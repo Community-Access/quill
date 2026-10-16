@@ -2298,6 +2298,7 @@ Control coverage: 199 audited sites (199 helped).
 - `self.output`: The editor stays where it is while transcription runs. Open Notifications and activate the completed result when you are ready to read it.
 - `self.timestamps`: Off unless you check it. A new paragraph starts wherever the recording pauses for two seconds or more; with timestamps checked, each paragraph begins with the hours, minutes and seconds into the recording where it was said, like [00:01:23], so you can find it again.
 - `self.obey`: Off by default: in a recording, somebody who says new paragraph or comma usually means the words. Turn it on for a recording you dictated on purpose, and comma, period, new line, new paragraph and scratch that work as they do in dictation. Commands that move the cursor are ignored.
+- `self.translate`: Off unless you check it. Writes the recording in English instead of the language spoken. It needs a recording in a language other than English and a model that translates: the built-in Whisper, or a multilingual Whisper you downloaded. With any other model this box is unavailable.
 - `self.running`: What is being transcribed at the moment, how far it has got, and how many recordings are waiting after it.
 - `stop`: Stops the transcription that is running and cancels any recordings waiting after it. The outcomes remain in Notifications; nothing is written into a document.
 #### DictationReviewFrame (`quill/ui/dictation_review_frame.py`)

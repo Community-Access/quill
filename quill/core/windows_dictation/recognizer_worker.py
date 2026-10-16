@@ -66,6 +66,8 @@ class WorkerMixin:
     _finish_requested: Any = None
     _watchdog: Any = None
     _last_partial: str = ""
+    #: The command word's keyword spotter (kws_keywords.KeywordGate), or ``None``.
+    keyword_gate: Any = None
 
     def _lose_microphone(self) -> None:  # provided by the recogniser
         raise NotImplementedError
@@ -121,6 +123,8 @@ class WorkerMixin:
                     continue
                 history.add(chunk)
                 vad.accept_waveform(chunk)
+                if self.keyword_gate is not None:
+                    self._spot(chunk)
                 speaking = bool(vad.is_speech_detected())
                 if speaking and not was_speaking:
                     self._post(self._listener.on_speech_started)
@@ -175,12 +179,23 @@ class WorkerMixin:
                 )
             if generation != self._generation:
                 continue  # Escape was pressed while this was being decoded
+            heard = self.keyword_gate.take() if self.keyword_gate is not None else None
             if (text or mark) and self._running.is_set():
                 self._post(
                     self._listener.on_phrase,
-                    RecognizedPhrase(words_from_text(text), text=text, previous_mark=mark),
+                    RecognizedPhrase(
+                        words_from_text(text), text=text, previous_mark=mark, keyword_heard=heard
+                    ),
                 )
         return any_done
+
+    def _spot(self, chunk: Any) -> None:
+        """The keyword spotter (D-27), on the same audio after the reader gate. A
+        spotter that fails is dropped: the text matcher works alone."""
+        try:
+            self.keyword_gate.accept(chunk)
+        except Exception:  # noqa: BLE001 - spotting is a refinement, never a blocker
+            self.keyword_gate = None
 
     def _finish_now(self, vad: Any, history: Any) -> None:
         """Flush the detector, recognise what was left, then report finished."""

@@ -250,8 +250,8 @@ Transcribe - Product Requirements Document</h1>
 implementation blueprint<br />
 <strong>Status:</strong> Proposed; architecture and scope for product
 review<br />
-<strong>Last updated:</strong> 2026-10-13 (as-built notes in 7.2, 7.4,
-10.3 and 15.2)<br />
+<strong>Last updated:</strong> 2026-10-16 (as-built notes in 7.2, 7.4,
+7.9, 10.3 and 15.2)<br />
 <strong>Initial platform:</strong> Windows desktop<br />
 <strong>Proposed product identifier:</strong>
 <code>QuillTranscribe</code></p>
@@ -762,6 +762,23 @@ the target immediately before writing.</p>
 contract, ship it in 1.1. Do not duplicate <code>FileTranscriber</code>,
 audio decoding, duration handling, or worker orchestration inside the
 new app.</p>
+<p><strong>As built 2026-10-16 (dict.md D-26).</strong> Every local
+model in QUILL, QUILL Lite and QUILL Transcribe now runs on one
+sherpa-onnx layer: QUILL’s Locked Dictation and offline transcription
+reach the same models, from the same store, through the same
+<code>FileTranscriber</code>
+(<code>quill/core/speech/providers/sherpa_shared.py</code>), so a model
+downloaded in any of the three is used by all of them. Transcribe a
+Recording here gains <strong>Translate into English</strong> (Alt+E), on
+the same models as QUILL: enabled for a recording in another language
+with a model whose catalogue <code>tasks</code> include translation
+(multilingual Whisper, built in or downloaded), unavailable otherwise,
+off unless checked. Timestamps were already there. Each catalogue model
+now also carries its memory tier (4, 8 or 16 GB), whether it streams,
+its tasks and its pinned source page. Keyword spotting for the command
+word, hotwords for My Words, punctuation and speaker labels are built on
+the same layer and switched off until measured (the dictation design
+record, section 22).</p>
 <h3 id="710-transcript-retention-and-actions">7.10 Transcript retention
 and actions</h3>
 <p>The default is no transcript history and no retained raw audio. The

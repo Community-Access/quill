@@ -219,6 +219,8 @@ class CommandModeMixin(ReviewMixin):  # and VoiceCommandsMixin under it (review_
             self._command_stop_timer()
             self._command_changed()
             return rest if rest is not None else phrase
+        if rest is not None and phrase.keyword_heard is False:
+            return None  # the keyword spotter ran and did not hear it: both must agree (D-27)
         return rest
 
     def _command_utterance(self, rest: RecognizedPhrase, preferences: DictationPreferences) -> None:

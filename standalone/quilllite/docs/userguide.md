@@ -5130,6 +5130,12 @@ between sentences. A few more things happen on the way:
   commands** (Alt+O): then "comma", "period", "new line", "new paragraph" and
   "scratch that" work just as they do when you dictate. Commands that move the
   cursor are ignored, because there is no cursor in a recording.
+- **Translation into English.** For a recording in Spanish, check **Translate
+  into English** (Alt+E) and the transcript is written in English instead of
+  Spanish. It needs a model that translates: the built-in Whisper, or a
+  multilingual Whisper you downloaded (not the ones marked English). With any
+  other model, or for an English recording, the box is unavailable. Off
+  unless you check it.
 
 #### Which model for which recording
 

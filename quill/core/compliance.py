@@ -83,7 +83,7 @@ _DEPENDENCY_USAGE_NOTES: dict[str, str] = {
     "pytest-xdist": "Parallel test execution.",
     "regex": "Core regular expression engine.",
     "ruff": "Linting and formatting.",
-    "sherpa-onnx": "ONNX speech runtime for the optional NVIDIA Nemotron offline dictation engine.",
+    "sherpa-onnx": "ONNX runtime for every local dictation and transcription model.",
     "speechrecognition": "Speech-recognition helper components.",
     "wx-accessible-webview": "Accessible web preview and dialog surfaces.",
     "wxpython": "Desktop UI framework.",

@@ -2544,6 +2544,23 @@ providers".
 >   Speech Models now speaks its **capabilities** ("detects the spoken
 >   language; never invents text from silence") *before* download — the catalog
 >   is the manifest of truth and the picker promises only what it lists.
+> - **One sherpa-onnx layer (2026-10-16, dict.md D-26).** The Parakeet and
+>   Nemotron providers and their second model folder are gone. One provider,
+>   `providers/sherpa_shared.py` (id `sherpa`), runs every local sherpa-onnx
+>   model from the family's one store, the one live dictation, QUILL Lite and
+>   QUILL Transcribe use, through Transcribe a Recording's own pipeline, so
+>   Locked Dictation and Transcribe a Recording give the same text for the same
+>   file and model, and a model downloaded in any app serves all of them. A
+>   saved `nemotron` or `parakeet` choice loads as `sherpa`, and an old-style
+>   Parakeet download is hard-linked into the store rather than downloaded
+>   again. The ladder keeps an installed Parakeet first and whisper.cpp the
+>   default when it has a model; with no whisper.cpp model, Locked Dictation
+>   uses the bundled Moonshine tiny. Translation into English goes to
+>   multilingual Whisper; an initial prompt is reported as unsupported in one
+>   sentence. Keyword spotting, hotwords, punctuation and speaker labels are
+>   built on the same layer and off until measured. Kokoro's onnxruntime
+>   session has an explicit thread count, and a test proves the two ONNX
+>   runtimes coexist (the dictation design record, section 22).
 > - **A silence pre-pass** (`speech_vad.py`) between recorder and engine: a pure
 >   stdlib RMS tier trims quiet lead-in/out from every captured WAV (calibrated
 >   identically to the Hey-QUILL turn detector), and an all-quiet recording

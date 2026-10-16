@@ -215,8 +215,8 @@ def test_openai_gets_a_minute_or_so_at_a_time_never_across_a_paragraph() -> None
 def test_the_real_engine_is_asked_for_when_none_is_given(monkeypatch) -> None:
     asked: list[str] = []
 
-    def local_engine(engine_id: str, language: str) -> tuple[Any, str]:
-        asked.append(f"{engine_id}/{language}")
+    def local_engine(engine_id: str, language: str, task: str) -> tuple[Any, str]:
+        asked.append(f"{engine_id}/{language}/{task}")
         return (lambda _samples: "Hello."), "notice"
 
     monkeypatch.setattr(file_transcribe, "local_engine", local_engine)
@@ -226,7 +226,7 @@ def test_the_real_engine_is_asked_for_when_none_is_given(monkeypatch) -> None:
         segmenter=lambda: _Phrases([(1.0, 1.0, "x")]),
     )
     transcript = transcriber.run()
-    assert asked == ["parakeet/es"]
+    assert asked == ["parakeet/es/transcribe"]
     assert transcript.notice == "notice"
 
 

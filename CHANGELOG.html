@@ -245,6 +245,89 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="one-sherpa-onnx-layer-for-every-local-speech-model-dictmd-d-26-to-d-30-2026-10-16">One
+sherpa-onnx layer for every local speech model (dict.md D-26 to D-30)
+(2026-10-16)</h3>
+<p>The dictation design record, section 22, is the full account; in
+brief:</p>
+<ul>
+<li><strong>D-26, one provider.</strong> New
+<code>quill/core/speech/providers/sherpa_shared.py</code>
+(<code>SherpaSharedProvider</code>, id <code>sherpa</code>) runs every
+local sherpa-onnx model from the family store through
+<code>file_transcribe.FileTranscriber</code>, so Locked Dictation and
+Transcribe a Recording give the same text for the same file and model.
+<code>providers/nemotron_onnx.py</code> and
+<code>providers/parakeet_onnx.py</code> and their tests are deleted, and
+<code>core/speech/catalog.py</code> lost its Nemotron and Parakeet rows.
+<code>translate_to_english</code> goes to multilingual Whisper
+(<code>task="translate"</code> through <code>model_loader.build</code>,
+<code>local_recognizer._load</code> and the new
+<code>FileJob.translate</code>); an <code>initial_prompt</code> is one
+warning sentence.</li>
+<li><strong>D-26, catalogue fields.</strong>
+<code>DownloadableModel.streaming</code>, <code>ram_tier</code>,
+<code>tasks</code> and <code>source_url</code>, derived
+(<code>model_types.RAM_TIERS</code>, <code>tasks_for</code>,
+<code>HOTWORD_MODELS</code>); <code>model_advice</code> reads its memory
+budgets from the tiers.</li>
+<li><strong>D-26, errors.</strong> <code>SherpaLoadError</code>,
+<code>SherpaUnsupportedError</code>, <code>SherpaRuntimeError</code> in
+<code>model_loader.py</code> (<code>QUILL-SPEECH-SHERPA-*</code>).</li>
+<li><strong>D-26, migration.</strong> New
+<code>quill/core/speech/sherpa_migration.py</code>: a saved
+<code>speech_provider</code> of <code>nemotron</code> or
+<code>parakeet</code> loads as <code>sherpa</code> (with the catalogue’s
+model ids), and an old-style Parakeet download is hard-linked (or moved)
+into the shared store, never downloaded twice. The older Nemotron is a
+different model and is not adopted.</li>
+<li><strong>D-26, the ladder.</strong>
+<code>preferred_dictation_provider_id</code>: an installed Parakeet
+promotes <code>sherpa</code>; whisper.cpp with no model gives way to the
+shared provider’s built-in Moonshine tiny. The guided offline-speech
+setup offers the shared engine in place of the two old ones
+(<code>guided_setup.py</code>), with D-22’s recommendation;
+<code>speech_vad.silero_model_path</code> prefers the bundled Silero;
+the voice features fall back to <code>sherpa</code> and prefer Moonshine
+(<code>voice_capture.py</code>,
+<code>service.preferred_command_model</code>).</li>
+<li><strong>D-26, parity.</strong> Transcribe a Recording (QUILL, QUILL
+Lite, QUILL Transcribe) has Translate into English, enabled only for
+another language and a model that translates
+(<code>FileModel.translates</code>,
+<code>TranscribeChoice.translate</code>).</li>
+<li><strong>D-26, packaging.</strong> <code>sherpa-onnx==1.13.8</code>
+exactly in <code>pyproject.toml</code>, <code>uv.lock</code> and
+<code>engine_install</code>; the Offline Edition stages a
+<code>nemotron</code> wheelhouse
+(<code>SHERPA_WHEELHOUSE_REQUIREMENTS</code>).</li>
+<li><strong>D-27, keyword spotting, off.</strong> New
+<code>kws_keywords.py</code> (keyword lines, <code>KeywordGate</code>,
+<code>keyword_gate_for</code>), fed by
+<code>recognizer_worker._spot</code>;
+<code>RecognizedPhrase.keyword_heard</code>, and
+<code>command_mode_mixin</code> requires both the spotter and the text
+to agree when a spotter ran. <code>KWS_ADOPTED = False</code> until the
+false-trigger soak, detection and CPU measurements pass.</li>
+<li><strong>D-28, hotwords, off.</strong> New <code>hotwords.py</code>
+behind <code>HOTWORDS_ENABLED = False</code>;
+<code>model_loader.build</code> and <code>online</code> take
+<code>decoder_options</code>. A measurement on an English Zipformer is
+needed first.</li>
+<li><strong>D-29, punctuation and speaker labels, off.</strong> New
+<code>post_passes.py</code> (<code>OfflinePunctuation</code>,
+<code>OfflineSpeakerDiarization</code>, <code>label_spans</code>); no
+model is adopted yet.</li>
+<li><strong>D-30, TTS through sherpa-onnx.</strong> Not built: dict.md
+decides after measuring.</li>
+<li><strong>Two runtimes.</strong> New
+<code>tests/unit/core/test_onnxruntime_coexistence.py</code> (both
+import orders, one <code>onnxruntime.dll</code> mapped; passed here).
+New <code>quill/core/onnx_threads.py</code>: Kokoro’s session gets
+<code>intra_op_num_threads</code> of half the cores, one to four
+(<code>read_aloud._get_cached_kokoro_onnx</code>).</li>
+</ul>
+<h3
 id="quill-radio-extras-marked-delete-resume-earcon-a-second-device-per-favourite-keys-whats-new-notes-in-reminders-2026-10-16">Quill
 Radio extras: marked delete, resume earcon, a second device,
 per-favourite keys, What’s New, notes in reminders (2026-10-16)</h3>

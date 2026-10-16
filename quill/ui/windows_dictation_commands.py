@@ -555,12 +555,16 @@ def _make_recognizer(controller: DictationController, preferences: DictationPref
             language=preferences.speech_language,
             prompt=preferences.context,
         )
+    from quill.core.windows_dictation.kws_keywords import keyword_gate_for
     from quill.core.windows_dictation.local_recognizer import LocalDictationRecognizer
 
-    return LocalDictationRecognizer(
+    recognizer = LocalDictationRecognizer(
         controller,
         preferences.engine,
         post=wx.CallAfter,
         pause_seconds=preferences.pause_seconds,
         language=preferences.speech_language,
     )
+    # The command word's keyword spotter (D-27): None until it is adopted.
+    recognizer.keyword_gate = keyword_gate_for(preferences)
+    return recognizer

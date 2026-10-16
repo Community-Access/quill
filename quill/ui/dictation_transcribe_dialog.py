@@ -10,9 +10,12 @@ Speech > Live Dictation in QUILL, Shift+F5 in both). One small window:
   with OpenAI's models joining the list once OpenAI has said which ones the
   saved key may use. Under it, what the model is good for and how long this
   recording should take with it.
-* **Language**, **timestamps** on each paragraph, and whether spoken punctuation
-  and commands are obeyed. The transcript is kept in Notifications and opens
-  only when the person activates its notification.
+* **Language**, **timestamps** on each paragraph, whether spoken punctuation
+  and commands are obeyed, and -- for a recording in another language with a
+  multilingual Whisper model -- **translation into English** (dict.md D-26:
+  the same translation QUILL's offline transcription has, on the same models).
+  The transcript is kept in Notifications and opens only when the person
+  activates its notification.
 
 While a transcription is running the window says so, and **Stop Transcribing**
 stops it and anything waiting. The work itself is
@@ -54,6 +57,8 @@ class TranscribeChoice:
     language: str
     timestamps: bool
     obey_commands: bool
+    #: Into English instead of the words said (multilingual Whisper only).
+    translate: bool = False
 
 
 class _Drop(wx.FileDropTarget):
@@ -200,8 +205,16 @@ class TranscribeFileDialog(wx.Dialog):
             "purpose, and comma, period, new line, new paragraph and scratch that work "
             "as they do in dictation. Commands that move the cursor are ignored."
         )
+        self.translate = wx.CheckBox(self, label="Translate into &English")
+        self.translate.SetHelpText(
+            "Off unless you check it. Writes the recording in English instead of the "
+            "language spoken. It needs a recording in a language other than English and "
+            "a model that translates: the built-in Whisper, or a multilingual Whisper "
+            "you downloaded. With any other model this box is unavailable."
+        )
         root.Add(self.timestamps, 0, wx.ALL, _PAD)
         root.Add(self.obey, 0, wx.ALL, _PAD)
+        root.Add(self.translate, 0, wx.ALL, _PAD)
 
         buttons = self.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
         ok = self.FindWindowById(wx.ID_OK, self)
@@ -323,7 +336,16 @@ class TranscribeFileDialog(wx.Dialog):
         row = self.model.GetSelection() if self._models else wx.NOT_FOUND
         return self._models[row] if 0 <= row < len(self._models) else None
 
+    def _can_translate(self) -> bool:
+        model = self.selected_model()
+        return model is not None and model.translates and self._language() != "en"
+
     def _describe(self) -> None:
+        if getattr(self, "translate", None) is not None:
+            can = self._can_translate()
+            self.translate.Enable(can)
+            if not can:
+                self.translate.SetValue(False)
         model = self.selected_model()
         if model is None:
             message = (
@@ -401,6 +423,7 @@ class TranscribeFileDialog(wx.Dialog):
             language=self._language(),
             timestamps=self.timestamps.GetValue(),
             obey_commands=self.obey.GetValue(),
+            translate=self._can_translate() and self.translate.GetValue(),
         )
         event.Skip()
 

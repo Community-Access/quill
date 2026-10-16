@@ -232,14 +232,18 @@ can install and choose:
   people**: *Tiny* (~75 MB) and *Base* (~145 MB) are fast and ideal for short
   voice commands; *Small* (~465 MB) is the recommended all-round choice. Larger
   models (Medium, Large) are more accurate but slower and much bigger.
-- **Parakeet 3** (NVIDIA, via sherpa-onnx) — **the most reliable choice for
-  dictation**, and once its ~650 MB model is installed, dictation prefers it
-  automatically (your explicit engine choice still wins). It covers 25
-  languages, detects which one you are speaking, runs on any CPU, and — unlike
-  Whisper — never invents text from silence, so a thinking pause can never
-  become a phantom "thank you" in your document.
-- **Nemotron** (NVIDIA, via sherpa-onnx) — a strong offline English engine that
-  runs without heavy dependencies.
+- **QUILL speech models** (via sherpa-onnx) — the models every QUILL app
+  shares, so one download serves QUILL, QUILL Lite and QUILL Transcribe. The
+  built-in Moonshine tiny is there from the start, and is what voice commands
+  use when Whisper has no model. Among the downloads:
+  - **Parakeet 3** (NVIDIA) — **the most reliable choice for dictation**, and
+    once its ~670 MB model is installed, dictation prefers it automatically
+    (your explicit engine choice still wins). It covers 25 languages, detects
+    which one you are speaking, runs on any CPU, and — unlike Whisper — never
+    invents text from silence, so a thinking pause can never become a phantom
+    "thank you" in your document.
+  - **Nemotron 3.5** (NVIDIA) — a strong English and Spanish model that
+    recognises while you speak.
 - **Faster Whisper** — an additional offline option.
 
 ## Privacy and control at a glance

@@ -177,6 +177,11 @@ KOKORO_WHEELHOUSE_REQUIREMENTS = ("kokoro-onnx>=0.6.1", "soundfile>=0.14.0")
 FASTER_WHISPER_WHEELHOUSE_REQUIREMENTS = ("faster-whisper>=1.0", "huggingface_hub>=0.20")
 VOSK_WHEELHOUSE_REQUIREMENTS = ("vosk>=0.3.45",)
 MP3_WHEELHOUSE_REQUIREMENTS = ("mutagen>=1.48.1",)
+# sherpa-onnx (and sherpa-onnx-core, its native half) for the shared speech
+# models (dict.md D-26): the "nemotron" pack name is what engine_install's
+# install_nemotron asks _bundled_wheelhouse_dir for. Pinned exactly, as the
+# pyproject extras are.
+SHERPA_WHEELHOUSE_REQUIREMENTS = ("sherpa-onnx==1.13.8", "numpy>=1.24.0")
 
 # GLOW is hidden for 0.5.0 (the core.glow feature is locked off), so the heavy
 # `glow` extra (quill-glow-core[glow], not yet on a public index) is NOT bundled
@@ -736,6 +741,9 @@ def build_windows_distribution(
                 exclude=("srt",),
             )
             _stage_pip_wheelhouse(portable_dir, python_exe, "mp3", MP3_WHEELHOUSE_REQUIREMENTS)
+            _stage_pip_wheelhouse(
+                portable_dir, python_exe, "nemotron", SHERPA_WHEELHOUSE_REQUIREMENTS
+            )
     elif bundle_offline:
         print(
             "Warning: --bundle-offline without --bundle-python cannot stage any "

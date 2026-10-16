@@ -535,7 +535,7 @@ class SpeechDownloadsMixin:
 
             pip_engines = {
                 "fasterwhisper": (ei.is_faster_whisper_available, ei.install_faster_whisper),
-                "nemotron": (ei.is_nemotron_available, ei.install_nemotron),
+                "sherpa": (ei.is_nemotron_available, ei.install_nemotron),  # sherpa-onnx
             }
             entry = pip_engines.get(engine_id)
             if entry is not None:

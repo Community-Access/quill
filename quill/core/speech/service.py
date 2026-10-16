@@ -20,6 +20,8 @@ from quill.core.storage import read_json, write_json_atomic
 from quill.core.windows_dictation.model_types import legacy_tier
 
 DEFAULT_PROVIDER_ID = "whispercpp"
+#: Every local sherpa-onnx model, from the family's one store (dict.md D-26).
+SHARED_PROVIDER_ID = "sherpa"
 
 
 def _prefs_path() -> object:
@@ -78,21 +80,15 @@ def default_registry(executable_path: str | None = None) -> SpeechProviderRegist
     except Exception:  # noqa: BLE001 - an optional engine must never break the registry
         pass
 
+    # Every local sherpa-onnx model -- the built-in Moonshine and Whisper and
+    # every download -- from the family's one model store (dict.md D-26). It
+    # replaced the Nemotron and Parakeet engines and their second model folder.
     try:
-        from quill.core.speech.providers.nemotron_onnx import NemotronOnnxProvider
+        from quill.core.speech.providers.sherpa_shared import SherpaSharedProvider
 
-        nemotron = NemotronOnnxProvider()
-        if nemotron.is_available():
-            registry.register(nemotron)
-    except Exception:  # noqa: BLE001 - an optional engine must never break the registry
-        pass
-
-    try:
-        from quill.core.speech.providers.parakeet_onnx import ParakeetOnnxProvider
-
-        parakeet = ParakeetOnnxProvider()
-        if parakeet.is_available():
-            registry.register(parakeet)
+        shared = SherpaSharedProvider()
+        if shared.is_available():
+            registry.register(shared)
     except Exception:  # noqa: BLE001 - an optional engine must never break the registry
         pass
 
@@ -116,25 +112,42 @@ def preferred_dictation_provider_id(registry: SpeechProviderRegistry, chosen: st
        ``settings.speech_provider``) is honoured verbatim when that provider is
        registered — preferring anything over an explicit setting would make the
        engine radio a lie.
-    2. **Parakeet 3, when its model is installed.** A transducer emits tokens
-       only for audio evidence, so it never invents text from silence — the
-       Whisper failure a dictation user actually meets ("thank you" typed into
-       the document after a quiet pause). It also detects its own language
-       across 25, and avoids whisper.cpp's documented GPU crash class by being
-       CPU-only. This was studied against the Handy project's production
-       experience (D:\\code\\handy) before the switch was made.
-    3. **whisper.cpp**, the bundled default: works before any large download.
+    2. **The shared models, when Parakeet 3 is installed** (``sherpa``, which
+       then transcribes with Parakeet: its installed list is most accurate
+       first). A transducer emits tokens only for audio evidence, so it never
+       invents text from silence — the Whisper failure a dictation user
+       actually meets ("thank you" typed into the document after a quiet
+       pause). It also detects its own language across 25, and avoids
+       whisper.cpp's documented GPU crash class by being CPU-only. This was
+       studied against the Handy project's production experience
+       (D:\\code\\handy) before the switch was made.
+    3. **whisper.cpp**, the bundled default, when it has a model.
+    4. **The shared models** with the built-in Moonshine tiny, when whisper.cpp
+       has none: so a fresh install dictates at once, with no download, and
+       removing whisper.cpp leaves offline dictation working (dict.md D-26).
 
     The ladder promotes Parakeet only after the user has *installed* its model
-    — an explicit, reversible act — so a fresh install still dictates with
-    whisper.cpp immediately, and nobody is surprised by a 650 MB download.
+    — an explicit, reversible act — and nobody is surprised by a 650 MB download.
     """
     if chosen and chosen not in CHAPTER_ONLY_PROVIDER_IDS and registry.get(chosen) is not None:
         return chosen
+    shared = registry.get(SHARED_PROVIDER_ID)
     try:
-        parakeet = registry.get("parakeet")
-        if parakeet is not None and parakeet.list_installed_models():
-            return "parakeet"
+        if shared is not None and any(
+            model.id == "parakeet" for model in shared.list_installed_models()
+        ):
+            return SHARED_PROVIDER_ID
+    except Exception:  # noqa: BLE001 - a probing failure must never block dictation
+        pass
+    try:
+        whisper_cpp = registry.get(DEFAULT_PROVIDER_ID)
+        if (
+            shared is not None
+            and whisper_cpp is not None
+            and not whisper_cpp.list_installed_models()
+        ):
+            if shared.list_installed_models():
+                return SHARED_PROVIDER_ID
     except Exception:  # noqa: BLE001 - a probing failure must never block dictation
         pass
     return DEFAULT_PROVIDER_ID
@@ -305,7 +318,15 @@ def recommend_model_id(model_ids: list[str], total_ram_gb: float, has_gpu: bool)
 #: dictation): the small, fast Whisper tiers first. Commands are a few words, so
 #: low latency matters far more than the accuracy of the heavier models, and the
 #: small models (Tiny 75 MB / Base 145 MB / Small 465 MB) are more than enough.
-_COMMAND_MODEL_PREFERENCE = ("base", "tiny", "small", "small.en-tdrz", "medium", "large-v3")
+_COMMAND_MODEL_PREFERENCE = (
+    "moonshine",  # the shared models' fastest, built in (D-26); no whisper.cpp id clashes
+    "base",
+    "tiny",
+    "small",
+    "small.en-tdrz",
+    "medium",
+    "large-v3",
+)
 
 
 def preferred_command_model(model_ids: list[str]) -> str:
@@ -389,6 +410,9 @@ def describe_models(
         has_gpu = detect_has_gpu()
     supported = list(provider.list_supported_models())
     recommended_id = recommend_model_id([m.id for m in supported], total_ram_gb, has_gpu)
+    shared = getattr(provider, "id", "") == SHARED_PROVIDER_ID
+    if shared:  # the dictation catalogue: D-22's recommendation, the same one Choose Model gives
+        recommended_id = _shared_recommendation() or recommended_id
     installed_ids = {m.id for m in provider.list_installed_models()}
     rows: list[ModelRow] = []
     for info in supported:
@@ -409,7 +433,9 @@ def describe_models(
         if info.approximate_size_mb >= 1500 and not has_gpu:
             gpu_note = "No GPU detected; expect slow transcription on the CPU."
         recommended = info.id == recommended_id
-        tier = legacy_tier(info.id, info.approximate_size_mb, info.accuracy_tier)
+        tier = (_shared_tier(info.id) if shared else "") or legacy_tier(
+            info.id, info.approximate_size_mb, info.accuracy_tier
+        )
         rec_note = (
             f" Recommended for your computer: {recommendation_reason(total_ram_gb, has_gpu)}"
             if recommended
@@ -448,6 +474,22 @@ def describe_models(
     return rows
 
 
+def _shared_tier(model_id: str) -> str:
+    from quill.core.windows_dictation.model_advice import engine_tier
+
+    return engine_tier(model_id)
+
+
+def _shared_recommendation() -> str:
+    """D-22's model for this computer, or ``""`` when it cannot be worked out."""
+    try:
+        from quill.core.windows_dictation.model_advice import for_this_computer
+
+        return for_this_computer().model_id
+    except Exception:  # noqa: BLE001 - no recommendation is better than a broken list
+        return ""
+
+
 def model_card_url(download_url: str | None) -> str:
     """Best-effort Hugging Face model-card URL from a model's download source.
 
@@ -460,7 +502,7 @@ def model_card_url(download_url: str | None) -> str:
     marker = "huggingface.co/"
     if marker in src:
         rest = src.split(marker, 1)[1]
-        repo = rest.split("/resolve/", 1)[0].strip("/")
+        repo = rest.split("/resolve/", 1)[0].split("/tree/", 1)[0].strip("/")
         return f"https://huggingface.co/{repo}" if repo else ""
     if "/" in src and not src.lower().startswith("http"):
         return f"https://huggingface.co/{src.strip('/')}"

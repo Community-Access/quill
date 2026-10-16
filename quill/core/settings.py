@@ -26,6 +26,7 @@ from quill.core.settings_normalizers import (
     _normalize_status_bar_hidden,
     _normalize_status_bar_order,
 )
+from quill.core.speech.sherpa_migration import migrate_choice
 from quill.core.speech.vosk_retirement import migrate_vosk_choices
 from quill.core.storage import write_json_atomic
 from quill.core.structure_announce import HEADING_POSITIONS as _HEADING_POSITIONS
@@ -409,8 +410,8 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
     # plus the serialized TextNormalizationOptions (empty = recommended defaults).
     tts_normalization_enabled: bool = True
     tts_normalization: dict[str, Any] = field(default_factory=dict)
-    # Offline speech engine: "" = bundled whisper.cpp; "fasterwhisper" or "nemotron"
-    # opt in on machines that have them. A saved "vosk" loads as "" (2026-10-13).
+    # Offline speech engine: "" = the ladder (service.py); "whispercpp", "fasterwhisper"
+    # or "sherpa" (every local sherpa-onnx model, D-26). "vosk" loads as "" (2026-10-13).
     speech_provider: str = ""
     # The model id to prefer for speech_provider (e.g. "small", "base.en"); ""
     # falls back to the first installed model of whichever engine is active.
@@ -1155,10 +1156,8 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
         tts_normalization = (
             dict(tts_normalization_raw) if isinstance(tts_normalization_raw, dict) else {}
         )
-        speech_provider = str(data.get("speech_provider", "")).strip().lower()
-        if speech_provider not in {"", "whispercpp", "fasterwhisper", "nemotron"}:
-            speech_provider = ""
-        speech_default_model_id = str(data.get("speech_default_model_id", "")).strip()
+        # nemotron/parakeet load as the shared engine, sherpa (dict.md D-26).
+        speech_provider, speech_default_model_id = migrate_choice(data)
         bw_speech_selection_mode = (
             str(data.get("bw_speech_selection_mode", "recommended")).strip().lower()
             or "recommended"

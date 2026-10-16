@@ -150,7 +150,9 @@ class _Recognizer:
 @pytest.fixture
 def recognizer(monkeypatch):
     fake = _Recognizer("Hello there.")
-    monkeypatch.setattr(local_recognizer, "_load", lambda _engine, _language="en": fake)
+    monkeypatch.setattr(
+        local_recognizer, "_load", lambda _engine, _language="en", _task="transcribe": fake
+    )
     return fake
 
 
@@ -229,7 +231,7 @@ def test_a_finished_phrase_reaches_the_listener_through_the_poster(recognizer) -
 
 
 def test_an_engine_failure_is_a_sentence_on_the_poster(monkeypatch) -> None:
-    def broken(_engine: str, _language: str = "en") -> Any:
+    def broken(_engine: str, _language: str = "en", _task: str = "transcribe") -> Any:
         raise RuntimeError("onnx exploded")
 
     monkeypatch.setattr(local_recognizer, "_load", broken)
