@@ -2777,12 +2777,13 @@ through live dictation's own `local_recognizer.transcribe("moonshine", ...)` and
 nothing new downloads; with the bundled model missing, voice falls back to the main engine as
 before. Saved settings migrate on load (`quill/core/speech/vosk_retirement.py`): a voice engine
 of `vosk` becomes `moonshine_tiny`, a `speech_provider` of `vosk` becomes `""`, and
-`vosk_retirement_notice` records that one sentence is owed. After the main window is up,
-`quill/ui/vosk_retirement_notice.py` says it once, in the status bar and through announce, then
-stores `done`: "Vosk is no longer used for voice commands or dictation. Voice commands and Hey
-QUILL now use Moonshine tiny, which is already installed. Podcast chapters still use Vosk." (or,
-when only the dictation engine was Vosk, "Vosk is no longer a dictation engine. Dictation now
-uses your default engine."). No model is offered for deletion, because chapters still use it.
+`vosk_retirement_notice` records that one sentence is owed (`voice`, `dictation` or `both`).
+`quill/ui/vosk_retirement_notice.py` says it through announce, which also sets the status bar,
+1.5 seconds after the main window is up and later still while a modal window is open, so the
+screen reader's startup speech does not cut it off; it stores `done` only after it is said. Each
+sentence names the engine that took over, says Moonshine tiny understands English only, and says
+where to choose another (Ctrl+Comma, "voice engine"; Speech and Dictation for dictation). No
+model is offered for deletion, because chapters still use it.
 
 ### 5.25d Batch Document-to-Speech, pronunciation, and SSML (shipped)
 

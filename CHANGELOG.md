@@ -229,12 +229,13 @@ The bundled Moonshine tiny is faster and more accurate, and needs no download.
   Download Vosk is gone with them.
 - **Saved choices move, and QUILL says so once.** A voice engine of Vosk
   becomes Moonshine tiny; a dictation engine of Vosk becomes the default. After
-  the main window is up, the status bar and the screen reader hear, once:
-  "Vosk is no longer used for voice commands or dictation. Voice commands and
-  Hey QUILL now use Moonshine tiny, which is already installed. Podcast
-  chapters still use Vosk." When only dictation used Vosk: "Vosk is no longer
-  a dictation engine. Dictation now uses your default engine." No model is
-  offered for deletion, because chapters still use it.
+  the main window is up and a moment has passed (longer while a dialog is
+  open, so the reader's own startup speech does not cut it off), the status
+  bar and the screen reader hear, once, which engine took over, that Moonshine
+  tiny understands English only, and where to choose another: Ctrl+Comma for
+  the voice engine, Speech and Dictation for dictation. One sentence covers
+  both when both used Vosk. It is recorded as said only after it is said. No
+  model is offered for deletion, because chapters still use it.
 
 ### QUILL Lineups in Quill Radio and QUILL Cast, and saved places that survive a restart (2026-10-13)
 

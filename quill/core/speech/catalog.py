@@ -318,7 +318,7 @@ NEMOTRON_MODELS: tuple[SpeechModelInfo, ...] = (
         speed_tier="fast",
         recommended_use=(
             "English-only, low-latency streaming accuracy on the CPU — no GPU or "
-            "torch needed. Larger download than Vosk; the strongest offline English."
+            "torch needed. A larger download; the strongest offline English."
         ),
         license_name="NVIDIA Open Model License",
     ),

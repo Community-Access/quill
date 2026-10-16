@@ -5835,15 +5835,16 @@ falls back to the main engine as before. Saved settings migrate on load
 <code>vosk</code> becomes <code>moonshine_tiny</code>, a
 <code>speech_provider</code> of <code>vosk</code> becomes
 <code>""</code>, and <code>vosk_retirement_notice</code> records that
-one sentence is owed. After the main window is up,
-<code>quill/ui/vosk_retirement_notice.py</code> says it once, in the
-status bar and through announce, then stores <code>done</code>: “Vosk is
-no longer used for voice commands or dictation. Voice commands and Hey
-QUILL now use Moonshine tiny, which is already installed. Podcast
-chapters still use Vosk.” (or, when only the dictation engine was Vosk,
-“Vosk is no longer a dictation engine. Dictation now uses your default
-engine.”). No model is offered for deletion, because chapters still use
-it.</p>
+one sentence is owed (<code>voice</code>, <code>dictation</code> or
+<code>both</code>). <code>quill/ui/vosk_retirement_notice.py</code> says
+it through announce, which also sets the status bar, 1.5 seconds after
+the main window is up and later still while a modal window is open, so
+the screen reader’s startup speech does not cut it off; it stores
+<code>done</code> only after it is said. Each sentence names the engine
+that took over, says Moonshine tiny understands English only, and says
+where to choose another (Ctrl+Comma, “voice engine”; Speech and
+Dictation for dictation). No model is offered for deletion, because
+chapters still use it.</p>
 <h3
 id="525d-batch-document-to-speech-pronunciation-and-ssml-shipped">5.25d
 Batch Document-to-Speech, pronunciation, and SSML (shipped)</h3>

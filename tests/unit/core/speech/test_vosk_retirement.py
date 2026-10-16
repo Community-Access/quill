@@ -37,11 +37,11 @@ def test_dictation_engine_vosk_becomes_the_default_with_the_dictation_notice() -
     assert loaded.vosk_retirement_notice == "dictation"
 
 
-def test_both_vosk_choices_say_the_voice_notice() -> None:
+def test_both_vosk_choices_say_the_combined_notice() -> None:
     loaded = Settings.from_dict({"speech_provider": "vosk", "voice_recognition_engine": "vosk"})
     assert loaded.speech_provider == ""
     assert loaded.voice_recognition_engine == "moonshine_tiny"
-    assert loaded.vosk_retirement_notice == "voice"
+    assert loaded.vosk_retirement_notice == "both"
 
 
 def test_no_vosk_choice_leaves_no_notice() -> None:
@@ -100,6 +100,16 @@ class _Host:
         self.status.append(message)
 
 
+def _now(_delay_ms: int, run: Any) -> None:
+    run()
+
+
+def _surface(host: Any, *, modal: bool = False) -> bool:
+    from quill.ui.vosk_retirement_notice import surface_vosk_retirement_notice
+
+    return surface_vosk_retirement_notice(host, later=_now, modal_open=lambda: modal)
+
+
 @pytest.fixture
 def _no_save(monkeypatch: pytest.MonkeyPatch) -> list[Settings]:
     saved: list[Settings] = []
@@ -108,54 +118,98 @@ def _no_save(monkeypatch: pytest.MonkeyPatch) -> list[Settings]:
 
 
 def test_voice_notice_is_said_once_and_remembered(_no_save: list[Settings]) -> None:
-    from quill.ui.vosk_retirement_notice import VOICE_NOTICE, surface_vosk_retirement_notice
+    from quill.ui.vosk_retirement_notice import VOICE_NOTICE
 
     host = _Host(Settings.from_dict({"voice_recognition_engine": "vosk"}))
-    assert surface_vosk_retirement_notice(host) is True
-    assert host.spoken == [VOICE_NOTICE]
-    assert host.status == [VOICE_NOTICE]
+    assert _surface(host) is True
+    assert host.spoken == [VOICE_NOTICE]  # announce also sets the status bar
+    assert host.status == []  # so it is not set a second time
     assert host.settings.vosk_retirement_notice == "done"
     assert _no_save and _no_save[-1].vosk_retirement_notice == "done"
     # The next start (and the one after) says nothing.
-    assert surface_vosk_retirement_notice(host) is False
+    assert _surface(host) is False
     assert host.spoken == [VOICE_NOTICE]
 
 
+def test_the_notice_waits_while_a_modal_window_is_open(_no_save: list[Settings]) -> None:
+    from quill.ui import vosk_retirement_notice as notice
+
+    host = _Host(Settings.from_dict({"voice_recognition_engine": "vosk"}))
+    waits: list[int] = []
+    modal = [True, True, False]
+
+    def later(delay_ms: int, run: Any) -> None:
+        waits.append(delay_ms)
+        run()
+
+    def modal_open() -> bool:
+        return modal.pop(0) if len(modal) > 1 else modal[0]
+
+    assert notice.surface_vosk_retirement_notice(host, later=later, modal_open=modal_open)
+    assert waits[0] == notice.DELAY_MS and notice.RETRY_MS in waits[1:]
+    assert host.spoken == [notice.VOICE_NOTICE]
+
+
+def test_a_notice_never_said_is_not_marked_done(_no_save: list[Settings]) -> None:
+    host = _Host(Settings.from_dict({"voice_recognition_engine": "vosk"}))
+
+    def broken(_message: str, **_kwargs: Any) -> None:
+        raise RuntimeError("no speech")
+
+    host._announce = broken  # type: ignore[method-assign]
+    _surface(host)
+    assert host.settings.vosk_retirement_notice == "voice"  # said at the next start
+    assert _no_save == []
+
+
 def test_dictation_notice_wording(_no_save: list[Settings]) -> None:
-    from quill.ui.vosk_retirement_notice import DICTATION_NOTICE, surface_vosk_retirement_notice
+    from quill.ui.vosk_retirement_notice import DICTATION_NOTICE
 
     host = _Host(Settings.from_dict({"speech_provider": "vosk"}))
-    assert surface_vosk_retirement_notice(host) is True
+    assert _surface(host) is True
     assert host.spoken == [
-        "Vosk is no longer a dictation engine. Dictation now uses your default engine."
+        "Vosk is no longer a dictation engine. Dictation now uses your default engine. "
+        "To choose another, open Speech and Dictation and its Dictation tab."
     ]
     assert host.spoken == [DICTATION_NOTICE]
+
+
+def test_both_notice_wording(_no_save: list[Settings]) -> None:
+    from quill.ui.vosk_retirement_notice import BOTH_NOTICE
+
+    host = _Host(
+        Settings.from_dict({"speech_provider": "vosk", "voice_recognition_engine": "vosk"})
+    )
+    assert _surface(host) is True
+    assert host.spoken == [BOTH_NOTICE]
+    assert "English only" in BOTH_NOTICE and "Speech and Dictation" in BOTH_NOTICE
 
 
 def test_voice_notice_wording() -> None:
     from quill.ui.vosk_retirement_notice import VOICE_NOTICE
 
     assert VOICE_NOTICE == (
-        "Vosk is no longer used for voice commands or dictation. Voice commands and "
-        "Hey QUILL now use Moonshine tiny, which is already installed. Podcast "
-        "chapters still use Vosk."
+        "Vosk is no longer used for voice commands. Voice commands and Hey QUILL now "
+        "use Moonshine tiny, which is already installed and understands English only. "
+        "To choose another, press Ctrl+Comma and find voice engine. Podcast chapters "
+        "still use Vosk."
     )
     assert VOICE_NOTICE.isascii()
 
 
 def test_nothing_is_said_without_a_migration(_no_save: list[Settings]) -> None:
-    from quill.ui.vosk_retirement_notice import surface_vosk_retirement_notice
-
     host = _Host(Settings())
-    assert surface_vosk_retirement_notice(host) is False
+    assert _surface(host) is False
     assert host.spoken == [] and host.status == [] and _no_save == []
 
 
 def test_the_notice_runs_with_the_startup_live_settings(
     monkeypatch: pytest.MonkeyPatch, _no_save: list[Settings]
 ) -> None:
-    from quill.ui import settings_live_switches, wakeword_switch
+    from quill.ui import settings_live_switches, vosk_retirement_notice, wakeword_switch
 
+    monkeypatch.setattr(vosk_retirement_notice, "_wx_later", _now)
+    monkeypatch.setattr(vosk_retirement_notice, "_modal_open", lambda: False)
     monkeypatch.setattr(settings_live_switches, "remember_shell_verbs", lambda host: None)
     monkeypatch.setattr(wakeword_switch, "start_wakeword_if_enabled", lambda host: None)
     host = _Host(Settings.from_dict({"voice_recognition_engine": "vosk"}))
@@ -316,6 +370,7 @@ def test_adapter_never_downloads_or_removes(tmp_path: Path) -> None:
 
 
 def test_adapter_transcribes_a_recording(tmp_path: Path) -> None:
+    pytest.importorskip("numpy")  # the live-dictation extra, not in every CI leg
     recognizer = _FakeRecognizer("Open the file.")
     provider = _adapter(tmp_path, recognizer)
     wav = _wav(tmp_path / "command.wav", 1.5)
@@ -327,6 +382,7 @@ def test_adapter_transcribes_a_recording(tmp_path: Path) -> None:
 
 
 def test_adapter_decodes_a_long_recording_in_twenty_second_pieces(tmp_path: Path) -> None:
+    pytest.importorskip("numpy")  # the live-dictation extra, not in every CI leg
     recognizer = _FakeRecognizer("one", "two")
     provider = _adapter(tmp_path, recognizer)
     wav = _wav(tmp_path / "long.wav", 25)
@@ -336,6 +392,7 @@ def test_adapter_decodes_a_long_recording_in_twenty_second_pieces(tmp_path: Path
 
 
 def test_adapter_refuses_audio_it_cannot_read(tmp_path: Path) -> None:
+    pytest.importorskip("numpy")  # the live-dictation extra, not in every CI leg
     provider = _adapter(tmp_path)
     wav = _wav(tmp_path / "fast.wav", 1, rate=44_100)
     with pytest.raises(SpeechError, match="16 kHz"):
@@ -343,6 +400,8 @@ def test_adapter_refuses_audio_it_cannot_read(tmp_path: Path) -> None:
 
 
 def test_adapter_wraps_a_recognizer_failure(tmp_path: Path) -> None:
+    pytest.importorskip("numpy")  # the live-dictation extra, not in every CI leg
+
     def broken(_samples: Any) -> str:
         raise RuntimeError("no engine")
 
@@ -400,6 +459,7 @@ def test_voice_provider_falls_back_to_the_main_engine_without_the_model(
 def test_command_and_wake_paths_transcribe_through_the_adapter(tmp_path: Path) -> None:
     """``_transcribe_recording`` is what Voice Command, Conversation Mode and the
     Hey QUILL wake window all call with ``_voice_provider()``'s answer."""
+    pytest.importorskip("numpy")  # the live-dictation extra, not in every CI leg
     host = _voice_host("moonshine_tiny", main=object())
     recognizer = _FakeRecognizer("open settings", "hey quill")
     provider = _adapter(tmp_path / "model", recognizer)

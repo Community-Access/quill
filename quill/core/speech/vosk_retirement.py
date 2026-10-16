@@ -11,7 +11,7 @@ accurate.
 recognition engine of ``"vosk"`` becomes ``"moonshine_tiny"``, and (because the
 dictation engine validation no longer accepts it) a saved ``speech_provider`` of
 ``"vosk"`` becomes ``""``, the default ladder. Neither happens silently: the
-returned notice state is ``"voice"`` or ``"dictation"`` until
+returned notice state is ``"voice"``, ``"dictation"`` or ``"both"`` until
 :mod:`quill.ui.vosk_retirement_notice` has said so once, then ``"done"``.
 """
 
@@ -20,7 +20,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 
 VOICE_ENGINES = frozenset({"", "whispercpp", "moonshine_tiny"})
-_NOTICE_STATES = frozenset({"", "voice", "dictation", "done"})
+_NOTICE_STATES = frozenset({"", "voice", "dictation", "both", "done"})
 
 
 def _text(data: Mapping[str, object], key: str) -> str:
@@ -35,9 +35,9 @@ def migrate_vosk_choices(data: Mapping[str, object]) -> tuple[str, str]:
         notice = ""
     retired = "dictation" if _text(data, "speech_provider") == "vosk" else ""
     if voice == "vosk":
-        voice, retired = "moonshine_tiny", "voice"
+        voice, retired = "moonshine_tiny", ("both" if retired else "voice")
     if voice not in VOICE_ENGINES:
         voice = ""
-    if retired and notice in {"", "dictation"}:
+    if retired and notice in {"", "voice", "dictation"}:
         notice = retired
     return voice, notice
