@@ -100,3 +100,20 @@ class QuillEditorHostMixin(EditorHostMixin):
         document = getattr(self, "document", None)
         if document is not None:
             document.set_text(self.editor.GetValue())  # type: ignore[attr-defined]
+
+    def _host_cue(self, event: str) -> None:
+        self.cue(event)  # type: ignore[attr-defined]
+
+    def _host_has_sound(self, event: str) -> bool:
+        try:
+            from quill.ui.sound_manager import has_sound_for
+
+            return bool(has_sound_for(event))
+        except Exception:  # noqa: BLE001 - no sound stack is an answer
+            return False
+
+    def _host_braille(self, message: str) -> None:
+        engine = getattr(self, "_announcement_engine", None)
+        braille = getattr(engine, "braille", None)
+        if callable(braille):
+            braille(message)

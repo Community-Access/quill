@@ -69,6 +69,10 @@ class SoundEvent(StrEnum):
     LIST_ENTERED = "list_entered"
     BROWSE_MODE_ON = "browse_mode_on"
     BROWSE_MODE_OFF = "browse_mode_off"
+    #: The caret has entered a line that carries an inline note (2026-10-17,
+    #: both editors; quill/core/inline_note_cue.py). Once on arrival, never
+    #: while the caret moves along the same line.
+    INLINE_NOTE_LINE = "inline_note_line"
 
     # Search
     SEARCH_FOUND = "search_found"

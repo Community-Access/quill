@@ -24,6 +24,7 @@ screen reader, navigated by hunk, and re-applied as a single text replacement
 from __future__ import annotations
 
 import re
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from difflib import SequenceMatcher
 
@@ -76,6 +77,14 @@ class WordChange:
     new_words: str
     old_sentence: str = ""
     new_sentence: str = ""
+    #: Where this edit sits in the hunk's original text (its lines joined with
+    #: newlines), and the exact text that replaces that span. They are what
+    #: lets one word group be accepted while its neighbours are rejected
+    #: (:meth:`DiffHunk.text_with`); ``old_words``/``new_words`` are the same
+    #: span trimmed for speech.
+    old_start: int = 0
+    old_end: int = 0
+    replacement: str = ""
 
     def action_phrase(self) -> str:
         """The spoken verb phrase: Changed / Inserted / Removed the words."""
@@ -84,6 +93,18 @@ class WordChange:
         if self.new_words:
             return f'Inserted "{self.new_words}"'
         return f'Removed "{self.old_words}"'
+
+    def choice_label(self) -> str:
+        """One row of the word list: the edit, then the sentence it is in.
+
+        The sentence rides on the row itself because the row is what the
+        screen reader reads as the arrow keys move; a separate pane would
+        only be heard by going to it.
+        """
+        context = self.new_sentence or self.old_sentence
+        if context and context not in (self.old_words, self.new_words):
+            return f"{self.action_phrase()}, in: {context}"
+        return self.action_phrase()
 
 
 @dataclass(frozen=True, slots=True)
@@ -106,6 +127,45 @@ class DiffHunk:
     new_lines: tuple[str, ...]
     old_line_no: int
     word_changes: tuple[WordChange, ...] = ()
+    #: Spacing-only edits inside a word-level hunk, as ``(start, end,
+    #: replacement)`` over the hunk's original text. Nobody is asked about a
+    #: changed space, so these follow the hunk: applied whenever any of its
+    #: word groups is accepted, which is what keeps "accept everything"
+    #: byte-identical to the AI's revision.
+    spacing_edits: tuple[tuple[int, int, str], ...] = ()
+
+    @property
+    def old_text(self) -> str:
+        return "\n".join(self.old_lines)
+
+    def text_with(self, accepted_words: set[int]) -> str:
+        """This hunk's text with only the word groups in *accepted_words*.
+
+        Indices are positions in :attr:`word_changes`. Every word group
+        accepted gives exactly the proposed lines; none gives exactly the
+        original ones.
+        """
+        if not self.word_changes:
+            return "\n".join(self.new_lines if accepted_words else self.old_lines)
+        if not accepted_words:
+            return self.old_text
+        if len(accepted_words & set(range(len(self.word_changes)))) == len(self.word_changes):
+            return "\n".join(self.new_lines)
+        edits = [
+            (change.old_start, change.old_end, change.replacement)
+            for index, change in enumerate(self.word_changes)
+            if index in accepted_words
+        ]
+        edits.extend(self.spacing_edits)
+        old = self.old_text
+        out: list[str] = []
+        cursor = 0
+        for start, end, replacement in sorted(edits):
+            out.append(old[cursor:start])
+            out.append(replacement)
+            cursor = end
+        out.append(old[cursor:])
+        return "".join(out)
 
     def describe(self) -> str:
         """A one-line, screen-reader-friendly summary of this hunk."""
@@ -172,21 +232,29 @@ class DiffReview:
     def has_changes(self) -> bool:
         return bool(self.hunks)
 
-    def apply(self, accepted: set[int]) -> str:
+    def apply(
+        self,
+        accepted: set[int],
+        word_choices: Mapping[int, set[int]] | None = None,
+    ) -> str:
         """Rebuild the text accepting only the hunks whose index is in *accepted*.
 
         Unchanged segments are kept verbatim. A rejected hunk keeps its original
-        lines; an accepted hunk uses the proposed lines. The result is a single
-        string ready to drop into the editor in one replacement (one undo).
+        lines; an accepted hunk uses the proposed lines -- or, when
+        *word_choices* names it, only the word groups listed there (positions
+        in that hunk's ``word_changes``). The result is a single string ready
+        to drop into the editor in one replacement (one undo).
         """
+        choices = word_choices or {}
         out: list[str] = []
         for segment in self._segments:
-            if segment.hunk_index < 0:
+            index = segment.hunk_index
+            if index < 0 or index not in accepted:
                 out.extend(segment.old_lines)
-            elif segment.hunk_index in accepted:
-                out.extend(segment.new_lines)
+            elif index in choices and self.hunks[index].word_changes:
+                out.append(self.hunks[index].text_with(set(choices[index])))
             else:
-                out.extend(segment.old_lines)
+                out.extend(segment.new_lines)
         return "\n".join(out)
 
     def accept_all(self) -> str:
@@ -250,7 +318,17 @@ def _token_offsets(tokens: list[str]) -> list[int]:
 
 
 def _word_changes(old_text: str, new_text: str) -> tuple[WordChange, ...]:
+    """The word groups of one changed hunk, or () to stay line-level."""
+    return _word_edits(old_text, new_text)[0]
+
+
+def _word_edits(
+    old_text: str, new_text: str
+) -> tuple[tuple[WordChange, ...], tuple[tuple[int, int, str], ...]]:
     """The second-stage word diff for one changed hunk, or () to stay line-level.
+
+    Returns the word groups and, beside them, the spacing-only edits that
+    nobody is asked about (see :attr:`DiffHunk.spacing_edits`).
 
     Tokens are words, whitespace runs, and punctuation runs, so nothing is
     lost between them; adjacent edits separated only by whitespace merge into
@@ -277,24 +355,34 @@ def _word_changes(old_text: str, new_text: str) -> tuple[WordChange, ...]:
     old_offsets = _token_offsets(old_tokens)
     new_offsets = _token_offsets(new_tokens)
     changes: list[WordChange] = []
+    spacing: list[tuple[int, int, str]] = []
     for i1, i2, j1, j2 in spans:
+        replacement = "".join(new_tokens[j1:j2])
         old_words = "".join(old_tokens[i1:i2]).strip()
-        new_words = "".join(new_tokens[j1:j2]).strip()
+        new_words = replacement.strip()
         if not old_words and not new_words:
-            continue  # spacing-only edit: nothing meaningful to speak
+            # Spacing-only edit: nothing meaningful to speak, but it still
+            # has to land when the hunk is accepted.
+            spacing.append((old_offsets[i1], old_offsets[i2], replacement))
+            continue
         if len(old_words) > _MAX_PHRASE_CHARS or len(new_words) > _MAX_PHRASE_CHARS:
-            return ()
+            return (), ()
         if len(changes) >= _MAX_WORD_CHANGES_PER_HUNK:
-            return ()
+            return (), ()
         changes.append(
             WordChange(
                 old_words=old_words,
                 new_words=new_words,
                 old_sentence=_sentence_context(old_text, old_offsets[i1], old_offsets[i2]),
                 new_sentence=_sentence_context(new_text, new_offsets[j1], new_offsets[j2]),
+                old_start=old_offsets[i1],
+                old_end=old_offsets[i2],
+                replacement=replacement,
             )
         )
-    return tuple(changes)
+    if not changes:
+        return (), ()
+    return tuple(changes), tuple(spacing)
 
 
 def build_diff_review(original: str, revised: str) -> DiffReview:
@@ -317,8 +405,9 @@ def build_diff_review(original: str, revised: str) -> DiffReview:
         else:  # "replace"
             kind = "changed"
         word_changes: tuple[WordChange, ...] = ()
+        spacing: tuple[tuple[int, int, str], ...] = ()
         if kind == "changed":
-            word_changes = _word_changes("\n".join(old_block), "\n".join(new_block))
+            word_changes, spacing = _word_edits("\n".join(old_block), "\n".join(new_block))
         index = len(hunks)
         hunks.append(
             DiffHunk(
@@ -328,6 +417,7 @@ def build_diff_review(original: str, revised: str) -> DiffReview:
                 new_lines=new_block,
                 old_line_no=i1 + 1,
                 word_changes=word_changes,
+                spacing_edits=spacing,
             )
         )
         segments.append(_Segment(old_block, new_block, index))

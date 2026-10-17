@@ -5310,6 +5310,8 @@ Once Quick Nav is on, the keys are the same either way:
 - `B` and `Shift+B` move by bookmark.
 - `'` and `Shift+'` move by code block.
 - `N` and `Shift+N` move by inline note.
+- `M` and `Shift+M` move by misspelled word.
+- `F` and `Shift+F` move by page, in a document with page breaks.
 - `P` and `Shift+P` move by paragraph.
 - `S` and `Shift+S` move by sentence.
 - `Tab` and `Shift+Tab` move by block.
@@ -5332,6 +5334,40 @@ A few things to know:
 - **Preload QUILL browse cache in background**, on the same page, is on by
   default. If you turn it off, QUILL builds the cache the first time you use
   Quick Nav.
+
+#### Moving by misspelling and by page
+
+**`M` and `Shift+M`** move to the next and previous misspelled word. QUILL
+selects the word and tells you what it is and where: "Misspelled: recieve,
+line 12". It uses the same spelling check as the Misspellings list in the
+Quick Nav panel, with your own dictionaries, so the key and the panel always
+agree. With the word selected you can type the right spelling straight over
+it, or press `Esc` to leave Quick Nav and use the spelling commands. At the
+last misspelling, `M` goes round to the first (unless you turned off wrapping
+in Settings); with none at all you hear "No misspelled words in this document."
+
+**`F` and `Shift+F`** move to the next and previous page. Pages here are the
+page breaks in the text itself: a PDF opened in QUILL has one between every
+page, and so does a braille file or a text file with page breaks. (F is for
+form feed, the character that marks a page break; `P` was already Paragraph.)
+QUILL says "Page 5 of 12". `Shift+F` from the middle of a page goes to the top
+of that page first, and from the top of a page to the page before. In a
+document with no page breaks you hear "This document has no page breaks."
+
+QUILL also tells you the page **once** when the cursor crosses a page break by
+any other means: an arrow key, `Page Down`, a search or a jump. Arrow down past
+the end of page 4 and you hear "Page 5 of 12"; keep arrowing through page 5
+and you hear nothing more about pages until you reach page 6. Moving with `F`
+does not make QUILL say the page twice. A document with no page breaks never
+mentions pages at all.
+
+For example, open a 12-page PDF and press `Ctrl+Shift+Grave` twice to lock
+Quick Nav. Press `F` four times to reach page 5 and read it with the arrow
+keys. Press `M` to jump to the first misspelled word after the cursor, fix it,
+and press `Esc` to leave Quick Nav.
+
+QUILL Lite has no Quick Nav, so it has neither key; its status bar shows the
+same "Page 5 of 12".
 
 #### How Quick Nav finds things
 
@@ -5671,6 +5707,35 @@ so it follows that text as you edit. If that text is deleted, the note is kept,
 not lost: the list shows it last, marked "the text it was on is gone", so you
 can read it and remove it. A new document keeps its notes until you close it;
 save it and they are kept.
+
+##### Hearing which lines have notes
+
+As you arrow through a document, QUILL plays a soft two-tap sound when the
+cursor arrives on a line that has an inline note, private or in the file. It
+plays once as you arrive, and never while you move along that same line with
+the left and right arrows, `Home`, `End` or `Ctrl+Left` and `Ctrl+Right`. Move
+off the line and back, and you hear it again. A note on a selection that runs
+over several lines counts as one place: you hear it as you enter, not on every
+line of it.
+
+For example, you have a note on the line "Back up the uploads folder." Arrow
+down: on the line before, nothing; on that line, the tap; then press `Alt+Shift+H`
+to hear the note itself.
+
+To change it, open **Settings**, go to the **Editing** page and find **When the
+caret reaches a line with an inline note** (the `inline_note_line_cue`
+setting). The choices are **Play a sound** (the default), **Say "note"**, and
+**Nothing**. A few things to know:
+
+- With the sound chosen, a braille display also shows the word "note", because
+  a sound does not reach somebody reading in braille without speech. With the
+  word chosen, your screen reader's braille shows it already.
+- If your sound pack has no sound for this, QUILL says "note" instead, so the
+  setting never ends up silent by accident. You can change or switch off the
+  sound itself in **Sound Scheme**, where it is listed as "Arrived on a line
+  with an inline note".
+- **Next Inline Note** and **Previous Inline Note** read you the note itself,
+  so arriving with them plays no tap on top.
 
 ##### Private notes and notes in the file
 
@@ -11356,6 +11421,32 @@ counted**: if it was too long, if there was no connection, if the service had a
 problem, or if you had already reached a limit, nothing is used. Opening Usage
 or About never uses anything.
 
+#### When the AI service is busy
+
+Every AI service has busy moments: too many people at once, a server
+restarting, a request that took too long. QUILL now handles them the same way
+on the free AI, your own OpenAI or Google Gemini key, and a ChatGPT plan:
+
+- It **tries the request up to three times**, one second apart and then two,
+  when the service answers that it is busy, overloaded, timed out or asked to
+  slow down (the HTTP answers 408, 409, 429, 500, 502, 503 and 504).
+- When the service says how long to wait, QUILL waits that long instead, up to
+  20 seconds. If it asks for longer, QUILL tells you now rather than leave you
+  listening to silence.
+- It **never sends a request twice when the service says not to**, because a
+  second copy might be counted, or charged, twice. Your free AI allowance being
+  used up, or your ChatGPT plan's usage, is said at once too: trying again
+  cannot change it.
+- **You only hear the end of it.** While QUILL is trying again you hear
+  nothing new; if the last try fails, you hear that one failure, in the same
+  words as before. If a try succeeds, you just get your answer.
+- A streamed answer that has already started to arrive is never started again,
+  so you never hear the beginning twice.
+
+For example, you press Summarize at a busy moment. The first try is answered
+"the service is busy", QUILL waits a second and tries again, and the answer
+arrives. All you notice is that it took a second longer.
+
 #### When you reach a limit
 
 The AI window tells you **which** limit you reached and **when it starts
@@ -12728,6 +12819,48 @@ When a change really is a rewrite, with many scattered edits or whole passages
 replaced, QUILL shows it as old and new lines instead, because forty word
 pairs in a row are harder to follow than two whole lines. Changes to spacing
 alone are also shown as lines, never spoken as word edits.
+
+#### Keeping some words of a change and not others
+
+In prose, one change is often a whole paragraph, and the AI may have changed
+three words in it: one you like, one you do not, and one you are unsure about.
+You no longer have to take all three or none.
+
+When the change you are on holds two or more word edits, a second list appears
+under **Changes**: **Words in this change**. Press `Alt+W` to go to it, or
+`Tab` from the Changes list. Each row is one word edit with the sentence it is
+in, so arrowing down the list reads you each edit in context. Every row starts
+checked. Press `Space` to drop an edit: the original words stay there, and the
+rest of the change still goes in. `Alt+C` takes you back to **Changes**, and
+`Alt+D` to **Change details**, which shows the sentence before and after for
+the word edit you are on.
+
+For example, the AI rewrote "The quick brown fox jumps over the lazy dog. It
+was very tired that day." The Words list says:
+
+- Changed "quick" to "rapid", in: The rapid brown fox leaps over the lazy dog.
+- Changed "jumps" to "leaps", in: The rapid brown fox leaps over the lazy dog.
+- Changed "very" to "rather", in: It was rather tired that day.
+
+Uncheck the first and choose **Apply Checked**. Your document now says "The
+quick brown fox leaps over the lazy dog. It was rather tired that day." You
+hear "Applied 1 change, 1 of them in part, as one undo step", and `Ctrl+Z`
+takes the whole thing back.
+
+A few things to know:
+
+- Drop every word edit in a change and the change itself is unchecked; you
+  hear "No word edits left in this change, so it will not be applied". Check
+  one back and the change is checked again. Checking or unchecking a whole
+  change in the Changes list checks or unchecks all its word edits.
+- **Accept All** still takes every change and every word edit, checked or not,
+  and the result is exactly the AI's version. **Reject All** still changes
+  nothing.
+- A change with only one word edit has no Words list, because its own check
+  box already says everything. A change shown as whole lines (a rewrite, or
+  spacing only) has none either.
+- Changes to spacing between the words of a change go in with the change
+  whenever any of its word edits does; nobody is asked about a space.
 
 #### Suggest Document Metadata
 

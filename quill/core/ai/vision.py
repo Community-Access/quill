@@ -21,9 +21,8 @@ from pathlib import Path
 
 from quill.core.assistant_ai import (
     _DEFAULT_MAX_TOKENS,
-    _RETRY_BACKOFF_SECONDS,
-    _RETRYABLE_CATEGORIES,
     AssistantConnectionSettings,
+    _chat_retry_wait,
     _FetchError,
     _post_chat,
     _validate_endpoint_security,
@@ -230,16 +229,15 @@ def describe_image(
 
     last_error: _FetchError | None = None
     attempts = max(1, max_attempts)
-    for attempt in range(attempts):
+    for attempt in range(1, attempts + 1):
         text, error = _post_chat(endpoint, headers, body, provider, timeout_seconds=timeout_seconds)
         if error is None:
             return text, None
         last_error = error
-        if error.category not in _RETRYABLE_CATEGORIES:
+        wait = _chat_retry_wait(error, attempt, attempts)
+        if wait is None:
             break
-        if attempt + 1 < attempts:
-            backoff = _RETRY_BACKOFF_SECONDS[min(attempt, len(_RETRY_BACKOFF_SECONDS) - 1)]
-            time.sleep(backoff)
+        time.sleep(wait)
 
     if last_error is None:
         return None, "Could not reach AI endpoint."

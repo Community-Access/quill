@@ -31,11 +31,14 @@ from quill.core.ai.chatgpt_errors import (
     ChatGptSignedOutError,
     ChatGptUnavailableError,
 )
+from quill.core.ai.retry_ladder import pause, wait_before_retry
 
 __all__ = ["Opener", "StreamOpener", "get_json", "post_json", "stream_sse"]
 
-#: Performs one prepared request and returns ``(status, body)``. Injected for tests.
-Opener = Callable[[urllib.request.Request], "tuple[int, bytes]"]
+#: Performs one prepared request and returns ``(status, body)`` -- or
+#: ``(status, body, headers)``, which lets a ``Retry-After`` be honoured.
+#: Injected for tests.
+Opener = Callable[[urllib.request.Request], "tuple[int, bytes] | tuple[int, bytes, Any]"]
 #: Performs one prepared request and yields the raw response lines. Injected for tests.
 StreamOpener = Callable[[urllib.request.Request], Iterator[bytes]]
 
@@ -66,14 +69,14 @@ def _context(url: str) -> ssl.SSLContext | None:
     return verified_ssl_context() if url.lower().startswith("https") else None
 
 
-def _real_opener(request: urllib.request.Request) -> tuple[int, bytes]:
+def _real_opener(request: urllib.request.Request) -> tuple[int, bytes, Any]:
     try:
         with urllib.request.urlopen(  # noqa: S310 - https enforced by _context
             request, timeout=_TIMEOUT_SECONDS, context=_context(request.full_url)
         ) as response:
-            return int(response.status or 200), response.read()
+            return int(response.status or 200), response.read(), response.headers
     except urllib.error.HTTPError as error:
-        return int(error.code), error.read()
+        return int(error.code), error.read(), error.headers
 
 
 def _real_stream_opener(request: urllib.request.Request) -> Iterator[bytes]:
@@ -82,7 +85,9 @@ def _real_stream_opener(request: urllib.request.Request) -> Iterator[bytes]:
             request, timeout=_STREAM_TIMEOUT_SECONDS, context=_context(request.full_url)
         )
     except urllib.error.HTTPError as error:
-        raise _error_for_status(int(error.code), error.read(), request.full_url) from error
+        raise _http_failure(
+            int(error.code), error.read(), request.full_url, error.headers
+        ) from error
     with response:
         yield from response
 
@@ -136,6 +141,21 @@ def _error_for_status(status: int, raw: bytes, url: str) -> ChatGptError:
     return ChatGptError(f"{host} answered {status}. {message}".strip())
 
 
+def _http_failure(status: int, raw: bytes, url: str, headers: Any) -> ChatGptError:
+    """:func:`_error_for_status`, remembering what the retry ladder needs.
+
+    The status and headers ride on the error so :func:`stream_sse` can ask
+    :func:`~quill.core.ai.retry_ladder.wait_before_retry` about a refusal that
+    arrived before any of the answer did. A plan whose usage is used up is
+    final: asking again cannot help until the plan resets.
+    """
+    error = _error_for_status(status, raw, url)
+    error.http_status = status  # type: ignore[attr-defined]
+    error.http_headers = headers  # type: ignore[attr-defined]
+    error.retry_final = b"subscription_sharing_usage" in raw  # type: ignore[attr-defined]
+    return error
+
+
 def get_json(url: str, *, token: str = "", opener: Opener | None = None) -> dict[str, Any]:
     """GET *url* and return the parsed JSON object."""
     return _exchange(_request(url, token=token, body=None, method="GET"), opener)
@@ -149,15 +169,35 @@ def post_json(
 
 
 def _exchange(request: urllib.request.Request, opener: Opener | None) -> dict[str, Any]:
+    """One request, asked again on a busy answer when it is a GET.
+
+    Only a GET climbs the retry ladder (:mod:`quill.core.ai.retry_ladder`):
+    reading the model list twice costs nothing, while a POST here is a
+    sign-in exchange whose one-time code a second attempt would only spend.
+    """
     run = opener or _real_opener
-    try:
-        status, raw = run(request)
-    except urllib.error.URLError as error:
-        raise _unreachable(request.full_url, error) from error
-    except (TimeoutError, OSError) as error:
-        raise _unreachable(request.full_url, error) from error
-    if status >= 400:
-        raise _error_for_status(status, raw, request.full_url)
+    attempt = 0
+    while True:
+        attempt += 1
+        try:
+            result = run(request)
+        except urllib.error.URLError as error:
+            raise _unreachable(request.full_url, error) from error
+        except (TimeoutError, OSError) as error:
+            raise _unreachable(request.full_url, error) from error
+        status, raw = int(result[0]), result[1]
+        headers = result[2] if len(result) > 2 else None
+        if status < 400:
+            break
+        failure = _http_failure(status, raw, request.full_url, headers)
+        wait = (
+            wait_before_retry(status, headers, attempt, final=failure.retry_final)  # type: ignore[attr-defined]
+            if request.get_method() == "GET"
+            else None
+        )
+        if wait is None:
+            raise failure
+        pause(wait)
     text = raw.decode("utf-8", errors="replace").strip()
     if not text:
         return {}
@@ -187,6 +227,38 @@ def stream_sse(
     """
     request = _request(url, token=token, body=body, method="POST")
     run = opener or _real_stream_opener
+    attempt = 0
+    while True:
+        attempt += 1
+        try:
+            _read_stream(run, request, url, on_event, stop)
+            return
+        except ChatGptError as error:
+            # A refusal before anything arrived climbs the shared ladder; once
+            # an event has been handed on, the answer is under way and a
+            # second request could be charged twice, so never then.
+            status = getattr(error, "http_status", None)
+            if status is None:
+                raise
+            wait = wait_before_retry(
+                int(status),
+                getattr(error, "http_headers", None),
+                attempt,
+                final=bool(getattr(error, "retry_final", False)),
+            )
+            if wait is None or (stop is not None and stop()):
+                raise
+            pause(wait)
+
+
+def _read_stream(
+    run: StreamOpener,
+    request: urllib.request.Request,
+    url: str,
+    on_event: Callable[[str, dict[str, Any]], None],
+    stop: Callable[[], bool] | None,
+) -> None:
+    """One streamed attempt: every event to *on_event* as it arrives."""
     event = ""
     data: list[str] = []
 

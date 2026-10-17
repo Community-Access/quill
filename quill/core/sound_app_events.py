@@ -71,6 +71,8 @@ QUILLLITE_EVENTS: frozenset[str] = frozenset({
     SoundEvent.WINDOWS_DICTATION_WORKING,
     SoundEvent.WINDOWS_DICTATION_COMMAND_ON,
     SoundEvent.WINDOWS_DICTATION_COMMAND_OFF,
+    # The caret arriving on a line with an inline note (quill/apps/lite_window.py).
+    SoundEvent.INLINE_NOTE_LINE,
 })
 
 # Not here, and each absence is a decision rather than an oversight: QUILL Lite

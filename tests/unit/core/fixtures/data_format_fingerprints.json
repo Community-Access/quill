@@ -427,6 +427,7 @@
             "session_files": "list[str]",
             "recover_untitled_documents": "bool",
             "inline_notes_in_file": "bool",
+            "inline_note_line_cue": "str",
             "external_change_watch_enabled": "bool",
             "external_change_auto_reload_when_clean": "bool",
             "external_change_prompt_on_conflict": "bool",
@@ -478,7 +479,7 @@
         "constant:quill.core.lite.settings:SCHEMA": "1"
       },
       "classification": "additive, compatible",
-      "note": "adds windows_dictation_share_family (D-13), a text that is empty until decided; older builds ignore it, and an older QUILL Lite forgets it on save, after which this build decides it again from the settings"
+      "note": ""
     },
     "quill.keymap": {
       "current": 1,
@@ -795,6 +796,7 @@
             "session_files": "list[str]",
             "recover_untitled_documents": "bool",
             "inline_notes_in_file": "bool",
+            "inline_note_line_cue": "str",
             "recovery_keep_days": "int",
             "markdown_hard_break_style": "str",
             "autoformat_smart_quotes": "bool",
@@ -1201,6 +1203,7 @@
           "session_files": "_ungrouped",
           "recover_untitled_documents": "general",
           "inline_notes_in_file": "editing",
+          "inline_note_line_cue": "editing",
           "recovery_keep_days": "general",
           "markdown_hard_break_style": "editing",
           "autoformat_smart_quotes": "editing",
@@ -1307,7 +1310,7 @@
         "constant:quill.core.settings_migration:SETTINGS_SCHEMA_VERSION": "2"
       },
       "classification": "additive, compatible",
-      "note": "adds windows_dictation_share_family (D-13), a text that is empty until decided; older builds ignore it, and an older QUILL Lite forgets it on save, after which this build decides it again from the settings"
+      "note": ""
     },
     "radio.favorites": {
       "current": 1,

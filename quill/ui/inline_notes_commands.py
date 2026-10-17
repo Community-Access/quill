@@ -32,6 +32,14 @@ from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
+from quill.core.inline_note_cue import (
+    NOTE_LINE_CUE_DEFAULT,
+    NOTE_WORD,
+    NoteLineCue,
+    coerce_note_line_cue,
+    cue_channels,
+    noted_spans,
+)
 from quill.core.inline_notes import (
     INLINE_NOTES_FILENAME,
     InlineNote,
@@ -57,6 +65,7 @@ from quill.core.inline_notes_list import (
     rows_as_markdown,
     rows_as_text,
 )
+from quill.core.sound_events import SoundEvent
 from quill.core.storage import write_text_atomic
 from quill.ui.atomic_edit import replace_as_one_undo
 from quill.ui.editor_host import EditorHostMixin
@@ -226,6 +235,67 @@ class InlineNotesCommandsMixin(EditorHostMixin):
         show = getattr(control, "ShowPosition", None)
         if callable(show):
             show(position)
+        # The command says the note itself, so arriving here is not a second
+        # piece of news: the line cue stays quiet for this move.
+        try:
+            self._note_line_cue().settle(position)
+        except Exception:  # noqa: BLE001 - a cue never breaks a jump
+            pass
+
+    # ------------------------------------------------------------------ #
+    # The cue on arriving at a noted line (quill.core.inline_note_cue)
+    # ------------------------------------------------------------------ #
+
+    def cue_inline_note_line(self, event: str = SoundEvent.INLINE_NOTE_LINE) -> None:
+        """Called on every caret move. A sound, "note" or nothing -- the
+        ``inline_note_line_cue`` setting -- when the caret has just entered a
+        line with an inline note, and never while it moves along that line.
+        Never raises: it rides the arrow keys."""
+        mode = getattr(self._host_settings(), "inline_note_line_cue", NOTE_LINE_CUE_DEFAULT)
+        if coerce_note_line_cue(mode) == "off":
+            return
+        try:
+            caret = int(self._host_control().GetInsertionPoint())
+            if not self._note_line_cue().arrive(caret):
+                return
+            play, speak, braille = cue_channels(mode, has_sound=self._host_has_sound(event))
+            if play:
+                self._host_cue(event)
+            if speak:
+                self._host_say(NOTE_WORD)
+            if braille:
+                self._host_braille(NOTE_WORD)
+        except Exception:  # noqa: BLE001 - a dead control mid-close, a stub in a test
+            return
+
+    def _note_line_cue(self) -> NoteLineCue:
+        """The latch, with its noted stretches rebuilt only when they can have
+        changed: another document, a different length, other private notes.
+        Reading the whole text on every arrow key is what this avoids."""
+        cue = getattr(self, "_inline_note_cue", None)
+        if cue is None:
+            cue = NoteLineCue()
+            self._inline_note_cue = cue
+        control = self._host_control()
+        notes = self._sidecar_notes()
+        kind = self._host_kind()
+        document = self._host_doc_key()
+        key = (document, id(notes), len(notes), kind, int(control.GetLastPosition()))
+        previous = getattr(self, "_inline_note_cue_key", None)
+        if key == previous:
+            return cue
+        if previous is None or previous[0] != document:
+            cue.forget()
+        spans: list[tuple[int, int]] = []
+        if notes or kind in IN_FILE_KINDS:
+            text = control.GetValue()
+            if notes or "quill-note:" in text:
+                rows = collect_rows(text, list(notes), kind)
+                located = [(r.position, r.end) for r in rows if r.position is not None]
+                spans = noted_spans(text, located)
+        cue.use(spans)
+        self._inline_note_cue_key = key
+        return cue
 
     def cmd_speak_inline_note(self) -> None:
         """Alt+Shift+H: say the note at the caret; twice quickly to edit it."""

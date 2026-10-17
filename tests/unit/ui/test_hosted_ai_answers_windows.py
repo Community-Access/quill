@@ -284,6 +284,100 @@ def test_the_review_window_has_help_on_every_control(wx_app) -> None:
         review.dialog.Destroy()
 
 
+_WORDS_OLD = "The quick brown fox jumps over the lazy dog. It was very tired that day."
+_WORDS_NEW = "The rapid brown fox leaps over the lazy dog. It was rather tired that day."
+
+
+def _word_review(wx_app, applied: list[str], said: list[str]):
+    from quill.ui.ai_diff_review_dialog import DiffReviewDialog
+
+    review = DiffReviewDialog(
+        None,
+        title="Review AI Changes",
+        original_text=_WORDS_OLD,
+        revised_text=_WORDS_NEW,
+        on_apply=applied.append,
+        announce=said.append,
+    )
+    review.dialog.EndModal = lambda _code: None  # not shown modally here
+    return review
+
+
+def test_a_paragraph_change_lists_its_word_edits_with_their_sentences(wx_app) -> None:
+    review = _word_review(wx_app, [], [])
+    try:
+        assert review.word_list.IsShown()
+        assert review.word_list.GetHelpText()
+        assert review.word_list.GetCount() == 3
+        assert review.word_list.GetString(2) == (
+            'Changed "very" to "rather", in: It was rather tired that day.'
+        )
+        assert all(review.word_list.IsChecked(i) for i in range(3))
+        # One paragraph, three edits: the bulk buttons, not single Accept/Reject.
+        assert review.apply_button.GetLabel() == "Apply Checked"
+    finally:
+        review.dialog.Destroy()
+
+
+def test_dropping_one_word_edit_keeps_the_original_word_there(wx_app) -> None:
+    applied: list[str] = []
+    said: list[str] = []
+    review = _word_review(wx_app, applied, said)
+    try:
+        review.word_list.Check(0, False)
+        review.set_word_accepted(0, False)  # what Space in the Words list does
+        review._on_apply_clicked(None)
+        assert applied == [
+            "The quick brown fox leaps over the lazy dog. It was rather tired that day."
+        ]
+        assert said[-1] == "Applied 1 change, 1 of them in part, as one undo step"
+    finally:
+        review.dialog.Destroy()
+
+
+def test_dropping_every_word_edit_drops_the_change_and_says_so(wx_app) -> None:
+    said: list[str] = []
+    review = _word_review(wx_app, [], said)
+    try:
+        for position in range(3):
+            review.set_word_accepted(position, False)
+        assert not review.hunk_list.IsChecked(0)
+        assert said == ["No word edits left in this change, so it will not be applied"]
+        review.set_word_accepted(1, True)
+        assert review.hunk_list.IsChecked(0)
+        assert said[-1] == "This change will be applied again, with the checked word edits"
+    finally:
+        review.dialog.Destroy()
+
+
+def test_accept_all_still_takes_every_word_edit(wx_app) -> None:
+    applied: list[str] = []
+    review = _word_review(wx_app, applied, [])
+    try:
+        review.set_word_accepted(0, False)
+        review._on_accept_all_clicked(None)
+        assert applied == [_WORDS_NEW]
+    finally:
+        review.dialog.Destroy()
+
+
+def test_a_one_word_change_hides_the_word_list(wx_app) -> None:
+    from quill.ui.ai_diff_review_dialog import DiffReviewDialog
+
+    review = DiffReviewDialog(
+        None,
+        title="Review AI Changes",
+        original_text="The quick fox.",
+        revised_text="The rapid fox.",
+        on_apply=lambda _t: None,
+    )
+    try:
+        assert not review.word_list.IsShown()
+        assert review.apply_button.GetLabel() == "Accept"
+    finally:
+        review.dialog.Destroy()
+
+
 def test_the_library_on_the_free_ai_fills_and_closes(wx_app, tmp_path, monkeypatch) -> None:
     from quill.core.prompt_library import PromptLibrary
     from quill.core.settings import Settings

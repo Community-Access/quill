@@ -3382,3 +3382,13 @@ Still saving; typing during a save), `test_lite_save_as_typed_extensions.py`,
 `tests/unit/io/test_rtf_heading_styles.py`, and the real-control round trip.
 
 **Manual checks** are listed, not yet done, in `docs/qa/screen-reader-checks-2026-10.md`.
+
+## Word-level AI review, the AI retry ladder, and the note-line cue (2026-10-17)
+
+**Review AI Changes, word by word.** QUILL's window (`quill/ui/ai_diff_review_dialog.py`), so QUILL Lite has what QUILL has: for a change with two or more word edits, **Words in this change** (Alt+W) lists each with its sentence; Space keeps or drops one, and the rest of the change still goes in. Dropping every edit drops the change. Accept All takes everything and is exactly the AI's version; Reject All takes nothing; Ctrl+Z takes back the whole apply. F1 catalogue entry updated (`quill/core/lite_surface_help.py`).
+
+**The AI tries again when the service is busy.** QUILL's ladder (`quill/core/ai/retry_ladder.py`) on all three routes QUILL Lite uses -- the free AI, the user's own key, a ChatGPT plan: three attempts on 408, 409, 429 and 5xx busy answers, one second then two, or the service's `Retry-After` up to 20 s; never a request the service says must not be repeated, a used-up allowance or plan, or a stream already under way. Only the last failure is said.
+
+**A cue on arriving at a noted line.** QUILL's shared mixin (`InlineNotesCommandsMixin.cue_inline_note_line`), called from `DocumentFrame._on_caret_moved`. Setting `inline_note_line_cue`, the same name, default and choices as QUILL's, in Preferences (`quill/apps/lite_preferences_note_cue.py`): Play a sound, Say "note", Nothing. Sound event `inline_note_line` is in QUILL Lite's roster. Braille gets "note" when the cue is a sound (`app.voice.braille`).
+
+**Not here, and why.** QUILL's browse-mode keys M (misspelling) and F (page) are QUILL-only: QUILL Lite has no browse mode. Its status bar's Page cell already shows "Page N of M" from the same `quill.core.navigation.page_position`.
