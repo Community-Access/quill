@@ -39,6 +39,7 @@ from quill.core.ai.gateway_session import (
     support_id_for,
 )
 from quill.ui.hosted_ai_own_key_route import OwnKeyRouteMixin
+from quill.ui.hosted_ai_route_guard import RouteGuardMixin
 from quill.ui.hosted_ai_route_words import RouteWords
 
 __all__ = ["AiService", "SignInCode"]
@@ -68,7 +69,7 @@ class SignInCode:
         return " ".join(self.user_code.replace("-", " dash "))
 
 
-class AiService(OwnKeyRouteMixin, RouteWords):
+class AiService(OwnKeyRouteMixin, RouteWords, RouteGuardMixin):
     """One per running QUILL Lite. Holds the session and does the waiting."""
 
     def __init__(self, app: Any) -> None:
@@ -251,6 +252,8 @@ class AiService(OwnKeyRouteMixin, RouteWords):
         *language* is Translate's target language.
         """
         stop = threading.Event()
+        if not self.route_allowed(lambda said: _call_after(on_error, said)):
+            return stop  # the route changed under the listener and they said No
         if self.chatgpt_active:
             from quill.core.ai.chatgpt_ai_help import ask_with_chatgpt
 
@@ -330,6 +333,8 @@ class AiService(OwnKeyRouteMixin, RouteWords):
         how many turns.
         """
         stop = threading.Event()
+        if not self.route_allowed(lambda said: _call_after(on_error, said)):
+            return stop
         if self.chatgpt_active:
             from quill.core.ai.chatgpt_ai_help import converse_with_chatgpt
 
@@ -392,6 +397,8 @@ class AiService(OwnKeyRouteMixin, RouteWords):
         the UI thread. The free service and an OpenAI key carry no pictures. A
         bad file is reported as the client's own sentence before anything is sent.
         """
+        if not self.route_allowed(lambda said: _call_after(on_error, said)):
+            return
         if self.chatgpt_active:
             from quill.core.ai.chatgpt_ai_help import describe_image_with_chatgpt
 

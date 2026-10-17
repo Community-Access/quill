@@ -11,8 +11,14 @@ the emergency path. Only two consecutive misses count as death; any sighting
 resets the count. Recovery (the reader comes back) is also reported so the UI
 can re-probe its announcement backend.
 
-This module is the pure state machine over an injected probe; the UI owns the
-timer, the flush, and the announcements.
+This module is the pure state machine over an injected probe, plus the words
+both editors say about it (:func:`died_message`, :func:`recovered_message`).
+The UI owns only the timer, the flush, and handing the sentence to its voice:
+QUILL's ``quill/ui/main_frame_sr_watchdog.py`` and QUILL Lite's
+``quill/apps/lite_sr_watchdog.py`` are each a small mixin over this one core,
+so the two editors cannot drift on when a reader counts as gone or on what
+they say when it is (QUILL Lite may never be ahead of QUILL, and nor may it
+fall behind on protecting work).
 """
 
 from __future__ import annotations
@@ -20,7 +26,14 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 
-__all__ = ["CHECK_INTERVAL_SECONDS", "MISSES_BEFORE_DEATH", "SrWatchdog", "WatchdogEvent"]
+__all__ = [
+    "CHECK_INTERVAL_SECONDS",
+    "MISSES_BEFORE_DEATH",
+    "SrWatchdog",
+    "WatchdogEvent",
+    "died_message",
+    "recovered_message",
+]
 
 #: How often the UI timer should call :meth:`SrWatchdog.check`.
 CHECK_INTERVAL_SECONDS = 30
@@ -83,3 +96,32 @@ class SrWatchdog:
             return WatchdogEvent(kind="none")
         self._dead = True
         return WatchdogEvent(kind="died", reader_name=self._last_seen_name)
+
+
+def died_message(app_name: str, reader_name: str, flushed: int) -> str:
+    """What an editor says when the reader has died and the flush is done.
+
+    *flushed* is how many documents were copied aside. The sentence leads with
+    what happened, then the one fact the listener is anxious about (is my work
+    safe), then what to do -- in that order because a reader that comes back
+    mid-sentence starts reading wherever the message has got to.
+    """
+    name = (reader_name or "").strip() or "Your screen reader"
+    count = max(0, int(flushed))
+    if count:
+        safe = (
+            f"Your work is safe: {count} document{'s' if count != 1 else ''} "
+            "snapshotted to autosave."
+        )
+    else:
+        safe = "There was no unsaved work to protect."
+    return (
+        f"{name} appears to have stopped. {safe} {app_name} keeps running; "
+        "restart your screen reader when ready."
+    )
+
+
+def recovered_message(reader_name: str) -> str:
+    """What an editor says when a reader is back after a confirmed death."""
+    name = (reader_name or "").strip() or "Your screen reader"
+    return f"{name} is running again."

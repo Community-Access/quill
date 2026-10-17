@@ -69,10 +69,13 @@ def ai_grammar_check(
     connection: AssistantConnectionSettings,
     api_key: str = "",
     categories: set[str] | None = None,
+    *,
+    markdown: bool = False,
 ) -> list[GrammarIssue]:
     """Send *document_text* to the AI, return a list of grammar and style issues.
 
     *categories* filters results to the given category set. If None, all are returned.
+    *markdown* says the document is Markdown, so its syntax is not reported.
     """
     if not document_text.strip():
         return []
@@ -82,7 +85,7 @@ def ai_grammar_check(
     seen: set[tuple[str, str]] = set()
 
     for chunk in chunks:
-        issues = _run_grammar_check_on_chunk(chunk, connection, api_key)
+        issues = _run_grammar_check_on_chunk(chunk, connection, api_key, markdown=markdown)
         for issue in issues:
             key = (issue.original, issue.context)
             if key not in seen:
@@ -121,8 +124,12 @@ def _run_grammar_check_on_chunk(
     text: str,
     connection: AssistantConnectionSettings,
     api_key: str,
+    *,
+    markdown: bool = False,
 ) -> list[GrammarIssue]:
-    system_prompt, user_prompt = split_instruction("grammar_check", _GRAMMAR_PROMPT_PREFIX + text)
+    system_prompt, user_prompt = split_instruction(
+        "grammar_check", _GRAMMAR_PROMPT_PREFIX + text, markdown=markdown
+    )
     response, error = generate_assistant_response(
         connection,
         api_key,

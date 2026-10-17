@@ -1714,6 +1714,31 @@ where it is. It is offered again next time, because it is still the only
 copy of that work.</p>
 <p>When you save, or close normally, the spare copy is deleted. So you
 are only ever offered work you actually need.</p>
+<h5 id="if-your-screen-reader-stops">If your screen reader stops</h5>
+<p>QUILL Lite checks every thirty seconds that your screen reader is
+still running. One missed check is ignored, so restarting NVDA or JAWS
+never sets anything off. When two checks in a row find it gone, QUILL
+Lite does two things, in this order:</p>
+<ol type="1">
+<li>Every document with unsaved changes writes its spare copy
+<strong>straight away</strong>, without waiting for the next
+thirty-second copy. These are the same copies described above, offered
+back the next time you start if QUILL Lite never closes normally.</li>
+<li>It explains what happened, for example: “NVDA appears to have
+stopped. Your work is safe: 2 documents snapshotted to autosave. QUILL
+Lite keeps running; restart your screen reader when ready.”</li>
+</ol>
+<p>QUILL Lite has no voice of its own, so that sentence is spoken only
+if another screen reader is still running. It is always written to the
+status bar of the document you were in, so when your reader is back,
+<strong>F6</strong> reads it.</p>
+<p>QUILL Lite does not close, and nothing in your documents changes.
+Restart your screen reader when you are ready; within half a minute
+QUILL Lite says, for example, “NVDA is running again.”</p>
+<p>QUILL has had this protection for some time; QUILL Lite now uses the
+same code, so the two behave the same. There is nothing to turn on: it
+only ever writes spare copies, which a normal close throws away, and it
+says nothing unless a screen reader has really stopped.</p>
 <h5 id="what-you-are-offered-and-what-is-tidied-away">What you are
 offered, and what is tidied away</h5>
 <p>Before the recovery window opens, QUILL Lite clears out three kinds
@@ -4533,6 +4558,27 @@ Anything QUILL Lite would say sooner than that after its last message is
 skipped. Zero, the default, says everything as it happens. You do not
 lose anything by raising it: the status bar still gets every message,
 and <strong>F6</strong> reads it back.</p>
+<h4 id="on-a-braille-display">On a braille display</h4>
+<p>Everything QUILL Lite says also goes to a connected braille display,
+through NVDA or JAWS, right after it is spoken. Dictation’s live
+preview, the words heard so far, goes to the display only.</p>
+<p><strong>A burst settles instead of flickering.</strong> When several
+different messages arrive quickly, the first appears on the display at
+once, and the rest are replaced, a moment later, by the newest one.
+Before, each message replaced the last as fast as it arrived, so while
+you dictated, or while a quick run of status changes went by, the
+display changed faster than a finger could read the first cell. QUILL
+has worked this way for a long time; QUILL Lite now uses the very same
+code.</p>
+<p>For example, dictate “please send the minutes by Friday”. Your
+display shows the first words as they are heard, then, a fraction of a
+second after you pause, the whole phrase, instead of a blur of
+half-phrases in between.</p>
+<p><strong>Speech is not affected.</strong> Every message is still
+spoken the moment it happens; only the display waits. The status bar
+still records every message, so <strong>F6</strong> reads back anything
+the display skipped over. If a message cannot be spoken (no screen
+reader is running), it is not brailled either.</p>
 <h4 id="what-formatting-is-here">What formatting is here?</h4>
 <p>Press <strong>Ctrl+Shift+D</strong> (<strong>Format &gt; Describe
 Formatting at Cursor</strong>) to hear the formatting where your cursor
@@ -8208,6 +8254,35 @@ is read aloud. Your document does not change.</li>
 </ul>
 <p>QUILL Lite remembers your choice until you change it. It applies to
 every answer: from the pad, the Chat Key and the Prompt Library.</p>
+<h4 id="how-answers-are-read-aloud">How answers are read aloud</h4>
+<p>AI answers usually come written in Markdown, with <code>#</code>
+before a heading, <code>**</code> around bold words and <code>-</code>
+before each item of a list. When QUILL Lite reads an answer aloud, it
+reads the words and leaves those symbols out, so you never hear “star
+star” or “hash hash”, or a link’s whole web address.</p>
+<p>That happens wherever an answer is spoken: an answer put <strong>at
+the cursor</strong> or <strong>on the clipboard</strong>, and every
+reply in an <strong>AI Conversation</strong>.</p>
+<p>Only what you hear changes. What goes into your document, onto the
+clipboard, into the answer window or into the conversation is the answer
+exactly as it came, symbols and all.</p>
+<p>For example, with <strong>Put the answer in</strong> set to
+<strong>My document, at the cursor</strong>, an answer of</p>
+<pre class="text"><code>## Summary
+
+**Three** points:
+
+- Costs went down.
+- See [the report](https://example.com/report).</code></pre>
+<p>goes into your document as those six lines, and you hear: “Answer
+inserted at the cursor. Press Control Z to undo. Summary Three points:
+Costs went down. See the report.”</p>
+<p>A few things are worth knowing. A link is read by its words, never
+its address. A picture is read as “image” and its description. A block
+of code is read as “code block”: the code itself is in your document,
+where you can read it a character at a time. The answer window is not
+read out for you; your screen reader reads it as text, so you can check
+the formatting first.</p>
 <h4 id="your-saved-prompts">Your saved prompts</h4>
 <p><strong>Prompt Library</strong> (<strong>Ctrl+7</strong>) is QUILL’s
 library of prompts: the ones QUILL comes with, such as Make Concise and
@@ -8596,6 +8671,41 @@ provider. The usual causes are a mistyped key, a model your account
 cannot use, an account with no credit, or the wrong provider chosen for
 the key you saved. <strong>Test the Key</strong> tells you which one it
 is.</p>
+<h4 id="if-the-ai-you-use-is-not-available">If the AI you use is not
+available</h4>
+<p>QUILL Lite never quietly sends your text to a different company from
+the one you chose. It remembers which way your requests have been going
+while it is running: your ChatGPT plan, your own OpenAI or Gemini key,
+or QUILL’s free AI. If that changes without you changing it, for example
+because your Gemini key has gone from Windows’ credential store or your
+ChatGPT sign-in has stopped working, the next request does not just go
+out. A <strong>Send to a Different AI?</strong> box asks first:</p>
+<blockquote>
+<p>Your own Google Gemini key is not available right now. Use QUILL’s
+free AI instead? That sends your text to QUILL’s free AI service over
+the internet. Choose No and nothing is sent.</p>
+</blockquote>
+<p>Your screen reader reads the question as the box opens.
+<strong>No</strong> is the default button, so pressing
+<strong>Enter</strong> out of habit sends nothing.</p>
+<ul>
+<li><strong>Yes</strong> sends the request the new way, and that is
+simply the way from then on, so you are only asked once.</li>
+<li><strong>No</strong> sends nothing. You hear “Nothing was sent”, and
+how to set your usual way up again in <strong>Tools &gt; AI</strong>.
+The next request asks again.</li>
+</ul>
+<p>This covers the pad, the Chat Key, the Prompt Library, AI
+conversations and <strong>Ask About an Image</strong>. Changing the way
+yourself is never questioned: signing in or out in <strong>Use My
+ChatGPT Subscription</strong> (<strong>Alt+F5</strong>), or saving or
+removing a key in <strong>Use My Own AI Key</strong>
+(<strong>Alt+F2</strong>), counts as your choice.</p>
+<p>One limit: QUILL Lite compares with the way your requests went
+earlier in the same session. The first request after starting goes where
+your settings say, as it always has. A request that simply
+<em>fails</em> is not covered here: you hear why, as described
+above.</p>
 <h3 id="using-your-chatgpt-subscription">Using your ChatGPT
 subscription</h3>
 <p>If you already pay for ChatGPT (Plus, Pro, Team or Enterprise), QUILL

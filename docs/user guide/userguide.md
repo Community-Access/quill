@@ -4884,6 +4884,9 @@ Four things are worth knowing:
   are replaced a moment later by the newest one, so the display is never a
   blur. Errors are the exception: an error is always shown straight away.
 
+QUILL Lite now settles bursts in exactly the same way, using the same code, so
+dictation's live preview no longer flickers on the display there either.
+
 To keep the display on your document, turn off **Show announcements in
 braille** in **Settings > Accessibility and Announcements**. Quiet Mode and Meeting Mode
 silence braille along with speech.
@@ -10442,6 +10445,58 @@ QUILL remembers your choice (the setting `ai_answer_delivery`) until you change
 it, and it applies to every answer: from the pad, the Chat Key and the Prompt
 Library.
 
+#### How AI answers are spoken
+
+AI models write their answers in Markdown, the plain-text formatting with `#`
+for headings, `**` for bold and `-` for list items. On screen that is
+harmless. Read aloud, it is noise: your screen reader would say "star star"
+and "hash hash", and read every link's whole web address. So whenever QUILL
+**speaks** an AI answer, it speaks the words and leaves the symbols out.
+
+This applies everywhere an answer is spoken:
+
+- an answer put **at the cursor** or **on the clipboard** (above), which QUILL
+  reads aloud because focus does not move;
+- each reply in an **AI Conversation**, in this window or a saved one;
+- **Ask Quill**'s replies, whether announced, read aloud by QUILL's own voice
+  or by the AI voice (see *Asking out loud and hearing the answer*), and the
+  progress Ask Quill announces while a long answer is still arriving.
+
+**What you hear, and what you get.** Only the spoken copy changes. What goes
+into your document, onto the clipboard, into the AI Result window or into the
+conversation transcript is the answer exactly as it arrived, Markdown and all.
+If you asked for a Markdown table, you get a Markdown table.
+
+**An example.** You set **Put the answer in** to **My document, at the
+cursor** and ask for a summary. The AI sends back:
+
+```text
+## Summary
+
+**Three** points:
+
+- Costs went down.
+- See [the report](https://example.com/report).
+```
+
+Your document gets those six lines exactly. You hear: "Answer inserted at the
+cursor. Press Control Z to undo. Summary Three points: Costs went down. See
+the report."
+
+**What is left out, and what is kept:**
+
+- Heading marks, bold and italic marks, list bullets and quote marks are
+  dropped; the words they mark are kept.
+- A link is read by its words ("the report"), never by its address.
+- A picture is read as "image" and its description.
+- A block of code is read as "code block". Code read aloud a symbol at a time
+  is rarely what you want from an announcement; the code itself is in your
+  document or the window, where you can read it character by character.
+
+The answer in the AI Result window is not read out for you: focus lands on it
+and your screen reader reads it as text, symbols included, so you can check
+the formatting before you use it.
+
 #### The Chat Key (Ctrl+6)
 
 Press `Ctrl+6` (**AI > Ask AI a Question...**) to open the pad on **Ask a
@@ -10914,6 +10969,54 @@ You hear why, followed by the error code `QUILL-AI-OWN-KEY-FAILED`, and the
 message names the provider. The usual causes are a mistyped key, a model your
 account cannot use, an account with no credit, or the wrong provider chosen for
 the key you saved. **Test the Key** tells you which.
+
+### If the AI you chose is not available
+
+QUILL never quietly answers with a different AI from the one you chose. If
+what you set up cannot be used right now, QUILL either tells you once, or
+asks you first; which one depends on where your text would go instead.
+
+**When your text would stay on this computer, you are told once.** If the
+provider in your AI settings cannot be reached and Ask Quill falls back to the
+on-device model, you hear, as Ask Quill opens: "Anthropic was not available, so
+Quill is using the on-device model instead. Check your provider and key in the
+AI settings to restore it." Nothing leaves the computer, so there is nothing to
+agree to.
+
+**When your text would go to a different company, you are asked first.** A
+**Use a Different AI Provider?** or **Send to a Different AI?** box opens. The
+question is the whole message, so your screen reader reads it as the box opens,
+and **No** is the default button, so pressing Enter out of habit sends nothing.
+
+- **Ask Quill and QUILL's AI tools.** The provider in your AI settings is
+  unavailable, and Ask Quill's own setup was once pointed at another cloud
+  provider. Before this change, Ask Quill used that other provider without a
+  word. Now it keeps the on-device model and asks, for example: "Anthropic is
+  not available right now. Use openai instead? That sends your text to openai
+  over the internet. Choose No and nothing is sent." **Yes** uses it for the
+  rest of this chat. **No** keeps the on-device model.
+- **The free AI, your own key and your ChatGPT plan** (the pad, the Chat Key,
+  the Prompt Library, AI conversations and Ask About an Image). QUILL remembers
+  which way your requests have been going this session. If that changes
+  without you changing it, for instance your Gemini key has gone from Windows'
+  credential store, or your ChatGPT sign-in has stopped working, the next
+  request asks: "Your own Google Gemini key is not available right now. Use
+  QUILL's free AI instead? That sends your text to QUILL's free AI service over
+  the internet. Choose No and nothing is sent." **Yes** sends it, and the new
+  route is simply the route from then on, so you are asked once. **No** sends
+  nothing, and you hear "Nothing was sent", with what to do next; the next
+  request asks again.
+
+Changing the route yourself is never questioned: signing in or out in **Use My
+ChatGPT Subscription**, or saving or removing a key in **Use My Own AI Key**,
+counts as your choice.
+
+**Limits.** QUILL compares against the route used earlier in the same session,
+so the very first request after starting goes where your settings say, as it
+always has. A request that
+*fails* (no connection, a limit reached) is not a fallback: you hear why it
+failed, and Ask Quill may suggest switching to your on-device model, but it
+never switches for you.
 
 ### Using your ChatGPT subscription
 
@@ -11658,6 +11761,48 @@ its two passes instead, and the second writes to a fixed **word budget** of
 about 150 words, not a fraction of the original, which stops a small local
 model padding or inventing. Your own instructions still shape how that final
 summary reads.
+
+##### Markdown documents keep their formatting
+
+When the document you are working on is **Markdown**, QUILL adds one more
+sentence to the instructions for every task that hands your own text back:
+AI Spell Check, Grammar and Style, Rewrite, Summarize, Expand and Translate.
+(**Check Grammar with AI** is a Prompt Library prompt rather than one of these
+tasks; edit its prompt if you want it to say the same.)
+It tells the AI to keep the Markdown exactly as it is (headings, lists, bold
+and italic, links, pictures, tables and code), never to remove or convert it,
+and never to report it as a spelling, grammar or style mistake.
+
+Before this, only Translate had that rule. A rewrite of a Markdown file could
+come back with its `##` headings turned into plain sentences and its bullet
+list run together into a paragraph, and the grammar check could list `**bold**`
+as a typing mistake.
+
+**How QUILL knows it is Markdown.** The same way the rest of QUILL does: the
+**Document Language** you pinned for this document, if you pinned one;
+otherwise the file's name (`.md`, `.markdown`, `.mdown` or `.mkd`); and, for a
+document with no such name, what is in it (headings starting with `#`, list
+items, links or code fences near the top).
+
+**An example.** In `notes.md`, select:
+
+```text
+## Next steps
+
+- email the team abuot the date
+- book the room
+```
+
+and run **AI > Proofread > Grammar and Style Check...**. The check reports "abuot" and nothing
+else: not the `##`, not the hyphens.
+
+**Limits.** The sentence is added to your own instructions too, and to a task
+whose instructions you have turned off, because keeping your document's
+structure is not a matter of style. Answers *about* a document (Document Q&A,
+the Research Agent, the AI Thesaurus) are new text rather than yours, so they
+are left alone. The Free AI Assistant pad and the AI Conversation window use
+QUILL's free service's own instructions, which are not covered by this
+setting.
 
 ##### Sharing instructions
 
@@ -14309,6 +14454,11 @@ whenever you are ready, and QUILL announces when it hears from it again.
 
 The same rule holds everywhere in QUILL: anything that closes QUILL or cuts
 back what it can do, without you asking, must save your work first.
+
+QUILL Lite has the same protection, through the same code: the same two
+missed checks, the same snapshot first, and the same sentence, ending "QUILL
+Lite keeps running". Its user guide explains the parts that differ, since QUILL
+Lite has no voice of its own.
 
 ### The default answer to a destructive question is No
 

@@ -5,6 +5,40 @@
 Testing rebuild: **1.2.0 (build 5)**, following builds 2, 3 and 4; builds 2 and 3 were
 uploaded for testing. The new packages have not been published yet.
 
+- **Your braille display no longer flickers while you dictate.** Messages that
+  arrive in a quick burst, such as dictation's live preview or a run of status
+  changes, now settle on the display: the first shows at once, and a moment
+  later the newest replaces the rest. Before, each one replaced the last as fast
+  as it came, faster than a finger could read the first cell. Speech is exactly
+  as before: every message is spoken the moment it happens. QUILL has worked
+  this way for some time, and QUILL Lite now uses the same code. For example,
+  dictate a sentence and pause: the display shows the first words, then the
+  whole phrase, with no blur in between. See *On a braille display* in the user
+  guide.
+- **AI answers are read as words, not symbols.** When an answer goes to the
+  cursor or the clipboard, or arrives in an AI conversation, QUILL Lite reads it
+  without the Markdown: no "star star", no "hash hash", and a link by its words
+  rather than its web address. A block of code is read as "code block". What
+  goes into your document, onto the clipboard or into the conversation is the
+  answer exactly as it came. See *How answers are read aloud*.
+- **QUILL Lite asks before sending your text to a different AI.** If your own
+  key or your ChatGPT sign-in stops working while QUILL Lite is running, the
+  next request no longer goes quietly to QUILL's free AI instead. A **Send to a
+  Different AI?** box asks first, and **No**, the default, sends nothing.
+  Changing it yourself in **Use My Own AI Key** (**Alt+F2**) or **Use My ChatGPT
+  Subscription** (**Alt+F5**) is never questioned. See *If the AI you use is
+  not available*.
+- **If your screen reader stops, your work is saved first.** QUILL Lite now
+  checks every thirty seconds that NVDA or JAWS is still running. When it has
+  missed it twice in a row, every document with unsaved changes writes its
+  spare copy at once, and the status bar says what happened, for example "NVDA
+  appears to have stopped. Your work is safe: 2 documents snapshotted to
+  autosave. QUILL Lite keeps running; restart your screen reader when ready."
+  When the reader is back you hear "NVDA is running again." QUILL Lite never
+  closes because of it, and there is nothing to turn on. QUILL has the same
+  protection, and the two now share the code. See *If your screen reader
+  stops*.
+
 - **Find in Open Documents, Search in Files and Replace Across Files are on the
   Edit menu itself, where you would look for them.** They had been one level
   down, inside **Edit > Matches**, and nothing in the word "Matches" says a

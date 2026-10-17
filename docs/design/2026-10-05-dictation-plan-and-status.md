@@ -3050,6 +3050,26 @@ affected only by the catalogue decision on the Whisper sizes, because
 whisper.cpp, Faster Whisper and the duplicate providers are QUILL-only. QUILL
 Cast is affected by Vosk only as the chapter engine, which stays.
 
+## 33. As built, 2026-10-16: the live preview on a braille display in QUILL Lite
+
+The live preview (section 3) reaches a braille display through
+`ScreenReaderVoice.braille`, and every spoken dictation status is mirrored to
+the display after it is spoken. In QUILL Lite both went straight to the display,
+one write per message, so a preview that changed several times a second
+replaced the cells faster than a finger could read them. QUILL never had this:
+its announcement service has run braille through `CoalescingBrailleWriter`
+(`quill/ui/announce_wiring.py`) since 2026-08.
+
+QUILL Lite now uses the same writer, not a copy. The voice switches the shared
+engine's inline braille off when it builds the engine, and sends the speech
+mirror and every preview through one coalescer: the first message of a quiet
+moment writes at once, and a burst lands as its newest message when the 150 ms
+window closes. Speech is not delayed at all. In practice, the display shows the
+first words of a phrase as they are heard and the whole phrase a moment after
+the speaker pauses, with nothing in between. Tests:
+`tests/unit/apps/test_lite_braille_coalescing.py` (fakes only: a fake engine
+and a fake timer). User-facing: QUILL Lite's user guide, *On a braille display*.
+
 ## Appendix A: the dict.md section numbers, and where they live now (the first dict.md, 2026-10-05)
 
 | dict.md | What it was | Here |

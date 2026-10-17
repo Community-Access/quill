@@ -2,6 +2,47 @@
 
 ## 1.0.0
 
+### Five small fixes: braille bursts, speech-safe answers, Markdown kept, fallbacks asked, the watchdog in QUILL Lite (2026-10-16)
+
+- **QUILL Lite's braille through QUILL's burst coalescer.** `ScreenReaderVoice`
+  (`quill/apps/lite_voice.py`) switches the shared engine's inline braille off
+  when it builds it and writes every braille message -- the mirror of speech,
+  after a successful announce, and `braille()` previews -- through one
+  `quill.ui.announce_wiring.CoalescingBrailleWriter`. Speech timing unchanged.
+  The QUILL Lite PRD's section 4.5, which still said "no braille output", is
+  corrected.
+- **Speech-safe AI answers.** NEW `quill/core/ai/spoken_answer.py` funnels every
+  spoken AI answer through `speech_text.prepare_for_speech(markdown=True)`:
+  `plan_voice_reply`, Ask Quill's `_announce_incoming` and streamed progress, the
+  hosted AI's cursor and clipboard deliveries (`hosted_ai_answers.py`), and every
+  AI conversation reply (`hosted_ai_chat.py`). The text inserted, copied, shown
+  in the AI Result window or written to a transcript is unchanged.
+- **Markdown kept by the AI text tools.** `custom_instructions.split_instruction`
+  and `apply_instruction` take `markdown=`; `MARKDOWN_PRESERVATION` is appended
+  for spell_check, grammar_check, rewrite, summarize, expand and translate
+  (previously only Translate's default prompt had it), even when an instruction
+  is customised or disabled. QUILL passes `_current_markup_context() ==
+  "markdown"` into AI spell check (both forms), Grammar and Style Check,
+  Translate and the agents (`AgentContext.markdown`). The hosted pad is not
+  covered: its prompts are the gateway's.
+- **AI fallbacks are said once, and a different company is asked about first.**
+  `fallback.plan_substitution` is the plan for a resolution-time substitution.
+  `make_default_backend` no longer silently uses the Ask Quill setup's cloud
+  provider after falling past the configured one: it holds it
+  (`quill/core/ai/backend_substitution.py`), keeps the on-device model, and the
+  Ask Quill panel asks (`assistant_reply_delivery._offer_backend_substitute`).
+  NEW `quill/ui/hosted_ai_route_guard.py` gives the shared `AiService` the same
+  rule for the hosted routes (ChatGPT plan, own key, free AI): a route that
+  changed without the listener choosing it asks in a Yes/No box before `ask`,
+  `converse` or `describe_image` sends anything.
+- **Screen-reader emergency save in QUILL Lite.** `died_message` and
+  `recovered_message` moved into `quill/core/sr_watchdog.py`; QUILL's mixin uses
+  them and NEW `quill/apps/lite_sr_watchdog.py` gives QUILL Lite the same
+  two-strikes watchdog, flushing every modified window's recovery copy before
+  explaining. No new setting, so the settings vocabulary is unchanged.
+- GATE-11: `hosted_ai_service.py` 620 -> 623, `hosted_ai_commands.py` 595 -> 596,
+  `quill/apps/lite.py` 631 -> 635 (rebaseline note in the budgets file).
+
 ### Three messages that named menu items that do not exist (2026-10-16)
 
 The documentation-versus-menu audit found QUILL itself pointing people at

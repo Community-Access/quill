@@ -16,6 +16,29 @@ Two firm rules, both encoded here (see QUILL-PRD.md §5.25f and the routing note
 
 Kept wx-free and headless-testable: it classifies the failure and returns a
 :class:`FallbackPlan`; the UI decides how to present the offer and performs the retry.
+
+**Substitutions** (2026-10-16). A failed request is one way to end up on another
+provider; the other is *resolution* -- the provider or route the person chose
+cannot be used right now, and something else would quietly answer in its place.
+:func:`plan_substitution` is the same plan for that moment, and every place QUILL
+picks where an AI request goes now consults it:
+
+- **Ask Quill and QUILL's AI tools** (:func:`quill.core.ai.assistant.make_default_backend`):
+  the configured connection is unavailable. Substituting the on-device model is
+  announced once, when Ask Quill opens. Substituting the *other* cloud provider
+  saved in the Ask Quill setup is no longer silent: QUILL keeps the on-device
+  model and asks first (``quill/ui/assistant_reply_delivery.py``).
+- **The free AI, own keys and ChatGPT plans, in both editors**
+  (``quill/ui/hosted_ai_route_guard.py``): the route requests were taking this
+  session -- your ChatGPT plan, your own OpenAI or Gemini key, or QUILL's free
+  AI -- has changed without you changing it (a key that has gone from the
+  credential store, a ChatGPT sign-in that no longer works). Every such change
+  sends text to a different company, so it always asks first, and saying No
+  sends nothing.
+
+The question is the announcement: a Yes/No box whose text the screen reader reads
+as it opens, so nothing is spoken on top of it (GATE-13), and a substitution is
+asked about once -- after Yes, the new route is simply the route.
 """
 
 from __future__ import annotations
@@ -122,5 +145,51 @@ def plan_fallback(
         announcement=(
             "The cloud service could not be reached. Retry this request with your "
             "on-device model? Your text stays on this computer."
+        ),
+    )
+
+
+def plan_substitution(
+    *,
+    chosen: str,
+    substitute: str,
+    substitute_is_local: bool,
+    destination: str = "",
+) -> FallbackPlan:
+    """The plan for answering with *substitute* because *chosen* cannot be used.
+
+    *chosen* and *substitute* are names as a person hears them ("OpenAI",
+    "your own Gemini key", "QUILL's free AI"). The same name twice is no
+    substitution at all. A local substitute keeps the text on this computer, so
+    it is announced and no more; anything else sends the text to somebody the
+    person did not pick, so the plan requires consent, and its announcement is
+    worded as the question to ask. *destination* is who actually receives the
+    text when that is not obvious from *substitute* ("OpenAI" for "your own
+    OpenAI key"); it defaults to *substitute*.
+    """
+    chosen_name = (chosen or "").strip() or "The AI you chose"
+    substitute_name = (substitute or "").strip()
+    if not substitute_name or substitute_name.lower() == chosen_name.lower():
+        return FallbackPlan.none()
+    if substitute_is_local:
+        return FallbackPlan(
+            offer=True,
+            to_provider="local",
+            requires_consent=False,
+            announcement=(
+                f"{chosen_name} was not available, so Quill is using the on-device "
+                "model instead. Check your provider and key in the AI settings to "
+                "restore it."
+            ),
+        )
+    receiver = (destination or "").strip() or substitute_name
+    return FallbackPlan(
+        offer=True,
+        to_provider=substitute_name,
+        requires_consent=True,
+        announcement=(
+            f"{chosen_name} is not available right now. Use {substitute_name} "
+            f"instead? That sends your text to {receiver} over the internet. "
+            "Choose No and nothing is sent."
         ),
     )

@@ -23,12 +23,18 @@ annoyed to discover by accident:
 * **Truncation belongs to announcements only.** A 140-character cap is right for
   a screen-reader summary and wrong for speech -- reading the first 137
   characters of an answer aloud and stopping is worse than not reading it.
+
+Every spoken form -- the announcement and the read-aloud text alike -- is made
+speech-safe first (:mod:`quill.core.ai.spoken_answer`), so a reply written in
+Markdown is heard as words rather than as "star star" and "hash hash". The
+chat transcript keeps the reply exactly as it arrived.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 
+from quill.core.ai.spoken_answer import speakable_line
 from quill.core.settings import VOICE_REPLY_MODES, Settings
 
 __all__ = [
@@ -121,9 +127,10 @@ def plan_voice_reply(
     appears to be ignored.
 
     An empty reply produces an empty plan: there is nothing to say, and an
-    announcement of "" is just noise.
+    announcement of "" is just noise. Both spoken forms are speech-safe: the
+    reply's Markdown is reduced to its words before anything is said.
     """
-    compact = " ".join((text or "").split())
+    compact = speakable_line(text)
     if not compact:
         return VoiceReplyPlan(mode=settings.ai_voice_reply_mode)
 

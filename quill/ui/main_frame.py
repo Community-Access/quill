@@ -12159,6 +12159,7 @@ class MainFrame(
             return
 
         self._set_status("AI spell check running...")
+        markdown = self._current_markup_context() == "markdown"  # keep its syntax
 
         import threading
 
@@ -12168,7 +12169,7 @@ class MainFrame(
             try:
                 from quill.core.ai.spell_check import ai_spell_check
 
-                corrections = ai_spell_check(text, conn, api_key)
+                corrections = ai_spell_check(text, conn, api_key, markdown=markdown)
             except Exception as exc:  # noqa: BLE001
                 _wx.CallAfter(self._set_status, f"AI spell check failed: {exc}")
                 return
@@ -12213,7 +12214,13 @@ class MainFrame(
                 self._set_status(f"AI spell check: {count} correction(s) applied.")
 
         dlg = AISpellCheckInteractiveDialog(
-            self.frame, paragraphs, conn, api_key, self._show_modal_dialog, _apply_accepted
+            self.frame,
+            paragraphs,
+            conn,
+            api_key,
+            self._show_modal_dialog,
+            _apply_accepted,
+            markdown=self._current_markup_context() == "markdown",
         )
         dlg.run()
 
@@ -12228,6 +12235,7 @@ class MainFrame(
             return
 
         self._set_status("AI grammar check running...")
+        markdown = self._current_markup_context() == "markdown"  # keep its syntax
 
         import threading
 
@@ -12237,7 +12245,7 @@ class MainFrame(
             try:
                 from quill.core.ai.grammar_check import ai_grammar_check
 
-                issues = ai_grammar_check(text, conn, api_key)
+                issues = ai_grammar_check(text, conn, api_key, markdown=markdown)
             except Exception as exc:  # noqa: BLE001
                 _wx.CallAfter(self._set_status, f"AI grammar check failed: {exc}")
                 return
@@ -12282,8 +12290,10 @@ class MainFrame(
 
         from quill.core.ai.translation import translate_text
 
+        markdown = self._current_markup_context() == "markdown"
+
         def _on_translate(t: str, lang: str, provider: str, lt_url: str) -> tuple[str, str]:
-            return translate_text(t, lang, conn, api_key, provider, lt_url)
+            return translate_text(t, lang, conn, api_key, provider, lt_url, markdown=markdown)
 
         def _on_replace(new_text: str) -> None:
             if selection_only:
@@ -12763,6 +12773,7 @@ class MainFrame(
             connection=conn,
             api_key=api_key,
             stop_event=stop_event,
+            markdown=self._current_markup_context() == "markdown",
         )
 
         profile_title = plan.profile.title

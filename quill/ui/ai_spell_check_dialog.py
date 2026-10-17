@@ -270,10 +270,14 @@ class AISpellCheckInteractiveDialog:
         api_key: str,
         show_modal_dialog: Callable,
         apply_to_document: Callable[[list[SpellCorrection]], None],
+        *,
+        markdown: bool = False,
     ) -> None:
         import wx
 
         self._wx = wx
+        #: A Markdown document: the model is told to leave its syntax alone.
+        self._markdown = markdown
         self._paragraphs = paragraphs
         self._connection = connection
         self._api_key = api_key
@@ -377,7 +381,9 @@ class AISpellCheckInteractiveDialog:
             from quill.core.ai.spell_check import SpellCheckError, ai_spell_check
 
             try:
-                corrections = ai_spell_check(para, self._connection, self._api_key)
+                corrections = ai_spell_check(
+                    para, self._connection, self._api_key, markdown=self._markdown
+                )
             except SpellCheckError as exc:
                 wx.CallAfter(self._set_status_safely, f"Error: {exc}")
                 corrections = []

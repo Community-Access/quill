@@ -14,6 +14,20 @@ Preferred usage in an AI module (caching-aware):
 Legacy usage (combines into one string, no provider-level caching):
     from quill.core.ai.custom_instructions import apply_instruction
     prompt = apply_instruction("spell_check", base_prompt)
+
+**Markdown is kept when the document is Markdown** (2026-10-16). Translate's
+default instruction always told the model to preserve Markdown; nothing else
+did, so asking for a rewrite, a grammar or spelling check or an expansion of a
+Markdown document could hand back its headings flattened, its bullets turned
+into sentences and its emphasis stripped -- or, for the two checks, report the
+Markdown itself as mistakes. Pass ``markdown=True`` to :func:`split_instruction`
+(or :func:`apply_instruction`) and every text tool in :data:`MARKDOWN_TEXT_TASKS`
+gets :data:`MARKDOWN_PRESERVATION` added to its system prompt. The caller
+decides with the editor's existing scope detection -- QUILL's
+``MainFrame._current_markup_context()``, QUILL Lite's
+``DocumentFrame.document_language()`` -- never by guessing here, and the
+clause is added whether or not the person has customised the instruction,
+because a custom tone is no reason to lose the document's structure.
 """
 
 from __future__ import annotations
@@ -394,40 +408,86 @@ def get_default_instruction(task_id: str) -> InstructionSet | None:
 
 
 # ---------------------------------------------------------------------------
+# Markdown preservation
+# ---------------------------------------------------------------------------
+
+#: The tasks whose result is the user's own text coming back -- corrected,
+#: rewritten, condensed, expanded or translated -- and so must keep its Markdown.
+#: Answers *about* a document (Q&A, research, the thesaurus) are not here: they
+#: are new text, not the document's.
+MARKDOWN_TEXT_TASKS: frozenset[str] = frozenset({
+    "spell_check",
+    "grammar_check",
+    "rewrite",
+    "summarize",
+    "expand",
+    "translate",
+})
+
+#: Added to the system prompt of a :data:`MARKDOWN_TEXT_TASKS` task when the
+#: text is Markdown. Written for both kinds of task at once: one that returns
+#: the text, and one that returns a list of corrections to it.
+MARKDOWN_PRESERVATION = (
+    "The text is Markdown. Keep its Markdown formatting exactly as it is: "
+    "headings, bulleted and numbered lists, bold and italic markers, links, "
+    "images, tables, code spans and code blocks. Do not remove, convert or add "
+    "formatting, and never report Markdown syntax as a spelling, grammar or "
+    "style mistake."
+)
+
+
+def markdown_clause(task_id: str, markdown: bool) -> str:
+    """The Markdown-preservation clause *task_id* needs, or "" when it needs none."""
+    return MARKDOWN_PRESERVATION if markdown and task_id in MARKDOWN_TEXT_TASKS else ""
+
+
+def _with_clause(system_prompt: str, clause: str) -> str:
+    if not clause:
+        return system_prompt
+    return f"{system_prompt}\n\n{clause}" if system_prompt else clause
+
+
+# ---------------------------------------------------------------------------
 # Integration helper
 # ---------------------------------------------------------------------------
 
 
-def split_instruction(task_id: str, base_prompt: str) -> tuple[str, str]:
+def split_instruction(task_id: str, base_prompt: str, *, markdown: bool = False) -> tuple[str, str]:
     """Return *(system_prompt, user_prompt)* for caching-aware callers.
 
     The system_prompt is the active instruction text; base_prompt is returned
     unchanged as the user portion.  Returns ("", base_prompt) when the task is
     disabled, unknown, or on any loading error, so AI calls are never blocked.
 
+    *markdown* says the text is Markdown (the caller's scope detection); a
+    :data:`MARKDOWN_TEXT_TASKS` task then also gets :data:`MARKDOWN_PRESERVATION`
+    -- even when its instruction is disabled or could not be loaded, because
+    keeping the document's structure is not a matter of style.
+
     Callers should pass system_prompt to generate_assistant_response so that
     providers can cache it separately from the per-request user content.
     """
+    clause = markdown_clause(task_id, markdown)
     try:
         inst = get_instruction(task_id)
     except Exception:  # noqa: BLE001
-        return "", base_prompt
+        return clause, base_prompt
 
     if inst is None or not inst.enabled:
-        return "", base_prompt
+        return clause, base_prompt
 
     active = inst.active_prompt.strip()
-    return (active, base_prompt) if active else ("", base_prompt)
+    return _with_clause(active, clause), base_prompt
 
 
-def apply_instruction(task_id: str, base_prompt: str) -> str:
+def apply_instruction(task_id: str, base_prompt: str, *, markdown: bool = False) -> str:
     """Prepend the active instruction for *task_id* to *base_prompt*.
 
     Legacy helper that combines system and user content into one string.
     Prefer split_instruction() for new callers so providers can cache the
     stable system prefix separately from per-request user content.
     """
-    system_prompt, user_prompt = split_instruction(task_id, base_prompt)
+    system_prompt, user_prompt = split_instruction(task_id, base_prompt, markdown=markdown)
     if not system_prompt:
         return user_prompt
     return f"{system_prompt}\n\n{user_prompt}"

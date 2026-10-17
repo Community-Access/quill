@@ -243,10 +243,12 @@ class AiChatFrame(wx.Frame):
         return int(self._service.limits.max_input_tokens)
 
     def _reply(self, message: str, text: str, quota: Any, dropped: int) -> None:
+        from quill.core.ai.spoken_answer import speakable_line
+
         self._busy = False
         if not self:
             # Closed while the reply was on its way: still say it, once.
-            self._announce(text)
+            self._announce(speakable_line(text))
             return
         self._conversation.add("user", message)
         self._conversation.add("assistant", text)
@@ -267,7 +269,9 @@ class AiChatFrame(wx.Frame):
                 f"{quota.daily_cap} left today."
             )
         self._status.SetValue(used)
-        spoken = text
+        # The transcript keeps the reply as it came; the listener hears words,
+        # not Markdown symbols (quill/core/ai/spoken_answer.py).
+        spoken = speakable_line(text)
         if self._conversation.set_aside and not self._told_set_aside:
             self._told_set_aside = True
             spoken += " " + self._set_aside_sentence()
