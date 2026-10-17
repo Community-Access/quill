@@ -207,10 +207,16 @@ def parse_profile(text: str) -> DictationProfile:
 
 
 def default_profile_path() -> Path:
-    """The user's dictation profile file (``dictation.md`` in the data dir)."""
-    from quill.core.paths import app_data_dir
+    """The family's word list (``dictation.md`` in the family's dictation folder).
 
-    return app_data_dir() / "dictation.md"
+    Until 2026-10-16 it was in QUILL's data folder; the first call copies it,
+    and its two neighbours, from there (dict.md D-12/D-13,
+    :mod:`quill.core.windows_dictation.family_words`). The old file is left as
+    it was."""
+    from quill.core.paths import app_data_dir
+    from quill.core.windows_dictation.family_words import family_profile_path
+
+    return family_profile_path(app_data_dir())
 
 
 def ensure_profile_file(path: Path | str | None = None) -> Path:

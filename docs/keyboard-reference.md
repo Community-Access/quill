@@ -628,6 +628,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+B | Browse Stations... | `radio.browse` |
 | Ctrl+Down | Radio: Volume Down | `radio.volume_down` |
 | Ctrl+E | Internet Radio: Sound Enhancements... | `radio.sound_enhancements` |
+| Ctrl+F11 | Dictate here | `app.dictate_here` |
 | Ctrl+G | Go to | `radio.go_to` |
 | Ctrl+K | Identify This Song | `radio.identify_song` |
 | Ctrl+L | Play Last Station | `radio.play_last` |
@@ -700,6 +701,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+X | Export My Setup... | `app.export_setup` |
 | Ctrl+Alt+Shift+Z | Quiet Hours... | `app.quiet_hours` |
 | Ctrl+Alt+Z | Ask About This Document... | `tools.hosted_ai_ask_document` |
+| Ctrl+F11 | Dictate here | `app.dictate_here` |
 | Ctrl+F5 | Refresh podcasts | `media.refresh_podcasts` |
 | Ctrl+G | Go to | `app.go_to` |
 | Ctrl+I | Player Information... | `podcasts.player_information` |

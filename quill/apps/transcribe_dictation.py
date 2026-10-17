@@ -426,7 +426,8 @@ class TranscribeDictationMixin(TranscribeTalkMixin, FieldHoldMixin):
 
     def _answer_owner_requests(self) -> None:
         """Requests passed on by Inkwell (its Dictate Anywhere key, pressed in
-        the field to dictate into), answered as if our own key was pressed."""
+        the field to dictate into) or by Quill Cast's and Quill Radio's Dictate
+        Here (``start``, D-16), answered as if our own key was pressed."""
         from quill.core.dictation_owner import take_requests
 
         if self._safe_mode or not self._own_dictate_anywhere():
@@ -440,6 +441,16 @@ class TranscribeDictationMixin(TranscribeTalkMixin, FieldHoldMixin):
                 self.stop_dictation()
             elif request.command == "show":
                 self._restore_from_tray()  # type: ignore[attr-defined]
+
+    def dictate_here_at_launch(self) -> None:
+        """Started by Quill Cast's or Quill Radio's Dictate Here (D-16) with
+        ``--dictate-here``: start in the field that has the focus, as a
+        ``start`` request would. Not while this window is open -- then the
+        focused field is ours (first run, or no tray) -- nor in Safe Mode."""
+        if self._safe_mode or self.frame.IsShown() or not self._own_dictate_anywhere():
+            return
+        if not self.dictation_active():
+            self.start_dictation()
 
     def _microphone_gate(self) -> Any:
         """The family's one microphone (D-11): held only while dictation listens,

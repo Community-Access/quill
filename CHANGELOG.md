@@ -34,6 +34,66 @@ defined but never used"; dictation design record, section 31.
   dictation-commands pages and `docs/site/dictation.html` regenerated. No
   control was added, so F1 help is unchanged.
 
+### Dictation: one settings store for the family (D-13), the word list's new home, and Dictate Here in Cast and Radio (D-16) (2026-10-16)
+
+dict.md D-12, D-13 and D-16. Design record:
+`docs/design/2026-10-05-dictation-plan-and-status.md` section 30.
+
+- **`quill/core/windows_dictation/family_store.py`** (new, wx-free): the family
+  folder (`%LOCALAPPDATA%\QuillVille\Dictation`; a portable copy's own
+  `data\dictation`) and `family_dictation.json`. `publish_fields` writes the
+  shared `windows_dictation_*` fields with `write_json_atomic`, keeping fields
+  a newer build wrote, and raises `FamilyDictationError`
+  (`QUILL-DICTATION-FAMILY-WRITE`) with a speakable `sentence` when it cannot.
+  `adopt_fields` / `adopt` take the family's values into a program's own,
+  after copying its own to `before-sharing-<app>.json` once, and take nothing
+  if that copy cannot be written. `stamp` lets QUILL Transcribe read only when
+  the file changed.
+- **`settings_fields.py`**: `windows_dictation_share_family` ("on", "off" or
+  empty), `FAMILY_LOCAL_FIELDS` (the share choice, working tick, strict mode,
+  phrase feedback, the one-time transcript sentence and every consent),
+  `shares_by_default` (on only while every shared field is a default, so an
+  upgrade never replaces somebody's choices), `settle_share` (decides before
+  the first change) and `share_on`.
+- **Both directions.** QUILL and QUILL Lite publish on Dictation Settings OK and
+  Switch Dictation Language (`windows_dictation_extras.py`) and adopt on window
+  activation, with "Dictation settings updated from the family." in the status
+  bar. QUILL Transcribe publishes from `_set_dictation_field` and Dictation
+  Settings and adopts on its IPC clock (`transcribe_commands.py`,
+  `transcribe.py`). Inkwell publishes on Dictation Settings OK and adopts
+  whenever its settings are used (`inkwell_dictation.py`). A hand-off keeps the
+  receiver's own share choice. A failed write is said in all four.
+- **More Dictation Settings**: "Share dictation settings with every &QuillVille program"
+  (Alt+Q), with inline F1 help (`dictation_more_dialog.py`).
+- **`quill/core/windows_dictation/family_words.py`** (new):
+  `default_profile_path()` now returns the family's `dictation.md`. The first
+  ask copies `dictation.md`, `dictation-instructions.md` and
+  `dictation-contexts.json` from QUILL's data folder byte for byte, never moving
+  or deleting the old files; a family list is never overwritten; later changes
+  to the old list are merged as Import merges (backup
+  `dictation-before-merge.md`), tracked in `family-words-moved.json`; a failed
+  copy reads through the old path; a call with nothing new writes nothing.
+- **D-16, `quill/core/windows_dictation/dictate_here.py`** (new, wx-free) and
+  **`quill/ui/dictate_here_ui.py`** (new): Edit > Dictate Here,
+  `app.dictate_here` on Ctrl+F11 in `APP_KEYMAPS["cast"]` and `["radio"]`,
+  wired once in `support_menu.insert_edit_menu` and `app_support`; shown only
+  where `is_app_released("transcribe")`. Sends `start` through
+  `dictation_owner.send_request` (new `SENDERS` admits `cast` and `radio`;
+  `APPS` unchanged), or launches QUILL Transcribe with `--tray
+  --dictate-here` (`TranscribeDictationMixin.dictate_here_at_launch`). A
+  `wx.EventFilter` answers the key in text fields of the app's dialogs, where
+  menu accelerators never reach; `AppShellMixin._apply_app_keymap` records
+  `_app_keymap_id` so the request names its sender.
+- **data_format_audit**: `quill.settings` and `lite.settings` recorded as
+  additive, compatible for the new field.
+- **Tests**: `tests/unit/core/test_family_dictation_store.py`,
+  `test_family_words_move.py`, `test_dictate_here.py`;
+  `tests/unit/ui/test_family_dictation_hosts.py`, `test_dictate_here_menu.py`;
+  `tests/conftest.py` gives every test its own family folder.
+- **Docs**: the QUILL, QUILL Lite, QUILL Transcribe, Quill Inkwell, QUILL Cast
+  and Quill Radio user guides and changelogs; the QUILL Lite, QUILL Transcribe,
+  QUILL Cast and Quill Radio PRDs; `voice-interaction.md`; the regenerated
+  keyboard and F1 references.
 ### Office files import without MarkItDown (todo P1 4b, 2026-10-16)
 
 Jeff's decision: "Give Office files a fallback that needs no MarkItDown." In a

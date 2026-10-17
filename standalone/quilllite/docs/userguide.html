@@ -5938,6 +5938,17 @@ which is just as you left it. The box is not shown in a portable copy,
 which always keeps its own list. Your dictation instructions and
 dictation contexts are kept beside the list, so they come with whichever
 list you use.</p>
+<p><strong>Where the shared list lives.</strong> Since this version the
+shared list is in the family’s own dictation folder:
+<code>%LOCALAPPDATA%\QuillVille\Dictation</code> (press Windows+R, type
+that and press Enter to open it). The first time a QuillVille program
+needs it after the update, it is copied there from QUILL’s data folder,
+with the instructions and contexts beside it. It is copied, never moved:
+the old files stay as they were, as a backup, and a list already in the
+new folder is never replaced. If the copy cannot be made, the old file
+is read instead, and the copy is tried again next time. QUILL Lite’s own
+list, the one you use while the box is unchecked, stays in QUILL Lite’s
+own data folder and is not touched.</p>
 <p>Your own phrases show up in the “what can I say” list along with
 everything else.</p>
 <h4 id="choosing-the-microphone">Choosing the microphone</h4>
@@ -6347,8 +6358,52 @@ see “Recent phrases”</td>
 <td>A spoken profile name does not switch profiles</td>
 <td>Unchecked</td>
 </tr>
+<tr>
+<td>Share dictation settings with every QuillVille program (Alt+Q)</td>
+<td>Your dictation settings are the same in QUILL Lite, QUILL, QUILL
+Transcribe and Quill Inkwell; see “Sharing dictation settings with the
+family”</td>
+<td>Checked for a new install; unchecked if you had changed your
+settings before</td>
+</tr>
 </tbody>
 </table>
+<h4 id="sharing-dictation-settings-with-the-family">Sharing dictation
+settings with the family</h4>
+<p><strong>Share dictation settings with every QuillVille
+program</strong> (Alt+Q) is a check box in More Dictation Settings. When
+it is on, the dictation settings you save are the same in QUILL, QUILL
+Lite, QUILL Transcribe and Quill Inkwell on this computer.</p>
+<ul>
+<li><strong>What is shared:</strong> the engine and model, the language,
+the microphone, automatic punctuation, the pause that ends a phrase,
+filler words, the wake phrase, the command word, review first, the
+never-type list and the other dictation choices.</li>
+<li><strong>What QUILL Lite keeps to itself:</strong> its keys, the
+working tick, strict mode, what you hear after each phrase, and every
+permission to send your speech to a company.</li>
+<li><strong>When it arrives:</strong> what you save with OK in Dictation
+Settings is there for the others at once. When you come back to QUILL
+Lite after saving something in another program, the status bar says
+“Dictation settings updated from the family.”</li>
+<li><strong>To begin with</strong> it is checked for a new install. If
+you had changed your dictation settings before this update, it starts
+unchecked, so nothing you chose is replaced; check it when you want to
+join in.</li>
+<li><strong>Nothing is lost:</strong> the first time QUILL Lite takes
+settings from the family, its own are saved first as
+<code>before-sharing-lite.json</code> in
+<code>%LOCALAPPDATA%\QuillVille\Dictation</code>.</li>
+<li>If two programs save at once, the last one saved wins; the file is
+never half written. If the shared copy cannot be saved, you hear why,
+for example “Saved here, but the other QuillVille programs will not see
+this change: the shared dictation settings could not be written (Access
+is denied).” QUILL Lite’s own copy is saved either way.</li>
+<li>A portable copy shares only with the programs in its own
+folder.</li>
+</ul>
+<p>For example: choose Spanish in QUILL Transcribe with Ctrl+Shift+F11,
+switch to QUILL Lite, and Ctrl+F11 dictates in Spanish.</p>
 <h4 id="dictating-in-spanish">Dictating in Spanish</h4>
 <p>You can dictate in Spanish. It’s new, so think of it as something to
 try, and let us know how it goes.</p>
