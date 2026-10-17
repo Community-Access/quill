@@ -25,7 +25,7 @@ from quill.core.safe_xml import fromstring as safe_xml_fromstring
 from quill.io.docx_text import read_docx_text, read_docx_xml_text
 from quill.io.markitdown_bridge import convert_with_markitdown
 from quill.io.pages import read_pages_document
-from quill.io.pdf import extract_pdf_outline, extract_pdf_text
+from quill.io.pdf import extract_pdf_outline_entries, extract_pdf_text
 from quill.io.rtf import read_rtf_document
 from quill.io.text import read_text_document
 
@@ -441,35 +441,20 @@ def _missing_legacy_office_text(path: Path, source_kind: str) -> tuple[str, dict
 
 
 def _format_pdf(path: Path, *, password: str | None = None) -> tuple[str, dict[str, object]]:
-    # The one PDF read both editors share (quill.core.pdf_open): text with form
-    # feeds between pages, and the embedded outline as (title, page) pairs when
-    # a reader saw pages. The module's own names are passed as the reader so a
-    # test that patches them here still reaches them.
+    # The one PDF read both editors share (quill.core.pdf_open): each page's
+    # most readable reading, form feeds between pages, the outline with its
+    # levels, and per-page provenance. MarkItDown is no longer a fallback here
+    # with an automatic score of 85: the reader offers it the pages itself,
+    # scores them by the same rules and keeps page boundaries, so QUILL and
+    # QUILL Lite read a PDF identically. The module's own names are passed as
+    # the reader so a test that patches them here still reaches them.
     found = read_pdf_for_open(
-        path, password=password, extract=extract_pdf_text, read_outline=extract_pdf_outline
+        path, password=password, extract=extract_pdf_text, read_outline=extract_pdf_outline_entries
     )
-    text, metadata = found.text, found.metadata()
-    if found.quality_score >= 50 and found.text.strip():
-        return text, metadata
-
-    # A locked PDF has no text for MarkItDown to read either (it cannot supply the
-    # password), and running it would only bury the "encrypted" signal the open
-    # flow needs to prompt for a password. Return the encrypted result unchanged.
-    if found.engine == "encrypted":
-        return text, metadata
-
-    markitdown_document = _read_via_markitdown(
-        path, "pdf", fallback_engine=found.engine, quality_score=85
-    )
-    if markitdown_document is None:
-        return text, metadata
-
-    metadata.update({
-        "engine": f"{found.engine} + markitdown",
-        "quality_score": max(found.quality_score, 85),
-        "markitdown_used": True,
-    })
-    return markitdown_document.text, metadata
+    metadata = found.metadata()
+    if "markitdown" in found.page_engines:
+        metadata["markitdown_used"] = True
+    return found.text, metadata
 
 
 def _format_structured_text(raw_text: str, suffix: str) -> tuple[str, dict[str, object]]:

@@ -856,19 +856,48 @@ A PDF opens as its **text**. You can read it, search it, select and copy from
 it, and change it. What you cannot do is turn it back into a PDF: QUILL Lite
 never writes to a PDF. The PDF you opened stays exactly as it was.
 
-When it opens, QUILL Lite tells you how many pages it has, and whether it has
-an outline.
+When it opens, QUILL Lite tells you how many pages it has, whether it has an
+outline, and which pages, if any, may read poorly.
 
 #### What comes through, and what does not
 
 The words come through, in order, with the lines joined back into paragraphs.
-Each page stays a page. Headings, lists and tables come through as ordinary
-lines of text, and pictures do not come through at all. A page set in two
-columns can come out mixed together. Those are the limits of reading a PDF's
-text, and QUILL has the same ones.
+Each page stays a page, blank pages included, so page 3 is always the third
+page. Headings, lists and tables come through as ordinary lines of text: a
+heading keeps its own line, a list item keeps its own line, and each row of a
+table stays one line with its numbers in order. Pictures do not come through at
+all. A page set in two clear columns is read down the first column and then the
+second; a page with three columns, or columns wrapped around pictures, can still
+come out mixed. Those are the limits of reading a PDF's text, and QUILL has the
+same ones.
 
 QUILL Lite reads the first 200 pages of a very long PDF, and tells you when it
 stopped early.
+
+#### How the text of each page is chosen
+
+A PDF can be read more than one way, and the ways do not always agree: one may
+spell a widely spaced line out a letter at a time, or run two columns together
+line by line, where another reads it properly. QUILL Lite decides page by page.
+A page whose first reading is clean is kept at once. A page that shows signs of
+trouble, or looks as if it is set in two columns, is read two more ways, and
+the reading with the fewest problems wins: fewest characters that cannot be
+read, words broken into letters, words glued together, and missing text. A short
+title page, a page of figures, or a page in another language is not marked
+down for being short.
+
+Nothing is uploaded, nothing is guessed, and the PDF is never changed. A
+character the PDF gave no meaning to is left in the text rather than deleted,
+and the page is named so you know to check it.
+
+#### When a page may read poorly
+
+When the PDF opens, QUILL Lite names any page that still reads poorly, for
+example: "Opened as text, 12 pages. Pages 3 and 7 may read poorly." A page is
+named when every reading of it was poor, when it holds characters that could
+not be read, or when it is only a picture, like one scanned page in an
+otherwise ordinary PDF. Blank pages are never named. Go to the page with
+**Ctrl+G** and check it; for a picture page, OCR (below) can read it.
 
 #### Pages
 
@@ -884,7 +913,11 @@ A PDF keeps its pages:
 Many PDFs come with an outline: a list of chapters and sections, which other
 programs call bookmarks. When the PDF you open has one, **Ctrl+G** has an
 **Outline** choice. Each entry says its title and its page, for example
-"Chapter 2, page 14". Choose one and press **Enter** to go there.
+"Chapter 2, page 14". An entry inside another also says its level, for example
+"Summary, level 3, page 15". Choose one and press **Enter** to go there: you
+land on the title itself, even when it is halfway down the page, or on the top
+of the page when the title cannot be found there. The level only describes the
+outline; it does not make anything a heading.
 
 #### A PDF with a password
 

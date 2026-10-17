@@ -322,3 +322,106 @@ def test_a_real_locked_pdf_opens_only_with_its_password(tmp_path: Path) -> None:
 def test_the_module_imports_no_wx() -> None:
     source = Path(pdf_open.__file__).read_text(encoding="utf-8")
     assert "import wx" not in source
+
+
+# -- item 28: outline targets, nesting and doubtful pages ---------------------- #
+
+
+def test_an_outline_entry_lands_on_its_title_inside_the_page() -> None:
+    text = "Cover\fIntro text runs on here.\nChapter 2\nBody.\fThird"
+    places = outline_places(text, [("Chapter 2", 2)])
+    assert places == [("Chapter 2, page 2", text.index("Chapter 2"))]
+
+
+def test_a_title_mentioned_mid_sentence_is_not_a_reliable_match() -> None:
+    # Only a title that starts a line counts; a mention inside prose does not.
+    text = "a\fWe come back to the Summary later.\nMore."
+    assert outline_places(text, [("Summary", 2)]) == [("Summary, page 2", 2)]
+
+
+def test_no_match_falls_back_to_the_page_start() -> None:
+    text = "one\ftwo\fthree"
+    assert outline_places(text, [("Missing", 3)]) == [("Missing, page 3", 8)]
+    assert outline_places(text, [("A", 2)]) == [("A, page 2", 4)]  # too short to trust
+
+
+def test_a_title_is_matched_with_spacing_and_case_forgiven() -> None:
+    text = "x\fCHAPTER   two\nbody"
+    assert outline_places(text, [("Chapter Two", 2)])[0][1] == 2
+
+
+def test_duplicate_titles_on_one_page_land_on_successive_matches() -> None:
+    text = "p1\fSummary\nfirst\nSummary\nsecond"
+    offsets = outline_bookmark_offsets(text, [("Summary", 2), ("Summary", 2)])
+    assert offsets == {"Summary": 3, "Summary (2)": text.index("Summary\nsecond")}
+
+
+def test_nesting_is_said_in_go_to_and_nothing_else() -> None:
+    text = "Part One\nChapter 1\fSection 1.1\nbody"
+    outline = [("Part One", 1), ("Chapter 1", 1), ("Section 1.1", 2)]
+    labels = [label for label, _ in outline_places(text, outline, (1, 2, 3))]
+    assert labels == [
+        "Part One, page 1",
+        "Chapter 1, level 2, page 1",
+        "Section 1.1, level 3, page 2",
+    ]
+    # Triples carry their own level; old pairs with no levels read as before.
+    assert outline_places(text, [("Section 1.1", 2, 2)])[0][0] == "Section 1.1, level 2, page 2"
+    assert outline_places(text, outline)[1][0] == "Chapter 1, page 1"
+
+
+def test_the_reader_seam_takes_pairs_or_triples() -> None:
+    found = read_pdf_for_open(
+        Path("report.pdf"),
+        extract=lambda _path, *, password=None: _result(f"{_PAGE}\f{_PAGE}"),
+        read_outline=lambda _path, *, password=None: [("A", 1, 1), ("B", 2, 2), ("C", 2)],
+    )
+    assert found.outline == (("A", 1), ("B", 2), ("C", 2))
+    assert found.outline_levels == (1, 2, 1)
+    metadata = found.metadata()
+    assert metadata["pdf_outline"] == [("A", 1), ("B", 2), ("C", 2)]
+    assert metadata["pdf_outline_levels"] == [1, 2, 1]
+
+
+def test_a_flat_outline_adds_no_levels_key() -> None:
+    assert "pdf_outline_levels" not in _read(_PAGE, outline=[("A", 1)]).metadata()
+
+
+def test_the_provenance_travels_with_the_document() -> None:
+    result = _result(f"{_PAGE}\f{_PAGE}")
+    result.page_engines = ["pdfplumber", "pypdf"]
+    result.page_unreadable = [0, 3]
+    found = read_pdf_for_open(
+        Path("report.pdf"),
+        extract=lambda _path, *, password=None: result,
+        read_outline=lambda _path, *, password=None: [],
+    )
+    metadata = found.metadata()
+    assert metadata["page_engines"] == ["pdfplumber", "pypdf"]
+    assert metadata["page_unreadable"] == [0, 3]
+    assert found.doubtful_pages == [2]
+
+
+def test_the_doubtful_pages_sentence() -> None:
+    from quill.core.pdf_open import doubtful_pages_sentence
+
+    assert doubtful_pages_sentence([]) == ""
+    assert doubtful_pages_sentence([3]) == "Page 3 may read poorly."
+    assert doubtful_pages_sentence([9, 2, 5]) == "Pages 2, 5 and 9 may read poorly."
+    assert doubtful_pages_sentence(range(1, 12)) == (
+        "11 pages may read poorly, starting with page 1."
+    )
+
+
+def test_the_open_summary_says_which_pages_may_read_poorly() -> None:
+    found = PdfOpen(
+        text="x",
+        engine="pdfplumber",
+        page_count=3,
+        page_scores=(100, 12, 100),
+        page_engines=("pdfplumber", "pypdf", "pdfplumber"),
+    )
+    assert opened_summary(found) == (
+        "Opened as text, 3 pages. Page 2 may read poorly. "
+        "Saving makes a new file; the PDF is not changed."
+    )

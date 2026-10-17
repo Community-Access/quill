@@ -3694,13 +3694,88 @@ for v1.0 and tracked in the backlog (<a
 href="#17-backlog-and-deferred-items">section 17</a>).</p>
 <p><strong>What v1.0 ships</strong></p>
 <ol type="1">
-<li><strong>Tier 1, local extraction (automatic on open).</strong> A
-layered pipeline runs <code>pdfplumber</code> and <code>pypdfium2</code>
-(with <code>pdfminer.six</code> as a third fallback) per page, scores
-each extraction for readability (line count, alphabetic ratio, average
-line length, presence of suspicious one-word-per-line patterns), and
-picks the best result per page. Pages are concatenated with explicit
-page markers so page navigation is exact.</li>
+<li><strong>Tier 1, local extraction (automatic on open) – per-page
+selection shipped 2026-10-16.</strong> Until 2026-10-16 this item
+described more than the reader did: <code>quill/io/pdf.py</code> tried
+<code>pdfplumber</code> and then <code>pypdf</code> and kept the
+<strong>first non-empty</strong> answer, scored by quantity (characters,
+words, pages), so a page of replacement characters scored 100 and a
+clean title page 25; <code>pypdfium2</code> was never a text extractor
+(it only rasterises pages for OCR). What ships now, in the one reader
+every entry point uses (File &gt; Open in both editors via
+<code>quill/core/pdf_open.py::read_pdf_for_open</code>,
+<code>quill.io.structured._format_pdf</code>, Import / Convert’s
+text-layer tier <code>quill.io.docconvert.convert_pdf_text_layer</code>,
+and Document Q&amp;A via <code>format_pdf_document</code>):
+<ul>
+<li><strong>Engine roster, per page, in tie-break order:</strong>
+<code>pdfplumber</code> (pdfminer.six underneath),
+<code>pdfplumber-dedupe</code> (only when the first reading shows
+fake-bold doubled letters), <code>pypdf</code> plain,
+<code>pypdf-layout</code>, <code>pypdf-columns</code> (the layout
+reading split at a detected column gutter and read column by column),
+and <code>markitdown</code> (below). <code>pdfplumber</code> and
+<code>pypdf</code> are in the shipped runtime; nothing else is
+required.</li>
+<li><strong>Fast path:</strong> pdfplumber reads each page first; a
+reading that scores at least <strong>90</strong>
+(<code>quill.io.pdf_score.FAST_PATH_SCORE</code>) on a page whose
+characters show no column gutter is kept as is, so a clean page pays for
+one extractor. Measured on the fixture corpus, every clean page scores
+100 and every damaged one 78 or less.</li>
+<li><strong>Questionable pages:</strong> otherwise every reading is
+repaired (<code>pdf_repair.repair_extracted_text</code>), scored
+<strong>before and after</strong> repair, the higher of the two kept for
+that reading (a repair that lowers the score is not applied), and the
+best reading wins the page (<code>quill/io/pdf_select.py</code>). A
+non-empty bad reading can no longer hide a better one.</li>
+<li><strong>Readability score (0-100,
+<code>quill/io/pdf_score.py</code>, version 1):</strong> 100 multiplied
+by one factor per kind of damage – suspicious characters (U+FFFD,
+private use, controls, <code>(cid:N)</code>), runs of single letters,
+one word per line (six or more lines only), implausible joins (20+
+letter Latin words, <code>wordWord</code>/<code>word.Word</code> seams,
+doubled letters, beyond a 3 percent allowance), coverage against the
+fullest reading of the page, and two-column rows run together. Short
+titles, numeric rows and non-Latin scripts are not penalised. A page
+below <strong>40</strong> that has text, a page that holds unreadable
+characters, and an image-only page are <em>doubtful</em>: both editors
+say “Pages 3 and 7 may read poorly.” when the PDF opens, and the
+Document Intake Report lists each with its reason. Blank pages are never
+doubtful. The document score is the mean of the text pages, discounted
+by half a page per image-only page.</li>
+<li><strong>MarkItDown</strong> is asked only when the whole document
+still scores below 50, and its pages replace the reader’s only page by
+page, when its form-feed pages line up with the PDF’s and it scores at
+least 10 points better by the same rules. It no longer receives an
+automatic 85, and nothing depends on it: the shipped runtime excludes
+onnxruntime, so MarkItDown does not import there.</li>
+<li><strong>Kept:</strong> passwords (this read only, never stored),
+page order, a form feed between pages with blank pages kept as empty
+sections (a blank first page used to be stripped, shifting every page
+offset), the 200-page cap, one page in memory at a time (each pdfplumber
+page is closed after it is read; the peak on a 200-page document fell
+from 429 MB to 7 MB), and the four failure outcomes (no reader,
+encrypted, damaged, no text layer). No network, and OCR stays opt-in.
+Per-page provenance travels in <code>source_metadata</code> as
+<code>page_engines</code>, <code>page_scores</code> and
+<code>page_unreadable</code>.</li>
+<li><strong>Repairs before reflow (<code>pdf_repair.py</code>):</strong>
+heading-like lines, list starts (including lettered and roman markers),
+address lines, column-spaced rows and rows of figures are protected, so
+a long body line no longer swallows a title under it and two long table
+rows stay two rows. Unmapped private-use characters are
+<strong>kept</strong> (they used to be deleted), and ligature slots are
+expanded only where they touch a letter. Identifier hyphens
+(<code>ISBN-</code>) are kept; always-hyphenated prefixes
+(<code>self-</code>) join and keep the hyphen. A letter-spaced line with
+no word gaps is not closed up into one long word. Repairs stay
+idempotent. Nothing creates heading levels, table cells or any font- or
+layout-derived structure.</li>
+<li>Design note with the formula, thresholds and measured budgets:
+<code>docs/design/2026-10-16-pdf-text-reliability.md</code>. Fixture
+corpus and generator: <code>tests/corpus/pdf/</code>.</li>
+</ul></li>
 <li><strong>Page navigation.</strong> <code>Page Up</code> /
 <code>Page Down</code> move to the previous/next page marker.
 <code>Ctrl+G</code> opens Go To Page when page markers exist. The status
@@ -3709,17 +3784,25 @@ last page is announced.</li>
 <li><strong>Embedded bookmarks (shipped).</strong> On open, a PDF’s
 embedded outline (Adobe’s bookmark tree) is imported into Quill’s own
 bookmark store so its entries appear in the Bookmarks Manager
-(Ctrl+Shift+G). <code>io/pdf.py::extract_pdf_outline</code> flattens
-pypdf’s outline tree to <code>(title, page)</code> pairs;
-<code>_format_pdf</code> carries them in
-<code>source_metadata["pdf_outline"]</code>; and
-<code>main_frame.py::_import_pdf_outline_bookmarks</code> resolves each
-destination page to a character offset (via the form-feed page markers,
-the same mapping “Go To Page” uses) and adds a bookmark. Import runs
-once, on first open — it is skipped when the document already has
-bookmarks, so it never duplicates entries or resurrects deleted ones.
-They are read-only with respect to the original PDF; renaming, adding,
-and deleting affect Quill’s own bookmark store.</li>
+(Ctrl+Shift+G).
+<code>io/pdf_outline.py::extract_pdf_outline_entries</code> reads
+pypdf’s outline tree as <code>(title, page, level)</code>;
+<code>source_metadata["pdf_outline"]</code> keeps the
+<code>(title, page)</code> pairs older builds and stored sessions read,
+with <code>pdf_outline_levels</code> beside them when the outline nests;
+and <code>main_frame.py::_import_pdf_outline_bookmarks</code> resolves
+each entry (via the form-feed page markers, the same mapping “Go To
+Page” uses) to <strong>its title at the start of a line on its
+page</strong> (since 2026-10-16; whitespace and case forgiven, too-short
+titles not trusted), falling back to the page start when there is no
+reliable match, and adds a bookmark. Duplicate titles stay distinct
+(“Summary”, “Summary (2)”, each at its own match). Go To’s Outline kind
+says a nested entry’s level (“Summary, level 3, page 15”); the level is
+presentation only and is never converted to a heading. Import runs once,
+on first open — it is skipped when the document already has bookmarks,
+so it never duplicates entries or resurrects deleted ones. They are
+read-only with respect to the original PDF; renaming, adding, and
+deleting affect Quill’s own bookmark store.</li>
 <li><strong>Password-protected PDFs (shipped).</strong> On open, Quill
 detects an encrypted (real user-password) PDF and prompts for the
 password through a standard modal dialog
@@ -3771,13 +3854,15 @@ defaults to Save As; the original is never changed.
 (<code>core/ai/assistant.py</code> <code>reading_order</code> operation,
 <code>ui/main_frame_ai_reading_order.py</code>.)</li>
 <li><strong>OCR for scanned PDFs.</strong> When tier 1 yields no
-readable text on a page, Quill offers a one-click escalation to local
-OCR via the bundled Tesseract (English shipped, additional languages
-downloadable). For longer scanned PDFs the user may instead escalate to
-tier 3 AI rendering. <strong>On File &gt; Open, too
-(2026-10-15).</strong> A PDF that opens with no text layer, or too
-little (<code>text_layer_looks_empty</code>), is followed by the
-question QUILL Lite asks in the same words
+readable text, Quill offers (never runs unasked) local OCR: Tesseract
+when installed (a verified one-time download, not bundled), otherwise
+Windows OCR. An image-only page inside a PDF that otherwise has text is
+named as a page that may read poorly, so the listener knows OCR could
+help. For longer scanned PDFs the user may instead escalate to tier 3 AI
+rendering. <strong>On File &gt; Open, too (2026-10-15).</strong> A PDF
+that opens with no text layer, or too little
+(<code>text_layer_looks_empty</code>), is followed by the question QUILL
+Lite asks in the same words
 (<code>quill/core/pdf_open.py::scanned_question</code>): read it with
 OCR on this computer, nothing uploaded, the PDF not changed. Yes runs
 <code>ocr_pdf_for_open</code> on the task manager (Tesseract if
