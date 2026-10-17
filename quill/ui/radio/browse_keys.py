@@ -7,7 +7,8 @@ means depends on where focus is**, which is a policy, not a widget detail.
 
 * **Ctrl+F** is the find box, from anywhere in the window.
 * **Delete** removes what the selected row's own menu removes -- but only while
-  the *tree* has focus, because Delete in the find box is a delete.
+  the *tree* has focus, because Delete in the find box is a delete. With rows
+  marked (``.``, see ``browse_marks``) it removes every marked row instead.
 * **Escape** clears an active search when the find box has focus; in the tree,
   inside a category (a country, a language, a genre), it goes back to that
   category's row and folds it -- one level per press, the way Enter opened
@@ -22,6 +23,8 @@ the narrower one has to be tried first.
 from __future__ import annotations
 
 from typing import Any
+
+from quill.ui.radio import browse_marks
 
 
 def handle(dialog: Any, event: Any) -> bool:
@@ -39,6 +42,10 @@ def handle(dialog: Any, event: Any) -> bool:
         dialog._find_ctrl.SetFocus()
         dialog._find_ctrl.SelectAll()
         dialog._announce("Find in this folder.")
+        return True
+
+    # ., Delete with rows marked, Ctrl+Shift+Delete: the marking keys.
+    if focus is dialog._tree and browse_marks.handle_key(dialog, event):
         return True
 
     if key == wx.WXK_DELETE and focus is dialog._tree:

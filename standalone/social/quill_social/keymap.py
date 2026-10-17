@@ -50,6 +50,50 @@ DEFAULT_BINDINGS: dict[str, str] = {
     "goto_7": "Ctrl+7",
     "goto_8": "Ctrl+8",
     "goto_9": "Ctrl+9",
+    # Every other menu row (family rule 8: every command has a key). The menu
+    # shows whatever this map says, so a rebind in keymap.json moves the key in
+    # the menu too, and one chord can never be claimed by two rows. Rare,
+    # settings-like commands take a longer chord (rule 9); the two that remove
+    # something also ask first.
+    "add_account": "Ctrl+Shift+A",
+    "preferences": "Ctrl+,",
+    "flag": "Ctrl+Shift+G",
+    "accessibility_check": "F7",
+    "send_to_quill": "Ctrl+Shift+Q",
+    "add_feed": "Ctrl+Shift+N",
+    "new_folder": "Ctrl+Alt+F",
+    "configure_feed": "Ctrl+Shift+P",
+    "mark_all_read": "Ctrl+Shift+K",
+    "undo_mark": "Ctrl+Z",
+    "new_smart_folder": "Ctrl+Shift+M",
+    "edit_smart_folder": "Ctrl+Alt+M",
+    "delete_smart_folder": "Ctrl+Shift+Delete",
+    "import_opml": "Ctrl+I",
+    "export_opml": "Ctrl+E",
+    "unsubscribe": "Ctrl+Alt+U",
+    "listen_start": "Ctrl+Shift+L",
+    "listen_toggle": "Ctrl+Shift+Space",
+    "listen_next": "Ctrl+Shift+.",
+    "listen_prev": "Ctrl+Shift+,",
+    "listen_stop": "Ctrl+Shift+S",
+    "drafts": "Ctrl+Shift+D",
+    "agenda": "Ctrl+Shift+Y",
+    "queue_schedule": "Ctrl+Shift+U",
+    "approvals": "Ctrl+Shift+W",
+    "find_text": "Ctrl+Shift+F",
+    "find_next": "F3",
+    "find_prev": "Shift+F3",
+    "catchup": "Ctrl+Shift+H",
+    "analytics": "Ctrl+Alt+I",
+    "safety_center": "Ctrl+Alt+T",
+    "notification_policies": "Ctrl+Alt+P",
+    "plugins": "Ctrl+Alt+G",
+    "outbox": "Ctrl+Shift+B",
+    "summarize_feed": "Ctrl+Alt+R",
+    "user_guide": "Ctrl+F1",
+    "keyboard_reference": "Ctrl+Shift+F1",
+    "product_requirements": "Alt+Shift+F1",
+    "about": "Alt+F1",
 }
 
 
@@ -82,9 +126,7 @@ class Keymap:
 
     def __init__(self, bindings: dict[str, str] | None = None) -> None:
         src = bindings if bindings is not None else dict(DEFAULT_BINDINGS)
-        self._by_command: dict[str, str] = {
-            cmd: normalize_chord(ch) for cmd, ch in src.items()
-        }
+        self._by_command: dict[str, str] = {cmd: normalize_chord(ch) for cmd, ch in src.items()}
 
     def chord_for(self, command_id: str) -> str:
         return self._by_command.get(command_id, "")
@@ -127,8 +169,16 @@ def load(data_dir: str | Path) -> Keymap:
         return Keymap()
     try:
         data = json.loads(p.read_text(encoding="utf-8"))
-        merged = dict(DEFAULT_BINDINGS)
-        merged.update({k: v for k, v in data.items() if isinstance(v, str)})
+        saved = {k: v for k, v in data.items() if isinstance(v, str)}
+        # A default added after this file was saved yields to a chord the
+        # listener already chose, so one key never ends up on two commands.
+        taken = {normalize_chord(v) for v in saved.values()}
+        merged = {
+            k: v
+            for k, v in DEFAULT_BINDINGS.items()
+            if k in saved or normalize_chord(v) not in taken
+        }
+        merged.update(saved)
         return Keymap(merged)
     except Exception:
         return Keymap()
@@ -136,7 +186,8 @@ def load(data_dir: str | Path) -> Keymap:
 
 def save(data_dir: str | Path, keymap: Keymap) -> None:
     (Path(data_dir) / BINDINGS_NAME).write_text(
-        json.dumps(keymap.as_dict(), indent=2), encoding="utf-8")
+        json.dumps(keymap.as_dict(), indent=2), encoding="utf-8"
+    )
 
 
 def chord_from_event(event) -> str:

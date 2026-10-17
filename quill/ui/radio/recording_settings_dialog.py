@@ -33,6 +33,7 @@ class RecordingSettingsDialog:
         self._wx = wx
         self._announce = announce_cb or (lambda _m: None)
         self._result: RecordingSettings | None = None
+        self._exact_optilab = settings.exact_optilab
 
         self.dialog = wx.Dialog(
             parent,
@@ -157,6 +158,13 @@ class RecordingSettingsDialog:
         self._apply_enhancements_check.SetValue(settings.apply_sound_enhancements)
         root.Add(self._apply_enhancements_check, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
+        self._split_songs_check = wx.CheckBox(
+            self.dialog, label="Split the recording at each so&ng change"
+        )
+        self._split_songs_check.SetHelpText(settings_help.HELP["split_songs"])
+        self._split_songs_check.SetValue(settings.split_at_song_changes)
+        root.Add(self._split_songs_check, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+
         hint = wx.StaticText(
             self.dialog,
             label=(
@@ -259,5 +267,8 @@ class RecordingSettingsDialog:
             reconnect_wait_seconds=self._reconnect_wait_ctrl.GetValue(),
             apply_sound_enhancements=self._apply_enhancements_check.GetValue(),
             max_concurrent_recordings=self._max_concurrent_ctrl.GetValue(),
+            split_at_song_changes=self._split_songs_check.GetValue(),
+            # Not on this dialog, so carried over rather than reset on save.
+            exact_optilab=self._exact_optilab,
         )
         self.dialog.EndModal(self._wx.ID_OK)

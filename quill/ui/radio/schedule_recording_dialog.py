@@ -13,6 +13,8 @@ from zoneinfo import available_timezones
 from quill.core.radio.recording_schedule import RecordingScheduleEntry, new_id, next_occurrence
 from quill.core.radio.wake_timer import parse_time_of_day
 from quill.ui.dialog_contract import announce_surface_exit, apply_modal_ids, bind_close_button
+from quill.ui.radio import schedule_marks
+from quill.ui.radio.marks_shared import say_ignored, with_ignored_note
 
 _WEEKDAYS = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 
@@ -396,35 +398,10 @@ class ScheduleRecordingDialog:
             self._toggle_btn.SetLabel("Disab&le")
 
     def _on_list_key(self, event: object) -> None:
-        wx = self._wx
-        if event.GetKeyCode() in (wx.WXK_DELETE, wx.WXK_NUMPAD_DELETE):
-            self._on_remove_click(None)
-            return
-        event.Skip()
+        schedule_marks.on_list_key(self, event)  # ., Delete, Ctrl+Shift+Delete
 
     def _on_list_context_menu(self, _event: object) -> None:
-        wx = self._wx
-        index = self._list.GetSelection()
-        if not (0 <= index < len(self._entries)):
-            return
-        entry = self._entries[index]
-        menu = wx.Menu()
-        edit_id = wx.NewIdRef()
-        duplicate_id = wx.NewIdRef()
-        toggle_id = wx.NewIdRef()
-        delete_id = wx.NewIdRef()
-        menu.Append(edit_id, "&Edit")
-        menu.Append(duplicate_id, "D&uplicate")
-        menu.Append(toggle_id, "Enab&le" if not entry.enabled else "Disab&le")
-        menu.Append(delete_id, f"&Delete {entry.station_name}\tDelete")
-        menu.Bind(wx.EVT_MENU, lambda _e: self._on_edit_click(None), id=edit_id)
-        menu.Bind(wx.EVT_MENU, lambda _e: self._on_duplicate_click(None), id=duplicate_id)
-        menu.Bind(wx.EVT_MENU, lambda _e: self._on_toggle_click(None), id=toggle_id)
-        menu.Bind(wx.EVT_MENU, lambda _e: self._on_remove_click(None), id=delete_id)
-        # pinned while the popup can fire
-        self._context_menu_id_refs = [edit_id, duplicate_id, toggle_id, delete_id]
-        self._list.PopupMenu(menu)
-        menu.Destroy()
+        schedule_marks.on_list_context_menu(self)
 
     def _build_surface_menu_bar(self) -> None:
         wx = self._wx
@@ -496,7 +473,7 @@ class ScheduleRecordingDialog:
         )
         self._list.Clear()
         for entry in self._entries:
-            self._list.Append(_entry_summary(entry), entry.id)
+            self._list.Append(schedule_marks.row_text(self, entry, _entry_summary(entry)), entry.id)
         selected = 0
         if keep_id is not None:
             for index, entry in enumerate(self._entries):
@@ -581,6 +558,7 @@ class ScheduleRecordingDialog:
         self._status.SetLabel(
             f"Editing {entry.station_name}. Change the fields, then choose Save Changes."
         )
+        say_ignored(self)  # silent unless schedules are marked
         self._name_ctrl.SetFocus()
 
     def _on_duplicate_click(self, _event: object) -> None:
@@ -591,6 +569,7 @@ class ScheduleRecordingDialog:
         self._enter_add_mode()  # a duplicate is a new entry, not an edit
         self._name_ctrl.SetValue(f"{entry.station_name} (copy)")
         self._status.SetLabel("Duplicated. Adjust the fields, then choose Add Schedule.")
+        say_ignored(self)  # silent unless schedules are marked
         self._name_ctrl.SetFocus()
 
     def _on_toggle_click(self, _event: object) -> None:
@@ -602,7 +581,7 @@ class ScheduleRecordingDialog:
             self._entries = [updated if e.id == updated.id else e for e in self._entries]
             self._refresh_list(keep_id=updated.id)
             state = "enabled" if updated.enabled else "disabled"
-            self._announce(f"{updated.station_name} {state}.")
+            self._announce(with_ignored_note(self, f"{updated.station_name} {state}."))
 
     def _build_entry_from_form(self) -> RecordingScheduleEntry | None:
         """Read the controls, validate via the pure builder, show any error."""

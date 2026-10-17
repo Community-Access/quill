@@ -203,6 +203,9 @@ class OpeningGuard:
         self._wait = wait_seconds
         self._lock = threading.Lock()
         self._references: dict[str, _Reference | None] = {}
+        #: Seconds cut from the front of each recording's first part, kept for
+        #: the song-change split: every song moment moves back by this much.
+        self._lead_trims: dict[str, float] = {}
 
     def begin(self, job_id: str, stream_url: str, capture_url: str) -> None:
         """A recording's first connection just opened: listen to a second one."""
@@ -243,14 +246,21 @@ class OpeningGuard:
         if not parts or not known:
             return parts, ""
         try:
-            return self._strip(reference, parts)
+            return self._strip(reference, parts, job_id)
         except Exception:  # noqa: BLE001 - the recording itself is safe either way
             logger.warning(
                 "pre-roll guard: comparison failed; parts kept as recorded", exc_info=True
             )
             return parts, ""
 
-    def _strip(self, reference: _Reference | None, parts: list[Path]) -> tuple[list[Path], str]:
+    def take_lead_trim(self, job_id: str) -> float:
+        """Seconds :meth:`strip` cut from the front of part one (0 when none)."""
+        with self._lock:
+            return self._lead_trims.pop(job_id, 0.0)
+
+    def _strip(
+        self, reference: _Reference | None, parts: list[Path], job_id: str = ""
+    ) -> tuple[list[Path], str]:
         ref_opening: Opening | None = None
         if reference is not None:
             if len(parts) == 1 and not reference.done.is_set():
@@ -284,6 +294,9 @@ class OpeningGuard:
                     continue
             if trim(part, seconds):
                 applied.append(seconds)
+                if index == 0 and job_id:
+                    with self._lock:
+                        self._lead_trims[job_id] = seconds
                 logger.info("pre-roll guard: trimmed %.1fs from %s", seconds, part.name)
             kept.append(part)
         return kept, describe_trims(applied, dropped)

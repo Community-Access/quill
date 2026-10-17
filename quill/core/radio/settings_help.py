@@ -91,6 +91,14 @@ HELP: dict[str, str] = {
         "the file is what the station sent, whatever your playback settings "
         "are doing."
     ),
+    "split_songs": (
+        "When a recording finishes, cut it into one file per song at each "
+        "point the station changed its song title, named after the song. "
+        "Nothing is lost between the files, and if the split cannot be done "
+        "the recording is kept whole. It needs a station that sends song "
+        "titles, and a cut can land a few seconds early or late, because "
+        "stations do not change their titles exactly as the music changes."
+    ),
     "status": "Status",
     "save_button": "Save these recording settings",
 }

@@ -41,6 +41,7 @@ __all__ = [
     "save_song_history",
     "build_song_background_prompt",
     "BACKGROUND_DISCLAIMER",
+    "is_noise_title",
 ]
 
 _FILE_NAME = "radio_song_history.json"
@@ -193,6 +194,17 @@ def _is_noise(now_playing: NowPlaying, station_name: str) -> bool:
         "ad break",
         "commercial",
     }
+
+
+def is_noise_title(stream_title: str, station_name: str = "") -> bool:
+    """Whether a raw stream title is the station talking about itself.
+
+    The public face of the rule :meth:`SongHistory.record` applies, so the
+    recorder's song-change split (``recording_song_watch``) treats "Live" or
+    the station's own name exactly as the history does: not a song, and so
+    never a reason to cut a recording.
+    """
+    return _is_noise(parse_now_playing(stream_title), station_name)
 
 
 @dataclass(slots=True)
