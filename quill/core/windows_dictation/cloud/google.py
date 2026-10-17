@@ -79,8 +79,8 @@ def streaming_pack_problem() -> str:
     Google's ``StreamingRecognize`` is gRPC only; the pack is not built here.
     """
     try:
-        import google.cloud.speech_v2  # type: ignore[import-not-found,unused-ignore]  # noqa: F401
-        import grpc  # type: ignore[import-not-found,unused-ignore]  # noqa: F401
+        import google.cloud.speech_v2  # type: ignore[import-not-found,import-untyped,unused-ignore]  # noqa: F401
+        import grpc  # type: ignore[import-not-found,import-untyped,unused-ignore]  # noqa: F401
     except ImportError:
         return (
             "Live words from Google need the optional Google streaming pack, which is "
