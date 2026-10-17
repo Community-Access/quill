@@ -52,20 +52,9 @@ DOCS = [
     ROOT / "standalone" / "cast" / "docs" / "userguide.md",
 ]
 
-#: Edit > Dictate Here is shown only once QUILL Transcribe is released
-#: (1 November 2026; ``dictate_here_available``), and the documents say so
-#: beside every mention.
-_TRANSCRIBE_GATED = (
-    "release gate: shown once QUILL Transcribe is released (1 November 2026); "
-    "the document says so beside it"
-)
-
 #: Finding key -> why it is allowed. Keep it short and honest; fix the document
 #: first.
-ALLOW: dict[str, str] = {
-    "path:edit > dictate here": _TRANSCRIBE_GATED,
-    "key:dictate here": _TRANSCRIBE_GATED,
-}
+ALLOW: dict[str, str] = {}
 
 #: Keys Cast binds on purpose without a menu row: chord -> command name.
 EXTRA_KEYS: dict[str, str] = {

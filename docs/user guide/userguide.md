@@ -713,7 +713,8 @@ dictates into the document you are in.
 Those five are every row this menu shows. Quill Cast and Audio Studio join it
 when they are released; Cast will keep `Ctrl+Alt+Shift+F12`, the key that
 shows and hides it from any program. Every row is a command you can give a
-different key in **Help > Keyboard Shortcuts...** (`Ctrl+Alt+K`): search for
+different key in **Tools > Customize and Support > Keymap Editor...**
+(`Ctrl+Alt+Shift+Space`): search for
 "QuillVille: Open".
 
 If an app is not on your computer yet, QUILL offers to download it for you.
