@@ -17,6 +17,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **The user guide no longer describes a Quillins menu.** Quill Weather does not load Quillins yet and has no Quillins menu; the guide said it did. The section now says what is true today.
 - **Radio-only commands in the guide are marked as Quill Radio's.** "Station > Start Quill Radio with Windows" and "Browse Stations > Weather / NOAA" are on Quill Radio's menus, not Quill Weather's, and the guide pointed at a Station menu chapter it does not have.
 
+## [Unreleased]
+
+- **QUILL Transcribe on the QuillVille menu and the tray.** QUILL Transcribe, which types what you say into any program, is released on 1 November 2026. The **QuillVille** menu (Alt+Q) now lists every released app with its letter and key: QUILL (Q, Ctrl+Alt+Shift+F7), Quill Radio (R, F8), Quill Converter (V, F9), Quill Inkwell (I, F10) and QUILL Transcribe (T, Ctrl+Alt+Shift+F11). The tray menu adds **Open QUILL Transcribe** after QUILL and Quill Radio. If it is not installed yet, Quill Weather offers to download it once it is published, and nothing is downloaded until you say yes. The user guide's "Reaching the other apps" listed only QUILL and Quill Radio; it now lists them all, with an example.
+
 ## [2.2.1] - 2026-10-08
 
 Build 2:

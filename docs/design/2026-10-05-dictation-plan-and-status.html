@@ -4110,18 +4110,27 @@ Transcribe and in Inkwell.</li>
 <code>tests/unit/ui/test_dictate_here_menu.py</code>: every outcome with
 fakes, the release gate, the request file’s senders, the Edit menu label
 and key in both apps, Quill Radio’s real menu bar carrying Ctrl+F11 once
-in a developer build, and QUILL Transcribe’s
-<code>dictate_here_at_launch</code> in each case. No real window is
-driven.</li>
+in a public build (a developer build before 2026-10-16), and QUILL
+Transcribe’s <code>dictate_here_at_launch</code> in each case. No real
+window is driven.</li>
 </ul>
 <h3 id="306-not-done">30.6 Not done</h3>
 <ul>
 <li>A screen-reader pass with JAWS and NVDA on Cast’s search box and
 Radio’s Search Stations box (D-16’s acceptance in practice).</li>
-<li>QUILL Transcribe is not yet in <code>RELEASED_APPS</code>. Jeff
-decided it releases on 2026-11-01; adding it to
-<code>RELEASED_APPS</code> that day is what makes Dictate Here appear in
-public Cast and Radio builds, with no other change.</li>
+<li><del>QUILL Transcribe is not yet in
+<code>RELEASED_APPS</code>.</del> Done on 2026-10-16 (Jeff’s decisions
+on todo P2 item 19): it is in <code>RELEASED_APPS</code> on the branch,
+with a release date of 2026-11-01, so public Cast and Radio builds show
+Dictate Here; it is last in <code>QUILLVILLE_APP_ORDER</code> and in the
+tray list (<code>TRAY_APP_ORDER</code>), and the companion-install offer
+covers it. No sixth QuillVille launcher key: public menus show at most
+five rows, and only a developer build shows keyless rows past the fifth
+(<code>app_keymaps.py</code>, beside
+<code>SIBLING_APP_ACCELERATORS</code>). Nothing has been tagged or
+published. The screen-reader pass in Outlook, Word, Notepad and the
+browsers is Jeff’s and is a release blocker
+(<code>docs/qa/screen-reader-checks-2026-10.md</code>).</li>
 <li>A “Restore my settings from before sharing” command over
 <code>before-sharing-&lt;app&gt;.json</code>; today that file is
 restored by hand.</li>

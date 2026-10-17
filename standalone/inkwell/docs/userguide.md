@@ -109,6 +109,27 @@ version, Quick Insert was Ctrl+Alt+Shift+K and Expand Word was Ctrl+Alt+Shift+X
 from anywhere; QuillVille apps use both for their own commands, so they are off
 now, and Inkwell tells you once after you update.
 
+### Opening the other QuillVille apps
+
+The **QuillVille** menu (Alt+Q) in Inkwell's window opens the other released
+apps in the family. Each row has its own letter, so Alt+Q and then one letter
+opens an app with nothing held down:
+
+- **Open QUILL**: Alt+Q, then Q (or Ctrl+Alt+Shift+F7)
+- **Open Quill Radio**: Alt+Q, then R (or Ctrl+Alt+Shift+F8)
+- **Open Quill Weather**: Alt+Q, then W (or Ctrl+Alt+Shift+F9)
+- **Open Quill Converter**: Alt+Q, then V (or Ctrl+Alt+Shift+F10)
+- **Open QUILL Transcribe**: Alt+Q, then T (or Ctrl+Alt+Shift+F11). QUILL
+  Transcribe, released on 1 November 2026, types what you say into any
+  program; section 20 explains how it and Dictate Anywhere share the work.
+
+The tray icon's menu has a shorter list: **Open QUILL**, **Open Quill Radio**,
+**Open Quill Weather** and **Open QUILL Transcribe**. For example, with
+Inkwell's window closed to the tray, right-click its icon (or press the
+Applications key on it) and choose Open QUILL Transcribe. If an app is not on
+your computer yet, Inkwell offers to download it, and nothing is downloaded
+until you say yes.
+
 ## 4. Creating abbreviations
 
 **Abbreviations > Manage Abbreviations...** (Ctrl+M) is the full list: search it,
@@ -592,6 +613,9 @@ to QUILL Transcribe, and it does the dictating; Inkwell's status line says so.
 When QUILL Transcribe is not running, Inkwell dictates as described here. If
 QUILL or QUILL Lite's **Dictate in Other Programs...** finds QUILL Transcribe
 running, it hands your settings to QUILL Transcribe instead of Inkwell.
+QUILL Transcribe is released on 1 November 2026. To open it from Inkwell,
+press Alt+Q, then T, or Ctrl+Alt+Shift+F11 (see "Opening the other QuillVille
+apps" in section 3).
 
 **Safe Mode.** With Safe Mode on, Dictate Anywhere is off.
 

@@ -127,11 +127,23 @@ def test_the_command_says_why_when_it_cannot(wx_app: Any, monkeypatch: pytest.Mo
         host.frame.Destroy()
 
 
-def test_quill_radio_real_menu_bar_carries_it_once_in_a_developer_build(
+def test_a_public_build_offers_it_now_that_transcribe_is_released(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """QUILL Transcribe is released on 2026-11-01 (Jeff, 2026-10-16), so the
+    item is no longer a developer-build-only row: public Cast and Radio show it."""
+    monkeypatch.delenv("QUILL_DEV_BUILD", raising=False)
+    assert dictate_here_ui.dictate_here_available() is True
+
+
+def test_quill_radio_real_menu_bar_carries_it_once_in_a_public_build(
     quill_data_dir: Any, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """The real bar, where every other Radio key lives: Ctrl+F11 claimed once."""
-    monkeypatch.setenv("QUILL_DEV_BUILD", "1")
+    """The real bar, where every other Radio key lives: Ctrl+F11 claimed once.
+
+    A public build since QUILL Transcribe's release; it was a developer build
+    while Dictate Here showed nowhere else."""
+    monkeypatch.delenv("QUILL_DEV_BUILD", raising=False)
     app = wx.App()
     from quill.apps.radio import RadioAppFrame
     from quill.ui.dialog_contract import set_transition_announcement_policy

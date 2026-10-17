@@ -8,7 +8,7 @@ It uses the same speech models and the same dictation as QUILL and QUILL Lite.
 If you already dictate in QUILL, the words, punctuation and commands you know
 work here too.
 
-Version 1.0.0.
+Version 1.0.0, released on 1 November 2026: the first public release.
 
 ## What it promises
 
@@ -978,6 +978,34 @@ are in, such as Cast's Add Podcast box or Radio's Search Stations box.
 Your words, commands and never-type list all work as usual, because it is
 QUILL Transcribe doing the dictating. Stop with your start and stop key, or say
 "stop dictation".
+
+Dictate Here is on the Edit menu of every copy of Quill Cast and Quill Radio
+from QUILL Transcribe's release on 1 November 2026. For example, in Quill
+Radio press Ctrl+F to search for stations, press Ctrl+F11 in the station name
+box, say "jazz", pause, and press Enter.
+
+## The other QuillVille apps
+
+QUILL Transcribe is one of the QuillVille family of free apps. The
+**QuillVille** menu (Alt+Q) in its window opens the others. Each row has its
+own letter, so Alt+Q and then one letter opens an app with nothing held down:
+
+- **Open QUILL**: Alt+Q, then Q (or Ctrl+Alt+Shift+F7)
+- **Open Quill Radio**: Alt+Q, then R (or Ctrl+Alt+Shift+F8)
+- **Open Quill Weather**: Alt+Q, then W (or Ctrl+Alt+Shift+F9)
+- **Open Quill Converter**: Alt+Q, then V (or Ctrl+Alt+Shift+F10)
+- **Open Quill Inkwell**: Alt+Q, then I (or Ctrl+Alt+Shift+F11)
+
+If the app is already running it comes to the front. If it is not on your
+computer yet, QUILL Transcribe offers to download it, and nothing is downloaded
+until you say yes.
+
+The other apps list QUILL Transcribe in the same way, last on their QuillVille
+menu: Alt+Q, then T in QUILL, Quill Radio, Quill Weather and Quill Inkwell, and
+Alt+U, then T in Quill Converter. Its key there is Ctrl+Alt+Shift+F11
+(Ctrl+Alt+Shift+F10 in Quill Radio, whose menu does not list Inkwell). The tray
+menus of Quill Radio, Quill Weather and Quill Inkwell have **Open QUILL
+Transcribe** too.
 
 ## One microphone: QUILL, QUILL Lite and QUILL Transcribe
 

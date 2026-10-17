@@ -3410,7 +3410,7 @@ QUILL Transcribe a `start` request, or launches it with `--tray
 --dictate-here`, and says only what QUILL Transcribe will not (Inkwell busy,
 not installed, starting). One `wx.EventFilter` answers the key in text fields
 of Radio's other windows, such as Search Stations, where the main window's
-accelerators never reach. Shown only where `is_app_released("transcribe")`; QUILL Transcribe releases on 2026-11-01, so public builds show it from then.
+accelerators never reach. Shown only where `is_app_released("transcribe")`. QUILL Transcribe releases on 2026-11-01 and is in `RELEASED_APPS` from 2026-10-16 (Jeff's decision on todo P2 item 19), so every public build carries the item, and the QuillVille menu lists **Open QUILL Transcribe** (Alt+Q, T; Ctrl+Alt+Shift+F10, after QUILL, Quill Weather and Quill Converter, Inkwell staying off Radio's menu) and the tray menu lists it after QUILL and Quill Weather.
 Shared with QUILL Cast (`quill/ui/dictate_here_ui.py`); dict.md D-16, and the
 dictation design record section 30.
 

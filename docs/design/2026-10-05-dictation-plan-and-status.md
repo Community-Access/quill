@@ -2667,16 +2667,23 @@ Alt+Right on every visit. One wiring serves both apps.
   `tests/unit/ui/test_dictate_here_menu.py`: every outcome with fakes, the
   release gate, the request file's senders, the Edit menu label and key in
   both apps, Quill Radio's real menu bar carrying Ctrl+F11 once in a
-  developer build, and QUILL Transcribe's `dictate_here_at_launch` in each
+  public build (a developer build before 2026-10-16), and QUILL Transcribe's `dictate_here_at_launch` in each
   case. No real window is driven.
 
 ### 30.6 Not done
 
 - A screen-reader pass with JAWS and NVDA on Cast's search box and Radio's
   Search Stations box (D-16's acceptance in practice).
-- QUILL Transcribe is not yet in `RELEASED_APPS`. Jeff decided it releases on
-  2026-11-01; adding it to `RELEASED_APPS` that day is what makes Dictate Here
-  appear in public Cast and Radio builds, with no other change.
+- ~~QUILL Transcribe is not yet in `RELEASED_APPS`.~~ Done on 2026-10-16 (Jeff's
+  decisions on todo P2 item 19): it is in `RELEASED_APPS` on the branch, with a
+  release date of 2026-11-01, so public Cast and Radio builds show Dictate
+  Here; it is last in `QUILLVILLE_APP_ORDER` and in the tray list
+  (`TRAY_APP_ORDER`), and the companion-install offer covers it. No sixth
+  QuillVille launcher key: public menus show at most five rows, and only a
+  developer build shows keyless rows past the fifth (`app_keymaps.py`, beside
+  `SIBLING_APP_ACCELERATORS`). Nothing has been tagged or published. The
+  screen-reader pass in Outlook, Word, Notepad and the browsers is Jeff's and
+  is a release blocker (`docs/qa/screen-reader-checks-2026-10.md`).
 - A "Restore my settings from before sharing" command over
   `before-sharing-<app>.json`; today that file is restored by hand.
 
