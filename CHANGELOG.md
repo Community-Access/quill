@@ -2,6 +2,62 @@
 
 ## 1.0.0
 
+### Notice drafted: released portable copies update by hand (todo C.2; 2026-10-17)
+
+The update helper in a released portable copy (QUILL Lite 1.1.2, any QUILL
+0.9) deletes the user's files in `data` when the new zip carries a `data`
+folder (`docs/release/RELEASE.md`, "Open, and yours to decide"). Jeff decided
+to tell those users to update by hand. The notice is drafted for the website
+in `docs/release/portable-update-by-hand-notice.md` (who is affected, what
+goes wrong, seven steps: back up `data`, download, unzip next to the old copy,
+copy `data` back, check, tidy up; what to do if the data is already gone), and
+a short version is in `docs/release notes/release1.0.0.md` (Staying up to date)
+and QUILL Lite's `release-notes-1.2.md` (If you already use QUILL Lite).
+Nothing published or sent; RELEASE.md records the decision.
+
+### Dictation acceptance tests in both editors; spelling across pauses; a dictated Markdown link (todo D.2; 2026-10-17)
+
+**`tests/unit/apps/test_dictation_acceptance.py` (new, 182 tests).** The
+automated half of dictation acceptance: every editor test runs in QUILL Lite's
+real window mixins and through QUILL's real adapter
+(`WindowsDictationCommandsMixin` on a stand-in frame with MainFrame's own
+`copy_all`), started with `cmd_toggle_dictation`, with a fake recogniser and the
+suite's `FakeControl`. Covered: go to / go before / go after then dictate,
+words not found, repeated matches (select previous / next / again, the ends,
+a far match's line), select by words and through, correct, units, Copy All and
+its aliases, copy that, scratch that (newest first, typed text never taken, a
+phrase typed into left alone), all twelve Copy Tray slots by word and digit,
+named snippets and abbreviations with spaces, every capitals command and mode,
+an email spelled character by character, every Markdown line and inline mark,
+literal, and the insert-only limits in another program (the shipped
+`ExternalDocument` and `AnywhereLibrary` with typing faked: 16 reading commands
+refused, clips and snippets typed, a snippet's cursor mark dropped). Accuracy
+and latency are not covered; they wait on the benchmarks (todo C.15).
+
+**Two fixes the tests found (shared, so QUILL, QUILL Lite, QUILL Transcribe and
+Inkwell all get them).**
+
+- **Spelling across pauses.** In spelling mode each phrase was composed as a new
+  phrase, so "juliet", pause, "oscar" wrote `j o`. A spelled phrase now joins
+  the letters spelled just before it when the cursor is still right after them:
+  `VoiceCommandsMixin._spelling_joins` (`voice_commands.py`), passed to
+  `compose(join_words=...)` by the controller, and a new
+  `DictatedPhrase.spelled` field (`history.py`, defaulted, so nothing else
+  changes). "space", the first spelled phrase after words, "spell that" and
+  "spell" with letters behave as before.
+- **A Markdown link.** `composer.py`: an opening parenthesis straight after a
+  closing bracket takes no space, so "close bracket open paren" writes `](`.
+
+**Documentation.** `quill/core/windows_dictation/reference_examples.py` (new)
+adds *Worked examples* and *Limits* to the generated dictation-commands guides
+and the in-app "What can I say?" list (regenerated with
+`scripts/build_dictation_commands.py`). The spelling example "jay dot smith at
+sign example dot com" was wrong (whole words are left out while spelling) and
+is now spelled out in `reference.py`, `scripts/build_dictation_page.py` (site
+page regenerated) and QUILL Lite's guide. QUILL's user guide: *Spelling with
+pauses*, *A Markdown link, by voice*, and a pointer to the examples. Design
+record section 35 has the coverage table.
+
 ### Word editing shared with QUILL Lite; two Word round-trip fixes; table navigation in QUILL Lite (2026-10-17)
 
 **`quill/core/docx_open.py` (new, wx-free).** QUILL's Word open and save

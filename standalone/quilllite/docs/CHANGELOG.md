@@ -5,6 +5,30 @@
 Testing rebuild: **1.2.0 (build 5)**, following builds 2, 3 and 4; builds 2 and 3 were
 uploaded for testing. The new packages have not been published yet.
 
+- **Portable 1.1.2: update by hand** (2026-10-17). The release notes now tell
+  anyone with the portable QUILL Lite 1.1.2 not to use Install and restart now,
+  because the updater inside 1.1.2 can delete the copy's `data` folder, and
+  give the steps to update by hand: back up `data`, unzip the new copy next to
+  the old one, copy `data` back. Installed copies are not affected.
+- **Spell an address with pauses** (2026-10-17). While spelling, each phrase now
+  joins the letters you spelled just before it, with no space. Before, every
+  pause put a space in: "juliet", a pause, then "oscar" wrote *j o*. Now
+  "start spelling", "juliet oscar", "at sign echo x-ray", "dot charlie oscar",
+  "stop spelling" writes *jo@ex.co*. Say "space" when you want a space. Limits:
+  a whole word such as "smith" is not a letter and is left out (the old
+  example in this guide, "jay dot smith at sign example dot com", was wrong
+  about that and is corrected); if you move the cursor between phrases, the
+  next letters start fresh with a space in front.
+- **A Markdown link by voice** (2026-10-17). "open bracket the guide close
+  bracket open paren page close paren" now writes `[the guide](page)`. Before,
+  a space came between the bracket and the parenthesis, which stops it being a
+  link. It works across two phrases too.
+- **Worked examples in the Dictation commands guide** (2026-10-17). The
+  *Dictation commands* file, and the list "what can I say" opens, now end with
+  worked examples (what you have, what you say, what you get) and the limits,
+  including what cannot work in another program. Every example is checked by
+  automated tests in QUILL Lite and QUILL. How accurately and how quickly each
+  engine hears you has not been measured yet.
 - **Edit Word documents** (2026-10-17). A `.docx` now opens to edit, as rich
   text, and **Ctrl+S** saves it as a real Word document, using QUILL's own Word
   code, so QUILL and QUILL Lite open, ask, back up and save a Word document the

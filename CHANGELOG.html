@@ -245,6 +245,77 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="notice-drafted-released-portable-copies-update-by-hand-todo-c2-2026-10-17">Notice
+drafted: released portable copies update by hand (todo C.2;
+2026-10-17)</h3>
+<p>The update helper in a released portable copy (QUILL Lite 1.1.2, any
+QUILL 0.9) deletes the user’s files in <code>data</code> when the new
+zip carries a <code>data</code> folder
+(<code>docs/release/RELEASE.md</code>, “Open, and yours to decide”).
+Jeff decided to tell those users to update by hand. The notice is
+drafted for the website in
+<code>docs/release/portable-update-by-hand-notice.md</code> (who is
+affected, what goes wrong, seven steps: back up <code>data</code>,
+download, unzip next to the old copy, copy <code>data</code> back,
+check, tidy up; what to do if the data is already gone), and a short
+version is in <code>docs/release notes/release1.0.0.md</code> (Staying
+up to date) and QUILL Lite’s <code>release-notes-1.2.md</code> (If you
+already use QUILL Lite). Nothing published or sent; RELEASE.md records
+the decision.</p>
+<h3
+id="dictation-acceptance-tests-in-both-editors-spelling-across-pauses-a-dictated-markdown-link-todo-d2-2026-10-17">Dictation
+acceptance tests in both editors; spelling across pauses; a dictated
+Markdown link (todo D.2; 2026-10-17)</h3>
+<p><strong><code>tests/unit/apps/test_dictation_acceptance.py</code>
+(new, 182 tests).</strong> The automated half of dictation acceptance:
+every editor test runs in QUILL Lite’s real window mixins and through
+QUILL’s real adapter (<code>WindowsDictationCommandsMixin</code> on a
+stand-in frame with MainFrame’s own <code>copy_all</code>), started with
+<code>cmd_toggle_dictation</code>, with a fake recogniser and the
+suite’s <code>FakeControl</code>. Covered: go to / go before / go after
+then dictate, words not found, repeated matches (select previous / next
+/ again, the ends, a far match’s line), select by words and through,
+correct, units, Copy All and its aliases, copy that, scratch that
+(newest first, typed text never taken, a phrase typed into left alone),
+all twelve Copy Tray slots by word and digit, named snippets and
+abbreviations with spaces, every capitals command and mode, an email
+spelled character by character, every Markdown line and inline mark,
+literal, and the insert-only limits in another program (the shipped
+<code>ExternalDocument</code> and <code>AnywhereLibrary</code> with
+typing faked: 16 reading commands refused, clips and snippets typed, a
+snippet’s cursor mark dropped). Accuracy and latency are not covered;
+they wait on the benchmarks (todo C.15).</p>
+<p><strong>Two fixes the tests found (shared, so QUILL, QUILL Lite,
+QUILL Transcribe and Inkwell all get them).</strong></p>
+<ul>
+<li><strong>Spelling across pauses.</strong> In spelling mode each
+phrase was composed as a new phrase, so “juliet”, pause, “oscar” wrote
+<code>j o</code>. A spelled phrase now joins the letters spelled just
+before it when the cursor is still right after them:
+<code>VoiceCommandsMixin._spelling_joins</code>
+(<code>voice_commands.py</code>), passed to
+<code>compose(join_words=...)</code> by the controller, and a new
+<code>DictatedPhrase.spelled</code> field (<code>history.py</code>,
+defaulted, so nothing else changes). “space”, the first spelled phrase
+after words, “spell that” and “spell” with letters behave as
+before.</li>
+<li><strong>A Markdown link.</strong> <code>composer.py</code>: an
+opening parenthesis straight after a closing bracket takes no space, so
+“close bracket open paren” writes <code>](</code>.</li>
+</ul>
+<p><strong>Documentation.</strong>
+<code>quill/core/windows_dictation/reference_examples.py</code> (new)
+adds <em>Worked examples</em> and <em>Limits</em> to the generated
+dictation-commands guides and the in-app “What can I say?” list
+(regenerated with <code>scripts/build_dictation_commands.py</code>). The
+spelling example “jay dot smith at sign example dot com” was wrong
+(whole words are left out while spelling) and is now spelled out in
+<code>reference.py</code>, <code>scripts/build_dictation_page.py</code>
+(site page regenerated) and QUILL Lite’s guide. QUILL’s user guide:
+<em>Spelling with pauses</em>, <em>A Markdown link, by voice</em>, and a
+pointer to the examples. Design record section 35 has the coverage
+table.</p>
+<h3
 id="word-editing-shared-with-quill-lite-two-word-round-trip-fixes-table-navigation-in-quill-lite-2026-10-17">Word
 editing shared with QUILL Lite; two Word round-trip fixes; table
 navigation in QUILL Lite (2026-10-17)</h3>

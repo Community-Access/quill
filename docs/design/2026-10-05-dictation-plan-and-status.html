@@ -5251,6 +5251,226 @@ nothing in between. Tests:
 only: a fake engine and a fake timer). User-facing: QUILL Lite’s user
 guide, <em>On a braille display</em>.</p>
 <h2
+id="35-acceptance-coverage-2026-10-17-the-automated-part-todo-d2">35.
+Acceptance coverage, 2026-10-17: the automated part (todo D.2)</h2>
+<p>What this section covers is the behaviour after a phrase is heard:
+given these words, does the document end up right, in QUILL and in QUILL
+Lite? It does <strong>not</strong> cover how accurately or how quickly
+any engine hears; that waits on the benchmarks (todo C.15, section
+32.2). Whether a screen reader echoes the read-back waits on the live
+checks (todo C.20). Nothing here is a claim about the quality of
+recognition.</p>
+<p><strong>How it runs.</strong>
+<code>tests/unit/apps/test_dictation_acceptance.py</code>. Every editor
+test runs twice: once in QUILL Lite’s real window mixins
+(<code>lite_window</code>), once through QUILL’s real adapter
+(<code>WindowsDictationCommandsMixin</code>) on a stand-in frame that
+answers what MainFrame answers, with QUILL’s own <code>copy_all</code>.
+Both start with the editor’s own <code>cmd_toggle_dictation</code>; from
+the phrase to the document everything is shipped code (controller,
+parser, composer, <code>EditorDocument</code> and
+<code>HostFeedback</code>, each editor’s library). The recogniser is a
+fake that hands over named words, the text control is the suite’s
+<code>FakeControl</code>, and the focus is patched: no microphone, no
+real window, no keystroke. The other-program tests use the shipped
+<code>ExternalDocument</code> with typing and backspaces faked and the
+shipped <code>AnywhereLibrary</code> reading a test folder. 182 tests on
+the day it landed.</p>
+<table>
+<thead>
+<tr>
+<th>Behaviour</th>
+<th>Command names</th>
+<th>QUILL</th>
+<th>QUILL Lite</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Insert before a spoken phrase</td>
+<td>go to, go before</td>
+<td>yes</td>
+<td>yes</td>
+<td>works</td>
+</tr>
+<tr>
+<td>Insert after a spoken phrase</td>
+<td>go after</td>
+<td>yes</td>
+<td>yes</td>
+<td>works</td>
+</tr>
+<tr>
+<td>Words not found</td>
+<td>go after, select</td>
+<td>yes</td>
+<td>yes</td>
+<td>written as text, said, scratch that removes it</td>
+</tr>
+<tr>
+<td>Repeated matches</td>
+<td>select, select previous, select next, select again</td>
+<td>yes</td>
+<td>yes</td>
+<td>nearest before the cursor first; “None before that.” and “No more.”
+at the ends; a far match says its line</td>
+</tr>
+<tr>
+<td>Selection by words</td>
+<td>select, select … through …, correct</td>
+<td>yes</td>
+<td>yes</td>
+<td>works; numbers match either way</td>
+</tr>
+<tr>
+<td>Units</td>
+<td>select sentence, select line, select paragraph</td>
+<td>yes</td>
+<td>yes</td>
+<td>works</td>
+</tr>
+<tr>
+<td>Copy All</td>
+<td>copy all, copy everything, copy document</td>
+<td>yes</td>
+<td>yes</td>
+<td>the editor’s own Copy All; nothing selected, cursor unmoved, empty
+document copies nothing</td>
+</tr>
+<tr>
+<td>Copy the last phrase</td>
+<td>copy that</td>
+<td>yes</td>
+<td>yes</td>
+<td>works</td>
+</tr>
+<tr>
+<td>Removing only the last phrase</td>
+<td>scratch that, delete that</td>
+<td>yes</td>
+<td>yes</td>
+<td>newest first, one at a time; typed text never taken; a phrase typed
+into is left alone and said</td>
+</tr>
+<tr>
+<td>All twelve clips</td>
+<td>paste clip one to twelve, paste slot 1 to 12</td>
+<td>yes</td>
+<td>yes</td>
+<td>each slot, one phrase, scratch that removes it; empty slot said;
+slot 13 asks for a number</td>
+</tr>
+<tr>
+<td>Named text with spaces</td>
+<td>insert snippet, insert abbreviation</td>
+<td>yes</td>
+<td>yes</td>
+<td>“sign off” and “home address” found; “sig off” finds sigoff; two
+matches counted, nothing typed</td>
+</tr>
+<tr>
+<td>Capitalization modes</td>
+<td>caps on/off, capitals on/off, all caps on/off</td>
+<td>yes</td>
+<td>yes</td>
+<td>works; modes end when dictation stops</td>
+</tr>
+<tr>
+<td>Changing the last phrase’s case</td>
+<td>capitalize that, cap that, all caps that, uppercase that, no caps
+that, lowercase that</td>
+<td>yes</td>
+<td>yes</td>
+<td>works</td>
+</tr>
+<tr>
+<td>Capitals while spelling</td>
+<td>capital, all caps, no caps</td>
+<td>yes</td>
+<td>yes</td>
+<td>works</td>
+</tr>
+<tr>
+<td>Email, character by character</td>
+<td>start spelling, stop spelling, spell, at sign, dot</td>
+<td>yes</td>
+<td>yes</td>
+<td><strong>fixed</strong>: pauses no longer put spaces in; words that
+are not letters are left out (documented)</td>
+</tr>
+<tr>
+<td>Markdown line marks</td>
+<td>heading one to six, bullet, list item, numbered item, block quote,
+code fence</td>
+<td>yes</td>
+<td>yes</td>
+<td>works; only at the start of a phrase</td>
+</tr>
+<tr>
+<td>Markdown inline marks</td>
+<td>backtick, back quote, vertical bar, pipe symbol, tilde, caret,
+greater than sign, less than sign, asterisk, underscore, brackets</td>
+<td>yes</td>
+<td>yes</td>
+<td><strong>fixed</strong>: a link’s “](” no longer gets a space;
+asterisk and underscore join both sides (documented)</td>
+</tr>
+<tr>
+<td>Literal</td>
+<td>literal</td>
+<td>yes</td>
+<td>yes</td>
+<td>works</td>
+</tr>
+<tr>
+<td>Insert-only limits in another program</td>
+<td>every command above</td>
+<td>n/a</td>
+<td>n/a</td>
+<td>16 commands that read or select are refused with one sentence;
+dictating, scratch that, modes, spelling, clips and snippets type; a
+snippet’s cursor mark is dropped</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What the tests found, and what changed.</strong> Two
+operations were broken, and both are fixed in the shared code, so QUILL,
+QUILL Lite, QUILL Transcribe and Quill Inkwell’s Dictate Anywhere all
+get them:</p>
+<ul>
+<li><strong>Spelling across pauses.</strong> Each spelled phrase was
+composed like a new phrase of words, so “juliet”, pause, “oscar” wrote
+“j o”. Now a phrase in spelling mode joins the letters spelled just
+before it, with no space, when the cursor is still right after them
+(<code>VoiceCommandsMixin._spelling_joins</code>, and
+<code>DictatedPhrase.spelled</code> in <code>history.py</code>). “space”
+still writes a space; the first spelled phrase after ordinary words
+still gets one; “spell that” and “spell” with letters are
+unchanged.</li>
+<li><strong>A Markdown link.</strong> “close bracket open paren” wrote
+“] (”: an opening parenthesis takes a space in front like any opening
+mark. It now hugs a closing bracket (<code>composer.py</code>), so
+<code>[text](page)</code> can be dictated, within one phrase or across
+two.</li>
+</ul>
+<p><strong>What the guides said that was not true.</strong> The spelling
+example “jay dot smith at sign example dot com” wrote <code>j.@.</code>:
+in spelling mode a word that is not a letter is left out by design
+(parser <code>_spell</code>), and the guides implied otherwise. The
+example is now spelled out in the generated command reference, the
+site’s dictation page and QUILL Lite’s guide.</p>
+<p><strong>Documentation.</strong> The generated dictation-commands
+guides (both editors) have a new <em>Worked examples</em> table and a
+<em>Limits</em> list
+(<code>quill/core/windows_dictation/reference_examples.py</code>,
+regenerated with <code>scripts/build_dictation_commands.py</code>);
+every example there is one these tests run. The in-app “What can I say?”
+list shows the same, as plain lines.</p>
+<p><strong>Left for people.</strong> Accuracy and latency (C.15), the
+live checks (C.16), and read-back without echo on each screen reader
+(C.20).</p>
+<h2
 id="appendix-a-the-dictmd-section-numbers-and-where-they-live-now-the-first-dictmd-2026-10-05">Appendix
 A: the dict.md section numbers, and where they live now (the first
 dict.md, 2026-10-05)</h2>

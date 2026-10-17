@@ -374,8 +374,10 @@ def commands_reference(
         'letters until you say "stop spelling".',
         'Say "capital" before a letter for a capital, and "space" for a space. '
         'Say "all caps" for capitals until "no caps" or the end of the phrase.',
-        'Punctuation works while spelling, with no spaces: "jay dot smith at sign '
-        'example dot com". "Dot" is a full stop only here.',
+        "Punctuation works while spelling, with no spaces, and each phrase joins the "
+        'letters before it, so you can pause: "jay dot sierra mike india tango hotel", '
+        'then "at sign echo x-ray dot charlie oscar" writes j.smith@ex.co. "Dot" is a '
+        "full stop only here. A whole word that is not a letter is left out.",
         (
             'Say "spell" and the letters to spell one word without starting spelling mode.'
             if external
@@ -391,6 +393,11 @@ def commands_reference(
         + ".",
     ):
         lines.append(("- " + sentence) if markdown else sentence)
+
+    if not external:
+        from quill.core.windows_dictation.reference_examples import examples_section
+
+        examples_section(heading, lines, markdown)
 
     heading("Starting and stopping by voice")
     phrase = wake_phrase or DEFAULT_WAKE_PHRASE

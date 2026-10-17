@@ -1251,8 +1251,11 @@ letters until you say “stop spelling”.</li>
 <li>Say “capital” before a letter for a capital, and “space” for a
 space. Say “all caps” for capitals until “no caps” or the end of the
 phrase.</li>
-<li>Punctuation works while spelling, with no spaces: “jay dot smith at
-sign example dot com”. “Dot” is a full stop only here.</li>
+<li>Punctuation works while spelling, with no spaces, and each phrase
+joins the letters before it, so you can pause: “jay dot sierra mike
+india tango hotel”, then “at sign echo x-ray dot charlie oscar” writes
+<a href="mailto:j.smith@ex.co">j.smith@ex.co</a>. “Dot” is a full stop
+only here. A whole word that is not a letter is left out.</li>
 <li>Say “spell” and the letters to spell one word without starting
 spelling mode, and “spell that” to spell the last phrase over
 again.</li>
@@ -1262,6 +1265,144 @@ india, juliet, kilo, lima, mike, november, oscar, papa, quebec, romeo,
 sierra, tango, uniform, victor, whiskey, x-ray, yankee, zulu.</li>
 <li>Numbers are written as digits: zero, one, two, three, four, five,
 six, seven, eight, nine.</li>
+</ul>
+<h2 id="worked-examples">Worked examples</h2>
+<p>Each of these works the same in QUILL and QUILL Lite. What you get is
+what the automated acceptance tests check.</p>
+<table>
+<thead>
+<tr>
+<th>You have</th>
+<th>You say</th>
+<th>You get</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Meet me on Friday.</td>
+<td>“go to Friday”, then “next”</td>
+<td>Meet me on next Friday. The cursor goes in front of the words, and
+what you say next is written there.</td>
+</tr>
+<tr>
+<td>Meet me on Friday.</td>
+<td>“go after meet me”, then “at noon”</td>
+<td>Meet me at noon on Friday.</td>
+</tr>
+<tr>
+<td>The cat sat. The cat ran. The cat slept. (cursor at the end)</td>
+<td>“select the cat”, then “select previous” twice, then “select
+again”</td>
+<td>The third The cat is selected first, because the nearest match
+before the cursor wins; then the second, then the first; then the second
+again. At the ends you hear “None before that.” or “No more.”</td>
+</tr>
+<tr>
+<td>Dear Sam, the meeting moved to Tuesday at ten.</td>
+<td>“select the meeting through Tuesday”</td>
+<td>the meeting moved to Tuesday is selected. The next phrase you say
+replaces it.</td>
+</tr>
+<tr>
+<td>I met Ann today.</td>
+<td>“correct Ann”, then “Anne”</td>
+<td>I met Anne today.</td>
+</tr>
+<tr>
+<td>Any document</td>
+<td>“copy all”</td>
+<td>The whole document is on the clipboard. Nothing is selected and the
+cursor does not move, so the next word you say cannot replace
+everything.</td>
+</tr>
+<tr>
+<td>Kept. (typed by you)</td>
+<td>“first phrase period”, “second phrase period”, then “scratch that”
+twice</td>
+<td>Kept. Each scratch that takes out one dictated phrase, newest first.
+Your own typing is never taken; a phrase you have typed into since is
+left alone.</td>
+</tr>
+<tr>
+<td>Copy Tray slots 1 to 12 filled</td>
+<td>“paste clip one” up to “paste clip twelve”, or “paste slot 12”</td>
+<td>That slot’s text goes in as one phrase, so scratch that takes all of
+it back. An empty slot is said (“Slot 4 is empty.”); “paste clip
+thirteen” asks for a slot number.</td>
+</tr>
+<tr>
+<td>A snippet named sign off</td>
+<td>“insert snippet sign off”</td>
+<td>The snippet’s text. A name said as separate words finds a joined
+name too (“sig off” finds sigoff). When two names match, you hear how
+many and nothing is typed.</td>
+</tr>
+<tr>
+<td>An abbreviation named home address</td>
+<td>“insert abbreviation home address”</td>
+<td>What the abbreviation expands to.</td>
+</tr>
+<tr>
+<td>Anywhere</td>
+<td>“caps on”, “the old man and the sea”, “caps off”</td>
+<td>The Old Man And The Sea. All caps on and all caps off work the same
+way for capitals throughout. Every mode ends when dictation stops.</td>
+</tr>
+<tr>
+<td>meeting notes (just dictated)</td>
+<td>“capitalize that”, then “all caps that”, then “no caps that”</td>
+<td>Meeting Notes, then MEETING NOTES, then meeting notes.</td>
+</tr>
+<tr>
+<td>Write to</td>
+<td>“start spelling”, “jay dot sierra mike india tango hotel”, “at sign
+echo x-ray dot charlie oscar”, “stop spelling”</td>
+<td>Write to <code>j.smith@ex.co</code>. While spelling, each phrase
+joins the letters before it with no space, so you can pause as often as
+you like; say “space” for a space. A whole word such as smith is not a
+letter and is left out.</td>
+</tr>
+<tr>
+<td>An empty line</td>
+<td>“heading one shopping”, “bullet milk”, “numbered item call the
+bank”, “block quote be kind”</td>
+<td><code># Shopping</code>, then <code>- Milk</code>,
+<code>1. Call the bank</code> and <code>&gt; Be kind</code>, each on its
+own line.</td>
+</tr>
+<tr>
+<td>See</td>
+<td>“open bracket the guide close bracket”, then “open paren page close
+paren”</td>
+<td><code>See [the guide](page)</code>: a Markdown link, with no space
+between the bracket and the parenthesis.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="limits">Limits</h2>
+<ul>
+<li>How accurately and how quickly each engine hears you has not been
+measured yet. Those numbers wait on the dictation benchmarks; nothing in
+this guide is a claim about them.</li>
+<li>Commands that take words after them (select, go to, go after,
+correct, paste clip, insert snippet) work only at the start of a
+phrase.</li>
+<li>Words you ask for are looked for in the document’s text. When they
+are not there, what you said is written as words and you hear “Not
+found, written as text.” Scratch that takes it out.</li>
+<li>An asterisk and an underscore join the words either side of them
+(<code>two*three</code>, <code>snake_case</code>). For Markdown bold,
+use “bold that” with the Markdown profile.</li>
+<li>In another program (QUILL Transcribe, and Quill Inkwell’s Dictate
+Anywhere) dictation can only type: dictating, punctuation, scratch that,
+the modes, spelling, paste clip, insert snippet and insert abbreviation
+work. Anything that has to read or select that program’s text is refused
+with the same sentence: select, go to, go after, select again, select
+sentence, line or paragraph, copy all, copy that, show clips, show
+snippets, spell that, and read last sentence or read selection.</li>
+<li>In another program, a snippet or abbreviation that puts the cursor
+in the middle leaves it at the end instead, because moving it back would
+mean reading that program’s text.</li>
 </ul>
 <h2 id="starting-and-stopping-by-voice">Starting and stopping by
 voice</h2>

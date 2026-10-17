@@ -3155,6 +3155,81 @@ the speaker pauses, with nothing in between. Tests:
 `tests/unit/apps/test_lite_braille_coalescing.py` (fakes only: a fake engine
 and a fake timer). User-facing: QUILL Lite's user guide, *On a braille display*.
 
+## 35. Acceptance coverage, 2026-10-17: the automated part (todo D.2)
+
+What this section covers is the behaviour after a phrase is heard: given these
+words, does the document end up right, in QUILL and in QUILL Lite? It does
+**not** cover how accurately or how quickly any engine hears; that waits on the
+benchmarks (todo C.15, section 32.2). Whether a screen reader echoes the
+read-back waits on the live checks (todo C.20). Nothing here is a claim about
+the quality of recognition.
+
+**How it runs.** `tests/unit/apps/test_dictation_acceptance.py`. Every editor
+test runs twice: once in QUILL Lite's real window mixins (`lite_window`), once
+through QUILL's real adapter (`WindowsDictationCommandsMixin`) on a stand-in
+frame that answers what MainFrame answers, with QUILL's own `copy_all`. Both
+start with the editor's own `cmd_toggle_dictation`; from the phrase to the
+document everything is shipped code (controller, parser, composer,
+`EditorDocument` and `HostFeedback`, each editor's library). The recogniser is
+a fake that hands over named words, the text control is the suite's
+`FakeControl`, and the focus is patched: no microphone, no real window, no
+keystroke. The other-program tests use the shipped `ExternalDocument` with
+typing and backspaces faked and the shipped `AnywhereLibrary` reading a test
+folder. 182 tests on the day it landed.
+
+| Behaviour | Command names | QUILL | QUILL Lite | Result |
+|---|---|---|---|---|
+| Insert before a spoken phrase | go to, go before | yes | yes | works |
+| Insert after a spoken phrase | go after | yes | yes | works |
+| Words not found | go after, select | yes | yes | written as text, said, scratch that removes it |
+| Repeated matches | select, select previous, select next, select again | yes | yes | nearest before the cursor first; "None before that." and "No more." at the ends; a far match says its line |
+| Selection by words | select, select ... through ..., correct | yes | yes | works; numbers match either way |
+| Units | select sentence, select line, select paragraph | yes | yes | works |
+| Copy All | copy all, copy everything, copy document | yes | yes | the editor's own Copy All; nothing selected, cursor unmoved, empty document copies nothing |
+| Copy the last phrase | copy that | yes | yes | works |
+| Removing only the last phrase | scratch that, delete that | yes | yes | newest first, one at a time; typed text never taken; a phrase typed into is left alone and said |
+| All twelve clips | paste clip one to twelve, paste slot 1 to 12 | yes | yes | each slot, one phrase, scratch that removes it; empty slot said; slot 13 asks for a number |
+| Named text with spaces | insert snippet, insert abbreviation | yes | yes | "sign off" and "home address" found; "sig off" finds sigoff; two matches counted, nothing typed |
+| Capitalization modes | caps on/off, capitals on/off, all caps on/off | yes | yes | works; modes end when dictation stops |
+| Changing the last phrase's case | capitalize that, cap that, all caps that, uppercase that, no caps that, lowercase that | yes | yes | works |
+| Capitals while spelling | capital, all caps, no caps | yes | yes | works |
+| Email, character by character | start spelling, stop spelling, spell, at sign, dot | yes | yes | **fixed**: pauses no longer put spaces in; words that are not letters are left out (documented) |
+| Markdown line marks | heading one to six, bullet, list item, numbered item, block quote, code fence | yes | yes | works; only at the start of a phrase |
+| Markdown inline marks | backtick, back quote, vertical bar, pipe symbol, tilde, caret, greater than sign, less than sign, asterisk, underscore, brackets | yes | yes | **fixed**: a link's "](" no longer gets a space; asterisk and underscore join both sides (documented) |
+| Literal | literal | yes | yes | works |
+| Insert-only limits in another program | every command above | n/a | n/a | 16 commands that read or select are refused with one sentence; dictating, scratch that, modes, spelling, clips and snippets type; a snippet's cursor mark is dropped |
+
+**What the tests found, and what changed.** Two operations were broken, and
+both are fixed in the shared code, so QUILL, QUILL Lite, QUILL Transcribe and
+Quill Inkwell's Dictate Anywhere all get them:
+
+* **Spelling across pauses.** Each spelled phrase was composed like a new
+  phrase of words, so "juliet", pause, "oscar" wrote "j o". Now a phrase in
+  spelling mode joins the letters spelled just before it, with no space, when
+  the cursor is still right after them (`VoiceCommandsMixin._spelling_joins`,
+  and `DictatedPhrase.spelled` in `history.py`). "space" still writes a space;
+  the first spelled phrase after ordinary words still gets one; "spell that"
+  and "spell" with letters are unchanged.
+* **A Markdown link.** "close bracket open paren" wrote "] (": an opening
+  parenthesis takes a space in front like any opening mark. It now hugs a
+  closing bracket (`composer.py`), so `[text](page)` can be dictated, within one
+  phrase or across two.
+
+**What the guides said that was not true.** The spelling example
+"jay dot smith at sign example dot com" wrote `j.@.`: in spelling mode a word
+that is not a letter is left out by design (parser `_spell`), and the guides
+implied otherwise. The example is now spelled out in the generated command
+reference, the site's dictation page and QUILL Lite's guide.
+
+**Documentation.** The generated dictation-commands guides (both editors) have
+a new *Worked examples* table and a *Limits* list
+(`quill/core/windows_dictation/reference_examples.py`, regenerated with
+`scripts/build_dictation_commands.py`); every example there is one these tests
+run. The in-app "What can I say?" list shows the same, as plain lines.
+
+**Left for people.** Accuracy and latency (C.15), the live checks (C.16), and
+read-back without echo on each screen reader (C.20).
+
 ## Appendix A: the dict.md section numbers, and where they live now (the first dict.md, 2026-10-05)
 
 | dict.md | What it was | Here |

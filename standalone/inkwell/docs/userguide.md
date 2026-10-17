@@ -593,6 +593,13 @@ like "Title?", and say the answer; for a choice, say one of the options or
 nothing. The cursor stays at the end, and "read that" reads back all of what
 was typed. "What can I say" lists only what works here.
 
+**Spelling an address with pauses.** While spelling, each phrase joins the
+letters you spelled just before it, with no space, so you can pause as often as
+you like: "start spelling", "juliet oscar", "at sign echo x-ray", "dot charlie
+oscar", "stop spelling" types *jo@ex.co*. Say "space" for a space. A whole word
+such as "smith" is not a letter and is left out, so spell it. If the focus
+moves between phrases, the next letters start fresh.
+
 **Correcting the words dictation typed.** Inkwell remembers the words it typed
 since the focus last moved, and can change those, by taking them back with
 Backspace and typing the corrected words. "Correct that" and "choose one" to

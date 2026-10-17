@@ -8141,7 +8141,14 @@ A few things that are good to know while you talk:
 The full list of everything Live Dictation understands is its own page,
 **[Dictation commands](dictation-commands.html)**, built from the same table
 QUILL itself reads. While dictating, say **"what can I say"** to open that list
-in a window.
+in a window. Near its end are **Worked examples** (what you have, what you
+say, what you get: going before and after words, picking the second of three
+matches, Copy All, scratch that, all twelve clips, snippets with spaces in
+their names, every capitals command, an email address spelled with pauses, and
+Markdown) and **Limits**, including what cannot work when dictating into
+another program. Every example there is checked by QUILL's automated tests in
+both QUILL and QUILL Lite. How accurately and how quickly each engine hears you
+has not been measured yet; that waits on the dictation benchmarks.
 
 ##### The command word
 
@@ -8655,6 +8662,14 @@ tango hotel at sign echo x-ray alpha mike papa lima echo dot charlie oscar
 mike, stop spelling" writes `j.smith@example.com`. Say "all caps" and every
 letter after it is a capital, until you say "no caps" or the phrase ends.
 
+**Spelling with pauses.** You do not have to say an address in one breath.
+While spelling, each phrase joins the letters you spelled just before it, with
+no space, so "juliet oscar", a pause, "at sign echo x-ray", a pause, "dot
+charlie oscar" writes `jo@ex.co`. Say "space" when you want a space. Two
+limits: only letters, digits and punctuation are written, so a whole word such
+as "smith" is left out (spell it instead), and if you move the cursor between
+phrases the next letters start fresh, with a space in front as usual.
+
 **Spelling one word.** Say "spell" and the letters, all in one phrase: "spell
 bravo alpha delta" writes *bad*. You do not need to start and stop spelling
 for that. A sentence that only happens to begin with the word "spell" ("spell
@@ -8697,6 +8712,14 @@ cursor is not at the start of a line, QUILL starts a new one first:
 
 Because they only count at the start, "the heading two lines down" in the
 middle of a sentence is written as words, just as you meant it.
+
+**A Markdown link, by voice.** Say "open bracket the guide close bracket open
+paren page close paren" and QUILL writes `[the guide](page)`, with no space
+between the closing bracket and the opening parenthesis, which is what makes
+it a link. It works across two phrases too, if you pause after "close
+bracket". An asterisk and an underscore join the words on both sides
+(`two*three`, `snake_case`), so for bold text say "bold that" with the
+Markdown profile rather than saying the asterisks.
 
 ##### Voice commands
 

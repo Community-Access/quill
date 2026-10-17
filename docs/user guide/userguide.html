@@ -9775,7 +9775,15 @@ it tells you about a failure.</li>
 page, <strong><a href="dictation-commands.html">Dictation
 commands</a></strong>, built from the same table QUILL itself reads.
 While dictating, say <strong>“what can I say”</strong> to open that list
-in a window.</p>
+in a window. Near its end are <strong>Worked examples</strong> (what you
+have, what you say, what you get: going before and after words, picking
+the second of three matches, Copy All, scratch that, all twelve clips,
+snippets with spaces in their names, every capitals command, an email
+address spelled with pauses, and Markdown) and <strong>Limits</strong>,
+including what cannot work when dictating into another program. Every
+example there is checked by QUILL’s automated tests in both QUILL and
+QUILL Lite. How accurately and how quickly each engine hears you has not
+been measured yet; that waits on the dictation benchmarks.</p>
 <h5 id="the-command-word">The command word</h5>
 <p>Commands such as “scratch that” work when you say them on their own,
 after a pause. To be sure a command is taken as a command and never
@@ -10416,6 +10424,15 @@ spelling, juliet dot sierra mike india tango hotel at sign echo x-ray
 alpha mike papa lima echo dot charlie oscar mike, stop spelling” writes
 <code>j.smith@example.com</code>. Say “all caps” and every letter after
 it is a capital, until you say “no caps” or the phrase ends.</p>
+<p><strong>Spelling with pauses.</strong> You do not have to say an
+address in one breath. While spelling, each phrase joins the letters you
+spelled just before it, with no space, so “juliet oscar”, a pause, “at
+sign echo x-ray”, a pause, “dot charlie oscar” writes
+<code>jo@ex.co</code>. Say “space” when you want a space. Two limits:
+only letters, digits and punctuation are written, so a whole word such
+as “smith” is left out (spell it instead), and if you move the cursor
+between phrases the next letters start fresh, with a space in front as
+usual.</p>
 <p><strong>Spelling one word.</strong> Say “spell” and the letters, all
 in one phrase: “spell bravo alpha delta” writes <em>bad</em>. You do not
 need to start and stop spelling for that. A sentence that only happens
@@ -10506,6 +10523,15 @@ new one first:</p>
 </table>
 <p>Because they only count at the start, “the heading two lines down” in
 the middle of a sentence is written as words, just as you meant it.</p>
+<p><strong>A Markdown link, by voice.</strong> Say “open bracket the
+guide close bracket open paren page close paren” and QUILL writes
+<code>[the guide](page)</code>, with no space between the closing
+bracket and the opening parenthesis, which is what makes it a link. It
+works across two phrases too, if you pause after “close bracket”. An
+asterisk and an underscore join the words on both sides
+(<code>two*three</code>, <code>snake_case</code>), so for bold text say
+“bold that” with the Markdown profile rather than saying the
+asterisks.</p>
 <h5 id="voice-commands">Voice commands</h5>
 <p><strong>Commands, as a whole phrase after a pause:</strong></p>
 <ul>

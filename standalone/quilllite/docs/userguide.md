@@ -4735,7 +4735,15 @@ While you are spelling, punctuation goes in with no spaces around it, so an
 address comes out whole. Say "start spelling", then "juliet alpha yankee dot
 sierra mike india tango hotel at sign echo x-ray alpha mike papa lima echo dot
 charlie oscar mike", then "stop spelling", and you get *jay.smith@example.com*.
-(Plain letter names work too: "jay dot smith at sign example dot com".)
+Plain letter names work too ("jay", "bee", "see"), but every part must be
+letters: a whole word such as "smith" is not a letter and is left out, so
+"jay dot smith" writes only *j.*. Spell the word instead.
+
+You do not have to say the address in one breath. While spelling, each phrase
+joins the letters you spelled just before it, with no space: "juliet oscar", a
+pause, "at sign echo x-ray", a pause, "dot charlie oscar" writes *jo@ex.co*.
+Say "space" when you want a space. If you move the cursor between phrases, the
+next letters start fresh, with a space in front as usual.
 
 While you are spelling, "dot" and "point" both mean a full stop. Outside
 spelling they are just words, so "the main point" stays as you said it.
@@ -4907,6 +4915,18 @@ from the very table dictation reads, so it always matches what QUILL Lite
 understands. It has every way of saying each thing, the Spanish punctuation
 words, and the spelling alphabet in one place, and it is a good page to keep
 open beside you for the first week or two.
+
+Near its end are **Worked examples**: what you have, what you say, and what you
+get. They show going before and after words ("go to Friday", then "next"),
+picking the second of three matches ("select the cat", then "select
+previous"), Copy All, scratch that, all twelve clips, snippets with spaces in
+their names, every capitals command, an email address spelled with pauses, and
+a Markdown link ("open bracket the guide close bracket open paren page close
+paren" writes `[the guide](page)` with no space in the middle). After them come
+the **Limits**, including what cannot work when you dictate into another
+program. Every example is checked by automated tests in both QUILL Lite and
+QUILL. How accurately and how quickly each engine hears you has not been
+measured yet; that waits on the dictation benchmarks.
 
 #### The command word: "QUILL scratch that"
 

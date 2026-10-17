@@ -425,7 +425,11 @@ These work in any program, after the command word:
 - "stop dictation" (with or without the word)
 - "scratch that" - removes the last phrase, but only while you are still in the
   same field
-- spelling: "start spelling" and "stop spelling"
+- spelling: "start spelling" and "stop spelling". While spelling, each phrase
+  joins the letters you spelled just before it with no space, so you can spell
+  an address a few characters at a time: "juliet oscar", a pause, "at sign
+  echo x-ray", a pause, "dot charlie oscar" types *jo@ex.co*. Say "space" for a
+  space; a whole word such as "smith" is not a letter and is left out
 - capitals and spacing: "caps on", "all caps on", "no space on" and their "off" forms
 - "switch to Spanish" and "switch to English"
 - punctuation and layout: "comma", "period", "new line", "new paragraph" and the rest
