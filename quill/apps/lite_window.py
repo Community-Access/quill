@@ -83,6 +83,7 @@ from quill.core.sound_events import SoundEvent
 from quill.core.speakable import speakable_controls
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.extend_selection_mode import ExtendSelectionMixin
+from quill.ui.highlight_commands import HighlightCommandsMixin
 from quill.ui.hosted_ai_commands import HostedAiMixin
 from quill.ui.html_export_commands import HtmlExportCommandsMixin
 from quill.ui.inline_notes_commands import InlineNotesCommandsMixin
@@ -106,6 +107,8 @@ class DocumentFrame(
     # Inline notes, Toggle Task Done and Export as HTML: QUILL's code, shared
     # (2026-10-04). Their hooks' defaults are this window's own attributes.
     InlineNotesCommandsMixin,
+    # Highlighted passages in a Word or RTF document: QUILL's code (2026-10-16).
+    HighlightCommandsMixin,
     TaskListCommandsMixin,
     HtmlExportCommandsMixin,
     DocumentActivityMixin,

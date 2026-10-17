@@ -308,6 +308,7 @@ _CHORD_COMMAND_TITLES: dict[str, str] = {
     "file.open_github_items": "Open GitHub Issues And Pull Requests",
     "tools.speech_dictate": "Dictate Into Document",
     "tools.speech_batch_export": "Batch Speech Export",
+    "tools.find_recording_chapters": "Find Chapters in a Recording",
     "radio.play_pause": "Radio Play Or Pause",
     "radio.stop": "Radio Stop",
     "radio.mute_toggle": "Radio Mute Toggle",

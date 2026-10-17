@@ -183,6 +183,69 @@ screen-reader checks, and the F1 help reference.
 - GATE-11: `hosted_ai_service.py` 620 -> 623, `hosted_ai_commands.py` 595 -> 596,
   `quill/apps/lite.py` 631 -> 635 (rebaseline note in the budgets file).
 
+### Highlighted passages, chapters for any recording, and feed position (todo items 39, 42, 43; 2026-10-16)
+
+**Highlighted passages (item 39), both editors.** Navigate > Highlighted
+Passages: Next (`Alt+PageDown`), Previous (`Alt+PageUp`) and List
+(`Ctrl+F2`), the same chords in QUILL Lite (rule 2; every letter chord was
+taken in both, and Ctrl+Alt+punctuation is AltGr). One shared implementation,
+`quill/ui/highlight_commands.py` over the `EditorHostMixin` hooks (two new
+ones, `_host_rich_wrapper` and `_host_go_to`, answered for QUILL in
+`main_frame_editor_host.py`), with the list in `highlight_list_dialog.py`.
+Passages are recomputed on every press from one of three sources: the rich
+control's own RTF (through `rtf_to_markdown` and `align_runs`, which places
+runs by words and paragraph, so edits above a passage are followed), the
+Markdown buffer's `highlight=` hidden codes (`passages_from_markdown`, buffer
+offsets), or, for a Word file shown as text (QUILL's read-extract, every Word
+file in QUILL Lite), the `.docx` on disk through the new standard-library
+reader `quill/io/docx_highlights.py`. Arrival says "Yellow highlight, 2 of 5:
+words"; the list's rows are words, colour and paragraph; Enter lands on the
+passage and Escape leaves the caret. The palette (`quill/core/highlights.py`)
+fixed four round-trip bugs found on the way: the RTF writer knew six colour
+names, so pink and turquoise highlights were written as none
+(`RtfTables.highlight_index`); `docx_writer` mapped every `#RRGGBB` value the
+RTF reader returns to yellow; `docx_reader` dropped Word's eight dark
+colours; and `set_highlight` in a rich document raised "Unknown color" for
+the menu's own Pink and Turquoise. Describe Formatting in rich mode now
+names the highlight (`highlight_from_colorref`). The surface's private colour
+table was replaced by `rtf_styles.parse_color`, which kept it inside GATE-11.
+Also fixed: `inline_notes_list_dialog` called `bind_close_button` without its
+required `modeless` argument.
+
+**Automatic chapters for any recording (item 42).** Tools > Speech > Find
+Chapters in a Recording... (`tools.find_recording_chapters`, QUILL Key +
+Shift+O, rule 9) and Quill Studio's Studio > Find Chapters in a Recording...
+(`Ctrl+Shift+R`) open the Chapter Workbench on any MP3/M4A/M4B and start
+Propose chapters from silences (`open_book_in_workbench(propose_silences=True)`).
+The flow moved to `chapter_workbench_silence.py` (the Workbench is at its
+budget): proposals are titled "Proposed chapter N" (`chapter_proposals.py`);
+a recording with two or more chapters asks Keep mine (default,
+`merge_proposals`, 10-second gap) / Replace / Cancel; the button becomes
+Stop proposing chapters and a stop or a close discards the result; failures
+reset the button; the scan timeout scales with duration
+(`scan_timeout_seconds`, at least 600 s, a tenth of the length). Studio's
+Edit a Book passed `on_sleep_timer`/`on_play_queue`, which
+`open_book_in_workbench` did not accept, so it raised before the Workbench
+opened; both are now accepted and bound inside the window
+(`bind_host_shortcuts`).
+
+**Category browsing and feed position (item 43).** Browse Stations: Escape in
+the tree goes back to the category's row and folds it, one level per press,
+closing only at the top (`browse_keys.back_to_category`). Apple storefront rows
+say "Apple chart for this country, any language"; Podcast Index's By Category
+says it is worldwide and any language. The Podcast Manager and Cast's
+opened podcast land on the last-selected episode by feed URL and GUID
+(`quill/core/podcasts/episode_cursor.py`, `podcast_episode_cursor.json`), with
+audio URL and nearest-published-date fallbacks, across sort, filter, refresh
+and restart; cross-podcast places never move a feed's cursor; the write is
+debounced and flushed on close (`episode_cursor_ui.py`, Cast's close tasks).
+
+Gates: keymap and help topics for the four commands, Lite rows in
+`commands_review.py` (commands.py 1107 -> 1109, rebaselined), F1 purposes for
+Highlighted Passages and Chapters already here, regenerated references.
+Manual JAWS/NVDA and braille checks are in
+`docs/qa/screen-reader-checks-2026-10.md`, unticked.
+
 ### Three messages that named menu items that do not exist (2026-10-16)
 
 The documentation-versus-menu audit found QUILL itself pointing people at

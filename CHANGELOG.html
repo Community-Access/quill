@@ -485,6 +485,82 @@ unchanged.</li>
 budgets file).</li>
 </ul>
 <h3
+id="highlighted-passages-chapters-for-any-recording-and-feed-position-todo-items-39-42-43-2026-10-16">Highlighted
+passages, chapters for any recording, and feed position (todo items 39,
+42, 43; 2026-10-16)</h3>
+<p><strong>Highlighted passages (item 39), both editors.</strong>
+Navigate &gt; Highlighted Passages: Next (<code>Alt+PageDown</code>),
+Previous (<code>Alt+PageUp</code>) and List (<code>Ctrl+F2</code>), the
+same chords in QUILL Lite (rule 2; every letter chord was taken in both,
+and Ctrl+Alt+punctuation is AltGr). One shared implementation,
+<code>quill/ui/highlight_commands.py</code> over the
+<code>EditorHostMixin</code> hooks (two new ones,
+<code>_host_rich_wrapper</code> and <code>_host_go_to</code>, answered
+for QUILL in <code>main_frame_editor_host.py</code>), with the list in
+<code>highlight_list_dialog.py</code>. Passages are recomputed on every
+press from one of three sources: the rich control’s own RTF (through
+<code>rtf_to_markdown</code> and <code>align_runs</code>, which places
+runs by words and paragraph, so edits above a passage are followed), the
+Markdown buffer’s <code>highlight=</code> hidden codes
+(<code>passages_from_markdown</code>, buffer offsets), or, for a Word
+file shown as text (QUILL’s read-extract, every Word file in QUILL
+Lite), the <code>.docx</code> on disk through the new standard-library
+reader <code>quill/io/docx_highlights.py</code>. Arrival says “Yellow
+highlight, 2 of 5: words”; the list’s rows are words, colour and
+paragraph; Enter lands on the passage and Escape leaves the caret. The
+palette (<code>quill/core/highlights.py</code>) fixed four round-trip
+bugs found on the way: the RTF writer knew six colour names, so pink and
+turquoise highlights were written as none
+(<code>RtfTables.highlight_index</code>); <code>docx_writer</code>
+mapped every <code>#RRGGBB</code> value the RTF reader returns to
+yellow; <code>docx_reader</code> dropped Word’s eight dark colours; and
+<code>set_highlight</code> in a rich document raised “Unknown color” for
+the menu’s own Pink and Turquoise. Describe Formatting in rich mode now
+names the highlight (<code>highlight_from_colorref</code>). The
+surface’s private colour table was replaced by
+<code>rtf_styles.parse_color</code>, which kept it inside GATE-11. Also
+fixed: <code>inline_notes_list_dialog</code> called
+<code>bind_close_button</code> without its required
+<code>modeless</code> argument.</p>
+<p><strong>Automatic chapters for any recording (item 42).</strong>
+Tools &gt; Speech &gt; Find Chapters in a Recording…
+(<code>tools.find_recording_chapters</code>, QUILL Key + Shift+O, rule
+9) and Quill Studio’s Studio &gt; Find Chapters in a Recording…
+(<code>Ctrl+Shift+R</code>) open the Chapter Workbench on any
+MP3/M4A/M4B and start Propose chapters from silences
+(<code>open_book_in_workbench(propose_silences=True)</code>). The flow
+moved to <code>chapter_workbench_silence.py</code> (the Workbench is at
+its budget): proposals are titled “Proposed chapter N”
+(<code>chapter_proposals.py</code>); a recording with two or more
+chapters asks Keep mine (default, <code>merge_proposals</code>,
+10-second gap) / Replace / Cancel; the button becomes Stop proposing
+chapters and a stop or a close discards the result; failures reset the
+button; the scan timeout scales with duration
+(<code>scan_timeout_seconds</code>, at least 600 s, a tenth of the
+length). Studio’s Edit a Book passed
+<code>on_sleep_timer</code>/<code>on_play_queue</code>, which
+<code>open_book_in_workbench</code> did not accept, so it raised before
+the Workbench opened; both are now accepted and bound inside the window
+(<code>bind_host_shortcuts</code>).</p>
+<p><strong>Category browsing and feed position (item 43).</strong>
+Browse Stations: Escape in the tree goes back to the category’s row and
+folds it, one level per press, closing only at the top
+(<code>browse_keys.back_to_category</code>). Apple storefront rows say
+“Apple chart for this country, any language”; Podcast Index’s By
+Category says it is worldwide and any language. The Podcast Manager and
+Cast’s opened podcast land on the last-selected episode by feed URL and
+GUID (<code>quill/core/podcasts/episode_cursor.py</code>,
+<code>podcast_episode_cursor.json</code>), with audio URL and
+nearest-published-date fallbacks, across sort, filter, refresh and
+restart; cross-podcast places never move a feed’s cursor; the write is
+debounced and flushed on close (<code>episode_cursor_ui.py</code>,
+Cast’s close tasks).</p>
+<p>Gates: keymap and help topics for the four commands, Lite rows in
+<code>commands_review.py</code> (commands.py 1107 -&gt; 1109,
+rebaselined), F1 purposes for Highlighted Passages and Chapters already
+here, regenerated references. Manual JAWS/NVDA and braille checks are in
+<code>docs/qa/screen-reader-checks-2026-10.md</code>, unticked.</p>
+<h3
 id="three-messages-that-named-menu-items-that-do-not-exist-2026-10-16">Three
 messages that named menu items that do not exist (2026-10-16)</h3>
 <p>The documentation-versus-menu audit found QUILL itself pointing

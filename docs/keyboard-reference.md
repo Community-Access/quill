@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 504.
+Editor commands with default bindings: 508.
 
 ## The QUILL editor
 
@@ -224,6 +224,8 @@ Editor commands with default bindings: 504.
 | (unbound by default) | Go To Page... | `navigate.go_to_page` |
 | Alt+Down | Next Structure | `navigate.next_structure` |
 | Alt+Left | Back Location | `navigate.back_location` |
+| Alt+PageDown | Next Highlighted Passage | `navigate.next_highlight` |
+| Alt+PageUp | Previous Highlighted Passage | `navigate.previous_highlight` |
 | Alt+Right | Forward Location | `navigate.forward_location` |
 | Alt+Shift+G or Ctrl+Shift+F5 | List Bookmarks... | `navigate.list_bookmarks` |
 | Alt+Shift+O | Heading Organizer... | `navigate.heading_organizer` |
@@ -236,6 +238,7 @@ Editor commands with default bindings: 504.
 | Ctrl+Alt+J | Set Temporary Bookmark | `navigate.set_temp_bookmark` |
 | Ctrl+Alt+Shift+A | Go to Anything | `navigate.go_to_anything` |
 | Ctrl+Alt+Shift+H | Previous Heading | `navigate.previous_heading` |
+| Ctrl+F2 | List Highlighted Passages... | `navigate.list_highlights` |
 | Ctrl+G | Go to Line... | `navigate.go_to_line` |
 | Ctrl+Shift+1 | Set numbered bookmark 1 | `navigate.set_numbered_bookmark_1` |
 | Ctrl+Shift+2 | Set numbered bookmark 2 | `navigate.set_numbered_bookmark_2` |
@@ -371,6 +374,7 @@ Editor commands with default bindings: 504.
 | QUILL Key + Shift+D | Dictate (Offline) | `tools.speech_dictate` |
 | QUILL Key + Shift+I | Document Intake Report... | `tools.document_intake_report` |
 | QUILL Key + Shift+N | New Sticky Note... | `tools.sticky_note_capture` |
+| QUILL Key + Shift+O | Find recording chapters | `tools.find_recording_chapters` |
 | QUILL Key + Shift+P | Post to Mastodon... | `tools.post_to_mastodon` |
 | QUILL Key + Shift+R | Read Aloud Stop | `tools.read_aloud_stop` |
 | QUILL Key + Y | Audiobook  Batch Speech... | `tools.speech_batch_export` |

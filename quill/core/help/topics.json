@@ -2339,6 +2339,42 @@
     "user_guide_section": "navigation"
   },
   {
+    "id": "navigate.next_highlight",
+    "title": "Next Highlighted Passage",
+    "body": "Move to the next highlighted passage in a Word document, a rich text document or a Markdown document, and hear its highlight colour, where it is in the count, and its words: \"Yellow highlight, 2 of 5: budget is final\". After the last passage it wraps to the first. In a Word document opened as text, the highlights are read from the file itself. Alt+Left comes back.",
+    "keystrokes": [
+      "Alt+PageDown"
+    ],
+    "user_guide_section": "navigation"
+  },
+  {
+    "id": "navigate.previous_highlight",
+    "title": "Previous Highlighted Passage",
+    "body": "Move to the previous highlighted passage and hear its colour, its place in the count and its words. Before the first passage it wraps to the last.",
+    "keystrokes": [
+      "Alt+PageUp"
+    ],
+    "user_guide_section": "navigation"
+  },
+  {
+    "id": "navigate.list_highlights",
+    "title": "List Highlighted Passages",
+    "body": "Every highlighted passage in the document in one list, in order: the passage's words, its highlight colour, and the paragraph around it. The list opens on the passage you are in or the next one. Enter goes to the passage; Escape closes the list and leaves the cursor where it was.",
+    "keystrokes": [
+      "Ctrl+F2"
+    ],
+    "user_guide_section": "navigation"
+  },
+  {
+    "id": "tools.find_recording_chapters",
+    "title": "Find Chapters in a Recording",
+    "body": "Pick any recording -- a lecture, a meeting, an MP3 you were sent -- and the Chapter Workbench opens on it and proposes chapters where it falls silent, titled Proposed chapter 1, 2 and so on. If the recording already has chapters you choose whether to keep them and add only new boundaries, or replace them. Press the button again to stop the scan. Hear each boundary, move it to the playhead, rename it, and Save; Restore original undoes the proposal.",
+    "keystrokes": [
+      "QUILL Key + Shift+O"
+    ],
+    "user_guide_section": "navigation"
+  },
+  {
     "id": "notes.list_inline_notes",
     "title": "List Inline Notes",
     "body": "Every note in this document in one window: the note, its line, the text it is about, and whether it is private or written into the file. A note whose text was deleted is listed last. Enter goes to a note, Delete deletes one, F2 edits one, and the buttons remove all, copy all, or export the notes as Markdown or JSON.",

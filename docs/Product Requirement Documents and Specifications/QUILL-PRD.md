@@ -16014,6 +16014,43 @@ one a blind writer can fully hear, interrogate, and learn from.
 
 ---
 
+## Highlighted passages, chapters for any recording, and feed position (2026-10-16)
+
+Items 39, 42 and 43 of the editor and media completion checklist.
+
+**Highlighted passages.** Navigate > Highlighted Passages holds Next
+(`navigate.next_highlight`, Alt+PageDown), Previous
+(`navigate.previous_highlight`, Alt+PageUp) and List
+(`navigate.list_highlights`, Ctrl+F2), shared with QUILL Lite on the same
+chords. Requirements: passages are recomputed on every press, from the rich
+control (a Word document edited as Rich Text, any RTF), from Markdown hidden
+codes, or from the `.docx` on disk when a Word file is shown as text; a
+passage is placed by its words and its paragraph, never by a stored offset,
+and one whose words are gone is left out. Arrival speaks colour, count and
+words ("Yellow highlight, 2 of 5: ..."), never the window or list title. List
+rows begin with the passage's words, then colour and paragraph; Enter lands on
+the passage, Escape leaves the caret; every jump feeds Back. Word's fifteen
+highlight colours are named, and a rich save keeps each colour. Describe
+Formatting names the highlight in rich mode. Out of scope: headers, footers,
+footnotes, comments, text boxes, style-only highlights and shading.
+
+**Chapters for any recording.** Tools > Speech > Find Chapters in a
+Recording... (`tools.find_recording_chapters`, QUILL Key + Shift+O) opens the
+Chapter Workbench on any MP3, M4A or M4B and starts Propose chapters from
+silences. Requirements: guesses are titled "Proposed chapter N"; a recording
+with chapters of its own (two or more) asks Keep mine, add proposals (default)
+/ Replace with the proposal / Cancel, and never replaces silently; the scan
+can be stopped and its result is then discarded; a failure is shown and the
+button restored; the scan's time limit grows with the recording; Save, Export
+and Restore original are the Workbench's own. No new chapter engine.
+
+**Feed position.** The Podcast Manager lands each podcast's list on the episode
+last selected in it, identified by feed URL and episode GUID (audio URL and
+published date as fallbacks), across sort, filter, refresh and restart; when
+the episode is gone, on the remaining episode published nearest to it. Kept in
+`podcast_episode_cursor.json` in the data folder; a damaged file is an empty
+memory.
+
 ## Closing note
 
 Part One argues QUILL can host a rich surface without betraying its plain-text,

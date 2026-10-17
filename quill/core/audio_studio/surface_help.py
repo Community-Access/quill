@@ -87,7 +87,8 @@ PURPOSES: dict[str, str] = {
         "whose file has moved says missing rather than failing silently."
     ),
     "Chapter Workbench": (
-        "One finished audiobook, open for surgery: listen with the "
+        "One audiobook or any recording -- a lecture, a meeting -- open for "
+        "surgery: listen with the "
         "chapter-aware player, rename chapters, split at the playhead, move "
         "a start, merge, or restore the original list. Book tags are "
         "editable below the player, and chapter lists import and export in "
@@ -98,9 +99,15 @@ PURPOSES: dict[str, str] = {
     "Propose chapters from silences": (
         "Two knobs for the silence scan: how quiet counts as silence (dB) "
         "and how long a pause must last (seconds). ffmpeg scans the "
-        "recording and proposes chapter boundaries at the silence midpoints "
-        "-- the proposal lands in the Workbench list for review, and Restore "
-        "original undoes it."
+        "recording and proposes chapters at the silences, titled Proposed "
+        "chapter -- they land in the Workbench list for review, and Restore "
+        "original undoes them. Pressing the button again while it runs stops it."
+    ),
+    "Chapters already here": (
+        "This recording already has chapters of its own. Keep mine, add "
+        "proposals keeps every one of them and adds only the boundaries that "
+        "are new; Replace with the proposal swaps the whole list. Cancel "
+        "changes nothing, and Restore original undoes either answer."
     ),
     "ACX check": (
         "The verdict of measuring this book against Audible's ACX submission "

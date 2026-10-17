@@ -287,6 +287,10 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/radio/recording_schedule.py::save_schedule": "content",
     "core/podcasts/subscriptions.py::save_library": "content",
     "core/podcasts/history.py::save_history": "content",
+    # Item 43: which episode was selected in each feed. A convenience the
+    # listener would notice losing but can rebuild by arrowing; a damaged file
+    # reads as an empty memory.
+    "core/podcasts/episode_cursor.py::save": "cache",
     "core/podcasts/episode_notes.py::save_episode_notes": "content",
     # Quick Actions (1.1.0): the listener's own ordering of the episode,
     # podcast, and queue action lists. Content -- it is a preference they
