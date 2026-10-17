@@ -932,6 +932,25 @@ A PDF keeps its pages:
 - **Ctrl+G** (Go To) has a **Page** choice. Arrow to it and pick a page from the
   list.
 
+#### Page breaks, and what you hear
+
+Between one page and the next, the text holds a single **page break**
+character (a "form feed"). It is what the Page part and Go To's Page list
+count, so it stays in the text, and it is saved with the text if you save it.
+The last words of one page and the first words of the next sit on either side
+of it.
+
+What QUILL Lite itself says never includes it. When a message quotes text
+across a page break, such as the first words of a selection that starts at the
+bottom of one page, the page break is read as a pause, the same as a new line, and
+the status bar shows it the same way. **Ctrl+Shift+C** on it says "Page
+break", where it used to say "Unnamed character".
+
+What your screen reader says as you arrow onto it is up to the screen reader:
+some say nothing, some say "page break", and some may say "form feed". If
+yours reads the last line of a page and the first line of the next as one
+line, use **Ctrl+G**, **Page**, to land at the top of a page instead.
+
 #### The PDF's own outline
 
 Many PDFs come with an outline: a list of chapters and sections, which other
@@ -1058,6 +1077,93 @@ saves over one. Press **Ctrl+S** and QUILL Lite tells you why, then opens
 **Save As** with the same name ending in `.txt`. Choose text, Markdown or rich
 text and press **Enter**. If you want the result back in Word, save it as rich
 text: Word opens a rich text file properly.
+
+### Importing and converting a document
+
+**File > Import / Convert Document (OCR)...** turns a document, or a picture
+of a page, into new text you can edit. It is QUILL's command, with QUILL's
+readers and QUILL's words, on QUILL Lite's File menu. It has no shortcut key,
+as in QUILL: press **Alt+F**, then **I**. It is also in the command palette.
+
+It reads:
+
+- **Word, Excel, PowerPoint and OpenDocument files** (`.docx`, `.doc`, `.xlsx`,
+  `.xls`, `.pptx`, `.ppt`, `.odt`, `.ods`, `.odp`), with QUILL's own readers,
+  the same ones Ctrl+O uses;
+- **web pages, e-books and CSV files** (`.html`, `.htm`, `.epub`, `.csv`), which
+  Ctrl+O would open as their raw markup or as a table of commas;
+- **PDFs**, from their own text, the same way Ctrl+O reads them;
+- **pictures of pages** (`.png`, `.jpg`, `.jpeg`, `.tif`, `.tiff`, `.bmp`,
+  `.gif`, `.webp`), such as a photo of a letter, with OCR on this computer.
+
+#### How it differs from Open
+
+**Ctrl+O** opens the file itself: the window takes the file's name, Recent
+Documents remembers it, and Save offers to save it again (or, for a PDF or an
+Office file, asks for a new name). **Import / Convert** makes a **new, untitled
+document** from what it reads, named after the file with "(converted)" on the
+end, for example "report (converted)". Nothing remembers or points back at the
+original, and the original is never changed. Use it when you want text to work
+with rather than the file you started from, or when Ctrl+O cannot open the
+file at all: a picture, a web page you want as words, or an e-book.
+
+#### Step by step
+
+1. Press **Alt+F**, then **I**. The Import / Convert Document box opens on the
+   folder of the document you are in.
+2. Choose the file and press **Enter**. The type list starts on "All convertible
+   documents"; you can narrow it to Documents or Images.
+3. QUILL Lite says "Converting report.docx". You can keep working; the status
+   bar's message part shows how far it has got.
+4. When the text arrives, it opens in this window if the window is empty, or
+   in a new window if it is not, so nothing you were writing is replaced. You
+   hear what happened, for example "Opened report.docx as editable text, read
+   by QUILL's own Word reader. Nothing was uploaded."
+
+The new document counts as unsaved, because its text exists nowhere else yet.
+Press **Ctrl+S** to save it as text, Markdown or rich text.
+
+#### When the file has no text: OCR
+
+A scanned PDF, or a PDF that is only pictures of pages, has no text to read.
+QUILL Lite then asks: "QUILL Lite could not find readable text in scan.pdf. It
+looks scanned or image-based. Run free on-device OCR?"
+
+- **Yes** reads the pictures with OCR on this computer. The status bar counts
+  the pages as it goes, for example "Recognizing page 3 of 12", and you hear
+  when it is done.
+- **No** opens whatever little text the file has, which may be nothing.
+- **Cancel**, or **Escape**, stops, and nothing opens.
+
+A picture file goes straight to OCR, without the question, because a picture
+has no text of its own.
+
+Nothing is uploaded and nothing is downloaded. The OCR is the one Windows
+already has, which reads the languages installed in Windows Settings; if
+QUILL's own OCR engine, Tesseract, is installed, QUILL Lite uses that instead,
+because it can say how sure it is ("Confidence 84 out of 100"). OCR makes
+mistakes: check the text, and spell check helps. If this computer has no OCR at
+all, QUILL Lite says so and opens nothing. Unlike QUILL, QUILL Lite never
+offers to download an OCR engine and has no cloud OCR.
+
+In the result, each page starts with a marker line such as
+`<!-- Page 2 -->`, as in QUILL, so **Ctrl+F** for "Page 2" finds it. When you
+want a scanned PDF with real pages instead, so the Page part and Go To's Page
+list work, open it with **Ctrl+O**: it asks the same OCR question.
+
+#### If it does not work
+
+- A **password-protected PDF** cannot be imported. QUILL Lite says so; open it
+  with **Ctrl+O**, which asks for the password and never stores it.
+- A **damaged file** is named as damaged. OCR does not help a damaged file.
+- A **very long PDF**: the first 200 pages are read, and QUILL Lite says so
+  when it stopped early, for example "Only the first 200 of 340 pages were
+  read."
+- If you **close the window** while a conversion is still running, the
+  conversion stops, and nothing opens.
+
+Any failure is a box you must dismiss, with the reason in it, because it cost
+you the thing you asked for.
 
 ### Saving
 
@@ -3585,6 +3691,10 @@ them is often the reason a search will not find text that is plainly there.
 
 For the full details, press **Ctrl+Alt+C**. It opens a window you can read
 line by line.
+
+A **page break**, the character a PDF has between its pages, is named as one:
+**Ctrl+Shift+C** says "Page break", and **Ctrl+Alt+C** adds that one page ends
+there and the next begins. See [Page breaks, and what you hear](#page-breaks-and-what-you-hear).
 
 ### What you learned, and where to go next
 

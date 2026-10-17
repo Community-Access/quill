@@ -1871,6 +1871,17 @@ Here is how a conversion goes:
    question: it is the OCR built into Windows 10 and 11, and it reads the
    languages you have in Windows Settings. It cannot say how confident it is, so
    check the text yourself. When Tesseract is installed, QUILL uses Tesseract.
+   **A picture of a page works the same way** (since 2026-10-17): a `.png`,
+   `.jpg`, `.tif` or other image goes straight to OCR, with Tesseract when it is
+   installed and Windows OCR when it is not. Before, a picture needed
+   Tesseract, and without it the conversion stopped with a message about
+   installing it. For example, choose a photo of a letter, `letter.jpg`, and
+   you hear "Opened letter.jpg from Windows OCR on this computer. Nothing was
+   uploaded. Check the text; OCR makes mistakes."
+
+QUILL Lite has the same command, on its File menu, with the same readers and
+the same sentences (since 2026-10-17). It never offers to download Tesseract
+and has no cloud OCR, and its result opens in a window rather than a tab.
 
 Other problems get their own clear message instead of the scanned-PDF question.
 A file that is really corrupt is reported as *damaged*, with a note that OCR
@@ -6665,6 +6676,21 @@ gives:
 
 If the cursor is at the very end of the document, it tells you so instead of
 guessing.
+
+A **page break** is named as one. A PDF opens with a page break between each
+of its pages (a form feed character, which is what Go To's Page list and the
+Page part of the status bar count). With the cursor on one, Describe Character
+says "Page break U+000C" and Character Details adds that one page ends there
+and the next begins. Before 2026-10-17 it said "Unnamed character", which told
+you nothing. For example, open a three-page PDF, press **Ctrl+G**, choose
+**Page**, pick page 2, then press **Left Arrow** once and **Ctrl+Shift+C**:
+you hear "Page break".
+
+QUILL also never hands that character, or any other control character, to
+your screen reader inside an announcement. When a message quotes text that
+crosses a page, such as the first words of a selection, the page break is read
+as a pause rather than as a character name. The text in your document is not
+changed.
 
 #### Reveal Codes (Alt+F3)
 

@@ -779,9 +779,9 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "file.recent_documents": "Alt+Shift+0",  # beside Alt+Shift+1-9; free in both (rule 5)
     "file.open_from_clipboard": "Ctrl+Alt+Shift+Enter",  # Ctrl+V pastes (rule 1); rule 5
     "file.open_url": "",  # no key in either editor; rule 8 reason in the family gate
-    # Once in a lifetime, so an F-key past F9 (rule 9). Reachable without
-    # switching profiles, because somebody can want their QUILL Lite
-    # abbreviations in QUILL without wanting QUILL Lite's menus (bad.md P2.4).
+    "file.import_convert": "",  # as open_url: no key in either; the reason is in the family gate
+    # Once in a lifetime, so an F-key past F9 (rule 9). Reachable without switching
+    # profiles: somebody can want QUILL Lite's abbreviations, not its menus (bad.md P2.4).
     "tools.bring_from_quilllite": "Alt+Shift+F11",
     # The magical tier (bad.md P3.7): the three things a screen reader cannot
     # say, because they are the application's own knowledge. Asked often enough

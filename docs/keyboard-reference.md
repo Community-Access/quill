@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 503.
+Editor commands with default bindings: 504.
 
 ## The QUILL editor
 
@@ -21,6 +21,7 @@ Editor commands with default bindings: 503.
 | --- | --- | --- |
 | (unbound by default) | Manage GitHub Accounts... | `file.github_manage_accounts` |
 | (unbound by default) | Save to GitHub... | `file.github_save_back` |
+| (unbound by default) | Import / Convert Document (OCR) | `file.import_convert` |
 | (unbound by default) | Manage Remote Sites... | `file.manage_remote_sites` |
 | (unbound by default) | Open from Remote... | `file.open_from_remote` |
 | (unbound by default) | Open Remote GitHub File URL... | `file.open_github_file_url` |

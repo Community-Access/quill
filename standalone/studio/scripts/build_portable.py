@@ -121,6 +121,11 @@ class Product:
     # launcher its installer ships is built separately, with the URL, into
     # dist/<exe>-installer/ -- the path its .iss copies from.
     offline_portable_launcher: bool = False
+    # Modules the bundle must import in step 8, beside the app's own. A
+    # dependency group that installs without error can still leave a feature
+    # dead -- a missing native DLL, a namespace pywinrt resolves lazily -- and
+    # the first person to find out would be the one who needed it (2026-10-17).
+    must_import: tuple[str, ...] = ()
 
 
 PRODUCTS: dict[str, Product] = {
@@ -228,15 +233,34 @@ PRODUCTS: dict[str, Product] = {
         display="QUILL Lite",
         zip_name="QuillLite-Portable-{ver}.zip",
         # An editor and nothing else: one native control, six small windows and
-        # a settings file. No media stack, no documents stack, no spell checker,
-        # nothing to download. The one engine it carries is dictation's
-        # (live-dictation: sherpa-onnx, numpy, sounddevice); the models are
-        # staged beside the launcher by build_release.ps1, not in here.
-        dep_groups=("ui", "live-dictation"),
+        # a settings file. No media stack, no spell checker, nothing to
+        # download. The one engine it carries is dictation's (live-dictation:
+        # sherpa-onnx, numpy, sounddevice); the models are staged beside the
+        # launcher by build_release.ps1, not in here.
+        # "office-text" and "ocr" (2026-10-17): QUILL Lite opens PDFs (Ctrl+O)
+        # and converts documents and scanned pages (File > Import / Convert
+        # Document). The INSTALLED copy has always had the reader -- the shared
+        # runtime carries pdfplumber, pypdf, pypdfium2 and the winrt OCR
+        # packages -- but the portable copy had none of them, so a PDF said
+        # "This copy of QUILL Lite has no PDF reader". Everything ships in both
+        # downloads, or it is not shipped. office-text is pdfplumber (which
+        # brings pdfminer.six and pypdfium2) + pypdf + openpyxl; ocr is the
+        # Windows.Media.Ocr projection. About 21 MB unpacked for the reader and
+        # 3-7 MB for OCR (junk/reference/pdf.md 4.5). Tesseract is not bundled.
+        dep_groups=("ui", "live-dictation", "office-text", "ocr"),
         stage_engines=False,
         stage_ffmpeg=False,
         stage_mpv=False,
         offline_portable_launcher=True,
+        must_import=(
+            "pdfplumber",
+            "pypdf",
+            "pypdfium2",
+            "winrt.windows.media.ocr",
+            "winrt.windows.graphics.imaging",
+            "quill.io.pdf",
+            "quill.io.docconvert",
+        ),
     ),
     "quill": Product(
         key="quill",
@@ -255,6 +279,18 @@ PRODUCTS: dict[str, Product] = {
         stage_mpv=True,  # podcasts / cast playback
     ),
 }
+
+
+def import_check_source(product: Product) -> str:
+    """The step-8 probe: quill, wx, the app, then each of ``must_import`` by name.
+
+    One ``import`` statement per module, so the traceback names the one that
+    failed rather than a line holding seven.
+    """
+    lines = ["import quill, wx", f"import {product.module}"]
+    lines += [f"import {name}" for name in product.must_import]
+    lines.append("print('OK', quill.__version__)")
+    return "; ".join(lines)
 
 
 def _download(url: str, target: Path, expected_sha256: str | None) -> None:
@@ -586,11 +622,7 @@ def main() -> int:
     if not (out_dir / "pythonw.exe").is_file():
         raise RuntimeError("Bundle missing genuine pythonw.exe")
     check = subprocess.run(
-        [
-            str(out_dir / "python.exe"),
-            "-c",
-            f"import quill, wx; import {product.module}; print('OK', quill.__version__)",
-        ],
+        [str(out_dir / "python.exe"), "-c", import_check_source(product)],
         capture_output=True,
         text=True,
     )

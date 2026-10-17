@@ -52,6 +52,7 @@ from quill.apps.lite_window_folding import DocumentFoldingMixin
 from quill.apps.lite_window_format import DocumentFormatCommandsMixin
 from quill.apps.lite_window_headings import DocumentHeadingsMixin
 from quill.apps.lite_window_history import DocumentHistoryMixin
+from quill.apps.lite_window_import import DocumentImportMixin
 from quill.apps.lite_window_lines import DocumentLineMixin
 from quill.apps.lite_window_marks import DocumentMarksMixin
 from quill.apps.lite_window_markup import DocumentMarkupMixin
@@ -79,6 +80,7 @@ from quill.core.lite import recovery as recovery_mod
 from quill.core.locations import LocationRing
 from quill.core.numbered_bookmarks import BookmarkSet
 from quill.core.sound_events import SoundEvent
+from quill.core.speakable import speakable_controls
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.extend_selection_mode import ExtendSelectionMixin
 from quill.ui.hosted_ai_commands import HostedAiMixin
@@ -140,6 +142,7 @@ class DocumentFrame(
     DocumentBackgroundOpenMixin,
     # PDFs open as text through QUILL's reader, never written back (2026-10-15).
     DocumentPdfMixin,
+    DocumentImportMixin,  # File > Import / Convert Document, QUILL's (2026-10-17)
     DocumentContextMenuMixin,
     DocumentMenuMixin,
     DocumentAppearanceMixin,
@@ -500,6 +503,9 @@ class DocumentFrame(
         reader is reading the line the caret landed on, and cutting across
         that would cost the listener the text they moved to hear.
         """
+        # No control character reaches the status cell either: a PDF's page break
+        # read there by Insert+Page Down would be "form feed" (2026-10-17).
+        message = speakable_controls(message)
         self.app.voice.speak(message, interrupt=interrupt)
         self._set_status_message(message)
 

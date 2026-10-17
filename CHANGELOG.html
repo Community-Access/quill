@@ -245,6 +245,97 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="pdf-in-quill-lite-what-was-left-import--convert-the-portable-reader-page-breaks-the-200-page-gate-2026-10-17">PDF
+in QUILL Lite, what was left: Import / Convert, the portable reader,
+page breaks, the 200-page gate (2026-10-17)</h3>
+<p>Todo item 28 after phases 1 and 2, the P3 PDF items, and todo item
+52.</p>
+<ul>
+<li><strong>Import / Convert Document’s words and file list are
+shared</strong> (<code>quill/core/import_convert.py</code>, new,
+wx-free): <code>import_wildcard</code>,
+<code>scanned_import_question(name, app_name=)</code>,
+<code>opened_sentence(name, outcome)</code> per tier,
+<code>failed_sentence</code>, <code>converted_name</code>,
+<code>CANCELLED_SENTENCE</code>.
+<code>quill/ui/main_frame_docconvert.py</code> calls them and shrank by
+about 60 lines; QUILL’s wording is byte-for-byte what it was
+(<code>test_main_frame_docconvert.py</code> unchanged).
+<code>_import_wildcard</code> stays importable there as an alias.</li>
+<li><strong>QUILL Lite gains File &gt; Import / Convert Document
+(OCR)…</strong> (<code>quill/apps/lite_window_import.py</code>,
+<code>cmd_import_convert</code>), parity
+<code>file.import_convert</code>, which is now in
+<code>DEFAULT_KEYMAP</code> as an unbound id with a rule 9 reason in
+<code>UNBOUND_WITH_REASON</code> (the keyboard reference lists it under
+“unbound by default”). No second implementation: the router, the readers
+and every sentence are QUILL’s.</li>
+<li><strong>A picture of a page goes to whichever on-device engine
+exists.</strong> <code>quill.io.docconvert.convert_document</code>
+routed images to <code>convert_with_local_ocr</code> (Tesseract only),
+so without Tesseract a <code>.png</code> or <code>.jpg</code> failed
+with “Install it from Tools &gt; OCR…” while a scanned PDF already fell
+back to Windows OCR. Images now go through
+<code>convert_with_on_device_ocr</code> too
+(<code>tests/unit/io/test_docconvert_images.py</code>).</li>
+<li><strong>No control character reaches a screen reader inside an
+announcement.</strong> <code>quill/core/speakable.py</code> (new):
+<code>speakable_controls</code> turns form feed and vertical tab into a
+newline and drops the other C0/C1 controls, keeping tab, CR and LF.
+Applied in <code>AnnouncementEngine.announce</code> and
+<code>.braille</code> (<code>prism_bridge.py</code>, which every app’s
+announcements leave through; two comments reflowed to stay inside its
+budget) and in QUILL Lite’s <code>DocumentFrame._announce</code> before
+the status cell. A PDF’s page breaks (U+000C) were otherwise able to
+reach speech as “form feed” whenever an announcement quoted text across
+a page. <code>char_describe</code> names U+000C “Page break” (it was
+“U+000C Unnamed character”), in both editors.</li>
+<li><strong>QUILL Lite portable build inputs.</strong>
+<code>build_portable.py</code>: the <code>quilllite</code> product adds
+the <code>office-text</code> and <code>ocr</code> groups, and a new
+<code>must_import</code> field per product that step 8 imports inside
+the bundle (QUILL Lite’s lists pdfplumber, pypdf, pypdfium2,
+<code>winrt.windows.media.ocr</code>,
+<code>winrt.windows.graphics.imaging</code>, <code>quill.io.pdf</code>,
+<code>quill.io.docconvert</code>).
+<code>standalone/quilllite/portable-inventory.json</code> is NOT
+hand-edited: the next real build’s inventory gate fails on the new
+packages until it is reviewed and rebaselined with <code>--write</code>
+(see <code>docs/building-windows-family.md</code>).</li>
+<li><strong>GATE-PERF for PDFs</strong>
+(<code>tests/unit/core/test_pdf_open_budget.py</code>,
+<code>perf</code>): a 200-page synthetic PDF through QUILL Lite’s
+<code>open_prepare.prepare</code> (which is QUILL’s reader, outline and
+scanned check) within 150 ms a page, then the Page rows and the last
+page’s position within 500 ms. Measured here at 31 ms a page with the
+machine 31 % busy.</li>
+<li><strong>Todo item 52</strong>
+(<code>test_clean_pages_pay_for_one_extractor_and_stay_in_budget</code>,
+293 ms a page against 250): the test timed a read made under
+<code>tracemalloc</code>, which hooks every allocation pdfminer makes
+per glyph. Measured 2026-10-17 with the machine 31 % busy: 28-29 ms a
+page untraced, 121-129 ms traced. The clean-page path is not over
+budget, so <code>pdf_select.py</code> is unchanged; the test now traces
+memory in one read and times a second, untraced one.</li>
+<li><strong>GLOW’s PDF audit in the shared runtime (finding, spec
+unchanged).</strong> <code>acb_large_print.pdf_auditor</code> imports
+<code>acb_large_print.auditor</code>, which imports python-docx at
+module top, and python-docx imports <code>lxml</code>, which
+<code>standalone/runtime/quillville-runtime.spec</code> excludes (and
+<code>runtime-inventory.json</code> confirms is absent). Simulated by
+blocking every spec exclude: <code>fitz</code> (PyMuPDF),
+<code>quill_glow_core</code> and
+<code>acb_large_print_core.services</code> import, but every GLOW audit
+(PDF, Word, PowerPoint) fails with <code>No module named 'lxml'</code>.
+QUILL’s own Office readers are unaffected (they fall back to the
+standard library). Not changed here, because un-excluding lxml grows
+every QuillVille installer and needs a runtime-inventory rebaseline; the
+fix, when wanted, is to drop <code>"lxml"</code> from the spec’s
+excludes and add <code>docx</code> and
+<code>acb_large_print.pdf_auditor</code> to
+<code>scripts/check_runtime_imports.py</code> MUST_IMPORT.</li>
+</ul>
+<h3
 id="speech-engines-and-models-every-guide-says-what-the-code-does-2026-10-17">Speech
 engines and models: every guide says what the code does
 (2026-10-17)</h3>

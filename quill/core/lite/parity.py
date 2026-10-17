@@ -348,6 +348,7 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_open": "file.open",
     "cmd_open_from_clipboard": "file.open_from_clipboard",
     "cmd_open_from_url": "file.open_url",
+    "cmd_import_convert": "file.import_convert",  # no key in either (rule 9), 2026-10-17
     "cmd_open_review_buffer": "edit.open_review_buffer",
     "cmd_outdent": "format.outdent",
     "cmd_page_setup": "file.page_setup",

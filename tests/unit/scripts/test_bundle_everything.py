@@ -123,6 +123,31 @@ def test_the_portable_message_says_what_is_wrong() -> None:
     assert "portable copy of %s is incomplete" in source
 
 
+# -- QUILL Lite's PDF reader and OCR ship in the portable too (2026-10-17) ----
+
+
+def test_quill_lite_portable_carries_the_pdf_reader_and_windows_ocr() -> None:
+    """The installed copy reads PDFs through the shared runtime; the portable must too."""
+    product = bp.PRODUCTS["quilllite"]
+    assert "office-text" in product.dep_groups and "ocr" in product.dep_groups
+    project = tomllib.loads((_ROOT / "pyproject.toml").read_text(encoding="utf-8"))["project"]
+    groups = project["optional-dependencies"]
+    named = " ".join(groups["office-text"] + groups["ocr"])
+    for package in ("pdfplumber", "pypdf", "winrt-Windows.Media.Ocr"):
+        assert package in named
+
+
+def test_the_portable_build_imports_what_quill_lite_reads_pdfs_with() -> None:
+    probe = bp.import_check_source(bp.PRODUCTS["quilllite"])
+    for module in ("pdfplumber", "pypdf", "pypdfium2", "winrt.windows.media.ocr", "quill.io.pdf"):
+        assert f"import {module};" in probe
+    assert probe.startswith("import quill, wx; import quill.apps.lite;")
+    # A product with nothing extra still gets the original three imports.
+    assert bp.import_check_source(bp.PRODUCTS["weather"]) == (
+        "import quill, wx; import quill.apps.weather; print('OK', quill.__version__)"
+    )
+
+
 # -- yt-dlp, yt-dlp-ejs and deno ship in both downloads -----------------------
 
 

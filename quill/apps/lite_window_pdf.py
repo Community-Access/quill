@@ -49,10 +49,18 @@ from quill.core.pdf_open import (
 )
 from quill.ui.dialog_contract import show_message_box
 
-__all__ = ["DocumentPdfMixin", "is_read_only_source"]
+__all__ = ["NO_PDF_READER", "DocumentPdfMixin", "is_read_only_source"]
 
 #: The formats QUILL Lite's Save As writes, named as its type list names them.
 _LITE_FORMATS = "text, Markdown or rich text"
+
+#: Said in place of the reader's own sentence, which names QUILL's Download
+#: Optional Components -- a menu QUILL Lite does not have. Open and Import /
+#: Convert Document both say it.
+NO_PDF_READER = (
+    "This copy of QUILL Lite has no PDF reader, so it cannot open PDFs. "
+    "The installed QUILL Lite has one."
+)
 
 
 def is_read_only_source(path: Path | str | None) -> bool:
@@ -94,12 +102,7 @@ class DocumentPdfMixin:
         if found.refused:
             reason = found.text.strip().strip("()").strip()
             if found.engine == ENGINE_UNAVAILABLE:
-                # The reader's own sentence names QUILL's Download Optional
-                # Components, which QUILL Lite does not have.
-                reason = (
-                    "This copy of QUILL Lite has no PDF reader, so it cannot open PDFs. "
-                    "The installed QUILL Lite has one."
-                )
+                reason = NO_PDF_READER
             self._report_failure("Open failed", f"Could not open {path.name}.\n\n{reason}")
             return False
         if found.looks_scanned:

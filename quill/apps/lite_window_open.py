@@ -141,9 +141,10 @@ class DocumentBackgroundOpenMixin:
     def cancel_background_load(self) -> None:
         """Forget an open in progress. Called as the window closes; idempotent."""
         self._open_generation = getattr(self, "_open_generation", 0) + 1
-        token = getattr(self, "_open_lifetime", None)
-        if token is not None:
-            token.invalidate()
+        for name in ("_open_lifetime", "_import_lifetime"):  # an Import / Convert too
+            token = getattr(self, name, None)
+            if token is not None:
+                token.invalidate()
         self.opening_path = None
 
     def _still_wanted(self, generation: int) -> bool:
