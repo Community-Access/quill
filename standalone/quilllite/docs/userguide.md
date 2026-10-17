@@ -2209,6 +2209,12 @@ a setting. It is the same switch as the Abbreviations box in Customize Features.
 If you also use QUILL or Quill Inkwell, there is a switch in Preferences that
 lets all three share one list of abbreviations.
 
+Your own AutoCorrect corrections (Chapter 11, Correcting misspellings as you
+type) are kept in this same list, under the category **AutoCorrect**. You will
+see them in Manage Abbreviations if you choose that category. They are not
+abbreviations, though: they never expand just because **Expand Abbreviations**
+is on, and they are not in **Snippets**.
+
 ### Undo, and getting text back
 
 | Key | What it does |
@@ -2312,6 +2318,37 @@ hear the one you want.
 In rich text, the bullets and numbers are drawn for you and renumber
 themselves. In Markdown, QUILL Lite writes `- ` or `1. ` at the start of the
 lines you selected, and only those lines.
+
+##### Pressing Enter in a list
+
+In a Markdown document, **Enter** keeps a list going, the way it does in QUILL
+and in other Markdown editors. QUILL Lite says what it did, because your screen
+reader only hears a new line:
+
+- **Enter** at the end of an item starts the next one with the next marker: a
+  hyphen after a hyphen, `3. ` after `2. `, `3) ` after `2) `, and an unchecked
+  `- [ ] ` after a task item. A nested item keeps its indentation. You hear
+  "Continued list item".
+- **Enter** in the middle of an item splits it. In `1. bread milk`, with the
+  cursor before `milk`, you get `1. bread` and `2. milk`.
+- A new numbered item renumbers the items under it, so adding an item after the
+  first of `1. 2. 3.` gives `1. 2. 3. 4.`, and you hear "Continued list item,
+  renumbered 2 items below". If your list jumps (from `2.` to `7.`), your own
+  numbering from the jump on is left alone.
+- **Enter** on an item with nothing after its marker ends the list. The marker
+  goes, the empty line stays, and you hear "Exited list".
+- **Ctrl+Z** straight afterwards takes the whole thing back in one step: the new
+  line, its marker and any renumbering.
+
+This needs the **Markdown and HTML** area switched on in Customize Features,
+like everything else that writes Markdown for you.
+
+**In plain text, only if you ask.** Check **Continue lists in plain text** in
+**Tools > Preferences** and the same happens in a `.txt` file or a new untitled
+document. It starts off, because in plain text a line that happens to begin
+with `1.` is as often a date or a version number as a list. It never happens in
+a source code or settings file, whatever the box says, and never in rich text,
+where **Ctrl+Shift+L** makes real lists and **Enter** is WordPad's own.
 
 #### Keys that only work in rich text
 
@@ -6707,6 +6744,17 @@ curly one.
 Both of these also need **Autocorrect while typing** switched on in Customize
 Features. Neither ever runs in a plain text, source code or settings document.
 
+**Correct common misspellings as I type** is off. It changes `teh` to `the`
+when you type the space after it. It also needs **Autocorrect while typing** in
+Customize Features, and unlike the two above it does run in plain text, because
+a misspelling is as wrong in a `.txt` file as anywhere. It never runs in source
+code or settings files. *Correcting misspellings as you type*, below, has the
+details.
+
+**Continue lists in plain text** is off. With it on, **Enter** in a plain text
+list starts the next item, as it always does in Markdown. Chapter 6 has the
+details, under *Pressing Enter in a list*.
+
 ##### What you hear
 
 **When a command does something, give me:** **a sound**, **the action spoken**,
@@ -7064,22 +7112,91 @@ again.
 
 ##### How autocorrect works
 
-**Autocorrect has two rules, and switching the area on does not turn either of
-them on.** The area decides whether autocorrect exists at all. Two check boxes in
-**Tools > Preferences** decide which rules run:
+**Autocorrect has three rules, and switching the area on does not turn any of
+them on.** The area decides whether autocorrect exists at all. Three check boxes
+in **Tools > Preferences** decide which rules run:
 
 - **Curl quotes as I type**
 - **Turn two hyphens into an em dash**
+- **Correct common misspellings as I type**
 
-Both start off. So after you switch the area on, you also need to check the rule
-you want. They are separate because plenty of people want the long dash but not
-the curly quotes.
+All three start off. So after you switch the area on, you also need to check the
+rule you want. They are separate because plenty of people want the long dash but
+not the curly quotes, or the spelling fixes and nothing else.
 
-Neither rule ever runs in a plain text, source code or settings document,
-whatever the boxes say. A curly quote in a `.json` file would break it.
+The two typography rules never run in a plain text, source code or settings
+document, whatever the boxes say. A curly quote in a `.json` file would break
+it. Misspelling correction runs in plain text, Markdown and rich text, and never
+in source code or settings files.
 
-There is no third rule. QUILL Lite does **not** capitalise the start of a
+There is no fourth rule. QUILL Lite does **not** capitalise the start of a
 sentence, and never has.
+
+##### Correcting misspellings as you type
+
+With the rule on, QUILL Lite fixes the misspellings almost everybody makes the
+moment you finish the word. Type `teh` and a space and it becomes `the `; type
+`recieve` and press **Enter** and it becomes `receive` before the new line
+starts. You hear the word-corrected sound and "Corrected to the", because your
+screen reader only echoes the space and would never tell you the word changed.
+
+The built-in list has about 350 common English misspellings, such as `teh`,
+`seperate`, `definately`, `occured`, `untill` and `wierd`. Every one was checked
+against American and British dictionaries before it went in, so a word you
+spelled correctly is never on it. Your capitals are kept: `Teh` becomes `The`,
+and `febuary` becomes `February`. Brackets, quotes and punctuation round the
+word stay where they were, so `(recieve,` becomes `(receive,`.
+
+It never touches:
+
+- a word typed all in capitals, such as `TEH`, which is far more often an
+  acronym than a mistake;
+- web addresses, email addresses and paths, or any word with a full stop,
+  slash, colon, `@`, digit or underscore inside it, so `teh.example.com` and
+  `adress@example.com` stay as typed;
+- anything inside backticks or a fenced code block in Markdown;
+- source code and settings files, by their name, the same list that keeps
+  spell-check-as-you-type quiet in them.
+
+**Taking one back.** **Ctrl+Z** straight after a correction puts back exactly
+what you typed, as one undo step. QUILL Lite then leaves that word alone in this
+document for the rest of the session: type the space again and the word stays,
+and the status bar says "Kept teh as you typed it".
+
+##### AutoCorrect Entries (Alt+Shift+9)
+
+**Tools > AutoCorrect Entries...** (**Alt+Shift+9**) shows every correction, the
+built-in ones and yours, one per row: "teh becomes the, built in". It is QUILL's
+window, on QUILL's key, so it works the same in both.
+
+- **Find** narrows the list as you type.
+- **Corrections** is the list. **Enter** or **Space** on a row edits it.
+- **Add...** makes a correction of your own: the word as you mistype it, what it
+  should become, and whether case must match exactly. For example, `qill`
+  becoming `QUILL`. The word must be letters only (an apostrophe inside is
+  fine); what it becomes may be several words.
+- **Edit...** changes the row you are on. Editing a built-in one keeps your
+  version beside it, and the row says "built in, changed by you".
+- **Turn Off** stops the correction you are on without deleting it, and the row
+  ends in "stopped". The same button, now **Turn On**, starts it again. Use this
+  when a correction keeps changing a word you meant.
+- **Remove** deletes one of yours. On a built-in one you changed or turned off,
+  it puts it back as it shipped. A built-in correction cannot be deleted, so
+  Remove on one turns it off instead and tells you so.
+
+Every button says what it did, and your changes are kept when you close the
+window.
+
+Your corrections are kept in your abbreviation list, under the category
+**AutoCorrect**: QUILL Lite's own list, or QUILL's if Preferences says share
+it, in which case QUILL and QUILL Lite share your corrections too. Turning
+**Abbreviations** off in Customize Features does not turn your corrections off.
+The window needs the **Autocorrect while typing** area switched on, like the
+rule itself.
+
+**Limits.** The built-in list is English only. A correction happens when a
+space or **Enter** ends the word. AutoCorrect fixes known misspellings, not
+every misspelling; **F7** and the spell check as you type still find the rest.
 
 ##### What can never be switched off
 
@@ -7851,10 +7968,10 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | Key | Command |
 |---|---|
 | **Ctrl+Shift+F3** | All Matches... |
+| **Ctrl+Alt+Shift+F3** | Count Occurrences |
 | **Ctrl+Alt+Shift+F8** | Find in Open Documents... |
 | **Ctrl+Alt+Shift+F** | Search in Files... |
 | **Ctrl+Shift+R** | Replace Across Files... |
-| **Ctrl+Alt+Shift+F3** | Count Occurrences |
 
 #### Lines (in Edit)
 
@@ -7917,7 +8034,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Alt+Shift+Y** | Copy to Tray Slot... |
 | **Ctrl+Alt+V** | Paste from Tray... |
 | **Ctrl+Alt+Shift+Y** | Clear Copy Tray |
-| **Alt+Shift+S** | Clipboard Collector (on or off) |
+| **Alt+Shift+S** | Clipboard Collector |
 | **Alt+Shift+C** | Collect Selection |
 | **Ctrl+Alt+Shift+G** | Paste Everything Collected |
 | **Ctrl+Alt+Shift+C** | Clear the Collector |
@@ -8056,12 +8173,13 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+Shift+Home** | Snippets... |
 | **Ctrl+Alt+A** | Manage Abbreviations... |
 | **Alt+Shift+A** | Expand Abbreviations |
+| **Alt+Shift+9** | AutoCorrect Entries... |
 | **Ctrl+,** | Preferences... |
 | **Ctrl+Alt+F11** | Back Up Settings... |
 | **Ctrl+Alt+F12** | Restore Settings... |
 | **Ctrl+Alt+F10** | Customize Features... |
 | **Ctrl+Alt+Shift+Space** | Keyboard Manager... |
-| **Alt+Shift+M** | App Sounds (on or off) |
+| **Alt+Shift+M** | App Sounds |
 | **Ctrl+Alt+Shift+O** | Sound Scheme... |
 
 #### Spelling (in Tools)
@@ -8137,6 +8255,8 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Alt+Shift+PageDown** | Start or Stop Live Transcript |
 | **Ctrl+Alt+Shift+PageUp** | Dictation Context for This Document... |
 | **Alt+F9** | Dictation Status |
+| **F11** | Speak a Command |
+| **Shift+F4** | Review Dictation... |
 
 #### Change Case (in Tools)
 

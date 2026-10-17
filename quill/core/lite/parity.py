@@ -322,6 +322,7 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_list_marks": "edit.list_marks",
     "cmd_lower_case": "format.lower_case",
     "cmd_manage_abbreviations": "format.manage_abbreviations",
+    "cmd_autocorrect_entries": "format.autocorrect_entries",
     "cmd_misspelling_list": "tools.misspelling_list",
     "cmd_move_line_down": "format.move_line_down",
     "cmd_move_line_up": "format.move_line_up",

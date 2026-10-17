@@ -44,6 +44,16 @@ def is_trigger_char(character: str) -> bool:
 
 _ABBREVIATIONS_FILE = "abbreviations.json"
 
+#: The category that marks an entry as an **AutoCorrect** correction rather than
+#: an abbreviation. Corrections live in this same library and file -- one store,
+#: one manager, one backup -- but they are not abbreviations: they fire only
+#: while the separate *Correct common misspellings as I type* setting is on, by
+#: the stricter word rules in :mod:`quill.core.autocorrect`, and never expand
+#: through this module, Quick Insert or Quill Inkwell. Every matcher here skips
+#: them, which is what keeps turning abbreviations on from also turning
+#: corrections on.
+AUTOCORRECT_CATEGORY = "AutoCorrect"
+
 
 #: Which trigger characters an entry accepts (``triggers``). ``"manual"`` never
 #: auto-expands -- the entry is only reachable from Quick Insert, which is the
@@ -168,11 +178,12 @@ class AbbreviationLibrary:
         return list(self.abbreviations)
 
     def enabled_only(self) -> list[Abbreviation]:
-        return [a for a in self.abbreviations if a.enabled]
+        """Enabled abbreviations -- AutoCorrect corrections are not among them."""
+        return [a for a in self.abbreviations if a.enabled and a.category != AUTOCORRECT_CATEGORY]
 
     def find_by_trigger(self, text: str, case_sensitive: bool = False) -> Abbreviation | None:
         for a in sorted(self.abbreviations, key=lambda x: len(x.abbreviation), reverse=True):
-            if not a.enabled:
+            if not a.enabled or a.category == AUTOCORRECT_CATEGORY:
                 continue
             if a.case_sensitive or case_sensitive:
                 if a.abbreviation == text:
@@ -298,7 +309,7 @@ def try_expand(
         return None
     token = text[token_start:token_end]
     candidates = sorted(
-        (a for a in library.abbreviations if a.enabled),
+        (a for a in library.abbreviations if a.enabled and a.category != AUTOCORRECT_CATEGORY),
         key=lambda a: len(a.abbreviation),
         reverse=True,
     )

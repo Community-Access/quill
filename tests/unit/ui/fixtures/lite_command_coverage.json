@@ -18,6 +18,7 @@
   "cmd_align_justify": "covered",
   "cmd_align_left": "covered",
   "cmd_align_right": "covered",
+  "cmd_autocorrect_entries": "covered",
   "cmd_back_location": "covered",
   "cmd_backup_settings": "covered",
   "cmd_bold": "covered",

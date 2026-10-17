@@ -190,6 +190,13 @@ QUILL Lite gets them by *using* QUILL's code, not by copying its conclusions:
   disagreeing about what a trailing newline means.
 - **The clipboard stores** — `copy_tray`, `clip_library`, `clipboard_collector`.
 - **Abbreviations** — the engine, the store, and the manager dialog.
+- **Typing assists** (2026-10-16) — AutoCorrect for misspellings
+  (`quill/core/autocorrect.py`, its built-in list and the AutoCorrect Entries
+  window, `quill/ui/autocorrect_entries_dialog.py`) and Enter in a list
+  (`quill/core/list_continuation.py`). QUILL had list continuation and QUILL
+  Lite did not; both have AutoCorrect, on the same settings
+  (`autocorrect_misspellings`, `continue_lists_in_plain_text`, both off by
+  default) and the same key (Alt+Shift+9).
 - **The command palette**, the **feature-areas dialog**, **char_describe**,
   **selection**, **print pagination**, and the **announcement path**.
 
@@ -290,6 +297,8 @@ ladder and rewriting them would silently re-level every heading in the document.
 | Describe Character | A reader says "space" for four different characters |
 | A twelve-slot copy tray, a collector and a clip library | The system clipboard holds one thing |
 | Abbreviations, over QUILL Lite's own library | Expansion is an accessibility feature, not a typing one |
+| AutoCorrect for common misspellings, with your own entries in that same library | A misspelling found by ear costs a read-back; one fixed as it is typed costs nothing |
+| Enter continues a Markdown list (and, if asked, a plain-text one) | A marker typed by hand is a marker that can be forgotten, and the reader never says one was |
 | Sort, de-duplicate, trim, and three case conversions | Work, not writing — and expensive by keyboard |
 | Printing and Page Setup | Every text editor Windows has ever shipped has Ctrl+P |
 | The Command Palette | Answers "how do I sort lines?", which is the real question |
@@ -348,7 +357,9 @@ unchecks rich text, and the Format menu is gone entirely.
 
 Four areas ship **switched off** and are found in that same checklist rather
 than hidden, because a feature nobody can find is a feature that does not exist:
-autocorrect (welcome in prose, actively wrong in a config file), timestamped
+autocorrect (welcome in prose, actively wrong in a config file; since
+2026-10-16 it holds three rules, curly quotes, em dashes and misspelling
+correction, each its own Preferences checkbox, all off), timestamped
 backups (reassuring, and they fill a folder), Go To Anything (the palette, the
 headings list and the bookmark list each already answer their own part), and AI
 help, which is off because it sends what you ask about off this computer -- a

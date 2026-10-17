@@ -498,6 +498,15 @@ trailing newline means.</li>
 <code>clip_library</code>, <code>clipboard_collector</code>.</li>
 <li><strong>Abbreviations</strong> — the engine, the store, and the
 manager dialog.</li>
+<li><strong>Typing assists</strong> (2026-10-16) — AutoCorrect for
+misspellings (<code>quill/core/autocorrect.py</code>, its built-in list
+and the AutoCorrect Entries window,
+<code>quill/ui/autocorrect_entries_dialog.py</code>) and Enter in a list
+(<code>quill/core/list_continuation.py</code>). QUILL had list
+continuation and QUILL Lite did not; both have AutoCorrect, on the same
+settings (<code>autocorrect_misspellings</code>,
+<code>continue_lists_in_plain_text</code>, both off by default) and the
+same key (Alt+Shift+9).</li>
 <li><strong>The command palette</strong>, the <strong>feature-areas
 dialog</strong>, <strong>char_describe</strong>,
 <strong>selection</strong>, <strong>print pagination</strong>, and the
@@ -664,6 +673,18 @@ above</td>
 <td>Expansion is an accessibility feature, not a typing one</td>
 </tr>
 <tr>
+<td>AutoCorrect for common misspellings, with your own entries in that
+same library</td>
+<td>A misspelling found by ear costs a read-back; one fixed as it is
+typed costs nothing</td>
+</tr>
+<tr>
+<td>Enter continues a Markdown list (and, if asked, a plain-text
+one)</td>
+<td>A marker typed by hand is a marker that can be forgotten, and the
+reader never says one was</td>
+</tr>
+<tr>
 <td>Sort, de-duplicate, trim, and three case conversions</td>
 <td>Work, not writing — and expensive by keyboard</td>
 </tr>
@@ -737,12 +758,14 @@ menu is gone entirely.</p>
 <p>Four areas ship <strong>switched off</strong> and are found in that
 same checklist rather than hidden, because a feature nobody can find is
 a feature that does not exist: autocorrect (welcome in prose, actively
-wrong in a config file), timestamped backups (reassuring, and they fill
-a folder), Go To Anything (the palette, the headings list and the
-bookmark list each already answer their own part), and AI help, which is
-off because it sends what you ask about off this computer – a different
-kind of reason, and the one that needs a second question as well as a
-switch (§5.6).</p>
+wrong in a config file; since 2026-10-16 it holds three rules, curly
+quotes, em dashes and misspelling correction, each its own Preferences
+checkbox, all off), timestamped backups (reassuring, and they fill a
+folder), Go To Anything (the palette, the headings list and the bookmark
+list each already answer their own part), and AI help, which is off
+because it sends what you ask about off this computer – a different kind
+of reason, and the one that needs a second question as well as a switch
+(§5.6).</p>
 <p><strong>Nineteen areas now.</strong> <em>Markdown and HTML</em>
 arrived on 2026-09-15 with the rule that decides what Ctrl+B writes in a
 <code>.md</code>, and <em>AI help</em> on 2026-09-23. Both are areas

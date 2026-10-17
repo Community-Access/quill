@@ -105,7 +105,6 @@ from quill.core.features import (
     FeatureManager,
 )
 from quill.core.format_ops import (
-    continue_markdown_list,
     describe_indent_depth,
     indent_lines,
     outdent_lines,
@@ -461,6 +460,7 @@ from quill.ui.main_frame_table_nav import TableNavMixin
 from quill.ui.main_frame_text_editor import TextEditorMixin
 from quill.ui.main_frame_tutorials import TutorialsMixin
 from quill.ui.main_frame_typing import TypingPathMixin
+from quill.ui.main_frame_typing_assist import TypingAssistMixin
 from quill.ui.main_frame_typing_modes import TypingModesMixin
 from quill.ui.main_frame_undo import PersistentUndoMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
@@ -809,6 +809,7 @@ class MainFrame(
     WorktreesMixin,
     WriteSafetyMixin,
     TypingPathMixin,
+    TypingAssistMixin,  # Enter in a list; AutoCorrect
     PaletteToggleLabelsMixin,
     MediaPlayerMixin,
     GlowFileMixin,
@@ -2055,7 +2056,7 @@ class MainFrame(
             return
         if self._swallow_native_formatting_key(event):
             return
-        if self._maybe_autoformat_char(event):
+        if self._maybe_autocorrect_char(event) or self._maybe_autoformat_char(event):
             return
         event.Skip()
 
@@ -2742,27 +2743,6 @@ class MainFrame(
         if not dispatch(line, line_start, line_end):
             return False
         self.document.set_text(self.editor.GetValue())
-        return True
-
-    def _handle_markdown_list_return(self) -> bool:
-        if self._effective_markup_kind() not in {"markdown", "plain"}:
-            return False
-        start, end = self.editor.GetSelection()
-        if start != end:
-            return False
-        continuation = continue_markdown_list(
-            self.editor.GetValue(), self.editor.GetInsertionPoint()
-        )
-        if continuation is None:
-            return False
-        self._replace_document_text(continuation.text)
-        self.document.set_text(continuation.text)
-        self.editor.SetInsertionPoint(continuation.caret)
-        self.editor.SetSelection(continuation.caret, continuation.caret)
-        if continuation.exited_list:
-            self._set_status("Exited list")
-        else:
-            self._set_status("Continued list item")
         return True
 
     def _is_caret_on_markdown_list_item(self) -> bool:

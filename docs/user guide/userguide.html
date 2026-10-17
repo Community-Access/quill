@@ -4156,6 +4156,120 @@ abbreviation wins.</li>
 <li>Export your library now and then, as a backup and to copy it to
 another computer.</li>
 </ul>
+<h3 id="autocorrect-fixing-common-misspellings-as-you-type">AutoCorrect:
+fixing common misspellings as you type</h3>
+<p>AutoCorrect fixes the misspellings almost everybody makes, the moment
+you finish the word. Type <code>teh</code> and a space, and QUILL
+changes it to <code>the </code>. Type <code>recieve</code> and press
+<code>Enter</code>, and it becomes <code>receive</code> before the new
+line starts. You hear the word-corrected sound and QUILL says “Corrected
+to the”, because your screen reader only echoes the space you typed and
+would otherwise never tell you the word changed.</p>
+<p><strong>It is off to begin with</strong>, like everything else that
+changes your text without being asked. Turn it on in <strong>Settings
+&gt; Editing &gt; Correct common misspellings as I type</strong>
+(<code>Ctrl+,</code> opens Settings; type “misspell” in its search box
+to jump there). QUILL remembers the choice.</p>
+<h4 id="what-it-corrects">What it corrects</h4>
+<p>QUILL ships a list of about 350 common English misspellings, such as
+<code>teh</code>, <code>recieve</code>, <code>seperate</code>,
+<code>definately</code>, <code>occured</code>, <code>untill</code>,
+<code>wierd</code> and <code>adress</code>. Every one was checked
+against two English dictionaries (American and British) before it went
+in: a word that is spelled correctly in either is never on the list, and
+neither is a word that is also a real word or a name, such as
+<code>calender</code> (a machine for pressing cloth) or
+<code>Sargent</code>.</p>
+<p>QUILL keeps your capital letters. Some examples:</p>
+<ul>
+<li><code>teh </code> becomes <code>the </code>, and <code>Teh </code>
+at the start of a sentence becomes <code>The </code>.</li>
+<li><code>febuary </code> becomes <code>February </code>, because the
+correction has its own capital.</li>
+<li><code>(recieve, </code> becomes <code>(receive, </code>. Brackets,
+quotes and punctuation around the word stay where they were.</li>
+<li><code>TEH </code> is left alone. A word typed all in capitals is far
+more often an abbreviation or an acronym than a mistake.</li>
+</ul>
+<h4 id="what-it-never-touches">What it never touches</h4>
+<p>AutoCorrect looks only at a whole word that a space or
+<code>Enter</code> has just ended. It never changes:</p>
+<ul>
+<li><strong>Code and settings files.</strong> Nothing is corrected in a
+file whose name marks it as code or configuration (<code>.py</code>,
+<code>.json</code>, <code>.yaml</code>, <code>.ini</code>,
+<code>.html</code>, <code>.csv</code> and the rest), the same list that
+keeps spell-check-as-you-type quiet in those files. Plain text
+(<code>.txt</code>), Markdown, rich text and new untitled documents are
+all corrected.</li>
+<li><strong>Web addresses, email addresses and paths.</strong> A word
+with a full stop, slash, colon, <code>@</code>, digit or underscore
+inside it is never a misspelling, so <code>teh.example.com</code>,
+<code>adress@example.com</code> and <code>my_recieve_function</code>
+stay exactly as typed.</li>
+<li><strong>Code inside prose.</strong> In a Markdown document, nothing
+inside backticks or inside a fenced code block is corrected.</li>
+</ul>
+<h4 id="taking-a-correction-back">Taking a correction back</h4>
+<p><code>Ctrl+Z</code> straight after a correction puts back exactly
+what you typed (the correction and the space are one undo step). QUILL
+then leaves that word alone in this window for the rest of the session:
+type the space again and the word stays the way you wrote it, and the
+status line says “Kept teh as you typed it”. If you never want a
+correction again, turn it off in AutoCorrect Entries, below.</p>
+<h4 id="autocorrect-entries-altshift9">AutoCorrect Entries
+(Alt+Shift+9)</h4>
+<p><strong>Insert &gt; AutoCorrect Entries…</strong>
+(<code>Alt+Shift+9</code>) shows every correction, the built-in ones and
+your own, one per row, read as a sentence: “teh becomes the, built in”.
+It is the same window, on the same key, in QUILL Lite.</p>
+<ul>
+<li><strong>Find</strong> narrows the list as you type. Type
+<code>rec</code> and only the corrections with <code>rec</code> in the
+misspelling or the correction remain.</li>
+<li><strong>Corrections</strong> is the list. <code>Enter</code> or
+<code>Space</code> on a row edits it.</li>
+<li><strong>Add…</strong> makes a correction of your own. You type the
+word as you mistype it, what it should become, and whether case must
+match exactly. For example, add <code>qill</code> becoming
+<code>QUILL</code>, or <code>adn</code> becoming <code>and</code> if it
+is not already there. The word to correct must be letters only (an
+apostrophe inside is fine); what it becomes can be several words.</li>
+<li><strong>Edit…</strong> changes the row you are on. Editing a
+built-in correction saves your version beside it, and the row then says
+“built in, changed by you”.</li>
+<li><strong>Turn Off</strong> stops the correction you are on without
+deleting it; the row then ends in “stopped”, and the same button, now
+<strong>Turn On</strong>, starts it again. This is the answer when a
+correction keeps changing a word you meant.</li>
+<li><strong>Remove</strong> deletes a correction of yours. On a built-in
+correction you changed or turned off, it puts it back the way QUILL
+shipped it. A built-in correction cannot be deleted, so Remove on one
+turns it off instead and tells you so.</li>
+</ul>
+<p>Every button says what it did. Your changes are kept when you close
+the window with <strong>Close</strong> or <code>Escape</code>.</p>
+<h4 id="where-your-corrections-are-kept">Where your corrections are
+kept</h4>
+<p>Your corrections are kept with your abbreviations, in the same
+<code>abbreviations.json</code> file in QUILL’s data folder, under the
+category <strong>AutoCorrect</strong>. So <strong>Back Up
+Settings</strong> carries them, and you can see them in <strong>Manage
+Abbreviations</strong> too (choose the AutoCorrect category). They are
+not abbreviations, though: they never expand while only Abbreviation
+Expansion is on, they do not appear in Quick Insert, and Quill Inkwell
+does not type them in other programs. AutoCorrect works inside QUILL and
+QUILL Lite.</p>
+<h4 id="limits">Limits</h4>
+<ul>
+<li>The built-in list is English only.</li>
+<li>A correction happens when a space or <code>Enter</code> ends the
+word. A word followed only by a full stop at the very end of your
+document is corrected when you type the space after the full stop.</li>
+<li>AutoCorrect fixes known misspellings, not every misspelling. Spell
+check (<code>F7</code>) and spell-check-as-you-type still find the
+rest.</li>
+</ul>
 <h3 id="insert-automation">Insert Automation</h3>
 <p>Insert Automation ties abbreviations, smart text triggers,
 <code>.LOG</code> files and append anchors together, all from the
@@ -4480,6 +4594,14 @@ autosaves the open document, from 5 to 600 seconds. The default is
 quotes into curly ones as you type. Off to begin with.</li>
 <li><strong>Autoformat double hyphen to dash</strong> turns two hyphens
 into a dash as you type. Off to begin with.</li>
+<li><strong>Correct common misspellings as I type</strong> turns on
+AutoCorrect, which changes <code>teh</code> to <code>the</code> when you
+type the space after it. Off to begin with; Chapter 4’s AutoCorrect
+section has the details.</li>
+<li><strong>Continue lists in plain text</strong> makes
+<code>Enter</code> continue a list in a plain text document the way it
+always does in Markdown. Off to begin with; see Typing in a list in
+Chapter 5.</li>
 <li><strong>Multi-press time window (ms)</strong> is how long QUILL
 waits for a second or third press of the same key before it treats the
 first as a single press. It matters for the Copy Tray and Command
@@ -4912,14 +5034,43 @@ is off, only the first item does.</p>
 <p>These keys always work in Markdown and HTML documents. In a
 plain-text document QUILL says the command is unavailable.</p>
 <h4 id="typing-in-a-list">Typing in a list</h4>
-<p>Markdown lists behave the way they do in other editors:</p>
+<p>Markdown lists behave the way they do in other editors, and QUILL
+tells you what <code>Enter</code> did, because your screen reader only
+hears a new line:</p>
 <ul>
-<li><code>Enter</code> continues the current bullet, numbered or task
-item.</li>
-<li><code>Enter</code> on an empty list marker ends the list.</li>
+<li><code>Enter</code> at the end of an item starts the next one with
+the next marker: a hyphen after a hyphen, <code>3. </code> after
+<code>2. </code>, <code>3) </code> after <code>2) </code>, and an
+unchecked <code>- [ ] </code> after any task item. The item’s
+indentation is kept, so a nested item continues at its own depth. QUILL
+says “Continued list item”.</li>
+<li><code>Enter</code> in the middle of an item splits it there. In
+<code>1. bread milk</code>, with the cursor before <code>milk</code>,
+<code>Enter</code> gives <code>1. bread</code> and
+<code>2. milk</code>.</li>
+<li>A new numbered item renumbers the items below it while they still
+count on from it, so adding an item after the first of
+<code>1. 2. 3.</code> gives <code>1. 2. 3. 4.</code> and QUILL says
+“Continued list item, renumbered 2 items below”. A list that jumps (from
+<code>2.</code> to <code>7.</code>, say) keeps your numbering from the
+jump on.</li>
+<li><code>Enter</code> on an empty list marker ends the list: the marker
+goes, the empty line stays, and QUILL says “Exited list”.</li>
+<li><code>Ctrl+Z</code> straight afterwards takes back the new line, its
+marker and any renumbering in one step.</li>
 <li>On a list item, <code>Tab</code> nests it one level deeper and
 <code>Shift+Tab</code> brings it back out.</li>
 </ul>
+<p><strong>Plain text</strong> does this only if you ask: turn on
+<strong>Settings &gt; Editing &gt; Continue lists in plain
+text</strong>. It is off to begin with because, in a <code>.txt</code>
+file or a new untitled note, a line that happens to start with
+<code>1.</code> is as often a date, a version number or a paragraph you
+are numbering by hand. Even with the setting on, QUILL never continues a
+list in a code or settings file. In a rich text document
+(<code>.rtf</code>, <code>.docx</code>) lists are formatting rather than
+characters, and <code>Ctrl+Shift+L</code> makes them; <code>Enter</code>
+there is the word processor’s own.</p>
 <p>For bigger changes, open <strong>Insert &gt; List &gt; List
 Manager…</strong> (<code>Ctrl+Shift+Grave, L</code>). It shows your list
 as a tree, where you can move, promote, demote, add, edit and delete

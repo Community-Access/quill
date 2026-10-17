@@ -279,6 +279,18 @@ PURPOSES: dict[str, str] = {
         "appears. This is QUILL Lite's own list unless you asked it, in "
         "Preferences, to share the one QUILL and Quill Inkwell use."
     ),
+    "AutoCorrect Entries": (
+        "Every correction AutoCorrect makes as you type, built in and your own, "
+        "one per row: teh becomes the. Type in Find to narrow the list. Add makes "
+        "a correction of your own, Edit changes the one you are on, Turn Off "
+        "stops one without deleting it, and Remove deletes one of yours or puts a "
+        "built-in one back. QUILL has the same window on the same key."
+    ),
+    "AutoCorrect Entry": (
+        "One correction: the word as you mistype it, and what it should become. "
+        "Leave Match case exactly unchecked unless the case of the word matters; "
+        "unchecked, a capital at the start of a sentence is kept."
+    ),
     "Customize QUILL Lite Features": (
         "Turn whole parts of QUILL Lite on or off. Unchecking an area removes its "
         "menu and its keys entirely, which is how this stays a small editor "
@@ -456,6 +468,8 @@ PURPOSES.update({
 #: Titles of the windows QUILL opens from the same shared modules. QUILL's F1
 #: takes their opening paragraph from here rather than keeping a second copy.
 SHARED_WITH_QUILL: frozenset[str] = frozenset({
+    "AutoCorrect Entries",
+    "AutoCorrect Entry",
     "AI Assistant",
     "AI Conversation",
     "Saved AI Conversations",

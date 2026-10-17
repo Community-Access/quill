@@ -4670,7 +4670,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
-<p>Control coverage: 216 audited sites (216 helped).</p>
+<p>Control coverage: 227 audited sites (227 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
@@ -4712,6 +4712,16 @@ Control Z takes back.</p>
 like, a question about it. The picture goes to OpenAI on your ChatGPT
 subscription and the description comes back in a window you can read,
 copy or insert into your document.</p>
+<p><strong>AutoCorrect Entries.</strong> Every correction AutoCorrect
+makes as you type, built in and your own, one per row: teh becomes the.
+Type in Find to narrow the list. Add makes a correction of your own,
+Edit changes the one you are on, Turn Off stops one without deleting it,
+and Remove deletes one of yours or puts a built-in one back. QUILL has
+the same window on the same key.</p>
+<p><strong>AutoCorrect Entry.</strong> One correction: the word as you
+mistype it, and what it should become. Leave Match case exactly
+unchecked unless the case of the word matters; unchecked, a capital at
+the start of a sentence is kept.</p>
 <p><strong>Bookmarks.</strong> The places you marked in this document,
 in the order they appear. Choose one and press Enter to go there; Remove
 takes one out of the list without touching the document. Bookmarks last
@@ -6018,6 +6028,50 @@ whole document, and {title} for the document’s title.</li>
 window.</li>
 <li><code>cancel_btn</code>: Closes this window without saving
 anything.</li>
+</ul>
+<h4
+id="correctioneditdialog-quilluiautocorrect_entries_dialogpy">CorrectionEditDialog
+(<code>quill/ui/autocorrect_entries_dialog.py</code>)</h4>
+<ul>
+<li><code>self.word</code>: The misspelling, exactly as you type it
+wrongly. One word of letters only; an apostrophe inside it is fine. It
+is matched in any case unless you check Match case exactly.</li>
+<li><code>self.fixed</code>: What the word becomes when you type a space
+or press Enter after it. It may be more than one word, on one line.</li>
+<li><code>self.case</code>: Checked: only the word typed in exactly this
+case is corrected, and the correction goes in exactly as written.
+Unchecked, the usual choice: teh, Teh and the start of a sentence are
+all corrected, keeping your capital letter.</li>
+<li><code>ok</code>: Save this correction and go back to the list.</li>
+<li><code>cancel</code>: Go back to the list without saving
+anything.</li>
+</ul>
+<h4
+id="autocorrectentriesdialog-quilluiautocorrect_entries_dialogpy">AutocorrectEntriesDialog
+(<code>quill/ui/autocorrect_entries_dialog.py</code>)</h4>
+<ul>
+<li><code>self.filter</code>: Type part of a word to narrow the list to
+the corrections that contain it, either the misspelling or what it
+becomes. Clear it to see them all again.</li>
+<li><code>self.list</code>: Every correction, one per row: the
+misspelling, what it becomes, and whether it is built in or yours. A row
+that ends in stopped is turned off. Corrections happen only while
+Correct common misspellings as I type is on, and never in code or
+settings files.</li>
+<li><code>self.add_button</code>: Add a correction of your own. Adding a
+word that is already built in changes what it becomes; Remove later puts
+the built-in one back.</li>
+<li><code>self.edit_button</code>: Change the correction you are on: the
+misspelling, what it becomes, or whether case must match.</li>
+<li><code>self.toggle_button</code>: Stop the correction you are on from
+happening, without deleting it, or start a stopped one again. Use this
+when a correction keeps changing a word you meant to type.</li>
+<li><code>self.remove_button</code>: Delete a correction of yours, or
+put a built-in one back the way it shipped after you changed or stopped
+it. A built-in correction cannot be deleted; Remove on one turns it off
+instead.</li>
+<li><code>close</code>: Close this window. Your changes are already
+kept.</li>
 </ul>
 </main>
 </body>
