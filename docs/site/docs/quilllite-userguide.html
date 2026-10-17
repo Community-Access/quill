@@ -2034,6 +2034,14 @@ something:</p>
 </tr>
 </tbody>
 </table>
+<p>All seven are rows of the <strong>Edit</strong> menu itself, so if
+you forget a key, press <strong>Alt+E</strong> and arrow down: after
+Replace you hear <strong>Find in Open Documents…</strong>,
+<strong>Search in Files…</strong> and <strong>Replace Across
+Files…</strong>, each with its key. The two that answer “how many” and
+“where in this document”, <strong>All Matches…</strong> and
+<strong>Count Occurrences</strong>, are one step further in, on
+<strong>Edit &gt; Matches</strong>.</p>
 <p>When a search reaches the end of the document, it goes back to the
 top and keeps looking, and it tells you it has done so. That little
 message is worth listening for. It is how you know a document has only
@@ -2096,9 +2104,9 @@ all your open documents</h4>
 <p>Sometimes the thing you are looking for is in one of a dozen
 documents you have open, or you need to change a name in all of them.
 <strong>Find in Open Documents…</strong>
-(<strong>Ctrl+Alt+Shift+F8</strong>, on <strong>Edit &gt;
-Matches</strong>) searches every document QUILL Lite has open, not just
-the one in front of you.</p>
+(<strong>Ctrl+Alt+Shift+F8</strong>, on the <strong>Edit</strong> menu
+under Replace) searches every document QUILL Lite has open, not just the
+one in front of you.</p>
 <p>It searches the text exactly as it is in each window, so it
 finds:</p>
 <ul>
@@ -2158,8 +2166,11 @@ them one match at a time without opening the window again. As soon as
 you start an ordinary Find (<strong>Ctrl+F</strong>) or Replace
 (<strong>Ctrl+H</strong>), F3 goes back to searching just the document
 you are in.</p>
-<p>QUILL and QUILL Lite share this window and work the same way, on the
-same key.</p>
+<p>QUILL and QUILL Lite share this window and work the same way, and it
+is in the same place in both: the <strong>Edit</strong> menu, under
+Replace. The key differs by one chord: QUILL uses
+<strong>Ctrl+Shift+F10</strong>, because in QUILL Ctrl+Alt+Shift+F8
+opens Quill Weather.</p>
 <h4 id="searching-a-whole-folder-of-files">Searching a whole folder of
 files</h4>
 <p>Find in Open Documents works on what you have open. When the files
@@ -2167,13 +2178,30 @@ you want are saved in a folder and you would rather not open them all,
 use the folder search, the same one QUILL has:</p>
 <ul>
 <li><strong>Search in Files…</strong>
-(<strong>Ctrl+Alt+Shift+F</strong>, on <strong>Edit &gt;
-Matches</strong>) looks through every file in a folder, and every folder
-inside it.</li>
+(<strong>Ctrl+Alt+Shift+F</strong>, on the <strong>Edit</strong> menu,
+just below Find in Open Documents; <strong>Alt+E</strong>, then
+<strong>S</strong>) looks through every file in a folder, and every
+folder inside it.</li>
 <li><strong>Replace Across Files…</strong>
-(<strong>Ctrl+Shift+R</strong>, beside it) changes every match in those
-files, on disk.</li>
+(<strong>Ctrl+Shift+R</strong>, the row below it) changes every match in
+those files, on disk.</li>
 </ul>
+<p>Both are on the same keys and in the same place in QUILL. In a new
+install they are there from the start. If you chose the Notepad or
+WordPad profile in <strong>Tools &gt; Customize Features…</strong>
+(<strong>Ctrl+Alt+F10</strong>), they are switched off with the rest of
+the <strong>Matches and wider searches</strong> area, because neither
+program had them; check that box there to bring all five back.</p>
+<p>An example. You remember writing to somebody called Priya about a
+deadline, but not which of the forty letters in your Letters folder it
+was in. Open any document from that folder, press
+<strong>Ctrl+Alt+Shift+F</strong>, leave <strong>Starting
+folder</strong> as it is, type <code>*.txt</code> in <strong>File
+pattern</strong> and <code>Priya</code> in <strong>Search text</strong>,
+and press <strong>Enter</strong>. When the search finishes QUILL Lite
+tells you, for example, “3 matches in 2 of 40 files”, and a new window
+lists each file with the matching lines. Press <strong>Ctrl+O</strong>
+and type the file name it gave you to open the one you want.</p>
 <p>Both open the same window, which asks for:</p>
 <ul>
 <li><strong>Starting folder</strong>: where to look. It starts at the
@@ -4549,8 +4577,10 @@ again and they come back, on the same sound card as before. You hear a
 short sound as they go off, and another where they now play when they
 come back on, and both are spoken too. <strong>Tools &gt; App
 Sounds</strong> has a check mark that shows whether they are on.</li>
-<li><strong>Tools &gt; Sound Scheme… (Ctrl+Alt+Shift+O) &gt; App Sounds
-Play On…</strong> lets you pick where they play:
+<li><strong>Tools &gt; Sound Scheme…</strong>
+(<strong>Ctrl+Alt+Shift+O</strong>) opens the Sound Scheme window; its
+<strong>App Sounds Play On…</strong> button lets you pick where they
+play:
 <ul>
 <li><strong>System default</strong>. This is where it starts. The sounds
 go where Windows sends sound.</li>
@@ -9208,8 +9238,8 @@ writing tools around the formatting:</p>
 <li>No line tools (Edit &gt; Lines) and no Change Case.</li>
 <li>No clipboard history or Copy Tray.</li>
 <li>No bookmarks, no abbreviations, and no Selection submenu.</li>
-<li>No Matches list, no Back and Forward, no Command Palette, and no Go
-To Anything.</li>
+<li>No Matches list, no Find in Open Documents or Search in Files, no
+Back and Forward, no Command Palette, and no Go To Anything.</li>
 <li>No Describe Character and no dictation.</li>
 <li>No dictionary or thesaurus (WordPad never had one).</li>
 <li>No autocorrect and no backups.</li>
@@ -9234,10 +9264,11 @@ size</strong>.</p>
 <p><strong>Off</strong>, all nineteen of the others: the Format menu and
 everything under it, headings, Markdown and HTML, bookmarks, the line
 tools, Change Case, the clipboard history, abbreviations, the Selection
-submenu, spell check, the dictionary and thesaurus, Matches, Back and
-Forward, the Command Palette, Go To Anything, Describe Character,
-dictation, autocorrect, backups and AI help. Nothing that Notepad does
-not have.</p>
+submenu, spell check, the dictionary and thesaurus, Matches (and with it
+Find in Open Documents and Search in Files), Back and Forward, the
+Command Palette, Go To Anything, Describe Character, dictation,
+autocorrect, backups and AI help. Nothing that Notepad does not
+have.</p>
 <p><strong>Ctrl+N makes a plain text document</strong>, and the Save As
 dialog stops offering you formats you have switched off.</p>
 <p><strong>Some things stay, because Notepad has always had
@@ -9332,8 +9363,10 @@ word</td>
 <td>on</td>
 </tr>
 <tr>
-<td><strong>The Matches submenu</strong></td>
-<td>All Matches and Count Occurrences (Find itself stays)</td>
+<td><strong>Matches</strong></td>
+<td>The Matches submenu (All Matches, Count Occurrences), and Find in
+Open Documents, Search in Files and Replace Across Files on Edit (Find
+itself stays)</td>
 <td>on</td>
 </tr>
 <tr>
@@ -10453,6 +10486,18 @@ list inside the app.</p>
 <td>Replace…</td>
 </tr>
 <tr>
+<td><strong>Ctrl+Alt+Shift+F8</strong></td>
+<td>Find in Open Documents…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+F</strong></td>
+<td>Search in Files…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+R</strong></td>
+<td>Replace Across Files…</td>
+</tr>
+<tr>
 <td><strong>Ctrl+G</strong></td>
 <td>Go To…</td>
 </tr>
@@ -10482,18 +10527,6 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+Alt+Shift+F3</strong></td>
 <td>Count Occurrences</td>
-</tr>
-<tr>
-<td><strong>Ctrl+Alt+Shift+F8</strong></td>
-<td>Find in Open Documents…</td>
-</tr>
-<tr>
-<td><strong>Ctrl+Alt+Shift+F</strong></td>
-<td>Search in Files…</td>
-</tr>
-<tr>
-<td><strong>Ctrl+Shift+R</strong></td>
-<td>Replace Across Files…</td>
 </tr>
 </tbody>
 </table>
