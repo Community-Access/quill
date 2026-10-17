@@ -2,6 +2,18 @@
 
 ## 1.0.0
 
+### Word, Markdown and HTML saves no longer carry the dark theme's grey (2026-10-16)
+
+A dark theme sets the rich control's foreground colour, which wxMSW applies as
+a character colour on every run. The `.rtf` save already took it off for the
+save (`_theme_colour_off`, bad.md R4), but saving a rich tab as `.docx`, `.md`
+or `.html` read the control's RTF with the grey still on, and `rtf_to_rich`
+kept it. Anyone working in dark mode sent grey text to everyone they shared
+a Word document with. Both paths in `quill/ui/main_frame_rich_mode.py` now
+read the RTF inside `_theme_colour_off`, and
+`test_docx_and_markup_saves_take_the_theme_colour_off_first` pins the order.
+QUILL Lite has no Word save yet and its `.rtf` save was already guarded.
+
 ### Dictation: self-repair, named styles, learning from corrections, and opt-in polish (D-20, D-21, 2026-10-16)
 
 dict.md section 4, "Polish", "Learn" and "Modes". Design record section 28.
