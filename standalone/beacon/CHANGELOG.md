@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+- **The guide names real menus, and a check keeps it that way** (2026-10-17).
+  The QuillSync and QuillBeacon guide described where commands live in prose
+  ("Tools, then Publish Collection") that nothing could check. Every such
+  place now gives the menu path and key exactly as the menu bar shows it, for
+  example **Tools > Publish Collection...** (Ctrl+Shift+W) or
+  **Sync > Sync Settings...**, and a new section, **Keys and menus you will
+  use most**, covers searching (**View > Search**, Ctrl+F), saving, opening,
+  trashing and undoing, Where Am I (Ctrl+F1), Next Pane (F6) and the Command
+  Palette (Ctrl+Shift+P), with a worked example that saves a search as a Smart
+  Collection. It also says which commands have no key yet, such as
+  **Edit > Find Duplicates** and the Sync menu, so you know to use the menu.
+  The 0.1.0 entry below that gave Where Am I as F1 now says it moved to
+  Ctrl+F1. A check now builds QuillBeacon's real menus during testing and
+  fails if this changelog or the guide names a menu path or key the menus do
+  not have, or if two menu rows show the same key. Its first run found
+  nothing the menus lacked; the prose paths it could not read were the gap.
+
 - **Every release build checks its version against what is published** (2026-10-15). The shared QuillVille runtime carries every app's version number, so a build of one app could make another report a version nobody can download yet, and Check for Updates would then never offer the real one. Quill Beacon's release builds now run the same check Quill Radio, QUILL Lite, QUILL Cast and Quill Weather already did, and a build of every app at once checks them all again instead of stopping at an app it did not know.
 
 - **Where Quill Beacon's own sounds play, and Alt+Shift+M to turn them off.** **Tools > App Sounds Play On...** (Ctrl+Alt+S) offers System default, None (no sounds), or any sound card or headset by name. After a change one sound plays on the new card, so you hear where it went. If that card is unplugged the sounds play on the system default until it is back, and Quill Beacon says so once. **Alt+Shift+M** turns Quill Beacon's sounds off and back on where they were, and **Tools > App Sounds** shows a check mark while they are on. Each QUILL app keeps its own choice; "Share these choices with my other Quill apps" keeps them in step. Your screen reader is never moved. Asked for on QUILLVille by Rick Lewis.
@@ -99,7 +116,8 @@ First slice: Phase-1 local-first desktop MVP.
 - Status-bar announcements with configurable verbosity and Where Am I
   (PRD 17.6, 18.4).
 - Keyboard model: no drag-and-drop required; F1 Where Am I, F6 next pane,
-  F2 rename, Delete trash, Enter open (PRD 18.3).
+  F2 rename, Delete trash, Enter open (PRD 18.3). (Where Am I has since
+  moved to Ctrl+F1; F1 now explains the window and the focused control.)
 
 ### Documentation
 - PRD and codebase renamed to QuillBeacon / QuillVille / QuillSync throughout.

@@ -249,7 +249,6 @@ class CastMenuBarMixin:
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self.podcast_toggle_stop_after_episode(), id=stop_after_id
         )
-        continue_id = wx.NewIdRef()
         now_playing_id = wx.NewIdRef()
         self._area_row(
             episode_menu,
@@ -262,7 +261,6 @@ class CastMenuBarMixin:
         self._area_row(episode_menu, "notes", about_ep_id, "Ab&out This Episode...\tCtrl+Shift+A")
         note_id = wx.NewIdRef()
         self._area_row(episode_menu, "notes", note_id, "Add Ep&isode Note...\tCtrl+Alt+N")
-        queue_id = wx.NewIdRef()
         self._append_queue_run_submenu(episode_menu)
         mark_all_id = wx.NewIdRef()
         episode_menu.Append(
@@ -350,10 +348,8 @@ class CastMenuBarMixin:
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_previous_chapter(), id=prev_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_skip_forward(), id=skip_fwd_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_skip_back(), id=skip_back_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_continue_listening(), id=continue_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_podcast_episode_extras(), id=about_ep_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.add_podcast_note(), id=note_id)
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_play_queue(), id=queue_id)
         menu_bar.Append(episode_menu, "&Episode")
 
         downloads_menu = wx.Menu()
@@ -369,19 +365,15 @@ class CastMenuBarMixin:
             wx.EVT_MENU, lambda _e: self.podcast_resume_all_downloads(), id=resume_all_id
         )
         downloads_menu.AppendSeparator()
-        manage_downloads_id, free_space_id, housekeeping_id = (
-            wx.NewIdRef(),
-            wx.NewIdRef(),
-            wx.NewIdRef(),
-        )
+        # Downloads itself is View > Downloads (Ctrl+D), as Continue Listening and
+        # Play Queue are View rows; the ids once bound here for all three had no
+        # menu row, so nothing could fire them (todo 50).
+        free_space_id, housekeeping_id = wx.NewIdRef(), wx.NewIdRef()
         self._advanced_row(
             downloads_menu, "free_space", free_space_id, "&Free Up Space\tCtrl+Alt+F"
         )
         self._advanced_row(
             downloads_menu, "housekeeping", housekeeping_id, "Run &Housekeeping Now\tCtrl+Alt+H"
-        )
-        self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self.open_podcast_downloads(), id=manage_downloads_id
         )
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_free_up_space(), id=free_space_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.podcast_run_maintenance(), id=housekeeping_id)
@@ -525,7 +517,6 @@ class CastMenuBarMixin:
             stats_id,
             sleep_episode_id,
             sleep_extend_id,
-            manage_downloads_id,
             free_space_id,
             housekeeping_id,
             channel_id,
@@ -552,10 +543,8 @@ class CastMenuBarMixin:
             prev_id,
             skip_fwd_id,
             skip_back_id,
-            continue_id,
             about_ep_id,
             note_id,
-            queue_id,
             sleep_id,
             enhance_id,
             pause_all_id,

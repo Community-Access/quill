@@ -69,7 +69,7 @@ From a checkout of the repository:
 The window opens with keyboard focus on your books list. From top to bottom:
 
 - **Studio activity** (read-only text): what the Studio is doing right now - "Ready", or live progress during a run. The same text is mirrored in the status bar.
-- Three buttons, one per journey: **Narrate Documents...**, **Build From Recordings...**, **Edit a Book...**
+- Three buttons, one per journey: **Narrate Documents...** (Alt+N), **Build From Recordings...** (Alt+R), **Edit a Book...** (Alt+E). Build From Recordings was Alt+B until 2026-10-17, but Alt+B is also the **Book Tools** menu, and when a button and a menu share a letter Windows presses the button, so the menu could not be opened with Alt+B. Now Alt+B always opens Book Tools and Alt+R presses Build From Recordings; for example, press Alt+R from the books list to start a new book from a folder of recordings. The menu row Studio > Build From Recordings... (Ctrl+Shift+B) does the same.
 - **Your books**: your audiobooks, organized as a tree (see below). Press **Enter** to open the selected book in the Chapter Workbench. A book whose file has been moved or renamed is marked "(missing)".
 
 ### The status bar
@@ -498,6 +498,8 @@ All the Quill apps are published from one place, and each one recognizes its own
 | AI menu | Alt+A |
 | View menu | Alt+V |
 | Help menu | Alt+H |
+| Build From Recordings button (main window) | Alt+R |
+| Your books list (main window) | Alt+Y |
 
 Every button and field in the wizard, the Workbench, and the dialogs also has an access key (underlined letter), reachable with Alt plus that letter while the surface has focus.
 

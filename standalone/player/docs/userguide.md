@@ -102,6 +102,50 @@ Rewind, Forward, Where am I?, Mute, and the Speed, Position and Volume
 controls. These keys are fixed; the standalone player has no Keyboard
 Shortcuts editor yet.
 
+### Alt letters in the window
+
+Every button and labelled control in the window has its own Alt letter, and
+none of them is a letter the menu bar uses. That matters because Windows sends
+Alt plus a letter to a button before a menu when both claim it: until
+2026-10-17, Alt+P pressed Play instead of opening the Playback menu, and Alt+V,
+Alt+W, Alt+F and Alt+N did the same to View, Window, File and Navigation. Now
+the menus keep their letters and the buttons moved:
+
+| Alt+ | Opens or presses | Alt+ | Opens or presses |
+| --- | --- | --- | --- |
+| F | File menu | A | Play or Pause button |
+| N | Navigation menu | T | Stop |
+| P | Playback menu | C | Previous chapter |
+| V | View menu | X | Next chapter |
+| Q | QuillVille menu | R | Rewind |
+| H | Help menu | O | Forward |
+| W | Window menu | I | Where am I? |
+| D | Speed | U | Mute or Unmute |
+| M | Add Bookmark (Bookmarks page) | K | Remove Bookmark (Bookmarks page) |
+| E | Equalizer preset (Audio page) | B | Volume boost (Audio page) |
+| L | Normalize loudness (Audio page) | S | Skip silence (Audio page) |
+
+The Play button says Play or Pause depending on what is happening, and the
+Mute button says Mute or Unmute, but each keeps one letter, so Alt+A and Alt+U
+always work. For example: press Alt+P and the Playback menu opens; press Escape,
+then Alt+A, and the book plays or pauses. The Bookmarks and Audio letters work
+while that page is the one showing (Ctrl+Tab moves between pages).
+
+### Arrows in the Chapters tree, sliders and page tabs
+
+Left and Right seek five seconds back and forward (Shift with them, thirty
+seconds) from anywhere in the window except where the focused control needs
+them itself. In the **Chapters** tree, Left closes a part and Right opens it,
+as in any tree, so a DAISY book's parts and chapters can be opened and closed
+from the keyboard. On the **position** and **volume** sliders the arrows move
+the slider, so Left on the volume slider makes it quieter rather than going
+back in the book. On the page tabs (Chapters, Bookmarks, Audio) Left and Right
+change the page. Text fields keep every key, as before. For example: Tab to the
+Chapters tree, press Right on "Part One" to open it, Down to a chapter and
+Enter to play it; then Tab to a button and Right goes forward five seconds.
+The limit: letter keys such as X, C and B are still the player's in the tree,
+so typing a chapter's first letter does not jump to it there.
+
 | Key | Action | Key | Action |
 | --- | --- | --- | --- |
 | C | Play / Pause | V | Stop |

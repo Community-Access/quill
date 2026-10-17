@@ -350,7 +350,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
                 lambda _e: self.open_studio("documents"),
             ),
             (
-                "&Build From Recordings...",
+                "Build From &Recordings...",
                 "Combine a folder of recordings into one chaptered audiobook",
                 lambda _e: self.open_studio("audio"),
             ),

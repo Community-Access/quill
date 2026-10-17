@@ -45,6 +45,20 @@ def real_menu_bar(
     monkeypatch: pytest.MonkeyPatch, request: pytest.FixtureRequest, module: str, cls: str
 ) -> Iterator[list[MenuItem]]:
     """Yield the menu items of ``module.cls()``; the data folder is the caller's."""
+    with real_app_shell(monkeypatch, request, module, cls) as shell:
+        yield items_from_wx_menu_bar(shell.frame.GetMenuBar())
+
+
+@contextmanager
+def real_app_shell(
+    monkeypatch: pytest.MonkeyPatch, request: pytest.FixtureRequest, module: str, cls: str
+) -> Iterator[Any]:
+    """Yield ``module.cls()`` itself, built as :func:`real_menu_bar` builds it.
+
+    For gates that need the whole window rather than its menus: the menu-bar
+    versus control access-key check (``test_menu_bar_versus_controls.py``)
+    walks ``shell.frame``'s controls against its menu titles.
+    """
     wx = pytest.importorskip("wx")
     import quill.ui.app_shell as app_shell
     from quill.platform.windows import launch_heal
@@ -60,7 +74,7 @@ def real_menu_bar(
     app = wx.App.Get() or wx.App(False)
     shell = getattr(importlib.import_module(module), cls)()
     try:
-        yield items_from_wx_menu_bar(shell.frame.GetMenuBar())
+        yield shell
     finally:
         _stop_timers(request)
         from quill.ui.dialog_contract import set_transition_announcement_policy

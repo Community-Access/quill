@@ -95,7 +95,7 @@ hide key if you chose one. The window shows:
 - **State** - Ready, Listening, Hearing you, Paused, or Waiting for you to
   switch to a field.
 - **Start Dictation** - the button changes to Stop Dictation while dictation is on.
-- **Resume**, **Resume in This Field** and **Discard Held Words** - for when dictation is paused.
+- **Resume** (Alt+R), **Resume in This Field** (Alt+T) and **Discard Held Words** (Alt+C) - for when dictation is paused. Discard Held Words was Alt+W until 2026-10-17, but Alt+W is the **Window** menu, and when a button and a menu share a letter Windows presses the button: Alt+W threw your held words away instead of opening the Window menu. Now Alt+W always opens Window, and Alt+C is the button. For example, if dictation paused because you left the field and you no longer want those words, press Alt+C; Dictation > Discard Held Words (Ctrl+Shift+D) does the same from the menu.
 - **Model and microphone** - the model, microphone, dictation profile (and
   whether it is locked) and keys in use.
 - **What happens next** - what starting dictation will do, or why it paused or

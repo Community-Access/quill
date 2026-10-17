@@ -77,8 +77,8 @@ QuillSync is the part that makes your stuff portable across your own devices.
 You sign in with a magic link sent to your email. There is no password to
 remember, lose, or have stolen, and no captcha to fight with a screen reader.
 
-1. In the app, you open Sync Settings and type your email address. That is
-   the only field.
+1. In the app, you open **Sync > Sync Settings...** and type your email
+   address. That is the only field.
 2. You press "Send sign-in link." The app emails you a single, one-time link.
 3. You open the email and activate the link. It opens the app directly -- not
    a web page -- and finishes signing you in on that device.
@@ -162,7 +162,8 @@ These are all working in the app right now:
 - **Smart Collections.** Save any search as a live collection -- "all my
   podcast episodes tagged research" -- and it always reflects your current
   library, never a frozen snapshot. Find it in the sidebar under Smart
-  Collections, or save one with View, then Save Search as Smart Collection.
+  Collections, or save one with **View > Save Search as Smart Collection...**
+  (Ctrl+Shift+G).
 - **Undo and bulk actions.** Select many items at once (Ctrl with arrows) and
   trash, archive, restore, favorite, tag, or delete them together. Every
   bulk action is one Undo step (Ctrl+Z), so a whole batch comes back at once,
@@ -173,66 +174,102 @@ These are all working in the app right now:
   description, and sharing hint) and learning Trails -- ordered paths through
   your saved items, each step with its own note.
 - **Broken-location repair.** When a saved place has shifted or gone dark,
-  open Review Location Repair to see the old location and a proposed fix side
+  select it and open **Tools > Review Location Repair...** to see the old location and a proposed fix side
   by side, and choose: accept the fix, keep the old location, or mark it for
   later. It never silently rewrites an exact bookmark.
-- **Radio.** Save a station with fallback stream addresses, or capture a
-  specific program (show, host, and air time) as its own saved item.
-- **Sync, fully.** Open Sync Settings to choose a folder or the hosted
-  service, sign in with a magic link, and unlock your vault. Sync Now pushes
-  and pulls. Sync History shows what synced and lets you roll back.
+- **Radio.** Save a station with fallback stream addresses
+  (**Media > Add Radio Station...**), or capture a specific program (show,
+  host, and air time) as its own saved item (**Media > Add Radio Program...**).
+- **Sync, fully.** Open **Sync > Sync Settings...** to choose a folder or the
+  hosted service, sign in with a magic link, and unlock your vault.
+  **Sync > Sync Now** pushes and pulls. **Sync > Sync History...** shows what
+  synced and lets you roll back.
 - **Accessibility settings.** Set announcement verbosity, high contrast, text
-  scale, and reduced motion -- all from one dialog, saved between sessions.
-- **One Preferences window.** Press Ctrl+Comma (or View, then Preferences) to
+  scale, and reduced motion -- all from one dialog,
+  **View > Accessibility Settings...**, saved between sessions.
+- **One Preferences window.** Press Ctrl+Comma (or **View > Preferences...**) to
   open one hub for Accessibility, Sync, the Capture Bridge, and your Published
   Pages. Change announcement verbosity or the auto-sync interval and Apply, or
   use the buttons to open Sync Settings, run Sync Now, copy the bridge token, or
   unpublish a page.
-- **Status center and tray.** A status center shows capture, sync, and
-  library health at a glance. The system-tray icon lets you capture, sync, and
+- **Status center and tray.** **Tools > Status Center...** shows capture,
+  sync, and library health at a glance. The system-tray icon lets you capture, sync, and
   show or hide the window without the full window open.
 - **External player.** Hand off a podcast or radio item to VLC or mpv (with
-  resume time) or your system player when the built-in player is unavailable.
-- **Attachments, in the UI.** Select a saved item and press Edit, then
-  Attachments (Ctrl+Shift+E) to add a file, a URL, or a note, view it, or
+  resume time) or your system player when the built-in player is unavailable:
+  **Media > Play in External Player**, with the player chosen under
+  **Tools > External Player...**.
+- **Attachments, in the UI.** Select a saved item and choose
+  **Edit > Attachments...** (Ctrl+Shift+E) to add a file, a URL, or a note, view it, or
   remove it. Attachments stay on your machine; they are not synced as blobs.
 - **Trails you can step through.** Trails now appear in the sidebar with their
   progress (3 of 5, for example). Pick one to open a step-through view: read
   the note for the current step, open the item, mark it complete, and move
   Previous or Next. Your place is saved, so you can leave and come back.
-- **Smart Collections you can edit.** Tools, then Smart Collections Manager
+- **Smart Collections you can edit.** **Tools > Smart Collections Manager...**
   lets you rename or re-query a saved search, or delete one. Deleting a Smart
   Collection never deletes the bookmarks it matched.
-- **More bulk actions.** Select many items and use Edit, then Bulk Add to
-  Collection (Ctrl+Shift+O) or Bulk Remove Tag (Ctrl+Shift+V). Each is one
-  Undo step.
-- **Health rechecks.** Tools, then Revalidate Health re-checks whether your
+- **More bulk actions.** Select many items and use
+  **Edit > Bulk Add to Collection...** (Ctrl+Shift+O) or
+  **Edit > Bulk Remove Tag...** (Ctrl+Shift+V). Each is one Undo step.
+- **Health rechecks.** **Tools > Revalidate Health...** re-checks whether your
   saved links are still reachable. Local files are checked against your disk;
   web links are checked over the network only if you allow it, and only after
   you confirm. Broken links are marked so you can review or repair them.
 - **Sync, smarter.** Sync only sends what changed (and any deletions), not the
   whole library every time. If two devices edit the same note, the conflict
   shows up in Sync History with Use Local / Use Remote / Use Merged buttons.
-  To share your encrypted library with a second device, use Sync Settings,
-  then Pair Device: it exports a short code you enter on the other device,
-  then unlock there with the same passphrase. Sync, then Auto Sync lets you
-  set an automatic interval (off by default), and the Status Center shows how
+  To share your encrypted library with a second device, open
+  **Sync > Sync Settings...** and press its Pair Device button: it exports a
+  short code you enter on the other device, then unlock there with the same
+  passphrase. **Sync > Auto Sync...** lets you set an automatic interval (off by default), and the Status Center shows how
   many new changes are waiting on the server.
 - **Publish a collection to a web page.** Select a collection in the sidebar,
-  then Tools, then Publish Collection (Ctrl+Shift+W) to render it as a
+  then **Tools > Publish Collection...** (Ctrl+Shift+W) to render it as a
   self-contained, read-only, accessible web page. You get a portable HTML file
   you can open, copy, or host anywhere, plus a localhost preview link behind a
   publish token. Nothing on the page can modify your library, and Unpublish
   removes the files. It is read-only by design -- there is no sign-in, no
   capture, and no write path back into QuillBeacon.
 
+## Keys and menus you will use most
+
+Every command in QuillBeacon is on a menu, so you can always find it by
+walking the menu bar with Alt and the arrow keys. Those that have a key show
+it beside their name. The ones most people use:
+
+- **Finding things.** **View > Search** (Ctrl+F) puts you in the search box;
+  type words or the search grammar, such as `tag:research type:episode`, and
+  press Down to move into the results. **View > Build Search...**
+  (Ctrl+Shift+F) builds the same kind of query from fields instead.
+- **Saving and opening.** **File > New Bookmark** (Ctrl+N) saves a new place;
+  **Edit > Open** (Enter) opens the selected one; **Edit > Trash** (Delete)
+  moves it to the Trash and **Edit > Restore** (Shift+Delete) brings it back.
+  **Edit > Undo** (Ctrl+Z) reverses the last change, a whole bulk action at a
+  time.
+- **Getting your bearings.** **View > Where Am I?** (Ctrl+F1) says where you
+  are; **View > Next Pane** (F6) moves between the sidebar, the results and
+  the details; F1 on its own explains the window and the control you are on.
+- **Everything else.** **View > Command Palette** (Ctrl+Shift+P) lists most
+  commands by name, with their keys: type part of one, such as `export`, and press Enter.
+
+Example: to find the podcast episodes you tagged for research and keep that
+search, press Ctrl+F, type `type:episode tag:research`, press Enter, then
+Ctrl+Shift+G and give the Smart Collection a name. It appears in the sidebar
+and stays current as your library changes.
+
+Some menu commands have no key yet, among them **Edit > Find Duplicates**,
+**Tools > Trail Editor...** and everything on the Sync menu; reach them
+through their menu.
+
 ## Getting started
 
 1. Open QuillBeacon. Your library lives on this machine by default.
 2. To capture from your browser, install the QuillBeacon extension, then in
-   the app choose Tools, then Capture Bridge, and copy the token into the
-   extension's Options.
-3. To sync across machines, open Sync Settings, enter your email, and follow
+   the app choose **Tools > Capture Bridge...** (Ctrl+Shift+B), and copy the
+   token into the extension's Options.
+3. To sync across machines, open **Sync > Sync Settings...**, enter your
+   email, and follow
    the magic-link sign-in. Point sync at a shared folder, or use the hosted
    service when it is available.
 

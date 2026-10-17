@@ -254,6 +254,16 @@ expansion is typed into whatever window you were working in.
 Quick Insert is the only way to reach an entry whose trigger mode is Never, and
 the easiest way to use an abbreviation you have not memorised yet.
 
+Inkwell's window also has a **Quick Insert...** button, beside **Manage
+Abbreviations...** (Alt+M). Its letter is I: press Alt+I to open Quick Insert
+from the window. Until 2026-10-17 the button used Alt+Q, which is also the
+**QuillVille** menu, and when a button and a menu share a letter Windows
+presses the button, so Alt+Q opened Quick Insert and "Alt+Q, then Q" in
+section 3 opened Quick Insert and typed a Q into its filter instead of opening
+QUILL. Now Alt+Q always opens the QuillVille menu. For example, in Inkwell's
+window press Alt+I, type "sig", and press Enter to type your signature into
+the program you were in; or press Alt+Q, then R, to open Quill Radio.
+
 **Expand the word I just typed** -- the key you chose in **File > Expand Word
 Key...** from anywhere, or **Ctrl+Alt+E** in the Abbreviations menu -- expands the word before the cursor without waiting for a
 space or punctuation. Use it mid-word, at the end of a line where you do not want
@@ -552,6 +562,23 @@ it was. For example, turn on polishing in QUILL's More Dictation Settings
 choose **Clean** and press OK: QUILL's Review Dictation still offers Polish
 afterwards. To change polishing, open Dictation Settings in one of those three
 programs.
+
+**Sending dictation to review first belongs there too.** In QUILL, QUILL Lite
+and QUILL Transcribe, **Send dictation to review first** (Alt+V in their More
+Dictation Settings) sends every phrase to Review Dictation instead of typing it,
+so you can read and change it before pressing Control Enter. Inkwell has no
+Review Dictation window, so its More Dictation Settings does not show that box
+either, and Dictate Anywhere always types each phrase straight into the program
+you are in. Your choice is kept in the same way as polishing: if you share
+dictation settings with the family and turned review first on in QUILL,
+pressing OK in Inkwell's Dictation Settings, with any style chosen, leaves it on
+for QUILL. For example, turn on **Send dictation to review first** in QUILL,
+open Inkwell's **Dictation > Dictation Settings...** (Ctrl+Alt+D), choose
+**Verbatim**, press OK, and dictate into your email: the words are typed into
+the email as usual, and back in QUILL your phrases still go to Review Dictation
+first. The limit is that Inkwell cannot turn review first on or off; do that in
+one of the three programs that have Review Dictation. In Inkwell, Alt+V in More
+Dictation Settings does nothing now.
 
 **What works in another program.** Spoken punctuation, spelling, "caps on", "all
 caps on" and "no space on", switching between English and Spanish, and "scratch

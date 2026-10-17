@@ -22,6 +22,18 @@ would just as silently stop opening a menu.
 
 Static, by AST, like the other gates: it reads the source rather than building a
 window, so it runs in the pre-commit hook without a display.
+
+Its blind spots are a label handed to a helper, a label in a tuple table and a
+menu a helper appends (the shared Window menu), and the 2026-10-17 pass (todo
+49) found real collisions in all three shapes in apps this table did not list:
+the Media Player (Play, Previous chapter, Rewind, Forward and Normalize
+loudness against Playback, View, Window, File and Navigation), Studio (Build
+From Recordings against Book Tools), QUILL Transcribe (Discard Held Words
+against Window) and Quill Inkwell (Quick Insert against QuillVille). Those
+apps, Converter and Weather are checked at run time instead, by
+``tests/unit/ui/test_menu_bar_versus_controls.py``, which builds each real
+main window in memory and walks every control under it against the titles the
+menu bar really has.
 """
 
 from __future__ import annotations

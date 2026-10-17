@@ -6,6 +6,8 @@ file is the itemized list.
 
 ## Unreleased
 
+- **Alt+W opens the Window menu again** (2026-10-17). In QUILL Transcribe's window the **Discard Held Words** button also claimed Alt+W, and Windows gives a letter shared by a button and a menu to the button, so Alt+W threw away held words instead of opening the Window menu. The button's letter is now C (Alt+C), and Alt+W opens Window. Dictation > Discard Held Words (Ctrl+Shift+D) is unchanged. The user guide's part on the window lists the three paused-dictation buttons with their letters.
+
 - **A proper guide to choosing a model** (2026-10-17). The user guide's
   "Models" chapter now explains every choice: the built-in Moonshine (the
   default, nothing to download) and Whisper, Windows speech recognition, why

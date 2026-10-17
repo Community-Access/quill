@@ -2224,6 +2224,18 @@ QUILL, QUILL Lite and QUILL Transcribe pass nothing and keep the box. Tests:
 kept, no access key repeats, Clean leaves polishing alone, Inkwell passes
 `review=False`).
 
+**Send dictation to review first, hidden the same way (todo 55, 2026-10-17).**
+The review-first box (`windows_dictation_review_first`, Alt+V) did nothing in
+Inkwell either: Dictate Anywhere types into the program in front and Inkwell
+has no Review Dictation. With `review=False`, `MoreDictationDialog` now builds
+neither box (`self.review_first` is `None` too) and `values()` leaves
+`windows_dictation_review_first` out, so a True saved by QUILL and shared
+through the family store survives Inkwell's OK. The style mixin already left
+the field alone with `_review` false. Alt+V is unused in Inkwell's copy; the
+editors keep both boxes and both keys. Tests: the same file, plus
+`test_inkwell_keeps_a_saved_review_first_choice` (Verbatim and Clean both
+leave a saved True alone).
+
 ### D-21. Learning from confirmed corrections
 
 **Module.** `quill/core/windows_dictation/correction_learning.py`, wx-free;

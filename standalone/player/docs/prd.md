@@ -1004,4 +1004,23 @@ source of truth where it differs from earlier prose):
   speaks it on request. Lookups happen only on request, are refused in Safe
   Mode, and are cached in memory only (`lrclib.CACHE_ON_DISK`, a default
   awaiting a decision).
-   
+- **Access keys and arrows (2026-10-17, todo 48 and 49).** The transport row is
+  the shared `PlayerPanel`, whose letters (&Play, Pre&vious chapter, Re&wind,
+  &Forward) took Alt+P, V, W and F from the Playback, View, Window and File
+  menus, and the Audio page's &Normalize loudness took Alt+N from Navigation;
+  on Windows a letter a control and a top-level menu share goes to the
+  control. `PlayerPanel(labels=...)` now takes the host's wording by button
+  name, and the player passes `quill/ui/media/player_access_keys.py`
+  (Play/Pause A, Previous chapter C, Rewind R, Forward O, Mute/Unmute U, Add
+  Bookmark M, Remove Bookmark K, Normalize loudness L). The Chapter Workbench
+  keeps the old letters. `tests/unit/ui/test_menu_bar_versus_controls.py`
+  builds the real window and fails on any control letter a menu owns, or two
+  controls on one letter. Separately, the frame's Winamp key hook took Left
+  and Right from every control but a text field, so the Chapters tree could
+  not open or close a level and the volume slider seeked instead of changing
+  the volume: `_winamp_focus_takes_arrows` now lets a tree, a report list, a
+  slider and the notebook tabs keep bare and Shift arrows. Still not built,
+  and still listed in section 18: global media keys, close behaviour, a
+  Keyboard Shortcuts editor, a Where am I? key, the verbosity, earcon,
+  self-voicing and braille status-line settings, and per-book overrides with
+  settings import and export.

@@ -8,12 +8,18 @@ as playback crosses into it ("Chapter 4: The Long Road").
 
 Pure UI over :mod:`quill.ui.audio.audio_engine`; chapter math stays in
 :mod:`quill.core.speech.chapters`.
+
+``labels`` lets a host give the buttons other access keys, by button name
+(``player.play``, ``player.pause``, ``player.mute``, ``player.unmute`` and the
+rest), because the panel's letters must not take a letter from the host's own
+menu bar (GATE-15): the Quill Media Player's are in
+:mod:`quill.ui.media.player_access_keys`.
 """
 
 from __future__ import annotations
 
 import logging
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 
 import wx
 
@@ -57,9 +63,11 @@ class PlayerPanel(OutputDeviceMixin, PlayerVolumeMixin, wx.Panel):
         on_finished: Callable[[], None] | None = None,
         on_tick: Callable[[], None] | None = None,
         output_device: str = "",
+        labels: Mapping[str, str] | None = None,
     ) -> None:
         super().__init__(parent)
         self.SetName(_("Player"))
+        self._labels = dict(labels or {})
         self._announce_fn = announce
         self._on_volume_cb = on_volume
         self._on_mute_cb = on_mute
@@ -185,7 +193,7 @@ class PlayerPanel(OutputDeviceMixin, PlayerVolumeMixin, wx.Panel):
         self._volume.Bind(wx.EVT_SLIDER, self._on_volume)
         bind_up_means_more(self._volume)  # Up is louder, as in the Windows mixer
         slider_row.Add(self._volume, 1, wx.EXPAND)
-        self._mute_btn = wx.Button(self, label=_("M&ute"), name="player.mute")
+        self._mute_btn = wx.Button(self, label=self._mute_label(False), name="player.mute")
         self._mute_btn.SetHelpText(
             "Silences playback without stopping it; pressing again restores "
             "the volume that was set before the mute. The mute state is "
@@ -337,7 +345,7 @@ class PlayerPanel(OutputDeviceMixin, PlayerVolumeMixin, wx.Panel):
         *,
         help_text: str = "",
     ) -> wx.Button:
-        btn = wx.Button(self, label=label, name=name)
+        btn = wx.Button(self, label=self._labels.get(name, label), name=name)
         if help_text:
             btn.SetHelpText(help_text)
         btn.Bind(wx.EVT_BUTTON, lambda _e: handler())
@@ -381,7 +389,15 @@ class PlayerPanel(OutputDeviceMixin, PlayerVolumeMixin, wx.Panel):
 
     def _sync_play_label(self) -> None:
         playing = self._engine is not None and self._engine.is_playing()
-        self._play_btn.SetLabel(_("&Pause") if playing else _("&Play"))
+        if playing:
+            self._play_btn.SetLabel(self._labels.get("player.pause", _("&Pause")))
+        else:
+            self._play_btn.SetLabel(self._labels.get("player.play", _("&Play")))
+
+    def _mute_label(self, muted: bool) -> str:
+        if muted:
+            return self._labels.get("player.unmute", _("Un&mute"))
+        return self._labels.get("player.mute", _("M&ute"))
 
     def _update_status(self) -> None:
         pos = self.playhead_ms()
@@ -557,7 +573,7 @@ class PlayerPanel(OutputDeviceMixin, PlayerVolumeMixin, wx.Panel):
         self._volume.SetValue(vp)
         self._pre_mute_volume = vp
         self._muted = muted
-        self._mute_btn.SetLabel(_("Un&mute") if muted else _("M&ute"))
+        self._mute_btn.SetLabel(self._mute_label(muted))
         if self._engine is not None:
             self._engine.set_volume(0 if muted else vp)
 

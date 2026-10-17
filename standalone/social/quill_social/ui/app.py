@@ -371,7 +371,10 @@ class SocialFrame(wx.Frame):
         )
         self._menu_item(m_tools, "&Where Am I\tCtrl+Shift+I", lambda _e: self.cmd_where_am_i())
         self._menu_item(m_tools, "&Search\tCtrl+L", lambda _e: self.cmd_focus_search())
-        self._menu_item(m_tools, "&Find Text...\tCtrl+F", lambda _e: self.cmd_find_text())
+        # Ctrl+F is Favourite (keymap.DEFAULT_BINDINGS, PRD 10.1), and the
+        # window's key hook answers it before any menu accelerator, so Find Text
+        # on Ctrl+F never fired. Ctrl+Shift+F is free in every menu here.
+        self._menu_item(m_tools, "&Find Text...\tCtrl+Shift+F", lambda _e: self.cmd_find_text())
         self._menu_item(m_tools, "Find &Next\tF3", lambda _e: self.cmd_find_next())
         self._menu_item(m_tools, "Find &Previous\tShift+F3", lambda _e: self.cmd_find_prev())
         self._menu_item(m_tools, "&Refresh\tF5", lambda _e: self.cmd_refresh())
