@@ -86,6 +86,11 @@ class InkwellSettings:
         if not settings_path(data_dir).exists():
             if ran_before:
                 moved = [_SHOW_HIDE, *(label for _old, label in _RETIRED_HOTKEYS.values())]
+            # Loading with no file filled the old defaults in (_read_fields):
+            # they move to none here, for a newcomer as for somebody told so.
+            # Kept, they were saved and registered system-wide on first run.
+            for name in _RETIRED_HOTKEYS:
+                setattr(self, name, "")
             save_settings(data_dir, self)
             return self.tray_hotkey, retired_keys_notice(moved)
         chord, tell = migrate_show_hide_key("inkwell", self.tray_hotkey, existing_user=True)

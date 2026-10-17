@@ -245,6 +245,42 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="batch-6-ci-the-shared-test-app-kept-alive-and-a-first-run-inkwell-key-bug-it-exposed-2026-10-17">Batch-6
+CI: the shared test App kept alive, and a first-run Inkwell key bug it
+exposed (2026-10-17)</h3>
+<ul>
+<li><strong>Why CI failed.</strong>
+<code>tests/unit/ui/test_mac_open_file_app.py</code> built a real
+<code>MacOpenFileApp</code> (a <code>wx.App</code> subclass), a second
+App in the process, and destroyed it; <code>shared_wx_app()</code> then
+built a new session App. When the replaced session App’s last Python
+reference went, its C++ destructor cleared wx’s global App pointer even
+though the newer App held it, and the rest of that worker failed with
+“The wx.App object must be created first!” (beacon auto-sync,
+close-confirm dialogs, labelled field, translated speech export).
+<code>tests/wx_session.py</code> now keeps every App it hands out alive
+(<code>_KEEP</code>); the Mac test builds its subclass with
+<code>wx.App.__init__</code> patched out, so it is no longer
+<code>machine_global</code>; and
+<code>tests/unit/test_wx_test_hygiene.py</code> now also flags building
+any <code>wx.App</code> subclass found under <code>quill/</code>.</li>
+<li><strong>App-dependent test.</strong>
+<code>test_queued_launch_check_does_not_start_during_shutdown</code>
+counted every deferred call; with an App alive, launch also queues
+<code>_confirm_update_started</code>. It now counts only the check.</li>
+<li><strong>Product bug: Inkwell registered two retired keys on a first
+run.</strong> With no settings file, <code>load_settings</code> fills in
+the pre-2026-10-05 defaults for Quick Insert (Ctrl+Alt+Shift+K) and
+Expand Word (Ctrl+Alt+Shift+X), and <code>take_system_keys</code> saved
+and registered them instead of moving them to none. The window test
+meant to catch it passed only while every test built its own App. Fixed
+in <code>quill/core/expansion/settings.py</code>, pinned by
+<code>tests/unit/core/test_show_hide_keys.py</code>.</li>
+<li><strong>mypy.</strong> <code>rtf_model._EMPHASIS</code> is now
+<code>(marker, bold, italic)</code> rather than a keyword dict, which
+strict mypy could not check against <code>_Attrs</code>.</li>
+</ul>
+<h3
 id="word-editing-shared-with-quill-lite-two-word-round-trip-fixes-table-navigation-in-quill-lite-2026-10-17">Word
 editing shared with QUILL Lite; two Word round-trip fixes; table
 navigation in QUILL Lite (2026-10-17)</h3>

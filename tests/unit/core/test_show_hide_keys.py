@@ -282,3 +282,18 @@ def test_the_installed_copy_of_the_menu_scan_is_readable() -> None:
     rows = family_chords.snapshot_chords()
     assert len(rows) > 500
     assert family_chords.snapshot_chords(Path("does-not-exist.json")) == []
+
+
+def test_a_first_run_with_no_settings_file_registers_neither_old_key(tmp_path: Path) -> None:
+    """With no file, loading fills in the retired defaults (a file without the
+    keys came from a build that registered them). A first run used to save and
+    register them: a brand new Inkwell took Ctrl+Alt+Shift+K and X system-wide.
+    The window-level test for it passed only while each test built its own
+    wx.App; with the shared App it failed, which is how this surfaced (2026-10-17)."""
+    for ran_before in (False, True):
+        folder = tmp_path / str(ran_before)
+        loaded = load_settings(folder)
+        loaded.take_system_keys(folder, ran_before=ran_before)
+        assert (loaded.quick_insert_hotkey, loaded.expand_now_hotkey) == ("", "")
+        again = load_settings(folder)
+        assert (again.quick_insert_hotkey, again.expand_now_hotkey) == ("", "")

@@ -56,6 +56,7 @@ def shared_wx_app() -> Any:
 
     current = wx.GetApp()
     if current is not None and _alive(current):
+        _KEEP.append(current)
         return current
 
     class _SessionApp(wx.App):
@@ -65,7 +66,18 @@ def shared_wx_app() -> Any:
             return None
 
     _APP = _SessionApp(False)
+    _KEEP.append(_APP)
     return _APP
+
+
+#: Every App handed out, held for the life of the process. A wx.App's C++
+#: destructor clears wx's one global App pointer -- even when a *newer* App
+#: has taken it. So an older App whose last Python reference went (replaced
+#: here after a test built its own App and destroyed it) was collected later
+#: and took the live App with it: "The wx.App object must be created first!"
+#: in whichever test came next (CI shard 4, 2026-10-17). Never collected,
+#: never able to do that.
+_KEEP: list[Any] = []
 
 
 class CallAfterCapture:
