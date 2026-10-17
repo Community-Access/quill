@@ -10,6 +10,8 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 Testing rebuild: **3.2.0 (build 4)**. The packages have not been published yet.
 
+- **Edit > Dictate Here (Ctrl+F11).** In Search Stations or any other text box, press Ctrl+F11 and QUILL Transcribe dictates into it, starting in the tray if it is not running. Quill Radio has no speech engine of its own; your words and dictation commands are QUILL Transcribe's. Shown when QUILL Transcribe is part of your copy of the family (dict.md D-16).
+
 - **Station Details: find a station by its call sign, frequency or slogan.**
   **View > Station Details...** (Alt+Shift+I) searches stations by name, call
   sign (KUOW), frequency (94.9 or 98.5 FM), slogan, format or city, and each

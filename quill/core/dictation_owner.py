@@ -59,6 +59,7 @@ __all__ = [
     "MicrophoneLock",
     "OwnerLock",
     "Request",
+    "SENDERS",
     "busy_sentence",
     "spoken_key",
     "current_owner",
@@ -79,6 +80,11 @@ APP_NAMES: dict[str, str] = {
     "quill": "QUILL",
     "lite": "QUILL Lite",
 }
+
+#: The programs that may *send* a request: the two owners, and Quill Cast and
+#: Quill Radio, whose Dictate Here (dict.md D-16) has no engine of its own and
+#: asks QUILL Transcribe to start in the field that has the focus.
+SENDERS: frozenset[str] = APPS | frozenset({"cast", "radio"})
 
 #: Everything a request may ask. ``toggle`` is the start/stop key; ``show``
 #: brings the owner's window forward.
@@ -344,7 +350,7 @@ class Request:
 
 def send_request(command: str, *, sender: str, folder: Path | None = None) -> bool:
     """Ask the owner to do *command*. ``False`` when it could not be asked."""
-    if command not in COMMANDS or sender not in APPS:
+    if command not in COMMANDS or sender not in SENDERS:
         return False
     where = _folder(folder)
     try:
@@ -376,6 +382,6 @@ def take_requests(*, folder: Path | None = None) -> list[Request]:
         if not isinstance(raw, dict):
             continue
         command, sender = raw.get("command"), raw.get("sender")
-        if command in COMMANDS and sender in APPS:
+        if command in COMMANDS and sender in SENDERS:
             requests.append(Request(str(command), str(sender)))
     return requests

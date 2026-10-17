@@ -394,6 +394,7 @@
             "windows_dictation_review_context": "bool",
             "windows_dictation_speech_providers": "dict[str, dict[str, str]]",
             "windows_dictation_speech_provider_consent": "dict[str, int]",
+            "windows_dictation_share_family": "str",
             "theme": "str",
             "font_name": "str",
             "font_size": "int",
@@ -470,7 +471,7 @@
         "constant:quill.core.lite.settings:SCHEMA": "1"
       },
       "classification": "additive, compatible",
-      "note": ""
+      "note": "adds windows_dictation_share_family (D-13), a text that is empty until decided; older builds ignore it, and an older QUILL Lite forgets it on save, after which this build decides it again from the settings"
     },
     "quill.keymap": {
       "current": 1,
@@ -523,6 +524,7 @@
             "windows_dictation_review_context": "bool",
             "windows_dictation_speech_providers": "dict[str, dict[str, str]]",
             "windows_dictation_speech_provider_consent": "dict[str, int]",
+            "windows_dictation_share_family": "str",
             "theme": "str",
             "keyboard_pack": "str",
             "soft_wrap": "bool",
@@ -921,6 +923,7 @@
           "windows_dictation_review_context": "_ungrouped",
           "windows_dictation_speech_providers": "_ungrouped",
           "windows_dictation_speech_provider_consent": "_ungrouped",
+          "windows_dictation_share_family": "_ungrouped",
           "theme": "general",
           "keyboard_pack": "_ungrouped",
           "soft_wrap": "editing",
@@ -1283,7 +1286,7 @@
         "constant:quill.core.settings_migration:SETTINGS_SCHEMA_VERSION": "2"
       },
       "classification": "additive, compatible",
-      "note": ""
+      "note": "adds windows_dictation_share_family (D-13), a text that is empty until decided; older builds ignore it, and an older QUILL Lite forgets it on save, after which this build decides it again from the settings"
     },
     "radio.favorites": {
       "current": 1,

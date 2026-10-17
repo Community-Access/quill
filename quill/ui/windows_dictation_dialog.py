@@ -547,6 +547,9 @@ class WindowsDictationDialog(CloudProvidersMixin, MicrophoneTestMixin, wx.Dialog
 
     def apply(self, settings: Any) -> None:
         """Write every choice into *settings*. The caller saves."""
+        from quill.core.windows_dictation.settings_fields import settle_share
+
+        settle_share(settings)  # sharing decided before anything changes (D-13)
         engine = self.engine.GetSelection()
         if 0 <= engine < len(self._engine_ids):
             settings.windows_dictation_engine = self._engine_ids[engine]

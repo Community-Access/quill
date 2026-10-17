@@ -54,6 +54,10 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # window the same key is Add Media Files, so Ctrl+O twice gets you from
         # anywhere to the file picker.
         "radio.local_media": "Ctrl+O",
+        # Edit > Dictate Here (dict.md D-16), as in QUILL Cast: Ctrl+F11, the
+        # editors' Start Dictation key (family rule 2). Plain F11 is Full Screen
+        # in the video window; Ctrl+F11 was free.
+        "app.dictate_here": "Ctrl+F11",
         # QUILL Lineups (2026-10-13): Ctrl+U, "lineUp". Ctrl+Alt+U was the first
         # choice and is Help > Check for Updates here; Ctrl+U was one of the few
         # chords free on both this bar and Cast's, where the same command keeps
@@ -291,6 +295,10 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         "podcasts.now_playing": "Ctrl+Alt+2",
         # QUILL Lineups: the same window and the same chord as in Quill Radio.
         "podcasts.lineups": "Ctrl+U",
+        # Edit > Dictate Here (dict.md D-16): QUILL Transcribe dictating into
+        # the field you are in. The editors' Start Dictation key, for the same
+        # verb (family rule 2), and free here and in Quill Radio.
+        "app.dictate_here": "Ctrl+F11",
         # The Now Playing line's key: what is playing, how far in, the speed.
         "podcasts.say_now_playing": "Ctrl+T",
         # Quill Radio's Skip Silence key, for the same verb (family rule 2).

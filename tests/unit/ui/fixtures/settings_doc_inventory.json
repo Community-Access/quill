@@ -382,6 +382,7 @@
   "windows_dictation_review_consent": "documented",
   "windows_dictation_review_context": "documented",
   "windows_dictation_review_first": "documented",
+  "windows_dictation_share_family": "documented",
   "windows_dictation_silence_minutes": "documented",
   "windows_dictation_speech_language": "documented",
   "windows_dictation_speech_provider_consent": "documented",

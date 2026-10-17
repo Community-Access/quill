@@ -2291,4 +2291,16 @@ saving to one and looking in the other.
 - Rules run only while the window is open, and on each open.
 - Cast plays episodes and podcasts itself; everything else needs Quill Radio.
 
+### 23.28 Dictate Here through QUILL Transcribe (dict.md D-16, 2026-10-16)
+
+Edit > Dictate Here, `app.dictate_here` on Ctrl+F11 (the editors' Start
+Dictation key, family rule 2), in the Edit menu both listening apps share
+(`quill/ui/support_menu.py`; Cast has no Tools menu). It asks QUILL Transcribe
+to dictate into the focused field: a `start` request when QUILL Transcribe owns
+Dictate Anywhere, a launch with `--tray --dictate-here` when nobody does, the
+busy sentence when Quill Inkwell is dictating, and "not installed" otherwise.
+Cast loads no engine. A `wx.EventFilter` answers the same key in text fields of
+Cast's dialogs, where the main window's accelerators never reach. Shown only
+where `is_app_released("transcribe")`. Dictation design record, section 30.
+
 See `CHANGELOG.md` for the full, versioned history.

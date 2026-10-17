@@ -251,29 +251,29 @@ This page records what version 1.0 does with the decisions that document
 left open, and what waits for a later version.</p>
 <h2 id="decisions-taken-for-10">Decisions taken for 1.0</h2>
 <ol type="1">
-<li><strong>Name.</strong> QUILL Transcribe; product identifier
+<li><p><strong>Name.</strong> QUILL Transcribe; product identifier
 <code>QuillTranscribe</code>; app key <code>transcribe</code>. Its icon
-is a text caret with words arriving at it.</li>
-<li><strong>One owner.</strong> Version 1.0 does not have a full service
-that QUILL, QUILL Lite and Inkwell talk to. It has one owner at a time
-instead: QUILL Transcribe holds an operating-system lock in the family
-data folder while it runs, and Quill Inkwell’s Dictate Anywhere key is
-passed to it. Inkwell takes the same lock only for the length of its own
-session, so the two never listen at once. Requests between them carry
-one word (toggle, start, stop or show) and never any words that were
-spoken.</li>
-<li><strong>Recordings.</strong> Transcribe a Recording is included. It
-is QUILL’s own command and pipeline, unchanged; QUILL Transcribe adds
+is a text caret with words arriving at it.</p></li>
+<li><p><strong>One owner.</strong> Version 1.0 does not have a full
+service that QUILL, QUILL Lite and Inkwell talk to. It has one owner at
+a time instead: QUILL Transcribe holds an operating-system lock in the
+family data folder while it runs, and Quill Inkwell’s Dictate Anywhere
+key is passed to it. Inkwell takes the same lock only for the length of
+its own session, so the two never listen at once. Requests between them
+carry one word (toggle, start, stop or show) and never any words that
+were spoken.</p></li>
+<li><p><strong>Recordings.</strong> Transcribe a Recording is included.
+It is QUILL’s own command and pipeline, unchanged; QUILL Transcribe adds
 only a window to review the result and copy it, save it, or open it in
-QUILL.</li>
-<li><strong>Internet models.</strong> Only OpenAI, which already had
+QUILL.</p></li>
+<li><p><strong>Internet models.</strong> Only OpenAI, which already had
 QUILL’s key storage, consent and network review. It is listed only when
-a key is saved and asks before anything is sent.</li>
-<li><strong>Where it works.</strong> No list of supported programs is
+a key is saved and asks before anything is sent.</p></li>
+<li><p><strong>Where it works.</strong> No list of supported programs is
 claimed yet. The list comes from testing with NVDA, JAWS and Narrator in
-Outlook, Word, Notepad and the three browsers.</li>
-<li><strong>One microphone</strong> (after 1.0.0, 2026-10-13). A second
-operating-system lock, separate from the owner lock, is held by
+Outlook, Word, Notepad and the three browsers.</p></li>
+<li><p><strong>One microphone</strong> (after 1.0.0, 2026-10-13). A
+second operating-system lock, separate from the owner lock, is held by
 whichever of QUILL, QUILL Lite, QUILL Transcribe and Inkwell has the
 microphone open, and only for as long as it is open. A second start is
 refused with the name of the program listening. It is separate because
@@ -281,42 +281,56 @@ QUILL Transcribe holds the owner lock for as long as it runs, and the
 editors must still dictate while it waits in the tray. QUILL Lite’s
 window is claimed as QUILL’s is, so QUILL Transcribe does not type into
 it. QUILL’s Locked Dictation (Ctrl+F9) takes the same lock while it
-records.</li>
-<li><strong>The editors’ keys</strong> (after 1.0.0). A dictation
+records.</p></li>
+<li><p><strong>The editors’ keys</strong> (after 1.0.0). A dictation
 command QUILL Transcribe shares with the editors answers the editors’
 chord (family rule 2), and the 1.0 key stays as a second key (rule 5).
 The editors’ dictation commands it does not have are listed, each with
 its reason, in <code>quill/core/transcribe/parity.py</code> (rule
-11).</li>
-<li><strong>The working tick</strong> (after 1.0.0). A soft tick once a
-second while a heard phrase takes more than a second to recognise, and
+11).</p></li>
+<li><p><strong>The working tick</strong> (after 1.0.0). A soft tick once
+a second while a heard phrase takes more than a second to recognise, and
 one sentence after four seconds, once a session. On by default here, off
 in the editors. <em>What you hear after each phrase</em> caps it: words
-only gives the sentence and no tick, nothing gives neither.</li>
-<li><strong>Recent Phrases</strong> (after 1.0.0). The editors’ window
-and code, on Shift+F11. Insert Again types into the program you go back
-to, through the same keystroke path and checks as dictation. Memory only
-for now.</li>
-<li><strong>In other programs</strong> (after 1.0.0). “insert snippet”,
-“insert abbreviation” and “paste clip” work, because they only insert.
-“What can I say” is a spoken sentence while dictating, and Dictation
-Commands lists exactly what works in other programs, with the person’s
-own phrases.</li>
-<li><strong>The wake phrase and holding the key</strong> (after 1.0.0,
-2026-10-15). Both are the editors’ settings, off by default. The wake
-phrase listens only while another program is in front, and never while
-QUILL Transcribe, QUILL, QUILL Lite or a program on the never-type list
-is; nothing heard is kept until the phrase is heard, and the state line
-and tray say “Listening for your wake phrase”. Holding follows the start
-and stop key itself, by asking Windows whether that one key is still
-down while a press is followed, with no keyboard hook. Because a
+only gives the sentence and no tick, nothing gives neither.</p></li>
+<li><p><strong>Recent Phrases</strong> (after 1.0.0). The editors’
+window and code, on Shift+F11. Insert Again types into the program you
+go back to, through the same keystroke path and checks as dictation.
+Memory only for now.</p></li>
+<li><p><strong>In other programs</strong> (after 1.0.0). “insert
+snippet”, “insert abbreviation” and “paste clip” work, because they only
+insert. “What can I say” is a spoken sentence while dictating, and
+Dictation Commands lists exactly what works in other programs, with the
+person’s own phrases.</p></li>
+<li><p><strong>The wake phrase and holding the key</strong> (after
+1.0.0, 2026-10-15). Both are the editors’ settings, off by default. The
+wake phrase listens only while another program is in front, and never
+while QUILL Transcribe, QUILL, QUILL Lite or a program on the never-type
+list is; nothing heard is kept until the phrase is heard, and the state
+line and tray say “Listening for your wake phrase”. Holding follows the
+start and stop key itself, by asking Windows whether that one key is
+still down while a press is followed, with no keyboard hook. Because a
 system-wide key needs Ctrl or Alt, what is said while it is held is
-typed when it comes up.</li>
-<li><strong>Feedback where you work</strong> (after 1.0.0, 2026-10-15).
-The words heard so far and the unspoken state changes go to a braille
-display only. Dictation Status is the editors’ Alt+F9. Dictation Status,
-Resume and Discard Held Words each have an optional system-wide key,
-empty until chosen, picked and checked like the others.</li>
+typed when it comes up.</p></li>
+<li><p><strong>Feedback where you work</strong> (after 1.0.0,
+2026-10-15). The words heard so far and the unspoken state changes go to
+a braille display only. Dictation Status is the editors’ Alt+F9.
+Dictation Status, Resume and Discard Held Words each have an optional
+system-wide key, empty until chosen, picked and checked like the
+others.</p></li>
+<li><p><strong>One settings store, and Dictate Here</strong> (after
+1.0.0, 2026-10-16). “Share dictation settings with the family” (dict.md
+D-13) replaces the one-way hand-off as the way settings move:
+<code>family_dictation.json</code> in
+<code>%LOCALAPPDATA%\QuillVille\Dictation</code>, written when Dictation
+Settings is saved anywhere and read here on the 800 ms clock, behind one
+check box that is on for a new install and off for one whose settings
+were changed. Keys, the tray, the working tick, strict mode, the
+read-back and every consent stay local. The word list moved to the same
+folder, copied with the old file kept. Quill Cast’s and Quill Radio’s
+Edit &gt; Dictate Here (D-16) send a <code>start</code> request, or
+launch QUILL Transcribe with <code>--tray --dictate-here</code>.
+Dictation design record, section 30.</p></li>
 </ol>
 <h2 id="waiting-for-a-later-version">Waiting for a later version</h2>
 <ul>

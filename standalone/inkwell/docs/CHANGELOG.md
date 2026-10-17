@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- **Dictation settings shared with the family** (2026-10-16). With **Share dictation settings with the family** checked (Alt+A, in More Dictation Settings), Dictate Anywhere uses the dictation settings you save in QUILL, QUILL Lite or QUILL Transcribe, and what you save in Inkwell reaches them. The read-back, your key and every permission to send your speech stay Inkwell's own. Your own settings are backed up the first time, and a save that cannot reach the others is said aloud. The word list now lives in `%LOCALAPPDATA%\QuillVille\Dictation`, copied from QUILL's data folder with the old file kept.
+
 - **Speech providers in Dictate Anywhere** (2026-10-16). Dictation Settings has the editors' **Speech Providers...** button (Alt+V), so Dictate Anywhere can use a speech company you already have an account with. Keys go to Windows Credential Manager, and you are asked before anything is sent.
 
 - **Every release build checks its version against what is published** (2026-10-15). The shared QuillVille runtime carries every app's version number, so a build of one app could make another report a version nobody can download yet, and Check for Updates would then never offer the real one. Quill Inkwell's release builds now run the same check Quill Radio, QUILL Lite, QUILL Cast and Quill Weather already did, and a build of every app at once checks them all again instead of stopping at an app it did not know.

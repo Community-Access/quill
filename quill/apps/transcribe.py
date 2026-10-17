@@ -369,6 +369,7 @@ class QuillTranscribeFrame(
             self._restore_from_tray()
             self.take_dictation_handoff()  # an editor's Dictate in Other Programs
         self._answer_owner_requests()
+        self.take_family_dictation()  # what another program saved (D-13): one stat a tick
         controller = getattr(self, "_dictation", None)
         if controller is not None:
             controller.finish_overdue()
@@ -466,6 +467,8 @@ def main() -> int:
         wx.CallAfter(frame.first_run)
     if "--dictate-anywhere" in sys.argv:
         wx.CallAfter(frame.take_dictation_handoff)
+    if "--dictate-here" in sys.argv:  # Quill Cast's or Quill Radio's Dictate Here (D-16)
+        wx.CallAfter(frame.dictate_here_at_launch)
     try:
         app.MainLoop()
     finally:

@@ -1501,10 +1501,17 @@ entries are added after a preview, entries already there or different
 keep the person’s own, and the list is copied to
 <code>dictation-before-import.md</code> first
 (<code>words_exchange.py</code>). “Use the shared word list”
-(<code>share_quill_dictation_words</code>, off) points QUILL Lite at
-QUILL’s <code>dictation.md</code>, the one QUILL Transcribe and Quill
-Inkwell read, after merging QUILL Lite’s own entries into it; never
-offered in a portable copy.</li>
+(<code>share_quill_dictation_words</code>, off) points QUILL Lite at the
+family’s <code>dictation.md</code>, the one QUILL, QUILL Transcribe and
+Quill Inkwell read, after merging QUILL Lite’s own entries into it;
+never offered in a portable copy. Since 2026-10-16 that file lives in
+<code>%LOCALAPPDATA%\QuillVille\Dictation</code>, copied there from
+QUILL’s data folder with the old file kept as the backup (dictation
+design record section 30). “Share dictation settings with the family”
+(<code>windows_dictation_share_family</code>, More Dictation Settings,
+Alt+A) keeps the shared dictation settings in
+<code>family_dictation.json</code> beside it, written on OK and taken
+when the window is activated (dict.md D-13).</li>
 </ul>
 <p><strong>Tests.</strong> The core behaviours against a fake recogniser
 and a fake document

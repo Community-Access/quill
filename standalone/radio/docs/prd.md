@@ -3401,6 +3401,19 @@ built and said to be one.
 - Song-boundary recording (xradio2 4.8) and pitch shift / station crossfade
   (4.11 and 4.12, which xradio2 defers and places in Player or Studio first).
 
+## 26a. Dictate Here through QUILL Transcribe (unreleased, 2026-10-16)
+
+Edit > Dictate Here, `app.dictate_here` on Ctrl+F11 in `APP_KEYMAPS["radio"]`
+(the editors' Start Dictation key, family rule 2; plain F11 stays Full Screen
+in the video window). Quill Radio loads no speech engine: the command sends
+QUILL Transcribe a `start` request, or launches it with `--tray
+--dictate-here`, and says only what QUILL Transcribe will not (Inkwell busy,
+not installed, starting). One `wx.EventFilter` answers the key in text fields
+of Radio's other windows, such as Search Stations, where the main window's
+accelerators never reach. Shown only where `is_app_released("transcribe")`.
+Shared with QUILL Cast (`quill/ui/dictate_here_ui.py`); dict.md D-16, and the
+dictation design record section 30.
+
 ## 27. Station details and the signed station pack (unreleased, 2026-10-16)
 
 Jeff's todo P2 #33, the "Radio station data program" planned on 2026-10-11 from

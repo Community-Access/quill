@@ -1021,9 +1021,15 @@ audio block.
   merging only: new entries are added after a preview, entries already there or
   different keep the person's own, and the list is copied to
   `dictation-before-import.md` first (`words_exchange.py`). "Use the shared word
-  list" (`share_quill_dictation_words`, off) points QUILL Lite at QUILL's
-  `dictation.md`, the one QUILL Transcribe and Quill Inkwell read, after merging
-  QUILL Lite's own entries into it; never offered in a portable copy.
+  list" (`share_quill_dictation_words`, off) points QUILL Lite at the family's
+  `dictation.md`, the one QUILL, QUILL Transcribe and Quill Inkwell read, after
+  merging QUILL Lite's own entries into it; never offered in a portable copy.
+  Since 2026-10-16 that file lives in `%LOCALAPPDATA%\QuillVille\Dictation`,
+  copied there from QUILL's data folder with the old file kept as the backup
+  (dictation design record section 30). "Share dictation settings with the
+  family" (`windows_dictation_share_family`, More Dictation Settings, Alt+A)
+  keeps the shared dictation settings in `family_dictation.json` beside it,
+  written on OK and taken when the window is activated (dict.md D-13).
 
 **Tests.** The core behaviours against a fake recogniser and a fake document
 (`tests/unit/core/test_windows_dictation.py`), the words model round-trip and

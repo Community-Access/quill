@@ -37,6 +37,7 @@ length of its own session.
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 import wx
@@ -116,7 +117,36 @@ class InkwellDictationMixin(FieldHoldMixin):
     def _anywhere_settings(self) -> Any:
         from quill.core.windows_dictation.anywhere import settings_from
 
+        self._take_family_dictation()
         return settings_from(getattr(self._settings, "dictation", None))
+
+    # -- the family's shared dictation settings (dict.md D-13) -------------------- #
+
+    def _take_family_dictation(self) -> None:
+        """What another program saved, taken whenever Inkwell's settings are
+        used (a start, or Dictation Settings opening): Inkwell has no window
+        of its own to come to the front."""
+        from quill.core.expansion.settings import save_settings
+        from quill.core.windows_dictation.family_store import adopt_fields
+
+        try:
+            updated = adopt_fields(dict(self._settings.dictation or {}), app="inkwell")
+            if updated is not None:
+                self._settings.dictation = updated
+                save_settings(self._data_dir, self._settings)
+        except Exception:  # noqa: BLE001 - our own copy still works
+            logging.getLogger(__name__).warning(
+                "The family's dictation settings could not be taken", exc_info=True
+            )
+
+    def _share_dictation(self) -> None:
+        """A write that fails is said: Inkwell's copy is saved, the family's is not."""
+        from quill.core.windows_dictation.family_store import FamilyDictationError, publish_fields
+
+        try:
+            publish_fields(dict(self._settings.dictation or {}), app="inkwell")
+        except FamilyDictationError as error:
+            self._announce(error.sentence)  # type: ignore[attr-defined]
 
     def _anywhere_preferences(self) -> Any:
         from quill.core.speech.dictation_profile import default_profile_path
@@ -140,7 +170,10 @@ class InkwellDictationMixin(FieldHoldMixin):
         stored = take_handoff(self._data_dir)
         if stored is None:
             return False
-        self._settings.dictation = stored
+        own_choice = (self._settings.dictation or {}).get("windows_dictation_share_family")
+        self._settings.dictation = dict(stored)
+        if own_choice is not None:  # sharing is this program's own choice (D-13)
+            self._settings.dictation["windows_dictation_share_family"] = own_choice
         save_settings(self._data_dir, self._settings)
         key = self._settings.dictate_anywhere_hotkey
         self._announce(  # type: ignore[attr-defined]
@@ -289,6 +322,7 @@ class InkwellDictationMixin(FieldHoldMixin):
             return
         self._settings.dictation = stored_from(settings)
         save_settings(self._data_dir, self._settings)
+        self._share_dictation()
         self._set_status("Dictation settings saved.")  # type: ignore[attr-defined]
 
     def show_dictation_commands(self) -> None:

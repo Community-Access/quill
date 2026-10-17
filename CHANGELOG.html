@@ -245,6 +245,93 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="dictation-one-settings-store-for-the-family-d-13-the-word-lists-new-home-and-dictate-here-in-cast-and-radio-d-16-2026-10-16">Dictation:
+one settings store for the family (D-13), the word list’s new home, and
+Dictate Here in Cast and Radio (D-16) (2026-10-16)</h3>
+<p>dict.md D-12, D-13 and D-16. Design record:
+<code>docs/design/2026-10-05-dictation-plan-and-status.md</code> section
+30.</p>
+<ul>
+<li><strong><code>quill/core/windows_dictation/family_store.py</code></strong>
+(new, wx-free): the family folder
+(<code>%LOCALAPPDATA%\QuillVille\Dictation</code>; a portable copy’s own
+<code>data\dictation</code>) and <code>family_dictation.json</code>.
+<code>publish_fields</code> writes the shared
+<code>windows_dictation_*</code> fields with
+<code>write_json_atomic</code>, keeping fields a newer build wrote, and
+raises <code>FamilyDictationError</code>
+(<code>QUILL-DICTATION-FAMILY-WRITE</code>) with a speakable
+<code>sentence</code> when it cannot. <code>adopt_fields</code> /
+<code>adopt</code> take the family’s values into a program’s own, after
+copying its own to <code>before-sharing-&lt;app&gt;.json</code> once,
+and take nothing if that copy cannot be written. <code>stamp</code> lets
+QUILL Transcribe read only when the file changed.</li>
+<li><strong><code>settings_fields.py</code></strong>:
+<code>windows_dictation_share_family</code> (“on”, “off” or empty),
+<code>FAMILY_LOCAL_FIELDS</code> (the share choice, working tick, strict
+mode, phrase feedback, the one-time transcript sentence and every
+consent), <code>shares_by_default</code> (on only while every shared
+field is a default, so an upgrade never replaces somebody’s choices),
+<code>settle_share</code> (decides before the first change) and
+<code>share_on</code>.</li>
+<li><strong>Both directions.</strong> QUILL and QUILL Lite publish on
+Dictation Settings OK and Switch Dictation Language
+(<code>windows_dictation_extras.py</code>) and adopt on window
+activation, with “Dictation settings updated from the family.” in the
+status bar. QUILL Transcribe publishes from
+<code>_set_dictation_field</code> and Dictation Settings and adopts on
+its IPC clock (<code>transcribe_commands.py</code>,
+<code>transcribe.py</code>). Inkwell publishes on Dictation Settings OK
+and adopts whenever its settings are used
+(<code>inkwell_dictation.py</code>). A hand-off keeps the receiver’s own
+share choice. A failed write is said in all four.</li>
+<li><strong>More Dictation Settings</strong>: “Sh&amp;are dictation
+settings with the family” (Alt+A), with inline F1 help
+(<code>dictation_more_dialog.py</code>).</li>
+<li><strong><code>quill/core/windows_dictation/family_words.py</code></strong>
+(new): <code>default_profile_path()</code> now returns the family’s
+<code>dictation.md</code>. The first ask copies
+<code>dictation.md</code>, <code>dictation-instructions.md</code> and
+<code>dictation-contexts.json</code> from QUILL’s data folder byte for
+byte, never moving or deleting the old files; a family list is never
+overwritten; later changes to the old list are merged as Import merges
+(backup <code>dictation-before-merge.md</code>), tracked in
+<code>family-words-moved.json</code>; a failed copy reads through the
+old path; a call with nothing new writes nothing.</li>
+<li><strong>D-16,
+<code>quill/core/windows_dictation/dictate_here.py</code></strong> (new,
+wx-free) and <strong><code>quill/ui/dictate_here_ui.py</code></strong>
+(new): Edit &gt; Dictate Here, <code>app.dictate_here</code> on Ctrl+F11
+in <code>APP_KEYMAPS["cast"]</code> and <code>["radio"]</code>, wired
+once in <code>support_menu.insert_edit_menu</code> and
+<code>app_support</code>; shown only where
+<code>is_app_released("transcribe")</code>. Sends <code>start</code>
+through <code>dictation_owner.send_request</code> (new
+<code>SENDERS</code> admits <code>cast</code> and <code>radio</code>;
+<code>APPS</code> unchanged), or launches QUILL Transcribe with
+<code>--tray --dictate-here</code>
+(<code>TranscribeDictationMixin.dictate_here_at_launch</code>). A
+<code>wx.EventFilter</code> answers the key in text fields of the app’s
+dialogs, where menu accelerators never reach;
+<code>AppShellMixin._apply_app_keymap</code> records
+<code>_app_keymap_id</code> so the request names its sender.</li>
+<li><strong>data_format_audit</strong>: <code>quill.settings</code> and
+<code>lite.settings</code> recorded as additive, compatible for the new
+field.</li>
+<li><strong>Tests</strong>:
+<code>tests/unit/core/test_family_dictation_store.py</code>,
+<code>test_family_words_move.py</code>,
+<code>test_dictate_here.py</code>;
+<code>tests/unit/ui/test_family_dictation_hosts.py</code>,
+<code>test_dictate_here_menu.py</code>; <code>tests/conftest.py</code>
+gives every test its own family folder.</li>
+<li><strong>Docs</strong>: the QUILL, QUILL Lite, QUILL Transcribe,
+Quill Inkwell, QUILL Cast and Quill Radio user guides and changelogs;
+the QUILL Lite, QUILL Transcribe, QUILL Cast and Quill Radio PRDs;
+<code>voice-interaction.md</code>; the regenerated keyboard and F1
+references.</li>
+</ul>
+<h3
 id="quill-radio-station-enrichment-the-signed-station-pack-fts5-search-and-station-details-2026-10-16">Quill
 Radio station enrichment: the signed station pack, FTS5 search and
 Station Details (2026-10-16)</h3>

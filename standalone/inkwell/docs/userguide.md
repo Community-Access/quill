@@ -470,7 +470,17 @@ dictation settings to Inkwell and starts it, and if you have not chosen a key
 yet, the key chooser opens for you.
 
 **Your settings.** Inkwell keeps its own copy of your dictation settings, so it
-works even when no editor is open. Change them in **Dictation > Dictation
+works even when no editor is open. When **Share dictation settings with the
+family** is checked (Alt+A, in More Dictation Settings), that copy follows what
+you save in QUILL, QUILL Lite or QUILL Transcribe, picked up the next time you
+start Dictate Anywhere or open Dictation Settings, and what you save here
+reaches them. The read-back, every permission to send your speech, and your
+Dictate Anywhere key stay Inkwell's own. The first time Inkwell takes the
+family's settings, its own are saved as `before-sharing-inkwell.json` in
+`%LOCALAPPDATA%\QuillVille\Dictation`; if the shared copy cannot be saved,
+Inkwell says so. Your word list lives in that folder too, copied there from
+QUILL's data folder the first time it is needed, with the old file left as a
+backup. Change them in **Dictation > Dictation
 Settings...** (Ctrl+Alt+D), which is the same window the editors use. One
 difference: the read-back after each phrase starts as a tone rather than the
 words, because your screen reader can already read out what is typed, and hearing

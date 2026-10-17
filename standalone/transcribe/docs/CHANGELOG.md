@@ -6,6 +6,23 @@ file is the itemized list.
 
 ## Unreleased
 
+- **Your dictation settings, shared with the family** (2026-10-16). More
+  Dictation Settings has **Share dictation settings with the family** (Alt+A).
+  When it is checked, what you save here is used by QUILL, QUILL Lite and Quill
+  Inkwell, and what you save in them is used here within a second. Before,
+  QUILL Transcribe kept its own copy and only Dictate in Other Programs brought
+  an editor's settings over. Keys, the tray, the working tick, strict mode, what
+  you hear after each phrase and every permission to send your speech stay
+  QUILL Transcribe's own. Checked for a new install; unchecked if you had
+  already changed your settings. Your own settings are kept in a backup file
+  the first time, and a save that cannot reach the others is said aloud.
+- **The word list's new home** (2026-10-16). My Words and Phrases now lives in
+  `%LOCALAPPDATA%\QuillVille\Dictation`, copied there from QUILL's data folder
+  the first time it is needed. The old file is left as a backup.
+- **Dictate Here from Quill Cast and Quill Radio** (2026-10-16). Their Edit >
+  Dictate Here (Ctrl+F11) asks QUILL Transcribe to dictate into the field you
+  are in, starting it in the tray if it is not running.
+
 - **Hold the key to talk** (2026-10-15). With **Hold the dictation key to
   talk** checked in More Dictation Settings (Alt+H, off until you turn it on),
   hold your start and stop key while you speak; letting go stops dictation and

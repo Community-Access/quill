@@ -6945,6 +6945,22 @@ crossfade (4.11 and 4.12, which xradio2 defers and places in Player or
 Studio first).</li>
 </ul>
 <h2
+id="26a-dictate-here-through-quill-transcribe-unreleased-2026-10-16">26a.
+Dictate Here through QUILL Transcribe (unreleased, 2026-10-16)</h2>
+<p>Edit &gt; Dictate Here, <code>app.dictate_here</code> on Ctrl+F11 in
+<code>APP_KEYMAPS["radio"]</code> (the editors’ Start Dictation key,
+family rule 2; plain F11 stays Full Screen in the video window). Quill
+Radio loads no speech engine: the command sends QUILL Transcribe a
+<code>start</code> request, or launches it with
+<code>--tray --dictate-here</code>, and says only what QUILL Transcribe
+will not (Inkwell busy, not installed, starting). One
+<code>wx.EventFilter</code> answers the key in text fields of Radio’s
+other windows, such as Search Stations, where the main window’s
+accelerators never reach. Shown only where
+<code>is_app_released("transcribe")</code>. Shared with QUILL Cast
+(<code>quill/ui/dictate_here_ui.py</code>); dict.md D-16, and the
+dictation design record section 30.</p>
+<h2
 id="27-station-details-and-the-signed-station-pack-unreleased-2026-10-16">27.
 Station details and the signed station pack (unreleased,
 2026-10-16)</h2>

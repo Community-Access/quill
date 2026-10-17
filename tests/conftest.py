@@ -857,6 +857,29 @@ def _family_locks_of_its_own(
 
 
 @pytest.fixture(autouse=True)
+def _family_dictation_of_its_own(
+    monkeypatch: pytest.MonkeyPatch, tmp_path_factory: pytest.TempPathFactory
+) -> None:
+    """Give every test its own family dictation folder (dict.md D-13).
+
+    ``family_dictation.json`` and the family's ``dictation.md`` live in
+    ``%LOCALAPPDATA%\\QuillVille\\Dictation``. Left there, a test would read the
+    developer's own words and settings, and one test's words would reach the
+    next. The folder is made only when a test asks for it.
+    """
+    from quill.core.windows_dictation import family_store
+
+    made: list[Path] = []
+
+    def folder() -> Path:
+        if not made:
+            made.append(tmp_path_factory.mktemp("family-dictation"))
+        return made[0]
+
+    monkeypatch.setattr(family_store, "_default_dir", folder)
+
+
+@pytest.fixture(autouse=True)
 def _no_saved_own_ai_key(monkeypatch: pytest.MonkeyPatch) -> None:
     """Hide the developer's saved OpenAI key from AI help.
 
