@@ -177,3 +177,61 @@ def test_ctrl_is_never_left_down(monkeypatch) -> None:
     result = injector.send_text_checked("a", hush_reader=True)
     assert result.complete  # every character went in; only the release was lost
     assert batches[-1] == [(0x11, True)]
+
+
+# -- astral characters (todo P3: an emoji lost its first half) ----------------
+
+
+def test_an_emoji_sends_both_key_downs_before_either_key_up() -> None:
+    """A key-up between the two surrogate halves is what separated their
+    WM_CHARs; the pair now goes down together and comes up together."""
+    from quill.platform.windows.text_injector import unicode_key_sequence
+
+    assert unicode_key_sequence("\U0001f600") == [
+        (0xD83D, False),
+        (0xDE00, False),
+        (0xDE00, True),
+        (0xD83D, True),
+    ]
+
+
+def test_a_bmp_character_is_still_one_tap() -> None:
+    from quill.platform.windows.text_injector import unicode_key_sequence
+
+    assert unicode_key_sequence("é\n") == [(0xE9, False), (0xE9, True), (0x0A, False), (0x0A, True)]
+
+
+def test_every_unit_of_mixed_text_is_sent_exactly_once_down_and_up() -> None:
+    from quill.platform.windows.text_injector import unicode_key_sequence, utf16_code_units
+
+    text = "a\U0001f44d b\U00020041é"
+    sequence = unicode_key_sequence(text)
+    downs = [unit for unit, up in sequence if not up]
+    ups = [unit for unit, up in sequence if up]
+    assert downs == utf16_code_units(text)
+    assert sorted(ups) == sorted(downs)
+    # And the downs decode back to exactly the text: nothing lost, nothing added.
+    assert b"".join(u.to_bytes(2, "little") for u in downs).decode("utf-16-le") == text
+
+
+def test_the_unicode_inputs_follow_that_sequence(monkeypatch) -> None:
+    injector = _us_layout(monkeypatch)
+    keys = _keys(injector._text_inputs("\U0001f600"))
+    assert [(scan, up) for _vk, scan, up in keys] == [
+        (0xD83D, False),
+        (0xDE00, False),
+        (0xDE00, True),
+        (0xD83D, True),
+    ]
+
+
+def test_an_astral_character_is_never_typed_as_a_layout_key(monkeypatch) -> None:
+    """VkKeyScanExW takes a 16-bit WCHAR: U+20041 reached it as U+0041 and the
+    US layout answered with the A key. The fake truncates the way ctypes does."""
+    injector = _us_layout(monkeypatch)
+    real = injector._user32.VkKeyScanExW
+    injector._user32.VkKeyScanExW = lambda code, layout: real(code & 0xFFFF, layout)
+    # "a" is in the fake's table, so U+20061 would have typed "a".
+    inputs = injector._text_inputs("\U00020061")
+    assert all(i.ki.dwFlags & 0x0004 for i in inputs)
+    assert [i.ki.wScan for i in inputs if not i.ki.dwFlags & 0x0002] == [0xD840, 0xDC61]

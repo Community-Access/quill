@@ -5,6 +5,19 @@
 Testing rebuild: **1.2.0 (build 5)**, following builds 2, 3 and 4; builds 2 and 3 were
 uploaded for testing. The new packages have not been published yet.
 
+- **Emoji no longer get cut in half by the Tools menu, Find and the
+  spelling fixes** (2026-10-17). The editor counts an emoji as two positions
+  and QUILL Lite counted it as one, so after an emoji the commands that work
+  on a selection were one place off for every emoji in front of it. For
+  example, with "😀 hi there" and "hi there" selected, **Tools > Upper Case**
+  changed the wrong letters and left the selection ending one character short;
+  now it changes "hi there" to "HI THERE" and selects exactly that. The same
+  fix covers the selected text Copy works from, the Find box opening with
+  your selection, Replace checking that the selection is a match, the Review
+  Buffer of a selection, choosing a spelling suggestion from the context menu
+  (Shift+F10) and dictation's line commands. Limits: nothing changes for text
+  without emoji or other characters beyond the first 65,536 in Unicode.
+
 - **Go back over an AI conversation, and save it as a file** (2026-10-17). In
   the AI Conversation window, **Alt+1** reads the newest message aloud,
   **Alt+2** the one before it, and so on to **Alt+0** for the tenth newest,

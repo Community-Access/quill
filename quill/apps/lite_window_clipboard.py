@@ -91,7 +91,7 @@ class DocumentClipboardMixin(DocumentClipboardCollectorMixin):  # and the collec
 
     def _selected_text(self) -> str:
         start, end = self.control.GetSelection()
-        return str(self.control.GetValue()[start:end]) if end > start else ""
+        return str(self.control.GetRange(start, end)) if end > start else ""
 
     def _insert(self, text: str) -> None:
         """Put *text* in at the caret, replacing the selection, as one undo step.

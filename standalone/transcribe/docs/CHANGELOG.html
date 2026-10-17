@@ -248,6 +248,18 @@ first. The release notes (<code>release-notes-1.0.md</code>) tell the
 same story as a narrative; this file is the itemized list.</p>
 <h2 id="unreleased">Unreleased</h2>
 <ul>
+<li><p><strong>Emoji arrive whole</strong> (2026-10-17). When something
+you dictate turns into an emoji (or any character beyond the first
+65,536 in Unicode, such as rarer Chinese characters), QUILL Transcribe
+types it as one character. Before, a plain edit box such as the Run box
+(Windows+R) could receive it without its first half and show a box or
+nothing. For example, if a word in My Words is replaced with a thumbs-up
+emoji, saying that word in the Run box now types the thumbs-up. A rarer
+Chinese character could also be typed as a plain Latin letter on some
+keyboard layouts; that is fixed too. Limits: what a program shows still
+depends on its font, so an emoji can look like a box in a program whose
+font has no picture for it even though the character is there; your
+screen reader reads it by name.</p></li>
 <li><p><strong>Alt+W opens the Window menu again</strong> (2026-10-17).
 In QUILL Transcribe’s window the <strong>Discard Held Words</strong>
 button also claimed Alt+W, and Windows gives a letter shared by a button

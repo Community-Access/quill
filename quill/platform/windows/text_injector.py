@@ -214,7 +214,13 @@ def _layout_key(char: str, layout: int, caps_lock: bool) -> list[_INPUT] | None:
     shortcuts in the target, and a dead key would join the next letter.
     """
     if len(char) != 1 or not char.isprintable():
-        return None  # line breaks, tabs and surrogates keep the Unicode route
+        return None  # line breaks and tabs keep the Unicode route
+    if ord(char) > 0xFFFF:
+        # Emoji and every other astral character: no layout has a key for one,
+        # and asking would lie. VkKeyScanExW takes a 16-bit WCHAR, so ctypes
+        # silently cuts U+20041 (a CJK Extension B ideograph) to U+0041 and the
+        # layout answers with the A key -- the character typed as a letter.
+        return None
     scanned = int(_user32.VkKeyScanExW(ord(char), layout))
     if scanned == -1 or scanned & 0xFFFF == 0xFFFF:
         return None
@@ -233,12 +239,35 @@ def _layout_key(char: str, layout: int, caps_lock: bool) -> list[_INPUT] | None:
     return keys
 
 
+def unicode_key_sequence(text: str) -> list[tuple[int, bool]]:
+    """*text* as ``(utf16_unit, key_up)`` pairs, in the order they are sent.
+
+    One down and one up per BMP character. An astral character -- every emoji
+    -- is two UTF-16 units, and its two key-downs go **together**, before
+    either key-up: high down, low down, low up, high up. Sending each half as
+    its own down-up tap put a key-up between the halves, and an emoji
+    dictated by QUILL Transcribe into a plain Edit control arrived without its
+    first half (todo P3, 2026-10). A key-up between the halves is the one
+    thing that separates the two ``WM_CHAR`` messages; with the downs
+    adjacent, ``TranslateMessage`` posts them back to back, which is the
+    order a control that pairs surrogates expects. (Not reproduced against a
+    live window: the overnight rules forbid driving the desktop, so the
+    sequence is pinned by a unit test and the field check is Jeff's.) Pure,
+    so it is testable off Windows.
+    """
+    sequence: list[tuple[int, bool]] = []
+    for char in text:
+        units = utf16_code_units(char)
+        sequence.extend((unit, False) for unit in units)
+        sequence.extend((unit, True) for unit in reversed(units))
+    return sequence
+
+
 def _unicode_inputs(text: str) -> list[_INPUT]:
-    inputs: list[_INPUT] = []
-    for unit in utf16_code_units(text):
-        inputs.append(_key(scan=unit, flags=_KEYEVENTF_UNICODE))
-        inputs.append(_key(scan=unit, flags=_KEYEVENTF_UNICODE | _KEYEVENTF_KEYUP))
-    return inputs
+    return [
+        _key(scan=unit, flags=_KEYEVENTF_UNICODE | (_KEYEVENTF_KEYUP if up else 0))
+        for unit, up in unicode_key_sequence(text)
+    ]
 
 
 def _text_inputs(text: str) -> list[_INPUT]:
@@ -322,7 +351,8 @@ def send_text(text: str) -> None:
     """Type *text* as Unicode keystrokes.
 
     Characters outside the Basic Multilingual Plane (emoji, some CJK extensions)
-    are sent as their two surrogate code units, which is what Windows expects.
+    are sent as their two surrogate code units, both key-downs before either
+    key-up (:func:`unicode_key_sequence`), which is what Windows expects.
 
     Returns nothing: :func:`send_text_checked` is the one that reports what
     landed, and is what a replacement should use.

@@ -245,6 +245,16 @@
 <h1 id="quill-inkwell-changelog">Quill Inkwell changelog</h1>
 <h2 id="unreleased">Unreleased</h2>
 <ul>
+<li><p><strong>Emoji arrive whole</strong> (2026-10-17). Dictate
+Anywhere and abbreviations that expand everywhere now type an emoji (or
+any character beyond the first 65,536 in Unicode) as one character.
+Before, a plain edit box such as the Run box (Windows+R) could receive
+it without its first half. For example, an abbreviation “thx” that
+expands to “Thanks! 🙏” now types the folded hands too, in any program.
+Some rarer Chinese characters could also be typed as a plain Latin
+letter; fixed as well. Limits: a program whose font has no picture for
+an emoji still shows a box, though the character is there and your
+screen reader reads it by name.</p></li>
 <li><p><strong>Alt+Q opens the QuillVille menu again</strong>
 (2026-10-17). The <strong>Quick Insert…</strong> button in Inkwell’s
 window also claimed Alt+Q, and Windows gives a letter that a button and

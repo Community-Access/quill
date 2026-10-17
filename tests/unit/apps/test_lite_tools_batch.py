@@ -29,6 +29,9 @@ class _Control:
     def GetValue(self) -> str:
         return self._text
 
+    def GetRange(self, start: int, end: int) -> str:  # noqa: N802 - wx API shape
+        return self._text[start:end]
+
     def GetSelection(self) -> tuple[int, int]:
         return self.selection
 

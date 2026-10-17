@@ -2,6 +2,51 @@
 
 ## 1.0.0
 
+### Emoji and other astral characters: typed whole, counted as the control counts them (todo P3; 2026-10-17)
+
+An emoji dictated by QUILL Transcribe into a plain edit control arrived
+without its first half. Two separate unit mistakes, one in each direction, and
+both now have a test that pins them without a real window.
+
+- **Typing into other programs** (`quill/platform/windows/text_injector.py`).
+  An astral character is two UTF-16 units, and each went out as its own
+  down-up `KEYEVENTF_UNICODE` tap, so a key-up sat between the high and low
+  surrogate. The new pure `unicode_key_sequence(text)` sends both key-downs
+  before either key-up (high down, low down, low up, high up), so
+  `TranslateMessage` posts the two `WM_CHAR`s back to back. Separately,
+  `_layout_key` asked `VkKeyScanExW` about astral characters, whose argument is
+  a 16-bit `WCHAR`: ctypes cut U+20041 (CJK Extension B) to U+0041 and the
+  layout answered with the A key, so the ideograph was typed as a letter. Astral
+  characters now always take the Unicode route. Shared by QUILL Transcribe,
+  Quill Inkwell's Dictate Anywhere and abbreviation expansion. Not reproduced
+  against a live window (the overnight rules forbid driving the desktop); the
+  field check is a person's.
+- **Positions inside our own controls.** A Windows Edit or Rich Edit control
+  (so every `wx.TextCtrl` on wxMSW) counts UTF-16 units and hands text back as
+  Python characters; confirmed in memory: with `"hi \U0001f600 there"`,
+  `GetLastPosition()` is 11 and selecting 0 to 4 gives `'hi \ud83d'`, a lone
+  high surrogate. New `quill/core/text_units.py` (`utf16_length`,
+  `native_length`) is the length to add to a control position. Fixed in QUILL
+  Lite: the five `GetValue()[start:end]` slices (the clipboard's selected text, Find's
+  opening needle and its Replace match check, the Review Buffer, the Tools
+  transforms) now read
+  `GetRange(start, end)`, and the four `start + len(text)` caret/selection
+  ends (context-menu and spelling replacements, the Tools transforms) use
+  `native_length`. Fixed in the shared dictation editor port
+  (`windows_dictation_ports.EditorDocument.line_bounds`).
+- **Left as is, on purpose.** `ExternalDocument` (Transcribe's port) counts
+  backspaces in code points, which is right: Windows edit controls delete a
+  surrogate pair with one Backspace. The dictation controller's correction
+  arithmetic (`corrections.py`, `live.py`) adds Python offsets to port
+  positions; for an editor port that is still off by one per emoji before the
+  change, and needs a port-units seam rather than a local patch.
+
+Tests: `tests/unit/platform/windows/test_text_injector.py` (key order, every
+unit sent once, no astral layout key), `tests/unit/core/test_text_units.py`
+(lengths, and `line_bounds` against a control that counts UTF-16), and
+`tests/unit/apps/test_lite_text_tools.py` (a real Rich Edit control: Upper
+Case after an emoji changes the right letters and selects all of them).
+
 ### Menu letters win over buttons, the Media Player's arrows, a key for Carry My Place, and Inkwell's review box (2026-10-17)
 
 Todo items 47 to 51 and 55.

@@ -245,6 +245,63 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="emoji-and-other-astral-characters-typed-whole-counted-as-the-control-counts-them-todo-p3-2026-10-17">Emoji
+and other astral characters: typed whole, counted as the control counts
+them (todo P3; 2026-10-17)</h3>
+<p>An emoji dictated by QUILL Transcribe into a plain edit control
+arrived without its first half. Two separate unit mistakes, one in each
+direction, and both now have a test that pins them without a real
+window.</p>
+<ul>
+<li><strong>Typing into other programs</strong>
+(<code>quill/platform/windows/text_injector.py</code>). An astral
+character is two UTF-16 units, and each went out as its own down-up
+<code>KEYEVENTF_UNICODE</code> tap, so a key-up sat between the high and
+low surrogate. The new pure <code>unicode_key_sequence(text)</code>
+sends both key-downs before either key-up (high down, low down, low up,
+high up), so <code>TranslateMessage</code> posts the two
+<code>WM_CHAR</code>s back to back. Separately, <code>_layout_key</code>
+asked <code>VkKeyScanExW</code> about astral characters, whose argument
+is a 16-bit <code>WCHAR</code>: ctypes cut U+20041 (CJK Extension B) to
+U+0041 and the layout answered with the A key, so the ideograph was
+typed as a letter. Astral characters now always take the Unicode route.
+Shared by QUILL Transcribe, Quill Inkwell’s Dictate Anywhere and
+abbreviation expansion. Not reproduced against a live window (the
+overnight rules forbid driving the desktop); the field check is a
+person’s.</li>
+<li><strong>Positions inside our own controls.</strong> A Windows Edit
+or Rich Edit control (so every <code>wx.TextCtrl</code> on wxMSW) counts
+UTF-16 units and hands text back as Python characters; confirmed in
+memory: with <code>"hi \U0001f600 there"</code>,
+<code>GetLastPosition()</code> is 11 and selecting 0 to 4 gives
+<code>'hi \ud83d'</code>, a lone high surrogate. New
+<code>quill/core/text_units.py</code> (<code>utf16_length</code>,
+<code>native_length</code>) is the length to add to a control position.
+Fixed in QUILL Lite: the five <code>GetValue()[start:end]</code> slices
+(the clipboard’s selected text, Find’s opening needle and its Replace
+match check, the Review Buffer, the Tools transforms) now read
+<code>GetRange(start, end)</code>, and the four
+<code>start + len(text)</code> caret/selection ends (context-menu and
+spelling replacements, the Tools transforms) use
+<code>native_length</code>. Fixed in the shared dictation editor port
+(<code>windows_dictation_ports.EditorDocument.line_bounds</code>).</li>
+<li><strong>Left as is, on purpose.</strong>
+<code>ExternalDocument</code> (Transcribe’s port) counts backspaces in
+code points, which is right: Windows edit controls delete a surrogate
+pair with one Backspace. The dictation controller’s correction
+arithmetic (<code>corrections.py</code>, <code>live.py</code>) adds
+Python offsets to port positions; for an editor port that is still off
+by one per emoji before the change, and needs a port-units seam rather
+than a local patch.</li>
+</ul>
+<p>Tests: <code>tests/unit/platform/windows/test_text_injector.py</code>
+(key order, every unit sent once, no astral layout key),
+<code>tests/unit/core/test_text_units.py</code> (lengths, and
+<code>line_bounds</code> against a control that counts UTF-16), and
+<code>tests/unit/apps/test_lite_text_tools.py</code> (a real Rich Edit
+control: Upper Case after an emoji changes the right letters and selects
+all of them).</p>
+<h3
 id="menu-letters-win-over-buttons-the-media-players-arrows-a-key-for-carry-my-place-and-inkwells-review-box-2026-10-17">Menu
 letters win over buttons, the Media Player’s arrows, a key for Carry My
 Place, and Inkwell’s review box (2026-10-17)</h3>

@@ -6,6 +6,18 @@ file is the itemized list.
 
 ## Unreleased
 
+- **Emoji arrive whole** (2026-10-17). When something you dictate turns
+  into an emoji (or any character beyond the first 65,536 in Unicode, such as
+  rarer Chinese characters), QUILL Transcribe types it as one character. Before,
+  a plain edit box such as the Run box (Windows+R) could receive it without its
+  first half and show a box or nothing. For example, if a word in My Words is
+  replaced with a thumbs-up emoji, saying that word in the Run box now types
+  the thumbs-up. A rarer Chinese character could also be typed as a plain
+  Latin letter on some keyboard layouts; that is fixed too. Limits: what a
+  program shows still depends on its font, so an emoji can look like a box in
+  a program whose font has no picture for it even though the character is
+  there; your screen reader reads it by name.
+
 - **Alt+W opens the Window menu again** (2026-10-17). In QUILL Transcribe's window the **Discard Held Words** button also claimed Alt+W, and Windows gives a letter shared by a button and a menu to the button, so Alt+W threw away held words instead of opening the Window menu. The button's letter is now C (Alt+C), and Alt+W opens Window. Dictation > Discard Held Words (Ctrl+Shift+D) is unchanged. The user guide's part on the window lists the three paused-dictation buttons with their letters.
 
 - **A proper guide to choosing a model** (2026-10-17). The user guide's
