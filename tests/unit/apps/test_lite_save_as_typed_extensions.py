@@ -1,9 +1,11 @@
-"""Save As in QUILL Lite: the typed name decides, and a Word name is refused.
+"""Save As in QUILL Lite: the typed name decides, and a Word name needs rich text.
 
 QUILL Lite writes text, Markdown and rich text, and the name somebody types
-decides which (2026-10-16, item 41). It has no Word writer, so until this date
-``minutes.docx`` got the window's text written under a Word name -- a file Word
-will not open. It now refuses and says what will work; QUILL saves Word.
+decides which (2026-10-16, item 41). Until that date ``minutes.docx`` got the
+window's text written under a Word name -- a file Word will not open -- and it
+was then refused. Since 2026-10-17 a **rich** window writes a real Word
+document through QUILL's writer (quill.core.docx_open); a plain text window is
+still refused, and so is every other Word extension.
 
 Every case runs ``cmd_save_as`` with a stand-in Save As window and checks the
 file on disk in its own format.
@@ -49,17 +51,32 @@ def test_a_word_name_is_refused_and_nothing_is_written(
     caption, message = boxes[-1]
     assert caption == "Format not supported"
     assert f"so {name} was not written" in message and "Rich Text (.rtf)" in message
+    if name.lower().endswith(".docx"):
+        assert "Switch Document Mode" in message, "says how to make it saveable"
     assert win.path is None, "the window still holds an unnamed document"
 
 
-def test_a_rich_document_is_refused_before_it_is_asked_to_flatten(
+def test_a_rich_document_saves_a_real_word_document_without_flattening(
     lite_window, fake_wx_dialog, boxes, tmp_path
 ) -> None:
+    docx = pytest.importorskip("docx")
+    win = lite_window("# Minutes\n\nformatted words", mode="rich")
+    assert _save_as(win, fake_wx_dialog, tmp_path / "minutes.docx") is True
+    assert boxes == [], "no 'removes all formatting' question: nothing is flattened"
+    reopened = docx.Document(str(tmp_path / "minutes.docx"))
+    written = [(p.style.name, p.text) for p in reopened.paragraphs if p.text]
+    assert written == [("Heading 1", "Minutes"), ("Normal", "formatted words")]
+    assert win.path == tmp_path / "minutes.docx"
+
+
+@pytest.mark.parametrize("name", ["minutes.docm", "letter.dotx"])
+def test_a_rich_document_is_still_refused_other_word_names(
+    lite_window, fake_wx_dialog, boxes, tmp_path, name
+) -> None:
     win = lite_window("formatted words", mode="rich")
-    assert _save_as(win, fake_wx_dialog, tmp_path / "minutes.docx") is False
-    assert [caption for caption, _m in boxes] == ["Format not supported"], (
-        "no 'removes all formatting' question for a save that will not happen"
-    )
+    assert _save_as(win, fake_wx_dialog, tmp_path / name) is False
+    assert not (tmp_path / name).exists()
+    assert [caption for caption, _m in boxes] == ["Format not supported"]
 
 
 @pytest.mark.parametrize("name", ["notes.txt", "notes.md", "NOTES.TXT", "page.html", "notes.log"])
@@ -113,5 +130,5 @@ def test_the_clipboard_collector_will_not_write_a_word_name(lite_window, tmp_pat
     win = lite_window(TEXT)
     win.path = tmp_path / "collected.docx"
     reason = win.save_quietly()
-    assert reason and "cannot save Word documents" in reason
+    assert reason and "saves Word documents from rich text" in reason
     assert not (tmp_path / "collected.docx").exists()

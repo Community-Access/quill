@@ -701,6 +701,8 @@ class _RtfReader:
                 self._fontsize = str(param // 2)
         elif word == "outlinelevel":
             self._outline = param if param is not None else 0
+            # Rich Edit writes \b\fsN before \outlinelevel: style, not authoring.
+            self._bold, self._fontsize = False, None
         elif word == "s":
             named = NAMED_STYLE_BY_INDEX.get(param if param is not None else -1)
             if named:

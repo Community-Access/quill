@@ -245,6 +245,58 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="word-editing-shared-with-quill-lite-two-word-round-trip-fixes-table-navigation-in-quill-lite-2026-10-17">Word
+editing shared with QUILL Lite; two Word round-trip fixes; table
+navigation in QUILL Lite (2026-10-17)</h3>
+<p><strong><code>quill/core/docx_open.py</code> (new, wx-free).</strong>
+QUILL’s Word open and save decisions moved out of
+<code>quill/ui/main_frame_rich_mode.py</code> so QUILL Lite can make
+them too, and QUILL calls them in the same change (CLAUDE.md: QUILL Lite
+may never be ahead of QUILL): <code>fidelity_findings</code>,
+<code>fidelity_question(name, findings, app=)</code>,
+<code>fidelity_choices</code>, <code>choice_for_selection</code>
+(clamped; Cancel is <code>text</code>), <code>backup_path_for</code> /
+<code>backup_original</code> / <code>needs_backup</code>
+(<code>name.backup-YYYYMMDD-HHMMSS.docx</code>, once per session,
+flagged originals only), <code>read_docx_as_rtf</code>,
+<code>rtf_to_docx_bytes</code>, <code>write_docx_from_rtf</code>
+(atomic), and <code>OPENED_RICH_SENTENCE</code>. QUILL’s wording, dialog
+and behaviour are unchanged and
+<code>tests/unit/ui/test_rich_mode.py</code> passes as it was.
+<code>main_frame_rich_mode.py</code> 949 -&gt; 929 lines.</p>
+<p><strong>Two fixes found by running a Word document through the real
+Rich Edit control three times</strong>
+(<code>tests/unit/ui/test_word_rich_round_trip.py</code>), both in
+shared code and so in both editors. (1) The control writes a heading’s
+<code>\b\fsN</code> before its <code>\outlinelevel</code>, and the RTF
+reader recorded them as authored formatting; saved to Word they became
+direct run formatting, and on the second save Heading 5 (11.5 pt, read
+back as 11) dropped off the ladder and came back as bold Normal text.
+<code>quill/io/rtf.py</code> now drops them when
+<code>\outlinelevel</code> arrives
+(<code>test_rtf_heading_styles.py</code>, six new cases). (2) The
+control ends its RTF with a paragraph mark and a NUL, so each save added
+a blank paragraph; <code>rtf_to_docx_bytes</code> strips both.</p>
+<p><strong>QUILL Lite</strong> opens <code>.docx</code> as rich text to
+edit and saves it as Word through these functions
+(<code>quill/apps/lite_window_word.py</code>), asks the same three-way
+question, backs up the same way, takes the theme colour off for the
+save, and says “Still saving NAME” if Save is pressed during a
+background Word save. It also gained QUILL’s eight table keys over the
+shared <code>quill/core/table_nav.py</code>
+(<code>quill/apps/lite_window_tables.py</code>, Navigate &gt; Table).
+<code>.docm</code> stays text in both editors: QUILL’s rich Word path
+was already <code>.docx</code> only.</p>
+<p>Gates: GATE-11 rebaselined
+(<code>_rebaseline_2026_10_17_word_in_lite</code>:
+<code>quill/core/lite/commands.py</code> +13 for the Table rows,
+<code>quill/io/rtf.py</code> +2); dialog inventory, Lite command
+coverage (275 covered, 0 shape-only), the F1 help reference, the family
+chords snapshot and QUILL Lite’s key table regenerated. Docs: QUILL user
+guide (Editing Word documents), QUILL PRD, QUILL Lite user guide (“Word
+documents”, “Moving through a table”), changelog and PRD; manual checks
+in <code>docs/qa/screen-reader-checks-2026-10.md</code>.</p>
+<h3
 id="menu-letters-win-over-buttons-the-media-players-arrows-a-key-for-carry-my-place-and-inkwells-review-box-2026-10-17">Menu
 letters win over buttons, the Media Player’s arrows, a key for Carry My
 Place, and Inkwell’s review box (2026-10-17)</h3>

@@ -5,6 +5,42 @@
 Testing rebuild: **1.2.0 (build 5)**, following builds 2, 3 and 4; builds 2 and 3 were
 uploaded for testing. The new packages have not been published yet.
 
+- **Edit Word documents** (2026-10-17). A `.docx` now opens to edit, as rich
+  text, and **Ctrl+S** saves it as a real Word document, using QUILL's own Word
+  code, so QUILL and QUILL Lite open, ask, back up and save a Word document the
+  same way. Headings 1 to 6, lists, bold, italic, underline, fonts, colours,
+  highlights, links, alignment and tables come in and go back out; Word's
+  navigation pane still finds your headings. When a document has things a save
+  would drop -- pictures, comments, tracked changes, headers, footers,
+  footnotes, extra sections, table formatting -- QUILL Lite names them first
+  and asks: **open for reading and plain editing** (the default, and what
+  Escape does: the file cannot change), **edit as rich text** (the original is
+  copied to `name.backup-date-time.docx` before your first save), or **edit a
+  copy**. A long save runs in the background; press **Ctrl+S** again before you
+  hear "Saved" and you hear "Still saving report.docx" instead of a second save.
+  **Save As** has a "Word document (*.docx)" row, and any rich text document
+  can be saved as Word. Dark mode never reaches the file. Limits: a `.docm`,
+  `.doc` or `.odt` still opens as text; a plain text window cannot save a
+  `.docx` (switch it to rich text with **Alt+Shift+F** first, and the message
+  says so); if this copy of QUILL Lite has no Word component, a `.docx` opens
+  as text as before. Example: open `agenda.docx`, press **Ctrl+End**, type a
+  line, press **Ctrl+S**, and open it in Word. User guide: "Word documents".
+
+- **Read a table cell by cell** (2026-10-17). **Navigate > Table** has QUILL's
+  eight table keys: **Ctrl+Alt+Right** and **Ctrl+Alt+Left** for the next and
+  previous cell, **Ctrl+Alt+Down** and **Ctrl+Alt+Up** for the cell below and
+  above, **Alt+Home** and **Alt+End** for the first and last cell in the row,
+  and **Ctrl+Alt+Home** and **Ctrl+Alt+End** for the first and last cell of the
+  table. Each says where you landed and what is there: "Row 2 of 4, column 3
+  of 5: Lead". At an edge you hear "No more cells" or "No more rows", and
+  outside a table "Not in a table". It works on Markdown tables and on the
+  tables in a Word document you open. User guide: "Moving through a table".
+
+- **Headings stay headings in Word, save after save** (2026-10-17, also in
+  QUILL). Saving a Word document a second time used to turn its Heading 5s into
+  bold ordinary text, and every save added a blank paragraph at the end. Both
+  are fixed.
+
 - **Go back over an AI conversation, and save it as a file** (2026-10-17). In
   the AI Conversation window, **Alt+1** reads the newest message aloud,
   **Alt+2** the one before it, and so on to **Alt+0** for the tenth newest,

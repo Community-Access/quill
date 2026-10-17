@@ -25479,6 +25479,26 @@ previously dropped entirely now survives, reads correctly, and is
 reachable by single-key table navigation (<code>T</code>).
 <code>scan_docx_features</code> still lists tables so the format change
 is disclosed before a rich edit.</p>
+<p><strong>Shared with QUILL Lite (2026-10-17).</strong> The wx-free
+half of this path lives in <code>quill/core/docx_open.py</code>, and
+<code>main_frame_rich_mode.py</code> calls it: the scan
+(<code>fidelity_findings</code>), the question, its three rows and the
+clamped answer (<code>fidelity_question</code>,
+<code>fidelity_choices</code>, <code>choice_for_selection</code>), the
+backup (<code>backup_path_for</code>, <code>backup_original</code>,
+<code>needs_backup</code>), read-to-RTF (<code>read_docx_as_rtf</code>)
+and RTF-to-Word (<code>rtf_to_docx_bytes</code>,
+<code>write_docx_from_rtf</code>). QUILL Lite edits <code>.docx</code>
+through the same functions (its PRD, “Word documents and table
+navigation”), so neither editor can drift from the other.
+<code>rtf_to_docx_bytes</code> drops the rich control’s trailing NUL and
+trailing empty paragraphs, which had added a blank paragraph per save;
+and the RTF reader (<code>quill/io/rtf.py</code>) drops a heading’s bold
+and ladder size when <code>\outlinelevel</code> follows them – the Rich
+Edit control’s own order – which had turned Heading 5 into bold Normal
+text on a document’s second save.
+<code>tests/unit/ui/test_word_rich_round_trip.py</code> runs Heading
+1-6, a bold run and a table through the real control three times.</p>
 <p><strong>EPUB reading.</strong> <code>core/epub.py</code> renders each
 chapter’s headings inline (as Markdown <code>#</code> lines two levels
 beneath the chapter) so single-key heading navigation traverses them,

@@ -1556,3 +1556,25 @@ reader. Use a `.docx` with three highlighted passages in different colours
 - [ ] All four with NVDA.
 - [ ] All four with JAWS.
 
+## QUILL Lite Word Documents and Table Navigation (2026-10-17)
+
+Real `.docx` files, made in Word: one plain (headings 1 to 6, a list, bold, a
+link), and one with a table and a comment.
+
+1. QUILL Lite, Ctrl+O, the plain file: "Opening ..." then "Opened as Rich
+   Text. Headings and bold are shown formatted." Ctrl+Alt+H walks Heading 1 to
+   Heading 6 with their levels.
+2. Type a line, Ctrl+S: "Saved ...". Open it in Word: headings are still
+   headings in the navigation pane; nothing grey in dark mode.
+3. The file with a comment: the Open Word document window reads its sentence
+   and the first row; Escape opens it as text, and Ctrl+S offers Save As.
+4. Open it again, choose Edit as Rich Text, Ctrl+S: "Backed up the original to
+   ..." then "Saved ..."; the backup opens in Word with the comment.
+5. A long document: Ctrl+S twice quickly: the second says "Still saving ...".
+6. In the table: Ctrl+Alt+Right, Down, Alt+Home, Ctrl+Alt+End read "Row N of
+   M, column C of D: text"; past the edge, "No more cells"; outside, "Not in a
+   table". Note whether the screen reader takes Ctrl+Alt+arrows first.
+7. QUILL: the same file opens with the same question in the same words.
+
+- [ ] All seven with NVDA.
+- [ ] All seven with JAWS.

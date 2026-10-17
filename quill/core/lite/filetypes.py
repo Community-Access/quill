@@ -36,6 +36,8 @@ Language cell) and every one of the four consumers reads the override first.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 __all__ = [
     "HTML_SUFFIXES",
     "LANGUAGE_CHOICES",
@@ -44,6 +46,7 @@ __all__ = [
     "MARKDOWN_SUFFIXES",
     "OPEN_WILDCARD",
     "RICH_SUFFIXES",
+    "SAVE_FILTER_WORD",
     "SAVE_WILDCARD_PLAIN",
     "SAVE_WILDCARD_RICH",
     "WORD_SUFFIXES",
@@ -64,18 +67,23 @@ RICH_SUFFIXES = frozenset({".rtf"})
 #: ``.pdf`` joined on 2026-10-15: a PDF opens as its text, read by QUILL's
 #: reader, and is never written back (quill/apps/lite_window_pdf.py).
 #: Word, Excel, PowerPoint and OpenDocument text joined on 2026-10-16, on the
-#: same terms (quill.core.lite.open_prepare.OFFICE_OPEN_SUFFIXES).
+#: same terms (quill.core.lite.open_prepare.OFFICE_OPEN_SUFFIXES). A ``.docx``
+#: has opened as a Word document to edit since 2026-10-17, through QUILL's own
+#: Word code (quill.core.docx_open); it has a row of its own for that reason,
+#: and the rest are still opened as text.
 _OFFICE = "*.docx;*.docm;*.doc;*.odt;*.xlsx;*.xls;*.pptx;*.ppt"
+_OFFICE_AS_TEXT = "*.docm;*.doc;*.odt;*.xlsx;*.xls;*.pptx;*.ppt"
 _TEXT_LIKE = f"*.txt;*.rtf;*.md;*.log;*.csv;*.json;*.py;*.html;*.htm;*.pdf;{_OFFICE}"
 
 OPEN_WILDCARD = (
     f"All supported files ({_TEXT_LIKE})|{_TEXT_LIKE}|"
     "Text files (*.txt)|*.txt|"
     "Rich Text (*.rtf)|*.rtf|"
+    "Word documents (*.docx)|*.docx|"
     "Markdown (*.md;*.markdown)|*.md;*.markdown|"
     "HTML (*.html;*.htm)|*.html;*.htm|"
     "PDF documents, opened as text (*.pdf)|*.pdf|"
-    f"Word, Excel and PowerPoint, opened as text ({_OFFICE})|{_OFFICE}|"
+    f"Older Word, Excel and PowerPoint, opened as text ({_OFFICE_AS_TEXT})|{_OFFICE_AS_TEXT}|"
     "All files (*.*)|*.*"
 )
 
@@ -100,14 +108,24 @@ OPEN_WILDCARD = (
 SAVE_WILDCARD_PLAIN = (
     "Text files (*.txt)|*.txt|Markdown (*.md)|*.md|Rich Text (*.rtf)|*.rtf|All files (*.*)|*.*"
 )
-SAVE_WILDCARD_RICH = "Rich Text (*.rtf)|*.rtf|Text files (*.txt)|*.txt|All files (*.*)|*.*"
+#: The Word row (2026-10-17) is second, after Rich Text: it writes a real Word
+#: document through QUILL's writer (quill.core.docx_open), and a window that
+#: holds a Word document arrives on it (:data:`SAVE_FILTER_WORD`).
+SAVE_WILDCARD_RICH = (
+    "Rich Text (*.rtf)|*.rtf|Word document (*.docx)|*.docx|"
+    "Text files (*.txt)|*.txt|All files (*.*)|*.*"
+)
+#: The :data:`SAVE_WILDCARD_RICH` row a Word document's Save As opens on.
+SAVE_FILTER_WORD = 1
 
 
-#: Word's own formats. QUILL writes ``.docx`` (``quill.io.export``); QUILL Lite
-#: neither opens nor writes them, and until 2026-10-16 a name typed with one of
-#: these extensions got the window's text written under it -- a file named
-#: ``report.docx`` that Word refuses to open. Save As now refuses instead and
-#: says what will work.
+#: Word's own formats. Until 2026-10-16 a name typed with one of these got the
+#: window's text written under it -- a file named ``report.docx`` that Word
+#: refuses to open. Since 2026-10-17 a **rich** window writes a real ``.docx``
+#: through QUILL's writer; a plain text window is still refused, and so is every
+#: other Word extension, because the writer makes a plain Word document and a
+#: ``.docm`` or a template written without its macros or its template parts is
+#: a file Word will not open under that name.
 WORD_SUFFIXES = frozenset({".docx", ".docm", ".dotx", ".dotm"})
 
 
@@ -117,12 +135,24 @@ def is_word_path(name: object) -> bool:
     return any(lowered.endswith(suffix) for suffix in WORD_SUFFIXES)
 
 
-def word_save_refusal(name: str) -> str:
-    """The sentence a refused Word target gets: what happened, then what works."""
+def word_save_refusal(name: str, *, switch_key: str = "") -> str:
+    """The sentence a refused Word target gets: what happened, then what works.
+
+    *switch_key* is the spoken key for Switch Document Mode; given, a ``.docx``
+    refused from a plain text window says how to make it saveable.
+    """
+    if str(name).lower().endswith(".docx"):
+        how = f" ({switch_key})" if switch_key else ""
+        return (
+            f"QUILL Lite saves Word documents from rich text, so {name} was not "
+            f"written from this plain text window. Switch Document Mode{how} to "
+            "rich text first, or choose Rich Text (.rtf), Text or Markdown in the "
+            "Save as type list."
+        )
     return (
-        f"QUILL Lite cannot save Word documents, so {name} was not written. Choose "
-        "Rich Text (.rtf), which Word opens, or Text or Markdown in the Save as "
-        "type list. QUILL saves Word documents."
+        f"QUILL Lite cannot save {Path(str(name)).suffix} files, so {name} was not "
+        "written. Choose Word document (.docx) or Rich Text (.rtf), which Word "
+        "opens, or Text or Markdown in the Save as type list."
     )
 
 

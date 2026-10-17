@@ -18436,26 +18436,26 @@ speaks your document’s language.</strong> The braille fix is on by
 default in every format; the braille troubleshooting entry in Chapter
 11, Accessibility, speech and braille, has the details.</p>
 <ul>
-<li><strong>Writing Markdown (.md):</strong> <code>Ctrl+B</code> wraps
-your selection in <code>**</code>, and Insert Heading 2 puts
-<code>## </code> at the start of the line.</li>
-<li><strong>Writing HTML (.html):</strong> <code>Ctrl+B</code> wraps in
-<code>&lt;strong&gt;</code>, and headings become real HTML
-headings.</li>
-<li><strong>Writing Rich Text (.rtf):</strong> the document opens
+<li><p><strong>Writing Markdown (.md):</strong> <code>Ctrl+B</code>
+wraps your selection in <code>**</code>, and Insert Heading 2 puts
+<code>## </code> at the start of the line.</p></li>
+<li><p><strong>Writing HTML (.html):</strong> <code>Ctrl+B</code> wraps
+in <code>&lt;strong&gt;</code>, and headings become real HTML
+headings.</p></li>
+<li><p><strong>Writing Rich Text (.rtf):</strong> the document opens
 <em>formatted</em>. <code>Ctrl+B</code> applies real bold, and Insert
 Heading 2 applies a real sized heading. The Format menu’s font, size,
 color, highlight and alignment commands change the actual formatting,
 and <strong>Describe Formatting at Cursor</strong> answers from the live
 document (“Arial, 14 point, bold, centered”). Search, spell check, read
 aloud, bookmarks, notes and braille all work as in any other
-document.</li>
-<li><strong>Writing plain text (.txt):</strong> text stays plain,
+document.</p></li>
+<li><p><strong>Writing plain text (.txt):</strong> text stays plain,
 because that is what a .txt file promises. The first time you press a
 formatting key, QUILL asks once: treat this document as Markdown,
 convert it to Rich Text, or stay plain. Your answer is remembered for
-that document.</li>
-<li><strong>Editing Word documents (.docx):</strong> a .docx can open
+that document.</p></li>
+<li><p><strong>Editing Word documents (.docx):</strong> a .docx can open
 for real rich editing and save back as a genuine Word file. If the file
 holds things QUILL’s editor cannot keep (images, comments, tracked
 changes, headers and footers), QUILL asks first. You can open it for
@@ -18465,7 +18465,32 @@ such a file writes a timestamped backup next to it automatically.
 <strong>Tables are preserved</strong> when you open a Word document for
 rich editing: they appear inline as accessible tables, so you can read
 them and jump to them with single-key table navigation
-(<code>T</code>).</li>
+(<code>T</code>).</p>
+<p>What the three choices look like: a window titled <strong>Open Word
+document</strong> says, for example, “team.docx contains features
+QUILL’s rich editor cannot carry: tables (1), comments. How should it
+open?” The first row, <strong>Open for reading and plain editing
+(recommended)</strong>, is selected, and <strong>Escape</strong> gives
+the same answer. The backup is named after the original with the date
+and time added, for example
+<code>team.backup-20261017-143005.docx</code>, sits beside it, and is
+made once each time you open the file, before your first save; QUILL
+says “Backed up the original to …” on the status bar. Inside the
+document, <strong>Ctrl+Alt+Right</strong>,
+<strong>Ctrl+Alt+Left</strong>, <strong>Ctrl+Alt+Down</strong> and
+<strong>Ctrl+Alt+Up</strong> move cell by cell through a table and say
+where you are (“Row 2 of 3, column 1 of 2: Ann”);
+<strong>Alt+Home</strong> and <strong>Alt+End</strong> go to the ends of
+the row, <strong>Ctrl+Alt+Home</strong> and
+<strong>Ctrl+Alt+End</strong> to the ends of the table.</p>
+<p>QUILL Lite edits Word documents too, since October 2026, with this
+same code: the same question in the same words, the same backup, the
+same table keys. A document saved in one opens the same way in the
+other.</p>
+<p>Fixed on 2026-10-17, in both: saving a Word document a second time no
+longer turns its Heading 5 and Heading 6 paragraphs into bold ordinary
+text, and saving no longer adds a blank paragraph at the end each
+time.</p></li>
 </ul>
 <h4 id="the-document-format-switcher">The Document Format switcher</h4>
 <p><strong>Format &gt; Document Format…</strong> moves the current

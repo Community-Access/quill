@@ -35,8 +35,7 @@ from typing import Any
 
 import wx
 
-from quill.core.lite.filetypes import is_rich_path
-from quill.core.lite.open_prepare import PLAIN, RICH, PreparedDocument
+from quill.core.lite.open_prepare import PLAIN, PreparedDocument
 from quill.core.lite.open_prepare import prepare as prepare_document
 from quill.core.pdf_open import PdfOpen, ocr_started_sentence
 
@@ -69,10 +68,11 @@ class DocumentBackgroundOpenMixin:
         *password* unlocks a PDF for this one read. *ocr_of* is a scanned PDF's
         first read: its pages are read with on-device OCR instead.
         """
+        from quill.apps.lite_window_word import open_mode_for
         from quill.stability.task_manager import UiLifetimeToken
 
         path = Path(path)
-        mode = RICH if is_rich_path(path.name) else PLAIN
+        mode = open_mode_for(self, path)  # a .docx is rich when it can be (2026-10-17)
         try:
             self._check_mode_available(mode)
         except Exception as exc:  # noqa: BLE001 - reported exactly as the sync path does
@@ -141,7 +141,8 @@ class DocumentBackgroundOpenMixin:
     def cancel_background_load(self) -> None:
         """Forget an open in progress. Called as the window closes; idempotent."""
         self._open_generation = getattr(self, "_open_generation", 0) + 1
-        for name in ("_open_lifetime", "_import_lifetime"):  # an Import / Convert too
+        # An Import / Convert too, and a Word save's result (lite_window_word).
+        for name in ("_open_lifetime", "_import_lifetime", "_word_save_lifetime"):
             token = getattr(self, name, None)
             if token is not None:
                 token.invalidate()

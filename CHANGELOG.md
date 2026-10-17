@@ -2,6 +2,47 @@
 
 ## 1.0.0
 
+### Word editing shared with QUILL Lite; two Word round-trip fixes; table navigation in QUILL Lite (2026-10-17)
+
+**`quill/core/docx_open.py` (new, wx-free).** QUILL's Word open and save
+decisions moved out of `quill/ui/main_frame_rich_mode.py` so QUILL Lite can make
+them too, and QUILL calls them in the same change (CLAUDE.md: QUILL Lite may
+never be ahead of QUILL): `fidelity_findings`, `fidelity_question(name,
+findings, app=)`, `fidelity_choices`, `choice_for_selection` (clamped; Cancel
+is `text`), `backup_path_for` / `backup_original` / `needs_backup`
+(`name.backup-YYYYMMDD-HHMMSS.docx`, once per session, flagged originals only),
+`read_docx_as_rtf`, `rtf_to_docx_bytes`, `write_docx_from_rtf` (atomic), and
+`OPENED_RICH_SENTENCE`. QUILL's wording, dialog and behaviour are unchanged and
+`tests/unit/ui/test_rich_mode.py` passes as it was. `main_frame_rich_mode.py`
+949 -> 929 lines.
+
+**Two fixes found by running a Word document through the real Rich Edit
+control three times** (`tests/unit/ui/test_word_rich_round_trip.py`), both in
+shared code and so in both editors. (1) The control writes a heading's
+`\b\fsN` before its `\outlinelevel`, and the RTF reader recorded them as
+authored formatting; saved to Word they became direct run formatting, and on
+the second save Heading 5 (11.5 pt, read back as 11) dropped off the ladder and
+came back as bold Normal text. `quill/io/rtf.py` now drops them when
+`\outlinelevel` arrives (`test_rtf_heading_styles.py`, six new cases). (2) The
+control ends its RTF with a paragraph mark and a NUL, so each save added a
+blank paragraph; `rtf_to_docx_bytes` strips both.
+
+**QUILL Lite** opens `.docx` as rich text to edit and saves it as Word through
+these functions (`quill/apps/lite_window_word.py`), asks the same three-way
+question, backs up the same way, takes the theme colour off for the save, and
+says "Still saving NAME" if Save is pressed during a background Word save. It
+also gained QUILL's eight table keys over the shared `quill/core/table_nav.py`
+(`quill/apps/lite_window_tables.py`, Navigate > Table). `.docm` stays text in
+both editors: QUILL's rich Word path was already `.docx` only.
+
+Gates: GATE-11 rebaselined (`_rebaseline_2026_10_17_word_in_lite`:
+`quill/core/lite/commands.py` +13 for the Table rows, `quill/io/rtf.py` +2);
+dialog inventory, Lite command coverage (275 covered, 0 shape-only), the F1
+help reference, the family chords snapshot and QUILL Lite's key table
+regenerated. Docs: QUILL user guide (Editing Word documents), QUILL PRD,
+QUILL Lite user guide ("Word documents", "Moving through a table"), changelog
+and PRD; manual checks in `docs/qa/screen-reader-checks-2026-10.md`.
+
 ### Menu letters win over buttons, the Media Player's arrows, a key for Carry My Place, and Inkwell's review box (2026-10-17)
 
 Todo items 47 to 51 and 55.

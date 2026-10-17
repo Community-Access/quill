@@ -14868,6 +14868,22 @@ that was previously dropped entirely now survives, reads correctly, and is
 reachable by single-key table navigation (`T`). `scan_docx_features` still lists
 tables so the format change is disclosed before a rich edit.
 
+**Shared with QUILL Lite (2026-10-17).** The wx-free half of this path lives in
+`quill/core/docx_open.py`, and `main_frame_rich_mode.py` calls it: the scan
+(`fidelity_findings`), the question, its three rows and the clamped answer
+(`fidelity_question`, `fidelity_choices`, `choice_for_selection`), the backup
+(`backup_path_for`, `backup_original`, `needs_backup`), read-to-RTF
+(`read_docx_as_rtf`) and RTF-to-Word (`rtf_to_docx_bytes`,
+`write_docx_from_rtf`). QUILL Lite edits `.docx` through the same functions
+(its PRD, "Word documents and table navigation"), so neither editor can drift
+from the other. `rtf_to_docx_bytes` drops the rich control's trailing NUL and
+trailing empty paragraphs, which had added a blank paragraph per save; and the
+RTF reader (`quill/io/rtf.py`) drops a heading's bold and ladder size when
+`\outlinelevel` follows them -- the Rich Edit control's own order -- which had
+turned Heading 5 into bold Normal text on a document's second save.
+`tests/unit/ui/test_word_rich_round_trip.py` runs Heading 1-6, a bold run and a
+table through the real control three times.
+
 **EPUB reading.** `core/epub.py` renders each chapter's headings inline (as
 Markdown `#` lines two levels beneath the chapter) so single-key heading
 navigation traverses them, not just chapter boundaries. When a chapter has no

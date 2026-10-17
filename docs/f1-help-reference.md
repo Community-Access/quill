@@ -2165,6 +2165,9 @@ Control coverage: 229 audited sites (229 helped).
 
 - `self.folder`: Where Open and Save As start for a new document. Leave blank to use the Windows Documents folder. A document already saved keeps using its own folder.
 - `self.choose`: Choose an existing folder for new documents.
+#### DocumentWordMixin (`quill/apps/lite_window_word.py`)
+
+- `dialog`: Choose how this Word document opens. Reading and plain editing never changes the file; Save then offers Save As. Edit as Rich Text keeps headings, lists, bold, italic and links, drops what the list names, and backs the original up before the first save. Edit a copy opens a dated copy beside the original, which stays untouched.
 #### (module level) (`quill/apps/lite_window_words.py`)
 
 - `field`: How many words each dictionary holds and where each file is. Read only; arrow through it, and copy any line you need.

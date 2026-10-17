@@ -1605,8 +1605,14 @@ oversight:
   low-vision user with no screen reader running.
 - **Preserving text colour in rich mode.** Colour is treated as presentation
   here, not as document content, which is what makes the dark theme safe.
-- **Word paragraph styles.** Headings are presentational — the size-and-bold
-  ladder — exactly as in QUILL's rich mode.
+- **Word paragraph styles beyond the shared vocabulary.** Revised
+  2026-10-17: QUILL Lite now edits `.docx` through QUILL's own Word code (see
+  *Word documents and table navigation*), so Heading 1-6, the list styles and
+  Title, Subtitle, Quote and Caption go out as real Word styles. In the editor
+  headings stay presentational -- the size-and-bold ladder -- exactly as in
+  QUILL's rich mode, and every other Word style arrives as a normal paragraph
+  with its visible formatting. That is the honest boundary: style sheets,
+  custom styles and style editing remain out of scope.
 - **A portable inventory baseline.** `portable-inventory.json` can only be
   generated from a real build; QUILL Lite adopts one when it first builds on a
   release machine, as Inkwell and Converter still must.
@@ -1683,7 +1689,7 @@ QUILL Lite opened text files and nothing else; it now opens PDFs, as their text,
 
 **Read-Only Guard.** QUILL's command (EDS-8) on QUILL's key: **Tools > Read-Only Guard** (**Ctrl+Alt+Backspace**, a check row), handler `cmd_toggle_read_only`, parity `power.toggle_read_only_guard`. The memory is QUILL's module, `quill/core/read_only_guards.py`, with QUILL Lite's own file in its data folder (`paths.data_file`, which does not create the folder to read). Keys are normalised the way document memory is, so a file opened from File Explorer under another spelling finds its guard. A failed write is spoken, never swallowed. While on, the control is read-only and `quill/core/lite/read_only.TEXT_CHANGING_HANDLERS` are refused by name at the menu and status-cell dispatch (`DocumentReadOnlyMixin.run_unless_read_only`) with "Document is read-only"; reading, Find, Go To, bookmarks and inline notes work, a note going beside the file through the shared `_host_read_only`; a word tool's Replace refuses through `refuse_if_guarded`. A file that cannot be written opens guarded, as in QUILL.
 
-**Word names.** QUILL Lite neither opens nor writes Word documents; a typed `.docx`, `.docm`, `.dotx` or `.dotm` is refused with one sentence naming Rich Text (`filetypes.word_save_refusal`) before anything else is asked, on Save As, Save and the collector's quiet save. Before this, the window's text was written under the Word name. QUILL writes `.docx`; QUILL Lite is behind here, not ahead.
+**Word names.** QUILL Lite neither opens nor writes Word documents; a typed `.docx`, `.docm`, `.dotx` or `.dotm` is refused with one sentence naming Rich Text (`filetypes.word_save_refusal`) before anything else is asked, on Save As, Save and the collector's quiet save. Before this, the window's text was written under the Word name. QUILL writes `.docx`; QUILL Lite is behind here, not ahead. *Superseded 2026-10-17: a rich window writes `.docx` through QUILL's writer; see Word documents and table navigation.*
 
 # QUILL Lite — Product Requirements
 
@@ -3221,8 +3227,14 @@ oversight:
   low-vision user with no screen reader running.
 - **Preserving text colour in rich mode.** Colour is treated as presentation
   here, not as document content, which is what makes the dark theme safe.
-- **Word paragraph styles.** Headings are presentational — the size-and-bold
-  ladder — exactly as in QUILL's rich mode.
+- **Word paragraph styles beyond the shared vocabulary.** Revised
+  2026-10-17: QUILL Lite now edits `.docx` through QUILL's own Word code (see
+  *Word documents and table navigation*), so Heading 1-6, the list styles and
+  Title, Subtitle, Quote and Caption go out as real Word styles. In the editor
+  headings stay presentational -- the size-and-bold ladder -- exactly as in
+  QUILL's rich mode, and every other Word style arrives as a normal paragraph
+  with its visible formatting. That is the honest boundary: style sheets,
+  custom styles and style editing remain out of scope.
 - **A portable inventory baseline.** `portable-inventory.json` can only be
   generated from a real build; QUILL Lite adopts one when it first builds on a
   release machine, as Inkwell and Converter still must.
@@ -3283,7 +3295,7 @@ QUILL Lite opened text files and nothing else; it now opens PDFs, as their text,
 
 **Read-Only Guard.** QUILL's command (EDS-8) on QUILL's key: **Tools > Read-Only Guard** (**Ctrl+Alt+Backspace**, a check row), handler `cmd_toggle_read_only`, parity `power.toggle_read_only_guard`. The memory is QUILL's module, `quill/core/read_only_guards.py`, with QUILL Lite's own file in its data folder (`paths.data_file`, which does not create the folder to read). Keys are normalised the way document memory is, so a file opened from File Explorer under another spelling finds its guard. A failed write is spoken, never swallowed. While on, the control is read-only and `quill/core/lite/read_only.TEXT_CHANGING_HANDLERS` are refused by name at the menu and status-cell dispatch (`DocumentReadOnlyMixin.run_unless_read_only`) with "Document is read-only"; reading, Find, Go To, bookmarks and inline notes work, a note going beside the file through the shared `_host_read_only`; a word tool's Replace refuses through `refuse_if_guarded`. A file that cannot be written opens guarded, as in QUILL.
 
-**Word names.** QUILL Lite neither opens nor writes Word documents; a typed `.docx`, `.docm`, `.dotx` or `.dotm` is refused with one sentence naming Rich Text (`filetypes.word_save_refusal`) before anything else is asked, on Save As, Save and the collector's quiet save. Before this, the window's text was written under the Word name. QUILL writes `.docx`; QUILL Lite is behind here, not ahead.
+**Word names.** QUILL Lite neither opens nor writes Word documents; a typed `.docx`, `.docm`, `.dotx` or `.dotm` is refused with one sentence naming Rich Text (`filetypes.word_save_refusal`) before anything else is asked, on Save As, Save and the collector's quiet save. Before this, the window's text was written under the Word name. QUILL writes `.docx`; QUILL Lite is behind here, not ahead. *Superseded 2026-10-17: a rich window writes `.docx` through QUILL's writer; see Word documents and table navigation.*
 
 **Typing a name in a list.** Every `apply_listbox_activation` list (Snippets, Recent Documents, the bookmark and heading lists, Recent Clips) has type-ahead from QUILL's `TypeAheadBuffer`; Space while a name is being typed is part of the name. Manage Abbreviations is a virtual list (`quill/ui/virtual_report_list.py`) whose search matches every word in any order and keeps the selection by identity.
 
@@ -3300,3 +3312,73 @@ the text by words and paragraph; a rich text document's come from the control.
 Arrival says colour, count and words; the list's rows are words, colour and
 paragraph, Enter goes there and Escape stays. Not listed: headers, footers,
 footnotes, text boxes, shading.
+
+## Word documents and table navigation (2026-10-17)
+
+**One implementation, moved.** QUILL's wx-free Word decisions left
+`quill/ui/main_frame_rich_mode.py` for the shared `quill/core/docx_open.py`, and
+QUILL calls them in the same change: the fidelity scan (`fidelity_findings`,
+over `scan_docx_features`), the question and its three rows
+(`fidelity_question`, `fidelity_choices`, `choice_for_selection`; Cancel is
+`text`), the one-time backup (`backup_path_for`, `backup_original`,
+`needs_backup`: `name.backup-YYYYMMDD-HHMMSS.docx`, once per session, only for
+a flagged original that exists), read-to-RTF (`read_docx_as_rtf`) and
+RTF-to-Word (`rtf_to_docx_bytes`, `write_docx_from_rtf`, atomic). The opened
+sentence is `OPENED_RICH_SENTENCE` in both editors. QUILL's tests
+(`tests/unit/ui/test_rich_mode.py`) pass unchanged.
+
+**Open.** `.docx` only (`docx_open.RICH_WORD_SUFFIXES`), as in QUILL, whose
+rich Word path is also `.docx` only: a `.docm` written without its macros is a
+file Word refuses under that name, so `.docm`, `.doc` and `.odt` stay read-only
+text. `lite_window_word.open_mode_for` makes a `.docx` RICH when the control
+has the TOM and python-docx is present; otherwise the 2026-10-16 read-only
+text path is unchanged. `open_prepare.prepare_word` runs on the worker: scan,
+RTF, and the extracted text only when the scan flagged something (the text
+answer). A rich read that fails opens the text with "Opened NAME as extracted
+text; the rich load failed." The commit (`DocumentWordMixin.settle_word_open`)
+asks QUILL's question in a native `wx.SingleChoiceDialog` through
+`show_modal_dialog`, row 0 preselected, inline F1 help.
+
+**Save.** `saves_as_word(target)` is the rule: a RICH window and a `.docx`
+name. It lifts the Word refusal (`refuse_word_target`), the read-only-source
+refusals (`refuse_save_over_source`, `refuse_save_as_target`) and the
+`.txt` proposal; a plain window, and `.docm`/`.dotx`/`.dotm` from any window,
+are still refused, now with a sentence that names Switch Document Mode's key
+for a `.docx` (`filetypes.word_save_refusal(name, switch_key=...)`). The RTF is
+read with the theme colour off (`_set_whole_document_colour(None)`, restored in
+`finally`), the guard every rich save has. Save As gained "Word document
+(*.docx)" as `SAVE_WILDCARD_RICH` row 1 (`SAVE_FILTER_WORD`), preselected for a
+Word document; the Open list gained "Word documents (*.docx)".
+
+**Still saving.** Ctrl+S (`cmd_save` -> `save(background=True)`) writes a Word
+document on the app's task manager (`begin_word_save`, `safe_to_cancel=False`,
+a `UiLifetimeToken` invalidated by `cancel_background_load`). While it runs,
+every save path answers "Still saving NAME" and starts nothing:
+`save()` (so the close prompt waits), Save As, and the collector's quiet save.
+The close prompt, Save As and the quiet save write synchronously, because they
+need the answer. Text typed during a background save leaves the window
+modified.
+
+**Two shared fixes found by the round trip** (both editors): the RTF reader
+now drops a heading's bold and ladder size when `\outlinelevel` follows them,
+the order the Rich Edit control writes (Heading 5, 11.5 pt read back as 11,
+became bold Normal text on the second save); and `rtf_to_docx_bytes` drops the
+control's trailing NUL and trailing empty paragraphs (each save added one).
+Heading 5 and 6 survive: `tests/unit/ui/test_word_rich_round_trip.py` runs
+Heading 1-6, a bold run and a table through the real control three times.
+QUILL Lite already had Heading 5 and 6 commands (Ctrl+Alt+5, Ctrl+Alt+6), so
+nothing was added to its command set for this.
+
+**Table navigation.** `quill/apps/lite_window_tables.py`, over the shared
+`quill/core/table_nav.py` that QUILL's `main_frame_table_nav.py` calls: eight
+handlers on QUILL's chords (family rule 2), parity rows `table.*`, a
+**Navigate > Table** submenu. Outside a table: "Not in a table".
+GATE-LITE-COVER: `tests/unit/apps/test_lite_table_nav.py` calls every handler.
+
+**Tests.** `tests/unit/apps/test_lite_word.py` (real `.docx` files: open,
+edit, save, reopen with python-docx; flagged files and each answer; Cancel;
+backup once; copy; theme colour guard including a failed save; Save As row;
+Still saving; typing during a save), `test_lite_save_as_typed_extensions.py`,
+`tests/unit/io/test_rtf_heading_styles.py`, and the real-control round trip.
+
+**Manual checks** are listed, not yet done, in `docs/qa/screen-reader-checks-2026-10.md`.

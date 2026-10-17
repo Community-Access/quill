@@ -879,6 +879,7 @@ def lite_window(tmp_path, lite_settings):
     from quill.apps.lite_window_selection import DocumentSelectionMixin
     from quill.apps.lite_window_sources import DocumentSourcesMixin
     from quill.apps.lite_window_spelling import DocumentSpellingMixin
+    from quill.apps.lite_window_tables import DocumentTableNavMixin
     from quill.apps.lite_window_text_editor import DocumentTextEditorMixin
     from quill.apps.lite_window_tools import DocumentToolsMixin
     from quill.apps.lite_window_typing import DocumentTypingMixin
@@ -927,6 +928,8 @@ def lite_window(tmp_path, lite_settings):
         # (GATE-11): Select Section, Move Section Up/Down, Move Section To.
         DocumentSectionCommandsMixin,
         DocumentHistoryMixin,
+        # Navigate > Table, 2026-10-17: QUILL's cell moves over quill.core.table_nav.
+        DocumentTableNavMixin,
         DocumentTypingMixin,
         # The View menu and the Spelling menu, added 2026-09-10. Both are the
         # same shape as the ones already here -- a state change plus a sentence --

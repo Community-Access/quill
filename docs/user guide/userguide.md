@@ -15635,6 +15635,28 @@ braille, has the details.
   accessible tables, so you can read them and jump to them with single-key
   table navigation (`T`).
 
+  What the three choices look like: a window titled **Open Word document**
+  says, for example, "team.docx contains features QUILL's rich editor cannot
+  carry: tables (1), comments. How should it open?" The first row, **Open for
+  reading and plain editing (recommended)**, is selected, and **Escape** gives
+  the same answer. The backup is named after the original with the date and
+  time added, for example `team.backup-20261017-143005.docx`, sits beside it,
+  and is made once each time you open the file, before your first save; QUILL
+  says "Backed up the original to ..." on the status bar. Inside the document,
+  **Ctrl+Alt+Right**, **Ctrl+Alt+Left**, **Ctrl+Alt+Down** and
+  **Ctrl+Alt+Up** move cell by cell through a table and say where you are
+  ("Row 2 of 3, column 1 of 2: Ann"); **Alt+Home** and **Alt+End** go to the
+  ends of the row, **Ctrl+Alt+Home** and **Ctrl+Alt+End** to the ends of the
+  table.
+
+  QUILL Lite edits Word documents too, since October 2026, with this same
+  code: the same question in the same words, the same backup, the same table
+  keys. A document saved in one opens the same way in the other.
+
+  Fixed on 2026-10-17, in both: saving a Word document a second time no
+  longer turns its Heading 5 and Heading 6 paragraphs into bold ordinary text,
+  and saving no longer adds a blank paragraph at the end each time.
+
 #### The Document Format switcher
 
 **Format > Document Format...** moves the current document between Plain

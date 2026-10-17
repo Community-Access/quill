@@ -729,6 +729,7 @@ COMMANDS: list[CommandRow] = [
     ("&Navigate", "Previo&us Section", "Ctrl+Alt+Shift+Up", "cmd_previous_fold", ""),
     ("&Navigate", "Unfold &Everything", "Ctrl+Shift+F10", "cmd_unfold_all", ""),
     ("&Navigate", "", "", "", "sep"),
+    ("&Navigate", "&Table", "", "", "sub"),
     ("&Navigate", "&Bookmarks", "", "", "sub"),
     ("&Navigate", "", "", "", "sep"),
     # F6 is the region key every Windows app uses, and the one QUILL's own
@@ -738,6 +739,18 @@ COMMANDS: list[CommandRow] = [
     # all is View's checkbox, one menu to the left.
     ("&Navigate", "&Status Bar", "F6", "cmd_focus_status_bar", ""),
     ("&Navigate", "&Go To Anything...", "Ctrl+Alt+Shift+A", "cmd_go_to_anything", ""),
+    # -- Navigate > Table (2026-10-17) -----------------------------------------
+    # QUILL's table moves on QUILL's keys (family rule 2), over the shared
+    # quill.core.table_nav: a Word table opened to edit and every Markdown
+    # table are rows of cells divided by pipes, and these read them cell by cell.
+    ("&Navigate|&Table", "&Next Cell", "Ctrl+Alt+Right", "cmd_table_next_cell", ""),
+    ("&Navigate|&Table", "&Previous Cell", "Ctrl+Alt+Left", "cmd_table_previous_cell", ""),
+    ("&Navigate|&Table", "Cell &Below", "Ctrl+Alt+Down", "cmd_table_cell_below", ""),
+    ("&Navigate|&Table", "Cell &Above", "Ctrl+Alt+Up", "cmd_table_cell_above", ""),
+    ("&Navigate|&Table", "First Cell in &Row", "Alt+Home", "cmd_table_row_start", ""),
+    ("&Navigate|&Table", "Last Cell in R&ow", "Alt+End", "cmd_table_row_end", ""),
+    ("&Navigate|&Table", "&First Cell", "Ctrl+Alt+Home", "cmd_table_first_cell", ""),
+    ("&Navigate|&Table", "&Last Cell", "Ctrl+Alt+End", "cmd_table_last_cell", ""),
     # -- Navigate > Bookmarks ------------------------------------------------
     # A place you meant to come back to. There is no scrollbar thumb to remember
     # the position of and no glance that finds the place again, so a bookmark is

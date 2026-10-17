@@ -52,10 +52,11 @@ The chapters follow the order you are likely to want things.
 2. **Chapter 2: Finding your way around.** Your numbered documents, the
    window, the status bar, the View menu, and finding any command by name.
 3. **Chapter 3: Opening, saving and printing.** The four kinds of document,
-   how saving keeps your file exactly as it was, getting your work back after
-   a crash, reopening last time's documents, and printing.
-4. **Chapter 4: Moving around a document.** Find, Go To, bookmarks, and
-   getting back to where you were.
+   editing Word documents, how saving keeps your file exactly as it was,
+   getting your work back after a crash, reopening last time's documents, and
+   printing.
+4. **Chapter 4: Moving around a document.** Find, Go To, reading a table cell
+   by cell, bookmarks, and getting back to where you were.
 5. **Chapter 5: Selecting, copying and changing text.** Better ways to
    select, more than one thing on the clipboard, working on whole lines, and
    undo.
@@ -1005,10 +1006,12 @@ To make a real PDF, print to **Microsoft Print to PDF** instead (see
 
 ### Opening Word, Excel and PowerPoint files
 
-QUILL Lite opens Word, Excel and PowerPoint files as their **text**, the same
-way it opens a PDF. Press **Ctrl+O**, and in the file type list choose "Word,
-Excel and PowerPoint, opened as text", or just pick the file from "All
-supported files". You can also drag one onto the window, or open it from
+QUILL Lite opens Excel and PowerPoint files, and older Word files, as their
+**text**, the same way it opens a PDF. A Word `.docx` is different: it opens
+to edit, as rich text, and saves as Word (see *Word documents* below). Press
+**Ctrl+O**, and in the file type list choose "Older Word, Excel and
+PowerPoint, opened as text", or just pick the file from "All supported
+files". You can also drag one onto the window, or open it from
 Recent Documents. Nothing is downloaded first, and nothing is uploaded: QUILL
 Lite uses the same readers as QUILL.
 
@@ -1022,7 +1025,8 @@ you hear explains what was wrong with the file.
 
 It opens these kinds of file:
 
-- Word documents: `.docx` and `.docm` (a macro is never run)
+- Word documents with macros, `.docm` (a macro is never run), and a `.docx`
+  when this copy of QUILL Lite cannot edit Word documents
 - Excel workbooks: `.xlsx`
 - PowerPoint presentations: `.pptx`
 - OpenDocument text, from LibreOffice Writer: `.odt`
@@ -1099,11 +1103,176 @@ as damaged.
 
 #### Saving
 
-QUILL Lite cannot write a real Word, Excel or PowerPoint file, so it never
-saves over one. Press **Ctrl+S** and QUILL Lite tells you why, then opens
-**Save As** with the same name ending in `.txt`. Choose text, Markdown or rich
-text and press **Enter**. If you want the result back in Word, save it as rich
-text: Word opens a rich text file properly.
+A file opened as text is never saved over: the text is not the file. Press
+**Ctrl+S** and QUILL Lite tells you why, then opens **Save As** with the same
+name ending in `.txt`. Choose text, Markdown or rich text and press **Enter**.
+A Word `.docx` opened **to edit** is different, and saves as Word; see *Word
+documents*, next.
+
+### Word documents
+
+Since October 2026 QUILL Lite **edits** Word documents. Open a `.docx` and it
+arrives as rich text, with its headings, lists, bold and links shown formatted;
+change it; press **Ctrl+S**; and what is written is a real Word document that
+Word, and anyone you send it to, opens as one. QUILL Lite does this with
+QUILL's own Word code, the same code QUILL's File > Open and Save use, so the
+two programs open, ask, back up and save a Word document in exactly the same
+way.
+
+This section covers what opens, what is kept, the question you are sometimes
+asked, the backup, tables, saving, and the limits. A worked example is at the
+end.
+
+#### What opens as a Word document
+
+- A `.docx` file opens as a Word document to edit. Press **Ctrl+O**, choose
+  "Word documents (*.docx)" in the file type list (or "All supported files"),
+  and press **Enter**. Dragging the file onto the window, Recent Documents and
+  opening it from File Explorer all do the same.
+- A `.docm` (a Word file with macros), a `.doc` from Word 97-2003 and an
+  OpenDocument `.odt` still open as **text**, read only, as described in
+  *Opening Word, Excel and PowerPoint files* above. A `.docm` is not edited
+  because saving it would drop its macros, and Word refuses a `.docm` without
+  them.
+- The file is read in the background, so the window keeps answering. You hear
+  "Opening report.docx", and when it is ready, "Opened as Rich Text. Headings
+  and bold are shown formatted."
+
+If this copy of QUILL Lite cannot edit Word documents, because the part that
+reads and writes them is not installed, a `.docx` opens as text exactly as it
+did before, and **Ctrl+S** offers Save As. Nothing is lost either way.
+
+#### What is kept
+
+Everything QUILL Lite can show in rich text comes in, and goes back out when
+you save:
+
+- headings, Heading 1 to Heading 6, as Word's own heading styles, so Word's
+  navigation pane and your screen reader's heading keys find them;
+- bulleted and numbered lists;
+- bold, italic, underline, strikethrough, superscript and subscript;
+- fonts, sizes, text colours and highlights;
+- links;
+- paragraph alignment, line spacing, spacing before and after, and indents;
+- the Title, Subtitle, Quote and Caption styles;
+- tables, as tables (see *Tables* below).
+
+Some things in a Word document cannot be shown in QUILL Lite's editor, so a
+save cannot carry them: pictures, comments, tracked changes, headers and
+footers, footnotes and endnotes, more than one section, and a table's own
+formatting, such as merged cells, borders and shading. QUILL Lite looks for
+these before it opens the file, and if it finds any it asks you first.
+
+#### The question, when a document has things a save would drop
+
+When the document has any of those things, QUILL Lite names them and asks how
+to open it, in a window titled **Open Word document**. For example: "team.docx
+contains features QUILL Lite's rich editor cannot carry: tables (1), comments.
+How should it open?" Use **Up Arrow** and **Down Arrow** to choose, then
+**Enter**:
+
+1. **Open for reading and plain editing (recommended).** The document opens as
+   text, as it would without Word editing. Nothing about the file can change:
+   **Ctrl+S** tells you so and offers Save As. This is the row you start on,
+   and **Escape** gives the same answer, because it is the one that cannot
+   hurt the file.
+2. **Edit as Rich Text, these will not survive a save: ...** The row names the
+   same things again. The document opens to edit, and the first time you save,
+   the original is backed up first (see *The backup*).
+3. **Edit a copy as Rich Text (the original stays untouched).** QUILL Lite
+   makes a dated copy beside the original, `team.backup-20261017-143005.docx`,
+   and opens the copy to edit, saying "Editing a copy,
+   team.backup-20261017-143005.docx. The original is untouched." Your saves go
+   to the copy; the original is never written.
+
+A document with none of those things opens to edit with no question.
+
+Press **F1** in the window for a summary of the three answers.
+
+#### The backup
+
+The first time you save a document you chose to edit with its losses named,
+QUILL Lite copies the original beside itself before writing anything, and says
+so: "Backed up the original to team.backup-20261017-143005.docx". The name is
+the original's, then `backup-`, then the date and time (in Coordinated
+Universal Time), then `.docx`. It happens once each time you open the file,
+not on every save. If you want the pictures or comments back, they are all in
+that copy; open it in Word.
+
+A document that opened with no question is not backed up: there was nothing in
+it a save would drop. QUILL Lite's own dated copies (**File > Earlier Versions**) are kept as
+well, as for any file.
+
+#### Tables
+
+A Word table arrives as rows of cells divided by `|`, with a row of dashes
+under the header row:
+
+```
+| Name | Role |
+| --- | --- |
+| Ann | Lead |
+```
+
+When you save, each block of rows like that becomes a real Word table again,
+its first row marked as the header row. Add a row by typing a new line in the
+same shape; add a column by adding a `|` and a cell to every row.
+
+To read a table cell by cell, use **Navigate > Table** (see *Moving through a
+table* in Chapter 4). For example, with the cursor on "Name", **Ctrl+Alt+Down**
+says "Row 2 of 2, column 1 of 2: Ann".
+
+#### Saving
+
+- **Ctrl+S** writes the Word document. A long document can take a moment, so
+  the save runs in the background: the status bar says "Saving report.docx",
+  and you hear "Saved report.docx" when it is written. If you press **Ctrl+S**
+  again before then, you hear "Still saving report.docx" and nothing else
+  happens; QUILL Lite never starts a second save over the first. Closing the
+  window in that moment waits too: answer the question again once you have
+  heard "Saved".
+- If you type while a save is running, what you typed is not in the file yet,
+  so the document still counts as changed. Press **Ctrl+S** again afterwards.
+- **Ctrl+Shift+S** (Save As) opens on the **Word document (*.docx)** row with
+  the same name proposed. Type a new name ending in `.docx` to keep a second
+  Word copy, or choose Rich Text, Text or Markdown to save in another form.
+- Dark mode never reaches the file. While a Word document is being saved,
+  QUILL Lite takes the screen's text colour off the document and puts it back
+  afterwards, so somebody opening your file in Word sees ordinary black text, not grey.
+- Any rich text document can become a Word document: press **Ctrl+Shift+S**
+  and type a name ending in `.docx`, or choose **Word document (*.docx)**.
+- A plain text window cannot save a `.docx`. Switch it to rich text first with
+  **Alt+Shift+F** (Switch Document Mode), or choose another kind of file.
+
+#### Limits
+
+- Pictures, comments, tracked changes, headers, footers, footnotes, endnotes,
+  extra sections and table formatting are not kept by a save. You are always
+  told before you start (see *The question*).
+- Styles other than the headings and the four named above become normal
+  paragraphs with the formatting you can see.
+- A `.docm`, `.dotx` or `.dotm` cannot be saved; QUILL Lite says so and writes
+  nothing.
+- A password-protected or damaged `.docx` does not open, and QUILL Lite says
+  which.
+
+#### Worked example: a meeting agenda
+
+1. Press **Ctrl+O**, choose `agenda.docx`, and press **Enter**. You hear
+   "Opening agenda.docx", then "Opened as Rich Text. Headings and bold are shown
+   formatted."
+2. Press **Ctrl+Alt+H** to move to the next heading. You hear "Heading 2:
+   Actions".
+3. Press **Ctrl+End** to go to the end of the agenda, press **Enter**, and type
+   "Book the room by Friday."
+4. Press **Ctrl+S**. You hear "Saved agenda.docx".
+5. Open `agenda.docx` in Word. "Actions" is still a Heading 2 in the
+   navigation pane, and "Book the room by Friday." is the last paragraph.
+
+The same document with a comment in it would first have asked the question
+above. Choosing **Edit as Rich Text** and saving would have said "Backed up the
+original to agenda.backup-...docx" before "Saved agenda.docx", and the comment
+would still be in that copy.
 
 ### Importing and converting a document
 
@@ -1399,30 +1568,34 @@ rich text.
 | `notes.md` | Your text as it stands; an HTML document is converted to Markdown (see above) |
 | `notes.rtf` | Rich text, with its formatting. A plain document becomes a rich one |
 | `page.html` | Your text as it stands. QUILL Lite treats HTML as something you write by hand, the way Notepad does |
-| `minutes.docx` | Nothing. QUILL Lite says so (see below) |
+| `minutes.docx` | A Word document, from a rich text window. From plain text, nothing: QUILL Lite says so (see below) |
+| `minutes.docm`, `letter.dotx` | Nothing. QUILL Lite says so (see below) |
 | `budget.xlsx`, `minutes.pdf`, `old.doc` | Nothing. These are formats QUILL Lite can only read or not open at all |
 
 If you type a name with no ending at all, Windows adds the ending of the row
 selected in **Save as type**, so `notes` with **Markdown (*.md)** selected is
 saved as `notes.md`.
 
-**Word documents.** QUILL Lite cannot write a Word document. Until October
-2026 a name ending in `.docx` got your plain text written under it, which made
-a file that Word refuses to open. Now, if you type `minutes.docx` (or `.docm`,
-`.dotx`, `.dotm`), QUILL Lite shows a short message instead and writes
-nothing:
+**Word documents.** A rich text window saves a real Word document: type
+`minutes.docx`, or choose **Word document (*.docx)** in Save as type (see
+*Word documents*, above). Until October 2026 a name ending in `.docx` got
+plain text written under it, which made a file Word refuses to open, so a
+plain text window is still refused, and so is every other Word ending
+(`.docm`, `.dotx`, `.dotm`). QUILL Lite shows a short message instead and
+writes nothing:
 
-> QUILL Lite cannot save Word documents, so minutes.docx was not written.
-> Choose Rich Text (.rtf), which Word opens, or Text or Markdown in the Save as
-> type list. QUILL saves Word documents.
+> QUILL Lite saves Word documents from rich text, so minutes.docx was not
+> written from this plain text window. Switch Document Mode (Alt Shift F) to
+> rich text first, or choose Rich Text (.rtf), Text or Markdown in the Save as
+> type list.
 
 Press **Enter** to close the message; Save As is over, and your document is
-exactly as it was. For example, to send a letter to someone who uses Word,
-save it as `letter.rtf`: Word opens rich text, headings and bold included. If
-you need a real `.docx`, open the file in QUILL and use its Save As.
+exactly as it was. For example, to send a plain letter to someone who uses
+Word, press **Alt+Shift+F** until you hear "Rich text mode", then save it as
+`letter.docx`.
 
-The message comes before anything else. A rich text document is not first
-asked whether to remove its formatting for a save that is not going to happen.
+The message comes before anything else. A rich text document is never asked
+whether to remove its formatting for a save to `.docx`: nothing is removed.
 
 Pressing **Escape** or **Cancel** in the Save As window writes nothing, as
 always.
@@ -1989,6 +2162,54 @@ If you already know which kind you want, there are quicker keys.
 **Alt+Shift+G** goes straight to the bookmark list, and **Ctrl+Alt+L** goes
 straight to the heading list. **Ctrl+G** is the one to press when you are not
 sure.
+
+### Moving through a table
+
+A table in a document is rows of cells divided by `|`: every Markdown table,
+and every table in a Word document you open (see *Word documents* in
+Chapter 3). **Navigate > Table** reads one cell at a time and tells you where
+you are, on the same keys as QUILL:
+
+| Key | Command | What it does |
+|---|---|---|
+| **Ctrl+Alt+Right** | Next Cell | The next cell in the row |
+| **Ctrl+Alt+Left** | Previous Cell | The previous cell in the row |
+| **Ctrl+Alt+Down** | Cell Below | The cell below, in the same column |
+| **Ctrl+Alt+Up** | Cell Above | The cell above, in the same column |
+| **Alt+Home** | First Cell in Row | The first cell of this row |
+| **Alt+End** | Last Cell in Row | The last cell of this row |
+| **Ctrl+Alt+Home** | First Cell | The first cell of the table |
+| **Ctrl+Alt+End** | Last Cell | The last cell of the table |
+
+Each move puts the cursor at the start of the cell's text and says the cell's
+place, then its text: "Row 2 of 4, column 3 of 5: Lead". An empty cell is
+"blank". The row of dashes under the header row is skipped; it is not a row
+you read.
+
+At an edge the cursor stays where it is and you hear why: "No more cells" at
+the end of a row, "No more rows" at the bottom of a column, and "No more
+cells, end of table" on the very last cell. Outside a table, every one of
+these keys says "Not in a table" and does nothing else. **Alt+Left** (Go Back)
+returns from a cell move like any other jump.
+
+For example, in this table:
+
+```
+| Name | Role |
+| --- | --- |
+| Ann | Lead |
+| Bo | Tester |
+```
+
+put the cursor on "Name" and press **Ctrl+Alt+Down**: you hear "Row 2 of 3,
+column 1 of 2: Ann". Press **Alt+End**: "Row 2 of 3, column 2 of 2: Lead".
+Press **Ctrl+Alt+End**: "Row 3 of 3, column 2 of 2: Tester". Press
+**Ctrl+Alt+Right**: "No more cells, end of table".
+
+A cell whose own text contains a `|` is written `\|` and read as the `|` it
+stands for, so it never makes an extra column. If your screen reader uses
+**Ctrl+Alt** with the arrow keys for its own table commands, it may answer
+these keys first in some modes; the menu rows always work.
 
 ### Reading without changing anything: the Read-Only Guard
 
@@ -8890,6 +9111,19 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Shift+F10** | Unfold Everything |
 | **F6** | Status Bar |
 | **Ctrl+Alt+Shift+A** | Go To Anything... |
+
+#### Table (in Navigate)
+
+| Key | Command |
+|---|---|
+| **Ctrl+Alt+Right** | Next Cell |
+| **Ctrl+Alt+Left** | Previous Cell |
+| **Ctrl+Alt+Down** | Cell Below |
+| **Ctrl+Alt+Up** | Cell Above |
+| **Alt+Home** | First Cell in Row |
+| **Alt+End** | Last Cell in Row |
+| **Ctrl+Alt+Home** | First Cell |
+| **Ctrl+Alt+End** | Last Cell |
 
 #### Bookmarks (in Navigate)
 

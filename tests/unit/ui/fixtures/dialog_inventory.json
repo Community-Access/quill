@@ -57,6 +57,7 @@
   "quill/apps/lite_window_settings_backup.py::DocumentSettingsBackupMixin.cmd_backup_settings::wx.FileDialog": "native",
   "quill/apps/lite_window_settings_backup.py::DocumentSettingsBackupMixin.cmd_restore_settings::wx.FileDialog": "native",
   "quill/apps/lite_window_view.py::DocumentViewCommandsMixin.cmd_editor_font::wx.FontDialog": "native",
+  "quill/apps/lite_window_word.py::DocumentWordMixin._ask_word_fidelity::wx.SingleChoiceDialog": "native",
   "quill/apps/lite_window_words.py::show_dictionary_status::wx.Dialog": "hardened_custom",
   "quill/apps/player.py::QuillMediaPlayerFrame._on_open_daisy::wx.FileDialog": "native",
   "quill/apps/player.py::QuillMediaPlayerFrame._on_open_file::wx.FileDialog": "native",

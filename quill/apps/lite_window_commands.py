@@ -40,7 +40,6 @@ from quill.core.lite.filetypes import (
     SAVE_WILDCARD_PLAIN,
     SAVE_WILDCARD_RICH,
     is_rich_path,
-    save_filter_index_for_language,
 )
 from quill.core.lite.keymap import key_for, spoken_key_for
 from quill.core.support_message import SUPPORT_EMAIL
@@ -112,7 +111,7 @@ class DocumentCommandsMixin(
         return self.path is None and not self.modified and not self.control.GetValue()
 
     def cmd_save(self) -> None:
-        self.save()
+        self.save(background=True)  # a Word document is written on the worker
 
     def _default_document_folder(self) -> str:
         """Configured folder, then the user's Windows Documents folder."""
@@ -138,18 +137,17 @@ class DocumentCommandsMixin(
             wildcard=SAVE_WILDCARD_RICH if rich else SAVE_WILDCARD_PLAIN,
             style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
         ) as dialog:
-            if not rich:
-                # The type list opens on the document's own language. wx appends the
-                # selected row's extension to a name typed without one, so a list that
-                # always opened on "Text files" was answering "save my Markdown" with a
-                # .txt -- and the person had said which it was.
-                self._preselect_save_type(dialog)
+            # The type list opens on the document's own language (or on Word, for a
+            # Word document). wx appends the selected row's extension to a name typed
+            # without one, so a list that always opened on "Text files" was answering
+            # "save my Markdown" with a .txt -- and the person had said which it was.
+            self._preselect_save_type(dialog, rich=rich)
             if dialog.ShowModal() != wx.ID_OK:
                 return False
             target = Path(dialog.GetPath())
         if self.refuse_word_target(target):  # before asking about flattening
             return False
-        wants_rich = is_rich_path(target.name)
+        wants_rich = is_rich_path(target.name) or self.saves_as_word(target)
         if wants_rich and not rich:
             self.switch_mode(RICH)
         elif not wants_rich and rich:
@@ -186,7 +184,7 @@ class DocumentCommandsMixin(
             return True
         return self.save(target)
 
-    def _preselect_save_type(self, dialog: Any) -> None:
+    def _preselect_save_type(self, dialog: Any, *, rich: bool = False) -> None:
         """Open the Save As type list on the row this document belongs in.
 
         ``SetFilterIndex`` is looked up rather than called, because the test
@@ -195,8 +193,8 @@ class DocumentCommandsMixin(
         rather than the styling of it.
         """
         set_filter_index = getattr(dialog, "SetFilterIndex", None)
-        if callable(set_filter_index):
-            set_filter_index(save_filter_index_for_language(self.document_language()))
+        if callable(set_filter_index) and (row := self.save_type_row(rich)) is not None:
+            set_filter_index(row)
 
     def _confirm_flatten_to_plain(self) -> bool:
         """Ask before a Save As that throws the formatting away. Asks only.
