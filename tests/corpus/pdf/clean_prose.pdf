@@ -1,0 +1,98 @@
+%PDF-1.3
+%‚„œ”
+1 0 obj
+<<
+/Producer (pypdf)
+>>
+endobj
+2 0 obj
+<<
+/Type /Pages
+/Count 2
+/Kids [ 5 0 R 7 0 R ]
+>>
+endobj
+3 0 obj
+<<
+/Type /Catalog
+/Pages 2 0 R
+>>
+endobj
+4 0 obj
+<<
+/Type /Font
+/Subtype /Type1
+/BaseFont /Helvetica
+/Encoding /WinAnsiEncoding
+>>
+endobj
+5 0 obj
+<<
+/Type /Page
+/Resources <<
+/Font <<
+/F1 4 0 R
+>>
+>>
+/MediaBox [ 0.0 0.0 612 792 ]
+/Parent 2 0 R
+/Contents 6 0 R
+>>
+endobj
+6 0 obj
+<<
+/Length 641
+>>
+stream
+BT /F1 11 Tf 72 720 Td (Chapter One) Tj ET
+BT /F1 11 Tf 72 690.0 Td (The committee met on a Tuesday, which was unusual, and agreed that the) Tj ET
+BT /F1 11 Tf 72 676.0 Td (report would be circulated before the end of the month. Nobody objected) Tj ET
+BT /F1 11 Tf 72 662.0 Td (to the timetable, although two members asked that the appendix be read) Tj ET
+BT /F1 11 Tf 72 648.0 Td (aloud at the next meeting so that everyone could follow the figures.) Tj ET
+BT /F1 11 Tf 72 620.0 Td (In 2024 the library lent 1,234 books, and the inter-) Tj ET
+BT /F1 11 Tf 72 606.0 Td (national exchange added ISBN 978-0-306-40615-7 to the catalogue.) Tj ET
+endstream
+endobj
+7 0 obj
+<<
+/Type /Page
+/Resources <<
+/Font <<
+/F1 4 0 R
+>>
+>>
+/MediaBox [ 0.0 0.0 612 792 ]
+/Parent 2 0 R
+/Contents 8 0 R
+>>
+endobj
+8 0 obj
+<<
+/Length 265
+>>
+stream
+BT /F1 11 Tf 72 720.0 Td (The second page continues the minutes. The treasurer reported a) Tj ET
+BT /F1 11 Tf 72 706.0 Td (balance of 4,512.75 pounds, which the members accepted without a) Tj ET
+BT /F1 11 Tf 72 692.0 Td (vote, and the meeting closed at four.) Tj ET
+endstream
+endobj
+xref
+0 9
+0000000000 65535 f 
+0000000015 00000 n 
+0000000054 00000 n 
+0000000119 00000 n 
+0000000168 00000 n 
+0000000265 00000 n 
+0000000397 00000 n 
+0000001089 00000 n 
+0000001221 00000 n 
+trailer
+<<
+/Size 9
+/Root 3 0 R
+/Info 1 0 R
+>>
+startxref
+1537
+%%EOF

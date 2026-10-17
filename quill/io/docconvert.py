@@ -306,7 +306,7 @@ def convert_pdf_text_layer(
     if on_progress is not None:
         on_progress(0.9, "Checking the recovered text...")
     outcome = ConversionOutcome(
-        text=text.rstrip() + "\n",
+        text=text.rstrip(" \t\r\n") + "\n",  # a blank last page keeps its form feed
         tier=TIER_PDF_TEXT,
         source=path,
         page_count=page_count,

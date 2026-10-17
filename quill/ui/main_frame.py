@@ -9566,8 +9566,8 @@ class MainFrame(
         (Alt+Shift+B) — QUILL already imports Word/EPUB structure; this closes the
         PDF gap.
 
-        Each outline entry (title + destination page) is resolved to a character
-        offset via the form-feed page markers the PDF extractor writes, by the
+        Each outline entry is resolved to its title on its page (else the page's
+        start) via the form-feed page markers the PDF extractor writes, by the
         helper QUILL Lite's Go To shares (quill.core.pdf_open). Idempotent:
         it skips when the document already has bookmarks (a re-open, or a user who
         curated them), so it never duplicates entries or resurrects deleted ones,

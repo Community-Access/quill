@@ -354,11 +354,14 @@ def test_read_structured_pdf_attaches_embedded_outline(monkeypatch, tmp_path: Pa
         ),
     )
     monkeypatch.setattr(
-        "quill.io.structured.extract_pdf_outline",
-        lambda _path, *, password=None: [("Chapter 1", 1), ("Chapter 2", 2)],
+        "quill.io.structured.extract_pdf_outline_entries",
+        lambda _path, *, password=None: [("Chapter 1", 1, 1), ("Section 1.1", 2, 2)],
     )
     document = read_structured_document(target)
-    assert document.source_metadata["pdf_outline"] == [("Chapter 1", 1), ("Chapter 2", 2)]
+    # The pairs keep the shape older builds and stored sessions read; the
+    # nesting rides beside them for Go To's wording only.
+    assert document.source_metadata["pdf_outline"] == [("Chapter 1", 1), ("Section 1.1", 2)]
+    assert document.source_metadata["pdf_outline_levels"] == [1, 2]
 
 
 def test_read_structured_pdf_omits_outline_key_when_empty(monkeypatch, tmp_path: Path) -> None:
@@ -376,11 +379,12 @@ def test_read_structured_pdf_omits_outline_key_when_empty(monkeypatch, tmp_path:
         ),
     )
     monkeypatch.setattr(
-        "quill.io.structured.extract_pdf_outline",
+        "quill.io.structured.extract_pdf_outline_entries",
         lambda _path, *, password=None: [],
     )
     document = read_structured_document(target)
     assert "pdf_outline" not in document.source_metadata
+    assert "pdf_outline_levels" not in document.source_metadata
 
 
 def test_read_structured_xlsx_uses_markitdown_when_available(monkeypatch, tmp_path: Path) -> None:
@@ -398,32 +402,39 @@ def test_read_structured_xlsx_uses_markitdown_when_available(monkeypatch, tmp_pa
     assert "| Item | Amount |" in document.text
 
 
-def test_read_structured_pdf_prefers_markitdown_when_quality_is_low(
+def test_read_structured_pdf_no_longer_gives_markitdown_an_automatic_85(
     monkeypatch, tmp_path: Path
 ) -> None:
+    # Item 28: the normal open used to run MarkItDown on any low score, replace
+    # the whole text with its answer (pages and all) and call it 85/100 without
+    # looking. MarkItDown is now offered pages inside the shared reader, scored
+    # by the same rules; the open path itself never calls it.
     target = tmp_path / "sample.pdf"
     target.write_bytes(b"%PDF-1.4")
     monkeypatch.setattr(
         "quill.io.structured.extract_pdf_text",
         lambda _path, *, password=None: PdfExtractionResult(
-            text="",
+            text="Page one\fPage two\n",
             quality_score=12,
             engine="pdfplumber",
             page_count=2,
-            extracted_pages=0,
+            extracted_pages=2,
             page_scores=[12, 8],
+            page_engines=["pdfplumber", "markitdown"],
         ),
     )
-    monkeypatch.setattr(
-        "quill.io.structured.convert_with_markitdown",
-        lambda _path: "# PDF Extract\n\nReadable PDF text\n",
-    )
+
+    def _never(_path: Path) -> str:
+        raise AssertionError("structured must not call MarkItDown for a PDF")
+
+    monkeypatch.setattr("quill.io.structured.convert_with_markitdown", _never)
 
     document = read_structured_document(target)
 
-    assert document.source_metadata["engine"] == "pdfplumber + markitdown"
+    assert document.text == "Page one\fPage two\n"
+    assert document.source_metadata["quality_score"] == 12
+    assert document.source_metadata["page_engines"] == ["pdfplumber", "markitdown"]
     assert document.source_metadata["markitdown_used"] is True
-    assert "Readable PDF text" in document.text
 
 
 def test_read_structured_pptx_extracts_headings_lists_tables_and_notes(

@@ -155,6 +155,62 @@ the same. Design record section 25.
   `test_dictation_snippet_fill.py`, `tests/unit/ui/test_dictation_kept_words.py`,
   and a parity test in `test_dictation_parity.py`.
 
+### PDF text reliability: each page's most readable reading, a bounded score, titles found inside their pages (2026-10-16)
+
+Jeff's todo P2 #28, "Text-extraction reliability, shared by both editors and
+Import / Convert". Text reading only: no structure work. Design note with the
+formula, thresholds and measured budget:
+`docs/design/2026-10-16-pdf-text-reliability.md`; PRD 5.5 item 1 rewritten to
+match what ships (it described a per-page selection with pypdfium2 and
+pdfminer.six as extractors that never existed).
+
+- **Per-page selection** (`quill/io/pdf.py`, new `quill/io/pdf_select.py`).
+  The reader used to keep the first non-empty answer of pdfplumber, then pypdf.
+  Now pdfplumber reads each page; a reading scoring at least 90 on a page whose
+  characters show no column gutter is kept (the fast path); otherwise pypdf
+  plain, pypdf layout and, on a two-column page, pypdf layout read column by
+  column are compared (plus pdfplumber with duplicate characters removed when
+  the first reading shows fake-bold doubling). Every reading is scored before
+  and after repair; the best reading wins, ties to the earlier engine. One
+  failing page is recorded as `failed` instead of sinking the document.
+- **Readability score** (new `quill/io/pdf_score.py`) replaces the quantity
+  score: 100 times one factor each for suspicious characters, single-letter
+  runs, one word per line, implausible joins, coverage against the fullest
+  reading, and columns run together. Short titles, numeric rows and non-Latin
+  scripts score 100. Doubtful pages (below 40, unreadable characters, or
+  image-only) are named in one shared sentence (`pdf_open.doubtful_pages_sentence`)
+  in QUILL's open status, QUILL Lite's open announcement and the intake
+  reports; blank pages never are. New metadata: `page_engines`,
+  `page_unreadable`, `pdf_outline_levels` (additive; old keys unchanged).
+- **MarkItDown** no longer gets an automatic 85 in `quill.io.structured`; that
+  fallback is gone. Inside the reader it is offered pages only when the
+  document still scores below 50, and a page is replaced only when its pages
+  line up and it scores 10 points better by the same rules.
+  `format_pdf_document` no longer keeps the *longer* answer.
+- **Fixes found by measuring first:** a blank first page lost its form feed
+  (every page offset shifted by one); unmapped private-use glyphs were deleted
+  ("next box" read as "net bo"); 200 pages peaked at 429 MB because pdfplumber
+  pages were never closed (now 6.5 MB); a long body line swallowed "Chapter 2"
+  under it; two long table rows were joined.
+- **Repairs** (`quill/io/pdf_repair.py`): unmapped private use kept, ligature
+  slots expanded only beside a letter; no closing-up of a spaced sentence into
+  one word; identifier hyphens kept, `self-`/`well-` style prefixes joined with
+  the hyphen; reflow protects headings, lettered/roman list starts, address
+  lines, column-spaced rows and rows of figures. Still idempotent.
+- **Outline** (new `quill/io/pdf_outline.py`, `quill/core/pdf_open.py`):
+  entries carry their nesting level; bookmarks and Go To land on the title at
+  the start of a line on its page, falling back to the page start; duplicate
+  titles take successive matches; Go To says "level N" for nested entries.
+  Stores keep their `(title, page)` shape.
+- **Fixture corpus** `tests/corpus/pdf/` (10 small PDFs and
+  `build_pdf_corpus.py`, pypdf only) and `tests/unit/io/test_pdf_corpus.py`
+  (real files, text and order, page offsets, bookmark targets, encrypted, the
+  PDF never changed, and a `perf` budget). New `tests/unit/io/test_pdf_score.py`;
+  `test_pdf.py`, `test_pdf_repair.py`, `test_pdf_open.py`, `test_intake.py`
+  and `test_structured.py` extended.
+- **Measured** (clean / questionable, ms a page, old then new): 37.6 / 38.3
+  and 41.9 / 58.4. `quill/io/structured.py` budget ratcheted 779 -> 764.
+
 ### Quill Radio station enrichment: the signed station pack, FTS5 search and Station Details (2026-10-16)
 
 Jeff's todo P2 #33, the Radio station data program. The data terms are not

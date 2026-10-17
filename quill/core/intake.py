@@ -7,6 +7,7 @@ from typing import Any
 
 from quill.core.document import Document
 from quill.core.marks import line_column_for_position
+from quill.core.pdf_open import doubtful_pages_sentence
 
 #: Below this extraction score the PDF text is treated as low confidence.
 _LOW_CONFIDENCE_SCORE = 50
@@ -44,6 +45,9 @@ def build_intake_summary(document: Document, cursor_position: int | None = None)
         # first line of the user's file.
         if quality < _LOW_CONFIDENCE_SCORE:
             parts.append(LOW_CONFIDENCE_HINT.rstrip("."))
+        doubtful = doubtful_pages_sentence(_doubtful_pages(metadata))
+        if doubtful:
+            parts.append(doubtful.rstrip("."))
     elif source_kind in {"csv", "tsv", "xlsx", "xls"}:
         engine = str(metadata.get("engine", source_kind))
         parts.append(f"{engine} table extract")
@@ -87,19 +91,68 @@ def build_intake_report(document: Document) -> str:
         lines.append(f"Note: {EXTRACTION_PACK_HINT}")
     if metadata.get("sidecar_path"):
         lines.append(f"Sidecar: {metadata['sidecar_path']}")
-    if metadata.get("page_scores"):
-        page_scores = metadata["page_scores"]
-        if isinstance(page_scores, list):
-            low_pages = [
-                f"Page {index + 1}: {score}/100"
-                for index, score in enumerate(page_scores)
-                if isinstance(score, int) and score < 40
-            ]
-            if low_pages:
-                lines.append("")
-                lines.append("Low-confidence pages:")
-                lines.extend(low_pages)
+    chosen = _engines_used(metadata)
+    if chosen:
+        lines.append(f"Text chosen per page: {chosen}")
+    doubtful = _doubtful_lines(metadata)
+    if doubtful:
+        lines.append("")
+        lines.append("Pages that may read poorly:")
+        lines.extend(doubtful)
     return "\n".join(lines).rstrip() + "\n"
+
+
+def _page_list(metadata: dict[str, object], key: str) -> list[Any]:
+    value = metadata.get(key)
+    return list(value) if isinstance(value, (list, tuple)) else []
+
+
+def _doubtful_pages(metadata: dict[str, object]) -> list[int]:
+    """The shared rule (``quill.io.pdf.doubtful_pages``) over stored metadata."""
+    from quill.io.pdf import doubtful_pages
+
+    scores = [int(s) if isinstance(s, int) else 100 for s in _page_list(metadata, "page_scores")]
+    engines = [str(e) for e in _page_list(metadata, "page_engines")]
+    unreadable = [
+        int(n) if isinstance(n, int) else 0 for n in _page_list(metadata, "page_unreadable")
+    ]
+    return doubtful_pages(scores, engines, unreadable)
+
+
+def _engines_used(metadata: dict[str, object]) -> str:
+    """``"pdfplumber (10 pages), pypdf (2 pages)"``: whose reading each page kept."""
+    counts: dict[str, int] = {}
+    for engine in _page_list(metadata, "page_engines"):
+        if engine in {"blank", "image-only", "failed"}:
+            continue
+        counts[str(engine)] = counts.get(str(engine), 0) + 1
+    return ", ".join(
+        f"{engine} ({count} page{'s' if count != 1 else ''})" for engine, count in counts.items()
+    )
+
+
+def _doubtful_lines(metadata: dict[str, object]) -> list[str]:
+    """One plain line per doubtful page, saying why."""
+    scores = _page_list(metadata, "page_scores")
+    engines = _page_list(metadata, "page_engines")
+    unreadable = _page_list(metadata, "page_unreadable")
+    lines = []
+    for number in _doubtful_pages(metadata):
+        engine = engines[number - 1] if number <= len(engines) else ""
+        count = unreadable[number - 1] if number <= len(unreadable) else 0
+        score = scores[number - 1] if number <= len(scores) else 0
+        if engine == "image-only":
+            lines.append(f"Page {number}: a picture with no text; OCR may read it")
+        elif engine == "failed":
+            lines.append(f"Page {number}: could not be read")
+        elif isinstance(count, int) and count:
+            lines.append(
+                f"Page {number}: {count} character{'s' if count != 1 else ''} could not be "
+                f"read ({score}/100)"
+            )
+        else:
+            lines.append(f"Page {number}: possible extraction issue ({score}/100)")
+    return lines
 
 
 def build_extraction_quality_report(document: Document) -> str:
@@ -110,12 +163,11 @@ def build_extraction_quality_report(document: Document) -> str:
     if not isinstance(page_scores, list) or not page_scores:
         return "No per-page extraction scores are available for this document."
     lines = [f"Extraction quality review for {document.name}", ""]
-    low_pages = []
-    for index, score in enumerate(page_scores, start=1):
-        if not isinstance(score, int):
-            continue
-        if score < 40:
-            low_pages.append(f"Page {index}: possible extraction issue ({score}/100)")
+    chosen = _engines_used(metadata)
+    if chosen:
+        lines.append(f"Text chosen per page: {chosen}")
+        lines.append("")
+    low_pages = _doubtful_lines(metadata)
     if low_pages:
         lines.append("Warnings:")
         lines.extend(low_pages)
