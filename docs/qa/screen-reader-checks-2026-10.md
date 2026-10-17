@@ -1616,3 +1616,28 @@ link), and one with a table and a comment.
 - [ ] All eight with NVDA.
 - [ ] All eight with JAWS.
 - [ ] Checks 1, 5 and 7 with Narrator.
+
+## Word documents in installed copies, and GLOW audits (2026-10-17)
+
+Before 2026-10-17 the shared runtime left out lxml, so an *installed* QUILL or
+QUILL Lite opened every `.docx` as plain text and could not save one, and the
+GLOW audits failed. These checks need the first installers built after that
+change (see *Rebaselining after the Word support change* in
+`docs/building-windows-family.md`). Use the two Word files from the section
+above.
+
+1. Installed QUILL Lite (from its installer, not the portable ZIP): Ctrl+O, the
+   plain file. You hear "Opened as Rich Text. Headings and bold are shown
+   formatted.", not the file as text. Type a line, Ctrl+S, "Saved ...", and the
+   file opens in Word with its headings.
+2. Installed QUILL: the same file, the same result.
+3. Installed QUILL, with GLOW turned on (Settings > Experimental): **GLOW Audit
+   File...** (from the Command Palette) on the Word file, then a PDF,
+   then a PowerPoint file. Each produces a report; none says a module is
+   missing.
+4. Both portable ZIPs, on a computer with nothing installed: checks 1 and 2.
+5. In either editor, open an Excel `.xlsx`: it opens as text with "Sheet:"
+   headings; Ctrl+S explains why and opens Save As with a `.txt` name.
+
+- [ ] All five with NVDA.
+- [ ] Checks 1 and 3 with JAWS.

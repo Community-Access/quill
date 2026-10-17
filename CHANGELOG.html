@@ -348,6 +348,116 @@ accessible-name and control-label snapshots were regenerated with their
 tools, and two tests now patch and read the module the code lives
 in.</p>
 <h3
+id="word-documents-work-in-every-installed-and-portable-build-lxml-ships-in-the-shared-runtime-one-office-story-in-the-docs-2026-10-17">Word
+documents work in every installed and portable build: lxml ships in the
+shared runtime; one Office story in the docs (2026-10-17)</h3>
+<p>Jeff’s decision (2026-10-17): “get whatever is needed to make word
+documents fully usable in quill and quill lite, the lxml or whatever it
+is called, get that bundled, do not worry about size.”</p>
+<p><strong>The bug.</strong>
+<code>standalone/runtime/quillville-runtime.spec</code> excluded
+<code>lxml</code>. python-docx is pure Python, so it froze in and
+<code>find_spec("docx")</code> found it, and then
+<code>import docx</code> raised on <code>lxml</code>. Every
+<em>installed</em> QUILL and QUILL Lite (both run on the shared runtime)
+therefore had <code>word_rich_available()</code> False: a
+<code>.docx</code> opened as read-extract text, a real
+<code>.docx</code> could not be saved, and every GLOW audit failed
+(<code>acb_large_print.auditor</code> imports python-docx at module top,
+and the PDF, PowerPoint and Excel auditors import that module). Portable
+builds were fine, because pip installs lxml with python-docx (a base
+dependency). Every build exited 0.</p>
+<p><strong>Runtime.</strong> <code>"lxml"</code> is gone from the spec’s
+<code>excludes</code>. In its place is a comment explaining why it must
+never return. A new <code>word_hidden</code> list names
+<code>lxml</code>, <code>lxml.etree</code>,
+<code>lxml._elementpath</code>, <code>docx</code>, <code>pptx</code>,
+<code>openpyxl</code> and
+<code>collect_submodules("acb_large_print")</code> as hidden imports, so
+the GLOW auditors reached through <code>acb_large_print_core</code>’s
+lazy per-extension imports are frozen on purpose rather than by
+luck.</p>
+<p><strong>Proof inside every bundle.</strong> The new module
+<code>quill/io/word_selfcheck.py</code> is wx-free and has
+<code>WORD_SUPPORT_MODULES</code>,
+<code>word_round_trip_problem()</code> and
+<code>assert_word_round_trip()</code>. It imports the Word stack, writes
+a real <code>.docx</code> with python-docx (a heading, a bold run and a
+table), checks that the fidelity scan sees the table, opens the file
+through <code>docx_open.read_docx_as_rtf</code>, saves it back through
+<code>rtf_to_docx_bytes</code>, and checks that the heading style and
+the bold run survive. Three build steps run it:</p>
+<ul>
+<li><code>scripts/check_runtime_imports.py</code> gains
+<code>WORD_MUST_IMPORT</code> (lxml.etree, docx, pptx, openpyxl, the
+Word reader, writer, <code>docx_open</code>,
+<code>word_selfcheck</code>, <code>quill_glow_core</code> and the four
+GLOW auditors), appended to <code>MUST_IMPORT</code>, and runs the round
+trip as <code>WORD_ROUND_TRIP</code> inside the frozen runtime. A Word
+failure prints a paragraph naming the spec exclude as the likely
+cause.</li>
+<li><code>standalone/studio/scripts/build_portable.py</code>:
+<code>Product.check_word</code>. The step-8 probe imports
+<code>WORD_SUPPORT_MODULES</code> one per statement, then calls
+<code>assert_word_round_trip()</code>. It is on for
+<code>quilllite</code> (which also names the <code>docx</code> group and
+<code>openpyxl</code>) and for <code>quill</code> (which gains the
+<code>docx</code> and <code>office-text</code> groups, so the portable
+QUILL is never behind portable QUILL Lite).</li>
+<li><code>scripts/build_windows_distribution.py</code>:
+<code>_check_word_support</code> runs it in QUILL for All’s embedded
+runtime after pruning.</li>
+</ul>
+<p><strong>The inventory is not hand-edited.</strong> The first runtime
+build after this change will fail
+<code>check_runtime_inventory.py</code> with
+<code>unexpected in _internal: lxml</code>. The gate’s new
+<code>KNOWN_ADDITIONS</code> prints the reason beside that name and
+points to the rebaseline steps, now in
+<code>docs/building-windows-family.md</code> (“Rebaselining after the
+Word support change”). Once the regenerated inventory is committed,
+delete the <code>lxml</code> entry. The portable inventories already
+list lxml.</p>
+<p><strong>Simulated runtime test.</strong>
+<code>tests/unit/scripts/test_word_support_in_runtime.py</code> parses
+the spec’s <code>excludes</code> with <code>ast</code> and blocks every
+one of them in a fresh interpreter through a meta-path finder. In that
+interpreter, every installed module of <code>WORD_MUST_IMPORT</code>
+must still import, and the round trip must pass. Re-adding
+<code>lxml</code> to the excludes fails this test, and it was checked to
+do so. The file also pins the explanatory messages of both gates, the
+portable probes and the distribution check.</p>
+<p><strong>Fallback kept as a safety net.</strong>
+<code>docx_open.word_rich_available()</code> and the standard-library
+readers (<code>office_word</code>, <code>docx_text</code>,
+<code>docx_highlights</code>) are unchanged. Comments that said “the
+shared runtime excludes lxml” now describe those readers as the safety
+net (<code>open_prepare.py</code>, <code>docx_highlights.py</code>,
+<code>docx_text.py</code>, <code>office_word.py</code>,
+<code>test_office_corpus.py</code>,
+<code>test_lite_office.py</code>).</p>
+<p><strong>One Office story in the docs.</strong> Both user guides have
+a new “Office files at a glance” section. It holds a table of each file
+type, what the editor does with it and whether you can save back to it:
+<code>.docx</code> edited and saved as Word; <code>.docm</code>,
+<code>.doc</code> (with LibreOffice), <code>.odt</code>,
+<code>.xlsx</code>, <code>.xls</code>, <code>.pptx</code> and
+<code>.ppt</code> read as text, with Save going to Save As;
+<code>.xlsm</code>, <code>.ods</code> and <code>.odp</code> through
+Import / Convert only. The section also says how to make a
+<code>.docx</code> to edit fully, and when to use Import / Convert
+rather than Open. QUILL’s “Word (.docx and .doc)” section had described
+only the structured view versus the text editor. It now describes the
+actual rich editing path and the “How to open Word files” setting. QUILL
+Lite’s changelog merges the three Unreleased bullets (“Edit Word
+documents”, “Word, Excel and PowerPoint files open as text” and “Save As
+never writes text under a Word name”) into one. Earlier entries below
+that predicted lxml would stay excluded now say what happened. Docs:
+both user guides, both PRDs, both changelogs,
+<code>docs/building-windows-family.md</code>,
+<code>docs/build-machine-sync.md</code> and the manual checks in
+<code>docs/qa/screen-reader-checks-2026-10.md</code>.</p>
+<h3
 id="word-editing-shared-with-quill-lite-two-word-round-trip-fixes-table-navigation-in-quill-lite-2026-10-17">Word
 editing shared with QUILL Lite; two Word round-trip fixes; table
 navigation in QUILL Lite (2026-10-17)</h3>
@@ -945,10 +1055,11 @@ per glyph. Measured 2026-10-17 with the machine 31 % busy: 28-29 ms a
 page untraced, 121-129 ms traced. The clean-page path is not over
 budget, so <code>pdf_select.py</code> is unchanged; the test now traces
 memory in one read and times a second, untraced one.</li>
-<li><strong>GLOW’s PDF audit in the shared runtime (finding, spec
-unchanged).</strong> <code>acb_large_print.pdf_auditor</code> imports
-<code>acb_large_print.auditor</code>, which imports python-docx at
-module top, and python-docx imports <code>lxml</code>, which
+<li><strong>GLOW’s PDF audit in the shared runtime</strong> (finding;
+fixed the same day by “Word documents work in every installed and
+portable build”, above). <code>acb_large_print.pdf_auditor</code>
+imports <code>acb_large_print.auditor</code>, which imports python-docx
+at module top, and python-docx imports <code>lxml</code>, which
 <code>standalone/runtime/quillville-runtime.spec</code> excludes (and
 <code>runtime-inventory.json</code> confirms is absent). Simulated by
 blocking every spec exclude: <code>fitz</code> (PyMuPDF),
@@ -956,12 +1067,9 @@ blocking every spec exclude: <code>fitz</code> (PyMuPDF),
 <code>acb_large_print_core.services</code> import, but every GLOW audit
 (PDF, Word, PowerPoint) fails with <code>No module named 'lxml'</code>.
 QUILL’s own Office readers are unaffected (they fall back to the
-standard library). Not changed here, because un-excluding lxml grows
-every QuillVille installer and needs a runtime-inventory rebaseline; the
-fix, when wanted, is to drop <code>"lxml"</code> from the spec’s
-excludes and add <code>docx</code> and
-<code>acb_large_print.pdf_auditor</code> to
-<code>scripts/check_runtime_imports.py</code> MUST_IMPORT.</li>
+standard library). Jeff then chose to ship lxml whatever the size, and
+that is what happened: the exclude is gone and the import gate holds
+<code>docx</code>, lxml and every GLOW auditor.</li>
 </ul>
 <h3
 id="speech-engines-and-models-every-guide-says-what-the-code-does-2026-10-17">Speech
@@ -1131,14 +1239,14 @@ press from one of three sources: the rich control’s own RTF (through
 runs by words and paragraph, so edits above a passage are followed), the
 Markdown buffer’s <code>highlight=</code> hidden codes
 (<code>passages_from_markdown</code>, buffer offsets), or, for a Word
-file shown as text (QUILL’s read-extract, every Word file in QUILL
-Lite), the <code>.docx</code> on disk through the new standard-library
-reader <code>quill/io/docx_highlights.py</code>. Arrival says “Yellow
-highlight, 2 of 5: words”; the list’s rows are words, colour and
-paragraph; Enter lands on the passage and Escape leaves the caret. The
-palette (<code>quill/core/highlights.py</code>) fixed four round-trip
-bugs found on the way: the RTF writer knew six colour names, so pink and
-turquoise highlights were written as none
+file shown as text (the read-extract answer in either editor, or a
+<code>.docm</code>), the <code>.docx</code> on disk through the new
+standard-library reader <code>quill/io/docx_highlights.py</code>.
+Arrival says “Yellow highlight, 2 of 5: words”; the list’s rows are
+words, colour and paragraph; Enter lands on the passage and Escape
+leaves the caret. The palette (<code>quill/core/highlights.py</code>)
+fixed four round-trip bugs found on the way: the RTF writer knew six
+colour names, so pink and turquoise highlights were written as none
 (<code>RtfTables.highlight_index</code>); <code>docx_writer</code>
 mapped every <code>#RRGGBB</code> value the RTF reader returns to
 yellow; <code>docx_reader</code> dropped Word’s eight dark colours; and
@@ -1536,9 +1644,10 @@ strict-typed), with the readers split into <code>office_word.py</code>
 (Word and ODT XML), <code>office_sheets.py</code> (openpyxl, else the
 workbook XML; ODS) and <code>office_slides.py</code> (PPTX and ODP; the
 slide code moved out of <code>structured.py</code>). Everything falls
-back to the standard library, because the shared runtime also excludes
-lxml (so python-docx cannot import there) and QUILL Lite excludes docx,
-pptx, openpyxl and markitdown. <code>read_office_text</code> never uses
+back to the standard library, because at the time the shared runtime
+excluded lxml (so python-docx could not import there; shipped since
+2026-10-17) and MarkItDown cannot import there at all. The fallback
+stays as the safety net. <code>read_office_text</code> never uses
 MarkItDown; <code>read_office_text_preferring_markitdown</code> tries it
 for DOCX/PPTX/XLSX/XLS/HTML/EPUB/CSV and falls back on <em>any</em>
 exception or an empty result, keeping the reason as
@@ -1588,10 +1697,12 @@ unreadable <code>.xls</code>.</li>
 columns per sheet, up from 50 by 20, and a sheet cut short now says
 so.</li>
 <li><strong>QUILL Lite</strong> opens
-<code>.docx/.docm/.doc/.odt/.xlsx/.xls/.pptx/.ppt</code> as text through
-the same reader (exactly QUILL’s File &gt; Open set, asserted), on the
+<code>.docm/.doc/.odt/.xlsx/.xls/.pptx/.ppt</code> as text through the
+same reader (exactly QUILL’s File &gt; Open set, asserted), on the
 worker, and refuses Save over them; it used to show a
-<code>.docx</code>’s zip bytes.</li>
+<code>.docx</code>’s zip bytes. (<code>.docx</code> was in this list
+until the next day, when it became editable rich text in both
+editors.)</li>
 <li>The OCR and Conversion Services page text moved to
 <code>quill/core/docconvert_services.py</code> and now describes the
 built-in readers.</li>

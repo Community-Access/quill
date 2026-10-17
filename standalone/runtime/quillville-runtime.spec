@@ -105,6 +105,22 @@ mutagen_hidden = collect_submodules("mutagen")
 # carried the code and not the licence.
 ytdlp_datas += copy_metadata("mutagen")
 
+# The Word stack (2026-10-17). python-docx and python-pptx parse through lxml,
+# a native extension (the upstream hooks in pyinstaller-hooks-contrib collect
+# lxml's own submodules and the docx/pptx package templates); openpyxl reads
+# .xlsx for Office import and the GLOW Excel audit. The GLOW auditors are
+# reached only through acb_large_print_core's per-extension lazy imports, so
+# they are named rather than trusted to the tracer. Named here so the Word path
+# never again depends on what some optional import happened to reach. The one
+# new top-level entry this adds to _internal is `lxml` -- see the rebaseline
+# steps in docs/building-windows-family.md.
+word_hidden = ["lxml", "lxml.etree", "lxml._elementpath", "docx", "pptx", "openpyxl"]
+try:
+    word_hidden += collect_submodules("acb_large_print")
+except Exception:  # GLOW absent on this build machine: check_build_env names it
+    pass
+ytdlp_hidden += word_hidden
+
 a = Analysis(
     ["runtime_launcher.py"],
     pathex=[_CHECKOUT_ROOT],
@@ -135,7 +151,16 @@ a = Analysis(
         # through some collected package's optional import -- and a test
         # framework has no business in a shipped runtime whatever its size.
         "hypothesis",
-        "lxml",
+        # lxml is NOT excluded (Jeff, 2026-10-17: "get whatever is needed to
+        # make word documents fully usable in quill and quill lite ... do not
+        # worry about size"). It was listed here until then, and python-docx
+        # and python-pptx cannot import without it: every installed QUILL and
+        # QUILL Lite opened Word files as plain text and could not save a real
+        # .docx, and the GLOW Word, PDF and PowerPoint audits failed. Both
+        # import gates now prove the Word path (check_runtime_imports.py runs
+        # quill.io.word_selfcheck inside this bundle), and
+        # tests/unit/scripts/test_word_support_in_runtime.py fails a pull
+        # request that excludes it again.
         # Additional dead weight dragged in transitively that NO QuillVille app
         # imports (verified: no `import speech_recognition|onnxruntime|av|imageio`
         # anywhere under quill/). speech_recognition (~44 MB) is unused -- QUILL's

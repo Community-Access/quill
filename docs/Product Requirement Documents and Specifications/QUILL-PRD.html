@@ -25935,10 +25935,11 @@ Office import failed with “The free local converter (MarkItDown) is not
 installed”, pointing at the “PDF and Office text extraction” download —
 which could not help, because the frozen copy shadows the downloaded one
 and <code>find_spec('markitdown')</code> keeps answering “installed”.
-The same runtime excludes <code>lxml</code>, so python-docx cannot
-import there either, and File &gt; Open fell to the flat paragraph walk
-for Word. PDFs were fixed first (<code>convert_pdf_text_layer</code>,
-2026-10-15).</p>
+The same runtime then excluded <code>lxml</code>, so python-docx could
+not import there either, and File &gt; Open fell to the flat paragraph
+walk for Word. (lxml ships since 2026-10-17; see “Word documents in
+every build” below.) PDFs were fixed first
+(<code>convert_pdf_text_layer</code>, 2026-10-15).</p>
 <p><strong>The decision (Jeff, 2026-10-16): Office files get a path that
 needs no MarkItDown.</strong> <code>quill/io/office_text.py</code> is
 the one entry point:</p>
@@ -26134,6 +26135,89 @@ stamps <code>extraction_pack_missing</code> in
 into a one-line pointer at the download — suppressed when python-docx
 already read the file well, so it never nags about 150 MB for a document
 that came through fine.</p>
+<h3
+id="word-documents-in-every-build-and-one-office-story-2026-10-17">Word
+documents in every build, and one Office story (2026-10-17)</h3>
+<p><strong>The defect.</strong>
+<code>standalone/runtime/quillville-runtime.spec</code> excluded
+<code>lxml</code>. python-docx froze in anyway (it is pure Python) and
+raised on import, so in every <em>installed</em> build
+<code>docx_open.word_rich_available()</code> was False. A
+<code>.docx</code> opened as read-extract text and could not be saved as
+Word, and every GLOW audit failed, because
+<code>acb_large_print.auditor</code>, which the PDF, PowerPoint and
+Excel auditors also import, imports python-docx at module top. Portable
+builds worked, because pip installs lxml with python-docx. Every build
+passed.</p>
+<p><strong>The decision (Jeff, 2026-10-17): ship lxml, whatever the
+size.</strong> The exclude is gone. The spec names <code>lxml</code>,
+<code>docx</code>, <code>pptx</code>, <code>openpyxl</code> and every
+<code>acb_large_print</code> submodule as hidden imports.
+<code>quill/io/word_selfcheck.py</code> is the one functional check, and
+it is run inside the frozen runtime
+(<code>check_runtime_imports.py</code>, <code>WORD_MUST_IMPORT</code>
+plus <code>WORD_ROUND_TRIP</code>), inside the QUILL and QUILL Lite
+portables (<code>build_portable.py</code>, <code>check_word</code>), and
+inside QUILL for All’s embedded runtime
+(<code>build_windows_distribution.py</code>,
+<code>_check_word_support</code>). It writes a <code>.docx</code>, opens
+it through <code>read_docx_as_rtf</code>, saves it through
+<code>rtf_to_docx_bytes</code> and checks that the heading style and a
+bold run survive.
+<code>tests/unit/scripts/test_word_support_in_runtime.py</code> blocks
+every spec exclude in a fresh interpreter and requires the same. The
+runtime inventory gains <code>lxml</code> in <code>_internal</code> on
+the next real build. That build fails the inventory gate with an
+explanation (<code>KNOWN_ADDITIONS</code>) until the inventory is
+rebaselined; the steps are in
+<code>docs/building-windows-family.md</code>. The read-extract fallback
+is unchanged, and it is now a safety net only.</p>
+<p><strong>The behaviour both editors document</strong> (QUILL Lite may
+never be ahead of QUILL, and here they are identical except that QUILL
+also offers its read-only structured Word view):</p>
+<table>
+<thead>
+<tr>
+<th>File type</th>
+<th>Opens as</th>
+<th>Save back to it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.docx</code></td>
+<td>Rich text to edit; the fidelity question when the scan flags
+something</td>
+<td>Yes, as Word; a flagged original is backed up once per session</td>
+</tr>
+<tr>
+<td><code>.docm</code></td>
+<td>Text (read-extract); macros never run</td>
+<td>No; Save goes to Save As</td>
+</tr>
+<tr>
+<td><code>.doc</code>, <code>.xls</code>, <code>.ppt</code></td>
+<td>Text through a LibreOffice temporary copy; without LibreOffice,
+<code>LegacyOfficeFormatError</code> names the Save As type</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>.odt</code>, <code>.xlsx</code>, <code>.pptx</code></td>
+<td>Text through QUILL’s own readers</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>.xlsm</code>, <code>.ods</code>, <code>.odp</code></td>
+<td>Not opened by File &gt; Open; Import / Convert Document reads
+them</td>
+<td>Not applicable (a new untitled document)</td>
+</tr>
+</tbody>
+</table>
+<p>Import / Convert Document always makes a new, untitled document that
+does not point back at the source. File &gt; Open opens the file itself,
+and only a <code>.docx</code> saves back to it. Both user guides carry
+this table as “Office files at a glance”.</p>
 <h3
 id="self-voice-fallback-is-logged-not-announced-shipped-081-beta-1">Self-voice
 fallback is logged, not announced (shipped 0.8.1 Beta 1)</h3>
