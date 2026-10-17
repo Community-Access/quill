@@ -104,12 +104,13 @@ def _key(value: str) -> str:
 #: python-docx's, where ``GREEN`` is the *dark* green: it is looked up last so
 #: the hidden-code and XML spelling "green" (bright) wins.
 _BY_SPELLING: dict[str, str] = {}
-for _colour in HIGHLIGHT_COLOURS:
-    _BY_SPELLING.setdefault(_key(_colour.docx_member), _colour.name)
-for _colour in HIGHLIGHT_COLOURS:
-    _BY_SPELLING[_key(_colour.ooxml)] = _colour.name
-for _colour in HIGHLIGHT_COLOURS:
-    _BY_SPELLING[_key(_colour.name)] = _colour.name
+for _entry in HIGHLIGHT_COLOURS:
+    _BY_SPELLING.setdefault(_key(_entry.docx_member), _entry.name)
+for _entry in HIGHLIGHT_COLOURS:
+    _BY_SPELLING[_key(_entry.ooxml)] = _entry.name
+for _entry in HIGHLIGHT_COLOURS:
+    _BY_SPELLING[_key(_entry.name)] = _entry.name
+del _entry  # a loop name must not shadow _colour() below
 _BY_SPELLING.update({
     "grey": "gray",
     "brightgreen": "green",
