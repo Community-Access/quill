@@ -32,6 +32,13 @@ from quill.io.office_text import (
 
 CORPUS = Path(__file__).resolve().parents[2] / "corpus" / "office"
 
+# CI's unit-test legs install neither: there the shipped-build simulation finds
+# no markitdown at all, so the reason recorded names markitdown rather than
+# onnxruntime, and the openpyxl leg of the Excel test has nothing to exercise.
+_HAS_MARKITDOWN = importlib.util.find_spec("markitdown") is not None
+_HAS_OPENPYXL = importlib.util.find_spec("openpyxl") is not None
+_WHY_PASSED_OVER = "onnxruntime" if _HAS_MARKITDOWN else "markitdown"
+
 
 def _break_markitdown_like_a_shipped_build(monkeypatch: pytest.MonkeyPatch) -> None:
     """``import markitdown`` fails on onnxruntime, as in the QuillVille runtime.
@@ -106,6 +113,8 @@ def test_excel_keeps_sheet_boundaries_and_cell_values(
 ) -> None:
     if blocked:
         _block(monkeypatch, "openpyxl")
+    elif not _HAS_OPENPYXL:
+        pytest.skip("openpyxl is not installed in this environment")
     found = read_office_text(CORPUS / "budget.xlsx")
     assert found.engine == ("sheet-xml" if blocked else "openpyxl")
     assert found.count_phrase == "2 sheets"
@@ -182,7 +191,7 @@ def test_legacy_doc_without_libreoffice_names_the_save_as(
     sentence = excinfo.value.sentence
     assert "Word 97-2003" in sentence
     assert '"Word Document (.docx)"' in sentence
-    assert "libreoffice.org" in sentence
+    assert "(free, from libreoffice.org)" in sentence
 
 
 def test_legacy_doc_is_read_after_libreoffice_converts_it() -> None:
@@ -242,7 +251,7 @@ def test_shipped_build_records_why_markitdown_was_passed_over(
     _break_markitdown_like_a_shipped_build(monkeypatch)
     found = read_office_text_preferring_markitdown(CORPUS / "report.docx")
     assert found.engine in {"python-docx", "word-xml"}
-    assert "onnxruntime" in found.markitdown_failure
+    assert _WHY_PASSED_OVER in found.markitdown_failure
     assert found.metadata()["markitdown_failure"] == found.markitdown_failure
 
 
@@ -279,7 +288,7 @@ def test_open_announcement_and_intake_report_name_the_reader(
     report = build_intake_report(document)
     assert "Read by: QUILL's own Excel reader" in report
     assert "Contents: 2 sheets" in report
-    assert "MarkItDown: not used." in report and "onnxruntime" in report
+    assert "MarkItDown: not used." in report and _WHY_PASSED_OVER in report
 
 
 def test_shipped_build_convert_file_names_the_stand_in(

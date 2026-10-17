@@ -293,7 +293,7 @@ def test_read_structured_doc_without_libreoffice_says_what_to_do(
     assert document.source_metadata["source_kind"] == "doc"
     assert document.source_metadata["engine"] == "unavailable"
     assert "Word Document (.docx)" in document.text
-    assert "libreoffice.org" in document.text
+    assert "(free, from libreoffice.org)" in document.text
     assert "[QUILL-" not in document.text
 
 
