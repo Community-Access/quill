@@ -25,6 +25,11 @@ size on disk. The prepared document carries what the reader found
 (:attr:`PreparedDocument.pdf`) so the UI half can ask for a password, offer
 OCR, or say why nothing opened -- the questions a worker thread may not ask.
 
+**Word, Excel and PowerPoint files go to the worker too** (2026-10-16), read
+as text by the readers QUILL's File > Open uses (:func:`read_office_for_open`).
+Like a PDF, the file is never written back: Save goes to Save As
+(``quill.apps.lite_window_pdf.is_read_only_source``).
+
 wx-free, strict-typed.
 """
 
@@ -39,11 +44,14 @@ from quill.io.rtf_safety import scan_rtf_safety
 
 __all__ = [
     "BACKGROUND_THRESHOLD_BYTES",
+    "OFFICE_OPEN_SUFFIXES",
     "PLAIN",
     "RICH",
     "PreparedDocument",
+    "is_office_open_path",
     "prepare",
     "prepare_in_background",
+    "read_office_for_open",
 ]
 
 #: The editor's two modes, spelled as ``quill.ui.richedit_editing`` spells
@@ -75,6 +83,46 @@ class PreparedDocument:
     pdf: PdfOpen | None = None
 
 
+#: The Office formats QUILL Lite opens as text: exactly the ones QUILL's own
+#: File > Open reads (``quill.io.open_read.OFFICE_STREAM_SUFFIXES``), never
+#: more, because QUILL Lite may never be ahead of QUILL. Read by the same
+#: shared readers (``quill.io.office_text``), which need nothing QUILL Lite's
+#: build leaves out: it ships no MarkItDown, python-docx, openpyxl or lxml,
+#: and the readers fall back to the standard library (2026-10-16).
+OFFICE_OPEN_SUFFIXES = frozenset({
+    ".docx",
+    ".docm",
+    ".doc",
+    ".odt",
+    ".pptx",
+    ".ppt",
+    ".xlsx",
+    ".xls",
+})
+
+
+def is_office_open_path(path: Path | str) -> bool:
+    return Path(path).suffix.lower() in OFFICE_OPEN_SUFFIXES
+
+
+def read_office_for_open(path: Path) -> str:
+    """An Office file's text for the editor. ``OSError`` with a sentence if unreadable.
+
+    ``OSError`` because that is what both open paths already report as "Could
+    not open <name>" with the reason under it; the reason is the shared
+    reader's own sentence (damaged, password-protected, or a .doc/.xls/.ppt
+    with no LibreOffice and the Save As that fixes it).
+    """
+    from quill.io.office_text import OfficeReadError, read_office_text_preferring_markitdown
+
+    if not Path(path).is_file():
+        raise FileNotFoundError(f"{Path(path).name} is no longer there.")
+    try:
+        return read_office_text_preferring_markitdown(path).text
+    except OfficeReadError as exc:
+        raise OSError(exc.sentence) from exc
+
+
 def prepare(path: Path, mode: str, *, password: str | None = None) -> PreparedDocument:
     """Read and decode *path* for *mode*. Raises ``OSError`` if it cannot be read.
 
@@ -87,6 +135,8 @@ def prepare(path: Path, mode: str, *, password: str | None = None) -> PreparedDo
             raise FileNotFoundError(f"{Path(path).name} is no longer there.")
         found = read_pdf_for_open(Path(path), password=password)
         return PreparedDocument(mode=PLAIN, text=found.text, pdf=found)
+    if is_office_open_path(path):
+        return PreparedDocument(mode=PLAIN, text=read_office_for_open(Path(path)))
     if mode == RICH:
         # Latin-1 both ways, because it maps every byte to one character and
         # back: an RTF file is 7-bit by the spec, and the 8-bit bytes some
@@ -117,6 +167,8 @@ def prepare_in_background(path: Path) -> bool:
     text = str(path)
     if text.startswith("\\\\") or text.startswith("//") or is_pdf_path(path):
         return True
+    if is_office_open_path(path):
+        return True  # unzipping and walking XML is not instant, whatever the size
     try:
         return Path(path).stat().st_size >= BACKGROUND_THRESHOLD_BYTES
     except OSError:

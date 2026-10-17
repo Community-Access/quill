@@ -612,7 +612,7 @@ Post-conversion prompt rule (issue #262): when the target format is editable in 
 
 **Round-trip improvements (0.9.0, `quill/io`).** docx hyperlinks round-trip both ways — `rich_to_docx` writes a real `w:hyperlink` with an OPC relationship, `read_docx_rich` recovers the href via `iter_inner_content` (previously links degraded to plain text). Numbered lists are first-class: a `numbered` `RichParagraph` style plus `list_number` carried through `markdown_to_rich`/`rich_to_markdown` (identity, keeps a non-1 start), docx `List Number` read/write (sequential numbering assigned on read), and the offset map. `markdown_to_html` now emits `<img>` for images and `<blockquote>` for quote lines. Tables round-trip as real tables between Markdown, HTML, and Word: `docx_writer` detects consecutive GFM-table paragraphs (`_table_block_length`) and rebuilds a native `w:tbl` (`_emit_table`) with a bold, repeating `<w:tblHeader>` header row — so Markdown→Word and HTML→Word (via the hub) now produce editable Word tables, and Word→Markdown/HTML already preserved them. Remaining honest gaps: RTF drops alignment and page breaks and writes tables as pipe-text; docx drops page breaks on read; inline formatting inside a Markdown-authored table cell flattens to plain text on the way to Word; Word-embedded images are not extracted.
 
-**Conversion engine preferences.** Two settings expose the engine choice with speakable outcome descriptions: `docx_read_engine` (auto | markitdown | pandoc — auto is MarkItDown-first, then the python-docx render (`quill/io/docx_text.py`: headings, lists, tables), with the raw `word/document.xml` walk as the last resort; the pandoc preference degrades to auto when Pandoc is missing, so a preference never fails an open) and `docx_write_engine` (auto | native | pandoc — native is the hidden-codes-preserving python-docx writer; pandoc maps structure to Word styles and drops run-level font/size/color). The Convert File dialog carries a per-operation Conversion engine choice (Auto/Pandoc/MarkItDown) whose description follows the selection; MarkItDown is honored only where it honestly applies (Office/PDF source, Markdown/plain output) and the handler asks before substituting Pandoc, never silently. Engine evidence: `docs/qa/converter-bakeoff.md` (2026-07-04) — MarkItDown and Pandoc passed the full corpus; the python-docx reader loses tables/footnotes/links (fallback only); **pydocx is rejected permanently** (cannot import on Python 3.10+, last release 2016); **mammoth is not adopted** (no current gap) with a standing decision tree: if a MarkItDown fidelity gap appears, mammoth is the candidate and would be bundled (pure-Python; frozen builds cannot pip-install at runtime), lazily imported, and offered as a third read-engine choice.
+**Conversion engine preferences.** Two settings expose the engine choice with speakable outcome descriptions: `docx_read_engine` (auto | markitdown | pandoc — auto is MarkItDown-first, then the python-docx render (`quill/io/docx_text.py`: headings, lists, tables), then the standard-library walk in `quill/io/office_word.py` (the same headings, lists and tables, for builds where python-docx cannot import because lxml is excluded); the pandoc preference degrades to auto when Pandoc is missing, so a preference never fails an open) and `docx_write_engine` (auto | native | pandoc — native is the hidden-codes-preserving python-docx writer; pandoc maps structure to Word styles and drops run-level font/size/color). The Convert File dialog carries a per-operation Conversion engine choice (Auto/Pandoc/MarkItDown) whose description follows the selection; MarkItDown is honored only where it honestly applies (Office/PDF source, Markdown/plain output) and the handler asks before substituting Pandoc, never silently. Engine evidence: `docs/qa/converter-bakeoff.md` (2026-07-04) — MarkItDown and Pandoc passed the full corpus; the python-docx reader loses tables/footnotes/links (fallback only); **pydocx is rejected permanently** (cannot import on Python 3.10+, last release 2016); **mammoth is not adopted** (no current gap) with a standing decision tree: if a MarkItDown fidelity gap appears, mammoth is the candidate and would be bundled (pure-Python; frozen builds cannot pip-install at runtime), lazily imported, and offered as a third read-engine choice.
 
 ##### 5.3a.1.2 Batch Conversion wizard
 
@@ -6919,7 +6919,7 @@ consent dialog.
 
 | Tier | Engine | Handles | Cost / privacy |
 |---|---|---|---|
-| 1 | MarkItDown (`quill/io/markitdown_bridge.py`, the optional `pdf-ocr` extra — not bundled; see "Reader chain and the document-text contract") | Born-digital DOCX/DOC, PPTX/PPT, XLSX/XLS, HTML, EPUB, CSV, ODT/ODP/ODS | Free, local, no upload |
+| 1 | MarkItDown (`quill/io/markitdown_bridge.py`, the optional `pdf-ocr` extra — not bundled) **when it imports and works**, otherwise QUILL's own readers (`quill/io/office_text.py`, 2026-10-16; see "QUILL's own Office readers") | Born-digital DOCX/DOCM/DOC, PPTX/PPT, XLSX/XLSM/XLS, ODT/ODS/ODP, HTML, EPUB, CSV. MarkItDown is offered only DOCX, PPTX, XLSX, XLS, HTML, EPUB and CSV (it has no OpenDocument or .doc/.ppt reader); any exception from it, including the magika/onnxruntime `ImportError` of a shipped build, falls through | Free, local, no upload |
 | 1 (PDF) | QUILL's PDF reader (`quill/io/pdf.py`: pdfplumber, then pypdf; bundled) via `convert_pdf_text_layer` | PDFs with a text layer. Never MarkItDown: the shared runtime freezes it in but excludes `onnxruntime`, so it cannot import in a shipped build (2026-10-15) | Free, local, no upload |
 | 2 | Local Tesseract OCR (`quill/io/tesseract_ocr.py`) | Images (PNG/JPG/TIFF/BMP/GIF/WebP) and image-based PDFs; CPU-only, no GPU | Free, local, no upload |
 | 2 (Windows) | Windows OCR (`Windows.Media.Ocr` via the frozen-in `winrt` packages; `quill/io/docconvert_windows.py`, 2026-10-15) | The same pages, when Tesseract is not installed: no download. Reports no confidence, so nothing is flagged weak. A build without `winrt` answers a sentence, never an ImportError | Free, local, no upload |
@@ -15037,6 +15037,97 @@ flat line per paragraph, headings/lists/tables discarded. `python-docx` is a
 direct `w:numPr` numbering, tables as GFM) with the XML walk kept as the last
 resort (`read_docx_xml_text`). The read chain is therefore: MarkItDown when
 present → python-docx → raw XML.
+
+### QUILL's own Office readers (todo P1 4b, shipped 2026-10-16)
+
+**The defect.** Import / Convert Document sent every Word, Excel and
+PowerPoint file to MarkItDown, and in a shipped build MarkItDown cannot import:
+the shared QuillVille runtime freezes `markitdown` and `magika` in but excludes
+`onnxruntime`, which magika imports at module top. Every Office import failed
+with "The free local converter (MarkItDown) is not installed", pointing at the
+"PDF and Office text extraction" download — which could not help, because the
+frozen copy shadows the downloaded one and `find_spec('markitdown')` keeps
+answering "installed". The same runtime excludes `lxml`, so python-docx cannot
+import there either, and File > Open fell to the flat paragraph walk for Word.
+PDFs were fixed first (`convert_pdf_text_layer`, 2026-10-15).
+
+**The decision (Jeff, 2026-10-16): Office files get a path that needs no
+MarkItDown.** `quill/io/office_text.py` is the one entry point:
+
+- `read_office_text(path)` never touches MarkItDown. Word: python-docx when it
+  imports, else `office_word.read_docx_xml` (body order; heading levels from the
+  style *name* looked up in `styles.xml`, `Title`/`Subtitle`, or direct
+  `w:outlineLvl`; list items and levels from `w:numPr`, bullets vs numbers from
+  `numbering.xml`; tables as GFM with pipe escaping; `w:br` as a backslash hard
+  break; `wp:docPr/@descr` as `[Image: ...]`; `mc:Fallback` skipped so drawings
+  are not read twice; `w:delText` and field codes never read). Excel: openpyxl
+  (read-only, cached values) else `office_sheets` over the workbook XML (shared
+  and inline strings, booleans, and dates recognised from `cellXfs` number
+  formats, built-in 14–22 and 45–47 or a custom code with d/m/y/h/s outside
+  quotes). PowerPoint: `office_slides` in presentation order
+  (`ppt/presentation.xml` `sldIdLst` through its rels, file-number order only
+  as a fallback), `# Slide N: Title`, bullets by `lvl`, tables under
+  `## Tables`, picture `descr`, hidden slides marked, speaker notes under
+  `## Notes` (the notes page's slide-image and number placeholders skipped).
+  OpenDocument `.odt`/`.ods`/`.odp` from `content.xml`, with
+  `number-rows-repeated`/`number-columns-repeated` honoured only for cells that
+  hold something (a blank repeated 1,048,570 times is "nothing more").
+- `read_office_text_preferring_markitdown(path)` tries MarkItDown for the
+  formats it reads and falls back on **any** exception or an empty result; the
+  reason (the root `ImportError` text, e.g. "No module named 'onnxruntime'") is
+  kept as `markitdown_failure` for provenance, never shown as the error.
+  Nothing consults `find_spec`.
+- Legacy `.doc`/`.xls`/`.ppt`: LibreOffice converts a temporary copy (now found
+  in `%ProgramFiles%\LibreOffice\program` on Windows as well as on PATH and
+  in the macOS app bundle) and the copy is read as above, recorded as
+  `conversion_engine: libreoffice`; without LibreOffice,
+  `LegacyOfficeFormatError` (`QUILL-IO-OFFICE-LEGACY`) carries one paragraph
+  naming the Save As type that fixes it ("Word Document (.docx)") and
+  libreoffice.org. MarkItDown is no longer asked for `.doc`/`.ppt`; it has no
+  reader for them.
+- An OLE compound file under an OOXML name is reported as password-protected
+  (with **File > Info** as the fix); a broken zip or XML as damaged. Both are
+  `OfficeReadError` (`QUILL-IO-OFFICE-UNREADABLE`), whose `.sentence` is what
+  the user hears.
+- Bounds (PERF-11): 2,000 rows × 50 columns per sheet, up from 50 × 20; a
+  sheet cut short adds a note to `extraction_notes`, which the open
+  announcement mentions and the Document Intake Report names.
+
+**Provenance.** `OfficeText.metadata()` gives `engine` (`markitdown`,
+`python-docx`, `word-xml`, `openpyxl`, `sheet-xml`, `slide-xml`, `odf-xml`),
+`reader` in words ("QUILL's own Excel reader", ", after LibreOffice converted
+it"), `units` ("2 sheets"), `conversion_engine`, `extraction_notes` and
+`markitdown_failure`. `build_intake_summary` says "read by <reader>. <units>"
+instead of an engine name, and `build_intake_report` lists all of it.
+Import / Convert records the new `TIER_OWN_READER` ("own-reader") with
+`ConversionOutcome.engine/reader/units`, announces "Opened X as editable text,
+read by QUILL's own Excel reader. 2 sheets. Nothing was uploaded.", and lists
+the reader in Review Last OCR Result. The `extraction_pack_missing` hint is now
+stamped only for a PDF or an `.xls` nothing could read; a good Office read no
+longer points at a download.
+
+**Every entry point.** Import / Convert Document (`docconvert.convert_born_digital`,
+which also gives HTML/EPUB/CSV the same fallback through `read_markup_text`),
+File > Open and the watch folder (`structured.read_structured_document`, Word
+behind the Pandoc preference), Convert File's MarkItDown engine
+(`markitdown_or_own_reader`, which names the stand-in reader in the
+announcement and reads a PDF with QUILL's PDF reader), the AI Action Builder's
+reference files, and `.pages` Route B (which also looked for a
+`converted.docx` LibreOffice never writes; it now reads `<stem>.docx`).
+QUILL Lite had no MarkItDown entry point; it decoded a `.docx` as Latin-1. It
+now opens exactly QUILL's File > Open Office set
+(`open_prepare.OFFICE_OPEN_SUFFIXES` ⊆ `open_read.OFFICE_STREAM_SUFFIXES`,
+asserted) through the same reader on its worker, and refuses to save over
+them (`is_read_only_source`), since it cannot write a real `.docx`.
+
+**Tests.** `tests/corpus/office/build_office_corpus.py` writes the fixtures
+(python-docx, openpyxl, python-pptx; ODF by hand; two OLE-magic stand-ins);
+`tests/unit/io/test_office_corpus.py` reads them through both reader tiers and
+simulates the shipped build (`onnxruntime` blocked so `import markitdown`
+fails, `find_spec` patched to say "installed") through Import / Convert,
+File > Open, Convert File and the intake report;
+`tests/unit/apps/test_lite_office.py` covers QUILL Lite with its excluded
+packages blocked.
 
 **Packaging: the lean half ships, the heavy half stays optional.** Bundling
 the whole `pdf-ocr` extra was measured, not assumed: MarkItDown hard-requires

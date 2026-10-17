@@ -1334,16 +1334,77 @@ EPUB books get the navigator and reading chapter by chapter.
 
 #### PowerPoint (.pptx and .ppt)
 
-QUILL keeps a presentation's structure when it brings it in. Slide titles become
-headings, bullets become nested list items, tables become text tables you can
-Tab through, and speaker notes come along when there are any.
+QUILL keeps a presentation's structure when it brings it in. Every slide starts
+with its own heading, "Slide 3: Quarterly results" (just "Slide 3" when the
+slide has no title), so **Next Heading** (`Ctrl+Alt+H`) moves one slide at a
+time and you hear the slide number before the title. Under each heading:
+
+- the slide's bullets, as list items indented by their level;
+- any tables, under a **Tables** heading, as text tables you can Tab through;
+- the description of each picture, as "[Image: ...]", when the author wrote one;
+- the speaker notes, under a **Notes** heading.
+
+Slides arrive in the order the presentation shows them, even when they were
+rearranged in PowerPoint. A hidden slide is included and says "(hidden slide)"
+after its title, because its words are still the author's.
 
 #### Excel-style spreadsheets (.xlsx and .xls)
 
-Spreadsheets come in as text, with their structure kept. QUILL lays each sheet
-out as readable table text, so you can look through the content quickly. If
-optional converters are installed, older and mixed-format files come through
-better.
+Spreadsheets come in as text, with their structure kept. Each sheet starts with
+its own heading, "Sheet: Budget", so **Next Heading** (`Ctrl+Alt+H`) moves
+sheet by sheet. The cells follow as a text table whose first row is the header
+row. Numbers read the way you would say them (950, not 950.0), true and false
+as TRUE and FALSE, and dates as dates (2026-11-01, not the number Excel stores).
+A formula shows the result Excel last calculated. Blank rows are left out.
+
+So that a huge workbook cannot freeze QUILL, each sheet is read up to 2,000
+rows and 50 columns. When a sheet is bigger, QUILL opens what fits and says so
+as the file opens ("part of it was too large and was cut short"), and the
+**Document Intake Report** names the sheet.
+
+#### Office files QUILL reads by itself
+
+QUILL reads Word, Excel, PowerPoint and OpenDocument files with its own
+built-in readers. Nothing has to be downloaded first, and nothing is uploaded.
+Where the optional MarkItDown converter can run on your computer, QUILL asks it
+first; where it cannot (the installed apps leave out a part it needs), QUILL's
+own reader does the job and never tells you to install anything.
+
+| Format | How to open it | What comes through |
+| --- | --- | --- |
+| Word (.docx, .docm) | **File > Open** (`Ctrl+O`) or **Import / Convert Document** | Headings, bulleted and numbered lists with their levels, tables, line breaks, picture descriptions |
+| OpenDocument text (.odt) | **File > Open** or **Import / Convert Document** | Headings, nested lists, tables, line breaks |
+| Excel (.xlsx) | **File > Open** or **Import / Convert Document** | One heading per sheet; each sheet as a table |
+| Excel with macros (.xlsm), OpenDocument spreadsheet (.ods) | **Import / Convert Document** | The same |
+| PowerPoint (.pptx) | **File > Open** or **Import / Convert Document** | One heading per slide; bullets, tables, picture descriptions, speaker notes |
+| OpenDocument presentation (.odp) | **Import / Convert Document** | The same |
+| Word, Excel or PowerPoint 97-2003 (.doc, .xls, .ppt) | Either, when LibreOffice is installed | Whatever LibreOffice carries into the newer format, then as above |
+
+What does not come through: bold, italic, fonts and colours; headers and
+footers; footnotes and comments; charts and SmartArt; and pictures themselves
+(only the descriptions their authors wrote). A macro is never run.
+
+**An example.** Press `Ctrl+O` and open `Budget.xlsx`. QUILL says it opened the
+file, "read by QUILL's own Excel reader", and that it has 2 sheets. The
+document starts at "Sheet: Budget". Press `Ctrl+Alt+H` and you are on
+"Sheet: Notes". Open the same file with **File > Import > Import / Convert
+Document (OCR)...** instead and it opens in a new, unsaved tab, and QUILL says
+"Opened Budget.xlsx as editable text, read by QUILL's own Excel reader.
+2 sheets. Nothing was uploaded."
+
+**Older Office files (.doc, .xls, .ppt).** QUILL has no reader of its own for
+the Office 97-2003 formats. When LibreOffice (free, from libreoffice.org) is
+installed, QUILL asks it to make a temporary copy in the newer format and reads
+that; your file is not changed. When LibreOffice is not installed, QUILL tells
+you what to do instead: open the file in Word, Excel or PowerPoint (or in
+LibreOffice), choose **File > Save As**, pick the newer type (for example
+"Word Document (.docx)"), and open that copy.
+
+**Files QUILL cannot read.** A password-protected Word, Excel or PowerPoint file
+is named as password-protected, with the fix: remove the password in the
+program that made it (**File > Info**), save, and try again. A damaged file is
+named as damaged, with the advice to open it in the program that made it and
+save it again.
 
 #### PDF and OCR-derived text
 
@@ -1460,7 +1521,9 @@ when they don't.
 
 - **Word document reading engine** (**Settings > Editing**) decides how a
   `.docx` becomes editable text when you open it. **Auto** (the default) tries
-  MarkItDown first and falls back to a plain extract. **MarkItDown** is fast and
+  MarkItDown first and, when MarkItDown cannot run on this computer, uses
+  QUILL's own Word reader, which keeps headings, lists and tables just the
+  same. **MarkItDown** is fast and
   reliable: headings, lists and tables come through, but images, comments and
   fonts do not. **Pandoc** keeps more of the structure, so footnotes and complex
   tables come through better. It needs Pandoc installed. If Pandoc is missing,
@@ -1478,7 +1541,10 @@ when they don't.
   before you convert. MarkItDown only works when the source is Word, PowerPoint,
   Excel or PDF and the result is Markdown or plain text. If you choose it for
   anything else, QUILL says so and offers Pandoc. It never swaps in an engine
-  you did not pick.
+  you did not pick. If MarkItDown itself cannot run on this computer, QUILL's
+  own reader converts the file instead and the announcement says so, for
+  example "Converted to report.md. MarkItDown could not run here, so QUILL's
+  own Word reader read the file instead."
 
 ### Import and Export
 
@@ -1660,9 +1726,16 @@ without your say-so.
 
 Here is how a conversion goes:
 
-1. **The free local converter runs first.** Word, PowerPoint, Excel, HTML, EPUB,
-   and PDFs that already contain text convert straight away on your computer and
-   open as clean, editable text. No account, no key, no upload and no cost.
+1. **The file's own text is read first.** Word, Excel, PowerPoint,
+   OpenDocument, HTML, EPUB, CSV, and PDFs that already contain text convert
+   straight away on your computer and open as clean, editable text in a new
+   tab. No account, no key, no upload, no cost, and nothing to download: QUILL
+   has its own reader for every one of these (see "Office files QUILL reads by
+   itself"). Where the optional MarkItDown converter can run, QUILL asks it
+   first; where it cannot, QUILL's own reader steps in. Either way QUILL says
+   who read the file and what it found, for example "Opened Budget.xlsx as
+   editable text, read by QUILL's own Excel reader. 2 sheets. Nothing was
+   uploaded." **Review Last OCR Result...** lists the same facts afterwards.
    A PDF is read by the same PDF reader **File > Open** uses, so its pages come
    through with their page breaks, and QUILL tells you how many pages it read.
 2. **A scanned document is noticed, not dumped on you.** If a PDF comes back
@@ -1690,6 +1763,14 @@ instead of claiming it is scanned. The installed apps come with a PDF reader, so
 this only happens with a pip or source install. A *password-protected* PDF is
 handled separately, as described next: Import / Convert Document tells you to
 open it with **File > Open**, which asks for the password.
+
+Office files get the same kind of plain message. A password-protected Word,
+Excel or PowerPoint file is named as password-protected, with the fix. An Office
+97-2003 file (.doc, .xls or .ppt) is read through LibreOffice when it is
+installed; when it is not, QUILL tells you to save it in the newer format from
+Word, Excel, PowerPoint or LibreOffice and import that copy. Earlier versions
+said "MarkItDown is not installed" for every Office file in the installed app,
+and the download it pointed to could not fix it. That message is gone.
 
 #### Opening a scanned PDF with File > Open
 
@@ -9565,10 +9646,13 @@ travels with you on the drive.
 The list puts the most important first:
 
 - **Pandoc**: document conversion for Word, ODT, EPUB and RTF.
-- **PDF and Office text extraction** (MarkItDown, pdfplumber and pypdf): lets
-  Import read the text out of Word, PowerPoint, Excel and PDF documents
-  without Pandoc or LibreOffice. Scanned or image-only PDFs still need
-  **File > Import > OCR** either way.
+- **PDF and Office text extraction** (MarkItDown, pdfplumber and pypdf): an
+  optional second reader for Word, PowerPoint, Excel and PDF documents. You do
+  not need it: QUILL reads all of these with its own readers. Where MarkItDown
+  can run, File > Open and Import / Convert Document try it first. In some
+  builds it cannot run at all (it needs a part the installer leaves out), and
+  then QUILL's own readers do the work and nothing asks you to download it.
+  Scanned or image-only PDFs still need **File > Import > OCR** either way.
 - The **braille translation pack**: liblouis tables and BRF profiles for the
   Translation submenu and for BRF and embossing export.
 - **Dictation (offline speech)**: a guided setup covering Whisper.cpp, Faster
@@ -12920,7 +13004,10 @@ writes a heading such as "PDF Extract", or the name of the engine, into the
 file you are reading. Everything about *how* it was read (format, engine,
 pages, quality score, which reader each PDF page's text came from, and the
 pages that may read poorly, with the reason for each) is in the **Document
-Intake Report**, and the short version is announced when the file opens.
+Intake Report**, and the short version is announced when the file opens. For a
+Word, Excel or PowerPoint file the report also says which reader read it, how
+many sheets or slides it has, which sheet was cut short if one was, and, when
+MarkItDown was tried and could not run, why.
 
 #### Shell Integration
 

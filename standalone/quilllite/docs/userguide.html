@@ -1336,7 +1336,69 @@ says it cannot save that kind of file, and asks you to choose
 another.</p>
 <p>To make a real PDF, print to <strong>Microsoft Print to PDF</strong>
 instead (see <a href="#printing">Printing</a>).</p>
-<h3 id="saving-1">Saving</h3>
+<h3 id="opening-word-excel-and-powerpoint-files">Opening Word, Excel and
+PowerPoint files</h3>
+<p>QUILL Lite opens Word, Excel and PowerPoint files as their
+<strong>text</strong>, the same way it opens a PDF. Press
+<strong>Ctrl+O</strong>, and in the file type list choose “Word, Excel
+and PowerPoint, opened as text”, or just pick the file from “All
+supported files”. You can also drag one onto the window, or open it from
+Recent Documents. Nothing is downloaded first, and nothing is uploaded:
+QUILL Lite uses the same readers as QUILL.</p>
+<p>It opens these kinds of file:</p>
+<ul>
+<li>Word documents: <code>.docx</code> and <code>.docm</code> (a macro
+is never run)</li>
+<li>Excel workbooks: <code>.xlsx</code></li>
+<li>PowerPoint presentations: <code>.pptx</code></li>
+<li>OpenDocument text, from LibreOffice Writer: <code>.odt</code></li>
+<li>The older Office 97-2003 files, <code>.doc</code>, <code>.xls</code>
+and <code>.ppt</code>, when LibreOffice is installed (see below)</li>
+</ul>
+<h4 id="what-comes-through-and-what-does-not-1">What comes through, and
+what does not</h4>
+<ul>
+<li><strong>Word and OpenDocument text:</strong> each heading keeps its
+own line, marked with <code>#</code> signs the way Markdown marks one
+(<code>##</code> for a level 2 heading); bulleted and numbered lists
+keep their levels; tables become text tables; a line break inside a
+paragraph stays a line break; a picture comes through as its
+description, “[Image: …]”, when the author wrote one.</li>
+<li><strong>Excel:</strong> each sheet starts with a heading, “Sheet:
+Budget”, and its cells follow as a text table whose first row is the
+header row. Dates read as dates and numbers as you would say them. A
+very large sheet is read up to 2,000 rows and 50 columns.</li>
+<li><strong>PowerPoint:</strong> each slide starts with a heading,
+“Slide 2: Figures”, in the order the presentation shows them. The
+bullets come next, then any tables, then the speaker notes under
+“Notes”.</li>
+</ul>
+<p>Bold, italic, fonts and colours do not come through, and nor do
+headers, footers, footnotes, comments, charts or the pictures
+themselves.</p>
+<p>For example, open <code>Budget.xlsx</code>. The document starts at
+“Sheet: Budget”, with the budget’s rows under it, and the next sheet’s
+heading, “Sheet: Notes”, follows the last row.</p>
+<h4 id="older-files-and-files-that-will-not-open">Older files and files
+that will not open</h4>
+<p>QUILL Lite cannot read the Office 97-2003 formats by itself. If
+LibreOffice (free, from libreoffice.org) is installed, QUILL Lite has it
+make a temporary copy in the newer format and opens that; your file is
+not changed. If it is not installed, QUILL Lite says it could not open
+the file and tells you what to do: open it in Word, Excel or PowerPoint
+(or LibreOffice), choose <strong>File &gt; Save As</strong>, pick the
+newer type, such as “Word Document (.docx)”, and open that copy.</p>
+<p>A password-protected file is named as password-protected: remove the
+password in the program that made it, save, and open it again. A damaged
+file is named as damaged.</p>
+<h4 id="saving-1">Saving</h4>
+<p>QUILL Lite cannot write a real Word, Excel or PowerPoint file, so it
+never saves over one. Press <strong>Ctrl+S</strong> and QUILL Lite tells
+you why, then opens <strong>Save As</strong> with the same name ending
+in <code>.txt</code>. Choose text, Markdown or rich text and press
+<strong>Enter</strong>. If you want the result back in Word, save it as
+rich text: Word opens a rich text file properly.</p>
+<h3 id="saving-2">Saving</h3>
 <p><strong>Ctrl+S</strong> saves. <strong>Ctrl+Shift+S</strong> saves
 under a new name.</p>
 <p>QUILL Lite makes you one promise: <strong>open a file, change

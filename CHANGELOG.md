@@ -2,6 +2,66 @@
 
 ## 1.0.0
 
+### Office files import without MarkItDown (todo P1 4b, 2026-10-16)
+
+Jeff's decision: "Give Office files a fallback that needs no MarkItDown." In a
+shipped build every Word, Excel and PowerPoint import failed with "The free
+local converter (MarkItDown) is not installed": the QuillVille runtime freezes
+markitdown and magika in but excludes onnxruntime, so `import markitdown`
+raises inside magika, and the "PDF and Office text extraction" download could
+not fix it because the frozen copy shadows it and `find_spec` still says
+installed. PDFs were already off MarkItDown (2026-10-15).
+
+- **New `quill/io/office_text.py`** (wx-free, strict-typed), with the readers
+  split into `office_word.py` (Word and ODT XML), `office_sheets.py` (openpyxl,
+  else the workbook XML; ODS) and `office_slides.py` (PPTX and ODP; the slide
+  code moved out of `structured.py`). Everything falls back to the standard
+  library, because the shared runtime also excludes lxml (so python-docx cannot
+  import there) and QUILL Lite excludes docx, pptx, openpyxl and markitdown.
+  `read_office_text` never uses MarkItDown; `read_office_text_preferring_markitdown`
+  tries it for DOCX/PPTX/XLSX/XLS/HTML/EPUB/CSV and falls back on *any*
+  exception or an empty result, keeping the reason as `markitdown_failure`.
+  Nothing consults `find_spec`.
+- **Kept:** headings (style names from `styles.xml`, `Title`, `outlineLvl`),
+  bulleted vs numbered list items and levels (`numbering.xml`), tables as GFM
+  with `|` escaped, hard breaks, picture descriptions as `[Image: ...]`,
+  `## Sheet: <name>` per sheet, `# Slide N: <title>` per slide in presentation
+  order with `## Tables` and `## Notes`, hidden slides marked. Dates in the XML
+  sheet reader come from the cell's number format. **Not kept:** run
+  formatting, headers/footers, footnotes, comments, charts, SmartArt.
+- **Legacy `.doc`/`.xls`/`.ppt`:** LibreOffice converts a temporary copy when
+  installed (`libreoffice_executable` now also looks in
+  `%ProgramFiles%\LibreOffice\program`); otherwise `LegacyOfficeFormatError`
+  (`QUILL-IO-OFFICE-LEGACY`) names the Save As type and libreoffice.org.
+  Password-protected (OLE magic under an OOXML name) and damaged files raise
+  `OfficeReadError` (`QUILL-IO-OFFICE-UNREADABLE`) with a sentence.
+- **Entry points:** `docconvert.convert_born_digital` (new `TIER_OWN_READER`,
+  `ConversionOutcome.engine/reader/units`; HTML/EPUB/CSV fall back through
+  `read_markup_text`; `.docm`/`.xlsm` added to the import list);
+  `structured.read_structured_document` (File > Open and the watch folder;
+  764 -> 302 lines, budget ratcheted); Convert File's MarkItDown engine
+  (`markitdown_or_own_reader`, announcement names the stand-in); the AI Action
+  Builder's reference files; `.pages` Route B, which also looked for a
+  `converted.docx` LibreOffice never writes.
+- **Announcements and intake:** Import / Convert says "Opened X as editable
+  text, read by QUILL's own Excel reader. 2 sheets. Nothing was uploaded.";
+  the open summary says "read by <reader>" instead of an engine id;
+  the Document Intake Report adds Read by, Contents, MarkItDown not used (why)
+  and per-sheet truncation notes. `extraction_pack_missing` is stamped only for
+  a PDF or an unreadable `.xls`.
+- **Spreadsheet bounds** (PERF-11) are 2,000 rows by 50 columns per sheet, up
+  from 50 by 20, and a sheet cut short now says so.
+- **QUILL Lite** opens `.docx/.docm/.doc/.odt/.xlsx/.xls/.pptx/.ppt` as text
+  through the same reader (exactly QUILL's File > Open set, asserted), on the
+  worker, and refuses Save over them; it used to show a `.docx`'s zip bytes.
+- The OCR and Conversion Services page text moved to
+  `quill/core/docconvert_services.py` and now describes the built-in readers.
+- Tests: `tests/corpus/office/build_office_corpus.py` and its eight fixtures;
+  `tests/unit/io/test_office_corpus.py` (both reader tiers, and the shipped
+  build simulated with onnxruntime blocked and `find_spec` saying installed);
+  `tests/unit/apps/test_lite_office.py`. Docs: both user guides, PRD
+  ("QUILL's own Office readers", section 5.93.1), both changelogs.
+
 ### Dictation: self-repair, named styles, learning from corrections, and opt-in polish (D-20, D-21, 2026-10-16)
 
 dict.md section 4, "Polish", "Learn" and "Modes". Design record section 28.
