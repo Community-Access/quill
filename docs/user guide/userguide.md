@@ -1725,14 +1725,77 @@ password (they only restrict permissions) open with no question, as before.
 If a PDF has an outline, the chapters and sections you would see in Adobe
 Reader's bookmarks pane, QUILL adds those entries to its own
 bookmark list (**List Named Bookmarks...**, `Alt+Shift+G`) when you open the file, as it does for
-Word and EPUB structure. Each bookmark takes you exactly where **Go To Page**
-for that page would. This happens once, the first time you open the PDF. If you
+Word and EPUB structure. Each bookmark takes you to its title on its page: if
+"Chapter 2" starts halfway down page 14, the bookmark lands on "Chapter 2", not
+on the top of the page. When QUILL cannot find the title at the start of a line
+on that page, the bookmark goes to the top of the page instead. Two entries
+with the same title, such as a "Summary" in every chapter, stay two bookmarks
+("Summary" and "Summary (2)"), each at its own place. This happens once, the
+first time you open the PDF. If you already have bookmarks in the file, or you
 later rename or delete some of those bookmarks, opening the file again will not
-bring them back or make duplicates. A PDF with no outline opens as usual.
+change them, bring them back or make duplicates. A PDF with no outline opens as
+usual.
 
 The outline is also in **Go To** (`Ctrl+G`), as its own **Outline** choice.
-Each entry says its title and its page, such as "Chapter 2, page 14", and it
-always takes you to that page, even after you have edited the text above it.
+Each entry says its title and its page, such as "Chapter 2, page 14". An entry
+that sits inside another says its level too, such as "Summary, level 3, page
+15", so you can hear the outline's shape. The level is only a description: it
+does not turn the line into a heading. An entry always takes you to its title
+on that page, even after you have edited the text above it.
+
+#### How QUILL chooses the text of each page
+
+A PDF can be read more than one way, and the ways do not always agree. One
+reader may spell a widely spaced line out a letter at a time ("W i d e l e t t
+e r s"), while another reads it as words; one may run two columns together line
+by line, while another reads down the first column and then the second. QUILL
+does not simply take the first answer it gets. It decides **page by page**:
+
+1. **The usual reader goes first.** For most pages its text is clean, and QUILL
+   keeps it straight away, so an ordinary PDF opens as quickly as it always did.
+2. **A doubtful page gets a second and third look.** If the first reading has
+   signs of trouble (letters one at a time, words run together, characters that
+   cannot be read, a line of text per word), or the page looks as if it is set
+   in two columns, QUILL reads that page again in two other ways and keeps
+   whichever reads best.
+3. **"Reads best" means fewest problems, not most text.** QUILL counts what a
+   listener would trip over: characters it could not read, words broken into
+   single letters, words glued together, one word per line, part of the page
+   missing, and columns read across instead of down. A short title page, a page
+   of figures, or a page in Greek or Japanese is not marked down for being
+   short or for not being English.
+
+The repairs described below run on every reading, and QUILL compares the
+readings both before and after repair, so a repair that would make a page worse
+is not used on it.
+
+**What you hear when a page is doubtful.** When the PDF opens, QUILL names the
+pages that may still read poorly, for example: "Opened report.pdf. 12 pages.
+extracted by pdfplumber + pypdf. quality 81/100. Pages 3 and 7 may read
+poorly." A page is named when it still reads badly in
+every way QUILL tried, when it holds characters QUILL could not read, or when it
+is only a picture (a scanned page inside an otherwise ordinary PDF). A blank
+page is never named: there is nothing on it to miss. The **Document Intake
+Report** lists those pages with the reason for each, such as "Page 7: 2
+characters could not be read", and says which reader's text each page uses.
+
+**What QUILL does not do.** It does not guess. A character that the PDF's own
+font gave no meaning to is left in the text, rather than deleted or swapped for
+a letter that might be wrong; the page is named instead, so you know to check
+it. QUILL does not turn anything into headings, tables or other structure: a
+heading stays a line of text, and a row of a table stays a line with its numbers
+in order. Nothing is uploaded, and OCR never runs unless you say yes (see
+"Opening a scanned PDF with File > Open", above).
+The optional MarkItDown converter, if you have it, is only asked about a PDF
+that still reads poorly, and its text is used for a page only when it keeps the
+PDF's pages and reads clearly better. The PDF itself is never changed.
+
+**Limits.** QUILL reads the first 200 pages of a very long PDF and says so.
+Columns are only put in order when the gap between them is clear; a page with
+three columns, or columns that run around pictures, can still come out mixed.
+Tables come through as lines of text, and pictures do not come through at all.
+The same rules apply in File > Open, Import / Convert Document, Document Q&A,
+and in QUILL Lite.
 
 #### The text from a PDF is repaired before you read it
 
@@ -1745,22 +1808,34 @@ it opens the file, page by page:
   with a hyphen at the end of a line, so "inter-" on one line and "national" on
   the next would be read as two words, and a search for "international" found
   nothing. QUILL joins them. A hyphen that belongs to the word stays:
-  **Anglo-Saxon** and **2018-2019** are left exactly as written.
+  **Anglo-Saxon**, **2018-2019** and an identifier such as **ISBN-** are left
+  exactly as written, and a word that is always hyphenated, such as "self-" at
+  the end of one line and "aware" on the next, becomes **self-aware**.
 - **Paragraphs are put back together.** Every printed line arrives as its own
   line of text, so speech would stop at the edge of the page instead of the end
   of the sentence, and moving to the next paragraph moved one printed line.
   QUILL joins lines that were only broken because the page ran out of room.
-  Blank lines, list items, headings, short deliberate lines and finished
-  sentences keep their breaks, so lists stay lists and paragraphs stay separate.
+  Blank lines, list items (including "a)" and "iv." items), headings, short
+  deliberate lines and finished sentences keep their breaks, so lists stay lists
+  and paragraphs stay separate. A heading such as "CHAPTER TWO" or "2.1
+  Methods" under a long line of text stays on its own line instead of being
+  swallowed into the paragraph, and so do address lines, rows set out in
+  columns, and rows of figures, so two long rows of a table stay two rows.
 - **Spaced-out headings are closed up.** A designer's letter-spaced title comes
   through as "C H A P T E R  O N E", which a screen reader spells one letter at
   a time and a search never matches. It becomes "CHAPTER ONE". Ordinary text is
-  left alone: a line such as "A B testing" is not a heading and is not touched.
+  left alone: a line such as "A B testing" is not a heading and is not touched,
+  and a whole sentence spaced out with no gaps between its words is not closed
+  up into one long word (QUILL looks for a better reading of that page
+  instead).
 - **Missing joined letters are restored.** The joined "fi", "fl" and "ff" shapes
   a typesetter uses are often stored as characters that mean nothing outside the
   document's own font, so a screen reader reads *nothing* where they were, and
-  "office" is announced as "o ce". QUILL turns them back into letters, and
-  removes any leftover meaningless character so speech doesn't stumble over it.
+  "office" is announced as "o ce". QUILL turns them back into letters where
+  they sit inside a word. Any other character with no meaning is **kept**, not
+  deleted: deleting it could quietly change what the page says (a font that
+  stored its "x" that way would turn "next box" into "net bo"). Instead QUILL
+  names the page as one that may read poorly, so you know to check it.
 
 These repairs are careful. When a case could go either way, QUILL leaves the
 text as it found it, and a PDF whose text is already clean comes through
@@ -12628,7 +12703,8 @@ need manual cleanup?
 An imported document opens with its own text and nothing else. QUILL never
 writes a heading such as "PDF Extract", or the name of the engine, into the
 file you are reading. Everything about *how* it was read (format, engine,
-pages, quality score, and any low-confidence warning) is in the **Document
+pages, quality score, which reader each PDF page's text came from, and the
+pages that may read poorly, with the reason for each) is in the **Document
 Intake Report**, and the short version is announced when the file opens.
 
 #### Shell Integration

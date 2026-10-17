@@ -12,7 +12,14 @@ that is already clean, so each heuristic refuses to act unless the damage is
 unambiguous, and running the pipeline twice produces the same result as running
 it once. When a case is genuinely ambiguous the rule is to leave the text alone
 -- a missed repair is a small annoyance, but a wrong "repair" silently changes
-what the document says.
+what the document says. Numbers, identifiers and hyphens that are spelling are
+never altered, and nothing here creates structure: a heading or a table row is
+protected as a line of text, never turned into a heading level or a cell.
+
+The reader scores every page before and after these repairs
+(:mod:`quill.io.pdf_select`) and keeps the unrepaired text when a repair would
+make it read worse, so a heuristic that misfires on some unusual page cannot
+silently win.
 
 The module is pure text in / text out: no wx, no I/O, no new dependencies.
 """
@@ -26,9 +33,9 @@ import re
 # The Unicode Private Use Area. Codepoints here have no agreed meaning: what
 # they render as depends entirely on the font the PDF embedded, so once the text
 # is extracted the glyph is gone and only an unassigned codepoint remains. A
-# screen reader announces nothing (or "unknown character") for these.
-_PUA_FIRST = "\ue000"
-_PUA_LAST = "\uf8ff"
+# screen reader announces nothing (or "unknown character") for these. Only the
+# ligature slots below are ever rewritten; every other one is kept, and the
+# readability score (quill.io.pdf_score) counts it against the page.
 
 # Ligature codepoints seen in the private-use runs of subsetted PDF fonts. Two
 # layouts dominate: the Adobe/Type-1 style run that starts at U+F000, and the
@@ -69,25 +76,35 @@ _UNICODE_LIGATURES = {
 
 
 def repair_private_use_glyphs(text: str) -> str:
-    """Turn private-use ligature codepoints back into letters; drop the rest.
+    """Turn private-use ligature codepoints inside words back into letters.
 
     The "fi" in an extracted PDF is often not U+FB01 but a private-use codepoint
-    such as U+F001, which reads as silence. Known ligature slots are expanded to
-    their letters (ff, fi, fl, ffi, ffl, ft, st, th); any other private-use
-    character is removed, because an unmapped one carries no recoverable meaning
-    and only adds noise to speech and search.
+    such as U+F001, which reads as silence. A known ligature slot (ff, fi, fl,
+    ffi, ffl, ft, st, th) is expanded only where it touches a letter -- inside or
+    at the edge of a word, which is the only place a ligature can be. Anywhere
+    else the same codepoint could be any glyph the font chose to put there, so
+    it is left exactly as it is.
+
+    Every other private-use character is **kept**. Its meaning depended on the
+    font and did not survive extraction; deleting it silently changes what the
+    page says ("next box" became "net bo" when a font put its "x" there), and
+    guessing a font-specific mapping is worse. Kept, it lowers the page's
+    readability score (:mod:`quill.io.pdf_score`), so the reader can say the
+    page may read poorly. The real Unicode ligatures (U+FB00-U+FB06) are always
+    spelled out.
     """
     if not text:
         return text
     pieces: list[str] = []
-    for character in text:
-        replacement = _PUA_LIGATURES.get(character) or _UNICODE_LIGATURES.get(character)
-        if replacement is not None:
-            pieces.append(replacement)
-        elif _PUA_FIRST <= character <= _PUA_LAST:
-            continue  # unmapped private use: no meaning survived extraction
-        else:
-            pieces.append(character)
+    last = len(text) - 1
+    for index, character in enumerate(text):
+        replacement = _UNICODE_LIGATURES.get(character)
+        if replacement is None and character in _PUA_LIGATURES:
+            before = text[index - 1] if index > 0 else ""
+            after = text[index + 1] if index < last else ""
+            if before.isalpha() or after.isalpha():
+                replacement = _PUA_LIGATURES[character]
+        pieces.append(replacement if replacement is not None else character)
     return "".join(pieces)
 
 
@@ -107,6 +124,10 @@ _SPACED_SINGLE_RATIO = 0.8
 # Two or more spaces between letter groups is how a letter-spaced heading marks
 # its word boundaries ("C H A P T E R  O N E").
 _WORD_GAP = re.compile(r"\s{2,}")
+
+# Letters closed up with no word gap to go by: beyond this length, and not in
+# capitals, the line is more likely a spaced-out sentence than one word.
+_MAX_UNGAPPED = 12
 
 
 def repair_spaced_headings(text: str) -> str:
@@ -136,6 +157,11 @@ def _collapse_spaced_line(line: str) -> str:
     if not any(token.isalpha() for token in singles):
         return line  # spaced digits are data (a table row), not a heading
     words = ["".join(group.split()) for group in _WORD_GAP.split(stripped) if group.strip()]
+    if len(words) == 1 and len(words[0]) > _MAX_UNGAPPED and not words[0].isupper():
+        # No word gaps survived extraction, so closing the letters up would run
+        # several words into one ("Helloworldfromhere"). A display heading is
+        # short or in capitals; anything else is left for the reader to compare.
+        return line
     leading = line[: len(line) - len(line.lstrip())]
     return leading + " ".join(words)
 
@@ -153,9 +179,11 @@ def dehyphenate(text: str) -> str:
     "inter-" followed by "national" becomes "international". The join only
     happens when the hyphen is almost certainly a typesetting artefact: the
     character before it is a letter, and the next line begins with a lowercase
-    letter. A hyphen after a number ("2018-"), before a capitalized word
-    ("Anglo-" / "Saxon"), or standing alone is meaningful punctuation, and is
-    kept along with its line break.
+    letter. A hyphen after a number ("2018-"), inside an identifier ("ISBN-"),
+    before a capitalized word ("Anglo-" / "Saxon"), or standing alone is
+    meaningful punctuation, and is kept along with its line break. After a
+    prefix that is always hyphenated ("self-" / "aware") the lines are joined
+    and the hyphen stays.
     """
     if not text:
         return text
@@ -165,7 +193,7 @@ def dehyphenate(text: str) -> str:
     while index < len(lines):
         current = lines[index]
         while index + 1 < len(lines) and _hyphen_continues(current, lines[index + 1]):
-            current = current.rstrip()[:-1] + lines[index + 1].lstrip()
+            current = _joined_at_hyphen(current, lines[index + 1])
             index += 1
         joined.append(current)
         index += 1
@@ -181,6 +209,10 @@ def _hyphen_continues(current: str, following: str) -> bool:
         # A digit, a space, or a second hyphen before the break: real punctuation
         # (a number range, a dash, or an em dash typed as "--"), not a split word.
         return False
+    word = stem.split()[-1] if stem.split() else stem
+    if any(character.isdigit() for character in word) or (len(word) > 1 and word.isupper()):
+        # An identifier ("ISBN-", "COVID-", "A4-"): its hyphen is part of it.
+        return False
     continuation = following.lstrip()
     if not continuation:
         return False
@@ -188,6 +220,18 @@ def _hyphen_continues(current: str, following: str) -> bool:
     # An uppercase continuation means a proper compound (Anglo-Saxon), so the
     # hyphen belongs to the text and the two halves stay as they were written.
     return first.isalpha() and first.islower()
+
+
+# Prefixes whose hyphen is spelling, not typesetting: "self-" at a line end is
+# "self-aware", never "selfaware". The line is still joined; the hyphen stays.
+_KEPT_HYPHEN_PREFIXES = frozenset({"self", "well", "ex", "all", "half", "non", "cross"})
+
+
+def _joined_at_hyphen(current: str, following: str) -> str:
+    stem = current.rstrip()[:-1]
+    word = stem.split()[-1].lower() if stem.split() else ""
+    hyphen = "-" if word in _KEPT_HYPHEN_PREFIXES else ""
+    return stem + hyphen + following.lstrip()
 
 
 # --- paragraph reflow ---------------------------------------------------------
@@ -202,8 +246,29 @@ def _hyphen_continues(current: str, following: str) -> bool:
 # paragraph) and must keep its break.
 _WRAP_WIDTH = 60
 
-# Bullets and numbered markers that start a list item.
-_LIST_ITEM = re.compile(r"^(?:[-*+•‣▪●·–—]\s+|\(?\d+[.)]\s+)")
+# Bullets and numbered or lettered markers that start a list item: "- ", "3. ",
+# "(2) ", "b) ", "(c) ", "iv. ".
+_LIST_ITEM = re.compile(
+    r"^(?:[-*+•‣▪●·–—]\s+|\(?\d+[.)]\s+|\(?[a-z][.)]\s+|\(?(?:[ivx]{1,4})[.)]\s+)"
+)
+
+# A line that names a part of the document: "Chapter 2", "Part IV", "2.1 Methods".
+# Also a street address line ("221 Baker Street"), which has the same shape.
+_NAMED_PART = re.compile(
+    r"^(?:(?:chapter|part|section|appendix|article|book|unit|lesson)\s+[\divxlc]+\b"
+    r"|\d+(?:\.\d+)*\.?\s+[A-Z])",
+    re.IGNORECASE,
+)
+_NUMBERED_START = re.compile(r"^\d+(?:\.\d+)*\.?\s+[A-Z]")
+
+# The end of a postal address: a ZIP or postcode.
+_POSTCODE_END = re.compile(r"(?:\b\d{4,5}(?:-\d{4})?|\b[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2})$")
+
+# A gap of three or more spaces inside a line: a row laid out in columns.
+_COLUMN_GAP = re.compile(r"\S {3,}\S")
+
+# The longest line still treated as a title rather than the end of a paragraph.
+_TITLE_WIDTH = 60
 
 # Sentence-ending punctuation, allowing for a closing quote or bracket after it.
 _SENTENCE_END = re.compile("[.!?…][\"'”’)\\]]*$")
@@ -214,9 +279,11 @@ def reflow_paragraphs(text: str) -> str:
 
     Each line is offered to :func:`_joins_previous_line`, which decides whether
     it continues the line above. Blank lines, list items, deliberately short
-    lines, and a finished sentence followed by a capital all stop the join, so
-    the document keeps its paragraph and list structure instead of melting into
-    one block of text.
+    lines, a finished sentence followed by a capital, a heading-like line, an
+    address line, a row laid out in columns and a second row of figures all
+    stop the join, so the document keeps its paragraph, list and row breaks
+    instead of melting into one block of text. Nothing here adds structure: a
+    heading stays a plain line, a row stays a plain line.
     """
     if not text:
         return text
@@ -245,7 +312,56 @@ def _joins_previous_line(previous: str, following: str) -> bool:
         return False  # short line: the break was intentional
     if _SENTENCE_END.search(above) and below[:1].isupper():
         return False  # a finished sentence followed by a new one
+    if _COLUMN_GAP.search(above.split("\n")[-1]) or _COLUMN_GAP.search(below):
+        return False  # a row laid out in columns keeps its own line
+    if _numeric_tail(above) and _numeric_tokens(below) >= 2:
+        return False  # two rows of figures: a table, not a wrapped sentence
+    if _looks_like_title(below) or _looks_like_address(below):
+        return False  # a heading or an address line under a long line
     return True
+
+
+def _numeric_tokens(line: str) -> int:
+    return sum(
+        1
+        for token in line.split()
+        if any(c.isdigit() for c in token) and not any(c.isalpha() for c in token)
+    )
+
+
+def _numeric_tail(line: str) -> bool:
+    tokens = line.split()
+    return bool(tokens) and _numeric_tokens(tokens[-1]) == 1
+
+
+def _looks_like_title(line: str) -> bool:
+    """A short line that reads as a heading: never the tail of a paragraph.
+
+    Capitals ("SUMMARY", "CHAPTER TWO"), a named part ("Chapter 2", "2.1
+    Methods"), or a short run of capitalized words with no closing punctuation
+    ("Results and Discussion"). Conservative by design: treating a real
+    continuation as a title only leaves a line break in place, while swallowing
+    a title into the paragraph above hides it.
+    """
+    if len(line) > _TITLE_WIDTH or line.endswith((".", ",", ";", "?", "!")):
+        return False
+    letters = [c for c in line if c.isalpha()]
+    if len(letters) >= 2 and not any(c.islower() for c in letters):
+        return True  # capitals, or a script without case: SUMMARY, CHAPTER TWO
+    if _NAMED_PART.match(line):
+        return True
+    words = line.split()
+    if not 1 <= len(words) <= 8 or not words[0][:1].isupper():
+        return False
+    significant = [w for w in words if sum(c.isalpha() for c in w) >= 4]
+    return bool(significant) and all(w[:1].isupper() for w in significant)
+
+
+def _looks_like_address(line: str) -> bool:
+    """A short line ending in a ZIP or postcode, or starting with a house number."""
+    if len(line) > 40:
+        return False
+    return bool(_POSTCODE_END.search(line) or _NUMBERED_START.match(line))
 
 
 # --- pipeline -----------------------------------------------------------------
