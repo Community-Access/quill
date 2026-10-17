@@ -41,13 +41,40 @@ ALLOWED: dict[str, str] = {
         "integration test against real windows; not run under the overnight "
         "no-real-desktop rule, so left unmigrated rather than changed blind"
     ),
+    "unit/ui/test_mac_open_file_app.py": (
+        "constructs MacOpenFileApp with wx.App.__init__ patched out, so no second "
+        "App is made: what it tests is the subclass's Python"
+    ),
     "integration/test_cast_native_transport.py": (
         "integration test that plays through a real native window; same reason"
     ),
 }
 
+
+def _app_subclasses(root: Path) -> frozenset[str]:
+    """Names of the classes under ``quill/`` that subclass ``wx.App``.
+
+    Building one is building a second App just as surely as ``wx.App()`` is:
+    ``MacOpenFileApp(False)`` in a test made one, its Destroy left none, and
+    every later window in that worker failed (CI shard 4, 2026-10-17).
+    """
+    names: set[str] = set()
+    for path in root.rglob("*.py"):
+        source = path.read_text(encoding="utf-8", errors="replace")
+        if "wx.App)" not in source and "wx.App," not in source:
+            continue
+        for node in ast.walk(ast.parse(source)):
+            if isinstance(node, ast.ClassDef) and any(
+                isinstance(base, ast.Attribute) and base.attr == "App" for base in node.bases
+            ):
+                names.add(node.name)
+    return frozenset(names)
+
+
+APP_SUBCLASSES = _app_subclasses(TESTS.parent / "quill")
+
 #: Only files that mention one of these can offend, so only they are parsed.
-_NEEDLES = (".App(", "PySimpleApp", "CallAfter")
+_NEEDLES = (".App(", "PySimpleApp", "CallAfter", *(f"{name}(" for name in APP_SUBCLASSES))
 
 
 def _wx_names(tree: ast.Module) -> set[str]:
@@ -90,6 +117,9 @@ def offences(source: str) -> list[str]:
                 and func.value.id in names
             ):
                 found.append(f"line {node.lineno}: builds its own wx.{func.attr}")
+            called = func.id if isinstance(func, ast.Name) else getattr(func, "attr", "")
+            if called in APP_SUBCLASSES:
+                found.append(f"line {node.lineno}: builds a second App ({called})")
             if (
                 isinstance(func, ast.Attribute)
                 and func.attr == "setattr"
@@ -191,3 +221,13 @@ def test_patch_call_after_is_test_scoped_and_records(monkeypatch) -> None:
     assert len(capture) == 1
     monkeypatch.undo()
     assert wx.CallAfter is original
+
+
+def test_every_app_handed_out_is_kept_alive() -> None:
+    """A wx.App's destructor clears wx's global App pointer even when a newer
+    App holds it, so an App collected late killed the live one (CI shard 4,
+    2026-10-17). shared_wx_app keeps a reference to every App it hands out."""
+    from tests import wx_session
+
+    app = wx_session.shared_wx_app()
+    assert any(kept is app for kept in wx_session._KEEP)

@@ -25,17 +25,21 @@ pytest.importorskip("wx")
 
 from quill.ui.mac_open_file_app import MacOpenFileApp  # noqa: E402
 
-#: Serialized onto one worker under ``-n --dist loadgroup``: this file uses
-#: a real MainFrame: system-wide hotkeys and the screen-reader bridges.
-#: See ``pytest_collection_modifyitems`` in ``tests/conftest.py``.
-pytestmark = pytest.mark.machine_global
-
 
 @pytest.fixture
-def app():
-    application = MacOpenFileApp(False)
-    yield application
-    application.Destroy()
+def app(monkeypatch):
+    """A MacOpenFileApp whose own ``__init__`` runs, without a second wx.App.
+
+    Everything tested here is the subclass's Python. Building it for real made
+    a second App in a process that already has one (tests/wx_session.py), and
+    its Destroy left no App at all: every later test in that worker that built
+    a window failed with "The wx.App object must be created first!" (CI shard 4,
+    2026-10-17). So wx.App's own initialiser is skipped for this one object.
+    No window, hotkey or screen-reader bridge is touched, so the file is no
+    longer ``machine_global``.
+    """
+    monkeypatch.setattr(wx.App, "__init__", lambda self, *args, **kwargs: None)
+    return MacOpenFileApp(False)
 
 
 class _FakeFrame:

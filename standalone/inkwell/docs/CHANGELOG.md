@@ -11,6 +11,17 @@
 - **Dictate Anywhere: a Markdown link by voice** (2026-10-17). "open bracket
   the guide close bracket open paren page close paren" now types
   `[the guide](page)`, with no space in the middle.
+
+- **A first run takes no system-wide keys** (2026-10-17). Started for the
+  first time on a computer, Inkwell still claimed Ctrl+Alt+Shift+K (Quick
+  Insert) and Ctrl+Alt+Shift+X (Expand Word) everywhere in Windows, although
+  both have been off by default since 5 October and other programs use those
+  keys. Now a first run registers neither. For example, a new Inkwell user
+  pressing Ctrl+Alt+Shift+X in Quill Radio gets Radio's own command, not
+  Inkwell's. To use either key, open the File menu and choose **Quick Insert
+  Key...** or **Expand Word Key...**. A key you chose yourself is never
+  changed.
+
 - **A backslash in your own phrases is kept** (2026-10-17). A phrase in My
   Words and Phrases that writes a folder or a file name, such as "my folder"
   writing `C:\new\temp`, was saved in a way that read back as `C:`, a new
