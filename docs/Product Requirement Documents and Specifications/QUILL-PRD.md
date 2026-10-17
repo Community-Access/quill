@@ -2608,7 +2608,27 @@ providers".
 >   (same single-speaker discipline as Reveal Codes). `StreamAnnouncer`
 >   enforces it and survives a misbehaving provider without double-speaking.
 >   Landed now, with tests, so the future streaming provider is built into the
->   contract rather than retrofitted.
+>   contract rather than retrofitted. **In use since 2026-10-16:** the spoken
+>   live preview feeds every streaming engine's updates (Nemotron, OpenAI,
+>   the cloud providers) through `WordAgreement`, which commits a word once
+>   two updates agree on it, and `StreamAnnouncer`, so each word is said once
+>   (dictation design record, section 31).
+
+> **Reading back more than the last phrase (D-18, 2026-10-16).** In QUILL's
+> and QUILL Lite's own documents, dictation answers "read last sentence" (the
+> sentence just before the cursor), "read last paragraph" or "read this
+> paragraph" (the paragraph the cursor is in) and "read selection" (Spanish:
+> "lee" or "leer la última frase", "el último párrafo", "la selección"), and
+> "read that" reads all of what last went in, a whole snippet included.
+> Requirements: every mark is said by its dictation name unless **Say
+> punctuation marks in the read-back** is off; nothing in the document, the
+> cursor or the selection changes, so a read-only document can be read back
+> too; an empty unit or selection says so in one sentence; in another program
+> (QUILL Transcribe, Dictate Anywhere) only "read that" works, reading the
+> session's own words, and the other three are refused with the usual
+> sentence. Spoken once, as a command outcome (GATE-13: the reader does not
+> say text the cursor did not move over). Dictation design record, sections
+> 25 and 31.
 
 > **Cloud dictation providers, your own account (D-31 to D-37, 2026-10-16).**
 > Dictation can use a speech company the person already has an account with --

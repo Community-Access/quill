@@ -1195,7 +1195,13 @@ every key in a read-only window you can arrow through.
 | Go to window 1 to 9 | Ctrl+1 to Ctrl+9 |
 
 The **QuillVille** menu (Alt+U) opens the other released apps in the family --
-QUILL, Quill Radio, Quill Weather and Quill Inkwell. Each item has an access
-letter, so Alt+U and then Q, R, W or I opens that app with nothing held down,
-and each shows its key, which you can see in Keyboard Shortcuts.
+QUILL, Quill Radio, Quill Weather, Quill Inkwell and QUILL Transcribe. Each
+item has an access letter, so Alt+U and then Q, R, W, I or T opens that app
+with nothing held down, and each shows its key, which you can see in Keyboard
+Shortcuts: Ctrl+Alt+Shift+F7 to F11, in that order. QUILL Transcribe is
+released on 1 November 2026. It types what you say into any program, so, for
+example, you can press Alt+U, T to open it and then dictate the new name of a
+converted file into Windows Explorer. If an app is not on your computer yet,
+Quill Converter offers to download it, and nothing is downloaded until you say
+yes.
 The **Window** menu lists the open windows.

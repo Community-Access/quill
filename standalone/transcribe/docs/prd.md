@@ -1,6 +1,13 @@
 # QUILL Transcribe -- Product Requirements
 
-Version 1.0.0. Status: implemented.
+Version 1.0.0. Status: implemented; releases 1 November 2026 (first public
+release). In `RELEASED_APPS` from 2026-10-16, so every public QuillVille menu,
+tray menu and companion-install offer lists it, and Quill Cast's and Quill
+Radio's Edit > Dictate Here shows in public builds. Its own QuillVille menu is
+five rows (QUILL, Quill Radio, Quill Weather, Quill Converter, Quill Inkwell on
+Ctrl+Alt+Shift+F7 to F11); it is last in `QUILLVILLE_APP_ORDER`, so no other
+app's row changes key. A release blocker remains: the screen-reader pass in
+Outlook, Word, Notepad and the browsers (`docs/qa/screen-reader-checks-2026-10.md`).
 
 The full product requirements are in the repository at
 `docs/Product Requirement Documents and Specifications/quilltranscribe.md`.

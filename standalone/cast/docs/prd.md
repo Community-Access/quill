@@ -2301,7 +2301,10 @@ Dictate Anywhere, a launch with `--tray --dictate-here` when nobody does, the
 busy sentence when Quill Inkwell is dictating, and "not installed" otherwise.
 Cast loads no engine. A `wx.EventFilter` answers the same key in text fields of
 Cast's dialogs, where the main window's accelerators never reach. Shown only
-where `is_app_released("transcribe")`; QUILL Transcribe releases on
-2026-11-01, so public builds show it from then. Dictation design record, section 30.
+where `is_app_released("transcribe")`. QUILL Transcribe releases on
+2026-11-01 and is in `RELEASED_APPS` from 2026-10-16 (Jeff's decision on todo
+P2 item 19), so every public Cast build carries the item; a copy without QUILL
+Transcribe installed answers Ctrl+F11 with the "not installed" sentence.
+Dictation design record, section 30.
 
 See `CHANGELOG.md` for the full, versioned history.

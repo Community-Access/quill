@@ -59,6 +59,85 @@ filed, and in QUILL whether a new user could reach them at all.
   CHANGELOG.md is not gated: it is developer-facing and covers every app, so
   its menu paths belong to many menu bars; its October 2026 sections were read
   by hand.
+
+### QUILL Transcribe is released (todo P2 item 19; release date 2026-11-01) (2026-10-16)
+
+Jeff's decisions of 2026-10-16. Nothing is tagged, pushed or published.
+
+- **`quill/core/app_launcher.py`**: `"transcribe"` joins `RELEASED_APPS`, with
+  the reason beside the set as Inkwell's and Converter's have: QUILL Transcribe
+  is the system-wide half of dictation, and Quill Cast's and Quill Radio's
+  Edit > Dictate Here (Ctrl+F11) has nobody else to ask. Consequences, all
+  through `is_app_released`: `dictate_here_ui.dictate_here_available()` is now
+  true in public Cast and Radio builds; every QuillVille menu lists it; the
+  companion-install offer (`companion_install.can_offer_download`, asset prefix
+  `QUILL-Transcribe`) covers it.
+- **`quill/ui/quillville_menu.py`**: `"transcribe"` is last in
+  `QUILLVILLE_APP_ORDER`, so every existing row keeps its positional key in
+  every app and Transcribe takes the next one (F11 in QUILL, Weather,
+  Converter and Inkwell; F10 in Radio, which leaves Inkwell off). The tray's
+  hard-coded `("quill", "radio", "weather")` becomes `TRAY_APP_ORDER`, which
+  adds `"transcribe"` (its own home is the tray) and is now gated by
+  `is_app_released` like the menu bar.
+- **No sixth launcher key** (`quill/core/app_keymaps.py`, the comment beside
+  `SIBLING_APP_ACCELERATORS`): a public menu shows at most five rows on
+  Ctrl+Alt+Shift+F7 to F11; only a developer build, which also lists Cast and
+  Audio Studio, shows rows past the fifth with no key, as the Media Player's
+  developer menu already did. The rest of the Ctrl+Alt+Shift F-row is taken.
+- **Gates**: `test_keymap_accelerators.py` now checks that every *public* menu
+  fits the keys, and a new test builds every app's real QuillVille menu (apps
+  found from the `exclude="..."` call sites) to assert that a public build has
+  no keyless row and that a developer build's keyless rows never outnumber the
+  unreleased apps it lists. `test_app_gating.py`, `test_quillville_menu_released.py`
+  (Transcribe last on F11; the tray list) and `test_dictate_here_menu.py`
+  (Radio's real bar carries Ctrl+F11 once in a *public* build) updated
+  deliberately.
+- **Release date 2026-11-01** in QUILL Transcribe's changelogs (the 1.0.0
+  heading, until now 2026-10-11, a build date for a version never published),
+  release notes, PRD status and README, and on the site (`index.html`,
+  `faq.html`, `docs.html`, `dictation.html`), with no download link to an
+  artifact that does not exist yet. The build scripts and the sibling version
+  gate read no release date, so nothing there changed.
+- **Docs**: the QUILL user guide's QuillVille menu section now lists the public
+  menu with its real keys (it listed developer-build positions) and Transcribe;
+  the Radio, Weather, Inkwell, Converter, Cast, QUILL Lite and QUILL Transcribe
+  user guides and changelogs; the Cast and Radio PRDs; the dictation design
+  record section 30.6; `docs/qa/screen-reader-checks-2026-10.md` gains a
+  release-blocker section (the Outlook, Word, Notepad and browser pass is
+  Jeff's) and checks for the new rows.
+
+### Dictation: the spoken preview keeps the streaming contract, D-18 additions, digits for clips (2026-10-16)
+
+dict.md section 9 (the small items) and Jeff's todo "StreamAnnouncer is
+defined but never used"; dictation design record, section 31.
+
+- **D-18 additions,** folded into section 25's implementation (one D-18): the
+  three reading commands are answered in `VoiceCommandsMixin._mode_command`,
+  before the writing check, so a read-only document can be read back (it was
+  refused as read-only); in another program they are still refused with
+  `external_refusal()`. Spanish takes "leer" as well as "lee".
+  `controller.py` did not grow.
+- **`StreamAnnouncer` is used.** The spoken live preview (`preview =
+  "speak"`) re-spoke words from wherever a streaming engine changed its mind,
+  which broke the committed-and-tentative contract dict.md D-26 asks of every
+  online recogniser. `PreviewThrottle.to_speak` now feeds each update through
+  the new `speech.streaming.WordAgreement` (a word is committed once two
+  updates agree on it and it is not the last word; committed text only ever
+  grows) and `StreamAnnouncer`, so only settled words are spoken, each once.
+  The visual preview (status bar, braille) is unchanged. Covers Nemotron,
+  OpenAI live and every streaming cloud provider, which all reach
+  `LiveMixin.on_partial`.
+- **"paste clip 3".** QUILL already took digits there (`targets.number_from`);
+  the benchmark's `bench_scoring.command_outcome` compared the raw words and
+  scored Moonshine's "Paste clip 3" as another command. It now compares the
+  slot number. A controller test pins the digit form end to end.
+- **Docs.** QUILL guide: "More about reading back"; QUILL Lite guide: a
+  worked example, "Checking your work by ear" (pinned by a controller test that
+  also checks the cursor and selection do not move); all three guides'
+  spoken-preview paragraphs; the PRD gains a D-18 requirement block;
+  dictation-commands pages and `docs/site/dictation.html` regenerated. No
+  control was added, so F1 help is unchanged.
+
 ### Dictation: one settings store for the family (D-13), the word list's new home, and Dictate Here in Cast and Radio (D-16) (2026-10-16)
 
 dict.md D-12, D-13 and D-16. Design record:

@@ -42,18 +42,8 @@ from tests.unit.docs.menu_claims import (  # noqa: E402
 DOCS = ROOT / "standalone" / "radio" / "docs"
 DOCUMENTS = [DOCS / "CHANGELOG.md", DOCS / "userguide.md"]
 
-#: Edit > Dictate Here is shown only once QUILL Transcribe is released
-#: (1 November 2026; ``dictate_here_available``), and the documents say so
-#: beside every mention.
-_TRANSCRIBE_GATED = (
-    "release gate: shown once QUILL Transcribe is released (1 November 2026); "
-    "the document says so beside it"
-)
-
 #: A finding allowed, and why. Each must still match something (asserted below).
 ALLOW: dict[str, str] = {
-    "path:edit > dictate here": _TRANSCRIBE_GATED,
-    "key:dictate here": _TRANSCRIBE_GATED,
     # History: the changelog records what a release shipped under the name it
     # had then. 3.0.1's "Get became Repair" entry is the record of the rename.
     "path:help > get ffmpeg": "3.0.1 records the rename to Help > Repair FFmpeg...",

@@ -4110,25 +4110,997 @@ Transcribe and in Inkwell.</li>
 <code>tests/unit/ui/test_dictate_here_menu.py</code>: every outcome with
 fakes, the release gate, the request file’s senders, the Edit menu label
 and key in both apps, Quill Radio’s real menu bar carrying Ctrl+F11 once
-in a developer build, and QUILL Transcribe’s
-<code>dictate_here_at_launch</code> in each case. No real window is
-driven.</li>
+in a public build (a developer build before 2026-10-16), and QUILL
+Transcribe’s <code>dictate_here_at_launch</code> in each case. No real
+window is driven.</li>
 </ul>
 <h3 id="306-not-done">30.6 Not done</h3>
 <ul>
 <li>A screen-reader pass with JAWS and NVDA on Cast’s search box and
 Radio’s Search Stations box (D-16’s acceptance in practice).</li>
-<li>QUILL Transcribe is not yet in <code>RELEASED_APPS</code>. Jeff
-decided it releases on 2026-11-01; adding it to
-<code>RELEASED_APPS</code> that day is what makes Dictate Here appear in
-public Cast and Radio builds, with no other change.</li>
+<li><del>QUILL Transcribe is not yet in
+<code>RELEASED_APPS</code>.</del> Done on 2026-10-16 (Jeff’s decisions
+on todo P2 item 19): it is in <code>RELEASED_APPS</code> on the branch,
+with a release date of 2026-11-01, so public Cast and Radio builds show
+Dictate Here; it is last in <code>QUILLVILLE_APP_ORDER</code> and in the
+tray list (<code>TRAY_APP_ORDER</code>), and the companion-install offer
+covers it. No sixth QuillVille launcher key: public menus show at most
+five rows, and only a developer build shows keyless rows past the fifth
+(<code>app_keymaps.py</code>, beside
+<code>SIBLING_APP_ACCELERATORS</code>). Nothing has been tagged or
+published. The screen-reader pass in Outlook, Word, Notepad and the
+browsers is Jeff’s and is a release blocker
+(<code>docs/qa/screen-reader-checks-2026-10.md</code>).</li>
 <li>A “Restore my settings from before sharing” command over
 <code>before-sharing-&lt;app&gt;.json</code>; today that file is
 restored by hand.</li>
 </ul>
 <h2
-id="appendix-a-the-dictmd-section-numbers-and-where-they-live-now">Appendix
-A: the dict.md section numbers, and where they live now</h2>
+id="31-as-built-2026-10-16-the-small-items-checked-and-the-streaming-contract-in-use">31.
+As built, 2026-10-16: the small items checked, and the streaming
+contract in use</h2>
+<p>dict.md section 9 asks what the small items alone would bring. This
+pass checked every one against this record and the code, built what was
+left, and closed Jeff’s todo about <code>StreamAnnouncer</code> (dict.md
+section 4, “Streaming integration”).</p>
+<h3 id="the-small-items-one-by-one">The small items, one by one</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>State</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D-6 braille preview and the status, resume and discard keys</td>
+<td>Already built</td>
+<td>Section 24</td>
+</tr>
+<tr>
+<td>D-15 Inkwell pauses when the focus moves</td>
+<td>Already built</td>
+<td>Section 15</td>
+</tr>
+<tr>
+<td>D-16 Dictate Here in Cast and Radio</td>
+<td>Built</td>
+<td>Section 30</td>
+</tr>
+<tr>
+<td>D-18 read last sentence, paragraph, selection</td>
+<td>Built in section 25; two additions folded in here</td>
+<td>Section 25, and “D-18 additions” below</td>
+</tr>
+<tr>
+<td>D-22 recommended model and tier labels</td>
+<td>Already built</td>
+<td>Section 21</td>
+</tr>
+<tr>
+<td>D-24 the never-type list and the cloud line in the tray</td>
+<td>Already built</td>
+<td>Section 15</td>
+</tr>
+<tr>
+<td>D-3 opt-in fallback for one program</td>
+<td>Waits, as planned</td>
+<td>It needs a clean D-4 run on an idle computer (section 17), and none
+has found a program that drops keys</td>
+</tr>
+<tr>
+<td>D-4 slice, the tested-programs table</td>
+<td>Already built, and more (the harness)</td>
+<td>Section 17. The table fills in when someone runs the harness on an
+idle computer</td>
+</tr>
+<tr>
+<td>D-12 slice, Import and Export</td>
+<td>Already built, and the shared list</td>
+<td>Section 20</td>
+</tr>
+<tr>
+<td>D-19 slice, replace and delete paragraph</td>
+<td>Built</td>
+<td>Section 27</td>
+</tr>
+<tr>
+<td>D-21 slice, the offer after two corrections</td>
+<td>Built</td>
+<td>Section 28</td>
+</tr>
+<tr>
+<td>D-25 slice, five Transcribe lessons</td>
+<td>Built</td>
+<td>Section 29</td>
+</tr>
+<tr>
+<td>B-6 screen-reader rows for Transcribe</td>
+<td>Already built (the rows; the checking is a person’s)</td>
+<td>Section 26</td>
+</tr>
+<tr>
+<td>B-7 privacy tests for the new paths</td>
+<td>Already built</td>
+<td>Section 26</td>
+</tr>
+<tr>
+<td>D-26 S0 benchmarks for candidate models</td>
+<td>The tools are built; the runs need the data</td>
+<td>Section 26</td>
+</tr>
+<tr>
+<td>Streaming partials through the committed-and-tentative contract</td>
+<td><strong>Built here</strong></td>
+<td>Below</td>
+</tr>
+<tr>
+<td>“paste clip 3” scored as slot three by the benchmark</td>
+<td><strong>Fixed here</strong></td>
+<td>Below</td>
+</tr>
+</tbody>
+</table>
+<p>dict.md section 4’s “Listen”, “Phrases” and “Privacy” have nothing
+small left beyond D-18 and D-24.</p>
+<h3 id="d-18-additions">D-18 additions</h3>
+<p>D-18 itself is section 25’s (one implementation; this branch’s
+duplicate was dropped at the merge). Two things this pass had that
+section 25 lacked were folded into that code rather than kept beside
+it:</p>
+<ul>
+<li><strong>A read-only document can be read back.</strong> The three
+reading commands are answered in
+<code>VoiceCommandsMixin._mode_command</code>, before the controller’s
+writing check, because reading writes nothing; they used to be refused
+with “This document is read-only”. In another program they are still
+refused there, with <code>external_refusal()</code>.
+<code>controller.py</code> did not grow.</li>
+<li><strong>“leer” as well as “lee”</strong> in the Spanish forms (“leer
+la última frase”, “leer el último párrafo”, “leer la selección”).</li>
+</ul>
+<p>The QUILL user guide gained “More about reading back” beside section
+25’s worked example; QUILL Lite’s guide, which had the commands only as
+table rows, gained a worked example (“Checking your work by ear”). The
+PRD has a D-18 requirement block.</p>
+<h3 id="the-streaming-contract-now-in-use">The streaming contract, now
+in use</h3>
+<p><code>quill/core/speech/streaming.py</code> (2026-08-17) defined
+<code>StreamAnnouncer</code> “ahead of need”: a streaming snapshot is an
+append-only committed prefix and a tentative tail, and speech says only
+newly committed text, exactly once. Then the streaming engines landed
+(section 3, Nemotron; OpenAI live; the WebSocket cloud providers,
+section 23) and none used it. dict.md D-26 (“Streaming integration”) and
+D-35 say partial results from any online recogniser go through
+<code>preview.py</code> and that contract, and that only committed words
+are ever spoken or written. The spec keeps the class, so it was wired,
+not removed.</p>
+<p><strong>What was wrong.</strong> With <strong>Show it, and say new
+words quietly</strong>, <code>PreviewThrottle.to_speak</code> said again
+from wherever the engine changed its mind: “call doctor” then “call Dr.
+Okonkwo” spoke “Dr. Okonkwo” after “doctor”, the same words twice in
+different forms, which is exactly the repainting the contract exists to
+stop.</p>
+<p><strong>What it does now.</strong> None of the engines hands QUILL a
+committed and a tentative part: each sends the whole phrase so far. So
+<code>streaming.WordAgreement</code> derives the split by local
+agreement: a word is committed once two updates in a row agree on it
+(case and edge punctuation ignored) and it is not the last word, which
+may still be half heard. Its committed text only grows, by construction,
+so a later rewrite of a word already said is never said again.
+<code>to_speak</code> feeds each update through
+<code>WordAgreement</code> and <code>StreamAnnouncer</code>, gathers
+what is newly committed, and still says it no more often than every two
+seconds. Everything reaches it the same way
+(<code>recognizer_worker</code> and the cloud recogniser post
+<code>on_partial</code>; <code>LiveMixin.on_partial</code> decides), so
+Nemotron, OpenAI and every streaming cloud provider follow the contract
+with no change in any engine.</p>
+<p><strong>What stays as it was.</strong> The visual preview, “Hearing:
+…” in the status bar and on a braille display, still shows the whole
+phrase, tentative tail included: it is one line replaced in place, not a
+stream of announcements, and dict.md D-6 asks for it. The words written
+at the pause are always the engine’s final ones; the spoken preview
+never decides what is written.</p>
+<p><strong>The cost.</strong> Speech now lags the engine by one update
+(a word is said once a second update confirms it). That is the trade the
+contract makes: a word late rather than a word twice.</p>
+<h3 id="paste-clip-3">“paste clip 3”</h3>
+<p>The first dictbench run (section 26) reported “paste clip three”
+heard as “Paste clip 3” and scored it as a different command. QUILL
+itself already accepts a digit there: <code>targets.number_from</code>
+reads “three”, “3” and “number three” alike. The miss was the
+benchmark’s: <code>bench_scoring.command_outcome</code> compared the raw
+words after the command. It now compares the slot number, and a
+controller test pins “Paste clip 3” pasting slot three in another
+program. (“insert abbreviation addr” heard as “address” is a different
+case: the engine changed the word, and nothing in the parser could
+know.)</p>
+<h3 id="documentation">Documentation</h3>
+<p>The spoken-preview paragraphs in all three user guides (QUILL, QUILL
+Lite, QUILL Transcribe) now say a word is spoken once it is settled and
+never twice; the reading-back additions are above. The
+dictation-commands page (both copies) and
+<code>docs/site/dictation.html</code> are regenerated from the command
+table. No control was added, so F1 help is unchanged.</p>
+<h3 id="tests-2">Tests</h3>
+<p><code>tests/unit/core/test_dictation_live_controller.py</code> (the
+spoken preview through a rewrite; the user guide’s reading example with
+the cursor and selection left where they were; a read-only document read
+back; nothing to read and the marks setting),
+<code>tests/unit/core/test_dictation_hold_and_preview.py</code>
+(<code>to_speak</code> under the contract),
+<code>tests/unit/core/speech/test_speech_vad_and_streaming.py</code>
+(<code>WordAgreement</code>),
+<code>tests/unit/core/test_dictation_external_list.py</code> and
+<code>tests/unit/scripts/test_bench_scoring.py</code> (the digit).
+Section 25’s own D-18 tests are in
+<code>tests/unit/core/test_dictation_snippet_fill.py</code>.</p>
+<h2
+id="32-closing-the-dictation-gaps-plan-dictmd-2026-10-13-to-2026-10-16">32.
+Closing the dictation gaps plan (dict.md, 2026-10-13 to 2026-10-16)</h2>
+<p>The working plan for the D and B items lived in an untracked
+<code>dict.md</code> from 2026-10-13 until every item that could be
+built without a person had been built, documented and merged
+(2026-10-16). It was then retired. This section keeps everything in it
+that is still needed: where each item stands, what waits on a person,
+the rules every item followed, what was decided against, and the
+verdicts on retiring old speech models. The <strong>as built</strong>
+sections above (14 to 31) are the record of what each item does.</p>
+<h3 id="321-where-every-item-stands">32.1 Where every item stands</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>What</th>
+<th>Status</th>
+<th>Record</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D-1</td>
+<td>A command keyword for directing dictation</td>
+<td>Built; live 30-minute soak and the F11-with-dictation-off decision
+confirmed (keep) 2026-10-16</td>
+<td>Section 18</td>
+</tr>
+<tr>
+<td>D-2</td>
+<td>AI review and conversation before inserting</td>
+<td>Built; needs a live check with a real AI sign-in</td>
+<td>Section 19</td>
+</tr>
+<tr>
+<td>D-3</td>
+<td>An insertion fallback for programs that drop keys</td>
+<td>Not built, on purpose: only if a clean D-4 run finds such a
+program</td>
+<td>Section 17</td>
+</tr>
+<tr>
+<td>D-4</td>
+<td>The tested-programs harness</td>
+<td>Built; every row reads Untested until it is run on an idle
+machine</td>
+<td>Section 17</td>
+</tr>
+<tr>
+<td>D-5</td>
+<td>Never lose what was said</td>
+<td>Built (Recent Phrases holds rescued words; confirmed
+2026-10-16)</td>
+<td>Section 25</td>
+</tr>
+<tr>
+<td>D-6</td>
+<td>Feedback where the person is working</td>
+<td>Built</td>
+<td>Section 24</td>
+</tr>
+<tr>
+<td>D-7</td>
+<td>“What can I say” in Transcribe</td>
+<td>Built before this plan</td>
+<td>Section 14</td>
+</tr>
+<tr>
+<td>D-8</td>
+<td>Spoken prompts for snippet blanks in other programs</td>
+<td>Built</td>
+<td>Section 25</td>
+</tr>
+<tr>
+<td>D-9</td>
+<td>Wake phrase and hold-to-talk in Transcribe</td>
+<td>Built</td>
+<td>Section 24</td>
+</tr>
+<tr>
+<td>D-10</td>
+<td>Correction in other programs, on the session’s own words</td>
+<td>Built; retyping refused in Word and Outlook until tested there</td>
+<td>Section 27</td>
+</tr>
+<tr>
+<td>D-11</td>
+<td>One microphone owner</td>
+<td>Built before this plan</td>
+<td>Section 14</td>
+</tr>
+<tr>
+<td>D-12</td>
+<td>One word list for the family, import and export</td>
+<td>Built</td>
+<td>Section 20</td>
+</tr>
+<tr>
+<td>D-13</td>
+<td>One dictation settings store</td>
+<td>Built</td>
+<td>Section 30</td>
+</tr>
+<tr>
+<td>D-14</td>
+<td>The same keys, and the parity gate</td>
+<td>Built before this plan</td>
+<td>Section 14</td>
+</tr>
+<tr>
+<td>D-15</td>
+<td>Inkwell as a client of Transcribe</td>
+<td>Built</td>
+<td>Section 15</td>
+</tr>
+<tr>
+<td>D-16</td>
+<td>Dictate Here in Cast and Radio</td>
+<td>Built; public from QUILL Transcribe’s release on 2026-11-01</td>
+<td>Section 30</td>
+</tr>
+<tr>
+<td>D-17</td>
+<td>The soft working tick</td>
+<td>Built before this plan</td>
+<td>Section 14</td>
+</tr>
+<tr>
+<td>D-18</td>
+<td>Read back more</td>
+<td>Built (one implementation)</td>
+<td>Sections 25 and 31</td>
+</tr>
+<tr>
+<td>D-19</td>
+<td>Replace, delete by paragraph, a second opinion</td>
+<td>Built</td>
+<td>Section 27</td>
+</tr>
+<tr>
+<td>D-20</td>
+<td>Self-repair; Verbatim, Clean and Polished</td>
+<td>Built</td>
+<td>Section 28</td>
+</tr>
+<tr>
+<td>D-21</td>
+<td>Learn from corrections</td>
+<td>Built; per-context lists wait on use; no Whisper prompt on
+sherpa-onnx 1.13.8</td>
+<td>Section 28</td>
+</tr>
+<tr>
+<td>D-22</td>
+<td>A recommended model, with reasons, and tier labels</td>
+<td>Built</td>
+<td>Section 21</td>
+</tr>
+<tr>
+<td>D-23</td>
+<td>Named profiles, format-aware structure</td>
+<td>Built</td>
+<td>Section 29</td>
+</tr>
+<tr>
+<td>D-24</td>
+<td>The never-type list, and the cloud indicator</td>
+<td>Built</td>
+<td>Section 15</td>
+</tr>
+<tr>
+<td>D-25</td>
+<td>Lessons, practice and the recognition test</td>
+<td>Built</td>
+<td>Section 29</td>
+</tr>
+<tr>
+<td>D-26 to D-29</td>
+<td>One sherpa-onnx layer; keyword spotting, hotwords, punctuation,
+diarization</td>
+<td>Built and off until measured (B-1, B-3, B-8)</td>
+<td>Section 22</td>
+</tr>
+<tr>
+<td>D-30</td>
+<td>Speech output through sherpa-onnx</td>
+<td>Not built, on purpose: decide after measuring</td>
+<td>Section 22</td>
+</tr>
+<tr>
+<td>D-31 to D-37</td>
+<td>Cloud providers with the person’s own account</td>
+<td>Built; each needs a live check with an account (protocol details
+marked “verify” in the code)</td>
+<td>Section 23</td>
+</tr>
+<tr>
+<td>B-1 to B-8</td>
+<td>Benchmark and test infrastructure</td>
+<td>Tooling built; the runs (B-1a, B-1c, B-8) and volunteers (B-1d) need
+a person</td>
+<td>Section 26</td>
+</tr>
+<tr>
+<td>Section 9</td>
+<td>The small items</td>
+<td>Built or covered</td>
+<td>Section 31</td>
+</tr>
+<tr>
+<td>Streaming</td>
+<td><code>StreamAnnouncer</code> in the spoken preview</td>
+<td>Built</td>
+<td>Section 31</td>
+</tr>
+<tr>
+<td>Polish</td>
+<td>Opt-in “Polish my dictation” AI pass</td>
+<td>Built</td>
+<td>Section 28</td>
+</tr>
+<tr>
+<td>Spanish</td>
+<td>Spanish dictation and commands</td>
+<td>Gated: needs recordings and a native speaker’s review; command
+drafts stay development-gated</td>
+<td>Sections 9 and 10</td>
+</tr>
+</tbody>
+</table>
+<h3 id="322-what-waits-on-a-person">32.2 What waits on a person</h3>
+<ol type="1">
+<li>Run the D-4 harness on an idle machine; its result decides D-3, and
+whether retyping corrections may be allowed in Word and Outlook.</li>
+<li>Benchmarks: pin the dataset hashes, build B-1a, render B-1c, run B-8
+on the 8 GB machine; B-1d needs volunteers. These decide D-26 to D-29
+adoption, D-30, and the retirements in 32.6.</li>
+<li>Live checks: D-1 (30 minutes in Notepad, Word and Edge), D-2 with a
+real AI sign-in, D-31 to D-37 with the person’s own provider
+accounts.</li>
+<li>Spanish: recordings, a native speaker’s review of the command tables
+and of the drafted review commands, then lifting the gate.</li>
+<li>The screen-reader checks listed in
+<code>docs/qa/screen-reader-checks-2026-10.md</code>.</li>
+</ol>
+<h3 id="323-decisions-confirmed-by-jeff-on-2026-10-16">32.3 Decisions
+confirmed by Jeff on 2026-10-16</h3>
+<p>F11 with dictation off still opens the microphone for one command;
+the overnight defaults stand (Speak a Command F11; empty Transcribe
+global keys and Command Key; Review before insert on Shift+F4; lyrics in
+memory only; sherpa-onnx pinned at 1.13.8 with its extras off); rescued
+words live in Recent Phrases; Quill Inkwell keeps no rescued words for
+now and hides the polish box; retyping corrections stay refused in Word
+and Outlook until tested; the Standard profile keeps today’s behaviour;
+sharing dictation settings starts on only for unchanged installs;
+Dictate Here is Edit &gt; Dictate Here on Ctrl+F11; Spanish review
+commands are drafted behind the gate.</p>
+<h3 id="324-the-rules-every-item-followed">32.4 The rules every item
+followed</h3>
+<ul>
+<li><strong>Announce only what the screen reader does not already say
+(GATE-13).</strong> Diffs, outcomes, refusals and background results are
+spoken. Text that has focus, window titles and control names are not.
+The review surface (D-2) announces the diff summary, never the whole
+text.</li>
+<li><strong>Keyboard first.</strong> Every voice command has a menu item
+with its key shown (menu accelerators rule). Every global key is empty
+until the person chooses one, except the start and stop key.</li>
+<li><strong>No surprises.</strong> There is no automatic model, profile
+or language switch. Modes show in the status cell and the tray. Command
+mode times out with a tone.</li>
+<li><strong>Undo for every change.</strong> In editors, each dictated
+change is one undo step. Externally, only backspace-and-retype on the
+session’s own words, refused out loud when unsafe. Originals stay
+recoverable (D-2, D-5, D-19).</li>
+<li><strong>Braille parity.</strong> Every state line and preview
+reaches braille. No information is speech-only.</li>
+<li><strong>F1 everywhere.</strong> New windows set inline
+<code>SetHelpText</code> and get <code>surface_help</code> entries
+(GATE-TRANSCRIBE-HELP).</li>
+<li><strong>Access keys (GATE-14).</strong> OK, Cancel and Close carry
+no access key, and there are no duplicates.</li>
+</ul>
+<h3 id="325-decided-against-or-deferred">32.5 Decided against, or
+deferred</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Automatic AI cleanup of every phrase</td>
+<td>Declined on purpose (cost, privacy, latency); D-2 and D-20 cover it
+on request</td>
+</tr>
+<tr>
+<td>Automatic language detection per phrase</td>
+<td>Declined: wrong-language text written silently is worse than one
+command (dictation design, section 13 “The gap plan: twelve published
+capabilities, checked and built” (this record), “Decided against”)</td>
+</tr>
+<tr>
+<td>Automatic per-program profile switching</td>
+<td>The PRD puts it out of scope “until a privacy review proves they can
+be implemented without reading document content” (<a
+href="../Product Requirement Documents and Specifications/quilltranscribe.md">QUILL
+Transcribe PRD, section 7.6 “Dictation settings and profiles”</a>);
+manual profiles (D-23) instead</td>
+</tr>
+<tr>
+<td>Reading another program’s text for context by default</td>
+<td>Breaks the Transcribe promise “It never reads the other program”;
+D-10 works on the session’s own words</td>
+</tr>
+<tr>
+<td>Local hotword biasing on Nemotron and Parakeet</td>
+<td>Blocked: on sherpa-onnx 1.13.8, Nemotron’s streaming decoder
+supports greedy search only, and Parakeet’s hotword path upper-cases
+words, so biasing did nothing or produced garbage (measured 2026-10-05;
+dictation design, section 5 B “Teaching dictation your words” (this
+record)). D-28 tries Zipformer transducers instead and rechecks NeMo on
+each upgrade</td>
+</tr>
+<tr>
+<td>Audio retention and replay</td>
+<td>Off; reconsider after D-5 history ships, as a separate opt-in</td>
+</tr>
+<tr>
+<td>Cloud providers before the provider layer</td>
+<td>Every cloud provider waits for D-31 (one interface, the Speech
+Providers page, safe secrets, per-provider consent), so that none is
+added as a one-off</td>
+</tr>
+<tr>
+<td>Windows online speech recognition (WinRT)</td>
+<td>It cannot choose the microphone and needs package identity
+(<code>quill/platform/windows/sapi_dictation.py</code>); Windows voice
+typing is already an engine</td>
+</tr>
+<tr>
+<td>Creating resources in a person’s cloud account (Amazon or Rev.ai
+vocabularies, Google recognizers)</td>
+<td>QUILL only uses what the person names; it never creates or changes
+their cloud resources</td>
+</tr>
+<tr>
+<td>Canary in the catalogue before measurement</td>
+<td>The API exists in sherpa-onnx 1.13.8 (<code>from_nemo_canary</code>)
+but QUILL has not measured it; S0 of D-26 measures it first</td>
+</tr>
+<tr>
+<td>Retiring whisper.cpp and Faster Whisper outright</td>
+<td>They are kept as optional packs: the initial prompt, GPU speed and
+the lowest memory for large models (D-26)</td>
+</tr>
+<tr>
+<td>Browser extensions</td>
+<td>The PRD says “The initial release does not require browser
+extensions” (<a
+href="../Product Requirement Documents and Specifications/quilltranscribe.md">QUILL
+Transcribe PRD, section 12.1 “Initial compatibility matrix”</a>)</td>
+</tr>
+<tr>
+<td>Held-modifier command mode as the default</td>
+<td>It conflicts with screen-reader keys (D-1)</td>
+</tr>
+<tr>
+<td>Replacing keystroke insertion</td>
+<td>It is tuned and verified (#1654, #1655); D-3 adds only an opt-in,
+per-program fallback where the matrix proves a program drops keys</td>
+</tr>
+</tbody>
+</table>
+<h3 id="326-retiring-legacy-models">32.6 Retiring legacy models</h3>
+<p>These verdicts were written on 2026-10-13 against the synthetic-voice
+numbers, so every removal waits for the section 26 benchmarks. The Vosk
+dictation retirement has since shipped (#1663).</p>
+<h4 id="verdict-per-engine-or-model-family">Verdict per engine or model
+family</h4>
+<table>
+<thead>
+<tr>
+<th>Engine or model</th>
+<th>What only it provides</th>
+<th>What supersedes it, and how well</th>
+<th>Maintenance cost in the repo</th>
+<th>Download and disk</th>
+<th>Risk to people using it today</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>whisper.cpp</strong> (Locked Dictation default and offline
+file transcription, QUILL only)</td>
+<td>The Whisper <strong>initial prompt</strong> (<code>--prompt</code>);
+tinydiarize speaker turns (<code>small.en-tdrz</code>); the lowest
+memory for large models (GGML used about half the memory of sherpa-onnx
+Whisper, design section 6)</td>
+<td>sherpa-onnx Whisper keeps translation and segment timestamps, and
+ran 4 to 7 times faster per thread on the same recordings (design
+section 6). It has <strong>no</strong> initial-prompt parameter (checked
+in the local <code>from_whisper</code> signature). D-29 diarization
+would replace tinydiarize</td>
+<td><code>providers/whispercpp.py</code> (535 lines),
+<code>catalog.py</code> tiers, executable allowlist, the assets-v1
+executable (about 8 MB) and GGML models with SHA-256 pins,
+<code>model_mirrors.py</code>, <code>test_whispercpp.py</code>; a
+subprocess path, not Python wheels, so Python 3.14 does not affect
+it</td>
+<td>Models of 75 MB (tiny) to 3.1 GB (large-v3)
+(<code>catalog.py</code>)</td>
+<td>High: it is the Locked Dictation default for every QUILL install
+without Parakeet
+(<code>service.preferred_dictation_provider_id</code>)</td>
+<td><strong>Keep as an optional pack.</strong> Change the default only
+after D-26 S2 and B-1</td>
+</tr>
+<tr>
+<td><strong>Faster Whisper</strong> (CTranslate2)</td>
+<td><strong>GPU acceleration</strong> (CUDA float16 when present,
+<code>fasterwhisper.pick_device_and_compute</code>); batched inference;
+initial prompt</td>
+<td>sherpa-onnx Whisper on CPU. The Windows sherpa-onnx wheel here has
+no GPU provider (local observation), so nothing supersedes the GPU
+speed</td>
+<td><code>providers/fasterwhisper.py</code> (349 lines),
+<code>engine_install.install_faster_whisper</code> (about 110 MB of
+wheels; <code>ctranslate2</code> 4.8.2 has a cp314 win_amd64 wheel, 19.5
+MB, in <code>uv.lock</code>), Hugging Face downloads,
+<code>test_fasterwhisper_provider.py</code></td>
+<td>Models of 75 MB to 3.1 GB, plus about 110 MB of engine</td>
+<td>Medium: few users, but they are the ones with GPUs and long
+recordings</td>
+<td><strong>Keep as an optional pack</strong> (it is already
+install-on-demand)</td>
+</tr>
+<tr>
+<td><strong>Vosk</strong> (Kaldi)</td>
+<td><strong>Podcast chapters in QUILL and QUILL Cast</strong>: it is the
+bundled chapter engine (<code>service.CHAPTER_PROVIDER_ID</code>;
+<code>scripts/build_windows_distribution.py</code>; the Cast spec). On
+the reference chapter lists it scored 0.372 against Whisper medium’s
+0.316, and was 4.7 times faster. As a dictation engine it offers only a
+small English model</td>
+<td>For <strong>dictation and voice features</strong> (voice commands,
+Hey QUILL): the bundled Moonshine tiny (3.4 percent word errors at 0.05
+of real time and 210 MB peak, design section 6). For
+<strong>chapters</strong>: nothing yet; Moonshine tiny plus Silero VAD
+cue segmentation is the candidate</td>
+<td><code>providers/vosk.py</code> (387 lines),
+<code>engine_install.install_vosk</code>, the bundled wheel (about 51 MB
+with libvosk), models from alphacephei.com checked by <strong>MD5
+only</strong>, an egress entry, <code>test_vosk_provider.py</code>. The
+last <code>vosk</code> release, 0.3.45, was uploaded on 2022-12-14
+(<code>uv.lock</code>)</td>
+<td>40 MB (small) or 1.8 GB (large <code>en-us-0.22</code>)
+(<code>catalog.py</code>)</td>
+<td>Chapters: high, if removed. Dictation: low, because saved settings
+migrate to Moonshine tiny, which is already installed</td>
+<td><strong>Keep for chapters. Retired as a dictation and voice-features
+engine: done, #1663 (2026-10-13).</strong> Replace it as the chapter
+engine only when the Moonshine and Silero candidate beats 0.372 on the
+same reference set (gated on section 8); Cast would also need
+sherpa-onnx bundled</td>
+</tr>
+<tr>
+<td><strong>Duplicate Parakeet and Nemotron</strong> (Locked Dictation’s
+own providers and folder)</td>
+<td>Nothing the shared models do not; the same model files in a second
+folder</td>
+<td>The same models in the shared dictation store
+(<code>windows_dictation/model_store.py</code>), as D-26 S1 plans</td>
+<td>Two providers (<code>nemotron_onnx.py</code>, 355 lines;
+<code>parakeet_onnx.py</code>, 314 lines),
+<code>engine_install.install_nemotron</code>, a second model folder;
+dictation design, section 10 (this record) lists “One folder for
+Parakeet” as deferred</td>
+<td>About 632 to 670 MB <strong>twice</strong> when both stacks have
+downloaded it</td>
+<td>None, if the files are moved rather than downloaded again</td>
+<td><strong>Deprecate the duplicate path</strong>: merge into the shared
+store in D-26 S1 (move or hard-link the files), then delete the second
+providers in QUILL 1.2. The models stay</td>
+</tr>
+<tr>
+<td><strong>Moonshine tiny</strong> (bundled) and <strong>Moonshine
+base</strong> (download)</td>
+<td>The fastest models on a modest computer, punctuated by
+themselves</td>
+<td>Nothing yet. Moonshine v2 is in the sherpa-onnx 1.13.8 API
+(<code>from_moonshine_v2</code>), but its models are unmeasured</td>
+<td>Small; shared with every app</td>
+<td>124 MB bundled; 141 MB download</td>
+<td>Removing them would break the default</td>
+<td><strong>Keep</strong> (tiny stays the 4 GB default)</td>
+</tr>
+<tr>
+<td><strong>Whisper tiny and tiny.en</strong> (bundled)</td>
+<td>Tiny is the only bundled Spanish model</td>
+<td>Nothing bundled</td>
+<td>Small</td>
+<td>About 104 MB each</td>
+<td>It is the Spanish path</td>
+<td><strong>Keep</strong></td>
+</tr>
+<tr>
+<td><strong>English-only Whisper sizes in the live catalogue</strong>
+(base.en, small.en, medium.en, Distil-Whisper small.en, medium.en and
+large-v3)</td>
+<td>Nothing measured that Moonshine base, Parakeet or Nemotron lacks in
+English</td>
+<td>Measured multilingual Whisper base (5.1 percent, 0.37), small (5.1
+percent, 1.29) and medium (3.4 percent, 3.04, 2.1 GB) against Moonshine
+base (3.4 percent, 0.08, 365 MB) and Nemotron (2.5 percent, 0.40). The
+<code>.en</code> and Distil variants themselves were
+<strong>not</strong> in that table, and the Distil cost factors are
+estimates (design section 10)</td>
+<td>Catalogue rows only (<code>model_catalog_whisper.py</code>), pinned
+to a commit and SHA-256</td>
+<td>Hundreds of MB to over 1 GB each</td>
+<td>Low, but some voices may suit Whisper better; that is the reason the
+design note offers Whisper</td>
+<td><strong>Deprecate candidates, pending B-1 and B-8.</strong> Decide
+per model after measuring; do not remove on the synthetic numbers</td>
+</tr>
+<tr>
+<td><strong>Multilingual Whisper sizes</strong> (base, small, medium,
+large-v3-turbo, large-v3)</td>
+<td>The only local models covering <strong>many languages</strong>
+beyond Parakeet TDT v3’s 25; translation to English</td>
+<td>Parakeet TDT v3 and Canary (four languages) cover only part of
+that</td>
+<td>Catalogue rows only</td>
+<td>145 MB to 3.1 GB</td>
+<td>High for people dictating in other languages</td>
+<td><strong>Keep.</strong> Review large-v3 against large-v3-turbo after
+B-8 (large-v3-turbo used 1.4 GB in the design table; large-v3 was not
+measured)</td>
+</tr>
+<tr>
+<td><strong>Windows speech recognition (SAPI)</strong></td>
+<td>Real <strong>alternates</strong> for “correct that” (the only engine
+that gives them, design section 8); offline; no download; Spanish
+recognizers where Windows has them; any microphone</td>
+<td>Nothing</td>
+<td><code>quill/platform/windows/sapi_dictation.py</code>, pywin32
+already shipped</td>
+<td>None</td>
+<td>It is someone’s preferred engine, and the fallback with no
+model</td>
+<td><strong>Keep</strong></td>
+</tr>
+<tr>
+<td><strong>Windows voice typing</strong> (Windows+H engine)</td>
+<td>Windows’ own panel, for people who already know it</td>
+<td>Nothing</td>
+<td>Small (<code>engines.py</code>)</td>
+<td>None</td>
+<td>Familiarity</td>
+<td><strong>Keep</strong></td>
+</tr>
+<tr>
+<td><strong>Legacy Win+H shim</strong>
+(<code>quill/core/dictation.py</code>)</td>
+<td>Nothing the <code>voice_typing</code> engine does not; its own
+docstring says it is “retained only as the OS-panel fallback”</td>
+<td>The <code>voice_typing</code> engine</td>
+<td>A separate module and settings fields described in its docstring as
+“inert”</td>
+<td>None</td>
+<td>None, if its callers are pointed at <code>voice_typing</code></td>
+<td><strong>Deprecate</strong>: fold into <code>voice_typing</code>,
+remove in QUILL 1.2 (callers <strong>not yet traced</strong>)</td>
+</tr>
+<tr>
+<td><strong>Kokoro TTS</strong> (kokoro-onnx, patched wheel)</td>
+<td>Many languages through espeak; checked bit-identical on Python 3.14
+(the untracked note <code>missing.md</code>)</td>
+<td>Possibly sherpa-onnx <code>OfflineTts</code>; its Kokoro language
+list looks narrower (Chinese and English,
+<strong>unverified</strong>)</td>
+<td>A patched wheel and the onnxruntime, phonemizer, espeakng-loader and
+Babel chain</td>
+<td>About 114 MB of voices</td>
+<td>High: people’s reading voice</td>
+<td><strong>Keep.</strong> Revisit only through D-30</td>
+</tr>
+<tr>
+<td><strong>Piper TTS</strong> (<code>piper.exe</code>)</td>
+<td>Many small voices</td>
+<td>Possibly sherpa-onnx VITS with converted voices
+(<strong>unverified</strong>)</td>
+<td><code>piper_install.py</code>, about a 22 MB zip, SHA-256</td>
+<td>Voices vary</td>
+<td>Medium</td>
+<td><strong>Keep.</strong> Revisit only through D-30</td>
+</tr>
+</tbody>
+</table>
+<p>Nothing in the inventory qualifies for <strong>Remove now</strong>.
+Every candidate either has users today with no announced notice, or a
+replacement that has not yet been measured on real voices.</p>
+<h4 id="what-happens-to-people-on-a-retired-model">What happens to
+people on a retired model</h4>
+<ul>
+<li><strong>Existing installs keep working</strong> for the whole notice
+period. A deprecated engine stays selectable and keeps running exactly
+as before.</li>
+<li><strong>Told once, in plain words.</strong> The first time a
+deprecated engine starts after the update, one sentence is spoken and
+shown in Activity, then never repeated. For example: “Faster Whisper is
+now an optional pack. Your recordings still transcribe with it. Choose
+Switch Engine in Dictation Settings to change.” There is no tone-only
+notice and no repeated nag. The sticky-model rule holds: <strong>QUILL
+never switches the engine by itself</strong>, not even at removal. The
+one exception is a migration announced in advance, such as Vosk
+dictation moving to Moonshine tiny (done, #1663): the saved setting
+migrates once, and a one-time notice says so in plain words (“Dictation
+now uses Moonshine, which is already on this computer. Vosk still makes
+your podcast chapters.”).</li>
+<li><strong>One action to move.</strong> A <strong>Switch to the
+Recommended Model</strong> button in Dictation Settings and in Speech
+Models uses D-22’s recommendation for this computer. It changes only the
+engine and model settings. My Words (<code>dictation.md</code>), My
+Dictation Instructions, the dictation context, pauses, punctuation and
+every other setting are untouched, because they are engine-independent
+already (<code>DictationPreferences</code>).</li>
+<li><strong>Downloaded files.</strong> After a successful switch, QUILL
+offers once: “Delete the Whisper medium files to free 1.5 GB?” No is the
+default. On Yes, the freed space is reported in one sentence (“Freed 1.5
+GB”), measured, not estimated. Shared files are never offered for
+deletion while another app or feature still points at them: a Parakeet
+folder that QUILL Lite also uses, or the Vosk model that podcast
+chapters still use. On removal, the engine pack (for example in
+<code>&lt;app data&gt;/engine-packs/</code>) goes into the same
+offer.</li>
+</ul>
+<h4 id="deprecation-policy">Deprecation policy</h4>
+<ol type="1">
+<li><strong>Evidence first.</strong> Nothing is deprecated until its
+replacement has been measured under the public-data benchmark plan in
+section 8: the LibriVox held-out set scored against the Gutenberg text
+(B-1a, word errors and punctuation), the relevant public datasets
+(B-1b), the dictation-command script (B-1c), and the 8 GB machine with a
+screen reader running (B-8). The results are written into the dictation
+design record.</li>
+<li><strong>Notice period: one full feature release.</strong> Deprecate
+in release N (the engine works, with the notice), and remove no earlier
+than release N+1. For an engine that is the default for some installs
+(whisper.cpp), the period is two releases.</li>
+<li><strong>Announced three ways:</strong> a “Deprecated” entry in the
+CHANGELOG and the release notes of release N, naming the replacement and
+the removal release; the one-time spoken notice above; and a line in the
+user guide’s model list until removal.</li>
+<li><strong>Never silently.</strong> No engine is switched, and no file
+deleted, without the person’s answer.</li>
+<li><strong>Removal checklist:</strong> delete the provider, its
+<code>engine_install</code> path, catalogue rows, egress entries, the
+wheelhouse and <code>uv.lock</code> pins, and its tests; regenerate the
+generated references; and confirm that the network egress audit and the
+settings vocabulary audit both pass.</li>
+</ol>
+<h4
+id="recommendation-yes-retire-a-few-and-only-for-clear-reasons">Recommendation:
+yes, retire a few, and only for clear reasons</h4>
+<p><strong>Should we remove support for some models? Yes, but only three
+things, and only after a notice period.</strong></p>
+<ul>
+<li><strong>Vosk as a dictation and voice-features engine</strong> (in
+progress, branch retire-vosk, PR pending): its dictation model is
+English only, the library has not changed since December 2022, it is
+checked by MD5 rather than SHA-256, and the bundled Moonshine tiny
+already covers dictation, voice commands and Hey QUILL. <strong>Vosk
+stays as the podcast chapter engine</strong>, where it beat Whisper
+medium (0.372 against 0.316) and was 4.7 times faster.</li>
+<li><strong>The duplicate Parakeet and Nemotron path</strong> inside
+Locked Dictation: it costs a second 650 MB download and two extra
+providers, for no capability of its own.</li>
+<li><strong>The legacy Win+H shim</strong>, which duplicates the voice
+typing engine.</li>
+</ul>
+<p><strong>Keep</strong> whisper.cpp and Faster Whisper as optional
+packs: one is the only initial-prompt and low-memory option, and the
+other is the only GPU option. Keep Vosk for chapters, Moonshine, the
+bundled Whisper models, multilingual Whisper, Windows speech
+recognition, voice typing, Kokoro and Piper.</p>
+<p><strong>Decide later, on measurements:</strong> the English-only
+Whisper and Distil-Whisper sizes (after B-1 and B-8), and the
+whisper.cpp default (after D-26 S2).</p>
+<p>The reason for removing anything is maintenance and safety, not
+fashion. Each removal takes a provider, a download host or a pinned
+wheel out of the build, and leaves people with a measured,
+already-installed alternative.</p>
+<table>
+<thead>
+<tr>
+<th>Proposed change</th>
+<th>Deprecate in</th>
+<th>Remove in</th>
+<th>Condition</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vosk as a dictation and voice-features engine (it stays for
+chapters)</td>
+<td>Done in #1663 (2026-10-13): settings migrated to Moonshine tiny with
+a one-time notice</td>
+<td>The release that merges it</td>
+<td>Moonshine tiny measured on B-1a, B-1c and B-8</td>
+</tr>
+<tr>
+<td>Vosk as the chapter engine</td>
+<td>Not before the replacement wins</td>
+<td>Not scheduled</td>
+<td>Moonshine tiny plus Silero VAD cue segmentation beats 0.372 on the
+same reference chapter lists (section 8), and sherpa-onnx is bundled in
+Cast</td>
+</tr>
+<tr>
+<td>Duplicate Parakeet and Nemotron providers and folder</td>
+<td>QUILL 1.1 (files merged into the shared store in D-26 S1)</td>
+<td>QUILL 1.2</td>
+<td>The migration is verified to move files without downloading them
+again</td>
+</tr>
+<tr>
+<td>Legacy Win+H shim (<code>quill/core/dictation.py</code>)</td>
+<td>QUILL 1.1</td>
+<td>QUILL 1.2</td>
+<td>Its callers are traced and pointed at <code>voice_typing</code> (not
+yet traced)</td>
+</tr>
+<tr>
+<td>whisper.cpp as the <strong>default</strong> (the engine itself stays
+as a pack)</td>
+<td>After D-26 S2</td>
+<td>Not removed</td>
+<td>B-1 parity for sherpa-onnx Whisper or Parakeet</td>
+</tr>
+<tr>
+<td>English-only Whisper and Distil-Whisper sizes</td>
+<td>Only if B-1 and B-8 show they are dominated</td>
+<td>One release later</td>
+<td>Measured per model, not on synthetic voices</td>
+</tr>
+</tbody>
+</table>
+<p>The release numbers assume that QUILL’s next feature releases are 1.1
+and 1.2 (the current QUILL changelog’s top entry is 1.0.0); rename them
+to the real release names when they are scheduled. QUILL Lite and
+Transcribe are affected only by the catalogue decision on the Whisper
+sizes, because whisper.cpp, Faster Whisper and the duplicate providers
+are QUILL-only. QUILL Cast is affected by Vosk only as the chapter
+engine, which stays.</p>
+<h2
+id="appendix-a-the-dictmd-section-numbers-and-where-they-live-now-the-first-dictmd-2026-10-05">Appendix
+A: the dict.md section numbers, and where they live now (the first
+dict.md, 2026-10-05)</h2>
 <table>
 <thead>
 <tr>
