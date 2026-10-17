@@ -209,6 +209,8 @@ def _say(controller: DictationController, text: str) -> None:
     ("said", "written"),
     [
         ("paste clip three", "Kind regards"),
+        # Moonshine writes the number as a digit (dictbench, 2026-10-16).
+        ("Paste clip 3", "Kind regards"),
         ("insert snippet sign off", "Thanks, [name]"),
         ("insert abbreviation addr", "1 Main Street"),
     ],

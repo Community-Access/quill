@@ -247,7 +247,8 @@ def command_outcome(
     open with it too (the controller takes the word off before parsing).
     """
     from quill.core.windows_dictation.parser import RecognizedPhrase, parse, words_from_text
-    from quill.core.windows_dictation.vocabulary import vocabulary_for
+    from quill.core.windows_dictation.targets import number_from
+    from quill.core.windows_dictation.vocabulary import Command, vocabulary_for
 
     if not basic_normalize(heard):
         return "nothing"
@@ -261,6 +262,10 @@ def command_outcome(
 
     def meaning(text: str) -> tuple[str, Any]:
         parsed = parse(RecognizedPhrase(words_from_text(text)), vocabulary=vocabulary)
+        if parsed.command is Command.PASTE_SLOT:
+            # QUILL reads the slot through number_from, which takes "three"
+            # and "3" alike: an engine that writes the digit has not failed.
+            return "command", (parsed.command, number_from(parsed.argument))
         if parsed.command is not None:
             return "command", (parsed.command, tuple(parsed.argument))
         if any(piece.mark is None for piece in parsed.pieces):

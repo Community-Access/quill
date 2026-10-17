@@ -15,6 +15,24 @@ file is the itemized list.
   another program already uses Alt+Shift+Backslash, QUILL Transcribe now says
   "To choose another, open the File menu and choose Start and Stop Key." Press
   Alt+F, then K, to get there. Nothing else about the key changed.
+
+- **Released on 1 November 2026** (decided 2026-10-16). Version 1.0.0 is the
+  first public release, and everything in this section ships in it. From then
+  QUILL Transcribe is part of every public QuillVille build: it is on the
+  QuillVille menu of QUILL, Quill Radio, Quill Weather, Quill Converter and
+  Quill Inkwell (Alt+Q, then T; Alt+U, then T in Quill Converter), on the tray
+  menus of Quill Radio, Quill Weather and Quill Inkwell, and offered for
+  download from them when it is not installed. Quill Cast's and Quill Radio's
+  **Edit > Dictate Here** (Ctrl+F11), which asks QUILL Transcribe to dictate
+  into the box you are in, shows in every copy too. QUILL Transcribe's own
+  QuillVille menu opens QUILL, Quill Radio, Quill Weather, Quill Converter and
+  Quill Inkwell on Ctrl+Alt+Shift+F7 to F11. User guide: "The other QuillVille
+  apps".
+
+- **A calmer spoken preview** (2026-10-16). With **Show it, and say new words
+  quietly** chosen for the words heard so far, each word is said once, when
+  the model has settled on it: never a word it is still changing its mind
+  about, and never the same word twice.
 - **Your dictation settings, shared with the family** (2026-10-16). More
   Dictation Settings has **Share dictation settings with every QuillVille program** (Alt+Q).
   When it is checked, what you save here is used by QUILL, QUILL Lite and Quill
@@ -256,7 +274,7 @@ file is the itemized list.
   an app or a shortcut still points to is left alone. Portable copies carry their
   own Python and change nothing outside their folder.
 
-## 1.0.0 - 2026-10-11
+## 1.0.0 - 2026-11-01
 
 The first release.
 

@@ -27,16 +27,28 @@ provider that violates append-only is a bug, surfaced loudly in dev (assert)
 and safely in release (the violating prefix is re-based, nothing is
 re-announced).
 
-Pure, wx-free, no runtime dependency; unit-tested directly. Referenced by the
-Parakeet/Nemotron provider docs as the contract their streaming variants must
-emit.
+**Wired 2026-10-16** (dictation design record, section 31). The streaming
+engines that landed -- Nemotron, OpenAI's live transcription and the cloud
+providers' WebSocket sessions -- hand dictation one string per update, the
+whole phrase so far, with no committed/tentative split of their own. So
+:class:`WordAgreement` derives one: a word is committed once two updates in a
+row agree on it and it is not the last word (which may still be half heard),
+the "local agreement" rule streaming recognisers use. Its committed text only
+ever grows, by construction, so a later rewrite of an already committed word is
+never spoken again. The live preview's spoken choice
+(:class:`quill.core.windows_dictation.preview.PreviewThrottle`) feeds its
+snapshots through :class:`StreamAnnouncer`; the visual preview (status bar and
+braille, one line that is replaced each time, not a stream of announcements)
+still shows the whole phrase, tentative tail included.
+
+Pure, wx-free, no runtime dependency; unit-tested directly.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 
-__all__ = ["StreamSnapshot", "StreamAnnouncer"]
+__all__ = ["StreamAnnouncer", "StreamSnapshot", "WordAgreement"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -100,3 +112,41 @@ class StreamAnnouncer:
     def reset(self) -> None:
         """Start a new utterance (a new dictation session)."""
         self._announced = ""
+
+
+def _key(word: str) -> str:
+    """A word as compared between updates: case and edge punctuation ignored."""
+    return word.strip(".,;:!?\"'()").lower()
+
+
+class WordAgreement:
+    """Snapshots for an engine that sends the whole phrase so far each time.
+
+    >>> agreement = WordAgreement()
+    >>> agreement.feed("can you")
+    StreamSnapshot(committed='', tentative='can you')
+    >>> agreement.feed("can you send")
+    StreamSnapshot(committed='can you', tentative='send')
+    """
+
+    def __init__(self) -> None:
+        self.reset()
+
+    def reset(self) -> None:
+        """A new phrase: nothing heard, nothing committed."""
+        self._previous: list[str] = []
+        self._committed: list[str] = []
+
+    def feed(self, text: str) -> StreamSnapshot:
+        """The snapshot for the latest whole-phrase *text*."""
+        words = text.split()
+        agreed = 0
+        for old, new in zip(self._previous, words, strict=False):
+            if _key(old) != _key(new):
+                break
+            agreed += 1
+        agreed = min(agreed, len(words) - 1)  # the last word may be half heard
+        if agreed > len(self._committed):
+            self._committed.extend(words[len(self._committed) : agreed])
+        self._previous = words
+        return StreamSnapshot(" ".join(self._committed), " ".join(words[len(self._committed) :]))

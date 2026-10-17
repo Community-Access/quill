@@ -81,6 +81,9 @@ def test_spanish_is_normalized_without_accents() -> None:
         ("scratch that", "new paragraph", "other command"),
         ("quill scratch that", "Quill, scratch that.", "parsed"),
         ("quill scratch that", "scratch that", "typed"),
+        # The 2026-10-16 run: QUILL reads "3" as slot three, so this parsed.
+        ("paste clip three", "Paste clip 3", "parsed"),
+        ("paste clip three", "Paste clip 4", "other command"),
     ],
 )
 def test_a_spoken_command_is_parsed_or_typed(reference: str, heard: str, outcome: str) -> None:

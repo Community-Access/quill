@@ -2447,7 +2447,6 @@ score said once, Score the Field, the profile window and lock, the lesson host,
 menu keys against the lesson table, F1 titles and inline help, reachability)
 and `tests/unit/ui/test_dictation_formatting_hooks.py` (QUILL's and QUILL
 Lite's formatting hooks and the editor port).
-
 ## 30. As built, 2026-10-16: one dictation settings store (D-13), the word list's new home, and Dictate Here in Cast and Radio (D-16)
 
 Three pieces, one change: the family's dictation settings are one store that
@@ -2667,18 +2666,148 @@ Alt+Right on every visit. One wiring serves both apps.
   `tests/unit/ui/test_dictate_here_menu.py`: every outcome with fakes, the
   release gate, the request file's senders, the Edit menu label and key in
   both apps, Quill Radio's real menu bar carrying Ctrl+F11 once in a
-  developer build, and QUILL Transcribe's `dictate_here_at_launch` in each
+  public build (a developer build before 2026-10-16), and QUILL Transcribe's `dictate_here_at_launch` in each
   case. No real window is driven.
 
 ### 30.6 Not done
 
 - A screen-reader pass with JAWS and NVDA on Cast's search box and Radio's
   Search Stations box (D-16's acceptance in practice).
-- QUILL Transcribe is not yet in `RELEASED_APPS`. Jeff decided it releases on
-  2026-11-01; adding it to `RELEASED_APPS` that day is what makes Dictate Here
-  appear in public Cast and Radio builds, with no other change.
+- ~~QUILL Transcribe is not yet in `RELEASED_APPS`.~~ Done on 2026-10-16 (Jeff's
+  decisions on todo P2 item 19): it is in `RELEASED_APPS` on the branch, with a
+  release date of 2026-11-01, so public Cast and Radio builds show Dictate
+  Here; it is last in `QUILLVILLE_APP_ORDER` and in the tray list
+  (`TRAY_APP_ORDER`), and the companion-install offer covers it. No sixth
+  QuillVille launcher key: public menus show at most five rows, and only a
+  developer build shows keyless rows past the fifth (`app_keymaps.py`, beside
+  `SIBLING_APP_ACCELERATORS`). Nothing has been tagged or published. The
+  screen-reader pass in Outlook, Word, Notepad and the browsers is Jeff's and
+  is a release blocker (`docs/qa/screen-reader-checks-2026-10.md`).
 - A "Restore my settings from before sharing" command over
   `before-sharing-<app>.json`; today that file is restored by hand.
+
+## 31. As built, 2026-10-16: the small items checked, and the streaming contract in use
+
+dict.md section 9 asks what the small items alone would bring. This pass
+checked every one against this record and the code, built what was left, and
+closed Jeff's todo about `StreamAnnouncer` (dict.md section 4, "Streaming
+integration").
+
+### The small items, one by one
+
+| Item | State | Where |
+|---|---|---|
+| D-6 braille preview and the status, resume and discard keys | Already built | Section 24 |
+| D-15 Inkwell pauses when the focus moves | Already built | Section 15 |
+| D-16 Dictate Here in Cast and Radio | Built | Section 30 |
+| D-18 read last sentence, paragraph, selection | Built in section 25; two additions folded in here | Section 25, and "D-18 additions" below |
+| D-22 recommended model and tier labels | Already built | Section 21 |
+| D-24 the never-type list and the cloud line in the tray | Already built | Section 15 |
+| D-3 opt-in fallback for one program | Waits, as planned | It needs a clean D-4 run on an idle computer (section 17), and none has found a program that drops keys |
+| D-4 slice, the tested-programs table | Already built, and more (the harness) | Section 17. The table fills in when someone runs the harness on an idle computer |
+| D-12 slice, Import and Export | Already built, and the shared list | Section 20 |
+| D-19 slice, replace and delete paragraph | Built | Section 27 |
+| D-21 slice, the offer after two corrections | Built | Section 28 |
+| D-25 slice, five Transcribe lessons | Built | Section 29 |
+| B-6 screen-reader rows for Transcribe | Already built (the rows; the checking is a person's) | Section 26 |
+| B-7 privacy tests for the new paths | Already built | Section 26 |
+| D-26 S0 benchmarks for candidate models | The tools are built; the runs need the data | Section 26 |
+| Streaming partials through the committed-and-tentative contract | **Built here** | Below |
+| "paste clip 3" scored as slot three by the benchmark | **Fixed here** | Below |
+
+dict.md section 4's "Listen", "Phrases" and "Privacy" have nothing small left
+beyond D-18 and D-24.
+
+### D-18 additions
+
+D-18 itself is section 25's (one implementation; this branch's duplicate was
+dropped at the merge). Two things this pass had that section 25 lacked were
+folded into that code rather than kept beside it:
+
+- **A read-only document can be read back.** The three reading commands are
+  answered in `VoiceCommandsMixin._mode_command`, before the controller's
+  writing check, because reading writes nothing; they used to be refused with
+  "This document is read-only". In another program they are still refused
+  there, with `external_refusal()`. `controller.py` did not grow.
+- **"leer" as well as "lee"** in the Spanish forms ("leer la última frase",
+  "leer el último párrafo", "leer la selección").
+
+The QUILL user guide gained "More about reading back" beside section 25's
+worked example; QUILL Lite's guide, which had the commands only as table rows,
+gained a worked example ("Checking your work by ear"). The PRD has a D-18
+requirement block.
+
+### The streaming contract, now in use
+
+`quill/core/speech/streaming.py` (2026-08-17) defined `StreamAnnouncer`
+"ahead of need": a streaming snapshot is an append-only committed prefix and a
+tentative tail, and speech says only newly committed text, exactly once. Then
+the streaming engines landed (section 3, Nemotron; OpenAI live; the WebSocket
+cloud providers, section 23) and none used it. dict.md D-26 ("Streaming
+integration") and D-35 say partial results from any online recogniser go
+through `preview.py` and that contract, and that only committed words are ever
+spoken or written. The spec keeps the class, so it was wired, not removed.
+
+**What was wrong.** With **Show it, and say new words quietly**,
+`PreviewThrottle.to_speak` said again from wherever the engine changed its
+mind: "call doctor" then "call Dr. Okonkwo" spoke "Dr. Okonkwo" after
+"doctor", the same words twice in different forms, which is exactly the
+repainting the contract exists to stop.
+
+**What it does now.** None of the engines hands QUILL a committed and a
+tentative part: each sends the whole phrase so far. So
+`streaming.WordAgreement` derives the split by local agreement: a word is
+committed once two updates in a row agree on it (case and edge punctuation
+ignored) and it is not the last word, which may still be half heard. Its
+committed text only grows, by construction, so a later rewrite of a word
+already said is never said again. `to_speak` feeds each update through
+`WordAgreement` and `StreamAnnouncer`, gathers what is newly committed, and
+still says it no more often than every two seconds. Everything reaches it the
+same way (`recognizer_worker` and the cloud recogniser post `on_partial`;
+`LiveMixin.on_partial` decides), so Nemotron, OpenAI and every streaming cloud
+provider follow the contract with no change in any engine.
+
+**What stays as it was.** The visual preview, "Hearing: ..." in the status bar
+and on a braille display, still shows the whole phrase, tentative tail
+included: it is one line replaced in place, not a stream of announcements,
+and dict.md D-6 asks for it. The words written at the pause are always the
+engine's final ones; the spoken preview never decides what is written.
+
+**The cost.** Speech now lags the engine by one update (a word is said once a
+second update confirms it). That is the trade the contract makes: a word late
+rather than a word twice.
+
+### "paste clip 3"
+
+The first dictbench run (section 26) reported "paste clip three" heard as
+"Paste clip 3" and scored it as a different command. QUILL itself already
+accepts a digit there: `targets.number_from` reads "three", "3" and "number
+three" alike. The miss was the benchmark's: `bench_scoring.command_outcome`
+compared the raw words after the command. It now compares the slot number,
+and a controller test pins "Paste clip 3" pasting slot three in another
+program. ("insert abbreviation addr" heard as "address" is a different case:
+the engine changed the word, and nothing in the parser could know.)
+
+### Documentation
+
+The spoken-preview paragraphs in all three user guides (QUILL, QUILL Lite,
+QUILL Transcribe) now say a word is spoken once it is settled and never twice;
+the reading-back additions are above. The dictation-commands page (both
+copies) and `docs/site/dictation.html` are regenerated from the command table.
+No control was added, so F1 help is unchanged.
+
+### Tests
+
+`tests/unit/core/test_dictation_live_controller.py` (the spoken preview
+through a rewrite; the user guide's reading example with the cursor and
+selection left where they were; a read-only document read back; nothing to
+read and the marks setting), `tests/unit/core/test_dictation_hold_and_preview.py`
+(`to_speak` under the contract),
+`tests/unit/core/speech/test_speech_vad_and_streaming.py` (`WordAgreement`),
+`tests/unit/core/test_dictation_external_list.py` and
+`tests/unit/scripts/test_bench_scoring.py` (the digit). Section 25's own D-18
+tests are in `tests/unit/core/test_dictation_snippet_fill.py`.
+
 
 ## Appendix A: the dict.md section numbers, and where they live now
 

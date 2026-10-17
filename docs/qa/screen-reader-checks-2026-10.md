@@ -2,7 +2,7 @@
 
 These are the hands-on checks for everything built in late September and early
 October 2026 across QUILL Cast, Quill Radio, QUILL Lite and QUILL. There are
-272 of them. Each one says where to go, what to press and what you should
+316 of them. Each one says where to go, what to press and what you should
 hear. Check a box only after you have tried it yourself with a screen reader;
 passing automated tests do not count.
 
@@ -14,6 +14,18 @@ This list used to live in the working file qc.md, which was retired on
 2026-10-03 once all its code work was done. The app-by-app sign-off sheets in
 this folder are still the place to start for a release; this page covers what
 is new since they were written.
+
+## Release blockers
+
+- **QUILL Transcribe 1.0, releasing 1 November 2026: the screen-reader pass in
+  Outlook, Word, Notepad and the browsers is Jeff's, and it blocks the
+  release.** Every Notepad, Word, Outlook, Edge, Chrome and Firefox box under
+  "QUILL Transcribe Into Other Programs" below must be checked, with NVDA, JAWS
+  and Narrator, before the 1.0.0 packages are published. QUILL Transcribe is in
+  `RELEASED_APPS` on the branch from 2026-10-16, so a build made now already
+  shows it on every QuillVille menu and shows Dictate Here in Quill Cast and
+  Quill Radio; that does not make the pass optional. The checks under "QUILL
+  Transcribe in the Rest of the Family" are part of the same pass.
 
 ## Still to do in the code
 
@@ -1021,6 +1033,33 @@ Then check a box for each program and reader once all six held:
   typed by dictation must not be doubled by the editor's automatic closing.
 - [ ] Visual Studio Code with JAWS.
 - [ ] Visual Studio Code with Narrator.
+
+### QUILL Transcribe in the Rest of the Family (release, 2026-10-16)
+
+QUILL Transcribe joins the public family on 1 November 2026. These checks are
+for the places the other apps now offer it. Use a build made without
+`QUILL_DEV_BUILD`, so you meet what the public will.
+
+- [ ] In QUILL, press Alt+Q. The QuillVille menu reads five rows, each with its
+  key: Open Quill Radio (Ctrl+Alt+Shift+F7), Open Quill Weather (F8), Open
+  Quill Converter (F9), Open Quill Inkwell (F10) and Open QUILL Transcribe
+  (Ctrl+Alt+Shift+F11). Press T: QUILL Transcribe opens, or comes to the front.
+- [ ] In Quill Radio, Alt+Q reads four rows, ending with Open QUILL Transcribe
+  (Ctrl+Alt+Shift+F10); there is no Inkwell row.
+- [ ] In Quill Weather, Quill Converter (Alt+U) and Quill Inkwell, the last row
+  is Open QUILL Transcribe on Ctrl+Alt+Shift+F11. In QUILL Transcribe's own
+  menu the five rows are QUILL, Radio, Weather, Converter and Inkwell, and it
+  does not list itself.
+- [ ] The tray menus of Quill Radio, Quill Weather and Quill Inkwell read Open
+  QUILL Transcribe after the other Open rows.
+- [ ] On a computer without QUILL Transcribe, a portable copy of QUILL: Alt+Q,
+  T asks whether to download it. Before 1 November 2026 there is nothing to
+  download, so after Yes you hear that it could not be fetched and are offered
+  the download page. Nothing is downloaded until you say Yes.
+- [ ] In Quill Cast and Quill Radio, Edit reads Dictate Here, Ctrl+F11. On a
+  computer without QUILL Transcribe, Ctrl+F11 in Search Stations says "Dictate
+  Here needs QUILL Transcribe, which is not installed with this copy." once,
+  and nothing else.
 
 ### Dictation: the command word and command mode (2026-10-15)
 

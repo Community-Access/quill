@@ -193,19 +193,19 @@ SPANISH_COMMAND_HELP: tuple[CommandHelp, ...] = (
     ),
     CommandHelp(
         Command.READ_SENTENCE,
-        ("lee la última frase",),
+        ("lee la última frase", "leer la última frase"),
         "Reads the sentence just before the cursor.",
         "Correcting",
     ),
     CommandHelp(
         Command.READ_PARAGRAPH,
-        ("lee el último párrafo", "lee este párrafo"),
+        ("lee el último párrafo", "leer el último párrafo", "lee este párrafo"),
         "Reads the paragraph the cursor is in.",
         "Correcting",
     ),
     CommandHelp(
         Command.READ_SELECTION,
-        ("lee la selección",),
+        ("lee la selección", "leer la selección"),
         "Reads what is selected.",
         "Correcting",
     ),

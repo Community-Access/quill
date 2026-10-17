@@ -154,3 +154,65 @@ def test_each_row_is_a_command_the_listener_can_rebind() -> None:
         _FakeWx(), frame, lambda _k: None, exclude="radio", retain=lambda _i: None, host=rebound
     )
     assert menu.labels[0] == "Open &QUILL	Ctrl+Alt+1"
+
+
+# -- QUILL Transcribe, released 2026-11-01 (Jeff, 2026-10-16) ------------------
+
+
+def test_transcribe_is_released_and_listed_last_on_the_fifth_key(monkeypatch) -> None:
+    """QUILL Transcribe joins every public QuillVille menu, last.
+
+    Last, so that no row anybody has learned changes key: in QUILL's public menu
+    Radio, Weather, Converter and Inkwell keep F7 to F10 and Transcribe takes
+    F11, the fifth and final launcher key (there is no sixth; see the comment
+    beside ``SIBLING_APP_ACCELERATORS``).
+    """
+    from quill.core.app_keymaps import SIBLING_APP_ACCELERATORS
+
+    monkeypatch.delenv("QUILL_DEV_BUILD", raising=False)
+    assert "transcribe" in qv.RELEASED_APPS
+    assert qv.QUILLVILLE_APP_ORDER[-1] == "transcribe"
+    labels = _build(exclude="quill")
+    assert [label.split(chr(9))[0].replace("&", "") for label in labels] == [
+        "Open Quill Radio",
+        "Open Quill Weather",
+        "Open Quill Converter",
+        "Open Quill Inkwell",
+        "Open QUILL Transcribe",
+    ]
+    assert [label.split(chr(9))[1] for label in labels] == list(SIBLING_APP_ACCELERATORS)
+    # QUILL Transcribe's own menu lists the five others and never itself.
+    own = " ".join(_build(exclude="transcribe"))
+    assert "Transcribe" not in own and own.count("Open ") == 5
+
+
+def test_the_tray_offers_transcribe_beside_the_first_three(monkeypatch) -> None:
+    """The tray keeps its short list and adds QUILL Transcribe, whose own home is
+    the tray; an unreleased app is never offered there either."""
+    import wx
+
+    from quill.ui import quillville_menu
+
+    monkeypatch.delenv("QUILL_DEV_BUILD", raising=False)
+    labels: list[str] = []
+    menu = SimpleNamespace(Append=lambda _id, label: labels.append(label))
+    monkeypatch.setattr(wx, "NewIdRef", lambda: object())
+    quillville_menu.append_sibling_items(
+        menu,
+        frame=SimpleNamespace(Bind=lambda *a, **k: None),
+        exclude="weather",
+        on_launch=lambda _k: None,
+        retain=lambda *_ids: None,
+    )
+    names = [label.split(chr(9))[0].replace("&", "") for label in labels]
+    assert names == ["Open QUILL", "Open Quill Radio", "Open QUILL Transcribe"]
+    monkeypatch.setattr(quillville_menu, "is_app_released", lambda key: key != "transcribe")
+    labels.clear()
+    quillville_menu.append_sibling_items(
+        menu,
+        frame=SimpleNamespace(Bind=lambda *a, **k: None),
+        exclude="weather",
+        on_launch=lambda _k: None,
+        retain=lambda *_ids: None,
+    )
+    assert not any("Transcribe" in label for label in labels)
