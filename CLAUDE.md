@@ -156,6 +156,10 @@ are pytest gates and one is a tool in `platform_report`:
   `perf`): a synthetic 50 MB buffer, against a ceiling rather than against the
   other editor -- comparing the two would pass a build where both had become
   slow together. This is what keeps the shared `DocumentText` from rotting.
+  Its PDF half (`tests/unit/core/test_pdf_open_budget.py`, 2026-10-17) opens a
+  200-page synthetic PDF -- the most either editor reads -- within 150 ms a page.
+  Never time a read made under `tracemalloc`: it runs about four times slower,
+  which is how a 60-page budget once "failed" at 293 ms a page.
 
 ### Key invariants
 

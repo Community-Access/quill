@@ -153,6 +153,7 @@ class QuillMediaPlayerFrame(
             MEDIA_PLAYER_PREFS,
             read_device_pref,
         )
+        from quill.ui.media.player_access_keys import PLAYER_PANEL_LABELS
 
         panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
         root = wx.BoxSizer(wx.VERTICAL)
@@ -174,6 +175,7 @@ class QuillMediaPlayerFrame(
             announce=self._announce,
             on_finished=self._on_finished,
             output_device=read_device_pref(MEDIA_PLAYER_PREFS, MEDIA_PLAYER_DEVICE_KEY),
+            labels=PLAYER_PANEL_LABELS,  # GATE-15: never a menu bar letter (todo 49)
         )
         root.Add(self._player, 0, wx.EXPAND | wx.ALL, 8)
 
@@ -216,15 +218,13 @@ class QuillMediaPlayerFrame(
         apply_listbox_activation(self._bookmarks_list, self._on_bookmark_activate)
         bm_sizer.Add(self._bookmarks_list, 1, wx.EXPAND | wx.ALL, 6)
         bm_row = wx.BoxSizer(wx.HORIZONTAL)
-        self._add_bm_btn = wx.Button(bm_page, label="&Add Bookmark")
+        self._add_bm_btn = wx.Button(bm_page, label="Add Book&mark")
         self._add_bm_btn.SetHelpText(
-            "Drop a bookmark at the current playback position. Add Bookmark "
-            "with Note in the Navigation menu attaches words to it."
+            "Drop a bookmark here. Add Bookmark with Note (Navigation menu) adds words to it."
         )
-        self._remove_bm_btn = wx.Button(bm_page, label="&Remove Bookmark")
+        self._remove_bm_btn = wx.Button(bm_page, label="Remove Boo&kmark")
         self._remove_bm_btn.SetHelpText(
-            "Delete the highlighted bookmark from this book. Only the "
-            "bookmark goes -- the audio and your position are untouched."
+            "Delete the highlighted bookmark from this book; the audio and your place stay."
         )
         self._add_bm_btn.Bind(wx.EVT_BUTTON, self._on_add_bookmark)
         self._remove_bm_btn.Bind(wx.EVT_BUTTON, self._on_remove_bookmark)

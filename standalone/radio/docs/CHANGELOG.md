@@ -10,6 +10,17 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 Testing rebuild: **3.2.0 (build 4)**. The packages have not been published yet.
 
+- **Properties now tells you about the drive a file is on** (2026-10-17). In
+  Local Media, **Properties...** (Alt+Enter) ends with the drive the file lives
+  on: its letter or network share, its label, what kind of drive it is (local
+  disk, removable drive, network drive, CD or DVD drive) and its file system,
+  then its capacity, how much is used (with the percentage) and how much is
+  free. Sizes are in the units File Explorer uses, with the exact number of
+  bytes beside them, for example "Drive free: 12.9 GB (13,857,980,416 bytes)".
+  If the drive has been removed, a network share cannot be reached, or Windows
+  will not let it be read, that is one plain line and everything else in the
+  box still shows. Nothing on the drive is changed. User guide: "Properties and
+  File Explorer".
 - **The user guide explains Dictate Here in full** (2026-10-17). "Dictating a
   search" now says what happens in each case when you press Ctrl+F11 (QUILL
   Transcribe running, not running, Quill Inkwell dictating, not installed, or

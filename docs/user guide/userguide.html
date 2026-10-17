@@ -2472,8 +2472,20 @@ result. <strong>No Tesseract? Windows OCR does it instead,</strong> with
 no download and no question: it is the OCR built into Windows 10 and 11,
 and it reads the languages you have in Windows Settings. It cannot say
 how confident it is, so check the text yourself. When Tesseract is
-installed, QUILL uses Tesseract.</li>
+installed, QUILL uses Tesseract. <strong>A picture of a page works the
+same way</strong> (since 2026-10-17): a <code>.png</code>,
+<code>.jpg</code>, <code>.tif</code> or other image goes straight to
+OCR, with Tesseract when it is installed and Windows OCR when it is not.
+Before, a picture needed Tesseract, and without it the conversion
+stopped with a message about installing it. For example, choose a photo
+of a letter, <code>letter.jpg</code>, and you hear “Opened letter.jpg
+from Windows OCR on this computer. Nothing was uploaded. Check the text;
+OCR makes mistakes.”</li>
 </ol>
+<p>QUILL Lite has the same command, on its File menu, with the same
+readers and the same sentences (since 2026-10-17). It never offers to
+download Tesseract and has no cloud OCR, and its result opens in a
+window rather than a tab.</p>
 <p>Other problems get their own clear message instead of the scanned-PDF
 question. A file that is really corrupt is reported as <em>damaged</em>,
 with a note that OCR won’t help (repair it or export it again from where
@@ -8100,6 +8112,21 @@ flag when the character is not ASCII.</li>
 </ul>
 <p>If the cursor is at the very end of the document, it tells you so
 instead of guessing.</p>
+<p>A <strong>page break</strong> is named as one. A PDF opens with a
+page break between each of its pages (a form feed character, which is
+what Go To’s Page list and the Page part of the status bar count). With
+the cursor on one, Describe Character says “Page break U+000C” and
+Character Details adds that one page ends there and the next begins.
+Before 2026-10-17 it said “Unnamed character”, which told you nothing.
+For example, open a three-page PDF, press <strong>Ctrl+G</strong>,
+choose <strong>Page</strong>, pick page 2, then press <strong>Left
+Arrow</strong> once and <strong>Ctrl+Shift+C</strong>: you hear “Page
+break”.</p>
+<p>QUILL also never hands that character, or any other control
+character, to your screen reader inside an announcement. When a message
+quotes text that crosses a page, such as the first words of a selection,
+the page break is read as a pause rather than as a character name. The
+text in your document is not changed.</p>
 <h4 id="reveal-codes-altf3">Reveal Codes (Alt+F3)</h4>
 <p>QUILL keeps formatting codes hidden, so your editing text stays clean
 and fast. Reveal Codes lets you see and hear every one of them when you
@@ -13387,7 +13414,9 @@ and each reply remembers what was said before.</p>
 <strong>Conversation</strong> above. Press <code>Shift+Tab</code> to
 reach it.</li>
 <li>Beside Send are <strong>Copy Last Reply</strong>, <strong>Insert
-Last Reply Below</strong> and <strong>New Conversation</strong>.</li>
+Last Reply Below</strong>, <strong>New Conversation</strong>,
+<strong>Messages…</strong> and <strong>Export Conversation…</strong>
+(both described below).</li>
 </ol>
 <p>If you started with a question about the document, each follow-up
 keeps sending the same passages, so you can keep asking about them.</p>
@@ -13399,6 +13428,44 @@ first. Press <code>Enter</code> on one to open it and carry on where it
 left off, or <strong>Delete</strong> to remove it (QUILL asks first).
 <strong>New Conversation</strong> starts a new saved conversation; the
 old one stays saved.</p>
+<p><strong>Going back over the conversation.</strong> In the
+conversation window:</p>
+<ul>
+<li><code>Alt+1</code> reads the newest message aloud,
+<code>Alt+2</code> the one before it, and so on up to <code>Alt+0</code>
+for the tenth newest. Each is said with its place and its speaker, for
+example “Message 4 of 9, AI: …”, and the newest starts with “Newest”.
+Focus stays in <strong>Your message</strong> and your half-typed message
+stays where it is. With fewer messages than the key asks for, you hear
+how many there are, for example “There are only 2 messages so far. Alt+2
+reads the oldest.”</li>
+<li><strong>Messages…</strong> lists every message, oldest first, one
+row each. Press <code>Enter</code> to open a message in a reading window
+where its headings and tables are real ones (in browse mode,
+<code>H</code> moves by heading and <code>T</code> by table), or
+<strong>Read as Text</strong> to see it exactly as it arrived in a plain
+text box. Close it with <code>Escape</code> and you are back on the same
+row; the list opens on that row again next time.</li>
+<li><strong>Export Conversation…</strong> saves the whole conversation
+as a <strong>Word document</strong> or a <strong>Text file</strong> you
+name. Every message is kept in order with who said it: in Word, each
+message is a level-2 heading such as “Message 3 of 8, AI” with the
+message beneath it and its tables as real Word tables; in a text file,
+each message is a paragraph starting “You:” or “AI:”. The Save As window
+asks before replacing a file, <strong>Cancel</strong> writes nothing,
+and your document is never changed. If the file cannot be written, you
+hear why and any file already there is left as it was.</li>
+<li>A reply that arrives while you are reading the
+<strong>Conversation</strong> box does not move your place in it. If you
+are not in the box, it shows the end, as before.</li>
+</ul>
+<p>Example: you ask “Plan a three-day trip to Lisbon”, then “Make day
+two cheaper”. Press <code>Alt+3</code> to hear the first plan again, and
+<strong>Export Conversation…</strong> to keep both plans in a Word file,
+each under its own heading.</p>
+<p>These work the same on QUILL’s free AI, with your own OpenAI or
+Gemini key, and with your ChatGPT plan, and every route saves to the
+same <strong>Saved Conversations</strong>.</p>
 <p>On the free AI each message counts as one request, and conversations
 have a monthly share of 40 of your 100 requests. The conversation so far
 goes with each message only as far as the ordinary size limit allows, so
@@ -14512,6 +14579,77 @@ speaker labels. The last response goes in as just its content.</li>
 <li><strong>Copy Last Response</strong> copies the most recent reply to
 the clipboard.</li>
 </ul>
+<h4 id="reading-back-listing-and-exporting-the-conversation">Reading
+back, listing and exporting the conversation</h4>
+<p>Three things help in a long chat, and they work the same way in the
+<strong>AI Conversation</strong> window (see Having a conversation,
+earlier in this chapter).</p>
+<p><strong>Hear a recent message without moving.</strong> Press
+<code>Alt+1</code> to hear the newest message, <code>Alt+2</code> for
+the one before it, and so on up to <code>Alt+0</code> for the tenth
+newest. Each one is said with its place and its speaker, for example
+“Message 7 of 12, You: what about the budget?”. The newest starts with
+the word “Newest”. Nothing moves: focus stays in your message, and
+anything you had half typed is still there. These keys work from the
+message box and from anywhere else in the Ask Quill window.</p>
+<ul>
+<li>With fewer messages than the key asks for, QUILL says how many there
+are, for example “There are only 3 messages so far. Alt+3 reads the
+oldest.”</li>
+<li>The message is read as words, not Markdown: no hash marks, stars or
+link addresses. To read it exactly as it arrived, use the message list
+below.</li>
+<li>Example: you ask for a summary, then ask two follow-up questions.
+The summary is now five messages back (your two questions and their two
+replies came after it), so <code>Alt+5</code> reads it again while you
+keep typing your next question.</li>
+</ul>
+<p><strong>Message List…</strong> (a button at the bottom of the window;
+<code>Tab</code> reaches it) shows every message in one list, oldest
+first, each row like “Message 2 of 6, Quill: Here is the plan…”. The
+list starts on the newest message, or on the row you were on last
+time.</p>
+<ul>
+<li><code>Enter</code> (or <strong>Open</strong>) shows that message in
+a reading window where its headings and tables are real ones. In your
+screen reader’s browse mode, <code>H</code> moves by heading and
+<code>T</code> by table, and the table commands read a row or a column
+with its headers.</li>
+<li><strong>Read as Text</strong> shows the same message exactly as it
+arrived, Markdown and all, in a plain text box you can arrow through,
+select and copy.</li>
+<li>Close either one with <code>Escape</code> and you are back on the
+same row of the list.</li>
+</ul>
+<p><strong>Export Conversation…</strong> saves the whole conversation to
+a file of its own. Choose <strong>Word document</strong> or <strong>Text
+file</strong> in the Save As window and name it.</p>
+<ul>
+<li>Every message is kept, in order, with who said it. In a Word file
+each message is a level-2 heading, “Message 3 of 12, Quill”, with the
+message underneath. Headings inside a reply become level 3 and lower,
+and tables become real Word tables. In a text file each message is a
+paragraph that starts with its speaker, “You:” or “Quill:”.</li>
+<li>If the file already exists, the Save As window asks before replacing
+it. Choosing <strong>Cancel</strong> writes nothing.</li>
+<li>Your document is never touched. Exporting does not insert anything,
+change your document’s name or mark it saved. (To put chat text into
+your document, use <strong>Insert into document</strong> above.)</li>
+<li>If the file cannot be written (a folder you cannot write to, or a
+drive that is full), QUILL says why, and any file already there is left
+as it was.</li>
+</ul>
+<p><strong>Headings in the chat.</strong> Each message is a level-2
+heading naming who said it. A reply that has its own headings now has
+them at level 3 and below, so your screen reader’s heading list shows
+the conversation, and each reply’s sections sit inside their
+message.</p>
+<p><strong>If the chat window cannot show its web view</strong> (on a
+few computers the built-in browser component is missing), the
+conversation is a plain list instead, one row per message. Press
+<code>Enter</code> on a row to open that message with its headings and
+tables, and you come back to the same row. When a new reply arrives
+while you are reading the list, your place in it does not move.</p>
 <h4 id="what-the-assistant-will-and-will-not-do">What the assistant will
 and will not do</h4>
 <ul>

@@ -4826,6 +4826,54 @@ because it lands in an unfocused transcript (GATE-13's case for speaking); the
 transcript is a read-only field Tab reaches; the window says, once, when a long
 conversation stops sending its beginning.
 
+**Reading back, navigating and exporting a conversation (2026-10-17, todo item
+44).** Both conversation windows -- Ask Quill and the AI Conversation window --
+share one implementation (`quill/core/ai/chat_navigation.py`,
+`quill/ui/ai_conversation_tools.py`), so QUILL Lite's AI Conversation window has
+all of it in the same release.
+
+- **The recent ten.** Alt+1 reads the newest message aloud, Alt+2 the one
+  before, to Alt+0 for the tenth newest: "Message 7 of 12, AI: ..." with
+  "Newest, " on Alt+1, words not Markdown (`speakable_line`). Fewer messages
+  than the key asks for says how many there are and which key reads the
+  oldest. The keys only read: focus, the half-typed message and any reading
+  position are untouched. Alt plus a digit was free in both windows and no
+  access key in either is a digit (asserted in
+  `tests/unit/ui/test_ai_conversation_tools.py`). In Ask Quill the WebView owns
+  the keyboard while focused, so a keydown script posts the digit over the
+  existing `awv` bridge; the dialog's char hook covers every other control, and
+  one press seen by both is said once.
+- **The message list.** Messages... (AI Conversation, Alt+G) and Message
+  List... (Ask Quill) list every message oldest first as "Message N of M,
+  speaker: opening words". Enter opens one rendered (`MarkdownPreviewDialog`):
+  a level-2 heading naming it, the reply's headings nested beneath, real
+  tables. Read as Text shows it verbatim. Closing returns focus to the same
+  row, and the window reopens the list on that row until New Conversation or
+  a saved conversation replaces it.
+- **Headings nest under the speaker.** Each Ask Quill turn is an article with
+  a level-2 speaker heading; a reply's own `#` headings are moved down so the
+  shallowest is level 3 (`nest_reply_headings`, fenced code untouched, capped
+  at 6), so the heading list reads as one conversation.
+- **Export Conversation...** writes the whole conversation to `.docx` or `.txt`
+  through `chat_export.export_conversation`, which builds a fresh `Document`
+  and calls the same writers as File > Save As (`write_docx_document`,
+  `write_text_document`). The active document is never an argument, so it
+  cannot be changed, renamed or marked saved. Word: a level-1 title, a level-2
+  heading per message, nested reply headings, Markdown tables as Word tables,
+  fenced code indented so the line-oriented writer never makes a heading of a
+  `# comment`. Text: the title, then "You: ..." / "AI: ..." paragraphs. Save As
+  prompts before overwriting; Cancel writes nothing; failures are spoken and,
+  the writers being atomic, leave an existing file as it was.
+- **Reading position.** A reply no longer moves the caret of somebody reading
+  the AI Conversation transcript; Ask Quill's fallback list (no WebView) keeps
+  the reader's row while it has focus and opens a row with Enter.
+- **Provider routes.** The conversation store is the editor's `ai-sessions`
+  folder on every route (free service, own key, ChatGPT plan), asserted by a
+  test; no model name is introduced.
+
+Manual JAWS and NVDA checks: `docs/qa/screen-reader-checks-2026-10.md`,
+"AI conversations: recent ten, message list, export".
+
 ### 5.84m3 Your own API key: OpenAI or Google Gemini, chosen, never inferred (2026-10-02, qc.md X-07)
 
 **Use My Own API Key** (`Alt+F2`, formerly Use My Own OpenAI Key) sends AI help

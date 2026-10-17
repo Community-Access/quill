@@ -13,6 +13,7 @@ from __future__ import annotations
 import threading
 import time
 
+from quill.ui.assistant_conversation_tools import AssistantConversationToolsMixin
 from quill.ui.assistant_reply_delivery import AssistantReplyDeliveryMixin
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 
@@ -48,7 +49,7 @@ def classify_assistant_error(error: str) -> tuple[str, bool]:
     return (f"Error: {text}", False)
 
 
-class AskQuillChatDialog(AssistantReplyDeliveryMixin):
+class AskQuillChatDialog(AssistantReplyDeliveryMixin, AssistantConversationToolsMixin):
     def __init__(
         self,
         parent: object,
@@ -176,6 +177,7 @@ class AskQuillChatDialog(AssistantReplyDeliveryMixin):
                 suggestions=SUGGESTED_PROMPTS,
                 on_send=self._submit,
                 on_close=self._close,
+                on_recent=lambda n: self._read_recent(n),
             )
             outer.Add(self._webview.control, 1, wx.EXPAND | wx.ALL, 0)
         except Exception:  # noqa: BLE001
@@ -246,6 +248,7 @@ class AskQuillChatDialog(AssistantReplyDeliveryMixin):
         self.copy_button = wx.Button(self.dialog, label="Copy Last Response")
         self.copy_button.Enable(False)
         footer.Add(self.copy_button, 0, wx.RIGHT, 8)
+        self._build_conversation_tools(footer)  # Message List, Export, Alt+1..0
         footer.AddStretchSpacer()
         footer.Add(wx.Button(self.dialog, wx.ID_CANCEL, label="Close"), 0)
         outer.Add(footer, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 14)
@@ -291,7 +294,7 @@ class AskQuillChatDialog(AssistantReplyDeliveryMixin):
                 if available
                 else "Hi! Ask me to write, edit, or run something."
             )
-            self._append("Quill", greeting)
+            self._fallback_show(f"Quill: {greeting}", None)  # a greeting, not a message
         self._set_busy(not available)
 
     # -- Setup strip ----------------------------------------------------------
@@ -455,6 +458,8 @@ class AskQuillChatDialog(AssistantReplyDeliveryMixin):
         if key == wx.WXK_ESCAPE:
             self._close()
             return
+        if self._recent_from_key(event):  # Alt+1 .. Alt+0 read a recent message
+            return
         # Ctrl+F9: ask a question by voice (record -> transcribe -> send).
         if key == wx.WXK_F9 and event.ControlDown():
             self._toggle_voice_question()
@@ -516,6 +521,7 @@ class AskQuillChatDialog(AssistantReplyDeliveryMixin):
         )
         self.messages = wx.ListBox(self.dialog, style=wx.LB_SINGLE | wx.LB_NEEDED_SB)
         self.messages.SetName("Conversation")
+        self._bind_fallback_list()
         outer.Add(self.messages, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 14)
 
         outer.Add(
@@ -556,11 +562,7 @@ class AskQuillChatDialog(AssistantReplyDeliveryMixin):
             self._webview.append_message(speaker, text)
             return
         display = f"{speaker}: {' '.join(text.splitlines())}"
-        index = self.messages.GetCount()
-        self.messages.Append(display)
-        self.messages.SetSelection(index)
-        if hasattr(self.messages, "EnsureVisible"):
-            self.messages.EnsureVisible(index)
+        self._fallback_show(display, len(self._transcript) - 1)
 
     def _set_busy(self, busy: bool) -> None:
         self._update_thinking(busy)

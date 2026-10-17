@@ -207,18 +207,29 @@ _PEAK_MB = 48
 
 @pytest.mark.perf
 def test_clean_pages_pay_for_one_extractor_and_stay_in_budget(tmp_path: Path) -> None:
+    """Memory and time in two separate reads -- never time a traced read.
+
+    tracemalloc hooks every allocation, and pdfminer allocates per glyph: on the
+    development machine a traced read cost 121-129 ms a page against 28-29 ms
+    untraced (2026-10-17). The one read used to do both, so the clock measured
+    the tracer, and on a loaded machine that came to 293 ms a page and failed a
+    250 ms budget the reader itself was nowhere near (todo item 52). The traced
+    read goes first, which also pays the cold imports before the clock starts.
+    """
     path = _builder().build_long(tmp_path / "long.pdf", 60)
-    start = time.perf_counter()
     tracemalloc.start()
     try:
-        result = extract_pdf_text(path)
+        traced = extract_pdf_text(path)
         _current, peak = tracemalloc.get_traced_memory()
     finally:
         tracemalloc.stop()
+    assert peak / 1_000_000 < _PEAK_MB
+    start = time.perf_counter()
+    result = extract_pdf_text(path)
     elapsed_ms = (time.perf_counter() - start) * 1000
     assert result.page_engines == ["pdfplumber"] * 60  # every page on the fast path
+    assert result.text == traced.text
     assert elapsed_ms / 60 < _CLEAN_MS_PER_PAGE
-    assert peak / 1_000_000 < _PEAK_MB
 
 
 @pytest.mark.perf

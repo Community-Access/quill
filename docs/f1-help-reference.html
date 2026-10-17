@@ -877,7 +877,9 @@ one.</li>
 (<code>quill/ui/radio/local_media_manage.py</code>)</h4>
 <ul>
 <li><code>box</code>: What this file says about itself and where it is,
-one fact a line. Arrow through it, or select and copy any of it.</li>
+one fact a line, ending with the drive it is on: its name, kind,
+capacity, used and free space. Arrow through it, or select and copy any
+of it.</li>
 <li><code>close</code>: Closes this and goes back to the list.</li>
 </ul>
 <h4
@@ -2697,12 +2699,10 @@ heading levels; flat MP3 or M4B chapters are a single level.</li>
 with its note and position. Enter jumps playback to the highlighted
 bookmark; a bookmark with a note is read aloud when playback reaches it
 again.</li>
-<li><code>self._add_bm_btn</code>: Drop a bookmark at the current
-playback position. Add Bookmark with Note in the Navigation menu
-attaches words to it.</li>
+<li><code>self._add_bm_btn</code>: Drop a bookmark here. Add Bookmark
+with Note (Navigation menu) adds words to it.</li>
 <li><code>self._remove_bm_btn</code>: Delete the highlighted bookmark
-from this book. Only the bookmark goes – the audio and your position are
-untouched.</li>
+from this book; the audio and your place stay.</li>
 </ul>
 <h2 id="quill-audio-studio">QUILL Audio Studio</h2>
 <p>Control coverage: 159 audited sites (157 helped, 2 named-help).</p>
@@ -4678,7 +4678,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
-<p>Control coverage: 227 audited sites (227 helped).</p>
+<p>Control coverage: 229 audited sites (229 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
@@ -5381,6 +5381,14 @@ the conversation so far as fits.</li>
 <li><code>fresh</code>: Forgets this conversation and starts again.
 Nothing is sent.</li>
 <li><code>copy</code>: Puts the most recent reply on the clipboard.</li>
+<li><code>messages</code>: Lists every message in this conversation.
+Enter opens one with its headings and tables; closing it comes back to
+the same row. Alt+1 reads the newest message aloud without leaving the
+message box, Alt+2 the one before, up to Alt+0 for the tenth
+newest.</li>
+<li><code>export</code>: Saves the whole conversation, every message
+with who said it, to a Word or text file you choose. Your document is
+not changed.</li>
 <li><code>saved</code>: Lists the conversations saved on this computer,
 newest first, so you can open one and carry on, or delete one.</li>
 <li><code>insert</code>: Puts the most recent reply into your document
@@ -5719,11 +5727,6 @@ in QUILL and QUILL Lite, on in QUILL Transcribe.</li>
 paragraph with the time, like 10:42 in square brackets, so you can find
 a moment later. A new paragraph starts when the speaker pauses for four
 seconds or more. Off by default.</li>
-<li><code>self.review_first</code>: When this is on, what you dictate
-goes into the Review Dictation window instead of the document or the
-other program. Read it, change it, and press Control Enter to insert it
-once. Off by default: then say QUILL review that, or press Review
-Dictation, when you want a phrase reviewed.</li>
 <li><code>self.share_family</code>: When this is on, the dictation
 settings you save here are used by QUILL, QUILL Lite, QUILL Transcribe
 and Quill Inkwell on this computer, and a change saved in any of them
@@ -5814,6 +5817,12 @@ hard to take back; off in QUILL and QUILL Lite.</li>
 Speak a Command twice, and everything you say is a command until you say
 dictation mode or give no command for this many seconds. A falling tone
 says it has ended. From 5 to 30; 8 by default.</li>
+<li><code>self.review_first</code>: When this is on, what you dictate
+goes into the Review Dictation window instead of the document or the
+other program. Read it, change it, and press Control Enter to insert it
+once. Off by default: then say QUILL review that, or press Review
+Dictation, when you want a phrase reviewed. Quill Inkwell has no Review
+Dictation, so it does not show this box.</li>
 <li><code>self.polish</code>: When this is on, saying QUILL polish that,
 or pressing Polish in Review Dictation, asks the AI to fix punctuation,
 capital letters and small slips in your words, keeping your words. The

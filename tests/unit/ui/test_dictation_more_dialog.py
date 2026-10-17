@@ -265,6 +265,10 @@ def test_without_review_dictation_the_box_is_gone_and_the_choice_is_kept(wx_app)
         labels = [child.GetLabel() for child in dialog.GetChildren()]
         assert not any("polish" in label.lower() for label in labels)
         assert "windows_dictation_polish" not in dialog.values()  # left as saved
+        # todo 55: Send dictation to review first goes the same way.
+        assert dialog.review_first is None
+        assert not any("review" in label.lower() for label in labels)
+        assert "windows_dictation_review_first" not in dialog.values()
         keys = _mnemonics(dialog)
         assert len(keys) == len(set(keys))  # GATE-14 in this host too
     finally:
@@ -272,9 +276,31 @@ def test_without_review_dictation_the_box_is_gone_and_the_choice_is_kept(wx_app)
     shown, _said = _dialog()
     try:
         keys = _mnemonics(shown)
-        assert len(keys) == len(set(keys)) and "g" in keys
+        assert len(keys) == len(set(keys)) and "g" in keys and "v" in keys
+        assert shown.review_first is not None and shown.review_first.IsShown()
+        assert "windows_dictation_review_first" in shown.values()
     finally:
         shown.Destroy()
+
+
+def test_inkwell_keeps_a_saved_review_first_choice(wx_app) -> None:
+    """Inkwell's OK in Dictation Settings never writes review-first, whatever
+    style is chosen: QUILL's True stays True (todo 55)."""
+    from quill.ui.windows_dictation_dialog import WindowsDictationDialog
+
+    class _Reviewing(_Polishing):
+        windows_dictation_review_first = True
+
+    for style in ("verbatim", "clean"):
+        dialog = WindowsDictationDialog(None, _Reviewing(), review=False)
+        try:
+            dialog.style.SetSelection(dialog._styles.index(style))
+            dialog._on_style(None)
+            settings = _Reviewing()
+            dialog.apply(settings)
+            assert settings.windows_dictation_review_first is True
+        finally:
+            dialog.Destroy()
 
 
 def test_inkwell_styles_never_touch_polishing(wx_app) -> None:

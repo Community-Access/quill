@@ -5,6 +5,7 @@
   "quill.ui.agent_validator_dialog": "reachable",
   "quill.ui.ai_agent_result_dialog": "reachable",
   "quill.ui.ai_chat_dialog": "reachable",
+  "quill.ui.ai_conversation_tools": "reachable",
   "quill.ui.ai_diff_review_dialog": "reachable",
   "quill.ui.ai_document_qa_dialog": "reachable",
   "quill.ui.ai_grammar_check_dialog": "reachable",

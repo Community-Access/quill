@@ -14,6 +14,8 @@ the launcher, installer, icon and these documents.
 
 ## Unreleased
 
+- **File Properties tells you about the drive** (2026-10-17). File Properties (Alt+Enter) now ends with the drive the highlighted file is on: its letter or network share, its label, its kind (local disk, removable drive, network drive, CD or DVD drive) and file system, then its capacity, used space with the percentage, and free space. Sizes use File Explorer's units with the exact bytes beside them, so you can check there is room before a long conversion. A drive that has been removed, a network share that cannot be reached, or one Windows will not let you read is one plain line, and the rest of the file's details still show. Nothing on the drive is changed. User guide: "Managing the queue", under File Properties.
+
 - **The user guide says where transcription lives** (2026-10-17). Quill Converter has no speech engine and does not transcribe. The guide's "Anywhere" section now says so, and points to QUILL Transcribe (Alt+U, then T) and QUILL for turning a recording into text.
 - **QUILL Transcribe on the QuillVille menu** (2026-10-16). QUILL Transcribe, which types what you say into any program, is released on 1 November 2026, and the **QuillVille** menu (Alt+U) lists it last: Alt+U, then T, or Ctrl+Alt+Shift+F11. QUILL, Quill Radio, Quill Weather and Quill Inkwell keep Ctrl+Alt+Shift+F7 to F10, so no key you know has moved. If it is not installed, Quill Converter offers to download it once it is published, and nothing is downloaded until you say yes. User guide: "Keyboard reference", under "Anywhere".
 

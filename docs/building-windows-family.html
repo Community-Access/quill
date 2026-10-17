@@ -427,6 +427,49 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb6-
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(-not</span> <span class="op">(</span><span class="fu">Get-ChildItem</span> <span class="st">&#39;dist/windows/installer/Output/Quill-for-All-Setup-*.exe&#39;</span> <span class="op">-</span>File<span class="op">))</span> <span class="op">{</span></span>
 <span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">throw</span> <span class="st">&#39;Missing QUILL for All installer&#39;</span></span>
 <span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<h3
+id="quill-lite-portable-the-pdf-reader-and-ocr-first-build-after-2026-10-17">QUILL
+Lite portable: the PDF reader and OCR (first build after
+2026-10-17)</h3>
+<p>The QUILL Lite portable ZIP now installs two more dependency groups,
+<code>office-text</code> (pdfplumber, which brings pdfminer.six and
+pypdfium2, plus pypdf and openpyxl) and <code>ocr</code> (the
+<code>winrt</code> Windows.Media.Ocr projection), so a portable copy
+opens PDFs and reads scanned pages the way the installed copy always
+has. Two things happen on the first build after this change, and both
+are expected:</p>
+<ol type="1">
+<li><p><strong>The inventory gate stops the build.</strong>
+<code>build_portable.py</code> step 8 compares the bundle with
+<code>standalone/quilllite/portable-inventory.json</code> and reports
+<code>unexpected in site-packages:</code> for the new packages
+(<code>pdfplumber</code>, <code>pdfminer</code>, <code>pypdf</code>,
+<code>pypdfium2</code>, <code>pypdfium2_raw</code>,
+<code>openpyxl</code>, <code>et_xmlfile</code>, <code>winrt</code> and
+their <code>*.dist-info</code> names). Check the list holds only those
+and nothing swept from the build machine, then rebaseline from the real
+bundle and run the release script again:</p>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> scripts\check_runtime_inventory<span class="op">.</span><span class="fu">py</span> standalone\quilllite\dist\QuillLite <span class="op">--</span>layout portable <span class="op">--</span>manifest standalone\quilllite\portable-inventory<span class="op">.</span><span class="fu">json</span> <span class="op">--</span>write</span></code></pre></div>
+<p>Never hand-edit <code>portable-inventory.json</code>; it is only
+correct when written from a build.</p></li>
+<li><p><strong>The import check is stricter.</strong> Step 8 now imports
+<code>pdfplumber</code>, <code>pypdf</code>, <code>pypdfium2</code>,
+<code>winrt.windows.media.ocr</code>,
+<code>winrt.windows.graphics.imaging</code>, <code>quill.io.pdf</code>
+and <code>quill.io.docconvert</code> inside the bundle and fails the
+build if any of them cannot load, so a build that installed the groups
+but cannot use them does not ship.</p></li>
+</ol>
+<p>After the build, verify by hand on a computer without QUILL
+installed: unzip the portable ZIP, start <code>QuillLite.exe</code>,
+open a text PDF with Ctrl+O (it opens with its pages, not “This copy of
+QUILL Lite has no PDF reader”), open a scanned PDF and answer Yes
+(Windows OCR reads it), and use File &gt; Import / Convert Document on a
+picture of printed text. Note the ZIP’s new size beside the old one
+(299,961,055 bytes for 1.1.2); expect roughly 25 MB more unpacked. The
+checks are also in
+<code>docs/qa/screen-reader-checks-2026-10.md</code>.</p>
 <p>The app directories <code>standalone/player/</code>,
 <code>standalone/radio-mac/</code>, and
 <code>standalone/weather-ios/</code> have no Windows

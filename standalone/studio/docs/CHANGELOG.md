@@ -4,6 +4,12 @@ All notable changes to QUILL Audio Studio are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Fixed
+
+- **Alt+B opens the Book Tools menu again** (2026-10-17). The main window's **Build From Recordings...** button also claimed Alt+B, and when a button and a top-level menu share a letter Windows presses the button, so Alt+B started a new book instead of opening Book Tools. The button is now **Build From &Recordings...**, Alt+R, and Alt+B opens Book Tools. For example, from the books list press Alt+B, then Down, to walk the Book Tools menu, or Alt+R to start the Build From Recordings journey; Studio > Build From Recordings... (Ctrl+Shift+B) is unchanged. A new test builds the real main window and fails if any control takes a menu's letter.
+
 ## [2.2.0] - built, not yet released
 
 - **The user guide explains the speech-recognition engines** (2026-10-17). A new section, "Speech recognition: the engines that listen", says which features listen (Generate Captions (Offline), Ctrl+Shift+C, and Propose AI titles), the three engines and why you would choose each (Whisper.cpp, the default, which downloads the first time; the QUILL speech models such as Parakeet and Nemotron, shared with QUILL Transcribe and QUILL Lite; Faster Whisper, which can use a graphics card), how to download a model with Manage Speech Models (Ctrl+Shift+M) or Download Optional Components (Ctrl+Alt+Shift+D), and a worked captions example. Vosk is no longer offered for speech recognition.

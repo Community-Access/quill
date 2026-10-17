@@ -1313,6 +1313,24 @@ to a page.</li>
 <li><strong>Ctrl+G</strong> (Go To) has a <strong>Page</strong> choice.
 Arrow to it and pick a page from the list.</li>
 </ul>
+<h4 id="page-breaks-and-what-you-hear">Page breaks, and what you
+hear</h4>
+<p>Between one page and the next, the text holds a single <strong>page
+break</strong> character (a “form feed”). It is what the Page part and
+Go To’s Page list count, so it stays in the text, and it is saved with
+the text if you save it. The last words of one page and the first words
+of the next sit on either side of it.</p>
+<p>What QUILL Lite itself says never includes it. When a message quotes
+text across a page break, such as the first words of a selection that
+starts at the bottom of one page, the page break is read as a pause, the
+same as a new line, and the status bar shows it the same way.
+<strong>Ctrl+Shift+C</strong> on it says “Page break”, where it used to
+say “Unnamed character”.</p>
+<p>What your screen reader says as you arrow onto it is up to the screen
+reader: some say nothing, some say “page break”, and some may say “form
+feed”. If yours reads the last line of a page and the first line of the
+next as one line, use <strong>Ctrl+G</strong>, <strong>Page</strong>, to
+land at the top of a page instead.</p>
 <h4 id="the-pdfs-own-outline">The PDF’s own outline</h4>
 <p>Many PDFs come with an outline: a list of chapters and sections,
 which other programs call bookmarks. When the PDF you open has one,
@@ -1469,6 +1487,109 @@ you why, then opens <strong>Save As</strong> with the same name ending
 in <code>.txt</code>. Choose text, Markdown or rich text and press
 <strong>Enter</strong>. If you want the result back in Word, save it as
 rich text: Word opens a rich text file properly.</p>
+<h3 id="importing-and-converting-a-document">Importing and converting a
+document</h3>
+<p><strong>File &gt; Import / Convert Document (OCR)…</strong> turns a
+document, or a picture of a page, into new text you can edit. It is
+QUILL’s command, with QUILL’s readers and QUILL’s words, on QUILL Lite’s
+File menu. It has no shortcut key, as in QUILL: press
+<strong>Alt+F</strong>, then <strong>I</strong>. It is also in the
+command palette.</p>
+<p>It reads:</p>
+<ul>
+<li><strong>Word, Excel, PowerPoint and OpenDocument files</strong>
+(<code>.docx</code>, <code>.doc</code>, <code>.xlsx</code>,
+<code>.xls</code>, <code>.pptx</code>, <code>.ppt</code>,
+<code>.odt</code>, <code>.ods</code>, <code>.odp</code>), with QUILL’s
+own readers, the same ones Ctrl+O uses;</li>
+<li><strong>web pages, e-books and CSV files</strong>
+(<code>.html</code>, <code>.htm</code>, <code>.epub</code>,
+<code>.csv</code>), which Ctrl+O would open as their raw markup or as a
+table of commas;</li>
+<li><strong>PDFs</strong>, from their own text, the same way Ctrl+O
+reads them;</li>
+<li><strong>pictures of pages</strong> (<code>.png</code>,
+<code>.jpg</code>, <code>.jpeg</code>, <code>.tif</code>,
+<code>.tiff</code>, <code>.bmp</code>, <code>.gif</code>,
+<code>.webp</code>), such as a photo of a letter, with OCR on this
+computer.</li>
+</ul>
+<h4 id="how-it-differs-from-open">How it differs from Open</h4>
+<p><strong>Ctrl+O</strong> opens the file itself: the window takes the
+file’s name, Recent Documents remembers it, and Save offers to save it
+again (or, for a PDF or an Office file, asks for a new name).
+<strong>Import / Convert</strong> makes a <strong>new, untitled
+document</strong> from what it reads, named after the file with
+“(converted)” on the end, for example “report (converted)”. Nothing
+remembers or points back at the original, and the original is never
+changed. Use it when you want text to work with rather than the file you
+started from, or when Ctrl+O cannot open the file at all: a picture, a
+web page you want as words, or an e-book.</p>
+<h4 id="step-by-step">Step by step</h4>
+<ol type="1">
+<li>Press <strong>Alt+F</strong>, then <strong>I</strong>. The Import /
+Convert Document box opens on the folder of the document you are
+in.</li>
+<li>Choose the file and press <strong>Enter</strong>. The type list
+starts on “All convertible documents”; you can narrow it to Documents or
+Images.</li>
+<li>QUILL Lite says “Converting report.docx”. You can keep working; the
+status bar’s message part shows how far it has got.</li>
+<li>When the text arrives, it opens in this window if the window is
+empty, or in a new window if it is not, so nothing you were writing is
+replaced. You hear what happened, for example “Opened report.docx as
+editable text, read by QUILL’s own Word reader. Nothing was
+uploaded.”</li>
+</ol>
+<p>The new document counts as unsaved, because its text exists nowhere
+else yet. Press <strong>Ctrl+S</strong> to save it as text, Markdown or
+rich text.</p>
+<h4 id="when-the-file-has-no-text-ocr">When the file has no text:
+OCR</h4>
+<p>A scanned PDF, or a PDF that is only pictures of pages, has no text
+to read. QUILL Lite then asks: “QUILL Lite could not find readable text
+in scan.pdf. It looks scanned or image-based. Run free on-device
+OCR?”</p>
+<ul>
+<li><strong>Yes</strong> reads the pictures with OCR on this computer.
+The status bar counts the pages as it goes, for example “Recognizing
+page 3 of 12”, and you hear when it is done.</li>
+<li><strong>No</strong> opens whatever little text the file has, which
+may be nothing.</li>
+<li><strong>Cancel</strong>, or <strong>Escape</strong>, stops, and
+nothing opens.</li>
+</ul>
+<p>A picture file goes straight to OCR, without the question, because a
+picture has no text of its own.</p>
+<p>Nothing is uploaded and nothing is downloaded. The OCR is the one
+Windows already has, which reads the languages installed in Windows
+Settings; if QUILL’s own OCR engine, Tesseract, is installed, QUILL Lite
+uses that instead, because it can say how sure it is (“Confidence 84 out
+of 100”). OCR makes mistakes: check the text, and spell check helps. If
+this computer has no OCR at all, QUILL Lite says so and opens nothing.
+Unlike QUILL, QUILL Lite never offers to download an OCR engine and has
+no cloud OCR.</p>
+<p>In the result, each page starts with a marker line such as
+<code>&lt;!-- Page 2 --&gt;</code>, as in QUILL, so
+<strong>Ctrl+F</strong> for “Page 2” finds it. When you want a scanned
+PDF with real pages instead, so the Page part and Go To’s Page list
+work, open it with <strong>Ctrl+O</strong>: it asks the same OCR
+question.</p>
+<h4 id="if-it-does-not-work">If it does not work</h4>
+<ul>
+<li>A <strong>password-protected PDF</strong> cannot be imported. QUILL
+Lite says so; open it with <strong>Ctrl+O</strong>, which asks for the
+password and never stores it.</li>
+<li>A <strong>damaged file</strong> is named as damaged. OCR does not
+help a damaged file.</li>
+<li>A <strong>very long PDF</strong>: the first 200 pages are read, and
+QUILL Lite says so when it stopped early, for example “Only the first
+200 of 340 pages were read.”</li>
+<li>If you <strong>close the window</strong> while a conversion is still
+running, the conversion stops, and nothing opens.</li>
+</ul>
+<p>Any failure is a box you must dismiss, with the reason in it, because
+it cost you the thing you asked for.</p>
 <h3 id="saving-2">Saving</h3>
 <p><strong>Ctrl+S</strong> saves. <strong>Ctrl+Shift+S</strong> saves
 under a new name.</p>
@@ -4539,6 +4660,11 @@ differently. One of them is often the reason a search will not find text
 that is plainly there.</p>
 <p>For the full details, press <strong>Ctrl+Alt+C</strong>. It opens a
 window you can read line by line.</p>
+<p>A <strong>page break</strong>, the character a PDF has between its
+pages, is named as one: <strong>Ctrl+Shift+C</strong> says “Page break”,
+and <strong>Ctrl+Alt+C</strong> adds that one page ends there and the
+next begins. See <a href="#page-breaks-and-what-you-hear">Page breaks,
+and what you hear</a>.</p>
 <h3 id="what-you-learned-and-where-to-go-next-6">What you learned, and
 where to go next</h3>
 <p><strong>F7</strong> checks the whole document,
@@ -8585,8 +8711,10 @@ from the message box to reach it.</li>
 <li><strong>Your message.</strong> This is where you start. Type, then
 press <strong>Enter</strong> to send.</li>
 <li>The buttons: <strong>Send</strong>, <strong>New
-Conversation</strong>, <strong>Copy Last Reply</strong>, <strong>Insert
-Last Reply Below</strong>, and Close.</li>
+Conversation</strong>, <strong>Copy Last Reply</strong>,
+<strong>Messages…</strong>, <strong>Export Conversation…</strong>,
+<strong>Saved Conversations</strong>, <strong>Insert Last Reply
+Below</strong>, and Close.</li>
 <li><strong>Status.</strong> Whether it is working, what answered, or
 what went wrong.</li>
 </ol>
@@ -8604,6 +8732,47 @@ how many messages it holds and when it was last used. Press
 or <strong>Delete</strong> to remove it; QUILL Lite asks first.
 <strong>New Conversation</strong> starts a new saved conversation and
 keeps the old one.</p>
+<h4 id="going-back-over-a-conversation">Going back over a
+conversation</h4>
+<p>In the conversation window:</p>
+<ul>
+<li><strong>Alt+1</strong> reads the newest message aloud,
+<strong>Alt+2</strong> the one before it, and so on up to
+<strong>Alt+0</strong> for the tenth newest. Each is said with its place
+and its speaker, for example “Message 4 of 9, AI: …”, and the newest
+starts with “Newest”. Focus stays in <strong>Your message</strong> and
+your half-typed message stays where it is. With fewer messages than the
+key asks for, you hear how many there are, for example “There are only 2
+messages so far. Alt+2 reads the oldest.”</li>
+<li><strong>Messages…</strong> (<strong>Alt+G</strong>) lists every
+message, oldest first, one row each. Press <strong>Enter</strong> to
+open a message in a reading window where its headings and tables are
+real ones (in browse mode, <strong>H</strong> moves by heading and
+<strong>T</strong> by table), or <strong>Read as Text</strong> to see it
+exactly as it arrived in a plain text box. Close it with
+<strong>Escape</strong> and you are back on the same row; the list opens
+on that row again next time.</li>
+<li><strong>Export Conversation…</strong> (<strong>Alt+X</strong>) saves
+the whole conversation as a <strong>Word document</strong> or a
+<strong>Text file</strong> you name. Every message is kept in order with
+who said it: in Word, each message is a level-2 heading such as “Message
+3 of 8, AI” with the message beneath it and its tables as real Word
+tables; in a text file, each message is a paragraph starting “You:” or
+“AI:”. The Save As window asks before replacing a file,
+<strong>Cancel</strong> writes nothing, and your document is never
+changed. If the file cannot be written, you hear why and any file
+already there is left as it was.</li>
+<li>A reply that arrives while you are reading the
+<strong>Conversation</strong> box does not move your place in it. If you
+are not in the box, it shows the end, as before.</li>
+</ul>
+<p>Example: you ask “Plan a three-day trip to Lisbon”, then “Make day
+two cheaper”. Press <strong>Alt+3</strong> to hear the first plan again,
+and <strong>Export Conversation…</strong> to keep both plans in a Word
+file, each under its own heading.</p>
+<p>These work the same on QUILL’s free AI, with your own OpenAI or
+Gemini key, and with your ChatGPT plan, and every route saves to the
+same <strong>Saved Conversations</strong>.</p>
 <h4 id="long-conversations-on-the-free-ai">Long conversations on the
 free AI</h4>
 <p>Each message you send is one request, and conversations have their

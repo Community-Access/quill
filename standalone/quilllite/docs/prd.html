@@ -1352,6 +1352,23 @@ QUILL’s Review AI Changes
 (<code>quill/ui/ai_diff_review_dialog.py</code>), offered only when
 Replace is and the answer differs, and applies only accepted changes as
 one undo step. Every control in the three windows has F1 help.</p>
+<p><strong>Going back over a conversation, and exporting it (2026-10-17,
+todo item 44).</strong> Shared with QUILL’s Ask Quill and AI
+Conversation window (<code>quill/core/ai/chat_navigation.py</code>,
+<code>quill/ui/ai_conversation_tools.py</code>), so neither editor is
+ahead (family rule 10). Requirements: Alt+1 to Alt+0 read the ten newest
+messages aloud with position and speaker (“Message 4 of 9, AI: …”),
+never moving focus or the half-typed message, and say how many there are
+when fewer than asked; <strong>Messages…</strong> (Alt+G) lists every
+message, Enter opens one with real headings and tables, Read as Text
+shows it verbatim, and closing returns to the same row; <strong>Export
+Conversation…</strong> (Alt+X) writes the whole conversation, every
+message with its speaker and in order, to <code>.docx</code> or
+<code>.txt</code> through the shared document writers, asks before
+overwriting, and never receives the active document; a reply arriving
+while the transcript has focus keeps the reader’s caret. The same on the
+free AI, an own key and a ChatGPT plan, each saving to the same
+<code>ai-sessions</code> store.</p>
 <p><strong>Answer delivery and the Chat Key (2026-10-15).</strong> No
 spec existed, so the minimum: the pad’s <strong>Put the answer
 in</strong> list chooses the AI Result window (default), the document at
@@ -2343,11 +2360,103 @@ refuses a <code>.pdf</code> name; Reopen with Encoding is not offered; a
 reload after another program changes the PDF runs the whole open
 again.</li>
 <li><strong>No new command, no new key.</strong> Ctrl+O and Ctrl+G, as
-in QUILL. Not done yet: File &gt; Import / Convert Document (spec phase
-2’s menu row), headings and tables from the PDF (phase 3), and the
-portable build’s dependency groups (the installed build already carries
-pdfplumber, pypdf, pypdfium2 and winrt in the shared runtime).</li>
+in QUILL. Not done yet: headings and tables from the PDF (phase 3). File
+&gt; Import / Convert Document and the portable build’s dependency
+groups followed on 2026-10-17 (next section).</li>
 </ul>
+<h2
+id="import--convert-document-the-portable-pdf-reader-page-breaks-and-the-200-page-gate-2026-10-17">Import
+/ Convert Document, the portable PDF reader, page breaks and the
+200-page gate (2026-10-17)</h2>
+<p><strong>File &gt; Import / Convert Document (OCR)…</strong> is
+QUILL’s <code>file.import_convert</code> on QUILL Lite’s File menu
+(handler <code>cmd_import_convert</code>,
+<code>quill/apps/lite_window_import.py</code>, parity
+<code>file.import_convert</code>). No key in either editor: rule 2 (the
+shared command keeps QUILL’s binding, which is none) and rule 9
+(occasional, and the next thing it does is ask which file); the reasons
+are rows in <code>KEYLESS_WITH_REASON</code> and
+<code>UNBOUND_WITH_REASON</code>, and <code>file.import_convert</code>
+is now in <code>DEFAULT_KEYMAP</code> as an unbound id so the parity
+table can name it. Mnemonic <strong>I</strong> (File’s D belongs to
+Recent Documents). Nothing is reimplemented:
+<code>quill.io.docconvert.convert_document</code> reads (QUILL’s Office
+readers, the PDF’s own text through <code>quill.io.pdf</code>, OCR), and
+every sentence – the scanned question, the opened sentence per tier, the
+failure box, the file list – moved out of
+<code>quill/ui/main_frame_docconvert.py</code> into the wx-free
+<code>quill/core/import_convert.py</code>, which both editors call with
+their own <code>app_name</code>. QUILL’s wording is unchanged and its
+tests are untouched.</p>
+<ul>
+<li><strong>Where the text goes.</strong> This window when
+<code>_is_blank()</code>, otherwise <code>app.new_window(PLAIN)</code>;
+committed with the Open from URL path (<code>_commit_download</code>):
+untitled, <code>download_name</code> =
+<code>"&lt;stem&gt; (converted)"</code>, modified. Never the source
+path, so Save cannot write over it.</li>
+<li><strong>OCR.</strong> A Tier 1 outcome flagged
+<code>offer_local_ocr</code> asks <code>scanned_import_question</code>
+(Yes / No / Cancel, Yes the default); Yes runs
+<code>convert_with_on_device_ocr</code> (Tesseract if installed, else
+Windows OCR). QUILL Lite never offers the Tesseract download and has no
+Datalab tier. A picture goes straight to OCR:
+<code>convert_document</code> now routes images through
+<code>convert_with_on_device_ocr</code> as well, which fixed the same
+dead end in QUILL (Tesseract-only, “Install it from Tools &gt;
+OCR…”).</li>
+<li><strong>Background and cancel.</strong> The app’s task manager, a
+<code>UiLifetimeToken</code> per conversion
+(<code>_import_lifetime</code>), progress on the message cell only, and
+<code>cancel_background_load</code> (called as the window closes)
+invalidates it, which also stops OCR between pages.</li>
+<li><strong>Spoken.</strong> “Converting <name>” (or “Reading <name>
+with OCR on this computer”) once; the opened sentence plus any outcome
+warning; failures through <code>_report_failure</code>. The reader’s
+“Download Optional Components” sentence is replaced with
+<code>NO_PDF_READER</code>, as on Open.</li>
+<li><strong>GATE-LITE-COVER.</strong>
+<code>tests/unit/apps/test_lite_import_convert.py</code> calls the
+handler for cancel, a Word file, a busy window, a warning, the three
+scanned answers, two failures, no OCR engine, and a window closed
+mid-conversion.</li>
+</ul>
+<p><strong>The portable build</strong>
+(<code>standalone/studio/scripts/build_portable.py</code>): the
+<code>quilllite</code> product gains the <code>office-text</code> and
+<code>ocr</code> dependency groups, and a <code>must_import</code> tuple
+(pdfplumber, pypdf, pypdfium2, the two winrt namespaces,
+<code>quill.io.pdf</code>, <code>quill.io.docconvert</code>) that step 8
+imports inside the bundle, failing the build if any cannot load.
+<code>portable-inventory.json</code> is regenerated only from a real
+build: the next build’s inventory gate reports the new packages as
+unexpected until it is rebaselined with
+<code>check_runtime_inventory.py &lt;dist&gt; --layout portable --manifest standalone/quilllite/portable-inventory.json --write</code>
+after review.</p>
+<p><strong>Page breaks.</strong> A PDF’s text reaches the Rich Edit
+control with U+000C between pages, in plain mode and (unchanged, as
+<code>.pdf</code> is plain language) after a switch to rich. The Page
+cell and Go To’s Page kind count those characters through
+<code>quill.core.navigation</code> and display numbers only. Two fixes:
+<code>quill/core/speakable.py</code> (<code>speakable_controls</code>,
+form feed and vertical tab to a newline, other C0/C1 controls dropped,
+tab/CR/LF kept) runs in <code>AnnouncementEngine.announce</code> and
+<code>.braille</code> – every announcement in the family – and in QUILL
+Lite’s <code>_announce</code> before the status cell; and
+<code>char_describe</code> names U+000C “Page break”. What a screen
+reader says when the caret is on the character, and whether Rich Edit
+draws a line break there, is a live check
+(<code>docs/qa/screen-reader-checks-2026-10.md</code>).</p>
+<p><strong>GATE-PERF for PDFs.</strong>
+<code>tests/unit/core/test_pdf_open_budget.py</code> (marked
+<code>perf</code>) opens a 200-page synthetic PDF through
+<code>open_prepare.prepare</code> within 150 ms a page, then builds the
+Page rows and the last page’s position within 500 ms. The 60-page corpus
+budget (todo item 52, 293 ms a page against 250 on a loaded machine) was
+timing a read under <code>tracemalloc</code>, about four times slower
+than the reader itself (121-129 ms against 28-29 ms a page here,
+2026-10-17); memory and time are now two separate reads, and no reader
+code changed.</p>
 <h2
 id="the-read-only-guard-word-names-and-typing-a-name-in-a-list-2026-10-16">The
 Read-Only Guard, Word names, and typing a name in a list

@@ -182,6 +182,9 @@ UNBOUND_WITH_REASON: dict[str, str] = {
     "file.open_url": "Reached another way: File > Open from URL..., in both editors. "
     "The address has to be typed into its window anyway, so a chord would only "
     "open a box that still needs the whole URL (rule 9).",
+    "file.import_convert": "Reached another way: File > Import / Convert Document (OCR)..., "
+    "in both editors (QUILL Lite since 2026-10-17). Rule 9: converting a Word file or a "
+    "scanned page is occasional, and the box that follows asks which file anyway.",
     "help.release_channel": "Deliberately vacated 2026-10-03 in all four channel apps. "
     "Alt+Shift+F4 closed the window it was pressed in wherever Windows read it as "
     "Alt+F4 -- a dialog, a separate Quill Radio window -- and rule 4 fixes "

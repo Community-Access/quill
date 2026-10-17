@@ -61,6 +61,13 @@ _SPECIAL = {
         0x0A: ("Line feed", "Ends a line (LF, new line)."),
         0x0D: ("Carriage return", "Part of a Windows CR LF line ending."),
         0x09: ("Tab", "A single tab character, not spaces."),
+        # A PDF's pages arrive separated by these (2026-10-17): named as what
+        # it does, where it used to read "U+000C, Unnamed character".
+        0x0C: (
+            "Page break",
+            "A form feed: one page ends here and the next begins. Go To's Page list "
+            "and the Page cell count these.",
+        ),
         0x20: ("Space", "An ordinary space."),
         0xA0: (
             "No-break space",

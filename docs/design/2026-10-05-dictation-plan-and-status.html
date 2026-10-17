@@ -3548,6 +3548,20 @@ pass nothing and keep the box. Tests:
 <code>tests/unit/ui/test_dictation_more_dialog.py</code> (the box is
 gone, the value is kept, no access key repeats, Clean leaves polishing
 alone, Inkwell passes <code>review=False</code>).</p>
+<p><strong>Send dictation to review first, hidden the same way (todo 55,
+2026-10-17).</strong> The review-first box
+(<code>windows_dictation_review_first</code>, Alt+V) did nothing in
+Inkwell either: Dictate Anywhere types into the program in front and
+Inkwell has no Review Dictation. With <code>review=False</code>,
+<code>MoreDictationDialog</code> now builds neither box
+(<code>self.review_first</code> is <code>None</code> too) and
+<code>values()</code> leaves <code>windows_dictation_review_first</code>
+out, so a True saved by QUILL and shared through the family store
+survives Inkwell’s OK. The style mixin already left the field alone with
+<code>_review</code> false. Alt+V is unused in Inkwell’s copy; the
+editors keep both boxes and both keys. Tests: the same file, plus
+<code>test_inkwell_keeps_a_saved_review_first_choice</code> (Verbatim
+and Clean both leave a saved True alone).</p>
 <h3 id="d-21-learning-from-confirmed-corrections">D-21. Learning from
 confirmed corrections</h3>
 <p><strong>Module.</strong>

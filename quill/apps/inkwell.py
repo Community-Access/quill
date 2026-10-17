@@ -318,7 +318,7 @@ class QuillInkwellFrame(
             "enable or disable entries, and import or export the whole "
             "library. Changes save immediately and work in QUILL too."
         )
-        quick_btn = wx.Button(panel, label="&Quick Insert...")
+        quick_btn = wx.Button(panel, label="Quick &Insert...")
         quick_btn.SetHelpText(
             "Pick an abbreviation and have its expansion typed into the "
             "window you were just working in -- the way to use entries set "

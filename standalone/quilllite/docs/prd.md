@@ -896,6 +896,21 @@ QUILL's Review AI Changes (`quill/ui/ai_diff_review_dialog.py`), offered only
 when Replace is and the answer differs, and applies only accepted changes as one
 undo step. Every control in the three windows has F1 help.
 
+**Going back over a conversation, and exporting it (2026-10-17, todo item
+44).** Shared with QUILL's Ask Quill and AI Conversation window
+(`quill/core/ai/chat_navigation.py`, `quill/ui/ai_conversation_tools.py`), so
+neither editor is ahead (family rule 10). Requirements: Alt+1 to Alt+0 read
+the ten newest messages aloud with position and speaker ("Message 4 of 9, AI:
+..."), never moving focus or the half-typed message, and say how many there
+are when fewer than asked; **Messages...** (Alt+G) lists every message, Enter
+opens one with real headings and tables, Read as Text shows it verbatim, and
+closing returns to the same row; **Export Conversation...** (Alt+X) writes the
+whole conversation, every message with its speaker and in order, to `.docx` or
+`.txt` through the shared document writers, asks before overwriting, and never
+receives the active document; a reply arriving while the transcript has focus
+keeps the reader's caret. The same on the free AI, an own key and a ChatGPT
+plan, each saving to the same `ai-sessions` store.
+
 **Answer delivery and the Chat Key (2026-10-15).** No spec existed, so the
 minimum: the pad's **Put the answer in** list chooses the AI Result window
 (default), the document at the caret (one undo step, read aloud), or the
@@ -1646,7 +1661,23 @@ QUILL Lite opened text files and nothing else; it now opens PDFs, as their text,
 - **Scanned** (no text, or under 50 characters a page): QUILL's question (`scanned_question`). Yes runs `ocr_pdf_for_open` as a background open -- Tesseract if installed, otherwise Windows OCR from the shared runtime, which needs no download (`quill/io/docconvert_windows.py`) -- with "Recognizing page N of M" on the message cell only, and opens the result with form feeds, marked modified. No opens the little text there is, or nothing. QUILL asks the same question on File > Open.
 - **Pages.** The status bar gains a **Page** cell ("Page 3 of 12"), shown only while the document has form feeds, skipped by the arrow keys when hidden; Enter on it opens Go To on its Page kind. Go To (Ctrl+G) offers **Page** and **Outline** only when the document has them (`page_places`, `outline_places`, the same rows QUILL's Go To shows); outline rows resolve their page from the text at the time of the jump. The numbered bookmarks are untouched: nine slots cannot hold an outline.
 - **Save.** The window keeps the PDF's path (title, Recent Documents, document memory), so Save refuses with QUILL's sentence (`save_refusal`, `EXPORT_ONLY_SUFFIXES`) and goes to Save As with `<name>.txt` proposed; Save As refuses a `.pdf` name; Reopen with Encoding is not offered; a reload after another program changes the PDF runs the whole open again.
-- **No new command, no new key.** Ctrl+O and Ctrl+G, as in QUILL. Not done yet: File > Import / Convert Document (spec phase 2's menu row), headings and tables from the PDF (phase 3), and the portable build's dependency groups (the installed build already carries pdfplumber, pypdf, pypdfium2 and winrt in the shared runtime).
+- **No new command, no new key.** Ctrl+O and Ctrl+G, as in QUILL. Not done yet: headings and tables from the PDF (phase 3). File > Import / Convert Document and the portable build's dependency groups followed on 2026-10-17 (next section).
+
+## Import / Convert Document, the portable PDF reader, page breaks and the 200-page gate (2026-10-17)
+
+**File > Import / Convert Document (OCR)...** is QUILL's `file.import_convert` on QUILL Lite's File menu (handler `cmd_import_convert`, `quill/apps/lite_window_import.py`, parity `file.import_convert`). No key in either editor: rule 2 (the shared command keeps QUILL's binding, which is none) and rule 9 (occasional, and the next thing it does is ask which file); the reasons are rows in `KEYLESS_WITH_REASON` and `UNBOUND_WITH_REASON`, and `file.import_convert` is now in `DEFAULT_KEYMAP` as an unbound id so the parity table can name it. Mnemonic **I** (File's D belongs to Recent Documents). Nothing is reimplemented: `quill.io.docconvert.convert_document` reads (QUILL's Office readers, the PDF's own text through `quill.io.pdf`, OCR), and every sentence -- the scanned question, the opened sentence per tier, the failure box, the file list -- moved out of `quill/ui/main_frame_docconvert.py` into the wx-free `quill/core/import_convert.py`, which both editors call with their own `app_name`. QUILL's wording is unchanged and its tests are untouched.
+
+- **Where the text goes.** This window when `_is_blank()`, otherwise `app.new_window(PLAIN)`; committed with the Open from URL path (`_commit_download`): untitled, `download_name` = `"<stem> (converted)"`, modified. Never the source path, so Save cannot write over it.
+- **OCR.** A Tier 1 outcome flagged `offer_local_ocr` asks `scanned_import_question` (Yes / No / Cancel, Yes the default); Yes runs `convert_with_on_device_ocr` (Tesseract if installed, else Windows OCR). QUILL Lite never offers the Tesseract download and has no Datalab tier. A picture goes straight to OCR: `convert_document` now routes images through `convert_with_on_device_ocr` as well, which fixed the same dead end in QUILL (Tesseract-only, "Install it from Tools > OCR...").
+- **Background and cancel.** The app's task manager, a `UiLifetimeToken` per conversion (`_import_lifetime`), progress on the message cell only, and `cancel_background_load` (called as the window closes) invalidates it, which also stops OCR between pages.
+- **Spoken.** "Converting <name>" (or "Reading <name> with OCR on this computer") once; the opened sentence plus any outcome warning; failures through `_report_failure`. The reader's "Download Optional Components" sentence is replaced with `NO_PDF_READER`, as on Open.
+- **GATE-LITE-COVER.** `tests/unit/apps/test_lite_import_convert.py` calls the handler for cancel, a Word file, a busy window, a warning, the three scanned answers, two failures, no OCR engine, and a window closed mid-conversion.
+
+**The portable build** (`standalone/studio/scripts/build_portable.py`): the `quilllite` product gains the `office-text` and `ocr` dependency groups, and a `must_import` tuple (pdfplumber, pypdf, pypdfium2, the two winrt namespaces, `quill.io.pdf`, `quill.io.docconvert`) that step 8 imports inside the bundle, failing the build if any cannot load. `portable-inventory.json` is regenerated only from a real build: the next build's inventory gate reports the new packages as unexpected until it is rebaselined with `check_runtime_inventory.py <dist> --layout portable --manifest standalone/quilllite/portable-inventory.json --write` after review.
+
+**Page breaks.** A PDF's text reaches the Rich Edit control with U+000C between pages, in plain mode and (unchanged, as `.pdf` is plain language) after a switch to rich. The Page cell and Go To's Page kind count those characters through `quill.core.navigation` and display numbers only. Two fixes: `quill/core/speakable.py` (`speakable_controls`, form feed and vertical tab to a newline, other C0/C1 controls dropped, tab/CR/LF kept) runs in `AnnouncementEngine.announce` and `.braille` -- every announcement in the family -- and in QUILL Lite's `_announce` before the status cell; and `char_describe` names U+000C "Page break". What a screen reader says when the caret is on the character, and whether Rich Edit draws a line break there, is a live check (`docs/qa/screen-reader-checks-2026-10.md`).
+
+**GATE-PERF for PDFs.** `tests/unit/core/test_pdf_open_budget.py` (marked `perf`) opens a 200-page synthetic PDF through `open_prepare.prepare` within 150 ms a page, then builds the Page rows and the last page's position within 500 ms. The 60-page corpus budget (todo item 52, 293 ms a page against 250 on a loaded machine) was timing a read under `tracemalloc`, about four times slower than the reader itself (121-129 ms against 28-29 ms a page here, 2026-10-17); memory and time are now two separate reads, and no reader code changed.
 
 ## The Read-Only Guard, Word names, and typing a name in a list (2026-10-16)
 

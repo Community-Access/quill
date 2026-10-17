@@ -188,7 +188,7 @@ class QuillTranscribeFrame(
             "dictation writes into, after the same safety checks as a new start."
         )
         self._here_button.Bind(wx.EVT_BUTTON, lambda _e: self.resume_in_this_field())
-        self._discard_button = wx.Button(panel, label="Discard Held &Words")
+        self._discard_button = wx.Button(panel, label="Dis&card Held Words")
         self._discard_button.SetHelpText(
             "When dictation is paused: throws away the words held while paused. "
             "Dictation stays paused until you resume or stop."

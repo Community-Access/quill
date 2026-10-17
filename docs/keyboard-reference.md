@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 507.
+Editor commands with default bindings: 508.
 
 ## The QUILL editor
 
@@ -21,6 +21,7 @@ Editor commands with default bindings: 507.
 | --- | --- | --- |
 | (unbound by default) | Manage GitHub Accounts... | `file.github_manage_accounts` |
 | (unbound by default) | Save to GitHub... | `file.github_save_back` |
+| (unbound by default) | Import / Convert Document (OCR) | `file.import_convert` |
 | (unbound by default) | Manage Remote Sites... | `file.manage_remote_sites` |
 | (unbound by default) | Open from Remote... | `file.open_from_remote` |
 | (unbound by default) | Open Remote GitHub File URL... | `file.open_github_file_url` |
@@ -688,6 +689,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+2 | Podcasts: Now Playing window | `podcasts.now_playing` |
 | Ctrl+Alt+A | Bookmark This Moment | `app.bookmark_moment` |
 | Ctrl+Alt+F1 | Podcasts: Tutorials... | `podcasts.tutorials` |
+| Ctrl+Alt+F10 | Carry My Place Between Machines... | `media.sync_places` |
 | Ctrl+Alt+F12 | Restore | `app.restore` |
 | Ctrl+Alt+F5 | Ask About an Image... | `tools.hosted_ai_image` |
 | Ctrl+Alt+G | Free AI Assistant... | `tools.hosted_ai_assistant` |

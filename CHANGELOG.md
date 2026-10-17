@@ -2,6 +2,218 @@
 
 ## 1.0.0
 
+### Menu letters win over buttons, the Media Player's arrows, a key for Carry My Place, and Inkwell's review box (2026-10-17)
+
+Todo items 47 to 51 and 55.
+
+**Access letters between a menu bar and the controls under it (49).** On
+wxMSW an Alt+letter that a top-level menu and a control in the same frame both
+claim goes to the control, so the menu silently stops opening from that letter.
+GATE-15 (`check_menubar_mnemonics.py`) reads that from source for Cast, Radio
+and Weather, and cannot see helper-built labels, tuple-table labels or the
+helper-appended Window menu. The new run-time gate,
+`tests/unit/ui/test_menu_bar_versus_controls.py`, builds each real main window
+in memory (`tests/unit/docs/_app_menu_bar.py` gained `real_app_shell`, which
+`real_menu_bar` now wraps) and walks every control against the real menu
+titles, plus GATE-14 across the whole frame. It confirmed all three suspected
+collisions and found two more:
+
+- Media Player: Play, Previous chapter, Rewind, Forward (the shared
+  `PlayerPanel`) and Normalize loudness took Alt+P, V, W, F and N from
+  Playback, View, Window, File and Navigation. `PlayerPanel(labels=...)` now
+  takes a host's wording by button name (Play/Pause and Mute/Unmute keep one
+  letter each across states, through `_mute_label`); the player passes
+  `quill/ui/media/player_access_keys.py`. The bookmark buttons moved to M and
+  K, Normalize loudness to L. The Chapter Workbench keeps its letters.
+- Studio: Build From Recordings took Alt+B from Book Tools; now Alt+R.
+- QUILL Transcribe: Discard Held Words took Alt+W from Window; now Alt+C.
+- Quill Inkwell: the Quick Insert button took Alt+Q from QuillVille, so the
+  guide's "Alt+Q, then Q" opened Quick Insert; now Alt+I.
+
+The menu bar wins (GATE-15); no control was left without a letter.
+
+**Media Player arrows (48).** The frame's `EVT_CHAR_HOOK` Winamp handler took
+Left and Right from every control but a text field, so the Chapters tree
+could not expand or collapse and the volume slider seeked instead.
+`MediaWinampKeysMixin._winamp_focus_takes_arrows` lets a tree, tree list,
+report list, slider and notebook keep bare and Shift arrows, as Cast's did on
+2026-09-30. Tests drive the real hook with real (unshown) wx controls. The six
+unbuilt player features stay listed in the PRD.
+
+**Quill Cast (50).** Carry My Place Between Machines... (`media.sync_places`)
+is bound to Ctrl+Alt+F10 in `APP_KEYMAPS["cast"]` (rule 9, beside Restore's
+Ctrl+Alt+F12; collision gates green). The `manage_downloads_id`, `continue_id`
+and `queue_id` bindings had no row and no accelerator, so they were dead and
+are removed; the three places stay on their View rows.
+
+**Inkwell (55).** `MoreDictationDialog(review=False)` no longer builds **Send
+dictation to review first** either; `values()` leaves
+`windows_dictation_review_first` out, so a family-shared True survives
+Inkwell's OK whatever style is chosen (new test).
+
+**Beacon and Social against their menus (51).** GATE-DOCMENU now covers Quill
+Beacon and QUILL Social (`tests/unit/docs/test_documented_menus_beacon.py`,
+`test_documented_menus_social.py`). Neither frame is an `AppShellFrame`, so
+each test builds the real frame itself with sockets, tray, timers, speech and
+the credential vault closed off. It checks the changelog and guides (and
+Social's Keyboard Reference, which Help opens) against the real menus, and
+fails if two menu rows share a key. Social's Find Text moved from Ctrl+F,
+which Favourite always took, to Ctrl+Shift+F. `KEYMAP_SPEC.md` was rewritten
+from a design spec that taught unbound keys into a reference of real ones.
+Beacon's guide now writes its menu paths as `Menu > Item` with keys, so 35 of
+them are checked. Left for later: many Beacon and Social rows show no key, and
+neither app is in `test_menu_accelerators`.
+
+**Not wired (47).** Translate Audio File to English has a handler
+(`ai_translate_audio_file`) with no test and a raw thread with no cancel, and
+its menu row was removed on purpose (one Transcribe dialog has the checkbox);
+`prism_bridge.retry_tts_init` has no tests and reports success before any
+voice is built, so no Retry Speech command yet. The Tools > Accessibility
+submenu's Audit, Keyboard Trap and Link Inventory have only core logic and
+Speak Cursor nothing; Sleep Timer is already wired behind the radio/podcasts
+release gate.
+
+Docs: the Media Player guide (two new parts) and PRD; the Studio, QUILL
+Transcribe, Quill Inkwell and Quill Cast guides and changelogs; the Cast PRD;
+the dictation design record; `docs/keyboard-reference.md` (regenerated).
+
+### AI conversations: the recent ten on Alt+1 to Alt+0, a message list, export to Word and text; the drive in file properties (2026-10-17)
+
+todo.md items 44 and 46. Item 44 extends the two conversation windows that
+already existed -- Ask Quill (QUILL) and the AI Conversation window both
+editors open -- rather than adding a third chat. Item 46 audited every
+file/folder properties entry point first and added the drive to the two that
+show a file's properties.
+
+- **Shared core, `quill/core/ai/chat_navigation.py` (new, wx-free).** Numbered
+  messages ("Message 3 of 12, AI"), the recent-ten sentence (Alt+1 newest to
+  Alt+0 tenth newest, fewer-than-ten says how many and which key reads the
+  oldest, spoken through `speakable_line` so no Markdown is read out),
+  `nest_reply_headings` (a reply's headings move down so its shallowest is
+  level 3, under the speaker's level 2; fenced code untouched; capped at 6) and
+  `message_view_html` (heading plus the reply with real `<th>` tables).
+- **Export, `quill/core/ai/chat_export.py`.** `export_conversation(messages,
+  path)` writes `.txt` through `quill.io.text.write_text_document` and `.docx`
+  through `quill.io.export.write_docx_document`, on a fresh `Document`: the
+  active document is never passed, so it cannot be changed, renamed or marked
+  saved. Word gets a level-2 heading per message with nested reply headings and
+  real tables; lines inside fenced code are indented so the line-oriented Word
+  writer cannot turn a `# comment` into a heading. Atomic: a failed write
+  leaves an existing file as it was.
+- **Shared UI, `quill/ui/ai_conversation_tools.py` (new).**
+  `RecentMessageReader` (one press seen twice within 0.3 s is said once),
+  `bind_recent_message_keys` (an accelerator table; neither window had one),
+  `recent_digit` for char hooks, `MessageListDialog` (Enter opens the
+  rendered message through `MarkdownPreviewDialog`, Read as Text shows it
+  verbatim; closing returns focus to the same row, and the owner reopens the
+  list on that row), `export_conversation_to_file` (Save As with overwrite
+  prompt; cancel says nothing; every failure is a sentence through
+  `user_facing_message`).
+- **AI Conversation window (`hosted_ai_chat.py`, both editors).** Messages...
+  (Alt+G), Export Conversation... (Alt+X), Alt+1..Alt+0, the keys named in
+  About this conversation. A reply no longer moves the caret of somebody
+  reading the transcript (`_show_transcript` keeps the insertion point when the
+  transcript has focus). New Conversation and opening a saved one forget the
+  list row.
+- **Ask Quill (`assistant_panel.py` + new `assistant_conversation_tools.py`
+  mixin).** Message List... and Export Conversation... in the footer; Alt+1..0
+  from the dialog's char hook and, inside the WebView, from a keydown script
+  that posts over the existing `awv` bridge (`accessible_webview.py`
+  `on_recent`). Reply headings nest under the speaker in the WebView. The
+  fallback list (no WebView) opens a row with Enter, keeps the reader's row
+  when a message arrives while it has focus, and no longer records the
+  greeting as a conversation message.
+- **Collision check.** Alt plus a digit is bound nowhere in either window and
+  no access key in either is a digit (`test_ai_conversation_tools.py`); the
+  editor's Alt+1..9 (go to document) belong to the main window, which these
+  top-level windows do not share accelerators with.
+- **Provider routes.** A test opens the window on the free service, an own
+  key and a ChatGPT plan and asserts the same `ai-sessions` store each time.
+  No model name was added anywhere.
+- **Item 46, `quill/core/volume_info.py` (new, wx-free).** `describe_volume`
+  returns labelled lines (Drive: root, label, kind, file system; capacity,
+  used with percent, free) in File Explorer's 1,024-based units with exact
+  bytes; `GetVolumePathNameW`, `GetVolumeInformationW`, `GetDriveTypeW` and
+  `shutil.disk_usage`, read-only and local. Removed media, unreachable shares
+  and permission refusals become one sentence, never an exception, and a root
+  that is not there is never guessed. Added to Quill Radio's Local Media Item
+  Properties (`properties_text`, injectable `volume=`) and Quill Converter's
+  File Properties. Audit: QUILL and QUILL Lite have no file or folder
+  properties window, so nothing was added there and no file manager was built.
+- **Tests.** `tests/unit/core/ai/test_chat_navigation.py`,
+  `tests/unit/core/ai/test_chat_export_files.py` (real DOCX read back with
+  python-docx: heading order, table cells, Unicode, code comment not a
+  heading), `tests/unit/ui/test_ai_conversation_tools.py`,
+  `tests/unit/core/test_volume_info.py`,
+  `tests/unit/apps/test_storage_properties.py`. Screen-reader passes are in
+  `docs/qa/screen-reader-checks-2026-10.md`, unticked.
+
+### PDF in QUILL Lite, what was left: Import / Convert, the portable reader, page breaks, the 200-page gate (2026-10-17)
+
+Todo item 28 after phases 1 and 2, the P3 PDF items, and todo item 52.
+
+- **Import / Convert Document's words and file list are shared**
+  (`quill/core/import_convert.py`, new, wx-free): `import_wildcard`,
+  `scanned_import_question(name, app_name=)`, `opened_sentence(name, outcome)`
+  per tier, `failed_sentence`, `converted_name`, `CANCELLED_SENTENCE`.
+  `quill/ui/main_frame_docconvert.py` calls them and shrank by about 60 lines;
+  QUILL's wording is byte-for-byte what it was (`test_main_frame_docconvert.py`
+  unchanged). `_import_wildcard` stays importable there as an alias.
+- **QUILL Lite gains File > Import / Convert Document (OCR)...**
+  (`quill/apps/lite_window_import.py`, `cmd_import_convert`), parity
+  `file.import_convert`, which is now in `DEFAULT_KEYMAP` as an unbound id with
+  a rule 9 reason in `UNBOUND_WITH_REASON` (the keyboard reference lists it
+  under "unbound by default"). No second implementation: the router, the
+  readers and every sentence are QUILL's.
+- **A picture of a page goes to whichever on-device engine exists.**
+  `quill.io.docconvert.convert_document` routed images to
+  `convert_with_local_ocr` (Tesseract only), so without Tesseract a `.png` or
+  `.jpg` failed with "Install it from Tools > OCR..." while a scanned PDF
+  already fell back to Windows OCR. Images now go through
+  `convert_with_on_device_ocr` too (`tests/unit/io/test_docconvert_images.py`).
+- **No control character reaches a screen reader inside an announcement.**
+  `quill/core/speakable.py` (new): `speakable_controls` turns form feed and
+  vertical tab into a newline and drops the other C0/C1 controls, keeping tab,
+  CR and LF. Applied in `AnnouncementEngine.announce` and `.braille`
+  (`prism_bridge.py`, which every app's announcements leave through; two
+  comments reflowed to stay inside its budget) and in QUILL Lite's
+  `DocumentFrame._announce` before the status cell. A PDF's page breaks
+  (U+000C) were otherwise able to reach speech as "form feed" whenever an
+  announcement quoted text across a page. `char_describe` names U+000C "Page
+  break" (it was "U+000C Unnamed character"), in both editors.
+- **QUILL Lite portable build inputs.** `build_portable.py`: the `quilllite`
+  product adds the `office-text` and `ocr` groups, and a new `must_import`
+  field per product that step 8 imports inside the bundle (QUILL Lite's lists
+  pdfplumber, pypdf, pypdfium2, `winrt.windows.media.ocr`,
+  `winrt.windows.graphics.imaging`, `quill.io.pdf`, `quill.io.docconvert`).
+  `standalone/quilllite/portable-inventory.json` is NOT hand-edited: the next
+  real build's inventory gate fails on the new packages until it is reviewed
+  and rebaselined with `--write` (see `docs/building-windows-family.md`).
+- **GATE-PERF for PDFs** (`tests/unit/core/test_pdf_open_budget.py`, `perf`):
+  a 200-page synthetic PDF through QUILL Lite's `open_prepare.prepare` (which
+  is QUILL's reader, outline and scanned check) within 150 ms a page, then
+  the Page rows and the last page's position within 500 ms. Measured here at
+  31 ms a page with the machine 31 % busy.
+- **Todo item 52** (`test_clean_pages_pay_for_one_extractor_and_stay_in_budget`,
+  293 ms a page against 250): the test timed a read made under `tracemalloc`,
+  which hooks every allocation pdfminer makes per glyph. Measured 2026-10-17
+  with the machine 31 % busy: 28-29 ms a page untraced, 121-129 ms traced. The
+  clean-page path is not over budget, so `pdf_select.py` is unchanged; the test
+  now traces memory in one read and times a second, untraced one.
+- **GLOW's PDF audit in the shared runtime (finding, spec unchanged).**
+  `acb_large_print.pdf_auditor` imports `acb_large_print.auditor`, which
+  imports python-docx at module top, and python-docx imports `lxml`, which
+  `standalone/runtime/quillville-runtime.spec` excludes (and
+  `runtime-inventory.json` confirms is absent). Simulated by blocking every
+  spec exclude: `fitz` (PyMuPDF), `quill_glow_core` and
+  `acb_large_print_core.services` import, but every GLOW audit (PDF, Word,
+  PowerPoint) fails with `No module named 'lxml'`. QUILL's own Office readers
+  are unaffected (they fall back to the standard library). Not changed here,
+  because un-excluding lxml grows every QuillVille installer and needs a
+  runtime-inventory rebaseline; the fix, when wanted, is to drop `"lxml"` from
+  the spec's excludes and add `docx` and `acb_large_print.pdf_auditor` to
+  `scripts/check_runtime_imports.py` MUST_IMPORT.
+
 ### Speech engines and models: every guide says what the code does (2026-10-17)
 
 Jeff: "I don't think all of its documentation is updated across all apps

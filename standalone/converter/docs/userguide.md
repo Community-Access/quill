@@ -639,7 +639,17 @@ conversion, and the Advanced Options for when a preset is not quite right.
 - **Clear the queue:** Queue > Clear Queue (Ctrl+Shift+Delete).
 - **File Properties:** Alt+Enter describes the highlighted file: its length,
   size, container, overall bit rate, tags, each video, audio and subtitle track,
-  whether it has cover art, and its chapters.
+  whether it has cover art, and its chapters. The last lines describe **the
+  drive the file is on**: its letter or network share name, its label, what
+  kind of drive it is (local disk, removable drive, network drive, CD or DVD
+  drive) and its file system, then **Drive capacity**, **Drive used** (with
+  the percentage) and **Drive free**. Sizes use File Explorer's units (KB, MB,
+  GB, TB, counted in 1,024s) followed by the exact number of bytes. Check
+  **Drive free** before a long conversion into the same folder: for example
+  "Drive free: 1.48 GB (1,589,137,408 bytes)" is too little for a two-hour
+  WAV. If the drive cannot be read (removed, not ready, an unreachable network
+  share, or not allowed), that is one line saying why and everything else
+  still shows. The window only reads; nothing on the drive changes.
 
 Adding the same file twice queues it once. A file that is not a media file is
 left out, and the announcement says how many were.
