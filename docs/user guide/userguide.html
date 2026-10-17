@@ -830,7 +830,9 @@ Windows and tabs topic, later in this chapter, covers.</p>
 <p>The menus run across the top of the window in the order you know from
 Windows and Office: File, Edit, View, Insert, Format, Navigate, Tools,
 AI, Window, QuillVille and Help. There used to be a Search menu as well.
-Its commands now live under <strong>Edit &gt; Search Tools</strong>.</p>
+Its commands now live on the <strong>Edit</strong> menu: the folder
+searches as rows of Edit itself, and the rest under <strong>Edit &gt;
+Search Tools</strong>.</p>
 <p>Every menu and every menu item can be reached from the keyboard.
 Press <code>Alt</code> with the menu’s underlined letter:
 <code>Alt+F</code> for File, <code>Alt+E</code> for Edit,
@@ -952,10 +954,11 @@ other formats. Chapter 3, Opening, saving and converting files, covers
 all of it.</p>
 <h4 id="edit">Edit</h4>
 <p>Edit holds the everyday editing commands, along with selection tools,
-the Copy Tray and <strong>Edit &gt; Search Tools</strong>, which has
-what used to be the Search menu. Chapter 4, Writing and editing, covers
-editing and selection, and Chapter 6, Moving around and finding things,
-covers Search Tools.</p>
+the Copy Tray, and what used to be the Search menu: <strong>Edit &gt;
+Search in Files…</strong>, <strong>Edit &gt; Replace Across
+Files…</strong> and the <strong>Edit &gt; Search Tools</strong> submenu.
+Chapter 4, Writing and editing, covers editing and selection, and
+Chapter 6, Moving around and finding things, covers searching.</p>
 <h4 id="view">View</h4>
 <p>View changes how your document is shown without changing what is in
 it: soft wrap, the tab row, the status bar, text size, previews and
@@ -1005,17 +1008,21 @@ its own:</p>
 (<code>Ctrl+Alt+Shift+F7</code>)</li>
 <li><strong>Open Quill Weather</strong>
 (<code>Ctrl+Alt+Shift+F8</code>)</li>
-<li><strong>Open Quill Cast</strong> (<code>Ctrl+Alt+Shift+F12</code>),
-the same key that shows and hides Cast from any program once it is
-running</li>
-<li><strong>Open Audio Studio</strong>
-(<code>Ctrl+Alt+Shift+F9</code>)</li>
 <li><strong>Open Quill Converter</strong>
-(<code>Ctrl+Alt+Shift+F10</code>), which changes audio and video files
+(<code>Ctrl+Alt+Shift+F9</code>), which changes audio and video files
 from one format to another</li>
 <li><strong>Open Quill Inkwell</strong>
-(<code>Ctrl+Alt+Shift+F11</code>)</li>
+(<code>Ctrl+Alt+Shift+F10</code>)</li>
 </ul>
+<p>The menu lists only the apps that have been released, and the keys
+are handed out in the order the menu lists them, starting at
+<code>Ctrl+Alt+Shift+F7</code>. Quill Cast and Audio Studio are not
+released yet, so they are not on this menu; when one is, it joins the
+list and the keys of the rows below it move down by one. The menu always
+shows each row’s current key beside it, so press <strong>Alt+Q</strong>
+and listen rather than relying on memory. (Once Quill Cast is running,
+its own show-and-hide key, <code>Ctrl+Alt+Shift+F12</code>, brings it
+forward from any program.)</p>
 <p>If an app is not on your computer yet, QUILL offers to download it
 for you. Chapter 14, Projects, notes and the QuillVille family, says
 more.</p>
@@ -1452,8 +1459,8 @@ save as <strong>Markdown</strong>, which keeps the formatting inline, or
 (Ctrl+Alt+E)</h4>
 <p><strong>File &gt; File Format…</strong> (<code>Ctrl+Alt+E</code>) is
 one window for the two things that decide exactly how your file is
-written to disk. QUILL Lite opens the same window on the same key, under
-the name <strong>Tools &gt; File Encoding and Line
+written to disk. QUILL Lite opens the same window on the same key; on
+its Tools menu it is called <strong>File Encoding and Line
 Endings…</strong>.</p>
 <ul>
 <li><strong>Encoding.</strong> Choose UTF-8 for anything new. UTF-8 with
@@ -1717,9 +1724,9 @@ went out. If you want the markup <em>stripped</em>, with headings and
 emphasis turned into plain words, use <strong>File &gt; Save As Plain
 Text</strong> instead. That command also offers to keep your formatting
 in an Illumination. A third route is <strong>Format &gt; Document
-Format… &gt; Plain text</strong>, which <em>asks</em> which of the two
-you want. Save As leaves your file byte for byte as it was, so a .txt
-you opened comes back unchanged.</li>
+Format…</strong> with Plain text chosen, which <em>asks</em> which of
+the two you want. Save As leaves your file byte for byte as it was, so a
+.txt you opened comes back unchanged.</li>
 <li><strong>HTML (.html)</strong>: converted to a complete web page with
 your document’s title, ready for a browser.</li>
 <li><strong>Rich Text (.rtf)</strong>: converted with all its
@@ -2191,12 +2198,13 @@ installed, QUILL uses Tesseract.</li>
 question. A file that is really corrupt is reported as <em>damaged</em>,
 with a note that OCR won’t help (repair it or export it again from where
 it came from). A PDF on a computer with no text extractor points you to
-<strong>Help &gt; Download Optional Components &gt; “PDF and Office text
-extraction”</strong> instead of claiming it is scanned. The installed
-apps come with a PDF reader, so this only happens with a pip or source
-install. A <em>password-protected</em> PDF is handled separately, as
-described next: Import / Convert Document tells you to open it with
-<strong>File &gt; Open</strong>, which asks for the password.</p>
+<strong>Help &gt; Download Optional Components…</strong> (the “PDF and
+Office text extraction” item in its list) instead of claiming it is
+scanned. The installed apps come with a PDF reader, so this only happens
+with a pip or source install. A <em>password-protected</em> PDF is
+handled separately, as described next: Import / Convert Document tells
+you to open it with <strong>File &gt; Open</strong>, which asks for the
+password.</p>
 <h4 id="opening-a-scanned-pdf-with-file--open">Opening a scanned PDF
 with File &gt; Open</h4>
 <p>You don’t have to go to Import / Convert Document to read a scanned
@@ -3010,8 +3018,9 @@ other style, two spaces at the end of the line, cannot be seen on
 screen, is not spoken by a screen reader, and is often removed by other
 programs when they save. QUILL reads both styles, so a document written
 elsewhere with two spaces still shows its breaks correctly here.</p>
-<p>QUILL Lite has the same command on <strong>Edit &gt; Insert &gt; Line
-Break</strong>, on the same key.</p>
+<p>You can also choose it from the menu: <strong>Insert &gt; Line
+Break</strong>. QUILL Lite has the same command in the same place, on
+the same key.</p>
 <h3 id="the-edit-menu">The Edit menu</h3>
 <p>The <strong>Edit</strong> menu holds the commands you use while
 writing. The standard clipboard commands come first:</p>
@@ -3045,6 +3054,9 @@ position:</p>
 Next</strong>, <strong>Find Previous</strong> and <strong>Find All
 Matches</strong>. The Replace dialog has a <strong>Replace All</strong>
 button, so bulk replacement happens in the same place.</li>
+<li><strong>Find in Open Documents…</strong>, <strong>Search in
+Files…</strong> and <strong>Replace Across Files…</strong>, the three
+searches that reach beyond this document (Chapter 6 covers them).</li>
 <li><strong>Word Prediction…</strong> opens inline word and tag
 suggestions (<code>Ctrl+.</code>).</li>
 <li><strong>Extend Selection Mode</strong> turns selection growth into a
@@ -3256,10 +3268,13 @@ Selection</strong> menu too, so you can find them there if you forget:
 <strong>Select to Start of Document</strong>
 (<code>Ctrl+Shift+Home</code>) and <strong>Select to End of
 Document</strong> (<code>Ctrl+Shift+End</code>).</p>
-<p>Once something is selected, <strong>Duplicate Selection</strong>
-(<code>Ctrl+Alt+Q</code>) puts a copy of it straight after itself, which
-saves a copy and a paste when you are building a list of similar lines.
-With nothing selected, it duplicates the line you are on.</p>
+<p>Once something is selected, press <code>Ctrl+Alt+Q</code> for
+<strong>Duplicate Selection</strong>: it puts a copy of the selection
+straight after itself, which saves a copy and a paste when you are
+building a list of similar lines. With nothing selected, it duplicates
+the line you are on. It is not on the menu bar; besides the key, it is
+on the editor’s right-click menu (press the Applications key) under
+<strong>Change Case</strong>, and in the Command Palette.</p>
 <p>You can also run any of these from the Command Palette, and change
 their keys in the Keymap Editor.</p>
 <h4 id="extend-selection-mode">Extend Selection Mode</h4>
@@ -3488,9 +3503,10 @@ asks first and tells you how many slots have something in them, with
 the tray is already empty, it just says so.</p>
 <h4 id="other-ways-to-reach-the-tray">Other ways to reach the tray</h4>
 <ul>
-<li><strong>The Paste from Tray submenu.</strong> <strong>Edit &gt; Copy
-Tray &gt; Paste from Tray</strong> lists every slot that has something
-in it, with its label and a preview: “1 signature, Hi, I wanted to
+<li><strong>The Paste from Slot rows.</strong> <strong>Edit &gt; Copy
+Tray</strong> has twelve rows, from <strong>Paste from Slot 1</strong>
+to <strong>Paste from Slot 12</strong>. A slot that has something in it
+shows its label and a preview on its row: “1 signature, Hi, I wanted to
 follow…”. Your screen reader reads both as you move through the
 submenu.</li>
 <li><strong>The status bar.</strong> The <code>Slots: X/12</code> cell
@@ -3518,14 +3534,15 @@ Editor…</strong>).</li>
 </ul>
 <h3 id="clip-library">Clip Library</h3>
 <p>The twelve Copy Tray slots are for things you chose to keep. The
-<strong>Clip Library</strong>, on the <strong>Edit</strong> menu, is a
-second, bigger store: a searchable history of up to 200 clips.</p>
+<strong>Clip Library</strong>, on the <strong>Edit &gt; Copy
+Tray</strong> submenu, is a second, bigger store: a searchable history
+of up to 200 clips.</p>
 <ul>
-<li><strong>Edit &gt; Keep Selection in Clip Library</strong>
-(<code>Ctrl+Alt+M</code>) remembers the current selection. Keeping the
-same text again from the same place does nothing, because it is already
-there.</li>
-<li><strong>Edit &gt; Open Clip Library…</strong>
+<li><strong>Edit &gt; Copy Tray &gt; Keep Selection in Clip
+Library</strong> (<code>Ctrl+Alt+M</code>) remembers the current
+selection. Keeping the same text again from the same place does nothing,
+because it is already there.</li>
+<li><strong>Edit &gt; Copy Tray &gt; Open Clip Library…</strong>
 (<code>Ctrl+Alt+Shift+M</code>) opens the library. Search as you type,
 <strong>Favorite</strong> a clip so it is never pushed out as the
 history fills up, <strong>Remove</strong> one you no longer need,
@@ -3676,9 +3693,9 @@ group still works, so the picker reaches every character Unicode has.
 When you insert one, QUILL tells you what it was, in Describe
 Character’s words, because most of these characters cannot be seen on
 the page.</p>
-<p>QUILL Lite has the same picker on <strong>Edit &gt; Insert &gt;
-Special Character…</strong>. Both keys can be changed in the Keymap
-Editor.</p>
+<p>In both QUILL and QUILL Lite the picker is on <strong>Insert &gt;
+Special Character…</strong> (<code>Ctrl+Shift+F2</code>). Both keys can
+be changed in the Keymap Editor.</p>
 <h4 id="insert-equation-ctrlalt">Insert Equation (Ctrl+Alt+=)</h4>
 <p><strong>Insert Equation…</strong> (<code>Ctrl+Alt+=</code>) asks for
 a LaTeX or MathML equation in up to two steps.</p>
@@ -4213,13 +4230,12 @@ new text and tells you what it inserted. If it does not match, nothing
 happens and Enter works as usual.</p>
 <p><strong>Large inserts.</strong> If a trigger would produce more than
 a set amount of text (50 paragraphs at first), QUILL asks before
-inserting anything. Change the amount in <strong>More Preferences &gt;
-Smart Insert &gt; General tab</strong>.</p>
+inserting anything. Change the amount on the <strong>General</strong>
+tab of the <strong>Smart Insert</strong> page in More Preferences.</p>
 <p><strong>Switching triggers on and off.</strong> Every trigger can be
-switched on or off in <strong>More Preferences &gt; Smart Insert &gt;
-Smart Triggers tab</strong>. A switched-off trigger’s
-<code>=name()</code> text is simply left on the line as you typed
-it.</p>
+switched on or off on the <strong>Smart Triggers</strong> tab of that
+same Smart Insert page. A switched-off trigger’s <code>=name()</code>
+text is simply left on the line as you typed it.</p>
 <h4 id="log-files-that-stamp-themselves">Log files that stamp
 themselves</h4>
 <p>If the first line of a text file is <code>.LOG</code>, QUILL treats
@@ -4239,8 +4255,8 @@ or the end of the document if there is none.</li>
 <p>QUILL never changes a read-only file. <code>.LOG</code> further down
 a file does nothing on its own. A UTF-8 BOM before <code>.LOG</code> is
 fine.</p>
-<p><strong>Time stamp format.</strong> Choose it in <strong>More
-Preferences &gt; Smart Insert &gt; Log Mode tab</strong>:</p>
+<p><strong>Time stamp format.</strong> Choose it on the <strong>Log
+Mode</strong> tab of the Smart Insert page in More Preferences:</p>
 <ul>
 <li>Long date and time (the default):
 <code>Sunday, June 14, 2026 9:42 PM</code></li>
@@ -4298,10 +4314,13 @@ Tab moves to the words for the chosen meaning: replacements, then
 <em>broader:</em> and <em>opposite:</em> words, each labelled. Enter or
 <strong>Replace</strong> puts the chosen word in and drops the
 selection.</p>
-<p><strong>Say Word Summary</strong> (<code>Ctrl+Alt+Shift+[</code>)
-reads you the plain word, its meanings for each part of speech, the
-first few replacements and the opposites, without opening anything.
-QUILL Lite has the same thesaurus.</p>
+<p>Press <code>Ctrl+Alt+Shift+[</code> for <strong>Say Word
+Summary</strong>: it reads you the plain word, its meanings for each
+part of speech, the first few replacements and the opposites, without
+opening anything. It has no menu item; besides the key, you can find it
+as “Word Summary” in the Command Palette (<strong>Tools &gt; Command
+Palette…</strong>, <code>Ctrl+Shift+P</code>). QUILL Lite has the same
+thesaurus.</p>
 <h4 id="look-up-word-altf10">Look Up Word (Alt+F10)</h4>
 <p><strong>Look Up Word…</strong> (<code>Alt+F10</code>, <strong>Tools
 &gt; Writing and Language</strong>) is the dictionary without AI, in a
@@ -4374,9 +4393,9 @@ text goes back into Thunderbird’s message window.</li>
 and reads it back when the editor closes.</p>
 <h3 id="autooutline-numbered-headings">AutoOutline numbered
 headings</h3>
-<p><strong>Format &gt; Update Outline Numbering</strong> numbers every
-heading in your document by its level, typed as real text at the start
-of the heading:</p>
+<p><strong>Format &gt; Line &gt; Update Outline Numbering</strong>
+numbers every heading in your document by its level, typed as real text
+at the start of the heading:</p>
 <ul>
 <li><strong>Numeric</strong> (the default): <code>1</code>,
 <code>1.1</code>, <code>1.2</code>, <code>2</code>,
@@ -4387,10 +4406,10 @@ of the heading:</p>
 <p>Choose the style in <strong>Settings &gt; Editing &gt; “AutoOutline
 numbering style.”</strong> Because the numbers are real text, they are
 read aloud, survive copy and paste, and export with nothing to set up.
-Add, remove or move headings, then run <strong>Format &gt; Update
-Outline Numbering</strong> again. It replaces the old numbers instead of
-adding new ones in front. <strong>Format &gt; Remove Outline
-Numbering</strong> takes them out again.</p>
+Add, remove or move headings, then run <strong>Format &gt; Line &gt;
+Update Outline Numbering</strong> again. It replaces the old numbers
+instead of adding new ones in front. <strong>Format &gt; Line &gt;
+Remove Outline Numbering</strong> takes them out again.</p>
 <h3 id="work-personas">Work Personas</h3>
 <p>A <strong>Work Persona</strong> is a named set of things you use
 together: a feature profile, a working folder, some favourite files and,
@@ -5049,13 +5068,14 @@ current profile and what it turns on, without opening a dialog.</li>
 <li><strong>Select Citation Style…</strong> chooses how the Author or
 Student profile writes citations: as Markdown footnotes (light, nothing
 extra to install), or as full Academic bibliography entries through the
-<strong>Insert &gt; Insert Citation…</strong> MLA / Chicago / APA
-form.</li>
+MLA, Chicago and APA form that <strong>Insert &gt; Insert
+Citation…</strong> opens.</li>
 </ul>
 <p>If you would like an outline written in the AI’s own words instead,
-use <strong>AI &gt; Generate Table of Contents</strong>. The two
-commands are separate, and the AI one appears only when AI Assistance is
-turned on.</p>
+use <strong>AI &gt; Transform Selection &gt; Generate Table of
+Contents</strong>. The two commands are separate, and the AI one appears
+only when <strong>AI &gt; Use Artificial Intelligence</strong> is on and
+<strong>AI &gt; Show advanced AI features</strong> is checked.</p>
 <h3 id="equations-and-mathematics">Equations and mathematics</h3>
 <p>Most editors make maths hard for a screen-reader user. The notation
 is visual, and the usual tools give you a mouse and a palette of
@@ -5181,7 +5201,9 @@ one piece at a time.</p>
 <li>Select an equation, or select nothing if you want to type a new
 one.</li>
 <li>Choose <strong>Insert &gt; Explore Equation Structure…</strong>, or
-press <code>Ctrl+Shift+Grave, Z</code>.</li>
+press <code>Ctrl+Shift+Grave, Z</code>. The menu item comes from the
+Math Equations Quillin that ships with QUILL, so it is missing if you
+have turned that Quillin off or started in Safe Mode.</li>
 <li>If nothing was selected, a text prompt asks for the LaTeX or MathML.
 Enter accepts it; Escape cancels.</li>
 <li>QUILL says where you are (“Whole equation” at the top, or the
@@ -5273,10 +5295,11 @@ and Markdown snippets. That helps when you want the structure but do not
 want to type every opening and closing marker correctly by hand each
 time.</p>
 <h3 id="cleanup-and-normalization">Cleanup and normalization</h3>
-<p>The cleanup commands under <strong>Tools &gt; Convert</strong> are
-made for pasted material, transcripts, exports and text moved from
-another program. Use them to turn messy text into something steady and
-readable.</p>
+<p>The cleanup commands under <strong>Format &gt; Whitespace</strong>,
+<strong>Format &gt; Sort and Filter</strong> and <strong>Format &gt;
+HTML and Encoding</strong> are made for pasted material, transcripts,
+exports and text moved from another program. Use them to turn messy text
+into something steady and readable.</p>
 <h3 id="character-encoding-tools">Character encoding tools</h3>
 <p>Text for the web often runs into encoding trouble: one tool wants
 UTF-8 and the next insists on plain ASCII. <strong>Format &gt; HTML and
@@ -5570,29 +5593,69 @@ Expression Helper (<strong>Tools &gt; Advanced &gt; Regular Expression
 Helper…</strong>) explains the syntax when you need it. QUILL also keeps
 your search history, so a search you run often is there waiting for you
 next time.</p>
-<h4 id="search-tools-on-the-edit-menu">Search Tools on the Edit
-menu</h4>
-<p>QUILL no longer has a top-level Search menu. The commands that used
-to live there are now under <strong>Edit &gt; Search Tools</strong>.
-This is where you go to search many files at once, or to work with
-regular expressions and lines:</p>
+<h4 id="searching-a-whole-folder-of-files">Searching a whole folder of
+files</h4>
+<p>QUILL no longer has a top-level Search menu. Its commands now live on
+the <strong>Edit</strong> menu. Three searches reach wider than the
+document in front of you, and they sit together directly under
+<strong>Find All Matches</strong>, in every feature profile, including
+the one a new install starts with:</p>
 <ul>
-<li><strong>Search in Files…</strong> (<code>Ctrl+Alt+Shift+F</code>)
-and <strong>Replace Across Files…</strong> (<code>Ctrl+Shift+R</code>)
-search and replace across a folder of documents. QUILL Lite has the same
-two commands, on the same keys, under <strong>Edit &gt;
-Matches</strong>.</li>
-<li><strong>Count Regex Matches…</strong> and <strong>Extract Regex
-Matches…</strong> tell you how many times a regular expression matches,
-or pull every match out for you.</li>
+<li><strong>Edit &gt; Find in Open Documents…</strong>
+(<code>Ctrl+Shift+F10</code>) searches every document you have open (see
+below).</li>
+<li><strong>Edit &gt; Search in Files…</strong>
+(<code>Ctrl+Alt+Shift+F</code>) searches every file in a folder, and
+every folder inside it, without opening them.</li>
+<li><strong>Edit &gt; Replace Across Files…</strong>
+(<code>Ctrl+Shift+R</code>) does the same search and replaces what it
+finds, in the files on disk.</li>
+</ul>
+<p>QUILL Lite has the same three rows in the same order on its own Edit
+menu, on the same keys, so what you learn in one editor works in the
+other.</p>
+<p>Both folder commands open one window. Fill in the <strong>Starting
+folder</strong> (it starts as the folder of the document you have open),
+a <strong>File pattern</strong> such as <code>*.md</code> or
+<code>*.txt</code>, and the <strong>Search text</strong>. Under
+<strong>Match mode</strong> choose Plain text, Wildcard or Regular
+expression, and tick <strong>Case sensitive</strong> or <strong>Whole
+word</strong> if you need them. <strong>Output format</strong> decides
+how much the results tell you: filenames only, filenames with line
+numbers and counts, counts only, or each filename with the matching
+lines around it. Replace Across Files adds a
+<strong>Replacement</strong> box and <strong>Preview before
+replacing</strong>, which shows you every change in a tab of its own and
+asks before it writes anything.</p>
+<p><strong>An example.</strong> You want every note in your
+<code>Clients</code> folder that mentions Rosa Diaz. Press
+<code>Ctrl+Alt+Shift+F</code>, check that the starting folder is
+<code>Clients</code>, type <code>*.md</code> as the file pattern and
+<code>Rosa Diaz</code> as the search text, and press Enter. QUILL
+searches in the background, then opens the results in a new tab and
+tells you, for example, “Search complete: 7 match(es) in 3 file(s)”.
+Arrow through the tab to hear each file and line. If she has changed her
+name, press <code>Ctrl+Shift+R</code> instead, fill in the replacement,
+keep Preview before replacing ticked, read the preview tab, and answer
+Yes.</p>
+<p>Search in Files reads files only; Replace Across Files changes files
+on disk that are not open in QUILL, so keep the preview on until you are
+sure of your search text.</p>
+<p>The rest of the search commands are on <strong>Edit &gt; Search
+Tools</strong>:</p>
+<ul>
+<li><strong>Count Regular Expression Matches…</strong> and
+<strong>Extract Regular Expression Matches…</strong> tell you how many
+times a regular expression matches, or pull every match out for
+you.</li>
 <li><strong>Lines in First Block Only</strong> and <strong>Lines Common
 to Both Blocks</strong> compare two marked blocks of lines and keep the
 lines that are only in the first, or the lines both share.</li>
+<li><strong>Multi Replace…</strong> runs up to four find-and-replace
+pairs in one pass.</li>
+<li><strong>Count Occurrences…</strong> (<code>Ctrl+Alt+Shift+F3</code>)
+tells you how many times a piece of text appears in the document.</li>
 </ul>
-<p>Search in Files and Replace Across Files appear only when your
-feature profile includes regular-expression search. In the simpler
-profiles you still have Find and Replace on the Edit menu, and Find in
-Open Documents, which every profile has.</p>
 <h4 id="find-and-replace-in-all-your-open-documents">Find and replace in
 all your open documents</h4>
 <p>Sometimes the thing you are looking for is in one of a dozen
@@ -5609,8 +5672,8 @@ them.</li>
 </ul>
 <p>Anything that is not open is left alone, and it never writes to a
 file on disk. If you want to search files that are saved in a folder
-instead, that is <strong>Search in Files</strong> (QUILL, on
-<strong>Edit &gt; Search Tools</strong>).</p>
+instead, that is <strong>Edit &gt; Search in Files…</strong>
+(<code>Ctrl+Alt+Shift+F</code>), described just above.</p>
 <p>The window has the same choices as Find and Replace:</p>
 <ul>
 <li><strong>Find what</strong> and <strong>Replace with</strong>.</li>
@@ -5728,9 +5791,12 @@ the bracket that pairs with the one at the cursor.</li>
 <li><strong>First Non-Blank</strong> and <strong>Last Non-Blank</strong>
 move to the first or last character on the line that is not a
 space.</li>
-<li><strong>Go to Anything</strong> (<code>Ctrl+Alt+Shift+A</code>) is a
-quick search box for jumping to anything by name.</li>
 </ul>
+<p>Not on the menu, but worth knowing: press
+<code>Ctrl+Alt+Shift+A</code> for <strong>Go to Anything</strong>, a
+quick search box for jumping to anything by name. It has no menu item;
+you can also find it in the Command Palette
+(<code>Ctrl+Shift+P</code>).</p>
 <h4 id="asking-where-you-are">Asking where you are</h4>
 <p>Three commands on the Navigate menu answer “where am I?” without
 moving you. Each one starts with the QUILL key
@@ -6731,10 +6797,11 @@ there.</p>
 List</strong> (<code>Alt+Shift+L</code>). It lists every misspelling in
 document order. Arrow through it and press Enter to jump to any one.</p>
 <h5 id="ranked-spelling">Ranked spelling</h5>
-<p><strong>Tools &gt; Misspelling List (Ranked by Frequency)…</strong>
-(<code>Alt+Shift+R</code>) shows the same list in a different order. The
-word that turns up most often comes first, and each entry carries its
-count, for example “teh (Ln 12, Col 4, 8 occurrences).”</p>
+<p><strong>Tools &gt; Writing and Language &gt; Misspelling List (Ranked
+by Frequency)…</strong> (<code>Alt+Shift+R</code>) shows the same list
+in a different order. The word that turns up most often comes first, and
+each entry carries its count, for example “teh (Ln 12, Col 4, 8
+occurrences).”</p>
 <p>A repeated typo or a single OCR misreading is usually the quickest
 thing to fix first. Deal with one entry, by correcting it or with
 <strong>Add to Dictionary</strong>, and you have dealt with every
@@ -6758,9 +6825,9 @@ inline code (between backticks) and fenced code blocks. The F7 review
 still covers the whole document; only the alert as you type skips
 them.</p>
 <p>You can switch the spelling sound on or off by itself in
-<strong>Tools &gt; Sound Scheme</strong> (look for “Possible misspelling
-as you type”). The spell check as you type toggle turns the whole live
-check on or off.</p>
+<strong>Tools &gt; Reading and Dictation &gt; Sound Scheme…</strong>
+(look for “Possible misspelling as you type”). The spell check as you
+type toggle turns the whole live check on or off.</p>
 <h5 id="quiet-in-code-files">Quiet in code files</h5>
 <p>In source and configuration files the live check says nothing at all.
 That covers <code>.py</code>, <code>.json</code>, <code>.js</code>,
@@ -6787,9 +6854,9 @@ the file is written. Fix or skip them as usual; the save then goes ahead
 with your corrections. This applies to <strong>Save</strong> and
 <strong>Save As</strong> for the document you are working on.</p>
 <h4 id="spell-check-language">Spell-check language</h4>
-<p><strong>Tools &gt; Spell Check Language…</strong> chooses the
-language the spell checker uses. It affects both the <code>F7</code>
-review and the check as you type.</p>
+<p><strong>Tools &gt; Writing and Language &gt; Spell Check
+Language…</strong> chooses the language the spell checker uses. It
+affects both the <code>F7</code> review and the check as you type.</p>
 <p><strong>English (United States)</strong> is built in and works
 offline straight away. Other languages are downloaded when you first
 choose them. Pick <strong>Spanish (Spain)</strong> or <strong>French
@@ -6816,9 +6883,10 @@ letters they are there.</p>
 all of this. Both editors also gather them in a window of their own. In
 QUILL it is <strong>Spelling Announcements</strong>, on
 <code>Ctrl+Alt+Shift+F6</code>, or type its name in the command palette
-(<code>Ctrl+Shift+P</code>). In QUILL Lite it is <strong>Tools &gt;
-Spelling &gt; Announcements</strong>. They are the same twelve settings
-in the same file, so setting them up once sets up both editors.</p>
+(<code>Ctrl+Shift+P</code>); it has no menu item in QUILL. In QUILL Lite
+it is <strong>Announcements…</strong>, on the Spelling submenu of its
+Tools menu. They are the same twelve settings in the same file, so
+setting them up once sets up both editors.</p>
 <h4 id="while-you-are-typing">While you are typing</h4>
 <ul>
 <li><strong>Play a sound when you type a misspelling</strong>
@@ -6887,10 +6955,11 @@ Up and other word tools</h3>
 one, finding out what one means, and counting them. Chapter 4, Writing
 and editing, gives a short introduction; this is the fuller story.</p>
 <h4 id="thesaurus-shiftf7-1">Thesaurus (Shift+F7)</h4>
-<p><strong>Tools &gt; Thesaurus…</strong> (<code>Shift+F7</code>) opens
-a two-pane picker for the word you are on. It finds the word even when
-it is in another form, so “running” finds “run”, and when you choose a
-replacement it goes back in the form your sentence needs.</p>
+<p><strong>Tools &gt; Writing and Language &gt; Thesaurus…</strong>
+(<code>Shift+F7</code>) opens a two-pane picker for the word you are on.
+It finds the word even when it is in another form, so “running” finds
+“run”, and when you choose a replacement it goes back in the form your
+sentence needs.</p>
 <h4 id="look-up-word-altf10-1">Look Up Word (Alt+F10)</h4>
 <p><strong>Look Up Word…</strong> (<code>Alt+F10</code>) is a dictionary
 with no AI. Out of the box it uses the thesaurus, which works offline.
@@ -6900,9 +6969,10 @@ online services. Nothing goes online until you check that box.</p>
 <h4 id="say-word-summary-and-dictionary-status">Say Word Summary and
 Dictionary Status</h4>
 <ul>
-<li><strong>Say Word Summary</strong> (<code>Ctrl+Alt+Shift+[</code>)
-says what the thesaurus knows about the word you are on, without opening
-a window.</li>
+<li>Press <code>Ctrl+Alt+Shift+[</code> for <strong>Say Word
+Summary</strong>, which says what the thesaurus knows about the word you
+are on, without opening a window. There is no menu item for it; the key
+or the Command Palette (<code>Ctrl+Shift+P</code>) reaches it.</li>
 <li><strong>Dictionary Status…</strong> (<code>Alt+Shift+;</code>) shows
 which spelling engine QUILL is using, how many words are in your
 personal, document and project dictionaries, and whether the thesaurus
@@ -6910,10 +6980,11 @@ is installed.</li>
 </ul>
 <h4 id="document-statistics-ctrlshiftg">Document Statistics
 (Ctrl+Shift+G)</h4>
-<p><strong>Tools &gt; Document Statistics…</strong>
-(<code>Ctrl+Shift+G</code>) gives you the number of words, characters,
-lines and paragraphs, and the reading time. It used to be called Word
-Count. It now has the same name and key as in Word and QUILL Lite.</p>
+<p><strong>Tools &gt; Writing and Language &gt; Document
+Statistics…</strong> (<code>Ctrl+Shift+G</code>) gives you the number of
+words, characters, lines and paragraphs, and the reading time. It used
+to be called Word Count. It now has the same name and key as in Word and
+QUILL Lite.</p>
 <h3 id="sounds-and-turning-them-off">Sounds, and turning them off</h3>
 <p>QUILL plays short sounds, called earcons, for things your screen
 reader does not mention, like a misspelling or a paste. Here is how to
@@ -6929,9 +7000,9 @@ short sound as they go off, and another where they now play when they
 come back on, and both are spoken too. <strong>Tools &gt; Reading and
 Dictation &gt; App Sounds</strong> has a check mark that shows whether
 they are on.</li>
-<li><strong>Tools &gt; Reading and Dictation &gt; Sound Scheme…
-(Ctrl+Alt+Shift+O) &gt; App Sounds Play On…</strong> lets you pick where
-they play:
+<li>The <strong>App Sounds Play On…</strong> button in <strong>Tools
+&gt; Reading and Dictation &gt; Sound Scheme…</strong>
+(<code>Ctrl+Alt+Shift+O</code>) lets you pick where they play:
 <ul>
 <li><strong>System default</strong>. This is where it starts. The sounds
 go where Windows sends sound.</li>
@@ -7102,11 +7173,14 @@ first.</p>
 </tr>
 </tbody>
 </table>
-<p><strong>Add Word to Dictionary</strong> (<code>Ctrl+Alt+F9</code>)
-teaches your personal dictionary the word at the cursor, so a name or a
-word from your work stops being called a misspelling, in this document
-and every other. If the word is already there, QUILL tells you and
-changes nothing.</p>
+<p>Press <code>Ctrl+Alt+F9</code> for <strong>Add Word to
+Dictionary</strong>. It teaches your personal dictionary the word at the
+cursor, so a name or a word from your work stops being called a
+misspelling, in this document and every other. If the word is already
+there, QUILL tells you and changes nothing. It has no row on the menu
+bar: use the key, the Command Palette (<code>Ctrl+Shift+P</code>), or
+<strong>Add to Dictionary</strong> in the spelling choices for a
+misspelled word.</p>
 <h3 id="what-you-learned-and-where-to-go-next-6">What you learned, and
 where to go next</h3>
 <p>You can now check a whole document with <code>F7</code>, or one word
@@ -8156,13 +8230,15 @@ Manager</strong>, never in QUILL’s settings.</li>
 account for professional post-production. QUILL uploads it, waits for
 the production to finish, and downloads the results into a folder next
 to the book. Your API token is also kept in the credential vault, and
-you can manage it in <strong>AI &gt; AI Hub &gt; Services</strong> with
-QUILL’s other service keys. Press <strong>Check account and load
-presets</strong> first: QUILL tells you whose account the token belongs
-to and how many processing credits remain, and fills the <strong>preset
-picker</strong> with your saved Auphonic presets. The confirmation then
-names the preset and your balance before anything uploads. QUILL asks
-before anything is uploaded.</li>
+you can manage it on the Services page of <strong>AI &gt; AI
+Hub…</strong>, with QUILL’s other service keys. (AI Hub is on the AI
+menu once <strong>AI &gt; Show advanced AI features</strong> is
+checked.) Press <strong>Check account and load presets</strong> first:
+QUILL tells you whose account the token belongs to and how many
+processing credits remain, and fills the <strong>preset picker</strong>
+with your saved Auphonic presets. The confirmation then names the preset
+and your balance before anything uploads. QUILL asks before anything is
+uploaded.</li>
 </ul>
 <p>Publishing is not available in Safe Mode. Every upload runs in the
 background and tells you when it is done. SFTP uploads and Auphonic
@@ -8347,8 +8423,13 @@ playhead under you in the middle of an episode.</li>
 <p><strong>Sync Now</strong> covers both halves in one press and reports
 on each.</p>
 <h4 id="sleep-timer">Sleep Timer</h4>
-<p><strong>Tools &gt; Media &gt; Sleep Timer…</strong> stops whatever is
-playing after a while, from one place.</p>
+<p>The sleep timer stops whatever is playing after a while, from one
+place. In this release radio and podcasts live in their own apps, so you
+set it in <strong>Quill Radio</strong> with <strong>Sleep
+Timer…</strong> on its Playback menu (<code>Ctrl+Shift+Z</code>), or in
+Quill Cast. The editor’s own Tools menu shows a Media submenu with the
+same Sleep Timer only in developer builds, where radio and podcasts are
+still part of the editor.</p>
 <ol type="1">
 <li>Choose a preset (15, 30, 45, 60, or 90 minutes), or type your own
 number of minutes.</li>
@@ -10410,9 +10491,9 @@ Inkwell, and Inkwell starts.</li>
 <li>If you have not chosen a key for it yet, Inkwell asks you for one
 now. Pick a key you do not use for anything else.</li>
 </ol>
-<p>You can also choose the key yourself in Inkwell: <strong>File &gt;
-Dictate Anywhere Key…</strong>. There is no key until you choose
-one.</p>
+<p>You can also choose the key yourself in Inkwell: on Inkwell’s own
+File menu, choose <strong>Dictate Anywhere Key…</strong>. There is no
+key until you choose one.</p>
 <p><strong>Using it:</strong></p>
 <ol type="1">
 <li>Go to the other program and put the cursor where you want the
@@ -10781,9 +10862,9 @@ only the defaults. Change them in the Keymap Editor (<strong>Tools &gt;
 Customize and Support &gt; Keymap Editor…</strong>).</li>
 </ul>
 <p>To use Locked Dictation you need an offline speech model installed
-(<strong>Tools &gt; Speech &gt; Manage Speech Models</strong>) and the
-optional microphone-capture support. In Safe Mode, dictation is turned
-off.</p>
+(Manage Speech Models, on <strong>Tools &gt; Speech &gt; Speech and
+Dictation…</strong>) and the optional microphone-capture support. In
+Safe Mode, dictation is turned off.</p>
 <h5 id="nothing-is-lost">Nothing is lost</h5>
 <p><strong>Nothing is lost.</strong> Your audio is saved to a recovery
 folder before transcription starts, and a transcript that cannot be
@@ -10910,8 +10991,8 @@ already has and reads recordings with parts of Windows; it can use any
 speech model you downloaded for dictation; and it writes paragraphs,
 with times if you want them, straight into a document. Transcribe Audio
 or Video (Offline) is the one for video files, captions and speaker
-labels, and AI &gt; Transcribe Audio File is the one for Transcript
-Actions such as meeting minutes.</p>
+labels, and AI &gt; Transcribe Audio &gt; Transcribe Audio File is the
+one for Transcript Actions such as meeting minutes.</p>
 <h5 id="your-first-transcription-step-by-step">Your first transcription,
 step by step</h5>
 <ol type="1">
@@ -11183,9 +11264,11 @@ OGG, Opus, WMA, WAV, MP4, M4V, MOV, MKV, WebM, or AVI.</p>
 you before transcribing, so you never have to make a WAV yourself. QUILL
 does not ship ffmpeg, but it can fetch it:</p>
 <ul>
-<li><strong>Tools &gt; Speech &gt; Download FFmpeg…</strong> downloads
-the official build (about 110 MB, with a progress bar you can cancel)
-and sets it up.</li>
+<li>The <strong>Download FFmpeg…</strong> button, on the Dictation
+(Offline) tab of <strong>Tools &gt; Speech &gt; Speech and
+Dictation…</strong>, downloads the official build (about 110 MB, with a
+progress bar you can cancel) and sets it up. It is also “Download
+FFmpeg” in the Command Palette (<code>Ctrl+Shift+P</code>).</li>
 <li>Or install it yourself once (for example,
 <code>winget install Gyan.FFmpeg</code>) and QUILL finds it on your
 PATH.</li>
@@ -11207,11 +11290,15 @@ Markdown and HTML. It tells the turns apart; it does not name the
 people.</li>
 </ul>
 <h4 id="transcribe-audio-file">Transcribe Audio File</h4>
-<p>If you have AI set up, <strong>AI &gt; Transcribe Audio
-File…</strong> sends a recording to OpenAI Whisper in the cloud.</p>
+<p>If you have AI set up, <strong>AI &gt; Transcribe Audio &gt;
+Transcribe Audio File…</strong> sends a recording to OpenAI Whisper in
+the cloud. The Transcribe Audio submenu is one of the longer AI
+commands: it appears once <strong>AI &gt; Use Artificial
+Intelligence</strong> is on and <strong>AI &gt; Show advanced AI
+features</strong> is checked (Chapter 10 explains both).</p>
 <ol type="1">
-<li>Choose <strong>AI &gt; Transcribe Audio File…</strong>. A file
-picker opens.</li>
+<li>Choose <strong>AI &gt; Transcribe Audio &gt; Transcribe Audio
+File…</strong>. A file picker opens.</li>
 <li>Pick the audio file. Supported formats: MP3, MP4, M4A, WAV, WEBM,
 OGG, FLAC (maximum 25 MB).</li>
 <li>Choose your options:
@@ -11235,8 +11322,10 @@ it for you to review and edit. Or choose <strong>“Just keep the
 transcript”</strong> to go to the viewer, where you can copy it, insert
 it at the cursor, or open it as a new document. If AI is turned off, you
 go straight to the viewer.</p>
-<p><strong>AI &gt; Translate Audio File to English…</strong> goes
-straight to the Whisper translation, skipping the language step.</p>
+<p>To get an English translation of a recording, use the
+<strong>Translate to English</strong> option in the step above. Earlier
+versions also had a separate Translate Audio File to English command; it
+is no longer on any menu.</p>
 <h4 id="transcript-actions">Transcript Actions</h4>
 <p>A transcript is rarely what you actually need. You want the minutes,
 the action items, or a clean draft. <strong>Transcript Actions</strong>
@@ -11315,8 +11404,8 @@ transcript is written next to it. Nothing is uploaded.</p>
 <p>The caption formats carry timestamps. If the engine returns no timed
 parts, they fall back to plain text, so you never get an empty caption
 file. This needs no consent. If no speech model is installed yet, the
-profile tells you to download one from <strong>Tools &gt; Speech &gt;
-Manage Speech Models</strong>.</p>
+profile tells you to download one from Manage Speech Models
+(<strong>Tools &gt; Speech &gt; Speech and Dictation…</strong>).</p>
 <p>There is also a separate <strong>Transcribe audio (OpenAI
 Whisper)</strong> action for cloud transcription, once you have turned
 on AI and set up a key.</p>
@@ -11380,9 +11469,11 @@ have to understand any of this to dictate. Come here when you want a
 more accurate model, a lighter one for an older computer, or a different
 engine.</p>
 <h4 id="manage-speech-models">Manage Speech Models</h4>
-<p><strong>Manage Speech Models…</strong> lists local speech models with
-their download size, accuracy and speed, and helps you pick one that
-will run well on your computer.</p>
+<p><strong>Tools &gt; Speech &gt; Speech and Dictation…</strong> opens
+Manage Speech Models (the command keeps that name in the Command
+Palette). It lists local speech models with their download size,
+accuracy and speed, and helps you pick one that will run well on your
+computer.</p>
 <ul>
 <li>The dialog opens with a one-line summary of your machine: its RAM,
 and whether a GPU was found.</li>
@@ -11444,17 +11535,15 @@ you had chosen it for voice commands, QUILL now uses Moonshine tiny.
 QUILL tells you this once, the first time it starts after the
 change.</p>
 <h4 id="getting-the-offline-engine">Getting the offline engine</h4>
-<p><strong>Download Offline Speech Engine…</strong> The private,
-on-device speech engine (whisper.cpp) is not bundled in the installer.
-The first time you use offline dictation or transcription, QUILL
-<strong>offers to download it for you</strong>: about 8 MB,
-checksum-verified, with a progress bar you can cancel. It is turned off
-in Safe Mode. You can also fetch it any time from <strong>Tools &gt;
-Speech &gt; Download Offline Speech Engine…</strong>, or from the
-all-in-one <strong>Help &gt; Download Optional Components</strong> list
-described below. If you are <strong>upgrading</strong> from a version
-that bundled the engine, your existing copy is kept and keeps working,
-with nothing to download.</p>
+<p>The private, on-device speech engine (whisper.cpp) is not bundled in
+the installer. The first time you use offline dictation or
+transcription, QUILL <strong>offers to download it for you</strong>:
+about 8 MB, checksum-verified, with a progress bar you can cancel. It is
+turned off in Safe Mode. If you said no then, fetch it any time from the
+all-in-one <strong>Help &gt; Download Optional Components…</strong> list
+described below. There is no separate menu item for it. If you are
+<strong>upgrading</strong> from a version that bundled the engine, your
+existing copy is kept and keeps working, with nothing to download.</p>
 <p>The installer does not include it and has no option to add it. In a
 portable copy you can also place the executable under
 <code>tools\speech\whispercpp</code> yourself. You do not need to
@@ -11560,7 +11649,7 @@ RTF.</li>
 pdfplumber and pypdf): lets Import read the text out of Word,
 PowerPoint, Excel and PDF documents without Pandoc or LibreOffice.
 Scanned or image-only PDFs still need <strong>File &gt; Import &gt;
-OCR</strong> either way.</li>
+Import / Convert Document (OCR)…</strong> either way.</li>
 <li>The <strong>braille translation pack</strong>: liblouis tables and
 BRF profiles for the Translation submenu and for BRF and embossing
 export.</li>
@@ -11577,8 +11666,8 @@ feature is first used.</li>
 <li><strong>Git</strong> and the <strong>GitHub CLI</strong>: portable
 fallback copies for <strong>Tools &gt; Git and GitHub &gt; Local
 Git</strong> and the Codespaces and Copilot commands on <strong>Tools
-&gt; GitHub</strong>. The section “Downloading git and the GitHub CLI”,
-where this guide covers Git and GitHub, has more.</li>
+&gt; Git and GitHub</strong>. The section “Downloading git and the
+GitHub CLI”, where this guide covers Git and GitHub, has more.</li>
 <li>The <strong>Node.js</strong> runtime, for Node Quillins and the
 Developer Console’s TypeScript interface. It comes last, as the extra
 people use least.</li>
@@ -11699,9 +11788,10 @@ between English and Spanish with <code>Ctrl+Shift+F11</code>, keep a
 live transcript with <code>Ctrl+Alt+Shift+PageDown</code>, and dictate
 into other programs through Quill Inkwell. You can transcribe a
 recording on your own computer or with <strong>AI &gt; Transcribe Audio
-File…</strong>, turn it into minutes or notes with Transcript Actions,
-and set a watch folder to do all of that for you. You also know where
-speech models, optional components and the memory settings live.</p>
+&gt; Transcribe Audio File…</strong>, turn it into minutes or notes with
+Transcript Actions, and set a watch folder to do all of that for you.
+You also know where speech models, optional components and the memory
+settings live.</p>
 <p>To practise with QUILL beside you, open <strong>Help &gt;
 Tutorials…</strong> (<code>Ctrl+Alt+F1</code>) and try “Write by
 talking”. The same track, “How much QUILL says”, also has five short
@@ -11879,14 +11969,15 @@ Only your question is sent, nothing from your document.</p>
 <h4 id="your-prompts-on-the-free-ai-ctrl7">Your prompts on the free AI
 (Ctrl+7)</h4>
 <p><code>Ctrl+7</code> (<strong>AI &gt; Free AI Prompt
-Library…</strong>) opens the same <strong>Prompt Library</strong> as
-<strong>AI &gt; Prompt Library</strong>: QUILL’s built-in prompts, the
-ones you wrote, and the ones your Quillins add. Choose a prompt and
-press <strong>Run with AI</strong>. The window closes, your selection is
-put where the prompt says <code>{selection}</code>, and the prompt goes
-to QUILL’s free AI as a general question, using one request. The answer
-arrives the way you chose. If the prompt with your text in it is bigger
-than the free limit allows, QUILL says so and sends nothing.</p>
+Library…</strong>) opens the <strong>Prompt Library</strong>, with the
+same prompts as the Prompts tab of <strong>AI &gt; AI Library…</strong>:
+QUILL’s built-in prompts, the ones you wrote, and the ones your Quillins
+add. Choose a prompt and press <strong>Run with AI</strong>. The window
+closes, your selection is put where the prompt says
+<code>{selection}</code>, and the prompt goes to QUILL’s free AI as a
+general question, using one request. The answer arrives the way you
+chose. If the prompt with your text in it is bigger than the free limit
+allows, QUILL says so and sends nothing.</p>
 <h4 id="searching-the-web-ctrl9">Searching the web (Ctrl+9)</h4>
 <p>QUILL’s free service can search the web for you, ten times a month.
 When the service has search switched on, the pad’s list ends with
@@ -12127,25 +12218,14 @@ assistant as a conversation. You can ask questions, draft text, suggest
 edits, and run QUILL commands, and nothing changes until you approve it.
 The window shows the provider and model in use, and you can switch
 either one there.</p>
-<p>When you only want a quick answer, with nothing to insert and no
-follow-up, use <strong>AI &gt; Ask AI…</strong> from the Command
-Palette. It is a simple question and answer window.</p>
-<ol type="1">
-<li><strong>Provider</strong> and <strong>Model</strong> already hold
-the last ones you used. If they are set up, focus goes straight to the
-Prompt field so you can start typing. If not, focus starts on Provider
-so you can set it up.</li>
-<li>Type your question and press <code>Ctrl+Enter</code>, or the
-<strong>Send</strong> button. QUILL says “Sending…” and the button is
-unavailable until the answer arrives.</li>
-<li>The answer opens in a read-only window. Read it with the arrow keys,
-and use <strong>Copy to Clipboard</strong> to copy all of it. Closing
-the answer brings you back to Ask AI, ready for a follow-up.</li>
-</ol>
-<p><strong>Clear</strong> empties the prompt field and puts you back in
-it.</p>
+<p>Earlier versions also had a separate, plain Ask AI question window.
+It has been folded into <strong>AI &gt; Ask Quill…</strong>, which is
+now the one chat window for questions with your own AI provider. For a
+quick question on the free AI, use <strong>AI &gt; Ask AI a
+Question…</strong> (<code>Ctrl+6</code>), described earlier in this
+chapter.</p>
 <h4 id="check-grammar-with-ai">Check Grammar with AI</h4>
-<p><strong>Edit &gt; Grammar &gt; Check Grammar with AI</strong> sends
+<p><strong>AI &gt; Proofread &gt; Check Grammar with AI…</strong> sends
 the selected text, or the whole document if nothing is selected, to your
 AI model and asks it to review the grammar. The answer lists each
 correction as the original phrase, the corrected phrase and the reason.
@@ -12267,9 +12347,9 @@ no account name or password to give. Support can raise your monthly
 allowance, and can end the new-connection allowance early. The change
 applies from your next request. You do not need to sign out, reconnect
 or update, and Usage shows the new number the next time you open it.</p>
-<p>Your support ID is also in <strong>Help &gt; About</strong> and in
-<strong>Usage</strong>, with a <strong>Copy Support ID</strong> button,
-if you would rather write from somewhere else.</p>
+<p>Your support ID is also in <strong>Help &gt; About Quill</strong> and
+in <strong>AI &gt; Free AI Usage…</strong>, with a <strong>Copy Support
+ID</strong> button, if you would rather write from somewhere else.</p>
 <h3 id="using-your-own-openai-or-google-gemini-key">Using your own
 OpenAI or Google Gemini key</h3>
 <p>If you have an OpenAI account or a Google Gemini key, you can use
@@ -12644,8 +12724,11 @@ Library, ready to Run on any document, change later, Promote to an
 Agent, or share.</li>
 </ol>
 <h4 id="prompt-library">Prompt Library</h4>
-<p><strong>AI &gt; Prompt Library…</strong> opens the full prompt
-manager.</p>
+<p>The full prompt manager is the <strong>Prompts</strong> tab of
+<strong>AI &gt; AI Library…</strong>, which holds Prompts, Skills and
+Agents in one window. (Type “Prompt Library” in the Command Palette,
+<code>Ctrl+Shift+P</code>, to open the older stand-alone prompt window
+this section describes.)</p>
 <p>On the left is a list of every prompt; type in the search field to
 filter it by name or category. On the right is the selected prompt’s
 instructions, and an optional input field where you can type or paste
@@ -12723,7 +12806,10 @@ class="sourceCode json"><code class="sourceCode json"><span id="cb5-1"><a href="
 <h4 id="skill-library">Skill Library</h4>
 <p>A prompt is one instruction. A skill is a series of steps, and each
 step can use what the step before it produced.</p>
-<p><strong>AI &gt; Skill Library…</strong> opens the Skill Library.</p>
+<p>Skills live on the <strong>Skills</strong> tab of <strong>AI &gt; AI
+Library…</strong>. (The older stand-alone Skill Library window is still
+in the Command Palette, <code>Ctrl+Shift+P</code>, as “Skill
+Library”.)</p>
 <p>A skill has a name, a description and a list of steps. If the skill
 asks for choices, such as tone, reading level or kind of output, QUILL
 asks you for them before it runs. Each step then sends its prompt to the
@@ -12749,7 +12835,8 @@ writes a stronger version for the audience you choose.</li>
 </ul>
 <h5 id="running-a-skill">Running a skill</h5>
 <ol type="1">
-<li>Open <strong>AI &gt; Skill Library…</strong>.</li>
+<li>Open <strong>AI &gt; AI Library…</strong> and go to the
+<strong>Skills</strong> tab.</li>
 <li>Select a skill in the list.</li>
 <li>Press <strong>Run</strong>. If the skill needs choices, a small
 window appears; fill them in and press OK.</li>
@@ -12948,8 +13035,10 @@ Models.</li>
 <code>%APPDATA%\\Quill\\models\\</code> (Windows), or set the
 <code>QUILL_LLAMA_MODEL</code> environment variable to the model’s full
 path.</li>
-<li>Open <strong>AI &gt; Writing Assistant…</strong> and send a
-prompt.</li>
+<li>Open <strong>AI &gt; Ask Quill…</strong> and send a prompt. (The
+older Writing Assistant window is no longer on the menu; type “Writing
+Assistant” in the Command Palette, <code>Ctrl+Shift+P</code>, if you
+still want it.)</li>
 </ol>
 <p>You can connect another provider instead of the on-device model:
 Ollama on your own computer or in the cloud, or a custom endpoint.</p>
@@ -13037,9 +13126,9 @@ command) waits for you to choose <code>Approve</code> or
 <code>Discard</code>.</li>
 <li>If the model or runtime is unavailable, QUILL tells you plainly and
 changes nothing.</li>
-<li><strong>Train Writing Style</strong> (<strong>AI &gt; Train Writing
-Style…</strong>) teaches the assistant your own style, from samples or
-from the current document.</li>
+<li><strong>Train Writing Style</strong> (<strong>AI &gt; More &gt;
+Train Writing Style…</strong>) teaches the assistant your own style,
+from samples or from the current document.</li>
 </ul>
 <h3 id="the-ai-hub">The AI Hub</h3>
 <p>The <strong>AI Hub</strong> (<strong>AI &gt; AI Hub…</strong>) is the
@@ -13386,20 +13475,21 @@ just in the wrong order.</p>
 check. An AI connection must be set up and turned on, and no text is
 sent until you choose the command.</p>
 <ul>
-<li><strong>AI Spell Check</strong> (<strong>AI &gt; AI Spell
-Check…</strong>) sends your document and returns a list of corrections.
-A review dialog lets you accept, skip or override each one before
-anything changes.</li>
-<li><strong>AI Spell Check Interactive</strong> (<strong>AI &gt; AI
-Spell Check Interactive…</strong>) works paragraph by paragraph. While
-you review one paragraph, QUILL fetches the next one’s corrections in
-the background, so the dialog stays quick on long documents.</li>
+<li><strong>AI Spell Check</strong> (<strong>AI &gt; Proofread &gt;
+Spell Check…</strong>) sends your document and returns a list of
+corrections. A review dialog lets you accept, skip or override each one
+before anything changes.</li>
+<li><strong>AI Spell Check Interactive</strong> (<strong>AI &gt;
+Proofread &gt; Spell Check Interactive…</strong>) works paragraph by
+paragraph. While you review one paragraph, QUILL fetches the next one’s
+corrections in the background, so the dialog stays quick on long
+documents.</li>
 </ul>
 <h4 id="ai-grammar-and-style-check">AI Grammar and Style Check</h4>
-<p><strong>AI &gt; AI Grammar and Style Check…</strong> checks the
-document for grammar, punctuation, clarity, style and word choice. It
-has no key by default; you can give it one in the Keymap Editor. Issues
-appear in a list grouped by category, and you can:</p>
+<p><strong>AI &gt; Proofread &gt; Grammar and Style Check…</strong>
+checks the document for grammar, punctuation, clarity, style and word
+choice. It has no key by default; you can give it one in the Keymap
+Editor. Issues appear in a list grouped by category, and you can:</p>
 <ul>
 <li>Show just one category (Grammar, Punctuation, Clarity, Style, Word
 Choice).</li>
@@ -13411,10 +13501,10 @@ accepted as one undo step.</li>
 </ul>
 <h4 id="translate-selection-and-translate-document">Translate Selection
 and Translate Document</h4>
-<p><strong>AI &gt; Translate Selection…</strong> and <strong>AI &gt;
-Translate Document…</strong> translate your text into a language you
-choose in the dialog. Translate Selection has no key by default; you can
-give it one in the Keymap Editor.</p>
+<p><strong>AI &gt; Translate &gt; Translate Selection…</strong> and
+<strong>AI &gt; Translate &gt; Translate Document…</strong> translate
+your text into a language you choose in the dialog. Translate Selection
+has no key by default; you can give it one in the Keymap Editor.</p>
 <p>You can choose between two providers:</p>
 <ul>
 <li><p><strong>AI Assistant</strong> (the default) uses your cloud or
@@ -13439,14 +13529,14 @@ or the document.</li>
 document tab.</li>
 </ul>
 <h4 id="ai-thesaurus">AI Thesaurus</h4>
-<p><strong>AI &gt; AI Thesaurus…</strong> finds synonyms for a word
-using your AI provider. A printed thesaurus lists every sense of a word;
-this one reads the sentence the word is in and gives you synonyms that
-fit what you meant. It has no key by default; you can give it one in the
-Keymap Editor.</p>
+<p><strong>AI &gt; More &gt; AI Thesaurus…</strong> finds synonyms for a
+word using your AI provider. A printed thesaurus lists every sense of a
+word; this one reads the sentence the word is in and gives you synonyms
+that fit what you meant. It has no key by default; you can give it one
+in the Keymap Editor.</p>
 <ol type="1">
 <li>Put the cursor on a word, or select it.</li>
-<li>Choose <strong>AI &gt; AI Thesaurus…</strong>.</li>
+<li>Choose <strong>AI &gt; More &gt; AI Thesaurus…</strong>.</li>
 <li>The dialog opens with the word filled in and synonyms loading.</li>
 <li>Arrow through the list. Each item gives the synonym and a short note
 on how it is used.</li>
@@ -13459,8 +13549,8 @@ box.</li>
 400 characters) are sent. The full document is never sent for a
 thesaurus lookup.</p>
 <h3 id="read-aloud-with-ai-voice">Read Aloud with AI Voice</h3>
-<p><strong>AI &gt; Read Selection Aloud (AI Voice)</strong> and
-<strong>AI &gt; Read Document Aloud (AI Voice)</strong> use a cloud
+<p><strong>AI &gt; Read Aloud &gt; Read Selection Aloud</strong> and
+<strong>AI &gt; Read Aloud &gt; Read Document Aloud</strong> use a cloud
 speech service to read your text in a natural, expressive voice. They
 sit alongside the on-device Read Aloud, which uses local voices such as
 SAPI 5, Piper, Kokoro, eSpeak and DECtalk.</p>
@@ -13484,13 +13574,13 @@ provider uses.</li>
 <p>Add the API key for your chosen provider in the AI Hub. ElevenLabs
 uses your stored “ElevenLabs API key” credential.</p>
 <ul>
-<li><strong>AI &gt; Stop AI Reading</strong> stops the current
-reading.</li>
-<li><strong>AI &gt; Export Document as Audio…</strong> saves the whole
-document as an audio file you choose: MP3 for OpenAI and ElevenLabs, WAV
-for Gemini. The status bar shows an estimated cost before the export
-starts. If you pick ElevenLabs for <em>live</em> reading, QUILL reminds
-you it is for export only for now.</li>
+<li><strong>AI &gt; Read Aloud &gt; Stop AI Reading</strong> stops the
+current reading.</li>
+<li><strong>AI &gt; Read Aloud &gt; Export Document as Audio…</strong>
+saves the whole document as an audio file you choose: MP3 for OpenAI and
+ElevenLabs, WAV for Gemini. The status bar shows an estimated cost
+before the export starts. If you pick ElevenLabs for <em>live</em>
+reading, QUILL reminds you it is for export only for now.</li>
 </ul>
 <p>Long documents are split only between sentences, never in the middle
 of a word, so the audio never stops at an awkward spot. Gemini exports
@@ -13500,10 +13590,10 @@ or <code>generativelanguage.googleapis.com</code>) in chunks split at
 sentences. QUILL stores no audio. The AI Privacy Reference below lists
 the ways to opt out.</p>
 <h3 id="document-qa">Document Q&amp;A</h3>
-<p><strong>AI &gt; Document Q&amp;A…</strong> opens a window where you
-ask questions about your current document, or about a PDF or text file
-you choose. It stays open while you work, so you can switch back to your
-document or any other window and return.</p>
+<p><strong>AI &gt; More &gt; Document Q&amp;A…</strong> opens a window
+where you ask questions about your current document, or about a PDF or
+text file you choose. It stays open while you work, so you can switch
+back to your document or any other window and return.</p>
 <ul>
 <li>Ask follow-up questions. The window keeps a history of your
 questions and the answers.</li>
@@ -13882,7 +13972,9 @@ its own built-in voice (Windows SAPI 5), used only for people who do not
 run a screen reader. If that voice ever fails to start while your screen
 reader is doing the talking, QUILL does not interrupt you about it; it
 just makes a quiet note. If you do want QUILL’s own voice and it did not
-start, choose <strong>Tools &gt; Retry TTS Engine</strong>.</p>
+start, close QUILL and open it again; it tries the voice once each time
+it starts. (Some older messages call this “Retry TTS Engine”, but there
+is no such menu item in this release.)</p>
 <h4 id="what-quill-says-when-it-starts">What QUILL says when it
 starts</h4>
 <p>At startup QUILL speaks only one line, <code>QUILL Ready</code>.
@@ -13986,18 +14078,15 @@ contrast and switch themes.</p>
 <h4 id="contrast-and-theme">Contrast and theme</h4>
 <p>You can check contrast, switch to dark mode, or follow the colours
 Windows uses. If you need a low-vision setup you can rely on, choose the
-one that works for your eyes and QUILL will keep to it. The
-<strong>Validate Contrast…</strong> command on the Tools &gt;
-Accessibility submenu (see <a href="#accessibility">Accessibility</a>)
-checks the current colours for you.</p>
-<p>For a quick answer, press the QUILL key and then <code>Shift+C</code>
-(<strong>Announce Contrast Ratio</strong>). QUILL works out the contrast
-between the editor’s text and its background and gives it a grade, for
-example “Contrast ratio: 15.3:1, WCAG grade: AAA (excellent)”. QUILL
-always says it out loud, because you asked, and puts it on the status
-bar too. (<strong>Speak startup readiness and theme contrast
-announcements</strong> only covers what QUILL says on its own after it
-starts or after a theme change.)</p>
+one that works for your eyes and QUILL will keep to it.</p>
+<p>To check the current colours, press the QUILL key and then
+<code>Shift+C</code> (<strong>Announce Contrast Ratio</strong>). QUILL
+works out the contrast between the editor’s text and its background and
+gives it a grade, for example “Contrast ratio: 15.3:1, WCAG grade: AAA
+(excellent)”. QUILL always says it out loud, because you asked, and puts
+it on the status bar too. (<strong>Speak startup readiness and theme
+contrast announcements</strong> only covers what QUILL says on its own
+after it starts or after a theme change.)</p>
 <h4 id="the-size-and-face-of-the-text">The size and face of the
 text</h4>
 <p>Three keys change the size of the text, and they are the ones you
@@ -14057,7 +14146,8 @@ document, use <strong>Format &gt; Font for Selection…</strong>
 plain or Markdown document it declines and tells you where to go
 instead. <code>Ctrl+Shift+F</code> is Word’s key for Font. If you used
 it for Search in Files in the past, Search in Files is now on
-<code>Ctrl+Alt+Shift+F</code>.</p>
+<code>Ctrl+Alt+Shift+F</code>, as <strong>Edit &gt; Search in
+Files…</strong>.</p>
 <h4 id="the-text-settings-if-you-would-rather-type-them">The text
 settings, if you would rather type them</h4>
 <p>Both are on the <strong>Editing</strong> page of Settings, as
@@ -14083,25 +14173,27 @@ keyboard.</p>
 <p>Press <code>F6</code> to move from the editor to the next major
 region of the window, and <code>Shift+F6</code> to move back. QUILL
 announces each move in the same way every time.</p>
-<h4 id="the-accessibility-submenu">The Accessibility submenu</h4>
-<p><strong>Tools &gt; Accessibility</strong> holds the commands for
-checking QUILL and your document:</p>
+<h4 id="checking-where-you-are-and-what-you-have">Checking where you are
+and what you have</h4>
+<p>Earlier versions had an Accessibility submenu on the Tools menu, with
+an interface audit, a tab-order snapshot, a contrast validator and a
+link catalog. That submenu is not in this release. What it did is
+covered by these instead:</p>
 <ul>
-<li><strong>Accessibility Audit…</strong> checks the interface for
-accessibility problems.</li>
-<li><strong>Keyboard Trap &amp; Tab-Order Snapshot…</strong> records
-where Tab goes and shows any place focus could get stuck.</li>
-<li><strong>Validate Contrast…</strong> checks colours for low-vision
-problems.</li>
-<li><strong>Link Inventory &amp; Alt-Text Catalog…</strong> lists the
-links and image descriptions in the current document.</li>
-<li><strong>Speak Cursor Address</strong>, <strong>Speak Document
-Status</strong> and <strong>Speak Selection Length</strong> tell your
-screen reader where the caret is, the state of the document and how much
+<li><strong>Navigate &gt; Speak Status Summary</strong> (the QUILL key,
+then <code>Q</code>) tells you the document’s name, where it is saved,
+whether it has unsaved changes and its encoding. The status bar,
+described next, has the line and column.</li>
+<li><code>Ctrl+Shift+Y</code> (<strong>Say Selected</strong>) reads what
 is selected.</li>
+<li>The QUILL key, then <code>Shift+C</code> (<strong>Announce Contrast
+Ratio</strong>), grades the editor’s colours (see Contrast and theme,
+above).</li>
+<li>For your document’s own accessibility, use the GLOW review described
+later in this chapter, or <strong>AI &gt; Accessibility
+Tune-Up…</strong> once <strong>AI &gt; Show advanced AI
+features</strong> is checked.</li>
 </ul>
-<p>The audit and the keyboard trap snapshot are useful to you, and also
-to testers helping to improve QUILL.</p>
 <h4 id="the-status-bar-1">The status bar</h4>
 <p>QUILL’s status bar is something you can move into and use, not just
 look at. It keeps useful information close and reachable from the
@@ -14564,8 +14656,11 @@ converter to look for.</p>
 <p>GLOW (Guided Layout and Output Workflow) is QUILL’s built-in
 accessibility checker. It reviews your document for accessibility
 problems and offers safe, predictable fixes, and it shows you what it
-found in plain words, not a compliance dashboard. Everything is under
-<strong>Tools &gt; GLOW</strong>.</p>
+found in plain words, not a compliance dashboard. Its four commands are
+on <strong>Tools &gt; Writing and Language</strong>: <strong>GLOW Audit
+Document</strong>, <strong>GLOW Audit Selection</strong>, <strong>GLOW
+Fix Document</strong> and <strong>GLOW Fix Selection</strong>, once it
+is turned on in the Experimental tab as described next.</p>
 <h4 id="turning-glow-on">Turning GLOW on</h4>
 <p>GLOW is an <strong>experimental feature</strong> and is off by
 default while it matures. To turn it on:</p>
@@ -14577,11 +14672,12 @@ for the whole tab.</li>
 (experimental)</strong>.</li>
 <li>Apply your settings.</li>
 </ol>
-<p>The <strong>Tools &gt; GLOW</strong> menu appears straight away, with
-no restart. While GLOW is off, its commands still show up in the Command
-Palette, and running one tells you how to turn GLOW on. Experimental
-means still being finished, not unsafe: GLOW always shows you before it
-changes anything, and it never touches your original file.</p>
+<p>The four GLOW rows appear on <strong>Tools &gt; Writing and
+Language</strong> straight away, with no restart. While GLOW is off, its
+commands still show up in the Command Palette, and running one tells you
+how to turn GLOW on. Experimental means still being finished, not
+unsafe: GLOW always shows you before it changes anything, and it never
+touches your original file.</p>
 <h4 id="auditing-a-document">Auditing a document</h4>
 <ul>
 <li><strong>GLOW Audit Current Document</strong> checks the whole file
@@ -14673,10 +14769,10 @@ readers know the caption belongs to the image.</li>
 <p>These options are hidden in Markdown documents, which cannot hold
 them. There you get the familiar <code>![alt](path)</code>.</p>
 <p>For any image already in your document, whether typed by hand, pasted
-or brought in from another format, <strong>Tools &gt; Describe Image at
-Cursor</strong> tells you what a screen reader will hear there: “Image:
-sunset.png, alt text: a sunset over the lake,” or “Image: sunset.png,
-alt text MISSING” if it has none.</p>
+or brought in from another format, <strong>Tools &gt; Advanced &gt;
+Describe Image at Cursor</strong> tells you what a screen reader will
+hear there: “Image: sunset.png, alt text: a sunset over the lake,” or
+“Image: sunset.png, alt text MISSING” if it has none.</p>
 <h3 id="what-you-learned-and-where-to-go-next-10">What you learned, and
 where to go next</h3>
 <p>You can now ask QUILL what a document is and what just changed, set
@@ -15255,7 +15351,7 @@ to save instead, clear <strong>Save the document after every clip the
 clipboard collector adds</strong> in <strong>Settings &gt;
 Editing</strong>. <strong>Alt+Shift+S</strong> turns the collector on
 and off. QUILL Lite has the same collector and the same setting, on the
-same key, under <strong>Edit &gt; Clipboard</strong>.</li>
+same key, in the Clipboard submenu of its Edit menu.</li>
 <li><strong>Toggle Key Describer</strong> says the names of keys instead
 of doing what they do. It is handy for writing down keystrokes.</li>
 <li><strong>Toggle Indentation Announcements</strong> and <strong>Infer
@@ -16240,8 +16336,8 @@ example:</p>
 <ul>
 <li>“Install Pandoc from Help &gt; Download Optional Components to
 convert this format.”</li>
-<li>“Check the address, credentials, and connection under File &gt;
-Manage Remote Sites.”</li>
+<li>“Check the address, credentials, and connection under File &gt; Open
+from Remote &gt; Manage Remote Sites.”</li>
 <li>“Check your AI provider and key in the AI Hub, or switch to a local
 model.”</li>
 </ul>
@@ -16314,9 +16410,10 @@ governs everything below it. Until it is checked, QUILL ignores every
 experimental option and its control is disabled (Tab skips it), so an
 accidental change can never affect the editor.</li>
 <li><strong>GLOW accessibility review and repair (experimental)</strong>
-turns on the <strong>Tools &gt; GLOW</strong> menu (see “<a
-href="#glow-workflows-inside-quill">GLOW Workflows Inside QUILL</a>”).
-It takes effect when you press Apply, with no restart.</li>
+turns on the GLOW rows of <strong>Tools &gt; Writing and
+Language</strong> (see “<a href="#glow-workflows-inside-quill">GLOW
+Workflows Inside QUILL</a>”). It takes effect when you press Apply, with
+no restart.</li>
 <li><strong>WordPress publishing connections (experimental)</strong>
 turns on the read-only publishing tools in the <strong>File</strong>
 menu: save a WordPress connection, verify it, browse your site’s posts
@@ -16507,11 +16604,11 @@ own, so they never clash: <strong>Quill Radio uses
 Ctrl+Alt+Shift+R</strong> and <strong>Quill Cast uses
 Ctrl+Alt+Shift+F12</strong>. Quill Weather, Quill Converter, Quill Media
 Player and Quill Inkwell have no key until you choose one, in that app’s
-<strong>File &gt; Show and Hide Key…</strong>, and they will not let you
-choose a key another QuillVille app already uses. That is handy for apps
-that live in the tray (Quill Weather watching for alerts, Quill Radio
-playing in the background), because each is then one keystroke away and
-you never have to hunt for the tray icon.</p>
+File menu, under <strong>Show and Hide Key…</strong>, and they will not
+let you choose a key another QuillVille app already uses. That is handy
+for apps that live in the tray (Quill Weather watching for alerts, Quill
+Radio playing in the background), because each is then one keystroke
+away and you never have to hunt for the tray icon.</p>
 <h4 id="what-can-be-a-global-hotkey">What can be a global hotkey</h4>
 <p>Only these commands can be bound:</p>
 <ul>
@@ -16830,9 +16927,9 @@ fallback on a normal install, please tell us through <strong>Help &gt;
 Get Help from Support</strong>.</p>
 <h3 id="table-studio-experimental">Table Studio (experimental)</h3>
 <p>Turn Table Studio on in the Experimental tab, and <strong>Tools &gt;
-Table Studio…</strong> opens a table in a spreadsheet-style grid made
-for screen-reader users, instead of a wall of pipe characters. One grid
-does two jobs:</p>
+Writing and Language &gt; Table Studio…</strong> opens a table in a
+spreadsheet-style grid made for screen-reader users, instead of a wall
+of pipe characters. One grid does two jobs:</p>
 <ul>
 <li><strong>Table Studio</strong> starts a new table you build up cell
 by cell.</li>
@@ -17461,8 +17558,9 @@ when you want the full map.</li>
 introduction.</li>
 <li><strong>Open Keyboard Reference</strong> is for when you want the
 exact keys you have now.</li>
-<li><strong>Key Cheatsheet</strong> (<code>Ctrl+F1</code>) gives you a
-quick list of shortcuts.</li>
+<li><strong>Key Cheatsheet</strong> gives you a quick list of shortcuts.
+It has no menu row: press <code>Alt+Shift+/</code> (or
+<code>Ctrl+F1</code>), or find it in the Command Palette.</li>
 <li><strong>What Can I Do Here?</strong>
 (<code>Ctrl+Alt+Shift+F1</code>) gives help on the spot, for the
 document you are in.</li>
@@ -18357,8 +18455,8 @@ other part of QUILL uses.</li>
 custom-drawn.</li>
 </ul>
 <h3 id="console-safety-settings">Console safety settings</h3>
-<p>Open them with <strong>Tools &gt; Advanced &gt; Developer Console
-&gt; Console Safety Settings</strong>, or run the command
+<p>There is no menu row for them: open the Command Palette
+(<code>Ctrl+Shift+P</code>) and run the command
 <code>quill.console.openSafetySettings</code>.</p>
 <table>
 <thead>
@@ -18825,8 +18923,9 @@ way you share any document. There are three ways it reaches other
 people:</p>
 <ul>
 <li>Through the Skill Library. Whoever receives your <code>.sqp</code>
-file imports it with <strong>AI &gt; Skill Library &gt; Import
-.sqp</strong>.</li>
+file imports it with <strong>AI &gt; AI Library…</strong> (on the AI
+menu once <strong>Show advanced AI features</strong> is checked there):
+choose the Skills tab, then <strong>Import .sqp</strong>.</li>
 <li>Through a Quillin. If you look after a Quillin, put your
 <code>.sqp</code> files in the Quillin’s folder. QUILL finds them on its
 own when the Skill Library loads.</li>
@@ -42297,7 +42396,7 @@ class="sourceCode ts"><code class="sourceCode typescript"><span id="cb57-1"><a h
 <h4 id="6-feature-placement">6. Feature placement</h4>
 <p>The feature appears in the following command surfaces:</p>
 <h5 id="tools-menu">Tools menu</h5>
-<p><code>Tools &gt; Authoring and Automation &gt; Developer Console</code></p>
+<p><code>Tools &gt; Advanced &gt; Developer Console</code></p>
 <p>Submenu items:</p>
 <ul>
 <li>Open Python Console</li>
@@ -43484,8 +43583,9 @@ and starts a compare, so you can review each change. Fixing a file on
 disk writes a repaired copy and leaves the original alone. The checks
 inside the editor cover plain text, Markdown and HTML. The optional GLOW
 engine adds checks and fixes for DOCX, PPTX, XLSX, PDF and EPUB, with a
-scored, graded report. You will find all of it under <strong>Tools &gt;
-GLOW</strong>.</p>
+scored, graded report. You will find its commands on <strong>Tools &gt;
+Writing and Language</strong> once GLOW is turned on in the Experimental
+tab of Preferences.</p>
 <p><strong>Keymap / Keyboard Pack (.kqp)</strong> The list of which key
 runs which QUILL command. You can change any of it in
 <strong>Preferences &gt; Keyboard</strong>. You can export your keymap
@@ -43494,9 +43594,10 @@ somebody else made. Resetting the keymap puts the factory keys back and
 leaves your other preferences alone.</p>
 <p><strong>Macro</strong> A recording of things you did in QUILL that
 you can play back whenever you like. Start from <strong>Tools &gt;
-Macros &gt; Start Recording</strong>, do the steps you want to repeat,
-then stop recording. Play it back later and QUILL repeats the steps
-exactly. Macros are great for cleanup jobs you do over and over.</p>
+Advanced &gt; Macros &gt; Start Recording</strong>, do the steps you
+want to repeat, then stop recording. Play it back later and QUILL
+repeats the steps exactly. Macros are great for cleanup jobs you do over
+and over.</p>
 <p><strong>Profile (Feature Profile)</strong> A named set of switches
 that decides which QUILL features you see and can use. QUILL comes with
 profiles such as Writing, Developer and Accessibility. A profile hides
@@ -43523,14 +43624,14 @@ expect it (a crash, a power cut, an accidental close), it notices the
 unsaved work the next time it starts and offers to bring back the last
 version it kept. Recovery files are kept apart from your own saved
 files, so a damaged recovery file can never overwrite your original.
-Manage them in <strong>File &gt; Recover Document</strong>.</p>
+Manage them in <strong>File &gt; Restore Backup…</strong>.</p>
 <p><strong>Remote Site</strong> A saved connection to a server, so QUILL
 can open and save files there directly. QUILL works with FTP, SFTP,
 HTTPS (WebDAV) and S3-compatible object storage. You name and save sites
-in <strong>File &gt; Remote Sites &gt; Manage Remote Sites</strong>, so
-you do not have to type your sign-in details every time. Each site keeps
-the host, port, protocol, sign-in details (encrypted on Windows with
-DPAPI) and a starting folder.</p>
+in <strong>File &gt; Open from Remote &gt; Manage Remote
+Sites…</strong>, so you do not have to type your sign-in details every
+time. Each site keeps the host, port, protocol, sign-in details
+(encrypted on Windows with DPAPI) and a starting folder.</p>
 <p><strong>Safe Mode</strong> A way of starting QUILL with AI, Watch
 Folder and Quillin extensions turned off. Use it when a Quillin or an AI
 provider is causing trouble and you want a clean start. Start QUILL with
@@ -43547,10 +43648,11 @@ session.</p>
 <p><strong>Skill / Skill Library</strong> A named AI workflow you can
 reuse, made of several steps (prompts, transforms and conditions). A
 skill is more organised than a single prompt: each step can pass what it
-produced on to the next. The Skill Library (<strong>AI &gt; Skill
-Library</strong>) is where you browse, run and write skills. Skills are
-stored as <code>.json</code> files; the skills you write and share by
-hand are <code>.sqp</code> files, and Appendix B shows you how.</p>
+produced on to the next. The Skill Library (the Skills tab of <strong>AI
+&gt; AI Library…</strong>) is where you browse, run and write skills.
+Skills are stored as <code>.json</code> files; the skills you write and
+share by hand are <code>.sqp</code> files, and Appendix B shows you
+how.</p>
 <p><strong>Snippet</strong> A block of text you reuse, inserted at the
 cursor when you ask for it. A snippet can have fill-in blanks:
 <code>${input:name}</code> asks you to type something,
@@ -43567,13 +43669,13 @@ A Sound Pack is loaded from a named folder, and you can swap packs in
 Preferences. The default pack uses synthesised bell tones. A custom pack
 can use any WAV files, as long as they follow the naming convention.</p>
 <p><strong>Template</strong> A ready-made document shape to start new
-writing from. QUILL has two kinds. <strong>Snippets</strong>
-(<code>Ctrl+Shift+Grave, S</code>) insert reusable blocks with fill-in
-blanks anywhere. The <strong>Accessible Vault’s Insert Template</strong>
-command fills in note templates from your vault’s Templates folder: it
-fills in <code>{{date}}</code> and <code>{{title}}</code>, asks you any
-<code>{{prompt}}</code> questions, and puts the cursor at
-<code>{{cursor}}</code>.</p>
+writing from. QUILL has two kinds. Snippets (<strong>Insert &gt; Insert
+Snippet…</strong>, <code>Ctrl+Shift+Grave, S</code>) insert reusable
+blocks with fill-in blanks anywhere. The <strong>Accessible Vault’s
+Insert Template</strong> command fills in note templates from your
+vault’s Templates folder: it fills in <code>{{date}}</code> and
+<code>{{title}}</code>, asks you any <code>{{prompt}}</code> questions,
+and puts the cursor at <code>{{cursor}}</code>.</p>
 <p><strong>Watch Folder</strong> A folder QUILL keeps an eye on while it
 runs. Drop a supported file into it, and QUILL opens the file as a new
 document tab (or deals with it by that folder’s own rules). It is handy

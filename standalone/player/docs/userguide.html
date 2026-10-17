@@ -288,7 +288,9 @@ folder, <code>python -m quill_media_player</code>).</li>
 <li><strong>Installed build:</strong> open <strong>Quill Media
 Player</strong> from the Start Menu, or choose it from any QuillVille
 app’s <strong>QuillVille</strong> menu (it offers to download and
-install it the first time if it isn’t present).</li>
+install it the first time if it isn’t present). Until Quill Media Player
+is released, the QuillVille menus of the other apps do not list it yet;
+open it from the Start Menu or from source instead.</li>
 <li>If you type <code>! python -m quill.apps.player</code> in QUILL’s
 prompt, it launches in this session so its output lands right here.</li>
 </ul>
@@ -302,19 +304,21 @@ choose a file.</p>
 <p>Moving through the window with Tab (or your screen reader’s
 controls), you meet these regions in order:</p>
 <ol type="1">
-<li><strong>Menu bar</strong> — File, Playback, Audio, Navigation,
-Library, View, Magical, Tools, Settings, Help. (In today’s build the
-standalone app ships File, Navigation, QuillVille, and Help; the rest
-arrive with their features.)</li>
+<li><strong>Menu bar</strong> - File, Navigation, Playback, View,
+QuillVille, Help and Window. Press Alt (or F10) to reach it, Left and
+Right to move between the menus, and Down to open one. For example, to
+set the sleep timer, press Alt, Right twice to Playback, Down, then T
+for Sleep Timer.</li>
 <li><strong>Now Playing</strong> — a review-only line with the title,
 and (as they arrive) author/narrator, source, and format. Arrow through
 it to read it.</li>
 <li><strong>Playback controls</strong> — Play/Pause, Stop, Previous/Next
 chapter, Rewind, Forward, “Where am I?”, the position slider, and the
 volume slider.</li>
-<li><strong>Content area</strong> — the Chapters, Bookmarks, Library,
-Queue, and Audio pages (Bookmarks is available today; the others arrive
-with their features).</li>
+<li><strong>Content area</strong> - three pages: Chapters, Bookmarks and
+Audio. Press Ctrl+Tab to move between them. The Book Library is a window
+of its own (File &gt; Book Library…, Ctrl+L); a play queue is not built
+yet.</li>
 <li><strong>Status bar</strong> — live state you can review field by
 field (Section 11).</li>
 </ol>
@@ -336,7 +340,8 @@ pick a book, and press <strong>Play</strong>; its sections appear in the
 Chapters tree.</li>
 <li><strong>From inside QUILL</strong> — open the player from
 <strong>Tools &gt; Media &gt; Media Player</strong>; it launches this
-same app and shares your library, bookmarks, and positions.</li>
+same app and shares your library, bookmarks, and positions. That row
+appears in QUILL once Quill Media Player is released.</li>
 <li><strong>BARD</strong> — arriving once the NLS BARD contract
 lands.</li>
 </ul>
@@ -347,8 +352,13 @@ moment you close the Player, so closing never loses the last few
 seconds.</p>
 <hr />
 <h2 id="4-playback-and-the-keyboard">4. Playback and the keyboard</h2>
-<p>Core transport needs no chord. Every key here is
-<strong>remappable</strong> in the Keyboard Shortcuts editor.</p>
+<p>Core transport needs no chord: the single letters in the next section
+(X, C, V, B, Z, T and the arrows) play, pause, stop, step and seek from
+anywhere in the window except a text field. The player controls are also
+buttons you can Tab to and press with Space: Play/Pause, Stop, Previous
+chapter, Next chapter, Rewind, Forward, Where am I?, Mute, and the
+Speed, Position and Volume controls. These keys are fixed; the
+standalone player has no Keyboard Shortcuts editor yet.</p>
 <table>
 <thead>
 <tr>
@@ -360,46 +370,50 @@ seconds.</p>
 </thead>
 <tbody>
 <tr>
-<td>Space</td>
+<td>C</td>
 <td>Play / Pause</td>
-<td>Stop button</td>
+<td>V</td>
 <td>Stop</td>
 </tr>
 <tr>
 <td>Left / Right</td>
-<td>Skip back / forward</td>
-<td><code>[</code> / <code>]</code></td>
-<td>Previous / Next chapter</td>
+<td>Back / forward 5 seconds</td>
+<td>Z / B</td>
+<td>Previous / Next track or chapter</td>
 </tr>
 <tr>
-<td>Up / Down</td>
+<td>Ctrl+Up / Ctrl+Down</td>
 <td>Volume up / down</td>
-<td>M</td>
-<td>Mute / Unmute</td>
+<td>T</td>
+<td>Time elapsed or remaining</td>
 </tr>
 <tr>
-<td>B</td>
-<td>Add bookmark</td>
 <td>Ctrl+B</td>
-<td>Add bookmark (menu)</td>
+<td>Add bookmark</td>
+<td>Ctrl+Shift+B</td>
+<td>Add bookmark with a note</td>
 </tr>
 <tr>
 <td>Ctrl+G</td>
 <td>Go to Position (H:M:S)</td>
-<td>W</td>
-<td>Where am I?</td>
-</tr>
-<tr>
 <td>Ctrl+O</td>
 <td>Open file</td>
+</tr>
+<tr>
+<td>F6</td>
+<td>Review the status bar</td>
 <td>Ctrl+W</td>
 <td>Minimize to tray</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Where am I?</strong> speaks the title, current chapter, how
-far in you are, and how much remains — a single key whenever you want
-your bearings.</p>
+<p><strong>Where am I?</strong> is a button in the player controls: it
+speaks the title, current chapter, how far in you are, and how much
+remains. It has no key of its own; for a quick reading without leaving
+where you are, press <strong>T</strong>, which says the time elapsed or,
+pressed again, the time remaining. For example, while a book plays,
+press T and you hear something like “1 minute 40 seconds of 58
+minutes”.</p>
 <h3 id="winamps-classic-keys">Winamp’s classic keys</h3>
 <p>If you came to Windows audio through Winamp, its main-window letter
 keys are almost certainly still in your fingers. They work here,
@@ -486,8 +500,9 @@ minute 40 seconds of 58 minutes”), never as a clock face — read aloud,
 swallowed while a text field has focus.</p>
 <p>The <strong>position slider</strong> speaks human time as you move it
 (“2 hours 14 minutes of 11 hours”), not a meaningless tick number.</p>
-<p>Playback speed, when enabled, ranges from 0.5× to 4.0× and preserves
-pitch so voices don’t turn squeaky.</p>
+<p>Playback speed, the <strong>Speed</strong> choice in the player
+controls, ranges from 0.5× to 3× and preserves pitch so voices don’t
+turn squeaky.</p>
 <hr />
 <h2 id="5-chapters">5. Chapters</h2>
 <p>Chapters come from M4B chapter atoms, MP3 chapter tags, Podcasting
@@ -496,9 +511,11 @@ pitch so voices don’t turn squeaky.</p>
 DAISY) keeps its hierarchy — parts with their chapters nested beneath —
 while a flat book shows a single level.</p>
 <ul>
-<li>Move by chapter with <strong><code>[</code></strong> and
-<strong><code>]</code></strong>; entering a new chapter is announced
-(“Chapter 12: The Return”).</li>
+<li>Move by chapter with <strong>Z</strong> and <strong>B</strong>
+(previous and next), or the Previous chapter and Next chapter buttons;
+entering a new chapter is announced (“Chapter 12: The Return”). In a
+book of one file per chapter, Z and B step by file, which is the same
+thing.</li>
 <li>Open the <strong>Chapters</strong> tree, arrow through it (in and
 out of levels), and press <strong>Enter</strong> to jump. Each row reads
 as a full sentence with its title and time.</li>
@@ -559,11 +576,14 @@ confirms the time it saved.</li>
 <strong>Ctrl+Shift+B</strong>. Type a note; it shows in the Bookmarks
 list next to the time.</li>
 <li><strong>Edit a bookmark’s note</strong> — select it and choose
-<strong>Edit Bookmark Note…</strong>.</li>
-<li><strong>Jump to a bookmark</strong> — open the
-<strong>Bookmarks</strong> list, arrow to one, press
-<strong>Enter</strong>.</li>
-<li><strong>Remove</strong> — select it and choose Remove Bookmark.</li>
+<strong>Navigation &gt; Edit Bookmark Note…</strong> (Ctrl+Alt+N).</li>
+<li><strong>Jump to a bookmark</strong> — press
+<strong>Ctrl+Alt+M</strong> (<strong>Navigation &gt; Go to Bookmarks
+List</strong>) to land in the Bookmarks list, arrow to one, press
+<strong>Enter</strong>. <strong>Ctrl+Alt+P</strong> (<strong>Navigation
+&gt; Go to Player Controls</strong>) takes you back.</li>
+<li><strong>Remove</strong> — select it and press the <strong>Remove
+Bookmark</strong> button below the list.</li>
 <li><strong>Send a bookmark into your document</strong> —
 <strong>Ctrl+Shift+C</strong> copies a paste-ready line
 (<code>[1:23:45] your note — Title</code>) to the clipboard; paste it
@@ -608,10 +628,12 @@ and a spoken “14:32” is ambiguous in a way the written form is not.</p>
 <h2 id="8-sound-speed-and-the-equalizer">8. Sound, speed, and the
 equalizer</h2>
 <ul>
-<li><strong>Volume</strong> — Up/Down, and <strong>M</strong> to mute
-(unmuting restores your level). Volume is remembered per book.</li>
-<li><strong>Speed</strong> — slower/faster in fine steps, remembered per
-book, pitch-preserving.</li>
+<li><strong>Volume</strong> — <strong>Ctrl+Up</strong> and
+<strong>Ctrl+Down</strong> from anywhere in the window, or Up and Down
+on the Volume slider; the <strong>Mute</strong> button mutes, and
+unmuting restores your level. Volume is remembered per book.</li>
+<li><strong>Speed</strong> — the Speed choice in the player controls,
+from 0.5× to 3×, pitch-preserving.</li>
 <li><strong>Volume boost / normalization</strong> lifts quiet recordings
 (Audio page).</li>
 <li><strong>Equalizer</strong> — a 10-band graphic EQ with presets
@@ -636,17 +658,18 @@ refinement.)</p>
 <h2 id="10-announcements-earcons-and-braille">10. Announcements,
 earcons, and braille</h2>
 <ul>
-<li><strong>Verbosity</strong> — choose Minimal, Normal, or Verbose.
-Minimal keeps the essentials and stays quiet about routine ticks;
-Verbose narrates more.</li>
-<li><strong>Earcons</strong> — short non-speech cues for play/pause,
-bookmark, chapter, and end; each can be toggled independently of speech,
-and you can pick an earcon personality (Classic, Warm, Minimal).</li>
-<li><strong>Braille</strong> — a dedicated status line renders Now
-Playing, chapter, and position on your refreshable display.</li>
-<li><strong>Self-voicing</strong> (optional) speaks the player’s
-announcements even when no screen reader is running.</li>
+<li><strong>Earcons</strong> — short non-speech cues for what the player
+does. Turn them all off and on with <strong>Alt+Shift+M</strong>
+(<strong>Playback &gt; App Sounds</strong>), and choose where they play
+in Preferences (see the next section).</li>
+<li><strong>Braille</strong> — everything the player announces also goes
+to your braille display, through your screen reader.</li>
 </ul>
+<p>Not built yet in the standalone player, though the PRD plans them: a
+verbosity choice (Minimal, Normal, Verbose), separate switches and a
+choice of personality for each earcon, a dedicated braille status line,
+and self-voicing without a screen reader. Nothing in its menus or
+Preferences sets these today.</p>
 <hr />
 <h2 id="10a-where-the-players-own-sounds-play">10a. Where the player’s
 own sounds play</h2>
@@ -659,8 +682,10 @@ Press it again and they come back, on the same sound card as before. You
 hear a short sound as they go off, and another where they now play when
 they come back on, and both are spoken too. <strong>Playback &gt; App
 Sounds</strong> has a check mark that shows whether they are on.</li>
-<li><strong>Preferences (Ctrl+,) &gt; App Sounds Play On…</strong> lets
-you pick where they play:
+<li><strong>App Sounds Play On…</strong>, a button in the Preferences
+window, lets you pick where they play. Open <strong>File &gt;
+Preferences…</strong> (Ctrl+,) and Tab to the button, or type “sounds”
+in its Find a setting box. The choices are:
 <ul>
 <li><strong>Same as its audio</strong>. This is where it starts. The
 sounds go wherever the book plays, and follow it when you move it to
@@ -686,14 +711,14 @@ Your screen reader is never moved.</p>
 <p>The status bar mirrors QUILL’s own multi-field status bar, so it
 reviews the same way you already know. Its fields:
 <strong>State</strong>, <strong>Position</strong>,
-<strong>Chapter</strong>, <strong>Speed</strong>,
-<strong>Sleep</strong>, <strong>Source &amp; format</strong>, and
+<strong>Chapter</strong>, <strong>Sleep</strong>, and
 <strong>Backend</strong>.</p>
 <ul>
-<li><strong>F6</strong> moves across the fields; each is announced with
-its label (“Chapter: 12 of 14, The Return”).</li>
-<li><strong>Shift+F6</strong> (Read Status Bar) speaks all fields at
-once.</li>
+<li><strong>F6</strong> (<strong>Navigation &gt; Review Status
+Field</strong>) moves across the fields; each is announced with its
+label (“Chapter: 12 of 14, The Return”).</li>
+<li><strong>Shift+F6</strong> (<strong>Navigation &gt; Read Status
+Bar</strong>) speaks all fields at once.</li>
 </ul>
 <hr />
 <h2 id="12-system-tray-and-media-keys">12. System tray and media
@@ -710,18 +735,23 @@ empty for none. If another QuillVille app already uses it, the player
 tells you whose it is and lets you try another. If you used an earlier
 version, Ctrl+Alt+Shift+P did this; other QuillVille apps use that key,
 so it is off now, and the player tells you once after you update.</li>
-<li>Right-click for a menu of the essentials (Play/Pause, skip, chapter,
-bookmark, sleep, Show Player, Exit).</li>
-<li><strong>Closing to the tray</strong> is a choice — <em>ask</em>,
-<em>minimize to tray</em>, or <em>exit</em> — and a deliberate
-<strong>Exit</strong> always quits, never bounces back.</li>
+<li>Right-click it, or press the Applications key on it, for its menu:
+<strong>Show Quill Media Player</strong> and <strong>Exit Quill Media
+Player</strong>. Playback commands are not on the tray menu yet; use the
+window.</li>
+<li><strong>File &gt; Minimize to Tray</strong> (Ctrl+W) tucks the
+window into the tray and playback carries on. Closing the window saves
+your place; there is no setting yet to choose between asking, going to
+the tray and exiting when you close it, so use Minimize to Tray when you
+want to keep listening. A deliberate <strong>Exit</strong> (Ctrl+Q)
+always quits.</li>
 </ul>
 <p>Because the tray icon and its menu are historically hard for screen
-readers, the tray is a convenience, never the only way: <strong>global
-media keys</strong> (Play/Pause, skip, chapter) work even while
-minimized, and state changes are spoken. On macOS there is no
-notification-area tray (the app uses the Dock and the system Now Playing
-controls instead).</p>
+readers, the tray is a convenience, never the only way: everything is in
+the window and its menus. The standalone player does not yet take the
+keyboard’s media keys (Play/Pause, Next, Previous) when another program
+is in front. On macOS there is no notification-area tray (the app uses
+the Dock instead).</p>
 <hr />
 <h2 id="13-mini-player-magical-mode-and-voice-control">13. Mini-player,
 Magical Mode, and voice control</h2>
@@ -772,9 +802,10 @@ dictation — for when you’d rather not talk aloud.</li>
 <em>“skip back thirty”</em>, <em>“go to 1:20:00”</em>, <em>“bookmark
 this”</em>, <em>“how much is left”</em>, <em>“sleep in twenty”</em>,
 <em>“summarize”</em>, <em>“recap”</em>. Unrecognized input is announced,
-never guessed, and every voice command also has its own key, so voice is
-purely additive. <em>(An always-on hotword — no key press to start
-listening — is a future addition.)</em></li>
+never guessed, and every voice command also has a key or a menu row (the
+sleep timer, for one, is <strong>Playback &gt; Sleep Timer</strong>), so
+voice is purely additive. <em>(An always-on hotword — no key press to
+start listening — is a future addition.)</em></li>
 </ul></li>
 </ul>
 <hr />
@@ -810,16 +841,26 @@ never in Safe Mode, and they are kept in memory only: nothing is written
 to your computer.</p>
 <hr />
 <h2 id="14-settings">14. Settings</h2>
-<p>Today you control the player from its menus: the
-<strong>Audio</strong> page for the equalizer, boost, normalize, and
-skip-silence; <strong>Playback &gt; Sleep Timer</strong>; and the
-<strong>View</strong> menu for Mini Player, Compact Mode, Magical Mode,
-and Always on Top. Your listening position, per-book volume, and
-bookmarks are remembered automatically.</p>
-<p>A single <strong>searchable, categorized Preferences dialog</strong>
-— with per-book overrides and import/export — is on the roadmap; its
-full catalogue of options is specified in the PRD (Section 10). Until it
-lands, the menu controls above cover the day-to-day settings.</p>
+<p><strong>File &gt; Preferences…</strong> (Ctrl+,) gathers the player’s
+settings in one window: <strong>Audio Output Device…</strong> and
+<strong>App Sounds Play On…</strong> (buttons that open their own
+windows), and, in a box labelled <strong>This session only</strong>,
+Compact mode, Magical mode, Always on top and the Sleep timer, which
+reset when the player closes. Each does exactly what its menu row does.
+Its <strong>Find a setting</strong> box searches these and the settings
+that stay in the main window: type “skip silence”, press Down to the
+match and press Enter, and Preferences closes, the Audio page comes
+forward and the focus lands on Skip silence.</p>
+<p>The same settings are also in the menus: the <strong>Audio</strong>
+page for the equalizer, boost, normalize, and skip-silence;
+<strong>Playback &gt; Sleep Timer</strong>; <strong>Playback &gt; Audio
+Output Device…</strong> (Ctrl+Shift+K); and the <strong>View</strong>
+menu for Mini Player (Ctrl+Shift+M), Compact Mode (Ctrl+Alt+K), Magical
+Mode (Ctrl+Shift+G), and Always on Top (Ctrl+Shift+T). Your listening
+position, per-book volume, and bookmarks are remembered
+automatically.</p>
+<p>Per-book overrides and importing or exporting settings, specified in
+the PRD (Section 10), are not built yet.</p>
 <hr />
 <h2 id="15-privacy-and-safety">15. Privacy and safety</h2>
 <ul>
@@ -857,8 +898,9 @@ engines are present next to the app.</li>
 <li><strong>EQ / boost / skip-silence are greyed out</strong> — libmpv
 isn’t loaded on this system; core playback still works.</li>
 <li><strong>No tray icon</strong> — you’re on macOS (which has no
-notification-area tray) or the tray is disabled in settings; use the
-Dock or the window itself.</li>
+notification-area tray), or Windows has hidden it in the overflow area
+(press Windows+B, then the arrow keys); otherwise use the window
+itself.</li>
 <li><strong>It didn’t resume where I expected</strong> — resume is saved
 per file; a renamed or moved file is treated as new.</li>
 </ul>
@@ -923,10 +965,11 @@ a glance</h2>
 to this guide (<code>prd.md</code>).</p>
 <h2 id="finding-a-setting-or-a-command">Finding a setting or a
 command</h2>
-<p>Quill Media Player keeps its options in its menus, so there is no
-settings window to search. Instead, <strong>Help &gt; Find a Setting or
-Command</strong> (<strong>Ctrl+Alt+Shift+S</strong>) searches every menu
-at once.</p>
+<p>Quill Media Player keeps most of its options in its menus, and
+<strong>Help &gt; Find a Setting or Command</strong>
+(<strong>Ctrl+Alt+Shift+S</strong>) searches every menu at once.
+(Preferences has its own <strong>Find a setting</strong> box for what is
+in that window; see Settings.)</p>
 <ol type="1">
 <li>Press <strong>Ctrl+Alt+Shift+S</strong>.</li>
 <li>Type part of what you are looking for, such as “bookmarks”. The list

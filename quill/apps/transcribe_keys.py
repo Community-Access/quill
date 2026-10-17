@@ -109,7 +109,7 @@ class TranscribeKeysMixin:
             notices.append(
                 f"Your start and stop key, {chord}, is not working: Windows says another "
                 "program is using it. If that is Quill Inkwell with the same key, Inkwell "
-                "passes it to QUILL Transcribe. To choose another, open the Dictation menu "
+                "passes it to QUILL Transcribe. To choose another, open the File menu "
                 "and choose Start and Stop Key."
             )
         command = str(getattr(self._settings, "command_hotkey", "") or "")

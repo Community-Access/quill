@@ -1005,7 +1005,7 @@ for when something goes wrong.
 Quill Converter makes short sounds of its own, such as the ones that mark a conversion finishing or failing. You choose where they play, and you can turn them off.
 
 - **Alt+Shift+M** turns Quill Converter's sounds off. Press it again and they come back, on the same sound card as before. You hear a short sound as they go off, and another where they now play when they come back on, and both are spoken too. **File > App Sounds** has a check mark that shows whether they are on.
-- **File > Preferences (Ctrl+,) > App Sounds Play On...** lets you pick where they play:
+- The **App Sounds Play On...** button in **File > Preferences...** (Ctrl+,) lets you pick where they play:
   - **System default**. This is where it starts. The sounds go where Windows sends sound.
   - **None (no sounds)**. Quill Converter makes no sounds at all. Everything it tells you is still spoken.
   - **Any sound card or headset in the list.** The sounds get a device of their own.

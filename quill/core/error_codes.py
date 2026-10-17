@@ -53,7 +53,8 @@ USER_HINTS: dict[str, str] = {
         "Install the OCR components from Help > Download Optional Components."
     ),
     "QUILL-IO-REMOTE-TRANSPORT": (
-        "Check the address, credentials, and connection under File > Manage Remote Sites."
+        "Check the address, credentials, and connection under "
+        "File > Open from Remote > Manage Remote Sites."
     ),
     "QUILL-SSH-CLIENT-NO-PARAMIKO": (
         "SSH support is not installed in this build; reinstall QUILL or add the "

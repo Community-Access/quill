@@ -545,8 +545,9 @@ through six stops, in this order.
    reads **Resume** and its name (Alt+U). If you gave the station your own
    name in Favorites, that is the name you hear. With a folder or nothing
    selected it reads **Play -- nothing selected**, and pressing it tells you
-   what would work. Stop does the same as **Ctrl+Period** and **Station >
-   Stop**, and **Ctrl+P** presses this button from anywhere.
+   what would work. Stop does the same as **Ctrl+Period**. **Ctrl+P**
+   presses this button from anywhere; it is the **Play** item on the
+   **Playback** menu, which reads **Stop** while something plays.
 4. **Website** (Alt+B), which opens the station's own website in your
    browser. If something is playing, you get that station's site; if not, you
    get the site of the favorite you are on. It is the quickest way to a
@@ -869,8 +870,8 @@ rather than something to learn.
 - **Update Station Catalog** (Ctrl+Alt+Shift+G): bring the station catalog on
   your computer up to date now.
 - **Connect to Spotify...** (Ctrl+Alt+P) and **Browse Spotify...**
-  (Ctrl+Alt+O): only there when the experimental Spotify feature is on. See
-  "Spotify (experimental)" in Chapter 9.
+  (Ctrl+Alt+O): experimental, and on the menu from the start; nothing is sent
+  to Spotify until you connect. See "Spotify (experimental)" in Chapter 9.
 - **Manage Favorites...** (Ctrl+Shift+M): the Manage Favorite Stations window.
 - **Add Playing Station to Favorites** (Ctrl+Shift+F): saves what is playing.
   If it is already a favorite, the same item removes it, and its name says so.
@@ -3935,12 +3936,20 @@ be heard on the internet.
 ### Spotify (experimental)
 
 Quill Radio can search Spotify, browse your library and playlists, and play
-through Spotify's own player. This is **experimental, and off to begin with**.
-When the Spotify feature is on, **Connect to Spotify...** (Ctrl+Alt+P) and
-**Browse Spotify...** (Ctrl+Alt+O) appear on the **Station** menu. Quill Radio
-has no switch of its own for it: it follows the Spotify feature in the feature
-settings it shares with QUILL. Nothing reaches Spotify until you connect an
-account, and it is off in Safe Mode.
+through Spotify's own player. This is **experimental**: it works, but it is
+newer and less tested than the rest of Quill Radio, and it may change. It is
+**on to begin with**, so **Connect to Spotify...** (Ctrl+Alt+P) and **Browse
+Spotify...** (Ctrl+Alt+O) are on the **Station** menu from the first time you
+open Quill Radio. Being visible does not mean anything is sent: nothing reaches
+Spotify until you choose Connect to Spotify and sign in to an account. Quill
+Radio has no switch of its own for it: it follows the Spotify feature in the
+feature settings it shares with QUILL, so turning that feature off there takes
+both rows away. It is also off in Safe Mode.
+
+For example: press **Alt+S** for the Station menu and arrow down to **Connect
+to Spotify...**, or press **Ctrl+Alt+P** from anywhere in Quill Radio. The
+Connect to Spotify window walks you through signing in; once you are connected,
+**Browse Spotify...** (**Ctrl+Alt+O**) lists your library and playlists.
 
 #### Does a free Spotify account work?
 

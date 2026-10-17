@@ -4061,18 +4061,19 @@ v1.2.</p>
 Lite).</strong> Asked for on QUILLVille by Chris Nova, who used
 NoteTab’s find and replace across a hundred open files.
 <code>Ctrl+Shift+F10</code> (Edit &gt; Find in Open Documents…; QUILL
-Lite: Edit &gt; Matches, on <code>Ctrl+Alt+Shift+F8</code>, because in
-QUILL that key is the QuillVille launcher for Quill Weather) opens one
-shared window (<code>quill/ui/open_documents_find.py</code>) over the
-wx-free model in <code>quill/core/open_documents_search.py</code>, which
-matches with the same <code>find_model</code> both editors’ Find already
-use. It searches each open document’s live text – unsaved and
-never-saved documents included, nothing on disk touched. Find
-Next/Previous cross from document to document, announcing the document
-name and line only when it moves, and wrap back to the start position;
-Find All lists every match grouped by document and Enter jumps; Replace
-All plans first (<code>plan_replace</code>), asks with the count, writes
-one undo step per plain-text document (<code>changed_span</code> +
+Lite: the same Edit row since 2026-10-16, on
+<code>Ctrl+Alt+Shift+F8</code>, because in QUILL that key is the
+QuillVille launcher for Quill Weather) opens one shared window
+(<code>quill/ui/open_documents_find.py</code>) over the wx-free model in
+<code>quill/core/open_documents_search.py</code>, which matches with the
+same <code>find_model</code> both editors’ Find already use. It searches
+each open document’s live text – unsaved and never-saved documents
+included, nothing on disk touched. Find Next/Previous cross from
+document to document, announcing the document name and line only when it
+moves, and wrap back to the start position; Find All lists every match
+grouped by document and Enter jumps; Replace All plans first
+(<code>plan_replace</code>), asks with the count, writes one undo step
+per plain-text document (<code>changed_span</code> +
 <code>replace_as_one_undo</code>) or one per match in a formatted one so
 formatting between matches is untouched, marks the documents modified
 and saves nothing. Read-only documents are searched and skipped by
@@ -4081,6 +4082,40 @@ continue across documents (<code>OpenDocumentsState</code>, per app)
 until an ordinary Find or Replace starts. Each editor supplies only an
 adapter: <code>quill/ui/main_frame_open_documents.py</code> (tabs) and
 <code>quill/apps/lite_open_documents.py</code> (windows).</p>
+<p><strong>One placement for the wider searches, in both editors
+(2026-10-16).</strong> Jeff, launching both editors from source with the
+changelogs in hand, could not find Search in Files or Find in Open
+Documents. Every handler and key existed; the defect was where they were
+filed. QUILL Lite had all three inside <strong>Edit &gt;
+Matches</strong>, a submenu whose name says nothing about a folder
+search. QUILL had Find in Open Documents on Edit but Search in Files and
+Replace Across Files in <strong>Edit &gt; Search Tools</strong>, and
+only when the feature profile included <code>core.search.regex</code> –
+which Essential, the profile every new install starts in, does not.
+Because <code>feature_command_map</code> gated the commands as well as
+the rows, <code>Ctrl+Alt+Shift+F</code> did nothing at all for a new
+QUILL user while QUILL Lite’s default showed it: the small editor ahead
+of the big one, which CLAUDE.md forbids. The decision, by family rules 1
+and 2 (one placement for a command both editors have, where a newcomer
+looks first): <strong>Find in Open Documents…, Search in Files… and
+Replace Across Files… are three consecutive rows of Edit itself, under
+Find All Matches in QUILL and under Replace in QUILL Lite</strong>, keys
+unchanged. In QUILL they are gated by <code>core.search</code> (Find’s
+own feature, on in every profile; neither command needs a pattern, plain
+text is the default and a regular expression a choice in the window) and
+appended by
+<code>OpenDocumentsFindMixin._append_cross_document_search_items</code>;
+Search Tools keeps the regular-expression tools, Count Occurrences and
+Multi Replace. QUILL’s Find row claims <code>&amp;F</code> explicitly
+(it was <code>Fin&amp;d</code>, lost to Restore Deleted Text, so the
+route pass had to seat it, and with Replace Across Files in the menu it
+seated Find on Q). The new gate GATE-DOCMENU
+(<code>tests/unit/docs/menu_claims.py</code> plus one
+<code>test_documented_menus_&lt;app&gt;.py</code> per app) reads each
+app’s changelog and guide for menu paths and for command names beside
+keys, and checks them against the menu bar a new install actually
+builds; a command that exists only once a switch is on passes only where
+the same chapter names the switch.</p>
 <h3 id="59-spell-checking-local-first-guided-f7-review">5.9 Spell
 checking (local-first, guided F7 review)</h3>
 <p>This section was significantly expanded in v0.2 of this PRD. See <a

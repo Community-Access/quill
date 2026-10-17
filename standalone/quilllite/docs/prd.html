@@ -2103,8 +2103,9 @@ is automated, and what a person actually <em>hears</em> is not.</li>
 <p>QUILL’s command from the same shared code (QUILL has it on
 Ctrl+Shift+F10, because its Ctrl+Alt+Shift+F8 is a QuillVille launcher;
 <code>parity.DIVERGENCES</code>) (QUILL Lite may never be ahead of
-QUILL, and here it is not behind either): <strong>Edit &gt; Matches &gt;
-Find in Open Documents…</strong> (<strong>Ctrl+Alt+Shift+F8</strong>)
+QUILL, and here it is not behind either): <strong>Edit &gt; Find in Open
+Documents…</strong> (<strong>Ctrl+Alt+Shift+F8</strong>; in Edit &gt;
+Matches until 2026-10-16, see the placement note under Search in Files)
 finds and replaces across every open window’s live text. The window and
 the model are QUILL’s (<code>quill/ui/open_documents_find.py</code>,
 <code>quill/core/open_documents_search.py</code>); QUILL Lite supplies
@@ -2118,6 +2119,34 @@ any window carries on the same search. Find and Replace end it
 Chris Nova.</p>
 <h2 id="search-in-files-and-replace-across-files-2026-10-15">Search in
 Files and Replace Across Files (2026-10-15)</h2>
+<p><strong>Placement, revised 2026-10-16.</strong> Find in Open
+Documents, Search in Files and Replace Across Files are rows of
+<strong>Edit</strong> itself, directly under Replace, in that order
+(<code>&amp;Edit</code>, “F&amp;ind in Open Documents…”, “&amp;Search in
+Files…”, “Replace Across Files…”), and QUILL has the same three rows in
+the same order under Find All Matches. They first shipped inside
+<strong>Edit &gt; Matches</strong>, and Jeff, launching from source with
+the changelog in hand, could not find either: a listener arrowing down
+Edit hears “Matches, submenu”, and nothing in that word says a folder
+search is behind it, while QUILL filed the same commands in a different
+place again (Edit for one, Edit &gt; Search Tools for two, and the two
+only in profiles with regular-expression search). Family rules 1 and 2
+decide it: one placement for a command both editors have, and the
+placement a newcomer looks in first. <strong>Edit &gt; Matches</strong>
+keeps the two commands about the document in front of you, All Matches
+and Count Occurrences. The three stay in the <code>matches</code> area
+(<code>command_areas.COMMAND_AREA</code>), now labelled “Matches and
+wider searches”: on in a new install, off in the Notepad and WordPad
+profiles, whose promise is to have only what those programs had. Search
+in Files took the access letter S from Character Details, whose title
+has no other free letter in Edit; it keeps Ctrl+Alt+C. Replace Across
+Files has no access letter for the same reason and is reached by
+Ctrl+Shift+R or by arrow (GATE-14: no mnemonic beats a duplicate). Keys
+are unchanged. GATE-DOCMENU
+(<code>tests/unit/docs/test_documented_menus_lite.py</code>) now checks
+every menu path and every command named beside a key in this app’s
+changelog and guide against the menus a new install builds, and pins the
+three Edit rows.</p>
 <p>QUILL’s two commands, on QUILL’s keys – Ctrl+Alt+Shift+F had been
 reserved for Search in Files since the keyboard parity work and never
 filled. The window moved from

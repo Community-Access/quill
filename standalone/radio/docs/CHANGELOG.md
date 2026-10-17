@@ -10,6 +10,35 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 Testing rebuild: **3.2.0 (build 4)**. The packages have not been published yet.
 
+- **Corrected: the guide now says Spotify is on the Station menu from the
+  start.** It said **Connect to Spotify...** (Ctrl+Alt+P) and **Browse
+  Spotify...** (Ctrl+Alt+O) appear only once an experimental feature is turned
+  on, but that feature is on in a new install, so both rows are there the first
+  time you open the Station menu (Alt+S). Spotify is still experimental: newer
+  and less tested than the rest of Quill Radio. Seeing the rows sends nothing;
+  Quill Radio talks to Spotify only after you connect an account with Connect
+  to Spotify. To remove both rows, turn the Spotify feature off in the feature
+  settings Quill Radio shares with QUILL. See "Spotify (experimental)" in the
+  user guide.
+
+- **Corrected: where Stop is in the main window.** The notes for 3.0.3 said
+  the main window's Stop button does the same as Ctrl+Period and "Station,
+  Stop". There has never been a Stop item on the Station menu, so anyone who
+  went looking for it found nothing. In the main window you stop in any of
+  three ways:
+  - Press **Ctrl+Period**, from anywhere in the window.
+  - Press **Alt+T** for the **Stop** button, first in the row before Mute and
+    Volume.
+  - Open the **Playback** menu (Alt+P). Its **Play** item (Ctrl+P), just
+    under the dimmed line that says what is playing, reads **Stop** while
+    something plays, and choosing it stops.
+
+  For example, with a station playing, press Alt+P, arrow down to Stop and
+  press Enter, and the station stops; Ctrl+Period does the same in one key. One limit: while something is paused, that
+  Playback item reads **Resume** instead, so to end a paused recording or
+  file use Ctrl+Period or the Stop button. The 3.0.3 entry below and the 3.0
+  release notes now say this too.
+
 - **Station Details: find a station by its call sign, frequency or slogan.**
   **View > Station Details...** (Alt+Shift+I) searches stations by name, call
   sign (KUOW), frequency (94.9 or 98.5 FM), slogan, format or city, and each
@@ -360,7 +389,8 @@ portable copy can now install itself, now or when you close.
   Cast, Weather, Audio Studio, the Converter and QUILL Lite's tutorial book
   used the same lookup and are fixed with it.
 - **The Stop button is back** in the main window (Alt+T), first in the row
-  before Mute and Volume; the same as Ctrl+Period and Station > Stop
+  before Mute and Volume; the same as Ctrl+Period and the Playback menu's
+  Play item, which reads Stop while something plays
   (`quill/ui/radio/stop_button.py`).
 - **Install when I close.** The Update downloaded window offers it beside
   Install and restart now: the update is applied when the app is next closed,

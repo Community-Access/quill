@@ -5,6 +5,34 @@
 Testing rebuild: **1.2.0 (build 5)**, following builds 2, 3 and 4; builds 2 and 3 were
 uploaded for testing. The new packages have not been published yet.
 
+- **Find in Open Documents, Search in Files and Replace Across Files are on the
+  Edit menu itself, where you would look for them.** They had been one level
+  down, inside **Edit > Matches**, and nothing in the word "Matches" says a
+  folder search is behind it: arrowing down the Edit menu, you never heard them.
+  Now press **Alt+E** and arrow down past **Replace...**: the next three rows are
+  **Find in Open Documents...** (**Ctrl+Alt+Shift+F8**), **Search in Files...**
+  (**Ctrl+Alt+Shift+F**, or **Alt+E** then **S**) and **Replace Across
+  Files...** (**Ctrl+Shift+R**). Their keys have not changed. **Edit > Matches**
+  keeps the two that are about the document in front of you, **All Matches...**
+  (**Ctrl+Shift+F3**) and **Count Occurrences** (**Ctrl+Alt+Shift+F3**).
+  QUILL now has the same three rows in the same place, so what you learn in one
+  editor works in the other. For example, to find which of the letters in a
+  folder mention Priya: open any one of them, press **Ctrl+Alt+Shift+F**, type
+  `*.txt` in File pattern and `Priya` in Search text, and press Enter; you hear
+  how many matches were found in how many files, and they are listed in a new
+  window. The three still belong to the **Matches and wider searches** area (the
+  new name of "The Matches submenu") in **Tools > Customize Features...**
+  (**Ctrl+Alt+F10**), which is on in a new install and off in the Notepad and
+  WordPad profiles. **Character Details...** (**Ctrl+Alt+C**) gave its Alt
+  letter S to Search in Files and is reached with its key or by arrowing.
+- **The user guide's menu paths are checked against the real menus.** Every
+  menu path and every command named beside its key in this changelog and the
+  user guide is now compared, before each release, with the menus a new install
+  shows. A command that is only there once you switch something on, such as AI
+  help or timestamped backups, has to say in the same chapter how to switch it
+  on. The first run found the Sound Scheme path written as if App Sounds Play On
+  were a menu (it is a button in the Sound Scheme window), now corrected.
+
 - **Dictation profiles, and bold and italic by voice.** More Dictation Settings has **Dictation profile, for the kind of writing** (**Alt+A**): Standard (your settings as they are, the default), Email, Document, Markdown, Chat, Coding or Verbatim. Each changes the pause, filler words and punctuation, and how headings, bold and italic are written; in a rich text document, Document and Email use QUILL Lite's own Heading, Bold and Italic. Say "QUILL email mode" to switch while dictating, or check **Lock the profile** (**Alt+B**) so a spoken name cannot. "QUILL bold that" and "QUILL italic that" format the selection or the phrase you just dictated. The same in QUILL and QUILL Transcribe.
 - **Fix it when I correct myself** (**Alt+X** in Dictation Settings, off until you turn it on). Say "meet on Thursday, no, Friday" and only Friday is written. A "no", "I mean", "no I mean", "sorry" or "scratch that word" between two days, months, numbers or names from My Words keeps the second; anything else, such as "no, I don't think so", is written as you said it. It works on this computer, with no AI, and never in a live transcript.
 - **Dictation style** (**Alt+Y** in Dictation Settings): **Verbatim** (every word as you say it), **Clean** (no filler words, and your corrections fixed) or, only when AI help is on, **Polished** (Clean, plus Send dictation to review first and polishing allowed). It sets the check boxes; change one yourself and it shows Your own mix.
@@ -46,10 +74,10 @@ uploaded for testing. The new packages have not been published yet.
 - **Which speech model suits this computer, and why.** Speech Models (**Alt+B** in Dictation Settings) now recommends one model in a read-only **Recommendation** box (**Alt+C**): whether it keeps up on this computer, about how soon your words appear after you pause, and how big the download is. **What matters most** (**Alt+W**) asks for the quickest response or the fewest mistakes instead, and **Show Recommended Model** (**Alt+S**) moves to it in the list. Dictation Settings shows the same advice in one line. It is only advice, labelled an estimate: QUILL Lite never changes your engine by itself. Every model is also labelled **Lightweight**, **Balanced** or **High accuracy** wherever you choose one.
 - **Programs Dictation Never Types Into...** (**Alt+N** in More Dictation Settings). The programs dictation from Quill Inkwell or QUILL Transcribe never types into, starting with the common password managers and the Windows sign-in prompts. Add the program you were just in, or type a file name.
 - **Clipboard Collector** (**Alt+Shift+S**, **Edit > Clipboard**): QUILL's system-wide collector. Turn it on in a window and everything you copy, in any program, is added to the end of that window, each distinct copy once. A window that already has a file name is saved after each piece, and you hear "Collected and saved"; an untitled window is never saved and no Save As window opens. If a save cannot happen you are told why and collecting carries on. **Save after every clip the clipboard collector adds** (**Alt+Y** in Preferences, on by default, the same setting as QUILL's) turns the saving off. It collects into one window at a time and stops when that window closes. **Collect Selection**, which gathers text selected inside QUILL Lite, moves to **Alt+Shift+C** so the two editors agree on Alt+Shift+S. Asked for on QUILLVille by Dean Martineau.
-- **Search in Files** (**Ctrl+Alt+Shift+F**) and **Replace Across Files** (**Ctrl+Shift+R**), on **Edit > Matches**: QUILL's folder search, its window and its keys. Search every file in a folder, and the folders inside it, by file pattern, with plain text, wildcards or a regular expression; the results open in a new window. Replace Across Files shows every change first and asks before any file is written. Both run in the background, so a big folder never freezes the window. Asked for on QUILLVille by Chris Nova.
-- **Find in Open Documents** (**Ctrl+Alt+Shift+F8**). Find and replace across every document you have open, not just the one in front of you, the same window as QUILL, where it is Ctrl+Shift+F10 because QUILL's Ctrl+Alt+Shift+F8 opens Quill Weather. It searches the text as it is in each window, so unsaved changes and never-saved documents are found too, and nothing on disk is touched. Find Next and Find Previous move from document to document and say each one's name; Find All lists every match, and Enter goes there; Replace All tells you how many in how many documents and asks, gives each document its own undo, and saves nothing. Read-only documents are searched but left alone. After the window closes, F3 and Shift+F3 keep searching across documents until you start an ordinary Find. Asked for on QUILLVille by Chris Nova.
+- **Search in Files** (**Ctrl+Alt+Shift+F**) and **Replace Across Files** (**Ctrl+Shift+R**), on the **Edit** menu: QUILL's folder search, its window and its keys. Search every file in a folder, and the folders inside it, by file pattern, with plain text, wildcards or a regular expression; the results open in a new window. Replace Across Files shows every change first and asks before any file is written. Both run in the background, so a big folder never freezes the window. Asked for on QUILLVille by Chris Nova.
+- **Find in Open Documents** (**Ctrl+Alt+Shift+F8**, on the **Edit** menu). Find and replace across every document you have open, not just the one in front of you, the same window as QUILL, where it is Ctrl+Shift+F10 because QUILL's Ctrl+Alt+Shift+F8 opens Quill Weather. It searches the text as it is in each window, so unsaved changes and never-saved documents are found too, and nothing on disk is touched. Find Next and Find Previous move from document to document and say each one's name; Find All lists every match, and Enter goes there; Replace All tells you how many in how many documents and asks, gives each document its own undo, and saves nothing. Read-only documents are searched but left alone. After the window closes, F3 and Shift+F3 keep searching across documents until you start an ordinary Find. Asked for on QUILLVille by Chris Nova.
 
-- **Where QUILL Lite's own sounds play, and Alt+Shift+M to turn them off.** **Tools > Sound Scheme > App Sounds Play On...** offers System default, None (no sounds), or any sound card or headset by name. After a change one sound plays on the new card, so you hear where it went. If that card is unplugged the sounds play on the system default until it is back, and QUILL Lite says so once. **Alt+Shift+M** turns QUILL Lite's sounds off and back on where they were, and **Tools > App Sounds (formerly Quiet Mode)** shows a check mark while they are on. Each QUILL app keeps its own choice; "Share these choices with my other Quill apps" keeps them in step. Your screen reader is never moved. Asked for on QUILLVille by Rick Lewis.
+- **Where QUILL Lite's own sounds play, and Alt+Shift+M to turn them off.** The **App Sounds Play On...** button in **Tools > Sound Scheme...** (**Ctrl+Alt+Shift+O**) offers System default, None (no sounds), or any sound card or headset by name. After a change one sound plays on the new card, so you hear where it went. If that card is unplugged the sounds play on the system default until it is back, and QUILL Lite says so once. **Alt+Shift+M** turns QUILL Lite's sounds off and back on where they were, and **Tools > App Sounds (formerly Quiet Mode)** shows a check mark while they are on. Each QUILL app keeps its own choice; "Share these choices with my other Quill apps" keeps them in step. Your screen reader is never moved. Asked for on QUILLVille by Rick Lewis.
   Until now Alt+Shift+M silenced QUILL and QUILL Lite together; it now silences the app you are in. **Sound notifications** in QUILL's Settings still silences every QUILL app at once.
 
 - **Runs on Python 3.14, and older runtimes are cleaned up.** The shared QuillVille
@@ -743,7 +771,7 @@ of it is QUILL's own code, shared, on QUILL's keys.
   before 1.1.0 shipped, and Quill Radio 3.0.3 and 3.0.4 were built from that
   source in between. The shared QuillVille Runtime those Radio installers put
   on a computer carries every app's code, QUILL Lite's included -- so on any
-  computer with Radio 3.0.3 or 3.0.4, Help > About in QUILL Lite already said
+  computer with Radio 3.0.3 or 3.0.4, Help > About QUILL Lite already said
   1.1.0, and Check for Updates, comparing 1.1.0 with 1.1.0, said "you are up to
   date" and never offered the real release with the ChatGPT subscription,
   pictures and dictation. 1.1.1 is newer than any number a runtime could have

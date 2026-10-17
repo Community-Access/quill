@@ -105,7 +105,9 @@ class MediaPlayerMenuMixin:
                 item.Check(True)
             self._sleep_minutes_by_id[int(sid)] = minutes
             self.frame.Bind(wx.EVT_MENU, self._on_set_sleep, id=sid)
-        playback_menu.AppendSubMenu(sleep_menu, "&Sleep Timer")
+        # T, not S: App &Sounds (below) owns S in this menu (GATE-14), and
+        # Audio Studio's Book Tools menu spells it Sleep &Timer too.
+        playback_menu.AppendSubMenu(sleep_menu, "Sleep &Timer")
         self._keep_menu_ids(self._add_note_cue_menu_item(playback_menu, wx))
         summarize_id, recap_id, voice_id, listen_id = (wx.NewIdRef() for _ in range(4))
         playback_menu.Append(summarize_id, "Summarize This &Chapter (AI)\tCtrl+Alt+C")

@@ -179,11 +179,13 @@ AREAS: tuple[AppArea, ...] = (
     ),
     AppArea(
         "matches",
-        "The Matches submenu",
+        "Matches and wider searches",
         "Edit > Matches: list every occurrence of what you searched for in one "
-        "window, and count them. Find, Find Next and Replace stay available "
-        "either way -- this is the part that answers 'how many' and 'where "
-        "else' rather than 'take me to the next one'.",
+        "window, and count them. With them go Find in Open Documents, Search in "
+        "Files and Replace Across Files, which are rows of the Edit menu itself. "
+        "Find, Find Next and Replace stay available either way -- this is the "
+        "part that answers 'how many' and 'where else' rather than 'take me to "
+        "the next one'.",
     ),
     AppArea(
         "history",

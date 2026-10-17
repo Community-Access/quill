@@ -120,7 +120,10 @@ DIVERGENCES: dict[str, str] = {
         "Ctrl+Shift+F10 there: free in QUILL, and nowhere near a key that "
         "closes anything (rule 4). In QUILL Lite that key is Unfold "
         "Everything, whose QUILL counterpart lives beside Ctrl+Shift+[ and ]. "
-        "Decided 2026-10-15."
+        "Decided 2026-10-15. The key is the only divergence: since 2026-10-16 "
+        "both editors put Find in Open Documents, Search in Files and Replace "
+        "Across Files as three rows of Edit itself, in that order (rules 1 "
+        "and 2); QUILL Lite had them in Edit > Matches, QUILL in two places."
     ),
     "cmd_ai_usage": (
         "Ctrl+Alt+Shift+F9 is a QuillVille launcher in QUILL -- the siblings "

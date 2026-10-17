@@ -245,6 +245,69 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="the-wider-searches-are-on-edit-in-both-editors-and-gate-docmenu-checks-every-apps-docs-against-its-menus-2026-10-16">The
+wider searches are on Edit in both editors, and GATE-DOCMENU checks
+every app’s docs against its menus (2026-10-16)</h3>
+<p>Jeff, launching QUILL Lite from source with its changelog in hand:
+“many commands mentioned are not in the menus like search in files,
+search in open documents”. Every handler and key existed; the defect was
+where they were filed, and in QUILL whether a new user could reach them
+at all.</p>
+<ul>
+<li><strong>One placement, both editors.</strong> Find in Open
+Documents, Search in Files and Replace Across Files are three
+consecutive rows of <strong>Edit</strong> itself: under Find All Matches
+in QUILL, under Replace in QUILL Lite. QUILL Lite had all three inside
+Edit &gt; Matches (a name that says nothing about a folder search);
+QUILL had Find in Open Documents on Edit and the other two in Edit &gt;
+Search Tools. Keys unchanged. Family rules 1 and 2; recorded in both
+PRDs and in <code>parity.DIVERGENCES["cmd_find_open_docs"]</code>, where
+the key is now the only divergence.</li>
+<li><strong>QUILL: Search in Files and Replace Across Files for every
+profile.</strong> <code>feature_command_map</code> gated
+<code>tools.search_in_files</code> / <code>tools.replace_in_files</code>
+on <code>core.search.regex</code>, which Essential (the default profile)
+leaves off, so for a new install the rows were missing <em>and</em>
+<code>Ctrl+Alt+Shift+F</code> / <code>Ctrl+Shift+R</code> did nothing,
+while QUILL Lite’s default showed them – the small editor ahead of the
+big one. They are <code>core.search</code> now (Find’s own feature;
+plain text is the default and a pattern is a choice in the window). The
+rows are appended by
+<code>OpenDocumentsFindMixin._append_cross_document_search_items</code>
+(<code>main_frame_open_documents.py</code>), which keeps
+<code>main_frame_menu.py</code> under its budget (3417 -&gt; 3406
+lines). QUILL’s Find row claims <code>&amp;F</code> explicitly: it was
+<code>Fin&amp;d</code>, which Restore Deleted Text holds, so the route
+pass seated Find on a leftover letter, and with Replace Across Files in
+the menu that became Q.</li>
+<li><strong>QUILL Lite.</strong> <code>commands.py</code> moves the
+three rows; <code>command_areas.COMMAND_AREA</code> keeps them in the
+<code>matches</code> area (on by default; off in the Notepad and WordPad
+profiles), whose label is now “Matches and wider searches”. Search in
+Files takes <code>&amp;S</code> from Character Details (no free letter
+left in its title; it keeps Ctrl+Alt+C); Replace Across Files has no
+letter (GATE-14).</li>
+<li><strong>GATE-DOCMENU</strong>
+(<code>tests/unit/docs/menu_claims.py</code>, one
+<code>test_documented_menus_&lt;app&gt;.py</code> per app). The chord
+gates ask whether a key a document teaches is bound; nothing asked
+whether a command a changelog or guide promises is on the menu, where it
+says, for a new install. The reader finds menu paths anchored at the
+app’s real top-level menus and command names beside keys, and checks
+them against the menu bar each app actually builds in memory with
+first-run settings (QUILL Lite from <code>visible_commands</code> with
+<code>DEFAULT_OFF</code>; QUILL from a real <code>MainFrame</code> on a
+fresh data folder, with <code>RegisterHotKey</code> and announcements
+stubbed so the desktop is untouched; the other apps from their real
+frames). A claim that exists only once a switch is on (QUILL Lite’s AI
+help or backups; QUILL’s profile areas or “Show advanced AI features”)
+passes only where the same <code>#</code>/<code>##</code> chapter names
+the switch. Allowlists carry a reason per entry and fail when stale. The
+root CHANGELOG.md is not gated: it is developer-facing and covers every
+app, so its menu paths belong to many menu bars; its October 2026
+sections were read by hand.</li>
+</ul>
+<h3
 id="word-markdown-and-html-saves-no-longer-carry-the-dark-themes-grey-2026-10-16">Word,
 Markdown and HTML saves no longer carry the dark theme’s grey
 (2026-10-16)</h3>

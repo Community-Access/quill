@@ -6,6 +6,15 @@ file is the itemized list.
 
 ## Unreleased
 
+- **Start and Stop Key is in the File menu, and now everything says so**
+  (2026-10-16). The key that starts and stops dictation from any program is
+  chosen with **File > Start and Stop Key...** (Ctrl+Alt+Shift+D), beside the
+  other keys you can choose. This changelog, the 1.0 release notes and the
+  sentence QUILL Transcribe says when Windows reports your key is taken all
+  sent you to the Dictation menu, where there is no such row. For example, if
+  another program already uses Alt+Shift+Backslash, QUILL Transcribe now says
+  "To choose another, open the File menu and choose Start and Stop Key." Press
+  Alt+F, then K, to get there. Nothing else about the key changed.
 - **Practice Dictation** (2026-10-16), Ctrl+Shift+P in the Dictation menu: a
   window with a field of QUILL Transcribe's own that dictation types into
   straight away, so you can learn and test without writing into another
@@ -175,7 +184,7 @@ file is the itemized list.
 ### Dictating into other programs
 
 - The start and stop key is **Alt+Shift+Backslash** from the start. Change it
-  or empty it in Dictation > Start and Stop Key.
+  or empty it in File > Start and Stop Key... (Ctrl+Alt+Shift+D).
 - Record Key, beside every key box: press the combination you want and it is
   written out for you. Typing the key still works.
 - No more "c" before or after each phrase with JAWS: words are typed as the

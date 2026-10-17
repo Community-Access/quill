@@ -144,6 +144,23 @@ class CastPlaceRoutesMixin:
             ("podcasts.episode_bookmarks", "Bookmarks in This Episode", "open_episode_bookmarks"),
             ("podcasts.skip_silence", "Skip Silence", "podcast_toggle_skip_silence"),
             ("podcasts.watched_folders", "Watched Folders", "open_watched_folders"),
+            # Advanced rows Simple mode leaves off the menus. menu_mode.py and the
+            # user guide promise the Command Palette reaches every one of them, and
+            # these seven had a handler and a menu row but no command, so in Simple
+            # mode they could not be reached at all. No key here: an Advanced
+            # row's key belongs to its menu row, and the palette must not show a
+            # key that does nothing in Simple mode.
+            ("podcasts.back_up", "Back Up My Podcasts...", "back_up_cast_data"),
+            ("podcasts.restore_backup", "Restore from a Backup...", "restore_cast_data"),
+            ("podcasts.choose_columns", "Choose Columns...", "open_cast_list_columns"),
+            (
+                "podcasts.directory_credentials",
+                "Podcast Index Credentials...",
+                "open_podcast_directory_credentials",
+            ),
+            ("podcasts.media_tools", "Media Tools", "podcast_media_tools_status"),
+            ("podcasts.get_ffmpeg", "Get FFmpeg...", "download_ffmpeg_component"),
+            ("podcasts.product_requirements", "Product Requirements...", "open_cast_prd"),
         ):
             self.commands.try_register(  # type: ignore[attr-defined]
                 command_id,

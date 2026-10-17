@@ -2,6 +2,55 @@
 
 ## 1.0.0
 
+### The wider searches are on Edit in both editors, and GATE-DOCMENU checks every app's docs against its menus (2026-10-16)
+
+Jeff, launching QUILL Lite from source with its changelog in hand: "many
+commands mentioned are not in the menus like search in files, search in open
+documents". Every handler and key existed; the defect was where they were
+filed, and in QUILL whether a new user could reach them at all.
+
+- **One placement, both editors.** Find in Open Documents, Search in Files and
+  Replace Across Files are three consecutive rows of **Edit** itself: under Find
+  All Matches in QUILL, under Replace in QUILL Lite. QUILL Lite had all three
+  inside Edit > Matches (a name that says nothing about a folder search); QUILL
+  had Find in Open Documents on Edit and the other two in Edit > Search Tools.
+  Keys unchanged. Family rules 1 and 2; recorded in both PRDs and in
+  `parity.DIVERGENCES["cmd_find_open_docs"]`, where the key is now the only
+  divergence.
+- **QUILL: Search in Files and Replace Across Files for every profile.**
+  `feature_command_map` gated `tools.search_in_files` / `tools.replace_in_files`
+  on `core.search.regex`, which Essential (the default profile) leaves off, so
+  for a new install the rows were missing *and* `Ctrl+Alt+Shift+F` /
+  `Ctrl+Shift+R` did nothing, while QUILL Lite's default showed them -- the
+  small editor ahead of the big one. They are `core.search` now (Find's own
+  feature; plain text is the default and a pattern is a choice in the window).
+  The rows are appended by `OpenDocumentsFindMixin._append_cross_document_search_items`
+  (`main_frame_open_documents.py`), which keeps `main_frame_menu.py` under its
+  budget (3417 -> 3406 lines). QUILL's Find row claims `&F` explicitly: it was
+  `Fin&d`, which Restore Deleted Text holds, so the route pass seated Find on a
+  leftover letter, and with Replace Across Files in the menu that became Q.
+- **QUILL Lite.** `commands.py` moves the three rows; `command_areas.COMMAND_AREA`
+  keeps them in the `matches` area (on by default; off in the Notepad and
+  WordPad profiles), whose label is now "Matches and wider searches". Search in
+  Files takes `&S` from Character Details (no free letter left in its title; it
+  keeps Ctrl+Alt+C); Replace Across Files has no letter (GATE-14).
+- **GATE-DOCMENU** (`tests/unit/docs/menu_claims.py`, one
+  `test_documented_menus_<app>.py` per app). The chord gates ask whether a key a
+  document teaches is bound; nothing asked whether a command a changelog or
+  guide promises is on the menu, where it says, for a new install. The reader
+  finds menu paths anchored at the app's real top-level menus and command names
+  beside keys, and checks them against the menu bar each app actually builds in
+  memory with first-run settings (QUILL Lite from `visible_commands` with
+  `DEFAULT_OFF`; QUILL from a real `MainFrame` on a fresh data folder, with
+  `RegisterHotKey` and announcements stubbed so the desktop is untouched; the
+  other apps from their real frames). A claim that exists only once a switch is
+  on (QUILL Lite's AI help or backups; QUILL's profile areas or "Show advanced
+  AI features") passes only where the same `#`/`##` chapter names the switch.
+  Allowlists carry a reason per entry and fail when stale. The root
+  CHANGELOG.md is not gated: it is developer-facing and covers every app, so
+  its menu paths belong to many menu bars; its October 2026 sections were read
+  by hand.
+
 ### Word, Markdown and HTML saves no longer carry the dark theme's grey (2026-10-16)
 
 A dark theme sets the rich control's foreground colour, which wxMSW applies as

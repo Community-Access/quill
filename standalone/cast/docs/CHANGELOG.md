@@ -4,6 +4,9 @@ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the fir
 
 ## Unreleased
 
+- **The user guide now matches the menus a new install shows.** Three things it taught were wrong, and are fixed. **New Folder** is **Ctrl+Shift+E** (Podcasts > New Folder...); the guide said Ctrl+Shift+F, which does nothing in Cast. The two **Spotify** rows, Connect to Spotify... (Ctrl+Alt+S) and Browse Spotify Podcasts... (Ctrl+Alt+V), are on the Help menu from the start; the guide said they stayed hidden until you redeemed an unlock code, and no code is needed. And every **Advanced row** the guide teaches, such as Back Up My Podcasts, Restore from a Backup, Export My Data, Clear All Podcast Data, Free Up Space, Run Housekeeping Now, Media Tools, Get FFmpeg and Redeem Unlock Code, now says it is one. The guide also says plainly what was always true: an Advanced row's key belongs to its menu row, so it works only while **View > Advanced Features** (Ctrl+Alt+Shift+G) is on. For example, in Simple mode Ctrl+Alt+Shift+B does nothing; press Ctrl+Shift+P for the Command Palette, type "back up" and press Enter instead, or turn Advanced Features on and press it again. A check now builds Cast's menus exactly as a new install has them, in both modes, and fails when the guide or this changelog names a menu path or key they do not keep.
+- **Every Advanced command is in the Command Palette, as the guide always said.** Simple menus leave the Advanced rows off, and the guide promised the Command Palette (Ctrl+Shift+P) still reaches each one. Seven could not be reached at all in Simple mode, and now can: **Back Up My Podcasts...**, **Restore from a Backup...**, **Choose Columns...**, **Podcast Index Credentials...**, **Media Tools**, **Get FFmpeg...** and **Product Requirements...**. For example, with Simple menus, press Ctrl+Shift+P, type `back up` and press Enter to start a backup. The palette lists these seven without a key, because an Advanced row's key works only while View > Advanced Features is on. Clear All Podcast Data from This Computer is in the palette under the name Delete All Podcast Data.
+
 - **Help > Notifications... says how many are unread**, such as "Notifications (3 new)...", read again each time the Help menu opens. Shared with Quill Radio (`quill/ui/support_menu.py`).
 
 - **FFmpeg's licence comes with it.** The QUILL Cast installer that carries its own copy of FFmpeg, and the folder it installs from, now have FFmpeg's licence (the GNU General Public License, version 3) and the note on where to get FFmpeg's source, in `tools\ffmpeg` beside the program. They were missing before. The build now stops if either is ever missing, and so does the installer.
@@ -222,8 +225,8 @@ until this release; 2.0.0 is the version everywhere now.)
 
 ### Restore from a Backup on Ctrl+Alt+F12 (2026-10-05)
 
-- **Podcasts > Restore from a Backup moves from Ctrl+Alt+Shift+R to
-  Ctrl+Alt+F12**, the key both editors give Restore Settings (family rules 2
+- **Podcasts > Restore from a Backup (an Advanced row) moves from
+  Ctrl+Alt+Shift+R to Ctrl+Alt+F12**, the key both editors give Restore Settings (family rules 2
   and 9). Ctrl+Alt+Shift+R is Quill Radio's system-wide show and hide key, so
   with Radio running, Restore never fired (`quill/core/app_keymaps.py`).
 - Quill Cast's QuillVille row in the other apps is now Ctrl+Alt+Shift+F12,
@@ -1045,7 +1048,7 @@ them here sets them there.
 
 ## 1.0.2
 
-- Sound Enhancements (Episode > Sound Enhancements...): an equalizer preset (Flat/Bass Boost/Voice Clarity/Podcast), a compressor ("Even Out Volume"), and Smart Speed (trims silence between words/sentences during playback) -- applied live via ffmpeg, no new audio engine, no new install step. Off by default; needs FFmpeg (Help > Get FFmpeg...). Full seek/scrub-bar support while enhanced, not a degraded mode. Distinct from the existing download-time silence trim (which permanently shortens the saved file's leading/trailing silence once); Smart Speed is a live, reversible, mid-episode filter you can toggle on any episode at any time.
+- Sound Enhancements (Episode > Sound Enhancements...): an equalizer preset (Flat/Bass Boost/Voice Clarity/Podcast), a compressor ("Even Out Volume"), and Smart Speed (trims silence between words/sentences during playback) -- applied live via ffmpeg, no new audio engine, no new install step. Off by default; needs FFmpeg (Help > Get FFmpeg..., now an Advanced row). Full seek/scrub-bar support while enhanced, not a degraded mode. Distinct from the existing download-time silence trim (which permanently shortens the saved file's leading/trailing silence once); Smart Speed is a live, reversible, mid-episode filter you can toggle on any episode at any time.
 - Download All Episodes and Remove All Episodes, on every show's context menu (Podcast Manager and the main library tree alike): Download All queues everything not already downloaded or in progress; Remove All Episodes asks to confirm, then -- only if any episode has a downloaded file -- asks separately whether to delete those files too. The show stays subscribed either way.
 
 ## 1.0.1
@@ -1056,7 +1059,7 @@ them here sets them there.
 - Resume Last Episode on Launch and a Recently Played submenu (distinct from Continue Listening).
 - Play Queue promoted to a top-level menu item and Command Palette entry.
 - Downloads now auto-reconnect on a dropped connection, configurable in Podcast Settings.
-- Help > Get FFmpeg... safety net.
+- Help > Get FFmpeg... safety net (now an Advanced row).
 - Automatic Check for Updates: a throttled, silent check once a day on launch -- quiet unless a real update is found.
 - Preferences... (Ctrl+,): a small dialog for Resume Last Episode on Launch and the new automatic update check.
 

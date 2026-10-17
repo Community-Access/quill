@@ -145,6 +145,14 @@ COMMAND_AREA: dict[str, str] = {
     # rather than small -- the same argument that keeps Select All in Edit.
     "cmd_copy_all": "",
     "cmd_go_to_anything": "go_to_anything",
+    # Rows of Edit itself since 2026-10-16, so a listener arrowing Edit hears
+    # them, but still the Matches area's: "how many, and where else" is one
+    # switch, and the Notepad and WordPad profiles promise to leave it out.
+    # The area is on in a new install, so moving them changed where they are,
+    # not who has them.
+    "cmd_find_open_docs": "matches",
+    "cmd_search_in_files": "matches",
+    "cmd_replace_in_files": "matches",
     # The Insert menu belongs to no single area, so its rows say so one at a
     # time. The two tag pickers ride with rich_text's opposite number -- they are
     # markup, which is what a *plain* document has instead of formatting -- and

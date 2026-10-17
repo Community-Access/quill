@@ -188,6 +188,11 @@ COMMANDS: list[CommandRow] = [
     ("&Edit", "Find Ne&xt", "F3", "cmd_find_next", ""),
     ("&Edit", "Find Pre&vious", "Shift+F3", "cmd_find_previous", ""),
     ("&Edit", "R&eplace...", "Ctrl+H", "cmd_replace", ""),
+    # Rows of Edit, as in QUILL (rules 1-2; were hidden in Matches, PRD 2026-10-16).
+    # S from Character Details; no letter is free for Replace Across Files (GATE-14).
+    ("&Edit", "F&ind in Open Documents...", "Ctrl+Alt+Shift+F8", "cmd_find_open_docs", ""),
+    ("&Edit", "&Search in Files...", "Ctrl+Alt+Shift+F", "cmd_search_in_files", ""),
+    ("&Edit", "Replace Across Files...", "Ctrl+Shift+R", "cmd_replace_in_files", ""),
     # Two questions Find Next cannot answer: how many are there, and what does
     # each one sit in. Both matter most in the moment just before a Replace
     # All, and both are otherwise reachable only by pressing F3 until it wraps
@@ -207,7 +212,7 @@ COMMANDS: list[CommandRow] = [
     # A screen reader says "space" for four different characters. This is the
     # only way to find out which one broke the search.
     ("&Edit", "Describe C&haracter", "Ctrl+Shift+C", "cmd_describe_character", ""),
-    ("&Edit", "Character Detail&s...", "Ctrl+Alt+C", "cmd_describe_character_detail", ""),
+    ("&Edit", "Character Details...", "Ctrl+Alt+C", "cmd_describe_character_detail", ""),
     ("&Edit", "", "", "", "sep"),
     ("&Edit", "&Lines", "", "", "sub"),
     ("&Edit", "Selectio&n", "", "", "sub"),
@@ -215,11 +220,6 @@ COMMANDS: list[CommandRow] = [
     # -- Edit > Matches ------------------------------------------------------
     ("&Edit|&Matches", "&All Matches...", "Ctrl+Shift+F3", "cmd_find_all", ""),
     ("&Edit|&Matches", "&Count Occurrences", "Ctrl+Alt+Shift+F3", "cmd_count_occurrences", ""),
-    # Every open window at once (ui/open_documents_find); QUILL's key and command.
-    ("&Edit|&Matches", "&Find in Open Documents...", "Ctrl+Alt+Shift+F8", "cmd_find_open_docs", ""),
-    # QUILL's folder search, its window and its keys (lite_file_search).
-    ("&Edit|&Matches", "&Search in Files...", "Ctrl+Alt+Shift+F", "cmd_search_in_files", ""),
-    ("&Edit|&Matches", "&Replace Across Files...", "Ctrl+Shift+R", "cmd_replace_in_files", ""),
     # -- Edit > Lines --------------------------------------------------------
     # Everything that happens to whole lines, in one place, in the order the
     # work is actually done: move them, delete them, order them, tidy them.

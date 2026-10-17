@@ -778,7 +778,9 @@ import and export, Choose Columns, Quick Actions and the Quillins menu.
 3. Press the same key again to switch back.
 
 Even in Simple mode, every Advanced command still works from the Command
-Palette (Ctrl+Shift+P) and from Go To. Nothing is out of reach.
+Palette (Ctrl+Shift+P) and from Go To. Nothing is out of reach. An
+Advanced row's own key, though, works only while Advanced Features is on,
+because the key belongs to the menu row.
 
 If you would like an even smaller Cast, **View > Customize Features**
 (Ctrl+Alt+C) can switch whole parts of it off, such as Downloads or the sleep
@@ -1970,7 +1972,7 @@ Drives, whatever suits you. They live in the **Podcasts** place
 
 To make a folder and fill it:
 
-1. Choose Podcasts > **New Folder...** (Ctrl+Shift+F), type a name and press
+1. Choose Podcasts > **New Folder...** (Ctrl+Shift+E), type a name and press
    Enter.
 2. Go to a podcast, press Shift+F10, and choose **Move to Folder...**.
 3. Pick the folder and press Enter.
@@ -2087,11 +2089,11 @@ in them.
 
 ### Spotify podcasts (experimental)
 
-Cast can play podcasts hosted on Spotify. This is early work, and hidden
-until you unlock it. You need four things:
+Cast can play podcasts hosted on Spotify. This is early, experimental work.
+Its two rows are on the Help menu from the start, in Simple and Advanced
+mode alike, and no unlock code is needed. Before they can play anything,
+you need three things:
 
-- the Spotify feature unlocked with a code, through Help > **Redeem Unlock
-  Code...**;
 - a Spotify Premium account, since Spotify only streams to Premium
   members;
 - your own Spotify Client ID, from an app you register in the Spotify
@@ -2099,7 +2101,7 @@ until you unlock it. You need four things:
   `http://127.0.0.1:43217/callback`;
 - the Microsoft Edge WebView2 runtime, which current Windows already has.
 
-Once it is unlocked, the Help menu gains two rows.
+With those three in place, use the two Help menu rows in this order.
 
 1. **Connect to Spotify...** (Ctrl+Alt+S). Type your Client ID and start the
    sign-in. Your web browser opens on Spotify's own page. Approve it, and
@@ -2786,13 +2788,15 @@ does not stop the episode and Cast can find chapters in it. It is on to start
 with, and the audio is cleared away by itself. **Space for streamed episodes**
 sets how much room that may take.
 
-**Free Up Space** (Ctrl+Alt+F) applies those rules now and tells you how much
-space came back. **Run Housekeeping Now** (Ctrl+Alt+H) does the whole tidy-up
-at once: expired queue episodes, Recently Expired, Inbox limits and storage,
-and tells you what it did in one sentence. It also runs after every check.
-Both are on the Downloads menu in Advanced mode, Free Up Space is on the
-Downloads place's Applications key menu, and both are always in the Command
-Palette (Ctrl+Shift+P).
+Two Advanced rows on the Downloads menu act on those rules straight away;
+turn on View > Advanced Features (Ctrl+Alt+Shift+G) to see them and use
+their keys. **Free Up Space** (Ctrl+Alt+F) applies those rules now and
+tells you how much space came back. **Run Housekeeping Now** (Ctrl+Alt+H)
+does the whole tidy-up at once: expired queue episodes, Recently Expired,
+Inbox limits and storage, and tells you what it did in one sentence. It
+also runs after every check. In Simple mode, Free Up Space is still on the
+Downloads place's Applications key menu, and both are always in the
+Command Palette (Ctrl+Shift+P).
 
 ### Playlists
 
@@ -3928,7 +3932,13 @@ your folders and playlists, your Lineups, your place in each episode, your
 notes, statistics, bookmarks and Go To order. Put it on a memory stick or in a cloud
 folder, and you can always get back to where you are today.
 
-1. Press **Ctrl+Alt+Shift+B** (Podcasts > Back Up My Podcasts).
+Back Up My Podcasts and Restore from a Backup are Advanced rows, and their
+keys work only while View > Advanced Features (Ctrl+Alt+Shift+G) is on. In
+Simple mode, type "back up" or "restore" in the Command Palette
+(Ctrl+Shift+P) instead.
+
+1. Press **Ctrl+Alt+Shift+B** (Podcasts > Back Up My Podcasts, an Advanced
+   row).
 2. Cast asks whether to include your downloaded episodes. The answer starts
    at No. Downloads can be huge, and Cast can fetch them again. Say Yes only
    if you want the audio files too.
@@ -3941,7 +3951,8 @@ Then do it again whenever you have spent an evening sorting folders.
 
 When you need your library back, from a backup you made earlier:
 
-1. Press **Ctrl+Alt+F12** (Podcasts > Restore from a Backup).
+1. Press **Ctrl+Alt+F12** (Podcasts > Restore from a Backup, an Advanced
+   row).
 2. Pick the backup file.
 3. Before it does anything, Cast tells you when the backup was made and how
    many podcasts it holds. If that is the one you meant, confirm.
@@ -3952,7 +3963,8 @@ first, and your podcasts are back straight away, with no restart.
 #### Exporting your data to read
 
 Sometimes you want to look at your data, or use it in another program.
-**Podcasts > Export My Data** (**Ctrl+Alt+Shift+E**) writes everything Cast
+In Advanced mode, **Podcasts > Export My Data** (**Ctrl+Alt+Shift+E**)
+writes everything Cast
 knows about your listening to one readable file: the podcasts you follow,
 folders, the Play Queue, playlists, notes, statistics and what you played
 recently.
@@ -3968,8 +3980,9 @@ covers the move to a new computer and keeping your place in step.
 
 ### Starting over
 
-If you want a clean slate on this computer, **Podcasts > Clear All Podcast
-Data from This Computer** (**Ctrl+Alt+Shift+D**) unfollows every podcast and
+If you want a clean slate on this computer, turn on Advanced Features and
+choose **Podcasts > Clear All Podcast Data from This Computer**
+(**Ctrl+Alt+Shift+D**), an Advanced row. It unfollows every podcast and
 clears your Play Queue, playlists, Inbox folders, statistics and history.
 Cast asks twice, with No selected each time, then asks separately whether to
 delete your downloaded files as well. Make a backup first if there is any
@@ -4388,9 +4401,12 @@ chapters in episodes that have none, and for Sound Enhancements and Smart
 Speed. It comes with Cast, so you will probably never think about it. If it
 ever goes missing, Cast tells you once when it opens.
 
-**Help > Media Tools** (**Ctrl+Alt+Shift+M**) checks for it whenever you
-ask, and **Help > Get FFmpeg** (**Ctrl+Alt+Shift+F**) puts it back. Both are
-Advanced rows. Following, downloading and playing all work without it.
+**Help > Media Tools** (**Ctrl+Alt+Shift+M**), an Advanced row, checks for it
+whenever you ask, and **Help > Get FFmpeg** (**Ctrl+Alt+Shift+F**), another
+Advanced row, puts it back. Turn on View > Advanced Features
+(Ctrl+Alt+Shift+G) to see both and use their keys, or find either by name in
+the Command Palette (Ctrl+Shift+P). Following, downloading and playing all
+work without it.
 
 ### Getting help from support
 
@@ -5147,7 +5163,12 @@ days you want them all in one place. Happy listening.
 
 These are the keys Cast comes with. If you change one, the Keyboard
 Shortcuts Sheet (Ctrl+Alt+Shift+K) shows the key you have now. Rows marked
-Advanced appear on the menus only when Advanced Features is on.
+Advanced appear on the menus only when Advanced Features is on, and their
+keys work only then too, because each key belongs to its menu row. In
+Simple mode, reach one of them by name from the Command Palette
+(Ctrl+Shift+P) or Go To (Ctrl+G), or turn Advanced Features on with
+Ctrl+Alt+Shift+G. For example, in Simple mode Ctrl+Alt+Shift+B does
+nothing; type "back up" in the Command Palette instead and press Enter.
 
 ### The main window and menus
 
@@ -5315,7 +5336,7 @@ They are listed in full under "Keys in the Lineups window" in Chapter 9.
 | Refresh All Now | Ctrl+F5 |
 | Add Podcast | Ctrl+N |
 | Follow, in Add Podcast | Alt+O |
-| New Folder | Ctrl+Shift+F |
+| New Folder | Ctrl+Shift+E |
 | Add Personal Audio | Ctrl+Alt+L |
 | Watched Folders | Ctrl+Alt+W |
 | Follow ACB Media Podcasts | Ctrl+Alt+B |
@@ -5375,8 +5396,8 @@ They are listed in full under "Keys in the Lineups window" in Chapter 9.
 | Media Tools (Advanced) | Ctrl+Alt+Shift+M |
 | Get FFmpeg (Advanced) | Ctrl+Alt+Shift+F |
 | Redeem Unlock Code (Advanced) | Ctrl+Alt+Shift+Y |
-| Connect to Spotify (experimental, once unlocked) | Ctrl+Alt+S |
-| Browse Spotify Podcasts (experimental, once unlocked) | Ctrl+Alt+V |
+| Connect to Spotify (experimental) | Ctrl+Alt+S |
+| Browse Spotify Podcasts (experimental) | Ctrl+Alt+V |
 
 ### AI Features
 

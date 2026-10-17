@@ -1455,6 +1455,12 @@ These are the keys you will use most when you are looking for something:
 | **Ctrl+Alt+Shift+F** | Search in Files: a whole folder |
 | **Ctrl+Shift+R** | Replace Across Files |
 
+All seven are rows of the **Edit** menu itself, so if you forget a key, press
+**Alt+E** and arrow down: after Replace you hear **Find in Open Documents...**,
+**Search in Files...** and **Replace Across Files...**, each with its key. The
+two that answer "how many" and "where in this document", **All Matches...** and
+**Count Occurrences**, are one step further in, on **Edit > Matches**.
+
 When a search reaches the end of the document, it goes back to the top and
 keeps looking, and it tells you it has done so. That little message is worth
 listening for. It is how you know a document has only one match, and not none.
@@ -1515,8 +1521,8 @@ you change it.
 
 Sometimes the thing you are looking for is in one of a dozen documents you have
 open, or you need to change a name in all of them. **Find in Open Documents...**
-(**Ctrl+Alt+Shift+F8**, on **Edit > Matches**) searches every document QUILL Lite has open,
-not just the one in front of you.
+(**Ctrl+Alt+Shift+F8**, on the **Edit** menu under Replace) searches every
+document QUILL Lite has open, not just the one in front of you.
 
 It searches the text exactly as it is in each window, so it finds:
 
@@ -1567,7 +1573,10 @@ documents, so you can work through them one match at a time without opening the
 window again. As soon as you start an ordinary Find (**Ctrl+F**) or Replace
 (**Ctrl+H**), F3 goes back to searching just the document you are in.
 
-QUILL and QUILL Lite share this window and work the same way, on the same key.
+QUILL and QUILL Lite share this window and work the same way, and it is in the
+same place in both: the **Edit** menu, under Replace. The key differs by one
+chord: QUILL uses **Ctrl+Shift+F10**, because in QUILL Ctrl+Alt+Shift+F8 opens
+Quill Weather.
 
 #### Searching a whole folder of files
 
@@ -1575,10 +1584,26 @@ Find in Open Documents works on what you have open. When the files you want are
 saved in a folder and you would rather not open them all, use the folder search,
 the same one QUILL has:
 
-- **Search in Files...** (**Ctrl+Alt+Shift+F**, on **Edit > Matches**) looks
-  through every file in a folder, and every folder inside it.
-- **Replace Across Files...** (**Ctrl+Shift+R**, beside it) changes every match
-  in those files, on disk.
+- **Search in Files...** (**Ctrl+Alt+Shift+F**, on the **Edit** menu, just
+  below Find in Open Documents; **Alt+E**, then **S**) looks through every file
+  in a folder, and every folder inside it.
+- **Replace Across Files...** (**Ctrl+Shift+R**, the row below it) changes
+  every match in those files, on disk.
+
+Both are on the same keys and in the same place in QUILL. In a new install they
+are there from the start. If you chose the Notepad or WordPad profile in
+**Tools > Customize Features...** (**Ctrl+Alt+F10**), they are switched off with
+the rest of the **Matches and wider searches** area, because neither program
+had them; tick that box there to bring all five back.
+
+An example. You remember writing to somebody called Priya about a deadline,
+but not which of the forty letters in your Letters folder it was in. Open any
+document from that folder, press **Ctrl+Alt+Shift+F**, leave **Starting
+folder** as it is, type `*.txt` in **File pattern** and `Priya` in **Search
+text**, and press **Enter**. When the search finishes QUILL Lite tells you, for
+example, "3 matches in 2 of 40 files", and a new window lists each file with
+the matching lines. Press **Ctrl+O** and type the file name it gave you to open
+the one you want.
 
 Both open the same window, which asks for:
 
@@ -3406,7 +3431,7 @@ them all at once, or change them one by one.
 QUILL Lite makes short sounds of its own. You choose where they play, and you can turn them off.
 
 - **Alt+Shift+M** turns QUILL Lite's sounds off. Press it again and they come back, on the same sound card as before. You hear a short sound as they go off, and another where they now play when they come back on, and both are spoken too. **Tools > App Sounds** has a check mark that shows whether they are on.
-- **Tools > Sound Scheme... (Ctrl+Alt+Shift+O) > App Sounds Play On...** lets you pick where they play:
+- **Tools > Sound Scheme...** (**Ctrl+Alt+Shift+O**) opens the Sound Scheme window; its **App Sounds Play On...** button lets you pick where they play:
   - **System default**. This is where it starts. The sounds go where Windows sends sound.
   - **None (no sounds)**. QUILL Lite makes no sounds at all. Everything it tells you is still spoken.
   - **Any sound card or headset in the list.** The sounds get a device of their own.
@@ -6934,8 +6959,8 @@ formatting:
 - No line tools (Edit > Lines) and no Change Case.
 - No clipboard history or Copy Tray.
 - No bookmarks, no abbreviations, and no Selection submenu.
-- No Matches list, no Back and Forward, no Command Palette, and no Go To
-  Anything.
+- No Matches list, no Find in Open Documents or Search in Files, no Back and
+  Forward, no Command Palette, and no Go To Anything.
 - No Describe Character and no dictation.
 - No dictionary or thesaurus (WordPad never had one).
 - No autocorrect and no backups.
@@ -6960,8 +6985,9 @@ Notepad, and this is the profile for them. It keeps two of the 21 areas:
 **Off**, all nineteen of the others: the Format menu and everything under it,
 headings, Markdown and HTML, bookmarks, the line tools, Change Case, the
 clipboard history, abbreviations, the Selection submenu, spell check, the
-dictionary and thesaurus, Matches, Back and Forward, the Command Palette, Go To
-Anything, Describe Character, dictation, autocorrect, backups and AI help.
+dictionary and thesaurus, Matches (and with it Find in Open Documents and
+Search in Files), Back and Forward, the Command Palette, Go To Anything,
+Describe Character, dictation, autocorrect, backups and AI help.
 Nothing that Notepad does not have.
 
 **Ctrl+N makes a plain text document**, and the Save As dialog stops offering
@@ -7012,7 +7038,7 @@ the list.
 | **Spell check** | Tools > Spelling, and checking as you type | on |
 | **Dictionary and thesaurus** | Look Up, Thesaurus, Say Word Summary, and the two submenus on any word | on |
 | **The Selection submenu** | F8 selecting, whole-structure selecting, marks | on |
-| **The Matches submenu** | All Matches and Count Occurrences (Find itself stays) | on |
+| **Matches** | The Matches submenu (All Matches, Count Occurrences), and Find in Open Documents, Search in Files and Replace Across Files on Edit (Find itself stays) | on |
 | **Go Back and Go Forward** | The trail of places you jumped from | on |
 | **The Command Palette** | Ctrl+Shift+P, the search box for commands | on |
 | **Describe Character** | What the character under the cursor actually is | on |
@@ -7842,6 +7868,9 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **F3** | Find Next |
 | **Shift+F3** | Find Previous |
 | **Ctrl+H** | Replace... |
+| **Ctrl+Alt+Shift+F8** | Find in Open Documents... |
+| **Ctrl+Alt+Shift+F** | Search in Files... |
+| **Ctrl+Shift+R** | Replace Across Files... |
 | **Ctrl+G** | Go To... |
 | **Ctrl+Shift+C** | Describe Character |
 | **Ctrl+Alt+C** | Character Details... |
@@ -7851,9 +7880,6 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | Key | Command |
 |---|---|
 | **Ctrl+Shift+F3** | All Matches... |
-| **Ctrl+Alt+Shift+F8** | Find in Open Documents... |
-| **Ctrl+Alt+Shift+F** | Search in Files... |
-| **Ctrl+Shift+R** | Replace Across Files... |
 | **Ctrl+Alt+Shift+F3** | Count Occurrences |
 
 #### Lines (in Edit)
