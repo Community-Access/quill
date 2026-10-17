@@ -64,8 +64,22 @@ def run_radio_shutdown(app: Any) -> None:
     )
     report.step("media_keys", BEST_EFFORT, lambda: app._unregister_media_keys())
     report.step("global_hotkeys", BEST_EFFORT, lambda: app._unregister_global_hotkeys())
+    report.step("favorite_hotkeys", BEST_EFFORT, lambda: _release_favorite_hotkeys(app))
+    report.step("second_output", BEST_EFFORT, lambda: _stop_second_output(app))
     report.step("tray", BEST_EFFORT, lambda: app._remove_tray_icon())
     report.persist(app_data_dir())
+
+
+def _release_favorite_hotkeys(app: Any) -> None:
+    from quill.ui.radio import favorite_hotkeys_ui
+
+    favorite_hotkeys_ui.unregister_all(app)
+
+
+def _stop_second_output(app: Any) -> None:
+    from quill.ui.radio import second_output_ui
+
+    second_output_ui.shutdown(app)
 
 
 def _flush_radio_history(app: Any) -> None:

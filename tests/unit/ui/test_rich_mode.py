@@ -470,3 +470,34 @@ def test_native_ctrl_biu_interception_is_wired() -> None:
     body = main_frame[start : main_frame.index("\n    def ", start + 1)]
     assert '== "rich"' in body
     assert "format_bold" in body and "format_italic" in body and "format_underline" in body
+
+
+def test_docx_and_markup_saves_take_the_theme_colour_off_first(tmp_path: Path) -> None:
+    """Dark mode puts the theme grey on every run; a Word, Markdown or HTML
+    save must read the RTF with it off, as the .rtf save always has."""
+    import pytest
+
+    from quill.io.docx_writer import python_docx_available
+
+    targets = [tmp_path / "notes.md", tmp_path / "page.html"]
+    if python_docx_available():
+        targets.append(tmp_path / "report.docx")
+    else:  # pragma: no cover - CI without python-docx
+        pytest.skip("python-docx not installed")
+    for target in targets:
+        wrapper = _FakeWrapper()
+        wrapper.set_document_color = lambda colour, w=wrapper: w.calls.append(  # type: ignore[attr-defined]
+            ("set_document_color", (colour,))
+        )
+        wrapper.get_rtf = lambda w=wrapper: (  # type: ignore[method-assign]
+            w.calls.append(("get_rtf", ())) or b"{\rtf1\ansi\deff0 hello\par}"
+        )
+        frame = _frame("rich", wrapper)
+        frame._active_richedit = lambda w=wrapper: w
+        frame._apply_rich_theme_colour = lambda w=wrapper: w.calls.append(("theme_back", ()))
+        frame._active_tab().docx_rich = target.suffix == ".docx"
+        frame.document.path = target
+        assert frame._save_rich_document_natively(frame.document, None) is True
+        names = [name for name, _ in wrapper.calls]
+        assert names[:3] == ["set_document_color", "get_rtf", "theme_back"], (target, names)
+        assert wrapper.calls[0][1] == (None,)

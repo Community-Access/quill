@@ -140,6 +140,110 @@ def test_every_transcript_page_is_a_current_episode() -> None:
     )
 
 
+#: Any link at the podcast audio release, whatever the page builds it from.
+_PODCAST_AUDIO = re.compile(
+    r"https://github\.com/Community-Access/quill/releases/download/podcast-v1/([^\"'<>\s]+)"
+)
+
+
+def _load_build_feed():
+    """build_feed.py itself, so the gate applies the builder's own rule."""
+    import importlib.util
+
+    path = _DOCS / "podcast" / "tools" / "build_feed.py"
+    spec = importlib.util.spec_from_file_location("_podcast_build_feed", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def _podcast_audio_links() -> list[tuple[str, str]]:
+    """(page, linked file name) for every podcast audio link on the site."""
+    found: list[tuple[str, str]] = []
+    for page in sorted(_SITE.rglob("*.html")) + sorted(_SITE.rglob("*.xml")):
+        for name in _PODCAST_AUDIO.findall(page.read_text(encoding="utf-8")):
+            found.append((page.relative_to(_ROOT).as_posix(), name))
+    return found
+
+
+def test_podcast_audio_links_are_in_the_manifest() -> None:
+    """External audio is outside the link check above, which is how 54 dead
+    MP3 links survived it: the ``podcast-v1`` release held 36 files from the
+    old numbering, and the four whose names still matched were recordings of
+    scripts rewritten since. ``docs/podcast/audio_assets.json`` records what the
+    release really holds (refresh_audio_manifest.py); a page may link an MP3
+    only when that manifest marks it published for that episode.
+    """
+    build_feed = _load_build_feed()
+    published = {
+        build_feed.audio_file_name(slug)
+        for slug in build_feed.published_audio(build_feed.load_manifest())
+    }
+    dead = [f"{page}: {name}" for page, name in _podcast_audio_links() if name not in published]
+    assert not dead, (
+        "podcast audio links the manifest does not vouch for -- a player that "
+        "fails or plays a different episode. Generate and upload the audio, run "
+        "docs/podcast/tools/refresh_audio_manifest.py, then build_feed.py:\n  " + "\n  ".join(dead)
+    )
+
+
+def test_podcast_audio_manifest_names_every_current_episode() -> None:
+    """The manifest's per-episode file names are derived as build_feed derives
+    them, for exactly the episodes in ``episodes.json``. A renamed or added
+    episode makes it stale, and a stale manifest could vouch for a recording
+    under the wrong slug."""
+    build_feed = _load_build_feed()
+    manifest = build_feed.load_manifest()
+    episodes = json.loads((_DOCS / "podcast" / "episodes.json").read_text(encoding="utf-8"))
+    expected = [(e["slug"], build_feed.audio_file_name(e["slug"])) for e in episodes["episodes"]]
+    recorded = [(e["slug"], e["file"]) for e in manifest["episodes"]]
+    assert recorded == expected, (
+        "docs/podcast/audio_assets.json is out of step with episodes.json; run "
+        "docs/podcast/tools/refresh_audio_manifest.py"
+    )
+    assets = {asset["name"] for asset in manifest["assets"]}
+    for entry in manifest["episodes"]:
+        assert entry["status"] in {"published", "stale", "missing"}, entry
+        assert (entry["file"] in assets) == (entry["status"] != "missing"), entry
+
+
+def test_the_feed_carries_exactly_the_published_episodes() -> None:
+    """Podcast apps ignore or mis-show an item with no enclosure, so an
+    episode without audio is left out of the feed (its transcript page stays).
+    The feed and the manifest must agree in both directions."""
+    build_feed = _load_build_feed()
+    published = build_feed.published_audio(build_feed.load_manifest())
+    feed = (_SITE / "podcast" / "feed.xml").read_text(encoding="utf-8")
+    items = re.findall(r"<item>.*?</item>", feed, re.DOTALL)
+    assert len(items) == len(published), "rebuild with docs/podcast/tools/build_feed.py"
+    assert all("<enclosure " in item for item in items), "an item without audio"
+    for slug in published:
+        page = (_SITE / "podcast" / "transcripts" / f"{slug}.html").read_text(encoding="utf-8")
+        assert build_feed.NOT_PUBLISHED not in page, slug
+
+
+def test_the_audio_gate_recognises_a_release_link() -> None:
+    """A pattern that matches nothing passes every broken page ever built."""
+    sample = (
+        '<source src="https://github.com/Community-Access/quill/releases/download/'
+        'podcast-v1/ep99-nothing.mp3" type="audio/mpeg">'
+    )
+    assert _PODCAST_AUDIO.findall(sample) == ["ep99-nothing.mp3"]
+    build_feed = _load_build_feed()
+    stale = {
+        "assets": [{"name": "ep01-a.mp3", "size": 5}, {"name": "ep02-b.mp3", "size": 7}],
+        "episodes": [
+            {"slug": "ep01-a", "file": "ep01-a.mp3", "status": "stale"},
+            {"slug": "ep02-b", "file": "ep02-b.mp3", "status": "published"},
+            {"slug": "ep03-c", "file": "ep02-b.mp3", "status": "published"},
+            {"slug": "ep04-d", "file": "ep04-d.mp3", "status": "published"},
+        ],
+    }
+    # Stale, borrowed (another slug's file) and absent files are all refused.
+    assert build_feed.published_audio(stale) == {"ep02-b": 7}
+
+
 def test_the_gate_is_actually_reading_the_site() -> None:
     """A scan that finds no links passes every broken site ever built."""
     published = _published_paths()

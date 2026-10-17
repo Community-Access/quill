@@ -79,6 +79,16 @@ class CastHelpSurfacesMixin:
 
         restore_cast_data(self)
 
+    def open_cast_list_columns(self) -> None:
+        """Choose Columns..., as a command the Command Palette can reach."""
+        from quill.ui.podcasts.list_columns_command import open_list_columns
+
+        open_list_columns(self)
+
+    def open_cast_prd(self) -> None:
+        """Product Requirements..., as a command the Command Palette can reach."""
+        self._open_podcasts_doc("prd")  # type: ignore[attr-defined]
+
     def surface_cast_media_health(self) -> None:
         """The launch-time half. Deferred by the caller; never raises."""
         from quill.ui.podcasts import media_preflight

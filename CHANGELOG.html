@@ -245,6 +245,2165 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="three-messages-that-named-menu-items-that-do-not-exist-2026-10-16">Three
+messages that named menu items that do not exist (2026-10-16)</h3>
+<p>The documentation-versus-menu audit found QUILL itself pointing
+people at rows no menu has. When the self-voice fails with no screen
+reader running, QUILL said “Run Tools &gt; Retry TTS Engine”; there is
+no such command, so it now says to restart QUILL. The dictation
+pre-flight and the whisper.cpp provider said “Tools, Speech, Download
+Offline Speech Engine”; that download now lives in Help &gt; Download
+Optional Components, and both say so.</p>
+<h3
+id="the-wider-searches-are-on-edit-in-both-editors-and-gate-docmenu-checks-every-apps-docs-against-its-menus-2026-10-16">The
+wider searches are on Edit in both editors, and GATE-DOCMENU checks
+every app’s docs against its menus (2026-10-16)</h3>
+<p>Jeff, launching QUILL Lite from source with its changelog in hand:
+“many commands mentioned are not in the menus like search in files,
+search in open documents”. Every handler and key existed; the defect was
+where they were filed, and in QUILL whether a new user could reach them
+at all.</p>
+<ul>
+<li><strong>One placement, both editors.</strong> Find in Open
+Documents, Search in Files and Replace Across Files are three
+consecutive rows of <strong>Edit</strong> itself: under Find All Matches
+in QUILL, under Replace in QUILL Lite. QUILL Lite had all three inside
+Edit &gt; Matches (a name that says nothing about a folder search);
+QUILL had Find in Open Documents on Edit and the other two in Edit &gt;
+Search Tools. Keys unchanged. Family rules 1 and 2; recorded in both
+PRDs and in <code>parity.DIVERGENCES["cmd_find_open_docs"]</code>, where
+the key is now the only divergence.</li>
+<li><strong>QUILL: Search in Files and Replace Across Files for every
+profile.</strong> <code>feature_command_map</code> gated
+<code>tools.search_in_files</code> / <code>tools.replace_in_files</code>
+on <code>core.search.regex</code>, which Essential (the default profile)
+leaves off, so for a new install the rows were missing <em>and</em>
+<code>Ctrl+Alt+Shift+F</code> / <code>Ctrl+Shift+R</code> did nothing,
+while QUILL Lite’s default showed them – the small editor ahead of the
+big one. They are <code>core.search</code> now (Find’s own feature;
+plain text is the default and a pattern is a choice in the window). The
+rows are appended by
+<code>OpenDocumentsFindMixin._append_cross_document_search_items</code>
+(<code>main_frame_open_documents.py</code>), which keeps
+<code>main_frame_menu.py</code> under its budget (3417 -&gt; 3406
+lines). QUILL’s Find row claims <code>&amp;F</code> explicitly: it was
+<code>Fin&amp;d</code>, which Restore Deleted Text holds, so the route
+pass seated Find on a leftover letter, and with Replace Across Files in
+the menu that became Q.</li>
+<li><strong>QUILL Lite.</strong> <code>commands.py</code> moves the
+three rows; <code>command_areas.COMMAND_AREA</code> keeps them in the
+<code>matches</code> area (on by default; off in the Notepad and WordPad
+profiles), whose label is now “Matches and wider searches”. Search in
+Files takes <code>&amp;S</code> from Character Details (no free letter
+left in its title; it keeps Ctrl+Alt+C); Replace Across Files has no
+letter (GATE-14).</li>
+<li><strong>GATE-DOCMENU</strong>
+(<code>tests/unit/docs/menu_claims.py</code>, one
+<code>test_documented_menus_&lt;app&gt;.py</code> per app). The chord
+gates ask whether a key a document teaches is bound; nothing asked
+whether a command a changelog or guide promises is on the menu, where it
+says, for a new install. The reader finds menu paths anchored at the
+app’s real top-level menus and command names beside keys, and checks
+them against the menu bar each app actually builds in memory with
+first-run settings (QUILL Lite from <code>visible_commands</code> with
+<code>DEFAULT_OFF</code>; QUILL from a real <code>MainFrame</code> on a
+fresh data folder, with <code>RegisterHotKey</code> and announcements
+stubbed so the desktop is untouched; the other apps from their real
+frames). A claim that exists only once a switch is on (QUILL Lite’s AI
+help or backups; QUILL’s profile areas or “Show advanced AI features”)
+passes only where the same <code>#</code>/<code>##</code> chapter names
+the switch. Allowlists carry a reason per entry and fail when stale. The
+root CHANGELOG.md is not gated: it is developer-facing and covers every
+app, so its menu paths belong to many menu bars; its October 2026
+sections were read by hand.</li>
+</ul>
+<h3
+id="dictation-one-settings-store-for-the-family-d-13-the-word-lists-new-home-and-dictate-here-in-cast-and-radio-d-16-2026-10-16">Dictation:
+one settings store for the family (D-13), the word list’s new home, and
+Dictate Here in Cast and Radio (D-16) (2026-10-16)</h3>
+<p>dict.md D-12, D-13 and D-16. Design record:
+<code>docs/design/2026-10-05-dictation-plan-and-status.md</code> section
+30.</p>
+<ul>
+<li><strong><code>quill/core/windows_dictation/family_store.py</code></strong>
+(new, wx-free): the family folder
+(<code>%LOCALAPPDATA%\QuillVille\Dictation</code>; a portable copy’s own
+<code>data\dictation</code>) and <code>family_dictation.json</code>.
+<code>publish_fields</code> writes the shared
+<code>windows_dictation_*</code> fields with
+<code>write_json_atomic</code>, keeping fields a newer build wrote, and
+raises <code>FamilyDictationError</code>
+(<code>QUILL-DICTATION-FAMILY-WRITE</code>) with a speakable
+<code>sentence</code> when it cannot. <code>adopt_fields</code> /
+<code>adopt</code> take the family’s values into a program’s own, after
+copying its own to <code>before-sharing-&lt;app&gt;.json</code> once,
+and take nothing if that copy cannot be written. <code>stamp</code> lets
+QUILL Transcribe read only when the file changed.</li>
+<li><strong><code>settings_fields.py</code></strong>:
+<code>windows_dictation_share_family</code> (“on”, “off” or empty),
+<code>FAMILY_LOCAL_FIELDS</code> (the share choice, working tick, strict
+mode, phrase feedback, the one-time transcript sentence and every
+consent), <code>shares_by_default</code> (on only while every shared
+field is a default, so an upgrade never replaces somebody’s choices),
+<code>settle_share</code> (decides before the first change) and
+<code>share_on</code>.</li>
+<li><strong>Both directions.</strong> QUILL and QUILL Lite publish on
+Dictation Settings OK and Switch Dictation Language
+(<code>windows_dictation_extras.py</code>) and adopt on window
+activation, with “Dictation settings updated from the family.” in the
+status bar. QUILL Transcribe publishes from
+<code>_set_dictation_field</code> and Dictation Settings and adopts on
+its IPC clock (<code>transcribe_commands.py</code>,
+<code>transcribe.py</code>). Inkwell publishes on Dictation Settings OK
+and adopts whenever its settings are used
+(<code>inkwell_dictation.py</code>). A hand-off keeps the receiver’s own
+share choice. A failed write is said in all four.</li>
+<li><strong>More Dictation Settings</strong>: “Share dictation settings
+with every &amp;QuillVille program” (Alt+Q), with inline F1 help
+(<code>dictation_more_dialog.py</code>).</li>
+<li><strong><code>quill/core/windows_dictation/family_words.py</code></strong>
+(new): <code>default_profile_path()</code> now returns the family’s
+<code>dictation.md</code>. The first ask copies
+<code>dictation.md</code>, <code>dictation-instructions.md</code> and
+<code>dictation-contexts.json</code> from QUILL’s data folder byte for
+byte, never moving or deleting the old files; a family list is never
+overwritten; later changes to the old list are merged as Import merges
+(backup <code>dictation-before-merge.md</code>), tracked in
+<code>family-words-moved.json</code>; a failed copy reads through the
+old path; a call with nothing new writes nothing.</li>
+<li><strong>D-16,
+<code>quill/core/windows_dictation/dictate_here.py</code></strong> (new,
+wx-free) and <strong><code>quill/ui/dictate_here_ui.py</code></strong>
+(new): Edit &gt; Dictate Here, <code>app.dictate_here</code> on Ctrl+F11
+in <code>APP_KEYMAPS["cast"]</code> and <code>["radio"]</code>, wired
+once in <code>support_menu.insert_edit_menu</code> and
+<code>app_support</code>; shown only where
+<code>is_app_released("transcribe")</code>. Sends <code>start</code>
+through <code>dictation_owner.send_request</code> (new
+<code>SENDERS</code> admits <code>cast</code> and <code>radio</code>;
+<code>APPS</code> unchanged), or launches QUILL Transcribe with
+<code>--tray --dictate-here</code>
+(<code>TranscribeDictationMixin.dictate_here_at_launch</code>). A
+<code>wx.EventFilter</code> answers the key in text fields of the app’s
+dialogs, where menu accelerators never reach;
+<code>AppShellMixin._apply_app_keymap</code> records
+<code>_app_keymap_id</code> so the request names its sender.</li>
+<li><strong>data_format_audit</strong>: <code>quill.settings</code> and
+<code>lite.settings</code> recorded as additive, compatible for the new
+field.</li>
+<li><strong>Tests</strong>:
+<code>tests/unit/core/test_family_dictation_store.py</code>,
+<code>test_family_words_move.py</code>,
+<code>test_dictate_here.py</code>;
+<code>tests/unit/ui/test_family_dictation_hosts.py</code>,
+<code>test_dictate_here_menu.py</code>; <code>tests/conftest.py</code>
+gives every test its own family folder.</li>
+<li><strong>Docs</strong>: the QUILL, QUILL Lite, QUILL Transcribe,
+Quill Inkwell, QUILL Cast and Quill Radio user guides and changelogs;
+the QUILL Lite, QUILL Transcribe, QUILL Cast and Quill Radio PRDs;
+<code>voice-interaction.md</code>; the regenerated keyboard and F1
+references.</li>
+</ul>
+<h3
+id="quills-own-office-readers-first-markitdown-only-as-their-fallback-2026-10-16">QUILL’s
+own Office readers first; MarkItDown only as their fallback
+(2026-10-16)</h3>
+<p>Measured
+(<code>docs/design/2026-10-16-editor-completion-measurements.md</code>):
+a cold <code>.docx</code> open from source took 12.4 s,
+<code>.xlsx</code> 11.1 s and <code>.pptx</code> 11.6 s, almost all of
+it importing MarkItDown. Now 1.24 s, 2.18 s (openpyxl’s import) and 0.34
+s; a warm <code>.docx</code> open went from 846 to 644 ms.</p>
+<ul>
+<li><strong>New
+<code>office_text.read_office_text_preferring_own</code>.</strong> Word,
+Excel, PowerPoint and OpenDocument read with QUILL’s reader first;
+MarkItDown is tried only on <code>OfficeReadError</code> (damaged or no
+text), for a suffix it reads, and never for an OLE container (a
+password-protected OOXML file). A rescue is recorded as
+<code>own_reader_failure</code> and the intake report says “QUILL’s own
+reader: not used.” with the reason; when both fail the user hears
+QUILL’s sentence. <code>.xls</code>, HTML, EPUB and CSV keep the
+MarkItDown-first order.</li>
+<li><strong>Every entry point switched:</strong>
+<code>structured.read_structured_document</code> (File &gt; Open,
+Recent, the shell, the watch folder),
+<code>docconvert.convert_born_digital</code> (Import / Convert),
+<code>lite/open_prepare.read_office_for_open</code> (QUILL Lite), the
+Action Builder’s reference files and <code>.pages</code> Route B. The
+explicit choices keep MarkItDown first:
+<code>docx_read_engine = "markitdown"</code> (relabelled “MarkItDown
+first”, Word only; Auto is now “Auto (QUILL’s own reader first)”, and
+the setting’s description says what each costs) and Convert File’s
+MarkItDown engine. <code>markitdown</code> is never imported on the fast
+path.</li>
+<li><strong>Output compared on <code>tests/corpus/office</code></strong>
+and two gaps closed where MarkItDown was better: numbered lists are
+counted 1, 2, 3 in the text
+(<code>office_word.number_ordered_items</code>, per run and indent
+level, in both Word readers and the ODT reader) instead of
+<code>1.</code> on every item; and Word <strong>equations</strong> are
+kept. python-docx’s <code>paragraph.text</code> skips
+<code>&lt;m:oMath&gt;</code>, so equations vanished silently; new
+<code>quill/io/omml_text.py</code> converts OMML to LaTeX in QUILL’s
+Insert Equation delimiters (<code>\(...\)</code>, <code>$$...$$</code>).
+The python-docx reader also keeps picture descriptions now
+(<code>[Image: ...]</code>), by borrowing
+<code>office_word.paragraph_text</code> for paragraphs that hold a
+picture or equation. Everywhere else QUILL’s output was already as good
+or better (title, table header row, pipes in cells, sheet and slide
+headings, TRUE/FALSE, dates, no <code>NaN</code>, nested slide
+bullets).</li>
+<li><strong>Tests:</strong> new
+<code>tests/unit/io/test_office_reader_order.py</code> (a fresh
+interpreter opens the corpus through <code>read_open_document</code> and
+QUILL Lite’s <code>prepare</code> and asserts <code>markitdown</code>
+and <code>magika</code> are not in <code>sys.modules</code>; every entry
+point with a failing MarkItDown stand-in; the fallback and its
+provenance; the setting; numbering; six equation shapes through both
+Word readers; picture descriptions). Updated
+<code>test_office_corpus.py</code> (numbering; the intake report no
+longer mentions MarkItDown) and <code>test_docconvert.py</code> (its
+MarkItDown-tier test uses an <code>.html</code>).</li>
+<li><code>scripts/bench_editor_completion.py open</code> also times the
+corpus’s <code>.xlsx</code>, <code>.pptx</code> and <code>.odt</code>
+and records whether <code>markitdown</code> was imported.</li>
+<li>Docs: the design note’s new section with before/after numbers and
+the comparison; QUILL user guide (“Office files QUILL reads by itself”,
+“Choosing a conversion engine”, Import / Convert, the optional
+components list, the intake report); QUILL Lite user guide and
+changelog; PRD (“QUILL’s own reader first”); the setting’s
+F1/description text.</li>
+</ul>
+<h3
+id="office-files-import-without-markitdown-todo-p1-4b-2026-10-16">Office
+files import without MarkItDown (todo P1 4b, 2026-10-16)</h3>
+<p>Jeff’s decision: “Give Office files a fallback that needs no
+MarkItDown.” In a shipped build every Word, Excel and PowerPoint import
+failed with “The free local converter (MarkItDown) is not installed”:
+the QuillVille runtime freezes markitdown and magika in but excludes
+onnxruntime, so <code>import markitdown</code> raises inside magika, and
+the “PDF and Office text extraction” download could not fix it because
+the frozen copy shadows it and <code>find_spec</code> still says
+installed. PDFs were already off MarkItDown (2026-10-15).</p>
+<ul>
+<li><strong>New <code>quill/io/office_text.py</code></strong> (wx-free,
+strict-typed), with the readers split into <code>office_word.py</code>
+(Word and ODT XML), <code>office_sheets.py</code> (openpyxl, else the
+workbook XML; ODS) and <code>office_slides.py</code> (PPTX and ODP; the
+slide code moved out of <code>structured.py</code>). Everything falls
+back to the standard library, because the shared runtime also excludes
+lxml (so python-docx cannot import there) and QUILL Lite excludes docx,
+pptx, openpyxl and markitdown. <code>read_office_text</code> never uses
+MarkItDown; <code>read_office_text_preferring_markitdown</code> tries it
+for DOCX/PPTX/XLSX/XLS/HTML/EPUB/CSV and falls back on <em>any</em>
+exception or an empty result, keeping the reason as
+<code>markitdown_failure</code>. Nothing consults
+<code>find_spec</code>.</li>
+<li><strong>Kept:</strong> headings (style names from
+<code>styles.xml</code>, <code>Title</code>, <code>outlineLvl</code>),
+bulleted vs numbered list items and levels (<code>numbering.xml</code>),
+tables as GFM with <code>|</code> escaped, hard breaks, picture
+descriptions as <code>[Image: ...]</code>,
+<code>## Sheet: &lt;name&gt;</code> per sheet,
+<code># Slide N: &lt;title&gt;</code> per slide in presentation order
+with <code>## Tables</code> and <code>## Notes</code>, hidden slides
+marked. Dates in the XML sheet reader come from the cell’s number
+format. <strong>Not kept:</strong> run formatting, headers/footers,
+footnotes, comments, charts, SmartArt.</li>
+<li><strong>Legacy
+<code>.doc</code>/<code>.xls</code>/<code>.ppt</code>:</strong>
+LibreOffice converts a temporary copy when installed
+(<code>libreoffice_executable</code> now also looks in
+<code>%ProgramFiles%\LibreOffice\program</code>); otherwise
+<code>LegacyOfficeFormatError</code>
+(<code>QUILL-IO-OFFICE-LEGACY</code>) names the Save As type and
+libreoffice.org. Password-protected (OLE magic under an OOXML name) and
+damaged files raise <code>OfficeReadError</code>
+(<code>QUILL-IO-OFFICE-UNREADABLE</code>) with a sentence.</li>
+<li><strong>Entry points:</strong>
+<code>docconvert.convert_born_digital</code> (new
+<code>TIER_OWN_READER</code>,
+<code>ConversionOutcome.engine/reader/units</code>; HTML/EPUB/CSV fall
+back through <code>read_markup_text</code>;
+<code>.docm</code>/<code>.xlsm</code> added to the import list);
+<code>structured.read_structured_document</code> (File &gt; Open and the
+watch folder; 764 -&gt; 302 lines, budget ratcheted); Convert File’s
+MarkItDown engine (<code>markitdown_or_own_reader</code>, announcement
+names the stand-in); the AI Action Builder’s reference files;
+<code>.pages</code> Route B, which also looked for a
+<code>converted.docx</code> LibreOffice never writes.</li>
+<li><strong>Announcements and intake:</strong> Import / Convert says
+“Opened X as editable text, read by QUILL’s own Excel reader. 2 sheets.
+Nothing was uploaded.”; the open summary says “read by <reader>” instead
+of an engine id; the Document Intake Report adds Read by, Contents,
+MarkItDown not used (why) and per-sheet truncation notes.
+<code>extraction_pack_missing</code> is stamped only for a PDF or an
+unreadable <code>.xls</code>.</li>
+<li><strong>Spreadsheet bounds</strong> (PERF-11) are 2,000 rows by 50
+columns per sheet, up from 50 by 20, and a sheet cut short now says
+so.</li>
+<li><strong>QUILL Lite</strong> opens
+<code>.docx/.docm/.doc/.odt/.xlsx/.xls/.pptx/.ppt</code> as text through
+the same reader (exactly QUILL’s File &gt; Open set, asserted), on the
+worker, and refuses Save over them; it used to show a
+<code>.docx</code>’s zip bytes.</li>
+<li>The OCR and Conversion Services page text moved to
+<code>quill/core/docconvert_services.py</code> and now describes the
+built-in readers.</li>
+<li>Tests: <code>tests/corpus/office/build_office_corpus.py</code> and
+its eight fixtures; <code>tests/unit/io/test_office_corpus.py</code>
+(both reader tiers, and the shipped build simulated with onnxruntime
+blocked and <code>find_spec</code> saying installed);
+<code>tests/unit/apps/test_lite_office.py</code>. Docs: both user
+guides, PRD (“QUILL’s own Office readers”, section 5.93.1), both
+changelogs.</li>
+</ul>
+<h3
+id="editor-and-media-completion-checks-the-read-only-guard-extension-driven-save-as-named-text-lists-items-37-41-45-2026-10-16">Editor
+and media completion checks: the Read-Only Guard, extension-driven Save
+As, named-text lists (items 37, 41, 45, 2026-10-16)</h3>
+<p>Measured before changing anything; method and numbers in
+<code>docs/design/2026-10-16-editor-completion-measurements.md</code>,
+reproducible with <code>scripts/bench_editor_completion.py</code>.</p>
+<ul>
+<li><strong>Read-Only Guard (item 37).</strong> The guard had no key,
+keyed its memory on the raw path string (so a file opened from File
+Explorer under another case missed the guard set from Open Recent), and
+swallowed a failed write of its list. Now:
+<code>power.toggle_read_only_guard</code> on
+<strong>Ctrl+Alt+Backspace</strong> in both editors (rule 2, free in
+both); the list lives in the new wx-free
+<code>quill/core/read_only_guards.py</code>
+(<code>ReadOnlyGuards</code>, keys through
+<code>DocumentMemory.key_for</code>, old bare-list and raw-spelling
+files normalised on read); <code>set()</code> returns the reason a write
+failed and <code>toggle_sentence</code> says it (“…could not be
+remembered for next time (reason)”). The QUILL half moved from
+<code>main_frame_power_tools.py</code> to
+<code>main_frame_read_only.py</code> (<code>ReadOnlyGuardMixin</code>).
+<code>_replace_document_text</code> and
+<code>_apply_insertion_result</code> raise
+<code>DocumentReadOnlyError</code>
+(<code>QUILL-CORE-READONLY-REFUSED</code>) on a guarded document and the
+command registry (<code>CommandRegistry.set_read_only_refusal</code>,
+every entry point) turns it into “Document is read-only”, so a command
+stops before it claims success. Word tools refuse a Replace through
+<code>refuse_if_guarded</code>.</li>
+<li><strong>Faster reading of a guarded long document.</strong>
+<code>BrowseModeMixin._browse_text</code> answers browse navigation from
+the document’s own string once it has checked it equals the control’s
+text, and the cache recognises it by identity: one heading step on an 8
+MB book went from 46.3 ms (a <code>GetValue</code> marshal per key) to
+0.04 ms. Open time is unchanged by the guard (<code>SetValue</code> 394
+ms dominates; <code>SetEditable(False)</code> is 0.02 ms).</li>
+<li><strong>QUILL Lite gains the guard</strong>
+(<code>quill/apps/lite_window_read_only.py</code>, Tools &gt; Read-Only
+Guard, the same key, parity row to
+<code>power.toggle_read_only_guard</code>), remembered in QUILL Lite’s
+data folder (<code>paths.data_file</code>, which reads without creating
+the folder). Text-changing commands are refused by name
+(<code>quill/core/lite/read_only.py</code>
+<code>TEXT_CHANGING_HANDLERS</code>) in the menu and status-cell
+dispatch; the shared <code>_host_read_only</code> keeps inline notes
+beside the file.</li>
+<li><strong>Save As (item 41).</strong> QUILL already honoured the typed
+extension; it is now pinned behaviourally (real <code>.docx</code> read
+back by python-docx, <code>.DOCX</code>, <code>.txt</code>,
+<code>.md</code>, <code>.html</code>, <code>.rtf</code>, mismatched
+filter, no extension, cancel, <code>.xlsx</code> refused,
+<code>.pdf</code> routed to Export). QUILL Lite wrote plain text under a
+<code>.docx</code> name; it now refuses Word names
+(<code>filetypes.WORD_SUFFIXES</code>, <code>refuse_word_target</code>)
+before the flatten question, on Save, Save As and the collector’s quiet
+save.</li>
+<li><strong>Opening .doc/.docx/PDF.</strong> Cold opens are dominated by
+importing MarkItDown (11-14 s from source: pandas, pdfminer, openpyxl,
+python-pptx, Magika). The bridge
+(<code>quill/io/markitdown_bridge.py</code>) no longer imports it for
+<code>.doc</code>/<code>.ppt</code>, which it cannot convert
+(<code>.doc</code> without LibreOffice: 11.6 s to the answer, now the
+time to look for LibreOffice), and turns MarkItDown’s own exceptions
+into <code>ValueError</code> so callers fall back instead of surfacing a
+raw library message. The remaining <code>.docx</code> cold cost lives in
+<code>quill/io/structured.py</code> (another agent’s file today); the
+design note records the measured order to change.</li>
+<li><strong>Named-text lists (item 45).</strong>
+<code>apply_listbox_activation</code> gained type-ahead through the
+shared <code>quill.core.type_ahead.TypeAheadBuffer</code> (new
+<code>typing()</code>, <code>reset()</code>, and a multi-character name
+that stays on its row): Space while a name is being typed is part of the
+name instead of activating the row. The searchable picker moved to
+<code>quill/ui/searchable_picker.py</code>, shows at most 200 rows with
+an honest count, and gathers keystrokes (150 ms) for libraries larger
+than that; filling 10,000 rows took 2.2-3 s. The Abbreviations manager
+(QUILL, QUILL Lite, Inkwell) uses the new <code>VirtualReportList</code>
+(3.7 s per refill for 10,000 rows before) and keeps its selection by
+identity. Snippet, abbreviation and Copy Tray search match every word in
+any order (<code>quill/core/list_search.py</code>).</li>
+</ul>
+<h3
+id="word-markdown-and-html-saves-no-longer-carry-the-dark-themes-grey-2026-10-16">Word,
+Markdown and HTML saves no longer carry the dark theme’s grey
+(2026-10-16)</h3>
+<p>A dark theme sets the rich control’s foreground colour, which wxMSW
+applies as a character colour on every run. The <code>.rtf</code> save
+already took it off for the save (<code>_theme_colour_off</code>, bad.md
+R4), but saving a rich tab as <code>.docx</code>, <code>.md</code> or
+<code>.html</code> read the control’s RTF with the grey still on, and
+<code>rtf_to_rich</code> kept it. Anyone working in dark mode sent grey
+text to everyone they shared a Word document with. Both paths in
+<code>quill/ui/main_frame_rich_mode.py</code> now read the RTF inside
+<code>_theme_colour_off</code>, and
+<code>test_docx_and_markup_saves_take_the_theme_colour_off_first</code>
+pins the order. QUILL Lite has no Word save yet and its
+<code>.rtf</code> save was already guarded.</p>
+<h3
+id="dictation-profiles-d-23-and-quill-transcribes-lessons-practice-field-and-recognition-test-d-25-2026-10-16">Dictation
+profiles (D-23), and QUILL Transcribe’s lessons, practice field and
+recognition test (D-25) (2026-10-16)</h3>
+<p>dict.md section 4, “Modes” and “Coach”. Design record section 29.</p>
+<ul>
+<li><strong><code>quill/core/windows_dictation/profiles.py</code></strong>
+(new, wx-free): seven <code>NamedProfile</code>s (Standard, Email,
+Document, Markdown, Chat, Coding, Verbatim), each an overlay of pause,
+fillers and punctuation plus a structure (<code>markdown</code>,
+<code>formatted</code>, <code>plain</code>);
+<code>coerce_profile</code>, <code>active_profile</code>,
+<code>active_profile_name</code>. Standard is no overlay and the
+default.</li>
+<li><strong><code>DictationPreferences</code></strong> gains
+<code>named_profile</code>, <code>structure</code> and
+<code>profile_locked</code>; <code>_writing</code> applies the overlay.
+Settings <code>windows_dictation_profile</code> and
+<code>windows_dictation_profile_locked</code> (shared by name; additive,
+accepted in <code>data_format_audit</code> for
+<code>quill.settings</code> and <code>lite.settings</code>).</li>
+<li><strong><code>profile_mixin.py</code></strong> (new) on the
+controller: headings by structure, “bold that” / “italic that” (new
+<code>Command.BOLD_THAT</code>, <code>ITALIC_THAT</code>), the seven
+profile commands with Lock Profile, and the profile in the status cell.
+Bold, italic and the profile commands also work in other programs
+(<code>anywhere.EXTERNAL_COMMANDS</code>).</li>
+<li><strong>Editors</strong>:
+<code>EditorDocument.formatting()</code>/<code>apply_style()</code>;
+QUILL runs
+<code>format.bold</code>/<code>italic</code>/<code>heading_N</code>,
+QUILL Lite its own <code>cmd_*</code>, in a rich text document (QUILL
+also in Markdown and HTML). More Dictation Settings has the profile
+(Alt+A) and the lock (Alt+B).</li>
+<li><strong>QUILL Transcribe</strong>: Dictation &gt; Dictation Profile…
+(Ctrl+Shift+F, <code>ProfileDialog</code>), Lock Profile (Ctrl+Shift+L),
+Practice Dictation… (Ctrl+Shift+P, new
+<code>transcribe_practice.py</code>), Help &gt; Tutorials…
+(Ctrl+Alt+F1); tray read-out and row; profile in the window, tray name
+and Dictation Status. New <code>transcribe_coach.py</code>.</li>
+<li><strong>Recognition test</strong>:
+<code>quill/core/transcribe/practice.py</code>; the word-error scorer
+moved from <code>scripts/dictbench.py</code> to
+<code>quill/core/windows_dictation/word_errors.py</code>, which both
+import.</li>
+<li><strong>Lessons</strong>:
+<code>quill/core/tutorials/transcribe_lessons.py</code> (five),
+<code>quill/core/transcribe/tutorials.py</code> (catalogue and command
+table), <code>quill/ui/transcribe_tutorials.py</code>; GATE-TUTDOC
+renders <code>standalone/transcribe/docs/tutorials.md</code>.</li>
+<li><strong>Reference</strong>: the dictation commands guide gains
+“Profiles and formatting” (<code>reference._profile_section</code>),
+regenerated with <code>docs/site/dictation.html</code>.</li>
+<li>Tests: <code>test_dictation_profiles.py</code>,
+<code>test_transcribe_coach.py</code>,
+<code>test_dictation_formatting_hooks.py</code>. Snapshots regenerated:
+dialog inventory, accessible names, Transcribe help, settings
+documentation and vocabulary, F1 help reference, data formats.</li>
+</ul>
+<h3
+id="no-links-to-the-quillin-hub-until-it-is-live-three-unused-build-specs-removed-2026-10-16">No
+links to the Quillin Hub until it is live; three unused build specs
+removed (2026-10-16)</h3>
+<ul>
+<li><strong>The site and the README stop linking to
+<code>hub.quillforall.org</code>.</strong> The host does not resolve,
+and <code>HUB_IS_LIVE</code> in
+<code>quill/ui/quillin_hub_submit.py</code> is still <code>False</code>,
+yet seven site pages linked to it: the Project footer on
+<code>index.html</code>, <code>docs.html</code>, <code>faq.html</code>,
+<code>compare.html</code>, <code>dictation.html</code>,
+<code>meet-quillbert-and-quillbee.html</code> and
+<code>quillin-wizard.html</code>, plus the “Visit the Quillin Hub”
+button on <code>index.html</code>, the Quillin Hub card on
+<code>docs.html</code>, and the FAQ answer “What is the Quillin Hub?”. A
+link to a host that does not answer drops a screen-reader user on a
+browser error page they then have to find their way back from. Each link
+is now an HTML comment that says it returns when the hub is live; the
+card, the FAQ answers and the home-page Hub section now say in words
+that the Hub is not open yet and that Tools, Quillins, Submit to Quillin
+Hub still runs every check locally. The root <code>README.md</code>
+paragraph is reworded the same way. The app needed no change: the dialog
+already hides its Open the Quillin Hub button and says the Hub is not
+open while <code>HUB_IS_LIVE</code> is <code>False</code>. When the hub
+answers, flip that flag and restore the commented links. Historical
+records (release notes, the PRD, design docs, the deployment runbook,
+podcast transcripts) still name the host as text, not as links, and are
+left as they were.</li>
+<li><strong><code>standalone/quilllite/quill-lite.spec</code>,
+<code>standalone/inkwell/quill-inkwell.spec</code> and
+<code>standalone/weather/quill-weather.spec</code> are deleted.</strong>
+QUILL Lite, Inkwell and Weather install onto the shared QuillVille
+Runtime (<code>standalone/runtime/quillville-runtime.spec</code>); their
+<code>build_release.ps1</code> never runs PyInstaller on a per-app spec,
+and no workflow, test or script names these three files. (Every other
+app’s spec is untouched; Beacon, Cast and Social, for example, still run
+PyInstaller on theirs.) The three <code>assets/README.md</code> files,
+the credential-exclusion comments in the three
+<code>build_release.ps1</code> scripts and the 2026-09-07 QUILL Lite
+integration design now point at the runtime spec instead.</li>
+</ul>
+<h3
+id="dictation-self-repair-named-styles-learning-from-corrections-and-opt-in-polish-d-20-d-21-2026-10-16">Dictation:
+self-repair, named styles, learning from corrections, and opt-in polish
+(D-20, D-21, 2026-10-16)</h3>
+<p>dict.md section 4, “Polish”, “Learn” and “Modes”. Design record
+section 28. QUILL, QUILL Lite, QUILL Transcribe and Quill Inkwell,
+through the shared dictation package.</p>
+<ul>
+<li><strong>Self-repair (D-20)</strong>,
+<code>quill/core/windows_dictation/self_repair.py</code> (new, wx-free).
+A repair marker (“no”, “I mean”, “no I mean”, “sorry”, “scratch that
+word”) between two words of one kind (a day, a month, a number, or a
+name from My Words’ Vocabulary) keeps the second. Only the words either
+side of the marker are looked at; a full stop or question mark before
+it, a different kind, or a lower-case “may”/“march” leaves the phrase
+alone. Run in <code>DictationController.on_phrase</code> after the
+rewrite, behind <code>DictationPreferences.self_repair</code>
+(<code>windows_dictation_self_repair</code>, off). The transcript
+profile forces it off. <code>profile.with_repair_names</code> gives the
+controller the names, in QUILL, QUILL Lite, QUILL Transcribe and
+Inkwell.</li>
+<li><strong>Named styles (D-20).</strong>
+<code>self_repair.STYLE_CHOICES</code> / <code>STYLE_FIELDS</code> /
+<code>style_of</code>: Verbatim, Clean, Polished (only with
+<code>ai_on</code>) and “Your own mix”, mapped onto existing fields;
+nothing new is stored for the style itself. The chooser and the
+self-repair box live in the new
+<code>quill/ui/windows_dictation_style.py</code>
+(<code>DictationStyleMixin</code>), so
+<code>windows_dictation_dialog.py</code> stays under the 600-line cap.
+The dialog takes <code>ai_on=</code>; the editors and Transcribe pass
+<code>_review_ai_on()</code>. The “After each phrase” chooser moved to
+the right column to keep the window under 700 pixels
+(<code>test_the_window_fits_a_small_screen</code>).</li>
+<li><strong>Polish my dictation (P3).</strong>
+<code>Command.REVIEW_POLISH</code> (“polish that”, “polish it”);
+<code>ReviewConversation.polish</code> sends the fixed
+<code>review_session.POLISH_INSTRUCTION</code> through the ordinary
+<code>instruct</code> path, so the D-2 consent, the account routes
+(ChatGPT subscription or own key; never the free allowance), the diff
+summary and Undo Change all apply unchanged.
+<code>windows_dictation_polish</code> (off) gates it; with no review
+open, <code>ReviewMixin._polish_last</code> opens the last phrase first.
+The review frame shows <strong>Polish</strong> (Ctrl+P) only when
+allowed, greyed with AI off. More Dictation Settings has the check box
+(Alt+G). No new network call site: the request is the review’s own
+(<code>network_egress_audit</code> unchanged).</li>
+<li><strong>Learning from corrections (D-21)</strong>,
+<code>quill/core/windows_dictation/correction_learning.py</code> (new,
+wx-free). The second identical “choose N” replacement, or “correct X”
+followed by the new words landing where X was
+(<code>voice_commands._land</code> records it,
+<code>LiveMixin._after_insert</code> checks it), offers “Add a
+correction: A becomes B?” once per run. Editors:
+<code>HostFeedback.confirm_correction</code>, a Yes/No box (No default)
+from the new <code>quill/ui/windows_dictation_learn.py</code>, deferred
+out of the recogniser callback; the focus-loss check stands aside while
+it is up. Transcribe: spoken, answered by “QUILL yes”/“QUILL no” within
+30 seconds (<code>CommandModeMixin</code> asks
+<code>_learn_answer</code> first). Yes writes through
+<code>words_file</code>’s model into Corrections.</li>
+<li><strong>Per-context lists (D-21).</strong> <code>words_file</code>
+parses and round-trips <code>## Context: &lt;name&gt;</code> sections
+(<code>ContextList</code>, <code>context_list</code>);
+<code>profile.context_profile</code> and
+<code>rewriter(path, context=...)</code> apply one on top of the main
+lists. No caller passes a context yet: D-23 profiles are not built.</li>
+<li><strong>Whisper initial prompt (D-21 investigation).</strong>
+sherpa-onnx 1.13.8’s <code>OfflineWhisperModelConfig</code> has no
+prompt field and <code>OfflineRecognizer.from_whisper</code> takes none,
+so local Whisper biasing through a prompt is not possible on the pinned
+version. Recorded in the design record.</li>
+<li>Settings: <code>windows_dictation_self_repair</code>,
+<code>windows_dictation_polish</code> in
+<code>settings_fields.DictationSettings</code> (both editors and
+Transcribe); <code>data_format_audit</code> recorded as additive for
+<code>quill.settings</code> and <code>lite.settings</code>. Generated:
+<code>docs/f1-help-reference.md</code>, both
+<code>dictation-commands.md</code> (new “Correcting yourself as you
+talk” section).</li>
+<li>Tests:
+<code>tests/unit/core/test_dictation_self_repair_and_learning.py</code>
+(new), plus <code>test_dictation_review_frame.py</code>,
+<code>test_dictation_settings_dialog.py</code> and
+<code>test_transcribe_app.py</code>.</li>
+</ul>
+<h3
+id="typing-assists-autocorrect-for-misspellings-and-enter-in-a-list-in-both-editors-todo-items-38-and-40-2026-10-16">Typing
+assists: AutoCorrect for misspellings, and Enter in a list in both
+editors (todo items 38 and 40, 2026-10-16)</h3>
+<p>Jeff’s editor completion checks, items 38 (automatic numbering in
+text and Markdown) and 40 (misspelling AutoCorrect with user entries).
+Shared, wx-free rules; QUILL and QUILL Lite deliver them on the same
+keys and settings.</p>
+<ul>
+<li><strong>AutoCorrect</strong>
+(<code>quill/core/autocorrect.py</code>). With the new setting
+<code>autocorrect_misspellings</code> on (Settings &gt; Editing,
+<em>Correct common misspellings as I type</em>; QUILL Lite Preferences,
+under the Autocorrect area; off by default in both), a space or Enter
+after a known misspelling replaces it: <code>teh</code> becomes
+<code>the</code>. Word rules: the token back to the previous whitespace,
+opening and closing punctuation trimmed and kept, letters only (internal
+apostrophe allowed), so URLs, email addresses, paths and identifiers
+never match; nothing inside a Markdown code span or fenced block
+(<code>spellcheck_live.live_alert_suppressed</code>); an all-capitals
+word is left alone; a capital is carried (<code>Teh</code> -&gt;
+<code>The</code>). Prose only: <code>autocorrect_allows</code> refuses
+any <code>spellcheck_filetypes.is_code_filename</code> name and the
+literal kinds, and accepts plain text, Markdown, rich text and untitled
+documents. The correction and the space are written by one
+<code>replace_as_one_undo</code>, so one Ctrl+Z restores the typed word;
+the word then joins a per-window declined set
+(<code>note_declined</code>) so the next space does not undo the undo.
+Word-corrected earcon plus “Corrected to X” (the reader echoes only the
+space). QUILL records it in the edit journal.</li>
+<li><strong>The built-in list</strong> is committed data,
+<code>quill/core/data/autocorrect_en.json</code> (354 pairs), with its
+source and rules written in the file. Every key is rejected by both the
+en_US and en_GB Hunspell dictionaries and every word of every correction
+is accepted by en_US; <code>tests/unit/core/test_autocorrect.py</code>
+re-checks that where pyenchant has the dictionaries. Real words,
+surnames and stylistic variants (calender, wich, Sargent, everytime) are
+excluded.</li>
+<li><strong>Your entries use the abbreviation store, not a new
+one.</strong> A correction of yours is an <code>Abbreviation</code> in
+<code>abbreviations.json</code> with the reserved category
+<code>AUTOCORRECT_CATEGORY</code> (“AutoCorrect”); no schema change. A
+user entry for a built-in word overrides it, a disabled one stops it,
+removing it restores the built-in. Every abbreviation matcher
+(<code>try_expand</code>, <code>enabled_only</code>,
+<code>find_by_trigger</code>, so Quick Insert, the snippet gallery and
+Inkwell too) skips the category, so abbreviations on never means
+corrections on.</li>
+<li><strong>AutoCorrect Entries</strong>
+(<code>format.autocorrect_entries</code>, Insert menu in QUILL;
+<code>cmd_autocorrect_entries</code>, Tools menu in QUILL Lite,
+Autocorrect area; Alt+Shift+9 in both, the only family-wide free chord
+rule 9 allows): one shared window,
+<code>quill/ui/autocorrect_entries_dialog.py</code>, with a filter, the
+list (Enter/Space edit, <code>apply_listbox_activation</code>), Add,
+Edit, Turn Off/Turn On and Remove, inline F1 help on every control,
+every outcome spoken, saved through the shared store on close. Parity
+row, help topic, F1 purposes (<code>lite_surface_help</code>, shared
+with QUILL) and both help audits updated.</li>
+<li><strong>Enter in a list</strong>
+(<code>quill/core/list_continuation.py</code>, moved out of
+<code>format_ops</code>, which re-exports it). Fixed: Enter on an empty
+item ate the line’s newline and joined the next line on; a numbered task
+item continued as a bullet. New: a split mid-item drops the spaces at
+the split; a new numbered item renumbers the following same-depth,
+same-separator items while they count on (custom numbering is left
+alone); the spoken message counts the renumbered items.
+<code>list_continuation_allowed</code>: Markdown always, plain text only
+with the new setting <code>continue_lists_in_plain_text</code> (off by
+default) and never in a code or configuration file, never in rich text
+(its lists are <code>ITextPara</code> properties) or HTML/YAML.
+<strong>Behaviour change for QUILL:</strong> plain text continued lists
+unconditionally before (including <code>.py</code>, <code>.json</code>
+and untitled buffers, which <code>infer_markup_kind</code> calls plain);
+it now waits for the setting. QUILL Lite had no list continuation at
+all; it now has QUILL’s, with Markdown behind the “markup” area. One
+undo step in both.</li>
+<li><strong>Structure</strong>: QUILL’s Enter and AutoCorrect delivery
+moved to <code>quill/ui/main_frame_typing_assist.py</code>
+(main_frame.py shrank 20 lines); QUILL Lite’s to
+<code>quill/apps/lite_window_typing_assist.py</code>, and the
+abbreviation half of <code>lite_window_typing.py</code> moved to
+<code>lite_window_abbreviations.py</code>; QUILL Lite’s two checkboxes
+are <code>lite_preferences_typing.py</code>. Settings, keymap and
+command tables rebaselined
+(<code>_rebaseline_2026_10_16_typing_assists</code>);
+<code>quill.settings</code> and <code>lite.settings</code> recorded as
+additive.</li>
+<li>Tests: <code>tests/unit/core/test_list_continuation.py</code>,
+<code>tests/unit/core/test_autocorrect.py</code>,
+<code>tests/unit/ui/test_main_frame_typing_assist.py</code>,
+<code>tests/unit/ui/test_autocorrect_entries_dialog.py</code>,
+<code>tests/unit/apps/test_lite_typing_assist.py</code>. Manual
+screen-reader checks are listed in
+<code>docs/qa/screen-reader-checks-2026-10.md</code>.</li>
+</ul>
+<h3
+id="dictation-replace-change-that-delete-by-paragraph-a-second-opinion-kept-revisions-and-correcting-in-other-programs-d-19-d-10-2026-10-16">Dictation:
+replace, change that, delete by paragraph, a second opinion, kept
+revisions, and correcting in other programs (D-19, D-10,
+2026-10-16)</h3>
+<p>dict.md D-19 and D-10; design record section 27. Shared code, so
+QUILL, QUILL Lite, QUILL Transcribe and Inkwell’s Dictate Anywhere get
+the same commands.</p>
+<ul>
+<li><strong>New commands</strong> in the one table
+(<code>vocabulary_commands.py</code>, so “What can I say” and the
+generated <code>dictation-commands.md</code> follow): “replace X with Y”
+(<code>Command.REPLACE_WORDS</code>, nearest X before the cursor, else
+after, through <code>targets.find_target</code>), “change that to Y”
+(<code>CHANGE_THAT</code>) and “delete previous paragraph” / “delete
+last paragraph” (<code>DELETE_PARAGRAPH</code>). They work bare with
+strict mode off and always after the command word; a replace that finds
+nothing is written as text bare and writes nothing after the word.</li>
+<li><strong>A second opinion for “correct that”</strong>: a model
+engine’s phrase carries its audio (<code>RecognizedPhrase.audio</code>,
+memory only, dropped at the next phrase); with no engine alternates,
+<code>WorkerMixin.second_opinion</code> re-decodes it with the other
+built-in engine on its own thread and offers the answer as choice 2. No
+disk, no network. Not in Spanish.</li>
+<li><strong>Kept revisions</strong>: choose, replace and change that put
+the replaced text in Recent Phrases labelled “(before correction)”;
+<code>phrase_from_entry</code> strips the label for Insert Again and
+Copy.</li>
+<li><strong>Correcting in other programs (D-10)</strong>:
+correct/choose, caps that, uppercase/lowercase that, replace, change
+that, delete last sentence and delete previous paragraph join
+<code>anywhere.EXTERNAL_COMMANDS</code>, acting only on the words the
+session typed, as backspace-and-retype. <code>external_edits.py</code>
+refuses with one sentence when the focus moved, when Windows saw input
+after dictation’s own (<code>OwnWordsGuard</code>,
+<code>GetLastInputInfo</code> in the new read-only
+<code>quill/platform/windows/input_activity.py</code>), or, for retyping
+commands, in Word and Outlook (<code>AUTOCORRECTING_PROGRAMS</code>).
+The other program is never read.</li>
+<li>New modules: <code>corrections.py</code>
+(<code>CorrectionsMixin</code>, first in the controller’s bases) and
+<code>external_edits.py</code>; the controller grew by two lines. Tests:
+<code>tests/unit/core/test_dictation_corrections.py</code> (32, fakes
+only).</li>
+</ul>
+<h3
+id="dictation-never-lose-what-was-said-snippet-blanks-by-voice-reading-back-more-d-5-d-8-d-18-2026-10-16">Dictation:
+never lose what was said, snippet blanks by voice, reading back more
+(D-5, D-8, D-18) (2026-10-16)</h3>
+<p>The rest of D-5, D-8 and D-18 of the dictation gap plan, in shared
+code, so QUILL, QUILL Lite, QUILL Transcribe and (for D-8 and D-18)
+Quill Inkwell behave the same. Design record section 25.</p>
+<ul>
+<li><strong>Rescue (D-5).</strong> New wx-free
+<code>core/windows_dictation/rescue.py</code>
+(<code>DictationKeep</code>, <code>keep_for</code>, <code>Kept</code>,
+<code>kept_notice</code>, <code>HISTORY_CHOICES</code>) keeps only
+uncommitted words, held while paused or a phrase whose writing failed,
+in <code>recovery/live-dictation/&lt;app&gt;-&lt;id&gt;.json</code>,
+atomic, sealed with DPAPI (entropy <code>quill-dictation-rescue</code>);
+unsealable words are not written. New <code>rescue_mixin.py</code>
+(<code>RescueMixin</code> under <code>TargetHoldMixin</code>,
+<code>RecentPhrases</code>, <code>held_text</code>): every change to the
+held list rewrites one entry per pause; Resume and Discard Held Words
+delete it; stop, failure and shut-down keep it (stop adds “They are kept
+in Recent Phrases.”). <code>command_mode_mixin._dictate</code> keeps a
+phrase whose <code>_apply</code> raised. The feedback ports gain the
+optional <code>rescue()</code> (editors: <code>HostFeedback</code>,
+through <code>DictationToolsMixin._dictation_keep</code>; QUILL
+Transcribe: <code>_Feedback</code>). Quill Inkwell has no store and
+keeps held words in memory, as before.</li>
+<li><strong>Recent Phrases lists kept words</strong>
+(<code>ui/dictation_kept.py</code>, <code>KeptWords</code>,
+<code>kept_at_start</code>): this session’s phrases, then “Not written”,
+D-2’s unfinished review read from <code>dictation-review.json</code>
+where it is, and the history. <code>RecentPhrasesDialog</code> gains
+Discard (Alt+D) and Clear History (Alt+H, No-default question); Insert
+Again deletes a kept entry once <code>insert_again</code> returns
+<code>True</code>. One start-up sentence replaces the review’s when kept
+words wait. QUILL Transcribe’s exit no longer asks about held words
+already on disk.</li>
+<li><strong>Opt-in history.</strong>
+<code>windows_dictation_history_days</code> (0, 1, 7 or 30; 0 default)
+in the shared <code>DictationSettings</code>,
+<code>DictationPreferences.history_days</code>, More Dictation Settings’
+Keep a dictation history (Alt+Y). Text only, sealed, pruned on every
+read and write, capped at 2000, deleted when off (at the next phrase, at
+start, and when Recent Phrases opens). <code>quill.settings</code> and
+<code>lite.settings</code> fingerprints accepted as additive.</li>
+<li><strong>Type a reviewed transcript into a field.</strong> QUILL
+Transcribe’s Review Transcript gains Type into a Field (Alt+F), the
+selection or all of it, through Recent Phrases’ Insert Again path and
+checks.</li>
+<li><strong>Snippet blanks by voice (D-8).</strong> New
+<code>core/windows_dictation/snippet_fill.py</code>
+(<code>SnippetFill</code>, <code>SnippetFillMixin</code> between
+<code>ReviewMixin</code> and <code>VoiceCommandsMixin</code>):
+<code>${input:x}</code> and <code>${choice:a|b}</code> are asked for in
+order (“Title?”, “Choose a or b.”; a name, or “choose two”), with skip,
+scratch that (back one) and cancel; the answers are never typed; the
+filled snippet goes through <code>_insert_text</code> as one phrase (or
+is held while paused). <code>${date}</code>/<code>${time}</code> resolve
+locally; <code>${cursor}</code> is dropped externally. The libraries
+gain <code>snippet_body</code> (<code>AnywhereLibrary</code>,
+<code>DictationLibrary</code> over QUILL’s
+<code>_dictation_snippet_body</code>); QUILL Lite’s abbreviation
+snippets have no blanks and keep the old path. Works after the command
+word (D-1).</li>
+<li><strong>Read back more (D-18).</strong> <code>_insert_text</code>
+sets <code>_last_spoken</code> to the whole insertion (marks named), so
+“read that” reads a whole snippet, clip or review insert (editors:
+<code>note_inserted</code>). New commands “read last sentence”, “read
+last paragraph”, “read selection” (<code>Command.READ_*</code>, English
+and Spanish), editors only; refused in other programs. Command
+references and <code>docs/site/dictation.html</code> regenerated.</li>
+<li>Tests: <code>tests/unit/core/test_dictation_rescue.py</code>,
+<code>test_dictation_snippet_fill.py</code>,
+<code>tests/unit/ui/test_dictation_kept_words.py</code>, and a parity
+test in <code>test_dictation_parity.py</code>.</li>
+</ul>
+<h3
+id="pdf-text-reliability-each-pages-most-readable-reading-a-bounded-score-titles-found-inside-their-pages-2026-10-16">PDF
+text reliability: each page’s most readable reading, a bounded score,
+titles found inside their pages (2026-10-16)</h3>
+<p>Jeff’s todo P2 #28, “Text-extraction reliability, shared by both
+editors and Import / Convert”. Text reading only: no structure work.
+Design note with the formula, thresholds and measured budget:
+<code>docs/design/2026-10-16-pdf-text-reliability.md</code>; PRD 5.5
+item 1 rewritten to match what ships (it described a per-page selection
+with pypdfium2 and pdfminer.six as extractors that never existed).</p>
+<ul>
+<li><strong>Per-page selection</strong> (<code>quill/io/pdf.py</code>,
+new <code>quill/io/pdf_select.py</code>). The reader used to keep the
+first non-empty answer of pdfplumber, then pypdf. Now pdfplumber reads
+each page; a reading scoring at least 90 on a page whose characters show
+no column gutter is kept (the fast path); otherwise pypdf plain, pypdf
+layout and, on a two-column page, pypdf layout read column by column are
+compared (plus pdfplumber with duplicate characters removed when the
+first reading shows fake-bold doubling). Every reading is scored before
+and after repair; the best reading wins, ties to the earlier engine. One
+failing page is recorded as <code>failed</code> instead of sinking the
+document.</li>
+<li><strong>Readability score</strong> (new
+<code>quill/io/pdf_score.py</code>) replaces the quantity score: 100
+times one factor each for suspicious characters, single-letter runs, one
+word per line, implausible joins, coverage against the fullest reading,
+and columns run together. Short titles, numeric rows and non-Latin
+scripts score 100. Doubtful pages (below 40, unreadable characters, or
+image-only) are named in one shared sentence
+(<code>pdf_open.doubtful_pages_sentence</code>) in QUILL’s open status,
+QUILL Lite’s open announcement and the intake reports; blank pages never
+are. New metadata: <code>page_engines</code>,
+<code>page_unreadable</code>, <code>pdf_outline_levels</code> (additive;
+old keys unchanged).</li>
+<li><strong>MarkItDown</strong> no longer gets an automatic 85 in
+<code>quill.io.structured</code>; that fallback is gone. Inside the
+reader it is offered pages only when the document still scores below 50,
+and a page is replaced only when its pages line up and it scores 10
+points better by the same rules. <code>format_pdf_document</code> no
+longer keeps the <em>longer</em> answer.</li>
+<li><strong>Fixes found by measuring first:</strong> a blank first page
+lost its form feed (every page offset shifted by one); unmapped
+private-use glyphs were deleted (“next box” read as “net bo”); 200 pages
+peaked at 429 MB because pdfplumber pages were never closed (now 6.5
+MB); a long body line swallowed “Chapter 2” under it; two long table
+rows were joined.</li>
+<li><strong>Repairs</strong> (<code>quill/io/pdf_repair.py</code>):
+unmapped private use kept, ligature slots expanded only beside a letter;
+no closing-up of a spaced sentence into one word; identifier hyphens
+kept, <code>self-</code>/<code>well-</code> style prefixes joined with
+the hyphen; reflow protects headings, lettered/roman list starts,
+address lines, column-spaced rows and rows of figures. Still
+idempotent.</li>
+<li><strong>Outline</strong> (new <code>quill/io/pdf_outline.py</code>,
+<code>quill/core/pdf_open.py</code>): entries carry their nesting level;
+bookmarks and Go To land on the title at the start of a line on its
+page, falling back to the page start; duplicate titles take successive
+matches; Go To says “level N” for nested entries. Stores keep their
+<code>(title, page)</code> shape.</li>
+<li><strong>Fixture corpus</strong> <code>tests/corpus/pdf/</code> (10
+small PDFs and <code>build_pdf_corpus.py</code>, pypdf only) and
+<code>tests/unit/io/test_pdf_corpus.py</code> (real files, text and
+order, page offsets, bookmark targets, encrypted, the PDF never changed,
+and a <code>perf</code> budget). New
+<code>tests/unit/io/test_pdf_score.py</code>; <code>test_pdf.py</code>,
+<code>test_pdf_repair.py</code>, <code>test_pdf_open.py</code>,
+<code>test_intake.py</code> and <code>test_structured.py</code>
+extended.</li>
+<li><strong>Measured</strong> (clean / questionable, ms a page, old then
+new): 37.6 / 38.3 and 41.9 / 58.4. <code>quill/io/structured.py</code>
+budget ratcheted 779 -&gt; 764.</li>
+</ul>
+<h3
+id="quill-radio-station-enrichment-the-signed-station-pack-fts5-search-and-station-details-2026-10-16">Quill
+Radio station enrichment: the signed station pack, FTS5 search and
+Station Details (2026-10-16)</h3>
+<p>Jeff’s todo P2 #33, the Radio station data program. The data terms
+are not settled, so this is the machinery against a pluggable source
+interface, with built-in sources that read only data the project already
+ships. Nothing in it fetches anything. Design record:
+<code>docs/design/2026-10-16-station-pack-format.md</code>; Radio PRD
+section 27.</p>
+<ul>
+<li><strong><code>quill/core/radio/enrichment/</code></strong> (new,
+wx-free, strict-typed): <code>facts.py</code> (<code>StationFacts</code>
+with per-field provenance, conservative call-sign and frequency reading,
+query normalization so “98.5”, “98.5 FM” and “KIRO-FM” meet the index,
+and a trust-ordered merge that never joins on URL alone);
+<code>sources.py</code> (the <code>EnrichmentSource</code> protocol,
+<code>APPROVED_SOURCES</code> with <code>community_picks</code> and
+<code>station_catalog</code>, and <code>PENDING_SOURCES</code> naming
+Radio Browser redistribution, Wikipedia, ICY and home-page meta as
+awaiting a decision); <code>pack.py</code> (canonical xz JSON, Ed25519
+sidecar through <code>quill.tools.signing.sign_artifact</code>, a
+manifest, and <code>open_verified</code>, which checks the signature
+before parsing and fails closed); <code>store.py</code> (its own SQLite
+file beside the catalog, <code>PRAGMA user_version</code> migrations, an
+FTS5 index with bm25 weights, one-transaction import, “matched:” reasons
+and a difflib fallback); <code>client.py</code> (install bundled or
+given packs, spoken outcomes, the labelled details text). Two new
+<code>CodedError</code>s: <code>QUILL-RADIO-ENRICHMENT-FAILED</code>,
+<code>QUILL-RADIO-ENRICHMENT-PACK-REFUSED</code>.</li>
+<li><strong><code>scripts/build_station_pack.py</code></strong> builds
+the pack. The key is the publisher seed in
+<code>STATION_PACK_SIGNING_KEY</code> (environment only); without it the
+pack is unsigned and any stale sidecar is removed, and a non-publisher
+key is refused before signing. <code>--verify</code> checks a pack
+exactly as the app does.</li>
+<li><strong><code>.github/workflows/station-pack.yml</code></strong>
+(new, not triggered): weekly cron plus <code>workflow_dispatch</code>,
+<code>contents: read</code>, verifies the pack and keeps a trusted one
+as a 90-day artifact. Publishes nothing. Needs the
+<code>STATION_PACK_SIGNING_KEY</code> secret (not created).</li>
+<li><strong><code>quill/ui/radio/station_details_dialog.py</code></strong>:
+View &gt; Station Details… (<code>radio.station_details</code>,
+Alt+Shift+I, <code>app_keymaps</code>), wired from
+<code>radio_settings_menu.build_catalog_status_item</code> and
+registered in <code>radio_launch_tasks</code>. Labelled search field,
+results and read-only details, inline F1 help on each, Close via
+<code>bind_close_button</code> with no access key, a
+<code>surface_help</code> purpose. The bundled pack (none ships yet)
+installs on the task manager the first time the window opens.</li>
+<li>Not built: downloading the weekly pack (needs consent, an egress
+entry and a serving decision), delta packs, pack facts in the browse
+tree’s details pane.</li>
+<li>Tests:
+<code>tests/unit/core/radio/test_station_enrichment.py</code>,
+<code>tests/unit/scripts/test_build_station_pack.py</code>,
+<code>tests/unit/ui/test_radio_station_details.py</code>, all offline
+with throwaway keys. Regenerated: keyboard reference, F1 help reference,
+dialog inventory, surface reachability, accessible-name and Radio help
+inventories; the Transcribe help inventory, which had drifted on the
+branch, was refreshed.</li>
+</ul>
+<h3 id="overnight-fixes-and-gates-2026-10-1516">Overnight fixes and
+gates (2026-10-15/16)</h3>
+<p>Small fixes made directly on the overnight branch; the larger work
+has its own sections below.</p>
+<ul>
+<li><strong>Picks:</strong> a rebuild with nothing new keeps the
+published <code>updated</code> stamp
+(<code>scripts/build_community_picks.py</code>,
+<code>keep_unchanged_timestamp</code>), so the picks workflow no longer
+opens a pull request that changes one line (#1659).</li>
+<li><strong>Quill Social uses the family’s one certificate
+check.</strong> <code>rss.py</code> built its own SSL context; it now
+uses <code>quill.core.net.verified_ssl_context()</code> and
+<code>certificate_problem</code>, Social’s <code>main</code> configures
+the shared trust first, and
+<code>tests/unit/core/test_tls_one_check.py</code> reads every
+<code>standalone/*/quill_*</code> package (Quill Radio for Mac exempt:
+it ships neither quill nor truststore).</li>
+<li><strong>Radio:</strong> Suggest a Station or Podcast starts What is
+it on Choose one (an untouched form filed a podcast as a station) and
+its Address help says <code>https://</code> or <code>http://</code>;
+tune-in reminders reach the notification centre
+(<code>reminder_monitor._notice</code>), a station reminder carrying its
+stream; the status bar gains a Notifications cell and the shared Help
+&gt; Notifications item says the unread count (Radio and Cast), with
+<code>CellSpec</code> moved to
+<code>quill/ui/radio/status_cells.py</code> under GATE-11.</li>
+<li><strong>Auphonic client:</strong> uploads and downloads stream, a
+download never overwrites a file (<code>name (2).ext</code>), a
+cancelled one leaves nothing, and the server’s file name is reduced to a
+bare name.</li>
+<li><strong>QUILL Lite Preferences:</strong> four access keys were each
+claimed twice in one window, which <code>check_access_keys</code> cannot
+see because the window is built by a function across modules;
+<code>tests/unit/apps/test_lite_preferences_access_keys.py</code> now
+reads it as one window.</li>
+<li><strong>New gate:</strong> the Alt menu paths Quill Radio’s guide
+teaches (“Alt+Q, then W”) are checked against the real menu bar
+(<code>test_menu_accelerators.py</code>).</li>
+<li><strong>D-1 review fixes:</strong> every way out of More Dictation
+Settings checks the command word, and Dictation Status says command
+mode.</li>
+<li><strong>Find in Open Documents</strong> has its own key in QUILL
+(Ctrl+Shift+F10) and the modal contract; <code>apply_modal_ids</code>
+relabels only its own dialog’s buttons (#1661, already on main).</li>
+</ul>
+<h3
+id="quill-transcribe-the-wake-phrase-holding-the-key-braille-and-dictation-status-d-9-d-6-2026-10-15">QUILL
+Transcribe: the wake phrase, holding the key, braille and Dictation
+Status (D-9, D-6, 2026-10-15)</h3>
+<p>D-9 and D-6 from the dictation plan; design record section 24.</p>
+<ul>
+<li><strong><code>transcribe/parity.py</code>
+<code>PREFERENCES_OFF</code> is empty.</strong> The wake phrase and hold
+to talk are the editors’ shared settings in QUILL Transcribe too, both
+off by default; <code>test_transcribe_dictation_parity.py</code> asserts
+they are honoured and default off in all three products.
+<code>tools.dictation_status</code> moved from <code>DIVERGENCES</code>
+to <code>SHARED_COMMANDS</code> on the editors’ Alt+F9.</li>
+<li><strong><code>quill/apps/transcribe_talk.py</code></strong> (new
+mixin under <code>TranscribeDictationMixin</code>) and
+<strong><code>quill/core/transcribe/talk.py</code></strong> (wx-free):
+hold to talk follows the start and stop key with the editors’
+<code>HoldToTalk</code>, polling <code>GetAsyncKeyState</code> on that
+one key (<code>quill/platform/windows/key_state.py</code>,
+<code>tray_hotkey.virtual_key</code>) only while a press is followed; no
+keyboard hook. <code>KeyHeldGate</code> sits between the recogniser and
+the controller and holds finished phrases while the key (with its Ctrl
+or Alt) is down, typing them on release. The wake phrase uses the
+controller’s STANDBY, kept by the window timer only while another
+program that is not a QUILL window or on the never-type list is in
+front.</li>
+<li><strong>Braille</strong> for the preview and the unspoken state
+changes, through the announcement engine’s braille-only call;
+<code>say_quietly</code> for the “speak” preview.
+<code>status_sentence</code> for Dictation Status, naming the locked
+program by file (<code>foreground.window_process_name</code>).</li>
+<li><strong>Three optional system-wide keys</strong> in
+<code>transcribe_keys.py</code> (<code>OPTIONAL_KEYS</code>:
+<code>status_hotkey</code>, <code>resume_hotkey</code>,
+<code>discard_hotkey</code>, ids 0x51B3 to 0x51B5), empty by default,
+chosen through <code>run_system_key_command</code> in File
+(Ctrl+Alt+Shift+A, U, Y). New <code>TranscribeSettings</code>
+fields.</li>
+<li><strong>Shared dialogs:</strong> <code>WindowsDictationDialog</code>
+and <code>MoreDictationDialog</code> take <code>help_for</code>, so a
+host can word the wake and hold check boxes’ F1 help; the editors pass
+nothing and are unchanged.</li>
+<li>Regenerated: <code>family_menu_chords.json</code>,
+<code>f1-help-reference.md</code>,
+<code>transcribe_help_inventory.json</code> (which also picks up a setup
+dialog field that was already in the tree). Tests:
+<code>test_transcribe_talk.py</code>,
+<code>test_transcribe_talk_core.py</code>, and additions to the parity
+and settings tests.</li>
+</ul>
+<h3
+id="one-sherpa-onnx-layer-for-every-local-speech-model-dictmd-d-26-to-d-30-2026-10-16">One
+sherpa-onnx layer for every local speech model (dict.md D-26 to D-30)
+(2026-10-16)</h3>
+<p>The dictation design record, section 22, is the full account; in
+brief:</p>
+<ul>
+<li><strong>D-26, one provider.</strong> New
+<code>quill/core/speech/providers/sherpa_shared.py</code>
+(<code>SherpaSharedProvider</code>, id <code>sherpa</code>) runs every
+local sherpa-onnx model from the family store through
+<code>file_transcribe.FileTranscriber</code>, so Locked Dictation and
+Transcribe a Recording give the same text for the same file and model.
+<code>providers/nemotron_onnx.py</code> and
+<code>providers/parakeet_onnx.py</code> and their tests are deleted, and
+<code>core/speech/catalog.py</code> lost its Nemotron and Parakeet rows.
+<code>translate_to_english</code> goes to multilingual Whisper
+(<code>task="translate"</code> through <code>model_loader.build</code>,
+<code>local_recognizer._load</code> and the new
+<code>FileJob.translate</code>); an <code>initial_prompt</code> is one
+warning sentence.</li>
+<li><strong>D-26, catalogue fields.</strong>
+<code>DownloadableModel.streaming</code>, <code>ram_tier</code>,
+<code>tasks</code> and <code>source_url</code>, derived
+(<code>model_types.RAM_TIERS</code>, <code>tasks_for</code>,
+<code>HOTWORD_MODELS</code>); <code>model_advice</code> reads its memory
+budgets from the tiers.</li>
+<li><strong>D-26, errors.</strong> <code>SherpaLoadError</code>,
+<code>SherpaUnsupportedError</code>, <code>SherpaRuntimeError</code> in
+<code>model_loader.py</code> (<code>QUILL-SPEECH-SHERPA-*</code>).</li>
+<li><strong>D-26, migration.</strong> New
+<code>quill/core/speech/sherpa_migration.py</code>: a saved
+<code>speech_provider</code> of <code>nemotron</code> or
+<code>parakeet</code> loads as <code>sherpa</code> (with the catalogue’s
+model ids), and an old-style Parakeet download is hard-linked (or moved)
+into the shared store, never downloaded twice. The older Nemotron is a
+different model and is not adopted.</li>
+<li><strong>D-26, the ladder.</strong>
+<code>preferred_dictation_provider_id</code>: an installed Parakeet
+promotes <code>sherpa</code>; whisper.cpp with no model gives way to the
+shared provider’s built-in Moonshine tiny. The guided offline-speech
+setup offers the shared engine in place of the two old ones
+(<code>guided_setup.py</code>), with D-22’s recommendation;
+<code>speech_vad.silero_model_path</code> prefers the bundled Silero;
+the voice features fall back to <code>sherpa</code> and prefer Moonshine
+(<code>voice_capture.py</code>,
+<code>service.preferred_command_model</code>).</li>
+<li><strong>D-26, parity.</strong> Transcribe a Recording (QUILL, QUILL
+Lite, QUILL Transcribe) has Translate into English, enabled only for
+another language and a model that translates
+(<code>FileModel.translates</code>,
+<code>TranscribeChoice.translate</code>).</li>
+<li><strong>D-26, packaging.</strong> <code>sherpa-onnx==1.13.8</code>
+exactly in <code>pyproject.toml</code>, <code>uv.lock</code> and
+<code>engine_install</code>; the Offline Edition stages a
+<code>nemotron</code> wheelhouse
+(<code>SHERPA_WHEELHOUSE_REQUIREMENTS</code>).</li>
+<li><strong>D-27, keyword spotting, off.</strong> New
+<code>kws_keywords.py</code> (keyword lines, <code>KeywordGate</code>,
+<code>keyword_gate_for</code>), fed by
+<code>recognizer_worker._spot</code>;
+<code>RecognizedPhrase.keyword_heard</code>, and
+<code>command_mode_mixin</code> requires both the spotter and the text
+to agree when a spotter ran. <code>KWS_ADOPTED = False</code> until the
+false-trigger soak, detection and CPU measurements pass.</li>
+<li><strong>D-28, hotwords, off.</strong> New <code>hotwords.py</code>
+behind <code>HOTWORDS_ENABLED = False</code>;
+<code>model_loader.build</code> and <code>online</code> take
+<code>decoder_options</code>. A measurement on an English Zipformer is
+needed first.</li>
+<li><strong>D-29, punctuation and speaker labels, off.</strong> New
+<code>post_passes.py</code> (<code>OfflinePunctuation</code>,
+<code>OfflineSpeakerDiarization</code>, <code>label_spans</code>); no
+model is adopted yet.</li>
+<li><strong>D-30, TTS through sherpa-onnx.</strong> Not built: dict.md
+decides after measuring.</li>
+<li><strong>Two runtimes.</strong> New
+<code>tests/unit/core/test_onnxruntime_coexistence.py</code> (both
+import orders, one <code>onnxruntime.dll</code> mapped; passed here).
+New <code>quill/core/onnx_threads.py</code>: Kokoro’s session gets
+<code>intra_op_num_threads</code> of half the cores, one to four
+(<code>read_aloud._get_cached_kokoro_onnx</code>).</li>
+</ul>
+<h3
+id="dictation-cloud-speech-providers-with-your-own-account-d-31-to-d-37-2026-10-16">Dictation:
+cloud speech providers with your own account (D-31 to D-37)
+(2026-10-16)</h3>
+<ul>
+<li>New wx-free layer <code>quill/core/windows_dictation/cloud/</code>:
+<code>CloudProvider</code>, <code>ProviderField</code>,
+<code>Capabilities</code>, <code>CloudSpeechError</code> and five coded
+subclasses, certificate-checked openers with one-sentence failures
+naming the field, a shared WebSocket session, secrets in the credential
+store
+(<code>provider_credential_target("speech-&lt;id&gt;-&lt;field&gt;")</code>,
+DPAPI file for Google’s service account), a consent generated from each
+provider’s facts, and <code>CloudDictationRecognizer</code> behind the
+built-in engines’ listening loop.</li>
+<li>Twelve providers, direct HTTPS or WebSocket, no SDK: Azure AI Speech
+(D-32), Google Speech-to-Text v2 a phrase at a time (D-33), Amazon
+Transcribe with stdlib SigV4 and event-stream framing (D-34), Deepgram,
+AssemblyAI, Speechmatics, ElevenLabs Scribe, Gladia and Rev.ai (D-35),
+Groq and Mistral Voxtral (D-36), IBM Watson (D-37). OpenAI is described
+on the same interface for the page; its recogniser is unchanged.</li>
+<li><code>quill/ui/speech_providers_dialog.py</code> (Speech Providers)
+from Dictation Settings’ new <strong>Speech Pro&amp;viders…</strong>
+button (<code>windows_dictation_cloud.py</code> mixin), in QUILL, QUILL
+Lite, QUILL Transcribe and Quill Inkwell.</li>
+<li>Settings <code>windows_dictation_speech_providers</code> and
+<code>windows_dictation_speech_provider_consent</code> in
+<code>DictationSettings</code> (additive; data formats recorded).
+Engines <code>cloud-&lt;id&gt;</code> through one registration point,
+<code>engines._cloud_engine</code>.
+<code>transcribe.models.start_problem</code> checks a cloud provider’s
+fields and consent.</li>
+<li><code>redaction.remember_secret</code> scrubs the literal value of
+every loaded secret; <code>gsk_</code>, <code>sk_</code> and
+<code>ASIA</code> key shapes added.</li>
+<li>28 egress entries in
+<code>quill/tools/network_egress_entries_speech.py</code>.</li>
+<li>Design record section 23.</li>
+</ul>
+<h3
+id="dictation-benchmark-and-test-infrastructure-b-1-to-b-8-2026-10-16">Dictation
+benchmark and test infrastructure, B-1 to B-8 (2026-10-16)</h3>
+<p>dict.md section 8; design record section 26. Dev-only tools in
+<code>scripts/</code> and tests in <code>tests/</code>: nothing ships,
+nothing a person using QUILL sees changes.</p>
+<ul>
+<li><strong>Datasets on demand (B-1b).</strong>
+<code>scripts/bench_datasets.json</code> (every dataset’s licence,
+attribution, size, source, access, contamination and archive URLs;
+SHA-256 slots, unpinned until a first <code>--pin</code>) and
+<code>scripts/fetch_bench_audio.py</code> (downloads only when a person
+says yes, never with <code>CI</code> set, from two named hosts; verifies
+SHA-256; unpacks with the <code>data</code> filter; caches outside the
+repository; licensed sets only by <code>--local</code>). Seeded subsets
+in <code>scripts/bench_subsets.json</code>.</li>
+<li><strong>dictbench.</strong> <code>--dataset</code>,
+<code>--subset</code>, <code>--group-by</code>, <code>--parse</code>,
+<code>--latency</code>, and JSON with the contamination flag, the
+normalizer, the date and every group. Punctuation F1 and capitals from
+<code>scripts/bench_scoring.py</code>.</li>
+<li><strong>LibriVox held out (B-1a)</strong>
+<code>scripts/bench_librivox.py</code>; <strong>command script
+(B-1c)</strong> <code>scripts/bench_commands.py</code>; <strong>live
+pace and latency (B-4)</strong> <code>scripts/bench_live.py</code>;
+<strong>machine run (B-8)</strong>
+<code>scripts/bench_machine_run.py</code>.</li>
+<li><strong>Soak (B-3)</strong>
+<code>tests/stability/test_dictation_soak.py</code>, a new
+<code>slow</code> marker, opt-in with
+<code>QUILL_DICTATION_SOAK=1</code>, skipped in CI, typing only into a
+fake. <strong>Correction efficiency (B-5)</strong> in the soak.
+<strong>Report agreement (B-2)</strong> in the tested-programs harness.
+<strong>Privacy (B-7)</strong>
+<code>tests/unit/core/test_dictation_privacy_paths.py</code>.
+<strong>Screen-reader rows (B-6)</strong> in
+<code>docs/qa/screen-reader-checks-2026-10.md</code>.</li>
+<li><strong>One engine hook.</strong>
+<code>LocalDictationRecognizer._reader_gate()</code> is a method, so the
+benchmark’s recorded-audio recogniser never starts the screen-reader
+capture.</li>
+<li><strong>First run</strong> with Moonshine tiny on synthetic audio:
+<code>docs/qa/dictbench-moonshine-tiny-2026-10-16.json</code>.</li>
+</ul>
+<h3
+id="quill-radio-extras-marked-delete-resume-earcon-a-second-device-per-favourite-keys-whats-new-notes-in-reminders-2026-10-16">Quill
+Radio extras: marked delete, resume earcon, a second device,
+per-favourite keys, What’s New, notes in reminders (2026-10-16)</h3>
+<p>Jeff’s todo P3 “Radio extras”, from the FreeRadio study (xradio2
+sections 4.5, 4.6, 4.7, 4.9 and 4.10). All of it is in the shared
+package; the wx-free rules are new strict-typed modules in
+<code>quill/core/radio/</code>.</p>
+<ul>
+<li><strong>Mark many, delete once (4.10).</strong>
+<code>core/radio/row_marks.py</code> (<code>RowMarks</code>,
+<code>delete_question</code>, <code>deleted_sentence</code>,
+<code>landing_after</code>) and
+<code>ui/radio/favorites_marks.py</code>, shared by the main window’s
+favorites tree (<code>apps/radio_favorites_tree.py</code>) and Manage
+Favorites (<code>favorites_manager_dialog.py</code> +5, rebaselined;
+<code>favorites_menu.py</code>). <code>.</code> toggles a mark and says
+the count, the row text gains “(marked)”, Delete with marks asks one
+No-default question with the count, Ctrl+Shift+Delete clears. The cursor
+lands on the next survivor. Folders are not markable. The Recordings
+Manager, Browse and the schedule list still delete one row.</li>
+<li><strong>Resume earcon (4.5).</strong> New
+<code>SoundEvent.RADIO_RESUMED</code>, <code>radio_resumed.wav</code> in
+the Ink pack (<code>scripts/gen_ink_sounds.py --radio-resumed</code>), a
+label in <code>sound_event_labels.py</code>.
+<code>RadioPlayerController.toggle_play_pause</code> posts it for PAUSED
+to PLAYING through <code>post_cue</code> (so the per-event disable list
+and App Sounds apply) in place of the “playing” cue.</li>
+<li><strong>Second device (4.6 background station, 4.7 mirror).</strong>
+<code>core/radio/second_output.py</code> decides what the second player
+does when the main one changes (background: volume scales with the main
+volume, pause follows, stop and station changes do not; mirror: follows
+everything). <code>ui/radio/second_output_ui.py</code> owns a second
+<code>MpvRadioEngine</code>, the two Audio menu rows
+(<code>radio.background_station</code> Alt+Shift+B,
+<code>radio.mirror_output</code> Alt+Shift+D) and the device question;
+<code>main_frame_radio.py</code> calls <code>follow</code> from
+<code>_on_radio_state_changed</code> (+3, under budget). Off by default,
+not persisted, needs mpv. Drift between the two players is stated in the
+guide.</li>
+<li><strong>Per-favourite system-wide keys (4.9).</strong>
+<code>core/radio/favorite_hotkeys.py</code> keeps
+<code>{favourite key: chord}</code> in its own
+<code>radio_favorite_hotkeys.json</code> (not in the favourites file, so
+an import never brings a key that collides here); conflicts are
+<code>family_chords.show_hide_key_problem</code> with the other
+favourites’ keys and Radio’s show/hide key as <code>own</code>, plus
+<code>hotkey_conflict.claimed_by_another_application</code>.
+<code>ui/radio/favorite_hotkeys_ui.py</code> registers ids from 0x7C00
+at launch (<code>radio_launch_tasks</code>) and releases them at
+shutdown (<code>radio_shutdown</code>); a new
+<code>RegisterHotKey</code> site in
+<code>test_global_hotkeys._REGISTER_HOTKEY_SITES</code>. Empty by
+default. <strong>System-Wide Key…</strong> on both trees’ station menus
+(standalone only).</li>
+<li><strong>What’s New (todo item 8).</strong>
+<code>core/radio/whats_new.py</code> sorts Quill Radio’s unread
+notification-centre entries into episodes, videos, reminders and other,
+and says one sentence; <code>ui/radio/whats_new_wiring.py</code>
+registers <code>radio.whats_new</code> (Alt+Shift+N, Community menu
+beside What Is On Now) and marks what it said as read. No spec existed;
+this is the sensible minimum.</li>
+<li><strong>Reminders read the station’s note (todo item 9).</strong>
+<code>reminders.announcement(..., station_note=)</code> and
+<code>reminders.station_note()</code> (keyed by stream URL through
+<code>item_notes</code>), called by <code>ReminderMonitor</code>.</li>
+<li>Not built: song-boundary recording (4.8) and pitch shift / crossfade
+(4.11, 4.12, which xradio2 defers).</li>
+<li>Gates: <code>bulk_count_inventory.json</code> (+2
+<code>no-announce</code>), keyboard reference, family menu chords,
+dialog inventory regenerated.</li>
+</ul>
+<h3
+id="pdfs-in-quill-lite-one-open-path-for-both-editors-and-windows-ocr-for-scanned-pdfs-2026-10-15">PDFs
+in QUILL Lite, one open path for both editors, and Windows OCR for
+scanned PDFs (2026-10-15)</h3>
+<p>Jeff’s todo P2 #28, phases 1 and 2 of the PDF plan. QUILL Lite may
+never be ahead of QUILL, so every piece is shared and QUILL reaches each
+one.</p>
+<ul>
+<li><strong>One PDF open, shared.</strong> New wx-free
+<code>quill/core/pdf_open.py</code>: <code>read_pdf_for_open</code> (the
+<code>quill.io.pdf</code> reader, form feeds between pages, the outline;
+the password is passed to the reader and never kept),
+<code>PdfOpen</code> (<code>needs_password</code>, <code>refused</code>,
+<code>looks_scanned</code> via docconvert’s chars-per-page heuristic),
+<code>ocr_pdf_for_open</code>, <code>outline_places</code> /
+<code>outline_bookmark_offsets</code> / <code>page_places</code>, and
+the sentences (password prompt, scanned question, open summary, Save’s
+refusal). <code>quill.io.structured._format_pdf</code> now reads through
+it, so File &gt; Open in QUILL and in QUILL Lite cannot read the same
+PDF two ways.</li>
+<li><strong>QUILL Lite opens PDFs</strong>
+(<code>quill/apps/lite_window_pdf.py</code>): in the Open filter; always
+on the worker (<code>open_prepare</code>); locked asks in the shared
+password box (<code>quill/ui/pdf_password.py</code>, now also QUILL’s
+<code>_ask_pdf_password</code>) and re-reads; damaged says why; scanned
+asks to OCR (Yes runs OCR as a background open, the result marked
+modified); text opens with one sentence. The window keeps the PDF’s
+path, Save refuses with the shared sentence
+(<code>EXPORT_ONLY_SUFFIXES</code>) and goes to Save As with
+<code>.txt</code>, Save As refuses <code>.pdf</code>, Reopen with
+Encoding is off for a PDF, and a reload after an outside change runs the
+whole open again.</li>
+<li><strong>Pages and outline.</strong>
+<code>navigation.page_position</code> is the one “page N of M” (QUILL’s
+Page cell now reads it). QUILL Lite’s status bar gains a
+<strong>Page</strong> cell shown only while the text has form feeds
+(arrow keys skip it when hidden; Enter opens Go To on Page). Go To in
+both editors gains an <strong>Outline</strong> kind; QUILL Lite’s offers
+<strong>Page</strong> only for a document with real pages.
+<code>ask_go_to</code> takes <code>initial_kind</code>.</li>
+<li><strong>Windows OCR tier</strong>
+(<code>quill/io/docconvert_windows.py</code>):
+<code>convert_with_windows_ocr</code> (Windows.Media.Ocr via the
+frozen-in <code>winrt</code> packages; a build without them answers a
+sentence) and <code>convert_with_on_device_ocr</code> (Tesseract first
+for its confidence, then Windows OCR, then
+<code>NO_ON_DEVICE_OCR</code>). The page loop is shared
+(<code>docconvert._ocr_pdf_pages</code>),
+<code>ConversionOutcome.pages</code> keeps each page, and the rasterizer
+moved to <code>quill/io/pdf_raster.py</code> (GATE-11). QUILL’s Import /
+Convert uses Windows OCR with no install offer when Tesseract is absent
+(<code>TIER_WINDOWS_OCR</code>, its own announcement and review
+label).</li>
+<li><strong>Scanned PDF on QUILL’s File &gt; Open</strong>
+(<code>quill/ui/main_frame_pdf_open.py</code>): the same question QUILL
+Lite asks; Yes puts the OCR text, with form feeds, into the PDF’s tab (a
+new tab if it was edited meanwhile).</li>
+<li><strong>Fixed on the way:</strong>
+<code>WindowsOcrBackend.is_available</code> was always true, because the
+platform module imports even without winrt; it now asks
+<code>windows_ocr.winrt_ocr_importable()</code>.</li>
+<li>Not done: QUILL Lite’s File &gt; Import / Convert Document row, the
+portable build’s <code>office-text</code> and <code>ocr</code> groups
+(needs a release-machine build to rebaseline
+<code>portable-inventory.json</code>), phase 3 (headings, tables).</li>
+</ul>
+<h3
+id="dictation-review-before-inserting-with-ai-on-request-d-2-2026-10-15">Dictation:
+review before inserting, with AI on request (D-2) (2026-10-15)</h3>
+<p>Dictated words can wait in a <strong>Review Dictation</strong> window
+before they reach the document or the other program: read, edit, keep
+dictating into it, ask the AI to change them, hear what changed, insert
+once. QUILL, QUILL Lite and QUILL Transcribe run the same code; Quill
+Inkwell says “Review is not available here.”</p>
+<ul>
+<li><strong>Core, wx-free.</strong>
+<code>quill/core/windows_dictation/review_session.py</code>
+(<code>ReviewSession</code>: <code>original</code>,
+<code>revisions</code> as <code>(instruction, before, after)</code>,
+<code>current</code>, <code>target</code>; <code>revise</code>,
+<code>undo_revision</code>, <code>restore_original</code>,
+<code>diff</code>; the request builder that marks the words as data; the
+rescue file <code>dictation-review.json</code>, written atomically while
+a review is open and deleted on Insert or Discard;
+<code>REVIEW_HELP</code>), <code>review_conversation.py</code>
+(<code>ReviewConversation</code>: every sentence, consent, one request
+per instruction, cancel, mute while the summary is read) and
+<code>review_mixin.py</code> (the controller’s voice half, under
+<code>CommandModeMixin</code>; <code>controller.py</code> did not grow).
+<code>quill/core/diffing.py</code> gains <code>spoken_changes</code> and
+<code>change_fraction</code>: a word-level <code>SequenceMatcher</code>
+summary of two sentences at most, “Large change” over 50 percent,
+computed locally and never taken from the model.</li>
+<li><strong>D-1’s AI slots are wired.</strong> After the command word:
+“review that” (the held words, else the last phrase taken back out the
+way “scratch that” does, so in another program it is backspaced), and
+while reviewing “insert it”, “what changed”, “read it back”, “undo that
+change”, “back to what I said”, “discard it”, and anything else that is
+not a dictation command is an AI instruction (“make it shorter”). Talk
+About It makes every utterance one. “review that” while paused for the
+field takes the held words. With AI off it says “AI is off. Your words
+were written as you said them.” and leaves them.</li>
+<li><strong>Nothing reaches the target before Insert.</strong> While a
+review is open the host points the controller at the review’s text
+(<code>review_retarget</code>, a document port over the
+<code>wx.TextCtrl</code>), never SendInput. Insert in the editors is one
+<code>replace_as_one_undo</code> at the place the words came from; in
+QUILL Transcribe the locked field’s window is brought back and the words
+go through <code>insert_reviewed</code> (the same
+<code>LockedTarget</code> checks and <code>send_text_checked</code> as a
+phrase; refusal said, words left in Recent Phrases). New setting
+<code>windows_dictation_review_first</code> (More Dictation Settings,
+Alt+V) sends every phrase to the review;
+<code>windows_dictation_review_consent</code> (a version, asked once, No
+default) and <code>windows_dictation_review_context</code> (off: no
+document context is sent) are the window’s.</li>
+<li><strong>AI routes.</strong> A new direct-only
+<code>revise_dictation</code> template in
+<code>own_key.INSTRUCTIONS</code>, through the existing
+<code>AiService.ask</code> (ChatGPT subscription or own key, as Tidy
+Dictated Text; never the free gateway). QUILL Transcribe reads the
+family’s ChatGPT sign-in and own key from the shared data folder and
+credential store; no new network call site, so no egress entry.</li>
+<li><strong>UI.</strong> <code>quill/ui/dictation_review_frame.py</code>
+(the window, <code>ReviewDesk</code>, the box document port),
+<code>quill/ui/windows_dictation_review.py</code> (Review Dictation,
+<code>tools.windows_dictation_review</code>, <strong>Shift+F4</strong>
+in both editors: every F11 chord is taken, Ctrl+Alt+Shift+F11 is a
+QuillVille launcher and Ctrl+Alt+F4 is one missed Control from Alt+F4),
+<code>quill/apps/transcribe_review.py</code>. F1 purposes in the Lite
+and Transcribe catalogues; the window is in the Lite help audit’s glob.
+The editors no longer stop dictation when the review window takes the
+focus. Startup says once when an unfinished review was kept.</li>
+<li><strong>Tests</strong> (fakes only):
+<code>tests/unit/core/test_dictation_review.py</code>,
+<code>tests/unit/ui/test_dictation_review_frame.py</code>,
+<code>tests/unit/apps/test_lite_dictation_review.py</code>,
+<code>tests/unit/apps/test_transcribe_review.py</code>. Design record
+section 19.</li>
+</ul>
+<h3
+id="free-ai-saved-conversations-the-prompt-library-word-level-review-answer-delivery-the-chat-key-and-web-search-2026-10-15">Free
+AI: saved conversations, the Prompt Library, word-level review, answer
+delivery, the Chat Key and web search (2026-10-15)</h3>
+<p>Todo P3, “QUILL Lite AI”. Everything is in the shared hosted-AI
+package, so QUILL and QUILL Lite get it together and neither has a
+copy.</p>
+<ul>
+<li><strong>Shared cores extracted, QUILL moved onto them.</strong>
+<code>DiffReviewDialog</code> left
+<code>quill/ui/assistant_tools.py</code> for
+<code>quill/ui/ai_diff_review_dialog.py</code> (re-exported;
+<code>MainFrame.open_ai_diff_review</code> imports the new module), with
+F1 sentences on every control. <code>_PromptEditDialog</code> left
+<code>prompt_library_dialog.py</code> for
+<code>quill/ui/prompt_edit_dialog.py</code>
+(<code>PromptEditDialog</code>, titled “New Prompt” or “Edit Prompt”);
+the AI Library uses it too. Ask Quill’s session recorder became
+<code>quill.core.ai.sessions.record_exchange</code>, and the store
+functions take an optional <code>directory</code>.
+<code>quill/core/prompt_fill.py::fill_prompt</code> is the one
+placeholder fill for both ways a prompt runs.</li>
+<li><strong>Saved conversations.</strong> The shared AI Conversation
+window saves every exchange through <code>record_exchange</code> into
+the host’s <code>ai-sessions</code> folder (QUILL’s is the one Ask Quill
+writes, so AI Session Branches sees them), and <strong>Saved
+Conversations…</strong> (<code>quill/ui/hosted_ai_saved_chats.py</code>)
+opens or deletes one. A Follow Up’s seed exchange is saved with it.</li>
+<li><strong>Prompt Library on the free AI.</strong>
+<code>PromptLibraryDialog(hosted=True)</code> fills the prompt, keeps it
+in <code>chosen</code> and closes; <code>cmd_ai_prompt_library</code>
+sends it as <code>ask</code> and delivers the answer. QUILL’s hook
+returns its cached library (Quillin prompts included). Every control in
+the library has F1 help now.</li>
+<li><strong>Review Changes</strong> in the AI Result window
+(<code>quill/ui/hosted_ai_result.py</code>, split from
+<code>hosted_ai_pad.py</code>, which still exports
+<code>AiResultFrame</code>) whenever Replace is offered and the answer
+differs.</li>
+<li><strong>Answer delivery</strong>
+(<code>quill/core/ai/answer_delivery.py</code>): <code>window</code>
+(default), <code>cursor</code> (one undo step, spoken) or
+<code>clipboard</code> (spoken; a busy clipboard falls back to the
+window). New setting <code>ai_answer_delivery</code> in both editors’
+settings, chosen in the pad’s <strong>Put the answer in</strong> list.
+No planning document specified delivery modes or a Chat Key; this is the
+minimum, written down in that module.</li>
+<li><strong>Chat Key, Prompt Library, Web Searches Left</strong>:
+<code>tools.hosted_ai_chat_key</code> (<code>Ctrl+6</code>),
+<code>tools.hosted_ai_prompt_library</code> (<code>Ctrl+7</code>),
+<code>tools.hosted_ai_web_searches</code> (<code>Ctrl+9</code>), free in
+both editors (<code>quill/core/lite/commands_ai.py</code> has the
+measurement); rows in QUILL’s AI menu
+(<code>main_frame_hosted_ai._append_answer_rows</code>) and QUILL Lite’s
+Tools &gt; AI; parity rows in <code>COMMAND_EQUIVALENTS</code>. Handlers
+live in the new shared mixin
+<code>quill/ui/hosted_ai_answers.py</code>.</li>
+<li><strong>Web search on the gateway, behind a flag.</strong>
+<code>web_search</code> is a new <code>OPT_IN_FEATURES</code> feature:
+seeded off (migration 009, <code>seed-config</code>), a missing flag row
+refuses, its own call <code>openai_client.search</code> with its own
+body allowlist (<code>SEARCH_BODY_KEYS</code> adds only
+<code>web_search_options</code>; the ordinary allowlist is untouched),
+<code>GATEWAY_OPENAI_SEARCH_MODEL</code>, a monthly feature cap
+<code>WEB_SEARCH_MONTHLY_CAP = 10</code>, and a per-search cost
+(<code>WEB_SEARCH_CALL_COST_USD</code>) charged to the global budget but
+not the person’s cost ceiling. <code>/v1/config</code> gains
+<code>web_search: {enabled, monthly_cap}</code> and, while on, a
+catalogue row (so the pad offers <strong>Search the web</strong> with no
+release); <code>/v1/quota</code> gains
+<code>web_search_monthly_cap</code> and <code>web_searches_used</code>.
+The client reads both (<code>GatewayLimits</code>,
+<code>GatewayQuota</code>, <code>AiService.fetch_web_searches</code>,
+<code>describe_web_searches</code>); no new egress site.</li>
+<li>Tests: <code>tests/unit/apps/test_lite_ai_answers.py</code>,
+<code>tests/unit/core/ai/test_hosted_ai_answers_core.py</code>,
+<code>tests/unit/ui/test_hosted_ai_answers_windows.py</code>,
+<code>quill-ai-gateway/tests/test_web_search.py</code>.</li>
+</ul>
+<h3 id="quill-converter-process-with-auphonic-the-mvp-2026-10-15">Quill
+Converter: Process with Auphonic, the MVP (2026-10-15)</h3>
+<p>Jeff’s todo P2 #29: the four delivery steps of
+<code>docs/planning/QUILL-Converter-Auphonic-Integration-PRD.md</code>
+(as-built note there; user-facing story in
+<code>standalone/converter/docs/</code>).</p>
+<ul>
+<li><strong>Shared client</strong>
+(<code>quill/core/publish/auphonic.py</code>, not forked): the JSON API
+alongside the simple API the Audio Studio keeps using –
+<code>create_production</code> (POST <code>/productions.json</code>,
+nothing charged yet), <code>upload_input</code> (streamed multipart to
+<code>/production/{uuid}/upload.json</code>; field
+<code>input_file</code>, or the track id for a multitrack track),
+<code>start_created</code>, <code>audio_results</code> (keeps only sound
+formats served from <code>https://auphonic.com</code> or a subdomain,
+and counts what it left out), <code>is_result_url</code>,
+<code>OUTPUT_FORMATS</code> (mp3, aac, opus, flac, wav). A production id
+is checked before it goes into a URL. Every call still goes through
+<code>_request</code>, the one reviewed egress site; its
+<code>network_egress_entries</code> rationale now names the
+Converter.</li>
+<li><strong>wx-free plan and run</strong>:
+<code>quill/core/publish/auphonic_plan.py</code> (eligibility with
+reasons, <code>AuphonicChoices</code>, the JSON body for separate and
+multitrack productions with metadata/chapter pass-through for separate
+ones only, the confirmation text, and the pending-work store
+<code>&lt;data&gt;/converter/auphonic_pending.json</code>, schema 1,
+classified <code>versioned</code> in <code>persistence_audit</code>) and
+<code>quill/core/publish/auphonic_run.py</code> (<code>Runner</code>:
+sequential separate productions with continue-on-failure, one multitrack
+production, per-phase cancel, pending record written after start and
+removed only on a saved or service-failed result, 3 consecutive poll
+failures or a 4-hour timeout leave it resumable, no retry of an
+ambiguous start, throttled progress).</li>
+<li><strong>Converter UI</strong>:
+<code>quill/apps/converter_auphonic.py</code> (mixin; Convert &gt;
+Process with Auphonic, Ctrl+Shift+A, and Auphonic Work Waiting,
+Ctrl+Alt+A; file inspection via ffprobe off the UI thread; token through
+<code>credential_manager</code> under <code>CREDENTIAL_TARGET</code>,
+the Audio Studio’s entry; launch notice from the local file only) and
+<code>quill/ui/converter_auphonic_dialog.py</code> (three windows, every
+control helped inline; the help audit now scans it).
+<code>converter_settings</code> gains six additive
+<code>auphonic_*</code> choice fields (never the token).
+<code>quill/apps/converter.py</code> 602 -&gt; 589 (budget ratcheted):
+Custom Effects’ handler moved to <code>converter_actions.py</code> and
+the <code>_on_convert_url</code> shim went.</li>
+<li>Tests: <code>tests/unit/core/test_auphonic_converter_core.py</code>
+(fake <code>urlopen</code> and a fake client: no network) and
+<code>tests/unit/apps/test_converter_auphonic.py</code> (the commands on
+a stand-in host, the windows built in memory; not
+<code>machine_global</code>). Regenerated: converter help, dialog,
+accessible-name and reachability inventories, family chords, the F1 help
+reference.</li>
+</ul>
+<h3
+id="import--convert-reads-pdfs-without-markitdown-ffmpeg-ships-with-its-licence-everywhere-2026-10-15">Import
+/ Convert reads PDFs without MarkItDown; FFmpeg ships with its licence
+everywhere (2026-10-15)</h3>
+<p>Two P1 items from the todo.</p>
+<ul>
+<li><strong>Import / Convert Document and PDFs.</strong> The shared
+runtime freezes markitdown in (<code>quill[glow]</code> pulls
+<code>markitdown[all]</code>) but the spec excludes
+<code>onnxruntime</code>, which magika imports at the top of markitdown,
+so <code>import markitdown</code> raises in every shipped build
+(reproduced by blocking <code>onnxruntime</code>).
+<code>convert_born_digital</code> sent every PDF to it first, so every
+PDF failed with “MarkItDown is not installed” before the scanned-file
+OCR offer. PDFs now go through
+<code>docconvert.convert_pdf_text_layer</code>, which uses
+<code>quill.io.pdf.extract_pdf_text</code> (pdfplumber, then pypdf: the
+File &gt; Open reader) and never MarkItDown. New tier
+<code>TIER_PDF_TEXT</code>; scanned and thin-text PDFs still get the OCR
+offer; password-protected, damaged and no-reader PDFs each get a message
+saying what to do; a capped read (over 200 pages) says how many pages
+came through. The runtime spec is unchanged (the safer choice: no
+runtime build to verify a new payload, and spec section 5 recommends
+against bundling onnxruntime). <code>check_runtime_imports.py</code>
+MUST_IMPORT gains <code>pdfplumber</code>, <code>pypdf</code>,
+<code>pypdfium2</code>, <code>quill.io.pdf</code> and
+<code>quill.io.docconvert</code>. Office files still go through
+MarkItDown and still fail in a shipped build: not fixed here.</li>
+<li><strong>FFmpeg licence.</strong> <code>fetch_build_deps.py</code>
+now stages <code>quill/data/notices/ffmpeg</code> (GPLv3 text and source
+offer; the pinned build is <code>--enable-gpl --enable-version3</code>)
+beside ffmpeg.exe, completes an older cache without re-downloading, and
+<code>--verify-only</code> counts a missing licence as missing. Quill
+Cast’s onedir looked for a <code>LICENSE</code> that never existed and
+shipped FFmpeg with neither file; it now copies the package notices. New
+<code>scripts/check_ffmpeg_notices.py</code> fails any bundle holding an
+ffmpeg.exe without byte-identical notices beside it; the Cast,
+Converter, Radio and Studio builds run it on the portable and the
+runtime payload before zipping. <code>shared-runtime.iss</code> and
+<code>quill-cast.iss</code> name both notice files one by one, so ISCC
+refuses to compile without them. The QUILL Offline Edition removes an
+ffmpeg that staged without its notices.
+<code>docs/legal/THIRD_PARTY_NOTICES</code> lists FFmpeg, libmpv and
+Deno.</li>
+<li>Tests: <code>test_ffmpeg_bundle_licence.py</code>,
+<code>test_docconvert.py</code> (including a real PDF with markitdown
+unimportable), <code>test_main_frame_docconvert.py</code>,
+<code>test_check_runtime_imports.py</code>.</li>
+</ul>
+<h3
+id="gate-sibver-knows-every-app-that-ships-and-every-installer-runs-it-2026-10-15">GATE-SIBVER
+knows every app that ships, and every installer runs it
+(2026-10-15)</h3>
+<p><code>scripts/check_sibling_versions.py</code> stopped with “unknown
+app(s) beacon, social, studio” whenever
+<code>build-quill-apps.ps1</code> built every app, so no joint build had
+checked any version.</p>
+<ul>
+<li><code>SITES</code> gains Audio Studio
+(<code>quill/apps/studio.py</code>), Beacon
+(<code>quill/apps/beacon/app.py</code>) and Social
+(<code>standalone/social/quill_social/__init__.py</code>,
+<code>__version__</code>/<code>__build__</code>). Nothing the check
+compares changed.</li>
+<li>An app with no row is still refused (exit 2), now with a sentence
+naming it, saying no version was checked, and saying how to add the row
+(<code>unknown_apps_problem</code>).</li>
+<li>Converter, Inkwell, Audio Studio, Beacon and Social’s
+<code>build_release.ps1</code> now call
+<code>Assert-QuillSiblingVersions</code> for their own app, as Radio,
+Lite, Cast, Transcribe and Weather already did; the four that lacked it
+gain <code>-SkipPublishedCheck</code>, which
+<code>build-quill-apps.ps1</code> passes after its joint check.</li>
+<li>Tests
+(<code>tests/unit/scripts/test_check_sibling_versions.py</code>):
+<code>SITES</code> must match
+<code>release_build_number.BUILD_CONSTANTS</code> (file and build
+constant), cover the <code>build-quill-apps.ps1</code> catalogue, and
+match <code>release_tags.release_tag</code>’s prefixes; every
+<code>standalone/*/scripts/build_release.ps1</code> must run the gate
+for its own app; an unknown app fails before any release is read.</li>
+<li>Run against the published releases on 2026-10-15: a joint build of
+every app, or of Radio and Lite, passes (Radio 3.2.0+4 against 3.0.4,
+Lite 1.2.0+5 against 1.1.2); a build of any one other app fails on both,
+as it should. The gate asked for no version bump, so Radio and Lite stay
+at 3.2.0 and 1.2.0.</li>
+</ul>
+<h3
+id="the-clipboard-collector-saves-as-it-collects-in-quill-and-quill-lite-2026-10-15">The
+clipboard collector saves as it collects, in QUILL and QUILL Lite
+(2026-10-15)</h3>
+<p>From Jeff’s list, 2026-10-15: the EdSharp habit, back as a
+setting.</p>
+<ul>
+<li>New shared setting
+<strong><code>clipboard_collector_saves</code></strong> (bool, on by
+default) in both <code>Settings</code> classes;
+<code>settings_vocabulary</code> <code>shared</code>,
+<code>data_format_audit</code> recorded additive for
+<code>quill.settings</code> and <code>lite.settings</code>.</li>
+<li><strong><code>quill/core/clipboard_collector.py</code></strong>
+holds the rule and the words for both editors:
+<code>saves_after_collect</code> (only a named document),
+<code>COLLECTED_AND_SAVED</code> (“Collected and saved”, one sentence
+instead of collect-then-“Saved <name>”, the double announcement bad.md
+C4 removed), <code>collected_but_not_saved</code> plus
+<code>disk_changed_reason</code> / <code>encoding_reason</code>.</li>
+<li>QUILL: <code>ClipboardCollectorMixin._collector_save</code> saves
+through <code>WriteSafetyMixin._write_named_document</code>, Save’s own
+write-and-settle step, extracted from <code>MainFrame.save_file</code>
+so the two cannot drift (<code>main_frame.py</code> shrank 16012 -&gt;
+15998). Never Save As, never a box: an export-only file, a pending
+format change, a read-only remote copy or an SSH-bound file just
+collects; a file changed on disk is not overwritten; a failed write
+speaks <code>_save_failure_sentence</code> (extracted from
+<code>_report_save_failure</code>). No backup copy per clip.</li>
+<li>QUILL Lite: <code>DocumentFileMixin.save_quietly</code> (shares
+<code>_write_to</code> and <code>_settle_saved</code> with
+<code>save</code>), called from
+<code>lite_clipboard_collector</code>.</li>
+<li>Settings &gt; Editing row (SettingSpec, description is the F1 help);
+QUILL Lite Preferences check box “Save after ever&amp;y clip the
+clipboard collector adds” in the new
+<code>quill/apps/lite_preferences_collector.py</code> (GATE-11).</li>
+<li>Tests: <code>tests/unit/ui/test_clipboard_collector_saves.py</code>,
+new cases in
+<code>tests/unit/apps/test_lite_clipboard_collector.py</code>.</li>
+</ul>
+<h3
+id="radio-recording-keeps-the-stations-pre-roll-advert-out-of-the-file-2026-10-15">Radio
+recording keeps the station’s pre-roll advert out of the file
+(2026-10-15)</h3>
+<p>xradio2 section 6.1: many stations play a pre-roll to every new
+connection, and every recording path (Record Now, Record Station,
+scheduled, resumed) opened its own ffmpeg connection, and ffmpeg’s
+<code>-reconnect_streamed</code> opened another, silently, mid-file.
+Verified against a local fake station: a drop spliced a second pre-roll
+into the file 20 seconds in.</p>
+<ul>
+<li><strong><code>recording_commands.build_record_command</code></strong>
+no longer passes <code>-reconnect_streamed</code>, so a live drop ends
+the part and the recorder’s own continuation (a known boundary) takes
+over. ffmpeg exits 0 when its input dies, so
+<strong><code>RadioRecorder._monitor</code></strong> now also counts a
+stall (<code>wait_for_exit</code>’s return, previously ignored) and
+ffmpeg’s demux-error last words
+(<code>recording_preroll.input_dropped</code>) as a drop; it joins the
+stderr drain thread (2 s) before reading the tail, so those words are
+there.</li>
+<li><strong><code>quill/core/radio/recording_preroll.py</code></strong>
+(pure, wx-free): 50 ms loudness outlines of each connection’s first 75
+s, and <code>shared_opening</code>, which finds what two openings share
+from their first moment (lag search of half a second; shape and level
+checks; silence, under 4 s, or over 70 s never count; boundary refined
+to where the outlines part).</li>
+<li><strong><code>quill/core/radio/recording_preroll_guard.py</code></strong>:
+<code>OpeningGuard</code> opens one reference connection 20 s after a
+recording’s first connection (never for HLS or YouTube), then at
+finalize cuts the shared opening from every part (stream copy, replaced
+only on success) before <code>_join_parts</code>, and removes a
+continuation part that was nothing but the insert. The sentence goes out
+through <code>on_parts_joined</code>. No setting: it only ever cuts
+audio heard opening two connections. Documented in
+<code>network_egress_entries_radio.py</code>.</li>
+<li><code>_await_stop</code> moved to
+<code>recording_liveness.await_stop</code> (GATE-11);
+<code>recording.py</code> budget 1159 to 1156.
+<code>tests/conftest.py</code> gives every test an inert decoder so no
+test recorder reaches the network.</li>
+<li>Tests: <code>tests/unit/core/test_radio_recording_preroll.py</code>,
+including a recorder that drops (exit 0) mid-recording and must
+reconnect and trim both parts before the join.</li>
+</ul>
+<h3 id="quill-cast-site-no-more-dead-audio-links-2026-10-15">QUILL Cast
+site: no more dead audio links (2026-10-15)</h3>
+<p>Every one of the 54 episodes linked an MP3 on the
+<code>podcast-v1</code> release, which holds only the 36 files of the
+retired 36-episode series. Four names still matched (episodes 1 to 4),
+but those are recordings of scripts rewritten since.</p>
+<ul>
+<li><strong><code>docs/podcast/audio_assets.json</code></strong>: what
+the release really holds (name, size, upload time, the date it was read)
+and each episode’s file and status (<code>published</code>,
+<code>stale</code> or <code>missing</code>). Written by the new
+read-only
+<strong><code>docs/podcast/tools/refresh_audio_manifest.py</code></strong>
+(<code>gh release view</code>; <code>--check</code> exits 1 on drift).
+Today: 0 published, 4 stale, 50 missing.</li>
+<li><strong><code>build_feed.py</code></strong> links audio and writes a
+feed <code>&lt;item&gt;</code> only for <code>published</code> episodes;
+every other transcript page and index row says “The audio for this
+episode is not published yet” and keeps its transcript link. Unpublished
+episodes are omitted from the feed rather than listed without an
+enclosure, which podcast apps drop or show as unplayable. The enclosure
+length comes from the manifest; an unknown <code>itunes:duration</code>
+is left out. The index’s part headings were still the 36-episode ranges
+(episodes 37 to 54 sat under “More episodes”); they now follow the eight
+parts in the README.</li>
+<li><strong>GATE-SITE-LINKS</strong>
+(<code>tests/unit/docs/test_site_links.py</code>) now fails on any
+podcast audio link the manifest does not mark published, on a manifest
+out of step with <code>episodes.json</code>, and on a feed whose items
+differ from the published set.</li>
+<li><code>docs/podcast/README.md</code>: how the manifest works, and the
+steps to record, upload and publish the missing audio. No audio was
+generated or uploaded.</li>
+</ul>
+<h3
+id="dictation-the-command-word-speak-a-command-and-command-mode-d-1-2026-10-15">Dictation:
+the command word, Speak a Command and command mode (D-1,
+2026-10-15)</h3>
+<p>D-1 from the dictation plan (the owner’s request): “QUILL scratch
+that” is a command and is never typed, in QUILL, QUILL Lite, QUILL
+Transcribe and Inkwell.</p>
+<ul>
+<li><strong><code>quill/core/windows_dictation/command_mode.py</code></strong>
+(wx-free): <code>split_prefix</code> and <code>split_phrase</code> reuse
+<code>wake.match_wake</code> (same word, Soundex or one edit), first
+word after a pause only; <code>command_prefix_problem</code> refuses
+common English words, command and mark words and the person’s My Words;
+<code>escape_literal_prefix</code> makes “literal QUILL” write the word;
+<code>COMMAND_MODE_HELP</code> holds the commands said only after the
+word (type that, command mode, dictation mode) and
+<code>COMMAND_MODE_PREFIX_HELP</code> is the empty slot for D-10’s
+argument forms. Every existing command works after the word, because the
+rest is parsed against the one table.</li>
+<li><strong><code>command_mode_mixin.py</code></strong>:
+<code>CommandModeMixin</code> (over <code>VoiceCommandsMixin</code>)
+decides command or dictation in <code>_dictate</code> before
+<code>compose</code> runs; a command utterance never reaches the
+document port’s <code>insert</code> (tested with
+<code>ExternalDocument</code> and an injector that fails if called). Not
+a command: the error cue and one sentence, and “QUILL type that” writes
+it once. One armed command, command mode with a timeout
+(<code>call_later</code>, and the clock checked at the next phrase),
+<code>command_key()</code> for the keys, <code>command_mode_text</code>
+for the status cell and the tray. While paused for its field, a command
+utterance is answered and never held
+(<code>target_hold._paused_parse</code>). controller.py grew by two
+lines.</li>
+<li><strong>Settings</strong> in <code>DictationSettings</code>:
+<code>windows_dictation_command_prefix</code> (“QUILL”),
+<code>windows_dictation_command_prefix_required</code> (strict mode: off
+in the editors, on in QUILL Transcribe through
+<code>TRANSCRIBE_DICTATION_DEFAULTS</code>) and
+<code>windows_dictation_command_timeout</code> (8, 5 to 30). In More
+Dictation Settings, a Commands group (Alt+C, Alt+E, Alt+D) in all four
+hosts; OK is refused with the reason for a poor command word.</li>
+<li><strong>Speak a Command</strong>,
+<code>tools.windows_dictation_command</code> on <strong>F11</strong>,
+free in both editors (rule 2), one handler
+(<code>quill/ui/windows_dictation_command_key.py</code>), a
+<code>COMMAND_EQUIVALENTS</code> row and the same chord in QUILL
+Transcribe’s window (<code>transcribe/parity.py</code>). QUILL
+Transcribe’s system-wide <strong>Command Key</strong>
+(<code>command_hotkey</code>, empty by default) is offered in setup
+beside Record Key and in File &gt; Command Key… (Ctrl+Alt+Shift+K).</li>
+<li><strong>Earcons</strong> <code>windows_dictation_command_on</code>
+and <code>_off</code>, generated by
+<code>scripts/generate_dictation_sounds.py</code> into the Ink
+pack.</li>
+<li>The status cell and QUILL Transcribe’s state line say “Command
+mode”; “What can I say” in QUILL Transcribe puts QUILL before each
+command while strict mode is on; the generated dictation commands
+reference has a “The command word” section.</li>
+<li>Tests: <code>test_dictation_command_mode.py</code>, and additions to
+<code>test_transcribe_app.py</code>,
+<code>test_lite_dictation.py</code>,
+<code>test_dictation_parity.py</code> and
+<code>test_dictation_more_dialog.py</code>. Live checks with a
+microphone in Notepad, Word and Edge, and the 30-minute soak, are still
+to do.</li>
+</ul>
+<h3
+id="hosted-ai-the-gateway-sends-a-feature-catalogue-in-v1config-2026-10-15">Hosted
+AI: the gateway sends a feature catalogue in /v1/config
+(2026-10-15)</h3>
+<p>Jeff’s todo P2 #30: a new hosted-AI text tool should need no client
+release.</p>
+<ul>
+<li><strong>Gateway</strong> (<code>quill-ai-gateway/</code>):
+<code>GET /v1/config</code> gains <code>features</code>, one entry per
+shipped feature whose flag is on (<code>id</code>, <code>label</code>,
+<code>help</code>, <code>input</code>, <code>max_input_tokens</code>),
+in <code>SHIPPED_FEATURES</code> order, empty while the service is
+paused. The wording is <code>app/prompts.py::CATALOGUE</code>; input
+kinds are <code>INPUT_KINDS</code> (<code>selection</code>,
+<code>prompt</code>, <code>document</code>, <code>conversation</code>).
+<code>build_prompt</code> fills a <code>{context}</code> slot in any
+template, so a new <code>document</code> tool needs only its template.
+Every older key is unchanged and older clients ignore the new one.
+Tests: <code>tests/test_feature_catalogue.py</code>.</li>
+<li><strong>Client</strong> (shared, so QUILL and QUILL Lite together):
+<code>quill/core/ai/gateway_catalogue.py</code> (wx-free) validates the
+list as remote input – id shape, plain printable text with control
+characters removed, length caps, known input kinds only, duplicates and
+built-in ids or labels dropped, at most 40 entries – and never raises.
+<code>GatewayLimits.features</code> carries it from the existing
+<code>/v1/config</code> fetch, cached with the rest of the limits; no
+new egress site (the GATE-9 entry for <code>gateway_client</code> says
+so). <code>quill/ui/hosted_ai_pad_catalogue.py</code> holds the pad’s
+rows: the built-in seventeen, then any catalogue extras, appended when
+the limits arrive and offered only on the free route. Each extra row’s
+<code>help</code> is its F1 text, Send runs it through the ordinary
+<code>ask</code> path, a <code>document</code> row sends excerpts as
+<code>chunks</code>, and a per-feature <code>max_input_tokens</code> can
+only lower the ceiling. The answer opens in the ordinary AI Result
+window. <code>hosted_ai_commands.py</code> hands the limits fetch’s
+answer to the pad (626 -&gt; 624 lines).</li>
+<li>Tests: <code>tests/unit/core/ai/test_gateway_catalogue.py</code>,
+<code>tests/unit/ui/test_hosted_ai_pad_catalogue.py</code>, and one in
+<code>tests/unit/apps/test_lite_ai.py</code>.</li>
+</ul>
+<h3
+id="release-channels-run-for-real-the-launcher-channel-the-update-helper-and-the-workflows-2026-10-15">Release
+channels run for real: the launcher, /CHANNEL=, the update helper and
+the workflows (2026-10-15)</h3>
+<p>Everything below had been written and read as text, never run. Now it
+runs, and running it found seven faults. Runbook:
+<code>docs/release/RELEASE.md</code>, “What has been run for real” and
+“One-time setup (owner)”.</p>
+<ul>
+<li><strong>Compiled tests.</strong>
+<code>tests/unit/native/test_launcher_compiled.py</code> compiles
+<code>runtime_resolve.c</code> behind a probe and builds the real
+launcher with <code>build_native_launcher.py</code>, then starts it
+against stand-in runtimes in the Stable and Beta slots
+(<code>tests/unit/native/compiled_harness.py</code>, including a
+windowless <code>fakeproc.exe</code>).
+<code>tests/unit/structure/test_shared_runtime_channel_compiled.py</code>
+compiles <code>installer/shared-runtime.iss</code> with Inno Setup 7 and
+checks
+<code>InstallChannel</code>/<code>RuntimeSlot</code>/<code>RuntimeDir</code>
+against <code>runtime_slots.py</code> for every channel and version.
+<code>tests/unit/core/test_update_helper_runs.py</code> runs the update
+helper batch against temp folders with stand-in apps and installers. All
+skip without the tools.</li>
+<li><strong><code>build_native_launcher.py</code></strong> picks CMake’s
+generator from the installed Visual Studio (<code>msvc_generator</code>;
+2022 or 2026) and discards a CMake cache made by another generator; the
+cmdline harness test uses it too.</li>
+<li><strong>Portable swap</strong>
+(<code>apply_script.swap_lines</code>): the user’s <code>data</code>
+folder replaces the new copy’s shipped one instead of landing in
+<code>data\data</code>, the move is checked, and any failed step is
+undone before the in-place fallback.</li>
+<li><strong>In-place copy</strong> (<code>self_update</code>):
+<code>/XD</code> names both <code>data</code> folders. With only the
+installed one excluded, robocopy walked into the zip’s <code>data</code>
+and <code>/MIR</code> purged the user’s files. <strong>A released
+portable copy whose helper runs still uses the old copy</strong> (the
+helper is written by the version being updated); see the open decision
+in <code>docs/release/RELEASE.md</code>.</li>
+<li><strong>Health check and undo</strong>
+(<code>apply_script.health_lines</code>, <code>stop_lines</code>):
+processes still running from the app’s folder are stopped first; every
+move is checked and a half-done undo is put back, never reported as
+done; the <code>.failed</code> folder is removed.</li>
+<li><strong>Installer</strong>
+(<code>apply_script.installer_lines</code>): no longer
+<code>-Verb RunAs</code> (every installer is per-user; Inno elevates
+itself for an all-users copy), its exit code is kept, and a failed
+install relaunches the old version at once with
+<code>apply-result.json</code> <code>install_failed</code>
+(<code>install_failed_lines</code>), which
+<code>apply.confirm_started</code> reports and records as
+<code>failed</code>. <code>/LOG=</code> is built with
+<code>[char]34</code>, because the doubled quote lost its closing
+quote.</li>
+<li><strong>First update’s undo is reported</strong>:
+<code>apply.running_version</code> reads the version being replaced from
+the install’s ini (or QUILL’s build) when the rollback books are empty;
+<code>begin_self_update</code> gains <code>current_version</code>.</li>
+<li><strong>Runtime slots</strong>:
+<code>runtime_reclaim.abandoned_channel_slots</code> lets the
+installer’s <code>reclaim-old-slots</code> remove a Beta or Dev slot of
+this Python that no app needs any more.
+<code>runtime_slots.default_channel</code> treats an unknown
+<code>/CHANNEL=</code> as absent, as the installer does. Three
+<code>Runtime\3.13</code> paths in the fragment’s comments had become
+<code>\x03</code> characters.</li>
+<li><strong>Workflows</strong>: <code>dev-builds.yml</code> and
+<code>promote-release.yml</code> pass every input through
+<code>env:</code>, run only in <code>Community-Access/quill</code>; Dev
+builds stop at once without <code>DEV_BUILDS_TOKEN</code>, build and
+label one commit, and pass <code>-SkipCatalog</code> to Radio only.
+<code>tests/unit/structure/test_release_workflows.py</code> pins the
+secrets, the Environment and the rest.</li>
+</ul>
+<h3
+id="lyrics-from-lrclib-in-quill-radio-and-quill-media-player-add-custom-station-looks-behind-a-web-page-2026-10-15">Lyrics
+from LRCLIB in Quill Radio and Quill Media Player; Add Custom Station
+looks behind a web page (2026-10-15)</h3>
+<p>P2 #31 and P2 #36 from Jeff’s list.</p>
+<ul>
+<li><strong><code>quill/core/lyrics/lrclib.py</code></strong> (new
+package, wx-free, mypy scope): the shared LRCLIB client.
+<code>search()</code> (Radio: artist + title) and
+<code>get_exact()</code> (Player: artist, title, album, length; falls
+back to the ranked search, preferring timed words); pure
+<code>parse_lrc()</code> / <code>line_at()</code> /
+<code>parse_response()</code>. One egress site <code>_fetch</code> (new
+<code>network_egress_entries</code> entry with the consent story: only
+on request, never in the background), verified TLS,
+<code>http_client.user_agent()</code>, a 250 ms global throttle, one
+honoured <code>Retry-After</code> on 429, 404 is empty.
+<code>LyricsError(CodedError)</code>,
+<code>QUILL-LYRICS-LRCLIB-LOOKUP</code>, only for Safe Mode and an
+unreachable network.
+<strong><code>CACHE_ON_DISK = False</code></strong>: a session-memory
+cache, the conservative default awaiting Jeff (xradio1 section 9); True
+would cache through <code>directory_cache</code> like MusicBrainz.</li>
+<li><strong><code>quill/ui/media/lyrics_window.py</code></strong>: one
+Lyrics window for both apps, Captions-window style. Radio: plain words
+only. Player: <strong>Current line</strong> (read-only, updated by a 250
+ms tick, never announced), <strong>Follow playback</strong> (caret rides
+<code>line_at()</code>; off holds still; on catches up; disabled with no
+timings) and <strong>Say Current Line</strong>. Title
+<code>Lyrics: &lt;song&gt;</code>, F1 by prefix in both
+<code>surface_help</code> catalogues.</li>
+<li>Radio: <code>quill/ui/radio/lyrics_commands.py</code>;
+<strong>Playback &gt; Lyrics…</strong> (<code>radio.lyrics</code>,
+<strong>Ctrl+Alt+B</strong> – Ctrl+Alt+L is Resume Last Station on
+Launch) via <code>radio_playback_extras.append_song_items</code>
+(radio_menu_bar.py 645 -&gt; 640, budget lowered); the palette row
+“Internet Radio: Lyrics…”, which is also how full QUILL reaches it; Song
+History’s <strong>L&amp;yrics</strong> button. The key is the parsed
+now-playing title; no artist, no lookup.</li>
+<li>Player: <code>quill/apps/player_lyrics.py</code> (player.py is at
+its ceiling), <strong>Playback &gt; Lyrics…</strong>
+(<strong>Ctrl+Alt+L</strong>) in <code>player_menus.py</code>; tags via
+<code>core/podcasts/local_tags.read_tags</code>, else an “Artist -
+Title” file name.</li>
+<li><strong>#36, Altitude Sports Radio “stream isn’t
+supported”.</strong> The site plays two Triton players,
+<code>player.listenlive.co/20551</code> (92.5 FM, <code>KKSEFM</code>)
+and <code>/48751</code> (950 AM, <code>KKSEAM</code>): plain
+StreamTheWorld MP3/HE-AAC, no token, no DRM.
+<code>triton.callsign_from_page</code> now also reads
+<code>"mount"</code>/<code>"callsign"</code> from the player’s inline
+config (the FM player has no logo); new
+<code>triton.is_player_page_url</code>; new
+<code>core/radio/address_kind.py</code> (extracted from
+<code>link_finder</code>: portal/player/help-page predicates,
+<code>is_web_page_address</code>, <code>same_page</code>) so the scan
+drops Triton’s <code>force.com</code> help article and does not re-fetch
+a player page’s self link; new <code>core/radio/stream_pick.py</code>
+(<code>pick_stream</code> groups MP3/AAC mounts as one station, prefers
+MP3; <code>durable_url</code> gives the <code>livestream-redirect</code>
+address), which <code>recovery._confident_candidate</code> now uses.
+<code>AddStationDialog</code> takes a <code>resolve_page_cb</code>
+(<code>add_custom_station.page_resolver</code>, the scan on the task
+manager; None in Safe Mode): a pasted web page is resolved on
+Test/OK.</li>
+<li>Tests (recorded fixtures, no network): <code>test_lrclib.py</code>,
+<code>test_radio_lyrics.py</code>, <code>test_player_lyrics.py</code>,
+<code>test_radio_lyrics_wiring.py</code>,
+<code>core/radio/test_altitude_stream.py</code> (+
+<code>fixtures/altitude/</code>),
+<code>test_radio_add_station_page.py</code>.</li>
+</ul>
+<h3
+id="my-words-and-phrases-import-export-and-quill-lite-on-the-shared-list-d-12-2026-10-15">My
+Words and Phrases: Import, Export, and QUILL Lite on the shared list
+(D-12, 2026-10-15)</h3>
+<p>dict.md D-12, design record section 20.</p>
+<ul>
+<li><strong><code>quill/core/windows_dictation/words_exchange.py</code></strong>
+(wx-free): export as the same Markdown <code>dictation.md</code> is, or
+CSV <code>say,write,kind</code> (UTF-8 with BOM); import
+<code>.md</code> or <code>.csv</code> (a <code>say</code> column at
+least; no header means by position; cp1252 fallback).
+<code>plan_merge</code> sorts every entry into new, already there, or
+different from yours (kept); <code>apply_merge</code> only adds;
+<code>back_up</code> copies the list to
+<code>dictation-before-import.md</code> first.
+<code>WordsImportError</code>
+(<code>QUILL-DICTATION-WORDS-IMPORT</code>). Export then import into an
+empty list is byte-identical.</li>
+<li><strong><code>quill/ui/dictation_words_exchange.py</code></strong>:
+Import… (Alt+I) and Export… (Alt+X) in My Words and Phrases, so in
+QUILL, QUILL Lite and QUILL Transcribe; a preview
+(<code>ImportPreviewDialog</code>, counts as the list’s label) before
+anything is written; spoken counts (“Imported 12 words, 3 already
+there.”).</li>
+<li><strong>QUILL Lite</strong>:
+<code>share_quill_dictation_words</code> (off), set by “Use the shared
+word list” (Alt+U) at the top of its My Words and Phrases; turning it on
+merges QUILL Lite’s words into QUILL’s <code>dictation.md</code> after
+the same preview. Not offered in a portable copy.
+<code>lite_window_dictation.py</code> owns the path.</li>
+<li>Tests: <code>test_dictation_words_exchange.py</code> (core),
+<code>test_dictation_words_exchange_ui.py</code>, and two in
+<code>test_lite_dictation.py</code> (a word added in QUILL Lite reaches
+Transcribe’s rewriter; portable keeps its own).</li>
+</ul>
+<h3
+id="dictation-a-recommended-model-with-reasons-and-tier-labels-d-22-2026-10-15">Dictation:
+a recommended model with reasons, and tier labels (D-22,
+2026-10-15)</h3>
+<p>dict.md D-22. The person still chooses; there is no automatic
+mode.</p>
+<ul>
+<li><strong><code>quill/core/windows_dictation/model_advice.py</code></strong>
+(new, wx-free):
+<code>recommend(check, language, privacy="local", *, priority, has_gpu)</code>
+returns one <code>Recommendation</code> (model id, name, tier, one
+sentence, reasons, <code>may_lag</code>). Only measured models are
+candidates; a model must keep up (0.25 on one thread, or two threads for
+“fewest mistakes” and on 16 GB/4-core machines) and fit the memory share
+beside the screen reader; fewest word errors win, ties to the bigger
+model except on a modest computer, where the built-in one wins.
+<code>speed_check.recommend</code> is the spec’s entry point;
+<code>for_this_computer</code> is the instant form on
+<code>speed_check.latest()</code>. Every answer says “estimate”.</li>
+<li><strong><code>model_types.py</code></strong>:
+<code>LIGHTWEIGHT</code> / <code>BALANCED</code> /
+<code>HIGH_ACCURACY</code>, <code>TIER_MEANINGS</code>,
+<code>MEASURED</code> (the 2026-10-05 dictbench table),
+<code>tier_for(cost_factor, word_errors)</code>,
+<code>DownloadableModel.tier</code>, and <code>legacy_tier</code> for
+<code>core/speech/catalog.py</code> so one model is one tier.</li>
+<li><strong><code>speed_check.py</code></strong>: memory now through
+<code>service.detect_total_ram_gb</code>; the timed check also records
+<code>has_gpu</code> (<code>service.detect_has_gpu</code>);
+<code>latest()</code> and <code>hardware_only()</code> answer at
+once.</li>
+<li><strong>Where models are chosen</strong>: Speech Models (What
+matters most, Alt+W; the read-only Recommendation, Alt+C; Show
+Recommended Model, Alt+S; tiers on every row and in Details), Dictation
+Settings (a read-only Recommended for this computer line; tiers in the
+Speech engine list), Transcribe’s Choose Model and Set Up (the same
+line; tiers in <code>transcribe.models.ModelRow</code>), Transcribe a
+Recording’s list, and QUILL’s Manage Speech Models and guided
+offline-speech setup (<code>service.recommendation_reason</code>, built
+on <code>machine_summary</code>; <code>ModelChoice.tier</code> and
+<code>.reason</code>).</li>
+<li>Tests: <code>test_dictation_model_advice.py</code> (a table of
+machine profiles), <code>test_transcribe_model_advice.py</code>, and
+additions to the Speech Models, guided setup, service and Transcribe
+model tests.</li>
+</ul>
+<h3
+id="radio-a-time-shift-buffer-on-disk-tiered-seek-and-identify-this-song-2026-10-15">Radio:
+a time-shift buffer on disk, tiered seek, and Identify This Song
+(2026-10-15)</h3>
+<p>Three FreeRadio deltas from <code>xradio2.md</code> (4.3, 4.4, 4.1),
+Jeff’s todo P2 #32. The shared <code>RadioMixin</code>/controller
+carries the first two into QUILL’s editor-embedded radio as well.</p>
+<ul>
+<li><strong><code>quill/core/radio/timeshift.py</code></strong>
+(wx-free, strict): the DVR back-cache moves to disk
+(<code>cache-on-disk</code>, <code>cache-dir</code>,
+<code>cache-unlink-files=whendone</code>) for
+<code>RadioHistory.timeshift_minutes</code> (0/30/60/120/180/300,
+default 60; 0 = the old 50 MiB in memory). Byte cap sized at 320 kbps
+and clamped to half the drive’s free space after a 1 GiB reserve; lives
+in
+<code>machine_local_dir()/radio-timeshift/session-&lt;pid&gt;-&lt;token&gt;</code>;
+swept at the first configure, removed in
+<code>MpvRadioEngine.terminate()</code>, memory fallback if the folder
+cannot be made. Radio Preferences gains <strong>Time-shift
+buffer</strong>
+(<code>quill/apps/radio_preferences_listening.py</code>).
+<code>radio.history</code> fingerprint accepted as additive.</li>
+<li><strong><code>quill/core/radio/tiered_seek.py</code></strong> +
+<strong><code>quill/ui/radio/tiered_seek_ui.py</code></strong>:
+Rewind/Forward (<code>radio.rewind</code>/<code>radio.forward</code>,
+and the transport table’s skip verbs) count a burst of presses – one tap
+12 s, two 60 s, three+ 300 s, auto-repeat (&lt; 90 ms apart) 5 s each –
+and seek once after 0.45 s of quiet, announcing the landing position
+only. Refusals stay immediate. Menu labels “Rewind”/“Forward” (were “…
+30 Seconds”); <code>_radio_seek_bounded</code> folded in.</li>
+<li><strong>Identify This Song</strong>
+(<code>radio.identify_song</code>, Radio Ctrl+K; palette in both apps):
+<code>quill/core/radio/acoustid.py</code> (client; the one egress site
+<code>_post</code>, reviewed in
+<code>network_egress_entries_radio.py</code>; key in the credential
+store <code>quill:radio:acoustid:key</code>, empty by default),
+<code>chromaprint.py</code> (locates <code>fpcalc</code>, which is
+<strong>not bundled</strong>; fixed argv through
+<code>run_subprocess_safely</code>), <code>song_recognition.py</code>
+(pipeline and wording),
+<code>quill/ui/radio/song_identify_commands.py</code>. The sample comes
+from <code>MpvRadioEngine.dump_recent_audio</code> (mpv
+<code>dump-cache</code>), never a new connection (6.1). New
+<code>CodedError</code>s: <code>QUILL-RADIO-ACOUSTID-LOOKUP</code>,
+<code>QUILL-RADIO-CHROMAPRINT-FINGERPRINT</code>.</li>
+<li>GATE-11: <code>mpv_radio_engine.py</code>’s pure device-list helpers
+moved to <code>quill/core/radio/mpv_devices.py</code> (re-exported) to
+stay under the cap.</li>
+<li>Tests: <code>test_timeshift.py</code>,
+<code>test_tiered_seek.py</code>, <code>test_song_recognition.py</code>,
+<code>test_radio_tiered_seek_ui.py</code>,
+<code>test_radio_song_identify.py</code>, plus the engine contract and
+the existing seek-routing tests at the new step.</li>
+<li>Needs Jeff: an AcoustID application key, if one is ever to be
+bundled.</li>
+</ul>
+<h3
 id="dictation-the-never-type-list-and-inkwell-keeps-its-field-2026-10-15">Dictation:
 the never-type list, and Inkwell keeps its field (2026-10-15)</h3>
 <p>D-24 and D-15 from the dictation plan, rescued from an uncommitted

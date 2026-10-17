@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import collections
 import re
+from pathlib import Path
 
 import pytest
 
@@ -203,3 +204,46 @@ _STATION_MENU_OUT_OF_LETTERS = frozenset({
     "Browse Spotify...",
     "Local Media...",
 })
+
+
+# -- the Alt paths the guide teaches ------------------------------------------
+
+_GUIDE = Path(__file__).resolve().parents[3] / "standalone" / "radio" / "docs" / "userguide.md"
+_DOC_ALT_PATH = re.compile(r"\bAlt\+([A-Z]),? then ([A-Z0-9])\b")
+
+
+def _access_key(label: str) -> str:
+    """The letter after a single ``&`` in *label*, lower case, or ``""``."""
+    match = re.search(r"(?<!&)&([^&\s])", label.split(chr(9))[0])
+    return match.group(1).lower() if match else ""
+
+
+def test_every_alt_path_the_guide_teaches_reaches_a_menu_item(radio_menu_bar) -> None:
+    """ "Alt+Q, then W opens Quill Weather" must be true of the real menu bar.
+
+    The chord gates check that a key the guide writes is bound; nothing checked
+    the *menu path* a guide writes -- the letters a person presses to walk the
+    menus -- so a renamed menu or a moved access key left the guide teaching a
+    path that went somewhere else, or nowhere (P3, 2026-10-15).
+    """
+    menus = {}
+    for index in range(radio_menu_bar.GetMenuCount()):
+        key = _access_key(radio_menu_bar.GetMenuLabel(index))
+        if key:
+            menus[key] = radio_menu_bar.GetMenu(index)
+    paths = sorted(set(_DOC_ALT_PATH.findall(_GUIDE.read_text(encoding="utf-8"))))
+    assert paths, "the guide teaches no Alt paths; the pattern changed and this checks nothing"
+    wrong = []
+    for menu_key, item_key in paths:
+        menu = menus.get(menu_key.lower())
+        if menu is None:
+            wrong.append(f"Alt+{menu_key}: no top-level menu has that access key")
+            continue
+        items = [i for i in menu.GetMenuItems() if not i.IsSeparator()]
+        if not any(_access_key(i.GetItemLabel()) == item_key.lower() for i in items):
+            wrong.append(
+                f"Alt+{menu_key}, then {item_key}: no item in that menu has that access key"
+            )
+    assert not wrong, "the Radio guide teaches menu paths that do not exist:\n  " + "\n  ".join(
+        wrong
+    )

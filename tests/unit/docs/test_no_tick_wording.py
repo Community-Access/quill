@@ -110,7 +110,6 @@ ALLOWED: dict[str, str] = {
     "landing on the tick": "a timer update",
     "a tick ago": "the previous timer update",
     "position ticks": "routine position updates from the player",
-    "routine ticks": "routine position updates from the player",
     "meaningless tick number": "a raw clock value",
     "ticking timer": "a countdown",
     "each tick is a": "the weather monitor's polling timer",

@@ -4,6 +4,19 @@ All notable changes to Quill Weather are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Added
+
+- **Help > Command Palette... (Ctrl+Shift+P).** Since 2.2.1 every Quill Weather command has had a name the Command Palette can find, but nothing in the app opened the palette, so the notes promised a door that was not there. It is now on the Help menu, on the same key as in Quill Radio and QUILL Cast. Type a few letters of what you want and press Enter: for example, press Ctrl+Shift+P, type `pause`, and the list narrows to **Weather: Pause or Resume Alert Checks**; Enter runs it. The palette lists only Quill Weather's own commands, each with its key, and Escape closes it without doing anything.
+- **Help > Product Requirements... (Alt+Shift+F1).** The user guide has always sent you to the Product Requirements for the roadmap -- spoken weather, weather channels, choosing which places the watch covers -- and the Help menu had no such item. It opens the document that ships in the `docs` folder beside the app, in your browser, with no internet connection needed. Alt+Shift+F1 is the same key Quill Radio and Quill Converter use for their own.
+
+### Fixed
+
+- **The user guide now teaches the right key for Start Weather Monitoring.** It said Ctrl+Shift+M, which Quill Weather has never bound; the key is **Ctrl+Alt+Shift+M**, as the Weather menu shows.
+- **The user guide no longer describes a Quillins menu.** Quill Weather does not load Quillins yet and has no Quillins menu; the guide said it did. The section now says what is true today.
+- **Radio-only commands in the guide are marked as Quill Radio's.** "Station > Start Quill Radio with Windows" and "Browse Stations > Weather / NOAA" are on Quill Radio's menus, not Quill Weather's, and the guide pointed at a Station menu chapter it does not have.
+
 ## [2.2.1] - 2026-10-08
 
 Build 2:
@@ -91,6 +104,6 @@ The work below was written up on 2026-07-23 as its own release before 2.2.0 was 
 - A configurable alert sounder: silence it, choose your own `.wav` (with Play and Use Default), and set how many times it repeats (1 to 10). Test Alert rehearses the whole experience -- words, sound, tray toast, and alert window -- clearly marked as a test, sending nothing over the internet.
 - Global show/hide hotkey Ctrl+Alt+Shift+W: a system-wide chord that hides the window to the tray (monitoring keeps running) or restores and focuses it, from any app, speaking "hidden to the tray" or "shown". Unique to Quill Weather within the family (QUILL uses Ctrl+Alt+Shift+Q, Quill Radio uses Ctrl+Alt+Shift+R); Windows-only and best-effort.
 - Feature customization (Options > Customize Features...): switch whole areas -- Alert Monitoring, NOAA Weather Radio -- on or off, removing their menus.
-- Sibling interoperability: File > Open Quill Radio and File > Open QUILL (also in the tray) launch a sibling in its own window; on one machine all apps share a data store, so a location saved in one is there in the others.
+- Sibling interoperability: QuillVille > Open Quill Radio and QuillVille > Open QUILL (also in the tray) launch a sibling in its own window; on one machine all apps share a data store, so a location saved in one is there in the others.
 - Your local NOAA Weather Radio: finds the transmitter covering your saved location and, with Quill Radio installed for playback, plays it; the full directory (1,035 transmitters) ships inside the app for offline lookup.
 - Independent distribution and updates: its own installer, portable build, and update feed. Help > Check for Updates knows whether you run the installer or the portable build and downloads the matching one.

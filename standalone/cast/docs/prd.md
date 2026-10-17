@@ -43,7 +43,7 @@ In scope (all reused from upstream):
 - Announcement-engine speech through the user's screen reader, **and braille output to the user's display** through the same screen-reader bridge, governed by the shared announcement service (§4).
 - **Quillins host**: a top-level Quillins menu running app-targeted, sandboxed, permission-gated extensions, including the bundled `cast-premium-auth` sample. Off in Safe Mode; third-party Quillins remain disabled.
 - **Keyboard Shortcuts...** (the shared Keymap Editor, scoped to this app's commands) and **Global Hotkeys...** (system-wide keys for Play/Pause, Stop, and Show/Hide QUILL Cast to the Tray).
-- **Spotify podcasts (experimental)**, shipped dark behind `future.spotify`: requires a signed unlock code, Spotify Premium, a user-supplied Client ID, and WebView2. Play-only -- Spotify audio is DRM-protected and cannot be downloaded. Off in Safe Mode.
+- **Spotify podcasts (experimental)**, behind `future.spotify`, which has been on by default since the unlock-code gate was withdrawn (2026-08-12): its two Help rows show in both menu modes, and playing needs Spotify Premium, a user-supplied Client ID, and WebView2. Play-only -- Spotify audio is DRM-protected and cannot be downloaded. Off in Safe Mode.
 - Help: Get FFmpeg (recovery download if the bundled copy goes missing), Open in Quill, Redeem Unlock Code (shared unlock store), Check for Updates against this repo's releases, About.
 
 Out of scope, by decision (D-1, "basic level of functionality"):
@@ -2290,5 +2290,18 @@ saving to one and looking in the other.
   disk, so there is deliberately no "every new upload" starter.
 - Rules run only while the window is open, and on each open.
 - Cast plays episodes and podcasts itself; everything else needs Quill Radio.
+
+### 23.28 Dictate Here through QUILL Transcribe (dict.md D-16, 2026-10-16)
+
+Edit > Dictate Here, `app.dictate_here` on Ctrl+F11 (the editors' Start
+Dictation key, family rule 2), in the Edit menu both listening apps share
+(`quill/ui/support_menu.py`; Cast has no Tools menu). It asks QUILL Transcribe
+to dictate into the focused field: a `start` request when QUILL Transcribe owns
+Dictate Anywhere, a launch with `--tray --dictate-here` when nobody does, the
+busy sentence when Quill Inkwell is dictating, and "not installed" otherwise.
+Cast loads no engine. A `wx.EventFilter` answers the same key in text fields of
+Cast's dialogs, where the main window's accelerators never reach. Shown only
+where `is_app_released("transcribe")`; QUILL Transcribe releases on
+2026-11-01, so public builds show it from then. Dictation design record, section 30.
 
 See `CHANGELOG.md` for the full, versioned history.

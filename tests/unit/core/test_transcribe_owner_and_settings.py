@@ -69,7 +69,8 @@ def test_an_unknown_app_cannot_own_it(tmp_path: Path) -> None:
 def test_requests_carry_one_known_word_and_nothing_else(tmp_path: Path) -> None:
     assert send_request("toggle", sender="inkwell", folder=tmp_path)
     assert not send_request("type hello", sender="inkwell", folder=tmp_path)
-    assert not send_request("toggle", sender="radio", folder=tmp_path)
+    # Quill Radio and Quill Cast may ask since Dictate Here (D-16); others may not.
+    assert not send_request("toggle", sender="weather", folder=tmp_path)
     with (tmp_path / "dictate-anywhere-requests.jsonl").open("a", encoding="utf-8") as handle:
         handle.write('{"command": "toggle", "sender": "inkwell", "text": "secret"}\n')
         handle.write("not json\n")
@@ -132,6 +133,10 @@ def test_settings_never_hold_transcript_text_or_keys(tmp_path: Path) -> None:
         "schema_version",
         "setup_done",
         "dictation_hotkey",
+        "command_hotkey",  # D-1: the key's name, empty until chosen
+        "status_hotkey",  # D-6: Dictation Status, Resume and Discard, empty until chosen
+        "resume_hotkey",
+        "discard_hotkey",
         "start_in_tray",
         "close_to_tray",
         "inkwell_checked",
@@ -195,6 +200,9 @@ def test_the_list_marks_every_model_local_or_not_and_ready_or_not(
     for row in rows:
         assert ("not downloaded" in row.label) == (not row.ready)
         assert "on this computer" in row.label
+        # D-22: every model names its tier; Windows speech recognition is not a model.
+        assert (row.tier in row.label) and bool(row.tier) == (row.id != "windows")
+    assert rows[0].label.startswith("Moonshine (on this computer; Lightweight; ")
 
 
 def test_openai_is_listed_only_with_a_key_and_says_where_speech_goes(

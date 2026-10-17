@@ -245,6 +245,77 @@
 <h1 id="quill-inkwell-changelog">Quill Inkwell changelog</h1>
 <h2 id="unreleased">Unreleased</h2>
 <ul>
+<li><p><strong>Dictation settings shared with the family</strong>
+(2026-10-16). With <strong>Share dictation settings with every
+QuillVille program</strong> checked (Alt+Q, in More Dictation Settings),
+Dictate Anywhere uses the dictation settings you save in QUILL, QUILL
+Lite or QUILL Transcribe, and what you save in Inkwell reaches them. The
+read-back, your key and every permission to send your speech stay
+Inkwell’s own. Your own settings are backed up the first time, and a
+save that cannot reach the others is said aloud. The word list now lives
+in <code>%LOCALAPPDATA%\QuillVille\Dictation</code>, copied from QUILL’s
+data folder with the old file kept.</p></li>
+<li><p><strong>A big abbreviation list opens and searches at
+once</strong> (2026-10-16). <strong>Manage Abbreviations</strong>
+(Ctrl+M) reads its rows only as you reach them, so ten thousand
+abbreviations fill instantly (it took over three seconds, and again
+after every key typed in the search box). The search finds words in any
+order, and the selection stays on the abbreviation you were on when the
+search changes.</p></li>
+<li><p><strong>Fixing it when you correct yourself</strong>
+(2026-10-16). With <strong>Fix it when I correct myself</strong> (Alt+X)
+checked in Dictation Settings, “Thursday, no, Friday” types Friday: a
+“no”, “I mean”, “sorry” or “scratch that word” between two days, months,
+numbers or names from My Words keeps the second. Anything else is typed
+as said, and it is off until you turn it on. <strong>Dictation
+style</strong> (Alt+Y) sets it and filler removal together, as Verbatim
+or Clean. The same as in QUILL, QUILL Lite and QUILL
+Transcribe.</p></li>
+<li><p><strong>Correcting in Dictate Anywhere</strong> (2026-10-16).
+“Correct that” and “choose” a number, “capitalize that”, “all caps
+that”, “no caps that”, “replace” some words “with” new ones, “change
+that to” and new words, “delete last sentence” and “delete previous
+paragraph” now work in other programs, on the words dictation typed
+there itself, by taking them back with Backspace and retyping. Inkwell
+never reads the other program. A correction is refused, with one
+sentence and nothing sent, if the focus has moved, if you have typed or
+clicked since, or, for the commands that retype words, in Word and
+Outlook. With Moonshine or Whisper, “correct that” asks the other
+built-in engine to listen again and offers its answer as choice
+two.</p></li>
+<li><p><strong>Snippet blanks by voice in Dictate Anywhere</strong>
+(2026-10-16). “insert snippet” and a name now asks for each blank
+(“Title?”) and each choice (“Choose NVDA, JAWS or Narrator.”), then
+types the whole snippet once. Say skip, scratch that to go back one, or
+cancel to type nothing. “read that” reads back all of what was typed,
+not just the snippet’s name.</p></li>
+<li><p><strong>Speech providers in Dictate Anywhere</strong>
+(2026-10-16). Dictation Settings has the editors’ <strong>Speech
+Providers…</strong> button (Alt+V), so Dictate Anywhere can use a speech
+company you already have an account with. Keys go to Windows Credential
+Manager, and you are asked before anything is sent.</p></li>
+<li><p><strong>Every release build checks its version against what is
+published</strong> (2026-10-15). The shared QuillVille runtime carries
+every app’s version number, so a build of one app could make another
+report a version nobody can download yet, and Check for Updates would
+then never offer the real one. Quill Inkwell’s release builds now run
+the same check Quill Radio, QUILL Lite, QUILL Cast and Quill Weather
+already did, and a build of every app at once checks them all again
+instead of stopping at an app it did not know.</p></li>
+<li><p><strong>The command word in Dictate Anywhere</strong>
+(2026-10-15). Say QUILL before a command, “QUILL scratch that”, and
+whatever follows QUILL is never typed; if it is not a command you hear
+“Not a command”, and “QUILL type that” types it. “QUILL command mode”
+takes commands without the word until “dictation mode” or eight seconds
+with none. The word, strict mode and the seconds are in More Dictation
+Settings (Alt+C, Alt+E, Alt+D). Two new sounds play when QUILL hears the
+command word and when command mode ends.</p></li>
+<li><p><strong>QUILL Lite’s words in Dictate Anywhere</strong>
+(2026-10-15). Dictate Anywhere uses QUILL’s My Words and Phrases list,
+as before. QUILL Lite can now share that list (Use the shared word list,
+in its My Words and Phrases), so the names you teach QUILL Lite come out
+right here too. QUILL, QUILL Lite and QUILL Transcribe can also import
+and export the list.</p></li>
 <li><p><strong>Dictate Anywhere stays in the field you started
 in</strong> (2026-10-15). If the focus moves while you dictate, Inkwell
 pauses and holds your words instead of typing them somewhere else, as
@@ -258,17 +329,17 @@ starts with the common password managers and the Windows sign-in
 prompts. Dictation refuses a listed program by name and types
 nothing.</p></li>
 <li><p><strong>Where Quill Inkwell’s own sounds play, and Alt+Shift+M to
-turn them off.</strong> <strong>Options &gt; Preferences &gt; App Sounds
-Play On…</strong> offers System default, None (no sounds), or any sound
-card or headset by name. After a change one sound plays on the new card,
-so you hear where it went. If that card is unplugged the sounds play on
-the system default until it is back, and Quill Inkwell says so once.
-<strong>Alt+Shift+M</strong> turns Quill Inkwell’s sounds off and back
-on where they were, and <strong>Options &gt; App Sounds</strong> shows a
-check mark while they are on. Each QUILL app keeps its own choice;
-“Share these choices with my other Quill apps” keeps them in step. Your
-screen reader is never moved. Asked for on QUILLVille by Rick
-Lewis.</p></li>
+turn them off.</strong> The <strong>App Sounds Play On…</strong> button
+in <strong>Options &gt; Preferences…</strong> (Ctrl+,) offers System
+default, None (no sounds), or any sound card or headset by name. After a
+change one sound plays on the new card, so you hear where it went. If
+that card is unplugged the sounds play on the system default until it is
+back, and Quill Inkwell says so once. <strong>Alt+Shift+M</strong> turns
+Quill Inkwell’s sounds off and back on where they were, and
+<strong>Options &gt; App Sounds</strong> shows a check mark while they
+are on. Each QUILL app keeps its own choice; “Share these choices with
+my other Quill apps” keeps them in step. Your screen reader is never
+moved. Asked for on QUILLVille by Rick Lewis.</p></li>
 <li><p><strong>Dictate Anywhere: one microphone, and your library by
 voice</strong> (2026-10-13). Inkwell takes the family’s one microphone
 lock while it listens, so it never dictates at the same time as QUILL,

@@ -498,6 +498,15 @@ trailing newline means.</li>
 <code>clip_library</code>, <code>clipboard_collector</code>.</li>
 <li><strong>Abbreviations</strong> — the engine, the store, and the
 manager dialog.</li>
+<li><strong>Typing assists</strong> (2026-10-16) — AutoCorrect for
+misspellings (<code>quill/core/autocorrect.py</code>, its built-in list
+and the AutoCorrect Entries window,
+<code>quill/ui/autocorrect_entries_dialog.py</code>) and Enter in a list
+(<code>quill/core/list_continuation.py</code>). QUILL had list
+continuation and QUILL Lite did not; both have AutoCorrect, on the same
+settings (<code>autocorrect_misspellings</code>,
+<code>continue_lists_in_plain_text</code>, both off by default) and the
+same key (Alt+Shift+9).</li>
 <li><strong>The command palette</strong>, the <strong>feature-areas
 dialog</strong>, <strong>char_describe</strong>,
 <strong>selection</strong>, <strong>print pagination</strong>, and the
@@ -664,6 +673,18 @@ above</td>
 <td>Expansion is an accessibility feature, not a typing one</td>
 </tr>
 <tr>
+<td>AutoCorrect for common misspellings, with your own entries in that
+same library</td>
+<td>A misspelling found by ear costs a read-back; one fixed as it is
+typed costs nothing</td>
+</tr>
+<tr>
+<td>Enter continues a Markdown list (and, if asked, a plain-text
+one)</td>
+<td>A marker typed by hand is a marker that can be forgotten, and the
+reader never says one was</td>
+</tr>
+<tr>
 <td>Sort, de-duplicate, trim, and three case conversions</td>
 <td>Work, not writing — and expensive by keyboard</td>
 </tr>
@@ -737,12 +758,14 @@ menu is gone entirely.</p>
 <p>Four areas ship <strong>switched off</strong> and are found in that
 same checklist rather than hidden, because a feature nobody can find is
 a feature that does not exist: autocorrect (welcome in prose, actively
-wrong in a config file), timestamped backups (reassuring, and they fill
-a folder), Go To Anything (the palette, the headings list and the
-bookmark list each already answer their own part), and AI help, which is
-off because it sends what you ask about off this computer – a different
-kind of reason, and the one that needs a second question as well as a
-switch (§5.6).</p>
+wrong in a config file; since 2026-10-16 it holds three rules, curly
+quotes, em dashes and misspelling correction, each its own Preferences
+checkbox, all off), timestamped backups (reassuring, and they fill a
+folder), Go To Anything (the palette, the headings list and the bookmark
+list each already answer their own part), and AI help, which is off
+because it sends what you ask about off this computer – a different kind
+of reason, and the one that needs a second question as well as a switch
+(§5.6).</p>
 <p><strong>Nineteen areas now.</strong> <em>Markdown and HTML</em>
 arrived on 2026-09-15 with the rule that decides what Ctrl+B writes in a
 <code>.md</code>, and <em>AI help</em> on 2026-09-23. Both are areas
@@ -1263,6 +1286,60 @@ because a list is far quicker to review by ear than a paragraph;
 reader navigates by, so it turns a flat passage into one you can move
 through. The list of seventeen is a list box, so a first letter jumps to
 a tool.</p>
+<p><strong>New tools without a release (2026-10).</strong> The service’s
+<code>GET /v1/config</code> now carries a feature catalogue: each
+shipped tool’s id, label, one-sentence help and input kind
+(<code>selection</code>, <code>prompt</code> or <code>document</code>).
+Any entry this build does not have built in becomes a row at the end of
+the pad’s list, after Have a conversation: its help is the row’s F1 text
+and Send runs it through the same path as the built-in rows.
+Requirements: every field is validated as remote input (id shape, plain
+text with control characters removed, length caps, at most 40 entries);
+an unknown input kind is skipped, never guessed; an entry duplicating a
+built-in id or label is dropped; rows arriving while the pad is open are
+appended at the end and not announced (GATE-13); a per-tool input
+ceiling may only lower the pad’s pre-check; the answer opens in the
+ordinary AI Result window. Only on the free service, since the tool’s
+instructions live there. Shared code
+(<code>quill/core/ai/gateway_catalogue.py</code>,
+<code>quill/ui/hosted_ai_pad_catalogue.py</code>), so QUILL has it in
+the same release (family rule 10).</p>
+<p><strong>QUILL’s saved conversations, Prompt Library and word-level
+review (2026-10-15).</strong> Brought from QUILL through shared code,
+never copied, with QUILL moved onto the extracted pieces in the same
+change. Requirements: every AI conversation is saved as it goes in
+QUILL’s session format (<code>quill/core/ai/sessions.py</code>,
+<code>record_exchange</code>) in QUILL Lite’s own
+<code>ai-sessions</code> folder, and <strong>Saved
+Conversations</strong> (Alt+V in the conversation window) opens one to
+continue or deletes one after asking; <strong>Prompt Library</strong>
+(Ctrl+7) is QUILL’s <code>PromptLibraryDialog</code> over QUILL’s
+library format (<code>prompts.json</code>, <code>.pqp</code> packs) in
+QUILL Lite’s data folder, and Run fills the prompt, closes, and sends it
+as a general question, refusing before sending if it is over the input
+ceiling; <strong>Review Changes</strong> in the result window opens
+QUILL’s Review AI Changes
+(<code>quill/ui/ai_diff_review_dialog.py</code>), offered only when
+Replace is and the answer differs, and applies only accepted changes as
+one undo step. Every control in the three windows has F1 help.</p>
+<p><strong>Answer delivery and the Chat Key (2026-10-15).</strong> No
+spec existed, so the minimum: the pad’s <strong>Put the answer
+in</strong> list chooses the AI Result window (default), the document at
+the caret (one undo step, read aloud), or the clipboard (read aloud;
+falls back to the window if the clipboard is busy), kept as
+<code>ai_answer_delivery</code> (QUILL’s field name too) and applied to
+every answer. <strong>Ask AI a Question</strong> (Ctrl+6), the Chat Key,
+opens the pad on Ask a General Question with the caret in the question
+box.</p>
+<p><strong>Web search on the free AI (2026-10-15).</strong> The
+service’s <code>web_search</code> feature ships off behind a feature
+flag, ten searches per account per month; while on, the catalogue offers
+<strong>Search the web</strong> in the pad. <strong>Web Searches
+Left</strong> (Ctrl+9) reads <code>/v1/config</code>’s
+<code>web_search</code> entry and <code>/v1/quota</code>’s count and
+says how many are left, or that search is not offered; on an own key or
+plan it says search is the free service’s. QUILL has the same three
+commands on the same three chords (rule 2).</p>
 <h3
 id="56c-your-own-api-key-a-provider-chosen-never-inferred-12-qcmd-x-07">5.6c
 Your own API key: a provider chosen, never inferred (1.2, qc.md
@@ -1440,6 +1517,24 @@ engine with no new runtime code. <code>DictationWordsDialog</code> is
 the window; the Dictation Settings button opens it. Found on the way:
 the starter file’s explanatory sentences were being parsed as
 vocabulary, now excluded (<code>looks_like_prose</code>).</li>
+<li><strong>Import, Export and the shared list</strong> (dict.md D-12,
+2026-10-15). My Words and Phrases exports to Markdown or CSV
+(<code>say,write,kind</code>) and imports either, merging only: new
+entries are added after a preview, entries already there or different
+keep the person’s own, and the list is copied to
+<code>dictation-before-import.md</code> first
+(<code>words_exchange.py</code>). “Use the shared word list”
+(<code>share_quill_dictation_words</code>, off) points QUILL Lite at the
+family’s <code>dictation.md</code>, the one QUILL, QUILL Transcribe and
+Quill Inkwell read, after merging QUILL Lite’s own entries into it;
+never offered in a portable copy. Since 2026-10-16 that file lives in
+<code>%LOCALAPPDATA%\QuillVille\Dictation</code>, copied there from
+QUILL’s data folder with the old file kept as the backup (dictation
+design record section 30). “Share dictation settings with the family”
+(<code>windows_dictation_share_family</code>, More Dictation Settings,
+Alt+Q) keeps the shared dictation settings in
+<code>family_dictation.json</code> beside it, written on OK and taken
+when the window is activated (dict.md D-13).</li>
 </ul>
 <p><strong>Tests.</strong> The core behaviours against a fake recogniser
 and a fake document
@@ -1478,8 +1573,17 @@ last one (so its questions end in question marks).</li>
 (<code>EditorDocument.anchor</code>): measured on speech start, honoured
 even if the caret moved or the focus left.</li>
 <li><strong>“Correct that”</strong> and “choose one” to “choose three”,
-with Windows speech recognition’s alternates; every other engine says it
-has none.</li>
+with Windows speech recognition’s alternates. Since 2026-10-16 (D-19),
+with Moonshine, Whisper or a downloaded model, the other built-in engine
+re-decodes the last phrase’s audio (memory only, dropped at the next
+phrase) and offers its answer as choice 2; OpenAI, the speech companies
+and Spanish still say there is none.</li>
+<li><strong>Replace, change that, delete by paragraph, kept
+revisions</strong> (D-19, 2026-10-16, <code>corrections.py</code>):
+“replace X with Y” (nearest before the cursor, else after), “change that
+to Y” (the last phrase), “delete previous paragraph”; what choose,
+replace and change that replaced goes into Recent Phrases labelled
+“(before correction)”.</li>
 <li><strong>Talk to the AI</strong>
 (<code>hosted_ai_chat._talk_to_it</code>): the AI Conversation window’s
 message box dictates with the <strong>Talking to AI</strong> profile,
@@ -1502,6 +1606,23 @@ minutes after the last session.</li>
 (<code>settings_fields.DictationSettings</code>), inherited by both
 editors’ <code>Settings</code>.</li>
 </ul>
+<h3
+id="59a-dictation-correcting-yourself-styles-polish-and-learning-2026-10-16">5.9a
+Dictation: correcting yourself, styles, polish and learning
+(2026-10-16)</h3>
+<p>The same as QUILL (QUILL PRD, the D-20/D-21 addendum; dictation
+design record section 28), through the shared dictation package, so
+QUILL Lite is never ahead. <strong>Fix it when I correct myself</strong>
+(Alt+X, off) keeps the second of “Thursday, no, Friday” between two
+days, months, numbers or names in My Words, locally and conservatively.
+<strong>Dictation style</strong> (Alt+Y) names Verbatim, Clean and, only
+with AI on, Polished, and stores nothing itself. <strong>Allow polishing
+my dictation with AI when I ask</strong> (Alt+G in More Dictation
+Settings, off) lets “QUILL polish that” and <strong>Polish</strong>
+(Ctrl+P) in Review Dictation send one fixed request through the review’s
+own consent and AI routes; it is never automatic. A second identical
+voice correction offers to add it to Corrections, in a Yes/No window
+with No the default; nothing is stored without a yes.</p>
 <h3 id="510-transcribing-a-recording-2026-10-06">5.10 Transcribing a
 recording (2026-10-06)</h3>
 <p>QUILL Lite’s <strong>Transcribe a Recording</strong> command
@@ -1514,6 +1635,13 @@ length. Several selected recordings run in sequence.</p>
 document the user was editing. A completion notice in Notifications
 opens the saved transcript when activated; Activity retains the outcome
 and failure reason. There is no destination picker.</p>
+<p><strong>Translate into English</strong> (2026-10-16, dict.md D-26):
+for a recording in a language other than English, with a model that
+translates (the built-in Whisper, or a downloaded multilingual Whisper),
+the transcript can be written in English instead. The check box is
+unavailable otherwise and off unless checked. QUILL’s offline
+transcription translates on the same models, because all three apps now
+run every local model through one shared sherpa-onnx layer.</p>
 <h2 id="6-release-packaging">6. Release packaging</h2>
 <p><strong>Two</strong> artifacts: the portable build and the system
 installer. That is the family contract for every app (2026-10-11), and
@@ -2002,12 +2130,14 @@ is automated, and what a person actually <em>hears</em> is not.</li>
 </ul>
 <h2 id="find-in-open-documents-2026-10-15">Find in Open Documents
 (2026-10-15)</h2>
-<p>QUILL’s command, on QUILL’s key, from the same shared code (QUILL
-Lite may never be ahead of QUILL, and here it is not behind either):
-<strong>Edit &gt; Matches &gt; Find in Open Documents…</strong>
-(<strong>Ctrl+Alt+Shift+F8</strong>) finds and replaces across every
-open window’s live text. The window and the model are QUILL’s
-(<code>quill/ui/open_documents_find.py</code>,
+<p>QUILL’s command from the same shared code (QUILL has it on
+Ctrl+Shift+F10, because its Ctrl+Alt+Shift+F8 is a QuillVille launcher;
+<code>parity.DIVERGENCES</code>) (QUILL Lite may never be ahead of
+QUILL, and here it is not behind either): <strong>Edit &gt; Find in Open
+Documents…</strong> (<strong>Ctrl+Alt+Shift+F8</strong>; in Edit &gt;
+Matches until 2026-10-16, see the placement note under Search in Files)
+finds and replaces across every open window’s live text. The window and
+the model are QUILL’s (<code>quill/ui/open_documents_find.py</code>,
 <code>quill/core/open_documents_search.py</code>); QUILL Lite supplies
 <code>quill/apps/lite_open_documents.py</code>, which lists
 <code>app.frames</code>, brings one to the front with
@@ -2019,6 +2149,34 @@ any window carries on the same search. Find and Replace end it
 Chris Nova.</p>
 <h2 id="search-in-files-and-replace-across-files-2026-10-15">Search in
 Files and Replace Across Files (2026-10-15)</h2>
+<p><strong>Placement, revised 2026-10-16.</strong> Find in Open
+Documents, Search in Files and Replace Across Files are rows of
+<strong>Edit</strong> itself, directly under Replace, in that order
+(<code>&amp;Edit</code>, “F&amp;ind in Open Documents…”, “&amp;Search in
+Files…”, “Replace Across Files…”), and QUILL has the same three rows in
+the same order under Find All Matches. They first shipped inside
+<strong>Edit &gt; Matches</strong>, and Jeff, launching from source with
+the changelog in hand, could not find either: a listener arrowing down
+Edit hears “Matches, submenu”, and nothing in that word says a folder
+search is behind it, while QUILL filed the same commands in a different
+place again (Edit for one, Edit &gt; Search Tools for two, and the two
+only in profiles with regular-expression search). Family rules 1 and 2
+decide it: one placement for a command both editors have, and the
+placement a newcomer looks in first. <strong>Edit &gt; Matches</strong>
+keeps the two commands about the document in front of you, All Matches
+and Count Occurrences. The three stay in the <code>matches</code> area
+(<code>command_areas.COMMAND_AREA</code>), now labelled “Matches and
+wider searches”: on in a new install, off in the Notepad and WordPad
+profiles, whose promise is to have only what those programs had. Search
+in Files took the access letter S from Character Details, whose title
+has no other free letter in Edit; it keeps Ctrl+Alt+C. Replace Across
+Files has no access letter for the same reason and is reached by
+Ctrl+Shift+R or by arrow (GATE-14: no mnemonic beats a duplicate). Keys
+are unchanged. GATE-DOCMENU
+(<code>tests/unit/docs/test_documented_menus_lite.py</code>) now checks
+every menu path and every command named beside a key in this app’s
+changelog and guide against the menus a new install builds, and pins the
+three Edit rows.</p>
 <p>QUILL’s two commands, on QUILL’s keys – Ctrl+Alt+Shift+F had been
 reserved for Search in Files since the keyboard parity work and never
 filled. The window moved from
@@ -2039,6 +2197,31 @@ pieces: <code>quill/apps/lite_clipboard_collector.py</code> polls the OS
 clipboard change counter
 (<code>ui/main_frame_clipboard_collector._clipboard_change_counter</code>),
 appends with <code>core/clipboard_collector.append_collected</code>,
+collects each distinct payload once, keeps one collecting window per
+app, and stops when it closes. With QUILL’s shared setting
+<code>clipboard_collector_saves</code> (2026-10-15, on by default,
+Preferences “Save after every clip the clipboard collector adds”, Alt+Y)
+a window with a file name is saved quietly after each clip through
+<code>DocumentFileMixin.save_quietly</code>, which shares the write and
+the settling with Save, and the one announcement is “Collected and
+saved”; an untitled window is never saved and no window ever opens.
+Anything Save would ask about in a window (characters the encoding
+cannot hold, a file changed on disk) and a failed write are spoken
+instead (“Collected, but not saved.” and the reason), and collecting
+carries on. The rule and the words are
+<code>core/clipboard_collector</code>, the same as QUILL’s. Handler
+<code>cmd_clipboard_collector</code> (Alt+Shift+S, a check row on Edit
+&gt; Clipboard), parity <code>power.toggle_clipboard_collector</code>.
+The parity table had mapped <code>cmd_collect_selection</code> to that
+command, which was never the same verb; Collect Selection is now
+<code>LITE_ONLY</code> with Paste and Clear, on Alt+Shift+C (rule 2: the
+command both editors have keeps the chord). Asked for on QUILLVille by
+Dean Martineau.</p>
+<p>QUILL’s system-wide collector (#964), on QUILL’s key, from QUILL’s
+pieces: <code>quill/apps/lite_clipboard_collector.py</code> polls the OS
+clipboard change counter
+(<code>ui/main_frame_clipboard_collector._clipboard_change_counter</code>),
+appends with <code>core/clipboard_collector.append_collected</code>,
 collects each distinct payload once, never saves, keeps one collecting
 window per app, and stops when it closes. Handler
 <code>cmd_clipboard_collector</code> (Alt+Shift+S, a check row on Edit
@@ -2048,6 +2231,98 @@ command, which was never the same verb; Collect Selection is now
 <code>LITE_ONLY</code> with Paste and Clear, on Alt+Shift+C (rule 2: the
 command both editors have keeps the chord). Asked for on QUILLVille by
 Dean Martineau.</p>
+<h2 id="pdfs-opened-as-text-2026-10-15">PDFs, opened as text
+(2026-10-15)</h2>
+<p>QUILL Lite opened text files and nothing else; it now opens PDFs, as
+their text, and never writes one. Everything comes from QUILL (QUILL
+Lite may never be ahead of QUILL, and here it may not have a second
+implementation either): <code>quill/core/pdf_open.py</code> reads
+through QUILL’s <code>quill/io/pdf.py</code> reader (pdfplumber, then
+pypdf, repaired text, form feeds between pages, at most 200 pages, the
+outline); <code>quill.io.structured._format_pdf</code>, which QUILL’s
+File &gt; Open uses, reads through the same function. QUILL Lite’s half
+is <code>quill/apps/lite_window_pdf.py</code>:</p>
+<ul>
+<li><strong>Open.</strong> <code>*.pdf</code> is in the Open filter’s
+“All supported files” and has its own row.
+<code>open_prepare.prepare</code> reads a PDF into a
+<code>PreparedDocument</code> carrying the <code>PdfOpen</code> result,
+and <code>prepare_in_background</code> sends every PDF to the worker;
+<code>load</code> does too.</li>
+<li><strong>Password.</strong> A locked PDF asks in QUILL’s password box
+(<code>quill/ui/pdf_password.py</code>), then re-reads in the background
+with the password; a wrong one asks again saying so; Cancel opens
+nothing. The password travels in one <code>wx.CallAfter</code> and the
+worker closure, and is stored nowhere.</li>
+<li><strong>Damaged or no reader.</strong> A failure box with the
+reader’s own sentence; nothing opens.</li>
+<li><strong>Scanned</strong> (no text, or under 50 characters a page):
+QUILL’s question (<code>scanned_question</code>). Yes runs
+<code>ocr_pdf_for_open</code> as a background open – Tesseract if
+installed, otherwise Windows OCR from the shared runtime, which needs no
+download (<code>quill/io/docconvert_windows.py</code>) – with
+“Recognizing page N of M” on the message cell only, and opens the result
+with form feeds, marked modified. No opens the little text there is, or
+nothing. QUILL asks the same question on File &gt; Open.</li>
+<li><strong>Pages.</strong> The status bar gains a <strong>Page</strong>
+cell (“Page 3 of 12”), shown only while the document has form feeds,
+skipped by the arrow keys when hidden; Enter on it opens Go To on its
+Page kind. Go To (Ctrl+G) offers <strong>Page</strong> and
+<strong>Outline</strong> only when the document has them
+(<code>page_places</code>, <code>outline_places</code>, the same rows
+QUILL’s Go To shows); outline rows resolve their page from the text at
+the time of the jump. The numbered bookmarks are untouched: nine slots
+cannot hold an outline.</li>
+<li><strong>Save.</strong> The window keeps the PDF’s path (title,
+Recent Documents, document memory), so Save refuses with QUILL’s
+sentence (<code>save_refusal</code>, <code>EXPORT_ONLY_SUFFIXES</code>)
+and goes to Save As with <code>&lt;name&gt;.txt</code> proposed; Save As
+refuses a <code>.pdf</code> name; Reopen with Encoding is not offered; a
+reload after another program changes the PDF runs the whole open
+again.</li>
+<li><strong>No new command, no new key.</strong> Ctrl+O and Ctrl+G, as
+in QUILL. Not done yet: File &gt; Import / Convert Document (spec phase
+2’s menu row), headings and tables from the PDF (phase 3), and the
+portable build’s dependency groups (the installed build already carries
+pdfplumber, pypdf, pypdfium2 and winrt in the shared runtime).</li>
+</ul>
+<h2
+id="the-read-only-guard-word-names-and-typing-a-name-in-a-list-2026-10-16">The
+Read-Only Guard, Word names, and typing a name in a list
+(2026-10-16)</h2>
+<p><strong>Read-Only Guard.</strong> QUILL’s command (EDS-8) on QUILL’s
+key: <strong>Tools &gt; Read-Only Guard</strong>
+(<strong>Ctrl+Alt+Backspace</strong>, a check row), handler
+<code>cmd_toggle_read_only</code>, parity
+<code>power.toggle_read_only_guard</code>. The memory is QUILL’s module,
+<code>quill/core/read_only_guards.py</code>, with QUILL Lite’s own file
+in its data folder (<code>paths.data_file</code>, which does not create
+the folder to read). Keys are normalised the way document memory is, so
+a file opened from File Explorer under another spelling finds its guard.
+A failed write is spoken, never swallowed. While on, the control is
+read-only and
+<code>quill/core/lite/read_only.TEXT_CHANGING_HANDLERS</code> are
+refused by name at the menu and status-cell dispatch
+(<code>DocumentReadOnlyMixin.run_unless_read_only</code>) with “Document
+is read-only”; reading, Find, Go To, bookmarks and inline notes work, a
+note going beside the file through the shared
+<code>_host_read_only</code>; a word tool’s Replace refuses through
+<code>refuse_if_guarded</code>. A file that cannot be written opens
+guarded, as in QUILL.</p>
+<p><strong>Word names.</strong> QUILL Lite neither opens nor writes Word
+documents; a typed <code>.docx</code>, <code>.docm</code>,
+<code>.dotx</code> or <code>.dotm</code> is refused with one sentence
+naming Rich Text (<code>filetypes.word_save_refusal</code>) before
+anything else is asked, on Save As, Save and the collector’s quiet save.
+Before this, the window’s text was written under the Word name. QUILL
+writes <code>.docx</code>; QUILL Lite is behind here, not ahead.</p>
+<p><strong>Typing a name in a list.</strong> Every
+<code>apply_listbox_activation</code> list (Snippets, Recent Documents,
+the bookmark and heading lists, Recent Clips) has type-ahead from
+QUILL’s <code>TypeAheadBuffer</code>; Space while a name is being typed
+is part of the name. Manage Abbreviations is a virtual list
+(<code>quill/ui/virtual_report_list.py</code>) whose search matches
+every word in any order and keeps the selection by identity.</p>
 </main>
 </body>
 </html>

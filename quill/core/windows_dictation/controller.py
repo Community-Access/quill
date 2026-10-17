@@ -46,7 +46,9 @@ from collections.abc import Callable
 
 from quill.core.action_feedback import resolve
 from quill.core.error_codes import CodedError
+from quill.core.windows_dictation.command_mode_mixin import CommandModeMixin
 from quill.core.windows_dictation.composer import compose, spoken_form
+from quill.core.windows_dictation.corrections import CorrectionsMixin
 from quill.core.windows_dictation.echo_guard import EchoGuard
 from quill.core.windows_dictation.editing import EditingMixin
 from quill.core.windows_dictation.history import DictatedPhrase, PhraseHistory
@@ -71,12 +73,14 @@ from quill.core.windows_dictation.preferences import (
     DEFAULT_PHRASE_FEEDBACK,
     DictationPreferences,
 )
+from quill.core.windows_dictation.profile_mixin import ProfileMixin
 from quill.core.windows_dictation.readback import spoken_marks
+from quill.core.windows_dictation.rescue_mixin import RecentPhrases
 from quill.core.windows_dictation.resilience import ResilienceMixin, engine_failure_message
+from quill.core.windows_dictation.self_repair import self_repair
 from quill.core.windows_dictation.target_hold import TargetHoldMixin
 from quill.core.windows_dictation.transcript import TranscriptMixin
 from quill.core.windows_dictation.vocabulary import Command
-from quill.core.windows_dictation.voice_commands import VoiceCommandsMixin
 from quill.core.windows_dictation.wake import is_stop_phrase, match_wake, wake_words
 from quill.core.windows_dictation.working_tick import WorkingTickMixin
 
@@ -123,10 +127,12 @@ _LIVE = frozenset({
 
 
 class DictationController(
+    CorrectionsMixin,  # first: asked about every command before the rest (D-10, D-19)
+    ProfileMixin,  # D-23: headings by structure, bold and italic, profiles
     ResilienceMixin,
     EditingMixin,
     LiveMixin,
-    VoiceCommandsMixin,
+    CommandModeMixin,  # and VoiceCommandsMixin under it (command_mode_mixin.py)
     TranscriptMixin,
     TargetHoldMixin,
     MicrophoneOwnerMixin,
@@ -154,8 +160,9 @@ class DictationController(
         self._state = DictationState.OFF
         self.spelling = False
         self.history = PhraseHistory()
-        #: What was dictated this app session, newest first, for Recent Phrases.
-        self.recent: deque[str] = deque(maxlen=20)
+        #: What was dictated this app session, newest first, for Recent Phrases,
+        #: and for the opt-in history (rescue_mixin.py, D-5).
+        self.recent: deque[str] = RecentPhrases(20, self._remember)
         self._ignore_until_speech = False  # Escape threw the phrase being heard away
         self._restarted = False  # the one silent engine restart, spent
         self._last_spoken = ""
@@ -236,6 +243,7 @@ class DictationController(
         self.spelling = False
         self._restarted = False
         self._working_new_session()  # working_tick.py: the sentence is said once a session
+        self._command_reset()  # command_mode_mixin.py: no command armed from before
         self._set_state(DictationState.LISTENING)
         self._announce_edge(Moment.ON, message, preferences)
 
@@ -338,6 +346,8 @@ class DictationController(
             language=preferences.filler_language,
         )
         phrase = self._rewrite(phrase, preferences)
+        if preferences.self_repair:  # D-20: "Thursday, no, Friday" is Friday
+            phrase = self_repair(phrase, preferences.repair_names)
         if self._ignore_until_speech:
             return  # the phrase Escape threw away, arriving late
         if self._state is DictationState.STANDBY:
@@ -370,7 +380,9 @@ class DictationController(
         self._revise_mark()
         self._set_state(DictationState.PROCESSING)
         try:
-            self._apply(self._parse(phrase, preferences), preferences)
+            # A command or dictation, decided before anything is composed: a
+            # command is never typed (command_mode_mixin.py).
+            self._dictate(phrase, preferences)
         except Exception:  # noqa: BLE001 - a failed edit ends the session, never the app
             self._abandon(self._write_failure())
             return

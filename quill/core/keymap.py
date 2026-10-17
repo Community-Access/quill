@@ -259,6 +259,10 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # claim it) and not an Alt+F4 neighbour (rule 4).
     "tools.hosted_ai_chatgpt": "Alt+F5",  # rule 9; free in both editors
     "tools.hosted_ai_image": "Ctrl+F5",  # free in both editors
+    # 2026-10-15, QUILL Lite's chords (rule 2); core/lite/commands_ai.py says why.
+    "tools.hosted_ai_chat_key": "Ctrl+6",
+    "tools.hosted_ai_prompt_library": "Ctrl+7",
+    "tools.hosted_ai_web_searches": "Ctrl+9",  # rule 9 wanted longer; none was free
     "tools.dictation_tidy": "Ctrl+F3",  # free in both editors; QUILL Lite's chord
     # The dictionary (2026-10-02; quill/ui/word_tools_commands.py, shared).
     # Look Up is the dictionary without AI (DICT-2's window, now reachable and
@@ -437,6 +441,8 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # products bind (bad.md 3.1). The two list commands should become one
     # command with a sort option (bad.md P1); until then both keep a key.
     "tools.misspelling_list_ranked": "Alt+Shift+R",
+    # Same in QUILL Lite (rule 2); three-modifier F-keys are all launchers (rule 9).
+    "format.autocorrect_entries": "Alt+Shift+9",
     # Favourite folders to the leader, 2026-09-17 (bad.md §0.6, rule 7: media,
     # radio favourites, favourite folders, AI and remote-file commands live on
     # the leader or in a menu -- editor chords are for the editor).
@@ -550,6 +556,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.windows_dictation_switch_language": "Ctrl+Shift+F11",
     "tools.windows_dictation_live_transcript": "Ctrl+Alt+Shift+PageDown",
     "tools.windows_dictation_context": "Ctrl+Alt+Shift+PageUp",
+    "tools.windows_dictation_command": "F11",  # free in both editors (rule 2)
+    # D-2: free in both (rule 2). Every F11 chord and Ctrl+Alt+Shift+F11 (a
+    # QuillVille launcher) are taken, and Ctrl+Alt+F4 is one missed Control
+    # from Alt+F4; F4 alone is unbound in both, so a missed Shift does nothing.
+    "tools.windows_dictation_review": "Shift+F4",
     "tools.describe_image": "Ctrl+Shift+Grave, I",
     # To the leader (bad.md 3.7): read once when a file arrives, not an
     # editing-loop verb -- and Ctrl+Shift+I is where Insert Image goes, so
@@ -1100,17 +1111,17 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # The collector and the clip library, on QUILL Lite's chords (P1.12).
     # Paste Collected is absent because QUILL has no such command yet;
     # Ctrl+Alt+Shift+G is held open for it (C4).
-    # Alt+Shift+S, not Ctrl+Alt+G, since 2026-09-22. Google Drive for desktop
-    # registers Ctrl+Alt+G **system-wide**, and a system-wide hotkey is handed
-    # to its owner before a focused application sees the key at all -- so this
-    # command could not be reached from the keyboard on any machine with Drive
-    # installed, and nothing said why. An in-app accelerator cannot outrank
-    # RegisterHotKey; the only fix that works out of the box is not to sit on
-    # the chord. Ctrl+Alt+<letter> is where third-party global hotkeys live,
-    # which is why Drive chose it, so this one leaves that space entirely.
-    # (The detection that makes the *next* one of these say so rather than go
-    # silent lives in quill/platform/windows/hotkey_owner.py.)
+    # Alt+Shift+S, not Ctrl+Alt+G, since 2026-09-22. Google Drive for desktop registers Ctrl+Alt+G
+    # **system-wide**, and a system-wide hotkey is handed to its owner before a focused application
+    # sees the key at all -- so this command could not be reached from the keyboard on any machine
+    # with Drive installed, and nothing said why. An in-app accelerator cannot outrank
+    # RegisterHotKey; the only fix that works out of the box is not to sit on the chord.
+    # Ctrl+Alt+<letter> is where third-party global hotkeys live, which is why Drive chose it, so
+    # this one leaves that space entirely. (The detection that makes the *next* one of these say so
+    # rather than go silent lives in quill/platform/windows/hotkey_owner.py.)
     "power.toggle_clipboard_collector": "Alt+Shift+S",
+    # Rule 2, free in both (2026-10-16; why: docs/design/2026-10-16-editor-completion-*.md).
+    "power.toggle_read_only_guard": "Ctrl+Alt+Backspace",
     "edit.keep_selection_in_clip_library": "Ctrl+Alt+M",
     "edit.open_clip_library": "Ctrl+Alt+Shift+M",
     # power.keep_unique_lines retired 2026-09-18 (bad.md 7.1, P2.5): it and

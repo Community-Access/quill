@@ -81,6 +81,9 @@ class _Host:
     def __init__(self, controller: _Controller) -> None:
         self._radio_controller = controller
         self.said: list[str] = []
+        # Tiered seek waits for a burst of taps to settle; settle each press at
+        # once here, so one press is one tap (12 seconds).
+        self.tiered_seek_scheduler = lambda _ms, callback: callback()
 
     def _announce(self, message: str) -> None:
         self.said.append(message)
@@ -145,8 +148,8 @@ def test_a_video_without_chapters_says_so() -> None:
 def test_skipping_forward_reports_the_new_position() -> None:
     host, controller = _host(position=100_000)
     ui.skip_forward(host)
-    assert controller.position == 130_000
-    assert host.said == ["2 minutes 10 seconds of 18 minutes 40 seconds"]
+    assert controller.position == 112_000
+    assert host.said == ["1 minute 52 seconds of 18 minutes 40 seconds"]
 
 
 def test_the_position_names_the_chapter_you_are_in() -> None:

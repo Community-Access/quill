@@ -147,3 +147,84 @@ def test_more_dictation_settings_is_reachable_from_dictation_settings(wx_app) ->
         assert dialog.more_button.GetLabel() == "More Dict&ation Settings..."
     finally:
         dialog.Destroy()
+
+
+def test_the_command_word_strict_mode_and_timeout_are_here(wx_app, monkeypatch) -> None:
+    """D-1: the command word, strict mode (on in QUILL Transcribe, off in the
+    editors) and command mode's timeout, under the shared settings' names; OK
+    is refused, with the reason, for a common word or one of My Words."""
+    import quill.ui.dialog_contract as contract
+
+    dialog, _said = _dialog(my_words=["Kubernetes"])
+    shown: list[str] = []
+    monkeypatch.setattr(contract, "show_message_box", lambda text, *_a, **_k: shown.append(text))
+    try:
+        values = dialog.values()
+        assert values["windows_dictation_command_prefix"] == "QUILL"
+        assert values["windows_dictation_command_prefix_required"] is False
+        assert values["windows_dictation_command_timeout"] == 8
+        dialog.command_prefix.SetValue("  Jarvis ")
+        dialog.command_required.SetValue(True)
+        dialog.command_timeout.SetValue(20)
+        values = dialog.values()
+        assert values["windows_dictation_command_prefix"] == "Jarvis"
+        assert values["windows_dictation_command_prefix_required"] is True
+        assert values["windows_dictation_command_timeout"] == 20
+        assert dialog.command_word_problem() == ""
+        dialog.command_prefix.SetValue("Kubernetes")
+        assert "My Words" in dialog.command_word_problem()
+
+        class _Event:
+            skipped = False
+
+            def Skip(self) -> None:  # noqa: N802
+                self.skipped = True
+
+        event = _Event()
+        dialog._on_ok(event)
+        assert not event.skipped and shown and "My Words" in shown[0]
+        dialog.command_prefix.SetValue("QUILL")
+        event = _Event()
+        dialog._on_ok(event)
+        assert event.skipped
+    finally:
+        dialog.Destroy()
+    from quill.core.transcribe.settings import TRANSCRIBE_DICTATION_DEFAULTS
+    from quill.core.windows_dictation.anywhere import settings_from
+    from quill.ui.dictation_more_dialog import MoreDictationDialog
+
+    transcribe = settings_from(dict(TRANSCRIBE_DICTATION_DEFAULTS))
+    dialog = MoreDictationDialog(None, transcribe, None, load_models=False)
+    try:
+        assert dialog.command_required.GetValue() is True
+    finally:
+        dialog.Destroy()
+
+
+def test_the_buttons_that_close_the_window_check_the_command_word_too(wx_app, monkeypatch) -> None:
+    """Add or Change OpenAI Key, My Dictation Instructions and Dictate in Other
+    Programs close this window and its values are saved, so a refused word was
+    saved through them until 2026-10-15 -- and then every phrase that started
+    with it typed nothing. They pass the same check as OK now."""
+    import quill.ui.dialog_contract as contract
+    from quill.ui.dictation_more_dialog import (
+        DICTATE_ANYWHERE,
+        EDIT_INSTRUCTIONS,
+        EDIT_OPENAI_KEY,
+    )
+
+    dialog, _said = _dialog()
+    shown: list[str] = []
+    ended: list[int] = []
+    monkeypatch.setattr(contract, "show_message_box", lambda text, *_a, **_k: shown.append(text))
+    monkeypatch.setattr(dialog, "EndModal", ended.append)
+    try:
+        dialog.command_prefix.SetValue("the")
+        for code in (EDIT_OPENAI_KEY, EDIT_INSTRUCTIONS, DICTATE_ANYWHERE):
+            dialog._end_if_ready(code)
+        assert ended == [] and len(shown) == 3
+        dialog.command_prefix.SetValue("QUILL")
+        dialog._end_if_ready(DICTATE_ANYWHERE)
+        assert ended == [DICTATE_ANYWHERE]
+    finally:
+        dialog.Destroy()

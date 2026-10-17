@@ -38,13 +38,17 @@ class DictationState(StrEnum):
 
 class Moment(StrEnum):
     """The moments dictation has a sound for. WORKING is the soft tick while a
-    heard phrase takes more than a second to recognise (working_tick.py)."""
+    heard phrase takes more than a second to recognise (working_tick.py);
+    COMMAND_ON and COMMAND_OFF are the command word heard and command mode
+    ended (command_mode_mixin.py)."""
 
     ON = "on"
     PHRASE = "phrase"
     OFF = "off"
     ERROR = "error"
     WORKING = "working"
+    COMMAND_ON = "command_on"
+    COMMAND_OFF = "command_off"
 
 
 class RecognizerPort(Protocol):

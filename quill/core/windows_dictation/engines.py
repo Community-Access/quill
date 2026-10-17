@@ -260,8 +260,27 @@ OPENAI_ENGINE = EngineInfo(
 _BY_ID = {engine.id: engine for engine in (*ENGINES, OPENAI_ENGINE)}
 
 
+def _cloud_engine(engine_id: str) -> EngineInfo | None:
+    """A cloud provider chosen with the person's own account (``cloud-azure``,
+    D-31) -- the one registration point the cloud layer needs here."""
+    from quill.core.windows_dictation.cloud.registry import provider_for_engine
+
+    provider = provider_for_engine(engine_id)
+    if provider is None:
+        return None
+    return EngineInfo(
+        engine_id,
+        f"{provider.name} (your own account; sends your speech to {provider.company})",
+        provider.description,
+        cloud_provider=provider.short_name or provider.name,
+    )
+
+
 def engine_info(engine_id: str) -> EngineInfo:
     engine_id = coerce_engine(engine_id)
+    cloud = _cloud_engine(engine_id)
+    if cloud is not None:
+        return cloud
     model = downloadable(engine_id)
     if model is None:
         return _BY_ID[engine_id]
@@ -290,7 +309,8 @@ def coerce_engine(value: object) -> str:
     """The engine *value* names -- built in, or a downloadable model -- or the
     default for anything else."""
     text = str(value or "").strip().lower()
-    return text if text in _BY_ID or downloadable(text) is not None else DEFAULT_ENGINE
+    known = text in _BY_ID or downloadable(text) is not None or _cloud_engine(text) is not None
+    return text if known else DEFAULT_ENGINE
 
 
 def is_model_engine(engine_id: str) -> bool:
@@ -301,18 +321,26 @@ def is_model_engine(engine_id: str) -> bool:
 
 def writes_punctuation(engine_id: str) -> bool:
     """Whether *engine_id* punctuates by itself: every model engine, and OpenAI."""
-    return engine_id == CLOUD_ENGINE or is_model_engine(engine_id)
+    return (
+        engine_id == CLOUD_ENGINE or is_model_engine(engine_id) or bool(cloud_provider(engine_id))
+    )
 
 
 def engine_choices(saved: str = "") -> list[tuple[str, str]]:
     """``(id, label)`` for the Speech engine list: the built-in engines, every
     downloaded model, OpenAI where an OpenAI key is saved, and *saved* when it
-    names one no longer here."""
+    names one no longer here. Every model row ends with its tier (D-22):
+    "Moonshine (fast, punctuates for you), Lightweight"."""
+    from quill.core.windows_dictation.model_advice import engine_tier
     from quill.core.windows_dictation.model_store import installed_models
     from quill.core.windows_dictation.openai_models import cloud_problem
 
-    rows = [(engine.id, engine.label) for engine in ENGINES]
-    rows += [(model.id, model.engine_label) for model in installed_models()]
+    def tiered(engine_id: str, label: str) -> str:
+        tier = engine_tier(engine_id)
+        return f"{label}, {tier}" if tier else label
+
+    rows = [(engine.id, tiered(engine.id, engine.label)) for engine in ENGINES]
+    rows += [(model.id, tiered(model.id, model.engine_label)) for model in installed_models()]
     problem = cloud_problem()
     if not problem:
         rows.append((OPENAI_ENGINE.id, OPENAI_ENGINE.label))

@@ -877,20 +877,11 @@ class AskQuillChatDialog(AssistantReplyDeliveryMixin):
         if not user_message or not assistant_text:
             return
         try:
-            from quill.core.ai.sessions import (
-                ROLE_ASSISTANT,
-                ROLE_USER,
-                append_turn,
-                new_session,
-                save_session,
-            )
+            # The shared recorder: the hosted-AI conversation window saves the
+            # same way into the same store (quill/core/ai/sessions.py).
+            from quill.core.ai.sessions import record_exchange
 
-            if self._session is None:
-                title = " ".join(user_message.split())[:60] or "Writing session"
-                self._session = new_session(title)
-            self._session = append_turn(self._session, ROLE_USER, user_message)
-            self._session = append_turn(self._session, ROLE_ASSISTANT, assistant_text)
-            save_session(self._session)
+            self._session = record_exchange(self._session, user_message, assistant_text)
         except Exception:  # noqa: BLE001
             pass
 

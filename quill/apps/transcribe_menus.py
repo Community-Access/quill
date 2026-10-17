@@ -2,7 +2,7 @@
 
 Every enabled item shows its key (the family's menu rule). A dictation command
 the editors have too shows the editors' chord -- Ctrl+F11, Alt+Shift+F6,
-Alt+Shift+F10, Ctrl+Shift+F11, Shift+F5 -- read from the keymap, and QUILL
+Alt+Shift+F10, Ctrl+Shift+F11, Shift+F5, Alt+F9 -- read from the keymap, and QUILL
 Transcribe 1.0's own key for it still works (:mod:`quill.core.transcribe.parity`).
 The tray menu, which
 has no keys of its own, gives every row a distinct access letter instead, so a
@@ -10,9 +10,9 @@ screen-reader user can reach any row with one letter. The tray menu's commands
 are bound on the menu itself, not on the frame: a tray popup routes its
 commands through the menu it was handed (#1465).
 
-The two status rows at the top of the tray menu -- what dictation is doing and
-which model it uses -- are disabled read-outs, so arrowing past them says the
-state without anything to press.
+The three status rows at the top of the tray menu -- what dictation is doing,
+which model it uses and which profile (D-23) -- are disabled read-outs, so
+arrowing past them says the state without anything to press.
 """
 
 from __future__ import annotations
@@ -69,7 +69,7 @@ def build_menu_bar(host: Any, *, title: str, version: str) -> None:
     _add(host, file_menu, "&Notifications...\tCtrl+Shift+N", host.open_dictation_notifications)
     file_menu.AppendSeparator()
     _add(host, file_menu, "Minimize to &Tray\tCtrl+W", host.toggle_window_to_tray)
-    host._append_key_items(file_menu)  # Show and Hide Key..., Start and Stop Key...
+    host._append_key_items(file_menu)  # Show and Hide, Start and Stop, Command, ... Keys
     file_menu.AppendSeparator()
     _add(host, file_menu, "E&xit\tCtrl+Q", host._exit_application)
     bar.Append(file_menu, "&File")
@@ -92,12 +92,27 @@ def build_menu_bar(host: Any, *, title: str, version: str) -> None:
         "Use the &Built-in Model This Time\tCtrl+B",
         host.use_built_in_model_once,
     )
+    _shared(dictation, "Dictation St&atus", "tools.dictation_status")
+    _shared(dictation, "Speak a Co&mmand", "tools.windows_dictation_command")
+    _shared(dictation, "Re&view Dictation...", "tools.windows_dictation_review")
     _shared(dictation, "Recent &Phrases...", "tools.windows_dictation_recent")
     _shared(dictation, "Switch Dictation &Language", "tools.windows_dictation_switch_language")
     _shared(dictation, "My &Words and Phrases...", "tools.windows_dictation_words")
     host._commands_item_id = _add(
         host, dictation, "Dictation &Commands...\tCtrl+Shift+C", host.show_dictation_commands
     )
+    dictation.AppendSeparator()
+    # D-23: the profile, chosen here, from the tray, or by voice ("QUILL email mode").
+    _add(host, dictation, "Dictation Pro&file...\tCtrl+Shift+F", host.choose_dictation_profile)
+    host._lock_item_id = _check(
+        host,
+        dictation,
+        "Loc&k Profile\tCtrl+Shift+L",
+        host.profile_locked(),
+        lambda _on: host.toggle_profile_lock(),
+    )
+    # D-25: a field of QUILL Transcribe's own to dictate into, and the recognition test.
+    _add(host, dictation, "Practice Dictatio&n...\tCtrl+Shift+P", host.open_practice)
     bar.Append(dictation, "&Dictation")
 
     model = wx.Menu()
@@ -148,6 +163,7 @@ def build_menu_bar(host: Any, *, title: str, version: str) -> None:
 
     help_menu = wx.Menu()
     _add(host, help_menu, "User &Guide\tCtrl+F1", host.open_user_guide)
+    _add(host, help_menu, "&Tutorials...\tCtrl+Alt+F1", host.open_transcribe_tutorials)  # D-25
     setup = title.replace("Transcribe", "T&ranscribe")
     _add(host, help_menu, f"Set Up {setup}...\tCtrl+Alt+S", host.open_setup)
     _add(host, help_menu, "Check for &Updates...\tCtrl+Alt+U", host.check_for_updates)
@@ -201,6 +217,7 @@ def build_tray_menu(host: Any, menu: Any) -> None:
 
     readout(f"State: {host.dictation_state_word()}")
     readout(f"Model: {model_name(host.engine_in_use())}")
+    readout(f"Profile: {host.dictation_profile_name()}")  # D-23
     menu.AppendSeparator()
     if host.dictation_armed():
         label = "Cancel Wai&ting to Start"
@@ -215,6 +232,7 @@ def build_tray_menu(host: Any, menu: Any) -> None:
     add("Choose &Model...", host.choose_model)
     add("Choose Micro&phone...", host.choose_microphone)
     add("Dictation Settin&gs...", host.edit_dictation_settings)
+    add("Dictation Pr&ofile...", host.choose_dictation_profile)
     add("Model &Library...", host.open_model_library)
     add("Transcribe a Re&cording...", host.transcribe_a_recording)
     menu.AppendSeparator()

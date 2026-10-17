@@ -98,6 +98,41 @@ class Command(StrEnum):
     CORRECT_WORDS = "correct_words"
     SPELL_WORDS = "spell_words"
     USE_CONTEXT = "use_context"
+    # 2026-10-15 (D-1): said only after the command word (command_mode.py).
+    TYPE_THAT = "type_that"
+    COMMAND_MODE = "command_mode"
+    DICTATION_MODE = "dictation_mode"
+    # 2026-10-15 (D-2): reviewing before inserting, after the command word
+    # (review_session.py, REVIEW_HELP).
+    REVIEW_THAT = "review_that"
+    REVIEW_REVISE = "review_revise"
+    REVIEW_READ = "review_read"
+    REVIEW_WHAT_CHANGED = "review_what_changed"
+    REVIEW_UNDO = "review_undo"
+    REVIEW_RESTORE = "review_restore"
+    REVIEW_INSERT = "review_insert"
+    REVIEW_DISCARD = "review_discard"
+    # 2026-10-16 (D-23): bold and italic by voice, and the named profiles.
+    BOLD_THAT = "bold_that"
+    ITALIC_THAT = "italic_that"
+    PROFILE_STANDARD = "profile_standard"
+    PROFILE_EMAIL = "profile_email"
+    PROFILE_DOCUMENT = "profile_document"
+    PROFILE_MARKDOWN = "profile_markdown"
+    PROFILE_CHAT = "profile_chat"
+    PROFILE_CODING = "profile_coding"
+    PROFILE_VERBATIM = "profile_verbatim"
+    # 2026-10-16 (P3, "Polish my dictation"): one fixed AI request in the review.
+    REVIEW_POLISH = "review_polish"
+    # 2026-10-16 (D-10, D-19): correcting by replacing, and by paragraph
+    # (corrections.py; in another program, external_edits.py).
+    REPLACE_WORDS = "replace_words"
+    CHANGE_THAT = "change_that"
+    DELETE_PARAGRAPH = "delete_paragraph"
+    # 2026-10-16 (D-18): reading back more than the last phrase, in the editors.
+    READ_SENTENCE = "read_sentence"
+    READ_PARAGRAPH = "read_paragraph"
+    READ_SELECTION = "read_selection"
 
 
 @dataclass(frozen=True, slots=True)

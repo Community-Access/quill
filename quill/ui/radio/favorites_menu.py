@@ -92,7 +92,15 @@ def entries_for(dialog: Any) -> list[tuple[str, Callable[[], None]]]:
         if dialog._marked_key is not None:
             entries.insert(5, ("Move &Above", lambda: dialog._on_move_marked(True)))
             entries.insert(6, ("Move Be&low", lambda: dialog._on_move_marked(False)))
-        return entries
+        # A system-wide key for this station (xradio2 4.9): standalone Quill
+        # Radio only, where the keys are registered (favorite_hotkeys_ui).
+        host = _folder_host(dialog)
+        if getattr(host, "_favorite_hotkey_ids", None) is not None:
+            entries.append(("S&ystem-Wide Key...", lambda: _choose_key(dialog, host)))
+        # Mark for Deleting / Remove N Marked / Clear Marks (xradio2 4.10).
+        from quill.ui.radio import favorites_marks
+
+        return favorites_marks.dialog_menu_entries(dialog, entries)
     return [
         ("&Play All in Folder", lambda: _play_folder(dialog, shuffle=False)),
         ("&Shuffle Folder", lambda: _play_folder(dialog, shuffle=True)),
@@ -100,6 +108,15 @@ def entries_for(dialog: Any) -> list[tuple[str, Callable[[], None]]]:
         ("Rena&me Folder...\tF2", dialog._on_rename_folder),
         ("&Delete Folder...", dialog._on_delete_folder),
     ]
+
+
+def _choose_key(dialog: Any, host: Any) -> None:
+    favorite = dialog._selected_favorite()
+    if favorite is None:
+        return
+    from quill.ui.radio import favorite_hotkeys_ui
+
+    favorite_hotkeys_ui.choose_key(host, favorite, parent=dialog.dialog)
 
 
 def _edit_website(dialog: Any) -> None:

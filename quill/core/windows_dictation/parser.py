@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
+from typing import Any
 
 from quill.core.windows_dictation.speech_language import fold
 from quill.core.windows_dictation.vocabulary import (
@@ -76,6 +77,13 @@ class RecognizedPhrase:
     previous_mark: str = ""
     #: Other things the engine thought was said, best first, for "correct that".
     alternatives: tuple[str, ...] = ()
+    #: Whether the keyword spotter heard the command word in this phrase (D-27);
+    #: ``None`` when no spotter ran, and the text alone decides.
+    keyword_heard: bool | None = None
+    #: The phrase's own audio (16 kHz samples) from a model engine, in memory
+    #: only, so "correct that" can ask the other built-in engine (D-19). Never
+    #: compared, never shown, dropped at the next phrase.
+    audio: Any = field(default=None, compare=False, repr=False)
 
 
 @dataclass(frozen=True, slots=True)

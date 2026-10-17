@@ -321,6 +321,45 @@ re-checked server-side:
 The client reads its thresholds from `GET /v1/config` once per session, so an
 admin raising a limit takes effect without a client release.
 
+The same answer carries the **feature catalogue** (`features`, 2026-10): one
+entry per shipped feature whose flag is on, with its `id`, `label`, one-sentence
+`help`, `input` kind (`selection`, `prompt`, `document` or `conversation`) and
+`max_input_tokens`. The client (`quill/core/ai/gateway_catalogue.py`) validates
+every field as remote input, skips an input kind it does not know, and offers
+each entry it does not already have built in as a row at the end of the AI
+Assistant pad's list (`quill/ui/hosted_ai_pad_catalogue.py`), with the `help`
+as the row's F1 text and the ordinary Send path. So a new text tool is a
+template and a catalogue entry in `app/prompts.py` and needs no client release.
+It is offered on the free service only, because its instructions live there.
+No new call: the catalogue rides on the existing `/v1/config` fetch.
+
+**Web search (2026-10-15), built and switched off.** `web_search` is the one
+feature in `app/prompts.py::OPT_IN_FEATURES`: built and tested, seeded with its
+flag **off** (migration 009, `flask seed-config`), and a missing flag row
+refuses it with its own sentence rather than defaulting on. An operator turns
+it on from the Features page once the global budget has room. While on:
+
+- It goes through `app/openai_client.py::search`, never `complete`, with its own
+  body allowlist `SEARCH_BODY_KEYS` (the ordinary four minus `reasoning_effort`,
+  plus `web_search_options`, sent empty). `ALLOWED_BODY_KEYS` is unchanged, so
+  no other feature can carry a search. The model is
+  `GATEWAY_OPENAI_SEARCH_MODEL` (default `gpt-4o-mini-search-preview`).
+- Each account gets `WEB_SEARCH_MONTHLY_CAP` (10, a server constant in
+  `app/limits.py`) searches a month: the fail-safe and seed of
+  `feature_cap.web_search`, which the Limits page can move. Each search is also
+  an ordinary counted request.
+- The provider's per-search charge, reckoned at `WEB_SEARCH_CALL_COST_USD`
+  ($0.03), is added to the usage event and the global budget, but **not** to
+  the person's monthly cost ceiling (sized for text requests, it would close
+  every other feature after three searches); the search cap bounds it. At ten
+  searches the worst case per active person rises by about $0.30 a month.
+- `GET /v1/config` carries `web_search: {"enabled", "monthly_cap"}` always, and
+  a `Search the web` catalogue row (input `prompt`) while it is on, so both
+  editors' pads offer it with no release. `GET /v1/quota` carries
+  `web_search_monthly_cap` (this account's, after any override) and
+  `web_searches_used`. QUILL and QUILL Lite's **Web Searches Left** (`Ctrl+9`)
+  reads both.
+
 ### 5.3 Reasoning effort is a code constant, per feature, at the floor
 
 Same rationale as `app/prompts.py`: a dial that changes what a billed API call

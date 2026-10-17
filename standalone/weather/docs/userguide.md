@@ -68,7 +68,7 @@ Left-double-click the icon to bring the window back.
 
 ## Weather Monitoring (Weather Guardian)
 
-**Weather menu > Start Weather Monitoring** (Ctrl+Shift+M) watches your saved
+**Weather menu > Start Weather Monitoring** (Ctrl+Alt+Shift+M) watches your saved
 locations' official alerts and speaks each new one as it is issued, with a system
 -tray notification and the alert sounder. **Pause Alert Checks** snoozes it
 without turning it off. See **Settings** for the alert sounder controls (on/off,
@@ -95,13 +95,13 @@ Radio offers.)
 
 ## Quillins
 
-Quill Weather can run **Quillins** -- QUILL's small, sandboxed, permission-gated
-add-ons -- from its own **Quillins** menu. A Quillin declares which apps it
-targets, so only add-ons written for Quill Weather appear here. The bundled
-`weather-extra-alerts` sample shows the idea: it contributes an additional alert
-source whose alerts are merged into the ones Weather Monitoring already watches.
-Quillins are off in Safe Mode, and third-party Quillins are disabled in this
-release -- the bundled ones are the foundation.
+**Quillins** -- QUILL's small, sandboxed, permission-gated add-ons -- are not
+loaded by Quill Weather yet, and this release has no Quillins menu. The groundwork
+is there: a Quillin can declare that it targets Quill Weather, and the bundled
+`weather-extra-alerts` sample shows the idea, an additional alert source whose
+alerts would be merged into the ones Weather Monitoring already watches. Until
+Quill Weather loads them, that sample does nothing here, and every alert you hear
+comes from the National Weather Service.
 
 ## How Quill Weather talks to you
 
@@ -217,6 +217,20 @@ notes for the version you are running. Both ship inside Quill Weather, so they
 work with no internet connection. They open in your browser, which means you can
 read them with the screen-reader navigation you already know -- headings, links,
 and find-in-page.
+
+**Help > Product Requirements... (Alt+Shift+F1)** opens the Product Requirements
+document the same way. It is the roadmap: what Quill Weather is for, what it does
+today, and what later releases add, such as spoken weather with its own voices
+and choosing exactly which saved places the alert watch covers. Alt+Shift+F1 is
+the same key Quill Radio and Quill Converter use for their own.
+
+**Help > Command Palette... (Ctrl+Shift+P)** finds any Quill Weather command by
+name. Type a few letters and the list narrows; each row shows the command's key,
+so it also teaches you the key for next time. For example, press Ctrl+Shift+P,
+type `quick`, and the list narrows to **Weather: Quick Weather**; press Enter and
+you hear the one-line summary, exactly as if you had pressed Ctrl+Shift+Q.
+Escape closes the palette without running anything. It lists only Quill
+Weather's own commands, not those of the other QuillVille apps.
 
 ## Tutorials
 
@@ -413,7 +427,7 @@ Weather Now (and the Weather Center) show three more things:
 
 ### Weather monitoring (Weather Guardian)
 
-**Weather menu > Start Weather Monitoring** (or **Ctrl+Shift+M**) watches your
+**Weather menu > Start Weather Monitoring** (or **Ctrl+Alt+Shift+M**) watches your
 saved locations' official watches, warnings, and advisories and **speaks each new
 one the moment it is issued** -- with interrupting speech for the most serious
 events (tornado, flash flood) -- and tells you when they all clear. It also drops
@@ -454,8 +468,9 @@ running on its own:
   looks for new warnings, and shows a toast if it finds one -- so you are covered
   even with no program running at all.
 
-And on the radio side, **Station > Start Quill Radio with Windows** launches Quill
-Radio automatically when you sign in.
+If you also use Quill Radio, its own **Station > Start Quill Radio with Windows**
+launches Quill Radio when you sign in. That item is on Quill Radio's menu, not on
+Quill Weather's.
 
 ### Your local NOAA Weather Radio
 
@@ -477,8 +492,9 @@ their internet re-streams:
   so browsing and the local lookup work even fully offline; an update simply
   layers fresher data on top, and the bundled copy always remains as the
   floor. Off in Safe Mode.
-- **Browse Stations > Weather / NOAA** -- the same directory as a browsable
-  state-by-state tree; see the Station menu chapter.
+- **In Quill Radio, Browse Stations > Weather / NOAA** -- the same directory as
+  a browsable state-by-state tree; see the Station menu chapter of the Quill
+  Radio User Guide. Quill Weather itself has no Browse Stations window.
 
 The audio stream is a companion to the text weather above, not a replacement
 for a dedicated NOAA Weather Radio receiver with alert tones.

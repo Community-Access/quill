@@ -13,10 +13,13 @@ what is sent, what comes back, what triggers it, and how it behaves in Safe Mode
 from __future__ import annotations
 
 from quill.tools.network_egress_entries_radio import RADIO_EGRESS
+from quill.tools.network_egress_entries_speech import SPEECH_EGRESS
 
 _REVIEWED_EGRESS: dict[str, str] = {
     # Quill Radio's, split out under GATE-11 -- see the module beside this one.
     **RADIO_EGRESS,
+    # The cloud dictation providers (D-31 to D-37), split out the same way.
+    **SPEECH_EGRESS,
     "core/audio/url_import.py::_default_download": (
         "The Universal Audio Converter's optional URL import (#1255 §4.6): "
         "downloads the best-audio stream of a user-pasted http(s) link via yt-dlp "
@@ -59,7 +62,11 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "verified (quill.core.net's system-store context, never relaxed) because what "
         "travels is that token and the user's own writing. What is sent is "
         "shown to the user in the AI Assistant window before Send, and the "
-        "consent notice is the feature area's own description."
+        "consent notice is the feature area's own description. The limits "
+        "answer (/v1/config) also carries the service's feature catalogue -- "
+        "labels and help sentences for tools this build does not have built "
+        "in, validated as remote input in core/ai/gateway_catalogue.py -- read "
+        "from that same fetch, so the catalogue adds no call and sends nothing."
     ),
     "core/library/http.py::fetch_bytes": (
         "Single egress site for the accessible book libraries (Part 4): keyword "
@@ -86,13 +93,32 @@ _REVIEWED_EGRESS: dict[str, str] = {
     "core/publish/auphonic.py::_request": (
         "Single egress site for Auphonic post-production: preset list, account/"
         "credit check, production upload/start, status poll, result download. "
-        "Reached only from the publish dialog's explicit buttons and the AI Hub "
-        "Services tab's 'Check Account and Credits' button. "
+        "Reached only from the publish dialog's explicit buttons, the AI Hub "
+        "Services tab's 'Check Account and Credits' button, and Quill "
+        "Converter's Process with Auphonic (2026-10-15: its JSON-API create/"
+        "upload/start, after one confirmation naming every file; its account "
+        "check; and Auphonic Work Waiting's explicit Resume -- never at launch). "
+        "Converter downloads only sound files from https://auphonic.com. "
         "Requires the user's own API token from the OS credential vault "
         "(Windows Credential Manager / macOS Keychain; never settings); every "
         "use is an explicit publish action in a dialog "
         "that names the service; absent in Safe Mode. HTTPS-only, verified TLS, "
         "bounded timeout."
+    ),
+    "core/lyrics/lrclib.py::_fetch": (
+        "Single egress site for song lyrics (LRCLIB, lrclib.net, a free keyless "
+        "community catalogue), shared by Quill Radio and Quill Media Player. "
+        "CONSENT: a lookup happens only when the listener opens the Lyrics "
+        "window or asks for lyrics -- never in the background, never as titles "
+        "change -- and sends only the artist and title (plus, from the Player, "
+        "the file's album tag and length). LRCLIB's etiquette is kept inside the "
+        "module: a descriptive User-Agent naming the app, version and homepage; "
+        "requests at least 250 ms apart; one honoured Retry-After on HTTP 429, "
+        "then nothing; an identical lookup never asked twice. Results are cached "
+        "in memory for the session only (lrclib.CACHE_ON_DISK is False), so "
+        "nothing about what somebody listened to is written to disk. HTTPS-only "
+        "over a verified TLS context with a bounded timeout and size; refused "
+        "in Safe Mode via refuse_in_safe_mode."
     ),
     "core/metadata_lookup.py::_http_json": (
         "Single egress site for the Audio Studio's 'Look up book details' button "

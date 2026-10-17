@@ -9,11 +9,31 @@ from __future__ import annotations
 
 import wx
 
+from quill.core.radio.row_marks import RowMarks
+from quill.ui.radio import favorites_marks
 from quill.ui.radio.volume_keys import volume_chord_handled
+
+#: The keys favorites_marks answers: "." (and the keypad's), and Delete.
+_MARK_KEYS = (ord("."), wx.WXK_NUMPAD_DECIMAL, wx.WXK_DELETE, wx.WXK_NUMPAD_DELETE)
 
 
 class RadioFavoritesTreeMixin:
     """The Favorites tree and its verbs; mixed into ``RadioAppFrame``."""
+
+    #: Stations marked for deleting with "." (xradio2 4.10). Per window, never
+    #: saved: a mark is a selection in progress, not a property of a station.
+    _favorite_marks: RowMarks | None = None
+
+    def _favorite_marks_set(self) -> RowMarks:
+        marks = getattr(self, "_favorite_marks", None)
+        if marks is None:
+            marks = RowMarks()
+            self._favorite_marks = marks
+        return marks
+
+    def _after_marks_changed(self, keep_key: str | None = None) -> None:
+        self._save_radio_favorites()
+        self._reload_favorites_tree(keep_key=keep_key)
 
     def _reload_favorites_tree(self, keep_key: str | None = None) -> None:
         tree = self._favorites_tree
@@ -44,7 +64,11 @@ class RadioFavoritesTreeMixin:
         for path in store.folders_in_display_order(sort):
             folder_item(path)
         for favorite in store.favorites_in_display_order(sort, folder_sorts):
-            item = tree.AppendItem(folder_item(favorite.folder), favorite.display_label)
+            # "(marked)" on a row marked for deleting (favorites_marks).
+            label = favorites_marks.label_for(
+                getattr(self, "_favorite_marks", None), favorite.key, favorite.display_label
+            )
+            item = tree.AppendItem(folder_item(favorite.folder), label)
             tree.SetItemData(item, ("station", favorite.key))
             if favorite.key == keep_key:
                 select_item = item
@@ -94,6 +118,17 @@ class RadioFavoritesTreeMixin:
             if favorite is not None and self._favorite_is_playing(favorite):
                 self._toggle_current_playback()
                 return
+        if code in _MARK_KEYS and favorites_marks.handle_key(
+            wx,
+            event,
+            tree=self._favorites_tree,
+            marks=RadioFavoritesTreeMixin._favorite_marks_set(self),
+            store=self._radio_favorites,
+            parent=self.frame,
+            announce=self._announce,
+            changed=self._after_marks_changed,
+        ):
+            return
         if code in (wx.WXK_DELETE, wx.WXK_NUMPAD_DELETE):
             self._on_tree_remove()
             return
@@ -198,6 +233,9 @@ class RadioFavoritesTreeMixin:
             if marked is not None and (favorite is None or marked != favorite.key):
                 entries.append(("Move Marked A&bove", lambda: self._on_move_marked_favorite(True)))
                 entries.append(("Move Marked Belo&w", lambda: self._on_move_marked_favorite(False)))
+            entries += self._favorite_mark_entries(entries)
+            # A key that plays this station from anywhere (xradio2 4.9).
+            entries.append(("S&ystem-Wide Key...", self._on_favorite_system_key))
             entries.append(("Manage Fa&vorites...", self.open_manage_radio_favorites))
             # QUILL Lineups. "&Add": Move &Up already answers U in this menu.
             entries.append(("&Add to Lineup...", self._on_favorite_add_to_lineup))
@@ -218,6 +256,38 @@ class RadioFavoritesTreeMixin:
         self._keep_menu_ids(*id_refs)
         self._favorites_tree.PopupMenu(menu)
         menu.Destroy()
+
+    def _on_favorite_system_key(self) -> None:
+        from quill.ui.radio import favorite_hotkeys_ui
+
+        favorite = self._selected_favorite()
+        if favorite is not None:
+            favorite_hotkeys_ui.choose_key(self, favorite, parent=self.frame)
+
+    def _favorite_mark_entries(self, entries: list) -> list:
+        """Mark for Deleting and, while marks exist, Remove N Marked in place
+        of the single-row Remove... -- one claimant for the Delete key."""
+        marks = self._favorite_marks_set()
+        if marks:
+            entries[:] = [entry for entry in entries if not entry[0].startswith("&Remove...")]
+        return favorites_marks.mark_menu_entries(
+            marks,
+            toggle=lambda: favorites_marks.toggle_selected(
+                self._favorites_tree, marks, self._radio_favorites, announce=self._announce
+            ),
+            remove=lambda: favorites_marks.remove_and_land(
+                self._favorites_tree,
+                self.frame,
+                self._radio_favorites,
+                marks,
+                announce=self._announce,
+                changed=self._after_marks_changed,
+            ),
+            clear=lambda: (
+                favorites_marks.clear_marks(marks, announce=self._announce),
+                self._reload_favorites_tree(),
+            ),
+        )
 
     def _on_play_stop_context(self) -> None:
         from quill.ui.radio.playback_state import ACTIVE_STATES

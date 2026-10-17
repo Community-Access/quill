@@ -1,4 +1,4 @@
-"""The five Windows Dictation earcons are generated, never hand-edited."""
+"""The seven Windows Dictation earcons are generated, never hand-edited."""
 
 from __future__ import annotations
 

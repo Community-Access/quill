@@ -40,13 +40,17 @@ from typing import Any
 import wx
 
 from quill.ui.atomic_edit import replace_as_one_undo
+from quill.ui.hosted_ai_answers import AiAnswersMixin
 from quill.ui.hosted_ai_chatgpt_commands import ChatGptAiMixin
 
 __all__ = ["HostedAiMixin"]
 
 
-class HostedAiMixin(ChatGptAiMixin):
-    """The hosted-AI commands. Mixed into both editors' document windows."""
+class HostedAiMixin(AiAnswersMixin, ChatGptAiMixin):
+    """The hosted-AI commands. Mixed into both editors' document windows.
+
+    Where an answer goes, Review Changes, the Chat Key, the Prompt Library and
+    the web search count are :mod:`quill.ui.hosted_ai_answers` (GATE-11)."""
 
     # ------------------------------------------------------------------ #
     # The three hooks -- the only things the two editors do differently
@@ -495,7 +499,7 @@ class HostedAiMixin(ChatGptAiMixin):
         else:
             take_focus(frame)
 
-    def _open_ai_pad(self, action: str = "") -> None:
+    def _open_ai_pad(self, action: str = "", *, focus_prompt: bool = False) -> None:
         if not self._ai_ready():
             return
 
@@ -507,11 +511,6 @@ class HostedAiMixin(ChatGptAiMixin):
             )
             self.cmd_ai_sign_in()
             return
-
-        # One lazy fetch of what the service currently allows, so the size
-        # check and the excerpt count match the server rather than a constant
-        # compiled in months ago.
-        service.refresh_limits()
 
         from quill.ui.hosted_ai_pad import AiPadFrame
         from quill.ui.windows_dictation_tools import bind_field_dictation
@@ -532,47 +531,17 @@ class HostedAiMixin(ChatGptAiMixin):
             ),
             initial_action=action,
             on_chat=lambda first: self._open_ai_chat(first_message=first),
+            focus_prompt=focus_prompt,
+            **self._ai_delivery_hooks(),
         )
         bind_field_dictation(pad, [getattr(pad, "_question", None)], self)
+        # One lazy fetch of the service's limits, so sizes match the server; any
+        # tools its catalogue adds become rows at the end of the pad's list.
+        service.refresh_limits(on_done=getattr(pad, "add_catalogue_rows", None))
         # Built now, shown once the agreement (if one was just asked for) has
         # finished handing focus back: the pad reads the selection as it is at
         # the moment the command ran, not at the next idle cycle.
         self._after_agreement(lambda: self._show_ai_window(pad))
-
-    def _show_ai_result(
-        self,
-        feature: str,
-        text: str,
-        used: str,
-        start: int,
-        end: int,
-        original: str,
-        action: str,
-        request: tuple[str, str, list[str] | None] | None = None,
-    ) -> None:
-        from quill.ui.hosted_ai_chat import follow_up_seed
-        from quill.ui.hosted_ai_pad import AiResultFrame
-
-        can_replace = bool(original) and self._selection_unchanged(start, end, original)
-
-        frame = AiResultFrame(
-            self._ai_parent(),
-            action=feature,
-            text=text,
-            used=used,
-            on_replace=(
-                (lambda answer: self._replace_range(start, end, answer)) if can_replace else None
-            ),
-            on_insert=self._insert_below,
-            on_again=lambda: self._open_ai_pad(action=action),
-            announce=self._announce,
-            on_follow_up=(
-                (lambda: self._open_ai_chat(seed=follow_up_seed(request, text)))
-                if request is not None
-                else None
-            ),
-        )
-        self._show_ai_window(frame)
 
     def _open_ai_chat(self, *, first_message: str = "", seed: Any = None) -> None:
         """The AI Conversation window; :func:`quill.ui.hosted_ai_chat.open_for` says how."""

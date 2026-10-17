@@ -2,6 +2,36 @@
 
 ## Unreleased
 
+- **Dictation settings shared with the family** (2026-10-16). With **Share dictation settings with every QuillVille program** checked (Alt+Q, in More Dictation Settings), Dictate Anywhere uses the dictation settings you save in QUILL, QUILL Lite or QUILL Transcribe, and what you save in Inkwell reaches them. The read-back, your key and every permission to send your speech stay Inkwell's own. Your own settings are backed up the first time, and a save that cannot reach the others is said aloud. The word list now lives in `%LOCALAPPDATA%\QuillVille\Dictation`, copied from QUILL's data folder with the old file kept.
+- **A big abbreviation list opens and searches at once** (2026-10-16). **Manage Abbreviations** (Ctrl+M) reads its rows only as you reach them, so ten thousand abbreviations fill instantly (it took over three seconds, and again after every key typed in the search box). The search finds words in any order, and the selection stays on the abbreviation you were on when the search changes.
+
+- **Fixing it when you correct yourself** (2026-10-16). With **Fix it when I
+  correct myself** (Alt+X) checked in Dictation Settings, "Thursday, no,
+  Friday" types Friday: a "no", "I mean", "sorry" or "scratch that word"
+  between two days, months, numbers or names from My Words keeps the second.
+  Anything else is typed as said, and it is off until you turn it on.
+  **Dictation style** (Alt+Y) sets it and filler removal together, as
+  Verbatim or Clean. The same as in QUILL, QUILL Lite and QUILL Transcribe.
+- **Correcting in Dictate Anywhere** (2026-10-16). "Correct that" and "choose" a number, "capitalize that", "all caps that", "no caps that", "replace" some words "with" new ones, "change that to" and new words, "delete last sentence" and "delete previous paragraph" now work in other programs, on the words dictation typed there itself, by taking them back with Backspace and retyping. Inkwell never reads the other program. A correction is refused, with one sentence and nothing sent, if the focus has moved, if you have typed or clicked since, or, for the commands that retype words, in Word and Outlook. With Moonshine or Whisper, "correct that" asks the other built-in engine to listen again and offers its answer as choice two.
+- **Snippet blanks by voice in Dictate Anywhere** (2026-10-16). "insert snippet" and a name now asks for each blank ("Title?") and each choice ("Choose NVDA, JAWS or Narrator."), then types the whole snippet once. Say skip, scratch that to go back one, or cancel to type nothing. "read that" reads back all of what was typed, not just the snippet's name.
+
+- **Speech providers in Dictate Anywhere** (2026-10-16). Dictation Settings has the editors' **Speech Providers...** button (Alt+V), so Dictate Anywhere can use a speech company you already have an account with. Keys go to Windows Credential Manager, and you are asked before anything is sent.
+
+- **Every release build checks its version against what is published** (2026-10-15). The shared QuillVille runtime carries every app's version number, so a build of one app could make another report a version nobody can download yet, and Check for Updates would then never offer the real one. Quill Inkwell's release builds now run the same check Quill Radio, QUILL Lite, QUILL Cast and Quill Weather already did, and a build of every app at once checks them all again instead of stopping at an app it did not know.
+
+- **The command word in Dictate Anywhere** (2026-10-15). Say QUILL before a
+  command, "QUILL scratch that", and whatever follows QUILL is never typed; if
+  it is not a command you hear "Not a command", and "QUILL type that" types
+  it. "QUILL command mode" takes commands without the word until "dictation
+  mode" or eight seconds with none. The word, strict mode and the seconds are
+  in More Dictation Settings (Alt+C, Alt+E, Alt+D). Two new sounds play when
+  QUILL hears the command word and when command mode ends.
+
+- **QUILL Lite's words in Dictate Anywhere** (2026-10-15). Dictate Anywhere
+  uses QUILL's My Words and Phrases list, as before. QUILL Lite can now share
+  that list (Use the shared word list, in its My Words and Phrases), so the
+  names you teach QUILL Lite come out right here too. QUILL, QUILL Lite and
+  QUILL Transcribe can also import and export the list.
 - **Dictate Anywhere stays in the field you started in** (2026-10-15). If the
   focus moves while you dictate, Inkwell pauses and holds your words instead of
   typing them somewhere else, as QUILL Transcribe does. **Dictation > Resume**
@@ -12,7 +42,7 @@
   managers and the Windows sign-in prompts. Dictation refuses a listed program
   by name and types nothing.
 
-- **Where Quill Inkwell's own sounds play, and Alt+Shift+M to turn them off.** **Options > Preferences > App Sounds Play On...** offers System default, None (no sounds), or any sound card or headset by name. After a change one sound plays on the new card, so you hear where it went. If that card is unplugged the sounds play on the system default until it is back, and Quill Inkwell says so once. **Alt+Shift+M** turns Quill Inkwell's sounds off and back on where they were, and **Options > App Sounds** shows a check mark while they are on. Each QUILL app keeps its own choice; "Share these choices with my other Quill apps" keeps them in step. Your screen reader is never moved. Asked for on QUILLVille by Rick Lewis.
+- **Where Quill Inkwell's own sounds play, and Alt+Shift+M to turn them off.** The **App Sounds Play On...** button in **Options > Preferences...** (Ctrl+,) offers System default, None (no sounds), or any sound card or headset by name. After a change one sound plays on the new card, so you hear where it went. If that card is unplugged the sounds play on the system default until it is back, and Quill Inkwell says so once. **Alt+Shift+M** turns Quill Inkwell's sounds off and back on where they were, and **Options > App Sounds** shows a check mark while they are on. Each QUILL app keeps its own choice; "Share these choices with my other Quill apps" keeps them in step. Your screen reader is never moved. Asked for on QUILLVille by Rick Lewis.
 
 - **Dictate Anywhere: one microphone, and your library by voice** (2026-10-13).
   Inkwell takes the family's one microphone lock while it listens, so it never

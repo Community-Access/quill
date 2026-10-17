@@ -30,7 +30,7 @@ import wx
 
 from quill.core.lite import APP_NAME
 from quill.core.lite import recovery as recovery_mod
-from quill.core.lite.filetypes import is_rich_path
+from quill.core.lite.filetypes import is_rich_path, is_word_path, word_save_refusal
 from quill.core.lite.open_prepare import PreparedDocument
 from quill.core.lite.open_prepare import prepare as prepare_document
 from quill.core.lite.textfile import (
@@ -40,6 +40,7 @@ from quill.core.lite.textfile import (
     unencodable_warning,
     write_bytes_atomic,
 )
+from quill.core.pdf_open import is_pdf_path
 from quill.core.sound_events import SoundEvent
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.richedit_editing import PLAIN, RICH
@@ -97,6 +98,11 @@ class DocumentFileMixin:
         same two halves with the slow one on a worker.
         """
         path = Path(path)
+        if is_pdf_path(path):
+            # Always on the worker, whatever its size: extraction is slow, and
+            # the commit is where a password or OCR gets asked (lite_window_pdf).
+            self.begin_background_load(path)
+            return True
         mode = RICH if is_rich_path(path.name) else PLAIN
         try:
             self._check_mode_available(mode)
@@ -116,6 +122,8 @@ class DocumentFileMixin:
 
         UI thread only: this is the half that touches the Rich Edit control.
         """
+        if prepared.pdf is not None and not self.pdf_ready_to_commit(path, prepared.pdf):
+            return False
         self._loading = True
         try:
             if prepared.mode == RICH:
@@ -134,6 +142,8 @@ class DocumentFileMixin:
             # set_rtf), so the mirror is told here rather than in each branch.
             self.doc_text.invalidate()
         self.path = path
+        # Guarded if somebody guarded this file, or it cannot be written.
+        self.apply_read_only_guard(path)
         self._remember_disk_baseline()
         self._discard_slot()
         self.modified = False
@@ -175,6 +185,7 @@ class DocumentFileMixin:
 
         if is_read_only(path):
             self._announce(READ_ONLY_NOTICE)
+        self.note_pdf_source(prepared.pdf)
         return True
 
     def _commit_rich(self, prepared: PreparedDocument) -> None:
@@ -264,6 +275,13 @@ class DocumentFileMixin:
         destination = target if target is not None else self.path
         if destination is None:
             return self.cmd_save_as()
+        if target is None and self.refuse_save_over_source():
+            # An opened PDF: the buffer is text read out of it (lite_window_pdf).
+            return self.cmd_save_as()
+        if target is not None and self.refuse_save_as_target(Path(target)):
+            return False
+        if self.refuse_word_target(Path(destination)):
+            return False
         if target is None and self._pending_suffix:
             # A mode switch has made this name wrong for what the buffer holds
             # -- rich runs under a .txt, or Markdown under a .rtf. Save proposes
@@ -284,13 +302,7 @@ class DocumentFileMixin:
         if not self._confirm_unseen_disk_change(destination):
             return False
         try:
-            if as_rich:
-                self._write_rtf(destination)
-            else:
-                write_bytes_atomic(
-                    destination,
-                    encode_text(body, encoding=self.encoding, newline=self.newline),
-                )
+            self._write_to(destination, body, as_rich=as_rich)
         except (OSError, RichEditRtfError) as exc:
             self._report_failure("Save failed", f"Could not save {destination.name}.\n\n{exc}")
             return False
@@ -300,6 +312,72 @@ class DocumentFileMixin:
             from quill.core.lite.backups import write_backup
 
             write_backup(destination, self.control.GetValue())
+        self._settle_saved(destination)
+        self._cue(SoundEvent.DOCUMENT_SAVED)
+        self._announce(f"Saved {destination.name}")
+        return True
+
+    def refuse_word_target(self, destination: Path) -> bool:
+        """A Word name (``.docx`` and its kin): refuse it rather than write text there.
+
+        QUILL Lite has no Word writer and no Word reader, so text written under
+        a Word name is a file Word will not open and QUILL Lite cannot read back
+        (``quill.core.lite.filetypes.WORD_SUFFIXES``). ``True`` when refused.
+        """
+        if not is_word_path(destination.name):
+            return False
+        show_message_box(
+            word_save_refusal(destination.name),
+            "Format not supported",
+            wx.OK | wx.ICON_INFORMATION,
+            self,
+        )
+        return True
+
+    def save_quietly(self) -> str | None:
+        """The clipboard collector's save: no window, and no sentence of its own.
+
+        ``None`` when the named document was written; otherwise the plain
+        reason it was not, for the collector to say. Everything Save would ask
+        about in a window -- characters the file's encoding cannot hold, a file
+        another program changed -- is a reason here instead, and the person
+        settles it with an ordinary Save. No backup copy either: a dated copy
+        per collected clip would bury the ones Save keeps. A document with no
+        name, or one waiting to be renamed, is not this method's to save.
+        """
+        from quill.core.clipboard_collector import disk_changed_reason, encoding_reason
+        from quill.core.external_change import changed_since
+
+        if self.path is None or self._pending_suffix:
+            return None
+        if is_word_path(Path(self.path).name):
+            return word_save_refusal(Path(self.path).name)
+        destination = Path(self.path)
+        as_rich = self.editor.mode == RICH
+        body = self.control.GetValue()
+        if not as_rich and unencodable_characters(body, self.encoding):
+            return encoding_reason(destination.name, self.encoding)
+        if changed_since(getattr(self, "_disk_baseline", None), destination) is not None:
+            return disk_changed_reason(destination.name)
+        try:
+            self._write_to(destination, body, as_rich=as_rich)
+        except (OSError, RichEditRtfError) as exc:
+            return f"Could not save {destination.name}: {exc}"
+        self._settle_saved(destination)
+        return None
+
+    def _write_to(self, destination: Path, body: str, *, as_rich: bool) -> None:
+        """The write itself, shared by Save and the collector's quiet save."""
+        if as_rich:
+            self._write_rtf(destination)
+        else:
+            write_bytes_atomic(
+                destination,
+                encode_text(body, encoding=self.encoding, newline=self.newline),
+            )
+
+    def _settle_saved(self, destination: Path) -> None:
+        """Everything a successful write settles, for Save and the quiet save alike."""
         self.path = destination
         self._remember_disk_baseline()
         self._discard_slot()
@@ -315,15 +393,12 @@ class DocumentFileMixin:
         # the document's own sidecar dictionary moved with the name.
         self._forget_spell_dictionary()
         self._remember(destination)
-        self._cue(SoundEvent.DOCUMENT_SAVED)
         # Whatever the name was wrong about, it is not wrong now.
         self._pending_suffix = ""
         # Save As can change the language as well as the spell check: an
         # untitled document saved as notes.md is a Markdown document from here
         # on, and its Format rows have to say so without waiting for a restart.
         self._sync_menu_rows()
-        self._announce(f"Saved {destination.name}")
-        return True
 
     def _encoding_allows(self, body: str) -> bool:
         """True when the save may go ahead; asks about characters that will not fit.

@@ -59,8 +59,10 @@ _TOKEN_RE = re.compile(r"\b[A-Fa-f0-9_\-]{32,}\b")
 # Modern API key prefixes that contain non-hex characters and would escape
 # _TOKEN_RE: GitHub PATs (ghp_/gho_/github_pat_), OpenAI (sk-),
 # AWS access keys (AKIA), Slack (xoxb-/xoxp-), generic long alphanumeric keys.
+# 2026-10-16 (D-31): the cloud speech providers' key shapes -- Groq (gsk_),
+# ElevenLabs (sk_), AWS temporary keys (ASIA).
 _PREFIXED_KEY_RE = re.compile(
-    r"(?:ghp_|gho_|github_pat_|sk-|AKIA)[A-Za-z0-9_\-]{16,}"
+    r"(?:ghp_|gho_|github_pat_|sk-|sk_|gsk_|AKIA|ASIA)[A-Za-z0-9_\-]{16,}"
     r"|"
     r"xox[bp]-[A-Za-z0-9_\-]{20,}"
     r"|"
@@ -118,6 +120,29 @@ _SECRET_VALUE_FLAGS = frozenset({
 })
 
 
+#: The literal values of secrets QUILL holds in memory right now -- a speech
+#: provider's key read from the credential store (D-31) -- scrubbed wherever
+#: they appear, whatever shape they have. Never written anywhere.
+_KNOWN_SECRETS: set[str] = set()
+_MIN_KNOWN_SECRET = 8
+
+
+def remember_secret(value: str) -> None:
+    """Scrub *value* from every redacted line from now on (this process only).
+    Values shorter than eight characters are ignored: too likely to be a word."""
+    text = str(value or "").strip()
+    if len(text) >= _MIN_KNOWN_SECRET:
+        _KNOWN_SECRETS.add(text)
+
+
+def redact_known_secrets(text: str) -> str:
+    """*text* with every remembered secret replaced by ``[SECRET]``."""
+    for secret in sorted(_KNOWN_SECRETS, key=len, reverse=True):
+        if secret in text:
+            text = text.replace(secret, "[SECRET]")
+    return text
+
+
 def redact_source_tokens(text: str) -> str:
     """Replace known API key patterns in *text* with ``[TOKEN]``.
 
@@ -149,6 +174,7 @@ def redact_command_arg(arg: str) -> str:
 
     if not arg:
         return arg
+    arg = redact_known_secrets(arg)
     original = arg
     if _SECRET_NAME_RE.search(arg):
         return "[REDACTED]"
@@ -264,6 +290,8 @@ def _line_is_pure_secret(line: str) -> bool:
     stripped = line.strip()
     if not stripped:
         return False
+    if any(secret in stripped for secret in _KNOWN_SECRETS):
+        return True
     if _SECRET_NAME_RE.search(stripped):
         return True
     if _JWT_RE.search(stripped):

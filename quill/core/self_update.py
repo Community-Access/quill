@@ -71,6 +71,7 @@ def build_apply_update_script(
     from_version: str = "",
     to_version: str = "",
     rollback_setup: Path | None = None,
+    health_wait_seconds: int = 120,
 ) -> str:
     """The Windows ``.bat`` that applies an update after this process exits (pure).
 
@@ -79,6 +80,14 @@ def build_apply_update_script(
     relaunch ``exe_path``. ``mode="installer"``: run ``setup_exe`` elevated and
     silent, then relaunch. Both wait for ``pid`` to exit first and tee every
     step to ``log_path``.
+
+    The installer runs **not elevated** (2026-10-15): every QuillVille installer
+    is per-user, so ``-Verb RunAs`` only ever cost a needless UAC prompt -- and,
+    for a standard user, installed into the administrator's profile. Inno Setup
+    elevates by itself when the copy being updated was installed for all
+    users. Its exit code is kept: a failed install relaunches the version that
+    is still there and writes ``apply-result.json`` with ``install_failed``,
+    instead of "undoing" an update that never happened.
 
     ``relaunch_args`` are appended to the relaunch, and without them the restart
     half of "Install and restart now" silently stopped working the day the
@@ -105,7 +114,8 @@ def build_apply_update_script(
     itself; ``health_marker`` makes the helper wait for the relaunched app to
     say it started, and undo the update -- the ``.previous`` folder, or
     ``rollback_setup`` for an installed copy -- when it never does
-    (:mod:`quill.core.updater.apply_script`).
+    (:mod:`quill.core.updater.apply_script`). ``health_wait_seconds`` is how
+    long it waits (two minutes; tests shorten it).
     """
     if mode == "portable" and source_dir is None:
         raise SelfUpdateError("Portable apply needs a staged source directory.")
@@ -150,8 +160,13 @@ def build_apply_update_script(
         # /IS forces same-size/same-timestamp files to be overwritten too, so
         # the install becomes exactly the new version -- never skipping a
         # changed-but-same-size file (and making the swap deterministic).
+        # /XD names BOTH data folders. Excluding only the installed one protects
+        # it while the new copy has none -- but every portable zip ships a data
+        # folder, robocopy then walked into it, and /MIR purged everything of
+        # yours in data as "extra" (found running it, 2026-10-15).
         mirror = (
-            f'robocopy "{source_dir}" "{install_dir}" /MIR /IS /XD "{data_dir}" '
+            f'robocopy "{source_dir}" "{install_dir}" /MIR /IS '
+            f'/XD "{data_dir}" "{source_dir}\\{data_dirname}" '
             f'/R:2 /W:1 /NP >>"%LOG%" 2>&1'
         )
         if swap and source_dir is not None:
@@ -170,21 +185,24 @@ def build_apply_update_script(
                 'echo [apply] robocopy exit %ERRORLEVEL% >>"%LOG%" 2>&1',
             ]
     else:
-        from quill.core.updater.apply_script import ps_single_quoted
+        from quill.core.updater.apply_script import INSTALL_RC, installer_lines, ps_single_quoted
 
         setup_args = ["'/VERYSILENT'", "'/SUPPRESSMSGBOXES'", "'/NORESTART'"]
         if channel:
             setup_args.append(f"'/CHANNEL={channel}'")
         if setup_log is not None:
-            setup_args.append(ps_single_quoted(f'/LOG=""{setup_log}""'))
-        lines += [
-            f'echo [apply] running installer "{setup_exe}" >>"%LOG%" 2>&1',
-            "powershell -NoProfile -Command "
-            f'"Start-Process -FilePath {ps_single_quoted(setup_exe)} '
-            f"-ArgumentList {','.join(setup_args)} "
-            f'-Verb RunAs -Wait" >>"%LOG%" 2>&1',
-            'echo [apply] installer done %ERRORLEVEL% >>"%LOG%" 2>&1',
-        ]
+            # /LOG="<path>" with real quotes round the path, built by PowerShell
+            # from [char]34: a doubled "" inside the batch line's own quotes lost
+            # the closing quote on its way through powershell.exe (found running
+            # it, 2026-10-15), which only worked while /LOG was the last argument.
+            setup_args.append(f"('/LOG='+[char]34+{ps_single_quoted(setup_log)}+[char]34)")
+        if setup_exe is None:  # checked above; this tells the type checker
+            raise SelfUpdateError("Installer apply needs the setup executable.")
+        lines += installer_lines(setup_exe, setup_args, label="the installer")
+        # A failed install is not health-checked: the old version is still
+        # there, and waiting two minutes for the new one to start would end in
+        # "undoing" an update that never happened (:installfailed, below).
+        lines.append(f'if not "%{INSTALL_RC}%"=="0" goto :installfailed')
     # Quoted only when it needs to be: a module name never contains a space, and
     # an unquoted "-m quill.apps.lite" is what the Start Menu shortcut passes and
     # what the apply log should show.
@@ -209,9 +227,19 @@ def build_apply_update_script(
                 data_dirname=data_dirname,
                 rollback_setup=rollback_setup,
                 setup_args=[f"'/CHANNEL={channel}'"] if channel else [],
+                wait_seconds=health_wait_seconds,
             )
     else:
         lines.append('echo [apply] not relaunching: updated on close >>"%LOG%" 2>&1')
+    if mode != "portable":
+        from quill.core.updater.apply_script import install_failed_lines
+
+        lines += install_failed_lines(
+            result_file=result_file,
+            from_version=from_version,
+            to_version=to_version,
+            relaunch=f'start "" "{exe_path}" {arguments}'.rstrip() if relaunch else "",
+        )
     if mode == "portable" and source_dir is not None:
         # Delete the staging *parent* (…/staging) so a re-run starts clean.
         lines.append(f'rmdir /S /Q "{source_dir.parent}" >>"%LOG%" 2>&1')
@@ -441,6 +469,7 @@ def begin_self_update(
     when: str = "now",
     channel: str | None = None,
     version: str = "",
+    current_version: str = "",
 ) -> None:
     """Apply the already-downloaded update at ``download_path`` and relaunch.
 
@@ -482,7 +511,16 @@ def begin_self_update(
     from quill.core.updater import apply as kept
     from quill.core.updater.profiles import PROFILES
 
-    previous = kept.installed_version(updates_dir)
+    # The version being replaced. The rollback books know it once one update has
+    # gone through; before that -- every copy's first update -- it is the
+    # installer's marker beside the app, or QUILL's own build. Left empty, the
+    # undo still happened but the app never recognised it as its own, so it
+    # never said so (found running the helper for real, 2026-10-15).
+    previous = (
+        kept.installed_version(updates_dir)
+        or current_version
+        or kept.running_version(install_dir, running_app_key())
+    )
     health: dict[str, object] = {}
     # Only apps that confirm their start (quill.ui.updates.started) can be
     # health-checked; any other app would be undone for staying silent.

@@ -51,13 +51,27 @@ def read_reference_text(path: Any) -> str:
 
 
 def _read_rich_reference(path: Any) -> str:
-    """Convert a rich document (docx, etc.) to text via markitdown, or '' if absent."""
+    """A rich document (docx, etc.) as text, or '' when nothing can read it.
+
+    Office, HTML, EPUB and CSV go through ``read_office_text_preferring_own``:
+    QUILL's own reader first for Word, Excel, PowerPoint and OpenDocument, and
+    MarkItDown only when that fails (2026-10-16), so a .docx reference never
+    pays MarkItDown's long import. Anything else still tries MarkItDown.
+    """
+    from quill.io.office_text import (
+        MARKUP_SUFFIXES,
+        OFFICE_SUFFIXES,
+        read_office_text_preferring_own,
+    )
+
     try:
+        if path.suffix.lower() in OFFICE_SUFFIXES | MARKUP_SUFFIXES:
+            return read_office_text_preferring_own(path).text
         from markitdown import MarkItDown
 
         result = MarkItDown().convert(str(path))
         return str(getattr(result, "text_content", "") or "")
-    except Exception:  # noqa: BLE001 - markitdown missing or conversion failed
+    except Exception:  # noqa: BLE001 - no reader could read it; the caller warns
         return ""
 
 

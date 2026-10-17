@@ -248,6 +248,68 @@ def test_a_due_reminder_is_announced_once(frame, tmp_path, monkeypatch) -> None:
     monitor.stop()
 
 
+def test_a_fired_reminder_waits_in_the_notification_centre(frame, tmp_path, monkeypatch) -> None:
+    """Spoken and toasted, and kept where someone who was away will find it.
+
+    Until 2026-10-15 a tune-in reminder never reached the centre, while new
+    episodes and channel alerts always did. A station reminder keeps its
+    stream, so Enter on the row can play it.
+    """
+    from quill.core import notification_targets
+    from quill.core.notifications import load_notifications
+    from quill.core.radio import reminders
+
+    monkeypatch.setattr("quill.ui.quiet_hours_ui.held_back", lambda _kind, **_k: False)
+    monkeypatch.setattr(
+        "quill.core.notifications.notifications_path", lambda: tmp_path / "notices.json"
+    )
+    reminders.add_reminder(
+        tmp_path,
+        "Radio Nowhere",
+        SHOWTIME,
+        kind=reminders.KIND_STATION,
+        target="https://stream.example.org/nowhere",
+    )
+    said: list[str] = []
+    monitor = _monitor(frame, said)
+
+    assert monitor.check_now(now=SHOWTIME) == 1
+    (notice,) = load_notifications(path=tmp_path / "notices.json")
+    assert notice.app == "Quill Radio" and notice.title == "Reminder"
+    assert notice.body == said[0]
+    assert notification_targets.parse(notice.target) == (
+        notification_targets.KIND_STREAM,
+        "https://stream.example.org/nowhere",
+    )
+    monitor.stop()
+
+
+def test_a_station_reminder_reads_the_note_kept_on_the_station(
+    frame, tmp_path, monkeypatch
+) -> None:
+    """Radio extras 9: the note written in Favorites is said when it goes off."""
+    from types import SimpleNamespace
+
+    from quill.core.radio import reminders
+    from quill.core.radio.item_notes import set_note
+
+    monkeypatch.setattr("quill.ui.quiet_hours_ui.held_back", lambda _kind, **_k: False)
+    monkeypatch.setattr(
+        "quill.core.notifications.notifications_path", lambda: tmp_path / "notices.json"
+    )
+    url = "https://stream.example.org/nowhere"
+    set_note(tmp_path, SimpleNamespace(stream_url=url), "The quiz is in the second hour.")
+    reminders.add_reminder(
+        tmp_path, "Radio Nowhere", SHOWTIME, kind=reminders.KIND_STATION, target=url
+    )
+    said: list[str] = []
+    monitor = _monitor(frame, said)
+
+    assert monitor.check_now(now=SHOWTIME) == 1
+    assert said[0].endswith("Your note: The quiz is in the second hour.")
+    monitor.stop()
+
+
 def test_nothing_due_is_silent(frame, tmp_path, monkeypatch) -> None:
     from quill.core.radio import reminders
 

@@ -17,6 +17,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import Any
 
+from quill.core.windows_dictation.command_mode import DEFAULT_COMMAND_PREFIX
 from quill.core.windows_dictation.vocabulary import (
     COMMAND_HELP,
     DASH_STYLES,
@@ -79,6 +80,131 @@ def _spanish_sections(heading: Any, row: Any, table_head: Any, lines: list[str],
             row(" or ".join(f'"{phrase}"' for phrase in entry.phrases), entry.description)
 
 
+def _command_word_section(
+    heading: Any,
+    row: Any,
+    table_head: Any,
+    lines: list[str],
+    md: bool,
+    prefix: str,
+    required: bool,
+) -> None:
+    """The command word (D-1): how it works, strict mode, and its own commands."""
+    from quill.core.windows_dictation.command_mode import COMMAND_MODE_HELP
+
+    heading("The command word")
+    word = prefix or "the command word"
+    said = f'"{prefix}"' if prefix else "the command word"
+    strict = (
+        "Strict mode is on, so a command said on its own is written as words: say the "
+        "command word first. The stop phrase always works on its own."
+        if required
+        else 'With "Commands only after the command word" switched on in More Dictation '
+        "Settings (it is on in QUILL Transcribe), a command said on its own is written as "
+        "words, except the stop phrase."
+    )
+    for sentence in (
+        (
+            f"Say {said} first to give a command instead of dictating: "
+            f'"{word} scratch that". It counts only as the first word after a pause, '
+            f'so "I told {word} about it" is written as words.'
+            if prefix
+            else "No command word is set, so give commands with the Speak a Command key."
+        ),
+        "Every command in this list works after the command word. If what follows it is "
+        f'not a command, nothing is typed: you hear "Not a command", and "{word} type '
+        'that" writes it after all.',
+        f'Say "literal {word}" to write the word itself.',
+        strict,
+        "Speak a Command (F11 in QUILL and QUILL Lite, and in QUILL Transcribe the "
+        "Command Key you choose) does the same without the word: the next thing you say "
+        "is a command. Press it twice for command mode.",
+    ):
+        lines.append(("- " + sentence) if md else sentence)
+    if md:
+        lines.append("")
+    table_head("Say, after the command word", "What happens")
+    for entry in COMMAND_MODE_HELP:
+        row(" or ".join(f'"{phrase}"' for phrase in entry.phrases), entry.description)
+
+
+def _review_section(
+    heading: Any, row: Any, table_head: Any, lines: list[str], md: bool, prefix: str
+) -> None:
+    """Review before inserting (D-2): what the review is, and its phrases."""
+    from quill.core.windows_dictation.review_session import REVIEW_HELP
+
+    heading("Review before inserting")
+    word = prefix or "the command word"
+    for sentence in (
+        f'Say "{word} review that" to take the last phrase back out and hold it in '
+        "Review Dictation (Shift+F4), where you can read it, edit it, ask the "
+        "AI to change it and insert it once. Nothing is written until you insert it.",
+        "While the review is open, what you say is written into it. Say the command word "
+        "first to give an instruction instead, or turn on Talk About It in the window.",
+        "Changing words with AI needs AI help switched on and your ChatGPT subscription "
+        "or your own AI key. With AI off, the review still lets you edit and insert.",
+        f'"{word} polish that" asks the AI to fix punctuation, capitals and small slips '
+        "and keep your words. It works only after you turn on Allow polishing my "
+        "dictation with AI in More Dictation Settings, and nothing is sent until you "
+        "agree.",
+    ):
+        lines.append(("- " + sentence) if md else sentence)
+    if md:
+        lines.append("")
+    table_head("Say, after the command word", "What happens")
+    for entry in REVIEW_HELP:
+        row(" or ".join(f'"{phrase}"' for phrase in entry.phrases), entry.description)
+
+
+def _profile_section(heading: Any, lines: list[str], md: bool, prefix: str) -> None:
+    """Profiles and formatting (D-23): what a profile changes, in sentences."""
+    from quill.core.windows_dictation.profiles import PROFILES
+
+    heading("Profiles and formatting")
+    names = ", ".join(profile.name for profile in PROFILES)
+    word = prefix or "the command word"
+    for sentence in (
+        f"A profile is the kind of writing dictation is for: {names}. Standard is "
+        "your Dictation Settings as they are, and is where everybody starts.",
+        "Choose one in More Dictation Settings in QUILL and QUILL Lite, or in QUILL "
+        "Transcribe's Dictation menu (Dictation Profile, Ctrl+Shift+F) or tray menu. "
+        f'Or say its name after the command word: "{word} email mode".',
+        "A profile sets the pause, whether filler words are removed and whether "
+        "punctuation is added, and how headings, bold and italic are written.",
+        'Markdown and Coding write "heading two" as two number signs, and "bold that" '
+        "as two asterisks either side. Document and Email use the editor's own Heading "
+        "and Bold in a document that holds formatting; anywhere else they type nothing "
+        "for them and say why. Chat and Verbatim write plain text.",
+        "Lock Profile stops a spoken profile name switching profiles; you can still "
+        "choose one by hand. Nothing ever switches profiles on its own.",
+    ):
+        lines.append(("- " + sentence) if md else sentence)
+
+
+def _repair_section(
+    heading: Any, lines: list[str], md: bool, prefix: str, *, external: bool = False
+) -> None:
+    """Correcting yourself (D-20) and remembering corrections (D-21). The same
+    in another program: "correct that" and "choose" work there since D-10."""
+    del external
+    heading("Correcting yourself as you talk")
+    word = prefix or "the command word"
+    for sentence in (
+        "With Fix it when I correct myself turned on in Dictation Settings, saying "
+        '"no", "I mean", "no I mean", "sorry" or "scratch that word" between two days, '
+        "months, numbers or names from My Words writes only the second: "
+        '"Thursday, no, Friday" writes Friday. Anything else is written as said.',
+        'When you correct the same word the same way twice, with "correct that" and '
+        '"choose", or in QUILL\'s own documents with "correct" and the word, dictation '
+        "offers to remember it: "
+        '"Add a correction: Ann becomes Anne?" In QUILL and QUILL Lite a window asks. '
+        f'Where no window can be shown the question is spoken: say "{word} yes" to add '
+        f'it or "{word} no" within 30 seconds. Nothing is added without a yes.',
+    ):
+        lines.append(("- " + sentence) if md else sentence)
+
+
 def commands_reference(
     *,
     markdown: bool = False,
@@ -88,6 +214,9 @@ def commands_reference(
     own_phrases: Iterable[tuple[str, str]] = (),
     language: str = "en",
     external: bool = False,
+    command_prefix: str = DEFAULT_COMMAND_PREFIX,
+    prefix_required: bool = False,
+    review: bool = True,
 ) -> str:
     """Every phrase dictation acts on, grouped, with what each one does.
 
@@ -103,7 +232,8 @@ def commands_reference(
     -- QUILL Transcribe and Inkwell's Dictate Anywhere: only the commands that
     work there (:data:`~quill.core.windows_dictation.anywhere.EXTERNAL_COMMANDS`),
     no wake phrase, and the two limits of inserting into another program. The
-    editors' list, the default, is unchanged.
+    editors' list, the default, is unchanged. *review* False leaves out Review
+    Dictation (D-2) for a host without it (Quill Inkwell).
     """
     from quill.core.windows_dictation.anywhere import EXTERNAL_COMMANDS
 
@@ -168,20 +298,35 @@ def commands_reference(
         'The Markdown line marks -- "bullet", "numbered item", "block quote" and '
         '"heading one" to "heading six" -- count only at the start of a phrase, so '
         '"the heading two lines down" stays words.',
+        "A snippet with blanks asks for each one by name: say the answer, or for a "
+        "choice say one of the options or choose and its number. Say skip to leave "
+        "one empty, scratch that to go back one, or cancel to type nothing. Then the "
+        "whole snippet goes in as one phrase, and scratch that takes all of it back.",
         *(
             (
-                "Nothing in the other program is read, so commands that select, find "
-                "or correct words are not listed: they work in QUILL's own documents.",
-                "A snippet's blanks are written as their names in square brackets, "
-                "like [title], and no question is asked. Where a snippet or an "
-                "abbreviation puts the cursor in the middle, the cursor stays at the "
-                "end instead.",
+                "Nothing in the other program is read, so commands that select or find "
+                "words are not listed: they work in QUILL's own documents.",
+                "Correcting works on the words dictation typed there itself, and only "
+                "while the focus has not moved and you have not typed or clicked since. "
+                "In Word and Outlook, which change words as they are typed, the "
+                "commands that retype words are refused; scratch that and the delete "
+                "commands still work.",
+                "Where a snippet or an abbreviation puts the cursor in the middle, the "
+                "cursor stays at the end instead.",
             )
             if external
             else ()
         ),
     ):
         lines.append(("- " + sentence) if markdown else sentence)
+
+    _command_word_section(
+        heading, row, table_head, lines, markdown, command_prefix, prefix_required
+    )
+    if review:
+        _review_section(heading, row, table_head, lines, markdown, command_prefix)
+    _profile_section(heading, lines, markdown, command_prefix)
+    _repair_section(heading, lines, markdown, command_prefix, external=external)
 
     for group, marks in _grouped(MARKS).items():
         heading(group)

@@ -69,9 +69,11 @@ from quill.core.release_assets import (  # noqa: E402
     fetch_component,
 )
 from quill.core.speech.ffmpeg_install import (  # noqa: E402
+    FFMPEG_NOTICE_FILES,
     FFMPEG_PINNED_VERSION,
     _extract_ffmpeg_from_zip,
     ffmpeg_download_source,
+    write_license_notices,
 )
 from quill.core.speech.piper_install import (  # noqa: E402
     PIPER_RELEASE_TAG,
@@ -135,6 +137,17 @@ def is_staged(component: str) -> bool:
     return (component_dir(component) / _sentinel(component)).is_file()
 
 
+def is_complete(component: str) -> bool:
+    """True when *component* is staged together with the licence it ships with."""
+    if not is_staged(component):
+        return False
+    if component == "ffmpeg":
+        return ffmpeg_notices_staged(component_dir("ffmpeg"))
+    if component == "deno":
+        return (component_dir("deno") / DENO_LICENSE_NAME).is_file()
+    return True
+
+
 def _progress(fraction: float, message: str) -> None:
     # One line per 10% so a long download shows life in a build log without
     # flooding it (build logs are read by humans, and by screen readers).
@@ -143,14 +156,27 @@ def _progress(fraction: float, message: str) -> None:
         print(f"    {pct:3d}%  {message}", flush=True)
 
 
+def ffmpeg_notices_staged(directory: Path) -> bool:
+    """True when every FFmpeg notice file sits in *directory*."""
+    return all((directory / name).is_file() for name in FFMPEG_NOTICE_FILES)
+
+
 def fetch_ffmpeg(*, force: bool = False) -> Path:
-    """Stage ffmpeg.exe + ffprobe.exe into the cache; return their directory.
+    """Stage ffmpeg.exe + ffprobe.exe and FFmpeg's licence into the cache.
 
     Uses :func:`ffmpeg_download_source`, so this is byte-for-byte the archive
-    QUILL's own on-demand ffmpeg install would fetch and verify.
+    QUILL's own on-demand ffmpeg install would fetch and verify. The pinned
+    build is GPLv3 (``--enable-gpl --enable-version3``; ``ffmpeg -L`` says so),
+    so its licence and source offer are staged beside the binaries the same way
+    Deno's licence is -- except that FFmpeg's texts are in the package
+    (``quill/data/notices/ffmpeg``), so no second download is needed for them,
+    and a cache staged before this existed is completed without re-fetching.
     """
     dest = component_dir("ffmpeg")
     if is_staged("ffmpeg") and not force:
+        if not ffmpeg_notices_staged(dest):
+            write_license_notices(dest)
+            print(f"  ffmpeg {FFMPEG_PINNED_VERSION}: added its licence notices at {dest}")
         print(f"  ffmpeg {FFMPEG_PINNED_VERSION}: already staged at {dest}")
         return dest
 
@@ -162,6 +188,7 @@ def fetch_ffmpeg(*, force: bool = False) -> Path:
         archive = tmp / "ffmpeg.zip"
         download_verified(url, archive, sha256=sha256, progress=_progress)
         _extract_ffmpeg_from_zip(archive, dest)
+        write_license_notices(dest)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
     print(f"  ffmpeg {FFMPEG_PINNED_VERSION}: staged at {dest}")
@@ -286,9 +313,9 @@ def main(argv: list[str] | None = None) -> int:
     components = tuple(args.only) if args.only else COMPONENTS
 
     if args.verify_only:
-        missing = [c for c in components if not is_staged(c)]
+        missing = [c for c in components if not is_complete(c)]
         for component in components:
-            state = "staged" if is_staged(component) else "MISSING"
+            state = "staged" if is_complete(component) else "MISSING"
             print(f"{component}: {state} ({component_dir(component)})")
         if missing:
             print(

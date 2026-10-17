@@ -24,6 +24,7 @@ this without a display.
 from __future__ import annotations
 
 from quill.core.lite import APP_NAME, APP_VERSION
+from quill.core.lite.commands_ai import AI_ASK_ROWS, AI_SEARCH_ROWS
 from quill.core.lite.commands_dictation import DICTATION_ROWS
 from quill.core.lite.commands_review import EXPORT_ROWS, NOTE_ROWS, NOTE_SUBMENU_ROWS, TASK_ROWS
 from quill.core.lite.commands_words import DICTIONARY_ROWS, DICTIONARY_STATUS_ROWS, WORD_ROWS
@@ -187,6 +188,11 @@ COMMANDS: list[CommandRow] = [
     ("&Edit", "Find Ne&xt", "F3", "cmd_find_next", ""),
     ("&Edit", "Find Pre&vious", "Shift+F3", "cmd_find_previous", ""),
     ("&Edit", "R&eplace...", "Ctrl+H", "cmd_replace", ""),
+    # Rows of Edit, as in QUILL (rules 1-2; were hidden in Matches, PRD 2026-10-16).
+    # S from Character Details; no letter is free for Replace Across Files (GATE-14).
+    ("&Edit", "F&ind in Open Documents...", "Ctrl+Alt+Shift+F8", "cmd_find_open_docs", ""),
+    ("&Edit", "&Search in Files...", "Ctrl+Alt+Shift+F", "cmd_search_in_files", ""),
+    ("&Edit", "Replace Across Files...", "Ctrl+Shift+R", "cmd_replace_in_files", ""),
     # Two questions Find Next cannot answer: how many are there, and what does
     # each one sit in. Both matter most in the moment just before a Replace
     # All, and both are otherwise reachable only by pressing F3 until it wraps
@@ -206,7 +212,7 @@ COMMANDS: list[CommandRow] = [
     # A screen reader says "space" for four different characters. This is the
     # only way to find out which one broke the search.
     ("&Edit", "Describe C&haracter", "Ctrl+Shift+C", "cmd_describe_character", ""),
-    ("&Edit", "Character Detail&s...", "Ctrl+Alt+C", "cmd_describe_character_detail", ""),
+    ("&Edit", "Character Details...", "Ctrl+Alt+C", "cmd_describe_character_detail", ""),
     ("&Edit", "", "", "", "sep"),
     ("&Edit", "&Lines", "", "", "sub"),
     ("&Edit", "Selectio&n", "", "", "sub"),
@@ -214,11 +220,6 @@ COMMANDS: list[CommandRow] = [
     # -- Edit > Matches ------------------------------------------------------
     ("&Edit|&Matches", "&All Matches...", "Ctrl+Shift+F3", "cmd_find_all", ""),
     ("&Edit|&Matches", "&Count Occurrences", "Ctrl+Alt+Shift+F3", "cmd_count_occurrences", ""),
-    # Every open window at once (ui/open_documents_find); QUILL's key and command.
-    ("&Edit|&Matches", "&Find in Open Documents...", "Ctrl+Alt+Shift+F8", "cmd_find_open_docs", ""),
-    # QUILL's folder search, its window and its keys (lite_file_search).
-    ("&Edit|&Matches", "&Search in Files...", "Ctrl+Alt+Shift+F", "cmd_search_in_files", ""),
-    ("&Edit|&Matches", "&Replace Across Files...", "Ctrl+Shift+R", "cmd_replace_in_files", ""),
     # -- Edit > Lines --------------------------------------------------------
     # Everything that happens to whole lines, in one place, in the order the
     # work is actually done: move them, delete them, order them, tidy them.
@@ -777,12 +778,11 @@ COMMANDS: list[CommandRow] = [
     ("&Navigate|&Bookmarks", "Set Bookmark &8", "Ctrl+Shift+8", "cmd_set_bookmark_8", ""),
     ("&Navigate|&Bookmarks", "Set Bookmark &9", "Ctrl+Shift+9", "cmd_set_bookmark_9", ""),
     # -- Tools --------------------------------------------------------------
-    # What is left once line work has gone to Edit where it belongs: the things
-    # that are genuinely *tools* rather than editing -- the spell checker, case
-    # conversion, indenting, the files-and-formats dialog, abbreviations, and
-    # the two ways to change what QUILL Lite itself is. Tools > Options is where
-    # Windows applications have kept their settings since Word 6, which is why
-    # Preferences and Customize Features are here rather than in View.
+    # What is left once line work has gone to Edit where it belongs: the things that are genuinely
+    # *tools* rather than editing -- the spell checker, case conversion, indenting, the
+    # files-and-formats dialog, abbreviations, and the two ways to change what QUILL Lite itself is.
+    # Tools > Options is where Windows applications have kept their settings since Word 6, which is
+    # why Preferences and Customize Features are here rather than in View.
     ("&Tools", "&Spelling", "", "", "sub"),
     *WORD_ROWS,  # Thesaurus and Say Word Summary (commands_words.py)
     ("&Tools", "&Change Case", "", "", "sub"),
@@ -795,10 +795,11 @@ COMMANDS: list[CommandRow] = [
     ("&Tools", "&Dictation", "", "", "sub"),
     *NOTE_SUBMENU_ROWS,  # Tools > Inline Notes (commands_review.py)
     ("&Tools", "", "", "", "sep"),
-    # Both are shown in the status bar and both used to be read-only: QUILL Lite
-    # wrote back whatever it read, which is the right default and a dead end for
-    # anyone who needs a UTF-8 copy of a Windows-1252 file.
+    # Both are shown in the status bar and both used to be read-only: QUILL Lite wrote back whatever
+    # it read, which is the right default and a dead end for anyone who needs a UTF-8 copy of a
+    # Windows-1252 file.
     ("&Tools", "&File Encoding and Line Endings...", "Ctrl+Alt+E", "cmd_file_format", ""),
+    ("&Tools", "&Read-Only Guard", "Ctrl+Alt+Backspace", "cmd_toggle_read_only", "check"),
     ("&Tools", "", "", "", "sep"),
     # Type a short form and a space, get the long one. QUILL's engine, QUILL's
     # manager dialog, and QUILL Lite's own library unless Preferences says share.
@@ -822,6 +823,7 @@ COMMANDS: list[CommandRow] = [
     # No area of its own, deliberately: the switch has to still be there when
     # the thing it switches is off, or it can only ever be turned one way.
     ("&Tools", "&Expand Abbreviations", "Alt+Shift+A", "cmd_toggle_abbreviations", "check"),
+    ("&Tools", "AutoCorrect Entries...", "Alt+Shift+9", "cmd_autocorrect_entries", ""),
     ("&Tools", "", "", "", "sep"),
     # The only place the two settings with no menu item of their own -- what
     # Ctrl+N creates, and how often unsaved work is copied aside -- can be
@@ -925,8 +927,10 @@ COMMANDS: list[CommandRow] = [
     # module -- see quill/ui/main_frame_hosted_ai.py.
     ("&Tools|&AI", "AI &Assistant...", "Ctrl+Alt+G", "cmd_ai_assistant", ""),
     ("&Tools|&AI", "As&k About This Document...", "Ctrl+Alt+Z", "cmd_ai_ask_document", ""),
+    *AI_ASK_ROWS,  # the Chat Key and the Prompt Library (commands_ai.py)
     ("&Tools|&AI", "", "", "", "sep"),
     ("&Tools|&AI", "&Usage...", "Ctrl+Alt+Shift+F9", "cmd_ai_usage", ""),
+    *AI_SEARCH_ROWS,  # Web Searches Left (commands_ai.py)
     # "Connect or Sign Out" rather than "Sign In or Out": the window this opens
     # talks about connecting *this computer*, and the word had to be settled
     # anyway -- QUILL shows the same five rows now, and every sentence that

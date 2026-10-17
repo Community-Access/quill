@@ -6,17 +6,12 @@ import quill.core.speech.guided_setup as gs
 def test_offline_speech_engine_options_lists_both_recommended_first() -> None:
     opts = gs.offline_speech_engine_options()
     ids = [o.engine_id for o in opts]
-    # whisper.cpp leads (the friendly, zero-big-download default). Parakeet 3
-    # sits second when its mirror is pinned — it is the engine dictation itself
-    # prefers once installed, so the picker surfaces it right after the
-    # default. The other always-listed engines follow in their fixed order;
-    # Nemotron may be appended when its asset is hosted (see the gate tests).
-    assert ids[0] == "whispercpp"
-    without_mirror_gated = [i for i in ids if i not in ("parakeet", "nemotron")]
-    # Vosk is not offered: it is the podcast chapter engine only (2026-10-13).
-    assert without_mirror_gated == ["whispercpp", "fasterwhisper"]
-    if "parakeet" in ids:
-        assert ids[1] == "parakeet"
+    # whisper.cpp leads (the friendly, zero-big-download default). The shared
+    # speech models sit second: they hold Parakeet, the engine dictation itself
+    # prefers once installed (dict.md D-26 replaced the separate Parakeet and
+    # Nemotron engines with them). Vosk is not offered: it is the podcast
+    # chapter engine only (2026-10-13).
+    assert ids == ["whispercpp", "sherpa", "fasterwhisper"]
     # whisper.cpp is the friendly default and always installable (release asset).
     whispercpp = opts[0]
     assert whispercpp.recommended is True
@@ -34,7 +29,7 @@ def test_engine_options_never_crash_on_detector_failure(monkeypatch) -> None:
 
     monkeypatch.setattr(gs, "_whispercpp_installed", boom)
     monkeypatch.setattr(gs, "_faster_whisper_installed", boom)
-    monkeypatch.setattr(gs, "_nemotron_installed", boom)
+    monkeypatch.setattr(gs, "_shared_installed", boom)
     opts = gs.offline_speech_engine_options()  # must not raise
     assert all(o.installed is False for o in opts)
 
@@ -43,7 +38,7 @@ def test_recommended_engine_prefers_an_installed_one_else_whispercpp(monkeypatch
     # Nothing installed -> the friendly default.
     monkeypatch.setattr(gs, "_whispercpp_installed", lambda: False)
     monkeypatch.setattr(gs, "_faster_whisper_installed", lambda: False)
-    monkeypatch.setattr(gs, "_nemotron_installed", lambda: False)
+    monkeypatch.setattr(gs, "_shared_installed", lambda: False)
     assert gs.recommended_engine_id() == "whispercpp"
 
     # Faster Whisper already installed -> keep the user on what they have.
@@ -64,6 +59,20 @@ def test_models_for_engine_lists_catalog_with_a_recommendation() -> None:
     assert {m.model_id for m in cpp} != {m.model_id for m in fw}
 
 
+def test_guided_models_carry_their_tier_and_the_reason(monkeypatch) -> None:
+    """D-22: the guided picker names each model's tier and says why the
+    recommended one suits this computer."""
+    from quill.core.speech import service
+
+    monkeypatch.setattr(service, "detect_total_ram_gb", lambda: 8.0)
+    monkeypatch.setattr(service, "detect_has_gpu", lambda: False)
+    models = gs.models_for_engine("whispercpp")
+    assert all(m.tier in {"Lightweight", "Balanced", "High accuracy"} for m in models)
+    best = [m for m in models if m.recommended]
+    assert len(best) == 1 and "8.0 GB RAM" in best[0].reason
+    assert all(not m.reason for m in models if not m.recommended)
+
+
 def test_default_model_is_the_smallest_for_a_fast_start() -> None:
     # "default to tiny so they're going immediately" -- the first (smallest) model.
     assert gs.default_model_id("whispercpp") == "tiny"
@@ -77,37 +86,24 @@ def test_vosk_is_not_a_guided_engine() -> None:
     assert {m.model_id for m in gs.models_for_engine("vosk")} == cpp_ids
 
 
-def test_nemotron_hidden_when_model_asset_unavailable(monkeypatch) -> None:
-    # If the model mirror is not hosted/pinned, the guided picker must NOT offer
-    # Nemotron -- no half-install of the runtime followed by a dead end.
-    monkeypatch.setattr(gs, "_nemotron_model_available", lambda: False)
+def test_there_is_no_separate_nemotron_or_parakeet_engine_any_more() -> None:
+    """dict.md D-26: one shared engine for every sherpa-onnx model."""
     ids = [o.engine_id for o in gs.offline_speech_engine_options()]
-    assert "nemotron" not in ids
+    assert "nemotron" not in ids and "parakeet" not in ids
 
 
-def test_nemotron_appears_once_its_model_asset_is_available(monkeypatch) -> None:
-    # Once the assets-v1 zip is hosted+pinned (mirror_for returns a real asset),
-    # Nemotron becomes a first-class guided engine automatically.
-    monkeypatch.setattr(gs, "_nemotron_model_available", lambda: True)
-    opts = gs.offline_speech_engine_options()
-    nem = [o for o in opts if o.engine_id == "nemotron"]
-    assert len(nem) == 1
-    assert nem[0].name and nem[0].tagline and len(nem[0].summary) > 20
+def test_models_for_the_shared_engine_are_the_family_catalogue(monkeypatch) -> None:
+    from quill.core.windows_dictation import model_advice
+    from quill.core.windows_dictation.model_catalog import catalogue_ids
+    from quill.core.windows_dictation.speed_check import SpeedCheck
 
-
-def test_nemotron_model_asset_is_hosted_and_pinned() -> None:
-    # The assets-v1 zip has been uploaded and its SHA pinned in model_mirrors, so
-    # the availability gate is really open (guards against dropping the pin).
-    assert gs._nemotron_model_available() is True
-
-
-def test_models_for_engine_nemotron_uses_its_own_catalog() -> None:
-    models = gs.models_for_engine("nemotron")
-    assert models
-    assert models[0].model_id == gs.default_model_id("nemotron")
-    assert sum(1 for m in models if m.recommended) == 1
-    cpp_ids = {m.model_id for m in gs.models_for_engine("whispercpp")}
-    assert {m.model_id for m in models} != cpp_ids
+    advice = model_advice.recommend(SpeedCheck(tiny=0.05, cores=4, memory_gb=8.0))
+    monkeypatch.setattr(model_advice, "for_this_computer", lambda *a, **k: advice)
+    models = gs.models_for_engine("sherpa")
+    assert [m.model_id for m in models] == list(catalogue_ids())
+    best = [m for m in models if m.recommended]
+    assert len(best) == 1 and best[0].reason == advice.sentence
+    assert all(m.tier in {"Lightweight", "Balanced", "High accuracy"} for m in models)
 
 
 def test_models_for_engine_never_crashes_on_detection_failure(monkeypatch) -> None:
@@ -183,14 +179,11 @@ def test_setup_status_ready_and_default_can_test_but_not_reset_default() -> None
     assert "default" in st.headline.lower()
 
 
-def test_parakeet_is_offered_with_catalog_capability_text() -> None:
-    """P4.2: the guided picker's Parakeet summary carries the catalog's own
-    capability sentence, so setup and the model manager can never disagree
-    about what the engine does. (Parakeet's mirror is pinned, so it is
-    offered.)"""
+def test_the_shared_engine_says_what_parakeet_does() -> None:
+    """The shared engine's summary names Parakeet's silence-safety, the reason
+    dictation prefers it."""
     opts = gs.offline_speech_engine_options()
-    parakeet = next((o for o in opts if o.engine_id == "parakeet"), None)
-    assert parakeet is not None
-    assert "never invents text from silence" in parakeet.summary
-    assert "detects the spoken language" in parakeet.summary
-    assert parakeet.tagline
+    shared = next(o for o in opts if o.engine_id == "sherpa")
+    assert "never invents text from silence" in shared.summary
+    assert "never downloaded twice" in shared.summary
+    assert shared.tagline

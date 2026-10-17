@@ -32,6 +32,11 @@ nothing looks broken.
 
 ## References
 
+- [transcribe-targets.json](transcribe-targets.json) -- the results of QUILL
+  Transcribe's tested-programs harness (`tests/integration/test_transcribe_targets.py`),
+  which `scripts/build_transcribe_compatibility.py` turns into the table in
+  Transcribe's user guide. The manual half is the "QUILL Transcribe Into Other
+  Programs" section of `screen-reader-checks-2026-10.md`.
 - [radio-3.0-test-plan.md](radio-3.0-test-plan.md) -- the long-form Radio plan:
   every verified URL, the described-audio investigation, the three bugs that
   probing found. `radio-signoff.md` is its fast run.

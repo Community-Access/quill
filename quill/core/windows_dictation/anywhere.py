@@ -13,8 +13,9 @@ This module is the wx-free part:
   capital and spacing modes, the language switch, "scratch that" (sent as
   backspaces, only while the same window still has the focus), "stop
   dictation". Nothing that needs to read the other program's text -- select,
-  go to, correct, units, the clips and snippets -- because Inkwell cannot see
-  it: :data:`EXTERNAL_COMMANDS`.
+  go to, units, copying -- because Inkwell cannot see it:
+  :data:`EXTERNAL_COMMANDS`. Correcting works on the words dictation itself
+  typed there (D-10, 2026-10-16; :mod:`~quill.core.windows_dictation.external_edits`).
 * **The settings handed over.** Starting it from an editor writes that
   editor's dictation settings to a small file in the shared data folder
   (:func:`write_handoff`); Inkwell takes them when it starts or comes forward
@@ -76,6 +77,31 @@ EXTERNAL_COMMANDS = frozenset({
     Command.INSERT_SNIPPET,
     Command.EXPAND,
     Command.PASTE_SLOT,
+    # D-23 (2026-10-16): a profile changes nothing in the other program, and
+    # bold and italic either retype the session's own last phrase with Markdown
+    # marks or say why they cannot (profile_mixin.py).
+    Command.BOLD_THAT,
+    Command.ITALIC_THAT,
+    Command.PROFILE_STANDARD,
+    Command.PROFILE_EMAIL,
+    Command.PROFILE_DOCUMENT,
+    Command.PROFILE_MARKDOWN,
+    Command.PROFILE_CHAT,
+    Command.PROFILE_CODING,
+    Command.PROFILE_VERBATIM,
+    # D-10 (2026-10-16): correcting the words this session typed, as backspaces
+    # and retyping, each checked first (external_edits.py, corrections.py).
+    Command.CORRECT,
+    Command.CHOOSE_1,
+    Command.CHOOSE_2,
+    Command.CHOOSE_3,
+    Command.CAPITALIZE,
+    Command.UPPERCASE,
+    Command.LOWERCASE,
+    Command.DELETE_SENTENCE,
+    Command.DELETE_PARAGRAPH,
+    Command.REPLACE_WORDS,
+    Command.CHANGE_THAT,
 })
 
 #: A read-back of a tone, for a mode where the screen reader echoes the typing.
@@ -94,10 +120,20 @@ SPOKEN_SUMMARY_COMMANDS: tuple[str, ...] = (
 )
 
 
-def spoken_summary(full_list: str) -> str:
+#: Of those, the ones that are commands and so need the command word in strict
+#: mode (D-1). "new line" is punctuation and "stop dictation" always works.
+_NEEDS_THE_WORD = frozenset({"scratch that", "start spelling", "insert snippet and its name"})
+
+
+def spoken_summary(full_list: str, *, prefix: str = "") -> str:
     """The short answer to "what can I say" in another program. *full_list*
-    says where the whole list is, as the host can open it now."""
-    first, last = SPOKEN_SUMMARY_COMMANDS[:-1], SPOKEN_SUMMARY_COMMANDS[-1]
+    says where the whole list is, as the host can open it now. *prefix* is the
+    command word when strict mode needs it before every command (D-1)."""
+    said_as = [
+        f"{prefix} {phrase}" if prefix and phrase in _NEEDS_THE_WORD else phrase
+        for phrase in SPOKEN_SUMMARY_COMMANDS
+    ]
+    first, last = said_as[:-1], said_as[-1]
     said = f"In another program, you can say {', '.join(first)}, or {last}."
     return f"{said} {full_list}".strip()
 

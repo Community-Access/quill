@@ -101,6 +101,19 @@ MUST_IMPORT: tuple[str, ...] = (
     # Route B (LibreOffice / MarkItDown); an ImportError here means .pages files
     # stopped opening at all rather than opening by the other route.
     "quill.io.pages",
+    # PDF reading, for File > Open and for Import / Convert Document. The
+    # runtime freezes markitdown in (quill[glow] pulls markitdown[all]) but
+    # excludes onnxruntime, which markitdown's magika sniffer imports at module
+    # top, so markitdown can NEVER import here -- and Import / Convert used to
+    # send every PDF to it and fail (2026-10-15). PDFs now go through
+    # quill.io.pdf (pdfplumber, then pypdf; pypdfium2 rasterises for OCR), so
+    # those are what must import. markitdown is deliberately not listed: it is
+    # known-unimportable in this runtime and nothing reaches it for a PDF.
+    "pdfplumber",
+    "pypdf",
+    "pypdfium2",
+    "quill.io.pdf",
+    "quill.io.docconvert",
 )
 
 _PROBE_MODULE = "_quill_import_gate"

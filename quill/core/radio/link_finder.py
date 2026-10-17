@@ -41,7 +41,8 @@ from html.parser import HTMLParser
 from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.net import verified_ssl_context
-from quill.core.radio import securenet
+from quill.core.radio.address_kind import is_help_page_url, same_page
+from quill.core.radio.address_kind import is_player_page_url as _is_player_page_url
 from quill.core.radio.page_url import normalize_page_url
 from quill.stability.redaction import format_args_for_log
 
@@ -85,17 +86,6 @@ _LISTEN_LINK_HINTS = (
     "/stream",
 )
 _MAX_LISTEN_LINKS_TO_FOLLOW = 3
-
-#: Known third-party station directories/portals. A *page* URL on one of these
-#: hosts (an iHeart ``/live/<slug>-<id>/`` or a TuneIn ``/radio/<name>-s<id>/``
-#: landing page) is never itself a playable stream -- the real stream is
-#: embedded in the page's inline player. Such links are followed one level deep
-#: (like a "Listen Live" link) so the embedded stream is extracted, instead of
-#: being offered as a bogus stream candidate. Without this, iHeart ``/live``
-#: links were flagged as "stream-shaped" (``/live`` is a path hint) and the
-#: unplayable portal page URL was handed to the user (issue #1087).
-_PORTAL_HOSTS = ("iheart.com", "tunein.com")
-_PORTAL_PAGE_PATH_HINTS = ("/live/", "/radio/", "/podcast/")
 
 
 class LinkFinderError(CodedError):
@@ -252,34 +242,6 @@ def _looks_like_listen_link(lowered_href: str, label: str) -> bool:
     return any(hint in haystack for hint in _LISTEN_LINK_HINTS)
 
 
-def _is_portal_page_url(url: str) -> bool:
-    """True when *url* is a known station-directory portal page (iHeart/TuneIn).
-
-    Such a page is a player/landing page, never a direct stream, so the scanner
-    follows it one level deep to extract the real embedded stream rather than
-    offering the portal page URL itself as a candidate (issue #1087). Matching
-    is host + path scoped: the same ``/live/`` path fragment on a station's own
-    domain is unaffected, only true portal hosts are treated this way.
-    """
-    parsed = urllib.parse.urlsplit(url)
-    host = (parsed.hostname or "").lower()
-    if not any(host == portal or host.endswith("." + portal) for portal in _PORTAL_HOSTS):
-        return False
-    path = parsed.path.lower()
-    return any(hint in path for hint in _PORTAL_PAGE_PATH_HINTS)
-
-
-def _is_player_page_url(url: str) -> bool:
-    """True when *url* is a page that hosts a player, not a stream to play.
-
-    The station-directory portals above, plus the SecureNet Cirrus front-ends
-    (:func:`quill.core.radio.securenet.is_player_page_url`). Both answer HTML,
-    so handing either to the engine sticks the player on "Connecting." for
-    good; both hide a real mount one fetch away.
-    """
-    return _is_portal_page_url(url) or securenet.is_player_page_url(url)
-
-
 _FETCH_ERRORS = (urllib.error.URLError, TimeoutError, ssl.SSLError, OSError)
 
 
@@ -391,7 +353,8 @@ def scan_page_for_streams(url: str, *, safe_mode: bool = False) -> PageScanResul
     # through its *host*). A bare host names no station, so skip a bare path.
     # These are dropped from the results below, so following them can add no
     # noise: unlike a "Listen Live" link, do it whatever else the page yielded.
-    portal_urls = list(parser.portal_urls)
+    # A player page links to itself (#36); following that only fetches it twice.
+    portal_urls = [u for u in parser.portal_urls if not same_page(u, normalized)]
     portal_urls.extend(
         c.url
         for c in all_candidates
@@ -426,7 +389,7 @@ def scan_page_for_streams(url: str, *, safe_mode: bool = False) -> PageScanResul
     # Nothing that answers HTML is ever offered as something to play (#1491).
     seen: dict[str, PageStreamCandidate] = {}
     for candidate in all_candidates:
-        if _is_player_page_url(candidate.url):
+        if _is_player_page_url(candidate.url) or is_help_page_url(candidate.url):
             continue
         seen.setdefault(candidate.url, candidate)
     # #5 observability: which links were kept, and why -- the argv-style

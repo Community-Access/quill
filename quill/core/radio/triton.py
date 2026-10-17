@@ -77,6 +77,13 @@ _TRITON_MARKERS = (
 _LOGO_CALLSIGN_RE = re.compile(r"/([A-Za-z0-9]{3,})_\d+_config_station_logo", re.IGNORECASE)
 #: Fallback: a bare ``station=CALLSIGN`` query anywhere in the page's scripts.
 _STATION_PARAM_RE = re.compile(r"[?&]station=([A-Za-z0-9]{3,})\b", re.IGNORECASE)
+#: Last resort: the player's own inline config object (``var app = {...}``),
+#: which names the mount as ``"mount":"KKSEFM"`` and the callsign as
+#: ``"callsign":"KKSEFM"``. A station that never uploaded a logo has no logo
+#: asset to read the callsign from -- Altitude Sports Radio's 92.5 FM player
+#: (``player.listenlive.co/20551``, #36) is exactly that, while its 950 AM
+#: sister page, logo and all, always resolved.
+_CONFIG_MOUNT_RE = re.compile(r'"(?:mount|callsign)"\s*:\s*"([A-Za-z0-9]{3,})"')
 
 
 class TritonResolverError(CodedError):
@@ -125,15 +132,36 @@ def page_is_triton_player(url: str, html: str) -> bool:
     return any(marker in haystack for marker in _TRITON_MARKERS)
 
 
+#: The listenlive.co player network's hosts. ``player.listenlive.co/<id>`` --
+#: a numeric embed id, optionally followed by a language -- is a web page with a
+#: Play button on it, never an audio stream.
+_PLAYER_PAGE_HOSTS = ("player.listenlive.co", "listenlive.co")
+
+
+def is_player_page_url(url: str) -> bool:
+    """True when *url* is a Triton web-player **page**, not a stream (pure).
+
+    ``player.listenlive.co/20551`` answers HTML, so handing it to the audio
+    engine fails with "source not supported" -- what a listener who copied the
+    "92.5 FM Live" button off altitudesportsradio.com got (#36). The stream
+    sits one provisioning call away; see :func:`resolve_station_streams`.
+    """
+    parsed = urllib.parse.urlsplit(url.strip())
+    host = (parsed.hostname or "").lower()
+    first = parsed.path.strip("/").split("/", 1)[0]
+    return host in _PLAYER_PAGE_HOSTS and first.isdigit()
+
+
 def callsign_from_page(url: str, html: str) -> str | None:
     """Extract the Triton mount/callsign advertised on the page, or ``None``.
 
     Pure. Tries the station-logo asset name first (the most reliable signal on
     a ``player.listenlive.co`` page), then any explicit ``station=`` query in
-    the page's scripts. Returns the callsign uppercased (Triton mounts are
-    conventionally upper-case) or ``None`` when the page advertises none.
+    the page's scripts, then the mount the player's inline config names.
+    Returns the callsign uppercased (Triton mounts are conventionally
+    upper-case) or ``None`` when the page advertises none.
     """
-    for pattern in (_LOGO_CALLSIGN_RE, _STATION_PARAM_RE):
+    for pattern in (_LOGO_CALLSIGN_RE, _STATION_PARAM_RE, _CONFIG_MOUNT_RE):
         match = pattern.search(html)
         if match:
             return match.group(1).upper()

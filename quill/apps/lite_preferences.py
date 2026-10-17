@@ -36,16 +36,14 @@ from typing import Any, NamedTuple
 import wx
 
 from quill.apps.lite_dialogs import _stack
+from quill.apps.lite_preferences_collector import CollectorSavePrefs
 from quill.apps.lite_preferences_files import FileChangePrefs
 from quill.apps.lite_preferences_profile import ProfileRow
 from quill.apps.lite_preferences_save_folder import DocumentFolderPrefs
+from quill.apps.lite_preferences_typing import TypingAssistPrefs
 from quill.core.action_feedback import ACTION_FEEDBACK_LABELS
 from quill.core.action_feedback import coerce as coerce_feedback
-from quill.core.app_features import (
-    AppArea,
-    AppFeatureSettings,
-    AppProfile,
-)
+from quill.core.app_features import AppArea, AppFeatureSettings, AppProfile
 from quill.core.structure_announce import HEADING_POSITION_LABELS, HEADING_POSITIONS
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_modal_dialog
 from quill.ui.text_editor_prefs import TextEditorPrefs
@@ -237,11 +235,12 @@ def edit_preferences(
     )
     keep_clips.SetValue(bool(getattr(settings, "clip_library_autocapture", False)))
     root.Add(keep_clips, 0, wx.LEFT | wx.RIGHT, _PAD)
+    collector_prefs = CollectorSavePrefs(dialog, root, settings, pad=_PAD)  # Alt+Y
 
     # &U, because every other letter in "Look for updates" is spoken for in
     # this window and Windows cycles focus between two controls with the same
     # access key rather than pressing either (GATE-14).
-    updates = wx.CheckBox(dialog, label="Look for &updates when QUILL Lite starts")
+    updates = wx.CheckBox(dialog, label="Look for updates when QUILL Lite starts")
     updates.SetHelpText(
         "Once a day, when the app opens, ask GitHub whether a newer QUILL Lite "
         "has been published. Nothing is said unless there is one, and nothing "
@@ -303,7 +302,7 @@ def edit_preferences(
     quotes.SetValue(bool(getattr(settings, "autoformat_smart_quotes", False)))
     root.Add(quotes, 0, wx.LEFT | wx.RIGHT, _PAD)
 
-    dashes = wx.CheckBox(dialog, label="Turn two hyphens into an em &dash")
+    dashes = wx.CheckBox(dialog, label="Turn two hyphens into an em dash")
     dashes.SetHelpText(
         "Typing a second hyphen replaces both with a single long dash. Same "
         "two conditions as curly quotes: Autocorrect switched on, and not in a "
@@ -311,6 +310,7 @@ def edit_preferences(
     )
     dashes.SetValue(bool(getattr(settings, "autoformat_dashes", False)))
     root.Add(dashes, 0, wx.LEFT | wx.RIGHT, _PAD)
+    typing_prefs = TypingAssistPrefs(dialog, root, settings, pad=_PAD)  # no access keys
 
     # The two feedback choosers are built from ACTION_FEEDBACK_LABELS rather
     # than from four typed strings, so this pane and QUILL's cannot describe the
@@ -422,7 +422,7 @@ def edit_preferences(
     # label above it is not read with it -- so "Choose button" was a button that
     # named no noun, and the only way to find out what it chose was to press it
     # and listen to the dialog that opened.
-    choose_btn = wx.Button(dialog, label="C&hange Font...")
+    choose_btn = wx.Button(dialog, label="Change Font...")
     choose_btn.SetHelpText("Open the font chooser and pick a face and size for the editor.")
     font_row.Add(font_field, 1, wx.RIGHT | wx.ALIGN_CENTRE_VERTICAL, _PAD)
     font_row.Add(choose_btn, 0)
@@ -516,7 +516,7 @@ def edit_preferences(
             return PreferencesResult(False, False)
         features_changed = profile_row.apply()
         folder_changed = document_folder.apply()
-        files_changed = file_prefs.apply()
+        files_changed = file_prefs.apply() | collector_prefs.apply() | typing_prefs.apply()
         before = (
             settings.default_mode,
             settings.theme,

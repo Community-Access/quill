@@ -74,6 +74,7 @@ class SongHistoryDialog:
         send_to_clip_library: Callable[[str, str], bool],
         request_background: Callable[[SongPlay, str, Callable[[str, str], None]], None],
         request_facts: Callable[[SongPlay, Callable[[str], None]], None] | None = None,
+        request_lyrics: Callable[[SongPlay | None], None] | None = None,
         on_changed: Callable[[], None],
         title: str = "Song History",
         transport_host: object | None = None,
@@ -95,6 +96,9 @@ class SongHistoryDialog:
         #: Injected like the Background lookup above: the frame owns the task
         #: manager and Safe Mode, this window owns the box the answer lands in.
         self._request_facts = request_facts
+        #: The words of a song heard earlier (quill/ui/radio/lyrics_commands.py);
+        #: the frame owns the lookup, the Lyrics window shows the answer.
+        self._request_lyrics = request_lyrics
         self._on_changed = on_changed
         self._title = title
         self._busy = False
@@ -227,6 +231,11 @@ class SongHistoryDialog:
             "Looks the song up on MusicBrainz -- which release, what year, how "
             "long. Keyless and off in Safe Mode."
         )
+        self._lyrics_btn = wx.Button(panel, label="L&yrics")
+        self._lyrics_btn.SetHelpText(
+            "Looks the highlighted song's words up on LRCLIB and opens them in "
+            "the Lyrics window. Only when you press it; off in Safe Mode."
+        )
         self._clear_btn = wx.Button(panel, label="Clea&r...")
         self._clear_btn.SetHelpText(
             "Erases the logged songs -- for this station or for every station; "
@@ -237,6 +246,7 @@ class SongHistoryDialog:
             self._clip_btn,
             self._background_btn,
             self._facts_btn,
+            self._lyrics_btn,
             self._clear_btn,
         ):
             btn_row.Add(button, 0, wx.RIGHT, 6)
@@ -277,6 +287,7 @@ class SongHistoryDialog:
 
         self._station_choice.Bind(self._wx.EVT_CHOICE, lambda _e: self._reload_songs())
         self._facts_btn.Bind(self._wx.EVT_BUTTON, self._on_song_facts)
+        self._lyrics_btn.Bind(self._wx.EVT_BUTTON, self._on_lyrics)
         self._songs.Bind(self._wx.EVT_LISTBOX, lambda _e: self._update_buttons())
         self._copy_btn.Bind(self._wx.EVT_BUTTON, self._on_copy)
         self._clip_btn.Bind(self._wx.EVT_BUTTON, self._on_clip)
@@ -330,6 +341,7 @@ class SongHistoryDialog:
         self._clip_btn.Enable(has_song)
         self._background_btn.Enable(has_song and not self._busy)
         self._facts_btn.Enable(has_song and self._request_facts is not None)
+        self._lyrics_btn.Enable(has_song and self._request_lyrics is not None)
         self._clear_btn.Enable(bool(self._stations))
 
     # -- actions --
@@ -366,6 +378,11 @@ class SongHistoryDialog:
             return
         self._background.SetValue("Looking up...")
         self._request_facts(song, self._background.SetValue)
+
+    def _on_lyrics(self, _event: object) -> None:
+        """**Lyrics**: the words of the highlighted song, in their own window."""
+        if self._request_lyrics is not None:
+            self._request_lyrics(self._selected_song())
 
     def _on_background(self, _event: object) -> None:
         song = self._selected_song()

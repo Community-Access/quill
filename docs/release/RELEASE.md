@@ -171,6 +171,18 @@ unchecked against GitHub, so check that by hand first:
 for each app. Outside a joint release, `-SkipPublishedCheck` is for Dev builds
 only.
 
+`build-quill-apps.ps1` runs that joint check for you (its "Sibling version
+check" step names every app it is building) and then builds each app with
+`-SkipPublishedCheck`. Every installer's `build_release.ps1` runs the check for
+its own app when built on its own. The check refuses, with a sentence, an app
+it has no row for in `SITES` rather than skipping it: until 2026-10-15 the
+table lacked Beacon, Social and Audio Studio, so `build-quill-apps.ps1 all`
+stopped at "unknown app(s)" and checked nothing.
+`tests/unit/scripts/test_check_sibling_versions.py` now holds `SITES` against
+`release_build_number.BUILD_CONSTANTS`, the `build-quill-apps.ps1` catalogue
+and every `standalone/*/scripts/build_release.ps1`, so a new app fails there
+by name.
+
 ### Code signing: Beta and Dev never, Stable always (decided 2026-10-04)
 
 Beta and Dev builds are not code-signed, and Stable always is. The version
@@ -283,7 +295,10 @@ checks job always runs as a dry run and uploads its report. The Stable job
 runs in the GitHub Environment **stable-promotion**, so nothing reaches Stable
 until you press Approve. Because the workflow has no key, it promotes with
 `--no-sign` and opens a pull request on `promote/<app>-<version>-stable`; sign
-it locally and push before merging.
+it locally and push before merging. A pull request opened with the workflow's
+own token starts no checks, so CI first runs on it when you push the signing
+commit. The workflow passes every input to its scripts through `env:`, never
+pasted into a command, and runs only in `Community-Access/quill`.
 
 ### Dev builds
 
@@ -292,6 +307,17 @@ changed since the last Dev build (`scripts/dev_build_plan.py` decides; Run
 workflow with **force** overrides both rules). It builds every app unsigned,
 with a version like `3.3.1-dev.20261003.1`, and publishes them to
 **Community-Access/quillville-dev-builds**, never to the main repository.
+
+- The first job stops at once, with an error naming the secret, when
+  `DEV_BUILDS_TOKEN` is missing or cannot read the dev-builds repository, so a
+  missing secret never costs four Windows builds.
+- Every job builds from the one commit the first job chose, and that commit is
+  the one written into the release notes, so "has `main` changed since the
+  last Dev build?" compares against what was really built.
+- Quill Radio's Dev build skips its catalog seed (`-SkipCatalog`, which only
+  Radio's build script has) and browses live until its first refresh. QUILL
+  Cast's build reads `QUILL_PODCAST_INDEX_KEY` and `QUILL_PODCAST_INDEX_SECRET`;
+  without them Cast builds with no Podcast Index search.
 
 Dev builds reach the Dev channel only when you list them, from your computer:
 
@@ -385,17 +411,110 @@ for 3.13 have those tags compiled in. A 3.14 runtime published there would
 install into `Runtime\3.14` while those launchers keep looking in
 `Runtime\3.13`, so an old app that lost its runtime would never start again.
 
+**A slot its last app has left is removed.** Every app installer, after
+registering the app on its slot, runs `runtime_cli reclaim-old-slots`. Since
+2026-10-15 that removes not only an older Python's slot but also a Beta or Dev
+slot of this Python that no app needs any more, so when the last Beta app goes
+back to Stable, `Runtime\3.14-beta` and its 335 MB go too. A slot stays while
+any app is registered on it, any installed app's `quill-app-version.ini` names
+it, or a shortcut runs from it; the slot being installed into and the Stable
+slot are never touched.
+
+### What has been run for real
+
+Release channels were built in October 2026 without anything being run but
+Python. These now run, on any Windows computer with the tools, and in PR CI:
+
+| What | Test | Needs |
+| --- | --- | --- |
+| The native launcher, compiled from `quill/native/launcher` exactly as a release builds it, started beside an ini that names a Beta slot: only the Beta runtime starts. `runtime_resolve.c` asked every slot question, including that a missing Beta runtime never falls back to Stable's | `tests/unit/native/test_launcher_compiled.py` | Visual Studio Build Tools (C++), CMake |
+| `/CHANNEL=` in `installer/shared-runtime.iss`, compiled by Inno Setup and run with each channel and version; the slot it picks matches `runtime_slots.py` | `tests/unit/structure/test_shared_runtime_channel_compiled.py` | Inno Setup 7 |
+| The update helper's portable swap, health check and undo, and the installed copy's reinstall of the kept version, run against temp folders with stand-in apps and installers | `tests/unit/core/test_update_helper_runs.py` | Windows (the installer cases also need the C tools) |
+| The two workflows' secrets, Environment, fork guard and that no input is pasted into a script | `tests/unit/structure/test_release_workflows.py`, plus actionlint in PR CI's `workflow-lint` | nothing |
+
+Without the tools those tests skip; they never fail for a missing compiler.
+The ones that start a built launcher or a compiled setup run only in CI, or on
+your computer when you ask with `QUILL_RUN_NATIVE_PROGRAMS=1`, so a plain
+`pytest` never starts a real program on your desktop.
+`scripts/build_native_launcher.py` now picks CMake's generator for whichever
+Visual Studio is installed (2022 or 2026), so a GitHub image that moves to the
+next Visual Studio still builds the launcher.
+
+Running them found four faults, all fixed: a portable update put your `data`
+folder inside the new copy's `data` folder (`data\data`), where the app never
+looks; the older in-place copy did worse, deleting what was in `data`, because
+every portable zip ships a `data` folder and robocopy's mirror walked into it;
+the installer's `/LOG="..."` lost its closing quote on the way through
+PowerShell; and a first update's undo was never reported, because nothing knew
+the version being replaced.
+
+**Open, and yours to decide before the next portable release.** The helper is
+written by the version being updated, not by the new one, so a portable copy
+already released runs the old in-place copy. Given a portable zip with a
+`data` folder in it, which every current zip has (it is what marks a fresh
+copy as portable), that copy deletes everything of the user's in `data`
+except the files the zip also carries. It only matters for a released
+portable copy whose "Install and restart now" actually reaches the helper:
+before the launcher let the helper leave its job (2026-09-30), the helper was
+killed before it ran, which is why Quill Radio 3.0.4 and earlier update by
+hand. Check QUILL Lite 1.1.2 first, then any QUILL 0.9 portable. If one is
+affected, the zip it can be offered must not contain a `data` folder, which
+means marking a fresh portable copy some other way, or telling those users to
+update by hand. Copies from the next release on carry the fixed helper.
+
+### The update helper: swap, health check and undo
+
+What happens after "Install and restart now" (`quill/core/self_update.py`,
+`quill/core/updater/apply_script.py`):
+
+- **Portable copy.** The new copy is unpacked, then swapped in: the running
+  folder becomes `<folder>.previous`, the new one takes its place, and your
+  `data` folder replaces the new copy's empty one. If any step fails (a file
+  still open), every step already taken is undone and the copy is made in
+  place instead, with both `data` folders left out.
+- **Installed copy.** The installer runs quietly with `/CHANNEL=` and `/LOG=`.
+  It is not started elevated: every QuillVille installer is per-user, and
+  Inno Setup asks for permission itself when the copy being updated was
+  installed for all users. If the installer fails, the version you had is
+  started again at once and the app says, once, that the update could not be
+  installed.
+- **Health check.** The new version must say it started within two minutes
+  (it writes `started-<version>.ok` once its window is up). If it does not,
+  the helper stops whatever is still running from the app's folder, and only
+  from there, and goes back: the `.previous` folder is swapped back, or the
+  kept installer of the version you had is run again. An undo that cannot
+  finish puts everything back as it was and says so in
+  `<updates>\apply-update.log`; it never claims to have gone back.
+- **Afterwards.** The version that starts reads `apply-result.json`, says
+  once what happened, and records it in Help > Update History.
+
 ### One-time setup (owner)
 
-- Create the repository **Community-Access/quillville-dev-builds** with a README
-  so it has a `main` branch.
-- Add the repository secret **DEV_BUILDS_TOKEN** to `Community-Access/quill`: a
-  fine-grained token with Contents read and write on the dev-builds repository
-  only.
-- Create the GitHub Environment **stable-promotion** in `Community-Access/quill`
-  with yourself as the required reviewer.
-- Publish the first signed list for each app before the first channel-aware
-  release ships; until a list exists, apps keep using the GitHub path.
+Nothing below can be done from the repository, and none of it has been done
+yet. In order:
+
+1. Create the repository **Community-Access/quillville-dev-builds** with a
+   README, so it has a `main` branch; a Dev release's tag is created there.
+2. Add the repository secret **DEV_BUILDS_TOKEN** to `Community-Access/quill`:
+   a fine-grained token with Contents read and write on the dev-builds
+   repository only.
+3. Add the repository secrets **QUILL_PODCAST_INDEX_KEY** and
+   **QUILL_PODCAST_INDEX_SECRET** (QUILL Cast's Dev builds read them; without
+   them Cast builds with no Podcast Index search).
+4. Create the GitHub Environment **stable-promotion** in
+   `Community-Access/quill` with yourself as the required reviewer.
+5. In Settings > Actions > General, allow GitHub Actions to create and approve
+   pull requests, so promote-release can open the pull request you sign.
+6. Publish and sign the first v2 list for each app (`publish_release.py`,
+   signing with your feed key on your own computer) before the first
+   channel-aware release ships; until a list exists, apps keep using the
+   GitHub path.
+7. Watch the first runs: run **dev-builds** once by hand with **force** and
+   read each job; check the four releases in the dev-builds repository and
+   that the next scheduled run says "main has not changed"; run
+   **promote-release** with **dry_run** on before any real promotion; and
+   update one portable copy and one installed copy by hand, reading
+   `apply-update.log` in the app's `updates` folder.
 
 ### The old v1 list and its CI key (decided 2026-10-04)
 

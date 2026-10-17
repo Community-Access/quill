@@ -8,8 +8,12 @@ Phrase, Add Correction, Edit and Remove. Each change is saved at once and said
 out loud; the next phrase dictated uses it, because the profile is re-read
 whenever the file's time changes.
 
-Open the File is still there, last, for whoever prefers the file. Shared by
-QUILL and QUILL Lite through :class:`~quill.ui.windows_dictation_tools.DictationToolsMixin`.
+Open the File is still there, last, for whoever prefers the file. Import and
+Export move the list between computers and copies (dict.md D-12,
+:mod:`quill.ui.dictation_words_exchange`), and in QUILL Lite a "Use the shared
+word list" check box chooses between its own list and the family's. Shared by
+QUILL and QUILL Lite through :class:`~quill.ui.windows_dictation_tools.DictationToolsMixin`,
+and opened by QUILL Transcribe too.
 """
 
 from __future__ import annotations
@@ -20,7 +24,9 @@ from typing import Any
 
 import wx
 
+from quill.core.windows_dictation.words_exchange import SharedWords
 from quill.core.windows_dictation.words_file import Entry, WordsFile, load_words, save_words
+from quill.ui import dictation_words_exchange as exchange
 from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids, bind_close_button
 
 __all__ = ["DictationWordsDialog"]
@@ -101,19 +107,34 @@ class DictationWordsDialog(wx.Dialog):
         *,
         say: Callable[[str], None],
         open_file: Callable[[Path], None] | None = None,
+        shared: SharedWords | None = None,
     ) -> None:
         super().__init__(
             parent,
             title="My Words and Phrases",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self._path = path
+        self._shared = shared
+        self._path = shared.current_path() if shared is not None else path
         self._say = say
         self._open_file = open_file
-        self._words: WordsFile = load_words(path)
+        self._words: WordsFile = load_words(self._path)
         self._entries: list[Entry] = []
 
         root = wx.BoxSizer(wx.VERTICAL)
+        self.shared_box: wx.CheckBox | None = None
+        if shared is not None:
+            self.shared_box = wx.CheckBox(self, label="&Use the shared word list")
+            self.shared_box.SetHelpText(
+                "Off: QUILL Lite keeps its own words and phrases. On: use the one "
+                "list QUILL, QUILL Transcribe and Quill Inkwell use on this computer, "
+                "so a word added in any of them works in all of them. Turning it on "
+                "shows which of your words will be added to that list first; turning "
+                "it off goes back to your own list, unchanged."
+            )
+            self.shared_box.SetValue(bool(shared.is_on()))
+            self.shared_box.Bind(wx.EVT_CHECKBOX, self._on_shared)
+            root.Add(self.shared_box, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         label = wx.StaticText(self, label="Your words, phrases and &corrections:")
         self.list = wx.ListBox(self)
         self.list.SetHelpText(
@@ -156,6 +177,24 @@ class DictationWordsDialog(wx.Dialog):
         root.Add(buttons, 0, wx.LEFT | wx.RIGHT, _PAD)
 
         bottom = wx.BoxSizer(wx.HORIZONTAL)
+        import_button = wx.Button(self, label="&Import...")
+        import_button.SetHelpText(
+            "Add the words, phrases and corrections from a file: a Markdown word "
+            "list exported from here, or a CSV file with say and write columns. "
+            "You see what will be added before anything changes; entries already "
+            "here keep yours, and your list as it was is kept as "
+            "dictation-before-import.md."
+        )
+        import_button.Bind(wx.EVT_BUTTON, self._on_import)
+        bottom.Add(import_button, 0, wx.RIGHT, _PAD)
+        export_button = wx.Button(self, label="E&xport...")
+        export_button.SetHelpText(
+            "Save this list to a file, to take to another computer or another "
+            "copy: Markdown, the same as the list itself, or CSV with say, write "
+            "and kind columns for a spreadsheet."
+        )
+        export_button.Bind(wx.EVT_BUTTON, self._on_export)
+        bottom.Add(export_button, 0, wx.RIGHT, _PAD)
         if open_file is not None:
             open_button = wx.Button(self, label="Open the &File...")
             open_button.SetHelpText(
@@ -243,11 +282,34 @@ class DictationWordsDialog(wx.Dialog):
         self._words.remove(entry)
         self._save(f"Removed. {entry.label()}", select=index)
 
+    def _on_import(self, _event: Any) -> None:
+        if exchange.run_import(self, self._path, self._words, self._say):
+            self._rebuild(select=0)
+
+    def _on_export(self, _event: Any) -> None:
+        exchange.run_export(self, self._words, self._say)
+
+    def _on_shared(self, _event: Any) -> None:
+        if self._shared is None or self.shared_box is None:
+            return
+        wanted = bool(self.shared_box.GetValue())
+        if not exchange.switch_shared(self, self._shared, wanted, self._say):
+            self.shared_box.SetValue(not wanted)
+            return
+        self._path = self._shared.current_path()
+        self._words = load_words(self._path)
+        self._rebuild(select=0)
+
     def _on_open_file(self, _event: Any) -> None:
         if self._open_file is None:
             return
         self.EndModal(wx.ID_CANCEL)
         self._open_file(self._path)
+
+    @property
+    def path(self) -> Path:
+        """The list this window is editing now (it changes with the shared box)."""
+        return self._path
 
 
 def _refusal(entry: Entry) -> str:

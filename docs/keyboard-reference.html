@@ -255,7 +255,7 @@ cannot drift from the code. Bindings shown as
 release, then the second key. Every binding here is a <em>default</em> –
 the in-app reference (Help &gt; Open Keyboard Reference) always shows
 your own customised keymap.</p>
-<p>Editor commands with default bindings: 496.</p>
+<p>Editor commands with default bindings: 503.</p>
 <h2 id="the-quill-editor">The QUILL editor</h2>
 <h3 id="files">Files</h3>
 <table>
@@ -925,6 +925,11 @@ your own customised keymap.</p>
 <td>(unbound by default)</td>
 <td>Quick Insert…</td>
 <td><code>format.quick_insert</code></td>
+</tr>
+<tr>
+<td>Alt+Shift+9</td>
+<td>Autocorrect entries</td>
+<td><code>format.autocorrect_entries</code></td>
 </tr>
 <tr>
 <td>Alt+Shift+A</td>
@@ -1693,6 +1698,21 @@ your own customised keymap.</p>
 <td><code>tools.misspelling_list_ranked</code></td>
 </tr>
 <tr>
+<td>Ctrl+6</td>
+<td>Ask AI a Question…</td>
+<td><code>tools.hosted_ai_chat_key</code></td>
+</tr>
+<tr>
+<td>Ctrl+7</td>
+<td>Free AI Prompt Library…</td>
+<td><code>tools.hosted_ai_prompt_library</code></td>
+</tr>
+<tr>
+<td>Ctrl+9</td>
+<td>Web Searches Left</td>
+<td><code>tools.hosted_ai_web_searches</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+F10</td>
 <td>Manage Individual Features…</td>
 <td><code>tools.individual_feature_toggles</code></td>
@@ -1898,6 +1918,11 @@ your own customised keymap.</p>
 <td><code>tools.dictation_emergency_stop</code></td>
 </tr>
 <tr>
+<td>F11</td>
+<td>Windows dictation command</td>
+<td><code>tools.windows_dictation_command</code></td>
+</tr>
+<tr>
 <td>F7</td>
 <td>Spell Check…</td>
 <td><code>tools.spell_check_dialog</code></td>
@@ -1956,6 +1981,11 @@ your own customised keymap.</p>
 <td>Shift+F11</td>
 <td>Windows dictation recent</td>
 <td><code>tools.windows_dictation_recent</code></td>
+</tr>
+<tr>
+<td>Shift+F4</td>
+<td>Windows dictation review</td>
+<td><code>tools.windows_dictation_review</code></td>
 </tr>
 <tr>
 <td>Shift+F5</td>
@@ -2636,6 +2666,11 @@ your own customised keymap.</p>
 <td><code>quill.quick_nav.table_of_contents</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+Backspace</td>
+<td>Toggle read only guard</td>
+<td><code>power.toggle_read_only_guard</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+C</td>
 <td>Describe character detail</td>
 <td><code>power.describe_character_detail</code></td>
@@ -2930,9 +2965,29 @@ never inside the QUILL editor.</p>
 <td><code>radio.chatgpt_account</code></td>
 </tr>
 <tr>
+<td>Alt+Shift+B</td>
+<td>Background station</td>
+<td><code>radio.background_station</code></td>
+</tr>
+<tr>
+<td>Alt+Shift+D</td>
+<td>Mirror output</td>
+<td><code>radio.mirror_output</code></td>
+</tr>
+<tr>
 <td>Alt+Shift+F</td>
 <td>Play Favorite Station…</td>
 <td><code>radio.play_favorite</code></td>
+</tr>
+<tr>
+<td>Alt+Shift+I</td>
+<td>Station details</td>
+<td><code>radio.station_details</code></td>
+</tr>
+<tr>
+<td>Alt+Shift+N</td>
+<td>Whats new</td>
+<td><code>radio.whats_new</code></td>
 </tr>
 <tr>
 <td>Ctrl+.</td>
@@ -2953,6 +3008,11 @@ never inside the QUILL editor.</p>
 <td>Ctrl+Alt+A</td>
 <td>Bookmark This Moment</td>
 <td><code>app.bookmark_moment</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+B</td>
+<td>Internet Radio: Lyrics…</td>
+<td><code>radio.lyrics</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+F1</td>
@@ -3115,9 +3175,19 @@ never inside the QUILL editor.</p>
 <td><code>radio.sound_enhancements</code></td>
 </tr>
 <tr>
+<td>Ctrl+F11</td>
+<td>Dictate here</td>
+<td><code>app.dictate_here</code></td>
+</tr>
+<tr>
 <td>Ctrl+G</td>
 <td>Go to</td>
 <td><code>radio.go_to</code></td>
+</tr>
+<tr>
+<td>Ctrl+K</td>
+<td>Identify This Song</td>
+<td><code>radio.identify_song</code></td>
 </tr>
 <tr>
 <td>Ctrl+L</td>
@@ -3221,7 +3291,7 @@ never inside the QUILL editor.</p>
 </tr>
 <tr>
 <td>Ctrl+Shift+Left</td>
-<td>Rewind 30 Seconds</td>
+<td>Rewind</td>
 <td><code>radio.rewind</code></td>
 </tr>
 <tr>
@@ -3246,7 +3316,7 @@ never inside the QUILL editor.</p>
 </tr>
 <tr>
 <td>Ctrl+Shift+Right</td>
-<td>Forward 30 Seconds</td>
+<td>Forward</td>
 <td><code>radio.forward</code></td>
 </tr>
 <tr>
@@ -3447,6 +3517,11 @@ never inside the QUILL editor.</p>
 <td>Ctrl+Alt+Z</td>
 <td>Ask About This Document…</td>
 <td><code>tools.hosted_ai_ask_document</code></td>
+</tr>
+<tr>
+<td>Ctrl+F11</td>
+<td>Dictate here</td>
+<td><code>app.dictate_here</code></td>
 </tr>
 <tr>
 <td>Ctrl+F5</td>

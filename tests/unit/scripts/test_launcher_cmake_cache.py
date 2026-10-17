@@ -66,3 +66,26 @@ def test_unreadable_cache_is_treated_as_stale(tmp_path: Path) -> None:
     (build_dir / "CMakeCache.txt").write_bytes(b"\xff\xfe\x00garbage")
 
     assert _discard_relocated_cmake_cache(build_dir) is True
+
+
+def test_cache_from_another_generator_is_discarded(tmp_path: Path) -> None:
+    """CMake refuses to switch generators in one tree; a machine that moved from
+    Visual Studio 2022 to 2026 would otherwise never configure again."""
+    build_dir = tmp_path / "radio"
+    cache = _write_cache(build_dir, _LAUNCHER_SRC.as_posix())
+    cache.write_text(
+        cache.read_text(encoding="utf-8") + "CMAKE_GENERATOR:INTERNAL=Visual Studio 17 2022\n",
+        encoding="utf-8",
+    )
+    assert _discard_relocated_cmake_cache(build_dir, "Visual Studio 17 2022") is False
+    assert _discard_relocated_cmake_cache(build_dir, "Visual Studio 18 2026") is True
+    assert not build_dir.exists()
+
+
+def test_generator_follows_the_installed_visual_studio() -> None:
+    from scripts.build_native_launcher import DEFAULT_GENERATOR, generator_for_version
+
+    assert generator_for_version("17.14.37216.2") == "Visual Studio 17 2022"
+    assert generator_for_version("18.0.11111.16") == "Visual Studio 18 2026"
+    assert generator_for_version("") == DEFAULT_GENERATOR
+    assert generator_for_version("99.1") == DEFAULT_GENERATOR

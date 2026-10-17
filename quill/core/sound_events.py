@@ -98,6 +98,12 @@ class SoundEvent(StrEnum):
     WINDOWS_DICTATION_OFF = "windows_dictation_off"
     WINDOWS_DICTATION_ERROR = "windows_dictation_error"
     WINDOWS_DICTATION_WORKING = "windows_dictation_working"
+    # The command word (D-1, 2026-10-15): a short rising pair when "QUILL" (or
+    # the Command Key) is heard and when command mode starts, the same pair
+    # falling when command mode ends. Higher and shorter than the on and off
+    # pair, so the two kinds of edge are never confused.
+    WINDOWS_DICTATION_COMMAND_ON = "windows_dictation_command_on"
+    WINDOWS_DICTATION_COMMAND_OFF = "windows_dictation_command_off"
 
     # Voice conversation mode (Hey QUILL Phase 2). Warm, consonant bell cues
     # that make every state of a hands-free exchange audible: on/off, the mic
@@ -144,6 +150,10 @@ class SoundEvent(StrEnum):
     #: and it has to be tellable from a download finishing or a feed check
     #: ticking without waiting for the words that follow it.
     RADIO_REMINDER = "radio_reminder"
+    #: Playback carrying on after a pause (xradio2 4.5): a tape spooling back
+    #: up to speed, so "carrying on where you were" is tellable from "tuned in
+    #: to something new" (RADIO_PLAYING) before the audio says which.
+    RADIO_RESUMED = "radio_resumed"
     CAST_EPISODE_FINISHED = "cast_episode_finished"
     #: The four outcomes of a one-key action in QUILL Cast (qc.md 18.7), under
     #: Cast's own action_feedback choice; failures use ERROR.

@@ -33,12 +33,14 @@ from pathlib import Path
 import wx
 import wx.adv
 
+from quill.apps.transcribe_coach import TranscribeCoachMixin
 from quill.apps.transcribe_commands import TranscribeCommandsMixin
 from quill.apps.transcribe_dictation import TranscribeDictationMixin
 from quill.apps.transcribe_files import TranscribeFilesMixin
 from quill.apps.transcribe_keys import TranscribeKeysMixin
 from quill.apps.transcribe_menus import build_menu_bar, build_tray_menu, start_stop_label
 from quill.apps.transcribe_recent import TranscribeRecentMixin
+from quill.apps.transcribe_review import TranscribeReviewMixin
 from quill.core.app_version import describe_version, installed_version
 from quill.core.net import configure_ssl_trust
 from quill.core.support_message import SUPPORT_EMAIL
@@ -66,6 +68,8 @@ class QuillTranscribeFrame(
     TranscribeCommandsMixin,
     TranscribeFilesMixin,
     TranscribeRecentMixin,
+    TranscribeReviewMixin,
+    TranscribeCoachMixin,
 ):
     """The status window for a dictation service that lives in the tray."""
 
@@ -102,6 +106,9 @@ class QuillTranscribeFrame(
         self._start_ipc_poll()
         self._refresh_view()
         notices = [sentence for sentence in (brought, key_notice) if sentence]
+        kept = self.kept_words_notice()  # words from last time (D-2 review, D-5 rescue)
+        if kept:
+            notices.append(kept)
         if safe_mode:
             notices.insert(0, "Safe Mode: QUILL Transcribe does not listen or register keys.")
         if not self._tray_available:
@@ -151,8 +158,9 @@ class QuillTranscribeFrame(
         self._state_text.SetName("Dictation state")
         self._state_text.SetHelpText(
             "What dictation is doing now: Ready, Listening, Hearing you, Paused with "
-            "words held, or Waiting for you to switch to a field. The tray icon's "
-            "name says the same."
+            "words held, Waiting for you to switch to a field, or Listening for your "
+            "wake phrase. The tray icon's name says the same, and Alt+F9 says it with "
+            "the program, the model and what is held."
         )
         font = self._state_text.GetFont()
         font.SetPointSize(font.GetPointSize() + 4)
@@ -200,7 +208,8 @@ class QuillTranscribeFrame(
         self._setup_text = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY)
         self._setup_text.SetName("Model and microphone")
         self._setup_text.SetHelpText(
-            "The speech model, microphone and start and stop key dictation uses now. "
+            "The speech model, microphone, dictation profile and start and stop key "
+            "dictation uses now. "
             "The model you chose is the one that runs; it never changes on its own."
         )
         root.Add(setup_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
@@ -259,7 +268,21 @@ class QuillTranscribeFrame(
             else "Start and stop key: none chosen. Use the tray menu, or choose one "
             "in the File menu."
         )
-        return "\n".join((model, microphone, keys))
+        command = self.command_key() or self._settings.command_hotkey
+        commands = (
+            f"Command Key: {command}." if command else "Command Key: none chosen; say QUILL first."
+        )
+        from quill.apps.transcribe_keys import OPTIONAL_KEYS
+
+        chosen_keys = [  # Dictation Status, Resume, Discard (D-6): said only once chosen
+            f"{row[1]}: {self.optional_key(field)}."
+            for field, row in OPTIONAL_KEYS.items()
+            if self.optional_key(field)
+        ]
+        profile = f"Profile: {self.dictation_profile_name()}" + (
+            ", locked." if self.profile_locked() else "."
+        )  # D-23
+        return "\n".join((model, microphone, profile, keys, commands, *chosen_keys))
 
     def _next_sentence(self) -> str:
         controller = getattr(self, "_dictation", None)
@@ -298,9 +321,16 @@ class QuillTranscribeFrame(
                 wx.ART_INFORMATION, wx.ART_OTHER, (16, 16)
             )
             try:
-                icon.SetIcon(art, f"{_TITLE} - {state}")
+                icon.SetIcon(art, self._tray_name(state))
             except Exception:  # noqa: BLE001 - a tooltip is never worth a failure
                 pass
+
+    def _tray_name(self, state: str) -> str:
+        """The tray icon's name: the state, and a profile other than Standard (D-23)."""
+        profile = self.dictation_profile_name()
+        if profile == "Standard":
+            return f"{_TITLE} - {state}"
+        return f"{_TITLE} - {state} - {profile} profile"
 
     def _refresh_menus(self, label: str, paused: bool) -> None:
         menu_bar = self.frame.GetMenuBar()
@@ -351,9 +381,12 @@ class QuillTranscribeFrame(
             self._restore_from_tray()
             self.take_dictation_handoff()  # an editor's Dictate in Other Programs
         self._answer_owner_requests()
+        self.take_family_dictation()  # what another program saved (D-13): one stat a tick
         controller = getattr(self, "_dictation", None)
         if controller is not None:
             controller.finish_overdue()
+        if not self._safe_mode:
+            self._keep_wake_standby()  # the wake phrase, as the program in front allows (D-9)
 
     # -- closing -------------------------------------------------------------------- #
 
@@ -385,7 +418,11 @@ class QuillTranscribeFrame(
 
     def _exit_application(self) -> None:
         held = self._held_count()
-        if held:
+        # Held words already on disk (D-5) are not lost: Recent Phrases has them
+        # next time, so there is nothing to ask. Only words that could not be
+        # kept are worth the question.
+        on_disk = bool(getattr(getattr(self, "_dictation", None), "held_on_disk", False))
+        if held and not on_disk:
             answer = self._show_message_box(
                 f"Dictation is paused with {held} phrase{'s' if held != 1 else ''} that "
                 "were never written. Exit and throw them away?",
@@ -401,6 +438,7 @@ class QuillTranscribeFrame(
         timer = getattr(self, "_ipc_timer", None)
         if timer is not None:
             timer.Stop()
+        self._close_review()  # an open review's words are kept for next time (D-2)
         self._release_dictate_anywhere()
         self._release_transcribe_keys()
         self._remove_tray_icon()
@@ -445,6 +483,8 @@ def main() -> int:
         wx.CallAfter(frame.first_run)
     if "--dictate-anywhere" in sys.argv:
         wx.CallAfter(frame.take_dictation_handoff)
+    if "--dictate-here" in sys.argv:  # Quill Cast's or Quill Radio's Dictate Here (D-16)
+        wx.CallAfter(frame.dictate_here_at_launch)
     try:
         app.MainLoop()
     finally:

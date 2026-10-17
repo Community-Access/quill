@@ -76,6 +76,11 @@ def build_catalog_status_item(app, view_menu, wx):
     # Ctrl+Alt+Shift+M: M for media, which is what the window reports on.
     view_menu.Append(audio_id, "Audio &Health...\tCtrl+Alt+Shift+M")
     app.frame.Bind(wx.EVT_MENU, lambda _e: app.radio_audio_health(), id=audio_id)
+    # Station Details: what the signed station pack knows about each station,
+    # searchable -- the same "what is stored here" family as the catalog status.
+    from quill.ui.radio import station_details_dialog
+
+    app._keep_menu_ids(station_details_dialog.append_menu_item(app, view_menu, wx))
     return (status_id, audio_id)
 
 

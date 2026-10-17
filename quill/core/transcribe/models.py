@@ -20,7 +20,9 @@ wx-free; reads only names, sizes and whether files exist.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
+from typing import Any
 
 from quill.core.windows_dictation.engines import (
     CLOUD_ENGINE,
@@ -68,13 +70,17 @@ class ModelRow:
     licence: str
     #: One line on what it is good for.
     note: str
+    #: Lightweight, Balanced or High accuracy (D-22); ``""`` for an engine that
+    #: is not a model (Windows speech recognition, OpenAI).
+    tier: str = ""
 
     @property
     def label(self) -> str:
         """The row as a list says it."""
         where = "on this computer" if self.local else "sends your speech over the internet"
+        tier = f"; {self.tier}" if self.tier else ""
         state = "" if self.ready else "; not downloaded"
-        return f"{self.name} ({where}; {self.languages}{state})"
+        return f"{self.name} ({where}{tier}; {self.languages}{state})"
 
 
 def _openai_ready() -> bool:
@@ -88,6 +94,7 @@ def _openai_ready() -> bool:
 
 def model_rows() -> list[ModelRow]:
     """Every model Transcribe can use, built in first, then downloads, then OpenAI."""
+    from quill.core.windows_dictation.model_advice import engine_tier
     from quill.core.windows_dictation.model_store import installed
 
     rows: list[ModelRow] = []
@@ -106,6 +113,7 @@ def model_rows() -> list[ModelRow]:
                 source="included with QUILL" if built_in else "Microsoft Windows",
                 licence="MIT" if built_in else "Windows",
                 note=engine.description,
+                tier=engine_tier(engine.id),
             )
         )
     for model in CATALOGUE:
@@ -120,6 +128,7 @@ def model_rows() -> list[ModelRow]:
                 source=model.source,
                 licence=model.licence,
                 note=model.good_for,
+                tier=model.tier,
             )
         )
     if _openai_ready():
@@ -150,11 +159,20 @@ def model_name(engine_id: str) -> str:
     return engine_info(engine_id).label.split(" (")[0]
 
 
-def start_problem(engine_id: str, language: str, *, openai_consent: bool) -> str:
+def start_problem(
+    engine_id: str,
+    language: str,
+    *,
+    openai_consent: bool,
+    cloud_fields: Mapping[str, Any] | None = None,
+    cloud_consent: Mapping[str, Any] | None = None,
+) -> str:
     """Why dictation with *engine_id* cannot start, as a sentence, or ``""``.
 
     Asked before the microphone opens, so a missing model is a refusal that
-    names it rather than a quiet switch to another one.
+    names it rather than a quiet switch to another one. A cloud provider with
+    the person's own account (D-31) is checked for its fields and its consent
+    with *cloud_fields* and *cloud_consent*.
     """
     if engine_id in _NOT_HERE:
         return (
@@ -162,6 +180,8 @@ def start_problem(engine_id: str, language: str, *, openai_consent: bool) -> str
             "Choose another model for QUILL Transcribe."
         )
     engine_id = coerce_engine(engine_id)
+    if engine_id.startswith("cloud-"):
+        return _cloud_problem(engine_id, cloud_fields or {}, cloud_consent or {})
     name = model_name(engine_id)
     model = downloadable(engine_id)
     if model is not None:
@@ -185,3 +205,17 @@ def start_problem(engine_id: str, language: str, *, openai_consent: bool) -> str
             "Transcribe puts it back."
         )
     return language_model_problem(engine_id, language)
+
+
+def _cloud_problem(engine_id: str, fields: Mapping[str, Any], consent: Mapping[str, Any]) -> str:
+    from quill.core.windows_dictation.cloud.consent import start_problem as cloud_start
+    from quill.core.windows_dictation.cloud.credentials import values_for
+    from quill.core.windows_dictation.cloud.registry import provider_for_engine
+
+    provider = provider_for_engine(engine_id)
+    if provider is None:
+        return "That speech provider is not part of this copy of QUILL Transcribe."
+    plain = fields.get(provider.id, {})
+    return cloud_start(
+        provider, values_for(provider, plain if isinstance(plain, Mapping) else {}), consent
+    )

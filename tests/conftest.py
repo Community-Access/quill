@@ -857,6 +857,29 @@ def _family_locks_of_its_own(
 
 
 @pytest.fixture(autouse=True)
+def _family_dictation_of_its_own(
+    monkeypatch: pytest.MonkeyPatch, tmp_path_factory: pytest.TempPathFactory
+) -> None:
+    """Give every test its own family dictation folder (dict.md D-13).
+
+    ``family_dictation.json`` and the family's ``dictation.md`` live in
+    ``%LOCALAPPDATA%\\QuillVille\\Dictation``. Left there, a test would read the
+    developer's own words and settings, and one test's words would reach the
+    next. The folder is made only when a test asks for it.
+    """
+    from quill.core.windows_dictation import family_store
+
+    made: list[Path] = []
+
+    def folder() -> Path:
+        if not made:
+            made.append(tmp_path_factory.mktemp("family-dictation"))
+        return made[0]
+
+    monkeypatch.setattr(family_store, "_default_dir", folder)
+
+
+@pytest.fixture(autouse=True)
 def _no_saved_own_ai_key(monkeypatch: pytest.MonkeyPatch) -> None:
     """Hide the developer's saved OpenAI key from AI help.
 
@@ -869,6 +892,20 @@ def _no_saved_own_ai_key(monkeypatch: pytest.MonkeyPatch) -> None:
     from quill.core.ai import own_key
 
     monkeypatch.setattr(own_key, "has_own_key", lambda *_a: False)
+
+
+@pytest.fixture(autouse=True)
+def _no_saved_acoustid_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Keep the developer's AcoustID key, and the credential store, out of tests.
+
+    Radio's Preferences reads the key from Windows' credential store to fill
+    its box, and saves it back when the box changed; neither may reach the real
+    store from a test. Tests of the key patch these back themselves.
+    """
+    from quill.core.radio import acoustid
+
+    monkeypatch.setattr(acoustid, "stored_key", lambda: "")
+    monkeypatch.setattr(acoustid, "save_key", lambda _value: True)
 
 
 @pytest.fixture(autouse=True)
@@ -886,6 +923,23 @@ def _no_live_release_feed(monkeypatch: pytest.MonkeyPatch) -> None:
         raise feed_fetch.FeedMissing(url)
 
     monkeypatch.setattr(feed_fetch, "http_get", _missing)
+
+
+@pytest.fixture(autouse=True)
+def _no_live_preroll_reference(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Radio recordings in tests never open a pre-roll reference connection.
+
+    Every recording starts a second, late connection to the station so the
+    pre-roll guard can hear what the station plays to each new listener
+    (``quill/core/radio/recording_preroll_guard.py``). A test recorder is
+    handed a made-up stream URL and a fake ffmpeg; without this, the reference
+    thread would wake twenty seconds later and run the real ffmpeg against that
+    URL. Tests of the guard pass their own decoder and trimmer.
+    """
+    from quill.core.radio import recording_preroll_guard
+
+    monkeypatch.setattr(recording_preroll_guard, "decode_opening", lambda _source: None)
+    monkeypatch.setattr(recording_preroll_guard, "trim_start", lambda _path, _seconds: False)
 
 
 @pytest.fixture(autouse=True)

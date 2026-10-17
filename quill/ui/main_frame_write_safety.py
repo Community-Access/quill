@@ -66,6 +66,17 @@ class WriteSafetyMixin:
         escape this method entirely, so the save failed with the generic
         "Command failed: file.save" and no mention of the character at all.
         """
+        message = self._save_failure_sentence(name, error)
+        self._show_message_box(message, title, self._wx.ICON_ERROR | self._wx.OK)
+        self._set_status(f"Could not save {name}")
+
+    def _save_failure_sentence(self, name: str, error: OSError | UnicodeEncodeError) -> str:
+        """The words for a failed save, for the box above or for speech.
+
+        The clipboard collector's quiet save speaks this rather than opening the
+        box: a copy made in another program must never put a window in front of
+        you, and the failure still has to say what to do.
+        """
         if isinstance(error, OSError) and error.errno == errno.ENOSPC:
             message = (
                 f"The disk is full. QUILL could not save {name}. Free some space "
@@ -101,8 +112,38 @@ class WriteSafetyMixin:
             )
         else:
             message = f"Could not save {name}: {error}"
-        self._show_message_box(message, title, self._wx.ICON_ERROR | self._wx.OK)
-        self._set_status(f"Could not save {name}")
+        return message
+
+    def _write_named_document(self) -> OSError | UnicodeEncodeError | None:
+        """Write the active document to its own path and settle what a save settles.
+
+        Shared by Save and the clipboard collector's quiet save
+        (``clipboard_collector_saves``), so the two cannot drift: bookmarks,
+        inline notes, the caret, the external-change watcher, persistent undo
+        and the title. The error is returned rather than reported, because the
+        two say it differently -- Save in a box, the collector aloud.
+        """
+        from quill.core.external_change import FileSnapshot
+
+        try:
+            self._write_document_to_disk(self.document)
+        except (OSError, UnicodeEncodeError) as error:
+            # UnicodeEncodeError since 2026-09-17 (bad.md P0.9): a cp1252
+            # document that gains an em dash used to fail with "Command failed:
+            # file.save" and leave the writer to guess which character did it.
+            return error
+        # Persist this document's bookmarks + cursor position under its path now that
+        # it is saved (also migrates an untitled document's in-memory bookmarks).
+        self._save_active_bookmarks()
+        self._save_inline_notes()
+        self._remember_active_caret()
+        # FEAT-19: prime the watcher so our own save is not reported as an external change.
+        if self._external_change_watcher is not None and self.document.path is not None:
+            self._external_change_watcher.prime(FileSnapshot.of(self.document.path))
+        self._record_persistent_undo_state(self.document.text)
+        self.flush_persistent_undo()
+        self._refresh_title()
+        return None
 
     def _veto_close_after_failed_save(self) -> bool:
         """Whether to cancel this close because a save failed (#1390).

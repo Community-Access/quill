@@ -1034,6 +1034,26 @@ def generate_all() -> None:
     )
 
     generate_cast_outcomes()
+    generate_radio_resumed()
+
+
+def generate_radio_resumed() -> None:
+    """Quill Radio's resume earcon (xradio2 4.5, todo P3 Radio extras 2).
+
+    A tape spooling back up to speed: a short whir of noise under a sine that
+    sweeps up into the playing cue's own D, so it reads as "the same thing,
+    carrying on" rather than "something new arrived". Kept apart from
+    ``radio_playing`` on purpose -- resuming where you left off and tuning in
+    are different events, and a listener can tell which happened before the
+    audio does.
+    """
+
+    def spool_env(i: int, n: int) -> float:
+        return adsr(i, n, ms(10), ms(40), 0.5, ms(40))
+
+    whir = _noise(150, lambda i, n: spool_env(i, n) * 0.10)
+    climb = _sweep(220, 587, 150, sine_at, spool_env)
+    write_wav("radio_resumed.wav", _mix(whir, climb), vol=0.45)
 
 
 def generate_cast_outcomes() -> None:
@@ -1056,5 +1076,7 @@ if __name__ == "__main__":
 
     if "--cast-outcomes" in sys.argv:
         generate_cast_outcomes()
+    elif "--radio-resumed" in sys.argv:
+        generate_radio_resumed()
     else:
         generate_all()

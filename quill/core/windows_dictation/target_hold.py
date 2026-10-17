@@ -18,9 +18,11 @@ document that asks for this (``holds_phrases``, :mod:`target_lock`) gets it;
 an editor's own document still ends the session, as it always has, because
 there the "field" cannot move.
 
-Held phrases live in memory for this session only -- never written to disk,
-never logged -- and there is a ceiling, so a person who walks away from a
-paused session does not fill memory with a meeting's worth of words.
+Held phrases are never logged, and there is a ceiling, so a person who walks
+away from a paused session does not fill memory with a meeting's worth of
+words. Since D-5 they are also kept on disk, sealed, through the host's store
+(:mod:~quill.core.windows_dictation.rescue_mixin): Resume and Discard let go
+of them; stopping, failing and the app ending keep them for Recent Phrases.
 
 Mixed into :class:`~quill.core.windows_dictation.controller.DictationController`.
 wx-free.
@@ -31,6 +33,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
+from quill.core.windows_dictation.rescue_mixin import KEPT_SENTENCE, RescueMixin
 from quill.core.windows_dictation.vocabulary import Command
 
 if TYPE_CHECKING:
@@ -53,7 +56,7 @@ def _phrases(count: int) -> str:
     return f"{count} phrase" + ("" if count == 1 else "s")
 
 
-class TargetHoldMixin:
+class TargetHoldMixin(RescueMixin):
     """Hold phrases while the session's field cannot be written; resume on request."""
 
     _state: DictationState
@@ -79,6 +82,12 @@ class TargetHoldMixin:
 
     def _abandon(self, message: str) -> None:
         raise NotImplementedError
+
+    def _paused_parse(
+        self, phrase: RecognizedPhrase, preferences: DictationPreferences
+    ) -> ParsedPhrase | None:
+        """The command word's answer first (command_mode_mixin.py overrides this)."""
+        return self._parse(phrase, preferences)
 
     def stop(self, message: str = "Dictation off.") -> None:
         raise NotImplementedError
@@ -130,13 +139,16 @@ class TargetHoldMixin:
 
         if not self._hold_reason or self._state is not DictationState.PAUSED:
             return False
-        parsed = self._parse(phrase, preferences)
+        parsed = self._paused_parse(phrase, preferences)
+        if parsed is None:
+            return True  # meant for QUILL, answered, never held (command_mode_mixin.py)
         command = parsed.command
         if command is Command.STOP:
             self.stop()
         elif command is Command.SCRATCH:
             if self._held:
                 self._held.pop()
+                self._rescue_held(self._held)
                 self._say(f"Took back the last held phrase. {_phrases(len(self._held))} held.")
             else:
                 self._say("Nothing is held to take back.")
@@ -151,6 +163,7 @@ class TargetHoldMixin:
             self._feedback.show(f"Paused. {_phrases(MAX_HELD)} held; no more are kept.")
             return
         self._held.append(parsed)
+        self._rescue_held(self._held)  # on disk, sealed (rescue_mixin.py, D-5)
         self._feedback.show(f"Paused. {_phrases(len(self._held))} held.")
 
     def _write_failure(self) -> str:
@@ -160,15 +173,17 @@ class TargetHoldMixin:
     def _held_stopping(self, message: str) -> str:
         """Stopping: drop what is held, and say how much was never written."""
         count = len(self._held)
+        kept = f" {KEPT_SENTENCE}" if self._rescue_held_left() else ""
         self._drop_held()
         if not count:
             return message
         verb = "was" if count == 1 else "were"
-        return f"{message[:-1]}. {_phrases(count)} held while paused {verb} not written."
+        return f"{message[:-1]}. {_phrases(count)} held while paused {verb} not written.{kept}"
 
     def _drop_held(self) -> None:
         self._held = []
         self._hold_reason = ""
+        self._rescue_held_left()  # whatever is on disk stays there (D-5)
 
     # -- the person's choices ----------------------------------------------- #
 
@@ -192,6 +207,7 @@ class TargetHoldMixin:
             return False
         held, self._held = self._held, []
         self._hold_reason = ""
+        kept_id = self._held_kept_id
         self._set_state(DictationState.LISTENING)
         preferences = self._preferences()
         for index, parsed in enumerate(held):
@@ -203,9 +219,13 @@ class TargetHoldMixin:
                 return False
             if self._hold_reason:  # the field moved again part-way through
                 self._held = self._held + held[index + 1 :]
+                self._held_kept_id = self._held_kept_id or kept_id
+                self._rescue_held(self._held)
                 return False
             if self._state is DictationState.PROCESSING:
                 self._set_state(DictationState.LISTENING)
+        self._held_kept_id = kept_id
+        self._rescue_held_done()  # delivered: nothing left to bring back
         where = "Resumed in this field." if here else "Resumed."
         written = f" {_phrases(len(held))} written." if held else ""
         self._say(where + written)
@@ -215,6 +235,7 @@ class TargetHoldMixin:
         """Drop the held phrases; the session stays paused. Returns how many."""
         count = len(self._held)
         self._held = []
+        self._rescue_held_done()  # discarded on purpose
         if not self._hold_reason:
             self._say("Dictation is not paused.")
             return 0

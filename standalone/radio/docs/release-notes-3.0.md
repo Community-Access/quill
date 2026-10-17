@@ -76,7 +76,8 @@ open again, in your web browser.
 
 The main window has a **Stop** button again (Alt+T), first in the row before
 Mute and Volume. It stops whatever is playing, just like **Ctrl+Period** and
-**Station > Stop**. Stopping is the one thing everybody needs to find at once,
+the **Play** item on the **Playback** menu (Ctrl+P), which reads **Stop**
+while something plays. Stopping is the one thing everybody needs to find at once,
 without knowing a key.
 
 #### Keys that are easier to press

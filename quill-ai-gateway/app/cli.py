@@ -40,7 +40,12 @@ def register_cli_commands(app: Flask) -> None:
         from app.config_schema import describe as describe_key
         from app.limits import _FEATURE_CAP_FAIL_SAFE_DEFAULTS, SEED_DEFAULTS
         from app.models import FeatureFlag, GatewayConfig, GatewayModel, db
-        from app.prompts import DEFERRED_FEATURES, FEATURE_LABELS, SHIPPED_FEATURES
+        from app.prompts import (
+            DEFERRED_FEATURES,
+            FEATURE_LABELS,
+            OPT_IN_FEATURES,
+            SHIPPED_FEATURES,
+        )
 
         added = 0
 
@@ -87,7 +92,9 @@ def register_cli_commands(app: Flask) -> None:
             if db.session.get(FeatureFlag, feature) is None:
                 db.session.add(FeatureFlag(feature=feature, enabled=True))
                 added += 1
-        for feature, reason in DEFERRED_FEATURES.items():
+        # Built and switched off until an operator turns it on (web search):
+        # seeded off with the sentence its refusal shows.
+        for feature, reason in (*DEFERRED_FEATURES.items(), *OPT_IN_FEATURES.items()):
             if db.session.get(FeatureFlag, feature) is None:
                 db.session.add(FeatureFlag(feature=feature, enabled=False, disabled_reason=reason))
                 added += 1

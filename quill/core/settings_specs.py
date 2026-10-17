@@ -643,15 +643,15 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Word document reading engine",
         "editing",
         "choice",
-        "How QUILL converts a Word document into editable text when you open "
-        "it. Auto tries MarkItDown first and falls back to a plain extract. "
-        "MarkItDown is fast and reliable: headings, lists, and tables come "
-        "through; images, comments, and fonts do not. Pandoc keeps richer "
-        "structure - footnotes and complex tables survive better - and needs "
-        "Pandoc installed; when Pandoc is missing it falls back to Auto.",
+        "How QUILL turns a Word document into editable text when you open it. Auto uses "
+        "QUILL's own reader (headings, lists, tables, picture descriptions; about a second) "
+        "and tries MarkItDown only if it fails. MarkItDown first keeps the same structure, "
+        "but the first Word file after starting waits 10 to 20 seconds for it to load. "
+        "Neither keeps images, comments, or fonts. Pandoc keeps footnotes and complex "
+        "tables better, needs Pandoc installed, and falls back to Auto without it.",
         choices=(
-            ("auto", "Auto (MarkItDown first)"),
-            ("markitdown", "MarkItDown"),
+            ("auto", "Auto (QUILL's own reader first)"),
+            ("markitdown", "MarkItDown first"),
             ("pandoc", "Pandoc"),
         ),
         keywords=("word", "docx", "converter", "engine", "pandoc", "markitdown", "open"),
@@ -730,6 +730,22 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         keywords=("clip library", "copy", "history", "automatic", "clipboard", "privacy"),
     ),
     SettingSpec(
+        "clipboard_collector_saves",
+        "Save the document after every clip the clipboard collector adds",
+        "editing",
+        "bool",
+        (
+            "On by default. While the clipboard collector is on, each piece of "
+            "text it adds is followed by a quiet save, and you hear one "
+            "sentence: Collected and saved. Only a document that already has a "
+            "file name is saved; an untitled one just collects, and no Save As "
+            "window ever opens. If the save cannot happen, QUILL says why and "
+            "keeps collecting. Off: collected text waits for you to save. QUILL "
+            "Lite has the same setting."
+        ),
+        keywords=("clipboard collector", "collect", "save", "autosave", "clipboard"),
+    ),
+    SettingSpec(
         "autosave_interval_seconds",
         "Autosave interval (seconds)",
         "editing",
@@ -773,6 +789,31 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "bool",
         "Convert a double hyphen to an en or em dash while you type.",
         keywords=("autoformat", "dash", "hyphen", "typography"),
+    ),
+    SettingSpec(
+        "autocorrect_misspellings",
+        "Correct common misspellings as I type",
+        "editing",
+        "bool",
+        "When you type a space or press Enter after a common misspelling, replace "
+        "it with the right word: teh becomes the, recieve becomes receive. You hear "
+        "the corrected word. Control Z straight afterwards puts back what you "
+        "typed, and that word is then left alone. Never in code or settings "
+        "files, web or email addresses, or a word typed all in capitals. Insert, "
+        "AutoCorrect Entries (Alt+Shift+9) lists the corrections and adds your own.",
+        keywords=("autocorrect", "misspelling", "spelling", "typo", "correct", "teh"),
+    ),
+    SettingSpec(
+        "continue_lists_in_plain_text",
+        "Continue lists in plain text",
+        "editing",
+        "bool",
+        "In a plain text document, pressing Enter at the end of a line that starts "
+        "with a list marker (a hyphen, an asterisk, 1. or 1)) starts the next line "
+        "with the next marker; Enter on an empty item ends the list. Markdown "
+        "documents always do this. Off by default, and never in code or settings "
+        "files or in rich text, whose lists are formatting.",
+        keywords=("list", "numbering", "bullet", "enter", "continue", "plain text"),
     ),
     # #262: Pandoc Import / Export batch conversion defaults. These show in
     # Preferences -> Editing; the wizard reads them as starting values and

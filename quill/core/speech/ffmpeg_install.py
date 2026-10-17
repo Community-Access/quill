@@ -57,6 +57,12 @@ _ASSETS_V1_BASE = "https://github.com/Community-Access/quill/releases/download/a
 _DOWNLOAD_TIMEOUT_S = 1800.0
 _WANTED = ("ffmpeg.exe", "ffprobe.exe")
 
+#: The files that travel beside every ffmpeg.exe QUILL ships or installs: the
+#: GPLv3 text (the pinned build is configured --enable-gpl --enable-version3)
+#: and the provenance + corresponding-source offer. One copy lives in
+#: ``quill/data/notices/ffmpeg``; every bundle check reads this tuple.
+FFMPEG_NOTICE_FILES = ("LICENSE.GPLv3.txt", "README-SOURCE.txt")
+
 
 def _is_real_sha256(value: str) -> bool:
     """True for a genuine 64-hex SHA-256 (not a blank/placeholder)."""
@@ -158,7 +164,7 @@ def write_license_notices(dest: Path) -> None:
     from importlib import resources
 
     folder = resources.files("quill.data").joinpath("notices", "ffmpeg")
-    for name in ("LICENSE.GPLv3.txt", "README-SOURCE.txt"):
+    for name in FFMPEG_NOTICE_FILES:
         (Path(dest) / name).write_bytes(folder.joinpath(name).read_bytes())
 
 

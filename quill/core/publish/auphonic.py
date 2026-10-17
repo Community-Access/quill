@@ -8,22 +8,25 @@ it is done, and download the results.
 
 Privacy/consent: everything requires the user's own API token (stored in the
 Windows Credential Manager under :data:`CREDENTIAL_TARGET`, never in settings)
-and runs only from the explicit publish dialog, which names the service and is
-absent in Safe Mode. All calls funnel through the two reviewed egress sites
-below (HTTPS-only, verified TLS, bounded timeouts) — see
-``quill/tools/network_egress_audit.py``. wx-free, strict-typed.
+and runs only from an explicit dialog that names the service and is absent in
+Safe Mode: the Audio Studio's publish dialog, and Quill Converter's Process
+with Auphonic (which uses the JSON API section further down). All calls
+funnel through the two reviewed egress sites below (HTTPS-only, verified
+TLS, bounded timeouts) — see ``quill/tools/network_egress_audit.py``. wx-free, strict-typed.
 """
 
 from __future__ import annotations
 
 import json
+import os
 import ssl
 import urllib.error
 import urllib.request
 import uuid
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from pathlib import Path
+from pathlib import Path, PurePosixPath
+from typing import BinaryIO
 
 from quill.core import http_client
 from quill.core.error_codes import CodedError
@@ -55,22 +58,30 @@ _DOWNLOAD_BLOCK = 64 * 1024
 
 
 class _ProgressReader:
-    """File-like wrapper over an upload body: reports progress, honors cancel.
+    """File-like upload body: reports progress, honors cancel, never loads it all.
 
     ``urllib`` hands file-like ``data`` to ``http.client``, which streams it
     with repeated ``read()`` calls — so every block is a chance to report
-    bytes sent and to abort. Content-Length is set by the caller, keeping the
-    request identical on the wire to the plain-bytes form.
+    bytes sent and to abort. The body is a sequence of parts, each either
+    bytes or an open binary file, read in turn: an hour of WAV goes up a block
+    at a time instead of being held in memory twice (2026-10-15). The caller
+    sets Content-Length from :attr:`total`.
     """
 
     def __init__(
         self,
-        body: bytes,
+        parts: bytes | list[bytes | BinaryIO],
         on_bytes: Callable[[int, int], None] | None,
         is_cancelled: Callable[[], bool] | None,
+        *,
+        total: int | None = None,
     ) -> None:
-        self._view = memoryview(body)
-        self._total = len(body)
+        self._parts: list[bytes | BinaryIO] = [parts] if isinstance(parts, bytes) else parts
+        self.total = (
+            total if total is not None else sum(len(p) for p in self._parts if isinstance(p, bytes))
+        )
+        self._index = 0
+        self._offset = 0
         self._sent = 0
         self._on_bytes = on_bytes
         self._is_cancelled = is_cancelled
@@ -79,12 +90,26 @@ class _ProgressReader:
         if self._is_cancelled is not None and self._is_cancelled():
             raise AuphonicCancelled("Cancelled — the Auphonic upload was stopped.")
         if size is None or size < 0:
-            size = self._total - self._sent
-        chunk = bytes(self._view[self._sent : self._sent + size])
-        self._sent += len(chunk)
-        if chunk and self._on_bytes is not None:
-            self._on_bytes(self._sent, self._total)
-        return chunk
+            size = max(self.total - self._sent, 0)
+        out = bytearray()
+        while len(out) < size and self._index < len(self._parts):
+            part = self._parts[self._index]
+            want = size - len(out)
+            if isinstance(part, bytes):
+                chunk = part[self._offset : self._offset + want]
+                self._offset += len(chunk)
+                exhausted = self._offset >= len(part)
+            else:
+                chunk = part.read(want)
+                exhausted = not chunk
+            out.extend(chunk)
+            if exhausted:
+                self._index += 1
+                self._offset = 0
+        self._sent += len(out)
+        if out and self._on_bytes is not None:
+            self._on_bytes(self._sent, self.total)
+        return bytes(out)
 
 
 @dataclass(slots=True)
@@ -125,16 +150,18 @@ def _request(
     url: str,
     token: str,
     *,
-    data: bytes | None = None,
+    data: bytes | _ProgressReader | None = None,
     content_type: str = "",
     on_bytes: Callable[[int, int], None] | None = None,
     is_cancelled: Callable[[], bool] | None = None,
+    sink: BinaryIO | None = None,
 ) -> bytes:
     """One authenticated HTTPS exchange — the reviewed JSON egress site.
 
     ``on_bytes(done, total)`` reports upload progress when *data* is given and
     download progress otherwise; ``is_cancelled`` aborts between blocks with
-    :class:`AuphonicCancelled`.
+    :class:`AuphonicCancelled`. With *sink*, a download is written to it block
+    by block and ``b""`` is returned, so a large file is never held in memory.
     """
     if not url.startswith("https://"):
         raise AuphonicError("Refusing a non-HTTPS Auphonic request.")
@@ -142,7 +169,9 @@ def _request(
     if content_type:
         headers["Content-Type"] = content_type
     body: bytes | _ProgressReader | None = data
-    if data is not None and (on_bytes is not None or is_cancelled is not None):
+    if isinstance(data, _ProgressReader):
+        headers["Content-Length"] = str(data.total)
+    elif data is not None and (on_bytes is not None or is_cancelled is not None):
         # Streamed upload: http.client reads the file-like body in blocks, so
         # progress and cancel get a look-in on every block. Content-Length is
         # required when the body has no len().
@@ -152,18 +181,25 @@ def _request(
     context = verified_ssl_context()
     try:
         with urllib.request.urlopen(request, timeout=_TIMEOUT_SECONDS, context=context) as resp:
-            if data is None and (on_bytes is not None or is_cancelled is not None):
+            if data is None and (
+                sink is not None or on_bytes is not None or is_cancelled is not None
+            ):
                 total = int(resp.headers.get("Content-Length") or 0)
                 received = bytearray()
+                count = 0
                 while True:
                     if is_cancelled is not None and is_cancelled():
                         raise AuphonicCancelled("Cancelled — the Auphonic download was stopped.")
                     chunk = resp.read(_DOWNLOAD_BLOCK)
                     if not chunk:
                         break
-                    received.extend(chunk)
+                    count += len(chunk)
+                    if sink is not None:
+                        sink.write(chunk)
+                    else:
+                        received.extend(chunk)
                     if on_bytes is not None:
-                        on_bytes(len(received), total)
+                        on_bytes(count, total)
                 return bytes(received)
             return bytes(resp.read())
     except urllib.error.HTTPError as error:
@@ -182,7 +218,7 @@ def _json(
     url: str,
     token: str,
     *,
-    data: bytes | None = None,
+    data: bytes | _ProgressReader | None = None,
     content_type: str = "",
     on_bytes: Callable[[int, int], None] | None = None,
     is_cancelled: Callable[[], bool] | None = None,
@@ -245,6 +281,32 @@ def _multipart(fields: dict[str, str], file_field: str, path: Path) -> tuple[byt
     return b"".join(lines), f"multipart/form-data; boundary={boundary}"
 
 
+def _multipart_parts(
+    fields: dict[str, str], file_field: str, path: Path, handle: BinaryIO
+) -> tuple[list[bytes | BinaryIO], int, str]:
+    """The same multipart body as :func:`_multipart`, as parts to stream.
+
+    Returns ``(parts, total_length, content_type)``; the file is read from
+    *handle* as it is sent, and its size comes from the file system.
+    """
+    boundary = f"----quill-{uuid.uuid4().hex}"
+    head: list[bytes] = []
+    for key, value in fields.items():
+        head.append(f"--{boundary}\r\n".encode())
+        head.append(f'Content-Disposition: form-data; name="{key}"\r\n\r\n'.encode())
+        head.append(f"{value}\r\n".encode())
+    head.append(f"--{boundary}\r\n".encode())
+    head.append(
+        f'Content-Disposition: form-data; name="{file_field}"; '
+        f'filename="{path.name}"\r\n'
+        "Content-Type: application/octet-stream\r\n\r\n".encode()
+    )
+    opening = b"".join(head)
+    closing = f"\r\n--{boundary}--\r\n".encode()
+    total = len(opening) + path.stat().st_size + len(closing)
+    return [opening, handle, closing], total, f"multipart/form-data; boundary={boundary}"
+
+
 def start_production(
     token: str,
     path: Path,
@@ -265,15 +327,14 @@ def start_production(
         fields["preset"] = preset_uuid
     if on_progress is not None:
         on_progress(f"Uploading {path.name} to Auphonic...")
-    body, content_type = _multipart(fields, "input_file", path)
-    data = _json(
-        f"{API_BASE}/simple/productions.json",
-        token,
-        data=body,
-        content_type=content_type,
-        on_bytes=on_bytes,
-        is_cancelled=is_cancelled,
-    )
+    with path.open("rb") as handle:
+        parts, total, content_type = _multipart_parts(fields, "input_file", path, handle)
+        data = _json(
+            f"{API_BASE}/simple/productions.json",
+            token,
+            data=_ProgressReader(parts, on_bytes, is_cancelled, total=total),
+            content_type=content_type,
+        )
     production = data.get("data")
     if not isinstance(production, dict) or not production.get("uuid"):
         raise AuphonicError("Auphonic did not accept the upload.")
@@ -310,12 +371,18 @@ def download_results(
 
     ``on_bytes(filename, done, total)`` reports download bytes per file;
     ``is_cancelled`` aborts between blocks with :class:`AuphonicCancelled`.
+
+    Each file streams to ``<name>.part`` and only then takes its name, and a
+    name already in the folder is never overwritten: the new file becomes
+    "name (2).ext" (2026-10-15). A cancelled or failed download leaves no
+    partial file. The server's name is used only as a bare file name, so it
+    cannot place a file outside *out_dir*.
     """
     out_dir.mkdir(parents=True, exist_ok=True)
     written: list[Path] = []
     for output in status.output_files:
         url = str(output.get("download_url", ""))
-        filename = str(output.get("filename", "")) or url.rsplit("/", 1)[-1]
+        filename = _safe_name(str(output.get("filename", "")) or url.rsplit("/", 1)[-1])
         if not url or not filename:
             continue
         if on_progress is not None:
@@ -325,8 +392,148 @@ def download_results(
             if on_bytes is None
             else (lambda done, total, _name=filename: on_bytes(_name, done, total))
         )
-        payload = _request(url, token, on_bytes=per_file, is_cancelled=is_cancelled)
-        target = out_dir / filename
-        target.write_bytes(payload)
-        written.append(target)
+        target = _unused_path(out_dir / filename)
+        partial = target.with_name(target.name + ".part")
+        try:
+            with partial.open("wb") as sink:
+                _request(url, token, on_bytes=per_file, is_cancelled=is_cancelled, sink=sink)
+            final = _unused_path(target)  # again: another file may have arrived
+            os.replace(partial, final)
+        except BaseException:
+            partial.unlink(missing_ok=True)
+            raise
+        written.append(final)
     return written
+
+
+# --------------------------------------------------------------------------- #
+# The JSON API: create, upload, start (Quill Converter, 2026-10-15)
+# --------------------------------------------------------------------------- #
+#
+# The simple API above uploads and starts in one request but cannot choose an
+# output format or hold more than one track. Quill Converter's Auphonic
+# workflow (docs/planning/QUILL-Converter-Auphonic-Integration-PRD.md) uses
+# Auphonic's JSON API instead -- the same three steps for one file or a
+# multitrack production: POST /productions.json with the settings, POST each
+# file to /production/{uuid}/upload.json (the form field is "input_file" for
+# one file and the track's id for a multitrack track), then
+# /production/{uuid}/start.json. Every call goes through _request, the one
+# reviewed egress site.
+
+#: The output formats Quill Converter offers, by Auphonic's format name. Each
+#: is in the JSON API's output-file list (help/api/details.html).
+OUTPUT_FORMATS: dict[str, str] = {
+    "mp3": "MP3",
+    "aac": "AAC (M4A)",
+    "opus": "Opus",
+    "flac": "FLAC",
+    "wav": "WAV",
+}
+#: Every sound format a production can return. Anything else -- a video, a
+#: waveform image, statistics, a chapter file, a zip of the tracks -- is not
+#: downloaded by Quill Converter, and the person is told how many were left.
+_AUDIO_RESULT_FORMATS = frozenset({
+    "mp3",
+    "mp3-vbr",
+    "vorbis",
+    "opus",
+    "aac",
+    "flac",
+    "alac",
+    "wav",
+    "wav-24bit",
+})
+_AUDIO_RESULT_ENDINGS = frozenset({"mp3", "ogg", "oga", "opus", "m4a", "aac", "flac", "wav"})
+#: The host every result is downloaded from.
+_RESULT_HOST = "auphonic.com"
+
+
+def _check_uuid(production_uuid: str) -> str:
+    if not production_uuid or not production_uuid.replace("-", "").isalnum():
+        raise AuphonicError("Auphonic returned a production that QUILL could not read.")
+    return production_uuid
+
+
+def create_production(token: str, body: dict[str, object]) -> str:
+    """Create (but do not start) a production from *body*; returns its uuid.
+
+    Nothing is uploaded and nothing is charged: a production costs credits
+    only once it is started.
+    """
+    data = _json(
+        f"{API_BASE}/productions.json",
+        token,
+        data=json.dumps(body).encode("utf-8"),
+        content_type="application/json",
+    )
+    production = data.get("data")
+    if not isinstance(production, dict) or not production.get("uuid"):
+        raise AuphonicError("Auphonic did not create the production.")
+    return _check_uuid(str(production["uuid"]))
+
+
+def upload_input(
+    token: str,
+    production_uuid: str,
+    path: Path,
+    *,
+    field_name: str = "input_file",
+    on_bytes: Callable[[int, int], None] | None = None,
+    is_cancelled: Callable[[], bool] | None = None,
+) -> None:
+    """Stream *path* into an existing production under *field_name*."""
+    with path.open("rb") as handle:
+        parts, total, content_type = _multipart_parts({}, field_name, path, handle)
+        _json(
+            f"{API_BASE}/production/{_check_uuid(production_uuid)}/upload.json",
+            token,
+            data=_ProgressReader(parts, on_bytes, is_cancelled, total=total),
+            content_type=content_type,
+        )
+
+
+def start_created(token: str, production_uuid: str) -> None:
+    """Start a production made by :func:`create_production` (credits are used now)."""
+    _json(f"{API_BASE}/production/{_check_uuid(production_uuid)}/start.json", token, data=b"")
+
+
+def is_result_url(url: str) -> bool:
+    """True for an HTTPS address on Auphonic's own host -- the only place
+    Quill Converter downloads a result from."""
+    from urllib.parse import urlsplit
+
+    parts = urlsplit(url)
+    host = (parts.hostname or "").lower()
+    return parts.scheme == "https" and (host == _RESULT_HOST or host.endswith("." + _RESULT_HOST))
+
+
+def audio_results(status: ProductionStatus) -> tuple[ProductionStatus, int]:
+    """*status* keeping only sound files on Auphonic's host, and how many were left out."""
+    kept: list[dict[str, object]] = []
+    for output in status.output_files:
+        fmt = str(output.get("format", "")).lower()
+        ending = str(output.get("ending", "")).lower().lstrip(".")
+        if not ending:
+            name = str(output.get("filename", ""))
+            ending = name.rsplit(".", 1)[-1].lower() if "." in name else ""
+        audio = fmt in _AUDIO_RESULT_FORMATS if fmt else ending in _AUDIO_RESULT_ENDINGS
+        if audio and is_result_url(str(output.get("download_url", ""))):
+            kept.append(output)
+    left_out = len(status.output_files) - len(kept)
+    return ProductionStatus(status.uuid, status.status, status.status_string, kept), left_out
+
+
+def _safe_name(name: str) -> str:
+    """The last part of *name* only: never a path the server chose."""
+    return PurePosixPath(name.replace("\\", "/")).name.strip().lstrip(".")
+
+
+def _unused_path(path: Path) -> Path:
+    """*path*, or "name (2).ext", "name (3).ext"... when it already exists."""
+    if not path.exists():
+        return path
+    for number in range(2, 10_000):
+        candidate = path.with_name(f"{path.stem} ({number}){path.suffix}")
+        if not candidate.exists():
+            return candidate
+    raise AuphonicError(f"Too many files called {path.name} in {path.parent}.")

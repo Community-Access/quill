@@ -8,7 +8,10 @@ and decoration everywhere else.
 C4 -- the collector called ``save_file()`` on every collected clip whenever the
 document had a path, driven by a 750 ms poll, so copying anything in any
 program wrote to disk and spoke twice. Its three refusals were silent, which is
-how a working feature comes to look broken.
+how a working feature comes to look broken. (Saving came back on 2026-10-15 as
+``clipboard_collector_saves``, quietly and in one sentence, without ever calling
+``save_file()``; ``test_clipboard_collector_saves.py`` covers it. These hosts
+turn it off.)
 
 C5 -- the first press of a tray slot waited out the 400 ms multi-press window
 before pasting, so a fast typist's next characters landed *before* the paste.
@@ -23,6 +26,7 @@ from __future__ import annotations
 
 import ast
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -213,6 +217,7 @@ class _CollectorHost(PowerToolsActionsMixin):
         self.document.path = path
         self.status: list[str] = []
         self.saves = 0
+        self.settings = SimpleNamespace(clipboard_collector_saves=False)
 
     def _document_is_read_only(self) -> bool:
         return self._read_only

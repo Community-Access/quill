@@ -73,18 +73,8 @@ class MenuBuilderMixin:
         """
         wx = self._wx
         search_menu = wx.Menu()
-        # Cross-file search is a regex-level feature; basic profiles only have
-        # in-document Find/Replace (Edit menu). Show Search in Files and Replace
-        # Across Files only when core.search.regex is enabled.
-        if self._feature_enabled("core.search.regex"):
-            search_menu.Append(
-                self._id_search_in_files,
-                self._menu_label(_("Search in &Files..."), "tools.search_in_files"),
-            )
-            search_menu.Append(
-                self._id_replace_in_files,
-                self._menu_label(_("&Replace Across Files..."), "tools.replace_in_files"),
-            )
+        # Search in Files and Replace Across Files left this submenu on
+        # 2026-10-16 for Edit itself (_append_cross_document_search_items).
         # Regular Expression match count/extract and block set-ops make this the
         # single find / filter / extract-lines hub (Power Tools recirculation,
         # menus.md Phase 4).
@@ -688,7 +678,11 @@ class MenuBuilderMixin:
         # Find / Replace and the find-navigation commands live in Edit (their
         # conventional home and their edit.* command ids); the Search menu is
         # reserved for cross-file search (menus.md Phase 3).
-        edit_menu.Append(self._id_find, self._menu_label(_("Fin&d..."), "edit.find"))
+        # &F, Notepad's letter and QUILL Lite's. It was Fin&d, which Restore
+        # Deleted Text holds, so the route pass seated Find on whatever was left
+        # -- and once Replace Across Files joined this menu (2026-10-16) that
+        # was Q, which nobody would guess. Claimed here, it is kept in round one.
+        edit_menu.Append(self._id_find, self._menu_label(_("&Find..."), "edit.find"))
         edit_menu.Append(
             self._id_replace,
             self._menu_label(_("Rep&lace..."), "edit.replace"),
@@ -706,6 +700,7 @@ class MenuBuilderMixin:
             self._menu_label(_("Find All &Matches"), "edit.find_all_matches"),
         )
         self._append_open_documents_item(edit_menu)  # main_frame_open_documents
+        self._append_cross_document_search_items(edit_menu)
         # Word puts Go To under Edit, beneath Find and Replace, and it is one
         # window with a target kind now (bad.md 5.4, M4, P1.20). It is here
         # rather than in both places because two menu rows on one chord means
@@ -1637,6 +1632,7 @@ class MenuBuilderMixin:
                     _("Toggle Abbre&viation Expansion"), "format.toggle_abbreviation_expansion"
                 ),
             )
+        self._append_autocorrect_entries_item(insert_menu)  # main_frame_typing_assist
         # Power Tools recirculation (menus.md Phase 4). The power-tool date/time
         # entries were removed: the bundled ``com.quill.bundled.insert-tools``
         # Quillin is now the single home for Insert Date / Insert Time / Insert
@@ -2634,12 +2630,8 @@ class MenuBuilderMixin:
             id_radio_rewind = wx.NewIdRef()
             id_radio_forward = wx.NewIdRef()
             id_radio_live = wx.NewIdRef()
-            media_menu.Append(
-                id_radio_rewind, self._menu_label(_("&Rewind 30 Seconds"), "radio.rewind")
-            )
-            media_menu.Append(
-                id_radio_forward, self._menu_label(_("Forw&ard 30 Seconds"), "radio.forward")
-            )
+            media_menu.Append(id_radio_rewind, self._menu_label(_("&Rewind"), "radio.rewind"))
+            media_menu.Append(id_radio_forward, self._menu_label(_("Forw&ard"), "radio.forward"))
             media_menu.Append(
                 id_radio_live, self._menu_label(_("Back &to Live"), "radio.jump_to_live")
             )
@@ -3176,7 +3168,7 @@ class MenuBuilderMixin:
         )
         customize_support_menu.Append(
             self._id_bring_from_quilllite,
-            self._menu_label(_("Bring My Quill&Lite Settings..."), "tools.bring_from_quilllite"),
+            self._menu_label(_("Bring My QUILL &Lite Settings..."), "tools.bring_from_quilllite"),
         )
         customize_support_menu.AppendSeparator()
         customize_support_menu.Append(

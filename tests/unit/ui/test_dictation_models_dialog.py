@@ -64,7 +64,7 @@ def test_the_list_reads_in_our_suggested_order_with_tiny_in_its_place(
         rows = [dialog.models.GetString(i) for i in range(dialog.models.GetCount())]
         assert rows[0].startswith("NVIDIA Nemotron 3.5 ASR Streaming 0.6B")
         assert "Suggested download" in rows[0]
-        assert rows[5].startswith("Whisper tiny: built in")
+        assert rows[5].startswith("Whisper tiny, Lightweight: built in")
         assert rows[4].startswith("Whisper base")
         assert all(row.endswith(".") for row in rows)
     finally:
@@ -294,13 +294,13 @@ def test_dictation_settings_lists_a_downloaded_model_and_opens_speech_models(
     dialog = WindowsDictationDialog(None, _Settings())
     try:
         labels = [dialog.engine.GetString(i) for i in range(dialog.engine.GetCount())]
-        assert "Whisper small (downloaded)" in labels
+        assert "Whisper small (downloaded), High accuracy" in labels
         assert dialog.speech_models.GetHelpText()
         monkeypatch.setattr(
-            dictation_models_dialog, "open_speech_models", lambda *_a: "whisper_small"
+            dictation_models_dialog, "open_speech_models", lambda *_a, **_k: "whisper_small"
         )
         dialog._on_speech_models(None)
-        assert dialog.engine.GetStringSelection() == "Whisper small (downloaded)"
+        assert dialog.engine.GetStringSelection() == "Whisper small (downloaded), High accuracy"
         settings = _Settings()
         dialog.apply(settings)
         assert settings.windows_dictation_engine == "whisper_small"
@@ -335,5 +335,89 @@ def test_speech_models_is_findable_and_has_its_own_access_key(wx_app) -> None:
             if "&" in child.GetLabel().replace("&&", "")
         ]
         assert keys.count("b") == 1 and len(keys) == len(set(keys))
+    finally:
+        dialog.Destroy()
+
+
+def test_the_recommendation_is_text_to_read_with_its_reasons(wx_app, dialog_module) -> None:
+    """D-22: the advice is read-only text, every row names its tier, and nothing
+    is chosen for the person."""
+    dialog = _open(dialog_module)
+    try:
+        advice = dialog.advice.GetValue()
+        assert advice.startswith("Recommended for this computer: NVIDIA Nemotron")
+        assert "estimates from a synthetic voice" in advice
+        assert dialog.advice.GetHelpText() and dialog.priority.GetHelpText()
+        assert dialog.show_recommended.GetHelpText()
+        rows = [dialog.models.GetString(i) for i in range(dialog.models.GetCount())]
+        assert rows[0].startswith("NVIDIA Nemotron 3.5 ASR Streaming 0.6B, High accuracy:")
+        assert "Tier: High accuracy:" in dialog.details.GetValue()
+        assert dialog.chosen is None
+    finally:
+        dialog.Destroy()
+
+
+def test_what_matters_most_changes_the_advice_and_says_so(wx_app, dialog_module) -> None:
+    said: list[str] = []
+    dialog = _open(dialog_module, said)
+    try:
+        dialog.priority.SetSelection(1)  # the quickest response
+        dialog._on_priority(None)
+        assert dialog.advice.GetValue().startswith(
+            "Recommended for this computer: Moonshine (built in)"
+        )
+        assert said[-1] == "Recommended: Moonshine (built in)."
+        assert not dialog.show_recommended.IsEnabled()  # Moonshine has no row here
+    finally:
+        dialog.Destroy()
+
+
+def test_show_recommended_moves_to_its_row_and_chooses_nothing(wx_app, dialog_module) -> None:
+    dialog = _open(dialog_module)
+    try:
+        dialog.models.SetSelection(3)
+        dialog._on_show_recommended(None)
+        assert dialog.selected().id == "nemotron"
+        assert dialog.chosen is None
+    finally:
+        dialog.Destroy()
+
+
+def test_spanish_advice_follows_the_dictation_language(wx_app, dialog_module) -> None:
+    from quill.core.windows_dictation.speed_check import SpeedCheck
+
+    check = SpeedCheck(tiny=0.05, cores=4, memory_gb=7.8)
+    dialog = dialog_module.SpeechModelsDialog(None, None, run_check=lambda: check, language="es")
+    try:
+        assert "Whisper (built in)" in dialog.advice.GetValue()
+        dialog._on_show_recommended(None)
+        assert dialog.selected() is None  # the built-in Whisper tiny row
+    finally:
+        dialog.Destroy()
+
+
+def test_dictation_settings_shows_the_recommendation(wx_app, monkeypatch) -> None:
+    """QUILL and QUILL Lite's Speech engine list gets the same line as Transcribe's
+    Choose Model, and it follows the dictation language."""
+    from quill.core.windows_dictation.model_advice import recommend
+    from quill.core.windows_dictation.speed_check import SpeedCheck
+    from quill.ui import windows_dictation_dialog
+    from quill.ui.windows_dictation_dialog import WindowsDictationDialog
+
+    check = SpeedCheck(tiny=0.05, cores=4, memory_gb=7.8)
+    monkeypatch.setattr(
+        windows_dictation_dialog, "for_this_computer", lambda language: recommend(check, language)
+    )
+
+    class _Settings:
+        windows_dictation_engine = "moonshine"
+
+    dialog = WindowsDictationDialog(None, _Settings())
+    try:
+        assert dialog.advice.GetValue().startswith("Moonshine base, Lightweight: keeps up")
+        assert dialog.advice.GetHelpText()
+        dialog.speech_language.SetSelection(1)  # Spanish
+        dialog._on_speech_language(None)
+        assert dialog.advice.GetValue().startswith("Whisper (built in), Lightweight:")
     finally:
         dialog.Destroy()

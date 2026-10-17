@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 496.
+Editor commands with default bindings: 503.
 
 ## The QUILL editor
 
@@ -156,6 +156,7 @@ Editor commands with default bindings: 496.
 | (unbound by default) | Structured List Studio Settings | `format.list_studio_settings` |
 | (unbound by default) | New Abbreviation from Clipboard... | `format.new_abbreviation_from_clipboard` |
 | (unbound by default) | Quick Insert... | `format.quick_insert` |
+| Alt+Shift+9 | Autocorrect entries | `format.autocorrect_entries` |
 | Alt+Shift+A | Toggle Abbreviation Expansion | `format.toggle_abbreviation_expansion` |
 | Alt+Shift+Down | Move Section Down | `format.move_section_down` |
 | Alt+Shift+F | Switch Document Format | `format.switch_document_format` |
@@ -317,6 +318,9 @@ Editor commands with default bindings: 496.
 | Alt+Shift+M | App Sounds On or Off | `tools.sound_toggle` |
 | Alt+Shift+Q | Ask Quill by Voice... | `tools.ask_quill_conversation` |
 | Alt+Shift+R | Misspelling List (Ranked by Frequency)... | `tools.misspelling_list_ranked` |
+| Ctrl+6 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
+| Ctrl+7 | Free AI Prompt Library... | `tools.hosted_ai_prompt_library` |
+| Ctrl+9 | Web Searches Left | `tools.hosted_ai_web_searches` |
 | Ctrl+Alt+F10 | Manage Individual Features... | `tools.individual_feature_toggles` |
 | Ctrl+Alt+F11 | Export and Back Up... | `tools.share_export` |
 | Ctrl+Alt+F12 | Import or Restore... | `tools.share_import` |
@@ -358,6 +362,7 @@ Editor commands with default bindings: 496.
 | Ctrl+Shift+R | Replace Across Files... | `tools.replace_in_files` |
 | Ctrl+Shift+] | List Folds... | `tools.list_folds` |
 | Escape | Stop Dictation (keep speech) | `tools.dictation_emergency_stop` |
+| F11 | Windows dictation command | `tools.windows_dictation_command` |
 | F7 | Spell Check... | `tools.spell_check_dialog` |
 | QUILL Key + D | Dictation | `tools.dictation_toggle` |
 | QUILL Key + I | Describe Image... | `tools.describe_image` |
@@ -370,6 +375,7 @@ Editor commands with default bindings: 496.
 | QUILL Key + Y | Audiobook  Batch Speech... | `tools.speech_batch_export` |
 | Shift+Escape | Cancel Dictation (discard) | `tools.dictation_cancel` |
 | Shift+F11 | Windows dictation recent | `tools.windows_dictation_recent` |
+| Shift+F4 | Windows dictation review | `tools.windows_dictation_review` |
 | Shift+F5 | Windows dictation transcribe file | `tools.windows_dictation_transcribe_file` |
 | Shift+F7 | Thesaurus... | `tools.thesaurus` |
 
@@ -516,6 +522,7 @@ Editor commands with default bindings: 496.
 | Alt+Shift+X | Delete lines containing | `power.delete_lines_containing` |
 | B | QUILL Quick Nav: Bookmark | `quill.quick_nav.bookmark` |
 | C | QUILL Quick Nav: Table of Contents | `quill.quick_nav.table_of_contents` |
+| Ctrl+Alt+Backspace | Toggle read only guard | `power.toggle_read_only_guard` |
 | Ctrl+Alt+C | Describe character detail | `power.describe_character_detail` |
 | Ctrl+Alt+Down | Table: Cell Below | `table.cell_below` |
 | Ctrl+Alt+End | Table: Last Cell | `table.last_cell` |
@@ -579,11 +586,16 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+8 | Play favorite 8 | `radio.play_favorite_8` |
 | Alt+9 | Play favorite 9 | `radio.play_favorite_9` |
 | Alt+F5 | Use My ChatGPT Subscription... | `radio.chatgpt_account` |
+| Alt+Shift+B | Background station | `radio.background_station` |
+| Alt+Shift+D | Mirror output | `radio.mirror_output` |
 | Alt+Shift+F | Play Favorite Station... | `radio.play_favorite` |
+| Alt+Shift+I | Station details | `radio.station_details` |
+| Alt+Shift+N | Whats new | `radio.whats_new` |
 | Ctrl+. | Radio: Stop | `radio.stop` |
 | Ctrl+Alt+0 | Community Picks... | `radio.community_picks` |
 | Ctrl+Alt+9 | Suggest a Station or Podcast... | `radio.suggest_pick` |
 | Ctrl+Alt+A | Bookmark This Moment | `app.bookmark_moment` |
+| Ctrl+Alt+B | Internet Radio: Lyrics... | `radio.lyrics` |
 | Ctrl+Alt+F1 | Internet Radio: Tutorials... | `radio.tutorials` |
 | Ctrl+Alt+H | What Is On Now | `radio.on_now` |
 | Ctrl+Alt+I | ACB Media Podcasts... | `radio.acb_podcasts` |
@@ -616,7 +628,9 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+B | Browse Stations... | `radio.browse` |
 | Ctrl+Down | Radio: Volume Down | `radio.volume_down` |
 | Ctrl+E | Internet Radio: Sound Enhancements... | `radio.sound_enhancements` |
+| Ctrl+F11 | Dictate here | `app.dictate_here` |
 | Ctrl+G | Go to | `radio.go_to` |
+| Ctrl+K | Identify This Song | `radio.identify_song` |
 | Ctrl+L | Play Last Station | `radio.play_last` |
 | Ctrl+M | Radio: Mute/Unmute | `radio.mute_toggle` |
 | Ctrl+N | Add Custom Station... | `radio.add_custom_station` |
@@ -637,12 +651,12 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Shift+G | Transport.go to player | `radio.transport.go_to_player` |
 | Ctrl+Shift+H | Song History... | `radio.song_history` |
 | Ctrl+Shift+L | Back to Live | `radio.jump_to_live` |
-| Ctrl+Shift+Left | Rewind 30 Seconds | `radio.rewind` |
+| Ctrl+Shift+Left | Rewind | `radio.rewind` |
 | Ctrl+Shift+M | Manage Favorites... | `radio.manage_favorites` |
 | Ctrl+Shift+N | ACB Media Schedule... | `radio.acb_calendar` |
 | Ctrl+Shift+Q | Internet Radio: Listening Statistics... | `radio.statistics` |
 | Ctrl+Shift+R | Recordings... | `radio.recordings` |
-| Ctrl+Shift+Right | Forward 30 Seconds | `radio.forward` |
+| Ctrl+Shift+Right | Forward | `radio.forward` |
 | Ctrl+Shift+S | Schedule Recording... | `radio.schedule_recording` |
 | Ctrl+Shift+Up | Transport.speed up | `radio.transport.speed_up` |
 | Ctrl+Shift+W | Transport.announce position | `radio.transport.announce_position` |
@@ -687,6 +701,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+X | Export My Setup... | `app.export_setup` |
 | Ctrl+Alt+Shift+Z | Quiet Hours... | `app.quiet_hours` |
 | Ctrl+Alt+Z | Ask About This Document... | `tools.hosted_ai_ask_document` |
+| Ctrl+F11 | Dictate here | `app.dictate_here` |
 | Ctrl+F5 | Refresh podcasts | `media.refresh_podcasts` |
 | Ctrl+G | Go to | `app.go_to` |
 | Ctrl+I | Player Information... | `podcasts.player_information` |

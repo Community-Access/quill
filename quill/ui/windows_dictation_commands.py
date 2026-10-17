@@ -47,11 +47,14 @@ from quill.core.windows_dictation.controller import (
     DictationState,
     Moment,
 )
+from quill.ui.windows_dictation_command_key import DictationCommandKeyMixin
 from quill.ui.windows_dictation_extras import DictationExtrasMixin
 from quill.ui.windows_dictation_hold import DictationHoldMixin
+from quill.ui.windows_dictation_learn import asking
 from quill.ui.windows_dictation_library import DictationLibraryMixin
 from quill.ui.windows_dictation_ports import EditorDocument as _EditorDocument
 from quill.ui.windows_dictation_ports import HostFeedback as _HostFeedback
+from quill.ui.windows_dictation_review import DictationReviewMixin, review_open
 from quill.ui.windows_dictation_tools import DictationToolsMixin
 from quill.ui.windows_dictation_transcribe import DictationTranscribeMixin
 
@@ -70,6 +73,8 @@ DICTATION_CUES: dict[Moment, str] = {
     Moment.OFF: SoundEvent.WINDOWS_DICTATION_OFF,
     Moment.ERROR: SoundEvent.WINDOWS_DICTATION_ERROR,
     Moment.WORKING: SoundEvent.WINDOWS_DICTATION_WORKING,
+    Moment.COMMAND_ON: SoundEvent.WINDOWS_DICTATION_COMMAND_ON,
+    Moment.COMMAND_OFF: SoundEvent.WINDOWS_DICTATION_COMMAND_OFF,
 }
 
 #: The one controller, the host window it writes into, and the top-level
@@ -92,11 +97,13 @@ def dictation_standing_by() -> bool:
 
 
 class WindowsDictationMixin(
+    DictationCommandKeyMixin,
     DictationToolsMixin,
     DictationHoldMixin,
     DictationTranscribeMixin,
     DictationExtrasMixin,
     DictationLibraryMixin,
+    DictationReviewMixin,
 ):
     """The dictation commands. Mixed into both editors' document windows."""
 
@@ -225,7 +232,13 @@ class WindowsDictationMixin(
         )
 
         settings = self._dictation_settings()
-        dialog = WindowsDictationDialog(self._dictation_parent(), settings, self._dictation_say)
+        dialog = WindowsDictationDialog(
+            self._dictation_parent(),
+            settings,
+            self._dictation_say,
+            my_words=self._dictation_my_words(),  # windows_dictation_command_key.py
+            ai_on=self._review_ai_on(),  # Polished only with AI (D-20)
+        )
         saving = (wx.ID_OK, EDIT_WORDS, EDIT_INSTRUCTIONS, EDIT_OPENAI_KEY, DICTATE_ANYWHERE)
         try:
             answer = self._dictation_run_modal(dialog, "Dictation Settings")
@@ -239,6 +252,7 @@ class WindowsDictationMixin(
         if answer not in saving:
             return
         self._dictation_save_settings()
+        self._dictation_share_settings()  # the family's copy, when shared (D-13)
         self._dictation_status("Dictation settings saved.")
         self._dictation_rearm()
         if answer == EDIT_WORDS:
@@ -280,6 +294,9 @@ class WindowsDictationMixin(
             return _controller.transcript_status()
         if not _controller.active or _host is not self:
             return ""
+        if _controller.command_mode_text and state is not DictationState.PAUSED:
+            # D-1: shown, never spoken again (GATE-13); a braille display has it.
+            return f"Dictation: {_controller.command_mode_text.lower()}"
         if _controller.spelling:
             return "Dictation: spelling"
         if _controller.mode_text and _controller.state is DictationState.LISTENING:
@@ -307,6 +324,7 @@ class WindowsDictationMixin(
         # so it runs before the control sees the key, and only consumes it when
         # there was something to cancel.
         self._dictation_parent().Bind(wx.EVT_CHAR_HOOK, self._dictation_cancel_key)
+        self._review_tell_rescue()  # a review that did not finish last time (D-2)
         try:
             wx.CallAfter(self._dictation_rearm)
         except Exception:  # noqa: BLE001 - no event loop (tests)
@@ -317,13 +335,14 @@ class WindowsDictationMixin(
         if _controller is None and not event.GetActive():
             return
         if event.GetActive():
+            self._dictation_take_family()  # what another program saved (D-13)
             self._dictation_current_host()._dictation_rearm()
             return
         controller = _controller
         if controller is None:
             return
-        if controller.transcribing:
-            return  # a live transcript keeps writing while you work in another program
+        if controller.transcribing or review_open() or asking():
+            return  # a transcript, Review Dictation (D-2), "Add a correction?" (D-21)
         if controller.active:
             controller.stop("Dictation off, because QUILL is no longer the window in front.")
         controller.disarm()
@@ -359,7 +378,7 @@ class WindowsDictationMixin(
         controller.arm()
 
     def _dictation_preferences(self) -> DictationPreferences:
-        from quill.core.windows_dictation.profile import rewriter
+        from quill.core.windows_dictation.profile import rewriter, with_repair_names
 
         try:
             rewrite = rewriter(self._dictation_profile_path())
@@ -371,7 +390,8 @@ class WindowsDictationMixin(
         preferences = DictationPreferences.from_settings(
             self._dictation_settings(), rewrite=rewrite, profile=profile
         )
-        if preferences.engine != "openai":
+        preferences = with_repair_names(preferences, self._dictation_profile_path())  # D-20
+        if preferences.engine != "openai" and not preferences.engine.startswith("cloud-"):
             return preferences
         from dataclasses import replace
 
@@ -478,6 +498,8 @@ class WindowsDictationMixin(
             stop_phrase=preferences.stop_phrase,
             own_phrases=profile.replacements,
             language=preferences.speech_language,
+            command_prefix=preferences.command_prefix,
+            prefix_required=preferences.command_prefix_required,
         )
         dialog = DictationCommandsDialog(self._dictation_parent(), body)
         try:
@@ -538,12 +560,41 @@ def _make_recognizer(controller: DictationController, preferences: DictationPref
             language=preferences.speech_language,
             prompt=preferences.context,
         )
+    if preferences.engine.startswith("cloud-"):
+        return _cloud_recognizer(controller, preferences)
+    from quill.core.windows_dictation.kws_keywords import keyword_gate_for
     from quill.core.windows_dictation.local_recognizer import LocalDictationRecognizer
 
-    return LocalDictationRecognizer(
+    recognizer = LocalDictationRecognizer(
         controller,
         preferences.engine,
         post=wx.CallAfter,
+        pause_seconds=preferences.pause_seconds,
+        language=preferences.speech_language,
+    )
+    # The command word's keyword spotter (D-27): None until it is adopted.
+    recognizer.keyword_gate = keyword_gate_for(preferences)
+    return recognizer
+
+
+def _cloud_recognizer(controller: DictationController, preferences: DictationPreferences) -> Any:
+    """A cloud provider with the person's own account (D-31): its secrets read
+    from the credential store now, in memory only."""
+    from quill.core.windows_dictation.cloud.credentials import values_for
+    from quill.core.windows_dictation.cloud.recognizer import CloudDictationRecognizer
+    from quill.core.windows_dictation.cloud.registry import provider_for_engine
+    from quill.core.windows_dictation.controller import DictationStartError
+
+    provider = provider_for_engine(preferences.engine)
+    if provider is None:
+        raise DictationStartError("That speech provider is not part of this copy of QUILL.")
+    return CloudDictationRecognizer(
+        controller,
+        post=wx.CallAfter,
+        provider=provider,
+        values=values_for(provider, preferences.cloud_fields.get(provider.id, {})),
+        consents=preferences.cloud_consent,
+        keywords=preferences.keywords,
         pause_seconds=preferences.pause_seconds,
         language=preferences.speech_language,
     )

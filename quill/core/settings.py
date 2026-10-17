@@ -26,6 +26,7 @@ from quill.core.settings_normalizers import (
     _normalize_status_bar_hidden,
     _normalize_status_bar_order,
 )
+from quill.core.speech.sherpa_migration import migrate_choice
 from quill.core.speech.vosk_retirement import migrate_vosk_choices
 from quill.core.storage import write_json_atomic
 from quill.core.structure_announce import HEADING_POSITIONS as _HEADING_POSITIONS
@@ -109,6 +110,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
     content_handoff_format: str = "text"
     auto_outline_style: str = "numeric"
     clip_library_autocapture: bool = False
+    clipboard_collector_saves: bool = True  # shared; quill/core/clipboard_collector.py
     indent_with_tabs: bool = False
     indent_size: int = 4
     # On by default so signed safety advisories (the remote feature kill
@@ -292,6 +294,9 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
     # Which company the own key belongs to: "openai" or "gemini". An explicit
     # choice made in Use My Own AI Key, never inferred (core/ai/own_key.py).
     ai_own_key_provider: str = "openai"
+    # Where a hosted-AI answer goes: "window", "cursor" or "clipboard" (QUILL
+    # Lite's field too; core/ai/answer_delivery.py). Chosen in the AI Assistant.
+    ai_answer_delivery: str = "window"
     markdown_clipboard_format: str = "text"  # Copy With Source: "text", "html" or "rtf"
     markdown_profile_id: str = "standard"
     citation_style: str = "footnotes"
@@ -405,8 +410,8 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
     # plus the serialized TextNormalizationOptions (empty = recommended defaults).
     tts_normalization_enabled: bool = True
     tts_normalization: dict[str, Any] = field(default_factory=dict)
-    # Offline speech engine: "" = bundled whisper.cpp; "fasterwhisper" or "nemotron"
-    # opt in on machines that have them. A saved "vosk" loads as "" (2026-10-13).
+    # Offline speech engine: "" = the ladder (service.py); "whispercpp", "fasterwhisper"
+    # or "sherpa" (every local sherpa-onnx model, D-26). "vosk" loads as "" (2026-10-13).
     speech_provider: str = ""
     # The model id to prefer for speech_provider (e.g. "small", "base.en"); ""
     # falls back to the first installed model of whichever engine is active.
@@ -645,6 +650,8 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
     markdown_hard_break_style: str = "backslash"
     autoformat_smart_quotes: bool = False
     autoformat_dashes: bool = False
+    continue_lists_in_plain_text: bool = False
+    autocorrect_misspellings: bool = False
     quick_nav_include_headings: bool = True
     quick_nav_include_links: bool = True
     quick_nav_include_lists: bool = True
@@ -923,6 +930,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
         if auto_outline_style not in {"numeric", "legal"}:
             auto_outline_style = "numeric"
         clip_library_autocapture = bool(data.get("clip_library_autocapture", False))
+        clipboard_collector_saves = bool(data.get("clipboard_collector_saves", True))
         indent_with_tabs = bool(data.get("indent_with_tabs", False))
         try:
             indent_size = int(data.get("indent_size", 4))
@@ -1150,10 +1158,8 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
         tts_normalization = (
             dict(tts_normalization_raw) if isinstance(tts_normalization_raw, dict) else {}
         )
-        speech_provider = str(data.get("speech_provider", "")).strip().lower()
-        if speech_provider not in {"", "whispercpp", "fasterwhisper", "nemotron"}:
-            speech_provider = ""
-        speech_default_model_id = str(data.get("speech_default_model_id", "")).strip()
+        # nemotron/parakeet load as the shared engine, sherpa (dict.md D-26).
+        speech_provider, speech_default_model_id = migrate_choice(data)
         bw_speech_selection_mode = (
             str(data.get("bw_speech_selection_mode", "recommended")).strip().lower()
             or "recommended"
@@ -1403,6 +1409,8 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
         )
         autoformat_smart_quotes = bool(data.get("autoformat_smart_quotes", False))
         autoformat_dashes = bool(data.get("autoformat_dashes", False))
+        continue_lists_in_plain_text = bool(data.get("continue_lists_in_plain_text", False))
+        autocorrect_misspellings = bool(data.get("autocorrect_misspellings", False))
         quick_nav_include_headings = bool(data.get("quick_nav_include_headings", True))
         quick_nav_include_links = bool(data.get("quick_nav_include_links", True))
         quick_nav_include_lists = bool(data.get("quick_nav_include_lists", True))
@@ -1678,6 +1686,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
             content_handoff_format=content_handoff_format,
             auto_outline_style=auto_outline_style,
             clip_library_autocapture=clip_library_autocapture,
+            clipboard_collector_saves=clipboard_collector_saves,
             indent_with_tabs=indent_with_tabs,
             indent_size=indent_size,
             auto_check_updates=auto_check_updates,
@@ -1907,6 +1916,8 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
             markdown_hard_break_style=markdown_hard_break_style,
             autoformat_smart_quotes=autoformat_smart_quotes,
             autoformat_dashes=autoformat_dashes,
+            continue_lists_in_plain_text=continue_lists_in_plain_text,
+            autocorrect_misspellings=autocorrect_misspellings,
             quick_nav_include_headings=quick_nav_include_headings,
             quick_nav_include_links=quick_nav_include_links,
             quick_nav_include_lists=quick_nav_include_lists,

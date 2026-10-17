@@ -90,4 +90,7 @@ def test_the_save_path_actually_catches_it() -> None:
 
     from quill.ui.main_frame import MainFrame
 
-    assert "(OSError, UnicodeEncodeError)" in inspect.getsource(MainFrame.save_file)
+    # Save's write step moved to _write_named_document on 2026-10-15, shared
+    # with the clipboard collector's quiet save; Save reports what it returns.
+    assert "(OSError, UnicodeEncodeError)" in inspect.getsource(MainFrame._write_named_document)
+    assert "self._write_named_document()" in inspect.getsource(MainFrame.save_file)

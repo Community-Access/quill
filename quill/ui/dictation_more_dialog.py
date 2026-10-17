@@ -23,6 +23,12 @@ the choices nobody needs on the first day:
 * **My Dictation Instructions...**: the file Tidy Dictated Text follows.
 * **Programs Dictation Never Types Into...** (D-24): the never-type list
   (:mod:`quill.ui.dictation_never_type_dialog`), kept until this window's OK.
+* **Keep a dictation history** (D-5): off, or one, seven or thirty days of the
+  text dictated, sealed for this Windows account; Recent Phrases lists it.
+* **Commands** (D-1): the command word ("QUILL"), strict mode and how long
+  command mode waits (:mod:`quill.core.windows_dictation.command_mode`). OK is
+  refused, with the reason, while the command word is a common word or one of
+  the person's own words.
 
 Nothing is applied until OK (:meth:`MoreDictationDialog.values`); Dictation
 Settings applies it with its own OK, so Cancel there cancels this too.
@@ -30,14 +36,16 @@ Settings applies it with its own OK, so Cancel there cancels this too.
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from typing import Any
 
 import wx
 
+from quill.core.windows_dictation.anywhere import dictation_fields
 from quill.core.windows_dictation.never_type import coerce_never_type
 from quill.core.windows_dictation.options import PAUSE_CHOICES, coerce_pause
 from quill.core.windows_dictation.preview import PREVIEW_CHOICES, coerce_preview
+from quill.core.windows_dictation.settings_fields import SHARE_FIELD, share_on
 from quill.ui.dialog_contract import apply_modal_ids
 
 __all__ = [
@@ -79,6 +87,8 @@ class MoreDictationDialog(wx.Dialog):
         *,
         pending: dict[str, Any] | None = None,
         load_models: bool = True,
+        my_words: Iterable[str] | None = None,
+        help_for: dict[str, str] | None = None,
     ) -> None:
         super().__init__(parent, title="More Dictation Settings")
         self._announce = announce or (lambda _text: None)
@@ -98,6 +108,8 @@ class MoreDictationDialog(wx.Dialog):
             "Turned on, you can also hold Ctrl+F11 while you talk, and dictation stops when "
             "you let go, keeping your last phrase. A quick press still turns it on and off."
         )
+        if (help_for or {}).get("hold"):  # QUILL Transcribe's key is its own (D-9)
+            self.hold.SetHelpText(str((help_for or {})["hold"]))
         root.Add(self.hold, 0, wx.ALL, _PAD)
 
         preview_label = wx.StaticText(self, label="While you speak, the &words heard so far:")
@@ -145,6 +157,52 @@ class MoreDictationDialog(wx.Dialog):
             "when the speaker pauses for four seconds or more. Off by default."
         )
         root.Add(self.timestamps, 0, wx.ALL, _PAD)
+
+        self.review_first = wx.CheckBox(self, label="Send dictation to re&view first")
+        self.review_first.SetValue(bool(value("windows_dictation_review_first", False)))
+        self.review_first.SetHelpText(
+            "When this is on, what you dictate goes into the Review Dictation window "
+            "instead of the document or the other program. Read it, change it, and "
+            "press Control Enter to insert it once. Off by default: then say QUILL "
+            "review that, or press Review Dictation, when you want a phrase reviewed."
+        )
+        root.Add(self.review_first, 0, wx.ALL, _PAD)
+
+        # P3, "Polish my dictation": opt-in, off by default, never automatic.
+        self.polish = wx.CheckBox(self, label="Allow polishin&g my dictation with AI when I ask")
+        self.polish.SetValue(bool(value("windows_dictation_polish", False)))
+        self.polish.SetHelpText(
+            "When this is on, saying QUILL polish that, or pressing Polish in Review "
+            "Dictation, asks the AI to fix punctuation, capital letters and small slips "
+            "in your words, keeping your words. The words open in Review Dictation "
+            "first, you are asked once before anything is sent, you hear what changed, "
+            "and nothing is inserted until you insert it. Off by default; it needs AI."
+        )
+        root.Add(self.polish, 0, wx.ALL, _PAD)
+
+        self._add_history(root, value)
+        # dict.md D-13: one settings store for the family (family_store.py).
+        self.share_family = wx.CheckBox(
+            self, label="Share dictation settings with every &QuillVille program"
+        )
+        self.share_family.SetValue(share_on({**dictation_fields(settings), **saved}))
+        self.share_family.SetHelpText(
+            "When this is on, the dictation settings you save here are used by QUILL, "
+            "QUILL Lite, QUILL Transcribe and Quill Inkwell on this computer, and a change "
+            "saved in any of them reaches this one the next time it comes to the front. "
+            "The keys, the tray, the working tick, strict mode, the read-back's sound and "
+            "every permission to send your speech somewhere stay with each program. If two "
+            "programs save at once, the last one saved wins; nothing is half written. On "
+            "for a new install, off for one whose settings you had already changed, until "
+            "you turn it on. The first time a program takes the family's settings, its own "
+            "are kept in a backup file, and if the shared copy cannot be saved you are told "
+            "why. A portable copy shares only with programs in its own folder."
+        )
+        root.Add(self.share_family, 0, wx.ALL, _PAD)
+
+        self._my_words = my_words
+        self._add_profile(root, value)  # D-23
+        self._add_command_word(root, value)
 
         ai_box = wx.StaticBoxSizer(wx.VERTICAL, self, "Talking to the AI")
         ai = ai_box.GetStaticBox()
@@ -228,7 +286,7 @@ class MoreDictationDialog(wx.Dialog):
             "secure store, never in a file. Once it is there, OpenAI appears in the "
             "speech engine list and its models load here."
         )
-        add_key.Bind(wx.EVT_BUTTON, lambda _e: self.EndModal(EDIT_OPENAI_KEY))
+        add_key.Bind(wx.EVT_BUTTON, lambda _e: self._end_if_ready(EDIT_OPENAI_KEY))
         cloud_box.Add(add_key, 0, wx.ALL, _PAD)
         root.Add(cloud_box, 0, wx.EXPAND | wx.ALL, _PAD)
 
@@ -238,7 +296,7 @@ class MoreDictationDialog(wx.Dialog):
             "dictation tidied: write numbers as digits, British spelling, names "
             "always spelled your way. Saves these settings first."
         )
-        instructions.Bind(wx.EVT_BUTTON, lambda _e: self.EndModal(EDIT_INSTRUCTIONS))
+        instructions.Bind(wx.EVT_BUTTON, lambda _e: self._end_if_ready(EDIT_INSTRUCTIONS))
         anywhere = wx.Button(self, label="Dictate in &Other Programs...")
         anywhere.SetHelpText(
             "Saves these settings, then starts Quill Inkwell with them, so you can "
@@ -246,7 +304,7 @@ class MoreDictationDialog(wx.Dialog):
             "choose in Inkwell's File menu. Punctuation, spelling and scratch that work "
             "there; selecting and correcting words work only in QUILL's own documents."
         )
-        anywhere.Bind(wx.EVT_BUTTON, lambda _e: self.EndModal(DICTATE_ANYWHERE))
+        anywhere.Bind(wx.EVT_BUTTON, lambda _e: self._end_if_ready(DICTATE_ANYWHERE))
         row = wx.BoxSizer(wx.HORIZONTAL)
         row.Add(instructions, 0, wx.RIGHT, _PAD)
         row.Add(anywhere, 0)
@@ -266,9 +324,178 @@ class MoreDictationDialog(wx.Dialog):
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, _PAD)
         self.SetSizerAndFit(root)
         apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
+        self.Bind(wx.EVT_BUTTON, self._on_ok, id=wx.ID_OK)
         self.hold.SetFocus()
         if load_models:
             self._load_models()
+
+    # -- the dictation profile (D-23) -------------------------------------------- #
+
+    def _add_profile(self, root: Any, value: Callable[[str, Any], Any]) -> None:
+        """The named profile, and the lock that stops voice switching."""
+        from quill.core.windows_dictation.profiles import (
+            DEFAULT_PROFILE,
+            coerce_profile,
+            profile_labels,
+        )
+
+        labels = profile_labels()
+        self._profiles = [profile_id for profile_id, _label in labels]
+        label = wx.StaticText(self, label="Dict&ation profile, for the kind of writing:")
+        self.profile = wx.Choice(self, choices=[text for _id, text in labels])
+        self.profile.SetSelection(
+            self._profiles.index(
+                coerce_profile(value("windows_dictation_profile", DEFAULT_PROFILE))
+            )
+        )
+        self.profile.SetHelpText(
+            "A profile changes the pause, the filler words and the punctuation for one kind "
+            "of writing, and how headings, bold and italic are written. Standard is your "
+            "settings as they are. Markdown writes the marks; Document and Email use QUILL's "
+            "own formatting and type nothing for a heading elsewhere; Chat and Verbatim "
+            "write plain text. You can also switch by voice: QUILL email mode."
+        )
+        self.profile_locked = wx.CheckBox(
+            self, label="Lock the profile so it cannot be switched &by voice"
+        )
+        self.profile_locked.SetValue(bool(value("windows_dictation_profile_locked", False)))
+        self.profile_locked.SetHelpText(
+            "When this is on, saying QUILL chat mode or another profile's name does not "
+            "switch profiles, and dictation says the profile stays as it is. You can still "
+            "choose a profile here."
+        )
+        root.Add(label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+        root.Add(self.profile, 0, wx.EXPAND | wx.ALL, _PAD)
+        root.Add(self.profile_locked, 0, wx.ALL, _PAD)
+
+    # -- dictation history (D-5) ------------------------------------------------ #
+
+    def _add_history(self, root: Any, value: Callable[[str, Any], Any]) -> None:
+        """How many days of dictated text to keep; off by default."""
+        from quill.core.windows_dictation.rescue import HISTORY_CHOICES, coerce_history_days
+
+        label = wx.StaticText(self, label="Keep a dictation histor&y:")
+        self._history_days = [days for days, _label in HISTORY_CHOICES]
+        self.history = wx.Choice(self, choices=[text for _days, text in HISTORY_CHOICES])
+        self.history.SetSelection(
+            self._history_days.index(
+                coerce_history_days(value("windows_dictation_history_days", 0))
+            )
+        )
+        self.history.SetHelpText(
+            "Off by default. Choose one, seven or thirty days to keep the text of what "
+            "you dictate on this computer, never the sound, so Recent Phrases can bring "
+            "back earlier phrases after the program closes. It is kept for this Windows account "
+            "only, and Clear History in Recent Phrases deletes it. Turning it off deletes "
+            "it too. Words that were never written are kept until you insert or discard "
+            "them, whatever this says."
+        )
+        root.Add(label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+        root.Add(self.history, 0, wx.EXPAND | wx.ALL, _PAD)
+
+    # -- the command word (D-1) ------------------------------------------------- #
+
+    def _add_command_word(self, root: Any, value: Callable[[str, Any], Any]) -> None:
+        """The command word, strict mode and how long command mode lasts."""
+        from quill.core.windows_dictation.command_mode import (
+            DEFAULT_COMMAND_PREFIX,
+            DEFAULT_COMMAND_TIMEOUT,
+            MAX_COMMAND_TIMEOUT,
+            MIN_COMMAND_TIMEOUT,
+            coerce_prefix,
+            coerce_timeout,
+        )
+
+        box_sizer = wx.StaticBoxSizer(wx.VERTICAL, self, "Commands")
+        box = box_sizer.GetStaticBox()
+        prefix_label = wx.StaticText(box, label="&Command word (empty for none):")
+        self.command_prefix = wx.TextCtrl(
+            box,
+            value=coerce_prefix(value("windows_dictation_command_prefix", DEFAULT_COMMAND_PREFIX)),
+        )
+        self.command_prefix.SetHelpText(
+            "Say this word first to give a command instead of dictating: QUILL scratch "
+            "that, QUILL select the cat. It counts only as the first word after a pause, "
+            "so I told Quill about it is written as words. If what follows is not a "
+            "command, nothing is typed, and QUILL type that writes it. Say literal QUILL "
+            "to write the word itself. Leave it empty to give commands with the Speak a "
+            "Command key only. A common word, or one of your own words in My Words and "
+            "Phrases, is refused."
+        )
+        self.command_required = wx.CheckBox(
+            box, label="Commands only after the command word (strict mod&e)"
+        )
+        self.command_required.SetValue(
+            bool(value("windows_dictation_command_prefix_required", False))
+        )
+        self.command_required.SetHelpText(
+            "When this is on, a command said on its own, like scratch that, is written as "
+            "words, and only QUILL scratch that is a command. The stop phrase always "
+            "works. On by default in QUILL Transcribe, where a command typed into an email "
+            "by mistake is hard to take back; off in QUILL and QUILL Lite."
+        )
+        timeout_label = wx.StaticText(box, label="Seconds command mo&de waits for a command:")
+        self.command_timeout = wx.SpinCtrl(
+            box,
+            min=MIN_COMMAND_TIMEOUT,
+            max=MAX_COMMAND_TIMEOUT,
+            initial=coerce_timeout(
+                value("windows_dictation_command_timeout", DEFAULT_COMMAND_TIMEOUT)
+            ),
+        )
+        self.command_timeout.SetHelpText(
+            "Say QUILL command mode, or press Speak a Command twice, and everything you "
+            "say is a command until you say dictation mode or give no command for this "
+            "many seconds. A falling tone says it has ended. From 5 to 30; 8 by default."
+        )
+        box_sizer.Add(prefix_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+        box_sizer.Add(self.command_prefix, 0, wx.EXPAND | wx.ALL, _PAD)
+        box_sizer.Add(self.command_required, 0, wx.ALL, _PAD)
+        box_sizer.Add(timeout_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+        box_sizer.Add(self.command_timeout, 0, wx.ALL, _PAD)
+        root.Add(box_sizer, 0, wx.EXPAND | wx.ALL, _PAD)
+
+    def command_word_problem(self) -> str:
+        """Why the command word typed here would not do, or ``""``."""
+        from quill.core.windows_dictation.command_mode import command_prefix_problem
+
+        return command_prefix_problem(self.command_prefix.GetValue(), self._words())
+
+    def _words(self) -> list[str]:
+        """The person's My Words vocabulary, which the command word may not be."""
+        if self._my_words is not None:
+            return list(self._my_words)
+        try:
+            from quill.core.speech.dictation_profile import default_profile_path
+            from quill.core.windows_dictation.profile import load
+
+            return list(load(default_profile_path()).vocabulary)
+        except Exception:  # noqa: BLE001 - no words is a fine answer
+            return []
+
+    def _on_ok(self, event: Any) -> None:
+        """OK: refused, with the reason, while the command word would not do."""
+        if self._command_word_ready():
+            event.Skip()
+
+    def _end_if_ready(self, code: int) -> None:
+        """The three buttons that close this window save its values too, so
+        they pass the same check as OK: a refused word was saved through them
+        until 2026-10-15, and every phrase starting with it typed nothing."""
+        if self._command_word_ready():
+            self.EndModal(code)
+
+    def _command_word_ready(self) -> bool:
+        """True when the command word will do; otherwise say why and go to it."""
+        problem = self.command_word_problem()
+        if not problem:
+            return True
+        from quill.ui.dialog_contract import show_message_box
+
+        show_message_box(problem, "More Dictation Settings", wx.OK | wx.ICON_WARNING, self)
+        self.command_prefix.SetFocus()
+        self.command_prefix.SelectAll()
+        return False
 
     # -- OpenAI's list --------------------------------------------------------- #
 
@@ -356,4 +583,15 @@ class MoreDictationDialog(wx.Dialog):
             "windows_dictation_transcript_timestamps": self.timestamps.GetValue(),
             "windows_dictation_working_tick": self.working_tick.GetValue(),
             "windows_dictation_never_type": list(self._never_type),
+            "windows_dictation_command_prefix": " ".join(self.command_prefix.GetValue().split()),
+            "windows_dictation_command_prefix_required": self.command_required.GetValue(),
+            "windows_dictation_command_timeout": int(self.command_timeout.GetValue()),
+            "windows_dictation_review_first": self.review_first.GetValue(),
+            "windows_dictation_profile": self._profiles[max(0, self.profile.GetSelection())],
+            "windows_dictation_profile_locked": self.profile_locked.GetValue(),
+            "windows_dictation_polish": self.polish.GetValue(),
+            "windows_dictation_history_days": self._history_days[
+                max(0, self.history.GetSelection())
+            ],
+            SHARE_FIELD: "on" if self.share_family.GetValue() else "off",
         }

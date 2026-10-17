@@ -121,6 +121,8 @@ COMMAND_AREA: dict[str, str] = {
     # no area at all, deliberately -- a switch that disappears with the thing it
     # switches can only ever be moved one way.
     "cmd_manage_abbreviations": "abbreviations",
+    # The corrections are the Autocorrect area's, like the rules that use them.
+    "cmd_autocorrect_entries": "autoformat",
     # Not the line tools' any more. It sat there because it was the last row
     # left in the old Tools menu, and the Notepad profile is what made the cost
     # visible: encoding and line endings are the two facts that decide whether
@@ -145,6 +147,14 @@ COMMAND_AREA: dict[str, str] = {
     # rather than small -- the same argument that keeps Select All in Edit.
     "cmd_copy_all": "",
     "cmd_go_to_anything": "go_to_anything",
+    # Rows of Edit itself since 2026-10-16, so a listener arrowing Edit hears
+    # them, but still the Matches area's: "how many, and where else" is one
+    # switch, and the Notepad and WordPad profiles promise to leave it out.
+    # The area is on in a new install, so moving them changed where they are,
+    # not who has them.
+    "cmd_find_open_docs": "matches",
+    "cmd_search_in_files": "matches",
+    "cmd_replace_in_files": "matches",
     # The Insert menu belongs to no single area, so its rows say so one at a
     # time. The two tag pickers ride with rich_text's opposite number -- they are
     # markup, which is what a *plain* document has instead of formatting -- and

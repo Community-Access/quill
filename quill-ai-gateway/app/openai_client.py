@@ -22,6 +22,16 @@ models reject the older parameter outright, and the newer one is what bounds
 reasoning and answer together — which is the same budget, and the reason
 ``app/routes/chat.py`` refuses to charge for a reply that spent it all on
 thinking and returned nothing.
+
+**Web search is the one exception, and it is a separate function.** Since
+2026-10-15 the ``web_search`` feature exists behind a feature flag that ships
+**off** (``app/prompts.py::OPT_IN_FEATURES``), capped at
+``app/limits.py::WEB_SEARCH_MONTHLY_CAP`` searches per account per month. It
+does not loosen :data:`ALLOWED_BODY_KEYS`: :func:`search` builds its body with
+:func:`build_search_body` against its own allowlist,
+:data:`SEARCH_BODY_KEYS`, which adds exactly one key -- ``web_search_options``
+-- and drops ``reasoning_effort`` (the search models reject it). Every other
+feature still goes through :func:`complete` and can never carry a search.
 """
 
 from __future__ import annotations
@@ -32,10 +42,13 @@ import requests
 
 __all__ = [
     "ALLOWED_BODY_KEYS",
+    "SEARCH_BODY_KEYS",
     "Completion",
     "OpenAICallError",
     "build_request_body",
+    "build_search_body",
     "complete",
+    "search",
 ]
 
 #: Every key that may appear in the JSON body sent upstream. Adding one is a
@@ -45,6 +58,16 @@ ALLOWED_BODY_KEYS: frozenset[str] = frozenset({
     "messages",
     "max_completion_tokens",
     "reasoning_effort",
+})
+
+#: The keys a **web search** body may carry, and only a web search body
+#: (:func:`build_search_body`). ``web_search_options`` is the one addition;
+#: ``reasoning_effort`` is absent because the search models refuse it.
+SEARCH_BODY_KEYS: frozenset[str] = frozenset({
+    "model",
+    "messages",
+    "max_completion_tokens",
+    "web_search_options",
 })
 
 
@@ -180,4 +203,46 @@ def complete(
         # place where an upstream change doing so would leak the key into a log.
         raise OpenAICallError(f"OpenAI request failed: {type(exc).__name__}") from exc
 
+    return _parse(response.json())
+
+
+def build_search_body(model_id: str, prompt: str, max_output_tokens: int) -> dict:
+    """The exact JSON body for one web search. Pure; no I/O.
+
+    ``web_search_options`` is sent empty: the provider's defaults (a medium
+    amount of search context, no location) are the cheapest settings that
+    answer a question, and nothing the client sends can change them.
+    """
+    body: dict = {
+        "model": model_id,
+        "messages": [{"role": "user", "content": prompt}],
+        "max_completion_tokens": int(max_output_tokens),
+        "web_search_options": {},
+    }
+    unexpected = set(body) - SEARCH_BODY_KEYS
+    if unexpected:  # pragma: no cover - unreachable unless this function changes
+        raise OpenAICallError(f"Refusing to send unapproved request keys: {sorted(unexpected)}")
+    return body
+
+
+def search(app, model_id: str, prompt: str, max_output_tokens: int) -> Completion:
+    """One web search: call the search model once and parse the reply.
+
+    Only ``app/routes/chat.py`` calls this, and only for the ``web_search``
+    feature after its flag, its monthly cap and every ordinary limit have
+    passed. No retry: a search that fails is refunded and said, and a second
+    attempt would be a second per-search fee.
+    """
+    api_key = app.config["OPENAI_API_KEY"]
+    url = f"{app.config['OPENAI_BASE_URL']}/chat/completions"
+    try:
+        response = requests.post(
+            url,
+            headers={"Authorization": f"Bearer {api_key}"},
+            json=build_search_body(model_id, prompt, max_output_tokens),
+            timeout=app.config["OPENAI_TIMEOUT_SECONDS"],
+        )
+        response.raise_for_status()
+    except requests.RequestException as exc:
+        raise OpenAICallError(f"OpenAI search request failed: {type(exc).__name__}") from exc
     return _parse(response.json())

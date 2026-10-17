@@ -42,6 +42,18 @@ _CONTEXT_ALLOWLIST: dict[str, str] = {}
 # context would never be used. Each needs a written reason.
 _PLAIN_HTTP_ALLOWLIST: dict[str, str] = {}
 
+#: Wrapper modules that are themselves the one place their callers open URLs,
+#: every call passing ``context=`` from quill.core.net (asserted below by
+#: test_every_verified_opener_passes_a_net_context). A caller importing one of
+#: these goes through net as surely as one importing net itself; without this,
+#: the seven cloud dictation providers (D-31 to D-37), which all open through
+#: cloud/transport.py, read as offenders.
+_VERIFIED_OPENERS: dict[str, str] = {
+    "quill.core.windows_dictation.cloud.transport": (
+        "quill/core/windows_dictation/cloud/transport.py"
+    ),
+}
+
 _URLLIB_CALLS = frozenset({"urlopen", "build_opener", "HTTPSHandler", "HTTPSConnection"})
 _UNVERIFIED_NAMES = frozenset({"_create_unverified_context", "CERT_NONE", "CERT_OPTIONAL"})
 _CONTEXT_BUILDERS = frozenset({"create_default_context", "SSLContext"})
@@ -58,9 +70,22 @@ _OFF_NEEDLES = (
 )
 
 
+#: Standalone packages outside quill/ that ship the quill package and so must use
+#: its one check too. Quill Social built its own context here until 2026-10-15,
+#: because this gate read only quill/. Quill Radio for Mac is not listed: it is a
+#: separate macOS app that does not ship the quill package or truststore.
+_STANDALONE_EXEMPT = ("radio-mac",)
+
+
 @cache
 def _sources() -> tuple[Path, ...]:
-    return tuple(sorted(_QUILL.rglob("*.py")))
+    standalone = [
+        path
+        for pkg in sorted((_REPO / "standalone").glob("*/quill_*"))
+        if pkg.is_dir() and pkg.parent.name not in _STANDALONE_EXEMPT
+        for path in pkg.rglob("*.py")
+    ]
+    return tuple(sorted([*_QUILL.rglob("*.py"), *standalone]))
 
 
 @cache
@@ -107,6 +132,13 @@ def _imports_net(tree: ast.Module) -> bool:
                 return True
             if node.module == "quill.core" and any(a.name == "net" for a in node.names):
                 return True
+        if isinstance(node, ast.ImportFrom) and node.module:
+            for alias in node.names:
+                if (
+                    f"{node.module}.{alias.name}" in _VERIFIED_OPENERS
+                    or node.module in _VERIFIED_OPENERS
+                ):
+                    return True
         if isinstance(node, ast.Import) and any(a.name == "quill.core.net" for a in node.names):
             return True
     return False
@@ -340,3 +372,19 @@ def test_context_for_verifies_https_and_skips_plain_http() -> None:
     assert context.verify_mode == ssl.CERT_REQUIRED
     assert context.check_hostname is True
     assert net.context_for("http://127.0.0.1:11434/api/tags") is None
+
+
+def test_every_verified_opener_passes_a_net_context() -> None:
+    """A wrapper counts as going through net only if every URL or socket it
+    opens is given a context from quill.core.net."""
+    for module, rel in _VERIFIED_OPENERS.items():
+        path = _REPO / rel
+        assert path.is_file(), f"{module} no longer exists; drop it from _VERIFIED_OPENERS"
+        tree = _tree(path)
+        assert "verified_ssl_context" in path.read_text(encoding="utf-8"), rel
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Call) and _name(node.func) in {"_open", "connect"}:
+                keywords = {k.arg for k in node.keywords}
+                assert keywords & {"context", "ssl"}, (
+                    f"{rel}:{node.lineno} opens a connection without a net context"
+                )

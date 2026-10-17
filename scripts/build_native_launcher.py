@@ -253,7 +253,56 @@ def find_msvc() -> Path | None:
     return Path(path[0]) if path else None
 
 
-def _discard_relocated_cmake_cache(build_dir: Path) -> bool:
+#: CMake's Visual Studio generator for each Visual Studio major version. GitHub's
+#: Windows images move to a new Visual Studio before anybody here does, and a
+#: hard-coded "Visual Studio 17 2022" stops configuring on an image that has only
+#: the next one -- so the generator follows whatever ``vswhere`` found.
+_VS_GENERATORS = {
+    "17": "Visual Studio 17 2022",
+    "18": "Visual Studio 18 2026",
+}
+DEFAULT_GENERATOR = _VS_GENERATORS["17"]
+
+
+def generator_for_version(installation_version: str) -> str:
+    """The CMake generator for a ``vswhere`` ``installationVersion`` (``17.14.37216.2``).
+
+    An unknown or empty version keeps the Visual Studio 2022 generator, which is
+    what every build used before the generator was chosen at all.
+    """
+    major = installation_version.strip().split(".", 1)[0]
+    return _VS_GENERATORS.get(major, DEFAULT_GENERATOR)
+
+
+def msvc_generator() -> str:
+    """The CMake generator for the Visual Studio :func:`find_msvc` would use."""
+    locator = _vswhere()
+    if locator is None:
+        return DEFAULT_GENERATOR
+    try:
+        result = subprocess.run(
+            [
+                str(locator),
+                "-products",
+                "*",
+                "-requires",
+                "Microsoft.VisualStudio.Component.VC.Tools.x86.x64",
+                "-property",
+                "installationVersion",
+                "-latest",
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=60,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return DEFAULT_GENERATOR
+    lines = (getattr(result, "stdout", None) or "").strip().splitlines()
+    return generator_for_version(lines[0] if lines else "")
+
+
+def _discard_relocated_cmake_cache(build_dir: Path, generator: str = "") -> bool:
     """Delete a CMake cache that was generated for a different path.
 
     CMakeCache.txt records the absolute source and binary directories it was
@@ -265,6 +314,8 @@ def _discard_relocated_cmake_cache(build_dir: Path) -> bool:
     and because build/ is gitignored the stale files were invisible.
 
     The cache is a pure build artifact, so discarding it costs one reconfigure.
+    A cache made by another *generator* (Visual Studio 2022 before the machine
+    moved to 2026) is discarded for the same reason: CMake refuses to switch.
     Returns True when a stale cache was removed.
     """
     cache = build_dir / "CMakeCache.txt"
@@ -280,14 +331,16 @@ def _discard_relocated_cmake_cache(build_dir: Path) -> bool:
     # keeps a genuinely foreign cache and the build fails with CMake's own
     # error instead -- which is the failure this function exists to prevent.
     recorded = ""
+    recorded_generator = ""
     for line in text.splitlines():
         key, _, value = line.partition("=")
         if key.strip().casefold() == "cmake_home_directory:internal":
             recorded = value.strip().casefold()
-            break
-    if recorded == expected:
+        elif key.strip().casefold() == "cmake_generator:internal":
+            recorded_generator = value.strip()
+    if recorded == expected and (not generator or recorded_generator in ("", generator)):
         return False
-    print(f"Discarding CMake cache configured for another path: {build_dir}")
+    print(f"Discarding CMake cache configured for another path or generator: {build_dir}")
     shutil.rmtree(build_dir, ignore_errors=True)
     return True
 
@@ -398,11 +451,13 @@ def configure_args(
     version: str,
     runtime_url: str,
     icon: Path | None = None,
+    generator: str = DEFAULT_GENERATOR,
 ) -> list[str]:
     """The CMake configure command line (pure, so the plumbing is testable).
 
     ``PRODUCT_RUNTIME_URL`` is always passed, empty for a portable launcher:
-    left out, CMake would reuse whatever the cache last held.
+    left out, CMake would reuse whatever the cache last held. *generator* is
+    :func:`msvc_generator`'s answer when building for real.
     """
     args = [
         cmake,
@@ -411,7 +466,7 @@ def configure_args(
         "-B",
         str(build_dir),
         "-G",
-        "Visual Studio 17 2022",
+        generator,
         "-A",
         "x64",
         f"-DPRODUCT_NAME={product.name}",
@@ -458,7 +513,8 @@ def build_launcher(
     build_dir = launcher_build_dir(
         product, build_root or _REPO_ROOT / "build" / "launcher", runtime_url=runtime_url
     )
-    _discard_relocated_cmake_cache(build_dir)
+    generator = msvc_generator()
+    _discard_relocated_cmake_cache(build_dir, generator)
     build_dir.mkdir(parents=True, exist_ok=True)
 
     configure = configure_args(
@@ -468,6 +524,7 @@ def build_launcher(
         version=version,
         runtime_url=runtime_url,
         icon=product_icon(product),
+        generator=generator,
     )
 
     print(f"  configuring {product.name} {version}")

@@ -144,8 +144,18 @@ Copy-Item (Join-Path $FfmpegDir "ffmpeg.exe") $toolsDir -Force
 if (Test-Path (Join-Path $FfmpegDir "ffprobe.exe")) {
     Copy-Item (Join-Path $FfmpegDir "ffprobe.exe") $toolsDir -Force
 }
-$ffLicense = Join-Path (Split-Path -Parent $FfmpegDir) "LICENSE"
-if (Test-Path $ffLicense) { Copy-Item $ffLicense (Join-Path $toolsDir "FFMPEG-LICENSE.txt") -Force }
+# FFmpeg is a GPLv3 build: its licence and source offer ship beside it. This
+# used to guess at a LICENSE next to the staging folder, which never existed,
+# so the onedir shipped FFmpeg with neither and said nothing. The texts live in
+# the package (quill\data\notices\ffmpeg), as StageMediaTools.ps1 uses them.
+$ffNotices = Join-Path $QuillRepo "quill\data\notices\ffmpeg"
+foreach ($notice in @("LICENSE.GPLv3.txt", "README-SOURCE.txt")) {
+    $noticePath = Join-Path $ffNotices $notice
+    if (-not (Test-Path $noticePath)) {
+        throw "FFmpeg licence notice '$noticePath' not found -- FFmpeg ships with its licence."
+    }
+    Copy-Item $noticePath $toolsDir -Force
+}
 
 # -- the chapter engine's model ----------------------------------------------
 # Cast infers chapters from a transcript, and most podcasts publish none -- so
@@ -202,6 +212,10 @@ $zipPath = Join-Path $repoRoot "dist\QUILL-Cast-Portable-$version.zip"
 if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
 # Every shipped .md leaves with its .html and .epub (scripts\complete_docs_folder.py).
 Complete-QuillDocsFolders -Python $Python -Root (Join-Path (Split-Path -Parent $PSScriptRoot) "dist") -QuillRepo $QuillRepo
+# FFmpeg ships with its licence: fail here, before anything is zipped or
+# compiled, if any ffmpeg.exe in the portable or the runtime payload lacks it.
+& $Python (Join-Path $QuillRepo "scripts\check_ffmpeg_notices.py") $appDir $sharedRuntimeDist
+if ($LASTEXITCODE -ne 0) { throw "A bundle ships ffmpeg.exe without its licence notices." }
 Compress-Archive -Path $appDir -DestinationPath $zipPath
 # The installed flavor must NOT carry the data folder (it would flip the
 # installed copy into portable mode), so remove it before the installer runs.

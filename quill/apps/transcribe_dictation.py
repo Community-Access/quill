@@ -25,6 +25,8 @@ adds is QUILL Transcribe's promise:
   (:mod:`quill.core.dictation_owner`) while it runs; Inkwell passes its key on.
 * **Starting from the tray** arms dictation: it begins in the next program you
   return to (:mod:`quill.core.transcribe.arming`).
+* **Holding the key, the wake phrase, braille and Dictation Status** (D-9,
+  D-6) are :mod:`quill.apps.transcribe_talk`'s.
 
 Refused in Safe Mode, which exists to touch nothing.
 """
@@ -36,6 +38,7 @@ from typing import Any
 
 import wx
 
+from quill.apps.transcribe_talk import TranscribeTalkMixin
 from quill.core.sound_events import SoundEvent
 from quill.ui.dictation_field_hold import FieldHoldMixin
 from quill.ui.windows_dictation_external import PAUSE_ADVICE, WRITE_FAILURE
@@ -48,6 +51,8 @@ _CUES = {
     "off": SoundEvent.WINDOWS_DICTATION_OFF,
     "error": SoundEvent.WINDOWS_DICTATION_ERROR,
     "working": SoundEvent.WINDOWS_DICTATION_WORKING,
+    "command_on": SoundEvent.WINDOWS_DICTATION_COMMAND_ON,
+    "command_off": SoundEvent.WINDOWS_DICTATION_COMMAND_OFF,
 }
 _READ_BACK_DELAY_MS = 250
 
@@ -81,10 +86,18 @@ class _Feedback:
         self._host._show_dictation_message(text)
 
     def preview(self, text: str) -> None:
+        """The words heard so far: the status bar, and a braille display (D-6)."""
         self._host._set_status(f"Hearing: {text}" if text else "")
+        if text:
+            self._host._braille_dictation(f"Hearing: {text}")
+
+    def say_quietly(self, text: str) -> None:
+        """New preview words, only when the preview setting is "speak"."""
+        self._host._announce(text)
 
     def state_changed(self, state: Any) -> None:
         self._host._dictation_state_changed()
+        self._host._braille_state_change()
 
     def show_commands(self) -> None:
         """Said "what can I say" while dictating: a short spoken answer (D-7).
@@ -97,6 +110,22 @@ class _Feedback:
 
         return AnywhereLibrary()
 
+    def review(self) -> Any:
+        """Review Dictation (D-2): the window held words wait in before Insert."""
+        return self._host._review_desk()
+
+    def words_path(self) -> Any:
+        """Where a learned correction is saved (D-21): the family's ``dictation.md``.
+        No ``confirm_correction`` here: a window would take the focus from the
+        field, so the offer is spoken and answered with "QUILL yes"."""
+        from quill.core.speech.dictation_profile import default_profile_path
+
+        return default_profile_path()
+
+    def rescue(self) -> Any:
+        """Where words not written are kept until delivered (D-5, rescue.py)."""
+        return self._host._dictation_keep()
+
     def call_later(self, seconds: float, callback: Any) -> Any:
         """The working tick's clock (working_tick.py): stopped when the wait ends."""
         return wx.CallLater(int(seconds * 1000), callback)
@@ -104,6 +133,16 @@ class _Feedback:
     def set_speech_language(self, language: str) -> None:
         """ "Switch to Spanish" said aloud, or Ctrl+Shift+F11: kept, as in the editors."""
         self._host._save_speech_language(language)
+
+    def set_dictation_profile(self, profile_id: str) -> None:
+        """ "QUILL email mode" said aloud (D-23): kept, as the window would."""
+        self._host._save_dictation_profile(profile_id)
+
+    def phrase_written(self, text: str) -> None:
+        """A phrase is in: the Practice window's recognition test may want it (D-25)."""
+        written = getattr(self._host, "_practice_phrase_written", None)
+        if callable(written):
+            written(text)
 
 
 class _ChosenModelOnly:
@@ -138,7 +177,7 @@ class _ChosenModelOnly:
         return getattr(self._inner, name)
 
 
-class TranscribeDictationMixin(FieldHoldMixin):
+class TranscribeDictationMixin(TranscribeTalkMixin, FieldHoldMixin):
     """On ``QuillTranscribeFrame``: start, stop, pause and resume."""
 
     _settings: Any
@@ -170,8 +209,11 @@ class TranscribeDictationMixin(FieldHoldMixin):
         )
         from quill.core.transcribe.parity import PREFERENCES_OFF
 
-        # The documented subset (parity.py): everything else is the editors'.
+        # The documented subset (parity.py), empty since D-9: all the editors'.
         preferences = replace(preferences, **dict.fromkeys(PREFERENCES_OFF, False))
+        from quill.core.windows_dictation.profile import with_repair_names
+
+        preferences = with_repair_names(preferences, default_profile_path())  # D-20
         override = getattr(self, "_engine_override", "")
         return replace(preferences, engine=override) if override else preferences
 
@@ -196,6 +238,7 @@ class TranscribeDictationMixin(FieldHoldMixin):
                 app="QUILL Transcribe",
                 key="start and stop key",
             )
+            self._dictation_document = document  # its locked program (Dictation Status)
             controller = DictationController(
                 recognizer=self._make_chosen_recognizer,
                 document=document,
@@ -206,11 +249,13 @@ class TranscribeDictationMixin(FieldHoldMixin):
             self._dictation = controller
         return controller
 
-    @staticmethod
-    def _make_chosen_recognizer(controller: Any, preferences: Any) -> Any:
+    def _make_chosen_recognizer(self, controller: Any, preferences: Any) -> Any:
+        """It reports through the key gate: phrases said while the start and
+        stop key is held wait until it comes up (transcribe_talk.py)."""
         from quill.ui.windows_dictation_commands import _make_recognizer
 
-        return _ChosenModelOnly(_make_recognizer(controller, preferences), preferences.engine)
+        gate = self._talk_gate(controller)
+        return _ChosenModelOnly(_make_recognizer(gate, preferences), preferences.engine)
 
     def never_type_list(self) -> list[str]:
         """The programs dictation never types into (D-24), as saved."""
@@ -256,24 +301,62 @@ class TranscribeDictationMixin(FieldHoldMixin):
             preferences.engine,
             preferences.speech_language,
             openai_consent=preferences.openai_consent,
+            cloud_fields=preferences.cloud_fields,
+            cloud_consent=preferences.cloud_consent,
         )
 
     def toggle_dictation(self) -> None:
-        """The start and stop key, pressed in the field to dictate into."""
+        """The start and stop key, pressed in the field to dictate into. Held,
+        it is followed until it comes up (hold-to-talk, transcribe_talk.py)."""
+        if self._key_repeat():
+            return  # Windows repeating a key that is being held
+        self._command_after_start = False  # a plain start: no command armed
         if self._cancel_arming():
             return
-        controller = self._controller()
-        if controller.active:
-            controller.finish()  # keeps the phrase being spoken
-            return
-        self.start_dictation()
+        self._press_start_key(self._controller())  # finish() keeps the phrase being spoken
 
     def start_dictation(self) -> None:
         refusal = self._refusal()
         if refusal:
+            self._command_after_start = False
             self._dictation_refused(refusal)
             return
-        self._controller().start()
+        controller = self._controller()
+        controller.start()
+        if getattr(self, "_command_after_start", False) and controller.active:
+            controller.command_key()  # Speak a Command started it: one command armed
+        self._command_after_start = False
+
+    # -- the Command Key and Speak a Command (D-1) ---------------------------- #
+
+    def command_key_pressed(self) -> None:
+        """The system-wide Command Key, pressed in the field to dictate into:
+        the next thing said is a command (starting dictation if it is off);
+        pressed again, command mode; in command mode, back to dictation."""
+        if self._cancel_arming():
+            return
+        controller = self._controller()
+        if controller.active:
+            controller.command_key()
+            return
+        self._command_after_start = True
+        self.start_dictation()
+
+    def speak_a_command(self) -> None:
+        """F11, the editors' Speak a Command, from QUILL Transcribe's window:
+        while dictating, the same as the Command Key; otherwise dictation waits
+        for the field you switch to, with one command armed."""
+        if self.dictation_active():
+            self._controller().command_key()
+            return
+        if self._cancel_arming():
+            return
+        refusal = self._refusal()
+        if refusal:
+            self._dictation_refused(refusal)
+            return
+        self._command_after_start = True
+        self._arm_start()
 
     def stop_dictation(self) -> None:
         if self._cancel_arming():
@@ -286,6 +369,7 @@ class TranscribeDictationMixin(FieldHoldMixin):
 
     def start_or_stop_from_here(self) -> None:
         """The tray menu and the window's button: stop, or arm a start."""
+        self._command_after_start = False  # a plain start: no command armed
         if self._cancel_arming():
             return
         if self.dictation_active():
@@ -342,7 +426,8 @@ class TranscribeDictationMixin(FieldHoldMixin):
 
     def _answer_owner_requests(self) -> None:
         """Requests passed on by Inkwell (its Dictate Anywhere key, pressed in
-        the field to dictate into), answered as if our own key was pressed."""
+        the field to dictate into) or by Quill Cast's and Quill Radio's Dictate
+        Here (``start``, D-16), answered as if our own key was pressed."""
         from quill.core.dictation_owner import take_requests
 
         if self._safe_mode or not self._own_dictate_anywhere():
@@ -356,6 +441,16 @@ class TranscribeDictationMixin(FieldHoldMixin):
                 self.stop_dictation()
             elif request.command == "show":
                 self._restore_from_tray()  # type: ignore[attr-defined]
+
+    def dictate_here_at_launch(self) -> None:
+        """Started by Quill Cast's or Quill Radio's Dictate Here (D-16) with
+        ``--dictate-here``: start in the field that has the focus, as a
+        ``start`` request would. Not while this window is open -- then the
+        focused field is ours (first run, or no tray) -- nor in Safe Mode."""
+        if self._safe_mode or self.frame.IsShown() or not self._own_dictate_anywhere():
+            return
+        if not self.dictation_active():
+            self.start_dictation()
 
     def _microphone_gate(self) -> Any:
         """The family's one microphone (D-11): held only while dictation listens,
@@ -374,6 +469,10 @@ class TranscribeDictationMixin(FieldHoldMixin):
         controller = getattr(self, "_dictation", None)
         if controller is not None:
             controller.shut_down()  # closes the recogniser, and lets go of the microphone
+        gate = getattr(self, "_key_gate", None)
+        if gate is not None:
+            gate.drop()  # words said while the key was held, never written
+        self._talk_hold().reset()
         self._cancel_arming(say=False)
         for name in ("_microphone", "_owner_lock"):
             lock = getattr(self, name, None)
@@ -431,6 +530,8 @@ class TranscribeDictationMixin(FieldHoldMixin):
         controller = getattr(self, "_dictation", None)
         if controller is None:
             return "Ready"
+        if controller.standing_by:
+            return "Listening for your wake phrase"  # D-9: the microphone is open
         state = controller.state
         if controller.paused_for_target:
             held = controller.held_count
@@ -439,6 +540,8 @@ class TranscribeDictationMixin(FieldHoldMixin):
             return "Paused, waiting for the microphone"
         if state is DictationState.STARTING:
             return "Starting"
+        if controller.active and controller.command_mode_text:
+            return str(controller.command_mode_text)  # "Command mode" (D-1), shown not said
         if state is DictationState.RECOGNIZING:
             return "Hearing you"
         if state in (DictationState.LISTENING, DictationState.PROCESSING):
@@ -449,6 +552,9 @@ class TranscribeDictationMixin(FieldHoldMixin):
         controller = getattr(self, "_dictation", None)
         if controller is not None and not controller.active and not self.dictation_armed():
             self._engine_override = ""  # a stand-in model lasts one session
+        practice = getattr(self, "_practice_state_changed", None)
+        if callable(practice):
+            practice()  # D-25: the Practice window's button, and back to the locked field
         refresh = getattr(self, "_refresh_view", None)
         if callable(refresh):
             refresh()

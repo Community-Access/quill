@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import wx
 
-from quill.apps import radio_audio_menu, radio_go_to
+from quill.apps import radio_audio_menu, radio_go_to, radio_playback_extras
 
 
 class RadioMenuBarMixin:
@@ -258,8 +258,8 @@ class RadioMenuBarMixin:
         # Live DVR (mpv engine): pause is the Play/Stop item; these move
         # within the buffered live window.
         rewind_id, forward_id, live_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
-        playback_menu.Append(rewind_id, self._menu_label("Re&wind 30 Seconds", "radio.rewind"))
-        playback_menu.Append(forward_id, self._menu_label("&Forward 30 Seconds", "radio.forward"))
+        playback_menu.Append(rewind_id, self._menu_label("Re&wind", "radio.rewind"))
+        playback_menu.Append(forward_id, self._menu_label("&Forward", "radio.forward"))
         playback_menu.Append(live_id, self._menu_label("Back to &Live", "radio.jump_to_live"))
         # Video: a finished YouTube video has a timeline, so it can be
         # scrubbed, sped up, navigated by chapter and read as a transcript --
@@ -286,13 +286,8 @@ class RadioMenuBarMixin:
         playback_menu.Append(go_to_player_id, "&Go to Player	Ctrl+Shift+G")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._radio_go_to_player(), id=go_to_player_id)
         playback_menu.Append(whats_playing_id, "W&hat's Playing?\tCtrl+T")
-        # Ctrl+Shift+H is free in the standalone app; inside full QUILL the same
-        # command ships unbound because there Ctrl+Shift+H is Replace All.
-        song_history_id = wx.NewIdRef()
-        playback_menu.Append(
-            song_history_id, self._menu_label("&Song History...", "radio.song_history")
-        )
-        self.frame.Bind(wx.EVT_MENU, lambda _e: self.radio_song_history(), id=song_history_id)
+        # Song History, then Lyrics (radio_playback_extras.append_song_items).
+        song_ids = radio_playback_extras.append_song_items(self, playback_menu, wx)
         forget_volumes_id = radio_audio_menu.build_preferences(self, audio_menu, wx)
         sleep_id = wx.NewIdRef()
         playback_menu.Append(sleep_id, "Sleep &Timer...\tCtrl+Shift+Z")
@@ -615,7 +610,7 @@ class RadioMenuBarMixin:
             forward_id,
             live_id,
             whats_playing_id,
-            song_history_id,
+            *song_ids,
             self._global_volume_item_id,
             forget_volumes_id,
             self._announce_titles_item_id,

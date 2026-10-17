@@ -6,6 +6,7 @@ app.
 
 ## Unreleased
 
+- **Transcribe a Recording translates into English.** For a recording in Spanish, check **Translate into English** (Alt+E) and the transcript comes out in English, with the built-in Whisper or a multilingual Whisper you downloaded. The same in QUILL and QUILL Lite.
 - **Where QUILL Transcribe's own sounds play, and Alt+Shift+M to turn them off.** **Options > App Sounds Play On...** (Ctrl+Shift+S) offers System default, None (no sounds), or any sound card or headset by name. After a change one sound plays on the new card, so you hear where it went. If that card is unplugged the sounds play on the system default until it is back, and QUILL Transcribe says so once. **Alt+Shift+M** turns QUILL Transcribe's sounds off and back on where they were, and **Options > App Sounds** shows a check mark while they are on. Each QUILL app keeps its own choice; "Share these choices with my other Quill apps" keeps them in step. Your screen reader is never moved. Asked for on QUILLVille by Rick Lewis.
 
 - The start and stop key is Alt+Shift+Backslash from the start, and every key

@@ -279,6 +279,18 @@ PURPOSES: dict[str, str] = {
         "appears. This is QUILL Lite's own list unless you asked it, in "
         "Preferences, to share the one QUILL and Quill Inkwell use."
     ),
+    "AutoCorrect Entries": (
+        "Every correction AutoCorrect makes as you type, built in and your own, "
+        "one per row: teh becomes the. Type in Find to narrow the list. Add makes "
+        "a correction of your own, Edit changes the one you are on, Turn Off "
+        "stops one without deleting it, and Remove deletes one of yours or puts a "
+        "built-in one back. QUILL has the same window on the same key."
+    ),
+    "AutoCorrect Entry": (
+        "One correction: the word as you mistype it, and what it should become. "
+        "Leave Match case exactly unchecked unless the case of the word matters; "
+        "unchecked, a capital at the start of a sentence is kept."
+    ),
     "Customize QUILL Lite Features": (
         "Turn whole parts of QUILL Lite on or off. Unchecking an area removes its "
         "menu and its keys entirely, which is how this stays a small editor "
@@ -342,6 +354,37 @@ PURPOSES.update({
         "conversation above, so you can read it again. Nothing goes into your "
         "document until you choose to put it there."
     ),
+    # 2026-10-15: QUILL's saved conversations, Prompt Library and word-level
+    # review, reached from the free AI in both editors.
+    "Saved AI Conversations": (
+        "Your saved AI conversations, newest first. Every conversation with the AI "
+        "is saved on this computer as it goes. Press Enter on one to open it and "
+        "carry on where it left off; Delete removes one after asking."
+    ),
+    "Delete Conversation": (
+        "Asks whether to delete the saved conversation. Yes deletes it from this "
+        "computer for good; No keeps it."
+    ),
+    "Prompt Library": (
+        "Prompts you keep for the AI: QUILL's own and the ones you write. Choose "
+        "one and Run with AI to send it with your selection filled in where it "
+        "says {selection}. New, Edit, Disable and Delete manage the list; Import "
+        "and Export share prompts as a prompt pack file."
+    ),
+    "New Prompt": (
+        "Write a prompt to keep: its name, its category and the instruction itself. "
+        "Type {selection} where the text you run it on should go."
+    ),
+    "Edit Prompt": (
+        "Change a prompt's name, category or instruction. Save keeps the change; "
+        "Cancel leaves the prompt as it was."
+    ),
+    "Review AI Changes": (
+        "The AI's answer compared with the text it would replace, one change per "
+        "line, with the words that differ and the sentence they are in. Uncheck a "
+        "change to keep the original there, then apply; it goes in as one edit "
+        "Control Z takes back. Nothing changes until you apply."
+    ),
     "Use My Own AI Key": (
         "Use AI help on your own OpenAI or Google Gemini account instead of "
         "QUILL's free service. Choose the company, paste the key it gave you, "
@@ -359,9 +402,28 @@ PURPOSES.update({
         "can read line by line. The same list is in the user guide."
     ),
     "Recent Phrases": (
-        "What you have dictated since the app started, newest first. Insert "
-        "Again writes the phrase you are on at the cursor, and Copy puts it on "
-        "the clipboard. The list is forgotten when you close the app."
+        "What you have dictated since the app started, newest first, then words "
+        "kept from before: phrases that were not written, a review that did not "
+        "finish, and with a dictation history on, earlier phrases. Insert Again "
+        "writes the phrase you are on at the cursor, Copy puts it on the clipboard, "
+        "and Discard deletes kept words without writing them. This session's "
+        "phrases are forgotten when you close the app."
+    ),
+    "My Words and Phrases": (
+        "Everything dictation has been taught: words spelled your way, phrases "
+        "that write something longer, and corrections. Each change is saved at "
+        "once. Import adds the new entries from a Markdown or CSV file after "
+        "showing them, and Export saves the list to a file."
+    ),
+    "Import Words": (
+        "What the file would add to your word list, with the counts as the "
+        "list's name. Add Them adds them and keeps a copy of your list as it "
+        "was; nothing you already have is replaced. Cancel changes nothing."
+    ),
+    "Use the Shared Word List": (
+        "Which of your words will be added to the list QUILL, QUILL Transcribe "
+        "and Quill Inkwell share, before QUILL Lite starts using it. Use the "
+        "Shared List goes ahead; Cancel keeps QUILL Lite's own list."
     ),
     "More Dictation Settings": (
         "The finer dictation choices: holding the key to talk, the quiet "
@@ -369,11 +431,31 @@ PURPOSES.update({
         "to the AI, and My Dictation Instructions. Nothing changes until you "
         "choose OK."
     ),
+    "Speech Providers": (
+        "Use a speech service you already have an account with -- Azure, Google, "
+        "Amazon, Deepgram and others -- for dictation. Choose one to see what it can "
+        "do and what it needs, enter that, test it, and save it; keys go to Windows "
+        "Credential Manager. Then choose it as the speech engine in Dictation Settings."
+    ),
     "Speech Models": (
         "Optional speech models you can download for better accuracy, with "
         "each one's size, languages and what it suits. Your voice never "
         "leaves the computer with these models; Download asks first, and "
         "Remove frees the space again."
+    ),
+    "Review Dictation": (
+        "Dictated words wait here before they are inserted. Read them, type or keep "
+        "dictating to change them, ask the AI to change them if AI is on, and hear "
+        "what changed. Control Enter inserts them where they were going; nothing is "
+        "written before that."
+    ),
+    "Review with AI": (
+        "Before the first change is asked for, this says who receives the words "
+        "being reviewed and what is sent. No is the default and sends nothing."
+    ),
+    "Discard These Words": (
+        "The AI has changed these words. Yes throws them away and writes nothing; "
+        "No keeps the review open."
     ),
     "Transcribe a Recording": (
         "Turns a recording into text in the background: choose the file, the "
@@ -386,8 +468,16 @@ PURPOSES.update({
 #: Titles of the windows QUILL opens from the same shared modules. QUILL's F1
 #: takes their opening paragraph from here rather than keeping a second copy.
 SHARED_WITH_QUILL: frozenset[str] = frozenset({
+    "AutoCorrect Entries",
+    "AutoCorrect Entry",
     "AI Assistant",
     "AI Conversation",
+    "Saved AI Conversations",
+    "Delete Conversation",
+    "Prompt Library",
+    "New Prompt",
+    "Edit Prompt",
+    "Review AI Changes",
     "AI Usage",
     "Ask About an Image",
     "QUILL AI Sign-In",
@@ -398,9 +488,15 @@ SHARED_WITH_QUILL: frozenset[str] = frozenset({
     "Dictation Settings",
     "Dictation Commands",
     "Recent Phrases",
+    "My Words and Phrases",
+    "Import Words",
     "More Dictation Settings",
     "Speech Models",
+    "Speech Providers",
     "Transcribe a Recording",
+    "Review Dictation",
+    "Review with AI",
+    "Discard These Words",
     "Recent Documents",
     "Clear Recent Documents",
     "Inline Notes",

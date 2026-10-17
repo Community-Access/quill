@@ -10,7 +10,6 @@ from typing import Any
 
 from quill.core.document import Document
 from quill.core.safe_archive import check_zip_safety
-from quill.io.markitdown_bridge import convert_with_markitdown
 
 # Pages paragraph style names → Markdown heading prefix
 _STYLE_HEADING_PREFIX: dict[str, str] = {
@@ -29,7 +28,7 @@ def read_pages_document(path: Path) -> Document:
     """Import an Apple Pages document and extract text with heading structure.
 
     Uses Route A (pure Python IWA parsing) when available, falls back to Route B
-    (LibreOffice + MarkItDown) for higher fidelity. If neither is available,
+    (LibreOffice, then the DOCX reader) for higher fidelity. If neither is available,
     returns a graceful error message.
     """
     # Refuse a decompression bomb before either route expands the bundle: a
@@ -304,9 +303,12 @@ def _para_style_at(para_style: dict[int, str], char_pos: int) -> str:
 
 
 def _read_pages_via_libreoffice(path: Path) -> Document:
-    """Route B: Convert .pages to DOCX via LibreOffice, then MarkItDown.
+    """Route B: Convert .pages to DOCX via LibreOffice, then read the DOCX.
 
-    Requires LibreOffice (soffice) and the markitdown Python package.
+    Requires LibreOffice (soffice). The DOCX is read by
+    :func:`quill.io.office_text.read_office_text_preferring_own` -- QUILL's own
+    Word reader first, MarkItDown only when it fails (2026-10-16), so this
+    route no longer needs, or waits for, the markitdown package.
     """
     from quill.core.external_tools import libreoffice_executable
 
@@ -318,7 +320,9 @@ def _read_pages_via_libreoffice(path: Path) -> Document:
         )
     with tempfile.TemporaryDirectory() as tmpdir:
         tmpdir_path = Path(tmpdir)
-        docx_path = tmpdir_path / "converted.docx"
+        # LibreOffice names its output after the input (report.pages ->
+        # report.docx); this looked for "converted.docx", which it never writes.
+        docx_path = tmpdir_path / f"{path.stem}.docx"
 
         try:
             subprocess.run(
@@ -344,7 +348,13 @@ def _read_pages_via_libreoffice(path: Path) -> Document:
         if not docx_path.exists():
             raise RuntimeError("LibreOffice did not produce a DOCX file")
 
-        text = convert_with_markitdown(docx_path)
+        from quill.io.office_text import OfficeReadError, read_office_text_preferring_own
+
+        try:
+            found = read_office_text_preferring_own(docx_path)
+        except OfficeReadError as exc:
+            raise RuntimeError(exc.sentence) from exc
+        text = found.text
 
         return Document(
             text=text.strip() + "\n",
@@ -354,7 +364,7 @@ def _read_pages_via_libreoffice(path: Path) -> Document:
             line_ending="\n",
             source_metadata={
                 "source_kind": "pages",
-                "engine": "libreoffice + markitdown",
+                "engine": f"libreoffice + {found.engine}",
                 "quality_score": 85,
             },
         )

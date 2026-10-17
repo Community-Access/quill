@@ -173,10 +173,10 @@ _CTRL_ALT_DOCUMENTED: frozenset[str] = frozenset({
     "power.toggle_clipboard_collector",  # Ctrl+Alt+G
     "edit.keep_selection_in_clip_library",  # Ctrl+Alt+M
     "power.describe_character_detail",  # Ctrl+Alt+C, QUILL Lite's chord (bad.md P1.13)
-    # Ctrl+Alt+= and Ctrl+Alt+E, 2026-09-17 (bad.md 3.3, 3.7, P1.8): File Format
-    # takes QUILL Lite's Ctrl+Alt+E, Select Line takes Word-shaped Ctrl+Shift+E,
-    # and Insert Equation moves to the sign it draws. Neither new chord is a
-    # letter any screen reader claims with Ctrl+Alt.
+    "power.toggle_read_only_guard",  # Ctrl+Alt+Backspace: AltGr types nothing, no reader key
+    # Ctrl+Alt+= and Ctrl+Alt+E, 2026-09-17 (bad.md 3.3, 3.7, P1.8): File Format takes QUILL Lite's
+    # Ctrl+Alt+E, Select Line takes Word-shaped Ctrl+Shift+E, and Insert Equation moves to the sign
+    # it draws. Neither new chord is a letter any screen reader claims with Ctrl+Alt.
     "edit.insert_equation",  # Ctrl+Alt+=
     "file.file_format",  # Ctrl+Alt+E
     # 2026-09-18, the structural six converging on QUILL Lite's chords (bad.md

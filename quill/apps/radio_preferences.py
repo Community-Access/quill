@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from quill.apps import radio_preferences_load
+from quill.apps import radio_preferences_listening, radio_preferences_load
 from quill.apps import radio_preferences_rows as rows
 from quill.apps.radio_preferences_load import PreferencesDataLoad, podcast_schedule_help
 from quill.core.radio import main_view, reminders
@@ -99,6 +99,7 @@ def open_preferences(app: Any) -> None:
     podcast_schedule_choice_index = 7
     podcast_schedule_options = [label for _minutes, label in refresh_policy.INTERVAL_CHOICES]
     yt_check, yt_choice, yt_file = yt_signin.rows(app)
+    timeshift_choice, acoustid_text = radio_preferences_listening.rows(app)
     close_action_index = _CLOSE_ACTION_VALUES.index(history.close_action)
     mpv_present = mpv_output_device_available()
     cached_devices = cached_output_devices()
@@ -344,6 +345,7 @@ def open_preferences(app: Any) -> None:
                 _resume_index(history.recording_resume_choice),
             ),
             yt_choice,
+            timeshift_choice,
         ],
         texts=[
             PreferenceText(
@@ -357,6 +359,7 @@ def open_preferences(app: Any) -> None:
                 "Changing it moves the log immediately.",
                 history.log_dir,
             ),
+            acoustid_text,
         ],
         actions=[
             # Where Quill Radio's own sounds play (ui/app_sounds), one window
@@ -453,6 +456,7 @@ def open_preferences(app: Any) -> None:
             )
         )
     youtube_said = yt_signin.apply(youtube_signin_on, choice_indices[10], app=app)
+    listening_said = radio_preferences_listening.apply(app, choice_indices[11], text_values[2])
     # Apply verbose logging immediately (quill-radio #5) so it takes effect
     # this session, not just the next launch.
     from quill.core.radio.radio_logging import set_radio_debug
@@ -544,5 +548,5 @@ def open_preferences(app: Any) -> None:
     menu_bar = app.frame.GetMenuBar()
     if menu_bar is not None:
         menu_bar.Check(int(app._resume_menu_item_id), history.resume_on_launch)
-    said = (startup_said, sound_said, schedule_said, youtube_said)
+    said = (startup_said, sound_said, schedule_said, youtube_said, listening_said)
     app._announce(" ".join(["Preferences saved.", *(part for part in said if part)]))

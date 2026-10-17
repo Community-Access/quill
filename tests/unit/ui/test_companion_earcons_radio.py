@@ -109,6 +109,31 @@ def test_pausing_has_no_earcon(monkeypatch: pytest.MonkeyPatch) -> None:
     assert cues == []
 
 
+def test_resuming_after_a_pause_cues_resumed_not_playing(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """xradio2 4.5: carrying on is tellable from tuning in, by sound alone."""
+    controller, cues = _controller(monkeypatch)
+    controller.play_station(_station())
+    controller._on_loaded(0)
+    controller.toggle_play_pause()
+    cues.clear()
+    controller.toggle_play_pause()
+    assert controller.state.state is RadioPlayerState.PLAYING
+    assert cues == [SoundEvent.RADIO_RESUMED]
+
+
+def test_the_resume_earcon_is_in_the_pack_and_can_be_named() -> None:
+    import json
+
+    from quill.ui.sound_event_labels import LABELS
+
+    pack = Path(__file__).resolve().parents[3] / "quill" / "assets" / "sound_packs" / "ink"
+    manifest = json.loads((pack / "manifest.json").read_text(encoding="utf-8"))
+    assert (pack / manifest["events"]["radio_resumed"]).is_file()
+    assert LABELS["radio_resumed"]
+
+
 def test_volume_changes_do_not_cue(monkeypatch: pytest.MonkeyPatch) -> None:
     controller, cues = _controller(monkeypatch)
     controller.play_station(_station())

@@ -896,7 +896,11 @@ class RadioPlayerController(PlaybackUrlMixin, PlayerTracksMixin):
             self._set_state(RadioPlayerState.PAUSED)
         elif self._state.state is RadioPlayerState.PAUSED:
             self._engine.play()
-            self._set_state(RadioPlayerState.PLAYING)
+            # Carrying on is its own earcon (xradio2 4.5), not "tuned in":
+            # post_cue honours the listener's sound settings for it as for
+            # every other event, so turning it off there silences it.
+            post_cue(SoundEvent.RADIO_RESUMED)
+            self._set_state(RadioPlayerState.PLAYING, cue=False)
         elif self._state.station is not None:
             self.play_station(self._state.station)
 

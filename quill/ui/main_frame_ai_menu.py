@@ -53,6 +53,8 @@ class AiMenuMixin:
             self._id_hosted_ai_ask_document,
             self._menu_label(_("Ask About This &Document..."), "tools.hosted_ai_ask_document"),
         )
+        # The Chat Key, the Prompt Library and Web Searches Left (2026-10-15).
+        self._append_answer_rows(ai_menu)  # quill/ui/main_frame_hosted_ai.py
         ai_menu.Append(
             self._id_hosted_ai_usage,
             self._menu_label(_("Free AI Usa&ge..."), "tools.hosted_ai_usage"),

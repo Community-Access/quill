@@ -1,8 +1,11 @@
 """Free-first document conversion UI (MainFrame mixin).
 
 Wires the supported **Import / Convert Document** tool over
-:mod:`quill.io.docconvert` — the PRD's free-first routing (Tier 1 MarkItDown,
-Tier 2 local Tesseract OCR), with the accessible escalation prompt between
+:mod:`quill.io.docconvert` — the PRD's free-first routing (Tier 1 the file's
+own text: MarkItDown for Office/HTML/EPUB where it can run and QUILL's own
+readers (quill.io.office_text) where it cannot, QUILL's PDF reader for PDFs; Tier 2
+local Tesseract OCR, or Windows OCR when Tesseract is not installed), with the
+accessible escalation prompt between
 them. Conversion runs on the background task pool; QUILL never opens an empty
 or garbled result silently, and never runs OCR without asking.
 
@@ -25,6 +28,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from quill.core.docconvert_services import SERVICES_OVERVIEW_MARKDOWN
 from quill.core.document import Document
 
 
@@ -46,68 +50,6 @@ def _import_wildcard() -> str:
         f"|Images ({_mask(IMAGE_EXTENSIONS)})|{_mask(IMAGE_EXTENSIONS)}"
         "|All files (*.*)|*.*"
     )
-
-
-SERVICES_OVERVIEW_MARKDOWN = """# OCR and Document Conversion Services
-
-QUILL's Import / Convert Document tool turns documents that are hard to read
-— scanned PDFs, photos of pages, locked-down Office files — into editable
-text. It always tries the **free, private, on-device** services first, and it
-never uploads anything.
-
-## Free Local Converter (MarkItDown) — installed with QUILL
-
-- **What it does:** reads the text that born-digital files already contain —
-  Word, PowerPoint, Excel, HTML, EPUB, and PDFs that carry a text layer — and
-  opens it as clean, editable Markdown.
-- **Best for:** files that were *made* on a computer.
-- **Local or cloud?** Local. Nothing is uploaded. No account, no API key.
-- **Cost:** free, always.
-- **Limits:** it is not OCR — a scanned or photographed page comes back
-  empty. When that happens QUILL offers the next service automatically.
-
-## Local OCR Engine (Tesseract) — free download, runs on your computer
-
-- **What it does:** real optical character recognition for scanned PDFs,
-  photos, and images, running entirely on your machine (CPU-only — no
-  special hardware).
-- **Best for:** scanned letters, handouts, forms, and photographed pages.
-- **Local or cloud?** Local. Your document never leaves this computer.
-- **Cost:** free. The engine is a one-time download of about 48 MB.
-- **Setup:** Tools > OCR and Document Conversion > Install Local OCR Engine.
-  QUILL downloads the official installer, verifies it byte-for-byte, and
-  opens it for you to complete. If Tesseract is already installed on this
-  computer, QUILL finds and uses it — no download needed.
-- **Honesty note:** on-device OCR is very good on clean scans and weaker on
-  complex tables, handwriting, and poor photocopies. QUILL tells you when a
-  result's confidence is low so you know to review it.
-
-## Datalab Chandra OCR Service — cloud, optional, consent-gated
-
-- **What it does:** the accuracy escalation for the hardest documents —
-  complex tables, forms, handwriting, math, dense multi-column layouts, and
-  poor scans. Returns clean Markdown (or HTML/JSON) with strong layout
-  understanding.
-- **Best for:** documents the free local tiers could not rescue well. QUILL
-  offers it only after local OCR comes back weak — never as the first stop.
-- **Local or cloud?** Cloud. Converting a document sends the file to
-  Datalab. QUILL asks for your explicit consent before every single upload,
-  and warns again when a filename suggests sensitive content. Datalab states
-  that results are deleted from its servers about an hour after processing;
-  QUILL retrieves promptly and keeps the result only in the opened document.
-- **Cost:** paid, per page, on your own Datalab account (bring your own API
-  key; new accounts include a monthly free allowance). QUILL never sees your
-  billing — check Datalab's pricing page for current rates.
-- **Setup:** AI Hub > Services — enable the service, paste your API key
-  (stored in the Windows credential vault, never in settings files), choose
-  a default mode, and press Test Connection.
-
-## The one rule
-
-Free first, local first, and nothing is ever uploaded without asking you.
-The cloud tier exists for the documents that genuinely need it — and it
-always asks first.
-"""
 
 
 class DocConvertMixin:
@@ -162,8 +104,8 @@ class DocConvertMixin:
                 (
                     f"QUILL could not find readable text in {source.name}. "
                     "It looks scanned or image-based.\n\n"
-                    "Run free on-device OCR (local Tesseract)? This stays on "
-                    "your computer and does not upload anything.\n\n"
+                    "Run free on-device OCR? This stays on your computer "
+                    "and does not upload anything.\n\n"
                     "Yes: run local OCR now.  No: open the empty result anyway.  "
                     "Cancel: stop."
                 ),
@@ -179,9 +121,16 @@ class DocConvertMixin:
         self._docconvert_open(source, outcome)
 
     def _docconvert_run_local_ocr(self, source: Path) -> None:
+        from quill.io.docconvert_windows import windows_ocr_available
         from quill.io.tesseract_ocr import tesseract_available
 
         if not tesseract_available(self._docconvert_tesseract_override()):
+            if windows_ocr_available():
+                # Windows OCR is already on this computer: no download, no
+                # question. Tesseract stays the first choice when installed,
+                # because it reports a confidence per line (2026-10-15).
+                self._docconvert_run_windows_ocr(source)
+                return
             wx = self._wx
             wants_install = self._show_message_box(
                 (
@@ -226,7 +175,13 @@ class DocConvertMixin:
     # ---------------------------------------------------------------- results
 
     def _docconvert_open(self, source: Path, outcome) -> None:
-        from quill.io.docconvert import TIER_CLOUD_OCR, TIER_LOCAL_OCR
+        from quill.io.docconvert import (
+            TIER_CLOUD_OCR,
+            TIER_LOCAL_OCR,
+            TIER_OWN_READER,
+            TIER_PDF_TEXT,
+            TIER_WINDOWS_OCR,
+        )
 
         self._docconvert_last_outcome = outcome
         # modified=True: the conversion/OCR result exists nowhere else, so the
@@ -251,6 +206,27 @@ class DocConvertMixin:
             )
             pages = f" {outcome.page_count} pages." if outcome.page_count > 1 else ""
             self._announce(f"Opened {source.name} from free on-device OCR.{pages}{confidence}")
+        elif outcome.tier == TIER_WINDOWS_OCR:
+            pages = f" {outcome.page_count} pages." if outcome.page_count > 1 else ""
+            self._announce(
+                f"Opened {source.name} from Windows OCR on this computer.{pages} "
+                "Nothing was uploaded. Check the text; OCR makes mistakes."
+            )
+        elif outcome.tier == TIER_PDF_TEXT:
+            pages = f" {outcome.page_count} pages." if outcome.page_count > 1 else ""
+            self._announce(
+                f"Opened {source.name} as editable text from the PDF's own text.{pages} "
+                "Nothing was uploaded."
+            )
+        elif outcome.tier == TIER_OWN_READER:
+            # MarkItDown could not run or read it (always, in a shipped build);
+            # say who did, and how many sheets or slides, since neither is
+            # something the screen reader can know.
+            units = f" {outcome.units}." if outcome.units else ""
+            self._announce(
+                f"Opened {source.name} as editable text, read by "
+                f"{outcome.reader or 'QUILL'}.{units} Nothing was uploaded."
+            )
         else:
             self._announce(
                 f"Opened {source.name} as editable text using the free local converter. "
@@ -355,11 +331,21 @@ class DocConvertMixin:
         if outcome is None:
             self._set_status("No conversion to review yet. Run Import / Convert Document first.")
             return
-        from quill.io.docconvert import TIER_CLOUD_OCR, TIER_LOCAL_OCR, TIER_MARKITDOWN
+        from quill.io.docconvert import (
+            TIER_CLOUD_OCR,
+            TIER_LOCAL_OCR,
+            TIER_MARKITDOWN,
+            TIER_OWN_READER,
+            TIER_PDF_TEXT,
+            TIER_WINDOWS_OCR,
+        )
 
         tier_labels = {
             TIER_MARKITDOWN: "Free local converter (MarkItDown) - no OCR was needed",
+            TIER_OWN_READER: f"{outcome.reader or 'QUILL'} - no OCR was needed",
+            TIER_PDF_TEXT: "The PDF's own text (QUILL's PDF reader) - no OCR was needed",
             TIER_LOCAL_OCR: "Free on-device OCR (Tesseract)",
+            TIER_WINDOWS_OCR: "Free on-device OCR (Windows OCR) - no confidence is reported",
             TIER_CLOUD_OCR: "Datalab Chandra cloud OCR (consented upload)",
         }
         lines = [
@@ -370,6 +356,8 @@ class DocConvertMixin:
         ]
         if outcome.page_count:
             lines.append(f"Pages: {outcome.page_count}")
+        if outcome.units:
+            lines.append(f"Contents: {outcome.units}")
         if outcome.mean_confidence >= 0.0:
             lines.append(f"Mean recognition confidence: {outcome.mean_confidence:.0f} out of 100")
         for warning in outcome.warnings:

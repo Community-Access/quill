@@ -248,6 +248,42 @@
 href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>, and
 this project adheres to <a
 href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+<h2 id="unreleased">Unreleased</h2>
+<h3 id="added">Added</h3>
+<ul>
+<li><strong>Help &gt; Command Palette… (Ctrl+Shift+P).</strong> Since
+2.2.1 every Quill Weather command has had a name the Command Palette can
+find, but nothing in the app opened the palette, so the notes promised a
+door that was not there. It is now on the Help menu, on the same key as
+in Quill Radio and QUILL Cast. Type a few letters of what you want and
+press Enter: for example, press Ctrl+Shift+P, type <code>pause</code>,
+and the list narrows to <strong>Weather: Pause or Resume Alert
+Checks</strong>; Enter runs it. The palette lists only Quill Weather’s
+own commands, each with its key, and Escape closes it without doing
+anything.</li>
+<li><strong>Help &gt; Product Requirements… (Alt+Shift+F1).</strong> The
+user guide has always sent you to the Product Requirements for the
+roadmap – spoken weather, weather channels, choosing which places the
+watch covers – and the Help menu had no such item. It opens the document
+that ships in the <code>docs</code> folder beside the app, in your
+browser, with no internet connection needed. Alt+Shift+F1 is the same
+key Quill Radio and Quill Converter use for their own.</li>
+</ul>
+<h3 id="fixed">Fixed</h3>
+<ul>
+<li><strong>The user guide now teaches the right key for Start Weather
+Monitoring.</strong> It said Ctrl+Shift+M, which Quill Weather has never
+bound; the key is <strong>Ctrl+Alt+Shift+M</strong>, as the Weather menu
+shows.</li>
+<li><strong>The user guide no longer describes a Quillins menu.</strong>
+Quill Weather does not load Quillins yet and has no Quillins menu; the
+guide said it did. The section now says what is true today.</li>
+<li><strong>Radio-only commands in the guide are marked as Quill
+Radio’s.</strong> “Station &gt; Start Quill Radio with Windows” and
+“Browse Stations &gt; Weather / NOAA” are on Quill Radio’s menus, not
+Quill Weather’s, and the guide pointed at a Station menu chapter it does
+not have.</li>
+</ul>
 <h2 id="221---2026-10-08">[2.2.1] - 2026-10-08</h2>
 <p>Build 2:</p>
 <ul>
@@ -291,7 +327,7 @@ launch; a key somebody chose is kept
 <code>quill/core/show_hide_keys.py</code>,
 <code>quill/ui/show_hide_key_picker.py</code>).</li>
 </ul>
-<h3 id="added">Added</h3>
+<h3 id="added-1">Added</h3>
 <ul>
 <li><p><strong>Help &gt; Tutorials… (Ctrl+Alt+F1)</strong> – 11 guided
 tutorials, 60 steps, in three tracks: your first ten minutes, being
@@ -314,7 +350,7 @@ simply have names now.</p></li>
 <li><p><strong>The book is generated from the lessons</strong>
 (<code>docs/tutorials.md</code>, GATE-TUTDOC).</p></li>
 </ul>
-<h3 id="fixed">Fixed</h3>
+<h3 id="fixed-1">Fixed</h3>
 <ul>
 <li><strong>Quill Weather has its own icon.</strong> It used to ship a
 byte-identical copy of Quill Radio’s broadcast-wave icon, carried over
@@ -331,7 +367,7 @@ the alert watch now covers <strong>every</strong> place you have saved
 rather than only your primary one, the app is delivered on the shared
 QuillVille Runtime with two much lighter downloads, and everything Quill
 Weather says now reaches a braille display as well as speech.</p>
-<h3 id="added-1">Added</h3>
+<h3 id="added-2">Added</h3>
 <ul>
 <li><strong>Weather Guardian now watches every place you have saved, not
 just one.</strong> Before this, the alert watch covered your primary
@@ -519,10 +555,10 @@ Quill Radio uses Ctrl+Alt+Shift+R); Windows-only and best-effort.</li>
 <li>Feature customization (Options &gt; Customize Features…): switch
 whole areas – Alert Monitoring, NOAA Weather Radio – on or off, removing
 their menus.</li>
-<li>Sibling interoperability: File &gt; Open Quill Radio and File &gt;
-Open QUILL (also in the tray) launch a sibling in its own window; on one
-machine all apps share a data store, so a location saved in one is there
-in the others.</li>
+<li>Sibling interoperability: QuillVille &gt; Open Quill Radio and
+QuillVille &gt; Open QUILL (also in the tray) launch a sibling in its
+own window; on one machine all apps share a data store, so a location
+saved in one is there in the others.</li>
 <li>Your local NOAA Weather Radio: finds the transmitter covering your
 saved location and, with Quill Radio installed for playback, plays it;
 the full directory (1,035 transmitters) ships inside the app for offline

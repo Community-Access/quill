@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<live_stream_config version="1.9" xmlns="http://provisioning.streamtheworld.com/player/livestream-1.9">
+    <mountpoints>
+                                                        <mountpoint  >
+                        <status>
+                            <status-code>200</status-code>
+                            <status-message>OK</status-message>
+                        </status>
+
+                                                    <transports>
+                                                                                                            <transport>http</transport>
+                                                                                                </transports>
+
+                        <metadata>
+                            <shoutcast-v1 enabled="true" mountSuffix="_SC"/>
+                            <shoutcast-v2 enabled="false" mountSuffix="_SC"/>
+                            <sse-sideband enabled="true" streamSuffix="_SC" metadataSuffix="_SBM" />
+                        </metadata>
+
+                                                    <servers>
+                                                                    <server sid="14613">
+                                                                                <ip>14613.live.streamtheworld.com</ip>
+                                                                                <ports>
+                                                                                            <port type="https">443</port>
+                                                                                    </ports>
+                                    </server>
+                                                                    <server sid="18373">
+                                                                                <ip>18373.live.streamtheworld.com</ip>
+                                                                                <ports>
+                                                                                            <port type="https">443</port>
+                                                                                    </ports>
+                                    </server>
+                                                                    <server sid="18233">
+                                                                                <ip>18233.live.streamtheworld.com</ip>
+                                                                                <ports>
+                                                                                            <port type="https">443</port>
+                                                                                    </ports>
+                                    </server>
+                                                                    <server sid="14093">
+                                                                                <ip>14093.live.streamtheworld.com</ip>
+                                                                                <ports>
+                                                                                            <port type="https">443</port>
+                                                                                    </ports>
+                                    </server>
+                                                                    <server sid="16613">
+                                                                                <ip>16613.live.streamtheworld.com</ip>
+                                                                                <ports>
+                                                                                            <port type="https">443</port>
+                                                                                    </ports>
+                                    </server>
+                                                                    <server sid="17653">
+                                                                                <ip>17653.live.streamtheworld.com</ip>
+                                                                                <ports>
+                                                                                            <port type="https">443</port>
+                                                                                    </ports>
+                                    </server>
+                                                            </servers>
+
+                            <metrics>
+                                <tag name="uuid"/>
+                            </metrics>
+
+                        <mount>KKSEFMAAC</mount>
+                                                   <format>FLV</format>
+
+                        <bitrate>32000</bitrate>
+
+                                                    <media-format container="flv" cuepoints="stwcue" trackScheme="audio">
+                                                                    <audio index="0" samplerate="44100" codec="heaacv2" bitrate="32000" channels="2" />
+                                                                                            </media-format>
+
+                        <authentication>0</authentication>
+                        <timeout>0</timeout>
+                        <send-page-url>1</send-page-url>
+
+                                            </mountpoint>
+                                                                <mountpoint  >
+                        <status>
+                            <status-code>200</status-code>
+                            <status-message>OK</status-message>
+                        </status>
+
+                                                    <transports>
+                                                                                                            <transport>http</transport>
+                                                                                                </transports>
+
+                        <metadata>
+                            <shoutcast-v1 enabled="true" mountSuffix="_SC"/>
+                            <shoutcast-v2 enabled="false" mountSuffix="_SC"/>
+                            <sse-sideband enabled="true" streamSuffix="_SC" metadataSuffix="_SBM" />
+                        </metadata>
+
+                                                    <servers>
+                                                                    <server sid="14093">
+                                                                                <ip>14093.live.streamtheworld.com</ip>
+                                                                                <ports>
+                                                                                            <port type="https">443</port>
+                                                                                    </ports>
+                                    </server>
+                                                                    <server sid="18373">
+                                                                                <ip>18373.live.streamtheworld.com</ip>
+                                                                                <ports>
+                                                                                            <port type="https">443</port>
+                                                                                    </ports>
+                                    </server>
+                                                                    <server sid="17653">
+                                                                                <ip>17653.live.streamtheworld.com</ip>
+                                                                                <ports>
+                                                                                            <port type="https">443</port>
+                                                                                    </ports>
+                                    </server>
+                                                                    <server sid="18233">
+                                                                                <ip>18233.live.streamtheworld.com</ip>
+                                                                                <ports>
+                                                                                            <port type="https">443</port>
+                                                                                    </ports>
+                                    </server>
+                                                                    <server sid="16613">
+                                                                                <ip>16613.live.streamtheworld.com</ip>
+                                                                                <ports>
+                                                                                            <port type="https">443</port>
+                                                                                    </ports>
+                                    </server>
+                                                                    <server sid="14613">
+                                                                                <ip>14613.live.streamtheworld.com</ip>
+                                                                                <ports>
+                                                                                            <port type="https">443</port>
+                                                                                    </ports>
+                                    </server>
+                                                            </servers>
+
+                            <metrics>
+                                <tag name="uuid"/>
+                            </metrics>
+
+                        <mount>KKSEFM</mount>
+                                                   <format>FLV</format>
+
+                        <bitrate>48000</bitrate>
+
+                                                    <media-format container="flv" cuepoints="stwcue" trackScheme="audio">
+                                                                    <audio index="0" samplerate="22050" codec="mp3" bitrate="48000" channels="2" />
+                                                                                            </media-format>
+
+                        <authentication>0</authentication>
+                        <timeout>0</timeout>
+                        <send-page-url>1</send-page-url>
+
+                                            </mountpoint>
+                                        </mountpoints>
+</live_stream_config>

@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import wx
 
+from quill.apps import player_lyrics
 from quill.apps.player_preferences import open_preferences
 
 __all__ = ["MediaPlayerMenuMixin"]
@@ -104,7 +105,9 @@ class MediaPlayerMenuMixin:
                 item.Check(True)
             self._sleep_minutes_by_id[int(sid)] = minutes
             self.frame.Bind(wx.EVT_MENU, self._on_set_sleep, id=sid)
-        playback_menu.AppendSubMenu(sleep_menu, "&Sleep Timer")
+        # T, not S: App &Sounds (below) owns S in this menu (GATE-14), and
+        # Audio Studio's Book Tools menu spells it Sleep &Timer too.
+        playback_menu.AppendSubMenu(sleep_menu, "Sleep &Timer")
         self._keep_menu_ids(self._add_note_cue_menu_item(playback_menu, wx))
         summarize_id, recap_id, voice_id, listen_id = (wx.NewIdRef() for _ in range(4))
         playback_menu.Append(summarize_id, "Summarize This &Chapter (AI)\tCtrl+Alt+C")
@@ -115,6 +118,13 @@ class MediaPlayerMenuMixin:
         )
         playback_menu.Append(voice_id, "Type a &Voice Command...\tCtrl+Shift+V")
         playback_menu.AppendSeparator()
+        # The timed words of the playing file, from LRCLIB, only when asked
+        # (quill.apps.player_lyrics). Ctrl+Alt+L is free here; Quill Radio,
+        # which gives it to Resume Last Station on Launch, uses Ctrl+Alt+B.
+        lyrics_id = wx.NewIdRef()
+        playback_menu.Append(lyrics_id, "L&yrics...\tCtrl+Alt+L")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: player_lyrics.open_lyrics(self), id=lyrics_id)
+        self._keep_menu_ids(lyrics_id)
         device_id = wx.NewIdRef()
         # Which sound card the book plays out of. &D and Ctrl+Shift+K are
         # both free in this bar, and Ctrl+Shift+K is the chord QUILL Cast

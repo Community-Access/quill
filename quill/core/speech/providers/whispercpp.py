@@ -267,7 +267,7 @@ class WhisperCppProvider:
                 installed=False,
                 detail=(
                     "The offline speech engine is not installed yet. Use "
-                    "Tools > Speech > Download Offline Speech Engine to fetch it "
+                    "Help > Download Optional Components to fetch it "
                     "(about 8 MB, verified), or place whisper-cli under "
                     "tools/speech/whispercpp."
                 ),

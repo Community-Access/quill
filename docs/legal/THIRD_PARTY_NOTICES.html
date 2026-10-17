@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Third-Party Notices</title>
   <style>
@@ -11,7 +11,10 @@
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -36,11 +39,16 @@
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -53,11 +61,8 @@
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -86,8 +91,11 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -111,7 +119,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -128,11 +136,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -171,7 +179,6 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -334,6 +341,54 @@ href="https://github.com/quodlibet/mutagen">https://github.com/quodlibet/mutagen
 document-to-speech and Build-Audiobook features
 (<code>quill/core/speech/chapters.py</code>). Imported lazily and only
 when MP3 chapter output is requested.</li>
+</ul>
+<hr />
+<h2 id="ffmpeg-ffmpegexe-and-ffprobeexe">FFmpeg (ffmpeg.exe and
+ffprobe.exe)</h2>
+<ul>
+<li><strong>Shipped in:</strong> Quill Converter, Quill Radio, Audio
+Studio and Quill Cast (installers and portable copies, in
+<code>tools\ffmpeg</code>), the QUILL Offline Edition, and QUILL’s own
+on-demand “get FFmpeg” install. Redistributed unmodified and run as
+separate programs.</li>
+<li><strong>Build:</strong> FFmpeg 8.1.2, gyan.dev “essentials” build
+for 64-bit Windows, SHA-256 pinned
+(<code>quill/core/speech/ffmpeg_install.py</code>)</li>
+<li><strong>Upstream:</strong> <a
+href="https://ffmpeg.org">https://ffmpeg.org</a> (source: <a
+href="https://ffmpeg.org/releases/ffmpeg-8.1.2.tar.xz">https://ffmpeg.org/releases/ffmpeg-8.1.2.tar.xz</a>)</li>
+<li><strong>License:</strong> GPL-3.0-or-later. This build is configured
+with <code>--enable-gpl --enable-version3</code>; <code>ffmpeg -L</code>
+prints the same notice.</li>
+<li><strong>Licence text and source offer:</strong>
+<code>quill/data/notices/ffmpeg/LICENSE.GPLv3.txt</code> and
+<code>README-SOURCE.txt</code>. Both are copied beside every
+<code>ffmpeg.exe</code> a build ships;
+<code>scripts/check_ffmpeg_notices.py</code> fails the build otherwise,
+and the installers name both files so they cannot compile without
+them.</li>
+</ul>
+<hr />
+<h2 id="libmpv-libmpv-2dll">libmpv (libmpv-2.dll)</h2>
+<ul>
+<li><strong>Shipped in:</strong> Quill Converter, Quill Radio and Audio
+Studio, in <code>tools\mpv</code></li>
+<li><strong>Build:</strong> shinchiro mpv-winbuild, pinned in
+<code>quill/core/release_assets.py</code></li>
+<li><strong>License:</strong> GPL-3.0 as built (mpv itself is
+GPL-2.0-or-later). The licence texts and source offer from the pinned
+pack ship beside the DLL.</li>
+</ul>
+<hr />
+<h2 id="deno-denoexe">Deno (deno.exe)</h2>
+<ul>
+<li><strong>Shipped in:</strong> Quill Radio and Quill Converter, in
+<code>tools\deno</code>, for yt-dlp’s YouTube challenges</li>
+<li><strong>Upstream:</strong> <a
+href="https://github.com/denoland/deno">https://github.com/denoland/deno</a>
+(pinned in <code>scripts/fetch_build_deps.py</code>)</li>
+<li><strong>License:</strong> MIT. Deno’s own licence text ships beside
+it as <code>DENO-LICENSE.txt</code>.</li>
 </ul>
 <hr />
 <h2 id="chapterforge-approach-credit">ChapterForge (approach

@@ -153,6 +153,11 @@ class DocumentSourcesMixin:
     # ------------------------------------------------------------------ #
 
     def _can_reopen_with_encoding(self) -> bool:
+        from quill.apps.lite_window_pdf import is_read_only_source
+
+        # A PDF's bytes are not text in any code page; its text came from a reader.
+        if is_read_only_source(self.path):
+            return False
         return self.path is not None and Path(self.path).is_file()
 
     def reopen_with_encoding(self, codec: str) -> None:

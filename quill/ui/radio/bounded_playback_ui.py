@@ -28,8 +28,8 @@ NO_CHAPTERS = "This video has no chapters."
 CHAPTERS_TITLE = "Chapters"
 GO_TO_POSITION_TITLE = "Go to Position"
 
-#: Skip step for the forward/back commands.
-SKIP_MS = 30_000
+#: The forward/back step is no longer one number: see quill.core.radio.tiered_seek
+#: (12 seconds a tap, a minute for two, five for three or more, 5 a repeat held).
 
 #: The speed steps, so stepping up and down lands on round, speakable values
 #: rather than drifting by a multiplier.
@@ -138,21 +138,21 @@ def _refuse(host: Any) -> bool:
 
 
 def skip_forward(host: Any) -> None:
-    """Jump forward through a finished video."""
+    """Jump forward through a finished video: further for each quick tap."""
     if _refuse(host):
         return
-    controller = _controller(host)
-    controller.skip_by(SKIP_MS)
-    host._announce(describe_position(controller))
+    from quill.ui.radio import tiered_seek_ui
+
+    tiered_seek_ui.press(host, 1, tiered_seek_ui.apply_timeline)
 
 
 def skip_back(host: Any) -> None:
-    """Jump back through a finished video."""
+    """Jump back through a finished video: further for each quick tap."""
     if _refuse(host):
         return
-    controller = _controller(host)
-    controller.skip_by(-SKIP_MS)
-    host._announce(describe_position(controller))
+    from quill.ui.radio import tiered_seek_ui
+
+    tiered_seek_ui.press(host, -1, tiered_seek_ui.apply_timeline)
 
 
 def announce_position(host: Any) -> None:

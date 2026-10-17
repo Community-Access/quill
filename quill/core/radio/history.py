@@ -274,6 +274,11 @@ class RadioHistory:
     #: Volume Boost (mpv engine): amplify up to 50% past 100 for quiet
     #: streams. No effect on the wx.media engine, which caps at 100.
     volume_boost: bool = False
+    #: How long the live time-shift buffer is, in minutes (xradio2.md 4.3):
+    #: pause and rewind live radio this far back. On disk in the machine-local
+    #: cache, capped in bytes and removed on exit; 0 keeps the old in-memory
+    #: buffer (about 45 minutes). See quill.core.radio.timeshift.
+    timeshift_minutes: int = 60
     #: Last volume level (0-100) the listener set, remembered across sessions so
     #: stations don't all come back at full blast on the next launch (#1263).
     #: -1 means "never set" -- the controller keeps its own default.

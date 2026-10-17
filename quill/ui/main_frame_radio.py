@@ -783,6 +783,9 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         self._radio_track_history_and_volume(state)
         # Time only counts while audio is actually coming out (stats_session).
         stats_session.on_state_changed(self, state)
+        from quill.ui.radio.second_output_ui import follow  # a second device, if in use
+
+        follow(self, state)
         self._radio_track_titles_follow_playback(state)
         self._radio_maybe_try_fallback_url(state)
         # The one transition that is spoken rather than cued: a reconnect.
@@ -1196,43 +1199,21 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
     # -- live DVR (mpv engine): rewind / forward / back to live -----------------
 
     def radio_rewind(self) -> None:
-        """Back 30 seconds -- along the video's timeline, or within the live buffer."""
-        if self._radio_seek_bounded(-1):
-            return
-        behind = self._radio_controller.rewind(30)
-        if behind is None:
-            self._announce(self._radio_dvr_unavailable_message())
-            return
-        self._announce(f"Rewound 30 seconds. {self._radio_behind_live_phrase(behind)}")
+        """Back along the video's timeline or the live buffer; taps go further.
+
+        One tap 12 seconds, two a minute, three five minutes, a hold 5 seconds a
+        repeat (quill.core.radio.tiered_seek). A finished video moves along its
+        own timeline, never "behind live" (A-10); see tiered_seek_ui.
+        """
+        from quill.ui.radio import tiered_seek_ui
+
+        tiered_seek_ui.press_main(self, -1)
 
     def radio_forward(self) -> None:
-        """Forward 30 seconds -- along the timeline, or back toward the live edge."""
-        if self._radio_seek_bounded(1):
-            return
-        behind = self._radio_controller.forward(30)
-        if behind is None:
-            self._announce(self._radio_dvr_unavailable_message())
-            return
-        self._announce(f"Forward 30 seconds. {self._radio_behind_live_phrase(behind)}")
+        """Forward along the timeline, or back toward the live edge; taps go further."""
+        from quill.ui.radio import tiered_seek_ui
 
-    def _radio_seek_bounded(self, direction: int) -> bool:
-        """Take the seek keys when a finished video is playing. True if taken.
-
-        A live stream's DVR seek moves within mpv's *cache* and reports how
-        far behind the live edge you are; a finished video has a real
-        timeline. Sending a video down the DVR path announced a distance
-        behind a live edge that does not exist -- a fabricated measurement
-        (A-10) on the one source where the honest number was available.
-        """
-        if not self._radio_controller.is_seekable():
-            return False
-        from quill.ui.radio import bounded_playback_ui
-
-        if direction > 0:
-            bounded_playback_ui.skip_forward(self)
-        else:
-            bounded_playback_ui.skip_back(self)
-        return True
+        tiered_seek_ui.press_main(self, 1)
 
     def radio_jump_to_live(self) -> None:
         """Return to the live edge of the stream."""

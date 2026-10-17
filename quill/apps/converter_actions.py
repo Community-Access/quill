@@ -104,6 +104,22 @@ class ConverterActionsMixin:
             f"Chapters: {chapters.lower()}"
         )
 
+    def _on_custom_effects(self, _event: Any) -> None:
+        """Custom Effects (Ctrl+E), seeded with what the Effects choice means now."""
+        from quill.ui.converter_dialogs import edit_effects
+
+        recipe = recipe_by_id(self._chosen_effect_id())
+        base = recipe.dsp if recipe is not None else self._settings.custom_effects
+        edited = edit_effects(
+            self, base, start_s=self._settings.start_s, end_s=self._settings.end_s
+        )
+        if edited is None:
+            return
+        self._settings.custom_effects, self._settings.start_s, self._settings.end_s = edited
+        self._effect.SetSelection(self._effect_ids.index(CUSTOM_RECIPE_ID))
+        self._remember()
+        self._announce(f"Custom effects set: {self.describe_choices()}.")
+
     def _destination(self) -> Path:
         dest = self._dest.GetValue().strip()
         if dest:
@@ -473,8 +489,9 @@ class ConverterActionsMixin:
             f"{_TITLE} {_version()}\n\n"
             "Convert audio and video between formats -- sound to sound, video to "
             "sound, and video to video -- with presets, effects you can preview, "
-            "Join into One File and Split by Chapters. Everything happens on this "
-            "computer; nothing is uploaded.\n\n"
+            "Join into One File and Split by Chapters. Converting happens on this "
+            "computer; nothing is uploaded unless you choose Process with Auphonic "
+            "and confirm.\n\n"
             "Includes FFmpeg (LGPL/GPL), yt-dlp (Unlicense) and mutagen (GPL).\n\n"
             "Support: support@community-access.org",
             f"About {_TITLE}",

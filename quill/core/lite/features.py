@@ -83,8 +83,9 @@ AREAS: tuple[AppArea, ...] = (
         "Language. With this on, Bold, Italic, Underline and the heading keys "
         "write markup in a .md or .html file instead of refusing -- two "
         "asterisks, or a <strong>. Turn it off to keep those keys meaning rich "
-        "text and nothing else. The caret still says what list you are in "
-        "either way: that is a separate switch, on Ctrl+Alt+F5.",
+        "text and nothing else. With it on, Enter in a Markdown list starts the "
+        "next item. The caret still says what list you are in either way: that "
+        "is a separate switch, on Ctrl+Alt+F5.",
     ),
     AppArea(
         "bookmarks",
@@ -159,9 +160,10 @@ AREAS: tuple[AppArea, ...] = (
         # else. A feature list that describes a rule the code does not have is
         # worse than one that describes nothing -- somebody turns the area on to
         # get the capitals and concludes the app is broken (bad.md T2).
-        "Curly quotes and em dashes. Welcome in prose and actively wrong in a "
-        "configuration file, which is why it starts switched off. It does not "
-        "capitalise sentences.",
+        "Curly quotes, em dashes, and correcting common misspellings such as teh "
+        "as you type, each with its own checkbox in Preferences. Welcome in prose "
+        "and actively wrong in a configuration file, which is why it starts "
+        "switched off. It does not capitalise sentences.",
     ),
     AppArea(
         "backups",
@@ -179,11 +181,13 @@ AREAS: tuple[AppArea, ...] = (
     ),
     AppArea(
         "matches",
-        "The Matches submenu",
+        "Matches and wider searches",
         "Edit > Matches: list every occurrence of what you searched for in one "
-        "window, and count them. Find, Find Next and Replace stay available "
-        "either way -- this is the part that answers 'how many' and 'where "
-        "else' rather than 'take me to the next one'.",
+        "window, and count them. With them go Find in Open Documents, Search in "
+        "Files and Replace Across Files, which are rows of the Edit menu itself. "
+        "Find, Find Next and Replace stay available either way -- this is the "
+        "part that answers 'how many' and 'where else' rather than 'take me to "
+        "the next one'.",
     ),
     AppArea(
         "history",

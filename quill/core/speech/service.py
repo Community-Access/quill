@@ -17,8 +17,11 @@ from quill.core.paths import app_data_dir
 from quill.core.speech.provider import SpeechModelInfo, SpeechToTextProvider
 from quill.core.speech.registry import SpeechProviderRegistry
 from quill.core.storage import read_json, write_json_atomic
+from quill.core.windows_dictation.model_types import legacy_tier
 
 DEFAULT_PROVIDER_ID = "whispercpp"
+#: Every local sherpa-onnx model, from the family's one store (dict.md D-26).
+SHARED_PROVIDER_ID = "sherpa"
 
 
 def _prefs_path() -> object:
@@ -77,21 +80,15 @@ def default_registry(executable_path: str | None = None) -> SpeechProviderRegist
     except Exception:  # noqa: BLE001 - an optional engine must never break the registry
         pass
 
+    # Every local sherpa-onnx model -- the built-in Moonshine and Whisper and
+    # every download -- from the family's one model store (dict.md D-26). It
+    # replaced the Nemotron and Parakeet engines and their second model folder.
     try:
-        from quill.core.speech.providers.nemotron_onnx import NemotronOnnxProvider
+        from quill.core.speech.providers.sherpa_shared import SherpaSharedProvider
 
-        nemotron = NemotronOnnxProvider()
-        if nemotron.is_available():
-            registry.register(nemotron)
-    except Exception:  # noqa: BLE001 - an optional engine must never break the registry
-        pass
-
-    try:
-        from quill.core.speech.providers.parakeet_onnx import ParakeetOnnxProvider
-
-        parakeet = ParakeetOnnxProvider()
-        if parakeet.is_available():
-            registry.register(parakeet)
+        shared = SherpaSharedProvider()
+        if shared.is_available():
+            registry.register(shared)
     except Exception:  # noqa: BLE001 - an optional engine must never break the registry
         pass
 
@@ -115,25 +112,42 @@ def preferred_dictation_provider_id(registry: SpeechProviderRegistry, chosen: st
        ``settings.speech_provider``) is honoured verbatim when that provider is
        registered — preferring anything over an explicit setting would make the
        engine radio a lie.
-    2. **Parakeet 3, when its model is installed.** A transducer emits tokens
-       only for audio evidence, so it never invents text from silence — the
-       Whisper failure a dictation user actually meets ("thank you" typed into
-       the document after a quiet pause). It also detects its own language
-       across 25, and avoids whisper.cpp's documented GPU crash class by being
-       CPU-only. This was studied against the Handy project's production
-       experience (D:\\code\\handy) before the switch was made.
-    3. **whisper.cpp**, the bundled default: works before any large download.
+    2. **The shared models, when Parakeet 3 is installed** (``sherpa``, which
+       then transcribes with Parakeet: its installed list is most accurate
+       first). A transducer emits tokens only for audio evidence, so it never
+       invents text from silence — the Whisper failure a dictation user
+       actually meets ("thank you" typed into the document after a quiet
+       pause). It also detects its own language across 25, and avoids
+       whisper.cpp's documented GPU crash class by being CPU-only. This was
+       studied against the Handy project's production experience
+       (D:\\code\\handy) before the switch was made.
+    3. **whisper.cpp**, the bundled default, when it has a model.
+    4. **The shared models** with the built-in Moonshine tiny, when whisper.cpp
+       has none: so a fresh install dictates at once, with no download, and
+       removing whisper.cpp leaves offline dictation working (dict.md D-26).
 
     The ladder promotes Parakeet only after the user has *installed* its model
-    — an explicit, reversible act — so a fresh install still dictates with
-    whisper.cpp immediately, and nobody is surprised by a 650 MB download.
+    — an explicit, reversible act — and nobody is surprised by a 650 MB download.
     """
     if chosen and chosen not in CHAPTER_ONLY_PROVIDER_IDS and registry.get(chosen) is not None:
         return chosen
+    shared = registry.get(SHARED_PROVIDER_ID)
     try:
-        parakeet = registry.get("parakeet")
-        if parakeet is not None and parakeet.list_installed_models():
-            return "parakeet"
+        if shared is not None and any(
+            model.id == "parakeet" for model in shared.list_installed_models()
+        ):
+            return SHARED_PROVIDER_ID
+    except Exception:  # noqa: BLE001 - a probing failure must never block dictation
+        pass
+    try:
+        whisper_cpp = registry.get(DEFAULT_PROVIDER_ID)
+        if (
+            shared is not None
+            and whisper_cpp is not None
+            and not whisper_cpp.list_installed_models()
+        ):
+            if shared.list_installed_models():
+                return SHARED_PROVIDER_ID
     except Exception:  # noqa: BLE001 - a probing failure must never block dictation
         pass
     return DEFAULT_PROVIDER_ID
@@ -251,6 +265,26 @@ def machine_summary(total_ram_gb: float, has_gpu: bool) -> str:
     return f"Your computer: {total_ram_gb:.1f} GB RAM and {gpu}."
 
 
+def recommendation_reason(total_ram_gb: float, has_gpu: bool) -> str:
+    """Why :func:`recommend_model_id` picked what it did, in a plain sentence
+    (D-22: a recommendation always says why). Follows the same memory bands."""
+    if total_ram_gb <= 0:
+        return "This computer's memory could not be measured, so a mid-sized model is a safe start."
+    if total_ram_gb < 3:
+        why = "with under 3 GB, the lightest model leaves room for your screen reader."
+    elif total_ram_gb < 6:
+        why = "a light model fits comfortably in this much memory beside your screen reader."
+    elif total_ram_gb < 12:
+        why = "a mid-sized model fits in this much memory without slowing the computer."
+    elif total_ram_gb < 16:
+        why = "a larger, more accurate model fits in this much memory."
+    elif has_gpu:
+        why = "the largest, most accurate model is practical with a graphics card."
+    else:
+        why = "without a graphics card the largest model would be slow, so one size down."
+    return f"{machine_summary(total_ram_gb, has_gpu)} So {why}"
+
+
 def recommend_model_id(model_ids: list[str], total_ram_gb: float, has_gpu: bool) -> str:
     """Pick the best-fit model id for this machine from those the provider offers.
 
@@ -284,7 +318,15 @@ def recommend_model_id(model_ids: list[str], total_ram_gb: float, has_gpu: bool)
 #: dictation): the small, fast Whisper tiers first. Commands are a few words, so
 #: low latency matters far more than the accuracy of the heavier models, and the
 #: small models (Tiny 75 MB / Base 145 MB / Small 465 MB) are more than enough.
-_COMMAND_MODEL_PREFERENCE = ("base", "tiny", "small", "small.en-tdrz", "medium", "large-v3")
+_COMMAND_MODEL_PREFERENCE = (
+    "moonshine",  # the shared models' fastest, built in (D-26); no whisper.cpp id clashes
+    "base",
+    "tiny",
+    "small",
+    "small.en-tdrz",
+    "medium",
+    "large-v3",
+)
 
 
 def preferred_command_model(model_ids: list[str]) -> str:
@@ -368,6 +410,9 @@ def describe_models(
         has_gpu = detect_has_gpu()
     supported = list(provider.list_supported_models())
     recommended_id = recommend_model_id([m.id for m in supported], total_ram_gb, has_gpu)
+    shared = getattr(provider, "id", "") == SHARED_PROVIDER_ID
+    if shared:  # the dictation catalogue: D-22's recommendation, the same one Choose Model gives
+        recommended_id = _shared_recommendation() or recommended_id
     installed_ids = {m.id for m in provider.list_installed_models()}
     rows: list[ModelRow] = []
     for info in supported:
@@ -388,7 +433,14 @@ def describe_models(
         if info.approximate_size_mb >= 1500 and not has_gpu:
             gpu_note = "No GPU detected; expect slow transcription on the CPU."
         recommended = info.id == recommended_id
-        rec_note = " Recommended for your computer." if recommended else ""
+        tier = (_shared_tier(info.id) if shared else "") or legacy_tier(
+            info.id, info.approximate_size_mb, info.accuracy_tier
+        )
+        rec_note = (
+            f" Recommended for your computer: {recommendation_reason(total_ram_gb, has_gpu)}"
+            if recommended
+            else ""
+        )
         license_name = info.license_name or ""
         license_note = f" {license_name} licensed." if license_name else ""
         # Capabilities, spoken plainly *before* download so the picker promises
@@ -400,7 +452,7 @@ def describe_models(
         # "Not installed" before the long descriptor (#669 follow-up): users were
         # not registering the buried mid-label state.
         label = (
-            f"{state}: {info.display_name} — {_size_text(info.approximate_size_mb)} "
+            f"{state}: {info.display_name}, {tier} — {_size_text(info.approximate_size_mb)} "
             f"download — {info.accuracy_tier} accuracy, {info.speed_tier} speed. "
             f"{info.recommended_use}{capability_note} {ram_note}"
             f"{(' ' + gpu_note) if gpu_note else ''}{rec_note}{license_note}"
@@ -422,6 +474,22 @@ def describe_models(
     return rows
 
 
+def _shared_tier(model_id: str) -> str:
+    from quill.core.windows_dictation.model_advice import engine_tier
+
+    return engine_tier(model_id)
+
+
+def _shared_recommendation() -> str:
+    """D-22's model for this computer, or ``""`` when it cannot be worked out."""
+    try:
+        from quill.core.windows_dictation.model_advice import for_this_computer
+
+        return for_this_computer().model_id
+    except Exception:  # noqa: BLE001 - no recommendation is better than a broken list
+        return ""
+
+
 def model_card_url(download_url: str | None) -> str:
     """Best-effort Hugging Face model-card URL from a model's download source.
 
@@ -434,7 +502,7 @@ def model_card_url(download_url: str | None) -> str:
     marker = "huggingface.co/"
     if marker in src:
         rest = src.split(marker, 1)[1]
-        repo = rest.split("/resolve/", 1)[0].strip("/")
+        repo = rest.split("/resolve/", 1)[0].split("/tree/", 1)[0].strip("/")
         return f"https://huggingface.co/{repo}" if repo else ""
     if "/" in src and not src.lower().startswith("http"):
         return f"https://huggingface.co/{src.strip('/')}"

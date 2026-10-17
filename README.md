@@ -53,9 +53,11 @@ small -- and the three silently broken speech engines found on the way --
 is told in plain English in
 [the runtime layering retrospective](docs/engineering/2026-08-18-runtime-layering-retrospective.md).
 
-The [Quillin Hub](https://hub.quillforall.org) hosts community-created
-extensions (Quillins) -- from research tools to accessibility auditors --
-verified for security and WCAG 2.2 AA compliance.
+The Quillin Hub, a community store for extensions (Quillins) -- from
+research tools to accessibility auditors -- verified for security and WCAG
+2.2 AA compliance, is not open yet. Until it is, Tools, then Quillins, then
+Submit to Quillin Hub runs the Hub's checks on your own computer, so an
+artifact that passes is ready on the day the Hub opens.
 
 ## The editions: two ways to get one app
 

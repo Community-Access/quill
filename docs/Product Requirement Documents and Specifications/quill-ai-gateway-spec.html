@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILL free hosted AI: Luna 6, the two editors, and the gateway
 that already exists</title>
@@ -12,7 +12,10 @@ that already exists</title>
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -37,11 +40,16 @@ that already exists</title>
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -54,11 +62,8 @@ that already exists</title>
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -87,8 +92,11 @@ that already exists</title>
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -112,7 +120,7 @@ that already exists</title>
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -129,11 +137,11 @@ that already exists</title>
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -172,7 +180,6 @@ that already exists</title>
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
     /* CSS for syntax highlighting */
     html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
@@ -757,6 +764,58 @@ once.</li>
 <p>The client reads its thresholds from <code>GET /v1/config</code> once
 per session, so an admin raising a limit takes effect without a client
 release.</p>
+<p>The same answer carries the <strong>feature catalogue</strong>
+(<code>features</code>, 2026-10): one entry per shipped feature whose
+flag is on, with its <code>id</code>, <code>label</code>, one-sentence
+<code>help</code>, <code>input</code> kind (<code>selection</code>,
+<code>prompt</code>, <code>document</code> or <code>conversation</code>)
+and <code>max_input_tokens</code>. The client
+(<code>quill/core/ai/gateway_catalogue.py</code>) validates every field
+as remote input, skips an input kind it does not know, and offers each
+entry it does not already have built in as a row at the end of the AI
+Assistant pad’s list (<code>quill/ui/hosted_ai_pad_catalogue.py</code>),
+with the <code>help</code> as the row’s F1 text and the ordinary Send
+path. So a new text tool is a template and a catalogue entry in
+<code>app/prompts.py</code> and needs no client release. It is offered
+on the free service only, because its instructions live there. No new
+call: the catalogue rides on the existing <code>/v1/config</code>
+fetch.</p>
+<p><strong>Web search (2026-10-15), built and switched off.</strong>
+<code>web_search</code> is the one feature in
+<code>app/prompts.py::OPT_IN_FEATURES</code>: built and tested, seeded
+with its flag <strong>off</strong> (migration 009,
+<code>flask seed-config</code>), and a missing flag row refuses it with
+its own sentence rather than defaulting on. An operator turns it on from
+the Features page once the global budget has room. While on:</p>
+<ul>
+<li>It goes through <code>app/openai_client.py::search</code>, never
+<code>complete</code>, with its own body allowlist
+<code>SEARCH_BODY_KEYS</code> (the ordinary four minus
+<code>reasoning_effort</code>, plus <code>web_search_options</code>,
+sent empty). <code>ALLOWED_BODY_KEYS</code> is unchanged, so no other
+feature can carry a search. The model is
+<code>GATEWAY_OPENAI_SEARCH_MODEL</code> (default
+<code>gpt-4o-mini-search-preview</code>).</li>
+<li>Each account gets <code>WEB_SEARCH_MONTHLY_CAP</code> (10, a server
+constant in <code>app/limits.py</code>) searches a month: the fail-safe
+and seed of <code>feature_cap.web_search</code>, which the Limits page
+can move. Each search is also an ordinary counted request.</li>
+<li>The provider’s per-search charge, reckoned at
+<code>WEB_SEARCH_CALL_COST_USD</code> ($0.03), is added to the usage
+event and the global budget, but <strong>not</strong> to the person’s
+monthly cost ceiling (sized for text requests, it would close every
+other feature after three searches); the search cap bounds it. At ten
+searches the worst case per active person rises by about $0.30 a
+month.</li>
+<li><code>GET /v1/config</code> carries
+<code>web_search: {"enabled", "monthly_cap"}</code> always, and a
+<code>Search the web</code> catalogue row (input <code>prompt</code>)
+while it is on, so both editors’ pads offer it with no release.
+<code>GET /v1/quota</code> carries <code>web_search_monthly_cap</code>
+(this account’s, after any override) and <code>web_searches_used</code>.
+QUILL and QUILL Lite’s <strong>Web Searches Left</strong>
+(<code>Ctrl+9</code>) reads both.</li>
+</ul>
 <h3
 id="53-reasoning-effort-is-a-code-constant-per-feature-at-the-floor">5.3
 Reasoning effort is a code constant, per feature, at the floor</h3>

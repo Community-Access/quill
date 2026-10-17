@@ -106,9 +106,15 @@ class ReminderMonitor:
             # has already turned their attention by the time the sentence
             # starts.
             self._cue()
-            said = reminders.announcement(reminder, now)
+            # A station reminder also says the listener's own note on that
+            # station, so "only the first hour is worth it" arrives at the
+            # moment it is useful rather than waiting in the details pane.
+            said = reminders.announcement(
+                reminder, now, station_note=reminders.station_note(data_dir, reminder)
+            )
             self._announce(said)
             self._toast(reminder, said)
+            self._notice(reminder, said)
             reminders.mark_fired(data_dir, reminder.reminder_id, now=now)
             spoken += 1
         return spoken
@@ -156,6 +162,28 @@ class ReminderMonitor:
             on_action=lambda: self._go_there(reminder),
             keep=True,
         )
+
+    def _notice(self, reminder: Any, said: str) -> None:
+        """Keep the reminder in the notification centre too.
+
+        The speech is gone once said and the toast once dismissed; the centre
+        is where somebody who was away from the computer finds out a reminder
+        went off. Tune-in reminders never reached it until 2026-10-15, while
+        new episodes and channel alerts always had. A station reminder keeps
+        its stream, so Enter on the row plays it; other kinds have nowhere to
+        go from the centre. Best-effort: the reminder has already been said.
+        """
+        from quill.core import notification_targets
+        from quill.core.notifications import add_notice
+        from quill.core.radio import reminders
+
+        target = ""
+        if reminder.kind == reminders.KIND_STATION and reminder.target:
+            target = notification_targets.for_stream(reminder.target)
+        try:
+            add_notice(app="Quill Radio", title="Reminder", body=said, target=target)
+        except Exception:  # noqa: BLE001 - the reminder was still spoken and shown
+            pass
 
     def _go_there(self, reminder: Any) -> None:
         """Open what the reminder was about, and say what happened either way.

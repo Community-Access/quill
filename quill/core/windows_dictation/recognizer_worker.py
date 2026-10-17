@@ -20,6 +20,8 @@ when the 2026-10-05 pass gave the worker four new duties:
   waits longer than the engine can clear it, a downloaded model gives way to
   Moonshine for the rest of the session and the listener is told why, once.
 * **Idle unloading**: :mod:`keep_up` again, from ``stop``.
+* **A second opinion** (:meth:`WorkerMixin.second_opinion`, D-19): the last
+  phrase's audio decoded again by the other built-in engine, on demand.
 
 Every result still crosses to the UI thread only through ``post``.
 """
@@ -66,6 +68,8 @@ class WorkerMixin:
     _finish_requested: Any = None
     _watchdog: Any = None
     _last_partial: str = ""
+    #: The command word's keyword spotter (kws_keywords.KeywordGate), or ``None``.
+    keyword_gate: Any = None
 
     def _lose_microphone(self) -> None:  # provided by the recogniser
         raise NotImplementedError
@@ -121,6 +125,8 @@ class WorkerMixin:
                     continue
                 history.add(chunk)
                 vad.accept_waveform(chunk)
+                if self.keyword_gate is not None:
+                    self._spot(chunk)
                 speaking = bool(vad.is_speech_detected())
                 if speaking and not was_speaking:
                     self._post(self._listener.on_speech_started)
@@ -175,12 +181,27 @@ class WorkerMixin:
                 )
             if generation != self._generation:
                 continue  # Escape was pressed while this was being decoded
+            heard = self.keyword_gate.take() if self.keyword_gate is not None else None
             if (text or mark) and self._running.is_set():
                 self._post(
                     self._listener.on_phrase,
-                    RecognizedPhrase(words_from_text(text), text=text, previous_mark=mark),
+                    RecognizedPhrase(
+                        words_from_text(text),
+                        text=text,
+                        previous_mark=mark,
+                        keyword_heard=heard,
+                        audio=samples,
+                    ),
                 )
         return any_done
+
+    def _spot(self, chunk: Any) -> None:
+        """The keyword spotter (D-27), on the same audio after the reader gate. A
+        spotter that fails is dropped: the text matcher works alone."""
+        try:
+            self.keyword_gate.accept(chunk)
+        except Exception:  # noqa: BLE001 - spotting is a refinement, never a blocker
+            self.keyword_gate = None
 
     def _finish_now(self, vad: Any, history: Any) -> None:
         """Flush the detector, recognise what was left, then report finished."""
@@ -270,6 +291,25 @@ class WorkerMixin:
             with lr._cache_lock:
                 lr._recognizers.pop((self._engine, self._language), None)
             return str(lr.transcribe(self._engine, samples, self._language))
+
+    def second_opinion(self, samples: Any, engine: str, done: Any) -> None:
+        """ "correct that" with an engine that gives one answer (D-19): decode the
+        last phrase's audio again with *engine*, on a thread of its own, and post
+        ``done(text)`` -- ``""`` when it heard nothing or could not load. Memory
+        only: the samples are the phrase's, and nothing is written anywhere."""
+        import threading
+
+        lr = _lr()
+        language = self._language
+
+        def run() -> None:
+            try:
+                text = str(lr.transcribe(engine, samples, language))
+            except Exception:  # noqa: BLE001 - no second opinion is an answer too
+                text = ""
+            self._post(done, text)
+
+        threading.Thread(target=run, name="dictation-second-opinion", daemon=True).start()
 
     def _drain(self) -> None:
         while True:

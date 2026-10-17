@@ -373,7 +373,7 @@ These preferences are stored in a small app-local file, so the shared settings Q
 Audio Studio makes short sounds of its own, such as the ones that mark a narration run starting and finishing. You choose where they play, and you can turn them off.
 
 - **Alt+Shift+M** turns Audio Studio's sounds off. Press it again and they come back, on the same sound card as before. You hear a short sound as they go off, and another where they now play when they come back on, and both are spoken too. **Studio > App Sounds** has a check mark that shows whether they are on.
-- **Studio > Preferences (Ctrl+,) > App Sounds Play On...** lets you pick where they play:
+- **App Sounds Play On...**, a button in the Preferences window, lets you pick where they play. Open **Studio > Preferences...** (Ctrl+,), press Tab until you reach the button, and press Space. It is a button rather than a menu row, so it has no key of its own. The choices are:
   - **System default**. This is where it starts. The sounds go where Windows sends sound.
   - **None (no sounds)**. Audio Studio makes no sounds at all. Everything it tells you is still spoken.
   - **Any sound card or headset in the list.** The sounds get a device of their own.
@@ -444,8 +444,9 @@ All the Quill apps are published from one place, and each one recognizes its own
 | Media Previous chapter (when a Workbench is open) | Media key |
 | Studio menu | Alt+S |
 | Book Tools menu | Alt+B |
-| Voices menu | Alt+V |
+| Voices menu | Alt+I |
 | AI menu | Alt+A |
+| View menu | Alt+V |
 | Help menu | Alt+H |
 
 Every button and field in the wizard, the Workbench, and the dialogs also has an access key (underlined letter), reachable with Alt plus that letter while the surface has focus.
@@ -493,7 +494,7 @@ using and what happened.
 Two Help items are worth knowing before anything else goes wrong. **Help > View Log...** opens the Studio's own log, so you can read what happened during a run instead of guessing. **Help > Save Diagnostics...** writes a small, redacted zip - the log plus what the Studio can tell about your machine and settings, with anything private scrubbed - which is exactly what to attach to a bug report. **Help > Get Help from Support...** (Ctrl+Alt+F2) writes to a person for you, already tagged with this app's name and version.
 
 - **"The ACX check measures loudness with FFmpeg, which looks missing."** Choose **Voices > Get FFmpeg...** The same applies if compressed output formats fall back to WAV, audiobook assembly fails, or silence detection cannot run - all of those are ffmpeg's jobs. The packaged installer and portable zip bundle ffmpeg; this mostly affects source checkouts.
-- **An engine shows "(not installed)" in the wizard.** Open **Voices > Speech Hub** and use the download button on that engine's tab, or **Voices > Download Optional Components...** DECtalk, Piper, eSpeak-NG, and the Kokoro models all install on demand.
+- **An engine shows "(not installed)" in the wizard.** Open **Voices > Speech Hub** and use the download button on that engine's tab, or use **Voices > Download Optional Components...** instead: DECtalk, Piper, eSpeak-NG, and the Kokoro models all install on demand.
 - **The Preview voice button says "Download this voice to hear a preview."** No bundled sample ships for that voice and its engine is not installed yet; download the engine or voice first.
 - **A Piper voice is selected but will not speak.** The voice model has not been downloaded; the Speech Hub's Download Voice button fetches it.
 - **A book in Your books is marked "(missing)".** The file was moved or renamed. Open it from its new location with Ctrl+O (the list updates), or press Delete to drop the stale entry.

@@ -213,6 +213,11 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin):
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_weather_tutorials(), id=tutorials_id)
         help_menu.Append(guide_id, "&User Guide...\tCtrl+Alt+G")
         help_menu.Append(notes_id, "&Release Notes...\tCtrl+Alt+R")
+        # The roadmap the guide's "What's coming later" points to, on the PRD key
+        # of Quill Radio's and Quill Converter's Help menus (Alt+Shift+F1).
+        prd_id = wx.NewIdRef()
+        help_menu.Append(prd_id, "Pro&duct Requirements...\tAlt+Shift+F1")
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_weather_doc("prd"), id=prd_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_weather_doc("userguide"), id=guide_id)
         self.frame.Bind(
             wx.EVT_MENU, lambda _e: self._open_weather_doc("release-notes-2.2.1"), id=notes_id
@@ -223,6 +228,11 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin):
         help_menu.Append(repeat_id, "Re&peat Last Result\tF9")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_activity(), id=activity_id)
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.repeat_last_result(), id=repeat_id)
+        # Every weather verb is registered by name (weather_commands.py); this is
+        # the door to them, on the family's palette key. P is Repeat, so M.
+        palette_id = wx.NewIdRef()
+        help_menu.Append(palette_id, self._menu_label("Co&mmand Palette...", "app.command_palette"))
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_command_palette(), id=palette_id)
         help_menu.AppendSeparator()
         updates_id = wx.NewIdRef()
         help_menu.Append(updates_id, "&Check for Updates...\tCtrl+Alt+U")
@@ -260,8 +270,10 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin):
             tutorials_id,
             guide_id,
             notes_id,
+            prd_id,
             activity_id,
             repeat_id,
+            palette_id,
             updates_id,
             about_id,
         )

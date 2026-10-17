@@ -247,8 +247,25 @@
 <code>docs/release-notes-3.2.md</code> (Help &gt; Release Notes,
 Shift+F1) for the fuller narrative version of the latest release.</p>
 <h2 id="unreleased">[Unreleased]</h2>
-<p>Testing rebuild: 3.2.0 (build 3).</p>
+<p>Testing rebuild: 3.2.0 (build 4).</p>
 <ul>
+<li><strong>Quill Radio’s own sounds play on the radio’s sound
+card.</strong> The sounds for connecting, playing, stopped, stream
+errors, recording started and stopped, and reminders now go to the same
+device as the radio, so if you send the station to a broadcast card you
+can hear on that card that you are on air. They follow every change:
+Preferences, Audio &gt; Output Device (Ctrl+Shift+D), and Quill Radio
+putting the radio back on a device that works. <strong>Preferences &gt;
+App Sounds Play On…</strong> offers Same as its audio (the default,
+which names that device), System default (the old behavior), None (no
+sounds), or any sound card or headset. After a change you hear one sound
+on the new device. An unplugged device never silences anything: the
+sounds play on the system default, Quill Radio says so once, and they go
+back by themselves when it returns. <strong>Alt+Shift+M</strong>
+(<strong>Audio &gt; App Sounds</strong>) turns them off and back on, the
+same key in every QUILL app. Your screen reader is never moved. Reported
+on QUILLVille by Rick Lewis. User guide: “Where Quill Radio’s own sounds
+play” in Chapter 5.</li>
 <li><strong>QUILL Lineups (Playback &gt; Lineups…, Ctrl+U).</strong> A
 Lineup is a named list of anything Quill Radio and QUILL Cast can play:
 stations, saved places, podcasts and episodes, YouTube videos, playlists
@@ -1048,8 +1065,9 @@ a portable copy, which is not a frozen build – instead of beside
 the Converter and QUILL Lite’s tutorial book used the same lookup and
 are fixed with it.</li>
 <li><strong>The Stop button is back</strong> in the main window (Alt+T),
-first in the row before Mute and Volume; the same as Ctrl+Period and
-Station &gt; Stop (<code>quill/ui/radio/stop_button.py</code>).</li>
+first in the row before Mute and Volume; the same as Ctrl+Period and the
+Playback menu’s Play item, which reads Stop while something plays
+(<code>quill/ui/radio/stop_button.py</code>).</li>
 <li><strong>Install when I close.</strong> The Update downloaded window
 offers it beside Install and restart now: the update is applied when the
 app is next closed, however long that is, and the app is not reopened

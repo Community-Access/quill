@@ -127,11 +127,9 @@ class RichModeMixin:
         had been sending grey-on-white documents to everybody they shared with,
         and would never see it themselves (bad.md R4).
 
-        ``tomAutoColor`` for the save, the theme back afterwards, and the
-        restore in a ``finally`` -- because a save that raises must not leave
-        the window unreadable, which is the one failure worse than the bug.
-        QUILL Lite has guarded both directions since it shipped
-        (``lite_window_file._write_rtf``); this is QUILL catching up.
+        ``tomAutoColor`` for every rich save (.rtf, and the RTF that .docx, .md
+        and .html read), the theme back in a ``finally`` -- a save that raises
+        must not leave the window unreadable, the one failure worse than the bug.
         """
         restore = False
         try:
@@ -224,7 +222,8 @@ class RichModeMixin:
         from quill.ui.richedit_rtf_surface import RichEditRtfError
 
         try:
-            rtf = bytes(wrapper.get_rtf()).decode("utf-8", errors="replace")
+            with self._theme_colour_off(wrapper):  # as for .rtf
+                rtf = bytes(wrapper.get_rtf()).decode("utf-8", errors="replace")
         except RichEditRtfError as error:
             raise OSError(str(error)) from error
         markdown = rich_to_markdown(rtf_to_rich(rtf))
@@ -277,7 +276,8 @@ class RichModeMixin:
 
         wrapper = self._active_richedit()
         try:
-            rtf = bytes(wrapper.get_rtf()).decode("utf-8", errors="replace")
+            with self._theme_colour_off(wrapper):
+                rtf = bytes(wrapper.get_rtf()).decode("utf-8", errors="replace")
         except RichEditRtfError as error:
             raise OSError(str(error)) from error
         if (

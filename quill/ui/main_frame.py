@@ -86,7 +86,6 @@ from quill.core.dictation import (
 from quill.core.document import Document
 from quill.core.external_change import (
     ExternalChangeWatcher,
-    FileSnapshot,
 )
 from quill.core.external_tools import (
     copyable_install_command,
@@ -106,7 +105,6 @@ from quill.core.features import (
     FeatureManager,
 )
 from quill.core.format_ops import (
-    continue_markdown_list,
     describe_indent_depth,
     indent_lines,
     outdent_lines,
@@ -172,7 +170,6 @@ from quill.core.multi_press import MultiPressDispatcher
 from quill.core.navigation import (
     next_block_start,
     next_heading_start,
-    page_start_for_number,
     previous_block_start,
     previous_heading_start,
 )
@@ -183,6 +180,7 @@ from quill.core.onboarding import (
 )
 from quill.core.outline import OutlineEntry, extract_outline_entries
 from quill.core.paths import app_data_dir, ensure_app_directories
+from quill.core.pdf_open import outline_bookmark_offsets, save_refusal
 from quill.core.platform_nouns import credential_store_name, primary_command_chord_label
 from quill.core.publishing_linkage import (
     apply_publishing_linkage_to_source_metadata,
@@ -212,6 +210,7 @@ from quill.core.read_aloud import (
     synthesize_with_kokoro,
     synthesize_with_piper,
 )
+from quill.core.read_only_guards import READ_ONLY_REFUSAL
 from quill.core.recent import (
     load_recent_files,
     prune_missing_recent_files,
@@ -419,6 +418,7 @@ from quill.ui.main_frame_onboarding_flow import OnboardingFlowMixin
 from quill.ui.main_frame_open_documents import OpenDocumentsFindMixin
 from quill.ui.main_frame_open_sources import OpenSourcesMixin
 from quill.ui.main_frame_palette_labels import PaletteToggleLabelsMixin
+from quill.ui.main_frame_pdf_open import PdfOpenOcrMixin
 from quill.ui.main_frame_podcasts import PodcastsMixin
 from quill.ui.main_frame_power_tools import PowerToolsActionsMixin
 from quill.ui.main_frame_power_tools_menu import PowerToolsMenuMixin
@@ -461,6 +461,7 @@ from quill.ui.main_frame_table_nav import TableNavMixin
 from quill.ui.main_frame_text_editor import TextEditorMixin
 from quill.ui.main_frame_tutorials import TutorialsMixin
 from quill.ui.main_frame_typing import TypingPathMixin
+from quill.ui.main_frame_typing_assist import TypingAssistMixin
 from quill.ui.main_frame_typing_modes import TypingModesMixin
 from quill.ui.main_frame_undo import PersistentUndoMixin
 from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
@@ -809,10 +810,12 @@ class MainFrame(
     WorktreesMixin,
     WriteSafetyMixin,
     TypingPathMixin,
+    TypingAssistMixin,  # Enter in a list; AutoCorrect
     PaletteToggleLabelsMixin,
     MediaPlayerMixin,
     GlowFileMixin,
     DocConvertMixin,
+    PdfOpenOcrMixin,
     DictationHotkeysMixin,
     # QUILL's own free AI: the shared hosted-AI commands, wired to QUILL's
     # frame and editor. Five commands, no implementation of its own.
@@ -1282,6 +1285,7 @@ class MainFrame(
         # Kill switch: block remotely-locked commands at the single dispatch
         # chokepoint, so keybindings and the palette obey uniformly.
         self.commands.set_run_gate(self._command_allowed_by_locks)
+        self.commands.set_read_only_refusal(lambda: self._set_status(READ_ONLY_REFUSAL))
         # Error specificity: the palette asks this probe *why* a command is
         # unavailable so it can display and speak the reason, not just refuse.
         self.commands.set_availability_probe(self._command_unavailable_reason)
@@ -2054,7 +2058,7 @@ class MainFrame(
             return
         if self._swallow_native_formatting_key(event):
             return
-        if self._maybe_autoformat_char(event):
+        if self._maybe_autocorrect_char(event) or self._maybe_autoformat_char(event):
             return
         event.Skip()
 
@@ -2651,6 +2655,7 @@ class MainFrame(
             and not event.ControlDown()
             and not event.AltDown()
             and not event.ShiftDown()
+            and not self._document_is_read_only()  # Enter's rewrites honour the guard
         ):
             if self._handle_smart_trigger_return():
                 return
@@ -2741,27 +2746,6 @@ class MainFrame(
         if not dispatch(line, line_start, line_end):
             return False
         self.document.set_text(self.editor.GetValue())
-        return True
-
-    def _handle_markdown_list_return(self) -> bool:
-        if self._effective_markup_kind() not in {"markdown", "plain"}:
-            return False
-        start, end = self.editor.GetSelection()
-        if start != end:
-            return False
-        continuation = continue_markdown_list(
-            self.editor.GetValue(), self.editor.GetInsertionPoint()
-        )
-        if continuation is None:
-            return False
-        self._replace_document_text(continuation.text)
-        self.document.set_text(continuation.text)
-        self.editor.SetInsertionPoint(continuation.caret)
-        self.editor.SetSelection(continuation.caret, continuation.caret)
-        if continuation.exited_list:
-            self._set_status("Exited list")
-        else:
-            self._set_status("Continued list item")
         return True
 
     def _is_caret_on_markdown_list_item(self) -> bool:
@@ -4134,16 +4118,15 @@ class MainFrame(
             self._set_status_quiet("Speaking through your screen reader.")
             return
         # No screen reader: the self-voice was the only voice, so this is a real
-        # problem the user must hear and may want to revisit. (The retry is
-        # Tools > Retry TTS Engine.)
+        # problem the user must hear and may want to revisit. There is no retry
+        # command (the menu audit of 2026-10-16 found the old wording named one
+        # that never existed), so the honest route is a restart.
         self._record_notification(
-            "Text-to-speech (the SAPI 5 self-voice) did not start. Run "
-            "Tools > Retry TTS Engine to try again.",
+            "Text-to-speech (the SAPI 5 self-voice) did not start. Restart QUILL to try again.",
             "accessibility",
         )
         self._set_status(
-            "Text-to-speech failed to start, so QUILL has no voice. "
-            "Run Tools > Retry TTS Engine to try again."
+            "Text-to-speech failed to start, so QUILL has no voice. Restart QUILL to try again."
         )
 
     def _screen_reader_handling_speech(self) -> bool:
@@ -6148,6 +6131,7 @@ class MainFrame(
             self._location_ring.record(0)
         self._announce_encoding_fallback(loaded)
         self._import_pdf_outline_bookmarks(loaded, suffix)
+        self._offer_ocr_for_scanned_pdf(loaded, selected_path, suffix)
         self._position_editor_at(line=line, column=column)
         if record_recent:
             self._record_recent(selected_path)
@@ -6198,17 +6182,12 @@ class MainFrame(
     def _ask_pdf_password(self, file_name: str, *, incorrect: bool) -> str | None:
         """Prompt for an encrypted PDF's password. Returns the entry, or ``None``
         if the user cancelled or left it blank. The password is never stored."""
-        wx = self._wx
-        prompt = (
-            f"That password did not open {file_name}. Try again, or Cancel:"
-            if incorrect
-            else f"{file_name} is password-protected. Enter its password to open it:"
+        from quill.ui.pdf_password import ask_pdf_password
+
+        # The one password box both editors use (quill/ui/pdf_password.py).
+        return ask_pdf_password(
+            self.frame, file_name, incorrect=incorrect, show_modal=self._show_modal_dialog
         )
-        with wx.PasswordEntryDialog(self.frame, prompt, "Open Password-Protected PDF") as dialog:
-            if self._show_modal_dialog(dialog, "Open Password-Protected PDF") != wx.ID_OK:
-                return None
-            password = dialog.GetValue()
-        return password or None
 
     def _prompt_and_reopen_encrypted_pdf(
         self,
@@ -6945,11 +6924,11 @@ class MainFrame(
         if path.suffix.lower() in EXPORT_ONLY_SUFFIXES:
             # e.g. an opened PDF: the buffer is extracted text. Writing it back
             # would destroy the binary original, so route to Save As instead.
+            # The sentence QUILL Lite says too (quill.core.pdf_open.save_refusal).
+            formats = "Markdown, Word, HTML, RTF, or text"
             self._show_message_box(
-                f"{self.document.name} was opened as extracted text. QUILL cannot "
-                f"write {path.suffix} files directly, so saving over the original "
-                "would destroy it. Choose a new name and format (Markdown, Word, "
-                "HTML, RTF, or text), or use File > Export.",
+                save_refusal(self.document.name, path.suffix, app_name="QUILL", formats=formats)
+                + ", or use File > Export.",
                 "Save",
                 wx.ICON_INFORMATION | wx.OK,
             )
@@ -6963,25 +6942,12 @@ class MainFrame(
             return
         if self.document.modified:
             self._backup_before_save(self.document)
-        try:
-            self._write_document_to_disk(self.document)
-        except (OSError, UnicodeEncodeError) as error:
-            # UnicodeEncodeError since 2026-09-17 (bad.md P0.9): a cp1252
-            # document that gains an em dash used to fail with "Command failed:
-            # file.save" and leave the writer to guess which character did it.
+        # The write and everything a save settles (main_frame_write_safety),
+        # shared with the clipboard collector's quiet save.
+        error = self._write_named_document()
+        if error is not None:
             self._report_save_failure(self.document.name, error, "Save")
             return
-        # Persist this document's bookmarks + cursor position under its path now that
-        # it is saved (also migrates an untitled document's in-memory bookmarks).
-        self._save_active_bookmarks()
-        self._save_inline_notes()
-        self._remember_active_caret()
-        # FEAT-19: prime the watcher so our own save is not reported as an external change.
-        if self._external_change_watcher is not None and self.document.path is not None:
-            self._external_change_watcher.prime(FileSnapshot.of(self.document.path))
-        self._record_persistent_undo_state(self.document.text)
-        self.flush_persistent_undo()
-        self._refresh_title()
         self._set_status(f"Saved {self.document.name}")
         from quill.core.sound_events import SoundEvent
         from quill.ui.sound_manager import post_sound
@@ -9576,25 +9542,15 @@ class MainFrame(
             self._bookmark_anchors = anchors
         anchors[name] = capture_anchor(text, position)
 
-    def _unique_outline_bookmark_name(self, title: str, used: set[str]) -> str:
-        """A whitespace-collapsed, de-duplicated bookmark name for a PDF outline
-        entry (two entries can share a title; a bookmark name must be unique)."""
-        base = " ".join(title.split()) or "Bookmark"
-        if base not in used:
-            return base
-        suffix = 2
-        while f"{base} ({suffix})" in used:
-            suffix += 1
-        return f"{base} ({suffix})"
-
     def _import_pdf_outline_bookmarks(self, loaded: object, suffix: str) -> None:
         """Import a PDF's embedded outline (Adobe bookmarks) into the document's
         bookmark store on first open, so they show up in List Bookmarks
         (Alt+Shift+B) — QUILL already imports Word/EPUB structure; this closes the
         PDF gap.
 
-        Each outline entry (title + destination page) is resolved to a character
-        offset via the form-feed page markers the PDF extractor writes. Idempotent:
+        Each outline entry is resolved to its title on its page (else the page's
+        start) via the form-feed page markers the PDF extractor writes, by the
+        helper QUILL Lite's Go To shares (quill.core.pdf_open). Idempotent:
         it skips when the document already has bookmarks (a re-open, or a user who
         curated them), so it never duplicates entries or resurrects deleted ones,
         and it never blocks the open — an unresolvable entry is simply skipped."""
@@ -9613,21 +9569,8 @@ class MainFrame(
             return  # already has bookmarks — don't duplicate or fight curation
 
         text = getattr(loaded, "text", "") or ""
-        bookmarks: dict[str, int] = {}
-        anchors: dict[str, object] = {}
-        used: set[str] = set()
-        for entry in outline:
-            try:
-                title, page = entry
-            except (TypeError, ValueError):
-                continue
-            offset = page_start_for_number(text, int(page))
-            if offset is None:
-                continue
-            name = self._unique_outline_bookmark_name(str(title), used)
-            used.add(name)
-            bookmarks[name] = offset
-            anchors[name] = capture_anchor(text, offset)
+        bookmarks = outline_bookmark_offsets(text, outline)
+        anchors = {name: capture_anchor(text, offset) for name, offset in bookmarks.items()}
         if not bookmarks:
             return
         self._bookmarks = bookmarks
@@ -12166,7 +12109,7 @@ class MainFrame(
     ) -> None:
         """AI-7: present a navigable added/removed/changed diff and apply the
         accepted hunks as a single undo step via ``on_apply``."""
-        from quill.ui.assistant_tools import DiffReviewDialog
+        from quill.ui.ai_diff_review_dialog import DiffReviewDialog
 
         dialog = DiffReviewDialog(
             self.frame,
@@ -13948,6 +13891,7 @@ class MainFrame(
         """
         from quill.core.selection import changed_span
 
+        self._refuse_edit_if_read_only()
         self._browse_navigation_cache = None
         current_text = self.editor.GetValue()
         start, end, replacement = changed_span(current_text, updated_text)
@@ -14084,103 +14028,21 @@ class MainFrame(
         search_callback: Callable[[str], list[str]],
         empty_search_examples: tuple[str, ...] = (),
     ) -> str | None:
-        wx = self._wx
-        with wx.Dialog(
+        """The type-to-filter picker (quill/ui/searchable_picker.py)."""
+        from quill.ui.searchable_picker import choose_searchable_option
+
+        return choose_searchable_option(
+            self._wx,
             self.frame,
+            self._show_modal_dialog,
+            self._searchable_picker_queries,
             title=title,
-            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
-        ) as dialog:
-            dialog.SetSize((560, 420))
-            root = wx.BoxSizer(wx.VERTICAL)
-
-            search = wx.SearchCtrl(dialog, style=wx.TE_PROCESS_ENTER)
-            search.ShowSearchButton(True)
-            search.SetDescriptiveText(prompt)
-            set_accessible_name(search, prompt)
-            root.Add(search, 0, wx.EXPAND | wx.ALL, 8)
-
-            status = wx.StaticText(dialog, label="")
-            root.Add(status, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
-
-            results = wx.ListBox(dialog)
-            set_accessible_name(results, dialog_label)
-            root.Add(results, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
-
-            buttons = dialog.CreateButtonSizer(wx.OK | wx.CANCEL)
-            if buttons is not None:
-                root.Add(buttons, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
-            dialog.SetSizer(root)
-
-            last_query = self._searchable_picker_queries.get(dialog_label, "")
-            if last_query:
-                search.SetValue(last_query)
-
-            filtered = list(initial_choices)
-
-            def _refresh() -> None:
-                nonlocal filtered
-                filtered = list(search_callback(search.GetValue()))
-                results.Set(filtered)
-                if filtered:
-                    results.SetSelection(0)
-                    status.SetLabel(f"{len(filtered)} match(es). Top match: {filtered[0]}")
-                else:
-                    if empty_search_examples:
-                        examples = ", ".join(empty_search_examples)
-                        status.SetLabel(f"No matching options. Try: {examples}")
-                    else:
-                        status.SetLabel("No matching options")
-
-            def _announce_selected() -> None:
-                selected = results.GetSelection()
-                if selected == wx.NOT_FOUND:
-                    return
-                if selected < 0 or selected >= len(filtered):
-                    return
-                status.SetLabel(f"Selected: {filtered[selected]}")
-
-            def _accept(_event: object) -> None:
-                if results.GetCount() == 0:
-                    return
-                dialog.EndModal(wx.ID_OK)
-
-            def _on_char_hook(event: object) -> None:
-                key_code = event.GetKeyCode()
-                if key_code == wx.WXK_ESCAPE:
-                    dialog.EndModal(wx.ID_CANCEL)
-                    return
-                if key_code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
-                    _accept(event)
-                    return
-                if key_code == wx.WXK_DOWN and results.GetCount() > 0:
-                    results.SetSelection(0)
-                    results.SetFocus()
-                    _announce_selected()
-                    return
-                if key_code == wx.WXK_UP and results.GetCount() > 0:
-                    results.SetSelection(results.GetCount() - 1)
-                    results.SetFocus()
-                    _announce_selected()
-                    return
-                event.Skip()
-
-            search.Bind(wx.EVT_TEXT, lambda _event: _refresh())
-            search.Bind(wx.EVT_TEXT_ENTER, _accept)
-            results.Bind(wx.EVT_LISTBOX, lambda _event: _announce_selected())
-            results.Bind(wx.EVT_LISTBOX_DCLICK, _accept)
-            dialog.Bind(wx.EVT_CHAR_HOOK, _on_char_hook)
-            apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
-            _refresh()
-            search.SetFocus()
-
-            result = self._show_modal_dialog(dialog, dialog_label)
-            self._searchable_picker_queries[dialog_label] = search.GetValue().strip()
-            if result != wx.ID_OK:
-                return None
-            selected = results.GetSelection()
-            if selected == wx.NOT_FOUND or selected < 0 or selected >= len(filtered):
-                return None
-            return filtered[selected]
+            prompt=prompt,
+            dialog_label=dialog_label,
+            initial_choices=initial_choices,
+            search_callback=search_callback,
+            empty_search_examples=empty_search_examples,
+        )
 
     def insert_html_tag(self) -> None:
         if not self._feature_enabled("core.format"):
@@ -14643,6 +14505,7 @@ class MainFrame(
         self._set_status(f'Snippet "{edited.name}" saved.')
 
     def _apply_insertion_result(self, result: InsertionResult) -> None:
+        self._refuse_edit_if_read_only()
         start, end = self.editor.GetSelection()
         self.editor.Replace(start, end, result.inserted_text)
         caret = start + result.caret_offset

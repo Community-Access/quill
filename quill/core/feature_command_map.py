@@ -197,8 +197,11 @@ COMMAND_FEATURE_MAP: dict[str, str] = {
     "tools.document_intake_report": "core.trust",
     "tools.review_extraction_quality": "core.trust",
     "tools.regex_helper": "core.search.regex",
-    "tools.search_in_files": "core.search.regex",
-    "tools.replace_in_files": "core.search.regex",
+    # Find's feature, not regular expressions' (2026-10-16): neither needs a
+    # pattern, and gating them on regex hid both, key and menu row, from the
+    # Essential profile every new install starts in.
+    "tools.search_in_files": "core.search",
+    "tools.replace_in_files": "core.search",
     "format.expand_abbreviation": "core.abbreviations",
     "format.manage_abbreviations": "core.abbreviations",
     "format.toggle_abbreviation_expansion": "core.abbreviations",

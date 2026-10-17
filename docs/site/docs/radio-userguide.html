@@ -583,10 +583,11 @@ finished, so the welcome will not come back.</li>
 <p>The welcome has one checkbox, <strong>Show me a tip now and
 then</strong> (Alt+T). Leave it checked. The first time you reach a
 place where one fact would help, Quill Radio says a single sentence
-about it, for example: “Live radio can be rewound. Rewind goes back 30
-seconds at a time, up to the buffer’s length, and Back to Live catches
-up again.” Each tip is said once, ever. Tips never take your keyboard
-away. If you would rather not hear them, uncheck the box.</p>
+about it, for example: “Live radio can be rewound. One tap of Rewind
+goes back 12 seconds, two quick taps a minute, three five minutes, and
+Back to Live catches up again.” Each tip is said once, ever. Tips never
+take your keyboard away. If you would rather not hear them, uncheck the
+box.</p>
 <h3 id="every-time-after-that">Every time after that</h3>
 <p>Open Quill Radio from the Start menu, or run
 <code>QuillRadio.exe</code> in the portable folder. The window opens
@@ -851,8 +852,10 @@ recording or file on your computer is paused it reads
 your own name in Favorites, that is the name you hear. With a folder or
 nothing selected it reads <strong>Play – nothing selected</strong>, and
 pressing it tells you what would work. Stop does the same as
-<strong>Ctrl+Period</strong> and <strong>Station &gt; Stop</strong>, and
-<strong>Ctrl+P</strong> presses this button from anywhere.</li>
+<strong>Ctrl+Period</strong>. <strong>Ctrl+P</strong> presses this
+button from anywhere; it is the <strong>Play</strong> item on the
+<strong>Playback</strong> menu, which reads <strong>Stop</strong> while
+something plays.</li>
 <li><strong>Website</strong> (Alt+B), which opens the station’s own
 website in your browser. If something is playing, you get that station’s
 site; if not, you get the site of the favorite you are on. It is the
@@ -937,6 +940,8 @@ Boost is on.</li>
 <li><strong>Record Now</strong>, which reads <strong>Stop
 Recording</strong>, with the time, while a recording runs.</li>
 <li><strong>Sleep timer</strong>, with the time left, or “Off”.</li>
+<li><strong>Notifications</strong>, with how many you have not read,
+such as “3 new”, or “None new”.</li>
 <li><strong>Time</strong>, the time of day.</li>
 </ol>
 <p>To use it:</p>
@@ -950,6 +955,7 @@ jump to the first and last cells.</li>
 <li>Press <strong>Enter</strong> or <strong>Space</strong> to press the
 cell you are on. On <strong>Volume</strong>, Enter mutes or unmutes. On
 <strong>Sleep timer</strong>, Enter opens the Sleep Timer. On
+<strong>Notifications</strong>, Enter opens the Notifications list. On
 <strong>Time</strong>, Enter tells you the full date and time.</li>
 <li>Press the <strong>Applications key</strong> or
 <strong>Shift+F10</strong> for the cell’s own menu. Every cell’s menu
@@ -1280,8 +1286,9 @@ which sources Browse Stations shows.</li>
 <li><strong>Update Station Catalog</strong> (Ctrl+Alt+Shift+G): bring
 the station catalog on your computer up to date now.</li>
 <li><strong>Connect to Spotify…</strong> (Ctrl+Alt+P) and <strong>Browse
-Spotify…</strong> (Ctrl+Alt+O): only there when the experimental Spotify
-feature is on. See “Spotify (experimental)” in Chapter 9.</li>
+Spotify…</strong> (Ctrl+Alt+O): experimental, and on the menu from the
+start; nothing is sent to Spotify until you connect. See “Spotify
+(experimental)” in Chapter 9.</li>
 <li><strong>Manage Favorites…</strong> (Ctrl+Shift+M): the Manage
 Favorite Stations window.</li>
 <li><strong>Add Playing Station to Favorites</strong> (Ctrl+Shift+F):
@@ -1332,6 +1339,11 @@ thing you removed or cleared. See “Taking back the last thing you did”
 in Chapter 15.</li>
 <li><strong>Undo History…</strong> (Ctrl+Alt+Shift+A): the last ten
 things you can take back, each with its own Undo.</li>
+<li><strong>Dictate Here</strong> (Ctrl+F11): QUILL Transcribe dictates
+into the text box you are in. Shown when QUILL Transcribe is part of
+your copy of the family, which is every public build from QUILL
+Transcribe’s release on 1 November 2026. See “Dictating a search” in
+Chapter 6.</li>
 </ul>
 <h4 id="view-menu-altv">View menu (Alt+V)</h4>
 <ul>
@@ -1357,6 +1369,9 @@ downloads.</li>
 stored on your computer.</li>
 <li><strong>Audio Health…</strong> (Ctrl+Alt+Shift+M): can this copy
 play and record?</li>
+<li><strong>Station Details…</strong> (Alt+Shift+I): search stations by
+call sign, frequency, slogan or place, and read what is known about each
+one.</li>
 <li><strong>Choose Columns…</strong> (Ctrl+Alt+Shift+C): what each row
 says in Find Stations and Recordings.</li>
 <li><strong>Customize Features…</strong> (Ctrl+Alt+C): turn the Record
@@ -1385,9 +1400,12 @@ while paused. It holds a podcast, a recording, a downloaded or local
 file, or a finished video, and picks it up where you left off. On a live
 station it is dimmed and tells you why: live radio is going out now, so
 there is nothing to hold.</li>
-<li><strong>Rewind 30 Seconds</strong> (Ctrl+Shift+Left),
-<strong>Forward 30 Seconds</strong> (Ctrl+Shift+Right) and <strong>Back
-to Live</strong> (Ctrl+Shift+L).</li>
+<li><strong>Rewind</strong> (Ctrl+Shift+Left), <strong>Forward</strong>
+(Ctrl+Shift+Right) and <strong>Back to Live</strong> (Ctrl+Shift+L). Tap
+once for a little, twice or three times for more; see “Rewinding live
+radio” in Chapter 4.</li>
+<li><strong>Identify This Song</strong> (Ctrl+K): asks AcoustID what
+song is playing. See “Identify This Song” in Chapter 5.</li>
 <li><strong>Continue Listening…</strong> (Ctrl+Alt+Shift+L): everything
 you started and did not finish.</li>
 <li><strong>Chapters…</strong> (Ctrl+Shift+C), <strong>Next
@@ -1410,6 +1428,8 @@ bring it to the front.</li>
 window.</li>
 <li><strong>Song History…</strong> (Ctrl+Shift+H): what each station
 played earlier.</li>
+<li><strong>Lyrics…</strong> (Ctrl+Alt+B): the words of the song on the
+air, in a window of their own.</li>
 <li><strong>Sleep Timer…</strong> (Ctrl+Shift+Z) and <strong>Wake-Up
 Timer…</strong> (Ctrl+Alt+Z).</li>
 <li><strong>Bookmark This Moment</strong> (Ctrl+Alt+A).</li>
@@ -1439,6 +1459,10 @@ item, off to begin with.</li>
 <li><strong>Sound Enhancements…</strong> (Ctrl+E): tone controls,
 evening out the volume, which ear the sound goes to, night mode and
 broadcast polish.</li>
+<li><strong>Background Station on Another Device…</strong> (Alt+Shift+B)
+and <strong>Mirror to Another Device…</strong> (Alt+Shift+D): a second
+sound card or headset at the same time. See “A second device” in Chapter
+5.</li>
 </ul>
 <p>The walkthroughs are in Chapter 5, What’s playing, and how it
 sounds.</p>
@@ -1480,6 +1504,8 @@ knows what is playing, on the ChatGPT plan you pay for.</li>
 <li><strong>ACB Media Schedule…</strong> (Ctrl+Shift+N), <strong>What Is
 On Now</strong> (Ctrl+Alt+H), <strong>Upcoming…</strong>
 (Ctrl+Alt+Shift+F) and <strong>Refresh the Schedule</strong> (F5).</li>
+<li><strong>What’s New</strong> (Alt+Shift+N): what arrived since you
+last looked, in one sentence.</li>
 <li><strong>ACB Media Podcasts…</strong> (Ctrl+Alt+I).</li>
 <li><strong>Community Picks…</strong> (Ctrl+Alt+0) and <strong>Suggest a
 Station or Podcast…</strong> (Ctrl+Alt+9).</li>
@@ -1516,7 +1542,8 @@ Manager.</li>
 Result</strong> (F9). See “Activity and Repeat Last Result” in Chapter
 15.</li>
 <li><strong>Notifications…</strong> (Ctrl+Alt+Shift+F3): everything you
-have been told about. See “Notifications” in Chapter 12.</li>
+have been told about. When some are unread, the item says how many, such
+as “Notifications (3 new)…”. See “Notifications” in Chapter 12.</li>
 <li><strong>Quiet Hours…</strong> (Ctrl+Alt+Shift+Z).</li>
 <li><strong>Bookmarks…</strong> (Ctrl+Alt+Shift+J).</li>
 <li><strong>Export My Setup…</strong> (Ctrl+Alt+Shift+X) and
@@ -1755,7 +1782,8 @@ plays or stops.</li>
 <li><strong>Ctrl+M</strong> mutes, and so does
 <strong>Ctrl+Shift+O</strong>.</li>
 <li><strong>Ctrl+Shift+Left</strong> and
-<strong>Ctrl+Shift+Right</strong> go back and forward 30 seconds, and
+<strong>Ctrl+Shift+Right</strong> go back and forward: 12 seconds for
+one tap, a minute for two, five minutes for three.
 <strong>Ctrl+Shift+L</strong> goes back to live.</li>
 </ul>
 <p>You can count on three things:</p>
@@ -1816,6 +1844,11 @@ recording, a downloaded or local file, or a finished video.
 <li>Press <strong>Ctrl+Space</strong> again. You should hear
 “Resumed.”</li>
 </ol>
+<p>Resuming has a sound of its own: a short tape-spooling sound,
+different from the “playing” sound you hear when a station starts. So
+you can tell carrying on from starting something new before the audio
+comes back. It is one of Quill Radio’s own sounds, so
+<strong>Alt+Shift+M</strong> turns it off with the others.</p>
 <p><strong>Live radio cannot be paused.</strong> It is going out now, so
 there is nothing to hold. On a live station, Pause is dimmed and tells
 you that. Stop ends it. To catch something you just missed, rewind
@@ -1825,20 +1858,40 @@ pauses and resumes anything that is not live.</p>
 <h3 id="rewinding-live-radio-and-going-back-to-live">Rewinding live
 radio, and going back to live</h3>
 <p>Missed what the newsreader just said? With the standard mpv playback
-engine, Quill Radio keeps the last stretch of a live station, roughly 45
-minutes at typical quality, so you can go back and hear it.</p>
+engine, Quill Radio keeps the last hour of a live station, so you can go
+back and hear it, or pause the whole programme and come back to it.
+Choose how long it keeps with <strong>Time-shift buffer</strong> in
+Preferences: half an hour up to five hours, or “In memory only” for the
+old buffer of about 45 minutes.</p>
+<p>How far one press goes depends on how you press:</p>
+<ul>
+<li><strong>One tap</strong>: 12 seconds.</li>
+<li><strong>Two quick taps</strong>: one minute.</li>
+<li><strong>Three or more quick taps</strong>: five minutes.</li>
+<li><strong>Holding the key down</strong>: 5 seconds for every repeat,
+for as long as you hold it.</li>
+</ul>
+<p>Taps do not add up: three taps take you back five minutes, not five
+minutes and a bit. Quill Radio waits for you to stop pressing, moves
+once, and then says where you landed.</p>
 <ol type="1">
 <li>While a live station plays, press <strong>Ctrl+Shift+Left</strong>
-(<strong>Playback &gt; Rewind 30 Seconds</strong>). You should hear
-“Rewound 30 seconds”, and how far behind live you are.</li>
-<li>Press it again to go back further, as far as Quill Radio has kept
-since you started listening.</li>
-<li>Press <strong>Ctrl+Shift+Right</strong> (<strong>Forward 30
-Seconds</strong>) to move forward again.</li>
+(<strong>Playback &gt; Rewind</strong>). Half a second later you should
+hear how far behind live you are, such as “12 seconds behind live.”</li>
+<li>Press it two or three times quickly to go back a minute or five
+minutes at once, as far as Quill Radio has kept since you started
+listening.</li>
+<li>Press <strong>Ctrl+Shift+Right</strong> (<strong>Forward</strong>)
+to move forward again, the same way.</li>
 <li>Press <strong>Ctrl+Shift+L</strong> (<strong>Back to Live</strong>)
 to jump straight back to what is on now. You should hear “Back to
 live.”</li>
 </ol>
+<p>The buffer is kept in a file in this computer’s cache folder, never
+in a data folder you sync to another computer. It is capped in size, it
+never takes more than half of the free space on the drive, and it is
+deleted when Quill Radio closes. Anything a crash leaves behind is
+cleared the next time Quill Radio starts.</p>
 <p>The Windows Media engine keeps nothing to go back to, so on that
 engine these keys tell you that rewinding live radio needs the mpv
 playback engine. To get it back, set <strong>Playback engine</strong> to
@@ -1856,9 +1909,11 @@ choose on a YouTube row applies to YouTube rows. While a <strong>podcast
 episode</strong> plays, the speed is remembered for that show, and you
 hear “Remembered for this show”. Normal Speed forgets it and tells you
 so.</li>
-<li><strong>Rewind 30 Seconds</strong> and <strong>Forward 30
-Seconds</strong> move you along and say where you landed, such as “3
-minutes 10 seconds of 18 minutes 40 seconds”.</li>
+<li><strong>Rewind</strong> and <strong>Forward</strong> move you along,
+the same way as on live radio: 12 seconds for one tap, a minute for two
+quick taps, five minutes for three, 5 seconds a repeat while you hold
+the key. They say where you landed, such as “3 minutes 10 seconds of 18
+minutes 40 seconds”.</li>
 <li><strong>Where Am I?</strong> (Ctrl+Shift+W) tells you your position,
 the length and the chapter you are in.</li>
 <li><strong>Next Chapter</strong> (Ctrl+Shift+.) and <strong>Previous
@@ -2100,6 +2155,9 @@ Not available in Safe Mode.</li>
 <li><strong>Song Details</strong> looks the song up on MusicBrainz:
 which release, what year, how long. If nothing more is known, it says
 so.</li>
+<li><strong>Lyrics</strong> (Alt+Y) opens the words of the selected song
+in the Lyrics window, the same as Lyrics on the Playback menu does for
+the song on the air now.</li>
 <li><strong>Clear…</strong> asks whether to clear <strong>This
 station</strong> or <strong>All stations</strong>.
 <strong>Cancel</strong> is already chosen, so Enter on its own clears
@@ -2116,6 +2174,89 @@ services, leave nothing to note.</p>
 <p>If a song is still playing when Quill Radio checks again, its play
 count goes up rather than it being listed twice. Station names, “Live”
 and advert markers are left out.</p>
+<h3 id="lyrics-step-by-step">Lyrics, step by step</h3>
+<p>Lyrics shows the words of the song the station is playing, as text
+you can arrow through and copy. The words come from LRCLIB (lrclib.net),
+a free community catalogue of song lyrics.</p>
+<ol type="1">
+<li>While a song is playing, press <strong>Ctrl+Alt+B</strong>
+(<strong>Playback &gt; Lyrics…</strong>). You hear “Looking up lyrics
+for” and the song.</li>
+<li>The Lyrics window opens, titled “Lyrics:” and the song, with your
+cursor at the top of the words. Arrow down through them a line at a
+time. <strong>Ctrl+C</strong> copies what you select.</li>
+<li>Press <strong>Escape</strong>, <strong>Ctrl+W</strong> or
+<strong>Ctrl+F4</strong> to close.</li>
+</ol>
+<p>To see the words of a song that played earlier, open Song History
+(Ctrl+Shift+H), select the song and choose <strong>Lyrics</strong>
+(Alt+Y).</p>
+<p>What you might hear instead of a window:</p>
+<ul>
+<li><strong>“No lyrics found for”</strong> and the song: LRCLIB does not
+have its words, or could not be reached.</li>
+<li><strong>That the song is an instrumental</strong>: LRCLIB knows it
+has no words.</li>
+<li><strong>That the station’s title does not name an artist</strong>:
+the station only sent a song name, and looking that up alone finds other
+people’s songs as often as the right one, so Quill Radio does not
+guess.</li>
+<li><strong>“Nothing is playing”</strong>, or that the station has not
+said what song is playing.</li>
+</ul>
+<p>Good to know:</p>
+<ul>
+<li>The words do not follow along. A radio stream does not say where in
+the song it is, so a line marked as “now” would often be the wrong one.
+Quill Media Player, which knows exactly where it is in a file, does
+follow along.</li>
+<li>Lyrics are looked up only when you ask, never in the background, and
+only the artist and title are sent. Nothing is written to your computer:
+the words are kept in memory until you close Quill Radio, so asking
+again is instant. Not available in Safe Mode.</li>
+</ul>
+<h3 id="identify-this-song">Identify This Song</h3>
+<p>Some stations never say what they are playing. <strong>Playback &gt;
+Identify This Song</strong> (Ctrl+K) listens to the last minute of what
+you are hearing and asks AcoustID, a free music-recognition service,
+what song it is.</p>
+<p>Before the first time, it needs two things you set up once:</p>
+<ol type="1">
+<li><strong>An AcoustID key.</strong> AcoustID asks every app to
+register for a free key. Register one at acoustid.org/new-application,
+then open Preferences (Ctrl+,), find <strong>AcoustID key for song
+recognition</strong> and paste it in. Until there is a key, Identify
+This Song tells you exactly this and does nothing else.</li>
+<li><strong>Chromaprint’s fpcalc program.</strong> It turns the sound
+into a fingerprint and does not come with Quill Radio. Download it from
+acoustid.org/chromaprint and put fpcalc.exe in a folder named
+chromaprint inside the tools folder of your Quill data folder, or
+anywhere on your PATH. Until it is there, Identify This Song tells you
+so.</li>
+</ol>
+<p>Then:</p>
+<ol type="1">
+<li>While a song plays, press <strong>Ctrl+K</strong>. You hear
+“Identifying the song…”</li>
+<li>A few seconds later you hear the answer, such as “Best guess: Blue
+Monday by New Order, 91 percent sure.” When AcoustID has two strong
+candidates, you hear the other one too.</li>
+<li>If it cannot tell, you hear that it found no match. Recognition
+works best on recorded music; talk, a live performance or a station’s
+jingle will not match. Try again a minute into the song.</li>
+</ol>
+<p>Good to know:</p>
+<ul>
+<li>It listens to what you are already hearing, from Quill Radio’s own
+buffer, so it never hears the advert some stations play to every new
+listener.</li>
+<li>It needs the mpv playback engine and a minute of the station in the
+buffer. Just after you tune in, it asks you to try again in half a
+minute.</li>
+<li>What is sent is your key and a fingerprint, a summary of the sound
+that cannot be played back. No audio leaves your computer. Nothing is
+sent until you press Ctrl+K, and nothing at all in Safe Mode.</li>
+</ul>
 <h3 id="listening-statistics">Listening statistics</h3>
 <p><strong>View &gt; Listening Statistics…</strong> (Ctrl+Shift+Q)
 answers how much you listened, as well as to what.</p>
@@ -2249,6 +2390,38 @@ device, and Windows remembers it from then on. A copy without the mpv
 engine opens that same page as soon as you press Ctrl+Shift+D. And if a
 device is saved in your settings while the classic player is in use,
 Quill Radio hands the setting back and tells you the same thing.</p>
+<h3 id="a-second-device-a-background-station-or-a-mirror">A second
+device: a background station, or a mirror</h3>
+<p>Quill Radio can play on a second sound card or headset at the same
+time as the main one, in one of two ways. Both are on the
+<strong>Audio</strong> menu, and both are off until you turn them on.
+Neither is remembered when you close Quill Radio. Both need the mpv
+playback engine, because it is the one that can choose a device; without
+it, Quill Radio tells you so.</p>
+<p><strong>Background Station on Another Device…</strong> (Alt+Shift+B)
+plays one of your favorites quietly on another device, underneath
+whatever the main player is doing. Rain sounds in the headphones while
+the news plays on the speakers, for example.</p>
+<ol type="1">
+<li>Press <strong>Alt+Shift+B</strong>. Choose the favorite, then the
+device, then how loud it should be compared with the main player, such
+as “40 percent of the main volume”.</li>
+<li>You should hear the station’s name and the device. The background
+station follows two rules. When you <strong>pause</strong> the main
+player, it pauses too, and it comes back when you resume. When you turn
+the main volume up or down, it goes up or down with it.
+<strong>Stop</strong>, or changing station, leaves it playing.</li>
+<li>To turn it off, press <strong>Alt+Shift+B</strong> again and answer
+<strong>Yes</strong>.</li>
+</ol>
+<p><strong>Mirror to Another Device…</strong> (Alt+Shift+D) plays
+whatever the main player plays on a second device as well: a guest on
+headphones, or a room speaker as well as the built-in one. It follows
+the main player in everything: the station, pause, stop and volume.
+Press <strong>Alt+Shift+D</strong> again to turn it off.</p>
+<p>The device the main player uses is not offered, and only one of the
+two can run at a time. Two players never stay exactly together: expect
+the two devices to be a fraction of a second apart.</p>
 <h3 id="where-quill-radios-own-sounds-play">Where Quill Radio’s own
 sounds play</h3>
 <p>Quill Radio makes short sounds of its own when a station connects,
@@ -2989,6 +3162,26 @@ website.”</p>
 search with separate fields for name, genre and country. The window’s
 title is <strong>Internet Radio</strong>, and Go To calls it Find
 Stations.</p>
+<h4 id="dictating-a-search">Dictating a search</h4>
+<p>If QUILL Transcribe is part of your QuillVille family, you can say a
+search instead of typing it. Quill Radio has no speech engine of its
+own; <strong>Edit &gt; Dictate Here</strong> (<strong>Ctrl+F11</strong>)
+asks QUILL Transcribe to listen and type into the box you are in.</p>
+<ol type="1">
+<li>Press <strong>Ctrl+F</strong> and go to the box you want, such as
+the station name.</li>
+<li>Press <strong>Ctrl+F11</strong>. If QUILL Transcribe is running, you
+hear it start, with its usual “Dictation on” or start sound. If not,
+Quill Radio says “Starting QUILL Transcribe. Dictation starts here when
+it is ready.” and it starts in the tray.</li>
+<li>Say what you are looking for, for example “jazz”, and pause.</li>
+<li>Stop with QUILL Transcribe’s start and stop key, or say “stop
+dictation”, then press Enter.</li>
+</ol>
+<p>Ctrl+F11 works in any text box in Quill Radio, in the main window and
+in its other windows. Your own words and the dictation commands work as
+everywhere else. If Quill Inkwell is dictating, you are told so and
+nothing starts.</p>
 <h4 id="search-by-name-tag-and-country-step-by-step">Search by name, tag
 and country, step by step</h4>
 <ol type="1">
@@ -3266,6 +3459,53 @@ ever reads or changes them. If you turn the catalog off in Preferences,
 browsing goes back to live only, with nothing stored and nothing fetched
 in the background. Safe Mode never updates the catalog, though it may
 read it.</p>
+<h3
+id="station-details-find-a-station-by-its-call-sign-frequency-or-slogan">Station
+Details: find a station by its call sign, frequency or slogan</h3>
+<p>Sometimes you know a station by something other than its name: its
+call sign (KUOW), its frequency (94.9), its slogan (“home of the
+Seahawks”), or the city it broadcasts from. <strong>Station
+Details</strong> searches all of those at once, and tells you everything
+it knows about each station.</p>
+<p>What it knows comes from a <strong>station pack</strong>: one file of
+station facts that the Quill Radio project builds and signs. Quill Radio
+checks the signature before it reads a single fact, and refuses a pack
+that is not signed by the project, so nobody can slip wrong details in.
+Today the pack is built only from information Quill Radio already ships:
+the Community Picks list and the station directory in your catalog.
+Richer facts from other sources will come once the project has agreed
+how it may use them.</p>
+<h4 id="station-details-step-by-step">Station Details, step by step</h4>
+<ol type="1">
+<li>Press <strong>Alt+Shift+I</strong> (<strong>View &gt; Station
+Details…</strong>). The first line says how many stations the installed
+pack covers and when it was built, or that no pack is installed yet.
+Your cursor is in the <strong>Find stations</strong> box (Alt+F).</li>
+<li>Type what you know, such as <strong>94.9</strong>, <strong>98.5
+FM</strong>, <strong>KIRO</strong>, <strong>Seahawks</strong> or
+<strong>jazz Seattle</strong>. The <strong>Results</strong> list (Alt+R)
+fills as you type.</li>
+<li>Press <strong>Enter</strong> to move to the results. Each row says
+why it matched, for example “KIRO-FM, matched slogan: Official home of
+the Seattle Seahawks”. If nothing matched as you typed, Enter also looks
+for stations whose name is spelled close to what you typed, such as
+Jazz24 for “Jaz24”; if there are none, Quill Radio says that nothing
+matches.</li>
+<li>Arrow through the results. The <strong>Details</strong> box (Alt+I)
+shows the highlighted station, one labelled line per fact, such as “Call
+sign: KUOW” and “Frequency: 94.9 FM”, then where those facts came from.
+You can read it line by line, or select and copy any of it.</li>
+<li>Press <strong>Escape</strong> to close.</li>
+</ol>
+<p>If a station is playing when you open Station Details and the pack
+knows it, that station is already in the list with “playing now”, and
+its details are showing.</p>
+<p>The details are read only. Nothing in this window changes your
+favorites or your own stations. The pack’s facts are kept on this
+computer beside the station catalog, and are replaced as a whole when a
+newer signed pack arrives with a Quill Radio update. If a pack is
+refused, Quill Radio says so once and keeps the details you already
+had.</p>
 <h3 id="adding-your-own-stations">Adding your own stations</h3>
 <p>Found a stream address on a station’s website, or been sent one by a
 friend? You can add any station yourself, even one no directory knows
@@ -3290,19 +3530,38 @@ station was added. If you already have it, Quill Radio tells you.</li>
 reason is in the text just above the buttons. It is not spoken by
 itself, so use your screen reader’s command to read the whole window
 (Insert+B in NVDA and JAWS) to hear it.</p>
-<p>Three kinds of link get extra help:</p>
+<p>Four kinds of link get extra help:</p>
 <ul>
-<li><strong>A YouTube link becomes a station.</strong> Chapter 11,
-YouTube, says how a YouTube link plays, records and is kept.</li>
-<li><strong>A Live365 link is fixed for you.</strong> A Live365 station
-page, a player link such as <code>player.live365.com/a25891</code>, or
-just a station number is turned into the real stream address, and the
-window tells you so. Nothing is fetched to do this.</li>
-<li><strong>A SecureNet player link</strong>
+<li><p><strong>A YouTube link becomes a station.</strong> Chapter 11,
+YouTube, says how a YouTube link plays, records and is kept.</p></li>
+<li><p><strong>A Live365 link is fixed for you.</strong> A Live365
+station page, a player link such as
+<code>player.live365.com/a25891</code>, or just a station number is
+turned into the real stream address, and the window tells you so.
+Nothing is fetched to do this.</p></li>
+<li><p><strong>A SecureNet player link</strong>
 (<code>securenetsystems.net/v5/...</code>) is saved as you typed it,
 because its stream has to be read from the page. Either use Find Streams
 from a Website with the link, or just save it and play it, and the
-repair described next finds the stream.</li>
+repair described next finds the stream.</p></li>
+<li><p><strong>A station’s web page, or the address of its “Listen Live”
+player.</strong> A home page such as
+<code>https://www.altitudesportsradio.com/</code>, a page ending in
+<code>.html</code>, or a player link such as
+<code>player.listenlive.co/20551</code> is a web page, not a stream, and
+the audio player cannot play it. When you choose Test or OK, Quill Radio
+looks behind the page for the station’s stream, the same way Find
+Streams from a Website does, and puts that stream in <strong>Stream
+URL</strong>. You hear “Looking for the stream behind that web page…”
+and then “Found the station’s stream behind that web page.”, and Test or
+OK carries on. If the page has more than one station on it, you hear how
+many, and for Triton players their call letters, such as KKSEFM and
+KKSEAM; use Find Streams from a Website to choose, or paste that
+station’s own player link. If no stream is found, or the page cannot be
+reached, you hear that, and pressing the button again uses the address
+as you typed it. A stream saved this way from a Triton player is its
+lasting address, which keeps working when the provider moves servers.
+Not in Safe Mode.</p></li>
 </ul>
 <p>Any other address is saved exactly as you typed it.</p>
 <h4 id="when-a-station-will-not-play">When a station will not play</h4>
@@ -3350,10 +3609,11 @@ player. For Triton Digital and StreamTheWorld players, including the
 whole <code>player.listenlive.co</code> network, Quill Radio reads the
 station’s call letters and looks up the real stream through the
 provider’s own public service. When a station has both an MP3 and an AAC
-stream, you are offered both. It also recognises <strong>iHeart</strong>
-and <strong>TuneIn</strong> station pages and <strong>SecureNet</strong>
-players, and offers their real stream first. A web page is never offered
-to you as something to play.</p>
+stream, you are offered both. The player’s own help article, which used
+to appear in the list, no longer does. It also recognises
+<strong>iHeart</strong> and <strong>TuneIn</strong> station pages and
+<strong>SecureNet</strong> players, and offers their real stream first.
+A web page is never offered to you as something to play.</p>
 <h4 id="import-stations-from-playlist-step-by-step">Import Stations from
 Playlist, step by step</h4>
 <p>Import reads <strong>M3U</strong>, <strong>M3U8</strong>,
@@ -3459,6 +3719,24 @@ whatever you had on last, with no looking.</li>
 stations, newest first. Inside that menu, <strong>Alt+Shift+1</strong>
 plays the newest.</li>
 </ul>
+<h4 id="a-key-that-plays-a-favorite-from-anywhere">A key that plays a
+favorite from anywhere</h4>
+<p>You can give any favorite its own system-wide key. It plays that
+station even when another program is in front, and Quill Radio stays
+where it is. No favorite has one until you choose it.</p>
+<ol type="1">
+<li>In the favorites tree, or in Manage Favorites, arrow to the station
+and press <strong>Shift+F10</strong>.</li>
+<li>Choose <strong>System-Wide Key…</strong>. Type the key, such as
+<code>Ctrl+Alt+PageUp</code>, and press <strong>Enter</strong>. Leave
+the box empty to take a key away.</li>
+<li>You should hear the key and the station’s name. If the key cannot be
+used, Quill Radio says why and nothing changes: it needs Ctrl or Alt, it
+must not be a key another QUILL app or another favorite already uses,
+and it must not be held by another program on this computer.</li>
+</ol>
+<p>The keys work while Quill Radio is running, including from the
+tray.</p>
 <h3 id="the-favorites-manager">The Favorites Manager</h3>
 <p><strong>Station &gt; Manage Favorites…</strong> (Ctrl+Shift+M) opens
 <strong>Manage Favorite Stations</strong>, a full organizer. The main
@@ -3496,6 +3774,27 @@ Folder…</strong> and <strong>Remove All…</strong>. Press
 </ol>
 <p>Some buttons in this window share an Alt letter, so Tab to the
 buttons rather than using Alt keys.</p>
+<h4 id="removing-several-favorites-at-once">Removing several favorites
+at once</h4>
+<p>In the main window’s favorites tree, or in the Manager’s tree:</p>
+<ol type="1">
+<li>Arrow to a station and press <strong>.</strong> (period, or the
+decimal point on the number pad). You hear “Marked” and how many are
+marked. The row now ends with “(marked)”, so you hear it again as you
+arrow past.</li>
+<li>Mark as many as you like. Press <strong>.</strong> again on a marked
+row to unmark it.</li>
+<li>Press <strong>Delete</strong>. One question asks, for example,
+“Delete 5 stations?”, with <strong>No</strong> already chosen. Choose
+<strong>Yes</strong>, and you hear how many were deleted. Your cursor
+lands on the next station that is left.</li>
+</ol>
+<p>While anything is marked, Delete removes the marked stations, not the
+one under your cursor. <strong>Ctrl+Shift+Delete</strong> clears every
+mark. <strong>Shift+F10</strong> on a station has the same three:
+<strong>Mark for Deleting</strong>, <strong>Remove N Marked…</strong>
+and <strong>Clear Marks</strong>. Folders cannot be marked: deleting a
+folder keeps its stations, which is a different question.</p>
 <h4 id="folders">Folders</h4>
 <ul>
 <li><strong>New Folder…</strong> (Ctrl+Shift+E) asks where the folder
@@ -4099,12 +4398,12 @@ Recordings player</strong> in Preferences. Ctrl+Up and Ctrl+Down work
 either way.</p>
 <h3 id="if-the-internet-hiccups-during-a-recording">If the internet
 hiccups during a recording</h3>
-<p>Short gaps are smoothed over by themselves, using the reconnect
-settings in Recording Settings. If the connection really does drop,
-Quill Radio waits and carries on in a numbered part file, telling you
-about each try. When the recording finishes, <strong>it joins the parts
-back into one file</strong>, and tells you: “Joined 3 parts into one
-recording”, or “Kept 3 separate parts” and the reason.</p>
+<p>If the connection drops, Quill Radio waits and carries on in a
+numbered part file, using the reconnect settings in Recording Settings
+and telling you about each try. When the recording finishes, <strong>it
+joins the parts back into one file</strong>, and tells you: “Joined 3
+parts into one recording”, or “Kept 3 separate parts” and the
+reason.</p>
 <ul>
 <li>Joining is a straight copy, so nothing is lost and it takes seconds.
 The joined file is checked before the parts are removed. If anything
@@ -4119,6 +4418,33 @@ gone. Any other problem means it reconnects.</li>
 (3)” and so on.</li>
 <li>If Quill Radio is closed or crashes, the recording stops with
 it.</li>
+</ul>
+<h3 id="station-adverts-at-the-start-of-a-recording">Station adverts at
+the start of a recording</h3>
+<p>Many stations play an advert, or a short “you are listening to”
+message, to every new listener before the programme. A recording is a
+new listener, so it can begin with that advert instead of the programme
+you are hearing. And if the connection drops, the next part is a new
+listener too, so a second advert could land in the middle of your
+show.</p>
+<p>Quill Radio takes these out by itself. There is nothing to set.</p>
+<ul>
+<li>When a recording starts, Quill Radio listens to the station once
+more, about 20 seconds later, for just over a minute. Nothing from that
+is saved.</li>
+<li>When the recording finishes, it compares how each part begins with
+that second listen, and with the other parts. Audio that starts two
+separate connections cannot be the live programme, so that stretch is
+cut from the start of every part before the parts are joined.</li>
+<li>You hear what was removed, for example: “Removed about 15 seconds
+that the station plays to every new connection, usually an advert, from
+the start of the recording.”</li>
+<li>If the station plays a different advert each time, or none, nothing
+is cut and the recording stays exactly as it was captured. Quill Radio
+only removes audio it has heard open two different connections.</li>
+<li>It does not apply to YouTube broadcasts or to HLS streams (addresses
+ending in <code>.m3u8</code>), where two connections can genuinely start
+with the same programme audio.</li>
 </ul>
 <h3 id="if-a-recording-was-in-progress-when-quill-radio-quit">If a
 recording was in progress when Quill Radio quit</h3>
@@ -4522,14 +4848,23 @@ or “County, ST”, such as <code>Fairfax, VA</code>, and press Enter.</li>
 </ol>
 <h3 id="spotify-experimental">Spotify (experimental)</h3>
 <p>Quill Radio can search Spotify, browse your library and playlists,
-and play through Spotify’s own player. This is <strong>experimental, and
-off to begin with</strong>. When the Spotify feature is on,
-<strong>Connect to Spotify…</strong> (Ctrl+Alt+P) and <strong>Browse
-Spotify…</strong> (Ctrl+Alt+O) appear on the <strong>Station</strong>
-menu. Quill Radio has no switch of its own for it: it follows the
-Spotify feature in the feature settings it shares with QUILL. Nothing
-reaches Spotify until you connect an account, and it is off in Safe
-Mode.</p>
+and play through Spotify’s own player. This is
+<strong>experimental</strong>: it works, but it is newer and less tested
+than the rest of Quill Radio, and it may change. It is <strong>on to
+begin with</strong>, so <strong>Connect to Spotify…</strong>
+(Ctrl+Alt+P) and <strong>Browse Spotify…</strong> (Ctrl+Alt+O) are on
+the <strong>Station</strong> menu from the first time you open Quill
+Radio. Being visible does not mean anything is sent: nothing reaches
+Spotify until you choose Connect to Spotify and sign in to an account.
+Quill Radio has no switch of its own for it: it follows the Spotify
+feature in the feature settings it shares with QUILL, so turning that
+feature off there takes both rows away. It is also off in Safe Mode.</p>
+<p>For example: press <strong>Alt+S</strong> for the Station menu and
+arrow down to <strong>Connect to Spotify…</strong>, or press
+<strong>Ctrl+Alt+P</strong> from anywhere in Quill Radio. The Connect to
+Spotify window walks you through signing in; once you are connected,
+<strong>Browse Spotify…</strong> (<strong>Ctrl+Alt+O</strong>) lists
+your library and playlists.</p>
 <h4 id="does-a-free-spotify-account-work">Does a free Spotify account
 work?</h4>
 <p><strong>Yes for finding things, no for playing them inside Quill
@@ -5703,15 +6038,15 @@ and an end. So everything in “Speed, position and chapters” in Chapter 4
 works on it. Play Faster (Ctrl+Shift+Up), Play Slower (Ctrl+Shift+Down)
 and Normal Speed (Ctrl+Shift+0) change the speed, and the speed you
 choose on a YouTube video is kept for YouTube videos. Rewind and Forward
-30 Seconds (Ctrl+Shift+Left and Right) move you along, <strong>Where Am
-I?</strong> (Ctrl+Shift+W) tells you how far in you are, and <strong>Go
-to Position…</strong> (Ctrl+Alt+J) jumps to a time you type. When the
-video’s maker published chapters, <strong>Chapters…</strong>
-(Ctrl+Shift+C), <strong>Next Chapter</strong> (Ctrl+Shift+.) and
-<strong>Previous Chapter</strong> (Ctrl+Shift+,) step through them.
-Quill Radio remembers where you stopped, so a long video carries on from
-there next time. A live broadcast has none of this, and each of these
-keys tells you so.</p>
+(Ctrl+Shift+Left and Right) move you along, further for each quick tap,
+<strong>Where Am I?</strong> (Ctrl+Shift+W) tells you how far in you
+are, and <strong>Go to Position…</strong> (Ctrl+Alt+J) jumps to a time
+you type. When the video’s maker published chapters,
+<strong>Chapters…</strong> (Ctrl+Shift+C), <strong>Next Chapter</strong>
+(Ctrl+Shift+.) and <strong>Previous Chapter</strong> (Ctrl+Shift+,) step
+through them. Quill Radio remembers where you stopped, so a long video
+carries on from there next time. A live broadcast has none of this, and
+each of these keys tells you so.</p>
 <h4 id="captions-the-picture-and-described-audio">Captions, the picture
 and described audio</h4>
 <p>YouTube plays as sound only to begin with. <strong>Captions</strong>
@@ -6233,6 +6568,11 @@ button. If a reminder came due while Quill Radio was closed, you still
 hear it when you next open it, as long as that is within a couple of
 hours. Quiet hours can hold a reminder back; you hear it when the quiet
 time ends.</p>
+<p>A station reminder also reads the note you keep on that station
+(<strong>Note to Self…</strong> on its menu), after the reminder’s own
+note: for example, “Reminder: Morning Show is starting now. Your note:
+Only the first hour is worth it.” A note that says the same as the
+reminder’s own is not read twice.</p>
 <p>In Preferences, <strong>New reminders start at</strong> sets how much
 warning you usually want, and <strong>Play a sound when a reminder comes
 due</strong> turns the sound off. You still hear the reminder spoken
@@ -6284,6 +6624,16 @@ record of being told, never the episodes or stations themselves.</li>
 </ol>
 <p>QUILL Cast shares the same list, so whichever app you have open can
 show you what the other one found.</p>
+<h4 id="whats-new-in-one-key">What’s New, in one key</h4>
+<p><strong>Community &gt; What’s New</strong> (Alt+Shift+N) tells you,
+in one sentence, what arrived since you last looked, without opening
+anything: for example, “Since you last looked: 4 new episodes in The
+Tech Show, Main Menu. 1 new video from Blind Abilities. 1 reminder went
+off.” If nothing has arrived, you hear “Nothing new since you last
+looked.”</p>
+<p>What it read out counts as read, so pressing it again says “Nothing
+new”. The entries stay in Notifications for the detail. It only reads
+out what Quill Radio found, not other apps’ notifications.</p>
 <h3 id="what-you-learned-and-where-to-go-next-11">What you learned, and
 where to go next</h3>
 <p>You can now browse the ACB Media schedule, tune in, record a
@@ -6511,9 +6861,11 @@ of any kind, and nothing is posted on a website.</p>
 Station or Podcast…</strong>). The Suggest a Station or Podcast window
 opens. At the top, it tells you where the suggestion goes, and that
 nothing is sent until you press Send in your email program.</li>
-<li><strong>What is it</strong> (Alt+W) is a list with two choices,
-<strong>A radio station</strong> or <strong>A podcast</strong>. Use the
-Up and Down Arrow keys. It starts on A radio station.</li>
+<li><strong>What is it</strong> (Alt+W): choose <strong>A radio
+station</strong> or <strong>A podcast</strong> with the Up and Down
+Arrow keys. It starts on <strong>Choose one</strong>, and nothing is
+sent until you have chosen, so a podcast is never filed as a station by
+mistake.</li>
 <li><strong>Name</strong> (Alt+N): what it should be called in the list,
 such as “Radio Nowhere”. You must fill this in, and it can be up to 120
 characters.</li>
@@ -6681,6 +7033,11 @@ Manually only.</li>
 <li><strong>Interrupted recordings at launch</strong>: Ask each time
 (where it starts), Always resume them, or Never resume them. See “If a
 recording was in progress when Quill Radio quit” in Chapter 8.</li>
+<li><strong>Time-shift buffer</strong>: how far back you can rewind or
+pause live radio. In memory only (about 45 minutes, nothing written to
+disk), 30 minutes, 1 hour (where it starts), 2 hours, 3 hours or 5 hours
+on disk. A change takes effect at the next station you play. See
+“Rewinding live radio, and going back to live” in Chapter 4.</li>
 </ul>
 <h4 id="the-checkboxes">The checkboxes</h4>
 <p>Each one is listed with how it starts:</p>
@@ -6733,7 +7090,7 @@ player</strong>: on. See “Winamp keys in Radio Recordings” in Chapter
 </ul>
 <h4 id="text-boxes-buttons-and-groups">Text boxes, buttons and
 groups</h4>
-<p>Two text boxes:</p>
+<p>Three text boxes:</p>
 <ul>
 <li><strong>What’s Playing announcement</strong>: the pattern for what
 What’s Playing says. <code>{title}</code> and <code>{artist}</code> are
@@ -6743,6 +7100,10 @@ what the stream sent. It starts as <code>{title}[ by {artist}]</code>.
 Leave it blank to go back to that.</li>
 <li><strong>Log folder</strong>: where the log is written. Leave it
 blank for the usual place. Changing it moves the log straight away.</li>
+<li><strong>AcoustID key for song recognition</strong>: the free key
+Identify This Song needs. It starts empty. It is kept in the Windows
+credential store, not in a settings file; clear the box to remove it.
+See “Identify This Song” in Chapter 5.</li>
 </ul>
 <p>Two buttons:</p>
 <ul>
@@ -7204,6 +7565,10 @@ storefront and Podcast Index. Xiph and Wikidata start switched off.
 whether it is on. A branch that is off is never contacted while you
 browse, and not to refresh the catalog either. <strong>Search All
 Sources</strong> asks every directory.</li>
+<li><strong>Identify This Song</strong> sends your AcoustID key and a
+fingerprint of the last minute of sound to AcoustID, only when you press
+Ctrl+K. No audio is sent, and with no key entered (where it starts)
+nothing is sent at all.</li>
 <li><strong>Podcast Index</strong> is on to begin with. It is the one
 directory here that needs a key, and Quill Radio comes with its own. The
 key identifies the app, not you.</li>
@@ -7355,9 +7720,14 @@ or <strong>Close</strong> (Escape) to leave it.</li>
 </ol>
 <p>Quill Radio offers the download that matches your copy: the portable
 zip for a portable copy, and the installer for everyone else. <strong>A
-portable copy updates itself where it is</strong>: the new files replace
-the old ones in its folder, and the <code>data</code> folder, with your
-favorites, settings, history and recordings, is never touched.</p>
+portable copy updates itself where it is</strong>: the new version takes
+the old folder’s place, and the <code>data</code> folder, with your
+favorites, settings, history and recordings, moves across untouched. The
+old version is kept beside it, in a folder ending in
+<code>.previous</code>, until the new one has started three times or for
+a week, so a failed update can put it back. The installer updates
+quietly and doesn’t ask for administrator permission, because Quill
+Radio is installed for you alone.</p>
 <p>Quill Radio also checks quietly once a day when it opens. It only
 speaks when it finds something. Turn it off with <strong>Check for
 updates automatically on launch</strong> in Preferences.</p>
@@ -7382,8 +7752,10 @@ install the update automatically” and left the zip in
 <code>data\updates</code>. Update them once by hand: close Quill Radio,
 unzip <code>Quill-Radio-Portable-3.2.0.zip</code>, and copy everything
 in its <code>QuillRadio</code> folder over your copy’s folder, replacing
-files when asked. Your <code>data</code> folder is not in the zip, so it
-is left alone.</li>
+files when asked. The zip’s own <code>data</code> folder holds only a
+short README and the note that marks the copy portable, so copying it
+over yours replaces those two files and leaves everything of yours
+alone.</li>
 <li><strong>If Check for Updates keeps offering an update you already
 installed.</strong> Up to 3.0.4, on a computer with several QuillVille
 apps, Quill Radio could read the wrong version number, and then compared
@@ -7450,15 +7822,18 @@ tells you about a new version and downloads it only when you ask.</p>
 <p><strong>If an update doesn’t start.</strong> After an update, Quill
 Radio checks that the new version really opens. If it doesn’t open
 within two minutes, the update undoes itself and puts back the version
-you had, and the next time Quill Radio starts it tells you so. Nothing
-of yours is changed, and Update History has the details. To make this
-possible, Quill Radio keeps a copy of the installer for the version you
-have: on Beta and Dev for as long as you have that version, and on
-Stable for a week or three starts after each update. That copy takes
-about 200 MB of disk space, which Stable gives back once the week or the
-three starts are up. After an update, the previous installer is kept
-until the new version has started three times, or for a week, and then
-it is deleted.</p>
+you had, and the next time Quill Radio starts it tells you so. If the
+new version is still running but stuck, it is closed first. Nothing of
+yours is changed, and Update History has the details. If the installer
+itself doesn’t finish, nothing is changed at all: Quill Radio opens
+again straight away as the version you had and tells you the update
+could not be installed. To make this possible, Quill Radio keeps a copy
+of the installer for the version you have: on Beta and Dev for as long
+as you have that version, and on Stable for a week or three starts after
+each update. That copy takes about 200 MB of disk space, which Stable
+gives back once the week or the three starts are up. After an update,
+the previous installer is kept until the new version has started three
+times, or for a week, and then it is deleted.</p>
 <p><strong>Coming back to Stable.</strong> Open Release Channel again
 and choose <strong>Stable</strong>.</p>
 <ul>
@@ -8854,8 +9229,13 @@ Window menu. See “The menus in other windows” in Chapter 3.</p>
 <td>Ctrl+Shift+F</td>
 </tr>
 <tr>
-<td>Rewind or forward 30 seconds</td>
+<td>Rewind or forward (one tap 12 seconds, two a minute, three five
+minutes)</td>
 <td>Ctrl+Shift+Left / Ctrl+Shift+Right</td>
+</tr>
+<tr>
+<td>Identify This Song</td>
+<td>Ctrl+K</td>
 </tr>
 <tr>
 <td>Back to Live</td>
@@ -8900,6 +9280,10 @@ Window menu. See “The menus in other windows” in Chapter 3.</p>
 <tr>
 <td>Song History</td>
 <td>Ctrl+Shift+H</td>
+</tr>
+<tr>
+<td>Lyrics</td>
+<td>Ctrl+Alt+B</td>
 </tr>
 <tr>
 <td>Bookmark This Moment</td>
@@ -8955,6 +9339,14 @@ Window menu. See “The menus in other windows” in Chapter 3.</p>
 <tr>
 <td>Sound Enhancements</td>
 <td>Ctrl+E</td>
+</tr>
+<tr>
+<td>Background Station on Another Device</td>
+<td>Alt+Shift+B</td>
+</tr>
+<tr>
+<td>Mirror to Another Device</td>
+<td>Alt+Shift+D</td>
 </tr>
 </tbody>
 </table>
@@ -9058,6 +9450,10 @@ Window menu. See “The menus in other windows” in Chapter 3.</p>
 <td>Station Catalog Status</td>
 <td>Ctrl+Alt+Shift+S</td>
 </tr>
+<tr>
+<td>Station Details</td>
+<td>Alt+Shift+I</td>
+</tr>
 </tbody>
 </table>
 <h3 id="youtube-1">YouTube</h3>
@@ -9144,6 +9540,18 @@ Comments, Live Chat, YouTube Video, About This Channel</td>
 <tr>
 <td>Remove (in a tree or list)</td>
 <td>Delete</td>
+</tr>
+<tr>
+<td>Mark or unmark a station for deleting (in a favorites tree)</td>
+<td>. (period)</td>
+</tr>
+<tr>
+<td>Remove every marked station (one question)</td>
+<td>Delete</td>
+</tr>
+<tr>
+<td>Clear every mark</td>
+<td>Ctrl+Shift+Delete</td>
 </tr>
 <tr>
 <td>Move the selected favorite up or down</td>
@@ -9242,6 +9650,10 @@ Comments, Live Chat, YouTube Video, About This Channel</td>
 <tr>
 <td>What Is On Now</td>
 <td>Ctrl+Alt+H</td>
+</tr>
+<tr>
+<td>What’s New</td>
+<td>Alt+Shift+N</td>
 </tr>
 <tr>
 <td>Upcoming</td>
@@ -9421,6 +9833,10 @@ Player</td>
 <tr>
 <td>Undo History</td>
 <td>Ctrl+Alt+Shift+A</td>
+</tr>
+<tr>
+<td>Dictate Here (Edit menu, with QUILL Transcribe)</td>
+<td>Ctrl+F11</td>
 </tr>
 <tr>
 <td>Recent Problems</td>

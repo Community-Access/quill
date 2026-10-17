@@ -125,10 +125,10 @@ class DocumentCommandsMixin(
     def cmd_save_as(self) -> bool:
         """Ask for a name, converting the document if the extension asks for it."""
         rich = self.editor.mode == RICH
-        # Not self.path.name: a document that has just changed mode is proposed
-        # under the suffix its new contents deserve, so switching a notes.txt to
-        # rich text and pressing Ctrl+S offers notes.rtf rather than asking the
-        # person to retype a name they already have (bad.md R6).
+        # Not self.path.name: a document that has just changed mode is proposed under
+        # the suffix its new contents deserve, so switching a notes.txt to rich text and
+        # pressing Ctrl+S offers notes.rtf rather than asking the person to retype a
+        # name they already have (bad.md R6).
         default_name = self.proposed_name_for_mode()
         with wx.FileDialog(
             self,
@@ -139,27 +139,28 @@ class DocumentCommandsMixin(
             style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
         ) as dialog:
             if not rich:
-                # The type list opens on the document's own language. wx appends
-                # the selected row's extension to a name typed without one, so a
-                # list that always opened on "Text files" was answering "save my
-                # Markdown" with a .txt -- and the person had said which it was.
+                # The type list opens on the document's own language. wx appends the
+                # selected row's extension to a name typed without one, so a list that
+                # always opened on "Text files" was answering "save my Markdown" with a
+                # .txt -- and the person had said which it was.
                 self._preselect_save_type(dialog)
             if dialog.ShowModal() != wx.ID_OK:
                 return False
             target = Path(dialog.GetPath())
+        if self.refuse_word_target(target):  # before asking about flattening
+            return False
         wants_rich = is_rich_path(target.name)
         if wants_rich and not rich:
             self.switch_mode(RICH)
         elif not wants_rich and rich:
             if not self._confirm_flatten_to_plain():
                 return False
-            # The *file* is flattened first and the window only afterwards, and
-            # only if the write worked. It used to ChangeValue the buffer here,
-            # leave self.path pointing at the old .rtf, and then try the save --
-            # so a locked file or a full disk left the window holding flattened
-            # text under the rich name, with the next Ctrl+S ready to write it
-            # over the original. ChangeValue is off the undo stack, so the
-            # formatting was gone from the window too (bad.md F1).
+            # The *file* is flattened first and the window only afterwards, and only if
+            # the write worked. It used to ChangeValue the buffer here, leave self.path
+            # pointing at the old .rtf, and then try the save -- so a locked file or a
+            # full disk left the window holding flattened text under the rich name, with
+            # the next Ctrl+S ready to write it over the original. ChangeValue is off the
+            # undo stack, so the formatting was gone from the window too (bad.md F1).
             if not self.save(target, text=self.control.GetValue()):
                 return False
             self._apply_flatten_to_plain()
@@ -176,10 +177,9 @@ class DocumentCommandsMixin(
         from quill.core.lite.filetypes import markup_language_for
 
         if markup_language_for(target.name) == "markdown" and self.document_language() == "html":
-            # The HTML made no Markdown worth writing, so the file is saved
-            # unchanged under a .md name -- which is not what choosing Markdown
-            # in the type list promised, and is invisible unless it is said
-            # (bad.md F8).
+            # The HTML made no Markdown worth writing, so the file is saved unchanged
+            # under a .md name -- which is not what choosing Markdown in the type list
+            # promised, and is invisible unless it is said (bad.md F8).
             if not self.save(target):
                 return False
             self._announce("No Markdown could be made from this HTML. Saved it unchanged.")

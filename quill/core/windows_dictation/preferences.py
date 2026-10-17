@@ -10,14 +10,21 @@ Pure and wx-free.
 
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 
 from quill.core.action_feedback import ActionFeedback
 from quill.core.action_feedback import coerce as coerce_feedback
+from quill.core.windows_dictation.command_mode import (
+    DEFAULT_COMMAND_PREFIX,
+    DEFAULT_COMMAND_TIMEOUT,
+    coerce_prefix,
+    coerce_timeout,
+)
 from quill.core.windows_dictation.engines import coerce_engine, writes_punctuation
 from quill.core.windows_dictation.options import PAUSE_SECONDS, coerce_pause, coerce_silence
 from quill.core.windows_dictation.preview import coerce_preview
+from quill.core.windows_dictation.rescue import coerce_history_days
 from quill.core.windows_dictation.speech_language import (
     STOP_PHRASES,
     WAKE_PHRASES,
@@ -64,6 +71,12 @@ class DictationPreferences:
     pause: str = "normal"
     #: Drop "um", "uh" and their kin before anything is written.
     remove_fillers: bool = False
+    #: "Thursday, no, Friday" writes "Friday" (D-20, self_repair.py).
+    self_repair: bool = False
+    #: "QUILL polish that" may ask the AI to tidy the words in Review Dictation.
+    polish: bool = False
+    #: The names in My Words, for self-repair's "a name, no, another name".
+    repair_names: tuple[str, ...] = field(default=(), compare=False)
     #: Let Moonshine and Whisper punctuate. Off: the user says every mark.
     auto_punctuation: bool = True
     #: Minutes of silence after which dictation stops; 0 is never.
@@ -88,6 +101,10 @@ class DictationPreferences:
     openai_model: str = ""
     #: The person agreed that their speech goes to OpenAI with their own key.
     openai_consent: bool = False
+    #: A cloud provider's plain fields, by provider id (D-31; no secrets ever).
+    cloud_fields: Mapping[str, Mapping[str, str]] = field(default_factory=dict, compare=False)
+    #: The consent version agreed to, by cloud provider id (D-31).
+    cloud_consent: Mapping[str, int] = field(default_factory=dict, compare=False)
     #: Say the marks by name in the read-back: "Hello comma world period"
     #: (dict.md 3.1, question 1: on by default). The status bar keeps the marks.
     readback_marks: bool = True
@@ -96,6 +113,25 @@ class DictationPreferences:
     #: A soft tick while a heard phrase takes more than a second to recognise
     #: (working_tick.py). Off in the editors, on in QUILL Transcribe.
     working_tick: bool = False
+    #: The command word (D-1, command_mode.py): "QUILL scratch that". Empty is none.
+    command_prefix: str = "QUILL"
+    #: Strict mode: a bare command is written as words. On in QUILL Transcribe.
+    command_prefix_required: bool = False
+    #: Seconds command mode, or one armed command, waits for a command.
+    command_timeout: int = 8
+    #: Send dictation to review first (D-2, review_mixin.py): the first phrase
+    #: opens the review, and everything said goes there until Insert.
+    review_first: bool = False
+    #: Send this document's dictation context with a review's AI request.
+    review_context: bool = False
+    #: The named profile (D-23, profiles.py): ``standard`` is none at all.
+    named_profile: str = "standard"
+    #: How the profile writes structure: ``markdown``, ``formatted`` or ``plain``.
+    structure: str = "markdown"
+    #: Lock profile: a profile cannot be switched by voice.
+    profile_locked: bool = False
+    #: Days of dictation history to keep, text only (D-5, rescue.py); 0 is off.
+    history_days: int = 0
     #: What this document is -- "a formal letter", "notes to a friend" -- for
     #: OpenAI's prompt (contexts.py, dict.md 3.8). Empty for none.
     context: str = field(default="", compare=False)
@@ -169,6 +205,7 @@ class DictationPreferences:
                 wake_enabled=False,
                 silence_minutes=0,
                 remove_fillers=True,
+                self_repair=False,  # a transcript keeps what the speaker said
                 auto_punctuation=True,
                 continuous=False,
                 hold_to_talk=False,
@@ -189,6 +226,34 @@ class DictationPreferences:
 
     @classmethod
     def _writing(
+        cls, settings: object, rewrite: Callable[[str], str] | None
+    ) -> DictationPreferences:
+        """The settings, with the named profile's overlay on top (D-23)."""
+        from dataclasses import replace
+
+        from quill.core.windows_dictation.profiles import active_profile
+
+        preferences = cls._as_set(settings, rewrite)
+        profile = active_profile(settings)
+        overlay: dict[str, object] = {
+            name: value
+            for name, value in (
+                ("pause", profile.pause),
+                ("remove_fillers", profile.remove_fillers),
+                ("auto_punctuation", profile.auto_punctuation),
+            )
+            if value is not None
+        }
+        return replace(
+            preferences,
+            named_profile=profile.id,
+            structure=profile.structure,
+            profile_locked=bool(getattr(settings, "windows_dictation_profile_locked", False)),
+            **overlay,  # type: ignore[arg-type]
+        )
+
+    @classmethod
+    def _as_set(
         cls, settings: object, rewrite: Callable[[str], str] | None
     ) -> DictationPreferences:
         dash = str(getattr(settings, "windows_dictation_dash", "em") or "em")
@@ -221,6 +286,8 @@ class DictationPreferences:
             speech_language=language,
             pause=coerce_pause(getattr(settings, "windows_dictation_pause", "normal")),
             remove_fillers=bool(getattr(settings, "windows_dictation_remove_fillers", False)),
+            self_repair=bool(getattr(settings, "windows_dictation_self_repair", False)),
+            polish=bool(getattr(settings, "windows_dictation_polish", False)),
             auto_punctuation=bool(getattr(settings, "windows_dictation_auto_punctuation", True)),
             silence_minutes=coerce_silence(
                 getattr(settings, "windows_dictation_silence_minutes", 0)
@@ -230,10 +297,28 @@ class DictationPreferences:
             preview=coerce_preview(getattr(settings, "windows_dictation_preview", "show")),
             openai_model=str(getattr(settings, "windows_dictation_openai_model", "") or ""),
             openai_consent=bool(getattr(settings, "windows_dictation_openai_consent", False)),
+            cloud_fields=dict(getattr(settings, "windows_dictation_speech_providers", {}) or {}),
+            cloud_consent=dict(
+                getattr(settings, "windows_dictation_speech_provider_consent", {}) or {}
+            ),
             readback_marks=bool(getattr(settings, "windows_dictation_readback_marks", True)),
             transcript_timestamps=bool(
                 getattr(settings, "windows_dictation_transcript_timestamps", False)
             ),
             working_tick=bool(getattr(settings, "windows_dictation_working_tick", False)),
+            command_prefix=coerce_prefix(
+                getattr(settings, "windows_dictation_command_prefix", DEFAULT_COMMAND_PREFIX)
+            ),
+            command_prefix_required=bool(
+                getattr(settings, "windows_dictation_command_prefix_required", False)
+            ),
+            command_timeout=coerce_timeout(
+                getattr(settings, "windows_dictation_command_timeout", DEFAULT_COMMAND_TIMEOUT)
+            ),
+            review_first=bool(getattr(settings, "windows_dictation_review_first", False)),
+            review_context=bool(getattr(settings, "windows_dictation_review_context", False)),
+            history_days=coerce_history_days(
+                getattr(settings, "windows_dictation_history_days", 0)
+            ),
             rewrite=rewrite,
         )

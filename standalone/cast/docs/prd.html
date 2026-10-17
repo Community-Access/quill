@@ -365,11 +365,12 @@ third-party Quillins remain disabled.</li>
 scoped to this app’s commands) and <strong>Global Hotkeys…</strong>
 (system-wide keys for Play/Pause, Stop, and Show/Hide QUILL Cast to the
 Tray).</li>
-<li><strong>Spotify podcasts (experimental)</strong>, shipped dark
-behind <code>future.spotify</code>: requires a signed unlock code,
-Spotify Premium, a user-supplied Client ID, and WebView2. Play-only –
-Spotify audio is DRM-protected and cannot be downloaded. Off in Safe
-Mode.</li>
+<li><strong>Spotify podcasts (experimental)</strong>, behind
+<code>future.spotify</code>, which has been on by default since the
+unlock-code gate was withdrawn (2026-08-12): its two Help rows show in
+both menu modes, and playing needs Spotify Premium, a user-supplied
+Client ID, and WebView2. Play-only – Spotify audio is DRM-protected and
+cannot be downloaded. Off in Safe Mode.</li>
 <li>Help: Get FFmpeg (recovery download if the bundled copy goes
 missing), Open in Quill, Redeem Unlock Code (shared unlock store), Check
 for Updates against this repo’s releases, About.</li>
@@ -3025,6 +3026,22 @@ starter.</li>
 <li>Cast plays episodes and podcasts itself; everything else needs Quill
 Radio.</li>
 </ul>
+<h3
+id="2328-dictate-here-through-quill-transcribe-dictmd-d-16-2026-10-16">23.28
+Dictate Here through QUILL Transcribe (dict.md D-16, 2026-10-16)</h3>
+<p>Edit &gt; Dictate Here, <code>app.dictate_here</code> on Ctrl+F11
+(the editors’ Start Dictation key, family rule 2), in the Edit menu both
+listening apps share (<code>quill/ui/support_menu.py</code>; Cast has no
+Tools menu). It asks QUILL Transcribe to dictate into the focused field:
+a <code>start</code> request when QUILL Transcribe owns Dictate
+Anywhere, a launch with <code>--tray --dictate-here</code> when nobody
+does, the busy sentence when Quill Inkwell is dictating, and “not
+installed” otherwise. Cast loads no engine. A
+<code>wx.EventFilter</code> answers the same key in text fields of
+Cast’s dialogs, where the main window’s accelerators never reach. Shown
+only where <code>is_app_released("transcribe")</code>; QUILL Transcribe
+releases on 2026-11-01, so public builds show it from then. Dictation
+design record, section 30.</p>
 <p>See <code>CHANGELOG.md</code> for the full, versioned history.</p>
 </main>
 </body>

@@ -18,6 +18,8 @@ bearer-token credential -- see that module's docstring.
 
 from __future__ import annotations
 
+from urllib.parse import urlsplit
+
 from flask import (
     Blueprint,
     current_app,
@@ -53,13 +55,33 @@ _FEATURES = ("document_qna", "summarize", "rewrite", "alt_text", "chat")
 # --- Auth ---------------------------------------------------------------------
 
 
+def _safe_next(candidate: str) -> str:
+    """Where to go after signing in: a path on this site, or the overview.
+
+    Only a single-slash local path is followed. Anything with a scheme, a host,
+    a protocol-relative ``//`` or a backslash (which browsers treat as ``/``)
+    would send a freshly signed-in admin to another site.
+    """
+    candidate = (candidate or "").strip()
+    parts = urlsplit(candidate)
+    if (
+        candidate.startswith("/")
+        and not candidate.startswith("//")
+        and "\\" not in candidate
+        and not parts.scheme
+        and not parts.netloc
+    ):
+        return candidate
+    return url_for("dashboard.overview")
+
+
 @bp.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
         return render_template("dashboard/login.html", next=request.args.get("next", ""))
 
     token = request.form.get("token", "").strip()
-    next_path = request.form.get("next", "") or url_for("dashboard.overview")
+    next_path = _safe_next(request.form.get("next", ""))
     device = verify_admin_token(current_app, token)
     if device is None:
         flash("That token isn't a valid, active admin device token.", "error")
@@ -398,15 +420,17 @@ def feature_flags():
     switch is broken.
     """
     from app.limits import _month_key, resolve_limit
-    from app.prompts import DEFERRED_FEATURES, FEATURE_LABELS, SHIPPED_FEATURES
+    from app.prompts import DEFERRED_FEATURES, FEATURE_LABELS, OPT_IN_FEATURES, SHIPPED_FEATURES
 
     shipped = []
-    for feature in SHIPPED_FEATURES:
+    # The opt-in features (web search) are switches like the shipped ones,
+    # listed after them and off until somebody turns them on.
+    for feature in (*SHIPPED_FEATURES, *OPT_IN_FEATURES):
         flag = db.session.get(FeatureFlag, feature)
         shipped.append({
             "feature": feature,
             "label": FEATURE_LABELS.get(feature, feature),
-            "enabled": flag.enabled if flag is not None else True,
+            "enabled": flag.enabled if flag is not None else feature in SHIPPED_FEATURES,
             "disabled_reason": flag.disabled_reason if flag is not None else "",
         })
 

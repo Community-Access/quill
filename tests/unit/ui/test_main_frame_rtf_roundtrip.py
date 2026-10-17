@@ -39,7 +39,16 @@ def test_save_file_uses_dispatch() -> None:
     start = SOURCE.index("def save_file(")
     next_def = SOURCE.index("\n    def ", start + 1)
     body = SOURCE[start:next_def]
-    assert "self._write_document_to_disk(self.document)" in body
+    # Save's write step is shared with the clipboard collector's quiet save
+    # since 2026-10-15 (main_frame_write_safety._write_named_document), so the
+    # two cannot drift; the dispatch is one call further in.
+    assert "self._write_named_document()" in body
+    safety = (
+        Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame_write_safety.py"
+    ).read_text(encoding="utf-8")
+    start = safety.index("def _write_named_document(")
+    next_def = safety.index("\n    def ", start + 1)
+    assert "self._write_document_to_disk(self.document)" in safety[start:next_def]
 
 
 def test_save_file_as_uses_dispatch() -> None:

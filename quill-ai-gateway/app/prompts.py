@@ -43,16 +43,26 @@ Translate. Each is the shape of Summarize -- one passage in, one result out,
 under the same input ceiling -- so none of them moves a worst case. Translate's
 target language is the one value a client fills into a template, and it must
 be one of :data:`LANGUAGES`.
+
+The last, ``web_search`` (2026-10-15), is built and **switched off**: it is in
+:data:`OPT_IN_FEATURES`, seeded with its flag off, and only an operator turns
+it on. It is the one feature that costs per request on top of its tokens (the
+provider charges for every search), so it has a monthly share of its own --
+``app/limits.py::WEB_SEARCH_MONTHLY_CAP``, ten -- and its own call
+(``app/openai_client.py::search``), which no other feature can reach.
 """
 
 from __future__ import annotations
 
 __all__ = [
+    "CATALOGUE",
     "DEFERRED_FEATURES",
     "FEATURES",
     "FEATURE_LABELS",
+    "INPUT_KINDS",
     "LANGUAGES",
     "LONG_ANSWER_FEATURES",
+    "OPT_IN_FEATURES",
     "REASONING_EFFORT",
     "SHIPPED_FEATURES",
     "TEMPLATES",
@@ -174,6 +184,15 @@ TEMPLATES: dict[str, str] = {
         "something, say so rather than guessing. Do not use tables, and keep "
         "any formatting simple.\n\n{prompt}"
     ),
+    # --- Built, switched off until an operator turns it on (OPT_IN_FEATURES).
+    "web_search": (
+        "Search the web to answer the user's question, in plain language "
+        "suitable for a screen reader to read aloud. Give the answer first, "
+        "briefly. Then list the sources you used, one per line, each as the "
+        "site's name followed by its address. If the search does not answer "
+        "the question, say so plainly rather than guessing. Do not use "
+        "tables.\n\nQuestion: {prompt}"
+    ),
     # --- Not shipped. See DEFERRED_FEATURES. --------------------------------
     "alt_text": (
         "Describe this image in one concise sentence suitable as alt text "
@@ -217,6 +236,7 @@ LONG_ANSWER_FEATURES: frozenset[str] = frozenset({
     "headings",
     "make_list",
     "simplify",
+    "web_search",
 })
 
 #: The languages Translate offers. The client shows the same list
@@ -258,6 +278,19 @@ DEFERRED_FEATURES: dict[str, str] = {
     ),
 }
 
+#: Features that are built, tested and shipped **switched off**, and the sentence
+#: anyone who reaches one while it is off is shown. Different from a deferred
+#: feature: nothing is missing, the flag is a cost decision an operator makes on
+#: the Features page. Seeded off (``flask seed-config``, migration 009), and a
+#: missing flag row reads as off (``app/routes/client_config.py``).
+OPT_IN_FEATURES: dict[str, str] = {
+    "web_search": (
+        "Web search is switched off on this service. Each search is charged by "
+        "the provider on top of its words, so it is turned on deliberately. "
+        "Everything else still works."
+    ),
+}
+
 #: Every id the ``/v1/chat`` route will recognise. A deferred feature is
 #: recognised and then refused by its flag, which produces a clear sentence;
 #: an unrecognised one is a 400, which does not.
@@ -283,6 +316,144 @@ FEATURE_LABELS: dict[str, str] = {
     "continue": "Continue writing",
     "email_reply": "Write an email reply",
     "translate": "Translate",
+    "web_search": "Web search",
+}
+
+#: The kinds of input a catalogue entry may ask the client for (``GET
+#: /v1/config``'s ``features``). A client offers a feature only when it knows
+#: the kind and skips the rest, so a new kind never breaks an older client:
+#:
+#: - ``selection``: a passage from the document -- the selection, else the
+#:   paragraph, else the section -- sent as ``prompt``. The shape of Summarize.
+#: - ``prompt``: only what the person types; nothing from the document.
+#: - ``document``: a typed question sent as ``prompt``, with excerpts from the
+#:   document picked to answer it sent as ``chunks`` (the template's
+#:   ``{context}``). The shape of document Q&A.
+#: - ``conversation``: a conversation window of its own. Only ``chat``.
+INPUT_KINDS: tuple[str, ...] = ("selection", "prompt", "document", "conversation")
+
+#: What the client is told about each shipped feature (``GET /v1/config``,
+#: ``features``), so a new text tool -- a template here, an id in
+#: :data:`SHIPPED_FEATURES` and an entry here -- reaches every installed copy
+#: with no client release. ``label`` is the row a person arrives on, ``help``
+#: is the one sentence F1 reads for it, ``input`` is what it works on
+#: (:data:`INPUT_KINDS`). Written for the person using QUILL, not for an operator; the
+#: console's words are :data:`FEATURE_LABELS`.
+#:
+#: The client shows only entries it does not already have built in, and it
+#: validates every field (it is remote input), so wording here is the only
+#: thing that reaches a screen -- never markup, never an instruction to a model.
+CATALOGUE: dict[str, dict[str, str]] = {
+    "summarize": {
+        "label": "Summarize",
+        "help": "A few plain sentences saying what this passage says.",
+        "input": "selection",
+    },
+    "rewrite": {
+        "label": "Rewrite",
+        "help": "The same meaning, clearer and shorter.",
+        "input": "selection",
+    },
+    "proofread": {
+        "label": "Proofread",
+        "help": "Spelling, grammar and punctuation corrected, wording left alone.",
+        "input": "selection",
+    },
+    "explain": {
+        "label": "Explain",
+        "help": "What this passage means, in plain language.",
+        "input": "selection",
+    },
+    "shorten": {
+        "label": "Shorten",
+        "help": "The same passage at about half the length, every important fact kept.",
+        "input": "selection",
+    },
+    "simplify": {
+        "label": "Simplify",
+        "help": (
+            "Plain language that is easy to read: short sentences, everyday words, "
+            "and any technical term explained."
+        ),
+        "input": "selection",
+    },
+    "formal": {
+        "label": "Make more formal",
+        "help": "The same meaning in a professional tone, for work or official letters.",
+        "input": "selection",
+    },
+    "friendly": {
+        "label": "Make friendlier",
+        "help": "The same meaning in a warmer tone, as if to someone you know.",
+        "input": "selection",
+    },
+    "make_list": {
+        "label": "Turn into a list",
+        "help": "A bulleted list, or numbered steps when the passage describes a process.",
+        "input": "selection",
+    },
+    "action_items": {
+        "label": "Find action items",
+        "help": (
+            "Every task, who does it, and every date or deadline the passage "
+            "mentions, one per line."
+        ),
+        "input": "selection",
+    },
+    "headings": {
+        "label": "Suggest headings",
+        "help": (
+            "Headings that would divide the passage into sections a screen reader "
+            "can jump between, and where each one goes."
+        ),
+        "input": "selection",
+    },
+    "continue": {
+        "label": "Continue writing",
+        "help": "A next paragraph in the same voice, to keep, change or throw away.",
+        "input": "selection",
+    },
+    "email_reply": {
+        "label": "Write an email reply",
+        "help": (
+            "Paste or select an email you received; you get a polite reply to edit, "
+            "with anything you must decide left in square brackets."
+        ),
+        "input": "selection",
+    },
+    "translate": {
+        "label": "Translate",
+        "help": "The passage in the language you choose, meaning and formatting kept.",
+        "input": "selection",
+    },
+    "document_qna": {
+        "label": "Ask a question about the document",
+        "help": (
+            "Type a question; QUILL finds the parts of the document that answer it "
+            "and sends only those."
+        ),
+        "input": "document",
+    },
+    "ask": {
+        "label": "Ask a general question",
+        "help": "Type any question. Only your question is sent -- nothing from your document.",
+        "input": "prompt",
+    },
+    "web_search": {
+        "label": "Search the web",
+        "help": (
+            "Type a question; QUILL's free AI searches the web and answers with its "
+            "sources. Only your question is sent. Searches are limited each month."
+        ),
+        "input": "prompt",
+    },
+    "chat": {
+        "label": "Have a conversation",
+        "help": (
+            "Talk back and forth in a window of its own; each reply remembers what was said before."
+        ),
+        "input": "conversation",
+    },
 }
 
 #: How hard the model may think, per feature. Code, not config — see the module
@@ -308,6 +479,9 @@ REASONING_EFFORT: dict[str, str] = {
     "continue": "none",
     "email_reply": "none",
     "translate": "none",
+    # Not sent: the search models refuse reasoning_effort, and
+    # app/openai_client.py::build_search_body leaves the key out.
+    "web_search": "none",
 }
 
 #: The only values :data:`REASONING_EFFORT` may take, cheapest first. Anything
@@ -361,7 +535,10 @@ def build_prompt(
     (``app/routes/chat.py``) validates ``feature`` against :data:`FEATURES`
     before ever reaching here, and validates *history* as well."""
     template = TEMPLATES[feature]
-    if feature == "document_qna":
+    # Any template with a {context} slot takes the excerpts there -- document
+    # Q&A today, and any catalogue feature whose input is "document" tomorrow,
+    # with no change to this function.
+    if "{context}" in template:
         context = "\n\n---\n\n".join(chunks or [])
         return template.format(context=context, prompt=prompt)
     if feature == "chat":

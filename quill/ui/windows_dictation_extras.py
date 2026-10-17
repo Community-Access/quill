@@ -70,6 +70,34 @@ class DictationExtrasMixin:
         QUILL Lite's windows keep themselves in step from their own events."""
         del control
 
+    # -- the family's shared settings (dict.md D-13) ------------------------------ #
+
+    def _dictation_share_settings(self) -> None:
+        """Dictation Settings was saved: give the shared fields to the family,
+        when "Share dictation settings with every QuillVille program" is on. A write that
+        fails is said: this program's copy is saved, the others' is not."""
+        from quill.core.windows_dictation.family_store import FamilyDictationError, publish
+
+        try:
+            publish(self._dictation_settings(), app=self._dictation_app())  # type: ignore[attr-defined]
+        except FamilyDictationError as error:
+            self._dictation_say(error.sentence)  # type: ignore[attr-defined]
+
+    def _dictation_take_family(self) -> bool:
+        """This program came to the front: take what another program saved.
+        Said in the status bar only; the change is the person's own choice,
+        made elsewhere, and is not worth interrupting them for."""
+        from quill.core.windows_dictation.family_store import adopt
+
+        try:
+            changed = adopt(self._dictation_settings(), app=self._dictation_app())  # type: ignore[attr-defined]
+        except Exception:  # noqa: BLE001 - a family file that cannot be read changes nothing
+            return False
+        if changed:
+            self._dictation_save_settings()  # type: ignore[attr-defined]
+            self._dictation_status("Dictation settings updated from the family.")  # type: ignore[attr-defined]
+        return changed
+
     # -- the language ----------------------------------------------------------- #
 
     def cmd_switch_dictation_language(self) -> None:
@@ -86,10 +114,13 @@ class DictationExtrasMixin:
     def _dictation_set_speech_language(self, language: str) -> None:
         """Save the dictation language, and say if this copy cannot do it."""
         from quill.core.windows_dictation.engines import language_model_problem
+        from quill.core.windows_dictation.settings_fields import settle_share
 
         settings = self._dictation_settings()  # type: ignore[attr-defined]
+        settle_share(settings)  # sharing decided before anything changes (D-13)
         settings.windows_dictation_speech_language = "es" if language == "es" else "en"
         self._dictation_save_settings()  # type: ignore[attr-defined]
+        self._dictation_share_settings()
         label = "Spanish" if language == "es" else "English"
         self._dictation_status(f"Dictation language: {label}")  # type: ignore[attr-defined]
         problem = language_model_problem(
@@ -275,8 +306,12 @@ class DictationExtrasMixin:
             return f"Waiting for the wake phrase, {preferences.wake_phrase}."
         modes = controller.mode_text
         spelling = " Spelling." if controller.spelling else ""
+        # Command mode (D-1) is otherwise only in the status bar, which a
+        # braille display does not show while the editor has the focus.
+        command = str(getattr(controller, "command_mode_text", "") or "")
         return (
             f"Dictation on, {engine}, in {language}."
             + (f" {modes[:1].upper()}{modes[1:]} on." if modes else "")
             + spelling
+            + (f" {command}." if command else "")
         )

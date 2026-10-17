@@ -987,7 +987,9 @@ in place, Backspace comes back. Chapter 5, Keeping up without keeping
 watch, shows how to make your own.</p>
 <p><strong>Notifications</strong> keeps what Cast has told you, newest
 first, so a message you missed is still there. Enter takes you to
-whatever the notice was about. Chapter 5 has more on it.</p>
+whatever the notice was about. When some are unread, <strong>Help &gt;
+Notifications…</strong> says how many, such as “Notifications (3 new)…”.
+Chapter 5 has more on it.</p>
 <p><strong>Podcasts</strong> is your whole library as a tree, with
 folders at the top and podcasts inside them. Try it now: press
 <strong>Ctrl+Shift+S</strong> and arrow down through the podcasts you
@@ -1120,8 +1122,9 @@ straight away.</li>
 <li>Press the same key again to switch back.</li>
 </ol>
 <p>Even in Simple mode, every Advanced command still works from the
-Command Palette (Ctrl+Shift+P) and from Go To. Nothing is out of
-reach.</p>
+Command Palette (Ctrl+Shift+P) and from Go To. Nothing is out of reach.
+An Advanced row’s own key, though, works only while Advanced Features is
+on, because the key belongs to the menu row.</p>
 <p>If you would like an even smaller Cast, <strong>View &gt; Customize
 Features</strong> (Ctrl+Alt+C) can switch whole parts of it off, such as
 Downloads or the sleep timer. Whatever you turn off, you still have a
@@ -2112,6 +2115,32 @@ not give a website. Cast tells you when an address has been copied.</p>
 <p>If you would rather be walked through it, Help &gt; Tutorials has a
 lesson called <strong>The first hour</strong>. Its first few steps find
 and follow a podcast with you.</p>
+<h3 id="dictating-into-a-search-box">Dictating into a search box</h3>
+<p>Typing a podcast’s name is not the only way. If QUILL Transcribe is
+part of your QuillVille family, <strong>Edit &gt; Dictate Here</strong>
+(<strong>Ctrl+F11</strong>) lets you say it instead. Neither Cast nor
+Radio listens to the microphone itself; QUILL Transcribe does the
+listening and types what you say into the box you are in.</p>
+<ol type="1">
+<li>Press <strong>Ctrl+N</strong>. Focus is in <strong>Podcast
+name</strong>.</li>
+<li>Press <strong>Ctrl+F11</strong>. If QUILL Transcribe is running, you
+hear it start, with its usual “Dictation on” or start sound. If it is
+not, Cast says “Starting QUILL Transcribe. Dictation starts here when it
+is ready.” and it starts in the tray.</li>
+<li>Say the name, for example “the daily”, and pause. The words are
+typed into the box.</li>
+<li>Press QUILL Transcribe’s start and stop key, or say “stop
+dictation”, then press Enter to search.</li>
+</ol>
+<p>Ctrl+F11 works in any text box in Cast, including the ones in dialogs
+such as Add Podcast and Search Everywhere. Your own words from My Words
+and Phrases and the dictation commands work as they do everywhere else.
+If Quill Inkwell is dictating, Cast tells you so and nothing starts. If
+QUILL Transcribe is not in your copy of the family, the item is not on
+the Edit menu; the key then does nothing. QUILL Transcribe is released
+on 1 November 2026, and from then on public builds of Quill Cast and
+Quill Radio show Dictate Here.</p>
 <h3 id="following-acb-medias-podcasts">Following ACB Media’s
 podcasts</h3>
 <p>If you would like a full shelf to explore on your first day, Podcasts
@@ -2419,7 +2448,7 @@ Tech, Long Drives, whatever suits you. They live in the
 with your podcasts inside them.</p>
 <p>To make a folder and fill it:</p>
 <ol type="1">
-<li>Choose Podcasts &gt; <strong>New Folder…</strong> (Ctrl+Shift+F),
+<li>Choose Podcasts &gt; <strong>New Folder…</strong> (Ctrl+Shift+E),
 type a name and press Enter.</li>
 <li>Go to a podcast, press Shift+F10, and choose <strong>Move to
 Folder…</strong>.</li>
@@ -2548,11 +2577,11 @@ too. Changed your mind? Press <strong>Ctrl+Z</strong> straight away and
 it comes back with its episodes and your place in them.</p>
 <h3 id="spotify-podcasts-experimental">Spotify podcasts
 (experimental)</h3>
-<p>Cast can play podcasts hosted on Spotify. This is early work, and
-hidden until you unlock it. You need four things:</p>
+<p>Cast can play podcasts hosted on Spotify. This is early, experimental
+work. Its two rows are on the Help menu from the start, in Simple and
+Advanced mode alike, and no unlock code is needed. Before they can play
+anything, you need three things:</p>
 <ul>
-<li>the Spotify feature unlocked with a code, through Help &gt;
-<strong>Redeem Unlock Code…</strong>;</li>
 <li>a Spotify Premium account, since Spotify only streams to Premium
 members;</li>
 <li>your own Spotify Client ID, from an app you register in the Spotify
@@ -2561,7 +2590,8 @@ Developer Dashboard with its redirect address set to exactly
 <li>the Microsoft Edge WebView2 runtime, which current Windows already
 has.</li>
 </ul>
-<p>Once it is unlocked, the Help menu gains two rows.</p>
+<p>With those three in place, use the two Help menu rows in this
+order.</p>
 <ol type="1">
 <li><strong>Connect to Spotify…</strong> (Ctrl+Alt+S). Type your Client
 ID and start the sign-in. Your web browser opens on Spotify’s own page.
@@ -3252,14 +3282,16 @@ streaming, so a dropped connection does not stop the episode and Cast
 can find chapters in it. It is on to start with, and the audio is
 cleared away by itself. <strong>Space for streamed episodes</strong>
 sets how much room that may take.</p>
-<p><strong>Free Up Space</strong> (Ctrl+Alt+F) applies those rules now
-and tells you how much space came back. <strong>Run Housekeeping
-Now</strong> (Ctrl+Alt+H) does the whole tidy-up at once: expired queue
-episodes, Recently Expired, Inbox limits and storage, and tells you what
-it did in one sentence. It also runs after every check. Both are on the
-Downloads menu in Advanced mode, Free Up Space is on the Downloads
-place’s Applications key menu, and both are always in the Command
-Palette (Ctrl+Shift+P).</p>
+<p>Two Advanced rows on the Downloads menu act on those rules straight
+away; turn on View &gt; Advanced Features (Ctrl+Alt+Shift+G) to see them
+and use their keys. <strong>Free Up Space</strong> (Ctrl+Alt+F) applies
+those rules now and tells you how much space came back. <strong>Run
+Housekeeping Now</strong> (Ctrl+Alt+H) does the whole tidy-up at once:
+expired queue episodes, Recently Expired, Inbox limits and storage, and
+tells you what it did in one sentence. It also runs after every check.
+In Simple mode, Free Up Space is still on the Downloads place’s
+Applications key menu, and both are always in the Command Palette
+(Ctrl+Shift+P).</p>
 <h3 id="playlists">Playlists</h3>
 <p>A playlist is a saved list of episodes you can come back to. There
 are two kinds. One you build by hand holds exactly what you put in it,
@@ -4498,9 +4530,13 @@ follow, your folders and playlists, your Lineups, your place in each
 episode, your notes, statistics, bookmarks and Go To order. Put it on a
 memory stick or in a cloud folder, and you can always get back to where
 you are today.</p>
+<p>Back Up My Podcasts and Restore from a Backup are Advanced rows, and
+their keys work only while View &gt; Advanced Features
+(Ctrl+Alt+Shift+G) is on. In Simple mode, type “back up” or “restore” in
+the Command Palette (Ctrl+Shift+P) instead.</p>
 <ol type="1">
 <li>Press <strong>Ctrl+Alt+Shift+B</strong> (Podcasts &gt; Back Up My
-Podcasts).</li>
+Podcasts, an Advanced row).</li>
 <li>Cast asks whether to include your downloaded episodes. The answer
 starts at No. Downloads can be huge, and Cast can fetch them again. Say
 Yes only if you want the audio files too.</li>
@@ -4513,7 +4549,7 @@ folders.</p>
 <p>When you need your library back, from a backup you made earlier:</p>
 <ol type="1">
 <li>Press <strong>Ctrl+Alt+F12</strong> (Podcasts &gt; Restore from a
-Backup).</li>
+Backup, an Advanced row).</li>
 <li>Pick the backup file.</li>
 <li>Before it does anything, Cast tells you when the backup was made and
 how many podcasts it holds. If that is the one you meant, confirm.</li>
@@ -4523,7 +4559,7 @@ stops first, and your podcasts are back straight away, with no
 restart.</p>
 <h4 id="exporting-your-data-to-read">Exporting your data to read</h4>
 <p>Sometimes you want to look at your data, or use it in another
-program. <strong>Podcasts &gt; Export My Data</strong>
+program. In Advanced mode, <strong>Podcasts &gt; Export My Data</strong>
 (<strong>Ctrl+Alt+Shift+E</strong>) writes everything Cast knows about
 your listening to one readable file: the podcasts you follow, folders,
 the Play Queue, playlists, notes, statistics and what you played
@@ -4537,13 +4573,14 @@ lesson called <strong>Back it up, move it, and keep your place</strong>.
 It makes a backup with you, then covers the move to a new computer and
 keeping your place in step.</p>
 <h3 id="starting-over">Starting over</h3>
-<p>If you want a clean slate on this computer, <strong>Podcasts &gt;
-Clear All Podcast Data from This Computer</strong>
-(<strong>Ctrl+Alt+Shift+D</strong>) unfollows every podcast and clears
-your Play Queue, playlists, Inbox folders, statistics and history. Cast
-asks twice, with No selected each time, then asks separately whether to
-delete your downloaded files as well. Make a backup first if there is
-any chance you will want it back.</p>
+<p>If you want a clean slate on this computer, turn on Advanced Features
+and choose <strong>Podcasts &gt; Clear All Podcast Data from This
+Computer</strong> (<strong>Ctrl+Alt+Shift+D</strong>), an Advanced row.
+It unfollows every podcast and clears your Play Queue, playlists, Inbox
+folders, statistics and history. Cast asks twice, with No selected each
+time, then asks separately whether to delete your downloaded files as
+well. Make a backup first if there is any chance you will want it
+back.</p>
 <p>It only ever clears this computer. Your phone, your other computers
 and the shared folder you use to keep your place in step are left
 exactly as they are, so tidying a laptop can never empty anything
@@ -4907,8 +4944,15 @@ tells you about a new version and downloads it only when you ask.</p>
 <p><strong>If an update doesn’t start.</strong> After an update, Cast
 checks that the new version really opens. If it doesn’t open within two
 minutes, the update undoes itself and puts back the version you had, and
-the next time Cast starts it tells you so. Nothing of yours is changed,
-and Update History has the details. To make this possible, Cast keeps a
+the next time Cast starts it tells you so. If the new version is still
+running but stuck, it is closed first. Nothing of yours is changed, and
+Update History has the details. If the installer itself doesn’t finish,
+nothing is changed at all: Cast opens again straight away as the version
+you had and tells you the update could not be installed. A portable copy
+is updated by putting the new version in the old folder’s place, with
+your <code>data</code> folder moved across untouched. The installer
+updates quietly and doesn’t ask for administrator permission, because
+Cast is installed for you alone. To make this possible, Cast keeps a
 copy of the installer for the version you have: on Beta and Dev for as
 long as you have that version, and on Stable for a week or three starts
 after each update. That copy takes about 200 MB of disk space, which
@@ -4946,10 +4990,13 @@ chapters in episodes that have none, and for Sound Enhancements and
 Smart Speed. It comes with Cast, so you will probably never think about
 it. If it ever goes missing, Cast tells you once when it opens.</p>
 <p><strong>Help &gt; Media Tools</strong>
-(<strong>Ctrl+Alt+Shift+M</strong>) checks for it whenever you ask, and
-<strong>Help &gt; Get FFmpeg</strong>
-(<strong>Ctrl+Alt+Shift+F</strong>) puts it back. Both are Advanced
-rows. Following, downloading and playing all work without it.</p>
+(<strong>Ctrl+Alt+Shift+M</strong>), an Advanced row, checks for it
+whenever you ask, and <strong>Help &gt; Get FFmpeg</strong>
+(<strong>Ctrl+Alt+Shift+F</strong>), another Advanced row, puts it back.
+Turn on View &gt; Advanced Features (Ctrl+Alt+Shift+G) to see both and
+use their keys, or find either by name in the Command Palette
+(Ctrl+Shift+P). Following, downloading and playing all work without
+it.</p>
 <h3 id="getting-help-from-support">Getting help from support</h3>
 <p>Support is run by Community Access, and a person reads every message.
 If something is wrong, or you have an idea, write to us.</p>
@@ -5948,8 +5995,13 @@ for the days you want them all in one place. Happy listening.</p>
 <h2 id="keyboard-reference">Keyboard reference</h2>
 <p>These are the keys Cast comes with. If you change one, the Keyboard
 Shortcuts Sheet (Ctrl+Alt+Shift+K) shows the key you have now. Rows
-marked Advanced appear on the menus only when Advanced Features is
-on.</p>
+marked Advanced appear on the menus only when Advanced Features is on,
+and their keys work only then too, because each key belongs to its menu
+row. In Simple mode, reach one of them by name from the Command Palette
+(Ctrl+Shift+P) or Go To (Ctrl+G), or turn Advanced Features on with
+Ctrl+Alt+Shift+G. For example, in Simple mode Ctrl+Alt+Shift+B does
+nothing; type “back up” in the Command Palette instead and press
+Enter.</p>
 <h3 id="the-main-window-and-menus">The main window and menus</h3>
 <table>
 <thead>
@@ -6489,7 +6541,7 @@ Chapter 9.</p>
 </tr>
 <tr>
 <td>New Folder</td>
-<td>Ctrl+Shift+F</td>
+<td>Ctrl+Shift+E</td>
 </tr>
 <tr>
 <td>Add Personal Audio</td>
@@ -6641,6 +6693,10 @@ Chapter 9.</p>
 <td>Ctrl+Shift+Z</td>
 </tr>
 <tr>
+<td>Dictate Here (Edit menu, with QUILL Transcribe)</td>
+<td>Ctrl+F11</td>
+</tr>
+<tr>
 <td>Repeat Last Result</td>
 <td>F9</td>
 </tr>
@@ -6701,11 +6757,11 @@ Chapter 9.</p>
 <td>Ctrl+Alt+Shift+Y</td>
 </tr>
 <tr>
-<td>Connect to Spotify (experimental, once unlocked)</td>
+<td>Connect to Spotify (experimental)</td>
 <td>Ctrl+Alt+S</td>
 </tr>
 <tr>
-<td>Browse Spotify Podcasts (experimental, once unlocked)</td>
+<td>Browse Spotify Podcasts (experimental)</td>
 <td>Ctrl+Alt+V</td>
 </tr>
 </tbody>

@@ -221,6 +221,7 @@ class Settings(DictationSettings):
     ai_privacy_accepted_version: int = 0
     ai_own_key_model: str = ""  # own-key AI model; key in the OS store (core/ai/own_key.py)
     ai_own_key_provider: str = "openai"  # or "gemini": the explicit choice, QUILL's field too
+    ai_answer_delivery: str = "window"  # or cursor/clipboard; QUILL's field (ai/answer_delivery)
     #: Whether reopening asks first: "always", "when_it_matters" or "never".
     #: Same field name and same three values as QUILL, because it is the same
     #: question -- see ``quill/core/session_restore.py``, which answers it for
@@ -261,11 +262,10 @@ class Settings(DictationSettings):
     #: alternative to QUILL -- and a machine that has never had QUILL installed
     #: must not grow a Quill data folder because somebody opened a text file.
     share_quill_abbreviations: bool = False
-    #: Read and write taught words in QUILL's shared dictionary instead of
-    #: QUILL Lite's own. Off by default for the same reason the abbreviation
-    #: switch is: a machine that has never had QUILL installed must not grow a
-    #: Quill data folder because somebody taught a text editor a word.
+    #: Taught words (spelling) and My Words (dictation, dict.md D-12) from QUILL's
+    #: files, not QUILL Lite's own. Off for the reason the abbreviation switch is.
     share_quill_dictionary: bool = False
+    share_quill_dictation_words: bool = False
     dictionary_online_lookups: bool = False
     #: Keep every copy and cut in the clip library automatically.
     #:
@@ -281,6 +281,8 @@ class Settings(DictationSettings):
     #: and never implemented it -- the capture method was written and called
     #: from nowhere (bad.md C1).
     clip_library_autocapture: bool = False
+    #: QUILL's setting and default; the rule is quill/core/clipboard_collector.py.
+    clipboard_collector_saves: bool = True
     #: Shortest gap between two spoken announcements, in milliseconds.
     #:
     #: Zero -- no throttle -- which is what QUILL Lite has always done and what
@@ -328,6 +330,9 @@ class Settings(DictationSettings):
     #: to discover by reading their own file back.
     autoformat_smart_quotes: bool = False
     autoformat_dashes: bool = False
+    #: QUILL's two typing assists, under QUILL's names and defaults (both off).
+    autocorrect_misspellings: bool = False
+    continue_lists_in_plain_text: bool = False
     #: Walk the F7 review by how often each word recurs rather than by
     #: position. QUILL Lite never had this: it was a QUILL-only second command
     #: on a second chord, and became the shared dialog's checkbox on

@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from quill.ui.radio import browse_door, volume_commands
+from quill.ui.radio import browse_door, song_identify_commands, volume_commands
 
 
 def _open_statistics(host: Any) -> None:
@@ -18,6 +18,13 @@ def _open_statistics(host: Any) -> None:
     from quill.ui.radio.stats_dialog import open_for_host
 
     open_for_host(host)
+
+
+def _lyrics(host: Any) -> None:
+    """Lyrics for the song on the air -- see ui/radio/lyrics_commands."""
+    from quill.ui.radio import lyrics_commands
+
+    lyrics_commands.lyrics_for_playing(host)
 
 
 def _folder_step(host: Any, *, forward: bool) -> None:
@@ -205,6 +212,12 @@ def register_radio_commands(host: Any) -> None:
             host.radio_song_history,
         ),
         (
+            # The words of the song on the air, from LRCLIB, on request only.
+            "radio.lyrics",
+            "Internet Radio: Lyrics...",
+            lambda: _lyrics(host),
+        ),
+        (
             # Your own searchable tags on what is on air (station_tags_dialog).
             "radio.edit_station_tags",
             "Internet Radio: Edit Tags for the Playing Station...",
@@ -227,18 +240,23 @@ def register_radio_commands(host: Any) -> None:
         ),
         (
             "radio.rewind",
-            "Internet Radio: Rewind 30 Seconds",
+            "Internet Radio: Rewind",
             host.radio_rewind,
         ),
         (
             "radio.forward",
-            "Internet Radio: Forward 30 Seconds",
+            "Internet Radio: Forward",
             host.radio_forward,
         ),
         (
             "radio.jump_to_live",
             "Internet Radio: Back to Live",
             host.radio_jump_to_live,
+        ),
+        (
+            song_identify_commands.COMMAND_ID,
+            song_identify_commands.PALETTE_TITLE,
+            lambda: song_identify_commands.identify_song(host),
         ),
         (
             "radio.volume_boost",

@@ -53,7 +53,35 @@ def test_the_bar_leads_with_actions_and_dropped_the_readout_cells() -> None:
     # count ("Favorites 1 button") came off; Play/Stop and Mute/Unmute came on.
     bar = RadioStatusBar(_host())
     keys = [s.key for s in bar._specs]
-    assert keys == ["play_stop", "mute", "volume", "recording", "sleep_timer", "clock"]
+    # Notifications (2026-10-15) is a readout that answers Enter by opening the
+    # list, so it earns its place the way Sleep timer and Time do.
+    assert keys == [
+        "play_stop",
+        "mute",
+        "volume",
+        "recording",
+        "sleep_timer",
+        "notifications",
+        "clock",
+    ]
+
+
+def test_the_notifications_cell_counts_what_is_unread(monkeypatch) -> None:
+    from quill.ui import support_menu
+
+    bar = RadioStatusBar(_host())
+    monkeypatch.setattr(support_menu, "unread_notices", lambda: 3)
+    assert _spec(bar, "notifications").text() == "3 new"
+    monkeypatch.setattr(support_menu, "unread_notices", lambda: 0)
+    assert _spec(bar, "notifications").text() == "None new"
+
+
+def test_the_help_menu_label_carries_the_unread_count() -> None:
+    from quill.ui.support_menu import notifications_label
+
+    host = SimpleNamespace(_menu_label=lambda title, _cid: f"{title}\tCtrl+Alt+Shift+F3")
+    assert notifications_label(host, 2) == "&Notifications (2 new)...\tCtrl+Alt+Shift+F3"
+    assert notifications_label(host, 0) == "&Notifications...\tCtrl+Alt+Shift+F3"
 
 
 def test_play_stop_cell_label_is_the_action_it_would_perform() -> None:

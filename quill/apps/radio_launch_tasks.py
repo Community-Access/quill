@@ -113,6 +113,22 @@ def register_surfaces(app: Any) -> None:
 
     bookmarks_wiring.register(app)
     calendar_wiring.register(app)
+    # What's New (todo P3 Radio extras 8): one key, what arrived meanwhile.
+    from quill.ui.radio import whats_new_wiring
+
+    whats_new_wiring.register(app)
+    # System-wide keys the listener gave favourites (xradio2 4.9); none by default.
+    from quill.ui.radio import favorite_hotkeys_ui
+
+    favorite_hotkeys_ui.register_all(app, wx)
+    # A background station or a mirror on another device (xradio2 4.6, 4.7).
+    from quill.ui.radio import second_output_ui
+
+    second_output_ui.register(app)
+    # Station Details: search and read the signed station pack (todo P2 #33).
+    from quill.ui.radio import station_details_dialog
+
+    station_details_dialog.register(app)
     # Make Quill Radio My Media Player (2026-10-04): standalone only, because
     # it registers *this* program, and embedded QUILL is a different one.
     from quill.ui.radio import media_player_registration
@@ -151,6 +167,11 @@ def append_calendar_menu(app: Any, menu: Any, wx: Any) -> None:
     ask_radio_wiring.append_menu_items(app, menu, wx)
     menu.AppendSeparator()
     calendar_wiring.append_menu_items(app, menu, wx)
+    # What's New sits beside What Is On Now: one asks what is broadcast, the
+    # other what arrived while you were away.
+    from quill.ui.radio import whats_new_wiring
+
+    whats_new_wiring.append_menu_item(app, menu, wx)
     # Beside the schedule, because they are the same question asked of the same
     # broadcaster: what is on live, and what can I keep. Both are "places this
     # community already goes, brought inside the app".

@@ -2,7 +2,7 @@
 
 These are the hands-on checks for everything built in late September and early
 October 2026 across QUILL Cast, Quill Radio, QUILL Lite and QUILL. There are
-226 of them. Each one says where to go, what to press and what you should
+272 of them. Each one says where to go, what to press and what you should
 hear. Check a box only after you have tried it yourself with a screen reader;
 passing automated tests do not count.
 
@@ -948,3 +948,320 @@ a long phrase and wait. Check on NVDA, JAWS and Narrator:
 - [ ] Narrator: the same.
 - [ ] With **What you hear after each phrase** set to words only: no tick, and
   the sentence at four seconds, on each slow phrase.
+
+## QUILL Transcribe Into Other Programs (D-4, 2026-10-15)
+
+An automated test (`tests/integration/test_transcribe_targets.py`) types the
+same phrases into each program below and reads the text back, and its results
+are the table in QUILL Transcribe's user guide, "Programs it has been tested
+with". It can tell whether the keys arrived. It cannot tell what your screen
+reader said, so these checks are for that, and for the programs the test has
+not reached yet.
+
+Before you start:
+
+- Dictate only into a new, empty document, or a new message addressed to
+  nobody. Never into anything you would mind losing or sending.
+- Use QUILL Transcribe's defaults: the start and stop key is
+  Alt+Shift+Backslash, and **What you hear after each phrase** is a tone.
+- Say the same thing each time: "Hello everyone period this is a test comma
+  of dictation period new line numbers like forty two arrive intact period".
+- Write down the program's version (Help > About) beside anything that goes
+  wrong, and whether letters went missing, came out of order, or turned into
+  the program's own shortcuts. A program that drops keys is what decides the
+  per-program fallback (D-3).
+
+In each program, with each screen reader, all of these must hold:
+
+1. Pressing Alt+Shift+Backslash plays the start tone, and the reader says
+   nothing extra: no "c", no stray letter.
+2. The text arrives exactly as said, with its capitals, commas, full stops,
+   the line break and "42".
+3. After each phrase you hear the tone and nothing else: the reader does not
+   say "period" or the last letter typed.
+4. Switch **What you hear after each phrase** to words: the reader, or QUILL
+   Transcribe, reads the phrase once, not twice.
+5. Press Alt+Tab to another program while dictating and say a phrase: you hear
+   "Dictation paused", nothing is typed in the other program, and choosing
+   Resume from the tray menu types the held words back in the first field.
+6. "scratch that" takes back the last phrase and nothing before it.
+
+Then check a box for each program and reader once all six held:
+
+- [ ] Notepad with NVDA.
+- [ ] Notepad with JAWS.
+- [ ] Notepad with Narrator.
+- [ ] WordPad with NVDA (Windows 10, or Windows 11 before version 24H2, which
+  removed it).
+- [ ] WordPad with JAWS.
+- [ ] WordPad with Narrator.
+- [ ] Word with NVDA. Word's own curly quotes and capitals are fine; a doubled
+  capital or a lost space is not.
+- [ ] Word with JAWS.
+- [ ] Word with Narrator.
+- [ ] Outlook with NVDA, in the body of a new message addressed to nobody. No
+  letter may act as a shortcut: the message must never send, and the To line
+  must stay empty.
+- [ ] Outlook with JAWS.
+- [ ] Outlook with Narrator.
+- [ ] Edge with NVDA, in a multi-line text box with the reader in focus mode.
+  Then start dictation once with the reader in browse mode instead, and write
+  down what happened: whether the words arrived, or the letters moved you
+  around the page as quick-navigation keys. That decides what the user guide
+  tells people to do.
+- [ ] Edge with JAWS (forms mode in place of focus mode).
+- [ ] Edge with Narrator (scan mode off).
+- [ ] Chrome with NVDA, the same as Edge.
+- [ ] Chrome with JAWS.
+- [ ] Chrome with Narrator.
+- [ ] Firefox with NVDA, the same as Edge.
+- [ ] Firefox with JAWS.
+- [ ] Firefox with Narrator.
+- [ ] Visual Studio Code with NVDA, in a new untitled file. A bracket or quote
+  typed by dictation must not be doubled by the editor's automatic closing.
+- [ ] Visual Studio Code with JAWS.
+- [ ] Visual Studio Code with Narrator.
+
+### Dictation: the command word and command mode (2026-10-15)
+
+With a microphone, in Notepad, Word and Edge through QUILL Transcribe (strict
+mode on), and in a QUILL Lite document. Check on NVDA, JAWS and Narrator:
+
+- [ ] NVDA: "QUILL scratch that" takes the last phrase back, with the short
+  rising tone and nothing typed; bare "scratch that" is typed as words in
+  QUILL Transcribe and works as a command in QUILL Lite.
+- [ ] NVDA: "QUILL pancakes" types nothing; you hear the error sound and "Not a
+  command", once; "QUILL type that" then types "pancakes".
+- [ ] NVDA: "QUILL command mode" says "Command mode" once; the State field (or
+  the Dictation cell) shows Command mode and is not read again on its own;
+  eight seconds later a falling tone plays, nothing is said, and the next
+  phrase is typed.
+- [ ] JAWS: the same.
+- [ ] Narrator: the same.
+- [ ] F11 in QUILL Lite and the Command Key in QUILL Transcribe: one press arms
+  one command (the tone), two presses command mode, a third back to dictation.
+- [ ] How often each engine hears "QUILL" as something else (Moonshine tiny,
+  Whisper, Windows speech): note any that never match.
+
+### Dictation: review before inserting (D-2, 2026-10-15)
+
+With a microphone, in a QUILL document, a QUILL Lite document and Notepad
+through QUILL Transcribe, with an own key or a ChatGPT sign-in. Check on NVDA,
+JAWS and Narrator:
+
+- [ ] NVDA: "QUILL review that" opens Review Dictation; the title and the text
+  are read by the screen reader and nothing else is said; the text reads by
+  line, word and character, and a braille display shows it.
+- [ ] NVDA: "QUILL make it shorter" says "Working." once, then a summary of no
+  more than two sentences; the reader's speech is not heard as the next
+  instruction; "QUILL what changed" repeats it.
+- [ ] NVDA: Ctrl+Enter in QUILL and QUILL Lite inserts once, and one Ctrl+Z
+  takes it out; in QUILL Transcribe the words are typed into the field you
+  started in, and nothing was typed while reviewing.
+- [ ] JAWS: the same.
+- [ ] Narrator: the same.
+- [ ] The consent question appears once, with No as the default; No sends
+  nothing and says "Nothing was sent."
+- [ ] From the tray, QUILL Transcribe's review window comes to the front rather
+  than flashing on the taskbar.
+- [ ] End QUILL Transcribe from Task Manager with a review open; on the next
+  start it says the review was kept, and Review Dictation brings the words back.
+
+### Dictation: rescue, history, snippet blanks and reading back (D-5, D-8, D-18, 2026-10-16)
+
+With a microphone, in a QUILL document, a QUILL Lite document, and Notepad and
+Edge through QUILL Transcribe. Check on NVDA, JAWS and Narrator:
+
+- [ ] NVDA: pause QUILL Transcribe by moving the focus, say two phrases, then
+  end it from Task Manager. On the next start it says "2 dictated phrases were
+  not written last time and are kept. Recent Phrases, Shift+F11, brings them
+  back." once, and Recent Phrases lists them after this run's phrases.
+- [ ] NVDA: in Recent Phrases, each kept row is read with its label ("Not
+  written, held while paused", the time, the words); Discard says
+  "Discarded." once and the list reads the next row; Insert Again types it and
+  the row is gone next time.
+- [ ] NVDA: with Keep a dictation history on Seven days, close and reopen, and
+  the earlier phrases are listed as "Earlier"; Clear History asks with No as
+  the default, and Yes says "Dictation history cleared."
+- [ ] NVDA: in Edge, "QUILL insert snippet bug report" says the snippet's name,
+  its count and "Summary?"; each answer is not typed; after the last blank the
+  whole snippet is typed once and the reader echoes it; "QUILL scratch that"
+  takes all of it back.
+- [ ] NVDA: a choice reads its options; "choose two" picks the second.
+- [ ] NVDA: in a QUILL document, "read last sentence", "read last paragraph" and
+  "read selection" each say the text once, punctuation by name; "read that"
+  after a snippet reads all of it.
+- [ ] NVDA: Review Transcript's Type into a Field says "Switch to the field you
+  want." and types the selection, or all of it, in the field.
+- [ ] JAWS: the same.
+- [ ] Narrator: the same.
+
+### AutoCorrect and Enter in a list (todo items 38 and 40, 2026-10-16)
+
+In QUILL and in QUILL Lite, each in a new `.txt` document and a new `.md`
+document. Turn on **Correct common misspellings as I type** (QUILL: Settings,
+Editing; QUILL Lite: Preferences, with Autocorrect while typing on in
+Customize Features). Check on NVDA, JAWS and Narrator:
+
+- [ ] NVDA: type `I saw teh` and a space. The reader echoes the space, then
+  the word-corrected sound plays and "Corrected to the" is said once. Read the
+  line: it says "I saw the".
+- [ ] NVDA: press Ctrl+Z straight away. Read the line: "I saw teh", no space.
+  Type a space: nothing is said about a correction and the word stays; the
+  status bar says "Kept teh as you typed it".
+- [ ] NVDA: type `Teh` at the start of a line and a space: "Corrected to The".
+  Type `TEH` and a space: no correction.
+- [ ] NVDA: type `teh.example.com` and a space, then `adress@example.com` and
+  a space: nothing is corrected and nothing is said.
+- [ ] NVDA: open a `.py` file and type `teh` and a space: nothing is corrected.
+- [ ] NVDA: press Alt+Shift+9. The reader says "AutoCorrect Entries" and the
+  focused row of the Corrections list ("abscence becomes absence, built in").
+  F1 says what the window is for, then the list's help. Type `teh` in Find
+  (Alt+F): the list narrows and the row is read when you Tab back to it.
+- [ ] NVDA: Add a correction (`qill`, `QUILL`): the AutoCorrect Entry window's
+  two fields and checkbox are read with their labels; OK says "Added: qill
+  becomes QUILL" once. Turn Off on `teh` says "Turned off: teh will no longer be
+  corrected"; the button is then read as "Turn On". Remove on `teh` says
+  "Restored the built-in correction: teh becomes the". Close with Escape and
+  type `qill` and a space in the document: "Corrected to QUILL".
+- [ ] NVDA: in the `.md` document type `1. bread milk`, put the cursor before
+  `milk` and press Enter. "Continued list item" is said once; read the two
+  lines: "1. bread", "2. milk". Ctrl+Z puts back the single line.
+- [ ] NVDA: on an empty `2. ` item press Enter: "Exited list" once, and the
+  marker is gone.
+- [ ] NVDA: in the `.txt` document, `1. one` and Enter starts a plain new line
+  and says nothing; with **Continue lists in plain text** on, the same Enter
+  says "Continued list item" and the new line starts `2. `.
+- [ ] NVDA: QUILL Lite Preferences: both new checkboxes are read with their
+  labels and states, Tab reaches them, and F1 on each reads its help.
+- [ ] JAWS: the same.
+- [ ] Narrator: the same.
+
+### QUILL Transcribe: holding the key, the wake phrase and braille (D-9, D-6, 2026-10-15)
+
+With a microphone, in Notepad, Word and Outlook through QUILL Transcribe, and a
+braille display where one is available. Check on NVDA, JAWS and Narrator:
+
+- [ ] NVDA: with Hold the dictation key to talk on, hold Alt+Shift+Backslash,
+  say two phrases, let go: both are typed after you let go, none arrives as an
+  Alt shortcut, and dictation stops. A quick press still turns it on and off.
+- [ ] NVDA: with the wake phrase on, the tray says Listening for your wake
+  phrase while Notepad is in front; ordinary speech types nothing; "Quill
+  dictate dear Sam" starts dictation and types "Dear Sam". With QUILL Lite in
+  front, Ctrl+F11 in QUILL Lite starts its own dictation rather than being
+  refused.
+- [ ] NVDA with a braille display: "Hearing: ..." appears while you speak in
+  Outlook, is not spoken, and does not fight the reader's own messages; Command
+  mode appears on the display when the Command Key is pressed twice.
+- [ ] NVDA: Alt+F9 in the window, and a Dictation Status Key chosen in the File
+  menu pressed in Outlook, say one sentence with the state, the program, the
+  model and the held count.
+- [ ] NVDA: with dictation paused, a Resume Key pressed back in the first field
+  types the held words; a Discard Held Words Key throws them away.
+- [ ] JAWS: the same.
+- [ ] Narrator: the same (Narrator brailles what is spoken, so the braille-only
+  lines may not appear).
+
+### QUILL Transcribe: the six moments, on every reader (B-6, 2026-10-16)
+
+The dictation benchmark (the design record's section 26) measures the words
+and how fast they arrive. It cannot hear your screen reader, so these are the
+checks it leaves to you. Use a microphone, QUILL Transcribe's defaults, and a
+new, empty Notepad document. Each moment must be announced once, in plain
+words, and the reader must not repeat what QUILL Transcribe already said.
+
+1. **Start.** Press Alt+Shift+Backslash: the start tone plays and you hear
+   "Dictation on." once. The reader says no stray letter.
+2. **Stop.** Press Alt+Shift+Backslash again while you are still speaking: the
+   phrase you were saying is still typed, then you hear "Dictation off." once.
+3. **Pause.** While dictating, press Alt+Tab to another program and say a
+   phrase: you hear "Dictation paused." and the reason, once; nothing is typed
+   in the other program; Resume in the tray menu types the held words in
+   Notepad and says how many phrases it wrote.
+4. **Refusal.** Start dictation in a password field (a browser sign-in page you
+   do not submit), then in QUILL Lite: you hear "That is a password field, so
+   nothing is typed there." and "This is a QUILL window: press Ctrl+F11 to
+   dictate here." Each is said once, and nothing is typed.
+5. **Command mode.** Say "QUILL command mode": you hear "Command mode" once;
+   the next phrase is a command, not typed; after eight seconds of quiet a
+   falling tone plays and nothing is said.
+6. **Review surface.** Say "QUILL review that" (with an AI engine set up): the
+   Review Dictation window opens; the reader says its title and the text, and
+   QUILL Transcribe says nothing over it; closing it puts you back in
+   Notepad.
+
+Check a box once all six held, and write the reader's version beside it:
+
+- [ ] All six with NVDA.
+- [ ] All six with JAWS.
+- [ ] All six with Narrator.
+
+## Reading guarded documents, Word names in Save As, and typing names in lists (2026-10-16)
+
+Items 37, 41 and 45 of the editor and media completion checks. The code and
+its automated tests are done; none of the checks below has been tried with a
+screen reader yet.
+
+### Read-Only Guard (QUILL and QUILL Lite)
+
+1. **Toggle.** Open a saved document, press Ctrl+Alt+Backspace: you hear
+   "Document is read-only" once, and nothing else. Type a letter: nothing is
+   typed and the reader says nothing odd. Press it again: "Document is
+   editable".
+2. **A refused command.** With the guard on, press Ctrl+V (QUILL Lite) or
+   insert a snippet (QUILL): you hear "Document is read-only" once and no
+   success sentence follows.
+3. **Remembered.** Turn it on, close the app, double-click the same file in
+   File Explorer: it opens locked (type a letter to check), with no extra
+   announcement beyond the usual open.
+4. **Reading still works.** With the guard on, use Find, Go To, the next
+   heading key, set a bookmark (QUILL Lite Ctrl+Shift+B, then F2) and add an
+   inline note (Alt+Shift+I): each works and says what it normally says. The
+   note is offered only as a note kept beside the file.
+5. **QUILL Lite menu.** Tools > Read-Only Guard reads as a checked or
+   unchecked item with Ctrl+Alt+Backspace beside it.
+6. **A long book.** Open a very long Markdown book, turn the guard on, and move
+   by heading in browse mode: each heading is read promptly.
+
+- [ ] All six with NVDA.
+- [ ] All six with JAWS.
+- [ ] All six with Narrator.
+
+### Save As by typed name
+
+1. **QUILL.** In an untitled document, Save As `minutes.docx`: you hear the
+   "Saved as minutes.docx, Word format" sentence; open the file in Word and
+   move by heading.
+2. **QUILL Lite.** Save As `minutes.docx`: one message box saying QUILL Lite
+   cannot save Word documents, naming Rich Text; Enter closes it and focus
+   returns to the document. Nothing is written.
+3. **QUILL Lite, rich document.** In a rich text window, Save As
+   `minutes.docx`: the same message, and no "removes all formatting" question
+   first.
+
+- [ ] All three with NVDA.
+- [ ] All three with JAWS.
+- [ ] All three with Narrator.
+
+### Typing a name in a list
+
+1. **QUILL Lite Snippets** (Ctrl+Alt+Shift+Home) with two snippets whose names
+   start the same ("meeting agenda", "meeting notes"): type `meeting notes` at
+   an ordinary pace. The reader reads the rows as the selection moves, the
+   space does not insert anything, and the list ends on "meeting notes".
+   Enter inserts it.
+2. **A pause.** Type `mee`, wait two seconds, press Space: the selected row
+   opens, as before.
+3. **No match.** Type `zzz`: you hear "No match for z" (or the letters typed)
+   once, and the selection stays.
+4. **QUILL Insert Snippet** with a large library (a few thousand snippets):
+   the window opens without a long wait, the line above the list says how many
+   matched and that only the first 200 are shown, and typing narrows it.
+5. **Manage Abbreviations** (QUILL Lite Ctrl+Alt+A, QUILL Ctrl+Shift+Grave then
+   Shift+A, Inkwell Ctrl+M) with a large list: rows read as "name, N of total", typing a few letters in the
+   list moves to the abbreviation, and searching keeps the selected row when
+   it still matches.
+
+- [ ] All five with NVDA.
+- [ ] All five with JAWS.
+- [ ] All five with Narrator.

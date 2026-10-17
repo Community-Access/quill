@@ -1282,6 +1282,15 @@
     "user_guide_section": "writing-and-editing"
   },
   {
+    "id": "format.autocorrect_entries",
+    "title": "AutoCorrect Entries...",
+    "body": "See, add, change, turn off and remove the corrections AutoCorrect makes as you type, such as teh becoming the. The list holds every built-in correction and every one of yours; type in Find to narrow it. Add makes a correction of your own, Edit changes the one you are on, Turn Off stops one without deleting it, and Remove deletes one of yours or puts a built-in one back. Corrections happen only while Correct common misspellings as I type is on in Settings, and never in code or settings files. Your corrections are kept with your abbreviations.",
+    "keystrokes": [
+      "Alt+Shift+9"
+    ],
+    "user_guide_section": "writing-and-editing"
+  },
+  {
     "id": "format.blockquote",
     "title": "Insert Block Quote",
     "body": "Insert a block quote at the cursor, or turn the selected lines into one. Format-aware: it writes Markdown in a Markdown document and HTML in an HTML document.",
@@ -3263,7 +3272,7 @@
   {
     "id": "tools.windows_dictation_recent",
     "title": "Recent Phrases",
-    "body": "The last twenty phrases you dictated this session, newest first. Enter writes the chosen phrase at the cursor again; Copy puts it on the clipboard.",
+    "body": "The last twenty phrases you dictated this session, newest first, then words kept from before: phrases that were not written because dictation was paused or typing stopped, a review that did not finish, and, with Keep a dictation history on in More Dictation Settings, earlier phrases. Enter writes the chosen phrase at the cursor again, and kept words are deleted once written; Copy puts it on the clipboard; Discard deletes kept words unwritten; Clear History deletes the history after asking.",
     "keystrokes": [
       "Shift+F11"
     ],
@@ -4187,6 +4196,24 @@
     "body": "Tell dictation what this document is, in a sentence: a formal letter to a client, notes to a friend, technical writing. It is remembered for this document. OpenAI dictation uses it to get names, titles and style right, and Tidy Dictated Text follows it with your instructions. The engines on this computer cannot be given a context. You can save a context under a name and pick it again later, or say dictation context and the name while dictating.",
     "keystrokes": [
       "Ctrl+Alt+Shift+PageUp"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.windows_dictation_command",
+    "title": "Speak a Command",
+    "body": "The keyboard way to give dictation a command. Press it, and the next thing you say is a command, as if you had said the command word, QUILL, first: press F11, then say scratch that. Press it twice and you are in command mode, where everything you say is a command until you say dictation mode, press it again, or give no command for eight seconds; a falling tone says it has ended. If dictation is off, it starts dictation here first. Anything that is not a command is never typed: you hear Not a command, and saying QUILL type that writes it after all. The command word, strict mode and how long command mode lasts are in More Dictation Settings.",
+    "keystrokes": [
+      "F11"
+    ],
+    "user_guide_section": "tools"
+  },
+  {
+    "id": "tools.windows_dictation_review",
+    "title": "Review Dictation",
+    "body": "Hold dictated words in a window before they go in. Press it while dictating and the last phrase is taken back out and opened for review; with nothing to take, the window opens empty, or with the words kept from a review that did not finish. Read the words with the arrow keys, type or keep dictating to change them, and with AI help on and your ChatGPT subscription or your own AI key, ask the AI to change them: type the instruction, or say QUILL make it shorter. What changed is said in two sentences at most. Control Enter inserts the words once, as one undo step; Escape discards them. Saying QUILL review that does the same as the key.",
+    "keystrokes": [
+      "Shift+F4"
     ],
     "user_guide_section": "tools"
   }

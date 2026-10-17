@@ -605,8 +605,11 @@ and close phrasings still match.</p>
 dictation your words (a dictation profile)</h2>
 <p>Dictation can learn <em>your</em> vocabulary. QUILL reads a small,
 human-editable file called <strong><code>dictation.md</code></strong> in
-your QUILL data folder; edit it, save, and the next dictation uses it.
-Every section is optional.</p>
+the family’s dictation folder
+(<code>%LOCALAPPDATA%\QuillVille\Dictation</code> on an installed copy;
+it was copied there from your QUILL data folder, which keeps the old one
+as a backup); edit it, save, and the next dictation uses it. Every
+section is optional.</p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">## Vocabulary</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>QUILL</span>
@@ -653,15 +656,22 @@ Speech Models</strong> you can install and choose:</p>
 commands; <em>Small</em> (~465 MB) is the recommended all-round choice.
 Larger models (Medium, Large) are more accurate but slower and much
 bigger.</li>
-<li><strong>Parakeet 3</strong> (NVIDIA, via sherpa-onnx) — <strong>the
-most reliable choice for dictation</strong>, and once its ~650 MB model
-is installed, dictation prefers it automatically (your explicit engine
-choice still wins). It covers 25 languages, detects which one you are
-speaking, runs on any CPU, and — unlike Whisper — never invents text
-from silence, so a thinking pause can never become a phantom “thank you”
-in your document.</li>
-<li><strong>Nemotron</strong> (NVIDIA, via sherpa-onnx) — a strong
-offline English engine that runs without heavy dependencies.</li>
+<li><strong>QUILL speech models</strong> (via sherpa-onnx) — the models
+every QUILL app shares, so one download serves QUILL, QUILL Lite and
+QUILL Transcribe. The built-in Moonshine tiny is there from the start,
+and is what voice commands use when Whisper has no model. Among the
+downloads:
+<ul>
+<li><strong>Parakeet 3</strong> (NVIDIA) — <strong>the most reliable
+choice for dictation</strong>, and once its ~670 MB model is installed,
+dictation prefers it automatically (your explicit engine choice still
+wins). It covers 25 languages, detects which one you are speaking, runs
+on any CPU, and — unlike Whisper — never invents text from silence, so a
+thinking pause can never become a phantom “thank you” in your
+document.</li>
+<li><strong>Nemotron 3.5</strong> (NVIDIA) — a strong English and
+Spanish model that recognises while you speak.</li>
+</ul></li>
 <li><strong>Faster Whisper</strong> — an additional offline option.</li>
 </ul>
 <h2 id="privacy-and-control-at-a-glance">Privacy and control at a

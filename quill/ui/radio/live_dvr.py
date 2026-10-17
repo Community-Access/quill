@@ -3,7 +3,9 @@
 Extracted from ``player_controller.py`` under GATE-11 (extract, never
 rebaseline). One concern: a live stream has no timeline, but the mpv engine
 keeps a rolling demuxer cache of what has already arrived, and that cache is a
-timeline of sorts -- roughly forty-five minutes of it. Everything here is about
+timeline of sorts -- an hour of it by default, kept on disk since 2026-10-15
+(``quill.core.radio.timeshift``). How far one burst of presses moves is
+``quill.core.radio.tiered_seek``. Everything here is about
 moving within that window and reporting honestly how far behind the live edge
 you now are.
 

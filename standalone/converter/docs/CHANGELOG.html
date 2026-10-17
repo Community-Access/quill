@@ -256,6 +256,44 @@ and <code>converter_advanced.py</code>, its windows in
 Audio Studio at the same time. The <code>standalone/converter</code>
 folder carries only the launcher, installer, icon and these
 documents.</p>
+<h2 id="unreleased">Unreleased</h2>
+<ul>
+<li><p><strong>Process with Auphonic</strong> (2026-10-15). If you have
+an Auphonic account, Convert &gt; Process with Auphonic… (Ctrl+Shift+A)
+sends the queue’s sound files to it for post-production and saves the
+results back under your output folder, without Auphonic’s website. Send
+them as separate productions, one after another, or as one multitrack
+production with a track per file in queue order. Check your account and
+load your presets without uploading anything, then keep the preset’s
+processing or choose Quick cleanup (leveling, loudness and filtering,
+with background-noise reduction only if you turn it on), and keep the
+preset’s outputs or choose MP3, AAC, Opus, FLAC or WAV. One confirmation
+lists every file that will be sent and every one that will not, and why,
+before anything is uploaded; Cancel sends nothing. Progress, Stop
+(Ctrl+Enter) and the report (Ctrl+R) work as they do for a conversion, a
+failed file does not stop the rest, only sound files are downloaded, and
+nothing is ever overwritten. A production Auphonic has started is
+remembered on this computer, so Stop, a lost connection or closing the
+app never loses it: Convert &gt; Auphonic Work Waiting… (Ctrl+Alt+A)
+fetches it later. The API token is the one the Audio Studio uses, kept
+in Windows Credential Manager. Nothing contacts Auphonic until you ask,
+and Safe Mode turns this off. Converting itself is still entirely on
+your computer.</p></li>
+<li><p><strong>FFmpeg’s licence, checked on every build.</strong>
+FFmpeg’s licence (the GNU General Public License, version 3) and the
+note on where to get its source were already in the
+<code>tools\ffmpeg</code> folder beside FFmpeg. The build and the
+installer now stop if either is ever missing, so a release cannot ship
+FFmpeg without them.</p></li>
+<li><p><strong>Every release build checks its version against what is
+published</strong> (2026-10-15). The shared QuillVille runtime carries
+every app’s version number, so a build of one app could make another
+report a version nobody can download yet, and Check for Updates would
+then never offer the real one. Quill Converter’s release builds now run
+the same check Quill Radio, QUILL Lite, QUILL Cast and Quill Weather
+already did, and a build of every app at once checks them all again
+instead of stopping at an app it did not know.</p></li>
+</ul>
 <h2 id="100--2026-09-28">1.0.0 – 2026-09-28</h2>
 <p>The first public release. The app was first built in July 2026 as an
 audio converter; that build was never published as an installer, and

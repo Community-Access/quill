@@ -32,8 +32,12 @@ import os
 import time
 from collections.abc import Callable
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from quill.core.windows_dictation.model_catalog import DownloadableModel
+
+if TYPE_CHECKING:
+    from quill.core.windows_dictation.model_advice import Recommendation
 
 __all__ = [
     "BUDGET",
@@ -41,6 +45,9 @@ __all__ = [
     "LAG_SENTENCE",
     "SpeedCheck",
     "estimate",
+    "hardware_only",
+    "latest",
+    "recommend",
     "run",
     "verdict",
 ]
@@ -68,6 +75,10 @@ class SpeedCheck:
     tiny: float | None
     cores: int
     memory_gb: float | None
+    #: An NVIDIA graphics card was found (D-22 says it changes nothing for
+    #: dictation, whose models all run on the processor). Only the timed check
+    #: looks, because the probe runs ``nvidia-smi``.
+    has_gpu: bool = False
 
     @property
     def weak(self) -> bool:
@@ -76,29 +87,23 @@ class SpeedCheck:
 
 
 def _memory_gb() -> float | None:
+    """Total memory, from the same detector Manage Speech Models uses."""
     try:
-        import ctypes
+        from quill.core.speech.service import detect_total_ram_gb
 
-        class _Status(ctypes.Structure):
-            _fields_ = [
-                ("length", ctypes.c_ulong),
-                ("load", ctypes.c_ulong),
-                ("total", ctypes.c_ulonglong),
-                ("free", ctypes.c_ulonglong),
-                ("page_total", ctypes.c_ulonglong),
-                ("page_free", ctypes.c_ulonglong),
-                ("virtual_total", ctypes.c_ulonglong),
-                ("virtual_free", ctypes.c_ulonglong),
-                ("extended", ctypes.c_ulonglong),
-            ]
-
-        status = _Status()
-        status.length = ctypes.sizeof(_Status)
-        if not ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(status)):  # type: ignore[attr-defined]
-            return None
-        return round(float(status.total) / 1_073_741_824, 1)
+        total = detect_total_ram_gb()
     except Exception:  # noqa: BLE001 - not Windows, or no answer
         return None
+    return round(total, 1) if total > 0 else None
+
+
+def _gpu() -> bool:
+    try:
+        from quill.core.speech.service import detect_has_gpu
+
+        return detect_has_gpu()
+    except Exception:  # noqa: BLE001 - no probe, no card
+        return False
 
 
 def _probe() -> list[float]:
@@ -143,13 +148,54 @@ def _time_tiny() -> float | None:
     return best / _CLIP_SECONDS * _PROBE_TO_SPEECH
 
 
-def run(timer: Callable[[], float | None] | None = None) -> SpeedCheck:
+#: The last timed check this session, so a window that cannot wait two seconds
+#: (QUILL Transcribe's Choose Model and Set Up, Dictation Settings) can still
+#: give the timed answer once Speech Models has run it.
+_LAST: SpeedCheck | None = None
+
+
+def run(
+    timer: Callable[[], float | None] | None = None,
+    gpu: Callable[[], bool] | None = None,
+) -> SpeedCheck:
     """Run the check. Blocking (about two seconds): call it on a worker."""
+    global _LAST
     try:
         tiny = (timer or _time_tiny)()
     except Exception:  # noqa: BLE001 - no engine, no numpy: fall back to the hardware
         tiny = None
-    return SpeedCheck(tiny=tiny, cores=os.cpu_count() or 1, memory_gb=_memory_gb())
+    result = SpeedCheck(
+        tiny=tiny, cores=os.cpu_count() or 1, memory_gb=_memory_gb(), has_gpu=(gpu or _gpu)()
+    )
+    if tiny is not None:
+        _LAST = result
+    return result
+
+
+def hardware_only() -> SpeedCheck:
+    """The instant answer: cores and memory, nothing timed."""
+    return SpeedCheck(tiny=None, cores=os.cpu_count() or 1, memory_gb=_memory_gb())
+
+
+def latest() -> SpeedCheck:
+    """This session's timed check if one ran, else :func:`hardware_only`. Instant."""
+    return _LAST if _LAST is not None else hardware_only()
+
+
+def recommend(
+    check: SpeedCheck,
+    language: str = "en",
+    privacy: str = "local",
+    *,
+    priority: str = "balanced",
+    has_gpu: bool | None = None,
+) -> Recommendation:
+    """The model for this computer and why (dict.md D-22); see
+    :func:`quill.core.windows_dictation.model_advice.recommend`, which this
+    names where the spec put it. Never switches anything."""
+    from quill.core.windows_dictation.model_advice import recommend as advise
+
+    return advise(check, language, privacy, priority=priority, has_gpu=has_gpu)
 
 
 def estimate(model: DownloadableModel, check: SpeedCheck) -> float:

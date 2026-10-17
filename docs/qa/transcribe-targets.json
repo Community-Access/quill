@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "phrases": [
+    "Hello everyone.",
+    " This is a test of dictation into another program.",
+    " Commas, full stops and question marks?",
+    " Yes!",
+    " Numbers like 42 and 3.5 arrive intact.",
+    " Don't lose the apostrophe.",
+    " She said \"quoted words\" here.",
+    " Brackets (like these) stay put.",
+    " A colon: and a semicolon; too.",
+    "\nA new line starts here.",
+    " The quick brown fox jumps over the lazy dog.",
+    " Last phrase, then stop."
+  ],
+  "programs": [
+    {
+      "key": "notepad",
+      "program": "Notepad",
+      "date": "2026-10-15",
+      "version": "11.2607.14.0",
+      "status": "tested",
+      "phrases_sent": 4,
+      "phrases_exact": 0,
+      "verified_by": "TextPattern",
+      "mismatches": [
+        {
+          "sent": "Hello everyone.",
+          "arrived": "Hello e.\u2666"
+        },
+        {
+          "sent": " This is a test of dictation into another program.",
+          "arrived": " this is a test of dictatin into another program."
+        },
+        {
+          "sent": " Commas, full stops and question marks?",
+          "arrived": " commas, fulks/\t"
+        }
+      ],
+      "incomplete": "another window came to the front (msedge.exe)"
+    },
+    {
+      "key": "wordpad",
+      "program": "WordPad",
+      "date": "2026-10-15",
+      "status": "untested",
+      "reason": "WordPad was removed from Windows 11 in version 24H2."
+    },
+    {
+      "key": "word",
+      "program": "Microsoft Word",
+      "date": "2026-10-15",
+      "status": "skipped",
+      "version": "16.0.20430.20146",
+      "reason": "installed on the test computer, not run yet"
+    },
+    {
+      "key": "outlook",
+      "program": "Microsoft Outlook",
+      "date": "2026-10-15",
+      "status": "skipped",
+      "version": "16.0.20430.20146",
+      "reason": "installed on the test computer, not run yet"
+    },
+    {
+      "key": "edge",
+      "program": "Microsoft Edge",
+      "date": "2026-10-15",
+      "status": "skipped",
+      "version": "155.0.4283.45",
+      "reason": "installed on the test computer, not run yet"
+    },
+    {
+      "key": "chrome",
+      "program": "Google Chrome",
+      "date": "2026-10-15",
+      "status": "skipped",
+      "version": "155.0.8059.84",
+      "reason": "installed on the test computer, not run yet"
+    },
+    {
+      "key": "firefox",
+      "program": "Mozilla Firefox",
+      "date": "2026-10-15",
+      "status": "skipped",
+      "version": "157.0.1.583",
+      "reason": "installed on the test computer, not run yet"
+    },
+    {
+      "key": "vscode",
+      "program": "Visual Studio Code",
+      "date": "2026-10-15",
+      "status": "skipped",
+      "version": "1.142.0.0",
+      "reason": "installed on the test computer, not run yet"
+    }
+  ]
+}

@@ -18,7 +18,7 @@ speak. Each phrase is typed when you pause. Press the key again, or say "stop
 dictation", to stop.
 
 The start and stop key is **Alt+Shift+Backslash** unless you change it. To
-change it, choose Dictation > Start and Stop Key (Ctrl+Alt+Shift+D): type the
+change it, choose File > Start and Stop Key... (Ctrl+Alt+Shift+D): type the
 key, or press **Record Key...** and press it. If you empty the box, the tray
 menu starts and stops dictation instead: choose Start Dictation, switch to the
 field you want, and dictation starts there.

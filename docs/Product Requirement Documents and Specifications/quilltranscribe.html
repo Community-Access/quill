@@ -250,8 +250,8 @@ Transcribe - Product Requirements Document</h1>
 implementation blueprint<br />
 <strong>Status:</strong> Proposed; architecture and scope for product
 review<br />
-<strong>Last updated:</strong> 2026-10-13 (as-built notes in 7.2, 7.4,
-10.3 and 15.2)<br />
+<strong>Last updated:</strong> 2026-10-16 (as-built notes in 7.2, 7.4,
+7.9, 10.3 and 15.2)<br />
 <strong>Initial platform:</strong> Windows desktop<br />
 <strong>Proposed product identifier:</strong>
 <code>QuillTranscribe</code></p>
@@ -507,6 +507,59 @@ at four seconds, once per wait. A sound pack without the tick also
 speaks the sentence at four seconds, once per wait. The setting off is
 silence. The sentence is only said while its wait is open, and the
 read-back that follows a phrase interrupts it.</p>
+<p><strong>As built, 2026-10-15: the command word (dictation plan
+D-1).</strong> A command in another program starts with the command
+word, <strong>QUILL</strong> by default
+(<code>windows_dictation_command_prefix</code>), matched forgivingly as
+the first word after a pause. An utterance classified as a command never
+reaches the insertion step (step 7): if what follows the word is not a
+command, nothing is typed, the error cue plays, and “QUILL type that”
+types the refused words once. <strong>Strict mode</strong>
+(<code>windows_dictation_command_prefix_required</code>) is on by
+default in QUILL Transcribe and off in the editors: a bare command is
+typed as words, except the stop phrase. <strong>Command mode</strong>
+(“QUILL command mode”, or the Command Key pressed twice) takes commands
+without the word until “dictation mode” or
+<code>windows_dictation_command_timeout</code> seconds (8, from 5 to 30)
+with no command, which ends with a falling tone and no speech; the State
+field and the tray name say “Command mode”. The <strong>Command
+Key</strong> (<code>command_hotkey</code>) is a second system-wide key,
+empty until chosen, offered in setup beside Record Key and in File &gt;
+Command Key… (Ctrl+Alt+Shift+K); the window’s Dictation menu has the
+editors’ Speak a Command on F11.</p>
+<p><strong>As built, 2026-10-15: the wake phrase and holding the key
+(dictation plan D-9).</strong> Step 2 has two more ways in, both the
+editors’ shared settings and both off by default. <em>Listen for the
+wake phrase while dictation is off</em>
+(<code>windows_dictation_wake_enabled</code>) keeps the microphone open
+in the shared controller’s STANDBY state while another program is in
+front, never while QUILL Transcribe’s own window, a QUILL or QUILL Lite
+window, or a program on the never-type list is; nothing heard there is
+written, kept or sent until the wake phrase is heard at the start of an
+utterance, and what follows it is dictated. The state line and tray name
+say “Listening for your wake phrase”; stopping goes back to it. <em>Hold
+the dictation key to talk</em>
+(<code>windows_dictation_hold_to_talk</code>) follows the start and stop
+key while it is down: a quick press toggles, a long press talks until
+release and stops, keeping the last phrase. The release is read with
+<code>GetAsyncKeyState</code> on that one key, polled every 40 ms only
+while a press is followed; no low-level keyboard hook is installed.
+Because a system-wide key must have Ctrl or Alt
+(<code>family_chords.show_hide_key_problem</code>) and nothing can be
+typed while one is held, phrases finished while the key is down wait and
+are typed, in order, when it comes up
+(<code>quill/core/transcribe/talk.py</code>
+<code>KeyHeldGate</code>).</p>
+<p><strong>As built, 2026-10-15: feedback where the person works
+(D-6).</strong> The live preview (“Hearing: …”) and the state changes
+that are shown but not spoken (Command mode, Waiting for a command,
+Listening for your wake phrase, and the change back from one of them) go
+to a braille display only, through the announcement engine’s
+braille-only call, following <code>announcement_braille</code>; the
+preview is throttled as in the editors
+(<code>preview.SHOW_SECONDS</code>) and an identical message within two
+seconds is not sent again. The preview is spoken only when the preview
+setting is “speak”.</p>
 <h3 id="73-tray-first-operation">7.3 Tray-first operation</h3>
 <p>The Windows notification-area icon is required for version 1.0. Its
 accessible name and tooltip expose the product name and concise current
@@ -556,12 +609,15 @@ window, a dictation command QUILL Transcribe shares with QUILL and QUILL
 Lite answers the editors’ chord (family rule 2): Ctrl+F11 start or stop,
 Alt+Shift+F6 Dictation Settings, Alt+Shift+F10 My Words and Phrases,
 Ctrl+Shift+F11 Switch Dictation Language, Shift+F5 Transcribe a
-Recording, Shift+F11 Recent Phrases. Version 1.0’s Ctrl+D, Ctrl+, and
-Ctrl+O remain as second keys (rule 5). Live Transcript, Dictation
-Context, Dictation Status and Tidy Dictated Text are not offered, each
-with its reason in <code>quill/core/transcribe/parity.py</code> (rule
-11), and <code>tests/unit/ui/test_transcribe_dictation_parity.py</code>
-holds the menu to that table.</p>
+Recording, Shift+F11 Recent Phrases, and (since 2026-10-15, D-6) Alt+F9
+Dictation Status, which says one sentence: the state, the program the
+session is locked to, the model and the held count. Version 1.0’s
+Ctrl+D, Ctrl+, and Ctrl+O remain as second keys (rule 5). Live
+Transcript, Dictation Context and Tidy Dictated Text are not offered,
+each with its reason in <code>quill/core/transcribe/parity.py</code>
+(rule 11), and
+<code>tests/unit/ui/test_transcribe_dictation_parity.py</code> holds the
+menu to that table.</p>
 <p><strong>As built, 2026-10-13: Recent Phrases (D-5 slice).</strong>
 The editors’ window and code
 (<code>windows_dictation_tools.open_recent_phrases</code>): the last 20
@@ -586,7 +642,19 @@ evidence.</li>
 <li>Model source, license, and any relevant restrictions.</li>
 <li>Whether it supports streaming preview or returns a phrase after a
 pause.</li>
+<li>Its tier: Lightweight, Balanced or High accuracy, derived from the
+model’s measured cost and word errors
+(<code>model_types.tier_for</code>), the same three words in every QUILL
+app that chooses a model.</li>
 </ul>
+<p>Choose Model and Set Up show a read-only <strong>Recommended for this
+computer</strong> line (dict.md D-22,
+<code>model_advice.recommend</code>): one local model for this
+computer’s cores, memory and measured speed, the dictation language and,
+in the Model Library, what matters most (balance, quickest response,
+fewest mistakes), with its reasons in plain words and labelled an
+estimate until the real-voice benchmark exists. It is advice only: there
+is no automatic mode.</p>
 <p>The selected model is sticky. QUILL Transcribe does not switch
 engines because another engine is faster, a model download completes, or
 a request fails. Fallback is a separate, visible action and announces
@@ -618,22 +686,39 @@ minimum:</p>
 <ul>
 <li>Model and speech language.</li>
 <li>Microphone/device.</li>
-<li>Start/stop hotkey and optional hold-to-talk behavior.</li>
+<li>Start/stop hotkey and optional hold-to-talk behavior (built
+2026-10-15, D-9; see 7.2).</li>
+<li>Optional system-wide Dictation Status, Resume and Discard Held Words
+keys (<code>status_hotkey</code>, <code>resume_hotkey</code>,
+<code>discard_hotkey</code>; built 2026-10-15, D-6), each empty until
+chosen in the File menu through the family key picker and its conflict
+checks, and not registered until then.</li>
 <li>Pause sensitivity and phrase preview mode.</li>
 <li>Automatic punctuation, capitalization, and spoken punctuation.</li>
 <li>Filler removal.</li>
-<li>My Words and Phrases / rewrite corrections.</li>
+<li>My Words and Phrases / rewrite corrections, with Import and Export
+(Markdown or CSV, merge only, preview first; dict.md D-12).</li>
 <li>Number, date, and dash formatting where supported.</li>
 <li>Phrase feedback: speech, sound, both, or silent, following shared
 <code>action_feedback</code> guarantees.</li>
-<li>Optional named profiles for common contexts such as email, notes,
-and forms.</li>
+<li>Named profiles (built 2026-10-16, dict.md D-23): Standard, Email,
+Document, Markdown, Chat, Coding and Verbatim. Each overlays the pause,
+fillers and punctuation and sets how headings, bold and italic are
+written. Chosen in Dictation &gt; Dictation Profile (Ctrl+Shift+F), the
+tray, More Dictation Settings, or by voice (“QUILL email mode”); Lock
+Profile stops voice switching. Standard, the default, changes
+nothing.</li>
 </ul>
 <p>Profiles may change correction and formatting choices, but cannot
 bypass target safety or cloud consent. Profiles are explicit user
 choices; automatic application-sensitive profiles are out of scope until
 a privacy review proves they can be implemented without reading document
 content.</p>
+<p>Learning (built 2026-10-16, dict.md D-25): Practice Dictation
+(Ctrl+Shift+P) is the one window of QUILL Transcribe’s own that
+dictation writes into, after the same refusals as any start; its
+recognition test scores a read sentence with the benchmark’s word-error
+count. Help &gt; Tutorials (Ctrl+Alt+F1) has five lessons.</p>
 <h3 id="77-safe-external-text-delivery">7.7 Safe external text
 delivery</h3>
 <p>QUILL Transcribe treats the foreground application as a write-only
@@ -691,11 +776,41 @@ dictating answers in one spoken sentence rather than opening a window
 that would take the focus and pause dictation, and the Dictation
 Commands window lists exactly the commands that work in another program,
 with the person’s own phrases (D-7).</p>
-<p>Commands such as “select that”, “correct the last word”, “go to the
-heading”, “replace this paragraph”, or commands that inspect
-selection/document context are refused in external targets. The refusal
-is brief, consistent, and tells the user that the command is available
-in a QUILL document but not in another application.</p>
+<p><strong>As built, 2026-10-15: review before it is typed
+(D-2).</strong> “QUILL review that” backspaces the last phrase (or takes
+the words held while paused) into the shared <strong>Review
+Dictation</strong> window (Shift+F4, the editors’ chord). While it is
+open the controller writes into the window’s text, never into the
+target, so nothing is typed until Insert, and the locked field is not
+asked (an expected pause, no “Dictation paused”). After the command
+word, “make it shorter” and any other non-command is an AI instruction,
+and “insert it”, “what changed”, “read it back”, “undo that change”,
+“back to what I said” and “discard it” act on the review. Insert brings
+the locked field’s window forward and types the words once through the
+same <code>LockedTarget</code> and <code>send_text_checked</code> path
+as a phrase; a refusal types nothing, is said, and leaves the words in
+Recent Phrases. The AI is the family’s direct route only (QUILL’s
+ChatGPT sign-in or the own key), asked once for consent with No as the
+default; only the words in the review and the instruction are sent,
+never anything read from the target. With no route, or in Safe Mode, AI
+is off and the window edits and inserts by hand.</p>
+<p><strong>As built, 2026-10-16: correction on the session’s own words
+(D-10).</strong> “Correct that” and “choose 1” to “choose 3”,
+“capitalize that”, “all caps that”, “no caps that”, “replace X with Y”
+(inside the last phrase only), “change that to Y”, “delete last
+sentence” and “delete previous paragraph” work in external targets on
+the text the adapter itself inserted, as a backspace-and-retype pair
+through the same checked injection path. They are refused, with one
+sentence and nothing sent, when the target is no longer the locked
+field, when the system’s last-input time is later than dictation’s own
+typing (the person typed, clicked or moved the mouse), or, for the
+commands that retype, when the foreground program is Word or Outlook
+(AutoCorrect). The target is never read. Design record section 27.</p>
+<p>Commands such as “select that”, “correct” and a word, “go to the
+heading”, or commands that inspect selection/document context are still
+refused in external targets. The refusal is brief, consistent, and tells
+the user that the command is available in a QUILL document but not in
+another application.</p>
 <h3 id="79-audio-file-transcription">7.9 Audio-file transcription</h3>
 <p>The existing QUILL and QUILL Lite file-transcription pipeline is a
 natural second workflow for QUILL Transcribe, but it must not delay or
@@ -711,6 +826,23 @@ the target immediately before writing.</p>
 contract, ship it in 1.1. Do not duplicate <code>FileTranscriber</code>,
 audio decoding, duration handling, or worker orchestration inside the
 new app.</p>
+<p><strong>As built 2026-10-16 (dict.md D-26).</strong> Every local
+model in QUILL, QUILL Lite and QUILL Transcribe now runs on one
+sherpa-onnx layer: QUILL’s Locked Dictation and offline transcription
+reach the same models, from the same store, through the same
+<code>FileTranscriber</code>
+(<code>quill/core/speech/providers/sherpa_shared.py</code>), so a model
+downloaded in any of the three is used by all of them. Transcribe a
+Recording here gains <strong>Translate into English</strong> (Alt+E), on
+the same models as QUILL: enabled for a recording in another language
+with a model whose catalogue <code>tasks</code> include translation
+(multilingual Whisper, built in or downloaded), unavailable otherwise,
+off unless checked. Timestamps were already there. Each catalogue model
+now also carries its memory tier (4, 8 or 16 GB), whether it streams,
+its tasks and its pinned source page. Keyword spotting for the command
+word, hotwords for My Words, punctuation and speaker labels are built on
+the same layer and switched off until measured (the dictation design
+record, section 22).</p>
 <h3 id="710-transcript-retention-and-actions">7.10 Transcript retention
 and actions</h3>
 <p>The default is no transcript history and no retained raw audio. The
@@ -722,9 +854,22 @@ user-visible, and clearable. If enabled, the user chooses whether to
 save transcript text; audio recording is a separate opt-in and is never
 implied by enabling text history. History is never synchronized or
 uploaded in version 1.0.</p>
+<p>As built after 1.0.0 (D-5, 2026-10-16): the history is <strong>Keep a
+dictation history</strong> in More Dictation Settings, Off (the
+default), one, seven or thirty days of text, sealed with Windows DPAPI
+for the person’s account, listed in Recent Phrases after the session’s
+phrases, cleared there with a No-default question, and deleted when
+turned off. Separately from it, the words that were never written (held
+while paused, or typing that stopped part-way) are kept on disk, sealed
+the same way, until they are typed or discarded, so a crash or an exit
+loses nothing. Neither is ever written to the log or a diagnostic
+bundle.</p>
 <p>User-directed output actions include:</p>
 <ul>
 <li>Continue typing into the authorized field.</li>
+<li>Type a reviewed transcript, or the part selected, into the field the
+person goes back to, with the same field checks as dictation (Review
+Transcript’s Type into a Field, after 1.0.0).</li>
 <li>Copy a reviewed transcript, with an explicit action and no
 background clipboard monitoring.</li>
 <li>Save a transcript to a user-selected file.</li>
@@ -794,6 +939,11 @@ named recording action and selects a destination.</li>
 <li>Settings and history use validated schemas and atomic writes;
 credentials use Windows Credential Manager/DPAPI via the shared secrets
 facade.</li>
+<li>The one exception to keeping dictated words in memory only (D-2,
+2026-10-15): words open in Review Dictation are written to
+<code>transcribe-dictation-review.json</code> in the data folder while
+the window is open, so a crash loses nothing, and the file is deleted on
+Insert or Discard.</li>
 </ul>
 <h3 id="93-safe-mode-and-shutdown">9.3 Safe Mode and shutdown</h3>
 <p>Safe Mode disables global hooks, microphone activation, model

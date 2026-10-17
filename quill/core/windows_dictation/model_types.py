@@ -11,16 +11,38 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 __all__ = [
+    "BALANCED",
     "CPU_ONLY",
     "GROUPS",
+    "HIGH_ACCURACY",
+    "HOTWORDS",
+    "HOTWORD_MODELS",
+    "LIGHTWEIGHT",
+    "MEASURED",
     "MODEST",
+    "RAM_TIERS",
     "SHERPA_SOURCE",
+    "STREAMING_KINDS",
     "STRONG",
+    "TASKS",
+    "TIERS",
+    "TIER_MEANINGS",
+    "TIMESTAMPS",
     "TOO_BIG",
+    "TRANSCRIBE",
+    "TRANSLATE",
     "DownloadFile",
     "DownloadableModel",
+    "Measured",
+    "estimated_peak_mb",
     "file",
+    "legacy_tier",
     "megabytes",
+    "ram_tier_budget_mb",
+    "ram_tier_for",
+    "ram_tier_sentence",
+    "tasks_for",
+    "tier_for",
 ]
 
 _HF = "https://huggingface.co/"
@@ -100,8 +122,42 @@ class DownloadableModel:
         return f"{self.name} (downloaded)"
 
     @property
+    def tier(self) -> str:
+        """Lightweight, Balanced or High accuracy (D-22, :func:`tier_for`)."""
+        measured = MEASURED.get(self.id)
+        return tier_for(self.cost_factor, measured.word_errors if measured else None)
+
+    @property
     def language_names(self) -> str:
         return " and ".join({"en": "English", "es": "Spanish"}[code] for code in self.languages)
+
+    # -- the shared layer's catalogue fields (dict.md D-26) ------------------- #
+    #
+    # Derived, never typed per model, for the same reason the tier is: a new
+    # entry gets them by having a kind, languages and a measurement.
+
+    @property
+    def streaming(self) -> bool:
+        """Recognises while you speak (sherpa-onnx's online recogniser)."""
+        return self.kind in STREAMING_KINDS
+
+    @property
+    def ram_tier(self) -> int:
+        """4, 8 or 16: the smallest computer, in GB of memory, this model fits on
+        beside a screen reader (:func:`ram_tier_for`)."""
+        measured = MEASURED.get(self.id)
+        peak = measured.peak_mb if measured else estimated_peak_mb(self.download_bytes)
+        return ram_tier_for(peak)
+
+    @property
+    def tasks(self) -> frozenset[str]:
+        """What it can do: :data:`TASKS` (:func:`tasks_for`)."""
+        return tasks_for(self.id, self.kind, self.languages)
+
+    @property
+    def source_url(self) -> str:
+        """The pinned repository page, for the licence and the details box."""
+        return f"{_HF}{self.repo}/tree/{self.commit}"
 
     def url(self, item: DownloadFile) -> str:
         return f"{_HF}{self.repo}/resolve/{self.commit}/{item.name}"
@@ -125,3 +181,181 @@ TOO_BIG = (
     "A fast computer with 16 GB of memory. Far too slow for live dictation on a "
     "dual-core computer with 8 GB; there it is only for when you can wait."
 )
+
+
+# -- tiers (D-22) ---------------------------------------------------------------- #
+#
+# One vocabulary for every place a speech model is chosen: dictation's Speech
+# engine list and Speech Models, QUILL Transcribe's Choose Model and Set Up, and
+# QUILL's Manage Speech Models and guided offline-speech setup. Named in dict.md
+# D-22; the tier is derived, never typed per model, so a new catalogue entry
+# gets one by having a cost factor.
+
+LIGHTWEIGHT = "Lightweight"
+BALANCED = "Balanced"
+HIGH_ACCURACY = "High accuracy"
+TIERS: tuple[str, ...] = (LIGHTWEIGHT, BALANCED, HIGH_ACCURACY)
+
+#: One plain sentence per tier, for details boxes and F1.
+TIER_MEANINGS: dict[str, str] = {
+    LIGHTWEIGHT: "Lightweight: keeps up comfortably even on a modest computer.",
+    BALANCED: (
+        "Balanced: more work than the built-in engines; keeps up on a computer with "
+        "four or more cores."
+    ),
+    HIGH_ACCURACY: (
+        "High accuracy: the fewest mistakes, for the most work; needs a capable "
+        "computer, or patience."
+    ),
+}
+
+#: The cost-factor bands. Moonshine tiny measured 0.05 seconds of computing per
+#: second of speech on the measuring machine (dictation design, section 6), so a
+#: model up to 5 times its cost stays inside the 0.25 one-thread budget there
+#: (Lightweight), and up to 10 times keeps up on the two threads dictation uses
+#: (Balanced). speed_check.BUDGET is the same 0.25; it is not imported here
+#: because speed_check imports the catalogue, which imports this module.
+_LIGHT_MAX_COST = 5.0
+_BALANCED_MAX_COST = 10.0
+#: A Balanced-cost model whose measured word errors are this low or lower is
+#: labelled High accuracy: the most accurate model measured, at a price a
+#: four-core computer can pay (Nemotron, 2.5 percent).
+_HIGH_ACCURACY_WORD_ERRORS = 2.5
+
+
+@dataclass(frozen=True, slots=True)
+class Measured:
+    """What scripts/dictbench.py measured for one model (2026-10-05: ten
+    recordings of a synthetic voice, one thread; dictation design, section 6).
+    An estimate until B-1's real voices exist, and said so wherever it is used."""
+
+    #: Percent of words wrong.
+    word_errors: float
+    #: Seconds from the end of speech to the text, on the measuring machine.
+    after_pause: float
+    #: Most memory while recognising, in megabytes.
+    peak_mb: int
+
+
+#: Keyed by engine id (built in) or catalogue id (downloads). A model missing
+#: here was not measured and is never recommended: a reason needs a number.
+MEASURED: dict[str, Measured] = {
+    "moonshine": Measured(3.4, 0.2, 210),
+    "whisper": Measured(3.4, 0.7, 303),
+    "moonshine_base": Measured(3.4, 0.3, 365),
+    "whisper_base": Measured(5.1, 1.4, 417),
+    "parakeet_unified": Measured(3.4, 1.2, 844),
+    "parakeet": Measured(4.2, 1.2, 805),
+    "nemotron": Measured(2.5, 1.5, 790),
+    "whisper_small": Measured(5.1, 4.7, 859),
+    "whisper_medium": Measured(3.4, 11.2, 2100),
+    "whisper_turbo": Measured(3.4, 15.4, 1400),
+}
+
+
+def tier_for(cost_factor: float, word_errors: float | None = None) -> str:
+    """The tier for a model costing *cost_factor* times Moonshine tiny, given
+    its *word_errors* (percent) when they were measured."""
+    if cost_factor <= _LIGHT_MAX_COST:
+        return LIGHTWEIGHT
+    if cost_factor <= _BALANCED_MAX_COST:
+        if word_errors is not None and word_errors <= _HIGH_ACCURACY_WORD_ERRORS:
+            return HIGH_ACCURACY
+        return BALANCED
+    return HIGH_ACCURACY
+
+
+#: QUILL's Locked Dictation catalogue names two of the live models under other
+#: ids; they take the live model's tier, so one model is never two tiers. The
+#: cost factors are the live catalogue's (not imported: it imports this module).
+_LEGACY_SAME_AS: dict[str, tuple[str, float]] = {
+    "nemotron-streaming-en-0.6b": ("nemotron", 8.0),
+    "parakeet-tdt-0.6b-v3": ("parakeet", 6.3),
+}
+
+
+# -- memory tiers, tasks and streaming (D-26) --------------------------------- #
+
+#: ``(tier in GB, megabytes dictation may take beside a screen reader there)``.
+#: The same budgets model_advice holds a recommendation to: 600 MB on a 4 GB
+#: computer (dictation design, section 1), 1 GB on an 8 GB one, 2.5 GB above.
+RAM_TIERS: tuple[tuple[int, int], ...] = ((4, 600), (8, 1000), (16, 2500))
+
+#: sherpa-onnx loader kinds that stream (online recognisers).
+STREAMING_KINDS = frozenset({"nemotron"})
+
+TRANSCRIBE = "transcribe"
+TRANSLATE = "translate"
+TIMESTAMPS = "timestamps"
+HOTWORDS = "hotwords"
+TASKS: tuple[str, ...] = (TRANSCRIBE, TRANSLATE, TIMESTAMPS, HOTWORDS)
+
+#: Models measured to learn My Words while listening (D-28). A model joins only
+#: once the real-voice benchmark (B-1) shows hotwords help it with no regression
+#: elsewhere. None has yet: Nemotron's streaming decoder is greedy-only and
+#: Parakeet's NeMo hotwords came out upper-cased and garbled (measured
+#: 2026-10-05, dictation design, section 5 B); English Zipformer transducers,
+#: the realistic route, are not in the catalogue yet.
+HOTWORD_MODELS: frozenset[str] = frozenset()
+
+
+def ram_tier_for(peak_mb: int) -> int:
+    """The smallest memory tier whose budget holds a model peaking at *peak_mb*."""
+    for tier, budget in RAM_TIERS:
+        if peak_mb <= budget:
+            return tier
+    return RAM_TIERS[-1][0]
+
+
+def ram_tier_budget_mb(memory_gb: float) -> int:
+    """What dictation may take beside the screen reader on a computer with
+    *memory_gb* of memory: the budget of the largest tier it reaches. A 4 GB
+    computer reports a little under 4, so the bands are 7 and 15."""
+    if memory_gb < 7.0:
+        return RAM_TIERS[0][1]
+    if memory_gb < 15.0:
+        return RAM_TIERS[1][1]
+    return RAM_TIERS[2][1]
+
+
+def estimated_peak_mb(download_bytes: int) -> int:
+    """Peak memory for a model nobody measured, from its download: the int8
+    weights plus working memory (the measured models ran 1.2 to 2.6 times
+    their download, the small ones highest)."""
+    download_mb = download_bytes / 1_000_000
+    return int(max(download_mb * 1.3, download_mb + 200))
+
+
+def ram_tier_sentence(tier: int) -> str:
+    """``"Fits a computer with 8 GB of memory or more."``"""
+    return f"Fits a computer with {tier} GB of memory or more."
+
+
+def tasks_for(model_id: str, kind: str, languages: tuple[str, ...]) -> frozenset[str]:
+    """Every model transcribes, and every model gives phrase timestamps (the
+    voice detector cuts the phrases, so the times are the same for all).
+    Multilingual Whisper translates into English (``task="translate"``);
+    hotwords only for :data:`HOTWORD_MODELS`."""
+    found = {TRANSCRIBE, TIMESTAMPS}
+    if kind == "whisper" and set(languages) - {"en"}:
+        found.add(TRANSLATE)
+    if model_id in HOTWORD_MODELS:
+        found.add(HOTWORDS)
+    return frozenset(found)
+
+
+def legacy_tier(model_id: str, size_mb: int, accuracy_tier: str) -> str:
+    """The tier for a model in QUILL's whisper.cpp / Faster Whisper catalogue
+    (``quill.core.speech.catalog``), which has sizes and accuracy words rather
+    than measured costs: 200 MB or less is Lightweight, a "high" or "highest"
+    accuracy model is High accuracy, everything between is Balanced."""
+    same = _LEGACY_SAME_AS.get(model_id)
+    if same is not None:
+        live_id, cost = same
+        measured = MEASURED.get(live_id)
+        return tier_for(cost, measured.word_errors if measured else None)
+    if size_mb <= 200:
+        return LIGHTWEIGHT
+    if accuracy_tier in {"high", "highest"}:
+        return HIGH_ACCURACY
+    return BALANCED

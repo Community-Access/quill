@@ -36,7 +36,6 @@ Safe-Mode gated by the caller. wx-free, strict-typed; the UI calls
 
 from __future__ import annotations
 
-import re
 import urllib.parse
 from dataclasses import dataclass, replace
 
@@ -118,7 +117,9 @@ def streamtheworld_mount(url: str) -> str:
     as an extension, which Triton's lookup does not accept -- so it is dropped.
     """
     parts = urllib.parse.urlsplit(url)
-    if not parts.netloc.lower().endswith("streamtheworld.com"):
+    host = (parts.hostname or "").lower()
+    # The parsed host at a dot boundary: evilstreamtheworld.com is not a mount.
+    if host != "streamtheworld.com" and not host.endswith(".streamtheworld.com"):
         return ""
     last = parts.path.strip("/").split("/")[-1] if parts.path.strip("/") else ""
     stem, dot, ext = last.rpartition(".")
@@ -225,37 +226,18 @@ def _pages_to_scan(station: RadioStation) -> list[str]:
     return pages
 
 
-#: A SecureNet *mount* lives on an ``ice<N>`` host. The player front-ends
-#: (``radio.``, ``streamdb<N>web.``) sit on the same domain but serve pages, and
-#: a player page links to itself -- so matching the domain would promote the
-#: page's own links right along with the stream.
-_SECURENET_MOUNT_RE = re.compile(r"^https?://ice\d+\.securenetsystems\.net/", re.IGNORECASE)
-
-
-def _is_resolved_player_mount(url: str) -> bool:
-    """True when *url* **is** a page's own resolved stream rather than a guess
-    taken off it: a Triton/StreamTheWorld mount, or a SecureNet ice mount.
-    """
-    return "streamtheworld.com" in url.lower() or bool(_SECURENET_MOUNT_RE.match(url))
-
-
 def _confident_candidate(candidates: list[PageStreamCandidate]) -> PageStreamCandidate | None:
     """A single high-confidence pick from website candidates, or ``None``.
 
-    A *resolved player mount* is unambiguous -- it is the live stream the page
-    itself advertises, not one of the page's links that merely looks like audio
-    -- so a lone one is confident even beside other guesses. Two platforms
-    qualify: Triton/StreamTheWorld (resolved through its provisioning API) and a
-    SecureNet Cirrus player's own ``ice<N>`` mount. The SecureNet case is why
-    this matters in practice: its player pages also carry ordinary links that
-    survive the scan, so without this a station saved from such a page would
-    stay broken purely because its page was chatty. Failing that, exactly one
-    candidate overall is confident; two or more genuinely different guesses are
-    left for the user to choose between.
+    A *resolved player mount* (Triton/StreamTheWorld, or a SecureNet Cirrus
+    player's own ``ice<N>`` mount) is the live stream the page itself
+    advertises, so one station's mounts are confident even beside other
+    guesses -- and a Triton station's MP3 and AAC mounts are one station, not
+    two choices (#36; :mod:`quill.core.radio.stream_pick`). Failing that,
+    exactly one candidate overall is confident; two or more genuinely different
+    guesses are left for the user to choose between.
     """
-    resolved = [c for c in candidates if _is_resolved_player_mount(c.url)]
-    if len(resolved) == 1:
-        return resolved[0]
-    if len(candidates) == 1:
-        return candidates[0]
-    return None
+    from quill.core.radio.stream_pick import pick_stream
+
+    pick = pick_stream(candidates)
+    return next((c for c in candidates if c.url == pick.url), None) if pick.found else None

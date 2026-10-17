@@ -82,6 +82,22 @@ def foreground_window_info() -> ForegroundWindow:
         return ForegroundWindow()
 
 
+def window_process_name(hwnd: int) -> str:
+    """The program file name that owns *hwnd* ("notepad.exe"), or "". Never raises.
+
+    QUILL Transcribe's Dictation Status key names the program dictation is
+    locked to with it (D-6); the window's title is not read.
+    """
+    try:
+        if not hwnd:
+            return ""
+        pid = ctypes.wintypes.DWORD()
+        _user32.GetWindowThreadProcessId(int(hwnd), ctypes.byref(pid))
+        return _process_name(int(pid.value))
+    except Exception:  # noqa: BLE001
+        return ""
+
+
 def _process_name(pid: int) -> str:
     if not pid:
         return ""

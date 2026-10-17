@@ -226,3 +226,40 @@ def test_the_source_file_validates_as_written() -> None:
         "version": 1,
         "collections": source["collections"],
     })
+
+
+# --------------------------------------------------------------------------- #
+# A rebuild with nothing new keeps the published timestamp (#1659)
+# --------------------------------------------------------------------------- #
+
+
+def test_an_unchanged_catalogue_keeps_its_published_stamp(tmp_path: Path) -> None:
+    builder = _module()
+    published = builder.build([])
+    published["updated"] = "2026-01-01T00:00:00Z"
+    previous = tmp_path / "picks.json"
+    previous.write_text(json.dumps(published), encoding="utf-8")
+
+    rebuilt = builder.keep_unchanged_timestamp(builder.build([]), previous)
+
+    assert rebuilt["updated"] == "2026-01-01T00:00:00Z"
+    assert json.dumps(rebuilt) == json.dumps(published)  # byte-identical: no PR
+
+
+def test_a_changed_catalogue_gets_a_new_stamp(tmp_path: Path) -> None:
+    builder = _module()
+    published = builder.build([])
+    published["updated"] = "2026-01-01T00:00:00Z"
+    published["description"] = "An older description."
+    previous = tmp_path / "picks.json"
+    previous.write_text(json.dumps(published), encoding="utf-8")
+
+    rebuilt = builder.keep_unchanged_timestamp(builder.build([]), previous)
+
+    assert rebuilt["updated"] != "2026-01-01T00:00:00Z"
+
+
+def test_no_published_catalogue_means_a_fresh_stamp(tmp_path: Path) -> None:
+    builder = _module()
+    document = builder.build([])
+    assert builder.keep_unchanged_timestamp(document, tmp_path / "missing.json") is document

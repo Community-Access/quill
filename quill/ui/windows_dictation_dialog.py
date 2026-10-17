@@ -10,7 +10,10 @@ Dictation has to work well without anybody opening this window. It holds:
 * **What happens after each phrase** (the shared
   :data:`~quill.core.action_feedback.ACTION_FEEDBACK_LABELS`), sounds, and
   saying "Dictation on" and "Dictation off".
-* **The finer choices** (:mod:`quill.core.windows_dictation.options`).
+* **The finer choices** (:mod:`quill.core.windows_dictation.options`), and
+  the named **Dictation style** -- Verbatim, Clean or Polished -- with **Fix it
+  when I correct myself** (D-20, :mod:`quill.core.windows_dictation.self_repair`).
+  Polished is offered only when the host says AI is on (``ai_on``).
 * **Test Microphone**: four seconds on a worker; the result goes into a field
   beside the button and is spoken, because a field changing beside the focused
   button is exactly what a screen reader does not announce.
@@ -18,6 +21,9 @@ Dictation has to work well without anybody opening this window. It holds:
   holding the key, the live preview, talking to the AI, and OpenAI. Choosing
   OpenAI as the engine asks first, in plain words, whether your speech may be
   sent (:data:`~quill.core.windows_dictation.openai_models.CONSENT_TEXT`).
+* **Speech Providers...** (D-31, :mod:`quill.ui.windows_dictation_cloud`):
+  a speech service the person already has an account with; once set up it is
+  listed as an engine, and choosing it asks first, from its own facts.
 
 Nothing is applied until OK, and :meth:`WindowsDictationDialog.apply` writes
 only the fields this window owns.
@@ -39,12 +45,12 @@ from quill.core.windows_dictation.engines import (
     engine_choices,
     language_model_problem,
 )
+from quill.core.windows_dictation.model_advice import for_this_computer
 from quill.core.windows_dictation.options import (
     PAUSE_CHOICES,
     SILENCE_CHOICES,
     coerce_pause,
     coerce_silence,
-    level_sentence,
 )
 from quill.core.windows_dictation.speech_language import (
     SPEECH_LANGUAGES,
@@ -62,11 +68,14 @@ from quill.core.windows_dictation.wake import (
 )
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
 from quill.ui.dictation_lists_dialog import DictationCommandsDialog, RecentPhrasesDialog
+from quill.ui.windows_dictation_cloud import CloudProvidersMixin
 from quill.ui.windows_dictation_devices import (
     default_microphone_name,
     microphone_names,
     recognizer_names,
 )
+from quill.ui.windows_dictation_mic_test import MicrophoneTestMixin
+from quill.ui.windows_dictation_style import DictationStyleMixin
 
 __all__ = [
     "DICTATE_ANYWHERE",
@@ -91,17 +100,33 @@ DICTATE_ANYWHERE = 5805  # quill.ui.dictation_more_dialog's, passed on
 _PAD = 8
 
 
-class WindowsDictationDialog(wx.Dialog):
+class WindowsDictationDialog(
+    CloudProvidersMixin, MicrophoneTestMixin, DictationStyleMixin, wx.Dialog
+):
     """The dictation settings. Read with :meth:`apply` after OK."""
 
     def __init__(
-        self, parent: Any, settings: Any, announce: Callable[[str], None] | None = None
+        self,
+        parent: Any,
+        settings: Any,
+        announce: Callable[[str], None] | None = None,
+        *,
+        my_words: list[str] | None = None,
+        help_for: dict[str, str] | None = None,
+        ai_on: bool = False,
     ) -> None:
         super().__init__(parent, title="Dictation Settings")
         self._announce = announce or (lambda _text: None)
         self._settings = settings
+        #: F1 help a host words its own way: QUILL Transcribe's wake phrase and
+        #: held key ("wake", "hold") behave as the editors' do, in other programs.
+        self._help_for = dict(help_for or {})
+        #: My Words, which the command word may not be (More Dictation Settings).
+        self._my_words = my_words
         #: More Dictation Settings' choices, applied with this window's OK.
         self._more: dict[str, object] = {}
+        #: Whether AI is on here, so the Polished style can be offered (D-20).
+        self._ai_on = bool(ai_on)
         # Two columns, so the window fits a 768-pixel-high screen. Tab order is
         # creation order, which runs down the left column and then the right.
         outer = wx.BoxSizer(wx.VERTICAL)
@@ -110,7 +135,7 @@ class WindowsDictationDialog(wx.Dialog):
 
         engine_label = wx.StaticText(self, label="Speech &engine:")
         saved_engine = coerce_engine(getattr(settings, "windows_dictation_engine", ""))
-        rows = engine_choices(saved_engine)
+        rows = self._with_cloud_rows(engine_choices(saved_engine), saved_engine)
         self._engine_ids = [engine_id for engine_id, _label in rows]
         self.engine = wx.Choice(self, choices=[label for _id, label in rows])
         self.engine.SetHelpText(
@@ -130,7 +155,10 @@ class WindowsDictationDialog(wx.Dialog):
             "Dictation works without them."
         )
         self.speech_models.Bind(wx.EVT_BUTTON, self._on_speech_models)
-        root.Add(self.speech_models, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
+        engine_buttons = wx.BoxSizer(wx.HORIZONTAL)
+        engine_buttons.Add(self.speech_models, 0, wx.RIGHT, _PAD)
+        engine_buttons.Add(self._make_speech_providers_button(self), 0)
+        root.Add(engine_buttons, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
 
         speech_label = wx.StaticText(self, label="Dictation lan&guage:")
         self._speech_languages = [value for value, _label in SPEECH_LANGUAGES]
@@ -227,25 +255,6 @@ class WindowsDictationDialog(wx.Dialog):
         test_row.Add(self.test_result, 1, wx.EXPAND)
         root.Add(test_row, 0, wx.EXPAND | wx.ALL, _PAD)
 
-        feedback_label = wx.StaticText(self, label="After each &phrase is written, give me:")
-        self._feedback_values = [str(mode) for mode, _label in ACTION_FEEDBACK_LABELS]
-        self.feedback = wx.Choice(self, choices=[label for _mode, label in ACTION_FEEDBACK_LABELS])
-        self.feedback.SetHelpText(
-            "What you hear each time a phrase goes into the document. A sound is "
-            "a short tone. Speech reads back the words that were written, so you "
-            "can hear whether they are the words you said. Use headphones if you "
-            "choose speech: read back through speakers, the microphone can hear "
-            "it and write it down again."
-        )
-        mode = str(
-            coerce_feedback(
-                getattr(settings, "windows_dictation_phrase_feedback", DEFAULT_PHRASE_FEEDBACK)
-            )
-        )
-        self.feedback.SetSelection(self._feedback_values.index(mode))
-        root.Add(feedback_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
-        root.Add(self.feedback, 0, wx.EXPAND | wx.ALL, _PAD)
-
         dash_label = wx.StaticText(self, label='Saying "&dash" writes:')
         self._dash_styles = list(DASH_STYLES)
         self.dash = wx.Choice(self, choices=[label for label, _text in DASH_STYLES.values()])
@@ -273,15 +282,7 @@ class WindowsDictationDialog(wx.Dialog):
         root.Add(pause_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         root.Add(self.pause, 0, wx.EXPAND | wx.ALL, _PAD)
 
-        self.remove_fillers = wx.CheckBox(self, label="Remove filler words li&ke um and uh")
-        self.remove_fillers.SetValue(
-            bool(getattr(settings, "windows_dictation_remove_fillers", False))
-        )
-        self.remove_fillers.SetHelpText(
-            "Leave out hesitations -- um, uh, erm, hmm -- instead of writing them. "
-            "Real words are never removed."
-        )
-        root.Add(self.remove_fillers, 0, wx.ALL, _PAD)
+        self._add_style_controls(root, settings, _PAD)  # windows_dictation_style.py (D-20)
 
         self.continuous = wx.CheckBox(
             self, label="&Just write what I say: nothing happens at a pause"
@@ -297,6 +298,36 @@ class WindowsDictationDialog(wx.Dialog):
 
         columns.Add(root, 1, wx.EXPAND)
         root = wx.BoxSizer(wx.VERTICAL)  # the right column: starting and stopping
+        advice_label = wx.StaticText(self, label="Recommended for this computer:")
+        self.advice = wx.TextCtrl(self, style=wx.TE_READONLY)
+        self.advice.SetHelpText("The model that suits this computer, and why. Only advice.")
+        # At the top of the right column, not under the engine: the left column
+        # has no room for another row on a 768-pixel screen. Created here, so
+        # Tab reaches it where it is shown, and its label comes first.
+        root.Add(advice_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+        root.Add(self.advice, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
+        self._show_advice()  # the speech language above is set by now
+        # What you hear after each phrase sits with the other sounds, in the
+        # right column: the left one gave its height to Dictation style (D-20).
+        feedback_label = wx.StaticText(self, label="After each &phrase is written, give me:")
+        self._feedback_values = [str(mode) for mode, _label in ACTION_FEEDBACK_LABELS]
+        self.feedback = wx.Choice(self, choices=[label for _mode, label in ACTION_FEEDBACK_LABELS])
+        self.feedback.SetHelpText(
+            "What you hear each time a phrase goes into the document. A sound is "
+            "a short tone. Speech reads back the words that were written, so you "
+            "can hear whether they are the words you said. Use headphones if you "
+            "choose speech: read back through speakers, the microphone can hear "
+            "it and write it down again."
+        )
+        mode = str(
+            coerce_feedback(
+                getattr(settings, "windows_dictation_phrase_feedback", DEFAULT_PHRASE_FEEDBACK)
+            )
+        )
+        self.feedback.SetSelection(self._feedback_values.index(mode))
+        root.Add(feedback_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+        root.Add(self.feedback, 0, wx.EXPAND | wx.ALL, _PAD)
+
         self.cue_sounds = wx.CheckBox(
             self, label="Play &sounds when dictation starts, stops or fails"
         )
@@ -326,6 +357,8 @@ class WindowsDictationDialog(wx.Dialog):
             "anywhere until it hears the wake phrase -- and it closes whenever "
             "another program comes to the front. Off unless you turn it on."
         )
+        if self._help_for.get("wake"):
+            self.wake.SetHelpText(self._help_for["wake"])
         root.Add(self.wake, 0, wx.ALL, _PAD)
 
         wake_label = wx.StaticText(self, label="&Wake phrase:")
@@ -433,6 +466,12 @@ class WindowsDictationDialog(wx.Dialog):
         problem = language_model_problem(engine, language)
         if problem:
             self._show_test(problem)
+        self._show_advice()
+
+    def _show_advice(self) -> None:
+        """D-22: the recommendation for the chosen language, as text to read."""
+        language = self._speech_languages[max(0, self.speech_language.GetSelection())]
+        self.advice.SetValue(for_this_computer(language).sentence)
 
     def _on_engine(self, _event: Any) -> None:
         """Choosing OpenAI asks first whether speech may leave the computer."""
@@ -441,6 +480,12 @@ class WindowsDictationDialog(wx.Dialog):
 
         row = self.engine.GetSelection()
         engine = self._engine_ids[row] if 0 <= row < len(self._engine_ids) else ""
+        if engine.startswith("cloud-"):
+            if self._agree_to_cloud(engine):
+                self._engine_row = row
+            else:
+                self.engine.SetSelection(self._engine_row)
+            return
         agreed = self._more.get(
             "windows_dictation_openai_consent",
             getattr(self._settings, "windows_dictation_openai_consent", False),
@@ -467,7 +512,14 @@ class WindowsDictationDialog(wx.Dialog):
         from quill.ui.dictation_more_dialog import EDIT_OPENAI_KEY as MORE_KEY
         from quill.ui.dictation_more_dialog import MoreDictationDialog
 
-        dialog = MoreDictationDialog(self, self._settings, self._announce, pending=self._more)
+        dialog = MoreDictationDialog(
+            self,
+            self._settings,
+            self._announce,
+            pending=self._more,
+            my_words=self._my_words,
+            help_for=self._help_for,
+        )
         if focus_model:
             dialog.focus_model()
         try:
@@ -476,6 +528,7 @@ class WindowsDictationDialog(wx.Dialog):
                 self._more.update(dialog.values())
         finally:
             dialog.Destroy()
+        self._show_style()  # polishing or review first may have changed there
         if answer == MORE_INSTRUCTIONS:
             self.EndModal(EDIT_INSTRUCTIONS)
         elif answer == MORE_KEY:
@@ -488,59 +541,19 @@ class WindowsDictationDialog(wx.Dialog):
         from quill.ui.dictation_models_dialog import open_speech_models
 
         current = self._engine_ids[max(0, self.engine.GetSelection())]
-        chosen = open_speech_models(self, self._announce) or current
-        rows = engine_choices(chosen)
+        language = self._speech_languages[max(0, self.speech_language.GetSelection())]
+        chosen = open_speech_models(self, self._announce, language=language) or current
+        self._show_advice()  # the timed check may have run there
+        rows = self._with_cloud_rows(engine_choices(chosen), chosen)
         self._engine_ids = [engine_id for engine_id, _label in rows]
         self.engine.Set([label for _id, label in rows])
         self.engine.SetSelection(self._engine_ids.index(chosen))
 
-    # -- Test Microphone -------------------------------------------------- #
-
-    def _on_test_microphone(self, _event: Any) -> None:
-        engine_row = self.engine.GetSelection()
-        engine = self._engine_ids[engine_row] if 0 <= engine_row < len(self._engine_ids) else ""
-        if engine == "voice_typing":
-            self._show_test("Windows voice typing uses its own microphone settings, in Windows.")
-            return
-        row = self.microphone.GetSelection()
-        microphone = self._microphone_names[row] if 0 <= row < len(self._microphone_names) else ""
-        from quill.core.windows_dictation.local_recognizer import record_and_hear
-        from quill.ui.update_download import thread_submit
-
-        self.test_microphone.Disable()
-        self.test_result.SetValue("Recording...")
-        # Spoken, not shown: the person has to know when to start talking.
-        self._announce("Speak now. Recording for four seconds.")
-
-        language = self._speech_languages[max(0, self.speech_language.GetSelection())]
-
-        def work(**_kwargs: Any) -> tuple[float, str]:
-            return record_and_hear(microphone, engine, language=language)
-
-        def done(_name: str, result: Any) -> None:
-            peak, heard = result
-            sentence = level_sentence(peak)
-            if heard:
-                sentence += f' It heard: "{heard}".'
-            elif engine == "windows" and peak >= 0.02:
-                sentence += " Windows speech recognition is tried by dictating."
-            wx.CallAfter(self._show_test, sentence)
-
-        def failed(_name: str, error: BaseException) -> None:
-            said = str(error.args[0]) if error.args else ""  # the sentence, not the code
-            wx.CallAfter(self._show_test, said or "The microphone test could not run.")
-
-        thread_submit("quill-dictation-mic-test", work, on_success=done, on_failure=failed)
-
-    def _show_test(self, sentence: str) -> None:
-        if not self:
-            return
-        self.test_microphone.Enable()
-        self.test_result.SetValue(sentence)
-        self._announce(sentence)
-
     def apply(self, settings: Any) -> None:
         """Write every choice into *settings*. The caller saves."""
+        from quill.core.windows_dictation.settings_fields import settle_share
+
+        settle_share(settings)  # sharing decided before anything changes (D-13)
         engine = self.engine.GetSelection()
         if 0 <= engine < len(self._engine_ids):
             settings.windows_dictation_engine = self._engine_ids[engine]
@@ -569,6 +582,7 @@ class WindowsDictationDialog(wx.Dialog):
         settings.windows_dictation_announce = self.announce.GetValue()
         settings.windows_dictation_auto_punctuation = self.auto_punctuation.GetValue()
         settings.windows_dictation_remove_fillers = self.remove_fillers.GetValue()
+        settings.windows_dictation_self_repair = self.self_repair.GetValue()
         settings.windows_dictation_continuous = self.continuous.GetValue()
         pause = self.pause.GetSelection()
         if 0 <= pause < len(self._pauses):

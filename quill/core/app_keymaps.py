@@ -54,6 +54,10 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # window the same key is Add Media Files, so Ctrl+O twice gets you from
         # anywhere to the file picker.
         "radio.local_media": "Ctrl+O",
+        # Edit > Dictate Here (dict.md D-16), as in QUILL Cast: Ctrl+F11, the
+        # editors' Start Dictation key (family rule 2). Plain F11 is Full Screen
+        # in the video window; Ctrl+F11 was free.
+        "app.dictate_here": "Ctrl+F11",
         # QUILL Lineups (2026-10-13): Ctrl+U, "lineUp". Ctrl+Alt+U was the first
         # choice and is Help > Check for Updates here; Ctrl+U was one of the few
         # chords free on both this bar and Cast's, where the same command keeps
@@ -113,8 +117,17 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         "radio.rewind": "Ctrl+Shift+Left",
         "radio.forward": "Ctrl+Shift+Right",
         "radio.jump_to_live": "Ctrl+Shift+L",
+        # Identify This Song (AcoustID, 2026-10-15). Not Ctrl+Alt+Shift+R,
+        # which looks free on this bar only because it is Radio's own
+        # system-wide show/hide key. Ctrl+K is one of the few plain Ctrl
+        # letters left that no clipboard or undo habit owns.
+        "radio.identify_song": "Ctrl+K",
         "radio.whats_playing_details": "Ctrl+T",
         "radio.song_history": "Ctrl+Shift+H",
+        # Lyrics of the song on the air (LRCLIB, on request only). The plan
+        # asked for Ctrl+Alt+L, which this window already gives to Resume Last
+        # Station on Launch; B is the one Ctrl+Alt letter Radio has left.
+        "radio.lyrics": "Ctrl+Alt+B",
         "radio.statistics": "Ctrl+Shift+Q",
         "radio.sound_enhancements": "Ctrl+E",
         # A QUILL leader chord Radio cannot dispatch; the Radio entry above is
@@ -128,7 +141,7 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # The transport verbs the palette lists as "Radio: ...": the keys the
         # transport table gives every window, which the main window's Playback
         # menu also carries. (Skip Back / Skip Forward are left out: on the
-        # main window those keys are Rewind / Forward 30 Seconds, above.)
+        # main window those keys are Rewind / Forward, above.)
         "radio.transport.speed_up": "Ctrl+Shift+Up",
         "radio.transport.speed_down": "Ctrl+Shift+Down",
         "radio.transport.speed_reset": "Ctrl+Shift+0",
@@ -183,6 +196,18 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         "radio.acb_calendar": "Ctrl+Shift+N",
         "radio.on_now": "Ctrl+Alt+H",
         "radio.upcoming": "Ctrl+Alt+Shift+F",
+        # What's New (todo P3 Radio extras 8): what arrived while you were
+        # away, the companion of What Is On Now (Ctrl+Alt+H). Alt+Shift+N for
+        # New, the same shape as Alt+Shift+F for Play Favorite: the Ctrl+Alt
+        # and Ctrl+Alt+Shift rows have no letter left on this bar.
+        "radio.whats_new": "Alt+Shift+N",
+        # A second output device (xradio2 4.6, 4.7): B for Background, D for
+        # Device. The Alt+Shift row is where this bar still has letters.
+        "radio.background_station": "Alt+Shift+B",
+        "radio.mirror_output": "Alt+Shift+D",
+        # Station Details (todo P2 #33, the station pack): I for information,
+        # on the Alt+Shift row for the same reason as the two above.
+        "radio.station_details": "Alt+Shift+I",
         # Community > ACB Media Podcasts... (2026-08-25). NOT in the
         # Ctrl+Alt+Shift family the other Community items use, because that
         # space is now completely exhausted -- no letter and no digit is free.
@@ -270,6 +295,10 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         "podcasts.now_playing": "Ctrl+Alt+2",
         # QUILL Lineups: the same window and the same chord as in Quill Radio.
         "podcasts.lineups": "Ctrl+U",
+        # Edit > Dictate Here (dict.md D-16): QUILL Transcribe dictating into
+        # the field you are in. The editors' Start Dictation key, for the same
+        # verb (family rule 2), and free here and in Quill Radio.
+        "app.dictate_here": "Ctrl+F11",
         # The Now Playing line's key: what is playing, how far in, the speed.
         "podcasts.say_now_playing": "Ctrl+T",
         # Quill Radio's Skip Silence key, for the same verb (family rule 2).

@@ -98,6 +98,48 @@ mutagen
 
 ------------------------------------------------------------------------
 
+FFmpeg (ffmpeg.exe and ffprobe.exe)
+
+- Shipped in: Quill Converter, Quill Radio, Audio Studio and Quill Cast
+  (installers and portable copies, in tools\ffmpeg), the QUILL Offline
+  Edition, and QUILL’s own on-demand “get FFmpeg” install. Redistributed
+  unmodified and run as separate programs.
+- Build: FFmpeg 8.1.2, gyan.dev “essentials” build for 64-bit Windows,
+  SHA-256 pinned (quill/core/speech/ffmpeg_install.py)
+- Upstream: https://ffmpeg.org (source:
+  https://ffmpeg.org/releases/ffmpeg-8.1.2.tar.xz)
+- License: GPL-3.0-or-later. This build is configured with
+  --enable-gpl --enable-version3; ffmpeg -L prints the same notice.
+- Licence text and source offer:
+  quill/data/notices/ffmpeg/LICENSE.GPLv3.txt and README-SOURCE.txt.
+  Both are copied beside every ffmpeg.exe a build ships;
+  scripts/check_ffmpeg_notices.py fails the build otherwise, and the
+  installers name both files so they cannot compile without them.
+
+------------------------------------------------------------------------
+
+libmpv (libmpv-2.dll)
+
+- Shipped in: Quill Converter, Quill Radio and Audio Studio, in
+  tools\mpv
+- Build: shinchiro mpv-winbuild, pinned in quill/core/release_assets.py
+- License: GPL-3.0 as built (mpv itself is GPL-2.0-or-later). The
+  licence texts and source offer from the pinned pack ship beside the
+  DLL.
+
+------------------------------------------------------------------------
+
+Deno (deno.exe)
+
+- Shipped in: Quill Radio and Quill Converter, in tools\deno, for
+  yt-dlp’s YouTube challenges
+- Upstream: https://github.com/denoland/deno (pinned in
+  scripts/fetch_build_deps.py)
+- License: MIT. Deno’s own licence text ships beside it as
+  DENO-LICENSE.txt.
+
+------------------------------------------------------------------------
+
 ChapterForge (approach credit)
 
 - Upstream: ChapterForge, a sibling Blind Information Technology

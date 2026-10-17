@@ -357,6 +357,21 @@ after you update.</p>
 <p><strong>Abbreviations &gt; Manage Abbreviations…</strong> (Ctrl+M) is
 the full list: search it, filter it by category, and add, edit, enable,
 disable, or delete entries.</p>
+<p><strong>Searching the list.</strong> Type in the search box and the
+list keeps only the abbreviations whose short form, expansion or
+description holds what you typed. The words can come in any order:
+<code>address home</code> finds an expansion that says “my home
+address”. The category filter beside it narrows the list further. When
+the search changes, the selection stays on the abbreviation you were on
+if it is still in the list, rather than jumping to whichever one now
+sits in its row.</p>
+<p><strong>Large lists.</strong> The list reads its rows only as you
+reach them, so a library of ten thousand abbreviations opens and filters
+as quickly as one of ten (before October 2026, ten thousand took over
+three seconds to fill, and again after every key typed in the search
+box). Typing the start of an abbreviation while you are in the list
+moves to it, as in any Windows list; the screen reader reads the row and
+its position, such as “abbr42, 43 of 10000”, as before.</p>
 <p><strong>Abbreviations &gt; New from Clipboard…</strong>
 (Ctrl+Shift+N) is the fast path. Copy a block of text anywhere, press
 Ctrl+Shift+N, and Inkwell opens a new entry with that text already
@@ -687,8 +702,8 @@ it again and they come back, on the same sound card as before. You hear
 a short sound as they go off, and another where they now play when they
 come back on, and both are spoken too. <strong>Options &gt; App
 Sounds</strong> has a check mark that shows whether they are on.</li>
-<li><strong>Options &gt; Preferences (Ctrl+,) &gt; App Sounds Play
-On…</strong> lets you pick where they play:
+<li>The <strong>App Sounds Play On…</strong> button in <strong>Options
+&gt; Preferences…</strong> (Ctrl+,) lets you pick where they play:
 <ul>
 <li><strong>System default</strong>. This is where it starts. The sounds
 go where Windows sends sound.</li>
@@ -860,10 +875,11 @@ reach it.</p>
 <h2 id="20-dictate-anywhere">20. Dictate Anywhere</h2>
 <p>Dictate Anywhere lets you talk instead of type in any program: your
 email, a web page, a chat window, a form. It uses the same speech
-engines as QUILL and QUILL Lite, the same words you have taught them in
-My Words and Phrases, and the same voice commands. Inkwell is its home
-because Inkwell is already running quietly in the background, typing
-into other programs for you.</p>
+engines as QUILL and QUILL Lite, the same words you have taught QUILL in
+My Words and Phrases (and QUILL Lite’s, once it is set to use the shared
+word list), and the same voice commands. Inkwell is its home because
+Inkwell is already running quietly in the background, typing into other
+programs for you.</p>
 <p><strong>Choosing your key.</strong> Nothing listens until you choose
 a key.</p>
 <ol type="1">
@@ -892,12 +908,39 @@ Programs…</strong>. The editor hands its dictation settings to Inkwell
 and starts it, and if you have not chosen a key yet, the key chooser
 opens for you.</p>
 <p><strong>Your settings.</strong> Inkwell keeps its own copy of your
-dictation settings, so it works even when no editor is open. Change them
-in <strong>Dictation &gt; Dictation Settings…</strong> (Ctrl+Alt+D),
-which is the same window the editors use. One difference: the read-back
-after each phrase starts as a tone rather than the words, because your
-screen reader can already read out what is typed, and hearing everything
-twice gets tiring. You can change that in the same window.</p>
+dictation settings, so it works even when no editor is open. When
+<strong>Share dictation settings with every QuillVille program</strong>
+is checked (Alt+Q, in More Dictation Settings), that copy follows what
+you save in QUILL, QUILL Lite or QUILL Transcribe, picked up the next
+time you start Dictate Anywhere or open Dictation Settings, and what you
+save here reaches them. The read-back, every permission to send your
+speech, and your Dictate Anywhere key stay Inkwell’s own. The first time
+Inkwell takes the family’s settings, its own are saved as
+<code>before-sharing-inkwell.json</code> in
+<code>%LOCALAPPDATA%\QuillVille\Dictation</code>; if the shared copy
+cannot be saved, Inkwell says so. Your word list lives in that folder
+too, copied there from QUILL’s data folder the first time it is needed,
+with the old file left as a backup. Change them in <strong>Dictation
+&gt; Dictation Settings…</strong> (Ctrl+Alt+D), which is the same window
+the editors use. One difference: the read-back after each phrase starts
+as a tone rather than the words, because your screen reader can already
+read out what is typed, and hearing everything twice gets tiring. You
+can change that in the same window.</p>
+<p><strong>Correcting yourself as you talk.</strong> Check <strong>Fix
+it when I correct myself, like Thursday, no, Friday</strong> (Alt+X) in
+Dictation Settings, and when you say “no”, “I mean”, “sorry” or “scratch
+that word” between two days, two months, two numbers or two names from
+My Words and Phrases, only the second is typed: “meet on Thursday, no,
+Friday” types “meet on Friday”, and “call me at 5, sorry, 6” types “call
+me at 6”. Anything else, such as “no, I don’t think so”, is typed as you
+said it. It happens on this computer, before anything is typed, and it
+is off until you turn it on. <strong>Dictation style</strong> (Alt+Y)
+sets it and <strong>Remove filler words</strong> together:
+<strong>Verbatim</strong> turns both off and <strong>Clean</strong>
+turns both on. The editors also offer <strong>Polished</strong>, which
+needs their Review Dictation window; Inkwell does not have that window,
+so the <strong>Allow polishing my dictation with AI</strong> box in More
+Dictation Settings does nothing here.</p>
 <p><strong>What works in another program.</strong> Spoken punctuation,
 spelling, “caps on”, “all caps on” and “no space on”, switching between
 English and Spanish, and “scratch that”. “Scratch that” erases the
@@ -906,14 +949,44 @@ window, so it can never erase anything you typed yourself. Your
 snippets, abbreviations and clips work too, because they only insert:
 “insert snippet” and its name, “insert abbreviation” and its name, and
 “paste clip” and a number, each typed as one phrase that “scratch that”
-takes back whole. A snippet’s blanks are typed as [name], with no
-questions, and the cursor stays at the end. “What can I say” lists only
-what works here.</p>
+takes back whole. A snippet’s blanks are asked for first: you hear each
+blank’s name, like “Title?”, and say the answer; for a choice, say one
+of the options or “choose two”; say skip, scratch that to go back one,
+or cancel to type nothing. The cursor stays at the end, and “read that”
+reads back all of what was typed. “What can I say” lists only what works
+here.</p>
+<p><strong>Correcting the words dictation typed.</strong> Inkwell
+remembers the words it typed since the focus last moved, and can change
+those, by taking them back with Backspace and typing the corrected
+words. “Correct that” and “choose one” to “choose three” (with
+Moonshine, Whisper or a downloaded model, the other built-in engine
+listens to your last phrase again and offers its answer as choice two),
+“capitalize that”, “all caps that”, “no caps that”, “replace Tuesday
+with Wednesday” (only inside the phrase you dictated last), “change that
+to” and the new words, “delete last sentence” and “delete previous
+paragraph”. For example, after “see you on Tuesday at noon”, “QUILL
+replace Tuesday with Wednesday” leaves “see you on Wednesday at noon”. A
+correction is refused, with one sentence and nothing sent, when the
+focus has moved, when you have typed, clicked or moved the mouse since
+dictation typed (the cursor may have moved), or, for the commands that
+retype words, in Word or Outlook, which change words as they are typed;
+“scratch that” and the delete commands still work there.</p>
 <p><strong>What does not.</strong> Anything that needs to read the other
-program’s text: “select” and “go to”, “correct”, “copy all” and “show
-clips”. Inkwell cannot see that text, so it tells you: “That works in
-QUILL’s own documents. In another program, say the words again, or
-scratch that.”</p>
+program’s text: “select” and “go to”, “correct” and a word, “copy all”
+and “show clips”. Inkwell cannot see that text, so it tells you: “That
+works in QUILL’s own documents. In another program, say the words again,
+or scratch that.”</p>
+<p><strong>The command word.</strong> Say QUILL before a command, “QUILL
+scratch that”, and it is always taken as a command; whatever follows
+QUILL is never typed. If it is not a command, you hear “Not a command”,
+and “QUILL type that” types it after all. “literal QUILL” types the word
+itself. “QUILL command mode” takes commands without the word until you
+say “dictation mode”, or for eight seconds with no command, when a
+falling tone says it has ended. In <strong>More Dictation
+Settings</strong> (from Dictation Settings) you can change the word
+(Alt+C), make commands work only after it (strict mode, Alt+E; off
+unless you turn it on), and choose how long command mode waits (Alt+D).
+It is the same in QUILL, QUILL Lite and QUILL Transcribe.</p>
 <p><strong>Where it will not type.</strong> Inkwell refuses, and tells
 you why, in:</p>
 <ul>
@@ -925,7 +998,24 @@ Windows will not let Inkwell type into it.</li>
 the editors dictate into their own documents directly.</li>
 <li>Inkwell’s own window. Switch to the program you want to dictate into
 first.</li>
+<li>A program on your list of programs dictation never types into:
+“Dictation does not type into KeePass. Move to another program.” The
+list starts with the common password managers and the Windows sign-in,
+lock and administrator prompts. Change it with <strong>Programs
+Dictation Never Types Into…</strong> (Alt+N) in More Dictation Settings.
+Programs are matched by file name, never by a window title.</li>
 </ul>
+<p><strong>It stays in the field you started in.</strong> If the focus
+moves to another field or program while you dictate, Inkwell says
+“Dictation paused” and holds what you say instead of typing it somewhere
+else. The <strong>Dictation</strong> menu then has
+<strong>Resume</strong> (Ctrl+R) to go back to the first field,
+<strong>Resume in This Field</strong> (Ctrl+Shift+R) to write where you
+are now, and <strong>Discard Held Words</strong> (Ctrl+Shift+D). They
+are greyed out until something is held, and the tray menu has the same
+three while dictation is paused. Chosen from Inkwell’s own window or
+tray, Resume in This Field waits for you to switch to another program;
+choose it again to cancel, and your words stay held.</p>
 <p><strong>With QUILL Transcribe.</strong> QUILL Transcribe is the
 QuillVille app made just for dictating into other programs. Only one of
 the two dictates at a time. While QUILL Transcribe is running, pressing
@@ -941,6 +1031,12 @@ off.</p>
 the editors: on this computer with the built-in engines, and sent to
 OpenAI only if you chose OpenAI dictation with your own key. Nothing you
 say is kept.</p>
+<p><strong>Speech providers.</strong> Inkwell’s Dictation Settings has
+the same <strong>Speech Providers…</strong> button (Alt+V) as the
+editors, so Dictate Anywhere can use a speech company you already have
+an account with, such as Azure, Deepgram or Amazon. Keys go to Windows
+Credential Manager; you are asked before anything is sent, and No is the
+default.</p>
 <h2 id="finding-a-setting-or-a-command">Finding a setting or a
 command</h2>
 <p>Quill Inkwell keeps its options in its menus, so there is no settings

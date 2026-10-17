@@ -47,6 +47,33 @@ says so.
 Needs the models (``python scripts/fetch_dictation_models.py``), ``sherpa-onnx``
 and ``numpy`` -- the ``live-dictation`` extra. Reads only the folder it is
 given; nothing is sent anywhere.
+
+**The benchmark set** (dict.md section 8, B-1 and B-4; design record section 26)::
+
+    python scripts/dictbench.py --dataset librispeech-test-clean --subset quick
+    python scripts/dictbench.py --dataset librivox-heldout-en --group-by heldout
+    python scripts/dictbench.py D:/bench/b1c-en-noise --parse --group-by group
+    python scripts/dictbench.py RECORDINGS_DIR --latency                # live pace, p95
+    python scripts/dictbench.py RECORDINGS_DIR --json results.json      # every number
+
+* ``--dataset ID`` reads a set ``scripts/fetch_bench_audio.py`` prepared (the
+  ids and licences are in ``scripts/bench_datasets.json``), and every number
+  it writes carries ``may_be_in_training_data`` for that model.
+* ``--subset NAME`` keeps to a fixed, seeded subset (``bench_subsets.json``),
+  so every run compares like with like.
+* ``--group-by FIELD`` reports per speaker, accent, gender, language, group
+  (a condition, or a speech disability), or ``heldout`` (B-1a: held out for
+  this model's family or not) -- never only one average. The fields come from
+  the folder's ``speakers.tsv``.
+* ``--latency`` feeds the recordings at live pace through the real recogniser
+  (``bench_live.py``) and reports, per file and at p95, the time to the state
+  change and to the text, against the Transcribe targets (0.5 s and 2 s).
+* ``--parse`` scores what QUILL would *write*: the output goes through
+  dictation's parser and composer, and a spoken command is ``parsed`` or --
+  the failure that matters -- ``typed`` (B-1c).
+* Punctuation is scored against the reference's own marks (precision, recall
+  and F1 for full stop, comma, question mark and new paragraph) and capitals
+  as the share of sentences that start with one (``bench_scoring.py``).
 """
 
 from __future__ import annotations
@@ -63,6 +90,7 @@ from typing import Any
 
 _REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(_REPO))
+sys.path.insert(0, str(_REPO / "scripts"))
 
 from quill.core.windows_dictation.engines import model_dir, model_for  # noqa: E402
 from quill.core.windows_dictation.model_catalog import (  # noqa: E402
@@ -74,6 +102,9 @@ from quill.core.windows_dictation.speech_language import (  # noqa: E402
     coerce_speech_language,
     fold,
 )
+
+# The one scorer, shared with QUILL Transcribe's recognition test (D-25).
+from quill.core.windows_dictation.word_errors import word_errors  # noqa: E402
 
 RATE = 16_000
 TRANSCRIPTS = "transcripts.txt"
@@ -98,6 +129,9 @@ class FileResult:
     final_seconds: float = 0.0
     command: bool = False
     failed: str = ""
+    #: --parse: what QUILL made of a spoken command (bench_scoring.command_outcome).
+    outcome: str = ""
+    dialogue: bool = False
 
 
 def read_transcripts(folder: Path) -> dict[str, str]:
@@ -122,19 +156,6 @@ def words(text: str, *, accents: bool = True) -> list[str]:
     """*text* as words for scoring: no capitals, no punctuation."""
     text = text.lower() if accents else fold(text)
     return _WORDS.findall(text.replace("_", " "))
-
-
-def word_errors(reference: list[str], heard: list[str]) -> int:
-    """Substitutions, insertions and deletions turning *reference* into *heard*."""
-    previous = list(range(len(heard) + 1))
-    for i, said in enumerate(reference, 1):
-        current = [i]
-        for j, got in enumerate(heard, 1):
-            current.append(
-                min(previous[j] + 1, current[j - 1] + 1, previous[j - 1] + (said != got))
-            )
-        previous = current
-    return previous[-1]
 
 
 def count_marks(text: str) -> dict[str, int]:
@@ -323,7 +344,139 @@ def summary(results: list[FileResult]) -> dict[str, Any]:
             f"{sum(1 for r in results if r.command)}"
         ),
         "failures": sum(1 for r in results if r.failed),
+        **punctuation_summary(results),
     }
+
+
+def punctuation_summary(results: list[FileResult]) -> dict[str, Any]:
+    """Marks scored against the reference's own, and capitals (bench_scoring);
+    dialogue segments apart, and what QUILL did with spoken commands."""
+    from bench_scoring import Totals
+
+    prose, dialogue = Totals(), Totals()
+    for result in results:
+        if result.command or result.failed:
+            continue
+        (dialogue if result.dialogue else prose).add(result.reference, result.heard)
+    found: dict[str, Any] = {"punctuation": prose.as_dict()}
+    if any(r.dialogue for r in results):
+        found["punctuation_in_dialogue"] = dialogue.as_dict()
+    outcomes = [r.outcome for r in results if r.command and r.outcome]
+    if outcomes:
+        found["commands_parsed"] = sum(1 for o in outcomes if o == "parsed")
+        found["commands_typed"] = sum(1 for o in outcomes if o == "typed")
+        found["commands_other"] = sum(1 for o in outcomes if o == "other command")
+    return found
+
+
+# --------------------------------------------------------------------------- #
+# The benchmark set: datasets, subsets, groups, parsing, live latency
+# --------------------------------------------------------------------------- #
+
+
+def resolve_folder(args: argparse.Namespace) -> tuple[Path, dict[str, Any] | None]:
+    """The recordings folder, and the dataset entry when ``--dataset`` named one."""
+    if args.dataset:
+        import fetch_bench_audio as fetch
+
+        entry = fetch.dataset(args.dataset)
+        folder = fetch.prepared_folder(args.dataset)
+        if not (folder / TRANSCRIPTS).is_file():
+            raise SystemExit(
+                f"{args.dataset} is not prepared here. Run: "
+                f"python scripts/fetch_bench_audio.py {args.dataset}"
+            )
+        return folder, entry
+    if args.folder is None:
+        raise SystemExit("Give a recordings folder or --dataset.")
+    return args.folder, None
+
+
+def refuse_the_aligner(folder: Path, engine: str) -> None:
+    """B-1a's references were cut by an aligner model; it may not be scored on them."""
+    aligner = folder / "aligner.txt"
+    if aligner.is_file() and aligner.read_text(encoding="utf-8").strip() == engine:
+        raise SystemExit(
+            f"{engine} aligned this set, so its scores on it would flatter it. "
+            "Benchmark another engine, or rebuild the set with a different aligner."
+        )
+
+
+def apply_parse(result: FileResult, language: str) -> FileResult:
+    """--parse: score what QUILL writes, not what the engine wrote."""
+    from bench_scoring import command_outcome
+
+    from quill.core.windows_dictation.composer import compose
+    from quill.core.windows_dictation.parser import RecognizedPhrase, parse, words_from_text
+    from quill.core.windows_dictation.vocabulary import vocabulary_for
+
+    if result.command:
+        result.outcome = command_outcome(result.reference, result.heard, language)
+        return result
+    parsed = parse(
+        RecognizedPhrase(words_from_text(result.heard)), vocabulary=vocabulary_for(language)
+    )
+    written = compose(parsed.pieces) if parsed.command is None else ""
+    rescored = score(result.name, result.reference, written)
+    for name in ("audio_seconds", "compute_seconds", "first_word_seconds", "final_seconds"):
+        setattr(rescored, name, getattr(result, name))
+    rescored.failed = result.failed
+    return rescored
+
+
+def group_key(field_name: str, engine: str) -> str:
+    """The speakers.tsv column for --group-by; ``heldout`` is per model family."""
+    if field_name != "heldout":
+        return field_name
+    from bench_scoring import model_family
+
+    return f"heldout_{model_family(engine)}"
+
+
+def run_live(
+    engine: str,
+    language: str,
+    folder: Path,
+    transcripts: dict[str, str],
+    *,
+    pace: float,
+    pause: float,
+) -> tuple[list[FileResult], dict[str, Any], float]:
+    """--latency: every recording through the real recogniser at *pace*."""
+    import bench_live
+
+    clips = [
+        bench_live.Clip(name, read_wav(folder / name), reference)
+        for name, reference in transcripts.items()
+    ]
+    listener = bench_live.LatencyListener()
+    recognizer = bench_live.recorded_recognizer(
+        listener,
+        engine,
+        clips,
+        post=lambda function, *args: function(*args),
+        pace=pace,
+        pause_seconds=pause,
+        language=language,
+    )
+    started = time.perf_counter()
+    recognizer.start("")
+    startup = time.perf_counter() - started
+    stream = recognizer.recorded
+    total = sum(len(c.samples) for c in clips) / RATE + 2.5 * len(clips) + 3.0
+    stream.finished.wait(timeout=total / max(pace, 0.05) + 60)
+    time.sleep(max(1.0, pause + 1.0))  # the last phrase's pause, and its decode
+    recognizer.stop()
+    report = bench_live.latency_report(clips, listener)
+    results: list[FileResult] = []
+    for clip, row in zip(clips, report["files"], strict=True):
+        result = score(clip.name, clip.reference, row["heard"])
+        result.audio_seconds = len(clip.samples) / RATE
+        result.first_word_seconds = row["state_change_seconds"] or 0.0
+        result.final_seconds = row["text_seconds"] or 0.0
+        result.failed = "" if row["text_seconds"] is not None else "no text arrived"
+        results.append(result)
+    return results, report, startup
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -336,6 +489,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--language", default="en", help="en or es")
     parser.add_argument("--threads", type=int, default=1, help="1 is the budget's measure")
     parser.add_argument("--json", type=Path, help="also write every result here")
+    parser.add_argument("--dataset", help="a prepared benchmark set (bench_datasets.json)")
+    parser.add_argument("--subset", help="a fixed, seeded subset (bench_subsets.json)")
+    parser.add_argument(
+        "--group-by",
+        choices=("speaker", "accent", "gender", "language", "group", "heldout"),
+        help="report per group from speakers.tsv, as well as overall",
+    )
+    parser.add_argument("--parse", action="store_true", help="score what QUILL would write")
+    parser.add_argument("--latency", action="store_true", help="live pace, real recogniser, p95")
+    parser.add_argument("--pace", type=float, default=1.0, help="--latency: 1.0 is live")
+    parser.add_argument("--pause", type=float, default=0.8, help="--latency: pause before writing")
     args = parser.parse_args(argv)
 
     if args.list_models:
@@ -348,35 +512,36 @@ def main(argv: list[str] | None = None) -> int:
         raise SystemExit(f"Unknown engine or model: {engine}. Try --list-models.")
     if args.fetch and downloadable(engine) is not None:
         fetch_model(engine)
-    if args.folder is None:
+    if args.folder is None and not args.dataset:
         return 0
     language = coerce_speech_language(args.language)
-    transcripts = read_transcripts(args.folder)
-    started = time.perf_counter()
-    recognizer = load_engine(engine, language, args.threads)
-    startup = time.perf_counter() - started
+    folder, entry = resolve_folder(args)
+    refuse_the_aligner(folder, engine)
+    transcripts = read_transcripts(folder)
+    if args.subset:
+        from fetch_bench_audio import subset_names
+
+        chosen = subset_names(args.dataset or folder.name, args.subset, folder)
+        transcripts = {name: transcripts[name] for name in chosen if name in transcripts}
     model = model_for(engine, language)
-    print(f"{model.label}, language {language}, {args.threads} thread(s), CPU only")
-    results: list[FileResult] = []
+    latency: dict[str, Any] | None = None
     cpu_before, wall_before = time.process_time(), time.perf_counter()
-    for name, reference in transcripts.items():
-        samples = read_wav(args.folder / name)
-        started = time.perf_counter()
-        try:
-            heard, failure = recognise(recognizer, samples), ""
-        except Exception as error:  # noqa: BLE001 - counted, and the run goes on
-            heard, failure = "", str(error)
-        result = score(name, reference, heard)
-        result.compute_seconds = result.final_seconds = time.perf_counter() - started
-        result.first_word_seconds = result.final_seconds
-        result.failed = failure
-        if model.id == "nemotron" and not failure:
-            result.first_word_seconds = streaming_latency(engine, samples, args.threads, language)
-        result.audio_seconds = len(samples) / RATE
-        results.append(result)
-        print(f"  {name}: {result.errors}/{result.words} word errors")
-        print(f"    said:  {reference}")
-        print(f"    heard: {heard}")
+    if args.latency:
+        print(f"{model.label}, language {language}, live pace x{args.pace}, CPU only")
+        results, latency, startup = run_live(
+            engine, language, folder, transcripts, pace=args.pace, pause=args.pause
+        )
+    else:
+        results, startup = run_files(engine, model.id, language, folder, transcripts, args.threads)
+    if args.parse:
+        results = [apply_parse(result, language) for result in results]
+    from bench_scoring import LIMITS, is_dialogue, normalizer
+
+    for result in results:
+        result.dialogue = is_dialogue(result.reference)
+        print(f"  {result.name}: {result.errors}/{result.words} word errors {result.outcome}")
+        print(f"    said:  {result.reference}")
+        print(f"    heard: {result.heard}")
     wall = time.perf_counter() - wall_before
     overall = summary(results)
     cpu = time.process_time() - cpu_before
@@ -387,12 +552,70 @@ def main(argv: list[str] | None = None) -> int:
     overall["model_size"] = megabytes(downloaded.download_bytes) if downloaded else "built in"
     overall["execution_provider"] = "cpu"
     overall["engine"], overall["language"] = model.id, language
+    overall["normalizer"] = normalizer(language)[0]
+    overall["date"] = time.strftime("%Y-%m-%d")
+    if entry is not None:
+        from fetch_bench_audio import may_be_in_training_data
+
+        overall["dataset"] = entry["id"]
+        overall["may_be_in_training_data"] = may_be_in_training_data(entry, model.id)
+    if latency is not None:
+        overall["speed_per_thread"] = None  # live: the engine's own threads, paced
+        overall.update({k: v for k, v in latency.items() if k != "files"})
     for key, value in overall.items():
         print(f"{key}: {value}")
+    groups: dict[str, Any] = {}
+    if args.group_by:
+        from bench_scoring import grouped
+        from fetch_bench_audio import read_speakers
+
+        speakers = read_speakers(folder)
+        column = group_key(args.group_by, model.id)
+        groups = grouped(results, lambda r: speakers.get(r.name, {}).get(column, ""), summary)
+        for name, numbers in groups.items():
+            rate = numbers["word_error_rate"]
+            print(f"{args.group_by} {name}: {numbers['files']} files, WER {rate}")
     if args.json:
-        payload = {"summary": overall, "files": [asdict(r) for r in results]}
+        payload = {
+            "summary": overall,
+            "limits": LIMITS,
+            "groups": {"by": args.group_by, "results": groups} if args.group_by else None,
+            "files": [asdict(r) for r in results],
+        }
         args.json.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     return 0
+
+
+def run_files(
+    engine: str,
+    model_id: str,
+    language: str,
+    folder: Path,
+    transcripts: dict[str, str],
+    threads: int,
+) -> tuple[list[FileResult], float]:
+    """Each recording to the engine whole, as a phrase -- the original measure."""
+    started = time.perf_counter()
+    recognizer = load_engine(engine, language, threads)
+    startup = time.perf_counter() - started
+    print(f"{model_id}, language {language}, {threads} thread(s), CPU only")
+    results: list[FileResult] = []
+    for name, reference in transcripts.items():
+        samples = read_wav(folder / name)
+        started = time.perf_counter()
+        try:
+            heard, failure = recognise(recognizer, samples), ""
+        except Exception as error:  # noqa: BLE001 - counted, and the run goes on
+            heard, failure = "", str(error)
+        result = score(name, reference, heard)
+        result.compute_seconds = result.final_seconds = time.perf_counter() - started
+        result.first_word_seconds = result.final_seconds
+        result.failed = failure
+        if model_id == "nemotron" and not failure:
+            result.first_word_seconds = streaming_latency(engine, samples, threads, language)
+        result.audio_seconds = len(samples) / RATE
+        results.append(result)
+    return results, startup
 
 
 def fetch_model(model_id: str) -> None:

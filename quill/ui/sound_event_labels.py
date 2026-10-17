@@ -120,6 +120,8 @@ EVENT_GROUPS: tuple[tuple[str, tuple[str, ...]], ...] = (
             "windows_dictation_off",
             "windows_dictation_error",
             "windows_dictation_working",
+            "windows_dictation_command_on",
+            "windows_dictation_command_off",
         ),
     ),
     (
@@ -156,6 +158,7 @@ EVENT_GROUPS: tuple[tuple[str, tuple[str, ...]], ...] = (
             "radio_recording_stopped",
             "radio_favorite_added",
             "radio_reminder",
+            "radio_resumed",
             "cast_download_started",
             "cast_download_complete",
             "cast_new_episodes",
@@ -258,6 +261,8 @@ LABELS: dict[str, str] = {
     "windows_dictation_off": "Live dictation stopped listening",
     "windows_dictation_error": "Live dictation could not go on",
     "windows_dictation_working": "Live dictation is still working on a phrase",
+    "windows_dictation_command_on": "Live dictation heard the command word",
+    "windows_dictation_command_off": "Live dictation left command mode",
     # Talking to QUILL
     "conversation_on": "Conversation mode on",
     "conversation_off": "Conversation mode off",
@@ -287,6 +292,7 @@ LABELS: dict[str, str] = {
     "radio_recording_stopped": "Recording stopped",
     "radio_favorite_added": "Added to favourites",
     "radio_reminder": "Reminder due",
+    "radio_resumed": "Radio resumed after a pause",
     "cast_download_started": "Episode download started",
     "cast_download_complete": "Episode downloaded",
     "cast_new_episodes": "New episodes found",

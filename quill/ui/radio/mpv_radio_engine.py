@@ -40,12 +40,16 @@ enumeration is local.
 
 from __future__ import annotations
 
-import json
 import logging
 from collections.abc import Callable
 
 import wx
 
+from quill.core.radio.mpv_devices import (  # noqa: F401 - re-exported for callers
+    SYSTEM_DEFAULT_DEVICE_LABEL,
+    output_device_choices,
+    parse_audio_device_list,
+)
 from quill.ui.audio.mpv_engine import _MpvClient, find_libmpv
 from quill.ui.radio.mpv_video_mixin import VideoOutputMixin
 
@@ -101,12 +105,9 @@ _NETWORK_TIMEOUT_SECONDS = 30
 _STREAM_LAVF_OPTIONS = (
     "reconnect=1,reconnect_streamed=1,reconnect_on_network_error=1,reconnect_delay_max=30"
 )
-#: The live-radio DVR buffer: mpv's demuxer cache keeps this much of the
-#: stream behind (and ahead while paused), which is what makes pausing a
-#: live show and rewinding it possible at all. 50 MiB is roughly 45
-#: minutes of a typical 128 kbps stream.
-_CACHE_MAX_BYTES = "50MiB"
-_CACHE_BACK_BYTES = "50MiB"
+#: The live-radio DVR buffer's size and home are decided in
+#: ``quill.core.radio.timeshift`` (on disk since 2026-10-15, a listener-chosen
+#: length, capped in bytes); this engine only applies the plan.
 #: Volume Boost headroom: mpv can amplify past 100 (with soft-clipping
 #: protection well above this); the boost feature uses up to 150.
 _VOLUME_MAX = "150"
@@ -146,37 +147,6 @@ def next_poll_action(
     return ACTION_NONE
 
 
-def parse_audio_device_list(raw: str) -> list[tuple[str, str]]:
-    """``(name, description)`` pairs out of mpv's ``audio-device-list`` JSON.
-
-    Pure and unit-tested; malformed input yields ``[]`` rather than raising.
-    The *name* (e.g. ``wasapi/{guid}``) is the stable value to persist and
-    hand back to ``audio-device``; the *description* is the human label
-    ("Speakers (Realtek High Definition Audio)").
-
-    mpv's list includes pseudo-entries that are not sound cards: ``auto``
-    (what "System default" already means) and bare driver fallbacks with no
-    device part (``openal``, ``sdl``). Both are dropped so the Preferences
-    dropdown lists only real, pickable devices.
-    """
-    try:
-        data = json.loads(raw)
-    except ValueError:
-        return []
-    devices: list[tuple[str, str]] = []
-    if not isinstance(data, list):
-        return []
-    for entry in data:
-        if not isinstance(entry, dict):
-            continue
-        name = str(entry.get("name", "")).strip()
-        if not name or name == "auto" or "/" not in name:
-            continue
-        description = str(entry.get("description", "")).strip() or name
-        devices.append((name, description))
-    return devices
-
-
 def list_audio_devices() -> list[tuple[str, str]]:
     """Enumerate output devices via a short-lived libmpv handle.
 
@@ -205,34 +175,6 @@ def list_audio_devices() -> list[tuple[str, str]]:
     return parse_audio_device_list(raw or "[]")
 
 
-#: The always-first dropdown entry (device name ""): keeps radio on the
-#: wx.media engine, byte-for-byte today's path.
-SYSTEM_DEFAULT_DEVICE_LABEL = "System default"
-
-
-def output_device_choices(
-    devices: list[tuple[str, str]], current: str
-) -> tuple[list[str], list[str], int]:
-    """The Preferences dropdown model: labels, parallel device names, and
-    the selected index (pure, unit-tested).
-
-    "System default" is always first (name ""). A saved device that is not
-    currently connected still appears -- marked, at the end -- so opening
-    Preferences never silently resets the choice just because a USB sound
-    card is unplugged today.
-    """
-    labels = [SYSTEM_DEFAULT_DEVICE_LABEL]
-    names = [""]
-    for name, description in devices:
-        labels.append(description)
-        names.append(name)
-    current = current.strip()
-    if current and current not in names:
-        labels.append(f"{current} (not currently available)")
-        names.append(current)
-    return labels, names, names.index(current) if current in names else 0
-
-
 def mpv_output_device_available() -> bool:
     """True when the opt-in device-selection path can work on this machine."""
     try:
@@ -259,6 +201,7 @@ class MpvRadioEngine(VideoOutputMixin):
         on_error: Callable[[str], None],
         audio_device: str = "",
         on_buffering: Callable[[bool], None] | None = None,
+        timeshift_minutes: int | None = None,
     ) -> None:
         dll_path = find_libmpv()
         if dll_path is None:
@@ -273,10 +216,12 @@ class MpvRadioEngine(VideoOutputMixin):
 
         self._mpv.set_str("user-agent", http_client.user_agent())
         # The DVR buffer: a seekable demuxer cache large enough to pause a
-        # live show or rewind it (see rewind_seconds / jump_to_live).
-        self._mpv.set_str("cache", "yes")
-        self._mpv.set_str("demuxer-max-bytes", _CACHE_MAX_BYTES)
-        self._mpv.set_str("demuxer-max-back-bytes", _CACHE_BACK_BYTES)
+        # live show or rewind it (see seek_relative / jump_to_live), on disk
+        # when the listener's time-shift length asks for it.
+        from quill.core.radio.timeshift import TimeshiftSession
+
+        self._timeshift = TimeshiftSession(self._mpv.set_str)
+        self._timeshift.configure(timeshift_minutes)
         self._mpv.set_str("volume-max", _VOLUME_MAX)
         self._on_loaded = on_loaded
         self._on_finished = on_finished
@@ -325,6 +270,31 @@ class MpvRadioEngine(VideoOutputMixin):
         self._mpv.set_str("af", f"lavfi=[{graph}]" if graph else "")
 
     # -- live DVR (pause / rewind within the demuxer cache) ----------------------
+
+    def configure_timeshift(self, minutes: int | None) -> None:
+        """Apply a new time-shift length; it takes effect at the next load."""
+        self._timeshift.configure(minutes)
+
+    def dump_recent_audio(self, seconds: float, target: str) -> bool:
+        """Write the last *seconds* of what is playing to *target* from the cache.
+
+        What song recognition listens to. Read from the buffer that is already
+        playing -- never from a new connection, which on many stations would
+        start with a pre-roll advert instead of the song (xradio2.md 6.1).
+        False when there is nothing to dump or mpv refused.
+        """
+        if not self._loaded:
+            return False
+        position = self._mpv.get_double("time-pos")
+        if position is None:
+            return False
+        start = max(0.0, position - max(1.0, seconds))
+        try:
+            self._mpv.command("dump-cache", f"{start:.3f}", f"{position:.3f}", target)
+        except Exception:  # noqa: BLE001 - a failed dump is "no sample", never a crash
+            _log.exception("mpv dump-cache failed")
+            return False
+        return True
 
     def behind_live_seconds(self) -> float | None:
         """How far behind the live edge playback currently is, or None when
@@ -421,6 +391,9 @@ class MpvRadioEngine(VideoOutputMixin):
             # picture must not silence a video whose audio IS the external
             # track. Same reasoning, and same line, as the referrer above.
             self._mpv.set_str("audio-files", "")
+            # The time-shift folder is (re)made before every load: another
+            # copy's start-up sweep may have removed it while it sat empty.
+            self._timeshift.prepare()
             self._mpv.command("loadfile", path, "replace")
         except Exception:  # noqa: BLE001 - a bad URL must not crash the app
             _log.exception("mpv loadfile failed")
@@ -461,6 +434,8 @@ class MpvRadioEngine(VideoOutputMixin):
             self._mpv.close()
         except Exception:  # noqa: BLE001 - never block app close
             _log.exception("mpv terminate failed")
+        # With mpv gone nothing holds the buffer file, so it can go too.
+        self._timeshift.close()
 
     def play(self) -> None:
         if self._loaded:

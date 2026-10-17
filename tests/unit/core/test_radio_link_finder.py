@@ -5,6 +5,7 @@ from __future__ import annotations
 import pytest
 
 import quill.core.radio.link_finder as lf
+from quill.core.radio.address_kind import is_portal_page_url
 from quill.core.radio.link_finder import (
     LinkFinderError,
     normalize_page_url,
@@ -472,12 +473,12 @@ def test_tunein_radio_link_is_followed_not_offered_as_a_stream(
 
 
 def test_is_portal_page_url_matches_hosts_and_paths() -> None:
-    assert lf._is_portal_page_url("https://www.iheart.com/live/delilah-4846/")
-    assert lf._is_portal_page_url("https://tunein.com/radio/BBC-Radio-1-s24939/")
+    assert is_portal_page_url("https://www.iheart.com/live/delilah-4846/")
+    assert is_portal_page_url("https://tunein.com/radio/BBC-Radio-1-s24939/")
     # Same path fragment on a station's own domain is NOT a portal page.
-    assert not lf._is_portal_page_url("https://station.example.com/live/stream.mp3")
+    assert not is_portal_page_url("https://station.example.com/live/stream.mp3")
     # An iHeart URL that isn't a station page path is not a portal page.
-    assert not lf._is_portal_page_url("https://www.iheart.com/news/")
+    assert not is_portal_page_url("https://www.iheart.com/news/")
 
 
 # -- SecureNet player pages: follow, don't offer the page URL (issue #1491) --

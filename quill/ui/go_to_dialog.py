@@ -8,9 +8,11 @@ separate commands and its bookmarks under a third. Three surfaces for one verb
 is three places to look and three things to learn (bad.md 5.4, P1.6, P2.3).
 
 Shared, so both editors open the same window. The host supplies the targets it
-has -- QUILL Lite has no pagination, so it offers no Page kind, and the radio box
-shows only the kinds it was given rather than a greyed row for a thing this
-product does not do.
+has, and the radio box shows only the kinds it was given rather than a greyed
+row for a thing this document does not have. QUILL Lite offers **Page** only
+when the document has real pages (a PDF's form feeds, 2026-10-15); both editors
+offer **Outline** when a PDF brought one, from the shared
+:func:`quill.core.pdf_open.outline_places`.
 
 **A radio box rather than a drop-down**, and the reason is a listener's: a
 ``wx.Choice`` announces the kind you land on and nothing else, so finding out
@@ -69,14 +71,16 @@ def ask_go_to(
     line: int,
     last_line: int,
     kinds: dict[str, list[GoToTarget]],
+    initial_kind: str | None = None,
 ) -> GoToResult | None:
     """Ask where to go. Returns the answer, or ``None`` on Escape.
 
-    *kinds* maps a kind's name -- "Bookmark", "Heading", "Page" -- to the
-    targets under it. A kind with no targets is still offered and says so when
-    chosen: "no headings in this document" is a fact worth hearing, and a radio
-    box whose rows come and go with the document is one whose shape nobody can
-    learn. Line is always first and always present.
+    *kinds* maps a kind's name -- "Bookmark", "Heading", "Page", "Outline" --
+    to the targets under it. A kind with no targets is still offered and says
+    so when chosen: "no headings in this document" is a fact worth hearing, and
+    a radio box whose rows come and go with the document is one whose shape
+    nobody can learn. Line is always first and always present.
+    *initial_kind* opens on that kind instead of Line (Enter on a Page cell).
     """
     dialog = wx.Dialog(parent, title="Go To", style=wx.DEFAULT_DIALOG_STYLE)
     root = wx.BoxSizer(wx.VERTICAL)
@@ -104,8 +108,8 @@ def ask_go_to(
     places = wx.ListBox(dialog, choices=[], style=wx.LB_SINGLE)
     set_accessible_name(places, "Places")
     places.SetHelpText(
-        "The bookmarks or headings in this document, in the order they appear. "
-        "Choose one and press Enter to go there."
+        "The pages, bookmarks, headings or PDF outline entries in this document, "
+        "in the order they appear. Choose one and press Enter to go there."
     )
     root.Add(list_label, 0, wx.LEFT | wx.RIGHT, _PAD)
     root.Add(places, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
@@ -152,10 +156,13 @@ def ask_go_to(
     apply_listbox_activation(places, lambda _e: dialog.EndModal(wx.ID_OK))
 
     apply_modal_ids(dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
-    _sync()
+    if initial_kind in names:
+        kind_box.SetSelection(names.index(initial_kind))
     kind_box.SetFocus()
-    line_field.SetFocus()
-    line_field.SelectAll()
+    _sync()  # focuses the number field, or the list when it has rows
+    if _chosen_kind() == "Line":
+        line_field.SetFocus()
+        line_field.SelectAll()
     try:
         if show_modal_dialog(dialog, "Go To") != wx.ID_OK:
             return None

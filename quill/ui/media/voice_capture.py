@@ -103,10 +103,10 @@ def dispatch_transcript(host: Any, transcript: str) -> VoiceFeedback:
 
 
 # Offline engines, in the order the player falls back through them when the user
-# has not chosen one. whisper.cpp is the always-present default; Nemotron (the
-# torch-free NVIDIA engine) and Faster Whisper follow if installed. Vosk is
-# never tried: it is registered only as the podcast chapter engine.
-_PROVIDER_FALLBACK = ("whispercpp", "nemotron", "fasterwhisper")
+# has not chosen one. whisper.cpp is the always-present default; the shared
+# sherpa-onnx models (the built-in Moonshine tiny at least; dict.md D-26) and
+# Faster Whisper follow. Vosk is never tried: it is the podcast chapter engine.
+_PROVIDER_FALLBACK = ("whispercpp", "sherpa", "fasterwhisper")
 
 
 def preferred_provider_ids(saved_provider: str = "") -> list[str]:
@@ -129,8 +129,8 @@ def resolve_provider_and_model(registry: Any, saved_provider: str = "") -> tuple
     installed model, and the best small model for it. ``(None, "")`` if none.
 
     Engine-agnostic: any registered provider works. For whisper.cpp this favours
-    the small tiers; for Nemotron (a single-model pack) it takes what's
-    installed.
+    the small tiers; for the shared sherpa-onnx models it prefers the built-in
+    Moonshine tiny (service.preferred_command_model).
     """
     from quill.core.speech.service import CHAPTER_ONLY_PROVIDER_IDS, preferred_command_model
 

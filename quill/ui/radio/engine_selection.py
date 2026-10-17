@@ -133,6 +133,11 @@ def _build_mpv(host: Any) -> bool:
             # a stall has to become a *state* as well as a sentence, or the
             # status bar goes on saying "playing" through dead air.
             on_buffering=host._handle_buffering,
+            # The listener's time-shift length, from the history record the
+            # frame hands the controller (None = the default, on disk).
+            timeshift_minutes=getattr(
+                getattr(host, "_radio_history", None), "timeshift_minutes", None
+            ),
         )
     except Exception:  # noqa: BLE001 - fall back, never fail playback
         _log.exception("mpv radio engine unavailable; using wx.media")

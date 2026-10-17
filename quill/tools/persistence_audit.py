@@ -31,6 +31,9 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
+from quill.tools.persistence_entries_dictation import DICTATION_ENTRIES
+from quill.tools.persistence_entries_radio import RADIO_LISTENER_ENTRIES
+
 _PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 
 _PERSIST_CALLEE = "write_json_atomic"
@@ -52,11 +55,8 @@ _CLASSIFICATIONS: dict[str, str] = {
 _REVIEWED_PERSISTENCE: dict[str, str] = {
     # --- versioned (the contract) ---
     "core/settings.py::save_settings": "versioned",
-    # 2026-10-05, dictation: each document's context (user-written descriptions,
-    # schema-stamped, additive) and the one-shot hand-off of an editor's dictation
-    # settings to Quill Inkwell (read once and deleted).
-    "core/windows_dictation/contexts.py::save": "content",
-    "core/windows_dictation/anywhere.py::write_handoff": "cache",
+    # Dictation's own stores: persistence_entries_dictation.
+    **DICTATION_ENTRIES,
     "core/transcribe/settings.py::save_settings": "versioned",  # QUILL Transcribe
     "core/dictation_owner.py::claim": "marker",  # who owns Dictate Anywhere; lock-backed
     # qc.md X-03 and X-05 (2026-10-03): small, self-describing, "version": 1 stamped;
@@ -112,6 +112,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # migration machinery, which has nothing to migrate from at 1.0.0.
     "core/lite/settings.py::save": "versioned",
     "core/converter_settings.py::save": "versioned",
+    "core/publish/auphonic_plan.py::save_pending": "versioned",  # Converter Auphonic resume
     "core/speech/dictation/recovery.py::save_metadata": "framework",
     # --- export / output (user picks the file) ---
     # "Move my setup to another machine" (11.10): the import writes each store
@@ -377,15 +378,8 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # rather than dropped on read, so a renamed lesson in a later build cannot
     # erase a place this build never heard of.
     "core/tutorials/progress.py::save_progress": "cache",
-    # A line the listener wrote themselves about a station or a podcast. Their
-    # own words, so it is content rather than configuration: additive and
-    # self-describing (a flat key -> text map), with no defaults that could
-    # change meaning under it, and nothing to migrate. Losing it would lose
-    # something somebody made, which is why it is written atomically -- but
-    # not something the versioned-delta contract helps with.
-    "core/radio/item_notes.py::set_note": "content",
-    # Your own tags on stations that are not favorites; additive, self-describing.
-    "core/radio/station_tags.py::save_tag_store": "content",
+    # A note, your own tags, a favourite's key: persistence_entries_radio.
+    **RADIO_LISTENER_ENTRIES,
     # --- marker / small state flags ---
     # Radio's active-recording resume marker (R1-R4): transient state written
     # when a recording starts and cleared on clean stop; absent by default, and
@@ -533,7 +527,8 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/menu_customization.py::save_menu_customization": "versioned",
     "core/profile_startup.py::save_profile_startup_config": "versioned",
     "ui/ai_hub_dialog.py::_save_deepgram_max_speakers": "versioned",
-    "ui/main_frame_power_tools.py::toggle_read_only_guard": "versioned",
+    # The Read-Only Guard list, shared by both editors since 2026-10-16.
+    "core/read_only_guards.py::set": "versioned",
 }
 
 

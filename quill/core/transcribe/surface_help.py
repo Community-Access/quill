@@ -43,9 +43,10 @@ PURPOSES: dict[str, str] = {
         "whatever Windows is set to; a named microphone stays chosen."
     ),
     "Review Transcript": (
-        "A finished transcript of a recording, read-only. Copy it, save it as a "
-        "text file, or open it in QUILL; nothing is copied or typed anywhere unless "
-        "you choose it."
+        "A finished transcript of a recording, read-only. Type it, or the part you "
+        "selected, into a field in another program; copy it, save it as a text "
+        "file, or open it in QUILL. Nothing is copied or typed anywhere unless you "
+        "choose it."
     ),
     "Save Transcript As": ("Choose where to save the transcript as a plain text file."),
     "Start and Stop Key": (
@@ -63,6 +64,22 @@ PURPOSES: dict[str, str] = {
         "Dictation is paused with words that were never written. Exit throws them "
         "away and closes QUILL Transcribe; Cancel keeps it running so you can resume."
     ),
+    "Practice Dictation": (
+        "A field of QUILL Transcribe's own that dictation types into, so you can learn "
+        "and test dictation without writing into another program. Start Dictation Here "
+        "starts it in the field; Read This Sentence reads a sentence aloud and says how "
+        "many words were heard as you said them."
+    ),
+    "Dictation Profile": (
+        "Choose the kind of writing dictation is for: Standard, Email, Document, "
+        "Markdown, Chat, Coding or Verbatim. A profile sets the pause, fillers and "
+        "punctuation, and how headings, bold and italic are written."
+    ),
+    "QUILL Transcribe Tutorials": (
+        "Five short lessons: a first dictation in the Practice window, pausing and "
+        "resuming, commands with the command word, snippets by voice, and review. "
+        "Try It runs a step's command for you."
+    ),
     "Use OpenAI": (
         "Before your speech goes to OpenAI, this says what is sent and where. No "
         "keeps the model you had; nothing is sent unless you agree."
@@ -77,6 +94,12 @@ PURPOSES: dict[str, str] = {
         "The rest of dictation's settings: pauses, fillers, dashes, wake phrase and "
         "the OpenAI model. Some only matter inside QUILL's own documents."
     ),
+    "Speech Providers": (
+        "Use a speech service you already have an account with -- Azure, Google, "
+        "Amazon, Deepgram and others -- for dictation. Choose one to see what it can "
+        "do and what it needs, enter that, test it, and save it; keys go to Windows "
+        "Credential Manager. Then choose it as the speech engine in Dictation Settings."
+    ),
     "Speech Models": (
         "The Model Library: download, check or remove the optional speech models. "
         "Each download shows its size first, is checked before it is used, and can "
@@ -86,9 +109,32 @@ PURPOSES: dict[str, str] = {
         "Everything dictation understands, to read with the arrow keys. In another "
         "program only the commands that do not need to read its text work."
     ),
+    "Review Dictation": (
+        "Dictated words wait here before they are inserted. Read them, type or keep "
+        "dictating to change them, ask the AI to change them if AI is on, and hear "
+        "what changed. Control Enter inserts them where they were going; nothing is "
+        "written before that."
+    ),
+    "Review with AI": (
+        "Before the first change is asked for, this says who receives the words "
+        "being reviewed and what is sent. No is the default and sends nothing."
+    ),
+    "Discard These Words": (
+        "The AI has changed these words. Yes throws them away and writes nothing; "
+        "No keeps the review open."
+    ),
     "Transcribe a Recording": (
         "Choose a recording and a model; it is transcribed in the background and "
         "the transcript waits in Notifications for you to review."
+    ),
+    "My Words and Phrases": (
+        "The words, phrases and corrections dictation uses, the same list as QUILL. "
+        "Import adds the new entries from a Markdown or CSV file after showing them; "
+        "Export saves the list to one."
+    ),
+    "Import Words": (
+        "What the file would add to your list, with the counts. Add Them adds them; "
+        "nothing you already have is replaced."
     ),
     "Notifications": (
         "Finished, failed and cancelled transcriptions. Open one to review its transcript."

@@ -1,28 +1,28 @@
 """What happens while you type: abbreviations, autocorrect, and the spell check.
 
-Two features that watch the keystroke rather than the menu, and the only two
-places in QUILL Lite where the app changes text the user did not ask it to
-change. Both are therefore switchable areas, and one of them starts off.
+Features that watch the keystroke rather than the menu, and the only places in
+QUILL Lite where the app changes text the user did not ask it to change. All
+of them are switchable, and the ones that change text start off.
 
 **Abbreviations** (:mod:`quill.core.abbreviations`, QUILL's own engine and
-QUILL's own manager dialog). Type ``addr`` and a space and get your address.
-Expansion is a real accessibility feature rather than a typing convenience: it
-turns a long, error-prone, character-by-character insertion into four
-keystrokes, and the errors it removes are the ones that cost most to find again
-by ear.
+QUILL's own manager dialog) live in :mod:`quill.apps.lite_window_abbreviations`
+since 2026-10-16, inherited here. Type ``addr`` and a space and get your
+address. The library is **QUILL Lite's own** by default, in QUILL Lite's own
+data folder; Preferences has a switch -- off by default -- that points it at
+QUILL's shared ``abbreviations.json`` instead, the one Inkwell and QUILL use.
+A machine that has never had QUILL installed must not grow a Quill data folder
+because somebody opened a text file.
 
-The library is **QUILL Lite's own** by default, in QUILL Lite's own data folder.
-Preferences has a switch -- off by default -- that points it at QUILL's shared
-``abbreviations.json`` instead, which is the one Inkwell and QUILL both use. That
-is deliberately opt-in and not the default: Inkwell shares the library because
-one library is its entire value, while QUILL Lite is offered as an alternative to
-QUILL, and a machine that has never had QUILL installed must not grow a Quill
-data folder because somebody opened a text file.
+**AutoCorrect for misspellings and Enter in a list**
+(:mod:`quill.apps.lite_window_typing_assist`, QUILL's rules from
+:mod:`quill.core.autocorrect` and :mod:`quill.core.list_continuation`). The key
+handlers below call in there: a space or Enter may correct the word it ends,
+and Enter may continue a list.
 
 **Autocorrect** (:mod:`quill.core.autoformat`, QUILL's rules). Curly quotes and
-em dashes from a double hyphen -- and nothing else: :meth:`_autoformat` has no
-sentence-capital rule and never has, whatever three descriptions used to say.
-It ships
+em dashes from a double hyphen; misspelling correction is the separate setting
+above, under the same area. :meth:`_autoformat` has no sentence-capital rule
+and never has, whatever three descriptions used to say. It ships
 **off** (:data:`quill.core.lite.features.DEFAULT_OFF`), because every one of
 those is welcome in prose and actively wrong in a configuration file, a code
 snippet or a CSV -- and QUILL Lite is used for all four. Turning it on is one
@@ -60,14 +60,12 @@ is not typing, does not trigger a check of a word the user never typed.
 
 from __future__ import annotations
 
-from typing import Any
-
 import wx
 
-from quill.core.abbreviations import is_trigger_char, try_expand
+from quill.apps.lite_window_abbreviations import DocumentAbbreviationsMixin
+from quill.apps.lite_window_typing_assist import DocumentTypingAssistMixin
 from quill.core.autoformat import autoformat_allows, is_dash_merge, smart_quote_for
 from quill.core.sound_events import SoundEvent
-from quill.ui.atomic_edit import replace_as_one_undo
 from quill.ui.richedit_editing import RICH
 
 __all__ = ["DocumentTypingMixin"]
@@ -95,7 +93,7 @@ def overwrite_now(frame: object) -> bool:
     return bool(live)
 
 
-class DocumentTypingMixin:
+class DocumentTypingMixin(DocumentAbbreviationsMixin, DocumentTypingAssistMixin):
     """Abbreviation expansion and autocorrect, on the way through EVT_CHAR."""
 
     # -- overtype ------------------------------------------------------------ #
@@ -176,6 +174,15 @@ class DocumentTypingMixin:
             return
         if code == wx.WXK_TAB and self._handle_tab(event):
             return
+        # Enter: correct the word it ends, then continue a list if it is one
+        # (lite_window_typing_assist.py). Plain Enter only; Shift+Enter is a
+        # line break, not a new item.
+        if code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER) and not (
+            event.ControlDown() or event.AltDown() or event.ShiftDown()
+        ):
+            self._autocorrect_word("\n")
+            if self._handle_list_return():
+                return
         # Escape drops a waiting F8 marker. It could not be cancelled at all
         # before 2026-09-16: cancel_extend_selection existed and nothing called
         # it, so once F8 was pressed the marker waited forever and pressing F8
@@ -372,6 +379,8 @@ class DocumentTypingMixin:
         """
         code = event.GetUnicodeKey()
         typed = chr(code) if code else ""
+        if typed == " " and self._autocorrect_word(typed):
+            return  # the space went in with the corrected word, as one undo step
         if typed and self.app.feature_enabled("autoformat") and self._autoformat(typed):
             return  # handled: the replacement went in instead of the keystroke
         event.Skip()
@@ -435,165 +444,3 @@ class DocumentTypingMixin:
         self.control.WriteText(text)
         self._set_modified(True)
         self._touch_status()
-
-    # ------------------------------------------------------------------ #
-    # Abbreviations
-    # ------------------------------------------------------------------ #
-
-    def _maybe_expand(self) -> None:
-        """Expand the word before the caret if it is an abbreviation.
-
-        Guarded end to end: an expansion that raises must not be able to eat a
-        keystroke, and the clipboard provider is passed rather than the
-        clipboard text so ``${clipboard}`` costs a clipboard open only on the
-        rare expansion that actually uses it -- not once per keystroke.
-        """
-        library: Any = self.app.abbreviations
-        if library is None:
-            return
-        try:
-            caret = self.control.GetInsertionPoint()
-            # An abbreviation is recognised by the character that follows it, so
-            # a keystroke that is not a trigger cannot possibly expand anything.
-            # Asked first, and asked of one character, because the answer is no
-            # for every letter anybody types and the alternative was reading the
-            # whole document to find that out (bad.md T1).
-            if caret < 2 or not is_trigger_char(self.control.GetRange(caret - 1, caret)):
-                return
-            text = self.control.GetValue()
-            match = try_expand(text, caret, library, clipboard_provider=self._clipboard_text)
-        except Exception:  # noqa: BLE001 - expansion must never break typing
-            return
-        if match is None:
-            return
-        # An expansion is the app typing several words on your behalf, which is
-        # the largest thing that happens in this editor without anybody pressing
-        # a key for it -- and a screen reader says nothing at all, because no
-        # focus moved and no control was named.
-        self._cue(SoundEvent.ABBREVIATION_EXPANDED)
-        replace_as_one_undo(self.control, match.token_start, match.token_end, match.resolved_text)
-        landing = match.token_start + (
-            match.cursor_offset if match.has_cursor else len(match.resolved_text)
-        )
-        if match.trailing_space:
-            self.control.WriteText(" ")
-        self.control.SetInsertionPoint(min(landing, self.control.GetLastPosition()))
-        self._set_modified(True)
-        self._touch_status()
-        self._announce(f"Expanded to {match.resolved_text.strip()[:60]}")
-
-    def cmd_toggle_abbreviations(self) -> None:
-        """Alt+Shift+A: expansion on or off, without opening a dialog.
-
-        The same switch Customize Features carries, on a key, because this is
-        the one feature that acts *while you type*: the moment you want it off
-        is the moment it has just expanded something you meant to keep, and
-        three keystrokes of dialog in that moment is three too many.
-
-        Everything the area owns follows -- the library is loaded or dropped and
-        the menus are rebuilt -- so turning it off here really does stop the
-        expansion rather than only stopping the menu item.
-        """
-        features = self.app.features
-        if features is None:  # pragma: no cover - only before the app has loaded
-            return
-        enabled = self.app.feature_enabled("abbreviations")
-        features.set_enabled("abbreviations", not enabled)
-        self.app.save_features()
-        self.app.reload_abbreviations()
-        # After this event, not during it: the menu bar being rebuilt is the one
-        # this command was just chosen from, and wxMSW does not survive having
-        # a menu deleted while it is still dispatching that menu's event.
-        wx.CallAfter(self.app.rebuild_all_menus)
-        self._announce("Abbreviations off" if enabled else "Abbreviations on")
-
-    def cmd_snippet_gallery(self) -> None:
-        """Ctrl+Alt+Shift+Home: pick a snippet from a list and put it in.
-
-        The half QUILL Lite did not have. Abbreviations expand when you *type the
-        trigger*, which is perfect for the six you use daily and useless for the
-        fortieth one, whose trigger you cannot remember -- and a manager is for
-        editing them, not for reaching them. QUILL has had a gallery since its
-        snippets shipped; this is the same surface at QUILL Lite's scale
-        (bad.md 4.2 Tier 3, P3.6).
-
-        "Snippet" rather than "abbreviation" in the title, because it is the
-        name the bigger product uses for the same idea and a person moving
-        between the two should not have to learn that they are the same thing.
-        The store, the triggers and the manager are unchanged and still say
-        abbreviation -- renaming those would move every key, every menu row and
-        every line of documentation for a wording preference.
-
-        Ordered by :func:`quill.core.abbreviations.quick_insert_order`, so the
-        ones actually used rise to the top of the list rather than sitting in
-        whatever order they were added.
-        """
-        from quill.apps.lite_dialogs import choose_from_rows
-        from quill.core.abbreviations import quick_insert_order, resolve_expansion
-
-        library = self.app.abbreviations
-        if library is None:
-            self._announce("Abbreviations are switched off. Alt+Shift+A turns them back on")
-            return
-        entries = quick_insert_order(library)
-        if not entries:
-            self._announce("There are no snippets yet. Manage Abbreviations adds one")
-            return
-        rows = []
-        for entry in entries:
-            # The trigger *and* a preview of what it writes: the trigger alone
-            # is the thing somebody came here because they could not remember.
-            preview = " ".join(entry.expansion.split())[:60]
-            rows.append((entry.id, f"{entry.abbreviation}: {preview}"))
-        chosen = choose_from_rows(
-            self,
-            title="Snippets",
-            label="Snippets, most used first:",
-            help_text=(
-                "Choose one and press Enter to put it in at the cursor. These are "
-                "the same abbreviations that expand as you type; this is the way "
-                "in when you cannot remember the trigger."
-            ),
-            rows=rows,
-        )
-        self.control.SetFocus()
-        if not isinstance(chosen, str):
-            return
-        entry = next((one for one in entries if one.id == chosen), None)
-        if entry is None:
-            return
-        # ``_clipboard_text`` is DocumentClipboardMixin's -- the same reader the
-        # typed expansion uses, so a clipboard snippet inserts the same thing
-        # whichever route reached it.
-        text, back, _used_clipboard = resolve_expansion(entry.expansion, self._clipboard_text())
-        self.control.WriteText(text)
-        if back:
-            # The cursor placeholder, honoured the same way the typed expansion
-            # honours it -- a snippet that puts the caret in the wrong place
-            # through one route and the right place through the other is two
-            # features wearing one name.
-            self.control.SetInsertionPoint(max(0, self.control.GetInsertionPoint() - back))
-        self._set_modified(True)
-        self._touch_status()
-        self._announce(f"Inserted {entry.abbreviation}")
-
-    def cmd_manage_abbreviations(self) -> None:
-        """QUILL's own abbreviation manager, over whichever library is in use."""
-        from quill.ui.abbreviation_manager_dialog import AbbreviationManagerDialog
-
-        library = self.app.abbreviations
-        if library is None:
-            self._announce("Abbreviations are switched off. Alt+Shift+A turns them back on")
-            return
-        from quill.ui.dialog_contract import show_modal_dialog
-
-        dialog = AbbreviationManagerDialog(self, library)
-        try:
-            show_modal_dialog(dialog.dialog, "Manage Abbreviations")
-        finally:
-            dialog.close()
-        # The dialog edits the library object in place; the write back is ours,
-        # and the reload is what makes a second window see the same list.
-        self.app.save_abbreviations()
-        self.app.reload_abbreviations()
-        self.control.SetFocus()

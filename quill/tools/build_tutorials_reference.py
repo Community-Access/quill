@@ -1,11 +1,13 @@
 """GATE-TUTDOC: render each app's tutorial book from the lessons it teaches.
 
-Four apps have lessons, and each ships a Markdown book beside its user guide:
+Six apps have lessons, and each ships a Markdown book beside its user guide:
 
 * Quill Radio -- ``standalone/radio/docs/tutorials.md``
 * QUILL Cast -- ``standalone/cast/docs/tutorials.md``
 * Quill Weather -- ``standalone/weather/docs/tutorials.md``
 * QUILL -- ``docs/user guide/tutorials.md``
+* QUILL Lite -- ``standalone/quilllite/docs/tutorials.md``
+* QUILL Transcribe -- ``standalone/transcribe/docs/tutorials.md`` (D-25)
 
 Every one is generated, never written by hand. The window and the document
 read the same steps, so a lesson cannot be right in one and stale in the other
@@ -97,6 +99,16 @@ BOOKS: tuple[Book, ...] = (
         "",
         "Help > Tutorials... (Ctrl+Alt+F1)",
     ),
+    Book(
+        "transcribe",
+        "QUILL Transcribe",
+        REPO_ROOT / "standalone" / "transcribe" / "docs" / "tutorials.md",
+        # No APP_KEYMAPS section either: QUILL Transcribe's lesson commands are
+        # its own small table (core/transcribe/tutorials.py, D-25) plus the
+        # editors' dictation chords it shares (core/transcribe/parity.py).
+        "",
+        "Help > Tutorials... (Ctrl+Alt+F1)",
+    ),
 )
 
 
@@ -122,6 +134,10 @@ def catalogue_for(app_id: str) -> TutorialSet:
         from quill.core.lite.tutorials import CATALOGUE as LITE
 
         return LITE
+    if app_id == "transcribe":
+        from quill.core.transcribe.tutorials import CATALOGUE as TRANSCRIBE
+
+        return TRANSCRIBE
     raise SystemExit(f"No tutorials for app '{app_id}'.")
 
 
@@ -147,6 +163,11 @@ def shipped_key(keymap_id: str, app_id: str = "") -> object:
             return shipped.get(command_id, "")
 
         return lite_lookup
+
+    if app_id == "transcribe":
+        from quill.core.transcribe.tutorials import key_for
+
+        return key_for
 
     overrides = APP_KEYMAPS.get(keymap_id, {}) if keymap_id else {}
 

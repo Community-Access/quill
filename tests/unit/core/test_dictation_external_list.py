@@ -53,9 +53,21 @@ def _listed_phrases(reference: str) -> list[str]:
 def test_every_listed_phrase_works_in_another_program() -> None:
     """Parsed as the controller parses it, each is a command it lets through
     in Notepad (EXTERNAL_COMMANDS), not one answered with a refusal."""
+    from quill.core.windows_dictation.command_mode import COMMAND_MODE_HELP
+    from quill.core.windows_dictation.review_session import REVIEW_HELP
+
+    # Said after the command word only (D-1, and D-2's review): the controller
+    # answers those before it parses, in any program (test_dictation_command_mode.py,
+    # test_dictation_review.py).
+    after_the_word = {
+        phrase for entry in (*COMMAND_MODE_HELP, *REVIEW_HELP) for phrase in entry.phrases
+    }
     phrases = _listed_phrases(commands_reference(external=True))
     assert len(phrases) >= 20
+    assert after_the_word <= set(phrases)
     for phrase in phrases:
+        if phrase in after_the_word:
+            continue
         sample = {"spell": "bravo alpha", "paste clip": "three", "paste slot": "three"}
         opening = phrase.replace("...", "").strip()
         text = phrase.replace("...", sample.get(opening, "sign off")).strip()
@@ -82,7 +94,7 @@ def test_the_insert_commands_are_listed_there() -> None:
     reference = commands_reference(external=True)
     for opening in ('"insert snippet ..."', '"paste clip ..."', '"insert abbreviation ..."'):
         assert opening in reference, opening
-    assert "[title]" in reference and "cursor stays at the end" in reference
+    assert "asks for each one by name" in reference and "cursor stays at the end" in reference
 
 
 def test_your_own_phrases_are_listed() -> None:

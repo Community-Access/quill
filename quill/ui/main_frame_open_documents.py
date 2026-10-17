@@ -124,6 +124,35 @@ class OpenDocumentsFindMixin:
             id=self._id_find_in_open_documents,
         )
 
+    def _append_cross_document_search_items(self, edit_menu: Any) -> None:
+        """Search in Files and Replace Across Files, as rows of Edit itself.
+
+        Called from the Edit menu straight after Find in Open Documents. They
+        were in Edit > Search Tools, and only when the feature profile included
+        regular-expression search -- which Essential, the profile a new install
+        gets, does not. So the changelog and the release notes announced a
+        command a new user could neither see nor press, because the key was
+        gated by the same feature. Jeff could not find it (2026-10-16).
+        Neither command needs a regular expression: plain text is the default
+        and a pattern is a choice inside the window, as in Find. So they are
+        gated by ``core.search``, Find's own feature, and sit in the same order
+        as QUILL Lite's Edit menu, so one sentence in either guide finds them in
+        both editors (family rules 1 and 2). No letters: the Edit menu has spent
+        them, and menu_routes seats an Alt path where it can.
+        """
+        from quill.core.i18n import _
+
+        if not self._feature_enabled("core.search"):  # type: ignore[attr-defined]
+            return
+        edit_menu.Append(
+            self._id_search_in_files,  # type: ignore[attr-defined]
+            self._menu_label(_("Search in Files..."), "tools.search_in_files"),  # type: ignore[attr-defined]
+        )
+        edit_menu.Append(
+            self._id_replace_in_files,  # type: ignore[attr-defined]
+            self._menu_label(_("Replace Across Files..."), "tools.replace_in_files"),  # type: ignore[attr-defined]
+        )
+
     def find_in_open_documents(self) -> None:
         """Ctrl+Shift+F10: find and replace across every open tab."""
         open_find_in_open_documents(QuillOpenDocuments(self))

@@ -40,8 +40,51 @@ class TranscribeCommandsMixin:
             refresh()
 
     def _set_dictation_field(self, name: str, value: Any) -> None:
-        self._settings.dictation = {**self._settings.dictation, name: value}
+        from quill.core.windows_dictation.settings_fields import settle_share
+
+        stored = dict(self._settings.dictation)
+        settle_share(stored)  # sharing decided before anything changes (D-13)
+        self._settings.dictation = {**stored, name: value}
         self._save()
+        self._share_dictation()
+
+    # -- the family's shared dictation settings (dict.md D-13) -------------------- #
+
+    _family_stamp: Any = None
+
+    def _share_dictation(self) -> None:
+        """Give the shared fields to the family, when sharing is on here. A
+        write that fails is said: our copy is saved, the family's is not."""
+        from quill.core.windows_dictation.family_store import (
+            FamilyDictationError,
+            publish_fields,
+            stamp,
+        )
+
+        try:
+            if publish_fields(self._settings.dictation, app="transcribe"):
+                self._family_stamp = stamp()  # our own write is not news
+        except FamilyDictationError as error:
+            self._announce(error.sentence)  # type: ignore[attr-defined]
+
+    def take_family_dictation(self) -> bool:
+        """What QUILL, QUILL Lite or Quill Inkwell saved since we last looked.
+        Quiet: the change is the person's own, made in another program."""
+        from quill.core.windows_dictation.family_store import adopt_fields, stamp
+
+        now = stamp()
+        if now is None or now == self._family_stamp:
+            return False
+        self._family_stamp = now
+        try:
+            updated = adopt_fields(self._settings.dictation, app="transcribe")
+        except Exception:  # noqa: BLE001 - an unreadable family file changes nothing
+            return False
+        if updated is None:
+            return False
+        self._settings.dictation = updated
+        self._save()
+        return True
 
     def set_option(self, name: str, value: bool) -> None:
         setattr(self._settings, name, bool(value))
@@ -79,7 +122,10 @@ class TranscribeCommandsMixin:
         from quill.apps.transcribe_dialogs import ChooseModelDialog
 
         dialog = ChooseModelDialog(
-            self.frame, current=self.chosen_engine(), open_library=self._library_for_dialog
+            self.frame,
+            current=self.chosen_engine(),
+            open_library=self._library_for_dialog,
+            language=self._language(),
         )
         try:
             answer = self._show_modal_dialog(dialog, "Choose Model")  # type: ignore[attr-defined]
@@ -100,7 +146,11 @@ class TranscribeCommandsMixin:
             return None
         from quill.ui.dictation_models_dialog import open_speech_models
 
-        return open_speech_models(self.frame, self._announce)  # type: ignore[attr-defined]
+        return open_speech_models(self.frame, self._announce, language=self._language())  # type: ignore[attr-defined]
+
+    def _language(self) -> str:
+        """The dictation language, which the model recommendation follows (D-22)."""
+        return str(self._settings.dictation.get("windows_dictation_speech_language", "") or "en")
 
     def open_model_library(self) -> None:
         chosen = self._open_library()
@@ -123,12 +173,20 @@ class TranscribeCommandsMixin:
 
     def edit_dictation_settings(self) -> None:
         """The same Dictation Settings window both editors show, over our copy."""
+        from quill.apps.transcribe_talk import HELP_FOR
         from quill.core.windows_dictation.anywhere import stored_from
         from quill.ui.windows_dictation_dialog import WindowsDictationDialog
 
         settings = self._dictation_settings_object()  # type: ignore[attr-defined]
         before = settings.windows_dictation_engine
-        dialog = WindowsDictationDialog(self.frame, settings, self._announce)  # type: ignore[attr-defined]
+        wake_before = bool(settings.windows_dictation_wake_enabled)
+        dialog = WindowsDictationDialog(
+            self.frame,
+            settings,
+            self._announce,  # type: ignore[attr-defined]
+            help_for=HELP_FOR,
+            ai_on=self._review_ai_on(),  # type: ignore[attr-defined]
+        )
         try:
             answer = self._show_modal_dialog(dialog, "Dictation Settings")  # type: ignore[attr-defined]
             if answer == wx.ID_OK:
@@ -139,12 +197,14 @@ class TranscribeCommandsMixin:
             return
         self._settings.dictation = stored_from(settings)
         self._save()
+        self._share_dictation()
         from quill.core.transcribe.models import model_name
 
         if settings.windows_dictation_engine != before:
             self._announce(f"Saved. Model: {model_name(settings.windows_dictation_engine)}.")  # type: ignore[attr-defined]
         else:
             self._set_status("Dictation settings saved.")  # type: ignore[attr-defined]
+        self._wake_settings_changed(wake_before)  # type: ignore[attr-defined]
 
     def edit_dictation_words(self) -> None:
         """My Words and Phrases: the editors' window, over the same word list
@@ -183,6 +243,8 @@ class TranscribeCommandsMixin:
             stop_phrase=preferences.stop_phrase,
             own_phrases=own,
             language=preferences.speech_language,
+            command_prefix=preferences.command_prefix,
+            prefix_required=preferences.command_prefix_required,
         )
 
     def spoken_commands_summary(self) -> str:
@@ -196,8 +258,12 @@ class TranscribeCommandsMixin:
         if item is not None:
             key = str(item.GetItemLabel()).partition(chr(9))[2].strip()  # after the tab
         where = f", {key}" if key else ""
+        preferences = self._dictation_preferences()  # type: ignore[attr-defined]
+        # Strict mode (D-1, on here by default): the commands need the word.
+        prefix = preferences.command_prefix if preferences.command_prefix_required else ""
         return spoken_summary(
-            f"For the full list, open Dictation Commands from the Dictation menu{where}."
+            f"For the full list, open Dictation Commands from the Dictation menu{where}.",
+            prefix=prefix,
         )
 
     def show_dictation_commands(self) -> None:
@@ -252,6 +318,7 @@ class TranscribeCommandsMixin:
 
         microphone = str(self._settings.dictation.get("windows_dictation_microphone", "") or "")
         engine, key = self.chosen_engine(), self._settings.dictation_hotkey
+        command = self._settings.command_hotkey
         at_login = self.launch_at_startup_enabled()
         while True:
             dialog = SetupDialog(
@@ -262,11 +329,14 @@ class TranscribeCommandsMixin:
                 at_login=at_login,
                 test_microphone=self._test_microphone,
                 show_modal=self._show_modal_dialog,  # type: ignore[attr-defined]
+                command_key=command,
+                language=self._language(),
             )
             try:
                 answer = self._show_modal_dialog(dialog, "Set Up QUILL Transcribe")  # type: ignore[attr-defined]
                 microphone, engine = dialog.chosen_microphone(), dialog.chosen_engine()
                 key, at_login = dialog.chosen_key(), bool(dialog.at_login.GetValue())
+                command = dialog.chosen_command_key()
             finally:
                 dialog.Destroy()
             if answer != wx.ID_OK:
@@ -288,6 +358,8 @@ class TranscribeCommandsMixin:
                         "does not say which one. Choose another key, or leave the box empty."
                     )
             if not problem:
+                problem = self._setup_command_key_problem(command, key)
+            if not problem:
                 break
             self._show_message_box(problem, "Set Up QUILL Transcribe", wx.OK | wx.ICON_WARNING)  # type: ignore[attr-defined]
         self._settings.dictation = {
@@ -295,6 +367,7 @@ class TranscribeCommandsMixin:
             "windows_dictation_microphone": microphone,
         }
         self._settings.dictation_hotkey = key
+        self._settings.command_hotkey = command
         self._settings.setup_done = True
         if engine and engine != self.chosen_engine():
             self._use_model(engine)
@@ -305,9 +378,31 @@ class TranscribeCommandsMixin:
         from quill.core.transcribe.models import model_name
 
         how = f"press {key} in the field you want" if key else "use the tray menu"
+        commands = f" For a command, press {command} first." if command else ""
         self._announce(  # type: ignore[attr-defined]
-            f"Ready. Model: {model_name(self.chosen_engine())}. To dictate, {how}."
+            f"Ready. Model: {model_name(self.chosen_engine())}. To dictate, {how}.{commands}"
         )
+
+    def _setup_command_key_problem(self, command: str, key: str) -> str:
+        """Why the Command Key typed in setup cannot be used, or ``""`` once it is
+        registered (D-1). It may not be the start and stop key."""
+        from quill.core.family_chords import show_hide_key_problem
+        from quill.ui.show_hide_key_picker import _family_choices
+
+        if command and command.lower() == key.lower():
+            return "The Command Key and the start and stop key must be different keys."
+        own = {**self._own_keys("command"), "start and stop key": key}  # type: ignore[attr-defined]
+        problem = show_hide_key_problem(
+            command, app_id="transcribe", taken=_family_choices(), own=own
+        )
+        if problem or command == self._settings.command_hotkey or self._safe_mode:
+            return str(problem or "")
+        if not self._register_command_key(command):  # type: ignore[attr-defined]
+            return (
+                f"Windows says another program is already using {command}. Windows does "
+                "not say which one. Choose another Command Key, or leave the box empty."
+            )
+        return ""
 
     # -- options --------------------------------------------------------------------- #
 
@@ -356,7 +451,10 @@ class TranscribeCommandsMixin:
         stored = take_handoff(self._data_dir)
         if stored is None:
             return False
-        self._settings.dictation = stored
+        own_choice = self._settings.dictation.get("windows_dictation_share_family")
+        self._settings.dictation = dict(stored)
+        if own_choice is not None:  # sharing is this program's own choice (D-13)
+            self._settings.dictation["windows_dictation_share_family"] = own_choice
         self._save()
         key = self._settings.dictation_hotkey
         self._announce(  # type: ignore[attr-defined]

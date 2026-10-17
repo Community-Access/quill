@@ -120,7 +120,10 @@ DIVERGENCES: dict[str, str] = {
         "Ctrl+Shift+F10 there: free in QUILL, and nowhere near a key that "
         "closes anything (rule 4). In QUILL Lite that key is Unfold "
         "Everything, whose QUILL counterpart lives beside Ctrl+Shift+[ and ]. "
-        "Decided 2026-10-15."
+        "Decided 2026-10-15. The key is the only divergence: since 2026-10-16 "
+        "both editors put Find in Open Documents, Search in Files and Replace "
+        "Across Files as three rows of Edit itself, in that order (rules 1 "
+        "and 2); QUILL Lite had them in Edit > Matches, QUILL in two places."
     ),
     "cmd_ai_usage": (
         "Ctrl+Alt+Shift+F9 is a QuillVille launcher in QUILL -- the siblings "
@@ -183,6 +186,12 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_ai_chatgpt": "tools.hosted_ai_chatgpt",
     "cmd_ai_image": "tools.hosted_ai_image",
     "cmd_ai_own_key": "tools.hosted_ai_own_key",
+    # 2026-10-15: the Chat Key, the Prompt Library on the free AI and Web
+    # Searches Left -- the shared mixin's (quill/ui/hosted_ai_answers.py), on
+    # the same three chords in both (commands_ai.py says why those).
+    "cmd_ai_chat_key": "tools.hosted_ai_chat_key",
+    "cmd_ai_prompt_library": "tools.hosted_ai_prompt_library",
+    "cmd_ai_web_searches": "tools.hosted_ai_web_searches",
     "cmd_dictation_tidy": "tools.dictation_tidy",
     # Inline notes, Toggle Task Done and Export as HTML (2026-10-04, from
     # PlanCake): QUILL's code, shared, on QUILL's chords (rule 2).
@@ -229,6 +238,7 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_clear_copy_tray": "edit.clear_all_tray_slots",
     "cmd_close": "file.close_document",
     "cmd_clipboard_collector": "power.toggle_clipboard_collector",
+    "cmd_toggle_read_only": "power.toggle_read_only_guard",
     "cmd_command_palette": "app.command_palette",
     "cmd_complete_selection": "edit.complete_selection",
     "cmd_context_help": "help.context_help",
@@ -263,6 +273,10 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_live_transcript": "tools.windows_dictation_live_transcript",
     "cmd_dictation_context": "tools.windows_dictation_context",
     "cmd_dictation_status": "tools.dictation_status",
+    # 2026-10-15 (D-1): Speak a Command, F11 in both, one shared handler.
+    "cmd_dictation_command": "tools.windows_dictation_command",
+    # 2026-10-15 (D-2): Review Dictation, Shift+F4 in both, one handler.
+    "cmd_dictation_review": "tools.windows_dictation_review",
     "cmd_duplicate_line": "format.duplicate_line",
     "cmd_duplicate_selection": "edit.duplicate_selection",
     "cmd_editor_font": "format.editor_font",
@@ -312,6 +326,7 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_list_marks": "edit.list_marks",
     "cmd_lower_case": "format.lower_case",
     "cmd_manage_abbreviations": "format.manage_abbreviations",
+    "cmd_autocorrect_entries": "format.autocorrect_entries",
     "cmd_misspelling_list": "tools.misspelling_list",
     "cmd_move_line_down": "format.move_line_down",
     "cmd_move_line_up": "format.move_line_up",

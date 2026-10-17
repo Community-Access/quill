@@ -116,10 +116,14 @@ class FakeControl:
         self._clamp()
 
     def IsEditable(self) -> bool:  # noqa: N802 - wx API shape
-        """Always true here. The read-only case has its own tests, and a stub
-        that lacked this method at all made a guard that consults it look like
-        a guard that refuses everything."""
-        return True
+        """True unless SetEditable(False) said otherwise. The read-only case has
+        its own tests, and a stub that lacked this method at all made a guard
+        that consults it look like a guard that refuses everything."""
+        return getattr(self, "_editable", True)
+
+    def SetEditable(self, on: bool) -> None:  # noqa: N802 - wx API shape
+        """The Read-Only Guard's switch (2026-10-16)."""
+        self._editable = bool(on)
 
     def GetLastPosition(self) -> int:
         return len(self._text)
@@ -868,6 +872,8 @@ def lite_window(tmp_path, lite_settings):
     from quill.apps.lite_window_marks import DocumentMarksMixin
     from quill.apps.lite_window_markup import DocumentMarkupMixin
     from quill.apps.lite_window_mode import DocumentModeMixin
+    from quill.apps.lite_window_pdf import DocumentPdfMixin
+    from quill.apps.lite_window_read_only import DocumentReadOnlyMixin
     from quill.apps.lite_window_sections import DocumentSectionCommandsMixin
     from quill.apps.lite_window_selection import DocumentSelectionMixin
     from quill.apps.lite_window_sources import DocumentSourcesMixin
@@ -883,6 +889,9 @@ def lite_window(tmp_path, lite_settings):
     from quill.ui.task_list_commands import TaskListCommandsMixin
 
     class LiteWindowStub(
+        # Tools > Read-Only Guard, 2026-10-16: first, as in DocumentFrame, so its
+        # _host_read_only answers the shared notes and word tools.
+        DocumentReadOnlyMixin,
         # Tools > Thesaurus and the Dictionary Status row, 2026-10-02.
         DocumentWordsMixin,
         # Inline notes, Toggle Task Done and Export as HTML, 2026-10-04: the
@@ -924,6 +933,9 @@ def lite_window(tmp_path, lite_settings):
         DocumentViewCommandsMixin,
         DocumentSpellingMixin,
         DocumentFileMixin,
+        # A PDF opened as text, and Save's refusal to write it back, 2026-10-15:
+        # save() asks it on every write, so a stub without it fails every save.
+        DocumentPdfMixin,
         # Open from URL and the clipboard, drops, Reopen with Encoding and the
         # save-time disk check, 2026-10-04 (the PlanCake design note).
         DocumentSourcesMixin,
@@ -1345,6 +1357,11 @@ class DialogRecorder:
         # than a function: the stub records the construction and the test's
         # answer is what ``.show()`` hands back.
         "EmojiPickerDialog": ("quill.ui.main_frame_emoji_picker", "EmojiPickerDialog"),
+        # Opening a PDF, 2026-10-15: the shared password box (imported inside
+        # the method, so the defining module) and the scanned question and
+        # Save's refusal (a message box imported at lite_window_pdf's scope).
+        "ask_pdf_password": ("quill.ui.pdf_password", "ask_pdf_password"),
+        "show_message_box_pdf": ("quill.apps.lite_window_pdf", "show_message_box"),
     }
 
     #: Names whose stub must be callable *and* have a ``show()``, because the

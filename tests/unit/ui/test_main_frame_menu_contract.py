@@ -137,8 +137,17 @@ def test_find_group_lives_in_edit_not_search() -> None:
     ):
         assert re.search(rf"edit_menu\.Append\(\s*{re.escape(fid)}\b", source), fid
         assert not re.search(rf"search_menu\.Append\(\s*{re.escape(fid)}\b", source), fid
-    assert re.search(r"search_menu\.Append\(\s*self\._id_search_in_files\b", source)
-    assert re.search(r"search_menu\.Append\(\s*self\._id_replace_in_files\b", source)
+    # Search in Files and Replace Across Files moved from Edit > Search Tools to
+    # Edit itself on 2026-10-16, under Find in Open Documents, where QUILL Lite
+    # has them too; and Find's feature gates them, not regular expressions'.
+    assert not re.search(r"search_menu\.Append\(\s*self\._id_search_in_files\b", source)
+    assert not re.search(r"search_menu\.Append\(\s*self\._id_replace_in_files\b", source)
+    mixin = (
+        Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame_open_documents.py"
+    ).read_text(encoding="utf-8")
+    assert re.search(r"edit_menu\.Append\(\s*self\._id_search_in_files\b", mixin)
+    assert re.search(r"edit_menu\.Append\(\s*self\._id_replace_in_files\b", mixin)
+    assert '_feature_enabled("core.search")' in mixin
 
 
 def test_insert_link_is_not_duplicated_in_edit_menu() -> None:

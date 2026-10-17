@@ -248,6 +248,230 @@ first. The release notes (<code>release-notes-1.0.md</code>) tell the
 same story as a narrative; this file is the itemized list.</p>
 <h2 id="unreleased">Unreleased</h2>
 <ul>
+<li><p><strong>Start and Stop Key is in the File menu, and now
+everything says so</strong> (2026-10-16). The key that starts and stops
+dictation from any program is chosen with <strong>File &gt; Start and
+Stop Key…</strong> (Ctrl+Alt+Shift+D), beside the other keys you can
+choose. This changelog, the 1.0 release notes and the sentence QUILL
+Transcribe says when Windows reports your key is taken all sent you to
+the Dictation menu, where there is no such row. For example, if another
+program already uses Alt+Shift+Backslash, QUILL Transcribe now says “To
+choose another, open the File menu and choose Start and Stop Key.” Press
+Alt+F, then K, to get there. Nothing else about the key
+changed.</p></li>
+<li><p><strong>Your dictation settings, shared with the family</strong>
+(2026-10-16). More Dictation Settings has <strong>Share dictation
+settings with every QuillVille program</strong> (Alt+Q). When it is
+checked, what you save here is used by QUILL, QUILL Lite and Quill
+Inkwell, and what you save in them is used here within a second. Before,
+QUILL Transcribe kept its own copy and only Dictate in Other Programs
+brought an editor’s settings over. Keys, the tray, the working tick,
+strict mode, what you hear after each phrase and every permission to
+send your speech stay QUILL Transcribe’s own. Checked for a new install;
+unchecked if you had already changed your settings. Your own settings
+are kept in a backup file the first time, and a save that cannot reach
+the others is said aloud.</p></li>
+<li><p><strong>The word list’s new home</strong> (2026-10-16). My Words
+and Phrases now lives in
+<code>%LOCALAPPDATA%\QuillVille\Dictation</code>, copied there from
+QUILL’s data folder the first time it is needed. The old file is left as
+a backup.</p></li>
+<li><p><strong>Dictate Here from Quill Cast and Quill Radio</strong>
+(2026-10-16). Their Edit &gt; Dictate Here (Ctrl+F11) asks QUILL
+Transcribe to dictate into the field you are in, starting it in the tray
+if it is not running.</p></li>
+<li><p><strong>Practice Dictation</strong> (2026-10-16), Ctrl+Shift+P in
+the Dictation menu: a window with a field of QUILL Transcribe’s own that
+dictation types into straight away, so you can learn and test without
+writing into another program. Start Dictation Here (Alt+H, or Ctrl+F11
+in the window) starts and stops it there.</p></li>
+<li><p><strong>The recognition test</strong> (2026-10-16). In Practice
+Dictation, Read This Sentence (Alt+T) clears the field and scores the
+first thing you say against the sentence shown: “All 9 words right”, or
+how many percent were right and which words were heard differently, with
+three suggestions below 80 percent. Score the Field (Alt+S) scores
+everything in the field.</p></li>
+<li><p><strong>Tutorials</strong> (2026-10-16), Ctrl+Alt+F1 in the Help
+menu: five short lessons (a first dictation, pausing and resuming,
+commands with the command word, snippets by voice, and review), in the
+same Tutorials window as QUILL, with a tutorial book beside this
+guide.</p></li>
+<li><p><strong>Dictation profiles</strong> (2026-10-16): Standard,
+Email, Document, Markdown, Chat, Coding and Verbatim, each changing the
+pause, filler words, punctuation and how headings, bold and italic are
+written. Choose one in Dictation &gt; Dictation Profile (Ctrl+Shift+F),
+the tray menu, More Dictation Settings, or by voice (“QUILL email
+mode”). Lock Profile (Ctrl+Shift+L) stops voice switching. The profile
+shows in the window, the tray and Dictation Status. Standard, the
+default, changes nothing.</p></li>
+<li><p><strong>Bold and italic by voice</strong> (2026-10-16): “QUILL
+bold that” and “QUILL italic that”. In the Markdown and Coding profiles
+they retype the phrase you just dictated with asterisks round it; in
+other profiles they say why they cannot format another program.</p></li>
+<li><p><strong>Fix it when I correct myself</strong> (2026-10-16). Check
+it in Dictation Settings (Alt+X, off until you turn it on) and “meet on
+Thursday, no, Friday” types “meet on Friday”: a “no”, “I mean”, “sorry”
+or “scratch that word” between two days, months, numbers or names from
+My Words keeps the second. Anything else is typed as you said it. It
+happens before anything is typed, on this computer, with no AI.</p></li>
+<li><p><strong>Dictation style</strong> (2026-10-16). Verbatim, Clean
+or, when AI is set up in QUILL, Polished (Alt+Y in Dictation Settings):
+one choice that sets filler removal, fixing your corrections and, for
+Polished, review first and polishing.</p></li>
+<li><p><strong>Polish what you said, when you ask</strong> (2026-10-16).
+Check <strong>Allow polishing my dictation with AI when I ask</strong>
+(Alt+G in More Dictation Settings, off by default). Then “QUILL polish
+that” backspaces the last phrase away, opens it in Review Dictation and
+asks the AI once to fix punctuation, capitals and small slips, keeping
+your words; <strong>Polish</strong> (Ctrl+P) in the window does the
+same. Nothing is sent until you agree, and nothing is typed until you
+insert it. It never runs by itself.</p></li>
+<li><p><strong>Correcting in another program</strong> (2026-10-16).
+“Correct that” and “choose one” to “choose three”, “capitalize that”,
+“all caps that”, “no caps that”, “replace Tuesday with Wednesday”,
+“change that to” and new words, “delete last sentence” and “delete
+previous paragraph” now work in other programs, on the words QUILL
+Transcribe typed there itself: it takes them back with Backspace and
+types the corrected words. It never reads the other program. A
+correction is refused, with one sentence and nothing sent, if the focus
+has moved, if you have typed, clicked or moved the mouse since, or, for
+the commands that retype words, in Word and Outlook, which change words
+as they are typed. See “Correcting in another program” in the user
+guide.</p></li>
+<li><p><strong>A second opinion for “correct that”</strong>
+(2026-10-16). With Moonshine, Whisper or a downloaded model, the other
+built-in engine listens to your last phrase again, and you can choose
+its answer. The sound stays in memory only.</p></li>
+<li><p><strong>Recent Phrases keeps what a correction replaced</strong>
+(2026-10-16), marked “(before correction)”.</p></li>
+<li><p><strong>Nothing you said is lost</strong> (2026-10-16). Words
+held while dictation is paused, and a phrase Windows stopped typing
+part-way, are now kept on this computer, sealed for your Windows
+account, until you type or discard them, so a crash, a sleep or exiting
+loses nothing. <strong>Recent Phrases</strong> (Shift+F11) lists them
+after this run’s phrases, with a review you did not finish, and has
+<strong>Discard</strong> (Alt+D). Stopping says they are kept; the next
+start says how many are waiting, and exiting no longer asks about words
+that are kept.</p></li>
+<li><p><strong>Type a transcript into a field</strong> (2026-10-16).
+<strong>Review Transcript</strong> has <strong>Type into a
+Field</strong> (Alt+F): the transcript, or the part you selected, is
+typed into the program you go back to, with the same checks as
+dictation.</p></li>
+<li><p><strong>Dictation history, off unless you want it</strong>
+(2026-10-16). <strong>Keep a dictation history</strong> (Alt+Y in More
+Dictation Settings) keeps the text of what you dictate for one, seven or
+thirty days, never the sound. <strong>Clear History</strong> (Alt+H) in
+Recent Phrases deletes it after asking; turning it off deletes it
+too.</p></li>
+<li><p><strong>Snippet blanks by voice</strong> (2026-10-16). “QUILL
+insert snippet bug report” asks for each blank by name and each choice
+by its options, then types the whole snippet once; say skip, scratch
+that to go back, or cancel. “QUILL scratch that” takes all of it
+back.</p></li>
+<li><p><strong>“QUILL read that” reads all of it</strong> (2026-10-16):
+a whole snippet or clip, not just its name.</p></li>
+<li><p><strong>Hold the key to talk</strong> (2026-10-15). With
+<strong>Hold the dictation key to talk</strong> checked in More
+Dictation Settings (Alt+H, off until you turn it on), hold your start
+and stop key while you speak; letting go stops dictation and keeps your
+last phrase. What you say while the key is down is typed when you let
+go, so nothing reaches the other program while Alt or Ctrl is held. A
+quick press still turns dictation on and off. It is the same setting as
+QUILL’s and QUILL Lite’s.</p></li>
+<li><p><strong>The wake phrase</strong> (2026-10-15). With
+<strong>Listen for the wake phrase while dictation is off</strong>
+checked in Dictation Settings (off until you turn it on), say “Quill
+dictate” in the field you want and dictation starts there. While it
+waits, the State field and the tray say Listening for your wake phrase,
+and nothing it hears is written, kept or sent until it hears the phrase.
+It does not listen while QUILL Transcribe, QUILL or QUILL Lite, or a
+program on your never-type list, is in front. Stopping goes back to
+listening for it.</p></li>
+<li><p><strong>Dictation on your braille display</strong> (2026-10-15).
+While you work in the other program, the words heard so far (“Hearing:
+…”) and the changes that are shown but not said (Command mode, Waiting
+for a command, Listening for your wake phrase) appear on a braille
+display, without being spoken.</p></li>
+<li><p><strong>Dictation Status</strong> (2026-10-15), Alt+F9 in the
+Dictation menu, as in QUILL and QUILL Lite: one sentence with what
+dictation is doing, the program it is writing into, the model, and how
+many phrases are held.</p></li>
+<li><p><strong>Three more keys you can choose</strong> (2026-10-15),
+each empty until you choose it in the File menu: the <strong>Dictation
+Status Key</strong> (Ctrl+Alt+Shift+A), the <strong>Resume Key</strong>
+(Ctrl+Alt+Shift+U) and the <strong>Discard Held Words Key</strong>
+(Ctrl+Alt+Shift+Y), so you can ask, resume or discard from the program
+you are working in.</p></li>
+<li><p><strong>Transcribe a Recording translates into English</strong>
+(2026-10-16). For a recording in Spanish, check <strong>Translate into
+English</strong> (Alt+E) and the transcript comes out in English. It
+works with the built-in Whisper or a multilingual Whisper you
+downloaded; with any other model the box is unavailable. The same in
+QUILL and QUILL Lite, on the same models.</p></li>
+<li><p><strong>Speech providers, your own account</strong> (2026-10-16).
+Dictation Settings has <strong>Speech Providers…</strong> (Alt+V):
+twelve speech companies, from Azure and Google to Deepgram and Groq,
+each with only the fields it needs, a Test Connection that sends no
+speech, and keys in Windows Credential Manager. Choose one as the model;
+you are told what is sent and No is the default. If it cannot be
+reached, your model stays your choice.</p></li>
+<li><p><strong>Review before it is typed</strong> (2026-10-15). Say
+“QUILL review that” and the last phrase is backspaced away and held in
+the <strong>Review Dictation</strong> window (Shift+F4 in the Dictation
+menu, as in QUILL and QUILL Lite). Read it, change it, keep talking into
+it, and with your ChatGPT subscription or your own key set up in QUILL,
+ask the AI to change it (“QUILL make it shorter”) and hear what changed.
+“QUILL insert it” or Ctrl+Enter goes back to the field you were in and
+types it there once, with the same checks as every phrase. Nothing is
+typed into the other program while you review, and you are asked before
+anything is sent to an AI. <strong>Send dictation to review
+first</strong> (Alt+V in More Dictation Settings) sends everything you
+say there.</p></li>
+<li><p><strong>Programs it has been tested with</strong> (2026-10-15). A
+new section of the user guide lists Notepad, WordPad, Word, Outlook,
+Edge, Chrome, Firefox and Visual Studio Code, each marked supported,
+best effort, unsupported or untested, with the version, the day it was
+checked and the day it is due to be checked again. The table comes from
+a test that types the same phrases into each program and reads them
+back. So far every row says untested: the first run was stopped because
+the test computer was in use, and a program that was not tried is never
+listed as unsupported.</p></li>
+<li><p><strong>The command word: “QUILL scratch that”</strong>
+(2026-10-15). A command now starts with QUILL, and whatever follows
+QUILL is never typed into the other program. Said on its own, “scratch
+that” is typed as words (strict mode, on in QUILL Transcribe; “stop
+dictation” always works). If what follows QUILL is not a command you
+hear “Not a command”, and “QUILL type that” types it. “QUILL command
+mode” takes commands without the word until “dictation mode” or eight
+seconds with none, ending with a falling tone; the State field and the
+tray say Command mode. Choices in More Dictation Settings: the command
+word (Alt+C), strict mode (Alt+E) and the seconds (Alt+D).</p></li>
+<li><p><strong>Command Key</strong> (2026-10-15). An optional
+system-wide key, empty until you choose it in setup or in <strong>File
+&gt; Command Key…</strong> (Ctrl+Alt+Shift+K): press it in the field and
+the next thing you say is a command; twice, command mode.
+<strong>Dictation &gt; Speak a Command</strong> (F11, as in QUILL and
+QUILL Lite) does the same from the window. Two new sounds play when
+QUILL hears the command word and when command mode ends.</p></li>
+<li><p><strong>Import and Export in My Words and Phrases</strong>
+(2026-10-15). Export saves your list to a Markdown file or a CSV file
+with say, write and kind columns. Import adds what is new from either,
+after showing how many it will add; nothing you have is replaced, and
+your list as it was is kept as dictation-before-import.md. You hear the
+counts, such as “Imported 12 words, 3 already there.” QUILL Lite can now
+use this same list too (Use the shared word list, in its own My Words
+and Phrases).</p></li>
+<li><p><strong>Which model suits this computer, and why</strong>
+(2026-10-15). Choose Model (Ctrl+M) and Set Up show a read-only
+<strong>Recommended for this computer</strong> box: the model that suits
+your computer and dictation language, whether it keeps up, about how
+soon your words appear after you pause, and the download size. The Model
+Library adds <strong>What matters most</strong> and <strong>Show
+Recommended Model</strong>. It is only advice, labelled an estimate;
+your model never changes by itself. Every model is now labelled
+<strong>Lightweight</strong>, <strong>Balanced</strong> or <strong>High
+accuracy</strong>.</p></li>
 <li><p><strong>Programs dictation never types into</strong>
 (2026-10-15). A list you keep, in More Dictation Settings (Alt+N), that
 starts with the common password managers and the Windows sign-in
@@ -275,8 +499,8 @@ QUILLVille by Rick Lewis.</p></li>
 programs</h3>
 <ul>
 <li>The start and stop key is <strong>Alt+Shift+Backslash</strong> from
-the start. Change it or empty it in Dictation &gt; Start and Stop
-Key.</li>
+the start. Change it or empty it in File &gt; Start and Stop Key…
+(Ctrl+Alt+Shift+D).</li>
 <li>Record Key, beside every key box: press the combination you want and
 it is written out for you. Typing the key still works.</li>
 <li>No more “c” before or after each phrase with JAWS: words are typed

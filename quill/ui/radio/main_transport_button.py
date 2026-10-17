@@ -18,7 +18,7 @@ quality plan sets for both players (qc.md, "Radio and Cast Transport State"):
   playing>``; live radio cannot pause, and this window is a list you play
   from, not a player, so the one button starts and ends;
 * **paused** (a podcast, a recording, a local file) -- ``Resume <it>``, and
-  Ctrl+Period or Station > Stop still ends it.
+  Ctrl+Period still ends it (the Playback menu's Play row reads Resume too).
 
 **The object is in the label.** On wxMSW a button is self-labelled and
 ``set_accessible_name`` is inert on it, so the station's name can only be heard

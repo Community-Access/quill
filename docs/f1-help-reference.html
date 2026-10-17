@@ -266,7 +266,7 @@ separately in <a href="CONTROL_REFERENCE.md">CONTROL_REFERENCE.md</a>,
 generated from <code>topics.json</code> by
 <code>quill/tools/build_docs.py</code>.</p>
 <h2 id="quill-radio">Quill Radio</h2>
-<p>Control coverage: 330 audited sites (216 helped, 114 named-help).</p>
+<p>Control coverage: 335 audited sites (221 helped, 114 named-help).</p>
 <h3 id="every-window-and-what-it-is-for">Every window, and what it is
 for</h3>
 <p><strong>ACB Media Podcasts.</strong> Everything ACB Media publishes,
@@ -576,6 +576,10 @@ come from: which sources are stored in the local station catalog, how
 fresh each one is, and which are live-only and why. The catalog is
 derived data – it can be rebuilt from here at any time without touching
 your favorites.</p>
+<p><strong>Station Details.</strong> Search stations by name, call sign,
+frequency, slogan or place, and read what the signed station pack knows
+about each one, with where each fact came from. Each result says why it
+matched. Read only; nothing here changes your favorites.</p>
 <p><strong>Suggest a Station or Podcast.</strong> Tell us about
 something worth adding to the Community Picks list. It goes by email to
 <a
@@ -650,6 +654,10 @@ exactly as the search results show them.</p>
 <p><strong>Windows titled “Help:…”.</strong> This is the help window
 itself: the purpose of the window you were in, then the control you were
 on. Escape returns you to it.</p>
+<p><strong>Windows titled “Lyrics:…”.</strong> The words of a song the
+station played, from LRCLIB (lrclib.net), as plain text to arrow through
+and copy. A radio stream does not say where in the song it is, so the
+words do not follow along. Escape closes it.</p>
 <p><strong>Windows titled “Now Playing…”.</strong> Everything known
 about what is playing, as reviewable, copyable text: the station’s own
 details, the current track, and the live playback status. It is a
@@ -978,10 +986,32 @@ for background on the song. The answer is model-written and says so – it
 is not the station’s own information.</li>
 <li><code>self._facts_btn</code>: Looks the song up on MusicBrainz –
 which release, what year, how long. Keyless and off in Safe Mode.</li>
+<li><code>self._lyrics_btn</code>: Looks the highlighted song’s words up
+on LRCLIB and opens them in the Lyrics window. Only when you press it;
+off in Safe Mode.</li>
 <li><code>self._clear_btn</code>: Erases the logged songs – for this
 station or for every station; a confirmation asks which.</li>
 <li><code>close_btn</code>: Closes Song History; logging continues while
 stations play.</li>
+</ul>
+<h4 id="module-level-quilluiradiostation_details_dialogpy">(module
+level) (<code>quill/ui/radio/station_details_dialog.py</code>)</h4>
+<ul>
+<li><code>query</code>: Type any part of what you know about a station:
+its name, its call sign such as KUOW, its frequency such as 94.9, a word
+from its slogan or description, or a city. The results below follow as
+you type; press Enter to move to them, or, when nothing matched, to look
+for names spelled close to what you typed.</li>
+<li><code>results</code>: Stations the station pack knows that match
+your search, best first. Each row says what matched, such as the
+frequency or a word from the slogan. The details of the highlighted
+station are below.</li>
+<li><code>details</code>: What the station pack knows about the
+highlighted station, one labelled line per fact, then where those facts
+came from. Read only; arrow through it, or select and copy any
+line.</li>
+<li><code>close_btn</code>: Closes Station Details. Nothing is changed
+by closing.</li>
 </ul>
 <h4 id="module-level-quilluiradiostation_tags_dialogpy">(module level)
 (<code>quill/ui/radio/station_tags_dialog.py</code>)</h4>
@@ -2512,7 +2542,7 @@ from here; Alt+Enter says why an item is here; Alt+Shift+Up and Down
 move it.</li>
 </ul>
 <h2 id="quill-media-player">QUILL Media Player</h2>
-<p>Control coverage: 36 audited sites (23 helped, 13 named-help).</p>
+<p>Control coverage: 39 audited sites (26 helped, 13 named-help).</p>
 <h3 id="every-window-and-what-it-is-for-2">Every window, and what it is
 for</h3>
 <p><strong>Add Bookmark.</strong> A note to keep with the bookmark being
@@ -2577,6 +2607,11 @@ without a microphone.</p>
 <p><strong>Windows titled “Help:…”.</strong> This is the help window
 itself: the purpose of the window you were in, then the control you were
 on. Escape returns you to it.</p>
+<p><strong>Windows titled “Lyrics:…”.</strong> The words of the song
+that is playing, from LRCLIB (lrclib.net), as text to arrow through and
+copy. When the words are timed, Current line shows the line being sung
+and Follow playback keeps the cursor on it; nothing is spoken unless you
+press Say Current Line. Escape closes it.</p>
 <h3 id="every-authored-control-help-sentence-2">Every authored control
 help sentence</h3>
 <h4 id="audiodsppanel-quilluimediaaudio_dsp_panelpy">AudioDspPanel
@@ -2610,6 +2645,21 @@ id="listcolumnsdialog-quilluimedialist_columns_dialogpy">ListColumnsDialog
 here. They are saved and apply to those lists from now on.</li>
 <li><code>cancel_btn</code>: Close without keeping anything. Every
 list’s columns stay as they were before this dialog opened.</li>
+</ul>
+<h4 id="lyricswindow-quilluimedialyrics_windowpy">LyricsWindow
+(<code>quill/ui/media/lyrics_window.py</code>)</h4>
+<ul>
+<li><code>self._text</code>: The words of the song, one line per line,
+from LRCLIB (lrclib.net). Arrow through them, or copy them with Ctrl+C.
+Nothing here is spoken by itself. Escape closes the window.</li>
+<li><code>self._current</code>: The line being sung now, kept up to date
+as the song plays. It is never read out by itself: come here to review
+it, or press Say Current Line to hear it.</li>
+<li><code>self._follow</code>: On, the cursor in the lyrics moves to the
+line being sung. Off, the lyrics hold still so you can read back without
+the song moving you; turning it on again catches up. Unavailable when
+the song has words but no timings.</li>
+<li><code>say</code>: Speaks the line being sung now, once.</li>
 </ul>
 <h4
 id="playerinfodialog-quilluimediaplayer_info_dialogpy">PlayerInfoDialog
@@ -3398,7 +3448,7 @@ set to expand only manually. Also on Ctrl+K here, and from any program
 on the key you choose with File, Quick Insert Key.</li>
 </ul>
 <h2 id="quill-transcribe">QUILL Transcribe</h2>
-<p>Control coverage: 29 audited sites (29 helped).</p>
+<p>Control coverage: 43 audited sites (43 helped).</p>
 <h3 id="every-window-and-what-it-is-for-5">Every window, and what it is
 for</h3>
 <p><strong>Choose Microphone.</strong> The microphone QUILL Transcribe
@@ -3411,30 +3461,60 @@ choose is used every time until you choose another.</p>
 <p><strong>Dictation Commands.</strong> Everything dictation
 understands, to read with the arrow keys. In another program only the
 commands that do not need to read its text work.</p>
+<p><strong>Dictation Profile.</strong> Choose the kind of writing
+dictation is for: Standard, Email, Document, Markdown, Chat, Coding or
+Verbatim. A profile sets the pause, fillers and punctuation, and how
+headings, bold and italic are written.</p>
 <p><strong>Dictation Settings.</strong> The dictation settings QUILL
 Transcribe uses: the model, microphone, language, punctuation, and what
 you hear after each phrase. They are the same settings as dictation in
 QUILL and QUILL Lite, kept for this app.</p>
+<p><strong>Discard These Words.</strong> The AI has changed these words.
+Yes throws them away and writes nothing; No keeps the review open.</p>
 <p><strong>Exit QUILL Transcribe.</strong> Dictation is paused with
 words that were never written. Exit throws them away and closes QUILL
 Transcribe; Cancel keeps it running so you can resume.</p>
 <p><strong>Find a Setting or Command.</strong> Every menu command in
 this app, searchable by name. Type part of a name; Down moves into the
 matches; Enter does the highlighted one.</p>
+<p><strong>Import Words.</strong> What the file would add to your list,
+with the counts. Add Them adds them; nothing you already have is
+replaced.</p>
 <p><strong>More Dictation Settings.</strong> The rest of dictation’s
 settings: pauses, fillers, dashes, wake phrase and the OpenAI model.
 Some only matter inside QUILL’s own documents.</p>
+<p><strong>My Words and Phrases.</strong> The words, phrases and
+corrections dictation uses, the same list as QUILL. Import adds the new
+entries from a Markdown or CSV file after showing them; Export saves the
+list to one.</p>
 <p><strong>Notifications.</strong> Finished, failed and cancelled
 transcriptions. Open one to review its transcript.</p>
+<p><strong>Practice Dictation.</strong> A field of QUILL Transcribe’s
+own that dictation types into, so you can learn and test dictation
+without writing into another program. Start Dictation Here starts it in
+the field; Read This Sentence reads a sentence aloud and says how many
+words were heard as you said them.</p>
 <p><strong>QUILL Transcribe.</strong> QUILL Transcribe types what you
 say into the program you are using. This window shows whether dictation
 is on, which model and microphone it uses, and what happened last. Start
 dictation from your start and stop key or the tray menu; it writes only
 into the field you started in, and pauses if you move. Closing this
 window keeps QUILL Transcribe in the tray.</p>
+<p><strong>QUILL Transcribe Tutorials.</strong> Five short lessons: a
+first dictation in the Practice window, pausing and resuming, commands
+with the command word, snippets by voice, and review. Try It runs a
+step’s command for you.</p>
+<p><strong>Review Dictation.</strong> Dictated words wait here before
+they are inserted. Read them, type or keep dictating to change them, ask
+the AI to change them if AI is on, and hear what changed. Control Enter
+inserts them where they were going; nothing is written before that.</p>
 <p><strong>Review Transcript.</strong> A finished transcript of a
-recording, read-only. Copy it, save it as a text file, or open it in
-QUILL; nothing is copied or typed anywhere unless you choose it.</p>
+recording, read-only. Type it, or the part you selected, into a field in
+another program; copy it, save it as a text file, or open it in QUILL.
+Nothing is copied or typed anywhere unless you choose it.</p>
+<p><strong>Review with AI.</strong> Before the first change is asked
+for, this says who receives the words being reviewed and what is sent.
+No is the default and sends nothing.</p>
 <p><strong>Save Transcript As.</strong> Choose where to save the
 transcript as a plain text file.</p>
 <p><strong>Send this recording to OpenAI?.</strong> Before a recording
@@ -3451,6 +3531,11 @@ and you are told whose it is.</p>
 remove the optional speech models. Each download shows its size first,
 is checked before it is used, and can be cancelled. A model that did not
 finish is never marked ready.</p>
+<p><strong>Speech Providers.</strong> Use a speech service you already
+have an account with – Azure, Google, Amazon, Deepgram and others – for
+dictation. Choose one to see what it can do and what it needs, enter
+that, test it, and save it; keys go to Windows Credential Manager. Then
+choose it as the speech engine in Dictation Settings.</p>
 <p><strong>Start and Stop Key.</strong> Choose the key that starts and
 stops dictation from any program. It is Alt+Shift+Backslash unless you
 change it. Type another, press Record Key to press it instead, or leave
@@ -3474,8 +3559,10 @@ help sentence</h3>
 (<code>quill/apps/transcribe.py</code>)</h4>
 <ul>
 <li><code>self._state_text</code>: What dictation is doing now: Ready,
-Listening, Hearing you, Paused with words held, or Waiting for you to
-switch to a field. The tray icon’s name says the same.</li>
+Listening, Hearing you, Paused with words held, Waiting for you to
+switch to a field, or Listening for your wake phrase. The tray icon’s
+name says the same, and Alt+F9 says it with the program, the model and
+what is held.</li>
 <li><code>self._start_button</code>: Starts dictation in the next field
 you switch to, or stops it. From another program, your start and stop
 key does the same without coming here.</li>
@@ -3488,9 +3575,9 @@ safety checks as a new start.</li>
 <li><code>self._discard_button</code>: When dictation is paused: throws
 away the words held while paused. Dictation stays paused until you
 resume or stop.</li>
-<li><code>self._setup_text</code>: The speech model, microphone and
-start and stop key dictation uses now. The model you chose is the one
-that runs; it never changes on its own.</li>
+<li><code>self._setup_text</code>: The speech model, microphone,
+dictation profile and start and stop key dictation uses now. The model
+you chose is the one that runs; it never changes on its own.</li>
 <li><code>self._next_text</code>: What starting dictation will do, why
 it paused or could not start, and the last thing it said.</li>
 <li><code>model_button</code>: Choose the speech model: each is marked
@@ -3501,6 +3588,22 @@ on.</li>
 <li><code>settings_button</code>: Language, punctuation, fillers, pauses
 and what you hear after each phrase: the same settings as dictation in
 QUILL.</li>
+</ul>
+<h4 id="profiledialog-quillappstranscribe_coachpy">ProfileDialog
+(<code>quill/apps/transcribe_coach.py</code>)</h4>
+<ul>
+<li><code>self.list</code>: The kind of writing dictation is for.
+Standard is your Dictation Settings as they are. A profile changes the
+pause, the filler words and the punctuation, and how headings, bold and
+italic are written.</li>
+<li><code>self.about</code>: What the profile you are on changes, in one
+sentence.</li>
+<li><code>self.lock</code>: When this is on, saying QUILL chat mode or
+another profile’s name does not switch profiles. You can still choose
+one here.</li>
+<li><code>ok</code>: Use the chosen profile from the next phrase
+on.</li>
+<li><code>cancel</code>: Keep the profile you have.</li>
 </ul>
 <h4 id="setupdialog-quillappstranscribe_dialogspy">SetupDialog
 (<code>quill/apps/transcribe_dialogs.py</code>)</h4>
@@ -3519,6 +3622,9 @@ found.</li>
 Only models already on this computer are listed here; more can be
 downloaded later from the Model Library. The one you choose is used
 every time until you change it.</li>
+<li><code>self.advice</code>: The model that suits this computer and
+why, as an estimate. It is only advice: the model you choose above is
+the one used.</li>
 <li><code>self.key</code>: The key that starts and stops dictation from
 any program: Alt+Shift+\ unless you change it. Type another, for example
 Ctrl+Alt+PageDown, press Record Key to press it instead, or leave the
@@ -3526,6 +3632,13 @@ box empty to use the tray menu only.</li>
 <li><code>self.record_key</code>: Press a key combination and it is
 written into the start and stop key box. A key another program already
 uses may not arrive: type that one.</li>
+<li><code>self.command_key</code>: Optional. Press this key in the field
+you are dictating into and the next thing you say is a command, as if
+you had said QUILL first: press it, then say scratch that. Press it
+twice for command mode. Empty unless you choose one; saying QUILL before
+a command works without it.</li>
+<li><code>self.record_command</code>: Press a key combination and it is
+written into the command key box.</li>
 <li><code>self.at_login</code>: Opens QUILL Transcribe in the tray when
 you sign in, so your key works straight away. It does not start
 listening until you start dictation.</li>
@@ -3539,10 +3652,15 @@ id="choosemodeldialog-quillappstranscribe_dialogspy">ChooseModelDialog
 <ul>
 <li><code>self.list</code>: Every speech model QUILL knows. Each says
 whether it runs on this computer or sends your speech over the internet,
-which languages it knows, and whether it is downloaded. Enter uses the
-one you are on.</li>
+its tier (Lightweight, Balanced or High accuracy), which languages it
+knows, and whether it is downloaded. Enter uses the one you are on.</li>
 <li><code>self.details</code>: The model you are on: where it runs, its
-languages and size, who publishes it and under which licence.</li>
+tier, its languages and size, who publishes it and under which
+licence.</li>
+<li><code>self.advice</code>: The model that suits this computer and
+why: whether it keeps up, about how soon your words appear after you
+pause, its tier and its size. The figures are estimates, and it is only
+advice: nothing changes until you choose.</li>
 <li><code>use</code>: Make this your model. It is used every time you
 dictate until you choose another; QUILL Transcribe never switches on its
 own.</li>
@@ -3558,12 +3676,33 @@ id="transcriptreviewdialog-quillappstranscribe_filespy">TranscriptReviewDialog
 <li><code>self.text</code>: The transcript, read-only. Read it with the
 arrow keys; select part of it and press Ctrl+C to copy just that
 part.</li>
+<li><code>type_in</code>: Type the transcript, or only the part you
+selected, into another program. Switch to the field you want and it is
+typed there, with the same checks as dictation: never into a password
+field or a program on your never-type list.</li>
 <li><code>copy</code>: Put the whole transcript on the clipboard.</li>
 <li><code>save</code>: Save the transcript as a text file where you
 choose.</li>
 <li><code>quill</code>: Open the transcript in QUILL to edit it.</li>
 <li><code>close</code>: Close the transcript. It stays in
 Notifications.</li>
+</ul>
+<h4
+id="practicedictationframe-quillappstranscribe_practicepy">PracticeDictationFrame
+(<code>quill/apps/transcribe_practice.py</code>)</h4>
+<ul>
+<li><code>self.sentence</code>: The sentence for the recognition test.
+Press Read This Sentence, then read it aloud at your usual pace. Next
+Sentence gives you another.</li>
+<li><code>self.field</code>: QUILL Transcribe’s own field. While
+dictation is on here, what you say is written into this field and
+nowhere else. You can type and edit in it too; Control F11 starts and
+stops dictation here.</li>
+<li><code>self.result</code>: The last recognition test: how many words
+were right, and any that were heard differently. It is said once when
+the test finishes.</li>
+<li><code>close</code>: Closes the window. Dictation in the practice
+field stops; nothing is kept.</li>
 </ul>
 <h2 id="quill-weather">Quill Weather</h2>
 <p>Control coverage: 40 audited sites (40 helped).</p>
@@ -3773,9 +3912,14 @@ code, city, county, or address. The first location you add becomes the
 primary one the alert watch follows.</li>
 </ul>
 <h2 id="quill-converter">Quill Converter</h2>
-<p>Control coverage: 26 audited sites (26 helped).</p>
+<p>Control coverage: 38 audited sites (38 helped).</p>
 <h3 id="every-window-and-what-it-is-for-7">Every window, and what it is
 for</h3>
+<p><strong>Auphonic Work Waiting.</strong> Productions Auphonic accepted
+whose results have not been saved yet, remembered on this computer
+without contacting Auphonic. Resume waits for them and saves the
+results; Dismiss forgets one here, and it stays in your Auphonic
+account.</p>
 <p><strong>Chapter Workbench.</strong> Edit the chapters of an MP3, M4B
 or M4A: hear it, then add, rename, move, split and merge chapters at the
 playhead, find them at the pauses, or import and export a chapter list.
@@ -3820,13 +3964,25 @@ and says the new state.</p>
 <p><strong>Keyboard Shortcuts.</strong> Every key in Quill Converter,
 grouped by menu, in one read-only list you can arrow through or copy. It
 is a reference; nothing here changes a key.</p>
+<p><strong>Process with Auphonic.</strong> Send the queue’s sound files
+to your own Auphonic account to be post-produced online, then save the
+results here. Choose separate productions or one multitrack production,
+check your account to load your presets, and pick the processing and the
+output format. Nothing is uploaded until you confirm on the next
+page.</p>
 <p><strong>Quill Converter.</strong> Convert audio and video between
 formats: sound to sound, video to sound, or video to video. Queue your
 files or folders, choose a format, a preset and any effects – Preview
 lets you hear fifteen seconds of the result first – and Convert.
 Everything runs on this computer, your originals are never touched, and
 a file already in the output folder is numbered around, never
-overwritten.</p>
+overwritten. The one exception is Process with Auphonic, which uploads
+only after you confirm.</p>
+<p><strong>Send to Auphonic?.</strong> The last look before anything
+leaves this computer: every file to be uploaded and every file left out,
+the preset and processing, and where the results will be saved. Upload
+and Process sends them using your Auphonic credits; Cancel sends
+nothing.</p>
 <p><strong>Show and Hide Key.</strong> Choose one key that shows and
 hides Quill Converter from any program. Type it, for example with Ctrl,
 Alt and Shift held, or leave the box empty for no key. A key another
@@ -3962,6 +4118,77 @@ are listed.</li>
 <li><code>self._since</code>: Only videos published in this window of
 time. Together with How many, whichever limit is reached first ends the
 download.</li>
+</ul>
+<h4
+id="auphonicdialog-quilluiconverter_auphonic_dialogpy">AuphonicDialog
+(<code>quill/ui/converter_auphonic_dialog.py</code>)</h4>
+<ul>
+<li><code>self._mode</code>: Separate productions process each file on
+its own with the same preset, one after another. A multitrack production
+mixes the files together as tracks – several microphones of one
+conversation, say – into one result.</li>
+<li><code>self._title</code>: The multitrack production’s title, which
+also names the folder its result is saved in. It starts as the first
+file’s name. Separate productions use each file’s own title
+instead.</li>
+<li><code>self._token</code>: Your Auphonic API token, from the account
+settings page on auphonic.com. It is the same token the Audio Studio
+uses, kept in Windows Credential Manager and never in Quill Converter’s
+settings.</li>
+<li><code>self._remember</code>: When checked, sending stores the token
+in Windows Credential Manager, where the Audio Studio and QUILL find it
+too. Clear it to use the token for this time only; a token already
+stored stays stored.</li>
+<li><code>self._check_btn</code>: Asks Auphonic who the token belongs
+to, how many credits are left, and which presets you have saved. Nothing
+is uploaded.</li>
+<li><code>self._status</code>: What the last account check found: the
+account name and its credits, or what went wrong. Read-only.</li>
+<li><code>self._preset</code>: Which of your saved Auphonic presets
+every production uses, or your account’s default. Check Account and Load
+Presets fills the list; the preset you used last time is offered until
+then.</li>
+<li><code>self._processing</code>: Keep whatever the preset does, or use
+Quick cleanup instead: Auphonic’s filtering, leveling and loudness
+normalization at its usual settings.</li>
+<li><code>self._denoise</code>: Quick cleanup only. Lets Auphonic take
+out steady background noise. It can also change quiet background sounds
+you wanted to keep, so it is off unless you turn it on.</li>
+<li><code>self._format</code>: The format the results come back in:
+whatever the preset says, or one format for every production. A
+multitrack production saves only the final mix.</li>
+</ul>
+<h4
+id="auphonicconfirmdialog-quilluiconverter_auphonic_dialogpy">AuphonicConfirmDialog
+(<code>quill/ui/converter_auphonic_dialog.py</code>)</h4>
+<ul>
+<li><code>self._body</code>: Everything this submission does, read-only:
+the service, every file sent and every file left out, the preset and
+processing, and where the results are saved. Nothing has been uploaded
+yet.</li>
+</ul>
+<h4
+id="auphonicwaitingdialog-quilluiconverter_auphonic_dialogpy">AuphonicWaitingDialog
+(<code>quill/ui/converter_auphonic_dialog.py</code>)</h4>
+<ul>
+<li><code>self._list</code>: Productions Auphonic accepted whose results
+have not been saved yet, remembered on this computer. Nothing has
+contacted Auphonic to make this list.</li>
+<li><code>resume</code>: Contacts Auphonic for every production listed,
+waits for any still processing, and saves the results where each one was
+going.</li>
+<li><code>self._dismiss_btn</code>: Forgets the highlighted production
+on this computer. It stays in your Auphonic account, and nothing is
+deleted there.</li>
+<li><code>close</code>: Closes this window; the list is kept for next
+time.</li>
+</ul>
+<h4
+id="auphonicdialog-quilluiconverter_auphonic_dialogpy-1">AuphonicDialog
+(<code>quill/ui/converter_auphonic_dialog.py</code>)</h4>
+<ul>
+<li><code>ok</code>: Shows everything that will be sent, and where the
+results go, before anything is uploaded.</li>
 </ul>
 <h2 id="quill-beacon">Quill Beacon</h2>
 <p>Control coverage: 127 audited sites (127 helped).</p>
@@ -4443,7 +4670,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
-<p>Control coverage: 157 audited sites (157 helped).</p>
+<p>Control coverage: 227 audited sites (227 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
@@ -4485,6 +4712,16 @@ Control Z takes back.</p>
 like, a question about it. The picture goes to OpenAI on your ChatGPT
 subscription and the description comes back in a window you can read,
 copy or insert into your document.</p>
+<p><strong>AutoCorrect Entries.</strong> Every correction AutoCorrect
+makes as you type, built in and your own, one per row: teh becomes the.
+Type in Find to narrow the list. Add makes a correction of your own,
+Edit changes the one you are on, Turn Off stops one without deleting it,
+and Remove deletes one of yours or puts a built-in one back. QUILL has
+the same window on the same key.</p>
+<p><strong>AutoCorrect Entry.</strong> One correction: the word as you
+mistype it, and what it should become. Leave Match case exactly
+unchecked unless the case of the word matters; unchecked, a capital at
+the start of a sentence is kept.</p>
 <p><strong>Bookmarks.</strong> The places you marked in this document,
 in the order they appear. Choose one and press Enter to go there; Remove
 takes one out of the list without touching the document. Bookmarks last
@@ -4514,6 +4751,9 @@ one. Type in the search box to narrow the list, or choose a profile –
 Notepad, WordPad, Recommended, Everything – to set them all at once.
 Three areas start switched off and are found here rather than hidden:
 autocorrect, timestamped backups, and Go To Anything.</p>
+<p><strong>Delete Conversation.</strong> Asks whether to delete the
+saved conversation. Yes deletes it from this computer for good; No keeps
+it.</p>
 <p><strong>Dictation Commands.</strong> Every phrase dictation acts on,
 and what each one does, as text you can read line by line. The same list
 is in the user guide.</p>
@@ -4527,6 +4767,8 @@ thesaurus data is present. A reading, not a setting: nothing here
 changes anything. Add words from the Spelling Actions submenu on a word,
 or with Ctrl+Alt+F9; Preferences chooses whether QUILL Lite shares
 QUILL’s dictionary.</p>
+<p><strong>Discard These Words.</strong> The AI has changed these words.
+Yes throws them away and writes nothing; No keeps the review open.</p>
 <p><strong>Document language.</strong> Which markup this document is
 written in. It decides what Bold writes, what the heading keys write,
 which of the two tag pickers the Insert menu offers, and whether the
@@ -4537,6 +4779,9 @@ as this window is open.</p>
 <p><strong>Edit Inline Note.</strong> Change what this note says, or
 delete it. The text the note is about is never changed. A note written
 into the file is changed in the file, so Undo takes the change back.</p>
+<p><strong>Edit Prompt.</strong> Change a prompt’s name, category or
+instruction. Save keeps the change; Cancel leaves the prompt as it
+was.</p>
 <p><strong>Email Reply.</strong> What the AI sent back. It is read-only
 on purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
@@ -4581,6 +4826,10 @@ navigation pane.</p>
 <p><strong>Image Description.</strong> What the model saw in the
 picture, read-only. Insert Below puts it under the paragraph you are in,
 Copy puts it on the clipboard, and Control Z takes an insert back.</p>
+<p><strong>Import Words.</strong> What the file would add to your word
+list, with the counts as the list’s name. Add Them adds them and keeps a
+copy of your list as it was; nothing you already have is replaced.
+Cancel changes nothing.</p>
 <p><strong>Inline Notes.</strong> Every note in this document: what it
 says, the line it is on, the text it is about, and whether it is private
 or written into the file. A note whose text was deleted is listed last,
@@ -4652,6 +4901,14 @@ back. Nothing changes unless you check the box and choose Move.</p>
 <p><strong>Move QUILL Lite to Dev?.</strong> Says plainly what could go
 wrong on Beta or Dev, how your settings are protected, and how to come
 back. Nothing changes unless you check the box and choose Move.</p>
+<p><strong>My Words and Phrases.</strong> Everything dictation has been
+taught: words spelled your way, phrases that write something longer, and
+corrections. Each change is saved at once. Import adds the new entries
+from a Markdown or CSV file after showing them, and Export saves the
+list to a file.</p>
+<p><strong>New Prompt.</strong> Write a prompt to keep: its name, its
+category and the instruction itself. Type {selection} where the text you
+run it on should go.</p>
 <p><strong>Next Paragraph.</strong> What the AI sent back. It is
 read-only on purpose: nothing goes into your document until you choose
 Replace My Selection or Insert Below, and either of those is a single
@@ -4665,6 +4922,11 @@ window. Two of them live only here: what Control N creates, and how
 often unsaved work is copied aside. The rest – theme, word wrap, and the
 editor font – are also on the View menu, where you will reach them
 faster.</p>
+<p><strong>Prompt Library.</strong> Prompts you keep for the AI: QUILL’s
+own and the ones you write. Choose one and Run with AI to send it with
+your selection filled in where it says {selection}. New, Edit, Disable
+and Delete manage the list; Import and Export share prompts as a prompt
+pack file.</p>
 <p><strong>Proofread.</strong> What the AI sent back. It is read-only on
 purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
@@ -4695,9 +4957,12 @@ recently, pinned ones first. Enter opens the one you are on; pin the
 ones you come back to and they stay at the top. Removing a row or
 clearing the list never touches the files themselves.</p>
 <p><strong>Recent Phrases.</strong> What you have dictated since the app
-started, newest first. Insert Again writes the phrase you are on at the
-cursor, and Copy puts it on the clipboard. The list is forgotten when
-you close the app.</p>
+started, newest first, then words kept from before: phrases that were
+not written, a review that did not finish, and with a dictation history
+on, earlier phrases. Insert Again writes the phrase you are on at the
+cursor, Copy puts it on the clipboard, and Discard deletes kept words
+without writing them. This session’s phrases are forgotten when you
+close the app.</p>
 <p><strong>Release Channel: QUILL Lite.</strong> Choose which versions
 this app offers you: Stable, the one we recommend; Beta, new features a
 few weeks early; or Dev, work in progress for testers. Arrowing through
@@ -4708,10 +4973,26 @@ place. Replace changes the match you are on and moves to the next;
 Replace All changes every one and tells you how many. In a rich text
 document Replace All asks first, because replaced text takes the
 formatting of the run it lands in.</p>
+<p><strong>Review AI Changes.</strong> The AI’s answer compared with the
+text it would replace, one change per line, with the words that differ
+and the sentence they are in. Uncheck a change to keep the original
+there, then apply; it goes in as one edit Control Z takes back. Nothing
+changes until you apply.</p>
+<p><strong>Review Dictation.</strong> Dictated words wait here before
+they are inserted. Read them, type or keep dictating to change them, ask
+the AI to change them if AI is on, and hear what changed. Control Enter
+inserts them where they were going; nothing is written before that.</p>
+<p><strong>Review with AI.</strong> Before the first change is asked
+for, this says who receives the words being reviewed and what is sent.
+No is the default and sends nothing.</p>
 <p><strong>Rewrite.</strong> What the AI sent back. It is read-only on
 purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
 Control Z takes back.</p>
+<p><strong>Saved AI Conversations.</strong> Your saved AI conversations,
+newest first. Every conversation with the AI is saved on this computer
+as it goes. Press Enter on one to open it and carry on where it left
+off; Delete removes one after asking.</p>
 <p><strong>Shorter.</strong> What the AI sent back. It is read-only on
 purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
@@ -4720,6 +5001,11 @@ Control Z takes back.</p>
 download for better accuracy, with each one’s size, languages and what
 it suits. Your voice never leaves the computer with these models;
 Download asks first, and Remove frees the space again.</p>
+<p><strong>Speech Providers.</strong> Use a speech service you already
+have an account with – Azure, Google, Amazon, Deepgram and others – for
+dictation. Choose one to see what it can do and what it needs, enter
+that, test it, and save it; keys go to Windows Credential Manager. Then
+choose it as the speech engine in Dictation Settings.</p>
 <p><strong>Spelling Announcements.</strong> How a misspelled word is
 reported to you. A misspelling is the one thing an editor cannot convey
 by speech alone – receive and recieve sound identical – so the letters
@@ -4769,6 +5055,10 @@ Google Gemini account instead of QUILL’s free service. Choose the
 company, paste the key it gave you, and test it; with a saved key there
 is no daily limit. Remove the Saved Key puts you straight back on the
 free service.</p>
+<p><strong>Use the Shared Word List.</strong> Which of your words will
+be added to the list QUILL, QUILL Transcribe and Quill Inkwell share,
+before QUILL Lite starts using it. Use the Shared List goes ahead;
+Cancel keeps QUILL Lite’s own list.</p>
 <p><strong>Windows titled “Help:…”.</strong> This is the help window
 itself: the purpose of the window you were in, then the control you were
 on. Escape returns you to it.</p>
@@ -5077,6 +5367,8 @@ the conversation so far as fits.</li>
 <li><code>fresh</code>: Forgets this conversation and starts again.
 Nothing is sent.</li>
 <li><code>copy</code>: Puts the most recent reply on the clipboard.</li>
+<li><code>saved</code>: Lists the conversations saved on this computer,
+newest first, so you can open one and carry on, or delete one.</li>
 <li><code>insert</code>: Puts the most recent reply into your document
 underneath the current paragraph. Control Z takes it back.</li>
 </ul>
@@ -5178,11 +5470,6 @@ your account.</li>
 provider now, and puts AI help back on QUILL’s free service with its
 free allowance.</li>
 </ul>
-<h4 id="airesultframe-quilluihosted_ai_padpy">AiResultFrame
-(<code>quill/ui/hosted_ai_pad.py</code>)</h4>
-<ul>
-<li><code>copy</code>: Puts the answer on the clipboard.</li>
-</ul>
 <h4 id="aipadframe-quilluihosted_ai_padpy">AiPadFrame
 (<code>quill/ui/hosted_ai_pad.py</code>)</h4>
 <ul>
@@ -5197,12 +5484,22 @@ these languages are offered.</li>
 <li><code>self._send</code>: Sends the text above and uses one of your
 free requests. While a request is on its way this button is Stop, and
 pressing it stops the request.</li>
+<li><code>choice</code>: Which part of your document to send: what you
+selected, the paragraph you are in, or the whole section.</li>
+<li><code>self._delivery</code>: Where the answer goes when it arrives:
+the AI Result window, where you can read it and choose what to do; your
+document at the cursor, as one edit Control Z takes back; or the
+clipboard. Remembered until you change it.</li>
 </ul>
-<h4 id="airesultframe-quilluihosted_ai_padpy-1">AiResultFrame
-(<code>quill/ui/hosted_ai_pad.py</code>)</h4>
+<h4 id="airesultframe-quilluihosted_ai_resultpy">AiResultFrame
+(<code>quill/ui/hosted_ai_result.py</code>)</h4>
 <ul>
+<li><code>copy</code>: Puts the answer on the clipboard.</li>
 <li><code>replace</code>: Puts this in place of the text you had
 selected. Control Z takes it back.</li>
+<li><code>review</code>: Compares this with the text you had selected,
+change by change and word by word, so you can keep some changes and
+leave the rest. Nothing changes until you apply.</li>
 <li><code>insert</code>: Puts this into your document underneath the
 current paragraph. Control Z takes it back.</li>
 <li><code>again</code>: Sends the same text again. This uses one more of
@@ -5211,11 +5508,31 @@ your free requests.</li>
 ask for it shorter, ask about one part of it, or ask something new. Each
 message uses one request.</li>
 </ul>
-<h4 id="aipadframe-quilluihosted_ai_padpy-1">AiPadFrame
-(<code>quill/ui/hosted_ai_pad.py</code>)</h4>
+<h4
+id="savedconversationsdialog-quilluihosted_ai_saved_chatspy">SavedConversationsDialog
+(<code>quill/ui/hosted_ai_saved_chats.py</code>)</h4>
 <ul>
-<li><code>choice</code>: Which part of your document to send: what you
-selected, the paragraph you are in, or the whole section.</li>
+<li><code>self._list</code>: Your saved AI conversations, newest first:
+how each one began, how many messages it holds and when it was last
+used. Press Enter to open one.</li>
+<li><code>self._open</code>: Opens the chosen conversation in the
+conversation window, so you can read it and carry on where it left
+off.</li>
+<li><code>self._delete</code>: Deletes the chosen conversation from this
+computer, after asking. It cannot be brought back.</li>
+<li><code>close</code>: Closes this window and leaves the conversation
+you had open.</li>
+</ul>
+<h4
+id="cloudprovidersmixin-quilluiwindows_dictation_cloudpy">CloudProvidersMixin
+(<code>quill/ui/windows_dictation_cloud.py</code>)</h4>
+<ul>
+<li><code>button</code>: Use a speech service you already have an
+account with: Microsoft Azure, Google Cloud, Amazon, Deepgram,
+AssemblyAI, Speechmatics, ElevenLabs, Gladia, Rev.ai, Groq, Mistral or
+IBM Watson. Enter what it needs and test it there, then choose it as the
+speech engine. Optional: the built-in engines need no account and never
+send anything anywhere.</li>
 </ul>
 <h4
 id="windowsdictationdialog-quilluiwindows_dictation_dialogpy">WindowsDictationDialog
@@ -5252,11 +5569,6 @@ how loud it was and, with an engine that runs on this computer, what the
 engine heard. Nothing is kept.</li>
 <li><code>self.test_result</code>: What the last microphone test
 found.</li>
-<li><code>self.feedback</code>: What you hear each time a phrase goes
-into the document. A sound is a short tone. Speech reads back the words
-that were written, so you can hear whether they are the words you said.
-Use headphones if you choose speech: read back through speakers, the
-microphone can hear it and write it down again.</li>
 <li><code>self.dash</code>: What the spoken word dash writes. A hyphen,
 said as hyphen, is always a plain hyphen that joins two words.</li>
 <li><code>self.pause</code>: How long you can stop talking before what
@@ -5264,13 +5576,18 @@ you said is written. Choose Long if dictation cuts you off while you are
 still thinking; Short writes sooner after you stop. Longer and Longest
 are for speaking slowly: every phrase then waits two or three seconds
 before it is written.</li>
-<li><code>self.remove_fillers</code>: Leave out hesitations – um, uh,
-erm, hmm – instead of writing them. Real words are never removed.</li>
 <li><code>self.continuous</code>: For talking in one long run and
 pausing wherever you like. A pause then puts in no full stop, plays no
 sound and reads nothing back, and voice commands are written as words –
 only the stop phrase still stops dictation. Punctuation you say still
 works.</li>
+<li><code>self.advice</code>: The model that suits this computer, and
+why. Only advice.</li>
+<li><code>self.feedback</code>: What you hear each time a phrase goes
+into the document. A sound is a short tone. Speech reads back the words
+that were written, so you can hear whether they are the words you said.
+Use headphones if you choose speech: read back through speakers, the
+microphone can hear it and write it down again.</li>
 <li><code>self.cue_sounds</code>: A rising pair of tones when dictation
 starts listening, a falling pair when it stops, and a low double tone
 when something goes wrong. A failure is always spoken as well, whatever
@@ -5308,6 +5625,26 @@ heard so far while you speak, how dictation behaves when you talk to the
 AI, OpenAI with your own key, and My Dictation Instructions.</li>
 </ul>
 <h4
+id="dictationstylemixin-quilluiwindows_dictation_stylepy">DictationStyleMixin
+(<code>quill/ui/windows_dictation_style.py</code>)</h4>
+<ul>
+<li><code>self.style</code>: A name for how your words are written.
+Verbatim: every word as you say it. Clean: filler words left out, and
+when you correct yourself, like Thursday, no, Friday, only Friday is
+written. Polished, offered when AI is on: Clean, and your dictation goes
+to Review Dictation first, where QUILL polish that asks the AI to tidy
+punctuation and small slips, only when you ask and only after you agree
+to send. Choosing a style sets the check boxes below; changing them
+shows Your own mix.</li>
+<li><code>self.remove_fillers</code>: Leave out hesitations – um, uh,
+erm, hmm – instead of writing them. Real words are never removed.</li>
+<li><code>self.self_repair</code>: When you say no, I mean, or sorry
+between two days, months, numbers or names from My Words, only the
+second is written: Thursday, no, Friday writes Friday. Everything else
+is written as you said it, so no, I do not think so stays as it is. Off
+by default.</li>
+</ul>
+<h4
 id="dictationcommandsdialog-quilluidictation_lists_dialogpy">DictationCommandsDialog
 (<code>quill/ui/dictation_lists_dialog.py</code>)</h4>
 <ul>
@@ -5321,13 +5658,23 @@ id="recentphrasesdialog-quilluidictation_lists_dialogpy">RecentPhrasesDialog
 (<code>quill/ui/dictation_lists_dialog.py</code>)</h4>
 <ul>
 <li><code>self.list</code>: What you dictated this session, newest
-first. Enter inserts the one you are on at the cursor again; Copy puts
+first, then words kept from before: phrases that were not written, a
+review that did not finish, and with dictation history on, earlier
+phrases. Enter inserts the one you are on at the cursor again; Copy puts
 it on the clipboard.</li>
 <li><code>insert</code>: Write this phrase at the cursor again, as one
-undo step.</li>
+undo step. Words kept from before are deleted from this computer once
+they are written.</li>
 <li><code>copy</code>: Put this phrase on the clipboard without writing
 it.</li>
+<li><code>discard</code>: Delete these kept words from this computer
+without writing them. This session’s own phrases are not kept, so there
+is nothing to discard for them.</li>
 <li><code>close</code>: Close the list without inserting anything.</li>
+<li><code>clear</code>: Delete the whole dictation history from this
+computer, after a question whose answer is No unless you choose Yes.
+Words not written last time are not part of the history and stay until
+you discard them.</li>
 </ul>
 <h4
 id="moredictationdialog-quilluidictation_more_dialogpy">MoreDictationDialog
@@ -5358,6 +5705,29 @@ in QUILL and QUILL Lite, on in QUILL Transcribe.</li>
 paragraph with the time, like 10:42 in square brackets, so you can find
 a moment later. A new paragraph starts when the speaker pauses for four
 seconds or more. Off by default.</li>
+<li><code>self.review_first</code>: When this is on, what you dictate
+goes into the Review Dictation window instead of the document or the
+other program. Read it, change it, and press Control Enter to insert it
+once. Off by default: then say QUILL review that, or press Review
+Dictation, when you want a phrase reviewed.</li>
+<li><code>self.polish</code>: When this is on, saying QUILL polish that,
+or pressing Polish in Review Dictation, asks the AI to fix punctuation,
+capital letters and small slips in your words, keeping your words. The
+words open in Review Dictation first, you are asked once before anything
+is sent, you hear what changed, and nothing is inserted until you insert
+it. Off by default; it needs AI.</li>
+<li><code>self.share_family</code>: When this is on, the dictation
+settings you save here are used by QUILL, QUILL Lite, QUILL Transcribe
+and Quill Inkwell on this computer, and a change saved in any of them
+reaches this one the next time it comes to the front. The keys, the
+tray, the working tick, strict mode, the read-back’s sound and every
+permission to send your speech somewhere stay with each program. If two
+programs save at once, the last one saved wins; nothing is half written.
+On for a new install, off for one whose settings you had already
+changed, until you turn it on. The first time a program takes the
+family’s settings, its own are kept in a backup file, and if the shared
+copy cannot be saved you are told why. A portable copy shares only with
+programs in its own folder.</li>
 <li><code>self.send</code>: In the AI Conversation window, Ctrl+F11
 dictates your message. When I pause sends it as soon as you stop
 talking, the reply is read aloud, and the microphone waits until it has
@@ -5402,15 +5772,61 @@ correcting words work only in QUILL’s own documents.</li>
 from QUILL Transcribe or Quill Inkwell, such as your password manager:
 add the program you were just in, add one by its file name, or remove
 one. Matched by file name, never by a window title.</li>
+<li><code>self.profile</code>: A profile changes the pause, the filler
+words and the punctuation for one kind of writing, and how headings,
+bold and italic are written. Standard is your settings as they are.
+Markdown writes the marks; Document and Email use QUILL’s own formatting
+and type nothing for a heading elsewhere; Chat and Verbatim write plain
+text. You can also switch by voice: QUILL email mode.</li>
+<li><code>self.profile_locked</code>: When this is on, saying QUILL chat
+mode or another profile’s name does not switch profiles, and dictation
+says the profile stays as it is. You can still choose a profile
+here.</li>
+<li><code>self.history</code>: Off by default. Choose one, seven or
+thirty days to keep the text of what you dictate on this computer, never
+the sound, so Recent Phrases can bring back earlier phrases after the
+program closes. It is kept for this Windows account only, and Clear
+History in Recent Phrases deletes it. Turning it off deletes it too.
+Words that were never written are kept until you insert or discard them,
+whatever this says.</li>
+<li><code>self.command_prefix</code>: Say this word first to give a
+command instead of dictating: QUILL scratch that, QUILL select the cat.
+It counts only as the first word after a pause, so I told Quill about it
+is written as words. If what follows is not a command, nothing is typed,
+and QUILL type that writes it. Say literal QUILL to write the word
+itself. Leave it empty to give commands with the Speak a Command key
+only. A common word, or one of your own words in My Words and Phrases,
+is refused.</li>
+<li><code>self.command_required</code>: When this is on, a command said
+on its own, like scratch that, is written as words, and only QUILL
+scratch that is a command. The stop phrase always works. On by default
+in QUILL Transcribe, where a command typed into an email by mistake is
+hard to take back; off in QUILL and QUILL Lite.</li>
+<li><code>self.command_timeout</code>: Say QUILL command mode, or press
+Speak a Command twice, and everything you say is a command until you say
+dictation mode or give no command for this many seconds. A falling tone
+says it has ended. From 5 to 30; 8 by default.</li>
 </ul>
 <h4
 id="speechmodelsdialog-quilluidictation_models_dialogpy">SpeechModelsDialog
 (<code>quill/ui/dictation_models_dialog.py</code>)</h4>
 <ul>
+<li><code>self.priority</code>: What the recommendation below aims for:
+a balance of speed and accuracy, the quickest response after you pause,
+or the fewest mistakes this computer can keep up with. It only changes
+the advice, never your model.</li>
+<li><code>self.advice</code>: The model that suits this computer and
+why: whether it keeps up, about how soon your words appear after you
+pause, its tier and its download size. The figures are estimates.
+Nothing changes until you choose a model.</li>
+<li><code>self.show_recommended</code>: Move to the recommended model in
+the list below, to read its details and download or use it. It does not
+download or choose anything.</li>
 <li><code>self.models</code>: The optional speech models, the ones VS
 Code offers first and then the rest of the Whisper family. Each row says
-what the model is good for, its size and whether it is on this computer.
-Details below say more.</li>
+its tier (Lightweight, Balanced or High accuracy), what the model is
+good for, its size and whether it is on this computer. Details below say
+more.</li>
 <li><code>self.details</code>: About the chosen model: what it is better
 at, its languages, download and disk size, what computer suits it and
 whether this one should keep up, its published accuracy, its licence and
@@ -5431,6 +5847,35 @@ engine. Dictation Settings shows it chosen; press OK there to keep
 it.</li>
 <li><code>close</code>: Close this window. A download in progress is
 stopped and kept.</li>
+</ul>
+<h4
+id="speechprovidersdialog-quilluispeech_providers_dialogpy">SpeechProvidersDialog
+(<code>quill/ui/speech_providers_dialog.py</code>)</h4>
+<ul>
+<li><code>self.providers</code>: Speech services you can use for
+dictation with your own account. Choose one to see what it can do and
+what it needs. The built-in engines stay the default: they never send
+anything anywhere. A provider bills you, not QUILL, and is used only
+after you choose it as the speech engine in Dictation Settings and agree
+to send your speech there.</li>
+<li><code>self.about</code>: What the chosen provider is, whether it
+gives words while you speak, whether it learns your words, where your
+speech goes, and its usage page.</li>
+<li><code>self.fields_panel</code>: The details the chosen provider
+needs.</li>
+<li><code>self.result</code>: What the last Test Connection, Save or
+Remove said.</li>
+<li><code>self.test_button</code>: Asks the provider whether these
+details work, using a check of the account, never your speech. Says what
+it answered, or which field to fix.</li>
+<li><code>self.save_button</code>: Keeps these details. Keys go to
+Windows Credential Manager now and are never written in QUILL’s
+settings; the other details are kept when you choose OK in Dictation
+Settings.</li>
+<li><code>self.remove_button</code>: Forgets everything saved for this
+provider, keys included.</li>
+<li><code>close</code>: Close Speech Providers. Asks first if you
+changed details and did not save them.</li>
 </ul>
 <h4
 id="transcribefiledialog-quilluidictation_transcribe_dialogpy">TranscribeFileDialog
@@ -5467,11 +5912,39 @@ says new paragraph or comma usually means the words. Turn it on for a
 recording you dictated on purpose, and comma, period, new line, new
 paragraph and scratch that work as they do in dictation. Commands that
 move the cursor are ignored.</li>
+<li><code>self.translate</code>: Off unless you check it. Writes the
+recording in English instead of the language spoken. It needs a
+recording in a language other than English and a model that translates:
+the built-in Whisper, or a multilingual Whisper you downloaded. With any
+other model this box is unavailable.</li>
 <li><code>self.running</code>: What is being transcribed at the moment,
 how far it has got, and how many recordings are waiting after it.</li>
 <li><code>stop</code>: Stops the transcription that is running and
 cancels any recordings waiting after it. The outcomes remain in
 Notifications; nothing is written into a document.</li>
+</ul>
+<h4
+id="dictationreviewframe-quilluidictation_review_framepy">DictationReviewFrame
+(<code>quill/ui/dictation_review_frame.py</code>)</h4>
+<ul>
+<li><code>self.text</code>: The words waiting to be inserted. Read them
+with the arrow keys, type to change them, or keep dictating: what you
+say is written here, not into the document. Nothing is inserted until
+you press Control Enter.</li>
+<li><code>self.instruction</code>: Type what to change and press Enter:
+make it shorter, more formal, fix the grammar only. Only these words and
+your instruction are sent. Each one is one request.</li>
+<li><code>self.send</code>: Sends the instruction you typed, with the
+words above.</li>
+<li><code>self.talk</code>: On: everything you say is an instruction for
+the AI, with no command word, and nothing you say is written into the
+text. Off: what you say is written into the text, and instructions start
+with the command word.</li>
+<li><code>close</code>: Closes the window without inserting. The words
+are kept, and Review Dictation brings them back.</li>
+<li><code>self.context</code>: Sends the dictation context you chose for
+this document, such as a formal letter, with each request. Off by
+default: then only the words above and your instruction are sent.</li>
 </ul>
 <h4
 id="recentdocumentswindow-quilluirecent_documents_dialogpy">RecentDocumentsWindow
@@ -5501,6 +5974,115 @@ start. Files on a USB drive or a network share are kept, because they
 are usually just unplugged.</li>
 <li><code>self.status</code>: What the last button you pressed did.</li>
 <li><code>close</code>: Close this window. Changes to the list are
+kept.</li>
+</ul>
+<h4
+id="diffreviewdialog-quilluiai_diff_review_dialogpy">DiffReviewDialog
+(<code>quill/ui/ai_diff_review_dialog.py</code>)</h4>
+<ul>
+<li><code>self.hunk_list</code>: Every change the AI proposes, one per
+line. A checked change will be applied; press Space to uncheck one you
+want to keep as it was. The details below say exactly what changed, word
+by word.</li>
+<li><code>self.details</code>: The change you are on, line by line: what
+was there, what would replace it, and for a small change the words that
+differ and the sentence they are in. Read-only.</li>
+<li><code>self.apply_button</code>: Applies the change as one edit;
+Control Z takes it back.</li>
+<li><code>reject_button</code>: Closes this window and leaves your
+document unchanged.</li>
+<li><code>self.apply_button</code>: Applies only the checked changes, as
+one edit; Control Z takes it back.</li>
+<li><code>accept_all_button</code>: Applies every change, checked or
+not, as one edit; Control Z takes it back.</li>
+<li><code>reject_all_button</code>: Closes this window and leaves your
+document unchanged.</li>
+</ul>
+<h4
+id="promptlibrarydialog-quilluiprompt_library_dialogpy">PromptLibraryDialog
+(<code>quill/ui/prompt_library_dialog.py</code>)</h4>
+<ul>
+<li><code>self._search</code>: Type part of a prompt’s name or category
+to narrow the list below.</li>
+<li><code>self._listbox</code>: Your saved prompts and the ones QUILL
+comes with, each after its category. Press Enter on one to run it on the
+input text.</li>
+<li><code>self._preview</code>: The instruction the chosen prompt gives
+the AI. Read-only; Edit changes it.</li>
+<li><code>self._input</code>: The text the prompt works on: what you had
+selected, which you can change here. It goes where the prompt says
+{selection}.</li>
+<li><code>self._btn_new</code>: Writes a new prompt of your own.</li>
+<li><code>self._btn_edit</code>: Changes the chosen prompt’s name,
+category or text.</li>
+<li><code>self._btn_toggle</code>: Switches the chosen prompt off or
+back on. A switched-off prompt stays in the list, marked disabled.</li>
+<li><code>self._btn_delete</code>: Deletes the chosen prompt after
+asking. Prompts QUILL comes with cannot be deleted.</li>
+<li><code>self._btn_import</code>: Adds the prompts from a QUILL prompt
+pack file.</li>
+<li><code>self._btn_export</code>: Saves the prompts in this list to a
+prompt pack file.</li>
+<li><code>btn_close</code>: Closes the Prompt Library. Your prompts are
+already saved.</li>
+</ul>
+<h4 id="prompteditdialog-quilluiprompt_edit_dialogpy">PromptEditDialog
+(<code>quill/ui/prompt_edit_dialog.py</code>)</h4>
+<ul>
+<li><code>self._name</code>: What the prompt is called in the list. Type
+a short name you will recognise, such as Make It Friendlier.</li>
+<li><code>self._category</code>: Which group the prompt is listed under.
+The list shows the category before each prompt’s name.</li>
+<li><code>self._text</code>: The instruction the AI is given. Type
+{selection} where the text you run it on should go, {document} for the
+whole document, and {title} for the document’s title.</li>
+<li><code>ok_btn</code>: Saves the prompt in the library and closes this
+window.</li>
+<li><code>cancel_btn</code>: Closes this window without saving
+anything.</li>
+</ul>
+<h4
+id="correctioneditdialog-quilluiautocorrect_entries_dialogpy">CorrectionEditDialog
+(<code>quill/ui/autocorrect_entries_dialog.py</code>)</h4>
+<ul>
+<li><code>self.word</code>: The misspelling, exactly as you type it
+wrongly. One word of letters only; an apostrophe inside it is fine. It
+is matched in any case unless you check Match case exactly.</li>
+<li><code>self.fixed</code>: What the word becomes when you type a space
+or press Enter after it. It may be more than one word, on one line.</li>
+<li><code>self.case</code>: Checked: only the word typed in exactly this
+case is corrected, and the correction goes in exactly as written.
+Unchecked, the usual choice: teh, Teh and the start of a sentence are
+all corrected, keeping your capital letter.</li>
+<li><code>ok</code>: Save this correction and go back to the list.</li>
+<li><code>cancel</code>: Go back to the list without saving
+anything.</li>
+</ul>
+<h4
+id="autocorrectentriesdialog-quilluiautocorrect_entries_dialogpy">AutocorrectEntriesDialog
+(<code>quill/ui/autocorrect_entries_dialog.py</code>)</h4>
+<ul>
+<li><code>self.filter</code>: Type part of a word to narrow the list to
+the corrections that contain it, either the misspelling or what it
+becomes. Clear it to see them all again.</li>
+<li><code>self.list</code>: Every correction, one per row: the
+misspelling, what it becomes, and whether it is built in or yours. A row
+that ends in stopped is turned off. Corrections happen only while
+Correct common misspellings as I type is on, and never in code or
+settings files.</li>
+<li><code>self.add_button</code>: Add a correction of your own. Adding a
+word that is already built in changes what it becomes; Remove later puts
+the built-in one back.</li>
+<li><code>self.edit_button</code>: Change the correction you are on: the
+misspelling, what it becomes, or whether case must match.</li>
+<li><code>self.toggle_button</code>: Stop the correction you are on from
+happening, without deleting it, or start a stopped one again. Use this
+when a correction keeps changing a word you meant to type.</li>
+<li><code>self.remove_button</code>: Delete a correction of yours, or
+put a built-in one back the way it shipped after you changed or stopped
+it. A built-in correction cannot be deleted; Remove on one turns it off
+instead.</li>
+<li><code>close</code>: Close this window. Your changes are already
 kept.</li>
 </ul>
 </main>

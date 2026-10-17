@@ -58,4 +58,8 @@ def build_preferences(app: Any, audio_menu: Any, wx: Any) -> Any:
     from quill.ui import app_sounds
 
     app_sounds.append_menu_item(app, audio_menu)
+    # A second device: a background station, or a mirror (xradio2 4.6, 4.7).
+    from quill.ui.radio import second_output_ui
+
+    second_output_ui.append_menu_items(app, audio_menu, wx)
     return forget_volumes_id

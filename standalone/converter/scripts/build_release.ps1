@@ -67,6 +67,7 @@ $build, $fileVersion = Resolve-QuillReleaseBuild -QuillRepo $QuillRepo -Python $
 # final-numbered build (a Stable candidate) signs as before. The rule is
 # scripts\code_signing.py build-decision; see docs\code-signing.md.
 $null = Resolve-QuillSigning -QuillRepo $QuillRepo -Python $Python -Version $version
+Assert-QuillSiblingVersions -QuillRepo $QuillRepo -Python $Python -Releasing @("converter") -Skip:$SkipPublishedCheck
 
 # -- the version is one number ---------------------------------------------
 # The app's _VERSION, this script's $version and the .iss fallback must agree,
@@ -204,6 +205,10 @@ if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
 Write-Host "Compressing portable bundle -> $zipPath ..."
 # Every shipped .md leaves with its .html and .epub (scripts\complete_docs_folder.py).
 Complete-QuillDocsFolders -Python $Python -Root (Join-Path (Split-Path -Parent $PSScriptRoot) "dist") -QuillRepo $QuillRepo
+# FFmpeg ships with its licence: fail here, before anything is zipped or
+# compiled, if any ffmpeg.exe in the portable or the runtime payload lacks it.
+& $Python (Join-Path $QuillRepo "scripts\check_ffmpeg_notices.py") $appDir $sharedRuntimeDist
+if ($LASTEXITCODE -ne 0) { throw "A bundle ships ffmpeg.exe without its licence notices." }
 Compress-Archive -Path $appDir -DestinationPath $zipPath
 
 # -- installer (Inno Setup 7; signs Setup.exe + uninstaller when signing is on)

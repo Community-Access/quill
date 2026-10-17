@@ -111,7 +111,34 @@ def test_build_intake_report_lists_quality() -> None:
     )
     report = build_intake_report(document)
     assert "Format: pdf" in report
-    assert "Low-confidence pages:" in report
+    assert "Pages that may read poorly:" in report
+    assert "Page 1: possible extraction issue (35/100)" in report
+
+
+def test_intake_says_which_pages_may_read_poorly_and_why() -> None:
+    document = Document(
+        path=Path("sample.pdf"),
+        source_metadata={
+            "source_kind": "pdf",
+            "engine": "pdfplumber + pypdf",
+            "quality_score": 70,
+            "page_count": 5,
+            "extracted_pages": 3,
+            "page_scores": [100, 0, 0, 78, 100],
+            "page_engines": ["pdfplumber", "blank", "image-only", "pypdf", "pdfplumber"],
+            "page_unreadable": [0, 0, 0, 2, 0],
+        },
+    )
+    report = build_intake_report(document)
+    # A blank page is not doubtful; a picture and unreadable characters are.
+    assert "Page 2" not in report
+    assert "Page 3: a picture with no text; OCR may read it" in report
+    assert "Page 4: 2 characters could not be read (78/100)" in report
+    assert "Text chosen per page: pdfplumber (2 pages), pypdf (1 page)" in report
+    summary = build_intake_summary(document)
+    assert "Pages 3 and 4 may read poorly" in summary
+    quality = build_extraction_quality_report(document)
+    assert "Page 3: a picture" in quality and "Page 2" not in quality
 
 
 def test_build_source_reference_for_pdf() -> None:

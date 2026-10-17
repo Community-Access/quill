@@ -125,6 +125,19 @@ def test_describe_models_marks_recommended_and_gpu_note() -> None:
     assert "No GPU detected" in by_id["large-v3"].label
 
 
+def test_describe_models_names_each_tier_and_says_why_it_recommends() -> None:
+    """D-22 in Manage Speech Models: the same tier words as dictation, and a
+    reason on the recommended row, as text in the row itself."""
+    rows = service.describe_models(_Provider(installed=[]), total_ram_gb=8.0, has_gpu=False)
+    by_id = {r.id: r for r in rows}
+    assert ", Balanced —" in by_id["small"].label
+    assert ", High accuracy —" in by_id["large-v3"].label
+    assert (
+        "Recommended for your computer: Your computer: 8.0 GB RAM and no GPU (uses the CPU). "
+        "So a mid-sized model fits" in by_id["small"].label
+    )
+
+
 def test_enough_disk_for() -> None:
     assert service.enough_disk_for(465, free_gb=10.0) is True
     assert service.enough_disk_for(3100, free_gb=2.0) is False  # 3.1 GB + buffer > 2

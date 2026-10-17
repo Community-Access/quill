@@ -40,6 +40,8 @@ _TRANSCRIBE = "tools.windows_dictation_transcribe_file"
 _LANGUAGE = "tools.windows_dictation_switch_language"
 _LIVE_TRANSCRIPT = "tools.windows_dictation_live_transcript"
 _CONTEXT = "tools.windows_dictation_context"
+_COMMAND = "tools.windows_dictation_command"
+_REVIEW = "tools.windows_dictation_review"
 
 #: ``(command id, menu label, palette title, handler)``, in menu order. The
 #: first is a check item. The labels are QUILL Lite's (commands_dictation.py).
@@ -77,6 +79,10 @@ _ROWS: tuple[tuple[str, str, str, str], ...] = (
         "Dictation Context for This Document",
         "cmd_dictation_context",
     ),
+    # D-1 (2026-10-15): the command word's key, F11 in both editors.
+    (_COMMAND, "Speak a Co&mmand", "Live Dictation: Speak a Command", "cmd_dictation_command"),
+    # D-2 (2026-10-15): review before inserting, Shift+F4 in both editors.
+    (_REVIEW, "Re&view Dictation...", "Live Dictation: Review Dictation", "cmd_dictation_review"),
 )
 
 
@@ -101,6 +107,24 @@ class WindowsDictationCommandsMixin(WindowsDictationMixin):
             save_settings(self.settings)
         except Exception:  # noqa: BLE001 - the choice still holds for this session
             pass
+
+    def _dictation_formatting(self) -> str:
+        """What formatting this document holds, for bold and headings by voice
+        (D-23): ``rich``, ``markdown``, ``html``, or ``""`` for plain text."""
+        if self._current_editor_mode() == "rich":
+            return "rich"
+        return str(self._active_markup_surface() or "")
+
+    def _dictation_apply_style(self, style: str) -> str | None:
+        """QUILL's own Bold, Italic or Heading command on the selection (D-23).
+        In rich text the command says the outcome itself; in markup it does not."""
+        kind = self._dictation_formatting()
+        if not kind:
+            return None  # never the plain-text formatting question mid-dictation
+        self.commands.run(f"format.{style}")
+        if kind == "rich":
+            return ""
+        return style.replace("_", " ").capitalize() + "."  # "Bold.", "Heading 2."
 
     def _dictation_say(self, text: str) -> None:
         # Forced past the verbosity gate: every sentence dictation speaks is
@@ -206,6 +230,14 @@ class WindowsDictationCommandsMixin(WindowsDictationMixin):
                     return snippet_with_blanks(snippet.body)
                 except ValueError:
                     return None
+        return None
+
+    def _dictation_snippet_body(self, name: str) -> str | None:
+        """The snippet's own text, so its blanks are asked for by voice (D-8)."""
+        library = getattr(self, "_snippet_library", None)
+        for snippet in getattr(library, "snippets", []) or []:
+            if snippet.enabled and snippet.name == name:
+                return str(snippet.body)
         return None
 
     def _dictation_abbreviation_entries(self) -> list[Any]:

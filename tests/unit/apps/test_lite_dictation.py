@@ -165,9 +165,10 @@ def test_a_phrase_heard_after_focus_left_is_not_written(lite_window, recognizers
 class _FakeSettingsDialog:
     answer = wx.ID_CANCEL
 
-    def __init__(self, parent: Any, settings: Any, announce: Any = None) -> None:
+    def __init__(self, parent: Any, settings: Any, announce: Any = None, **kwargs: Any) -> None:
         self.settings = settings
         self.destroyed = False
+        self.my_words = kwargs.get("my_words")  # the command word may not be one (D-1)
 
     def apply(self, settings: Any) -> None:
         settings.windows_dictation_microphone = "chosen"
@@ -233,8 +234,16 @@ class _WordsWindow:
 
     opened: list[dict[str, Any]] = []
 
-    def __init__(self, parent: Any, path: Path, *, say: Any, open_file: Any = None) -> None:
-        _WordsWindow.opened.append({"parent": parent, "path": path, "say": say, "open": open_file})
+    def __init__(
+        self, parent: Any, path: Path, *, say: Any, open_file: Any = None, shared: Any = None
+    ) -> None:
+        _WordsWindow.opened.append({
+            "parent": parent,
+            "path": path,
+            "say": say,
+            "open": open_file,
+            "shared": shared,
+        })
 
     def ShowModal(self) -> int:  # noqa: N802 - wx API shape
         return wx.ID_CANCEL
@@ -290,6 +299,51 @@ def test_a_correction_added_through_the_model_is_heard(lite_window, recognizers,
     assert win.control.GetValue() == "I write in QUILL Lite"
 
 
+def test_my_words_offers_the_shared_list_and_a_word_added_here_reaches_transcribe(
+    lite_window, recognizers, focused, words_window, quill_data_dir
+):
+    """dict.md D-12: with "Use the shared word list" checked, QUILL Lite edits and
+    dictates with the one ``dictation.md`` QUILL Transcribe reads per phrase."""
+    from quill.core.speech.dictation_profile import default_profile_path
+    from quill.core.windows_dictation.profile import rewriter
+    from quill.core.windows_dictation.words_file import Entry, load_words, save_words
+
+    made, _ = recognizers
+    win = _window(lite_window, focused)
+    win.cmd_dictation_words()
+    shared = words_window[-1]["shared"]
+    assert shared is not None and not shared.is_on()
+    assert win._dictation_profile_path() == win.app.data_dir / "dictation.md"
+
+    before = win.app.saved_settings
+    shared.set_on(True)
+    assert win.app.settings.share_quill_dictation_words is True
+    assert win.app.saved_settings == before + 1
+    assert win._dictation_profile_path() == default_profile_path()
+
+    words = load_words(win._dictation_profile_path())
+    words.add(Entry("correction", "doctor oh conk woe", "Dr Okonkwo"))
+    save_words(win._dictation_profile_path(), words)
+    # What QUILL Transcribe runs on its next phrase (transcribe_dictation.py).
+    assert rewriter(default_profile_path())("ask doctor oh conk woe") == "ask Dr Okonkwo"
+    win.cmd_toggle_dictation()
+    made[0].hear("ask doctor oh conk woe")
+    assert win.control.GetValue() == "Ask Dr Okonkwo"  # the composer capitalizes
+
+
+def test_a_portable_quill_lite_keeps_its_own_word_list(
+    lite_window, focused, words_window, monkeypatch
+):
+    import quill.core.lite.paths as lite_paths
+
+    monkeypatch.setattr(lite_paths, "_portable_root", lambda: win.app.data_dir)
+    win = _window(lite_window, focused)
+    win.app.settings.share_quill_dictation_words = True  # carried over from elsewhere
+    win.cmd_dictation_words()
+    assert words_window[-1]["shared"] is None
+    assert win._dictation_profile_path() == win.app.data_dir / "dictation.md"
+
+
 def test_windows_voice_typing_hands_over_and_opens_no_microphone(
     lite_window, recognizers, focused, monkeypatch
 ):
@@ -337,7 +391,9 @@ class _RecentWindow:
     answer: tuple[str | None, str] = (None, "insert")
     shown: list[list[str]] = []
 
-    def __init__(self, _parent: Any, phrases: list[str]) -> None:
+    chosen_row = None
+
+    def __init__(self, _parent: Any, phrases: list[str], **_kept: Any) -> None:
         _RecentWindow.shown.append(list(phrases))
         self.chosen, self.verb = _RecentWindow.answer
 
@@ -578,3 +634,44 @@ def test_the_working_tick_plays_in_quill_lite_when_switched_on(
     assert SoundEvent.WINDOWS_DICTATION_WORKING in win.cues
     made[0].hear("there it is")
     assert win.control.GetValue() == "There it is"
+
+
+# -- the command word and Speak a Command (D-1, 2026-10-15) ------------------------- #
+
+
+def test_speak_a_command_starts_dictation_and_takes_one_command(
+    lite_window, recognizers, focused, monkeypatch
+) -> None:
+    """F11 in QUILL Lite, through the shared handler QUILL runs too: off, it
+    starts dictation here with one command armed; the next phrase is a command
+    and is never written; twice, command mode, shown in the status cell."""
+    from quill.apps.lite_window_dictation import dictation_cell
+    from quill.ui.windows_dictation_ports import HostFeedback
+
+    monkeypatch.setattr(HostFeedback, "call_later", lambda _s, _sec, _cb: None)
+    made, _ = recognizers
+    win = _window(lite_window, focused, "Kept.")
+    win.cmd_dictation_command()
+    assert win.dictation_active()
+    assert SoundEvent.WINDOWS_DICTATION_COMMAND_ON in win.cues
+    assert dictation_cell(win) == "Waiting for a command"
+    made[0].hear("pancakes")  # not a command: nothing written
+    assert win.control.GetValue() == "Kept."
+    assert any(line.startswith("Not a command.") for line in win.announcements)
+    win.cmd_dictation_command()
+    win.cmd_dictation_command()
+    assert dictation_cell(win) == "Command mode"
+    win.cmd_dictation_command()
+    assert SoundEvent.WINDOWS_DICTATION_COMMAND_OFF in win.cues
+    assert dictation_cell(win) == "Listening"
+
+
+def test_the_command_word_works_in_quill_lite(lite_window, recognizers, focused) -> None:
+    made, _ = recognizers
+    win = _window(lite_window, focused, "Kept.")
+    win.cmd_toggle_dictation()
+    made[0].hear("first try")
+    made[0].hear("quill scratch that")
+    assert win.control.GetValue() == "Kept."
+    made[0].hear("literal quill is open")
+    assert "QUILL is open" in win.control.GetValue()

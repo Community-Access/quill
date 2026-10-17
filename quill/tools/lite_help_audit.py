@@ -74,10 +74,21 @@ _SCAN_GLOBS: tuple[str, ...] = (
     "quill/ui/dictation_lists_dialog.py",
     "quill/ui/dictation_more_dialog.py",
     "quill/ui/dictation_models_dialog.py",
+    # Speech Providers (D-31), opened from Dictation Settings in every editor.
+    "quill/ui/speech_providers_dialog.py",
     # Transcribe a Recording, the same window in both editors (2026-10-05).
     "quill/ui/dictation_transcribe_dialog.py",
+    # Review Dictation, the same window in both editors and QUILL Transcribe (D-2).
+    "quill/ui/dictation_review_frame.py",
     # File > Recent Documents, the same window in both editors (2026-10-04).
     "quill/ui/recent_documents_dialog.py",
+    # QUILL's word-level review and Prompt Library, reached from the free AI
+    # in both editors since 2026-10-15 (quill/ui/hosted_ai_answers.py).
+    "quill/ui/ai_diff_review_dialog.py",
+    "quill/ui/prompt_library_dialog.py",
+    "quill/ui/prompt_edit_dialog.py",
+    # AutoCorrect Entries, the same window in both editors (2026-10-16).
+    "quill/ui/autocorrect_entries_dialog.py",
 )
 
 #: Surface constructions whose titles the scan cannot resolve, with the reason
@@ -113,10 +124,21 @@ TITLE_EXEMPT: dict[str, str] = {
         "what is being agreed to cannot leave the window announcing the old "
         "thing. The catalogue answers that constant's current value."
     ),
-    "quill/ui/hosted_ai_pad.py::AiResultFrame.__init__": (
+    "quill/ui/hosted_ai_result.py::AiResultFrame.__init__": (
         "Titled from quill.core.ai.writing_tools.ACTION_TITLES (or 'AI Result'), "
         "and the catalogue builds its result-window entries from that same "
         "table, so every title it can carry has a purpose."
+    ),
+    "quill/ui/prompt_edit_dialog.py::PromptEditDialog.__init__": (
+        "One of two literals chosen by whether a prompt is being written or "
+        "changed -- 'New Prompt' or 'Edit Prompt' -- and the catalogue answers "
+        "both."
+    ),
+    "quill/ui/ai_diff_review_dialog.py::DiffReviewDialog.__init__": (
+        "The title is the caller's. The free AI's Review Changes passes the "
+        "literal 'Review AI Changes', which the catalogue answers; QUILL's own "
+        "callers pass 'Review AI Changes' or an agent's title, and answer F1 "
+        "from QUILL's topics."
     ),
     "quill/apps/lite_dialogs_entry.py::ask_text": (
         "One labelled-box window whose three callers pass literals the catalogue "
