@@ -126,7 +126,7 @@ def test_the_sibling_launcher_keys_are_free_in_every_app(wx_app) -> None:
     )
 
 
-def test_there_is_a_launcher_key_for_every_row_the_menu_can_show(wx_app) -> None:
+def test_there_is_a_launcher_key_for_every_row_a_public_menu_can_show(wx_app) -> None:
     """The QuillVille menu's own comment claims the house rule; make it true.
 
     An app never lists itself, so the longest possible menu is one row short of
@@ -136,8 +136,15 @@ def test_there_is_a_launcher_key_for_every_row_the_menu_can_show(wx_app) -> None
     A sibling with a key of its own (Quill Cast, on its show/hide key) takes no
     positional key, so the longest menu needs one positional key per *other*
     sibling.
+
+    **Public builds only, since 2026-10-16.** QUILL Transcribe's release made
+    the developer-build menus longer than ``SIBLING_APP_ACCELERATORS``, and
+    Jeff decided against a sixth key (the comment beside the tuple says why):
+    a public build lists only ``RELEASED_APPS``, and that list must fit the
+    keys. The developer-build overflow is the next test's business.
     """
     from quill.core.app_keymaps import SIBLING_APP_ACCELERATORS, SIBLING_APP_FIXED_ACCELERATORS
+    from quill.core.app_launcher import RELEASED_APPS
     from quill.ui.quillville_menu import QUILLVILLE_APP_ORDER
 
     fixed = set(SIBLING_APP_FIXED_ACCELERATORS)
@@ -146,10 +153,108 @@ def test_there_is_a_launcher_key_for_every_row_the_menu_can_show(wx_app) -> None
     assert "build_quillville_menu" not in "".join(
         path.read_text(encoding="utf-8") for path in _APPS.glob("podcasts*.py")
     )
-    for app in (key for key in QUILLVILLE_APP_ORDER if key not in fixed):
-        counted = [key for key in QUILLVILLE_APP_ORDER if key != app and key not in fixed]
+    for app in sorted(RELEASED_APPS):
+        counted = [
+            key
+            for key in QUILLVILLE_APP_ORDER
+            if key != app and key not in fixed and key in RELEASED_APPS
+        ]
         assert len(SIBLING_APP_ACCELERATORS) >= len(counted), (
-            f"{app}'s menu can show {len(counted)} positional rows but only "
+            f"{app}'s public menu can show {len(counted)} positional rows but only "
             f"{len(SIBLING_APP_ACCELERATORS)} launcher keys exist; the rows past the end "
             "ship with no keyboard route"
         )
+
+
+class _FakeMenu:
+    def __init__(self) -> None:
+        self.labels: list[str] = []
+
+    def Append(self, _id: object, label: str) -> None:  # noqa: N802 - wx shape
+        self.labels.append(label)
+
+
+class _FakeWx:
+    EVT_MENU = object()
+
+    @staticmethod
+    def Menu() -> _FakeMenu:  # noqa: N802 - wx shape
+        return _FakeMenu()
+
+    @staticmethod
+    def NewIdRef() -> object:  # noqa: N802 - wx shape
+        return object()
+
+
+def _quillville_rows(exclude: str) -> list[tuple[str, str]]:
+    """(name, key) for each row of *exclude*'s QuillVille menu, as built."""
+    from types import SimpleNamespace
+
+    from quill.ui.quillville_menu import build_quillville_menu
+
+    frame = SimpleNamespace(Bind=lambda *_a, **_k: None)
+    menu = build_quillville_menu(
+        _FakeWx, frame, lambda _key: None, exclude=exclude, retain=lambda _id: None
+    )
+    rows = []
+    for label in menu.labels:
+        name, _, key = label.partition(chr(9))
+        rows.append((name.replace("&", ""), key))
+    return rows
+
+
+def _apps_that_build_a_quillville_menu() -> list[str]:
+    """Every app whose source builds a QuillVille menu, read from the call sites
+    (``exclude="<app>"``), so a new menu cannot escape the check below."""
+    import re
+
+    sources = [*_APPS.glob("*.py"), _APPS.parent / "ui" / "main_frame_menu.py"]
+    found: set[str] = set()
+    for path in sources:
+        text = path.read_text(encoding="utf-8")
+        if "build_quillville_menu(" not in text:
+            continue
+        found.update(re.findall(r'(?<!also_)exclude="(\w+)"', text))
+    assert {"quill", "radio", "player"} <= found  # the scan still sees the menus
+    return sorted(found)
+
+
+def test_only_a_developer_build_shows_a_quillville_row_with_no_key(monkeypatch) -> None:
+    """Jeff, 2026-10-16: no sixth launcher key.
+
+    Built from the real menu builder, not counted from the tuples. In a public
+    build (only ``RELEASED_APPS`` listed) every row of every app's menu shows a
+    key. In a developer build, which lists the unreleased apps too, the rows
+    past the fifth positional one carry no key -- the one deliberate exemption
+    from the house rule, limited to developer builds, where nobody but the
+    people building the family meets them. They keep their access letter
+    (Alt+Q, then the letter) and can be bound in Keyboard Shortcuts.
+    """
+    from quill.core.app_keymaps import SIBLING_APP_ACCELERATORS
+    from quill.core.app_launcher import APP_NAMES, RELEASED_APPS
+    from quill.ui import quillville_menu
+
+    monkeypatch.setattr(quillville_menu, "is_app_released", lambda key: key in RELEASED_APPS)
+    for app in sorted(RELEASED_APPS):
+        keyless = [name for name, key in _quillville_rows(app) if not key]
+        assert keyless == [], f"{app}'s public QuillVille menu has rows with no key: {keyless}"
+
+    monkeypatch.setattr(quillville_menu, "is_app_released", lambda _key: True)
+    unreleased = {f"Open {APP_NAMES[key]}" for key in APP_NAMES if key not in RELEASED_APPS}
+    for app in _apps_that_build_a_quillville_menu():
+        rows = _quillville_rows(app)
+        keyed = [name for name, key in rows if key]
+        keyless = [name for name, key in rows if not key]
+        # Keys are handed out in order, so a keyless row only ever follows the
+        # last positional key -- never a gap in the middle of the menu.
+        assert all(key for _name, key in rows[: len(keyed)]), (
+            f"{app}'s developer menu skips a key mid-list: {rows}"
+        )
+        # The overflow exists only because unreleased apps are listed: there are
+        # never more keyless rows than unreleased siblings on the menu.
+        listed_unreleased = [name for name, _key in rows if name in unreleased]
+        assert len(keyless) <= len(listed_unreleased), (
+            f"{app}'s developer menu has {len(keyless)} rows with no key but lists only "
+            f"{len(listed_unreleased)} unreleased apps; a released app lost its key"
+        )
+        assert len(keyed) <= len(SIBLING_APP_ACCELERATORS) + 1  # + Cast's own F12

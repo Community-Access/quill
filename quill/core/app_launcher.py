@@ -85,7 +85,21 @@ def app_name(app_key: str) -> str:
 #: abbreviation expansion, sharing one library with it, so gating it would leave
 #: that feature visibly half-present.
 #: Quill Converter ships on 2026-09-27 (1.0.0), with its own installer and portable zip.
-RELEASED_APPS: frozenset[str] = frozenset({"quill", "radio", "weather", "inkwell", "converter"})
+#: QUILL Transcribe ships on 2026-11-01 (1.0.0), with its own installer and
+#: portable zip (Jeff, 2026-10-16). It is the system-wide half of dictation, as
+#: Inkwell is of abbreviation expansion. Releasing it shows Edit > Dictate Here
+#: (Ctrl+F11) in public Quill Cast and Quill Radio builds (only QUILL Transcribe
+#: answers it, so ``dictate_here_ui`` hid it until now), and lists it on every
+#: QuillVille menu, the tray menus and the companion-install offer. It goes last
+#: in ``QUILLVILLE_APP_ORDER``, so no row anybody has learned changes key.
+RELEASED_APPS: frozenset[str] = frozenset({
+    "quill",
+    "radio",
+    "weather",
+    "inkwell",
+    "converter",
+    "transcribe",
+})
 
 
 def is_dev_build() -> bool:

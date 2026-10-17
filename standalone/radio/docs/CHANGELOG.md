@@ -38,6 +38,9 @@ Testing rebuild: **3.2.0 (build 4)**. The packages have not been published yet.
   Playback item reads **Resume** instead, so to end a paused recording or
   file use Ctrl+Period or the Stop button. The 3.0.3 entry below and the 3.0
   release notes now say this too.
+
+- **QUILL Transcribe on the QuillVille menu, the tray, and behind Dictate Here.** QUILL Transcribe is released on 1 November 2026, and Quill Radio offers it everywhere it offers the family. The **QuillVille** menu has **Open QUILL Transcribe**: Alt+Q, then T, or Ctrl+Alt+Shift+F10. QUILL, Quill Weather and Quill Converter keep F7, F8 and F9, so no key you know has moved. The tray menu lists it after QUILL and Quill Weather. **Edit > Dictate Here** (Ctrl+F11) now shows in every copy of Quill Radio, not only developer builds. If QUILL Transcribe is not on your computer, the QuillVille menu offers to download it once it is published, and nothing is downloaded until you say yes. User guide: "QuillVille menu (Alt+Q)" and "Dictating a search".
+
 - **Edit > Dictate Here (Ctrl+F11).** In Search Stations or any other text box, press Ctrl+F11 and QUILL Transcribe dictates into it, starting in the tray if it is not running. Quill Radio has no speech engine of its own; your words and dictation commands are QUILL Transcribe's. Shown when QUILL Transcribe is part of your copy of the family, which is every public build from QUILL Transcribe's release on 1 November 2026 (dict.md D-16).
 
 - **Station Details: find a station by its call sign, frequency or slogan.**

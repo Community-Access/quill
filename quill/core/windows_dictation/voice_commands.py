@@ -193,7 +193,15 @@ class VoiceCommandsMixin:
             use = getattr(self._feedback, "use_context", None)
             self._say(str(use(parsed.argument)) if callable(use) else "Not available here.")
             return True
-        del preferences
+        if command in _READS:
+            # D-18: reading writes nothing, so it comes before the writing
+            # check (a read-only document can be read); in another program
+            # nothing can be read, so it is refused there.
+            if getattr(self._document, "external", False):
+                self._say(external_refusal())
+            else:
+                self._read_unit(_READS[command], preferences)
+            return True
         return False
 
     def _in_mode(self, pieces: tuple[Piece, ...]) -> tuple[Piece, ...]:
@@ -254,8 +262,6 @@ class VoiceCommandsMixin:
             self._paragraph_edge(command is Command.PARAGRAPH_START)
         elif command is Command.SPELL_THAT:
             self._spell_that()
-        elif command in _READS:
-            self._read_unit(_READS[command], preferences)
         elif command in _LIBRARY:
             self._library_command(parsed, preferences)
         else:

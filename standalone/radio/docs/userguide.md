@@ -1069,9 +1069,22 @@ with nothing held down:
 - **Open QUILL**: Alt+Q, then Q (or Ctrl+Alt+Shift+F7)
 - **Open Quill Weather**: Alt+Q, then W (or Ctrl+Alt+Shift+F8)
 - **Open Quill Converter**: Alt+Q, then V (or Ctrl+Alt+Shift+F9)
+- **Open QUILL Transcribe**: Alt+Q, then T (or Ctrl+Alt+Shift+F10). QUILL
+  Transcribe types what you say into any program, and it is released on
+  1 November 2026.
+
+QUILL Transcribe is also the app behind **Edit > Dictate Here** (Ctrl+F11),
+which shows in every copy of Quill Radio from its release: see "Dictating a
+search" under Station > Search Stations. For example, press Ctrl+Alt+Shift+F10
+to open QUILL Transcribe and choose a speech model the first time; after that,
+Ctrl+F11 in Search Stations starts it for you. If it is not on your computer
+yet, Quill Radio offers to download it, and nothing is downloaded until you say
+yes. Until 1 November 2026 there is nothing to download yet, so Quill Radio
+says it could not fetch it and offers to open the download page instead.
 
 Each app will keep its letter as more of the family arrives: C for Quill Cast,
-A for Audio Studio, I for Quill Inkwell.
+A for Audio Studio. Quill Inkwell is not on Quill Radio's menu; open it from
+QUILL or from the Start menu.
 
 The long keys are only where things start. Each row is a command called
 **QuillVille: Open** and the app's name, and you can give it any key you like
@@ -2511,6 +2524,11 @@ box you are in.
 Ctrl+F11 works in any text box in Quill Radio, in the main window and in its
 other windows. Your own words and the dictation commands work as everywhere
 else. If Quill Inkwell is dictating, you are told so and nothing starts.
+Dictate Here is on the Edit menu of every copy of Quill Radio from QUILL
+Transcribe's release on 1 November 2026. QUILL Transcribe is a separate, free
+download; if it is not installed, Ctrl+F11 says "Dictate Here needs QUILL
+Transcribe, which is not installed with this copy." and the QuillVille menu
+(Alt+Q, then T) offers to get it.
 
 #### Search by name, tag and country, step by step
 
