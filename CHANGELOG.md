@@ -2,6 +2,67 @@
 
 ## 1.0.0
 
+### Editor and media completion checks: the Read-Only Guard, extension-driven Save As, named-text lists (items 37, 41, 45, 2026-10-16)
+
+Measured before changing anything; method and numbers in
+`docs/design/2026-10-16-editor-completion-measurements.md`, reproducible with
+`scripts/bench_editor_completion.py`.
+
+- **Read-Only Guard (item 37).** The guard had no key, keyed its memory on the
+  raw path string (so a file opened from File Explorer under another case missed
+  the guard set from Open Recent), and swallowed a failed write of its list. Now:
+  `power.toggle_read_only_guard` on **Ctrl+Alt+Backspace** in both editors (rule
+  2, free in both); the list lives in the new wx-free
+  `quill/core/read_only_guards.py` (`ReadOnlyGuards`, keys through
+  `DocumentMemory.key_for`, old bare-list and raw-spelling files normalised on
+  read); `set()` returns the reason a write failed and `toggle_sentence` says it
+  ("...could not be remembered for next time (reason)"). The QUILL half moved
+  from `main_frame_power_tools.py` to `main_frame_read_only.py`
+  (`ReadOnlyGuardMixin`). `_replace_document_text` and
+  `_apply_insertion_result` raise `DocumentReadOnlyError`
+  (`QUILL-CORE-READONLY-REFUSED`) on a guarded document and the command registry
+  (`CommandRegistry.set_read_only_refusal`, every entry point) turns it into "Document is read-only", so a command stops before it claims
+  success. Word tools refuse a Replace through `refuse_if_guarded`.
+- **Faster reading of a guarded long document.** `BrowseModeMixin._browse_text`
+  answers browse navigation from the document's own string once it has checked
+  it equals the control's text, and the cache recognises it by identity: one
+  heading step on an 8 MB book went from 46.3 ms (a `GetValue` marshal per key)
+  to 0.04 ms. Open time is unchanged by the guard (`SetValue` 394 ms dominates;
+  `SetEditable(False)` is 0.02 ms).
+- **QUILL Lite gains the guard** (`quill/apps/lite_window_read_only.py`,
+  Tools > Read-Only Guard, the same key, parity row to
+  `power.toggle_read_only_guard`), remembered in QUILL Lite's data folder
+  (`paths.data_file`, which reads without creating the folder). Text-changing
+  commands are refused by name (`quill/core/lite/read_only.py`
+  `TEXT_CHANGING_HANDLERS`) in the menu and status-cell dispatch; the shared
+  `_host_read_only` keeps inline notes beside the file.
+- **Save As (item 41).** QUILL already honoured the typed extension; it is now
+  pinned behaviourally (real `.docx` read back by python-docx, `.DOCX`, `.txt`,
+  `.md`, `.html`, `.rtf`, mismatched filter, no extension, cancel, `.xlsx`
+  refused, `.pdf` routed to Export). QUILL Lite wrote plain text under a `.docx`
+  name; it now refuses Word names (`filetypes.WORD_SUFFIXES`,
+  `refuse_word_target`) before the flatten question, on Save, Save As and the
+  collector's quiet save.
+- **Opening .doc/.docx/PDF.** Cold opens are dominated by importing MarkItDown
+  (11-14 s from source: pandas, pdfminer, openpyxl, python-pptx, Magika). The
+  bridge (`quill/io/markitdown_bridge.py`) no longer imports it for `.doc`/`.ppt`,
+  which it cannot convert (`.doc` without LibreOffice: 11.6 s to the answer, now
+  the time to look for LibreOffice), and turns MarkItDown's own exceptions into
+  `ValueError` so callers fall back instead of surfacing a raw library message.
+  The remaining `.docx` cold cost lives in `quill/io/structured.py` (another
+  agent's file today); the design note records the measured order to change.
+- **Named-text lists (item 45).** `apply_listbox_activation` gained type-ahead
+  through the shared `quill.core.type_ahead.TypeAheadBuffer` (new `typing()`,
+  `reset()`, and a multi-character name that stays on its row): Space while a
+  name is being typed is part of the name instead of activating the row. The
+  searchable picker moved to `quill/ui/searchable_picker.py`, shows at most 200
+  rows with an honest count, and gathers keystrokes (150 ms) for libraries
+  larger than that; filling 10,000 rows took 2.2-3 s. The Abbreviations manager
+  (QUILL, QUILL Lite, Inkwell) uses the new `VirtualReportList` (3.7 s per
+  refill for 10,000 rows before) and keeps its selection by identity. Snippet,
+  abbreviation and Copy Tray search match every word in any order
+  (`quill/core/list_search.py`).
+
 ### Dictation: replace, change that, delete by paragraph, a second opinion, kept revisions, and correcting in other programs (D-19, D-10, 2026-10-16)
 
 dict.md D-19 and D-10; design record section 27. Shared code, so QUILL, QUILL

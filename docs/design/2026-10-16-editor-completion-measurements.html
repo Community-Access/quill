@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Editor completion checks: measured before, measured
+after</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="editor-completion-checks-measured-before-measured-after">Editor
+completion checks: measured before, measured after</h1>
+<p>Status: built 2026-10-16 on the overnight branch, from Jeff’s todo
+“Editor and media completion checks” items 37 (persistent read-only
+reading), 41 (faster opening and truthful extension-driven Save As) and
+45 (named-text startup and multiword list search). The user-facing
+descriptions are in the QUILL user guide (Chapter 3, “The name you type
+decides”; Chapter 8, “Reading without changing anything”; Chapter 4,
+“Finding a snippet by name”), the QUILL Lite guide (the same three
+topics) and the Inkwell guide (section 4). Manual screen-reader checks
+are listed, not yet checked, in
+<code>docs/qa/screen-reader-checks-2026-10.md</code>.</p>
+<p>The rule for this work was: measure first, change only what the
+measurement blames, and prove each gap with a test before closing
+it.</p>
+<h2 id="how-the-numbers-were-taken">How the numbers were taken</h2>
+<p>Every number below comes from
+<code>scripts/bench_editor_completion.py</code>, run from a source
+checkout on the development machine (Intel Core Ultra class, 16 logical
+processors, Windows 11, Python 3.14.8, wxPython 4.3), with the worktree
+on <code>PYTHONPATH</code>:</p>
+<pre class="text"><code>python scripts/bench_editor_completion.py reading --runs 3 --megabytes 8
+python scripts/bench_editor_completion.py open --runs 3
+python scripts/bench_editor_completion.py lists --runs 3 --entries 10000</code></pre>
+<ul>
+<li><strong>Cold</strong> is a fresh Python process: importing QUILL and
+the reader’s libraries, then one read. That is what the first open after
+starting the app pays. <strong>Warm</strong> is a second read in the
+same process: every later open. Figures are medians of three.</li>
+<li>The reading and list sections build QUILL’s real controls (the Rich
+Edit surface, a <code>wx.ListBox</code>, a report
+<code>wx.ListCtrl</code>, the new virtual list) in memory and never show
+them. Nothing is typed or clicked, so the script is safe beside a
+running screen reader.</li>
+<li>The fixtures are generated: an 8 MB Markdown book with 2,500
+headings; a 1,500-paragraph <code>.docx</code> written with python-docx;
+a 60-page text PDF written with PyMuPDF; and an OLE2 header named
+<code>.doc</code>, because no Word 97 file can be written from Python
+without Word or LibreOffice. The <code>.doc</code> figure is therefore
+the time to the <em>answer</em> (converted, or a sentence naming what is
+missing), which is what a person waits through.</li>
+</ul>
+<p><strong>Installed and portable builds are for Jeff to
+measure.</strong> They import from a frozen bundle, so their cold
+numbers differ. The method by hand: start the app, open the same kind of
+file with File &gt; Open, and time from Enter to the first line being
+read (a stopwatch is fine; the differences here are seconds). Do it
+twice, the second time without restarting, for cold and warm. Note which
+optional parts are installed (Download Optional Components,
+LibreOffice).</p>
+<h2 id="item-37-a-long-document-guarded">Item 37: a long document,
+guarded</h2>
+<table>
+<thead>
+<tr>
+<th>Measure (8 MB, 2,500 headings)</th>
+<th style="text-align: right;">Before</th>
+<th style="text-align: right;">After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Read the file from disk</td>
+<td style="text-align: right;">11.0 ms</td>
+<td style="text-align: right;">11.0 ms</td>
+</tr>
+<tr>
+<td>Put it in the editor (<code>SetValue</code>)</td>
+<td style="text-align: right;">394 ms</td>
+<td style="text-align: right;">394 ms</td>
+</tr>
+<tr>
+<td><code>SetEditable(False)</code> (the guard itself)</td>
+<td style="text-align: right;">0.02 ms</td>
+<td style="text-align: right;">0.02 ms</td>
+</tr>
+<tr>
+<td>Copy the text out of the editor (<code>GetValue</code>)</td>
+<td style="text-align: right;">46.1 ms</td>
+<td style="text-align: right;">46.1 ms</td>
+</tr>
+<tr>
+<td>Compare two copies of the text</td>
+<td style="text-align: right;">0.66 ms</td>
+<td style="text-align: right;">0.66 ms</td>
+</tr>
+<tr>
+<td>One browse-navigation step, guarded</td>
+<td style="text-align: right;">46.3 ms</td>
+<td style="text-align: right;">0.04 ms</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What this says.</strong> Making the control read-only proves
+nothing about speed, and the table shows why: the guard costs 0.02 ms
+and changes no other figure. Opening is dominated by
+<code>SetValue</code>, which the guard cannot touch. The one cost the
+guard <em>could</em> remove was in navigation: every browse key (next
+heading, paragraph, link) called <code>GetValue</code> to check the
+cached structure was still current, which on 8 MB is the whole 46 ms of
+each keypress. A guarded document cannot change, so
+<code>BrowseModeMixin._browse_text</code> checks once that
+<code>document.text</code> equals the control’s text and then answers
+with that string, which the cache recognises by identity. The check is
+dropped whenever the guard is toggled or re-applied, and a mismatch
+falls back to the control. Unguarded documents are unchanged.</p>
+<p><strong>Gaps the tests proved, and closed.</strong></p>
+<ol type="1">
+<li>No keyboard toggle. <code>power.toggle_read_only_guard</code> was a
+menu row with no key. It is now <strong>Ctrl+Alt+Backspace</strong> in
+both editors (rule 2; free in both; every Ctrl+Alt+Shift letter is a
+family show/hide or taken; Ctrl+Alt with a sign is AltGr typing on
+European layouts; no default JAWS, NVDA or Narrator command uses it;
+<code>menu_lint._CTRL_ALT_DOCUMENTED</code> records why).</li>
+<li>The memory missed a File Explorer open. Keys were the raw path
+string, so <code>D:\Books\Long Book.md</code> from Open Recent and
+<code>d:\books\long book.md</code> from the shell were two files.
+<code>quill/core/read_only_guards.py</code> keys through
+<code>DocumentMemory.key_for</code>, the normalisation bookmarks,
+positions and notes already used, and normalises older lists as it reads
+them.</li>
+<li>A failed save was swallowed (<code>except OSError: pass</code>)
+while the toggle said “Document is read-only” as if it would be
+remembered. <code>ReadOnlyGuards.set</code> returns the reason and the
+sentence says it.</li>
+<li>Commands bypassed the guard. A read-only control still obeys
+programmatic writes, so Insert Snippet, the line tools and Copy Tray
+pastes changed a guarded document. QUILL’s two shared write paths raise
+<code>DocumentReadOnlyError</code>, and
+<code>CommandRegistry.set_read_only_refusal</code> turns it into
+“Document is read-only” at every entry point (keys, palette, hotkeys,
+voice) before the command can announce success. QUILL Lite refuses
+<code>TEXT_CHANGING_HANDLERS</code> by name at the menu, status-cell and
+palette dispatch. Word-tool Replace checks at the moment it would
+write.</li>
+<li>QUILL Lite had no guard at all; it now has QUILL’s, through the
+shared module. Bookmarks and inline notes stay available in both (a note
+goes beside the file while the guard is on).</li>
+</ol>
+<h2 id="item-41-opening-doc-docx-and-pdf">Item 41: opening .doc, .docx
+and PDF</h2>
+<table>
+<thead>
+<tr>
+<th>Format (fixture)</th>
+<th style="text-align: right;">Cold import</th>
+<th style="text-align: right;">Cold read, before</th>
+<th style="text-align: right;">Warm read, before</th>
+<th style="text-align: right;">Cold read, after</th>
+<th style="text-align: right;">Warm read, after</th>
+<th>Engine</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.docx</code> (40 KB, 1,500 paragraphs)</td>
+<td style="text-align: right;">247 ms</td>
+<td style="text-align: right;">11,979 ms</td>
+<td style="text-align: right;">857 ms</td>
+<td style="text-align: right;">AFTER_DOCX_COLD</td>
+<td style="text-align: right;">AFTER_DOCX_WARM</td>
+<td>MarkItDown</td>
+</tr>
+<tr>
+<td>PDF (33 KB, 60 pages)</td>
+<td style="text-align: right;">280 ms</td>
+<td style="text-align: right;">4,474 ms</td>
+<td style="text-align: right;">3,191 ms</td>
+<td style="text-align: right;">AFTER_PDF_COLD</td>
+<td style="text-align: right;">AFTER_PDF_WARM</td>
+<td>pdfplumber</td>
+</tr>
+<tr>
+<td><code>.doc</code> (OLE2 header; no LibreOffice)</td>
+<td style="text-align: right;">292 ms</td>
+<td style="text-align: right;">11,639 ms, then a raw
+<code>UnsupportedFormatException</code></td>
+<td style="text-align: right;">138 ms</td>
+<td style="text-align: right;">AFTER_DOC_COLD</td>
+<td style="text-align: right;">AFTER_DOC_WARM</td>
+<td>the missing-LibreOffice sentence</td>
+</tr>
+</tbody>
+</table>
+<p>Dependencies on this machine: markitdown, magika, onnxruntime,
+python-docx, PyMuPDF and pypdf present; LibreOffice missing.</p>
+<p><strong>Slow conversion or a missing dependency?</strong> Both, and
+they are now told apart.</p>
+<ul>
+<li><strong><code>.docx</code> is slow on a cold start, not missing
+anything.</strong>
+<code>python -X importtime -c "import markitdown"</code> puts 11 to 14
+seconds in the import alone: MarkItDown imports pandas (3.2 s), pdfminer
+(2.5 s), openpyxl (1.1 s), python-pptx (0.7 s) and the Magika model (1.2
+s) before converting anything. The conversion itself is the 0.86 s warm
+figure. The order that decides MarkItDown-first for <code>.docx</code>
+is in <code>quill/io/structured.py</code>, which another agent was
+changing during this work and which this change was told not to touch.
+<strong>Recommended next step there:</strong> read <code>.docx</code>
+with python-docx first (already a base dependency and already the
+fallback, about one second to import) and keep MarkItDown for the
+formats only it reads, or prewarm it on a background thread after
+startup when Office files are in Recent Documents.</li>
+<li><strong><code>.doc</code> was missing a dependency, and paid the
+slow cost to find out.</strong> MarkItDown has no <code>.doc</code>
+converter, so the open spent the whole import to be told so, then raised
+MarkItDown’s own exception, which none of the callers’ fallbacks caught:
+the person heard a library message instead of the sentence naming
+LibreOffice. <code>quill/io/markitdown_bridge.py</code> now answers
+<code>.doc</code> and <code>.ppt</code> without importing MarkItDown,
+and turns MarkItDown’s exception family into <code>ValueError</code> so
+every caller falls through to LibreOffice or the missing-tool
+sentence.</li>
+<li><strong>PDF is conversion time, per page.</strong> pdfplumber spends
+about 50 ms a page warm; the reader is <code>quill/io/pdf.py</code>,
+also another agent’s file today. Progress and Cancel are unchanged:
+QUILL and QUILL Lite already read in the background with a progress
+message.</li>
+<li>Office-in-shipped-builds (whether the installed runtime carries
+MarkItDown, Magika and onnxruntime) is Jeff’s open decision; the runtime
+spec is unchanged.</li>
+</ul>
+<p><strong>Save As.</strong> QUILL’s resolver already let the typed
+extension win; the new behavioural test drives <code>save_file_as</code>
+with the real writers and reads the results back in their real formats,
+so that is now proved rather than assumed. QUILL Lite was the gap: it
+wrote plain text under a <code>.docx</code> name. It now refuses Word
+names on Save As (before its rich-to-plain question), Save and the
+collector’s quiet save, naming Rich Text as what Word opens. The PDF
+original-protection and export-only guard is unchanged in both.</p>
+<h2 id="item-45-named-text-lists">Item 45: named-text lists</h2>
+<table>
+<thead>
+<tr>
+<th>Measure (10,000 snippets, 4.5 MB)</th>
+<th style="text-align: right;">Before</th>
+<th style="text-align: right;">After</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Import, cold</td>
+<td style="text-align: right;">167 ms</td>
+<td style="text-align: right;">AFTER_IMPORT</td>
+</tr>
+<tr>
+<td>Load the library, cold</td>
+<td style="text-align: right;">25.9 ms</td>
+<td style="text-align: right;">AFTER_LOAD_COLD</td>
+</tr>
+<tr>
+<td>Load the library, warm</td>
+<td style="text-align: right;">24.4 ms</td>
+<td style="text-align: right;">AFTER_LOAD_WARM</td>
+</tr>
+<tr>
+<td>Filter one keystroke (median over “meeting notes”)</td>
+<td style="text-align: right;">6.5 ms</td>
+<td style="text-align: right;">AFTER_FILTER</td>
+</tr>
+<tr>
+<td>Matches for “notes meeting”</td>
+<td style="text-align: right;">157 (one order only)</td>
+<td style="text-align: right;">AFTER_MATCHES (either order)</td>
+</tr>
+<tr>
+<td>Fill the picker’s list with all 10,000</td>
+<td style="text-align: right;">3,063 ms</td>
+<td style="text-align: right;">not done any more</td>
+</tr>
+<tr>
+<td>Fill the picker’s list with what it now shows</td>
+<td style="text-align: right;">n/a</td>
+<td style="text-align: right;">AFTER_PICKER</td>
+</tr>
+<tr>
+<td>Fill the Abbreviations report list, 10,000 rows</td>
+<td style="text-align: right;">3,755 ms</td>
+<td style="text-align: right;">AFTER_VIRTUAL (virtual)</td>
+</tr>
+<tr>
+<td>Same, with Freeze/Thaw (considered, not used)</td>
+<td style="text-align: right;">2,377 ms</td>
+<td style="text-align: right;"></td>
+</tr>
+<tr>
+<td>Load 10,000 abbreviations</td>
+<td style="text-align: right;">32.8 ms</td>
+<td style="text-align: right;">AFTER_ABBR</td>
+</tr>
+</tbody>
+</table>
+<p><strong>What this says.</strong> Loading and filtering were never the
+problem: 25 ms and 6.5 ms for ten thousand entries. Putting rows into a
+native list was, at a quarter to a third of a millisecond a row, paid on
+opening and again after every key that left thousands of matches.
+So:</p>
+<ul>
+<li>The searchable picker (<code>quill/ui/searchable_picker.py</code>,
+moved out of <code>main_frame.py</code>) shows at most 200 rows, says
+how many matched in its status line <em>and</em> in the list’s
+accessible name, and for libraries larger than that refills 150 ms after
+the last key; Enter and the arrows flush a pending refill first, so they
+never act on a stale list. Small lists behave exactly as before.</li>
+<li>The Abbreviations manager, shared by QUILL, QUILL Lite and Inkwell,
+became a virtual list (<code>quill/ui/virtual_report_list.py</code>): a
+refill is a row count and a repaint. Windows’ own type-ahead keeps
+working: the list view asks for row text through
+<code>LVN_ODFINDITEM</code>, which wx answers (checked in process with
+<code>LVM_FINDITEMW</code>: “meeting n” found its row). Its selection is
+now kept by identity when the search changes.</li>
+<li>Multiword search (<code>quill/core/list_search.py</code>) doubled
+the filter cost to 12.8 ms a key at 10,000 entries, well under a frame,
+in exchange for finding “Notes from the meeting” from “meeting
+notes”.</li>
+</ul>
+<p><strong>The Space gap.</strong>
+<code>apply_listbox_activation</code>, used by more than a hundred
+lists, opened the selected row on Space. Typing “meeting notes” in a
+list reached “Meeting…” on the M and then <em>opened</em> it at the
+space. The glue now feeds printable keys to the shared
+<code>TypeAheadBuffer</code> (which had no caller until now); while a
+name is being typed (within 1.2 s of the last key) Space is part of the
+name, and a longer name stays on the row it reached instead of hopping
+to the next match. Enter and Escape keep their meanings, and Space after
+a pause opens the row as before. “No match for X” is said through the
+shared announcer when nothing starts with what was typed.</p>
+<h2 id="what-is-not-done">What is not done</h2>
+<ul>
+<li>The <code>.docx</code> cold-start cost lives in
+<code>quill/io/structured.py</code>; the measured recommendation is
+above, for after the other agent’s work lands.</li>
+<li>PDF per-page cost lives in <code>quill/io/pdf.py</code>,
+likewise.</li>
+<li>Installed and portable build timings, by the method above.</li>
+<li>Every manual screen-reader check in
+<code>docs/qa/screen-reader-checks-2026-10.md</code>.</li>
+</ul>
+</main>
+</body>
+</html>

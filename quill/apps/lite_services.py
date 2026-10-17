@@ -165,7 +165,8 @@ class LiteServicesMixin:
             registry.try_register(
                 f"lite.{handler}",
                 f"{plain_label(menu)}: {plain_label(label)}",
-                (lambda h=handler: getattr(frame, h)()),
+                # Through the Read-Only Guard, as the menus and keys are.
+                (lambda h=handler: _run_guarded(frame, h)),
                 keybinding=key,
             )
         return registry
@@ -215,3 +216,12 @@ class LiteServicesMixin:
                 frame.rebuild_menus()
             except RuntimeError:
                 pass
+
+
+def _run_guarded(frame: Any, handler: str) -> None:
+    """Run *handler* on *frame*, unless its Read-Only Guard refuses it."""
+    run = getattr(frame, "run_unless_read_only", None)
+    if callable(run):
+        run(handler)
+    else:
+        getattr(frame, handler)()

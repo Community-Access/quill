@@ -51,17 +51,18 @@ from quill.core.line_ops import (
     first_non_blank_position,
     last_non_blank_position,
 )
-from quill.core.paths import app_data_dir
 from quill.core.regex_ops import RegexError, count_matches, extract_matches
 from quill.core.run_target import classify_target, is_dangerous_executable, target_at_cursor
 from quill.core.set_ops import format_lines, lines_common_to_both, lines_in_first_not_second
-from quill.core.storage import read_json, write_json_atomic
 from quill.ui.main_frame_clipboard_collector import ClipboardCollectorMixin
 from quill.ui.main_frame_line_break import LineBreakMixin
+from quill.ui.main_frame_read_only import ReadOnlyGuardMixin
 from quill.ui.main_frame_special_character import SpecialCharacterMixin
 
 
-class PowerToolsActionsMixin(ClipboardCollectorMixin, SpecialCharacterMixin, LineBreakMixin):
+class PowerToolsActionsMixin(
+    ClipboardCollectorMixin, SpecialCharacterMixin, LineBreakMixin, ReadOnlyGuardMixin
+):
     """Editor power-tool conveniences mixed into :class:`MainFrame`."""
 
     # ------------------------------------------------------------------ shared
@@ -372,74 +373,6 @@ class PowerToolsActionsMixin(ClipboardCollectorMixin, SpecialCharacterMixin, Lin
             except UnicodeDecodeError:
                 continue
         return raw.decode("latin-1")
-
-    # -------------------------------------------------- EDS-8 read-only guard
-    def _read_only_store_path(self) -> Path:
-        return app_data_dir() / "read-only-guards.json"
-
-    def _read_only_paths(self) -> set[str]:
-        cached = getattr(self, "_power_tools_read_only_paths", None)
-        if cached is None:
-            stored = read_json(self._read_only_store_path(), [])
-            # Versioned envelope {"schema_version", "paths": [...]} or legacy list.
-            items = stored.get("paths", []) if isinstance(stored, dict) else stored
-            cached = {str(item) for item in items} if isinstance(items, list) else set()
-            self._power_tools_read_only_paths = cached
-        return cached
-
-    def _document_is_read_only(self) -> bool:
-        flag = self.document.source_metadata.get("read_only_guard")
-        if flag is not None:
-            return bool(flag)
-        if self.document.path is not None:
-            if str(self.document.path) in self._read_only_paths():
-                return True
-            # The file itself, not just the guard somebody switched on: a file
-            # from a read-only share could be typed into for twenty minutes
-            # and refuse at Ctrl+S, which is the worst moment to find out
-            # (bad.md P2.12).
-            from quill.core.file_access import is_read_only
-
-            return is_read_only(self.document.path)
-        return False
-
-    def announce_read_only_at_open(self) -> bool:
-        """Say it once, at open, when the file cannot be saved back.
-
-        True when it said something. Named rather than inlined so the open path
-        reads as what it is, and so the sentence has one home in each editor.
-        """
-        from quill.core.file_access import READ_ONLY_NOTICE, is_read_only
-
-        if not is_read_only(getattr(self.document, "path", None)):
-            return False
-        self._set_status(READ_ONLY_NOTICE)
-        return True
-
-    def _refresh_read_only_state(self) -> None:
-        """Re-apply the persisted read-only guard to the active editor."""
-        read_only = self._document_is_read_only()
-        self.document.source_metadata["read_only_guard"] = read_only
-        getattr(self.editor, "SetEditable", lambda _v: None)(not read_only)
-
-    def toggle_read_only_guard(self) -> None:
-        read_only = not self._document_is_read_only()
-        self.document.source_metadata["read_only_guard"] = read_only
-        self.editor.SetEditable(not read_only)
-        if self.document.path is not None:
-            paths = self._read_only_paths()
-            if read_only:
-                paths.add(str(self.document.path))
-            else:
-                paths.discard(str(self.document.path))
-            try:
-                write_json_atomic(
-                    self._read_only_store_path(),
-                    {"schema_version": 1, "paths": sorted(paths)},
-                )
-            except OSError:
-                pass
-        self._announce("Document is read-only" if read_only else "Document is editable")
 
     # ------------------------------------------------ EDS-9 delete to bounds
     def delete_to_line_start(self) -> None:

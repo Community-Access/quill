@@ -230,6 +230,7 @@
   ["QUILL Lite", "core/lite/commands.py Privacy Agreement...", "Ctrl+Alt+Shift+K"],
   ["QUILL Lite", "core/lite/commands.py Promote Heading", "Alt+Shift+Left"],
   ["QUILL Lite", "core/lite/commands.py Quote Lines", "Ctrl+Shift+Q"],
+  ["QUILL Lite", "core/lite/commands.py Read-Only Guard", "Ctrl+Alt+Backspace"],
   ["QUILL Lite", "core/lite/commands.py Recent Clips...", "Ctrl+Alt+Shift+M"],
   ["QUILL Lite", "core/lite/commands.py Recent Documents...", "Alt+Shift+0"],
   ["QUILL Lite", "core/lite/commands.py Redo", "Ctrl+Y"],

@@ -5,6 +5,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 from quill.core.features import feature_for_command
+from quill.core.read_only_guards import DocumentReadOnlyError
 
 CommandHandler = Callable[[], None]
 
@@ -48,6 +49,10 @@ class CommandRegistry:
         #: so surfaces like the palette can *display and speak the reason*
         #: before the user ever tries to run the command.
         self._availability_probe: Callable[[str], str] | None = None
+        #: Optional answer to a command the Read-Only Guard stopped part-way
+        #: (``DocumentReadOnlyError``), so every entry point -- keys, palette,
+        #: hotkeys, voice -- says one sentence instead of raising (2026-10-16).
+        self._on_read_only: Callable[[], None] | None = None
 
     def _require_owner_thread(self) -> None:
         if threading.current_thread() is not self._owner_thread:
@@ -168,6 +173,11 @@ class CommandRegistry:
         self._require_owner_thread()
         self._run_gate = gate
 
+    def set_read_only_refusal(self, answer: Callable[[], None] | None) -> None:
+        """Install (or clear) what a command refused by the Read-Only Guard does."""
+        self._require_owner_thread()
+        self._on_read_only = answer
+
     def set_availability_probe(self, probe: Callable[[str], str] | None) -> None:
         """Install (or clear) the side-effect-free unavailability-reason probe."""
         self._require_owner_thread()
@@ -205,7 +215,13 @@ class CommandRegistry:
         for _ in range(count):
             if self._on_run is not None:
                 self._on_run(command_id)
-            command.handler()
+            try:
+                command.handler()
+            except DocumentReadOnlyError:
+                if self._on_read_only is None:
+                    raise
+                self._on_read_only()
+                return
 
     def get(self, command_id: str) -> Command | None:
         self._require_owner_thread()

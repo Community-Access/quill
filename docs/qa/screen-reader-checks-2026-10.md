@@ -1154,3 +1154,73 @@ Check a box once all six held, and write the reader's version beside it:
 - [ ] All six with NVDA.
 - [ ] All six with JAWS.
 - [ ] All six with Narrator.
+
+## Reading guarded documents, Word names in Save As, and typing names in lists (2026-10-16)
+
+Items 37, 41 and 45 of the editor and media completion checks. The code and
+its automated tests are done; none of the checks below has been tried with a
+screen reader yet.
+
+### Read-Only Guard (QUILL and QUILL Lite)
+
+1. **Toggle.** Open a saved document, press Ctrl+Alt+Backspace: you hear
+   "Document is read-only" once, and nothing else. Type a letter: nothing is
+   typed and the reader says nothing odd. Press it again: "Document is
+   editable".
+2. **A refused command.** With the guard on, press Ctrl+V (QUILL Lite) or
+   insert a snippet (QUILL): you hear "Document is read-only" once and no
+   success sentence follows.
+3. **Remembered.** Turn it on, close the app, double-click the same file in
+   File Explorer: it opens locked (type a letter to check), with no extra
+   announcement beyond the usual open.
+4. **Reading still works.** With the guard on, use Find, Go To, the next
+   heading key, set a bookmark (QUILL Lite Ctrl+Shift+B, then F2) and add an
+   inline note (Alt+Shift+I): each works and says what it normally says. The
+   note is offered only as a note kept beside the file.
+5. **QUILL Lite menu.** Tools > Read-Only Guard reads as a checked or
+   unchecked item with Ctrl+Alt+Backspace beside it.
+6. **A long book.** Open a very long Markdown book, turn the guard on, and move
+   by heading in browse mode: each heading is read promptly.
+
+- [ ] All six with NVDA.
+- [ ] All six with JAWS.
+- [ ] All six with Narrator.
+
+### Save As by typed name
+
+1. **QUILL.** In an untitled document, Save As `minutes.docx`: you hear the
+   "Saved as minutes.docx, Word format" sentence; open the file in Word and
+   move by heading.
+2. **QUILL Lite.** Save As `minutes.docx`: one message box saying QUILL Lite
+   cannot save Word documents, naming Rich Text; Enter closes it and focus
+   returns to the document. Nothing is written.
+3. **QUILL Lite, rich document.** In a rich text window, Save As
+   `minutes.docx`: the same message, and no "removes all formatting" question
+   first.
+
+- [ ] All three with NVDA.
+- [ ] All three with JAWS.
+- [ ] All three with Narrator.
+
+### Typing a name in a list
+
+1. **QUILL Lite Snippets** (Ctrl+Alt+Shift+Home) with two snippets whose names
+   start the same ("meeting agenda", "meeting notes"): type `meeting notes` at
+   an ordinary pace. The reader reads the rows as the selection moves, the
+   space does not insert anything, and the list ends on "meeting notes".
+   Enter inserts it.
+2. **A pause.** Type `mee`, wait two seconds, press Space: the selected row
+   opens, as before.
+3. **No match.** Type `zzz`: you hear "No match for z" (or the letters typed)
+   once, and the selection stays.
+4. **QUILL Insert Snippet** with a large library (a few thousand snippets):
+   the window opens without a long wait, the line above the list says how many
+   matched and that only the first 200 are shown, and typing narrows it.
+5. **Manage Abbreviations** (QUILL Lite Ctrl+Alt+A, QUILL Ctrl+Shift+Grave then
+   Shift+A, Inkwell Ctrl+M) with a large list: rows read as "name, N of total", typing a few letters in the
+   list moves to the abbreviation, and searching keeps the selected row when
+   it still matches.
+
+- [ ] All five with NVDA.
+- [ ] All five with JAWS.
+- [ ] All five with Narrator.
