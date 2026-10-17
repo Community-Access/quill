@@ -41,6 +41,7 @@ from quill.core import thesaurus as thesaurus_engine
 from quill.core import word_lookup
 from quill.core.ai import word_tools
 from quill.core.ai.word_tools import WordTool
+from quill.core.read_only_guards import refuse_if_guarded
 from quill.core.word_lookup import WordSpan
 from quill.ui.atomic_edit import replace_as_one_undo
 
@@ -166,24 +167,26 @@ class WordToolsMixin:
             and current[span.start : span.end] == span.word
         )
 
-    def _replace_word(self, span: WordSpan, replacement: str) -> None:
+    def _replace_word(self, span: WordSpan, replacement: str) -> bool:
         """Write *replacement* over the word as one undoable edit, caret after it.
 
-        The selection is collapsed afterwards: a selected word is destroyed by
-        the next keystroke, and the reader announces a selection on focus
-        return, which is an utterance nobody asked for.
+        The selection is collapsed afterwards: a selected word is destroyed by the next
+        keystroke, and the reader announces a selection on focus return, unasked for.
+        False (and said) when the Read-Only Guard refuses the write.
         """
+        if refuse_if_guarded(self):
+            return False
         control = self._ai_control()  # type: ignore[attr-defined]
         replace_as_one_undo(control, span.start, span.end, replacement)
         control.SetInsertionPoint(span.start + len(replacement))
+        return True
 
     def _insert_at_caret(self, text: str) -> None:
         control = self._ai_control()  # type: ignore[attr-defined]
         start, end = control.GetSelection()
         if end <= start:
             start = end = int(control.GetInsertionPoint())
-        replace_as_one_undo(control, int(start), int(end), text)
-        control.SetInsertionPoint(int(start) + len(text))
+        self._replace_word(WordSpan("", int(start), int(end)), text)
 
     # ------------------------------------------------------------------ #
     # The thesaurus (offline)
@@ -239,8 +242,8 @@ class WordToolsMixin:
             picker.Destroy()
         if not chosen or span is None:
             return
-        self._replace_word(span, chosen)
-        self._announce(f'Replaced "{span.word}" with "{chosen}".')  # type: ignore[attr-defined]
+        if self._replace_word(span, chosen):
+            self._announce(f'Replaced "{span.word}" with "{chosen}".')  # type: ignore[attr-defined]
 
     def cmd_look_up(self) -> None:
         """Alt+F10: the dictionary without AI, for the word you are on or one you type."""
@@ -533,8 +536,8 @@ class WordToolsMixin:
             if not self._word_still_there("", span):
                 self._announce("The word has changed; nothing replaced.")  # type: ignore[attr-defined]
                 return
-            self._replace_word(span, chosen)
-            self._announce(f'Replaced "{span.word}" with "{chosen}".')  # type: ignore[attr-defined]
+            if self._replace_word(span, chosen):
+                self._announce(f'Replaced "{span.word}" with "{chosen}".')  # type: ignore[attr-defined]
 
         popup.Bind(wx.EVT_MENU, replace, item)
 

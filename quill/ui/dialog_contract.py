@@ -106,20 +106,63 @@ def apply_listbox_activation(listbox: object, handler: Callable[[object], None])
     calling *handler* for both. The key event is consumed on activation so the
     dialog's default button does not also fire. *handler* takes the wx event, so an
     existing double-click handler works unchanged.
+
+    Typing a row's text moves to it, and while a name is being typed Space is part
+    of the name rather than an activation (:mod:`quill.core.type_ahead`), so
+    "Meeting notes" reaches that row instead of opening "Meeting agenda" at the
+    space. Enter still activates and Escape still closes, always.
     """
+    import time
+
     import wx
 
+    from quill.core.type_ahead import TypeAheadBuffer
+
     listbox.Bind(wx.EVT_LISTBOX_DCLICK, handler)
+    # Typing a row's name moves to it, spaces and all; Space opens the row only
+    # when no name is being typed (quill/core/type_ahead.py, 2026-10-16).
+    typing = TypeAheadBuffer(open_suppression=0.0)
 
     def _on_key(event: object) -> None:
         code = event.GetKeyCode()
+        if code == wx.WXK_SPACE and typing.typing(time.monotonic()):
+            event.Skip()  # part of the name: EVT_CHAR carries it to _on_char
+            return
         has_selection = listbox.GetSelection() != wx.NOT_FOUND
         if has_selection and code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER, wx.WXK_SPACE):
+            typing.reset()
             handler(event)
             return  # consume so the modal default button does not also activate
         event.Skip()
 
+    def _on_char(event: object) -> None:
+        key = event.GetUnicodeKey()
+        get_strings = getattr(listbox, "GetStrings", None)
+        modified = event.ControlDown() or event.AltDown()
+        if modified or get_strings is None or key in (wx.WXK_NONE, None) or key < 32:
+            event.Skip()
+            return
+        if key == 32 and not typing.typing(time.monotonic()):
+            event.Skip()  # a space that starts nothing is the list's own business
+            return
+        current = listbox.GetSelection()
+        result = typing.press(chr(key), list(get_strings()), current, time.monotonic())
+        found = result.index
+        if result.failed:
+            from quill.platform.sr_announce import announce
+
+            announce(f"No match for {result.query}")
+        elif found >= 0 and found != current:
+            listbox.SetSelection(found)
+            # What a click or an arrow key raises, so a details pane follows.
+            moved = wx.CommandEvent(wx.wxEVT_LISTBOX, listbox.GetId())
+            moved.SetEventObject(listbox)
+            moved.SetInt(found)
+            listbox.GetEventHandler().ProcessEvent(moved)
+        # Consumed either way: the native first-letter jump would fight the name.
+
     listbox.Bind(wx.EVT_KEY_DOWN, _on_key)
+    listbox.Bind(wx.EVT_CHAR, _on_char)
 
 
 def dialog_alive(dialog: object) -> bool:

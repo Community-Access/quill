@@ -578,7 +578,7 @@ class DocumentStatusMixin:
         """
         handler = _CELL_ACTIONS.get(key)
         if handler is not None:
-            getattr(self, handler)()
+            self.run_unless_read_only(handler)
             return
         self._announce(self._cell_reading(key))
 

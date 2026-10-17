@@ -264,6 +264,30 @@ Save As with a <code>.txt</code> name instead. An older
 LibreOffice installed; without it, QUILL Lite tells you how to save the
 file in the newer format. See “Opening Word, Excel and PowerPoint files”
 in the user guide.</p></li>
+<li><p><strong>Read-Only Guard</strong> (2026-10-16). <strong>Tools &gt;
+Read-Only Guard</strong> (<strong>Ctrl+Alt+Backspace</strong>, the same
+key as QUILL) locks a document you are only reading: typing does
+nothing, and commands that would change the text say “Document is
+read-only” instead. Find, Go To, bookmarks and inline notes keep
+working; a note added while it is on is kept beside the file. QUILL Lite
+remembers the lock for that file, however you open it next time, and
+tells you if it could not write that down. A file Windows marks
+read-only opens locked too.</p></li>
+<li><p><strong>Save As never writes text under a Word name</strong>
+(2026-10-16). Typing <code>minutes.docx</code> used to write your plain
+text into a file Word refuses to open. QUILL Lite now says it cannot
+save Word documents, names Rich Text (.rtf), which Word opens, and
+writes nothing. The ending you type decides the format in every other
+case, capitals or not.</p></li>
+<li><p><strong>Typing a name in a list, spaces and all</strong>
+(2026-10-16). In Snippets and the other pick-one lists, typing “meeting
+notes” moves to that row; Space while you type a name is part of the
+name instead of opening the row the first word reached. After a pause
+Space opens the row as before; Enter and Escape are unchanged.</p></li>
+<li><p><strong>A big abbreviation list opens and searches at
+once</strong> (2026-10-16). Manage Abbreviations fills ten thousand rows
+instantly (it took over three seconds, again after every key), keeps
+your place when you search, and finds words in any order.</p></li>
 <li><p><strong>Dictation profiles, and bold and italic by
 voice.</strong> More Dictation Settings has <strong>Dictation profile,
 for the kind of writing</strong> (<strong>Alt+A</strong>): Standard

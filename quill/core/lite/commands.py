@@ -778,12 +778,11 @@ COMMANDS: list[CommandRow] = [
     ("&Navigate|&Bookmarks", "Set Bookmark &8", "Ctrl+Shift+8", "cmd_set_bookmark_8", ""),
     ("&Navigate|&Bookmarks", "Set Bookmark &9", "Ctrl+Shift+9", "cmd_set_bookmark_9", ""),
     # -- Tools --------------------------------------------------------------
-    # What is left once line work has gone to Edit where it belongs: the things
-    # that are genuinely *tools* rather than editing -- the spell checker, case
-    # conversion, indenting, the files-and-formats dialog, abbreviations, and
-    # the two ways to change what QUILL Lite itself is. Tools > Options is where
-    # Windows applications have kept their settings since Word 6, which is why
-    # Preferences and Customize Features are here rather than in View.
+    # What is left once line work has gone to Edit where it belongs: the things that are genuinely
+    # *tools* rather than editing -- the spell checker, case conversion, indenting, the
+    # files-and-formats dialog, abbreviations, and the two ways to change what QUILL Lite itself is.
+    # Tools > Options is where Windows applications have kept their settings since Word 6, which is
+    # why Preferences and Customize Features are here rather than in View.
     ("&Tools", "&Spelling", "", "", "sub"),
     *WORD_ROWS,  # Thesaurus and Say Word Summary (commands_words.py)
     ("&Tools", "&Change Case", "", "", "sub"),
@@ -796,10 +795,11 @@ COMMANDS: list[CommandRow] = [
     ("&Tools", "&Dictation", "", "", "sub"),
     *NOTE_SUBMENU_ROWS,  # Tools > Inline Notes (commands_review.py)
     ("&Tools", "", "", "", "sep"),
-    # Both are shown in the status bar and both used to be read-only: QUILL Lite
-    # wrote back whatever it read, which is the right default and a dead end for
-    # anyone who needs a UTF-8 copy of a Windows-1252 file.
+    # Both are shown in the status bar and both used to be read-only: QUILL Lite wrote back whatever
+    # it read, which is the right default and a dead end for anyone who needs a UTF-8 copy of a
+    # Windows-1252 file.
     ("&Tools", "&File Encoding and Line Endings...", "Ctrl+Alt+E", "cmd_file_format", ""),
+    ("&Tools", "&Read-Only Guard", "Ctrl+Alt+Backspace", "cmd_toggle_read_only", "check"),
     ("&Tools", "", "", "", "sep"),
     # Type a short form and a space, get the long one. QUILL's engine, QUILL's
     # manager dialog, and QUILL Lite's own library unless Preferences says share.

@@ -58,6 +58,9 @@ _ALLOWLIST: frozenset[str] = frozenset({
     # but the control variable name doesn't match the status pattern.
     # quillin_wizard.py uses a positional `announce` param, not _announce.
     "quill/ui/quillin_wizard.py",
+    # The searchable picker's status line changes on every keystroke; the match
+    # count and any cap are carried by the results list's own name instead.
+    "quill/ui/searchable_picker.py",
     # The four AI dialogs below are pre-existing violations that existed before
     # GATE-12 was introduced in the x3 wave. They need announce_cb + _set_status
     # added in a follow-up pass (tracked as part of the a11y backlog).

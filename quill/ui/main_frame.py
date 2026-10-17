@@ -210,6 +210,7 @@ from quill.core.read_aloud import (
     synthesize_with_kokoro,
     synthesize_with_piper,
 )
+from quill.core.read_only_guards import READ_ONLY_REFUSAL
 from quill.core.recent import (
     load_recent_files,
     prune_missing_recent_files,
@@ -1284,6 +1285,7 @@ class MainFrame(
         # Kill switch: block remotely-locked commands at the single dispatch
         # chokepoint, so keybindings and the palette obey uniformly.
         self.commands.set_run_gate(self._command_allowed_by_locks)
+        self.commands.set_read_only_refusal(lambda: self._set_status(READ_ONLY_REFUSAL))
         # Error specificity: the palette asks this probe *why* a command is
         # unavailable so it can display and speak the reason, not just refuse.
         self.commands.set_availability_probe(self._command_unavailable_reason)
@@ -2653,6 +2655,7 @@ class MainFrame(
             and not event.ControlDown()
             and not event.AltDown()
             and not event.ShiftDown()
+            and not self._document_is_read_only()  # Enter's rewrites honour the guard
         ):
             if self._handle_smart_trigger_return():
                 return
@@ -13889,6 +13892,7 @@ class MainFrame(
         """
         from quill.core.selection import changed_span
 
+        self._refuse_edit_if_read_only()
         self._browse_navigation_cache = None
         current_text = self.editor.GetValue()
         start, end, replacement = changed_span(current_text, updated_text)
@@ -14025,103 +14029,21 @@ class MainFrame(
         search_callback: Callable[[str], list[str]],
         empty_search_examples: tuple[str, ...] = (),
     ) -> str | None:
-        wx = self._wx
-        with wx.Dialog(
+        """The type-to-filter picker (quill/ui/searchable_picker.py)."""
+        from quill.ui.searchable_picker import choose_searchable_option
+
+        return choose_searchable_option(
+            self._wx,
             self.frame,
+            self._show_modal_dialog,
+            self._searchable_picker_queries,
             title=title,
-            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
-        ) as dialog:
-            dialog.SetSize((560, 420))
-            root = wx.BoxSizer(wx.VERTICAL)
-
-            search = wx.SearchCtrl(dialog, style=wx.TE_PROCESS_ENTER)
-            search.ShowSearchButton(True)
-            search.SetDescriptiveText(prompt)
-            set_accessible_name(search, prompt)
-            root.Add(search, 0, wx.EXPAND | wx.ALL, 8)
-
-            status = wx.StaticText(dialog, label="")
-            root.Add(status, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
-
-            results = wx.ListBox(dialog)
-            set_accessible_name(results, dialog_label)
-            root.Add(results, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
-
-            buttons = dialog.CreateButtonSizer(wx.OK | wx.CANCEL)
-            if buttons is not None:
-                root.Add(buttons, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
-            dialog.SetSizer(root)
-
-            last_query = self._searchable_picker_queries.get(dialog_label, "")
-            if last_query:
-                search.SetValue(last_query)
-
-            filtered = list(initial_choices)
-
-            def _refresh() -> None:
-                nonlocal filtered
-                filtered = list(search_callback(search.GetValue()))
-                results.Set(filtered)
-                if filtered:
-                    results.SetSelection(0)
-                    status.SetLabel(f"{len(filtered)} match(es). Top match: {filtered[0]}")
-                else:
-                    if empty_search_examples:
-                        examples = ", ".join(empty_search_examples)
-                        status.SetLabel(f"No matching options. Try: {examples}")
-                    else:
-                        status.SetLabel("No matching options")
-
-            def _announce_selected() -> None:
-                selected = results.GetSelection()
-                if selected == wx.NOT_FOUND:
-                    return
-                if selected < 0 or selected >= len(filtered):
-                    return
-                status.SetLabel(f"Selected: {filtered[selected]}")
-
-            def _accept(_event: object) -> None:
-                if results.GetCount() == 0:
-                    return
-                dialog.EndModal(wx.ID_OK)
-
-            def _on_char_hook(event: object) -> None:
-                key_code = event.GetKeyCode()
-                if key_code == wx.WXK_ESCAPE:
-                    dialog.EndModal(wx.ID_CANCEL)
-                    return
-                if key_code in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
-                    _accept(event)
-                    return
-                if key_code == wx.WXK_DOWN and results.GetCount() > 0:
-                    results.SetSelection(0)
-                    results.SetFocus()
-                    _announce_selected()
-                    return
-                if key_code == wx.WXK_UP and results.GetCount() > 0:
-                    results.SetSelection(results.GetCount() - 1)
-                    results.SetFocus()
-                    _announce_selected()
-                    return
-                event.Skip()
-
-            search.Bind(wx.EVT_TEXT, lambda _event: _refresh())
-            search.Bind(wx.EVT_TEXT_ENTER, _accept)
-            results.Bind(wx.EVT_LISTBOX, lambda _event: _announce_selected())
-            results.Bind(wx.EVT_LISTBOX_DCLICK, _accept)
-            dialog.Bind(wx.EVT_CHAR_HOOK, _on_char_hook)
-            apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
-            _refresh()
-            search.SetFocus()
-
-            result = self._show_modal_dialog(dialog, dialog_label)
-            self._searchable_picker_queries[dialog_label] = search.GetValue().strip()
-            if result != wx.ID_OK:
-                return None
-            selected = results.GetSelection()
-            if selected == wx.NOT_FOUND or selected < 0 or selected >= len(filtered):
-                return None
-            return filtered[selected]
+            prompt=prompt,
+            dialog_label=dialog_label,
+            initial_choices=initial_choices,
+            search_callback=search_callback,
+            empty_search_examples=empty_search_examples,
+        )
 
     def insert_html_tag(self) -> None:
         if not self._feature_enabled("core.format"):
@@ -14584,6 +14506,7 @@ class MainFrame(
         self._set_status(f'Snippet "{edited.name}" saved.')
 
     def _apply_insertion_result(self, result: InsertionResult) -> None:
+        self._refuse_edit_if_read_only()
         start, end = self.editor.GetSelection()
         self.editor.Replace(start, end, result.inserted_text)
         caret = start + result.caret_offset

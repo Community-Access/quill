@@ -235,6 +235,7 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_clear_copy_tray": "edit.clear_all_tray_slots",
     "cmd_close": "file.close_document",
     "cmd_clipboard_collector": "power.toggle_clipboard_collector",
+    "cmd_toggle_read_only": "power.toggle_read_only_guard",
     "cmd_command_palette": "app.command_palette",
     "cmd_complete_selection": "edit.complete_selection",
     "cmd_context_help": "help.context_help",

@@ -30,13 +30,39 @@ from quill.core.selection import line_span
 class BrowseModeMixin:
     """Browse-mode element navigation, mixed into :class:`MainFrame`."""
 
+    def _browse_text(self) -> str:
+        """The text browse navigation works over, read as cheaply as is safe.
+
+        Every browse keypress used to copy the whole buffer out of the control
+        and compare it with the cached copy. On an eight-megabyte book that is
+        about 46 ms a key -- the whole of the navigation cost -- and none of it
+        is needed while the Read-Only Guard is on, because nothing can change
+        the text. So a guarded document checks once that its own string is the
+        control's text and from then on answers with that string, which the
+        cache recognises by identity (measured 0.04 ms;
+        ``docs/design/2026-10-16-editor-completion-measurements.md``). The
+        check is forgotten whenever the guard is toggled or re-applied.
+        """
+        document = getattr(self, "document", None)
+        guarded = bool(getattr(document, "source_metadata", {}).get("read_only_guard"))
+        own = getattr(document, "text", None)
+        if guarded and isinstance(own, str):
+            if getattr(self, "_guarded_browse_text", None) is own:
+                return own
+            current = self.editor.GetValue()
+            if current == own:
+                self._guarded_browse_text = own
+                return own
+            return current
+        return self.editor.GetValue()
+
     def _browse_navigation_context(self) -> dict[str, object]:
-        text = self.editor.GetValue()
+        text = self._browse_text()
         markup_kind = infer_markup_kind(self.document.path)
         cache = self._browse_navigation_cache
         if (
             cache is not None
-            and cache.get("text") == text
+            and (cache.get("text") is text or cache.get("text") == text)
             and cache.get("markup_kind") == markup_kind
         ):
             return cache
@@ -187,7 +213,7 @@ class BrowseModeMixin:
         try:
             if not bool(getattr(self.settings, "browse_mode_preload_cache", True)):
                 return
-            text = self.editor.GetValue()
+            text = self._browse_text()
             if not force and len(text) < self._browse_prewarm_large_document_threshold:
                 return
             markup_kind = infer_markup_kind(self.document.path)
@@ -234,7 +260,8 @@ class BrowseModeMixin:
     ) -> None:
         if not self._browse_cache_generation.is_current(generation):
             return
-        if self.editor.GetValue() != text_snapshot:
+        current = self._browse_text()
+        if current is not text_snapshot and current != text_snapshot:
             return
         if infer_markup_kind(self.document.path) != markup_kind_snapshot:
             return

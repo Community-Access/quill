@@ -1979,8 +1979,11 @@ remembered by path), e.g. <code>plain.txt</code>.</li>
 </ul>
 <p><strong>Do this</strong></p>
 <ol type="1">
-<li><strong>Tools menu ▸ Advanced ▸ Toggle Read-Only Guard</strong>. Try
-to type. Toggle again.</li>
+<li><strong>Tools menu ▸ Advanced ▸ Toggle Read-Only Guard</strong>, or
+<strong>Ctrl+Alt+Backspace</strong>. Try to type. Insert a snippet. Set
+a bookmark. Toggle again.</li>
+<li>With the guard on, close QUILL and double-click the same file in
+File Explorer: it opens locked.</li>
 </ol>
 <p><strong>You should see and hear</strong></p>
 <ul>
@@ -1988,7 +1991,9 @@ to type. Toggle again.</li>
 typing is blocked; transform commands report <strong>“Document is
 read-only”</strong> rather than changing text. Second toggle announces
 <strong>“Document is editable”</strong> and typing works again. The
-read-only state persists for that file when reopened.</li>
+read-only state persists for that file when reopened, including from
+File Explorer. The snippet is refused with “Document is read-only” and
+no “Inserted snippet”; the bookmark is set as usual.</li>
 </ul>
 <p><strong>Sign off</strong> —
 <code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>

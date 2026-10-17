@@ -46,12 +46,15 @@ __all__ = [
     "RICH_SUFFIXES",
     "SAVE_WILDCARD_PLAIN",
     "SAVE_WILDCARD_RICH",
+    "WORD_SUFFIXES",
     "has_markdown_headings",
     "is_rich_path",
+    "is_word_path",
     "language_label",
     "markup_language_for",
     "save_filter_index_for_language",
     "save_suffix_for_language",
+    "word_save_refusal",
 ]
 
 #: The one extension that means rich text.
@@ -98,6 +101,29 @@ SAVE_WILDCARD_PLAIN = (
     "Text files (*.txt)|*.txt|Markdown (*.md)|*.md|Rich Text (*.rtf)|*.rtf|All files (*.*)|*.*"
 )
 SAVE_WILDCARD_RICH = "Rich Text (*.rtf)|*.rtf|Text files (*.txt)|*.txt|All files (*.*)|*.*"
+
+
+#: Word's own formats. QUILL writes ``.docx`` (``quill.io.export``); QUILL Lite
+#: neither opens nor writes them, and until 2026-10-16 a name typed with one of
+#: these extensions got the window's text written under it -- a file named
+#: ``report.docx`` that Word refuses to open. Save As now refuses instead and
+#: says what will work.
+WORD_SUFFIXES = frozenset({".docx", ".docm", ".dotx", ".dotm"})
+
+
+def is_word_path(name: object) -> bool:
+    """True for a name ending in one of Word's extensions, in any case."""
+    lowered = str(name).lower()
+    return any(lowered.endswith(suffix) for suffix in WORD_SUFFIXES)
+
+
+def word_save_refusal(name: str) -> str:
+    """The sentence a refused Word target gets: what happened, then what works."""
+    return (
+        f"QUILL Lite cannot save Word documents, so {name} was not written. Choose "
+        "Rich Text (.rtf), which Word opens, or Text or Markdown in the Save as "
+        "type list. QUILL saves Word documents."
+    )
 
 
 def is_rich_path(name: str) -> bool:

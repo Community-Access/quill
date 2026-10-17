@@ -697,6 +697,28 @@ not need to know which menu it is in.
 Each command in the list shows its key beside it. That is a gentle way to learn
 keys as you go. If you have changed a key, the palette shows your key.
 
+#### Typing a name to reach it in a list
+
+Most lists in QUILL Lite, such as Snippets, Recent Documents, the bookmark and
+heading lists and Recent Clips, let you type the start of a row's name to move
+to it. You can type the **whole** name, spaces included:
+
+1. Press **Ctrl+Alt+Shift+Home** to open Snippets.
+2. Type `meeting notes` at an ordinary pace. The list moves to the first row
+   that starts with "meeting notes", and stays on it while the row still
+   matches.
+3. Press **Enter** to put that snippet in.
+
+While you are typing a name, **Space is part of the name**. It used to open
+whatever row the first word had reached, so typing "meeting notes" could
+insert "Meeting agenda". If you pause for about a second, the next key starts
+a new name, and **Space** on its own opens the selected row as before. **Enter**
+always opens the selected row and **Escape** always closes the list.
+
+Typing the same letter again and again steps through the rows that start with
+it. If nothing starts with what you typed, you hear "No match for" and what you
+typed, and the selection stays where it was.
+
 #### One box for everything: Go To Anything
 
 **Navigate > Go To Anything...** (**Ctrl+Alt+Shift+A**) is like the Command
@@ -1216,6 +1238,47 @@ to guess which bold lines you meant as headings. Save it as plain text first
 (QUILL Lite asks before it removes the formatting), and then the Markdown
 choice is there.
 
+#### Which kind of file you get: the name you type decides
+
+When you save with **Ctrl+Shift+S**, the ending you type on the name decides
+what kind of file is written, whatever the **Save as type** list happens to
+show. Capitals do not matter: `NOTES.TXT` is a text file and `Report.RTF` is
+rich text.
+
+| You type | What QUILL Lite writes |
+|---|---|
+| `notes.txt`, `notes.log`, or any other text ending | Your text, exactly as it stands |
+| `notes.md` | Your text as it stands; an HTML document is converted to Markdown (see above) |
+| `notes.rtf` | Rich text, with its formatting. A plain document becomes a rich one |
+| `page.html` | Your text as it stands. QUILL Lite treats HTML as something you write by hand, the way Notepad does |
+| `minutes.docx` | Nothing. QUILL Lite says so (see below) |
+| `budget.xlsx`, `minutes.pdf`, `old.doc` | Nothing. These are formats QUILL Lite can only read or not open at all |
+
+If you type a name with no ending at all, Windows adds the ending of the row
+selected in **Save as type**, so `notes` with **Markdown (*.md)** selected is
+saved as `notes.md`.
+
+**Word documents.** QUILL Lite cannot write a Word document. Until October
+2026 a name ending in `.docx` got your plain text written under it, which made
+a file that Word refuses to open. Now, if you type `minutes.docx` (or `.docm`,
+`.dotx`, `.dotm`), QUILL Lite shows a short message instead and writes
+nothing:
+
+> QUILL Lite cannot save Word documents, so minutes.docx was not written.
+> Choose Rich Text (.rtf), which Word opens, or Text or Markdown in the Save as
+> type list. QUILL saves Word documents.
+
+Press **Enter** to close the message; Save As is over, and your document is
+exactly as it was. For example, to send a letter to someone who uses Word,
+save it as `letter.rtf`: Word opens rich text, headings and bold included. If
+you need a real `.docx`, open the file in QUILL and use its Save As.
+
+The message comes before anything else. A rich text document is not first
+asked whether to remove its formatting for a save that is not going to happen.
+
+Pressing **Escape** or **Cancel** in the Save As window writes nothing, as
+always.
+
 #### If something goes wrong
 
 While a document has changes you have not saved, QUILL Lite keeps a spare copy
@@ -1725,6 +1788,58 @@ If you already know which kind you want, there are quicker keys.
 **Alt+Shift+G** goes straight to the bookmark list, and **Ctrl+Alt+L** goes
 straight to the heading list. **Ctrl+G** is the one to press when you are not
 sure.
+
+### Reading without changing anything: the Read-Only Guard
+
+When you open a long reference document only to read it, such as a manual, a
+book or minutes you must not alter, one stray key can change it, and a Ctrl+S
+an hour later saves the change. The **Read-Only Guard** locks the document
+against edits while you read.
+
+**Ctrl+Alt+Backspace**, or **Tools > Read-Only Guard**, turns it on and off.
+The menu row shows a check mark while it is on. You hear:
+
+- "Document is read-only" when you turn it on;
+- "Document is editable" when you turn it off.
+
+While it is on:
+
+- Typing, **Backspace**, **Delete**, **Enter** and pasting do nothing.
+- Commands that would change the text say "Document is read-only" and change
+  nothing. That covers cutting, pasting, undo and redo, everything in
+  **Edit > Lines**, the **Insert** menu, the formatting commands, changing
+  case and indenting, Snippets, and a word tool's **Replace**.
+- Everything you use to read still works: the arrow keys and every way of
+  moving, **Find** (**Ctrl+F**), **Go To** (**Ctrl+G**), the headings list,
+  selecting and copying, Say Selection, the dictionary and the thesaurus
+  (looking up, not replacing).
+- **Bookmarks** work as usual. Set one with **Ctrl+Shift+B** and come back to
+  it with **F2**; a bookmark is kept beside the file, not inside it.
+- **Inline notes** work too. A note you add while the guard is on is kept
+  beside the file rather than written into it, so the document stays exactly
+  as it was.
+
+QUILL Lite **remembers** the guard for that file. Close QUILL Lite, open the
+same file tomorrow from File Explorer, from Recent Documents or from Ctrl+O,
+and it opens locked again. It is the same file however it was reached, even if
+File Explorer spells the folder with different capitals.
+
+If QUILL Lite cannot write down that you locked the file, for example because
+its settings folder is on a full disk, the document is still locked for now
+and you hear so, with the reason:
+
+> Document is read-only for now, but it could not be remembered for next time
+> (There is not enough space on the disk).
+
+A document that has never been saved cannot be remembered either, because it
+has no file name yet; save it first if you want the guard to stay.
+
+A file that Windows itself marks read-only, or one on a share you cannot write
+to, opens locked as well, and QUILL Lite says so as it opens. Turn the guard
+off if you want to type anyway; you can then save under a new name.
+
+The guard is the same command QUILL has, on the same key, so you only learn it
+once.
 
 ### Bookmarks
 
@@ -8232,6 +8347,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Shift+F7** | Thesaurus... |
 | **Ctrl+Alt+Shift+[** | Say Word Summary |
 | **Ctrl+Alt+E** | File Encoding and Line Endings... |
+| **Ctrl+Alt+Backspace** | Read-Only Guard |
 | **Ctrl+Alt+Shift+Home** | Snippets... |
 | **Ctrl+Alt+A** | Manage Abbreviations... |
 | **Alt+Shift+A** | Expand Abbreviations |

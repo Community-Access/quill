@@ -51,7 +51,8 @@ def test_the_notice_names_the_consequence_not_the_state() -> None:
 
 def test_both_editors_say_the_same_sentence() -> None:
     root = Path(__file__).resolve().parents[3]
-    quill = (root / "quill" / "ui" / "main_frame_power_tools.py").read_text(encoding="utf-8")
+    # The guard moved to its own mixin on 2026-10-16 (main_frame_read_only.py).
+    quill = (root / "quill" / "ui" / "main_frame_read_only.py").read_text(encoding="utf-8")
     lite = (root / "quill" / "apps" / "lite_window_file.py").read_text(encoding="utf-8")
     assert "READ_ONLY_NOTICE" in quill
     assert "READ_ONLY_NOTICE" in lite

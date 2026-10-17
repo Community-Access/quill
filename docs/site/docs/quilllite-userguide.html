@@ -1063,6 +1063,29 @@ Palette…</strong>. Type part of what you want, such as “sort”,
 <p>Each command in the list shows its key beside it. That is a gentle
 way to learn keys as you go. If you have changed a key, the palette
 shows your key.</p>
+<h4 id="typing-a-name-to-reach-it-in-a-list">Typing a name to reach it
+in a list</h4>
+<p>Most lists in QUILL Lite, such as Snippets, Recent Documents, the
+bookmark and heading lists and Recent Clips, let you type the start of a
+row’s name to move to it. You can type the <strong>whole</strong> name,
+spaces included:</p>
+<ol type="1">
+<li>Press <strong>Ctrl+Alt+Shift+Home</strong> to open Snippets.</li>
+<li>Type <code>meeting notes</code> at an ordinary pace. The list moves
+to the first row that starts with “meeting notes”, and stays on it while
+the row still matches.</li>
+<li>Press <strong>Enter</strong> to put that snippet in.</li>
+</ol>
+<p>While you are typing a name, <strong>Space is part of the
+name</strong>. It used to open whatever row the first word had reached,
+so typing “meeting notes” could insert “Meeting agenda”. If you pause
+for about a second, the next key starts a new name, and
+<strong>Space</strong> on its own opens the selected row as before.
+<strong>Enter</strong> always opens the selected row and
+<strong>Escape</strong> always closes the list.</p>
+<p>Typing the same letter again and again steps through the rows that
+start with it. If nothing starts with what you typed, you hear “No match
+for” and what you typed, and the selection stays where it was.</p>
 <h4 id="one-box-for-everything-go-to-anything">One box for everything:
 Go To Anything</h4>
 <p><strong>Navigate &gt; Go To Anything…</strong>
@@ -1588,6 +1611,78 @@ nothing at all. A <strong>rich text</strong> document is not offered
 Markdown, because QUILL Lite would have to guess which bold lines you
 meant as headings. Save it as plain text first (QUILL Lite asks before
 it removes the formatting), and then the Markdown choice is there.</p>
+<h4 id="which-kind-of-file-you-get-the-name-you-type-decides">Which kind
+of file you get: the name you type decides</h4>
+<p>When you save with <strong>Ctrl+Shift+S</strong>, the ending you type
+on the name decides what kind of file is written, whatever the
+<strong>Save as type</strong> list happens to show. Capitals do not
+matter: <code>NOTES.TXT</code> is a text file and
+<code>Report.RTF</code> is rich text.</p>
+<table>
+<thead>
+<tr>
+<th>You type</th>
+<th>What QUILL Lite writes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>notes.txt</code>, <code>notes.log</code>, or any other text
+ending</td>
+<td>Your text, exactly as it stands</td>
+</tr>
+<tr>
+<td><code>notes.md</code></td>
+<td>Your text as it stands; an HTML document is converted to Markdown
+(see above)</td>
+</tr>
+<tr>
+<td><code>notes.rtf</code></td>
+<td>Rich text, with its formatting. A plain document becomes a rich
+one</td>
+</tr>
+<tr>
+<td><code>page.html</code></td>
+<td>Your text as it stands. QUILL Lite treats HTML as something you
+write by hand, the way Notepad does</td>
+</tr>
+<tr>
+<td><code>minutes.docx</code></td>
+<td>Nothing. QUILL Lite says so (see below)</td>
+</tr>
+<tr>
+<td><code>budget.xlsx</code>, <code>minutes.pdf</code>,
+<code>old.doc</code></td>
+<td>Nothing. These are formats QUILL Lite can only read or not open at
+all</td>
+</tr>
+</tbody>
+</table>
+<p>If you type a name with no ending at all, Windows adds the ending of
+the row selected in <strong>Save as type</strong>, so <code>notes</code>
+with <strong>Markdown (*.md)</strong> selected is saved as
+<code>notes.md</code>.</p>
+<p><strong>Word documents.</strong> QUILL Lite cannot write a Word
+document. Until October 2026 a name ending in <code>.docx</code> got
+your plain text written under it, which made a file that Word refuses to
+open. Now, if you type <code>minutes.docx</code> (or <code>.docm</code>,
+<code>.dotx</code>, <code>.dotm</code>), QUILL Lite shows a short
+message instead and writes nothing:</p>
+<blockquote>
+<p>QUILL Lite cannot save Word documents, so minutes.docx was not
+written. Choose Rich Text (.rtf), which Word opens, or Text or Markdown
+in the Save as type list. QUILL saves Word documents.</p>
+</blockquote>
+<p>Press <strong>Enter</strong> to close the message; Save As is over,
+and your document is exactly as it was. For example, to send a letter to
+someone who uses Word, save it as <code>letter.rtf</code>: Word opens
+rich text, headings and bold included. If you need a real
+<code>.docx</code>, open the file in QUILL and use its Save As.</p>
+<p>The message comes before anything else. A rich text document is not
+first asked whether to remove its formatting for a save that is not
+going to happen.</p>
+<p>Pressing <strong>Escape</strong> or <strong>Cancel</strong> in the
+Save As window writes nothing, as always.</p>
 <h4 id="if-something-goes-wrong">If something goes wrong</h4>
 <p>While a document has changes you have not saved, QUILL Lite keeps a
 spare copy of it about every thirty seconds. That copy is kept
@@ -2148,6 +2243,62 @@ so you can pick one out by its first word.</li>
 <strong>Alt+Shift+G</strong> goes straight to the bookmark list, and
 <strong>Ctrl+Alt+L</strong> goes straight to the heading list.
 <strong>Ctrl+G</strong> is the one to press when you are not sure.</p>
+<h3 id="reading-without-changing-anything-the-read-only-guard">Reading
+without changing anything: the Read-Only Guard</h3>
+<p>When you open a long reference document only to read it, such as a
+manual, a book or minutes you must not alter, one stray key can change
+it, and a Ctrl+S an hour later saves the change. The <strong>Read-Only
+Guard</strong> locks the document against edits while you read.</p>
+<p><strong>Ctrl+Alt+Backspace</strong>, or <strong>Tools &gt; Read-Only
+Guard</strong>, turns it on and off. The menu row shows a check mark
+while it is on. You hear:</p>
+<ul>
+<li>“Document is read-only” when you turn it on;</li>
+<li>“Document is editable” when you turn it off.</li>
+</ul>
+<p>While it is on:</p>
+<ul>
+<li>Typing, <strong>Backspace</strong>, <strong>Delete</strong>,
+<strong>Enter</strong> and pasting do nothing.</li>
+<li>Commands that would change the text say “Document is read-only” and
+change nothing. That covers cutting, pasting, undo and redo, everything
+in <strong>Edit &gt; Lines</strong>, the <strong>Insert</strong> menu,
+the formatting commands, changing case and indenting, Snippets, and a
+word tool’s <strong>Replace</strong>.</li>
+<li>Everything you use to read still works: the arrow keys and every way
+of moving, <strong>Find</strong> (<strong>Ctrl+F</strong>), <strong>Go
+To</strong> (<strong>Ctrl+G</strong>), the headings list, selecting and
+copying, Say Selection, the dictionary and the thesaurus (looking up,
+not replacing).</li>
+<li><strong>Bookmarks</strong> work as usual. Set one with
+<strong>Ctrl+Shift+B</strong> and come back to it with
+<strong>F2</strong>; a bookmark is kept beside the file, not inside
+it.</li>
+<li><strong>Inline notes</strong> work too. A note you add while the
+guard is on is kept beside the file rather than written into it, so the
+document stays exactly as it was.</li>
+</ul>
+<p>QUILL Lite <strong>remembers</strong> the guard for that file. Close
+QUILL Lite, open the same file tomorrow from File Explorer, from Recent
+Documents or from Ctrl+O, and it opens locked again. It is the same file
+however it was reached, even if File Explorer spells the folder with
+different capitals.</p>
+<p>If QUILL Lite cannot write down that you locked the file, for example
+because its settings folder is on a full disk, the document is still
+locked for now and you hear so, with the reason:</p>
+<blockquote>
+<p>Document is read-only for now, but it could not be remembered for
+next time (There is not enough space on the disk).</p>
+</blockquote>
+<p>A document that has never been saved cannot be remembered either,
+because it has no file name yet; save it first if you want the guard to
+stay.</p>
+<p>A file that Windows itself marks read-only, or one on a share you
+cannot write to, opens locked as well, and QUILL Lite says so as it
+opens. Turn the guard off if you want to type anyway; you can then save
+under a new name.</p>
+<p>The guard is the same command QUILL has, on the same key, so you only
+learn it once.</p>
 <h3 id="bookmarks">Bookmarks</h3>
 <p>A bookmark is a place you want to come back to.</p>
 <table>
@@ -10958,6 +11109,10 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+Alt+E</strong></td>
 <td>File Encoding and Line Endings…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Backspace</strong></td>
+<td>Read-Only Guard</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Shift+Home</strong></td>

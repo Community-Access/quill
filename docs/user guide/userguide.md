@@ -1328,6 +1328,16 @@ tables) becomes real Word styles, so you can move around the result in Word by
 heading, not just look at it. Saving plain text this way gives you a correct but
 unformatted document, because plain text has no structure to carry.
 
+**How long opening takes.** The first Word, PowerPoint or Excel file you open
+after starting QUILL takes longest, because QUILL loads its document converter
+then; later ones in the same session open in under a second for an ordinary
+document. Old-style Word files (`.doc`, from Word 97 to 2003) are converted by
+LibreOffice when it is installed. When it is not, QUILL now tells you so
+straight away, instead of first spending ten seconds or more loading a
+converter that cannot read `.doc` at all. Install LibreOffice, or save the file
+as `.docx` from Word, and open it again. A PDF's time grows with its number of
+pages, because every page is read for its text.
+
 #### EPUB
 
 EPUB books get the navigator and reading chapter by chapter.
@@ -1455,6 +1465,41 @@ presentation, what you are editing is text taken out of it, and the original
 file cannot hold your changes. Pressing `Ctrl+S` on one of these never
 overwrites the original. QUILL explains why and opens Save As, so your edits go
 into a new file in a format that can hold them.
+
+#### The name you type decides: a worked example
+
+The ending you type always wins over the **Save as type** list, and capitals do
+not matter. Suppose you have an untitled document of meeting minutes with a
+heading, some bold and a short list:
+
+1. Press `Ctrl+Shift+S` (**File > Save As...**).
+2. Type `Minutes.DOCX` in the name box. The type list can show anything; it is
+   the name that counts.
+3. Press Enter. QUILL writes a real Word document: Word opens it, the heading
+   is a Word heading you can move to by heading, the bold is bold, and the list
+   is a list. You hear "Saved as Minutes.DOCX, Word format. You are still
+   editing QUILL text; each save converts it to Word."
+
+The same document saved under other names:
+
+| You type | What is written |
+|---|---|
+| `minutes.txt` or `MINUTES.TXT` | Your text exactly as it is, markup included |
+| `minutes.md` | Your text exactly as it is |
+| `minutes.html` | A complete web page, with the heading, bold and list as HTML |
+| `minutes.rtf` | Rich text with its formatting |
+| `minutes.docx` | A real Word document, as above |
+| `minutes` with **Word Document** selected | `minutes.docx`, a Word document |
+| `minutes.txt` with **Word Document** selected | `minutes.txt`, plain text: the typed ending wins, and no `minutes.txt.docx` is made |
+| `minutes.pdf`, `.odt` or `.epub` | Nothing yet: QUILL offers **File > Export**, which makes these properly |
+| `budget.xlsx` or another format QUILL only reads | Nothing: QUILL says it cannot save that format |
+
+**Cancel** or **Escape** in the Save As window writes nothing and leaves the
+document as it was.
+
+QUILL Lite has no Word writer. Typing a `.docx` name there gets a short message
+saying so and naming Rich Text (`.rtf`), which Word opens; nothing is written.
+Use QUILL when you need a `.docx`.
 
 #### What carries over between formats
 
@@ -3061,6 +3106,30 @@ To set up and look after snippets:
 
 Snippets can have blanks such as `${input:name}`, `${choice:a|b}`, `${date}`,
 `${time}` and `${cursor}`.
+
+**Finding a snippet by name.** In **Insert Snippet**, type any part of a
+snippet's name, trigger or text, spaces included, and the list narrows as you
+type. The words can come in any order: `notes meeting` finds "Meeting notes
+for Tuesday" and "Notes from the meeting". Snippets whose name starts with
+what you typed come first. Press Down Arrow to move into the list, Enter to
+insert the top match or the one you are on, and Escape to cancel. The
+Abbreviations manager's search box and **Search Tray Slots** match words in any
+order in the same way.
+
+**Large libraries.** With thousands of snippets, the list shows the first 200
+matches, and the line above it says how many matched in all, for example
+"4,980 matches; showing the first 200. Type more to narrow them." Every
+snippet is still reachable: type a little more of its name. QUILL also waits
+until you pause typing before it refills a long list, so typing a whole name
+fills it once instead of after every letter. Enter never acts on an
+out-of-date list.
+
+**Typing a name in a list.** In lists you arrow through, such as Copy Tray,
+Open Recent, bookmarks and most other pick-one lists, you can type the start of
+a row's name, spaces included, to move to it. While you are typing a name,
+Space is part of the name; after a pause of about a second, Space on its own
+opens the selected row as before. Enter always opens the row and Escape always
+closes the list.
 
 #### Date and time
 
@@ -6376,6 +6445,64 @@ transcription, covers them properly.
 
 For the complete reference (every voice mode, every spoken command, and the
 privacy rules) see [Voice Interaction](voice-interaction.md).
+
+### Reading without changing anything: the Read-Only Guard
+
+When you open a document only to read it, such as a manual, a long book or
+minutes you must not alter, one stray key can change it, and a `Ctrl+S` later
+saves the change. The **Read-Only Guard** locks the document against edits
+while you read.
+
+Press `Ctrl+Alt+Backspace`, or choose **Tools > Advanced > Toggle Read-Only
+Guard**. You hear "Document is read-only". Press it again to hear "Document is
+editable".
+
+While the guard is on:
+
+- Typing, `Backspace`, `Delete`, `Enter` and pasting do nothing.
+- Commands that change text say "Document is read-only" on the status bar and
+  change nothing: snippets, the line tools, case changes, Copy Tray pastes,
+  Markdown and HTML inserts, and a thesaurus or dictionary **Replace**, among
+  others. They stop *before* they say anything, so you never hear "Inserted
+  snippet" about a snippet that was not inserted.
+- Reading and moving work as always: the arrow keys, Find (`Ctrl+F`), Go To
+  (`Ctrl+G`), browse-mode navigation by heading, paragraph and link, selecting
+  and copying, Read Aloud.
+- **Bookmarks** work as usual. They are kept beside the document, not inside
+  it, so setting one never changes the file.
+- **Document notes** work too. A note you add with **Add Inline Note**
+  (`Alt+Shift+I`) while the guard is on is kept beside the file instead of
+  written into it, and `Alt+Shift+J` and `Alt+Shift+K` still move between
+  notes.
+
+QUILL **remembers** the guard for that file. Close QUILL, open the same file
+tomorrow by double-clicking it in File Explorer, from **Open Recent** or with
+`Ctrl+O`, and it opens locked again, even if File Explorer spells the folder
+with different capitals. QUILL Lite has the same guard on the same key, with
+its own list.
+
+If QUILL cannot write down that you locked the file, for example because its
+settings folder is on a full disk, the document is still locked for now and
+you hear why:
+
+> Document is read-only for now, but it could not be remembered for next time
+> (There is not enough space on the disk).
+
+An untitled document cannot be remembered either, because it has no file name
+yet. Save it first if you want the lock to stay.
+
+A file Windows marks read-only, or one on a share you cannot write to, opens
+locked as well, and QUILL says so as it opens. Turn the guard off to type
+anyway, then save under a new name.
+
+**Long documents.** Locking a document does not make it open faster: the text
+still has to be put into the editor, which for an eight-megabyte book takes
+about four tenths of a second on a fast computer. What the guard does speed up
+is moving around. Because a locked document cannot change, browse-mode keys
+(next heading, next paragraph, next link) read QUILL's own copy of the text
+instead of copying the whole document out of the editor on every key. On that
+eight-megabyte book a heading jump went from about 46 milliseconds to well
+under one.
 
 ### Tools for Reading, Review, and Inspection
 
@@ -13121,8 +13248,10 @@ there.
 
 #### Editor utilities
 
-- **Toggle Read-Only Guard** stops accidental edits to a document you are
-  reviewing.
+- **Toggle Read-Only Guard** (`Ctrl+Alt+Backspace`) stops accidental edits to a
+  document you are reviewing, and is remembered for that file. Bookmarks and
+  notes keep working. Chapter 8, Reading without changing anything, has the
+  details.
 - **Toggle Clipboard Collector** and **Collect Clipboard Now** gather
   clipboard entries into a running log in the open document. This works
   system-wide, the way EdSharp did: while the collector is on, anything you

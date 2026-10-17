@@ -2153,6 +2153,57 @@ decision tree: if a MarkItDown fidelity gap appears, mammoth is the
 candidate and would be bundled (pure-Python; frozen builds cannot
 pip-install at runtime), lazily imported, and offered as a third
 read-engine choice.</p>
+<p><strong>Typed extension, pinned in both editors (2026-10-16, item
+41).</strong> QUILL’s resolver
+(<code>MainFrame._resolve_save_target</code>) gives the typed extension
+precedence over the type list and only uses the selected filter when no
+extension was typed;
+<code>tests/unit/ui/test_save_as_typed_extension_formats.py</code>
+drives <code>save_file_as</code> with the real writers and checks the
+files in their real formats (an untitled document saved as
+<code>.docx</code> and <code>.DOCX</code> reads back through
+python-docx; <code>.txt</code>/<code>.md</code> verbatim;
+<code>.html</code> a page; <code>.rtf</code> RTF; a typed
+<code>.txt</code> under the Word filter stays <code>.txt</code>; no
+extension takes the filter’s; Cancel writes nothing; <code>.xlsx</code>
+is refused; <code>.pdf</code> is routed to Export and never written as
+text). QUILL Lite has no Word writer and no Word reader, so it refuses
+Word names (<code>.docx .docm .dotx .dotm</code>,
+<code>quill/core/lite/filetypes.WORD_SUFFIXES</code>) on Save, Save As
+(before the rich-to-plain question) and the collector’s quiet save,
+naming Rich Text as what Word opens; before this it wrote plain text
+under a <code>.docx</code> name. QUILL Lite writes <code>.html</code>
+verbatim by design (HTML is hand-written there).</p>
+<h5
+id="53a11b-read-only-guard-eds-8-key-memory-and-enforcement-2026-10-16-item-37">5.3a.1.1b
+Read-Only Guard (EDS-8; key, memory and enforcement 2026-10-16, item
+37)</h5>
+<p><strong>Ctrl+Alt+Backspace</strong>
+(<code>power.toggle_read_only_guard</code>, Tools &gt; Advanced) in
+QUILL and QUILL Lite (Tools &gt; Read-Only Guard,
+<code>cmd_toggle_read_only</code>), rule 2. The remembered list is
+<code>quill/core/read_only_guards.py</code>, one per editor’s data
+folder, keyed through <code>DocumentMemory.key_for</code> so every
+per-file memory (bookmarks, last position, notes, the guard) agrees on
+what one file is; older lists are normalised on read. A write that fails
+is reported (“…could not be remembered for next time (reason)”); the
+guard stays on for the session. Enforcement: the control is read-only;
+QUILL’s <code>_replace_document_text</code> and
+<code>_apply_insertion_result</code> raise
+<code>DocumentReadOnlyError</code> and the command registry
+(<code>set_read_only_refusal</code>, so keys, palette, hotkeys and voice
+alike) speaks “Document is read-only”; QUILL Lite refuses
+<code>TEXT_CHANGING_HANDLERS</code> by name at dispatch; word-tool
+replacement refuses through <code>refuse_if_guarded</code>. Not
+affected: caret, selection, Find, Go To, browse navigation, bookmarks,
+and inline notes (kept beside the file while guarded, through the shared
+<code>_host_read_only</code>). An unwritable file opens guarded.
+<strong>Performance:</strong> guarding does not change open time (8 MB:
+<code>SetValue</code> 394 ms, <code>SetEditable</code> 0.02 ms) but
+browse navigation on a guarded document reads <code>document.text</code>
+after one equality check instead of <code>GetValue</code> per key (46.3
+ms to 0.04 ms per heading step on 8 MB). Measurements:
+<code>docs/design/2026-10-16-editor-completion-measurements.md</code>.</p>
 <h5 id="53a12-batch-conversion-wizard">5.3a.1.2 Batch Conversion
 wizard</h5>
 <p><strong>File &gt; Import &gt; Batch Conversion…</strong> and
@@ -4834,6 +4885,22 @@ Settings.</li>
 Tab expansion. <code>Ctrl+Alt+Space</code> opens Insert Snippet;
 <code>Ctrl+Alt+Shift+Space</code> opens Manage Snippets. Off by default
 in prose, on by default in code. Editable in Settings.</li>
+<li><strong>Named-text lists (2026-10-16, item 45).</strong> The Insert
+Snippet picker (<code>quill/ui/searchable_picker.py</code>, shared by
+Insert HTML Tag and Move Section To) shows at most 200 matches with the
+true count in its status line and, for libraries above that, refills 150
+ms after the last key (Enter and the arrows flush a pending refill
+first); measured fill cost was 0.22-0.3 ms a row, 2.2-3 s for 10,000.
+Snippet, abbreviation and Copy Tray search match the whole query or
+every word in any order (<code>quill/core/list_search.py</code>). The
+Abbreviations manager (QUILL, QUILL Lite, Inkwell) is a virtual report
+list (<code>quill/ui/virtual_report_list.py</code>; native type-ahead
+answered through <code>LVN_ODFINDITEM</code>) that keeps its selection
+by identity. Every <code>apply_listbox_activation</code> list has
+type-ahead through <code>quill.core.type_ahead.TypeAheadBuffer</code>:
+Space while a name is being typed (within 1.2 s) extends the name
+instead of activating the row; Enter activates and Escape closes,
+unchanged.</li>
 <li><strong>Save options</strong> (per document and per workspace): trim
 trailing whitespace on save, ensure final newline, normalise line
 endings on save.</li>

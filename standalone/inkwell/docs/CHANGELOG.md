@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- **A big abbreviation list opens and searches at once** (2026-10-16). **Manage Abbreviations** (Ctrl+M) reads its rows only as you reach them, so ten thousand abbreviations fill instantly (it took over three seconds, and again after every key typed in the search box). The search finds words in any order, and the selection stays on the abbreviation you were on when the search changes.
+
 - **Fixing it when you correct yourself** (2026-10-16). With **Fix it when I
   correct myself** (Alt+X) checked in Dictation Settings, "Thursday, no,
   Friday" types Friday: a "no", "I mean", "sorry" or "scratch that word"

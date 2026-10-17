@@ -385,6 +385,7 @@
   "quill.ui.regex_helper_dialog": "reachable",
   "quill.ui.remote_sites_dialog": "reachable",
   "quill.ui.save_conflict_dialog": "reachable",
+  "quill.ui.searchable_picker": "reachable",
   "quill.ui.session_browser": "reachable",
   "quill.ui.session_restore_dialog": "reachable",
   "quill.ui.settings_recipes_dialog": "reachable",

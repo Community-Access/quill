@@ -2250,6 +2250,43 @@ in QUILL. Not done yet: File &gt; Import / Convert Document (spec phase
 portable build’s dependency groups (the installed build already carries
 pdfplumber, pypdf, pypdfium2 and winrt in the shared runtime).</li>
 </ul>
+<h2
+id="the-read-only-guard-word-names-and-typing-a-name-in-a-list-2026-10-16">The
+Read-Only Guard, Word names, and typing a name in a list
+(2026-10-16)</h2>
+<p><strong>Read-Only Guard.</strong> QUILL’s command (EDS-8) on QUILL’s
+key: <strong>Tools &gt; Read-Only Guard</strong>
+(<strong>Ctrl+Alt+Backspace</strong>, a check row), handler
+<code>cmd_toggle_read_only</code>, parity
+<code>power.toggle_read_only_guard</code>. The memory is QUILL’s module,
+<code>quill/core/read_only_guards.py</code>, with QUILL Lite’s own file
+in its data folder (<code>paths.data_file</code>, which does not create
+the folder to read). Keys are normalised the way document memory is, so
+a file opened from File Explorer under another spelling finds its guard.
+A failed write is spoken, never swallowed. While on, the control is
+read-only and
+<code>quill/core/lite/read_only.TEXT_CHANGING_HANDLERS</code> are
+refused by name at the menu and status-cell dispatch
+(<code>DocumentReadOnlyMixin.run_unless_read_only</code>) with “Document
+is read-only”; reading, Find, Go To, bookmarks and inline notes work, a
+note going beside the file through the shared
+<code>_host_read_only</code>; a word tool’s Replace refuses through
+<code>refuse_if_guarded</code>. A file that cannot be written opens
+guarded, as in QUILL.</p>
+<p><strong>Word names.</strong> QUILL Lite neither opens nor writes Word
+documents; a typed <code>.docx</code>, <code>.docm</code>,
+<code>.dotx</code> or <code>.dotm</code> is refused with one sentence
+naming Rich Text (<code>filetypes.word_save_refusal</code>) before
+anything else is asked, on Save As, Save and the collector’s quiet save.
+Before this, the window’s text was written under the Word name. QUILL
+writes <code>.docx</code>; QUILL Lite is behind here, not ahead.</p>
+<p><strong>Typing a name in a list.</strong> Every
+<code>apply_listbox_activation</code> list (Snippets, Recent Documents,
+the bookmark and heading lists, Recent Clips) has type-ahead from
+QUILL’s <code>TypeAheadBuffer</code>; Space while a name is being typed
+is part of the name. Manage Abbreviations is a virtual list
+(<code>quill/ui/virtual_report_list.py</code>) whose search matches
+every word in any order and keeps the selection by identity.</p>
 </main>
 </body>
 </html>
