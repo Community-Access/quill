@@ -4118,16 +4118,15 @@ class MainFrame(
             self._set_status_quiet("Speaking through your screen reader.")
             return
         # No screen reader: the self-voice was the only voice, so this is a real
-        # problem the user must hear and may want to revisit. (The retry is
-        # Tools > Retry TTS Engine.)
+        # problem the user must hear and may want to revisit. There is no retry
+        # command (the menu audit of 2026-10-16 found the old wording named one
+        # that never existed), so the honest route is a restart.
         self._record_notification(
-            "Text-to-speech (the SAPI 5 self-voice) did not start. Run "
-            "Tools > Retry TTS Engine to try again.",
+            "Text-to-speech (the SAPI 5 self-voice) did not start. Restart QUILL to try again.",
             "accessibility",
         )
         self._set_status(
-            "Text-to-speech failed to start, so QUILL has no voice. "
-            "Run Tools > Retry TTS Engine to try again."
+            "Text-to-speech failed to start, so QUILL has no voice. Restart QUILL to try again."
         )
 
     def _screen_reader_handling_speech(self) -> bool:

@@ -418,7 +418,7 @@ class DictationHotkeysMixin(WindowsDictationCommandsMixin):
                 else:
                     self._announce(
                         "Dictation needs the offline speech engine. You can install it "
-                        "any time from Tools, Speech, Download Offline Speech Engine.",
+                        "any time from Help, Download Optional Components.",
                         force=True,
                     )
                 return False

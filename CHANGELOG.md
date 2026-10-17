@@ -2,6 +2,15 @@
 
 ## 1.0.0
 
+### Three messages that named menu items that do not exist (2026-10-16)
+
+The documentation-versus-menu audit found QUILL itself pointing people at
+rows no menu has. When the self-voice fails with no screen reader running,
+QUILL said "Run Tools > Retry TTS Engine"; there is no such command, so it
+now says to restart QUILL. The dictation pre-flight and the whisper.cpp
+provider said "Tools, Speech, Download Offline Speech Engine"; that download
+now lives in Help > Download Optional Components, and both say so.
+
 ### The wider searches are on Edit in both editors, and GATE-DOCMENU checks every app's docs against its menus (2026-10-16)
 
 Jeff, launching QUILL Lite from source with its changelog in hand: "many

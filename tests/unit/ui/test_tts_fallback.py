@@ -72,7 +72,7 @@ def test_failure_without_screen_reader_speaks_correct_retry(
     assert len(stub.spoken) == 1
     message = stub.spoken[0]
     assert "F8" not in message  # the old wrong instruction is gone
-    assert "Retry TTS Engine" in message  # the real retry path
+    assert "Restart QUILL" in message  # no retry command exists; a restart is the route
     assert len(stub.notes) == 1
 
 
