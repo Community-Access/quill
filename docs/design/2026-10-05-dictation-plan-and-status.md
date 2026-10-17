@@ -313,6 +313,32 @@ capital after "¿", "¿" and "¡" not stripped). The drafted Spanish commands
 `QUILL_DICTATION_SPANISH_COMMANDS=1`. Nemotron and Parakeet TDT dictate Spanish
 too, as downloads.
 
+**Drafted 2026-10-17, behind the same switch (Jeff: "draft them, gated").** Two
+more Spanish forms, in `quill/core/windows_dictation/vocabulary_es.py`, kept
+apart from `SPANISH_COMMAND_HELP` because their English twins are matched
+outside the vocabulary too (review commands by `REVIEW_COMMANDS`, the answer by
+`CorrectionLearningMixin._learn_answer`):
+
+| English | Drafted Spanish | Where it is matched | Why these words |
+|---|---|---|---|
+| "QUILL polish that" / "polish it" (P3) | "pule eso", "púlelo", "mejora eso" (`SPANISH_REVIEW_HELP`) | `ReviewMixin._review_command`, through `spanish_review_command(words, language)` | *Pulir* is the verb a Spanish writer uses for polishing a text; "púlelo" is the same with the object pronoun; "mejora eso" ("improve that") is the everyday fallback. "Corrige eso" was left out: "corrige" followed by words is already the drafted "correct X". |
+| "QUILL yes" / "QUILL no" to "Add a correction: A becomes B?" (D-21, QUILL Transcribe's spoken offer) | "sí" / "no" (`SPANISH_ANSWERS`) | `CorrectionLearningMixin._learn_answer`, through `spanish_answer(words, language)` | "No" is the same word in both languages; "sí" is matched folded, so a recogniser's "si" counts too. |
+
+Both helpers answer only when the dictation language is Spanish **and**
+`spanish_commands_enabled()` is true (a development build with
+`QUILL_DICTATION_SPANISH_COMMANDS=1`), so nothing changes for anybody until a
+native speaker has checked them. The English forms keep working in Spanish
+dictation either way, and the spoken offer stays in English ("Say QUILL yes to
+add it, or QUILL no."), like the rest of the interface (dict.md 9.6). The
+published dictation command reference is unchanged, because it lists the
+drafted Spanish commands only when the switch is on. Tests:
+`tests/unit/core/test_dictation_spanish_drafts.py` (nothing parses with the
+switch off or in a release build; with it on, the phrases parse in Spanish
+only; "QUILL sí" adds a correction and "QUILL pule eso" polishes through the
+controller, and neither does with the switch off). The questions for the
+native speaker are in `docs/qa/screen-reader-checks-2026-10.md`, "Spanish
+review".
+
 **The Spanish punctuation design, kept.** Marks are recognised anywhere in a
 phrase, and "coma" ("que coma") and "punto" ("el punto es") are ordinary
 Spanish words, which is why they count only while automatic punctuation is
@@ -324,7 +350,7 @@ next word like an opening bracket.
 | Item | Needs |
 |---|---|
 | **The Spanish measurement** (dict.md 9.7 step 2): accuracy, speed and memory of multilingual Whisper tiny on Spanish against the section 1 budgets, and whether Whisper writes "¿" and "¡" itself | Ten Spanish recordings from a native speaker (instructions below) |
-| **Native-speaker review** of the wake and stop phrases, the Spanish punctuation words, and the Spanish command table, before the commands are switched on | A native speaker's time |
+| **Native-speaker review** of the wake and stop phrases, the Spanish punctuation words, the Spanish command table, and the 2026-10-17 drafts ("pule eso", "sí" / "no"), before the commands are switched on; the list of questions is "Spanish review" in `docs/qa/screen-reader-checks-2026-10.md` | A native speaker's time |
 | **The real-voice test** for every engine and model (the 2026-10-05 numbers are on a synthetic voice, which flatters every engine) | Recordings of real voices, ideally several |
 | **Measurements on the baseline machine** with NVDA and JAWS running: speed, memory high-water mark, screen-reader lag, battery draw over ten minutes, for every offered model; then tightening each model's `cost_factor` (the Distil-Whisper and large-v3 factors are estimates) | A 4 GB dual-core Windows 10 computer and a person to listen |
 | **A CI-runnable benchmark gate** (`dictbench.py` baseline mode): every engine offered must meet the speed budget on one thread on recorded speech | Recorded speech checked into a test-asset location, and a CI runner whose speed is stable enough to gate on |
@@ -2181,6 +2207,23 @@ Dictation Settings.") and sends nothing. It is never automatic: Polished as a
 style allows it and sends dictation to review first, but each polish is still
 asked for.
 
+**Not shown in Quill Inkwell (decided by Jeff, 2026-10-17: "hide it").**
+Inkwell types into other programs and has no Review Dictation, so the box did
+nothing there. Inkwell's `edit_anywhere_settings` now opens
+`WindowsDictationDialog(..., review=False)`, which passes `review=False` on to
+`MoreDictationDialog`: the **Allow polishing my dictation with AI** box is not
+built (`self.polish` is `None`) and `values()` leaves
+`windows_dictation_polish` out, so the saved value, which the family store may
+share with QUILL, is untouched. `DictationStyleMixin` follows the same flag:
+with `_review` false it neither reads nor writes the polish and review-first
+fields, so choosing Verbatim or Clean in Inkwell sets only the two check boxes
+and cannot turn polishing off for QUILL. Every other box keeps its access key,
+and Alt+G is simply unused in Inkwell's copy (GATE-14 holds in both shapes).
+QUILL, QUILL Lite and QUILL Transcribe pass nothing and keep the box. Tests:
+`tests/unit/ui/test_dictation_more_dialog.py` (the box is gone, the value is
+kept, no access key repeats, Clean leaves polishing alone, Inkwell passes
+`review=False`).
+
 ### D-21. Learning from confirmed corrections
 
 **Module.** `quill/core/windows_dictation/correction_learning.py`, wx-free;
@@ -2279,8 +2322,10 @@ a small screen). All use fakes: no microphone, no network, no real window.
 ### What remains
 
 - D-23 named profiles, which switch the context lists on.
-- Spanish phrases for "polish that" and the yes/no answer; the review commands
-  are English only today, like the rest of D-2.
+- Spanish phrases for "polish that" and the yes/no answer: **drafted
+  2026-10-17**, behind the development switch with the rest of the Spanish
+  commands (section 9); waiting for the native-speaker pass. The other review
+  commands are English only today, like the rest of D-2.
 - Screen-reader passes of the Add a Correction box and the style chooser
   (`docs/qa/screen-reader-checks-2026-10.md`).
 ## 29. As built, 2026-10-16: named profiles (D-23), and lessons, practice and the recognition test (D-25)
@@ -3049,6 +3094,54 @@ real release names when they are scheduled. QUILL Lite and Transcribe are
 affected only by the catalogue decision on the Whisper sizes, because
 whisper.cpp, Faster Whisper and the duplicate providers are QUILL-only. QUILL
 Cast is affected by Vosk only as the chapter engine, which stays.
+
+## 33. Documentation, 2026-10-17: every guide checked against the engines as built
+
+A family-wide pass rebuilt the engine and model story from the code and
+corrected every guide, PRD, release note, help topic and the site's dictation
+page against it (root CHANGELOG, "Speech engines and models: every guide says
+what the code does"). Three findings change what earlier sections imply and
+are recorded here:
+
+* **"A fresh install dictates at once" (section 22) holds for Locked
+  Dictation's transcription, not its pre-flight.** `_dictation_preflight` asks
+  `_speech_provider()`, which falls back to whisper.cpp, and offers the ~8 MB
+  whisper.cpp engine when it is missing; only after that does the ladder's
+  Moonshine tiny step apply. Dictate (Offline), Transcribe Audio or Video,
+  captions and the voice features (with the default Follow main engine) use
+  `_speech_provider()` and `_check_installed_speech_models`, so they need a
+  model for the chosen engine. Choosing QUILL speech models (`sherpa`) is the
+  only way nothing downloads at all. The guides now say exactly this.
+* **Dictate in Other Programs goes to QUILL Transcribe first**
+  (`windows_dictation_extras._dictation_hand_to_transcribe`), and to Inkwell
+  only when QUILL Transcribe is neither running nor released.
+* **Quill Inkwell alone cannot run the built-in models, OpenAI or the
+  providers**: its installer carries neither `dictation-models` nor
+  sherpa-onnx, and OpenAI and the providers still load sherpa-onnx's voice
+  detector (`local_recognizer._check_audio_stack`). On an Inkwell-only
+  computer only Windows speech recognition works; the Inkwell guide says so
+  and points to QUILL Transcribe. Whether Inkwell should ship that part is a
+  product decision, not made.
+
+## 34. As built, 2026-10-16: the live preview on a braille display in QUILL Lite
+
+The live preview (section 3) reaches a braille display through
+`ScreenReaderVoice.braille`, and every spoken dictation status is mirrored to
+the display after it is spoken. In QUILL Lite both went straight to the display,
+one write per message, so a preview that changed several times a second
+replaced the cells faster than a finger could read them. QUILL never had this:
+its announcement service has run braille through `CoalescingBrailleWriter`
+(`quill/ui/announce_wiring.py`) since 2026-08.
+
+QUILL Lite now uses the same writer, not a copy. The voice switches the shared
+engine's inline braille off when it builds the engine, and sends the speech
+mirror and every preview through one coalescer: the first message of a quiet
+moment writes at once, and a burst lands as its newest message when the 150 ms
+window closes. Speech is not delayed at all. In practice, the display shows the
+first words of a phrase as they are heard and the whole phrase a moment after
+the speaker pauses, with nothing in between. Tests:
+`tests/unit/apps/test_lite_braille_coalescing.py` (fakes only: a fake engine
+and a fake timer). User-facing: QUILL Lite's user guide, *On a braille display*.
 
 ## Appendix A: the dict.md section numbers, and where they live now (the first dict.md, 2026-10-05)
 

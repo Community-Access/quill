@@ -525,16 +525,30 @@ default**, because the users this editor is for are disproportionately
 light-sensitive and a first launch that is bright white is a first launch some of
 them cannot read.
 
-### 4.5 Speech, and not braille
+### 4.5 Speech, and braille through QUILL's coalescer
 
 QUILL Lite announces through a running screen reader and nowhere else.
 `ScreenReaderVoice` reaches NVDA and JAWS through Prism or accessible_output2
 and Narrator through a UIA notification, and hands nothing to the engine unless
-a reader is actually running. There is **no self-voicing fallback** and there is
-**no braille output**: nothing in the QUILL Lite tree routes an announcement to a
-braille display, where QUILL has a braille service that does.
+a reader is actually running. There is **no self-voicing fallback**.
 
-This is a decision, recorded so it stops reading as an oversight.
+**Braille (corrected 2026-10-16).** This section used to say QUILL Lite had no
+braille output. That stopped being true when the shared engine began mirroring
+every announcement to the display (#1283), and when dictation's live preview
+gained `ScreenReaderVoice.braille`. What QUILL Lite lacked was QUILL's burst
+coalescing, so a dictation preview or a run of status changes replaced the
+display faster than it could be read. Now the engine's inline braille is
+switched off when the voice builds it (`set_braille_enabled(False)`), and every
+braille write -- the mirror of a spoken message, after the speech and only when
+the speech went out, and every `braille()` preview -- goes through one
+`quill.ui.announce_wiring.CoalescingBrailleWriter`, QUILL's own class: the first
+message of a quiet moment writes at once, and a burst lands as its newest
+message one 150 ms window later. Speech timing is unchanged. QUILL Lite has no
+braille settings group and gains none; what follows is about why it still does
+not have one.
+
+The rest of this section was written about a second output channel with its own
+settings, and still stands as the reason QUILL Lite has no braille *settings*.
 
 **Why.** A braille route is not a line of code; it is a delivery channel with
 its own verbosity rules, its own truncation problems, and its own way of being
@@ -588,6 +602,20 @@ cannot leave somebody with a truncated original *and* no recovery.
 The interval is a setting (`autosave_seconds`, 15–600 seconds, **default 30**),
 reachable only from Preferences -- **Copy unsaved work aside every (seconds)**.
 It has no key and no menu row, deliberately: it is a number somebody sets once.
+
+### 5.2a When the screen reader dies (2026-10-16)
+
+QUILL's screen-reader watchdog, through the same wx-free core
+(`quill/core/sr_watchdog.py`) and a small mixin on the app
+(`quill/apps/lite_sr_watchdog.py`). Every 30 seconds the running reader is
+detected; two consecutive misses confirm a death (one, a routine restart, never
+does). Then every window with unsaved changes writes its recovery copy at once
+(5.2) and the shared sentence -- "NVDA appears to have stopped. Your work is
+safe: 2 documents snapshotted to autosave. QUILL Lite keeps running; restart
+your screen reader when ready." -- goes to the active window's status bar and
+to the voice, which speaks only if another reader is running. A recovery
+re-probes the voice and says "NVDA is running again." It never closes the app,
+and no setting gates it, in either editor.
 
 ### 5.3 Its own data folder
 
@@ -942,6 +970,22 @@ That half was not taken. The requirements instead:
   shipped code against a loopback server shaped like both providers, with
   synthetic keys.
 
+### 5.6d What is spoken, and where a request goes (2026-10-16)
+
+**Spoken answers are speech-safe.** An answer delivered at the cursor or on the
+clipboard, and every conversation reply, is spoken through
+`quill.core.ai.spoken_answer.speakable_line`: Markdown symbols and link
+addresses are left out of what the reader is handed. The inserted, copied and
+transcript text is the answer as it came.
+
+**A route change asks first.** The shared `AiService` remembers which route
+requests took this session (ChatGPT plan, own key, free AI). A request that
+would take another without the listener having chosen it -- a key gone from the
+store, a sign-in that stopped working -- is a substitution
+(`quill.core.ai.fallback.plan_substitution`) and asks in a Yes/No box, No the
+default; No sends nothing. Signing in or out of ChatGPT and saving or removing a
+key mark the new route as chosen. Shared with QUILL, which has the same pad.
+
 ### 5.7 Every switch has a way back, from inside the app
 
 A preference somebody can turn off and cannot turn back on is not a preference;
@@ -1087,6 +1131,18 @@ a dictation command, key or setting.
   from OpenAI's live list without retiring models, Realtime transcription for
   `gpt-live-transcribe`, never a silent switch, refused in Safe Mode, three
   reviewed egress entries, and a Dictation section in the privacy statement.
+- **Speech providers, own account only** (2026-10-16, dictation design record
+  section 23, D-31 to D-37; the same as QUILL through the shared
+  `quill/core/windows_dictation/cloud/` package and `quill/ui/speech_providers_dialog.py`):
+  Dictation Settings' **Speech Providers...** (Alt+V) sets up Azure, Google,
+  Amazon, Deepgram, AssemblyAI, Speechmatics, ElevenLabs, Gladia, Rev.ai, Groq,
+  Mistral or IBM Watson; secrets in Windows Credential Manager, Test Connection
+  never sends speech, a generated consent with No the default, refused in Safe
+  Mode, never recommended, never a silent switch.
+- **Model tiers and a recommendation** (D-22) and **one sherpa-onnx store**
+  (D-26): Speech Models names Lightweight, Balanced or High accuracy on every
+  model and recommends one for this computer (What matters most, Alt+W);
+  downloads are shared with QUILL and QUILL Transcribe.
 - **My Dictation Instructions** (`instructions.py`) for Tidy Dictated Text.
 - **Kind to a modest computer** (`keep_up.py`): the keep-up watchdog and models
   unloaded five minutes after the last session.

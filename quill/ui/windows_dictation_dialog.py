@@ -5,15 +5,15 @@ Dictation has to work well without anybody opening this window. It holds:
 * **Which speech engine** -- Moonshine (the default), Whisper, Windows' own
   recogniser, and any optional model downloaded with **Better Accuracy: Speech
   Models...** (:mod:`quill.ui.dictation_models_dialog`).
-* **Which microphone**, saved by name: the one thing every engine agrees on,
-  where tokens and device numbers change when a device is replugged.
+* **Which microphone**, saved by name: tokens and device numbers change on replug.
 * **What happens after each phrase** (the shared
   :data:`~quill.core.action_feedback.ACTION_FEEDBACK_LABELS`), sounds, and
   saying "Dictation on" and "Dictation off".
 * **The finer choices** (:mod:`quill.core.windows_dictation.options`), and
   the named **Dictation style** -- Verbatim, Clean or Polished -- with **Fix it
   when I correct myself** (D-20, :mod:`quill.core.windows_dictation.self_repair`).
-  Polished is offered only when the host says AI is on (``ai_on``).
+  Polished is offered only when the host says AI is on (``ai_on``); a host
+  without Review Dictation (``review=False``) never touches polishing.
 * **Test Microphone**: four seconds on a worker; the result goes into a field
   beside the button and is spoken, because a field changing beside the focused
   button is exactly what a screen reader does not announce.
@@ -21,9 +21,8 @@ Dictation has to work well without anybody opening this window. It holds:
   holding the key, the live preview, talking to the AI, and OpenAI. Choosing
   OpenAI as the engine asks first, in plain words, whether your speech may be
   sent (:data:`~quill.core.windows_dictation.openai_models.CONSENT_TEXT`).
-* **Speech Providers...** (D-31, :mod:`quill.ui.windows_dictation_cloud`):
-  a speech service the person already has an account with; once set up it is
-  listed as an engine, and choosing it asks first, from its own facts.
+* **Speech Providers...** (D-31, :mod:`quill.ui.windows_dictation_cloud`): a
+  service the person has an account with, listed as an engine once set up.
 
 Nothing is applied until OK, and :meth:`WindowsDictationDialog.apply` writes
 only the fields this window owns.
@@ -40,9 +39,9 @@ from quill.core.action_feedback import ACTION_FEEDBACK_LABELS
 from quill.core.action_feedback import coerce as coerce_feedback
 from quill.core.windows_dictation.controller import DEFAULT_PHRASE_FEEDBACK
 from quill.core.windows_dictation.engines import (
-    ENGINES,
     coerce_engine,
     engine_choices,
+    engine_list_help,
     language_model_problem,
 )
 from quill.core.windows_dictation.model_advice import for_this_computer
@@ -114,6 +113,7 @@ class WindowsDictationDialog(
         my_words: list[str] | None = None,
         help_for: dict[str, str] | None = None,
         ai_on: bool = False,
+        review: bool = True,
     ) -> None:
         super().__init__(parent, title="Dictation Settings")
         self._announce = announce or (lambda _text: None)
@@ -125,8 +125,9 @@ class WindowsDictationDialog(
         self._my_words = my_words
         #: More Dictation Settings' choices, applied with this window's OK.
         self._more: dict[str, object] = {}
-        #: Whether AI is on here, so the Polished style can be offered (D-20).
-        self._ai_on = bool(ai_on)
+        #: Whether AI is on here, so the Polished style can be offered (D-20), and
+        #: whether this host has Review Dictation (Quill Inkwell has not).
+        self._ai_on, self._review = bool(ai_on), bool(review)
         # Two columns, so the window fits a 768-pixel-high screen. Tab order is
         # creation order, which runs down the left column and then the right.
         outer = wx.BoxSizer(wx.VERTICAL)
@@ -138,11 +139,7 @@ class WindowsDictationDialog(
         rows = self._with_cloud_rows(engine_choices(saved_engine), saved_engine)
         self._engine_ids = [engine_id for engine_id, _label in rows]
         self.engine = wx.Choice(self, choices=[label for _id, label in rows])
-        self.engine.SetHelpText(
-            "Which speech recogniser dictation uses. "
-            + " ".join(f"{engine.label}: {engine.description}" for engine in ENGINES)
-            + " Models you download with Better Accuracy: Speech Models are listed too."
-        )
+        self.engine.SetHelpText(engine_list_help())
         self.engine.SetSelection(self._engine_ids.index(saved_engine))
         self._engine_row = self.engine.GetSelection()
         self.engine.Bind(wx.EVT_CHOICE, self._on_engine)
@@ -150,9 +147,9 @@ class WindowsDictationDialog(
         root.Add(self.engine, 0, wx.EXPAND | wx.ALL, _PAD)
         self.speech_models = wx.Button(self, label="&Better Accuracy: Speech Models...")
         self.speech_models.SetHelpText(
-            "Optional, larger speech models for better accuracy -- the ones VS Code "
-            "offers and the rest of the Whisper family -- to download, remove or choose. "
-            "Dictation works without them."
+            "Optional, larger speech models for better accuracy, such as Nemotron, Parakeet "
+            "and the Whisper family, to download, remove or choose; it recommends one for "
+            "this computer. They run here, so speech stays here. Dictation works without them."
         )
         self.speech_models.Bind(wx.EVT_BUTTON, self._on_speech_models)
         engine_buttons = wx.BoxSizer(wx.HORIZONTAL)
@@ -519,6 +516,7 @@ class WindowsDictationDialog(
             pending=self._more,
             my_words=self._my_words,
             help_for=self._help_for,
+            review=self._review,
         )
         if focus_model:
             dialog.focus_model()

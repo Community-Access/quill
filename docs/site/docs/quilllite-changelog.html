@@ -248,6 +248,44 @@
 2, 3 and 4; builds 2 and 3 were uploaded for testing. The new packages
 have not been published yet.</p>
 <ul>
+<li><p><strong>Your braille display no longer flickers while you
+dictate.</strong> Messages that arrive in a quick burst, such as
+dictation’s live preview or a run of status changes, now settle on the
+display: the first shows at once, and a moment later the newest replaces
+the rest. Before, each one replaced the last as fast as it came, faster
+than a finger could read the first cell. Speech is exactly as before:
+every message is spoken the moment it happens. QUILL has worked this way
+for some time, and QUILL Lite now uses the same code. For example,
+dictate a sentence and pause: the display shows the first words, then
+the whole phrase, with no blur in between. See <em>On a braille
+display</em> in the user guide.</p></li>
+<li><p><strong>AI answers are read as words, not symbols.</strong> When
+an answer goes to the cursor or the clipboard, or arrives in an AI
+conversation, QUILL Lite reads it without the Markdown: no “star star”,
+no “hash hash”, and a link by its words rather than its web address. A
+block of code is read as “code block”. What goes into your document,
+onto the clipboard or into the conversation is the answer exactly as it
+came. See <em>How answers are read aloud</em>.</p></li>
+<li><p><strong>QUILL Lite asks before sending your text to a different
+AI.</strong> If your own key or your ChatGPT sign-in stops working while
+QUILL Lite is running, the next request no longer goes quietly to
+QUILL’s free AI instead. A <strong>Send to a Different AI?</strong> box
+asks first, and <strong>No</strong>, the default, sends nothing.
+Changing it yourself in <strong>Use My Own AI Key</strong>
+(<strong>Alt+F2</strong>) or <strong>Use My ChatGPT
+Subscription</strong> (<strong>Alt+F5</strong>) is never questioned. See
+<em>If the AI you use is not available</em>.</p></li>
+<li><p><strong>If your screen reader stops, your work is saved
+first.</strong> QUILL Lite now checks every thirty seconds that NVDA or
+JAWS is still running. When it has missed it twice in a row, every
+document with unsaved changes writes its spare copy at once, and the
+status bar says what happened, for example “NVDA appears to have
+stopped. Your work is safe: 2 documents snapshotted to autosave. QUILL
+Lite keeps running; restart your screen reader when ready.” When the
+reader is back you hear “NVDA is running again.” QUILL Lite never closes
+because of it, and there is nothing to turn on. QUILL has the same
+protection, and the two now share the code. See <em>If your screen
+reader stops</em>.</p></li>
 <li><p><strong>Find in Open Documents, Search in Files and Replace
 Across Files are on the Edit menu itself, where you would look for
 them.</strong> They had been one level down, inside <strong>Edit &gt;
@@ -284,6 +322,25 @@ backups, has to say in the same chapter how to switch it on. The first
 run found the Sound Scheme path written as if App Sounds Play On were a
 menu (it is a button in the Sound Scheme window), now
 corrected.</p></li>
+<li><p><strong>The user guide helps you choose a speech engine.</strong>
+Chapter 9 has a new section, “Which engine should I choose?”: privacy,
+speed, accuracy, memory and Spanish in plain words, what the
+Lightweight, Balanced and High accuracy tiers mean, the
+<strong>Recommended for this computer</strong> line and Speech Models’
+<strong>What matters most</strong> (<strong>Alt+W</strong>),
+<strong>Recommendation</strong> (<strong>Alt+C</strong>) and
+<strong>Show Recommended Model</strong> (<strong>Alt+S</strong>), with
+examples and a worked example from advice to download. The engine table
+now lists every choice, including downloaded models and the speech
+providers, and says Whisper dictates Spanish too (it said English only).
+“Speech providers: dictation with your own account” now explains what is
+sent, the question with No as the default, Windows Credential Manager,
+Test Connection, which providers show words while you speak, and the
+limits. The guide also says the models folder is shared with QUILL
+Transcribe and Quill Inkwell, and that <strong>Dictate in Other
+Programs…</strong> (<strong>Alt+O</strong>) hands your settings to QUILL
+Transcribe when it is installed, and to Quill Inkwell
+otherwise.</p></li>
 <li><p><strong>QUILL Transcribe is released on 1 November 2026.</strong>
 The user guide’s list of QuillVille apps that open full screen and
 remember their window (“The window”) now names QUILL Transcribe, the

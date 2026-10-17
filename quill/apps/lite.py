@@ -47,6 +47,7 @@ from quill.apps.lite_services import LiteServicesMixin
 from quill.apps.lite_session import LiteSessionMixin
 from quill.apps.lite_settings_persistence import LiteSettingsPersistenceMixin
 from quill.apps.lite_shell import QuillLiteShell
+from quill.apps.lite_sr_watchdog import LiteSrWatchdogMixin
 from quill.apps.lite_updates import check_at_launch
 from quill.apps.lite_voice import ScreenReaderVoice
 from quill.apps.lite_window import DocumentFrame
@@ -88,6 +89,7 @@ class QuillLiteApp(
     LiteSessionMixin,
     LiteServicesMixin,
     LiteSettingsPersistenceMixin,
+    LiteSrWatchdogMixin,
     wx.App,
 ):
     """The window registry, the settings owner, and the single-instance inbox."""
@@ -220,6 +222,7 @@ class QuillLiteApp(
         self.starting_up = False
         # The quiet once-a-day update check; silent unless there is one.
         check_at_launch(self)
+        self._start_sr_watchdog()  # a reader dying mid-session saves work first
         return True
 
     def next_document_number(self) -> int:
@@ -475,6 +478,7 @@ class QuillLiteApp(
         self._inbox_timer = None
         if timer is not None:
             timer.Stop()
+        LiteSrWatchdogMixin._stop_sr_watchdog(self)  # safe on any stand-in
         if getattr(self, "task_manager", None) is not None:  # F-05's background opens
             self.task_manager.shutdown(wait=False, cancel_pending=True)
 

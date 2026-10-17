@@ -19,8 +19,13 @@ published as of 2026-10-16). See `docs/userguide.md`,
 - `QUILL-Transcribe-Portable-1.0.0.zip` -- unpack anywhere; settings stay in its
   own `data` folder next to the app.
 
-Neither download fetches anything on first use. Both include the Moonshine and
-Whisper speech models and the engine that runs them.
+Neither download fetches anything on first use. Both include the built-in
+Moonshine (the default) and Whisper speech models, Whisper's multilingual model
+for Spanish, and the sherpa-onnx engine that runs them. Larger models (141 MB
+to 1.8 GB, tiered Lightweight, Balanced or High accuracy) download only when
+you ask, from Model > Model Library (Ctrl+L). OpenAI and twelve speech
+providers can be used with your own account, after a question whose default
+is No. The user guide's "Models" chapter explains how to choose.
 
 ## This folder
 

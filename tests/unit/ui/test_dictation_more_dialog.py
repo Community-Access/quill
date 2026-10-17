@@ -228,3 +228,103 @@ def test_the_buttons_that_close_the_window_check_the_command_word_too(wx_app, mo
         assert ended == [DICTATE_ANYWHERE]
     finally:
         dialog.Destroy()
+
+
+# -- a host with no Review Dictation (Quill Inkwell, 2026-10-17) ----------------- #
+
+
+class _Polishing:
+    windows_dictation_polish = True
+    windows_dictation_review_first = False
+
+
+def _mnemonics(dialog: Any) -> list[str]:
+    keys = []
+    for child in dialog.GetChildren():
+        label = child.GetLabel() if hasattr(child, "GetLabel") else ""
+        if "&" in label.replace("&&", ""):
+            keys.append(label[label.index("&") + 1].lower())
+    return keys
+
+
+def test_the_polishing_box_is_shown_where_review_dictation_exists(wx_app) -> None:
+    dialog, _said = _dialog()
+    try:
+        assert dialog.polish is not None and dialog.polish.IsShown()
+        assert dialog.values()["windows_dictation_polish"] is False
+    finally:
+        dialog.Destroy()
+
+
+def test_without_review_dictation_the_box_is_gone_and_the_choice_is_kept(wx_app) -> None:
+    from quill.ui.dictation_more_dialog import MoreDictationDialog
+
+    dialog = MoreDictationDialog(None, _Polishing(), None, load_models=False, review=False)
+    try:
+        assert dialog.polish is None
+        labels = [child.GetLabel() for child in dialog.GetChildren()]
+        assert not any("polish" in label.lower() for label in labels)
+        assert "windows_dictation_polish" not in dialog.values()  # left as saved
+        keys = _mnemonics(dialog)
+        assert len(keys) == len(set(keys))  # GATE-14 in this host too
+    finally:
+        dialog.Destroy()
+    shown, _said = _dialog()
+    try:
+        keys = _mnemonics(shown)
+        assert len(keys) == len(set(keys)) and "g" in keys
+    finally:
+        shown.Destroy()
+
+
+def test_inkwell_styles_never_touch_polishing(wx_app) -> None:
+    from quill.ui.windows_dictation_dialog import WindowsDictationDialog
+
+    dialog = WindowsDictationDialog(None, _Polishing(), review=False)
+    try:
+        dialog.style.SetSelection(dialog._styles.index("clean"))
+        dialog._on_style(None)
+        assert dialog._styles[dialog.style.GetSelection()] == "clean"
+        settings = _Polishing()
+        dialog.apply(settings)
+        assert settings.windows_dictation_polish is True  # as QUILL left it
+        assert settings.windows_dictation_self_repair is True
+    finally:
+        dialog.Destroy()
+    editors = WindowsDictationDialog(None, _Polishing())
+    try:
+        editors.style.SetSelection(editors._styles.index("clean"))
+        editors._on_style(None)
+        settings = _Polishing()
+        editors.apply(settings)
+        assert settings.windows_dictation_polish is False  # Clean turns it off there
+    finally:
+        editors.Destroy()
+
+
+def test_inkwell_opens_dictation_settings_without_review(monkeypatch) -> None:
+    import quill.ui.windows_dictation_dialog as module
+    from quill.apps.inkwell_dictation import InkwellDictationMixin
+
+    seen: dict[str, Any] = {}
+
+    class _Stop(Exception):
+        pass
+
+    def _record(*_args: Any, **kwargs: Any) -> Any:
+        seen.update(kwargs)
+        raise _Stop
+
+    class _Host(InkwellDictationMixin):
+        frame = None
+
+        def _anywhere_settings(self) -> Any:
+            return _Settings()
+
+        def _announce(self, _text: str) -> None:
+            pass
+
+    monkeypatch.setattr(module, "WindowsDictationDialog", _record)
+    with pytest.raises(_Stop):
+        _Host().edit_anywhere_settings()
+    assert seen.get("review") is False

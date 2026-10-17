@@ -8,7 +8,7 @@ Everything QUILL Lite and QUILL's Live Dictation understand, generated from the 
 - Commands only work as a whole phrase, said on their own after a pause. "Delete that line of text" in a sentence is just words.
 - With "Just write what I say" switched on in Dictation Settings, commands are written as words too; punctuation, layout and the stop phrase still work.
 - Say "literal" before any of these to write the word instead: "literal comma" writes comma.
-- Moonshine and Whisper add punctuation by themselves; saying it yourself always wins. With Windows speech recognition, say all of it.
+- Moonshine, Whisper, every downloaded model, OpenAI and the speech providers add punctuation by themselves; saying it yourself always wins. With Windows speech recognition, say all of it.
 - Some commands take words after them: select the cat, paste clip three, insert snippet sign off. They work only at the start of a phrase.
 - The Markdown line marks -- "bullet", "numbered item", "block quote" and "heading one" to "heading six" -- count only at the start of a phrase, so "the heading two lines down" stays words.
 - A snippet with blanks asks for each one by name: say the answer, or for a choice say one of the options or choose and its number. Say skip to leave one empty, scratch that to go back one, or cancel to type nothing. Then the whole snippet goes in as one phrase, and scratch that takes all of it back.

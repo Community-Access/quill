@@ -6,6 +6,19 @@ file is the itemized list.
 
 ## Unreleased
 
+- **A proper guide to choosing a model** (2026-10-17). The user guide's
+  "Models" chapter now explains every choice: the built-in Moonshine (the
+  default, nothing to download) and Whisper, Windows speech recognition, why
+  Windows voice typing is not run here, the fifteen downloadable models with
+  their sizes, languages, tiers and the memory they need, the recommendation
+  and what it usually suggests, OpenAI, and the twelve speech providers (set up
+  in Dictation Settings, Alt+V, because Choose Model does not list them yet).
+  New sections: "What you can choose from", "What the tiers mean", "The models
+  you can download", "Which one should I choose?", "A worked example",
+  "Dictating in Spanish" (commands stay in English) and "Limits". The guide also
+  says that the state line's "Speech goes to" names a speech provider as well
+  as OpenAI, and its Dictation Status example says "Moonshine", as the app does.
+
 - **Start and Stop Key is in the File menu, and now everything says so**
   (2026-10-16). The key that starts and stops dictation from any program is
   chosen with **File > Start and Stop Key...** (Ctrl+Alt+Shift+D), beside the
@@ -149,7 +162,8 @@ file is the itemized list.
   **Speech Providers...** (Alt+V): twelve speech companies, from Azure and
   Google to Deepgram and Groq, each with only the fields it needs, a Test
   Connection that sends no speech, and keys in Windows Credential Manager.
-  Choose one as the model; you are told what is sent and No is the default.
+  Choose one in the Speech engine list there (Choose Model does not list the
+  providers yet); you are told what is sent and No is the default.
   If it cannot be reached, your model stays your choice.
 
 - **Review before it is typed** (2026-10-15). Say "QUILL review that" and the

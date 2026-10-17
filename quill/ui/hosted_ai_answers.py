@@ -126,20 +126,27 @@ class AiAnswersMixin:
 
         Spoken either way, because focus does not move and nothing else would
         tell anybody the answer arrived -- the one case GATE-13 says to speak.
+
+        What goes into the document or onto the clipboard is *text* exactly as
+        it arrived; only the spoken copy is made speech-safe
+        (:mod:`quill.core.ai.spoken_answer`), so Markdown is heard as words.
         """
         from quill.core.ai.answer_delivery import CLIPBOARD, CURSOR
+        from quill.core.ai.spoken_answer import speakable_line
 
         mode = self._ai_delivery()
         if mode == CURSOR:
             control = self._ai_control()
             where = control.GetInsertionPoint()
             replace_as_one_undo(control, where, where, text)
-            self._announce(f"Answer inserted at the cursor. Press Control Z to undo. {text}")
+            self._announce(
+                f"Answer inserted at the cursor. Press Control Z to undo. {speakable_line(text)}"
+            )
             return True
         if mode == CLIPBOARD:
             if not self._ai_copy_to_clipboard(text):
                 return False  # the clipboard is busy: the window still has Copy
-            self._announce(f"Answer copied to the clipboard. {text}")
+            self._announce(f"Answer copied to the clipboard. {speakable_line(text)}")
             return True
         return False
 

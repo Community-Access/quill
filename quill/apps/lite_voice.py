@@ -28,6 +28,19 @@ class ScreenReaderVoice:
     notification. The one thing added here is the guard -- nothing is handed to
     the engine unless a reader is actually running, which is what keeps its SAPI
     fallback from ever being reached.
+
+    **Braille goes through QUILL's burst coalescer** (2026-10-16). The engine
+    used to write every announcement to the braille display inline, straight
+    after speaking it, so a dictation preview or a run of status changes
+    replaced the display faster than a finger could read cell one. QUILL has
+    collapsed such bursts since 2026-08 with
+    :class:`~quill.ui.announce_wiring.CoalescingBrailleWriter`; QUILL Lite now
+    uses the same object rather than a copy. The engine's inline braille is
+    switched off the moment the engine is built, and every braille write --
+    the mirror of a spoken message and :meth:`braille` alike -- goes through
+    one coalescer, so the first message of a quiet moment still appears at
+    once and a burst lands as its newest message. Speech is untouched: it is
+    spoken exactly when it was before, and only the braille is coalesced.
     """
 
     #: How long a screen-reader detection is trusted before re-probing. A reader
@@ -45,6 +58,9 @@ class ScreenReaderVoice:
         #: whenever Preferences is saved.
         self.throttle_ms = 0
         self._spoke_at = 0.0
+        #: The one braille writer for the whole app: QUILL's burst coalescer
+        #: over :meth:`_write_braille`. Built with the engine.
+        self._braille_out: Any | None = None
 
     def _reader_running(self) -> bool:
 
@@ -59,6 +75,15 @@ class ScreenReaderVoice:
         except Exception:  # noqa: BLE001 - detection must never break an announcement
             self._reader_present = False
         return self._reader_present
+
+    def reprobe(self) -> None:
+        """Look for a screen reader afresh on the next message.
+
+        For the screen-reader watchdog (``lite_sr_watchdog.py``): when a reader
+        comes back, the first thing to say is that it has, and the 30-second
+        detection cache would otherwise still be answering "none".
+        """
+        self._probed_at = 0.0
 
     def speak(self, message: str, *, interrupt: bool = True) -> None:
         """Say *message* if a screen reader is listening. Never raises.
@@ -81,14 +106,16 @@ class ScreenReaderVoice:
                 return
             self._spoke_at = now
         try:
-            if self._engine is None:
-                from quill.platform.windows.prism_bridge import AnnouncementEngine
-
-                # "prism" rather than "auto": auto is allowed to self-voice.
-                self._engine = AnnouncementEngine("prism")
-            self._engine.announce(text, force_speech=interrupt)
+            engine = self._ensure_engine()
+            spoken = engine.announce(text, force_speech=interrupt)
         except Exception:  # noqa: BLE001 - the status bar still carries the message
             self._engine = None
+            return
+        # The braille mirror, after the speech and only when the speech went
+        # out -- the order and the condition the engine's own inline braille
+        # had, now through the coalescer.
+        if not spoken:
+            self._braille_writer()(text)
 
     def braille(self, message: str) -> None:
         """Write *message* to a braille display only -- dictation's live preview.
@@ -97,13 +124,44 @@ class ScreenReaderVoice:
         if not text or not self._reader_running():
             return
         try:
-            if self._engine is None:
-                from quill.platform.windows.prism_bridge import AnnouncementEngine
-
-                self._engine = AnnouncementEngine("prism")
-            self._engine.braille(text)
+            self._ensure_engine()
+            self._braille_writer()(text)
         except Exception:  # noqa: BLE001 - the status bar still carries it
             pass
+
+    def _ensure_engine(self) -> Any:
+        """The engine, built on first use with its inline braille switched off.
+
+        Off because braille is written here, through the coalescer: left on,
+        every message would reach the display twice, once uncoalesced.
+        """
+        if self._engine is None:
+            from quill.platform.windows.prism_bridge import AnnouncementEngine
+
+            # "prism" rather than "auto": auto is allowed to self-voice.
+            engine = AnnouncementEngine("prism")
+            engine.set_braille_enabled(False)
+            self._engine = engine
+        return self._engine
+
+    def _braille_writer(self) -> Any:
+        """The shared coalescer, made once (QUILL's own class, not a copy)."""
+        if self._braille_out is None:
+            from quill.ui.announce_wiring import CoalescingBrailleWriter
+
+            self._braille_out = CoalescingBrailleWriter(self._write_braille)
+        return self._braille_out
+
+    def _write_braille(self, text: str) -> str:
+        """One real write to the display; never raises. A display unplugged
+        mid-sentence must not take the next announcement with it."""
+        braille = getattr(self._engine, "braille", None)
+        if not callable(braille):
+            return ""
+        try:
+            return str(braille(text) or "")
+        except Exception:  # noqa: BLE001 - the status bar still carries it
+            return ""
 
     def backend_name(self) -> str:
         """What is serving speech right now, for the ``--check`` diagnostic."""

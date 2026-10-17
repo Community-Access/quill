@@ -1313,6 +1313,34 @@ work.
 When you save, or close normally, the spare copy is deleted. So you are only
 ever offered work you actually need.
 
+##### If your screen reader stops
+
+QUILL Lite checks every thirty seconds that your screen reader is still
+running. One missed check is ignored, so restarting NVDA or JAWS never sets
+anything off. When two checks in a row find it gone, QUILL Lite does two
+things, in this order:
+
+1. Every document with unsaved changes writes its spare copy **straight
+   away**, without waiting for the next thirty-second copy. These are the same
+   copies described above, offered back the next time you start if QUILL Lite
+   never closes normally.
+2. It explains what happened, for example: "NVDA appears to have stopped. Your
+   work is safe: 2 documents snapshotted to autosave. QUILL Lite keeps running;
+   restart your screen reader when ready."
+
+QUILL Lite has no voice of its own, so that sentence is spoken only if another
+screen reader is still running. It is always written to the status bar of the
+document you were in, so when your reader is back, **F6** reads it.
+
+QUILL Lite does not close, and nothing in your documents changes. Restart your
+screen reader when you are ready; within half a minute QUILL Lite says, for
+example, "NVDA is running again."
+
+QUILL has had this protection for some time; QUILL Lite now uses the same
+code, so the two behave the same. There is nothing to turn on: it only ever
+writes spare copies, which a normal close throws away, and it says nothing
+unless a screen reader has really stopped.
+
 ##### What you are offered, and what is tidied away
 
 Before the recovery window opens, QUILL Lite clears out three kinds of copy,
@@ -3616,6 +3644,29 @@ after its last message is skipped. Zero, the default, says everything as it
 happens. You do not lose anything by raising it: the status bar still gets
 every message, and **F6** reads it back.
 
+#### On a braille display
+
+Everything QUILL Lite says also goes to a connected braille display, through
+NVDA or JAWS, right after it is spoken. Dictation's live preview, the words
+heard so far, goes to the display only.
+
+**A burst settles instead of flickering.** When several different messages
+arrive quickly, the first appears on the display at once, and the rest are
+replaced, a moment later, by the newest one. Before, each message replaced the
+last as fast as it arrived, so while you dictated, or while a quick run of
+status changes went by, the display changed faster than a finger could read
+the first cell. QUILL has worked this way for a long time; QUILL Lite now uses
+the very same code.
+
+For example, dictate "please send the minutes by Friday". Your display shows
+the first words as they are heard, then, a fraction of a second after you
+pause, the whole phrase, instead of a blur of half-phrases in between.
+
+**Speech is not affected.** Every message is still spoken the moment it
+happens; only the display waits. The status bar still records every message,
+so **F6** reads back anything the display skipped over. If a message cannot be
+spoken (no screen reader is running), it is not brailled either.
+
 #### What formatting is here?
 
 Press **Ctrl+Shift+D** (**Format > Describe Formatting at Cursor**) to hear the
@@ -3786,10 +3837,13 @@ What you say always wins.
 
 It all happens on your own computer. Nothing is downloaded, nothing you say is
 sent anywhere, and no recording is kept. Your words are recognised, written
-into your document, and then forgotten. (If you have your own OpenAI key, you
-can choose to have OpenAI recognise your speech instead. That is off unless
-you turn it on, and "OpenAI dictation, with your own key" explains exactly
-what it sends.)
+into your document, and then forgotten. (If you have your own OpenAI key, or
+your own account with one of twelve speech companies, you can choose to have
+that company recognise your speech instead. That is off unless you turn it on,
+and "OpenAI dictation, with your own key" and "Speech providers: dictation
+with your own account" explain exactly what is sent. Larger speech models you
+can download stay on your computer too; "Which engine should I choose?" helps
+you decide.)
 
 This chapter starts with your first dictation. Then it covers what you can
 say, starting and stopping with your voice, making dictation fit you, talking
@@ -3907,36 +3961,181 @@ speakers, set "After each phrase is written, give me" to a sound only.
 
 #### Choosing a speech engine
 
-You choose the engine in **Dictation Settings**. The first two come with QUILL
-Lite. Larger models you download for better accuracy are listed there too; see
-"Better accuracy: optional speech models" below.
+You choose the engine in **Dictation Settings** (**Alt+Shift+F6**), in the
+**Speech engine** list, which has the focus when the window opens. Arrow to
+one and press Enter. The first two come with QUILL Lite, inside the program
+itself, so dictation works the moment you install, with nothing to download.
 
 | Engine | What it is like |
 |---|---|
-| **Moonshine** (the one it starts with) | Quick even on a modest computer, and puts in punctuation for you. For most voices it is the most accurate. English. |
-| **Whisper** | Also puts in punctuation for you, and is a little slower. Try it if Moonshine often mishears your voice or your microphone. English. |
+| **Moonshine** (the one it starts with) | Built in. Quick even on a modest computer, and puts in punctuation for you. For most voices it is the most accurate of the built-in engines. English only: when the dictation language is Spanish, the built-in Whisper does the listening instead. |
+| **Whisper** | Built in. Also puts in punctuation for you, and is a little slower. Try it if Moonshine often mishears your voice or your microphone. English and Spanish. |
 | **Windows speech recognition** | Windows' own recogniser. It does not add punctuation, so you say every mark, and it often mishears a voice it has not been trained on. It can use any speech language you have installed in Windows. |
 | **Windows voice typing (Windows+H)** | Hands you over to Windows' own voice typing panel. Windows does the listening and the typing, so the commands, tones, read-back and wake phrase in this chapter do not apply. |
-| **OpenAI** (only with your own key) | OpenAI recognises your speech, so it is sent over the internet. Off unless you choose it; see "OpenAI dictation, with your own key". |
+| **A model you downloaded** | Listed with "(downloaded)" and its tier after the name, once you download it in **Better Accuracy: Speech Models...** (**Alt+B**). Stays on your computer. See "Better accuracy: optional speech models". |
+| **OpenAI** (only with your own key) | OpenAI recognises your speech, so it is sent over the internet. Listed only when an OpenAI key is saved, and off unless you choose it; see "OpenAI dictation, with your own key". |
+| **A speech provider** (only with your own account) | One of twelve speech companies you already have an account with, once you set it up in **Speech Providers...** (**Alt+V**). Your speech is sent to that company. See "Speech providers: dictation with your own account". |
+
+Every engine puts in punctuation for you except Windows speech recognition.
+Each model in the list also says its tier, for example "Moonshine (fast,
+punctuates for you), Lightweight". The tiers are explained in the next
+section.
+
+#### Which engine should I choose?
+
+The short answer: **start with Moonshine, and change only if you have a
+reason.** It needs nothing downloaded, it is the quickest, it is kind to your
+screen reader, and your voice never leaves the computer. Here is how to think
+about the rest.
+
+**What matters to you?**
+
+- **Privacy and working offline.** Moonshine, Whisper, Windows speech
+  recognition and every downloaded model work with no internet connection,
+  and nothing you say leaves your computer. OpenAI and the speech providers
+  send your speech to a company over the internet, so they need a connection,
+  and they ask before the first word is sent.
+- **Speed.** Moonshine writes your words about a fifth of a second after you
+  pause, using very little of the processor. Whisper takes a little longer.
+  The large downloads can take a second or more after each pause.
+- **Accuracy.** The built-in engines are good with a clear voice and a decent
+  microphone. A downloaded model copes better with accents, fast speech, a
+  noisy room, names and long sentences. OpenAI and most speech providers are
+  very accurate too, but cost money and send your speech away.
+- **Memory and an older computer.** Moonshine uses about 210 MB of memory.
+  The large downloads use 800 MB to 2 GB, and keep the processor busier, which
+  can make your screen reader answer more slowly while you dictate.
+- **Spanish.** Moonshine only knows English. In Spanish, the built-in Whisper
+  is used. For a lot of Spanish, a larger model that knows Spanish (Nemotron,
+  Parakeet TDT 0.6B v3 or a multilingual Whisper) makes far fewer mistakes.
+
+**What the tiers mean.** Every model is labelled with one of three tiers,
+wherever you choose one:
+
+- **Lightweight**: keeps up comfortably even on a modest computer. The
+  built-in Moonshine and Whisper, and Moonshine base.
+- **Balanced**: more work than the built-in engines; keeps up on a computer
+  with four or more cores.
+- **High accuracy**: the fewest mistakes, for the most work; needs a capable
+  computer, or patience.
+
+**Let QUILL Lite recommend one.** Dictation Settings has a read-only line,
+**Recommended for this computer**, at the top of the right-hand column. Tab
+to it to hear which model suits this computer and your dictation language, and
+why. For more, press **Better Accuracy: Speech Models...** (**Alt+B**): the
+**Recommendation** box (**Alt+C**) explains the choice, **What matters most**
+(**Alt+W**) changes it to a balance of speed and accuracy, the quickest
+response, or the fewest mistakes, and **Show Recommended Model** (**Alt+S**)
+moves to that model in the list so you can download it. The recommendation is
+only advice: QUILL Lite never changes your engine for you, and it never
+recommends OpenAI or a speech provider. Its figures are estimates, measured
+with a computer voice, not yours.
+
+What it suggests depends on the computer. Some examples, for a balance, the
+quickest response, and the fewest mistakes:
+
+| This computer | A balance | The quickest | The fewest mistakes |
+|---|---|---|---|
+| 4 GB of memory, 2 cores | Moonshine | Moonshine | Moonshine base |
+| 8 GB, 4 cores | Moonshine base | Moonshine | Nemotron |
+| 16 GB, 8 cores | Nemotron | Moonshine | Nemotron |
+| 8 GB, 4 cores, dictating in Spanish | Whisper | Whisper | Nemotron |
+
+**A worked example.** Maria has a laptop with 16 GB of memory and 8 cores. She
+dictates long emails, and Moonshine keeps writing "Siobhan" and "Dún
+Laoghaire" wrong.
+
+1. She adds both names to **My Words and Phrases** (**Alt+Shift+F10**). That
+   alone fixes many names, with any engine.
+2. She opens **Dictation Settings** (**Alt+Shift+F6**) and Tabs to
+   **Recommended for this computer**. It says something like "NVIDIA Nemotron
+   3.5 ASR Streaming 0.6B, High accuracy: keeps up on this computer's 16 GB and
+   8 cores, about 1.5 seconds after you pause; stays on this computer; a 682 MB
+   download."
+3. She presses **Better Accuracy: Speech Models...** (**Alt+B**), then **Show
+   Recommended Model** (**Alt+S**), then **Download...** (**Alt+D**), and
+   answers Yes to the question that names the size and the licence.
+4. When she hears that it is downloaded, she presses **Use for Dictation**
+   (**Alt+U**), then **OK** in Dictation Settings.
+5. She dictates for a day. Her words now also appear in the status bar and on
+   her braille display while she talks. If her screen reader feels slow, she
+   goes back to Moonshine in the Speech engine list; the download stays, ready
+   for next time.
+
+If Maria had a two-core laptop with 4 GB of memory, the advice would have been
+to stay with Moonshine, and perhaps try Moonshine base, a 141 MB download.
+
+**To switch engine at any time,** open Dictation Settings, choose another in
+**Speech engine**, and press **OK**. Dictation Status (**Alt+F9**) tells you
+which engine and language you are using.
 
 #### Speech providers: dictation with your own account
 
 If you already have an account with a speech company, QUILL Lite's dictation
-can use it: Microsoft Azure AI Speech, Google Cloud Speech-to-Text, Amazon Transcribe, Deepgram, AssemblyAI, Speechmatics, ElevenLabs Scribe, Gladia, Rev.ai, Groq, Mistral Voxtral and IBM Watson Speech to Text. The built-in engines stay the default and never send
-anything anywhere; these are only for people who want them.
+can use it. There are twelve: Microsoft Azure AI Speech, Google Cloud
+Speech-to-Text (Chirp 3), Amazon Transcribe, Deepgram, AssemblyAI,
+Speechmatics, ElevenLabs Scribe, Gladia, Rev.ai, Groq, Mistral Voxtral and IBM
+Watson Speech to Text. The built-in engines stay the default and the
+recommendation, and never send anything anywhere. None of this is needed, and
+none of it is on until you choose it.
 
-Open **Dictation Settings** (**Alt+Shift+F6**) and choose **Speech
-Providers...** (**Alt+V**). Arrow to the company, read **About this provider**,
-Tab to its fields and fill them in; F1 on each field says where that company
-shows it. **Test Connection** (**Alt+T**) asks the company about your account,
-never with your speech, and says what it answered or which field to fix.
-Saving them (the Save button, Alt+S) puts keys in Windows Credential Manager straight away; they
-are never written in QUILL Lite's settings. **Remove** (**Alt+M**) forgets them.
+**What is sent.** With one of these chosen as the speech engine, each phrase
+dictation hears is sent over an encrypted connection to that company, with
+your account, and the words come back. Nothing is sent while nobody is
+speaking. Where the company can take a list of words to expect, the newest
+names and terms from **My Words and Phrases** go with it, up to that company's
+limit, so it spells them your way. Nothing goes through QUILL's servers, and
+QUILL Lite keeps no copy of your voice. The company's own policies apply to
+what it receives. The company bills you, not QUILL; QUILL Lite shows no prices
+and counts nothing, so look at your provider's own usage page. None of it works
+in Safe Mode.
 
-Then choose the company in **Speech engine**. A question says exactly what is
-sent and to whom; No is the default, and nothing is sent unless you agree. Your
-provider bills you, so check its usage page. Safe Mode turns all of this off,
-and QUILL Lite never switches engines by itself if the connection goes.
+**Setting one up, step by step:**
+
+1. Open **Dictation Settings** (**Alt+Shift+F6**) and press **Speech
+   Providers...** (**Alt+V**). The focus is on the **Providers** list.
+2. Arrow to the company. **About this provider** says whether it shows your
+   words while you speak, whether it learns your words from My Words and
+   Phrases (and how many), where your speech goes, and its usage page.
+3. Tab to its fields and fill them in: usually a key, sometimes a region, a
+   project or an address. Press **F1** on a field to hear where that company's
+   console shows it. A key is never shown again once saved; leaving a key field
+   empty keeps the one already saved.
+4. Press **Test Connection** (**Alt+T**). QUILL Lite asks the company about
+   your account, never with your speech, and says what it answered, such as
+   "Azure answered: ready, region westeurope." If something is wrong it says
+   which field, such as "The key was refused. Check Key.", and puts you there.
+   **Last result** keeps what it said, so you can read it again.
+5. Press the Save button (Alt+S). Keys go to **Windows Credential Manager** at
+   once, and are never written in QUILL Lite's settings or logs. The other
+   details, such as a region, are kept when you press OK in Dictation Settings.
+6. Close the page. The company is now in the **Speech engine** list, as, for
+   example, "Deepgram (your own account; sends your speech to Deepgram)".
+   Choose it, and a question says exactly what will be sent and to whom.
+   **No** is the default: if you just press Enter, nothing is sent and you keep
+   the engine you had. Choose **Yes** to agree.
+7. Press **OK** in Dictation Settings, then **Ctrl+F11**, and talk.
+
+**Remove** (**Alt+M**) forgets everything saved for that company, keys
+included. To stop sending your speech, choose another engine in Dictation
+Settings.
+
+**Which ones show words while you speak.** Azure, Amazon, Deepgram,
+AssemblyAI, Speechmatics, ElevenLabs, Gladia, Rev.ai and IBM Watson show the
+words heard so far in the status bar and on braille. Google, Groq and Mistral
+send each phrase when you pause, so with them nothing appears until you stop.
+
+**If the connection goes.** A lost phrase is said in one sentence, for example
+"Groq could not be reached. Check the internet connection.", and dictation
+keeps listening. A refused key or an account with no credit left stops
+dictation and says so. QUILL Lite never switches to another engine by itself.
+
+**Limits for now.** The providers are for dictating as you talk: Transcribe a
+Recording offers your computer's models and OpenAI, not these. They have not
+yet been tried against every company's live accounts, so if one does not
+behave, tell us with **Help > Get Help from Support**. Your agreement to each
+company is kept by QUILL Lite alone, even when you share dictation settings
+with the family.
 
 #### The dictation keys
 
@@ -4785,7 +4984,7 @@ right side is about starting and stopping.
 
 | Option | What it does | Starts as |
 |---|---|---|
-| Speech engine | Moonshine, Whisper, Windows speech recognition, Windows voice typing, any model you downloaded, or OpenAI with your own key | Moonshine |
+| Speech engine | Moonshine, Whisper, Windows speech recognition, Windows voice typing, any model you downloaded, OpenAI with your own key, or a speech provider you set up; see "Which engine should I choose?" | Moonshine |
 | Dictation language | English, or Spanish (see "Dictating in Spanish"). Ctrl+Shift+F11 switches it without opening this window. | English |
 | Automatic punctuation (Moonshine and Whisper) | The engine puts in the marks you do not say | On |
 | Language for Windows speech recognition | Which installed Windows speech language to use; the other engines follow the dictation language | Windows default |
@@ -4804,7 +5003,8 @@ right side is about starting and stopping.
 | Wake phrase | The words that start it | Quill dictate |
 | Stop phrase | The words that stop it, said on their own | stop dictation |
 | Stop dictation after silence | Never, or after 1, 5 or 10 minutes | Never |
-| Better Accuracy: Speech Models (button) | Optional larger models to download, remove or choose (see "Better accuracy: optional speech models") | (a button) |
+| Better Accuracy: Speech Models (button, Alt+B) | Optional larger models to download, remove or choose (see "Better accuracy: optional speech models") | (a button) |
+| Speech Providers (button, Alt+V) | Set up a speech company you have your own account with (see "Speech providers: dictation with your own account") | (a button) |
 | Recommended for this computer | The model that suits this computer and why, in one line to read; only advice | (read-only) |
 
 Three buttons sit below the options. **Dictation Commands...** opens the full
@@ -4832,7 +5032,7 @@ you change here is saved when you press OK in Dictation Settings.
 | OpenAI speech model | The model OpenAI dictation uses, from OpenAI's own list | The newest |
 | Add or Change OpenAI Key (button, Alt+K) | Saves your settings and opens Use My Own AI Key | (a button) |
 | My Dictation Instructions (button, Alt+I) | Opens the file Tidy Dictated Text follows | (a button) |
-| Dictate in Other Programs (button, Alt+O) | Saves your settings, hands them to Quill Inkwell and starts it; see "Dictating into other programs" | (a button) |
+| Dictate in Other Programs (button, Alt+O) | Saves your settings and hands them to QUILL Transcribe if it is installed, otherwise to Quill Inkwell, and starts it; see "Dictating into other programs" | (a button) |
 | Programs Dictation Never Types Into (button, Alt+N) | The programs dictation never types into from Quill Inkwell or QUILL Transcribe, such as your password manager; see "Programs dictation never types into" | The common password managers and the Windows sign-in prompts |
 | Command word (Alt+C) | The word you say before a command, like QUILL scratch that; empty for none; see "The command word" | QUILL |
 | Commands only after the command word (strict mode) (Alt+E) | A command said on its own is written as words; the stop phrase always works | Unchecked (checked in QUILL Transcribe) |
@@ -4998,7 +5198,7 @@ and accuracy (the usual choice), the quickest response, or the fewest
 mistakes this computer can keep up with. **Show Recommended Model**
 (**Alt+S**) moves to that model in the list, so you can read its details and
 download it. Dictation Settings shows the same advice in one line, in the
-**Recommended for this computer** box under the Better Accuracy button.
+**Recommended for this computer** box at the top of its right-hand column.
 
 The recommendation is only advice. QUILL Lite never changes your engine by
 itself; you choose. Its figures are estimates, measured with a synthetic
@@ -5007,24 +5207,27 @@ model runs on the processor.
 
 **Tiers.** Every model is labelled with one of three tiers, wherever you
 choose one: the Speech engine list, Speech Models and Transcribe a Recording.
+What each tier means is in "Which engine should I choose?" above. Which
+models are in which:
 
-- **Lightweight**: keeps up comfortably even on a modest computer. The
-  built-in Moonshine and Whisper, and Moonshine base.
-- **Balanced**: more work than the built-in engines; keeps up on a computer
-  with four or more cores. Parakeet and Whisper base.
-- **High accuracy**: the fewest mistakes, for the most work; needs a capable
-  computer, or patience. Nemotron, and Whisper small and larger.
+- **Lightweight**: the built-in Moonshine and Whisper, and Moonshine base.
+- **Balanced**: both Parakeet models, Whisper base and Whisper base.en.
+- **High accuracy**: Nemotron, Whisper small and small.en, the Distil-Whisper
+  models, and Whisper medium, medium.en, large-v3-turbo and large-v3.
 
-**Where the models go.** One folder for QUILL and QUILL Lite on the same
-computer, so a model downloaded in one is there for the other:
+**Where the models go.** One folder for QUILL, QUILL Lite, QUILL Transcribe
+and Quill Inkwell on the same computer, so a model downloaded in one is there
+for the others and is never downloaded twice:
 `%LOCALAPPDATA%\QuillVille\Dictation\models`. In a portable copy, models are
 saved inside the portable folder, so everything travels together
 (`data\dictation\models` in the portable folder). Before a download starts,
-QUILL checks there is room on that drive and tells you if there is not.
+QUILL Lite checks there is room on that drive and tells you if there is not.
+The built-in Moonshine and Whisper are not in that folder: they come inside
+QUILL Lite itself.
 
 **To remove one**, choose it in Speech Models and press **Remove**
-(**Alt+R**). It frees the space for both programs. If dictation is using it,
-choose another engine first.
+(**Alt+R**). It frees the space for every program that shares the folder. If
+dictation is using it, choose another engine first.
 
 **Will my computer keep up?** When Speech Models opens, it spends about two
 seconds timing the built-in Moonshine on this computer, then works out how
@@ -5518,15 +5721,25 @@ audio file", below.
 
 You can dictate into almost any program on your computer: an email, a web
 form, a chat window, another word processor. This is called **Dictate
-Anywhere**, and it is done by **Quill Inkwell**, the small QuillVille program
-that also expands your abbreviations everywhere.
+Anywhere**. It is done by another QuillVille program: **QUILL Transcribe**,
+the family app made for exactly this, released on 1 November 2026, or **Quill
+Inkwell**, the small program that also expands your abbreviations everywhere.
 
 #### What you need first
 
-**Quill Inkwell must be installed.** It is a separate, free member of the
-QuillVille family. If it is not on your computer, QUILL Lite tells you so:
-"Quill Inkwell is not installed with this copy." Install Inkwell first, then
-come back to these steps.
+**QUILL Transcribe or Quill Inkwell must be installed.** Both are separate,
+free members of the QuillVille family. When you press **Dictate in Other
+Programs...**, QUILL Lite hands your settings to QUILL Transcribe if it is
+running, or starts it if it is installed. Otherwise it hands them to Quill
+Inkwell. If neither is on your computer, QUILL Lite tells you so: "Quill
+Inkwell is not installed with this copy." Install one, then come back to these
+steps.
+
+**With QUILL Transcribe,** you hear "QUILL Transcribe has your dictation
+settings. Use its start and stop key, or its tray menu, in the program you
+want to dictate into." From then on, QUILL Transcribe's own user guide is the
+one to read: it has its own keys, models and settings. The steps below are
+for Quill Inkwell.
 
 #### Setting it up, step by step
 
@@ -5534,9 +5747,12 @@ come back to these steps.
    the way you like it: engine, microphone, language, pause and so on.
 2. Press **More Dictation Settings...** (**Alt+A**).
 3. Press **Dictate in Other Programs...** (**Alt+O**). Your settings are
-   saved, handed to Quill Inkwell, and Inkwell starts. You hear "Quill Inkwell
-   is starting with your dictation settings. Choose the Dictate Anywhere key in
-   its File menu."
+   saved and handed over. If QUILL Transcribe is running or installed, it gets
+   them and starts, and you hear "QUILL Transcribe has your dictation
+   settings. Use its start and stop key, or its tray menu, in the program you
+   want to dictate into." Otherwise Quill Inkwell gets them and starts, and you
+   hear "Quill Inkwell is starting with your dictation settings. Choose the
+   Dictate Anywhere key in its File menu."
 4. If you have not chosen a key yet, Inkwell opens its key chooser for you.
    Choose a key you will remember and that no other program uses. You can
    change it later in Inkwell with **File > Dictate Anywhere Key...**.
@@ -5799,7 +6015,8 @@ last transcription finishes, which gives its memory back.
 
 - **Several at once.** In Browse, hold **Ctrl** and choose more than one file.
   They are transcribed one after another with the same choices, and each one
-  opens in its own new document when it finishes. If one is already running
+  is saved with its own completion notice in **Notifications** when it
+  finishes. If one is already running
   when you start another, you hear "Added to the queue".
 - **How far has it got?** Press **Shift+F5** again. At the top of the window,
   **Transcribing now** says which recording it is on, how far it has got, and
@@ -5922,6 +6139,7 @@ ones:
 #### If it keeps mishearing you
 
 - Try Whisper instead of Moonshine, or the other way round.
+- Try a downloaded model; see "Which engine should I choose?".
 - Use a headset microphone instead of a laptop's built-in one.
 - If you are using speakers, set the read-back to a sound only.
 - Add names you use often to **My Words and Phrases**.
@@ -6044,8 +6262,10 @@ voice down while you dictate.
 - **If it mishears your accent or your microphone**, try **Whisper**, which
   also comes with QUILL Lite.
 - **For more accuracy**, download one of the optional models (see "Better
-  accuracy: optional speech models"). For writing as you go, try Nemotron; for
-  dictating a paragraph and then checking it, try Parakeet.
+  accuracy: optional speech models"). The **Recommended for this computer**
+  line in Dictation Settings names the one that suits your computer. For
+  writing as you go, try Nemotron; for dictating a paragraph and then checking
+  it, try Parakeet.
 - **Judge with your own voice.** Use one model for a day, then another, and
   keep the one that needed fewer fixes.
 
@@ -6286,6 +6506,42 @@ The pad's **Put the answer in** list has three choices:
 
 QUILL Lite remembers your choice until you change it. It applies to every
 answer: from the pad, the Chat Key and the Prompt Library.
+
+#### How answers are read aloud
+
+AI answers usually come written in Markdown, with `#` before a heading, `**`
+around bold words and `-` before each item of a list. When QUILL Lite reads an
+answer aloud, it reads the words and leaves those symbols out, so you never
+hear "star star" or "hash hash", or a link's whole web address.
+
+That happens wherever an answer is spoken: an answer put **at the cursor** or
+**on the clipboard**, and every reply in an **AI Conversation**.
+
+Only what you hear changes. What goes into your document, onto the clipboard,
+into the answer window or into the conversation is the answer exactly as it
+came, symbols and all.
+
+For example, with **Put the answer in** set to **My document, at the cursor**,
+an answer of
+
+```text
+## Summary
+
+**Three** points:
+
+- Costs went down.
+- See [the report](https://example.com/report).
+```
+
+goes into your document as those six lines, and you hear: "Answer inserted at
+the cursor. Press Control Z to undo. Summary Three points: Costs went down. See
+the report."
+
+A few things are worth knowing. A link is read by its words, never its address.
+A picture is read as "image" and its description. A block of code is read as
+"code block": the code itself is in your document, where you can read it a
+character at a time. The answer window is not read out for you; your screen
+reader reads it as text, so you can check the formatting first.
 
 #### Your saved prompts
 
@@ -6650,6 +6906,38 @@ You hear what went wrong, followed by the error code
 causes are a mistyped key, a model your account cannot use, an account with no
 credit, or the wrong provider chosen for the key you saved. **Test the Key**
 tells you which one it is.
+
+#### If the AI you use is not available
+
+QUILL Lite never quietly sends your text to a different company from the one
+you chose. It remembers which way your requests have been going while it is
+running: your ChatGPT plan, your own OpenAI or Gemini key, or QUILL's free AI.
+If that changes without you changing it, for example because your Gemini key
+has gone from Windows' credential store or your ChatGPT sign-in has stopped
+working, the next request does not just go out. A **Send to a Different AI?**
+box asks first:
+
+> Your own Google Gemini key is not available right now. Use QUILL's free AI
+> instead? That sends your text to QUILL's free AI service over the internet.
+> Choose No and nothing is sent.
+
+Your screen reader reads the question as the box opens. **No** is the default
+button, so pressing **Enter** out of habit sends nothing.
+
+- **Yes** sends the request the new way, and that is simply the way from then
+  on, so you are only asked once.
+- **No** sends nothing. You hear "Nothing was sent", and how to set your
+  usual way up again in **Tools > AI**. The next request asks again.
+
+This covers the pad, the Chat Key, the Prompt Library, AI conversations and
+**Ask About an Image**. Changing the way yourself is never questioned: signing
+in or out in **Use My ChatGPT Subscription** (**Alt+F5**), or saving or removing
+a key in **Use My Own AI Key** (**Alt+F2**), counts as your choice.
+
+One limit: QUILL Lite compares with the way your requests went earlier in the
+same session. The first request after starting goes where your settings say,
+as it always has. A request that simply *fails* is not covered here: you hear
+why, as described above.
 
 ### Using your ChatGPT subscription
 

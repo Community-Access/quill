@@ -961,16 +961,32 @@ collision elsewhere (GATE-14) — and <strong>dark mode is the
 default</strong>, because the users this editor is for are
 disproportionately light-sensitive and a first launch that is bright
 white is a first launch some of them cannot read.</p>
-<h3 id="45-speech-and-not-braille">4.5 Speech, and not braille</h3>
+<h3 id="45-speech-and-braille-through-quills-coalescer">4.5 Speech, and
+braille through QUILL’s coalescer</h3>
 <p>QUILL Lite announces through a running screen reader and nowhere
 else. <code>ScreenReaderVoice</code> reaches NVDA and JAWS through Prism
 or accessible_output2 and Narrator through a UIA notification, and hands
 nothing to the engine unless a reader is actually running. There is
-<strong>no self-voicing fallback</strong> and there is <strong>no
-braille output</strong>: nothing in the QUILL Lite tree routes an
-announcement to a braille display, where QUILL has a braille service
-that does.</p>
-<p>This is a decision, recorded so it stops reading as an oversight.</p>
+<strong>no self-voicing fallback</strong>.</p>
+<p><strong>Braille (corrected 2026-10-16).</strong> This section used to
+say QUILL Lite had no braille output. That stopped being true when the
+shared engine began mirroring every announcement to the display (#1283),
+and when dictation’s live preview gained
+<code>ScreenReaderVoice.braille</code>. What QUILL Lite lacked was
+QUILL’s burst coalescing, so a dictation preview or a run of status
+changes replaced the display faster than it could be read. Now the
+engine’s inline braille is switched off when the voice builds it
+(<code>set_braille_enabled(False)</code>), and every braille write – the
+mirror of a spoken message, after the speech and only when the speech
+went out, and every <code>braille()</code> preview – goes through one
+<code>quill.ui.announce_wiring.CoalescingBrailleWriter</code>, QUILL’s
+own class: the first message of a quiet moment writes at once, and a
+burst lands as its newest message one 150 ms window later. Speech timing
+is unchanged. QUILL Lite has no braille settings group and gains none;
+what follows is about why it still does not have one.</p>
+<p>The rest of this section was written about a second output channel
+with its own settings, and still stands as the reason QUILL Lite has no
+braille <em>settings</em>.</p>
 <p><strong>Why.</strong> A braille route is not a line of code; it is a
 delivery channel with its own verbosity rules, its own truncation
 problems, and its own way of being wrong – QUILL’s braille surface is
@@ -1020,6 +1036,20 @@ truncated original <em>and</em> no recovery.</p>
 seconds, <strong>default 30</strong>), reachable only from Preferences –
 <strong>Copy unsaved work aside every (seconds)</strong>. It has no key
 and no menu row, deliberately: it is a number somebody sets once.</p>
+<h3 id="52a-when-the-screen-reader-dies-2026-10-16">5.2a When the screen
+reader dies (2026-10-16)</h3>
+<p>QUILL’s screen-reader watchdog, through the same wx-free core
+(<code>quill/core/sr_watchdog.py</code>) and a small mixin on the app
+(<code>quill/apps/lite_sr_watchdog.py</code>). Every 30 seconds the
+running reader is detected; two consecutive misses confirm a death (one,
+a routine restart, never does). Then every window with unsaved changes
+writes its recovery copy at once (5.2) and the shared sentence – “NVDA
+appears to have stopped. Your work is safe: 2 documents snapshotted to
+autosave. QUILL Lite keeps running; restart your screen reader when
+ready.” – goes to the active window’s status bar and to the voice, which
+speaks only if another reader is running. A recovery re-probes the voice
+and says “NVDA is running again.” It never closes the app, and no
+setting gates it, in either editor.</p>
 <h3 id="53-its-own-data-folder">5.3 Its own data folder</h3>
 <p>Settings, recent files and recovered work live in
 <code>%LOCALAPPDATA%\QuillLite</code>, deliberately <strong>not</strong>
@@ -1416,6 +1446,23 @@ reviewed in the egress audit. Tests:
 shipped code against a loopback server shaped like both providers, with
 synthetic keys.</li>
 </ul>
+<h3 id="56d-what-is-spoken-and-where-a-request-goes-2026-10-16">5.6d
+What is spoken, and where a request goes (2026-10-16)</h3>
+<p><strong>Spoken answers are speech-safe.</strong> An answer delivered
+at the cursor or on the clipboard, and every conversation reply, is
+spoken through <code>quill.core.ai.spoken_answer.speakable_line</code>:
+Markdown symbols and link addresses are left out of what the reader is
+handed. The inserted, copied and transcript text is the answer as it
+came.</p>
+<p><strong>A route change asks first.</strong> The shared
+<code>AiService</code> remembers which route requests took this session
+(ChatGPT plan, own key, free AI). A request that would take another
+without the listener having chosen it – a key gone from the store, a
+sign-in that stopped working – is a substitution
+(<code>quill.core.ai.fallback.plan_substitution</code>) and asks in a
+Yes/No box, No the default; No sends nothing. Signing in or out of
+ChatGPT and saving or removing a key mark the new route as chosen.
+Shared with QUILL, which has the same pad.</p>
 <h3 id="57-every-switch-has-a-way-back-from-inside-the-app">5.7 Every
 switch has a way back, from inside the app</h3>
 <p>A preference somebody can turn off and cannot turn back on is not a
@@ -1596,6 +1643,21 @@ model chosen from OpenAI’s live list without retiring models, Realtime
 transcription for <code>gpt-live-transcribe</code>, never a silent
 switch, refused in Safe Mode, three reviewed egress entries, and a
 Dictation section in the privacy statement.</li>
+<li><strong>Speech providers, own account only</strong> (2026-10-16,
+dictation design record section 23, D-31 to D-37; the same as QUILL
+through the shared <code>quill/core/windows_dictation/cloud/</code>
+package and <code>quill/ui/speech_providers_dialog.py</code>): Dictation
+Settings’ <strong>Speech Providers…</strong> (Alt+V) sets up Azure,
+Google, Amazon, Deepgram, AssemblyAI, Speechmatics, ElevenLabs, Gladia,
+Rev.ai, Groq, Mistral or IBM Watson; secrets in Windows Credential
+Manager, Test Connection never sends speech, a generated consent with No
+the default, refused in Safe Mode, never recommended, never a silent
+switch.</li>
+<li><strong>Model tiers and a recommendation</strong> (D-22) and
+<strong>one sherpa-onnx store</strong> (D-26): Speech Models names
+Lightweight, Balanced or High accuracy on every model and recommends one
+for this computer (What matters most, Alt+W); downloads are shared with
+QUILL and QUILL Transcribe.</li>
 <li><strong>My Dictation Instructions</strong>
 (<code>instructions.py</code>) for Tidy Dictated Text.</li>
 <li><strong>Kind to a modest computer</strong>

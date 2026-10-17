@@ -4884,6 +4884,9 @@ Four things are worth knowing:
   are replaced a moment later by the newest one, so the display is never a
   blur. Errors are the exception: an error is always shown straight away.
 
+QUILL Lite now settles bursts in exactly the same way, using the same code, so
+dictation's live preview no longer flickers on the display there either.
+
 To keep the display on your document, turn off **Show announcements in
 braille** in **Settings > Accessibility and Announcements**. Quiet Mode and Meeting Mode
 silence braille along with speech.
@@ -7564,8 +7567,265 @@ straight into a document, to turn a recording into a transcript, and to have
 QUILL make meeting minutes or notes out of that transcript for you. Most of it
 runs entirely on your own computer, with no account and nothing uploaded. If
 you would rather speak than type, or you have a pile of recordings to get
-through, this chapter is for you. The parts about speech models, optional
-downloads and memory come last, for when you want to tune things.
+through, this chapter is for you. The first section is a map of QUILL's
+speech engines, to help you choose one. The parts about speech models,
+optional downloads and memory come last, for when you want to tune things.
+
+### Which speech engine? A guide to choosing
+
+QUILL can turn your voice into text in several ways, and you can choose the
+speech engine that does the listening. This section is the map. It tells you
+which setting matters for what you are doing, what each engine costs you in
+privacy, speed, accuracy and memory, how to switch, and where the full details
+are. You do not need to read it before you start: everything works the moment
+QUILL is installed.
+
+#### The short answer
+
+- **You do not have to choose anything.** Live Dictation (`Ctrl+F11`) starts
+  with **Moonshine**, which comes with QUILL. It is fast, puts in punctuation
+  for you, and keeps everything on your computer. The offline tools (Locked
+  Dictation, `Ctrl+F9`, and the others below) start on **Whisper.cpp**, whose
+  small engine (about 8 MB) QUILL offers to fetch the first time you need it.
+  If you would rather download nothing at all, choose **QUILL speech models**
+  as their engine: it includes the same built-in Moonshine.
+- **If you want fewer mistakes and your speech to stay on your computer**,
+  download a larger speech model. It takes a few minutes, and the worked
+  example below walks you through it.
+- **If you want the very best accuracy** and you are happy for your speech to
+  go to a company you already pay, choose OpenAI or a speech provider with
+  your own account. Nothing is ever sent until you choose one and say Yes.
+
+#### Two speech systems, one shared set of models
+
+QUILL has two sets of speech tools. Each has its own engine setting, and
+changing one never changes the other.
+
+1. **Live Dictation and its family.** Live Dictation (`Ctrl+F11`), live
+   transcripts, talking to the AI, and **Transcribe a Recording...**
+   (`Shift+F5`). This is the same dictation QUILL Lite, QUILL Transcribe and
+   Quill Inkwell have, on the same keys. You choose its engine in the **Speech
+   engine** list in **Dictation Settings** (`Alt+Shift+F6`).
+2. **The offline speech tools, which only QUILL has.** Locked Dictation
+   (`Ctrl+F9`), **Dictate (Offline)**, **Transcribe Audio or Video
+   (Offline)...**, **Generate Captions (Offline)...** and watch folders. You
+   choose their engine in Manage Speech Models (**Tools > Speech > Speech and
+   Dictation...**), or in the guided setup: **Help > Download Optional
+   Components...**, row **Dictation (offline speech)**.
+
+| What you are doing | Which engine setting it uses | Where you change it |
+|---|---|---|
+| Dictating as you talk (`Ctrl+F11`) | Live Dictation's | Dictation Settings, **Speech engine** |
+| Transcribing a recording with `Shift+F5` | Live Dictation's models, chosen in the window each time | The **Speech model** list in Transcribe a Recording |
+| Locked Dictation (`Ctrl+F9`) or Dictate (Offline) | The offline tools' | Manage Speech Models |
+| Transcribe Audio or Video (Offline), captions, watch folders | The offline tools' | Manage Speech Models |
+| Voice Command, Voice Conversation Mode, Hey QUILL | Their own small setting | **Voice recognition engine**, on the Transcription page in Settings |
+| Dictate Here in Quill Cast or Quill Radio | QUILL Transcribe's, which follows QUILL's while dictation settings are shared | QUILL Transcribe's Dictation Settings; see "Dictating into other programs" |
+
+**The two systems share their models.** A model you download in Speech Models
+for Live Dictation, such as Nemotron or Parakeet, goes in the same folder the
+offline tools' **QUILL speech models** engine reads, and QUILL Lite and QUILL
+Transcribe use that folder too. Nothing is ever downloaded twice.
+
+#### Live Dictation's engines
+
+You choose these in the **Speech engine** list in Dictation Settings
+(`Alt+Shift+F6`). Each row says what the engine is like and its tier, for
+example "Moonshine (fast, punctuates for you), Lightweight".
+
+| Engine | Where your speech goes | Speed and memory | Accuracy and languages |
+|---|---|---|---|
+| **Moonshine** (built in, the default) | Stays on your computer | The fastest: about a twentieth of a second of work per second of speech, about 210 MB of memory, words about 0.2 seconds after you pause | Good with a clear voice and a decent microphone. English only; in Spanish, QUILL uses Whisper instead |
+| **Whisper** (built in) | Stays on your computer | A little slower, about 300 MB | Try it if Moonshine often mishears you. English and Spanish |
+| **A model you downloaded** | Stays on your computer | Depends on its tier; the NVIDIA models use about 800 MB | Fewer mistakes with names, accents, fast speech and noise. Languages depend on the model |
+| **Windows speech recognition** | Recognised by Windows on your computer | Light | Puts in no punctuation, so you say every mark, and often mishears a voice it has not been trained on. Any speech language installed in Windows |
+| **Windows voice typing** (`Windows+H`) | Handled by Windows' own panel | Windows' own | None of dictation's commands, tones, read-back or wake phrase apply |
+| **OpenAI** (your own key) | Sent to OpenAI | Depends on your connection | Very accurate, good with names. gpt-live-transcribe shows your words as you speak |
+| **A speech provider** (your own account) | Sent to that company | Depends on your connection | Twelve companies; most show your words as you speak |
+
+Every engine except Windows speech recognition puts in punctuation and
+capitals for you. Moonshine and Whisper come inside QUILL's installer and
+portable copy, so nothing downloads for them. This built-in Whisper is not the
+whisper.cpp engine the offline tools use.
+
+**To switch:** press `Alt+Shift+F6`, move to **Speech engine**, arrow to the
+engine you want, and press `Enter` to save. Models you downloaded are listed
+with "(downloaded)" after the name. The next time you press `Ctrl+F11`, the
+new engine listens. **Test Microphone**, in the same window, records four
+seconds and tells you what the engine heard.
+
+**The tiers** tell you how hard an engine works:
+
+- **Lightweight**: keeps up comfortably even on a modest computer. The
+  built-in Moonshine and Whisper, and Moonshine base.
+- **Balanced**: more work than the built-in engines; keeps up on a computer
+  with four or more cores. Parakeet, Whisper base and base.en.
+- **High accuracy**: the fewest mistakes, for the most work; needs a capable
+  computer, or patience. Nemotron, Distil-Whisper, and Whisper small and
+  larger.
+
+Every downloaded model runs on the processor. A graphics card makes no
+difference to Live Dictation. The full list of models, their sizes and their
+measured speed is in "Better accuracy: optional speech models".
+
+#### The offline speech tools' engines
+
+Locked Dictation, Dictate (Offline), Transcribe Audio or Video (Offline),
+captions and watch folders use one of three engines. The guided setup on
+**Help > Download Optional Components...** offers them in this order:
+
+1. **Whisper.cpp**, the default: "light and fast, works on any computer". The
+   engine itself is about 8 MB and is not in the installer; QUILL offers to
+   fetch it from QUILL's own verified release the first time you need it. Then
+   you choose a model in Manage Speech Models: **Tiny** (75 MB), **Base** (145
+   MB), **Small** (465 MB, the recommended starting point), **Small English
+   with speaker detection** (465 MB), **Medium** (about 1.5 GB) or **Large
+   (v3)** (about 3.1 GB). Choose Whisper.cpp when you are not sure, and
+   whenever you want a transcript that marks Speaker 1, Speaker 2 and so on:
+   only its speaker-detection model does that.
+2. **QUILL speech models (Parakeet, Nemotron and more)**: the very models Live
+   Dictation, QUILL Lite and QUILL Transcribe use, from the same folder.
+   Choose this when you already downloaded Parakeet or Nemotron for Live
+   Dictation, or when you want Parakeet's great strength: it never invents
+   words from silence (see "Parakeet 3 and silence"). It runs on the
+   processor.
+3. **Faster Whisper**: "most accurate; larger and can use your graphics card".
+   It is the only engine in QUILL that uses a graphics card. It installs when
+   you choose it, in a copy of QUILL that can install it; where it cannot, it
+   is not offered. It has its own models (Tiny to Large v3, and an English
+   Distil-Large v3). Choose it for long recordings on a capable computer,
+   especially one with a graphics card. It does not label speakers.
+
+**Which engine is used when you have not chosen.** Your own choice always
+wins. Otherwise, an installed Parakeet model means the QUILL speech models
+engine; then Whisper.cpp, once it has a model; and otherwise the built-in
+Moonshine through the QUILL speech models engine. That last step is why
+Locked Dictation needs no model: once the small Whisper.cpp engine is here,
+the built-in Moonshine transcribes until Whisper.cpp has a model of its own.
+Dictate (Offline), Transcribe Audio or Video (Offline) and captions do not
+fall back like that: they use the engine you chose and ask you for one of its
+models if it has none. With **QUILL speech models** chosen, every one of them
+works with nothing downloaded, because the built-in Moonshine and Whisper
+count as its models. Whisper.cpp stays the default for now.
+
+**To switch:** open **Tools > Speech > Speech and Dictation...**. On the
+**Dictation (Offline)** tab, choose the **Speech Engine**, choose a model, and
+press **Set as Default**. Or use the guided setup, which takes you through
+engine, model and a test one step at a time; see "Setting up offline
+dictation". The details are in "Manage Speech Models" and "Choosing a speech
+engine", later in this chapter.
+
+#### Privacy at a glance
+
+- **Nothing leaves your computer** with Moonshine, Whisper, any model you
+  downloaded, Windows speech recognition, Whisper.cpp, the QUILL speech models
+  or Faster Whisper. The only thing that comes over the internet is a model or
+  engine file, once, when you ask for it and answer a question about it.
+  Every file is checked against a fingerprint, and a damaged one
+  is never used.
+- **Your speech is sent to a company** only with OpenAI or a speech provider,
+  and only after you choose one and answer Yes.
+- **QUILL's free AI never carries your voice.** It is not used for dictation
+  at all.
+- **AI > Transcribe Audio > Transcribe Audio File...** and the cloud
+  providers on the **Dictation (Online)** tab are separate: they upload a
+  recording only when you ask them to transcribe it. See "Transcribe Audio
+  File" and "Cloud transcription providers".
+
+#### Cloud engines: OpenAI and the twelve speech providers
+
+You may already pay for a speech service. Live Dictation can use **OpenAI**,
+with your own OpenAI key, or one of twelve **speech providers**, with your own
+account: Microsoft Azure AI Speech, Google Cloud Speech-to-Text, Amazon
+Transcribe, Deepgram, AssemblyAI, Speechmatics, ElevenLabs Scribe, Gladia,
+Rev.ai, Groq, Mistral Voxtral and IBM Watson Speech to Text.
+
+- **Your own account.** The company bills you, not QUILL. QUILL shows no
+  prices and counts nothing, so check the company's own usage page.
+- **What is sent.** Each phrase dictation hears, over an encrypted connection,
+  and the words come back. Silence is never sent. Names from My Words and
+  Phrases go with it as words to expect, where the company supports that.
+  Nothing passes through QUILL's servers, and QUILL keeps no copy of your
+  voice.
+- **Your agreement.** Choosing one in the **Speech engine** list asks a
+  question that says exactly what is sent and to whom. **No** is the default:
+  if you just press `Enter`, nothing is sent.
+- **Your keys.** An OpenAI key is saved in **Use My Own AI Key** (`Alt+F2`).
+  A provider's details are saved in **Speech Providers...** (`Alt+V`) in
+  Dictation Settings, where **Test Connection** (`Alt+T`) checks your account
+  without sending speech. Keys go straight to Windows Credential Manager and
+  are never written in QUILL's settings or logs.
+- **Safe Mode** turns every cloud engine off.
+- **If the connection drops**, that phrase is lost, you hear one sentence, and
+  dictation keeps listening. QUILL never switches to another engine by itself.
+
+Setting them up is explained step by step in "OpenAI dictation, with your own
+key" and "Speech providers: dictation with your own account at another
+company".
+
+#### Worked example: fewer mistakes on an 8 GB laptop
+
+Sam has a laptop with four processor cores and 8 GB of memory. Moonshine is
+quick, but it keeps getting colleagues' names and fast sentences wrong. Sam
+wants fewer mistakes, and wants the speech to stay on the laptop.
+
+1. Press `Alt+Shift+F6` to open Dictation Settings. The read-only
+   **Recommended for this computer** line already names a model and says why.
+2. Press **Better Accuracy: Speech Models...** (`Alt+B`).
+3. Press `Alt+W` to reach **What matters most**, and choose **The fewest
+   mistakes**.
+4. Press `Alt+C` to read the **Recommendation** box. On this laptop it names
+   **NVIDIA Nemotron 3.5 ASR Streaming 0.6B**, and says whether it keeps up
+   here, about how soon words appear after a pause, that the speech stays on
+   this computer, and that the download is 682 MB.
+5. Press **Show Recommended Model** (`Alt+S`) to move to it in the list, and
+   **Details** (`Alt+T`) to read about it.
+6. Press **Download...** (`Alt+D`). A question names where it comes from, its
+   size, its licence and the folder it goes in. Answer Yes. You hear
+   "Downloading", then every quarter of the way. **Cancel Download** (`Alt+L`)
+   stops it, and pressing Download again later carries on from where it
+   stopped.
+7. When it says the model is downloaded, press **Use for Dictation**
+   (`Alt+U`), then **OK** in Dictation Settings.
+8. Press `Ctrl+F11` and talk. Nemotron recognises while you speak, so the
+   words heard so far appear in the status bar and on a braille display, and
+   each phrase is written when you pause.
+
+Sam would like Locked Dictation to use it too. In **Tools > Speech > Speech
+and Dictation...**, Sam chooses **QUILL speech models** as the speech engine,
+chooses Nemotron, and presses **Set as Default**. Nothing downloads again.
+
+If Nemotron ever feels slow on this laptop, choose **A balance of speed and
+accuracy** in **What matters most**: here it suggests **Moonshine base**, a
+141 MB step up from the built-in Moonshine. The advice depends on the
+computer, for example:
+
+| Computer | A balance | The quickest response | The fewest mistakes |
+|---|---|---|---|
+| 4 GB, 2 cores | Moonshine | Moonshine | Moonshine base |
+| 8 GB, 4 cores | Moonshine base | Moonshine | Nemotron |
+| 16 GB, 8 cores | Nemotron | Moonshine | Nemotron |
+| 8 GB, 4 cores, dictating in Spanish | Whisper | Whisper | Nemotron |
+
+The recommendation is only advice. It never changes your engine, its figures
+are estimates measured with a computer voice, and it never suggests a cloud
+engine. Your own voice is the real test: use a model for a day, and keep the
+one that needs fewer fixes (see "How to tell which is more accurate for you").
+
+#### What is not available yet
+
+- **Speech providers are for Live Dictation only.** They are not offered in
+  Transcribe a Recording, Transcribe Audio or Video (Offline), captions or
+  watch folders. OpenAI, with your own key, is offered in Transcribe a
+  Recording.
+- **Google, Groq and Mistral show no words while you speak.** Each phrase is
+  written when you pause.
+- **Spanish commands.** You can dictate Spanish text now, but commands such as
+  "scratch that" stay in English for now. See "Dictating in Spanish".
+- **A graphics card** helps only Faster Whisper. Every other engine runs on
+  the processor.
+- A few further speech features, such as a small listener just for the
+  command word, are built but not switched on yet.
 
 ### Dictating into a document
 
@@ -7596,8 +7856,8 @@ you can turn that on; see Holding Ctrl+F11 to talk, below.
 writing, and the status bar says what dictation is doing.
 
 Nothing leaves your computer, nothing is downloaded, and no recording is kept,
-unless you choose OpenAI dictation with your own key (see "OpenAI dictation,
-with your own key" below). Unlike **Locked Dictation**, which records a
+unless you choose OpenAI dictation with your own key, or a speech provider
+with your own account (see "Which speech engine? A guide to choosing" above). Unlike **Locked Dictation**, which records a
 passage and transcribes it afterwards, Live Dictation writes as you go.
 
 The same submenu has more windows:
@@ -8414,22 +8674,32 @@ phrase takes away the whole corrected phrase.
 
 ##### Speech engines for Live Dictation
 
-**Speech engines.** You have four to choose from:
+**Speech engines.** The **Speech engine** list in Dictation Settings
+(`Alt+Shift+F6`) offers these:
 
-- **Moonshine**, the default. It is fast even on a modest computer.
-- **Whisper**, a little slower. Try it if Moonshine often mishears you.
-  Moonshine and Whisper are both built in, and both are English. This
-  Whisper comes with QUILL; it is not the whisper.cpp engine that
-  transcription uses, which downloads the first time you need it.
+- **Moonshine**, the default. It is fast even on a modest computer, and puts
+  in punctuation for you. It is built in, and English only.
+- **Whisper**, a little slower. Try it if Moonshine often mishears you. It is
+  built in too, and knows English and Spanish; in Spanish it is used even
+  when Moonshine is chosen. This Whisper comes with QUILL; it is not the
+  whisper.cpp engine that Locked Dictation and transcription use, which
+  downloads the first time you need it.
+- **Every model you downloaded** for better accuracy, such as Nemotron or
+  Parakeet, listed with "(downloaded)" and its tier. See "Better accuracy:
+  optional speech models" below.
 - **Windows speech recognition** works in any speech language installed in
   Windows, but adds no punctuation of its own.
 - **Windows voice typing** hands over to `Windows+H`, where none of the
   commands apply.
 - **OpenAI**, only with your own OpenAI key and only if you choose it. Your
   speech is sent to OpenAI; see "OpenAI dictation, with your own key" below.
+- **Speech providers**, only with your own account at that company and only
+  once you set it up in **Speech Providers...** (`Alt+V`). Your speech is sent
+  to that company; see "Speech providers: dictation with your own account at
+  another company" below.
 
-Larger models you download for better accuracy join this list; see "Better
-accuracy: optional speech models" below.
+To weigh them up side by side, see "Which speech engine? A guide to
+choosing" at the start of this chapter.
 
 ##### The wake phrase
 
@@ -8531,7 +8801,7 @@ you change here is saved when you press OK in Dictation Settings.
 | Say punctuation marks in the read-back (`Alt+S`) | Reads "comma", "period" and the other marks by name after each phrase; see "What you hear" | On |
 | Tick while a phrase is being worked on (`Alt+R`) | A soft tick once a second while a phrase takes more than a second to turn into text; see "What you hear" | Off (on in QUILL Transcribe) |
 | Time stamps in live transcripts (`Alt+T`) | Starts each paragraph of a live transcript with the time, like [10:42]; see "Live transcripts" | Off |
-| Dictate in Other Programs... (button, `Alt+O`) | Saves your settings, hands them to Quill Inkwell and starts it; see "Dictating into other programs" | (a button) |
+| Dictate in Other Programs... (button, `Alt+O`) | Saves your settings and hands them to QUILL Transcribe when it is running or installed, otherwise to Quill Inkwell, and starts it; see "Dictating into other programs" | (a button) |
 | Programs Dictation Never Types Into... (button, `Alt+N`) | The programs dictation never types into from QUILL Transcribe or Quill Inkwell, such as your password manager; see "Programs dictation never types into" | The common password managers and the Windows sign-in prompts |
 | Command word (`Alt+C`) | The word you say before a command, like QUILL scratch that; empty for none; see "The command word" | QUILL |
 | Commands only after the command word (strict mode) (`Alt+E`) | A command said on its own is written as words; the stop phrase always works | Off (on in QUILL Transcribe) |
@@ -8704,15 +8974,17 @@ and Manage Speech Models.
 - **High accuracy**: the fewest mistakes, for the most work; needs a capable
   computer, or patience. Nemotron, and Whisper small and larger.
 
-**Where the models go.** One folder for QUILL and QUILL Lite on the same
-computer, so a model downloaded in one is there for the other:
+**Where the models go.** One folder for QUILL, QUILL Lite and QUILL
+Transcribe on the same computer, so a model downloaded in one is there for the
+others, and for the **QUILL speech models** engine that Locked Dictation and
+offline transcription can use:
 `%LOCALAPPDATA%\QuillVille\Dictation\models`. In a portable copy, models are
 saved inside the portable folder, so everything travels together
 (`data\dictation\models` in the portable folder). Before a download starts,
 QUILL checks there is room on that drive and tells you if there is not.
 
 **To remove one**, choose it in Speech Models and press **Remove**
-(**Alt+R**). It frees the space for both programs. If dictation is using it,
+(**Alt+R**). It frees the space for every program that shares it. If dictation is using it,
 choose another engine first.
 
 **Will my computer keep up?** When Speech Models opens, it spends about two
@@ -9008,6 +9280,13 @@ not be reached. Check the internet connection.") and dictation keeps
 listening; a refused key or an empty account stops dictation and says so.
 QUILL never switches to another engine by itself.
 
+**Where they work.** Speech providers are for Live Dictation, here and in
+QUILL Lite, QUILL Transcribe and Quill Inkwell, which have the same Speech
+Providers page. They are not offered in Transcribe a Recording (`Shift+F5`),
+Transcribe Audio or Video (Offline), captions or watch folders, and they are
+never recommended; the recommendation only ever names a model on your
+computer.
+
 In settings files, each company's other details are kept in
 `windows_dictation_speech_providers` and your answers to the consent
 questions in `windows_dictation_speech_provider_consent`. Keys are never
@@ -9118,9 +9397,13 @@ Inkwell**, `Ctrl+Alt+Shift+F11`, offers to fetch it if it is not).
 1. In QUILL, open Dictation Settings (`Alt+Shift+F6`), then **More Dictation
    Settings...** (`Alt+A`).
 2. Press **Dictate in Other Programs...** (`Alt+O`). Your dictation settings
-   are saved and handed to Inkwell, and Inkwell starts.
-3. If you have not chosen a key for it yet, Inkwell asks you for one now. Pick
-   a key you do not use for anything else.
+   are saved and handed over. If QUILL Transcribe is running or installed, it
+   gets them and starts, and you hear "QUILL Transcribe has your dictation
+   settings. Use its start and stop key, or its tray menu, in the program you
+   want to dictate into." Its start and stop key is the one you chose when
+   you set up QUILL Transcribe. Otherwise Inkwell gets them and starts.
+3. With Inkwell, if you have not chosen a key for it yet, Inkwell asks you for
+   one now. Pick a key you do not use for anything else.
 
 You can also choose the key yourself in Inkwell: on Inkwell's own File menu,
 choose **Dictate Anywhere Key...**. There is no key until you choose one.
@@ -9407,9 +9690,21 @@ computer" and the choices below.
   especially with names, accents and fast speech, and still runs entirely on
   your computer. It needs a reasonably capable computer; see "Better accuracy:
   optional speech models".
-- **OpenAI, with your own key**, is the most accurate of all and is very good
-  with names, but your speech is sent to OpenAI and they charge you for it. See
-  "OpenAI dictation, with your own key".
+- **OpenAI, with your own key**, is very accurate and very good with names,
+  but your speech is sent to OpenAI and they charge you for it. See "OpenAI
+  dictation, with your own key".
+- **A speech provider, with your own account**, such as Azure, Deepgram or
+  AssemblyAI, is the same idea with another company: very accurate, sent to
+  that company, billed by them. See "Speech providers: dictation with your own
+  account at another company".
+- **Windows speech recognition** is there for a language the others do not
+  know, but it puts in no punctuation and mishears an untrained voice often.
+
+Speech Models can suggest a model for this computer: open Dictation Settings
+(`Alt+Shift+F6`), press **Better Accuracy: Speech Models...** (`Alt+B`),
+choose what matters most to you (`Alt+W`) and read the **Recommendation** (`Alt+C`).
+"Which speech engine? A guide to choosing", at the start of this chapter,
+walks through it with an example.
 
 Try one for a day before you judge it. Everyone's voice suits a different
 engine.
@@ -9476,8 +9771,12 @@ the Tutorials, described at the end of this chapter.
 #### Locked Dictation (Ctrl+F9)
 
 Locked Dictation is a keyboard-only way to dictate a longer passage without
-opening a dialog or leaving the editor. It uses the same on-device Whisper
-engine and microphone as **Dictate (Offline)**, so nothing is uploaded.
+opening a dialog or leaving the editor. It uses the same offline engine and
+microphone as **Dictate (Offline)**, so nothing is uploaded: Whisper.cpp, the
+QUILL speech models or Faster Whisper, whichever you chose in Manage Speech
+Models. It needs no speech model to start: until your engine has one, it
+uses the Moonshine tiny model that comes with QUILL. See "The offline speech
+tools' engines".
 
 1. Put your cursor where the text should go.
 2. Press `Ctrl+F9`. QUILL says "Locked dictation on."
@@ -9503,9 +9802,15 @@ key repeats and announces itself endlessly under a screen reader.
 - **Remappable.** `Ctrl+F9` and the rest are only the defaults. Change them in
   the Keymap Editor (**Tools > Customize and Support > Keymap Editor...**).
 
-To use Locked Dictation you need an offline speech model installed (Manage Speech Models, on
-**Tools > Speech > Speech and Dictation...**) and the optional microphone-capture support.
-In Safe Mode, dictation is turned off.
+Locked Dictation needs no model: with no other model ready, it uses the
+built-in Moonshine tiny. With Whisper.cpp as the engine (the default), the
+first press of `Ctrl+F9` offers the small Whisper.cpp engine itself (about
+8 MB, verified); answer Yes, and dictation is ready when it finishes. With
+**QUILL speech models** as the engine, nothing is downloaded at all. For
+fewer mistakes, choose a larger model in
+Manage Speech Models (**Tools > Speech > Speech and Dictation...**). It also
+needs microphone-capture support, which standard installs include; if it is
+missing, QUILL tells you. In Safe Mode, dictation is turned off.
 
 ##### Nothing is lost
 
@@ -9550,10 +9855,11 @@ across by itself when its files are the same as today's download; if they are
 not, it is listed as not downloaded, and downloading it once more fixes that.
 Once its model is installed, dictation switches to it
 automatically. If you have chosen an engine yourself, that choice is always
-respected, and removing the model simply returns you to Whisper. Nothing else
+respected, and removing the model simply returns you to Whisper.cpp, or to
+the built-in Moonshine tiny if Whisper.cpp has no model. Nothing else
 changes: same keys, same review, same recovery.
 
-**Dictation works before you download anything.** If Whisper.cpp has no model
+**Locked Dictation works before you download a model.** If Whisper.cpp has no model
 yet, Locked Dictation uses the Moonshine tiny model that comes with QUILL, the
 same one live dictation starts with. If you had chosen the older Nemotron
 engine, QUILL now uses the most accurate model you have; download **NVIDIA
@@ -9585,8 +9891,8 @@ words are left alone.
 
 The **Voice Interaction** guide ([voice-interaction.md](voice-interaction.md)),
 in its section "Teaching dictation your words," explains the file format and
-how to choose a speech engine (Whisper's small models, Parakeet 3, or
-Nemotron).
+how to choose a speech engine for these offline tools (Whisper.cpp, the QUILL
+speech models such as Parakeet 3 and Nemotron, or Faster Whisper).
 
 ##### Filler words
 
@@ -9612,6 +9918,13 @@ straight into your document.
 
 **Dictation Microphone...** on the same menu chooses which microphone this
 dictation uses, or the system default.
+
+Dictate (Offline) listens with the same offline engine as Locked Dictation,
+but it needs one of that engine's models: with Whisper.cpp and no model yet,
+QUILL offers to open Manage Speech Models so you can download one. With
+**QUILL speech models** as the engine, the built-in Moonshine and Whisper are
+its models, so nothing needs downloading. To change the engine or the model,
+see "The offline speech tools' engines".
 
 ### Transcribing a recording
 
@@ -9704,15 +10017,18 @@ between sentences. A few more things happen on the way:
 The **Speech model** list shows every model on your computer, most accurate
 first: the two that come with QUILL, and any you downloaded in Dictation
 Settings, Speech Models (see "Better accuracy: optional speech models"
-earlier in this chapter). Here is how to choose:
+earlier in this chapter), each with its tier. With your own OpenAI key,
+OpenAI's file models are at the end (see below). Speech providers are not in
+this list; they are for live dictation only. Here is how to choose:
 
 - **Voice notes and dictated letters.** One clear voice, close to the
   microphone. **Moonshine tiny** is built in, is the fastest by far, and does
   this well. Whisper tiny is the one to try if Moonshine mishears an accent.
 - **Interviews and meetings.** Several voices, people interrupting, someone
   further from the microphone. A downloaded model is worth it here.
-  **Parakeet TDT 0.6B v3** is our first choice: it is the most accurate model
-  we offer and among the quickest of the big ones. Whisper small, medium or
+  **Parakeet TDT 0.6B v3** is our first choice: it is accurate, never invents
+  words in a silence, and is among the quickest of the big ones. Nemotron,
+  rated High accuracy, is as good a choice, and Whisper small, medium or
   large-v3-turbo are good too, just slower.
 - **Lectures and talks.** One voice, a long time, and plenty of special words.
   Parakeet again, or a Whisper model. Before you start, add the speaker's
@@ -9845,9 +10161,13 @@ do not need to turn on Artificial Intelligence to use it.
    done and how many words it produced, and opens the result as a draft
    document you can edit.
 
-The first time you transcribe or dictate offline, QUILL may need to fetch its
-speech engine and a model. It offers to do that for you. The Speech section
-later in this chapter explains models and engines.
+This uses the offline speech tools' engine: Whisper.cpp, the QUILL speech
+models or Faster Whisper, whichever you chose in Manage Speech Models, and
+the built-in Moonshine tiny when none of them is ready. The first time, QUILL
+may offer to fetch the Whisper.cpp engine and a model for you; nothing
+downloads unless you agree. "The offline speech tools' engines", at the start
+of this chapter, says which to choose, and the Speech section later in this
+chapter explains models and engines in full.
 
 ##### Supported formats and FFmpeg
 
@@ -10083,16 +10403,39 @@ remembers your choice and uses it for transcription, captions and dictation.
 
 #### Choosing a speech engine
 
-**Choosing a speech engine.** QUILL uses the **whisper.cpp** engine by default.
-You can add an optional engine by installing what it depends on:
+**Choosing a speech engine.** This choice is for the offline speech tools:
+Locked Dictation, Dictate (Offline), Transcribe Audio or Video (Offline),
+captions and watch folders. Live Dictation has its own engine setting, in
+Dictation Settings (`Alt+Shift+F6`). All three engines run **entirely on your
+computer**:
 
-- **Faster Whisper** (`fasterwhisper` dependency): a faster engine for many
-  languages. It runs inside QUILL and uses your **GPU** automatically when you
-  have one.
+- **Whisper.cpp**, the default: light and fast, and works on any computer.
+  The engine is a small download (about 8 MB) the first time you need it; see
+  "Getting the offline engine". Its models download in Manage Speech Models,
+  from **Tiny** (75 MB) to **Large (v3)** (about 3.1 GB); **Small** (465 MB)
+  is the recommended starting point. Only Whisper.cpp has the **Small English
+  with speaker detection** model, which labels who is speaking. Choose it when
+  you are not sure.
+- **QUILL speech models (Parakeet, Nemotron and more)**: the same models Live
+  Dictation, QUILL Lite and QUILL Transcribe use, in the same folder, so a
+  model you already downloaded for Live Dictation is ready here with nothing
+  more to fetch. It includes the built-in Moonshine tiny, so it works with
+  nothing downloaded. Choose it for **Parakeet 3**, which never invents words
+  from silence, or **Nemotron**, which is strong in English and Spanish. Once
+  Parakeet 3 is installed, QUILL uses this engine by itself unless you chose
+  one yourself. It replaces the separate Parakeet and Nemotron engines of
+  earlier versions.
+- **Faster Whisper**: the most accurate, a larger download, more memory, and
+  the only engine that can use your **graphics card**. It installs when you
+  choose it, where your copy of QUILL can install it; otherwise it is not
+  offered. It has its own models. It does not label speakers.
 
-Each engine has its own models, so download a model after switching. All of
-them run **entirely on your computer**. Faster Whisper does not label
-speakers; for speaker attribution, use the whisper.cpp speaker-detection model.
+Whisper.cpp and Faster Whisper each have their own models, so download a model
+after switching to one of them. To switch, choose the **Speech Engine** on the
+Dictation (Offline) tab, or run the guided setup described in "Setting up
+offline dictation". For a side-by-side comparison with Live Dictation's
+engines, see "Which speech engine? A guide to choosing" at the start of this
+chapter.
 
 **Vosk is no longer a dictation engine.** Since October 2026, Vosk is used
 only to work out **podcast chapters**. It ships with QUILL for that job,
@@ -10113,7 +10456,11 @@ installer. The first time you use offline dictation or transcription, QUILL
 **offers to download it for you**: about 8 MB, checksum-verified, with a
 progress bar you can cancel. It is turned off in Safe Mode. If you said no
 then, fetch it any time from the all-in-one **Help > Download Optional
-Components...** list described below. There is no separate menu item for it. If you are **upgrading** from a version
+Components...** list described below. There is no separate menu item for it.
+You need the engine, but not yet a model, for Locked Dictation: until
+Whisper.cpp has a model, Locked Dictation uses the built-in Moonshine tiny.
+Dictate (Offline) and Transcribe Audio or Video need a Whisper.cpp model. To
+skip all of this, choose **QUILL speech models** as the engine instead. If you are **upgrading** from a version
 that bundled the engine, your existing copy is kept and keeps working, with
 nothing to download.
 
@@ -10223,8 +10570,8 @@ The list puts the most important first:
   Scanned or image-only PDFs still need **File > Import > Import / Convert Document (OCR)...** either way.
 - The **braille translation pack**: liblouis tables and BRF profiles for the
   Translation submenu and for BRF and embossing export.
-- **Dictation (offline speech)**: a guided setup covering Whisper.cpp, Faster
-  Whisper and QUILL speech models (Parakeet, Nemotron and more), described
+- **Dictation (offline speech)**: a guided setup covering Whisper.cpp, QUILL
+  speech models (Parakeet, Nemotron and more) and Faster Whisper, described
   below.
 - **Kokoro** and **Piper** neural voices, and **eSpeak NG** and **DECtalk**
   voices.
@@ -10348,8 +10695,10 @@ between English and Spanish with `Ctrl+Shift+F11`, keep a live transcript
 with `Ctrl+Alt+Shift+PageDown`, and dictate into other programs through Quill
 Inkwell. You can transcribe a recording on your own computer or with
 **AI > Transcribe Audio > Transcribe Audio File...**, turn it into minutes or notes with
-Transcript Actions, and set a watch folder to do all of that for you. You also
-know where speech models, optional components and the memory settings live.
+Transcript Actions, and set a watch folder to do all of that for you. You know
+which speech engine each of these uses, how to choose one for privacy, speed
+or accuracy, and what a cloud engine sends. You also know where speech models,
+optional components and the memory settings live.
 
 To practise with QUILL beside you, open **Help > Tutorials...**
 (`Ctrl+Alt+F1`) and try "Write by talking". The same track, "How much QUILL
@@ -10441,6 +10790,58 @@ The pad has a list called **Put the answer in**, with three choices:
 QUILL remembers your choice (the setting `ai_answer_delivery`) until you change
 it, and it applies to every answer: from the pad, the Chat Key and the Prompt
 Library.
+
+#### How AI answers are spoken
+
+AI models write their answers in Markdown, the plain-text formatting with `#`
+for headings, `**` for bold and `-` for list items. On screen that is
+harmless. Read aloud, it is noise: your screen reader would say "star star"
+and "hash hash", and read every link's whole web address. So whenever QUILL
+**speaks** an AI answer, it speaks the words and leaves the symbols out.
+
+This applies everywhere an answer is spoken:
+
+- an answer put **at the cursor** or **on the clipboard** (above), which QUILL
+  reads aloud because focus does not move;
+- each reply in an **AI Conversation**, in this window or a saved one;
+- **Ask Quill**'s replies, whether announced, read aloud by QUILL's own voice
+  or by the AI voice (see *Asking out loud and hearing the answer*), and the
+  progress Ask Quill announces while a long answer is still arriving.
+
+**What you hear, and what you get.** Only the spoken copy changes. What goes
+into your document, onto the clipboard, into the AI Result window or into the
+conversation transcript is the answer exactly as it arrived, Markdown and all.
+If you asked for a Markdown table, you get a Markdown table.
+
+**An example.** You set **Put the answer in** to **My document, at the
+cursor** and ask for a summary. The AI sends back:
+
+```text
+## Summary
+
+**Three** points:
+
+- Costs went down.
+- See [the report](https://example.com/report).
+```
+
+Your document gets those six lines exactly. You hear: "Answer inserted at the
+cursor. Press Control Z to undo. Summary Three points: Costs went down. See
+the report."
+
+**What is left out, and what is kept:**
+
+- Heading marks, bold and italic marks, list bullets and quote marks are
+  dropped; the words they mark are kept.
+- A link is read by its words ("the report"), never by its address.
+- A picture is read as "image" and its description.
+- A block of code is read as "code block". Code read aloud a symbol at a time
+  is rarely what you want from an announcement; the code itself is in your
+  document or the window, where you can read it character by character.
+
+The answer in the AI Result window is not read out for you: focus lands on it
+and your screen reader reads it as text, symbols included, so you can check
+the formatting before you use it.
 
 #### The Chat Key (Ctrl+6)
 
@@ -10914,6 +11315,54 @@ You hear why, followed by the error code `QUILL-AI-OWN-KEY-FAILED`, and the
 message names the provider. The usual causes are a mistyped key, a model your
 account cannot use, an account with no credit, or the wrong provider chosen for
 the key you saved. **Test the Key** tells you which.
+
+### If the AI you chose is not available
+
+QUILL never quietly answers with a different AI from the one you chose. If
+what you set up cannot be used right now, QUILL either tells you once, or
+asks you first; which one depends on where your text would go instead.
+
+**When your text would stay on this computer, you are told once.** If the
+provider in your AI settings cannot be reached and Ask Quill falls back to the
+on-device model, you hear, as Ask Quill opens: "Anthropic was not available, so
+Quill is using the on-device model instead. Check your provider and key in the
+AI settings to restore it." Nothing leaves the computer, so there is nothing to
+agree to.
+
+**When your text would go to a different company, you are asked first.** A
+**Use a Different AI Provider?** or **Send to a Different AI?** box opens. The
+question is the whole message, so your screen reader reads it as the box opens,
+and **No** is the default button, so pressing Enter out of habit sends nothing.
+
+- **Ask Quill and QUILL's AI tools.** The provider in your AI settings is
+  unavailable, and Ask Quill's own setup was once pointed at another cloud
+  provider. Before this change, Ask Quill used that other provider without a
+  word. Now it keeps the on-device model and asks, for example: "Anthropic is
+  not available right now. Use openai instead? That sends your text to openai
+  over the internet. Choose No and nothing is sent." **Yes** uses it for the
+  rest of this chat. **No** keeps the on-device model.
+- **The free AI, your own key and your ChatGPT plan** (the pad, the Chat Key,
+  the Prompt Library, AI conversations and Ask About an Image). QUILL remembers
+  which way your requests have been going this session. If that changes
+  without you changing it, for instance your Gemini key has gone from Windows'
+  credential store, or your ChatGPT sign-in has stopped working, the next
+  request asks: "Your own Google Gemini key is not available right now. Use
+  QUILL's free AI instead? That sends your text to QUILL's free AI service over
+  the internet. Choose No and nothing is sent." **Yes** sends it, and the new
+  route is simply the route from then on, so you are asked once. **No** sends
+  nothing, and you hear "Nothing was sent", with what to do next; the next
+  request asks again.
+
+Changing the route yourself is never questioned: signing in or out in **Use My
+ChatGPT Subscription**, or saving or removing a key in **Use My Own AI Key**,
+counts as your choice.
+
+**Limits.** QUILL compares against the route used earlier in the same session,
+so the very first request after starting goes where your settings say, as it
+always has. A request that
+*fails* (no connection, a limit reached) is not a fallback: you hear why it
+failed, and Ask Quill may suggest switching to your on-device model, but it
+never switches for you.
 
 ### Using your ChatGPT subscription
 
@@ -11658,6 +12107,48 @@ its two passes instead, and the second writes to a fixed **word budget** of
 about 150 words, not a fraction of the original, which stops a small local
 model padding or inventing. Your own instructions still shape how that final
 summary reads.
+
+##### Markdown documents keep their formatting
+
+When the document you are working on is **Markdown**, QUILL adds one more
+sentence to the instructions for every task that hands your own text back:
+AI Spell Check, Grammar and Style, Rewrite, Summarize, Expand and Translate.
+(**Check Grammar with AI** is a Prompt Library prompt rather than one of these
+tasks; edit its prompt if you want it to say the same.)
+It tells the AI to keep the Markdown exactly as it is (headings, lists, bold
+and italic, links, pictures, tables and code), never to remove or convert it,
+and never to report it as a spelling, grammar or style mistake.
+
+Before this, only Translate had that rule. A rewrite of a Markdown file could
+come back with its `##` headings turned into plain sentences and its bullet
+list run together into a paragraph, and the grammar check could list `**bold**`
+as a typing mistake.
+
+**How QUILL knows it is Markdown.** The same way the rest of QUILL does: the
+**Document Language** you pinned for this document, if you pinned one;
+otherwise the file's name (`.md`, `.markdown`, `.mdown` or `.mkd`); and, for a
+document with no such name, what is in it (headings starting with `#`, list
+items, links or code fences near the top).
+
+**An example.** In `notes.md`, select:
+
+```text
+## Next steps
+
+- email the team abuot the date
+- book the room
+```
+
+and run **AI > Proofread > Grammar and Style Check...**. The check reports "abuot" and nothing
+else: not the `##`, not the hyphens.
+
+**Limits.** The sentence is added to your own instructions too, and to a task
+whose instructions you have turned off, because keeping your document's
+structure is not a matter of style. Answers *about* a document (Document Q&A,
+the Research Agent, the AI Thesaurus) are new text rather than yours, so they
+are left alone. The Free AI Assistant pad and the AI Conversation window use
+QUILL's free service's own instructions, which are not covered by this
+setting.
 
 ##### Sharing instructions
 
@@ -14309,6 +14800,11 @@ whenever you are ready, and QUILL announces when it hears from it again.
 
 The same rule holds everywhere in QUILL: anything that closes QUILL or cuts
 back what it can do, without you asking, must save your work first.
+
+QUILL Lite has the same protection, through the same code: the same two
+missed checks, the same snapshot first, and the same sentence, ending "QUILL
+Lite keeps running". Its user guide explains the parts that differ, since QUILL
+Lite has no voice of its own.
 
 ### The default answer to a destructive question is No
 

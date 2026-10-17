@@ -150,6 +150,7 @@ class HostedAiMixin(AiAnswersMixin, ChatGptAiMixin):
         finally:
             dialog.Destroy()
         self._ai_host().save_settings()
+        self._ai_route_changed()  # a key saved or removed here is a choice, not a fallback
         self._announce(outcome)
 
     def cmd_ai_sign_in(self) -> None:

@@ -2507,28 +2507,80 @@ To calls it Find Stations.
 
 #### Dictating a search
 
-If QUILL Transcribe is part of your QuillVille family, you can say a search
-instead of typing it. Quill Radio has no speech engine of its own; **Edit >
-Dictate Here** (**Ctrl+F11**) asks QUILL Transcribe to listen and type into the
-box you are in.
+You can say a search instead of typing it. Quill Radio does not listen to the
+microphone itself, and has no speech engine of its own. **Edit > Dictate
+Here** (**Ctrl+F11**) asks QUILL Transcribe, the QuillVille app that types
+what you say into any program, to start dictating into the box you are in.
+QUILL Transcribe does the listening and types the words; Quill Radio only
+asks.
 
-1. Press **Ctrl+F** and go to the box you want, such as the station name.
+1. Press **Ctrl+F**. You hear "Internet Radio", and your cursor is in
+   **Station name**. Tab to another box, such as the genre, if you prefer.
 2. Press **Ctrl+F11**. If QUILL Transcribe is running, you hear it start,
-   with its usual "Dictation on" or start sound. If not, Quill Radio says
-   "Starting QUILL Transcribe. Dictation starts here when it is ready." and it
-   starts in the tray.
-3. Say what you are looking for, for example "jazz", and pause.
-4. Stop with QUILL Transcribe's start and stop key, or say "stop dictation",
-   then press Enter.
+   with its own "Dictation on" and start sound. Quill Radio says nothing, so
+   you hear it once.
+3. Say what you are looking for, for example "jazz", and pause. The word is
+   typed into the box.
+4. Stop dictating: press QUILL Transcribe's start and stop key
+   (Alt+Shift+Backslash unless you changed it), or say "stop dictation".
+5. Press **Enter** to search.
 
 Ctrl+F11 works in any text box in Quill Radio, in the main window and in its
-other windows. Your own words and the dictation commands work as everywhere
-else. If Quill Inkwell is dictating, you are told so and nothing starts.
-Dictate Here is on the Edit menu of every copy of Quill Radio from QUILL
-Transcribe's release on 1 November 2026. QUILL Transcribe is a separate, free
-download; if it is not installed, Ctrl+F11 says "Dictate Here needs QUILL
-Transcribe, which is not installed with this copy." and the QuillVille menu
-(Alt+Q, then T) offers to get it.
+other windows, such as Search Stations. Put the cursor in the box first:
+pressing the key does not move the focus, and QUILL Transcribe types wherever
+the focus is.
+
+**What happens when you press Ctrl+F11.**
+
+- **QUILL Transcribe is running:** Quill Radio passes the request on, and
+  QUILL Transcribe starts dictating within a second. If it is already
+  dictating, nothing changes: it keeps going, and types into your box because
+  that is where you are.
+- **QUILL Transcribe is installed but not running:** Quill Radio says
+  "Starting QUILL Transcribe. Dictation starts here when it is ready." QUILL
+  Transcribe starts in the system tray, so the box keeps the focus, and starts
+  dictating once it is ready. The very first time, QUILL Transcribe opens its
+  own window instead, to set itself up. Finish that, come back, and press
+  Ctrl+F11 again.
+- **Quill Inkwell is dictating:** nothing starts, and you hear "Quill Inkwell
+  is dictating. Stop it there, then try again." Only one program uses the
+  microphone at a time.
+- **QUILL Transcribe is not installed:** you hear "Dictate Here needs QUILL
+  Transcribe, which is not installed with this copy." The QuillVille menu
+  (Alt+Q, then T) offers to get it.
+- **QUILL Transcribe is running but does not answer:** you hear "QUILL
+  Transcribe is running, and could not be reached." Quit it with Exit QUILL
+  Transcribe on its tray menu, then press Ctrl+F11 again to start it fresh.
+
+**Which speech engine listens.** Because it is QUILL Transcribe dictating, the
+engine is the one you chose in QUILL Transcribe, and everything you set up
+there applies here too: My Words and Phrases, the command word, the dictation
+commands, the words it must never type, and the field lock. There is nothing
+to set up in Quill Radio. To see or change the engine, open QUILL Transcribe
+(**Ctrl+Alt+Shift+F10** from Quill Radio) and choose Model > Choose Model...
+(Ctrl+M in QUILL Transcribe). **Moonshine**, the one it starts with, is built
+in, needs nothing downloaded, is the fastest and punctuates for you, in
+English. **Whisper** is built in too, a little slower, worth trying if
+Moonshine mishears you, and also writes Spanish. Larger models, such as NVIDIA
+Parakeet or Nemotron, make fewer mistakes for more work; they are free
+downloads from Model > Model Library... (Ctrl+L in QUILL Transcribe), and
+Choose Model shows which one is recommended for your computer. QUILL
+Transcribe's own guide explains each one in full.
+
+**Your privacy.** Quill Radio never records your voice and never sends it
+anywhere. With the built-in engines and the downloaded models, QUILL
+Transcribe keeps your speech on your computer as well. Your voice leaves the
+computer only if you chose OpenAI or a speech provider with your own account
+as the engine in QUILL Transcribe; it asks before the first time it sends
+anything, and No is the answer it starts on.
+
+**Limits.** Ctrl+F11 in Quill Radio starts dictation but does not stop it:
+stop with QUILL Transcribe's key, or say "stop dictation". Dictate Here types
+into a box; Quill Radio's own commands are still keys and menus, so saying
+"play" does not play a station. Dictate Here is on the Edit menu of every copy
+of Quill Radio from QUILL Transcribe's release on 1 November 2026, whether or
+not QUILL Transcribe is installed yet. QUILL Transcribe is a separate, free
+download.
 
 #### Search by name, tag and country, step by step
 

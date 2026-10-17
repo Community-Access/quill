@@ -71,3 +71,26 @@ def test_the_string_none_is_not_a_reader() -> None:
     watchdog.check()
     watchdog.check()
     assert not watchdog.armed
+
+
+def test_both_editors_share_the_died_sentence() -> None:
+    from quill.core.sr_watchdog import died_message
+
+    quill = died_message("QUILL", "JAWS", 2)
+    lite = died_message("QUILL Lite", "JAWS", 2)
+    assert quill == (
+        "JAWS appears to have stopped. Your work is safe: 2 documents snapshotted "
+        "to autosave. QUILL keeps running; restart your screen reader when ready."
+    )
+    assert lite == quill.replace("QUILL keeps", "QUILL Lite keeps")
+    assert "1 document snapshotted" in died_message("QUILL", "NVDA", 1)
+    assert died_message("QUILL", "", 0).startswith(
+        "Your screen reader appears to have stopped. There was no unsaved work to protect."
+    )
+
+
+def test_recovered_sentence() -> None:
+    from quill.core.sr_watchdog import recovered_message
+
+    assert recovered_message("NVDA") == "NVDA is running again."
+    assert recovered_message("") == "Your screen reader is running again."

@@ -13,6 +13,10 @@ when the primary reader just died — and recorded in Notifications so the user
 finds the explanation later. Recovery is announced too, so a reader restart
 is never silent either.
 
+The state machine and the sentences are the wx-free
+:mod:`quill.core.sr_watchdog`; QUILL Lite runs the same core through its own
+small mixin (``quill/apps/lite_sr_watchdog.py``).
+
 The watchdog never closes QUILL: unlike single-reader tools, QUILL works with several
 readers and its own self-voice, so the correct response to a dead reader is
 "your work is safe, here is what happened", not shutdown.
@@ -22,7 +26,12 @@ from __future__ import annotations
 
 import sys
 
-from quill.core.sr_watchdog import CHECK_INTERVAL_SECONDS, SrWatchdog
+from quill.core.sr_watchdog import (
+    CHECK_INTERVAL_SECONDS,
+    SrWatchdog,
+    died_message,
+    recovered_message,
+)
 
 
 class SrWatchdogMixin:
@@ -55,7 +64,7 @@ class SrWatchdogMixin:
             if event.kind == "died":
                 self._on_screen_reader_died(event.reader_name)
             elif event.kind == "recovered":
-                self._announce(f"{event.reader_name} is running again.")
+                self._announce(recovered_message(event.reader_name))
         except RuntimeError:
             return  # the frame is going away; stop rescheduling
         except Exception:  # noqa: BLE001 - the watchdog must never take QUILL down
@@ -65,13 +74,8 @@ class SrWatchdogMixin:
     def _on_screen_reader_died(self, reader_name: str) -> None:
         """The environment collapsed: persist everything, then explain."""
         flushed = self._sr_emergency_flush()
-        name = reader_name or "Your screen reader"
-        message = (
-            f"{name} appears to have stopped. Your work is safe: "
-            f"{flushed} document{'s' if flushed != 1 else ''} "
-            "snapshotted to autosave. QUILL keeps running; restart your "
-            "screen reader when ready."
-        )
+        # The words are the shared core's, so QUILL Lite says the same thing.
+        message = died_message("QUILL", reader_name, flushed)
         # The announcement engine's own fallback chain (another reader, the
         # SAPI self-voice) is what makes announcing after a reader death
         # meaningful rather than ironic.

@@ -272,10 +272,10 @@ timer</strong>, the <strong>mini-player</strong>, the
 <strong>multi-field status bar</strong> (F6 review), the Magical
 <strong>welcome-back</strong> recap, the <strong>AI chapter
 summary/recap</strong>, and <strong>voice commands</strong> — both
-hands-free (offline Whisper or Nemotron) and say-or-type. Still to come:
-an <strong>always-on hotword</strong> and <strong>BARD sources</strong>
-(pending the NLS contract). Where a feature is still future, this guide
-says so.</p>
+hands-free (offline, with QUILL’s speech engines) and say-or-type. Still
+to come: an <strong>always-on hotword</strong> and <strong>BARD
+sources</strong> (pending the NLS contract). Where a feature is still
+future, this guide says so.</p>
 </blockquote>
 <hr />
 <h2 id="1-getting-started">1. Getting started</h2>
@@ -787,14 +787,20 @@ voice, both built:
 Press once and the player starts listening (you’ll hear a “Listening”
 cue and the book quietens); say your command; press Ctrl+Shift+L again
 to stop. The player transcribes what you said <strong>on your own
-computer</strong> (offline, using a small Whisper speech model) and
-carries it out — announcing the result. The book is <em>ducked, never
+computer</strong> (offline, with a small, fast speech model) and carries
+it out — announcing the result. The book is <em>ducked, never
 paused</em>, so you don’t lose your place, and it restores the moment
 the command finishes. If nothing is recognized the player tells you what
 it heard so you can try again. A safety timer closes the microphone
-automatically if you forget to stop. (Needs a microphone and a speech
-model installed in QUILL — open QUILL ▸ download a small Whisper model
-once.)</li>
+automatically if you forget to stop. It uses the speech engine you chose
+in QUILL (Tools ▸ Speech ▸ Speech and Dictation…) and that engine’s
+smallest fast model, because a command is only a few words. If that
+engine has no model, it tries Whisper.cpp, then the QUILL speech models
+(where it prefers the built-in Moonshine tiny), then Faster Whisper. If
+none has a model, you hear “Voice listening needs a microphone and an
+installed speech model. Open QUILL and download a small Whisper model
+first.” Open QUILL, press Alt+T, H, S, and download Whisper.cpp’s Tiny
+or Base model once. Vosk is not used for voice commands.</li>
 <li><strong>Type it: Type a Voice Command (Ctrl+Shift+V).</strong> Opens
 a box; type the command — or speak it in with your operating system’s
 dictation — for when you’d rather not talk aloud.</li>
@@ -920,7 +926,8 @@ a glance</h2>
 <td>Always-on hotword (say a wake word to start)</td>
 </tr>
 <tr>
-<td><strong>Hands-free voice (offline Whisper/Nemotron)</strong></td>
+<td><strong>Hands-free voice (offline, QUILL’s speech
+engines)</strong></td>
 <td>Spoken chapter intros / soundscape</td>
 </tr>
 <tr>

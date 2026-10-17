@@ -67,6 +67,37 @@ class AssistantReplyDeliveryMixin:
         if plan.mode == "ai_voice":
             self._speak_with_ai_voice(plan.spoken_text, settings)
 
+    def _offer_backend_substitute(self) -> None:
+        """Ask before answering from a cloud provider nobody chose (fallback plan).
+
+        Resolution fell past the provider configured in AI settings and found
+        another cloud provider, which it held rather than use unasked
+        (:mod:`quill.core.ai.backend_substitution`). The plan's announcement is
+        the question, read by the screen reader as the box opens, so nothing is
+        spoken on top of it (GATE-13). Yes answers from that provider from now
+        on; No keeps the on-device model, and nothing goes anywhere else.
+        """
+        assistant = getattr(self, "_assistant", None)
+        plan = getattr(assistant, "backend_plan", None)
+        if plan is None or not plan.requires_consent:
+            return
+        if self._confirm_substitute(plan.announcement):
+            assistant.accept_substitute()
+
+    def _confirm_substitute(self, question: str) -> bool:
+        """The Yes/No box; No is the default, because No sends nothing."""
+        import wx
+
+        from quill.ui.dialog_contract import show_message_box
+
+        answer = show_message_box(
+            question,
+            "Use a Different AI Provider?",
+            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
+            getattr(self, "dialog", None),
+        )
+        return answer == wx.YES
+
     def _announce_incoming(self, text: str, *, prefix: str = "Quill says") -> None:
         """Announce *text* through the screen reader, at the configured length.
 
@@ -75,9 +106,12 @@ class AssistantReplyDeliveryMixin:
         honour the same length the user configured, instead of the literal 140
         that used to be written in here. One rule, one place.
         """
+        from quill.core.ai.spoken_answer import speakable_line
         from quill.core.ai.voice_reply import truncate_announcement
 
-        compact = truncate_announcement(text, self._announce_limit())
+        # Speech-safe first, then cut: a cap counted in Markdown symbols would
+        # spend the listener's characters on "star star".
+        compact = truncate_announcement(speakable_line(text), self._announce_limit())
         if not compact:
             return
         self._announce(f"{prefix}: {compact}")

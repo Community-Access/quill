@@ -286,8 +286,9 @@ def commands_reference(
         "are written as words too; punctuation, layout and the stop phrase still work.",
         'Say "literal" before any of these to write the word instead: '
         '"literal comma" writes comma.',
-        "Moonshine and Whisper add punctuation by themselves; saying it yourself "
-        "always wins. With Windows speech recognition, say all of it.",
+        "Moonshine, Whisper, every downloaded model, OpenAI and the speech providers "
+        "add punctuation by themselves; saying it yourself always wins. With Windows "
+        "speech recognition, say all of it.",
         (
             "Some commands take words after them: paste clip three, insert snippet "
             "sign off. They work only at the start of a phrase."

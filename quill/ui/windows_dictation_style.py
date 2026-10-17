@@ -7,8 +7,13 @@ boxes built here and, for Polished, two of More Dictation Settings' fields
 (kept in the dialog's ``_more`` until OK). Changing a box by hand moves the
 chooser to **Your own mix**, which changes nothing when chosen.
 
+In a host without Review Dictation (Quill Inkwell, ``_review`` false) the
+polishing fields are neither read nor written here: Verbatim and Clean set the
+two check boxes only, and the saved polishing choice, which More Dictation
+Settings hides there too, stays as QUILL, QUILL Lite or QUILL Transcribe left it.
+
 Mixed into :class:`~quill.ui.windows_dictation_dialog.WindowsDictationDialog`,
-which supplies ``_settings``, ``_more`` and ``_ai_on``. Every control carries
+which supplies ``_settings``, ``_more``, ``_ai_on`` and ``_review``. Every control carries
 its F1 help inline (GATE-<APP>-HELP).
 """
 
@@ -34,6 +39,7 @@ class DictationStyleMixin:
     _settings: Any
     _more: dict[str, object]
     _ai_on: bool
+    _review: bool = True
 
     def _add_style_controls(self, root: wx.Sizer, settings: Any, pad: int) -> None:
         # Label and chooser on one row: the left column has no height to spare
@@ -87,12 +93,14 @@ class DictationStyleMixin:
         def more(name: str) -> object:
             return self._more.get(name, getattr(self._settings, name, False))
 
-        return {
+        values: dict[str, object] = {
             "windows_dictation_remove_fillers": self.remove_fillers.GetValue(),
             "windows_dictation_self_repair": self.self_repair.GetValue(),
-            "windows_dictation_polish": more("windows_dictation_polish"),
-            "windows_dictation_review_first": more("windows_dictation_review_first"),
         }
+        if self._review:
+            values["windows_dictation_polish"] = more("windows_dictation_polish")
+            values["windows_dictation_review_first"] = more("windows_dictation_review_first")
+        return values
 
     def _show_style(self) -> None:
         """The chooser follows the check boxes: a named style, or Your own mix."""
@@ -113,5 +121,5 @@ class DictationStyleMixin:
                 self.remove_fillers.SetValue(on)
             elif name == "windows_dictation_self_repair":
                 self.self_repair.SetValue(on)
-            else:
+            elif self._review:
                 self._more[name] = on  # More Dictation Settings' fields, kept until OK

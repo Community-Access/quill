@@ -304,10 +304,10 @@ Dictate a few sentences into a document, take one back, turn it off, and find th
    - Keys: Shift+F11
    - You should hear: Recent Phrases, on the newest phrase.
 
-6. **Find the settings.** Dictation Settings has the speech engine, the microphone and what you hear after each phrase. More Dictation Settings, inside it, lets you hold the key to talk if you prefer, and has the words heard while you speak and talking to the AI.
+6. **Find the settings.** Dictation Settings has the speech engine, the microphone and what you hear after each phrase. Moonshine, the engine it starts with, needs nothing downloaded. Better Accuracy: Speech Models offers larger models and recommends one for this computer. More Dictation Settings, inside it, lets you hold the key to talk if you prefer, and has the words heard while you speak and talking to the AI.
    - Keys: Alt+Shift+F6
    - You should hear: Dictation Settings, on Speech engine.
-   - Worth knowing: Nothing you say leaves the computer unless you choose OpenAI as the speech engine with your own key, and agree to it.
+   - Worth knowing: Nothing you say leaves the computer unless you choose OpenAI with your own key, or a speech provider you set up with your own account in Speech Providers, and agree to it.
 
 You can now write by talking, take back a phrase, and turn dictation on and off with one key. Say what can I say while dictating to hear everything it understands; the user guide's dictation chapter has the rest.
 

@@ -967,6 +967,18 @@ and recorded in Notifications with severity warning. Recovery is
 announced too. The watchdog never closes QUILL. Generalised rule,
 recorded as product law: <strong>any code path that closes or degrades
 the app without the user asking persists work first.</strong></p>
+<p><strong>Shared with QUILL Lite (2026-10-16).</strong> The sentences
+moved into the core beside the state machine
+(<code>died_message(app_name, reader_name, flushed)</code>,
+<code>recovered_message(reader_name)</code>), and QUILL Lite runs the
+same core through its own small mixin,
+<code>quill/apps/lite_sr_watchdog.py</code>: same 30 s cadence, same two
+strikes, same words. QUILL Lite’s flush is its recovery copy
+(<code>DocumentFrame._write_recovery_copy</code>) for every window with
+unsaved changes; its explanation goes to the active window’s status bar
+and to the screen-reader voice (QUILL Lite has no self-voice by design),
+and a recovery re-probes that voice before speaking. No setting gates it
+in either editor, so the settings vocabulary is unchanged.</p>
 <h4 id="51c-hd-hardening-conventions-shipped-100">5.1c-HD Hardening
 conventions (shipped 1.0.0)</h4>
 <p>Four shared foundations from the hardening pass, each wx-free,
@@ -5843,6 +5855,20 @@ retyping) in Word and Outlook. Shared code (<code>corrections.py</code>,
 </blockquote>
 <h3 id="525f-ai-footprint-on-demand-acquisition-and-optimization">5.25f
 AI footprint, on-demand acquisition, and optimization</h3>
+<p><strong>Hosted-AI route changes ask first (2026-10-16).</strong>
+<code>quill/ui/hosted_ai_route_guard.py</code>
+(<code>RouteGuardMixin</code>, a base of the shared
+<code>AiService</code>) remembers the route used this session
+(<code>chatgpt</code>, <code>own_key</code>, <code>free</code>).
+<code>ask</code>, <code>converse</code> and <code>describe_image</code>
+call <code>route_allowed</code> before submitting; a route that changed
+without <code>route_chosen()</code> (called by
+<code>_ai_route_changed</code> on a ChatGPT sign-in or sign-out and
+after Use My Own AI Key) is a substitution, and every hosted
+substitution sends text to a different company, so it is a Yes/No
+question (No default); No reports “Nothing was sent” through the
+request’s own error path. The first request of a session has nothing to
+compare with.</p>
 <p>QUILL’s guiding aim is to be <strong>as capable as possible on
 whatever hardware the user has</strong>, while keeping its on-disk and
 in-memory footprint small — <em>fitting more capability onto modest,
@@ -9047,6 +9073,30 @@ provider (ElevenLabs), falls back to <code>local_tts</code> and then to
 <code>announce</code>, carrying a <code>fallback_reason</code> the UI
 states once — silently doing something other than what a setting says is
 how trust in the setting is lost.</p>
+<p><strong>Speech-safe replies (2026-10-16).</strong> Every spoken form
+of an AI answer goes through <code>quill/core/ai/spoken_answer.py</code>
+(<code>speakable_answer</code>, <code>speakable_line</code>), the AI
+funnel over <code>speech_text.prepare_for_speech(markdown=True)</code>:
+heading marks, emphasis, bullets and link addresses are dropped, a link
+keeps its label, an image is “image, <alt>”, and a fenced block is “code
+block”. It is applied in <code>plan_voice_reply</code> (before
+whitespace is collapsed, since a heading or bullet is only recognisable
+at a line start), in <code>_announce_incoming</code> (before truncation,
+so the cap is not spent on symbols), to Ask Quill’s streamed progress,
+to the hosted AI’s cursor and clipboard deliveries and to every AI
+conversation reply. The inserted, copied, displayed and transcript text
+is never changed.</p>
+<p><strong>Backend substitution needs consent (2026-10-16).</strong>
+<code>make_default_backend</code> used to fall past an unavailable
+configured provider to the Ask Quill setup provider
+(<code>ai_chat_default_provider</code>) silently – a different company
+receiving the text. That step now consults
+<code>fallback.plan_substitution</code>; an off-device substitute is
+<em>held</em> (<code>core/ai/backend_substitution.py</code>) while the
+assistant keeps the on-device model, and the Ask Quill panel asks with
+the plan’s announcement as a Yes/No box (No default). Yes calls
+<code>Assistant.accept_substitute()</code>. An on-device substitute is
+used directly and announced once, as before.</p>
 <p>The dialog is the single place the whole chain is configured, and it
 closes a real defect: <code>ai_tts_voice</code> was surfaced in the
 generic settings list as one flat catalog of every provider’s voices, so
@@ -12422,6 +12472,8 @@ All tests follow the module-level import pattern so `generate_assistant_response
 **Goal.** Reduce per-request token cost by sending the stable custom-instruction text as a cacheable system prefix rather than re-sending it inline with every call.
 
 **Design.**
+
+**Markdown preservation (2026-10-16).** `split_instruction(task_id, base_prompt, *, markdown=False)` and `apply_instruction(..., markdown=False)` append `MARKDOWN_PRESERVATION` to the system prompt of every task in `MARKDOWN_TEXT_TASKS` (spell_check, grammar_check, rewrite, summarize, expand, translate) when the caller says the text is Markdown -- even when the task&#39;s instruction is customised, disabled or unreadable. Only Translate&#39;s default prompt had carried such a rule before. The caller decides with the editor&#39;s existing scope detection, `MainFrame._current_markup_context()` (pinned Document Language, then extension, then content sniff); `ai_spell_check`, `ai_grammar_check`, `translate_text`, `AISpellCheckInteractiveDialog` and `AgentContext.markdown` thread the flag. Not covered: the hosted pad&#39;s prompts, which are the gateway&#39;s and are mirrored word for word on the direct routes.
 
 `custom_instructions.split_instruction(task_id, base_prompt) -&gt; (str, str)` is the canonical split point. It returns the active system prompt and the user content as separate strings. Every AI module calls `split_instruction` instead of `apply_instruction` and passes the system_prompt through to `generate_assistant_response`.
 
@@ -17382,21 +17434,29 @@ chosen cloud-drive folder.</li>
 is post-v2 at earliest. The <code>core/</code> layer has no
 <code>wx</code> so it remains <em>possible</em>, not
 <em>committed</em>.</li>
-<li><strong>Voice input / dictation.</strong> Dictation is the offline,
-on-device Whisper stack (Locked Dictation; the Windows/SAPI path was
-removed). Voice control of QUILL itself shipped in 0.9.0 as <strong>Hey
-QUILL</strong> (Tools &gt; Speech; full reference in the user guide’s
-“Voice Interaction”): <strong>Voice Command (Offline)</strong>
-push-to-talk, <strong>Voice Conversation Mode</strong> (a
-follow-up-window loop with nine retunable audio cues and VAD silence
-detection), and <strong>Listen for “Hey QUILL”</strong> always-listening
-wake word. The light engine for them is the bundled Moonshine tiny (Vosk
-until 2026-10-13; see 5.25f). Every mode runs recognition entirely
-on-device, is bounded by the agent safe-tool allowlist so a misheard
-phrase cannot do damage, is off by default, and is off in Safe Mode; the
-always-listening mode shows a live-mic indicator with a periodic spoken
-reminder. Always-on listening without those explicit opt-ins stays out
-of scope.</li>
+<li><strong>Voice input / dictation.</strong> Dictation is on-device by
+default and comes in two forms: Live Dictation (Ctrl+F11, shared with
+QUILL Lite and QUILL Transcribe: the built-in Moonshine and Whisper
+models, optional downloaded sherpa-onnx models such as Nemotron and
+Parakeet, Windows speech recognition and voice typing, and, only with
+the person’s own account and consent, OpenAI and twelve speech
+providers; dictation design record sections 6, 7, 21 to 23) and the
+record-then-transcribe offline stack (Locked Dictation, Dictate
+(Offline): Whisper.cpp, the shared QUILL speech models, or Faster
+Whisper, falling back to the built-in Moonshine tiny when nothing is
+downloaded). Voice control of QUILL itself shipped in 0.9.0 as
+<strong>Hey QUILL</strong> (Tools &gt; Speech; full reference in the
+user guide’s “Voice Interaction”): <strong>Voice Command
+(Offline)</strong> push-to-talk, <strong>Voice Conversation
+Mode</strong> (a follow-up-window loop with nine retunable audio cues
+and VAD silence detection), and <strong>Listen for “Hey QUILL”</strong>
+always-listening wake word. The light engine for them is the bundled
+Moonshine tiny (Vosk until 2026-10-13; see 5.25f). Every mode runs
+recognition entirely on-device, is bounded by the agent safe-tool
+allowlist so a misheard phrase cannot do damage, is off by default, and
+is off in Safe Mode; the always-listening mode shows a live-mic
+indicator with a periodic spoken reminder. Always-on listening without
+those explicit opt-ins stays out of scope.</li>
 <li><strong>AI authoring assistant.</strong> The current build exposes a
 local Writing Assistant shell, prompt presets, Prompt Studio reusable
 prompt templates, Agent Center guided profiles, AI Hub launch surface,

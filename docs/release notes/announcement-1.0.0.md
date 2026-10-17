@@ -135,9 +135,14 @@ macOS system voice, and optional cloud voices with your own key. Audiobook and
 Batch Speech turns a whole folder into chaptered audio, with real MP3 chapter
 markers and ACX loudness normalization.
 
-Dictation runs **on your own machine**, using whisper.cpp, Faster Whisper, Vosk or
-NVIDIA's Nemotron. A model manager checks your actual RAM and GPU before it
-recommends one. Your audio is saved before transcription starts, so a failed
+Dictation runs **on your own machine** by default: the built-in Moonshine and
+Whisper need no download, and larger models such as NVIDIA's Nemotron and Parakeet,
+the Whisper family, whisper.cpp and Faster Whisper are there when you want them.
+Every model is labelled Lightweight, Balanced or High accuracy, and QUILL recommends
+the one that suits your computer, with its reasons. If you already pay for a cloud
+speech service, OpenAI or twelve speech providers such as Microsoft Azure and Google
+Cloud can do the listening with your own account, off until you choose one and say
+yes. Your audio is saved before transcription starts, so a failed
 transcription never costs you a session. **Live Dictation** (**Ctrl+F11**) writes
 each phrase at the cursor as you pause, and you can now dictate in **Spanish** as
 well as English.

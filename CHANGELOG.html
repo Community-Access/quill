@@ -245,6 +245,155 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="speech-engines-and-models-every-guide-says-what-the-code-does-2026-10-17">Speech
+engines and models: every guide says what the code does
+(2026-10-17)</h3>
+<p>Jeff: “I don’t think all of its documentation is updated across all
+apps though like the new transcribe models… Make sure all documentation
+is amazing.” A family-wide pass built the facts from the code
+(<code>windows_dictation/engines.py</code>,
+<code>model_catalog.py</code>, <code>model_types.py</code>,
+<code>model_advice.py</code>, <code>cloud/</code>,
+<code>speech/guided_setup.py</code>, <code>service.py</code>, the
+in-memory menu bars), then corrected every guide against them.</p>
+<ul>
+<li><strong>Stale claims fixed.</strong> Vosk offered as a dictation
+engine (release notes, announcement); “four engines” lists that omitted
+downloads and the twelve speech providers; Whisper called English-only;
+Locked Dictation said to use “the on-device Whisper engine” and to need
+a model (it needs none: the built-in Moonshine tiny transcribes until
+the engine has one, though the ~8 MB whisper.cpp engine is still offered
+on the first Ctrl+F9 unless QUILL speech models is chosen); voice
+commands said to fall back to Moonshine tiny (they fall back to the main
+offline engine); Dictate in Other Programs said to go only to Inkwell
+(it goes to QUILL Transcribe when running or released); QUILL
+Transcribe’s What matters most given two choices, not three; Transcribe
+PRD decision 4 “only OpenAI”.</li>
+<li><strong>Written new.</strong> QUILL: “Which speech engine? A guide
+to choosing” (two systems, tiers, privacy, cloud, a worked example,
+limits) and a rewritten offline-engine section. QUILL Lite: “Which
+engine should I choose?” and a full Speech providers section. QUILL
+Transcribe: the Models chapter rebuilt (15 downloads with sizes, tiers
+and memory, recommendation, Spanish, limits). Quill Inkwell: which
+engines Dictate Anywhere uses, and what an Inkwell-only computer lacks
+(the built-in models and sherpa-onnx; only Windows speech recognition
+works there). Quill Cast and Quill Radio: Dictate Here explained in
+full. Quill Studio: the speech-recognition engines behind captions. The
+site’s dictation page: choosing an engine, tiers, the recommendation,
+and speech providers. Release notes and the announcement: the current
+engine story.</li>
+<li><strong>Code.</strong> <code>engines.engine_list_help()</code> gives
+the Speech engine list’s F1 the downloads, tiers, OpenAI, the providers
+and the consent question; the Speech Models button’s help no longer
+cites another product; <code>reference.py</code> credits punctuation to
+every engine but Windows speech recognition (both
+<code>dictation-commands.md</code> regenerated); the Dictation Settings
+help topic names Speech Models and Speech Providers.</li>
+</ul>
+<h3
+id="dictation-no-polishing-box-in-quill-inkwell-and-spanish-pule-eso-and-sí-drafted-behind-the-switch-2026-10-17">Dictation:
+no polishing box in Quill Inkwell, and Spanish “pule eso” and “sí”
+drafted behind the switch (2026-10-17)</h3>
+<p>Two small dictation decisions of Jeff’s, 2026-10-16.</p>
+<p><strong>“Hide it.”</strong> More Dictation Settings is shared by
+QUILL, QUILL Lite, QUILL Transcribe and Quill Inkwell, and it showed
+<strong>Allow polishing my dictation with AI when I ask</strong> (Alt+G)
+in Inkwell too, where it did nothing: polishing runs only in Review
+Dictation, which Inkwell does not have.
+<code>WindowsDictationDialog</code> and <code>MoreDictationDialog</code>
+take a new keyword, <code>review</code> (default <code>True</code>);
+Inkwell’s <code>edit_anywhere_settings</code> passes
+<code>review=False</code>. Then the box is not built,
+<code>MoreDictationDialog.values()</code> leaves
+<code>windows_dictation_polish</code> out so the saved (possibly
+family-shared) value is untouched, and <code>DictationStyleMixin</code>
+neither reads nor writes the polish and review-first fields, so choosing
+Verbatim or Clean in Inkwell cannot turn polishing off for QUILL. QUILL,
+QUILL Lite and QUILL Transcribe are unchanged. No access key moved;
+GATE-14 holds with and without the box. The box’s F1 help now says
+Inkwell does not show it. Both dialog modules stay at or under the
+600-line default cap (module docstrings were tightened to make
+room).</p>
+<p><strong>“Draft them, gated.”</strong> Spanish forms of “polish that”
+(“pule eso”, “púlelo”, “mejora eso”) and of the spoken answers to the
+“Add a correction?” offer in QUILL Transcribe (“sí”, “no”), in
+<code>vocabulary_es.SPANISH_REVIEW_HELP</code> and
+<code>SPANISH_ANSWERS</code>. They are matched through
+<code>spanish_review_command</code> and <code>spanish_answer</code>,
+which answer only in Spanish dictation with the drafted Spanish commands
+switched on (a development build with
+<code>QUILL_DICTATION_SPANISH_COMMANDS=1</code>), so nothing changes for
+users until a native speaker has reviewed them; the questions for that
+review are a new “Spanish review” list at the end of
+<code>docs/qa/screen-reader-checks-2026-10.md</code>. The published
+dictation command reference is unchanged.</p>
+<p>Tests: <code>tests/unit/ui/test_dictation_more_dialog.py</code> (four
+new) and the new
+<code>tests/unit/core/test_dictation_spanish_drafts.py</code>. Docs: the
+Inkwell user guide and changelog, the dictation design record (sections
+9, 10 and 28), the screen-reader checks, and the F1 help reference.</p>
+<h3
+id="five-small-fixes-braille-bursts-speech-safe-answers-markdown-kept-fallbacks-asked-the-watchdog-in-quill-lite-2026-10-16">Five
+small fixes: braille bursts, speech-safe answers, Markdown kept,
+fallbacks asked, the watchdog in QUILL Lite (2026-10-16)</h3>
+<ul>
+<li><strong>QUILL Lite’s braille through QUILL’s burst
+coalescer.</strong> <code>ScreenReaderVoice</code>
+(<code>quill/apps/lite_voice.py</code>) switches the shared engine’s
+inline braille off when it builds it and writes every braille message –
+the mirror of speech, after a successful announce, and
+<code>braille()</code> previews – through one
+<code>quill.ui.announce_wiring.CoalescingBrailleWriter</code>. Speech
+timing unchanged. The QUILL Lite PRD’s section 4.5, which still said “no
+braille output”, is corrected.</li>
+<li><strong>Speech-safe AI answers.</strong> NEW
+<code>quill/core/ai/spoken_answer.py</code> funnels every spoken AI
+answer through
+<code>speech_text.prepare_for_speech(markdown=True)</code>:
+<code>plan_voice_reply</code>, Ask Quill’s
+<code>_announce_incoming</code> and streamed progress, the hosted AI’s
+cursor and clipboard deliveries (<code>hosted_ai_answers.py</code>), and
+every AI conversation reply (<code>hosted_ai_chat.py</code>). The text
+inserted, copied, shown in the AI Result window or written to a
+transcript is unchanged.</li>
+<li><strong>Markdown kept by the AI text tools.</strong>
+<code>custom_instructions.split_instruction</code> and
+<code>apply_instruction</code> take <code>markdown=</code>;
+<code>MARKDOWN_PRESERVATION</code> is appended for spell_check,
+grammar_check, rewrite, summarize, expand and translate (previously only
+Translate’s default prompt had it), even when an instruction is
+customised or disabled. QUILL passes
+<code>_current_markup_context() == "markdown"</code> into AI spell check
+(both forms), Grammar and Style Check, Translate and the agents
+(<code>AgentContext.markdown</code>). The hosted pad is not covered: its
+prompts are the gateway’s.</li>
+<li><strong>AI fallbacks are said once, and a different company is asked
+about first.</strong> <code>fallback.plan_substitution</code> is the
+plan for a resolution-time substitution.
+<code>make_default_backend</code> no longer silently uses the Ask Quill
+setup’s cloud provider after falling past the configured one: it holds
+it (<code>quill/core/ai/backend_substitution.py</code>), keeps the
+on-device model, and the Ask Quill panel asks
+(<code>assistant_reply_delivery._offer_backend_substitute</code>). NEW
+<code>quill/ui/hosted_ai_route_guard.py</code> gives the shared
+<code>AiService</code> the same rule for the hosted routes (ChatGPT
+plan, own key, free AI): a route that changed without the listener
+choosing it asks in a Yes/No box before <code>ask</code>,
+<code>converse</code> or <code>describe_image</code> sends
+anything.</li>
+<li><strong>Screen-reader emergency save in QUILL Lite.</strong>
+<code>died_message</code> and <code>recovered_message</code> moved into
+<code>quill/core/sr_watchdog.py</code>; QUILL’s mixin uses them and NEW
+<code>quill/apps/lite_sr_watchdog.py</code> gives QUILL Lite the same
+two-strikes watchdog, flushing every modified window’s recovery copy
+before explaining. No new setting, so the settings vocabulary is
+unchanged.</li>
+<li>GATE-11: <code>hosted_ai_service.py</code> 620 -&gt; 623,
+<code>hosted_ai_commands.py</code> 595 -&gt; 596,
+<code>quill/apps/lite.py</code> 631 -&gt; 635 (rebaseline note in the
+budgets file).</li>
+</ul>
+<h3
 id="three-messages-that-named-menu-items-that-do-not-exist-2026-10-16">Three
 messages that named menu items that do not exist (2026-10-16)</h3>
 <p>The documentation-versus-menu audit found QUILL itself pointing

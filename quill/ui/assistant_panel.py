@@ -118,7 +118,9 @@ class AskQuillChatDialog(AssistantReplyDeliveryMixin):
         # Never silently swap engines: if default backend resolution fell back
         # past a provider the user configured, say so when the chat opens.
         backend_note = str(getattr(assistant, "backend_note", "") or "")
-        if backend_note:
+        if getattr(getattr(assistant, "backend_plan", None), "requires_consent", False):
+            wx.CallAfter(self._offer_backend_substitute)  # the question is the announcement
+        elif backend_note:
             wx.CallAfter(self._announce, backend_note)
         self._last_response = ""
         self._first_done = False
@@ -711,7 +713,9 @@ class AskQuillChatDialog(AssistantReplyDeliveryMixin):
         else:
             consumed = boundary + 1
             chunk = pending[:consumed]
-        spoken = " ".join(chunk.split())
+        from quill.core.ai.spoken_answer import speakable_line  # words, not Markdown
+
+        spoken = speakable_line(chunk)
         self._stream_announced += consumed
         if not spoken:
             return
