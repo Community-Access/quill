@@ -3263,7 +3263,7 @@
   {
     "id": "tools.windows_dictation_recent",
     "title": "Recent Phrases",
-    "body": "The last twenty phrases you dictated this session, newest first. Enter writes the chosen phrase at the cursor again; Copy puts it on the clipboard.",
+    "body": "The last twenty phrases you dictated this session, newest first, then words kept from before: phrases that were not written because dictation was paused or typing stopped, a review that did not finish, and, with Keep a dictation history on in More Dictation Settings, earlier phrases. Enter writes the chosen phrase at the cursor again, and kept words are deleted once written; Copy puts it on the clipboard; Discard deletes kept words unwritten; Clear History deletes the history after asking.",
     "keystrokes": [
       "Shift+F11"
     ],

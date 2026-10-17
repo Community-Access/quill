@@ -260,6 +260,7 @@ class DictationReviewMixin:
             for phrase in (original, text):
                 if phrase.strip():
                     controller.recent.appendleft(" ".join(phrase.split()))
+            controller.note_inserted(written)  # "read that" reads all of it (D-18)
         try:
             wx.CallAfter(control.SetFocus)
         except Exception:  # noqa: BLE001 - no event loop (tests)
@@ -278,17 +279,20 @@ class DictationReviewMixin:
             controller.mute_for(seconds)
 
     def _review_tell_rescue(self) -> None:
-        """Once a run, at start: a review that did not finish is waiting."""
+        """Once a run, at start: words from last time are waiting -- a review
+        that did not finish (D-2), or words not written (D-5)."""
         global _rescue_told
         if _rescue_told:
             return
         _rescue_told = True
         try:
-            waiting = self._review_rescue_path().exists()
+            from quill.ui.dictation_kept import kept_at_start
+
+            sentence = kept_at_start(self._dictation_kept(), RESCUE_NOTICE)  # type: ignore[attr-defined]
         except Exception:  # noqa: BLE001 - nothing to tell
             return
-        if waiting:
+        if sentence:
             try:
-                wx.CallLater(1500, self._dictation_say, RESCUE_NOTICE)  # type: ignore[attr-defined]
+                wx.CallLater(1500, self._dictation_say, sentence)  # type: ignore[attr-defined]
             except Exception:  # noqa: BLE001 - no event loop (tests)
                 pass

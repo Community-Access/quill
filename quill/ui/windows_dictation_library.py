@@ -71,6 +71,11 @@ class DictationLibrary:
     def snippet_text(self, name: str) -> tuple[str, int] | None:
         return self._host._dictation_snippet_text(name)
 
+    def snippet_body(self, name: str) -> str | None:
+        """The snippet's own text, for the spoken prompts for its blanks (D-8)."""
+        body = getattr(self._host, "_dictation_snippet_body", None)
+        return body(name) if callable(body) else None
+
     def abbreviation_names(self) -> list[str]:
         return list(self._host._dictation_abbreviation_names())
 

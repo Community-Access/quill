@@ -1543,8 +1543,17 @@ last one (so its questions end in question marks).</li>
 (<code>EditorDocument.anchor</code>): measured on speech start, honoured
 even if the caret moved or the focus left.</li>
 <li><strong>“Correct that”</strong> and “choose one” to “choose three”,
-with Windows speech recognition’s alternates; every other engine says it
-has none.</li>
+with Windows speech recognition’s alternates. Since 2026-10-16 (D-19),
+with Moonshine, Whisper or a downloaded model, the other built-in engine
+re-decodes the last phrase’s audio (memory only, dropped at the next
+phrase) and offers its answer as choice 2; OpenAI, the speech companies
+and Spanish still say there is none.</li>
+<li><strong>Replace, change that, delete by paragraph, kept
+revisions</strong> (D-19, 2026-10-16, <code>corrections.py</code>):
+“replace X with Y” (nearest before the cursor, else after), “change that
+to Y” (the last phrase), “delete previous paragraph”; what choose,
+replace and change that replaced goes into Recent Phrases labelled
+“(before correction)”.</li>
 <li><strong>Talk to the AI</strong>
 (<code>hosted_ai_chat._talk_to_it</code>): the AI Conversation window’s
 message box dictates with the <strong>Talking to AI</strong> profile,

@@ -1053,7 +1053,15 @@ a dictation command, key or setting.
 - **Words go where you started** (`EditorDocument.anchor`): measured on speech
   start, honoured even if the caret moved or the focus left.
 - **"Correct that"** and "choose one" to "choose three", with Windows speech
-  recognition's alternates; every other engine says it has none.
+  recognition's alternates. Since 2026-10-16 (D-19), with Moonshine, Whisper or
+  a downloaded model, the other built-in engine re-decodes the last phrase's
+  audio (memory only, dropped at the next phrase) and offers its answer as
+  choice 2; OpenAI, the speech companies and Spanish still say there is none.
+- **Replace, change that, delete by paragraph, kept revisions** (D-19,
+  2026-10-16, `corrections.py`): "replace X with Y" (nearest before the cursor,
+  else after), "change that to Y" (the last phrase), "delete previous
+  paragraph"; what choose, replace and change that replaced goes into Recent
+  Phrases labelled "(before correction)".
 - **Talk to the AI** (`hosted_ai_chat._talk_to_it`): the AI Conversation
   window's message box dictates with the **Talking to AI** profile, sends at the
   pause (or on Enter), and mutes the microphone while the reply is read.

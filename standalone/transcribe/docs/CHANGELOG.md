@@ -23,6 +23,26 @@ file is the itemized list.
   small slips, keeping your words; **Polish** (Ctrl+P) in the window does the
   same. Nothing is sent until you agree, and nothing is typed until you insert
   it. It never runs by itself.
+- **Correcting in another program** (2026-10-16). "Correct that" and "choose
+  one" to "choose three", "capitalize that", "all caps that", "no caps that",
+  "replace Tuesday with Wednesday", "change that to" and new words, "delete last
+  sentence" and "delete previous paragraph" now work in other programs, on the
+  words QUILL Transcribe typed there itself: it takes them back with Backspace
+  and types the corrected words. It never reads the other program. A correction
+  is refused, with one sentence and nothing sent, if the focus has moved, if you
+  have typed, clicked or moved the mouse since, or, for the commands that retype
+  words, in Word and Outlook, which change words as they are typed. See
+  "Correcting in another program" in the user guide.
+- **A second opinion for "correct that"** (2026-10-16). With Moonshine, Whisper
+  or a downloaded model, the other built-in engine listens to your last phrase
+  again, and you can choose its answer. The sound stays in memory only.
+- **Recent Phrases keeps what a correction replaced** (2026-10-16), marked
+  "(before correction)".
+- **Nothing you said is lost** (2026-10-16). Words held while dictation is paused, and a phrase Windows stopped typing part-way, are now kept on this computer, sealed for your Windows account, until you type or discard them, so a crash, a sleep or exiting loses nothing. **Recent Phrases** (Shift+F11) lists them after this run's phrases, with a review you did not finish, and has **Discard** (Alt+D). Stopping says they are kept; the next start says how many are waiting, and exiting no longer asks about words that are kept.
+- **Type a transcript into a field** (2026-10-16). **Review Transcript** has **Type into a Field** (Alt+F): the transcript, or the part you selected, is typed into the program you go back to, with the same checks as dictation.
+- **Dictation history, off unless you want it** (2026-10-16). **Keep a dictation history** (Alt+Y in More Dictation Settings) keeps the text of what you dictate for one, seven or thirty days, never the sound. **Clear History** (Alt+H) in Recent Phrases deletes it after asking; turning it off deletes it too.
+- **Snippet blanks by voice** (2026-10-16). "QUILL insert snippet bug report" asks for each blank by name and each choice by its options, then types the whole snippet once; say skip, scratch that to go back, or cancel. "QUILL scratch that" takes all of it back.
+- **"QUILL read that" reads all of it** (2026-10-16): a whole snippet or clip, not just its name.
 
 - **Hold the key to talk** (2026-10-15). With **Hold the dictation key to
   talk** checked in More Dictation Settings (Alt+H, off until you turn it on),

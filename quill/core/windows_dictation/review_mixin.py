@@ -36,7 +36,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from quill.core.windows_dictation.composer import compose
 from quill.core.windows_dictation.parser import RecognizedPhrase
 from quill.core.windows_dictation.review_session import (
     AI_OFF,
@@ -44,8 +43,8 @@ from quill.core.windows_dictation.review_session import (
     REVIEW_COMMANDS,
     not_reviewing,
 )
+from quill.core.windows_dictation.snippet_fill import SnippetFillMixin
 from quill.core.windows_dictation.vocabulary import Command
-from quill.core.windows_dictation.voice_commands import VoiceCommandsMixin
 from quill.core.windows_dictation.wake import wake_words
 
 if TYPE_CHECKING:
@@ -62,7 +61,7 @@ def _said(phrase: RecognizedPhrase) -> str:
     return phrase.text or " ".join(word.display for word in phrase.words)
 
 
-class ReviewMixin(VoiceCommandsMixin):
+class ReviewMixin(SnippetFillMixin):  # and VoiceCommandsMixin under that
     """ "review that", the review commands, Talk About It and review first."""
 
     _held: list[ParsedPhrase]
@@ -77,6 +76,8 @@ class ReviewMixin(VoiceCommandsMixin):
     if TYPE_CHECKING:  # target_hold.py, later in the controller's bases than this
 
         def _drop_held(self) -> None: ...
+
+        def _rescue_held_done(self) -> None: ...
 
     # -- the host's review desk ------------------------------------------------- #
 
@@ -227,14 +228,14 @@ class ReviewMixin(VoiceCommandsMixin):
         held = list(getattr(self, "_held", []) or [])
         if held:
             from quill.core.windows_dictation.ports import DictationState
+            from quill.core.windows_dictation.rescue_mixin import held_text
 
-            text = ""
-            for parsed in held:  # one after another, as they would have been written
-                text += compose(parsed.pieces, before=text, after="")
+            text = held_text(held)  # one after another, as they would have been written
+            self._rescue_held_done()  # the review keeps them now (its own rescue file)
             self._drop_held()
             if self.active:
                 self._set_state(DictationState.LISTENING)
-            return text.strip()
+            return text
         phrase = self.history.peek()
         if phrase is None:
             return None

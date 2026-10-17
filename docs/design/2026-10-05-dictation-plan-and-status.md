@@ -1781,6 +1781,304 @@ licence (the scoring uses it when the `whisper_normalizer` package is present,
 and QUILL's basic one otherwise); pin the first hashes; build and publish the
 B-1a subset on assets-v1; record the volunteers (B-1d).
 
+## 27. As built, 2026-10-16: replace, delete by paragraph, a second opinion, kept revisions (D-19), and correcting in other programs (D-10)
+
+Both items were built together, in shared code, so QUILL, QUILL Lite, QUILL
+Transcribe and Inkwell's Dictate Anywhere have the same commands with the same
+rules. Section 18 left an empty slot (`COMMAND_MODE_PREFIX_HELP`) for these;
+they joined the one command table instead (`vocabulary_commands.py`), which is
+what makes them work after the command word and, with strict mode off, on
+their own, and keeps "What can I say" and the published reference (regenerated
+by `scripts/build_dictation_commands.py`) generated from one source. The slot
+stays empty, with a comment saying why.
+
+**The grammar.** Three new commands (`Command.REPLACE_WORDS`, `CHANGE_THAT`,
+`DELETE_PARAGRAPH`):
+
+| Say | What happens |
+|---|---|
+| replace X with Y | In QUILL's documents, the nearest X before the cursor (else after it, `targets.find_target`) becomes Y, with X's capital and closing mark; the cursor stays where it was. In another program, only inside the phrase dictated last, retyped from X on. Not found: written as text when said bare (as select does), nothing after the command word. |
+| change that to Y | Y in place of the phrase dictated last, keeping its leading space, capital and closing mark; only the characters from the first difference on are retyped. |
+| delete previous paragraph, delete last paragraph | From the start of the paragraph before the cursor (blank lines apart, as `select paragraph` counts them) up to the cursor, with the blank line in front of it. |
+
+"delete that" already was a name for scratch that, and stays so.
+
+**Correcting in another program (D-10,
+`quill/core/windows_dictation/external_edits.py`).** Correct that and choose 1
+to 3, caps that, uppercase that, lowercase that, replace, change that to,
+delete last sentence and delete previous paragraph now work in QUILL
+Transcribe and Dictate Anywhere (`anywhere.EXTERNAL_COMMANDS`), on the words
+the session typed and nothing else: the external document answers from what
+it typed (it has no way to read the other program), and each edit is a
+backspace-and-retype pair through the same `send_text_checked` and
+`send_backspaces_checked` path. Before any of them, and before scratch that,
+`edit_problem` is asked, and refuses with one sentence when:
+
+- the focus moved: the field lock (`LockedTarget.edit_problem`) or the
+  external document's own focus identity says this is not the field the words
+  went into;
+- the person typed or clicked since (`OwnWordsGuard`): Windows says *when* it
+  last saw a key or the mouse (`GetLastInputInfo`, in the new read-only
+  `quill/platform/windows/input_activity.py`), never what it was. Input more
+  than 300 ms after dictation's own last key or backspace means the cursor or
+  the text may have moved. Mouse movement counts too, and so do the screen
+  reader's own reading keys, because an arrow key moves the cursor and the
+  guard cannot tell one key from another: refusing is safe, guessing is not;
+- the program corrects as you type, for the commands that retype
+  (`AUTOCORRECTING_PROGRAMS`: Word and Outlook, by file name). The plan asked
+  for D-4 to probe them first; the harness has not had a clean run yet
+  (section 17), so the default is the cautious one, and scratch that and the
+  delete commands, which only take words away, still work there.
+
+`ExternalDocument` takes the two checks as optional callables
+(`last_input`, `program`); `locked_external_document`, which every host uses,
+passes the real ones, and a document built without them skips those checks,
+as before. The never-type list, the password field and the administrator
+refusal are unchanged: they stop words going in at all.
+
+**A second opinion (D-19's local alternates).** A model engine's phrase now
+carries its own audio (`RecognizedPhrase.audio`, never compared or shown).
+The controller keeps the audio of the last *written* phrase only, so the
+"correct that" utterance does not replace it, and drops it at the next phrase
+and at stop. "Correct that" with no list from the engine asks the
+recogniser's `second_opinion` (`recognizer_worker.py`) to decode it again with
+the other built-in engine (Whisper after Moonshine, Moonshine after Whisper or
+a downloaded model; none for Spanish, where only multilingual Whisper hears it)
+on a thread of its own, says "Listening again with Whisper.", and offers the
+answer as choice 2 ("1: what was written. 2: what Whisper heard. Say choose
+and the number."). An answer about a phrase that is no longer last is dropped
+silently. The same answer is said as such. No disk, no network; the second
+model loads on demand and unloads with the first. Windows speech recognition's
+own list is used when it gives one, as before.
+
+**Kept revisions.** Choose N, change that to and replace put the text they
+replaced into Recent Phrases (Shift+F11) marked "(before correction)", with the
+new text in front of it; Insert Again and Copy take the words without the label
+(`corrections.phrase_from_entry`, in the one shared `open_recent_phrases`).
+Memory only, like the rest of Recent Phrases.
+
+**Where it lives.** `corrections.py` (`CorrectionsMixin`, first in the
+controller's bases, so it is asked about every command before the rest) and
+`external_edits.py`, both new and wx-free; the controller grew by two lines.
+
+**Tests** (fakes only): `tests/unit/core/test_dictation_corrections.py` --
+the grammar, replace before and after the cursor, scratch after a replace,
+not-found bare and after the word, strict mode, change that, delete by
+paragraph, the second opinion (asked, chosen, stale, the same answer), the
+revision labels, and in another program: replace retyping from the words on
+and only in the last phrase, caps and change and delete on own words, correct
+that and choose retyping only the last phrase (never the words before it),
+refusal after the focus moves and after typing with nothing sent, Word and
+Outlook refusing choose and caps while scratch and delete last sentence work,
+and the field lock's check; and the worker's `second_opinion` itself (its own
+thread, the answer posted, a load failure posted as no answer). The external
+document there is given only a typist, a backspacer and a focus identity, so
+no edit can have read the target -- the spec's "a fake document that cannot be
+read" acceptance test. 32 tests.
+
+**How the spec's guard was met.** dict.md asked for edits "only while
+`LockedTarget` confirms the same field and the remembered tail is unchanged in
+length". Without reading the target the length cannot be measured; what can
+change it is the person's own input, so the guard is the last-input time
+instead, which is stricter (it also refuses after a mouse move or a reading
+key). The memory risk D-19 named (600 MB) is met by decoding only on demand:
+the second engine loads when "correct that" first asks and is released with
+the rest by the idle unloader (`keep_up.py`).
+
+**What the person sees and hears.** No new window, control or key: every
+change is a spoken command, so there is no F1 text to add, and
+`docs/f1-help-reference.md` is unchanged. The help line for "correct that" in
+the one table now says the other engine listens again, and "change that to"
+carries an example; both reach "What can I say", the Dictation Commands window
+and the generated `dictation-commands.md` (QUILL and QUILL Lite) and the site's
+dictation page. Sentences said: "Replaced X with Y.", "Changed to: ...",
+"Deleted the paragraph: ...", "No paragraph before the cursor.", "Listening
+again with Whisper.", "1: ... 2: ... Say choose and the number.", "The other
+engine heard the same: ...", and the three refusals in `external_edits.py`.
+
+**Documentation.** User guides: QUILL ("Replace and change that", the second
+opinion under "Correct that", Recent Phrases), QUILL Lite (the same, plus the
+command table), QUILL Transcribe ("Correcting in another program", with the
+three refusals quoted) and Quill Inkwell ("Correcting the words dictation
+typed"). Changelogs: QUILL (developer), QUILL Lite, QUILL Transcribe and
+Inkwell (user). PRDs: QUILL, QUILL Lite, QUILL Transcribe's decision 13 and the
+QUILL Transcribe specification's section 7.8. Inkwell has no Recent Phrases
+window, so its guide does not mention the "(before correction)" entries.
+
+**Still to check, with a microphone and the real programs.** Replace and
+change that in Notepad, Edge and Chrome; whether `GetLastInputInfo` ever
+counts dictation's own keys late enough to trip the 300 ms guard; how often
+Whisper's second opinion is the better one; and, when D-4's harness has a clean
+run, whether Word and Outlook can come off the autocorrecting list.
+
+## 25. As built, 2026-10-16: never lose what was said (D-5), snippet blanks by voice (D-8), reading back more (D-18)
+
+The rest of three items, in shared code. QUILL, QUILL Lite and QUILL Transcribe
+have all of it; Quill Inkwell has D-8 and D-18, which are the controller's, and
+not D-5's store (see "Not done").
+
+### D-5: rescue, a reviewed transcript into a field, opt-in history
+
+**What was true.** Held words were memory only (`target_hold.py`, 50 at most);
+Recent Phrases was memory only (section 14); D-2 kept an open review in
+`dictation-review.json` (section 19); QUILL Transcribe's Review Transcript
+could copy, save or open a transcript but not type it; there was no history.
+
+**The store** (`quill/core/windows_dictation/rescue.py`, wx-free).
+`DictationKeep(data_dir, app)` writes **uncommitted text only** to
+`recovery/live-dictation/<app>-<id>.json` under the host's data folder (the
+editors: the folder of `dictation.md`, as D-2's review file; QUILL Transcribe:
+its data folder, which is QUILL's), one file per entry, `write_json_atomic`,
+schema 1, the words sealed with DPAPI (`protect_secret`, entropy
+`quill-dictation-rescue`, so a blob from the credential store cannot be
+replayed here or the other way). The app's slug is in the file name, so
+QUILL and QUILL Transcribe sharing a folder never offer each other's words.
+Words that cannot be sealed are not written: they stay in memory, exactly as
+before. Nothing in either module logs the words. `keep_for` gives one store
+per folder and app for the run.
+
+**What is kept, and when it goes** (`rescue_mixin.py`, `RescueMixin` under
+`TargetHoldMixin`, so the controller's base list did not change; the
+controller grew by two lines, the `RecentPhrases` import and comment). Two
+kinds. *Held*: every change to the held list (`_keep`, scratch while paused, a
+resume that pauses again) rewrites one entry for that pause, the text composed
+as it would have been written (`held_text`, which D-2's "review that" now uses
+too). Resume and Discard Held Words delete it; "review that" deletes it
+because the review's own file takes over. Stop, a failure and shut-down keep
+it and start a new entry for the next pause; stopping says the plan's sentence
+plus "They are kept in Recent Phrases." *Unwritten*: when the controller's
+`_apply` raises for a dictated phrase (`command_mode_mixin._dictate`), its
+text is kept before the session ends as it always did; QUILL Transcribe's
+Insert Again keeps a phrase Windows only partly took. The host hands the store
+over through the feedback port's optional `rescue()`, as `library()` and
+`review()`.
+
+**The start and the window** (`quill/ui/dictation_kept.py`). The plan named
+the History and Review window (`dictation_history_dialog.py`) as the pattern.
+What was built reuses **Recent Phrases** itself instead: it already had
+Insert Again (into the document, or typed into the field in QUILL Transcribe
+after the usual `LockedTarget` checks, waiting for a field from QUILL
+Transcribe's own window, as `arming.py` does) and Copy, on Shift+F11 in all
+three hosts, so no new command, chord or window was needed, and every F-key
+chord free in both editors had a cost (Alt+Shift+F4 and Ctrl+Alt+F4 sit one
+missed key from Alt+F4; Shift+F12 is Word's Save). The list is this session's
+phrases, then "Not written" entries oldest first, then D-2's unfinished
+review read from its own file (not copied: Insert and Discard clear it), then
+the history newest first. `RecentPhrasesDialog` gained **Discard** (Alt+D;
+says "Discarded.", because the reader announces the next row and not the
+deletion) and **Clear History** (Alt+H, only while the history is on, a
+No-default question). Insert Again deletes a kept entry only when the host's
+`insert_again` returns `True`; QUILL Transcribe returns `None` while waiting
+for a field, so a cancelled wait keeps the words. At start, one sentence
+(`kept_at_start`): "N dictated phrases were not written last time and are
+kept. Recent Phrases, Shift+F11, brings them back.", replacing D-2's notice
+when both apply. QUILL Transcribe's exit question about held words is asked
+only when they could not be kept (`held_on_disk`).
+
+**A reviewed transcript into a field.** D-2 covers dictated words (Insert in
+Review Dictation). For a recording, QUILL Transcribe's Review Transcript has
+**Type into a Field** (Alt+F, first in the row): the selection, or all of it,
+through `insert_recent_phrase`, so the wait, the field lock, the never-type
+list and `send_text_checked` are the dictated phrase's. The editors open a
+transcript as a document, where it needs no such button.
+
+**History** (`windows_dictation_history_days`: 0, 1, 7 or 30; 0 by default;
+`coerce_history_days`). More Dictation Settings, **Keep a dictation history**
+(Alt+Y), in all four hosts' copy of the window. `RecentPhrases` (the
+controller's `recent`, a `deque` subclass) tells `_remember` about every
+phrase that reaches Recent Phrases, so editor review inserts count too. One
+file per app, `dictation-history-<app>.json`, each phrase sealed, pruned to
+its days on every write and read, capped at 2000. Off deletes it: at the next
+phrase, at start and when Recent Phrases opens, so it also goes when another
+copy of the settings turned it off. Text only; audio for replay stays
+deferred (plan section 6). QUILL Transcribe's defaults leave it off, as the
+editors'.
+
+**Acceptance criteria.** *Killing the process while words are held loses
+nothing*: `test_killing_the_process_while_words_are_held_loses_nothing` holds
+two phrases and reads them back through a second store on the same folder with
+no stop or shut-down. *With history off, nothing remains on disk after
+delivery*: `test_with_history_off_nothing_remains_on_disk_after_delivery`
+(a phrase written, words held and resumed, dictation stopped, and the folder
+empty). *No transcript text in logs or crash bundles*:
+`test_no_transcript_text_reaches_the_log_or_a_crash_bundle` captures every log
+record at DEBUG through a session that writes, holds and fails, builds a real
+diagnostic bundle from that log, and finds the words in neither; the files
+themselves hold only sealed text (`test_the_words_on_disk_are_sealed`, and
+once with DPAPI itself). Crash bundles carry logs and dumps only, never the
+data folder (`crash_report.build_diagnostic_bundle`).
+
+### D-8: spoken prompts for snippet blanks
+
+**What was true.** Section 14's slice: snippets typed as one phrase with each
+blank "[name]" and `${cursor}` dropped in other programs.
+
+**What was built** (`quill/core/windows_dictation/snippet_fill.py`). The
+libraries gain `snippet_body(name)`: QUILL Transcribe's and Quill Inkwell's
+`AnywhereLibrary` (QUILL's `snippets.json`) and the editors' `DictationLibrary`
+over the host's `_dictation_snippet_body` (QUILL's own library). QUILL Lite's
+snippets are its abbreviations, which have no blanks, so it keeps the old path,
+which QUILL also has: QUILL Lite is not ahead. `SnippetFillMixin` sits between
+`ReviewMixin` and `VoiceCommandsMixin` and overrides `_insert_named`: one match
+with a readable body and at least one `${input:x}` or `${choice:a|b}` starts a
+fill. "Snippet Bug Report Template, 3 blanks. Say cancel to stop. Summary?";
+a choice is "Choose NVDA, JAWS or Narrator.", answered by an option (the same
+name matching as snippets, `match_names`) or "choose two" / "number two"; "Say
+one of NVDA, JAWS or Narrator, or choose and a number." otherwise. "skip",
+"scratch that" (or "go back") and "cancel" ("Snippet cancelled. Nothing was
+typed."). `CommandModeMixin._dictate` hands every utterance to the fill first,
+before the command word is looked for, so an answer is never typed and never
+taken for a command; the command word is allowed before an answer and is not
+part of it. An input answer is the phrase parsed and composed, so spoken
+punctuation works in it. The last answer renders the body (`render_snippet`,
+so `${date}` and `${time}` come from the local clock in the built path) and
+goes through `_insert_text` as one phrase, one undo step and one "scratch
+that"; when the field cannot be written it is held like any phrase, so D-5
+keeps it. `${cursor}` moves the caret in the editors and is dropped
+externally. The D-1 form "QUILL insert snippet X" is the command table's
+existing argument form; nothing in the matcher changed. Stopping dictation
+ends a fill. The published references say how blanks are asked for.
+
+**Acceptance criteria.** *"QUILL insert snippet bug report" in Edge asks for
+each field and types the filled text as one phrase*:
+`test_quill_insert_snippet_asks_for_each_blank_and_types_once`, strict mode
+on, through `ExternalDocument` whose injector records every keystroke: nothing
+typed until the last answer, then one string. *Scratch that removes all of
+it*: `test_scratch_that_removes_all_of_the_filled_snippet` (one backspace run
+of the whole length).
+
+### D-18: read back more than the last phrase
+
+**What was true.** "read that" spoke `_last_spoken`, set only by a dictated
+phrase, so after a snippet, clip or review insert it said the phrase before.
+
+**What was built.** `_insert_text` sets `_last_spoken` to the whole insertion,
+marks named when Say Punctuation Marks is on (`VoiceCommandsMixin._heard`);
+the editors' review Insert calls `note_inserted`. The per-phrase read-back
+still says "Snippet sign off", not three paragraphs. Three commands, editors
+only (`Command.READ_SENTENCE`, `READ_PARAGRAPH`, `READ_SELECTION`, in the
+command table and its Spanish twin): "read last sentence" (the sentence before
+the cursor, back over spaces and line breaks, `targets.unit_bounds`), "read
+last paragraph" / "read this paragraph", and "read selection" ("Nothing is
+selected."). They are not `EXTERNAL_COMMANDS`, so another program answers with
+the usual refusal; "read that" is, and reads only the session's own words.
+
+**Tests** (fakes; no microphone, no real window): `tests/unit/core/test_dictation_rescue.py`,
+`tests/unit/core/test_dictation_snippet_fill.py`,
+`tests/unit/ui/test_dictation_kept_words.py` (the window, Discard, Clear
+History, the start sentence, the setting, Type into a Field), and
+`test_kept_words_history_and_snippet_prompts_are_one_thing_in_all_three` in
+`tests/unit/ui/test_dictation_parity.py`.
+
+**Not done, and why.** Quill Inkwell's held words stay in memory: it has no
+Recent Phrases to offer them in, and writing words nobody can reach is worse
+for privacy than not writing them; giving its feedback port a `rescue()` and a
+window is the step. QUILL Transcribe's Type into a Field from a review that
+waits for a field and is then cancelled does not count as delivered, so a kept
+entry stays (by design). Audio retention is deferred. Still to check with a
+microphone and a screen reader: the lines under "Dictation: rescue, history,
+snippet blanks and reading back" in `docs/qa/screen-reader-checks-2026-10.md`.
+
 ## 28. As built, 2026-10-16: self-repair, named styles, learning from corrections, and opt-in polish (D-20, D-21)
 
 dict.md section 4, the "Polish", "Learn" and "Modes" parts. Everything is in
@@ -1910,8 +2208,10 @@ the answer.
   field. The question is spoken with "Say QUILL yes to add it, or QUILL no",
   and `CommandModeMixin` asks `_learn_answer` before any other command. It
   lapses after 30 seconds (`ANSWER_SECONDS`), so a later "yes" answers
-  nothing. In practice it seldom comes up there: "correct that" and "correct"
-  work only in QUILL's own documents.
+  nothing. Since D-10 (section 27) "correct that" and "choose N" work on the
+  session's own words in another program, and `CorrectionsMixin._choose` calls
+  through to `LiveMixin._choose`, so a choice made there counts the same way;
+  "correct X" still works only in QUILL's own documents.
 - **A host with no word list** (no `words_path` on its feedback port) is never
   offered anything.
 

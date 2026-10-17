@@ -188,7 +188,25 @@ SPANISH_COMMAND_HELP: tuple[CommandHelp, ...] = (
     CommandHelp(
         Command.READ_BACK,
         ("léelo", "repite eso"),
-        "Reads the last phrase aloud again.",
+        "Reads aloud again everything the last phrase, snippet, clip or review put in.",
+        "Correcting",
+    ),
+    CommandHelp(
+        Command.READ_SENTENCE,
+        ("lee la última frase",),
+        "Reads the sentence just before the cursor.",
+        "Correcting",
+    ),
+    CommandHelp(
+        Command.READ_PARAGRAPH,
+        ("lee el último párrafo", "lee este párrafo"),
+        "Reads the paragraph the cursor is in.",
+        "Correcting",
+    ),
+    CommandHelp(
+        Command.READ_SELECTION,
+        ("lee la selección",),
+        "Reads what is selected.",
         "Correcting",
     ),
     CommandHelp(

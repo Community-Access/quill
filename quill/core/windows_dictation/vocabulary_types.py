@@ -114,6 +114,15 @@ class Command(StrEnum):
     REVIEW_DISCARD = "review_discard"
     # 2026-10-16 (P3, "Polish my dictation"): one fixed AI request in the review.
     REVIEW_POLISH = "review_polish"
+    # 2026-10-16 (D-10, D-19): correcting by replacing, and by paragraph
+    # (corrections.py; in another program, external_edits.py).
+    REPLACE_WORDS = "replace_words"
+    CHANGE_THAT = "change_that"
+    DELETE_PARAGRAPH = "delete_paragraph"
+    # 2026-10-16 (D-18): reading back more than the last phrase, in the editors.
+    READ_SENTENCE = "read_sentence"
+    READ_PARAGRAPH = "read_paragraph"
+    READ_SELECTION = "read_selection"
 
 
 @dataclass(frozen=True, slots=True)

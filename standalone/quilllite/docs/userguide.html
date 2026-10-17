@@ -4754,8 +4754,35 @@ next phrase you say replaces it.</td>
 <td>Deletes the sentence the cursor is at the end of.</td>
 </tr>
 <tr>
+<td>“delete previous paragraph”</td>
+<td>Deletes the paragraph just before the cursor.</td>
+</tr>
+<tr>
+<td>“replace” the words “with” the new words</td>
+<td>Puts the new words in place of the nearest old ones: “replace
+Tuesday with Wednesday”.</td>
+</tr>
+<tr>
+<td>“change that to” and the new words</td>
+<td>Puts the new words in place of the phrase you dictated last.</td>
+</tr>
+<tr>
 <td>“read that” or “repeat that”</td>
-<td>Reads the last phrase aloud again.</td>
+<td>Reads aloud again all of what last went in: a phrase, a whole
+snippet or clip, or reviewed words.</td>
+</tr>
+<tr>
+<td>“read last sentence”</td>
+<td>Reads the sentence just before the cursor, with its punctuation
+said.</td>
+</tr>
+<tr>
+<td>“read last paragraph” or “read this paragraph”</td>
+<td>Reads the paragraph the cursor is in.</td>
+</tr>
+<tr>
+<td>“read selection”</td>
+<td>Reads what is selected.</td>
 </tr>
 <tr>
 <td>“spell that”</td>
@@ -4797,14 +4824,59 @@ Ann. 2: write two Ann. Say choose and the number.” Then say
 <strong>“choose one”</strong>, <strong>“choose two”</strong> or
 <strong>“choose three”</strong>, and that guess takes the place of what
 was written. You hear “Changed to:” and the new words.</p>
-<p>Only <strong>Windows speech recognition</strong> keeps other guesses.
-Moonshine, Whisper, the optional models and OpenAI give one answer each,
-so with them “correct that” tells you there is nothing to choose from.
-Say “scratch that” and say it again, or add a correction in <strong>My
-Words and Phrases</strong> so it comes out right next time.</p>
+<p><strong>Windows speech recognition</strong> keeps its own other
+guesses. Moonshine, Whisper and the optional models give one answer
+each, so with them “correct that” asks for a <strong>second
+opinion</strong> instead: the other built-in engine listens to your last
+phrase again. You hear “Listening again with Whisper.” (or Moonshine),
+and a moment later both answers: “1: the whether is nice. 2: the weather
+is nice. Say choose and the number.” Say <strong>“choose two”</strong>
+to take the second. If both engines heard the same words, you are told
+so, and nothing changes. Whisper listens again after Moonshine, and
+Moonshine after Whisper or a downloaded model.</p>
+<p>The second opinion uses only the sound of your last phrase, kept in
+memory until you say the next one: nothing is saved to disk and nothing
+goes over the internet. It is not offered in Spanish, where only Whisper
+understands you, or with OpenAI or a speech company. Then “correct that”
+tells you there is nothing to choose from: say “scratch that” and say it
+again, or add a correction in <strong>My Words and Phrases</strong> so
+it comes out right next time.</p>
+<p>Whatever a correction replaced is not lost. It goes into
+<strong>Recent Phrases</strong> (<strong>Shift+F11</strong>,
+<strong>Tools &gt; Dictation &gt; Recent Phrases…</strong>) marked
+“(before correction)”, just after the corrected words, so you can put it
+back with Insert Again or copy it.</p>
 <p>To fix a word further back, say <strong>“correct”</strong> and the
 word itself, like “correct Ann”. The word is selected, and what you say
 next takes its place. “Moving and selecting by voice” explains how.</p>
+<h4
+id="replace-and-change-that-fixing-words-without-retyping-them">Replace
+and change that: fixing words without retyping them</h4>
+<p>Two commands put new words in place of old ones, so you do not have
+to select anything first. Say each one at the start of a phrase.</p>
+<p><strong>“replace” the words “with” the new words.</strong> Say
+“replace Tuesday with Wednesday” and the nearest “Tuesday” before the
+cursor becomes “Wednesday”; if there is none before the cursor, QUILL
+Lite looks after it. The new words take the capital and the closing full
+stop of the old ones, and the cursor stays where it was, so you can
+carry on dictating. You hear “Replaced Tuesday with Wednesday.” If the
+words are not there, what you said is written as ordinary text, as with
+“select” (you hear “Not found, written as text.”; say “scratch that” to
+take it away). After the command word, “QUILL replace Tuesday with
+Wednesday”, nothing is written when the words are not found.</p>
+<p><strong>“change that to” and the new words</strong> replaces the
+whole phrase you dictated last. You said “see you Thursday.” and meant
+Friday: say “change that to see you Friday”, and you hear “Changed to:
+See you Friday.” The leading space, the capital and the closing full
+stop stay as they were.</p>
+<p><strong>“delete previous paragraph”</strong> (or “delete last
+paragraph”) deletes the paragraph just before the cursor, from its start
+up to the cursor, with the blank line in front of it. Say it again to
+delete the one before. If text is selected, the selection is deleted
+instead.</p>
+<p>Replace and change that keep what they replaced in Recent Phrases,
+marked “(before correction)”. “Scratch that” straight after a replace
+inside your last phrase takes away the whole corrected phrase.</p>
 <h4 id="spelling-a-word">Spelling a word</h4>
 <p>Some names the engine will never get right. For those, say
 <strong>“start spelling”</strong>. Until you say <strong>“stop
@@ -5856,6 +5928,13 @@ see “Review before inserting”</td>
 the AI to fix punctuation and small slips, keeping your words</td>
 <td>Unchecked</td>
 </tr>
+<tr>
+<td>Keep a dictation history (Alt+Y)</td>
+<td>Off, One day, Seven days or Thirty days of the text you dictate,
+never the sound, listed in Recent Phrases; turning it off deletes it;
+see “Recent phrases”</td>
+<td>Off</td>
+</tr>
 </tbody>
 </table>
 <h4 id="dictating-in-spanish">Dictating in Spanish</h4>
@@ -6553,8 +6632,43 @@ Recent Phrases…</strong>) to see the last twenty phrases you dictated,
 newest first. Arrow to one and press <strong>Enter</strong> (Insert
 Again) to write it at the cursor as one undo step, or press
 <strong>Copy</strong> to put it on the clipboard. This is your rescue if
-“scratch that” took away one phrase too many. The list lasts only until
-you close QUILL Lite.</p>
+“scratch that” took away one phrase too many. When “choose”, “replace”
+or “change that to” changed a phrase, the words it had before are in the
+list too, marked “(before correction)”; Insert Again and Copy leave that
+label out. This session’s phrases last only until you close QUILL
+Lite.</p>
+<p>After them come words kept from before, so nothing you said is
+lost:</p>
+<ul>
+<li><strong>Not written</strong>: a phrase that could not be written, or
+words held while dictation was paused. They stay on this computer, even
+through a crash, until you write or discard them, and QUILL Lite says
+once at start how many are waiting.</li>
+<li><strong>Review not finished</strong>: the words of a review you
+closed without inserting.</li>
+<li><strong>Earlier</strong>: with <strong>Keep a dictation
+history</strong> on in More Dictation Settings, the phrases from earlier
+days, newest first.</li>
+</ul>
+<p><strong>Insert Again</strong> writes one at the cursor and deletes it
+from the computer; <strong>Discard</strong> (<strong>Alt+D</strong>)
+deletes it without writing it; <strong>Clear History</strong>
+(<strong>Alt+H</strong>) deletes the whole history after asking, with No
+as the answer unless you choose Yes. Kept words and the history are
+sealed for your Windows account, never kept as sound, and never written
+to the log.</p>
+<p>For example: you are dictating into a document, step away, and
+dictation pauses with two phrases held because the window lost focus.
+Then the computer restarts for an update. The next time QUILL Lite
+starts it says “2 dictated phrases were not written last time and are
+kept. Recent Phrases, Shift+F11, brings them back.” Press
+<strong>Shift+F11</strong>, arrow past this session’s phrases to the
+first “Not written” entry, and press <strong>Enter</strong>: it is
+written at the cursor and deleted from the computer. Do the same for the
+second, or press <strong>Alt+D</strong> to discard it.</p>
+<p>Limits: only text is kept, never sound; the history keeps at most
+2000 phrases; and a kept entry is deleted only when it is written,
+discarded or cleared, never by copying it.</p>
 <h3 id="talking-to-the-ai">Talking to the AI</h3>
 <p>You can have a spoken conversation with AI help. Open the <strong>AI
 Conversation</strong> window (see “Having a conversation” in the AI help
@@ -6710,8 +6824,11 @@ as long as you are still in the same window.</p></li>
 Inkwell share (QUILL’s snippets, the shared abbreviation library, and
 QUILL’s clips): “insert snippet” and its name, “insert abbreviation” and
 its name, and “paste clip” and a number. They are typed as one phrase,
-so “scratch that” takes all of it back. A snippet’s blanks are typed as
-[name], with no questions, and the cursor stays at the end.</p></li>
+so “scratch that” takes all of it back. A snippet’s blanks are asked for
+by voice first: you hear each blank’s name, like “Title?”, and say the
+answer; for a choice, say an option or “choose two”. Say skip, scratch
+that to go back one, or cancel to type nothing. The cursor stays at the
+end.</p></li>
 </ul>
 <p>Some commands need to read the text of the document, and Inkwell
 cannot read another program’s text. So “select”, “go to”, “correct”,

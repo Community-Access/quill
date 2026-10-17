@@ -8349,7 +8349,11 @@ afterwards, Live Dictation writes as you go.</p>
 <p>The same submenu has more windows:</p>
 <ul>
 <li><strong>Recent Phrases…</strong> (<code>Shift+F11</code>) lists the
-last twenty phrases of the session, with Insert Again and Copy.</li>
+last twenty phrases of the session, with Insert Again and Copy. Words a
+correction replaced are there too, marked “(before correction)”, so
+nothing a correction changed is lost. After them come any words kept
+from before. See “Words that were not written, and dictation
+history”.</li>
 <li><strong>My Words and Phrases…</strong> (<code>Alt+Shift+F10</code>)
 is a window with Add Word, Add Phrase, Add Correction, Edit and Remove.
 It edits your <code>dictation.md</code> file for you.
@@ -8750,6 +8754,42 @@ file can hold a section headed, for example,
 QUILL keeps these sections when it saves the file. They are ready for
 named dictation profiles, which are not in this version, so for now they
 are not used.</p>
+<h5 id="words-that-were-not-written-and-dictation-history">Words that
+were not written, and dictation history</h5>
+<p>Dictation never throws away words it could not write. If dictation
+pauses because its field moved, or Windows stops typing a phrase
+part-way through, the words are kept on this computer until you deal
+with them, even if QUILL is closed, crashes or the computer sleeps.
+Stopping dictation while words are held says so: “1 phrase held while
+paused was not written. They are kept in Recent Phrases.” The next time
+QUILL starts, it says once how many are waiting.</p>
+<p>They are in <strong>Recent Phrases</strong> (<code>Shift+F11</code>),
+after this session’s phrases, labelled “Not written” with the time. So
+is a review that did not finish, labelled “Review not finished”. Choose
+one and:</p>
+<ul>
+<li><strong>Insert Again</strong> (<code>Alt+I</code>, or
+<code>Enter</code>) writes it at the cursor, and then it is deleted from
+this computer;</li>
+<li><strong>Copy</strong> (<code>Alt+C</code>) puts it on the clipboard
+and keeps it;</li>
+<li><strong>Discard</strong> (<code>Alt+D</code>) deletes it without
+writing it.</li>
+</ul>
+<p>Only words that were never written are kept, and they are sealed for
+your Windows account, so another account on the same computer cannot
+read them. Nothing you dictate is kept as sound.</p>
+<p><strong>Dictation history</strong> is off unless you turn it on. In
+More Dictation Settings, <strong>Keep a dictation history</strong>
+(<code>Alt+Y</code>) can be Off, One day, Seven days or Thirty days.
+While it is on, the text of each phrase you dictate is kept for that
+long, sealed the same way, and Recent Phrases lists the earlier ones
+after the words not written, newest first, labelled “Earlier” with the
+time. <strong>Clear History</strong> (<code>Alt+H</code>) in Recent
+Phrases deletes all of it, after a question whose answer is No unless
+you choose Yes. Turning the history off deletes it too. Neither the kept
+words nor the history ever go into QUILL’s log or a diagnostic
+report.</p>
 <h5 id="holding-ctrlf11-to-talk">Holding Ctrl+F11 to talk</h5>
 <p>Press <code>Ctrl+F11</code> to start dictating and press it again to
 stop. That is all most people ever need, and it is how dictation starts
@@ -8960,8 +9000,10 @@ the middle of a sentence is written as words, just as you meant it.</p>
 <li>“undo that”</li>
 <li>“select that”</li>
 <li>“capitalize that”, “all caps that”, “no caps that”</li>
-<li>“delete word”, “delete sentence”</li>
-<li>“read that”</li>
+<li>“delete word”, “delete sentence”, “delete previous paragraph”</li>
+<li>“read that” reads all of what last went in, a whole snippet
+included</li>
+<li>“read last sentence”, “read last paragraph”, “read selection”</li>
 <li>“go to beginning of line”, “go to end of line”, “go to top”, “go to
 end of document”</li>
 <li>“select sentence”, “select line”, “select paragraph”</li>
@@ -8971,12 +9013,27 @@ numbers and symbols”</li>
 <li>“copy that”, “copy all”, “show clips”, “show snippets”</li>
 <li>“stop dictation”</li>
 </ul>
+<p><strong>Reading back, a worked example.</strong> You have dictated
+“Thanks for the notes comma I will send the draft on Friday period” and
+want to check it by ear. Say “read last sentence”: you hear “Thanks for
+the notes comma I will send the draft on Friday period”, with the marks
+named when <strong>Say punctuation marks in the read-back</strong> (More
+Dictation Settings) is on, so a missing comma is easy to catch. “read
+last paragraph” (or “read this paragraph”) reads the whole paragraph the
+cursor is in, and “read selection” reads what you selected (“Nothing is
+selected.” when nothing is). “read that” reads all of what last went in,
+so after “insert snippet sign off” it reads the whole snippet, not only
+its name. Reading never moves the cursor or changes the text. In another
+program only “read that” works, because QUILL reads only the words it
+typed there.</p>
 <p><strong>Commands with words after them</strong>, said at the start of
 a phrase:</p>
 <ul>
 <li>“select” and some words, “go to”, “go before” or “go after” and some
 words, “correct” and some words (see “Moving and selecting by
 voice”)</li>
+<li>“replace” some words “with” new words, and “change that to” and new
+words (see “Replace and change that”)</li>
 <li>“paste clip three”, “insert snippet” and a name, “insert
 abbreviation” and a trigger (see “Snippets and clips by voice”)</li>
 <li>“switch to Spanish” (see “Switching between English and
@@ -9058,14 +9115,24 @@ nothing is written.</li>
 <strong>and its trigger</strong> writes what that abbreviation stands
 for.</li>
 </ul>
-<p>A snippet with blanks to fill in is written with each blank as its
-name in square brackets, like <code>[name]</code>. Say “select name” and
-then the real name, and the blank is filled.</p>
+<p>A snippet with blanks to fill in asks for each blank by voice before
+anything is written. With the starter Bug Report Template, “insert
+snippet bug report” says “Snippet Bug Report Template, 3 blanks. Say
+cancel to stop. Summary?”. What you say next is the answer, with spoken
+punctuation obeyed. For a choice, such as
+<code>${choice:NVDA|JAWS|Narrator}</code>, you hear “Choose NVDA, JAWS
+or Narrator.”: say one of them, or “choose two”. Say
+<strong>skip</strong> to leave a blank empty, <strong>scratch
+that</strong> to answer the one before again, or <strong>cancel</strong>
+to write nothing. <code>${date}</code> and <code>${time}</code> come
+from this computer’s clock, and <code>${cursor}</code> puts the cursor
+where the snippet says.</p>
 <p>Whatever goes in, it goes in as one phrase: one <code>Ctrl+Z</code>
 takes it out, and so does “scratch that”. The read-back keeps it short,
 “Snippet sign off” or “Pasted slot 3”, rather than reading the whole
-thing to you. These commands do not work while <strong>Just write what I
-say</strong> is on, because commands are off then.</p>
+thing to you; say “read that” to hear all of it. These commands do not
+work while <strong>Just write what I say</strong> is on, because
+commands are off then.</p>
 <h5 id="correct-that-choosing-another-guess">Correct that: choosing
 another guess</h5>
 <p>Sometimes the engine was not sure what you said, and had a second
@@ -9075,15 +9142,60 @@ Ann. 2: write two Ann. Say choose and the number.” Then say
 <strong>“choose one”</strong>, <strong>“choose two”</strong> or
 <strong>“choose three”</strong>, and that guess takes the place of what
 was written. You hear “Changed to:” and the new words.</p>
-<p>Only <strong>Windows speech recognition</strong> keeps other guesses.
-Moonshine, Whisper, the optional models and OpenAI give one answer each,
-so with them “correct that” tells you there is nothing to choose from.
-Say “scratch that” and say it again, or add a correction in <strong>My
-Words and Phrases</strong> so it comes out right next time.</p>
+<p><strong>Windows speech recognition</strong> keeps its own other
+guesses. Moonshine, Whisper and the optional models give one answer
+each, so with them “correct that” asks for a <strong>second
+opinion</strong> instead: the other built-in engine listens to your last
+phrase again. You hear “Listening again with Whisper.” (or Moonshine),
+and a moment later both answers: “1: the whether is nice. 2: the weather
+is nice. Say choose and the number.” Say <strong>“choose two”</strong>
+to take the second. If both engines heard the same words, you are told
+so, and nothing changes. Whisper listens again after Moonshine, and
+Moonshine after Whisper or a downloaded model.</p>
+<p>The second opinion uses only the sound of your last phrase, kept in
+memory until you say the next one: nothing is saved to disk and nothing
+goes over the internet. It is not offered in Spanish, where only Whisper
+understands you, or with OpenAI or a speech company. Then “correct that”
+tells you there is nothing to choose from: say “scratch that” and say it
+again, or add a correction in <strong>My Words and Phrases</strong> so
+it comes out right next time.</p>
+<p>Whatever a correction replaced is not lost. It goes into
+<strong>Recent Phrases</strong> (<code>Shift+F11</code>, in the Live
+Dictation submenu) marked “(before correction)”, just after the
+corrected words, so you can put it back with Insert Again or copy
+it.</p>
 <p>With any engine you can also say <strong>“correct” and the
 words</strong> that came out wrong, then say the right ones (see “Moving
 and selecting by voice”), or <strong>“spell that”</strong> to spell the
 last phrase out (see “Letters, numbers and symbols”).</p>
+<h5
+id="replace-and-change-that-fixing-words-without-retyping-them">Replace
+and change that: fixing words without retyping them</h5>
+<p>Two commands put new words in place of old ones, so you do not have
+to select anything first. Say each one at the start of a phrase.</p>
+<p><strong>“replace” the words “with” the new words.</strong> Say
+“replace Tuesday with Wednesday” and the nearest “Tuesday” before the
+cursor becomes “Wednesday”; if there is none before the cursor, QUILL
+looks after it. The new words take the capital and the closing full stop
+of the old ones, and the cursor stays where it was, so you can carry on
+dictating. You hear “Replaced Tuesday with Wednesday.” If the words are
+not there, what you said is written as ordinary text, as with “select”
+(you hear “Not found, written as text.”; say “scratch that” to take it
+away). After the command word, “QUILL replace Tuesday with Wednesday”,
+nothing is written when the words are not found.</p>
+<p><strong>“change that to” and the new words</strong> replaces the
+whole phrase you dictated last. You said “see you Thursday.” and meant
+Friday: say “change that to see you Friday”, and you hear “Changed to:
+See you Friday.” The leading space, the capital and the closing full
+stop stay as they were.</p>
+<p><strong>“delete previous paragraph”</strong> (or “delete last
+paragraph”) deletes the paragraph just before the cursor, from its start
+up to the cursor, with the blank line in front of it. Say it again to
+delete the one before. If text is selected, the selection is deleted
+instead.</p>
+<p>Replace and change that keep what they replaced in Recent Phrases,
+marked “(before correction)”. “Scratch that” straight after a replace
+inside your last phrase takes away the whole corrected phrase.</p>
 <h5 id="speech-engines-for-live-dictation">Speech engines for Live
 Dictation</h5>
 <p><strong>Speech engines.</strong> You have four to choose from:</p>
@@ -9325,6 +9437,13 @@ the AI to fix punctuation and small slips, keeping your words; see
 “Polishing your dictation with AI, only when you ask”</td>
 <td>Off</td>
 </tr>
+<tr>
+<td>Keep a dictation history (<code>Alt+Y</code>)</td>
+<td>Off, One day, Seven days or Thirty days of the text you dictate,
+never the sound, listed in Recent Phrases; turning it off deletes it;
+see “Words that were not written, and dictation history”</td>
+<td>Off</td>
+</tr>
 </tbody>
 </table>
 <p>In settings files these are
@@ -9343,8 +9462,10 @@ the AI to fix punctuation and small slips, keeping your words; see
 <code>windows_dictation_command_prefix</code>,
 <code>windows_dictation_command_prefix_required</code>,
 <code>windows_dictation_command_timeout</code>,
-<code>windows_dictation_review_first</code> and
-<code>windows_dictation_polish</code>. The review window also keeps
+<code>windows_dictation_review_first</code>,
+<code>windows_dictation_polish</code> and
+<code>windows_dictation_history_days</code> (0 for off, or 1, 7 or 30).
+The review window also keeps
 <code>windows_dictation_review_context</code> (its context check box)
 and <code>windows_dictation_review_consent</code> (your answer to its
 question).</p>
@@ -10125,9 +10246,11 @@ window still has the focus.</p>
 <p>Your snippets, abbreviations and clips work there too, because they
 only insert: “insert snippet” and its name, “insert abbreviation” and
 its name, and “paste clip” and a number. Each is typed as one phrase, so
-“scratch that” takes all of it back. A snippet’s blanks are typed as
-their names in square brackets, like [title], with no questions, and the
-cursor stays at the end.</p>
+“scratch that” takes all of it back. A snippet’s blanks are asked for by
+voice first, as in a document (see “Snippets and clips by voice”), and
+the cursor stays at the end. “read that” reads what dictation typed
+there; “read last sentence” and the other commands that read the text
+cannot, because nothing in the other program is read.</p>
 <p>Anything that needs to read what is already in the other program
 cannot work there: “select”, “go to”, “correct”, “copy all” and “show
 clips”. If you say one of those, you are told “That works in QUILL’s own
@@ -10345,7 +10468,8 @@ never heard. Spell it with the phonetic alphabet in your next
 phrase.</li>
 <li><strong>Recent Phrases</strong> (<code>Shift+F11</code>) shows what
 was written for your last twenty phrases, so you can see what went
-wrong.</li>
+wrong, and any words that were never written. Say “read last sentence”
+to hear a sentence back with its punctuation.</li>
 <li>When you are done, <strong>Tidy Dictated Text</strong>
 (<code>Ctrl+F3</code>) can fix sound-alike words, names and punctuation
 in a paragraph or a selection with AI, if you have a ChatGPT

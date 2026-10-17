@@ -160,8 +160,9 @@ def _review_section(
 def _repair_section(
     heading: Any, lines: list[str], md: bool, prefix: str, *, external: bool = False
 ) -> None:
-    """Correcting yourself (D-20) and remembering corrections (D-21). In
-    another program only the first: "correct that" needs QUILL's own text."""
+    """Correcting yourself (D-20) and remembering corrections (D-21). The same
+    in another program: "correct that" and "choose" work there since D-10."""
+    del external
     heading("Correcting yourself as you talk")
     word = prefix or "the command word"
     for sentence in (
@@ -170,11 +171,12 @@ def _repair_section(
         "months, numbers or names from My Words writes only the second: "
         '"Thursday, no, Friday" writes Friday. Anything else is written as said.',
         'When you correct the same word the same way twice, with "correct that" and '
-        '"choose", or with "correct" and the word, dictation offers to remember it: '
+        '"choose", or in QUILL\'s own documents with "correct" and the word, dictation '
+        "offers to remember it: "
         '"Add a correction: Ann becomes Anne?" In QUILL and QUILL Lite a window asks. '
         f'Where no window can be shown the question is spoken: say "{word} yes" to add '
         f'it or "{word} no" within 30 seconds. Nothing is added without a yes.',
-    )[: 1 if external else 2]:
+    ):
         lines.append(("- " + sentence) if md else sentence)
 
 
@@ -271,14 +273,21 @@ def commands_reference(
         'The Markdown line marks -- "bullet", "numbered item", "block quote" and '
         '"heading one" to "heading six" -- count only at the start of a phrase, so '
         '"the heading two lines down" stays words.',
+        "A snippet with blanks asks for each one by name: say the answer, or for a "
+        "choice say one of the options or choose and its number. Say skip to leave "
+        "one empty, scratch that to go back one, or cancel to type nothing. Then the "
+        "whole snippet goes in as one phrase, and scratch that takes all of it back.",
         *(
             (
-                "Nothing in the other program is read, so commands that select, find "
-                "or correct words are not listed: they work in QUILL's own documents.",
-                "A snippet's blanks are written as their names in square brackets, "
-                "like [title], and no question is asked. Where a snippet or an "
-                "abbreviation puts the cursor in the middle, the cursor stays at the "
-                "end instead.",
+                "Nothing in the other program is read, so commands that select or find "
+                "words are not listed: they work in QUILL's own documents.",
+                "Correcting works on the words dictation typed there itself, and only "
+                "while the focus has not moved and you have not typed or clicked since. "
+                "In Word and Outlook, which change words as they are typed, the "
+                "commands that retype words are refused; scratch that and the delete "
+                "commands still work.",
+                "Where a snippet or an abbreviation puts the cursor in the middle, the "
+                "cursor stays at the end instead.",
             )
             if external
             else ()

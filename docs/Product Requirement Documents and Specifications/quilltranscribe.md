@@ -488,9 +488,21 @@ asked once for consent with No as the default; only the words in the review
 and the instruction are sent, never anything read from the target. With no
 route, or in Safe Mode, AI is off and the window edits and inserts by hand.
 
-Commands such as "select that", "correct the last word", "go to the heading",
-"replace this paragraph", or commands that inspect selection/document context
-are refused in external targets. The refusal is brief, consistent, and tells
+**As built, 2026-10-16: correction on the session's own words (D-10).**
+"Correct that" and "choose 1" to "choose 3", "capitalize that", "all caps
+that", "no caps that", "replace X with Y" (inside the last phrase only),
+"change that to Y", "delete last sentence" and "delete previous paragraph"
+work in external targets on the text the adapter itself inserted, as a
+backspace-and-retype pair through the same checked injection path. They are
+refused, with one sentence and nothing sent, when the target is no longer the
+locked field, when the system's last-input time is later than dictation's own
+typing (the person typed, clicked or moved the mouse), or, for the commands
+that retype, when the foreground program is Word or Outlook (AutoCorrect). The
+target is never read. Design record section 27.
+
+Commands such as "select that", "correct" and a word, "go to the heading",
+or commands that inspect selection/document context are still refused in
+external targets. The refusal is brief, consistent, and tells
 the user that the command is available in a QUILL document but not in another
 application.
 
@@ -537,9 +549,21 @@ clearable. If enabled, the user chooses whether to save transcript text; audio
 recording is a separate opt-in and is never implied by enabling text history.
 History is never synchronized or uploaded in version 1.0.
 
+As built after 1.0.0 (D-5, 2026-10-16): the history is **Keep a dictation
+history** in More Dictation Settings, Off (the default), one, seven or thirty
+days of text, sealed with Windows DPAPI for the person's account, listed in
+Recent Phrases after the session's phrases, cleared there with a No-default
+question, and deleted when turned off. Separately from it, the words that were
+never written (held while paused, or typing that stopped part-way) are kept on
+disk, sealed the same way, until they are typed or discarded, so a crash or an
+exit loses nothing. Neither is ever written to the log or a diagnostic bundle.
+
 User-directed output actions include:
 
 - Continue typing into the authorized field.
+- Type a reviewed transcript, or the part selected, into the field the
+  person goes back to, with the same field checks as dictation (Review
+  Transcript's Type into a Field, after 1.0.0).
 - Copy a reviewed transcript, with an explicit action and no background
   clipboard monitoring.
 - Save a transcript to a user-selected file.
