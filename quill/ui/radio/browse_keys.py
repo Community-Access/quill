@@ -8,8 +8,10 @@ means depends on where focus is**, which is a policy, not a widget detail.
 * **Ctrl+F** is the find box, from anywhere in the window.
 * **Delete** removes what the selected row's own menu removes -- but only while
   the *tree* has focus, because Delete in the find box is a delete.
-* **Escape** clears an active search when the find box has focus, and closes
-  the window otherwise.
+* **Escape** clears an active search when the find box has focus; in the tree,
+  inside a category (a country, a language, a genre), it goes back to that
+  category's row and folds it -- one level per press, the way Enter opened
+  it -- and only at the top level does it close the window.
 * **Ctrl+F4** closes, because a frame gets no automatic Escape-to-Cancel and
   this is the document-window close key a family of windows owes people.
 
@@ -51,7 +53,37 @@ def handle(dialog: Any, event: Any) -> bool:
             dialog._clear_find()
             return True
 
+    # Escape inside a category goes back to the category's own row, folded,
+    # one level per press; only at the top level does it close (item 43). The
+    # Find box keeps its text and the player keeps playing.
+    plain = not getattr(event, "HasAnyModifiers", lambda: False)()
+    if key == wx.WXK_ESCAPE and focus is dialog._tree and plain:
+        if back_to_category(dialog._tree):
+            return True
+
     if dialog._modeless and (key == wx.WXK_ESCAPE or (key == wx.WXK_F4 and event.ControlDown())):
         dialog._win.Close()
         return True
     return False
+
+
+def back_to_category(tree: Any) -> bool:
+    """Select the highlighted row's category and fold it. False at the top level.
+
+    The tree's root is hidden, so a top-level source's parent is the root and
+    there is nowhere further back to go: Escape then means close, as it always
+    has. Nothing is spoken; the selection change is the reader's to read.
+    """
+    try:
+        item = tree.GetSelection()
+        if not item or not item.IsOk():
+            return False
+        parent = tree.GetItemParent(item)
+        if not parent.IsOk() or parent == tree.GetRootItem():
+            return False
+    except (AttributeError, RuntimeError):  # no tree yet, or one being torn down
+        return False
+    tree.SelectItem(parent)
+    tree.Collapse(parent)
+    tree.EnsureVisible(parent)
+    return True

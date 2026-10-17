@@ -2307,4 +2307,18 @@ P2 item 19), so every public Cast build carries the item; a copy without QUILL
 Transcribe installed answers Ctrl+F11 with the "not installed" sentence.
 Dictation design record, section 30.
 
+### 23.29 Where you were in each podcast (todo item 43, 2026-10-16)
+
+A podcast opened in place (Favorites, Enter) lands on the episode last
+selected in it, not on its first row. The episode is known by identity -- the
+feed URL (lower-cased, no trailing slash; a local show's id) and the episode
+GUID, with its audio URL and published date as fallbacks -- so a new episode
+at the top, a sort change, View > Show and a refresh do not move it. A gone
+episode lands on the remaining one published nearest to it, the newer of two.
+The memory is `podcast_episode_cursor.json` in the data folder
+(`quill/core/podcasts/episode_cursor.py`), written a second after the cursor
+stops and on close (a close-task step). Only a single podcast's list records:
+New Episodes, the Inbox and the Play Queue never move a feed's cursor. QUILL's
+Podcast Manager uses the same store.
+
 See `CHANGELOG.md` for the full, versioned history.

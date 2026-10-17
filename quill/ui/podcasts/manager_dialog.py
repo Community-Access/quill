@@ -417,6 +417,9 @@ class PodcastManagerDialog(
         finally:
             # The controller keeps playing after this dialog closes -- only
             # the dialog itself is torn down.
+            from quill.ui.podcasts.episode_cursor_ui import flush_cursor
+
+            flush_cursor(self)
             self.dialog.Destroy()
 
     def _update_now_playing(self) -> None:
@@ -809,8 +812,13 @@ class PodcastManagerDialog(
                 speak=False,
             )
         if self._current_episodes:
-            self._episodes.Select(0)
-            self._episodes.Focus(0)
+            # Where the listener was in this feed, by episode identity (item 43).
+            from quill.ui.podcasts.episode_cursor_ui import remembered_row
+
+            row = remembered_row(self, show, self._current_episodes)
+            self._episodes.Select(row)
+            self._episodes.Focus(row)
+            self._episodes.EnsureVisible(row)
 
     def _download_item_id(self, episode: PodcastEpisode) -> str:
         return episode.guid
@@ -828,6 +836,9 @@ class PodcastManagerDialog(
         episode = self._selected_episode()
         if episode is None:
             return
+        from quill.ui.podcasts.episode_cursor_ui import remember_episode
+
+        remember_episode(self, self._current_show, episode)
         already_downloaded = bool(episode.downloaded_path)
         item = self._download_queue.get(self._download_item_id(episode))
         in_flight = item is not None and item.status in ("queued", "downloading", "paused")

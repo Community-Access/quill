@@ -4,6 +4,15 @@ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the fir
 
 ## Unreleased
 
+- **Cast remembers where you were in each podcast** (2026-10-16). Press Enter
+  on a podcast in Favorites and its list now opens on the episode you last had
+  selected there, after a restart too, instead of on the first row. The
+  episode is found by who it is, so new episodes, a sort change, View > Show
+  and a refresh do not move it; if it has gone, you land on the episode
+  published closest to it. Mixed lists (New Episodes, the Inbox, the Play
+  Queue) never move a podcast's place. See "Where you were in each podcast" in
+  the guide.
+
 - **The user guide now matches the menus a new install shows.** Three things it taught were wrong, and are fixed. **New Folder** is **Ctrl+Shift+E** (Podcasts > New Folder...); the guide said Ctrl+Shift+F, which does nothing in Cast. The two **Spotify** rows, Connect to Spotify... (Ctrl+Alt+S) and Browse Spotify Podcasts... (Ctrl+Alt+V), are on the Help menu from the start; the guide said they stayed hidden until you redeemed an unlock code, and no code is needed. And every **Advanced row** the guide teaches, such as Back Up My Podcasts, Restore from a Backup, Export My Data, Clear All Podcast Data, Free Up Space, Run Housekeeping Now, Media Tools, Get FFmpeg and Redeem Unlock Code, now says it is one. The guide also says plainly what was always true: an Advanced row's key belongs to its menu row, so it works only while **View > Advanced Features** (Ctrl+Alt+Shift+G) is on. For example, in Simple mode Ctrl+Alt+Shift+B does nothing; press Ctrl+Shift+P for the Command Palette, type "back up" and press Enter instead, or turn Advanced Features on and press it again. A check now builds Cast's menus exactly as a new install has them, in both modes, and fails when the guide or this changelog names a menu path or key they do not keep.
 - **Every Advanced command is in the Command Palette, as the guide always said.** Simple menus leave the Advanced rows off, and the guide promised the Command Palette (Ctrl+Shift+P) still reaches each one. Seven could not be reached at all in Simple mode, and now can: **Back Up My Podcasts...**, **Restore from a Backup...**, **Choose Columns...**, **Podcast Index Credentials...**, **Media Tools**, **Get FFmpeg...** and **Product Requirements...**. For example, with Simple menus, press Ctrl+Shift+P, type `back up` and press Enter to start a backup. The palette lists these seven without a key, because an Advanced row's key works only while View > Advanced Features is on. Clear All Podcast Data from This Computer is in the palette under the name Delete All Podcast Data.
 

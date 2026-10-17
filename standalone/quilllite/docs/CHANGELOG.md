@@ -5,6 +5,16 @@
 Testing rebuild: **1.2.0 (build 5)**, following builds 2, 3 and 4; builds 2 and 3 were
 uploaded for testing. The new packages have not been published yet.
 
+- **Find the highlighted passages in a Word document.** A Word file opens here
+  as text, and until now its highlighter marks were simply gone. QUILL Lite now
+  reads them from the file and takes you to them, from **Navigate > Highlighted
+  Passages**: **Alt+PageDown** goes to the next one and says its colour, its
+  place in the count and its words ("Yellow highlight, 2 of 5: sign and date
+  here"); **Alt+PageUp** goes back; **Ctrl+F2** lists them all with the
+  paragraph each one is in, and Enter goes there while Escape leaves you where
+  you were. The same keys work in a rich text document. They are QUILL's
+  commands and QUILL's keys. The guide's "Finding the highlighted passages in a
+  Word document" has an example and the limits.
 - **Find in Open Documents, Search in Files and Replace Across Files are on the
   Edit menu itself, where you would look for them.** They had been one level
   down, inside **Edit > Matches**, and nothing in the word "Matches" says a

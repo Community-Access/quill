@@ -1304,3 +1304,69 @@ screen reader yet.
 - [ ] All five with NVDA.
 - [ ] All five with JAWS.
 - [ ] All five with Narrator.
+
+## Highlighted passages, chapters for any recording, and feed position (todo 39, 42, 43; 2026-10-16)
+
+Nothing here was checked off from source inspection; every item needs a real
+reader. Use a `.docx` with three highlighted passages in different colours
+(yellow, pink, teal), one inside a table.
+
+### Highlighted passages (QUILL and QUILL Lite)
+
+1. **QUILL, Word document edited as Rich Text.** Alt+Page Down: you hear
+   "Yellow highlight, 1 of 3: ..." once, and the reader does not also repeat
+   the whole line unasked. Alt+Page Up from the first wraps to the last.
+2. **Describe Formatting** (Ctrl+Shift+D) inside a highlighted word says
+   "..., yellow highlight"; outside one it does not mention highlighting.
+3. **Ctrl+F2** opens Highlighted Passages on the passage the cursor is in;
+   rows read words first, then colour, then "in:" and the paragraph. Enter
+   lands on the passage (the reader reads that line); Escape returns with the
+   caret unmoved; Alt+Left returns after Enter.
+4. **Apply and remove.** Format > Highlight > Pink on a word, then Ctrl+F2:
+   it is listed. Ctrl+Shift+N on it: it is gone. Save, reopen: the colours are
+   the ones you saved (pink stays pink).
+5. **QUILL Lite, the same `.docx`** (opened read-only as text): the three
+   keys behave as above, the table cell's passage included.
+6. **Braille.** With a braille display, the arrival sentence appears as a
+   flash message and the display then shows the line at the passage, cursor
+   on its first character.
+
+- [ ] All six with NVDA.
+- [ ] All six with JAWS.
+- [ ] Items 1, 3 and 5 with Narrator.
+
+### Find Chapters in a Recording (QUILL, Quill Studio)
+
+1. QUILL: Tools > Speech > Find Chapters in a Recording... on a 30-minute MP3
+   with no chapters. The silence window opens on top of the Workbench; after
+   OK you hear "Proposing chapters from silences started" and, later, the
+   count. Rows read "Proposed chapter 1 ...".
+2. Press the button again during a scan of a long recording (an hour or
+   more): it reads "Stop proposing chapters" while running and you hear the
+   stopped sentence; the list is unchanged.
+3. A recording with chapters: the Keep / Replace question reads both choices;
+   Enter keeps.
+4. Quill Studio: Studio > Find Chapters in a Recording... (Ctrl+Shift+R), and
+   Edit a Book (Ctrl+E) now opens; Ctrl+Shift+T and Ctrl+Shift+Q work inside
+   the Workbench while a book plays.
+
+- [ ] All four with NVDA.
+- [ ] All four with JAWS.
+
+### Browse Stations categories and podcast position
+
+1. Quill Radio Browse Stations: open By Country > Ireland, arrow onto a
+   station, Escape: focus is on "Ireland", folded; Escape again: "By Country";
+   Escape again closes. Playback continues throughout; a query in the Find box
+   is still there when you Tab back to it.
+2. Apple country rows read "..., Apple chart for this country, any language".
+3. QUILL Cast: Favorites > Enter on a podcast, arrow to its fifth episode,
+   Backspace, Enter again: the cursor is on the fifth episode. Close and
+   reopen Cast: still there. Refresh the podcast: still there.
+4. QUILL's Podcast Manager: choose a podcast, arrow to an episode, close the
+   window, open it and choose the podcast again: the same episode is
+   selected and read.
+
+- [ ] All four with NVDA.
+- [ ] All four with JAWS.
+

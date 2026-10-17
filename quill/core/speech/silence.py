@@ -105,13 +105,18 @@ def detect_silence_chapters(
     min_silence_s: float = 0.8,
     min_chapter_ms: int = 5000,
     title_prefix: str = "Chapter",
-    timeout_seconds: float = 600.0,
+    timeout_seconds: float | None = None,
 ) -> list[Chapter]:
     """Scan *path* and propose chapters at its silences.
+
+    *timeout_seconds* defaults to one that grows with the recording
+    (:func:`quill.core.speech.chapter_proposals.scan_timeout_seconds`): the
+    fixed ten minutes it used to be stopped a long lecture's scan part-way.
 
     Raises :class:`TranscodeError` when ffmpeg is unavailable, the file's
     duration cannot be read, or the scan fails.
     """
+    from quill.core.speech.chapter_proposals import scan_timeout_seconds
     from quill.core.speech.ffmpeg import probe_duration_ms
     from quill.stability.safe_subprocess import run_subprocess_safely
 
@@ -126,7 +131,9 @@ def detect_silence_chapters(
             build_silence_detect_command(
                 ffmpeg, path, noise_db=noise_db, min_silence_s=min_silence_s
             ),
-            timeout_seconds=timeout_seconds,
+            timeout_seconds=(
+                timeout_seconds if timeout_seconds is not None else scan_timeout_seconds(total_ms)
+            ),
         )
     except OSError as exc:
         raise TranscodeError(f"Could not run ffmpeg: {exc}") from exc

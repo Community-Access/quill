@@ -10,6 +10,15 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 Testing rebuild: **3.2.0 (build 4)**. The packages have not been published yet.
 
+- **Escape walks back out of a category in Browse Stations** (2026-10-16). In
+  the tree, Escape inside a branch now goes back to the row you opened it from
+  and folds it -- from a station in "Ireland" to "Ireland", then to "By
+  Country" -- one level per press. Only on a top-level branch does Escape close
+  the window. The Find box keeps its text and playback carries on. The Apple
+  country rows now say they are that country's chart in any language, and
+  Podcast Index's By Category says it is worldwide, so a country is never
+  mistaken for a language.
+
 - **Corrected: the guide now says Spotify is on the Station menu from the
   start.** It said **Connect to Spotify...** (Ctrl+Alt+P) and **Browse
   Spotify...** (Ctrl+Alt+O) appear only once an experimental feature is turned

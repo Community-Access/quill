@@ -41,11 +41,15 @@ from quill.core.speech.chapters import (
 )
 from quill.ui.audio_studio.chapter_workbench_dialogs import (
     AcxResultDialog,
-    SilenceParamsDialog,
 )
 from quill.ui.audio_studio.chapter_workbench_edits import (
     ChapterEditsMixin,
     build_chapter_edit_rows,
+)
+from quill.ui.audio_studio.chapter_workbench_silence import (
+    PROPOSE_LABEL,
+    SilenceProposalMixin,
+    bind_host_shortcuts,
 )
 from quill.ui.audio_studio.pages_base import set_accessible_name
 from quill.ui.audio_studio.player_panel import PlayerPanel
@@ -67,7 +71,7 @@ _EXPORT_LABELS: tuple[tuple[str, str], ...] = (
 )
 
 
-class ChapterWorkbenchDialog(ChapterEditsMixin, wx.Dialog):
+class ChapterWorkbenchDialog(SilenceProposalMixin, ChapterEditsMixin, wx.Dialog):
     """Edit an opened book's chapters and tags, with the player as the anchor."""
 
     def __init__(
@@ -213,7 +217,7 @@ class ChapterWorkbenchDialog(ChapterEditsMixin, wx.Dialog):
         build_chapter_edit_rows(self, root)
 
         analysis_row = wx.BoxSizer(wx.HORIZONTAL)
-        propose_btn = wx.Button(self, label=_("Propose chapters from silen&ces..."))
+        propose_btn = self._propose_btn = wx.Button(self, label=_(PROPOSE_LABEL))
         propose_btn.SetToolTip(
             _(
                 "Scan the recording for silences with ffmpeg and propose chapter "
@@ -222,10 +226,12 @@ class ChapterWorkbenchDialog(ChapterEditsMixin, wx.Dialog):
             )
         )
         propose_btn.SetHelpText(
-            "Scans the recording for silences with ffmpeg and proposes chapter "
-            "boundaries at the silence midpoints. You choose the noise threshold "
-            "and minimum pause first; the proposal replaces the list for review, "
-            "and Restore original undoes it."
+            "Scans any recording -- a lecture or meeting as much as a book -- for "
+            "silences with ffmpeg and proposes chapters there, titled Proposed "
+            "chapter. You choose the noise threshold and minimum pause first. If "
+            "the recording already has chapters you are asked whether to keep them "
+            "and add only new boundaries, or replace them. Press again while it "
+            "runs to stop; Restore original undoes a proposal."
         )
         propose_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_propose_from_silences())
         acx_btn = wx.Button(self, label=_("Chec&k against ACX"))
@@ -738,57 +744,7 @@ class ChapterWorkbenchDialog(ChapterEditsMixin, wx.Dialog):
 
     # -- analysis: silence auto-chapter, ACX check ---------------------------
 
-    def _on_propose_from_silences(self) -> None:
-        """Run ffmpeg silencedetect on the background pool; the proposal lands in the list."""
-        from quill.core.speech.silence import detect_silence_chapters
-
-        with SilenceParamsDialog(self) as dlg:
-            if dlg.ShowModal() != wx.ID_OK:  # GATE-42-OK: native modal
-                return
-            noise_db, min_silence_s = dlg.values()
-        if not self._book.path.is_file():
-            self._error(str(_("The book file is missing on disk.")))
-            return
-        path = self._book.path
-
-        def work(_progress: object = None) -> object:
-            return detect_silence_chapters(
-                path,
-                noise_db=noise_db,
-                min_silence_s=min_silence_s,
-                min_chapter_ms=5000,
-                title_prefix=str(_("Chapter")),
-            )
-
-        def on_success(result: object) -> None:
-            from quill.core.speech.chapters import Chapter
-
-            proposed = result
-            if not isinstance(proposed, list) or not proposed:
-                self._announce(str(_("No silences were found; no changes made.")))
-                return
-            chapters = [
-                Chapter(index=i, title=c.title, start_ms=c.start_ms, end_ms=c.end_ms)
-                for i, c in enumerate(proposed)
-            ]
-            self._apply(
-                chapters,
-                select=0,
-                spoken=str(
-                    _(
-                        "Proposed {count} chapters from silences — review the list, "
-                        "rename or restore as needed."
-                    ).format(count=len(chapters))
-                ),
-            )
-
-        if self._run_background is not None:
-            self._run_background(str(_("Proposing chapters from silences")), work, on_success)
-            return
-        try:
-            on_success(work())
-        except Exception as exc:  # noqa: BLE001 - surfaced, not raised through wx
-            self._error(str(exc))
+    # _on_propose_from_silences: chapter_workbench_silence.SilenceProposalMixin
 
     def _on_propose_ai_titles(self) -> None:
         """Transcribe each chapter's opening locally, ask the AI for titles."""
@@ -943,8 +899,15 @@ def open_book_in_workbench(
     on_volume: Callable[[str, int], None] | None = None,
     on_mute: Callable[[str, bool], None] | None = None,
     on_closed: Callable[[str, int, int], None] | None = None,
+    on_sleep_timer: Callable[[], None] | None = None,
+    on_play_queue: Callable[[], None] | None = None,
+    propose_silences: bool = False,
 ) -> None:
     """Read *path* and open the Workbench on it (the journey-C entry point).
+
+    *propose_silences* starts "Propose chapters from silences" as the window
+    opens -- the Find Chapters in a Recording entry points (item 42). Studio's
+    Sleep Timer and Play Queue keep their keys inside the window.
 
     The optional ``on_*`` callbacks let a host observe the workbench's player
     lifecycle (media-key routing, per-book prefs, queue auto-advance, history
@@ -1000,7 +963,11 @@ def open_book_in_workbench(
         on_mute=on_mute,
         on_closed=on_closed,
     )
+    bind_host_shortcuts(dlg, {"Ctrl+Shift+T": on_sleep_timer, "Ctrl+Shift+Q": on_play_queue})
+    if propose_silences:
+        wx.CallAfter(dlg._on_propose_from_silences)
     try:
         frame._show_modal_dialog(dlg, str(_("Chapter Workbench")))  # type: ignore[attr-defined]
     finally:
+        dlg._cancel_silence_scan(spoken=False)
         dlg.Destroy()

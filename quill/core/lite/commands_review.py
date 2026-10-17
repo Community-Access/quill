@@ -20,16 +20,43 @@ separator, which neither editor has (rule 1 does not bite).
 
 **Export as HTML**, File, on Ctrl+Alt+Shift+End: a once-in-a-while command
 gets a key, not a short one (rule 9).
+
+**Highlighted Passages**, Navigate > Highlighted Passages, joined them on
+2026-10-16 (item 39): Next and Previous on Alt+Page Down and Alt+Page Up, the
+list on Ctrl+F2, QUILL's code and QUILL's chords
+(:mod:`quill.ui.highlight_commands`). In QUILL Lite they read a Word file's
+highlights from the file itself, because a Word document opens here as text,
+and an RTF document's from the rich control.
 """
 
 from __future__ import annotations
 
-__all__ = ["EXPORT_ROWS", "NOTE_ROWS", "NOTE_SUBMENU_ROWS", "TASK_ROWS"]
+__all__ = [
+    "EXPORT_ROWS",
+    "HIGHLIGHT_ROWS",
+    "NOTE_ROWS",
+    "NOTE_SUBMENU_ROWS",
+    "TASK_ROWS",
+]
 
 _NOTES = "&Tools|Inline &Notes"
 
 NOTE_SUBMENU_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
     ("&Tools", "Inline &Notes", "", "", "sub"),
+)
+
+_HIGHLIGHTS = "&Navigate|&Highlighted Passages"
+
+#: The submenu's title row first. They ride on NOTE_ROWS' splice rather than one
+#: of their own (commands.py is at its GATE-11 budget): a row's top-level menu,
+#: not its place in the table, decides where it shows, and every other Navigate
+#: row comes earlier in the table, so Highlighted Passages is Navigate's last
+#: entry, after Bookmarks.
+HIGHLIGHT_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
+    ("&Navigate", "&Highlighted Passages", "", "", "sub"),
+    (_HIGHLIGHTS, "&Next Highlighted Passage", "Alt+PageDown", "cmd_next_highlight", ""),
+    (_HIGHLIGHTS, "&Previous Highlighted Passage", "Alt+PageUp", "cmd_previous_highlight", ""),
+    (_HIGHLIGHTS, "&List Highlighted Passages...", "Ctrl+F2", "cmd_list_highlights", ""),
 )
 
 NOTE_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
@@ -40,6 +67,7 @@ NOTE_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
     (_NOTES, "", "", "", "sep"),
     (_NOTES, "&Delete Inline Note...", "Alt+Shift+Delete", "cmd_delete_inline_note", ""),
     (_NOTES, "&List Inline Notes...", "Alt+Shift+Enter", "cmd_list_inline_notes", ""),
+    *HIGHLIGHT_ROWS,  # Navigate > Highlighted Passages, item 39
 )
 
 TASK_ROWS: tuple[tuple[str, str, str, str, str], ...] = (

@@ -624,6 +624,19 @@ requirement, not a layer.
 - A second pipeline. Any narration or assembly behavior that diverges from
   QUILL's Audio Studio is a bug, not a feature.
 
+## 7a. Chapters for any recording (2026-10-16)
+
+Todo item 42. **Studio > Find Chapters in a Recording...** (**Ctrl+Shift+R**)
+picks any MP3, M4A or M4B and opens the Chapter Workbench on it with Propose
+chapters from silences already started, so a lecture or a meeting gets
+chapters without being thought of as an audiobook. The proposals are titled
+"Proposed chapter N"; a recording with chapters of its own asks Keep mine, add
+proposals (the default) or Replace with the proposal; the button reads Stop
+proposing chapters while the scan runs, and stopping or closing discards the
+answer. Edit a Book's Sleep Timer (Ctrl+Shift+T) and Play Queue (Ctrl+Shift+Q)
+now work inside the Workbench: Studio passed them to a function that did not
+accept them, so Edit a Book failed before the Workbench opened.
+
 ## 8. Future directions
 
 - Watch-folder auto rebuild surfaced in the UI: the shared

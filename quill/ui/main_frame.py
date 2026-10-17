@@ -432,6 +432,7 @@ from quill.ui.main_frame_quill_key import QuillKeyMixin
 from quill.ui.main_frame_quillins import QuillinsMenuMixin
 from quill.ui.main_frame_radio import RadioMixin
 from quill.ui.main_frame_recent_documents import RecentDocumentsMixin
+from quill.ui.main_frame_recording_chapters import RecordingChaptersMixin
 from quill.ui.main_frame_remote_files import RemoteFilesMixin
 from quill.ui.main_frame_restore_points import RestorePointsMixin
 from quill.ui.main_frame_reveal_codes import RevealCodesMixin
@@ -841,6 +842,7 @@ class MainFrame(
     PowerToolsMenuMixin,
     RevealCodesMixin,
     InlineNotesMixin,
+    RecordingChaptersMixin,
     ReviewToolsMixin,
     RestorePointsMixin,
     QuillinsMenuMixin,

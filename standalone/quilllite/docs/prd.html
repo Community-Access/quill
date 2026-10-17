@@ -2323,6 +2323,24 @@ QUILL’s <code>TypeAheadBuffer</code>; Space while a name is being typed
 is part of the name. Manage Abbreviations is a virtual list
 (<code>quill/ui/virtual_report_list.py</code>) whose search matches
 every word in any order and keeps the selection by identity.</p>
+<h2 id="highlighted-passages-2026-10-16">Highlighted passages
+(2026-10-16)</h2>
+<p>QUILL’s three commands, shared
+(<code>quill/ui/highlight_commands.py</code>), on QUILL’s chords:
+<strong>Navigate &gt; Highlighted Passages &gt; Next Highlighted
+Passage</strong> (<strong>Alt+PageDown</strong>,
+<code>cmd_next_highlight</code>), <strong>Previous Highlighted
+Passage</strong> (<strong>Alt+PageUp</strong>,
+<code>cmd_previous_highlight</code>) and <strong>List Highlighted
+Passages…</strong> (<strong>Ctrl+F2</strong>,
+<code>cmd_list_highlights</code>). A Word file opens here as text, so
+its highlights are read from the <code>.docx</code> itself by the
+standard-library reader <code>quill/io/docx_highlights.py</code> (QUILL
+Lite ships no python-docx) and placed on the text by words and
+paragraph; a rich text document’s come from the control. Arrival says
+colour, count and words; the list’s rows are words, colour and
+paragraph, Enter goes there and Escape stays. Not listed: headers,
+footers, footnotes, text boxes, shading.</p>
 </main>
 </body>
 </html>
