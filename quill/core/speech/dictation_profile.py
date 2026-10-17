@@ -52,8 +52,6 @@ _VOCAB_HEADINGS = {"vocabulary", "words", "terms", "dictionary"}
 _REPLACE_HEADINGS = {"replacements", "substitutions", "corrections", "replace"}
 _COMMAND_HEADINGS = {"commands", "voice commands", "actions"}
 
-_ESCAPES = (("\\n", "\n"), ("\\t", "\t"), ("\\r", "\r"))
-
 TEMPLATE = """\
 # QUILL Dictation Profile
 
@@ -133,10 +131,40 @@ class DictationProfile:
         return {cid: tuple(phrases) for cid, phrases in grouped.items()}
 
 
+_UNESCAPED = {"n": "\n", "t": "\t", "r": "\r", "\\": "\\"}
+
+
 def _unescape(value: str) -> str:
-    for token, char in _ESCAPES:
-        value = value.replace(token, char)
-    return value
+    r"""The written side of ``spoken => written``, escapes read left to right.
+
+    ``\n``, ``\t`` and ``\r`` are a new line, a tab and a return, and ``\\`` is
+    one backslash; any other backslash is kept as typed. Read in one pass, not
+    with a ``replace`` per escape: that turned the ``\n`` in a replacement
+    writing ``C:\new`` into a new line, and left a writer no way to keep a
+    backslash before an ``n`` (found by a property test, 2026-10-17). A
+    hand-written ``C:\temp`` still reads as it always did, with a tab.
+    """
+    if "\\" not in value:
+        return value
+    out: list[str] = []
+    index = 0
+    while index < len(value):
+        char = value[index]
+        if char == "\\" and index + 1 < len(value) and value[index + 1] in _UNESCAPED:
+            out.append(_UNESCAPED[value[index + 1]])
+            index += 2
+            continue
+        out.append(char)
+        index += 1
+    return "".join(out)
+
+
+def escape_written(value: str) -> str:
+    """The inverse of :func:`_unescape`: what to write after ``=>`` so that
+    reading it back gives *value* exactly."""
+    return (
+        value.replace("\\", "\\\\").replace("\n", "\\n").replace("\t", "\\t").replace("\r", "\\r")
+    )
 
 
 def looks_like_prose(line: str) -> bool:

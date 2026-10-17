@@ -2,6 +2,46 @@
 
 ## 1.0.0
 
+### Property-based tests for io, dictation words, fillers and braille, and the three bugs they found (todo P3; 2026-10-17)
+
+Hypothesis was already a dev extra (`pyproject.toml`, `hypothesis>=6.168.1`,
+locked at 6.169.0 in `uv.lock`) with the suite profile in `tests/conftest.py`;
+nothing was added to the dependencies.
+
+- **`tests/unit/io/test_format_round_trip_properties.py`.** Plain text written
+  and read back in UTF-8, UTF-8 with BOM and UTF-16, LF and CRLF, is the same
+  text with the same line ending. A rich document of headings, bullets and
+  paragraphs with bold and italic runs survives RTF and Word with its text,
+  styles and emphasis.
+- **`tests/unit/core/test_dictation_text_properties.py`.** My Words and Phrases
+  saved and reopened gives back the same words, phrases and corrections in
+  order, and a file QUILL wrote is rewritten byte for byte. Filler removal is
+  idempotent in every language tier, removes every filler and keeps every
+  other word in order, and is a no-op when switched off.
+- **`tests/unit/core/test_braille_properties.py`.** A BRF page map covers every
+  character once, in order, in all three page-break modes, with a form feed as
+  the boundary between two pages, and is the same every time; the braille
+  worker's JSON pipe returns any text unchanged; the `lou_translate` route trims
+  only the newline the tool appends; with liblouis present (it is not on this
+  machine, so that one skips), translation is deterministic.
+
+Bugs found and fixed:
+
+- **Bold and italic together did not survive RTF.** `rich_to_markdown` writes
+  a run that is both as `***x***`, and both `rtf.markdown_to_rtf` and
+  `rtf_model._walk_inline` (QUILL's Markdown model, so the rich lens as well)
+  read that as bold `*x` and a stray `*`. Both now take `***` first.
+- **A backslash in a dictation replacement.** The words file escaped new lines
+  and tabs but not the backslash, and the reader replaced `\n` everywhere, so
+  a replacement writing `C:\new` came back as `C:` and a new line. One escape
+  now serves both the window and the recogniser
+  (`dictation_profile.escape_written` / `_unescape`, read in one pass);
+  `\\` is a backslash. A hand-written `C:\temp` still reads as before (a tab).
+- **Known limit, pinned rather than hidden.** Two neighbouring runs with
+  different emphasis (italic, then bold italic) share asterisks in Markdown and
+  merge on the way through RTF; `test_italic_next_to_bold_italic_survives_rtf`
+  is a strict xfail until the serializer separates them.
+
 ### GATE-BRAILLE: what QUILL speaks also reaches a braille display (todo P3; 2026-10-17)
 
 Developer-facing. A deafblind user, or anyone reading with speech off, gets

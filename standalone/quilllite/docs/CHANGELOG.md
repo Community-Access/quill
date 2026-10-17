@@ -5,6 +5,21 @@
 Testing rebuild: **1.2.0 (build 5)**, following builds 2, 3 and 4; builds 2 and 3 were
 uploaded for testing. The new packages have not been published yet.
 
+- **Bold italic Markdown stays bold italic in rich text** (2026-10-17). In a
+  Markdown document, a word written `***like this***` is bold and italic. When
+  the document became rich text, or was copied as formatted text, it came out
+  bold with a stray asterisk ("*like this" in bold, then "*"). It now comes out
+  bold and italic. For example: in a Markdown document type `***urgent***`,
+  then press **Format > Switch Document Mode** (Alt+Shift+F) until you hear
+  rich text; "urgent" is bold italic. Limits: an italic word directly followed
+  by a bold italic one (`*a****b***`) can still merge; put a space or a plain
+  word between them.
+- **A backslash in your own dictation phrases is kept** (2026-10-17). A phrase
+  in My Words and Phrases that writes a folder, such as `C:\new\temp`, used to
+  read back as `C:`, a new line, `ew` and a tab. It is now saved with each
+  backslash doubled and reads back exactly as typed. To fix a phrase that
+  already broke, edit it in My Words and Phrases and type it again.
+
 - **Emoji no longer get cut in half by the Tools menu, Find and the
   spelling fixes** (2026-10-17). The editor counts an emoji as two positions
   and QUILL Lite counted it as one, so after an emoji the commands that work

@@ -245,6 +245,17 @@
 <h1 id="quill-inkwell-changelog">Quill Inkwell changelog</h1>
 <h2 id="unreleased">Unreleased</h2>
 <ul>
+<li><p><strong>A backslash in your own phrases is kept</strong>
+(2026-10-17). A phrase in My Words and Phrases that writes a folder or a
+file name, such as “my folder” writing <code>C:\new\temp</code>, was
+saved in a way that read back as <code>C:</code>, a new line and
+<code>ew</code>, then a tab. It is now saved with each backslash doubled
+(<code>C:\\new\\temp</code>) and reads back exactly as you typed it.
+Phrases you saved before keep working as they did; to fix one that
+already broke, open My Words and Phrases, choose the phrase, Edit, and
+type the folder again. Limits: when you edit <code>dictation.md</code>
+by hand, <code>\n</code> is still a new line and <code>\t</code> a tab,
+so write <code>\\</code> for a backslash before those letters.</p></li>
 <li><p><strong>Emoji arrive whole</strong> (2026-10-17). Dictate
 Anywhere and abbreviations that expand everywhere now type an emoji (or
 any character beyond the first 65,536 in Unicode) as one character.

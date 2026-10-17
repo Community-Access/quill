@@ -245,6 +245,57 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="property-based-tests-for-io-dictation-words-fillers-and-braille-and-the-three-bugs-they-found-todo-p3-2026-10-17">Property-based
+tests for io, dictation words, fillers and braille, and the three bugs
+they found (todo P3; 2026-10-17)</h3>
+<p>Hypothesis was already a dev extra (<code>pyproject.toml</code>,
+<code>hypothesis&gt;=6.168.1</code>, locked at 6.169.0 in
+<code>uv.lock</code>) with the suite profile in
+<code>tests/conftest.py</code>; nothing was added to the
+dependencies.</p>
+<ul>
+<li><strong><code>tests/unit/io/test_format_round_trip_properties.py</code>.</strong>
+Plain text written and read back in UTF-8, UTF-8 with BOM and UTF-16, LF
+and CRLF, is the same text with the same line ending. A rich document of
+headings, bullets and paragraphs with bold and italic runs survives RTF
+and Word with its text, styles and emphasis.</li>
+<li><strong><code>tests/unit/core/test_dictation_text_properties.py</code>.</strong>
+My Words and Phrases saved and reopened gives back the same words,
+phrases and corrections in order, and a file QUILL wrote is rewritten
+byte for byte. Filler removal is idempotent in every language tier,
+removes every filler and keeps every other word in order, and is a no-op
+when switched off.</li>
+<li><strong><code>tests/unit/core/test_braille_properties.py</code>.</strong>
+A BRF page map covers every character once, in order, in all three
+page-break modes, with a form feed as the boundary between two pages,
+and is the same every time; the braille worker’s JSON pipe returns any
+text unchanged; the <code>lou_translate</code> route trims only the
+newline the tool appends; with liblouis present (it is not on this
+machine, so that one skips), translation is deterministic.</li>
+</ul>
+<p>Bugs found and fixed:</p>
+<ul>
+<li><strong>Bold and italic together did not survive RTF.</strong>
+<code>rich_to_markdown</code> writes a run that is both as
+<code>***x***</code>, and both <code>rtf.markdown_to_rtf</code> and
+<code>rtf_model._walk_inline</code> (QUILL’s Markdown model, so the rich
+lens as well) read that as bold <code>*x</code> and a stray
+<code>*</code>. Both now take <code>***</code> first.</li>
+<li><strong>A backslash in a dictation replacement.</strong> The words
+file escaped new lines and tabs but not the backslash, and the reader
+replaced <code>\n</code> everywhere, so a replacement writing
+<code>C:\new</code> came back as <code>C:</code> and a new line. One
+escape now serves both the window and the recogniser
+(<code>dictation_profile.escape_written</code> / <code>_unescape</code>,
+read in one pass); <code>\\</code> is a backslash. A hand-written
+<code>C:\temp</code> still reads as before (a tab).</li>
+<li><strong>Known limit, pinned rather than hidden.</strong> Two
+neighbouring runs with different emphasis (italic, then bold italic)
+share asterisks in Markdown and merge on the way through RTF;
+<code>test_italic_next_to_bold_italic_survives_rtf</code> is a strict
+xfail until the serializer separates them.</li>
+</ul>
+<h3
 id="gate-braille-what-quill-speaks-also-reaches-a-braille-display-todo-p3-2026-10-17">GATE-BRAILLE:
 what QUILL speaks also reaches a braille display (todo P3;
 2026-10-17)</h3>

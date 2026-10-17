@@ -33,14 +33,19 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from quill.core.speech.dictation_profile import _HEADING_RE, _SEP, _section_of, looks_like_prose
+from quill.core.speech.dictation_profile import (
+    _HEADING_RE,
+    _SEP,
+    _section_of,
+    escape_written,
+    looks_like_prose,
+)
+from quill.core.speech.dictation_profile import _unescape as _profile_unescape
 
 __all__ = ["ContextList", "Entry", "WordsFile", "context_list", "load_words", "save_words"]
 
 _CORRECTION_HEADINGS = {"corrections"}
 _CONTEXT_HEADING = re.compile(r"^context\s*:\s*(.+?)\s*$", re.IGNORECASE)
-_ESCAPES = (("\n", "\\n"), ("\t", "\\t"), ("\r", "\\r"))
-_UNESCAPES = tuple((token, char) for char, token in _ESCAPES)
 
 
 @dataclass(frozen=True, slots=True)
@@ -152,15 +157,13 @@ class WordsFile:
 
 
 def _unescape(value: str) -> str:
-    for token, char in _UNESCAPES:
-        value = value.replace(token, char)
-    return value
+    return _profile_unescape(value)
 
 
 def _escape(value: str) -> str:
-    for char, token in _ESCAPES:
-        value = value.replace(char, token)
-    return value
+    # The one escape the profile parser reads back (dictation_profile): a
+    # backslash is doubled, so a path such as C:\new is not saved as a new line.
+    return escape_written(value)
 
 
 def parse_words(text: str) -> WordsFile:

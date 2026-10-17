@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- **A backslash in your own phrases is kept** (2026-10-17). A phrase in My
+  Words and Phrases that writes a folder or a file name, such as "my folder"
+  writing `C:\new\temp`, was saved in a way that read back as `C:`, a new
+  line and `ew`, then a tab. It is now saved with each backslash doubled
+  (`C:\\new\\temp`) and reads back exactly as you typed it. Phrases you saved
+  before keep working as they did; to fix one that already broke, open My
+  Words and Phrases, choose the phrase, Edit, and type the folder again.
+  Limits: when you edit `dictation.md` by hand, `\n` is still a new line and
+  `\t` a tab, so write `\\` for a backslash before those letters.
+
 - **Emoji arrive whole** (2026-10-17). Dictate Anywhere and abbreviations
   that expand everywhere now type an emoji (or any character beyond the first
   65,536 in Unicode) as one character. Before, a plain edit box such as the
