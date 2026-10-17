@@ -146,7 +146,7 @@ def _span_controls(raw: str, tables: RtfTables) -> tuple[str, str]:
             opens.append(f"\\cf{index}")
     highlight = attrs.get("highlight", "")
     if highlight:
-        index = tables.color_index(highlight)
+        index = tables.highlight_index(highlight)
         if index:
             opens.append(f"\\highlight{index}")
     if "underline" in attrs:

@@ -3053,6 +3053,21 @@ releases on 2026-11-01 and is in <code>RELEASED_APPS</code> from
 build carries the item; a copy without QUILL Transcribe installed
 answers Ctrl+F11 with the “not installed” sentence. Dictation design
 record, section 30.</p>
+<h3
+id="2329-where-you-were-in-each-podcast-todo-item-43-2026-10-16">23.29
+Where you were in each podcast (todo item 43, 2026-10-16)</h3>
+<p>A podcast opened in place (Favorites, Enter) lands on the episode
+last selected in it, not on its first row. The episode is known by
+identity – the feed URL (lower-cased, no trailing slash; a local show’s
+id) and the episode GUID, with its audio URL and published date as
+fallbacks – so a new episode at the top, a sort change, View &gt; Show
+and a refresh do not move it. A gone episode lands on the remaining one
+published nearest to it, the newer of two. The memory is
+<code>podcast_episode_cursor.json</code> in the data folder
+(<code>quill/core/podcasts/episode_cursor.py</code>), written a second
+after the cursor stops and on close (a close-task step). Only a single
+podcast’s list records: New Episodes, the Inbox and the Play Queue never
+move a feed’s cursor. QUILL’s Podcast Manager uses the same store.</p>
 <p>See <code>CHANGELOG.md</code> for the full, versioned history.</p>
 </main>
 </body>

@@ -2133,8 +2133,18 @@ plays the row you are on.
    and **Refresh**, which fetches the highlighted source again from the
    internet.
 9. Press **Alt+T** to jump back to the tree from anywhere in the window.
-10. Press **Escape**, **Ctrl+W** or **Ctrl+F4** to close Browse Stations. What
-    you are listening to keeps playing.
+10. Inside a branch, press **Escape** to go back to the row you opened it
+    from: from a station in "Ireland" back to "Ireland", folded, and once more
+    back to "By Country". Each press goes up one level. On a top-level branch,
+    **Escape** closes Browse Stations, as do **Ctrl+W** and **Ctrl+F4**. The
+    Find box keeps what you typed, and what you are listening to keeps
+    playing.
+
+The country rows under **Podcasts (Apple)** are Apple's charts for that
+country, in any language: an English-language show that is popular in
+Germany is in Germany's chart. **Podcast Index > By Category** is the index's
+worldwide taxonomy, in every language. Neither is a language filter; for
+stations in one language, use **By Language**.
 
 The details box follows the row you are on. For a station it gives the
 source, stream, format and country, and any note to yourself you have written

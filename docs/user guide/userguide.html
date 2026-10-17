@@ -6645,6 +6645,66 @@ the bookmark list (<code>Alt+Shift+G</code>), or <strong>Go To…</strong>
 (<code>Ctrl+G</code>) with Bookmark chosen. They are stored like named
 bookmarks, under names such as “Quick 3”, so they are kept with the
 document. Going to a slot you have not set tells you so plainly.</p>
+<h4 id="highlighted-passages">Highlighted passages</h4>
+<p>Somebody has gone through a contract, a set of meeting notes or a
+draft with Word’s highlighter: the yellow bits are the ones you must
+read. A sighted reader sees them at a glance. QUILL lets you go straight
+to them by ear, in the same way bookmarks take you to places you marked
+yourself. The three commands are on <strong>Navigate &gt; Highlighted
+Passages</strong>:</p>
+<ul>
+<li><strong>Next Highlighted Passage</strong>
+(<code>Alt+PageDown</code>) moves the cursor to the start of the next
+highlighted passage and says its colour, where it is in the count and
+its words, for example “Yellow highlight, 2 of 5: budget is final”.
+After the last passage it goes round to the first.</li>
+<li><strong>Previous Highlighted Passage</strong>
+(<code>Alt+PageUp</code>) does the same backwards.</li>
+<li><strong>List Highlighted Passages…</strong> (<code>Ctrl+F2</code>)
+shows every passage in one list, in document order. Each row starts with
+the passage’s words, so typing a letter finds a row, then gives the
+colour and the paragraph it sits in: “budget is final, yellow highlight,
+in: The budget is final unless the board objects.” The list opens on the
+passage you are in, or the next one after the cursor. Enter (or
+<strong>Go To</strong>) closes the list and puts the cursor on the
+passage; Escape closes it and leaves the cursor where it was.</li>
+</ul>
+<p><code>Alt+Left</code> (Back) returns you to where you were before a
+jump, as it does after any other jump.</p>
+<p><strong>Where the highlights come from.</strong> QUILL reads them
+fresh every time you press one of these keys, so a highlight you have
+just added with <strong>Format &gt; Highlight</strong>, or just taken
+off with <strong>Format &gt; Clear Formatting</strong>
+(<code>Ctrl+Shift+N</code>), is already counted, and typing above a
+passage never sends you to the wrong place.</p>
+<ul>
+<li>A Word document you edit as Rich Text, and any RTF document: the
+highlights in the document itself.</li>
+<li>A Markdown document: the hidden highlight codes that <strong>Format
+&gt; Highlight</strong> writes, such as
+<code>[budget is final]{highlight="yellow"}</code>.</li>
+<li>A Word document you chose to open for reading and plain editing: the
+highlights in the <code>.docx</code> file on disk, placed on the text by
+their words and the paragraph they are in. If you have since retyped a
+passage’s words, that passage is left out rather than guessed at.</li>
+</ul>
+<p><strong>Describe Formatting at Cursor</strong>
+(<code>Ctrl+Shift+D</code>) now also names the highlight in a rich
+document: “Calibri, 11 point, yellow highlight”. Before this it said
+nothing about highlighting there.</p>
+<p><strong>Colours.</strong> QUILL knows all fifteen of Word’s highlight
+colours by name: yellow, green, turquoise, pink, blue, red and gray, and
+the darker dark blue, teal, dark green, violet, dark red, dark yellow,
+dark gray and black. Saving a rich Word document now keeps each
+passage’s colour. Before 2026-10-16 a green or pink highlight came back
+yellow after a save from rich mode, Pink and Turquoise on the Highlight
+menu did nothing in a rich document, and the darker colours were dropped
+when the document was opened.</p>
+<p><strong>Limits.</strong> Highlights in headers, footers, footnotes,
+comments and text boxes are not listed, because QUILL does not show that
+text in the editor. A highlight that comes only from a Word character
+style, rather than from the highlighter, is not counted. Shading (a
+paragraph’s background colour) is not a highlight and is not listed.</p>
 <h4 id="marks-bookmarks-and-selecting-a-block">Marks, bookmarks and
 selecting a block</h4>
 <p>These three all “mark a spot”, so they are easy to mix up. Here is
@@ -8586,7 +8646,70 @@ it is done.</li>
 </ul>
 <h4 id="the-chapter-workbench">The Chapter Workbench</h4>
 <p>The Workbench is where you fix a finished audiobook by ear. Reach it
-from the wizard’s <strong>Edit an existing audiobook</strong> path.</p>
+from the wizard’s <strong>Edit an existing audiobook</strong> path, or,
+for any recording at all, from <strong>Tools &gt; Speech &gt; Find
+Chapters in a Recording…</strong>
+(<code>QUILL Key + Shift+O</code>).</p>
+<h5 id="automatic-chapters-for-a-lecture-a-meeting-or-any-mp3">Automatic
+chapters for a lecture, a meeting or any MP3</h5>
+<p>A two-hour lecture with no chapters is hard to move around by ear:
+there is nothing to skip to. <strong>Find Chapters in a
+Recording…</strong> fixes that. It asks for a recording (MP3, M4A or
+M4B), opens the Workbench on it, and starts <strong>Propose chapters
+from silences</strong> straight away.</p>
+<ol type="1">
+<li>Choose the recording and press Open.</li>
+<li>The <strong>Propose chapters from silences</strong> window asks two
+things: how quiet counts as silence (in decibels; -30 suits most speech,
+-40 a noisy room) and how long a pause must last (in seconds; 0.8
+catches a speaker drawing breath between topics, 2 or 3 only the real
+breaks). OK starts the scan.</li>
+<li>The scan runs in the background, and you can keep listening while it
+does. Each new chapter starts in the middle of a silence and is titled
+<strong>Proposed chapter 1</strong>, <strong>Proposed chapter 2</strong>
+and so on, so you can always tell a guess from a name somebody chose.
+You hear how many were proposed.</li>
+<li>Arrow through the list. Enter plays a chapter from its start;
+<strong>Hear boundary</strong> plays the moments around where it starts;
+<strong>Set start to playhead</strong>, <strong>Split at
+playhead</strong>, <strong>Nudge back</strong> and <strong>Nudge
+forward</strong> move a boundary until it sounds right; <strong>Merge
+into previous</strong> removes one that should not be there. Rename each
+one you keep (type the title and press Enter).</li>
+<li><strong>Save</strong> writes the chapters: an MP3 in place (only its
+tags change; the audio is untouched), an M4B as a new file.
+<strong>Export chapters…</strong> writes them as a CUE sheet,
+timestamps, Audacity labels, Podcasting 2.0 JSON or a spreadsheet
+instead. Reopen the file and the chapters are there.</li>
+</ol>
+<p>Some things to know:</p>
+<ul>
+<li><strong>Your own chapters are never silently replaced.</strong> If
+the recording already has two or more chapters, QUILL asks first.
+<strong>Keep mine, add proposals</strong> (the default) keeps every
+chapter you had, with its title and start, and adds a proposed chapter
+only where a silence is at least ten seconds from one of yours.
+<strong>Replace with the proposal</strong> swaps the whole list. Cancel
+changes nothing. A recording with no chapter marks of its own is not
+asked, because there is nothing of yours to lose.</li>
+<li><strong>Stopping.</strong> While the scan runs the button reads
+<strong>Stop proposing chapters</strong>. Press it again, or close the
+Workbench, and the scan’s answer is thrown away and the list stays
+exactly as it was. (The scan program finishes its pass in the background
+and nothing is written.)</li>
+<li><strong>Restore original</strong> takes back the whole proposal at
+once, whichever way you answered.</li>
+<li><strong>Long recordings.</strong> The scan is given time in
+proportion to the recording: at least ten minutes, and a tenth of the
+recording’s length for anything over a hundred minutes, so a whole day’s
+recording is scanned to the end.</li>
+<li>It needs ffmpeg. Without it you are told so, and the button comes
+back.</li>
+<li>Silence is a guess about structure, not knowledge of it. A speaker
+who pauses mid-sentence makes a boundary that is not a topic change;
+that is why every proposal is labelled and nothing is saved until you
+press Save.</li>
+</ul>
 <h5 id="the-chapter-list-and-the-player">The chapter list and the
 player</h5>
 <p>The chapter list reads each row in full (“3. The Long Road, starts
@@ -8868,6 +8991,29 @@ the row. The episode stays unplayed, because “I am not going back to
 this” and “I finished it” are different things. Clearing what you have
 given up on keeps the list worth opening.</li>
 </ul>
+<h4 id="where-you-were-in-each-podcast">Where you were in each
+podcast</h4>
+<p>The Podcasts window remembers, for each podcast, which episode you
+last had selected, and puts you back on it the next time you choose that
+podcast – after closing the window and after restarting QUILL. It knows
+the episode by who it is (its feed’s own episode ID, with its address
+and date as fall-backs), not by its row number, so it still finds the
+right one after new episodes arrive at the top, after you change the
+episode sort, and after a refresh.</p>
+<p>If the episode has gone – the feed dropped it, or a filter hides it –
+you land on the remaining episode published closest to it (the newer of
+two equally close), so you are still in the same stretch of the back
+catalogue rather than back at the top. A podcast you have never opened
+starts at the first row, as before.</p>
+<p>For example: you are working through a history podcast from its first
+episode and stop on episode 41. Next week four new episodes have
+arrived. Choose the podcast and the cursor is on episode 41, not on the
+newest one.</p>
+<p>QUILL Cast does the same for a podcast opened from Favorites with
+Enter. The places that mix podcasts (New Episodes, the Inbox, the Play
+Queue) do not move a podcast’s remembered place. Each app keeps its own
+memory, in <code>podcast_episode_cursor.json</code> in its data folder;
+deleting the file only forgets the places.</p>
 <h4 id="carry-my-place-between-machines">Carry My Place Between
 Machines</h4>
 <p>If you listen on more than one computer, <strong>Carry My Place

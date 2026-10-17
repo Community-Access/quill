@@ -159,7 +159,7 @@ def show_inline_notes_list(
     export_btn.Bind(wx.EVT_BUTTON, lambda _e: host.export(list(rows)))
     listing.Bind(wx.EVT_LIST_ITEM_ACTIVATED, _go)
     listing.Bind(wx.EVT_KEY_DOWN, _on_key)
-    bind_close_button(dialog, close_btn)
+    bind_close_button(dialog, close_btn, modeless=False)
 
     dialog.SetSizer(sizer)
     apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)

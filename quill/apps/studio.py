@@ -935,7 +935,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         open_id, narrate_id, build_id, edit_id, open_book_id, job_id = (
             wx.NewIdRef() for _ in range(6)
         )
-        tags_id = wx.NewIdRef()
+        tags_id, chapters_id = wx.NewIdRef(), wx.NewIdRef()
         prefs_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
         narrate_translated_id = wx.NewIdRef()
         studio.Append(open_id, "&Open Audio Studio...\tCtrl+N", "Open the Studio wizard")
@@ -956,6 +956,11 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
             tags_id,
             "Edit &Tags Only...\tCtrl+Shift+E",
             "Open a file in the Tag Editor, without the Chapter Workbench",
+        )
+        studio.Append(  # item 42: any recording, not only a book
+            chapters_id,
+            "Find C&hapters in a Recording...\tCtrl+Shift+R",
+            "Pick a lecture or any MP3; the Workbench proposes chapters from its silences",
         )
         studio.AppendSeparator()
         studio.Append(open_book_id, "Open Boo&k File...\tCtrl+O")
@@ -1091,6 +1096,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
             (build_id, lambda: self.open_studio("audio")),
             (edit_id, self.open_book_picker),
             (tags_id, self.open_tag_editor_picker),
+            (chapters_id, self.find_chapters_in_recording),
             (open_book_id, self.open_book_picker),
             (job_id, self.open_job_file),
             (self._resume_menu_item_id, self._toggle_resume_on_launch),
@@ -1209,6 +1215,11 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
             ),
             ("studio.build", "Build From Recordings...", lambda: self.open_studio("audio")),
             ("studio.edit", "Edit a Book...", self.open_book_picker),
+            (
+                "studio.find_chapters",
+                "Find Chapters in a Recording...",
+                self.find_chapters_in_recording,
+            ),
             ("studio.open_job", "Open Job File...", self.open_job_file),
             ("studio.publish", "Publish a Finished Book...", self.publish_book),
             ("studio.feed", "Make a Podcast Feed From a Folder...", self.make_podcast_feed),
@@ -1329,6 +1340,16 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
             path = Path(dialog.GetPath())
         self.open_book(path)
 
+    def find_chapters_in_recording(self) -> None:
+        """Pick any recording; the Workbench opens on it proposing chapters (item 42)."""
+        from quill.ui.audio_studio.chapter_workbench_silence import pick_recording
+
+        books = self._recent_books()
+        start = str(books[0].parent) if books and books[0].parent.is_dir() else ""
+        path = pick_recording(self.frame, start)
+        if path is not None:
+            self.open_book(path, propose_silences=True)
+
     def open_tag_editor_picker(self) -> None:
         """Edit Tags Only: a file picker, then the Tag Editor on its own.
 
@@ -1358,7 +1379,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
 
         open_tags_in_editor(self, path)
 
-    def open_book(self, path: Path) -> None:
+    def open_book(self, path: Path, *, propose_silences: bool = False) -> None:
         from quill.ui.audio_studio.chapter_workbench import open_book_in_workbench
 
         if not path.exists():
@@ -1380,6 +1401,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
             # 6c: reachable inside the modal Workbench while a book plays.
             on_sleep_timer=self._on_sleep_timer,
             on_play_queue=self._on_play_queue,
+            propose_silences=propose_silences,
         )
         self._record_play(path)
         self._reload_library_list()

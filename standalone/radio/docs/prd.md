@@ -3500,3 +3500,15 @@ approach is ported; no data of his is used. Design record:
 - Download and update of the weekly pack, a "Check for Station Updates"
   command and its setting; delta packs; the browse tree's details pane showing
   pack facts; the "matched:" reason in Search Stations' own results.
+
+## 28. Escape walks back out of a category (unreleased, 2026-10-16)
+
+Todo item 43. In Browse Stations, Enter on a category (a country, a
+language, a genre, an Apple storefront) opens it, as it always has. Escape
+with the tree focused now goes back to that category's own row and folds it,
+one level per press; only on a top-level source does Escape close the window
+(`quill/ui/radio/browse_keys.back_to_category`). The Find box keeps its text,
+and the player keeps playing: no transport key is taken. Apple's storefront
+rows say "Apple chart for this country, any language", and Podcast Index's By
+Category says it is worldwide and any language, so a country chart is not
+mistaken for a language filter.
