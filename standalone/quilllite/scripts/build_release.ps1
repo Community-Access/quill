@@ -102,7 +102,8 @@ Assert-QuillSiblingVersions -QuillRepo $QuillRepo -Python $Python -Releasing @("
 # to support@community-access.org through the reader's own mail program, and
 # nothing is filed as a GitHub issue, so there is no credential to ship.
 # -TokenFile and -SkipToken were removed with it; nothing else here used them.
-# No build regenerates quill\_feedback_token.py now, and the spec excludes it and
+# No build regenerates quill\_feedback_token.py now, and the shared runtime spec
+# (..\runtime\quillville-runtime.spec) excludes it and
 # refuses to freeze it or feedback_hub (scripts\check_no_credentials.py), so
 # a stale gitignored copy left in the checkout can no longer ride along.
 
