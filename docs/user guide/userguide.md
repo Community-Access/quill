@@ -8919,6 +8919,18 @@ phrase takes away the whole corrected phrase.
   Windows, but adds no punctuation of its own.
 - **Windows voice typing** hands over to `Windows+H`, where none of the
   commands apply.
+  You can also open Windows' panel without changing your engine: press
+  `QUILL Key + D` (the **Dictation** command; QUILL Key is `Ctrl+Shift+Grave`
+  unless you changed it). QUILL puts the focus in the document, opens the
+  panel, and says "System dictation started. Speak into the editor." Press
+  `QUILL Key + D` again, or `Escape` in the document, to close it. For
+  example, to dictate one paragraph with Windows' own panel while your Live
+  Dictation engine stays Moonshine: press `QUILL Key + D`, speak, then press
+  `Escape`. The command presses `Windows+H` for you, exactly as choosing
+  Windows voice typing in the Speech engine list does (since 2026-10-17 both
+  go through the same code), so the panel's limits are the same: none of
+  dictation's commands, tones or read-back. If the panel cannot open on this
+  computer, a message says so.
 - **OpenAI**, only with your own OpenAI key and only if you choose it. Your
   speech is sent to OpenAI; see "OpenAI dictation, with your own key" below.
 - **Speech providers**, only with your own account at that company and only

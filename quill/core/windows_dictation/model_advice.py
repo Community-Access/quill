@@ -83,7 +83,8 @@ _CHOSEN_FOR = {
     PRIORITY_ACCURACY: "Chosen for the fewest mistakes this computer can keep up with.",
 }
 ESTIMATE_NOTE = (
-    "These figures are estimates from a synthetic voice, until tests with real voices exist."
+    "The mistakes and memory were measured on public recordings of people reading aloud, "
+    "not on your voice; the speed is an estimate for this computer."
 )
 _NEVER_SWITCHES = "QUILL never changes your model by itself: choose this one if you want it."
 
@@ -199,10 +200,21 @@ def _machine(check: SpeedCheck) -> str:
     return f"this computer's {round(check.memory_gb)} GB and {cores}"
 
 
-def _sort_key(candidate: _Candidate, *, built_in_first: bool) -> tuple[float, int, int]:
+def _errors(model_id: str, language: str) -> float:
+    """The model's measured word errors in *language*: its Spanish figure when
+    Spanish was measured (FLEURS, 2026-10-17), otherwise its English one."""
+    measured = MEASURED[model_id]
+    if language == "es" and measured.word_errors_es is not None:
+        return measured.word_errors_es
+    return measured.word_errors
+
+
+def _sort_key(
+    candidate: _Candidate, *, built_in_first: bool, language: str = "en"
+) -> tuple[float, int, int]:
     order = _TIE_ORDER.index(candidate.id) if candidate.id in _TIE_ORDER else len(_TIE_ORDER)
     preference = 0 if (candidate.built_in or not built_in_first) else 1
-    return (MEASURED[candidate.id].word_errors, preference, order)
+    return (_errors(candidate.id, language), preference, order)
 
 
 def recommend(
@@ -249,10 +261,13 @@ def recommend(
     if lightest:
         chosen = min((c for c in candidates if c.built_in), key=lambda c: c.cost_factor)
     elif priority == PRIORITY_SPEED:
-        chosen = min(allowed, key=lambda c: (c.cost_factor, MEASURED[c.id].word_errors))
+        chosen = min(allowed, key=lambda c: (c.cost_factor, _errors(c.id, language)))
     else:
         built_in_first = check.weak and priority == PRIORITY_BALANCED
-        chosen = min(allowed, key=lambda c: _sort_key(c, built_in_first=built_in_first))
+        chosen = min(
+            allowed,
+            key=lambda c: _sort_key(c, built_in_first=built_in_first, language=language),
+        )
 
     machine = _machine(check)
     pace = speed(chosen)
@@ -278,6 +293,9 @@ def recommend(
     if language == "en":
         errors = MEASURED[chosen.id].word_errors
         reasons.append(f"In our test it got {errors:g} percent of words wrong.")
+    elif MEASURED[chosen.id].word_errors_es is not None:
+        errors = _errors(chosen.id, language)
+        reasons.append(f"In our Spanish test it got {errors:g} percent of words wrong.")
     else:
         reasons.append(
             f"Accuracy was measured in English only; {_LANGUAGE_NAMES[language]} was not measured."
@@ -291,9 +309,9 @@ def recommend(
         (
             c
             for c in candidates
-            if MEASURED[c.id].word_errors < MEASURED[chosen.id].word_errors and excluded(c)
+            if _errors(c.id, language) < _errors(chosen.id, language) and excluded(c)
         ),
-        key=lambda c: _sort_key(c, built_in_first=False),
+        key=lambda c: _sort_key(c, built_in_first=False, language=language),
     )
     if better:
         reasons.append(f"{better[0].name} makes fewer mistakes but {excluded(better[0])}.")

@@ -157,19 +157,38 @@ def check_host(url: str) -> None:
 
 
 def _download(url: str, target: Path) -> None:  # pragma: no cover - network, by a person only
+    """Download *url* to *target*, resuming the ``.part`` file after a dropped
+    connection (the first real fetch, 2026-10-17, was reset mid-file more than
+    once). The SHA-256 check afterwards is what proves the bytes are whole."""
+    import time
+    import urllib.error
     import urllib.request
 
     check_host(url)
     partial = target.with_suffix(target.suffix + ".part")
-    request = urllib.request.Request(url, headers={"User-Agent": "QUILL-bench/1"})
-    with urllib.request.urlopen(request, timeout=60) as response, partial.open("wb") as out:
-        total = int(response.headers.get("Content-Length") or 0)
-        done = 0
-        for block in iter(lambda: response.read(_CHUNK), b""):
-            out.write(block)
-            done += len(block)
-            if total:
-                print(f"  {done * 100 // total}%", end="\r")
+    for attempt in range(8):
+        done = partial.stat().st_size if partial.is_file() else 0
+        headers = {"User-Agent": "QUILL-bench/1"}
+        if done:
+            headers["Range"] = f"bytes={done}-"
+        request = urllib.request.Request(url, headers=headers)
+        try:
+            with urllib.request.urlopen(request, timeout=60) as response:
+                resumed = done and response.status == 206
+                total = int(response.headers.get("Content-Length") or 0) + (done if resumed else 0)
+                with partial.open("ab" if resumed else "wb") as out:
+                    done = done if resumed else 0
+                    for block in iter(lambda: response.read(_CHUNK), b""):
+                        out.write(block)
+                        done += len(block)
+                        if total:
+                            print(f"  {done * 100 // total}%", end="\r")
+            break
+        except (urllib.error.URLError, OSError) as error:
+            if attempt == 7:
+                raise
+            print(f"\n  connection lost ({error}); resuming")
+            time.sleep(2 + 2 * attempt)
     partial.replace(target)
     print()
 

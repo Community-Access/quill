@@ -380,6 +380,7 @@
   "quill:shell_verb_ocr_structured": "one_side",
   "quill:shell_verb_open": "one_side",
   "quill:shell_verb_read": "one_side",
+  "quill:sherpa_migration_notice": "one_side",
   "quill:show_status_bar": "shared",
   "quill:show_tab_control": "one_side",
   "quill:skipped_update_version": "one_side",

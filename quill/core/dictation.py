@@ -1,4 +1,16 @@
-"""Dictation control for QUILL.
+"""Dictation control for QUILL -- **deprecated in QUILL 1.1, removed in QUILL 1.2**.
+
+**Deprecated (2026-10-17, dictation design record sections 32.6 and 35).** It
+duplicates the ``voice_typing`` engine. Its callers were traced: the only two
+were ``quill/ui/main_frame.py`` (which built a :class:`DictationController` for
+Tools > Dictation and its Escape key) and ``quill/ui/main_frame_bw.py``
+(``toggle_dictation``); both now open Windows' panel through
+``quill.platform.windows.dictation.launch_windows_dictation``, exactly as the
+voice typing engine does, so nothing in the app imports this module any more
+(``tests/unit/core/test_dictation.py`` asserts that). Nothing a person sees
+changed, so there is no spoken notice; the CHANGELOG's "Deprecated" entry is the
+notice. Delete this module and its test in QUILL 1.2 (the removal checklist in
+section 32.6). Do not add callers.
 
 **What this module is, honestly:** the *legacy* Win+H bridge. On Windows it
 toggles the operating system's built-in dictation panel via

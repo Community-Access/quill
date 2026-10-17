@@ -80,9 +80,6 @@ from quill.core.deletion_ring import DeletionRing, removed_span
 from quill.core.diagnostics import (
     record_diagnostic_event,
 )
-from quill.core.dictation import (
-    DictationController,
-)
 from quill.core.document import Document
 from quill.core.external_change import (
     ExternalChangeWatcher,
@@ -1231,7 +1228,8 @@ class MainFrame(
         prewarm_tts_engine()
         self._announcement_error_reported = ""
         self._read_aloud = ReadAloudController()
-        self._dictation = DictationController()
+        # Windows+H's panel, opened by Tools > Dictation (main_frame_bw).
+        self._voice_typing_open = False
         # Built lazily on first lookup: constructing the online providers pulls
         # the urllib request stack and the lexical provider tree, none of which
         # an empty editor needs at startup. See _get_lexical_service().
@@ -2696,11 +2694,7 @@ class MainFrame(
             if announce_depth:
                 self._set_status(self._current_line_indent_phrase())
             return
-        if (
-            hasattr(self, "_dictation")
-            and self._dictation.state == "listening"
-            and event.GetKeyCode() == wx.WXK_ESCAPE
-        ):
+        if getattr(self, "_voice_typing_open", False) and event.GetKeyCode() == wx.WXK_ESCAPE:
             self.toggle_dictation()
             return
         space_key = getattr(wx, "WXK_SPACE", None)

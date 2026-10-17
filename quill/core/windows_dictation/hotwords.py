@@ -15,6 +15,12 @@ Zipformer transducer, and dict.md says to *evaluate* it first: a model joins
 names are recognised 50 percent better than without hotwords, with word errors
 on the real-voice benchmark (B-1) no worse.
 
+**Measured 2026-10-17 (dictation design record section 35).** On the
+GigaSpeech Zipformer transducer, hotwords took 20 hard names from 16 to 42
+recognised in 120 clips, with word errors 2.6 against 2.7 percent on
+LibriSpeech test-clean. Still off: that model writes upper case with no
+punctuation, and no punctuation pass came near the engines' own.
+
 So this is the plumbing behind a capability flag that defaults off
 (:data:`HOTWORDS_ENABLED`): writing the hotwords file in the model's case
 (:func:`hotword_lines`), the decoder options a transducer needs

@@ -122,11 +122,17 @@ def _set_arguments(source: str) -> list[str]:
 
 
 def run_one(  # pragma: no cover - runs the models
-    engine: str, label: str, source: str, mode: str, out: Path, subset: str | None
+    engine: str,
+    label: str,
+    source: str,
+    mode: str,
+    out: Path,
+    subset: str | None,
+    threads: int = 1,
 ) -> dict[str, Any]:
     target = out / f"{engine}-{label}-{mode}.json"
     command = [sys.executable, str(_HERE / "dictbench.py"), *_set_arguments(source)]
-    command += ["--engine", engine, "--json", str(target)]
+    command += ["--engine", engine, "--json", str(target), "--threads", str(threads)]
     if label.startswith("es"):
         command += ["--language", "es"]
     if label.startswith("b1c"):
@@ -149,6 +155,12 @@ def main(argv: list[str] | None = None) -> int:  # pragma: no cover - a person r
     parser.add_argument("--models", nargs="*", help="default: every model on this computer")
     parser.add_argument("--live", action="store_true", help="also run each at live pace")
     parser.add_argument("--sr-note", default="", help="which screen reader ran, and what lagged")
+    parser.add_argument(
+        "--threads",
+        type=int,
+        default=1,
+        help="1 is the budget's measure; more only to get a slow model's accuracy sooner",
+    )
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args(argv)
     if not args.set:
@@ -161,7 +173,9 @@ def main(argv: list[str] | None = None) -> int:  # pragma: no cover - a person r
             label, _eq, source = item.partition("=")
             for mode in ("files", "live") if args.live else ("files",):
                 print(f"{engine} on {label} ({mode})...")
-                rows.append(run_one(engine, label, source, mode, args.out, args.subset))
+                rows.append(
+                    run_one(engine, label, source, mode, args.out, args.subset, args.threads)
+                )
     date = time.strftime("%Y-%m-%d")
     report = {
         "date": date,

@@ -157,7 +157,8 @@ def test_the_gate_is_off_until_adopted(tmp_path) -> None:
         ready=lambda _folder: True,
     )
     assert isinstance(built, kws_keywords.KeywordGate)
-    assert "@HEY QUILL" in (tmp_path / "keywords.txt").read_text(encoding="utf-8")
+    # Spaces in the label would make sherpa-onnx refuse the file (2026-10-17).
+    assert "@HEY_QUILL" in (tmp_path / "keywords.txt").read_text(encoding="utf-8")
     no_word = SimpleNamespace(command_prefix="", wake_phrase="", stop_phrase="")
     assert kws_keywords.keyword_gate_for(no_word, ready=lambda _f: True) is None
 

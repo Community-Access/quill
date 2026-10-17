@@ -2918,6 +2918,21 @@ sentence names the engine that took over, says Moonshine tiny understands Englis
 where to choose another (Ctrl+Comma, "voice engine"; Speech and Dictation for dictation). No
 model is offered for deletion, because chapters still use it.
 
+**The duplicate Parakeet and Nemotron path is deprecated (2026-10-17).** Locked Dictation's two
+engines of its own, `nemotron` and `parakeet`, became one engine, QUILL speech models (`sherpa`),
+on 2026-10-16 (dictation design record section 22, D-26), and the duplicate path is formally
+deprecated in QUILL 1.1 and its adoption code removed in QUILL 1.2 (design record sections 32.6
+and 35). Saved settings already load as `sherpa`; `sherpa_migration_notice` records that the move
+is owed one sentence (`pending`, then `done`), because the deprecation policy says no engine moves
+silently. `quill/ui/sherpa_migration_notice.py` says it once, after the Vosk notice's delay and
+never over a modal window. When the older Nemotron's files (80 mel features, a different model
+from the catalogue's Nemotron 3.5, so never adopted) are still on disk, the sentence becomes a
+Yes/No question with **No the default** -- "Delete the older files to free 650 MB? No keeps
+them." -- and on Yes `sherpa_migration.remove_leftovers` deletes only folders inside the old
+`speech-models/nemotron` and `parakeet` folders and the space actually freed is said ("Freed 650
+MB."). An adopted Parakeet's old folder is never offered: its files are hard links into the
+shared store, so deleting them would free nothing.
+
 ### 5.25d Batch Document-to-Speech, pronunciation, and SSML (shipped)
 
 QUILL converts whole folders of documents to speech audio and gives the user fine control over how that audio sounds. This section records the shipped behavior; the original design plan and project-format spec were retired to git history once delivered (their remaining follow-ups are tracked in [`roadmap.md`](../../planning/roadmap.md) §1.2). All synthesis logic is wx-free and headless-testable; the UI wraps it on the background task pool.

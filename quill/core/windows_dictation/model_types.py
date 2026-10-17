@@ -225,16 +225,26 @@ _HIGH_ACCURACY_WORD_ERRORS = 2.5
 
 @dataclass(frozen=True, slots=True)
 class Measured:
-    """What scripts/dictbench.py measured for one model (2026-10-05: ten
-    recordings of a synthetic voice, one thread; dictation design, section 6).
-    An estimate until B-1's real voices exist, and said so wherever it is used."""
+    """What the benchmark measured for one model (dictation design record).
 
-    #: Percent of words wrong.
+    Since 2026-10-17 (section 35) the word errors and memory come from real
+    recordings: ``word_errors`` on the B-1a LibriVox held-out English set (its
+    fixed 50-recording ``b1`` subset, read speech catalogued after Whisper's and
+    Moonshine's training cutoffs), ``word_errors_es`` on FLEURS Spanish (``b1``,
+    100 recordings) where measured, and ``peak_mb`` the most memory on the B-1a
+    set. ``after_pause`` is still section 6's timing on its measuring machine
+    (the advice scales it to this computer's own timed Moonshine): speed is
+    the one figure a busy shared computer cannot give, and waits for the real
+    8 GB run (B-8)."""
+
+    #: Percent of words wrong, English.
     word_errors: float
     #: Seconds from the end of speech to the text, on the measuring machine.
     after_pause: float
     #: Most memory while recognising, in megabytes.
     peak_mb: int
+    #: Percent of words wrong in Spanish, or ``None`` where not measured.
+    word_errors_es: float | None = None
 
 
 #: Keyed by engine id (built in) or catalogue id (downloads). A model missing

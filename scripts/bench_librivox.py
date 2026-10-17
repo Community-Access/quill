@@ -47,9 +47,18 @@ lines unwrapped.
 * archive.org -- the project zips LibriVox links to
 * www.gutenberg.org -- the book texts
 
-**Unverified** (dict.md says so too): the API's field for the catalogue date
-(``date_catalog`` is tried, then the ``--since`` asked for) and whether
-sections carry reader IDs (``readers`` is tried, then the project's).
+**The catalogue date.** The API has no catalogue-date field (checked
+2026-10-17: ``date_catalog`` is absent). Every project's archive.org
+identifier ends ``_YYMM_librivox``, the month it was catalogued, so that month's
+first day is used (:func:`catalogue_date`): conservative, because a recording
+from the cutoff's own month never counts as held out. ``date_catalog`` is still
+read first, and the ``--since`` asked for is the last resort. Sections carry
+their reader (``readers``), so the balance is per reader, not per project.
+
+**Per chapter, not per book.** ``fetch`` downloads each chosen section's own
+MP3 (its ``listen_url`` on archive.org), not the whole book's zip, and
+``build-selection`` builds every chosen section in one run, trimmed to its
+first ``--first-minutes``.
 """
 
 from __future__ import annotations
@@ -164,16 +173,31 @@ class Section:
     held_out: dict[str, bool] = field(default_factory=dict)
 
 
+_ARCHIVE_MONTH = re.compile(r"_(\d{2})(\d{2})_librivox")
+
+
+def catalogue_date(project: dict[str, Any], since: _dt.date) -> _dt.date:
+    """When *project* was catalogued: ``date_catalog`` if the API gives it,
+    else the first day of the ``_YYMM_librivox`` month in its archive.org
+    identifier, else *since* (all the API's ``since=`` filter guarantees)."""
+    raw_date = str(project.get("date_catalog") or "")[:10]
+    try:
+        return _dt.date.fromisoformat(raw_date)
+    except ValueError:
+        pass
+    for key in ("url_iarchive", "url_zip_file"):
+        match = _ARCHIVE_MONTH.search(str(project.get(key) or ""))
+        if match and 1 <= int(match.group(2)) <= 12:
+            return _dt.date(2000 + int(match.group(1)), int(match.group(2)), 1)
+    return since
+
+
 def sections_of(project: dict[str, Any], since: _dt.date) -> list[Section]:
     """A catalogue project's sections, when its text is from Gutenberg."""
     ebook = gutenberg_number(str(project.get("url_text_source") or ""))
     if ebook is None:
         return []
-    raw_date = str(project.get("date_catalog") or "")[:10]
-    try:
-        catalogued = _dt.date.fromisoformat(raw_date)
-    except ValueError:
-        catalogued = since  # the API's since= is all that is known
+    catalogued = catalogue_date(project, since)
     project_readers = project.get("readers") or []
     found: list[Section] = []
     for section in project.get("sections") or []:
@@ -208,11 +232,15 @@ def select(
     seed: int = 20261015,
     minutes_per_reader: float = 5.0,
     total_minutes: float = 40.0,
+    max_section_minutes: float | None = None,
 ) -> list[Section]:
     """A fixed, seeded choice of sections, balanced across readers.
 
     No reader gives more than *minutes_per_reader*; the total stops at about
-    *total_minutes* of audio (before rejection, which drops some).
+    *total_minutes* of audio (before rejection, which drops some). With
+    *max_section_minutes*, a longer section counts as only that much, because
+    ``build-selection --first-minutes`` uses no more of it -- so one long
+    chapter cannot take a whole reader's share, or the whole set's.
     """
     wanted = _LANGUAGES.get(language, language).lower()
     pool = [
@@ -229,6 +257,8 @@ def select(
     total = 0.0
     for section in pool:
         minutes = section.seconds / 60
+        if max_section_minutes:
+            minutes = min(minutes, max_section_minutes)
         if per_reader[section.reader] + minutes > minutes_per_reader and per_reader[section.reader]:
             continue
         if total + minutes > total_minutes and chosen:
@@ -489,14 +519,38 @@ def stretches_from_audio(samples: Any, aligner: Any) -> list[Stretch]:  # pragma
     for begin in range(0, len(samples), block):
         vad.accept_waveform(np.asarray(samples[begin : begin + block], dtype=np.float32))
         while not vad.empty():
+            # Copy out before pop(): the front segment's memory is freed by
+            # pop(), and reading it afterwards crashed the first real run
+            # (2026-10-17, a segmentation fault on the first chapter).
             segment = vad.front
+            audio = np.array(segment.samples, dtype=np.float32)
+            start = segment.start / 16_000
             vad.pop()
             stream = aligner.create_stream()
-            stream.accept_waveform(16_000, np.asarray(segment.samples, dtype=np.float32))
+            stream.accept_waveform(16_000, audio)
             aligner.decode_stream(stream)
-            start = segment.start / 16_000
-            found.append(Stretch(start, start + len(segment.samples) / 16_000, stream.result.text))
+            found.append(Stretch(start, start + len(audio) / 16_000, stream.result.text))
     return found
+
+
+def load_selection(path: Path, set_name: str | None = None) -> list[dict[str, Any]]:
+    """A ``select`` output (a list), or one set of a ``bench_librivox_sets.json``
+    file (the committed B-1a selections), by *set_name*."""
+    data = json.loads(path.read_text(encoding="utf-8"))
+    if isinstance(data, list):
+        return data
+    sets = data.get("sets", {})
+    if set_name not in sets:
+        raise SystemExit(f"Name one of these with --set: {', '.join(sorted(sets))}.")
+    return list(sets[set_name])
+
+
+def section_audio_name(section: dict[str, Any]) -> str:
+    """The file ``fetch`` saves a chosen section's MP3 as."""
+    return f"lv{section['project']}-{int(section['section']):03d}.mp3"
+
+
+_ALIGNERS: dict[tuple[str, str], Any] = {}
 
 
 def build(args: argparse.Namespace) -> int:  # pragma: no cover - needs models and audio
@@ -505,8 +559,16 @@ def build(args: argparse.Namespace) -> int:  # pragma: no cover - needs models a
     from fetch_bench_audio import resample
 
     samples, rate = sf.read(str(args.chapter), dtype="float32", always_2d=True)
+    first = getattr(args, "first_minutes", None)
+    if first:
+        samples = samples[: int(first * 60 * rate)]
     mono = resample(samples.mean(axis=1), rate, 16_000)
-    aligner = dictbench.load_engine(args.aligner, args.language, 2)
+    key = (args.aligner, args.language)
+    if key not in _ALIGNERS:  # loaded once for a whole selection
+        _ALIGNERS[key] = dictbench.load_engine(
+            args.aligner, args.language, getattr(args, "threads", 2)
+        )
+    aligner = _ALIGNERS[key]
     found = utterances(
         stretches_from_audio(mono, aligner),
         clean_gutenberg(Path(args.book).read_text(encoding="utf-8", errors="replace")),
@@ -563,9 +625,11 @@ def main(argv: list[str] | None = None) -> int:  # pragma: no cover - a person r
     sel.add_argument("--minutes-per-reader", type=float, default=5.0)
     sel.add_argument("--minutes", type=float, default=40.0)
     sel.add_argument("--seed", type=int, default=20261015)
+    sel.add_argument("--max-section-minutes", type=float, help="count a section as at most this")
     sel.add_argument("--out", type=Path, required=True)
     fet = commands.add_parser("fetch", help="the selection's zips and Gutenberg texts")
     fet.add_argument("selection", type=Path)
+    fet.add_argument("--set", help="one set of a bench_librivox_sets.json file")
     fet.add_argument("--into", type=Path, required=True)
     fet.add_argument("--yes", action="store_true")
     bld = commands.add_parser("build", help="one chapter into kept utterances")
@@ -577,7 +641,18 @@ def main(argv: list[str] | None = None) -> int:  # pragma: no cover - a person r
     bld.add_argument("--catalogued", required=True, help="YYYY-MM-DD")
     bld.add_argument("--language", default="en")
     bld.add_argument("--aligner", default="whisper", help="an engine NOT being evaluated")
+    bld.add_argument("--first-minutes", type=float, help="use only the chapter's start")
+    bld.add_argument("--threads", type=int, default=2)
     bld.add_argument("--out", type=Path, required=True)
+    many = commands.add_parser("build-selection", help="every fetched section of a selection")
+    many.add_argument("selection", type=Path)
+    many.add_argument("--set", help="one set of a bench_librivox_sets.json file")
+    many.add_argument("--audio", type=Path, required=True, help="the folder fetch saved into")
+    many.add_argument("--language", default="en")
+    many.add_argument("--aligner", default="whisper", help="an engine NOT being evaluated")
+    many.add_argument("--first-minutes", type=float, default=6.0)
+    many.add_argument("--threads", type=int, default=2)
+    many.add_argument("--out", type=Path, required=True)
     args = parser.parse_args(argv)
 
     if args.command == "catalogue":
@@ -603,25 +678,75 @@ def main(argv: list[str] | None = None) -> int:  # pragma: no cover - a person r
             seed=args.seed,
             minutes_per_reader=args.minutes_per_reader,
             total_minutes=args.minutes,
+            max_section_minutes=args.max_section_minutes,
         )
         args.out.write_text(json.dumps([asdict(c) for c in chosen], indent=2), encoding="utf-8")
         print(f"{len(chosen)} sections from {len({c.reader for c in chosen})} readers.")
         return 0
     if args.command == "fetch":
         _refuse_ci()
-        chosen = json.loads(args.selection.read_text(encoding="utf-8"))
+        chosen = load_selection(args.selection, args.set)
         books = sorted({c["ebook"] for c in chosen})
-        zips = sorted({c["zip_url"] for c in chosen if c["zip_url"]})
-        _confirm(f"Download {len(books)} book texts and {len(zips)} audio zips?", args.yes)
+        singles = [c for c in chosen if c.get("listen_url")]
+        zips = sorted({c["zip_url"] for c in chosen if c["zip_url"] and not c.get("listen_url")})
+        _confirm(
+            f"Download {len(books)} book texts, {len(singles)} chapter MP3s "
+            f"and {len(zips)} audio zips?",
+            args.yes,
+        )
         args.into.mkdir(parents=True, exist_ok=True)
         for ebook in books:
-            url = f"https://www.gutenberg.org/cache/epub/{ebook}/pg{ebook}.txt"
-            (args.into / f"pg{ebook}.txt").write_bytes(_get(url))
+            target = args.into / f"pg{ebook}.txt"
+            if not target.is_file():
+                url = f"https://www.gutenberg.org/cache/epub/{ebook}/pg{ebook}.txt"
+                target.write_bytes(_get(url))
+        for section in singles:
+            target = args.into / section_audio_name(section)
+            if not target.is_file():
+                try:
+                    target.write_bytes(_get(section["listen_url"]))
+                except OSError as error:  # archive.org has the odd bad file: skip it
+                    print(f"Skipped {target.name}: {error}")
         for url in zips:
             (args.into / Path(urllib.parse.urlparse(url).path).name).write_bytes(_get(url))
-        print(f"Saved to {args.into}. Unzip each project, then run build per chapter.")
+        print(f"Saved to {args.into}. Then: build-selection, or build per chapter.")
         return 0
+    if args.command == "build-selection":
+        return build_selection(args)
     return build(args)
+
+
+def build_selection(args: argparse.Namespace) -> int:  # pragma: no cover - needs models and audio
+    """``build`` for every section of a selection whose MP3 ``fetch`` saved."""
+    chosen = load_selection(args.selection, args.set)
+    built = 0
+    for section in chosen:
+        chapter = args.audio / section_audio_name(section)
+        book = args.audio / f"pg{section['ebook']}.txt"
+        if not (chapter.is_file() and book.is_file()):
+            print(f"Skipped {chapter.name}: not fetched.")
+            continue
+        print(f"Building {chapter.name} ({section['reader']})...", flush=True)
+        one = argparse.Namespace(
+            chapter=chapter,
+            book=book,
+            reader=section["reader"],
+            project=section["project"],
+            ebook=section["ebook"],
+            catalogued=section["catalogued"],
+            language=args.language,
+            aligner=args.aligner,
+            first_minutes=args.first_minutes,
+            threads=args.threads,
+            out=args.out,
+        )
+        try:
+            build(one)
+            built += 1
+        except Exception as error:  # noqa: BLE001 - one bad chapter never stops the set
+            print(f"  {chapter.name} failed: {error}")
+    print(f"{built} of {len(chosen)} sections built into {args.out}.")
+    return 0
 
 
 if __name__ == "__main__":

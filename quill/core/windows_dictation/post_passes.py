@@ -23,6 +23,14 @@ a pinned model is added. Everything below that point -- building the sherpa-onnx
 objects, running them, and matching speakers to a transcript's paragraphs -- is
 here and tested with fakes, so adopting a model is a catalogue entry and a flag.
 
+**Measured 2026-10-17 (dictation design record section 35).** Punctuation:
+not adopted. The CT-Transformer writes Chinese full-width marks into English
+text, and neither it nor the English cased model came near the engines' own
+marks. Speaker labels: pyannote 3.0 with NeMo TitaNet small at threshold 0.8
+labelled 92 and 89 percent of turns right (two and three voices) at about a
+fifth of one thread and under 400 MB, enough to offer on request once the
+models are pinned in the catalogue and wired in; still off until then.
+
 wx-free. sherpa-onnx is passed in, never imported here.
 """
 
@@ -130,11 +138,14 @@ def build_diarizer(
     embedding: Path,
     *,
     speakers: int = -1,
-    threshold: float = 0.5,
+    threshold: float = 0.8,
     threads: int = _THREADS,
 ) -> Any:
     """sherpa-onnx's offline speaker diarization. *speakers* is ``-1`` to let
-    the clustering decide, or the number the person knows took part."""
+    the clustering decide, or the number the person knows took part.
+    *threshold* 0.8 is the measured best with pyannote segmentation 3.0 and
+    NeMo TitaNet small (design record section 35: 91.7 and 88.6 percent of
+    turns right for two and three voices; 0.5 over-split every conversation)."""
     config = sherpa_onnx.OfflineSpeakerDiarizationConfig(
         segmentation=sherpa_onnx.OfflineSpeakerSegmentationModelConfig(
             pyannote=sherpa_onnx.OfflineSpeakerSegmentationPyannoteModelConfig(

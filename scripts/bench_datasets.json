@@ -15,7 +15,9 @@
       "source_url": "https://librivox.org/api/info",
       "version": "not yet built",
       "size": "about 30 MB (30 minutes, 16 kHz FLAC)",
-      "languages": ["en"],
+      "languages": [
+        "en"
+      ],
       "style": "read",
       "speech_disabilities": false,
       "contamination": "low for recordings catalogued after a model's cutoff",
@@ -37,7 +39,9 @@
       "source_url": "https://librivox.org/api/info",
       "version": "not yet built",
       "size": "about 30 MB (30 minutes, 16 kHz FLAC)",
-      "languages": ["es"],
+      "languages": [
+        "es"
+      ],
       "style": "read",
       "speech_disabilities": false,
       "contamination": "low for recordings catalogued after a model's cutoff",
@@ -59,14 +63,22 @@
       "source_url": "https://openslr.org/12",
       "version": "OpenSLR SLR12",
       "size": "346 MB",
-      "languages": ["en"],
+      "languages": [
+        "en"
+      ],
       "style": "read",
       "speech_disabilities": false,
       "contamination": "very high",
-      "contaminated_models": ["*"],
+      "contaminated_models": [
+        "*"
+      ],
       "layout": "librispeech",
       "archives": [
-        {"url": "https://www.openslr.org/resources/12/test-clean.tar.gz", "sha256": null, "bytes": null}
+        {
+          "url": "https://www.openslr.org/resources/12/test-clean.tar.gz",
+          "sha256": "39fde525e59672dc6d1551919b1478f724438a95aa55f874b576be21967e6c23",
+          "bytes": null
+        }
       ],
       "notes": "In Moonshine's training data and a standard set for everyone. Reported, flagged, for comparison only."
     },
@@ -83,14 +95,22 @@
       "source_url": "https://openslr.org/12",
       "version": "OpenSLR SLR12",
       "size": "328 MB",
-      "languages": ["en"],
+      "languages": [
+        "en"
+      ],
       "style": "read",
       "speech_disabilities": false,
       "contamination": "very high",
-      "contaminated_models": ["*"],
+      "contaminated_models": [
+        "*"
+      ],
       "layout": "librispeech",
       "archives": [
-        {"url": "https://www.openslr.org/resources/12/test-other.tar.gz", "sha256": null, "bytes": null}
+        {
+          "url": "https://www.openslr.org/resources/12/test-other.tar.gz",
+          "sha256": "d09c181bba5cf717b3dee7d4d592af11a3ee3a09e08ae025c5506f6ebe961c29",
+          "bytes": null
+        }
       ],
       "notes": "As test-clean, with harder speakers."
     },
@@ -107,15 +127,27 @@
       "source_url": "https://huggingface.co/datasets/google/fleurs",
       "version": "main",
       "size": "about 300 MB",
-      "languages": ["en"],
+      "languages": [
+        "en"
+      ],
       "style": "read",
       "speech_disabilities": false,
       "contamination": "medium",
-      "contaminated_models": ["moonshine"],
+      "contaminated_models": [
+        "moonshine"
+      ],
       "layout": "fleurs",
       "archives": [
-        {"url": "https://huggingface.co/datasets/google/fleurs/resolve/main/data/en_us/audio/test.tar.gz", "sha256": null, "bytes": null},
-        {"url": "https://huggingface.co/datasets/google/fleurs/resolve/main/data/en_us/test.tsv", "sha256": null, "bytes": null}
+        {
+          "url": "https://huggingface.co/datasets/google/fleurs/resolve/70bb2e84b976b7e960aa89f1c648e09c59f894dd/data/en_us/audio/test.tar.gz",
+          "sha256": null,
+          "bytes": null
+        },
+        {
+          "url": "https://huggingface.co/datasets/google/fleurs/resolve/70bb2e84b976b7e960aa89f1c648e09c59f894dd/data/en_us/test.tsv",
+          "sha256": null,
+          "bytes": null
+        }
       ],
       "notes": "Archive paths follow the dataset repository's layout and are unverified until first pinned."
     },
@@ -132,15 +164,27 @@
       "source_url": "https://huggingface.co/datasets/google/fleurs",
       "version": "main",
       "size": "about 300 MB",
-      "languages": ["es"],
+      "languages": [
+        "es"
+      ],
       "style": "read",
       "speech_disabilities": false,
       "contamination": "medium",
-      "contaminated_models": ["moonshine"],
+      "contaminated_models": [
+        "moonshine"
+      ],
       "layout": "fleurs",
       "archives": [
-        {"url": "https://huggingface.co/datasets/google/fleurs/resolve/main/data/es_419/audio/test.tar.gz", "sha256": null, "bytes": null},
-        {"url": "https://huggingface.co/datasets/google/fleurs/resolve/main/data/es_419/test.tsv", "sha256": null, "bytes": null}
+        {
+          "url": "https://huggingface.co/datasets/google/fleurs/resolve/70bb2e84b976b7e960aa89f1c648e09c59f894dd/data/es_419/audio/test.tar.gz",
+          "sha256": "981802f6c828fd214fcf8bfc1036d80c9184b6eeb5650b3f7882f8affec046c9",
+          "bytes": null
+        },
+        {
+          "url": "https://huggingface.co/datasets/google/fleurs/resolve/70bb2e84b976b7e960aa89f1c648e09c59f894dd/data/es_419/test.tsv",
+          "sha256": "d107a93a4f54a18ac25cd470bb4cdadce14fb075b0c1d1542258e274d209ec09",
+          "bytes": null
+        }
       ],
       "notes": "Latin American Spanish (es_419), the variant FLEURS publishes. Paths unverified until first pinned."
     },
@@ -164,7 +208,11 @@
       "contaminated_models": [],
       "layout": "noise",
       "archives": [
-        {"url": "https://www.openslr.org/resources/17/musan.tar.gz", "sha256": null, "bytes": null}
+        {
+          "url": "https://www.openslr.org/resources/17/musan.tar.gz",
+          "sha256": null,
+          "bytes": null
+        }
       ],
       "notes": "Used only to add noise to the B-1c command script (scripts/bench_commands.py --noise)."
     },
@@ -181,11 +229,16 @@
       "source_url": "https://dev.datacollective.mozillafoundation.org",
       "version": "unverified",
       "size": "varies by language",
-      "languages": ["en", "es"],
+      "languages": [
+        "en",
+        "es"
+      ],
       "style": "read",
       "speech_disabilities": false,
       "contamination": "high",
-      "contaminated_models": ["moonshine"],
+      "contaminated_models": [
+        "moonshine"
+      ],
       "layout": "folder",
       "archives": [],
       "notes": "Never fetched automatically. Download it under your own account, convert a test subset to 16 kHz WAV with transcripts.txt and speakers.tsv, and register the folder with --local."
@@ -203,7 +256,10 @@
       "source_url": "https://huggingface.co/datasets/facebook/voxpopuli",
       "version": "unverified",
       "size": "about 1,800 h in 16 languages",
-      "languages": ["en", "es"],
+      "languages": [
+        "en",
+        "es"
+      ],
       "style": "parliamentary speech",
       "speech_disabilities": false,
       "contamination": "medium (unverified)",
@@ -225,11 +281,15 @@
       "source_url": "https://groups.inf.ed.ac.uk/ami/corpus/",
       "version": "unverified",
       "size": "about 100 h",
-      "languages": ["en"],
+      "languages": [
+        "en"
+      ],
       "style": "spontaneous meetings",
       "speech_disabilities": false,
       "contamination": "high",
-      "contaminated_models": ["moonshine"],
+      "contaminated_models": [
+        "moonshine"
+      ],
       "layout": "folder",
       "archives": [],
       "notes": "The corpus's own download page builds a per-meeting script, so it is fetched by hand and registered with --local."
@@ -247,7 +307,9 @@
       "source_url": "https://lium.univ-lemans.fr/en/tag/ted-lium_release3",
       "version": "release 3",
       "size": "about 50 GB",
-      "languages": ["en"],
+      "languages": [
+        "en"
+      ],
       "style": "prepared talks",
       "speech_disabilities": false,
       "contamination": "high (unverified)",
@@ -269,7 +331,9 @@
       "source_url": "https://huggingface.co/datasets/hf-audio/asr-leaderboard-longform",
       "version": "unverified",
       "size": "39 h",
-      "languages": ["en"],
+      "languages": [
+        "en"
+      ],
       "style": "spontaneous earnings calls; names and numbers",
       "speech_disabilities": false,
       "contamination": "medium (unverified)",
@@ -291,7 +355,9 @@
       "source_url": "https://catalog.ldc.upenn.edu/LDC2025S07",
       "version": "by licence",
       "size": "large",
-      "languages": ["en"],
+      "languages": [
+        "en"
+      ],
       "style": "far-field, noisy, overlapping speech",
       "speech_disabilities": false,
       "contamination": "low to medium (unverified)",
@@ -313,7 +379,9 @@
       "source_url": "https://psi.engr.tamu.edu/l2-arctic-corpus/",
       "version": "unverified",
       "size": "about 27 h",
-      "languages": ["en"],
+      "languages": [
+        "en"
+      ],
       "style": "read, 24 non-native speakers",
       "speech_disabilities": false,
       "contamination": "low to medium (unverified)",
@@ -335,7 +403,9 @@
       "source_url": "https://accent.gmu.edu",
       "version": "unverified",
       "size": "thousands of one-paragraph readings",
-      "languages": ["en"],
+      "languages": [
+        "en"
+      ],
       "style": "read paragraph",
       "speech_disabilities": false,
       "contamination": "medium (unverified)",
@@ -357,7 +427,9 @@
       "source_url": "https://catalog.ldc.upenn.edu/LDC2012S02",
       "version": "LDC2012S02",
       "size": "about 23 h",
-      "languages": ["en"],
+      "languages": [
+        "en"
+      ],
       "style": "read; speakers with cerebral palsy or ALS, plus controls",
       "speech_disabilities": true,
       "contamination": "low (unverified)",
@@ -379,7 +451,9 @@
       "source_url": "https://speechtechnology.web.illinois.edu/uaspeech/",
       "version": "by email request",
       "size": "16 speakers, isolated words",
-      "languages": ["en"],
+      "languages": [
+        "en"
+      ],
       "style": "isolated words; dysarthria",
       "speech_disabilities": true,
       "contamination": "low",
@@ -401,7 +475,9 @@
       "source_url": "https://speechaccessibilityproject.beckman.illinois.edu/about-the-project/frequently-asked-questions",
       "version": "by agreement",
       "size": "unverified",
-      "languages": ["en"],
+      "languages": [
+        "en"
+      ],
       "style": "speakers with Parkinson's, ALS, cerebral palsy, Down syndrome and stroke",
       "speech_disabilities": true,
       "contamination": "low, but offered to companies for training (unverified)",
@@ -423,7 +499,10 @@
       "source_url": "",
       "version": "not yet recorded",
       "size": "about 20 speakers",
-      "languages": ["en", "es"],
+      "languages": [
+        "en",
+        "es"
+      ],
       "style": "real dictation: commands, pauses, self-corrections",
       "speech_disabilities": true,
       "contamination": "none",
@@ -435,11 +514,29 @@
   ],
   "model_cutoffs": {
     "_about": "The upper-bound date of each model's training data, for B-1a's held-out rule: a LibriVox recording is held out for a model only if it was catalogued after this date. None is published; each is the safe assumption dict.md section 8 names. null means no date is known yet, so nothing counts as held out for that model until one is filled in.",
-    "whisper": {"date": "2024-10-01", "basis": "assumption: a safe upper bound for large-v3-turbo; Whisper's own cutoff is unpublished"},
-    "moonshine": {"date": "2024-10-21", "basis": "the Moonshine paper's date (arXiv 2410.15608)"},
-    "parakeet": {"date": null, "basis": "fill in the Hugging Face commit date pinned in model_catalog.py"},
-    "nemotron": {"date": null, "basis": "fill in the Hugging Face commit date pinned in model_catalog.py"},
-    "vosk": {"date": null, "basis": "fill in the archive dates from alphacephei.com"},
-    "canary": {"date": null, "basis": "fill in the release date of the sherpa-onnx export"}
+    "whisper": {
+      "date": "2024-10-01",
+      "basis": "assumption: a safe upper bound for large-v3-turbo; Whisper's own cutoff is unpublished"
+    },
+    "moonshine": {
+      "date": "2024-10-21",
+      "basis": "the Moonshine paper's date (arXiv 2410.15608)"
+    },
+    "parakeet": {
+      "date": "2026-04-27",
+      "basis": "upper bound for both catalogue Parakeets (checked 2026-10-17 on the Hugging Face API): the unified English export was created 2026-04-27, TDT v3's 2025-08-16 (NVIDIA's own v3 card 2025-08-04); the later date covers both"
+    },
+    "nemotron": {
+      "date": "2026-06-11",
+      "basis": "the date in the pinned sherpa-onnx export's repository name (nemotron-3.5-asr-streaming-0.6b-1120ms-int8-2026-06-11); NVIDIA's training cutoff is unpublished"
+    },
+    "vosk": {
+      "date": null,
+      "basis": "fill in the archive dates from alphacephei.com"
+    },
+    "canary": {
+      "date": null,
+      "basis": "fill in the release date of the sherpa-onnx export"
+    }
   }
 }

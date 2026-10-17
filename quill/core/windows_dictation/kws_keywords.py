@@ -30,6 +30,12 @@ has an unverified size and licence, so it is not in the download catalogue.
 until the measurements pass, the model is pinned, and the per-word defaults
 below are tuned and recorded.
 
+**Measured 2026-10-17 (dictation design record section 35): not adopted.**
+The GigaSpeech 3.3M spotter (Apache 2.0) made 1 false trigger in 60 minutes
+of LibriSpeech, heard the command word after a pause in 90 percent of 72
+synthetic clips, and used 0.031 of one thread: all three criteria missed
+(2 an hour, 92 percent and 0.032 at boost 2.0, threshold 0.15).
+
 wx-free. sherpa-onnx is passed in, never imported here.
 """
 
@@ -92,13 +98,17 @@ def keyword_lines(
     threshold: float = DEFAULT_THRESHOLD,
 ) -> list[str]:
     """sherpa-onnx keyword lines: the tokens, ``:boost``, ``#threshold`` and
-    ``@`` the phrase itself, which is what the spotter answers with."""
+    ``@`` the phrase itself, which is what the spotter answers with. The
+    phrase's spaces become underscores: sherpa-onnx splits the line on spaces,
+    so ``@HEY QUILL`` made it look for a token called ``QUILL`` and refuse the
+    whole file (found by the first real run, 2026-10-17)."""
     if not phrases:
         return []
     lines = []
     for phrase, tokens in zip(phrases, tokenize(list(phrases)), strict=True):
         joined = " ".join(str(token) for token in tokens)
-        lines.append(f"{joined} :{boost:g} #{threshold:g} @{phrase}")
+        label = "_".join(phrase.split())
+        lines.append(f"{joined} :{boost:g} #{threshold:g} @{label}")
     return lines
 
 

@@ -28,6 +28,7 @@ from quill.core.settings_normalizers import (
     _normalize_status_bar_order,
 )
 from quill.core.speech.sherpa_migration import migrate_choice
+from quill.core.speech.sherpa_migration import migration_notice as sherpa_notice
 from quill.core.speech.vosk_retirement import migrate_vosk_choices
 from quill.core.storage import write_json_atomic
 from quill.core.structure_announce import HEADING_POSITIONS as _HEADING_POSITIONS
@@ -447,6 +448,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
     # recognition (best for the wake word). Falls back when one is unavailable.
     voice_recognition_engine: str = ""
     vosk_retirement_notice: str = ""  # "voice"/"dictation" pending, "done" (vosk_retirement)
+    sherpa_migration_notice: str = ""  # "pending"/"done" (sherpa_migration, D-26)
     # Wake word (Hey QUILL Phase 3). Always-listening for "Hey QUILL" on-device;
     # off by default and never persisted-on across a restart unless the user
     # opts in. See quill/core/speech/wakeword.py.
@@ -1163,6 +1165,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
         )
         # nemotron/parakeet load as the shared engine, sherpa (dict.md D-26).
         speech_provider, speech_default_model_id = migrate_choice(data)
+        sherpa_migration_notice = sherpa_notice(data)
         bw_speech_selection_mode = (
             str(data.get("bw_speech_selection_mode", "recommended")).strip().lower()
             or "recommended"
@@ -1821,6 +1824,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
             voice_conversation_spoken_cues=voice_conversation_spoken_cues,
             voice_recognition_engine=voice_recognition_engine,
             vosk_retirement_notice=vosk_retirement_notice,
+            sherpa_migration_notice=sherpa_migration_notice,
             voice_wakeword_enabled=voice_wakeword_enabled,
             voice_wakeword_persist=voice_wakeword_persist,
             watch_folder_enabled=watch_folder_enabled,

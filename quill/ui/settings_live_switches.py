@@ -77,9 +77,11 @@ def at_startup(host: Any) -> None:
     default dictation engine (:mod:`quill.ui.vosk_retirement_notice`), because
     the wake word that resumes next is the thing it changed.
     """
+    from quill.ui.sherpa_migration_notice import surface_sherpa_migration_notice
     from quill.ui.vosk_retirement_notice import surface_vosk_retirement_notice
 
     surface_vosk_retirement_notice(host)
+    surface_sherpa_migration_notice(host)  # D-26's deprecation, said once
     remember_shell_verbs(host)
     wakeword_switch.start_wakeword_if_enabled(host)
 

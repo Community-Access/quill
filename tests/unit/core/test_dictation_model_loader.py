@@ -256,3 +256,9 @@ def test_the_speed_check_falls_back_to_the_hardware_when_it_cannot_time(monkeypa
     weak = speed_check.SpeedCheck(tiny=None, cores=2, memory_gb=4.0)
     assert speed_check.LAG_SENTENCE in speed_check.verdict(downloadable("whisper_large_v3"), weak)
     assert speed_check.run(lambda: 0.05).tiny == 0.05
+
+
+def test_nemotron_gets_enough_quiet_to_flush_its_last_word() -> None:
+    # 0.4 s lost the last word of 60 of 335 short commands (design record
+    # section 35): "choose one" came back "Choose.". 0.8 s fixed 39 of them.
+    assert model_loader._TAIL_SECONDS >= 0.8

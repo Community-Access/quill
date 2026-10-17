@@ -61,7 +61,11 @@ __all__ = [
 _PROVIDER = "cpu"
 #: Nemotron 3.5's feature size (128 mel bins, not the 80 of older transducers).
 _NEMOTRON_FEATURES = 128
-_TAIL_SECONDS = 0.4
+#: Quiet fed after a phrase so Nemotron's 1.12-second chunks flush the last
+#: word. 0.4 lost it on 60 of 335 short B-1c commands ("choose one" came back
+#: "Choose."; design record section 35); 0.8 recovered 39 of those 60, and
+#: 1.2 and 1.6 recovered no more.
+_TAIL_SECONDS = 0.8
 
 
 class DictationEngine(Protocol):
@@ -283,12 +287,17 @@ def build(
             provider=_PROVIDER,
         )
     if model.kind == "moonshine_v2":
-        return sherpa_onnx.OfflineRecognizer.from_moonshine_v2(
-            encoder=files["encoder"],
-            decoder=files["decoder"],
-            tokens=files["tokens"],
-            num_threads=threads,
-            provider=_PROVIDER,
+        from quill.core.windows_dictation.long_phrases import SplitLongPhrases
+
+        # Silent on phrases over ~8.5 s (B-1, 2026-10-17): fed in pieces.
+        return SplitLongPhrases(
+            sherpa_onnx.OfflineRecognizer.from_moonshine_v2(
+                encoder=files["encoder"],
+                decoder=files["decoder"],
+                tokens=files["tokens"],
+                num_threads=threads,
+                provider=_PROVIDER,
+            )
         )
     if model.kind == "nemo_transducer":
         return sherpa_onnx.OfflineRecognizer.from_transducer(

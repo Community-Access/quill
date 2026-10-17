@@ -122,7 +122,11 @@ def test_the_contamination_flag_covers_families_and_everyone() -> None:
 def test_the_model_cutoffs_are_dates_or_honestly_unknown() -> None:
     cutoffs = _fetch().load_table()["model_cutoffs"]
     assert cutoffs["moonshine"]["date"] and cutoffs["whisper"]["date"]
-    assert cutoffs["parakeet"]["date"] is None and cutoffs["parakeet"]["basis"]
+    # Filled in 2026-10-17 from the Hugging Face API (design record section 35).
+    assert cutoffs["parakeet"]["date"] == "2026-04-27" and cutoffs["parakeet"]["basis"]
+    assert cutoffs["nemotron"]["date"] == "2026-06-11" and cutoffs["nemotron"]["basis"]
+    # Still unknown: nothing counts as held out for them.
+    assert cutoffs["canary"]["date"] is None and cutoffs["canary"]["basis"]
 
 
 # -- the cache -------------------------------------------------------------------- #

@@ -11,38 +11,38 @@ Model downloads are user-initiated and covered by the network egress audit.
 
 from __future__ import annotations
 
+import contextlib
 from collections.abc import Callable
 from datetime import UTC, datetime
 
-from quill.core.dictation import (
-    DictationSettings,
-    DictationUnavailableError,
-)
 from quill.core.settings import save_settings
-from quill.ui.dialog_contract import (
-    apply_modal_ids,
-)
+from quill.ui.dialog_contract import apply_modal_ids
 
 
 class BwSpeechMixin:
     def toggle_dictation(self) -> None:
+        """Windows+H, as the voice typing engine presses it; the deprecated
+        ``quill.core.dictation`` shim is no longer used (design section 35)."""
+        from quill.platform.windows.dictation import launch_windows_dictation
+
         wx = self._wx
-        state = self._dictation.state
-        if state == "listening":
-            self._dictation.stop()
+        if getattr(self, "_voice_typing_open", False):
+            self._voice_typing_open = False
+            with contextlib.suppress(OSError):
+                launch_windows_dictation()
             self._set_status("System dictation stopped")
             return
-
         self.editor.SetFocus()
         try:
-            self._dictation.start(DictationSettings())
-        except DictationUnavailableError:
+            launch_windows_dictation()
+        except OSError:
             self._show_message_box(
                 "System dictation is unavailable on this system.",
                 "Dictation",
                 wx.ICON_INFORMATION | wx.OK,
             )
             return
+        self._voice_typing_open = True
         self._set_status("System dictation started. Speak into the editor.")
 
     def show_bw_model_status(self) -> None:

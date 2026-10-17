@@ -25,6 +25,13 @@ model in the one store. This module moves what people already have:
   Nemotron 3.5 (80 mel features, not 128), so it is not adopted; a person who
   chose it gets the most accurate model they have until they download
   Nemotron 3.5 in Dictation Settings, Speech Models.
+* **Deprecated, and said once (2026-10-17).** The duplicate path is deprecated
+  in QUILL 1.1 and this adoption code goes in QUILL 1.2 (design record sections
+  32.6 and 35). :func:`migration_notice` marks a moved engine choice as owed a
+  sentence, and :func:`legacy_leftovers` finds old folders nothing uses (the
+  older Nemotron above), which :mod:`quill.ui.sherpa_migration_notice` offers
+  once to delete, No by default; :func:`remove_leftovers` reports the bytes it
+  actually freed. Nothing is ever deleted without that Yes.
 
 wx-free.
 """
@@ -42,8 +49,18 @@ __all__ = [
     "LEGACY_PROVIDER_IDS",
     "SHARED_PROVIDER_ID",
     "adopt_legacy_models",
+    "legacy_leftovers",
     "migrate_choice",
+    "migration_notice",
+    "remove_leftovers",
 ]
+
+#: The deprecation (design record sections 32.6 and 35): the duplicate path is
+#: deprecated in QUILL 1.1 and its adoption code goes in QUILL 1.2. A saved
+#: ``nemotron`` or ``parakeet`` keeps loading as ``sherpa`` after that.
+DEPRECATED_IN = "QUILL 1.1"
+REMOVED_IN = "QUILL 1.2"
+_NOTICE_STATES = frozenset({"", "pending", "done"})
 
 SHARED_PROVIDER_ID = "sherpa"
 LEGACY_PROVIDER_IDS = frozenset({"nemotron", "parakeet"})
@@ -68,6 +85,93 @@ def migrate_choice(data: Mapping[str, object]) -> tuple[str, str]:
     if provider not in ACCEPTED_PROVIDERS:
         provider = ""
     return provider, LEGACY_MODEL_IDS.get(model, model)
+
+
+def migration_notice(data: Mapping[str, object]) -> str:
+    """``sherpa_migration_notice`` for saved *data*: ``"pending"`` when a saved
+    engine of ``nemotron`` or ``parakeet`` is being moved to ``sherpa`` now and
+    the person has not been told, else what was saved (``""`` or ``"done"``).
+    The policy's "never silently" (section 32.6): the move is said once, by
+    :mod:`quill.ui.sherpa_migration_notice`."""
+    saved = str(data.get("sherpa_migration_notice", "") or "").strip().lower()
+    if saved not in _NOTICE_STATES:
+        saved = ""
+    provider = str(data.get("speech_provider", "") or "").strip().lower()
+    if provider in LEGACY_PROVIDER_IDS and saved != "done":
+        return "pending"
+    return saved
+
+
+def _bytes_only_here(folder: Path) -> int:
+    """Bytes under *folder* that deleting it would free: files with no other
+    hard link (an adopted Parakeet's files are links into the store, so
+    deleting the old folder frees nothing and is not worth offering)."""
+    total = 0
+    for path in folder.rglob("*"):
+        try:
+            info = path.stat()
+        except OSError:
+            continue
+        if path.is_file() and info.st_nlink <= 1:
+            total += info.st_size
+    return total
+
+
+def legacy_leftovers(legacy_root: Path | None = None) -> list[tuple[Path, int]]:
+    """Old-style model folders nothing uses any more, with the bytes deleting
+    each would free: the older Nemotron (never adopted, section 22) and any old
+    Parakeet copy whose files are not links into the shared store. Folders that
+    would free nothing are left out. Never raises."""
+    try:
+        if legacy_root is None:
+            from quill.core.speech.models import models_root
+
+            legacy_root = models_root()
+        found: list[tuple[Path, int]] = []
+        for engine in sorted(LEGACY_PROVIDER_IDS):
+            parent = legacy_root / engine
+            if not parent.is_dir():
+                continue
+            for folder in sorted(p for p in parent.iterdir() if p.is_dir()):
+                size = _bytes_only_here(folder)
+                if size > 0:
+                    found.append((folder, size))
+        return found
+    except OSError:
+        return []
+
+
+def remove_leftovers(folders: list[Path], legacy_root: Path | None = None) -> int:
+    """Delete *folders* (only ever ones :func:`legacy_leftovers` named, inside
+    the old ``speech-models/nemotron`` or ``parakeet`` folders) and return the
+    bytes actually freed, measured file by file as each is removed -- never an
+    estimate. Called only after the person answered Yes."""
+    if legacy_root is None:
+        from quill.core.speech.models import models_root
+
+        legacy_root = models_root()
+    allowed = [(legacy_root / engine).resolve() for engine in LEGACY_PROVIDER_IDS]
+    freed = 0
+    for folder in folders:
+        target = folder.resolve()
+        if not any(parent in target.parents for parent in allowed):
+            continue  # never outside the old engines' own folders
+        for path in sorted(target.rglob("*"), reverse=True):
+            try:
+                if path.is_file() or path.is_symlink():
+                    info = path.stat()
+                    path.unlink()
+                    if info.st_nlink <= 1:
+                        freed += info.st_size
+                elif path.is_dir():
+                    path.rmdir()
+            except OSError:
+                continue
+        try:
+            target.rmdir()
+        except OSError:
+            pass
+    return freed
 
 
 def _find(root: Path, name: str, size: int) -> Path | None:
