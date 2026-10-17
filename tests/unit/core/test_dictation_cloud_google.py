@@ -277,8 +277,7 @@ def test_facts_and_capabilities() -> None:
     assert keys["location"].default == "us"
     assert keys["recognizer"].default == "_" and keys["model"].default == "chirp_3"
     assert provider.where({"location": "eu"}) == "eu"
-    assert "eu-speech.googleapis.com" in provider.hosts
-    assert "oauth2.googleapis.com" in provider.hosts
+    assert {"eu-speech.googleapis.com", "oauth2.googleapis.com"} <= set(provider.hosts)
     assert all(spec.help for spec in provider.fields())
 
 

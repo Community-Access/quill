@@ -91,7 +91,7 @@ class Readability:
 # Replacement character, private use (BMP and planes 15-16), and control
 # characters other than tab, newline, carriage return and form feed.
 _SUSPICIOUS = re.compile(
-    "[\ufffd\ue000-\uf8ff\U000f0000-\U0010ffff\x00-\x08\x0b\x0e-\x1f\x7f-\x9f]"
+    r"[\ufffd\ue000-\uf8ff\U000f0000-\U0010ffff\x00-\x08\x0b\x0e-\x1f\x7f-\x9f]"
 )
 _ALNUM = re.compile(r"[^\W_]")
 _HAS_LETTER = re.compile(r"[^\W\d_]")
