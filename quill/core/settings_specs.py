@@ -643,15 +643,15 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Word document reading engine",
         "editing",
         "choice",
-        "How QUILL converts a Word document into editable text when you open "
-        "it. Auto tries MarkItDown first and falls back to a plain extract. "
-        "MarkItDown is fast and reliable: headings, lists, and tables come "
-        "through; images, comments, and fonts do not. Pandoc keeps richer "
-        "structure - footnotes and complex tables survive better - and needs "
-        "Pandoc installed; when Pandoc is missing it falls back to Auto.",
+        "How QUILL turns a Word document into editable text when you open it. Auto uses "
+        "QUILL's own reader (headings, lists, tables, picture descriptions; about a second) "
+        "and tries MarkItDown only if it fails. MarkItDown first keeps the same structure, "
+        "but the first Word file after starting waits 10 to 20 seconds for it to load. "
+        "Neither keeps images, comments, or fonts. Pandoc keeps footnotes and complex "
+        "tables better, needs Pandoc installed, and falls back to Auto without it.",
         choices=(
-            ("auto", "Auto (MarkItDown first)"),
-            ("markitdown", "MarkItDown"),
+            ("auto", "Auto (QUILL's own reader first)"),
+            ("markitdown", "MarkItDown first"),
             ("pandoc", "Pandoc"),
         ),
         keywords=("word", "docx", "converter", "engine", "pandoc", "markitdown", "open"),

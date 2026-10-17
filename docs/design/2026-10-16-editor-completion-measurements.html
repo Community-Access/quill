@@ -479,6 +479,170 @@ wrote plain text under a <code>.docx</code> name. It now refuses Word
 names on Save As (before its rich-to-plain question), Save and the
 collector’s quiet save, naming Rich Text as what Word opens. The PDF
 original-protection and export-only guard is unchanged in both.</p>
+<h2
+id="follow-up-quills-own-office-readers-first-2026-10-16-evening">Follow-up:
+QUILL’s own Office readers first (2026-10-16, evening)</h2>
+<p>The recommendation above, carried out. QUILL now has its own readers
+for every modern Office format (<code>quill/io/office_text.py</code>
+with <code>office_word.py</code>, <code>office_sheets.py</code>,
+<code>office_slides.py</code>), so the order is reversed:
+<code>office_text.read_office_text_preferring_own</code> reads Word,
+Excel, PowerPoint and OpenDocument with QUILL’s reader
+<strong>first</strong>, and asks MarkItDown only when that reader fails
+or finds no text (and never for a password-protected file, which no
+reader opens). Every entry point uses it: File &gt; Open’s classic path
+(<code>structured.py</code>), Import / Convert
+(<code>docconvert.convert_born_digital</code>), intake, QUILL Lite’s
+<code>open_prepare</code>, the Action Builder’s reference files and
+<code>.pages</code> Route B. MarkItDown stays first only where it is
+asked for by name (the Word reading engine’s “MarkItDown first”, and
+Convert File’s MarkItDown engine), for <code>.xls</code> (no reader of
+QUILL’s own without LibreOffice), and for HTML, EPUB and CSV in Import /
+Convert. <code>markitdown</code> is imported only inside
+<code>markitdown_bridge</code>, on the fallback.</p>
+<p>Same machine, same method,
+<code>python scripts/bench_editor_completion.py open --runs 3</code>,
+medians of three. The script now also opens the committed corpus’s
+<code>.xlsx</code>, <code>.pptx</code> and <code>.odt</code> and records
+whether <code>markitdown</code> was imported. The “before” run used an
+export of the commit before this change, on a quiet machine; the “after”
+run, the change.</p>
+<table>
+<thead>
+<tr>
+<th>Format (fixture)</th>
+<th style="text-align: right;">Cold read, before</th>
+<th style="text-align: right;">Warm, before</th>
+<th style="text-align: right;">Cold read, after</th>
+<th style="text-align: right;">Warm, after</th>
+<th>Reader after</th>
+<th>MarkItDown imported, before / after</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.docx</code> (40 KB, 1,500 paragraphs)</td>
+<td style="text-align: right;">12,372 ms</td>
+<td style="text-align: right;">846 ms</td>
+<td style="text-align: right;">1,240 ms</td>
+<td style="text-align: right;">644 ms</td>
+<td>python-docx</td>
+<td>yes / no</td>
+</tr>
+<tr>
+<td><code>.xlsx</code> (<code>budget.xlsx</code>, 2 sheets)</td>
+<td style="text-align: right;">11,106 ms</td>
+<td style="text-align: right;">102 ms</td>
+<td style="text-align: right;">2,183 ms</td>
+<td style="text-align: right;">27 ms</td>
+<td>openpyxl</td>
+<td>yes / no</td>
+</tr>
+<tr>
+<td><code>.pptx</code> (<code>deck.pptx</code>, 3 slides)</td>
+<td style="text-align: right;">11,590 ms</td>
+<td style="text-align: right;">543 ms</td>
+<td style="text-align: right;">338 ms</td>
+<td style="text-align: right;">56 ms</td>
+<td>QUILL’s slide XML</td>
+<td>yes / no</td>
+</tr>
+<tr>
+<td><code>.odt</code> (<code>minutes.odt</code>)</td>
+<td style="text-align: right;">254 ms</td>
+<td style="text-align: right;">9 ms</td>
+<td style="text-align: right;">346 ms</td>
+<td style="text-align: right;">8 ms</td>
+<td>QUILL’s ODF XML</td>
+<td>no / no</td>
+</tr>
+<tr>
+<td><code>.doc</code> (OLE2 header; no LibreOffice)</td>
+<td style="text-align: right;">284 ms</td>
+<td style="text-align: right;">50 ms</td>
+<td style="text-align: right;">272 ms</td>
+<td style="text-align: right;">31 ms</td>
+<td>the missing-LibreOffice sentence</td>
+<td>no / no</td>
+</tr>
+<tr>
+<td>PDF (60 pages)</td>
+<td style="text-align: right;">4,337 ms</td>
+<td style="text-align: right;">2,303 ms</td>
+<td style="text-align: right;">3,601 ms</td>
+<td style="text-align: right;">2,682 ms</td>
+<td>pdfplumber</td>
+<td>no / no</td>
+</tr>
+</tbody>
+</table>
+<p>Importing QUILL’s open path itself is 160 to 240 ms in both runs. The
+<code>.xlsx</code> cold figure that remains is openpyxl’s own import
+(about 2 s on this machine, measured alone); QUILL’s XML sheet reader,
+used when openpyxl is absent, does not pay it. The <code>.odt</code>,
+<code>.doc</code> and PDF rows did not change path and moved only by run
+noise. The Word warm figure fell too (846 to 644 ms): python-docx
+renders a 1,500-paragraph file faster than MarkItDown converts it.</p>
+<p><strong>Output equivalence, on
+<code>tests/corpus/office</code>.</strong> Each file was read with the
+old order and the new one and the texts compared:</p>
+<ul>
+<li><code>minutes.odt</code>, <code>scores.ods</code>,
+<code>talk.odp</code>, <code>legacy.doc</code>,
+<code>locked.docx</code>: identical (MarkItDown never read these: no
+OpenDocument reader, no <code>.doc</code> reader, and a
+password-protected file fails for everyone).</li>
+<li><code>report.docx</code>: QUILL’s reader is better on the title
+(<code># Quarterly Report</code>; MarkItDown wrote it as plain text),
+the table (MarkItDown wrote an empty header row and the real header as a
+body row; it also split “South | West” into two cells, so the row had
+three cells under a two-column header), and a hard return (kept as a
+Markdown hard break; see #1488 in
+<code>quill/core/markdown_breaks.py</code>). MarkItDown was better on
+<strong>numbered lists</strong>: QUILL wrote <code>1.</code> for every
+item, which renders correctly but is read aloud as “one, one”. Closed:
+<code>office_word.number_ordered_items</code> counts each run per indent
+level, in both Word readers and the ODT reader.</li>
+<li><code>budget.xlsx</code>: QUILL’s reader is better throughout:
+“Sheet: Budget” headings, TRUE/FALSE (MarkItDown: 1.0/0.0),
+<code>2026-11-01</code> (MarkItDown: <code>2026-11-01 00:00:00</code>),
+an empty cell empty (MarkItDown: <code>NaN</code>), a pipe kept in its
+cell, and the sheet count in the announcement.</li>
+<li><code>deck.pptx</code>: QUILL’s reader is better: “Slide 2: Figures”
+headings (MarkItDown: an HTML comment and a bare heading), nested
+bullets by level (MarkItDown flattened them), tables under their own
+heading, a sentence for a slide with no body text, and the slide
+count.</li>
+</ul>
+<p><strong>A gap the corpus did not show, found by an existing
+test.</strong> <code>tests/unit/io/test_structured_math.py</code> opens
+a Word file with a real equation. MarkItDown read it as
+<code>$a^{2}+b^{2}=c^{2}$</code>; python-docx’s
+<code>paragraph.text</code> skips <code>&lt;m:oMath&gt;</code> entirely,
+so QUILL’s reader gave “Pythagorean theorem:” and nothing else,
+silently. Closed: <code>quill/io/omml_text.py</code> turns OMML into
+LaTeX (superscripts and subscripts, fractions, roots, delimiters, sums
+and integrals, functions, accents, bars, limits, matrices, equation
+arrays), in QUILL’s own delimiters, <code>\(...\)</code> inline and
+<code>$$...$$</code> on its own line, which are what Insert Equation
+writes and what <code>docx_math</code> turns back into a real Word
+equation on save. Both Word readers use it. The python-docx reader also
+dropped picture descriptions, which the XML reader kept; it now borrows
+the XML reader’s walk for any paragraph holding a picture or an
+equation, so both say <code>[Image: ...]</code>.</p>
+<p><strong>What was checked.</strong>
+<code>tests/unit/io/test_office_reader_order.py</code>: opening the
+corpus’s <code>.docx</code>, <code>.xlsx</code>, <code>.pptx</code> and
+<code>.odt</code> through <code>read_open_document</code> and QUILL
+Lite’s <code>prepare</code>, in a fresh interpreter, leaves neither
+<code>markitdown</code> nor <code>magika</code> in
+<code>sys.modules</code>; each entry point reads with QUILL’s reader
+while a MarkItDown stand-in fails the test if called; MarkItDown stands
+in when QUILL finds no text, and when both fail the user hears QUILL’s
+sentence; a locked file is never offered to MarkItDown; the “MarkItDown
+first” setting still asks MarkItDown first, for Word only; the intake
+report says why QUILL’s reader stood aside; list numbering; six equation
+shapes through both Word readers; picture descriptions through both.</p>
 <h2 id="item-45-named-text-lists">Item 45: named-text lists</h2>
 <table>
 <thead>
@@ -578,9 +742,17 @@ a pause opens the row as before. “No match for X” is said through the
 shared announcer when nothing starts with what was typed.</p>
 <h2 id="what-is-not-done">What is not done</h2>
 <ul>
-<li>The <code>.docx</code> cold-start cost lives in
-<code>quill/io/structured.py</code>; the measured recommendation is
-above, for after the other agent’s work lands.</li>
+<li><del>The <code>.docx</code> cold-start cost</del>: done the same
+evening; see “QUILL’s own Office readers first” above. File &gt; Open
+still does not route <code>.xlsm</code>, <code>.ods</code> or
+<code>.odp</code> (only Import / Convert reads them); adding them to
+<code>open_read.OFFICE_STREAM_SUFFIXES</code> also needs their Save
+routing reviewed.</li>
+<li>The <code>.xlsx</code> cold open is now openpyxl’s import (about 2
+s). QUILL’s own sheet XML reader needs no import; making it first for
+<code>.xlsx</code> would bring the cold open under half a second, once
+its output is compared with openpyxl’s the way this note compares
+MarkItDown’s.</li>
 <li>PDF per-page cost lives in <code>quill/io/pdf.py</code>,
 likewise.</li>
 <li>Installed and portable build timings, by the method above.</li>

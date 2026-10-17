@@ -248,6 +248,23 @@
 2, 3 and 4; builds 2 and 3 were uploaded for testing. The new packages
 have not been published yet.</p>
 <ul>
+<li><p><strong>Your dictation settings, shared with the family.</strong>
+More Dictation Settings has <strong>Share dictation settings with every
+QuillVille program</strong> (<strong>Alt+Q</strong>). When it is
+checked, what you save in Dictation Settings is used by QUILL, QUILL
+Transcribe and Quill Inkwell too, and what you save in any of them
+reaches QUILL Lite when you come back to it. Keys, the working tick,
+strict mode, what you hear after each phrase and every permission to
+send your speech stay QUILL Lite’s own. Checked for a new install;
+unchecked if you had already changed your settings, so nothing is
+replaced behind your back. Your own settings are kept in a backup file
+the first time, and a save that cannot reach the others is said
+aloud.</p></li>
+<li><p><strong>The shared word list has a new home.</strong> It is now
+in <code>%LOCALAPPDATA%\QuillVille\Dictation</code>, copied there from
+QUILL’s data folder the first time it is needed. The old file is left as
+it was, as a backup; nothing is deleted. QUILL Lite’s own word list is
+not affected.</p></li>
 <li><p><strong>Word, Excel and PowerPoint files open as text.</strong>
 Press <strong>Ctrl+O</strong> and choose a <code>.docx</code>,
 <code>.xlsx</code>, <code>.pptx</code> or <code>.odt</code> file (or an
@@ -264,6 +281,16 @@ Save As with a <code>.txt</code> name instead. An older
 LibreOffice installed; without it, QUILL Lite tells you how to save the
 file in the newer format. See “Opening Word, Excel and PowerPoint files”
 in the user guide.</p></li>
+<li><p><strong>Numbered lists and equations in Word files</strong>
+(2026-10-16). Numbered items now read 1, 2, 3 instead of 1, 1, 1, and an
+equation in a Word file comes through as text, for example
+<code>\(a^{2}+b^{2}=c^{2}\)</code>, where it used to be left out without
+a word. QUILL Lite reads Word, Excel, PowerPoint and OpenDocument files
+with QUILL’s own readers first, in the same order as QUILL, so a Word
+file opens in about a second; a second reader (MarkItDown, which QUILL
+Lite’s installer does not include) is tried only if QUILL’s own cannot
+read a file. See “Opening Word, Excel and PowerPoint files” in the user
+guide.</p></li>
 <li><p><strong>Read-Only Guard</strong> (2026-10-16). <strong>Tools &gt;
 Read-Only Guard</strong> (<strong>Ctrl+Alt+Backspace</strong>, the same
 key as QUILL) locks a document you are only reading: typing does

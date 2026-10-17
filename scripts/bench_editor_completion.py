@@ -148,7 +148,8 @@ except Exception as exc:
     status = type(exc).__name__ + ": " + str(exc)[:160]
 t2 = time.perf_counter()
 print(json.dumps({"import_s": t1 - t0, "read_s": t2 - t1, "status": status,
-                  "engine": engine, "chars": chars}))
+                  "engine": engine, "chars": chars,
+                  "markitdown_imported": "markitdown" in sys.modules}))
 """
 
 
@@ -161,6 +162,12 @@ def bench_open(runs: int, work: Path) -> dict[str, Any]:
     _write_docx(fixtures["docx"], 1500)
     _write_pdf(fixtures["pdf"], 60)
     _write_fake_doc(fixtures["doc"])
+    # The committed Office corpus (tests/corpus/office): a workbook and a deck,
+    # so the reader order is measured for every format it changes, not only Word.
+    corpus = _ROOT / "tests" / "corpus" / "office"
+    for name in ("budget.xlsx", "deck.pptx", "minutes.odt"):
+        if (corpus / name).is_file():
+            fixtures[name.rsplit(".", 1)[1]] = corpus / name
     results: dict[str, Any] = {}
     env_path = str(_ROOT)
     for kind, path in fixtures.items():
@@ -199,6 +206,7 @@ def bench_open(runs: int, work: Path) -> dict[str, Any]:
             "status": last.get("status", ""),
             "engine": last.get("engine", "") or warm_engine,
             "chars": last.get("chars", 0),
+            "markitdown_imported": last.get("markitdown_imported", None),
         }
     results["dependencies"] = _dependency_report()
     return results

@@ -50,8 +50,10 @@ def test_text_layer_emptiness_heuristic() -> None:
 
 
 def test_born_digital_routes_through_markitdown() -> None:
+    # A web page still tries MarkItDown first; Word, Excel, PowerPoint and
+    # OpenDocument go to QUILL's own reader first (test_office_reader_order.py).
     deps = _Deps(markitdown=lambda path: "# Converted\n\nBody text.\n")
-    outcome = convert_document(Path("report.docx"), deps=deps)
+    outcome = convert_document(Path("report.html"), deps=deps)
     assert outcome.tier == TIER_MARKITDOWN
     assert "Converted" in outcome.text
     assert not outcome.offer_local_ocr

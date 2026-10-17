@@ -110,6 +110,57 @@ dict.md D-12, D-13 and D-16. Design record:
   and Quill Radio user guides and changelogs; the QUILL Lite, QUILL Transcribe,
   QUILL Cast and Quill Radio PRDs; `voice-interaction.md`; the regenerated
   keyboard and F1 references.
+
+### QUILL's own Office readers first; MarkItDown only as their fallback (2026-10-16)
+
+Measured (`docs/design/2026-10-16-editor-completion-measurements.md`): a cold
+`.docx` open from source took 12.4 s, `.xlsx` 11.1 s and `.pptx` 11.6 s, almost
+all of it importing MarkItDown. Now 1.24 s, 2.18 s (openpyxl's import) and
+0.34 s; a warm `.docx` open went from 846 to 644 ms.
+
+- **New `office_text.read_office_text_preferring_own`.** Word, Excel,
+  PowerPoint and OpenDocument read with QUILL's reader first; MarkItDown is
+  tried only on `OfficeReadError` (damaged or no text), for a suffix it reads,
+  and never for an OLE container (a password-protected OOXML file). A rescue
+  is recorded as `own_reader_failure` and the intake report says "QUILL's own
+  reader: not used." with the reason; when both fail the user hears QUILL's
+  sentence. `.xls`, HTML, EPUB and CSV keep the MarkItDown-first order.
+- **Every entry point switched:** `structured.read_structured_document`
+  (File > Open, Recent, the shell, the watch folder), `docconvert.convert_born_digital`
+  (Import / Convert), `lite/open_prepare.read_office_for_open` (QUILL Lite),
+  the Action Builder's reference files and `.pages` Route B. The explicit
+  choices keep MarkItDown first: `docx_read_engine = "markitdown"` (relabelled
+  "MarkItDown first", Word only; Auto is now "Auto (QUILL's own reader
+  first)", and the setting's description says what each costs) and Convert
+  File's MarkItDown engine. `markitdown` is never imported on the fast path.
+- **Output compared on `tests/corpus/office`** and two gaps closed where
+  MarkItDown was better: numbered lists are counted 1, 2, 3 in the text
+  (`office_word.number_ordered_items`, per run and indent level, in both Word
+  readers and the ODT reader) instead of `1.` on every item; and Word
+  **equations** are kept. python-docx's `paragraph.text` skips `<m:oMath>`, so
+  equations vanished silently; new `quill/io/omml_text.py` converts OMML to
+  LaTeX in QUILL's Insert Equation delimiters (`\(...\)`, `$$...$$`). The
+  python-docx reader also keeps picture descriptions now (`[Image: ...]`), by
+  borrowing `office_word.paragraph_text` for paragraphs that hold a picture or
+  equation. Everywhere else QUILL's output was already as good or better
+  (title, table header row, pipes in cells, sheet and slide headings,
+  TRUE/FALSE, dates, no `NaN`, nested slide bullets).
+- **Tests:** new `tests/unit/io/test_office_reader_order.py` (a fresh
+  interpreter opens the corpus through `read_open_document` and QUILL Lite's
+  `prepare` and asserts `markitdown` and `magika` are not in `sys.modules`;
+  every entry point with a failing MarkItDown stand-in; the fallback and its
+  provenance; the setting; numbering; six equation shapes through both Word
+  readers; picture descriptions). Updated `test_office_corpus.py` (numbering;
+  the intake report no longer mentions MarkItDown) and `test_docconvert.py`
+  (its MarkItDown-tier test uses an `.html`).
+- `scripts/bench_editor_completion.py open` also times the corpus's `.xlsx`,
+  `.pptx` and `.odt` and records whether `markitdown` was imported.
+- Docs: the design note's new section with before/after numbers and the
+  comparison; QUILL user guide ("Office files QUILL reads by itself",
+  "Choosing a conversion engine", Import / Convert, the optional components
+  list, the intake report); QUILL Lite user guide and changelog; PRD
+  ("QUILL's own reader first"); the setting's F1/description text.
+
 ### Office files import without MarkItDown (todo P1 4b, 2026-10-16)
 
 Jeff's decision: "Give Office files a fallback that needs no MarkItDown." In a
