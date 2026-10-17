@@ -96,11 +96,25 @@ open, and what waits for a later version.
    a window would take the focus from the field; it follows "correct that" and
    "choose", which work here on the session's own words since decision 13.
 
+15. **Learning and profiles** (after 1.0.0, 2026-10-16, D-25 and D-23).
+   Practice Dictation is the one window of QUILL Transcribe's own that
+   dictation writes into: its field is an editor-style target written with one
+   undo step a phrase, never keystrokes, and only after the same refusals as
+   any start. Its recognition test scores with the benchmark's own word-error
+   count. Five lessons use the family's Tutorials window. Seven named profiles
+   (Standard, Email, Document, Markdown, Chat, Coding, Verbatim) overlay the
+   dictation settings; switching is manual only (menu, tray, More Dictation
+   Settings, or by voice), and Lock Profile stops voice switching. In another
+   program, a formatting profile types nothing for a heading and says why,
+   because the other program's formatting cannot be applied by keystrokes
+   QUILL Transcribe can trust.
+
 ## Waiting for a later version
 
 - Keeping audio for replay, which stays a separate opt-in that text history
   never implies.
-- Named dictation profiles for email, notes and forms.
+- A profile chosen automatically by the program in front (needs the privacy
+  review in the spec, section 7.6), and a word list per profile (D-21).
 - A multi-page setup with Back on each step.
 - Inkwell and the editors using QUILL Transcribe as a service rather than
   through the owner and microphone locks; Inkwell's own Dictate Anywhere pausing when the

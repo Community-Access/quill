@@ -224,6 +224,27 @@ class EditorDocument:
         self._host._dictation_after_edit()
         return True
 
+    # -- formatting by voice (D-23, profile_mixin.py) -------------------------- #
+
+    def formatting(self) -> str:
+        """``rich``, ``markdown`` or ``html`` when the document holds formatting
+        the editor's own commands can apply; ``""`` when it does not."""
+        ask = getattr(self._host, "_dictation_formatting", None)
+        return str(ask() or "") if callable(ask) and not self.background else ""
+
+    def apply_style(self, style: str, start: int, end: int) -> str | None:
+        """Select ``start..end`` and run the editor's own Bold, Italic or Heading
+        command (*style* ``bold``, ``italic``, ``heading_2``). ``None`` when it
+        could not; otherwise what is left to say, ``""`` when the editor said it."""
+        run = getattr(self._host, "_dictation_apply_style", None)
+        if not callable(run):
+            return None
+        self._control.SetSelection(start, end)
+        result = run(style)
+        if result is not None:
+            self._host._dictation_after_edit()
+        return result
+
 
 class HostFeedback:
     """The feedback port: the host's own cues, speech and status line."""
@@ -349,6 +370,12 @@ class HostFeedback:
     def set_speech_language(self, language: str) -> None:
         """Switch the dictation language, and save it (a choice, not a mode)."""
         self._host._dictation_set_speech_language(language)
+
+    def set_dictation_profile(self, profile_id: str) -> None:
+        """A profile chosen by voice (D-23): saved, as Dictation Settings would."""
+        settings = self._host._dictation_settings()
+        settings.windows_dictation_profile = profile_id
+        self._host._dictation_save_settings()
 
     def call_later(self, seconds: float, callback: Any) -> Any:
         """The working tick's clock (working_tick.py). A one-shot that owns

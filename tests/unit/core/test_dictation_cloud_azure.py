@@ -7,7 +7,6 @@ import struct
 from typing import Any
 from urllib.parse import parse_qsl, urlsplit
 
-import numpy as np
 import pytest
 from cloud_speech_fakes import FakeSocket, http_error, install
 
@@ -23,6 +22,8 @@ from quill.core.windows_dictation.cloud.errors import (
     said,
 )
 from quill.core.windows_dictation.cloud.types import CloudProvider
+
+np = pytest.importorskip("numpy")  # the live-dictation extra, not in every CI leg
 
 SECRET = "az-very-secret-123"
 VALUES = {"key": SECRET, "region": "westeurope"}

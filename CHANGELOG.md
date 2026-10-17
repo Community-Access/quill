@@ -62,6 +62,60 @@ installed. PDFs were already off MarkItDown (2026-10-15).
   `tests/unit/apps/test_lite_office.py`. Docs: both user guides, PRD
   ("QUILL's own Office readers", section 5.93.1), both changelogs.
 
+### Word, Markdown and HTML saves no longer carry the dark theme's grey (2026-10-16)
+
+A dark theme sets the rich control's foreground colour, which wxMSW applies as
+a character colour on every run. The `.rtf` save already took it off for the
+save (`_theme_colour_off`, bad.md R4), but saving a rich tab as `.docx`, `.md`
+or `.html` read the control's RTF with the grey still on, and `rtf_to_rich`
+kept it. Anyone working in dark mode sent grey text to everyone they shared
+a Word document with. Both paths in `quill/ui/main_frame_rich_mode.py` now
+read the RTF inside `_theme_colour_off`, and
+`test_docx_and_markup_saves_take_the_theme_colour_off_first` pins the order.
+QUILL Lite has no Word save yet and its `.rtf` save was already guarded.
+
+### Dictation profiles (D-23), and QUILL Transcribe's lessons, practice field and recognition test (D-25) (2026-10-16)
+
+dict.md section 4, "Modes" and "Coach". Design record section 29.
+
+- **`quill/core/windows_dictation/profiles.py`** (new, wx-free): seven
+  `NamedProfile`s (Standard, Email, Document, Markdown, Chat, Coding,
+  Verbatim), each an overlay of pause, fillers and punctuation plus a structure
+  (`markdown`, `formatted`, `plain`); `coerce_profile`, `active_profile`,
+  `active_profile_name`. Standard is no overlay and the default.
+- **`DictationPreferences`** gains `named_profile`, `structure` and
+  `profile_locked`; `_writing` applies the overlay. Settings
+  `windows_dictation_profile` and `windows_dictation_profile_locked` (shared
+  by name; additive, accepted in `data_format_audit` for `quill.settings` and
+  `lite.settings`).
+- **`profile_mixin.py`** (new) on the controller: headings by structure,
+  "bold that" / "italic that" (new `Command.BOLD_THAT`, `ITALIC_THAT`), the
+  seven profile commands with Lock Profile, and the profile in the status cell.
+  Bold, italic and the profile commands also work in other programs
+  (`anywhere.EXTERNAL_COMMANDS`).
+- **Editors**: `EditorDocument.formatting()`/`apply_style()`; QUILL runs
+  `format.bold`/`italic`/`heading_N`, QUILL Lite its own `cmd_*`, in a rich
+  text document (QUILL also in Markdown and HTML). More Dictation Settings has
+  the profile (Alt+A) and the lock (Alt+B).
+- **QUILL Transcribe**: Dictation > Dictation Profile... (Ctrl+Shift+F,
+  `ProfileDialog`), Lock Profile (Ctrl+Shift+L), Practice Dictation...
+  (Ctrl+Shift+P, new `transcribe_practice.py`), Help > Tutorials...
+  (Ctrl+Alt+F1); tray read-out and row; profile in the window, tray name and
+  Dictation Status. New `transcribe_coach.py`.
+- **Recognition test**: `quill/core/transcribe/practice.py`; the word-error
+  scorer moved from `scripts/dictbench.py` to
+  `quill/core/windows_dictation/word_errors.py`, which both import.
+- **Lessons**: `quill/core/tutorials/transcribe_lessons.py` (five),
+  `quill/core/transcribe/tutorials.py` (catalogue and command table),
+  `quill/ui/transcribe_tutorials.py`; GATE-TUTDOC renders
+  `standalone/transcribe/docs/tutorials.md`.
+- **Reference**: the dictation commands guide gains "Profiles and formatting"
+  (`reference._profile_section`), regenerated with `docs/site/dictation.html`.
+- Tests: `test_dictation_profiles.py`, `test_transcribe_coach.py`,
+  `test_dictation_formatting_hooks.py`. Snapshots regenerated: dialog
+  inventory, accessible names, Transcribe help, settings documentation and
+  vocabulary, F1 help reference, data formats.
+
 ### Dictation: self-repair, named styles, learning from corrections, and opt-in polish (D-20, D-21, 2026-10-16)
 
 dict.md section 4, "Polish", "Learn" and "Modes". Design record section 28.

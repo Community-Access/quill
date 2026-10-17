@@ -13186,11 +13186,12 @@ point size. That is why the ladder moved to `core/heading_ladder.py`: `quill/io`
 may not import `quill/ui`, and a second copy of those numbers is a silent
 round-trip bug.
 
-**Prior art.** Leasey 11.5 solves the same problem the same way and with no UIA
-anywhere -- `accessible_output2` plus its own `heading_positions`,
-`imported_word_tables` and `announce_word_table_cell` models, backed by a
-JAWS-only script layer QUILL deliberately does not have. Confirmation that
-self-narration is the answer available to any hosted control, not a workaround.
+**Prior art.** Established screen-reader add-ons solve the same problem the
+same way, with no UIA anywhere: the application speaks through a speech
+library and keeps its own model of heading positions and table cells, often
+backed by a script layer for one screen reader that QUILL deliberately does
+not have. Confirmation that self-narration is the answer available to any
+hosted control, not a workaround.
 
 ---
 
