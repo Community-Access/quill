@@ -108,6 +108,24 @@ class WindowsDictationCommandsMixin(WindowsDictationMixin):
         except Exception:  # noqa: BLE001 - the choice still holds for this session
             pass
 
+    def _dictation_formatting(self) -> str:
+        """What formatting this document holds, for bold and headings by voice
+        (D-23): ``rich``, ``markdown``, ``html``, or ``""`` for plain text."""
+        if self._current_editor_mode() == "rich":
+            return "rich"
+        return str(self._active_markup_surface() or "")
+
+    def _dictation_apply_style(self, style: str) -> str | None:
+        """QUILL's own Bold, Italic or Heading command on the selection (D-23).
+        In rich text the command says the outcome itself; in markup it does not."""
+        kind = self._dictation_formatting()
+        if not kind:
+            return None  # never the plain-text formatting question mid-dictation
+        self.commands.run(f"format.{style}")
+        if kind == "rich":
+            return ""
+        return style.replace("_", " ").capitalize() + "."  # "Bold.", "Heading 2."
+
     def _dictation_say(self, text: str) -> None:
         # Forced past the verbosity gate: every sentence dictation speaks is
         # either something the user asked to hear read back or a failure.

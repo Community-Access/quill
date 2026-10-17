@@ -155,6 +155,8 @@ class VoiceCommandsMixin:
         self._spell_once = False
         self._target: Target | None = None
         self._target_mode = Command.SELECT_WORDS
+        #: "correct X": the words and where they start (D-21), until the next phrase.
+        self._correcting: tuple[str, int] | None = None
 
     def _end_voice_modes(self) -> None:
         """Dictation stopped: every mode goes back to normal."""
@@ -162,6 +164,7 @@ class VoiceCommandsMixin:
         self.no_space = False
         self._spell_once = False
         self._target = None
+        self._correcting = None
 
     @property
     def mode_text(self) -> str:
@@ -305,6 +308,7 @@ class VoiceCommandsMixin:
         """Select or move to *target*, and say where, once."""
         matched = _short(text[target.start : target.end])
         mode = self._target_mode
+        self._correcting = None
         if mode is Command.GO_TO_WORDS:
             self._document.select(target.start, target.start)
             said = f"Before {matched}"
@@ -313,6 +317,9 @@ class VoiceCommandsMixin:
             said = f"After {matched}"
         elif mode is Command.CORRECT_WORDS:
             self._document.select(target.start, target.end)
+            # D-21: what the next phrase replaces, so a repeated correction
+            # can be offered for My Words (correction_learning.py).
+            self._correcting = (text[target.start : target.end], target.start)
             said = f"Correcting {matched}. Say the new words"
         else:
             self._document.select(target.start, target.end)

@@ -7,7 +7,6 @@ import json
 from typing import Any
 from urllib.parse import parse_qsl, urlsplit
 
-import numpy as np
 import pytest
 from cloud_speech_fakes import FakeSocket, MemoryBackend, http_error, install
 
@@ -19,6 +18,8 @@ from quill.core.windows_dictation.cloud.errors import (
     said,
 )
 from quill.core.windows_dictation.cloud.streaming_more import ElevenLabsScribe, Gladia, RevAI
+
+np = pytest.importorskip("numpy")  # the live-dictation extra, not in every CI leg
 
 SECRET = "sk-very-secret-123"
 

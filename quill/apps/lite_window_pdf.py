@@ -73,6 +73,8 @@ class DocumentPdfMixin:
 
     #: The open PDF's outline as ``(title, page)`` pairs; empty for anything else.
     pdf_outline: tuple[tuple[str, int], ...] = ()
+    #: Each outline entry's nesting level, for Go To's wording only.
+    pdf_outline_levels: tuple[int, ...] = ()
 
     # -- before the commit -------------------------------------------------- #
 
@@ -136,6 +138,7 @@ class DocumentPdfMixin:
         then opened a text file does not keep offering the PDF's chapters.
         """
         self.pdf_outline = tuple(found.outline) if found is not None else ()
+        self.pdf_outline_levels = tuple(found.outline_levels) if found is not None else ()
         if found is None:
             return
         if found.engine == ENGINE_OCR:

@@ -328,6 +328,167 @@ identity. Snippet, abbreviation and Copy Tray search match every word in
 any order (<code>quill/core/list_search.py</code>).</li>
 </ul>
 <h3
+id="word-markdown-and-html-saves-no-longer-carry-the-dark-themes-grey-2026-10-16">Word,
+Markdown and HTML saves no longer carry the dark theme’s grey
+(2026-10-16)</h3>
+<p>A dark theme sets the rich control’s foreground colour, which wxMSW
+applies as a character colour on every run. The <code>.rtf</code> save
+already took it off for the save (<code>_theme_colour_off</code>, bad.md
+R4), but saving a rich tab as <code>.docx</code>, <code>.md</code> or
+<code>.html</code> read the control’s RTF with the grey still on, and
+<code>rtf_to_rich</code> kept it. Anyone working in dark mode sent grey
+text to everyone they shared a Word document with. Both paths in
+<code>quill/ui/main_frame_rich_mode.py</code> now read the RTF inside
+<code>_theme_colour_off</code>, and
+<code>test_docx_and_markup_saves_take_the_theme_colour_off_first</code>
+pins the order. QUILL Lite has no Word save yet and its
+<code>.rtf</code> save was already guarded.</p>
+<h3
+id="dictation-profiles-d-23-and-quill-transcribes-lessons-practice-field-and-recognition-test-d-25-2026-10-16">Dictation
+profiles (D-23), and QUILL Transcribe’s lessons, practice field and
+recognition test (D-25) (2026-10-16)</h3>
+<p>dict.md section 4, “Modes” and “Coach”. Design record section 29.</p>
+<ul>
+<li><strong><code>quill/core/windows_dictation/profiles.py</code></strong>
+(new, wx-free): seven <code>NamedProfile</code>s (Standard, Email,
+Document, Markdown, Chat, Coding, Verbatim), each an overlay of pause,
+fillers and punctuation plus a structure (<code>markdown</code>,
+<code>formatted</code>, <code>plain</code>);
+<code>coerce_profile</code>, <code>active_profile</code>,
+<code>active_profile_name</code>. Standard is no overlay and the
+default.</li>
+<li><strong><code>DictationPreferences</code></strong> gains
+<code>named_profile</code>, <code>structure</code> and
+<code>profile_locked</code>; <code>_writing</code> applies the overlay.
+Settings <code>windows_dictation_profile</code> and
+<code>windows_dictation_profile_locked</code> (shared by name; additive,
+accepted in <code>data_format_audit</code> for
+<code>quill.settings</code> and <code>lite.settings</code>).</li>
+<li><strong><code>profile_mixin.py</code></strong> (new) on the
+controller: headings by structure, “bold that” / “italic that” (new
+<code>Command.BOLD_THAT</code>, <code>ITALIC_THAT</code>), the seven
+profile commands with Lock Profile, and the profile in the status cell.
+Bold, italic and the profile commands also work in other programs
+(<code>anywhere.EXTERNAL_COMMANDS</code>).</li>
+<li><strong>Editors</strong>:
+<code>EditorDocument.formatting()</code>/<code>apply_style()</code>;
+QUILL runs
+<code>format.bold</code>/<code>italic</code>/<code>heading_N</code>,
+QUILL Lite its own <code>cmd_*</code>, in a rich text document (QUILL
+also in Markdown and HTML). More Dictation Settings has the profile
+(Alt+A) and the lock (Alt+B).</li>
+<li><strong>QUILL Transcribe</strong>: Dictation &gt; Dictation Profile…
+(Ctrl+Shift+F, <code>ProfileDialog</code>), Lock Profile (Ctrl+Shift+L),
+Practice Dictation… (Ctrl+Shift+P, new
+<code>transcribe_practice.py</code>), Help &gt; Tutorials…
+(Ctrl+Alt+F1); tray read-out and row; profile in the window, tray name
+and Dictation Status. New <code>transcribe_coach.py</code>.</li>
+<li><strong>Recognition test</strong>:
+<code>quill/core/transcribe/practice.py</code>; the word-error scorer
+moved from <code>scripts/dictbench.py</code> to
+<code>quill/core/windows_dictation/word_errors.py</code>, which both
+import.</li>
+<li><strong>Lessons</strong>:
+<code>quill/core/tutorials/transcribe_lessons.py</code> (five),
+<code>quill/core/transcribe/tutorials.py</code> (catalogue and command
+table), <code>quill/ui/transcribe_tutorials.py</code>; GATE-TUTDOC
+renders <code>standalone/transcribe/docs/tutorials.md</code>.</li>
+<li><strong>Reference</strong>: the dictation commands guide gains
+“Profiles and formatting” (<code>reference._profile_section</code>),
+regenerated with <code>docs/site/dictation.html</code>.</li>
+<li>Tests: <code>test_dictation_profiles.py</code>,
+<code>test_transcribe_coach.py</code>,
+<code>test_dictation_formatting_hooks.py</code>. Snapshots regenerated:
+dialog inventory, accessible names, Transcribe help, settings
+documentation and vocabulary, F1 help reference, data formats.</li>
+</ul>
+<h3
+id="dictation-self-repair-named-styles-learning-from-corrections-and-opt-in-polish-d-20-d-21-2026-10-16">Dictation:
+self-repair, named styles, learning from corrections, and opt-in polish
+(D-20, D-21, 2026-10-16)</h3>
+<p>dict.md section 4, “Polish”, “Learn” and “Modes”. Design record
+section 28. QUILL, QUILL Lite, QUILL Transcribe and Quill Inkwell,
+through the shared dictation package.</p>
+<ul>
+<li><strong>Self-repair (D-20)</strong>,
+<code>quill/core/windows_dictation/self_repair.py</code> (new, wx-free).
+A repair marker (“no”, “I mean”, “no I mean”, “sorry”, “scratch that
+word”) between two words of one kind (a day, a month, a number, or a
+name from My Words’ Vocabulary) keeps the second. Only the words either
+side of the marker are looked at; a full stop or question mark before
+it, a different kind, or a lower-case “may”/“march” leaves the phrase
+alone. Run in <code>DictationController.on_phrase</code> after the
+rewrite, behind <code>DictationPreferences.self_repair</code>
+(<code>windows_dictation_self_repair</code>, off). The transcript
+profile forces it off. <code>profile.with_repair_names</code> gives the
+controller the names, in QUILL, QUILL Lite, QUILL Transcribe and
+Inkwell.</li>
+<li><strong>Named styles (D-20).</strong>
+<code>self_repair.STYLE_CHOICES</code> / <code>STYLE_FIELDS</code> /
+<code>style_of</code>: Verbatim, Clean, Polished (only with
+<code>ai_on</code>) and “Your own mix”, mapped onto existing fields;
+nothing new is stored for the style itself. The chooser and the
+self-repair box live in the new
+<code>quill/ui/windows_dictation_style.py</code>
+(<code>DictationStyleMixin</code>), so
+<code>windows_dictation_dialog.py</code> stays under the 600-line cap.
+The dialog takes <code>ai_on=</code>; the editors and Transcribe pass
+<code>_review_ai_on()</code>. The “After each phrase” chooser moved to
+the right column to keep the window under 700 pixels
+(<code>test_the_window_fits_a_small_screen</code>).</li>
+<li><strong>Polish my dictation (P3).</strong>
+<code>Command.REVIEW_POLISH</code> (“polish that”, “polish it”);
+<code>ReviewConversation.polish</code> sends the fixed
+<code>review_session.POLISH_INSTRUCTION</code> through the ordinary
+<code>instruct</code> path, so the D-2 consent, the account routes
+(ChatGPT subscription or own key; never the free allowance), the diff
+summary and Undo Change all apply unchanged.
+<code>windows_dictation_polish</code> (off) gates it; with no review
+open, <code>ReviewMixin._polish_last</code> opens the last phrase first.
+The review frame shows <strong>Polish</strong> (Ctrl+P) only when
+allowed, greyed with AI off. More Dictation Settings has the check box
+(Alt+G). No new network call site: the request is the review’s own
+(<code>network_egress_audit</code> unchanged).</li>
+<li><strong>Learning from corrections (D-21)</strong>,
+<code>quill/core/windows_dictation/correction_learning.py</code> (new,
+wx-free). The second identical “choose N” replacement, or “correct X”
+followed by the new words landing where X was
+(<code>voice_commands._land</code> records it,
+<code>LiveMixin._after_insert</code> checks it), offers “Add a
+correction: A becomes B?” once per run. Editors:
+<code>HostFeedback.confirm_correction</code>, a Yes/No box (No default)
+from the new <code>quill/ui/windows_dictation_learn.py</code>, deferred
+out of the recogniser callback; the focus-loss check stands aside while
+it is up. Transcribe: spoken, answered by “QUILL yes”/“QUILL no” within
+30 seconds (<code>CommandModeMixin</code> asks
+<code>_learn_answer</code> first). Yes writes through
+<code>words_file</code>’s model into Corrections.</li>
+<li><strong>Per-context lists (D-21).</strong> <code>words_file</code>
+parses and round-trips <code>## Context: &lt;name&gt;</code> sections
+(<code>ContextList</code>, <code>context_list</code>);
+<code>profile.context_profile</code> and
+<code>rewriter(path, context=...)</code> apply one on top of the main
+lists. No caller passes a context yet: D-23 profiles are not built.</li>
+<li><strong>Whisper initial prompt (D-21 investigation).</strong>
+sherpa-onnx 1.13.8’s <code>OfflineWhisperModelConfig</code> has no
+prompt field and <code>OfflineRecognizer.from_whisper</code> takes none,
+so local Whisper biasing through a prompt is not possible on the pinned
+version. Recorded in the design record.</li>
+<li>Settings: <code>windows_dictation_self_repair</code>,
+<code>windows_dictation_polish</code> in
+<code>settings_fields.DictationSettings</code> (both editors and
+Transcribe); <code>data_format_audit</code> recorded as additive for
+<code>quill.settings</code> and <code>lite.settings</code>. Generated:
+<code>docs/f1-help-reference.md</code>, both
+<code>dictation-commands.md</code> (new “Correcting yourself as you
+talk” section).</li>
+<li>Tests:
+<code>tests/unit/core/test_dictation_self_repair_and_learning.py</code>
+(new), plus <code>test_dictation_review_frame.py</code>,
+<code>test_dictation_settings_dialog.py</code> and
+<code>test_transcribe_app.py</code>.</li>
+</ul>
+<h3
 id="dictation-replace-change-that-delete-by-paragraph-a-second-opinion-kept-revisions-and-correcting-in-other-programs-d-19-d-10-2026-10-16">Dictation:
 replace, change that, delete by paragraph, a second opinion, kept
 revisions, and correcting in other programs (D-19, D-10,
@@ -446,6 +607,78 @@ references and <code>docs/site/dictation.html</code> regenerated.</li>
 <code>test_dictation_snippet_fill.py</code>,
 <code>tests/unit/ui/test_dictation_kept_words.py</code>, and a parity
 test in <code>test_dictation_parity.py</code>.</li>
+</ul>
+<h3
+id="pdf-text-reliability-each-pages-most-readable-reading-a-bounded-score-titles-found-inside-their-pages-2026-10-16">PDF
+text reliability: each page’s most readable reading, a bounded score,
+titles found inside their pages (2026-10-16)</h3>
+<p>Jeff’s todo P2 #28, “Text-extraction reliability, shared by both
+editors and Import / Convert”. Text reading only: no structure work.
+Design note with the formula, thresholds and measured budget:
+<code>docs/design/2026-10-16-pdf-text-reliability.md</code>; PRD 5.5
+item 1 rewritten to match what ships (it described a per-page selection
+with pypdfium2 and pdfminer.six as extractors that never existed).</p>
+<ul>
+<li><strong>Per-page selection</strong> (<code>quill/io/pdf.py</code>,
+new <code>quill/io/pdf_select.py</code>). The reader used to keep the
+first non-empty answer of pdfplumber, then pypdf. Now pdfplumber reads
+each page; a reading scoring at least 90 on a page whose characters show
+no column gutter is kept (the fast path); otherwise pypdf plain, pypdf
+layout and, on a two-column page, pypdf layout read column by column are
+compared (plus pdfplumber with duplicate characters removed when the
+first reading shows fake-bold doubling). Every reading is scored before
+and after repair; the best reading wins, ties to the earlier engine. One
+failing page is recorded as <code>failed</code> instead of sinking the
+document.</li>
+<li><strong>Readability score</strong> (new
+<code>quill/io/pdf_score.py</code>) replaces the quantity score: 100
+times one factor each for suspicious characters, single-letter runs, one
+word per line, implausible joins, coverage against the fullest reading,
+and columns run together. Short titles, numeric rows and non-Latin
+scripts score 100. Doubtful pages (below 40, unreadable characters, or
+image-only) are named in one shared sentence
+(<code>pdf_open.doubtful_pages_sentence</code>) in QUILL’s open status,
+QUILL Lite’s open announcement and the intake reports; blank pages never
+are. New metadata: <code>page_engines</code>,
+<code>page_unreadable</code>, <code>pdf_outline_levels</code> (additive;
+old keys unchanged).</li>
+<li><strong>MarkItDown</strong> no longer gets an automatic 85 in
+<code>quill.io.structured</code>; that fallback is gone. Inside the
+reader it is offered pages only when the document still scores below 50,
+and a page is replaced only when its pages line up and it scores 10
+points better by the same rules. <code>format_pdf_document</code> no
+longer keeps the <em>longer</em> answer.</li>
+<li><strong>Fixes found by measuring first:</strong> a blank first page
+lost its form feed (every page offset shifted by one); unmapped
+private-use glyphs were deleted (“next box” read as “net bo”); 200 pages
+peaked at 429 MB because pdfplumber pages were never closed (now 6.5
+MB); a long body line swallowed “Chapter 2” under it; two long table
+rows were joined.</li>
+<li><strong>Repairs</strong> (<code>quill/io/pdf_repair.py</code>):
+unmapped private use kept, ligature slots expanded only beside a letter;
+no closing-up of a spaced sentence into one word; identifier hyphens
+kept, <code>self-</code>/<code>well-</code> style prefixes joined with
+the hyphen; reflow protects headings, lettered/roman list starts,
+address lines, column-spaced rows and rows of figures. Still
+idempotent.</li>
+<li><strong>Outline</strong> (new <code>quill/io/pdf_outline.py</code>,
+<code>quill/core/pdf_open.py</code>): entries carry their nesting level;
+bookmarks and Go To land on the title at the start of a line on its
+page, falling back to the page start; duplicate titles take successive
+matches; Go To says “level N” for nested entries. Stores keep their
+<code>(title, page)</code> shape.</li>
+<li><strong>Fixture corpus</strong> <code>tests/corpus/pdf/</code> (10
+small PDFs and <code>build_pdf_corpus.py</code>, pypdf only) and
+<code>tests/unit/io/test_pdf_corpus.py</code> (real files, text and
+order, page offsets, bookmark targets, encrypted, the PDF never changed,
+and a <code>perf</code> budget). New
+<code>tests/unit/io/test_pdf_score.py</code>; <code>test_pdf.py</code>,
+<code>test_pdf_repair.py</code>, <code>test_pdf_open.py</code>,
+<code>test_intake.py</code> and <code>test_structured.py</code>
+extended.</li>
+<li><strong>Measured</strong> (clean / questionable, ms a page, old then
+new): 37.6 / 38.3 and 41.9 / 58.4. <code>quill/io/structured.py</code>
+budget ratcheted 779 -&gt; 764.</li>
 </ul>
 <h3
 id="quill-radio-station-enrichment-the-signed-station-pack-fts5-search-and-station-details-2026-10-16">Quill

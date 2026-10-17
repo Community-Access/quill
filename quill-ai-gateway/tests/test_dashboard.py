@@ -143,3 +143,24 @@ def test_audit_log_records_dashboard_actions(app, client, db):
     response = client.get("/dashboard/audit-log")
     assert response.status_code == 200
     assert b"set_config" in response.data
+
+
+def test_login_follows_only_a_local_next_path(app, client, db):
+    """A signed-in admin is never sent off-site by a crafted ``next``."""
+    from app.models import Device, User
+
+    user = User(email="next@example.com")
+    db.session.add(user)
+    db.session.flush()
+    device = Device(user_id=user.id, token_hash=hash_token("next-token"), label="admin")
+    db.session.add(device)
+    db.session.commit()
+    app.config["ADMIN_ALLOWLIST"] = frozenset({device.id})
+    for hostile in ("https://evil.example/", "//evil.example/", "/\evil.example", "javascript:x"):
+        response = client.post("/dashboard/login", data={"token": "next-token", "next": hostile})
+        assert response.status_code == 302
+        assert response.headers["Location"].endswith("/dashboard/"), hostile
+    response = client.post(
+        "/dashboard/login", data={"token": "next-token", "next": "/dashboard/users"}
+    )
+    assert response.headers["Location"].endswith("/dashboard/users")

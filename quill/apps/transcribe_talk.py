@@ -271,12 +271,15 @@ class TranscribeTalkMixin:
 
         controller = getattr(self, "_dictation", None)
         live = controller is not None and controller.active
-        return status_sentence(
+        sentence = status_sentence(
             state=self._dictation_state_only(),  # type: ignore[attr-defined]
             program=self._dictation_program() if live else "",
             model=model_name(self.engine_in_use()),  # type: ignore[attr-defined]
             held=int(controller.held_count) if controller is not None else 0,
         )
+        profile = getattr(self, "dictation_profile_name", None)
+        name = str(profile()) if callable(profile) else "Standard"
+        return sentence if name == "Standard" else f"{sentence} {name} profile."  # D-23
 
     def speak_dictation_status(self) -> None:
         """Alt+F9 in the window, or the Dictation Status key from anywhere."""

@@ -23,7 +23,12 @@ live here, wx-free, and both editors call them:
   both editors) and :func:`outline_bookmark_offsets` (QUILL's named bookmarks).
   An outline entry names a page; the page is found from the form feeds in the
   text *now*, so an edit above it does not leave the entry pointing at the
-  wrong place.
+  wrong place, and the entry's title is then looked for at the start of a line
+  on that page, so "Chapter 2" halfway down page 14 lands on "Chapter 2", not
+  on the top of page 14. No reliable match means the page's start, as before.
+  Nesting is kept for Go To's wording ("level 2") and never becomes a heading.
+* **Which pages may read poorly** -- :func:`doubtful_pages_sentence`, said in
+  the open summary of both editors.
 * **The sentences** -- the password prompt, the scanned question, the open
   summary and Save's refusal, so the two editors say the same thing about the
   same file.
@@ -33,6 +38,7 @@ wx-free; in scope for strict ``mypy``.
 
 from __future__ import annotations
 
+import re
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from pathlib import Path
@@ -49,6 +55,7 @@ __all__ = [
     "PASSWORD_DIALOG_TITLE",
     "SCANNED_DIALOG_TITLE",
     "PdfOpen",
+    "doubtful_pages_sentence",
     "is_pdf_path",
     "ocr_finished_sentence",
     "ocr_pdf_for_open",
@@ -100,6 +107,12 @@ class PdfOpen:
     page_scores: tuple[int, ...] = ()
     #: ``(title, page)`` pairs, page 1-based, in document order.
     outline: tuple[tuple[str, int], ...] = ()
+    #: Each outline entry's nesting level (1 = top), parallel to ``outline``.
+    outline_levels: tuple[int, ...] = ()
+    #: Per page read: whose reading was kept (``quill.io.pdf.PdfExtractionResult``).
+    page_engines: tuple[str, ...] = ()
+    #: Per page read: characters that could not be read as text.
+    page_unreadable: tuple[int, ...] = ()
     #: A password was tried and did not open the file.
     password_rejected: bool = False
     #: Mean OCR confidence 0-100, or -1 when not measured (Windows OCR, or no OCR).
@@ -141,10 +154,21 @@ class PdfOpen:
             "page_count": self.page_count,
             "extracted_pages": self.extracted_pages,
             "page_scores": list(self.page_scores),
+            "page_engines": list(self.page_engines),
+            "page_unreadable": list(self.page_unreadable),
         }
         if self.outline:
             metadata["pdf_outline"] = [tuple(entry) for entry in self.outline]
+            if any(level > 1 for level in self.outline_levels):
+                metadata["pdf_outline_levels"] = list(self.outline_levels)
         return metadata
+
+    @property
+    def doubtful_pages(self) -> list[int]:
+        """1-based numbers of the pages that may read poorly."""
+        from quill.io.pdf import doubtful_pages
+
+        return doubtful_pages(self.page_scores, self.page_engines, self.page_unreadable)
 
 
 def read_pdf_for_open(
@@ -152,38 +176,46 @@ def read_pdf_for_open(
     *,
     password: str | None = None,
     extract: Callable[..., Any] | None = None,
-    read_outline: Callable[..., list[tuple[str, int]]] | None = None,
+    read_outline: Callable[..., Iterable[Any]] | None = None,
 ) -> PdfOpen:
     """Read *path* with the shared reader; *password* is used for this read only.
 
     ``extract`` and ``read_outline`` are seams for tests; by default they are
     :func:`quill.io.pdf.extract_pdf_text` and
-    :func:`quill.io.pdf.extract_pdf_outline`. The outline is read only when the
-    reader saw pages, because a locked or unreadable file has none.
+    :func:`quill.io.pdf.extract_pdf_outline_entries`. ``read_outline`` may give
+    ``(title, page)`` pairs or ``(title, page, level)`` triples. The outline is
+    read only when the reader saw pages, because a locked or unreadable file
+    has none. Both editors, and QUILL's ``quill.io.structured``, read through
+    here, so the page choice, the MarkItDown fallback (inside the reader,
+    scored by the same rules) and the provenance are the same everywhere.
     """
     if extract is None or read_outline is None:
-        from quill.io.pdf import extract_pdf_outline, extract_pdf_text
+        from quill.io.pdf import extract_pdf_outline_entries, extract_pdf_text
 
         extract = extract or extract_pdf_text
-        read_outline = read_outline or extract_pdf_outline
+        read_outline = read_outline or extract_pdf_outline_entries
     result = extract(path, password=password)
     page_count = int(getattr(result, "page_count", 0) or 0)
-    outline: tuple[tuple[str, int], ...] = ()
-    if page_count > 0:
-        outline = tuple(
-            (str(title), int(page)) for title, page in read_outline(path, password=password)
-        )
     engine = str(getattr(result, "engine", ""))
+    outline: list[tuple[str, int]] = []
+    levels: list[int] = []
+    if page_count > 0 and engine not in {ENGINE_ENCRYPTED, ENGINE_DAMAGED, ENGINE_UNAVAILABLE}:
+        for entry in read_outline(path, password=password):
+            outline.append((str(entry[0]), int(entry[1])))
+            levels.append(int(entry[2]) if len(entry) > 2 else 1)
     # format_pdf_document's own answer for a result in hand: the text, with
     # nothing prepended (#1279).
     return PdfOpen(
-        text=str(getattr(result, "text", "")).rstrip() + "\n",
+        text=str(getattr(result, "text", "")).rstrip(" \t\r\n") + "\n",
         engine=engine,
         page_count=page_count,
         extracted_pages=int(getattr(result, "extracted_pages", 0) or 0),
         quality_score=int(getattr(result, "quality_score", 0) or 0),
         page_scores=tuple(int(score) for score in getattr(result, "page_scores", []) or []),
-        outline=outline,
+        outline=tuple(outline),
+        outline_levels=tuple(levels),
+        page_engines=tuple(str(name) for name in getattr(result, "page_engines", []) or []),
+        page_unreadable=tuple(int(n) for n in getattr(result, "page_unreadable", []) or []),
         password_rejected=engine == ENGINE_ENCRYPTED and bool(password),
     )
 
@@ -224,6 +256,7 @@ def ocr_pdf_for_open(
         extracted_pages=sum(1 for page in pages if page),
         quality_score=found.quality_score,
         outline=found.outline,
+        outline_levels=found.outline_levels,
         ocr_confidence=float(outcome.mean_confidence),
     )
 
@@ -246,43 +279,85 @@ def unique_outline_name(title: str, used: set[str]) -> str:
     return f"{base} ({suffix})"
 
 
-def _resolved(text: str, outline: Iterable[object]) -> list[tuple[str, int, int]]:
-    """``(title, page, offset)`` for each entry whose page the text has.
+def _title_pattern(title: str) -> re.Pattern[str] | None:
+    """The title at the start of a line, with spacing and case forgiven."""
+    words = str(title).split()
+    if not words or sum(len(word) for word in words) < 2:
+        return None  # too short to find reliably: "1", "A"
+    body = r"\s+".join(re.escape(word) for word in words)
+    # A page starts after a form feed, which ``^`` does not count as a line start.
+    return re.compile(rf"(?:^|(?<=\f))[ \t]*({body})(?=\s|$)", re.IGNORECASE | re.MULTILINE)
 
-    A malformed entry, or one pointing past the last page, is skipped:
-    importing an outline must never block opening a PDF.
+
+def _resolved(
+    text: str, outline: Iterable[object], levels: Iterable[int] = ()
+) -> list[tuple[str, int, int, int]]:
+    """``(title, page, offset, level)`` for each entry whose page the text has.
+
+    The offset is where the title starts a line on its page, when it does;
+    otherwise the page's start. Two entries with one title on one page land on
+    successive matches, so duplicates stay distinct. The level comes from a
+    ``(title, page, level)`` entry, else from *levels*, else 1. A malformed
+    entry, or one pointing past the last page, is skipped: importing an
+    outline must never block opening a PDF.
     """
-    found: list[tuple[str, int, int]] = []
-    for entry in outline:
-        if not isinstance(entry, (tuple, list)) or len(entry) != 2:
+    depth = list(levels)
+    found: list[tuple[str, int, int, int]] = []
+    searched_from: dict[tuple[int, str], int] = {}
+    for index, entry in enumerate(outline):
+        if not isinstance(entry, (tuple, list)) or len(entry) not in {2, 3}:
             continue
         try:
             page = int(entry[1])
+            level = (
+                int(entry[2]) if len(entry) == 3 else (depth[index] if index < len(depth) else 1)
+            )
         except (TypeError, ValueError):
             continue
-        offset = page_start_for_number(text, page)
-        if offset is not None:
-            found.append((str(entry[0]), page, offset))
+        start = page_start_for_number(text, page)
+        if start is None:
+            continue
+        title = str(entry[0])
+        offset = start
+        pattern = _title_pattern(title)
+        if pattern is not None:
+            end = text.find("\f", start)
+            key = (page, " ".join(title.lower().split()))
+            match = pattern.search(
+                text, searched_from.get(key, start), len(text) if end < 0 else end
+            )
+            if match is not None:
+                offset = match.start(1)
+                searched_from[key] = match.end()
+        found.append((title, page, offset, max(1, level)))
     return found
 
 
 def outline_bookmark_offsets(text: str, outline: Iterable[object]) -> dict[str, int]:
-    """Each outline entry as a unique name and the offset of its page's start."""
+    """Each outline entry as a unique name and the offset of its title (or page)."""
     offsets: dict[str, int] = {}
-    for title, _page, offset in _resolved(text, outline):
+    for title, _page, offset, _level in _resolved(text, outline):
         offsets[unique_outline_name(title, set(offsets))] = offset
     return offsets
 
 
-def outline_places(text: str, outline: Iterable[object]) -> list[tuple[str, int]]:
+def outline_places(
+    text: str, outline: Iterable[object], levels: Iterable[int] = ()
+) -> list[tuple[str, int]]:
     """Go To's Outline kind: ``("Chapter 2, page 14", offset)`` rows, in order.
 
     Led by the title, because that is what a listener is choosing between; the
-    page follows so two entries with one title can still be told apart.
+    page follows so two entries with one title can still be told apart. A
+    nested entry says its level ("Summary, level 2, page 3"): the outline's
+    shape in words, not a heading level -- nothing is made a heading.
     """
     return [
-        (f"{' '.join(title.split()) or 'Untitled'}, page {page}", offset)
-        for title, page, offset in _resolved(text, outline)
+        (
+            f"{' '.join(title.split()) or 'Untitled'}"
+            f"{f', level {level}' if level > 1 else ''}, page {page}",
+            offset,
+        )
+        for title, page, offset, level in _resolved(text, outline, levels)
     ]
 
 
@@ -355,7 +430,26 @@ def opened_summary(found: PdfOpen) -> str:
     if found.outline:
         entries = len(found.outline)
         parts.append(f"{entries} outline {'entry' if entries == 1 else 'entries'} in Go To")
-    return ", ".join(parts) + ". Saving makes a new file; the PDF is not changed."
+    doubtful = doubtful_pages_sentence(found.doubtful_pages)
+    doubtful = f" {doubtful}" if doubtful else ""
+    return ", ".join(parts) + f".{doubtful} Saving makes a new file; the PDF is not changed."
+
+
+def doubtful_pages_sentence(pages: Iterable[int]) -> str:
+    """``"Page 3 may read poorly."`` or ``"Pages 2, 5 and 9 may read poorly."``.
+
+    Empty when every page read cleanly. More than six pages are counted rather
+    than listed, because a long run of numbers is not something to listen to.
+    """
+    numbers = sorted({int(page) for page in pages})
+    if not numbers:
+        return ""
+    if len(numbers) == 1:
+        return f"Page {numbers[0]} may read poorly."
+    if len(numbers) > 6:
+        return f"{len(numbers)} pages may read poorly, starting with page {numbers[0]}."
+    listed = ", ".join(str(n) for n in numbers[:-1]) + f" and {numbers[-1]}"
+    return f"Pages {listed} may read poorly."
 
 
 def save_refusal(name: str, suffix: str, *, app_name: str, formats: str) -> str:

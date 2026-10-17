@@ -261,9 +261,9 @@ it.</p>
 <h2 id="how-the-numbers-were-taken">How the numbers were taken</h2>
 <p>Every number below comes from
 <code>scripts/bench_editor_completion.py</code>, run from a source
-checkout on the development machine (Intel Core Ultra class, 16 logical
-processors, Windows 11, Python 3.14.8, wxPython 4.3), with the worktree
-on <code>PYTHONPATH</code>:</p>
+checkout on the development machine (Intel x64, 16 logical processors,
+Windows 11, Python 3.14.8, wxPython 4.3), with the worktree on
+<code>PYTHONPATH</code>:</p>
 <pre class="text"><code>python scripts/bench_editor_completion.py reading --runs 3 --megabytes 8
 python scripts/bench_editor_completion.py open --runs 3
 python scripts/bench_editor_completion.py lists --runs 3 --entries 10000</code></pre>
@@ -402,8 +402,8 @@ and PDF</h2>
 <td style="text-align: right;">247 ms</td>
 <td style="text-align: right;">11,979 ms</td>
 <td style="text-align: right;">857 ms</td>
-<td style="text-align: right;">AFTER_DOCX_COLD</td>
-<td style="text-align: right;">AFTER_DOCX_WARM</td>
+<td style="text-align: right;">17,347 ms (same path; see below)</td>
+<td style="text-align: right;">1,058 ms</td>
 <td>MarkItDown</td>
 </tr>
 <tr>
@@ -411,8 +411,8 @@ and PDF</h2>
 <td style="text-align: right;">280 ms</td>
 <td style="text-align: right;">4,474 ms</td>
 <td style="text-align: right;">3,191 ms</td>
-<td style="text-align: right;">AFTER_PDF_COLD</td>
-<td style="text-align: right;">AFTER_PDF_WARM</td>
+<td style="text-align: right;">4,410 ms</td>
+<td style="text-align: right;">2,437 ms</td>
 <td>pdfplumber</td>
 </tr>
 <tr>
@@ -421,14 +421,20 @@ and PDF</h2>
 <td style="text-align: right;">11,639 ms, then a raw
 <code>UnsupportedFormatException</code></td>
 <td style="text-align: right;">138 ms</td>
-<td style="text-align: right;">AFTER_DOC_COLD</td>
-<td style="text-align: right;">AFTER_DOC_WARM</td>
+<td style="text-align: right;">412 ms, the missing-LibreOffice
+sentence</td>
+<td style="text-align: right;">71 ms</td>
 <td>the missing-LibreOffice sentence</td>
 </tr>
 </tbody>
 </table>
 <p>Dependencies on this machine: markitdown, magika, onnxruntime,
 python-docx, PyMuPDF and pypdf present; LibreOffice missing.</p>
+<p>The <code>.docx</code> cold figure rose between the two runs (12.0 s,
+then 17.3 s) with no change to its path: it is the MarkItDown import,
+which varies with disk cache and machine load, and the second run
+followed a merge that brought in other agents’ reader work. Read both as
+“twelve to seventeen seconds, nearly all of it importing”.</p>
 <p><strong>Slow conversion or a missing dependency?</strong> Both, and
 they are now told apart.</p>
 <ul>
@@ -486,27 +492,27 @@ original-protection and export-only guard is unchanged in both.</p>
 <tr>
 <td>Import, cold</td>
 <td style="text-align: right;">167 ms</td>
-<td style="text-align: right;">AFTER_IMPORT</td>
+<td style="text-align: right;">227 ms</td>
 </tr>
 <tr>
 <td>Load the library, cold</td>
 <td style="text-align: right;">25.9 ms</td>
-<td style="text-align: right;">AFTER_LOAD_COLD</td>
+<td style="text-align: right;">26.2 ms</td>
 </tr>
 <tr>
 <td>Load the library, warm</td>
 <td style="text-align: right;">24.4 ms</td>
-<td style="text-align: right;">AFTER_LOAD_WARM</td>
+<td style="text-align: right;">26.4 ms</td>
 </tr>
 <tr>
 <td>Filter one keystroke (median over “meeting notes”)</td>
 <td style="text-align: right;">6.5 ms</td>
-<td style="text-align: right;">AFTER_FILTER</td>
+<td style="text-align: right;">13.0 ms</td>
 </tr>
 <tr>
 <td>Matches for “notes meeting”</td>
 <td style="text-align: right;">157 (one order only)</td>
-<td style="text-align: right;">AFTER_MATCHES (either order)</td>
+<td style="text-align: right;">314 (either order)</td>
 </tr>
 <tr>
 <td>Fill the picker’s list with all 10,000</td>
@@ -516,12 +522,12 @@ original-protection and export-only guard is unchanged in both.</p>
 <tr>
 <td>Fill the picker’s list with what it now shows</td>
 <td style="text-align: right;">n/a</td>
-<td style="text-align: right;">AFTER_PICKER</td>
+<td style="text-align: right;">60 ms (200 rows)</td>
 </tr>
 <tr>
 <td>Fill the Abbreviations report list, 10,000 rows</td>
 <td style="text-align: right;">3,755 ms</td>
-<td style="text-align: right;">AFTER_VIRTUAL (virtual)</td>
+<td style="text-align: right;">1.8 ms (virtual)</td>
 </tr>
 <tr>
 <td>Same, with Freeze/Thaw (considered, not used)</td>
@@ -531,7 +537,7 @@ original-protection and export-only guard is unchanged in both.</p>
 <tr>
 <td>Load 10,000 abbreviations</td>
 <td style="text-align: right;">32.8 ms</td>
-<td style="text-align: right;">AFTER_ABBR</td>
+<td style="text-align: right;">27.8 ms</td>
 </tr>
 </tbody>
 </table>

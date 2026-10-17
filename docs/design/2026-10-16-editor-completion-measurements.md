@@ -16,7 +16,7 @@ blames, and prove each gap with a test before closing it.
 ## How the numbers were taken
 
 Every number below comes from `scripts/bench_editor_completion.py`, run from a
-source checkout on the development machine (Intel Core Ultra class, 16 logical
+source checkout on the development machine (Intel x64, 16 logical
 processors, Windows 11, Python 3.14.8, wxPython 4.3), with the worktree on
 `PYTHONPATH`:
 
@@ -102,12 +102,17 @@ Unguarded documents are unchanged.
 
 | Format (fixture) | Cold import | Cold read, before | Warm read, before | Cold read, after | Warm read, after | Engine |
 |---|---:|---:|---:|---:|---:|---|
-| `.docx` (40 KB, 1,500 paragraphs) | 247 ms | 11,979 ms | 857 ms | AFTER_DOCX_COLD | AFTER_DOCX_WARM | MarkItDown |
-| PDF (33 KB, 60 pages) | 280 ms | 4,474 ms | 3,191 ms | AFTER_PDF_COLD | AFTER_PDF_WARM | pdfplumber |
-| `.doc` (OLE2 header; no LibreOffice) | 292 ms | 11,639 ms, then a raw `UnsupportedFormatException` | 138 ms | AFTER_DOC_COLD | AFTER_DOC_WARM | the missing-LibreOffice sentence |
+| `.docx` (40 KB, 1,500 paragraphs) | 247 ms | 11,979 ms | 857 ms | 17,347 ms (same path; see below) | 1,058 ms | MarkItDown |
+| PDF (33 KB, 60 pages) | 280 ms | 4,474 ms | 3,191 ms | 4,410 ms | 2,437 ms | pdfplumber |
+| `.doc` (OLE2 header; no LibreOffice) | 292 ms | 11,639 ms, then a raw `UnsupportedFormatException` | 138 ms | 412 ms, the missing-LibreOffice sentence | 71 ms | the missing-LibreOffice sentence |
 
 Dependencies on this machine: markitdown, magika, onnxruntime, python-docx,
 PyMuPDF and pypdf present; LibreOffice missing.
+
+The `.docx` cold figure rose between the two runs (12.0 s, then 17.3 s) with no change to
+its path: it is the MarkItDown import, which varies with disk cache and machine load, and
+the second run followed a merge that brought in other agents' reader work. Read both as
+"twelve to seventeen seconds, nearly all of it importing".
 
 **Slow conversion or a missing dependency?** Both, and they are now told apart.
 
@@ -150,16 +155,16 @@ original-protection and export-only guard is unchanged in both.
 
 | Measure (10,000 snippets, 4.5 MB) | Before | After |
 |---|---:|---:|
-| Import, cold | 167 ms | AFTER_IMPORT |
-| Load the library, cold | 25.9 ms | AFTER_LOAD_COLD |
-| Load the library, warm | 24.4 ms | AFTER_LOAD_WARM |
-| Filter one keystroke (median over "meeting notes") | 6.5 ms | AFTER_FILTER |
-| Matches for "notes meeting" | 157 (one order only) | AFTER_MATCHES (either order) |
+| Import, cold | 167 ms | 227 ms |
+| Load the library, cold | 25.9 ms | 26.2 ms |
+| Load the library, warm | 24.4 ms | 26.4 ms |
+| Filter one keystroke (median over "meeting notes") | 6.5 ms | 13.0 ms |
+| Matches for "notes meeting" | 157 (one order only) | 314 (either order) |
 | Fill the picker's list with all 10,000 | 3,063 ms | not done any more |
-| Fill the picker's list with what it now shows | n/a | AFTER_PICKER |
-| Fill the Abbreviations report list, 10,000 rows | 3,755 ms | AFTER_VIRTUAL (virtual) |
+| Fill the picker's list with what it now shows | n/a | 60 ms (200 rows) |
+| Fill the Abbreviations report list, 10,000 rows | 3,755 ms | 1.8 ms (virtual) |
 | Same, with Freeze/Thaw (considered, not used) | 2,377 ms | |
-| Load 10,000 abbreviations | 32.8 ms | AFTER_ABBR |
+| Load 10,000 abbreviations | 32.8 ms | 27.8 ms |
 
 **What this says.** Loading and filtering were never the problem: 25 ms and
 6.5 ms for ten thousand entries. Putting rows into a native list was, at a

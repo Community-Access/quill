@@ -33,6 +33,7 @@ from pathlib import Path
 import wx
 import wx.adv
 
+from quill.apps.transcribe_coach import TranscribeCoachMixin
 from quill.apps.transcribe_commands import TranscribeCommandsMixin
 from quill.apps.transcribe_dictation import TranscribeDictationMixin
 from quill.apps.transcribe_files import TranscribeFilesMixin
@@ -68,6 +69,7 @@ class QuillTranscribeFrame(
     TranscribeFilesMixin,
     TranscribeRecentMixin,
     TranscribeReviewMixin,
+    TranscribeCoachMixin,
 ):
     """The status window for a dictation service that lives in the tray."""
 
@@ -206,7 +208,8 @@ class QuillTranscribeFrame(
         self._setup_text = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY)
         self._setup_text.SetName("Model and microphone")
         self._setup_text.SetHelpText(
-            "The speech model, microphone and start and stop key dictation uses now. "
+            "The speech model, microphone, dictation profile and start and stop key "
+            "dictation uses now. "
             "The model you chose is the one that runs; it never changes on its own."
         )
         root.Add(setup_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
@@ -276,7 +279,10 @@ class QuillTranscribeFrame(
             for field, row in OPTIONAL_KEYS.items()
             if self.optional_key(field)
         ]
-        return "\n".join((model, microphone, keys, commands, *chosen_keys))
+        profile = f"Profile: {self.dictation_profile_name()}" + (
+            ", locked." if self.profile_locked() else "."
+        )  # D-23
+        return "\n".join((model, microphone, profile, keys, commands, *chosen_keys))
 
     def _next_sentence(self) -> str:
         controller = getattr(self, "_dictation", None)
@@ -315,9 +321,16 @@ class QuillTranscribeFrame(
                 wx.ART_INFORMATION, wx.ART_OTHER, (16, 16)
             )
             try:
-                icon.SetIcon(art, f"{_TITLE} - {state}")
+                icon.SetIcon(art, self._tray_name(state))
             except Exception:  # noqa: BLE001 - a tooltip is never worth a failure
                 pass
+
+    def _tray_name(self, state: str) -> str:
+        """The tray icon's name: the state, and a profile other than Standard (D-23)."""
+        profile = self.dictation_profile_name()
+        if profile == "Standard":
+            return f"{_TITLE} - {state}"
+        return f"{_TITLE} - {state} - {profile} profile"
 
     def _refresh_menus(self, label: str, paused: bool) -> None:
         menu_bar = self.frame.GetMenuBar()

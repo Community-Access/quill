@@ -77,6 +77,18 @@ EXTERNAL_COMMANDS = frozenset({
     Command.INSERT_SNIPPET,
     Command.EXPAND,
     Command.PASTE_SLOT,
+    # D-23 (2026-10-16): a profile changes nothing in the other program, and
+    # bold and italic either retype the session's own last phrase with Markdown
+    # marks or say why they cannot (profile_mixin.py).
+    Command.BOLD_THAT,
+    Command.ITALIC_THAT,
+    Command.PROFILE_STANDARD,
+    Command.PROFILE_EMAIL,
+    Command.PROFILE_DOCUMENT,
+    Command.PROFILE_MARKDOWN,
+    Command.PROFILE_CHAT,
+    Command.PROFILE_CODING,
+    Command.PROFILE_VERBATIM,
     # D-10 (2026-10-16): correcting the words this session typed, as backspaces
     # and retyping, each checked first (external_edits.py, corrections.py).
     Command.CORRECT,

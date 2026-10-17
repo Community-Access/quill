@@ -32,6 +32,7 @@ Everything QUILL Lite and QUILL's Live Dictation understand, generated from the 
 - Say "QUILL review that" to take the last phrase back out and hold it in Review Dictation (Shift+F4), where you can read it, edit it, ask the AI to change it and insert it once. Nothing is written until you insert it.
 - While the review is open, what you say is written into it. Say the command word first to give an instruction instead, or turn on Talk About It in the window.
 - Changing words with AI needs AI help switched on and your ChatGPT subscription or your own AI key. With AI off, the review still lets you edit and insert.
+- "QUILL polish that" asks the AI to fix punctuation, capitals and small slips and keep your words. It works only after you turn on Allow polishing my dictation with AI in More Dictation Settings, and nothing is sent until you agree.
 
 | Say, after the command word | What happens |
 |---|---|
@@ -41,8 +42,22 @@ Everything QUILL Lite and QUILL's Live Dictation understand, generated from the 
 | "read it back" or "read it" | While reviewing: reads the whole text. |
 | "undo that change" or "undo the change" | While reviewing: takes back the last change. |
 | "back to what i said" | While reviewing: puts back the words exactly as you said them. |
+| "polish that" or "polish it" | Asks the AI to fix punctuation, capitals and small slips in the words, keeping your words; opens the last phrase in Review Dictation first. Only when Allow polishing my dictation with AI is on, and only after you agree to send. You hear what changed; nothing is inserted until you insert it. |
 | "insert it" | While reviewing: writes the text where it was going, once. |
 | "discard it" | While reviewing: throws the text away; nothing is written. |
+
+## Profiles and formatting
+
+- A profile is the kind of writing dictation is for: Standard, Email, Document, Markdown, Chat, Coding, Verbatim. Standard is your Dictation Settings as they are, and is where everybody starts.
+- Choose one in More Dictation Settings in QUILL and QUILL Lite, or in QUILL Transcribe's Dictation menu (Dictation Profile, Ctrl+Shift+F) or tray menu. Or say its name after the command word: "QUILL email mode".
+- A profile sets the pause, whether filler words are removed and whether punctuation is added, and how headings, bold and italic are written.
+- Markdown and Coding write "heading two" as two number signs, and "bold that" as two asterisks either side. Document and Email use the editor's own Heading and Bold in a document that holds formatting; anywhere else they type nothing for them and say why. Chat and Verbatim write plain text.
+- Lock Profile stops a spoken profile name switching profiles; you can still choose one by hand. Nothing ever switches profiles on its own.
+
+## Correcting yourself as you talk
+
+- With Fix it when I correct myself turned on in Dictation Settings, saying "no", "I mean", "no I mean", "sorry" or "scratch that word" between two days, months, numbers or names from My Words writes only the second: "Thursday, no, Friday" writes Friday. Anything else is written as said.
+- When you correct the same word the same way twice, with "correct that" and "choose", or in QUILL's own documents with "correct" and the word, dictation offers to remember it: "Add a correction: Ann becomes Anne?" In QUILL and QUILL Lite a window asks. Where no window can be shown the question is spoken: say "QUILL yes" to add it or "QUILL no" within 30 seconds. Nothing is added without a yes.
 
 ## Punctuation
 
@@ -231,6 +246,20 @@ Everything QUILL Lite and QUILL's Live Dictation understand, generated from the 
 | "copy that" | Copies the phrase you dictated last. |
 | "show clips" or "open copy tray" or "show copy tray" | Opens the Copy Tray, where you choose a slot to paste. |
 | "show snippets" | Opens the list of snippets to choose from. |
+
+## Commands: profiles and formatting
+
+| Say, on its own | What happens |
+|---|---|
+| "bold that" | Makes the selection, or the phrase you dictated last, bold: QUILL's own Bold in a document that holds formatting, two asterisks either side in the Markdown and Coding profiles. |
+| "italic that" or "italicize that" | Makes the selection, or the phrase you dictated last, italic, the same way. |
+| "standard mode" or "standard profile" | Switches to the Standard profile, unless Lock Profile is on. |
+| "email mode" or "email profile" | Switches to the Email profile, unless Lock Profile is on. |
+| "document mode" or "document profile" | Switches to the Document profile, unless Lock Profile is on. |
+| "markdown mode" or "markdown profile" | Switches to the Markdown profile, unless Lock Profile is on. |
+| "chat mode" or "chat profile" | Switches to the Chat profile, unless Lock Profile is on. |
+| "coding mode" or "coding profile" | Switches to the Coding profile, unless Lock Profile is on. |
+| "verbatim mode" or "verbatim profile" | Switches to the Verbatim profile, unless Lock Profile is on. |
 
 ## Commands with words after them: selecting
 

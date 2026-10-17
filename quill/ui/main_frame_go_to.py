@@ -132,7 +132,11 @@ class GoToMixin:
         """
         metadata = getattr(getattr(self, "document", None), "source_metadata", None) or {}
         outline = metadata.get("pdf_outline") or ()
-        return [GoToTarget(label=label, position=at) for label, at in outline_places(text, outline)]
+        levels = metadata.get("pdf_outline_levels") or ()
+        return [
+            GoToTarget(label=label, position=at)
+            for label, at in outline_places(text, outline, levels)
+        ]
 
     def _go_to_bookmark_targets(self) -> list[GoToTarget]:
         """The numbered bookmarks, each row led by its digit (bad.md 5.2).

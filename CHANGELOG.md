@@ -62,6 +62,123 @@ Measured before changing anything; method and numbers in
   refill for 10,000 rows before) and keeps its selection by identity. Snippet,
   abbreviation and Copy Tray search match every word in any order
   (`quill/core/list_search.py`).
+### Word, Markdown and HTML saves no longer carry the dark theme's grey (2026-10-16)
+
+A dark theme sets the rich control's foreground colour, which wxMSW applies as
+a character colour on every run. The `.rtf` save already took it off for the
+save (`_theme_colour_off`, bad.md R4), but saving a rich tab as `.docx`, `.md`
+or `.html` read the control's RTF with the grey still on, and `rtf_to_rich`
+kept it. Anyone working in dark mode sent grey text to everyone they shared
+a Word document with. Both paths in `quill/ui/main_frame_rich_mode.py` now
+read the RTF inside `_theme_colour_off`, and
+`test_docx_and_markup_saves_take_the_theme_colour_off_first` pins the order.
+QUILL Lite has no Word save yet and its `.rtf` save was already guarded.
+
+### Dictation profiles (D-23), and QUILL Transcribe's lessons, practice field and recognition test (D-25) (2026-10-16)
+
+dict.md section 4, "Modes" and "Coach". Design record section 29.
+
+- **`quill/core/windows_dictation/profiles.py`** (new, wx-free): seven
+  `NamedProfile`s (Standard, Email, Document, Markdown, Chat, Coding,
+  Verbatim), each an overlay of pause, fillers and punctuation plus a structure
+  (`markdown`, `formatted`, `plain`); `coerce_profile`, `active_profile`,
+  `active_profile_name`. Standard is no overlay and the default.
+- **`DictationPreferences`** gains `named_profile`, `structure` and
+  `profile_locked`; `_writing` applies the overlay. Settings
+  `windows_dictation_profile` and `windows_dictation_profile_locked` (shared
+  by name; additive, accepted in `data_format_audit` for `quill.settings` and
+  `lite.settings`).
+- **`profile_mixin.py`** (new) on the controller: headings by structure,
+  "bold that" / "italic that" (new `Command.BOLD_THAT`, `ITALIC_THAT`), the
+  seven profile commands with Lock Profile, and the profile in the status cell.
+  Bold, italic and the profile commands also work in other programs
+  (`anywhere.EXTERNAL_COMMANDS`).
+- **Editors**: `EditorDocument.formatting()`/`apply_style()`; QUILL runs
+  `format.bold`/`italic`/`heading_N`, QUILL Lite its own `cmd_*`, in a rich
+  text document (QUILL also in Markdown and HTML). More Dictation Settings has
+  the profile (Alt+A) and the lock (Alt+B).
+- **QUILL Transcribe**: Dictation > Dictation Profile... (Ctrl+Shift+F,
+  `ProfileDialog`), Lock Profile (Ctrl+Shift+L), Practice Dictation...
+  (Ctrl+Shift+P, new `transcribe_practice.py`), Help > Tutorials...
+  (Ctrl+Alt+F1); tray read-out and row; profile in the window, tray name and
+  Dictation Status. New `transcribe_coach.py`.
+- **Recognition test**: `quill/core/transcribe/practice.py`; the word-error
+  scorer moved from `scripts/dictbench.py` to
+  `quill/core/windows_dictation/word_errors.py`, which both import.
+- **Lessons**: `quill/core/tutorials/transcribe_lessons.py` (five),
+  `quill/core/transcribe/tutorials.py` (catalogue and command table),
+  `quill/ui/transcribe_tutorials.py`; GATE-TUTDOC renders
+  `standalone/transcribe/docs/tutorials.md`.
+- **Reference**: the dictation commands guide gains "Profiles and formatting"
+  (`reference._profile_section`), regenerated with `docs/site/dictation.html`.
+- Tests: `test_dictation_profiles.py`, `test_transcribe_coach.py`,
+  `test_dictation_formatting_hooks.py`. Snapshots regenerated: dialog
+  inventory, accessible names, Transcribe help, settings documentation and
+  vocabulary, F1 help reference, data formats.
+### Dictation: self-repair, named styles, learning from corrections, and opt-in polish (D-20, D-21, 2026-10-16)
+
+dict.md section 4, "Polish", "Learn" and "Modes". Design record section 28.
+QUILL, QUILL Lite, QUILL Transcribe and Quill Inkwell, through the shared
+dictation package.
+
+- **Self-repair (D-20)**, `quill/core/windows_dictation/self_repair.py` (new,
+  wx-free). A repair marker ("no", "I mean", "no I mean", "sorry", "scratch
+  that word") between two words of one kind (a day, a month, a number, or a
+  name from My Words' Vocabulary) keeps the second. Only the words either side
+  of the marker are looked at; a full stop or question mark before it, a
+  different kind, or a lower-case "may"/"march" leaves the phrase alone. Run
+  in `DictationController.on_phrase` after the rewrite, behind
+  `DictationPreferences.self_repair` (`windows_dictation_self_repair`, off).
+  The transcript profile forces it off. `profile.with_repair_names` gives the
+  controller the names, in QUILL, QUILL Lite, QUILL Transcribe and Inkwell.
+- **Named styles (D-20).** `self_repair.STYLE_CHOICES` / `STYLE_FIELDS` /
+  `style_of`: Verbatim, Clean, Polished (only with `ai_on`) and "Your own mix",
+  mapped onto existing fields; nothing new is stored for the style itself.
+  The chooser and the self-repair box live in the new
+  `quill/ui/windows_dictation_style.py` (`DictationStyleMixin`), so
+  `windows_dictation_dialog.py` stays under the 600-line cap. The dialog takes
+  `ai_on=`; the editors and Transcribe pass `_review_ai_on()`. The "After each
+  phrase" chooser moved to the right column to keep the window under 700
+  pixels (`test_the_window_fits_a_small_screen`).
+- **Polish my dictation (P3).** `Command.REVIEW_POLISH` ("polish that",
+  "polish it"); `ReviewConversation.polish` sends the fixed
+  `review_session.POLISH_INSTRUCTION` through the ordinary `instruct` path, so
+  the D-2 consent, the account routes (ChatGPT subscription or own key; never
+  the free allowance), the diff summary and Undo Change all apply unchanged.
+  `windows_dictation_polish` (off) gates it; with no review open,
+  `ReviewMixin._polish_last` opens the last phrase first. The review frame
+  shows **Polish** (Ctrl+P) only when allowed, greyed with AI off. More
+  Dictation Settings has the check box (Alt+G). No new network call site: the
+  request is the review's own (`network_egress_audit` unchanged).
+- **Learning from corrections (D-21)**,
+  `quill/core/windows_dictation/correction_learning.py` (new, wx-free). The
+  second identical "choose N" replacement, or "correct X" followed by the new
+  words landing where X was (`voice_commands._land` records it,
+  `LiveMixin._after_insert` checks it), offers "Add a correction: A becomes
+  B?" once per run. Editors: `HostFeedback.confirm_correction`, a Yes/No box
+  (No default) from the new `quill/ui/windows_dictation_learn.py`, deferred
+  out of the recogniser callback; the focus-loss check stands aside while it
+  is up. Transcribe: spoken, answered by "QUILL yes"/"QUILL no" within 30
+  seconds (`CommandModeMixin` asks `_learn_answer` first). Yes writes through
+  `words_file`'s model into Corrections.
+- **Per-context lists (D-21).** `words_file` parses and round-trips
+  `## Context: <name>` sections (`ContextList`, `context_list`);
+  `profile.context_profile` and `rewriter(path, context=...)` apply one on
+  top of the main lists. No caller passes a context yet: D-23 profiles are not
+  built.
+- **Whisper initial prompt (D-21 investigation).** sherpa-onnx 1.13.8's
+  `OfflineWhisperModelConfig` has no prompt field and
+  `OfflineRecognizer.from_whisper` takes none, so local Whisper biasing through
+  a prompt is not possible on the pinned version. Recorded in the design
+  record.
+- Settings: `windows_dictation_self_repair`, `windows_dictation_polish` in
+  `settings_fields.DictationSettings` (both editors and Transcribe);
+  `data_format_audit` recorded as additive for `quill.settings` and
+  `lite.settings`. Generated: `docs/f1-help-reference.md`, both
+  `dictation-commands.md` (new "Correcting yourself as you talk" section).
+- Tests: `tests/unit/core/test_dictation_self_repair_and_learning.py` (new),
+  plus `test_dictation_review_frame.py`, `test_dictation_settings_dialog.py`
+  and `test_transcribe_app.py`.
 
 ### Dictation: replace, change that, delete by paragraph, a second opinion, kept revisions, and correcting in other programs (D-19, D-10, 2026-10-16)
 
@@ -150,6 +267,62 @@ the same. Design record section 25.
 - Tests: `tests/unit/core/test_dictation_rescue.py`,
   `test_dictation_snippet_fill.py`, `tests/unit/ui/test_dictation_kept_words.py`,
   and a parity test in `test_dictation_parity.py`.
+
+### PDF text reliability: each page's most readable reading, a bounded score, titles found inside their pages (2026-10-16)
+
+Jeff's todo P2 #28, "Text-extraction reliability, shared by both editors and
+Import / Convert". Text reading only: no structure work. Design note with the
+formula, thresholds and measured budget:
+`docs/design/2026-10-16-pdf-text-reliability.md`; PRD 5.5 item 1 rewritten to
+match what ships (it described a per-page selection with pypdfium2 and
+pdfminer.six as extractors that never existed).
+
+- **Per-page selection** (`quill/io/pdf.py`, new `quill/io/pdf_select.py`).
+  The reader used to keep the first non-empty answer of pdfplumber, then pypdf.
+  Now pdfplumber reads each page; a reading scoring at least 90 on a page whose
+  characters show no column gutter is kept (the fast path); otherwise pypdf
+  plain, pypdf layout and, on a two-column page, pypdf layout read column by
+  column are compared (plus pdfplumber with duplicate characters removed when
+  the first reading shows fake-bold doubling). Every reading is scored before
+  and after repair; the best reading wins, ties to the earlier engine. One
+  failing page is recorded as `failed` instead of sinking the document.
+- **Readability score** (new `quill/io/pdf_score.py`) replaces the quantity
+  score: 100 times one factor each for suspicious characters, single-letter
+  runs, one word per line, implausible joins, coverage against the fullest
+  reading, and columns run together. Short titles, numeric rows and non-Latin
+  scripts score 100. Doubtful pages (below 40, unreadable characters, or
+  image-only) are named in one shared sentence (`pdf_open.doubtful_pages_sentence`)
+  in QUILL's open status, QUILL Lite's open announcement and the intake
+  reports; blank pages never are. New metadata: `page_engines`,
+  `page_unreadable`, `pdf_outline_levels` (additive; old keys unchanged).
+- **MarkItDown** no longer gets an automatic 85 in `quill.io.structured`; that
+  fallback is gone. Inside the reader it is offered pages only when the
+  document still scores below 50, and a page is replaced only when its pages
+  line up and it scores 10 points better by the same rules.
+  `format_pdf_document` no longer keeps the *longer* answer.
+- **Fixes found by measuring first:** a blank first page lost its form feed
+  (every page offset shifted by one); unmapped private-use glyphs were deleted
+  ("next box" read as "net bo"); 200 pages peaked at 429 MB because pdfplumber
+  pages were never closed (now 6.5 MB); a long body line swallowed "Chapter 2"
+  under it; two long table rows were joined.
+- **Repairs** (`quill/io/pdf_repair.py`): unmapped private use kept, ligature
+  slots expanded only beside a letter; no closing-up of a spaced sentence into
+  one word; identifier hyphens kept, `self-`/`well-` style prefixes joined with
+  the hyphen; reflow protects headings, lettered/roman list starts, address
+  lines, column-spaced rows and rows of figures. Still idempotent.
+- **Outline** (new `quill/io/pdf_outline.py`, `quill/core/pdf_open.py`):
+  entries carry their nesting level; bookmarks and Go To land on the title at
+  the start of a line on its page, falling back to the page start; duplicate
+  titles take successive matches; Go To says "level N" for nested entries.
+  Stores keep their `(title, page)` shape.
+- **Fixture corpus** `tests/corpus/pdf/` (10 small PDFs and
+  `build_pdf_corpus.py`, pypdf only) and `tests/unit/io/test_pdf_corpus.py`
+  (real files, text and order, page offsets, bookmark targets, encrypted, the
+  PDF never changed, and a `perf` budget). New `tests/unit/io/test_pdf_score.py`;
+  `test_pdf.py`, `test_pdf_repair.py`, `test_pdf_open.py`, `test_intake.py`
+  and `test_structured.py` extended.
+- **Measured** (clean / questionable, ms a page, old then new): 37.6 / 38.3
+  and 41.9 / 58.4. `quill/io/structured.py` budget ratcheted 779 -> 764.
 
 ### Quill Radio station enrichment: the signed station pack, FTS5 search and Station Details (2026-10-16)
 

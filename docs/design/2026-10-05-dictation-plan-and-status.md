@@ -330,6 +330,8 @@ next word like an opening bracket.
 | **A CI-runnable benchmark gate** (`dictbench.py` baseline mode): every engine offered must meet the speed budget on one thread on recorded speech | Recorded speech checked into a test-asset location, and a CI runner whose speed is stable enough to gate on |
 | **Word biasing for the local models** (section 5 B; the plumbing is built and off, section 22, D-28) | A sherpa-onnx that encodes hotwords for mixed-case SentencePiece vocabularies, a hotword-capable Nemotron decoder, or an English Zipformer transducer measured on B-1 |
 | **The shared layer's measurements** (section 22): keyword spotting (a false-trigger soak, the detection rate, CPU), hotwords on an English Zipformer, the punctuation and speaker models, and sherpa-onnx TTS against kokoro-onnx (D-30) | B-1, B-3 and the 8 GB machine (B-8) |
+| **Per-context word lists switched on** (D-21; section 28): the lists are parsed and kept, but nothing names the active context | The named dictation profiles of D-23 |
+| **A Whisper initial prompt for local biasing** (D-21; section 28): sherpa-onnx 1.13.8 has no prompt input for Whisper | A sherpa-onnx release that adds one |
 | **Interface translation** (menus and spoken replies in Spanish) | Its own decision (dict.md 9.6) |
 | Held for Jeff, untouched: removing the bundled models from the installers, and Nemotron as the first-run default | Jeff |
 
@@ -762,7 +764,7 @@ the three paused commands and arming live once, in
 **Speech goes to OpenAI.** A cloud engine names who receives the speech
 (`EngineInfo.cloud_provider`); Transcribe's state line says so while it does.
 
-D-21 was planned beside these but was not built; it stays in section 10.
+D-21 was planned beside these and was built on 2026-10-16; see section 28.
 
 ## 16. As built 2026-10-13: Vosk leaves dictation and the voice features
 
@@ -2076,6 +2078,370 @@ waits for a field and is then cancelled does not count as delivered, so a kept
 entry stays (by design). Audio retention is deferred. Still to check with a
 microphone and a screen reader: the lines under "Dictation: rescue, history,
 snippet blanks and reading back" in `docs/qa/screen-reader-checks-2026-10.md`.
+
+## 28. As built, 2026-10-16: self-repair, named styles, learning from corrections, and opt-in polish (D-20, D-21)
+
+dict.md section 4, the "Polish", "Learn" and "Modes" parts. Everything is in
+the shared dictation package, so QUILL, QUILL Lite, QUILL Transcribe and Quill
+Inkwell get it together (QUILL Lite is never ahead). Automatic AI clean-up of
+every phrase stays declined, as section 5 D decided: nothing here sends a
+phrase anywhere unless the person asks for that phrase and agrees.
+
+### D-20. Self-repair
+
+**Module.** `quill/core/windows_dictation/self_repair.py`, wx-free. The plan
+put the rule in `options.py`; it got its own module because the rule, its word
+lists and the style table together would have pushed `options.py` past its
+size budget, and because the controller calls it at a different point (after
+the My Words rewrite, so a name the engine misheard is corrected before the
+repair looks at it).
+
+**The rule.** `self_repair(phrase, names)` scans the recognised words for a
+marker: "scratch that word", "no I mean", "I mean", "no", "sorry" (longest
+first). It looks at exactly one word before and one word after, skipping
+punctuation-only tokens. It repairs only when:
+
+- the word before ends with nothing, a comma or a dash, never a full stop or a
+  question mark ("Is it Thursday? No, Friday." is an answer, not a repair);
+- the marker's last word does not end a sentence either;
+- both words are of one kind: a day (with today, tomorrow, tonight and
+  yesterday), a month (May and March only when capitalised, since "may" and
+  "march" are verbs), a number (digits, or one number word), or a name from
+  My Words' Vocabulary, matched without case.
+
+It keeps the second word, drops the first and the marker, and carries a
+capital across when the first word had one. A phrase holds at most eight
+repairs (in practice one or two). `repair_text` is the same over plain text.
+
+**False positives, tested** (`LEFT_ALONE` in the test file): "no, I don't think
+so"; "Is it Thursday? No, Friday."; "I said no, Friday"; "I may, no, March";
+"I mean it"; "sorry, Friday is out"; "Thursday, no"; "send it to Bob, no,
+Maria" with Bob not in My Words; "two, no more"; "Friday. No, Saturday works
+better".
+
+**Where it runs.** `DictationController.on_phrase`, after fillers and the
+rewrite, behind `DictationPreferences.self_repair`
+(`windows_dictation_self_repair`, off). The transcript profile forces it off:
+a transcript keeps what the speaker said. `profile.with_repair_names` fills
+`repair_names` from `dictation.md` when it is on, in the editors
+(`windows_dictation_commands.py`), Transcribe (`transcribe_dictation.py`) and
+Inkwell (`inkwell_dictation.py`).
+
+**The named styles.** `STYLE_CHOICES`, `STYLE_FIELDS` and `style_of` in the same
+module. Each style is only a name for existing fields; nothing new is stored:
+
+| Style | Remove fillers | Self-repair | Polish allowed | Review first |
+|---|---|---|---|---|
+| Verbatim | off | off | off | (unchanged) |
+| Clean | on | on | off | (unchanged) |
+| Polished (only with AI on) | on | on | on | on |
+
+Any other mix shows as "Your own mix of the settings below", which changes
+nothing when chosen. The chooser (**Dictation style**, Alt+Y) and **Fix it when
+I correct myself** (Alt+X) are built by the new
+`quill/ui/windows_dictation_style.py` (`DictationStyleMixin`) inside Dictation
+Settings; `WindowsDictationDialog(ai_on=...)` decides whether Polished is
+listed, and the editors and Transcribe pass `_review_ai_on()` (the review's AI
+port reports no reason to refuse). The two Polished fields that live in More
+Dictation Settings are held in the dialog's pending `_more` until OK. To keep
+the window under 700 pixels on a 768-pixel screen, **After each phrase is
+written, give me** moved to the right column, beside the other sounds.
+
+### Polish my dictation (opt-in AI pass)
+
+**What it is.** One fixed request, `review_session.POLISH_INSTRUCTION`: fix
+punctuation, capital letters, spelling and obvious grammar slips only; keep
+the words, meaning, order and tone; add or remove no ideas. It is sent through
+`ReviewConversation.instruct`, so it inherits every D-2 guarantee unchanged:
+the review's own consent question (No by default) before the first request,
+the AI routes the review already uses (ChatGPT subscription or own key; never
+the free allowance; off in Safe Mode), the words treated as data, the
+two-sentence diff summary worked out locally, Undo Change, and nothing inserted
+until Insert. It adds **no network call site**, so `network_egress_audit` is
+unchanged.
+
+**How it is reached.** Only with **Allow polishing my dictation with AI when I
+ask** (`windows_dictation_polish`, off; Alt+G in More Dictation Settings):
+
+- "QUILL polish that" / "QUILL polish it" (`Command.REVIEW_POLISH`, in
+  `REVIEW_HELP`). With no review open, `ReviewMixin._polish_last` opens the
+  last phrase in Review Dictation (as "review that" would) and then asks for
+  the polish there; with one open, it polishes the words in it.
+- **Polish** (Ctrl+P, access key P) in the Review Dictation window, built only
+  when allowed and greyed when the AI is off.
+
+With the setting off, the voice command says `POLISH_OFF` ("Polish my
+dictation is off. Turn on Allow polishing my dictation with AI in More
+Dictation Settings.") and sends nothing. It is never automatic: Polished as a
+style allows it and sends dictation to review first, but each polish is still
+asked for.
+
+### D-21. Learning from confirmed corrections
+
+**Module.** `quill/core/windows_dictation/correction_learning.py`, wx-free;
+`CorrectionLearningMixin` is mixed into the controller through `LiveMixin`.
+
+**What counts.** A voice correction the person confirmed by making it:
+
+- "correct that" then "choose N" (`LiveMixin._choose` calls `_note_correction`
+  with the phrase before and after);
+- "correct X" then the new words. `voice_commands._land` records X and where
+  it starts; `LiveMixin._after_insert` counts the next phrase only if it was
+  inserted at that place (`_learn_from_correcting`). Another target in between
+  clears the record.
+
+`replaced_span` reduces the change to one replaced span of up to four words a
+side; additions, removals, case-only or punctuation-only changes and changes in
+two places are not offers. `CorrectionLearner` counts pairs without case, in
+memory, for this run only; the second identical pair is offered once, whatever
+the answer.
+
+**The offer.** "Add a correction: Ann becomes Anne?"
+
+- **Editors:** `HostFeedback.confirm_correction` shows a Yes/No message box
+  titled Add a Correction (No the default) from the new
+  `quill/ui/windows_dictation_learn.py`, deferred with `wx.CallAfter` so it is
+  not opened inside the recogniser callback. While it is up, the editors'
+  "QUILL is no longer the window in front" check stands aside (`asking()`), so
+  answering does not stop dictation.
+- **QUILL Transcribe:** no window, because one would take the focus from the
+  field. The question is spoken with "Say QUILL yes to add it, or QUILL no",
+  and `CommandModeMixin` asks `_learn_answer` before any other command. It
+  lapses after 30 seconds (`ANSWER_SECONDS`), so a later "yes" answers
+  nothing. Since D-10 (section 27) "correct that" and "choose N" work on the
+  session's own words in another program, and `CorrectionsMixin._choose` calls
+  through to `LiveMixin._choose`, so a choice made there counts the same way;
+  "correct X" still works only in QUILL's own documents.
+- **A host with no word list** (no `words_path` on its feedback port) is never
+  offered anything.
+
+**Yes** adds `heard => written` to Corrections through `words_file`'s model
+(`add_learned_correction`), the same model as My Words and Phrases and its
+Import and Export (D-12), and says "Added: Ann becomes Anne. It is in My Words
+and Phrases." A heard word that already has a correction is not overwritten;
+the person is told so.
+
+### D-21. Lists per context
+
+`words_file.parse_words` reads `## Context: <name>` sections (words one a
+line, corrections `heard => write`) into `WordsFile.contexts`, and
+`render_words` writes them back, so My Words and Phrases' Save keeps them. The
+general profile parser ignores those sections, so they never apply anywhere
+else. `profile.context_profile(path, name)` and `rewriter(path, context=name)`
+apply one context's list on top of the main lists, the context's correction
+winning. **Nothing passes a context yet**: the named profiles of D-23 are not
+built, so today the lists are stored and round-tripped but unused. When D-23
+lands, its active profile name is the argument.
+
+### D-21. Whisper initial prompt through sherpa-onnx: investigated, not possible on 1.13.8
+
+Checked 2026-10-16 against the pinned sherpa-onnx 1.13.8 in the dev venv:
+`OfflineRecognizer.from_whisper` takes encoder, decoder, tokens, language,
+task, threads, decoding method, provider, tail paddings, timestamps and the
+rule and homophone FST paths, and `OfflineWhisperModelConfig` exposes only
+`encoder`, `decoder`, `language`, `task`, `tail_paddings` and the two
+timestamp switches. There is no initial prompt (and no hotwords for Whisper),
+so local biasing through a Whisper prompt cannot be done without a newer
+sherpa-onnx or a different runtime. OpenAI dictation keeps using the
+transcription `prompt` for the document's context (`contexts.py`). Revisit
+when the pin moves.
+
+### Accessibility
+
+- Every new control has a label, an access key unique in its window (GATE-14:
+  Alt+Y and Alt+X in Dictation Settings; Alt+G in More Dictation Settings;
+  Alt+P on Polish), inline F1 help, and a keyboard route; Polish's Ctrl+P is in
+  the window's accelerator table and its label.
+- Spoken only what the reader does not say (GATE-13): the polish outcome and
+  diff, the offer and its result, "Not added", and the refusals. The style
+  chooser following the check boxes is a value change the reader reads when
+  the chooser is reached.
+- Nothing is changed or stored without the person: self-repair and polish are
+  off by default, styles store nothing, and a learned correction needs a yes.
+
+### Tests
+
+`tests/unit/core/test_dictation_self_repair_and_learning.py` (the repair and
+false-positive tables, the controller wiring, the transcript exclusion, the
+styles, the learner, both offer routes, correct-X counting and its location
+check, context lists, polish consent and undo, "polish that" from dictation,
+the My Words names), `tests/unit/ui/test_dictation_review_frame.py` (the
+Polish button only when allowed, greyed with AI off, by key and by voice) and
+`tests/unit/ui/test_dictation_settings_dialog.py` (styles set the boxes,
+Polished only with AI, Polished saves polish and review-first, the window fits
+a small screen). All use fakes: no microphone, no network, no real window.
+
+### What remains
+
+- D-23 named profiles, which switch the context lists on.
+- Spanish phrases for "polish that" and the yes/no answer; the review commands
+  are English only today, like the rest of D-2.
+- Screen-reader passes of the Add a Correction box and the style chooser
+  (`docs/qa/screen-reader-checks-2026-10.md`).
+## 29. As built, 2026-10-16: named profiles (D-23), and lessons, practice and the recognition test (D-25)
+
+dict.md section 4, "Modes" and "Coach". Both are shared capability: the
+profiles are the controller's and work in QUILL, QUILL Lite and QUILL
+Transcribe alike; the coaching is QUILL Transcribe's, because the editors
+already had lessons and a document to practise in.
+
+### D-23: named profiles and format-aware structure
+
+**The profiles** (`quill/core/windows_dictation/profiles.py`, wx-free) are
+Standard, Email, Document, Markdown, Chat, Coding and Verbatim, each a frozen
+`NamedProfile`: an overlay of `pause`, `remove_fillers` and
+`auto_punctuation` (None means "as Dictation Settings say") plus how it writes
+structure, `markdown`, `formatted` or `plain`. **Standard is no overlay at
+all**, structure `markdown`, and is the default, so nobody's dictation changed
+on upgrade; dict.md named six profiles and this adds Standard as the zero
+point, because a person needs a way back to "my settings as they are".
+
+| Profile | Fillers | Punctuation | Pause | Structure |
+|---|---|---|---|---|
+| Standard | settings | settings | settings | markdown |
+| Email | removed | added | settings | formatted |
+| Document | settings | settings | settings | formatted |
+| Markdown | settings | settings | settings | markdown |
+| Chat | removed | settings | settings | plain |
+| Coding | removed | off | long | markdown |
+| Verbatim | kept | settings | settings | plain |
+
+**With section 28's named styles.** A style (Verbatim, Clean, Polished) is
+only a name for existing fields in Dictation Settings; a profile is an overlay
+applied after those fields are read. So while a profile other than Standard is
+on, its `remove_fillers` wins over the style's (Verbatim profile keeps fillers
+under the Clean style; Email, Chat and Coding remove them under the Verbatim
+style). No profile touches self-repair, polish or review-first, and Standard
+overlays nothing, so the style stands as chosen. The two names Verbatim are
+consistent: both keep every word.
+
+`DictationPreferences._writing` applies the overlay after reading the settings
+(`_as_set`), and records `named_profile`, `structure` and `profile_locked`.
+The "Talking to AI" and live-transcript profiles are applied on top, as before,
+so a named profile never changes the AI message box or a transcript. Two
+settings, under one name in every app (`settings_fields.py`):
+`windows_dictation_profile` (cleaned by `coerce_profile`, unknown values fall
+back to Standard) and `windows_dictation_profile_locked`. Both are additive:
+`data_format_audit` recorded `quill.settings` and `lite.settings` as additive
+and compatible, because an older build's loader ignores names it does not know.
+
+**What a profile does to writing** is `profile_mixin.py`'s `ProfileMixin`,
+listed first among the controller's bases so `controller.py` (at its size
+ceiling) grew by two lines. It wraps four hooks of the voice-command mixins:
+
+- `_in_mode`: a heading mark at the start of a phrase. `markdown` types
+  `## ` as it always has. `formatted` and `plain` turn the mark into a bare
+  line start and remember the level.
+- `_after_phrase`: for `formatted`, the editor's own heading command over the
+  phrase just written (the document port's optional `formatting()` and
+  `apply_style(style, start, end)`), or, where there is none, nothing typed
+  and `HEADING_REFUSAL` said and shown: "Headings work in QUILL documents or
+  the Markdown profile." (dict.md's sentence). `plain` says nothing: the words
+  on their own line are what Chat asked for.
+- `_voice_command`: "bold that" and "italic that"/"italicize that"
+  (`Command.BOLD_THAT`, `ITALIC_THAT`, new in `vocabulary_types.py`) act on the
+  selection, or the last intact phrase. `markdown` wraps the words in `**` or
+  `*` (keeping surrounding spaces outside the marks) as one replace, and
+  updates the history so "scratch that" removes the formatted phrase;
+  `formatted` runs the editor's own Bold or Italic; `plain` says
+  `PLAIN_REFUSAL`. dict.md said "there are no bold or italic voice commands";
+  now there are, because a format-aware profile with no way to format a word
+  would have been half a feature.
+- `_mode_command`: the seven profile commands ("QUILL email mode", "email
+  profile", ...). Refused out loud while Lock Profile is on; otherwise kept
+  through the feedback port's optional `set_dictation_profile`, and "Email
+  profile." said once. A host without that hook says where to choose one.
+
+**The editors' half.** `EditorDocument.formatting()` and `apply_style()`
+(`windows_dictation_ports.py`) select the range and ask the host. QUILL
+(`main_frame_windows_dictation.py`) answers `rich` in a rich text document and
+the markup surface (`markdown`, `html`) otherwise, and runs
+`format.bold`/`format.italic`/`format.heading_N` through its own command
+registry; rich text speaks its own outcome, markup does not, so the mixin
+says "Heading 2." there. QUILL Lite (`lite_window_dictation.py`) formats only
+a rich text document, through its own `cmd_bold`, `cmd_italic` and
+`cmd_heading_N`. A live transcript (`background`) is never formatted. The
+choice is in More Dictation Settings (`dictation_more_dialog.py`: Dictation
+profile, Alt+A; Lock, Alt+B), shared by all three apps.
+
+**QUILL Transcribe's half.** The profile commands and bold and italic are in
+`anywhere.EXTERNAL_COMMANDS`, so they work in other programs: Markdown and
+Coding retype the session's own last phrase with marks (the same
+backspace-and-retype as "capitalize that"; the other program's text is never
+read); Document and Email say why nothing was formatted. The choice is also in
+Dictation > Dictation Profile... (Ctrl+Shift+F, `ProfileDialog` in
+`transcribe_coach.py`), the tray menu (Dictation Pr&ofile...), and Dictation >
+Lock Profile (Ctrl+Shift+L, a check item). The profile shows in the window's
+Model and microphone field, a third tray read-out, the tray icon's name and
+Dictation Status (only when it is not Standard, the last three).
+
+**Not done, on purpose.** Automatic switching per program stays out (dict.md
+section 6; PRD 7.6 needs a privacy review first). A word list per profile is
+D-21's: `NamedProfile.word_list` and `active_profile_name(settings)` are the
+API it will read. QUILL has no separate menu row for the profile: More
+Dictation Settings and the voice command are its routes, as for every other
+dictation setting.
+
+### D-25: lessons, a practice field and a recognition test
+
+**Practice Dictation** (`quill/apps/transcribe_practice.py`, Dictation >
+Practice Dictation..., Ctrl+Shift+P) is a modeless window: the sentence to
+read, the **practice field**, the result, and Start Dictation Here (Alt+H),
+Read This Sentence (Alt+T), Score the Field (Alt+S), Next Sentence (Alt+N) and
+Close (Escape; no access key, GATE-14). Ctrl+F11 in the window starts and stops
+dictation in the field. Its F1 purpose is in `core/transcribe/surface_help.py`
+and every control has inline help (GATE-TRANSCRIBE-HELP).
+
+**The own-window refusal, and its one exception.** A start from QUILL
+Transcribe's own window normally arms and waits for another program. Start
+Dictation Here instead runs the same refusals as any start (`_refusal`: Safe
+Mode, the owner lock, the family microphone, the model), then points the shared
+controller at `PracticeFieldDocument` -- `ReviewBoxDocument`'s editor-style
+port over the field, one undo step a phrase, never keystrokes, and
+`formatting()` empty so it behaves like Notepad for profiles -- and starts it.
+`review_retarget` does the switch, the same seam Review Dictation uses. Any
+stop, by any route, goes back to the locked-field document
+(`_practice_state_changed`, called from `_dictation_state_changed`); so does
+closing the window. A session already running in another program is never
+taken over: "Stop it first".
+
+**The recognition test.** `quill/core/transcribe/practice.py` holds eight
+plain sentences (a name, a number and a question among them) and `score()`.
+The scorer is `quill/core/windows_dictation/word_errors.py`, moved out of
+`scripts/dictbench.py`, which now imports it: one word-error count for the
+benchmark and the window, so a number means the same in both. Capitals and
+punctuation do not count. Read This Sentence clears the field, starts dictation
+there if it is off, and scores the **first phrase written** (the feedback
+port's `phrase_written`), said once after the read-back and kept in Result;
+Score the Field scores the whole field for a sentence said in two breaths.
+Below 80 percent it suggests speaking slower, moving closer, or a larger model.
+
+**Five lessons** (`quill/core/tutorials/transcribe_lessons.py`): your first
+dictation in the Practice window, pause and resume in another program,
+commands with the command word, snippets and clips, and review. They are kept
+beside the editors' `dictation_lessons.py`, not in it, because they name QUILL
+Transcribe's commands. `quill/core/transcribe/tutorials.py` is the catalogue
+and the one small command table (`LOCAL_COMMANDS`: lesson id, frame method,
+key) that the menu, Try It and the book all read. Help > Tutorials...
+(Ctrl+Alt+F1) opens the family's Tutorials window through a small adapter
+(`_LessonHost`) that answers `commands.get/run` and `_binding_for` from that
+table, since QUILL Transcribe has no command registry. The book is generated
+into `standalone/transcribe/docs/tutorials.md` (GATE-TUTDOC now has six apps).
+
+**Acceptance.** dict.md's criterion, a new user reaching a first successful
+dictation from setup without sighted help, is a screen-reader check and is
+added to the D-4 passes; it is not claimed here.
+
+### Tests
+
+`tests/unit/core/test_dictation_profiles.py` (overlay, cleaning, structure per
+profile, bold and italic, voice switching and the lock, the reference),
+`tests/unit/apps/test_transcribe_coach.py` (practice field written directly
+and never another program, refusals, restore on stop and on close, the test's
+score said once, Score the Field, the profile window and lock, the lesson host,
+menu keys against the lesson table, F1 titles and inline help, reachability)
+and `tests/unit/ui/test_dictation_formatting_hooks.py` (QUILL's and QUILL
+Lite's formatting hooks and the editor port).
 
 ## Appendix A: the dict.md section numbers, and where they live now
 

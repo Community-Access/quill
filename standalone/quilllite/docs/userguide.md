@@ -878,19 +878,48 @@ A PDF opens as its **text**. You can read it, search it, select and copy from
 it, and change it. What you cannot do is turn it back into a PDF: QUILL Lite
 never writes to a PDF. The PDF you opened stays exactly as it was.
 
-When it opens, QUILL Lite tells you how many pages it has, and whether it has
-an outline.
+When it opens, QUILL Lite tells you how many pages it has, whether it has an
+outline, and which pages, if any, may read poorly.
 
 #### What comes through, and what does not
 
 The words come through, in order, with the lines joined back into paragraphs.
-Each page stays a page. Headings, lists and tables come through as ordinary
-lines of text, and pictures do not come through at all. A page set in two
-columns can come out mixed together. Those are the limits of reading a PDF's
-text, and QUILL has the same ones.
+Each page stays a page, blank pages included, so page 3 is always the third
+page. Headings, lists and tables come through as ordinary lines of text: a
+heading keeps its own line, a list item keeps its own line, and each row of a
+table stays one line with its numbers in order. Pictures do not come through at
+all. A page set in two clear columns is read down the first column and then the
+second; a page with three columns, or columns wrapped around pictures, can still
+come out mixed. Those are the limits of reading a PDF's text, and QUILL has the
+same ones.
 
 QUILL Lite reads the first 200 pages of a very long PDF, and tells you when it
 stopped early.
+
+#### How the text of each page is chosen
+
+A PDF can be read more than one way, and the ways do not always agree: one may
+spell a widely spaced line out a letter at a time, or run two columns together
+line by line, where another reads it properly. QUILL Lite decides page by page.
+A page whose first reading is clean is kept at once. A page that shows signs of
+trouble, or looks as if it is set in two columns, is read two more ways, and
+the reading with the fewest problems wins: fewest characters that cannot be
+read, words broken into letters, words glued together, and missing text. A short
+title page, a page of figures, or a page in another language is not marked
+down for being short.
+
+Nothing is uploaded, nothing is guessed, and the PDF is never changed. A
+character the PDF gave no meaning to is left in the text rather than deleted,
+and the page is named so you know to check it.
+
+#### When a page may read poorly
+
+When the PDF opens, QUILL Lite names any page that still reads poorly, for
+example: "Opened as text, 12 pages. Pages 3 and 7 may read poorly." A page is
+named when every reading of it was poor, when it holds characters that could
+not be read, or when it is only a picture, like one scanned page in an
+otherwise ordinary PDF. Blank pages are never named. Go to the page with
+**Ctrl+G** and check it; for a picture page, OCR (below) can read it.
 
 #### Pages
 
@@ -906,7 +935,11 @@ A PDF keeps its pages:
 Many PDFs come with an outline: a list of chapters and sections, which other
 programs call bookmarks. When the PDF you open has one, **Ctrl+G** has an
 **Outline** choice. Each entry says its title and its page, for example
-"Chapter 2, page 14". Choose one and press **Enter** to go there.
+"Chapter 2, page 14". An entry inside another also says its level, for example
+"Summary, level 3, page 15". Choose one and press **Enter** to go there: you
+land on the title itself, even when it is halfway down the page, or on the top
+of the page when the title cannot be found there. The level only describes the
+outline; it does not make anything a heading.
 
 #### A PDF with a password
 
@@ -4163,6 +4196,66 @@ word. Strict mode is off in QUILL Lite, so the commands you know keep working.
 A common word, or one of your own words in My Words and Phrases, cannot be the
 command word; you are told why.
 
+#### Dictation profiles: the kind of writing you are doing
+
+A dictation profile changes dictation for one kind of writing in one step,
+instead of changing several settings each time. There are seven:
+
+| Profile | What it changes |
+|---|---|
+| Standard | Nothing: your Dictation Settings as they are. Headings are written as Markdown marks, as before. Everybody starts here. |
+| Email | Removes filler words and adds punctuation. Headings, bold and italic use QUILL Lite's own formatting. |
+| Document | Headings, bold and italic use QUILL Lite's own formatting. |
+| Markdown | Headings, bold and italic are written as Markdown marks. |
+| Chat | Removes filler words; plain text, with no heading marks. |
+| Coding | Removes filler words, adds no punctuation of its own (you say every mark), and waits longer for a pause. Markdown marks. |
+| Verbatim | Keeps every word you say, fillers too; plain text. |
+
+**Choosing one.** Open Dictation Settings (**Alt+Shift+F6**), press **More Dictation
+Settings...**, and choose in **Dictation profile, for the kind of writing**
+(**Alt+A**). Or, while dictating, say the profile's name after the command
+word: "QUILL email mode", "QUILL markdown mode", "QUILL standard mode" ("email
+profile" works too). You hear "Email profile." and the choice is kept for next
+time. The status bar shows a profile other than Standard beside the dictation
+modes, so a braille display shows it too.
+
+**Lock the profile so it cannot be switched by voice** (**Alt+B**, in More
+Dictation Settings) stops a spoken profile name from switching: you hear "Lock
+Profile is on, so the profile stays Email." Nothing ever switches profiles on
+its own.
+
+**Profiles and the Dictation style.** While a profile other than Standard is
+on, its own choice about filler words wins over the **Dictation style** in
+Dictation Settings: Verbatim keeps fillers even if the style is Clean, and
+Email, Chat and Coding remove them even if the style is Verbatim. A profile
+never changes **Fix it when I correct myself** or polishing. Standard leaves
+your style exactly as it is.
+
+**Headings, bold and italic by voice.** "heading one" to "heading six" at the
+start of a phrase, and "QUILL bold that" and "QUILL italic that" (or
+"italicize that"), act on the selection, or on the phrase you dictated last.
+What happens depends on the profile:
+
+- **Markdown** and **Coding**, and **Standard** for headings: the marks are
+  written. "bold that" puts two asterisks either side, "italic that" one; one
+  Ctrl+Z takes it back.
+- **Document** and **Email**: In a rich text document, QUILL Lite's own Heading, Bold and Italic
+commands apply the style, as if you had pressed their keys. In a plain text document nothing is
+  typed for the heading, and you hear "Headings work in QUILL documents or the
+  Markdown profile." Bold and italic say the same about themselves.
+- **Chat** and **Verbatim**: "heading two" starts a new line with your words
+  and nothing else, and bold and italic say "This profile writes plain text, so
+  nothing was formatted."
+
+**Example.** In a letter written as a rich text document, choose the Document
+profile, then say "heading two dear Sam" and pause. "Dear Sam" goes on a line
+of its own with the Heading 2 style. Select a word, say "QUILL bold that", and
+it is bold.
+
+The settings are `windows_dictation_profile` and
+`windows_dictation_profile_locked`, under the same names in QUILL, QUILL Lite
+and QUILL Transcribe.
+
 #### Review before inserting
 
 When you want to check what you said before it goes into the document, review
@@ -4216,6 +4309,71 @@ your words are kept: the next time it starts it says so, and Review Dictation
 brings them back. Discard throws them away. To send everything you dictate to
 the window first, turn on **Send dictation to review first** (**Alt+V**) in More
 Dictation Settings.
+
+#### Polishing your dictation with AI, only when you ask
+
+**Polish** tidies punctuation, capitals and small slips without rewording
+anything. It is one request you ask for each time, it is off until you turn it
+on, and it never runs by itself.
+
+1. Open **Dictation Settings** (**Alt+Shift+F6**), press **More Dictation
+   Settings...** (**Alt+A**), and check **Allow polishing my dictation with AI
+   when I ask** (**Alt+G**). Press OK in both windows.
+2. Dictate as usual. When you want a phrase polished, say **"QUILL polish
+   that"** or "QUILL polish it". The last phrase is taken back out and opened in
+   Review Dictation, and the polish request is made there. If Review Dictation
+   is already open, the words in it are polished.
+3. In the Review Dictation window you can also press **Polish** (**Ctrl+P**).
+   The button is there only while polishing is allowed.
+4. You hear "Polishing", then what changed. Read the words, then press
+   **Insert** (**Ctrl+Enter**), or take the change back with **Undo Change**
+   (**Ctrl+Z**).
+
+The AI is asked to fix punctuation, capital letters, spelling and obvious
+grammar slips only, and to keep your words, meaning, order and tone. Polish
+uses the same AI, account and first-time question as the rest of Review
+Dictation: nothing is sent until you say yes, and only the words in the window
+are sent. With AI off the Polish button is greyed out, and with polishing not
+allowed "QUILL polish that" says "Polish my dictation is off" and sends nothing.
+
+#### Correcting yourself as you talk
+
+With **Fix it when I correct myself, like Thursday, no, Friday** (**Alt+X**)
+checked in Dictation Settings, QUILL Lite writes only what you meant when you
+correct yourself mid-sentence:
+
+| You say | QUILL Lite writes |
+|---|---|
+| meet on Thursday, no, Friday at noon | meet on Friday at noon |
+| in June, no I mean July | in July |
+| I have two no three cats | I have three cats |
+| call me at 5, sorry, 6 | call me at 6 |
+| send it to Ana, sorry, Maria (both names in My Words) | send it to Maria |
+
+The marking words are "no", "I mean", "no I mean", "sorry" and "scratch that
+word", and a correction is made only between two days, two months, two numbers
+or two names from the Vocabulary list in My Words and Phrases. Anything else is
+written as you said it: "no, I don't think so" and "Is it Thursday? No,
+Friday." stay exactly as they are. It works on this computer with no AI, it is
+off until you turn it on, and live transcripts never use it.
+
+**Dictation style** (**Alt+Y**) sets these choices together: **Verbatim**
+(every word as you say it), **Clean** (no filler words, and your corrections
+fixed) or, only when AI help is on, **Polished** (Clean, plus Send dictation to
+review first and Allow polishing my dictation with AI). Choosing Polished sends
+nothing by itself. Change a check box yourself and the style shows **Your own
+mix of the settings below**.
+
+#### Learning from your corrections
+
+When you correct the same word the same way twice, by "correct that" and then
+"choose two", or by "correct Ann" and then the new words, a window called **Add
+a Correction** asks, for example, "Add a correction: Ann becomes Anne?" **No**
+is the default. **Yes** adds it to the Corrections list in My Words and Phrases
+(**Alt+Shift+F10**), where you can change or remove it, and the next phrase
+uses it. Each pair is asked about once each time QUILL Lite runs, only words
+and short phrases of up to four words are offered, and nothing is saved unless
+you say yes.
 
 ### Starting and stopping with your voice
 
@@ -4367,6 +4525,11 @@ phrase at a time. Turn it off again when you want the commands back.
   finish later" just below. Windows speech recognition uses the same length.
 - **Remove filler words like um and uh.** Hesitations like um, uh, erm and hmm
   are left out. Real words are never removed.
+- **Dictation style** (**Alt+Y**). Verbatim, Clean or, with AI on, Polished:
+  a quick way to set the next two choices together. See "Correcting yourself
+  as you talk".
+- **Fix it when I correct myself, like Thursday, no, Friday** (**Alt+X**).
+  "Thursday, no, Friday" writes Friday. Off at first.
 - **Stop dictation after silence.** Never, or after 1, 5 or 10 minutes of
   hearing nothing, so dictation is not left writing in an empty room. With the
   wake phrase on, it goes back to waiting for the wake phrase instead. You hear
@@ -4463,6 +4626,8 @@ right side is about starting and stopping.
 | Saying "dash" writes | Em dash, spaced en dash, or two hyphens | Em dash |
 | Pause before a phrase is written | Short, Normal, Long, Longer (2 seconds) or Longest (3 seconds) | Normal |
 | Remove filler words like um and uh | Leave hesitations out | Off |
+| Dictation style (Alt+Y) | Verbatim, Clean, or Polished when AI is on; sets the choices below | Verbatim |
+| Fix it when I correct myself, like Thursday, no, Friday (Alt+X) | Writes only the second of two days, months, numbers or names from My Words | Off |
 | Just write what I say: nothing happens at a pause | No full stop, sound, read-back or command at a pause | Off |
 | Play sounds when dictation starts, stops or fails | The start, stop and error tones | On |
 | Say "Dictation on" and "Dictation off" | The words that go with those tones | On |
@@ -4504,7 +4669,10 @@ you change here is saved when you press OK in Dictation Settings.
 | Commands only after the command word (strict mode) (Alt+E) | A command said on its own is written as words; the stop phrase always works | Unchecked (checked in QUILL Transcribe) |
 | Seconds command mode waits for a command (Alt+D) | How long command mode lasts with no command, from 5 to 30 | 8 |
 | Send dictation to review first (Alt+V) | What you dictate goes into Review Dictation instead, to insert once; see "Review before inserting" | Unchecked |
+| Allow polishing my dictation with AI when I ask (Alt+G) | "QUILL polish that" and the Polish button in Review Dictation ask the AI to fix punctuation and small slips, keeping your words | Unchecked |
 | Keep a dictation history (Alt+Y) | Off, One day, Seven days or Thirty days of the text you dictate, never the sound, listed in Recent Phrases; turning it off deletes it; see "Recent phrases" | Off |
+| Dictation profile, for the kind of writing (Alt+A) | Standard, Email, Document, Markdown, Chat, Coding or Verbatim; see "Dictation profiles" | Standard |
+| Lock the profile so it cannot be switched by voice (Alt+B) | A spoken profile name does not switch profiles | Unchecked |
 
 #### Dictating in Spanish
 

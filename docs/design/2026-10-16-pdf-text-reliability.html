@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>PDF text reliability: choosing each page's reading</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="pdf-text-reliability-choosing-each-pages-reading">PDF text
+reliability: choosing each page’s reading</h1>
+<p>Date: 2026-10-16. Jeff’s todo, P2 item 28, “Text-extraction
+reliability, shared by both editors and Import / Convert”. This is
+text-reading work: which words come out of a PDF, in what order, with
+what page boundaries. It is not PDF document-structure work, and nothing
+here makes headings, tables or any other structure.</p>
+<h2 id="short-version">Short version</h2>
+<p>The PDF reader used to keep the first non-empty answer from
+pdfplumber or pypdf, scored by how much text there was. A page of
+replacement characters scored 100, a clean title page scored 25, and a
+bad first answer hid a good second one. Now each page is read by
+pdfplumber first; a clean reading is kept at once (the fast path), and a
+doubtful one is read two or three more ways and the most
+<em>readable</em> reading wins. Readability is a bounded 0-100 score
+built from the kinds of damage a listener trips over. The same reader
+serves File &gt; Open in QUILL and QUILL Lite, Import / Convert’s
+text-layer tier and Document Q&amp;A. Clean documents cost the same as
+before (38.3 against 37.6 ms a page); doubtful pages cost about 40
+percent more; peak memory fell from 429 MB to 6.5 MB on 200 pages.</p>
+<h2 id="what-was-wrong-measured-before-any-change">What was wrong
+(measured before any change)</h2>
+<p>The fixture corpus (<code>tests/corpus/pdf/</code>, built by
+<code>build_pdf_corpus.py</code>) was read with the old reader first.
+What it found:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Old result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>clean_prose.pdf</code></td>
+<td>Scores 32 and 18 per page, 50 for the document: clean text called
+mediocre, because it is short.</td>
+</tr>
+<tr>
+<td><code>letter_spaced.pdf</code></td>
+<td>pdfplumber read a widely spaced paragraph one letter at a time;
+repair closed the letters up into “Widelettersarehardtoread”. pypdf had
+it right and was never asked.</td>
+</tr>
+<tr>
+<td><code>two_columns.pdf</code></td>
+<td>The two columns run together row by row (“through the night Repairs
+to the bridge”). pypdf, which follows the drawing order, had them in
+order.</td>
+</tr>
+<tr>
+<td><code>nested_outline.pdf</code></td>
+<td>“Chapter 2” under a long body line was swallowed into that
+paragraph.</td>
+</tr>
+<tr>
+<td><code>damaged_encoding.pdf</code></td>
+<td>A page of U+FFFD scored 17, the same as clean pages; a font that
+stored its “x” as a private-use glyph read “The net bo holds”, because
+unmapped private-use characters were deleted.</td>
+</tr>
+<tr>
+<td><code>blank_edges.pdf</code></td>
+<td>A blank first page vanished: the leading form feed was stripped, so
+page 2’s text became page 1 and every offset shifted.</td>
+</tr>
+<tr>
+<td>200 clean pages</td>
+<td>6.9-7.5 s, peak traced memory <strong>429 MB</strong>: pages were
+never released.</td>
+</tr>
+</tbody>
+</table>
+<p>Also: <code>quill.io.structured._format_pdf</code> ran MarkItDown on
+any document below 50, replaced <em>all</em> of the text with its answer
+(losing the page breaks), and recorded an automatic 85;
+<code>format_pdf_document</code> kept whichever answer was
+<em>longer</em>. The shipped runtime cannot import MarkItDown at all
+(magika needs onnxruntime, which the runtime excludes), so the behaviour
+differed between a development install and a shipped build. PRD 5.5
+described a per-page selection with <code>pypdfium2</code> and
+<code>pdfminer.six</code> as extractors that the reader never had.</p>
+<h2 id="the-engine-roster">The engine roster</h2>
+<p>Per page, in tie-break order
+(<code>quill/io/pdf_select.py::ROSTER</code>):</p>
+<ol type="1">
+<li><code>pdfplumber</code> – pdfminer.six underneath. The first reading
+of every page.</li>
+<li><code>pdfplumber-dedupe</code> – the same page with overprinted
+duplicate characters removed; tried only when the first reading shows
+fake-bold doubling (“HHeelllloo”).</li>
+<li><code>pypdf</code> – plain mode, which follows the order the page
+was drawn in.</li>
+<li><code>pypdf-layout</code> – layout mode, which keeps horizontal gaps
+as spaces; tidied (indentation dropped, wide gaps reduced to three
+spaces, blank runs collapsed) without changing a word.</li>
+<li><code>pypdf-columns</code> – the layout reading split at a detected
+column gutter and read down each column in turn; only when the layout
+reading shows two columns.</li>
+<li><code>markitdown</code> – only for a document that still scores
+below 50, page by page (below).</li>
+</ol>
+<p><code>pypdfium2</code> stays what it always was: the rasteriser for
+OCR. OCR is never run by the reader.</p>
+<h2 id="the-fast-path">The fast path</h2>
+<p>pdfplumber reads the page. If that reading scores at least
+<strong><code>FAST_PATH_SCORE = 90</code></strong> and the page’s
+characters show no column gutter, it is repaired (unless repair would
+lower its score) and kept; nothing else reads the page.</p>
+<p>The threshold was measured on the corpus: every clean page’s first
+reading scored 100, and every damaged one scored 78 or less (the
+private-use page, with 2 unreadable characters in 38) or 0. 90 sits in
+that gap, and lets a page with up to about 2.5 percent unreadable
+characters through on the fast path, where the other extractors would
+have read the same glyphs the same way.</p>
+<p><strong>The gutter check</strong>
+(<code>quill/io/pdf.py::_suspect_columns</code>) uses pdfplumber’s own
+character boxes, which it already computed: on a page with at least 150
+characters and six lines, it looks in the middle 40 percent of the text
+width for a vertical band at least 12 points wide that at most a tenth
+of the lines cross, with at least three lines on each side of it. One
+column of prose crosses the middle on nearly every line, so it never
+matches. A table can match; that only costs the page a comparison, never
+changes how it is read.</p>
+<h2 id="the-readability-score">The readability score</h2>
+<p><code>quill/io/pdf_score.py</code>, <code>SCORE_VERSION = 1</code>.
+The score is 100 multiplied by six factors, each between 0 and 1,
+rounded and clamped to 0-100:</p>
+<pre><code>score = round(100 x suspicious x fragmented x one_word_lines x joins x coverage x column_order)
+
+suspicious     = max(0, 1 - 4 x share of visible characters that are U+FFFD,
+                     private use, stray controls, or (cid:N) placeholders)
+fragmented     = max(0, 1 - 1.5 x share of words inside runs of 3+ single Latin letters)
+one_word_lines = 1 - min(0.6, max(0, share_of_one_word_lines - 0.5) x 1.2)
+                 (only with 6 or more non-blank lines; so never below 0.4)
+joins          = max(0.2, 1 - 4 x max(0, share_of_implausible_words - 0.03))
+                 implausible: Latin words of 20+ letters, &quot;wordWord&quot; or &quot;word.Word&quot;
+                 seams, doubled letters; 3 percent allowance for real long words
+coverage       = min(1, content_chars / fullest reading&#39;s content_chars / 0.95)
+column_order   = 1 - 0.5 x share of two-column rows run together side by side
+                 (only when the page shows two columns)</code></pre>
+<p>Empty text scores 0. What it deliberately does not penalise: length
+(a one-line title scores 100), digits and punctuation (a row of figures
+scores 100), and other scripts (Greek, Cyrillic and Japanese prose score
+100; word length is judged only for Latin, Greek, Cyrillic and Armenian
+words).</p>
+<p><strong>Before and after repair.</strong> Every reading is scored as
+extracted and again after <code>repair_extracted_text</code>; the higher
+score wins for that reading, and if the repaired text scored lower, the
+unrepaired text is kept. So a repair heuristic that misfires on an
+unusual page cannot silently win, and the score of a page is never
+inflated by a repair that deleted something (no repair deletes
+characters any more; see below).</p>
+<p><strong>Coverage</strong> is measured against the fullest reading of
+the same page (letters and digits, placeholders and junk excluded), so a
+reading that is clean because it lost half the page does not beat one
+that kept it.</p>
+<p><strong>Regression pins</strong>
+(<code>tests/unit/io/test_pdf_score.py</code>): repeated replacement
+characters score 0, never 100; letters one at a time score below 40; the
+score is always within 0-100 over random input; a poor first reading
+loses to a cleaner one (<code>test_pdf.py</code>, and on a real file in
+<code>test_pdf_corpus.py</code>).</p>
+<h2 id="doubtful-pages-and-the-document-score">Doubtful pages and the
+document score</h2>
+<p>A page is <strong>doubtful</strong>
+(<code>quill/io/pdf.py::doubtful_pages</code>) when it has text scoring
+below <strong><code>DOUBTFUL_PAGE_SCORE = 40</code></strong>, holds any
+unreadable character, is image-only (pdfplumber found a picture and no
+text), or failed to read. A blank page is never doubtful. Both editors
+say which, in one shared sentence
+(<code>quill/core/pdf_open.py::doubtful_pages_sentence</code>): “Page 3
+may read poorly.”, “Pages 2, 5 and 9 may read poorly.”, or, past six,
+“11 pages may read poorly, starting with page 1.” QUILL says it in the
+open status (<code>intake.py</code>), QUILL Lite in its open
+announcement; the Document Intake Report and Review Extraction Quality
+list each page with its reason.</p>
+<p>The <strong>document score</strong> is the mean of the pages with
+text, multiplied by
+<code>1 - 0.5 x image_only / (text_pages + image_only)</code>. Blank
+pages do not count, so a report with a blank cover still scores 100.</p>
+<h2 id="markitdown-scored-by-the-same-rules">MarkItDown, scored by the
+same rules</h2>
+<p>Only when the document still scores below 50, no password was used,
+and the document is within the page cap. MarkItDown’s answer is split at
+its form feeds; it is used only if its pages line up with the reader’s
+(a missing trailing blank page is tolerated). Then each page is
+contested with the same <code>choose_page</code> and replaced only when
+MarkItDown’s reading wins by at least 10 points (or the reader had
+nothing). There is no automatic score. If MarkItDown cannot import –
+always, in the shipped runtime – nothing changes.
+<code>quill.io.structured._format_pdf</code> no longer calls it at all;
+it reads through <code>read_pdf_for_open</code> like QUILL Lite.</p>
+<h2 id="repairs-before-reflow">Repairs before reflow</h2>
+<p><code>quill/io/pdf_repair.py</code> keeps its four repairs and its
+rule (“a missed repair is an annoyance, a wrong one changes the
+document”), with these changes:</p>
+<ul>
+<li><strong>Private-use glyphs are kept.</strong> A ligature slot
+(U+F000-U+F007, U+E000-U+E007) is expanded only where it touches a
+letter; anything else is left as it is and counted as unreadable, so the
+page is reported. No font-specific mapping is guessed.</li>
+<li><strong>Letter-spaced lines with no word gaps</strong> are not
+closed up when the result would be a mixed-case run longer than 12
+letters (a spaced sentence, not a heading). Capitals and short words
+still close up.</li>
+<li><strong>Dehyphenation</strong> keeps identifier hyphens (a word with
+a digit, or in capitals: <code>ISBN-</code>, <code>A4-</code>) and joins
+always-hyphenated prefixes (<code>self</code>, <code>well</code>,
+<code>ex</code>, <code>all</code>, <code>half</code>, <code>non</code>,
+<code>cross</code>) keeping the hyphen.</li>
+<li><strong>Reflow never joins</strong> a line below a long one when the
+lower line is heading-like (capitals; <code>Chapter 2</code>,
+<code>Part IV</code>, <code>2.1 Methods</code>; or up to eight
+capitalised words with no closing punctuation), an address line (a house
+number, or a ZIP or postcode at the end), a row with a three-space
+column gap, or a second row of figures under a line ending in a figure;
+and lettered and roman list markers (<code>a)</code>, <code>(b)</code>,
+<code>iv.</code>) start list items.</li>
+</ul>
+<p>All of it is idempotent
+(<code>test_the_new_protections_are_idempotent</code>) and leaves
+numbers and identifiers untouched
+(<code>test_numbers_and_identifiers_survive_every_repair</code>).</p>
+<h2 id="outline-bookmarks">Outline bookmarks</h2>
+<p><code>quill/io/pdf_outline.py</code> reads the outline as
+<code>(title, page, level)</code>. The stored shape is unchanged –
+<code>source_metadata["pdf_outline"]</code> is still
+<code>(title, page)</code> pairs, so older builds and saved sessions
+read it – with <code>pdf_outline_levels</code> beside it only when the
+outline nests. <code>quill/core/pdf_open.py::_resolved</code> finds each
+title at the start of a line on its destination page (whitespace and
+case forgiven; a title shorter than two characters is not trusted) and
+falls back to the page start. Two entries with the same title on one
+page take successive matches; the bookmark names stay distinct
+(“Summary”, “Summary (2)”). Go To’s Outline kind says a nested entry’s
+level (“Summary, level 3, page 15”). The level never becomes a heading.
+QUILL’s first-open import still does nothing when the document already
+has bookmarks, so user bookmarks and existing stores are untouched.</p>
+<h2 id="bounds-kept">Bounds kept</h2>
+<p>Passwords (one read, never stored, never in metadata), page order, a
+form feed between pages with blank pages kept as empty sections, the
+200-page cap, the four failure outcomes (no reader installed, encrypted,
+damaged, no text layer – an image-only document now keeps its page count
+so the OCR offer can say it), no network, OCR opt-in, the original PDF
+never written (<code>test_reading_never_changes_the_pdf</code>). Each
+pdfplumber page is closed after it is read, which is where the memory
+went.</p>
+<h2 id="measured-budget">Measured budget</h2>
+<p>Measured side by side (<code>old</code> is the reader at the branch
+point, <code>new</code> is this change), on the development machine with
+other agents running, MarkItDown disabled on both sides, median of two
+or three runs. Peak is <code>tracemalloc</code>’s traced peak for one
+full read.</p>
+<table>
+<thead>
+<tr>
+<th>Case</th>
+<th>Old</th>
+<th>New</th>
+<th>Ratio</th>
+<th>Peak old</th>
+<th>Peak new</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Corpus, 10 files, 20 pages</td>
+<td>108 ms (5.4 ms/page)</td>
+<td>158 ms (7.9 ms/page)</td>
+<td>1.46</td>
+<td>3.4 MB</td>
+<td>1.1 MB</td>
+</tr>
+<tr>
+<td>200 clean pages</td>
+<td>7,528 ms (37.6 ms/page)</td>
+<td>7,653 ms (38.3 ms/page)</td>
+<td>1.02</td>
+<td>428.7 MB</td>
+<td>6.5 MB</td>
+</tr>
+<tr>
+<td>50 questionable pages</td>
+<td>2,093 ms (41.9 ms/page)</td>
+<td>2,921 ms (58.4 ms/page)</td>
+<td>1.40</td>
+<td>108.2 MB</td>
+<td>5.0 MB</td>
+</tr>
+</tbody>
+</table>
+<p>The corpus is small and mostly questionable on purpose, and its
+per-file cost is dominated by opening both readers, so its ratio
+overstates the everyday cost. On clean pages the reader costs what it
+did. A questionable page pays for two or three readings.</p>
+<p><strong>The gate</strong>
+(<code>tests/unit/io/test_pdf_corpus.py</code>, marked
+<code>perf</code>): 60 clean pages must all take the fast path, under
+250 ms a page and 48 MB peak; 20 questionable pages must all be won by
+the better reading, under 400 ms a page. The ceilings are several times
+the measurement, as GATE-PERF’s are, because a loaded CI box is slower
+and a gate that fails on a bad afternoon gets deleted; what they catch
+is a change of kind, such as every page paying for every extractor, or
+pages no longer being released.</p>
+<h2 id="not-done-here">Not done here</h2>
+<ul>
+<li>Columns are ordered only when the gap is clear in pypdf’s layout
+reading; three columns, or columns around pictures, can still mix.</li>
+<li>No heading levels, table cells, header associations, or anything
+derived from fonts or layout: the separate PDF structure plan (headings
+from font size, tables from ruled lines) is untouched.</li>
+<li>Tagged-PDF structure is not read.</li>
+</ul>
+</main>
+</body>
+</html>

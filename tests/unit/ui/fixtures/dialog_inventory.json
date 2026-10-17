@@ -75,6 +75,7 @@
   "quill/apps/studio.py::StudioAppFrame.run_acx_check::wx.FileDialog": "native",
   "quill/apps/studio.py::StudioAppFrame.save_diagnostics_bundle::wx.FileDialog": "native",
   "quill/apps/studio.py::main::wx.MessageBox": "native",
+  "quill/apps/transcribe_coach.py::ProfileDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/apps/transcribe_dialogs.py::ChooseModelDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/apps/transcribe_dialogs.py::SetupDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/apps/transcribe_dialogs.py::choose_microphone::wx.SingleChoiceDialog": "native",

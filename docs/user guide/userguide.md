@@ -1770,14 +1770,77 @@ password (they only restrict permissions) open with no question, as before.
 If a PDF has an outline, the chapters and sections you would see in Adobe
 Reader's bookmarks pane, QUILL adds those entries to its own
 bookmark list (**List Named Bookmarks...**, `Alt+Shift+G`) when you open the file, as it does for
-Word and EPUB structure. Each bookmark takes you exactly where **Go To Page**
-for that page would. This happens once, the first time you open the PDF. If you
+Word and EPUB structure. Each bookmark takes you to its title on its page: if
+"Chapter 2" starts halfway down page 14, the bookmark lands on "Chapter 2", not
+on the top of the page. When QUILL cannot find the title at the start of a line
+on that page, the bookmark goes to the top of the page instead. Two entries
+with the same title, such as a "Summary" in every chapter, stay two bookmarks
+("Summary" and "Summary (2)"), each at its own place. This happens once, the
+first time you open the PDF. If you already have bookmarks in the file, or you
 later rename or delete some of those bookmarks, opening the file again will not
-bring them back or make duplicates. A PDF with no outline opens as usual.
+change them, bring them back or make duplicates. A PDF with no outline opens as
+usual.
 
 The outline is also in **Go To** (`Ctrl+G`), as its own **Outline** choice.
-Each entry says its title and its page, such as "Chapter 2, page 14", and it
-always takes you to that page, even after you have edited the text above it.
+Each entry says its title and its page, such as "Chapter 2, page 14". An entry
+that sits inside another says its level too, such as "Summary, level 3, page
+15", so you can hear the outline's shape. The level is only a description: it
+does not turn the line into a heading. An entry always takes you to its title
+on that page, even after you have edited the text above it.
+
+#### How QUILL chooses the text of each page
+
+A PDF can be read more than one way, and the ways do not always agree. One
+reader may spell a widely spaced line out a letter at a time ("W i d e l e t t
+e r s"), while another reads it as words; one may run two columns together line
+by line, while another reads down the first column and then the second. QUILL
+does not simply take the first answer it gets. It decides **page by page**:
+
+1. **The usual reader goes first.** For most pages its text is clean, and QUILL
+   keeps it straight away, so an ordinary PDF opens as quickly as it always did.
+2. **A doubtful page gets a second and third look.** If the first reading has
+   signs of trouble (letters one at a time, words run together, characters that
+   cannot be read, a line of text per word), or the page looks as if it is set
+   in two columns, QUILL reads that page again in two other ways and keeps
+   whichever reads best.
+3. **"Reads best" means fewest problems, not most text.** QUILL counts what a
+   listener would trip over: characters it could not read, words broken into
+   single letters, words glued together, one word per line, part of the page
+   missing, and columns read across instead of down. A short title page, a page
+   of figures, or a page in Greek or Japanese is not marked down for being
+   short or for not being English.
+
+The repairs described below run on every reading, and QUILL compares the
+readings both before and after repair, so a repair that would make a page worse
+is not used on it.
+
+**What you hear when a page is doubtful.** When the PDF opens, QUILL names the
+pages that may still read poorly, for example: "Opened report.pdf. 12 pages.
+extracted by pdfplumber + pypdf. quality 81/100. Pages 3 and 7 may read
+poorly." A page is named when it still reads badly in
+every way QUILL tried, when it holds characters QUILL could not read, or when it
+is only a picture (a scanned page inside an otherwise ordinary PDF). A blank
+page is never named: there is nothing on it to miss. The **Document Intake
+Report** lists those pages with the reason for each, such as "Page 7: 2
+characters could not be read", and says which reader's text each page uses.
+
+**What QUILL does not do.** It does not guess. A character that the PDF's own
+font gave no meaning to is left in the text, rather than deleted or swapped for
+a letter that might be wrong; the page is named instead, so you know to check
+it. QUILL does not turn anything into headings, tables or other structure: a
+heading stays a line of text, and a row of a table stays a line with its numbers
+in order. Nothing is uploaded, and OCR never runs unless you say yes (see
+"Opening a scanned PDF with File > Open", above).
+The optional MarkItDown converter, if you have it, is only asked about a PDF
+that still reads poorly, and its text is used for a page only when it keeps the
+PDF's pages and reads clearly better. The PDF itself is never changed.
+
+**Limits.** QUILL reads the first 200 pages of a very long PDF and says so.
+Columns are only put in order when the gap between them is clear; a page with
+three columns, or columns that run around pictures, can still come out mixed.
+Tables come through as lines of text, and pictures do not come through at all.
+The same rules apply in File > Open, Import / Convert Document, Document Q&A,
+and in QUILL Lite.
 
 #### The text from a PDF is repaired before you read it
 
@@ -1790,22 +1853,34 @@ it opens the file, page by page:
   with a hyphen at the end of a line, so "inter-" on one line and "national" on
   the next would be read as two words, and a search for "international" found
   nothing. QUILL joins them. A hyphen that belongs to the word stays:
-  **Anglo-Saxon** and **2018-2019** are left exactly as written.
+  **Anglo-Saxon**, **2018-2019** and an identifier such as **ISBN-** are left
+  exactly as written, and a word that is always hyphenated, such as "self-" at
+  the end of one line and "aware" on the next, becomes **self-aware**.
 - **Paragraphs are put back together.** Every printed line arrives as its own
   line of text, so speech would stop at the edge of the page instead of the end
   of the sentence, and moving to the next paragraph moved one printed line.
   QUILL joins lines that were only broken because the page ran out of room.
-  Blank lines, list items, headings, short deliberate lines and finished
-  sentences keep their breaks, so lists stay lists and paragraphs stay separate.
+  Blank lines, list items (including "a)" and "iv." items), headings, short
+  deliberate lines and finished sentences keep their breaks, so lists stay lists
+  and paragraphs stay separate. A heading such as "CHAPTER TWO" or "2.1
+  Methods" under a long line of text stays on its own line instead of being
+  swallowed into the paragraph, and so do address lines, rows set out in
+  columns, and rows of figures, so two long rows of a table stay two rows.
 - **Spaced-out headings are closed up.** A designer's letter-spaced title comes
   through as "C H A P T E R  O N E", which a screen reader spells one letter at
   a time and a search never matches. It becomes "CHAPTER ONE". Ordinary text is
-  left alone: a line such as "A B testing" is not a heading and is not touched.
+  left alone: a line such as "A B testing" is not a heading and is not touched,
+  and a whole sentence spaced out with no gaps between its words is not closed
+  up into one long word (QUILL looks for a better reading of that page
+  instead).
 - **Missing joined letters are restored.** The joined "fi", "fl" and "ff" shapes
   a typesetter uses are often stored as characters that mean nothing outside the
   document's own font, so a screen reader reads *nothing* where they were, and
-  "office" is announced as "o ce". QUILL turns them back into letters, and
-  removes any leftover meaningless character so speech doesn't stumble over it.
+  "office" is announced as "o ce". QUILL turns them back into letters where
+  they sit inside a word. Any other character with no meaning is **kept**, not
+  deleted: deleting it could quietly change what the page says (a font that
+  stored its "x" that way would turn "next box" into "net bo"). Instead QUILL
+  names the page as one that may read poorly, so you know to check it.
 
 These repairs are careful. When a case could go either way, QUILL leaves the
 text as it found it, and a PDF whose text is already clean comes through
@@ -7269,6 +7344,67 @@ works. Strict mode is off in QUILL and QUILL Lite, so the commands you know keep
 working, and on in QUILL Transcribe. A common word, or a word from your own My
 Words and Phrases, is refused as the command word, with the reason.
 
+##### Dictation profiles: the kind of writing you are doing
+
+A dictation profile changes dictation for one kind of writing in one step,
+instead of changing several settings each time. There are seven:
+
+| Profile | What it changes |
+|---|---|
+| Standard | Nothing: your Dictation Settings as they are. Headings are written as Markdown marks, as before. Everybody starts here. |
+| Email | Removes filler words and adds punctuation. Headings, bold and italic use QUILL's own formatting. |
+| Document | Headings, bold and italic use QUILL's own formatting. |
+| Markdown | Headings, bold and italic are written as Markdown marks. |
+| Chat | Removes filler words; plain text, with no heading marks. |
+| Coding | Removes filler words, adds no punctuation of its own (you say every mark), and waits longer for a pause. Markdown marks. |
+| Verbatim | Keeps every word you say, fillers too; plain text. |
+
+**Choosing one.** Open Dictation Settings (`Alt+Shift+F6`), press **More Dictation
+Settings...**, and choose in **Dictation profile, for the kind of writing**
+(**Alt+A**). Or, while dictating, say the profile's name after the command
+word: "QUILL email mode", "QUILL markdown mode", "QUILL standard mode" ("email
+profile" works too). You hear "Email profile." and the choice is kept for next
+time. The status bar shows a profile other than Standard beside the dictation
+modes, so a braille display shows it too.
+
+**Lock the profile so it cannot be switched by voice** (**Alt+B**, in More
+Dictation Settings) stops a spoken profile name from switching: you hear "Lock
+Profile is on, so the profile stays Email." Nothing ever switches profiles on
+its own.
+
+**Profiles and the Dictation style.** While a profile other than Standard is
+on, its own choice about filler words wins over the **Dictation style** in
+Dictation Settings: Verbatim keeps fillers even if the style is Clean, and
+Email, Chat and Coding remove them even if the style is Verbatim. A profile
+never changes **Fix it when I correct myself** or polishing. Standard leaves
+your style exactly as it is.
+
+**Headings, bold and italic by voice.** "heading one" to "heading six" at the
+start of a phrase, and "QUILL bold that" and "QUILL italic that" (or
+"italicize that"), act on the selection, or on the phrase you dictated last.
+What happens depends on the profile:
+
+- **Markdown** and **Coding**, and **Standard** for headings: the marks are
+  written. "bold that" puts two asterisks either side, "italic that" one; one
+  Ctrl+Z takes it back.
+- **Document** and **Email**: In a rich text document, QUILL's own Heading and Bold commands apply the
+style. In a Markdown or HTML document, QUILL's own commands write the marks
+or tags, and you hear "Heading 2." or "Bold." In a plain text document nothing is
+  typed for the heading, and you hear "Headings work in QUILL documents or the
+  Markdown profile." Bold and italic say the same about themselves.
+- **Chat** and **Verbatim**: "heading two" starts a new line with your words
+  and nothing else, and bold and italic say "This profile writes plain text, so
+  nothing was formatted."
+
+**Example.** In a letter written as a rich text document, choose the Document
+profile, then say "heading two dear Sam" and pause. "Dear Sam" goes on a line
+of its own with the Heading 2 style. Select a word, say "QUILL bold that", and
+it is bold.
+
+The settings are `windows_dictation_profile` and
+`windows_dictation_profile_locked`, under the same names in QUILL, QUILL Lite
+and QUILL Transcribe.
+
 ##### Importing and exporting your words
 
 **Export...** saves your whole list to a file you name. Choose **Word list in
@@ -7358,6 +7494,105 @@ To send everything you dictate to the window first, turn on **Send dictation
 to review first** (`Alt+V`) in More Dictation Settings. The first thing you say
 opens the window, and nothing reaches the document until you insert it.
 
+##### Polishing your dictation with AI, only when you ask
+
+Sometimes you want the punctuation and capitals tidied without rewording
+anything. **Polish** does exactly that, as one request you ask for each time.
+It is off until you turn it on, and it never runs by itself.
+
+1. Open Dictation Settings (`Alt+Shift+F6`), press **More Dictation
+   Settings...** (`Alt+A`), and check **Allow polishing my dictation with AI
+   when I ask** (`Alt+G`). Press OK in both windows.
+2. Dictate as usual. When you want a phrase polished, say **"QUILL polish
+   that"** (or "QUILL polish it"). The last phrase is taken back out of the
+   document and opened in Review Dictation, then the polish request is made
+   there. If Review Dictation is already open, the words in it are polished.
+3. In the Review Dictation window you can also press **Polish** (`Ctrl+P`).
+   That button is there only while polishing is allowed.
+4. You hear "Polishing", then what changed, in two sentences at most, worked
+   out by QUILL comparing the words itself. Read the words, then **Insert** (`Ctrl+Enter`)
+   or take the change back with **Undo Change** (`Ctrl+Z`).
+
+What the AI is asked: to fix punctuation, capital letters, spelling and obvious
+grammar slips only, and to keep your words, your meaning, your order and your
+tone. It is the same request every time.
+
+What is sent, and when: polish uses the same AI, the same account and the same
+question as the rest of Review Dictation. The first time, QUILL asks before
+anything is sent and names who receives it; No is the default and sends
+nothing. Only the words in the window are sent. With AI off or in Safe Mode
+the Polish button is greyed out. With polishing not allowed, "QUILL polish
+that" says "Polish my dictation is off" and sends nothing.
+
+##### Correcting yourself as you talk, and dictation styles
+
+People correct themselves mid-sentence: "meet on Thursday, no, Friday". With
+**Fix it when I correct myself, like Thursday, no, Friday** (`Alt+X`) checked
+in Dictation Settings, QUILL writes only what you meant:
+
+| You say | QUILL writes |
+|---|---|
+| meet on Thursday, no, Friday at noon | meet on Friday at noon |
+| in June, no I mean July | in July |
+| I have two no three cats | I have three cats |
+| call me at 5, sorry, 6 | call me at 6 |
+| send it to Ana, I mean Maria (with Maria and Ana in My Words) | send it to Maria |
+| Monday scratch that word Tuesday | Tuesday |
+
+The words that mark a correction are "no", "I mean", "no I mean", "sorry" and
+"scratch that word". A correction is made only between two things of the same
+kind: two days (including today, tomorrow, tonight and yesterday), two months,
+two numbers, or two names from the Vocabulary list in My Words and Phrases.
+Everything else is written exactly as you said it, so these are left alone:
+
+- "no, I don't think so" (nothing before the "no");
+- "Is it Thursday? No, Friday." (a question and its answer);
+- "I said no, Friday" (a word that is not a day before the "no");
+- "I may, no, March" ("may" is a verb unless you say it as the month May).
+
+It all happens on this computer, with no AI and no internet. It is off until
+you turn it on, and a live transcript never uses it, because a transcript
+keeps what the speaker said.
+
+**Dictation style** (`Alt+Y`), just above, is a quick way to set these choices
+together:
+
+- **Verbatim: every word as I say it.** No filler removal, no correction.
+- **Clean: no filler words, and my corrections fixed.** Turns on **Remove
+  filler words** and **Fix it when I correct myself**.
+- **Polished: Clean, then review, and polish with AI when I ask.** Clean,
+  plus **Send dictation to review first** and **Allow polishing my dictation
+  with AI when I ask**. It is offered only when AI help is on. Choosing it
+  sends nothing: you still say "QUILL polish that" or press Polish each time.
+
+If you change a check box yourself, the style shows **Your own mix of the
+settings below**, and choosing that changes nothing.
+
+##### Learning from your corrections
+
+When you correct the same word the same way twice, QUILL offers to remember it,
+so you do not have to correct it a third time. A correction counts when you say
+"QUILL correct that" and then "choose 2", or when you say "QUILL correct Ann"
+and then say the new words.
+
+The second time, a window called **Add a Correction** asks, for example,
+"Add a correction: Ann becomes Anne? It goes into My Words and Phrases, under
+Corrections." **No** is the default. Press **Yes** to add it, or No
+or Escape to leave it. Dictation keeps going while you answer.
+
+On Yes the correction goes into the Corrections list of My Words and Phrases
+(`Alt+Shift+F10`), the same list you can edit by hand, and the next phrase uses
+it. You hear "Added: Ann becomes Anne. It is in My Words and Phrases."
+
+Limits: each pair is offered once each time QUILL runs, whatever you answer.
+Only a single word or a short phrase of up to four words is offered, never a
+sentence. Nothing about your corrections is saved anywhere until you say yes.
+
+**Words for one kind of writing.** My Words and Phrases' file can hold a
+section headed, for example, `## Context: email`, with words (one a line) and
+corrections (`heard => write`) meant only for that kind of writing. QUILL keeps
+these sections when it saves the file. They are ready for named dictation
+profiles, which are not in this version, so for now they are not used.
 ##### Words that were not written, and dictation history
 
 Dictation never throws away words it could not write. If dictation pauses
@@ -7806,7 +8041,7 @@ brackets:
   dictation" until you choose your own words, said on their own after a pause.
   "stop dictation" always works too.
 
-Five finer choices sit beside them:
+Six finer choices, and a style that sets two of them, sit beside them:
 
 - **Automatic punctuation** for Moonshine and Whisper
   (`windows_dictation_auto_punctuation`). Turn it off and you say every mark.
@@ -7817,6 +8052,11 @@ Five finer choices sit beside them:
   that long before it is written.
 - **Remove filler words** such as um and uh
   (`windows_dictation_remove_fillers`).
+- **Dictation style** (`Alt+Y`): Verbatim, Clean or, with AI on, Polished;
+  see "Correcting yourself as you talk, and dictation styles". It is a name
+  for the settings it changes and is not saved by itself.
+- **Fix it when I correct myself** (`windows_dictation_self_repair`, `Alt+X`):
+  "Thursday, no, Friday" writes Friday. Off at first.
 - **Stop dictation after silence** (`windows_dictation_silence_minutes`):
   never, 1, 5 or 10 minutes.
 - **Just write what I say** (`windows_dictation_continuous`), for talking in
@@ -7864,7 +8104,10 @@ you change here is saved when you press OK in Dictation Settings.
 | Commands only after the command word (strict mode) (`Alt+E`) | A command said on its own is written as words; the stop phrase always works | Off (on in QUILL Transcribe) |
 | Seconds command mode waits for a command (`Alt+D`) | How long command mode lasts with no command, from 5 to 30 | 8 |
 | Send dictation to review first (`Alt+V`) | What you dictate goes into Review Dictation instead, to insert once; see "Review before inserting" | Off |
+| Allow polishing my dictation with AI when I ask (`Alt+G`) | "QUILL polish that" and the Polish button in Review Dictation ask the AI to fix punctuation and small slips, keeping your words; see "Polishing your dictation with AI, only when you ask" | Off |
 | Keep a dictation history (`Alt+Y`) | Off, One day, Seven days or Thirty days of the text you dictate, never the sound, listed in Recent Phrases; turning it off deletes it; see "Words that were not written, and dictation history" | Off |
+| Dictation profile, for the kind of writing (`Alt+A`) | Standard, Email, Document, Markdown, Chat, Coding or Verbatim; see "Dictation profiles" | Standard |
+| Lock the profile so it cannot be switched by voice (`Alt+B`) | A spoken profile name does not switch profiles | Off |
 
 In settings files these are `windows_dictation_hold_to_talk`,
 `windows_dictation_preview`, `windows_dictation_ai_send`,
@@ -7874,8 +8117,10 @@ In settings files these are `windows_dictation_hold_to_talk`,
 `windows_dictation_working_tick`, `windows_dictation_transcript_timestamps`,
 `windows_dictation_never_type`, `windows_dictation_command_prefix`,
 `windows_dictation_command_prefix_required`,
-`windows_dictation_command_timeout`, `windows_dictation_review_first` and
-`windows_dictation_history_days` (0 for off, or 1, 7 or 30). The
+`windows_dictation_command_timeout`, `windows_dictation_review_first`,
+`windows_dictation_polish`, `windows_dictation_history_days` (0 for off,
+or 1, 7 or 30), `windows_dictation_profile` and
+`windows_dictation_profile_locked`. The
 review window also keeps `windows_dictation_review_context` (its context check
 box) and `windows_dictation_review_consent` (your answer to its question).
 
@@ -12866,7 +13111,8 @@ need manual cleanup?
 An imported document opens with its own text and nothing else. QUILL never
 writes a heading such as "PDF Extract", or the name of the engine, into the
 file you are reading. Everything about *how* it was read (format, engine,
-pages, quality score, and any low-confidence warning) is in the **Document
+pages, quality score, which reader each PDF page's text came from, and the
+pages that may read poorly, with the reason for each) is in the **Document
 Intake Report**, and the short version is announced when the file opens.
 
 #### Shell Integration

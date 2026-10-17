@@ -491,10 +491,17 @@ def test_dictation_settings_are_the_shared_window_over_our_copy(
 
     class Dialog:
         def __init__(
-            self, _parent: Any, settings: Any, _announce: Any, *, help_for: Any = None
+            self,
+            _parent: Any,
+            settings: Any,
+            _announce: Any,
+            *,
+            help_for: Any = None,
+            ai_on: bool = False,
         ) -> None:
             self.settings = settings
             seen["help_for"] = help_for
+            seen["ai_on"] = ai_on
 
         def apply(self, settings: Any) -> None:
             settings.windows_dictation_remove_fillers = True
@@ -503,6 +510,7 @@ def test_dictation_settings_are_the_shared_window_over_our_copy(
             pass
 
     monkeypatch.setattr(shared, "WindowsDictationDialog", Dialog)
+    host._review_ai_on = lambda: False  # type: ignore[attr-defined]  # TranscribeReviewMixin's
     host.modal = lambda _d, _l: wx.ID_OK
     host.edit_dictation_settings()
     assert host._settings.dictation["windows_dictation_remove_fillers"] is True
@@ -510,6 +518,8 @@ def test_dictation_settings_are_the_shared_window_over_our_copy(
     # The wake phrase and the held key, worded for other programs (D-9).
     assert "another program is in front" in seen["help_for"]["wake"]
     assert "start and stop key" in seen["help_for"]["hold"]
+    # Polished is offered only when a review could ask the AI (D-20).
+    assert seen["ai_on"] is False
 
 
 # -- keys ---------------------------------------------------------------------------- #
