@@ -111,6 +111,7 @@ COMMANDS: list[CommandRow] = [
     ("&File", "&Open...", "Ctrl+O", "cmd_open", ""),
     ("&File", "Open from Clip&board", "Ctrl+Alt+Shift+Enter", "cmd_open_from_clipboard", ""),
     ("&File", "Open &from URL...", "", "cmd_open_from_url", ""),  # no key, as in QUILL
+    ("&File", "&Import / Convert Document (OCR)...", "", "cmd_import_convert", ""),  # as QUILL
     ("&File", "Recent &Documents...", "Alt+Shift+0", "cmd_recent_documents", ""),
     ("&File", "", "", "", "sep"),
     ("&File", "&Save", "Ctrl+S", "cmd_save", ""),
@@ -138,9 +139,8 @@ COMMANDS: list[CommandRow] = [
     # P3.6). WordPad and Word both show a scaled image of the sheet, which
     # answers nothing for somebody who listens; this says how many pages, on
     # what paper, with what margins, and what is at the top of each one.
-    # Not &V: Earlier &Versions has it in this menu, and Windows cycles
-    # focus between duplicates instead of pressing, so one of the pair
-    # silently cannot be reached (GATE-14).
+    # Not &V: Earlier &Versions has it in this menu, and Windows cycles focus between
+    # duplicates instead of pressing, so one silently cannot be reached (GATE-14).
     ("&File", "Print Previe&w...", "Ctrl+Alt+Shift+P", "cmd_print_preview", ""),
     ("&File", "&Print...", "Ctrl+P", "cmd_print", ""),
     ("&File", "", "", "", "sep"),

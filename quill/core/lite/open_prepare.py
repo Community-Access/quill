@@ -87,8 +87,9 @@ class PreparedDocument:
 #: File > Open reads (``quill.io.open_read.OFFICE_STREAM_SUFFIXES``), never
 #: more, because QUILL Lite may never be ahead of QUILL. Read by the same
 #: shared readers (``quill.io.office_text``), which need nothing QUILL Lite's
-#: build leaves out: it ships no MarkItDown, python-docx, openpyxl or lxml,
-#: and the readers fall back to the standard library (2026-10-16).
+#: build leaves out: it ships no MarkItDown or lxml (openpyxl only since the
+#: portable gained the office-text group, 2026-10-17), and the readers fall
+#: back to the standard library (2026-10-16).
 OFFICE_OPEN_SUFFIXES = frozenset({
     ".docx",
     ".docm",

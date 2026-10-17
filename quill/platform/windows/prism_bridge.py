@@ -9,6 +9,7 @@ from dataclasses import dataclass, replace
 from importlib import import_module
 from typing import Any
 
+from quill.core.speakable import speakable_controls
 from quill.platform.windows.braille_output import (
     braille_via_accessible_output2,
     braille_via_prism,
@@ -339,6 +340,7 @@ class AnnouncementEngine:
         return self._state
 
     def announce(self, message: str, *, force_speech: bool = False) -> str | None:
+        message = speakable_controls(message)  # never "form feed" mid-sentence (2026-10-17)
         if self._runtime_backend is None and self._ao2_speaker is not None:
             # accessible_output2 fallback: route to the live screen reader. Like
             # the Prism path, force_speech interrupts so internal-state narration
@@ -438,12 +440,10 @@ class AnnouncementEngine:
             error = "Active Prism backend does not expose speak()."
             self._state = replace(self._state, last_error=error)
             return error
-        # force_speech callers (Tab-indent, QUILL-key chord prefix, ...) narrate
-        # internal state the screen reader has no focus/control change to read on
-        # its own. Queued behind the reader's current utterance (interrupt=False)
-        # they are routinely dropped, which reads to the user as "the indentation
-        # announcement is gone". Interrupt so a forced announcement is actually
-        # voiced; routine status keeps the polite non-interrupting behaviour.
+        # force_speech callers (Tab-indent, QUILL-key chord prefix, ...) narrate internal
+        # state the screen reader has no focus/control change to read on its own. Queued
+        # behind the reader's utterance (interrupt=False) they are routinely dropped ("the
+        # indentation announcement is gone"), so they interrupt; routine status does not.
         try:
             speak(message, interrupt=force_speech)
         except TypeError:
@@ -460,12 +460,12 @@ class AnnouncementEngine:
         """Write *message* to the braille display only; "" or an error string.
 
         The public entry point the announcement service's BrailleSink uses
-        (#1293). The engine still owns the bridge and its capability checks;
-        what moved out is the decision about *whether* to write, which is the
-        policy's now -- and that is what buys dedupe, sticky errors and the
-        compact style. ``announce()`` keeps its own inline braille for hosts
-        that have not adopted the service yet.
+        (#1293). The engine still owns the bridge and its capability checks; the
+        decision about *whether* to write is the policy's now -- which buys dedupe,
+        sticky errors and the compact style. ``announce()`` keeps its own inline
+        braille for hosts that have not adopted the service yet.
         """
+        message = speakable_controls(message)
         if self._runtime_backend is not None:
             return braille_via_prism(self._runtime_backend, message)
         if self._ao2_output is not None:

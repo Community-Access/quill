@@ -868,6 +868,7 @@ def lite_window(tmp_path, lite_settings):
     from quill.apps.lite_window_format import DocumentFormatCommandsMixin
     from quill.apps.lite_window_headings import DocumentHeadingsMixin
     from quill.apps.lite_window_history import DocumentHistoryMixin
+    from quill.apps.lite_window_import import DocumentImportMixin
     from quill.apps.lite_window_lines import DocumentLineMixin
     from quill.apps.lite_window_marks import DocumentMarksMixin
     from quill.apps.lite_window_markup import DocumentMarkupMixin
@@ -939,6 +940,9 @@ def lite_window(tmp_path, lite_settings):
         # A PDF opened as text, and Save's refusal to write it back, 2026-10-15:
         # save() asks it on every write, so a stub without it fails every save.
         DocumentPdfMixin,
+        # File > Import / Convert Document, 2026-10-17: QUILL's converter on
+        # QUILL Lite's File menu.
+        DocumentImportMixin,
         # Open from URL and the clipboard, drops, Reopen with Encoding and the
         # save-time disk check, 2026-10-04 (the PlanCake design note).
         DocumentSourcesMixin,
@@ -1365,6 +1369,9 @@ class DialogRecorder:
         # Save's refusal (a message box imported at lite_window_pdf's scope).
         "ask_pdf_password": ("quill.ui.pdf_password", "ask_pdf_password"),
         "show_message_box_pdf": ("quill.apps.lite_window_pdf", "show_message_box"),
+        # Import / Convert Document's scanned question, 2026-10-17 (a message
+        # box imported at lite_window_import's scope).
+        "show_message_box_import": ("quill.apps.lite_window_import", "show_message_box"),
     }
 
     #: Names whose stub must be callable *and* have a ``show()``, because the

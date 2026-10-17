@@ -20,6 +20,49 @@ uploaded for testing. The new packages have not been published yet.
   longer moves your place in it. All of this works the same on the free AI,
   your own key and a ChatGPT plan. User guide: "Going back over a
   conversation".
+
+- **File > Import / Convert Document (OCR)...: turn a document or a picture of
+  a page into new text.** QUILL's command, with QUILL's readers and QUILL's
+  words, now on QUILL Lite's File menu, below Open from URL. It has no key, as
+  in QUILL: press **Alt+F**, then **I**. Choose a Word, Excel, PowerPoint or
+  OpenDocument file, a web page, an e-book, a CSV file, a PDF, or a picture
+  such as a photo of a letter, and it opens as a **new, untitled document**
+  named after the file, for example "report (converted)", marked unsaved. It
+  opens in the window you are in when that window is empty, and in a new
+  window otherwise, so nothing you were writing is replaced. You hear who read
+  it and what was found, for example "Opened report.docx as editable text,
+  read by QUILL's own Word reader. Nothing was uploaded." A scanned PDF asks
+  first whether to read it with OCR on this computer (Yes, No or Cancel); a
+  picture goes straight to OCR. The OCR is Windows' own, or Tesseract when it
+  is installed. Nothing is downloaded and nothing is uploaded; QUILL Lite has
+  no cloud OCR. Unlike **Ctrl+O**, the new document does not point back at the
+  file, so it is the way to get text you want to work with, or to read a file
+  Ctrl+O cannot open at all, such as a picture or an e-book. Limits: a
+  password-protected PDF must be opened with Ctrl+O instead; only the first
+  200 pages of a long PDF are read, and you are told when it stopped early;
+  closing the window while it runs stops it. See *Importing and converting a
+  document* in the user guide.
+- **A picture of a page no longer needs Tesseract.** In QUILL too, a `.png`,
+  `.jpg` or other picture given to Import / Convert Document is read with
+  Windows OCR when Tesseract is not installed; before, it stopped with a
+  message about installing it.
+- **A PDF's page breaks are never read out as "form feed" by QUILL Lite.** A
+  PDF keeps one page-break character between its pages, which is what the
+  Page part of the status bar and Go To's Page list count. When something QUILL
+  Lite says quotes text across a page break, such as the first words of a
+  selection, the page break is now a pause, and the status bar shows it the
+  same way; no other control character reaches your screen reader either.
+  **Ctrl+Shift+C** on a page break says "Page break" (it said "Unnamed
+  character"), and **Ctrl+Alt+C** explains it. What your screen reader says
+  when you arrow onto the character itself is up to the screen reader. See
+  *Page breaks, and what you hear*.
+- **The portable copy will read PDFs too.** The installed QUILL Lite has always
+  carried a PDF reader and Windows OCR; the portable zip did not, so a PDF there
+  said "This copy of QUILL Lite has no PDF reader". The next portable build
+  includes the reader (pdfplumber, pypdf, pypdfium2) and Windows OCR, and the
+  build now refuses to finish if any of them fails to load. The portable zip
+  grows by roughly 25 MB unpacked.
+
 - **Your braille display no longer flickers while you dictate.** Messages that
   arrive in a quick burst, such as dictation's live preview or a run of status
   changes, now settle on the display: the first shows at once, and a moment

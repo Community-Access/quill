@@ -100,4 +100,19 @@ if (-not (Get-ChildItem 'dist/windows/installer/Output/Quill-for-All-Setup-*.exe
 }
 ```
 
+### QUILL Lite portable: the PDF reader and OCR (first build after 2026-10-17)
+
+The QUILL Lite portable ZIP now installs two more dependency groups, `office-text` (pdfplumber, which brings pdfminer.six and pypdfium2, plus pypdf and openpyxl) and `ocr` (the `winrt` Windows.Media.Ocr projection), so a portable copy opens PDFs and reads scanned pages the way the installed copy always has. Two things happen on the first build after this change, and both are expected:
+
+1. **The inventory gate stops the build.** `build_portable.py` step 8 compares the bundle with `standalone/quilllite/portable-inventory.json` and reports `unexpected in site-packages:` for the new packages (`pdfplumber`, `pdfminer`, `pypdf`, `pypdfium2`, `pypdfium2_raw`, `openpyxl`, `et_xmlfile`, `winrt` and their `*.dist-info` names). Check the list holds only those and nothing swept from the build machine, then rebaseline from the real bundle and run the release script again:
+
+   ```powershell
+   & $python scripts\check_runtime_inventory.py standalone\quilllite\dist\QuillLite --layout portable --manifest standalone\quilllite\portable-inventory.json --write
+   ```
+
+   Never hand-edit `portable-inventory.json`; it is only correct when written from a build.
+2. **The import check is stricter.** Step 8 now imports `pdfplumber`, `pypdf`, `pypdfium2`, `winrt.windows.media.ocr`, `winrt.windows.graphics.imaging`, `quill.io.pdf` and `quill.io.docconvert` inside the bundle and fails the build if any of them cannot load, so a build that installed the groups but cannot use them does not ship.
+
+After the build, verify by hand on a computer without QUILL installed: unzip the portable ZIP, start `QuillLite.exe`, open a text PDF with Ctrl+O (it opens with its pages, not "This copy of QUILL Lite has no PDF reader"), open a scanned PDF and answer Yes (Windows OCR reads it), and use File > Import / Convert Document on a picture of printed text. Note the ZIP's new size beside the old one (299,961,055 bytes for 1.1.2); expect roughly 25 MB more unpacked. The checks are also in `docs/qa/screen-reader-checks-2026-10.md`.
+
 The app directories `standalone/player/`, `standalone/radio-mac/`, and `standalone/weather-ios/` have no Windows `build_release.ps1` target. Build and test the macOS and iOS projects on their respective platform toolchains.

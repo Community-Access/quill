@@ -59,6 +59,9 @@ KEYLESS_WITH_REASON: dict[str, str] = {
     "cmd_open_from_url": "Reached another way, as in QUILL, where Open from URL has "
     "no key either: a link usually arrives on the clipboard, and Open from Clipboard "
     "(Ctrl+Alt+Shift+Enter) opens it. This row is for typing an address -- Alt+F, F.",
+    "cmd_import_convert": "As in QUILL, where Import / Convert Document has no key either "
+    "(rule 2; rule 9 for an occasional command): the next thing it does is ask which "
+    "file, so a chord saves nothing. Alt+F, I reaches it.",
 }
 
 

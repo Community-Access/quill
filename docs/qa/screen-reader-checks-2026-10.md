@@ -1379,6 +1379,89 @@ and a table (ask "Compare tea and coffee in a table, with a heading").
 - [ ] All four with JAWS.
 - [ ] All four with Narrator.
 
+## PDFs in QUILL Lite: page breaks, Import / Convert, the portable copy (2026-10-17)
+
+The code and its automated tests are done; none of the checks below has been
+tried with a screen reader yet. What the code establishes: a PDF's text
+reaches the Rich Edit control with one U+000C (form feed) between pages,
+directly after the last character of a page and directly before the first
+character of the next, in plain mode and after a switch to rich; the Page cell
+and Go To's Page list count those characters and show only numbers;
+announcements, braille and QUILL Lite's status-bar message now carry a line
+break instead. What only listening can establish is what each reader does
+with the character itself.
+
+### Page breaks, heard
+
+Open a PDF of three or more pages in QUILL Lite with Ctrl+O (any multi-page
+PDF with text). Then:
+
+1. **Arrow across a page.** Ctrl+G, choose Page, pick 2, Enter. Press Up Arrow
+   once, then Down Arrow once. Write down exactly what is said on each line:
+   is the last line of page 1 read on its own, or run together with the
+   first line of page 2? Is anything said for the page break itself ("form
+   feed", "page break", a symbol name, a pause, nothing)?
+2. **By character.** From the top of page 2, press Left Arrow once and then
+   Right Arrow once: write down what is said for the character.
+3. **Say All.** From the top of page 1, read continuously across into page 2:
+   is anything extra spoken at the boundary?
+4. **Ctrl+Shift+C on it.** Put the cursor on the page break (step 2) and press
+   Ctrl+Shift+C: you hear "Page break" and U+000C, not "Unnamed character".
+   Ctrl+Alt+C opens the details window saying one page ends there.
+5. **An announcement across it.** Select from the middle of the last line of
+   page 1 to the middle of the first line of page 2 (Shift+Down Arrow), then
+   use a command that quotes the selection's start (for example Edit >
+   Selection > Review Buffer, Alt+Shift+U). Nothing says "form feed".
+6. **The status bar.** After step 5, press Insert+Page Down (JAWS) or read the
+   status bar (NVDA: Insert+End): no control-character name.
+7. **The Line cell.** On the first line of page 2, compare the status bar's
+   Line number with the line count you would expect: if Rich Edit draws the
+   page break as a line of its own, the two may differ by one per page. Note
+   it if so.
+8. **Rich mode.** Switch the PDF to rich text with Format > Switch Document
+   Mode (Alt+Shift+F, until it says rich text): repeat steps 1 and 2.
+
+- [ ] All eight with NVDA.
+- [ ] All eight with JAWS.
+- [ ] Steps 1 to 4 with Narrator.
+- [ ] Repeat steps 1, 2 and 4 in QUILL (File > Open on the same PDF).
+
+### Import / Convert Document in QUILL Lite
+
+1. **The row.** Alt+F: the File menu has "Import / Convert Document (OCR)..."
+   after "Open from URL...", with no key shown; I selects it.
+2. **A Word file.** Choose a .docx: you hear "Converting name.docx", then
+   "Opened name.docx as editable text, read by QUILL's own Word reader.
+   Nothing was uploaded." The title is "name (converted)", and closing asks to
+   save.
+3. **A busy window.** With text in the window, import again: a new window opens
+   with the result and your text is untouched.
+4. **A scanned PDF.** Choose a scanned PDF: the question box names QUILL Lite,
+   Yes is the default, Escape cancels and nothing opens. Yes: "Reading
+   name.pdf with OCR on this computer", the status bar counts pages, and the
+   result is announced once.
+5. **A photo of a page.** Choose a .jpg of printed text, on a computer without
+   Tesseract: it is read with Windows OCR, no question.
+6. **Cancel the box.** Escape in the file box: nothing is said.
+
+- [ ] All six with NVDA.
+- [ ] All six with JAWS.
+- [ ] All six with Narrator.
+
+### The portable copy, after the next build
+
+These need the next real portable build (see
+`docs/building-windows-family.md`, "QUILL Lite portable: the PDF reader and
+OCR").
+
+1. Unzip QuillLite-Portable on a computer with no QUILL installed, start
+   QuillLite.exe, Ctrl+O a text PDF: it opens with its pages, not "This copy
+   of QUILL Lite has no PDF reader".
+2. Ctrl+O a scanned PDF and answer Yes: Windows OCR reads it.
+3. File > Import / Convert Document on a .png of text: it is read.
+
+- [ ] All three, any one screen reader.
+
 ## Spanish review (for a native speaker)
 
 Not a screen-reader check: questions for a native Spanish speaker, to answer

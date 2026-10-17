@@ -523,7 +523,12 @@ def convert_document(
     del prefer_free_local  # No paid tier exists yet; free-first is the only route.
     suffix = path.suffix.lower()
     if suffix in IMAGE_EXTENSIONS:
-        return convert_with_local_ocr(
+        # Whichever engine this computer has: Tesseract, else Windows OCR
+        # (2026-10-17). Tesseract-only left a picture a dead end wherever it was
+        # not installed -- every QUILL Lite, and QUILL until the download.
+        from quill.io.docconvert_windows import convert_with_on_device_ocr
+
+        return convert_with_on_device_ocr(
             path,
             language=language,
             deps=deps,
