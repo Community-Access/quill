@@ -55,6 +55,38 @@ dict.md section 4, "Modes" and "Coach". Design record section 29.
   `test_dictation_formatting_hooks.py`. Snapshots regenerated: dialog
   inventory, accessible names, Transcribe help, settings documentation and
   vocabulary, F1 help reference, data formats.
+
+### No links to the Quillin Hub until it is live; three unused build specs removed (2026-10-16)
+
+- **The site and the README stop linking to `hub.quillforall.org`.** The host
+  does not resolve, and `HUB_IS_LIVE` in `quill/ui/quillin_hub_submit.py` is
+  still `False`, yet seven site pages linked to it: the Project footer on
+  `index.html`, `docs.html`, `faq.html`, `compare.html`, `dictation.html`,
+  `meet-quillbert-and-quillbee.html` and `quillin-wizard.html`, plus the
+  "Visit the Quillin Hub" button on `index.html`, the Quillin Hub card on
+  `docs.html`, and the FAQ answer "What is the Quillin Hub?". A link to a host
+  that does not answer drops a screen-reader user on a browser error page they
+  then have to find their way back from. Each link is now an HTML comment that
+  says it returns when the hub is live; the card, the FAQ answers and the
+  home-page Hub section now say in words that the Hub is not open yet and that
+  Tools, Quillins, Submit to Quillin Hub still runs every check locally. The
+  root `README.md` paragraph is reworded the same way. The app needed no
+  change: the dialog already hides its Open the Quillin Hub button and says the
+  Hub is not open while `HUB_IS_LIVE` is `False`. When the hub answers, flip
+  that flag and restore the commented links. Historical records (release notes,
+  the PRD, design docs, the deployment runbook, podcast transcripts) still name
+  the host as text, not as links, and are left as they were.
+- **`standalone/quilllite/quill-lite.spec`, `standalone/inkwell/quill-inkwell.spec`
+  and `standalone/weather/quill-weather.spec` are deleted.** QUILL Lite, Inkwell
+  and Weather install onto the shared QuillVille Runtime
+  (`standalone/runtime/quillville-runtime.spec`); their `build_release.ps1`
+  never runs PyInstaller on a per-app spec, and no workflow, test or script
+  names these three files. (Every other app's spec is untouched; Beacon, Cast
+  and Social, for example, still run PyInstaller on theirs.) The three `assets/README.md` files, the
+  credential-exclusion comments in the three `build_release.ps1` scripts and
+  the 2026-09-07 QUILL Lite integration design now point at the runtime spec
+  instead.
+
 ### Dictation: self-repair, named styles, learning from corrections, and opt-in polish (D-20, D-21, 2026-10-16)
 
 dict.md section 4, "Polish", "Learn" and "Modes". Design record section 28.

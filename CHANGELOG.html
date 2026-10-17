@@ -320,6 +320,48 @@ dialog inventory, accessible names, Transcribe help, settings
 documentation and vocabulary, F1 help reference, data formats.</li>
 </ul>
 <h3
+id="no-links-to-the-quillin-hub-until-it-is-live-three-unused-build-specs-removed-2026-10-16">No
+links to the Quillin Hub until it is live; three unused build specs
+removed (2026-10-16)</h3>
+<ul>
+<li><strong>The site and the README stop linking to
+<code>hub.quillforall.org</code>.</strong> The host does not resolve,
+and <code>HUB_IS_LIVE</code> in
+<code>quill/ui/quillin_hub_submit.py</code> is still <code>False</code>,
+yet seven site pages linked to it: the Project footer on
+<code>index.html</code>, <code>docs.html</code>, <code>faq.html</code>,
+<code>compare.html</code>, <code>dictation.html</code>,
+<code>meet-quillbert-and-quillbee.html</code> and
+<code>quillin-wizard.html</code>, plus the “Visit the Quillin Hub”
+button on <code>index.html</code>, the Quillin Hub card on
+<code>docs.html</code>, and the FAQ answer “What is the Quillin Hub?”. A
+link to a host that does not answer drops a screen-reader user on a
+browser error page they then have to find their way back from. Each link
+is now an HTML comment that says it returns when the hub is live; the
+card, the FAQ answers and the home-page Hub section now say in words
+that the Hub is not open yet and that Tools, Quillins, Submit to Quillin
+Hub still runs every check locally. The root <code>README.md</code>
+paragraph is reworded the same way. The app needed no change: the dialog
+already hides its Open the Quillin Hub button and says the Hub is not
+open while <code>HUB_IS_LIVE</code> is <code>False</code>. When the hub
+answers, flip that flag and restore the commented links. Historical
+records (release notes, the PRD, design docs, the deployment runbook,
+podcast transcripts) still name the host as text, not as links, and are
+left as they were.</li>
+<li><strong><code>standalone/quilllite/quill-lite.spec</code>,
+<code>standalone/inkwell/quill-inkwell.spec</code> and
+<code>standalone/weather/quill-weather.spec</code> are deleted.</strong>
+QUILL Lite, Inkwell and Weather install onto the shared QuillVille
+Runtime (<code>standalone/runtime/quillville-runtime.spec</code>); their
+<code>build_release.ps1</code> never runs PyInstaller on a per-app spec,
+and no workflow, test or script names these three files. (Every other
+app’s spec is untouched; Beacon, Cast and Social, for example, still run
+PyInstaller on theirs.) The three <code>assets/README.md</code> files,
+the credential-exclusion comments in the three
+<code>build_release.ps1</code> scripts and the 2026-09-07 QUILL Lite
+integration design now point at the runtime spec instead.</li>
+</ul>
+<h3
 id="dictation-self-repair-named-styles-learning-from-corrections-and-opt-in-polish-d-20-d-21-2026-10-16">Dictation:
 self-repair, named styles, learning from corrections, and opt-in polish
 (D-20, D-21, 2026-10-16)</h3>

@@ -1,7 +1,9 @@
 # QUILL Lite assets
 
 - `quill-lite.ico` — the app and installer icon, referenced by
-  `quill-lite.spec` and `installer/quilllite.iss`.
+  `installer/quilllite.iss`. (QUILL Lite ships on the shared QuillVille
+  Runtime, so it has no PyInstaller spec of its own; the old
+  `quill-lite.spec` was removed on 2026-10-16 because no build used it.)
 
 **Generated — do not edit by hand.** The icon comes from
 `scripts/build_app_icons.py`, which owns the design system for the whole
