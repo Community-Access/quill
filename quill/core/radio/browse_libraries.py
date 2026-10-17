@@ -29,6 +29,9 @@ if TYPE_CHECKING:
 
 # --- Apple Podcasts -----------------------------------------------------------
 
+#: Said once per country row, so nobody reads "Germany" as "German-language".
+STOREFRONT_NOTE = "Apple chart for this country, any language"
+
 
 def _browse_apple(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
     from quill.core.podcasts import apple_podcasts as apple
@@ -50,7 +53,12 @@ def _browse_apple(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
                 make_id("mypodcasts"),
                 f"Subscriptions ({followed})" if followed else "Subscriptions",
             ),
-            *(folder(make_id("apple", code), name) for code, name in apple.DEFAULT_STOREFRONTS),
+            # A storefront is a *country's* chart, not a language filter: an
+            # English show charting in Germany is in Germany's (item 43).
+            *(
+                folder(make_id("apple", code), name, note=STOREFRONT_NOTE)
+                for code, name in apple.DEFAULT_STOREFRONTS
+            ),
         ]
     storefront = args[0]
     # Both chart kinds Apple publishes: the top shows, and the top individual

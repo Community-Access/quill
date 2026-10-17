@@ -1116,7 +1116,9 @@ Control coverage: 159 audited sites (157 helped, 2 named-help).
 
 **ACX check.** The verdict of measuring this book against Audible's ACX submission window: loudness, true peak, and noise floor, each with its limit, plus plain recommendations for anything failing. Read-only -- Escape closes it and nothing was changed.
 
-**Chapter Workbench.** One finished audiobook, open for surgery: listen with the chapter-aware player, rename chapters, split at the playhead, move a start, merge, or restore the original list. Book tags are editable below the player, and chapter lists import and export in Audacity, CUE, timestamp, JSON, and CSV forms. An MP3 saves its edits in place without touching the audio; an M4B saves as a new file, losslessly.
+**Chapter Workbench.** One audiobook or any recording -- a lecture, a meeting -- open for surgery: listen with the chapter-aware player, rename chapters, split at the playhead, move a start, merge, or restore the original list. Book tags are editable below the player, and chapter lists import and export in Audacity, CUE, timestamp, JSON, and CSV forms. An MP3 saves its edits in place without touching the audio; an M4B saves as a new file, losslessly.
+
+**Chapters already here.** This recording already has chapters of its own. Keep mine, add proposals keeps every one of them and adds only the boundaries that are new; Replace with the proposal swaps the whole list. Cancel changes nothing, and Restore original undoes either answer.
 
 **Convert Audio.** Convert audio files or whole folders between formats, on this machine. Build the queue, pick the output format, preset, and destination folder, and Convert runs in the background with spoken progress. The Advanced options only override what you deliberately change; untouched controls leave the preset alone.
 
@@ -1128,7 +1130,7 @@ Control coverage: 159 audited sites (157 helped, 2 named-help).
 
 **Play Queue.** The books lined up to play in order. Add a book, jump to the next one, remove or clear entries -- Delete on the list removes the highlighted row. The current book is marked in words, and a row whose file has moved says missing rather than failing silently.
 
-**Propose chapters from silences.** Two knobs for the silence scan: how quiet counts as silence (dB) and how long a pause must last (seconds). ffmpeg scans the recording and proposes chapter boundaries at the silence midpoints -- the proposal lands in the Workbench list for review, and Restore original undoes it.
+**Propose chapters from silences.** Two knobs for the silence scan: how quiet counts as silence (dB) and how long a pause must last (seconds). ffmpeg scans the recording and proposes chapters at the silences, titled Proposed chapter -- they land in the Workbench list for review, and Restore original undoes them. Pressing the button again while it runs stops it.
 
 **Publish Audiobook.** Three ways to send one finished book out, each behind its own explicit button: write a podcast feed file next to it, upload it over SFTP to a saved destination (the password lives in the system's credential store, never in settings), or send it to your own Auphonic account for post-production. Nothing happens until you press the button for it.
 
@@ -1156,7 +1158,7 @@ Control coverage: 159 audited sites (157 helped, 2 named-help).
 - `self._chapter_list`: Every chapter, with where it starts and how long it runs. Alt with Left or Right arrow nudges the highlighted chapter's start earlier or later by one step; hold Shift as well to move ten steps at once. The step size is the Step box below.
 - `self._title_edit`: The highlighted chapter's title, ready to edit. Type the new title and press Enter (or the Rename button) to apply it to the selected row. It cannot be empty, and nothing reaches the file until Save.
 - `rename_btn`: Applies the text in the Chapter title field to the highlighted chapter. The same as pressing Enter in that field.
-- `propose_btn`: Scans the recording for silences with ffmpeg and proposes chapter boundaries at the silence midpoints. You choose the noise threshold and minimum pause first; the proposal replaces the list for review, and Restore original undoes it.
+- `propose_btn`: Scans any recording -- a lecture or meeting as much as a book -- for silences with ffmpeg and proposes chapters there, titled Proposed chapter. You choose the noise threshold and minimum pause first. If the recording already has chapters you are asked whether to keep them and add only new boundaries, or replace them. Press again while it runs to stop; Restore original undoes a proposal.
 - `acx_btn`: Measures this book against Audible's ACX submission window -- loudness, true peak, and noise floor -- and shows the verdict with plain recommendations for anything failing. Measurement only; the file is not changed.
 - `titles_btn`: Transcribes the opening minute of each chapter with the local speech model (the audio never leaves this computer), then sends only that text to your configured AI for a short title per chapter. You consent first, the proposals land in the list for review, and Restore original undoes them. Needs an AI provider; unavailable in Safe Mode.
 - `import_btn`: Replaces the chapter list with one read from a file: Audacity labels, a timestamps list, a CUE sheet, Podcasting 2.0 JSON, or CSV. The whole list is swapped for review; Restore original undoes it, and nothing is saved until Save.
@@ -1974,6 +1976,8 @@ Control coverage: 227 audited sites (227 helped).
 **Going straight back isn't safe yet.** How to come back to Stable from a newer version. When Stable can read everything you have saved, you can go back now. When it can't, you can wait for Stable to catch up, or go back to the copy saved when you joined. Close changes nothing.
 
 **Headings.** Every heading in this document, in the order they appear. Choose one and the cursor lands at the start of it. Headings exist in rich text only: they are the bold-plus-point-size ladder QUILL uses, so this list is also what Word will show in its navigation pane.
+
+**Highlighted Passages.** Every highlighted passage in this document, in order: its words, its highlight colour, and the paragraph around it. In a Word document opened as text the highlights come from the file itself. Enter goes to the passage and closes the list; Escape closes it and leaves the cursor where it was. Alt Page Down and Alt Page Up walk the passages without it.
 
 **Image Description.** What the model saw in the picture, read-only. Insert Below puts it under the paragraph you are in, Copy puts it on the clipboard, and Control Z takes an insert back.
 

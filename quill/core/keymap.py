@@ -197,6 +197,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "navigate.next_bookmark": "F2",
     "navigate.previous_bookmark": "Shift+F2",
     "navigate.clear_numbered_bookmarks": "Ctrl+Alt+B",
+    # Highlighted passages (item 39), QUILL Lite's chords too (rule 2). Free in both
+    # editors and Word; Ctrl+Alt+punctuation is AltGr; Ctrl+F2 sits by F2's bookmarks.
+    "navigate.next_highlight": "Alt+PageDown",
+    "navigate.previous_highlight": "Alt+PageUp",
+    "navigate.list_highlights": "Ctrl+F2",
     "navigate.set_numbered_bookmark_1": "Ctrl+Shift+1",
     "navigate.set_numbered_bookmark_2": "Ctrl+Shift+2",
     "navigate.set_numbered_bookmark_3": "Ctrl+Shift+3",
@@ -495,6 +500,7 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.dictation_toggle": "Ctrl+Shift+Grave, D",
     "tools.speech_dictate": "Ctrl+Shift+Grave, Shift+D",
     "tools.speech_batch_export": "Ctrl+Shift+Grave, Y",  # Audio Studio
+    "tools.find_recording_chapters": "Ctrl+Shift+Grave, Shift+O",  # rule 9; item 42
     "radio.play_pause": "Ctrl+Shift+Grave, 2",  # Radio; leader N is browse mode (rule 7: digits)
     "radio.stop": "Ctrl+Shift+Grave, 0",  # Internet Radio
     "radio.mute_toggle": "Ctrl+Shift+Grave, 9",  # Internet Radio

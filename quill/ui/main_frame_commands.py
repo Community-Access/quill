@@ -2186,6 +2186,7 @@ class CommandRegistryMixin:
         self.register_format_codes_commands()
         self.register_reveal_codes_commands()
         self.register_inline_note_commands()
+        self.register_recording_chapter_commands()  # main_frame_recording_chapters
         self.register_restore_point_commands()
         self.commands.register(
             "format.heading_1",

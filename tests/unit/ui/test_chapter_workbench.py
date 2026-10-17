@@ -15,6 +15,7 @@ wx = pytest.importorskip("wx")
 from quill.core.speech.book_file import BookFile  # noqa: E402
 from quill.core.speech.chapters import Chapter  # noqa: E402
 from quill.core.speech.ffmpeg import AudioMetadata  # noqa: E402
+from quill.ui.audio_studio import chapter_workbench as cwb  # noqa: E402
 from quill.ui.audio_studio.chapter_workbench import ChapterWorkbenchDialog  # noqa: E402
 
 
@@ -164,7 +165,7 @@ def test_m4b_save_follows_which_edits_are_pending(wx_app, tmp_path):
 def test_propose_from_silences_replaces_chapters(wx_app, tmp_path, monkeypatch):
     """Patched detect_silence_chapters returns a 3-chapter proposal that lands in the list."""
     from quill.core.speech.chapters import Chapter as _Chapter
-    from quill.ui.audio_studio import chapter_workbench as cwb
+    from quill.ui.audio_studio import chapter_workbench_silence as cws
 
     proposed = [
         _Chapter(index=0, title="Chapter 1", start_ms=0, end_ms=20_000),
@@ -182,15 +183,21 @@ def test_propose_from_silences_replaces_chapters(wx_app, tmp_path, monkeypatch):
     # patch the symbol there, not on the dialog's own module. We also stub
     # the params modal so the test does not actually open a wx dialog.
     monkeypatch.setattr("quill.core.speech.silence.detect_silence_chapters", fake_detect)
-    monkeypatch.setattr(cwb, "SilenceParamsDialog", _OKDialogWithDefaults)
+    monkeypatch.setattr(cws, "SilenceParamsDialog", _OKDialogWithDefaults)
 
     frame, dlg = _make(wx_app, tmp_path)
     try:
+        dlg._ask_keep_or_replace = lambda _count: "replace"
         dlg._on_propose_from_silences()
         assert captured["path"] == dlg._book.path
         assert captured["kwargs"]["noise_db"] == -30.0
         assert captured["kwargs"]["min_silence_s"] == 0.8
-        assert [c.title for c in dlg._book.chapters] == ["Chapter 1", "Chapter 2", "Chapter 3"]
+        # Guesses are titled as guesses (item 42), whatever the scan called them.
+        assert [c.title for c in dlg._book.chapters] == [
+            "Proposed chapter 1",
+            "Proposed chapter 2",
+            "Proposed chapter 3",
+        ]
     finally:
         dlg.Destroy()
         frame.Destroy()
@@ -199,7 +206,7 @@ def test_propose_from_silences_replaces_chapters(wx_app, tmp_path, monkeypatch):
 def test_propose_from_silences_announces_count(wx_app, tmp_path, monkeypatch):
     """The spoken announcement includes the proposed chapter count."""
     from quill.core.speech.chapters import Chapter as _Chapter
-    from quill.ui.audio_studio import chapter_workbench as cwb
+    from quill.ui.audio_studio import chapter_workbench_silence as cws
 
     proposed = [
         _Chapter(index=0, title="Chapter 1", start_ms=0, end_ms=30_000),
@@ -209,11 +216,12 @@ def test_propose_from_silences_announces_count(wx_app, tmp_path, monkeypatch):
         "quill.core.speech.silence.detect_silence_chapters",
         lambda *_a, **_k: proposed,
     )
-    monkeypatch.setattr(cwb, "SilenceParamsDialog", _OKDialogWithDefaults)
+    monkeypatch.setattr(cws, "SilenceParamsDialog", _OKDialogWithDefaults)
 
     announces: list[str] = []
     frame, dlg = _make(wx_app, tmp_path, announces)
     try:
+        dlg._ask_keep_or_replace = lambda _count: "replace"
         dlg._on_propose_from_silences()
         assert any("2 chapters" in a for a in announces), f"got {announces!r}"
     finally:
@@ -224,7 +232,7 @@ def test_propose_from_silences_announces_count(wx_app, tmp_path, monkeypatch):
 def test_propose_from_silences_undo_with_restore(wx_app, tmp_path, monkeypatch):
     """After a proposal, Restore original returns the original chapter list."""
     from quill.core.speech.chapters import Chapter as _Chapter
-    from quill.ui.audio_studio import chapter_workbench as cwb
+    from quill.ui.audio_studio import chapter_workbench_silence as cws
 
     original_titles = ["One", "Two"]
     proposed = [
@@ -236,12 +244,13 @@ def test_propose_from_silences_undo_with_restore(wx_app, tmp_path, monkeypatch):
         "quill.core.speech.silence.detect_silence_chapters",
         lambda *_a, **_k: proposed,
     )
-    monkeypatch.setattr(cwb, "SilenceParamsDialog", _OKDialogWithDefaults)
+    monkeypatch.setattr(cws, "SilenceParamsDialog", _OKDialogWithDefaults)
 
     frame, dlg = _make(wx_app, tmp_path)
     try:
+        dlg._ask_keep_or_replace = lambda _count: "replace"
         dlg._on_propose_from_silences()
-        assert [c.title for c in dlg._book.chapters] == ["A", "B", "C"]
+        assert [c.start_ms for c in dlg._book.chapters] == [0, 20_000, 40_000]
         dlg._on_restore()
         assert [c.title for c in dlg._book.chapters] == original_titles
     finally:
@@ -251,18 +260,19 @@ def test_propose_from_silences_undo_with_restore(wx_app, tmp_path, monkeypatch):
 
 def test_propose_no_silences_announces_and_does_not_change(wx_app, tmp_path, monkeypatch):
     """When ffmpeg finds no silences, the original list is kept and a message is announced."""
-    from quill.ui.audio_studio import chapter_workbench as cwb
+    from quill.ui.audio_studio import chapter_workbench_silence as cws
 
     original_titles = ["One", "Two"]
     monkeypatch.setattr(
         "quill.core.speech.silence.detect_silence_chapters",
         lambda *_a, **_k: [],
     )
-    monkeypatch.setattr(cwb, "SilenceParamsDialog", _OKDialogWithDefaults)
+    monkeypatch.setattr(cws, "SilenceParamsDialog", _OKDialogWithDefaults)
 
     announces: list[str] = []
     frame, dlg = _make(wx_app, tmp_path, announces)
     try:
+        dlg._ask_keep_or_replace = lambda _count: "replace"
         dlg._on_propose_from_silences()
         assert [c.title for c in dlg._book.chapters] == original_titles
         assert any("no silences" in a.lower() for a in announces), f"got {announces!r}"
@@ -274,7 +284,6 @@ def test_propose_no_silences_announces_and_does_not_change(wx_app, tmp_path, mon
 def test_acx_check_passes_announces_and_shows_dialog(wx_app, tmp_path, monkeypatch):
     """A passing check announces 'passes' and the dialog carries the verdict."""
     from quill.core.speech.loudness import AcxCheck
-    from quill.ui.audio_studio import chapter_workbench as cwb
 
     check = AcxCheck(
         integrated_lufs=-20.0,
@@ -310,7 +319,6 @@ def test_acx_check_passes_announces_and_shows_dialog(wx_app, tmp_path, monkeypat
 def test_acx_check_failing_announces_fail(wx_app, tmp_path, monkeypatch):
     """A failing check announces 'fails' and the dialog gets the AcxCheck with recommendations."""
     from quill.core.speech.loudness import AcxCheck
-    from quill.ui.audio_studio import chapter_workbench as cwb
 
     check = AcxCheck(
         integrated_lufs=-14.2,
@@ -351,7 +359,6 @@ def test_acx_check_failing_announces_fail(wx_app, tmp_path, monkeypatch):
 
 def test_acx_check_none_shows_no_measurement_dialog(wx_app, tmp_path, monkeypatch):
     """When acx_check_file returns None (ffmpeg missing), the dialog still opens with no data."""
-    from quill.ui.audio_studio import chapter_workbench as cwb
 
     monkeypatch.setattr("quill.core.speech.loudness.acx_check_file", lambda _path: None)
     captured: dict[str, object] = {}

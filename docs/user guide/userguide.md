@@ -5465,6 +5465,64 @@ To get back to one, use `F2` and `Shift+F2`, the bookmark list
 stored like named bookmarks, under names such as "Quick 3", so they are kept
 with the document. Going to a slot you have not set tells you so plainly.
 
+#### Highlighted passages
+
+Somebody has gone through a contract, a set of meeting notes or a draft with
+Word's highlighter: the yellow bits are the ones you must read. A sighted
+reader sees them at a glance. QUILL lets you go straight to them by ear, in the
+same way bookmarks take you to places you marked yourself. The three commands
+are on **Navigate > Highlighted Passages**:
+
+- **Next Highlighted Passage** (`Alt+PageDown`) moves the cursor to the start
+  of the next highlighted passage and says its colour, where it is in the count
+  and its words, for example "Yellow highlight, 2 of 5: budget is final". After
+  the last passage it goes round to the first.
+- **Previous Highlighted Passage** (`Alt+PageUp`) does the same backwards.
+- **List Highlighted Passages...** (`Ctrl+F2`) shows every passage in one list,
+  in document order. Each row starts with the passage's words, so typing a
+  letter finds a row, then gives the colour and the paragraph it sits in:
+  "budget is final, yellow highlight, in: The budget is final unless the board
+  objects." The list opens on the passage you are in, or the next one after
+  the cursor. Enter (or **Go To**) closes the list and puts the cursor on the
+  passage; Escape closes it and leaves the cursor where it was.
+
+`Alt+Left` (Back) returns you to where you were before a jump, as it does
+after any other jump.
+
+**Where the highlights come from.** QUILL reads them fresh every time you
+press one of these keys, so a highlight you have just added with **Format >
+Highlight**, or just taken off with **Format > Clear Formatting**
+(`Ctrl+Shift+N`), is already counted, and typing above a passage never sends
+you to the wrong place.
+
+- A Word document you edit as Rich Text, and any RTF document: the highlights
+  in the document itself.
+- A Markdown document: the hidden highlight codes that **Format > Highlight**
+  writes, such as `[budget is final]{highlight="yellow"}`.
+- A Word document you chose to open for reading and plain editing: the
+  highlights in the `.docx` file on disk, placed on the text by their words
+  and the paragraph they are in. If you have since retyped a passage's words,
+  that passage is left out rather than guessed at.
+
+**Describe Formatting at Cursor** (`Ctrl+Shift+D`) now also names the
+highlight in a rich document:
+"Calibri, 11 point, yellow highlight". Before this it said nothing about
+highlighting there.
+
+**Colours.** QUILL knows all fifteen of Word's highlight colours by name:
+yellow, green, turquoise, pink, blue, red and gray, and the darker dark blue,
+teal, dark green, violet, dark red, dark yellow, dark gray and black. Saving a
+rich Word document now keeps each passage's colour. Before 2026-10-16 a green
+or pink highlight came back yellow after a save from rich mode, Pink and
+Turquoise on the Highlight menu did nothing in a rich document, and the darker
+colours were dropped when the document was opened.
+
+**Limits.** Highlights in headers, footers, footnotes, comments and text boxes
+are not listed, because QUILL does not show that text in the editor. A
+highlight that comes only from a Word character style, rather than from the
+highlighter, is not counted. Shading (a paragraph's background colour) is not
+a highlight and is not listed.
+
 #### Marks, bookmarks and selecting a block
 
 These three all "mark a spot", so they are easy to mix up. Here is what each
@@ -7184,7 +7242,60 @@ recordings, or speech QUILL exported earlier) into a single master.
 #### The Chapter Workbench
 
 The Workbench is where you fix a finished audiobook by ear. Reach it from the
-wizard's **Edit an existing audiobook** path.
+wizard's **Edit an existing audiobook** path, or, for any recording at all,
+from **Tools > Speech > Find Chapters in a Recording...**
+(`QUILL Key + Shift+O`).
+
+##### Automatic chapters for a lecture, a meeting or any MP3
+
+A two-hour lecture with no chapters is hard to move around by ear: there is
+nothing to skip to. **Find Chapters in a Recording...** fixes that. It asks
+for a recording (MP3, M4A or M4B), opens the Workbench on it, and starts
+**Propose chapters from silences** straight away.
+
+1. Choose the recording and press Open.
+2. The **Propose chapters from silences** window asks two things: how quiet
+   counts as silence (in decibels; -30 suits most speech, -40 a noisy room)
+   and how long a pause must last (in seconds; 0.8 catches a speaker drawing
+   breath between topics, 2 or 3 only the real breaks). OK starts the scan.
+3. The scan runs in the background, and you can keep listening while it
+   does. Each new chapter starts in the middle of a silence and is titled
+   **Proposed chapter 1**, **Proposed chapter 2** and so on, so you can always
+   tell a guess from a name somebody chose. You hear how many were proposed.
+4. Arrow through the list. Enter plays a chapter from its start; **Hear
+   boundary** plays the moments around where it starts; **Set start
+   to playhead**, **Split at playhead**, **Nudge back** and **Nudge forward**
+   move a boundary until it sounds right; **Merge into previous** removes one
+   that should not be there. Rename each one you keep (type the title and
+   press Enter).
+5. **Save** writes the chapters: an MP3 in place (only its tags change; the
+   audio is untouched), an M4B as a new file. **Export chapters...** writes
+   them as a CUE sheet, timestamps, Audacity labels, Podcasting 2.0 JSON or a
+   spreadsheet instead. Reopen the file and the chapters are there.
+
+Some things to know:
+
+- **Your own chapters are never silently replaced.** If the recording already
+  has two or more chapters, QUILL asks first. **Keep mine, add proposals** (the
+  default) keeps every chapter you had, with its title and start, and adds a
+  proposed chapter only where a silence is at least ten seconds from one of
+  yours. **Replace with the proposal** swaps the whole list. Cancel changes
+  nothing. A recording with no chapter marks of its own is not asked, because
+  there is nothing of yours to lose.
+- **Stopping.** While the scan runs the button reads **Stop proposing
+  chapters**. Press it again, or close the Workbench, and the scan's answer is
+  thrown away and the list stays exactly as it was. (The scan program finishes
+  its pass in the background and nothing is written.)
+- **Restore original** takes back the whole proposal at once, whichever way
+  you answered.
+- **Long recordings.** The scan is given time in proportion to the
+  recording: at least ten minutes, and a tenth of the recording's length for
+  anything over a hundred minutes, so a whole day's recording is scanned to
+  the end.
+- It needs ffmpeg. Without it you are told so, and the button comes back.
+- Silence is a guess about structure, not knowledge of it. A speaker who
+  pauses mid-sentence makes a boundary that is not a topic change; that is
+  why every proposal is labelled and nothing is saved until you press Save.
 
 ##### The chapter list and the player
 
@@ -7442,6 +7553,32 @@ I in the middle of?" in one place.
   stays unplayed, because "I am not going back to this" and "I finished it"
   are different things. Clearing what you have given up on keeps the list
   worth opening.
+
+#### Where you were in each podcast
+
+The Podcasts window remembers, for each podcast, which episode you last had
+selected, and puts you back on it the next time you choose that podcast --
+after closing the window and after restarting QUILL. It knows the episode by
+who it is (its feed's own episode ID, with its address and date as
+fall-backs), not by its row number, so it still finds the right one after new
+episodes arrive at the top, after you change the episode sort, and after a
+refresh.
+
+If the episode has gone -- the feed dropped it, or a filter hides it -- you
+land on the remaining episode published closest to it (the newer of two
+equally close), so you are still in the same stretch of the back catalogue
+rather than back at the top. A podcast you have never opened starts at the
+first row, as before.
+
+For example: you are working through a history podcast from its first
+episode and stop on episode 41. Next week four new episodes have arrived.
+Choose the podcast and the cursor is on episode 41, not on the newest one.
+
+QUILL Cast does the same for a podcast opened from Favorites with Enter. The
+places that mix podcasts (New Episodes, the Inbox, the Play Queue) do not
+move a podcast's remembered place. Each app keeps its own memory, in
+`podcast_episode_cursor.json` in its data folder; deleting the file only
+forgets the places.
 
 #### Carry My Place Between Machines
 

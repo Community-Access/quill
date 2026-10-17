@@ -24,6 +24,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from quill.core.highlights import HIGHLIGHT_COLOURS
 from quill.io.docx_writer import python_docx_available
 from quill.io.rtf_model import InlineSpan, RichDocument, RichParagraph
 
@@ -37,17 +38,11 @@ _NAMED_STYLES = {
     "Caption": "caption",
 }
 
-#: WD_COLOR_INDEX member names -> the hidden-codes highlight vocabulary
-#: (docx_writer._HIGHLIGHT_NAMES, inverted; GRAY_25 folds to "gray").
-_HIGHLIGHT_VALUES = {
-    "YELLOW": "yellow",
-    "BRIGHT_GREEN": "green",
-    "TURQUOISE": "turquoise",
-    "PINK": "pink",
-    "BLUE": "blue",
-    "RED": "red",
-    "GRAY_25": "gray",
-}
+#: WD_COLOR_INDEX member names -> the hidden-codes highlight vocabulary, all
+#: fifteen of Word's colours (quill.core.highlights). The seven-name table this
+#: replaced read Word's darker eight -- teal, violet, dark red and the rest -- as
+#: no highlight at all, so those passages vanished on open.
+_HIGHLIGHT_VALUES = {colour.docx_member: colour.name for colour in HIGHLIGHT_COLOURS}
 
 _ALIGNMENTS = {"LEFT": "left", "RIGHT": "right", "CENTER": "center", "JUSTIFY": "justify"}
 

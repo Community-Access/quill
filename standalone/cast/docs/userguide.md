@@ -640,10 +640,28 @@ library with your place in each, ready to download again whenever you like.
 Four places hold something other than a plain list of episodes.
 
 **Favorites** lists the podcasts you love most. Press Enter on one and its
-episodes open right there in the same list. Backspace takes you back to your
-favorites. Delete takes a podcast out of Favorites, and you still follow it.
+episodes open right there in the same list, on the episode you last had
+selected in that podcast (see "Where you were in each podcast" below).
+Backspace takes you back to your favorites. Delete takes a podcast out of Favorites, and you still follow it.
 To add a favorite, play one of its episodes and press Add to Favorites
 (Alt+F).
+
+#### Where you were in each podcast
+
+Cast remembers which episode you last had selected in each podcast, and when
+you open that podcast again -- later today, or after closing Cast -- the cursor
+is back on it. It knows the episode by who it is, not by its row, so new
+episodes arriving at the top, a different sort, **View > Show** and a refresh
+do not lose your place. If the episode has gone from the feed, you land on the
+one published closest to it.
+
+For example: you are working through a history podcast from the beginning and
+stop on episode 41. Next week four new episodes have arrived. Open the
+podcast from Favorites and the cursor is on episode 41, not on the newest.
+
+Only a podcast's own list moves its place. New Episodes, the Inbox and the
+Play Queue mix podcasts, and arrowing through them leaves each podcast's place
+alone.
 
 **Playlists** works the same way. Enter opens a playlist in place, Backspace
 comes back. Chapter 5, Keeping up without keeping watch, shows how to make
