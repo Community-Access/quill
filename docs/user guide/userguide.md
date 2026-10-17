@@ -7217,6 +7217,67 @@ works. Strict mode is off in QUILL and QUILL Lite, so the commands you know keep
 working, and on in QUILL Transcribe. A common word, or a word from your own My
 Words and Phrases, is refused as the command word, with the reason.
 
+##### Dictation profiles: the kind of writing you are doing
+
+A dictation profile changes dictation for one kind of writing in one step,
+instead of changing several settings each time. There are seven:
+
+| Profile | What it changes |
+|---|---|
+| Standard | Nothing: your Dictation Settings as they are. Headings are written as Markdown marks, as before. Everybody starts here. |
+| Email | Removes filler words and adds punctuation. Headings, bold and italic use QUILL's own formatting. |
+| Document | Headings, bold and italic use QUILL's own formatting. |
+| Markdown | Headings, bold and italic are written as Markdown marks. |
+| Chat | Removes filler words; plain text, with no heading marks. |
+| Coding | Removes filler words, adds no punctuation of its own (you say every mark), and waits longer for a pause. Markdown marks. |
+| Verbatim | Keeps every word you say, fillers too; plain text. |
+
+**Choosing one.** Open Dictation Settings (`Alt+Shift+F6`), press **More Dictation
+Settings...**, and choose in **Dictation profile, for the kind of writing**
+(**Alt+A**). Or, while dictating, say the profile's name after the command
+word: "QUILL email mode", "QUILL markdown mode", "QUILL standard mode" ("email
+profile" works too). You hear "Email profile." and the choice is kept for next
+time. The status bar shows a profile other than Standard beside the dictation
+modes, so a braille display shows it too.
+
+**Lock the profile so it cannot be switched by voice** (**Alt+B**, in More
+Dictation Settings) stops a spoken profile name from switching: you hear "Lock
+Profile is on, so the profile stays Email." Nothing ever switches profiles on
+its own.
+
+**Profiles and the Dictation style.** While a profile other than Standard is
+on, its own choice about filler words wins over the **Dictation style** in
+Dictation Settings: Verbatim keeps fillers even if the style is Clean, and
+Email, Chat and Coding remove them even if the style is Verbatim. A profile
+never changes **Fix it when I correct myself** or polishing. Standard leaves
+your style exactly as it is.
+
+**Headings, bold and italic by voice.** "heading one" to "heading six" at the
+start of a phrase, and "QUILL bold that" and "QUILL italic that" (or
+"italicize that"), act on the selection, or on the phrase you dictated last.
+What happens depends on the profile:
+
+- **Markdown** and **Coding**, and **Standard** for headings: the marks are
+  written. "bold that" puts two asterisks either side, "italic that" one; one
+  Ctrl+Z takes it back.
+- **Document** and **Email**: In a rich text document, QUILL's own Heading and Bold commands apply the
+style. In a Markdown or HTML document, QUILL's own commands write the marks
+or tags, and you hear "Heading 2." or "Bold." In a plain text document nothing is
+  typed for the heading, and you hear "Headings work in QUILL documents or the
+  Markdown profile." Bold and italic say the same about themselves.
+- **Chat** and **Verbatim**: "heading two" starts a new line with your words
+  and nothing else, and bold and italic say "This profile writes plain text, so
+  nothing was formatted."
+
+**Example.** In a letter written as a rich text document, choose the Document
+profile, then say "heading two dear Sam" and pause. "Dear Sam" goes on a line
+of its own with the Heading 2 style. Select a word, say "QUILL bold that", and
+it is bold.
+
+The settings are `windows_dictation_profile` and
+`windows_dictation_profile_locked`, under the same names in QUILL, QUILL Lite
+and QUILL Transcribe.
+
 ##### Importing and exporting your words
 
 **Export...** saves your whole list to a file you name. Choose **Word list in
@@ -7918,6 +7979,8 @@ you change here is saved when you press OK in Dictation Settings.
 | Send dictation to review first (`Alt+V`) | What you dictate goes into Review Dictation instead, to insert once; see "Review before inserting" | Off |
 | Allow polishing my dictation with AI when I ask (`Alt+G`) | "QUILL polish that" and the Polish button in Review Dictation ask the AI to fix punctuation and small slips, keeping your words; see "Polishing your dictation with AI, only when you ask" | Off |
 | Keep a dictation history (`Alt+Y`) | Off, One day, Seven days or Thirty days of the text you dictate, never the sound, listed in Recent Phrases; turning it off deletes it; see "Words that were not written, and dictation history" | Off |
+| Dictation profile, for the kind of writing (`Alt+A`) | Standard, Email, Document, Markdown, Chat, Coding or Verbatim; see "Dictation profiles" | Standard |
+| Lock the profile so it cannot be switched by voice (`Alt+B`) | A spoken profile name does not switch profiles | Off |
 
 In settings files these are `windows_dictation_hold_to_talk`,
 `windows_dictation_preview`, `windows_dictation_ai_send`,
@@ -7928,8 +7991,9 @@ In settings files these are `windows_dictation_hold_to_talk`,
 `windows_dictation_never_type`, `windows_dictation_command_prefix`,
 `windows_dictation_command_prefix_required`,
 `windows_dictation_command_timeout`, `windows_dictation_review_first`,
-`windows_dictation_polish` and `windows_dictation_history_days` (0 for off,
-or 1, 7 or 30). The
+`windows_dictation_polish`, `windows_dictation_history_days` (0 for off,
+or 1, 7 or 30), `windows_dictation_profile` and
+`windows_dictation_profile_locked`. The
 review window also keeps `windows_dictation_review_context` (its context check
 box) and `windows_dictation_review_consent` (your answer to its question).
 

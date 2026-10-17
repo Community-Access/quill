@@ -112,6 +112,16 @@ class Command(StrEnum):
     REVIEW_RESTORE = "review_restore"
     REVIEW_INSERT = "review_insert"
     REVIEW_DISCARD = "review_discard"
+    # 2026-10-16 (D-23): bold and italic by voice, and the named profiles.
+    BOLD_THAT = "bold_that"
+    ITALIC_THAT = "italic_that"
+    PROFILE_STANDARD = "profile_standard"
+    PROFILE_EMAIL = "profile_email"
+    PROFILE_DOCUMENT = "profile_document"
+    PROFILE_MARKDOWN = "profile_markdown"
+    PROFILE_CHAT = "profile_chat"
+    PROFILE_CODING = "profile_coding"
+    PROFILE_VERBATIM = "profile_verbatim"
     # 2026-10-16 (P3, "Polish my dictation"): one fixed AI request in the review.
     REVIEW_POLISH = "review_polish"
     # 2026-10-16 (D-10, D-19): correcting by replacing, and by paragraph

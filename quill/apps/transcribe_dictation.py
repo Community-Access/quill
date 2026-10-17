@@ -134,6 +134,16 @@ class _Feedback:
         """ "Switch to Spanish" said aloud, or Ctrl+Shift+F11: kept, as in the editors."""
         self._host._save_speech_language(language)
 
+    def set_dictation_profile(self, profile_id: str) -> None:
+        """ "QUILL email mode" said aloud (D-23): kept, as the window would."""
+        self._host._save_dictation_profile(profile_id)
+
+    def phrase_written(self, text: str) -> None:
+        """A phrase is in: the Practice window's recognition test may want it (D-25)."""
+        written = getattr(self._host, "_practice_phrase_written", None)
+        if callable(written):
+            written(text)
+
 
 class _ChosenModelOnly:
     """The recogniser the settings chose, and only that one.
@@ -531,6 +541,9 @@ class TranscribeDictationMixin(TranscribeTalkMixin, FieldHoldMixin):
         controller = getattr(self, "_dictation", None)
         if controller is not None and not controller.active and not self.dictation_armed():
             self._engine_override = ""  # a stand-in model lasts one session
+        practice = getattr(self, "_practice_state_changed", None)
+        if callable(practice):
+            practice()  # D-25: the Practice window's button, and back to the locked field
         refresh = getattr(self, "_refresh_view", None)
         if callable(refresh):
             refresh()

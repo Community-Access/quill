@@ -2278,6 +2278,170 @@ a small screen). All use fakes: no microphone, no network, no real window.
   are English only today, like the rest of D-2.
 - Screen-reader passes of the Add a Correction box and the style chooser
   (`docs/qa/screen-reader-checks-2026-10.md`).
+## 29. As built, 2026-10-16: named profiles (D-23), and lessons, practice and the recognition test (D-25)
+
+dict.md section 4, "Modes" and "Coach". Both are shared capability: the
+profiles are the controller's and work in QUILL, QUILL Lite and QUILL
+Transcribe alike; the coaching is QUILL Transcribe's, because the editors
+already had lessons and a document to practise in.
+
+### D-23: named profiles and format-aware structure
+
+**The profiles** (`quill/core/windows_dictation/profiles.py`, wx-free) are
+Standard, Email, Document, Markdown, Chat, Coding and Verbatim, each a frozen
+`NamedProfile`: an overlay of `pause`, `remove_fillers` and
+`auto_punctuation` (None means "as Dictation Settings say") plus how it writes
+structure, `markdown`, `formatted` or `plain`. **Standard is no overlay at
+all**, structure `markdown`, and is the default, so nobody's dictation changed
+on upgrade; dict.md named six profiles and this adds Standard as the zero
+point, because a person needs a way back to "my settings as they are".
+
+| Profile | Fillers | Punctuation | Pause | Structure |
+|---|---|---|---|---|
+| Standard | settings | settings | settings | markdown |
+| Email | removed | added | settings | formatted |
+| Document | settings | settings | settings | formatted |
+| Markdown | settings | settings | settings | markdown |
+| Chat | removed | settings | settings | plain |
+| Coding | removed | off | long | markdown |
+| Verbatim | kept | settings | settings | plain |
+
+**With section 28's named styles.** A style (Verbatim, Clean, Polished) is
+only a name for existing fields in Dictation Settings; a profile is an overlay
+applied after those fields are read. So while a profile other than Standard is
+on, its `remove_fillers` wins over the style's (Verbatim profile keeps fillers
+under the Clean style; Email, Chat and Coding remove them under the Verbatim
+style). No profile touches self-repair, polish or review-first, and Standard
+overlays nothing, so the style stands as chosen. The two names Verbatim are
+consistent: both keep every word.
+
+`DictationPreferences._writing` applies the overlay after reading the settings
+(`_as_set`), and records `named_profile`, `structure` and `profile_locked`.
+The "Talking to AI" and live-transcript profiles are applied on top, as before,
+so a named profile never changes the AI message box or a transcript. Two
+settings, under one name in every app (`settings_fields.py`):
+`windows_dictation_profile` (cleaned by `coerce_profile`, unknown values fall
+back to Standard) and `windows_dictation_profile_locked`. Both are additive:
+`data_format_audit` recorded `quill.settings` and `lite.settings` as additive
+and compatible, because an older build's loader ignores names it does not know.
+
+**What a profile does to writing** is `profile_mixin.py`'s `ProfileMixin`,
+listed first among the controller's bases so `controller.py` (at its size
+ceiling) grew by two lines. It wraps four hooks of the voice-command mixins:
+
+- `_in_mode`: a heading mark at the start of a phrase. `markdown` types
+  `## ` as it always has. `formatted` and `plain` turn the mark into a bare
+  line start and remember the level.
+- `_after_phrase`: for `formatted`, the editor's own heading command over the
+  phrase just written (the document port's optional `formatting()` and
+  `apply_style(style, start, end)`), or, where there is none, nothing typed
+  and `HEADING_REFUSAL` said and shown: "Headings work in QUILL documents or
+  the Markdown profile." (dict.md's sentence). `plain` says nothing: the words
+  on their own line are what Chat asked for.
+- `_voice_command`: "bold that" and "italic that"/"italicize that"
+  (`Command.BOLD_THAT`, `ITALIC_THAT`, new in `vocabulary_types.py`) act on the
+  selection, or the last intact phrase. `markdown` wraps the words in `**` or
+  `*` (keeping surrounding spaces outside the marks) as one replace, and
+  updates the history so "scratch that" removes the formatted phrase;
+  `formatted` runs the editor's own Bold or Italic; `plain` says
+  `PLAIN_REFUSAL`. dict.md said "there are no bold or italic voice commands";
+  now there are, because a format-aware profile with no way to format a word
+  would have been half a feature.
+- `_mode_command`: the seven profile commands ("QUILL email mode", "email
+  profile", ...). Refused out loud while Lock Profile is on; otherwise kept
+  through the feedback port's optional `set_dictation_profile`, and "Email
+  profile." said once. A host without that hook says where to choose one.
+
+**The editors' half.** `EditorDocument.formatting()` and `apply_style()`
+(`windows_dictation_ports.py`) select the range and ask the host. QUILL
+(`main_frame_windows_dictation.py`) answers `rich` in a rich text document and
+the markup surface (`markdown`, `html`) otherwise, and runs
+`format.bold`/`format.italic`/`format.heading_N` through its own command
+registry; rich text speaks its own outcome, markup does not, so the mixin
+says "Heading 2." there. QUILL Lite (`lite_window_dictation.py`) formats only
+a rich text document, through its own `cmd_bold`, `cmd_italic` and
+`cmd_heading_N`. A live transcript (`background`) is never formatted. The
+choice is in More Dictation Settings (`dictation_more_dialog.py`: Dictation
+profile, Alt+A; Lock, Alt+B), shared by all three apps.
+
+**QUILL Transcribe's half.** The profile commands and bold and italic are in
+`anywhere.EXTERNAL_COMMANDS`, so they work in other programs: Markdown and
+Coding retype the session's own last phrase with marks (the same
+backspace-and-retype as "capitalize that"; the other program's text is never
+read); Document and Email say why nothing was formatted. The choice is also in
+Dictation > Dictation Profile... (Ctrl+Shift+F, `ProfileDialog` in
+`transcribe_coach.py`), the tray menu (Dictation Pr&ofile...), and Dictation >
+Lock Profile (Ctrl+Shift+L, a check item). The profile shows in the window's
+Model and microphone field, a third tray read-out, the tray icon's name and
+Dictation Status (only when it is not Standard, the last three).
+
+**Not done, on purpose.** Automatic switching per program stays out (dict.md
+section 6; PRD 7.6 needs a privacy review first). A word list per profile is
+D-21's: `NamedProfile.word_list` and `active_profile_name(settings)` are the
+API it will read. QUILL has no separate menu row for the profile: More
+Dictation Settings and the voice command are its routes, as for every other
+dictation setting.
+
+### D-25: lessons, a practice field and a recognition test
+
+**Practice Dictation** (`quill/apps/transcribe_practice.py`, Dictation >
+Practice Dictation..., Ctrl+Shift+P) is a modeless window: the sentence to
+read, the **practice field**, the result, and Start Dictation Here (Alt+H),
+Read This Sentence (Alt+T), Score the Field (Alt+S), Next Sentence (Alt+N) and
+Close (Escape; no access key, GATE-14). Ctrl+F11 in the window starts and stops
+dictation in the field. Its F1 purpose is in `core/transcribe/surface_help.py`
+and every control has inline help (GATE-TRANSCRIBE-HELP).
+
+**The own-window refusal, and its one exception.** A start from QUILL
+Transcribe's own window normally arms and waits for another program. Start
+Dictation Here instead runs the same refusals as any start (`_refusal`: Safe
+Mode, the owner lock, the family microphone, the model), then points the shared
+controller at `PracticeFieldDocument` -- `ReviewBoxDocument`'s editor-style
+port over the field, one undo step a phrase, never keystrokes, and
+`formatting()` empty so it behaves like Notepad for profiles -- and starts it.
+`review_retarget` does the switch, the same seam Review Dictation uses. Any
+stop, by any route, goes back to the locked-field document
+(`_practice_state_changed`, called from `_dictation_state_changed`); so does
+closing the window. A session already running in another program is never
+taken over: "Stop it first".
+
+**The recognition test.** `quill/core/transcribe/practice.py` holds eight
+plain sentences (a name, a number and a question among them) and `score()`.
+The scorer is `quill/core/windows_dictation/word_errors.py`, moved out of
+`scripts/dictbench.py`, which now imports it: one word-error count for the
+benchmark and the window, so a number means the same in both. Capitals and
+punctuation do not count. Read This Sentence clears the field, starts dictation
+there if it is off, and scores the **first phrase written** (the feedback
+port's `phrase_written`), said once after the read-back and kept in Result;
+Score the Field scores the whole field for a sentence said in two breaths.
+Below 80 percent it suggests speaking slower, moving closer, or a larger model.
+
+**Five lessons** (`quill/core/tutorials/transcribe_lessons.py`): your first
+dictation in the Practice window, pause and resume in another program,
+commands with the command word, snippets and clips, and review. They are kept
+beside the editors' `dictation_lessons.py`, not in it, because they name QUILL
+Transcribe's commands. `quill/core/transcribe/tutorials.py` is the catalogue
+and the one small command table (`LOCAL_COMMANDS`: lesson id, frame method,
+key) that the menu, Try It and the book all read. Help > Tutorials...
+(Ctrl+Alt+F1) opens the family's Tutorials window through a small adapter
+(`_LessonHost`) that answers `commands.get/run` and `_binding_for` from that
+table, since QUILL Transcribe has no command registry. The book is generated
+into `standalone/transcribe/docs/tutorials.md` (GATE-TUTDOC now has six apps).
+
+**Acceptance.** dict.md's criterion, a new user reaching a first successful
+dictation from setup without sighted help, is a screen-reader check and is
+added to the D-4 passes; it is not claimed here.
+
+### Tests
+
+`tests/unit/core/test_dictation_profiles.py` (overlay, cleaning, structure per
+profile, bold and italic, voice switching and the lock, the reference),
+`tests/unit/apps/test_transcribe_coach.py` (practice field written directly
+and never another program, refusals, restore on stop and on close, the test's
+score said once, Score the Field, the profile window and lock, the lesson host,
+menu keys against the lesson table, F1 titles and inline help, reachability)
+and `tests/unit/ui/test_dictation_formatting_hooks.py` (QUILL's and QUILL
+Lite's formatting hooks and the editor port).
 
 ## Appendix A: the dict.md section numbers, and where they live now
 

@@ -124,6 +124,12 @@ class DictationPreferences:
     review_first: bool = False
     #: Send this document's dictation context with a review's AI request.
     review_context: bool = False
+    #: The named profile (D-23, profiles.py): ``standard`` is none at all.
+    named_profile: str = "standard"
+    #: How the profile writes structure: ``markdown``, ``formatted`` or ``plain``.
+    structure: str = "markdown"
+    #: Lock profile: a profile cannot be switched by voice.
+    profile_locked: bool = False
     #: Days of dictation history to keep, text only (D-5, rescue.py); 0 is off.
     history_days: int = 0
     #: What this document is -- "a formal letter", "notes to a friend" -- for
@@ -220,6 +226,34 @@ class DictationPreferences:
 
     @classmethod
     def _writing(
+        cls, settings: object, rewrite: Callable[[str], str] | None
+    ) -> DictationPreferences:
+        """The settings, with the named profile's overlay on top (D-23)."""
+        from dataclasses import replace
+
+        from quill.core.windows_dictation.profiles import active_profile
+
+        preferences = cls._as_set(settings, rewrite)
+        profile = active_profile(settings)
+        overlay: dict[str, object] = {
+            name: value
+            for name, value in (
+                ("pause", profile.pause),
+                ("remove_fillers", profile.remove_fillers),
+                ("auto_punctuation", profile.auto_punctuation),
+            )
+            if value is not None
+        }
+        return replace(
+            preferences,
+            named_profile=profile.id,
+            structure=profile.structure,
+            profile_locked=bool(getattr(settings, "windows_dictation_profile_locked", False)),
+            **overlay,  # type: ignore[arg-type]
+        )
+
+    @classmethod
+    def _as_set(
         cls, settings: object, rewrite: Callable[[str], str] | None
     ) -> DictationPreferences:
         dash = str(getattr(settings, "windows_dictation_dash", "em") or "em")

@@ -8567,6 +8567,99 @@ stop phrase always works. Strict mode is off in QUILL and QUILL Lite, so
 the commands you know keep working, and on in QUILL Transcribe. A common
 word, or a word from your own My Words and Phrases, is refused as the
 command word, with the reason.</p>
+<h5 id="dictation-profiles-the-kind-of-writing-you-are-doing">Dictation
+profiles: the kind of writing you are doing</h5>
+<p>A dictation profile changes dictation for one kind of writing in one
+step, instead of changing several settings each time. There are
+seven:</p>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>What it changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standard</td>
+<td>Nothing: your Dictation Settings as they are. Headings are written
+as Markdown marks, as before. Everybody starts here.</td>
+</tr>
+<tr>
+<td>Email</td>
+<td>Removes filler words and adds punctuation. Headings, bold and italic
+use QUILL’s own formatting.</td>
+</tr>
+<tr>
+<td>Document</td>
+<td>Headings, bold and italic use QUILL’s own formatting.</td>
+</tr>
+<tr>
+<td>Markdown</td>
+<td>Headings, bold and italic are written as Markdown marks.</td>
+</tr>
+<tr>
+<td>Chat</td>
+<td>Removes filler words; plain text, with no heading marks.</td>
+</tr>
+<tr>
+<td>Coding</td>
+<td>Removes filler words, adds no punctuation of its own (you say every
+mark), and waits longer for a pause. Markdown marks.</td>
+</tr>
+<tr>
+<td>Verbatim</td>
+<td>Keeps every word you say, fillers too; plain text.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Choosing one.</strong> Open Dictation Settings
+(<code>Alt+Shift+F6</code>), press <strong>More Dictation
+Settings…</strong>, and choose in <strong>Dictation profile, for the
+kind of writing</strong> (<strong>Alt+A</strong>). Or, while dictating,
+say the profile’s name after the command word: “QUILL email mode”,
+“QUILL markdown mode”, “QUILL standard mode” (“email profile” works
+too). You hear “Email profile.” and the choice is kept for next time.
+The status bar shows a profile other than Standard beside the dictation
+modes, so a braille display shows it too.</p>
+<p><strong>Lock the profile so it cannot be switched by voice</strong>
+(<strong>Alt+B</strong>, in More Dictation Settings) stops a spoken
+profile name from switching: you hear “Lock Profile is on, so the
+profile stays Email.” Nothing ever switches profiles on its own.</p>
+<p><strong>Profiles and the Dictation style.</strong> While a profile
+other than Standard is on, its own choice about filler words wins over
+the <strong>Dictation style</strong> in Dictation Settings: Verbatim
+keeps fillers even if the style is Clean, and Email, Chat and Coding
+remove them even if the style is Verbatim. A profile never changes
+<strong>Fix it when I correct myself</strong> or polishing. Standard
+leaves your style exactly as it is.</p>
+<p><strong>Headings, bold and italic by voice.</strong> “heading one” to
+“heading six” at the start of a phrase, and “QUILL bold that” and “QUILL
+italic that” (or “italicize that”), act on the selection, or on the
+phrase you dictated last. What happens depends on the profile:</p>
+<ul>
+<li><strong>Markdown</strong> and <strong>Coding</strong>, and
+<strong>Standard</strong> for headings: the marks are written. “bold
+that” puts two asterisks either side, “italic that” one; one Ctrl+Z
+takes it back.</li>
+<li><strong>Document</strong> and <strong>Email</strong>: In a rich text
+document, QUILL’s own Heading and Bold commands apply the style. In a
+Markdown or HTML document, QUILL’s own commands write the marks or tags,
+and you hear “Heading 2.” or “Bold.” In a plain text document nothing is
+typed for the heading, and you hear “Headings work in QUILL documents or
+the Markdown profile.” Bold and italic say the same about
+themselves.</li>
+<li><strong>Chat</strong> and <strong>Verbatim</strong>: “heading two”
+starts a new line with your words and nothing else, and bold and italic
+say “This profile writes plain text, so nothing was formatted.”</li>
+</ul>
+<p><strong>Example.</strong> In a letter written as a rich text
+document, choose the Document profile, then say “heading two dear Sam”
+and pause. “Dear Sam” goes on a line of its own with the Heading 2
+style. Select a word, say “QUILL bold that”, and it is bold.</p>
+<p>The settings are <code>windows_dictation_profile</code> and
+<code>windows_dictation_profile_locked</code>, under the same names in
+QUILL, QUILL Lite and QUILL Transcribe.</p>
 <h5 id="importing-and-exporting-your-words">Importing and exporting your
 words</h5>
 <p><strong>Export…</strong> saves your whole list to a file you name.
@@ -9522,6 +9615,18 @@ never the sound, listed in Recent Phrases; turning it off deletes it;
 see “Words that were not written, and dictation history”</td>
 <td>Off</td>
 </tr>
+<tr>
+<td>Dictation profile, for the kind of writing (<code>Alt+A</code>)</td>
+<td>Standard, Email, Document, Markdown, Chat, Coding or Verbatim; see
+“Dictation profiles”</td>
+<td>Standard</td>
+</tr>
+<tr>
+<td>Lock the profile so it cannot be switched by voice
+(<code>Alt+B</code>)</td>
+<td>A spoken profile name does not switch profiles</td>
+<td>Off</td>
+</tr>
 </tbody>
 </table>
 <p>In settings files these are
@@ -9541,12 +9646,13 @@ see “Words that were not written, and dictation history”</td>
 <code>windows_dictation_command_prefix_required</code>,
 <code>windows_dictation_command_timeout</code>,
 <code>windows_dictation_review_first</code>,
-<code>windows_dictation_polish</code> and
-<code>windows_dictation_history_days</code> (0 for off, or 1, 7 or 30).
-The review window also keeps
-<code>windows_dictation_review_context</code> (its context check box)
-and <code>windows_dictation_review_consent</code> (your answer to its
-question).</p>
+<code>windows_dictation_polish</code>,
+<code>windows_dictation_history_days</code> (0 for off, or 1, 7 or 30),
+<code>windows_dictation_profile</code> and
+<code>windows_dictation_profile_locked</code>. The review window also
+keeps <code>windows_dictation_review_context</code> (its context check
+box) and <code>windows_dictation_review_consent</code> (your answer to
+its question).</p>
 <p>A failure is always spoken, whatever these settings say. If the
 read-back plays through speakers, the microphone can hear it, so use
 headphones or choose a sound only.</p>
