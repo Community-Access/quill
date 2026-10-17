@@ -110,6 +110,8 @@ APPS: tuple[AppConfig, ...] = (
             "quill/apps/converter*.py",
             "quill/ui/converter_dialogs.py",
             "quill/ui/converter_auphonic_dialog.py",
+            "quill/ui/converter_auphonic_options_dialog.py",
+            "quill/ui/converter_auphonic_history_dialog.py",
         ),
         "converter_help_inventory.json",
     ),

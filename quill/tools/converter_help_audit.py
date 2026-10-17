@@ -50,6 +50,8 @@ _SCAN_GLOBS: tuple[str, ...] = (
     "quill/apps/converter*.py",
     "quill/ui/converter_dialogs.py",
     "quill/ui/converter_auphonic_dialog.py",  # Process with Auphonic (2026-10-15)
+    "quill/ui/converter_auphonic_options_dialog.py",  # its option windows (2026-10-17)
+    "quill/ui/converter_auphonic_history_dialog.py",  # History and Account (2026-10-17)
 )
 
 #: Surface constructions whose titles the scan cannot resolve, with the

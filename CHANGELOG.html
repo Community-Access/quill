@@ -245,6 +245,63 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="quill-converters-auphonic-backlog-history-account-tags-and-cover-more-options-2026-10-17">Quill
+Converter’s Auphonic backlog: history, account, tags and cover, more
+options (2026-10-17)</h3>
+<p>Quill Converter only (its user guide’s Chapter 7 and changelog say it
+for users); recorded here because the shared Auphonic client and the
+family credential are QUILL’s too. Spec: section 14 of
+<code>docs/planning/QUILL-Converter-Auphonic-Integration-PRD.md</code>.</p>
+<ul>
+<li><strong>New wx-free modules under
+<code>quill/core/publish/</code>.</strong>
+<code>auphonic_options.py</code> (Custom processing’s value tables and
+JSON, chapter-mark parsing, cover limits, extra outputs and the
+speech-recognition block), <code>auphonic_history.py</code> (the
+Production History store,
+<code>&lt;data&gt;/converter/auphonic_history.json</code>, schema 1,
+<code>versioned</code> in <code>persistence_audit</code>, capped at 200;
+merge with the account’s list) and <code>auphonic_account.py</code>
+(<code>GET user.json</code> as <code>AccountDetails</code> with plan
+words, <code>GET productions.json?limit=50</code> as
+<code>RemoteProduction</code> rows). Both reads go through
+<code>auphonic._json</code>, so <code>_request</code> stays the one
+reviewed egress site; its <code>network_egress_entries</code> rationale
+now names the cover upload, the account view, Refresh and Download
+Again.</li>
+<li><strong><code>AuphonicChoices</code> grows</strong> (all defaulted,
+so every MVP caller and test is unchanged): <code>custom</code>,
+<code>artist</code>, <code>album</code>, <code>cover</code>,
+<code>chapters</code> (<code>None</code> keeps the source’s),
+<code>second_format</code>, <code>transcript</code>,
+<code>language</code>; processing gains <code>CUSTOM</code>.
+<code>production_body</code>, <code>problem</code> and
+<code>confirmation_text</code> cover them; <code>uploads_for</code> adds
+the cover as field <code>image</code>, and <code>track_ids</code> never
+yields a reserved field name.</li>
+<li><strong><code>Runner</code></strong> takes <code>history</code>
+(records each start and outcome; <code>Outcome.uuid</code> carries the
+production) and <code>waiting_door</code> (where a left-behind result is
+fetched). <code>audio_results</code> now also keeps
+<code>subtitle</code>/<code>transcript</code> results ending .srt, .vtt,
+.txt or .html; the Audio Studio’s simple-API path does not use the
+filter.</li>
+<li><strong>UI:</strong>
+<code>quill/apps/converter_auphonic_history.py</code> (a mixin base of
+<code>ConverterAuphonicMixin</code>, so <code>converter.py</code> does
+not grow), <code>quill/ui/converter_auphonic_history_dialog.py</code>
+and <code>quill/ui/converter_auphonic_options_dialog.py</code>; menu
+rows Ctrl+Alt+H and Ctrl+Alt+Shift+A. Sign Out deletes the family
+credential (<code>quill:publish:auphonic</code>), so the Audio Studio is
+signed out too, after a Yes/No question.</li>
+<li><strong>Tests:</strong>
+<code>tests/unit/core/test_auphonic_backlog_core.py</code>,
+<code>tests/unit/apps/test_converter_auphonic_backlog.py</code>.
+Snapshots regenerated: converter help, dialog, accessible-name and
+reachability inventories, family menu chords, the F1 help
+reference.</li>
+</ul>
+<h3
 id="word-editing-shared-with-quill-lite-two-word-round-trip-fixes-table-navigation-in-quill-lite-2026-10-17">Word
 editing shared with QUILL Lite; two Word round-trip fixes; table
 navigation in QUILL Lite (2026-10-17)</h3>

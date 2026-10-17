@@ -17,7 +17,7 @@ import wx
 from quill.apps import converter_auphonic
 from quill.apps.converter_auphonic import ConverterAuphonicMixin
 from quill.core.converter_settings import ConverterSettings
-from quill.core.publish import auphonic_plan, auphonic_run
+from quill.core.publish import auphonic_history, auphonic_plan, auphonic_run
 from quill.core.publish.auphonic import ProductionStatus
 from quill.core.publish.auphonic_plan import (
     MULTITRACK,
@@ -150,13 +150,22 @@ def env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> dict[str, Any]:
     saved_tokens: list[str] = []
     monkeypatch.setattr(auphonic_run, "_default_client", lambda: client)
     monkeypatch.setattr(auphonic_plan, "pending_path", lambda _d=None: store)
+    history = tmp_path / "data" / "converter" / "auphonic_history.json"
+    monkeypatch.setattr(auphonic_history, "history_path", lambda _d=None: history)
     monkeypatch.setattr(converter_auphonic, "inspect_files", lambda paths: (paths, [], {}))
     monkeypatch.setattr(converter_auphonic, "load_token", lambda: "stored-token")
     monkeypatch.setattr(converter_auphonic, "save_token", saved_tokens.append)
     monkeypatch.setattr(converter_auphonic.threading, "Thread", _NowThread)
     patch_call_after(monkeypatch, lambda fn, *a, **k: fn(*a, **k))
     host = _Host(tmp_path, files)
-    return {"host": host, "client": client, "store": store, "files": files, "tokens": saved_tokens}
+    return {
+        "host": host,
+        "client": client,
+        "store": store,
+        "history": history,
+        "files": files,
+        "tokens": saved_tokens,
+    }
 
 
 def _answer(monkeypatch: pytest.MonkeyPatch, choices: Any, *, confirmed: bool = True) -> list[str]:

@@ -1582,9 +1582,13 @@ Control coverage: 40 audited sites (40 helped).
 
 ## Quill Converter
 
-Control coverage: 38 audited sites (38 helped).
+Control coverage: 60 audited sites (60 helped).
 
 ### Every window, and what it is for
+
+**Auphonic Account.** Whether an Auphonic token is stored on this computer, and on Check Account, who the account is, the credits left and the plan. Sign In stores a token only after Auphonic accepts it; Sign Out removes it, for the Audio Studio too. Nothing is uploaded from here.
+
+**Auphonic Production History.** Every production Quill Converter sent to Auphonic, newest first, kept on this computer: its status, its files and where its results went. Refresh from Auphonic brings the statuses up to date, Download Again fetches the results once more without replacing a file, and Remove from List forgets one here only.
 
 **Auphonic Work Waiting.** Productions Auphonic accepted whose results have not been saved yet, remembered on this computer without contacting Auphonic. Resume waits for them and saves the results; Dismiss forgets one here, and it stays in your Auphonic account.
 
@@ -1606,6 +1610,8 @@ Control coverage: 38 audited sites (38 helped).
 
 **Keyboard Shortcuts.** Every key in Quill Converter, grouped by menu, in one read-only list you can arrow through or copy. It is a reference; nothing here changes a key.
 
+**More Auphonic Options.** Custom processing's own values -- loudness target, peak limit, leveling, filtering and noise reduction -- used when Processing is set to Custom, plus a second output format and captions with a transcript. OK keeps them for this submission; nothing is sent from here.
+
 **Process with Auphonic.** Send the queue's sound files to your own Auphonic account to be post-produced online, then save the results here. Choose separate productions or one multitrack production, check your account to load your presets, and pick the processing and the output format. Nothing is uploaded until you confirm on the next page.
 
 **Quill Converter.** Convert audio and video between formats: sound to sound, video to sound, or video to video. Queue your files or folders, choose a format, a preset and any effects -- Preview lets you hear fifteen seconds of the result first -- and Convert. Everything runs on this computer, your originals are never touched, and a file already in the output folder is numbered around, never overwritten. The one exception is Process with Auphonic, which uploads only after you confirm.
@@ -1615,6 +1621,8 @@ Control coverage: 38 audited sites (38 helped).
 **Show and Hide Key.** Choose one key that shows and hides Quill Converter from any program. Type it, for example with Ctrl, Alt and Shift held, or leave the box empty for no key. A key another QuillVille app already uses is refused, and you are told whose it is.
 
 **Tag Editor.** Every tag of one MP3, M4A, M4B or MP4 file, over five pages -- title, artist and album, the people, the dates and numbers, sorting, and the cover art. Control+Tab moves between pages. OK writes the tags into the file; the sound itself is not touched.
+
+**Tags, Cover and Chapter Marks.** What your Auphonic productions carry besides their sound: an artist and an album that replace the files' own tags, a JPEG or PNG cover image uploaded with each production, and, for one production, its chapter marks typed one a line. OK keeps them for this submission; nothing is sent from here.
 
 **Windows titled "Help:...".** This is the help window itself: the purpose of the window you were in, then the control you were on. Escape returns you to it.
 
@@ -1666,9 +1674,11 @@ Control coverage: 38 audited sites (38 helped).
 - `self._check_btn`: Asks Auphonic who the token belongs to, how many credits are left, and which presets you have saved. Nothing is uploaded.
 - `self._status`: What the last account check found: the account name and its credits, or what went wrong. Read-only.
 - `self._preset`: Which of your saved Auphonic presets every production uses, or your account's default. Check Account and Load Presets fills the list; the preset you used last time is offered until then.
-- `self._processing`: Keep whatever the preset does, or use Quick cleanup instead: Auphonic's filtering, leveling and loudness normalization at its usual settings.
+- `self._processing`: Keep whatever the preset does, use Quick cleanup instead (Auphonic's filtering, leveling and loudness normalization at its usual settings), or use Custom processing: your own loudness target, peak limit and noise reduction, chosen with the More Options button.
 - `self._denoise`: Quick cleanup only. Lets Auphonic take out steady background noise. It can also change quiet background sounds you wanted to keep, so it is off unless you turn it on.
 - `self._format`: The format the results come back in: whatever the preset says, or one format for every production. A multitrack production saves only the final mix.
+- `self._tags_btn`: Opens a window for an artist and album to tag every production with, a cover image to upload with it, and, for one production, its chapter marks. Nothing is sent from there.
+- `self._more_btn`: Opens a window for Custom processing's loudness target, peak limit and noise reduction, a second output format, and captions with a transcript. Nothing is sent from there.
 #### AuphonicConfirmDialog (`quill/ui/converter_auphonic_dialog.py`)
 
 - `self._body`: Everything this submission does, read-only: the service, every file sent and every file left out, the preset and processing, and where the results are saved. Nothing has been uploaded yet.
@@ -1681,6 +1691,36 @@ Control coverage: 38 audited sites (38 helped).
 #### AuphonicDialog (`quill/ui/converter_auphonic_dialog.py`)
 
 - `ok`: Shows everything that will be sent, and where the results go, before anything is uploaded.
+#### AuphonicTagsDialog (`quill/ui/converter_auphonic_options_dialog.py`)
+
+- `self._artist`: The artist or author every production is tagged with. Leave it empty to keep each file's own artist tag.
+- `self._album`: The album, show or book name every production is tagged with. Leave it empty to keep each file's own album tag.
+- `self._cover`: The picture uploaded with each production as its cover art, or No cover image. Read-only; use Choose Cover Image to pick one.
+- `self._choose`: Opens a file picker for a JPEG or PNG picture of up to 10 MB. It is uploaded to Auphonic with each production; the picture itself is not changed.
+- `self._remove`: Sends no cover image. The picture file is not touched.
+- `self._chapters`: One chapter a line: its start time, a space, and its title, such as 0:00:00 Welcome and then 0:05:30 Interview. Times are hours, minutes and seconds, or minutes and seconds. It starts with the file's own chapters.
+#### AuphonicMoreDialog (`quill/ui/converter_auphonic_options_dialog.py`)
+
+- `self._leveler`: Auphonic's leveler: quiet and loud speakers, and quiet and loud passages, come out at a similar level. Usually on for speech.
+- `self._filtering`: Auphonic's filtering: takes out rumble and other sound below the voice, and evens out the tone. Usually on.
+- `self._transcript`: Auphonic's speech recognition writes what is said: captions (an SRT file) and a plain-text transcript, saved beside the sound. It uses more of your Auphonic credits, and it needs an output format chosen.
+#### AuphonicHistoryDialog (`quill/ui/converter_auphonic_history_dialog.py`)
+
+- `self._list`: Every production Quill Converter sent to Auphonic, newest first: its title, its last known status and when it was sent. The list is kept on this computer; nothing contacted Auphonic to show it.
+- `self._details`: Everything known about the highlighted production, one fact a line: its status, the files sent, the preset, the results folder, each file saved, the last outcome and its Auphonic id. Read-only.
+- `self._refresh_btn`: Asks Auphonic for your account's recent productions and brings every status here up to date; productions sent from elsewhere are added. Nothing is uploaded and no credits are used.
+- `download`: Fetches the highlighted production's results from Auphonic again, into its results folder. A file already there is never replaced; the new one gets a number. If it is still processing, this waits for it.
+- `self._folder_btn`: Opens the highlighted production's results folder in File Explorer.
+- `self._remove_btn`: Forgets the highlighted production on this computer. It stays in your Auphonic account and its saved files stay where they are.
+- `close`: Closes this window; the history is kept for next time.
+#### AuphonicAccountDialog (`quill/ui/converter_auphonic_history_dialog.py`)
+
+- `self._details`: Whether you are signed in, and after Check Account, the account name, the credits left in hours, split into one-time and recurring credits when Auphonic says, and the plan. Read-only.
+- `self._check_btn`: Asks Auphonic, with the stored token, who the account is, how many credits are left and which plan it has. Nothing is uploaded.
+- `self._token`: Your Auphonic API token, from the account settings page on auphonic.com. Sign In checks it with Auphonic before storing it in Windows Credential Manager, where the Audio Studio and QUILL find it too.
+- `self._sign_in`: Checks the token you typed with Auphonic and, only if Auphonic accepts it, stores it on this computer in place of any token stored before.
+- `self._sign_out`: Removes the stored Auphonic token from this computer, after asking. The Audio Studio uses the same token, so it is signed out too. Your Auphonic account and its productions are not touched.
+- `close`: Closes this window.
 
 ## Quill Beacon
 

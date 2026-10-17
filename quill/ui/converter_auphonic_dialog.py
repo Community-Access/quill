@@ -6,8 +6,10 @@ queue order, which is also the multitrack track order), separate productions
 or one multitrack production and its title, the API token (shared with the
 Audio Studio through the system's credential store), an explicit account
 check that loads the presets and never uploads anything, the preset, Quick
-cleanup and its noise switch, and one output format. Nothing is contacted
-when it opens.
+cleanup and its noise switch (or Custom processing), and one output format.
+Two buttons open the post-MVP options (PRD section 14) in their own windows,
+:mod:`quill.ui.converter_auphonic_options_dialog`: Tags, Cover and Chapter
+Marks, and More Options. Nothing is contacted when any of them opens.
 
 **Send to Auphonic?** is the one confirmation for the whole submission: a
 read-only text naming the service, every file sent and skipped, the mode, the
@@ -25,6 +27,7 @@ carry none. Every control has its F1 sentence inline (GATE-CONVERTER-HELP).
 from __future__ import annotations
 
 from collections.abc import Callable
+from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
@@ -32,6 +35,7 @@ import wx
 
 from quill.core.publish.auphonic import OUTPUT_FORMATS
 from quill.core.publish.auphonic_plan import (
+    CUSTOM,
     MULTITRACK,
     QUICK_CLEANUP,
     SEPARATE,
@@ -67,6 +71,8 @@ class AuphonicDialog(wx.Dialog):
         announce: Callable[[str], None],
         problem: Callable[[AuphonicChoices, str], str] = lambda _c, _t: "",
         refuse: Callable[[str], None] = lambda _text: None,
+        show_modal: Callable[[wx.Dialog, str], int] | None = None,
+        source_chapters: tuple[tuple[float, str], ...] = (),
     ) -> None:
         super().__init__(
             parent,
@@ -75,6 +81,11 @@ class AuphonicDialog(wx.Dialog):
             name="converter.auphonic",
         )
         self._files = files
+        # The post-MVP options live in two smaller windows (Tags, Cover and
+        # Chapter Marks; More Options) and come back here as one choices value.
+        self._extras = initial
+        self._show_modal = show_modal
+        self._source_chapters = source_chapters
         self._check = check
         self._announce = announce
         self._problem = problem
@@ -184,14 +195,17 @@ class AuphonicDialog(wx.Dialog):
             choices=[
                 "Use the preset's settings",
                 "Quick cleanup: filter the sound, even out the levels, standard loudness",
+                "Custom processing, set in More Options",
             ],
             majorDimension=1,
             style=wx.RA_SPECIFY_COLS,
         )
-        self._processing.SetSelection(1 if initial.processing == QUICK_CLEANUP else 0)
+        self._processing.SetSelection({QUICK_CLEANUP: 1, CUSTOM: 2}.get(initial.processing, 0))
         self._processing.SetHelpText(
-            "Keep whatever the preset does, or use Quick cleanup instead: Auphonic's "
-            "filtering, leveling and loudness normalization at its usual settings."
+            "Keep whatever the preset does, use Quick cleanup instead (Auphonic's "
+            "filtering, leveling and loudness normalization at its usual settings), or "
+            "use Custom processing: your own loudness target, peak limit and noise "
+            "reduction, chosen with the More Options button."
         )
         root.Add(self._processing, 0, wx.EXPAND | wx.ALL, 8)
         self._denoise = wx.CheckBox(self, label="Reduce background &noise")
@@ -217,6 +231,23 @@ class AuphonicDialog(wx.Dialog):
         )
         root.Add(self._format, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
+        extra_row = wx.BoxSizer(wx.HORIZONTAL)
+        self._tags_btn = wx.Button(self, label="Tags, Cover and Chapter &Marks...")
+        self._tags_btn.SetHelpText(
+            "Opens a window for an artist and album to tag every production with, a "
+            "cover image to upload with it, and, for one production, its chapter "
+            "marks. Nothing is sent from there."
+        )
+        self._more_btn = wx.Button(self, label="M&ore Options...")
+        self._more_btn.SetHelpText(
+            "Opens a window for Custom processing's loudness target, peak limit and "
+            "noise reduction, a second output format, and captions with a transcript. "
+            "Nothing is sent from there."
+        )
+        extra_row.Add(self._tags_btn, 0, wx.RIGHT, 6)
+        extra_row.Add(self._more_btn, 0)
+        root.Add(extra_row, 0, wx.ALL, 8)
+
         buttons = self.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
         root.Add(buttons, 0, wx.ALL | wx.EXPAND, 8)
         apply_modal_ids(
@@ -235,6 +266,8 @@ class AuphonicDialog(wx.Dialog):
         self.SetSizerAndFit(root)
 
         self._check_btn.Bind(wx.EVT_BUTTON, lambda _e: self.check_account())
+        self._tags_btn.Bind(wx.EVT_BUTTON, lambda _e: self.edit_tags())
+        self._more_btn.Bind(wx.EVT_BUTTON, lambda _e: self.edit_more())
         self.Bind(wx.EVT_BUTTON, self._on_review, id=wx.ID_OK)
         self._mode.Bind(wx.EVT_RADIOBOX, lambda _e: self._sync())
         self._processing.Bind(wx.EVT_RADIOBOX, lambda _e: self._sync())
@@ -246,6 +279,22 @@ class AuphonicDialog(wx.Dialog):
     def _sync(self) -> None:
         self._title.Enable(self._mode.GetSelection() == 1)
         self._denoise.Enable(self._processing.GetSelection() == 1)
+
+    # -- the option windows (post-MVP; converter_auphonic_options_dialog) -----------
+
+    def edit_tags(self) -> None:
+        """Tags, Cover and Chapter Marks; OK keeps them for this submission."""
+        from quill.ui.converter_auphonic_options_dialog import edit_tags
+
+        single = len(self._files) == 1 or self._mode.GetSelection() == 1
+        source = self._source_chapters if len(self._files) == 1 else ()
+        self._extras = edit_tags(self, self._extras, single, source, self._show_modal, self._refuse)
+
+    def edit_more(self) -> None:
+        """More Auphonic Options; OK keeps them for this submission."""
+        from quill.ui.converter_auphonic_options_dialog import edit_more
+
+        self._extras = edit_more(self, self._extras, self._show_modal)
 
     def _fill_presets(self, presets: list[Any], wanted: str, wanted_label: str = "") -> None:
         labels = [_DEFAULT_PRESET]
@@ -273,12 +322,14 @@ class AuphonicDialog(wx.Dialog):
     def choices(self) -> AuphonicChoices:
         index = max(0, self._preset.GetSelection())
         uuid = self._preset_ids[index] if index < len(self._preset_ids) else ""
-        return AuphonicChoices(
+        processing = (USE_PRESET, QUICK_CLEANUP, CUSTOM)[max(0, self._processing.GetSelection())]
+        return replace(
+            self._extras,
             mode=MULTITRACK if self._mode.GetSelection() == 1 else SEPARATE,
             preset_uuid=uuid,
             preset_label=self._preset.GetString(index) if uuid else "",
-            processing=QUICK_CLEANUP if self._processing.GetSelection() == 1 else USE_PRESET,
-            denoise=self._processing.GetSelection() == 1 and self._denoise.GetValue(),
+            processing=processing,
+            denoise=processing == QUICK_CLEANUP and self._denoise.GetValue(),
             output_format=_FORMATS[max(0, self._format.GetSelection())][0],
             title=self._title.GetValue().strip(),
         )
@@ -345,6 +396,7 @@ def ask_choices(
     token: str,
     check: Callable[[str, Callable[[list[Any] | None, Any, str], None]], None],
     problem: Callable[[AuphonicChoices, str], str],
+    source_chapters: tuple[tuple[float, str], ...] = (),
 ) -> tuple[AuphonicChoices, str, bool, str] | None:
     """``(choices, token, remember, account)``, or ``None`` when cancelled."""
     dialog = AuphonicDialog(
@@ -357,6 +409,8 @@ def ask_choices(
         announce=lambda text: host._announce(text),
         problem=problem,
         refuse=lambda text: host._show_message_box(text, PROCESS_TITLE),
+        show_modal=host._show_modal_dialog,
+        source_chapters=source_chapters,
     )
     try:
         if (

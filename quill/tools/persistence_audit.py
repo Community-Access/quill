@@ -113,6 +113,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/lite/settings.py::save": "versioned",
     "core/converter_settings.py::save": "versioned",
     "core/publish/auphonic_plan.py::save_pending": "versioned",  # Converter Auphonic resume
+    "core/publish/auphonic_history.py::save_history": "versioned",  # its Production History
     "core/speech/dictation/recovery.py::save_metadata": "framework",
     # --- export / output (user picks the file) ---
     # "Move my setup to another machine" (11.10): the import writes each store

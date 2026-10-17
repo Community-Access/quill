@@ -513,6 +513,8 @@
   ["Quill Converter", "apps/converter_menu.py Add Files...", "Ctrl+O"],
   ["Quill Converter", "apps/converter_menu.py Add Folder...", "Ctrl+Shift+O"],
   ["Quill Converter", "apps/converter_menu.py Advanced Options", "Ctrl+Alt+V"],
+  ["Quill Converter", "apps/converter_menu.py Auphonic Account...", "Ctrl+Alt+Shift+A"],
+  ["Quill Converter", "apps/converter_menu.py Auphonic Production History...", "Ctrl+Alt+H"],
   ["Quill Converter", "apps/converter_menu.py Auphonic Work Waiting...", "Ctrl+Alt+A"],
   ["Quill Converter", "apps/converter_menu.py Changelog", "Ctrl+Shift+F1"],
   ["Quill Converter", "apps/converter_menu.py Chapter Workbench...", "Ctrl+H"],

@@ -1,6 +1,7 @@
 # Quill Converter + Auphonic Integration -- MVP Product Requirements
 
-**Status:** MVP built 2026-10-15, unreleased; see section 13, As built  
+**Status:** MVP built 2026-10-15, post-MVP backlog built 2026-10-17, both
+unreleased; see section 13, As built, and section 14, The backlog  
 **Date:** October 5, 2026  
 **Scope:** Optional, multi-file audio post-production through the user's own
 Auphonic account
@@ -500,3 +501,134 @@ below is unreleased until a Converter build ships it.
 - **Not done, needs Jeff:** manual verification with NVDA or JAWS and a real
   Auphonic test account (no account or network was used tonight), and a
   Converter release build. Until then the shipped Converter is unchanged.
+
+## 14. The backlog, as built (2026-10-17)
+
+Section 11 said not to begin later-phase work until the MVP was evaluated;
+Jeff asked for the backlog to be built ahead of that evaluation, against
+recorded fakes, so it is ready for the same live check. Three items were
+named directly -- Production History, the account view, and metadata with
+cover art -- and then section 8's later work in its own order, as far as it
+can be built without a live account. Everything here is unreleased.
+
+### Production History (section 8, "completed-production history")
+
+- **Convert > Auphonic Production History...** (Ctrl+Alt+H;
+  `quill/apps/converter_auphonic_history.py`,
+  `quill/ui/converter_auphonic_history_dialog.py`, wx-free
+  `quill/core/publish/auphonic_history.py`). Every production the Converter
+  starts is recorded in `<data>/converter/auphonic_history.json` (schema 1,
+  `versioned` in `persistence_audit`, at most 200 entries, newest first)
+  when Auphonic starts it, and its outcome (saved with file paths, failed,
+  still at Auphonic) when it ends. A start whose outcome is unknown is
+  recorded as failed with the words that say it may have started, so
+  Refresh can settle it. Never the token or the media.
+- Opening reads the file only. **Refresh from Auphonic** is one
+  `GET /api/productions.json?limit=50`; known productions take Auphonic's
+  status (3 done, not fetched; 2 failed; anything else processing), and
+  unknown ones are added with a results folder named after their title
+  under the output folder. Saved files and outcomes are never dropped.
+- **Download Again** (the default button) runs the Resume path on the
+  entry -- poll, then download -- as an ordinary Converter job; files are
+  numbered, never overwritten; the history records the new files.
+  **Open Folder** opens the results folder locally; **Remove from List**
+  forgets the entry here only. Deleting a production at Auphonic is not
+  offered (destructive, remote, and nobody asked for it).
+
+### The account view (sections 5.2 and 8)
+
+- **Convert > Auphonic Account...** (Ctrl+Alt+Shift+A;
+  `quill/core/publish/auphonic_account.py`). Sign-in state is whether the
+  family credential (`quill:publish:auphonic`) holds a token -- read
+  locally. **Check Account** is `GET /api/user.json`: username, email,
+  `credits`, and when present `onetime_credits`, `recurring_credits`,
+  `recharge_recurring_credits` and `recharge_date`, from which the plan is
+  said in words ("A recurring plan: 9 hours each month, next added on
+  ..."; "one-time credits only"; or that Auphonic did not say). **Sign In**
+  checks a typed token with the same call and stores it only on success;
+  **Sign Out** deletes the credential after a Yes/No question. No cost
+  estimate is offered (section 5.2).
+
+### Metadata and cover art (section 5.3's deferred controls)
+
+- **Tags, Cover and Chapter Marks** (a button in Process with Auphonic):
+  typed artist and album replace each source's tags (`metadata.artist`,
+  `metadata.album`) in both modes -- typed values are not tags merged from
+  tracks, so section 5.3's multitrack rule still holds; a JPEG or PNG cover
+  up to 10 MB, uploaded into each production as multipart field `image`
+  after its sound (a track named "image" becomes "image track" so the field
+  cannot collide); chapter marks typed `H:MM:SS Title`, one production
+  only, replacing the source's (an empty edited list sends none).
+
+### Section 8's later work, in its order
+
+1. **OAuth or browser sign-in: not built.** It needs a registered Auphonic
+   OAuth client and a decision about holding a client secret in a desktop
+   app (section 8 also rules out a QUILL broker). Token sign-in is in the
+   account view. Needs Jeff.
+2. **Advanced processing: built in part.** A third Processing choice,
+   **Custom processing**, set in **More Options**: `loudnesstarget` (-14,
+   -16, -18, -19, -20, -23, -24 LUFS), `maxpeak` (-1, -2, -3 dBTP),
+   `leveler`, `filtering`, `denoise` with `denoiseamount` (0 automatic, 6,
+   12, 18, 100) and `denoisemethod` (`static`, `dynamic`,
+   `speech_isolation`). A multitrack production levels and normalizes the
+   master and filters and denoises each track. Not built: per-track
+   settings (a per-track editor needs its own accessible design), reverb and
+   breath reduction (their API fields could not be confirmed from the
+   published pages), and preview before upload (Auphonic offers no preview).
+3. **Automatic cutting (silence, filler, cough, music): not built.**
+   Section 8 requires a separate accessible review design for anything that
+   removes content; that is a product decision, not a missing account.
+4. **Transcription and captions: built; the rest not.** **Make captions and
+   a transcript** sends `speech_recognition: {"type": "auphonic",
+   "language": ...}` (seven languages) and asks for `subtitle`/`srt` and
+   `transcript`/`txt` outputs; the result filter now keeps `subtitle` and
+   `transcript` files ending .srt, .vtt, .txt or .html, still only from
+   https://auphonic.com. Translation, diarization, generated chapters, show
+   notes, audiograms, publishing and Cast workflows are not built: each is
+   either a separate product surface or a Cast feature.
+5. **Formats: a second output format built.** **Also save as** adds one more
+   `output_files` entry. Because a production's `output_files` replaces the
+   preset's, a second format or a transcript needs an output format chosen;
+   Review refuses otherwise, in words. Not built: video input and output
+   (the Converter's Auphonic path is sound only by design), URL input,
+   folder recursion (the queue already expands folders), and multitrack stem
+   export.
+6. **Webhooks or notifications after the app has closed: not built.** They
+   need a server to receive them, which section 8 rules out.
+
+### Tested by
+
+`tests/unit/core/test_auphonic_backlog_core.py` (custom-processing JSON and
+words, value lists enforced, chapter parsing, cover limits, extras problems,
+bodies with typed tags, chapters, custom processing, second format and
+transcript, the confirmation lines, reserved track names, `user.json` and
+`productions.json` against a recorded fake `urlopen` -- GET, bearer token,
+no body -- plan words, the caption/transcript filter, the history's
+round trip, damage, cap, merge and Download Again record, the cover uploaded
+as `image` and not counted as a track, an ambiguous start recorded, and no
+HTTP in the new modules) and `tests/unit/apps/test_converter_auphonic_backlog.py`
+(Safe Mode; opening the history contacts nobody; Download Again as a job
+that never overwrites; no token or a busy app; Refresh off the UI thread;
+Sign Out removes only the family credential; the history, account, tags and
+more-options windows built in memory, including Sign In storing nothing on a
+refusal, Sign Out asking first, bad covers and chapter lines refused in
+words, and F1 text on every new control).
+
+### Needs Jeff's live check
+
+With NVDA or JAWS and a real Auphonic account (the manual checks are listed,
+unticked, in `docs/qa/screen-reader-checks-2026-10.md`):
+
+- `user.json`'s credit and plan fields, and that the plan sentence is right
+  for a free account and a recurring one.
+- `productions.json?limit=50`: the list shape, `creation_time`, and that
+  Refresh's statuses match the website.
+- The cover upload: field `image` on `upload.json`, and the cover in the
+  downloaded MP3/M4A.
+- Custom processing's field names and values (`loudnesstarget`, `maxpeak`,
+  `denoiseamount`, `denoisemethod` including `speech_isolation`), and that a
+  production with them starts rather than failing validation.
+- Speech recognition's request shape (`type: auphonic`) and that the
+  `subtitle`/`srt` and `transcript`/`txt` outputs arrive and download.
+- Download Again on a production a week old (Auphonic's retention).

@@ -116,6 +116,9 @@ def build_menu_bar(host: Any, wx: Any, *, title: str, version: str, repo: str) -
     # nothing is sent before its confirmation, and Safe Mode declines both.
     add(convert_menu, "Process with &Auphonic...\tCtrl+Shift+A", host.process_with_auphonic)
     add(convert_menu, "Auphonic Wor&k Waiting...\tCtrl+Alt+A", host.show_auphonic_work)
+    # Post-MVP (PRD section 14): both read locally on opening; their buttons ask.
+    add(convert_menu, "Auphonic Production &History...\tCtrl+Alt+H", host.show_auphonic_history)
+    add(convert_menu, "Auphonic Accou&nt...\tCtrl+Alt+Shift+A", host.show_auphonic_account)
     convert_menu.AppendSeparator()
     add(convert_menu, "Conversion &Report...\tCtrl+R", host.show_report)
     open_item = wx.NewIdRef()

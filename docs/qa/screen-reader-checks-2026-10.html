@@ -2260,6 +2260,98 @@ back; in a clean document M says there are none.</li>
 <li><label><input type="checkbox" />Checks 1, 5 and 7 with
 Narrator.</label></li>
 </ul>
+<h2 id="quill-converters-auphonic-backlog-2026-10-17">Quill Converter’s
+Auphonic backlog (2026-10-17)</h2>
+<p>Production History, the account view, tags with cover art and chapter
+marks, Custom processing, a second format and a transcript, all in Quill
+Converter (the user guide’s Chapter 7, and section 14 of
+<code>docs/planning/QUILL-Converter-Auphonic-Integration-PRD.md</code>).
+The code and its automated tests are done against recorded Auphonic
+answers; nothing below has been tried with a screen reader or a real
+Auphonic account yet, so none is checked. Use a test account with a few
+credits and two short WAV files.</p>
+<h3 id="the-account">The account</h3>
+<ol type="1">
+<li><strong>Ctrl+Alt+Shift+A with no token stored.</strong> The Auphonic
+Account window opens with focus in the token box; Alt+D reads “Not
+signed in: no Auphonic token is stored on this computer.” Nothing is
+sent on opening.</li>
+<li><strong>Paste a wrong token, Alt+S.</strong> You hear “Sign-in
+failed; nothing was stored: …” and Process with Auphonic still shows no
+token.</li>
+<li><strong>Paste the real token, Alt+S.</strong> You hear “Signed in.
+The token is stored on this computer. Account: (name). Plan: …”; the
+details list the credits, one-time and recurring hours, and the plan as
+the website shows them.</li>
+<li><strong>Alt+C (Check Account)</strong> says the same from the stored
+token. Compare the credit hours and the plan sentence with auphonic.com,
+for a free account and a paid one if you can.</li>
+<li><strong>Alt+O (Sign Out), answer No, then Yes.</strong> No changes
+nothing; Yes says “Signed out …”, and the Audio Studio’s publish dialog
+no longer has the token. Sign in again before the next checks.</li>
+</ol>
+<h3 id="tags-cover-and-chapter-marks">Tags, cover and chapter marks</h3>
+<ol start="6" type="1">
+<li><strong>Queue one WAV, Ctrl+Shift+A, Alt+M.</strong> Tags, Cover and
+Chapter Marks opens on Artist. Type an artist and album, Alt+C and
+choose a PNG, check Alt+M and type two chapter lines. OK, then Review:
+the confirmation lists the tags, the cover’s name and “Chapter marks:
+the 2 you edited.”</li>
+<li><strong>Upload and Process.</strong> The downloaded MP3 has the
+artist, album, cover art and both chapters (Alt+Enter on it in the
+queue).</li>
+<li><strong>Bad input.</strong> Choose a GIF as the cover, then type
+“hello” as a chapter line and press OK: each is refused in one spoken
+sentence and the window stays open.</li>
+</ol>
+<h3 id="more-options">More options</h3>
+<ol start="9" type="1">
+<li><strong>Alt+O in Process with Auphonic.</strong> More Auphonic
+Options opens on Even out the levels; every choice reads its label and
+value; Noise reduction method is unavailable while Noise reduction is
+Off.</li>
+<li><strong>Custom processing.</strong> Choose Custom processing, Output
+format FLAC, and in More Options: Audiobook loudness, -3 dB, Light, Also
+save as MP3, Make captions and a transcript (English). The confirmation
+says all of it, and the production starts at Auphonic without a
+validation error.</li>
+<li><strong>The results.</strong> The folder holds a FLAC, an MP3, an
+SRT and a TXT; the FLAC measures about -20 LUFS. The summary does not
+claim other files.</li>
+<li><strong>A transcript without a format.</strong> Use the preset’s
+outputs and check Make captions and a transcript: Review refuses, saying
+an output format is needed.</li>
+</ol>
+<h3 id="production-history">Production History</h3>
+<ol start="13" type="1">
+<li><strong>Ctrl+Alt+H.</strong> The history lists the productions from
+checks 7 and 11, newest first, as “title: results saved, N files, sent
+…”; Alt+E reads the details. Nothing is sent on opening.</li>
+<li><strong>Alt+R (Refresh from Auphonic).</strong> You hear “Auphonic
+listed N recent productions: … brought up to date, … added.”;
+productions made on the website appear, and the statuses match the
+website.</li>
+<li><strong>Enter (Download Again) on check 7’s production.</strong> It
+runs as a job with progress and Stop; the new file is numbered “(2)”
+beside the first, and the details list both files.</li>
+<li><strong>Alt+O, then Alt+M.</strong> Open Folder opens the results
+folder in File Explorer; Remove from List removes the row, says it is
+still in your Auphonic account, and keeps focus in the list.</li>
+<li><strong>Safe Mode.</strong> Start Quill Converter in Safe Mode:
+Ctrl+Alt+H and Ctrl+Alt+Shift+A both say Auphonic is unavailable in Safe
+Mode.</li>
+</ol>
+<ul class="task-list">
+<li><label><input type="checkbox" />All seventeen with
+NVDA.</label></li>
+<li><label><input type="checkbox" />All seventeen with
+JAWS.</label></li>
+<li><label><input type="checkbox" />Checks 1, 6, 9 and 13 with
+Narrator.</label></li>
+<li><label><input type="checkbox" />F1 in each of the four new windows
+gives the window’s purpose, then the focused control’s
+help.</label></li>
+</ul>
 </main>
 </body>
 </html>

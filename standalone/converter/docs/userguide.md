@@ -878,10 +878,16 @@ The **Process with Auphonic** window then asks for everything at once:
   **Quick cleanup** uses Auphonic's filtering, leveling and loudness
   normalization instead, at Auphonic's usual settings, and enables **Reduce
   background noise**, which is off unless you turn it on because it can also
-  take out quiet background sounds you wanted to keep.
+  take out quiet background sounds you wanted to keep. **Custom processing**
+  uses values you choose yourself in **More Options** (see "More options"
+  below).
 - **Output format.** **Use the preset's outputs**, or one format for every
   production: MP3, AAC (M4A), Opus, FLAC or WAV. A multitrack production saves
   only the final mix.
+- **Tags, Cover and Chapter Marks...** (Alt+M) and **More Options...**
+  (Alt+O). Two buttons that open smaller windows for the extras described
+  below. Nothing is sent from either of them; what you choose there is used
+  for this submission and is listed in the confirmation.
 
 Press **Review**. If something is missing -- no token, too few files
 for a multitrack production, no title -- you are told what, and the window
@@ -900,7 +906,108 @@ nothing at all.
 
 Each separate production carries its file's title, artist and album, and its
 chapter marks, to Auphonic. A multitrack production carries only its title:
-tags and chapters from different tracks are never mixed together.
+tags and chapters from different tracks are never mixed together. Anything
+you typed in **Tags, Cover and Chapter Marks** replaces those, and the
+confirmation says so in its own lines.
+
+### Tags, cover art and chapter marks
+
+The **Tags, Cover and Chapter Marks** window (Alt+M in Process with Auphonic)
+sets what your productions carry besides their sound:
+
+- **Artist** (Alt+A) and **Album** (Alt+L). Typed here, they replace each
+  file's own artist and album tags in every production. Leave a box empty to
+  keep the files' own. They work for a multitrack production too, because
+  they are yours rather than something merged from the tracks.
+- **Cover image**, with **Choose Cover Image...** (Alt+C) and **Remove
+  Cover** (Alt+R). Pick a JPEG or PNG picture of up to 10 MB; it is uploaded
+  with each production and Auphonic puts it into the results as cover art.
+  The picture file itself is not changed. A GIF, an empty file or one that is
+  too large is refused with the reason.
+- **Send these chapter marks instead of the file's own** (Alt+M) and the
+  **Chapter marks** box (Alt+H). Only for one production at a time: a single
+  file, or a multitrack production. The box starts with the file's own
+  chapters; check the box above it to edit them. Write one chapter a line,
+  its start time, a space, then its title. Times are hours, minutes and
+  seconds, or just minutes and seconds. Checking the box and leaving the list
+  empty sends no chapters at all.
+
+**OK** keeps your choices for this submission; **Cancel** changes nothing. A
+chapter line that cannot be read is named by its number, such as "Chapter
+line 3 needs a start time and a title", and the window stays open.
+
+**Example.** You are sending one interview, `interview.wav`, and want it
+tagged for your show with two chapters. Press Ctrl+Shift+A, then Alt+M. Type
+`Jeff Bishop` in Artist and `Access Hour` in Album, press Alt+C and choose
+`show-art.png`, then check Send these chapter marks and type:
+
+    0:00:00 Welcome
+    0:04:30 The interview
+
+Press Enter for OK, then Review. The confirmation now includes "Tags you
+typed, replacing the files' own: artist Jeff Bishop, album Access Hour",
+"Cover image uploaded with each production: show-art.png" and "Chapter marks:
+the 2 you edited."
+
+**Limits.** Edited chapter marks need exactly one production; with several
+separate files, each keeps its own chapters. The title is still each file's
+own (or the multitrack title). Your choices here are not remembered for next
+time.
+
+### More options: custom processing, a second format, captions and a transcript
+
+The **More Auphonic Options** window (Alt+O in Process with Auphonic) has
+three parts.
+
+**Custom processing.** Used only when **Processing** is set to **Custom
+processing**; otherwise these values are ignored.
+
+- **Even out the levels** (Alt+E) and **Filter the sound** (Alt+F): Auphonic's
+  leveler and filtering, both on unless you turn them off.
+- **Loudness target** (Alt+L): how loud the result is overall. Podcast
+  loudness, -16 LUFS, is the usual choice; there are also music streaming
+  (-14), a quieter podcast (-18), a mono podcast (-19), audiobook (-20) and
+  European and American broadcast (-23 and -24).
+- **Peak limit** (Alt+P): how loud the loudest moment may be: -1, -2 or -3 dB.
+  -2 leaves room for MP3 and AAC; -3 suits audiobook stores.
+- **Noise reduction** (Alt+N): Off, Automatic (Auphonic decides), Light,
+  Medium, Strong, or As much as possible.
+- **Noise reduction method** (Alt+M), when noise reduction is on: Auphonic's
+  usual method, steady noise only (hum and hiss), changing noise too
+  (traffic, other voices), or **Keep only the speech**, which removes music
+  and every other sound as well.
+
+A multitrack production filters and denoises each track and levels and sets
+the loudness of the final mix.
+
+**Also save as** (Alt+S). A second format for every result, beside the
+**Output format** chosen in Process with Auphonic: for example FLAC to keep
+and MP3 to share.
+
+**Make captions and a transcript** (Alt+T) and **Transcript language**
+(Alt+G). Auphonic's own speech recognition writes down what is said: you get
+captions (an SRT file) and a plain-text transcript (a TXT file), saved beside
+the sound. Choose the language spoken: English, German, Spanish, French,
+Italian, Dutch or Portuguese. This uses more of your Auphonic credits.
+
+**Example.** For an audiobook chapter you want -20 LUFS, peaks at -3 dB,
+light noise reduction, a FLAC master and an MP3 copy, and a transcript. In
+Process with Auphonic choose Custom processing and Output format FLAC, then
+press Alt+O. Set Loudness target to Audiobook loudness, Peak limit to -3 dB,
+Noise reduction to Light, Also save as to MP3, and check Make captions and a
+transcript. OK, then Review: the confirmation says "Custom processing, which
+replaces the preset's own: ... -20 LUFS, peaks no louder than -3 dB, noise
+reduction light ..." and "saved as FLAC and MP3 instead of the preset's
+outputs, with captions and a transcript in English".
+
+**Limits.** A second format or a transcript needs an **Output format** chosen
+too, because asking Auphonic for extra files replaces the preset's own
+outputs; Review tells you if one is missing. Custom processing's values are
+not remembered for next time (the choice of Custom processing is). Per-track
+settings for a multitrack production, Auphonic's automatic cutting of
+silence, filler words or coughs, video, and more than two formats are not
+offered. Only captions and a plain-text transcript are saved, never other
+files Auphonic makes.
 
 ### While it works, and when it is done
 
@@ -948,11 +1055,91 @@ was going; **Dismiss** (Alt+D) forgets the highlighted one on this computer,
 and it stays in your Auphonic account. When Quill Converter starts with work
 waiting, it says so once, without contacting Auphonic.
 
+### Production History
+
+**Convert > Auphonic Production History...** (Ctrl+Alt+H) lists every
+production Quill Converter has sent to Auphonic, newest first, whether it
+finished, failed or is still at Auphonic. The list is kept on this computer
+(up to 200 productions), and opening it contacts nobody.
+
+- **Productions, newest first** (Alt+P). Each row says the title, its last
+  known status -- results saved, processing at Auphonic, still at Auphonic
+  and not fetched, or failed -- how many files were saved, and when it was
+  sent. Arrow through it.
+- **Details** (Alt+E). A read-only box with everything known about the
+  highlighted production: its status and what Auphonic last said, the files
+  sent, the preset, its results folder, every file saved, the last outcome in
+  words, and its Auphonic production id.
+- **Refresh from Auphonic** (Alt+R). Asks Auphonic for your account's 50 most
+  recent productions and brings every status in the list up to date.
+  Productions you made on Auphonic's website, or from another computer, are
+  added below the rest; their results would be saved in a folder named after
+  their title inside the Output folder. Nothing is uploaded and no credits are
+  used. What it found is spoken, such as "Auphonic listed 12 recent
+  productions: 3 brought up to date, 9 added."
+- **Download Again** (Enter). Fetches the highlighted production's results
+  from Auphonic once more, into its results folder, as an ordinary Converter
+  job: the progress bar, Stop with Ctrl+Enter, and the outcome in the
+  Conversion Report. A file already in the folder is never replaced; the new
+  copy is numbered, such as "talk (2).mp3". If the production is still
+  processing, it waits for it. Downloading uses no credits.
+- **Open Folder** (Alt+O). Opens the highlighted production's results folder
+  in File Explorer, or says the folder does not exist yet.
+- **Remove from List** (Alt+M). Forgets the highlighted production on this
+  computer. It stays in your Auphonic account, and the files already saved
+  stay where they are.
+
+**Example.** Last week you sent a talk and deleted the MP3 by mistake. Press
+Ctrl+Alt+H, arrow to the talk, and press Enter. Quill Converter fetches the
+result again into the same folder and says "talk: 1 file saved in ...". If
+Auphonic no longer has the result, the reason is said and nothing is saved.
+
+**Limits.** Auphonic keeps results for a limited time under its own terms;
+Download Again can only fetch what is still there. Removing an entry here
+never deletes anything at Auphonic. The history starts with this version:
+productions sent before it appear only after Refresh from Auphonic.
+
+### Your Auphonic account
+
+**Convert > Auphonic Account...** (Ctrl+Alt+Shift+A) shows whether you are
+signed in -- that is, whether an Auphonic token is stored on this computer --
+and lets you sign in and out without opening Process with Auphonic. Opening
+it contacts nobody.
+
+- **Account details** (Alt+D). A read-only box. It starts by saying "Signed
+  in" or "Not signed in", and after a check it lists the account name and
+  email, the credits left in hours, split into one-time and recurring credits
+  when Auphonic reports them, and the plan: a recurring plan's hours each
+  month and the date more are added, or "one-time credits only".
+- **Check Account** (Alt+C). Asks Auphonic about the stored token's account.
+  Nothing is uploaded and no credits are used.
+- **API token to sign in with** (Alt+K) and **Sign In** (Alt+S). Paste your
+  token from the account settings page on auphonic.com and choose Sign In.
+  The token is checked with Auphonic first and stored only if Auphonic
+  accepts it; a wrong token is reported and nothing is stored.
+- **Sign Out** (Alt+O). Removes the stored token from this computer after
+  asking you to confirm. The Audio Studio in QUILL uses the same token, so it
+  is signed out too. Your Auphonic account and its productions are not
+  touched.
+
+**Example.** To see how many hours you have left before a long batch, press
+Ctrl+Alt+Shift+A, then Alt+C. You hear "Signed in: an Auphonic token is stored
+on this computer. Account: jeff. Plan: A recurring plan: 9 hours each month,
+next added on 2026-11-01." and the details box holds the full breakdown.
+
+**Limits.** Sign-in is by API token only; signing in through Auphonic's
+website in a browser is not offered. Quill Converter shows the credits
+Auphonic reports and never estimates what a production will cost.
+
 ### Privacy
 
 Nothing is sent to Auphonic by opening Quill Converter, adding files, opening
-the Process with Auphonic window or choosing a preset. The account check sends
-only your token. Files are uploaded only after the confirmation, over a secure
+the Process with Auphonic window or choosing a preset, nor by opening
+Production History or the Auphonic Account window. The account check, Sign
+In and Refresh from Auphonic send only your token and read your account; a
+cover image goes up with the files, after the same confirmation. Production
+History is kept on this computer and holds titles, file names, folders and
+statuses, never your token or your recordings. Files are uploaded only after the confirmation, over a secure
 connection, and are then handled under Auphonic's own terms -- Quill Converter
 cannot promise when Auphonic deletes them. Your token, and the contents of your
 files, are never written to Quill Converter's settings, logs or reports.
@@ -961,8 +1148,12 @@ files, are never written to Quill Converter's settings, logs or reports.
 
 Process with Auphonic (Ctrl+Shift+A) sends the queue's sound files to your own
 Auphonic account, as separate productions or one multitrack production, after
-one confirmation that names everything. Stop is safe at every stage, and
-Auphonic Work Waiting (Ctrl+Alt+A) fetches anything Auphonic finished later.
+one confirmation that names everything, with your own tags, cover art,
+chapter marks, custom processing, a second format and a transcript when you
+want them. Stop is safe at every stage, and Auphonic Work Waiting
+(Ctrl+Alt+A) fetches anything Auphonic finished later. Production History
+(Ctrl+Alt+H) finds any past production again, and Auphonic Account
+(Ctrl+Alt+Shift+A) shows your credits and plan and signs you in or out.
 Chapter 8 is about keeping Quill Converter out of the way while it works.
 
 ## Chapter 8: Out of the way, and easy to find
@@ -1176,6 +1367,8 @@ every key in a read-only window you can arrow through.
 | Split by Chapters | Ctrl+Shift+S |
 | Process with Auphonic... | Ctrl+Shift+A |
 | Auphonic Work Waiting... | Ctrl+Alt+A |
+| Auphonic Production History... | Ctrl+Alt+H |
+| Auphonic Account... | Ctrl+Alt+Shift+A |
 | Conversion Report... | Ctrl+R |
 | Open Output Folder When Done | Ctrl+Shift+W |
 

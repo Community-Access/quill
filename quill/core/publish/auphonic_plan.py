@@ -21,7 +21,9 @@ from collections.abc import Callable, Iterable
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
+from quill.core.publish import auphonic_options as options
 from quill.core.publish.auphonic import OUTPUT_FORMATS
+from quill.core.publish.auphonic_options import CustomProcessing
 
 #: The sound files Auphonic takes as input and QUILL can name with confidence.
 #: Everything else in the Converter's queue is skipped and named before the
@@ -44,9 +46,13 @@ MIN_TRACKS = 2
 
 SEPARATE = "separate"
 MULTITRACK = "multitrack"
-#: Processing modes: the preset as it is, or Quick cleanup's three switches.
+#: Processing modes: the preset as it is, Quick cleanup's three switches, or
+#: Custom processing's own values (post-MVP, auphonic_options).
 USE_PRESET = "preset"
 QUICK_CLEANUP = "cleanup"
+CUSTOM = "custom"
+#: Upload field names a multitrack track id may never take.
+_RESERVED_FIELDS = frozenset({"input_file", options.COVER_FIELD})
 
 #: The pending-work file in the Converter's data folder.
 PENDING_FILE = "auphonic_pending.json"
@@ -64,6 +70,15 @@ class AuphonicChoices:
     denoise: bool = False
     output_format: str = ""  # "" keeps the preset's outputs
     title: str = ""  # the multitrack production's title
+    # Post-MVP (PRD section 14): custom processing, metadata and more results.
+    custom: CustomProcessing = CustomProcessing()
+    artist: str = ""  # "" keeps each source's own
+    album: str = ""
+    cover: str = ""  # a JPEG or PNG path, uploaded with each production
+    chapters: tuple[tuple[float, str], ...] | None = None  # None keeps the source's
+    second_format: str = ""
+    transcript: bool = False
+    language: str = "en"
 
 
 @dataclass(frozen=True, slots=True)
@@ -181,7 +196,17 @@ def problem(choices: AuphonicChoices, eligible: list[Path]) -> str:
             return "Give the multitrack production a title."
     if choices.output_format and choices.output_format not in OUTPUT_FORMATS:
         return "Choose an output format from the list."
-    return ""
+    if choices.processing == CUSTOM and choices.custom.problem():
+        return choices.custom.problem()
+    return options.extras_problem(
+        output_format=choices.output_format,
+        second_format=choices.second_format,
+        transcript=choices.transcript,
+        language=choices.language,
+        cover=choices.cover,
+        chapters_edited=choices.chapters is not None,
+        productions=1 if choices.mode == MULTITRACK else len(eligible),
+    )
 
 
 # -- what is sent -----------------------------------------------------------------
@@ -196,6 +221,8 @@ def track_ids(paths: list[Path]) -> list[str]:
     ids: list[str] = []
     for path in paths:
         base = re.sub(r'[\r\n"\\]', " ", path.stem).strip() or "Track"
+        if base.lower() in _RESERVED_FIELDS:
+            base = f"{base} track"  # never the cover's or a single file's field
         name, number = base, 2
         while name in ids:
             name, number = f"{base} ({number})", number + 1
@@ -221,21 +248,28 @@ def production_body(
 
     A separate production carries its source's title, artist, album and
     chapter marks (*details*); a multitrack production carries only its title,
-    because tags from separate tracks are never merged.
+    because tags from separate tracks are never merged. An artist, album or
+    chapter list the person typed (post-MVP) replaces the source's, in either
+    mode, since that merges nobody's tracks.
     """
     metadata: dict[str, str] = {"title": title}
     body: dict[str, object] = {"metadata": metadata}
     if choices.preset_uuid:
         body["preset"] = choices.preset_uuid
-    if details is not None and tracks is None:
-        if details.artist:
-            metadata["artist"] = details.artist
-        if details.album:
-            metadata["album"] = details.album
-        if details.chapters:
-            body["chapters"] = [
-                {"start": _clock(start), "title": name} for start, name in details.chapters
-            ]
+    source = details if details is not None and tracks is None else SourceDetails()
+    for key, typed, found in (
+        ("artist", choices.artist.strip(), source.artist),
+        ("album", choices.album.strip(), source.album),
+    ):
+        if typed or found:
+            metadata[key] = typed or found
+    chapters = choices.chapters if choices.chapters is not None else source.chapters
+    if chapters:
+        body["chapters"] = [{"start": _clock(start), "title": name} for start, name in chapters]
+    master: dict[str, object] = {}
+    per_track: dict[str, object] = {}
+    if choices.processing == CUSTOM:
+        master, per_track = choices.custom.algorithms(multitrack=tracks is not None)
     cleanup = choices.processing == QUICK_CLEANUP
     if tracks is None:
         if cleanup:
@@ -252,13 +286,25 @@ def production_body(
             entry: dict[str, object] = {"type": "multitrack", "id": track}
             if cleanup:
                 entry["algorithms"] = {"filtering": True, "denoise": bool(choices.denoise)}
+            elif per_track:
+                entry["algorithms"] = dict(per_track)
             entries.append(entry)
         body["multi_input_files"] = entries
         if cleanup:
             body["algorithms"] = {"leveler": True, "normloudness": True}
-    if choices.output_format:
-        body["output_files"] = [{"format": choices.output_format}]
+    if master:
+        body["algorithms"] = master
+    files = options.outputs(choices.output_format, choices.second_format, choices.transcript)
+    if files:
+        body["output_files"] = files
+    if choices.transcript:
+        body["speech_recognition"] = options.speech_recognition(choices.language)
     return body
+
+
+def uploads_for(choices: AuphonicChoices, audio: list[tuple[str, Path]]) -> list[tuple[str, Path]]:
+    """The files one production uploads: its sound, then the cover when there is one."""
+    return [*audio, (options.COVER_FIELD, Path(choices.cover))] if choices.cover else audio
 
 
 def folder_name(name: str) -> str:
@@ -284,11 +330,18 @@ def describe_processing(choices: AuphonicChoices) -> str:
             "Quick cleanup, which replaces the preset's own processing: filtering, "
             f"even levels and standard loudness, {noise}"
         )
+    elif choices.processing == CUSTOM:
+        processing = choices.custom.describe()
     else:
         processing = "the preset's own processing, unchanged"
     if choices.output_format:
         label = OUTPUT_FORMATS.get(choices.output_format, choices.output_format)
+        if choices.second_format:
+            label += " and " + OUTPUT_FORMATS.get(choices.second_format, choices.second_format)
         output = f"saved as {label} instead of the preset's outputs"
+        if choices.transcript:
+            language = options.language_label(choices.language)
+            output += f", with captions and a transcript in {language}"
     else:
         output = "saved in the formats the preset chooses"
     return f"Processing: {processing}. Results: {output}."
@@ -325,12 +378,35 @@ def confirmation_text(
         lines.append(f"{count} separate {noun}, one for each file, sent one at a time:")
         lines += [f"  {path.name}" for path in eligible]
         where = f"Each file's results are saved in a folder named after it, inside {dest}."
-    lines += ["", f"Preset: {preset}.", describe_processing(choices), where]
+    lines += ["", f"Preset: {preset}.", describe_processing(choices), *describe_details(choices)]
+    lines.append(where)
     lines.append("Your original files are not changed, and no existing file is replaced.")
     if skipped:
         lines += ["", f"Not sent ({len(skipped)}):"]
         lines += [f"  {item.path.name}: {item.reason}." for item in skipped]
     return "\n".join(lines)
+
+
+def describe_details(choices: AuphonicChoices) -> list[str]:
+    """The typed tags, cover and chapter marks, one plain line each."""
+    lines: list[str] = []
+    typed = [
+        f"{key} {value.strip()}"
+        for key, value in (("artist", choices.artist), ("album", choices.album))
+        if value.strip()
+    ]
+    if typed:
+        lines.append("Tags you typed, replacing the files' own: " + ", ".join(typed) + ".")
+    if choices.cover:
+        lines.append(f"Cover image uploaded with each production: {Path(choices.cover).name}.")
+    if choices.chapters is not None:
+        count = len(choices.chapters)
+        lines.append(
+            f"Chapter marks: the {count} you edited."
+            if count
+            else "Chapter marks: none; the file's own are left out."
+        )
+    return lines
 
 
 # -- pending work ------------------------------------------------------------------------

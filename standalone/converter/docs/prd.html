@@ -469,6 +469,38 @@ closing the app leaves it resumable from <strong>Auphonic Work
 Waiting</strong> (Ctrl+Alt+A), which reads the file without the network
 and contacts Auphonic only on Resume. No blind retry of a start whose
 outcome is unknown. Refused in Safe Mode.</li>
+<li><strong>The Auphonic backlog</strong> (unreleased, added 2026-10-17;
+the integration PRD’s section 14). <strong>Auphonic Production
+History</strong> (Convert menu, Ctrl+Alt+H;
+<code>quill/apps/converter_auphonic_history.py</code>,
+<code>quill/ui/converter_auphonic_history_dialog.py</code>, wx-free
+<code>quill/core/publish/auphonic_history.py</code>): every production
+the Converter started, recorded in
+<code>converter\auphonic_history.json</code> (schema 1, at most 200,
+newest first; id, title, mode, input names, preset label, results
+folder, status, outcome words, saved file paths – never the token or
+media); Refresh from Auphonic
+(<code>GET productions.json?limit=50</code>, merged: statuses updated,
+foreign productions added), Download Again (a Converter job over the
+same wait-and-download as Resume, numbered never overwritten), Open
+Folder, Remove from List (local only). <strong>Auphonic Account</strong>
+(Convert menu, Ctrl+Alt+Shift+A;
+<code>quill/core/publish/auphonic_account.py</code>): sign-in state from
+the credential store without the network; Check Account
+(<code>GET user.json</code>: account, email, credits, one-time and
+recurring hours, plan from the recurring recharge); Sign In stores a
+token only after Auphonic accepts it; Sign Out deletes the family
+credential after a confirmation. In Process with Auphonic, <strong>Tags,
+Cover and Chapter Marks</strong> (typed artist and album replace the
+sources’ tags in either mode; a JPEG/PNG cover up to 10 MB uploaded as
+field <code>image</code>; edited chapter marks for one production) and
+<strong>More Options</strong> (Custom processing – loudness target,
+true-peak limit, leveler, filtering, noise amount and method – a second
+output format, and Auphonic speech recognition with SRT captions and a
+TXT transcript), all wx-free in
+<code>quill/core/publish/auphonic_options.py</code> and named in the
+confirmation. Results now include captions and transcripts besides
+sound. Refused in Safe Mode.</li>
 <li><strong>Running a batch.</strong> Off the UI thread, multi-worker
 for sound and one at a time for video. Convert becomes Stop; Stop kills
 the encode in progress (its temp file is removed), starts nothing after
@@ -581,7 +613,9 @@ focused control’s own help (GATE-CONVERTER-HELP): the main window (the
 Chapters choice, the Advanced section and the progress bar included),
 Chapter Workbench, Tag Editor, Convert from URL, Custom Effects, File
 Properties, Conversion Report, Keyboard Shortcuts, Process with
-Auphonic, Send to Auphonic? and Auphonic Work Waiting.</li>
+Auphonic, Send to Auphonic?, Auphonic Work Waiting, Tags, Cover and
+Chapter Marks, More Auphonic Options, Auphonic Production History and
+Auphonic Account.</li>
 <li>A-10. Reports and descriptions are shown in a read-only multi-line
 text box, the one surface every screen reader reviews line by line
 without a special mode.</li>
@@ -596,20 +630,23 @@ account.</li>
 <strong>Check for Updates</strong> (this app’s own releases),
 <strong>Convert from URL</strong>, <strong>Get FFmpeg</strong> (repair,
 when the bundled copy is missing), and <strong>Auphonic</strong> (the
-account check, a confirmed submission, and Resume), every Auphonic
-request through the shared client’s one reviewed egress site
+account check, a confirmed submission with its cover image, Resume,
+Auphonic Account’s Check Account and Sign In, and Production History’s
+Refresh from Auphonic and Download Again), every Auphonic request
+through the shared client’s one reviewed egress site
 (<code>core/publish/auphonic.py::_request</code> in
 <code>network_egress_audit</code>). Nothing contacts Auphonic at launch,
 on adding files, or on opening its windows.</li>
 <li>N-3. yt-dlp is bundled; Convert from URL downloads only the address
 the user pasted, sends no account or credential to the site, and reminds
 the user to download only what they have the right to use.</li>
-<li>N-4. Convert from URL, Process with Auphonic and Auphonic Work
-Waiting are refused in Safe Mode.</li>
+<li>N-4. Convert from URL, Process with Auphonic, Auphonic Work Waiting,
+Auphonic Production History and Auphonic Account are refused in Safe
+Mode.</li>
 <li>N-6. The Auphonic API token lives only in the system credential
 store (<code>quill:publish:auphonic</code>, shared with the Audio
 Studio), and is never written to <code>converter.json</code>, the
-pending-work file, logs or reports.</li>
+pending-work file, the production history, logs or reports.</li>
 <li>N-5. Support messages leave only through the user’s own mail
 program, and only when the user sends them.</li>
 </ul>

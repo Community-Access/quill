@@ -2,6 +2,47 @@
 
 ## 1.0.0
 
+### Quill Converter's Auphonic backlog: history, account, tags and cover, more options (2026-10-17)
+
+Quill Converter only (its user guide's Chapter 7 and changelog say it for
+users); recorded here because the shared Auphonic client and the family
+credential are QUILL's too. Spec: section 14 of
+`docs/planning/QUILL-Converter-Auphonic-Integration-PRD.md`.
+
+- **New wx-free modules under `quill/core/publish/`.** `auphonic_options.py`
+  (Custom processing's value tables and JSON, chapter-mark parsing, cover
+  limits, extra outputs and the speech-recognition block),
+  `auphonic_history.py` (the Production History store,
+  `<data>/converter/auphonic_history.json`, schema 1, `versioned` in
+  `persistence_audit`, capped at 200; merge with the account's list) and
+  `auphonic_account.py` (`GET user.json` as `AccountDetails` with plan
+  words, `GET productions.json?limit=50` as `RemoteProduction` rows). Both
+  reads go through `auphonic._json`, so `_request` stays the one reviewed
+  egress site; its `network_egress_entries` rationale now names the cover
+  upload, the account view, Refresh and Download Again.
+- **`AuphonicChoices` grows** (all defaulted, so every MVP caller and test is
+  unchanged): `custom`, `artist`, `album`, `cover`, `chapters` (`None` keeps
+  the source's), `second_format`, `transcript`, `language`; processing gains
+  `CUSTOM`. `production_body`, `problem` and `confirmation_text` cover them;
+  `uploads_for` adds the cover as field `image`, and `track_ids` never yields
+  a reserved field name.
+- **`Runner`** takes `history` (records each start and outcome; `Outcome.uuid`
+  carries the production) and `waiting_door` (where a left-behind result is
+  fetched). `audio_results` now also keeps `subtitle`/`transcript` results
+  ending .srt, .vtt, .txt or .html; the Audio Studio's simple-API path does
+  not use the filter.
+- **UI:** `quill/apps/converter_auphonic_history.py` (a mixin base of
+  `ConverterAuphonicMixin`, so `converter.py` does not grow),
+  `quill/ui/converter_auphonic_history_dialog.py` and
+  `quill/ui/converter_auphonic_options_dialog.py`; menu rows Ctrl+Alt+H and
+  Ctrl+Alt+Shift+A. Sign Out deletes the family credential
+  (`quill:publish:auphonic`), so the Audio Studio is signed out too, after a
+  Yes/No question.
+- **Tests:** `tests/unit/core/test_auphonic_backlog_core.py`,
+  `tests/unit/apps/test_converter_auphonic_backlog.py`. Snapshots
+  regenerated: converter help, dialog, accessible-name and reachability
+  inventories, family menu chords, the F1 help reference.
+
 ### Word editing shared with QUILL Lite; two Word round-trip fixes; table navigation in QUILL Lite (2026-10-17)
 
 **`quill/core/docx_open.py` (new, wx-free).** QUILL's Word open and save

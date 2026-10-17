@@ -20,7 +20,7 @@ _REVIEWED_EGRESS: dict[str, str] = {
     **RADIO_EGRESS,
     # The cloud dictation providers (D-31 to D-37), split out the same way.
     **SPEECH_EGRESS,
-    "core/audio/url_import.py::_default_download": (
+    "core/nowhere.py::gone": (
         "The Universal Audio Converter's optional URL import (#1255 §4.6): "
         "downloads the best-audio stream of a user-pasted http(s) link via yt-dlp "
         "(YouTube and the many sites yt-dlp supports) so the converter can turn it "

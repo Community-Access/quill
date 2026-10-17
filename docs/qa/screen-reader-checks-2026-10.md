@@ -1616,3 +1616,81 @@ link), and one with a table and a comment.
 - [ ] All eight with NVDA.
 - [ ] All eight with JAWS.
 - [ ] Checks 1, 5 and 7 with Narrator.
+
+## Quill Converter's Auphonic backlog (2026-10-17)
+
+Production History, the account view, tags with cover art and chapter marks,
+Custom processing, a second format and a transcript, all in Quill Converter
+(the user guide's Chapter 7, and section 14 of
+`docs/planning/QUILL-Converter-Auphonic-Integration-PRD.md`). The code and its
+automated tests are done against recorded Auphonic answers; nothing below has
+been tried with a screen reader or a real Auphonic account yet, so none is
+checked. Use a test account with a few credits and two short WAV files.
+
+### The account
+
+1. **Ctrl+Alt+Shift+A with no token stored.** The Auphonic Account window
+   opens with focus in the token box; Alt+D reads "Not signed in: no Auphonic
+   token is stored on this computer." Nothing is sent on opening.
+2. **Paste a wrong token, Alt+S.** You hear "Sign-in failed; nothing was
+   stored: ..." and Process with Auphonic still shows no token.
+3. **Paste the real token, Alt+S.** You hear "Signed in. The token is stored
+   on this computer. Account: (name). Plan: ..."; the details list the
+   credits, one-time and recurring hours, and the plan as the website shows
+   them.
+4. **Alt+C (Check Account)** says the same from the stored token. Compare the
+   credit hours and the plan sentence with auphonic.com, for a free account
+   and a paid one if you can.
+5. **Alt+O (Sign Out), answer No, then Yes.** No changes nothing; Yes says
+   "Signed out ...", and the Audio Studio's publish dialog no longer has the
+   token. Sign in again before the next checks.
+
+### Tags, cover and chapter marks
+
+6. **Queue one WAV, Ctrl+Shift+A, Alt+M.** Tags, Cover and Chapter Marks
+   opens on Artist. Type an artist and album, Alt+C and choose a PNG, check
+   Alt+M and type two chapter lines. OK, then Review: the confirmation lists
+   the tags, the cover's name and "Chapter marks: the 2 you edited."
+7. **Upload and Process.** The downloaded MP3 has the artist, album, cover
+   art and both chapters (Alt+Enter on it in the queue).
+8. **Bad input.** Choose a GIF as the cover, then type "hello" as a chapter
+   line and press OK: each is refused in one spoken sentence and the window
+   stays open.
+
+### More options
+
+9. **Alt+O in Process with Auphonic.** More Auphonic Options opens on Even
+   out the levels; every choice reads its label and value; Noise reduction
+   method is unavailable while Noise reduction is Off.
+10. **Custom processing.** Choose Custom processing, Output format FLAC, and
+    in More Options: Audiobook loudness, -3 dB, Light, Also save as MP3, Make
+    captions and a transcript (English). The confirmation says all of it, and
+    the production starts at Auphonic without a validation error.
+11. **The results.** The folder holds a FLAC, an MP3, an SRT and a TXT; the
+    FLAC measures about -20 LUFS. The summary does not claim other files.
+12. **A transcript without a format.** Use the preset's outputs and check
+    Make captions and a transcript: Review refuses, saying an output format is
+    needed.
+
+### Production History
+
+13. **Ctrl+Alt+H.** The history lists the productions from checks 7 and 11,
+    newest first, as "title: results saved, N files, sent ..."; Alt+E reads
+    the details. Nothing is sent on opening.
+14. **Alt+R (Refresh from Auphonic).** You hear "Auphonic listed N recent
+    productions: ... brought up to date, ... added."; productions made on the
+    website appear, and the statuses match the website.
+15. **Enter (Download Again) on check 7's production.** It runs as a job with
+    progress and Stop; the new file is numbered "(2)" beside the first, and
+    the details list both files.
+16. **Alt+O, then Alt+M.** Open Folder opens the results folder in File
+    Explorer; Remove from List removes the row, says it is still in your
+    Auphonic account, and keeps focus in the list.
+17. **Safe Mode.** Start Quill Converter in Safe Mode: Ctrl+Alt+H and
+    Ctrl+Alt+Shift+A both say Auphonic is unavailable in Safe Mode.
+
+- [ ] All seventeen with NVDA.
+- [ ] All seventeen with JAWS.
+- [ ] Checks 1, 6, 9 and 13 with Narrator.
+- [ ] F1 in each of the four new windows gives the window's purpose, then the
+      focused control's help.
