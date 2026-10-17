@@ -2,6 +2,41 @@
 
 ## 1.0.0
 
+### GATE-BRAILLE: what QUILL speaks also reaches a braille display (todo P3; 2026-10-17)
+
+Developer-facing. A deafblind user, or anyone reading with speech off, gets
+only what reaches the display; a message that is only spoken does not exist for
+them, and nobody testing by ear notices. Announcements route through three
+layers -- the announcement service (`announce_wiring` installs a `SpeechSink`
+and a `BrailleSink` together and turns the engine's inline braille off), the
+engine (`prism_bridge.AnnouncementEngine.announce`, which mirrors to braille
+itself), and the engine's fallbacks (Narrator's UI Automation notification,
+VoiceOver, the system voice) -- and a speech call could skip braille at any of
+them.
+
+- **`quill/tools/braille_parity_audit.py`**, in `platform_report`: an AST walk
+  of `quill/` for every speech primitive (`announce(..., force_speech=)`,
+  `speak(..., interrupt=)`, `narrator_announce.announce`, `voiceover_announce`,
+  `speak_announcement`, `_enqueue_tts`). A call is *mirrored* when braille is
+  written on the same path: the same statement or a later one in the same body,
+  climbing out of `try`/`with` but stopping at a branch, loop or function, so
+  the engine's Narrator and VoiceOver fallbacks (which return before its braille
+  line) are not counted while the Prism and accessible_output2 paths are.
+- **Reviewed snapshot** `tests/unit/tools/fixtures/braille_parity.json`: every
+  unmirrored call is `delegates` (QUILL Lite's `_announce` to
+  `ScreenReaderVoice.speak`, which mirrors; the app shell's no-service fallback
+  to the engine's still-enabled inline braille) or `speech_only` with its
+  reason (Narrator and VoiceOver braille their own notifications; the system
+  voice and macOS self-voice run only with no screen reader, so no display is
+  driven). First run: 11 speech calls, 5 mirrored, 6 reviewed, none found
+  missing braille. A new unclassified call fails, `--write` adds it as
+  `unreviewed` (still failing), and a row whose call has gone fails as stale.
+- **Behavioural half** (`tests/unit/tools/test_braille_parity_audit.py`): the
+  real `build_announcement_service` with a fake engine writes every spoken
+  routine, warning and error message to braille exactly through the sink (the
+  engine's inline braille switched off), and `AnnouncementEngine.announce` on
+  the Prism path mirrors its own speech.
+
 ### Tests: one wx.App per process, and wx.CallAfter patched one way (todo P3 flake risks; 2026-10-17)
 
 Developer-facing; nothing a user sees changes.

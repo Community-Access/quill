@@ -9,7 +9,7 @@ uploaded for testing. The new packages have not been published yet.
   spelling fixes** (2026-10-17). The editor counts an emoji as two positions
   and QUILL Lite counted it as one, so after an emoji the commands that work
   on a selection were one place off for every emoji in front of it. For
-  example, with "😀 hi there" and "hi there" selected, **Tools > Upper Case**
+  example, with "😀 hi there" and "hi there" selected, **Tools > Change Case > UPPERCASE** (Ctrl+Shift+U)
   changed the wrong letters and left the selection ending one character short;
   now it changes "hi there" to "HI THERE" and selects exactly that. The same
   fix covers the selected text Copy works from, the Find box opening with
