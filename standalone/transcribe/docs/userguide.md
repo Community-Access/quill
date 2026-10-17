@@ -273,7 +273,9 @@ while you speak, and the changes dictation shows without saying them: Command
 mode, Waiting for a command, and Listening for your wake phrase. These go to
 the display only and are not spoken. To hear the words so far as well, choose
 **Show it, and say new words quietly** for **While you speak, the words heard
-so far** in More Dictation Settings.
+so far** in More Dictation Settings. You then hear each word once, when the
+model has settled on it, never a word it is still changing its mind about,
+and never the same word twice.
 
 **Dictation Status** (Alt+F9 in the window, as in QUILL and QUILL Lite) says in
 one sentence what dictation is doing, the program it is writing into, the model,

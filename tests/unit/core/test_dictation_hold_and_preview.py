@@ -71,18 +71,32 @@ def test_the_status_bar_is_updated_a_few_times_a_second_at_most() -> None:
     assert throttle.to_show("can you send", 1.0) is None  # nothing new
 
 
-def test_the_spoken_preview_says_only_new_words_and_not_too_often() -> None:
+def test_the_spoken_preview_says_only_settled_words_and_not_too_often() -> None:
+    # The committed-and-tentative contract (quill/core/speech/streaming.py):
+    # a word is said once two updates agree on it, and never the last word.
     throttle = PreviewThrottle()
-    assert throttle.to_speak("can you send", 0.0) == "can you send"
-    assert throttle.to_speak("can you send me the", 0.5) is None  # too soon
-    assert throttle.to_speak("can you send me the report", 2.5) == "me the report"
-    assert throttle.to_speak("can you send me the report", 5.0) is None
+    assert throttle.to_speak("can you send", 0.0) is None  # nothing settled yet
+    assert throttle.to_speak("can you send me the", 0.1) == "can you send"
+    assert throttle.to_speak("can you send me the report", 0.5) is None  # too soon
+    assert throttle.to_speak("can you send me the report now", 2.5) == "me the report"
+    assert throttle.to_speak("can you send me the report now", 5.0) is None
 
 
-def test_a_changed_mind_is_said_from_where_it_changed() -> None:
+def test_a_word_still_changing_is_never_said_and_a_said_word_never_again() -> None:
     throttle = PreviewThrottle()
-    throttle.to_speak("call doctor", 0.0)
-    assert throttle.to_speak("call dr okonkwo", 3.0) == "dr okonkwo"
+    assert throttle.to_speak("call doctor", 0.0) is None
+    assert throttle.to_speak("call dr okonkwo", 3.0) == "call"  # "doctor" changed
+    assert throttle.to_speak("call dr okonkwo please", 6.0) == "dr okonkwo"
+    assert throttle.to_speak("Call Dr. Okonkwo, please now", 9.0) == "please"
+
+
+def test_a_new_phrase_starts_the_spoken_preview_afresh() -> None:
+    throttle = PreviewThrottle()
+    throttle.to_speak("first phrase", 0.0)
+    throttle.to_speak("first phrase here", 3.0)
+    throttle.reset()
+    assert throttle.to_speak("first again", 6.0) is None
+    assert throttle.to_speak("first again now", 9.0) == "first again"
 
 
 def test_preview_choice_is_coerced() -> None:

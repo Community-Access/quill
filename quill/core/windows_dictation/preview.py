@@ -7,8 +7,13 @@ undo history. They go to the status bar's Dictation cell and a braille display
 as "Hearing: ..." (``preview = "show"``, the default), which is where a
 listener can glance at them without anything talking over the person who is
 talking. Dictation Settings can also have them spoken (``"speak"``) -- calmly:
-only the words that are new, never the same words twice, and no more often
-than every :data:`SPEAK_SECONDS` -- or switched off.
+only words the engine has settled on, each exactly once, and no more often
+than every :data:`SPEAK_SECONDS` -- or switched off. "Settled" is the
+committed-and-tentative contract (:mod:`quill.core.speech.streaming`, dict.md
+D-26 "Streaming integration"): a word is spoken once two updates in a row
+agree on it, so a word the engine is still changing its mind about is never
+said, and a word already said is never said again, even if the engine later
+rewrites it (the final phrase that is written is what counts).
 
 When the phrase ends, the final words replace the preview and go through
 everything a phrase always goes through (the normaliser and the commands), so
@@ -95,9 +100,13 @@ class PreviewThrottle:
 
     def reset(self) -> None:
         """A phrase finished or was thrown away: the next preview starts afresh."""
+        from quill.core.speech.streaming import StreamAnnouncer, WordAgreement
+
         self._shown = ""
         self._shown_at = -1e9
-        self._spoken = ""
+        self._agreement = WordAgreement()
+        self._announcer = StreamAnnouncer()
+        self._unspoken = ""
         self._spoken_at = -1e9
 
     def to_show(self, text: str, now: float) -> str | None:
@@ -109,17 +118,14 @@ class PreviewThrottle:
         return text
 
     def to_speak(self, text: str, now: float) -> str | None:
-        """The words not yet spoken, when it is time to say them, else ``None``."""
-        words = text.split()
-        # Where the engine changed its mind, say again from there; otherwise
-        # only what is new since the last time.
-        common = 0
-        for old, new in zip(self._spoken.split(), words, strict=False):
-            if old.lower() != new.lower():
-                break
-            common += 1
-        fresh = words[common:]
-        if now - self._spoken_at < SPEAK_SECONDS or not fresh:
+        """Newly committed words, when it is time to say them, else ``None``.
+
+        Committed words that arrive too soon after the last speech wait, and go
+        with the next update that is due; nothing tentative is ever returned.
+        """
+        fresh = self._announcer.feed(self._agreement.feed(text))
+        self._unspoken = " ".join((self._unspoken + " " + fresh).split())
+        if not self._unspoken or now - self._spoken_at < SPEAK_SECONDS:
             return None
-        self._spoken, self._spoken_at = " ".join(words), now
-        return " ".join(fresh)
+        said, self._unspoken, self._spoken_at = self._unspoken, "", now
+        return said

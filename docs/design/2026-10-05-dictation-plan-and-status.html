@@ -4136,6 +4136,208 @@ browsers is Jeff’s and is a release blocker
 restored by hand.</li>
 </ul>
 <h2
+id="31-as-built-2026-10-16-the-small-items-checked-and-the-streaming-contract-in-use">31.
+As built, 2026-10-16: the small items checked, and the streaming
+contract in use</h2>
+<p>dict.md section 9 asks what the small items alone would bring. This
+pass checked every one against this record and the code, built what was
+left, and closed Jeff’s todo about <code>StreamAnnouncer</code> (dict.md
+section 4, “Streaming integration”).</p>
+<h3 id="the-small-items-one-by-one">The small items, one by one</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>State</th>
+<th>Where</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D-6 braille preview and the status, resume and discard keys</td>
+<td>Already built</td>
+<td>Section 24</td>
+</tr>
+<tr>
+<td>D-15 Inkwell pauses when the focus moves</td>
+<td>Already built</td>
+<td>Section 15</td>
+</tr>
+<tr>
+<td>D-16 Dictate Here in Cast and Radio</td>
+<td>Built</td>
+<td>Section 30</td>
+</tr>
+<tr>
+<td>D-18 read last sentence, paragraph, selection</td>
+<td>Built in section 25; two additions folded in here</td>
+<td>Section 25, and “D-18 additions” below</td>
+</tr>
+<tr>
+<td>D-22 recommended model and tier labels</td>
+<td>Already built</td>
+<td>Section 21</td>
+</tr>
+<tr>
+<td>D-24 the never-type list and the cloud line in the tray</td>
+<td>Already built</td>
+<td>Section 15</td>
+</tr>
+<tr>
+<td>D-3 opt-in fallback for one program</td>
+<td>Waits, as planned</td>
+<td>It needs a clean D-4 run on an idle computer (section 17), and none
+has found a program that drops keys</td>
+</tr>
+<tr>
+<td>D-4 slice, the tested-programs table</td>
+<td>Already built, and more (the harness)</td>
+<td>Section 17. The table fills in when someone runs the harness on an
+idle computer</td>
+</tr>
+<tr>
+<td>D-12 slice, Import and Export</td>
+<td>Already built, and the shared list</td>
+<td>Section 20</td>
+</tr>
+<tr>
+<td>D-19 slice, replace and delete paragraph</td>
+<td>Built</td>
+<td>Section 27</td>
+</tr>
+<tr>
+<td>D-21 slice, the offer after two corrections</td>
+<td>Built</td>
+<td>Section 28</td>
+</tr>
+<tr>
+<td>D-25 slice, five Transcribe lessons</td>
+<td>Built</td>
+<td>Section 29</td>
+</tr>
+<tr>
+<td>B-6 screen-reader rows for Transcribe</td>
+<td>Already built (the rows; the checking is a person’s)</td>
+<td>Section 26</td>
+</tr>
+<tr>
+<td>B-7 privacy tests for the new paths</td>
+<td>Already built</td>
+<td>Section 26</td>
+</tr>
+<tr>
+<td>D-26 S0 benchmarks for candidate models</td>
+<td>The tools are built; the runs need the data</td>
+<td>Section 26</td>
+</tr>
+<tr>
+<td>Streaming partials through the committed-and-tentative contract</td>
+<td><strong>Built here</strong></td>
+<td>Below</td>
+</tr>
+<tr>
+<td>“paste clip 3” scored as slot three by the benchmark</td>
+<td><strong>Fixed here</strong></td>
+<td>Below</td>
+</tr>
+</tbody>
+</table>
+<p>dict.md section 4’s “Listen”, “Phrases” and “Privacy” have nothing
+small left beyond D-18 and D-24.</p>
+<h3 id="d-18-additions">D-18 additions</h3>
+<p>D-18 itself is section 25’s (one implementation; this branch’s
+duplicate was dropped at the merge). Two things this pass had that
+section 25 lacked were folded into that code rather than kept beside
+it:</p>
+<ul>
+<li><strong>A read-only document can be read back.</strong> The three
+reading commands are answered in
+<code>VoiceCommandsMixin._mode_command</code>, before the controller’s
+writing check, because reading writes nothing; they used to be refused
+with “This document is read-only”. In another program they are still
+refused there, with <code>external_refusal()</code>.
+<code>controller.py</code> did not grow.</li>
+<li><strong>“leer” as well as “lee”</strong> in the Spanish forms (“leer
+la última frase”, “leer el último párrafo”, “leer la selección”).</li>
+</ul>
+<p>The QUILL user guide gained “More about reading back” beside section
+25’s worked example; QUILL Lite’s guide, which had the commands only as
+table rows, gained a worked example (“Checking your work by ear”). The
+PRD has a D-18 requirement block.</p>
+<h3 id="the-streaming-contract-now-in-use">The streaming contract, now
+in use</h3>
+<p><code>quill/core/speech/streaming.py</code> (2026-08-17) defined
+<code>StreamAnnouncer</code> “ahead of need”: a streaming snapshot is an
+append-only committed prefix and a tentative tail, and speech says only
+newly committed text, exactly once. Then the streaming engines landed
+(section 3, Nemotron; OpenAI live; the WebSocket cloud providers,
+section 23) and none used it. dict.md D-26 (“Streaming integration”) and
+D-35 say partial results from any online recogniser go through
+<code>preview.py</code> and that contract, and that only committed words
+are ever spoken or written. The spec keeps the class, so it was wired,
+not removed.</p>
+<p><strong>What was wrong.</strong> With <strong>Show it, and say new
+words quietly</strong>, <code>PreviewThrottle.to_speak</code> said again
+from wherever the engine changed its mind: “call doctor” then “call Dr.
+Okonkwo” spoke “Dr. Okonkwo” after “doctor”, the same words twice in
+different forms, which is exactly the repainting the contract exists to
+stop.</p>
+<p><strong>What it does now.</strong> None of the engines hands QUILL a
+committed and a tentative part: each sends the whole phrase so far. So
+<code>streaming.WordAgreement</code> derives the split by local
+agreement: a word is committed once two updates in a row agree on it
+(case and edge punctuation ignored) and it is not the last word, which
+may still be half heard. Its committed text only grows, by construction,
+so a later rewrite of a word already said is never said again.
+<code>to_speak</code> feeds each update through
+<code>WordAgreement</code> and <code>StreamAnnouncer</code>, gathers
+what is newly committed, and still says it no more often than every two
+seconds. Everything reaches it the same way
+(<code>recognizer_worker</code> and the cloud recogniser post
+<code>on_partial</code>; <code>LiveMixin.on_partial</code> decides), so
+Nemotron, OpenAI and every streaming cloud provider follow the contract
+with no change in any engine.</p>
+<p><strong>What stays as it was.</strong> The visual preview, “Hearing:
+…” in the status bar and on a braille display, still shows the whole
+phrase, tentative tail included: it is one line replaced in place, not a
+stream of announcements, and dict.md D-6 asks for it. The words written
+at the pause are always the engine’s final ones; the spoken preview
+never decides what is written.</p>
+<p><strong>The cost.</strong> Speech now lags the engine by one update
+(a word is said once a second update confirms it). That is the trade the
+contract makes: a word late rather than a word twice.</p>
+<h3 id="paste-clip-3">“paste clip 3”</h3>
+<p>The first dictbench run (section 26) reported “paste clip three”
+heard as “Paste clip 3” and scored it as a different command. QUILL
+itself already accepts a digit there: <code>targets.number_from</code>
+reads “three”, “3” and “number three” alike. The miss was the
+benchmark’s: <code>bench_scoring.command_outcome</code> compared the raw
+words after the command. It now compares the slot number, and a
+controller test pins “Paste clip 3” pasting slot three in another
+program. (“insert abbreviation addr” heard as “address” is a different
+case: the engine changed the word, and nothing in the parser could
+know.)</p>
+<h3 id="documentation">Documentation</h3>
+<p>The spoken-preview paragraphs in all three user guides (QUILL, QUILL
+Lite, QUILL Transcribe) now say a word is spoken once it is settled and
+never twice; the reading-back additions are above. The
+dictation-commands page (both copies) and
+<code>docs/site/dictation.html</code> are regenerated from the command
+table. No control was added, so F1 help is unchanged.</p>
+<h3 id="tests-2">Tests</h3>
+<p><code>tests/unit/core/test_dictation_live_controller.py</code> (the
+spoken preview through a rewrite; the user guide’s reading example with
+the cursor and selection left where they were; a read-only document read
+back; nothing to read and the marks setting),
+<code>tests/unit/core/test_dictation_hold_and_preview.py</code>
+(<code>to_speak</code> under the contract),
+<code>tests/unit/core/speech/test_speech_vad_and_streaming.py</code>
+(<code>WordAgreement</code>),
+<code>tests/unit/core/test_dictation_external_list.py</code> and
+<code>tests/unit/scripts/test_bench_scoring.py</code> (the digit).
+Section 25’s own D-18 tests are in
+<code>tests/unit/core/test_dictation_snippet_fill.py</code>.</p>
+<h2
 id="appendix-a-the-dictmd-section-numbers-and-where-they-live-now">Appendix
 A: the dict.md section numbers, and where they live now</h2>
 <table>

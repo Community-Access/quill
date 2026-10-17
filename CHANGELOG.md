@@ -106,6 +106,38 @@ Jeff's decisions of 2026-10-16. Nothing is tagged, pushed or published.
   release-blocker section (the Outlook, Word, Notepad and browser pass is
   Jeff's) and checks for the new rows.
 
+### Dictation: the spoken preview keeps the streaming contract, D-18 additions, digits for clips (2026-10-16)
+
+dict.md section 9 (the small items) and Jeff's todo "StreamAnnouncer is
+defined but never used"; dictation design record, section 31.
+
+- **D-18 additions,** folded into section 25's implementation (one D-18): the
+  three reading commands are answered in `VoiceCommandsMixin._mode_command`,
+  before the writing check, so a read-only document can be read back (it was
+  refused as read-only); in another program they are still refused with
+  `external_refusal()`. Spanish takes "leer" as well as "lee".
+  `controller.py` did not grow.
+- **`StreamAnnouncer` is used.** The spoken live preview (`preview =
+  "speak"`) re-spoke words from wherever a streaming engine changed its mind,
+  which broke the committed-and-tentative contract dict.md D-26 asks of every
+  online recogniser. `PreviewThrottle.to_speak` now feeds each update through
+  the new `speech.streaming.WordAgreement` (a word is committed once two
+  updates agree on it and it is not the last word; committed text only ever
+  grows) and `StreamAnnouncer`, so only settled words are spoken, each once.
+  The visual preview (status bar, braille) is unchanged. Covers Nemotron,
+  OpenAI live and every streaming cloud provider, which all reach
+  `LiveMixin.on_partial`.
+- **"paste clip 3".** QUILL already took digits there (`targets.number_from`);
+  the benchmark's `bench_scoring.command_outcome` compared the raw words and
+  scored Moonshine's "Paste clip 3" as another command. It now compares the
+  slot number. A controller test pins the digit form end to end.
+- **Docs.** QUILL guide: "More about reading back"; QUILL Lite guide: a
+  worked example, "Checking your work by ear" (pinned by a controller test that
+  also checks the cursor and selection do not move); all three guides'
+  spoken-preview paragraphs; the PRD gains a D-18 requirement block;
+  dictation-commands pages and `docs/site/dictation.html` regenerated. No
+  control was added, so F1 help is unchanged.
+
 ### Dictation: one settings store for the family (D-13), the word list's new home, and Dictate Here in Cast and Radio (D-16) (2026-10-16)
 
 dict.md D-12, D-13 and D-16. Design record:

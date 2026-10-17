@@ -28,6 +28,11 @@ file is the itemized list.
   QuillVille menu opens QUILL, Quill Radio, Quill Weather, Quill Converter and
   Quill Inkwell on Ctrl+Alt+Shift+F7 to F11. User guide: "The other QuillVille
   apps".
+
+- **A calmer spoken preview** (2026-10-16). With **Show it, and say new words
+  quietly** chosen for the words heard so far, each word is said once, when
+  the model has settled on it: never a word it is still changing its mind
+  about, and never the same word twice.
 - **Your dictation settings, shared with the family** (2026-10-16). More
   Dictation Settings has **Share dictation settings with every QuillVille program** (Alt+Q).
   When it is checked, what you save here is used by QUILL, QUILL Lite and Quill

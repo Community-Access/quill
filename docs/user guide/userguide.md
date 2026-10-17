@@ -8087,8 +8087,12 @@ them to you:
 You do not hear these words spoken, so nothing talks over you while you talk.
 If you would like to hear them, open **More Dictation Settings** and set
 **While you speak, the words heard so far** to **Show it, and say new words
-quietly**. You then hear the new words every couple of seconds, never the same
-ones twice. Choose **Do not show it** to turn the preview off.
+quietly**. You then hear new words every couple of seconds, each one once,
+and only once the engine has settled on it: a word it is still changing its
+mind about is not spoken until it stops changing, and a word you have already
+heard is not said again if the engine corrects it later (the words that go into
+your document are always the final ones). Choose **Do not show it** to turn the
+preview off.
 
 Nemotron also gets its punctuation right at the end of a sentence now. It
 decides whether a sentence was a question once it hears the next one, so a
@@ -8255,6 +8259,13 @@ change it leave it alone, and tell you so.
 That is the everyday set. Every command and every mark, in English and
 Spanish, is on the **[Dictation commands](dictation-commands.html)** page, and
 "what can I say" opens the same list while you dictate.
+
+**More about reading back.** Reading back also works in a document that is
+read-only, because it changes nothing. If there is nothing before the cursor
+you hear "There is no sentence here." (or paragraph). To hear the words
+without the mark names, clear **Say punctuation marks in the read-back**. In
+Spanish, say "lee la última frase", "lee el último párrafo" (or "lee este
+párrafo") or "lee la selección"; "leer" works as well as "lee".
 
 ##### Moving and selecting by voice
 

@@ -4015,6 +4015,26 @@ sentence, it is just written as words.
 | "spell that" | Selects the last phrase, and the next thing you say is spelled out letter by letter to replace it. |
 | "copy that" | Copies the last phrase to the clipboard. |
 
+**Checking your work by ear.** Say "read last sentence", "read last
+paragraph" or "read selection" as a phrase on its own, and QUILL Lite reads that
+part of your document aloud with every mark named when **Say punctuation marks
+in the read-back** (More Dictation Settings) is on, whatever your screen
+reader's punctuation level. For example, after you dictate "First idea. Can
+you send it, please?" and pause:
+
+- "read last sentence" says "Can you send it comma please question mark".
+- "read last paragraph" says "First idea period Can you send it comma please
+  question mark".
+- Select "send it" with Shift and the arrow keys, then say "read selection":
+  you hear "send it".
+
+Nothing in your document changes and the cursor stays where it was, so a
+read-only document can be read back too. If there is nothing to read you hear
+"There is no sentence here." (or paragraph), or "Nothing is selected." In
+Spanish, say "lee la última frase", "lee el último párrafo" or "lee la
+selección"; "leer" works as well as "lee". In another program only "read that"
+works, because dictation reads only the words it typed there.
+
 **Moving the cursor:** "go to beginning of line", "go to end of line", "go to
 top", "go to end of document", "go to start of paragraph" and "go to end of
 paragraph". You can also go to, select or correct any words you can see in
@@ -5299,8 +5319,12 @@ them to you:
 You do not hear these words spoken, so nothing talks over you while you talk.
 If you would like to hear them, open **More Dictation Settings** and set
 **While you speak, the words heard so far** to **Show it, and say new words
-quietly**. You then hear the new words every couple of seconds, never the same
-ones twice. Choose **Do not show it** to turn the preview off.
+quietly**. You then hear new words every couple of seconds, each one once,
+and only once the engine has settled on it: a word it is still changing its
+mind about is not spoken until it stops changing, and a word you have already
+heard is not said again if the engine corrects it later (the words that go into
+your document are always the final ones). Choose **Do not show it** to turn the
+preview off.
 
 Nemotron also gets its punctuation right at the end of a sentence now. It
 decides whether a sentence was a question once it hears the next one, so a
