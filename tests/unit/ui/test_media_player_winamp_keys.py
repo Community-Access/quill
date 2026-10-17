@@ -293,3 +293,75 @@ def test_ctrl_arrows_change_volume_and_say_the_level() -> None:
 
     host._winamp_volume(up=False)
     assert host._player.volume() == 50
+
+
+# -- arrows belong to a control that uses them (todo 48) ----------------------
+
+
+class _Event:
+    def __init__(self, code: int, *, shift: bool = False) -> None:
+        self._code = code
+        self._shift = shift
+        self.skipped = False
+
+    def GetKeyCode(self) -> int:  # noqa: N802 - wx API shape
+        return self._code
+
+    def ControlDown(self) -> bool:  # noqa: N802 - wx API shape
+        return False
+
+    def ShiftDown(self) -> bool:  # noqa: N802 - wx API shape
+        return self._shift
+
+    def AltDown(self) -> bool:  # noqa: N802 - wx API shape
+        return False
+
+    def Skip(self, skip: bool = True) -> None:  # noqa: N802 - wx API shape
+        self.skipped = skip
+
+
+def _press_with_focus(
+    monkeypatch: pytest.MonkeyPatch, control: str, code_name: str, *, shift: bool = False
+) -> tuple[_Host, _Event]:
+    """Press an arrow with a real, unshown wx control as the focus."""
+    wx = pytest.importorskip("wx")
+    app = wx.App.Get() or wx.App(False)
+    frame = wx.Frame(None)
+    try:
+        if control == "Button":
+            focused = wx.Button(frame, label="Stop")
+        else:
+            focused = getattr(wx, control)(frame)
+        monkeypatch.setattr(wx.Window, "FindFocus", staticmethod(lambda: focused))
+        host = _Host(_Player())
+        event = _Event(getattr(wx, code_name), shift=shift)
+        host._on_winamp_char_hook(event)
+        return host, event
+    finally:
+        frame.Destroy()
+        del app
+
+
+@pytest.mark.parametrize("shift", [False, True])
+@pytest.mark.parametrize("arrow", ["WXK_LEFT", "WXK_RIGHT"])
+def test_the_chapters_tree_keeps_left_and_right(monkeypatch, arrow: str, shift: bool) -> None:
+    """Left and Right collapse and expand a DAISY book's parts; the frame's
+    hook used to seek five seconds instead, so a tree with levels could not be
+    opened or closed from the keyboard at all."""
+    host, event = _press_with_focus(monkeypatch, "TreeCtrl", arrow, shift=shift)
+    assert event.skipped, "the tree never got its own key"
+    assert host._player.position == 100_000, "the arrow seeked instead"
+    assert host.announced == []
+
+
+def test_a_slider_keeps_its_arrows_too(monkeypatch) -> None:
+    """The volume slider turned the book back five seconds instead of down."""
+    host, event = _press_with_focus(monkeypatch, "Slider", "WXK_LEFT")
+    assert event.skipped and host._player.position == 100_000
+
+
+def test_from_a_button_the_arrows_still_seek(monkeypatch) -> None:
+    """The guide's promise stands everywhere else: Right is forward 5 seconds."""
+    host, event = _press_with_focus(monkeypatch, "Button", "WXK_RIGHT")
+    assert not event.skipped
+    assert host._player.position == 105_000

@@ -367,6 +367,12 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # command belongs on an F-key past F9 (rule 9).
         "app.backup": "Ctrl+Alt+Shift+B",
         "app.restore": "Ctrl+Alt+F12",
+        # Carry My Place Between Machines... (todo 50), the row beside Back Up
+        # and Restore, had no key. Set up once per computer, so rule 9: an
+        # F-key past F9, two along from Restore's Ctrl+Alt+F12. Free in Cast and
+        # system-wide nowhere; Radio's and Studio's own Ctrl+Alt+F10 rows live
+        # in other windows, and QUILL Lite's is QUILL Lite's.
+        "media.sync_places": "Ctrl+Alt+F10",
         # The guided lessons, on the family key: Ctrl+Alt+F1 opens the tutorials
         # in Quill Radio, Quill Weather and QUILL too. This bar had no F-key
         # accelerator of any kind, so the whole family could be given one chord.

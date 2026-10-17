@@ -1739,6 +1739,17 @@ Carry My Place Between Machines... (Alt+H in the menu) were palette-only.
 Bookmark This Moment (Ctrl+Alt+A) and Skip Silence (Ctrl+Shift+9) gained
 Episode rows in the same pass; their keys never fired in Cast without one.
 
+**Carry My Place gets a key, and three dead bindings go (2026-10-17, todo 50).**
+Carry My Place Between Machines... (`media.sync_places`) is bound to
+Ctrl+Alt+F10 in `APP_KEYMAPS["cast"]`: rule 9 puts a set-up-once window on an
+F-key past F9, and it sits two along from Restore from a Backup's Ctrl+Alt+F12.
+It is free in Cast's menu bar and in the family's system-wide table; Quill
+Radio's and Quill Studio's own Ctrl+Alt+F10 rows are in other windows. The
+`manage_downloads_id`, `continue_id` and `queue_id` bindings in
+`podcasts_menu.py` had no menu row and no accelerator, so nothing could send
+them; they were removed, and Downloads (Ctrl+D), Continue Listening
+(Ctrl+Shift+L) and Play Queue (Ctrl+Shift+Q) stay on their View rows.
+
 ### 23.16 Phase 5: one vocabulary, two settings windows, refresh schedules (2026-10-02)
 
 **Words** (section 12): `core/podcasts/words.py` is the list (forbidden word ->

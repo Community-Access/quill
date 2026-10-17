@@ -2,6 +2,81 @@
 
 ## 1.0.0
 
+### Menu letters win over buttons, the Media Player's arrows, a key for Carry My Place, and Inkwell's review box (2026-10-17)
+
+Todo items 47 to 51 and 55.
+
+**Access letters between a menu bar and the controls under it (49).** On
+wxMSW an Alt+letter that a top-level menu and a control in the same frame both
+claim goes to the control, so the menu silently stops opening from that letter.
+GATE-15 (`check_menubar_mnemonics.py`) reads that from source for Cast, Radio
+and Weather, and cannot see helper-built labels, tuple-table labels or the
+helper-appended Window menu. The new run-time gate,
+`tests/unit/ui/test_menu_bar_versus_controls.py`, builds each real main window
+in memory (`tests/unit/docs/_app_menu_bar.py` gained `real_app_shell`, which
+`real_menu_bar` now wraps) and walks every control against the real menu
+titles, plus GATE-14 across the whole frame. It confirmed all three suspected
+collisions and found two more:
+
+- Media Player: Play, Previous chapter, Rewind, Forward (the shared
+  `PlayerPanel`) and Normalize loudness took Alt+P, V, W, F and N from
+  Playback, View, Window, File and Navigation. `PlayerPanel(labels=...)` now
+  takes a host's wording by button name (Play/Pause and Mute/Unmute keep one
+  letter each across states, through `_mute_label`); the player passes
+  `quill/ui/media/player_access_keys.py`. The bookmark buttons moved to M and
+  K, Normalize loudness to L. The Chapter Workbench keeps its letters.
+- Studio: Build From Recordings took Alt+B from Book Tools; now Alt+R.
+- QUILL Transcribe: Discard Held Words took Alt+W from Window; now Alt+C.
+- Quill Inkwell: the Quick Insert button took Alt+Q from QuillVille, so the
+  guide's "Alt+Q, then Q" opened Quick Insert; now Alt+I.
+
+The menu bar wins (GATE-15); no control was left without a letter.
+
+**Media Player arrows (48).** The frame's `EVT_CHAR_HOOK` Winamp handler took
+Left and Right from every control but a text field, so the Chapters tree
+could not expand or collapse and the volume slider seeked instead.
+`MediaWinampKeysMixin._winamp_focus_takes_arrows` lets a tree, tree list,
+report list, slider and notebook keep bare and Shift arrows, as Cast's did on
+2026-09-30. Tests drive the real hook with real (unshown) wx controls. The six
+unbuilt player features stay listed in the PRD.
+
+**Quill Cast (50).** Carry My Place Between Machines... (`media.sync_places`)
+is bound to Ctrl+Alt+F10 in `APP_KEYMAPS["cast"]` (rule 9, beside Restore's
+Ctrl+Alt+F12; collision gates green). The `manage_downloads_id`, `continue_id`
+and `queue_id` bindings had no row and no accelerator, so they were dead and
+are removed; the three places stay on their View rows.
+
+**Inkwell (55).** `MoreDictationDialog(review=False)` no longer builds **Send
+dictation to review first** either; `values()` leaves
+`windows_dictation_review_first` out, so a family-shared True survives
+Inkwell's OK whatever style is chosen (new test).
+
+**Beacon and Social against their menus (51).** GATE-DOCMENU now covers Quill
+Beacon and QUILL Social (`tests/unit/docs/test_documented_menus_beacon.py`,
+`test_documented_menus_social.py`). Neither frame is an `AppShellFrame`, so
+each test builds the real frame itself with sockets, tray, timers, speech and
+the credential vault closed off. It checks the changelog and guides (and
+Social's Keyboard Reference, which Help opens) against the real menus, and
+fails if two menu rows share a key. Social's Find Text moved from Ctrl+F,
+which Favourite always took, to Ctrl+Shift+F. `KEYMAP_SPEC.md` was rewritten
+from a design spec that taught unbound keys into a reference of real ones.
+Beacon's guide now writes its menu paths as `Menu > Item` with keys, so 35 of
+them are checked. Left for later: many Beacon and Social rows show no key, and
+neither app is in `test_menu_accelerators`.
+
+**Not wired (47).** Translate Audio File to English has a handler
+(`ai_translate_audio_file`) with no test and a raw thread with no cancel, and
+its menu row was removed on purpose (one Transcribe dialog has the checkbox);
+`prism_bridge.retry_tts_init` has no tests and reports success before any
+voice is built, so no Retry Speech command yet. The Tools > Accessibility
+submenu's Audit, Keyboard Trap and Link Inventory have only core logic and
+Speak Cursor nothing; Sleep Timer is already wired behind the radio/podcasts
+release gate.
+
+Docs: the Media Player guide (two new parts) and PRD; the Studio, QUILL
+Transcribe, Quill Inkwell and Quill Cast guides and changelogs; the Cast PRD;
+the dictation design record; `docs/keyboard-reference.md` (regenerated).
+
 ### Speech engines and models: every guide says what the code does (2026-10-17)
 
 Jeff: "I don't think all of its documentation is updated across all apps

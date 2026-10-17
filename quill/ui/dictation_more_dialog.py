@@ -1,5 +1,4 @@
-"""More Dictation Settings: holding the key, the live preview, talking to the
-AI, and OpenAI with your own key.
+"""More Dictation Settings: the less everyday dictation choices.
 
 Reached from Dictation Settings (More Dictation Settings..., Alt+A). Its own
 window because every Alt letter is taken there, and nobody needs these on day one:
@@ -8,10 +7,9 @@ window because every Alt letter is taken there, and nobody needs these on day on
   let go to stop; a quick press still turns dictation on and off.
 * **While you speak, the words heard so far**: a streaming engine's live
   preview in the status bar and on braille, said quietly too, or not at all.
-* **Tick while a phrase is being worked on** (off in the editors, on in QUILL
-  Transcribe; ``quill/core/windows_dictation/working_tick.py``).
-* **Allow polishing my dictation with AI**, only where Review Dictation exists:
-  without it (Quill Inkwell, ``review=False``) the box is hidden, its value kept.
+* **Tick while a phrase is being worked on** (on only in QUILL Transcribe).
+* **Send dictation to review first** and **Allow polishing**, only where Review
+  Dictation exists: in Quill Inkwell (``review=False``) both hide, values kept.
 * **Talking to the AI**: the AI Conversation window's own profile -- send at
   the pause or wait for Enter, its own pause length, fillers and punctuation.
 * **OpenAI**: whether your speech may be sent (an agreement taken back here),
@@ -154,19 +152,20 @@ class MoreDictationDialog(wx.Dialog):
         )
         root.Add(self.timestamps, 0, wx.ALL, _PAD)
 
-        self.review_first = wx.CheckBox(self, label="Send dictation to re&view first")
-        self.review_first.SetValue(bool(value("windows_dictation_review_first", False)))
-        self.review_first.SetHelpText(
-            "When this is on, what you dictate goes into the Review Dictation window "
-            "instead of the document or the other program. Read it, change it, and "
-            "press Control Enter to insert it once. Off by default: then say QUILL "
-            "review that, or press Review Dictation, when you want a phrase reviewed."
-        )
-        root.Add(self.review_first, 0, wx.ALL, _PAD)
-
-        # P3: opt-in, never automatic; only where Review Dictation exists (not Inkwell).
+        # Only where Review Dictation exists (not Inkwell); polishing is opt-in (P3).
+        self.review_first: wx.CheckBox | None = None
         self.polish: wx.CheckBox | None = None
         if review:
+            self.review_first = wx.CheckBox(self, label="Send dictation to re&view first")
+            self.review_first.SetValue(bool(value("windows_dictation_review_first", False)))
+            self.review_first.SetHelpText(
+                "When this is on, what you dictate goes into the Review Dictation window "
+                "instead of the document or the other program. Read it, change it, and "
+                "press Control Enter to insert it once. Off by default: then say QUILL "
+                "review that, or press Review Dictation, when you want a phrase reviewed. "
+                "Quill Inkwell has no Review Dictation, so it does not show this box."
+            )
+            root.Add(self.review_first, 0, wx.ALL, _PAD)
             self.polish = wx.CheckBox(
                 self, label="Allow polishin&g my dictation with AI when I ask"
             )
@@ -587,7 +586,6 @@ class MoreDictationDialog(wx.Dialog):
             "windows_dictation_command_prefix": " ".join(self.command_prefix.GetValue().split()),
             "windows_dictation_command_prefix_required": self.command_required.GetValue(),
             "windows_dictation_command_timeout": int(self.command_timeout.GetValue()),
-            "windows_dictation_review_first": self.review_first.GetValue(),
             "windows_dictation_profile": self._profiles[max(0, self.profile.GetSelection())],
             "windows_dictation_profile_locked": self.profile_locked.GetValue(),
             "windows_dictation_history_days": self._history_days[
@@ -595,6 +593,8 @@ class MoreDictationDialog(wx.Dialog):
             ],
             SHARE_FIELD: "on" if self.share_family.GetValue() else "off",
         }
+        if self.review_first is not None:
+            chosen["windows_dictation_review_first"] = self.review_first.GetValue()
         if self.polish is not None:
             chosen["windows_dictation_polish"] = self.polish.GetValue()
         return chosen

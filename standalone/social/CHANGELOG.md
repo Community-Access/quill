@@ -9,6 +9,31 @@ semantic versioning once it reaches a stable release.
 QUILL Social became a feed reader as well as a social client, and grew an
 installer of its own.
 
+- **Find Text moved to Ctrl+Shift+F, and the Keyboard Reference teaches only
+  keys that work** (2026-10-17). Ctrl+F was shown on two menu rows, Item >
+  Favourite and Tools > Find Text, and only Favourite ever answered it, so
+  Find Text could not be reached from the keyboard at all. **Tools > Find
+  Text...** is now **Ctrl+Shift+F**: it asks for a word or phrase and a
+  direction, moves to the first row of the current list that contains it, and
+  says where it is ("3 of 20"); F3 and Shift+F3 go to the next and previous
+  match. For example, in Unified Home press Ctrl+Shift+F, type `release` and
+  press Enter, then F3 for the next post about a release. Find looks only at
+  the list you are in; **Tools > Search** (Ctrl+L) searches more widely.
+  Favourite keeps Ctrl+F.
+
+  **Help > Keyboard Reference** was the keyboard's design specification, and
+  it promised keys that were never bound: F6 and Shift+F6 between panes,
+  Ctrl with a number to jump to a destination, F7 to spell check and Ctrl+S
+  to save a draft in the composer, among others. Pressing them did nothing.
+  It is now a reference to the keys this version really has, grouped by task,
+  with the menu each command lives on, how to change a key by editing
+  `keymap.json` (with QUILL Social closed), and the limits of doing so. The
+  planned keys are listed at the end as plans, without keys. The User Guide
+  gained **Where every command lives**, a walk through every menu with its
+  keys, and a section on finding text. A check now builds QUILL Social's real
+  menus during testing and fails if either document names a menu path or a
+  key the menus do not have, or if two menu rows show the same key.
+
 - **Feeds check certificates the way Windows does** (2026-10-15). Feed
   downloads now use the same certificate check as every other QUILL app, so a
   feed served behind a school's or company's own certificate loads, and a
@@ -181,13 +206,11 @@ installer of its own.
 
 ### Known issues
 
-- **Ctrl+F is claimed twice.** Tools > Find Text and Item > Favourite both
-  bind Ctrl+F. Use F3 and Shift+F3, or the Tools menu, to reach Find
-  reliably.
 - The new Feeds, Listen, and Find commands are menu-only: they are not in
-  the command center and are not remappable in Preferences.
-- The F1 help dialog and the User Guide have not been updated for any of the
-  above.
+  the command center, and their keys cannot be changed.
+- The F1 Keyboard Guide lists only the keys you can change, so it does not
+  show the Feeds, Listen and Find keys; **Help > Keyboard Reference** and the
+  User Guide do.
 
 ## [0.3.0] - 2026-07-19
 

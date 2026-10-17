@@ -2697,12 +2697,10 @@ heading levels; flat MP3 or M4B chapters are a single level.</li>
 with its note and position. Enter jumps playback to the highlighted
 bookmark; a bookmark with a note is read aloud when playback reaches it
 again.</li>
-<li><code>self._add_bm_btn</code>: Drop a bookmark at the current
-playback position. Add Bookmark with Note in the Navigation menu
-attaches words to it.</li>
+<li><code>self._add_bm_btn</code>: Drop a bookmark here. Add Bookmark
+with Note (Navigation menu) adds words to it.</li>
 <li><code>self._remove_bm_btn</code>: Delete the highlighted bookmark
-from this book. Only the bookmark goes – the audio and your position are
-untouched.</li>
+from this book; the audio and your place stay.</li>
 </ul>
 <h2 id="quill-audio-studio">QUILL Audio Studio</h2>
 <p>Control coverage: 159 audited sites (157 helped, 2 named-help).</p>
@@ -5705,11 +5703,6 @@ in QUILL and QUILL Lite, on in QUILL Transcribe.</li>
 paragraph with the time, like 10:42 in square brackets, so you can find
 a moment later. A new paragraph starts when the speaker pauses for four
 seconds or more. Off by default.</li>
-<li><code>self.review_first</code>: When this is on, what you dictate
-goes into the Review Dictation window instead of the document or the
-other program. Read it, change it, and press Control Enter to insert it
-once. Off by default: then say QUILL review that, or press Review
-Dictation, when you want a phrase reviewed.</li>
 <li><code>self.share_family</code>: When this is on, the dictation
 settings you save here are used by QUILL, QUILL Lite, QUILL Transcribe
 and Quill Inkwell on this computer, and a change saved in any of them
@@ -5800,6 +5793,12 @@ hard to take back; off in QUILL and QUILL Lite.</li>
 Speak a Command twice, and everything you say is a command until you say
 dictation mode or give no command for this many seconds. A falling tone
 says it has ended. From 5 to 30; 8 by default.</li>
+<li><code>self.review_first</code>: When this is on, what you dictate
+goes into the Review Dictation window instead of the document or the
+other program. Read it, change it, and press Control Enter to insert it
+once. Off by default: then say QUILL review that, or press Review
+Dictation, when you want a phrase reviewed. Quill Inkwell has no Review
+Dictation, so it does not show this box.</li>
 <li><code>self.polish</code>: When this is on, saying QUILL polish that,
 or pressing Polish in Review Dictation, asks the AI to fix punctuation,
 capital letters and small slips in your words, keeping your words. The

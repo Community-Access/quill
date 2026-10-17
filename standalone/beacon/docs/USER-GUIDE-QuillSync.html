@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.2" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QuillSync and QuillBeacon -- What You Can Do</title>
   <style>
@@ -11,7 +11,10 @@
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -36,11 +39,16 @@
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -53,11 +61,8 @@
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -86,8 +91,11 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -111,7 +119,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -128,11 +136,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -171,7 +179,6 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -315,8 +322,8 @@ password, no website)</h2>
 password to remember, lose, or have stolen, and no captcha to fight with
 a screen reader.</p>
 <ol type="1">
-<li>In the app, you open Sync Settings and type your email address. That
-is the only field.</li>
+<li>In the app, you open <strong>Sync &gt; Sync Settings…</strong> and
+type your email address. That is the only field.</li>
 <li>You press “Send sign-in link.” The app emails you a single, one-time
 link.</li>
 <li>You open the email and activate the link. It opens the app directly
@@ -409,8 +416,8 @@ QuillBeacon today</h2>
 <li><strong>Smart Collections.</strong> Save any search as a live
 collection – “all my podcast episodes tagged research” – and it always
 reflects your current library, never a frozen snapshot. Find it in the
-sidebar under Smart Collections, or save one with View, then Save Search
-as Smart Collection.</li>
+sidebar under Smart Collections, or save one with <strong>View &gt; Save
+Search as Smart Collection…</strong> (Ctrl+Shift+G).</li>
 <li><strong>Undo and bulk actions.</strong> Select many items at once
 (Ctrl with arrows) and trash, archive, restore, favorite, tag, or delete
 them together. Every bulk action is one Undo step (Ctrl+Z), so a whole
@@ -423,81 +430,126 @@ saved.</li>
 ordered paths through your saved items, each step with its own
 note.</li>
 <li><strong>Broken-location repair.</strong> When a saved place has
-shifted or gone dark, open Review Location Repair to see the old
-location and a proposed fix side by side, and choose: accept the fix,
-keep the old location, or mark it for later. It never silently rewrites
-an exact bookmark.</li>
+shifted or gone dark, select it and open <strong>Tools &gt; Review
+Location Repair…</strong> to see the old location and a proposed fix
+side by side, and choose: accept the fix, keep the old location, or mark
+it for later. It never silently rewrites an exact bookmark.</li>
 <li><strong>Radio.</strong> Save a station with fallback stream
-addresses, or capture a specific program (show, host, and air time) as
-its own saved item.</li>
-<li><strong>Sync, fully.</strong> Open Sync Settings to choose a folder
-or the hosted service, sign in with a magic link, and unlock your vault.
-Sync Now pushes and pulls. Sync History shows what synced and lets you
-roll back.</li>
+addresses (<strong>Media &gt; Add Radio Station…</strong>), or capture a
+specific program (show, host, and air time) as its own saved item
+(<strong>Media &gt; Add Radio Program…</strong>).</li>
+<li><strong>Sync, fully.</strong> Open <strong>Sync &gt; Sync
+Settings…</strong> to choose a folder or the hosted service, sign in
+with a magic link, and unlock your vault. <strong>Sync &gt; Sync
+Now</strong> pushes and pulls. <strong>Sync &gt; Sync History…</strong>
+shows what synced and lets you roll back.</li>
 <li><strong>Accessibility settings.</strong> Set announcement verbosity,
 high contrast, text scale, and reduced motion – all from one dialog,
-saved between sessions.</li>
-<li><strong>One Preferences window.</strong> Press Ctrl+Comma (or View,
-then Preferences) to open one hub for Accessibility, Sync, the Capture
-Bridge, and your Published Pages. Change announcement verbosity or the
-auto-sync interval and Apply, or use the buttons to open Sync Settings,
-run Sync Now, copy the bridge token, or unpublish a page.</li>
-<li><strong>Status center and tray.</strong> A status center shows
-capture, sync, and library health at a glance. The system-tray icon lets
-you capture, sync, and show or hide the window without the full window
-open.</li>
+<strong>View &gt; Accessibility Settings…</strong>, saved between
+sessions.</li>
+<li><strong>One Preferences window.</strong> Press Ctrl+Comma (or
+<strong>View &gt; Preferences…</strong>) to open one hub for
+Accessibility, Sync, the Capture Bridge, and your Published Pages.
+Change announcement verbosity or the auto-sync interval and Apply, or
+use the buttons to open Sync Settings, run Sync Now, copy the bridge
+token, or unpublish a page.</li>
+<li><strong>Status center and tray.</strong> <strong>Tools &gt; Status
+Center…</strong> shows capture, sync, and library health at a glance.
+The system-tray icon lets you capture, sync, and show or hide the window
+without the full window open.</li>
 <li><strong>External player.</strong> Hand off a podcast or radio item
 to VLC or mpv (with resume time) or your system player when the built-in
-player is unavailable.</li>
+player is unavailable: <strong>Media &gt; Play in External
+Player</strong>, with the player chosen under <strong>Tools &gt;
+External Player…</strong>.</li>
 <li><strong>Attachments, in the UI.</strong> Select a saved item and
-press Edit, then Attachments (Ctrl+Shift+E) to add a file, a URL, or a
-note, view it, or remove it. Attachments stay on your machine; they are
-not synced as blobs.</li>
+choose <strong>Edit &gt; Attachments…</strong> (Ctrl+Shift+E) to add a
+file, a URL, or a note, view it, or remove it. Attachments stay on your
+machine; they are not synced as blobs.</li>
 <li><strong>Trails you can step through.</strong> Trails now appear in
 the sidebar with their progress (3 of 5, for example). Pick one to open
 a step-through view: read the note for the current step, open the item,
 mark it complete, and move Previous or Next. Your place is saved, so you
 can leave and come back.</li>
-<li><strong>Smart Collections you can edit.</strong> Tools, then Smart
-Collections Manager lets you rename or re-query a saved search, or
-delete one. Deleting a Smart Collection never deletes the bookmarks it
-matched.</li>
-<li><strong>More bulk actions.</strong> Select many items and use Edit,
-then Bulk Add to Collection (Ctrl+Shift+O) or Bulk Remove Tag
-(Ctrl+Shift+V). Each is one Undo step.</li>
-<li><strong>Health rechecks.</strong> Tools, then Revalidate Health
-re-checks whether your saved links are still reachable. Local files are
-checked against your disk; web links are checked over the network only
-if you allow it, and only after you confirm. Broken links are marked so
-you can review or repair them.</li>
+<li><strong>Smart Collections you can edit.</strong> <strong>Tools &gt;
+Smart Collections Manager…</strong> lets you rename or re-query a saved
+search, or delete one. Deleting a Smart Collection never deletes the
+bookmarks it matched.</li>
+<li><strong>More bulk actions.</strong> Select many items and use
+<strong>Edit &gt; Bulk Add to Collection…</strong> (Ctrl+Shift+O) or
+<strong>Edit &gt; Bulk Remove Tag…</strong> (Ctrl+Shift+V). Each is one
+Undo step.</li>
+<li><strong>Health rechecks.</strong> <strong>Tools &gt; Revalidate
+Health…</strong> re-checks whether your saved links are still reachable.
+Local files are checked against your disk; web links are checked over
+the network only if you allow it, and only after you confirm. Broken
+links are marked so you can review or repair them.</li>
 <li><strong>Sync, smarter.</strong> Sync only sends what changed (and
 any deletions), not the whole library every time. If two devices edit
 the same note, the conflict shows up in Sync History with Use Local /
 Use Remote / Use Merged buttons. To share your encrypted library with a
-second device, use Sync Settings, then Pair Device: it exports a short
-code you enter on the other device, then unlock there with the same
-passphrase. Sync, then Auto Sync lets you set an automatic interval (off
-by default), and the Status Center shows how many new changes are
-waiting on the server.</li>
+second device, open <strong>Sync &gt; Sync Settings…</strong> and press
+its Pair Device button: it exports a short code you enter on the other
+device, then unlock there with the same passphrase. <strong>Sync &gt;
+Auto Sync…</strong> lets you set an automatic interval (off by default),
+and the Status Center shows how many new changes are waiting on the
+server.</li>
 <li><strong>Publish a collection to a web page.</strong> Select a
-collection in the sidebar, then Tools, then Publish Collection
-(Ctrl+Shift+W) to render it as a self-contained, read-only, accessible
-web page. You get a portable HTML file you can open, copy, or host
-anywhere, plus a localhost preview link behind a publish token. Nothing
-on the page can modify your library, and Unpublish removes the files. It
-is read-only by design – there is no sign-in, no capture, and no write
-path back into QuillBeacon.</li>
+collection in the sidebar, then <strong>Tools &gt; Publish
+Collection…</strong> (Ctrl+Shift+W) to render it as a self-contained,
+read-only, accessible web page. You get a portable HTML file you can
+open, copy, or host anywhere, plus a localhost preview link behind a
+publish token. Nothing on the page can modify your library, and
+Unpublish removes the files. It is read-only by design – there is no
+sign-in, no capture, and no write path back into QuillBeacon.</li>
 </ul>
+<h2 id="keys-and-menus-you-will-use-most">Keys and menus you will use
+most</h2>
+<p>Every command in QuillBeacon is on a menu, so you can always find it
+by walking the menu bar with Alt and the arrow keys. Those that have a
+key show it beside their name. The ones most people use:</p>
+<ul>
+<li><strong>Finding things.</strong> <strong>View &gt; Search</strong>
+(Ctrl+F) puts you in the search box; type words or the search grammar,
+such as <code>tag:research type:episode</code>, and press Down to move
+into the results. <strong>View &gt; Build Search…</strong>
+(Ctrl+Shift+F) builds the same kind of query from fields instead.</li>
+<li><strong>Saving and opening.</strong> <strong>File &gt; New
+Bookmark</strong> (Ctrl+N) saves a new place; <strong>Edit &gt;
+Open</strong> (Enter) opens the selected one; <strong>Edit &gt;
+Trash</strong> (Delete) moves it to the Trash and <strong>Edit &gt;
+Restore</strong> (Shift+Delete) brings it back. <strong>Edit &gt;
+Undo</strong> (Ctrl+Z) reverses the last change, a whole bulk action at
+a time.</li>
+<li><strong>Getting your bearings.</strong> <strong>View &gt; Where Am
+I?</strong> (Ctrl+F1) says where you are; <strong>View &gt; Next
+Pane</strong> (F6) moves between the sidebar, the results and the
+details; F1 on its own explains the window and the control you are
+on.</li>
+<li><strong>Everything else.</strong> <strong>View &gt; Command
+Palette</strong> (Ctrl+Shift+P) lists most commands by name, with their
+keys: type part of one, such as <code>export</code>, and press
+Enter.</li>
+</ul>
+<p>Example: to find the podcast episodes you tagged for research and
+keep that search, press Ctrl+F, type
+<code>type:episode tag:research</code>, press Enter, then Ctrl+Shift+G
+and give the Smart Collection a name. It appears in the sidebar and
+stays current as your library changes.</p>
+<p>Some menu commands have no key yet, among them <strong>Edit &gt; Find
+Duplicates</strong>, <strong>Tools &gt; Trail Editor…</strong> and
+everything on the Sync menu; reach them through their menu.</p>
 <h2 id="getting-started">Getting started</h2>
 <ol type="1">
 <li>Open QuillBeacon. Your library lives on this machine by
 default.</li>
 <li>To capture from your browser, install the QuillBeacon extension,
-then in the app choose Tools, then Capture Bridge, and copy the token
-into the extension’s Options.</li>
-<li>To sync across machines, open Sync Settings, enter your email, and
-follow the magic-link sign-in. Point sync at a shared folder, or use the
-hosted service when it is available.</li>
+then in the app choose <strong>Tools &gt; Capture Bridge…</strong>
+(Ctrl+Shift+B), and copy the token into the extension’s Options.</li>
+<li>To sync across machines, open <strong>Sync &gt; Sync
+Settings…</strong>, enter your email, and follow the magic-link sign-in.
+Point sync at a shared folder, or use the hosted service when it is
+available.</li>
 </ol>
 <p>For the technical design and the order in which apps will gain sync,
 see <code>Docs/PLAN-quillsync-integration.md</code>. This document is

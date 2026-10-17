@@ -4133,8 +4133,14 @@ each episode in step between them, through a folder you already sync with
 Dropbox, OneDrive, Google Drive, iCloud Drive or a network share. There is no
 account to make, and nothing goes anywhere except that folder.
 
-1. Open the Podcasts menu (Alt+P) and choose **Carry My Place Between
-   Machines** (H).
+The window has its own key, **Ctrl+Alt+F10**, two along from Restore from
+a Backup's Ctrl+Alt+F12, because like a restore it is something you set up once
+on each computer rather than every day. It works from anywhere in Cast's main
+window. It opens the same window as the menu row, and it changes nothing until
+you press OK there.
+
+1. Press **Ctrl+Alt+F10**, or open the Podcasts menu (Alt+P) and choose
+   **Carry My Place Between Machines...** (H).
 2. Check **Carry my place between machines**.
 3. In **Shared folder**, choose the synced folder. **Browse** helps you find
    it.

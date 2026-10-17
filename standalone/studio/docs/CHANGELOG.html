@@ -249,6 +249,21 @@ file.</p>
 href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>, and
 this project adheres to <a
 href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+<h2 id="unreleased">Unreleased</h2>
+<h3 id="fixed">Fixed</h3>
+<ul>
+<li><strong>Alt+B opens the Book Tools menu again</strong> (2026-10-17).
+The main window’s <strong>Build From Recordings…</strong> button also
+claimed Alt+B, and when a button and a top-level menu share a letter
+Windows presses the button, so Alt+B started a new book instead of
+opening Book Tools. The button is now <strong>Build From
+&amp;Recordings…</strong>, Alt+R, and Alt+B opens Book Tools. For
+example, from the books list press Alt+B, then Down, to walk the Book
+Tools menu, or Alt+R to start the Build From Recordings journey; Studio
+&gt; Build From Recordings… (Ctrl+Shift+B) is unchanged. A new test
+builds the real main window and fails if any control takes a menu’s
+letter.</li>
+</ul>
 <h2 id="220---built-not-yet-released">[2.2.0] - built, not yet
 released</h2>
 <ul>
@@ -491,7 +506,7 @@ Full, Compact (program only, no bundled documentation), and Custom
 setups; the shared runtime and the app itself are always installed, and
 only the packaged documentation is optional.</li>
 </ul>
-<h3 id="fixed">Fixed</h3>
+<h3 id="fixed-1">Fixed</h3>
 <ul>
 <li><strong>Up is more on every slider.</strong> The player’s Position
 and Volume sliders answered Up with less, because a Windows slider on

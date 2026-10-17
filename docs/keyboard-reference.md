@@ -684,6 +684,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+2 | Podcasts: Now Playing window | `podcasts.now_playing` |
 | Ctrl+Alt+A | Bookmark This Moment | `app.bookmark_moment` |
 | Ctrl+Alt+F1 | Podcasts: Tutorials... | `podcasts.tutorials` |
+| Ctrl+Alt+F10 | Carry My Place Between Machines... | `media.sync_places` |
 | Ctrl+Alt+F12 | Restore | `app.restore` |
 | Ctrl+Alt+F5 | Ask About an Image... | `tools.hosted_ai_image` |
 | Ctrl+Alt+G | Free AI Assistant... | `tools.hosted_ai_assistant` |

@@ -81,7 +81,7 @@ class AudioDspPanel(wx.Panel):
         self._boost.Bind(wx.EVT_CHOICE, self._fire)
         root.Add(self._boost, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
 
-        self._normalize = wx.CheckBox(self, label="&Normalize loudness")
+        self._normalize = wx.CheckBox(self, label="Norma&lize loudness")
         self._skip_silence = wx.CheckBox(self, label="Skip &silence")
         for check in (self._normalize, self._skip_silence):
             check.Bind(wx.EVT_CHECKBOX, self._fire)

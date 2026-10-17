@@ -70,6 +70,32 @@ class MediaWinampKeysMixin:
                 return True
         return False
 
+    def _winamp_focus_takes_arrows(self) -> bool:
+        """True when the focused control uses Left and Right itself (todo 48).
+
+        The hook is on the frame, so it saw the Chapters tree's Left and Right
+        first and seeked five seconds instead: a DAISY book's parts could not
+        be collapsed or expanded from the keyboard at all. A tree (collapse,
+        expand), a report list (columns), a slider (its own value: the volume
+        slider turned the volume down by seeking backwards) and the notebook's
+        page tabs keep their arrows, bare or with Shift; everywhere else the
+        arrows still seek, as the guide says. Quill Cast fixed the same trap on
+        2026-09-30 (``quill/ui/podcasts/winamp_mixin.py``).
+        """
+        import wx
+
+        try:
+            focused = wx.Window.FindFocus()
+        except Exception:  # noqa: BLE001 - no focus needs no arrows
+            return False
+        if focused is None:
+            return False
+        for name in ("TreeCtrl", "TreeListCtrl", "ListCtrl", "Slider", "Notebook"):
+            control = getattr(wx, name, None)
+            if control is not None and isinstance(focused, control):
+                return True
+        return False
+
     def _on_winamp_char_hook(self, event: Any) -> None:
         """The classic transport keys. Anything unmapped passes through."""
         import wx
@@ -80,6 +106,9 @@ class MediaWinampKeysMixin:
         alt = bool(event.AltDown())
         if not key or self._winamp_focus_is_text_entry():
             event.Skip()
+            return
+        if key in ("LEFT", "RIGHT") and not ctrl and not alt and self._winamp_focus_takes_arrows():
+            event.Skip()  # the tree's collapse and expand, the slider's own step
             return
         # Ctrl+arrow volume predates the letter map and can never collide with
         # typing, so it is outside the opt-out.

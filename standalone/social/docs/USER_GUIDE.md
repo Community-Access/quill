@@ -146,15 +146,29 @@ A unified hub for maintaining your digital boundaries:
 
 ### Command Center and Navigation
 Operate the app at the speed of thought:
-- **Command Center**: `Ctrl+Shift+C` to search for any command or action by name.
-- **"Where Am I"**: `Ctrl+Shift+I` for a comprehensive announcement of your current workspace, account, network, and position.
-- **Remappable Keys**: Every single action has a keyboard shortcut, all of which can be customized to fit your workflow.
+- **Command Center** (**Ctrl+Shift+C**): search for a command by name. Type part of it, such as `reply`, and press Enter to run it.
+- **Where Am I** (**Ctrl+Shift+I**): one announcement of your workspace, account, network, and which post of how many you are on.
+- **Keys you can change**: the commands in the F1 list (reply, favourite, refresh, search and the rest) can be given other keys by editing `keymap.json` in QUILL Social's data folder while the app is closed. **Help > Keyboard Reference** explains how, with an example. Many menu commands have no key yet and are reached through their menu; the menus always show the key QUILL Social shipped with.
 - **Soundpacks**: Optional audio cues for different events and accounts to provide non-visual awareness.
+
+### Where every command lives
+Every command is on a menu, so you can always find it by walking the menu bar with Alt and the arrow keys; the key, where there is one, is read beside the name. The menus, left to right:
+
+- **File** (Alt+F): **File > Add Account...** (Ctrl+Shift+A), **File > Preferences...** for announcement verbosity, high contrast and what each row speaks, and **File > Exit** (Alt+F4).
+- **Compose** (Alt+C): **Compose > New Post** (Ctrl+N), **Compose > Reply** (Ctrl+R) and **Compose > Quote** (Ctrl+Q). Reply and Quote work on the focused post.
+- **Item** (Alt+I), for the focused post: **Item > Boost / Repost** (Ctrl+Shift+R), **Item > Favourite** (Ctrl+F), **Item > Bookmark** (Alt+B), **Item > Flag for follow-up**, **Item > Open conversation** (Ctrl+G), **Item > Open links** (Ctrl+O), **Item > Mark read** (Ctrl+K), **Item > Accessibility check**, **Item > Send to QUILL** and **Item > Play media** (Ctrl+Enter).
+- **Feeds** (Alt+D): **Feeds > Add Feed...** (Ctrl+Shift+N), **Feeds > New Folder...**, **Feeds > Feed settings...** (Ctrl+Shift+P), **Feeds > Mark all read** (Ctrl+Shift+K) and **Feeds > Undo mark all read** (Ctrl+Z), then the smart-folder commands, **Feeds > Import OPML...**, **Feeds > Export OPML...** and **Feeds > Unsubscribe from feed**.
+- **Listen** (Alt+L): **Listen > Listen to this view** (Ctrl+Shift+L) reads the unread articles in the current view aloud, one after another; **Listen > Play / Pause**, **Listen > Next article**, **Listen > Previous article** and **Listen > Stop listening** control it.
+- **Studio** (Alt+S): **Studio > Drafts...**, **Studio > Agenda / Calendar...**, **Studio > Queue schedule...** and **Studio > Approvals...**.
+- **Tools** (Alt+T): **Tools > Command Center** (Ctrl+Shift+C), **Tools > Where Am I** (Ctrl+Shift+I), **Tools > Search** (Ctrl+L), **Tools > Find Text...** (Ctrl+Shift+F), **Tools > Find Next** (F3), **Tools > Find Previous** (Shift+F3), **Tools > Refresh** (F5), **Tools > Catch Up**, and the Insights, Safety Center, Notification policies, Plugins, Outbox and Summarize commands.
+- **Help** (Alt+H): the documents described below, and **Help > About**.
+
+**Finding text in a list.** **Tools > Find Text...** (Ctrl+Shift+F) asks for a word or phrase and a direction (Forward or Backward), then moves to the first row of the current list that contains it and tells you where it is, such as "3 of 20". **Tools > Find Next** (F3) and **Tools > Find Previous** (Shift+F3) repeat the search; if you have not searched yet, they open Find Text first. Example: in Unified Home, press Ctrl+Shift+F, type `release`, and press Enter to land on the first post that mentions a release; press F3 for the next. Find searches the rows of the list you are looking at, in any kind of view, and wraps around at the end. It does not search other views; for that, use **Tools > Search** (Ctrl+L). Find Text was on Ctrl+F until 2026-10-17, but Ctrl+F is Favourite, which always answered first.
 
 ### Help and Documentation
 Everything below is installed alongside QUILL Social, so it works with no internet connection. All three open in your browser, where your screen reader already gives you heading, link, and find-in-page navigation.
 - **Help > User Guide**: this document.
-- **Help > Keyboard Reference**: the full keymap specification, every action and its default shortcut.
+- **Help > Keyboard Reference**: every key QUILL Social ships with, grouped by task, with the menu each command lives on and how to change a key.
 - **Help > Product Requirements**: what QUILL Social is meant to be, for the curious.
 - **Help > Keyboard Guide (shortcuts)** (`F1`): the quick in-app list of the shortcuts currently in effect, including any you have remapped. This is the one that reflects *your* keymap rather than the shipped defaults.
 

@@ -30,6 +30,7 @@ class PlayerVolumeMixin:
     _duck_saved: int | None
     _on_mute_cb: Any
     _on_volume_cb: Any
+    _mute_label: Any  # the host's Mute/Unmute wording (PlayerPanel's labels)
 
     def toggle_mute(self) -> None:
         """Flip mute; unmuting restores the pre-mute engine volume."""
@@ -38,12 +39,12 @@ class PlayerVolumeMixin:
         if self._muted:
             self._muted = False
             self._engine.set_volume(self._pre_mute_volume)
-            self._mute_btn.SetLabel(_("M&ute"))
+            self._mute_btn.SetLabel(self._mute_label(False))
         else:
             self._pre_mute_volume = self._volume.GetValue()
             self._muted = True
             self._engine.set_volume(0)
-            self._mute_btn.SetLabel(_("Un&mute"))
+            self._mute_btn.SetLabel(self._mute_label(True))
         self._announce(_("Muted") if self._muted else _("Unmuted"))
         if self._on_mute_cb is not None:
             self._on_mute_cb(self._muted)
@@ -97,6 +98,6 @@ class PlayerVolumeMixin:
             if self._muted and value > 0:
                 self._muted = False
                 self._pre_mute_volume = value
-                self._mute_btn.SetLabel(_("M&ute"))
+                self._mute_btn.SetLabel(self._mute_label(False))
             if self._on_volume_cb is not None:
                 self._on_volume_cb(value)

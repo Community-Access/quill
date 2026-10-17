@@ -1,81 +1,105 @@
-# QUILL Social — Keyboard Map Specification
-**The Interface of Intent**
+# QUILL Social — Keyboard Reference
+**Every key in this document works in the version you have.**
 
-This document defines the global keyboard shortcuts for QUILL Social. The goal is to provide a "magic" experience where the user can navigate, interact, and compose with zero friction and total spatial awareness.
+This is the list **Help > Keyboard Reference** opens. It gives the keys QUILL Social ships with, grouped by what you are doing, and says which menu each command lives on, so you can always reach a command by walking the menus if you forget its key. Pressing **F1** (Help > Keyboard Guide (shortcuts)) shows a shorter, in-app list of the keys *currently in effect*, including any you have changed.
 
-## Design Principles
-- **Consistent**: Similar actions use similar keys across all networks (Mastodon, Bluesky, GitHub).
-- **A11y-First**: Every shortcut triggers a clear, concise aural confirmation or state announcement.
-- **Remappable**: While these are the defaults, every key is configurable via the Command Center.
-- **Low Cognitive Load**: High-frequency actions are mapped to keys that minimize hand movement.
+Until 2026-10-17 this page was the design specification for the keyboard. It promised keys that were never bound — moving between panes with F6, jumping to a destination with Ctrl and a number, spell checking a post with F7, and more — so following it did nothing. Those are now listed separately at the end, without keys, as plans rather than instructions.
 
 ---
 
-## 1. Spatial Awareness & System Control
-These commands provide the "Where Am I" and "How do I" context.
+## How keys work in QUILL Social
 
-| Shortcut | Action | Purpose | A11y Announcement / Feedback |
+- **Every menu row that has a key shows it** beside its name, so a screen reader reads the key as you arrow through the menu. Some commands have no key yet; they are reached through their menu. For example, Feeds > New Folder... has no key: press Alt+D to open the Feeds menu, then F for New Folder.
+- **Keys act on the focused post.** Reply, Quote, Favourite, Bookmark and the other item commands work on whichever row of the post list is focused. With no post selected, Favourite, Bookmark, Boost and Reply say so rather than doing nothing silently.
+- **Changing a key.** The keys for the commands in the F1 list can be changed by editing `keymap.json` in QUILL Social's data folder (`%APPDATA%\QuillSocial` on Windows, or the `data` folder beside a portable copy). Close QUILL Social first: it writes that file again when it closes. Example: to make Favourite answer Ctrl+J, change the line `"favourite": "Ctrl+F"` to `"favourite": "Ctrl+J"`, save, and start QUILL Social. F1 then lists Ctrl+J.
+- **Limits of changing a key.** There is no window for this yet; it is the file or nothing. The menus keep showing, and keep answering to, the key QUILL Social shipped with. If two commands are given the same key, only one of them answers it, so give each its own. Commands that are not in the F1 list (most of the Feeds, Listen, Studio and Tools commands) cannot be changed.
+
+---
+
+## 1. Finding your place
+
+| Key | Command | Menu | What you hear |
 | :--- | :--- | :--- | :--- |
-| `Ctrl+Shift+I` | **Where Am I** | Total spatial snapshot | "Workspace: [Name], Account: [User], Network: [Net], Item [X] of [Y], [Field Name]." |
-| `Ctrl+Shift+C` | **Command Center** | Search for any action by name | "Command Center open. Type command name or synonym." |
-| `F6` | **Next Pane** | Cycle forward through major UI regions | "[Pane Name] focus." |
-| `Shift+F6` | **Prev Pane** | Cycle backward through major UI regions | "[Pane Name] focus." |
-| `Applications Key` / `Shift+F10` | **Context Menu** | A la-carte actions for current item | "Context menu open. [Number] actions available." |
+| **Ctrl+Shift+I** | Where Am I | Tools | Your workspace, account, network, and which post of how many you are on. |
+| **Ctrl+Shift+C** | Command Center | Tools | A searchable list of commands; type part of a name, then Enter. |
+| **Ctrl+L** | Search | Tools | Focus moves to the search box. Type, then Enter; results appear under Discover. |
+| **F5** | Refresh | Tools | Pulls new posts from every active account and refreshes your feeds. |
+| **F1** | Keyboard Guide (shortcuts) | Help | The in-app list of the keys in effect now. |
 
----
+In the post list, **Up** and **Down** move between posts, **Left** and **Right** read the previous or next field of the focused post (author, text, time and the rest), and **Enter** opens the post in the Details pane. **Tab** and **Shift+Tab** move between the navigation tree, the search box, the post list and the details.
 
-## 2. High-Velocity Navigation
-"Magic jumps" to move between feeds, threads, and profiles.
+## 2. Reading and acting on a post
 
-| Shortcut | Action | Purpose | A11y Announcement / Feedback |
+| Key | Command | Menu | What it does |
 | :--- | :--- | :--- | :--- |
-| `Ctrl+G` | **Jump to Conversation** | Pivot from a post to its full relational thread | "Opening conversation thread. [X] replies found." |
-| `Ctrl+1` $\rightarrow$ `Ctrl+9` | **Primary Destination** | Jump to a pinned feed or workspace | "[Destination Name] active." |
-| `Alt+Win+Left` | **Previous Timeline** | Sequential switch to previous feed | "Timeline: [Name]." |
-| `Alt+Win+Right` | **Next Timeline** | Sequential switch to next feed | "Timeline: [Name]." |
-| `Ctrl+Up` | **Prev Thread Item** | Move to previous post in current conversation | "Post [N] of [Total]." |
-| `Ctrl+Down` | **Next Thread Item** | Move to next post in current conversation | "Post [N] of [Total]." |
-| `Ctrl+Left` | **Prev Author Post** | Jump to previous post by same author in feed | "Previous post by [Author]." |
-| `Ctrl+Right` | **Next Author Post** | Jump to next post by same author in feed | "Next post by [Author]." |
+| **Ctrl+G** | Open conversation | Item | Opens the whole thread the focused post belongs to. |
+| **Ctrl+O** | Open links | Item | Opens the links in the focused post in your browser. |
+| **Ctrl+K** | Mark read | Item | Marks the focused post read. |
+| **Ctrl+F** | Favourite | Item | Favourites (likes) the focused post, or takes the favourite off again. |
+| **Alt+B** | Bookmark | Item | Bookmarks the focused post, or removes the bookmark; bookmarked posts gather under Bookmarks in the navigation tree. |
+| **Ctrl+Shift+R** | Boost / Repost | Item | Boosts (reposts) the focused post to your followers, or undoes the boost. |
+| **Ctrl+Enter** | Play media | Item | Plays the audio or video attached to the focused post. |
 
----
+Item > Flag for follow-up, Item > Accessibility check and Item > Send to QUILL have no key yet.
 
-## 3. Fluid Social Interaction
-Perform core social actions without leaving the reading flow.
+## 3. Writing
 
-| Shortcut | Action | Purpose | A11y Announcement / Feedback |
+| Key | Command | Menu | What it does |
 | :--- | :--- | :--- | :--- |
-| `Ctrl+F` | **Like / Favourite** | Mark item as liked | *[Liking Sound]* "Liked." |
-| `Alt+B` | **Bookmark** | Save item to the Social Library | *[Saving Sound]* "Bookmarked." |
-| `Ctrl+R` | **Rapid Reply** | Jump to composer with context loaded | "Composer open. Replying to [Author]." |
-| `Ctrl+Shift+R` | **Repost / Boost** | Share content to followers | *[Boost Sound]* "Reposted." |
-| `Ctrl+Q` | **Quote Post** | Share content with a custom comment | "Composer open. Quoting [Author]." |
-| `Ctrl+Enter` | **Primary Media Play** | Play audio/video associated with post | *[Playback Start Sound]* "Playing [Media Type]." |
+| **Ctrl+N** | New Post | Compose | Opens an empty composer for your default account. |
+| **Ctrl+R** | Reply | Compose | Opens the composer as a reply to the focused post. |
+| **Ctrl+Q** | Quote | Compose | Opens the composer quoting the focused post. |
 
----
+Inside the composer, the buttons carry their own access keys: **Alt+P** Publish now, **Alt+S** Schedule, **Alt+D** Save draft, **Alt+A** Add media and **Alt+T** Edit alt text. Escape closes the composer.
 
-## 4. The Power Composer
-Tools for professional publishing and long-form content.
+## 4. Finding text in the list
 
-| Shortcut | Action | Purpose | A11y Announcement / Feedback |
+| Key | Command | Menu | What it does |
 | :--- | :--- | :--- | :--- |
-| `Ctrl+N` | **New Compose** | Open a fresh composer | "New post. Account: [Active Account]." |
-| `Enter` | **Activate / Open** | Primary action (Open details/Send) | (Action specific) |
-| `Escape` | **Back / Close** | Return to previous logical context | "Returning to [Previous View]." |
-| `F7` | **Spell Check** | Trigger accessibility/grammar check | "Spell check running..." |
-| `Ctrl+S` | **Save Draft** | Manually commit current draft to DB | "Draft saved." |
+| **Ctrl+Shift+F** | Find Text | Tools | Asks for a word or phrase and a direction, then moves to the first row that contains it. |
+| **F3** | Find Next | Tools | Moves forward to the next row containing the same text. |
+| **Shift+F3** | Find Previous | Tools | Moves back to the previous row containing it. |
 
----
+Example: in Unified Home, press Ctrl+Shift+F, type `release`, press Enter. Focus lands on the first post that mentions a release and you hear its position, such as "3 of 20". Press F3 for the next one. Find searches the rows of the list you are looking at, in every kind of view (posts, feeds, GitHub items, drafts); it wraps around at the end and says "not found" when nothing matches. It does not search other views or the full text of articles. Find Text was on Ctrl+F until 2026-10-17, where Favourite always answered first.
 
-## 5. GitHub Social Surfaces
-Treating developer tools as social experiences.
+## 5. Feeds
 
-| Shortcut | Action | Purpose | A11y Announcement / Feedback |
+| Key | Command | Menu | What it does |
 | :--- | :--- | :--- | :--- |
-| `Ctrl+G` | **Jump to Discussion** | (Contextual) Jump to full GitHub forum thread | "Opening GitHub Discussion. [X] participants." |
-| `Ctrl+R` | **In-Line Comment** | (Contextual) Reply to a specific GitHub comment | "Replying to comment [N] by [Author]." |
-| `Alt+B` | **Save to Project** | (Contextual) Save GitHub item to a local folder | "Saved to folder [Folder Name]." |
+| **Ctrl+Shift+N** | Add Feed | Feeds | Subscribe by feed address, or paste a site's address and pick from the feeds it offers. |
+| **Ctrl+Shift+P** | Feed settings | Feeds | Title, refresh interval, how long to keep articles, and keyword rules for the selected feed. |
+| **Ctrl+Shift+K** | Mark all read | Feeds | Marks everything in the current view read and says how many. |
+| **Ctrl+Z** | Undo mark all read | Feeds | Puts back exactly the items the last Mark all read changed. |
+
+Feeds > New Folder..., the smart-folder commands, Import OPML..., Export OPML... and Unsubscribe from feed have no key yet.
+
+## 6. Listening
+
+| Key | Command | Menu | What it does |
+| :--- | :--- | :--- | :--- |
+| **Ctrl+Shift+L** | Listen to this view | Listen | Reads the unread articles in the current view aloud, one after another. |
+
+Listen > Play / Pause, Next article, Previous article and Stop listening have no key yet; open the Listen menu with Alt+L.
+
+## 7. Everything else
+
+| Key | Command | Menu | What it does |
+| :--- | :--- | :--- | :--- |
+| **Ctrl+Shift+A** | Add Account | File | Connects an account: Mastodon or a Mastodon-compatible server, Lemmy, or Bluesky. |
+| **Alt+F4** | Exit | File | Closes QUILL Social. Your reading place is remembered. |
+
+The Studio menu (Drafts, Agenda / Calendar, Queue schedule, Approvals), the rest of the Tools menu (Catch Up, Insights / Analytics, Safety Center, Notification policies, Plugins, Outbox, Summarize this feed) and File > Preferences have no keys yet.
 
 ---
 
-**Philosophy Note:** When a shortcut is triggered, the audio feedback should be immediate. For "High-Velocity" actions (Like, Bookmark, Repost), a short **Earcon (Soundpack)** is preferred over a full spoken sentence to maintain the user's momentum.
+## Planned, not yet in this version
+
+These were in the original design and are not bound to anything today. They are listed so you know they are coming, not so you try them:
+
+- moving between the major panes with one key, forwards and backwards (use Tab and Shift+Tab today);
+- jumping straight to one of nine pinned destinations;
+- switching to the previous or next timeline in order;
+- moving to the previous or next post in the same conversation, or by the same author;
+- a context menu of actions for the focused post;
+- spell checking and saving a draft from the composer with dedicated keys (use the composer's Save draft button, Alt+D, today);
+- GitHub-specific variants of Open conversation, Reply and Bookmark.
