@@ -26,15 +26,8 @@ import wx
 docx = pytest.importorskip("docx")
 
 
-@pytest.fixture(scope="module")
-def wx_app():
-    app = wx.App()
-    yield app
-    app.Destroy()
-
-
 @pytest.fixture()
-def wrapper(wx_app):
+def wrapper(wx_session_app):
     from quill.ui.richedit_rtf_surface import create_richedit_rtf
 
     frame = wx.Frame(None)
@@ -46,7 +39,7 @@ def wrapper(wx_app):
     surface.set_text_mode("rich")
     yield surface
     frame.Destroy()
-    wx_app.Yield()
+    wx_session_app.Yield()
 
 
 def _document(path: Path) -> Path:

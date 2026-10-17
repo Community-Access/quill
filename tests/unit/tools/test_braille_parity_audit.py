@@ -103,9 +103,18 @@ class _Engine:
         return SimpleNamespace(active_backend="prism", backend_name="NVDA")
 
 
-def test_the_service_writes_braille_for_what_it_speaks_and_only_once() -> None:
+def test_the_service_writes_braille_for_what_it_speaks_and_only_once(monkeypatch) -> None:
     from quill.core.announce import Announcement, Severity
+    from quill.ui import announce_wiring
     from quill.ui.announce_wiring import build_announcement_service
+
+    # Parity, not pacing: with a live wx.App (the shared test session has one)
+    # the braille writer coalesces a burst into one write per 150 ms window, by
+    # design. Pin the write-through path so every message is checked; the
+    # coalescing has its own tests.
+    monkeypatch.setattr(
+        announce_wiring.CoalescingBrailleWriter, "_default_schedule", lambda self, *_a: None
+    )
 
     engine = _Engine()
     host = SimpleNamespace(_announcement_engine=engine, settings=None)
