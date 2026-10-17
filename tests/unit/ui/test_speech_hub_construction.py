@@ -6,8 +6,8 @@ cut inside that window crashed the moment the Dictation (Offline) tab was
 constructed -- which is on hub open, so the whole Speech Hub was unreachable.
 
 Nothing caught it: the kwargs travel as ``**dictation_offline_kwargs``, a dict
-built twelve thousand lines away in ``main_frame.py``, and ``quill/ui`` is
-excluded from mypy. This test is the cheap thing that does catch it -- it reads
+built in ``main_frame_speech_hub.py`` (in ``main_frame.py`` until 2026-10-17),
+and ``quill/ui`` is excluded from mypy. This test is the cheap thing that does catch it -- it reads
 the keys the hub actually passes out of the source (following ``**spread``) and
 checks them against the real constructor signatures.
 """
@@ -23,7 +23,9 @@ import pytest
 from quill.ui.speech_setup_dialog import SpeechSetupDialog
 from quill.ui.voice_browser_dialog import VoiceBrowserDialog
 
-_MAIN_FRAME = Path(str(inspect.getsourcefile(SpeechSetupDialog))).with_name("main_frame.py")
+_MAIN_FRAME = Path(str(inspect.getsourcefile(SpeechSetupDialog))).with_name(
+    "main_frame_speech_hub.py"
+)
 _TREE = ast.parse(_MAIN_FRAME.read_text(encoding="utf-8"))
 
 #: Supplied by SpeechHubDialog itself when it constructs each tab, not by the
@@ -48,7 +50,7 @@ def _keys(name: str, seen: frozenset[str] = frozenset()) -> set[str]:
     """Every keyword ``name`` carries, following ``**other`` spreads."""
     literals = _dict_literals()
     literal = literals.get(name)
-    assert literal is not None, f"{name} = {{...}} not found in main_frame.py"
+    assert literal is not None, f"{name} = {{...}} not found in main_frame_speech_hub.py"
     keys: set[str] = set()
     for key, value in zip(literal.keys, literal.values, strict=True):
         if key is None:  # a **spread

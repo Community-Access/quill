@@ -6,6 +6,15 @@ file is the itemized list.
 
 ## Unreleased
 
+- **Spell an address with pauses** (2026-10-17). While spelling, each phrase
+  now joins the letters you spelled just before it, with no space, so you can
+  pause as often as you like: "QUILL start spelling", "juliet oscar", "at sign
+  echo x-ray", "dot charlie oscar", "stop spelling" types *jo@ex.co*. Before,
+  every pause typed a space into the address. Say "space" for a space. Limit:
+  a whole word such as "smith" is not a letter and is left out; spell it.
+- **A Markdown link by voice** (2026-10-17). "open bracket the guide close
+  bracket open paren page close paren" now types `[the guide](page)`, with no
+  space between the bracket and the parenthesis.
 - **A backslash in your own phrases is kept** (2026-10-17). A phrase in My
   Words and Phrases that writes a folder or a file name, such as "my folder"
   writing `C:\new\temp`, was saved in a way that read back as `C:`, a new

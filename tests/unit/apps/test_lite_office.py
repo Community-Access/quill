@@ -28,7 +28,12 @@ CORPUS = Path(__file__).resolve().parents[2] / "corpus" / "office"
 
 
 def _as_built(monkeypatch: pytest.MonkeyPatch) -> None:
-    """QUILL Lite's spec excludes all of these; the readers must not need them."""
+    """The readers must not need any of these: the safety net if a build loses them.
+
+    Every build carries python-docx, lxml and openpyxl since 2026-10-17, but the
+    text readers must still work without them (and MarkItDown, which the shared
+    runtime cannot import, is never needed).
+    """
     for name in ("markitdown", "magika", "onnxruntime", "docx", "pptx", "openpyxl", "lxml"):
         monkeypatch.setitem(sys.modules, name, None)
 

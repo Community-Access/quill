@@ -57,7 +57,7 @@ class _Editor:
 @pytest.fixture
 def _resolves_to(monkeypatch: pytest.MonkeyPatch):
     def _install(position: int) -> None:
-        import quill.ui.main_frame as module
+        import quill.ui.main_frame_bookmarks as module
 
         monkeypatch.setattr(module, "resolve_anchor", lambda _text, _anchor: position)
 
@@ -84,9 +84,9 @@ def test_a_bookmark_that_has_not_moved_writes_nothing(_resolves_to) -> None:
 
 def test_the_list_asks_for_the_resolved_position_not_the_stored_one() -> None:
     """A source contract: the loop must go through the resolver."""
-    source = (Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame.py").read_text(
-        encoding="utf-8"
-    )
+    source = (
+        Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame_bookmarks.py"
+    ).read_text(encoding="utf-8")
     listing = source[source.index("    def list_bookmarks(self)") :][:1600]
     assert "position = self._resolve_bookmark_target(name)" in listing
     assert "position = self._bookmarks[name]" not in listing

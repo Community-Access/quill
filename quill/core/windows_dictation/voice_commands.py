@@ -268,6 +268,16 @@ class VoiceCommandsMixin:
             return False
         return True
 
+    def _spelling_joins(self) -> bool:
+        """Spelling mode: letters join the letters spelled just before them, with
+        no space, so an address can be spelled a few characters at a time with a
+        pause between; "space" still writes a space (todo D.2, 2026-10-17)."""
+        if not self.spelling or self._spell_once:
+            return False
+        phrase = self.history.peek()
+        caret = self._document.selection()
+        return phrase is not None and phrase.spelled and caret == (phrase.end, phrase.end)
+
     def _after_phrase(self) -> None:
         """A phrase was written: "spell that" lasts for one phrase only."""
         if self._spell_once:

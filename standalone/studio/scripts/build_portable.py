@@ -72,6 +72,18 @@ _DEV_CACHE_IGNORE = shutil.ignore_patterns(
     "__pycache__", ".mypy_cache", ".pytest_cache", ".ruff_cache", "*.pyc", "build"
 )
 
+#: Mirrors quill.io.word_selfcheck.WORD_SUPPORT_MODULES (this script runs under
+#: the build interpreter, before quill is importable from the bundle); a test
+#: holds the two equal. One import per line in the probe, so a failure names it.
+WORD_SUPPORT_MODULES: tuple[str, ...] = (
+    "lxml.etree",
+    "docx",
+    "quill.io.docx_reader",
+    "quill.io.docx_writer",
+    "quill.io.docx_text",
+    "quill.core.docx_open",
+)
+
 # Offline speech/TTS engine trees copied from the local Quill app-data folder
 # into the portable data/ dir (studio only). Each is skipped when absent.
 ENGINE_SUBDIRS = (
@@ -126,6 +138,13 @@ class Product:
     # dead -- a missing native DLL, a namespace pywinrt resolves lazily -- and
     # the first person to find out would be the one who needed it (2026-10-17).
     must_import: tuple[str, ...] = ()
+    # Word documents must open and save as Word in this product (2026-10-17):
+    # step 8 imports the Word stack (quill.io.word_selfcheck.WORD_SUPPORT_MODULES,
+    # lxml first) and round-trips a real .docx through the same open and save
+    # path both editors use. python-docx is a base dependency, so every portable
+    # carries it and lxml; this makes a portable that somehow lost either fail
+    # its build instead of quietly opening Word files as text.
+    check_word: bool = False
 
 
 PRODUCTS: dict[str, Product] = {
@@ -247,7 +266,10 @@ PRODUCTS: dict[str, Product] = {
         # brings pdfminer.six and pypdfium2) + pypdf + openpyxl; ocr is the
         # Windows.Media.Ocr projection. About 21 MB unpacked for the reader and
         # 3-7 MB for OCR (junk/reference/pdf.md 4.5). Tesseract is not bundled.
-        dep_groups=("ui", "live-dictation", "office-text", "ocr"),
+        # "docx" (2026-10-17): python-docx is already a base dependency, named
+        # again so the Word stack QUILL Lite edits with is declared where the
+        # product is, not inherited by accident. lxml arrives with it.
+        dep_groups=("ui", "live-dictation", "office-text", "ocr", "docx"),
         stage_engines=False,
         stage_ffmpeg=False,
         stage_mpv=False,
@@ -260,7 +282,9 @@ PRODUCTS: dict[str, Product] = {
             "winrt.windows.graphics.imaging",
             "quill.io.pdf",
             "quill.io.docconvert",
+            "openpyxl",
         ),
+        check_word=True,
     ),
     "quill": Product(
         key="quill",
@@ -271,24 +295,42 @@ PRODUCTS: dict[str, Product] = {
         # The full editor: the complete bundled dependency set QUILL ships.
         # "windows-media" for the same reason as Radio's: QUILL plays podcasts
         # and casts through the same engines.
-        dep_groups=("ui", "spellcheck", "ocr", "speech", "github", "windows-media"),
+        # "docx" and "office-text" (2026-10-17): Word editing and the Office
+        # readers, the same set QUILL Lite's portable carries -- QUILL Lite may
+        # never be ahead of QUILL.
+        dep_groups=(
+            "ui",
+            "spellcheck",
+            "ocr",
+            "speech",
+            "github",
+            "windows-media",
+            "docx",
+            "office-text",
+        ),
         # Engines download on demand (QUILL's standard portable); the fully
         # offline variant is the separate --bundle-offline Offline Edition.
         stage_engines=False,
         stage_ffmpeg=True,  # transcription / media
         stage_mpv=True,  # podcasts / cast playback
+        must_import=("openpyxl", "pdfplumber", "pypdf"),
+        check_word=True,
     ),
 }
 
 
 def import_check_source(product: Product) -> str:
-    """The step-8 probe: quill, wx, the app, then each of ``must_import`` by name.
+    """The step-8 probe: quill, wx, the app, each of ``must_import`` by name, then Word.
 
     One ``import`` statement per module, so the traceback names the one that
     failed rather than a line holding seven.
     """
     lines = ["import quill, wx", f"import {product.module}"]
     lines += [f"import {name}" for name in product.must_import]
+    if product.check_word:
+        lines.append("import quill.io.word_selfcheck as word_check")
+        lines += [f"import {name}" for name in WORD_SUPPORT_MODULES]
+        lines.append("word_check.assert_word_round_trip()")
     lines.append("print('OK', quill.__version__)")
     return "; ".join(lines)
 
@@ -629,7 +671,9 @@ def main() -> int:
     print("      runtime import check:", (check.stdout or check.stderr).strip().splitlines()[-1:])
     if check.returncode != 0:
         raise RuntimeError(
-            f"Bundled runtime failed to import {product.module}:\n" + (check.stderr or "")
+            f"Bundled runtime failed the import check for {product.module} (the app, "
+            "its must_import modules, or -- where check_word is set -- the Word "
+            "open-and-save round trip):\n" + (check.stderr or "")
         )
     # Inventory drift gate (P1.2): the source tree-copy sweeps whatever sits in
     # quill/data on the build machine, exactly the class that put 82 MB of

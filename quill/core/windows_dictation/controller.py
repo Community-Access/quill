@@ -513,12 +513,13 @@ class DictationController(
             after=after,
             dash=preferences.dash,
             close_paragraphs=preferences.engine_punctuates and not self._one_line(),
-            join_words=self.no_space,
+            join_words=self.no_space or self._spelling_joins(),
         )
         if not text:
             return
         start, end = self._document.insert(text)
-        self.history.push(DictatedPhrase(text, start, end, auto_period=parsed.auto_period))
+        spelled = self.spelling and not self._spell_once
+        self.history.push(DictatedPhrase(text, start, end, parsed.auto_period, spelled))
         self._after_insert(text)
         self.recent.appendleft(" ".join(text.split()))
         self._echo.wrote(text)

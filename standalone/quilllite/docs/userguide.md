@@ -1004,16 +1004,65 @@ that kind of file, and asks you to choose another.
 To make a real PDF, print to **Microsoft Print to PDF** instead (see
 [Printing](#printing)).
 
+### Office files at a glance
+
+QUILL Lite handles Office files in two different ways, and it helps to know
+which one you are getting before you start.
+
+- A **Word document** (`.docx`) is a document you can **edit and save as Word**.
+  It opens as rich text, with its headings, lists, bold, links and tables, and
+  **Ctrl+S** writes a real Word document back. See *Word documents* below.
+- **Everything else** from Office or LibreOffice opens as **readable text**, so
+  you can read it, search it and copy from it. QUILL Lite never writes back into
+  those files. **Ctrl+S** explains why, then opens **Save As** so you can keep
+  your text as a new file.
+
+This works the same in an installed copy of QUILL Lite and in the portable
+copy. Both carry everything Word editing needs, and nothing is downloaded or
+uploaded.
+
+| File type | What QUILL Lite does | Can you save back to it? |
+| --- | --- | --- |
+| Word document (`.docx`) | Opens to edit as rich text. Asks first if the document has things a save would drop, such as comments or pictures | **Yes.** Ctrl+S saves a real Word document. A document you were warned about is backed up first |
+| Word document with macros (`.docm`) | Opens as text to read and copy. Macros never run | No. Ctrl+S opens Save As |
+| Word 97-2003 document (`.doc`) | Opens as text when LibreOffice is installed. Without LibreOffice, QUILL Lite tells you how to make a `.docx` | No. Ctrl+S opens Save As |
+| OpenDocument text (`.odt`) | Opens as text | No. Ctrl+S opens Save As |
+| Excel workbook (`.xlsx`, or `.xls` with LibreOffice) | Opens as text: a "Sheet:" heading for each sheet, then its cells as a text table | No. Ctrl+S opens Save As |
+| PowerPoint presentation (`.pptx`, or `.ppt` with LibreOffice) | Opens as text: a "Slide" heading for each slide, then its bullets, tables and speaker notes | No. Ctrl+S opens Save As |
+| Excel with macros (`.xlsm`), OpenDocument spreadsheet (`.ods`) or presentation (`.odp`) | **Ctrl+O** does not open these. **File > Import / Convert Document** reads them into a new document | Not applicable. You get a new, untitled document |
+
+**To edit a file that opens as text, make it a `.docx` first.** For example,
+to edit a `.docm`, a `.doc` or an `.odt` in full:
+
+1. Open it in Word, or in LibreOffice Writer.
+2. Choose **File > Save As**.
+3. Pick **Word Document (.docx)** and save.
+4. Open the new `.docx` in QUILL Lite.
+
+A `.docm` saved this way loses its macros, which is why QUILL Lite never edits
+one directly. To keep the text without leaving QUILL Lite, open the file, switch
+the window to rich text with **Switch Document Mode** (**Alt+Shift+F**), and save it with **Ctrl+Shift+S**
+under a new name ending in `.docx`. You get a new Word document, and the
+original is left untouched.
+
+**Open or Import / Convert?** **Ctrl+O** opens the file itself: the window
+takes the file's name, and a Word document saves back to that file.
+**File > Import / Convert Document** always makes a new, untitled document from
+what it reads, named after the file with "(converted)" on the end. Use Import /
+Convert when you want a copy of the text to work on, or for a file Ctrl+O
+cannot open, such as a `.xlsm`, an e-book or a picture of a page. See
+*Importing and converting a document* below.
+
 ### Opening Word, Excel and PowerPoint files
 
-QUILL Lite opens Excel and PowerPoint files, and older Word files, as their
-**text**, the same way it opens a PDF. A Word `.docx` is different: it opens
-to edit, as rich text, and saves as Word (see *Word documents* below). Press
-**Ctrl+O**, and in the file type list choose "Older Word, Excel and
-PowerPoint, opened as text", or just pick the file from "All supported
-files". You can also drag one onto the window, or open it from
-Recent Documents. Nothing is downloaded first, and nothing is uploaded: QUILL
-Lite uses the same readers as QUILL.
+QUILL Lite opens Excel and PowerPoint files, Word files with macros, older Word
+files and OpenDocument text as their **text**, the same way it opens a PDF. A
+Word `.docx` is different: it opens to edit, as rich text, and saves as Word
+(see *Word documents* below). Press **Ctrl+O**, and in the file type list
+choose "Older Word, Excel and PowerPoint, opened as text", or just pick the
+file from "All supported files". You can also drag one onto the window, or
+open it from Recent Documents. Nothing is downloaded first, and nothing is
+uploaded: QUILL Lite uses the same readers as QUILL.
 
 These are QUILL's own readers, and they are always used first, in the same
 order QUILL uses. They open a Word file in about a second, and a slide show in
@@ -1026,7 +1075,7 @@ you hear explains what was wrong with the file.
 It opens these kinds of file:
 
 - Word documents with macros, `.docm` (a macro is never run), and a `.docx`
-  when this copy of QUILL Lite cannot edit Word documents
+  you chose to open "for reading and plain editing" (see *Word documents*)
 - Excel workbooks: `.xlsx`
 - PowerPoint presentations: `.pptx`
 - OpenDocument text, from LibreOffice Writer: `.odt`
@@ -1035,8 +1084,8 @@ It opens these kinds of file:
 
 #### Finding the highlighted passages in a Word document
 
-The text of a Word file comes through without its formatting, but its
-highlights are not lost: QUILL Lite reads them from the file itself (`.docx`
+A Word file opened as text (a `.docm`, or a `.docx` you chose to open for
+reading) comes through without its formatting, but its highlights are not lost: QUILL Lite reads them from the file itself (`.docx`
 and `.docm`) and takes you to them. They are on **Navigate > Highlighted
 Passages**, on the same keys as in QUILL:
 
@@ -1138,9 +1187,13 @@ end.
   "Opening report.docx", and when it is ready, "Opened as Rich Text. Headings
   and bold are shown formatted."
 
-If this copy of QUILL Lite cannot edit Word documents, because the part that
-reads and writes them is not installed, a `.docx` opens as text exactly as it
-did before, and **Ctrl+S** offers Save As. Nothing is lost either way.
+Word editing works in every copy of QUILL Lite, installed or portable, since
+the builds of 17 October 2026. Earlier test builds of the *installed* copy
+were missing a part Word editing needs, so they opened every `.docx` as text;
+the portable copy was not affected. If a copy were ever to lose that part
+again, a `.docx` would open as text, as described above, and **Ctrl+S** would
+offer Save As, so nothing would be lost. QUILL Lite's build checks for exactly
+this and refuses to finish, so it should never happen to you.
 
 #### What is kept
 
@@ -4735,7 +4788,15 @@ While you are spelling, punctuation goes in with no spaces around it, so an
 address comes out whole. Say "start spelling", then "juliet alpha yankee dot
 sierra mike india tango hotel at sign echo x-ray alpha mike papa lima echo dot
 charlie oscar mike", then "stop spelling", and you get *jay.smith@example.com*.
-(Plain letter names work too: "jay dot smith at sign example dot com".)
+Plain letter names work too ("jay", "bee", "see"), but every part must be
+letters: a whole word such as "smith" is not a letter and is left out, so
+"jay dot smith" writes only *j.*. Spell the word instead.
+
+You do not have to say the address in one breath. While spelling, each phrase
+joins the letters you spelled just before it, with no space: "juliet oscar", a
+pause, "at sign echo x-ray", a pause, "dot charlie oscar" writes *jo@ex.co*.
+Say "space" when you want a space. If you move the cursor between phrases, the
+next letters start fresh, with a space in front as usual.
 
 While you are spelling, "dot" and "point" both mean a full stop. Outside
 spelling they are just words, so "the main point" stays as you said it.
@@ -4907,6 +4968,18 @@ from the very table dictation reads, so it always matches what QUILL Lite
 understands. It has every way of saying each thing, the Spanish punctuation
 words, and the spelling alphabet in one place, and it is a good page to keep
 open beside you for the first week or two.
+
+Near its end are **Worked examples**: what you have, what you say, and what you
+get. They show going before and after words ("go to Friday", then "next"),
+picking the second of three matches ("select the cat", then "select
+previous"), Copy All, scratch that, all twelve clips, snippets with spaces in
+their names, every capitals command, an email address spelled with pauses, and
+a Markdown link ("open bracket the guide close bracket open paren page close
+paren" writes `[the guide](page)` with no space in the middle). After them come
+the **Limits**, including what cannot work when you dictate into another
+program. Every example is checked by automated tests in both QUILL Lite and
+QUILL. How accurately and how quickly each engine hears you has not been
+measured yet; that waits on the dictation benchmarks.
 
 #### The command word: "QUILL scratch that"
 

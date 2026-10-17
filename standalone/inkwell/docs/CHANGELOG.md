@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- **Dictate Anywhere: spell an address with pauses** (2026-10-17). While
+  spelling, each phrase now joins the letters you spelled just before it, with
+  no space: "start spelling", "juliet oscar", "at sign echo x-ray", "dot
+  charlie oscar", "stop spelling" types *jo@ex.co*. Before, every pause typed a
+  space into the address. Say "space" for a space. Limit: a whole word such as
+  "smith" is not a letter and is left out; spell it.
+- **Dictate Anywhere: a Markdown link by voice** (2026-10-17). "open bracket
+  the guide close bracket open paren page close paren" now types
+  `[the guide](page)`, with no space in the middle.
+
 - **A first run takes no system-wide keys** (2026-10-17). Started for the
   first time on a computer, Inkwell still claimed Ctrl+Alt+Shift+K (Quick
   Insert) and Ctrl+Alt+Shift+X (Expand Word) everywhere in Windows, although

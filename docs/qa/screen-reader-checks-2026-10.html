@@ -2260,6 +2260,37 @@ back; in a clean document M says there are none.</li>
 <li><label><input type="checkbox" />Checks 1, 5 and 7 with
 Narrator.</label></li>
 </ul>
+<h2
+id="word-documents-in-installed-copies-and-glow-audits-2026-10-17">Word
+documents in installed copies, and GLOW audits (2026-10-17)</h2>
+<p>Before 2026-10-17 the shared runtime left out lxml, so an
+<em>installed</em> QUILL or QUILL Lite opened every <code>.docx</code>
+as plain text and could not save one, and the GLOW audits failed. These
+checks need the first installers built after that change (see
+<em>Rebaselining after the Word support change</em> in
+<code>docs/building-windows-family.md</code>). Use the two Word files
+from the section above.</p>
+<ol type="1">
+<li>Installed QUILL Lite (from its installer, not the portable ZIP):
+Ctrl+O, the plain file. You hear “Opened as Rich Text. Headings and bold
+are shown formatted.”, not the file as text. Type a line, Ctrl+S, “Saved
+…”, and the file opens in Word with its headings.</li>
+<li>Installed QUILL: the same file, the same result.</li>
+<li>Installed QUILL, with GLOW turned on (Settings &gt; Experimental):
+<strong>GLOW Audit File…</strong> (from the Command Palette) on the Word
+file, then a PDF, then a PowerPoint file. Each produces a report; none
+says a module is missing.</li>
+<li>Both portable ZIPs, on a computer with nothing installed: checks 1
+and 2.</li>
+<li>In either editor, open an Excel <code>.xlsx</code>: it opens as text
+with “Sheet:” headings; Ctrl+S explains why and opens Save As with a
+<code>.txt</code> name.</li>
+</ol>
+<ul class="task-list">
+<li><label><input type="checkbox" />All five with NVDA.</label></li>
+<li><label><input type="checkbox" />Checks 1 and 3 with
+JAWS.</label></li>
+</ul>
 </main>
 </body>
 </html>

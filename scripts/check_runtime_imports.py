@@ -116,6 +116,40 @@ MUST_IMPORT: tuple[str, ...] = (
     "quill.io.docconvert",
 )
 
+#: The Word stack and GLOW's audits; part of MUST_IMPORT, and named on their
+#: own so tests/unit/scripts/test_word_support_in_runtime.py can import exactly
+#: these with every spec exclude blocked.
+WORD_MUST_IMPORT: tuple[str, ...] = (
+    # Word documents (2026-10-17). The runtime excluded lxml until then, and
+    # python-docx -- pure Python, so it froze in and find_spec found it -- raised
+    # the moment it reached for lxml. Every installed QUILL and QUILL Lite opened
+    # Word as plain text and could not save a real .docx, and the GLOW audits
+    # below failed. The Word round trip (WORD_ROUND_TRIP) proves the rest.
+    "lxml.etree",
+    "docx",
+    "pptx",
+    "openpyxl",
+    "quill.io.docx_reader",
+    "quill.io.docx_writer",
+    "quill.core.docx_open",
+    "quill.io.word_selfcheck",
+    # GLOW's audits, one per format. Every one of them imports
+    # acb_large_print.auditor, which imports python-docx at module top -- so a
+    # runtime without lxml failed the PDF audit too, not only Word's.
+    "quill_glow_core",
+    "acb_large_print.auditor",
+    "acb_large_print.pdf_auditor",
+    "acb_large_print.pptx_auditor",
+    "acb_large_print.xlsx_auditor",
+)
+
+MUST_IMPORT = MUST_IMPORT + WORD_MUST_IMPORT
+
+#: The functional check run after the imports: write a real .docx, open it the
+#: way both editors do, save it back and read the result
+#: (quill.io.word_selfcheck). An import can succeed while the job still fails.
+WORD_ROUND_TRIP = "quill.io.word_selfcheck"
+
 _PROBE_MODULE = "_quill_import_gate"
 
 _PROBE_SOURCE = '''\
@@ -156,6 +190,17 @@ for name in MUST_IMPORT:
             "error": "{{0}}: {{1}}".format(type(error).__name__, error),
         }})
 
+result["checked"] += 1
+try:
+    problem = importlib.import_module({word_round_trip!r}).word_round_trip_problem()
+except Exception as error:
+    problem = "{{0}}: {{1}}".format(type(error).__name__, error)
+if problem:
+    result["import_failures"].append({{
+        "module": "Word open and save round trip",
+        "error": problem,
+    }})
+
 with open(os.environ["QUILL_IMPORT_GATE_OUT"], "w", encoding="utf-8") as handle:
     json.dump(result, handle)
 '''
@@ -177,7 +222,9 @@ def run_probe(dist: Path, timeout: float = 300.0) -> dict:
         out_path = Path(tmp) / "import-gate.json"
         probe_path.write_text(
             _PROBE_SOURCE.format(
-                engine_pack=list(ENGINE_PACK_OWNED), must_import=list(MUST_IMPORT)
+                engine_pack=list(ENGINE_PACK_OWNED),
+                must_import=list(MUST_IMPORT),
+                word_round_trip=WORD_ROUND_TRIP,
             ),
             encoding="utf-8",
         )
@@ -234,6 +281,19 @@ def report(result: dict) -> int:
             "missing dependency or exclude the module so the on-demand path "
             "takes over."
         )
+        word_names = {"lxml.etree", "docx", "pptx", "Word open and save round trip"}
+        if any(
+            entry["module"] in word_names or "docx" in entry["module"] or "acb_" in entry["module"]
+            for entry in failures
+        ):
+            print(
+                "\nWord support is broken in this runtime: QUILL and QUILL Lite would "
+                "open Word files as plain text, could not save a real .docx, and the "
+                "GLOW audits would fail. python-docx needs lxml -- make sure neither "
+                "is in `excludes` in standalone/runtime/quillville-runtime.spec and "
+                "that both are installed in the build interpreter "
+                "(scripts/check_build_env.py --groups runtime,packaging)."
+            )
     if absent or failures:
         return 1
     print(f"Runtime import gate: {result.get('checked', 0)} modules checked, all correct.")
