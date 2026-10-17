@@ -314,7 +314,7 @@ Control coverage: 335 audited sites (221 helped, 114 named-help).
 - `combo`: Where the imported stations land in your favorites: pick an existing folder, or type a new name to create one.
 #### (module level) (`quill/ui/radio/local_media_manage.py`)
 
-- `box`: What this file says about itself and where it is, one fact a line. Arrow through it, or select and copy any of it.
+- `box`: What this file says about itself and where it is, one fact a line, ending with the drive it is on: its name, kind, capacity, used and free space. Arrow through it, or select and copy any of it.
 - `close`: Closes this and goes back to the list.
 #### LocalMediaWindow (`quill/ui/radio/local_media_window.py`)
 
@@ -1899,7 +1899,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 227 audited sites (227 helped).
+Control coverage: 229 audited sites (229 helped).
 
 ### Every window, and what it is for
 
@@ -2186,6 +2186,8 @@ Control coverage: 227 audited sites (227 helped).
 - `self._send_button`: Sends your message, with as much of the conversation so far as fits.
 - `fresh`: Forgets this conversation and starts again. Nothing is sent.
 - `copy`: Puts the most recent reply on the clipboard.
+- `messages`: Lists every message in this conversation. Enter opens one with its headings and tables; closing it comes back to the same row. Alt+1 reads the newest message aloud without leaving the message box, Alt+2 the one before, up to Alt+0 for the tenth newest.
+- `export`: Saves the whole conversation, every message with who said it, to a Word or text file you choose. Your document is not changed.
 - `saved`: Lists the conversations saved on this computer, newest first, so you can open one and carry on, or delete one.
 - `insert`: Puts the most recent reply into your document underneath the current paragraph. Control Z takes it back.
 #### ChatGptFrame (`quill/ui/hosted_ai_chatgpt.py`)

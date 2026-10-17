@@ -4590,6 +4590,28 @@ on the **Edit** menu) takes every missing item out of the playlist at once.
   you can arrow through and copy from. It shows the title, artist, album, length, whether it is audio or
   video, its place in the playlist, the file name, the folder, whether it is on
   this computer, and how big it is. Press **Escape** to go back to the list.
+
+  The last lines are about **the drive the file is on**, which is what to
+  check when a file will not play or a recording will not save:
+
+  - **Drive:** its letter (or, for a network share, the share's name), its
+    label if it has one, what kind of drive it is (local disk, removable
+    drive, network drive, CD or DVD drive) and its file system.
+  - **Drive capacity**, **Drive used** (with the percentage) and **Drive
+    free**, each in the units File Explorer uses (KB, MB, GB, TB, counted in
+    1,024s) followed by the exact number of bytes, so the numbers match what
+    File Explorer shows for the same drive.
+
+  For example, a song on a USB stick might end with "Drive: E:\ (STICK),
+  removable drive, FAT32" and "Drive free: 12.9 GB (13,857,980,416 bytes)".
+  **Drive free** is the space you can still use, which can be less than the
+  drive's total free space where Windows limits each person's share.
+
+  If the drive cannot be read, the box still opens with everything else, and
+  the drive is one line saying why: the drive has been removed or is not
+  ready, the network location cannot be reached, or Windows did not allow it
+  to be read. Nothing on the drive is changed; the box only reads. A network
+  drive that is slow to answer can make the box take a moment to open.
 - **Show in File Explorer** (Ctrl+Shift+E) opens the item's folder in File
   Explorer with the file already selected.
 - **Copy Path**, on an item's menu in Browse Stations, puts the file's full

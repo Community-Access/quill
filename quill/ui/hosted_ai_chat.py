@@ -33,6 +33,15 @@ the way QUILL's Ask Quill has always saved its own -- a writing session in the
 app's ``ai-sessions`` folder, through the one recorder both use
 (:func:`quill.core.ai.sessions.record_exchange`). **Saved Conversations** lists
 them (:mod:`quill.ui.hosted_ai_saved_chats`) and opens one here to carry on.
+
+**Reading back and exporting** (2026-10-17, todo item 44): Alt+1 reads the
+newest message aloud and Alt+0 the tenth newest, without moving focus;
+**Messages...** lists every message and opens one with its headings and
+tables intact, coming back to the same row; **Export Conversation...** writes
+the whole conversation to a Word or text file. All three are the shared
+:mod:`quill.ui.ai_conversation_tools`, the same as Ask Quill's. A reply that
+arrives while the transcript is being read leaves the reading position where
+it was.
 """
 
 from __future__ import annotations
@@ -45,6 +54,12 @@ import wx
 
 from quill.core.ai.hosted_chat import Conversation
 from quill.ui.accessible_names import set_accessible_name
+from quill.ui.ai_conversation_tools import (
+    RecentMessageReader,
+    bind_recent_message_keys,
+    export_conversation_to_file,
+    show_message_list,
+)
 from quill.ui.hosted_ai_dialogs import _PAD, _close_row, _read_only, focus_on, show_problem
 
 __all__ = ["AiChatFrame", "follow_up_seed", "open_for"]
@@ -77,6 +92,8 @@ class AiChatFrame(wx.Frame):
         self._store = store
         #: The saved session this conversation is being written to.
         self._session: Any = None
+        #: The row Messages... was left on, so it opens there again.
+        self._list_position: int | None = None
 
         panel = wx.Panel(self)
         sizer = wx.BoxSizer(wx.VERTICAL)
@@ -125,7 +142,21 @@ class AiChatFrame(wx.Frame):
         copy.SetHelpText("Puts the most recent reply on the clipboard.")
         copy.Bind(wx.EVT_BUTTON, lambda _e: self._copy_last())
 
-        extra = [self._send_button, fresh, copy]
+        messages = wx.Button(panel, label="Messa&ges...")
+        messages.SetHelpText(
+            "Lists every message in this conversation. Enter opens one with its "
+            "headings and tables; closing it comes back to the same row. Alt+1 reads "
+            "the newest message aloud without leaving the message box, Alt+2 the one "
+            "before, up to Alt+0 for the tenth newest."
+        )
+        messages.Bind(wx.EVT_BUTTON, lambda _e: self._list_messages())
+        export = wx.Button(panel, label="E&xport Conversation...")
+        export.SetHelpText(
+            "Saves the whole conversation, every message with who said it, to a Word "
+            "or text file you choose. Your document is not changed."
+        )
+        export.Bind(wx.EVT_BUTTON, lambda _e: self._export())
+        extra = [self._send_button, fresh, copy, messages, export]
         if store is not None:
             saved = wx.Button(panel, label="Saved Con&versations...")
             saved.SetHelpText(
@@ -153,6 +184,8 @@ class AiChatFrame(wx.Frame):
             grow=False,
         )
 
+        self.recent = RecentMessageReader(self._pairs, self._announce)
+        bind_recent_message_keys(self, self.recent)
         self.SetInitialSize((680, 640))
         self.Centre()
         focus_on(self, self._message)
@@ -176,6 +209,10 @@ class AiChatFrame(wx.Frame):
             " Excerpts from your document go with every message, as they did with your question."
             if self._conversation.excerpts
             else " Nothing from your document is sent."
+        )
+        excerpts += (
+            " Alt+1 reads the newest message aloud, Alt+2 the one before it, up to "
+            "Alt+0; Messages lists them all."
         )
         if self._store is not None:
             excerpts += (
@@ -254,8 +291,7 @@ class AiChatFrame(wx.Frame):
         self._conversation.add("assistant", text)
         self._save_exchange(message, text)
         self._conversation.set_aside += max(0, int(dropped or 0))
-        self._transcript.SetValue(self._conversation.transcript())
-        self._transcript.SetInsertionPointEnd()
+        self._show_transcript()
         # Only what was sent goes: anything said or typed while waiting stays.
         current = self._message.GetValue().strip()
         if current.startswith(message):
@@ -280,6 +316,34 @@ class AiChatFrame(wx.Frame):
         if self.on_reply is not None:
             self.on_reply(spoken)
         self._announce(spoken)
+
+    def _show_transcript(self) -> None:
+        """Put the conversation in the transcript without moving a reader in it.
+
+        The transcript only grows, so somebody arrowing through it when a reply
+        lands keeps their place; otherwise it shows its end.
+        """
+        reading = wx.Window.FindFocus() is self._transcript
+        where = self._transcript.GetInsertionPoint()
+        self._transcript.SetValue(self._conversation.transcript())
+        if reading:
+            self._transcript.SetInsertionPoint(where)
+        else:
+            self._transcript.SetInsertionPointEnd()
+
+    def _pairs(self) -> list[tuple[str, str]]:
+        """The conversation as ``(speaker, text)``, as the transcript names them."""
+        from quill.core.ai.hosted_chat import TRANSCRIPT_SPEAKERS
+
+        return [(TRANSCRIPT_SPEAKERS[turn.role], turn.text) for turn in self._conversation.turns]
+
+    def _list_messages(self) -> None:
+        self._list_position = show_message_list(
+            self, self._pairs(), self._announce, start=self._list_position
+        )
+
+    def _export(self) -> None:
+        export_conversation_to_file(self, self._pairs(), self._announce)
 
     @property
     def message_box(self) -> wx.TextCtrl:
@@ -356,6 +420,7 @@ class AiChatFrame(wx.Frame):
                 conversation.add(turn.role, turn.text)
         self._conversation = conversation
         self._session = session
+        self._list_position = None
         self._told_set_aside = False
         self._transcript.SetValue(conversation.transcript())
         self._transcript.SetInsertionPointEnd()
@@ -371,6 +436,7 @@ class AiChatFrame(wx.Frame):
     def _start_over(self) -> None:
         self._conversation = Conversation()
         self._session = None
+        self._list_position = None
         self._told_set_aside = False
         self._transcript.SetValue("")
         self._about.SetValue(self._about_text())

@@ -393,11 +393,14 @@ class ConverterActionsMixin:
             self._announce("Highlight a file in the queue first.")
             return
         from quill.core.audio.media_probe import describe, probe
+        from quill.core.volume_info import describe_volume
         from quill.ui.converter_dialogs import show_text
 
         wx.BeginBusyCursor()
         try:
-            text = "\n".join(describe(probe(source)))
+            # The drive comes last: its name, capacity, used and free space,
+            # which is what to check before a long conversion (todo item 46).
+            text = "\n".join(describe(probe(source)) + describe_volume(source))
         finally:
             wx.EndBusyCursor()
         show_text(self, "File Properties", text)

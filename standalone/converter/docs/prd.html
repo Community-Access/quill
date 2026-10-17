@@ -322,7 +322,10 @@ the output mirrors the source tree. Duplicates are ignored. Delete,
 Remove, Remove from Queue and Clear Queue take rows out; Alt+Up and
 Alt+Down reorder; File Properties describes the highlighted file in
 plain words (length, size, container, bit rate, tags, each track, cover
-art, chapters).</li>
+art, chapters), then the drive the file is on (identity, kind, file
+system, capacity, used, free; <code>quill/core/volume_info.py</code>,
+todo item 46), where a drive that cannot be read is one sentence, never
+an error.</li>
 <li><strong>Getting files in.</strong> Add Files, Add Folder, Paste
 Files (files copied in File Explorer; a text box keeps its own paste),
 drag and drop, positional command-line paths, the installer’s

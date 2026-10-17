@@ -136,6 +136,8 @@
   "quill/ui/ai_agent_result_dialog.py::AIAgentResultDialog._build_ui::wx.ListCtrl": "named",
   "quill/ui/ai_agent_result_dialog.py::AIAgentResultDialog._build_ui::wx.TextCtrl": "named",
   "quill/ui/ai_chat_dialog.py::AIResponseDialog.__init__::wx.TextCtrl": "named",
+  "quill/ui/ai_conversation_tools.py::MessageListDialog.__init__::wx.ListBox": "named",
+  "quill/ui/ai_conversation_tools.py::_MessageTextDialog.__init__::wx.TextCtrl": "named",
   "quill/ui/ai_diff_review_dialog.py::DiffReviewDialog.__init__::wx.CheckListBox": "named",
   "quill/ui/ai_diff_review_dialog.py::DiffReviewDialog.__init__::wx.TextCtrl": "named",
   "quill/ui/ai_document_qa_dialog.py::AIDocumentQADialog._build_ui::wx.ListCtrl": "named",

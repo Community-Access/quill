@@ -66,7 +66,9 @@ In scope for 1.0.0:
   tree. Duplicates are ignored. Delete, Remove, Remove from Queue and Clear
   Queue take rows out; Alt+Up and Alt+Down reorder; File Properties describes
   the highlighted file in plain words (length, size, container, bit rate, tags,
-  each track, cover art, chapters).
+  each track, cover art, chapters), then the drive the file is on (identity,
+  kind, file system, capacity, used, free; `quill/core/volume_info.py`, todo
+  item 46), where a drive that cannot be read is one sentence, never an error.
 - **Getting files in.** Add Files, Add Folder, Paste Files (files copied in
   File Explorer; a text box keeps its own paste), drag and drop, positional
   command-line paths, the installer's **Convert with Quill Converter** Explorer

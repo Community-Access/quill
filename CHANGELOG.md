@@ -2,6 +2,77 @@
 
 ## 1.0.0
 
+### AI conversations: the recent ten on Alt+1 to Alt+0, a message list, export to Word and text; the drive in file properties (2026-10-17)
+
+todo.md items 44 and 46. Item 44 extends the two conversation windows that
+already existed -- Ask Quill (QUILL) and the AI Conversation window both
+editors open -- rather than adding a third chat. Item 46 audited every
+file/folder properties entry point first and added the drive to the two that
+show a file's properties.
+
+- **Shared core, `quill/core/ai/chat_navigation.py` (new, wx-free).** Numbered
+  messages ("Message 3 of 12, AI"), the recent-ten sentence (Alt+1 newest to
+  Alt+0 tenth newest, fewer-than-ten says how many and which key reads the
+  oldest, spoken through `speakable_line` so no Markdown is read out),
+  `nest_reply_headings` (a reply's headings move down so its shallowest is
+  level 3, under the speaker's level 2; fenced code untouched; capped at 6) and
+  `message_view_html` (heading plus the reply with real `<th>` tables).
+- **Export, `quill/core/ai/chat_export.py`.** `export_conversation(messages,
+  path)` writes `.txt` through `quill.io.text.write_text_document` and `.docx`
+  through `quill.io.export.write_docx_document`, on a fresh `Document`: the
+  active document is never passed, so it cannot be changed, renamed or marked
+  saved. Word gets a level-2 heading per message with nested reply headings and
+  real tables; lines inside fenced code are indented so the line-oriented Word
+  writer cannot turn a `# comment` into a heading. Atomic: a failed write
+  leaves an existing file as it was.
+- **Shared UI, `quill/ui/ai_conversation_tools.py` (new).**
+  `RecentMessageReader` (one press seen twice within 0.3 s is said once),
+  `bind_recent_message_keys` (an accelerator table; neither window had one),
+  `recent_digit` for char hooks, `MessageListDialog` (Enter opens the
+  rendered message through `MarkdownPreviewDialog`, Read as Text shows it
+  verbatim; closing returns focus to the same row, and the owner reopens the
+  list on that row), `export_conversation_to_file` (Save As with overwrite
+  prompt; cancel says nothing; every failure is a sentence through
+  `user_facing_message`).
+- **AI Conversation window (`hosted_ai_chat.py`, both editors).** Messages...
+  (Alt+G), Export Conversation... (Alt+X), Alt+1..Alt+0, the keys named in
+  About this conversation. A reply no longer moves the caret of somebody
+  reading the transcript (`_show_transcript` keeps the insertion point when the
+  transcript has focus). New Conversation and opening a saved one forget the
+  list row.
+- **Ask Quill (`assistant_panel.py` + new `assistant_conversation_tools.py`
+  mixin).** Message List... and Export Conversation... in the footer; Alt+1..0
+  from the dialog's char hook and, inside the WebView, from a keydown script
+  that posts over the existing `awv` bridge (`accessible_webview.py`
+  `on_recent`). Reply headings nest under the speaker in the WebView. The
+  fallback list (no WebView) opens a row with Enter, keeps the reader's row
+  when a message arrives while it has focus, and no longer records the
+  greeting as a conversation message.
+- **Collision check.** Alt plus a digit is bound nowhere in either window and
+  no access key in either is a digit (`test_ai_conversation_tools.py`); the
+  editor's Alt+1..9 (go to document) belong to the main window, which these
+  top-level windows do not share accelerators with.
+- **Provider routes.** A test opens the window on the free service, an own
+  key and a ChatGPT plan and asserts the same `ai-sessions` store each time.
+  No model name was added anywhere.
+- **Item 46, `quill/core/volume_info.py` (new, wx-free).** `describe_volume`
+  returns labelled lines (Drive: root, label, kind, file system; capacity,
+  used with percent, free) in File Explorer's 1,024-based units with exact
+  bytes; `GetVolumePathNameW`, `GetVolumeInformationW`, `GetDriveTypeW` and
+  `shutil.disk_usage`, read-only and local. Removed media, unreachable shares
+  and permission refusals become one sentence, never an exception, and a root
+  that is not there is never guessed. Added to Quill Radio's Local Media Item
+  Properties (`properties_text`, injectable `volume=`) and Quill Converter's
+  File Properties. Audit: QUILL and QUILL Lite have no file or folder
+  properties window, so nothing was added there and no file manager was built.
+- **Tests.** `tests/unit/core/ai/test_chat_navigation.py`,
+  `tests/unit/core/ai/test_chat_export_files.py` (real DOCX read back with
+  python-docx: heading order, table cells, Unicode, code comment not a
+  heading), `tests/unit/ui/test_ai_conversation_tools.py`,
+  `tests/unit/core/test_volume_info.py`,
+  `tests/unit/apps/test_storage_properties.py`. Screen-reader passes are in
+  `docs/qa/screen-reader-checks-2026-10.md`, unticked.
+
 ### Speech engines and models: every guide says what the code does (2026-10-17)
 
 Jeff: "I don't think all of its documentation is updated across all apps

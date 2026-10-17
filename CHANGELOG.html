@@ -245,6 +245,95 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="ai-conversations-the-recent-ten-on-alt1-to-alt0-a-message-list-export-to-word-and-text-the-drive-in-file-properties-2026-10-17">AI
+conversations: the recent ten on Alt+1 to Alt+0, a message list, export
+to Word and text; the drive in file properties (2026-10-17)</h3>
+<p>todo.md items 44 and 46. Item 44 extends the two conversation windows
+that already existed – Ask Quill (QUILL) and the AI Conversation window
+both editors open – rather than adding a third chat. Item 46 audited
+every file/folder properties entry point first and added the drive to
+the two that show a file’s properties.</p>
+<ul>
+<li><strong>Shared core, <code>quill/core/ai/chat_navigation.py</code>
+(new, wx-free).</strong> Numbered messages (“Message 3 of 12, AI”), the
+recent-ten sentence (Alt+1 newest to Alt+0 tenth newest, fewer-than-ten
+says how many and which key reads the oldest, spoken through
+<code>speakable_line</code> so no Markdown is read out),
+<code>nest_reply_headings</code> (a reply’s headings move down so its
+shallowest is level 3, under the speaker’s level 2; fenced code
+untouched; capped at 6) and <code>message_view_html</code> (heading plus
+the reply with real <code>&lt;th&gt;</code> tables).</li>
+<li><strong>Export, <code>quill/core/ai/chat_export.py</code>.</strong>
+<code>export_conversation(messages, path)</code> writes
+<code>.txt</code> through <code>quill.io.text.write_text_document</code>
+and <code>.docx</code> through
+<code>quill.io.export.write_docx_document</code>, on a fresh
+<code>Document</code>: the active document is never passed, so it cannot
+be changed, renamed or marked saved. Word gets a level-2 heading per
+message with nested reply headings and real tables; lines inside fenced
+code are indented so the line-oriented Word writer cannot turn a
+<code># comment</code> into a heading. Atomic: a failed write leaves an
+existing file as it was.</li>
+<li><strong>Shared UI, <code>quill/ui/ai_conversation_tools.py</code>
+(new).</strong> <code>RecentMessageReader</code> (one press seen twice
+within 0.3 s is said once), <code>bind_recent_message_keys</code> (an
+accelerator table; neither window had one), <code>recent_digit</code>
+for char hooks, <code>MessageListDialog</code> (Enter opens the rendered
+message through <code>MarkdownPreviewDialog</code>, Read as Text shows
+it verbatim; closing returns focus to the same row, and the owner
+reopens the list on that row), <code>export_conversation_to_file</code>
+(Save As with overwrite prompt; cancel says nothing; every failure is a
+sentence through <code>user_facing_message</code>).</li>
+<li><strong>AI Conversation window (<code>hosted_ai_chat.py</code>, both
+editors).</strong> Messages… (Alt+G), Export Conversation… (Alt+X),
+Alt+1..Alt+0, the keys named in About this conversation. A reply no
+longer moves the caret of somebody reading the transcript
+(<code>_show_transcript</code> keeps the insertion point when the
+transcript has focus). New Conversation and opening a saved one forget
+the list row.</li>
+<li><strong>Ask Quill (<code>assistant_panel.py</code> + new
+<code>assistant_conversation_tools.py</code> mixin).</strong> Message
+List… and Export Conversation… in the footer; Alt+1..0 from the dialog’s
+char hook and, inside the WebView, from a keydown script that posts over
+the existing <code>awv</code> bridge (<code>accessible_webview.py</code>
+<code>on_recent</code>). Reply headings nest under the speaker in the
+WebView. The fallback list (no WebView) opens a row with Enter, keeps
+the reader’s row when a message arrives while it has focus, and no
+longer records the greeting as a conversation message.</li>
+<li><strong>Collision check.</strong> Alt plus a digit is bound nowhere
+in either window and no access key in either is a digit
+(<code>test_ai_conversation_tools.py</code>); the editor’s Alt+1..9 (go
+to document) belong to the main window, which these top-level windows do
+not share accelerators with.</li>
+<li><strong>Provider routes.</strong> A test opens the window on the
+free service, an own key and a ChatGPT plan and asserts the same
+<code>ai-sessions</code> store each time. No model name was added
+anywhere.</li>
+<li><strong>Item 46, <code>quill/core/volume_info.py</code> (new,
+wx-free).</strong> <code>describe_volume</code> returns labelled lines
+(Drive: root, label, kind, file system; capacity, used with percent,
+free) in File Explorer’s 1,024-based units with exact bytes;
+<code>GetVolumePathNameW</code>, <code>GetVolumeInformationW</code>,
+<code>GetDriveTypeW</code> and <code>shutil.disk_usage</code>, read-only
+and local. Removed media, unreachable shares and permission refusals
+become one sentence, never an exception, and a root that is not there is
+never guessed. Added to Quill Radio’s Local Media Item Properties
+(<code>properties_text</code>, injectable <code>volume=</code>) and
+Quill Converter’s File Properties. Audit: QUILL and QUILL Lite have no
+file or folder properties window, so nothing was added there and no file
+manager was built.</li>
+<li><strong>Tests.</strong>
+<code>tests/unit/core/ai/test_chat_navigation.py</code>,
+<code>tests/unit/core/ai/test_chat_export_files.py</code> (real DOCX
+read back with python-docx: heading order, table cells, Unicode, code
+comment not a heading),
+<code>tests/unit/ui/test_ai_conversation_tools.py</code>,
+<code>tests/unit/core/test_volume_info.py</code>,
+<code>tests/unit/apps/test_storage_properties.py</code>. Screen-reader
+passes are in <code>docs/qa/screen-reader-checks-2026-10.md</code>,
+unticked.</li>
+</ul>
+<h3
 id="speech-engines-and-models-every-guide-says-what-the-code-does-2026-10-17">Speech
 engines and models: every guide says what the code does
 (2026-10-17)</h3>
