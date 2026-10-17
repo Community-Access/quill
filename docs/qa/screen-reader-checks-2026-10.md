@@ -885,6 +885,13 @@ microphone does not hear the read-back.
 - [ ] In Inkwell, the Dictation menu reads Dictate Anywhere as a checked or
   unchecked item, and Dictation Settings (Ctrl+Alt+D) opens the same window the
   editors use.
+- [ ] (2026-10-17) In Inkwell, open Dictation Settings (Ctrl+Alt+D), then More
+  Dictation Settings (Alt+A). Tab through the whole window: there is no "Allow
+  polishing my dictation with AI" box, every other box still answers to its
+  Alt letter, and Alt+G does nothing. In QUILL's More Dictation Settings the
+  box is still there on Alt+G. With polishing on in QUILL and sharing on,
+  choose Clean in Inkwell's Dictation style and press OK: QUILL's Review
+  Dictation still offers Polish.
 
 ## The October 11 Integration
 
@@ -1304,3 +1311,32 @@ screen reader yet.
 - [ ] All five with NVDA.
 - [ ] All five with JAWS.
 - [ ] All five with Narrator.
+
+## Spanish review (for a native speaker)
+
+Not a screen-reader check: questions for a native Spanish speaker, to answer
+before the drafted Spanish commands are switched on for everybody. Until then
+they work only in a development build with `QUILL_DICTATION_SPANISH_COMMANDS=1`,
+and Spanish dictation uses the English commands. The full drafted table is
+`quill/core/windows_dictation/vocabulary_es.py`; the design record's section 9
+explains each choice. For each item, say whether a Spanish speaker would say
+it naturally, and what you would say instead.
+
+- [ ] **"Polish that" (2026-10-17).** Drafted as "QUILL pule eso", "QUILL
+  púlelo" and "QUILL mejora eso". It asks the AI to tidy punctuation, capital
+  letters and small slips in a phrase in Review Dictation, keeping the words.
+  Is "pulir" the word you would use for that, or does "mejora eso" (or
+  something else, such as "arregla eso") sound more natural? "Corrige eso" was
+  avoided because "corrige" followed by words already means "correct these
+  words".
+- [ ] **"Yes" and "no" to "Add a correction?" (2026-10-17).** In QUILL
+  Transcribe, after you correct the same word the same way twice, dictation
+  asks (in English) whether to remember the correction, and you answer after
+  the command word. Drafted as "QUILL sí" and "QUILL no". Would you say "sí",
+  or something longer such as "sí, añádela" or "vale"? Should "vale" or
+  "claro" count as yes?
+- [ ] **The wake and stop phrases**, "Quill dicta" and "deja de dictar".
+- [ ] **The punctuation words** ("coma", "punto", "punto y aparte", "abrir
+  interrogación" and the rest), as listed in Dictation Commands.
+- [ ] **The command table** (`SPANISH_COMMAND_HELP` and `SPANISH_PREFIX_HELP`),
+  from "borra eso" to "inserta fragmento".

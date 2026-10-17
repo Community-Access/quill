@@ -245,6 +245,48 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="dictation-no-polishing-box-in-quill-inkwell-and-spanish-pule-eso-and-sí-drafted-behind-the-switch-2026-10-17">Dictation:
+no polishing box in Quill Inkwell, and Spanish “pule eso” and “sí”
+drafted behind the switch (2026-10-17)</h3>
+<p>Two small dictation decisions of Jeff’s, 2026-10-16.</p>
+<p><strong>“Hide it.”</strong> More Dictation Settings is shared by
+QUILL, QUILL Lite, QUILL Transcribe and Quill Inkwell, and it showed
+<strong>Allow polishing my dictation with AI when I ask</strong> (Alt+G)
+in Inkwell too, where it did nothing: polishing runs only in Review
+Dictation, which Inkwell does not have.
+<code>WindowsDictationDialog</code> and <code>MoreDictationDialog</code>
+take a new keyword, <code>review</code> (default <code>True</code>);
+Inkwell’s <code>edit_anywhere_settings</code> passes
+<code>review=False</code>. Then the box is not built,
+<code>MoreDictationDialog.values()</code> leaves
+<code>windows_dictation_polish</code> out so the saved (possibly
+family-shared) value is untouched, and <code>DictationStyleMixin</code>
+neither reads nor writes the polish and review-first fields, so choosing
+Verbatim or Clean in Inkwell cannot turn polishing off for QUILL. QUILL,
+QUILL Lite and QUILL Transcribe are unchanged. No access key moved;
+GATE-14 holds with and without the box. The box’s F1 help now says
+Inkwell does not show it. Both dialog modules stay at or under the
+600-line default cap (module docstrings were tightened to make
+room).</p>
+<p><strong>“Draft them, gated.”</strong> Spanish forms of “polish that”
+(“pule eso”, “púlelo”, “mejora eso”) and of the spoken answers to the
+“Add a correction?” offer in QUILL Transcribe (“sí”, “no”), in
+<code>vocabulary_es.SPANISH_REVIEW_HELP</code> and
+<code>SPANISH_ANSWERS</code>. They are matched through
+<code>spanish_review_command</code> and <code>spanish_answer</code>,
+which answer only in Spanish dictation with the drafted Spanish commands
+switched on (a development build with
+<code>QUILL_DICTATION_SPANISH_COMMANDS=1</code>), so nothing changes for
+users until a native speaker has reviewed them; the questions for that
+review are a new “Spanish review” list at the end of
+<code>docs/qa/screen-reader-checks-2026-10.md</code>. The published
+dictation command reference is unchanged.</p>
+<p>Tests: <code>tests/unit/ui/test_dictation_more_dialog.py</code> (four
+new) and the new
+<code>tests/unit/core/test_dictation_spanish_drafts.py</code>. Docs: the
+Inkwell user guide and changelog, the dictation design record (sections
+9, 10 and 28), the screen-reader checks, and the F1 help reference.</p>
+<h3
 id="three-messages-that-named-menu-items-that-do-not-exist-2026-10-16">Three
 messages that named menu items that do not exist (2026-10-16)</h3>
 <p>The documentation-versus-menu audit found QUILL itself pointing

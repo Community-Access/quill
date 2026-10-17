@@ -16,6 +16,14 @@ English commands (dict.md 9.8, answer 4). The table below is a first draft
 :func:`~quill.core.windows_dictation.speech_language.spanish_commands_enabled`
 says so -- a development build with ``QUILL_DICTATION_SPANISH_COMMANDS=1``.
 
+Two more drafts sit behind the same switch (2026-10-17), outside the main
+table because English matches them outside it too: "pule eso" for "polish
+that" in Review Dictation (:data:`SPANISH_REVIEW_HELP`), and "sí" / "no" as the
+answers to QUILL Transcribe's spoken "Add a correction?" offer
+(:data:`SPANISH_ANSWERS`). Both are read only through
+:func:`spanish_review_command` and :func:`spanish_answer`, which say nothing
+unless the dictation language is Spanish *and* the drafted commands are on.
+
 Phrases are written here with their accents, as a reader expects; they are
 matched without them (:func:`~quill.core.windows_dictation.speech_language.fold`),
 because a recogniser may write "linea" or "línea".
@@ -35,13 +43,17 @@ from quill.core.windows_dictation.vocabulary import (
 )
 
 __all__ = [
+    "SPANISH_ANSWERS",
     "SPANISH_CAPITAL_WORDS",
     "SPANISH_COMMAND_HELP",
     "SPANISH_MARKS",
     "SPANISH_PREFIX_HELP",
+    "SPANISH_REVIEW_HELP",
     "SPANISH_SPACE_WORDS",
     "SPANISH_SWITCH_HELP",
+    "spanish_answer",
     "spanish_mark_rows",
+    "spanish_review_command",
 ]
 
 _OPEN_QUESTION = chr(0xBF)  # the inverted question mark
@@ -399,3 +411,74 @@ SPANISH_SWITCH_HELP: tuple[CommandHelp, ...] = (
         "Dictation itself",
     ),
 )
+
+#: The drafted Spanish review command (P3, "polish that"). **Awaiting
+#: native-speaker review; switched off** with the main table. "Pule eso" is the
+#: plain imperative of *pulir*, the verb a Spanish writer uses for polishing a
+#: text; "púlelo" says it with the object pronoun; "mejora eso" ("improve
+#: that") is the everyday fallback. "Corrige eso" was left out on purpose:
+#: "corrige" followed by words already selects those words to replace.
+SPANISH_REVIEW_HELP: tuple[CommandHelp, ...] = (
+    CommandHelp(
+        Command.REVIEW_POLISH,
+        ("pule eso", "púlelo", "mejora eso"),
+        "Asks the AI to fix punctuation, capitals and small slips in the words, "
+        "keeping your words; opens the last phrase in Review Dictation first. Only "
+        "when Allow polishing my dictation with AI is on.",
+        "Reviewing",
+    ),
+)
+
+#: The drafted spoken answers to "Add a correction: A becomes B?" (D-21), said
+#: after the command word where no yes/no window can be shown (QUILL
+#: Transcribe). **Awaiting native-speaker review; switched off.** The English
+#: "yes" and "no" keep working in Spanish dictation either way; "no" is the same
+#: word in both languages, so only "sí" is new. Matched folded: "si" counts.
+SPANISH_ANSWERS: dict[str, tuple[str, ...]] = {
+    "yes": ("sí",),
+    "no": ("no",),
+}
+
+
+def _drafts_on(language: str) -> bool:
+    """Spanish dictation, with the drafted commands switched on (module docstring)."""
+    from quill.core.windows_dictation.speech_language import (
+        coerce_speech_language,
+        spanish_commands_enabled,
+    )
+
+    return coerce_speech_language(language) == "es" and spanish_commands_enabled()
+
+
+def _matches(words: tuple[str, ...] | list[str], phrases: tuple[str, ...]) -> bool:
+    from quill.core.windows_dictation.speech_language import fold
+
+    said = tuple(words)
+    return any(tuple(fold(phrase).split()) == said for phrase in phrases)
+
+
+def spanish_review_command(words: tuple[str, ...] | list[str], language: str) -> Command | None:
+    """The drafted review command *words* (folded, as ``wake_words`` gives) say.
+
+    ``None`` unless *language* is Spanish and the drafted commands are on, so
+    nothing changes for anybody until a native speaker has checked the phrases.
+    """
+    if not _drafts_on(language):
+        return None
+    for entry in SPANISH_REVIEW_HELP:
+        if _matches(words, entry.phrases):
+            return entry.command
+    return None
+
+
+def spanish_answer(words: tuple[str, ...] | list[str], language: str) -> str:
+    """``"yes"`` or ``"no"`` for a drafted Spanish answer in *words* (folded), else ``""``.
+
+    Empty unless *language* is Spanish and the drafted commands are on.
+    """
+    if not _drafts_on(language):
+        return ""
+    for answer, phrases in SPANISH_ANSWERS.items():
+        if _matches(words, phrases):
+            return answer
+    return ""

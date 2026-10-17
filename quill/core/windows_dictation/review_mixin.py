@@ -98,7 +98,11 @@ class ReviewMixin(SnippetFillMixin):  # and VoiceCommandsMixin under that
 
     def _review_command(self, words: tuple[str, ...] | list[str], preferences: Any) -> bool:
         """A review command after the command word: handled here, ``True``."""
-        command = REVIEW_COMMANDS.get(tuple(words))
+        from quill.core.windows_dictation.vocabulary_es import spanish_review_command
+
+        language = str(getattr(preferences, "speech_language", "en") or "en")
+        # "pule eso": a draft, off until a native speaker checks it (vocabulary_es).
+        command = REVIEW_COMMANDS.get(tuple(words)) or spanish_review_command(words, language)
         if command is None:
             return False
         desk = self._review_desk()

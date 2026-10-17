@@ -312,7 +312,8 @@ class InkwellDictationMixin(FieldHoldMixin):
         from quill.ui.windows_dictation_dialog import WindowsDictationDialog
 
         settings = self._anywhere_settings()
-        dialog = WindowsDictationDialog(self.frame, settings, self._announce)  # type: ignore[attr-defined]
+        # No Review Dictation here, so no polishing box and polishing left as saved.
+        dialog = WindowsDictationDialog(self.frame, settings, self._announce, review=False)  # type: ignore[attr-defined]
         try:
             answer = self._show_modal_dialog(dialog, "Dictation Settings")  # type: ignore[attr-defined]
             if answer == wx.ID_OK:

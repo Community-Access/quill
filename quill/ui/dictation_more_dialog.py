@@ -1,34 +1,29 @@
 """More Dictation Settings: holding the key, the live preview, talking to the
 AI, and OpenAI with your own key.
 
-Reached from Dictation Settings (More Dictation Settings..., Alt+A) in both
-editors. A window of its own because Dictation Settings is full -- every letter
-a screen-reader user can reach with Alt is taken there -- and because these are
-the choices nobody needs on the first day:
+Reached from Dictation Settings (More Dictation Settings..., Alt+A). Its own
+window because every Alt letter is taken there, and nobody needs these on day one:
 
-* **Hold the dictation key to talk** (off by default): when on, hold Ctrl+F11
-  and speak, let go to stop; a quick press still turns dictation on and off.
-  Off, one press starts dictation and the next stops it.
-* **While you speak, the words heard so far**: the live preview of a streaming
-  engine (Nemotron, OpenAI) in the status bar and on a braille display, said
-  quietly as well, or not at all.
+* **Hold the dictation key to talk** (off by default): hold Ctrl+F11 and speak,
+  let go to stop; a quick press still turns dictation on and off.
+* **While you speak, the words heard so far**: a streaming engine's live
+  preview in the status bar and on braille, said quietly too, or not at all.
 * **Tick while a phrase is being worked on** (off in the editors, on in QUILL
-  Transcribe): a soft tick while a heard phrase is still being recognised
-  (``quill/core/windows_dictation/working_tick.py``).
+  Transcribe; ``quill/core/windows_dictation/working_tick.py``).
+* **Allow polishing my dictation with AI**, only where Review Dictation exists:
+  without it (Quill Inkwell, ``review=False``) the box is hidden, its value kept.
 * **Talking to the AI**: the AI Conversation window's own profile -- send at
   the pause or wait for Enter, its own pause length, fillers and punctuation.
-* **OpenAI**: whether your speech may be sent (the agreement, which can be
-  taken back here), and which of the transcription models your key can use,
-  read live from OpenAI when this window opens -- never a list kept in QUILL.
+* **OpenAI**: whether your speech may be sent (an agreement taken back here),
+  and the models your key can use, read live from OpenAI, never kept in QUILL.
 * **My Dictation Instructions...**: the file Tidy Dictated Text follows.
 * **Programs Dictation Never Types Into...** (D-24): the never-type list
   (:mod:`quill.ui.dictation_never_type_dialog`), kept until this window's OK.
 * **Keep a dictation history** (D-5): off, or one, seven or thirty days of the
   text dictated, sealed for this Windows account; Recent Phrases lists it.
-* **Commands** (D-1): the command word ("QUILL"), strict mode and how long
-  command mode waits (:mod:`quill.core.windows_dictation.command_mode`). OK is
-  refused, with the reason, while the command word is a common word or one of
-  the person's own words.
+* **Commands** (D-1): the command word ("QUILL"), strict mode and command
+  mode's wait (:mod:`quill.core.windows_dictation.command_mode`). OK is refused,
+  with the reason, while the command word is a common word or one of My Words.
 
 Nothing is applied until OK (:meth:`MoreDictationDialog.values`); Dictation
 Settings applies it with its own OK, so Cancel there cancels this too.
@@ -89,6 +84,7 @@ class MoreDictationDialog(wx.Dialog):
         load_models: bool = True,
         my_words: Iterable[str] | None = None,
         help_for: dict[str, str] | None = None,
+        review: bool = True,
     ) -> None:
         super().__init__(parent, title="More Dictation Settings")
         self._announce = announce or (lambda _text: None)
@@ -168,17 +164,22 @@ class MoreDictationDialog(wx.Dialog):
         )
         root.Add(self.review_first, 0, wx.ALL, _PAD)
 
-        # P3, "Polish my dictation": opt-in, off by default, never automatic.
-        self.polish = wx.CheckBox(self, label="Allow polishin&g my dictation with AI when I ask")
-        self.polish.SetValue(bool(value("windows_dictation_polish", False)))
-        self.polish.SetHelpText(
-            "When this is on, saying QUILL polish that, or pressing Polish in Review "
-            "Dictation, asks the AI to fix punctuation, capital letters and small slips "
-            "in your words, keeping your words. The words open in Review Dictation "
-            "first, you are asked once before anything is sent, you hear what changed, "
-            "and nothing is inserted until you insert it. Off by default; it needs AI."
-        )
-        root.Add(self.polish, 0, wx.ALL, _PAD)
+        # P3: opt-in, never automatic; only where Review Dictation exists (not Inkwell).
+        self.polish: wx.CheckBox | None = None
+        if review:
+            self.polish = wx.CheckBox(
+                self, label="Allow polishin&g my dictation with AI when I ask"
+            )
+            self.polish.SetValue(bool(value("windows_dictation_polish", False)))
+            self.polish.SetHelpText(
+                "When this is on, saying QUILL polish that, or pressing Polish in Review "
+                "Dictation, asks the AI to fix punctuation, capital letters and small slips "
+                "in your words, keeping your words. The words open in Review Dictation "
+                "first, you are asked once before anything is sent, you hear what changed, "
+                "and nothing is inserted until you insert it. Off by default; it needs AI. "
+                "Quill Inkwell has no Review Dictation, so it does not show this box."
+            )
+            root.Add(self.polish, 0, wx.ALL, _PAD)
 
         self._add_history(root, value)
         # dict.md D-13: one settings store for the family (family_store.py).
@@ -565,12 +566,12 @@ class MoreDictationDialog(wx.Dialog):
     # -- reading it back --------------------------------------------------------- #
 
     def values(self) -> dict[str, Any]:
-        """Every choice, under the settings' own names."""
+        """Every choice shown, under the settings' own names (a hidden one is left out)."""
         row = self.model.GetSelection()
         model = self._models[row] if 0 <= row < len(self._models) else self._chosen_model
         if row == wx.NOT_FOUND and self._chosen_model not in self._models:
             model = ""  # gone, and not chosen again: say so at the next start
-        return {
+        chosen: dict[str, Any] = {
             "windows_dictation_hold_to_talk": self.hold.GetValue(),
             "windows_dictation_preview": self._previews[max(0, self.preview.GetSelection())],
             "windows_dictation_ai_send": self._sends[max(0, self.send.GetSelection())],
@@ -589,9 +590,11 @@ class MoreDictationDialog(wx.Dialog):
             "windows_dictation_review_first": self.review_first.GetValue(),
             "windows_dictation_profile": self._profiles[max(0, self.profile.GetSelection())],
             "windows_dictation_profile_locked": self.profile_locked.GetValue(),
-            "windows_dictation_polish": self.polish.GetValue(),
             "windows_dictation_history_days": self._history_days[
                 max(0, self.history.GetSelection())
             ],
             SHARE_FIELD: "on" if self.share_family.GetValue() else "off",
         }
+        if self.polish is not None:
+            chosen["windows_dictation_polish"] = self.polish.GetValue()
+        return chosen

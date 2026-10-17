@@ -2,6 +2,41 @@
 
 ## 1.0.0
 
+### Dictation: no polishing box in Quill Inkwell, and Spanish "pule eso" and "sí" drafted behind the switch (2026-10-17)
+
+Two small dictation decisions of Jeff's, 2026-10-16.
+
+**"Hide it."** More Dictation Settings is shared by QUILL, QUILL Lite, QUILL
+Transcribe and Quill Inkwell, and it showed **Allow polishing my dictation with
+AI when I ask** (Alt+G) in Inkwell too, where it did nothing: polishing runs
+only in Review Dictation, which Inkwell does not have. `WindowsDictationDialog`
+and `MoreDictationDialog` take a new keyword, `review` (default `True`);
+Inkwell's `edit_anywhere_settings` passes `review=False`. Then the box is not
+built, `MoreDictationDialog.values()` leaves `windows_dictation_polish` out so
+the saved (possibly family-shared) value is untouched, and
+`DictationStyleMixin` neither reads nor writes the polish and review-first
+fields, so choosing Verbatim or Clean in Inkwell cannot turn polishing off for
+QUILL. QUILL, QUILL Lite and QUILL Transcribe are unchanged. No access key
+moved; GATE-14 holds with and without the box. The box's F1 help now says
+Inkwell does not show it. Both dialog modules stay at or under the 600-line
+default cap (module docstrings were tightened to make room).
+
+**"Draft them, gated."** Spanish forms of "polish that" ("pule eso", "púlelo",
+"mejora eso") and of the spoken answers to the "Add a correction?" offer in
+QUILL Transcribe ("sí", "no"), in `vocabulary_es.SPANISH_REVIEW_HELP` and
+`SPANISH_ANSWERS`. They are matched through `spanish_review_command` and
+`spanish_answer`, which answer only in Spanish dictation with the drafted
+Spanish commands switched on (a development build with
+`QUILL_DICTATION_SPANISH_COMMANDS=1`), so nothing changes for users until a
+native speaker has reviewed them; the questions for that review are a new
+"Spanish review" list at the end of `docs/qa/screen-reader-checks-2026-10.md`.
+The published dictation command reference is unchanged.
+
+Tests: `tests/unit/ui/test_dictation_more_dialog.py` (four new) and the new
+`tests/unit/core/test_dictation_spanish_drafts.py`. Docs: the Inkwell user
+guide and changelog, the dictation design record (sections 9, 10 and 28), the
+screen-reader checks, and the F1 help reference.
+
 ### Three messages that named menu items that do not exist (2026-10-16)
 
 The documentation-versus-menu audit found QUILL itself pointing people at

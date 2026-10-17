@@ -532,9 +532,23 @@ sorry, 6" types "call me at 6". Anything else, such as "no, I don't think so",
 is typed as you said it. It happens on this computer, before anything is typed,
 and it is off until you turn it on. **Dictation style** (Alt+Y) sets it and
 **Remove filler words** together: **Verbatim** turns both off and **Clean**
-turns both on. The editors also offer **Polished**, which needs their Review
-Dictation window; Inkwell does not have that window, so the **Allow polishing
-my dictation with AI** box in More Dictation Settings does nothing here.
+turns both on. Choosing a style here changes only those two boxes.
+
+**Polishing with AI belongs to Review Dictation.** QUILL, QUILL Lite and QUILL
+Transcribe can send a phrase you dictated to the AI to tidy its punctuation,
+capital letters and small slips, but only inside their **Review Dictation**
+window, where you read the result before anything is inserted. Inkwell types
+straight into another program and has no Review Dictation window, so Inkwell's
+**More Dictation Settings** does not show the **Allow polishing my dictation
+with AI** box, and its **Dictation style** list has no **Polished** row. Your
+choice is not lost: if you turned polishing on in QUILL and share dictation
+settings with every QuillVille program, it stays on there, and saving Inkwell's
+Dictation Settings (even after choosing Verbatim or Clean) leaves it exactly as
+it was. For example, turn on polishing in QUILL's More Dictation Settings
+(Alt+G), then open Inkwell's **Dictation > Dictation Settings...** (Ctrl+Alt+D),
+choose **Clean** and press OK: QUILL's Review Dictation still offers Polish
+afterwards. To change polishing, open Dictation Settings in one of those three
+programs.
 
 **What works in another program.** Spoken punctuation, spelling, "caps on", "all
 caps on" and "no space on", switching between English and Spanish, and "scratch
