@@ -2,6 +2,79 @@
 
 ## 1.0.0
 
+### Typing assists: AutoCorrect for misspellings, and Enter in a list in both editors (todo items 38 and 40, 2026-10-16)
+
+Jeff's editor completion checks, items 38 (automatic numbering in text and
+Markdown) and 40 (misspelling AutoCorrect with user entries). Shared, wx-free
+rules; QUILL and QUILL Lite deliver them on the same keys and settings.
+
+- **AutoCorrect** (`quill/core/autocorrect.py`). With the new setting
+  `autocorrect_misspellings` on (Settings > Editing, *Correct common
+  misspellings as I type*; QUILL Lite Preferences, under the Autocorrect area;
+  off by default in both), a space or Enter after a known misspelling replaces
+  it: `teh` becomes `the`. Word rules: the token back to the previous
+  whitespace, opening and closing punctuation trimmed and kept, letters only
+  (internal apostrophe allowed), so URLs, email addresses, paths and
+  identifiers never match; nothing inside a Markdown code span or fenced block
+  (`spellcheck_live.live_alert_suppressed`); an all-capitals word is left
+  alone; a capital is carried (`Teh` -> `The`). Prose only:
+  `autocorrect_allows` refuses any `spellcheck_filetypes.is_code_filename`
+  name and the literal kinds, and accepts plain text, Markdown, rich text and
+  untitled documents. The correction and the space are written by one
+  `replace_as_one_undo`, so one Ctrl+Z restores the typed word; the word then
+  joins a per-window declined set (`note_declined`) so the next space does not
+  undo the undo. Word-corrected earcon plus "Corrected to X" (the reader echoes
+  only the space). QUILL records it in the edit journal.
+- **The built-in list** is committed data, `quill/core/data/autocorrect_en.json`
+  (354 pairs), with its source and rules written in the file. Every key is
+  rejected by both the en_US and en_GB Hunspell dictionaries and every word of
+  every correction is accepted by en_US; `tests/unit/core/test_autocorrect.py`
+  re-checks that where pyenchant has the dictionaries. Real words, surnames and
+  stylistic variants (calender, wich, Sargent, everytime) are excluded.
+- **Your entries use the abbreviation store, not a new one.** A correction of
+  yours is an `Abbreviation` in `abbreviations.json` with the reserved category
+  `AUTOCORRECT_CATEGORY` ("AutoCorrect"); no schema change. A user entry for a
+  built-in word overrides it, a disabled one stops it, removing it restores
+  the built-in. Every abbreviation matcher (`try_expand`, `enabled_only`,
+  `find_by_trigger`, so Quick Insert, the snippet gallery and Inkwell too)
+  skips the category, so abbreviations on never means corrections on.
+- **AutoCorrect Entries** (`format.autocorrect_entries`, Insert menu in QUILL;
+  `cmd_autocorrect_entries`, Tools menu in QUILL Lite, Autocorrect area;
+  Alt+Shift+9 in both, the only family-wide free chord rule 9 allows): one
+  shared window, `quill/ui/autocorrect_entries_dialog.py`, with a filter, the
+  list (Enter/Space edit, `apply_listbox_activation`), Add, Edit, Turn Off/Turn
+  On and Remove, inline F1 help on every control, every outcome spoken, saved
+  through the shared store on close. Parity row, help topic, F1 purposes
+  (`lite_surface_help`, shared with QUILL) and both help audits updated.
+- **Enter in a list** (`quill/core/list_continuation.py`, moved out of
+  `format_ops`, which re-exports it). Fixed: Enter on an empty item ate the
+  line's newline and joined the next line on; a numbered task item continued
+  as a bullet. New: a split mid-item drops the spaces at the split; a new
+  numbered item renumbers the following same-depth, same-separator items while
+  they count on (custom numbering is left alone); the spoken message counts the
+  renumbered items. `list_continuation_allowed`: Markdown always, plain text
+  only with the new setting `continue_lists_in_plain_text` (off by default) and
+  never in a code or configuration file, never in rich text (its lists are
+  `ITextPara` properties) or HTML/YAML. **Behaviour change for QUILL:** plain
+  text continued lists unconditionally before (including `.py`, `.json` and
+  untitled buffers, which `infer_markup_kind` calls plain); it now waits for
+  the setting. QUILL Lite had no list continuation at all; it now has QUILL's,
+  with Markdown behind the "markup" area. One undo step in both.
+- **Structure**: QUILL's Enter and AutoCorrect delivery moved to
+  `quill/ui/main_frame_typing_assist.py` (main_frame.py shrank 20 lines);
+  QUILL Lite's to `quill/apps/lite_window_typing_assist.py`, and the
+  abbreviation half of `lite_window_typing.py` moved to
+  `lite_window_abbreviations.py`; QUILL Lite's two checkboxes are
+  `lite_preferences_typing.py`. Settings, keymap and command tables rebaselined
+  (`_rebaseline_2026_10_16_typing_assists`); `quill.settings` and
+  `lite.settings` recorded as additive.
+- Tests: `tests/unit/core/test_list_continuation.py`,
+  `tests/unit/core/test_autocorrect.py`,
+  `tests/unit/ui/test_main_frame_typing_assist.py`,
+  `tests/unit/ui/test_autocorrect_entries_dialog.py`,
+  `tests/unit/apps/test_lite_typing_assist.py`. Manual screen-reader checks are
+  listed in `docs/qa/screen-reader-checks-2026-10.md`.
+
 ### Dictation: replace, change that, delete by paragraph, a second opinion, kept revisions, and correcting in other programs (D-19, D-10, 2026-10-16)
 
 dict.md D-19 and D-10; design record section 27. Shared code, so QUILL, QUILL

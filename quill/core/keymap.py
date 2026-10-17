@@ -441,6 +441,8 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # products bind (bad.md 3.1). The two list commands should become one
     # command with a sort option (bad.md P1); until then both keep a key.
     "tools.misspelling_list_ranked": "Alt+Shift+R",
+    # Same in QUILL Lite (rule 2); three-modifier F-keys are all launchers (rule 9).
+    "format.autocorrect_entries": "Alt+Shift+9",
     # Favourite folders to the leader, 2026-09-17 (bad.md §0.6, rule 7: media,
     # radio favourites, favourite folders, AI and remote-file commands live on
     # the leader or in a menu -- editor chords are for the editor).

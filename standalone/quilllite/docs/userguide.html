@@ -2744,6 +2744,12 @@ without looking for a setting. It is the same switch as the
 Abbreviations box in Customize Features.</p>
 <p>If you also use QUILL or Quill Inkwell, there is a switch in
 Preferences that lets all three share one list of abbreviations.</p>
+<p>Your own AutoCorrect corrections (Chapter 11, Correcting misspellings
+as you type) are kept in this same list, under the category
+<strong>AutoCorrect</strong>. You will see them in Manage Abbreviations
+if you choose that category. They are not abbreviations, though: they
+never expand just because <strong>Expand Abbreviations</strong> is on,
+and they are not in <strong>Snippets</strong>.</p>
 <h3 id="undo-and-getting-text-back">Undo, and getting text back</h3>
 <table>
 <thead>
@@ -2880,6 +2886,42 @@ so keep pressing until you hear the one you want.</p>
 themselves. In Markdown, QUILL Lite writes <code>- </code> or
 <code>1. </code> at the start of the lines you selected, and only those
 lines.</p>
+<h5 id="pressing-enter-in-a-list">Pressing Enter in a list</h5>
+<p>In a Markdown document, <strong>Enter</strong> keeps a list going,
+the way it does in QUILL and in other Markdown editors. QUILL Lite says
+what it did, because your screen reader only hears a new line:</p>
+<ul>
+<li><strong>Enter</strong> at the end of an item starts the next one
+with the next marker: a hyphen after a hyphen, <code>3. </code> after
+<code>2. </code>, <code>3) </code> after <code>2) </code>, and an
+unchecked <code>- [ ] </code> after a task item. A nested item keeps its
+indentation. You hear “Continued list item”.</li>
+<li><strong>Enter</strong> in the middle of an item splits it. In
+<code>1. bread milk</code>, with the cursor before <code>milk</code>,
+you get <code>1. bread</code> and <code>2. milk</code>.</li>
+<li>A new numbered item renumbers the items under it, so adding an item
+after the first of <code>1. 2. 3.</code> gives <code>1. 2. 3. 4.</code>,
+and you hear “Continued list item, renumbered 2 items below”. If your
+list jumps (from <code>2.</code> to <code>7.</code>), your own numbering
+from the jump on is left alone.</li>
+<li><strong>Enter</strong> on an item with nothing after its marker ends
+the list. The marker goes, the empty line stays, and you hear “Exited
+list”.</li>
+<li><strong>Ctrl+Z</strong> straight afterwards takes the whole thing
+back in one step: the new line, its marker and any renumbering.</li>
+</ul>
+<p>This needs the <strong>Markdown and HTML</strong> area switched on in
+Customize Features, like everything else that writes Markdown for
+you.</p>
+<p><strong>In plain text, only if you ask.</strong> Check
+<strong>Continue lists in plain text</strong> in <strong>Tools &gt;
+Preferences</strong> and the same happens in a <code>.txt</code> file or
+a new untitled document. It starts off, because in plain text a line
+that happens to begin with <code>1.</code> is as often a date or a
+version number as a list. It never happens in a source code or settings
+file, whatever the box says, and never in rich text, where
+<strong>Ctrl+Shift+L</strong> makes real lists and
+<strong>Enter</strong> is WordPad’s own.</p>
 <h4 id="keys-that-only-work-in-rich-text">Keys that only work in rich
 text</h4>
 <p>Underneath, every QUILL Lite document uses the same Windows editing
@@ -8342,6 +8384,17 @@ dash.</p>
 <p>Both of these also need <strong>Autocorrect while typing</strong>
 switched on in Customize Features. Neither ever runs in a plain text,
 source code or settings document.</p>
+<p><strong>Correct common misspellings as I type</strong> is off. It
+changes <code>teh</code> to <code>the</code> when you type the space
+after it. It also needs <strong>Autocorrect while typing</strong> in
+Customize Features, and unlike the two above it does run in plain text,
+because a misspelling is as wrong in a <code>.txt</code> file as
+anywhere. It never runs in source code or settings files. <em>Correcting
+misspellings as you type</em>, below, has the details.</p>
+<p><strong>Continue lists in plain text</strong> is off. With it on,
+<strong>Enter</strong> in a plain text list starts the next item, as it
+always does in Markdown. Chapter 6 has the details, under <em>Pressing
+Enter in a list</em>.</p>
 <h5 id="what-you-hear-2">What you hear</h5>
 <p><strong>When a command does something, give me:</strong> <strong>a
 sound</strong>, <strong>the action spoken</strong>,
@@ -8836,22 +8889,102 @@ asks you straight away.</li>
 ever changes in a way that matters, such as what is sent or what is
 kept, you will be asked again.</p>
 <h5 id="how-autocorrect-works">How autocorrect works</h5>
-<p><strong>Autocorrect has two rules, and switching the area on does not
-turn either of them on.</strong> The area decides whether autocorrect
-exists at all. Two check boxes in <strong>Tools &gt;
+<p><strong>Autocorrect has three rules, and switching the area on does
+not turn any of them on.</strong> The area decides whether autocorrect
+exists at all. Three check boxes in <strong>Tools &gt;
 Preferences</strong> decide which rules run:</p>
 <ul>
 <li><strong>Curl quotes as I type</strong></li>
 <li><strong>Turn two hyphens into an em dash</strong></li>
+<li><strong>Correct common misspellings as I type</strong></li>
 </ul>
-<p>Both start off. So after you switch the area on, you also need to
-check the rule you want. They are separate because plenty of people want
-the long dash but not the curly quotes.</p>
-<p>Neither rule ever runs in a plain text, source code or settings
-document, whatever the boxes say. A curly quote in a <code>.json</code>
-file would break it.</p>
-<p>There is no third rule. QUILL Lite does <strong>not</strong>
+<p>All three start off. So after you switch the area on, you also need
+to check the rule you want. They are separate because plenty of people
+want the long dash but not the curly quotes, or the spelling fixes and
+nothing else.</p>
+<p>The two typography rules never run in a plain text, source code or
+settings document, whatever the boxes say. A curly quote in a
+<code>.json</code> file would break it. Misspelling correction runs in
+plain text, Markdown and rich text, and never in source code or settings
+files.</p>
+<p>There is no fourth rule. QUILL Lite does <strong>not</strong>
 capitalise the start of a sentence, and never has.</p>
+<h5 id="correcting-misspellings-as-you-type">Correcting misspellings as
+you type</h5>
+<p>With the rule on, QUILL Lite fixes the misspellings almost everybody
+makes the moment you finish the word. Type <code>teh</code> and a space
+and it becomes <code>the </code>; type <code>recieve</code> and press
+<strong>Enter</strong> and it becomes <code>receive</code> before the
+new line starts. You hear the word-corrected sound and “Corrected to
+the”, because your screen reader only echoes the space and would never
+tell you the word changed.</p>
+<p>The built-in list has about 350 common English misspellings, such as
+<code>teh</code>, <code>seperate</code>, <code>definately</code>,
+<code>occured</code>, <code>untill</code> and <code>wierd</code>. Every
+one was checked against American and British dictionaries before it went
+in, so a word you spelled correctly is never on it. Your capitals are
+kept: <code>Teh</code> becomes <code>The</code>, and
+<code>febuary</code> becomes <code>February</code>. Brackets, quotes and
+punctuation round the word stay where they were, so
+<code>(recieve,</code> becomes <code>(receive,</code>.</p>
+<p>It never touches:</p>
+<ul>
+<li>a word typed all in capitals, such as <code>TEH</code>, which is far
+more often an acronym than a mistake;</li>
+<li>web addresses, email addresses and paths, or any word with a full
+stop, slash, colon, <code>@</code>, digit or underscore inside it, so
+<code>teh.example.com</code> and <code>adress@example.com</code> stay as
+typed;</li>
+<li>anything inside backticks or a fenced code block in Markdown;</li>
+<li>source code and settings files, by their name, the same list that
+keeps spell-check-as-you-type quiet in them.</li>
+</ul>
+<p><strong>Taking one back.</strong> <strong>Ctrl+Z</strong> straight
+after a correction puts back exactly what you typed, as one undo step.
+QUILL Lite then leaves that word alone in this document for the rest of
+the session: type the space again and the word stays, and the status bar
+says “Kept teh as you typed it”.</p>
+<h5 id="autocorrect-entries-altshift9">AutoCorrect Entries
+(Alt+Shift+9)</h5>
+<p><strong>Tools &gt; AutoCorrect Entries…</strong>
+(<strong>Alt+Shift+9</strong>) shows every correction, the built-in ones
+and yours, one per row: “teh becomes the, built in”. It is QUILL’s
+window, on QUILL’s key, so it works the same in both.</p>
+<ul>
+<li><strong>Find</strong> narrows the list as you type.</li>
+<li><strong>Corrections</strong> is the list. <strong>Enter</strong> or
+<strong>Space</strong> on a row edits it.</li>
+<li><strong>Add…</strong> makes a correction of your own: the word as
+you mistype it, what it should become, and whether case must match
+exactly. For example, <code>qill</code> becoming <code>QUILL</code>. The
+word must be letters only (an apostrophe inside is fine); what it
+becomes may be several words.</li>
+<li><strong>Edit…</strong> changes the row you are on. Editing a
+built-in one keeps your version beside it, and the row says “built in,
+changed by you”.</li>
+<li><strong>Turn Off</strong> stops the correction you are on without
+deleting it, and the row ends in “stopped”. The same button, now
+<strong>Turn On</strong>, starts it again. Use this when a correction
+keeps changing a word you meant.</li>
+<li><strong>Remove</strong> deletes one of yours. On a built-in one you
+changed or turned off, it puts it back as it shipped. A built-in
+correction cannot be deleted, so Remove on one turns it off instead and
+tells you so.</li>
+</ul>
+<p>Every button says what it did, and your changes are kept when you
+close the window.</p>
+<p>Your corrections are kept in your abbreviation list, under the
+category <strong>AutoCorrect</strong>: QUILL Lite’s own list, or QUILL’s
+if Preferences says share it, in which case QUILL and QUILL Lite share
+your corrections too. Turning <strong>Abbreviations</strong> off in
+Customize Features does not turn your corrections off. The window needs
+the <strong>Autocorrect while typing</strong> area switched on, like the
+rule itself.</p>
+<p><strong>Limits.</strong> The built-in list is English only. A
+correction happens when a space or <strong>Enter</strong> ends the word.
+AutoCorrect fixes known misspellings, not every misspelling;
+<strong>F7</strong> and the spell check as you type still find the
+rest.</p>
 <h5 id="what-can-never-be-switched-off">What can never be switched
 off</h5>
 <p>Three things always stay. <strong>Tools &gt; Preferences</strong> and
@@ -9813,6 +9946,10 @@ list inside the app.</p>
 <td>All Matches…</td>
 </tr>
 <tr>
+<td><strong>Ctrl+Alt+Shift+F3</strong></td>
+<td>Count Occurrences</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Alt+Shift+F8</strong></td>
 <td>Find in Open Documents…</td>
 </tr>
@@ -9823,10 +9960,6 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+Shift+R</strong></td>
 <td>Replace Across Files…</td>
-</tr>
-<tr>
-<td><strong>Ctrl+Alt+Shift+F3</strong></td>
-<td>Count Occurrences</td>
 </tr>
 </tbody>
 </table>
@@ -10051,7 +10184,7 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Alt+Shift+S</strong></td>
-<td>Clipboard Collector (on or off)</td>
+<td>Clipboard Collector</td>
 </tr>
 <tr>
 <td><strong>Alt+Shift+C</strong></td>
@@ -10525,6 +10658,10 @@ list inside the app.</p>
 <td>Expand Abbreviations</td>
 </tr>
 <tr>
+<td><strong>Alt+Shift+9</strong></td>
+<td>AutoCorrect Entries…</td>
+</tr>
+<tr>
 <td><strong>Ctrl+,</strong></td>
 <td>Preferences…</td>
 </tr>
@@ -10546,7 +10683,7 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Alt+Shift+M</strong></td>
-<td>App Sounds (on or off)</td>
+<td>App Sounds</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Shift+O</strong></td>
@@ -10802,6 +10939,14 @@ list inside the app.</p>
 <tr>
 <td><strong>Alt+F9</strong></td>
 <td>Dictation Status</td>
+</tr>
+<tr>
+<td><strong>F11</strong></td>
+<td>Speak a Command</td>
+</tr>
+<tr>
+<td><strong>Shift+F4</strong></td>
+<td>Review Dictation…</td>
 </tr>
 </tbody>
 </table>

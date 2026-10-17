@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 501.
+Editor commands with default bindings: 502.
 
 ## The QUILL editor
 
@@ -156,6 +156,7 @@ Editor commands with default bindings: 501.
 | (unbound by default) | Structured List Studio Settings | `format.list_studio_settings` |
 | (unbound by default) | New Abbreviation from Clipboard... | `format.new_abbreviation_from_clipboard` |
 | (unbound by default) | Quick Insert... | `format.quick_insert` |
+| Alt+Shift+9 | Autocorrect entries | `format.autocorrect_entries` |
 | Alt+Shift+A | Toggle Abbreviation Expansion | `format.toggle_abbreviation_expansion` |
 | Alt+Shift+Down | Move Section Down | `format.move_section_down` |
 | Alt+Shift+F | Switch Document Format | `format.switch_document_format` |

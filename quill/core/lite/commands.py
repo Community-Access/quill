@@ -823,6 +823,7 @@ COMMANDS: list[CommandRow] = [
     # No area of its own, deliberately: the switch has to still be there when
     # the thing it switches is off, or it can only ever be turned one way.
     ("&Tools", "&Expand Abbreviations", "Alt+Shift+A", "cmd_toggle_abbreviations", "check"),
+    ("&Tools", "AutoCorrect Entries...", "Alt+Shift+9", "cmd_autocorrect_entries", ""),
     ("&Tools", "", "", "", "sep"),
     # The only place the two settings with no menu item of their own -- what
     # Ctrl+N creates, and how often unsaved work is copied aside -- can be

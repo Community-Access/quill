@@ -790,6 +790,31 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "Convert a double hyphen to an en or em dash while you type.",
         keywords=("autoformat", "dash", "hyphen", "typography"),
     ),
+    SettingSpec(
+        "autocorrect_misspellings",
+        "Correct common misspellings as I type",
+        "editing",
+        "bool",
+        "When you type a space or press Enter after a common misspelling, replace "
+        "it with the right word: teh becomes the, recieve becomes receive. You hear "
+        "the corrected word. Control Z straight afterwards puts back what you "
+        "typed, and that word is then left alone. Never in code or settings "
+        "files, web or email addresses, or a word typed all in capitals. Insert, "
+        "AutoCorrect Entries (Alt+Shift+9) lists the corrections and adds your own.",
+        keywords=("autocorrect", "misspelling", "spelling", "typo", "correct", "teh"),
+    ),
+    SettingSpec(
+        "continue_lists_in_plain_text",
+        "Continue lists in plain text",
+        "editing",
+        "bool",
+        "In a plain text document, pressing Enter at the end of a line that starts "
+        "with a list marker (a hyphen, an asterisk, 1. or 1)) starts the next line "
+        "with the next marker; Enter on an empty item ends the list. Markdown "
+        "documents always do this. Off by default, and never in code or settings "
+        "files or in rich text, whose lists are formatting.",
+        keywords=("list", "numbering", "bullet", "enter", "continue", "plain text"),
+    ),
     # #262: Pandoc Import / Export batch conversion defaults. These show in
     # Preferences -> Editing; the wizard reads them as starting values and
     # lets the user override per batch. ``import_export_last_folder`` is

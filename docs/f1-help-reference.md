@@ -1880,7 +1880,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 214 audited sites (214 helped).
+Control coverage: 225 audited sites (225 helped).
 
 ### Every window, and what it is for
 
@@ -1901,6 +1901,10 @@ Control coverage: 214 audited sites (214 helped).
 **Answer.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
 **Ask About an Image.** Choose a picture and, if you like, a question about it. The picture goes to OpenAI on your ChatGPT subscription and the description comes back in a window you can read, copy or insert into your document.
+
+**AutoCorrect Entries.** Every correction AutoCorrect makes as you type, built in and your own, one per row: teh becomes the. Type in Find to narrow the list. Add makes a correction of your own, Edit changes the one you are on, Turn Off stops one without deleting it, and Remove deletes one of yours or puts a built-in one back. QUILL has the same window on the same key.
+
+**AutoCorrect Entry.** One correction: the word as you mistype it, and what it should become. Leave Match case exactly unchecked unless the case of the word matters; unchecked, a capital at the start of a sentence is kept.
 
 **Bookmarks.** The places you marked in this document, in the order they appear. Choose one and press Enter to go there; Remove takes one out of the list without touching the document. Bookmarks last for the session and move with the text as you edit around them.
 
@@ -2379,3 +2383,19 @@ Control coverage: 214 audited sites (214 helped).
 - `self._text`: The instruction the AI is given. Type {selection} where the text you run it on should go, {document} for the whole document, and {title} for the document's title.
 - `ok_btn`: Saves the prompt in the library and closes this window.
 - `cancel_btn`: Closes this window without saving anything.
+#### CorrectionEditDialog (`quill/ui/autocorrect_entries_dialog.py`)
+
+- `self.word`: The misspelling, exactly as you type it wrongly. One word of letters only; an apostrophe inside it is fine. It is matched in any case unless you check Match case exactly.
+- `self.fixed`: What the word becomes when you type a space or press Enter after it. It may be more than one word, on one line.
+- `self.case`: Checked: only the word typed in exactly this case is corrected, and the correction goes in exactly as written. Unchecked, the usual choice: teh, Teh and the start of a sentence are all corrected, keeping your capital letter.
+- `ok`: Save this correction and go back to the list.
+- `cancel`: Go back to the list without saving anything.
+#### AutocorrectEntriesDialog (`quill/ui/autocorrect_entries_dialog.py`)
+
+- `self.filter`: Type part of a word to narrow the list to the corrections that contain it, either the misspelling or what it becomes. Clear it to see them all again.
+- `self.list`: Every correction, one per row: the misspelling, what it becomes, and whether it is built in or yours. A row that ends in stopped is turned off. Corrections happen only while Correct common misspellings as I type is on, and never in code or settings files.
+- `self.add_button`: Add a correction of your own. Adding a word that is already built in changes what it becomes; Remove later puts the built-in one back.
+- `self.edit_button`: Change the correction you are on: the misspelling, what it becomes, or whether case must match.
+- `self.toggle_button`: Stop the correction you are on from happening, without deleting it, or start a stopped one again. Use this when a correction keeps changing a word you meant to type.
+- `self.remove_button`: Delete a correction of yours, or put a built-in one back the way it shipped after you changed or stopped it. A built-in correction cannot be deleted; Remove on one turns it off instead.
+- `close`: Close this window. Your changes are already kept.

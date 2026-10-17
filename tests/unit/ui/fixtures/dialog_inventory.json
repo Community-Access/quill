@@ -184,6 +184,8 @@
   "quill/ui/audiobook_chapter_editor_dialog.py::ChapterEditorDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/audiobook_chapter_editor_dialog.py::ChapterEditorDialog._on_export_titles::wx.FileDialog": "native",
   "quill/ui/audiobook_chapter_editor_dialog.py::ChapterEditorDialog._on_import_titles::wx.FileDialog": "native",
+  "quill/ui/autocorrect_entries_dialog.py::AutocorrectEntriesDialog.__init__::wx.Dialog": "hardened_custom",
+  "quill/ui/autocorrect_entries_dialog.py::CorrectionEditDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/batch_wizard_pages.py::BatchWizardDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/bookmarks_dialog.py::show_bookmarks._on_export::wx.FileDialog": "native",
   "quill/ui/bookmarks_dialog.py::show_bookmarks._on_note::wx.TextEntryDialog": "native",

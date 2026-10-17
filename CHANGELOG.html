@@ -245,6 +245,102 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="typing-assists-autocorrect-for-misspellings-and-enter-in-a-list-in-both-editors-todo-items-38-and-40-2026-10-16">Typing
+assists: AutoCorrect for misspellings, and Enter in a list in both
+editors (todo items 38 and 40, 2026-10-16)</h3>
+<p>Jeff’s editor completion checks, items 38 (automatic numbering in
+text and Markdown) and 40 (misspelling AutoCorrect with user entries).
+Shared, wx-free rules; QUILL and QUILL Lite deliver them on the same
+keys and settings.</p>
+<ul>
+<li><strong>AutoCorrect</strong>
+(<code>quill/core/autocorrect.py</code>). With the new setting
+<code>autocorrect_misspellings</code> on (Settings &gt; Editing,
+<em>Correct common misspellings as I type</em>; QUILL Lite Preferences,
+under the Autocorrect area; off by default in both), a space or Enter
+after a known misspelling replaces it: <code>teh</code> becomes
+<code>the</code>. Word rules: the token back to the previous whitespace,
+opening and closing punctuation trimmed and kept, letters only (internal
+apostrophe allowed), so URLs, email addresses, paths and identifiers
+never match; nothing inside a Markdown code span or fenced block
+(<code>spellcheck_live.live_alert_suppressed</code>); an all-capitals
+word is left alone; a capital is carried (<code>Teh</code> -&gt;
+<code>The</code>). Prose only: <code>autocorrect_allows</code> refuses
+any <code>spellcheck_filetypes.is_code_filename</code> name and the
+literal kinds, and accepts plain text, Markdown, rich text and untitled
+documents. The correction and the space are written by one
+<code>replace_as_one_undo</code>, so one Ctrl+Z restores the typed word;
+the word then joins a per-window declined set
+(<code>note_declined</code>) so the next space does not undo the undo.
+Word-corrected earcon plus “Corrected to X” (the reader echoes only the
+space). QUILL records it in the edit journal.</li>
+<li><strong>The built-in list</strong> is committed data,
+<code>quill/core/data/autocorrect_en.json</code> (354 pairs), with its
+source and rules written in the file. Every key is rejected by both the
+en_US and en_GB Hunspell dictionaries and every word of every correction
+is accepted by en_US; <code>tests/unit/core/test_autocorrect.py</code>
+re-checks that where pyenchant has the dictionaries. Real words,
+surnames and stylistic variants (calender, wich, Sargent, everytime) are
+excluded.</li>
+<li><strong>Your entries use the abbreviation store, not a new
+one.</strong> A correction of yours is an <code>Abbreviation</code> in
+<code>abbreviations.json</code> with the reserved category
+<code>AUTOCORRECT_CATEGORY</code> (“AutoCorrect”); no schema change. A
+user entry for a built-in word overrides it, a disabled one stops it,
+removing it restores the built-in. Every abbreviation matcher
+(<code>try_expand</code>, <code>enabled_only</code>,
+<code>find_by_trigger</code>, so Quick Insert, the snippet gallery and
+Inkwell too) skips the category, so abbreviations on never means
+corrections on.</li>
+<li><strong>AutoCorrect Entries</strong>
+(<code>format.autocorrect_entries</code>, Insert menu in QUILL;
+<code>cmd_autocorrect_entries</code>, Tools menu in QUILL Lite,
+Autocorrect area; Alt+Shift+9 in both, the only family-wide free chord
+rule 9 allows): one shared window,
+<code>quill/ui/autocorrect_entries_dialog.py</code>, with a filter, the
+list (Enter/Space edit, <code>apply_listbox_activation</code>), Add,
+Edit, Turn Off/Turn On and Remove, inline F1 help on every control,
+every outcome spoken, saved through the shared store on close. Parity
+row, help topic, F1 purposes (<code>lite_surface_help</code>, shared
+with QUILL) and both help audits updated.</li>
+<li><strong>Enter in a list</strong>
+(<code>quill/core/list_continuation.py</code>, moved out of
+<code>format_ops</code>, which re-exports it). Fixed: Enter on an empty
+item ate the line’s newline and joined the next line on; a numbered task
+item continued as a bullet. New: a split mid-item drops the spaces at
+the split; a new numbered item renumbers the following same-depth,
+same-separator items while they count on (custom numbering is left
+alone); the spoken message counts the renumbered items.
+<code>list_continuation_allowed</code>: Markdown always, plain text only
+with the new setting <code>continue_lists_in_plain_text</code> (off by
+default) and never in a code or configuration file, never in rich text
+(its lists are <code>ITextPara</code> properties) or HTML/YAML.
+<strong>Behaviour change for QUILL:</strong> plain text continued lists
+unconditionally before (including <code>.py</code>, <code>.json</code>
+and untitled buffers, which <code>infer_markup_kind</code> calls plain);
+it now waits for the setting. QUILL Lite had no list continuation at
+all; it now has QUILL’s, with Markdown behind the “markup” area. One
+undo step in both.</li>
+<li><strong>Structure</strong>: QUILL’s Enter and AutoCorrect delivery
+moved to <code>quill/ui/main_frame_typing_assist.py</code>
+(main_frame.py shrank 20 lines); QUILL Lite’s to
+<code>quill/apps/lite_window_typing_assist.py</code>, and the
+abbreviation half of <code>lite_window_typing.py</code> moved to
+<code>lite_window_abbreviations.py</code>; QUILL Lite’s two checkboxes
+are <code>lite_preferences_typing.py</code>. Settings, keymap and
+command tables rebaselined
+(<code>_rebaseline_2026_10_16_typing_assists</code>);
+<code>quill.settings</code> and <code>lite.settings</code> recorded as
+additive.</li>
+<li>Tests: <code>tests/unit/core/test_list_continuation.py</code>,
+<code>tests/unit/core/test_autocorrect.py</code>,
+<code>tests/unit/ui/test_main_frame_typing_assist.py</code>,
+<code>tests/unit/ui/test_autocorrect_entries_dialog.py</code>,
+<code>tests/unit/apps/test_lite_typing_assist.py</code>. Manual
+screen-reader checks are listed in
+<code>docs/qa/screen-reader-checks-2026-10.md</code>.</li>
+</ul>
+<h3
 id="dictation-replace-change-that-delete-by-paragraph-a-second-opinion-kept-revisions-and-correcting-in-other-programs-d-19-d-10-2026-10-16">Dictation:
 replace, change that, delete by paragraph, a second opinion, kept
 revisions, and correcting in other programs (D-19, D-10,

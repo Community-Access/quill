@@ -1615,6 +1615,65 @@ all of it, in the field.</label></li>
 <li><label><input type="checkbox" />Narrator: the same.</label></li>
 </ul>
 <h3
+id="autocorrect-and-enter-in-a-list-todo-items-38-and-40-2026-10-16">AutoCorrect
+and Enter in a list (todo items 38 and 40, 2026-10-16)</h3>
+<p>In QUILL and in QUILL Lite, each in a new <code>.txt</code> document
+and a new <code>.md</code> document. Turn on <strong>Correct common
+misspellings as I type</strong> (QUILL: Settings, Editing; QUILL Lite:
+Preferences, with Autocorrect while typing on in Customize Features).
+Check on NVDA, JAWS and Narrator:</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />NVDA: type <code>I saw teh</code>
+and a space. The reader echoes the space, then the word-corrected sound
+plays and “Corrected to the” is said once. Read the line: it says “I saw
+the”.</label></li>
+<li><label><input type="checkbox" />NVDA: press Ctrl+Z straight away.
+Read the line: “I saw teh”, no space. Type a space: nothing is said
+about a correction and the word stays; the status bar says “Kept teh as
+you typed it”.</label></li>
+<li><label><input type="checkbox" />NVDA: type <code>Teh</code> at the
+start of a line and a space: “Corrected to The”. Type <code>TEH</code>
+and a space: no correction.</label></li>
+<li><label><input type="checkbox" />NVDA: type
+<code>teh.example.com</code> and a space, then
+<code>adress@example.com</code> and a space: nothing is corrected and
+nothing is said.</label></li>
+<li><label><input type="checkbox" />NVDA: open a <code>.py</code> file
+and type <code>teh</code> and a space: nothing is
+corrected.</label></li>
+<li><label><input type="checkbox" />NVDA: press Alt+Shift+9. The reader
+says “AutoCorrect Entries” and the focused row of the Corrections list
+(“abscence becomes absence, built in”). F1 says what the window is for,
+then the list’s help. Type <code>teh</code> in Find (Alt+F): the list
+narrows and the row is read when you Tab back to it.</label></li>
+<li><label><input type="checkbox" />NVDA: Add a correction
+(<code>qill</code>, <code>QUILL</code>): the AutoCorrect Entry window’s
+two fields and checkbox are read with their labels; OK says “Added: qill
+becomes QUILL” once. Turn Off on <code>teh</code> says “Turned off: teh
+will no longer be corrected”; the button is then read as “Turn On”.
+Remove on <code>teh</code> says “Restored the built-in correction: teh
+becomes the”. Close with Escape and type <code>qill</code> and a space
+in the document: “Corrected to QUILL”.</label></li>
+<li><label><input type="checkbox" />NVDA: in the <code>.md</code>
+document type <code>1. bread milk</code>, put the cursor before
+<code>milk</code> and press Enter. “Continued list item” is said once;
+read the two lines: “1. bread”, “2. milk”. Ctrl+Z puts back the single
+line.</label></li>
+<li><label><input type="checkbox" />NVDA: on an empty <code>2. </code>
+item press Enter: “Exited list” once, and the marker is
+gone.</label></li>
+<li><label><input type="checkbox" />NVDA: in the <code>.txt</code>
+document, <code>1. one</code> and Enter starts a plain new line and says
+nothing; with <strong>Continue lists in plain text</strong> on, the same
+Enter says “Continued list item” and the new line starts
+<code>2. </code>.</label></li>
+<li><label><input type="checkbox" />NVDA: QUILL Lite Preferences: both
+new checkboxes are read with their labels and states, Tab reaches them,
+and F1 on each reads its help.</label></li>
+<li><label><input type="checkbox" />JAWS: the same.</label></li>
+<li><label><input type="checkbox" />Narrator: the same.</label></li>
+</ul>
+<h3
 id="quill-transcribe-holding-the-key-the-wake-phrase-and-braille-d-9-d-6-2026-10-15">QUILL
 Transcribe: holding the key, the wake phrase and braille (D-9, D-6,
 2026-10-15)</h3>

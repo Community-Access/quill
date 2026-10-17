@@ -1096,6 +1096,47 @@ Edge through QUILL Transcribe. Check on NVDA, JAWS and Narrator:
 - [ ] JAWS: the same.
 - [ ] Narrator: the same.
 
+### AutoCorrect and Enter in a list (todo items 38 and 40, 2026-10-16)
+
+In QUILL and in QUILL Lite, each in a new `.txt` document and a new `.md`
+document. Turn on **Correct common misspellings as I type** (QUILL: Settings,
+Editing; QUILL Lite: Preferences, with Autocorrect while typing on in
+Customize Features). Check on NVDA, JAWS and Narrator:
+
+- [ ] NVDA: type `I saw teh` and a space. The reader echoes the space, then
+  the word-corrected sound plays and "Corrected to the" is said once. Read the
+  line: it says "I saw the".
+- [ ] NVDA: press Ctrl+Z straight away. Read the line: "I saw teh", no space.
+  Type a space: nothing is said about a correction and the word stays; the
+  status bar says "Kept teh as you typed it".
+- [ ] NVDA: type `Teh` at the start of a line and a space: "Corrected to The".
+  Type `TEH` and a space: no correction.
+- [ ] NVDA: type `teh.example.com` and a space, then `adress@example.com` and
+  a space: nothing is corrected and nothing is said.
+- [ ] NVDA: open a `.py` file and type `teh` and a space: nothing is corrected.
+- [ ] NVDA: press Alt+Shift+9. The reader says "AutoCorrect Entries" and the
+  focused row of the Corrections list ("abscence becomes absence, built in").
+  F1 says what the window is for, then the list's help. Type `teh` in Find
+  (Alt+F): the list narrows and the row is read when you Tab back to it.
+- [ ] NVDA: Add a correction (`qill`, `QUILL`): the AutoCorrect Entry window's
+  two fields and checkbox are read with their labels; OK says "Added: qill
+  becomes QUILL" once. Turn Off on `teh` says "Turned off: teh will no longer be
+  corrected"; the button is then read as "Turn On". Remove on `teh` says
+  "Restored the built-in correction: teh becomes the". Close with Escape and
+  type `qill` and a space in the document: "Corrected to QUILL".
+- [ ] NVDA: in the `.md` document type `1. bread milk`, put the cursor before
+  `milk` and press Enter. "Continued list item" is said once; read the two
+  lines: "1. bread", "2. milk". Ctrl+Z puts back the single line.
+- [ ] NVDA: on an empty `2. ` item press Enter: "Exited list" once, and the
+  marker is gone.
+- [ ] NVDA: in the `.txt` document, `1. one` and Enter starts a plain new line
+  and says nothing; with **Continue lists in plain text** on, the same Enter
+  says "Continued list item" and the new line starts `2. `.
+- [ ] NVDA: QUILL Lite Preferences: both new checkboxes are read with their
+  labels and states, Tab reaches them, and F1 on each reads its help.
+- [ ] JAWS: the same.
+- [ ] Narrator: the same.
+
 ### QUILL Transcribe: holding the key, the wake phrase and braille (D-9, D-6, 2026-10-15)
 
 With a microphone, in Notepad, Word and Outlook through QUILL Transcribe, and a

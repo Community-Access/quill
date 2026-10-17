@@ -4529,10 +4529,29 @@ bound to anything in Preferences &gt; Keyboard Shortcuts.</p>
 (ascending/descending, case-sensitive option, natural-numeric option),
 Remove Duplicate Lines, Reverse Lines, Trim Trailing Whitespace, Convert
 Indent (tabs↔︎spaces), Normalize Whitespace, Wrap to Column N.</li>
-<li><strong>Smart list continuation</strong> (Markdown, opt-in):
-pressing Enter on a <code>-</code>, <code>*</code>, or <code>1.</code>
-line continues the list and increments numeric markers; pressing Enter
-on an empty list item ends the list.</li>
+<li><strong>Smart list continuation</strong>
+(<code>quill/core/list_continuation.py</code>, shared with QUILL Lite;
+updated 2026-10-16). Enter at the end of a <code>-</code>,
+<code>*</code>, <code>+</code>, <code>1.</code> or <code>1)</code> item,
+or a task item, starts the next item with the next marker at the same
+indentation (a numbered task item stays a numbered task item). Enter
+mid-item splits it, dropping the spaces at the split. A new numbered
+item renumbers the following items at the same depth with the same
+separator while they count on from it; numbering the user chose (a jump)
+is left alone, and the walk passes over deeper lines and stops at a
+blank or shallower one. Enter on an empty item removes the marker and
+keeps the line and its newline (it used to join the next line on). The
+change is one write of the changed span, so one undo step. Spoken:
+“Continued list item”, “Continued list item, renumbered N items below”,
+“Exited list”. <strong>When:</strong> Markdown always; plain text only
+with <code>continue_lists_in_plain_text</code> (Settings &gt; Editing,
+<em>Continue lists in plain text</em>, <strong>off by default</strong>)
+and never in a file <code>spellcheck_filetypes.is_code_filename</code>
+names; never in rich text (lists there are <code>ITextPara</code>
+properties, <code>Ctrl+Shift+L</code>) or HTML/YAML. Before 2026-10-16
+QUILL continued lists in every “plain” document unconditionally, which
+<code>infer_markup_kind</code> makes of <code>.py</code>,
+<code>.json</code> and untitled buffers alike.</li>
 <li><strong>Bracket and quote auto-pair</strong> (off by default;
 per-format toggle in Settings). Never enabled in plain text.</li>
 </ul>
@@ -9271,6 +9290,103 @@ line untouched and Enter behaves normally. Host wiring:
 before Markdown list continuation) →
 <code>QuillinsMenuMixin.dispatch_smart_trigger_line</code>.</p>
 <hr />
+<h3
+id="578b-autocorrect--common-misspellings-corrected-as-you-type-2026-10-16">5.78b
+AutoCorrect — common misspellings corrected as you type
+(2026-10-16)</h3>
+<p>QUILL had typography autoformat (curly quotes, dashes; SET-4) and the
+user’s own abbreviations, and neither is a misspelling corrector.
+AutoCorrect is that feature, shared with QUILL Lite
+(<code>quill/core/autocorrect.py</code>; delivery in
+<code>quill/ui/main_frame_typing_assist.py</code> and
+<code>quill/apps/lite_window_typing_assist.py</code>).</p>
+<p><strong>Opt-in.</strong> <code>autocorrect_misspellings</code>
+(Settings &gt; Editing, <em>Correct common misspellings as I type</em>),
+<strong>off by default</strong> in both editors; in QUILL Lite the
+Autocorrect feature area is also the master switch, as it is for the
+typography rules.</p>
+<p><strong>When it fires.</strong> On a space or Enter (EVT_CHAR_HOOK in
+QUILL, EVT_CHAR / EVT_KEY_DOWN in QUILL Lite), for the word before the
+caret, read from at most 64 characters back (<code>WINDOW</code>; no
+whitespace in that window means no word). The token is trimmed of
+opening (<code>( [ { &lt; " ' “ ‘ * _</code>) and closing
+(<code>. , ; : ! ? ) ] } &gt; " ' ” ’ * _</code>) punctuation, which is
+kept; what remains must be letters with optional internal apostrophes,
+so a URL, email address, path, identifier or anything with a digit never
+matches. A word inside a Markdown code span or fenced block, or a
+URL/email span, is suppressed through
+<code>spellcheck_live.live_alert_suppressed</code>. A word in capitals
+throughout is left alone (acronyms). Prose only
+(<code>autocorrect_allows</code>): never in a file
+<code>is_code_filename</code> names or a literal kind (code, json, yaml,
+toml, ini, conf); plain text, Markdown, rich text and untitled documents
+are corrected, unlike the typography rules, because a corrected word
+cannot break a file format the way a curly quote can.</p>
+<p><strong>Case.</strong> Lower case in, correction as written; an
+initial capital is carried (<code>Teh</code> → <code>The</code>); a
+correction with its own capitals keeps them (<code>febuary</code> →
+<code>February</code>). An entry marked <em>match case</em> fires only
+on the exact typed form and inserts exactly its correction.</p>
+<p><strong>Undo and declining.</strong> The correction, any trailing
+punctuation and the space are written by one
+<code>replace_as_one_undo</code>, so one Ctrl+Z restores the typed word.
+On the next space or Enter, if the corrected word is back as typed at
+the same place (<code>note_declined</code>), its lower-case form joins a
+per-window declined set for the session and it is not corrected again;
+the status line says “Kept X as you typed it”. Enter is never consumed:
+the word is corrected, then list continuation or the control’s new line
+runs.</p>
+<p><strong>Feedback.</strong> The <code>word_corrected</code> earcon
+(<code>cue_typing_assist("autocorrect")</code> in QUILL) and “Corrected
+to X” spoken, because the reader echoes only the space. QUILL also
+records the correction in the edit journal.</p>
+<p><strong>The built-in list.</strong>
+<code>quill/core/data/autocorrect_en.json</code>, 354 pairs of common
+English misspellings, committed as data with its source and rules in the
+file. Every key is rejected by the en_US and en_GB Hunspell dictionaries
+and every word of every correction is accepted by en_US (re-checked by
+<code>tests/unit/core/test_autocorrect.py</code> where pyenchant has
+those dictionaries); real words, surnames and stylistic variants
+(calender, wich, Sargent, everytime) are excluded on purpose.</p>
+<p><strong>User entries, through the shared store.</strong> A user
+correction is an <code>Abbreviation</code> in
+<code>abbreviations.json</code> with the reserved category
+<code>AUTOCORRECT_CATEGORY</code> (“AutoCorrect”); no second file and no
+schema change, so Back Up Settings, the abbreviation-sharing switch in
+QUILL Lite and Manage Abbreviations all see them. A user entry for a
+built-in word overrides it; a disabled entry stops it (a disabled entry
+whose correction equals the built-in one is a plain “stop”); deleting
+the user entry restores the built-in. Every abbreviation matcher
+(<code>try_expand</code>, <code>AbbreviationLibrary.enabled_only</code>,
+<code>find_by_trigger</code>, hence Quick Insert, the snippet gallery
+and Inkwell’s system-wide expansion) skips the category: turning
+abbreviations on never turns corrections on, and corrections work only
+inside QUILL and QUILL Lite.</p>
+<p><strong>AutoCorrect Entries</strong>
+(<code>format.autocorrect_entries</code>, <strong>Insert &gt;
+AutoCorrect Entries…</strong>, <code>Alt+Shift+9</code>; QUILL Lite
+<code>cmd_autocorrect_entries</code>, Tools, same key, rule 2). One
+shared hardened dialog,
+<code>quill/ui/autocorrect_entries_dialog.py</code>:
+<strong>Find</strong> filters by either side;
+<strong>Corrections</strong> is a list box of sentences (“teh becomes
+the, built in”, “…, built in, changed by you”, “…, stopped”),
+Enter/Space/double-click edit; <strong>Add…</strong>,
+<strong>Edit…</strong> (a small <em>AutoCorrect Entry</em> window: word,
+correction, <em>Match case exactly</em>, validated before OK),
+<strong>Turn Off</strong>/<strong>Turn On</strong>,
+<strong>Remove</strong> (deletes yours; restores a changed or stopped
+built-in; on an unchanged built-in it turns it off and says a built-in
+cannot be deleted), and Close (Escape). Inline F1 help on every control;
+every outcome is spoken. The caller saves the library through
+<code>save_abbreviation_library</code> when anything changed.
+Alt+Shift+9 because rule 9 wants a key and every three-modifier F-key is
+a QuillVille launcher or a system-wide show/hide key; Alt+Shift+digits
+were free in both editors and the family and are not AltGr
+characters.</p>
+<p><strong>Limits.</strong> English only. A correction needs a space or
+Enter after the word. Known misspellings only; spell check finds the
+rest.</p>
 <h3 id="579-ask-ai--lightweight-in-editor-ai-chat">5.79 Ask AI —
 lightweight in-editor AI chat</h3>
 <blockquote>
