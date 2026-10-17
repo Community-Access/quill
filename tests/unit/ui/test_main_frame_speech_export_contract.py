@@ -1,6 +1,7 @@
 """Source-contract test for MainFrame.generate_speech_audio (fix.md #4).
 
-Assert the wiring in :mod:`quill.ui.main_frame` without spinning up a real wx
+Assert the wiring in :mod:`quill.ui.main_frame_read_aloud` (where the method lives
+since it moved out of ``MainFrame`` on 2026-10-17) without spinning up a real wx
 UI, matching the convention in test_remote_sites_dialog.py. The text assembled
 from the editor must be routed through the shared markdown sanitizer before
 being handed to any synthesis engine (Piper's espeak-ng phonemizer badly
@@ -12,7 +13,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame.py"
+ROOT = Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame_read_aloud.py"
 
 
 def _generate_speech_audio_source() -> str:

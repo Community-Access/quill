@@ -9,7 +9,8 @@ from __future__ import annotations
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3] / "quill" / "ui" / "speech_hub_dialog.py"
-_MAIN_FRAME = Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame.py"
+# open_speech_hub moved out of MainFrame into the SpeechHubMixin (2026-10-17).
+_MAIN_FRAME = Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame_speech_hub.py"
 
 
 def _read_source() -> str:

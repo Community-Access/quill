@@ -87,7 +87,8 @@ def test_ensure_offline_engine_handles_pip_installed_engines() -> None:
 
 
 def test_dictation_dialog_set_default_action_is_handled() -> None:
-    src = _src("main_frame.py")
+    # The Speech Hub's result handling lives in main_frame_speech_hub.py.
+    src = _src("main_frame_speech.py")
     assert 'elif dict_result.action == "set_default" and dict_result.model_id:' in src
     assert "self.settings.speech_default_model_id = dict_result.model_id" in src
 
