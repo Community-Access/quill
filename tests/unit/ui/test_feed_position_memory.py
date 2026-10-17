@@ -83,6 +83,12 @@ def test_escape_in_the_tree_is_answered_before_closing(tree) -> None:
         def ControlDown(self) -> bool:  # noqa: N802
             return False
 
+        def AltDown(self) -> bool:  # noqa: N802
+            return False
+
+        def ShiftDown(self) -> bool:  # noqa: N802
+            return False
+
     assert browse_keys.handle(_Dialog(), _Escape()) is True
     assert control.GetSelection() == ireland and closed == []
 
