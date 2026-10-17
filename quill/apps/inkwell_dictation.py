@@ -151,7 +151,7 @@ class InkwellDictationMixin(FieldHoldMixin):
     def _anywhere_preferences(self) -> Any:
         from quill.core.speech.dictation_profile import default_profile_path
         from quill.core.windows_dictation.preferences import DictationPreferences
-        from quill.core.windows_dictation.profile import rewriter
+        from quill.core.windows_dictation.profile import rewriter, with_repair_names
 
         try:
             rewrite = rewriter(default_profile_path())
@@ -160,6 +160,7 @@ class InkwellDictationMixin(FieldHoldMixin):
         from dataclasses import replace
 
         preferences = DictationPreferences.from_settings(self._anywhere_settings(), rewrite=rewrite)
+        preferences = with_repair_names(preferences, default_profile_path())  # D-20
         return replace(preferences, wake_enabled=False, hold_to_talk=False)
 
     def take_dictation_handoff(self) -> bool:

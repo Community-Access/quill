@@ -285,8 +285,8 @@ its IPC clock (<code>transcribe_commands.py</code>,
 and adopts whenever its settings are used
 (<code>inkwell_dictation.py</code>). A hand-off keeps the receiver’s own
 share choice. A failed write is said in all four.</li>
-<li><strong>More Dictation Settings</strong>: “Sh&amp;are dictation
-settings with the family” (Alt+A), with inline F1 help
+<li><strong>More Dictation Settings</strong>: “Share dictation settings
+with every &amp;QuillVille program” (Alt+Q), with inline F1 help
 (<code>dictation_more_dialog.py</code>).</li>
 <li><strong><code>quill/core/windows_dictation/family_words.py</code></strong>
 (new): <code>default_profile_path()</code> now returns the family’s
@@ -330,6 +330,664 @@ Quill Inkwell, QUILL Cast and Quill Radio user guides and changelogs;
 the QUILL Lite, QUILL Transcribe, QUILL Cast and Quill Radio PRDs;
 <code>voice-interaction.md</code>; the regenerated keyboard and F1
 references.</li>
+</ul>
+<h3
+id="office-files-import-without-markitdown-todo-p1-4b-2026-10-16">Office
+files import without MarkItDown (todo P1 4b, 2026-10-16)</h3>
+<p>Jeff’s decision: “Give Office files a fallback that needs no
+MarkItDown.” In a shipped build every Word, Excel and PowerPoint import
+failed with “The free local converter (MarkItDown) is not installed”:
+the QuillVille runtime freezes markitdown and magika in but excludes
+onnxruntime, so <code>import markitdown</code> raises inside magika, and
+the “PDF and Office text extraction” download could not fix it because
+the frozen copy shadows it and <code>find_spec</code> still says
+installed. PDFs were already off MarkItDown (2026-10-15).</p>
+<ul>
+<li><strong>New <code>quill/io/office_text.py</code></strong> (wx-free,
+strict-typed), with the readers split into <code>office_word.py</code>
+(Word and ODT XML), <code>office_sheets.py</code> (openpyxl, else the
+workbook XML; ODS) and <code>office_slides.py</code> (PPTX and ODP; the
+slide code moved out of <code>structured.py</code>). Everything falls
+back to the standard library, because the shared runtime also excludes
+lxml (so python-docx cannot import there) and QUILL Lite excludes docx,
+pptx, openpyxl and markitdown. <code>read_office_text</code> never uses
+MarkItDown; <code>read_office_text_preferring_markitdown</code> tries it
+for DOCX/PPTX/XLSX/XLS/HTML/EPUB/CSV and falls back on <em>any</em>
+exception or an empty result, keeping the reason as
+<code>markitdown_failure</code>. Nothing consults
+<code>find_spec</code>.</li>
+<li><strong>Kept:</strong> headings (style names from
+<code>styles.xml</code>, <code>Title</code>, <code>outlineLvl</code>),
+bulleted vs numbered list items and levels (<code>numbering.xml</code>),
+tables as GFM with <code>|</code> escaped, hard breaks, picture
+descriptions as <code>[Image: ...]</code>,
+<code>## Sheet: &lt;name&gt;</code> per sheet,
+<code># Slide N: &lt;title&gt;</code> per slide in presentation order
+with <code>## Tables</code> and <code>## Notes</code>, hidden slides
+marked. Dates in the XML sheet reader come from the cell’s number
+format. <strong>Not kept:</strong> run formatting, headers/footers,
+footnotes, comments, charts, SmartArt.</li>
+<li><strong>Legacy
+<code>.doc</code>/<code>.xls</code>/<code>.ppt</code>:</strong>
+LibreOffice converts a temporary copy when installed
+(<code>libreoffice_executable</code> now also looks in
+<code>%ProgramFiles%\LibreOffice\program</code>); otherwise
+<code>LegacyOfficeFormatError</code>
+(<code>QUILL-IO-OFFICE-LEGACY</code>) names the Save As type and
+libreoffice.org. Password-protected (OLE magic under an OOXML name) and
+damaged files raise <code>OfficeReadError</code>
+(<code>QUILL-IO-OFFICE-UNREADABLE</code>) with a sentence.</li>
+<li><strong>Entry points:</strong>
+<code>docconvert.convert_born_digital</code> (new
+<code>TIER_OWN_READER</code>,
+<code>ConversionOutcome.engine/reader/units</code>; HTML/EPUB/CSV fall
+back through <code>read_markup_text</code>;
+<code>.docm</code>/<code>.xlsm</code> added to the import list);
+<code>structured.read_structured_document</code> (File &gt; Open and the
+watch folder; 764 -&gt; 302 lines, budget ratcheted); Convert File’s
+MarkItDown engine (<code>markitdown_or_own_reader</code>, announcement
+names the stand-in); the AI Action Builder’s reference files;
+<code>.pages</code> Route B, which also looked for a
+<code>converted.docx</code> LibreOffice never writes.</li>
+<li><strong>Announcements and intake:</strong> Import / Convert says
+“Opened X as editable text, read by QUILL’s own Excel reader. 2 sheets.
+Nothing was uploaded.”; the open summary says “read by <reader>” instead
+of an engine id; the Document Intake Report adds Read by, Contents,
+MarkItDown not used (why) and per-sheet truncation notes.
+<code>extraction_pack_missing</code> is stamped only for a PDF or an
+unreadable <code>.xls</code>.</li>
+<li><strong>Spreadsheet bounds</strong> (PERF-11) are 2,000 rows by 50
+columns per sheet, up from 50 by 20, and a sheet cut short now says
+so.</li>
+<li><strong>QUILL Lite</strong> opens
+<code>.docx/.docm/.doc/.odt/.xlsx/.xls/.pptx/.ppt</code> as text through
+the same reader (exactly QUILL’s File &gt; Open set, asserted), on the
+worker, and refuses Save over them; it used to show a
+<code>.docx</code>’s zip bytes.</li>
+<li>The OCR and Conversion Services page text moved to
+<code>quill/core/docconvert_services.py</code> and now describes the
+built-in readers.</li>
+<li>Tests: <code>tests/corpus/office/build_office_corpus.py</code> and
+its eight fixtures; <code>tests/unit/io/test_office_corpus.py</code>
+(both reader tiers, and the shipped build simulated with onnxruntime
+blocked and <code>find_spec</code> saying installed);
+<code>tests/unit/apps/test_lite_office.py</code>. Docs: both user
+guides, PRD (“QUILL’s own Office readers”, section 5.93.1), both
+changelogs.</li>
+</ul>
+<h3
+id="editor-and-media-completion-checks-the-read-only-guard-extension-driven-save-as-named-text-lists-items-37-41-45-2026-10-16">Editor
+and media completion checks: the Read-Only Guard, extension-driven Save
+As, named-text lists (items 37, 41, 45, 2026-10-16)</h3>
+<p>Measured before changing anything; method and numbers in
+<code>docs/design/2026-10-16-editor-completion-measurements.md</code>,
+reproducible with <code>scripts/bench_editor_completion.py</code>.</p>
+<ul>
+<li><strong>Read-Only Guard (item 37).</strong> The guard had no key,
+keyed its memory on the raw path string (so a file opened from File
+Explorer under another case missed the guard set from Open Recent), and
+swallowed a failed write of its list. Now:
+<code>power.toggle_read_only_guard</code> on
+<strong>Ctrl+Alt+Backspace</strong> in both editors (rule 2, free in
+both); the list lives in the new wx-free
+<code>quill/core/read_only_guards.py</code>
+(<code>ReadOnlyGuards</code>, keys through
+<code>DocumentMemory.key_for</code>, old bare-list and raw-spelling
+files normalised on read); <code>set()</code> returns the reason a write
+failed and <code>toggle_sentence</code> says it (“…could not be
+remembered for next time (reason)”). The QUILL half moved from
+<code>main_frame_power_tools.py</code> to
+<code>main_frame_read_only.py</code> (<code>ReadOnlyGuardMixin</code>).
+<code>_replace_document_text</code> and
+<code>_apply_insertion_result</code> raise
+<code>DocumentReadOnlyError</code>
+(<code>QUILL-CORE-READONLY-REFUSED</code>) on a guarded document and the
+command registry (<code>CommandRegistry.set_read_only_refusal</code>,
+every entry point) turns it into “Document is read-only”, so a command
+stops before it claims success. Word tools refuse a Replace through
+<code>refuse_if_guarded</code>.</li>
+<li><strong>Faster reading of a guarded long document.</strong>
+<code>BrowseModeMixin._browse_text</code> answers browse navigation from
+the document’s own string once it has checked it equals the control’s
+text, and the cache recognises it by identity: one heading step on an 8
+MB book went from 46.3 ms (a <code>GetValue</code> marshal per key) to
+0.04 ms. Open time is unchanged by the guard (<code>SetValue</code> 394
+ms dominates; <code>SetEditable(False)</code> is 0.02 ms).</li>
+<li><strong>QUILL Lite gains the guard</strong>
+(<code>quill/apps/lite_window_read_only.py</code>, Tools &gt; Read-Only
+Guard, the same key, parity row to
+<code>power.toggle_read_only_guard</code>), remembered in QUILL Lite’s
+data folder (<code>paths.data_file</code>, which reads without creating
+the folder). Text-changing commands are refused by name
+(<code>quill/core/lite/read_only.py</code>
+<code>TEXT_CHANGING_HANDLERS</code>) in the menu and status-cell
+dispatch; the shared <code>_host_read_only</code> keeps inline notes
+beside the file.</li>
+<li><strong>Save As (item 41).</strong> QUILL already honoured the typed
+extension; it is now pinned behaviourally (real <code>.docx</code> read
+back by python-docx, <code>.DOCX</code>, <code>.txt</code>,
+<code>.md</code>, <code>.html</code>, <code>.rtf</code>, mismatched
+filter, no extension, cancel, <code>.xlsx</code> refused,
+<code>.pdf</code> routed to Export). QUILL Lite wrote plain text under a
+<code>.docx</code> name; it now refuses Word names
+(<code>filetypes.WORD_SUFFIXES</code>, <code>refuse_word_target</code>)
+before the flatten question, on Save, Save As and the collector’s quiet
+save.</li>
+<li><strong>Opening .doc/.docx/PDF.</strong> Cold opens are dominated by
+importing MarkItDown (11-14 s from source: pandas, pdfminer, openpyxl,
+python-pptx, Magika). The bridge
+(<code>quill/io/markitdown_bridge.py</code>) no longer imports it for
+<code>.doc</code>/<code>.ppt</code>, which it cannot convert
+(<code>.doc</code> without LibreOffice: 11.6 s to the answer, now the
+time to look for LibreOffice), and turns MarkItDown’s own exceptions
+into <code>ValueError</code> so callers fall back instead of surfacing a
+raw library message. The remaining <code>.docx</code> cold cost lives in
+<code>quill/io/structured.py</code> (another agent’s file today); the
+design note records the measured order to change.</li>
+<li><strong>Named-text lists (item 45).</strong>
+<code>apply_listbox_activation</code> gained type-ahead through the
+shared <code>quill.core.type_ahead.TypeAheadBuffer</code> (new
+<code>typing()</code>, <code>reset()</code>, and a multi-character name
+that stays on its row): Space while a name is being typed is part of the
+name instead of activating the row. The searchable picker moved to
+<code>quill/ui/searchable_picker.py</code>, shows at most 200 rows with
+an honest count, and gathers keystrokes (150 ms) for libraries larger
+than that; filling 10,000 rows took 2.2-3 s. The Abbreviations manager
+(QUILL, QUILL Lite, Inkwell) uses the new <code>VirtualReportList</code>
+(3.7 s per refill for 10,000 rows before) and keeps its selection by
+identity. Snippet, abbreviation and Copy Tray search match every word in
+any order (<code>quill/core/list_search.py</code>).</li>
+</ul>
+<h3
+id="word-markdown-and-html-saves-no-longer-carry-the-dark-themes-grey-2026-10-16">Word,
+Markdown and HTML saves no longer carry the dark theme’s grey
+(2026-10-16)</h3>
+<p>A dark theme sets the rich control’s foreground colour, which wxMSW
+applies as a character colour on every run. The <code>.rtf</code> save
+already took it off for the save (<code>_theme_colour_off</code>, bad.md
+R4), but saving a rich tab as <code>.docx</code>, <code>.md</code> or
+<code>.html</code> read the control’s RTF with the grey still on, and
+<code>rtf_to_rich</code> kept it. Anyone working in dark mode sent grey
+text to everyone they shared a Word document with. Both paths in
+<code>quill/ui/main_frame_rich_mode.py</code> now read the RTF inside
+<code>_theme_colour_off</code>, and
+<code>test_docx_and_markup_saves_take_the_theme_colour_off_first</code>
+pins the order. QUILL Lite has no Word save yet and its
+<code>.rtf</code> save was already guarded.</p>
+<h3
+id="dictation-profiles-d-23-and-quill-transcribes-lessons-practice-field-and-recognition-test-d-25-2026-10-16">Dictation
+profiles (D-23), and QUILL Transcribe’s lessons, practice field and
+recognition test (D-25) (2026-10-16)</h3>
+<p>dict.md section 4, “Modes” and “Coach”. Design record section 29.</p>
+<ul>
+<li><strong><code>quill/core/windows_dictation/profiles.py</code></strong>
+(new, wx-free): seven <code>NamedProfile</code>s (Standard, Email,
+Document, Markdown, Chat, Coding, Verbatim), each an overlay of pause,
+fillers and punctuation plus a structure (<code>markdown</code>,
+<code>formatted</code>, <code>plain</code>);
+<code>coerce_profile</code>, <code>active_profile</code>,
+<code>active_profile_name</code>. Standard is no overlay and the
+default.</li>
+<li><strong><code>DictationPreferences</code></strong> gains
+<code>named_profile</code>, <code>structure</code> and
+<code>profile_locked</code>; <code>_writing</code> applies the overlay.
+Settings <code>windows_dictation_profile</code> and
+<code>windows_dictation_profile_locked</code> (shared by name; additive,
+accepted in <code>data_format_audit</code> for
+<code>quill.settings</code> and <code>lite.settings</code>).</li>
+<li><strong><code>profile_mixin.py</code></strong> (new) on the
+controller: headings by structure, “bold that” / “italic that” (new
+<code>Command.BOLD_THAT</code>, <code>ITALIC_THAT</code>), the seven
+profile commands with Lock Profile, and the profile in the status cell.
+Bold, italic and the profile commands also work in other programs
+(<code>anywhere.EXTERNAL_COMMANDS</code>).</li>
+<li><strong>Editors</strong>:
+<code>EditorDocument.formatting()</code>/<code>apply_style()</code>;
+QUILL runs
+<code>format.bold</code>/<code>italic</code>/<code>heading_N</code>,
+QUILL Lite its own <code>cmd_*</code>, in a rich text document (QUILL
+also in Markdown and HTML). More Dictation Settings has the profile
+(Alt+A) and the lock (Alt+B).</li>
+<li><strong>QUILL Transcribe</strong>: Dictation &gt; Dictation Profile…
+(Ctrl+Shift+F, <code>ProfileDialog</code>), Lock Profile (Ctrl+Shift+L),
+Practice Dictation… (Ctrl+Shift+P, new
+<code>transcribe_practice.py</code>), Help &gt; Tutorials…
+(Ctrl+Alt+F1); tray read-out and row; profile in the window, tray name
+and Dictation Status. New <code>transcribe_coach.py</code>.</li>
+<li><strong>Recognition test</strong>:
+<code>quill/core/transcribe/practice.py</code>; the word-error scorer
+moved from <code>scripts/dictbench.py</code> to
+<code>quill/core/windows_dictation/word_errors.py</code>, which both
+import.</li>
+<li><strong>Lessons</strong>:
+<code>quill/core/tutorials/transcribe_lessons.py</code> (five),
+<code>quill/core/transcribe/tutorials.py</code> (catalogue and command
+table), <code>quill/ui/transcribe_tutorials.py</code>; GATE-TUTDOC
+renders <code>standalone/transcribe/docs/tutorials.md</code>.</li>
+<li><strong>Reference</strong>: the dictation commands guide gains
+“Profiles and formatting” (<code>reference._profile_section</code>),
+regenerated with <code>docs/site/dictation.html</code>.</li>
+<li>Tests: <code>test_dictation_profiles.py</code>,
+<code>test_transcribe_coach.py</code>,
+<code>test_dictation_formatting_hooks.py</code>. Snapshots regenerated:
+dialog inventory, accessible names, Transcribe help, settings
+documentation and vocabulary, F1 help reference, data formats.</li>
+</ul>
+<h3
+id="no-links-to-the-quillin-hub-until-it-is-live-three-unused-build-specs-removed-2026-10-16">No
+links to the Quillin Hub until it is live; three unused build specs
+removed (2026-10-16)</h3>
+<ul>
+<li><strong>The site and the README stop linking to
+<code>hub.quillforall.org</code>.</strong> The host does not resolve,
+and <code>HUB_IS_LIVE</code> in
+<code>quill/ui/quillin_hub_submit.py</code> is still <code>False</code>,
+yet seven site pages linked to it: the Project footer on
+<code>index.html</code>, <code>docs.html</code>, <code>faq.html</code>,
+<code>compare.html</code>, <code>dictation.html</code>,
+<code>meet-quillbert-and-quillbee.html</code> and
+<code>quillin-wizard.html</code>, plus the “Visit the Quillin Hub”
+button on <code>index.html</code>, the Quillin Hub card on
+<code>docs.html</code>, and the FAQ answer “What is the Quillin Hub?”. A
+link to a host that does not answer drops a screen-reader user on a
+browser error page they then have to find their way back from. Each link
+is now an HTML comment that says it returns when the hub is live; the
+card, the FAQ answers and the home-page Hub section now say in words
+that the Hub is not open yet and that Tools, Quillins, Submit to Quillin
+Hub still runs every check locally. The root <code>README.md</code>
+paragraph is reworded the same way. The app needed no change: the dialog
+already hides its Open the Quillin Hub button and says the Hub is not
+open while <code>HUB_IS_LIVE</code> is <code>False</code>. When the hub
+answers, flip that flag and restore the commented links. Historical
+records (release notes, the PRD, design docs, the deployment runbook,
+podcast transcripts) still name the host as text, not as links, and are
+left as they were.</li>
+<li><strong><code>standalone/quilllite/quill-lite.spec</code>,
+<code>standalone/inkwell/quill-inkwell.spec</code> and
+<code>standalone/weather/quill-weather.spec</code> are deleted.</strong>
+QUILL Lite, Inkwell and Weather install onto the shared QuillVille
+Runtime (<code>standalone/runtime/quillville-runtime.spec</code>); their
+<code>build_release.ps1</code> never runs PyInstaller on a per-app spec,
+and no workflow, test or script names these three files. (Every other
+app’s spec is untouched; Beacon, Cast and Social, for example, still run
+PyInstaller on theirs.) The three <code>assets/README.md</code> files,
+the credential-exclusion comments in the three
+<code>build_release.ps1</code> scripts and the 2026-09-07 QUILL Lite
+integration design now point at the runtime spec instead.</li>
+</ul>
+<h3
+id="dictation-self-repair-named-styles-learning-from-corrections-and-opt-in-polish-d-20-d-21-2026-10-16">Dictation:
+self-repair, named styles, learning from corrections, and opt-in polish
+(D-20, D-21, 2026-10-16)</h3>
+<p>dict.md section 4, “Polish”, “Learn” and “Modes”. Design record
+section 28. QUILL, QUILL Lite, QUILL Transcribe and Quill Inkwell,
+through the shared dictation package.</p>
+<ul>
+<li><strong>Self-repair (D-20)</strong>,
+<code>quill/core/windows_dictation/self_repair.py</code> (new, wx-free).
+A repair marker (“no”, “I mean”, “no I mean”, “sorry”, “scratch that
+word”) between two words of one kind (a day, a month, a number, or a
+name from My Words’ Vocabulary) keeps the second. Only the words either
+side of the marker are looked at; a full stop or question mark before
+it, a different kind, or a lower-case “may”/“march” leaves the phrase
+alone. Run in <code>DictationController.on_phrase</code> after the
+rewrite, behind <code>DictationPreferences.self_repair</code>
+(<code>windows_dictation_self_repair</code>, off). The transcript
+profile forces it off. <code>profile.with_repair_names</code> gives the
+controller the names, in QUILL, QUILL Lite, QUILL Transcribe and
+Inkwell.</li>
+<li><strong>Named styles (D-20).</strong>
+<code>self_repair.STYLE_CHOICES</code> / <code>STYLE_FIELDS</code> /
+<code>style_of</code>: Verbatim, Clean, Polished (only with
+<code>ai_on</code>) and “Your own mix”, mapped onto existing fields;
+nothing new is stored for the style itself. The chooser and the
+self-repair box live in the new
+<code>quill/ui/windows_dictation_style.py</code>
+(<code>DictationStyleMixin</code>), so
+<code>windows_dictation_dialog.py</code> stays under the 600-line cap.
+The dialog takes <code>ai_on=</code>; the editors and Transcribe pass
+<code>_review_ai_on()</code>. The “After each phrase” chooser moved to
+the right column to keep the window under 700 pixels
+(<code>test_the_window_fits_a_small_screen</code>).</li>
+<li><strong>Polish my dictation (P3).</strong>
+<code>Command.REVIEW_POLISH</code> (“polish that”, “polish it”);
+<code>ReviewConversation.polish</code> sends the fixed
+<code>review_session.POLISH_INSTRUCTION</code> through the ordinary
+<code>instruct</code> path, so the D-2 consent, the account routes
+(ChatGPT subscription or own key; never the free allowance), the diff
+summary and Undo Change all apply unchanged.
+<code>windows_dictation_polish</code> (off) gates it; with no review
+open, <code>ReviewMixin._polish_last</code> opens the last phrase first.
+The review frame shows <strong>Polish</strong> (Ctrl+P) only when
+allowed, greyed with AI off. More Dictation Settings has the check box
+(Alt+G). No new network call site: the request is the review’s own
+(<code>network_egress_audit</code> unchanged).</li>
+<li><strong>Learning from corrections (D-21)</strong>,
+<code>quill/core/windows_dictation/correction_learning.py</code> (new,
+wx-free). The second identical “choose N” replacement, or “correct X”
+followed by the new words landing where X was
+(<code>voice_commands._land</code> records it,
+<code>LiveMixin._after_insert</code> checks it), offers “Add a
+correction: A becomes B?” once per run. Editors:
+<code>HostFeedback.confirm_correction</code>, a Yes/No box (No default)
+from the new <code>quill/ui/windows_dictation_learn.py</code>, deferred
+out of the recogniser callback; the focus-loss check stands aside while
+it is up. Transcribe: spoken, answered by “QUILL yes”/“QUILL no” within
+30 seconds (<code>CommandModeMixin</code> asks
+<code>_learn_answer</code> first). Yes writes through
+<code>words_file</code>’s model into Corrections.</li>
+<li><strong>Per-context lists (D-21).</strong> <code>words_file</code>
+parses and round-trips <code>## Context: &lt;name&gt;</code> sections
+(<code>ContextList</code>, <code>context_list</code>);
+<code>profile.context_profile</code> and
+<code>rewriter(path, context=...)</code> apply one on top of the main
+lists. No caller passes a context yet: D-23 profiles are not built.</li>
+<li><strong>Whisper initial prompt (D-21 investigation).</strong>
+sherpa-onnx 1.13.8’s <code>OfflineWhisperModelConfig</code> has no
+prompt field and <code>OfflineRecognizer.from_whisper</code> takes none,
+so local Whisper biasing through a prompt is not possible on the pinned
+version. Recorded in the design record.</li>
+<li>Settings: <code>windows_dictation_self_repair</code>,
+<code>windows_dictation_polish</code> in
+<code>settings_fields.DictationSettings</code> (both editors and
+Transcribe); <code>data_format_audit</code> recorded as additive for
+<code>quill.settings</code> and <code>lite.settings</code>. Generated:
+<code>docs/f1-help-reference.md</code>, both
+<code>dictation-commands.md</code> (new “Correcting yourself as you
+talk” section).</li>
+<li>Tests:
+<code>tests/unit/core/test_dictation_self_repair_and_learning.py</code>
+(new), plus <code>test_dictation_review_frame.py</code>,
+<code>test_dictation_settings_dialog.py</code> and
+<code>test_transcribe_app.py</code>.</li>
+</ul>
+<h3
+id="typing-assists-autocorrect-for-misspellings-and-enter-in-a-list-in-both-editors-todo-items-38-and-40-2026-10-16">Typing
+assists: AutoCorrect for misspellings, and Enter in a list in both
+editors (todo items 38 and 40, 2026-10-16)</h3>
+<p>Jeff’s editor completion checks, items 38 (automatic numbering in
+text and Markdown) and 40 (misspelling AutoCorrect with user entries).
+Shared, wx-free rules; QUILL and QUILL Lite deliver them on the same
+keys and settings.</p>
+<ul>
+<li><strong>AutoCorrect</strong>
+(<code>quill/core/autocorrect.py</code>). With the new setting
+<code>autocorrect_misspellings</code> on (Settings &gt; Editing,
+<em>Correct common misspellings as I type</em>; QUILL Lite Preferences,
+under the Autocorrect area; off by default in both), a space or Enter
+after a known misspelling replaces it: <code>teh</code> becomes
+<code>the</code>. Word rules: the token back to the previous whitespace,
+opening and closing punctuation trimmed and kept, letters only (internal
+apostrophe allowed), so URLs, email addresses, paths and identifiers
+never match; nothing inside a Markdown code span or fenced block
+(<code>spellcheck_live.live_alert_suppressed</code>); an all-capitals
+word is left alone; a capital is carried (<code>Teh</code> -&gt;
+<code>The</code>). Prose only: <code>autocorrect_allows</code> refuses
+any <code>spellcheck_filetypes.is_code_filename</code> name and the
+literal kinds, and accepts plain text, Markdown, rich text and untitled
+documents. The correction and the space are written by one
+<code>replace_as_one_undo</code>, so one Ctrl+Z restores the typed word;
+the word then joins a per-window declined set
+(<code>note_declined</code>) so the next space does not undo the undo.
+Word-corrected earcon plus “Corrected to X” (the reader echoes only the
+space). QUILL records it in the edit journal.</li>
+<li><strong>The built-in list</strong> is committed data,
+<code>quill/core/data/autocorrect_en.json</code> (354 pairs), with its
+source and rules written in the file. Every key is rejected by both the
+en_US and en_GB Hunspell dictionaries and every word of every correction
+is accepted by en_US; <code>tests/unit/core/test_autocorrect.py</code>
+re-checks that where pyenchant has the dictionaries. Real words,
+surnames and stylistic variants (calender, wich, Sargent, everytime) are
+excluded.</li>
+<li><strong>Your entries use the abbreviation store, not a new
+one.</strong> A correction of yours is an <code>Abbreviation</code> in
+<code>abbreviations.json</code> with the reserved category
+<code>AUTOCORRECT_CATEGORY</code> (“AutoCorrect”); no schema change. A
+user entry for a built-in word overrides it, a disabled one stops it,
+removing it restores the built-in. Every abbreviation matcher
+(<code>try_expand</code>, <code>enabled_only</code>,
+<code>find_by_trigger</code>, so Quick Insert, the snippet gallery and
+Inkwell too) skips the category, so abbreviations on never means
+corrections on.</li>
+<li><strong>AutoCorrect Entries</strong>
+(<code>format.autocorrect_entries</code>, Insert menu in QUILL;
+<code>cmd_autocorrect_entries</code>, Tools menu in QUILL Lite,
+Autocorrect area; Alt+Shift+9 in both, the only family-wide free chord
+rule 9 allows): one shared window,
+<code>quill/ui/autocorrect_entries_dialog.py</code>, with a filter, the
+list (Enter/Space edit, <code>apply_listbox_activation</code>), Add,
+Edit, Turn Off/Turn On and Remove, inline F1 help on every control,
+every outcome spoken, saved through the shared store on close. Parity
+row, help topic, F1 purposes (<code>lite_surface_help</code>, shared
+with QUILL) and both help audits updated.</li>
+<li><strong>Enter in a list</strong>
+(<code>quill/core/list_continuation.py</code>, moved out of
+<code>format_ops</code>, which re-exports it). Fixed: Enter on an empty
+item ate the line’s newline and joined the next line on; a numbered task
+item continued as a bullet. New: a split mid-item drops the spaces at
+the split; a new numbered item renumbers the following same-depth,
+same-separator items while they count on (custom numbering is left
+alone); the spoken message counts the renumbered items.
+<code>list_continuation_allowed</code>: Markdown always, plain text only
+with the new setting <code>continue_lists_in_plain_text</code> (off by
+default) and never in a code or configuration file, never in rich text
+(its lists are <code>ITextPara</code> properties) or HTML/YAML.
+<strong>Behaviour change for QUILL:</strong> plain text continued lists
+unconditionally before (including <code>.py</code>, <code>.json</code>
+and untitled buffers, which <code>infer_markup_kind</code> calls plain);
+it now waits for the setting. QUILL Lite had no list continuation at
+all; it now has QUILL’s, with Markdown behind the “markup” area. One
+undo step in both.</li>
+<li><strong>Structure</strong>: QUILL’s Enter and AutoCorrect delivery
+moved to <code>quill/ui/main_frame_typing_assist.py</code>
+(main_frame.py shrank 20 lines); QUILL Lite’s to
+<code>quill/apps/lite_window_typing_assist.py</code>, and the
+abbreviation half of <code>lite_window_typing.py</code> moved to
+<code>lite_window_abbreviations.py</code>; QUILL Lite’s two checkboxes
+are <code>lite_preferences_typing.py</code>. Settings, keymap and
+command tables rebaselined
+(<code>_rebaseline_2026_10_16_typing_assists</code>);
+<code>quill.settings</code> and <code>lite.settings</code> recorded as
+additive.</li>
+<li>Tests: <code>tests/unit/core/test_list_continuation.py</code>,
+<code>tests/unit/core/test_autocorrect.py</code>,
+<code>tests/unit/ui/test_main_frame_typing_assist.py</code>,
+<code>tests/unit/ui/test_autocorrect_entries_dialog.py</code>,
+<code>tests/unit/apps/test_lite_typing_assist.py</code>. Manual
+screen-reader checks are listed in
+<code>docs/qa/screen-reader-checks-2026-10.md</code>.</li>
+</ul>
+<h3
+id="dictation-replace-change-that-delete-by-paragraph-a-second-opinion-kept-revisions-and-correcting-in-other-programs-d-19-d-10-2026-10-16">Dictation:
+replace, change that, delete by paragraph, a second opinion, kept
+revisions, and correcting in other programs (D-19, D-10,
+2026-10-16)</h3>
+<p>dict.md D-19 and D-10; design record section 27. Shared code, so
+QUILL, QUILL Lite, QUILL Transcribe and Inkwell’s Dictate Anywhere get
+the same commands.</p>
+<ul>
+<li><strong>New commands</strong> in the one table
+(<code>vocabulary_commands.py</code>, so “What can I say” and the
+generated <code>dictation-commands.md</code> follow): “replace X with Y”
+(<code>Command.REPLACE_WORDS</code>, nearest X before the cursor, else
+after, through <code>targets.find_target</code>), “change that to Y”
+(<code>CHANGE_THAT</code>) and “delete previous paragraph” / “delete
+last paragraph” (<code>DELETE_PARAGRAPH</code>). They work bare with
+strict mode off and always after the command word; a replace that finds
+nothing is written as text bare and writes nothing after the word.</li>
+<li><strong>A second opinion for “correct that”</strong>: a model
+engine’s phrase carries its audio (<code>RecognizedPhrase.audio</code>,
+memory only, dropped at the next phrase); with no engine alternates,
+<code>WorkerMixin.second_opinion</code> re-decodes it with the other
+built-in engine on its own thread and offers the answer as choice 2. No
+disk, no network. Not in Spanish.</li>
+<li><strong>Kept revisions</strong>: choose, replace and change that put
+the replaced text in Recent Phrases labelled “(before correction)”;
+<code>phrase_from_entry</code> strips the label for Insert Again and
+Copy.</li>
+<li><strong>Correcting in other programs (D-10)</strong>:
+correct/choose, caps that, uppercase/lowercase that, replace, change
+that, delete last sentence and delete previous paragraph join
+<code>anywhere.EXTERNAL_COMMANDS</code>, acting only on the words the
+session typed, as backspace-and-retype. <code>external_edits.py</code>
+refuses with one sentence when the focus moved, when Windows saw input
+after dictation’s own (<code>OwnWordsGuard</code>,
+<code>GetLastInputInfo</code> in the new read-only
+<code>quill/platform/windows/input_activity.py</code>), or, for retyping
+commands, in Word and Outlook (<code>AUTOCORRECTING_PROGRAMS</code>).
+The other program is never read.</li>
+<li>New modules: <code>corrections.py</code>
+(<code>CorrectionsMixin</code>, first in the controller’s bases) and
+<code>external_edits.py</code>; the controller grew by two lines. Tests:
+<code>tests/unit/core/test_dictation_corrections.py</code> (32, fakes
+only).</li>
+</ul>
+<h3
+id="dictation-never-lose-what-was-said-snippet-blanks-by-voice-reading-back-more-d-5-d-8-d-18-2026-10-16">Dictation:
+never lose what was said, snippet blanks by voice, reading back more
+(D-5, D-8, D-18) (2026-10-16)</h3>
+<p>The rest of D-5, D-8 and D-18 of the dictation gap plan, in shared
+code, so QUILL, QUILL Lite, QUILL Transcribe and (for D-8 and D-18)
+Quill Inkwell behave the same. Design record section 25.</p>
+<ul>
+<li><strong>Rescue (D-5).</strong> New wx-free
+<code>core/windows_dictation/rescue.py</code>
+(<code>DictationKeep</code>, <code>keep_for</code>, <code>Kept</code>,
+<code>kept_notice</code>, <code>HISTORY_CHOICES</code>) keeps only
+uncommitted words, held while paused or a phrase whose writing failed,
+in <code>recovery/live-dictation/&lt;app&gt;-&lt;id&gt;.json</code>,
+atomic, sealed with DPAPI (entropy <code>quill-dictation-rescue</code>);
+unsealable words are not written. New <code>rescue_mixin.py</code>
+(<code>RescueMixin</code> under <code>TargetHoldMixin</code>,
+<code>RecentPhrases</code>, <code>held_text</code>): every change to the
+held list rewrites one entry per pause; Resume and Discard Held Words
+delete it; stop, failure and shut-down keep it (stop adds “They are kept
+in Recent Phrases.”). <code>command_mode_mixin._dictate</code> keeps a
+phrase whose <code>_apply</code> raised. The feedback ports gain the
+optional <code>rescue()</code> (editors: <code>HostFeedback</code>,
+through <code>DictationToolsMixin._dictation_keep</code>; QUILL
+Transcribe: <code>_Feedback</code>). Quill Inkwell has no store and
+keeps held words in memory, as before.</li>
+<li><strong>Recent Phrases lists kept words</strong>
+(<code>ui/dictation_kept.py</code>, <code>KeptWords</code>,
+<code>kept_at_start</code>): this session’s phrases, then “Not written”,
+D-2’s unfinished review read from <code>dictation-review.json</code>
+where it is, and the history. <code>RecentPhrasesDialog</code> gains
+Discard (Alt+D) and Clear History (Alt+H, No-default question); Insert
+Again deletes a kept entry once <code>insert_again</code> returns
+<code>True</code>. One start-up sentence replaces the review’s when kept
+words wait. QUILL Transcribe’s exit no longer asks about held words
+already on disk.</li>
+<li><strong>Opt-in history.</strong>
+<code>windows_dictation_history_days</code> (0, 1, 7 or 30; 0 default)
+in the shared <code>DictationSettings</code>,
+<code>DictationPreferences.history_days</code>, More Dictation Settings’
+Keep a dictation history (Alt+Y). Text only, sealed, pruned on every
+read and write, capped at 2000, deleted when off (at the next phrase, at
+start, and when Recent Phrases opens). <code>quill.settings</code> and
+<code>lite.settings</code> fingerprints accepted as additive.</li>
+<li><strong>Type a reviewed transcript into a field.</strong> QUILL
+Transcribe’s Review Transcript gains Type into a Field (Alt+F), the
+selection or all of it, through Recent Phrases’ Insert Again path and
+checks.</li>
+<li><strong>Snippet blanks by voice (D-8).</strong> New
+<code>core/windows_dictation/snippet_fill.py</code>
+(<code>SnippetFill</code>, <code>SnippetFillMixin</code> between
+<code>ReviewMixin</code> and <code>VoiceCommandsMixin</code>):
+<code>${input:x}</code> and <code>${choice:a|b}</code> are asked for in
+order (“Title?”, “Choose a or b.”; a name, or “choose two”), with skip,
+scratch that (back one) and cancel; the answers are never typed; the
+filled snippet goes through <code>_insert_text</code> as one phrase (or
+is held while paused). <code>${date}</code>/<code>${time}</code> resolve
+locally; <code>${cursor}</code> is dropped externally. The libraries
+gain <code>snippet_body</code> (<code>AnywhereLibrary</code>,
+<code>DictationLibrary</code> over QUILL’s
+<code>_dictation_snippet_body</code>); QUILL Lite’s abbreviation
+snippets have no blanks and keep the old path. Works after the command
+word (D-1).</li>
+<li><strong>Read back more (D-18).</strong> <code>_insert_text</code>
+sets <code>_last_spoken</code> to the whole insertion (marks named), so
+“read that” reads a whole snippet, clip or review insert (editors:
+<code>note_inserted</code>). New commands “read last sentence”, “read
+last paragraph”, “read selection” (<code>Command.READ_*</code>, English
+and Spanish), editors only; refused in other programs. Command
+references and <code>docs/site/dictation.html</code> regenerated.</li>
+<li>Tests: <code>tests/unit/core/test_dictation_rescue.py</code>,
+<code>test_dictation_snippet_fill.py</code>,
+<code>tests/unit/ui/test_dictation_kept_words.py</code>, and a parity
+test in <code>test_dictation_parity.py</code>.</li>
+</ul>
+<h3
+id="pdf-text-reliability-each-pages-most-readable-reading-a-bounded-score-titles-found-inside-their-pages-2026-10-16">PDF
+text reliability: each page’s most readable reading, a bounded score,
+titles found inside their pages (2026-10-16)</h3>
+<p>Jeff’s todo P2 #28, “Text-extraction reliability, shared by both
+editors and Import / Convert”. Text reading only: no structure work.
+Design note with the formula, thresholds and measured budget:
+<code>docs/design/2026-10-16-pdf-text-reliability.md</code>; PRD 5.5
+item 1 rewritten to match what ships (it described a per-page selection
+with pypdfium2 and pdfminer.six as extractors that never existed).</p>
+<ul>
+<li><strong>Per-page selection</strong> (<code>quill/io/pdf.py</code>,
+new <code>quill/io/pdf_select.py</code>). The reader used to keep the
+first non-empty answer of pdfplumber, then pypdf. Now pdfplumber reads
+each page; a reading scoring at least 90 on a page whose characters show
+no column gutter is kept (the fast path); otherwise pypdf plain, pypdf
+layout and, on a two-column page, pypdf layout read column by column are
+compared (plus pdfplumber with duplicate characters removed when the
+first reading shows fake-bold doubling). Every reading is scored before
+and after repair; the best reading wins, ties to the earlier engine. One
+failing page is recorded as <code>failed</code> instead of sinking the
+document.</li>
+<li><strong>Readability score</strong> (new
+<code>quill/io/pdf_score.py</code>) replaces the quantity score: 100
+times one factor each for suspicious characters, single-letter runs, one
+word per line, implausible joins, coverage against the fullest reading,
+and columns run together. Short titles, numeric rows and non-Latin
+scripts score 100. Doubtful pages (below 40, unreadable characters, or
+image-only) are named in one shared sentence
+(<code>pdf_open.doubtful_pages_sentence</code>) in QUILL’s open status,
+QUILL Lite’s open announcement and the intake reports; blank pages never
+are. New metadata: <code>page_engines</code>,
+<code>page_unreadable</code>, <code>pdf_outline_levels</code> (additive;
+old keys unchanged).</li>
+<li><strong>MarkItDown</strong> no longer gets an automatic 85 in
+<code>quill.io.structured</code>; that fallback is gone. Inside the
+reader it is offered pages only when the document still scores below 50,
+and a page is replaced only when its pages line up and it scores 10
+points better by the same rules. <code>format_pdf_document</code> no
+longer keeps the <em>longer</em> answer.</li>
+<li><strong>Fixes found by measuring first:</strong> a blank first page
+lost its form feed (every page offset shifted by one); unmapped
+private-use glyphs were deleted (“next box” read as “net bo”); 200 pages
+peaked at 429 MB because pdfplumber pages were never closed (now 6.5
+MB); a long body line swallowed “Chapter 2” under it; two long table
+rows were joined.</li>
+<li><strong>Repairs</strong> (<code>quill/io/pdf_repair.py</code>):
+unmapped private use kept, ligature slots expanded only beside a letter;
+no closing-up of a spaced sentence into one word; identifier hyphens
+kept, <code>self-</code>/<code>well-</code> style prefixes joined with
+the hyphen; reflow protects headings, lettered/roman list starts,
+address lines, column-spaced rows and rows of figures. Still
+idempotent.</li>
+<li><strong>Outline</strong> (new <code>quill/io/pdf_outline.py</code>,
+<code>quill/core/pdf_open.py</code>): entries carry their nesting level;
+bookmarks and Go To land on the title at the start of a line on its
+page, falling back to the page start; duplicate titles take successive
+matches; Go To says “level N” for nested entries. Stores keep their
+<code>(title, page)</code> shape.</li>
+<li><strong>Fixture corpus</strong> <code>tests/corpus/pdf/</code> (10
+small PDFs and <code>build_pdf_corpus.py</code>, pypdf only) and
+<code>tests/unit/io/test_pdf_corpus.py</code> (real files, text and
+order, page offsets, bookmark targets, encrypted, the PDF never changed,
+and a <code>perf</code> budget). New
+<code>tests/unit/io/test_pdf_score.py</code>; <code>test_pdf.py</code>,
+<code>test_pdf_repair.py</code>, <code>test_pdf_open.py</code>,
+<code>test_intake.py</code> and <code>test_structured.py</code>
+extended.</li>
+<li><strong>Measured</strong> (clean / questionable, ms a page, old then
+new): 37.6 / 38.3 and 41.9 / 58.4. <code>quill/io/structured.py</code>
+budget ratcheted 779 -&gt; 764.</li>
 </ul>
 <h3
 id="quill-radio-station-enrichment-the-signed-station-pack-fts5-search-and-station-details-2026-10-16">Quill

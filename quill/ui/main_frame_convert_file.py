@@ -14,6 +14,7 @@ from pathlib import Path
 
 from quill.core.external_tools import copyable_install_command, get_external_tool_status
 from quill.core.settings import save_settings
+from quill.io.office_text import markitdown_or_own_reader
 from quill.io.pandoc import PandocConversionError, PandocUnavailableError, convert_file_with_pandoc
 
 
@@ -159,12 +160,11 @@ class ConvertFileMixin:
                 return
             engine = "pandoc"
 
+        substitute = ""
         if engine == "markitdown":
             self._set_status(f"Converting {request.source_path.name} with MarkItDown...")
             try:
-                from quill.io.markitdown_bridge import convert_with_markitdown
-
-                text = convert_with_markitdown(request.source_path)
+                text, substitute = markitdown_or_own_reader(request.source_path)
                 with target.open("w", encoding="utf-8", newline="\n") as handle:
                     handle.write(text)
             except (ImportError, ValueError, RuntimeError, OSError) as error:
@@ -201,7 +201,17 @@ class ConvertFileMixin:
 
         self._remember_convert_file_choices(request.output_dir, request.output_token)
         self._record_recent(target)
-        self._announce(f"Converted to {target.name}")
+        if substitute:
+            # MarkItDown cannot run in a shipped build (magika needs
+            # onnxruntime, which the shared runtime leaves out), so the reader
+            # that stood in is named rather than letting the user think
+            # MarkItDown made this file.
+            self._announce(
+                f"Converted to {target.name}. MarkItDown could not run here, "
+                f"so {substitute} read the file instead."
+            )
+        else:
+            self._announce(f"Converted to {target.name}")
 
         if request.action == "open":
             self.open_file(path=target)

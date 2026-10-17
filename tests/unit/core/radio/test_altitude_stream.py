@@ -28,7 +28,12 @@ import quill.core.radio.link_finder as lf
 import quill.core.radio.triton as triton
 from quill.core.radio import address_kind, recovery
 from quill.core.radio.link_finder import PageStreamCandidate, scan_page_for_streams
-from quill.core.radio.stream_pick import durable_url, pick_stream, station_key
+from quill.core.radio.stream_pick import (
+    durable_url,
+    is_resolved_player_mount,
+    pick_stream,
+    station_key,
+)
 
 _FIXTURES = Path(__file__).parent / "fixtures" / "altitude"
 _PAGES = {
@@ -154,3 +159,17 @@ def test_durable_url_leaves_everything_but_a_stw_mp3_server_alone() -> None:
 )
 def test_what_add_custom_station_treats_as_a_web_page(url: str, page: bool) -> None:
     assert address_kind.is_web_page_address(url) is page
+
+
+@pytest.mark.parametrize(
+    ("url", "expected"),
+    [
+        ("https://16613.live.streamtheworld.com/KKSEFMAAC", True),
+        ("https://streamtheworld.com/KKSEFM.mp3", True),
+        ("https://evilstreamtheworld.com/KKSEFM.mp3", False),
+        ("https://example.com/?next=streamtheworld.com", False),
+        ("https://streamtheworld.com.example.com/KKSEFM", False),
+    ],
+)
+def test_a_resolved_mount_is_matched_on_the_host_not_a_substring(url, expected) -> None:
+    assert is_resolved_player_mount(url) is expected

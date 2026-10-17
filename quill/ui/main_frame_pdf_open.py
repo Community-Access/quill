@@ -47,6 +47,7 @@ class PdfOpenOcrMixin:
             engine=str(metadata.get("engine", "")),
             page_count=int(metadata.get("page_count", 0) or 0),
             outline=tuple(tuple(entry) for entry in metadata.get("pdf_outline") or ()),
+            outline_levels=tuple(int(n) for n in metadata.get("pdf_outline_levels") or ()),
         )
         if not found.looks_scanned:
             return

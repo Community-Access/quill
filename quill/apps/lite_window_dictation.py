@@ -1,4 +1,5 @@
-"""QUILL Lite's half of Windows Dictation: the seven cues, and nothing else.
+"""QUILL Lite's half of Windows Dictation: the seven cues, the word list, and
+which of its own formatting commands bold and headings by voice may run (D-23).
 
 Every command, sentence and rule is the shared module's
 (:mod:`quill.ui.windows_dictation_commands`), which QUILL runs too. What is here
@@ -60,6 +61,20 @@ class DocumentDictationMixin(WindowsDictationMixin):
             is_on=lambda: bool(getattr(app.settings, "share_quill_dictation_words", False)),
             set_on=set_on,
         )
+
+    def _dictation_formatting(self) -> str:
+        """``rich`` in a rich document, where QUILL Lite's own Bold, Italic and
+        Heading commands apply (D-23); ``""`` otherwise."""
+        editor = getattr(self, "editor", None)
+        return "rich" if getattr(editor, "mode", "") == "rich" else ""
+
+    def _dictation_apply_style(self, style: str) -> str | None:
+        """QUILL Lite's own command on the selection; it says the outcome itself."""
+        command = getattr(self, f"cmd_{style}", None)
+        if not callable(command) or not self._dictation_formatting():
+            return None
+        command()
+        return ""
 
     def _dictation_profile_path(self) -> Path:
         """QUILL Lite's own ``dictation.md``, or the shared one when chosen."""

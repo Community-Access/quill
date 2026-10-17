@@ -185,6 +185,7 @@ class TranscribeCommandsMixin:
             settings,
             self._announce,  # type: ignore[attr-defined]
             help_for=HELP_FOR,
+            ai_on=self._review_ai_on(),  # type: ignore[attr-defined]
         )
         try:
             answer = self._show_modal_dialog(dialog, "Dictation Settings")  # type: ignore[attr-defined]

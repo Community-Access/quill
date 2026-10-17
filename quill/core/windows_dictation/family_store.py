@@ -16,7 +16,7 @@ folder (:func:`family_dictation_dir`):
 * **Read when a program comes to the front** (and, in QUILL Transcribe, which
   lives in the tray, on its own clock), by :func:`adopt_fields`. What it holds
   replaces the program's own values for the shared fields only.
-* **Behind one setting**, "Share dictation settings with the family"
+* **Behind one setting**, "Share dictation settings with every QuillVille program"
   (``windows_dictation_share_family``, ``"on"`` or ``"off"``). On for a
   program whose shared settings are all still the defaults, which loses
   nothing by sharing -- every new install; off for one where the person chose

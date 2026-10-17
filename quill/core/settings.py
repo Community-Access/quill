@@ -650,6 +650,8 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
     markdown_hard_break_style: str = "backslash"
     autoformat_smart_quotes: bool = False
     autoformat_dashes: bool = False
+    continue_lists_in_plain_text: bool = False
+    autocorrect_misspellings: bool = False
     quick_nav_include_headings: bool = True
     quick_nav_include_links: bool = True
     quick_nav_include_lists: bool = True
@@ -1407,6 +1409,8 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
         )
         autoformat_smart_quotes = bool(data.get("autoformat_smart_quotes", False))
         autoformat_dashes = bool(data.get("autoformat_dashes", False))
+        continue_lists_in_plain_text = bool(data.get("continue_lists_in_plain_text", False))
+        autocorrect_misspellings = bool(data.get("autocorrect_misspellings", False))
         quick_nav_include_headings = bool(data.get("quick_nav_include_headings", True))
         quick_nav_include_links = bool(data.get("quick_nav_include_links", True))
         quick_nav_include_lists = bool(data.get("quick_nav_include_lists", True))
@@ -1912,6 +1916,8 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
             markdown_hard_break_style=markdown_hard_break_style,
             autoformat_smart_quotes=autoformat_smart_quotes,
             autoformat_dashes=autoformat_dashes,
+            continue_lists_in_plain_text=continue_lists_in_plain_text,
+            autocorrect_misspellings=autocorrect_misspellings,
             quick_nav_include_headings=quick_nav_include_headings,
             quick_nav_include_links=quick_nav_include_links,
             quick_nav_include_lists=quick_nav_include_lists,

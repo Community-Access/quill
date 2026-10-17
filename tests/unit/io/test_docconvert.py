@@ -10,6 +10,7 @@ from quill.io.docconvert import (
     MIN_CHARS_PER_PAGE,
     TIER_LOCAL_OCR,
     TIER_MARKITDOWN,
+    TIER_OWN_READER,
     TIER_PDF_TEXT,
     ConversionOutcome,
     DocConvertCancelled,
@@ -180,14 +181,29 @@ def test_a_real_pdf_imports_with_markitdown_unimportable(
     assert not outcome.offer_local_ocr
 
 
-def test_markitdown_missing_is_a_friendly_error() -> None:
+def test_markitdown_missing_is_no_longer_an_error_for_an_office_file() -> None:
+    """2026-10-16: MarkItDown missing reads the file with QUILL's own reader."""
+
     def _missing(path: Path) -> str:
         raise ImportError("markitdown not available")
 
-    deps = _Deps(markitdown=_missing)
+    corpus = Path(__file__).resolve().parents[2] / "corpus" / "office"
+    outcome = convert_born_digital(corpus / "report.docx", deps=_Deps(markitdown=_missing))
+    assert outcome.tier == TIER_OWN_READER
+    assert "## Highlights" in outcome.text
+    assert "QUILL's own Word reader" in outcome.reader
+
+
+def test_an_unreadable_office_file_is_a_sentence_not_an_install_prompt() -> None:
+    def _missing(path: Path) -> str:
+        raise ImportError("markitdown not available")
+
     with pytest.raises(DocConvertError) as excinfo:
-        convert_born_digital(Path("report.docx"), deps=deps)
-    assert "not installed" in str(excinfo.value)
+        convert_born_digital(Path("no-such-report.docx"), deps=_Deps(markitdown=_missing))
+    message = str(excinfo.value)
+    assert "no-such-report.docx" in message
+    assert "not installed" not in message
+    assert "Download Optional Components" not in message
 
 
 def test_image_goes_straight_to_local_ocr() -> None:

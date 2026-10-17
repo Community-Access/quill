@@ -176,6 +176,45 @@ def test_the_command_word_and_its_key_are_one_thing_in_all_three() -> None:
         assert getattr(QuillSettings(), name) == getattr(LiteSettings(), name), name
 
 
+def test_kept_words_history_and_snippet_prompts_are_one_thing_in_all_three() -> None:
+    """D-5, D-8 and D-18 (2026-10-16): one store for words not written and the
+    opt-in history, offered by one Recent Phrases on Shift+F11; one place the
+    spoken snippet prompts and the read-back commands live (the controller's
+    mixins); the history length one shared field, off in every host."""
+    import inspect
+
+    from quill.apps.lite_window_dictation import DocumentDictationMixin
+    from quill.apps.transcribe_dictation import _Feedback as TranscribeFeedback
+    from quill.apps.transcribe_recent import TranscribeRecentMixin
+    from quill.core.lite.settings import Settings as LiteSettings
+    from quill.core.settings import Settings as QuillSettings
+    from quill.core.transcribe.parity import SHARED_COMMANDS
+    from quill.core.transcribe.settings import TRANSCRIBE_DICTATION_DEFAULTS
+    from quill.core.windows_dictation.controller import DictationController
+    from quill.core.windows_dictation.rescue_mixin import RescueMixin
+    from quill.core.windows_dictation.snippet_fill import SnippetFillMixin
+    from quill.ui.main_frame_windows_dictation import WindowsDictationCommandsMixin
+    from quill.ui.windows_dictation_ports import HostFeedback
+    from quill.ui.windows_dictation_tools import DictationToolsMixin
+
+    assert issubclass(DictationController, RescueMixin)
+    assert issubclass(DictationController, SnippetFillMixin)
+    assert _lite_dictation_rows()["cmd_dictation_recent"] == "Shift+F11"
+    assert SHARED_COMMANDS["tools.windows_dictation_recent"] == "show_recent_phrases"
+    for adapter in (DocumentDictationMixin, WindowsDictationCommandsMixin):
+        assert adapter._dictation_kept is DictationToolsMixin._dictation_kept
+    for port in (HostFeedback, TranscribeFeedback):
+        assert callable(getattr(port, "rescue", None)), port
+    for show in (
+        DictationToolsMixin.cmd_dictation_recent,
+        TranscribeRecentMixin.show_recent_phrases,
+    ):
+        assert "kept=" in inspect.getsource(show)
+    name = "windows_dictation_history_days"
+    assert getattr(QuillSettings(), name) == getattr(LiteSettings(), name) == 0
+    assert name not in TRANSCRIBE_DICTATION_DEFAULTS
+
+
 def test_transcribe_a_recording_has_what_quills_offline_transcription_has() -> None:
     """dict.md D-26, part 7: on the shared layer, QUILL Lite's and Transcribe's
     Transcribe a Recording translate and timestamp on the same models QUILL's

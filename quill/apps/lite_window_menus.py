@@ -217,7 +217,8 @@ class DocumentMenuMixin:
 
     def _dispatch(self, handler: str) -> Any:
         def run(_event: wx.CommandEvent) -> None:
-            getattr(self, handler)()
+            # The Read-Only Guard refuses text-changing commands by name.
+            self.run_unless_read_only(handler)
 
         return run
 
@@ -238,6 +239,7 @@ class DocumentMenuMixin:
             # F8 extend mode: on while there is an anchor to extend from.
             "cmd_toggle_extend_mode": getattr(self, "_selection_anchor", None) is not None,
             "cmd_toggle_extend_selection_mode": self.extend_selection_active(),
+            "cmd_toggle_read_only": bool(getattr(self, "read_only_active", bool)()),
             # Per document too: the control keeps overtype per control.
             "cmd_toggle_overwrite": overwrite_now(self),
             # Checked means Tab types a tab, which is how QUILL Lite starts.

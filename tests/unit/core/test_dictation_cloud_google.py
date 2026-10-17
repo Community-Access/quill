@@ -185,6 +185,7 @@ def test_missing_role_names_service_account(monkeypatch: pytest.MonkeyPatch) -> 
 
 
 def test_phrase_carries_the_adaptation_phrases(monkeypatch: pytest.MonkeyPatch) -> None:
+    pytest.importorskip("numpy")  # the live-dictation extra, not in every CI leg
     wire = install(monkeypatch)
     wire.answer(
         TOKEN,
@@ -224,6 +225,7 @@ def test_phrase_carries_the_adaptation_phrases(monkeypatch: pytest.MonkeyPatch) 
 
 
 def test_phrase_without_terms_has_no_adaptation(monkeypatch: pytest.MonkeyPatch) -> None:
+    pytest.importorskip("numpy")  # the live-dictation extra, not in every CI leg
     wire = install(monkeypatch)
     wire.answer(TOKEN, {"results": []})
     assert (
@@ -235,6 +237,7 @@ def test_phrase_without_terms_has_no_adaptation(monkeypatch: pytest.MonkeyPatch)
 
 
 def test_token_is_kept_until_shortly_before_expiry(monkeypatch: pytest.MonkeyPatch) -> None:
+    pytest.importorskip("numpy")  # the live-dictation extra, not in every CI leg
     wire = install(monkeypatch)
     wire.answer(TOKEN, {"results": []}, {"results": []})
     provider = GoogleSpeech()
@@ -252,6 +255,7 @@ def test_token_is_kept_until_shortly_before_expiry(monkeypatch: pytest.MonkeyPat
 
 
 def test_refused_phrase_forgets_the_token(monkeypatch: pytest.MonkeyPatch) -> None:
+    pytest.importorskip("numpy")  # the live-dictation extra, not in every CI leg
     wire = install(monkeypatch)
     wire.answer(TOKEN, http_error("https://us-speech.googleapis.com/", 401), TOKEN, {})
     provider = GoogleSpeech()
@@ -277,8 +281,7 @@ def test_facts_and_capabilities() -> None:
     assert keys["location"].default == "us"
     assert keys["recognizer"].default == "_" and keys["model"].default == "chirp_3"
     assert provider.where({"location": "eu"}) == "eu"
-    assert "eu-speech.googleapis.com" in provider.hosts
-    assert "oauth2.googleapis.com" in provider.hosts
+    assert {"eu-speech.googleapis.com", "oauth2.googleapis.com"} <= set(provider.hosts)
     assert all(spec.help for spec in provider.fields())
 
 

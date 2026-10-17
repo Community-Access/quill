@@ -114,6 +114,18 @@ class _Feedback:
         """Review Dictation (D-2): the window held words wait in before Insert."""
         return self._host._review_desk()
 
+    def words_path(self) -> Any:
+        """Where a learned correction is saved (D-21): the family's ``dictation.md``.
+        No ``confirm_correction`` here: a window would take the focus from the
+        field, so the offer is spoken and answered with "QUILL yes"."""
+        from quill.core.speech.dictation_profile import default_profile_path
+
+        return default_profile_path()
+
+    def rescue(self) -> Any:
+        """Where words not written are kept until delivered (D-5, rescue.py)."""
+        return self._host._dictation_keep()
+
     def call_later(self, seconds: float, callback: Any) -> Any:
         """The working tick's clock (working_tick.py): stopped when the wait ends."""
         return wx.CallLater(int(seconds * 1000), callback)
@@ -121,6 +133,16 @@ class _Feedback:
     def set_speech_language(self, language: str) -> None:
         """ "Switch to Spanish" said aloud, or Ctrl+Shift+F11: kept, as in the editors."""
         self._host._save_speech_language(language)
+
+    def set_dictation_profile(self, profile_id: str) -> None:
+        """ "QUILL email mode" said aloud (D-23): kept, as the window would."""
+        self._host._save_dictation_profile(profile_id)
+
+    def phrase_written(self, text: str) -> None:
+        """A phrase is in: the Practice window's recognition test may want it (D-25)."""
+        written = getattr(self._host, "_practice_phrase_written", None)
+        if callable(written):
+            written(text)
 
 
 class _ChosenModelOnly:
@@ -189,6 +211,9 @@ class TranscribeDictationMixin(TranscribeTalkMixin, FieldHoldMixin):
 
         # The documented subset (parity.py), empty since D-9: all the editors'.
         preferences = replace(preferences, **dict.fromkeys(PREFERENCES_OFF, False))
+        from quill.core.windows_dictation.profile import with_repair_names
+
+        preferences = with_repair_names(preferences, default_profile_path())  # D-20
         override = getattr(self, "_engine_override", "")
         return replace(preferences, engine=override) if override else preferences
 
@@ -527,6 +552,9 @@ class TranscribeDictationMixin(TranscribeTalkMixin, FieldHoldMixin):
         controller = getattr(self, "_dictation", None)
         if controller is not None and not controller.active and not self.dictation_armed():
             self._engine_override = ""  # a stand-in model lasts one session
+        practice = getattr(self, "_practice_state_changed", None)
+        if callable(practice):
+            practice()  # D-25: the Practice window's button, and back to the locked field
         refresh = getattr(self, "_refresh_view", None)
         if callable(refresh):
             refresh()

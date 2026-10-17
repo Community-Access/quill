@@ -35,6 +35,7 @@ from quill.core.lite import APP_ID
 
 __all__ = [
     "data_dir",
+    "data_file",
     "inbox_dir",
     "instance_marker_path",
     "recovery_dir",
@@ -79,6 +80,19 @@ def data_dir() -> Path:
     root = override if override is not None else _base_dir() / APP_ID
     root.mkdir(parents=True, exist_ok=True)
     return root
+
+
+def data_file(name: str) -> Path:
+    """A file in QUILL Lite's data folder, *without* creating the folder.
+
+    For lists that are read far more often than written -- the Read-Only
+    Guard's is asked on every open -- so asking about a list that does not
+    exist yet leaves no folder behind. The atomic writer creates the folder
+    the first time something is written.
+    """
+    override = _override()
+    root = override if override is not None else _base_dir() / APP_ID
+    return root / name
 
 
 def settings_path() -> Path:

@@ -114,6 +114,22 @@ now, and Inkwell tells you once after you update.
 **Abbreviations > Manage Abbreviations...** (Ctrl+M) is the full list: search it,
 filter it by category, and add, edit, enable, disable, or delete entries.
 
+**Searching the list.** Type in the search box and the list keeps only the
+abbreviations whose short form, expansion or description holds what you typed.
+The words can come in any order: `address home` finds an expansion that says
+"my home address". The category filter beside it narrows the list further.
+When the search changes, the selection stays on the abbreviation you were on
+if it is still in the list, rather than jumping to whichever one now sits in
+its row.
+
+**Large lists.** The list reads its rows only as you reach them, so a library
+of ten thousand abbreviations opens and filters as quickly as one of ten
+(before October 2026, ten thousand took over three seconds to fill, and again
+after every key typed in the search box). Typing the start of an abbreviation
+while you are in the list moves to it, as in any Windows list; the screen
+reader reads the row and its position, such as "abbr42, 43 of 10000", as
+before.
+
 **Abbreviations > New from Clipboard...** (Ctrl+Shift+N) is the fast path. Copy
 a block of text anywhere, press Ctrl+Shift+N, and Inkwell opens a new entry with
 that text already filled in as the expansion -- you only supply the trigger.
@@ -470,8 +486,8 @@ dictation settings to Inkwell and starts it, and if you have not chosen a key
 yet, the key chooser opens for you.
 
 **Your settings.** Inkwell keeps its own copy of your dictation settings, so it
-works even when no editor is open. When **Share dictation settings with the
-family** is checked (Alt+A, in More Dictation Settings), that copy follows what
+works even when no editor is open. When **Share dictation settings with every
+QuillVille program** is checked (Alt+Q, in More Dictation Settings), that copy follows what
 you save in QUILL, QUILL Lite or QUILL Transcribe, picked up the next time you
 start Dictate Anywhere or open Dictation Settings, and what you save here
 reaches them. The read-back, every permission to send your speech, and your
@@ -486,6 +502,19 @@ difference: the read-back after each phrase starts as a tone rather than the
 words, because your screen reader can already read out what is typed, and hearing
 everything twice gets tiring. You can change that in the same window.
 
+**Correcting yourself as you talk.** Check **Fix it when I correct myself,
+like Thursday, no, Friday** (Alt+X) in Dictation Settings, and when you say
+"no", "I mean", "sorry" or "scratch that word" between two days, two months,
+two numbers or two names from My Words and Phrases, only the second is typed:
+"meet on Thursday, no, Friday" types "meet on Friday", and "call me at 5,
+sorry, 6" types "call me at 6". Anything else, such as "no, I don't think so",
+is typed as you said it. It happens on this computer, before anything is typed,
+and it is off until you turn it on. **Dictation style** (Alt+Y) sets it and
+**Remove filler words** together: **Verbatim** turns both off and **Clean**
+turns both on. The editors also offer **Polished**, which needs their Review
+Dictation window; Inkwell does not have that window, so the **Allow polishing
+my dictation with AI** box in More Dictation Settings does nothing here.
+
 **What works in another program.** Spoken punctuation, spelling, "caps on", "all
 caps on" and "no space on", switching between English and Spanish, and "scratch
 that". "Scratch that" erases the phrase that was just typed, but only while you
@@ -493,13 +522,32 @@ are still in the same window, so it can never erase anything you typed yourself.
 Your snippets, abbreviations and clips work too, because they only insert:
 "insert snippet" and its name, "insert abbreviation" and its name, and "paste
 clip" and a number, each typed as one phrase that "scratch that" takes back
-whole. A snippet's blanks are typed as [name], with no questions, and the
-cursor stays at the end. "What can I say" lists only what works here.
+whole. A snippet's blanks are asked for first: you hear each blank's name,
+like "Title?", and say the answer; for a choice, say one of the options or
+"choose two"; say skip, scratch that to go back one, or cancel to type
+nothing. The cursor stays at the end, and "read that" reads back all of what
+was typed. "What can I say" lists only what works here.
 
-**What does not.** Anything that needs to read the other program's text: "select"
-and "go to", "correct", "copy all" and "show clips". Inkwell cannot see that text, so it
-tells you: "That works in QUILL's own documents. In another program, say the
-words again, or scratch that."
+**Correcting the words dictation typed.** Inkwell remembers the words it typed
+since the focus last moved, and can change those, by taking them back with
+Backspace and typing the corrected words. "Correct that" and "choose one" to
+"choose three" (with Moonshine, Whisper or a downloaded model, the other
+built-in engine listens to your last phrase again and offers its answer as
+choice two), "capitalize that", "all caps that", "no caps that", "replace
+Tuesday with Wednesday" (only inside the phrase you dictated last), "change
+that to" and the new words, "delete last sentence" and "delete previous
+paragraph". For example, after "see you on Tuesday at noon", "QUILL replace
+Tuesday with Wednesday" leaves "see you on Wednesday at noon". A correction is
+refused, with one sentence and nothing sent, when the focus has moved, when you
+have typed, clicked or moved the mouse since dictation typed (the cursor may
+have moved), or, for the commands that retype words, in Word or Outlook, which
+change words as they are typed; "scratch that" and the delete commands still
+work there.
+
+**What does not.** Anything that needs to read the other program's text:
+"select" and "go to", "correct" and a word, "copy all" and "show clips". Inkwell
+cannot see that text, so it tells you: "That works in QUILL's own documents. In
+another program, say the words again, or scratch that."
 
 **The command word.** Say QUILL before a command, "QUILL scratch that", and it
 is always taken as a command; whatever follows QUILL is never typed. If it is

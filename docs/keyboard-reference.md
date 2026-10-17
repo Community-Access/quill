@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 501.
+Editor commands with default bindings: 503.
 
 ## The QUILL editor
 
@@ -156,6 +156,7 @@ Editor commands with default bindings: 501.
 | (unbound by default) | Structured List Studio Settings | `format.list_studio_settings` |
 | (unbound by default) | New Abbreviation from Clipboard... | `format.new_abbreviation_from_clipboard` |
 | (unbound by default) | Quick Insert... | `format.quick_insert` |
+| Alt+Shift+9 | Autocorrect entries | `format.autocorrect_entries` |
 | Alt+Shift+A | Toggle Abbreviation Expansion | `format.toggle_abbreviation_expansion` |
 | Alt+Shift+Down | Move Section Down | `format.move_section_down` |
 | Alt+Shift+F | Switch Document Format | `format.switch_document_format` |
@@ -521,6 +522,7 @@ Editor commands with default bindings: 501.
 | Alt+Shift+X | Delete lines containing | `power.delete_lines_containing` |
 | B | QUILL Quick Nav: Bookmark | `quill.quick_nav.bookmark` |
 | C | QUILL Quick Nav: Table of Contents | `quill.quick_nav.table_of_contents` |
+| Ctrl+Alt+Backspace | Toggle read only guard | `power.toggle_read_only_guard` |
 | Ctrl+Alt+C | Describe character detail | `power.describe_character_detail` |
 | Ctrl+Alt+Down | Table: Cell Below | `table.cell_below` |
 | Ctrl+Alt+End | Table: Last Cell | `table.last_cell` |

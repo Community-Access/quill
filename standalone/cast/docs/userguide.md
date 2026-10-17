@@ -1700,7 +1700,7 @@ Add Podcast and Search Everywhere. Your own words from My Words and Phrases and 
 dictation commands work as they do everywhere else. If Quill Inkwell is
 dictating, Cast tells you so and nothing starts. If QUILL Transcribe is not in
 your copy of the family, the item is not on the Edit menu; the key then does
-nothing.
+nothing. QUILL Transcribe is released on 1 November 2026, and from then on public builds of Quill Cast and Quill Radio show Dictate Here.
 
 ### Following ACB Media's podcasts
 

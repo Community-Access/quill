@@ -160,3 +160,42 @@ def test_choosing_spanish_swaps_the_default_phrases_and_reports_a_missing_model(
         assert dialog.stop_phrase.GetValue() == "basta ya por favor"  # the user's own
     finally:
         dialog.Destroy()
+
+
+def test_the_named_styles_set_the_boxes_and_polished_needs_ai(wx_app) -> None:
+    from quill.ui.windows_dictation_dialog import WindowsDictationDialog
+
+    dialog = WindowsDictationDialog(None, _Settings())
+    try:
+        labels = [dialog.style.GetString(i) for i in range(dialog.style.GetCount())]
+        assert not any(label.startswith("Polished") for label in labels)  # AI off
+        assert dialog._styles[dialog.style.GetSelection()] == "verbatim"  # the defaults
+        assert dialog.style.GetHelpText() and dialog.self_repair.GetHelpText()  # F1
+        dialog.style.SetSelection(dialog._styles.index("clean"))
+        dialog._on_style(None)
+        assert dialog.remove_fillers.GetValue() and dialog.self_repair.GetValue()
+        dialog.self_repair.SetValue(False)
+        dialog._show_style()
+        assert dialog._styles[dialog.style.GetSelection()] == "custom"
+        settings = _Settings()
+        dialog.apply(settings)
+        assert settings.windows_dictation_self_repair is False
+        assert settings.windows_dictation_remove_fillers is True
+    finally:
+        dialog.Destroy()
+
+
+def test_polished_with_ai_on_also_allows_polish_and_review_first(wx_app) -> None:
+    from quill.ui.windows_dictation_dialog import WindowsDictationDialog
+
+    dialog = WindowsDictationDialog(None, _Settings(), ai_on=True)
+    try:
+        dialog.style.SetSelection(dialog._styles.index("polished"))
+        dialog._on_style(None)
+        settings = _Settings()
+        dialog.apply(settings)
+        assert settings.windows_dictation_self_repair is True
+        assert settings.windows_dictation_polish is True
+        assert settings.windows_dictation_review_first is True
+    finally:
+        dialog.Destroy()

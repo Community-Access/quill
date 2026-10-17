@@ -250,6 +250,7 @@ def test_failures_and_cancelling_are_speech_errors(tmp_path) -> None:
 def test_locked_dictation_and_transcribe_a_recording_give_identical_text(tmp_path) -> None:
     """The acceptance criterion: same file, same model, same words -- because the
     provider runs Transcribe a Recording's own pipeline."""
+    pytest.importorskip("numpy")  # the live-dictation extra, not in every CI leg
     rate = 16_000
 
     class _Source:

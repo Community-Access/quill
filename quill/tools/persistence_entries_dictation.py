@@ -14,6 +14,10 @@ DICTATION_ENTRIES: dict[str, str] = {
     "core/windows_dictation/contexts.py::save": "content",
     "core/windows_dictation/anywhere.py::write_handoff": "cache",
     "core/windows_dictation/review_session.py::save_rescue": "content",
+    # D-5 (2026-10-16): words not written, sealed, deleted on delivery; and the
+    # opt-in text history, sealed, schema-stamped (rescue.py).
+    "core/windows_dictation/rescue.py::keep": "content",
+    "core/windows_dictation/rescue.py::_write_history": "content",
     # D-13 (2026-10-16): the family's shared dictation settings, schema-stamped
     # and keeping the fields a newer build wrote; the one-time copy of a
     # program's own settings before it first shares; and the word list's move

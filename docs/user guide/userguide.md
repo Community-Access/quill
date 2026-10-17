@@ -1328,22 +1328,93 @@ tables) becomes real Word styles, so you can move around the result in Word by
 heading, not just look at it. Saving plain text this way gives you a correct but
 unformatted document, because plain text has no structure to carry.
 
+**How long opening takes.** The first Word, PowerPoint or Excel file you open
+after starting QUILL takes longest, because QUILL loads its document converter
+then; later ones in the same session open in under a second for an ordinary
+document. Old-style Word files (`.doc`, from Word 97 to 2003) are converted by
+LibreOffice when it is installed. When it is not, QUILL now tells you so
+straight away, instead of first spending ten seconds or more loading a
+converter that cannot read `.doc` at all. Install LibreOffice, or save the file
+as `.docx` from Word, and open it again. A PDF's time grows with its number of
+pages, because every page is read for its text.
+
 #### EPUB
 
 EPUB books get the navigator and reading chapter by chapter.
 
 #### PowerPoint (.pptx and .ppt)
 
-QUILL keeps a presentation's structure when it brings it in. Slide titles become
-headings, bullets become nested list items, tables become text tables you can
-Tab through, and speaker notes come along when there are any.
+QUILL keeps a presentation's structure when it brings it in. Every slide starts
+with its own heading, "Slide 3: Quarterly results" (just "Slide 3" when the
+slide has no title), so **Next Heading** (`Ctrl+Alt+H`) moves one slide at a
+time and you hear the slide number before the title. Under each heading:
+
+- the slide's bullets, as list items indented by their level;
+- any tables, under a **Tables** heading, as text tables you can Tab through;
+- the description of each picture, as "[Image: ...]", when the author wrote one;
+- the speaker notes, under a **Notes** heading.
+
+Slides arrive in the order the presentation shows them, even when they were
+rearranged in PowerPoint. A hidden slide is included and says "(hidden slide)"
+after its title, because its words are still the author's.
 
 #### Excel-style spreadsheets (.xlsx and .xls)
 
-Spreadsheets come in as text, with their structure kept. QUILL lays each sheet
-out as readable table text, so you can look through the content quickly. If
-optional converters are installed, older and mixed-format files come through
-better.
+Spreadsheets come in as text, with their structure kept. Each sheet starts with
+its own heading, "Sheet: Budget", so **Next Heading** (`Ctrl+Alt+H`) moves
+sheet by sheet. The cells follow as a text table whose first row is the header
+row. Numbers read the way you would say them (950, not 950.0), true and false
+as TRUE and FALSE, and dates as dates (2026-11-01, not the number Excel stores).
+A formula shows the result Excel last calculated. Blank rows are left out.
+
+So that a huge workbook cannot freeze QUILL, each sheet is read up to 2,000
+rows and 50 columns. When a sheet is bigger, QUILL opens what fits and says so
+as the file opens ("part of it was too large and was cut short"), and the
+**Document Intake Report** names the sheet.
+
+#### Office files QUILL reads by itself
+
+QUILL reads Word, Excel, PowerPoint and OpenDocument files with its own
+built-in readers. Nothing has to be downloaded first, and nothing is uploaded.
+Where the optional MarkItDown converter can run on your computer, QUILL asks it
+first; where it cannot (the installed apps leave out a part it needs), QUILL's
+own reader does the job and never tells you to install anything.
+
+| Format | How to open it | What comes through |
+| --- | --- | --- |
+| Word (.docx, .docm) | **File > Open** (`Ctrl+O`) or **Import / Convert Document** | Headings, bulleted and numbered lists with their levels, tables, line breaks, picture descriptions |
+| OpenDocument text (.odt) | **File > Open** or **Import / Convert Document** | Headings, nested lists, tables, line breaks |
+| Excel (.xlsx) | **File > Open** or **Import / Convert Document** | One heading per sheet; each sheet as a table |
+| Excel with macros (.xlsm), OpenDocument spreadsheet (.ods) | **Import / Convert Document** | The same |
+| PowerPoint (.pptx) | **File > Open** or **Import / Convert Document** | One heading per slide; bullets, tables, picture descriptions, speaker notes |
+| OpenDocument presentation (.odp) | **Import / Convert Document** | The same |
+| Word, Excel or PowerPoint 97-2003 (.doc, .xls, .ppt) | Either, when LibreOffice is installed | Whatever LibreOffice carries into the newer format, then as above |
+
+What does not come through: bold, italic, fonts and colours; headers and
+footers; footnotes and comments; charts and SmartArt; and pictures themselves
+(only the descriptions their authors wrote). A macro is never run.
+
+**An example.** Press `Ctrl+O` and open `Budget.xlsx`. QUILL says it opened the
+file, "read by QUILL's own Excel reader", and that it has 2 sheets. The
+document starts at "Sheet: Budget". Press `Ctrl+Alt+H` and you are on
+"Sheet: Notes". Open the same file with **File > Import > Import / Convert
+Document (OCR)...** instead and it opens in a new, unsaved tab, and QUILL says
+"Opened Budget.xlsx as editable text, read by QUILL's own Excel reader.
+2 sheets. Nothing was uploaded."
+
+**Older Office files (.doc, .xls, .ppt).** QUILL has no reader of its own for
+the Office 97-2003 formats. When LibreOffice (free, from libreoffice.org) is
+installed, QUILL asks it to make a temporary copy in the newer format and reads
+that; your file is not changed. When LibreOffice is not installed, QUILL tells
+you what to do instead: open the file in Word, Excel or PowerPoint (or in
+LibreOffice), choose **File > Save As**, pick the newer type (for example
+"Word Document (.docx)"), and open that copy.
+
+**Files QUILL cannot read.** A password-protected Word, Excel or PowerPoint file
+is named as password-protected, with the fix: remove the password in the
+program that made it (**File > Info**), save, and try again. A damaged file is
+named as damaged, with the advice to open it in the program that made it and
+save it again.
 
 #### PDF and OCR-derived text
 
@@ -1394,6 +1465,41 @@ presentation, what you are editing is text taken out of it, and the original
 file cannot hold your changes. Pressing `Ctrl+S` on one of these never
 overwrites the original. QUILL explains why and opens Save As, so your edits go
 into a new file in a format that can hold them.
+
+#### The name you type decides: a worked example
+
+The ending you type always wins over the **Save as type** list, and capitals do
+not matter. Suppose you have an untitled document of meeting minutes with a
+heading, some bold and a short list:
+
+1. Press `Ctrl+Shift+S` (**File > Save As...**).
+2. Type `Minutes.DOCX` in the name box. The type list can show anything; it is
+   the name that counts.
+3. Press Enter. QUILL writes a real Word document: Word opens it, the heading
+   is a Word heading you can move to by heading, the bold is bold, and the list
+   is a list. You hear "Saved as Minutes.DOCX, Word format. You are still
+   editing QUILL text; each save converts it to Word."
+
+The same document saved under other names:
+
+| You type | What is written |
+|---|---|
+| `minutes.txt` or `MINUTES.TXT` | Your text exactly as it is, markup included |
+| `minutes.md` | Your text exactly as it is |
+| `minutes.html` | A complete web page, with the heading, bold and list as HTML |
+| `minutes.rtf` | Rich text with its formatting |
+| `minutes.docx` | A real Word document, as above |
+| `minutes` with **Word Document** selected | `minutes.docx`, a Word document |
+| `minutes.txt` with **Word Document** selected | `minutes.txt`, plain text: the typed ending wins, and no `minutes.txt.docx` is made |
+| `minutes.pdf`, `.odt` or `.epub` | Nothing yet: QUILL offers **File > Export**, which makes these properly |
+| `budget.xlsx` or another format QUILL only reads | Nothing: QUILL says it cannot save that format |
+
+**Cancel** or **Escape** in the Save As window writes nothing and leaves the
+document as it was.
+
+QUILL Lite has no Word writer. Typing a `.docx` name there gets a short message
+saying so and naming Rich Text (`.rtf`), which Word opens; nothing is written.
+Use QUILL when you need a `.docx`.
 
 #### What carries over between formats
 
@@ -1460,7 +1566,9 @@ when they don't.
 
 - **Word document reading engine** (**Settings > Editing**) decides how a
   `.docx` becomes editable text when you open it. **Auto** (the default) tries
-  MarkItDown first and falls back to a plain extract. **MarkItDown** is fast and
+  MarkItDown first and, when MarkItDown cannot run on this computer, uses
+  QUILL's own Word reader, which keeps headings, lists and tables just the
+  same. **MarkItDown** is fast and
   reliable: headings, lists and tables come through, but images, comments and
   fonts do not. **Pandoc** keeps more of the structure, so footnotes and complex
   tables come through better. It needs Pandoc installed. If Pandoc is missing,
@@ -1478,7 +1586,10 @@ when they don't.
   before you convert. MarkItDown only works when the source is Word, PowerPoint,
   Excel or PDF and the result is Markdown or plain text. If you choose it for
   anything else, QUILL says so and offers Pandoc. It never swaps in an engine
-  you did not pick.
+  you did not pick. If MarkItDown itself cannot run on this computer, QUILL's
+  own reader converts the file instead and the announcement says so, for
+  example "Converted to report.md. MarkItDown could not run here, so QUILL's
+  own Word reader read the file instead."
 
 ### Import and Export
 
@@ -1660,9 +1771,16 @@ without your say-so.
 
 Here is how a conversion goes:
 
-1. **The free local converter runs first.** Word, PowerPoint, Excel, HTML, EPUB,
-   and PDFs that already contain text convert straight away on your computer and
-   open as clean, editable text. No account, no key, no upload and no cost.
+1. **The file's own text is read first.** Word, Excel, PowerPoint,
+   OpenDocument, HTML, EPUB, CSV, and PDFs that already contain text convert
+   straight away on your computer and open as clean, editable text in a new
+   tab. No account, no key, no upload, no cost, and nothing to download: QUILL
+   has its own reader for every one of these (see "Office files QUILL reads by
+   itself"). Where the optional MarkItDown converter can run, QUILL asks it
+   first; where it cannot, QUILL's own reader steps in. Either way QUILL says
+   who read the file and what it found, for example "Opened Budget.xlsx as
+   editable text, read by QUILL's own Excel reader. 2 sheets. Nothing was
+   uploaded." **Review Last OCR Result...** lists the same facts afterwards.
    A PDF is read by the same PDF reader **File > Open** uses, so its pages come
    through with their page breaks, and QUILL tells you how many pages it read.
 2. **A scanned document is noticed, not dumped on you.** If a PDF comes back
@@ -1690,6 +1808,14 @@ instead of claiming it is scanned. The installed apps come with a PDF reader, so
 this only happens with a pip or source install. A *password-protected* PDF is
 handled separately, as described next: Import / Convert Document tells you to
 open it with **File > Open**, which asks for the password.
+
+Office files get the same kind of plain message. A password-protected Word,
+Excel or PowerPoint file is named as password-protected, with the fix. An Office
+97-2003 file (.doc, .xls or .ppt) is read through LibreOffice when it is
+installed; when it is not, QUILL tells you to save it in the newer format from
+Word, Excel, PowerPoint or LibreOffice and import that copy. Earlier versions
+said "MarkItDown is not installed" for every Office file in the installed app,
+and the download it pointed to could not fix it. That message is gone.
 
 #### Opening a scanned PDF with File > Open
 
@@ -1725,14 +1851,77 @@ password (they only restrict permissions) open with no question, as before.
 If a PDF has an outline, the chapters and sections you would see in Adobe
 Reader's bookmarks pane, QUILL adds those entries to its own
 bookmark list (**List Named Bookmarks...**, `Alt+Shift+G`) when you open the file, as it does for
-Word and EPUB structure. Each bookmark takes you exactly where **Go To Page**
-for that page would. This happens once, the first time you open the PDF. If you
+Word and EPUB structure. Each bookmark takes you to its title on its page: if
+"Chapter 2" starts halfway down page 14, the bookmark lands on "Chapter 2", not
+on the top of the page. When QUILL cannot find the title at the start of a line
+on that page, the bookmark goes to the top of the page instead. Two entries
+with the same title, such as a "Summary" in every chapter, stay two bookmarks
+("Summary" and "Summary (2)"), each at its own place. This happens once, the
+first time you open the PDF. If you already have bookmarks in the file, or you
 later rename or delete some of those bookmarks, opening the file again will not
-bring them back or make duplicates. A PDF with no outline opens as usual.
+change them, bring them back or make duplicates. A PDF with no outline opens as
+usual.
 
 The outline is also in **Go To** (`Ctrl+G`), as its own **Outline** choice.
-Each entry says its title and its page, such as "Chapter 2, page 14", and it
-always takes you to that page, even after you have edited the text above it.
+Each entry says its title and its page, such as "Chapter 2, page 14". An entry
+that sits inside another says its level too, such as "Summary, level 3, page
+15", so you can hear the outline's shape. The level is only a description: it
+does not turn the line into a heading. An entry always takes you to its title
+on that page, even after you have edited the text above it.
+
+#### How QUILL chooses the text of each page
+
+A PDF can be read more than one way, and the ways do not always agree. One
+reader may spell a widely spaced line out a letter at a time ("W i d e l e t t
+e r s"), while another reads it as words; one may run two columns together line
+by line, while another reads down the first column and then the second. QUILL
+does not simply take the first answer it gets. It decides **page by page**:
+
+1. **The usual reader goes first.** For most pages its text is clean, and QUILL
+   keeps it straight away, so an ordinary PDF opens as quickly as it always did.
+2. **A doubtful page gets a second and third look.** If the first reading has
+   signs of trouble (letters one at a time, words run together, characters that
+   cannot be read, a line of text per word), or the page looks as if it is set
+   in two columns, QUILL reads that page again in two other ways and keeps
+   whichever reads best.
+3. **"Reads best" means fewest problems, not most text.** QUILL counts what a
+   listener would trip over: characters it could not read, words broken into
+   single letters, words glued together, one word per line, part of the page
+   missing, and columns read across instead of down. A short title page, a page
+   of figures, or a page in Greek or Japanese is not marked down for being
+   short or for not being English.
+
+The repairs described below run on every reading, and QUILL compares the
+readings both before and after repair, so a repair that would make a page worse
+is not used on it.
+
+**What you hear when a page is doubtful.** When the PDF opens, QUILL names the
+pages that may still read poorly, for example: "Opened report.pdf. 12 pages.
+extracted by pdfplumber + pypdf. quality 81/100. Pages 3 and 7 may read
+poorly." A page is named when it still reads badly in
+every way QUILL tried, when it holds characters QUILL could not read, or when it
+is only a picture (a scanned page inside an otherwise ordinary PDF). A blank
+page is never named: there is nothing on it to miss. The **Document Intake
+Report** lists those pages with the reason for each, such as "Page 7: 2
+characters could not be read", and says which reader's text each page uses.
+
+**What QUILL does not do.** It does not guess. A character that the PDF's own
+font gave no meaning to is left in the text, rather than deleted or swapped for
+a letter that might be wrong; the page is named instead, so you know to check
+it. QUILL does not turn anything into headings, tables or other structure: a
+heading stays a line of text, and a row of a table stays a line with its numbers
+in order. Nothing is uploaded, and OCR never runs unless you say yes (see
+"Opening a scanned PDF with File > Open", above).
+The optional MarkItDown converter, if you have it, is only asked about a PDF
+that still reads poorly, and its text is used for a page only when it keeps the
+PDF's pages and reads clearly better. The PDF itself is never changed.
+
+**Limits.** QUILL reads the first 200 pages of a very long PDF and says so.
+Columns are only put in order when the gap between them is clear; a page with
+three columns, or columns that run around pictures, can still come out mixed.
+Tables come through as lines of text, and pictures do not come through at all.
+The same rules apply in File > Open, Import / Convert Document, Document Q&A,
+and in QUILL Lite.
 
 #### The text from a PDF is repaired before you read it
 
@@ -1745,22 +1934,34 @@ it opens the file, page by page:
   with a hyphen at the end of a line, so "inter-" on one line and "national" on
   the next would be read as two words, and a search for "international" found
   nothing. QUILL joins them. A hyphen that belongs to the word stays:
-  **Anglo-Saxon** and **2018-2019** are left exactly as written.
+  **Anglo-Saxon**, **2018-2019** and an identifier such as **ISBN-** are left
+  exactly as written, and a word that is always hyphenated, such as "self-" at
+  the end of one line and "aware" on the next, becomes **self-aware**.
 - **Paragraphs are put back together.** Every printed line arrives as its own
   line of text, so speech would stop at the edge of the page instead of the end
   of the sentence, and moving to the next paragraph moved one printed line.
   QUILL joins lines that were only broken because the page ran out of room.
-  Blank lines, list items, headings, short deliberate lines and finished
-  sentences keep their breaks, so lists stay lists and paragraphs stay separate.
+  Blank lines, list items (including "a)" and "iv." items), headings, short
+  deliberate lines and finished sentences keep their breaks, so lists stay lists
+  and paragraphs stay separate. A heading such as "CHAPTER TWO" or "2.1
+  Methods" under a long line of text stays on its own line instead of being
+  swallowed into the paragraph, and so do address lines, rows set out in
+  columns, and rows of figures, so two long rows of a table stay two rows.
 - **Spaced-out headings are closed up.** A designer's letter-spaced title comes
   through as "C H A P T E R  O N E", which a screen reader spells one letter at
   a time and a search never matches. It becomes "CHAPTER ONE". Ordinary text is
-  left alone: a line such as "A B testing" is not a heading and is not touched.
+  left alone: a line such as "A B testing" is not a heading and is not touched,
+  and a whole sentence spaced out with no gaps between its words is not closed
+  up into one long word (QUILL looks for a better reading of that page
+  instead).
 - **Missing joined letters are restored.** The joined "fi", "fl" and "ff" shapes
   a typesetter uses are often stored as characters that mean nothing outside the
   document's own font, so a screen reader reads *nothing* where they were, and
-  "office" is announced as "o ce". QUILL turns them back into letters, and
-  removes any leftover meaningless character so speech doesn't stumble over it.
+  "office" is announced as "o ce". QUILL turns them back into letters where
+  they sit inside a word. Any other character with no meaning is **kept**, not
+  deleted: deleting it could quietly change what the page says (a font that
+  stored its "x" that way would turn "next box" into "net bo"). Instead QUILL
+  names the page as one that may read poorly, so you know to check it.
 
 These repairs are careful. When a case could go either way, QUILL leaves the
 text as it found it, and a PDF whose text is already clean comes through
@@ -2906,6 +3107,30 @@ To set up and look after snippets:
 Snippets can have blanks such as `${input:name}`, `${choice:a|b}`, `${date}`,
 `${time}` and `${cursor}`.
 
+**Finding a snippet by name.** In **Insert Snippet**, type any part of a
+snippet's name, trigger or text, spaces included, and the list narrows as you
+type. The words can come in any order: `notes meeting` finds "Meeting notes
+for Tuesday" and "Notes from the meeting". Snippets whose name starts with
+what you typed come first. Press Down Arrow to move into the list, Enter to
+insert the top match or the one you are on, and Escape to cancel. The
+Abbreviations manager's search box and **Search Tray Slots** match words in any
+order in the same way.
+
+**Large libraries.** With thousands of snippets, the list shows the first 200
+matches, and the line above it says how many matched in all, for example
+"4,980 matches; showing the first 200. Type more to narrow them." Every
+snippet is still reachable: type a little more of its name. QUILL also waits
+until you pause typing before it refills a long list, so typing a whole name
+fills it once instead of after every letter. Enter never acts on an
+out-of-date list.
+
+**Typing a name in a list.** In lists you arrow through, such as Copy Tray,
+Open Recent, bookmarks and most other pick-one lists, you can type the start of
+a row's name, spaces included, to move to it. While you are typing a name,
+Space is part of the name; after a pause of about a second, Space on its own
+opens the selected row as before. Enter always opens the row and Escape always
+closes the list.
+
 #### Date and time
 
 **Date and Time** (`F5`) types the time and date at the caret and reads it
@@ -3190,6 +3415,111 @@ command instead.
 - Export your library now and then, as a backup and to copy it to another
   computer.
 
+### AutoCorrect: fixing common misspellings as you type
+
+AutoCorrect fixes the misspellings almost everybody makes, the moment you
+finish the word. Type `teh` and a space, and QUILL changes it to `the `. Type
+`recieve` and press `Enter`, and it becomes `receive` before the new line
+starts. You hear the word-corrected sound and QUILL says "Corrected to the",
+because your screen reader only echoes the space you typed and would otherwise
+never tell you the word changed.
+
+**It is off to begin with**, like everything else that changes your text
+without being asked. Turn it on in **Settings > Editing > Correct common
+misspellings as I type** (`Ctrl+,` opens Settings; type "misspell" in its
+search box to jump there). QUILL remembers the choice.
+
+#### What it corrects
+
+QUILL ships a list of about 350 common English misspellings, such as `teh`,
+`recieve`, `seperate`, `definately`, `occured`, `untill`, `wierd` and
+`adress`. Every one was checked against two English dictionaries (American
+and British) before it went in: a word that is spelled correctly in either is
+never on the list, and neither is a word that is also a real word or a name,
+such as `calender` (a machine for pressing cloth) or `Sargent`.
+
+QUILL keeps your capital letters. Some examples:
+
+- `teh ` becomes `the `, and `Teh ` at the start of a sentence becomes
+  `The `.
+- `febuary ` becomes `February `, because the correction has its own capital.
+- `(recieve, ` becomes `(receive, `. Brackets, quotes and punctuation around
+  the word stay where they were.
+- `TEH ` is left alone. A word typed all in capitals is far more often an
+  abbreviation or an acronym than a mistake.
+
+#### What it never touches
+
+AutoCorrect looks only at a whole word that a space or `Enter` has just ended.
+It never changes:
+
+- **Code and settings files.** Nothing is corrected in a file whose name
+  marks it as code or configuration (`.py`, `.json`, `.yaml`, `.ini`, `.html`,
+  `.csv` and the rest), the same list that keeps spell-check-as-you-type
+  quiet in those files. Plain text (`.txt`), Markdown, rich text and new
+  untitled documents are all corrected.
+- **Web addresses, email addresses and paths.** A word with a full stop,
+  slash, colon, `@`, digit or underscore inside it is never a misspelling, so
+  `teh.example.com`, `adress@example.com` and `my_recieve_function` stay
+  exactly as typed.
+- **Code inside prose.** In a Markdown document, nothing inside backticks or
+  inside a fenced code block is corrected.
+
+#### Taking a correction back
+
+`Ctrl+Z` straight after a correction puts back exactly what you typed (the
+correction and the space are one undo step). QUILL then leaves that word alone
+in this window for the rest of the session: type the space again and the word
+stays the way you wrote it, and the status line says "Kept teh as you typed
+it". If you never want a correction again, turn it off in AutoCorrect Entries,
+below.
+
+#### AutoCorrect Entries (Alt+Shift+9)
+
+**Insert > AutoCorrect Entries...** (`Alt+Shift+9`) shows every correction,
+the built-in ones and your own, one per row, read as a sentence: "teh becomes
+the, built in". It is the same window, on the same key, in QUILL Lite.
+
+- **Find** narrows the list as you type. Type `rec` and only the corrections
+  with `rec` in the misspelling or the correction remain.
+- **Corrections** is the list. `Enter` or `Space` on a row edits it.
+- **Add...** makes a correction of your own. You type the word as you
+  mistype it, what it should become, and whether case must match exactly.
+  For example, add `qill` becoming `QUILL`, or `adn` becoming `and` if it is
+  not already there. The word to correct must be letters only (an apostrophe
+  inside is fine); what it becomes can be several words.
+- **Edit...** changes the row you are on. Editing a built-in correction saves
+  your version beside it, and the row then says "built in, changed by you".
+- **Turn Off** stops the correction you are on without deleting it; the row
+  then ends in "stopped", and the same button, now **Turn On**, starts it
+  again. This is the answer when a correction keeps changing a word you meant.
+- **Remove** deletes a correction of yours. On a built-in correction you
+  changed or turned off, it puts it back the way QUILL shipped it. A built-in
+  correction cannot be deleted, so Remove on one turns it off instead and
+  tells you so.
+
+Every button says what it did. Your changes are kept when you close the window
+with **Close** or `Escape`.
+
+#### Where your corrections are kept
+
+Your corrections are kept with your abbreviations, in the same
+`abbreviations.json` file in QUILL's data folder, under the category
+**AutoCorrect**. So **Back Up Settings** carries them, and you can see them in
+**Manage Abbreviations** too (choose the AutoCorrect category). They are not
+abbreviations, though: they never expand while only Abbreviation Expansion is
+on, they do not appear in Quick Insert, and Quill Inkwell does not type them in
+other programs. AutoCorrect works inside QUILL and QUILL Lite.
+
+#### Limits
+
+- The built-in list is English only.
+- A correction happens when a space or `Enter` ends the word. A word followed
+  only by a full stop at the very end of your document is corrected when you
+  type the space after the full stop.
+- AutoCorrect fixes known misspellings, not every misspelling. Spell check
+  (`F7`) and spell-check-as-you-type still find the rest.
+
 ### Insert Automation
 
 Insert Automation ties abbreviations, smart text triggers, `.LOG` files and
@@ -3472,6 +3802,12 @@ feature itself is. These are the rest:
   ones as you type. Off to begin with.
 - **Autoformat double hyphen to dash** turns two hyphens into a dash as you
   type. Off to begin with.
+- **Correct common misspellings as I type** turns on AutoCorrect, which
+  changes `teh` to `the` when you type the space after it. Off to begin with;
+  Chapter 4's AutoCorrect section has the details.
+- **Continue lists in plain text** makes `Enter` continue a list in a plain
+  text document the way it always does in Markdown. Off to begin with; see
+  Typing in a list in Chapter 5.
 - **Multi-press time window (ms)** is how long QUILL waits for a second or
   third press of the same key before it treats the first as a single press.
   It matters for the Copy Tray and Command Palette keys that do something
@@ -3881,12 +4217,34 @@ document QUILL says the command is unavailable.
 
 #### Typing in a list
 
-Markdown lists behave the way they do in other editors:
+Markdown lists behave the way they do in other editors, and QUILL tells you
+what `Enter` did, because your screen reader only hears a new line:
 
-- `Enter` continues the current bullet, numbered or task item.
-- `Enter` on an empty list marker ends the list.
+- `Enter` at the end of an item starts the next one with the next marker: a
+  hyphen after a hyphen, `3. ` after `2. `, `3) ` after `2) `, and an unchecked
+  `- [ ] ` after any task item. The item's indentation is kept, so a nested
+  item continues at its own depth. QUILL says "Continued list item".
+- `Enter` in the middle of an item splits it there. In `1. bread milk`, with
+  the cursor before `milk`, `Enter` gives `1. bread` and `2. milk`.
+- A new numbered item renumbers the items below it while they still count on
+  from it, so adding an item after the first of `1. 2. 3.` gives `1. 2. 3. 4.`
+  and QUILL says "Continued list item, renumbered 2 items below". A list that
+  jumps (from `2.` to `7.`, say) keeps your numbering from the jump on.
+- `Enter` on an empty list marker ends the list: the marker goes, the empty
+  line stays, and QUILL says "Exited list".
+- `Ctrl+Z` straight afterwards takes back the new line, its marker and any
+  renumbering in one step.
 - On a list item, `Tab` nests it one level deeper and `Shift+Tab` brings it
   back out.
+
+**Plain text** does this only if you ask: turn on **Settings > Editing >
+Continue lists in plain text**. It is off to begin with because, in a `.txt`
+file or a new untitled note, a line that happens to start with `1.` is as often
+a date, a version number or a paragraph you are numbering by hand. Even with
+the setting on, QUILL never continues a list in a code or settings file. In a
+rich text document (`.rtf`, `.docx`) lists are formatting rather than
+characters, and `Ctrl+Shift+L` makes them; `Enter` there is the word
+processor's own.
 
 For bigger changes, open **Insert > List > List Manager...**
 (`Ctrl+Shift+Grave, L`). It shows your list as a tree, where you can move,
@@ -6088,6 +6446,64 @@ transcription, covers them properly.
 For the complete reference (every voice mode, every spoken command, and the
 privacy rules) see [Voice Interaction](voice-interaction.md).
 
+### Reading without changing anything: the Read-Only Guard
+
+When you open a document only to read it, such as a manual, a long book or
+minutes you must not alter, one stray key can change it, and a `Ctrl+S` later
+saves the change. The **Read-Only Guard** locks the document against edits
+while you read.
+
+Press `Ctrl+Alt+Backspace`, or choose **Tools > Advanced > Toggle Read-Only
+Guard**. You hear "Document is read-only". Press it again to hear "Document is
+editable".
+
+While the guard is on:
+
+- Typing, `Backspace`, `Delete`, `Enter` and pasting do nothing.
+- Commands that change text say "Document is read-only" on the status bar and
+  change nothing: snippets, the line tools, case changes, Copy Tray pastes,
+  Markdown and HTML inserts, and a thesaurus or dictionary **Replace**, among
+  others. They stop *before* they say anything, so you never hear "Inserted
+  snippet" about a snippet that was not inserted.
+- Reading and moving work as always: the arrow keys, Find (`Ctrl+F`), Go To
+  (`Ctrl+G`), browse-mode navigation by heading, paragraph and link, selecting
+  and copying, Read Aloud.
+- **Bookmarks** work as usual. They are kept beside the document, not inside
+  it, so setting one never changes the file.
+- **Document notes** work too. A note you add with **Add Inline Note**
+  (`Alt+Shift+I`) while the guard is on is kept beside the file instead of
+  written into it, and `Alt+Shift+J` and `Alt+Shift+K` still move between
+  notes.
+
+QUILL **remembers** the guard for that file. Close QUILL, open the same file
+tomorrow by double-clicking it in File Explorer, from **Open Recent** or with
+`Ctrl+O`, and it opens locked again, even if File Explorer spells the folder
+with different capitals. QUILL Lite has the same guard on the same key, with
+its own list.
+
+If QUILL cannot write down that you locked the file, for example because its
+settings folder is on a full disk, the document is still locked for now and
+you hear why:
+
+> Document is read-only for now, but it could not be remembered for next time
+> (There is not enough space on the disk).
+
+An untitled document cannot be remembered either, because it has no file name
+yet. Save it first if you want the lock to stay.
+
+A file Windows marks read-only, or one on a share you cannot write to, opens
+locked as well, and QUILL says so as it opens. Turn the guard off to type
+anyway, then save under a new name.
+
+**Long documents.** Locking a document does not make it open faster: the text
+still has to be put into the editor, which for an eight-megabyte book takes
+about four tenths of a second on a fast computer. What the guard does speed up
+is moving around. Because a locked document cannot change, browse-mode keys
+(next heading, next paragraph, next link) read QUILL's own copy of the text
+instead of copying the whole document out of the editor on every key. On that
+eight-megabyte book a heading jump went from about 46 milliseconds to well
+under one.
+
 ### Tools for Reading, Review, and Inspection
 
 These tools help when a file is hard to read, or when you need to know
@@ -7056,7 +7472,10 @@ passage and transcribes it afterwards, Live Dictation writes as you go.
 The same submenu has more windows:
 
 - **Recent Phrases...** (`Shift+F11`) lists the last twenty phrases of the
-  session, with Insert Again and Copy.
+  session, with Insert Again and Copy. Words a correction replaced are there
+  too, marked "(before correction)", so nothing a correction changed is lost.
+  After them come any words kept from before. See "Words that were not
+  written, and dictation history".
 - **My Words and Phrases...** (`Alt+Shift+F10`) is a window with Add Word, Add
   Phrase, Add Correction, Edit and Remove. It edits your `dictation.md` file for
   you. **Import...** and **Export...** move the list to another computer or
@@ -7139,6 +7558,67 @@ works. Strict mode is off in QUILL and QUILL Lite, so the commands you know keep
 working, and on in QUILL Transcribe. A common word, or a word from your own My
 Words and Phrases, is refused as the command word, with the reason.
 
+##### Dictation profiles: the kind of writing you are doing
+
+A dictation profile changes dictation for one kind of writing in one step,
+instead of changing several settings each time. There are seven:
+
+| Profile | What it changes |
+|---|---|
+| Standard | Nothing: your Dictation Settings as they are. Headings are written as Markdown marks, as before. Everybody starts here. |
+| Email | Removes filler words and adds punctuation. Headings, bold and italic use QUILL's own formatting. |
+| Document | Headings, bold and italic use QUILL's own formatting. |
+| Markdown | Headings, bold and italic are written as Markdown marks. |
+| Chat | Removes filler words; plain text, with no heading marks. |
+| Coding | Removes filler words, adds no punctuation of its own (you say every mark), and waits longer for a pause. Markdown marks. |
+| Verbatim | Keeps every word you say, fillers too; plain text. |
+
+**Choosing one.** Open Dictation Settings (`Alt+Shift+F6`), press **More Dictation
+Settings...**, and choose in **Dictation profile, for the kind of writing**
+(**Alt+A**). Or, while dictating, say the profile's name after the command
+word: "QUILL email mode", "QUILL markdown mode", "QUILL standard mode" ("email
+profile" works too). You hear "Email profile." and the choice is kept for next
+time. The status bar shows a profile other than Standard beside the dictation
+modes, so a braille display shows it too.
+
+**Lock the profile so it cannot be switched by voice** (**Alt+B**, in More
+Dictation Settings) stops a spoken profile name from switching: you hear "Lock
+Profile is on, so the profile stays Email." Nothing ever switches profiles on
+its own.
+
+**Profiles and the Dictation style.** While a profile other than Standard is
+on, its own choice about filler words wins over the **Dictation style** in
+Dictation Settings: Verbatim keeps fillers even if the style is Clean, and
+Email, Chat and Coding remove them even if the style is Verbatim. A profile
+never changes **Fix it when I correct myself** or polishing. Standard leaves
+your style exactly as it is.
+
+**Headings, bold and italic by voice.** "heading one" to "heading six" at the
+start of a phrase, and "QUILL bold that" and "QUILL italic that" (or
+"italicize that"), act on the selection, or on the phrase you dictated last.
+What happens depends on the profile:
+
+- **Markdown** and **Coding**, and **Standard** for headings: the marks are
+  written. "bold that" puts two asterisks either side, "italic that" one; one
+  Ctrl+Z takes it back.
+- **Document** and **Email**: In a rich text document, QUILL's own Heading and Bold commands apply the
+style. In a Markdown or HTML document, QUILL's own commands write the marks
+or tags, and you hear "Heading 2." or "Bold." In a plain text document nothing is
+  typed for the heading, and you hear "Headings work in QUILL documents or the
+  Markdown profile." Bold and italic say the same about themselves.
+- **Chat** and **Verbatim**: "heading two" starts a new line with your words
+  and nothing else, and bold and italic say "This profile writes plain text, so
+  nothing was formatted."
+
+**Example.** In a letter written as a rich text document, choose the Document
+profile, then say "heading two dear Sam" and pause. "Dear Sam" goes on a line
+of its own with the Heading 2 style. Select a word, say "QUILL bold that", and
+it is bold.
+
+The settings are `windows_dictation_profile` and
+`windows_dictation_profile_locked`, under the same names in QUILL, QUILL Lite
+and QUILL Transcribe.
+
 ##### Importing and exporting your words
 
 **Export...** saves your whole list to a file you name. Choose **Word list in
@@ -7205,7 +7685,7 @@ it right too.
 
 ##### Sharing dictation settings with the family
 
-**Share dictation settings with the family** (`Alt+A`) is a check box in More
+**Share dictation settings with every QuillVille program** (`Alt+Q`) is a check box in More
 Dictation Settings. When it is on, the dictation settings you save in QUILL
 are used by QUILL Lite, QUILL Transcribe and Quill Inkwell on this computer
 too, and what you save in any of them reaches QUILL.
@@ -7304,6 +7784,137 @@ The AI, and what is sent:
 To send everything you dictate to the window first, turn on **Send dictation
 to review first** (`Alt+V`) in More Dictation Settings. The first thing you say
 opens the window, and nothing reaches the document until you insert it.
+
+##### Polishing your dictation with AI, only when you ask
+
+Sometimes you want the punctuation and capitals tidied without rewording
+anything. **Polish** does exactly that, as one request you ask for each time.
+It is off until you turn it on, and it never runs by itself.
+
+1. Open Dictation Settings (`Alt+Shift+F6`), press **More Dictation
+   Settings...** (`Alt+A`), and check **Allow polishing my dictation with AI
+   when I ask** (`Alt+G`). Press OK in both windows.
+2. Dictate as usual. When you want a phrase polished, say **"QUILL polish
+   that"** (or "QUILL polish it"). The last phrase is taken back out of the
+   document and opened in Review Dictation, then the polish request is made
+   there. If Review Dictation is already open, the words in it are polished.
+3. In the Review Dictation window you can also press **Polish** (`Ctrl+P`).
+   That button is there only while polishing is allowed.
+4. You hear "Polishing", then what changed, in two sentences at most, worked
+   out by QUILL comparing the words itself. Read the words, then **Insert** (`Ctrl+Enter`)
+   or take the change back with **Undo Change** (`Ctrl+Z`).
+
+What the AI is asked: to fix punctuation, capital letters, spelling and obvious
+grammar slips only, and to keep your words, your meaning, your order and your
+tone. It is the same request every time.
+
+What is sent, and when: polish uses the same AI, the same account and the same
+question as the rest of Review Dictation. The first time, QUILL asks before
+anything is sent and names who receives it; No is the default and sends
+nothing. Only the words in the window are sent. With AI off or in Safe Mode
+the Polish button is greyed out. With polishing not allowed, "QUILL polish
+that" says "Polish my dictation is off" and sends nothing.
+
+##### Correcting yourself as you talk, and dictation styles
+
+People correct themselves mid-sentence: "meet on Thursday, no, Friday". With
+**Fix it when I correct myself, like Thursday, no, Friday** (`Alt+X`) checked
+in Dictation Settings, QUILL writes only what you meant:
+
+| You say | QUILL writes |
+|---|---|
+| meet on Thursday, no, Friday at noon | meet on Friday at noon |
+| in June, no I mean July | in July |
+| I have two no three cats | I have three cats |
+| call me at 5, sorry, 6 | call me at 6 |
+| send it to Ana, I mean Maria (with Maria and Ana in My Words) | send it to Maria |
+| Monday scratch that word Tuesday | Tuesday |
+
+The words that mark a correction are "no", "I mean", "no I mean", "sorry" and
+"scratch that word". A correction is made only between two things of the same
+kind: two days (including today, tomorrow, tonight and yesterday), two months,
+two numbers, or two names from the Vocabulary list in My Words and Phrases.
+Everything else is written exactly as you said it, so these are left alone:
+
+- "no, I don't think so" (nothing before the "no");
+- "Is it Thursday? No, Friday." (a question and its answer);
+- "I said no, Friday" (a word that is not a day before the "no");
+- "I may, no, March" ("may" is a verb unless you say it as the month May).
+
+It all happens on this computer, with no AI and no internet. It is off until
+you turn it on, and a live transcript never uses it, because a transcript
+keeps what the speaker said.
+
+**Dictation style** (`Alt+Y`), just above, is a quick way to set these choices
+together:
+
+- **Verbatim: every word as I say it.** No filler removal, no correction.
+- **Clean: no filler words, and my corrections fixed.** Turns on **Remove
+  filler words** and **Fix it when I correct myself**.
+- **Polished: Clean, then review, and polish with AI when I ask.** Clean,
+  plus **Send dictation to review first** and **Allow polishing my dictation
+  with AI when I ask**. It is offered only when AI help is on. Choosing it
+  sends nothing: you still say "QUILL polish that" or press Polish each time.
+
+If you change a check box yourself, the style shows **Your own mix of the
+settings below**, and choosing that changes nothing.
+
+##### Learning from your corrections
+
+When you correct the same word the same way twice, QUILL offers to remember it,
+so you do not have to correct it a third time. A correction counts when you say
+"QUILL correct that" and then "choose 2", or when you say "QUILL correct Ann"
+and then say the new words.
+
+The second time, a window called **Add a Correction** asks, for example,
+"Add a correction: Ann becomes Anne? It goes into My Words and Phrases, under
+Corrections." **No** is the default. Press **Yes** to add it, or No
+or Escape to leave it. Dictation keeps going while you answer.
+
+On Yes the correction goes into the Corrections list of My Words and Phrases
+(`Alt+Shift+F10`), the same list you can edit by hand, and the next phrase uses
+it. You hear "Added: Ann becomes Anne. It is in My Words and Phrases."
+
+Limits: each pair is offered once each time QUILL runs, whatever you answer.
+Only a single word or a short phrase of up to four words is offered, never a
+sentence. Nothing about your corrections is saved anywhere until you say yes.
+
+**Words for one kind of writing.** My Words and Phrases' file can hold a
+section headed, for example, `## Context: email`, with words (one a line) and
+corrections (`heard => write`) meant only for that kind of writing. QUILL keeps
+these sections when it saves the file. They are ready for named dictation
+profiles, which are not in this version, so for now they are not used.
+##### Words that were not written, and dictation history
+
+Dictation never throws away words it could not write. If dictation pauses
+because its field moved, or Windows stops typing a phrase part-way through, the
+words are kept on this computer until you deal with them, even if QUILL is
+closed, crashes or the computer sleeps. Stopping dictation while words are held
+says so: "1 phrase held while paused was not written. They are kept in Recent
+Phrases." The next time QUILL starts, it says once how many are waiting.
+
+They are in **Recent Phrases** (`Shift+F11`), after this session's phrases,
+labelled "Not written" with the time. So is a review that did not finish,
+labelled "Review not finished". Choose one and:
+
+- **Insert Again** (`Alt+I`, or `Enter`) writes it at the cursor, and then it
+  is deleted from this computer;
+- **Copy** (`Alt+C`) puts it on the clipboard and keeps it;
+- **Discard** (`Alt+D`) deletes it without writing it.
+
+Only words that were never written are kept, and they are sealed for your
+Windows account, so another account on the same computer cannot read them.
+Nothing you dictate is kept as sound.
+
+**Dictation history** is off unless you turn it on. In More Dictation
+Settings, **Keep a dictation history** (`Alt+Y`) can be Off, One day, Seven
+days or Thirty days. While it is on, the text of each phrase you dictate is
+kept for that long, sealed the same way, and Recent Phrases lists the earlier
+ones after the words not written, newest first, labelled "Earlier" with the
+time. **Clear History** (`Alt+H`) in Recent Phrases deletes all of it, after a
+question whose answer is No unless you choose Yes. Turning the history off
+deletes it too. Neither the kept words nor the history ever go into QUILL's
+log or a diagnostic report.
 
 ##### Holding Ctrl+F11 to talk
 
@@ -7472,8 +8083,9 @@ middle of a sentence is written as words, just as you meant it.
 - "undo that"
 - "select that"
 - "capitalize that", "all caps that", "no caps that"
-- "delete word", "delete sentence"
-- "read that"
+- "delete word", "delete sentence", "delete previous paragraph"
+- "read that" reads all of what last went in, a whole snippet included
+- "read last sentence", "read last paragraph", "read selection"
 - "go to beginning of line", "go to end of line", "go to top", "go to end of
   document"
 - "select sentence", "select line", "select paragraph"
@@ -7483,10 +8095,25 @@ middle of a sentence is written as words, just as you meant it.
 - "copy that", "copy all", "show clips", "show snippets"
 - "stop dictation"
 
+**Reading back, a worked example.** You have dictated "Thanks for the notes
+comma I will send the draft on Friday period" and want to check it by ear.
+Say "read last sentence": you hear "Thanks for the notes comma I will send the
+draft on Friday period", with the marks named when **Say punctuation marks in
+the read-back** (More Dictation Settings) is
+on, so a missing comma is easy to catch. "read last paragraph" (or "read this
+paragraph") reads the whole paragraph the cursor is in, and "read selection"
+reads what you selected ("Nothing is selected." when nothing is). "read that"
+reads all of what last went in, so after "insert snippet sign off" it reads the
+whole snippet, not only its name. Reading never moves the cursor or changes
+the text. In another program only "read that" works, because QUILL reads only
+the words it typed there.
+
 **Commands with words after them**, said at the start of a phrase:
 
 - "select" and some words, "go to", "go before" or "go after" and some words,
   "correct" and some words (see "Moving and selecting by voice")
+- "replace" some words "with" new words, and "change that to" and new words
+  (see "Replace and change that")
 - "paste clip three", "insert snippet" and a name, "insert abbreviation" and a
   trigger (see "Snippets and clips by voice")
 - "switch to Spanish" (see "Switching between English and Spanish")
@@ -7564,13 +8191,20 @@ With words after them, at the start of a phrase:
 - **"insert abbreviation"** (or "expand abbreviation") **and its trigger**
   writes what that abbreviation stands for.
 
-A snippet with blanks to fill in is written with each blank as its name in
-square brackets, like `[name]`. Say "select name" and then the real name, and
-the blank is filled.
+A snippet with blanks to fill in asks for each blank by voice before anything
+is written. With the starter Bug Report Template, "insert snippet bug report"
+says "Snippet Bug Report Template, 3 blanks. Say cancel to stop. Summary?". What
+you say next is the answer, with spoken punctuation obeyed. For a choice, such
+as `${choice:NVDA|JAWS|Narrator}`, you hear "Choose NVDA, JAWS or Narrator.":
+say one of them, or "choose two". Say **skip** to leave a blank empty,
+**scratch that** to answer the one before again, or **cancel** to write
+nothing. `${date}` and `${time}` come from this computer's clock, and
+`${cursor}` puts the cursor where the snippet says.
 
 Whatever goes in, it goes in as one phrase: one `Ctrl+Z` takes it out, and so
 does "scratch that". The read-back keeps it short, "Snippet sign off" or
-"Pasted slot 3", rather than reading the whole thing to you. These commands do
+"Pasted slot 3", rather than reading the whole thing to you; say "read that"
+to hear all of it. These commands do
 not work while **Just write what I say** is on, because commands are off then.
 
 ##### Correct that: choosing another guess
@@ -7582,15 +8216,59 @@ and the number." Then say **"choose one"**, **"choose two"** or **"choose
 three"**, and that guess takes the place of what was written. You hear
 "Changed to:" and the new words.
 
-Only **Windows speech recognition** keeps other guesses. Moonshine, Whisper,
-the optional models and OpenAI give one answer each, so with them "correct
-that" tells you there is nothing to choose from. Say "scratch that" and say it
-again, or add a correction in **My Words and Phrases** so it comes out right
-next time.
+**Windows speech recognition** keeps its own other guesses. Moonshine,
+Whisper and the optional models give one answer each, so with them "correct
+that" asks for a **second opinion** instead: the other built-in engine listens
+to your last phrase again. You hear "Listening again with Whisper." (or
+Moonshine), and a moment later both answers: "1: the whether is nice. 2: the
+weather is nice. Say choose and the number." Say **"choose two"** to take the
+second. If both engines heard the same words, you are told so, and nothing
+changes. Whisper listens again after Moonshine, and Moonshine after Whisper or
+a downloaded model.
+
+The second opinion uses only the sound of your last phrase, kept in memory
+until you say the next one: nothing is saved to disk and nothing goes over the
+internet. It is not offered in Spanish, where only Whisper understands you, or
+with OpenAI or a speech company. Then "correct that" tells you there is nothing
+to choose from: say "scratch that" and say it again, or add a correction in
+**My Words and Phrases** so it comes out right next time.
+
+Whatever a correction replaced is not lost. It goes into **Recent Phrases**
+(`Shift+F11`, in the Live Dictation submenu) marked "(before correction)", just after the corrected
+words, so you can put it back with Insert Again or copy it.
 
 With any engine you can also say **"correct" and the words** that came out
 wrong, then say the right ones (see "Moving and selecting by voice"), or **"spell
 that"** to spell the last phrase out (see "Letters, numbers and symbols").
+
+##### Replace and change that: fixing words without retyping them
+
+Two commands put new words in place of old ones, so you do not have to
+select anything first. Say each one at the start of a phrase.
+
+**"replace" the words "with" the new words.** Say "replace Tuesday with
+Wednesday" and the nearest "Tuesday" before the cursor becomes "Wednesday";
+if there is none before the cursor, QUILL looks after it. The new words take
+the capital and the closing full stop of the old ones, and the cursor stays
+where it was, so you can carry on dictating. You hear "Replaced Tuesday with
+Wednesday." If the words are not there, what you said is written as ordinary
+text, as with "select" (you hear "Not found, written as text."; say "scratch
+that" to take it away). After the command word, "QUILL replace Tuesday with
+Wednesday", nothing is written when the words are not found.
+
+**"change that to" and the new words** replaces the whole phrase you dictated
+last. You said "see you Thursday." and meant Friday: say "change that to see
+you Friday", and you hear "Changed to: See you Friday." The leading space, the
+capital and the closing full stop stay as they were.
+
+**"delete previous paragraph"** (or "delete last paragraph") deletes the
+paragraph just before the cursor, from its start up to the cursor, with the
+blank line in front of it. Say it again to delete the one before. If text is
+selected, the selection is deleted instead.
+
+Replace and change that keep what they replaced in Recent Phrases, marked
+"(before correction)". "Scratch that" straight after a replace inside your last
+phrase takes away the whole corrected phrase.
 
 ##### Speech engines for Live Dictation
 
@@ -7654,7 +8332,7 @@ brackets:
   dictation" until you choose your own words, said on their own after a pause.
   "stop dictation" always works too.
 
-Five finer choices sit beside them:
+Six finer choices, and a style that sets two of them, sit beside them:
 
 - **Automatic punctuation** for Moonshine and Whisper
   (`windows_dictation_auto_punctuation`). Turn it off and you say every mark.
@@ -7665,6 +8343,11 @@ Five finer choices sit beside them:
   that long before it is written.
 - **Remove filler words** such as um and uh
   (`windows_dictation_remove_fillers`).
+- **Dictation style** (`Alt+Y`): Verbatim, Clean or, with AI on, Polished;
+  see "Correcting yourself as you talk, and dictation styles". It is a name
+  for the settings it changes and is not saved by itself.
+- **Fix it when I correct myself** (`windows_dictation_self_repair`, `Alt+X`):
+  "Thursday, no, Friday" writes Friday. Off at first.
 - **Stop dictation after silence** (`windows_dictation_silence_minutes`):
   never, 1, 5 or 10 minutes.
 - **Just write what I say** (`windows_dictation_continuous`), for talking in
@@ -7712,7 +8395,11 @@ you change here is saved when you press OK in Dictation Settings.
 | Commands only after the command word (strict mode) (`Alt+E`) | A command said on its own is written as words; the stop phrase always works | Off (on in QUILL Transcribe) |
 | Seconds command mode waits for a command (`Alt+D`) | How long command mode lasts with no command, from 5 to 30 | 8 |
 | Send dictation to review first (`Alt+V`) | What you dictate goes into Review Dictation instead, to insert once; see "Review before inserting" | Off |
-| Share dictation settings with the family (`Alt+A`) | Your dictation settings are the same in QUILL, QUILL Lite, QUILL Transcribe and Quill Inkwell; see "Sharing dictation settings with the family" | On for a new install; off if you had changed your settings before |
+| Allow polishing my dictation with AI when I ask (`Alt+G`) | "QUILL polish that" and the Polish button in Review Dictation ask the AI to fix punctuation and small slips, keeping your words; see "Polishing your dictation with AI, only when you ask" | Off |
+| Keep a dictation history (`Alt+Y`) | Off, One day, Seven days or Thirty days of the text you dictate, never the sound, listed in Recent Phrases; turning it off deletes it; see "Words that were not written, and dictation history" | Off |
+| Dictation profile, for the kind of writing (`Alt+A`) | Standard, Email, Document, Markdown, Chat, Coding or Verbatim; see "Dictation profiles" | Standard |
+| Lock the profile so it cannot be switched by voice (`Alt+B`) | A spoken profile name does not switch profiles | Off |
+| Share dictation settings with every QuillVille program (`Alt+Q`) | Your dictation settings are the same in QUILL, QUILL Lite, QUILL Transcribe and Quill Inkwell; see "Sharing dictation settings with the family" | On for a new install; off if you had changed your settings before |
 
 In settings files these are `windows_dictation_hold_to_talk`,
 `windows_dictation_preview`, `windows_dictation_ai_send`,
@@ -7722,7 +8409,10 @@ In settings files these are `windows_dictation_hold_to_talk`,
 `windows_dictation_working_tick`, `windows_dictation_transcript_timestamps`,
 `windows_dictation_never_type`, `windows_dictation_command_prefix`,
 `windows_dictation_command_prefix_required`,
-`windows_dictation_command_timeout`, `windows_dictation_review_first` and
+`windows_dictation_command_timeout`, `windows_dictation_review_first`,
+`windows_dictation_polish`, `windows_dictation_history_days` (0 for off,
+or 1, 7 or 30), `windows_dictation_profile` and
+`windows_dictation_profile_locked` and
 `windows_dictation_share_family` (`on` or `off`; empty until decided). The
 review window also keeps `windows_dictation_review_context` (its context check
 box) and `windows_dictation_review_consent` (your answer to its question).
@@ -8308,8 +8998,11 @@ Backspace for you, so it only works while the same window still has the focus.
 Your snippets, abbreviations and clips work there too, because they only
 insert: "insert snippet" and its name, "insert abbreviation" and its name, and
 "paste clip" and a number. Each is typed as one phrase, so "scratch that" takes
-all of it back. A snippet's blanks are typed as their names in square
-brackets, like [title], with no questions, and the cursor stays at the end.
+all of it back. A snippet's blanks are asked for by voice first, as in a
+document (see "Snippets and clips by voice"), and the cursor stays at the end.
+"read that" reads what dictation typed there; "read last sentence" and the
+other commands that read the text cannot, because nothing in the other program
+is read.
 
 Anything that needs to read what is already in the other program cannot work
 there: "select", "go to", "correct", "copy all" and "show clips". If you say
@@ -8360,7 +9053,7 @@ The list is saved when you press OK in Dictation Settings.
 Inside other programs the read-back starts as a tone only, because your
 screen reader already echoes what is typed. Inkwell keeps its own copy of the
 dictation settings, which follows QUILL's while **Share dictation settings with
-the family** is on (see "Sharing dictation settings with the family"): in Inkwell, **Dictation > Dictation Settings...**
+every QuillVille program** is on (see "Sharing dictation settings with the family"): in Inkwell, **Dictation > Dictation Settings...**
 (`Ctrl+Alt+D`) opens the same window you know from QUILL, and **Dictation >
 Dictate Anywhere** (`Ctrl+D`) turns it on and off from the menu. Inkwell uses
 the same My Words and Phrases file as QUILL, so the names you taught QUILL come
@@ -8371,8 +9064,9 @@ out right everywhere. Dictate Anywhere is off in Safe Mode.
 search box, such as Cast's podcast search, press `Ctrl+F11`, and QUILL
 Transcribe dictates into it with your words and commands. If QUILL Transcribe
 is not running, it starts in the tray and begins dictating when it is ready.
-Neither app has a speech engine of its own. Dictate Here is shown only where
-QUILL Transcribe is part of your copy of the family.
+Neither app has a speech engine of its own. Dictate Here appears once
+QUILL Transcribe is part of your copy of the family: in every public build from
+QUILL Transcribe's release on 1 November 2026.
 
 **One microphone at a time.** QUILL, QUILL Lite, QUILL Transcribe and Quill
 Inkwell never listen at once, so the same words are never written twice. The
@@ -8531,7 +9225,9 @@ quick loop:
 4. **"spell that"** is for a name or a word the engine has never heard. Spell
    it with the phonetic alphabet in your next phrase.
 5. **Recent Phrases** (`Shift+F11`) shows what was written for your last twenty
-   phrases, so you can see what went wrong.
+   phrases, so you can see what went wrong, and any words that were never
+   written. Say "read last sentence" to hear a sentence back with its
+   punctuation.
 6. When you are done, **Tidy Dictated Text** (`Ctrl+F3`) can fix sound-alike
    words, names and punctuation in a paragraph or a selection with AI, if you
    have a ChatGPT subscription or your own OpenAI key (see "Tidy Dictated
@@ -9363,10 +10059,13 @@ travels with you on the drive.
 The list puts the most important first:
 
 - **Pandoc**: document conversion for Word, ODT, EPUB and RTF.
-- **PDF and Office text extraction** (MarkItDown, pdfplumber and pypdf): lets
-  Import read the text out of Word, PowerPoint, Excel and PDF documents
-  without Pandoc or LibreOffice. Scanned or image-only PDFs still need
-  **File > Import > OCR** either way.
+- **PDF and Office text extraction** (MarkItDown, pdfplumber and pypdf): an
+  optional second reader for Word, PowerPoint, Excel and PDF documents. You do
+  not need it: QUILL reads all of these with its own readers. Where MarkItDown
+  can run, File > Open and Import / Convert Document try it first. In some
+  builds it cannot run at all (it needs a part the installer leaves out), and
+  then QUILL's own readers do the work and nothing asks you to download it.
+  Scanned or image-only PDFs still need **File > Import > OCR** either way.
 - The **braille translation pack**: liblouis tables and BRF profiles for the
   Translation submenu and for BRF and embossing export.
 - **Dictation (offline speech)**: a guided setup covering Whisper.cpp, Faster
@@ -12638,8 +13337,10 @@ there.
 
 #### Editor utilities
 
-- **Toggle Read-Only Guard** stops accidental edits to a document you are
-  reviewing.
+- **Toggle Read-Only Guard** (`Ctrl+Alt+Backspace`) stops accidental edits to a
+  document you are reviewing, and is remembered for that file. Bookmarks and
+  notes keep working. Chapter 8, Reading without changing anything, has the
+  details.
 - **Toggle Clipboard Collector** and **Collect Clipboard Now** gather
   clipboard entries into a running log in the open document. This works
   system-wide, the way EdSharp did: while the collector is on, anything you
@@ -12716,8 +13417,12 @@ need manual cleanup?
 An imported document opens with its own text and nothing else. QUILL never
 writes a heading such as "PDF Extract", or the name of the engine, into the
 file you are reading. Everything about *how* it was read (format, engine,
-pages, quality score, and any low-confidence warning) is in the **Document
-Intake Report**, and the short version is announced when the file opens.
+pages, quality score, which reader each PDF page's text came from, and the
+pages that may read poorly, with the reason for each) is in the **Document
+Intake Report**, and the short version is announced when the file opens. For a
+Word, Excel or PowerPoint file the report also says which reader read it, how
+many sheets or slides it has, which sheet was cut short if one was, and, when
+MarkItDown was tried and could not run, why.
 
 #### Shell Integration
 

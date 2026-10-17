@@ -201,3 +201,16 @@ def test_quills_go_to_offers_the_pdf_outline(tmp_path: Path) -> None:
     assert _GoToHost({})._go_to_outline_targets("one\ftwo") == []
     pages = host._go_to_page_targets("one\ftwo")
     assert [(row.label, row.position) for row in pages] == [("1", 0), ("2", 4)]
+
+
+def test_quills_go_to_says_a_nested_entrys_level_and_lands_on_its_title() -> None:
+    host = _GoToHost({
+        "pdf_outline": [("Part One", 1), ("Summary", 2)],
+        "pdf_outline_levels": [1, 3],
+    })
+    text = "Part One\fA long line of body text.\nSummary\nShort."
+    rows = host._go_to_outline_targets(text)
+    assert [(row.label, row.position) for row in rows] == [
+        ("Part One, page 1", 0),
+        ("Summary, level 3, page 2", text.index("Summary")),
+    ]

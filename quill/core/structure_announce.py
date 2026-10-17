@@ -40,9 +40,9 @@ never the other way about. Headings go to both editors.
 
 Everything else stays silent, and the :class:`StructureAnnouncer` latch is what
 keeps it that way: moving the caret *within* a heading says nothing, because you
-have already been told. Leasey reaches the same conclusion from the other end
-with its last-announced-page latch -- the cue is about the crossing, never about
-the position.
+have already been told. Established screen-reader add-ons reach the same
+conclusion from the other end with a last-announced-page latch -- the cue is
+about the crossing, never about the position.
 
 Pure and wx-free. The UI layer reads the caret, builds a :class:`StructurePoint`
 for wherever it is, and speaks whatever comes back.

@@ -267,6 +267,11 @@ phrase.</li>
 <li>The Markdown line marks – “bullet”, “numbered item”, “block quote”
 and “heading one” to “heading six” – count only at the start of a
 phrase, so “the heading two lines down” stays words.</li>
+<li>A snippet with blanks asks for each one by name: say the answer, or
+for a choice say one of the options or choose and its number. Say skip
+to leave one empty, scratch that to go back one, or cancel to type
+nothing. Then the whole snippet goes in as one phrase, and scratch that
+takes all of it back.</li>
 </ul>
 <h2 id="the-command-word">The command word</h2>
 <ul>
@@ -321,6 +326,10 @@ It in the window.</li>
 <li>Changing words with AI needs AI help switched on and your ChatGPT
 subscription or your own AI key. With AI off, the review still lets you
 edit and insert.</li>
+<li>“QUILL polish that” asks the AI to fix punctuation, capitals and
+small slips and keep your words. It works only after you turn on Allow
+polishing my dictation with AI in More Dictation Settings, and nothing
+is sent until you agree.</li>
 </ul>
 <table>
 <thead>
@@ -359,6 +368,14 @@ what changed.</td>
 <td>While reviewing: puts back the words exactly as you said them.</td>
 </tr>
 <tr>
+<td>“polish that” or “polish it”</td>
+<td>Asks the AI to fix punctuation, capitals and small slips in the
+words, keeping your words; opens the last phrase in Review Dictation
+first. Only when Allow polishing my dictation with AI is on, and only
+after you agree to send. You hear what changed; nothing is inserted
+until you insert it.</td>
+</tr>
+<tr>
 <td>“insert it”</td>
 <td>While reviewing: writes the text where it was going, once.</td>
 </tr>
@@ -368,6 +385,42 @@ what changed.</td>
 </tr>
 </tbody>
 </table>
+<h2 id="profiles-and-formatting">Profiles and formatting</h2>
+<ul>
+<li>A profile is the kind of writing dictation is for: Standard, Email,
+Document, Markdown, Chat, Coding, Verbatim. Standard is your Dictation
+Settings as they are, and is where everybody starts.</li>
+<li>Choose one in More Dictation Settings in QUILL and QUILL Lite, or in
+QUILL Transcribe’s Dictation menu (Dictation Profile, Ctrl+Shift+F) or
+tray menu. Or say its name after the command word: “QUILL email
+mode”.</li>
+<li>A profile sets the pause, whether filler words are removed and
+whether punctuation is added, and how headings, bold and italic are
+written.</li>
+<li>Markdown and Coding write “heading two” as two number signs, and
+“bold that” as two asterisks either side. Document and Email use the
+editor’s own Heading and Bold in a document that holds formatting;
+anywhere else they type nothing for them and say why. Chat and Verbatim
+write plain text.</li>
+<li>Lock Profile stops a spoken profile name switching profiles; you can
+still choose one by hand. Nothing ever switches profiles on its
+own.</li>
+</ul>
+<h2 id="correcting-yourself-as-you-talk">Correcting yourself as you
+talk</h2>
+<ul>
+<li>With Fix it when I correct myself turned on in Dictation Settings,
+saying “no”, “I mean”, “no I mean”, “sorry” or “scratch that word”
+between two days, months, numbers or names from My Words writes only the
+second: “Thursday, no, Friday” writes Friday. Anything else is written
+as said.</li>
+<li>When you correct the same word the same way twice, with “correct
+that” and “choose”, or in QUILL’s own documents with “correct” and the
+word, dictation offers to remember it: “Add a correction: Ann becomes
+Anne?” In QUILL and QUILL Lite a window asks. Where no window can be
+shown the question is spoken: say “QUILL yes” to add it or “QUILL no”
+within 30 seconds. Nothing is added without a yes.</li>
+</ul>
 <h2 id="punctuation">Punctuation</h2>
 <table>
 <thead>
@@ -804,14 +857,36 @@ Meeting Notes.</td>
 cursor.</td>
 </tr>
 <tr>
+<td>“delete previous paragraph” or “delete last paragraph”</td>
+<td>Deletes the paragraph just before the cursor, from its start up to
+the cursor. In another program, only words dictation typed there.</td>
+</tr>
+<tr>
 <td>“read that” or “repeat that”</td>
-<td>Reads the last phrase aloud again.</td>
+<td>Reads aloud again everything the last phrase, snippet, clip or
+review put in. In another program, only what dictation itself typed can
+be read.</td>
+</tr>
+<tr>
+<td>“read last sentence” or “read the last sentence”</td>
+<td>Reads the sentence just before the cursor, with its punctuation
+said.</td>
+</tr>
+<tr>
+<td>“read last paragraph” or “read the last paragraph” or “read this
+paragraph”</td>
+<td>Reads the paragraph the cursor is in.</td>
+</tr>
+<tr>
+<td>“read selection” or “read the selection”</td>
+<td>Reads what is selected.</td>
 </tr>
 <tr>
 <td>“correct that”</td>
-<td>Reads the other things the speech engine thought you said, numbered,
-when it offers them (Windows speech recognition does). Then say choose
-and a number.</td>
+<td>Reads the other things the speech engine thought you said, numbered.
+Windows speech recognition offers its own; with Moonshine, Whisper or a
+downloaded model, the other built-in engine listens to the last phrase
+again and its answer is choice 2. Then say choose and a number.</td>
 </tr>
 <tr>
 <td>“choose one” or “choose 1”</td>
@@ -1009,6 +1084,57 @@ Nothing is selected.</td>
 </tr>
 </tbody>
 </table>
+<h2 id="commands-profiles-and-formatting">Commands: profiles and
+formatting</h2>
+<table>
+<thead>
+<tr>
+<th>Say, on its own</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>“bold that”</td>
+<td>Makes the selection, or the phrase you dictated last, bold: QUILL’s
+own Bold in a document that holds formatting, two asterisks either side
+in the Markdown and Coding profiles.</td>
+</tr>
+<tr>
+<td>“italic that” or “italicize that”</td>
+<td>Makes the selection, or the phrase you dictated last, italic, the
+same way.</td>
+</tr>
+<tr>
+<td>“standard mode” or “standard profile”</td>
+<td>Switches to the Standard profile, unless Lock Profile is on.</td>
+</tr>
+<tr>
+<td>“email mode” or “email profile”</td>
+<td>Switches to the Email profile, unless Lock Profile is on.</td>
+</tr>
+<tr>
+<td>“document mode” or “document profile”</td>
+<td>Switches to the Document profile, unless Lock Profile is on.</td>
+</tr>
+<tr>
+<td>“markdown mode” or “markdown profile”</td>
+<td>Switches to the Markdown profile, unless Lock Profile is on.</td>
+</tr>
+<tr>
+<td>“chat mode” or “chat profile”</td>
+<td>Switches to the Chat profile, unless Lock Profile is on.</td>
+</tr>
+<tr>
+<td>“coding mode” or “coding profile”</td>
+<td>Switches to the Coding profile, unless Lock Profile is on.</td>
+</tr>
+<tr>
+<td>“verbatim mode” or “verbatim profile”</td>
+<td>Switches to the Verbatim profile, unless Lock Profile is on.</td>
+</tr>
+</tbody>
+</table>
 <h2 id="commands-with-words-after-them-selecting">Commands with words
 after them: selecting</h2>
 <table>
@@ -1051,6 +1177,21 @@ after them: correcting</h2>
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>“replace …” (words in your document, then with, then the new
+words)</td>
+<td>Replaces those words with the new ones: replace Tuesday with
+Wednesday. QUILL looks just before the cursor first, then after it; in
+another program, only in the phrase you dictated last. If the words are
+not there, what you said is written as text, as with select; after the
+command word, nothing is written.</td>
+</tr>
+<tr>
+<td>“change that to …” (the new words)</td>
+<td>Puts the new words in place of the phrase you dictated last: change
+that to see you on Friday. What it said before stays in Recent Phrases,
+marked before correction.</td>
+</tr>
 <tr>
 <td>“spell …” (letters)</td>
 <td>Spells one word without going into spelling mode: spell bravo alpha

@@ -96,6 +96,9 @@ class _Host:
     def launch_at_startup_enabled(self) -> bool:
         return False
 
+    def profile_locked(self) -> bool:  # Dictation > Lock Profile's check (D-23)
+        return False
+
     def _append_key_items(self, menu: Any) -> None:
         item_id = wx.NewIdRef()
         menu.Append(item_id, "Start and Stop &Key...\tCtrl+Alt+Shift+D")

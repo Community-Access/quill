@@ -74,7 +74,7 @@ class DictationExtrasMixin:
 
     def _dictation_share_settings(self) -> None:
         """Dictation Settings was saved: give the shared fields to the family,
-        when "Share dictation settings with the family" is on. A write that
+        when "Share dictation settings with every QuillVille program" is on. A write that
         fails is said: this program's copy is saved, the others' is not."""
         from quill.core.windows_dictation.family_store import FamilyDictationError, publish
 

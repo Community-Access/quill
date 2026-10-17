@@ -1637,6 +1637,7 @@ class MenuBuilderMixin:
                     _("Toggle Abbre&viation Expansion"), "format.toggle_abbreviation_expansion"
                 ),
             )
+        self._append_autocorrect_entries_item(insert_menu)  # main_frame_typing_assist
         # Power Tools recirculation (menus.md Phase 4). The power-tool date/time
         # entries were removed: the bundled ``com.quill.bundled.insert-tools``
         # Quillin is now the single home for Insert Date / Insert Time / Insert

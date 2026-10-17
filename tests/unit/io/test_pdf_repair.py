@@ -32,10 +32,19 @@ def test_private_use_ligatures_become_letters() -> None:
     assert repair_private_use_glyphs(damaged) == "The office staff confirmed the flight."
 
 
-def test_unmapped_private_use_characters_are_dropped() -> None:
-    # An unmapped private-use codepoint carries no recoverable meaning, so it is
-    # removed rather than read out as an unknown character.
-    assert repair_private_use_glyphs("page \uf8f0break") == "page break"
+def test_unmapped_private_use_characters_are_kept_not_deleted() -> None:
+    # Item 28: deleting an unmapped private-use glyph silently changes the text
+    # ("next box" read as "net bo" when a font put its "x" there). It is kept,
+    # and the readability score reports the page instead.
+    assert repair_private_use_glyphs("page \uf8f0break") == "page \uf8f0break"
+    assert repair_private_use_glyphs("ne\ue123t bo\ue123") == "ne\ue123t bo\ue123"
+
+
+def test_a_ligature_slot_away_from_any_letter_is_not_guessed_at() -> None:
+    # U+F001 is "fi" only where a ligature can be: touching a letter. Standing
+    # alone it could be any glyph the font chose, so it is left as it is.
+    assert repair_private_use_glyphs("bullet \uf001 here") == "bullet \uf001 here"
+    assert repair_private_use_glyphs("\uf001rst") == "first"
 
 
 def test_real_unicode_ligatures_are_normalized() -> None:
@@ -185,3 +194,96 @@ def test_every_repair_accepts_empty_text() -> None:
         repair_extracted_text,
     ):
         assert repair("") == ""
+
+
+# -- item 28: protect lines before reflow, keep meaningful hyphens -------------- #
+
+_LONG_BODY = "The committee met on a Tuesday, which was unusual, and agreed that the"
+
+
+def test_a_long_body_line_does_not_swallow_the_title_under_it() -> None:
+    for title in ("CHAPTER TWO", "Chapter 2", "2.1 Methods", "Results and Discussion"):
+        text = f"{_LONG_BODY}\n{title}\nThe next paragraph begins here."
+        assert reflow_paragraphs(text) == text, title
+
+
+def test_a_wrapped_lowercase_continuation_still_joins() -> None:
+    text = f"{_LONG_BODY}\nreport would be circulated before the end of the month."
+    assert reflow_paragraphs(text) == (
+        f"{_LONG_BODY} report would be circulated before the end of the month."
+    )
+
+
+def test_two_long_table_like_rows_stay_separate() -> None:
+    rows = (
+        "Northern regional distribution centre and warehouse 1,250 18.75 23,437.50\n"
+        "Southern regional distribution centre and warehouse 980 18.75 18,375.00"
+    )
+    assert repair_extracted_text(rows) == rows
+
+
+def test_a_column_spaced_row_is_never_joined() -> None:
+    rows = (
+        "Northern regional distribution centre and warehouse   1,250   18.75\n"
+        "covering the whole of the upper valley and the coast   980   18.75"
+    )
+    assert reflow_paragraphs(rows) == rows
+
+
+def test_an_address_line_under_a_long_line_stays_its_own_line() -> None:
+    for line in ("221 Baker Street", "Springfield, IL 62704", "London NW1 6XE"):
+        text = f"{_LONG_BODY}\n{line}"
+        assert reflow_paragraphs(text) == text, line
+
+
+def test_lettered_and_roman_list_starts_are_list_items() -> None:
+    text = (
+        f"{_LONG_BODY}\n"
+        "a) the first lettered item in the list, which is long enough to wrap\n"
+        "(b) the second lettered item in the list, which is long enough too\n"
+        "iv. the fourth item numbered in roman figures, long enough to wrap"
+    )
+    assert reflow_paragraphs(text) == text
+
+
+def test_spaced_letters_with_no_word_gaps_are_not_run_together() -> None:
+    # pdfplumber reads a widely spaced sentence one letter at a time with single
+    # spaces only; closing it up would make one long nonsense word.
+    line = "W i d e l e t t e r s a r e h a r d t o r e a d"
+    assert repair_spaced_headings(line) == line
+    # A short or all-capitals display word still closes up.
+    assert repair_spaced_headings("C H A P T E R") == "CHAPTER"
+    assert repair_spaced_headings("A C K N O W L E D G E M E N T S") == "ACKNOWLEDGEMENTS"
+
+
+def test_an_identifier_keeps_its_hyphen_and_its_line_break() -> None:
+    assert dehyphenate("ISBN-\nnumber") == "ISBN-\nnumber"
+    assert dehyphenate("form A4-\nsized") == "form A4-\nsized"
+
+
+def test_an_always_hyphenated_prefix_joins_and_keeps_the_hyphen() -> None:
+    assert dehyphenate("a self-\naware reader") == "a self-aware reader"
+    assert dehyphenate("well-\nknown") == "well-known"
+
+
+def test_numbers_and_identifiers_survive_every_repair() -> None:
+    text = (
+        "In 2024 the library lent 1,234 books and added ISBN 978-0-306-40615-7,\n"
+        "a balance of 4,512.75 pounds, code X-17b and the 2018-2019 figures."
+    )
+    repaired = repair_extracted_text(text)
+    for token in ("2024", "1,234", "978-0-306-40615-7", "4,512.75", "X-17b", "2018-2019"):
+        assert token in repaired
+
+
+def test_the_new_protections_are_idempotent() -> None:
+    damaged = (
+        f"{_LONG_BODY}\n"
+        "CHAPTER TWO\n"
+        "Northern regional distribution centre and warehouse 1,250 18.75 23,437.50\n"
+        "Southern regional distribution centre and warehouse 980 18.75 18,375.00\n"
+        "a self-\naware reader and an ISBN-\nnumber, net to  alone\n"
+        "W i d e l e t t e r s a r e h a r d t o r e a d"
+    )
+    once = repair_extracted_text(damaged)
+    assert repair_extracted_text(once) == once

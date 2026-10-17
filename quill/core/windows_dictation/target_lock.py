@@ -171,6 +171,16 @@ class LockedTarget:
         self.remove(start, end)
         return self.insert(text)
 
+    def edit_problem(self, command: Any) -> str:
+        """Why a correcting command must not change the words typed here (D-10):
+        the focus left the locked field, or the inner document's own checks."""
+        if not self.on_locked_field():
+            from quill.core.windows_dictation.external_edits import MOVED_SINCE
+
+            return MOVED_SINCE
+        check = getattr(self._inner, "edit_problem", None)
+        return str(check(command)) if callable(check) else ""
+
     def line_bounds(self) -> tuple[int, int]:
         return self._inner.line_bounds()
 

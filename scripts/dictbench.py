@@ -103,6 +103,9 @@ from quill.core.windows_dictation.speech_language import (  # noqa: E402
     fold,
 )
 
+# The one scorer, shared with QUILL Transcribe's recognition test (D-25).
+from quill.core.windows_dictation.word_errors import word_errors  # noqa: E402
+
 RATE = 16_000
 TRANSCRIPTS = "transcripts.txt"
 #: Marks counted for punctuation, including Spanish's opening pair.
@@ -153,19 +156,6 @@ def words(text: str, *, accents: bool = True) -> list[str]:
     """*text* as words for scoring: no capitals, no punctuation."""
     text = text.lower() if accents else fold(text)
     return _WORDS.findall(text.replace("_", " "))
-
-
-def word_errors(reference: list[str], heard: list[str]) -> int:
-    """Substitutions, insertions and deletions turning *reference* into *heard*."""
-    previous = list(range(len(heard) + 1))
-    for i, said in enumerate(reference, 1):
-        current = [i]
-        for j, got in enumerate(heard, 1):
-            current.append(
-                min(previous[j] + 1, current[j - 1] + 1, previous[j - 1] + (said != got))
-            )
-        previous = current
-    return previous[-1]
 
 
 def count_marks(text: str) -> dict[str, int]:

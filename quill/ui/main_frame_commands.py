@@ -1811,6 +1811,7 @@ class CommandRegistryMixin:
             self._binding_for("edit.find_all_matches"),
         )
         self._register_open_documents_command()  # main_frame_open_documents
+        self._register_typing_assist_commands()  # main_frame_typing_assist
         self.commands.register(
             "tools.search_in_files",
             "Search in Files...",

@@ -48,6 +48,7 @@ from quill.core.action_feedback import resolve
 from quill.core.error_codes import CodedError
 from quill.core.windows_dictation.command_mode_mixin import CommandModeMixin
 from quill.core.windows_dictation.composer import compose, spoken_form
+from quill.core.windows_dictation.corrections import CorrectionsMixin
 from quill.core.windows_dictation.echo_guard import EchoGuard
 from quill.core.windows_dictation.editing import EditingMixin
 from quill.core.windows_dictation.history import DictatedPhrase, PhraseHistory
@@ -72,8 +73,11 @@ from quill.core.windows_dictation.preferences import (
     DEFAULT_PHRASE_FEEDBACK,
     DictationPreferences,
 )
+from quill.core.windows_dictation.profile_mixin import ProfileMixin
 from quill.core.windows_dictation.readback import spoken_marks
+from quill.core.windows_dictation.rescue_mixin import RecentPhrases
 from quill.core.windows_dictation.resilience import ResilienceMixin, engine_failure_message
+from quill.core.windows_dictation.self_repair import self_repair
 from quill.core.windows_dictation.target_hold import TargetHoldMixin
 from quill.core.windows_dictation.transcript import TranscriptMixin
 from quill.core.windows_dictation.vocabulary import Command
@@ -123,6 +127,8 @@ _LIVE = frozenset({
 
 
 class DictationController(
+    CorrectionsMixin,  # first: asked about every command before the rest (D-10, D-19)
+    ProfileMixin,  # D-23: headings by structure, bold and italic, profiles
     ResilienceMixin,
     EditingMixin,
     LiveMixin,
@@ -154,8 +160,9 @@ class DictationController(
         self._state = DictationState.OFF
         self.spelling = False
         self.history = PhraseHistory()
-        #: What was dictated this app session, newest first, for Recent Phrases.
-        self.recent: deque[str] = deque(maxlen=20)
+        #: What was dictated this app session, newest first, for Recent Phrases,
+        #: and for the opt-in history (rescue_mixin.py, D-5).
+        self.recent: deque[str] = RecentPhrases(20, self._remember)
         self._ignore_until_speech = False  # Escape threw the phrase being heard away
         self._restarted = False  # the one silent engine restart, spent
         self._last_spoken = ""
@@ -339,6 +346,8 @@ class DictationController(
             language=preferences.filler_language,
         )
         phrase = self._rewrite(phrase, preferences)
+        if preferences.self_repair:  # D-20: "Thursday, no, Friday" is Friday
+            phrase = self_repair(phrase, preferences.repair_names)
         if self._ignore_until_speech:
             return  # the phrase Escape threw away, arriving late
         if self._state is DictationState.STANDBY:

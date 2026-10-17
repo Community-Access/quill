@@ -56,7 +56,9 @@ class DocumentGoToMixin:
             kinds["Page"] = [GoToTarget(label=label, position=at) for label, at in pages]
         kinds["Bookmark"] = self._go_to_bookmark_targets()
         kinds["Heading"] = self._go_to_heading_targets()
-        outline = outline_places(text, getattr(self, "pdf_outline", ()))
+        outline = outline_places(
+            text, getattr(self, "pdf_outline", ()), getattr(self, "pdf_outline_levels", ())
+        )
         if outline:
             kinds["Outline"] = [GoToTarget(label=label, position=at) for label, at in outline]
         answer = ask_go_to(

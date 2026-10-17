@@ -18,6 +18,11 @@ What the controller decides, before anything is composed
   ("insert it", "what changed") or, when it is not a dictation command at all,
   an instruction for the AI ("make it shorter"). With **Talk About It** on,
   every utterance is one of those, with or without the word.
+* **"QUILL polish that"** (P3, "Polish my dictation"): with the opt-in
+  setting on, the last phrase is opened in the review the same way and one
+  fixed request -- punctuation, capitals and small slips, the words kept -- is
+  made there, after the review's consent. Never automatic, never inserted
+  until Insert, and Undo Change takes it back.
 * **Send dictation to review first** (``windows_dictation_review_first``):
   the first phrase of dictation opens an empty review, and that phrase and the
   rest are written into it. The host points the controller at the review's text
@@ -31,7 +36,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from quill.core.windows_dictation.composer import compose
 from quill.core.windows_dictation.parser import RecognizedPhrase
 from quill.core.windows_dictation.review_session import (
     AI_OFF,
@@ -39,8 +43,8 @@ from quill.core.windows_dictation.review_session import (
     REVIEW_COMMANDS,
     not_reviewing,
 )
+from quill.core.windows_dictation.snippet_fill import SnippetFillMixin
 from quill.core.windows_dictation.vocabulary import Command
-from quill.core.windows_dictation.voice_commands import VoiceCommandsMixin
 from quill.core.windows_dictation.wake import wake_words
 
 if TYPE_CHECKING:
@@ -57,7 +61,7 @@ def _said(phrase: RecognizedPhrase) -> str:
     return phrase.text or " ".join(word.display for word in phrase.words)
 
 
-class ReviewMixin(VoiceCommandsMixin):
+class ReviewMixin(SnippetFillMixin):  # and VoiceCommandsMixin under that
     """ "review that", the review commands, Talk About It and review first."""
 
     _held: list[ParsedPhrase]
@@ -72,6 +76,8 @@ class ReviewMixin(VoiceCommandsMixin):
     if TYPE_CHECKING:  # target_hold.py, later in the controller's bases than this
 
         def _drop_held(self) -> None: ...
+
+        def _rescue_held_done(self) -> None: ...
 
     # -- the host's review desk ------------------------------------------------- #
 
@@ -98,6 +104,9 @@ class ReviewMixin(VoiceCommandsMixin):
         desk = self._review_desk()
         if command is Command.REVIEW_THAT:
             self.review_last(voice=True)
+            return True
+        if command is Command.REVIEW_POLISH and desk is not None and not desk.is_open():
+            self._polish_last(preferences)
             return True
         if desk is None:
             self._say(NOT_HERE)
@@ -171,6 +180,22 @@ class ReviewMixin(VoiceCommandsMixin):
             return str(error) or "The words could not be written."
         return ""
 
+    # -- "polish that" (P3) ---------------------------------------------------------- #
+
+    def _polish_last(self, preferences: Any) -> None:
+        """ "QUILL polish that" with no review open: the last phrase goes into
+        the review, then the one polish request is made there -- after the
+        review's own consent question. Off unless the person allowed it."""
+        from quill.core.windows_dictation.review_session import POLISH_OFF
+
+        if not getattr(preferences, "polish", False):
+            self._say(POLISH_OFF)
+            return
+        self.review_last(voice=True)
+        desk = self._review_desk()
+        if desk is not None and desk.is_open():
+            desk.command(Command.REVIEW_POLISH)
+
     # -- "review that" ------------------------------------------------------------ #
 
     def review_last(self, *, voice: bool = False) -> None:
@@ -203,14 +228,14 @@ class ReviewMixin(VoiceCommandsMixin):
         held = list(getattr(self, "_held", []) or [])
         if held:
             from quill.core.windows_dictation.ports import DictationState
+            from quill.core.windows_dictation.rescue_mixin import held_text
 
-            text = ""
-            for parsed in held:  # one after another, as they would have been written
-                text += compose(parsed.pieces, before=text, after="")
+            text = held_text(held)  # one after another, as they would have been written
+            self._rescue_held_done()  # the review keeps them now (its own rescue file)
             self._drop_held()
             if self.active:
                 self._set_state(DictationState.LISTENING)
-            return text.strip()
+            return text
         phrase = self.history.peek()
         if phrase is None:
             return None

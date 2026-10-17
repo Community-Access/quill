@@ -52,6 +52,17 @@ open, and what waits for a later version.
    abbreviation" and "paste clip" work, because they only insert. "What can I
    say" is a spoken sentence while dictating, and Dictation Commands lists
    exactly what works in other programs, with the person's own phrases.
+11. **Never lose what was said** (after 1.0.0, D-5). Words held while paused,
+   and a phrase whose typing stopped part-way, are kept on disk, sealed with
+   Windows DPAPI, until they are typed or discarded; Recent Phrases lists them
+   after this run's phrases, with Discard. A finished recording's transcript
+   can be typed into a field (Review Transcript's Type into a Field). The text
+   history is opt-in (Keep a dictation history: off, 1, 7 or 30 days), text
+   only, clearable, and deleted when turned off.
+12. **Snippet blanks by voice** (after 1.0.0, D-8). "QUILL insert snippet"
+   asks for each blank and choice, then types the filled snippet as one
+   phrase. "read that" reads the whole of the last insertion (D-18).
+
 11. **The wake phrase and holding the key** (after 1.0.0, 2026-10-15). Both are
    the editors' settings, off by default. The wake phrase listens only while
    another program is in front, and never while QUILL Transcribe, QUILL, QUILL
@@ -66,9 +77,40 @@ open, and what waits for a later version.
    Status is the editors' Alt+F9. Dictation Status, Resume and Discard Held
    Words each have an optional system-wide key, empty until chosen, picked and
    checked like the others.
+13. **Correcting in other programs** (after 1.0.0, 2026-10-16, D-10). The
+   correcting commands work on the words this session typed, and only those,
+   as backspace-and-retype; the other program is never read. Each is refused
+   with one sentence when the focus moved, when Windows saw a key or the mouse
+   after dictation's own typing (when, never which key), or, for the commands
+   that retype, in Word and Outlook until the insertion harness shows they are
+   safe. "Correct that" with a one-answer engine asks the other built-in engine
+   for a second opinion (D-19), in memory only.
+14. **Correcting yourself, styles and polish** (after 1.0.0, 2026-10-16).
+   The editors' settings and code (dictation design record section 28):
+   **Fix it when I correct myself** (off) fixes "Thursday, no, Friday" before
+   anything is typed; **Dictation style** offers Polished only when the review
+   could reach an AI; **Allow polishing my dictation with AI when I ask** (off)
+   makes "QUILL polish that" backspace the last phrase into Review Dictation and
+   send one fixed request there, after the review's consent, never by itself.
+   Learning a correction asks by voice ("QUILL yes"), never in a window, because
+   a window would take the focus from the field; it follows "correct that" and
+   "choose", which work here on the session's own words since decision 13.
+
+15. **Learning and profiles** (after 1.0.0, 2026-10-16, D-25 and D-23).
+   Practice Dictation is the one window of QUILL Transcribe's own that
+   dictation writes into: its field is an editor-style target written with one
+   undo step a phrase, never keystrokes, and only after the same refusals as
+   any start. Its recognition test scores with the benchmark's own word-error
+   count. Five lessons use the family's Tutorials window. Seven named profiles
+   (Standard, Email, Document, Markdown, Chat, Coding, Verbatim) overlay the
+   dictation settings; switching is manual only (menu, tray, More Dictation
+   Settings, or by voice), and Lock Profile stops voice switching. In another
+   program, a formatting profile types nothing for a heading and says why,
+   because the other program's formatting cannot be applied by keystrokes
+   QUILL Transcribe can trust.
 
 13. **One settings store, and Dictate Here** (after 1.0.0, 2026-10-16).
-   "Share dictation settings with the family" (dict.md D-13) replaces the
+   "Share dictation settings with every QuillVille program" (dict.md D-13) replaces the
    one-way hand-off as the way settings move: `family_dictation.json` in
    `%LOCALAPPDATA%\QuillVille\Dictation`, written when Dictation Settings is
    saved anywhere and read here on the 800 ms clock, behind one check box that
@@ -81,11 +123,10 @@ open, and what waits for a later version.
 
 ## Waiting for a later version
 
-- Typing a reviewed transcript into another program's field.
-- Recent Phrases kept on disk between runs (the rest of D-5).
-- Snippet blanks filled in by voice, with spoken prompts (the rest of D-8).
-- Optional transcript history.
-- Named dictation profiles for email, notes and forms.
+- Keeping audio for replay, which stays a separate opt-in that text history
+  never implies.
+- A profile chosen automatically by the program in front (needs the privacy
+  review in the spec, section 7.6), and a word list per profile (D-21).
 - A multi-page setup with Back on each step.
 - Inkwell and the editors using QUILL Transcribe as a service rather than
   through the owner and microphone locks; Inkwell's own Dictate Anywhere pausing when the

@@ -7,7 +7,7 @@ file is the itemized list.
 ## Unreleased
 
 - **Your dictation settings, shared with the family** (2026-10-16). More
-  Dictation Settings has **Share dictation settings with the family** (Alt+A).
+  Dictation Settings has **Share dictation settings with every QuillVille program** (Alt+Q).
   When it is checked, what you save here is used by QUILL, QUILL Lite and Quill
   Inkwell, and what you save in them is used here within a second. Before,
   QUILL Transcribe kept its own copy and only Dictate in Other Programs brought
@@ -22,6 +22,68 @@ file is the itemized list.
 - **Dictate Here from Quill Cast and Quill Radio** (2026-10-16). Their Edit >
   Dictate Here (Ctrl+F11) asks QUILL Transcribe to dictate into the field you
   are in, starting it in the tray if it is not running.
+- **Practice Dictation** (2026-10-16), Ctrl+Shift+P in the Dictation menu: a
+  window with a field of QUILL Transcribe's own that dictation types into
+  straight away, so you can learn and test without writing into another
+  program. Start Dictation Here (Alt+H, or Ctrl+F11 in the window) starts and
+  stops it there.
+- **The recognition test** (2026-10-16). In Practice Dictation, Read This
+  Sentence (Alt+T) clears the field and scores the first thing you say against
+  the sentence shown: "All 9 words right", or how many percent were right and
+  which words were heard differently, with three suggestions below 80 percent.
+  Score the Field (Alt+S) scores everything in the field.
+- **Tutorials** (2026-10-16), Ctrl+Alt+F1 in the Help menu: five short lessons
+  (a first dictation, pausing and resuming, commands with the command word,
+  snippets by voice, and review), in the same Tutorials window as QUILL, with
+  a tutorial book beside this guide.
+- **Dictation profiles** (2026-10-16): Standard, Email, Document, Markdown,
+  Chat, Coding and Verbatim, each changing the pause, filler words,
+  punctuation and how headings, bold and italic are written. Choose one in
+  Dictation > Dictation Profile (Ctrl+Shift+F), the tray menu, More Dictation
+  Settings, or by voice ("QUILL email mode"). Lock Profile (Ctrl+Shift+L) stops
+  voice switching. The profile shows in the window, the tray and Dictation
+  Status. Standard, the default, changes nothing.
+- **Bold and italic by voice** (2026-10-16): "QUILL bold that" and "QUILL
+  italic that". In the Markdown and Coding profiles they retype the phrase you
+  just dictated with asterisks round it; in other profiles they say why they
+  cannot format another program.
+- **Fix it when I correct myself** (2026-10-16). Check it in Dictation
+  Settings (Alt+X, off until you turn it on) and "meet on Thursday, no,
+  Friday" types "meet on Friday": a "no", "I mean", "sorry" or "scratch that
+  word" between two days, months, numbers or names from My Words keeps the
+  second. Anything else is typed as you said it. It happens before anything is
+  typed, on this computer, with no AI.
+- **Dictation style** (2026-10-16). Verbatim, Clean or, when AI is set up in
+  QUILL, Polished (Alt+Y in Dictation Settings): one choice that sets filler
+  removal, fixing your corrections and, for Polished, review first and
+  polishing.
+- **Polish what you said, when you ask** (2026-10-16). Check **Allow polishing
+  my dictation with AI when I ask** (Alt+G in More Dictation Settings, off by
+  default). Then "QUILL polish that" backspaces the last phrase away, opens it
+  in Review Dictation and asks the AI once to fix punctuation, capitals and
+  small slips, keeping your words; **Polish** (Ctrl+P) in the window does the
+  same. Nothing is sent until you agree, and nothing is typed until you insert
+  it. It never runs by itself.
+- **Correcting in another program** (2026-10-16). "Correct that" and "choose
+  one" to "choose three", "capitalize that", "all caps that", "no caps that",
+  "replace Tuesday with Wednesday", "change that to" and new words, "delete last
+  sentence" and "delete previous paragraph" now work in other programs, on the
+  words QUILL Transcribe typed there itself: it takes them back with Backspace
+  and types the corrected words. It never reads the other program. A correction
+  is refused, with one sentence and nothing sent, if the focus has moved, if you
+  have typed, clicked or moved the mouse since, or, for the commands that retype
+  words, in Word and Outlook, which change words as they are typed. See
+  "Correcting in another program" in the user guide.
+- **A second opinion for "correct that"** (2026-10-16). With Moonshine, Whisper
+  or a downloaded model, the other built-in engine listens to your last phrase
+  again, and you can choose its answer. The sound stays in memory only.
+- **Recent Phrases keeps what a correction replaced** (2026-10-16), marked
+  "(before correction)".
+- **Nothing you said is lost** (2026-10-16). Words held while dictation is paused, and a phrase Windows stopped typing part-way, are now kept on this computer, sealed for your Windows account, until you type or discard them, so a crash, a sleep or exiting loses nothing. **Recent Phrases** (Shift+F11) lists them after this run's phrases, with a review you did not finish, and has **Discard** (Alt+D). Stopping says they are kept; the next start says how many are waiting, and exiting no longer asks about words that are kept.
+- **Type a transcript into a field** (2026-10-16). **Review Transcript** has **Type into a Field** (Alt+F): the transcript, or the part you selected, is typed into the program you go back to, with the same checks as dictation.
+- **Dictation history, off unless you want it** (2026-10-16). **Keep a dictation history** (Alt+Y in More Dictation Settings) keeps the text of what you dictate for one, seven or thirty days, never the sound. **Clear History** (Alt+H) in Recent Phrases deletes it after asking; turning it off deletes it too.
+- **Snippet blanks by voice** (2026-10-16). "QUILL insert snippet bug report" asks for each blank by name and each choice by its options, then types the whole snippet once; say skip, scratch that to go back, or cancel. "QUILL scratch that" takes all of it back.
+- **"QUILL read that" reads all of it** (2026-10-16): a whole snippet or clip, not just its name.
 
 - **Hold the key to talk** (2026-10-15). With **Hold the dictation key to
   talk** checked in More Dictation Settings (Alt+H, off until you turn it on),

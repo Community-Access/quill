@@ -102,7 +102,8 @@ is two places for them to disagree about what a trailing newline means.
 
 `quill_lite/__init__.py` (anchors `QUILL_APP_ROOT` for a portable build, hands
 off to `quill.apps.lite:main`), `quill_lite/__main__.py`, `launcher.py`,
-`run-quill-lite.bat`, `pyproject.toml`, `quill-lite.spec`, two `.iss` installers
+`run-quill-lite.bat`, `pyproject.toml`, `quill-lite.spec` (removed 2026-10-16:
+QUILL Lite builds on the shared QuillVille Runtime and nothing used it), two `.iss` installers
 plus their edition markers, the generated icon, `scripts/build_release.ps1`,
 `scripts/render_docs.ps1`, four docs, `LICENSE`, `README.md`, and two probes.
 

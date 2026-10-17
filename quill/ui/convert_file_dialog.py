@@ -142,7 +142,8 @@ class ConvertFileDialog:
                 _(
                     "Reads Word, PowerPoint, Excel, or PDF into Markdown or plain "
                     "text. Fast; headings, lists, and tables come through; images, "
-                    "comments, and fonts do not."
+                    "comments, and fonts do not. If MarkItDown cannot run on this "
+                    "computer, QUILL's own reader converts the file and says so."
                 ),
             ),
         )

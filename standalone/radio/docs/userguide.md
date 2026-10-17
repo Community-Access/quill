@@ -913,7 +913,8 @@ rather than something to learn.
 - **Undo History...** (Ctrl+Alt+Shift+A): the last ten things you can take
   back, each with its own Undo.
 - **Dictate Here** (Ctrl+F11): QUILL Transcribe dictates into the text box you
-  are in. Shown when QUILL Transcribe is part of your copy of the family. See
+  are in. Shown when QUILL Transcribe is part of your copy of the family, which is
+  every public build from QUILL Transcribe's release on 1 November 2026. See
   "Dictating a search" in Chapter 6.
 
 #### View menu (Alt+V)

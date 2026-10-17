@@ -441,6 +441,8 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # products bind (bad.md 3.1). The two list commands should become one
     # command with a sort option (bad.md P1); until then both keep a key.
     "tools.misspelling_list_ranked": "Alt+Shift+R",
+    # Same in QUILL Lite (rule 2); three-modifier F-keys are all launchers (rule 9).
+    "format.autocorrect_entries": "Alt+Shift+9",
     # Favourite folders to the leader, 2026-09-17 (bad.md §0.6, rule 7: media,
     # radio favourites, favourite folders, AI and remote-file commands live on
     # the leader or in a menu -- editor chords are for the editor).
@@ -1109,17 +1111,17 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # The collector and the clip library, on QUILL Lite's chords (P1.12).
     # Paste Collected is absent because QUILL has no such command yet;
     # Ctrl+Alt+Shift+G is held open for it (C4).
-    # Alt+Shift+S, not Ctrl+Alt+G, since 2026-09-22. Google Drive for desktop
-    # registers Ctrl+Alt+G **system-wide**, and a system-wide hotkey is handed
-    # to its owner before a focused application sees the key at all -- so this
-    # command could not be reached from the keyboard on any machine with Drive
-    # installed, and nothing said why. An in-app accelerator cannot outrank
-    # RegisterHotKey; the only fix that works out of the box is not to sit on
-    # the chord. Ctrl+Alt+<letter> is where third-party global hotkeys live,
-    # which is why Drive chose it, so this one leaves that space entirely.
-    # (The detection that makes the *next* one of these say so rather than go
-    # silent lives in quill/platform/windows/hotkey_owner.py.)
+    # Alt+Shift+S, not Ctrl+Alt+G, since 2026-09-22. Google Drive for desktop registers Ctrl+Alt+G
+    # **system-wide**, and a system-wide hotkey is handed to its owner before a focused application
+    # sees the key at all -- so this command could not be reached from the keyboard on any machine
+    # with Drive installed, and nothing said why. An in-app accelerator cannot outrank
+    # RegisterHotKey; the only fix that works out of the box is not to sit on the chord.
+    # Ctrl+Alt+<letter> is where third-party global hotkeys live, which is why Drive chose it, so
+    # this one leaves that space entirely. (The detection that makes the *next* one of these say so
+    # rather than go silent lives in quill/platform/windows/hotkey_owner.py.)
     "power.toggle_clipboard_collector": "Alt+Shift+S",
+    # Rule 2, free in both (2026-10-16; why: docs/design/2026-10-16-editor-completion-*.md).
+    "power.toggle_read_only_guard": "Ctrl+Alt+Backspace",
     "edit.keep_selection_in_clip_library": "Ctrl+Alt+M",
     "edit.open_clip_library": "Ctrl+Alt+Shift+M",
     # power.keep_unique_lines retired 2026-09-18 (bad.md 7.1, P2.5): it and

@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QUILL Transcribe Tutorials</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="quill-transcribe-tutorials">QUILL Transcribe Tutorials</h1>
+<p>Welcome. There are 5 short lessons here, about 24 minutes in all, and
+you can take them in any order. Each one is a few small steps, and each
+step tells you what to press and what you should hear.</p>
+<p>This page is the lessons written out, so you can read them anywhere.
+If you would rather be walked through, open <strong>Help &gt; Tutorials…
+(Ctrl+Alt+F1)</strong> in QUILL Transcribe. It does a step for you when
+you ask, and moves on by itself once it hears you have done one.</p>
+<p>The keys here are the ones QUILL Transcribe comes with. If you have
+changed a key, the lessons inside the app use your key; this page cannot
+know about the change.</p>
+<h2 id="contents">Contents</h2>
+<ul>
+<li><strong>Dictating with QUILL Transcribe</strong>: From a first
+sentence in the Practice window to dictating, correcting and reviewing
+in any program.
+<ul>
+<li>Your first dictation, in the Practice window (5 minutes)</li>
+<li>Pause and resume in another program (5 minutes)</li>
+<li>Commands with the command word (5 minutes)</li>
+<li>Snippets and clips by voice (4 minutes)</li>
+<li>Review before it is typed (5 minutes)</li>
+</ul></li>
+</ul>
+<h2 id="dictating-with-quill-transcribe">Dictating with QUILL
+Transcribe</h2>
+<p>From a first sentence in the Practice window to dictating, correcting
+and reviewing in any program.</p>
+<h3 id="your-first-dictation-in-the-practice-window">Your first
+dictation, in the Practice window</h3>
+<p>Open the Practice window, dictate a sentence into its own field, and
+take the recognition test, without typing into any other program.</p>
+<p><em>4 steps, about 5 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Open the Practice window.</strong> Open Practice
+Dictation from the Dictation menu. It has a field of its own, so nothing
+you say goes anywhere else while you learn.</p>
+<ul>
+<li>Keys: Ctrl+Shift+P</li>
+<li>You should hear: “Practice Dictation”, then “Practice field,
+edit”.</li>
+</ul></li>
+<li><p><strong>Start dictation in the practice field.</strong> With the
+focus in the practice field, press Start Dictation Here. Your own start
+and stop key does the same while you are in the field.</p>
+<ul>
+<li>Keys: Ctrl+F11</li>
+<li>You should hear: A rising tone and “Dictation on”.</li>
+</ul></li>
+<li><p><strong>Say a sentence, then pause.</strong> Say: this is my
+first dictation period. Then stop talking for a moment. The pause is
+what tells dictation the phrase is finished.</p>
+<ul>
+<li>You should hear: Your words read back, and they are in the practice
+field.</li>
+</ul></li>
+<li><p><strong>Take the recognition test.</strong> Press Read This
+Sentence and read the sentence shown above it aloud. The field is
+cleared first, so only the sentence is scored.</p>
+<ul>
+<li>Keys: Alt+T</li>
+<li>You should hear: How many words were right, and any that were heard
+differently.</li>
+<li>Worth knowing: Below 80 percent, try speaking a little slower,
+moving closer to the microphone, or a larger model in Choose Model.</li>
+</ul></li>
+</ol>
+<p>You have dictated, and you know how well your microphone and model
+hear you. Next, dictate into a real program.</p>
+<p>Next: Pause and resume in another program.</p>
+<h3 id="pause-and-resume-in-another-program">Pause and resume in another
+program</h3>
+<p>Dictate into Notepad, move away to see dictation pause and keep your
+words, and send them on with Resume.</p>
+<p><em>3 steps, about 5 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Start in a field of your own choosing.</strong> Open
+Notepad, put the focus in it, and press your start and stop key.
+Dictation writes into that field and only that field.</p>
+<ul>
+<li>Keys: Ctrl+F11</li>
+<li>You should hear: A rising tone and “Dictation on”.</li>
+</ul></li>
+<li><p><strong>Move away while you talk.</strong> Switch to another
+window with Alt+Tab and say a sentence. Nothing is typed into the window
+you moved to; your words are held.</p>
+<ul>
+<li>Keys: Alt+Tab</li>
+<li>You should hear: “Paused”, and how many phrases are held.</li>
+</ul></li>
+<li><p><strong>Resume where you started.</strong> Go back to Notepad and
+choose Resume. The held words are typed into the field you started in,
+and dictation carries on.</p>
+<ul>
+<li>Keys: Ctrl+R</li>
+<li>You should hear: The held words, typed into Notepad.</li>
+<li>Worth knowing: Resume in This Field sends them to the field you
+switch to next instead; Discard Held Words throws them away.</li>
+</ul></li>
+</ol>
+<p>A focus change never sends your words somewhere you did not
+choose.</p>
+<p>Next: Commands with the command word.</p>
+<h3 id="commands-with-the-command-word">Commands with the command
+word</h3>
+<p>Say QUILL before a command so it is never typed as words, and use
+command mode for several commands in a row.</p>
+<p><em>3 steps, about 5 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Dictate something to correct.</strong> In the practice
+field, start dictation and say a short sentence, then pause, so there is
+a phrase for a command to act on.</p>
+<ul>
+<li>Keys: Ctrl+F11</li>
+<li>You should hear: Your sentence read back.</li>
+</ul></li>
+<li><p><strong>Take it back by voice.</strong> Say: QUILL scratch that.
+The command word first is what makes it a command; scratch that on its
+own is typed as words here.</p>
+<ul>
+<li>You should hear: A rising tone, then “Scratched” and your
+words.</li>
+</ul></li>
+<li><p><strong>Give a command with the key.</strong> Press Speak a
+Command, then say a command without the command word, such as caps on.
+Pressed twice, it starts command mode.</p>
+<ul>
+<li>Keys: F11</li>
+<li>You should hear: “Caps on.”</li>
+<li>Worth knowing: Say dictation mode, or wait, to go back to
+dictating.</li>
+</ul></li>
+</ol>
+<p>Say QUILL what can I say for a short list of what works here.</p>
+<p>Next: Snippets and clips by voice.</p>
+<h3 id="snippets-and-clips-by-voice">Snippets and clips by voice</h3>
+<p>Insert a saved snippet or a Copy Tray clip by saying its name, as one
+phrase that scratch that takes back.</p>
+<p><em>3 steps, about 4 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Start dictation in the practice field.</strong> Open the
+Practice window and start dictation there, so the snippet goes into a
+field where it does no harm.</p>
+<ul>
+<li>Keys: Ctrl+F11</li>
+<li>You should hear: “Dictation on”.</li>
+</ul></li>
+<li><p><strong>Insert a snippet by name.</strong> Say: QUILL insert
+snippet, then the snippet’s name. Snippets are the ones you saved in
+QUILL; the whole snippet is typed at once.</p>
+<ul>
+<li>You should hear: The snippet’s text read back.</li>
+</ul></li>
+<li><p><strong>Paste a clip.</strong> Say: QUILL paste clip one. The
+first slot of the Copy Tray is typed, and QUILL scratch that takes all
+of it back out.</p>
+<ul>
+<li>You should hear: The clip’s text read back.</li>
+</ul></li>
+</ol>
+<p>Snippets and clips only insert; they never read the other program’s
+text.</p>
+<p>Next: Review before it is typed.</p>
+<h3 id="review-before-it-is-typed">Review before it is typed</h3>
+<p>Send what you dictate to Review Dictation first, change it there, and
+insert it when it reads right.</p>
+<p><em>3 steps, about 5 minutes.</em></p>
+<ol type="1">
+<li><p><strong>Dictate into the practice field.</strong> Start dictation
+in the practice field and say two sentences, pausing after each, so
+there is something worth reviewing.</p>
+<ul>
+<li>Keys: Ctrl+F11</li>
+<li>You should hear: Each sentence read back.</li>
+</ul></li>
+<li><p><strong>Open the review.</strong> Press Review Dictation. The
+words wait there, in a field you can read and edit, until you choose
+Insert or Discard.</p>
+<ul>
+<li>Keys: Shift+F4</li>
+<li>You should hear: “Review Dictation”, then the review field.</li>
+</ul></li>
+<li><p><strong>Insert when it reads right.</strong> Change anything you
+like with the keyboard, then choose Insert. The words are typed into the
+field the session is locked to.</p>
+<ul>
+<li>You should hear: The words, typed into the practice field.</li>
+</ul></li>
+</ol>
+<p>Send dictation to review first, in More Dictation Settings, makes
+every phrase wait for you this way.</p>
+</main>
+</body>
+</html>

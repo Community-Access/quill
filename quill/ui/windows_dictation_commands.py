@@ -50,6 +50,7 @@ from quill.core.windows_dictation.controller import (
 from quill.ui.windows_dictation_command_key import DictationCommandKeyMixin
 from quill.ui.windows_dictation_extras import DictationExtrasMixin
 from quill.ui.windows_dictation_hold import DictationHoldMixin
+from quill.ui.windows_dictation_learn import asking
 from quill.ui.windows_dictation_library import DictationLibraryMixin
 from quill.ui.windows_dictation_ports import EditorDocument as _EditorDocument
 from quill.ui.windows_dictation_ports import HostFeedback as _HostFeedback
@@ -236,6 +237,7 @@ class WindowsDictationMixin(
             settings,
             self._dictation_say,
             my_words=self._dictation_my_words(),  # windows_dictation_command_key.py
+            ai_on=self._review_ai_on(),  # Polished only with AI (D-20)
         )
         saving = (wx.ID_OK, EDIT_WORDS, EDIT_INSTRUCTIONS, EDIT_OPENAI_KEY, DICTATE_ANYWHERE)
         try:
@@ -339,8 +341,8 @@ class WindowsDictationMixin(
         controller = _controller
         if controller is None:
             return
-        if controller.transcribing or review_open():
-            return  # a live transcript, or Review Dictation's window in front (D-2)
+        if controller.transcribing or review_open() or asking():
+            return  # a transcript, Review Dictation (D-2), "Add a correction?" (D-21)
         if controller.active:
             controller.stop("Dictation off, because QUILL is no longer the window in front.")
         controller.disarm()
@@ -376,7 +378,7 @@ class WindowsDictationMixin(
         controller.arm()
 
     def _dictation_preferences(self) -> DictationPreferences:
-        from quill.core.windows_dictation.profile import rewriter
+        from quill.core.windows_dictation.profile import rewriter, with_repair_names
 
         try:
             rewrite = rewriter(self._dictation_profile_path())
@@ -388,6 +390,7 @@ class WindowsDictationMixin(
         preferences = DictationPreferences.from_settings(
             self._dictation_settings(), rewrite=rewrite, profile=profile
         )
+        preferences = with_repair_names(preferences, self._dictation_profile_path())  # D-20
         if preferences.engine != "openai" and not preferences.engine.startswith("cloud-"):
             return preferences
         from dataclasses import replace

@@ -40,7 +40,10 @@ def test_convert_file_honors_engine_choice() -> None:
     body = _FRAME_SOURCE[start : _FRAME_SOURCE.index("\n    def ", start + 1)]
     assert 'getattr(request, "engine", "auto")' in body
     assert "_markitdown_convert_applies(request)" in body
-    assert "convert_with_markitdown(request.source_path)" in body
+    # 2026-10-16: through the helper that names the stand-in reader when
+    # MarkItDown cannot run (a shipped build), rather than failing outright.
+    assert "markitdown_or_own_reader(request.source_path)" in body
+    assert "MarkItDown could not run here" in body
     assert "Convert with Pandoc instead?" in body
 
 

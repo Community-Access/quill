@@ -18,6 +18,8 @@ bearer-token credential -- see that module's docstring.
 
 from __future__ import annotations
 
+from urllib.parse import urlsplit
+
 from flask import (
     Blueprint,
     current_app,
@@ -53,13 +55,33 @@ _FEATURES = ("document_qna", "summarize", "rewrite", "alt_text", "chat")
 # --- Auth ---------------------------------------------------------------------
 
 
+def _safe_next(candidate: str) -> str:
+    """Where to go after signing in: a path on this site, or the overview.
+
+    Only a single-slash local path is followed. Anything with a scheme, a host,
+    a protocol-relative ``//`` or a backslash (which browsers treat as ``/``)
+    would send a freshly signed-in admin to another site.
+    """
+    candidate = (candidate or "").strip()
+    parts = urlsplit(candidate)
+    if (
+        candidate.startswith("/")
+        and not candidate.startswith("//")
+        and "\\" not in candidate
+        and not parts.scheme
+        and not parts.netloc
+    ):
+        return candidate
+    return url_for("dashboard.overview")
+
+
 @bp.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
         return render_template("dashboard/login.html", next=request.args.get("next", ""))
 
     token = request.form.get("token", "").strip()
-    next_path = request.form.get("next", "") or url_for("dashboard.overview")
+    next_path = _safe_next(request.form.get("next", ""))
     device = verify_admin_token(current_app, token)
     if device is None:
         flash("That token isn't a valid, active admin device token.", "error")

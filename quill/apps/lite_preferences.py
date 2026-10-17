@@ -40,6 +40,7 @@ from quill.apps.lite_preferences_collector import CollectorSavePrefs
 from quill.apps.lite_preferences_files import FileChangePrefs
 from quill.apps.lite_preferences_profile import ProfileRow
 from quill.apps.lite_preferences_save_folder import DocumentFolderPrefs
+from quill.apps.lite_preferences_typing import TypingAssistPrefs
 from quill.core.action_feedback import ACTION_FEEDBACK_LABELS
 from quill.core.action_feedback import coerce as coerce_feedback
 from quill.core.app_features import AppArea, AppFeatureSettings, AppProfile
@@ -309,6 +310,7 @@ def edit_preferences(
     )
     dashes.SetValue(bool(getattr(settings, "autoformat_dashes", False)))
     root.Add(dashes, 0, wx.LEFT | wx.RIGHT, _PAD)
+    typing_prefs = TypingAssistPrefs(dialog, root, settings, pad=_PAD)  # no access keys
 
     # The two feedback choosers are built from ACTION_FEEDBACK_LABELS rather
     # than from four typed strings, so this pane and QUILL's cannot describe the
@@ -514,7 +516,7 @@ def edit_preferences(
             return PreferencesResult(False, False)
         features_changed = profile_row.apply()
         folder_changed = document_folder.apply()
-        files_changed = file_prefs.apply() | collector_prefs.apply()
+        files_changed = file_prefs.apply() | collector_prefs.apply() | typing_prefs.apply()
         before = (
             settings.default_mode,
             settings.theme,

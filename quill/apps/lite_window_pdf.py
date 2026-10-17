@@ -59,13 +59,17 @@ def is_read_only_source(path: Path | str | None) -> bool:
     """True for a file QUILL Lite opened as extracted text and must not write back.
 
     The list is QUILL's own (``EXPORT_ONLY_SUFFIXES``), so the two editors
-    refuse the same files. QUILL Lite opens only one of them today: ``.pdf``.
+    refuse the same files, plus the Office formats QUILL Lite opens as text
+    (2026-10-16). QUILL can write a real ``.docx``; QUILL Lite cannot, so for
+    QUILL Lite a Word file is as read-only as a PDF -- saving the text back
+    into it would leave a file Word cannot open.
     """
     if path is None:
         return False
+    from quill.core.lite.open_prepare import OFFICE_OPEN_SUFFIXES
     from quill.io.export import EXPORT_ONLY_SUFFIXES
 
-    return Path(path).suffix.lower() in EXPORT_ONLY_SUFFIXES
+    return Path(path).suffix.lower() in EXPORT_ONLY_SUFFIXES | OFFICE_OPEN_SUFFIXES
 
 
 class DocumentPdfMixin:
@@ -73,6 +77,8 @@ class DocumentPdfMixin:
 
     #: The open PDF's outline as ``(title, page)`` pairs; empty for anything else.
     pdf_outline: tuple[tuple[str, int], ...] = ()
+    #: Each outline entry's nesting level, for Go To's wording only.
+    pdf_outline_levels: tuple[int, ...] = ()
 
     # -- before the commit -------------------------------------------------- #
 
@@ -136,6 +142,7 @@ class DocumentPdfMixin:
         then opened a text file does not keep offering the PDF's chapters.
         """
         self.pdf_outline = tuple(found.outline) if found is not None else ()
+        self.pdf_outline_levels = tuple(found.outline_levels) if found is not None else ()
         if found is None:
             return
         if found.engine == ENGINE_OCR:

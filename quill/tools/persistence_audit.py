@@ -527,7 +527,8 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/menu_customization.py::save_menu_customization": "versioned",
     "core/profile_startup.py::save_profile_startup_config": "versioned",
     "ui/ai_hub_dialog.py::_save_deepgram_max_speakers": "versioned",
-    "ui/main_frame_power_tools.py::toggle_read_only_guard": "versioned",
+    # The Read-Only Guard list, shared by both editors since 2026-10-16.
+    "core/read_only_guards.py::set": "versioned",
 }
 
 
