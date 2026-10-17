@@ -32,6 +32,48 @@ def page_position(text: str, position: int) -> tuple[int, int] | None:
     return max(1, min(current, len(starts))), len(starts)
 
 
+def page_target(starts: list[int], position: int, *, forward: bool) -> int | None:
+    """Where Next or Previous Page goes from *position*, or ``None`` at the end.
+
+    *starts* is :func:`page_starts`. Next is the start of the page after the
+    caret's; Previous is the start of the caret's own page when the caret is
+    inside it, else of the page before -- the way Ctrl+Up treats paragraphs, so
+    a press from mid-page goes to the top of the page being read first.
+    """
+    if forward:
+        return next((start for start in starts if start > position), None)
+    return next((start for start in reversed(starts) if start < position), None)
+
+
+class PageLatch:
+    """The last page somebody was told about, so it is said once, not per key.
+
+    Arrowing through a PDF crosses a form feed now and then; the page number
+    is worth hearing when that happens and is noise on every other key.
+    :meth:`crossed` answers True only when the page differs from the one
+    recorded -- the first reading of a document records without speaking,
+    because opening a file is not a page crossing. :meth:`settle` records a
+    page a command has already announced, so arriving there is not news twice.
+    """
+
+    __slots__ = ("document", "page")
+
+    def __init__(self) -> None:
+        self.page: int | None = None
+        self.document: object = None
+
+    def crossed(self, page: int | None, document: object = None) -> bool:
+        if document is not self.document:
+            self.document, self.page = document, page
+            return False
+        changed = page is not None and self.page is not None and page != self.page
+        self.page = page
+        return changed
+
+    def settle(self, page: int | None, document: object = None) -> None:
+        self.document, self.page = document, page
+
+
 def _word_starts(text: str) -> list[int]:
     """Character offset of each word (maximal run of non-whitespace).
 

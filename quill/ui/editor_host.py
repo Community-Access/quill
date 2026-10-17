@@ -93,3 +93,15 @@ class EditorHostMixin:
             if value and value.lower() not in {"auto", "system", "default"}:
                 return value.replace("_", "-")
         return "en"
+
+    def _host_cue(self, event: str) -> None:
+        """Play *event*'s earcon; silent when it cannot."""
+        self._cue(event)  # type: ignore[attr-defined]
+
+    def _host_has_sound(self, event: str) -> bool:
+        """Whether the loaded sound pack has a clip for *event*."""
+        return bool(self._has_sound_for(event))  # type: ignore[attr-defined]
+
+    def _host_braille(self, message: str) -> None:
+        """Write *message* to a braille display only -- never spoken."""
+        self.app.voice.braille(message)  # type: ignore[attr-defined]

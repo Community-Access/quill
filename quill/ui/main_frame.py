@@ -2549,6 +2549,8 @@ class MainFrame(
             self._maybe_announce_format_transition()
             self.announce_structure_at_caret()
             self._maybe_announce_braille_movement()
+            self.cue_inline_note_line(SoundEvent.INLINE_NOTE_LINE)
+            self._maybe_announce_page_crossing()
         except RuntimeError:  # #603/#269: editor can be a dead TextCtrl mid-event.
             pass
         event.Skip()

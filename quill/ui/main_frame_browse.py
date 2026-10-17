@@ -25,10 +25,14 @@ from quill.core.links import infer_markup_kind
 from quill.core.markdown_sections import parse_heading_blocks
 from quill.core.marks import line_column_for_position
 from quill.core.selection import line_span
+from quill.ui.main_frame_browse_pages import BrowsePagesMixin
 
 
-class BrowseModeMixin:
-    """Browse-mode element navigation, mixed into :class:`MainFrame`."""
+class BrowseModeMixin(BrowsePagesMixin):
+    """Browse-mode element navigation, mixed into :class:`MainFrame`.
+
+    Misspellings, pages and the page said on crossing are in
+    :mod:`quill.ui.main_frame_browse_pages`."""
 
     def _browse_text(self) -> str:
         """The text browse navigation works over, read as cheaply as is safe.

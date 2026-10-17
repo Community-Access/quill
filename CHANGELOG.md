@@ -2,6 +2,81 @@
 
 ## 1.0.0
 
+### Word-level AI review, one retry ladder for AI, a note-line cue, and browse mode M and F (2026-10-17)
+
+**Review AI Changes: accept or reject single word groups.** `DiffHunk` gains
+`spacing_edits` and `text_with(accepted_words)`, `WordChange` gains
+`old_start`/`old_end`/`replacement` and `choice_label()`, and
+`DiffReview.apply(accepted, word_choices=None)` takes per-hunk word choices
+(`quill/core/ai/diff_review.py`). Accepting every group is byte-identical to the
+revision (spacing-only edits ride with the hunk whenever any of its groups is
+accepted); none is the original. `DiffReviewDialog`
+(`quill/ui/ai_diff_review_dialog.py`, both editors) adds **Words in this
+change** (Alt+W), a check list shown for a hunk with two or more groups, each
+row the edit plus its sentence; access keys Alt+C (Changes) and Alt+D (Change
+details). Dropping the last group unchecks the hunk and checking one rechecks it
+-- the only two things announced (GATE-13: a state change on an unfocused
+control). Accept All and Reject All unchanged. Single Accept/Reject now only
+for one hunk with fewer than two groups. Help text updated (F1, and QUILL
+Lite's catalogue in `lite_surface_help.py`). Tests:
+`tests/unit/core/ai/test_diff_review.py`,
+`tests/unit/ui/test_hosted_ai_answers_windows.py`.
+
+**One retry ladder for every AI provider (`quill/core/ai/retry_ladder.py`).**
+`wait_before_retry(status, headers, attempt)`: three attempts on 408, 409,
+429, 500, 502, 503, 504; linear backoff 1 s then 2 s; `Retry-After` (seconds
+or HTTP date) honoured up to 20 s, longer is reported at once;
+`x-should-retry: false` or a caller's `final=True` is never retried.
+`wait_after_failure` adds the no-answer case (timeout, local server starting).
+Wired into `gateway_client._urlopen_json` (the hosted service; final on a 429
+that is an allowance rather than throttling, or a body saying `"charged": true`
+or `"retry": false`), `chatgpt_http` (GETs and the stream before its first
+event; never the sign-in POST; final on `subscription_sharing_usage_*`; openers
+may now return `(status, body, headers)`), `own_key_gemini.stream_answer`
+(three attempts, was two), and `assistant_ai` (chat, streamed chat, model
+listing) plus `ai/vision.py` through `_chat_retry_wait`; the old
+`_RETRYABLE_CATEGORIES`/`_RETRY_BACKOFF_SECONDS` are gone. The egress sites are
+unchanged, so `network_egress_entries.py` needs no change. Only the final
+failure is raised. Tests: `tests/unit/core/ai/test_retry_ladder.py` (fakes
+only; `time.sleep` replaced); the Gemini route test now expects three requests.
+
+**A cue when the caret enters a line with an inline note (both editors).**
+`quill/core/inline_note_cue.py` (wx-free: `NoteLineCue` latch, `noted_spans`,
+`cue_channels`), driven from `InlineNotesCommandsMixin.cue_inline_note_line`
+on every caret move (`MainFrame._on_editor_caret_activity`,
+`DocumentFrame._on_caret_moved`). New sound event `inline_note_line` with a
+generated Ink clip (`scripts/gen_ink_sounds.py --inline-note-line`), label
+"Arrived on a line with an inline note", in QUILL Lite's roster. New shared
+setting `inline_note_line_cue` (`sound` default / `speech` / `off`) in both
+editors' Settings, a SettingSpec on QUILL's Editing page and a chooser in QUILL
+Lite's Preferences (`quill/apps/lite_preferences_note_cue.py`). A sound with no
+clip speaks "note" (the `action_feedback` rule); with the sound, "note" also
+goes to braille only (new host hook `_host_braille`: QUILL's announcement
+engine, QUILL Lite's voice). Next/Previous Inline Note settle the latch so they
+do not double up. Noted stretches are rebuilt only when the document, its
+length or the private notes change. Tests:
+`tests/unit/core/test_inline_note_cue.py`,
+`tests/unit/apps/test_lite_inline_notes.py`,
+`tests/unit/ui/test_quill_review_tools.py`.
+
+**Browse mode: M / Shift+M by misspelling, F / Shift+F by page.**
+`quill/ui/main_frame_browse_pages.py` (`BrowsePagesMixin`, a base of
+`BrowseModeMixin`). M uses `list_misspellings` with the user's dictionaries --
+the Quick Nav panel's data -- selects the word and says "Misspelled: word, line
+N". F moves over form feeds (`navigation.page_target`) and says "Page N of M".
+Crossing a page break by any caret movement says the page once
+(`navigation.PageLatch`, settled by F so it is not said twice); page starts are
+cached on the document and its length. Keys `quill.quick_nav.misspelling` (M)
+and `quill.quick_nav.page` (F) in `DEFAULT_KEYMAP`, the browse dispatch, the
+cheat sheet and the Keymap Editor; no collision (a test asserts no two Quick
+Nav keys share a letter). QUILL Lite has no browse mode, so it has neither.
+Tests: `tests/unit/ui/test_browse_pages.py`.
+
+Docs: both user guides, QUILL Lite's changelog, both PRDs, regenerated
+references, and unticked checks in `docs/qa/screen-reader-checks-2026-10.md`.
+Module budgets rebaselined in `module_size_budgets.json`
+(`_rebaseline_2026_10_17_four_contained_improvements`).
+
 ### Menu letters win over buttons, the Media Player's arrows, a key for Carry My Place, and Inkwell's review box (2026-10-17)
 
 Todo items 47 to 51 and 55.

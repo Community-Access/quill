@@ -4678,7 +4678,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
-<p>Control coverage: 229 audited sites (229 helped).</p>
+<p>Control coverage: 231 audited sites (231 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
@@ -4990,8 +4990,10 @@ formatting of the run it lands in.</p>
 <p><strong>Review AI Changes.</strong> The AI’s answer compared with the
 text it would replace, one change per line, with the words that differ
 and the sentence they are in. Uncheck a change to keep the original
-there, then apply; it goes in as one edit Control Z takes back. Nothing
-changes until you apply.</p>
+there. When one change holds several word edits, Alt+W goes to their
+list, where Space keeps or drops each one on its own. Then apply; it
+goes in as one edit Control Z takes back. Nothing changes until you
+apply.</p>
 <p><strong>Review Dictation.</strong> Dictated words wait here before
 they are inserted. Read them, type or keep dictating to change them, ask
 the AI to change them if AI is on, and hear what changed. Control Enter
@@ -6007,7 +6009,12 @@ id="diffreviewdialog-quilluiai_diff_review_dialogpy">DiffReviewDialog
 <li><code>self.hunk_list</code>: Every change the AI proposes, one per
 line. A checked change will be applied; press Space to uncheck one you
 want to keep as it was. The details below say exactly what changed, word
-by word.</li>
+by word. Alt+C comes back here.</li>
+<li><code>self.word_list</code>: Each word edit inside the change you
+are on, with the sentence it is in. A checked edit is applied; press
+Space to drop one and keep the original words there while the rest of
+the change still goes in. Dropping every edit drops the change. Shown
+only when a change holds two or more word edits; Alt+W reaches it.</li>
 <li><code>self.details</code>: The change you are on, line by line: what
 was there, what would replace it, and for a small change the words that
 differ and the sentence they are in. Read-only.</li>
@@ -6015,10 +6022,11 @@ differ and the sentence they are in. Read-only.</li>
 Control Z takes it back.</li>
 <li><code>reject_button</code>: Closes this window and leaves your
 document unchanged.</li>
-<li><code>self.apply_button</code>: Applies only the checked changes, as
-one edit; Control Z takes it back.</li>
-<li><code>accept_all_button</code>: Applies every change, checked or
-not, as one edit; Control Z takes it back.</li>
+<li><code>self.apply_button</code>: Applies only the checked changes,
+and inside them only the checked word edits, as one edit; Control Z
+takes it back.</li>
+<li><code>accept_all_button</code>: Applies every change and every word
+edit, checked or not, as one edit; Control Z takes it back.</li>
 <li><code>reject_all_button</code>: Closes this window and leaves your
 document unchanged.</li>
 </ul>

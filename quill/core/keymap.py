@@ -1151,6 +1151,8 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "quill.quick_nav.skip_forward": "]",
     "quill.quick_nav.skip_backward": "[",
     "quill.quick_nav.inline_note": "N",  # browse mode N: next note (QUILL only)
+    "quill.quick_nav.misspelling": "M",  # browse mode: next misspelling (QUILL only)
+    "quill.quick_nav.page": "F",  # browse mode: next page; F for form feed, P is Paragraph
     # §8.1 — context help for current mode and doc summary (Alt+I).
     # Alt+H is reserved for the Help menu mnemonic; Ctrl+Shift+H is edit.replace_all;
     # Ctrl+Alt+ is banned by §10.8 (screen-reader-hostile). Use the QUILL-key chord.

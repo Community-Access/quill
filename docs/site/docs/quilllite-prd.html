@@ -4588,6 +4588,38 @@ paragraph; a rich text document’s come from the control. Arrival says
 colour, count and words; the list’s rows are words, colour and
 paragraph, Enter goes there and Escape stays. Not listed: headers,
 footers, footnotes, text boxes, shading.</p>
+<h2
+id="word-level-ai-review-the-ai-retry-ladder-and-the-note-line-cue-2026-10-17">Word-level
+AI review, the AI retry ladder, and the note-line cue (2026-10-17)</h2>
+<p><strong>Review AI Changes, word by word.</strong> QUILL’s window
+(<code>quill/ui/ai_diff_review_dialog.py</code>), so QUILL Lite has what
+QUILL has: for a change with two or more word edits, <strong>Words in
+this change</strong> (Alt+W) lists each with its sentence; Space keeps
+or drops one, and the rest of the change still goes in. Dropping every
+edit drops the change. Accept All takes everything and is exactly the
+AI’s version; Reject All takes nothing; Ctrl+Z takes back the whole
+apply. F1 catalogue entry updated
+(<code>quill/core/lite_surface_help.py</code>).</p>
+<p><strong>The AI tries again when the service is busy.</strong> QUILL’s
+ladder (<code>quill/core/ai/retry_ladder.py</code>) on all three routes
+QUILL Lite uses – the free AI, the user’s own key, a ChatGPT plan: three
+attempts on 408, 409, 429 and 5xx busy answers, one second then two, or
+the service’s <code>Retry-After</code> up to 20 s; never a request the
+service says must not be repeated, a used-up allowance or plan, or a
+stream already under way. Only the last failure is said.</p>
+<p><strong>A cue on arriving at a noted line.</strong> QUILL’s shared
+mixin (<code>InlineNotesCommandsMixin.cue_inline_note_line</code>),
+called from <code>DocumentFrame._on_caret_moved</code>. Setting
+<code>inline_note_line_cue</code>, the same name, default and choices as
+QUILL’s, in Preferences
+(<code>quill/apps/lite_preferences_note_cue.py</code>): Play a sound,
+Say “note”, Nothing. Sound event <code>inline_note_line</code> is in
+QUILL Lite’s roster. Braille gets “note” when the cue is a sound
+(<code>app.voice.braille</code>).</p>
+<p><strong>Not here, and why.</strong> QUILL’s browse-mode keys M
+(misspelling) and F (page) are QUILL-only: QUILL Lite has no browse
+mode. Its status bar’s Page cell already shows “Page N of M” from the
+same <code>quill.core.navigation.page_position</code>.</p>
 </main>
 </body>
 </html>

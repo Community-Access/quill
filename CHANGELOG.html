@@ -245,6 +245,101 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="word-level-ai-review-one-retry-ladder-for-ai-a-note-line-cue-and-browse-mode-m-and-f-2026-10-17">Word-level
+AI review, one retry ladder for AI, a note-line cue, and browse mode M
+and F (2026-10-17)</h3>
+<p><strong>Review AI Changes: accept or reject single word
+groups.</strong> <code>DiffHunk</code> gains <code>spacing_edits</code>
+and <code>text_with(accepted_words)</code>, <code>WordChange</code>
+gains
+<code>old_start</code>/<code>old_end</code>/<code>replacement</code> and
+<code>choice_label()</code>, and
+<code>DiffReview.apply(accepted, word_choices=None)</code> takes
+per-hunk word choices (<code>quill/core/ai/diff_review.py</code>).
+Accepting every group is byte-identical to the revision (spacing-only
+edits ride with the hunk whenever any of its groups is accepted); none
+is the original. <code>DiffReviewDialog</code>
+(<code>quill/ui/ai_diff_review_dialog.py</code>, both editors) adds
+<strong>Words in this change</strong> (Alt+W), a check list shown for a
+hunk with two or more groups, each row the edit plus its sentence;
+access keys Alt+C (Changes) and Alt+D (Change details). Dropping the
+last group unchecks the hunk and checking one rechecks it – the only two
+things announced (GATE-13: a state change on an unfocused control).
+Accept All and Reject All unchanged. Single Accept/Reject now only for
+one hunk with fewer than two groups. Help text updated (F1, and QUILL
+Lite’s catalogue in <code>lite_surface_help.py</code>). Tests:
+<code>tests/unit/core/ai/test_diff_review.py</code>,
+<code>tests/unit/ui/test_hosted_ai_answers_windows.py</code>.</p>
+<p><strong>One retry ladder for every AI provider
+(<code>quill/core/ai/retry_ladder.py</code>).</strong>
+<code>wait_before_retry(status, headers, attempt)</code>: three attempts
+on 408, 409, 429, 500, 502, 503, 504; linear backoff 1 s then 2 s;
+<code>Retry-After</code> (seconds or HTTP date) honoured up to 20 s,
+longer is reported at once; <code>x-should-retry: false</code> or a
+caller’s <code>final=True</code> is never retried.
+<code>wait_after_failure</code> adds the no-answer case (timeout, local
+server starting). Wired into <code>gateway_client._urlopen_json</code>
+(the hosted service; final on a 429 that is an allowance rather than
+throttling, or a body saying <code>"charged": true</code> or
+<code>"retry": false</code>), <code>chatgpt_http</code> (GETs and the
+stream before its first event; never the sign-in POST; final on
+<code>subscription_sharing_usage_*</code>; openers may now return
+<code>(status, body, headers)</code>),
+<code>own_key_gemini.stream_answer</code> (three attempts, was two), and
+<code>assistant_ai</code> (chat, streamed chat, model listing) plus
+<code>ai/vision.py</code> through <code>_chat_retry_wait</code>; the old
+<code>_RETRYABLE_CATEGORIES</code>/<code>_RETRY_BACKOFF_SECONDS</code>
+are gone. The egress sites are unchanged, so
+<code>network_egress_entries.py</code> needs no change. Only the final
+failure is raised. Tests:
+<code>tests/unit/core/ai/test_retry_ladder.py</code> (fakes only;
+<code>time.sleep</code> replaced); the Gemini route test now expects
+three requests.</p>
+<p><strong>A cue when the caret enters a line with an inline note (both
+editors).</strong> <code>quill/core/inline_note_cue.py</code> (wx-free:
+<code>NoteLineCue</code> latch, <code>noted_spans</code>,
+<code>cue_channels</code>), driven from
+<code>InlineNotesCommandsMixin.cue_inline_note_line</code> on every
+caret move (<code>MainFrame._on_editor_caret_activity</code>,
+<code>DocumentFrame._on_caret_moved</code>). New sound event
+<code>inline_note_line</code> with a generated Ink clip
+(<code>scripts/gen_ink_sounds.py --inline-note-line</code>), label
+“Arrived on a line with an inline note”, in QUILL Lite’s roster. New
+shared setting <code>inline_note_line_cue</code> (<code>sound</code>
+default / <code>speech</code> / <code>off</code>) in both editors’
+Settings, a SettingSpec on QUILL’s Editing page and a chooser in QUILL
+Lite’s Preferences
+(<code>quill/apps/lite_preferences_note_cue.py</code>). A sound with no
+clip speaks “note” (the <code>action_feedback</code> rule); with the
+sound, “note” also goes to braille only (new host hook
+<code>_host_braille</code>: QUILL’s announcement engine, QUILL Lite’s
+voice). Next/Previous Inline Note settle the latch so they do not double
+up. Noted stretches are rebuilt only when the document, its length or
+the private notes change. Tests:
+<code>tests/unit/core/test_inline_note_cue.py</code>,
+<code>tests/unit/apps/test_lite_inline_notes.py</code>,
+<code>tests/unit/ui/test_quill_review_tools.py</code>.</p>
+<p><strong>Browse mode: M / Shift+M by misspelling, F / Shift+F by
+page.</strong> <code>quill/ui/main_frame_browse_pages.py</code>
+(<code>BrowsePagesMixin</code>, a base of <code>BrowseModeMixin</code>).
+M uses <code>list_misspellings</code> with the user’s dictionaries – the
+Quick Nav panel’s data – selects the word and says “Misspelled: word,
+line N”. F moves over form feeds (<code>navigation.page_target</code>)
+and says “Page N of M”. Crossing a page break by any caret movement says
+the page once (<code>navigation.PageLatch</code>, settled by F so it is
+not said twice); page starts are cached on the document and its length.
+Keys <code>quill.quick_nav.misspelling</code> (M) and
+<code>quill.quick_nav.page</code> (F) in <code>DEFAULT_KEYMAP</code>,
+the browse dispatch, the cheat sheet and the Keymap Editor; no collision
+(a test asserts no two Quick Nav keys share a letter). QUILL Lite has no
+browse mode, so it has neither. Tests:
+<code>tests/unit/ui/test_browse_pages.py</code>.</p>
+<p>Docs: both user guides, QUILL Lite’s changelog, both PRDs,
+regenerated references, and unticked checks in
+<code>docs/qa/screen-reader-checks-2026-10.md</code>. Module budgets
+rebaselined in <code>module_size_budgets.json</code>
+(<code>_rebaseline_2026_10_17_four_contained_improvements</code>).</p>
+<h3
 id="menu-letters-win-over-buttons-the-media-players-arrows-a-key-for-carry-my-place-and-inkwells-review-box-2026-10-17">Menu
 letters win over buttons, the Media Player’s arrows, a key for Carry My
 Place, and Inkwell’s review box (2026-10-17)</h3>

@@ -53,6 +53,8 @@ _QUICK_NAV_ACTIONS: tuple[tuple[str, str], ...] = (
     ("QUILL Quick Nav: Bookmark", "quill.quick_nav.bookmark"),
     ("QUILL Quick Nav: Code Block", "quill.quick_nav.code_block"),
     ("QUILL Quick Nav: Inline Note", "quill.quick_nav.inline_note"),
+    ("QUILL Quick Nav: Misspelling", "quill.quick_nav.misspelling"),
+    ("QUILL Quick Nav: Page", "quill.quick_nav.page"),
     ("QUILL Quick Nav: Table of Contents", "quill.quick_nav.table_of_contents"),
     ("QUILL Quick Nav: Paragraph", "quill.quick_nav.paragraph"),
     ("QUILL Quick Nav: Sentence", "quill.quick_nav.sentence"),

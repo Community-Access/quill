@@ -11,6 +11,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from quill.core.action_feedback import ACTION_FEEDBACK_LABELS
+from quill.core.inline_note_cue import NOTE_LINE_CUE_CHOICES, NOTE_LINE_CUE_LABELS
 from quill.core.markdown_breaks import HARD_BREAK_LABELS, HARD_BREAK_STYLES
 from quill.core.structure_announce import (
     HEADING_POSITION_LABELS as _HEADING_POSITION_LABELS,
@@ -404,6 +405,19 @@ SETTING_SPECS: tuple[SettingSpec, ...] = (
         "notes stay private to you. Each document remembers your last choice. "
         "QUILL Lite has the same setting under the same name.",
         keywords=("notes", "inline", "comment", "review", "file"),
+    ),
+    SettingSpec(
+        "inline_note_line_cue",
+        "When the caret reaches a line with an inline note",
+        "editing",
+        "choice",
+        "Arrowing onto a line that carries an inline note plays a soft two-tap "
+        "sound, or says the word note, or does nothing. It happens once as you "
+        "arrive, never while you move along the same line. With the sound chosen "
+        "and no clip in your sound pack, the word is said instead, and a braille "
+        "display shows note either way. QUILL Lite has the same setting.",
+        choices=tuple((key, NOTE_LINE_CUE_LABELS[key]) for key in NOTE_LINE_CUE_CHOICES),
+        keywords=("notes", "inline", "sound", "cue", "caret", "braille"),
     ),
     SettingSpec(
         "recovery_keep_days",

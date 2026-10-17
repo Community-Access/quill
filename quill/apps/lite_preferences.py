@@ -38,6 +38,7 @@ import wx
 from quill.apps.lite_dialogs import _stack
 from quill.apps.lite_preferences_collector import CollectorSavePrefs
 from quill.apps.lite_preferences_files import FileChangePrefs
+from quill.apps.lite_preferences_note_cue import NoteLineCuePrefs
 from quill.apps.lite_preferences_profile import ProfileRow
 from quill.apps.lite_preferences_save_folder import DocumentFolderPrefs
 from quill.apps.lite_preferences_typing import TypingAssistPrefs
@@ -180,6 +181,7 @@ def edit_preferences(
     )
     notes_in_file.SetValue(bool(getattr(settings, "inline_notes_in_file", False)))
     root.Add(notes_in_file, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+    note_cue_prefs = NoteLineCuePrefs(dialog, root, settings, pad=_PAD)
 
     # Beside Reopen last session's documents, because the two together are the
     # whole answer to "what do I get when I start?" -- and somebody turning one
@@ -517,6 +519,7 @@ def edit_preferences(
         features_changed = profile_row.apply()
         folder_changed = document_folder.apply()
         files_changed = file_prefs.apply() | collector_prefs.apply() | typing_prefs.apply()
+        files_changed |= note_cue_prefs.apply()
         before = (
             settings.default_mode,
             settings.theme,

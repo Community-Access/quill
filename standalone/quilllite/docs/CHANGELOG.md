@@ -5,6 +5,37 @@
 Testing rebuild: **1.2.0 (build 5)**, following builds 2, 3 and 4; builds 2 and 3 were
 uploaded for testing. The new packages have not been published yet.
 
+- **Keep some words of an AI change and drop others** (2026-10-17). In **Review
+  AI Changes** (the AI Result window's Review Changes), when one change holds
+  two or more word edits -- usual in prose, where a change is a paragraph -- a
+  second list, **Words in this change** (**Alt+W**), shows each edit with the
+  sentence it is in. Press **Space** to drop one and keep your original words
+  there while the rest of the change still goes in. Example: of "quick" to
+  "rapid", "jumps" to "leaps" and "very" to "rather", uncheck the first and
+  choose Apply Checked; you get "The quick brown fox leaps..." and hear
+  "Applied 1 change, 1 of them in part, as one undo step". Dropping every edit
+  drops the change. **Alt+C** goes back to Changes and **Alt+D** to Change
+  details. Accept All and Reject All work as before, and Ctrl+Z takes back the
+  whole apply. User guide: "Keeping some words of a change and not others".
+
+- **The AI tries again when the service is busy** (2026-10-17). On the free AI,
+  your own OpenAI or Gemini key and a ChatGPT plan alike, a busy, overloaded or
+  timed-out answer is tried up to three times, one second apart and then two,
+  or after the wait the service asks for (up to 20 seconds). You hear nothing
+  while it tries, and only the last failure if every try fails. A request the
+  service says must not be repeated, a used-up allowance or plan, and an answer
+  that had already started to arrive are never sent again. User guide: "When
+  the AI service is busy".
+
+- **A sound when you arrow onto a line with an inline note** (2026-10-17). A
+  soft two-tap tone plays as the cursor arrives on a noted line, once, and not
+  while you move along it. **Preferences > When the caret reaches a line with
+  an inline note** chooses Play a sound (the default), Say "note", or Nothing.
+  With the sound, a braille display also shows "note"; a sound pack without
+  this sound says "note" instead. Next and Previous Inline Note, which read the
+  note, play no tap on top. Same setting and same sound as QUILL. User guide:
+  "Hearing which lines have notes".
+
 - **Go back over an AI conversation, and save it as a file** (2026-10-17). In
   the AI Conversation window, **Alt+1** reads the newest message aloud,
   **Alt+2** the one before it, and so on to **Alt+0** for the tenth newest,

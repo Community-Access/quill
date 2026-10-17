@@ -82,6 +82,7 @@ EVENT_GROUPS: tuple[tuple[str, tuple[str, ...]], ...] = (
             "list_entered",
             "browse_mode_on",
             "browse_mode_off",
+            "inline_note_line",
         ),
     ),
     (
@@ -235,6 +236,7 @@ LABELS: dict[str, str] = {
     "list_entered": "Entered a list",
     "browse_mode_on": "Browse mode on",
     "browse_mode_off": "Browse mode off",
+    "inline_note_line": "Arrived on a line with an inline note",
     # Finding
     "search_found": "Found it",
     "search_not_found": "Not found",

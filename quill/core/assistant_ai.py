@@ -50,6 +50,7 @@ from quill.core.ai.providers import (
 from quill.core.ai.providers import (
     recommended_models_for_provider as recommended_models_for_provider,
 )
+from quill.core.ai.retry_ladder import wait_after_failure
 from quill.core.paths import app_data_dir
 from quill.core.storage import read_json, write_json_atomic
 from quill.platform.windows.credential_store import (
@@ -222,10 +223,6 @@ def verify_assistant_connection(
 
 # Error categories used to give callers cause-specific, screen-reader-friendly
 # messages instead of scanning formatted strings for substrings like "401".
-# Retryable categories are transient and benefit from a brief warm-up retry
-# (cloud cold starts, a local server still booting, rate limiting). Auth and
-# permission failures are never retried.
-_RETRYABLE_CATEGORIES = frozenset({"warming_up", "not_running", "rate_limited", "timeout"})
 
 # Highest-priority first. When several endpoints fail in one attempt we surface
 # the most actionable cause (an auth/permission problem outranks a transient one).
@@ -245,15 +242,13 @@ _CATEGORY_PRIORITY = (
 # finished warming up.
 _WARMING_UP_STATUS = frozenset({408, 425, 500, 502, 503, 504, 520, 522, 524})
 
-# Bounded warm-up backoff (seconds) between retry attempts.
-_RETRY_BACKOFF_SECONDS: tuple[float, ...] = (0.4, 1.0, 2.0)
-
 
 @dataclass(slots=True)
 class _FetchError:
     category: str
     message: str
     status_code: int | None = None
+    headers: object = None  # the reply's headers, for Retry-After (retry_ladder)
 
 
 def _category_for_status(code: int) -> str:
@@ -376,7 +371,7 @@ def list_assistant_models(
 
     last_error: _FetchError | None = None
     attempts = max(1, max_attempts)
-    for attempt in range(attempts):
+    for attempt in range(1, attempts + 1):
         attempt_errors: list[_FetchError] = []
         empty_success = False
         for endpoint in candidates:
@@ -400,11 +395,10 @@ def list_assistant_models(
             return [], None
 
         last_error = _most_significant_error(attempt_errors)
-        if last_error is None or last_error.category not in _RETRYABLE_CATEGORIES:
+        wait = None if last_error is None else _chat_retry_wait(last_error, attempt, attempts)
+        if wait is None:
             break
-        if attempt + 1 < attempts:
-            backoff = _RETRY_BACKOFF_SECONDS[min(attempt, len(_RETRY_BACKOFF_SECONDS) - 1)]
-            time.sleep(backoff)
+        time.sleep(wait)
 
     if last_error is None:
         return [], "Could not reach AI endpoint."
@@ -443,6 +437,7 @@ def _fetch_models_from_endpoint(
             category,
             _message_for_category(category, endpoint=endpoint, status_code=exc.code),
             exc.code,
+            exc.headers,
         )
     except URLError as exc:
         category = _category_for_url_error(exc)
@@ -1186,6 +1181,7 @@ def _post_chat(
             category,
             _message_for_category(category, endpoint=endpoint, status_code=exc.code, detail=detail),
             exc.code,
+            exc.headers,
         )
     except URLError as exc:
         category = _category_for_url_error(exc)
@@ -1204,6 +1200,12 @@ def _post_chat(
             "bad_response", _message_for_category("bad_response", endpoint=endpoint)
         )
     return text, None
+
+
+def _chat_retry_wait(error: _FetchError, attempt: int, attempts: int) -> float | None:
+    """The shared ladder for one failed chat (:mod:`quill.core.ai.retry_ladder`)."""
+    lost = error.category in ("not_running", "timeout")  # no answer: the warm-up retry
+    return wait_after_failure(error.status_code, error.headers, attempt, attempts, lost=lost)
 
 
 def generate_assistant_response(
@@ -1259,16 +1261,15 @@ def generate_assistant_response(
 
     last_error: _FetchError | None = None
     attempts = max(1, max_attempts)
-    for attempt in range(attempts):
+    for attempt in range(1, attempts + 1):
         text, error = _post_chat(endpoint, headers, body, provider, timeout_seconds=timeout_seconds)
         if error is None:
             return text, None
         last_error = error
-        if error.category not in _RETRYABLE_CATEGORIES:
+        wait = _chat_retry_wait(error, attempt, attempts)
+        if wait is None:
             break
-        if attempt + 1 < attempts:
-            backoff = _RETRY_BACKOFF_SECONDS[min(attempt, len(_RETRY_BACKOFF_SECONDS) - 1)]
-            time.sleep(backoff)
+        time.sleep(wait)
 
     if last_error is None:
         return None, "Could not reach AI endpoint."
@@ -1446,6 +1447,7 @@ def _post_chat_stream(
                 category,
                 _message_for_category(category, endpoint=endpoint, status_code=exc.code),
                 exc.code,
+                exc.headers,
             ),
             emitted,
         )
@@ -1517,18 +1519,17 @@ def generate_assistant_response_stream(
 
     last_error: _FetchError | None = None
     attempts = max(1, max_attempts)
-    for attempt in range(attempts):
+    for attempt in range(1, attempts + 1):
         text, error, emitted = _post_chat_stream(
             endpoint, headers, body, provider, on_delta, timeout_seconds=timeout_seconds
         )
         if error is None:
             return text, None
         last_error = error
-        if emitted or error.category not in _RETRYABLE_CATEGORIES:
+        wait = None if emitted else _chat_retry_wait(error, attempt, attempts)
+        if wait is None:
             break
-        if attempt + 1 < attempts:
-            backoff = _RETRY_BACKOFF_SECONDS[min(attempt, len(_RETRY_BACKOFF_SECONDS) - 1)]
-            time.sleep(backoff)
+        time.sleep(wait)
 
     if last_error is None:
         return None, "Could not reach AI endpoint."

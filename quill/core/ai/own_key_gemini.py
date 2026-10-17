@@ -27,7 +27,6 @@ One egress site, :func:`_open_stream`, reviewed in
 from __future__ import annotations
 
 import json
-import time
 from collections.abc import Callable, Iterable, Iterator
 from typing import Any
 from urllib.error import HTTPError, URLError
@@ -41,6 +40,7 @@ from quill.core.ai.own_key import (
     OwnKeyRejected,
     scrub,
 )
+from quill.core.ai.retry_ladder import pause, wait_before_retry
 
 __all__ = ["GEMINI_HOST", "KEY_PAGE_URL", "USAGE_URL", "stream_answer"]
 
@@ -52,12 +52,13 @@ USAGE_URL = "https://aistudio.google.com/usage"
 
 _LOOPBACK = frozenset({"127.0.0.1", "localhost", "::1"})
 
-#: Server errors worth one more try, if nothing has arrived yet.
+#: Server errors that mean "busy" rather than "refused". Whether one is asked
+#: again is the shared ladder's decision (quill.core.ai.retry_ladder).
 _TRY_AGAIN = frozenset({500, 502, 503, 504})
 
 
 class _Busy(OwnKeyError):
-    """Gemini was busy before it sent anything; one more try is allowed."""
+    """Gemini was busy before it sent anything."""
 
     code = "QUILL-AI-OWN-KEY-GEMINI-BUSY"
 
@@ -186,15 +187,21 @@ def stream_answer(
     headers = build_chat_headers(GEMINI, host, key)
     payload = build_chat_body(GEMINI, model, user, max_tokens=None, system_prompt=system)
     body = json.dumps(payload).encode("utf-8")
-    for attempt in range(2):
+    attempt = 0
+    while True:
+        attempt += 1
         try:
             text = _open_stream(
                 endpoint, headers, body, timeout=timeout, cancel=cancel, on_delta=on_delta
             )
         except HTTPError as error:
+            # The shared ladder (quill.core.ai.retry_ladder). An HTTPError
+            # arrives before the first piece of the answer, so asking again
+            # never repeats text that was already heard.
             failure = _failure(error, model, key)
-            if isinstance(failure, _Busy) and attempt == 0:
-                _pause(cancel, 1.0)
+            wait = wait_before_retry(error.code, error.headers, attempt)
+            if wait is not None:
+                _pause(cancel, wait)
                 continue
             raise failure from None
         except (URLError, TimeoutError, OSError):
@@ -209,16 +216,12 @@ def stream_answer(
                 "try rewording it, or choose another model."
             )
         return text.strip()
-    raise OwnKeyError("Google Gemini is busy or not answering right now. Try again in a moment.")
 
 
 def _pause(cancel: Any, seconds: float) -> None:
-    """Wait before the one retry, but not past a Stop."""
-    if cancel is not None:
-        if cancel.wait(seconds):
-            _stop_if_cancelled(cancel)
-        return
-    time.sleep(seconds)
+    """Wait before the next attempt, but not past a Stop."""
+    if pause(seconds, cancel=cancel):
+        _stop_if_cancelled(cancel)
 
 
 def _safe_mode() -> bool:

@@ -442,6 +442,8 @@ class DocumentFrame(
         # stack can say: no Windows edit control exposes a paragraph style to a
         # screen reader, so if QUILL Lite does not say "Heading 2" nobody does.
         self.announce_structure_at_caret()
+        # And a note on the line it has just entered (quill/core/inline_note_cue.py).
+        self.cue_inline_note_line(SoundEvent.INLINE_NOTE_LINE)
         event.Skip()
 
     def _on_activate(self, event: wx.ActivateEvent) -> None:

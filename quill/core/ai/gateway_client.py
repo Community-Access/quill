@@ -50,6 +50,7 @@ from quill.core.ai.gateway_errors import (
     GatewayTooLargeError,
     GatewayUnreachableError,
 )
+from quill.core.ai.retry_ladder import pause, wait_before_retry
 from quill.core.net import verified_ssl_context
 
 __all__ = [
@@ -296,37 +297,69 @@ def _urlopen_json(
     if token:
         request.add_header("Authorization", f"Bearer {token}")
 
-    try:
-        with urllib.request.urlopen(  # noqa: S310 - https enforced by _verified_context
-            request, timeout=_TIMEOUT_SECONDS, context=_verified_context()
-        ) as response:
-            raw = response.read().decode("utf-8", errors="replace")
-        return json.loads(raw) if raw.strip() else {}
-    except urllib.error.HTTPError as error:
-        if error.code in answers:
-            try:
-                raw = error.read().decode("utf-8", errors="replace")
-                return json.loads(raw) if raw.strip() else {}
-            except (ValueError, OSError):
-                return {}
-        raise _error_for_status(error) from error
-    except urllib.error.URLError as error:
-        raise _unreachable(url, error) from error
-    except (TimeoutError, OSError) as error:
-        raise _unreachable(url, error) from error
-    except json.JSONDecodeError as error:
-        raise GatewayServiceError(
-            "The AI service sent back something QUILL could not read. "
-            "Try again in a moment. Nothing was used."
-        ) from error
+    attempt = 0
+    while True:
+        attempt += 1
+        try:
+            with urllib.request.urlopen(  # noqa: S310 - https enforced by _verified_context
+                request, timeout=_TIMEOUT_SECONDS, context=_verified_context()
+            ) as response:
+                raw = response.read().decode("utf-8", errors="replace")
+            return json.loads(raw) if raw.strip() else {}
+        except urllib.error.HTTPError as error:
+            payload = _read_payload(error)
+            if error.code in answers:
+                return payload
+            # The shared ladder (quill.core.ai.retry_ladder): a busy moment is
+            # asked again, silently; only the last failure is raised.
+            wait = wait_before_retry(
+                error.code, error.headers, attempt, final=_service_says_final(error.code, payload)
+            )
+            if wait is None:
+                raise _error_for_status(error, payload) from error
+            pause(wait)
+            continue
+        except urllib.error.URLError as error:
+            raise _unreachable(url, error) from error
+        except (TimeoutError, OSError) as error:
+            raise _unreachable(url, error) from error
+        except json.JSONDecodeError as error:
+            raise GatewayServiceError(
+                "The AI service sent back something QUILL could not read. "
+                "Try again in a moment. Nothing was used."
+            ) from error
 
 
-def _error_for_status(error: urllib.error.HTTPError) -> GatewayError:
-    """Turn an HTTP failure into the right coded error, keeping the server's words."""
+def _read_payload(error: urllib.error.HTTPError) -> dict[str, Any]:
+    """The JSON body of a failed reply, or {} -- read once, used twice."""
     try:
-        payload = json.loads(error.read().decode("utf-8", errors="replace") or "{}")
+        raw = error.read().decode("utf-8", errors="replace")
+        parsed = json.loads(raw) if raw.strip() else {}
     except (ValueError, OSError):
-        payload = {}
+        return {}
+    return parsed if isinstance(parsed, dict) else {}
+
+
+def _service_says_final(status: int, payload: dict[str, Any]) -> bool:
+    """Whether the hosted service's own reply rules out asking again.
+
+    It says so outright with ``"charged": true`` (the request may already
+    have counted, so a second one could count twice) or ``"retry": false``.
+    And a 429 that is not network throttling is the person's allowance being
+    used up -- a fact until the reset, not a busy moment -- so it is said at
+    once rather than asked about three times.
+    """
+    if payload.get("charged") is True or payload.get("retry") is False:
+        return True
+    return status == 429 and payload.get("status") != "throttled"
+
+
+def _error_for_status(
+    error: urllib.error.HTTPError, payload: dict[str, Any] | None = None
+) -> GatewayError:
+    """Turn an HTTP failure into the right coded error, keeping the server's words."""
+    if payload is None:
+        payload = _read_payload(error)
     message = str(payload.get("message", "")).strip()
 
     if error.code == 401:

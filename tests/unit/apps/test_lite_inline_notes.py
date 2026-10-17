@@ -228,3 +228,98 @@ def test_private_notes_persist_per_file(lite_window, note_dialog, tmp_path) -> N
     again.path = tmp_path / "plan.md"
     again.cmd_speak_inline_note()
     assert again.announcements[-1] == "Inline note: remember me"
+
+
+# -- the cue on arriving at a noted line (2026-10-17) -------------------------- #
+
+
+def _cue_recorder(win, monkeypatch, *, has_sound: bool = True) -> dict[str, list[str]]:
+    heard: dict[str, list[str]] = {"sound": [], "braille": []}
+    monkeypatch.setattr(win, "_host_cue", heard["sound"].append)
+    monkeypatch.setattr(win, "_host_has_sound", lambda _event: has_sound)
+    monkeypatch.setattr(win, "_host_braille", heard["braille"].append)
+    return heard
+
+
+def _caret_to(win, position: int) -> None:
+    win.control.SetInsertionPoint(position)
+    win.cue_inline_note_line()  # what DocumentFrame._on_caret_moved calls
+
+
+def test_the_document_window_asks_on_every_caret_move() -> None:
+    """The key-up and click handler is where the cue rides (lite_window.py)."""
+    from types import SimpleNamespace
+
+    from quill.apps.lite_window import DocumentFrame
+
+    asked: list[str] = []
+    window = SimpleNamespace(
+        _touch_status=lambda: None,
+        check_spelling_at_caret=lambda _code: None,
+        announce_structure_at_caret=lambda: None,
+        cue_inline_note_line=asked.append,
+    )
+    DocumentFrame._on_caret_moved(window, wx.KeyEvent(wx.wxEVT_KEY_UP))
+    assert asked == ["inline_note_line"]
+
+
+def _noted_window(lite_window):
+    from quill.core.inline_notes import make_inline_note
+
+    win = lite_window(DOC, cursor=0)
+    line = DOC.index("Back up")
+    win._set_sidecar_notes([make_inline_note("Check sizes.", DOC, line, line)])
+    return win, line
+
+
+def test_arriving_on_a_noted_line_plays_the_cue_once(lite_window, monkeypatch) -> None:
+    win, line = _noted_window(lite_window)
+    heard = _cue_recorder(win, monkeypatch)
+
+    _caret_to(win, 2)
+    assert heard["sound"] == []
+    _caret_to(win, line)
+    assert heard["sound"] == ["inline_note_line"]
+    assert heard["braille"] == ["note"], "braille gets the word when the cue is a tone"
+    _caret_to(win, line + 5)  # moving along the same line
+    _caret_to(win, line + 12)
+    assert heard["sound"] == ["inline_note_line"]
+    assert "note" not in win.announcements
+
+
+def test_speech_says_note_and_off_says_nothing(lite_window, monkeypatch) -> None:
+    win, line = _noted_window(lite_window)
+    heard = _cue_recorder(win, monkeypatch)
+    win.app.settings.inline_note_line_cue = "speech"
+    _caret_to(win, line)
+    assert win.announcements[-1] == "note" and heard["sound"] == []
+
+    win.app.settings.inline_note_line_cue = "off"
+    _caret_to(win, 0)
+    _caret_to(win, line)
+    assert win.announcements.count("note") == 1
+
+
+def test_a_sound_with_no_clip_says_the_word(lite_window, monkeypatch) -> None:
+    win, line = _noted_window(lite_window)
+    heard = _cue_recorder(win, monkeypatch, has_sound=False)
+    _caret_to(win, line)
+    assert heard["sound"] == [] and win.announcements[-1] == "note"
+
+
+def test_a_note_in_the_file_cues_and_next_note_does_not_double_up(
+    lite_window, monkeypatch, note_dialog
+) -> None:
+    _calls, answers = note_dialog
+    win = lite_window(DOC, cursor=DOC.index("Write the tests"))
+    _markdown(win)
+    answers.append(("save", "Use real data.", True))
+    win.cmd_add_inline_note()
+    heard = _cue_recorder(win, monkeypatch)
+    _caret_to(win, 0)
+    win.cmd_next_inline_note()  # says the note itself
+    _caret_to(win, win.control.GetInsertionPoint())
+    assert heard["sound"] == []
+    _caret_to(win, 0)
+    _caret_to(win, win.control.GetValue().index("Write the tests") + 3)
+    assert heard["sound"] == ["inline_note_line"]

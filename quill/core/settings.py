@@ -8,6 +8,7 @@ from quill.core.action_feedback import coerce as _coerce_action_feedback
 from quill.core.ai.own_key import load_settings_fields as load_own_key_fields
 from quill.core.ai.vision_prompts import BUILTIN_STYLE_IDS
 from quill.core.editor_font import DEFAULT_FONT_POINTS, clamp_font_points
+from quill.core.inline_note_cue import coerce_note_line_cue
 from quill.core.markdown_breaks import normalise_hard_break_style
 from quill.core.monitor_policy import (
     MONITOR_GITHUB,
@@ -639,6 +640,8 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
     #: New inline notes in Markdown and HTML go into the file as quill-note
     #: comments, not the private sidecar. Off by default; shared with Lite.
     inline_notes_in_file: bool = False
+    #: "sound", "speech" or "off" when the caret enters a noted line (inline_note_cue).
+    inline_note_line_cue: str = "sound"
     #: How many days of autosave history to keep. Only the previous session is
     #: ever offered back, so older directories are unreachable by design and
     #: were nevertheless kept for ever -- a real install had eighty-six days of
@@ -1393,6 +1396,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
             session_restore_ask = "when_it_matters"
         recover_untitled_documents = bool(data.get("recover_untitled_documents", True))
         inline_notes_in_file = bool(data.get("inline_notes_in_file", False))
+        inline_note_line_cue = coerce_note_line_cue(data.get("inline_note_line_cue"))
         # Upper bound of ten years rather than none: this field deletes, and a
         # hand-edited 1e999 would otherwise become an int() crash at launch.
         recovery_keep_days = _clamp_int(
@@ -1912,6 +1916,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
             session_files=session_files,
             recover_untitled_documents=recover_untitled_documents,
             inline_notes_in_file=inline_notes_in_file,
+            inline_note_line_cue=inline_note_line_cue,
             recovery_keep_days=recovery_keep_days,
             markdown_hard_break_style=markdown_hard_break_style,
             autoformat_smart_quotes=autoformat_smart_quotes,

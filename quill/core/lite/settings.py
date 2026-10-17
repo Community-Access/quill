@@ -37,6 +37,7 @@ from pathlib import Path
 from typing import Any
 
 from quill.core.action_feedback import coerce as _coerce_action_feedback
+from quill.core.inline_note_cue import coerce_note_line_cue
 from quill.core.lite.paths import settings_path
 from quill.core.lite.settings_values import clamp_ms as _clamp_ms
 from quill.core.lite.settings_values import coerce as _coerce
@@ -240,6 +241,7 @@ class Settings(DictationSettings):
     recover_untitled_documents: bool = True
     #: New inline notes in Markdown and HTML go into the file (same as QUILL).
     inline_notes_in_file: bool = False
+    inline_note_line_cue: str = "sound"  # as QUILL's (quill/core/inline_note_cue.py)
     # -- When another program changes the file (2026-10-04) -----------------
     # QUILL's six fields, names, defaults and meanings, read by the shared
     # quill.core.external_change.decide_for. The two lists are the per-format
@@ -488,6 +490,7 @@ class Settings(DictationSettings):
         self.print_margins_mm = margins
         self.print_paper_id = max(0, int(self.print_paper_id))
         self.action_feedback = str(_coerce_action_feedback(self.action_feedback))
+        self.inline_note_line_cue = coerce_note_line_cue(self.inline_note_line_cue)
         self.find_not_found_feedback = str(_coerce_action_feedback(self.find_not_found_feedback))
         self.windows_dictation_phrase_feedback = str(
             _coerce_action_feedback(self.windows_dictation_phrase_feedback)

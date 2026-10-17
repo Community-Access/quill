@@ -48,6 +48,8 @@ _DEFAULT_KEYS: dict[str, str] = {
     "quill.quick_nav.skip_forward": "]",
     "quill.quick_nav.skip_backward": "[",
     "quill.quick_nav.inline_note": "N",
+    "quill.quick_nav.misspelling": "M",
+    "quill.quick_nav.page": "F",
 }
 
 
@@ -170,6 +172,8 @@ def _build_browse_groups(
             entry("quill.quick_nav.bookmark", "Next or previous bookmark", "bookmarks"),
             entry("quill.quick_nav.code_block", "Next or previous code block", "code_blocks"),
             entry("quill.quick_nav.inline_note", "Next or previous inline note", None),
+            entry("quill.quick_nav.misspelling", "Next or previous misspelled word", None),
+            entry("quill.quick_nav.page", "Next or previous page (page breaks)", None),
             entry(
                 "quill.quick_nav.table_of_contents",
                 "Open the table of contents",

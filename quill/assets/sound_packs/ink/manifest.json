@@ -72,6 +72,7 @@
     "error": "error.wav",
     "heading_jumped": "nav_heading.wav",
     "information": "information.wav",
+    "inline_note_line": "inline_note_line.wav",
     "keepalive": "keepalive.wav",
     "list_entered": "list_entered.wav",
     "nothing_to_undo": "nothing_to_undo.wav",
