@@ -77,6 +77,24 @@ class QuillEditorHostMixin(EditorHostMixin):
         except Exception:  # noqa: BLE001
             return False
 
+    def _host_rich_wrapper(self) -> Any:
+        """The current tab's Rich Edit wrapper while it is in rich mode, else ``None``."""
+        try:
+            if self._current_editor_mode() != "rich":  # type: ignore[attr-defined]
+                return None
+            return self._active_richedit()  # type: ignore[attr-defined]
+        except Exception:  # noqa: BLE001 - no tab yet
+            return None
+
+    def _host_go_to(self, position: int) -> None:
+        """A jump the way QUILL's others go: Back returns from it (Alt+Left)."""
+        self._record_location_before_jump()  # type: ignore[attr-defined]
+        self._move_point(position)  # type: ignore[attr-defined]
+        show = getattr(self.editor, "ShowPosition", None)  # type: ignore[attr-defined]
+        if callable(show):
+            show(position)
+        self.editor.SetFocus()  # type: ignore[attr-defined]
+
     def _host_after_edit(self) -> None:
         self._browse_navigation_cache = None
         document = getattr(self, "document", None)

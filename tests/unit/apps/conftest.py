@@ -883,6 +883,7 @@ def lite_window(tmp_path, lite_settings):
     from quill.apps.lite_window_typing import DocumentTypingMixin
     from quill.apps.lite_window_view import DocumentViewCommandsMixin
     from quill.apps.lite_window_words import DocumentWordsMixin
+    from quill.ui.highlight_commands import HighlightCommandsMixin
     from quill.ui.hosted_ai_commands import HostedAiMixin
     from quill.ui.html_export_commands import HtmlExportCommandsMixin
     from quill.ui.inline_notes_commands import InlineNotesCommandsMixin
@@ -898,6 +899,8 @@ def lite_window(tmp_path, lite_settings):
         # shared modules themselves, whose hooks default to this window's own
         # control, _announce and app.
         InlineNotesCommandsMixin,
+        # Highlighted passages, 2026-10-16: shared the same way.
+        HighlightCommandsMixin,
         TaskListCommandsMixin,
         HtmlExportCommandsMixin,
         # Help > Activity and Repeat Last Result, 2026-10-02 (qc.md F-10).

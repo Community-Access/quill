@@ -256,6 +256,9 @@ class CastMainPanelMixin(CastLibraryFindMixin):
             return
         if not getattr(self, "_cast_tree_mutating", False):
             self._cast_cursor_revision = int(getattr(self, "_cast_cursor_revision", 0)) + 1
+        from quill.ui.podcasts.episode_cursor_ui import remember_feed_cursor
+
+        remember_feed_cursor(self)
         if not getattr(self, "_cast_selection_refresh_pending", False):
             self._cast_selection_refresh_pending = True
 

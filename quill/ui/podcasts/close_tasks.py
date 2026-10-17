@@ -33,6 +33,9 @@ def begin(host: Any, *, forced: bool = False) -> bool:
         report = ShutdownReport("cast", "QUILL Cast")
         host._cast_close_report = report
         steps: list[tuple[str, str, Any]] = []
+        from quill.ui.podcasts.episode_cursor_ui import flush_cursor
+
+        steps.append(("episode_cursor", BEST_EFFORT, lambda: flush_cursor(host)))
         steps.append((
             "quillins",
             BEST_EFFORT,

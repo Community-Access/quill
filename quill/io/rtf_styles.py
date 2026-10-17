@@ -94,6 +94,17 @@ class RtfTables:
             self.colors[rgb] = len(self.colors) + 1
         return self.colors[rgb]
 
+    def highlight_index(self, value: str) -> int:
+        """A colour-table index for a highlight, from Word's highlight palette.
+
+        Not the text-colour names above: "green" is Word's bright highlighter
+        green, and "pink" and "turquoise" exist -- before 2026-10-16 those two
+        were written as no highlight at all (quill.core.highlights).
+        """
+        from quill.core.highlights import highlight_hex
+
+        return self.color_index(highlight_hex(value) or value)
+
     def font_table(self) -> str:
         entries = ["{\\f0 Calibri;}"]
         for family, index in sorted(self.fonts.items(), key=lambda item: item[1]):

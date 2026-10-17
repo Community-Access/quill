@@ -20,6 +20,7 @@ import re
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from quill.core.highlights import docx_highlight_member
 from quill.io.docx_math import omml_fragment_for_latex, split_math_segments
 from quill.io.rtf_model import RichDocument, RichParagraph, markdown_to_rich
 from quill.io.xml_text import count_xml_incompatible, strip_xml_incompatible
@@ -44,19 +45,11 @@ _NAMED_COLORS: dict[str, tuple[int, int, int]] = {
     "grey": (128, 128, 128),
 }
 
-#: python-docx highlight is an enum of named indices, not arbitrary RGB. Map the
-#: common highlight names; anything else falls back to yellow.
-_HIGHLIGHT_NAMES = {
-    "yellow": "YELLOW",
-    "green": "BRIGHT_GREEN",
-    "bright_green": "BRIGHT_GREEN",
-    "turquoise": "TURQUOISE",
-    "pink": "PINK",
-    "blue": "BLUE",
-    "red": "RED",
-    "gray": "GRAY_25",
-    "grey": "GRAY_25",
-}
+#: python-docx highlight is an enum of named indices, not arbitrary RGB. The
+#: mapping is Word's whole palette (quill.core.highlights), which also reads the
+#: ``#RRGGBB`` values a Rich Edit control writes back -- the old six-name table
+#: did not, so every highlight in a Word document saved from rich mode came out
+#: yellow. A value that names no colour at all still falls back to yellow.
 
 
 def python_docx_available() -> bool:
@@ -193,7 +186,7 @@ def rich_to_docx(document: RichDocument) -> Any:
                     if rgb is not None:
                         run.font.color.rgb = RGBColor(*rgb)
                 if span.highlight:
-                    name = _HIGHLIGHT_NAMES.get(span.highlight.lower(), "YELLOW")
+                    name = docx_highlight_member(span.highlight) or "YELLOW"
                     run.font.highlight_color = getattr(WD_COLOR_INDEX, name)
             if span.href and span_runs:
                 _wrap_runs_in_hyperlink(para, span.href, span_runs)

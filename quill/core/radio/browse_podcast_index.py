@@ -209,7 +209,11 @@ def browse_root(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
         ]
     return [
         folder(make_id("pitrending"), "Trending Now", note="what is being talked about today"),
-        folder(make_id("picategories"), "By Category", note="the index's own taxonomy"),
+        folder(
+            make_id("picategories"),
+            "By Category",
+            note="the index's own taxonomy, worldwide, any language",
+        ),
         action(
             "searchpodcastindex",
             "Search the Podcast Index...",

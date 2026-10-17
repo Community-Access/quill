@@ -47,7 +47,9 @@ from quill.core.heading_ladder import (
     HEADING_POINT_SIZES,
     heading_level_for_font,
 )
+from quill.core.highlights import highlight_from_colorref, highlight_hex
 from quill.io.rtf_heading_promotion import promote_heading_styles_in_file
+from quill.io.rtf_styles import parse_color
 
 SURFACE_KIND = "richedit_rtf"
 
@@ -99,36 +101,16 @@ _MAX_HEADING_SCAN_PARAGRAPHS = 100000
 #: and a second copy of the numbers is a silent round-trip bug.
 
 
-#: Named colors accepted by set_color/set_highlight, mirroring the hidden-codes
-#: vocabulary (quill/io/docx_writer.py keeps the same table for export parity).
-_COLOR_NAMES: dict[str, tuple[int, int, int]] = {
-    "red": (255, 0, 0),
-    "green": (0, 128, 0),
-    "blue": (0, 0, 255),
-    "black": (0, 0, 0),
-    "white": (255, 255, 255),
-    "yellow": (255, 255, 0),
-    "orange": (255, 165, 0),
-    "purple": (128, 0, 128),
-    "gray": (128, 128, 128),
-    "grey": (128, 128, 128),
-}
-
-
 def _color_to_colorref(color: str) -> int:
-    """Convert ``#rrggbb`` or a named color to a Win32 COLORREF (0x00BBGGRR)."""
-    value = str(color).strip().lower()
-    if value.startswith("#") and len(value) == 7:
-        try:
-            red = int(value[1:3], 16)
-            green = int(value[3:5], 16)
-            blue = int(value[5:7], 16)
-        except ValueError as exc:
-            raise RichEditRtfError(f"Unknown color: {color!r}") from exc
-    elif value in _COLOR_NAMES:
-        red, green, blue = _COLOR_NAMES[value]
-    else:
+    """Convert ``#rrggbb`` or a named color to a Win32 COLORREF (0x00BBGGRR).
+
+    Names come from the RTF writer's own table (``quill.io.rtf_styles``), so the
+    editor and the files it writes agree on what "green" is.
+    """
+    rgb = parse_color(str(color))
+    if rgb is None:
         raise RichEditRtfError(f"Unknown color: {color!r}")
+    red, green, blue = rgb
     return red | (green << 8) | (blue << 16)
 
 
@@ -463,8 +445,8 @@ class QuillRichEdit:
         self._apply_font("ForeColor", _color_to_colorref(color))
 
     def set_highlight(self, color: str) -> None:
-        """Set the highlight (background) color of the selection."""
-        self._apply_font("BackColor", _color_to_colorref(color))
+        """Set the selection's highlight, from Word's palette (Pink and Turquoise too)."""
+        self._apply_font("BackColor", _color_to_colorref(highlight_hex(color) or color))
 
     def set_heading(self, level: int) -> None:
         """Style the paragraph(s) under the selection as a Heading 1-6.
@@ -532,6 +514,9 @@ class QuillRichEdit:
                 parts.append("italic")
             if int(getattr(font, "Underline", 0)) != 0:
                 parts.append("underline")
+            highlight = highlight_from_colorref(getattr(font, "BackColor", -1))
+            if highlight:
+                parts.append(f"{highlight} highlight")
             alignment_phrases = {
                 "center": "centered",
                 "right": "right aligned",

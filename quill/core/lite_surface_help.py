@@ -171,6 +171,13 @@ PURPOSES: dict[str, str] = {
         "it. Enter goes to a note, Delete deletes one, F2 edits one; Remove All, "
         "Copy All and Export are buttons."
     ),
+    "Highlighted Passages": (
+        "Every highlighted passage in this document, in order: its words, its "
+        "highlight colour, and the paragraph around it. In a Word document opened "
+        "as text the highlights come from the file itself. Enter goes to the "
+        "passage and closes the list; Escape closes it and leaves the cursor "
+        "where it was. Alt Page Down and Alt Page Up walk the passages without it."
+    ),
     "Add Inline Note": (
         "Write a note about the line or selection you were on. Note on shows the "
         "start of that text, so you can check you are in the right place. In "
@@ -500,6 +507,7 @@ SHARED_WITH_QUILL: frozenset[str] = frozenset({
     "Recent Documents",
     "Clear Recent Documents",
     "Inline Notes",
+    "Highlighted Passages",
     "Add Inline Note",
     "Edit Inline Note",
     *_AI_RESULT_TITLES.values(),

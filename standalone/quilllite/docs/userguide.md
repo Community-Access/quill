@@ -1010,6 +1010,33 @@ It opens these kinds of file:
 - The older Office 97-2003 files, `.doc`, `.xls` and `.ppt`, when LibreOffice
   is installed (see below)
 
+#### Finding the highlighted passages in a Word document
+
+The text of a Word file comes through without its formatting, but its
+highlights are not lost: QUILL Lite reads them from the file itself (`.docx`
+and `.docm`) and takes you to them. They are on **Navigate > Highlighted
+Passages**, on the same keys as in QUILL:
+
+- **Next Highlighted Passage** (**Alt+PageDown**) puts the cursor at the start
+  of the next highlighted passage and says its colour, where it is in the count
+  and its words: "Yellow highlight, 2 of 5: sign and date here". After the last
+  one it goes round to the first.
+- **Previous Highlighted Passage** (**Alt+PageUp**) goes the other way.
+- **List Highlighted Passages...** (**Ctrl+F2**) lists them all, in order. Each
+  row is the passage's words, its colour, and the paragraph it is in, so a row
+  makes sense on its own. Enter goes to the passage; Escape closes the list and
+  leaves the cursor where it was. **Alt+Left** goes back after either.
+
+For example, a tenancy agreement whose landlord highlighted "deposit" in
+yellow and "two forms of ID" in pink: open it, press **Ctrl+F2**, and you hear
+"deposit, yellow highlight, in: Pay the deposit by Friday." as the first row.
+
+The same keys work in a rich text document you have open in QUILL Lite, where
+the highlights are in the document itself. If you edit the text of a Word file
+after opening it, a passage whose words you changed is left out rather than
+guessed at. Highlights in headers, footers, footnotes and text boxes are not
+listed, because that text is not in the editor; nor is paragraph shading.
+
 #### What comes through, and what does not
 
 - **Word and OpenDocument text:** each heading keeps its own line, marked
@@ -8735,6 +8762,14 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Ctrl+Shift+7** | Set Bookmark 7 |
 | **Ctrl+Shift+8** | Set Bookmark 8 |
 | **Ctrl+Shift+9** | Set Bookmark 9 |
+
+#### Highlighted Passages (in Navigate)
+
+| Key | Command |
+|---|---|
+| **Alt+PageDown** | Next Highlighted Passage |
+| **Alt+PageUp** | Previous Highlighted Passage |
+| **Ctrl+F2** | List Highlighted Passages... |
 
 ### Tools
 
