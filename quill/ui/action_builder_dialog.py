@@ -53,19 +53,20 @@ def read_reference_text(path: Any) -> str:
 def _read_rich_reference(path: Any) -> str:
     """A rich document (docx, etc.) as text, or '' when nothing can read it.
 
-    Office, HTML, EPUB and CSV go through ``read_office_text_preferring_markitdown``:
-    MarkItDown when it works, QUILL's own reader when it does not -- which in a
-    shipped build is always (2026-10-16). Anything else still tries MarkItDown.
+    Office, HTML, EPUB and CSV go through ``read_office_text_preferring_own``:
+    QUILL's own reader first for Word, Excel, PowerPoint and OpenDocument, and
+    MarkItDown only when that fails (2026-10-16), so a .docx reference never
+    pays MarkItDown's long import. Anything else still tries MarkItDown.
     """
     from quill.io.office_text import (
         MARKUP_SUFFIXES,
         OFFICE_SUFFIXES,
-        read_office_text_preferring_markitdown,
+        read_office_text_preferring_own,
     )
 
     try:
         if path.suffix.lower() in OFFICE_SUFFIXES | MARKUP_SUFFIXES:
-            return read_office_text_preferring_markitdown(path).text
+            return read_office_text_preferring_own(path).text
         from markitdown import MarkItDown
 
         result = MarkItDown().convert(str(path))

@@ -113,12 +113,15 @@ def read_office_for_open(path: Path) -> str:
     reader's own sentence (damaged, password-protected, or a .doc/.xls/.ppt
     with no LibreOffice and the Save As that fixes it).
     """
-    from quill.io.office_text import OfficeReadError, read_office_text_preferring_markitdown
+    # QUILL's own reader first, MarkItDown only when it fails (2026-10-16): the
+    # same order and the same reader as QUILL's File > Open, and no 11-17 s
+    # MarkItDown import on a Word file QUILL can read itself.
+    from quill.io.office_text import OfficeReadError, read_office_text_preferring_own
 
     if not Path(path).is_file():
         raise FileNotFoundError(f"{Path(path).name} is no longer there.")
     try:
-        return read_office_text_preferring_markitdown(path).text
+        return read_office_text_preferring_own(path).text
     except OfficeReadError as exc:
         raise OSError(exc.sentence) from exc
 

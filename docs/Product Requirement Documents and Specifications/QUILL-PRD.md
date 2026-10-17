@@ -15065,8 +15065,9 @@ flat line per paragraph, headings/lists/tables discarded. `python-docx` is a
 *base* dependency, so the fallback now renders through it
 (`quill/io/docx_text.py::read_docx_text`: heading levels, list styles and
 direct `w:numPr` numbering, tables as GFM) with the XML walk kept as the last
-resort (`read_docx_xml_text`). The read chain is therefore: MarkItDown when
-present → python-docx → raw XML.
+resort (`read_docx_xml_text`). The read chain was therefore: MarkItDown when
+present → python-docx → raw XML. Since 2026-10-16 it is python-docx → Word XML
+→ MarkItDown (see "QUILL's own reader first" below).
 
 ### QUILL's own Office readers (todo P1 4b, shipped 2026-10-16)
 
@@ -15158,6 +15159,57 @@ fails, `find_spec` patched to say "installed") through Import / Convert,
 File > Open, Convert File and the intake report;
 `tests/unit/apps/test_lite_office.py` covers QUILL Lite with its excluded
 packages blocked.
+
+**QUILL's own reader first (2026-10-16, evening).** Measured the same day
+(`docs/design/2026-10-16-editor-completion-measurements.md`): a cold `.docx`
+open from source took 12.4 s, an `.xlsx` 11.1 s and a `.pptx` 11.6 s, nearly
+all of it `import markitdown` (pandas, pdfminer, the Magika model). The order is
+now reversed by `office_text.read_office_text_preferring_own`, which every
+entry point above uses except the two explicit MarkItDown choices:
+
+- Word (`.docx`/`.docm`), Excel (`.xlsx`/`.xlsm`), PowerPoint (`.pptx`) and
+  OpenDocument (`.odt`/`.ods`/`.odp`): `read_office_text` first. MarkItDown is
+  tried only when that raises `OfficeReadError` (damaged, or no text at all)
+  **and** the suffix is one MarkItDown reads **and** the file is not an OLE
+  container (a password-protected OOXML file, which no reader opens: asking
+  would cost the whole import to hear the same answer). A MarkItDown rescue is
+  recorded as `own_reader_failure` (the intake report says "QUILL's own reader:
+  not used." and why); when MarkItDown fails too, the user hears QUILL's
+  sentence, never MarkItDown's.
+- `.xls`, HTML, EPUB and CSV keep `read_office_text_preferring_markitdown`:
+  `.xls` has no reader of QUILL's own without LibreOffice, and the markup
+  formats were not part of this measurement.
+- The explicit choices keep MarkItDown first: the **Word document reading
+  engine** setting's `markitdown` value ("MarkItDown first", Word only; Auto is
+  relabelled "Auto (QUILL's own reader first)") and Convert File's MarkItDown
+  engine, which is a per-conversion request for that converter by name.
+- `markitdown` is imported only inside `markitdown_bridge.convert_with_markitdown`,
+  which is called only on the fallback; `tests/unit/io/test_office_reader_order.py`
+  opens the corpus through `read_open_document` and QUILL Lite's `prepare` in a
+  fresh interpreter and asserts neither `markitdown` nor `magika` is in
+  `sys.modules`.
+
+After: `.docx` 1.24 s cold, 0.64 s warm (was 0.85 s with MarkItDown); `.xlsx`
+2.18 s cold (openpyxl's import), `.pptx` 0.34 s cold. **Output equivalence**
+was compared on the corpus. QUILL's readers kept everything MarkItDown kept and
+did better on: the Title style as `#`, a Word table's first row as its header
+(MarkItDown wrote an empty header row), a pipe inside a cell escaped, Excel
+sheet headings with the sheet name, booleans as TRUE/FALSE (MarkItDown: 1.0 and
+0.0), dates without a midnight time, empty cells empty (MarkItDown: `NaN`),
+slide headings with numbers, nested bullets by level, speaker notes. Two
+constructs MarkItDown did better, both closed in QUILL's readers:
+**numbered lists** (QUILL wrote every item as `1.`, correct Markdown but read
+aloud as "one, one, one"; `office_word.number_ordered_items` now counts each
+run per indent level, used by both Word readers and the ODT reader) and
+**equations** (python-docx's `paragraph.text` skips `<m:oMath>`, so an equation
+vanished silently; `quill/io/omml_text.py` converts OMML to LaTeX in QUILL's
+own delimiters, `\(...\)` inline and `$$...$$` for `oMathPara`, which
+`docx_math` writes back as real equations; MarkItDown writes `$...$`, which
+QUILL never treats as math). The python-docx reader now also keeps picture
+descriptions (`[Image: ...]`), as the XML reader already did, by borrowing
+`office_word.paragraph_text` for any paragraph holding a picture or equation.
+One difference is kept on purpose: a Word hard return is written as a
+backslash hard break (see #1488), where MarkItDown left a bare newline.
 
 **Packaging: the lean half ships, the heavy half stays optional.** Bundling
 the whole `pdf-ocr` extra was measured, not assumed: MarkItDown hard-requires

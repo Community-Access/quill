@@ -38,9 +38,10 @@ _DEFAULT_BREAK = hard_break_suffix("backslash")
 
 _HEADING_STYLE = re.compile(r"^heading (\d)$", re.IGNORECASE)
 
-#: Word's built-in list styles. Numbering beyond "is this a list" is not
-#: reconstructed: Markdown renumbers ordered items anyway, and a wrong number is
-#: worse than a consistent one.
+#: Word's built-in list styles. Each numbered paragraph is written as ``1.``
+#: here; :func:`quill.io.office_word.number_ordered_items` then counts each run
+#: 1, 2, 3, so the text reads right before any Markdown renderer touches it.
+#: Word's own start values and restarts are not reconstructed.
 _BULLET_STYLES = ("list bullet", "list paragraph")
 _NUMBER_STYLES = ("list number",)
 
@@ -62,7 +63,9 @@ def read_docx_text(path: Path) -> str | None:
         return None
     if not any(line.strip() for line in lines):
         return None
-    return "\n".join(lines).strip("\n") + "\n"
+    from quill.io.office_word import number_ordered_items
+
+    return "\n".join(number_ordered_items("\n".join(lines).split("\n"))).strip("\n") + "\n"
 
 
 def _is_list_line(line: str) -> bool:
@@ -116,7 +119,7 @@ def _render_paragraph(paragraph: Any, *, hard_break: str = _DEFAULT_BREAK) -> st
     a real Markdown hard break instead, which is the same thing the author
     typed.
     """
-    text = (paragraph.text or "").strip()
+    text = _paragraph_text(paragraph).strip()
     if not text:
         return None
     if NEWLINE in text or RETURN in text:
@@ -136,6 +139,29 @@ def _render_paragraph(paragraph: Any, *, hard_break: str = _DEFAULT_BREAK) -> st
     if any(style.startswith(name) for name in _BULLET_STYLES) or _has_numbering(paragraph):
         return f"- {text}"
     return text
+
+
+#: What python-docx's ``paragraph.text`` leaves out: Word equations (OMML) and
+#: the description of a picture. Found against MarkItDown on 2026-10-16, when
+#: this reader became the first choice for opening a .docx.
+_MATH_TAG = "{http://schemas.openxmlformats.org/officeDocument/2006/math}oMath"
+_PICTURE_TAG = "{http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing}docPr"
+
+
+def _paragraph_text(paragraph: Any) -> str:
+    """The paragraph's text, keeping equations and picture descriptions.
+
+    Most paragraphs hold neither and keep python-docx's own text. One that
+    does is read by :func:`quill.io.office_word.paragraph_text`, the XML
+    reader's walk, so both Word readers say the same thing: an equation as
+    ``\\(a^{2}+b^{2}=c^{2}\\)``, a picture as ``[Image: its description]``.
+    """
+    element = getattr(paragraph, "_p", None)
+    if element is not None and next(element.iter(_MATH_TAG, _PICTURE_TAG), None) is not None:
+        from quill.io.office_word import paragraph_text
+
+        return paragraph_text(element)
+    return str(paragraph.text or "")
 
 
 def _style_name(paragraph: Any) -> str:

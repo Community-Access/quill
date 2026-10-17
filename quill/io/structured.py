@@ -16,7 +16,11 @@ from quill.core.pdf_open import read_pdf_for_open
 from quill.core.safe_archive import check_zip_safety
 from quill.core.safe_xml import fromstring as safe_xml_fromstring
 from quill.io.markitdown_bridge import convert_with_markitdown
-from quill.io.office_text import OfficeReadError, read_office_text_preferring_markitdown
+from quill.io.office_text import (
+    OfficeReadError,
+    read_office_text_preferring_markitdown,
+    read_office_text_preferring_own,
+)
 from quill.io.pages import read_pages_document
 from quill.io.pdf import extract_pdf_outline_entries, extract_pdf_text
 from quill.io.rtf import read_rtf_document
@@ -48,12 +52,10 @@ def read_structured_document(
         document = _read_docx_with_pandoc(path) if docx_engine == "pandoc" else None
         if document is not None:
             return document
-        text, metadata = _read_office(path)
+        text, metadata = _read_office(path, docx_engine)
     elif suffix in _OFFICE_OPEN_SUFFIXES:
-        # 2026-10-16 (todo P1 4b): every Office format reads through
-        # quill.io.office_text -- MarkItDown when it works, QUILL's own reader
-        # whenever it does not, which in a shipped build is always (magika
-        # needs onnxruntime, which the shared runtime excludes).
+        # 2026-10-16: QUILL's own reader first, MarkItDown only when it fails; a
+        # cold MarkItDown import costs 11-17 s, and an Office open must not pay it.
         _guard_office_zip(path)
         text, metadata = _read_office(path)
     elif suffix == ".epub":
@@ -83,10 +85,8 @@ def read_structured_document(
             source_metadata=metadata,
         )
 
-    # #1279: point at the one-click download only where it can help. Since
-    # 2026-10-16 QUILL's own Office readers keep headings, lists, tables, sheets
-    # and slides, so a good Office read is not nagged about; what is left is a
-    # PDF (MarkItDown may read some pages better) and an .xls nothing else could
+    # #1279: point at the one-click download only where it can help: a PDF
+    # (MarkItDown may read some pages better) and an .xls nothing else could
     # read (MarkItDown reads that format; QUILL's own readers do not).
     unread_xls = suffix == ".xls" and metadata.get("engine") == "unavailable"
     if (
@@ -109,14 +109,11 @@ def read_structured_document(
 def _guard_office_zip(path: Path) -> None:
     """Reject a decompression bomb before a primary OOXML reader expands it.
 
-    The office formats (.docx/.docm/.pptx/.xlsx) are ZIP containers, and the
-    preferred readers (MarkItDown, openpyxl, python-docx) all expand entries
-    without a size guard of their own. Running :func:`check_zip_safety` up front
-    refuses a crafted archive whose declared expansion exceeds the safe limits
-    before any entry is read, raising
-    :class:`~quill.core.safe_archive.DecompressionBombError`. A non-ZIP file (a
-    legacy .doc/.xls, or a corrupt upload) is left for the downstream reader to
-    diagnose -- only a genuine bomb is refused here.
+    The office formats are ZIP containers, and their readers (python-docx,
+    openpyxl, MarkItDown) expand entries without a size guard of their own, so
+    :func:`check_zip_safety` refuses a crafted archive before any entry is read
+    (:class:`~quill.core.safe_archive.DecompressionBombError`). A non-ZIP file
+    (a legacy .doc/.xls, or a corrupt upload) is left for the reader to diagnose.
     """
     try:
         with zipfile.ZipFile(path) as archive:
@@ -130,16 +127,19 @@ def _call_markitdown(path: Path) -> str:
     return convert_with_markitdown(path)
 
 
-def _read_office(path: Path) -> tuple[str, dict[str, object]]:
-    """Any Office format, through :mod:`quill.io.office_text`.
+def _read_office(path: Path, docx_engine: str = "auto") -> tuple[str, dict[str, object]]:
+    """Any Office format: QUILL's own reader first, MarkItDown only as a fallback.
 
-    MarkItDown when it works; QUILL's own reader on any MarkItDown failure.
-    A file no reader can open (damaged, password-protected, or a legacy
+    ``docx_engine == "markitdown"`` (the Word reading engine setting) keeps
+    MarkItDown first for Word. A file no reader can open (damaged, password-protected, or a legacy
     .doc/.xls/.ppt with no LibreOffice) opens as one parenthesised paragraph
     saying why and what to do, as every other unreadable format here does.
     """
     try:
-        found = read_office_text_preferring_markitdown(path, markitdown=_call_markitdown)
+        prefer = read_office_text_preferring_own
+        if docx_engine == "markitdown" and path.suffix.lower() in {".docx", ".docm"}:
+            prefer = read_office_text_preferring_markitdown
+        found = prefer(path, markitdown=_call_markitdown)
     except OfficeReadError as exc:
         return f"({exc.sentence})\n", {
             "source_kind": path.suffix.lower().lstrip("."),

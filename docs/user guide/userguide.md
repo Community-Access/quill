@@ -1376,13 +1376,40 @@ as the file opens ("part of it was too large and was cut short"), and the
 
 QUILL reads Word, Excel, PowerPoint and OpenDocument files with its own
 built-in readers. Nothing has to be downloaded first, and nothing is uploaded.
-Where the optional MarkItDown converter can run on your computer, QUILL asks it
-first; where it cannot (the installed apps leave out a part it needs), QUILL's
-own reader does the job and never tells you to install anything.
+QUILL's own reader is always the **first** choice, in every place a file comes
+in: **File > Open**, **Import / Convert Document**, Recent Documents, a file
+opened from File Explorer, and QUILL Lite. The optional MarkItDown converter is
+asked only when QUILL's own reader cannot read a file, or finds no text in it,
+and MarkItDown can read that format. You never need to install anything.
+
+**Why it matters: speed.** MarkItDown takes a long time to start: on a test
+computer, the first Word file after starting QUILL from source took 12 to 17
+seconds to open when MarkItDown read it, almost all of that spent loading
+MarkItDown itself. QUILL's own Word reader opens the same file in about a
+second, and later opens in about half a second. A spreadsheet or a slide show
+opens in a fraction of a second.
+
+**What you get is the same or better.** On QUILL's own test files, QUILL's
+readers keep everything MarkItDown kept and add some things it did not: the
+document's title as a heading, a pipe character inside a table cell kept in
+its cell, the first row of a Word table as the table's header row, a heading
+for every sheet ("Sheet: Budget") and every slide ("Slide 2: Figures"), nested
+bullets on slides, true and false shown as TRUE and FALSE instead of 1.0 and
+0.0, and an empty spreadsheet cell left empty instead of the word NaN.
+Two things MarkItDown did better have been fixed in QUILL's reader: numbered
+lists are now numbered 1, 2, 3 in the text itself (they used to read "1, 1,
+1"), and **equations** in a Word document now come through as text, written
+the way QUILL's own **Insert Equation** writes them, for example
+`\(a^{2}+b^{2}=c^{2}\)`. One difference remains on purpose: a line break inside
+a Word paragraph (Shift+Enter) ends in a backslash, which is how Markdown
+writes a hard line break you can hear and find; MarkItDown left no mark.
+
+If you prefer MarkItDown for Word files anyway, set **Word document reading
+engine** to **MarkItDown first** (see "Choosing a conversion engine").
 
 | Format | How to open it | What comes through |
 | --- | --- | --- |
-| Word (.docx, .docm) | **File > Open** (`Ctrl+O`) or **Import / Convert Document** | Headings, bulleted and numbered lists with their levels, tables, line breaks, picture descriptions |
+| Word (.docx, .docm) | **File > Open** (`Ctrl+O`) or **Import / Convert Document** | Headings, bulleted and numbered lists with their levels, tables, line breaks, picture descriptions, equations (as LaTeX text) |
 | OpenDocument text (.odt) | **File > Open** or **Import / Convert Document** | Headings, nested lists, tables, line breaks |
 | Excel (.xlsx) | **File > Open** or **Import / Convert Document** | One heading per sheet; each sheet as a table |
 | Excel with macros (.xlsm), OpenDocument spreadsheet (.ods) | **Import / Convert Document** | The same |
@@ -1565,14 +1592,24 @@ you in plain words. The defaults suit almost everyone. The choices are there for
 when they don't.
 
 - **Word document reading engine** (**Settings > Editing**) decides how a
-  `.docx` becomes editable text when you open it. **Auto** (the default) tries
-  MarkItDown first and, when MarkItDown cannot run on this computer, uses
-  QUILL's own Word reader, which keeps headings, lists and tables just the
-  same. **MarkItDown** is fast and
-  reliable: headings, lists and tables come through, but images, comments and
-  fonts do not. **Pandoc** keeps more of the structure, so footnotes and complex
-  tables come through better. It needs Pandoc installed. If Pandoc is missing,
-  this setting quietly acts as Auto, so your file still opens.
+  `.docx` becomes editable text when you open it. **Auto (QUILL's own reader
+  first)** is the default: QUILL's own Word reader reads the file in about a
+  second, keeping headings, numbered and bulleted lists, tables, line breaks,
+  picture descriptions and equations, and MarkItDown is asked only if that
+  reader fails. **MarkItDown first** asks MarkItDown before QUILL's own reader.
+  It keeps the same headings, lists and tables in its own style, but the first
+  Word file you open after starting QUILL waits 10 to 20 seconds while
+  MarkItDown loads; when MarkItDown cannot run, QUILL's own reader steps in.
+  Neither keeps images, comments or fonts. **Pandoc** keeps more of the
+  structure, so footnotes and complex tables come through better. It needs
+  Pandoc installed. If Pandoc is missing, this setting quietly acts as Auto, so
+  your file still opens. This setting is only about Word files: spreadsheets
+  and slide shows are always read by QUILL's own reader first.
+
+  For example: you open a 40-page Word report each morning and want it to
+  appear at once. Leave the setting on **Auto**. If one particular document
+  comes in with a table you think MarkItDown handles better, choose
+  **MarkItDown first**, open it, and set it back afterwards.
 - **Word document saving engine** (**Settings > Editing**) decides how your
   text becomes a `.docx` when you save. **Auto** (the default) uses the native
   writer. **Native** keeps QUILL's formatting codes (fonts, sizes, colors,
@@ -1776,8 +1813,11 @@ Here is how a conversion goes:
    straight away on your computer and open as clean, editable text in a new
    tab. No account, no key, no upload, no cost, and nothing to download: QUILL
    has its own reader for every one of these (see "Office files QUILL reads by
-   itself"). Where the optional MarkItDown converter can run, QUILL asks it
-   first; where it cannot, QUILL's own reader steps in. Either way QUILL says
+   itself"). For Word, Excel, PowerPoint and OpenDocument files QUILL's own
+   reader goes first, and the optional MarkItDown converter is asked only if it
+   cannot read the file; for HTML, EPUB, CSV and Excel 97-2003 (.xls),
+   MarkItDown goes first where it can run, and QUILL's own reader steps in
+   where it cannot. Either way QUILL says
    who read the file and what it found, for example "Opened Budget.xlsx as
    editable text, read by QUILL's own Excel reader. 2 sheets. Nothing was
    uploaded." **Review Last OCR Result...** lists the same facts afterwards.
@@ -10061,10 +10101,14 @@ The list puts the most important first:
 - **Pandoc**: document conversion for Word, ODT, EPUB and RTF.
 - **PDF and Office text extraction** (MarkItDown, pdfplumber and pypdf): an
   optional second reader for Word, PowerPoint, Excel and PDF documents. You do
-  not need it: QUILL reads all of these with its own readers. Where MarkItDown
-  can run, File > Open and Import / Convert Document try it first. In some
-  builds it cannot run at all (it needs a part the installer leaves out), and
-  then QUILL's own readers do the work and nothing asks you to download it.
+  not need it: QUILL reads all of these with its own readers, and for Word,
+  Excel, PowerPoint and OpenDocument files QUILL's own reader goes first, so
+  MarkItDown is asked only when that reader cannot read a file (or when you
+  choose **MarkItDown first** for Word files). It still goes first for Excel
+  97-2003 (.xls) files, which QUILL cannot read by itself without LibreOffice.
+  In some builds it cannot run at all (it needs a part the installer leaves
+  out), and then QUILL's own readers do the work and nothing asks you to
+  download it.
   Scanned or image-only PDFs still need **File > Import > OCR** either way.
 - The **braille translation pack**: liblouis tables and BRF profiles for the
   Translation submenu and for BRF and embossing export.
@@ -13421,8 +13465,12 @@ pages, quality score, which reader each PDF page's text came from, and the
 pages that may read poorly, with the reason for each) is in the **Document
 Intake Report**, and the short version is announced when the file opens. For a
 Word, Excel or PowerPoint file the report also says which reader read it, how
-many sheets or slides it has, which sheet was cut short if one was, and, when
-MarkItDown was tried and could not run, why.
+many sheets or slides it has, which sheet was cut short if one was, and, in
+the rare case QUILL's own reader could not read the file and MarkItDown did,
+why ("QUILL's own reader: not used." followed by the reason). For example, a
+Word file whose only content is a scanned picture opens with "Read by:
+MarkItDown" if MarkItDown found text in it, and the next line says QUILL's own
+reader found no text to read.
 
 #### Shell Integration
 

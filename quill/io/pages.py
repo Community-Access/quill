@@ -306,9 +306,9 @@ def _read_pages_via_libreoffice(path: Path) -> Document:
     """Route B: Convert .pages to DOCX via LibreOffice, then read the DOCX.
 
     Requires LibreOffice (soffice). The DOCX is read by
-    :func:`quill.io.office_text.read_office_text_preferring_markitdown` --
-    MarkItDown when it works, QUILL's own Word reader when it does not
-    (2026-10-16), so this route no longer needs the markitdown package.
+    :func:`quill.io.office_text.read_office_text_preferring_own` -- QUILL's own
+    Word reader first, MarkItDown only when it fails (2026-10-16), so this
+    route no longer needs, or waits for, the markitdown package.
     """
     from quill.core.external_tools import libreoffice_executable
 
@@ -348,10 +348,10 @@ def _read_pages_via_libreoffice(path: Path) -> Document:
         if not docx_path.exists():
             raise RuntimeError("LibreOffice did not produce a DOCX file")
 
-        from quill.io.office_text import OfficeReadError, read_office_text_preferring_markitdown
+        from quill.io.office_text import OfficeReadError, read_office_text_preferring_own
 
         try:
-            found = read_office_text_preferring_markitdown(docx_path)
+            found = read_office_text_preferring_own(docx_path)
         except OfficeReadError as exc:
             raise RuntimeError(exc.sentence) from exc
         text = found.text

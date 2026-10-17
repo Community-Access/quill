@@ -80,6 +80,9 @@ def build_intake_report(document: Document) -> str:
         lines.append(f"Contents: {metadata['units']}")
     if metadata.get("markitdown_failure"):
         lines.append(f"MarkItDown: not used. {metadata['markitdown_failure']}")
+    if metadata.get("own_reader_failure"):
+        # QUILL's own reader runs first (2026-10-16); this is why it stood aside.
+        lines.append(f"QUILL's own reader: not used. {metadata['own_reader_failure']}")
     notes = metadata.get("extraction_notes")
     for note in notes if isinstance(notes, list) else []:
         lines.append(f"Note: {note}")

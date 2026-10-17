@@ -100,7 +100,8 @@ def test_word_keeps_headings_lists_tables_and_breaks(
     assert "\n# Summary\n" in text
     assert "\n## Highlights\n" in text
     assert "- North grew fastest\n- South held steady\n" in text
-    assert "1. Hire two editors\n1. Open the Leeds office\n" in text
+    # Counted 1, 2 in the text itself (2026-10-16), not 1, 1: a listener hears the text.
+    assert "1. Hire two editors\n2. Open the Leeds office\n" in text
     assert "| Region | Total |\n| --- | --- |\n| North | 1,200 |\n" in text
     assert "| South \\| West | 950 |" in text  # a pipe in a cell stays in its cell
     assert "First line of the address\\\nSecond line of the address" in text
@@ -288,7 +289,9 @@ def test_open_announcement_and_intake_report_name_the_reader(
     report = build_intake_report(document)
     assert "Read by: QUILL's own Excel reader" in report
     assert "Contents: 2 sheets" in report
-    assert "MarkItDown: not used." in report and _WHY_PASSED_OVER in report
+    # QUILL's own reader runs first (2026-10-16), so MarkItDown is never tried
+    # and the report has nothing to say about it.
+    assert "MarkItDown" not in report
 
 
 def test_shipped_build_convert_file_names_the_stand_in(

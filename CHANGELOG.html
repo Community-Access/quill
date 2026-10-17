@@ -332,6 +332,77 @@ the QUILL Lite, QUILL Transcribe, QUILL Cast and Quill Radio PRDs;
 references.</li>
 </ul>
 <h3
+id="quills-own-office-readers-first-markitdown-only-as-their-fallback-2026-10-16">QUILL’s
+own Office readers first; MarkItDown only as their fallback
+(2026-10-16)</h3>
+<p>Measured
+(<code>docs/design/2026-10-16-editor-completion-measurements.md</code>):
+a cold <code>.docx</code> open from source took 12.4 s,
+<code>.xlsx</code> 11.1 s and <code>.pptx</code> 11.6 s, almost all of
+it importing MarkItDown. Now 1.24 s, 2.18 s (openpyxl’s import) and 0.34
+s; a warm <code>.docx</code> open went from 846 to 644 ms.</p>
+<ul>
+<li><strong>New
+<code>office_text.read_office_text_preferring_own</code>.</strong> Word,
+Excel, PowerPoint and OpenDocument read with QUILL’s reader first;
+MarkItDown is tried only on <code>OfficeReadError</code> (damaged or no
+text), for a suffix it reads, and never for an OLE container (a
+password-protected OOXML file). A rescue is recorded as
+<code>own_reader_failure</code> and the intake report says “QUILL’s own
+reader: not used.” with the reason; when both fail the user hears
+QUILL’s sentence. <code>.xls</code>, HTML, EPUB and CSV keep the
+MarkItDown-first order.</li>
+<li><strong>Every entry point switched:</strong>
+<code>structured.read_structured_document</code> (File &gt; Open,
+Recent, the shell, the watch folder),
+<code>docconvert.convert_born_digital</code> (Import / Convert),
+<code>lite/open_prepare.read_office_for_open</code> (QUILL Lite), the
+Action Builder’s reference files and <code>.pages</code> Route B. The
+explicit choices keep MarkItDown first:
+<code>docx_read_engine = "markitdown"</code> (relabelled “MarkItDown
+first”, Word only; Auto is now “Auto (QUILL’s own reader first)”, and
+the setting’s description says what each costs) and Convert File’s
+MarkItDown engine. <code>markitdown</code> is never imported on the fast
+path.</li>
+<li><strong>Output compared on <code>tests/corpus/office</code></strong>
+and two gaps closed where MarkItDown was better: numbered lists are
+counted 1, 2, 3 in the text
+(<code>office_word.number_ordered_items</code>, per run and indent
+level, in both Word readers and the ODT reader) instead of
+<code>1.</code> on every item; and Word <strong>equations</strong> are
+kept. python-docx’s <code>paragraph.text</code> skips
+<code>&lt;m:oMath&gt;</code>, so equations vanished silently; new
+<code>quill/io/omml_text.py</code> converts OMML to LaTeX in QUILL’s
+Insert Equation delimiters (<code>\(...\)</code>, <code>$$...$$</code>).
+The python-docx reader also keeps picture descriptions now
+(<code>[Image: ...]</code>), by borrowing
+<code>office_word.paragraph_text</code> for paragraphs that hold a
+picture or equation. Everywhere else QUILL’s output was already as good
+or better (title, table header row, pipes in cells, sheet and slide
+headings, TRUE/FALSE, dates, no <code>NaN</code>, nested slide
+bullets).</li>
+<li><strong>Tests:</strong> new
+<code>tests/unit/io/test_office_reader_order.py</code> (a fresh
+interpreter opens the corpus through <code>read_open_document</code> and
+QUILL Lite’s <code>prepare</code> and asserts <code>markitdown</code>
+and <code>magika</code> are not in <code>sys.modules</code>; every entry
+point with a failing MarkItDown stand-in; the fallback and its
+provenance; the setting; numbering; six equation shapes through both
+Word readers; picture descriptions). Updated
+<code>test_office_corpus.py</code> (numbering; the intake report no
+longer mentions MarkItDown) and <code>test_docconvert.py</code> (its
+MarkItDown-tier test uses an <code>.html</code>).</li>
+<li><code>scripts/bench_editor_completion.py open</code> also times the
+corpus’s <code>.xlsx</code>, <code>.pptx</code> and <code>.odt</code>
+and records whether <code>markitdown</code> was imported.</li>
+<li>Docs: the design note’s new section with before/after numbers and
+the comparison; QUILL user guide (“Office files QUILL reads by itself”,
+“Choosing a conversion engine”, Import / Convert, the optional
+components list, the intake report); QUILL Lite user guide and
+changelog; PRD (“QUILL’s own reader first”); the setting’s
+F1/description text.</li>
+</ul>
+<h3
 id="office-files-import-without-markitdown-todo-p1-4b-2026-10-16">Office
 files import without MarkItDown (todo P1 4b, 2026-10-16)</h3>
 <p>Jeff’s decision: “Give Office files a fallback that needs no

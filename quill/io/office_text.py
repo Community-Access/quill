@@ -21,13 +21,24 @@ test is whether it *worked*:
   (:mod:`quill.io.office_sheets`); PowerPoint and the OpenDocument formats
   through their XML (:mod:`quill.io.office_slides`). The XML readers need the
   standard library and nothing else, so they work in every build.
+* :func:`read_office_text_preferring_own` is what every entry point uses
+  (since 2026-10-16, evening): QUILL's own reader **first** for Word, Excel,
+  PowerPoint and OpenDocument, and MarkItDown only when that reader fails or
+  finds no text. Importing MarkItDown costs 11 to 17 seconds on a cold start
+  from source (pandas, pdfminer, the Magika model), so a Word file that QUILL
+  can read itself must never pay it; the import happens lazily, inside
+  :mod:`quill.io.markitdown_bridge`, only on the fallback.
+  ``docs/design/2026-10-16-editor-completion-measurements.md`` has the numbers.
 * :func:`read_office_text_preferring_markitdown` tries MarkItDown first,
   where it can read the format, and on **any** failure -- an ``ImportError``
   from magika or onnxruntime, an ``OSError`` from a native DLL, MarkItDown's
   own conversion errors, or an empty result -- reads the file with QUILL's
   own reader instead. Why MarkItDown was passed over is kept in
   :attr:`OfficeText.markitdown_failure` for the provenance record; it is
-  never the user's problem.
+  never the user's problem. It is now kept for the formats QUILL has no
+  reader of its own for without LibreOffice (``.xls``), for HTML, EPUB and
+  CSV in Import / Convert, and for the explicit "MarkItDown" choices (the
+  Word reading engine setting, Convert File's engine).
 * The legacy binary formats (``.doc``, ``.xls``, ``.ppt``) have no
   pure-Python reader. With LibreOffice installed QUILL converts a temporary
   copy to the modern format and reads that; without it,
@@ -70,6 +81,7 @@ __all__ = [
     "read_markup_text",
     "read_office_text",
     "read_office_text_preferring_markitdown",
+    "read_office_text_preferring_own",
 ]
 
 WORD_SUFFIXES = frozenset({".docx", ".docm"})
@@ -91,6 +103,9 @@ MARKUP_SUFFIXES = frozenset({".html", ".htm", ".epub", ".csv"})
 #: The formats MarkItDown actually reads. It has no OpenDocument or legacy
 #: Word/PowerPoint reader, so those are never offered to it.
 MARKITDOWN_SUFFIXES = frozenset({".docx", ".pptx", ".xlsx", ".xls"}) | MARKUP_SUFFIXES
+#: The formats QUILL's own reader reads first, with no help from anything
+#: outside the standard library and python-docx/openpyxl (2026-10-16).
+OWN_FIRST_SUFFIXES = WORD_SUFFIXES | SHEET_SUFFIXES | SLIDE_SUFFIXES | OPEN_DOCUMENT_SUFFIXES
 
 ENGINE_MARKITDOWN = "markitdown"
 
@@ -159,6 +174,8 @@ class OfficeText:
     notes: tuple[str, ...] = ()
     #: Why MarkItDown was passed over, when it was tried first ("" otherwise).
     markitdown_failure: str = ""
+    #: Why QUILL's own reader was passed over, when MarkItDown stood in for it.
+    own_reader_failure: str = ""
 
     @property
     def kind(self) -> str:
@@ -198,6 +215,8 @@ class OfficeText:
             found["extraction_notes"] = list(self.notes)
         if self.markitdown_failure:
             found["markitdown_failure"] = self.markitdown_failure
+        if self.own_reader_failure:
+            found["own_reader_failure"] = self.own_reader_failure
         return found
 
 
@@ -400,6 +419,62 @@ def read_office_text_preferring_markitdown(
         return OfficeText(text, f"quill-{kind}", kind, markitdown_failure=reason)
     own = read_office_text(path, legacy_converter=legacy_converter)
     return replace(own, markitdown_failure=reason)
+
+
+def read_office_text_preferring_own(
+    path: Path,
+    *,
+    markitdown: Callable[[Path], str] | None = None,
+    legacy_converter: LegacyConverter | None = None,
+) -> OfficeText:
+    """QUILL's own reader first; MarkItDown only when it fails or finds nothing.
+
+    The default for every entry point (File > Open, Import / Convert, QUILL
+    Lite, intake, the Action Builder). For Word, Excel, PowerPoint and
+    OpenDocument files QUILL's reader runs first and MarkItDown is never
+    imported unless that reader raised :class:`OfficeReadError` (a damaged
+    package, or no text at all) **and** MarkItDown reads the format. A
+    password-protected file is not offered to MarkItDown either: it is an
+    encrypted OLE container that no reader opens, and asking would cost the
+    whole import to hear the same answer. When MarkItDown cannot help, the
+    person hears QUILL's own sentence, not MarkItDown's.
+
+    Every other suffix (``.xls``, ``.doc``, ``.ppt``, HTML, EPUB, CSV) keeps
+    :func:`read_office_text_preferring_markitdown`'s order, which already
+    skips MarkItDown for the formats it cannot read.
+    """
+    path = Path(path)
+    suffix = path.suffix.lower()
+    if suffix not in OWN_FIRST_SUFFIXES:
+        return read_office_text_preferring_markitdown(
+            path, markitdown=markitdown, legacy_converter=legacy_converter
+        )
+    try:
+        return read_office_text(path, legacy_converter=legacy_converter)
+    except OfficeReadError as exc:
+        own_error = exc
+    if suffix not in MARKITDOWN_SUFFIXES or _is_ole_container(path):
+        raise own_error
+    try:
+        text = (markitdown or _default_markitdown)(path)
+    except Exception:  # noqa: BLE001 - QUILL's own sentence is the one to hear
+        raise own_error from None
+    if not text.strip():
+        raise own_error
+    return OfficeText(
+        text.rstrip() + "\n",
+        ENGINE_MARKITDOWN,
+        suffix.lstrip("."),
+        own_reader_failure=own_error.sentence,
+    )
+
+
+def _is_ole_container(path: Path) -> bool:
+    try:
+        with path.open("rb") as handle:
+            return handle.read(8) == _OLE_MAGIC
+    except OSError:
+        return False
 
 
 def markitdown_or_own_reader(path: Path) -> tuple[str, str]:
