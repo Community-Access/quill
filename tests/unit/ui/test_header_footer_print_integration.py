@@ -13,6 +13,7 @@ from quill.core.document import Document
 from quill.core.header_footer import HeaderFooterSpec
 from quill.core.header_footer_store import key_for
 from quill.ui.main_frame import MainFrame
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture(autouse=True)
@@ -22,7 +23,7 @@ def _isolated_data_dir(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

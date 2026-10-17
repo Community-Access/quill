@@ -11,6 +11,8 @@ from pathlib import Path
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.core.window_geometry import (  # noqa: E402
@@ -27,7 +29,7 @@ from quill.ui.window_state import (  # noqa: E402
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

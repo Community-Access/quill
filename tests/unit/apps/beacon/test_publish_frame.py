@@ -10,6 +10,8 @@ import tempfile
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.apps.beacon.model import Beacon, Resource
@@ -19,7 +21,7 @@ from quill.apps.beacon.model import Beacon, Resource
 def frame(monkeypatch):
     data_dir = tempfile.mkdtemp()
     monkeypatch.setenv("QUILLBEACON_DATA", data_dir)
-    app = wx.App(False)
+    app = shared_wx_app()
     from quill.apps.beacon.app import BeaconFrame
 
     f = BeaconFrame()

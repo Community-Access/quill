@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 508.
+Editor commands with default bindings: 510.
 
 ## The QUILL editor
 
@@ -545,9 +545,11 @@ Editor commands with default bindings: 508.
 | Ctrl+Shift+Enter | Trim blank lines | `power.trim_blank_lines` |
 | Ctrl+Shift+F2 | Insert special character | `power.insert_special_character` |
 | Ctrl+Shift+I | Insert image | `power.insert_image` |
+| F | QUILL Quick Nav: Page | `quill.quick_nav.page` |
 | H | QUILL Quick Nav: Heading | `quill.quick_nav.heading` |
 | I | QUILL Quick Nav: List Item | `quill.quick_nav.list_item` |
 | L | QUILL Quick Nav: List | `quill.quick_nav.list` |
+| M | QUILL Quick Nav: Misspelling | `quill.quick_nav.misspelling` |
 | N | QUILL Quick Nav: Inline Note | `quill.quick_nav.inline_note` |
 | P | QUILL Quick Nav: Paragraph | `quill.quick_nav.paragraph` |
 | Q | QUILL Quick Nav: Block Quote | `quill.quick_nav.block_quote` |

@@ -272,6 +272,10 @@ def _merge_span_attrs(base: _Attrs, raw: str) -> _Attrs:
 # --------------------------------------------------------------------------- #
 # Inline parsing with offset tracking
 # --------------------------------------------------------------------------- #
+#: Marker, then whether it makes the run bold, and whether italic.
+_EMPHASIS = (("***", True, True), ("**", True, False), ("*", False, True))
+
+
 def _walk_inline(
     text: str,
     base: int,
@@ -313,32 +317,26 @@ def _walk_inline(
             )
             index = span.end()
             continue
-        if text.startswith("**", index):
-            close = text.find("**", index + 2)
+        # "***" first: read as "**" it was bold "*x" and a stray "*" (2026-10-17).
+        for marker, bold, italic in _EMPHASIS:
+            close = text.find(marker, index + len(marker)) if text.startswith(marker, index) else -1
             if close != -1:
+                inner_start = index + len(marker)
+                emphasised = replace(
+                    current, bold=current.bold or bold, italic=current.italic or italic
+                )
                 _walk_inline(
-                    text[index + 2 : close],
-                    base + index + 2,
-                    replace(current, bold=True),
+                    text[inner_start:close],
+                    base + inner_start,
+                    emphasised,
                     plain_chars,
                     md_index,
                     attrs,
                 )
-                index = close + 2
-                continue
-        if text[index] == "*":
-            close = text.find("*", index + 1)
-            if close != -1:
-                _walk_inline(
-                    text[index + 1 : close],
-                    base + index + 1,
-                    replace(current, italic=True),
-                    plain_chars,
-                    md_index,
-                    attrs,
-                )
-                index = close + 1
-                continue
+                index = close + len(marker)
+                break
+        if close != -1:
+            continue
         plain_chars.append(text[index])
         md_index.append(base + index)
         attrs.append(current)

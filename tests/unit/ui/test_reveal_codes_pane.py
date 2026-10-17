@@ -13,13 +13,14 @@ from types import SimpleNamespace
 import pytest
 
 from quill.ui.reveal_codes_pane import RevealCodesPane
+from tests.wx_session import shared_wx_app
 
 wx = pytest.importorskip("wx")
 
 
 @pytest.fixture
 def app():
-    application = wx.App(False)
+    application = shared_wx_app()
     yield application
     application.Destroy()
 

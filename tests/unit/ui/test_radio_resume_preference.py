@@ -15,6 +15,7 @@ import pytest  # type: ignore[import-not-found]
 
 from quill.apps import radio_preferences, radio_preferences_load
 from quill.core.radio.history import RadioHistory
+from tests.wx_session import patch_call_after
 
 _LABEL = "Interrup&ted recordings at launch:"
 
@@ -236,10 +237,8 @@ def test_preferences_data_loads_after_open_without_overwriting_edits(
 
     monkeypatch.setattr(dialog_module, "PreferencesDialog", _PreferencesDialog)
     monkeypatch.setattr(wx, "GetApp", lambda: object())
-    monkeypatch.setattr(
-        wx,
-        "CallAfter",
-        lambda callback, *args, **kwargs: scheduled.append((callback, args, kwargs)),
+    patch_call_after(
+        monkeypatch, lambda callback, *args, **kwargs: scheduled.append((callback, args, kwargs))
     )
     monkeypatch.setattr(output_routing, "cached_output_devices", lambda: None)
     monkeypatch.setattr(

@@ -11,11 +11,12 @@ import wx
 from quill.core.document import Document
 from quill.core.print_pagination import PrintPreview
 from quill.ui.main_frame import MainFrame
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

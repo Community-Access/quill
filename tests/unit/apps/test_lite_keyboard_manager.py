@@ -20,11 +20,12 @@ from quill.apps.lite_keymap_editor import (
     sort_key,
 )
 from quill.core.lite.keymap import default_keymap
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

@@ -5,12 +5,14 @@ from __future__ import annotations
 import pytest
 import wx
 
+from tests.wx_session import shared_wx_app
+
 NOTES = '<h2>Guests</h2><p>With <a href="https://example.com/jane">Jane</a> at 1:05.</p>'
 
 
 @pytest.fixture
 def wx_app():
-    yield wx.GetApp() or wx.App(False)
+    yield wx.GetApp() or shared_wx_app()
 
 
 def test_the_show_notes_window_is_the_notes_reader_with_send_and_save(wx_app) -> None:

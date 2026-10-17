@@ -6470,6 +6470,10 @@ previous one.</li>
 <li><code>B</code> and <code>Shift+B</code> move by bookmark.</li>
 <li><code>'</code> and <code>Shift+'</code> move by code block.</li>
 <li><code>N</code> and <code>Shift+N</code> move by inline note.</li>
+<li><code>M</code> and <code>Shift+M</code> move by misspelled
+word.</li>
+<li><code>F</code> and <code>Shift+F</code> move by page, in a document
+with page breaks.</li>
 <li><code>P</code> and <code>Shift+P</code> move by paragraph.</li>
 <li><code>S</code> and <code>Shift+S</code> move by sentence.</li>
 <li><code>Tab</code> and <code>Shift+Tab</code> move by block.</li>
@@ -6495,6 +6499,41 @@ default), <em>Line only</em> or <em>Say nothing</em>.</li>
 same page, is on by default. If you turn it off, QUILL builds the cache
 the first time you use Quick Nav.</li>
 </ul>
+<h4 id="moving-by-misspelling-and-by-page">Moving by misspelling and by
+page</h4>
+<p><strong><code>M</code> and <code>Shift+M</code></strong> move to the
+next and previous misspelled word. QUILL selects the word and tells you
+what it is and where: “Misspelled: recieve, line 12”. It uses the same
+spelling check as the Misspellings list in the Quick Nav panel, with
+your own dictionaries, so the key and the panel always agree. With the
+word selected you can type the right spelling straight over it, or press
+<code>Esc</code> to leave Quick Nav and use the spelling commands. At
+the last misspelling, <code>M</code> goes round to the first (unless you
+turned off wrapping in Settings); with none at all you hear “No
+misspelled words in this document.”</p>
+<p><strong><code>F</code> and <code>Shift+F</code></strong> move to the
+next and previous page. Pages here are the page breaks in the text
+itself: a PDF opened in QUILL has one between every page, and so does a
+braille file or a text file with page breaks. (F is for form feed, the
+character that marks a page break; <code>P</code> was already
+Paragraph.) QUILL says “Page 5 of 12”. <code>Shift+F</code> from the
+middle of a page goes to the top of that page first, and from the top of
+a page to the page before. In a document with no page breaks you hear
+“This document has no page breaks.”</p>
+<p>QUILL also tells you the page <strong>once</strong> when the cursor
+crosses a page break by any other means: an arrow key,
+<code>Page Down</code>, a search or a jump. Arrow down past the end of
+page 4 and you hear “Page 5 of 12”; keep arrowing through page 5 and you
+hear nothing more about pages until you reach page 6. Moving with
+<code>F</code> does not make QUILL say the page twice. A document with
+no page breaks never mentions pages at all.</p>
+<p>For example, open a 12-page PDF and press
+<code>Ctrl+Shift+Grave</code> twice to lock Quick Nav. Press
+<code>F</code> four times to reach page 5 and read it with the arrow
+keys. Press <code>M</code> to jump to the first misspelled word after
+the cursor, fix it, and press <code>Esc</code> to leave Quick Nav.</p>
+<p>QUILL Lite has no Quick Nav, so it has neither key; its status bar
+shows the same “Page 5 of 12”.</p>
 <h4 id="how-quick-nav-finds-things">How Quick Nav finds things</h4>
 <p>QUILL builds a list of the places in the document once, and reuses it
 until the text or the kind of document changes. That keeps Quick Nav
@@ -6866,6 +6905,38 @@ around it, so it follows that text as you edit. If that text is deleted,
 the note is kept, not lost: the list shows it last, marked “the text it
 was on is gone”, so you can read it and remove it. A new document keeps
 its notes until you close it; save it and they are kept.</p>
+<h5 id="hearing-which-lines-have-notes">Hearing which lines have
+notes</h5>
+<p>As you arrow through a document, QUILL plays a soft two-tap sound
+when the cursor arrives on a line that has an inline note, private or in
+the file. It plays once as you arrive, and never while you move along
+that same line with the left and right arrows, <code>Home</code>,
+<code>End</code> or <code>Ctrl+Left</code> and <code>Ctrl+Right</code>.
+Move off the line and back, and you hear it again. A note on a selection
+that runs over several lines counts as one place: you hear it as you
+enter, not on every line of it.</p>
+<p>For example, you have a note on the line “Back up the uploads
+folder.” Arrow down: on the line before, nothing; on that line, the tap;
+then press <code>Alt+Shift+H</code> to hear the note itself.</p>
+<p>To change it, open <strong>Settings</strong>, go to the
+<strong>Editing</strong> page and find <strong>When the caret reaches a
+line with an inline note</strong> (the <code>inline_note_line_cue</code>
+setting). The choices are <strong>Play a sound</strong> (the default),
+<strong>Say “note”</strong>, and <strong>Nothing</strong>. A few things
+to know:</p>
+<ul>
+<li>With the sound chosen, a braille display also shows the word “note”,
+because a sound does not reach somebody reading in braille without
+speech. With the word chosen, your screen reader’s braille shows it
+already.</li>
+<li>If your sound pack has no sound for this, QUILL says “note” instead,
+so the setting never ends up silent by accident. You can change or
+switch off the sound itself in <strong>Sound Scheme</strong>, where it
+is listed as “Arrived on a line with an inline note”.</li>
+<li><strong>Next Inline Note</strong> and <strong>Previous Inline
+Note</strong> read you the note itself, so arriving with them plays no
+tap on top.</li>
+</ul>
 <h5 id="private-notes-and-notes-in-the-file">Private notes and notes in
 the file</h5>
 <p>Normally a note is private. It is kept in QUILL’s own settings
@@ -10692,7 +10763,12 @@ and Phrases…</strong> in Dictation Settings opens your
 <code>dictation.md</code>, the same file Locked Dictation reads.
 <strong>Vocabulary</strong> entries correct near misses to your
 spelling. <strong>Replacements</strong> (<code>say =&gt; write</code>,
-with <code>\n</code> for a new line) are spoken phrases of your own.</p>
+with <code>\n</code> for a new line) are spoken phrases of your own. In
+that file <code>\t</code> is a tab and <code>\\</code> is one backslash,
+so a phrase that writes the folder <code>C:\new</code> is saved as
+<code>my folder =&gt; C:\\new</code>. My Words and Phrases writes it
+that way for you; it matters only when you edit the file by hand. A
+single backslash before any other letter is kept as you typed it.</p>
 <h5 id="dictation-settings-altshiftf6">Dictation Settings
 (Alt+Shift+F6)</h5>
 <p><strong>Dictation Settings – Alt+Shift+F6</strong> (press
@@ -13719,6 +13795,34 @@ that brings no answer is <strong>not counted</strong>: if it was too
 long, if there was no connection, if the service had a problem, or if
 you had already reached a limit, nothing is used. Opening Usage or About
 never uses anything.</p>
+<h4 id="when-the-ai-service-is-busy">When the AI service is busy</h4>
+<p>Every AI service has busy moments: too many people at once, a server
+restarting, a request that took too long. QUILL now handles them the
+same way on the free AI, your own OpenAI or Google Gemini key, and a
+ChatGPT plan:</p>
+<ul>
+<li>It <strong>tries the request up to three times</strong>, one second
+apart and then two, when the service answers that it is busy,
+overloaded, timed out or asked to slow down (the HTTP answers 408, 409,
+429, 500, 502, 503 and 504).</li>
+<li>When the service says how long to wait, QUILL waits that long
+instead, up to 20 seconds. If it asks for longer, QUILL tells you now
+rather than leave you listening to silence.</li>
+<li>It <strong>never sends a request twice when the service says not
+to</strong>, because a second copy might be counted, or charged, twice.
+Your free AI allowance being used up, or your ChatGPT plan’s usage, is
+said at once too: trying again cannot change it.</li>
+<li><strong>You only hear the end of it.</strong> While QUILL is trying
+again you hear nothing new; if the last try fails, you hear that one
+failure, in the same words as before. If a try succeeds, you just get
+your answer.</li>
+<li>A streamed answer that has already started to arrive is never
+started again, so you never hear the beginning twice.</li>
+</ul>
+<p>For example, you press Summarize at a busy moment. The first try is
+answered “the service is busy”, QUILL waits a second and tries again,
+and the answer arrives. All you notice is that it took a second
+longer.</p>
 <h4 id="when-you-reach-a-limit">When you reach a limit</h4>
 <p>The AI window tells you <strong>which</strong> limit you reached and
 <strong>when it starts again</strong>, and focus moves to that message
@@ -15202,6 +15306,52 @@ passages replaced, QUILL shows it as old and new lines instead, because
 forty word pairs in a row are harder to follow than two whole lines.
 Changes to spacing alone are also shown as lines, never spoken as word
 edits.</p>
+<h4 id="keeping-some-words-of-a-change-and-not-others">Keeping some
+words of a change and not others</h4>
+<p>In prose, one change is often a whole paragraph, and the AI may have
+changed three words in it: one you like, one you do not, and one you are
+unsure about. You no longer have to take all three or none.</p>
+<p>When the change you are on holds two or more word edits, a second
+list appears under <strong>Changes</strong>: <strong>Words in this
+change</strong>. Press <code>Alt+W</code> to go to it, or
+<code>Tab</code> from the Changes list. Each row is one word edit with
+the sentence it is in, so arrowing down the list reads you each edit in
+context. Every row starts checked. Press <code>Space</code> to drop an
+edit: the original words stay there, and the rest of the change still
+goes in. <code>Alt+C</code> takes you back to <strong>Changes</strong>,
+and <code>Alt+D</code> to <strong>Change details</strong>, which shows
+the sentence before and after for the word edit you are on.</p>
+<p>For example, the AI rewrote “The quick brown fox jumps over the lazy
+dog. It was very tired that day.” The Words list says:</p>
+<ul>
+<li>Changed “quick” to “rapid”, in: The rapid brown fox leaps over the
+lazy dog.</li>
+<li>Changed “jumps” to “leaps”, in: The rapid brown fox leaps over the
+lazy dog.</li>
+<li>Changed “very” to “rather”, in: It was rather tired that day.</li>
+</ul>
+<p>Uncheck the first and choose <strong>Apply Checked</strong>. Your
+document now says “The quick brown fox leaps over the lazy dog. It was
+rather tired that day.” You hear “Applied 1 change, 1 of them in part,
+as one undo step”, and <code>Ctrl+Z</code> takes the whole thing
+back.</p>
+<p>A few things to know:</p>
+<ul>
+<li>Drop every word edit in a change and the change itself is unchecked;
+you hear “No word edits left in this change, so it will not be applied”.
+Check one back and the change is checked again. Checking or unchecking a
+whole change in the Changes list checks or unchecks all its word
+edits.</li>
+<li><strong>Accept All</strong> still takes every change and every word
+edit, checked or not, and the result is exactly the AI’s version.
+<strong>Reject All</strong> still changes nothing.</li>
+<li>A change with only one word edit has no Words list, because its own
+check box already says everything. A change shown as whole lines (a
+rewrite, or spacing only) has none either.</li>
+<li>Changes to spacing between the words of a change go in with the
+change whenever any of its word edits does; nobody is asked about a
+space.</li>
+</ul>
 <h4 id="suggest-document-metadata">Suggest Document Metadata</h4>
 <p><strong>Suggest Document Metadata…</strong> (in the command palette,
 and you can give it a key in the Keymap Editor) asks your AI to suggest
@@ -18436,26 +18586,26 @@ speaks your document’s language.</strong> The braille fix is on by
 default in every format; the braille troubleshooting entry in Chapter
 11, Accessibility, speech and braille, has the details.</p>
 <ul>
-<li><strong>Writing Markdown (.md):</strong> <code>Ctrl+B</code> wraps
-your selection in <code>**</code>, and Insert Heading 2 puts
-<code>## </code> at the start of the line.</li>
-<li><strong>Writing HTML (.html):</strong> <code>Ctrl+B</code> wraps in
-<code>&lt;strong&gt;</code>, and headings become real HTML
-headings.</li>
-<li><strong>Writing Rich Text (.rtf):</strong> the document opens
+<li><p><strong>Writing Markdown (.md):</strong> <code>Ctrl+B</code>
+wraps your selection in <code>**</code>, and Insert Heading 2 puts
+<code>## </code> at the start of the line.</p></li>
+<li><p><strong>Writing HTML (.html):</strong> <code>Ctrl+B</code> wraps
+in <code>&lt;strong&gt;</code>, and headings become real HTML
+headings.</p></li>
+<li><p><strong>Writing Rich Text (.rtf):</strong> the document opens
 <em>formatted</em>. <code>Ctrl+B</code> applies real bold, and Insert
 Heading 2 applies a real sized heading. The Format menu’s font, size,
 color, highlight and alignment commands change the actual formatting,
 and <strong>Describe Formatting at Cursor</strong> answers from the live
 document (“Arial, 14 point, bold, centered”). Search, spell check, read
 aloud, bookmarks, notes and braille all work as in any other
-document.</li>
-<li><strong>Writing plain text (.txt):</strong> text stays plain,
+document.</p></li>
+<li><p><strong>Writing plain text (.txt):</strong> text stays plain,
 because that is what a .txt file promises. The first time you press a
 formatting key, QUILL asks once: treat this document as Markdown,
 convert it to Rich Text, or stay plain. Your answer is remembered for
-that document.</li>
-<li><strong>Editing Word documents (.docx):</strong> a .docx can open
+that document.</p></li>
+<li><p><strong>Editing Word documents (.docx):</strong> a .docx can open
 for real rich editing and save back as a genuine Word file. If the file
 holds things QUILL’s editor cannot keep (images, comments, tracked
 changes, headers and footers), QUILL asks first. You can open it for
@@ -18465,7 +18615,32 @@ such a file writes a timestamped backup next to it automatically.
 <strong>Tables are preserved</strong> when you open a Word document for
 rich editing: they appear inline as accessible tables, so you can read
 them and jump to them with single-key table navigation
-(<code>T</code>).</li>
+(<code>T</code>).</p>
+<p>What the three choices look like: a window titled <strong>Open Word
+document</strong> says, for example, “team.docx contains features
+QUILL’s rich editor cannot carry: tables (1), comments. How should it
+open?” The first row, <strong>Open for reading and plain editing
+(recommended)</strong>, is selected, and <strong>Escape</strong> gives
+the same answer. The backup is named after the original with the date
+and time added, for example
+<code>team.backup-20261017-143005.docx</code>, sits beside it, and is
+made once each time you open the file, before your first save; QUILL
+says “Backed up the original to …” on the status bar. Inside the
+document, <strong>Ctrl+Alt+Right</strong>,
+<strong>Ctrl+Alt+Left</strong>, <strong>Ctrl+Alt+Down</strong> and
+<strong>Ctrl+Alt+Up</strong> move cell by cell through a table and say
+where you are (“Row 2 of 3, column 1 of 2: Ann”);
+<strong>Alt+Home</strong> and <strong>Alt+End</strong> go to the ends of
+the row, <strong>Ctrl+Alt+Home</strong> and
+<strong>Ctrl+Alt+End</strong> to the ends of the table.</p>
+<p>QUILL Lite edits Word documents too, since October 2026, with this
+same code: the same question in the same words, the same backup, the
+same table keys. A document saved in one opens the same way in the
+other.</p>
+<p>Fixed on 2026-10-17, in both: saving a Word document a second time no
+longer turns its Heading 5 and Heading 6 paragraphs into bold ordinary
+text, and saving no longer adds a blank paragraph at the end each
+time.</p></li>
 </ul>
 <h4 id="the-document-format-switcher">The Document Format switcher</h4>
 <p><strong>Format &gt; Document Format…</strong> moves the current

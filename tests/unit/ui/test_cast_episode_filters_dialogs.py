@@ -20,6 +20,8 @@ from __future__ import annotations
 
 import pytest  # type: ignore[import-not-found]
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.core.podcasts import episode_filter_maintenance as maintenance  # noqa: E402
@@ -40,7 +42,7 @@ from quill.ui.podcasts.episode_filters_dialog import EpisodeFiltersWindow  # noq
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

@@ -21,6 +21,8 @@ from __future__ import annotations
 
 import pytest  # type: ignore[import-not-found]
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.core.podcasts import settings_catalog, surface_help  # noqa: E402
@@ -42,7 +44,7 @@ from quill.ui.podcasts.show_settings_dialog import (  # noqa: E402
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     # SetHelpText stores nothing at all without a wx.HelpProvider -- the
     # load-bearing detail behind every F1 answer in this family. The app
     # installs one at activation; a headless test has to do it itself, and

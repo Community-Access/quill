@@ -25,6 +25,7 @@ import pytest
 
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow, QueueItem
 from quill.core.podcasts.subscriptions import PodcastLibrary
+from tests.wx_session import shared_wx_app
 
 wx = pytest.importorskip("wx")
 
@@ -33,7 +34,7 @@ from quill.ui.podcasts.play_queue_dialog import PlayQueueDialog  # noqa: E402
 
 @pytest.fixture(scope="module", autouse=True)
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

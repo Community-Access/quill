@@ -12,6 +12,8 @@ import tempfile
 import pytest
 import wx  # type: ignore[import-not-found]  # pytest.importorskip below
 
+from tests.wx_session import shared_wx_app
+
 pytest.importorskip("wx")  # noqa: E402
 
 from pathlib import Path  # noqa: E402
@@ -24,7 +26,7 @@ from quill.ui.simple_open_dialog import (  # noqa: E402
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

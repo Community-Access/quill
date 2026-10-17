@@ -9,6 +9,7 @@ from quill.ui.dialog_contract import (
     set_transition_announcement_policy,
     show_modal_dialog,
 )
+from tests.wx_session import shared_wx_app
 
 
 class _DialogWithIds:
@@ -436,7 +437,7 @@ def test_labels_land_on_this_dialogs_buttons_not_another_windows() -> None:
     import pytest
 
     wx = pytest.importorskip("wx")
-    app = wx.App.Get() or wx.App()
+    app = wx.App.Get() or shared_wx_app()
     frame = wx.Frame(None)
     frame_ok = wx.Button(frame, wx.ID_OK, "frame ok")
     dialog = wx.Dialog(frame)

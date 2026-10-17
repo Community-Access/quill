@@ -21,11 +21,12 @@ from quill.core.radio import browse_visibility as bv
 from quill.core.radio import history as radio_history
 from quill.core.radio.favorites import RadioFavoritesStore
 from quill.ui.radio.browse_tree_dialog import BrowseTreeDialog
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture(scope="module")
 def _app() -> wx.App:
-    return wx.App()
+    return shared_wx_app()
 
 
 def _make(visible_sources: object | None) -> BrowseTreeDialog:

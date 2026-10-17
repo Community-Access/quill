@@ -19,6 +19,7 @@ import pytest
 
 from quill.core.podcasts.onboarding import OnboardingState
 from quill.ui.podcasts.first_run_dialog import maybe_run_first_run
+from tests.wx_session import shared_wx_app
 
 wx = pytest.importorskip("wx")
 
@@ -27,7 +28,7 @@ REPO = Path(__file__).resolve().parents[3]
 
 @pytest.fixture(scope="module", autouse=True)
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

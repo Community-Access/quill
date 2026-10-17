@@ -247,3 +247,29 @@ def test_every_transform_leaves_the_document_marked_modified(lite_window) -> Non
         win.control.SelectAll()
         getattr(win, command)()
         assert win.modified is True, command
+
+
+def test_an_emoji_before_the_selection_is_counted_as_the_control_counts_it(
+    lite_window, wx_app
+) -> None:
+    """A real Rich Edit control counts an emoji as two positions and hands text
+    back as Python characters. The transform sliced ``GetValue()`` with the
+    control's positions, so with an emoji in front it changed the wrong
+    letters, and the new selection stopped one short -- between the halves of
+    the emoji when it held one (todo P3: an emoji lost its first half)."""
+    import wx
+
+    del wx_app
+    frame = wx.Frame(None)
+    try:
+        real = wx.TextCtrl(frame, style=wx.TE_MULTILINE | wx.TE_RICH2)
+        real.SetValue("😀 hi 😀 there")
+        win = lite_window("", cursor=0)
+        win.control = real
+        start = len("😀 ".encode("utf-16-le")) // 2
+        real.SetSelection(start, real.GetLastPosition())
+        win.cmd_upper_case()
+        assert real.GetValue() == "😀 HI 😀 THERE"
+        assert real.GetStringSelection() == "HI 😀 THERE"
+    finally:
+        frame.Destroy()

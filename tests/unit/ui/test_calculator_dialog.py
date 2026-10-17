@@ -4,14 +4,14 @@ numbers/tables, and inserts results. Real wx.App, no modal shown."""
 from __future__ import annotations
 
 import pytest
-import wx
 
 from quill.ui.calculator_dialog import CalculatorDialog
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture
 def app():
-    a = wx.App(False)
+    a = shared_wx_app()
     yield a
     a.Destroy()
 

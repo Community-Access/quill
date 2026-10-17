@@ -18,6 +18,8 @@ from pathlib import Path
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.core.sound_scheme import SchemeDraft  # noqa: E402
@@ -27,7 +29,7 @@ from quill.ui.sound_scheme_dialog import SoundSchemeDialog, known_events  # noqa
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

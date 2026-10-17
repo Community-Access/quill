@@ -419,7 +419,7 @@ class DocumentSelectionMixin:
         if end <= start:
             self._announce("Select something to review first")
             return
-        text = self.control.GetValue()[start:end]
+        text = self.control.GetRange(start, end)
         show_text_window(self, "Review Buffer", text)
         self.control.SetFocus()
         words = len(text.split())

@@ -6,12 +6,13 @@ import copy
 import threading
 
 import pytest
-import wx
+
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture
 def app():
-    instance = wx.App(False)
+    instance = shared_wx_app()
     yield instance
     instance.Destroy()
 

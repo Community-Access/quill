@@ -16,6 +16,7 @@ from quill.apps.lite_window_dictation import dictation_cell
 from quill.core.windows_dictation import RecognizedPhrase, words_from_text
 from quill.ui import windows_dictation_commands as shared
 from quill.ui import windows_dictation_hold as hold_module
+from tests.wx_session import patch_call_after
 
 
 class FakeRecognizer:
@@ -137,7 +138,7 @@ def test_the_words_heard_so_far_show_in_the_status_cell(window, made, keyboard):
 
 
 def test_talking_to_the_ai_sends_at_the_pause(window, made, keyboard, monkeypatch):
-    monkeypatch.setattr(wx, "CallAfter", lambda function, *args: function(*args))
+    patch_call_after(monkeypatch, lambda function, *args: function(*args))
     box = type(window.control)("")  # the fixture's own control, as the AI message box
     sent: list[str] = []
     box._quill_dictation_profile = "ai"

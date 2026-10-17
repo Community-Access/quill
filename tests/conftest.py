@@ -1089,3 +1089,30 @@ def isolated_profile(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Path:
     monkeypatch.setenv("USERPROFILE", str(home))
     monkeypatch.setenv("HOME", str(home))
     return home
+
+
+@pytest.fixture
+def wx_session_app() -> Any:
+    """The test process's one live ``wx.App`` (``tests/wx_session.py``).
+
+    Use this, or call ``shared_wx_app()``, instead of building a ``wx.App``:
+    ``tests/unit/test_wx_test_hygiene.py`` fails a test file that makes its own.
+    """
+    from tests.wx_session import shared_wx_app
+
+    return shared_wx_app()
+
+
+@pytest.fixture
+def wx_call_after(monkeypatch: pytest.MonkeyPatch) -> Callable[..., Any]:
+    """Patch ``wx.CallAfter`` for this test only; see ``tests/wx_session.py``.
+
+    ``wx_call_after()`` runs callbacks inline; ``wx_call_after(queue.append)``
+    hands each one to *queue.append*. Both return the capture of every call.
+    """
+    from tests.wx_session import patch_call_after
+
+    def install(replacement: Callable[..., Any] | None = None) -> Any:
+        return patch_call_after(monkeypatch, replacement)
+
+    return install

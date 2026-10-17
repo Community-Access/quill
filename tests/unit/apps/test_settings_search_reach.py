@@ -7,12 +7,14 @@ from types import SimpleNamespace
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 
 @pytest.fixture(scope="module")
 def app():
-    application = wx.App()
+    application = shared_wx_app()
     yield application
     application.Destroy()
 

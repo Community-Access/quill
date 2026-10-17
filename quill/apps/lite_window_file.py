@@ -28,9 +28,10 @@ from pathlib import Path
 
 import wx
 
+from quill.apps.lite_window_word import DocumentWordMixin, open_mode_for
 from quill.core.lite import APP_NAME
 from quill.core.lite import recovery as recovery_mod
-from quill.core.lite.filetypes import is_rich_path, is_word_path, word_save_refusal
+from quill.core.lite.filetypes import is_word_path, word_save_refusal
 from quill.core.lite.open_prepare import PreparedDocument
 from quill.core.lite.open_prepare import prepare as prepare_document
 from quill.core.lite.textfile import (
@@ -53,7 +54,7 @@ __all__ = ["DocumentFileMixin"]
 _TMP_SUFFIX = ".quilllite-tmp"
 
 
-class DocumentFileMixin:
+class DocumentFileMixin(DocumentWordMixin):
     """Load, save, and the autosave copy. Composed onto ``DocumentFrame``."""
 
     # ------------------------------------------------------------------ #
@@ -103,7 +104,7 @@ class DocumentFileMixin:
             # the commit is where a password or OCR gets asked (lite_window_pdf).
             self.begin_background_load(path)
             return True
-        mode = RICH if is_rich_path(path.name) else PLAIN
+        mode = open_mode_for(self, path)  # a .docx opens rich when it can (2026-10-17)
         try:
             self._check_mode_available(mode)
             prepared = prepare_document(path, mode)
@@ -124,6 +125,7 @@ class DocumentFileMixin:
         """
         if prepared.pdf is not None and not self.pdf_ready_to_commit(path, prepared.pdf):
             return False
+        path, prepared = self.settle_word_open(path, prepared)  # lite_window_word
         self._loading = True
         try:
             if prepared.mode == RICH:
@@ -186,6 +188,7 @@ class DocumentFileMixin:
         if is_read_only(path):
             self._announce(READ_ONLY_NOTICE)
         self.note_pdf_source(prepared.pdf)
+        self.note_word_source(path, prepared)
         return True
 
     def _commit_rich(self, prepared: PreparedDocument) -> None:
@@ -264,14 +267,22 @@ class DocumentFileMixin:
     # Save
     # ------------------------------------------------------------------ #
 
-    def save(self, target: Path | None = None, text: str | None = None) -> bool:
+    def save(
+        self, target: Path | None = None, text: str | None = None, *, background: bool = False
+    ) -> bool:
         """Write the document. Falls through to Save As when it has no name yet.
 
         *text* is what to write instead of the buffer, which is how Save As
         converts a document **at write time** rather than in the window: the
         conversion is applied to the file, and only a successful write is
         allowed to change what is on screen (bad.md F1).
+
+        *background* is Ctrl+S's: a Word document is then written on the worker
+        (lite_window_word). Every other caller -- the close prompt above all --
+        needs the write finished when this returns, and gets it.
         """
+        if self.refuse_while_word_saving():
+            return False
         destination = target if target is not None else self.path
         if destination is None:
             return self.cmd_save_as()
@@ -301,6 +312,8 @@ class DocumentFileMixin:
         # read or wrote the file (2026-10-04); asks Overwrite, Reload or Save As.
         if not self._confirm_unseen_disk_change(destination):
             return False
+        if background and as_rich and self.saves_as_word(destination):
+            return self.begin_word_save(destination)
         try:
             self._write_to(destination, body, as_rich=as_rich)
         except (OSError, RichEditRtfError) as exc:
@@ -318,21 +331,26 @@ class DocumentFileMixin:
         return True
 
     def refuse_word_target(self, destination: Path) -> bool:
-        """A Word name (``.docx`` and its kin): refuse it rather than write text there.
+        """A Word name from a window that cannot write it: refuse rather than write text.
 
-        QUILL Lite has no Word writer and no Word reader, so text written under
-        a Word name is a file Word will not open and QUILL Lite cannot read back
+        A rich window writes a real ``.docx`` (2026-10-17, lite_window_word).
+        Plain text under a Word name, or anything under ``.docm`` and the
+        template names, is a file Word will not open
         (``quill.core.lite.filetypes.WORD_SUFFIXES``). ``True`` when refused.
         """
-        if not is_word_path(destination.name):
+        if not is_word_path(destination.name) or self.saves_as_word(destination):
             return False
         show_message_box(
-            word_save_refusal(destination.name),
+            word_save_refusal(destination.name, switch_key=self._switch_mode_key()),
             "Format not supported",
             wx.OK | wx.ICON_INFORMATION,
             self,
         )
         return True
+
+    def _switch_mode_key(self) -> str:
+        """Switch Document Mode's key as a sentence says it, for the refusal."""
+        return self.spoken_key_for("cmd_switch_document_kind")
 
     def save_quietly(self) -> str | None:
         """The clipboard collector's save: no window, and no sentence of its own.
@@ -350,8 +368,10 @@ class DocumentFileMixin:
 
         if self.path is None or self._pending_suffix:
             return None
-        if is_word_path(Path(self.path).name):
-            return word_save_refusal(Path(self.path).name)
+        if self._word_save_busy:
+            return f"Still saving {self._word_save_busy}"
+        if is_word_path(Path(self.path).name) and not self.saves_as_word(self.path):
+            return word_save_refusal(Path(self.path).name, switch_key=self._switch_mode_key())
         destination = Path(self.path)
         as_rich = self.editor.mode == RICH
         body = self.control.GetValue()
@@ -368,7 +388,9 @@ class DocumentFileMixin:
 
     def _write_to(self, destination: Path, body: str, *, as_rich: bool) -> None:
         """The write itself, shared by Save and the collector's quiet save."""
-        if as_rich:
+        if as_rich and self.saves_as_word(destination):
+            self._write_word(destination)  # through QUILL's Word writer
+        elif as_rich:
             self._write_rtf(destination)
         else:
             write_bytes_atomic(

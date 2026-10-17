@@ -49,6 +49,8 @@ import re
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from tests.unit.ui.test_menu_accelerators import _items  # noqa: E402
@@ -94,7 +96,7 @@ def _mnemonic(title: str) -> str:
 
 @pytest.fixture(scope="module")
 def quill_menu_bar():
-    app = wx.App()
+    app = shared_wx_app()
     from unittest.mock import patch
 
     from quill.ui.dialog_contract import set_transition_announcement_policy

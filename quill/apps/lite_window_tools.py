@@ -41,6 +41,7 @@ from quill.apps.lite_window_backups import DocumentBackupsMixin
 from quill.core import format_ops, line_ops, transforms
 from quill.core.lite import APP_NAME
 from quill.core.selection import word_span
+from quill.core.text_units import native_length
 from quill.core.wrap_ops import hard_wrap
 from quill.ui.atomic_edit import replace_as_one_undo
 from quill.ui.dialog_contract import show_message_box
@@ -88,7 +89,7 @@ class DocumentToolsMixin(DocumentBackupsMixin):
         whole = end <= start
         if whole:
             start, end = 0, self.control.GetLastPosition()
-        text = self.control.GetValue()[start:end]
+        text = self.control.GetRange(start, end)
         if not text:
             self._announce("Nothing to change")
             return
@@ -104,7 +105,7 @@ class DocumentToolsMixin(DocumentBackupsMixin):
             else _difference(text, changed_text, unit=unit)
         )
         replace_as_one_undo(self.control, start, end, changed_text)
-        self.control.SetSelection(start, start + len(changed_text))
+        self.control.SetSelection(start, start + native_length(changed_text))
         self._set_modified(True)
         self._touch_status()
         plural = "" if counted == 1 else "s"
@@ -195,7 +196,7 @@ class DocumentToolsMixin(DocumentBackupsMixin):
             self._announce(f"{word} is already like that")
             return
         replace_as_one_undo(self.control, word_start, word_end, changed)
-        self.control.SetSelection(word_start, word_start + len(changed))
+        self.control.SetSelection(word_start, word_start + native_length(changed))
         self._set_modified(True)
         self._touch_status()
         self._announce(f"Changed to {changed}")

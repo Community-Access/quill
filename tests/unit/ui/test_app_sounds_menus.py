@@ -14,6 +14,8 @@ import re
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 _APPS = [
@@ -41,7 +43,7 @@ def _walk(menu: object, path: str = ""):  # type: ignore[no-untyped-def]
 @pytest.fixture
 def menu_items(quill_data_dir, request):  # type: ignore[no-untyped-def]
     module_name, class_name = request.param
-    app = wx.App()
+    app = shared_wx_app()
     frame_cls = getattr(importlib.import_module(module_name), class_name)
     shell = frame_cls()
     bar = shell.frame.GetMenuBar()

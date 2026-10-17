@@ -27,6 +27,8 @@ from pathlib import Path
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 _APPS = Path(__file__).resolve().parents[3] / "quill" / "apps"
 
 wx = pytest.importorskip("wx")
@@ -34,7 +36,7 @@ wx = pytest.importorskip("wx")
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     del app
 

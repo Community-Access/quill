@@ -9,6 +9,8 @@ from pathlib import Path
 
 import pytest
 
+from tests.wx_session import patch_call_after, shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "core"))
@@ -19,7 +21,7 @@ _KEY = "deepgram-key-0123456789abcdef"
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     # SetHelpText stores nothing without a help provider (CLAUDE.md, F1).
     wx.HelpProvider.Set(wx.SimpleHelpProvider())
     yield app
@@ -94,7 +96,7 @@ def test_test_connection_says_what_the_provider_answered(wx_app, store, monkeypa
 
     wire = install(monkeypatch)
     wire.answer(http_error("https://api.deepgram.com/v1/projects", 401))
-    monkeypatch.setattr(wx, "CallAfter", lambda fn, *args: fn(*args))
+    patch_call_after(monkeypatch, lambda fn, *args: fn(*args))
 
     class _Now:
         def __init__(self, target, **_kw):

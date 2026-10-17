@@ -114,6 +114,9 @@ class _Editor:
     def GetInsertionPoint(self) -> int:  # noqa: N802
         return self.sel[0]
 
+    def GetLastPosition(self) -> int:  # noqa: N802
+        return len(self.text)
+
     def SetInsertionPoint(self, pos: int) -> None:  # noqa: N802
         self.sel = (pos, pos)
 
@@ -178,3 +181,51 @@ def test_quill_writes_a_note_into_the_file(monkeypatch) -> None:
     assert quill.statuses == ["Inline note written into the file."]
     quill.cmd_next_inline_note()
     assert quill.statuses[-1] == "Inline note 1 of 1: check this"
+
+
+def test_quill_cues_a_noted_line_with_its_own_sound_and_braille(monkeypatch) -> None:
+    """QUILL's hooks: the earcon through CueMixin.cue, "note" to braille through
+    the announcement engine, and nothing more while the caret stays on the line."""
+    from quill.core.inline_notes import make_inline_note
+
+    text = "First line.\nSecond line has a note.\nThird.\n"
+    quill = _Quill(text, 0, kind="plain")
+    line = text.index("Second")
+    quill._inline_notes = [make_inline_note("Check.", text, line, line)]
+    quill.settings.inline_note_line_cue = "sound"
+    played: list[str] = []
+    brailled: list[str] = []
+    quill.cue = played.append
+    quill._announcement_engine = type("E", (), {"braille": staticmethod(brailled.append)})()
+    monkeypatch.setattr("quill.ui.sound_manager.has_sound_for", lambda _e: True)
+
+    quill.cue_inline_note_line()
+    quill.editor.SetInsertionPoint(line + 3)
+    quill.cue_inline_note_line()
+    quill.editor.SetInsertionPoint(line + 9)
+    quill.cue_inline_note_line()
+    assert played == ["inline_note_line"]
+    assert brailled == ["note"]
+    assert quill.statuses == [], "a tone, not a sentence"
+
+
+def test_quills_caret_handler_asks_for_the_cue() -> None:
+    """MainFrame._on_editor_caret_activity is where the cue rides in QUILL."""
+    from types import SimpleNamespace
+
+    from quill.ui.main_frame import MainFrame
+
+    asked: list[str] = []
+    quiet = lambda *_a: None  # noqa: E731
+    frame = SimpleNamespace(
+        _schedule_statusbar_refresh=quiet,
+        _maybe_announce_indent=quiet,
+        _maybe_play_indent_tone=quiet,
+        _maybe_announce_format_transition=quiet,
+        announce_structure_at_caret=quiet,
+        _maybe_announce_braille_movement=quiet,
+        cue_inline_note_line=asked.append,
+        _maybe_announce_page_crossing=lambda: asked.append("page"),
+    )
+    MainFrame._on_editor_caret_activity(frame, SimpleNamespace(Skip=quiet))
+    assert asked == ["inline_note_line", "page"]

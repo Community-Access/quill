@@ -2169,8 +2169,15 @@ default — for a low-vision user with no screen reader running.</li>
 <li><strong>Preserving text colour in rich mode.</strong> Colour is
 treated as presentation here, not as document content, which is what
 makes the dark theme safe.</li>
-<li><strong>Word paragraph styles.</strong> Headings are presentational
-— the size-and-bold ladder — exactly as in QUILL’s rich mode.</li>
+<li><strong>Word paragraph styles beyond the shared vocabulary.</strong>
+Revised 2026-10-17: QUILL Lite now edits <code>.docx</code> through
+QUILL’s own Word code (see <em>Word documents and table
+navigation</em>), so Heading 1-6, the list styles and Title, Subtitle,
+Quote and Caption go out as real Word styles. In the editor headings
+stay presentational – the size-and-bold ladder – exactly as in QUILL’s
+rich mode, and every other Word style arrives as a normal paragraph with
+its visible formatting. That is the honest boundary: style sheets,
+custom styles and style editing remain out of scope.</li>
 <li><strong>A portable inventory baseline.</strong>
 <code>portable-inventory.json</code> can only be generated from a real
 build; QUILL Lite adopts one when it first builds on a release machine,
@@ -2486,7 +2493,10 @@ documents; a typed <code>.docx</code>, <code>.docm</code>,
 naming Rich Text (<code>filetypes.word_save_refusal</code>) before
 anything else is asked, on Save As, Save and the collector’s quiet save.
 Before this, the window’s text was written under the Word name. QUILL
-writes <code>.docx</code>; QUILL Lite is behind here, not ahead.</p>
+writes <code>.docx</code>; QUILL Lite is behind here, not ahead.
+<em>Superseded 2026-10-17: a rich window writes <code>.docx</code>
+through QUILL’s writer; see Word documents and table
+navigation.</em></p>
 <h1 id="quill-lite--product-requirements-1">QUILL Lite — Product
 Requirements</h1>
 <p><strong>Version 1.0.0 · released 2026-09-25 · Windows · MIT · part of
@@ -4337,8 +4347,15 @@ default — for a low-vision user with no screen reader running.</li>
 <li><strong>Preserving text colour in rich mode.</strong> Colour is
 treated as presentation here, not as document content, which is what
 makes the dark theme safe.</li>
-<li><strong>Word paragraph styles.</strong> Headings are presentational
-— the size-and-bold ladder — exactly as in QUILL’s rich mode.</li>
+<li><strong>Word paragraph styles beyond the shared vocabulary.</strong>
+Revised 2026-10-17: QUILL Lite now edits <code>.docx</code> through
+QUILL’s own Word code (see <em>Word documents and table
+navigation</em>), so Heading 1-6, the list styles and Title, Subtitle,
+Quote and Caption go out as real Word styles. In the editor headings
+stay presentational – the size-and-bold ladder – exactly as in QUILL’s
+rich mode, and every other Word style arrives as a normal paragraph with
+its visible formatting. That is the honest boundary: style sheets,
+custom styles and style editing remain out of scope.</li>
 <li><strong>A portable inventory baseline.</strong>
 <code>portable-inventory.json</code> can only be generated from a real
 build; QUILL Lite adopts one when it first builds on a release machine,
@@ -4562,7 +4579,10 @@ documents; a typed <code>.docx</code>, <code>.docm</code>,
 naming Rich Text (<code>filetypes.word_save_refusal</code>) before
 anything else is asked, on Save As, Save and the collector’s quiet save.
 Before this, the window’s text was written under the Word name. QUILL
-writes <code>.docx</code>; QUILL Lite is behind here, not ahead.</p>
+writes <code>.docx</code>; QUILL Lite is behind here, not ahead.
+<em>Superseded 2026-10-17: a rich window writes <code>.docx</code>
+through QUILL’s writer; see Word documents and table
+navigation.</em></p>
 <p><strong>Typing a name in a list.</strong> Every
 <code>apply_listbox_activation</code> list (Snippets, Recent Documents,
 the bookmark and heading lists, Recent Clips) has type-ahead from
@@ -4588,6 +4608,127 @@ paragraph; a rich text document’s come from the control. Arrival says
 colour, count and words; the list’s rows are words, colour and
 paragraph, Enter goes there and Escape stays. Not listed: headers,
 footers, footnotes, text boxes, shading.</p>
+<h2 id="word-documents-and-table-navigation-2026-10-17">Word documents
+and table navigation (2026-10-17)</h2>
+<p><strong>One implementation, moved.</strong> QUILL’s wx-free Word
+decisions left <code>quill/ui/main_frame_rich_mode.py</code> for the
+shared <code>quill/core/docx_open.py</code>, and QUILL calls them in the
+same change: the fidelity scan (<code>fidelity_findings</code>, over
+<code>scan_docx_features</code>), the question and its three rows
+(<code>fidelity_question</code>, <code>fidelity_choices</code>,
+<code>choice_for_selection</code>; Cancel is <code>text</code>), the
+one-time backup (<code>backup_path_for</code>,
+<code>backup_original</code>, <code>needs_backup</code>:
+<code>name.backup-YYYYMMDD-HHMMSS.docx</code>, once per session, only
+for a flagged original that exists), read-to-RTF
+(<code>read_docx_as_rtf</code>) and RTF-to-Word
+(<code>rtf_to_docx_bytes</code>, <code>write_docx_from_rtf</code>,
+atomic). The opened sentence is <code>OPENED_RICH_SENTENCE</code> in
+both editors. QUILL’s tests
+(<code>tests/unit/ui/test_rich_mode.py</code>) pass unchanged.</p>
+<p><strong>Open.</strong> <code>.docx</code> only
+(<code>docx_open.RICH_WORD_SUFFIXES</code>), as in QUILL, whose rich
+Word path is also <code>.docx</code> only: a <code>.docm</code> written
+without its macros is a file Word refuses under that name, so
+<code>.docm</code>, <code>.doc</code> and <code>.odt</code> stay
+read-only text. <code>lite_window_word.open_mode_for</code> makes a
+<code>.docx</code> RICH when the control has the TOM and python-docx is
+present; otherwise the 2026-10-16 read-only text path is unchanged.
+<code>open_prepare.prepare_word</code> runs on the worker: scan, RTF,
+and the extracted text only when the scan flagged something (the text
+answer). A rich read that fails opens the text with “Opened NAME as
+extracted text; the rich load failed.” The commit
+(<code>DocumentWordMixin.settle_word_open</code>) asks QUILL’s question
+in a native <code>wx.SingleChoiceDialog</code> through
+<code>show_modal_dialog</code>, row 0 preselected, inline F1 help.</p>
+<p><strong>Save.</strong> <code>saves_as_word(target)</code> is the
+rule: a RICH window and a <code>.docx</code> name. It lifts the Word
+refusal (<code>refuse_word_target</code>), the read-only-source refusals
+(<code>refuse_save_over_source</code>,
+<code>refuse_save_as_target</code>) and the <code>.txt</code> proposal;
+a plain window, and
+<code>.docm</code>/<code>.dotx</code>/<code>.dotm</code> from any
+window, are still refused, now with a sentence that names Switch
+Document Mode’s key for a <code>.docx</code>
+(<code>filetypes.word_save_refusal(name, switch_key=...)</code>). The
+RTF is read with the theme colour off
+(<code>_set_whole_document_colour(None)</code>, restored in
+<code>finally</code>), the guard every rich save has. Save As gained
+“Word document (*.docx)” as <code>SAVE_WILDCARD_RICH</code> row 1
+(<code>SAVE_FILTER_WORD</code>), preselected for a Word document; the
+Open list gained “Word documents (*.docx)”.</p>
+<p><strong>Still saving.</strong> Ctrl+S (<code>cmd_save</code> -&gt;
+<code>save(background=True)</code>) writes a Word document on the app’s
+task manager (<code>begin_word_save</code>,
+<code>safe_to_cancel=False</code>, a <code>UiLifetimeToken</code>
+invalidated by <code>cancel_background_load</code>). While it runs,
+every save path answers “Still saving NAME” and starts nothing:
+<code>save()</code> (so the close prompt waits), Save As, and the
+collector’s quiet save. The close prompt, Save As and the quiet save
+write synchronously, because they need the answer. Text typed during a
+background save leaves the window modified.</p>
+<p><strong>Two shared fixes found by the round trip</strong> (both
+editors): the RTF reader now drops a heading’s bold and ladder size when
+<code>\outlinelevel</code> follows them, the order the Rich Edit control
+writes (Heading 5, 11.5 pt read back as 11, became bold Normal text on
+the second save); and <code>rtf_to_docx_bytes</code> drops the control’s
+trailing NUL and trailing empty paragraphs (each save added one).
+Heading 5 and 6 survive:
+<code>tests/unit/ui/test_word_rich_round_trip.py</code> runs Heading
+1-6, a bold run and a table through the real control three times. QUILL
+Lite already had Heading 5 and 6 commands (Ctrl+Alt+5, Ctrl+Alt+6), so
+nothing was added to its command set for this.</p>
+<p><strong>Table navigation.</strong>
+<code>quill/apps/lite_window_tables.py</code>, over the shared
+<code>quill/core/table_nav.py</code> that QUILL’s
+<code>main_frame_table_nav.py</code> calls: eight handlers on QUILL’s
+chords (family rule 2), parity rows <code>table.*</code>, a
+<strong>Navigate &gt; Table</strong> submenu. Outside a table: “Not in a
+table”. GATE-LITE-COVER:
+<code>tests/unit/apps/test_lite_table_nav.py</code> calls every
+handler.</p>
+<p><strong>Tests.</strong>
+<code>tests/unit/apps/test_lite_word.py</code> (real <code>.docx</code>
+files: open, edit, save, reopen with python-docx; flagged files and each
+answer; Cancel; backup once; copy; theme colour guard including a failed
+save; Save As row; Still saving; typing during a save),
+<code>test_lite_save_as_typed_extensions.py</code>,
+<code>tests/unit/io/test_rtf_heading_styles.py</code>, and the
+real-control round trip.</p>
+<p><strong>Manual checks</strong> are listed, not yet done, in
+<code>docs/qa/screen-reader-checks-2026-10.md</code>.</p>
+<h2
+id="word-level-ai-review-the-ai-retry-ladder-and-the-note-line-cue-2026-10-17">Word-level
+AI review, the AI retry ladder, and the note-line cue (2026-10-17)</h2>
+<p><strong>Review AI Changes, word by word.</strong> QUILL’s window
+(<code>quill/ui/ai_diff_review_dialog.py</code>), so QUILL Lite has what
+QUILL has: for a change with two or more word edits, <strong>Words in
+this change</strong> (Alt+W) lists each with its sentence; Space keeps
+or drops one, and the rest of the change still goes in. Dropping every
+edit drops the change. Accept All takes everything and is exactly the
+AI’s version; Reject All takes nothing; Ctrl+Z takes back the whole
+apply. F1 catalogue entry updated
+(<code>quill/core/lite_surface_help.py</code>).</p>
+<p><strong>The AI tries again when the service is busy.</strong> QUILL’s
+ladder (<code>quill/core/ai/retry_ladder.py</code>) on all three routes
+QUILL Lite uses – the free AI, the user’s own key, a ChatGPT plan: three
+attempts on 408, 409, 429 and 5xx busy answers, one second then two, or
+the service’s <code>Retry-After</code> up to 20 s; never a request the
+service says must not be repeated, a used-up allowance or plan, or a
+stream already under way. Only the last failure is said.</p>
+<p><strong>A cue on arriving at a noted line.</strong> QUILL’s shared
+mixin (<code>InlineNotesCommandsMixin.cue_inline_note_line</code>),
+called from <code>DocumentFrame._on_caret_moved</code>. Setting
+<code>inline_note_line_cue</code>, the same name, default and choices as
+QUILL’s, in Preferences
+(<code>quill/apps/lite_preferences_note_cue.py</code>): Play a sound,
+Say “note”, Nothing. Sound event <code>inline_note_line</code> is in
+QUILL Lite’s roster. Braille gets “note” when the cue is a sound
+(<code>app.voice.braille</code>).</p>
+<p><strong>Not here, and why.</strong> QUILL’s browse-mode keys M
+(misspelling) and F (page) are QUILL-only: QUILL Lite has no browse
+mode. Its status bar’s Page cell already shows “Page N of M” from the
+same <code>quill.core.navigation.page_position</code>.</p>
 </main>
 </body>
 </html>

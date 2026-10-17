@@ -5,6 +5,101 @@
 Testing rebuild: **1.2.0 (build 5)**, following builds 2, 3 and 4; builds 2 and 3 were
 uploaded for testing. The new packages have not been published yet.
 
+- **Edit Word documents** (2026-10-17). A `.docx` now opens to edit, as rich
+  text, and **Ctrl+S** saves it as a real Word document, using QUILL's own Word
+  code, so QUILL and QUILL Lite open, ask, back up and save a Word document the
+  same way. Headings 1 to 6, lists, bold, italic, underline, fonts, colours,
+  highlights, links, alignment and tables come in and go back out; Word's
+  navigation pane still finds your headings. When a document has things a save
+  would drop -- pictures, comments, tracked changes, headers, footers,
+  footnotes, extra sections, table formatting -- QUILL Lite names them first
+  and asks: **open for reading and plain editing** (the default, and what
+  Escape does: the file cannot change), **edit as rich text** (the original is
+  copied to `name.backup-date-time.docx` before your first save), or **edit a
+  copy**. A long save runs in the background; press **Ctrl+S** again before you
+  hear "Saved" and you hear "Still saving report.docx" instead of a second save.
+  **Save As** has a "Word document (*.docx)" row, and any rich text document
+  can be saved as Word. Dark mode never reaches the file. Limits: a `.docm`,
+  `.doc` or `.odt` still opens as text; a plain text window cannot save a
+  `.docx` (switch it to rich text with **Alt+Shift+F** first, and the message
+  says so); if this copy of QUILL Lite has no Word component, a `.docx` opens
+  as text as before. Example: open `agenda.docx`, press **Ctrl+End**, type a
+  line, press **Ctrl+S**, and open it in Word. User guide: "Word documents".
+
+- **Read a table cell by cell** (2026-10-17). **Navigate > Table** has QUILL's
+  eight table keys: **Ctrl+Alt+Right** and **Ctrl+Alt+Left** for the next and
+  previous cell, **Ctrl+Alt+Down** and **Ctrl+Alt+Up** for the cell below and
+  above, **Alt+Home** and **Alt+End** for the first and last cell in the row,
+  and **Ctrl+Alt+Home** and **Ctrl+Alt+End** for the first and last cell of the
+  table. Each says where you landed and what is there: "Row 2 of 4, column 3
+  of 5: Lead". At an edge you hear "No more cells" or "No more rows", and
+  outside a table "Not in a table". It works on Markdown tables and on the
+  tables in a Word document you open. User guide: "Moving through a table".
+
+- **Headings stay headings in Word, save after save** (2026-10-17, also in
+  QUILL). Saving a Word document a second time used to turn its Heading 5s into
+  bold ordinary text, and every save added a blank paragraph at the end. Both
+  are fixed.
+
+- **Keep some words of an AI change and drop others** (2026-10-17). In **Review
+  AI Changes** (the AI Result window's Review Changes), when one change holds
+  two or more word edits -- usual in prose, where a change is a paragraph -- a
+  second list, **Words in this change** (**Alt+W**), shows each edit with the
+  sentence it is in. Press **Space** to drop one and keep your original words
+  there while the rest of the change still goes in. Example: of "quick" to
+  "rapid", "jumps" to "leaps" and "very" to "rather", uncheck the first and
+  choose Apply Checked; you get "The quick brown fox leaps..." and hear
+  "Applied 1 change, 1 of them in part, as one undo step". Dropping every edit
+  drops the change. **Alt+C** goes back to Changes and **Alt+D** to Change
+  details. Accept All and Reject All work as before, and Ctrl+Z takes back the
+  whole apply. User guide: "Keeping some words of a change and not others".
+
+- **The AI tries again when the service is busy** (2026-10-17). On the free AI,
+  your own OpenAI or Gemini key and a ChatGPT plan alike, a busy, overloaded or
+  timed-out answer is tried up to three times, one second apart and then two,
+  or after the wait the service asks for (up to 20 seconds). You hear nothing
+  while it tries, and only the last failure if every try fails. A request the
+  service says must not be repeated, a used-up allowance or plan, and an answer
+  that had already started to arrive are never sent again. User guide: "When
+  the AI service is busy".
+
+- **A sound when you arrow onto a line with an inline note** (2026-10-17). A
+  soft two-tap tone plays as the cursor arrives on a noted line, once, and not
+  while you move along it. **Preferences > When the caret reaches a line with
+  an inline note** chooses Play a sound (the default), Say "note", or Nothing.
+  With the sound, a braille display also shows "note"; a sound pack without
+  this sound says "note" instead. Next and Previous Inline Note, which read the
+  note, play no tap on top. Same setting and same sound as QUILL. User guide:
+  "Hearing which lines have notes".
+
+- **Bold italic Markdown stays bold italic in rich text** (2026-10-17). In a
+  Markdown document, a word written `***like this***` is bold and italic. When
+  the document became rich text, or was copied as formatted text, it came out
+  bold with a stray asterisk ("*like this" in bold, then "*"). It now comes out
+  bold and italic. For example: in a Markdown document type `***urgent***`,
+  then press **Format > Switch Document Mode** (Alt+Shift+F) until you hear
+  rich text; "urgent" is bold italic. Limits: an italic word directly followed
+  by a bold italic one (`*a****b***`) can still merge; put a space or a plain
+  word between them.
+- **A backslash in your own dictation phrases is kept** (2026-10-17). A phrase
+  in My Words and Phrases that writes a folder, such as `C:\new\temp`, used to
+  read back as `C:`, a new line, `ew` and a tab. It is now saved with each
+  backslash doubled and reads back exactly as typed. To fix a phrase that
+  already broke, edit it in My Words and Phrases and type it again.
+
+- **Emoji no longer get cut in half by the Tools menu, Find and the
+  spelling fixes** (2026-10-17). The editor counts an emoji as two positions
+  and QUILL Lite counted it as one, so after an emoji the commands that work
+  on a selection were one place off for every emoji in front of it. For
+  example, with "😀 hi there" and "hi there" selected, **Tools > Change Case > UPPERCASE** (Ctrl+Shift+U)
+  changed the wrong letters and left the selection ending one character short;
+  now it changes "hi there" to "HI THERE" and selects exactly that. The same
+  fix covers the selected text Copy works from, the Find box opening with
+  your selection, Replace checking that the selection is a match, the Review
+  Buffer of a selection, choosing a spelling suggestion from the context menu
+  (Shift+F10) and dictation's line commands. Limits: nothing changes for text
+  without emoji or other characters beyond the first 65,536 in Unicode.
+
 - **Go back over an AI conversation, and save it as a file** (2026-10-17). In
   the AI Conversation window, **Alt+1** reads the newest message aloud,
   **Alt+2** the one before it, and so on to **Alt+0** for the tenth newest,

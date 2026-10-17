@@ -21,11 +21,12 @@ from quill.ui.accessible_names import (
     set_accessible_name,
 )
 from quill.ui.dialog_contract import show_modal_dialog
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

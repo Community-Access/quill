@@ -16,6 +16,7 @@ from types import SimpleNamespace
 import pytest
 
 from quill.apps import lite_updates
+from tests.wx_session import patch_call_after
 
 
 class _Release(SimpleNamespace):
@@ -69,7 +70,7 @@ def updates(monkeypatch):
 
     monkeypatch.setattr(core_updates, "fetch_app_releases", _fetch)
     monkeypatch.setattr(update_download, "thread_submit", _submit)
-    monkeypatch.setattr(lite_updates.wx, "CallAfter", lambda fn, *a, **k: fn(*a, **k))
+    patch_call_after(monkeypatch, lambda fn, *a, **k: fn(*a, **k))
     monkeypatch.setattr(
         lite_updates,
         "show_message_box",
@@ -192,19 +193,24 @@ def test_the_launch_check_still_offers_a_real_update(updates):
 
 
 def test_queued_launch_check_does_not_start_during_shutdown(monkeypatch):
-    scheduled = []
     checked = []
     app = SimpleNamespace(
         shutting_down=False,
         settings=SimpleNamespace(check_updates_on_launch=True, last_update_check=""),
         save_settings=lambda: None,
     )
-    monkeypatch.setattr(lite_updates.wx, "CallAfter", scheduled.append)
+    capture = patch_call_after(monkeypatch, lambda *_a, **_k: None)
     monkeypatch.setattr(
         lite_updates, "check_for_updates", lambda *args, **kwargs: checked.append(args)
     )
     lite_updates.check_at_launch(app)
     app.shutting_down = True
+    # Only the check itself: with a wx.App alive in this worker, launch also
+    # queues _confirm_update_started, and whether one is alive depends on which
+    # files ran first -- so count the check, not every deferred call.
+    scheduled = [
+        fn for fn, _a, _k in capture.calls if fn is not lite_updates._confirm_update_started
+    ]
     assert len(scheduled) == 1
     scheduled[0]()
     assert checked == []

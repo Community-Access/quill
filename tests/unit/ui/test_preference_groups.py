@@ -22,6 +22,8 @@ from __future__ import annotations
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.ui.app_preferences_dialog import (  # noqa: E402
@@ -35,7 +37,7 @@ from quill.ui.app_preferences_dialog import (  # noqa: E402
 
 @pytest.fixture(scope="module", autouse=True)
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

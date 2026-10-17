@@ -21,6 +21,7 @@ from quill.core.speech.chapter_proposals import (
     scan_timeout_seconds,
 )
 from quill.core.speech.chapters import Chapter
+from tests.wx_session import patch_call_after, shared_wx_app
 
 wx = pytest.importorskip("wx")
 
@@ -117,7 +118,7 @@ def workbench(tmp_path: Path, monkeypatch):
             return (-30.0, 0.8)
 
     monkeypatch.setattr(cws, "SilenceParamsDialog", _Params)
-    app = wx.App(False)
+    app = shared_wx_app()
     frame = wx.Frame(None)
     made: list[Any] = []
 
@@ -251,7 +252,7 @@ def test_open_book_in_workbench_takes_studios_keys_and_can_start_proposing(
     monkeypatch.setattr(cwb, "ChapterWorkbenchDialog", _Dialog)
     monkeypatch.setattr("quill.core.speech.book_file.read_book", lambda path: f"book:{path.name}")
     monkeypatch.setattr(cwb, "bind_host_shortcuts", lambda dlg, keys: events.append(sorted(keys)))
-    monkeypatch.setattr(cwb.wx, "CallAfter", lambda fn: fn())
+    patch_call_after(monkeypatch, lambda fn: fn())
     cwb.open_book_in_workbench(
         _Frame(),
         tmp_path / "lecture.mp3",
@@ -272,7 +273,7 @@ def test_open_book_in_workbench_takes_studios_keys_and_can_start_proposing(
 def test_host_shortcuts_become_an_accelerator_table() -> None:
     from quill.ui.audio_studio.chapter_workbench_silence import bind_host_shortcuts
 
-    app = wx.App(False)
+    app = shared_wx_app()
     dialog = wx.Dialog(None)
     try:
         calls: list[str] = []

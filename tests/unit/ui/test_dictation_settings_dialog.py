@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import pytest
 
+from tests.wx_session import patch_call_after, shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
 
 
@@ -64,7 +66,7 @@ def test_test_microphone_says_speak_now_then_what_it_heard(wx_app, monkeypatch) 
 
     monkeypatch.setattr(local, "record_and_hear", lambda _mic, _engine, **_kw: (0.5, "hello there"))
     monkeypatch.setattr(download, "thread_submit", _run_now)
-    monkeypatch.setattr(wx, "CallAfter", lambda fn, *args: fn(*args))
+    patch_call_after(monkeypatch, lambda fn, *args: fn(*args))
     said: list[str] = []
     dialog = WindowsDictationDialog(None, _Settings(), said.append)
     try:
@@ -89,7 +91,7 @@ def test_a_failed_microphone_test_is_a_sentence(wx_app, monkeypatch) -> None:
 
     monkeypatch.setattr(local, "record_and_hear", refuse)
     monkeypatch.setattr(download, "thread_submit", _run_now)
-    monkeypatch.setattr(wx, "CallAfter", lambda fn, *args: fn(*args))
+    patch_call_after(monkeypatch, lambda fn, *args: fn(*args))
     said: list[str] = []
     dialog = WindowsDictationDialog(None, _Settings(), said.append)
     try:

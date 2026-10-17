@@ -14,11 +14,12 @@ from quill.apps.weather import WeatherAppFrame
 from quill.core.weather import locations as loc_store
 from quill.core.weather import monitor
 from quill.core.weather.models import WeatherLocation
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture
 def app():
-    a = wx.App(False)
+    a = shared_wx_app()
     yield a
     a.Destroy()
 

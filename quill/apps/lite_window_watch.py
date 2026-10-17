@@ -195,6 +195,10 @@ class DocumentDiskWatchMixin:
             self.begin_background_load(path)
             return False
         mode = RICH if is_rich_path(path.name) else PLAIN
+        if path.suffix.lower() == ".docx":
+            # A Word document reloads as it is held: rich if it was opened to
+            # edit, text if it was opened for reading (lite_window_word).
+            mode = self.editor.mode
         line = self._caret_line()
         try:
             self._check_mode_available(mode)

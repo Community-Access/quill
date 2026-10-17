@@ -12,11 +12,12 @@ from quill.core.podcasts.subscriptions import PodcastLibrary
 from quill.ui.podcasts.place_content import CastPlaceContentMixin
 from quill.ui.podcasts.places_host import CastPlacesHostMixin
 from quill.ui.podcasts.places_list import PlacesList
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture
 def wx_app():
-    app = wx.GetApp() or wx.App(False)
+    app = wx.GetApp() or shared_wx_app()
     yield app
 
 

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from quill.core.keymap import DEFAULT_KEYMAP
 from quill.ui.app_shell import AppShellFrame
+from tests.wx_session import patch_call_after
 
 
 class _Locks:
@@ -155,9 +156,8 @@ def test_silent_update_check_says_nothing_when_up_to_date(monkeypatch):
     "Checking for updates" or "You are up to date" -- only a genuine
     available update is worth interrupting a launch for."""
     import quill.core.updates as updates
-    import quill.ui.app_shell as app_shell_module
 
-    monkeypatch.setattr(app_shell_module.wx, "CallAfter", lambda fn, *a, **k: fn(*a, **k))
+    patch_call_after(monkeypatch, lambda fn, *a, **k: fn(*a, **k))
     release = type("R", (), {"prerelease": False, "version": "1.0.0"})()
     monkeypatch.setattr(updates, "fetch_releases", lambda url, **_kw: [release])
     announced: list[str] = []
@@ -176,9 +176,8 @@ def test_manual_update_check_shows_dialog_when_up_to_date(monkeypatch):
     must show a real dialog, not just a spoken announcement that's easy to
     miss over other app noise."""
     import quill.core.updates as updates
-    import quill.ui.app_shell as app_shell_module
 
-    monkeypatch.setattr(app_shell_module.wx, "CallAfter", lambda fn, *a, **k: fn(*a, **k))
+    patch_call_after(monkeypatch, lambda fn, *a, **k: fn(*a, **k))
     release = type("R", (), {"prerelease": False, "version": "1.0.0"})()
     monkeypatch.setattr(updates, "fetch_releases", lambda url, **_kw: [release])
     announced: list[str] = []
@@ -195,9 +194,8 @@ def test_manual_update_check_shows_dialog_when_up_to_date(monkeypatch):
 
 def test_silent_update_check_failure_shows_no_dialog(monkeypatch):
     import quill.core.updates as updates
-    import quill.ui.app_shell as app_shell_module
 
-    monkeypatch.setattr(app_shell_module.wx, "CallAfter", lambda fn, *a, **k: fn(*a, **k))
+    patch_call_after(monkeypatch, lambda fn, *a, **k: fn(*a, **k))
 
     def _boom(*_a, **_kw):
         raise RuntimeError("no network")
@@ -217,9 +215,8 @@ def test_silent_update_check_failure_shows_no_dialog(monkeypatch):
 
 def test_manual_update_check_failure_shows_dialog(monkeypatch):
     import quill.core.updates as updates
-    import quill.ui.app_shell as app_shell_module
 
-    monkeypatch.setattr(app_shell_module.wx, "CallAfter", lambda fn, *a, **k: fn(*a, **k))
+    patch_call_after(monkeypatch, lambda fn, *a, **k: fn(*a, **k))
 
     def _boom(*_a, **_kw):
         raise RuntimeError("no network")

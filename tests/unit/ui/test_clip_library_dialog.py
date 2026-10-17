@@ -10,6 +10,7 @@ import wx
 from quill.core.clip_library import ClipLibrary
 from quill.core.fragment import Fragment, FragmentFormat
 from quill.ui.clip_library_dialog import ClipLibraryDialog
+from tests.wx_session import shared_wx_app
 
 #: Serialized onto one worker under ``-n --dist loadgroup``: this file uses
 #: the real Windows clipboard (wx.TheClipboard.Open/GetData), which the whole
@@ -20,7 +21,7 @@ pytestmark = pytest.mark.machine_global
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

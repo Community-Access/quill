@@ -13,6 +13,8 @@ from typing import Any
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.core.app_keymaps import APP_KEYMAPS  # noqa: E402
@@ -22,7 +24,7 @@ from quill.ui.dictate_here_ui import COMMAND_ID, DictateHereMixin  # noqa: E402
 
 @pytest.fixture
 def wx_app() -> Any:
-    app = wx.GetApp() or wx.App()
+    app = wx.GetApp() or shared_wx_app()
     yield app
 
 
@@ -144,7 +146,7 @@ def test_quill_radio_real_menu_bar_carries_it_once_in_a_public_build(
     A public build since QUILL Transcribe's release; it was a developer build
     while Dictate Here showed nowhere else."""
     monkeypatch.delenv("QUILL_DEV_BUILD", raising=False)
-    app = wx.App()
+    app = shared_wx_app()
     from quill.apps.radio import RadioAppFrame
     from quill.ui.dialog_contract import set_transition_announcement_policy
 

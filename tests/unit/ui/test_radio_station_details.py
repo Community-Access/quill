@@ -19,11 +19,12 @@ from quill.core.radio import surface_help
 from quill.core.radio.enrichment import client, pack
 from quill.core.radio.enrichment.facts import StationFacts
 from quill.ui.radio import station_details_dialog as details
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture(scope="module")
 def wx_app():  # noqa: ANN201 - wx types are dynamic
-    app = wx.App()
+    app = shared_wx_app()
     # SetHelpText stores nothing without a provider; the app installs one at
     # activation (ensure_help_provider), so the test does too.
     previous = wx.HelpProvider.Set(wx.SimpleHelpProvider())

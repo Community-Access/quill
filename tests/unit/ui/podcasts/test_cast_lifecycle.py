@@ -4,6 +4,8 @@ from types import SimpleNamespace
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 
@@ -11,7 +13,7 @@ def test_destroying_the_native_frame_invalidates_delivery_and_releases_undo(monk
     from quill.ui import undo_last_ui
     from quill.ui.podcasts.lifecycle import install
 
-    app = wx.GetApp() or wx.App()
+    app = wx.GetApp() or shared_wx_app()
     loop = wx.GUIEventLoop()
     previous = wx.EventLoop.GetActive()
     wx.EventLoop.SetActive(loop)
@@ -43,7 +45,7 @@ def test_destroying_the_native_frame_invalidates_delivery_and_releases_undo(monk
 def test_queued_selection_and_notes_callbacks_do_not_touch_a_destroying_frame(closing) -> None:
     from quill.ui.podcasts.main_panel import CastMainPanelMixin
 
-    app = wx.GetApp() or wx.App()
+    app = wx.GetApp() or shared_wx_app()
     frame = wx.Frame(None)
     touched = []
     event = SimpleNamespace(Skip=lambda: touched.append("skip"))
@@ -69,7 +71,7 @@ def test_queued_selection_and_notes_callbacks_do_not_touch_a_destroying_frame(cl
 def test_programmatic_list_selection_waits_for_the_final_button_and_notes_refresh() -> None:
     from quill.ui.podcasts.main_panel import CastMainPanelMixin
 
-    app = wx.GetApp() or wx.App()
+    app = wx.GetApp() or shared_wx_app()
     frame = wx.Frame(None)
     skipped = []
     host = SimpleNamespace(

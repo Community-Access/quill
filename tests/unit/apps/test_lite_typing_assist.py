@@ -17,6 +17,7 @@ import wx
 
 from quill.core.abbreviations import AbbreviationLibrary
 from quill.core.autocorrect import set_correction, stop_correction
+from tests.wx_session import patch_call_after
 
 
 class _Key:
@@ -46,7 +47,7 @@ class _Key:
 @pytest.fixture(autouse=True)
 def _no_call_after(monkeypatch: pytest.MonkeyPatch) -> None:
     """The abbreviation check is posted after the keystroke; nothing here wants it."""
-    monkeypatch.setattr(wx, "CallAfter", lambda *_a, **_k: None)
+    patch_call_after(monkeypatch, lambda *_a, **_k: None)
 
 
 def _enter(win: Any) -> _Key:

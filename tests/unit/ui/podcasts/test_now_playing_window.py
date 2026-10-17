@@ -15,6 +15,7 @@ import pytest
 import wx
 
 from quill.ui.podcasts.player_controller import PodcastPlaybackState, PodcastPlayerState
+from tests.wx_session import shared_wx_app
 
 NOTES = (
     "<h2>This week</h2>"
@@ -119,7 +120,7 @@ def host(wx_app, tmp_path, monkeypatch):
 
 @pytest.fixture
 def wx_app():
-    app = wx.GetApp() or wx.App(False)
+    app = wx.GetApp() or shared_wx_app()
     yield app
 
 

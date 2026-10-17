@@ -18,6 +18,7 @@ import wx
 from quill.core.abbreviations import AbbreviationLibrary
 from quill.core.windows_dictation import RecognizedPhrase, words_from_text
 from quill.ui import windows_dictation_commands as shared
+from tests.wx_session import patch_call_after
 
 
 class FakeRecognizer:
@@ -143,7 +144,7 @@ def test_show_clips_opens_the_copy_tray(lite_window, recognizers, focused, monke
     win = _window(lite_window, focused)
     opened: list[str] = []
     monkeypatch.setattr(win, "cmd_paste_from_tray", lambda: opened.append("tray"))
-    monkeypatch.setattr(wx, "CallAfter", lambda function, *args: function(*args))
+    patch_call_after(monkeypatch, lambda function, *args: function(*args))
     _start(win, recognizers).hear("show clips")
     assert opened == ["tray"]
 

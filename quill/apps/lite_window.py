@@ -67,6 +67,7 @@ from quill.apps.lite_window_selection import DocumentSelectionMixin
 from quill.apps.lite_window_sources import DocumentSourcesMixin
 from quill.apps.lite_window_spelling import DocumentSpellingMixin
 from quill.apps.lite_window_status import DocumentStatusMixin
+from quill.apps.lite_window_tables import DocumentTableNavMixin
 from quill.apps.lite_window_text_editor import DocumentTextEditorMixin
 from quill.apps.lite_window_theme import DocumentAppearanceMixin
 from quill.apps.lite_window_tools import DocumentToolsMixin
@@ -129,6 +130,7 @@ class DocumentFrame(
     DocumentKeymapMixin,
     DocumentLineMixin,
     DocumentHistoryMixin,
+    DocumentTableNavMixin,
     DocumentMarksMixin,
     DocumentSelectionMixin,
     DocumentClipboardMixin,
@@ -442,6 +444,8 @@ class DocumentFrame(
         # stack can say: no Windows edit control exposes a paragraph style to a
         # screen reader, so if QUILL Lite does not say "Heading 2" nobody does.
         self.announce_structure_at_caret()
+        # And a note on the line it has just entered (quill/core/inline_note_cue.py).
+        self.cue_inline_note_line(SoundEvent.INLINE_NOTE_LINE)
         event.Skip()
 
     def _on_activate(self, event: wx.ActivateEvent) -> None:

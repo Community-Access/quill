@@ -15,6 +15,7 @@ import wx
 
 from quill.core.app_features import AppArea, AppFeatureSettings, AppProfile
 from quill.ui.app_features_dialog import CUSTOM_PROFILE, AppFeaturesDialog, matching_areas
+from tests.wx_session import shared_wx_app
 
 AREAS = (
     AppArea("rich_text", "Rich text and the Format menu", "Bold, italic, headings and bullets."),
@@ -31,7 +32,7 @@ PROFILES = (
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

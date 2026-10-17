@@ -11,11 +11,12 @@ import pytest
 import wx
 
 from quill.ui.radio.add_station_dialog import AddStationDialog
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture(scope="module", autouse=True)
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

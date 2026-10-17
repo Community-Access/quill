@@ -25,6 +25,8 @@ from typing import Any
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.core import control_help, lite_surface_help  # noqa: E402
@@ -35,7 +37,7 @@ from quill.ui import app_context_help, dialog_contract  # noqa: E402
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     app_context_help.ensure_help_provider(wx)
     yield app
     app.Destroy()

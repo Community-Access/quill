@@ -6,6 +6,7 @@ import pytest
 
 from quill.core.audio_studio.library import BookEntry, LibraryState
 from quill.ui.audio_studio.library_tree import LibraryTreeActions, build_library_tree
+from tests.wx_session import shared_wx_app
 
 
 def _view_children(tree, view_name):
@@ -26,9 +27,8 @@ def _view_children(tree, view_name):
 
 @pytest.fixture
 def app():
-    import wx
 
-    a = wx.App(False)
+    a = shared_wx_app()
     yield a
     a.Destroy()
 

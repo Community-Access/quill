@@ -342,15 +342,24 @@ def test_a_reply_that_quotes_the_key_is_scrubbed(providers, monkeypatch):
     ],
 )
 def test_each_failure_is_one_plain_sentence(providers, monkeypatch, status, words):
+    from quill.core.ai import retry_ladder
+
     _host, rec = providers
     _keys(monkeypatch, gemini=GEMINI_KEY)
+    waits: list[float] = []
+    monkeypatch.setattr(retry_ladder.time, "sleep", waits.append)
     rec.gemini_status = status
     with pytest.raises(own_key.OwnKeyError) as caught:
         own_key.ask_with_own_key("summarize", "x", provider="gemini")
     assert words in str(caught.value)
     assert "http://" not in str(caught.value)  # no address read out at a listener
-    if status == 503:
-        assert len(rec.requests) == 2  # one more try, then a sentence
+    if status in (429, 503):
+        # The shared ladder: three tries, one then two seconds apart, and only
+        # the last failure is said.
+        assert len(rec.requests) == 3
+        assert waits == [1.0, 2.0]
+    else:
+        assert len(rec.requests) == 1 and waits == []
 
 
 def test_an_unreachable_gemini_is_a_sentence_not_a_traceback(monkeypatch):

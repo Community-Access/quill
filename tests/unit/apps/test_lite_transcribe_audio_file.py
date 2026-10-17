@@ -32,6 +32,7 @@ from quill.ui import dictation_transcribe_dialog as dialog_module
 from quill.ui import windows_dictation_commands as shared
 from quill.ui import windows_dictation_transcribe as runner
 from quill.ui.dictation_transcribe_dialog import STOP_TRANSCRIBING, TranscribeChoice
+from tests.wx_session import shared_wx_app
 
 _MOONSHINE = FileModel("moonshine", "Moonshine tiny (built in, fastest)", "", ("en",), 1.0)
 _OPENAI = FileModel("openai:gpt-transcribe", "OpenAI gpt-transcribe", "", ("en", "es"), None)
@@ -188,7 +189,7 @@ def test_transcript_is_private_and_opens_only_from_its_notification(transcribe):
 
 def test_notification_writes_run_off_the_ui_thread(transcribe, monkeypatch):
     win, recording, opened = transcribe
-    app = wx.GetApp() or wx.App()
+    app = wx.GetApp() or shared_wx_app()
     manager = TaskManager(max_workers=1)
     win.app.task_manager = manager
     write_threads: list[int] = []

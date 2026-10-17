@@ -1901,7 +1901,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 229 audited sites (229 helped).
+Control coverage: 231 audited sites (231 helped).
 
 ### Every window, and what it is for
 
@@ -2041,7 +2041,7 @@ Control coverage: 229 audited sites (229 helped).
 
 **Replace.** Find text and put something else in its place. Replace changes the match you are on and moves to the next; Replace All changes every one and tells you how many. In a rich text document Replace All asks first, because replaced text takes the formatting of the run it lands in.
 
-**Review AI Changes.** The AI's answer compared with the text it would replace, one change per line, with the words that differ and the sentence they are in. Uncheck a change to keep the original there, then apply; it goes in as one edit Control Z takes back. Nothing changes until you apply.
+**Review AI Changes.** The AI's answer compared with the text it would replace, one change per line, with the words that differ and the sentence they are in. Uncheck a change to keep the original there. When one change holds several word edits, Alt+W goes to their list, where Space keeps or drops each one on its own. Then apply; it goes in as one edit Control Z takes back. Nothing changes until you apply.
 
 **Review Dictation.** Dictated words wait here before they are inserted. Read them, type or keep dictating to change them, ask the AI to change them if AI is on, and hear what changed. Control Enter inserts them where they were going; nothing is written before that.
 
@@ -2165,6 +2165,9 @@ Control coverage: 229 audited sites (229 helped).
 
 - `self.folder`: Where Open and Save As start for a new document. Leave blank to use the Windows Documents folder. A document already saved keeps using its own folder.
 - `self.choose`: Choose an existing folder for new documents.
+#### DocumentWordMixin (`quill/apps/lite_window_word.py`)
+
+- `dialog`: Choose how this Word document opens. Reading and plain editing never changes the file; Save then offers Save As. Edit as Rich Text keeps headings, lists, bold, italic and links, drops what the list names, and backs the original up before the first save. Edit a copy opens a dated copy beside the original, which stays untouched.
 #### (module level) (`quill/apps/lite_window_words.py`)
 
 - `field`: How many words each dictionary holds and where each file is. Read only; arrow through it, and copy any line you need.
@@ -2389,12 +2392,13 @@ Control coverage: 229 audited sites (229 helped).
 - `close`: Close this window. Changes to the list are kept.
 #### DiffReviewDialog (`quill/ui/ai_diff_review_dialog.py`)
 
-- `self.hunk_list`: Every change the AI proposes, one per line. A checked change will be applied; press Space to uncheck one you want to keep as it was. The details below say exactly what changed, word by word.
+- `self.hunk_list`: Every change the AI proposes, one per line. A checked change will be applied; press Space to uncheck one you want to keep as it was. The details below say exactly what changed, word by word. Alt+C comes back here.
+- `self.word_list`: Each word edit inside the change you are on, with the sentence it is in. A checked edit is applied; press Space to drop one and keep the original words there while the rest of the change still goes in. Dropping every edit drops the change. Shown only when a change holds two or more word edits; Alt+W reaches it.
 - `self.details`: The change you are on, line by line: what was there, what would replace it, and for a small change the words that differ and the sentence they are in. Read-only.
 - `self.apply_button`: Applies the change as one edit; Control Z takes it back.
 - `reject_button`: Closes this window and leaves your document unchanged.
-- `self.apply_button`: Applies only the checked changes, as one edit; Control Z takes it back.
-- `accept_all_button`: Applies every change, checked or not, as one edit; Control Z takes it back.
+- `self.apply_button`: Applies only the checked changes, and inside them only the checked word edits, as one edit; Control Z takes it back.
+- `accept_all_button`: Applies every change and every word edit, checked or not, as one edit; Control Z takes it back.
 - `reject_all_button`: Closes this window and leaves your document unchanged.
 #### PromptLibraryDialog (`quill/ui/prompt_library_dialog.py`)
 

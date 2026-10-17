@@ -21,11 +21,12 @@ import pytest
 import wx
 
 from quill.apps.lite_find_dialogs import FindDialog, ReplaceDialog
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

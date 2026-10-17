@@ -344,6 +344,7 @@ Every AI edit that touches the document routes through the accessible "Review AI
 - Every word change carries the **enclosing sentence from both sides** (terminator-bounded, line-break-bounded, whitespace-collapsed) — "changed 'quick' to 'rapid'" is meaningless alone; with the sentence it is reviewable by ear.
 - The hunk list row speaks the word-level summary ('Changed "quick" to "rapid" at line 3.'; 'Changed 2 phrases at line 7.'), and the detail pane leads with each change's verb phrase plus Sentence before / Sentence after, followed by the full removed/added lines, which stay reviewable exactly as before.
 - **Degradation is deliberate:** a hunk falls back to plain line presentation when it has more than 8 word edits or any single "phrase" exceeds 100 characters (a rewrite spoken as forty word pairs is worse than hearing the lines whole), and spacing-only edits are never spoken as word changes.
+- **Word groups are decisions too (2026-10-17).** A changed hunk with two or more word groups can be accepted in part: `DiffReview.apply(accepted, word_choices)` takes, per hunk, the indices of its accepted groups, and `DiffHunk.text_with()` rebuilds the hunk from each group's `old_start`/`old_end`/`replacement`. Spacing-only edits (`spacing_edits`) are applied whenever any group of their hunk is, so accepting every group is byte-identical to the revision and accepting none is the original. The dialog shows **Words in this change** (Alt+W) for the hunk on focus when it has two or more groups; each row is `WordChange.choice_label()` -- the edit and its sentence, because the row is what the reader reads on arrow. Dropping the last group unchecks the hunk, checking one rechecks it, and those two state changes on an unfocused control are the only announcements (GATE-13). Accept All / Reject All unchanged; the single Accept/Reject pair is kept for one hunk with fewer than two groups. One window in both editors.
 - Pure model change: `DiffReviewDialog`, the agent editor host, and the tool gateway all read `describe()`/`detail_lines()`, so every consumer upgraded with no UI changes.
 
 ### 5.1f Profile safety and recovery
@@ -452,6 +453,10 @@ Default Quick Nav keys:
 - `P` / `Shift+P`: next and previous paragraph.
 - `S` / `Shift+S`: next and previous sentence.
 - `Tab` / `Shift+Tab`: next and previous block.
+- `N` / `Shift+N`: next and previous inline note.
+- `M` / `Shift+M`: next and previous misspelled word (2026-10-17): `list_misspellings` with the user's dictionaries, the data the Quick Nav panel lists; the word is selected and said with its line ("Misspelled: recieve, line 12"), because a caret moved by a command is not read by every screen reader.
+- `F` / `Shift+F`: next and previous page over form feeds (2026-10-17; F for form feed, P is Paragraph): "Page 5 of 12". `Shift+F` inside a page goes to its top first. A document without form feeds says so.
+- Page crossing (2026-10-17): any caret movement that crosses a form feed says "Page N of M" **once**; `quill.core.navigation.PageLatch` holds the last page said, records without speaking on a document's first reading, and is settled by `F` so a jump is not followed by a second announcement. Page starts are cached on the document and its length, so an arrow key in a long PDF is not a read of the whole text. QUILL Lite has no browse mode; its status bar's Page cell shows the same count.
 
 Artifact tracking model:
 
@@ -14868,6 +14873,22 @@ that was previously dropped entirely now survives, reads correctly, and is
 reachable by single-key table navigation (`T`). `scan_docx_features` still lists
 tables so the format change is disclosed before a rich edit.
 
+**Shared with QUILL Lite (2026-10-17).** The wx-free half of this path lives in
+`quill/core/docx_open.py`, and `main_frame_rich_mode.py` calls it: the scan
+(`fidelity_findings`), the question, its three rows and the clamped answer
+(`fidelity_question`, `fidelity_choices`, `choice_for_selection`), the backup
+(`backup_path_for`, `backup_original`, `needs_backup`), read-to-RTF
+(`read_docx_as_rtf`) and RTF-to-Word (`rtf_to_docx_bytes`,
+`write_docx_from_rtf`). QUILL Lite edits `.docx` through the same functions
+(its PRD, "Word documents and table navigation"), so neither editor can drift
+from the other. `rtf_to_docx_bytes` drops the rich control's trailing NUL and
+trailing empty paragraphs, which had added a blank paragraph per save; and the
+RTF reader (`quill/io/rtf.py`) drops a heading's bold and ladder size when
+`\outlinelevel` follows them -- the Rich Edit control's own order -- which had
+turned Heading 5 into bold Normal text on a document's second save.
+`tests/unit/ui/test_word_rich_round_trip.py` runs Heading 1-6, a bold run and a
+table through the real control three times.
+
 **EPUB reading.** `core/epub.py` renders each chapter's headings inline (as
 Markdown `#` lines two levels beneath the chapter) so single-key heading
 navigation traverses them, not just chapter boundaries. When a chapter has no
@@ -16117,3 +16138,9 @@ same accessible commands, dialog, and tree QUILL already uses for spelling.
 
 The throughline of all five is one ambition: take features the rest of the
 industry built for the eye, and make QUILL the place where they finally speak.
+
+### 2026-10-17: one retry ladder for AI, and the note-line cue
+
+**One retry ladder for every AI provider (`quill/core/ai/retry_ladder.py`).** The free hosted service (`gateway_client._urlopen_json`), the user's own OpenAI-compatible key (`assistant_ai` chat, streamed chat and model listing, and `ai/vision.py`), the user's own Gemini key (`own_key_gemini.stream_answer`) and a ChatGPT plan (`chatgpt_http`: GETs, and the stream before its first event) all ask `wait_before_retry(status, headers, attempt)`. Three attempts on 408, 409, 429, 500, 502, 503 and 504; linear backoff of 1 s then 2 s; `Retry-After` in seconds or as an HTTP date honoured up to 20 s, a longer request reported at once. **Never twice when the API says no:** `x-should-retry: false`, a hosted reply with `"charged": true` or `"retry": false`, a hosted 429 that is an allowance rather than throttling, and a ChatGPT `subscription_sharing_usage_*` refusal are final, and a sign-in POST and a stream that has delivered an event are never repeated. Retries are silent; only the final failure reaches the caller (GATE-13). Each route keeps its one reviewed egress site, so the network egress audit is unchanged. A failure with no answer at all (a timeout, a local server still starting) climbs the same steps through `wait_after_failure`.
+
+**A cue when the caret enters a line with an inline note (both editors).** `quill/core/inline_note_cue.py`: `noted_spans` (a note covers the lines from its first character's to its last's; overlapping notes merge, neighbouring lines stay separate), `NoteLineCue` (cues on arrival only; `settle` for Next/Previous Inline Note, which say the note; `forget` for another document) and `cue_channels`. Setting `inline_note_line_cue`, shared, `sound` (default) / `speech` / `off`; a sound with no clip speaks "note" (the `action_feedback` rule), and a sound also writes "note" to braille only. Sound event `inline_note_line`, Ink clip `inline_note_line.wav`. Driven from `InlineNotesCommandsMixin.cue_inline_note_line` on every caret move; the noted stretches are rebuilt only when the document, its length or its private notes change.

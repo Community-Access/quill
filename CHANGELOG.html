@@ -245,6 +245,390 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="batch-6-ci-the-shared-test-app-kept-alive-and-a-first-run-inkwell-key-bug-it-exposed-2026-10-17">Batch-6
+CI: the shared test App kept alive, and a first-run Inkwell key bug it
+exposed (2026-10-17)</h3>
+<ul>
+<li><strong>Why CI failed.</strong>
+<code>tests/unit/ui/test_mac_open_file_app.py</code> built a real
+<code>MacOpenFileApp</code> (a <code>wx.App</code> subclass), a second
+App in the process, and destroyed it; <code>shared_wx_app()</code> then
+built a new session App. When the replaced session App’s last Python
+reference went, its C++ destructor cleared wx’s global App pointer even
+though the newer App held it, and the rest of that worker failed with
+“The wx.App object must be created first!” (beacon auto-sync,
+close-confirm dialogs, labelled field, translated speech export).
+<code>tests/wx_session.py</code> now keeps every App it hands out alive
+(<code>_KEEP</code>); the Mac test builds its subclass with
+<code>wx.App.__init__</code> patched out, so it is no longer
+<code>machine_global</code>; and
+<code>tests/unit/test_wx_test_hygiene.py</code> now also flags building
+any <code>wx.App</code> subclass found under <code>quill/</code>.</li>
+<li><strong>App-dependent test.</strong>
+<code>test_queued_launch_check_does_not_start_during_shutdown</code>
+counted every deferred call; with an App alive, launch also queues
+<code>_confirm_update_started</code>. It now counts only the check.</li>
+<li><strong>Product bug: Inkwell registered two retired keys on a first
+run.</strong> With no settings file, <code>load_settings</code> fills in
+the pre-2026-10-05 defaults for Quick Insert (Ctrl+Alt+Shift+K) and
+Expand Word (Ctrl+Alt+Shift+X), and <code>take_system_keys</code> saved
+and registered them instead of moving them to none. The window test
+meant to catch it passed only while every test built its own App. Fixed
+in <code>quill/core/expansion/settings.py</code>, pinned by
+<code>tests/unit/core/test_show_hide_keys.py</code>.</li>
+<li><strong>mypy.</strong> <code>rtf_model._EMPHASIS</code> is now
+<code>(marker, bold, italic)</code> rather than a keyword dict, which
+strict mypy could not check against <code>_Attrs</code>.</li>
+</ul>
+<h3
+id="word-editing-shared-with-quill-lite-two-word-round-trip-fixes-table-navigation-in-quill-lite-2026-10-17">Word
+editing shared with QUILL Lite; two Word round-trip fixes; table
+navigation in QUILL Lite (2026-10-17)</h3>
+<p><strong><code>quill/core/docx_open.py</code> (new, wx-free).</strong>
+QUILL’s Word open and save decisions moved out of
+<code>quill/ui/main_frame_rich_mode.py</code> so QUILL Lite can make
+them too, and QUILL calls them in the same change (CLAUDE.md: QUILL Lite
+may never be ahead of QUILL): <code>fidelity_findings</code>,
+<code>fidelity_question(name, findings, app=)</code>,
+<code>fidelity_choices</code>, <code>choice_for_selection</code>
+(clamped; Cancel is <code>text</code>), <code>backup_path_for</code> /
+<code>backup_original</code> / <code>needs_backup</code>
+(<code>name.backup-YYYYMMDD-HHMMSS.docx</code>, once per session,
+flagged originals only), <code>read_docx_as_rtf</code>,
+<code>rtf_to_docx_bytes</code>, <code>write_docx_from_rtf</code>
+(atomic), and <code>OPENED_RICH_SENTENCE</code>. QUILL’s wording, dialog
+and behaviour are unchanged and
+<code>tests/unit/ui/test_rich_mode.py</code> passes as it was.
+<code>main_frame_rich_mode.py</code> 949 -&gt; 929 lines.</p>
+<p><strong>Two fixes found by running a Word document through the real
+Rich Edit control three times</strong>
+(<code>tests/unit/ui/test_word_rich_round_trip.py</code>), both in
+shared code and so in both editors. (1) The control writes a heading’s
+<code>\b\fsN</code> before its <code>\outlinelevel</code>, and the RTF
+reader recorded them as authored formatting; saved to Word they became
+direct run formatting, and on the second save Heading 5 (11.5 pt, read
+back as 11) dropped off the ladder and came back as bold Normal text.
+<code>quill/io/rtf.py</code> now drops them when
+<code>\outlinelevel</code> arrives
+(<code>test_rtf_heading_styles.py</code>, six new cases). (2) The
+control ends its RTF with a paragraph mark and a NUL, so each save added
+a blank paragraph; <code>rtf_to_docx_bytes</code> strips both.</p>
+<p><strong>QUILL Lite</strong> opens <code>.docx</code> as rich text to
+edit and saves it as Word through these functions
+(<code>quill/apps/lite_window_word.py</code>), asks the same three-way
+question, backs up the same way, takes the theme colour off for the
+save, and says “Still saving NAME” if Save is pressed during a
+background Word save. It also gained QUILL’s eight table keys over the
+shared <code>quill/core/table_nav.py</code>
+(<code>quill/apps/lite_window_tables.py</code>, Navigate &gt; Table).
+<code>.docm</code> stays text in both editors: QUILL’s rich Word path
+was already <code>.docx</code> only.</p>
+<p>Gates: GATE-11 rebaselined
+(<code>_rebaseline_2026_10_17_word_in_lite</code>:
+<code>quill/core/lite/commands.py</code> +13 for the Table rows,
+<code>quill/io/rtf.py</code> +2); dialog inventory, Lite command
+coverage (275 covered, 0 shape-only), the F1 help reference, the family
+chords snapshot and QUILL Lite’s key table regenerated. Docs: QUILL user
+guide (Editing Word documents), QUILL PRD, QUILL Lite user guide (“Word
+documents”, “Moving through a table”), changelog and PRD; manual checks
+in <code>docs/qa/screen-reader-checks-2026-10.md</code>.</p>
+<h3
+id="word-level-ai-review-one-retry-ladder-for-ai-a-note-line-cue-and-browse-mode-m-and-f-2026-10-17">Word-level
+AI review, one retry ladder for AI, a note-line cue, and browse mode M
+and F (2026-10-17)</h3>
+<p><strong>Review AI Changes: accept or reject single word
+groups.</strong> <code>DiffHunk</code> gains <code>spacing_edits</code>
+and <code>text_with(accepted_words)</code>, <code>WordChange</code>
+gains
+<code>old_start</code>/<code>old_end</code>/<code>replacement</code> and
+<code>choice_label()</code>, and
+<code>DiffReview.apply(accepted, word_choices=None)</code> takes
+per-hunk word choices (<code>quill/core/ai/diff_review.py</code>).
+Accepting every group is byte-identical to the revision (spacing-only
+edits ride with the hunk whenever any of its groups is accepted); none
+is the original. <code>DiffReviewDialog</code>
+(<code>quill/ui/ai_diff_review_dialog.py</code>, both editors) adds
+<strong>Words in this change</strong> (Alt+W), a check list shown for a
+hunk with two or more groups, each row the edit plus its sentence;
+access keys Alt+C (Changes) and Alt+D (Change details). Dropping the
+last group unchecks the hunk and checking one rechecks it – the only two
+things announced (GATE-13: a state change on an unfocused control).
+Accept All and Reject All unchanged. Single Accept/Reject now only for
+one hunk with fewer than two groups. Help text updated (F1, and QUILL
+Lite’s catalogue in <code>lite_surface_help.py</code>). Tests:
+<code>tests/unit/core/ai/test_diff_review.py</code>,
+<code>tests/unit/ui/test_hosted_ai_answers_windows.py</code>.</p>
+<p><strong>One retry ladder for every AI provider
+(<code>quill/core/ai/retry_ladder.py</code>).</strong>
+<code>wait_before_retry(status, headers, attempt)</code>: three attempts
+on 408, 409, 429, 500, 502, 503, 504; linear backoff 1 s then 2 s;
+<code>Retry-After</code> (seconds or HTTP date) honoured up to 20 s,
+longer is reported at once; <code>x-should-retry: false</code> or a
+caller’s <code>final=True</code> is never retried.
+<code>wait_after_failure</code> adds the no-answer case (timeout, local
+server starting). Wired into <code>gateway_client._urlopen_json</code>
+(the hosted service; final on a 429 that is an allowance rather than
+throttling, or a body saying <code>"charged": true</code> or
+<code>"retry": false</code>), <code>chatgpt_http</code> (GETs and the
+stream before its first event; never the sign-in POST; final on
+<code>subscription_sharing_usage_*</code>; openers may now return
+<code>(status, body, headers)</code>),
+<code>own_key_gemini.stream_answer</code> (three attempts, was two), and
+<code>assistant_ai</code> (chat, streamed chat, model listing) plus
+<code>ai/vision.py</code> through <code>_chat_retry_wait</code>; the old
+<code>_RETRYABLE_CATEGORIES</code>/<code>_RETRY_BACKOFF_SECONDS</code>
+are gone. The egress sites are unchanged, so
+<code>network_egress_entries.py</code> needs no change. Only the final
+failure is raised. Tests:
+<code>tests/unit/core/ai/test_retry_ladder.py</code> (fakes only;
+<code>time.sleep</code> replaced); the Gemini route test now expects
+three requests.</p>
+<p><strong>A cue when the caret enters a line with an inline note (both
+editors).</strong> <code>quill/core/inline_note_cue.py</code> (wx-free:
+<code>NoteLineCue</code> latch, <code>noted_spans</code>,
+<code>cue_channels</code>), driven from
+<code>InlineNotesCommandsMixin.cue_inline_note_line</code> on every
+caret move (<code>MainFrame._on_editor_caret_activity</code>,
+<code>DocumentFrame._on_caret_moved</code>). New sound event
+<code>inline_note_line</code> with a generated Ink clip
+(<code>scripts/gen_ink_sounds.py --inline-note-line</code>), label
+“Arrived on a line with an inline note”, in QUILL Lite’s roster. New
+shared setting <code>inline_note_line_cue</code> (<code>sound</code>
+default / <code>speech</code> / <code>off</code>) in both editors’
+Settings, a SettingSpec on QUILL’s Editing page and a chooser in QUILL
+Lite’s Preferences
+(<code>quill/apps/lite_preferences_note_cue.py</code>). A sound with no
+clip speaks “note” (the <code>action_feedback</code> rule); with the
+sound, “note” also goes to braille only (new host hook
+<code>_host_braille</code>: QUILL’s announcement engine, QUILL Lite’s
+voice). Next/Previous Inline Note settle the latch so they do not double
+up. Noted stretches are rebuilt only when the document, its length or
+the private notes change. Tests:
+<code>tests/unit/core/test_inline_note_cue.py</code>,
+<code>tests/unit/apps/test_lite_inline_notes.py</code>,
+<code>tests/unit/ui/test_quill_review_tools.py</code>.</p>
+<p><strong>Browse mode: M / Shift+M by misspelling, F / Shift+F by
+page.</strong> <code>quill/ui/main_frame_browse_pages.py</code>
+(<code>BrowsePagesMixin</code>, a base of <code>BrowseModeMixin</code>).
+M uses <code>list_misspellings</code> with the user’s dictionaries – the
+Quick Nav panel’s data – selects the word and says “Misspelled: word,
+line N”. F moves over form feeds (<code>navigation.page_target</code>)
+and says “Page N of M”. Crossing a page break by any caret movement says
+the page once (<code>navigation.PageLatch</code>, settled by F so it is
+not said twice); page starts are cached on the document and its length.
+Keys <code>quill.quick_nav.misspelling</code> (M) and
+<code>quill.quick_nav.page</code> (F) in <code>DEFAULT_KEYMAP</code>,
+the browse dispatch, the cheat sheet and the Keymap Editor; no collision
+(a test asserts no two Quick Nav keys share a letter). QUILL Lite has no
+browse mode, so it has neither. Tests:
+<code>tests/unit/ui/test_browse_pages.py</code>.</p>
+<p>Docs: both user guides, QUILL Lite’s changelog, both PRDs,
+regenerated references, and unticked checks in
+<code>docs/qa/screen-reader-checks-2026-10.md</code>. Module budgets
+rebaselined in <code>module_size_budgets.json</code>
+(<code>_rebaseline_2026_10_17_four_contained_improvements</code>).</p>
+<h3
+id="property-based-tests-for-io-dictation-words-fillers-and-braille-and-the-three-bugs-they-found-todo-p3-2026-10-17">Property-based
+tests for io, dictation words, fillers and braille, and the three bugs
+they found (todo P3; 2026-10-17)</h3>
+<p>Hypothesis was already a dev extra (<code>pyproject.toml</code>,
+<code>hypothesis&gt;=6.168.1</code>, locked at 6.169.0 in
+<code>uv.lock</code>) with the suite profile in
+<code>tests/conftest.py</code>; nothing was added to the
+dependencies.</p>
+<ul>
+<li><strong><code>tests/unit/io/test_format_round_trip_properties.py</code>.</strong>
+Plain text written and read back in UTF-8, UTF-8 with BOM and UTF-16, LF
+and CRLF, is the same text with the same line ending. A rich document of
+headings, bullets and paragraphs with bold and italic runs survives RTF
+and Word with its text, styles and emphasis.</li>
+<li><strong><code>tests/unit/core/test_dictation_text_properties.py</code>.</strong>
+My Words and Phrases saved and reopened gives back the same words,
+phrases and corrections in order, and a file QUILL wrote is rewritten
+byte for byte. Filler removal is idempotent in every language tier,
+removes every filler and keeps every other word in order, and is a no-op
+when switched off.</li>
+<li><strong><code>tests/unit/core/test_braille_properties.py</code>.</strong>
+A BRF page map covers every character once, in order, in all three
+page-break modes, with a form feed as the boundary between two pages,
+and is the same every time; the braille worker’s JSON pipe returns any
+text unchanged; the <code>lou_translate</code> route trims only the
+newline the tool appends; with liblouis present (it is not on this
+machine, so that one skips), translation is deterministic.</li>
+</ul>
+<p>Bugs found and fixed:</p>
+<ul>
+<li><strong>Bold and italic together did not survive RTF.</strong>
+<code>rich_to_markdown</code> writes a run that is both as
+<code>***x***</code>, and both <code>rtf.markdown_to_rtf</code> and
+<code>rtf_model._walk_inline</code> (QUILL’s Markdown model, so the rich
+lens as well) read that as bold <code>*x</code> and a stray
+<code>*</code>. Both now take <code>***</code> first.</li>
+<li><strong>A backslash in a dictation replacement.</strong> The words
+file escaped new lines and tabs but not the backslash, and the reader
+replaced <code>\n</code> everywhere, so a replacement writing
+<code>C:\new</code> came back as <code>C:</code> and a new line. One
+escape now serves both the window and the recogniser
+(<code>dictation_profile.escape_written</code> / <code>_unescape</code>,
+read in one pass); <code>\\</code> is a backslash. A hand-written
+<code>C:\temp</code> still reads as before (a tab).</li>
+<li><strong>Known limit, pinned rather than hidden.</strong> Two
+neighbouring runs with different emphasis (italic, then bold italic)
+share asterisks in Markdown and merge on the way through RTF;
+<code>test_italic_next_to_bold_italic_survives_rtf</code> is a strict
+xfail until the serializer separates them.</li>
+</ul>
+<h3
+id="gate-braille-what-quill-speaks-also-reaches-a-braille-display-todo-p3-2026-10-17">GATE-BRAILLE:
+what QUILL speaks also reaches a braille display (todo P3;
+2026-10-17)</h3>
+<p>Developer-facing. A deafblind user, or anyone reading with speech
+off, gets only what reaches the display; a message that is only spoken
+does not exist for them, and nobody testing by ear notices.
+Announcements route through three layers – the announcement service
+(<code>announce_wiring</code> installs a <code>SpeechSink</code> and a
+<code>BrailleSink</code> together and turns the engine’s inline braille
+off), the engine (<code>prism_bridge.AnnouncementEngine.announce</code>,
+which mirrors to braille itself), and the engine’s fallbacks (Narrator’s
+UI Automation notification, VoiceOver, the system voice) – and a speech
+call could skip braille at any of them.</p>
+<ul>
+<li><strong><code>quill/tools/braille_parity_audit.py</code></strong>,
+in <code>platform_report</code>: an AST walk of <code>quill/</code> for
+every speech primitive (<code>announce(..., force_speech=)</code>,
+<code>speak(..., interrupt=)</code>,
+<code>narrator_announce.announce</code>,
+<code>voiceover_announce</code>, <code>speak_announcement</code>,
+<code>_enqueue_tts</code>). A call is <em>mirrored</em> when braille is
+written on the same path: the same statement or a later one in the same
+body, climbing out of <code>try</code>/<code>with</code> but stopping at
+a branch, loop or function, so the engine’s Narrator and VoiceOver
+fallbacks (which return before its braille line) are not counted while
+the Prism and accessible_output2 paths are.</li>
+<li><strong>Reviewed snapshot</strong>
+<code>tests/unit/tools/fixtures/braille_parity.json</code>: every
+unmirrored call is <code>delegates</code> (QUILL Lite’s
+<code>_announce</code> to <code>ScreenReaderVoice.speak</code>, which
+mirrors; the app shell’s no-service fallback to the engine’s
+still-enabled inline braille) or <code>speech_only</code> with its
+reason (Narrator and VoiceOver braille their own notifications; the
+system voice and macOS self-voice run only with no screen reader, so no
+display is driven). First run: 11 speech calls, 5 mirrored, 6 reviewed,
+none found missing braille. A new unclassified call fails,
+<code>--write</code> adds it as <code>unreviewed</code> (still failing),
+and a row whose call has gone fails as stale.</li>
+<li><strong>Behavioural half</strong>
+(<code>tests/unit/tools/test_braille_parity_audit.py</code>): the real
+<code>build_announcement_service</code> with a fake engine writes every
+spoken routine, warning and error message to braille exactly through the
+sink (the engine’s inline braille switched off), and
+<code>AnnouncementEngine.announce</code> on the Prism path mirrors its
+own speech.</li>
+</ul>
+<h3
+id="tests-one-wxapp-per-process-and-wxcallafter-patched-one-way-todo-p3-flake-risks-2026-10-17">Tests:
+one wx.App per process, and wx.CallAfter patched one way (todo P3 flake
+risks; 2026-10-17)</h3>
+<p>Developer-facing; nothing a user sees changes.</p>
+<ul>
+<li><strong>One App.</strong> 230 test files built their own
+<code>wx.App()</code> (per test, per module or inline) and many
+destroyed it in teardown. wx supports one App per process, so whether a
+file met an App whose C++ half another file had destroyed was decided by
+which files shared an xdist worker. New <code>tests/wx_session.py</code>
+<code>shared_wx_app()</code> returns the one live App and builds it on
+first use; its <code>Destroy()</code> is a no-op, so the old teardown
+lines are harmless and each test still means “I need an App”. Fixture
+form: <code>wx_session_app</code> in <code>tests/conftest.py</code>.
+Every <code>wx.App(...)</code> call under <code>tests/unit</code> was
+rewritten to <code>shared_wx_app()</code> by an AST pass (strings and
+docstrings untouched), 231 sites.</li>
+<li><strong>One way to patch CallAfter.</strong> 33 files did
+<code>monkeypatch.setattr(&lt;module&gt;.wx, "CallAfter", ...)</code>,
+which is the wx module’s attribute and so global, written in a way that
+does not look it.
+<code>patch_call_after(monkeypatch, replacement=None)</code> is now the
+only way: always the real <code>wx</code>, always through the test’s own
+monkeypatch, <code>None</code> meaning run inline, and it returns a
+capture of every call. Fixture form: <code>wx_call_after</code>. 46
+sites rewritten, each with the same replacement it had.</li>
+<li><strong>What the shared App exposed.</strong> Three QUILL Lite AI
+tests (<code>test_lite_ai.py</code>) passed only when no App was alive
+in their worker: with one alive, <code>_show_ai_window</code> defers the
+focus call and the sign-in window through <code>wx.CallAfter</code>, and
+no unit test runs an event loop. They now run deferred work inline
+through <code>wx_call_after()</code>, so their result no longer depends
+on which files ran first.</li>
+<li><strong>Gate.</strong>
+<code>tests/unit/test_wx_test_hygiene.py</code> fails on any test file
+that builds a <code>wx.App</code>/<code>wx.PySimpleApp</code> or patches
+<code>wx.CallAfter</code> by <code>setattr</code>,
+<code>mock.patch("wx.CallAfter")</code> or assignment, outside
+<code>tests/wx_session.py</code>. AST, not grep: it follows
+<code>import wx as w</code> and
+<code>wx = pytest.importorskip("wx")</code>. Its <code>ALLOWED</code>
+table may only shrink: <code>tests/ui_live/conftest.py</code> and two
+<code>tests/integration</code> files that drive real windows were left
+unmigrated rather than changed without being run.</li>
+</ul>
+<h3
+id="emoji-and-other-astral-characters-typed-whole-counted-as-the-control-counts-them-todo-p3-2026-10-17">Emoji
+and other astral characters: typed whole, counted as the control counts
+them (todo P3; 2026-10-17)</h3>
+<p>An emoji dictated by QUILL Transcribe into a plain edit control
+arrived without its first half. Two separate unit mistakes, one in each
+direction, and both now have a test that pins them without a real
+window.</p>
+<ul>
+<li><strong>Typing into other programs</strong>
+(<code>quill/platform/windows/text_injector.py</code>). An astral
+character is two UTF-16 units, and each went out as its own down-up
+<code>KEYEVENTF_UNICODE</code> tap, so a key-up sat between the high and
+low surrogate. The new pure <code>unicode_key_sequence(text)</code>
+sends both key-downs before either key-up (high down, low down, low up,
+high up), so <code>TranslateMessage</code> posts the two
+<code>WM_CHAR</code>s back to back. Separately, <code>_layout_key</code>
+asked <code>VkKeyScanExW</code> about astral characters, whose argument
+is a 16-bit <code>WCHAR</code>: ctypes cut U+20041 (CJK Extension B) to
+U+0041 and the layout answered with the A key, so the ideograph was
+typed as a letter. Astral characters now always take the Unicode route.
+Shared by QUILL Transcribe, Quill Inkwell’s Dictate Anywhere and
+abbreviation expansion. Not reproduced against a live window (the
+overnight rules forbid driving the desktop); the field check is a
+person’s.</li>
+<li><strong>Positions inside our own controls.</strong> A Windows Edit
+or Rich Edit control (so every <code>wx.TextCtrl</code> on wxMSW) counts
+UTF-16 units and hands text back as Python characters; confirmed in
+memory: with <code>"hi \U0001f600 there"</code>,
+<code>GetLastPosition()</code> is 11 and selecting 0 to 4 gives
+<code>'hi \ud83d'</code>, a lone high surrogate. New
+<code>quill/core/text_units.py</code> (<code>utf16_length</code>,
+<code>native_length</code>) is the length to add to a control position.
+Fixed in QUILL Lite: the five <code>GetValue()[start:end]</code> slices
+(the clipboard’s selected text, Find’s opening needle and its Replace
+match check, the Review Buffer, the Tools transforms) now read
+<code>GetRange(start, end)</code>, and the four
+<code>start + len(text)</code> caret/selection ends (context-menu and
+spelling replacements, the Tools transforms) use
+<code>native_length</code>. Fixed in the shared dictation editor port
+(<code>windows_dictation_ports.EditorDocument.line_bounds</code>).</li>
+<li><strong>Left as is, on purpose.</strong>
+<code>ExternalDocument</code> (Transcribe’s port) counts backspaces in
+code points, which is right: Windows edit controls delete a surrogate
+pair with one Backspace. The dictation controller’s correction
+arithmetic (<code>corrections.py</code>, <code>live.py</code>) adds
+Python offsets to port positions; for an editor port that is still off
+by one per emoji before the change, and needs a port-units seam rather
+than a local patch.</li>
+</ul>
+<p>Tests: <code>tests/unit/platform/windows/test_text_injector.py</code>
+(key order, every unit sent once, no astral layout key),
+<code>tests/unit/core/test_text_units.py</code> (lengths, and
+<code>line_bounds</code> against a control that counts UTF-16), and
+<code>tests/unit/apps/test_lite_text_tools.py</code> (a real Rich Edit
+control: Upper Case after an emoji changes the right letters and selects
+all of them).</p>
+<h3
 id="menu-letters-win-over-buttons-the-media-players-arrows-a-key-for-carry-my-place-and-inkwells-review-box-2026-10-17">Menu
 letters win over buttons, the Media Player’s arrows, a key for Carry My
 Place, and Inkwell’s review box (2026-10-17)</h3>

@@ -19,6 +19,7 @@ from typing import Any
 import pytest
 
 from quill.ui.audio import winrt_engine
+from tests.wx_session import shared_wx_app
 
 CORPUS_MP3 = Path(__file__).resolve().parents[2] / "corpus" / "audio" / "chaptered-sample.mp3"
 HEADSET = "wasapi/{ca86f65f-6b12-449a-ae6d-e99036afdb13}"
@@ -86,9 +87,8 @@ needs_engine = pytest.mark.skipif(
 
 @pytest.fixture(scope="module")
 def wx_app():
-    import wx
 
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

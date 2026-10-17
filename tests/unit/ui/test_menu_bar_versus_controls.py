@@ -30,13 +30,14 @@ from typing import Any
 import pytest
 
 from tests.unit.docs._app_menu_bar import real_app_shell
+from tests.wx_session import shared_wx_app
 
 wx = pytest.importorskip("wx")
 
 
 @pytest.fixture
 def wx_app():
-    yield wx.App.Get() or wx.App(False)
+    yield wx.App.Get() or shared_wx_app()
 
 
 _CONTROLS = ("Button", "ToggleButton", "CheckBox", "RadioButton", "StaticText")

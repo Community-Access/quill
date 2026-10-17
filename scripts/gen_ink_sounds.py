@@ -1071,10 +1071,24 @@ def generate_cast_outcomes() -> None:
     write_wav("cast_marked_played.wav", marked, vol=0.40)
 
 
+def generate_inline_note_line() -> None:
+    """The caret has entered a line that carries an inline note (2026-10-17).
+
+    Heard while arrowing through a document, so it is the quietest and
+    shortest kind of cue: two soft bell taps a sixth apart, like a margin mark
+    being touched, with no noise transient to read as a keyboard click. It
+    plays once on arrival and never while the caret moves along the same line.
+    """
+    tap = _concat(_bell(1319, 45), _silence(10), _bell(1047, 70))
+    write_wav("inline_note_line.wav", tap, vol=0.30)
+
+
 if __name__ == "__main__":
     import sys
 
-    if "--cast-outcomes" in sys.argv:
+    if "--inline-note-line" in sys.argv:
+        generate_inline_note_line()
+    elif "--cast-outcomes" in sys.argv:
         generate_cast_outcomes()
     elif "--radio-resumed" in sys.argv:
         generate_radio_resumed()

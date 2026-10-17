@@ -7,13 +7,13 @@ import wx
 
 from quill.core.audio_studio.sleep_timer import SleepTimerSetting
 from quill.ui.audio_studio.sleep_timer_dialog import SleepTimerDialog
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture
 def app():
-    import wx
 
-    a = wx.App(False)
+    a = shared_wx_app()
     yield a
     a.Destroy()
 

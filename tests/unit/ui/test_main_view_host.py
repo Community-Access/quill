@@ -22,6 +22,7 @@ from typing import Any
 import pytest
 
 from quill.core.radio import main_view
+from tests.wx_session import shared_wx_app
 
 wx = pytest.importorskip("wx")
 
@@ -31,7 +32,7 @@ from quill.ui.radio.main_view_host import MainViewHost  # noqa: E402
 
 @pytest.fixture(scope="module", autouse=True)
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

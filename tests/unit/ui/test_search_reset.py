@@ -9,6 +9,8 @@ from __future__ import annotations
 
 import pytest  # type: ignore[import-not-found]
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.ui.search_reset import bind_empty_query_reset  # noqa: E402
@@ -16,7 +18,7 @@ from quill.ui.search_reset import bind_empty_query_reset  # noqa: E402
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

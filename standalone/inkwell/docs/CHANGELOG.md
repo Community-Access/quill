@@ -2,6 +2,36 @@
 
 ## Unreleased
 
+- **A first run takes no system-wide keys** (2026-10-17). Started for the
+  first time on a computer, Inkwell still claimed Ctrl+Alt+Shift+K (Quick
+  Insert) and Ctrl+Alt+Shift+X (Expand Word) everywhere in Windows, although
+  both have been off by default since 5 October and other programs use those
+  keys. Now a first run registers neither. For example, a new Inkwell user
+  pressing Ctrl+Alt+Shift+X in Quill Radio gets Radio's own command, not
+  Inkwell's. To use either key, open the File menu and choose **Quick Insert
+  Key...** or **Expand Word Key...**. A key you chose yourself is never
+  changed.
+
+- **A backslash in your own phrases is kept** (2026-10-17). A phrase in My
+  Words and Phrases that writes a folder or a file name, such as "my folder"
+  writing `C:\new\temp`, was saved in a way that read back as `C:`, a new
+  line and `ew`, then a tab. It is now saved with each backslash doubled
+  (`C:\\new\\temp`) and reads back exactly as you typed it. Phrases you saved
+  before keep working as they did; to fix one that already broke, open My
+  Words and Phrases, choose the phrase, Edit, and type the folder again.
+  Limits: when you edit `dictation.md` by hand, `\n` is still a new line and
+  `\t` a tab, so write `\\` for a backslash before those letters.
+
+- **Emoji arrive whole** (2026-10-17). Dictate Anywhere and abbreviations
+  that expand everywhere now type an emoji (or any character beyond the first
+  65,536 in Unicode) as one character. Before, a plain edit box such as the
+  Run box (Windows+R) could receive it without its first half. For example, an
+  abbreviation "thx" that expands to "Thanks! 🙏" now types the folded hands
+  too, in any program. Some rarer Chinese characters could also be typed as a
+  plain Latin letter; fixed as well. Limits: a program whose font has no
+  picture for an emoji still shows a box, though the character is there and
+  your screen reader reads it by name.
+
 - **Alt+Q opens the QuillVille menu again** (2026-10-17). The **Quick Insert...** button in Inkwell's window also claimed Alt+Q, and Windows gives a letter that a button and a menu share to the button, so Alt+Q opened Quick Insert and the guide's "Alt+Q, then Q to open QUILL" typed a Q into Quick Insert's filter instead. The button is now Alt+I (Quick &Insert), and Alt+Q opens QuillVille, so Alt+Q then Q, R, W, V or T opens QUILL, Quill Radio, Quill Weather, Quill Converter or QUILL Transcribe as section 3 of the guide says. Ctrl+K still opens Quick Insert from the window. Section 9 of the user guide explains the button's letter with an example.
 - **No review-first box where there is nothing to review** (2026-10-17). Inkwell's **More Dictation Settings** (from **Dictation > Dictation Settings...**, Ctrl+Alt+D, then **More Dictation Settings...**, Alt+A) no longer shows **Send dictation to review first** (it was Alt+V). That box sends each phrase to the **Review Dictation** window of QUILL, QUILL Lite and QUILL Transcribe instead of typing it; Inkwell has no such window, so Dictate Anywhere always types straight into the program you are in and the box did nothing here. As with the polishing box hidden earlier today, your choice is kept: if you share dictation settings with the family and turned review first on in QUILL, pressing OK in Inkwell's Dictation Settings leaves it on, whichever style you choose. For example: turn it on in QUILL, choose **Verbatim** in Inkwell and press OK, and QUILL still sends your phrases to Review Dictation. To change it, use one of those three programs. The user guide's "Correcting yourself as you talk" part says so, with that example.
 

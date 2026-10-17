@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import pytest
 
+from tests.wx_session import patch_call_after, shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
 
 
@@ -26,7 +28,7 @@ def dialog_module(monkeypatch):
         on_success(name, work())
 
     monkeypatch.setattr(download, "thread_submit", run_now)
-    monkeypatch.setattr(wx, "CallAfter", lambda fn, *args: fn(*args))
+    patch_call_after(monkeypatch, lambda fn, *args: fn(*args))
     return module
 
 

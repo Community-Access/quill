@@ -21,11 +21,12 @@ from quill.ui.weather import weather_center_dialog as wcd
 from quill.ui.weather.add_location_dialog import AddLocationDialog
 from quill.ui.weather.settings_dialog import WeatherSettingsDialog
 from quill.ui.weather.weather_center_dialog import WeatherCenterDialog
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture
 def app():
-    a = wx.App(False)
+    a = shared_wx_app()
     yield a
     a.Destroy()
 

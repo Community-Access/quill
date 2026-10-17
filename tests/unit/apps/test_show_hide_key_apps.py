@@ -11,6 +11,8 @@ from __future__ import annotations
 import pytest
 import wx
 
+from tests.wx_session import shared_wx_app
+
 #: Serialized onto one worker under ``-n --dist loadgroup``: these tests build
 #: real app windows that register system-wide hotkeys (RegisterHotKey is
 #: per-desktop, not per-process).
@@ -20,7 +22,7 @@ pytestmark = pytest.mark.machine_global
 
 @pytest.fixture
 def app():
-    a = wx.App(False)
+    a = shared_wx_app()
     yield a
     a.Destroy()
 

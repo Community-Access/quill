@@ -389,8 +389,10 @@ PURPOSES.update({
     "Review AI Changes": (
         "The AI's answer compared with the text it would replace, one change per "
         "line, with the words that differ and the sentence they are in. Uncheck a "
-        "change to keep the original there, then apply; it goes in as one edit "
-        "Control Z takes back. Nothing changes until you apply."
+        "change to keep the original there. When one change holds several word "
+        "edits, Alt+W goes to their list, where Space keeps or drops each one on "
+        "its own. Then apply; it goes in as one edit Control Z takes back. "
+        "Nothing changes until you apply."
     ),
     "Use My Own AI Key": (
         "Use AI help on your own OpenAI or Google Gemini account instead of "

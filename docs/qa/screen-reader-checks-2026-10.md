@@ -1556,3 +1556,63 @@ reader. Use a `.docx` with three highlighted passages in different colours
 - [ ] All four with NVDA.
 - [ ] All four with JAWS.
 
+## QUILL Lite Word Documents and Table Navigation (2026-10-17)
+
+Real `.docx` files, made in Word: one plain (headings 1 to 6, a list, bold, a
+link), and one with a table and a comment.
+
+1. QUILL Lite, Ctrl+O, the plain file: "Opening ..." then "Opened as Rich
+   Text. Headings and bold are shown formatted." Ctrl+Alt+H walks Heading 1 to
+   Heading 6 with their levels.
+2. Type a line, Ctrl+S: "Saved ...". Open it in Word: headings are still
+   headings in the navigation pane; nothing grey in dark mode.
+3. The file with a comment: the Open Word document window reads its sentence
+   and the first row; Escape opens it as text, and Ctrl+S offers Save As.
+4. Open it again, choose Edit as Rich Text, Ctrl+S: "Backed up the original to
+   ..." then "Saved ..."; the backup opens in Word with the comment.
+5. A long document: Ctrl+S twice quickly: the second says "Still saving ...".
+6. In the table: Ctrl+Alt+Right, Down, Alt+Home, Ctrl+Alt+End read "Row N of
+   M, column C of D: text"; past the edge, "No more cells"; outside, "Not in a
+   table". Note whether the screen reader takes Ctrl+Alt+arrows first.
+7. QUILL: the same file opens with the same question in the same words.
+
+- [ ] All seven with NVDA.
+- [ ] All seven with JAWS.
+
+
+### Word-level review, AI retries, the note-line cue, and browse M and F (2026-10-17)
+
+1. QUILL and QUILL Lite: select a paragraph, ask the free AI to Rewrite it, and
+   choose Review Changes in the AI Result window. On a change with several word
+   edits, Alt+W reaches "Words in this change"; each row reads the edit and its
+   sentence. Space on one row says only its state (nothing else spoken). Apply
+   Checked: the dropped word stays as it was, and you hear "Applied 1 change, 1
+   of them in part, as one undo step". Ctrl+Z takes the whole edit back.
+2. In the same window, uncheck every row of one change: you hear "No word edits
+   left in this change, so it will not be applied", and the Changes row is
+   unchecked when you Alt+C back to it. Check one row again: "This change will
+   be applied again". Accept All gives exactly the AI's text.
+3. A one-word change shows no Words list and Tab goes from Changes to Change
+   details. F1 on the Words list reads its help.
+4. With a network that drops or a service answering busy (a developer can point
+   the service at a test server that answers 503 twice): the answer arrives
+   after a short wait and nothing is said about the retries. With a server that
+   answers 503 three times: one failure sentence, said once.
+5. QUILL and QUILL Lite: add an inline note to a line, go to the top, and arrow
+   down: the two-tap sound plays on that line only, once; Left, Right, Home and
+   End on that line are silent. Next Inline Note to it plays no tap.
+6. Settings > Editing (QUILL) and Preferences (QUILL Lite), "When the caret
+   reaches a line with an inline note": Say "note" speaks the word once on
+   arrival; Nothing is silent. With a braille display and the sound chosen,
+   "note" flashes on the display without being spoken.
+7. QUILL: open a PDF with several pages, lock Quick Nav (Ctrl+Shift+Grave
+   twice): F says "Page 2 of N"; Shift+F from mid-page goes to the top of the
+   page; the cheat sheet (?) lists M and F. Press Escape and arrow down across
+   a page break: "Page 3 of N" is said once, and not again on the next arrows.
+8. QUILL: in a document with typing mistakes, Quick Nav M selects the next
+   misspelled word and says "Misspelled: word, line N"; Shift+M goes back; in
+   a clean document M says there are none.
+
+- [ ] All eight with NVDA.
+- [ ] All eight with JAWS.
+- [ ] Checks 1, 5 and 7 with Narrator.

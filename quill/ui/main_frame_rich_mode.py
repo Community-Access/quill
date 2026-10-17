@@ -41,7 +41,7 @@ from quill.core.format_transitions import (
 )
 from quill.core.html_to_markdown import contains_html_markup, html_to_markdown
 from quill.io.rtf import markdown_to_rtf, read_rtf_sanitized, rtf_to_markdown
-from quill.io.rtf_model import rich_to_rtf, rtf_to_rich, scan_rtf_features
+from quill.io.rtf_model import rtf_to_rich, scan_rtf_features
 
 #: The switcher's target formats: value -> (menu label, save suffix).
 DOCUMENT_FORMATS: dict[str, tuple[str, str]] = {
@@ -218,7 +218,7 @@ class RichModeMixin:
         italic, and links instead of collapsing to the plain-text mirror.
         """
         from quill.core.storage import write_text_atomic
-        from quill.io.rtf_model import rich_to_markdown, rtf_to_rich
+        from quill.io.rtf_model import rich_to_markdown
         from quill.ui.richedit_rtf_surface import RichEditRtfError
 
         try:
@@ -269,9 +269,10 @@ class RichModeMixin:
         Reconstructive by design (control RTF -> RichDocument ->
         ``rich_to_docx_bytes``), so a fidelity-flagged original gets a
         timestamped backup alongside before its first overwrite — QUILL never
-        silently rewrites someone's Word file.
+        silently rewrites someone's Word file. The decisions are the shared
+        ones QUILL Lite makes too (``quill.core.docx_open``, 2026-10-17).
         """
-        from quill.io.docx_writer import rich_to_docx_bytes
+        from quill.core import docx_open
         from quill.ui.richedit_rtf_surface import RichEditRtfError
 
         wrapper = self._active_richedit()
@@ -280,34 +281,24 @@ class RichModeMixin:
                 rtf = bytes(wrapper.get_rtf()).decode("utf-8", errors="replace")
         except RichEditRtfError as error:
             raise OSError(str(error)) from error
-        if (
-            getattr(tab, "docx_flagged", False)
-            and not getattr(tab, "rich_backup_done", False)
-            and target.exists()
+        if docx_open.needs_backup(
+            flagged=getattr(tab, "docx_flagged", False),
+            backup_done=getattr(tab, "rich_backup_done", False),
+            target=target,
         ):
             backup = self._backup_original_docx(target)
             tab.rich_backup_done = True
             if backup is not None:
                 self._set_status(f"Backed up the original to {backup.name}")
-        data = rich_to_docx_bytes(rtf_to_rich(rtf))
-        from quill.core.storage import write_bytes_atomic
-
-        write_bytes_atomic(target, data)
+        docx_open.write_docx_from_rtf(target, rtf)
         document.mark_saved(target)
 
     @staticmethod
     def _backup_original_docx(target: Path) -> Path | None:
         """Copy the original .docx to a timestamped sibling (best-effort)."""
-        from datetime import UTC, datetime
-        from shutil import copy2
+        from quill.core.docx_open import backup_original
 
-        stamp = datetime.now(UTC).strftime("%Y%m%d-%H%M%S")
-        backup = target.with_name(f"{target.stem}.backup-{stamp}{target.suffix}")
-        try:
-            copy2(target, backup)
-        except OSError:
-            return None
-        return backup
+        return backup_original(target)
 
     def _enter_docx_rich_mode_for_open(self, path: Path, document: object) -> None:
         """Offer/enter rich editing for a freshly opened .docx (Phase 7).
@@ -318,24 +309,18 @@ class RichModeMixin:
         flagged file gets the three-way choice — rich edit with the listed
         losses, read-extract as today, or edit a copy.
         """
-        try:
-            from quill.io.docx_reader import (
-                python_docx_available,
-                read_docx_rich,
-                scan_docx_features,
-            )
-        except Exception:  # noqa: BLE001 - the io layer is a soft boundary here
+        from quill.core import docx_open
+
+        if not docx_open.word_rich_available() or not self._rich_capable():
             return
-        if not python_docx_available() or not self._rich_capable():
-            return
-        findings = scan_docx_features(path)
-        choice = "rich"
+        findings = docx_open.fidelity_findings(path)
+        choice = docx_open.CHOICE_RICH
         if findings:
             choice = self._offer_docx_rich_choice(path, findings)
-        if choice == "text":
+        if choice == docx_open.CHOICE_TEXT:
             return
         open_path = path
-        if choice == "copy":
+        if choice == docx_open.CHOICE_COPY:
             copied = self._backup_original_docx(path)
             if copied is None:
                 self._set_status("Could not create a copy; opened read-extract instead")
@@ -344,20 +329,20 @@ class RichModeMixin:
         tab = self._active_tab()
         wrapper = self._active_richedit()
         try:
-            rich = read_docx_rich(open_path)
-            wrapper.set_rtf(rich_to_rtf(rich).encode("utf-8", errors="replace"))
+            rtf = docx_open.read_docx_as_rtf(open_path)
+            wrapper.set_rtf(rtf.encode("utf-8", errors="replace"))
         except Exception:  # noqa: BLE001 - any failure stays on read-extract
             self._set_status(f"Opened {path.name} as extracted text; the rich load failed.")
             return
         tab.editor_mode = "rich"
         tab.docx_rich = True
         tab.docx_flagged = bool(findings)
-        if choice == "copy":
+        if choice == docx_open.CHOICE_COPY:
             document.path = open_path
         document.text = wrapper.get_plain_text()
         document.modified = False
         self._set_status_quiet(f"Opened {Path(open_path).name} as Rich Text (Word)")
-        self._announce("Opened as Rich Text. Headings and bold are shown formatted.")
+        self._announce(docx_open.OPENED_RICH_SENTENCE)
         self._refresh_statusbar()
 
     def _offer_docx_rich_choice(self, path: Path, findings: list[str]) -> str:
@@ -366,28 +351,23 @@ class RichModeMixin:
         Read-extract is the default (safest) answer; the losses are named
         specifically, never as a vague "some formatting may be lost".
         """
+        from quill.core import docx_open
+
         wx = self._wx
-        inventory = ", ".join(findings)
-        choices = [
-            "Open for reading and plain editing (recommended)",
-            f"Edit as Rich Text — these will not survive a save: {inventory}",
-            "Edit a copy as Rich Text (the original stays untouched)",
-        ]
         dialog = wx.SingleChoiceDialog(
             self.frame,
-            f"{path.name} contains features QUILL's rich editor cannot carry: "
-            f"{inventory}.\n\nHow should it open?",
-            "Open Word document",
-            choices,
+            docx_open.fidelity_question(path.name, findings, app="QUILL"),
+            docx_open.FIDELITY_DIALOG_TITLE,
+            docx_open.fidelity_choices(findings),
         )
         try:
-            result = self._show_modal_dialog(dialog, "Open Word document")
+            result = self._show_modal_dialog(dialog, docx_open.FIDELITY_DIALOG_TITLE)
             if result != wx.ID_OK:
-                return "text"
+                return docx_open.CHOICE_TEXT
             selection = int(dialog.GetSelection())
         finally:
             dialog.Destroy()
-        return ("text", "rich", "copy")[max(0, min(2, selection))]
+        return docx_open.choice_for_selection(selection)
 
     def _rich_autosave_payload(self) -> bytes | None:
         """RTF bytes for the rich autosave sidecar, or None off the rich path.

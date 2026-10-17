@@ -68,9 +68,11 @@ def is_read_only_source(path: Path | str | None) -> bool:
 
     The list is QUILL's own (``EXPORT_ONLY_SUFFIXES``), so the two editors
     refuse the same files, plus the Office formats QUILL Lite opens as text
-    (2026-10-16). QUILL can write a real ``.docx``; QUILL Lite cannot, so for
-    QUILL Lite a Word file is as read-only as a PDF -- saving the text back
-    into it would leave a file Word cannot open.
+    (2026-10-16). By its *name* a ``.docx`` is still here: a window holding
+    one as text must not write that text back, which would leave a file Word
+    cannot open. A **rich** window holding one writes a real Word document
+    through QUILL's writer (2026-10-17), and the two refusals below ask
+    ``saves_as_word`` (lite_window_word) before refusing.
     """
     if path is None:
         return False
@@ -78,6 +80,12 @@ def is_read_only_source(path: Path | str | None) -> bool:
     from quill.io.export import EXPORT_ONLY_SUFFIXES
 
     return Path(path).suffix.lower() in EXPORT_ONLY_SUFFIXES | OFFICE_OPEN_SUFFIXES
+
+
+def _saves_as_word(window: object, path: Path | str | None) -> bool:
+    """A rich window writes a real ``.docx`` (2026-10-17): not read-only for it."""
+    saves = getattr(window, "saves_as_word", None)
+    return bool(callable(saves) and saves(path))
 
 
 class DocumentPdfMixin:
@@ -165,7 +173,7 @@ class DocumentPdfMixin:
         same way, with the same sentence.
         """
         path = getattr(self, "path", None)
-        if not is_read_only_source(path):
+        if not is_read_only_source(path) or _saves_as_word(self, path):
             return False
         assert path is not None
         name, suffix = Path(path).name, Path(path).suffix
@@ -179,7 +187,7 @@ class DocumentPdfMixin:
 
     def refuse_save_as_target(self, target: Path) -> bool:
         """A Save As name ending ``.pdf``: refuse it rather than write text there."""
-        if not is_read_only_source(target):
+        if not is_read_only_source(target) or _saves_as_word(self, target):
             return False
         show_message_box(
             f"{self._app_name()} cannot save to {target.suffix}. Choose text, Markdown "

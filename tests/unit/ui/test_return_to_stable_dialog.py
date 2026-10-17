@@ -14,6 +14,8 @@ from pathlib import Path
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.core.data_format_ledger import Ledger, LedgerEntry  # noqa: E402
@@ -27,7 +29,7 @@ from quill.ui.updates.return_to_stable_dialog import ReturnToStableDialog  # noq
 
 @pytest.fixture
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     wx.HelpProvider.Set(wx.SimpleHelpProvider())
     yield app
     app.Destroy()

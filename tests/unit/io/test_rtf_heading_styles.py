@@ -91,3 +91,22 @@ def test_body_text_is_written_at_the_ladders_body_size() -> None:
     preamble = rtf.split("\n", 1)[0]
     assert f"\\fs{DEFAULT_HALF_POINTS}" in preamble
     assert heading_level_for_font(DEFAULT_HALF_POINTS / 2, bold=True) is None
+
+
+@pytest.mark.parametrize("level", sorted(HEADING_POINT_SIZES))
+def test_the_rich_controls_own_heading_order_reads_as_a_plain_heading(level: int) -> None:
+    """The Rich Edit control writes ``\\b\\fsN`` *before* ``\\outlinelevel``.
+
+    Read in that order, the heading's own bold and ladder size used to come
+    back as authored formatting -- ``##### [**Five**]{font-size="11"}`` -- and a
+    Word document saved from rich text then carried them as direct formatting,
+    which on the next save knocked Heading 5 off the ladder into bold Normal
+    text (2026-10-17).
+    """
+    half_points = round(HEADING_POINT_SIZES[level] * 2)
+    rtf = (
+        "{\\rtf1\\ansi\\deff0{\\fonttbl{\\f0\\fnil Calibri;}}"
+        f"\\pard\\keepn\\s{level}\\b\\fs{half_points} \\s{level}\\outlinelevel{level - 1}"
+        "\\keepn Title\\b0\\fs22\\par\\pard Body {\\b bold}\\par}"
+    )
+    assert rtf_to_markdown(rtf).strip().splitlines() == ["#" * level + " Title", "Body **bold**"]

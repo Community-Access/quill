@@ -13,6 +13,7 @@ import inspect
 import pytest
 
 from quill.ui import labelled_field
+from tests.wx_session import shared_wx_app
 
 
 def test_labelled_takes_no_help_argument() -> None:
@@ -21,7 +22,7 @@ def test_labelled_takes_no_help_argument() -> None:
 
 def test_the_label_is_created_before_the_control_and_added_first() -> None:
     wx = pytest.importorskip("wx")
-    app = wx.App()  # noqa: F841 - a window needs one
+    app = shared_wx_app()  # noqa: F841 - a window needs one
     frame = wx.Frame(None)
     sizer = wx.BoxSizer(wx.HORIZONTAL)
     made: list[str] = []

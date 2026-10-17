@@ -232,3 +232,53 @@ def test_apostrophe_words_stay_whole() -> None:
     change = review.hunks[0].word_changes[0]
     assert change.old_words == "doesn't"
     assert change.new_words == "shouldn't"
+
+
+# -- word-level accept and reject (2026-10-17) ------------------------------- #
+
+_PARAGRAPH_OLD = "The quick brown fox jumps over the lazy dog. It was very tired that day."
+_PARAGRAPH_NEW = "The rapid brown fox leaps over the lazy dog. It was rather tired that day."
+
+
+def test_each_word_group_can_be_kept_or_dropped_alone() -> None:
+    review = build_diff_review(_PARAGRAPH_OLD, _PARAGRAPH_NEW)
+    hunk = review.hunks[0]
+    assert [c.new_words for c in hunk.word_changes] == ["rapid", "leaps", "rather"]
+    # Keep only the second edit: the first and third stay as they were.
+    only_leaps = review.apply({0}, {0: {1}})
+    assert only_leaps == (
+        "The quick brown fox leaps over the lazy dog. It was very tired that day."
+    )
+    assert review.apply({0}, {0: {0, 2}}) == (
+        "The rapid brown fox jumps over the lazy dog. It was rather tired that day."
+    )
+
+
+def test_every_word_group_accepted_is_the_revision_exactly() -> None:
+    old = "Alpha beta  gamma.\nSecond  line here.\nkeep"
+    new = "Alpha BETA gamma.\nSecond line there.\nkeep"
+    review = build_diff_review(old, new)
+    choices = {h.index: set(range(len(h.word_changes))) for h in review.hunks}
+    # Spacing-only edits ride with the hunk, so "everything" is byte-identical.
+    assert review.apply({h.index for h in review.hunks}, choices) == new
+    assert review.apply({h.index for h in review.hunks}, choices) == review.accept_all()
+
+
+def test_no_word_group_accepted_is_the_original() -> None:
+    review = build_diff_review(_PARAGRAPH_OLD, _PARAGRAPH_NEW)
+    assert review.apply({0}, {0: set()}) == _PARAGRAPH_OLD
+    assert review.apply(set(), {0: {0, 1, 2}}) == _PARAGRAPH_OLD
+
+
+def test_the_word_row_carries_its_sentence() -> None:
+    review = build_diff_review(_PARAGRAPH_OLD, _PARAGRAPH_NEW)
+    label = review.hunks[0].word_changes[2].choice_label()
+    assert label == 'Changed "very" to "rather", in: It was rather tired that day.'
+
+
+def test_a_rewrite_has_no_word_groups_and_applies_whole() -> None:
+    old = "x" * 120
+    new = "y" * 120
+    review = build_diff_review(old, new)
+    assert review.hunks[0].word_changes == ()
+    assert review.apply({0}, {0: set()}) == new  # no groups: the hunk decides
