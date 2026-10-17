@@ -5214,6 +5214,29 @@ so and points to QUILL Transcribe. Whether Inkwell should ship that part
 is a product decision, not made.</li>
 </ul>
 <h2
+id="34-as-built-2026-10-16-the-live-preview-on-a-braille-display-in-quill-lite">34.
+As built, 2026-10-16: the live preview on a braille display in QUILL
+Lite</h2>
+<p>The live preview (section 3) reaches a braille display through
+<code>ScreenReaderVoice.braille</code>, and every spoken dictation
+status is mirrored to the display after it is spoken. In QUILL Lite both
+went straight to the display, one write per message, so a preview that
+changed several times a second replaced the cells faster than a finger
+could read them. QUILL never had this: its announcement service has run
+braille through <code>CoalescingBrailleWriter</code>
+(<code>quill/ui/announce_wiring.py</code>) since 2026-08.</p>
+<p>QUILL Lite now uses the same writer, not a copy. The voice switches
+the shared engine’s inline braille off when it builds the engine, and
+sends the speech mirror and every preview through one coalescer: the
+first message of a quiet moment writes at once, and a burst lands as its
+newest message when the 150 ms window closes. Speech is not delayed at
+all. In practice, the display shows the first words of a phrase as they
+are heard and the whole phrase a moment after the speaker pauses, with
+nothing in between. Tests:
+<code>tests/unit/apps/test_lite_braille_coalescing.py</code> (fakes
+only: a fake engine and a fake timer). User-facing: QUILL Lite’s user
+guide, <em>On a braille display</em>.</p>
+<h2
 id="appendix-a-the-dictmd-section-numbers-and-where-they-live-now-the-first-dictmd-2026-10-05">Appendix
 A: the dict.md section numbers, and where they live now (the first
 dict.md, 2026-10-05)</h2>

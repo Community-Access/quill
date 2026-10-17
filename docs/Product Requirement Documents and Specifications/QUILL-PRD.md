@@ -297,6 +297,17 @@ A sighted user opens the failing file or dialog and sees the problem; a blind us
 
 Detection was a one-shot startup probe; a reader dying mid-session was invisible to QUILL. `core/sr_watchdog.py` is a wx-free two-strikes state machine (30 s cadence, `MISSES_BEFORE_DEATH = 2` so a routine JAWS/NVDA restart never fires it; arms only after a reader has been seen, so self-voice/sighted sessions never trigger; probe errors count as misses but never raise). `ui/main_frame_sr_watchdog.py` applies the collapse rule — **flush first, then act**: on confirmed death every open tab is snapshotted through the existing autosave machinery (active editor synced first; one failing tab never stops the rest), then the event is announced through the engine's fallback chain and recorded in Notifications with severity warning. Recovery is announced too. The watchdog never closes QUILL. Generalised rule, recorded as product law: **any code path that closes or degrades the app without the user asking persists work first.**
 
+**Shared with QUILL Lite (2026-10-16).** The sentences moved into the core
+beside the state machine (`died_message(app_name, reader_name, flushed)`,
+`recovered_message(reader_name)`), and QUILL Lite runs the same core through its
+own small mixin, `quill/apps/lite_sr_watchdog.py`: same 30 s cadence, same two
+strikes, same words. QUILL Lite's flush is its recovery copy
+(`DocumentFrame._write_recovery_copy`) for every window with unsaved changes;
+its explanation goes to the active window's status bar and to the screen-reader
+voice (QUILL Lite has no self-voice by design), and a recovery re-probes that
+voice before speaking. No setting gates it in either editor, so the settings
+vocabulary is unchanged.
+
 #### 5.1c-HD Hardening conventions (shipped 1.0.0)
 
 Four shared foundations from the hardening pass, each wx-free, strict-typed, and unit-tested; new code should reach for these instead of hand-rolling:
@@ -2684,6 +2695,16 @@ providers".
 
 ### 5.25f AI footprint, on-demand acquisition, and optimization
 
+**Hosted-AI route changes ask first (2026-10-16).** `quill/ui/hosted_ai_route_guard.py`
+(`RouteGuardMixin`, a base of the shared `AiService`) remembers the route used
+this session (`chatgpt`, `own_key`, `free`). `ask`, `converse` and
+`describe_image` call `route_allowed` before submitting; a route that changed
+without `route_chosen()` (called by `_ai_route_changed` on a ChatGPT sign-in or
+sign-out and after Use My Own AI Key) is a substitution, and every hosted
+substitution sends text to a different company, so it is a Yes/No question (No
+default); No reports "Nothing was sent" through the request's own error path.
+The first request of a session has nothing to compare with.
+
 QUILL's guiding aim is to be **as capable as possible on whatever hardware the user
 has**, while keeping its on-disk and in-memory footprint small — *fitting more
 capability onto modest, CPU-only machines*, never trimming features off the low end.
@@ -3988,6 +4009,27 @@ API key, or with an export-only provider (ElevenLabs), falls back to `local_tts`
 and then to `announce`, carrying a `fallback_reason` the UI states once —
 silently doing something other than what a setting says is how trust in the
 setting is lost.
+
+**Speech-safe replies (2026-10-16).** Every spoken form of an AI answer goes
+through `quill/core/ai/spoken_answer.py` (`speakable_answer`, `speakable_line`),
+the AI funnel over `speech_text.prepare_for_speech(markdown=True)`: heading
+marks, emphasis, bullets and link addresses are dropped, a link keeps its label,
+an image is "image, <alt>", and a fenced block is "code block". It is applied in
+`plan_voice_reply` (before whitespace is collapsed, since a heading or bullet is
+only recognisable at a line start), in `_announce_incoming` (before truncation,
+so the cap is not spent on symbols), to Ask Quill's streamed progress, to the
+hosted AI's cursor and clipboard deliveries and to every AI conversation reply.
+The inserted, copied, displayed and transcript text is never changed.
+
+**Backend substitution needs consent (2026-10-16).** `make_default_backend`
+used to fall past an unavailable configured provider to the Ask Quill setup
+provider (`ai_chat_default_provider`) silently -- a different company receiving
+the text. That step now consults `fallback.plan_substitution`; an off-device
+substitute is *held* (`core/ai/backend_substitution.py`) while the assistant
+keeps the on-device model, and the Ask Quill panel asks with the plan's
+announcement as a Yes/No box (No default). Yes calls
+`Assistant.accept_substitute()`. An on-device substitute is used directly and
+announced once, as before.
 
 The dialog is the single place the whole chain is configured, and it closes a
 real defect: `ai_tts_voice` was surfaced in the generic settings list as one flat
@@ -6745,6 +6787,8 @@ All tests follow the module-level import pattern so `generate_assistant_response
 **Goal.** Reduce per-request token cost by sending the stable custom-instruction text as a cacheable system prefix rather than re-sending it inline with every call.
 
 **Design.**
+
+**Markdown preservation (2026-10-16).** `split_instruction(task_id, base_prompt, *, markdown=False)` and `apply_instruction(..., markdown=False)` append `MARKDOWN_PRESERVATION` to the system prompt of every task in `MARKDOWN_TEXT_TASKS` (spell_check, grammar_check, rewrite, summarize, expand, translate) when the caller says the text is Markdown -- even when the task's instruction is customised, disabled or unreadable. Only Translate's default prompt had carried such a rule before. The caller decides with the editor's existing scope detection, `MainFrame._current_markup_context()` (pinned Document Language, then extension, then content sniff); `ai_spell_check`, `ai_grammar_check`, `translate_text`, `AISpellCheckInteractiveDialog` and `AgentContext.markdown` thread the flag. Not covered: the hosted pad's prompts, which are the gateway's and are mirrored word for word on the direct routes.
 
 `custom_instructions.split_instruction(task_id, base_prompt) -> (str, str)` is the canonical split point. It returns the active system prompt and the user content as separate strings. Every AI module calls `split_instruction` instead of `apply_instruction` and passes the system_prompt through to `generate_assistant_response`.
 

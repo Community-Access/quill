@@ -13,6 +13,7 @@ from collections.abc import Callable, Iterable
 from typing import TYPE_CHECKING
 
 from quill.core.ai.backend import AIBackend, ContextWindowExceeded
+from quill.core.ai.fallback import FallbackPlan
 from quill.core.ai.quality_filter import (
     find_quality_issues,
     negative_examples_block,
@@ -139,6 +140,9 @@ def last_backend_note() -> str:
 
 def _note_backend_fallback(provider: str) -> None:
     global _LAST_BACKEND_NOTE
+    from quill.core.ai import backend_substitution
+
+    backend_substitution.fell_past(provider)
     name = provider.strip() or "your configured AI provider"
     _LAST_BACKEND_NOTE = (
         f"{name} was not available, so Quill is using the on-device model "
@@ -162,6 +166,9 @@ def make_default_backend() -> AIBackend:
 
     global _LAST_BACKEND_NOTE
     _LAST_BACKEND_NOTE = ""
+    from quill.core.ai import backend_substitution
+
+    backend_substitution.reset()
 
     # Honor an explicitly configured provider first (AI-13). The presence of the
     # connection file marks a deliberate user choice; an unconfigured install has
@@ -201,10 +208,13 @@ def make_default_backend() -> AIBackend:
             from quill.core.ai.provider_backend import SimpleChatBackend
 
             _backend = SimpleChatBackend(_provider, _model)
-            if _backend.is_available()[0]:
+            # Past a configured provider to a different cloud one: held for a
+            # yes instead of used silently (core/ai/backend_substitution.py).
+            if not _backend.is_available()[0]:
+                _note_backend_fallback(_provider)
+            elif not backend_substitution.hold_for_consent(_provider, _backend):
                 _LAST_BACKEND_NOTE = ""
                 return _backend
-            _note_backend_fallback(_provider)
     except Exception as exc:  # noqa: BLE001
         logger.warning("Simple chat settings backend probe failed: %s", exc)
 
@@ -227,9 +237,15 @@ class Assistant:
         #: When default resolution fell back past a configured provider, the
         #: sentence the UI must speak (never silently swap engines).
         self.backend_note = ""
+        #: A cloud provider resolution held back rather than use unasked, and
+        #: the plan whose announcement is the question (backend_substitution).
+        self.backend_plan, self._substitute = FallbackPlan.none(), None
         if backend is None:
+            from quill.core.ai import backend_substitution
+
             backend = make_default_backend()
             self.backend_note = last_backend_note()
+            self.backend_plan, self._substitute = backend_substitution.take()
         self.backend = backend
         self._style_preamble = ""
         self._instructions_preamble = ""
@@ -249,6 +265,14 @@ class Assistant:
         #: specificity: never silently deliver less than was asked).
         self.last_context_note = ""
         self._last_fit_budget = 0
+
+    def accept_substitute(self) -> bool:
+        """Yes to :attr:`backend_plan`: answer from the held provider from now on."""
+        if self._substitute is None:
+            return False
+        self.backend, self._substitute = self._substitute, None
+        self.backend_plan, self.backend_note = FallbackPlan.none(), ""
+        return True
 
     def set_style_preamble(self, preamble: str) -> None:
         """Condition generation on the user's writing style (empty to disable)."""

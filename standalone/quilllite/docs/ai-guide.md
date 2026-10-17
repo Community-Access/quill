@@ -468,6 +468,11 @@ likely to hear:
   This is rare, and nothing is wrong with your computer.
 - **This computer was signed out.** Choose **Connect or Sign Out** and connect
   again.
+- **The way your requests go has changed.** If your own key or your ChatGPT
+  sign-in stops working while QUILL Lite is running, the next request does not
+  quietly go to QUILL's free AI instead. A **Send to a Different AI?** box asks
+  first, with **No** as the default; **No** sends nothing. The user guide's
+  *If the AI you use is not available* has the whole story.
 
 ### What you learned, and where to go next
 

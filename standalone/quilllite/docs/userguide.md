@@ -1313,6 +1313,34 @@ work.
 When you save, or close normally, the spare copy is deleted. So you are only
 ever offered work you actually need.
 
+##### If your screen reader stops
+
+QUILL Lite checks every thirty seconds that your screen reader is still
+running. One missed check is ignored, so restarting NVDA or JAWS never sets
+anything off. When two checks in a row find it gone, QUILL Lite does two
+things, in this order:
+
+1. Every document with unsaved changes writes its spare copy **straight
+   away**, without waiting for the next thirty-second copy. These are the same
+   copies described above, offered back the next time you start if QUILL Lite
+   never closes normally.
+2. It explains what happened, for example: "NVDA appears to have stopped. Your
+   work is safe: 2 documents snapshotted to autosave. QUILL Lite keeps running;
+   restart your screen reader when ready."
+
+QUILL Lite has no voice of its own, so that sentence is spoken only if another
+screen reader is still running. It is always written to the status bar of the
+document you were in, so when your reader is back, **F6** reads it.
+
+QUILL Lite does not close, and nothing in your documents changes. Restart your
+screen reader when you are ready; within half a minute QUILL Lite says, for
+example, "NVDA is running again."
+
+QUILL has had this protection for some time; QUILL Lite now uses the same
+code, so the two behave the same. There is nothing to turn on: it only ever
+writes spare copies, which a normal close throws away, and it says nothing
+unless a screen reader has really stopped.
+
 ##### What you are offered, and what is tidied away
 
 Before the recovery window opens, QUILL Lite clears out three kinds of copy,
@@ -3615,6 +3643,29 @@ is a number of milliseconds. Anything QUILL Lite would say sooner than that
 after its last message is skipped. Zero, the default, says everything as it
 happens. You do not lose anything by raising it: the status bar still gets
 every message, and **F6** reads it back.
+
+#### On a braille display
+
+Everything QUILL Lite says also goes to a connected braille display, through
+NVDA or JAWS, right after it is spoken. Dictation's live preview, the words
+heard so far, goes to the display only.
+
+**A burst settles instead of flickering.** When several different messages
+arrive quickly, the first appears on the display at once, and the rest are
+replaced, a moment later, by the newest one. Before, each message replaced the
+last as fast as it arrived, so while you dictated, or while a quick run of
+status changes went by, the display changed faster than a finger could read
+the first cell. QUILL has worked this way for a long time; QUILL Lite now uses
+the very same code.
+
+For example, dictate "please send the minutes by Friday". Your display shows
+the first words as they are heard, then, a fraction of a second after you
+pause, the whole phrase, instead of a blur of half-phrases in between.
+
+**Speech is not affected.** Every message is still spoken the moment it
+happens; only the display waits. The status bar still records every message,
+so **F6** reads back anything the display skipped over. If a message cannot be
+spoken (no screen reader is running), it is not brailled either.
 
 #### What formatting is here?
 
@@ -6456,6 +6507,42 @@ The pad's **Put the answer in** list has three choices:
 QUILL Lite remembers your choice until you change it. It applies to every
 answer: from the pad, the Chat Key and the Prompt Library.
 
+#### How answers are read aloud
+
+AI answers usually come written in Markdown, with `#` before a heading, `**`
+around bold words and `-` before each item of a list. When QUILL Lite reads an
+answer aloud, it reads the words and leaves those symbols out, so you never
+hear "star star" or "hash hash", or a link's whole web address.
+
+That happens wherever an answer is spoken: an answer put **at the cursor** or
+**on the clipboard**, and every reply in an **AI Conversation**.
+
+Only what you hear changes. What goes into your document, onto the clipboard,
+into the answer window or into the conversation is the answer exactly as it
+came, symbols and all.
+
+For example, with **Put the answer in** set to **My document, at the cursor**,
+an answer of
+
+```text
+## Summary
+
+**Three** points:
+
+- Costs went down.
+- See [the report](https://example.com/report).
+```
+
+goes into your document as those six lines, and you hear: "Answer inserted at
+the cursor. Press Control Z to undo. Summary Three points: Costs went down. See
+the report."
+
+A few things are worth knowing. A link is read by its words, never its address.
+A picture is read as "image" and its description. A block of code is read as
+"code block": the code itself is in your document, where you can read it a
+character at a time. The answer window is not read out for you; your screen
+reader reads it as text, so you can check the formatting first.
+
 #### Your saved prompts
 
 **Prompt Library** (**Ctrl+7**) is QUILL's library of prompts: the ones QUILL
@@ -6819,6 +6906,38 @@ You hear what went wrong, followed by the error code
 causes are a mistyped key, a model your account cannot use, an account with no
 credit, or the wrong provider chosen for the key you saved. **Test the Key**
 tells you which one it is.
+
+#### If the AI you use is not available
+
+QUILL Lite never quietly sends your text to a different company from the one
+you chose. It remembers which way your requests have been going while it is
+running: your ChatGPT plan, your own OpenAI or Gemini key, or QUILL's free AI.
+If that changes without you changing it, for example because your Gemini key
+has gone from Windows' credential store or your ChatGPT sign-in has stopped
+working, the next request does not just go out. A **Send to a Different AI?**
+box asks first:
+
+> Your own Google Gemini key is not available right now. Use QUILL's free AI
+> instead? That sends your text to QUILL's free AI service over the internet.
+> Choose No and nothing is sent.
+
+Your screen reader reads the question as the box opens. **No** is the default
+button, so pressing **Enter** out of habit sends nothing.
+
+- **Yes** sends the request the new way, and that is simply the way from then
+  on, so you are only asked once.
+- **No** sends nothing. You hear "Nothing was sent", and how to set your
+  usual way up again in **Tools > AI**. The next request asks again.
+
+This covers the pad, the Chat Key, the Prompt Library, AI conversations and
+**Ask About an Image**. Changing the way yourself is never questioned: signing
+in or out in **Use My ChatGPT Subscription** (**Alt+F5**), or saving or removing
+a key in **Use My Own AI Key** (**Alt+F2**), counts as your choice.
+
+One limit: QUILL Lite compares with the way your requests went earlier in the
+same session. The first request after starting goes where your settings say,
+as it always has. A request that simply *fails* is not covered here: you hear
+why, as described above.
 
 ### Using your ChatGPT subscription
 

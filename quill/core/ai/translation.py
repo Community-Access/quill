@@ -84,10 +84,14 @@ def translate_text(
     api_key: str = "",
     provider: str = "ai_assistant",
     libretranslate_url: str = "http://localhost:5000",
+    *,
+    markdown: bool = False,
 ) -> tuple[str, str]:
     """Translate *text* to *target_language*.
 
     *provider*: "ai_assistant" (default, uses configured AI) or "libretranslate".
+    *markdown* says the text is Markdown: the preservation clause is then added
+    even when the user has replaced Translate's default instruction.
 
     Returns (translated_text, detected_source_language).
     detected_source_language is an ISO 639-1 code or "unknown".
@@ -100,7 +104,7 @@ def translate_text(
     if provider == "libretranslate":
         return _translate_libretranslate(text, target_language, libretranslate_url)
 
-    return _translate_ai(text, target_name, connection, api_key)
+    return _translate_ai(text, target_name, connection, api_key, markdown=markdown)
 
 
 def _resolve_target_name(target: str) -> str:
@@ -117,10 +121,13 @@ def _translate_ai(
     target_language_name: str,
     connection: AssistantConnectionSettings,
     api_key: str,
+    *,
+    markdown: bool = False,
 ) -> tuple[str, str]:
     system_prompt, user_prompt = split_instruction(
         "translate",
         _TRANSLATE_PROMPT_TEMPLATE.format(target_language=target_language_name) + text,
+        markdown=markdown,
     )
     response, error = generate_assistant_response(
         connection,

@@ -91,6 +91,9 @@ class AgentContext:
     on_progress:
         Optional callable(step_label: str, step_index: int, total_steps: int)
         called before each step begins; intended for UI progress updates.
+    markdown:
+        The document is Markdown (the editor's own scope detection), so a text
+        tool -- rewrite, summarize, expand -- is told to keep its formatting.
     """
 
     plan: AgentPlan
@@ -98,6 +101,7 @@ class AgentContext:
     api_key: str = ""
     stop_event: threading.Event = field(default_factory=threading.Event)
     on_progress: Callable[[str, int, int], None] | None = None
+    markdown: bool = False
 
     def is_cancelled(self) -> bool:
         return self.stop_event.is_set()
@@ -149,7 +153,9 @@ def run_agent(ctx: AgentContext, *, refine: bool = False) -> AgentResult:
         result.cancelled = True
         return result
 
-    system_prompt, user_prompt = split_instruction(ctx.plan.profile.agent_id, ctx.plan.prompt)
+    system_prompt, user_prompt = split_instruction(
+        ctx.plan.profile.agent_id, ctx.plan.prompt, markdown=ctx.markdown
+    )
     text, error = generate_assistant_response(
         ctx.connection,
         ctx.api_key,

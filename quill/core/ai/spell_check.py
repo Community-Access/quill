@@ -53,11 +53,14 @@ def ai_spell_check(
     document_text: str,
     connection: AssistantConnectionSettings,
     api_key: str = "",
+    *,
+    markdown: bool = False,
 ) -> list[SpellCorrection]:
     """Send *document_text* to the AI, return a list of spelling corrections.
 
     For large documents, splits into chunks and merges results, deduplicating
-    by (original, context) pair.
+    by (original, context) pair. *markdown* says the document is Markdown, so
+    the model is told to leave its syntax alone rather than "correct" it.
 
     Raises SpellCheckParseError if the response is not valid JSON.
     Raises SpellCheckAuthError on authentication failure.
@@ -70,7 +73,7 @@ def ai_spell_check(
     seen: set[tuple[str, str]] = set()
 
     for chunk in chunks:
-        raw = _run_spell_check_on_chunk(chunk, connection, api_key)
+        raw = _run_spell_check_on_chunk(chunk, connection, api_key, markdown=markdown)
         for item in raw:
             key = (item.original, item.context)
             if key not in seen:
@@ -110,8 +113,12 @@ def _run_spell_check_on_chunk(
     text: str,
     connection: AssistantConnectionSettings,
     api_key: str,
+    *,
+    markdown: bool = False,
 ) -> list[SpellCorrection]:
-    system_prompt, user_prompt = split_instruction("spell_check", _SPELL_CHECK_PROMPT_PREFIX + text)
+    system_prompt, user_prompt = split_instruction(
+        "spell_check", _SPELL_CHECK_PROMPT_PREFIX + text, markdown=markdown
+    )
     response, error = generate_assistant_response(
         connection,
         api_key,

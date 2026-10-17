@@ -189,12 +189,18 @@ class ChatGptAiMixin(WordToolsMixin):
         return False
 
     def _ai_route_changed(self) -> None:
-        """A sign-in or sign-out just changed where requests go.
+        """A sign-in, a sign-out or a saved key just changed where requests go.
 
-        A hook, empty here: the service reads the account live, so nothing is
-        cached that could go stale. An editor that shows the route somewhere --
-        a status cell, an About window already open -- overrides this.
+        The service reads the account live, so nothing is cached that could go
+        stale -- except the route it remembers to notice a *fallback*
+        (``hosted_ai_route_guard.py``), which is told here that this change was
+        the listener's own, so the next request is not questioned. An editor
+        that shows the route somewhere overrides this and calls it.
         """
+        service = getattr(self._ai_host(), "ai_service", None)
+        chosen = getattr(service, "route_chosen", None)
+        if callable(chosen):
+            chosen()
 
     def _show_image_result(self, text: str, path: Path) -> None:
         from quill.core.ai.chatgpt_ai_help import IMAGE_FEATURE
