@@ -20,6 +20,7 @@ from quill.core.radio.recordings_index import (
     RecordingEntry,
     format_elapsed,
 )
+from quill.core.radio.row_marks import marked_label
 from quill.ui.media.list_columns_view import build_columns, columns_for, set_row
 
 #: This list's id in Radio's column catalogue. Defined here rather than in the
@@ -58,7 +59,8 @@ class RecordingsRowViewMixin:
         # intention nobody expressed.
         length = f"{entry.scheduled_minutes} min" if entry.duration_requested else ""
         return {
-            "name": entry.name,
+            # "(marked)" on a row marked for deleting (recordings_marks).
+            "name": marked_label(entry.name, entry.id in getattr(self, "_row_marks", ())),
             "status": entry.status,
             "size": entry.size_display,
             "when": when,

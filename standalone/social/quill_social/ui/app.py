@@ -297,121 +297,176 @@ class SocialFrame(wx.Frame):
     def _build_menu(self) -> None:
         bar = wx.MenuBar()
 
-        m_file = wx.Menu()
-        self._menu_item(m_file, "Add &Account...\tCtrl+Shift+A", self._on_add_account)
-        self._menu_item(m_file, "&Preferences...", self._on_preferences)
-        m_file.AppendSeparator()
-        self._menu_item(m_file, "E&xit\tAlt+F4", lambda _e: self.Close())
-        bar.Append(m_file, "&File")
-
-        m_compose = wx.Menu()
-        self._menu_item(m_compose, "&New Post\tCtrl+N", lambda _e: self.cmd_compose())
-        self._menu_item(m_compose, "&Reply\tCtrl+R", lambda _e: self.cmd_reply())
-        self._menu_item(m_compose, "&Quote\tCtrl+Q", lambda _e: self.cmd_quote())
-        bar.Append(m_compose, "&Compose")
-
-        m_item = wx.Menu()
-        self._menu_item(m_item, "&Boost / Repost\tCtrl+Shift+R", lambda _e: self.cmd_repost())
-        self._menu_item(m_item, "&Favourite\tCtrl+F", lambda _e: self.cmd_favourite())
-        self._menu_item(m_item, "&Bookmark\tAlt+B", lambda _e: self.cmd_bookmark())
-        self._menu_item(m_item, "Flag for follow-&up", lambda _e: self.cmd_flag())
-        self._menu_item(
-            m_item, "Open co&nversation\tCtrl+G", lambda _e: self.cmd_open_conversation()
-        )
-        self._menu_item(m_item, "&Open links\tCtrl+O", lambda _e: self.cmd_open_links())
-        self._menu_item(m_item, "Mark &read\tCtrl+K", lambda _e: self.cmd_mark_read())
-        m_item.AppendSeparator()
-        self._menu_item(m_item, "&Accessibility check", lambda _e: self.cmd_accessibility_check())
-        self._menu_item(m_item, "Send to &QUILL", lambda _e: self.cmd_send_to_quill())
-        self._menu_item(m_item, "&Play media\tCtrl+Enter", lambda _e: self.cmd_play_media())
-        bar.Append(m_item, "&Item")
-
-        m_feeds = wx.Menu()
-        self._menu_item(m_feeds, "&Add Feed...\tCtrl+Shift+N", lambda _e: self.cmd_add_feed())
-        self._menu_item(m_feeds, "New &Folder...", lambda _e: self.cmd_new_folder())
-        self._menu_item(
-            m_feeds, "Feed &settings...\tCtrl+Shift+P", lambda _e: self.cmd_configure_feed()
-        )
-        self._menu_item(
-            m_feeds,
-            "&Mark all read\tCtrl+Shift+K",
-            lambda _e: self.cmd_mark_all_read(),
-        )
-        self._menu_item(m_feeds, "&Undo mark all read\tCtrl+Z", lambda _e: self.cmd_undo_mark())
-        m_feeds.AppendSeparator()
-        self._menu_item(m_feeds, "New s&mart folder...", lambda _e: self.cmd_new_smart_folder())
-        self._menu_item(m_feeds, "Edit smart folde&r...", lambda _e: self.cmd_edit_smart_folder())
-        self._menu_item(m_feeds, "De&lete smart folder", lambda _e: self.cmd_delete_smart_folder())
-        m_feeds.AppendSeparator()
-        self._menu_item(m_feeds, "&Import OPML...", lambda _e: self.cmd_import_opml())
-        self._menu_item(m_feeds, "&Export OPML...", lambda _e: self.cmd_export_opml())
-        self._menu_item(m_feeds, "Un&subscribe from feed", lambda _e: self.cmd_unsubscribe())
-        bar.Append(m_feeds, "Fee&ds")
-
-        m_listen = wx.Menu()
-        self._menu_item(
-            m_listen, "&Listen to this view\tCtrl+Shift+L", lambda _e: self.cmd_listen_start()
-        )
-        self._menu_item(m_listen, "&Play / Pause", lambda _e: self.cmd_listen_toggle())
-        self._menu_item(m_listen, "&Next article", lambda _e: self.cmd_listen_next())
-        self._menu_item(m_listen, "Pre&vious article", lambda _e: self.cmd_listen_prev())
-        self._menu_item(m_listen, "&Stop listening", lambda _e: self.cmd_listen_stop())
-        bar.Append(m_listen, "&Listen")
-
-        m_studio = wx.Menu()
-        self._menu_item(m_studio, "&Drafts...", lambda _e: self.cmd_drafts())
-        self._menu_item(m_studio, "&Agenda / Calendar...", lambda _e: self.cmd_agenda())
-        self._menu_item(m_studio, "&Queue schedule...", lambda _e: self.cmd_queue_schedule())
-        self._menu_item(m_studio, "A&pprovals...", lambda _e: self.cmd_approvals())
-        bar.Append(m_studio, "&Studio")
-
-        m_tools = wx.Menu()
-        self._menu_item(
-            m_tools, "&Command Center\tCtrl+Shift+C", lambda _e: self.cmd_command_center()
-        )
-        self._menu_item(m_tools, "&Where Am I\tCtrl+Shift+I", lambda _e: self.cmd_where_am_i())
-        self._menu_item(m_tools, "&Search\tCtrl+L", lambda _e: self.cmd_focus_search())
-        # Ctrl+F is Favourite (keymap.DEFAULT_BINDINGS, PRD 10.1), and the
-        # window's key hook answers it before any menu accelerator, so Find Text
-        # on Ctrl+F never fired. Ctrl+Shift+F is free in every menu here.
-        self._menu_item(m_tools, "&Find Text...\tCtrl+Shift+F", lambda _e: self.cmd_find_text())
-        self._menu_item(m_tools, "Find &Next\tF3", lambda _e: self.cmd_find_next())
-        self._menu_item(m_tools, "Find &Previous\tShift+F3", lambda _e: self.cmd_find_prev())
-        self._menu_item(m_tools, "&Refresh\tF5", lambda _e: self.cmd_refresh())
-        self._menu_item(m_tools, "Catch &Up", lambda _e: self.cmd_catchup())
-        m_tools.AppendSeparator()
-        self._menu_item(m_tools, "&Insights / Analytics", lambda _e: self.cmd_analytics())
-        self._menu_item(m_tools, "Safety Cen&ter", lambda _e: self.cmd_safety_center())
-        self._menu_item(
-            m_tools, "&Notification policies", lambda _e: self.cmd_notification_policies()
-        )
-        self._menu_item(m_tools, "&Plugins", lambda _e: self.cmd_plugins())
-        self._menu_item(m_tools, "&Outbox", lambda _e: self.cmd_outbox())
-        self._menu_item(m_tools, "Summari&ze this feed (AI)", lambda _e: self.cmd_summarize_feed())
-        bar.Append(m_tools, "&Tools")
-
-        m_help = wx.Menu()
-        # "Help" used to be the only item here and it opened the keyboard guide,
-        # while the user guide the installer ships sat in docs\ with nothing to
-        # open it. Both are reachable now, and the shortcut list is named for
-        # what it actually is.
-        self._menu_item(m_help, "&User Guide", lambda _e: self.cmd_open_doc("USER_GUIDE"))
-        self._menu_item(m_help, "&Keyboard Reference", lambda _e: self.cmd_open_doc("KEYMAP_SPEC"))
-        self._menu_item(
-            m_help,
-            "&Product Requirements",
-            lambda _e: self.cmd_open_doc("QUILL_Social_PRD_Working_Draft"),
-        )
-        m_help.AppendSeparator()
-        self._menu_item(m_help, "Keyboard &Guide (shortcuts)\tF1", lambda _e: self.cmd_help())
-        self._menu_item(m_help, "&About", self._on_about)
-        bar.Append(m_help, "&Help")
+        # Every row names its command id; the key it shows is read from the
+        # keymap (keymap.DEFAULT_BINDINGS, rebindable in keymap.json), so the
+        # menu, the window's key hook and the keyboard guide always agree.
+        # Ctrl+F is Favourite (PRD 10.1), and the key hook answers before any
+        # menu accelerator, which is why Find Text is on Ctrl+Shift+F.
+        menus = (
+            ("&File", (
+                ("Add &Account...", "add_account"),
+                ("&Preferences...", "preferences"),
+                None,
+                ("E&xit\tAlt+F4", "exit"),
+            )),
+            ("&Compose", (
+                ("&New Post", "compose"),
+                ("&Reply", "reply"),
+                ("&Quote", "quote"),
+            )),
+            ("&Item", (
+                ("&Boost / Repost", "repost"),
+                ("&Favourite", "favourite"),
+                ("Boo&kmark", "bookmark"),
+                ("Flag for follow-&up", "flag"),
+                ("Open co&nversation", "open_conversation"),
+                ("&Open links", "open_links"),
+                ("Mark &read", "mark_read"),
+                None,
+                ("&Accessibility check", "accessibility_check"),
+                ("Send to &QUILL", "send_to_quill"),
+                ("&Play media", "play_media"),
+            )),
+            ("Fee&ds", (
+                ("&Add Feed...", "add_feed"),
+                ("New &Folder...", "new_folder"),
+                ("Feed &settings...", "configure_feed"),
+                ("&Mark all read", "mark_all_read"),
+                ("&Undo mark all read", "undo_mark"),
+                None,
+                ("New smar&t folder...", "new_smart_folder"),
+                ("Edit smart folde&r...", "edit_smart_folder"),
+                ("De&lete smart folder", "delete_smart_folder"),
+                None,
+                ("&Import OPML...", "import_opml"),
+                ("&Export OPML...", "export_opml"),
+                ("Unsu&bscribe from feed", "unsubscribe"),
+            )),
+            ("&Listen", (
+                ("&Listen to this view", "listen_start"),
+                ("&Play / Pause", "listen_toggle"),
+                ("&Next article", "listen_next"),
+                ("Pre&vious article", "listen_prev"),
+                ("&Stop listening", "listen_stop"),
+            )),
+            ("&Studio", (
+                ("&Drafts...", "drafts"),
+                ("&Agenda / Calendar...", "agenda"),
+                ("&Queue schedule...", "queue_schedule"),
+                ("A&pprovals...", "approvals"),
+            )),
+            ("&Tools", (
+                ("&Command Center", "command_center"),
+                ("&Where Am I", "where_am_i"),
+                ("&Search", "search"),
+                ("&Find Text...", "find_text"),
+                ("Find &Next", "find_next"),
+                ("Find &Previous", "find_prev"),
+                ("&Refresh", "refresh"),
+                ("Catch &Up", "catchup"),
+                None,
+                ("&Insights / Analytics", "analytics"),
+                ("Safety Cen&ter", "safety_center"),
+                ("Notification po&licies", "notification_policies"),
+                ("Plu&gins", "plugins"),
+                ("&Outbox", "outbox"),
+                ("Summari&ze this feed (AI)", "summarize_feed"),
+            )),
+            # "Help" used to be the only item here and it opened the keyboard
+            # guide, while the user guide the installer ships sat in docs\ with
+            # nothing to open it. Both are reachable now.
+            ("&Help", (
+                ("&User Guide", "user_guide"),
+                ("&Keyboard Reference", "keyboard_reference"),
+                ("&Product Requirements", "product_requirements"),
+                None,
+                ("Keyboard &Guide (shortcuts)", "help"),
+                ("&About", "about"),
+            )),
+        )  # fmt: skip
+        handlers = self._command_handlers()
+        handlers["exit"] = self.Close
+        for title, rows in menus:
+            menu = wx.Menu()
+            for row in rows:
+                if row is None:
+                    menu.AppendSeparator()
+                    continue
+                label, command_id = row
+                self._menu_item(menu, self._menu_label(label, command_id), handlers[command_id])
+            bar.Append(menu, title)
 
         self.SetMenuBar(bar)
 
+    def _menu_label(self, title: str, command_id: str) -> str:
+        """*title* with the key the keymap binds to *command_id*, if any."""
+        if "\t" in title:
+            return title
+        chord = self.keymap.chord_for(command_id)
+        return f"{title}\t{chord}" if chord else title
+
     def _menu_item(self, menu, label, handler) -> None:
         item = menu.Append(wx.ID_ANY, label)
-        self.Bind(wx.EVT_MENU, handler, item)
+        self.Bind(wx.EVT_MENU, lambda _e: handler(), item)
+
+    def _command_handlers(self) -> dict:
+        """Command id -> what it runs: the menu and the key hook share this."""
+        return {
+            "compose": self.cmd_compose,
+            "reply": self.cmd_reply,
+            "quote": self.cmd_quote,
+            "repost": self.cmd_repost,
+            "favourite": self.cmd_favourite,
+            "bookmark": self.cmd_bookmark,
+            "flag": self.cmd_flag,
+            "open_conversation": self.cmd_open_conversation,
+            "open_links": self.cmd_open_links,
+            "mark_read": self.cmd_mark_read,
+            "accessibility_check": self.cmd_accessibility_check,
+            "send_to_quill": self.cmd_send_to_quill,
+            "play_media": self.cmd_play_media,
+            "add_account": lambda: self._on_add_account(None),
+            "preferences": lambda: self._on_preferences(None),
+            "add_feed": self.cmd_add_feed,
+            "new_folder": self.cmd_new_folder,
+            "configure_feed": self.cmd_configure_feed,
+            "mark_all_read": self.cmd_mark_all_read,
+            "undo_mark": self.cmd_undo_mark,
+            "new_smart_folder": self.cmd_new_smart_folder,
+            "edit_smart_folder": self.cmd_edit_smart_folder,
+            "delete_smart_folder": self.cmd_delete_smart_folder,
+            "import_opml": self.cmd_import_opml,
+            "export_opml": self.cmd_export_opml,
+            "unsubscribe": self.cmd_unsubscribe,
+            "listen_start": self.cmd_listen_start,
+            "listen_toggle": self.cmd_listen_toggle,
+            "listen_next": self.cmd_listen_next,
+            "listen_prev": self.cmd_listen_prev,
+            "listen_stop": self.cmd_listen_stop,
+            "drafts": self.cmd_drafts,
+            "agenda": self.cmd_agenda,
+            "queue_schedule": self.cmd_queue_schedule,
+            "approvals": self.cmd_approvals,
+            "command_center": self.cmd_command_center,
+            "where_am_i": self.cmd_where_am_i,
+            "search": self.cmd_focus_search,
+            "find_text": self.cmd_find_text,
+            "find_next": self.cmd_find_next,
+            "find_prev": self.cmd_find_prev,
+            "refresh": self.cmd_refresh,
+            "catchup": self.cmd_catchup,
+            "analytics": self.cmd_analytics,
+            "safety_center": self.cmd_safety_center,
+            "notification_policies": self.cmd_notification_policies,
+            "plugins": self.cmd_plugins,
+            "outbox": self.cmd_outbox,
+            "summarize_feed": self.cmd_summarize_feed,
+            "user_guide": lambda: self.cmd_open_doc("USER_GUIDE"),
+            "keyboard_reference": lambda: self.cmd_open_doc("KEYMAP_SPEC"),
+            "product_requirements": lambda: self.cmd_open_doc("QUILL_Social_PRD_Working_Draft"),
+            "help": self.cmd_help,
+            "about": lambda: self._on_about(None),
+        }
 
     # -- ui -------------------------------------------------------------------
 
@@ -937,22 +992,7 @@ class SocialFrame(wx.Frame):
         event.Skip()
 
     def _dispatch(self, command_id: str) -> bool:
-        handler = {
-            "compose": self.cmd_compose,
-            "reply": self.cmd_reply,
-            "quote": self.cmd_quote,
-            "repost": self.cmd_repost,
-            "favourite": self.cmd_favourite,
-            "bookmark": self.cmd_bookmark,
-            "open_conversation": self.cmd_open_conversation,
-            "open_links": self.cmd_open_links,
-            "mark_read": self.cmd_mark_read,
-            "command_center": self.cmd_command_center,
-            "where_am_i": self.cmd_where_am_i,
-            "refresh": self.cmd_refresh,
-            "search": self.cmd_focus_search,
-            "help": self.cmd_help,
-        }.get(command_id)
+        handler = self._command_handlers().get(command_id)
         if handler is None:
             return False
         handler()
@@ -1822,7 +1862,7 @@ class SocialFrame(wx.Frame):
     def _build_commands(self) -> list[Command]:
         has_item = self._current_item() is not None
         km = self.keymap
-        return [
+        commands = [
             Command(
                 "compose",
                 "New post",
@@ -1951,6 +1991,10 @@ class SocialFrame(wx.Frame):
             Command("preferences", "Preferences", lambda: self._on_preferences(None)),
             Command("help", "Help", self.cmd_help, shortcut=km.chord_for("help")),
         ]
+        # Every command the keymap binds shows its key here as on the menu.
+        for command in commands:
+            command.shortcut = command.shortcut or km.chord_for(command.command_id)
+        return commands
 
     # -- dialogs --------------------------------------------------------------
 

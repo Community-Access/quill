@@ -1292,6 +1292,39 @@ The application should provide:
 - Optional single-key navigation when focus is not in an edit field.
 - A mode that avoids intercepting screen-reader browse commands.
 
+**Status, 2026-10-17: every menu command has a key.** The family rule applies
+to QuillBeacon as to every QUILL app: every enabled menu row shows a key, no key
+is shown on two rows, and every row has an access letter no other row in its
+menu shares (family rules 8 and 9: every command has a key, and a rarely used
+command gets a longer one rather than none). Sixteen rows had no key; they now
+have these, chosen against every key already on the menu bar, the results-list
+keys (Delete, F2) and the family's system-wide keys:
+
+| Menu row | Key |
+| :--- | :--- |
+| Edit > Find Duplicates | Ctrl+Alt+D |
+| View > Accessibility Settings... | Ctrl+Shift+Comma |
+| Media > Play in External Player | Ctrl+Alt+P |
+| Media > Add Radio Station... | Ctrl+Alt+R |
+| Media > Add Radio Program... | Ctrl+Alt+G |
+| Tools > Trail Editor... | Ctrl+Alt+T |
+| Tools > Smart Collections Manager... | Ctrl+Alt+Shift+G |
+| Tools > Revalidate Health... | Ctrl+Alt+H |
+| Tools > Review Location Repair... | Ctrl+Alt+Shift+H |
+| Tools > External Player... | Ctrl+Alt+Shift+X |
+| Tools > Status Center... | Ctrl+Alt+I |
+| Sync > Sync Now | F9 |
+| Sync > Sync Settings... | Ctrl+F9 |
+| Sync > Sync History... | Shift+F9 |
+| Sync > Auto Sync... | Ctrl+Shift+F9 |
+| Help > About | Alt+F1 |
+
+The keys are literals in the menu labels (`quill/apps/beacon/app.py`), so wx
+binds exactly what the menu shows, and the family key snapshot reads them from
+there. `tests/unit/ui/test_menu_accelerators.py` builds the real menu bar and
+holds it to the rule. Customizable shortcuts, conflict detection on rebinding
+and shortcut profiles above remain to be built.
+
 ### 18.4 Accessible notifications
 
 Announcements should be concise:

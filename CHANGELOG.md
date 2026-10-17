@@ -167,6 +167,53 @@ Docs: both user guides, both PRDs, both changelogs,
 `docs/building-windows-family.md`, `docs/build-machine-sync.md` and the manual
 checks in `docs/qa/screen-reader-checks-2026-10.md`.
 
+### Radio: one file per song at each song change; marks in Recordings, Browse and the schedule list (todo D.3; 2026-10-17)
+
+**Split at song changes (xradio2 4.8), opt-in.** New
+`RecordingSettings.split_at_song_changes` (default off; additive, older builds
+ignore the key) and a Recording Settings check box (Alt+N, F1 help in
+`settings_help.HELP["split_songs"]`). `quill/core/radio/recording_song_watch.py`
+(new) runs one watcher per recording that polls the recorded stream's ICY
+title every 10 s (`icy.read_stream_title`, same egress as What's Playing) and
+places each change at the midpoint between polls, ignoring
+`song_history.is_noise_title` (new public wrapper of Song History's rule).
+`quill/core/radio/recording_split.py` (new) plans the cuts (pre-roll trim
+subtracted via the new `OpeningGuard.take_lead_trim`, pieces under 20 s
+folded, names `<stem> - NN <Artist - Title><ext>` sanitised and uniquified)
+and cuts in one ffmpeg segment-muxer pass with `-c copy`, under the
+`recording_join` safety contract: private work folder, verify count/size,
+move into place, delete the source last, undo everything on any failure. The
+recorder calls it after join and exact OptiLab and speaks the outcome through
+`on_parts_joined`; a recording that reconnected is kept whole. GATE-11:
+`recording.py` stays under budget by moving `_finalize_move` to
+`recording_outcome.finalize_move` (the old name is an alias). Also fixed:
+Recording Settings' OK reset `exact_optilab` to False. Tests:
+`tests/unit/core/test_radio_recording_split.py` (fake runner, fake title
+reader, fake clock; a conftest guard keeps the real title reader out of
+tests).
+
+**Marks beyond Favorites (xradio2 4.10).** `quill/ui/radio/marks_shared.py`
+(new) holds the keys (`.`, Delete, Ctrl+Shift+Delete), the menu rows and the
+No-default question; `favorites_marks` now imports them. New
+`recordings_marks.py` (finished recordings; one undo for the batch),
+`schedule_marks.py` (also owns the list's key handler and Shift+F10 menu,
+moved out of `schedule_recording_dialog.py`, 652 -> 631 lines) and
+`browse_marks.py` (removable rows only; reuses `browse_delete.confirm` and the
+new no-question cores `remove_stored_now` / `unfavorite_now`; the tree's
+`_row_label` is now `browse_marks.row_text`, 941 -> 940 lines).
+`RowMarks.ignored_note` / `ignored_sentence` give the once-per-set
+"That used the selected row only; N rows are still marked for Delete." to
+actions that act on the selected row. Tests:
+`tests/unit/ui/test_radio_list_marks.py` (real in-memory windows, faked
+questions, and a guard that fails if a real message box would open).
+
+**Beacon and Social menu keys (todo D.9).** Every enabled row on both menu
+bars now shows a key (16 in Beacon, 31 in Social had none), with access
+letters de-duplicated, and `tests/unit/ui/test_menu_accelerators.py` now walks
+Radio's, Beacon's and Social's real menu bars. Social's menu labels come from
+its own keymap, so a rebound key moves in the menu too. See each app's
+changelog for the keys.
+
 ### Batch-6 CI: the shared test App kept alive, and a first-run Inkwell key bug it exposed (2026-10-17)
 
 - **Why CI failed.** `tests/unit/ui/test_mac_open_file_app.py` built a real

@@ -2380,6 +2380,31 @@ hides the source, just like **Hide This Source** on the menu, and **Reset
 Sources to Default** brings it back. On a folder inside one of Quill Radio's
 own sources, Delete explains that there is nothing to delete.
 
+#### Removing several rows at once
+
+Press **.** (period) on each row you want to remove: a saved YouTube video or
+playlist, a followed channel, a server you added, or a station that is one of
+your favorites. You hear "Marked" and how many are marked, and the row's name
+gains "(marked)". It keeps the mark if you fold its folder and open it again.
+Then press **Delete**: one question asks, for example, "Delete 4 items?", and
+you hear "Deleted 4 items." Each branch that lost a row reloads, so the rows
+are gone from the tree. **Ctrl+Shift+Delete** clears every mark.
+
+For example, to tidy your saved YouTube videos, open **YouTube**, then your
+saved videos, press **.** on each one you have finished with, and press
+**Delete** once.
+
+Things to know:
+
+- A row Delete cannot remove cannot be marked. Pressing **.** on a country, a
+  genre or a station you have not saved tells you which rows can be marked.
+- The question is the same one Delete asks for a single row, so if you checked
+  **Don't ask me again** there, marked rows go without a question too. You
+  still hear how many were deleted.
+- **Enter** still plays or opens the row under your cursor. While rows are
+  marked it says once that the marks are still there.
+- A favorite that appears in two branches is removed once.
+
 #### A note to yourself about any station
 
 **Note to Self...** sits near the end of every row's menu. Use it to write
@@ -3504,7 +3529,21 @@ similar entries are easy to tell apart. With an entry selected:
 - **Remove**, or the **Delete** key, deletes the entry **straight away, without
   asking**.
 - **Shift+F10** on the list offers Edit, Duplicate, Enable or Disable, and
-  Delete.
+  Delete, then **Mark for Deleting** (and, while anything is marked, **Remove
+  N Marked...** and **Clear Marks**).
+
+To remove several schedules at once, press **.** (period) on each one. You
+hear "Marked" and how many are marked, and the row ends with "(marked)". Then
+press **Delete**: one question asks, for example, "Delete 4 schedules?", with
+**No** already chosen, and you hear "Deleted 4 schedules." Your cursor lands on
+the next schedule that is left. **Ctrl+Shift+Delete** clears every mark. A
+single Delete with nothing marked still removes the selected entry straight
+away; the question is only for several, because one schedule is quick to add
+again and a dozen are not.
+
+**Edit**, **Duplicate** and **Enable** or **Disable** work on the selected
+entry only. If schedules are marked, the first of them you use says so once:
+"That used the selected row only; 2 rows are still marked for Delete."
 
 Close the window with **Escape** or **Ctrl+W**. Its menus are **Schedule**
 (Alt+D), **Station** (Alt+S) and **Window** (Alt+W).
@@ -3551,6 +3590,9 @@ schedule can book a programme for you too. See Chapter 12.
    - **Apply Sound Enhancements to recordings** (Alt+E): off, so recordings
      are kept exactly as the station sent them. Turn it on to record the sound
      with your enhancements, for every kind of recording.
+   - **Split the recording at each song change** (Alt+N): off to begin with.
+     Turn it on to get one file per song instead of one long file. See
+     "Splitting a recording into songs" below.
 3. Choose **OK**. You should hear "Recording settings saved".
 
 **Raw stream** saves exactly what the station sends, without changing it, so
@@ -3578,6 +3620,39 @@ now, the finished ones, and the scheduled ones.
    press **Y** to delete. Your cursor lands on the next recording. If you
    change your mind, Ctrl+Z in the main window brings it back.
 6. Press **Escape** to close. Recordings keep going.
+
+#### Removing several recordings at once
+
+The same three keys as the favorites tree (see "Removing several favorites at
+once" in Chapter 7):
+
+1. Arrow to a finished recording and press **.** (period, or the decimal point
+   on the number pad). You hear "Marked. 1 marked." and the row's name now ends
+   with "(marked)", so you hear it again as you arrow past.
+2. Mark as many as you like. Press **.** again on a marked row to unmark it;
+   you hear "Unmarked" and how many are still marked.
+3. Press **Delete**, or choose **Remove...**. One question asks, for example,
+   "Delete 3 recordings?", with **No** already chosen. Choose **Yes** and you
+   hear "Deleted 3 recordings." Your cursor lands on the nearest recording that
+   is left, and one **Ctrl+Z** in the main window brings all three back.
+
+**Ctrl+Shift+Delete** clears every mark and says how many it cleared.
+
+For example, after a week of scheduled shows you might arrow down the list
+pressing **.** on Monday, Tuesday and Thursday, then press **Delete** once and
+answer **Yes**: three files go, with one question instead of three.
+
+Things to know:
+
+- Only a **finished** recording can be marked. On a recording still being made
+  you hear "Still recording; it can be marked once it has finished", and on a
+  scheduled row "Only finished recordings can be marked". Its schedule is
+  removed in Schedule Recording.
+- **Play** and **Open in Folder** still work on the recording under your
+  cursor, not on the marked ones. The first time you use one while recordings
+  are marked, it says so, for example "That used the selected row only; 3 rows
+  are still marked for Delete." It says this once for each set of marks.
+- Marks last while the window is open. Closing it forgets them.
 
 The line under the list starts with what is happening, such as "Recording, 42
 min left. Next: KFI at 11:00 tomorrow. 14 recorded. In D:\Music\Quill Radio
@@ -3673,6 +3748,52 @@ Quill Radio takes these out by itself. There is nothing to set.
 - It does not apply to YouTube broadcasts or to HLS streams (addresses ending
   in `.m3u8`), where two connections can genuinely start with the same
   programme audio.
+
+### Splitting a recording into songs
+
+Many music stations say the name of each song as it starts. With **Split the
+recording at each song change** turned on in Recording Settings (Alt+N),
+Quill Radio listens for those names while it records and, when the recording
+finishes, cuts it into one file per song, named after the song.
+
+To try it:
+
+1. Press **Ctrl+Alt+Shift+I** (**Record > Recording Settings...**), press
+   **Alt+N** to check **Split the recording at each song change**, and choose
+   **OK**.
+2. Record as usual, with **Ctrl+R**, Record Station or a schedule.
+3. When the recording finishes you hear what happened, for example "Split
+   KXYZ - 2026-10-17 20-00-00.mp3 into 12 songs, starting with KXYZ -
+   2026-10-17 20-00-00 - 01 Elton John - Your Song.mp3."
+
+Each file keeps the recording's own name and adds a two-digit number and the
+song, so the songs sort in the order they played:
+`KXYZ - 2026-10-17 20-00-00 - 02 Queen - Somebody to Love.mp3`. Characters a
+file name cannot hold are left out, a song with no usable name is called
+"Untitled song", and a name already in the folder gets " (2)" added.
+
+Things to know:
+
+- **Nothing is lost between songs.** The recording is made as one file and cut
+  afterwards with a straight copy, so the songs played one after another are
+  the whole recording.
+- **A cut can be a few seconds early or late.** Quill Radio checks the song
+  name every ten seconds, and stations do not always change the name exactly
+  when the music changes. A few seconds of one song may be at the start or end
+  of its neighbour.
+- **Station talk is not a song.** A name like "Live", an advert marker or the
+  station's own name does not start a new file, and anything shorter than 20
+  seconds is folded into the song beside it.
+- **If the split cannot be done, the recording is kept whole** and you hear
+  why, for example "Kept ... as one recording: no song change was heard while
+  it recorded." This happens on stations that do not send song names, on talk
+  stations, and if FFmpeg is missing.
+- **A recording that dropped and reconnected is kept whole.** The gap while it
+  reconnected is missing from the file, so the song times no longer match the
+  audio. You hear "the stream dropped while it recorded".
+- The first file is whatever was already playing when you pressed Record, so
+  it is usually the end of a song.
+- It works with every recording format, including Raw stream.
 
 ### If a recording was in progress when Quill Radio quit
 
@@ -7815,8 +7936,8 @@ In every other window, Alt+S is the Station menu and Alt+W is the Window menu. S
 | New Folder | Ctrl+Shift+E |
 | Rename (in a tree) | F2 |
 | Remove (in a tree or list) | Delete |
-| Mark or unmark a station for deleting (in a favorites tree) | . (period) |
-| Remove every marked station (one question) | Delete |
+| Mark or unmark a row for deleting (favorites, Recordings, Browse, Schedule Recording) | . (period) |
+| Remove every marked row (one question) | Delete |
 | Clear every mark | Ctrl+Shift+Delete |
 | Move the selected favorite up or down | Alt+Shift+Up / Alt+Shift+Down |
 | Sort: A to Z, Z to A, manual | Ctrl+Alt+Shift+F4 / F5 / F6 |

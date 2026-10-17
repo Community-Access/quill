@@ -1,17 +1,20 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QuillBeacon Product Requirements</title>
+  <title>QuillBeacon Product Requirements Document</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -36,12 +39,16 @@
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
-        font-size: 12pt;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -54,11 +61,8 @@
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -87,8 +91,11 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -112,7 +119,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -129,11 +136,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -172,7 +179,6 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
     /* CSS for syntax highlighting */
     html { -webkit-text-size-adjust: 100%; }
     pre > code.sourceCode { white-space: pre; position: relative; }
@@ -240,11 +246,7 @@
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
   <style>
-    /* Retrofitted to match docs/pandoc/quill-accessible.html5, which this page
-       was not rendered through. See that template for the reasoning: a skip link
-       needs a focusable target, and Pandoc's own styles.html ships
-       `table { display: block }`, which takes the table role -- and the row and
-       cell roles with it -- out of the accessibility tree in Blink and Gecko. */
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
     .skip-link {
       position: absolute;
       left: -9999px;
@@ -256,10 +258,41 @@
       z-index: 1000;
     }
     .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
     main[tabindex="-1"]:focus-visible {
       outline: 3px solid #b8540a;
       outline-offset: -3px;
     }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
     table {
       display: table;
       overflow-x: visible;
@@ -274,645 +307,6 @@
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
-<header id="title-block-header">
-<h1 class="title">QuillBeacon Product Requirements</h1>
-</header>
-<nav id="TOC" role="doc-toc">
-<ul>
-<li><a href="#quillbeacon-product-requirements-document"
-id="toc-quillbeacon-product-requirements-document">QuillBeacon Product
-Requirements Document</a>
-<ul>
-<li><a href="#1-executive-product-decision"
-id="toc-1-executive-product-decision">1. Executive product
-decision</a></li>
-<li><a href="#2-product-name-and-brand"
-id="toc-2-product-name-and-brand">2. Product name and brand</a>
-<ul>
-<li><a href="#21-recommended-name-quillbeacon"
-id="toc-21-recommended-name-quillbeacon">2.1 Recommended name:
-QuillBeacon</a></li>
-<li><a href="#22-product-language" id="toc-22-product-language">2.2
-Product language</a></li>
-</ul></li>
-<li><a href="#3-product-vision" id="toc-3-product-vision">3. Product
-vision</a>
-<ul>
-<li><a href="#31-vision-statement" id="toc-31-vision-statement">3.1
-Vision statement</a></li>
-<li><a href="#32-product-promise" id="toc-32-product-promise">3.2
-Product promise</a></li>
-<li><a href="#33-the-larger-opportunity"
-id="toc-33-the-larger-opportunity">3.3 The larger opportunity</a></li>
-</ul></li>
-<li><a href="#4-product-principles" id="toc-4-product-principles">4.
-Product principles</a>
-<ul>
-<li><a href="#41-accessibility-is-the-architecture"
-id="toc-41-accessibility-is-the-architecture">4.1 Accessibility is the
-architecture</a></li>
-<li><a href="#42-local-first-cloud-connected"
-id="toc-42-local-first-cloud-connected">4.2 Local-first,
-cloud-connected</a></li>
-<li><a href="#43-native-where-the-user-touches-it"
-id="toc-43-native-where-the-user-touches-it">4.3 Native where the user
-touches it</a></li>
-<li><a href="#44-exact-locations-with-graceful-fallback"
-id="toc-44-exact-locations-with-graceful-fallback">4.4 Exact locations
-with graceful fallback</a></li>
-<li><a href="#45-search-before-filing"
-id="toc-45-search-before-filing">4.5 Search before filing</a></li>
-<li><a href="#46-user-ownership" id="toc-46-user-ownership">4.6 User
-ownership</a></li>
-<li><a href="#47-interconnection-without-lock-in"
-id="toc-47-interconnection-without-lock-in">4.7 Interconnection without
-lock-in</a></li>
-<li><a href="#48-delight-without-mystery"
-id="toc-48-delight-without-mystery">4.8 Delight without mystery</a></li>
-</ul></li>
-<li><a href="#5-goals" id="toc-5-goals">5. Goals</a>
-<ul>
-<li><a href="#51-primary-goals" id="toc-51-primary-goals">5.1 Primary
-goals</a></li>
-<li><a href="#52-success-definition" id="toc-52-success-definition">5.2
-Success definition</a></li>
-</ul></li>
-<li><a href="#6-non-goals-for-the-initial-release"
-id="toc-6-non-goals-for-the-initial-release">6. Non-goals for the
-initial release</a></li>
-<li><a href="#7-primary-audiences-and-personas"
-id="toc-7-primary-audiences-and-personas">7. Primary audiences and
-personas</a>
-<ul>
-<li><a href="#71-the-rapid-retriever"
-id="toc-71-the-rapid-retriever">7.1 The rapid retriever</a></li>
-<li><a href="#72-the-researcher" id="toc-72-the-researcher">7.2 The
-researcher</a></li>
-<li><a href="#73-the-podcast-and-radio-listener"
-id="toc-73-the-podcast-and-radio-listener">7.3 The podcast and radio
-listener</a></li>
-<li><a href="#74-the-student" id="toc-74-the-student">7.4 The
-student</a></li>
-<li><a href="#75-the-professional" id="toc-75-the-professional">7.5 The
-professional</a></li>
-<li><a href="#76-the-accessibility-first-power-user"
-id="toc-76-the-accessibility-first-power-user">7.6 The
-accessibility-first power user</a></li>
-<li><a href="#77-the-cross-device-user"
-id="toc-77-the-cross-device-user">7.7 The cross-device user</a></li>
-</ul></li>
-<li><a href="#8-core-jobs-to-be-done" id="toc-8-core-jobs-to-be-done">8.
-Core jobs to be done</a></li>
-<li><a href="#9-supported-resource-model"
-id="toc-9-supported-resource-model">9. Supported resource model</a>
-<ul>
-<li><a href="#91-resource-categories"
-id="toc-91-resource-categories">9.1 Resource categories</a></li>
-<li><a href="#92-resource-state" id="toc-92-resource-state">9.2 Resource
-state</a></li>
-</ul></li>
-<li><a href="#10-the-universal-location-model"
-id="toc-10-the-universal-location-model">10. The universal location
-model</a>
-<ul>
-<li><a href="#101-locator-layers" id="toc-101-locator-layers">10.1
-Locator layers</a></li>
-<li><a href="#102-recovery-behavior" id="toc-102-recovery-behavior">10.2
-Recovery behavior</a></li>
-</ul></li>
-<li><a href="#11-podcast-and-episode-design"
-id="toc-11-podcast-and-episode-design">11. Podcast and episode
-design</a>
-<ul>
-<li><a href="#111-bookmarkable-podcast-entities"
-id="toc-111-bookmarkable-podcast-entities">11.1 Bookmarkable podcast
-entities</a></li>
-<li><a href="#112-chapter-sources" id="toc-112-chapter-sources">11.2
-Chapter sources</a></li>
-<li><a href="#113-personal-episode-chapters"
-id="toc-113-personal-episode-chapters">11.3 Personal episode
-chapters</a></li>
-<li><a href="#114-time-point-capture"
-id="toc-114-time-point-capture">11.4 Time-point capture</a></li>
-<li><a href="#115-chapter-and-time-point-navigation"
-id="toc-115-chapter-and-time-point-navigation">11.5 Chapter and
-time-point navigation</a></li>
-<li><a href="#116-transcript-linked-bookmarks"
-id="toc-116-transcript-linked-bookmarks">11.6 Transcript-linked
-bookmarks</a></li>
-<li><a href="#117-continue-listening"
-id="toc-117-continue-listening">11.7 Continue listening</a></li>
-<li><a href="#118-podcast-subscriptions-and-scope"
-id="toc-118-podcast-subscriptions-and-scope">11.8 Podcast subscriptions
-and scope</a></li>
-</ul></li>
-<li><a href="#12-radio-stream-design"
-id="toc-12-radio-stream-design">12. Radio-stream design</a>
-<ul>
-<li><a href="#121-bookmarkable-radio-entities"
-id="toc-121-bookmarkable-radio-entities">12.1 Bookmarkable radio
-entities</a></li>
-<li><a href="#122-stream-metadata" id="toc-122-stream-metadata">12.2
-Stream metadata</a></li>
-<li><a href="#123-live-stream-limitations"
-id="toc-123-live-stream-limitations">12.3 Live-stream
-limitations</a></li>
-<li><a href="#124-radio-delight" id="toc-124-radio-delight">12.4 Radio
-delight</a></li>
-</ul></li>
-<li><a href="#13-information-architecture"
-id="toc-13-information-architecture">13. Information architecture</a>
-<ul>
-<li><a href="#131-primary-destinations"
-id="toc-131-primary-destinations">13.1 Primary destinations</a></li>
-<li><a href="#132-home" id="toc-132-home">13.2 Home</a></li>
-<li><a href="#133-three-pane-desktop-layout"
-id="toc-133-three-pane-desktop-layout">13.3 Three-pane desktop
-layout</a></li>
-<li><a href="#134-ios-structure" id="toc-134-ios-structure">13.4 iOS
-structure</a></li>
-</ul></li>
-<li><a href="#14-capture-experience" id="toc-14-capture-experience">14.
-Capture experience</a>
-<ul>
-<li><a href="#141-capture-modes" id="toc-141-capture-modes">14.1 Capture
-modes</a></li>
-<li><a href="#142-global-capture-command"
-id="toc-142-global-capture-command">14.2 Global capture command</a></li>
-<li><a href="#143-quick-capture-form"
-id="toc-143-quick-capture-form">14.3 Quick capture form</a></li>
-<li><a href="#144-context-captured-automatically"
-id="toc-144-context-captured-automatically">14.4 Context captured
-automatically</a></li>
-<li><a href="#145-capture-routing-rules"
-id="toc-145-capture-routing-rules">14.5 Capture routing rules</a></li>
-</ul></li>
-<li><a href="#15-search-vision" id="toc-15-search-vision">15. Search
-vision</a>
-<ul>
-<li><a href="#151-searchable-fields" id="toc-151-searchable-fields">15.1
-Searchable fields</a></li>
-<li><a href="#152-search-behavior" id="toc-152-search-behavior">15.2
-Search behavior</a></li>
-<li><a href="#153-query-examples" id="toc-153-query-examples">15.3 Query
-examples</a></li>
-<li><a href="#154-accessible-search-builder"
-id="toc-154-accessible-search-builder">15.4 Accessible search
-builder</a></li>
-<li><a href="#155-filters" id="toc-155-filters">15.5 Filters</a></li>
-<li><a href="#156-sorting" id="toc-156-sorting">15.6 Sorting</a></li>
-<li><a href="#157-result-presentation"
-id="toc-157-result-presentation">15.7 Result presentation</a></li>
-<li><a href="#158-smart-collections" id="toc-158-smart-collections">15.8
-Smart Collections</a></li>
-</ul></li>
-<li><a href="#16-organization-model" id="toc-16-organization-model">16.
-Organization model</a>
-<ul>
-<li><a href="#161-collections" id="toc-161-collections">16.1
-Collections</a></li>
-<li><a href="#162-tags" id="toc-162-tags">16.2 Tags</a></li>
-<li><a href="#163-trails" id="toc-163-trails">16.3 Trails</a></li>
-<li><a href="#164-relationships" id="toc-164-relationships">16.4
-Relationships</a></li>
-</ul></li>
-<li><a href="#17-delightful-product-capabilities"
-id="toc-17-delightful-product-capabilities">17. Delightful product
-capabilities</a>
-<ul>
-<li><a href="#171-return-cards" id="toc-171-return-cards">17.1 Return
-Cards</a></li>
-<li><a href="#172-one-command-mark-this"
-id="toc-172-one-command-mark-this">17.2 One-command “Mark This”</a></li>
-<li><a href="#173-context-rewind" id="toc-173-context-rewind">17.3
-Context rewind</a></li>
-<li><a href="#174-broken-location-repair-assistant"
-id="toc-174-broken-location-repair-assistant">17.4 Broken-location
-repair assistant</a></li>
-<li><a href="#175-duplicate-intelligence"
-id="toc-175-duplicate-intelligence">17.5 Duplicate intelligence</a></li>
-<li><a href="#176-accessible-where-am-i-command"
-id="toc-176-accessible-where-am-i-command">17.6 Accessible “Where Am I?”
-command</a></li>
-<li><a href="#177-daily-resurfacing" id="toc-177-daily-resurfacing">17.7
-Daily resurfacing</a></li>
-</ul></li>
-<li><a href="#18-accessibility-requirements"
-id="toc-18-accessibility-requirements">18. Accessibility
-requirements</a>
-<ul>
-<li><a href="#181-non-negotiable-requirements"
-id="toc-181-non-negotiable-requirements">18.1 Non-negotiable
-requirements</a></li>
-<li><a href="#182-screen-reader-experience"
-id="toc-182-screen-reader-experience">18.2 Screen-reader
-experience</a></li>
-<li><a href="#183-keyboard-design" id="toc-183-keyboard-design">18.3
-Keyboard design</a></li>
-<li><a href="#184-accessible-notifications"
-id="toc-184-accessible-notifications">18.4 Accessible
-notifications</a></li>
-</ul></li>
-<li><a href="#19-native-platform-strategy"
-id="toc-19-native-platform-strategy">19. Native platform strategy</a>
-<ul>
-<li><a href="#191-architectural-decision"
-id="toc-191-architectural-decision">19.1 Architectural decision</a></li>
-<li><a href="#192-platform-specific-integration"
-id="toc-192-platform-specific-integration">19.2 Platform-specific
-integration</a></li>
-</ul></li>
-<li><a href="#20-quillville-ecosystem-integration"
-id="toc-20-quillville-ecosystem-integration">20. QuillVille ecosystem
-integration</a>
-<ul>
-<li><a href="#201-quille-integration"
-id="toc-201-quille-integration">20.1 QUILLE integration</a></li>
-<li><a href="#202-quillsync-integration"
-id="toc-202-quillsync-integration">20.2 QuillSync integration</a></li>
-<li><a href="#203-future-quillville-integrations"
-id="toc-203-future-quillville-integrations">20.3 Future QuillVille
-integrations</a></li>
-</ul></li>
-<li><a href="#21-browser-extension" id="toc-21-browser-extension">21.
-Browser extension</a>
-<ul>
-<li><a href="#211-required-browser-actions"
-id="toc-211-required-browser-actions">21.1 Required browser
-actions</a></li>
-<li><a href="#212-browser-accessibility"
-id="toc-212-browser-accessibility">21.2 Browser accessibility</a></li>
-<li><a href="#213-location-capture" id="toc-213-location-capture">21.3
-Location capture</a></li>
-</ul></li>
-<li><a href="#22-search-and-storage-implementation"
-id="toc-22-search-and-storage-implementation">22. Search and storage
-implementation</a>
-<ul>
-<li><a href="#221-local-database" id="toc-221-local-database">22.1 Local
-database</a></li>
-<li><a href="#222-search-index-layers"
-id="toc-222-search-index-layers">22.2 Search index layers</a></li>
-<li><a href="#223-search-performance-targets"
-id="toc-223-search-performance-targets">22.3 Search performance
-targets</a></li>
-</ul></li>
-<li><a href="#23-quillsync-architecture"
-id="toc-23-quillsync-architecture">23. QuillSync architecture</a>
-<ul>
-<li><a href="#231-sync-principles" id="toc-231-sync-principles">23.1
-Sync principles</a></li>
-<li><a href="#232-recommended-server-architecture"
-id="toc-232-recommended-server-architecture">23.2 Recommended server
-architecture</a></li>
-<li><a href="#233-encryption-model" id="toc-233-encryption-model">23.3
-Encryption model</a></li>
-<li><a href="#234-recovery-options" id="toc-234-recovery-options">23.4
-Recovery options</a></li>
-<li><a href="#235-sync-conflict-policy"
-id="toc-235-sync-conflict-policy">23.5 Sync conflict policy</a></li>
-<li><a href="#236-device-handoff" id="toc-236-device-handoff">23.6
-Device handoff</a></li>
-</ul></li>
-<li><a href="#24-core-data-model" id="toc-24-core-data-model">24. Core
-data model</a>
-<ul>
-<li><a href="#241-principal-entities"
-id="toc-241-principal-entities">24.1 Principal entities</a></li>
-<li><a href="#242-example-portable-record"
-id="toc-242-example-portable-record">24.2 Example portable
-record</a></li>
-</ul></li>
-<li><a href="#25-import-and-migration"
-id="toc-25-import-and-migration">25. Import and migration</a>
-<ul>
-<li><a href="#251-initial-import-sources"
-id="toc-251-initial-import-sources">25.1 Initial import sources</a></li>
-<li><a href="#252-future-import-sources"
-id="toc-252-future-import-sources">25.2 Future import sources</a></li>
-<li><a href="#253-import-experience" id="toc-253-import-experience">25.3
-Import experience</a></li>
-</ul></li>
-<li><a href="#26-export-and-portability"
-id="toc-26-export-and-portability">26. Export and portability</a></li>
-<li><a href="#27-sharing-and-collaboration"
-id="toc-27-sharing-and-collaboration">27. Sharing and collaboration</a>
-<ul>
-<li><a href="#271-sharing-modes" id="toc-271-sharing-modes">27.1 Sharing
-modes</a></li>
-<li><a href="#272-accessible-share-representation"
-id="toc-272-accessible-share-representation">27.2 Accessible share
-representation</a></li>
-<li><a href="#273-collaboration-requirements"
-id="toc-273-collaboration-requirements">27.3 Collaboration
-requirements</a></li>
-</ul></li>
-<li><a href="#28-optional-intelligent-capabilities"
-id="toc-28-optional-intelligent-capabilities">28. Optional intelligent
-capabilities</a>
-<ul>
-<li><a href="#281-suggested-tags" id="toc-281-suggested-tags">28.1
-Suggested tags</a></li>
-<li><a href="#282-summaries" id="toc-282-summaries">28.2
-Summaries</a></li>
-<li><a href="#283-suggested-podcast-chapters"
-id="toc-283-suggested-podcast-chapters">28.3 Suggested podcast
-chapters</a></li>
-<li><a href="#284-semantic-search" id="toc-284-semantic-search">28.4
-Semantic search</a></li>
-<li><a href="#285-relationship-suggestions"
-id="toc-285-relationship-suggestions">28.5 Relationship
-suggestions</a></li>
-<li><a href="#286-repair-suggestions"
-id="toc-286-repair-suggestions">28.6 Repair suggestions</a></li>
-<li><a href="#287-privacy-boundaries"
-id="toc-287-privacy-boundaries">28.7 Privacy boundaries</a></li>
-</ul></li>
-<li><a href="#29-settings" id="toc-29-settings">29. Settings</a>
-<ul>
-<li><a href="#291-general" id="toc-291-general">29.1 General</a></li>
-<li><a href="#292-accessibility" id="toc-292-accessibility">29.2
-Accessibility</a></li>
-<li><a href="#293-search" id="toc-293-search">29.3 Search</a></li>
-<li><a href="#294-sync" id="toc-294-sync">29.4 Sync</a></li>
-<li><a href="#295-media" id="toc-295-media">29.5 Media</a></li>
-<li><a href="#296-privacy" id="toc-296-privacy">29.6 Privacy</a></li>
-</ul></li>
-<li><a href="#30-notifications-and-status"
-id="toc-30-notifications-and-status">30. Notifications and
-status</a></li>
-<li><a href="#31-security-and-privacy-requirements"
-id="toc-31-security-and-privacy-requirements">31. Security and privacy
-requirements</a></li>
-<li><a href="#32-reliability-and-non-functional-requirements"
-id="toc-32-reliability-and-non-functional-requirements">32. Reliability
-and non-functional requirements</a>
-<ul>
-<li><a href="#321-availability" id="toc-321-availability">32.1
-Availability</a></li>
-<li><a href="#322-data-integrity" id="toc-322-data-integrity">32.2 Data
-integrity</a></li>
-<li><a href="#323-performance" id="toc-323-performance">32.3
-Performance</a></li>
-<li><a href="#324-localization" id="toc-324-localization">32.4
-Localization</a></li>
-</ul></li>
-<li><a href="#33-analytics-and-measurement"
-id="toc-33-analytics-and-measurement">33. Analytics and measurement</a>
-<ul>
-<li><a href="#331-product-metrics" id="toc-331-product-metrics">33.1
-Product metrics</a></li>
-<li><a href="#332-metrics-not-to-optimize-blindly"
-id="toc-332-metrics-not-to-optimize-blindly">33.2 Metrics not to
-optimize blindly</a></li>
-</ul></li>
-<li><a href="#34-functional-requirements-by-epic"
-id="toc-34-functional-requirements-by-epic">34. Functional requirements
-by epic</a>
-<ul>
-<li><a href="#epic-a-library-foundation"
-id="toc-epic-a-library-foundation">Epic A: Library foundation</a></li>
-<li><a href="#epic-b-capture" id="toc-epic-b-capture">Epic B:
-Capture</a></li>
-<li><a href="#epic-c-search-and-discovery"
-id="toc-epic-c-search-and-discovery">Epic C: Search and
-discovery</a></li>
-<li><a href="#epic-d-opening-and-recovery"
-id="toc-epic-d-opening-and-recovery">Epic D: Opening and
-recovery</a></li>
-<li><a href="#epic-e-podcasts-and-media"
-id="toc-epic-e-podcasts-and-media">Epic E: Podcasts and media</a></li>
-<li><a href="#epic-f-radio" id="toc-epic-f-radio">Epic F: Radio</a></li>
-<li><a href="#epic-g-quillsync" id="toc-epic-g-quillsync">Epic G:
-QuillSync</a></li>
-<li><a href="#epic-h-accessibility-and-customization"
-id="toc-epic-h-accessibility-and-customization">Epic H: Accessibility
-and customization</a></li>
-</ul></li>
-<li><a href="#35-recommended-delivery-phases"
-id="toc-35-recommended-delivery-phases">35. Recommended delivery
-phases</a>
-<ul>
-<li><a href="#phase-0-product-and-accessibility-prototype"
-id="toc-phase-0-product-and-accessibility-prototype">Phase 0: Product
-and accessibility prototype</a></li>
-<li><a href="#phase-1-desktop-local-first-mvp"
-id="toc-phase-1-desktop-local-first-mvp">Phase 1: Desktop local-first
-MVP</a></li>
-<li><a href="#phase-2-quillsync-and-multi-device-desktop"
-id="toc-phase-2-quillsync-and-multi-device-desktop">Phase 2: QuillSync
-and multi-device desktop</a></li>
-<li><a href="#phase-3-rich-media" id="toc-phase-3-rich-media">Phase 3:
-Rich media</a></li>
-<li><a href="#phase-4-ios-and-ipados"
-id="toc-phase-4-ios-and-ipados">Phase 4: iOS and iPadOS</a></li>
-<li><a href="#phase-5-intelligent-assistance-and-advanced-integrations"
-id="toc-phase-5-intelligent-assistance-and-advanced-integrations">Phase
-5: Intelligent assistance and advanced integrations</a></li>
-</ul></li>
-<li><a href="#36-mvp-acceptance-criteria"
-id="toc-36-mvp-acceptance-criteria">36. MVP acceptance criteria</a>
-<ul>
-<li><a href="#capture" id="toc-capture">Capture</a></li>
-<li><a href="#search" id="toc-search">Search</a></li>
-<li><a href="#open" id="toc-open">Open</a></li>
-<li><a href="#accessibility"
-id="toc-accessibility">Accessibility</a></li>
-<li><a href="#portability" id="toc-portability">Portability</a></li>
-</ul></li>
-<li><a href="#37-example-end-to-end-experiences"
-id="toc-37-example-end-to-end-experiences">37. Example end-to-end
-experiences</a>
-<ul>
-<li><a href="#371-save-a-document-hotspot"
-id="toc-371-save-a-document-hotspot">37.1 Save a document
-hotspot</a></li>
-<li><a href="#372-save-a-podcast-chapter-and-precise-point"
-id="toc-372-save-a-podcast-chapter-and-precise-point">37.2 Save a
-podcast chapter and precise point</a></li>
-<li><a href="#373-create-a-personal-podcast-chapter"
-id="toc-373-create-a-personal-podcast-chapter">37.3 Create a personal
-podcast chapter</a></li>
-<li><a href="#374-save-a-live-radio-moment"
-id="toc-374-save-a-live-radio-moment">37.4 Save a live radio
-moment</a></li>
-<li><a href="#375-continue-a-cross-device-trail"
-id="toc-375-continue-a-cross-device-trail">37.5 Continue a cross-device
-Trail</a></li>
-</ul></li>
-<li><a href="#38-risks-and-mitigations"
-id="toc-38-risks-and-mitigations">38. Risks and mitigations</a>
-<ul>
-<li><a href="#381-exact-location-fragility"
-id="toc-381-exact-location-fragility">38.1 Exact-location
-fragility</a></li>
-<li><a href="#382-product-scope-explosion"
-id="toc-382-product-scope-explosion">38.2 Product scope
-explosion</a></li>
-<li><a href="#383-native-multi-platform-cost"
-id="toc-383-native-multi-platform-cost">38.3 Native multi-platform
-cost</a></li>
-<li><a href="#384-encryption-recovery-complexity"
-id="toc-384-encryption-recovery-complexity">38.4 Encryption recovery
-complexity</a></li>
-<li><a href="#385-search-index-size" id="toc-385-search-index-size">38.5
-Search index size</a></li>
-<li><a href="#386-inconsistent-podcast-metadata"
-id="toc-386-inconsistent-podcast-metadata">38.6 Inconsistent podcast
-metadata</a></li>
-<li><a href="#387-live-radio-impermanence"
-id="toc-387-live-radio-impermanence">38.7 Live radio
-impermanence</a></li>
-<li><a href="#388-accessibility-regressions"
-id="toc-388-accessibility-regressions">38.8 Accessibility
-regressions</a></li>
-</ul></li>
-<li><a href="#39-testing-strategy" id="toc-39-testing-strategy">39.
-Testing strategy</a>
-<ul>
-<li><a href="#391-automated-testing" id="toc-391-automated-testing">39.1
-Automated testing</a></li>
-<li><a href="#392-manual-accessibility-gates"
-id="toc-392-manual-accessibility-gates">39.2 Manual accessibility
-gates</a></li>
-<li><a href="#393-community-validation"
-id="toc-393-community-validation">39.3 Community validation</a></li>
-</ul></li>
-<li><a href="#40-recommended-product-decisions"
-id="toc-40-recommended-product-decisions">40. Recommended product
-decisions</a></li>
-<li><a href="#41-product-statement" id="toc-41-product-statement">41.
-Product statement</a></li>
-<li><a href="#42-standards-and-technical-references"
-id="toc-42-standards-and-technical-references">42. Standards and
-technical references</a></li>
-<li><a href="#43-immediate-next-implementation-artifacts"
-id="toc-43-immediate-next-implementation-artifacts">43. Immediate next
-implementation artifacts</a></li>
-<li><a href="#appendix-a-candidate-names-considered"
-id="toc-appendix-a-candidate-names-considered">Appendix A: Candidate
-names considered</a></li>
-<li><a href="#quillbeacon--recommended"
-id="toc-quillbeacon--recommended">QuillBeacon — recommended</a></li>
-<li><a href="#quillatlas" id="toc-quillatlas">QuillAtlas</a></li>
-<li><a href="#quillcompass" id="toc-quillcompass">QuillCompass</a></li>
-<li><a href="#quilltrail" id="toc-quilltrail">QuillTrail</a></li>
-<li><a href="#quillmark" id="toc-quillmark">QuillMark</a></li>
-<li><a href="#appendix-b-command-vocabulary"
-id="toc-appendix-b-command-vocabulary">Appendix B: Command
-vocabulary</a></li>
-<li><a href="#appendix-c-definition-of-outstanding"
-id="toc-appendix-c-definition-of-outstanding">Appendix C: Definition of
-outstanding</a></li>
-<li><a href="#44-implementation-plan-grounded-in-the-quill-stack"
-id="toc-44-implementation-plan-grounded-in-the-quill-stack">44.
-Implementation plan (grounded in the QUILL stack)</a></li>
-<li><a href="#441-architecture-decision-revised-against-the-real-stack"
-id="toc-441-architecture-decision-revised-against-the-real-stack">44.1
-Architecture decision (revised against the real stack)</a></li>
-<li><a href="#442-phase-1-mvp-scope-this-build"
-id="toc-442-phase-1-mvp-scope-this-build">44.2 Phase-1 MVP scope (this
-build)</a></li>
-<li><a href="#443-module-map-epic-to-file"
-id="toc-443-module-map-epic-to-file">44.3 Module map (epic to
-file)</a></li>
-<li><a href="#444-accessibility-verification-how-epic-h-is-met"
-id="toc-444-accessibility-verification-how-epic-h-is-met">44.4
-Accessibility verification (how Epic H is met)</a></li>
-<li><a href="#445-build-status" id="toc-445-build-status">44.5 Build
-status</a></li>
-<li><a href="#446-completed-feature-set-this-repo"
-id="toc-446-completed-feature-set-this-repo">44.6 Completed feature set
-(this repo)</a></li>
-<li><a href="#447-second-pass-in-repo-completions"
-id="toc-447-second-pass-in-repo-completions">44.7 Second-pass in-repo
-completions</a></li>
-<li><a href="#45-quillsync-implementation-plan-aligned-with-quill-sync"
-id="toc-45-quillsync-implementation-plan-aligned-with-quill-sync">45.
-QuillSync implementation plan (aligned with QUILL Sync)</a></li>
-<li><a href="#451-model-the-library-is-a-repository"
-id="toc-451-model-the-library-is-a-repository">45.1 Model: the library
-is a repository</a></li>
-<li><a href="#452-transport-three-tiers-cheapest-first"
-id="toc-452-transport-three-tiers-cheapest-first">45.2 Transport: three
-tiers, cheapest first</a></li>
-<li><a href="#453-security-non-negotiable"
-id="toc-453-security-non-negotiable">45.3 Security
-(non-negotiable)</a></li>
-<li><a href="#454-sync-scopes-smallest-first"
-id="toc-454-sync-scopes-smallest-first">45.4 Sync scopes, smallest
-first</a></li>
-<li><a href="#455-hosted-quillsync-server-architecture"
-id="toc-455-hosted-quillsync-server-architecture">45.5 Hosted QuillSync
-server architecture</a></li>
-<li><a href="#456-client-sync-protocol"
-id="toc-456-client-sync-protocol">45.6 Client sync protocol</a></li>
-<li><a href="#457-sequencing" id="toc-457-sequencing">45.7
-Sequencing</a></li>
-<li><a href="#458-what-this-changes-in-section-23"
-id="toc-458-what-this-changes-in-section-23">45.8 What this changes in
-section 23</a></li>
-<li><a href="#448-read-only-web-publish-surface-in-repo-built"
-id="toc-448-read-only-web-publish-surface-in-repo-built">44.8 Read-only
-web publish surface (in-repo, built)</a></li>
-<li><a href="#449-unified-preferences-hub-in-repo-built"
-id="toc-449-unified-preferences-hub-in-repo-built">44.9 Unified
-Preferences hub (in-repo, built)</a></li>
-<li><a
-href="#4410-headless-cli-native-messaging-fallback-player-settings-collection-edit-in-repo-built"
-id="toc-4410-headless-cli-native-messaging-fallback-player-settings-collection-edit-in-repo-built">44.10
-Headless CLI, native messaging fallback, player settings, collection
-edit (in-repo, built)</a></li>
-<li><a href="#4411-capture-routing-rules-in-repo-built"
-id="toc-4411-capture-routing-rules-in-repo-built">44.11 Capture routing
-rules (in-repo, built)</a></li>
-<li><a href="#4510-incremental-commits-and-auto-sync-in-repo-built"
-id="toc-4510-incremental-commits-and-auto-sync-in-repo-built">45.10
-Incremental commits and auto-sync (in-repo, built)</a></li>
-<li><a href="#459-authentication-magic-links-via-postmark"
-id="toc-459-authentication-magic-links-via-postmark">45.9
-Authentication: magic links via Postmark</a>
-<ul>
-<li><a href="#why-magic-links" id="toc-why-magic-links">Why magic
-links</a></li>
-<li><a href="#no-web-interface-client-based-verification"
-id="toc-no-web-interface-client-based-verification">No web interface
-(client-based verification)</a></li>
-<li><a href="#flow" id="toc-flow">Flow</a></li>
-<li><a href="#security-properties" id="toc-security-properties">Security
-properties</a></li>
-<li><a href="#provider-abstraction"
-id="toc-provider-abstraction">Provider abstraction</a></li>
-<li><a href="#accessibility-of-the-email-itself"
-id="toc-accessibility-of-the-email-itself">Accessibility of the email
-itself</a></li>
-<li><a href="#recovery-interaction"
-id="toc-recovery-interaction">Recovery interaction</a></li>
-</ul></li>
-<li><a href="#46-quillsync-as-the-shared-sync-framework"
-id="toc-46-quillsync-as-the-shared-sync-framework">46. QuillSync as the
-shared sync framework</a></li>
-<li><a href="#461-the-framework-lives-here"
-id="toc-461-the-framework-lives-here">46.1 The framework lives
-here</a></li>
-<li><a
-href="#462-the-integration-contract-what-each-companion-app-implements"
-id="toc-462-the-integration-contract-what-each-companion-app-implements">46.2
-The integration contract (what each companion app implements)</a></li>
-<li><a href="#463-integration-plans-planned-not-built-here"
-id="toc-463-integration-plans-planned-not-built-here">46.3 Integration
-plans (planned, not built here)</a></li>
-<li><a href="#464-server-integration"
-id="toc-464-server-integration">46.4 Server integration</a></li>
-<li><a href="#47-intelligent-assistance-local-heuristics-no-ai-required"
-id="toc-47-intelligent-assistance-local-heuristics-no-ai-required">47.
-Intelligent assistance (local heuristics, no AI required)</a></li>
-<li><a href="#474-semantic-search--opt-in-hook-no-default-model"
-id="toc-474-semantic-search--opt-in-hook-no-default-model">47.4 Semantic
-search – opt-in hook, no default model</a></li>
-</ul></li>
-</ul>
-</nav>
 <h1 id="quillbeacon-product-requirements-document">QuillBeacon Product
 Requirements Document</h1>
 <p><strong>Working product name:</strong> QuillBeacon<br />
@@ -2212,6 +1606,95 @@ recovery, and sync-conflict flows are fully accessible.</p>
 field.</li>
 <li>A mode that avoids intercepting screen-reader browse commands.</li>
 </ul>
+<p><strong>Status, 2026-10-17: every menu command has a key.</strong>
+The family rule applies to QuillBeacon as to every QUILL app: every
+enabled menu row shows a key, no key is shown on two rows, and every row
+has an access letter no other row in its menu shares (family rules 8 and
+9: every command has a key, and a rarely used command gets a longer one
+rather than none). Sixteen rows had no key; they now have these, chosen
+against every key already on the menu bar, the results-list keys
+(Delete, F2) and the family’s system-wide keys:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Menu row</th>
+<th style="text-align: left;">Key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">Edit &gt; Find Duplicates</td>
+<td style="text-align: left;">Ctrl+Alt+D</td>
+</tr>
+<tr>
+<td style="text-align: left;">View &gt; Accessibility Settings…</td>
+<td style="text-align: left;">Ctrl+Shift+Comma</td>
+</tr>
+<tr>
+<td style="text-align: left;">Media &gt; Play in External Player</td>
+<td style="text-align: left;">Ctrl+Alt+P</td>
+</tr>
+<tr>
+<td style="text-align: left;">Media &gt; Add Radio Station…</td>
+<td style="text-align: left;">Ctrl+Alt+R</td>
+</tr>
+<tr>
+<td style="text-align: left;">Media &gt; Add Radio Program…</td>
+<td style="text-align: left;">Ctrl+Alt+G</td>
+</tr>
+<tr>
+<td style="text-align: left;">Tools &gt; Trail Editor…</td>
+<td style="text-align: left;">Ctrl+Alt+T</td>
+</tr>
+<tr>
+<td style="text-align: left;">Tools &gt; Smart Collections Manager…</td>
+<td style="text-align: left;">Ctrl+Alt+Shift+G</td>
+</tr>
+<tr>
+<td style="text-align: left;">Tools &gt; Revalidate Health…</td>
+<td style="text-align: left;">Ctrl+Alt+H</td>
+</tr>
+<tr>
+<td style="text-align: left;">Tools &gt; Review Location Repair…</td>
+<td style="text-align: left;">Ctrl+Alt+Shift+H</td>
+</tr>
+<tr>
+<td style="text-align: left;">Tools &gt; External Player…</td>
+<td style="text-align: left;">Ctrl+Alt+Shift+X</td>
+</tr>
+<tr>
+<td style="text-align: left;">Tools &gt; Status Center…</td>
+<td style="text-align: left;">Ctrl+Alt+I</td>
+</tr>
+<tr>
+<td style="text-align: left;">Sync &gt; Sync Now</td>
+<td style="text-align: left;">F9</td>
+</tr>
+<tr>
+<td style="text-align: left;">Sync &gt; Sync Settings…</td>
+<td style="text-align: left;">Ctrl+F9</td>
+</tr>
+<tr>
+<td style="text-align: left;">Sync &gt; Sync History…</td>
+<td style="text-align: left;">Shift+F9</td>
+</tr>
+<tr>
+<td style="text-align: left;">Sync &gt; Auto Sync…</td>
+<td style="text-align: left;">Ctrl+Shift+F9</td>
+</tr>
+<tr>
+<td style="text-align: left;">Help &gt; About</td>
+<td style="text-align: left;">Alt+F1</td>
+</tr>
+</tbody>
+</table>
+<p>The keys are literals in the menu labels
+(<code>quill/apps/beacon/app.py</code>), so wx binds exactly what the
+menu shows, and the family key snapshot reads them from there.
+<code>tests/unit/ui/test_menu_accelerators.py</code> builds the real
+menu bar and holds it to the rule. Customizable shortcuts, conflict
+detection on rebinding and shortcut profiles above remain to be
+built.</p>
 <h3 id="184-accessible-notifications">18.4 Accessible notifications</h3>
 <p>Announcements should be concise:</p>
 <ul>

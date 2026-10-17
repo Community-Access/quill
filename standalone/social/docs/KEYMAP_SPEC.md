@@ -9,10 +9,11 @@ Until 2026-10-17 this page was the design specification for the keyboard. It pro
 
 ## How keys work in QUILL Social
 
-- **Every menu row that has a key shows it** beside its name, so a screen reader reads the key as you arrow through the menu. Some commands have no key yet; they are reached through their menu. For example, Feeds > New Folder... has no key: press Alt+D to open the Feeds menu, then F for New Folder.
+- **Every menu command has a key, and every menu row shows it** beside its name, so a screen reader reads the key as you arrow through the menu. Since 2026-10-17 there are no exceptions: the 31 commands that used to be reachable only through their menu have keys of their own, listed in the tables below.
+- **Every command also has its own letter in its menu.** Press Alt, the menu's letter, then the command's letter, one key at a time with nothing held down. No two commands in one menu share a letter. For example, Alt+D, then F opens Feeds > New Folder..., and Alt+L, then S stops listening.
 - **Keys act on the focused post.** Reply, Quote, Favourite, Bookmark and the other item commands work on whichever row of the post list is focused. With no post selected, Favourite, Bookmark, Boost and Reply say so rather than doing nothing silently.
-- **Changing a key.** The keys for the commands in the F1 list can be changed by editing `keymap.json` in QUILL Social's data folder (`%APPDATA%\QuillSocial` on Windows, or the `data` folder beside a portable copy). Close QUILL Social first: it writes that file again when it closes. Example: to make Favourite answer Ctrl+J, change the line `"favourite": "Ctrl+F"` to `"favourite": "Ctrl+J"`, save, and start QUILL Social. F1 then lists Ctrl+J.
-- **Limits of changing a key.** There is no window for this yet; it is the file or nothing. The menus keep showing, and keep answering to, the key QUILL Social shipped with. If two commands are given the same key, only one of them answers it, so give each its own. Commands that are not in the F1 list (most of the Feeds, Listen, Studio and Tools commands) cannot be changed.
+- **Changing a key.** Every key in this document can be changed by editing `keymap.json` in QUILL Social's data folder (`%APPDATA%\QuillSocial` on Windows, or the `data` folder beside a portable copy). Close QUILL Social first: it writes that file again when it closes. Example: to make Favourite answer Ctrl+J, change the line `"favourite": "Ctrl+F"` to `"favourite": "Ctrl+J"`, save, and start QUILL Social. Item > Favourite then shows Ctrl+J, Ctrl+J favourites the focused post, and F1 lists it. The names in the file are the command names F1 shows, with underscores for spaces (`listen_toggle` is Play / Pause, `delete_smart_folder` is Delete smart folder).
+- **Limits of changing a key.** There is no window for this yet; it is the file or nothing. If two commands are given the same key, only one of them answers it, so give each its own. If your `keymap.json` was saved by an earlier version and already gives one of the new keys to another command, your choice stands and the new command is left without a key until you give it one; F1 shows which. File > Exit stays on Alt+F4, which Windows owns.
 
 ---
 
@@ -39,8 +40,9 @@ In the post list, **Up** and **Down** move between posts, **Left** and **Right**
 | **Alt+B** | Bookmark | Item | Bookmarks the focused post, or removes the bookmark; bookmarked posts gather under Bookmarks in the navigation tree. |
 | **Ctrl+Shift+R** | Boost / Repost | Item | Boosts (reposts) the focused post to your followers, or undoes the boost. |
 | **Ctrl+Enter** | Play media | Item | Plays the audio or video attached to the focused post. |
-
-Item > Flag for follow-up, Item > Accessibility check and Item > Send to QUILL have no key yet.
+| **Ctrl+Shift+G** | Flag for follow-up | Item | Flags the focused post so it gathers under Flagged, or takes the flag off again. |
+| **F7** | Accessibility check | Item | Checks the focused post for missing image descriptions and other problems, and reads you what it found. |
+| **Ctrl+Shift+Q** | Send to QUILL | Item | Saves the focused post and its whole conversation as a Markdown document for QUILL, in the exports folder of QUILL Social's data folder, and says where. |
 
 ## 3. Writing
 
@@ -70,25 +72,57 @@ Example: in Unified Home, press Ctrl+Shift+F, type `release`, press Enter. Focus
 | **Ctrl+Shift+P** | Feed settings | Feeds | Title, refresh interval, how long to keep articles, and keyword rules for the selected feed. |
 | **Ctrl+Shift+K** | Mark all read | Feeds | Marks everything in the current view read and says how many. |
 | **Ctrl+Z** | Undo mark all read | Feeds | Puts back exactly the items the last Mark all read changed. |
+| **Ctrl+Alt+F** | New Folder | Feeds | Asks for a name and makes a folder for feeds. |
+| **Ctrl+Shift+M** | New smart folder | Feeds | Saves a search across your feeds as a folder that keeps itself up to date. |
+| **Ctrl+Alt+M** | Edit smart folder | Feeds | Changes the name or search of the smart folder selected in the navigation tree. |
+| **Ctrl+Shift+Delete** | Delete smart folder | Feeds | Asks first, then deletes the selected smart folder. The articles it matched are not touched. |
+| **Ctrl+I** | Import OPML | Feeds | Subscribes to every feed in an OPML file, keeping its folders. |
+| **Ctrl+E** | Export OPML | Feeds | Saves your subscriptions and folders to an OPML file. |
+| **Ctrl+Alt+U** | Unsubscribe from feed | Feeds | Asks first, then unsubscribes from the feed selected in the navigation tree and removes its cached items. |
 
-Feeds > New Folder..., the smart-folder commands, Import OPML..., Export OPML... and Unsubscribe from feed have no key yet.
+The two keys that remove something both ask before they act, and answering No changes nothing.
 
 ## 6. Listening
 
 | Key | Command | Menu | What it does |
 | :--- | :--- | :--- | :--- |
 | **Ctrl+Shift+L** | Listen to this view | Listen | Reads the unread articles in the current view aloud, one after another. |
+| **Ctrl+Shift+Space** | Play / Pause | Listen | Pauses the reading, or carries on from where it paused. If nothing is being read yet, it starts Listen to this view. |
+| **Ctrl+Shift+Period** | Next article | Listen | Skips to the next article. |
+| **Ctrl+Shift+Comma** | Previous article | Listen | Goes back to the previous article. |
+| **Ctrl+Shift+S** | Stop listening | Listen | Stops reading. |
 
-Listen > Play / Pause, Next article, Previous article and Stop listening have no key yet; open the Listen menu with Alt+L.
+Example: open a feed, press Ctrl+Shift+L, and the first unread article starts. Press Ctrl+Shift+Period to skip one you do not want, Ctrl+Shift+Space to pause while you answer the door and again to carry on, and Ctrl+Shift+S when you are done. The comma and period are the keys beside M, the same pair many players use for back and forward.
 
-## 7. Everything else
+## 7. Planning posts (Studio)
+
+| Key | Command | Menu | What it does |
+| :--- | :--- | :--- | :--- |
+| **Ctrl+Shift+D** | Drafts | Studio | Lists your saved drafts; open one to keep writing it. |
+| **Ctrl+Shift+Y** | Agenda / Calendar | Studio | What is scheduled to publish, by day. |
+| **Ctrl+Shift+U** | Queue schedule | Studio | The times of day queued posts go out. |
+| **Ctrl+Shift+W** | Approvals | Studio | Posts waiting for someone to approve them before they publish. |
+
+## 8. Everything else
 
 | Key | Command | Menu | What it does |
 | :--- | :--- | :--- | :--- |
 | **Ctrl+Shift+A** | Add Account | File | Connects an account: Mastodon or a Mastodon-compatible server, Lemmy, or Bluesky. |
+| **Ctrl+Comma** | Preferences | File | Announcement verbosity, high contrast and what each row speaks. |
 | **Alt+F4** | Exit | File | Closes QUILL Social. Your reading place is remembered. |
+| **Ctrl+Shift+H** | Catch Up | Tools | Opens Catch Up under Discover: a digest of what you missed. |
+| **Ctrl+Alt+I** | Insights / Analytics | Tools | How your posts have done, as a report you can read line by line; you hear the number of posts sent and replies received. |
+| **Ctrl+Alt+T** | Safety Center | Tools | Mutes, blocks and filters. |
+| **Ctrl+Alt+P** | Notification policies | Tools | Quiet hours and which notifications reach you. |
+| **Ctrl+Alt+G** | Plugins | Tools | Turn plugins on and off. |
+| **Ctrl+Shift+B** | Outbox | Tools | Posts waiting to be sent, for example while you are offline. |
+| **Ctrl+Alt+R** | Summarize this feed (AI) | Tools | A short summary of the current view, as a report. |
+| **Ctrl+F1** | User Guide | Help | Opens the user guide in your browser. |
+| **Ctrl+Shift+F1** | Keyboard Reference | Help | Opens this document. |
+| **Alt+Shift+F1** | Product Requirements | Help | Opens the product requirements document. |
+| **Alt+F1** | About | Help | The version of QUILL Social you have. |
 
-The Studio menu (Drafts, Agenda / Calendar, Queue schedule, Approvals), the rest of the Tools menu (Catch Up, Insights / Analytics, Safety Center, Notification policies, Plugins, Outbox, Summarize this feed) and File > Preferences have no keys yet.
+Rarely used commands, such as the Help documents and the settings-like Tools windows, have longer keys on purpose, so the short ones stay free for what you do every few minutes. Ctrl+Alt keys and keyboard layouts: where the right Alt key types accented letters, a Ctrl+Alt key may run its command instead of typing the letter while the search box has focus; the menu always works.
 
 ---
 

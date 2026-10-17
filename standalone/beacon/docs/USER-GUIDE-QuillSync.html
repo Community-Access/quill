@@ -536,9 +536,66 @@ keep that search, press Ctrl+F, type
 <code>type:episode tag:research</code>, press Enter, then Ctrl+Shift+G
 and give the Smart Collection a name. It appears in the sidebar and
 stays current as your library changes.</p>
-<p>Some menu commands have no key yet, among them <strong>Edit &gt; Find
-Duplicates</strong>, <strong>Tools &gt; Trail Editor…</strong> and
-everything on the Sync menu; reach them through their menu.</p>
+<h2 id="every-menu-command-has-a-key">Every menu command has a key</h2>
+<p>Since 2026-10-17 every command on QuillBeacon’s menus has a key of
+its own, shown beside its name, so a screen reader reads it as you arrow
+through the menu. Before that, sixteen commands – among them Find
+Duplicates, the Trail Editor and the whole Sync menu – could only be
+reached by walking the menus. Every command also has its own letter in
+its menu, so you can reach it one key at a time with nothing held down:
+press Alt, the menu’s letter, then the command’s letter. No two commands
+in one menu share a letter.</p>
+<p>The keys that were added, by menu:</p>
+<ul>
+<li><strong>Edit &gt; Find Duplicates</strong> (Ctrl+Alt+D) lists saved
+items that point at the same place.</li>
+<li><strong>View &gt; Accessibility Settings…</strong>
+(Ctrl+Shift+Comma) sits beside <strong>View &gt; Preferences…</strong>
+(Ctrl+Comma).</li>
+<li><strong>Media &gt; Play in External Player</strong> (Ctrl+Alt+P)
+hands the selected episode or station to VLC, mpv or your system
+player.</li>
+<li><strong>Media &gt; Add Radio Station…</strong> (Ctrl+Alt+R) and
+<strong>Media &gt; Add Radio Program…</strong> (Ctrl+Alt+G).</li>
+<li><strong>Tools &gt; Trail Editor…</strong> (Ctrl+Alt+T).</li>
+<li><strong>Tools &gt; Smart Collections Manager…</strong>
+(Ctrl+Alt+Shift+G): the same letter as saving a search as a Smart
+Collection (Ctrl+Shift+G), with Alt added.</li>
+<li><strong>Tools &gt; Revalidate Health…</strong> (Ctrl+Alt+H), and
+<strong>Tools &gt; Review Location Repair…</strong> (Ctrl+Alt+Shift+H)
+for what the recheck found broken.</li>
+<li><strong>Tools &gt; External Player…</strong> (Ctrl+Alt+Shift+X)
+chooses the player.</li>
+<li><strong>Tools &gt; Status Center…</strong> (Ctrl+Alt+I).</li>
+<li><strong>The Sync menu is F9.</strong> <strong>Sync &gt; Sync
+Now</strong> (F9), <strong>Sync &gt; Sync Settings…</strong> (Ctrl+F9),
+<strong>Sync &gt; Sync History…</strong> (Shift+F9) and <strong>Sync
+&gt; Auto Sync…</strong> (Ctrl+Shift+F9).</li>
+<li><strong>Help &gt; About</strong> (Alt+F1).</li>
+</ul>
+<p>Some access letters moved so that no two commands in one menu share
+one. In the Edit menu: <strong>Archive</strong> is now H, <strong>Bulk
+Trash Selected</strong> S, <strong>Bulk Archive Selected</strong> V,
+<strong>Bulk Restore Selected</strong> E, <strong>Bulk Toggle
+Favorite</strong> L, <strong>Bulk Remove Tag…</strong> M, <strong>Bulk
+Add to Collection…</strong> I and <strong>Find Duplicates</strong> P. In
+the View menu: <strong>Save Search as Smart Collection…</strong> is M
+and <strong>Command Palette</strong> is L. In the Media menu:
+<strong>Play in External Player</strong> is X, <strong>Add Radio
+Station…</strong> T and <strong>Add Radio Program…</strong> G. In the
+Tools menu: <strong>Smart Collections Manager…</strong> is M and
+<strong>Publish Collection…</strong> L.</p>
+<p>Example: to sync now without a chord, press Alt+S, then N. To do it
+with one key, press F9. When it finishes you hear “Synced. Pushed 3,
+pulled 1.” (with your own numbers), and a count of any conflicts waiting
+in Sync History. To find duplicates, press Alt+E, then P, or Ctrl+Alt+D:
+you hear how many groups of duplicates there are, and a window lists
+them.</p>
+<p>Limits: the keys cannot be changed yet. Several new keys hold Ctrl
+and Alt together; on keyboard layouts where the right Alt key types
+accented letters, such a key may run its command instead of typing the
+letter while the search box has focus, and the menus always work. The
+keys work in the main window, not inside a dialog.</p>
 <h2 id="getting-started">Getting started</h2>
 <ol type="1">
 <li>Open QuillBeacon. Your library lives on this machine by
