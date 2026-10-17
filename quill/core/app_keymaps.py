@@ -433,6 +433,25 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
 #: Cast is five rows. (Quill Media Player is not in ``QUILLVILLE_APP_ORDER``,
 #: so its developer-build menu lists all seven and its last row had no key
 #: before this change as well as after.)
+#:
+#: **Five keys, and no sixth (Jeff, 2026-10-16).** QUILL Transcribe joins the
+#: menu on 2026-11-01, last in ``QUILLVILLE_APP_ORDER``, and that makes the
+#: developer-build menus one row longer than this tuple: QUILL's lists six
+#: positional siblings, the Media Player's seven. The decision is not to invent
+#: a sixth launcher key. In a public build every menu shows at most five rows,
+#: on Ctrl+Alt+Shift+F7 to F11 (Cast and Audio Studio are gated, and Quill Radio
+#: leaves Inkwell off its own menu), so no row a listener can meet is ever
+#: without a key. Only a developer build shows rows past the fifth, with no key
+#: -- exactly as the Media Player's developer menu already did -- and they are
+#: still reached with Alt+Q and their access letter, or a key bound to
+#: ``quillville.open_<app>`` in Keyboard Shortcuts. The rest of the
+#: Ctrl+Alt+Shift F-row is spoken for (F1 What Can I Do Here, F2 hosted AI
+#: usage, F3 Count Occurrences, F4-F6 Radio's Sort Favorites, F12 Cast), so a
+#: sixth key would be a fight somebody loses silently, for rows no public build
+#: shows.
+#: ``test_keymap_accelerators.py`` holds both halves: five rows at most in a
+#: public build, and the keyless overflow only where a developer build lists
+#: unreleased apps.
 SIBLING_APP_ACCELERATORS: tuple[str, ...] = (
     "Ctrl+Alt+Shift+F7",
     "Ctrl+Alt+Shift+F8",

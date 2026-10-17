@@ -14,7 +14,7 @@ import wave
 from pathlib import Path
 
 from quill.core.speech.speech_vad import speech_span, trim_for_transcription
-from quill.core.speech.streaming import StreamAnnouncer, StreamSnapshot
+from quill.core.speech.streaming import StreamAnnouncer, StreamSnapshot, WordAgreement
 
 _RATE = 16000
 
@@ -111,6 +111,27 @@ def test_contract_violation_rebases_without_reannouncing() -> None:
     # for the rewrite, and later growth announces from the new base.
     assert announcer.feed(StreamSnapshot("hello, world")) == ""
     assert announcer.feed(StreamSnapshot("hello, world today")) == " today"
+
+
+def test_word_agreement_commits_what_two_updates_agree_on() -> None:
+    agreement = WordAgreement()
+    assert agreement.feed("the cat") == StreamSnapshot("", "the cat")
+    assert agreement.feed("the cat sat") == StreamSnapshot("the cat", "sat")
+    # Case and edge punctuation do not count as a change of mind.
+    assert agreement.feed("The cat, sat on").committed == "the cat sat"
+
+
+def test_word_agreement_only_ever_grows_through_a_rewrite() -> None:
+    agreement = WordAgreement()
+    announcer = StreamAnnouncer()
+    said = [
+        announcer.feed(agreement.feed(text))
+        for text in ("call doctor", "call doctor about", "call doctor's office", "call")
+    ]
+    assert said == ["", "call doctor", "", ""]
+    assert agreement.feed("").committed == "call doctor"
+    agreement.reset()
+    assert agreement.feed("new phrase").committed == ""
 
 
 def test_reset_starts_a_new_utterance() -> None:

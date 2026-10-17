@@ -677,7 +677,9 @@ chapter, under Windows and tabs.
 
 #### QuillVille
 
-QuillVille opens the other apps in the QUILL family, each on a key of its own:
+QuillVille (`Alt+Q`) opens the other apps in the QUILL family. Each row has
+its own letter, so `Alt+Q` and then one letter opens an app with nothing held
+down, and each has a key of its own:
 
 - **Open Quill Radio** (`Ctrl+Alt+Shift+F7`)
 - **Open Quill Weather** (`Ctrl+Alt+Shift+F8`)
@@ -693,8 +695,32 @@ The menu always shows each row's current key beside it, so press **Alt+Q** and
 listen rather than relying on memory. (Once Quill Cast is running, its own
 show-and-hide key, `Ctrl+Alt+Shift+F12`, brings it forward from any program.)
 
+- **Open Quill Radio** (`Alt+Q`, `R`, or `Ctrl+Alt+Shift+F7`)
+- **Open Quill Weather** (`Alt+Q`, `W`, or `Ctrl+Alt+Shift+F8`)
+- **Open Quill Converter** (`Alt+Q`, `V`, or `Ctrl+Alt+Shift+F9`), which
+  changes audio and video files from one format to another
+- **Open Quill Inkwell** (`Alt+Q`, `I`, or `Ctrl+Alt+Shift+F10`), which
+  expands your abbreviations in every program
+- **Open QUILL Transcribe** (`Alt+Q`, `T`, or `Ctrl+Alt+Shift+F11`), which
+  types what you say into any program. It is released on 1 November 2026.
+
+For example, to start dictating into an email, press `Ctrl+Alt+Shift+F11`.
+QUILL Transcribe opens (or comes to the front if it is already running), and
+its own start and stop key, Alt+Shift+Backslash unless you changed it, then
+works in your email program. Inside QUILL you do not need it: `Ctrl+F11`
+dictates into the document you are in.
+
+Those five are every row this menu shows. Quill Cast and Audio Studio join it
+when they are released; Cast will keep `Ctrl+Alt+Shift+F12`, the key that
+shows and hides it from any program. Every row is a command you can give a
+different key in **Tools > Customize and Support > Keymap Editor...**
+(`Ctrl+Alt+Shift+Space`): search for
+"QuillVille: Open".
+
 If an app is not on your computer yet, QUILL offers to download it for you.
-Chapter 14, Projects, notes and the QuillVille family, says more.
+Nothing is downloaded until you say yes. QUILL Transcribe has nothing to
+download until 1 November 2026; before then QUILL says it could not fetch it
+and offers to open the download page instead. Chapter 14, Projects, notes and the QuillVille family, says more.
 
 #### Help
 
@@ -8062,8 +8088,12 @@ them to you:
 You do not hear these words spoken, so nothing talks over you while you talk.
 If you would like to hear them, open **More Dictation Settings** and set
 **While you speak, the words heard so far** to **Show it, and say new words
-quietly**. You then hear the new words every couple of seconds, never the same
-ones twice. Choose **Do not show it** to turn the preview off.
+quietly**. You then hear new words every couple of seconds, each one once,
+and only once the engine has settled on it: a word it is still changing its
+mind about is not spoken until it stops changing, and a word you have already
+heard is not said again if the engine corrects it later (the words that go into
+your document are always the final ones). Choose **Do not show it** to turn the
+preview off.
 
 Nemotron also gets its punctuation right at the end of a sentence now. It
 decides whether a sentence was a question once it hears the next one, so a
@@ -8230,6 +8260,13 @@ change it leave it alone, and tell you so.
 That is the everyday set. Every command and every mark, in English and
 Spanish, is on the **[Dictation commands](dictation-commands.html)** page, and
 "what can I say" opens the same list while you dictate.
+
+**More about reading back.** Reading back also works in a document that is
+read-only, because it changes nothing. If there is nothing before the cursor
+you hear "There is no sentence here." (or paragraph). To hear the words
+without the mark names, clear **Say punctuation marks in the read-back**. In
+Spanish, say "lee la última frase", "lee el último párrafo" (or "lee este
+párrafo") or "lee la selección"; "leer" works as well as "lee".
 
 ##### Moving and selecting by voice
 
@@ -15304,7 +15341,9 @@ Internet radio is not part of QUILL. It is **Quill Radio**, a free app of its
 own in the QuillVille family, with its own window, its own keyboard-first
 design, and its own complete User Guide (open it from the app's Help menu).
 The other companions are the same: **Quill Weather**, **QUILL Audio Studio**,
-**Quill Inkwell**, and the rest.
+**Quill Inkwell**, **Quill Converter**, **QUILL Transcribe** (released on 1
+November 2026, it types what you say into any program, not only into QUILL),
+and the rest.
 
 They share QUILL's code, settings and data where that helps you. A station
 you favorite in Quill Radio, or an abbreviation you add in Quill Inkwell, is
