@@ -7646,6 +7646,83 @@ QUILL, QUILL Transcribe and Quill Inkwell all use this one list. QUILL Lite
 keeps its own unless you choose **Use the shared word list** in its My Words and
 Phrases window.
 
+##### Where your word list lives
+
+Your word list is one file, `dictation.md`, shared by QUILL, QUILL Transcribe,
+Quill Inkwell and (when you choose it) QUILL Lite. Since this version it lives
+in the family's own dictation folder, with your dictation instructions
+(`dictation-instructions.md`) and your dictation contexts
+(`dictation-contexts.json`) beside it:
+
+- **On an installed copy:** `%LOCALAPPDATA%\QuillVille\Dictation`. To open it,
+  press `Windows+R`, type `%LOCALAPPDATA%\QuillVille\Dictation` and press
+  `Enter`. The speech models you download live there too.
+- **On a portable copy:** the `dictation` folder inside the portable copy's own
+  `data` folder. A portable copy never writes to the computer it runs on, and
+  shares only with the programs in its own folder.
+
+**How your words got there.** The first time any QuillVille program needs your
+list after the update, it copies `dictation.md` and its two companions from
+QUILL's data folder (`%APPDATA%\Quill`, or the data folder you chose) into the
+new folder. It copies; it never moves or deletes. Your old files stay exactly as
+they were, as a backup, and you do not have to do anything.
+
+- If the new folder already has a list, it is never replaced by the old one.
+- If you go on adding words in a program that still uses the old file (an older
+  copy of QUILL, say), the new words are added to the shared list the next time
+  you dictate, the way Import adds them: where the two lists spell something
+  differently, the shared list's spelling is kept. The shared list as it was
+  just before is saved as `dictation-before-merge.md` in the same folder.
+- If the copy cannot be made, for example because the disk is full, QUILL goes
+  on reading your old file, so your list never looks empty, and tries the copy
+  again the next time.
+
+**An example.** You taught QUILL the name "Okonkwo" last month. After the
+update, open My Words and Phrases (`Alt+Shift+F10`): "Okonkwo" is still there,
+now read from `%LOCALAPPDATA%\QuillVille\Dictation\dictation.md`. Add
+"Tucson" in QUILL Transcribe, and the next phrase you dictate in QUILL spells
+it right too.
+
+##### Sharing dictation settings with the family
+
+**Share dictation settings with every QuillVille program** (`Alt+Q`) is a check box in More
+Dictation Settings. When it is on, the dictation settings you save in QUILL
+are used by QUILL Lite, QUILL Transcribe and Quill Inkwell on this computer
+too, and what you save in any of them reaches QUILL.
+
+- **What is shared:** the speech engine and model, the language, the
+  microphone, automatic punctuation, the pause that ends a phrase, filler
+  words, the wake phrase, the command word, the live preview, review first, the
+  never-type list and the rest of the dictation choices.
+- **What each program keeps to itself:** its keys and tray, the working tick
+  and strict mode (on in QUILL Transcribe on purpose), what you hear after each
+  phrase (Inkwell starts with a tone, because your screen reader already reads
+  what is typed), and every permission to send your speech to a company. Saying
+  yes to OpenAI in QUILL is not saying yes in QUILL Transcribe.
+- **When it arrives:** the moment you save Dictation Settings with OK, the
+  others can see it. QUILL picks up what another program saved when you switch
+  back to its window, and the status bar says "Dictation settings updated from
+  the family." QUILL Transcribe picks it up within a second. Quill Inkwell picks
+  it up the next time it starts Dictate Anywhere or opens Dictation Settings.
+- **On or off to begin with:** on for a new install, where nothing has been
+  changed yet. If you had already changed your dictation settings before this
+  update, it starts off, so nothing you chose is replaced behind your back;
+  check the box when you want to join in.
+- **Nothing is lost.** The first time a program takes settings from the
+  family, its own are saved first as `before-sharing-` and the program's name,
+  for example `before-sharing-quill.json`, in the family's dictation folder.
+- **Two programs saving at once:** the last one saved wins. Each save writes
+  the whole file at once, so it is never half written.
+- **If it cannot be saved for the others,** you hear why, for example "Saved
+  here, but the other QuillVille programs will not see this change: the shared
+  dictation settings could not be written (Access is denied)." QUILL's own
+  copy is saved either way.
+
+**An example.** In QUILL Transcribe, choose Spanish with Switch Dictation
+Language (`Ctrl+Shift+F11`). Switch back to QUILL. The status bar says
+"Dictation settings updated from the family.", and `Ctrl+F11` now dictates in
+Spanish.
+
 ##### Review before inserting
 
 When you want to check what you said before it goes into the document, review
@@ -8322,6 +8399,7 @@ you change here is saved when you press OK in Dictation Settings.
 | Keep a dictation history (`Alt+Y`) | Off, One day, Seven days or Thirty days of the text you dictate, never the sound, listed in Recent Phrases; turning it off deletes it; see "Words that were not written, and dictation history" | Off |
 | Dictation profile, for the kind of writing (`Alt+A`) | Standard, Email, Document, Markdown, Chat, Coding or Verbatim; see "Dictation profiles" | Standard |
 | Lock the profile so it cannot be switched by voice (`Alt+B`) | A spoken profile name does not switch profiles | Off |
+| Share dictation settings with every QuillVille program (`Alt+Q`) | Your dictation settings are the same in QUILL, QUILL Lite, QUILL Transcribe and Quill Inkwell; see "Sharing dictation settings with the family" | On for a new install; off if you had changed your settings before |
 
 In settings files these are `windows_dictation_hold_to_talk`,
 `windows_dictation_preview`, `windows_dictation_ai_send`,
@@ -8334,7 +8412,8 @@ In settings files these are `windows_dictation_hold_to_talk`,
 `windows_dictation_command_timeout`, `windows_dictation_review_first`,
 `windows_dictation_polish`, `windows_dictation_history_days` (0 for off,
 or 1, 7 or 30), `windows_dictation_profile` and
-`windows_dictation_profile_locked`. The
+`windows_dictation_profile_locked` and
+`windows_dictation_share_family` (`on` or `off`; empty until decided). The
 review window also keeps `windows_dictation_review_context` (its context check
 box) and `windows_dictation_review_consent` (your answer to its question).
 
@@ -8973,11 +9052,21 @@ The list is saved when you press OK in Dictation Settings.
 
 Inside other programs the read-back starts as a tone only, because your
 screen reader already echoes what is typed. Inkwell keeps its own copy of the
-dictation settings: in Inkwell, **Dictation > Dictation Settings...**
+dictation settings, which follows QUILL's while **Share dictation settings with
+every QuillVille program** is on (see "Sharing dictation settings with the family"): in Inkwell, **Dictation > Dictation Settings...**
 (`Ctrl+Alt+D`) opens the same window you know from QUILL, and **Dictation >
 Dictate Anywhere** (`Ctrl+D`) turns it on and off from the menu. Inkwell uses
 the same My Words and Phrases file as QUILL, so the names you taught QUILL come
 out right everywhere. Dictate Anywhere is off in Safe Mode.
+
+**From Quill Cast and Quill Radio.** Both have **Edit > Dictate Here**
+(`Ctrl+F11`, the same key as Start Dictation in QUILL). Put the cursor in a
+search box, such as Cast's podcast search, press `Ctrl+F11`, and QUILL
+Transcribe dictates into it with your words and commands. If QUILL Transcribe
+is not running, it starts in the tray and begins dictating when it is ready.
+Neither app has a speech engine of its own. Dictate Here appears once
+QUILL Transcribe is part of your copy of the family: in every public build from
+QUILL Transcribe's release on 1 November 2026.
 
 **One microphone at a time.** QUILL, QUILL Lite, QUILL Transcribe and Quill
 Inkwell never listen at once, so the same words are never written twice. The
@@ -9338,8 +9427,8 @@ there is nothing to set.
 
 ##### Teach dictation your words
 
-**Teach dictation your words.** A small file called **`dictation.md`** in your
-QUILL data folder holds your own vocabulary (so names and jargon come back
+**Teach dictation your words.** A small file called **`dictation.md`** in the
+family's dictation folder (see "Where your word list lives") holds your own vocabulary (so names and jargon come back
 spelled right), spoken-to-written replacements (such as "new line" becoming a
 real line break), and spoken command phrases of your own. It applies to Locked
 Dictation and the Dictate (Offline) toggle.

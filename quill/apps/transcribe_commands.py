@@ -40,8 +40,51 @@ class TranscribeCommandsMixin:
             refresh()
 
     def _set_dictation_field(self, name: str, value: Any) -> None:
-        self._settings.dictation = {**self._settings.dictation, name: value}
+        from quill.core.windows_dictation.settings_fields import settle_share
+
+        stored = dict(self._settings.dictation)
+        settle_share(stored)  # sharing decided before anything changes (D-13)
+        self._settings.dictation = {**stored, name: value}
         self._save()
+        self._share_dictation()
+
+    # -- the family's shared dictation settings (dict.md D-13) -------------------- #
+
+    _family_stamp: Any = None
+
+    def _share_dictation(self) -> None:
+        """Give the shared fields to the family, when sharing is on here. A
+        write that fails is said: our copy is saved, the family's is not."""
+        from quill.core.windows_dictation.family_store import (
+            FamilyDictationError,
+            publish_fields,
+            stamp,
+        )
+
+        try:
+            if publish_fields(self._settings.dictation, app="transcribe"):
+                self._family_stamp = stamp()  # our own write is not news
+        except FamilyDictationError as error:
+            self._announce(error.sentence)  # type: ignore[attr-defined]
+
+    def take_family_dictation(self) -> bool:
+        """What QUILL, QUILL Lite or Quill Inkwell saved since we last looked.
+        Quiet: the change is the person's own, made in another program."""
+        from quill.core.windows_dictation.family_store import adopt_fields, stamp
+
+        now = stamp()
+        if now is None or now == self._family_stamp:
+            return False
+        self._family_stamp = now
+        try:
+            updated = adopt_fields(self._settings.dictation, app="transcribe")
+        except Exception:  # noqa: BLE001 - an unreadable family file changes nothing
+            return False
+        if updated is None:
+            return False
+        self._settings.dictation = updated
+        self._save()
+        return True
 
     def set_option(self, name: str, value: bool) -> None:
         setattr(self._settings, name, bool(value))
@@ -154,6 +197,7 @@ class TranscribeCommandsMixin:
             return
         self._settings.dictation = stored_from(settings)
         self._save()
+        self._share_dictation()
         from quill.core.transcribe.models import model_name
 
         if settings.windows_dictation_engine != before:
@@ -407,7 +451,10 @@ class TranscribeCommandsMixin:
         stored = take_handoff(self._data_dir)
         if stored is None:
             return False
-        self._settings.dictation = stored
+        own_choice = self._settings.dictation.get("windows_dictation_share_family")
+        self._settings.dictation = dict(stored)
+        if own_choice is not None:  # sharing is this program's own choice (D-13)
+            self._settings.dictation["windows_dictation_share_family"] = own_choice
         self._save()
         key = self._settings.dictation_hotkey
         self._announce(  # type: ignore[attr-defined]

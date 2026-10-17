@@ -188,8 +188,10 @@ mind"**, **"stop"**, or **"dismiss"** to abort.
 ## Teaching dictation your words (a dictation profile)
 
 Dictation can learn *your* vocabulary. QUILL reads a small, human-editable file
-called **`dictation.md`** in your QUILL data folder; edit it, save, and the next
-dictation uses it. Every section is optional.
+called **`dictation.md`** in the family's dictation folder
+(`%LOCALAPPDATA%\QuillVille\Dictation` on an installed copy; it was copied there
+from your QUILL data folder, which keeps the old one as a backup); edit it,
+save, and the next dictation uses it. Every section is optional.
 
 ```markdown
 ## Vocabulary

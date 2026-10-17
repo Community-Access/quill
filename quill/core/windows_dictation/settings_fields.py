@@ -34,7 +34,50 @@ from quill.core.windows_dictation.speech_language import coerce_speech_language
 from quill.core.windows_dictation.vocabulary import DASH_STYLES
 from quill.core.windows_dictation.wake import DEFAULT_STOP_PHRASE, DEFAULT_WAKE_PHRASE
 
-__all__ = ["DictationSettings", "load_fields"]
+__all__ = [
+    "FAMILY_LOCAL_FIELDS",
+    "SHARE_FIELD",
+    "DictationSettings",
+    "load_fields",
+    "settle_share",
+    "share_on",
+    "shares_by_default",
+]
+
+#: "Share dictation settings with every QuillVille program" (dict.md D-13, family_store.py).
+SHARE_FIELD = "windows_dictation_share_family"
+#: The dictation settings each program keeps to itself even when it shares:
+#: the ones a program sets differently on purpose (the working tick and strict
+#: mode in QUILL Transcribe, the read-back's tone where the screen reader
+#: echoes the typing), the one-time sentence, and every consent -- agreeing to
+#: send speech to a provider from one program is not agreeing for another.
+FAMILY_LOCAL_FIELDS: frozenset[str] = frozenset({
+    SHARE_FIELD,
+    "windows_dictation_working_tick",
+    "windows_dictation_command_prefix_required",
+    "windows_dictation_phrase_feedback",
+    "windows_dictation_openai_consent",
+    "windows_dictation_review_consent",
+    "windows_dictation_speech_provider_consent",
+    "windows_dictation_transcript_told",
+    # Keeping your words on this computer (D-5's opt-in history) is a choice
+    # about what each program stores, like a consent: never shared.
+    "windows_dictation_history_days",
+})
+
+
+def shares_by_default(data: Mapping[str, Any]) -> bool:
+    """Sharing's default: on for a program whose shared dictation settings are
+    all still the defaults (it has nothing to lose), off for one where the
+    person changed any, so an upgrade never swaps somebody's choices for
+    another program's behind their back. Absent fields count as defaults, so
+    a raw file and a full set of fields give the same answer."""
+    defaults = DictationSettings()
+    return not any(
+        name in data and data[name] != getattr(defaults, name)
+        for name in DictationSettings.__dataclass_fields__
+        if name not in FAMILY_LOCAL_FIELDS
+    )
 
 
 @dataclass(slots=True)
@@ -113,6 +156,11 @@ class DictationSettings:
     # and (P3) allow "polish that", one AI request in Review Dictation. Both off.
     windows_dictation_self_repair: bool = False
     windows_dictation_polish: bool = False
+    # 2026-10-16 (D-13): share these with the family (family_store.py), "on"
+    # or "off". Empty means not decided yet, and the loader decides it once
+    # (shares_by_default) -- a text rather than a bool so that QUILL Lite,
+    # which saves only what differs from the default, keeps the decision too.
+    windows_dictation_share_family: str = ""
 
 
 def load_fields(data: Mapping[str, Any]) -> dict[str, Any]:
@@ -208,7 +256,45 @@ def load_fields(data: Mapping[str, Any]) -> dict[str, Any]:
         ),
         "windows_dictation_self_repair": bool(data.get("windows_dictation_self_repair", False)),
         "windows_dictation_polish": bool(data.get("windows_dictation_polish", False)),
+        SHARE_FIELD: _loaded_share(data),
     }
+
+
+def _loaded_share(data: Mapping[str, Any]) -> str:
+    """The saved choice; for a file without one, empty (still undecided, and
+    sharing) while every shared setting is a default, else "off"."""
+    value = data.get(SHARE_FIELD, "")
+    if value in ("on", "off"):
+        return str(value)
+    if isinstance(value, bool):
+        return "on" if value else "off"
+    return "" if shares_by_default(data) else "off"
+
+
+def settle_share(stored: Any) -> None:
+    """Decide sharing for good, just before a shared setting changes, so that
+    the change cannot itself turn an undecided "on" into "off". *stored* is a
+    settings object or a stored dict."""
+    if isinstance(stored, dict):
+        if stored.get(SHARE_FIELD) not in ("on", "off"):
+            stored[SHARE_FIELD] = "on" if share_on(stored) else "off"
+        return
+    current = getattr(stored, SHARE_FIELD, "")
+    if current not in ("on", "off"):
+        from quill.core.windows_dictation.anywhere import dictation_fields
+
+        setattr(stored, SHARE_FIELD, "on" if share_on(dictation_fields(stored)) else "off")
+
+
+def share_on(data: Mapping[str, Any]) -> bool:
+    """Whether the settings *data* share with the family: the saved choice,
+    or for a file that has none, :func:`shares_by_default`."""
+    value = data.get(SHARE_FIELD, "")
+    if value in ("on", True):
+        return True
+    if value in ("off", False):
+        return False
+    return shares_by_default(data)
 
 
 #: Field names a secret might hide under. A settings file edited by hand, or

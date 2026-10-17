@@ -1032,6 +1032,11 @@ retire `share_quill_dictation_words` by pointing QUILL Lite's "shared" at the
 new file. The box is first in the window's tab order but focus still opens on
 the list, so the choice is offered on every open rather than asked once.
 
+**Since done (2026-10-16, section 30).** The list and its two neighbours now
+live in the family folder beside `family_dictation.json`, copied there on
+first use with the old files left as the backup; QUILL Lite's "Use the shared
+word list" points at the new place.
+
 ## 19. As built, 2026-10-15: review before inserting (D-2)
 
 The owner asked for accessible output before rendering: compose by talking,
@@ -2442,6 +2447,238 @@ score said once, Score the Field, the profile window and lock, the lesson host,
 menu keys against the lesson table, F1 titles and inline help, reachability)
 and `tests/unit/ui/test_dictation_formatting_hooks.py` (QUILL's and QUILL
 Lite's formatting hooks and the editor port).
+
+## 30. As built, 2026-10-16: one dictation settings store (D-13), the word list's new home, and Dictate Here in Cast and Radio (D-16)
+
+Three pieces, one change: the family's dictation settings are one store that
+every program writes and reads; the family's word list moves beside it, in
+`%LOCALAPPDATA%\QuillVille\Dictation`; and Quill Cast and Quill Radio can ask
+QUILL Transcribe to dictate into the field you are in. Section 20's "Not
+done, and where D-13 picks up" is what this closes.
+
+### 30.1 The family folder
+
+`family_dictation_dir()` (`quill/core/windows_dictation/family_store.py`) is
+the one answer to "where", for both files:
+
+| Copy | Folder |
+|---|---|
+| Installed (QUILL, QUILL Lite, QUILL Transcribe, Quill Inkwell) | `%LOCALAPPDATA%\QuillVille\Dictation`, the speech models' folder |
+| Portable QUILL or a portable family bundle | the `dictation` folder in the bundle's own `data` folder |
+| Portable QUILL Lite | the `dictation` folder beside its own portable data |
+| Developer build with `QUILL_DATA_DIR` | `QuillVille\Dictation` inside that folder |
+
+A portable copy never writes to the host and shares only with programs in its
+own bundle, the rule D-12 set ("portable keeps its own"). The test suite gives
+every test its own folder (`tests/conftest.py`, `_family_dictation_of_its_own`),
+so no test reads the developer's words or settings.
+
+### 30.2 One settings store, both directions (D-13)
+
+**Before.** QUILL Transcribe and Quill Inkwell each kept a copy of the
+dictation settings, refreshed only when an editor handed its own over
+(`anywhere.write_handoff`, Dictate in Other Programs). A model chosen in QUILL
+Transcribe never reached QUILL; one chosen in QUILL Lite reached QUILL
+Transcribe only through that button.
+
+**Now.** `family_dictation.json` holds every `windows_dictation_*` field in
+`SHARED_FIELDS`: all of `DictationSettings` except `FAMILY_LOCAL_FIELDS`
+(`settings_fields.py`).
+
+- **Written** when Dictation Settings is saved (OK) in any of the four
+  programs, and when Switch Dictation Language or one of QUILL Transcribe's
+  Dictation menu toggles saves, by `publish_fields`, through
+  `core.storage.write_json_atomic`. The file carries `schema` (1),
+  `written_by` and `dictation`; fields a newer build wrote and this one does
+  not know are kept on every write.
+- **Read** when a program meets the person again: QUILL and QUILL Lite when
+  their window is activated (`windows_dictation_commands.py`,
+  `_dictation_take_family`); QUILL Transcribe on its 800 ms clock, one `stat`
+  each time and a read only when the file's time or size changed
+  (`take_family_dictation`, with its own write's stamp remembered so its own
+  save is not news); Quill Inkwell, which has no window to activate, whenever
+  its settings are used (a start, or Dictation Settings opening). What the
+  file holds replaces the program's own values for the shared fields only.
+- **Said quietly.** An editor says "Dictation settings updated from the
+  family." in the status bar; nothing is announced, because the change is the
+  person's own, made in another program a moment ago (GATE-13's spirit).
+  QUILL Transcribe and Inkwell take it silently.
+- **Not shared** (`FAMILY_LOCAL_FIELDS`): the share choice itself; the working
+  tick and strict mode, which QUILL Transcribe sets on deliberately; what you
+  hear after each phrase, which Inkwell starts as a tone because the screen
+  reader echoes the typing; the one-time transcript sentence; and every
+  consent (OpenAI, review, speech providers), because agreeing to send speech
+  somewhere from one program is not agreeing for another. Keys, the tray and
+  QUILL Transcribe's own options were never dictation settings and stay where
+  they are.
+
+**The setting.** "Share dictation settings with every QuillVille program" is a check box in
+More Dictation Settings (`dictation_more_dialog.py`, Alt+A, with inline F1
+help), stored as `windows_dictation_share_family`. It is a text, `"on"`,
+`"off"` or empty, not a bool, because QUILL Lite saves only what differs from
+the default and must keep a decision either way.
+
+- **Default.** Empty means undecided, and an undecided program shares only
+  while every shared setting is still the default (`shares_by_default`): a
+  new install, which has nothing to lose. A program whose settings the person
+  had changed loads as `"off"`, so an upgrade never swaps somebody's choices
+  for another program's behind their back; they turn it on to join. dict.md
+  asked for "on by default for new installs", and this is that, made safe for
+  upgrades.
+- **Decided before the first change.** `settle_share` fixes the choice just
+  before Dictation Settings, Switch Dictation Language or one of QUILL
+  Transcribe's own menu toggles changes a shared field. Without it the change
+  itself would make the settings non-default and turn an undecided "on" into
+  "off" at the moment the person expected it to be shared.
+- **A hand-off keeps the choice.** Dictate in Other Programs still hands an
+  editor's settings over (`take_handoff`), but the receiving program keeps
+  its own `windows_dictation_share_family`.
+
+**Never loses a setting.** The first time a program takes values from the
+family, its own shared values are written to `before-sharing-<app>.json` in
+the family folder, once, and never overwritten. If that copy cannot be
+written, nothing is taken (`adopt_fields` returns `None`).
+
+**Failure to write is reported, not hidden.** `publish_fields` raises
+`FamilyDictationError` (`QUILL-DICTATION-FAMILY-WRITE`) with a sentence, and
+each program says it after its own save: "Saved here, but the other QuillVille
+programs will not see this change: the shared dictation settings could not be
+written (Access is denied)." The program's own copy *was* saved, so the
+sentence says exactly what did not happen. The editors say it through
+`_dictation_say`; QUILL Transcribe and Inkwell through `_announce`.
+
+**Contention.** None to manage: each write is a whole file put in place by an
+atomic replace, so two programs saving at once leave one complete file, the
+last one saved. The check box's F1 help says so, as dict.md asked.
+
+### 30.3 The word list moves to the family folder (D-12, finished)
+
+`default_profile_path()` (`dictation_profile.py`) now returns
+`family_profile_path(app_data_dir())` (`family_words.py`). Every reader keys
+off that one function: QUILL's dictation and Locked Dictation, QUILL
+Transcribe's rewriter, review and file transcription, Quill Inkwell, the
+command-word check, and QUILL Lite's "Use the shared word list". The two
+neighbours, `dictation-instructions.md` and `dictation-contexts.json`, follow
+the list because they are found beside it.
+
+The migration, in order of what matters:
+
+1. **Copied, never moved.** The first time anything asks for the list, each of
+   the three files in QUILL's old data folder (`%APPDATA%\Quill`, the folder
+   the person chose, or the portable `data` folder) is copied to the family
+   folder if the family folder has none, byte for byte
+   (`write_bytes_atomic`, then the old file's times). The old files are left
+   exactly as they were: they are the backup, and an older build still finds
+   them. Nothing is deleted.
+2. **The family list is never overwritten.** If the family folder already has
+   a list, the old one is not copied over it.
+3. **Words added later in the old place are merged.** Each old file's time
+   and size are recorded in `family-words-moved.json`. If the old list
+   changes afterwards (an older build still running, or a second copy whose
+   data folder is elsewhere), its new entries are added the way Import adds
+   them (`words_exchange.plan_merge`, so where the two differ, the family's is
+   kept), after the family list is copied to `dictation-before-merge.md`.
+   Instructions and contexts are copied only while the family has none.
+4. **Read through the old place until the copy exists.** If the copy fails (a
+   full disk, a folder the person cannot write), the old file's path is
+   returned, so the list never looks empty, and the reason goes to the log;
+   the copy is tried again the next time.
+5. **Cheap when nothing changed.** The list is asked for on every phrase in
+   some hosts, so a call that finds nothing new writes nothing, not even the
+   record.
+
+`share_quill_dictation_words` in QUILL Lite is unchanged in meaning ("use the
+family's list"); it now points at the new place. It was not retired, because
+a QUILL Lite person who never chose the shared list keeps their own list, as
+D-12 promised.
+
+**data_format_audit.** `windows_dictation_share_family` is a new field in both
+`quill.settings` and `lite.settings`, recorded as additive, compatible: older
+builds ignore it, and an older QUILL Lite forgets it when it saves, after
+which this build decides it again from the settings. `family_dictation.json`
+is not a registered format: it carries its own `schema`, keeps unknown
+fields, and an older build simply does not read it.
+
+### 30.4 Dictate Here in Quill Cast and Quill Radio (D-16)
+
+dict.md asked for a "Dictate Here" item in each app's Tools menu. Neither app
+has a Tools menu, and both have the shared Edit menu
+(`support_menu.insert_edit_menu`), so it is **Edit > Dictate Here**:
+dictating is putting text into a field, which is what Edit is for, and adding
+a one-item top-level menu to two dense menu bars would cost every listener an
+Alt+Right on every visit. One wiring serves both apps.
+
+- **Key:** `app.dictate_here` on **Ctrl+F11** in `APP_KEYMAPS["cast"]` and
+  `APP_KEYMAPS["radio"]`, the editors' Start Dictation key, for the same verb
+  (family rule 2). It was free on both bars (Radio's plain F11 is Full Screen
+  in the video window). The label comes from `_menu_label`, so it follows a
+  rebinding. Access key D, free in that menu.
+- **The key in a dialog, too.** The search boxes people dictate into most,
+  Cast's Add Podcast and Search Everywhere and Radio's Search Stations, are
+  modal dialogs, where Windows never consults the main window's menu
+  accelerators. So registering the command also installs one
+  `wx.EventFilter` (`dictate_here_ui._DialogKeyFilter`) that answers the same
+  key, as bound now, in a text field of any *other* window of the app. In the
+  main window the accelerator answers and the filter steps aside, so the key
+  never fires twice; it is removed when the frame is destroyed.
+- **Shown only where QUILL Transcribe may be offered**
+  (`dictate_here_ui.dictate_here_available`, `is_app_released("transcribe")`):
+  a public build without QUILL Transcribe would otherwise advertise a key whose
+  only answer is "not installed".
+- **What it does** (`quill/core/windows_dictation/dictate_here.py`, wx-free):
+  - QUILL Transcribe owns Dictate Anywhere (it is running): a `start` request
+    through `dictation_owner.send_request`, sender `cast` or `radio`.
+    `dictation_owner.SENDERS` now admits the two; `APPS`, who may *own*
+    Dictate Anywhere, does not. QUILL Transcribe answers within a second, as
+    if its own key had been pressed, in the field that has the focus, which is
+    the field the person pressed Ctrl+F11 in, since an accelerator never moves
+    the focus. Cast and Radio say nothing: QUILL Transcribe says "Dictation on"
+    itself, and saying it twice is GATE-13's failure.
+  - Quill Inkwell owns it (it is dictating): nothing is sent, and the busy
+    sentence names Inkwell.
+  - Nobody owns it: QUILL Transcribe is launched with `--tray --dictate-here`
+    and the app says "Starting QUILL Transcribe. Dictation starts here when it
+    is ready." QUILL Transcribe's `dictate_here_at_launch` then starts, unless
+    its window is open (first run, or no tray: then the focused field is its
+    own), in Safe Mode, or when Inkwell holds the lock.
+  - No QUILL Transcribe to launch: "Dictate Here needs QUILL Transcribe, which
+    is not installed with this copy."
+- **No engine in Cast or Radio.** The words, commands, never-type list and
+  field lock are QUILL Transcribe's, so "the same commands and words work in
+  Cast's search box" (D-16's acceptance) holds by construction.
+- **F1 and keys.** No new control, so no new help text; the command is in the
+  command palette and Keyboard Shortcuts through `try_register`
+  (`feature_id="core.app"`), and the keyboard reference is regenerated.
+
+### 30.5 Tests
+
+- `tests/unit/core/test_family_dictation_store.py`: both directions, the local
+  fields, sharing off, the upgrade-safe default, `settle_share`, the one-time
+  backup and refusing to adopt without it, a failed write raising a coded
+  sentence, unknown fields kept, an unreadable file.
+- `tests/unit/core/test_family_words_move.py`: the three files copied byte for
+  byte with the old ones untouched, no writes on a second ask, the family list
+  never overwritten, later words merged with `dictation-before-merge.md`, the
+  read-through when the copy fails and the retry, `default_profile_path`.
+- `tests/unit/ui/test_family_dictation_hosts.py`: QUILL to QUILL Lite, QUILL
+  Transcribe to an editor and back, Transcribe's own write not news, and the
+  write failure said in an editor, in QUILL Transcribe and in Inkwell.
+- `tests/unit/core/test_dictate_here.py` and
+  `tests/unit/ui/test_dictate_here_menu.py`: every outcome with fakes, the
+  release gate, the request file's senders, the Edit menu label and key in
+  both apps, Quill Radio's real menu bar carrying Ctrl+F11 once in a
+  developer build, and QUILL Transcribe's `dictate_here_at_launch` in each
+  case. No real window is driven.
+
+### 30.6 Not done
+
+- A screen-reader pass with JAWS and NVDA on Cast's search box and Radio's
+  Search Stations box (D-16's acceptance in practice).
+- QUILL Transcribe is not yet in `RELEASED_APPS`. Jeff decided it releases on
+  2026-11-01; adding it to `RELEASED_APPS` that day is what makes Dictate Here
+  appear in public Cast and Radio builds, with no other change.
+- A "Restore my settings from before sharing" command over
+  `before-sharing-<app>.json`; today that file is restored by hand.
 
 ## Appendix A: the dict.md section numbers, and where they live now
 

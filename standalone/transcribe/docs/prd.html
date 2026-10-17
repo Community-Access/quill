@@ -364,6 +364,19 @@ Dictation Settings, or by voice), and Lock Profile stops voice
 switching. In another program, a formatting profile types nothing for a
 heading and says why, because the other program’s formatting cannot be
 applied by keystrokes QUILL Transcribe can trust.</p></li>
+<li><p><strong>One settings store, and Dictate Here</strong> (after
+1.0.0, 2026-10-16). “Share dictation settings with every QuillVille
+program” (dict.md D-13) replaces the one-way hand-off as the way
+settings move: <code>family_dictation.json</code> in
+<code>%LOCALAPPDATA%\QuillVille\Dictation</code>, written when Dictation
+Settings is saved anywhere and read here on the 800 ms clock, behind one
+check box that is on for a new install and off for one whose settings
+were changed. Keys, the tray, the working tick, strict mode, the
+read-back and every consent stay local. The word list moved to the same
+folder, copied with the old file kept. Quill Cast’s and Quill Radio’s
+Edit &gt; Dictate Here (D-16) send a <code>start</code> request, or
+launch QUILL Transcribe with <code>--tray --dictate-here</code>.
+Dictation design record, section 30.</p></li>
 </ol>
 <h2 id="waiting-for-a-later-version">Waiting for a later version</h2>
 <ul>

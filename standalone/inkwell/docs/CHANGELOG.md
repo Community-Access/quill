@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- **Dictation settings shared with the family** (2026-10-16). With **Share dictation settings with every QuillVille program** checked (Alt+Q, in More Dictation Settings), Dictate Anywhere uses the dictation settings you save in QUILL, QUILL Lite or QUILL Transcribe, and what you save in Inkwell reaches them. The read-back, your key and every permission to send your speech stay Inkwell's own. Your own settings are backed up the first time, and a save that cannot reach the others is said aloud. The word list now lives in `%LOCALAPPDATA%\QuillVille\Dictation`, copied from QUILL's data folder with the old file kept.
 - **A big abbreviation list opens and searches at once** (2026-10-16). **Manage Abbreviations** (Ctrl+M) reads its rows only as you reach them, so ten thousand abbreviations fill instantly (it took over three seconds, and again after every key typed in the search box). The search finds words in any order, and the selection stays on the abbreviation you were on when the search changes.
 
 - **Fixing it when you correct yourself** (2026-10-16). With **Fix it when I

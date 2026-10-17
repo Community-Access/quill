@@ -41,9 +41,11 @@ from typing import Any
 
 import wx
 
+from quill.core.windows_dictation.anywhere import dictation_fields
 from quill.core.windows_dictation.never_type import coerce_never_type
 from quill.core.windows_dictation.options import PAUSE_CHOICES, coerce_pause
 from quill.core.windows_dictation.preview import PREVIEW_CHOICES, coerce_preview
+from quill.core.windows_dictation.settings_fields import SHARE_FIELD, share_on
 from quill.ui.dialog_contract import apply_modal_ids
 
 __all__ = [
@@ -179,6 +181,25 @@ class MoreDictationDialog(wx.Dialog):
         root.Add(self.polish, 0, wx.ALL, _PAD)
 
         self._add_history(root, value)
+        # dict.md D-13: one settings store for the family (family_store.py).
+        self.share_family = wx.CheckBox(
+            self, label="Share dictation settings with every &QuillVille program"
+        )
+        self.share_family.SetValue(share_on({**dictation_fields(settings), **saved}))
+        self.share_family.SetHelpText(
+            "When this is on, the dictation settings you save here are used by QUILL, "
+            "QUILL Lite, QUILL Transcribe and Quill Inkwell on this computer, and a change "
+            "saved in any of them reaches this one the next time it comes to the front. "
+            "The keys, the tray, the working tick, strict mode, the read-back's sound and "
+            "every permission to send your speech somewhere stay with each program. If two "
+            "programs save at once, the last one saved wins; nothing is half written. On "
+            "for a new install, off for one whose settings you had already changed, until "
+            "you turn it on. The first time a program takes the family's settings, its own "
+            "are kept in a backup file, and if the shared copy cannot be saved you are told "
+            "why. A portable copy shares only with programs in its own folder."
+        )
+        root.Add(self.share_family, 0, wx.ALL, _PAD)
+
         self._my_words = my_words
         self._add_profile(root, value)  # D-23
         self._add_command_word(root, value)
@@ -572,4 +593,5 @@ class MoreDictationDialog(wx.Dialog):
             "windows_dictation_history_days": self._history_days[
                 max(0, self.history.GetSelection())
             ],
+            SHARE_FIELD: "on" if self.share_family.GetValue() else "off",
         }

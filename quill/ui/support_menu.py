@@ -158,12 +158,17 @@ def append_support_items(host: Any, help_menu: Any, wx: Any) -> tuple[Any, ...]:
 
 
 def insert_edit_menu(host: object, menu_bar: object, wx: object, *, position: int = 1) -> object:
-    """Insert the one-item &Edit menu holding Undo Last Action (11.3).
+    """Insert the &Edit menu: Undo Last Action (11.3), Undo History and,
+    where QUILL Transcribe is offered, Dictate Here (dict.md D-16).
 
     Where Windows apps keep it, and where a listener will press Alt+E looking
     for it. One step of undo is cheaper than a confirmation prompt on every
     destructive verb and kinder than either; both apps have no editor, so
     Ctrl+Z is free here in exactly the way it is not in QUILL.
+
+    Dictate Here is in Edit because neither app has a Tools menu and both
+    have this one: dictating is putting text into a field, which is what
+    Edit is for. Its key, Ctrl+F11, is the editors' Start Dictation.
 
     Returns the id ref, which the caller must pin.
     """
@@ -176,6 +181,14 @@ def insert_edit_menu(host: object, menu_bar: object, wx: object, *, position: in
     host._keep_menu_ids(history_id)
     edit_menu.Append(history_id, host._menu_label("Undo &History...", "app.undo_history"))
     host.frame.Bind(wx.EVT_MENU, lambda _e: host.open_undo_history(), id=history_id)
+    from quill.ui.dictate_here_ui import COMMAND_ID, dictate_here_available
+
+    if dictate_here_available() and callable(getattr(host, "dictate_here", None)):
+        edit_menu.AppendSeparator()
+        dictate_id = wx.NewIdRef()
+        host._keep_menu_ids(dictate_id)
+        edit_menu.Append(dictate_id, host._menu_label("&Dictate Here", COMMAND_ID))
+        host.frame.Bind(wx.EVT_MENU, lambda _e: host.dictate_here(), id=dictate_id)
     menu_bar.Insert(position, edit_menu, _edit_label(menu_bar))
     return undo_id
 
