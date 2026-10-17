@@ -33,6 +33,7 @@ from typing import Any
 
 from quill.core.radio.browse_nodes import split_id
 from quill.core.radio.browse_sources import ROOT_SOURCES
+from quill.core.radio.row_marks import MARK_SUFFIX
 
 #: Node kind -> (what it is called, which root branch to reload after).
 #: A kind that is not here has no removal, and Delete says so out loud.
@@ -53,7 +54,8 @@ NOTHING_TO_DELETE = (
 def _label(dialog: Any, node: Any) -> str:
     """The row's own text, without the trailing "  (3 items)" the tree adds."""
     try:
-        return str(dialog._tree.GetItemText(node)).split("  (")[0]
+        text = str(dialog._tree.GetItemText(node)).split("  (")[0]
+        return text.removesuffix(MARK_SUFFIX)  # a row marked for deleting (browse_marks)
     except Exception:  # noqa: BLE001 - a label is never worth failing a key on
         return "this row"
 
@@ -248,7 +250,15 @@ def _remove_stored(dialog: Any, node: Any, kind: str, args: list[str]) -> bool:
     if not confirm(dialog, f"Remove {name} from {where}?"):
         dialog._announce("Nothing was removed.")
         return False
+    remove_stored_now(kind, args)
+    reload_branch(dialog, root)
+    dialog._announce(f"Removed {name}. That {what} is gone from {where}.")
+    return True
 
+
+def remove_stored_now(kind: str, args: list[str]) -> str:
+    """Remove a saved link, channel or server without asking; returns the
+    root branch to reload. The one removal both Delete paths share."""
     url = args[0]
     if kind in ("ytvideo", "ytplaylist"):
         from quill.core.radio.youtube_saved import SavedStore
@@ -262,10 +272,7 @@ def _remove_stored(dialog: Any, node: Any, kind: str, args: list[str]) -> bool:
         from quill.core.radio.my_servers import ServerStore
 
         ServerStore().remove(url)
-
-    reload_branch(dialog, root)
-    dialog._announce(f"Removed {name}. That {what} is gone from {where}.")
-    return True
+    return _REMOVABLE[kind][1]
 
 
 def _remove_favorite(dialog: Any, station: Any) -> bool:
@@ -274,6 +281,13 @@ def _remove_favorite(dialog: Any, station: Any) -> bool:
     if not confirm(dialog, f"Remove {name} from Favorites?"):
         dialog._announce("Nothing was removed.")
         return False
+    unfavorite_now(dialog, station)
+    dialog._announce(f"Removed {name} from Favorites.")
+    return True
+
+
+def unfavorite_now(dialog: Any, station: Any) -> None:
+    """Remove *station* from Favorites without asking, and redraw the branch."""
     key = str(getattr(station, "station_uuid", "") or "") or str(
         getattr(station, "stream_url", "") or ""
     )
@@ -284,8 +298,6 @@ def _remove_favorite(dialog: Any, station: Any) -> bool:
     refresh = getattr(dialog, "_refresh_favorites_branch", None)
     if callable(refresh):
         refresh()
-    dialog._announce(f"Removed {name} from Favorites.")
-    return True
 
 
 def _remove_podcast(dialog: Any, node: Any, kind: str, args: list[str]) -> bool:

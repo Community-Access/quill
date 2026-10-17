@@ -461,6 +461,10 @@ hand. Check QUILL Lite 1.1.2 first, then any QUILL 0.9 portable. If one is
 affected, the zip it can be offered must not contain a `data` folder, which
 means marking a fresh portable copy some other way, or telling those users to
 update by hand. Copies from the next release on carry the fixed helper.
+**Decided (Jeff, 2026-10-17): tell them to update by hand.** The notice is
+drafted in `docs/release/portable-update-by-hand-notice.md` (for the website),
+and a short version is in QUILL Lite's 1.2 release notes and QUILL's 1.0
+release notes. Nothing has been published or sent.
 
 ### The update helper: swap, health check and undo
 

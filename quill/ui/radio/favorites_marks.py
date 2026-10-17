@@ -30,6 +30,15 @@ from quill.core.radio.row_marks import (
     marked_label,
 )
 
+# The key, the menu rows and the question are shared with Recordings, Browse
+# and the schedule list (marks_shared); re-exported here for existing callers.
+from quill.ui.radio.marks_shared import (
+    clear_marks,
+    is_mark_key,
+    mark_menu_entries,
+    yes_no_asker,
+)
+
 __all__ = [
     "clear_marks",
     "dialog_marks",
@@ -47,13 +56,6 @@ __all__ = [
 ]
 
 _NOUN = "station"
-
-
-def is_mark_key(wx: Any, event: Any) -> bool:
-    """Plain ``.`` or the keypad's decimal point, with no modifier held."""
-    if event.ControlDown() or event.AltDown() or event.ShiftDown():
-        return False
-    return event.GetKeyCode() in (ord("."), getattr(wx, "WXK_NUMPAD_DECIMAL", -1))
 
 
 def label_for(marks: RowMarks | None, key: str, label: str) -> str:
@@ -117,33 +119,6 @@ def remove_marked(
     marks.clear()
     announce(deleted_sentence(removed, _NOUN, failed=count - removed))
     return removed > 0
-
-
-def mark_menu_entries(
-    marks: RowMarks | None,
-    *,
-    toggle: Callable[[], None],
-    remove: Callable[[], None],
-    clear: Callable[[], None],
-) -> list[tuple[str, Callable[[], None]]]:
-    """The context-menu rows for marking, each showing its key.
-
-    While anything is marked, Delete means "remove the marked stations", so the
-    row that says so is the one carrying the Delete key -- the caller drops its
-    single-row Remove... entry then, keeping one claimant per key.
-    """
-    entries: list[tuple[str, Callable[[], None]]] = [("Mark &for Deleting\t.", toggle)]
-    if marks:
-        entries.append((f"&Remove {len(marks)} Marked...\tDelete", remove))
-        entries.append(("&Clear Marks\tCtrl+Shift+Delete", clear))
-    return entries
-
-
-def clear_marks(marks: RowMarks, *, announce: Callable[[str], None]) -> int:
-    """Unmark everything and say how many were unmarked."""
-    count = marks.clear()
-    announce(f"Cleared {count} mark{'' if count == 1 else 's'}." if count else "Nothing marked.")
-    return count
 
 
 def handle_key(
@@ -290,15 +265,4 @@ def dialog_menu_entries(
 
 
 def _ask_with_message_box(parent: Any) -> Callable[[str], bool]:
-    def ask(question: str) -> bool:
-        import wx
-
-        answer = wx.MessageBox(  # MSGBOX-OK: parented confirmation for a shared action
-            question,
-            "Delete Marked Stations",
-            wx.ICON_QUESTION | wx.YES_NO | wx.NO_DEFAULT,
-            parent,
-        )
-        return bool(answer == wx.YES)
-
-    return ask
+    return yes_no_asker(parent, "Delete Marked Stations")

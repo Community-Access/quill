@@ -164,7 +164,8 @@ def compose(
             emit(text)
             attach = False
         elif glue is Glue.OPEN:
-            space_before()
+            if not (text == "(" and previous == "]"):
+                space_before()  # a Markdown link's "](" stays joined: [text](page)
             emit(text)
             own_space = 0
             attach = True

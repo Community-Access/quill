@@ -9,6 +9,50 @@ semantic versioning once it reaches a stable release.
 QUILL Social became a feed reader as well as a social client, and grew an
 installer of its own.
 
+- **Every menu command has a key you can change** (2026-10-17). Thirty-one
+  commands could only be reached by walking the menus. Each now has a key,
+  shown beside its name: in the Item menu **Item > Flag for follow-up**
+  (Ctrl+Shift+G), **Item > Accessibility check** (F7) and
+  **Item > Send to QUILL** (Ctrl+Shift+Q); in the Feeds menu
+  **Feeds > New Folder...** (Ctrl+Alt+F), **Feeds > New smart folder...**
+  (Ctrl+Shift+M), **Feeds > Edit smart folder...** (Ctrl+Alt+M),
+  **Feeds > Delete smart folder** (Ctrl+Shift+Delete), **Feeds > Import OPML...**
+  (Ctrl+I), **Feeds > Export OPML...** (Ctrl+E) and
+  **Feeds > Unsubscribe from feed** (Ctrl+Alt+U), the last two asking first as
+  before; in the Listen menu **Listen > Play / Pause** (Ctrl+Shift+Space),
+  **Listen > Next article** (Ctrl+Shift+Period), **Listen > Previous article**
+  (Ctrl+Shift+Comma) and **Listen > Stop listening** (Ctrl+Shift+S); in the
+  Studio menu **Studio > Drafts...** (Ctrl+Shift+D),
+  **Studio > Agenda / Calendar...** (Ctrl+Shift+Y),
+  **Studio > Queue schedule...** (Ctrl+Shift+U) and **Studio > Approvals...**
+  (Ctrl+Shift+W); in the Tools menu **Tools > Catch Up** (Ctrl+Shift+H),
+  **Tools > Insights / Analytics** (Ctrl+Alt+I), **Tools > Safety Center**
+  (Ctrl+Alt+T), **Tools > Notification policies** (Ctrl+Alt+P),
+  **Tools > Plugins** (Ctrl+Alt+G), **Tools > Outbox** (Ctrl+Shift+B) and
+  **Tools > Summarize this feed (AI)** (Ctrl+Alt+R); **File > Preferences...**
+  (Ctrl+Comma); and in the Help menu **Help > User Guide** (Ctrl+F1),
+  **Help > Keyboard Reference** (Ctrl+Shift+F1), **Help > Product Requirements**
+  (Alt+Shift+F1) and **Help > About** (Alt+F1).
+
+  The menus now read their keys from your keymap, so a key you change in
+  `keymap.json` moves in the menu too, and every command can be changed, not
+  only the ones F1 used to list. Before, the menus kept showing the shipped
+  key after a change. If a `keymap.json` saved by an earlier version already
+  gives one of the new keys to another command, your choice stands and the new
+  command waits for a key of its own. The Command Center shows every
+  command's key as well.
+
+  Every command also has its own letter in its menu now: **Item > Bookmark**
+  is K, **Feeds > New smart folder...** is T, **Feeds > Unsubscribe from
+  feed** is B, **Tools > Notification policies** is L and **Tools > Plugins**
+  is G, because each shared its letter with another command. For example,
+  Alt+L, then N skips to the next article, and Alt+I, then K bookmarks the
+  focused post. The keys work in the main window, not inside dialogs. A check
+  that runs during testing now walks QUILL Social's real menu bar and fails on
+  any command without a key, any key shown twice, any key Windows cannot bind
+  and any letter two commands in one menu share. **Help > Keyboard Reference**
+  has every key in tables by task, with a listening example.
+
 - **Find Text moved to Ctrl+Shift+F, and the Keyboard Reference teaches only
   keys that work** (2026-10-17). Ctrl+F was shown on two menu rows, Item >
   Favourite and Tools > Find Text, and only Favourite ever answered it, so

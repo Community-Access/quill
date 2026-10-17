@@ -55,6 +55,24 @@ Your settings, recent
 files and recovered work come with you exactly as they are, and **Help >
 Check for Updates** (**Ctrl+Alt+U**) offers 1.2.0 like any other update.
 
+**If you use the portable QUILL Lite 1.1.2, update by hand this time.** In
+that copy, **Install and restart now** can delete everything in its `data`
+folder: your settings, keys and recovered work. The fault is in the updater
+inside 1.1.2, so 1.2.0 cannot fix it for you; 1.2.0 carries a fixed one. An
+installed copy is not affected. Instead of Install and restart now:
+
+1. Close QUILL Lite.
+2. Copy the `data` folder next to `QuillLite.exe` somewhere safe.
+3. Download the new `QuillLite-Portable` zip and unzip it into a new folder
+   next to the old one, not on top of it.
+4. Copy everything from your saved `data` folder into the new folder's `data`
+   folder, and choose to replace files with the same name.
+5. Start the new copy, check **Help > About** and your settings, then delete
+   the old folder when you are sure.
+
+If your settings are already gone, QUILL Lite cannot bring them back; look for
+a backup or your computer's File History.
+
 One key has moved. **Tools > Keyboard Manager** is now
 **Ctrl+Alt+Shift+Space**. Its old key, Ctrl+Alt+Shift+R, shows and hides Quill
 Radio from anywhere, so while Quill Radio was running the Keyboard Manager

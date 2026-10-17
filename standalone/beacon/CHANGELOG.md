@@ -2,6 +2,37 @@
 
 ## Unreleased
 
+- **Every menu command has a key, and every command has its own letter**
+  (2026-10-17). Sixteen commands on QuillBeacon's menus could only be reached
+  by walking the menus. Each now shows a key beside its name:
+  **Edit > Find Duplicates** (Ctrl+Alt+D),
+  **View > Accessibility Settings...** (Ctrl+Shift+Comma),
+  **Media > Play in External Player** (Ctrl+Alt+P),
+  **Media > Add Radio Station...** (Ctrl+Alt+R),
+  **Media > Add Radio Program...** (Ctrl+Alt+G),
+  **Tools > Trail Editor...** (Ctrl+Alt+T),
+  **Tools > Smart Collections Manager...** (Ctrl+Alt+Shift+G),
+  **Tools > Revalidate Health...** (Ctrl+Alt+H),
+  **Tools > Review Location Repair...** (Ctrl+Alt+Shift+H),
+  **Tools > External Player...** (Ctrl+Alt+Shift+X),
+  **Tools > Status Center...** (Ctrl+Alt+I) and **Help > About** (Alt+F1).
+  The Sync menu lives on F9: **Sync > Sync Now** (F9),
+  **Sync > Sync Settings...** (Ctrl+F9), **Sync > Sync History...** (Shift+F9)
+  and **Sync > Auto Sync...** (Ctrl+Shift+F9). The Command Palette shows the
+  same keys.
+
+  Two commands had no access letter at all (**Edit > Archive** and
+  **Tools > Publish Collection...**), and nine letters were shared by two to
+  four commands in one menu, so pressing the letter only moved between them.
+  Every command now has a letter of its own in its menu; Archive is H,
+  Publish Collection is L, Find Duplicates is P, and the guide lists every
+  letter that moved. For example, Alt+S, then N syncs now, and Alt+E, then P
+  finds duplicates. The keys cannot be changed yet, and they work in the main
+  window rather than inside dialogs. The menu check that runs during testing
+  now walks QuillBeacon's real menu bar too, and fails on any command without
+  a key, any key shown twice, any key Windows cannot bind, and any letter two
+  commands share. See **Every menu command has a key** in the guide.
+
 - **The guide names real menus, and a check keeps it that way** (2026-10-17).
   The QuillSync and QuillBeacon guide described where commands live in prose
   ("Tools, then Publish Collection") that nothing could check. Every such

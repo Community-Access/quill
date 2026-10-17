@@ -474,6 +474,33 @@ Users can hide, rename, reorder, nest, pin, or assign shortcuts to most nodes.
 
 All shortcuts must be remappable.
 
+**Status, 2026-10-17: every menu command has a key.** The QUILL family rule
+holds here too: every enabled menu row shows a key, no key is on two rows, and
+every row has an access letter no other row in its menu shares (family rules 8
+and 9: every command has a key, and a rarely used command gets a longer key
+rather than none). The keys live in one table, `quill_social/keymap.py`
+(`DEFAULT_BINDINGS`), keyed by command id; the menu reads its labels from it,
+the menu and the window's key hook run one command-id table, and the command
+center reads its shortcuts from the same keymap, so the menu, the key, the F1
+list and the command center cannot disagree, and a rebind in `keymap.json`
+moves all four. A default added
+later yields to a chord the listener's saved `keymap.json` already uses.
+Thirty-one rows gained keys: Flag for follow-up Ctrl+Shift+G, Accessibility
+check F7, Send to QUILL Ctrl+Shift+Q, New Folder Ctrl+Alt+F, New smart folder
+Ctrl+Shift+M, Edit smart folder Ctrl+Alt+M, Delete smart folder
+Ctrl+Shift+Delete, Import OPML Ctrl+I, Export OPML Ctrl+E, Unsubscribe
+Ctrl+Alt+U, Play / Pause Ctrl+Shift+Space, Next article Ctrl+Shift+Period,
+Previous article Ctrl+Shift+Comma, Stop listening Ctrl+Shift+S, Drafts
+Ctrl+Shift+D, Agenda / Calendar Ctrl+Shift+Y, Queue schedule Ctrl+Shift+U,
+Approvals Ctrl+Shift+W, Catch Up Ctrl+Shift+H, Insights / Analytics
+Ctrl+Alt+I, Safety Center Ctrl+Alt+T, Notification policies Ctrl+Alt+P,
+Plugins Ctrl+Alt+G, Outbox Ctrl+Shift+B, Summarize this feed Ctrl+Alt+R,
+Preferences Ctrl+Comma, User Guide Ctrl+F1, Keyboard Reference Ctrl+Shift+F1,
+Product Requirements Alt+Shift+F1 and About Alt+F1. F6, Shift+F6 and
+Control+1 through Control+9 above are still in the keymap but not yet acted
+on; the Keyboard Reference lists them as planned. The gate is
+`tests/unit/ui/test_menu_accelerators.py`, which builds the real menu bar.
+
 ## 10.2 Command Center
 
 The command center must:

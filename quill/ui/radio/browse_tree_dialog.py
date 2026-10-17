@@ -32,7 +32,7 @@ from collections.abc import Callable
 from dataclasses import replace
 from typing import Any
 
-from quill.core.radio import browse_helpers, browse_sources, transport_commands
+from quill.core.radio import browse_sources, transport_commands
 from quill.core.radio.browse_nodes import BrowseNode
 from quill.core.radio.favorites import RadioFavoritesStore
 from quill.core.radio.models import RadioStation
@@ -43,6 +43,7 @@ from quill.ui.dialog_contract import (
     dialog_alive,
 )
 from quill.ui.radio import browse_feedback, browse_keys, browse_position, transport_keys
+from quill.ui.radio.browse_marks import row_text
 from quill.ui.radio.volume_row import add_volume_slider
 from quill.ui.surface_lifetime import surface_tasks
 
@@ -530,9 +531,7 @@ class BrowseTreeDialog:
 
         browse_reveal.on_children_added(self, node)
 
-    def _row_label(self, child: BrowseNode) -> str:
-        """The text of one row. See :func:`browse_helpers.row_label`."""
-        return browse_helpers.row_label(child)
+    _row_label = row_text  # one row's text, with "(marked)" when it is marked
 
     def _row_data(self, child: BrowseNode) -> dict:
         if child.is_folder or child.is_action:

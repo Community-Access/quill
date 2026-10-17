@@ -24,7 +24,6 @@ import logging
 import math
 import os
 import re
-import shutil
 import subprocess
 import threading
 import uuid
@@ -58,6 +57,7 @@ from quill.core.radio.recording_liveness import await_stop as _await_stop
 from quill.core.radio.recording_liveness import wait_for_exit
 from quill.core.radio.recording_preroll import input_dropped
 from quill.core.radio.recording_preroll_guard import OpeningGuard
+from quill.core.radio.recording_song_watch import SongSplitter
 from quill.core.radio.recording_winjob import assign_kill_on_close_job, close_job_handle
 from quill.core.speech.ffmpeg import INSTALL_HINT, find_ffmpeg
 from quill.stability.redaction import format_args_for_log, redact_source_tokens
@@ -166,6 +166,9 @@ class RecordingSettings:
     #: The default is unlimited by explicit product choice; a user on a modest
     #: machine or a metered connection can set a ceiling in Recording Settings.
     max_concurrent_recordings: int = 0
+    #: Off by default. When true, a recording is cut into one file per song at
+    #: each ICY title change once it finishes (recording_song_watch).
+    split_at_song_changes: bool = False
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -181,6 +184,7 @@ class RecordingSettings:
             "apply_sound_enhancements": self.apply_sound_enhancements,
             "exact_optilab": self.exact_optilab,
             "max_concurrent_recordings": self.max_concurrent_recordings,
+            "split_at_song_changes": self.split_at_song_changes,
         }
 
     @classmethod
@@ -202,6 +206,7 @@ class RecordingSettings:
             exact_optilab=bool(data.get("exact_optilab", False)),
             # 0 (unlimited) is the floor -- a negative saved value coerces to it.
             max_concurrent_recordings=max(0, _coerce_int(data.get("max_concurrent_recordings"), 0)),
+            split_at_song_changes=bool(data.get("split_at_song_changes", False)),
         )
 
 
@@ -383,6 +388,8 @@ class RadioRecorder:
         self._parts: dict[str, list[Path]] = {}
         #: Keeps the station's pre-roll advert out of the file (xradio2 6.1).
         self._openings = OpeningGuard()
+        #: Cuts a finished recording at each song change, when asked (4.8).
+        self._songs = SongSplitter()
 
     # -- read API ---------------------------------------------------------------
 
@@ -694,6 +701,13 @@ class RadioRecorder:
             raise RecordingLimitError(cap_message)
         if not is_continuation:
             self._openings.begin(job_id, stream_url, capture_url)
+        self._songs.connection(
+            job_id,
+            capture_url,
+            station_name=station_name,
+            enabled=settings.split_at_song_changes,
+            continuation=is_continuation,
+        )
         self._on_state_changed(True, destination, job_id)
         job.drain = threading.Thread(
             target=self._drain_stderr, args=(job,), daemon=True, name="quill-radio-record-stderr"
@@ -828,6 +842,7 @@ class RadioRecorder:
             self._on_state_changed(False, None, job.job_id)
             self._on_capture_failed(job.station_name, reason)
             self._openings.discard(job.job_id)
+            self._songs.discard(job.job_id)
             with self._lock:
                 self._parts.pop(job.job_id, None)
             return
@@ -842,6 +857,10 @@ class RadioRecorder:
             final = self._join_parts(job)
             if final is not None:
                 self._apply_exact_optilab(job, final)
+            lead = self._openings.take_lead_trim(job.job_id)
+            note = self._songs.finish(job.job_id, final, lead_trim=lead)
+            if note:
+                self._on_parts_joined(note)
 
     def _apply_exact_optilab(self, job: RecordingJob, path: Path) -> None:
         """Run the real OptiLab engine over the finished recording, if asked.
@@ -1059,35 +1078,11 @@ class RadioRecorder:
         """Called once, from the frame's close path: stop every recording."""
         self.stop(None)
         self._openings.cancel_all()
+        self._songs.cancel_all()
 
 
-def _finalize_move(src: Path, dst: Path) -> Path:
-    """Move a finished recording from the temp dir *src* to its home *dst* (#5).
-
-    Returns where the file actually ended up. ``os.replace`` handles the same
-    volume in one atomic step; a cross-volume move raises ``OSError``, so it
-    falls back to copy-then-delete. If even that fails the file is left in the
-    temp dir (still playable) and *src* is returned, so a finished recording is
-    never lost to a move error.
-    """
-    if not src.exists():
-        return dst
-    try:
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        os.replace(src, dst)
-        return dst
-    except OSError:
-        try:
-            shutil.copy2(src, dst)
-            src.unlink(missing_ok=True)
-            return dst
-        except OSError as exc:
-            logger.warning(
-                "Could not move recording to %s (%s); left it in the temp folder.",
-                format_args_for_log([str(dst)]),
-                exc,
-            )
-            return src
+#: Moved to recording_outcome under GATE-11; the old name stays for callers.
+_finalize_move = recording_outcome.finalize_move
 
 
 def _resolve_capture_url(stream_url: str) -> str:

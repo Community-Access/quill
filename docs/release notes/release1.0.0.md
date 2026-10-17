@@ -134,6 +134,19 @@ window, and QUILL tells you plainly if it has to wait for Stable to catch up.
 The same window is a button away in **Settings > Administration**, and its
 **Update History** shows everything the updater has done.
 
+**Coming from a portable QUILL 0.9? Update by hand this time.** In a portable
+0.9 copy, **Install and restart now** can delete everything in its `data`
+folder: your settings, keys and recovered work. The fault is in the updater
+inside 0.9, so 1.0 cannot fix it for you; 1.0 carries a fixed one. An
+installed copy is not affected. Instead: close QUILL; copy the `data` folder
+next to `quill.exe` somewhere safe; unzip the new portable zip into a new
+folder next to the old one, not on top of it; copy everything from your saved
+`data` folder into the new folder's `data` folder, replacing files with the
+same name; start the new copy and check **Help > About Quill** and your
+settings; delete the old folder when you are sure. If your settings are
+already gone, QUILL cannot bring them back; look for a backup or your
+computer's File History.
+
 Every version now has a **build number**, so a fix can ship without a new
 version number. **Help > About Quill** says "1.0.0 (build 1)", and Check for
 Updates offers a later build of the same version to everyone on an earlier

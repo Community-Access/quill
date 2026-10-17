@@ -5,6 +5,30 @@
 Testing rebuild: **1.2.0 (build 5)**, following builds 2, 3 and 4; builds 2 and 3 were
 uploaded for testing. The new packages have not been published yet.
 
+- **Portable 1.1.2: update by hand** (2026-10-17). The release notes now tell
+  anyone with the portable QUILL Lite 1.1.2 not to use Install and restart now,
+  because the updater inside 1.1.2 can delete the copy's `data` folder, and
+  give the steps to update by hand: back up `data`, unzip the new copy next to
+  the old one, copy `data` back. Installed copies are not affected.
+- **Spell an address with pauses** (2026-10-17). While spelling, each phrase now
+  joins the letters you spelled just before it, with no space. Before, every
+  pause put a space in: "juliet", a pause, then "oscar" wrote *j o*. Now
+  "start spelling", "juliet oscar", "at sign echo x-ray", "dot charlie oscar",
+  "stop spelling" writes *jo@ex.co*. Say "space" when you want a space. Limits:
+  a whole word such as "smith" is not a letter and is left out (the old
+  example in this guide, "jay dot smith at sign example dot com", was wrong
+  about that and is corrected); if you move the cursor between phrases, the
+  next letters start fresh with a space in front.
+- **A Markdown link by voice** (2026-10-17). "open bracket the guide close
+  bracket open paren page close paren" now writes `[the guide](page)`. Before,
+  a space came between the bracket and the parenthesis, which stops it being a
+  link. It works across two phrases too.
+- **Worked examples in the Dictation commands guide** (2026-10-17). The
+  *Dictation commands* file, and the list "what can I say" opens, now end with
+  worked examples (what you have, what you say, what you get) and the limits,
+  including what cannot work in another program. Every example is checked by
+  automated tests in QUILL Lite and QUILL. How accurately and how quickly each
+  engine hears you has not been measured yet.
 - **Edit Word documents** (2026-10-17). A `.docx` now opens to edit, as rich
   text, and **Ctrl+S** saves it as a real Word document, using QUILL's own Word
   code, so QUILL and QUILL Lite open, ask, back up and save a Word document the
@@ -25,6 +49,55 @@ uploaded for testing. The new packages have not been published yet.
   says so); if this copy of QUILL Lite has no Word component, a `.docx` opens
   as text as before. Example: open `agenda.docx`, press **Ctrl+End**, type a
   line, press **Ctrl+S**, and open it in Word. User guide: "Word documents".
+
+- **Word, Excel, PowerPoint and OpenDocument files: what QUILL Lite does with
+  each** (2026-10-16 and 2026-10-17; this one entry replaces three earlier
+  ones that described the steps in the order they were built). The table
+  "Office files at a glance" in the user guide sets it out in full.
+  - **Word documents (`.docx`) open to edit and save as Word**, in the
+    installed copy and the portable copy alike. A `.docx` opens as rich text,
+    using QUILL's own Word code, so QUILL and QUILL Lite open, ask, back up and
+    save a Word document the same way. Headings 1 to 6, lists, bold, italic,
+    underline, fonts, colours, highlights, links, alignment and tables come in
+    and go back out, and Word's navigation pane still finds your headings.
+    **Ctrl+S** saves a real Word document. When a document has things a save
+    would drop (pictures, comments, tracked changes, headers, footers,
+    footnotes, extra sections or table formatting), QUILL Lite names them
+    first and asks. You can **open for reading and plain editing** (the
+    default, and what Escape does, so the file cannot change), **edit as rich
+    text** (the original is copied to `name.backup-date-time.docx` before your
+    first save), or **edit a copy**. A long save runs in the background: press
+    **Ctrl+S** again before you hear "Saved" and you hear "Still saving
+    report.docx" instead of a second save starting. **Save As** has a "Word
+    document (*.docx)" row, and any rich text document can be saved as Word.
+    Dark mode never reaches the file. Earlier test builds of the *installed*
+    copy were missing a part Word editing needs and opened every `.docx` as
+    text; that is fixed, and the build now refuses to finish without it.
+  - **Everything else opens as readable text, never edited in its own
+    format.** That covers a Word file with macros (`.docm`), OpenDocument text
+    (`.odt`), Excel (`.xlsx`) and PowerPoint (`.pptx`), and with LibreOffice
+    installed the older `.doc`, `.xls` and `.ppt`. Headings stay headings,
+    lists stay lists, tables become text tables, each sheet starts with
+    "Sheet:" and its name, and each slide starts with "Slide" and its number,
+    followed by its speaker notes. Before this, QUILL Lite showed the file's raw
+    contents, which no one could read. **Ctrl+S** never writes over these
+    files: it explains why and opens Save As with a `.txt` name. Without
+    LibreOffice, an older file gets a message telling you how to save it as the
+    newer type. `.xlsm`, `.ods` and `.odp` are read by File > Import / Convert
+    Document, not Ctrl+O.
+  - **To edit one of those in full, make it a `.docx`.** Save it as Word
+    Document (.docx) from Word or LibreOffice Writer. Or open it here, switch
+    to rich text with **Switch Document Mode** (**Alt+Shift+F**), and save it
+    with **Ctrl+Shift+S** under a new `.docx` name. A plain text window never
+    writes under a Word name: typing `minutes.docx` there used to write plain
+    text that Word refused to open, and now QUILL Lite says how to switch to
+    rich text and writes nothing. `.docm`, `.dotx` and `.dotm` are never
+    written.
+  - Example: open `agenda.docx`, press **Ctrl+End**, type a line, press
+    **Ctrl+S**, and open it in Word. Then open `budget.xlsx`: it reads from
+    "Sheet: Budget", and Ctrl+S offers `budget.txt`. User guide: "Office files
+    at a glance", "Word documents" and "Opening Word, Excel and PowerPoint
+    files".
 
 - **Read a table cell by cell** (2026-10-17). **Navigate > Table** has QUILL's
   eight table keys: **Ctrl+Alt+Right** and **Ctrl+Alt+Left** for the next and
@@ -192,8 +265,9 @@ uploaded for testing. The new packages have not been published yet.
   protection, and the two now share the code. See *If your screen reader
   stops*.
 
-- **Find the highlighted passages in a Word document.** A Word file opens here
-  as text, and until now its highlighter marks were simply gone. QUILL Lite now
+- **Find the highlighted passages in a Word document.** In a Word file opened
+  as text (a `.docm`, or a `.docx` opened for reading only), the highlighter
+  marks used to be simply gone. QUILL Lite now
   reads them from the file and takes you to them, from **Navigate > Highlighted
   Passages**: **Alt+PageDown** goes to the next one and says its colour, its
   place in the count and its words ("Yellow highlight, 2 of 5: sign and date
@@ -251,11 +325,8 @@ uploaded for testing. The new packages have not been published yet.
 - **A calmer spoken preview.** With **Show it, and say new words quietly** chosen for the words heard so far, each word is now said once, when the engine has settled on it, never a word it is still changing its mind about and never the same word twice.
 - **Your dictation settings, shared with the family.** More Dictation Settings has **Share dictation settings with every QuillVille program** (**Alt+Q**). When it is checked, what you save in Dictation Settings is used by QUILL, QUILL Transcribe and Quill Inkwell too, and what you save in any of them reaches QUILL Lite when you come back to it. Keys, the working tick, strict mode, what you hear after each phrase and every permission to send your speech stay QUILL Lite's own. Checked for a new install; unchecked if you had already changed your settings, so nothing is replaced behind your back. Your own settings are kept in a backup file the first time, and a save that cannot reach the others is said aloud.
 - **The shared word list has a new home.** It is now in `%LOCALAPPDATA%\QuillVille\Dictation`, copied there from QUILL's data folder the first time it is needed. The old file is left as it was, as a backup; nothing is deleted. QUILL Lite's own word list is not affected.
-- **Word, Excel and PowerPoint files open as text.** Press **Ctrl+O** and choose a `.docx`, `.xlsx`, `.pptx` or `.odt` file (or an older `.doc`, `.xls` or `.ppt`), and QUILL Lite opens its words, the same way it opens a PDF. Headings stay headings, lists stay lists, tables become text tables, each sheet starts with "Sheet:" and its name, and each slide starts with "Slide" and its number, with its speaker notes after it. Before, QUILL Lite showed the file's raw contents, which no one could read. It uses QUILL's own readers, so nothing is downloaded and nothing is uploaded. QUILL Lite never writes back into an Office file: **Ctrl+S** opens Save As with a `.txt` name instead. An older `.doc`, `.xls` or `.ppt` needs LibreOffice installed; without it, QUILL Lite tells you how to save the file in the newer format. See "Opening Word, Excel and PowerPoint files" in the user guide.
-
-- **Numbered lists and equations in Word files** (2026-10-16). Numbered items now read 1, 2, 3 instead of 1, 1, 1, and an equation in a Word file comes through as text, for example `\(a^{2}+b^{2}=c^{2}\)`, where it used to be left out without a word. QUILL Lite reads Word, Excel, PowerPoint and OpenDocument files with QUILL's own readers first, in the same order as QUILL, so a Word file opens in about a second; a second reader (MarkItDown, which QUILL Lite's installer does not include) is tried only if QUILL's own cannot read a file. See "Opening Word, Excel and PowerPoint files" in the user guide.
+- **Numbered lists and equations in Word files** (2026-10-16). Numbered items now read 1, 2, 3 instead of 1, 1, 1, and an equation in a Word file comes through as text, for example `\(a^{2}+b^{2}=c^{2}\)`, where it used to be left out without a word. QUILL Lite reads Word, Excel, PowerPoint and OpenDocument files with QUILL's own readers first, in the same order as QUILL, so a Word file opened as text appears in about a second; a second reader (MarkItDown, which QUILL Lite's installer does not include) is tried only if QUILL's own cannot read a file. See "Opening Word, Excel and PowerPoint files" in the user guide.
 - **Read-Only Guard** (2026-10-16). **Tools > Read-Only Guard** (**Ctrl+Alt+Backspace**, the same key as QUILL) locks a document you are only reading: typing does nothing, and commands that would change the text say "Document is read-only" instead. Find, Go To, bookmarks and inline notes keep working; a note added while it is on is kept beside the file. QUILL Lite remembers the lock for that file, however you open it next time, and tells you if it could not write that down. A file Windows marks read-only opens locked too.
-- **Save As never writes text under a Word name** (2026-10-16). Typing `minutes.docx` used to write your plain text into a file Word refuses to open. QUILL Lite now says it cannot save Word documents, names Rich Text (.rtf), which Word opens, and writes nothing. The ending you type decides the format in every other case, capitals or not.
 - **Typing a name in a list, spaces and all** (2026-10-16). In Snippets and the other pick-one lists, typing "meeting notes" moves to that row; Space while you type a name is part of the name instead of opening the row the first word reached. After a pause Space opens the row as before; Enter and Escape are unchanged.
 - **A big abbreviation list opens and searches at once** (2026-10-16). Manage Abbreviations fills ten thousand rows instantly (it took over three seconds, again after every key), keeps your place when you search, and finds words in any order.
 

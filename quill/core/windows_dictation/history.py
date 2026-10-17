@@ -33,6 +33,8 @@ class DictatedPhrase:
     end: int
     #: It ended with a full stop the recogniser added, not one somebody said.
     auto_period: bool = False
+    #: Written in spelling mode: the next letters join it with no space.
+    spelled: bool = False
 
 
 class PhraseHistory:

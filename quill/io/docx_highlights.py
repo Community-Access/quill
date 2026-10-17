@@ -2,8 +2,8 @@
 
 Item 39 (highlighted passages in Word documents). QUILL's rich Word editing
 reads highlights through python-docx; but a Word file opened as text -- QUILL's
-read-extract choice, QUILL without python-docx, and every Word file QUILL Lite
-opens, since QUILL Lite ships neither python-docx nor lxml -- keeps the words
+read-extract choice, a ``.docm``, or a build that somehow lost python-docx
+(both editors carry it and lxml since 2026-10-17) -- keeps the words
 and drops the formatting, so its highlights were simply gone. This walks the
 same ``word/document.xml`` QUILL's own text reader walks
 (:mod:`quill.io.office_word`, with the same safe archive and XML guards) and

@@ -55,7 +55,7 @@ def _required_keyword_only() -> set[str]:
 
 #: Every module that builds the Speech Hub's kwargs. A third one must join this
 #: list -- that is the point of the gate.
-BUILDERS = ("quill/ui/main_frame.py", "quill/apps/studio.py")
+BUILDERS = ("quill/ui/main_frame_speech_hub.py", "quill/apps/studio.py")
 
 
 def _keys_supplied_by(builder: str) -> set[str]:

@@ -245,6 +245,275 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="notice-drafted-released-portable-copies-update-by-hand-todo-c2-2026-10-17">Notice
+drafted: released portable copies update by hand (todo C.2;
+2026-10-17)</h3>
+<p>The update helper in a released portable copy (QUILL Lite 1.1.2, any
+QUILL 0.9) deletes the user’s files in <code>data</code> when the new
+zip carries a <code>data</code> folder
+(<code>docs/release/RELEASE.md</code>, “Open, and yours to decide”).
+Jeff decided to tell those users to update by hand. The notice is
+drafted for the website in
+<code>docs/release/portable-update-by-hand-notice.md</code> (who is
+affected, what goes wrong, seven steps: back up <code>data</code>,
+download, unzip next to the old copy, copy <code>data</code> back,
+check, tidy up; what to do if the data is already gone), and a short
+version is in <code>docs/release notes/release1.0.0.md</code> (Staying
+up to date) and QUILL Lite’s <code>release-notes-1.2.md</code> (If you
+already use QUILL Lite). Nothing published or sent; RELEASE.md records
+the decision.</p>
+<h3
+id="dictation-acceptance-tests-in-both-editors-spelling-across-pauses-a-dictated-markdown-link-todo-d2-2026-10-17">Dictation
+acceptance tests in both editors; spelling across pauses; a dictated
+Markdown link (todo D.2; 2026-10-17)</h3>
+<p><strong><code>tests/unit/apps/test_dictation_acceptance.py</code>
+(new, 182 tests).</strong> The automated half of dictation acceptance:
+every editor test runs in QUILL Lite’s real window mixins and through
+QUILL’s real adapter (<code>WindowsDictationCommandsMixin</code> on a
+stand-in frame with MainFrame’s own <code>copy_all</code>), started with
+<code>cmd_toggle_dictation</code>, with a fake recogniser and the
+suite’s <code>FakeControl</code>. Covered: go to / go before / go after
+then dictate, words not found, repeated matches (select previous / next
+/ again, the ends, a far match’s line), select by words and through,
+correct, units, Copy All and its aliases, copy that, scratch that
+(newest first, typed text never taken, a phrase typed into left alone),
+all twelve Copy Tray slots by word and digit, named snippets and
+abbreviations with spaces, every capitals command and mode, an email
+spelled character by character, every Markdown line and inline mark,
+literal, and the insert-only limits in another program (the shipped
+<code>ExternalDocument</code> and <code>AnywhereLibrary</code> with
+typing faked: 16 reading commands refused, clips and snippets typed, a
+snippet’s cursor mark dropped). Accuracy and latency are not covered;
+they wait on the benchmarks (todo C.15).</p>
+<p><strong>Two fixes the tests found (shared, so QUILL, QUILL Lite,
+QUILL Transcribe and Inkwell all get them).</strong></p>
+<ul>
+<li><strong>Spelling across pauses.</strong> In spelling mode each
+phrase was composed as a new phrase, so “juliet”, pause, “oscar” wrote
+<code>j o</code>. A spelled phrase now joins the letters spelled just
+before it when the cursor is still right after them:
+<code>VoiceCommandsMixin._spelling_joins</code>
+(<code>voice_commands.py</code>), passed to
+<code>compose(join_words=...)</code> by the controller, and a new
+<code>DictatedPhrase.spelled</code> field (<code>history.py</code>,
+defaulted, so nothing else changes). “space”, the first spelled phrase
+after words, “spell that” and “spell” with letters behave as
+before.</li>
+<li><strong>A Markdown link.</strong> <code>composer.py</code>: an
+opening parenthesis straight after a closing bracket takes no space, so
+“close bracket open paren” writes <code>](</code>.</li>
+</ul>
+<p><strong>Documentation.</strong>
+<code>quill/core/windows_dictation/reference_examples.py</code> (new)
+adds <em>Worked examples</em> and <em>Limits</em> to the generated
+dictation-commands guides and the in-app “What can I say?” list
+(regenerated with <code>scripts/build_dictation_commands.py</code>). The
+spelling example “jay dot smith at sign example dot com” was wrong
+(whole words are left out while spelling) and is now spelled out in
+<code>reference.py</code>, <code>scripts/build_dictation_page.py</code>
+(site page regenerated) and QUILL Lite’s guide. QUILL’s user guide:
+<em>Spelling with pauses</em>, <em>A Markdown link, by voice</em>, and a
+pointer to the examples. Design record section 35 has the coverage
+table.</p>
+<h3
+id="main_framepy-below-15000-lines-three-feature-groups-move-to-mixins-2026-10-17"><code>main_frame.py</code>
+below 15,000 lines: three feature groups move to mixins
+(2026-10-17)</h3>
+<p>Developer-facing refactor; nothing a user sees or hears changes.
+<code>quill/ui/main_frame.py</code> went from 15,890 to 14,459 lines
+(todo D.4) by moving three whole feature groups out of
+<code>MainFrame</code>, unchanged, into new under-cap mixins:</p>
+<ul>
+<li><code>quill/ui/main_frame_bookmarks.py</code>
+(<code>BookmarksFoldsMixin</code>): named, temporary and quick bookmarks
+with their anchors, PDF outline import and per-document memory; code
+folding; Favorite Folders and Open From Favorite Folder.</li>
+<li><code>quill/ui/main_frame_read_aloud.py</code>
+(<code>ReadAloudMixin</code>): live Read Aloud with the ElevenLabs
+consent, Read in Browser, Export to Speech Audio and the controller
+callbacks.</li>
+<li><code>quill/ui/main_frame_speech_hub.py</code>
+(<code>SpeechHubMixin</code>): the Speech Hub and its Piper voice and
+Kokoro model downloads.</li>
+</ul>
+<p>The three are listed first in <code>MainFrame</code>’s bases so their
+methods keep the precedence they had as class methods.
+<code>_NavigatorNode</code> moved to
+<code>quill/ui/navigator_node.py</code> (re-exported from
+<code>main_frame</code>) so a mixin can build tree-navigator rows
+without a circular import. Same command ids, keys, menu rows, dialogs
+and announcements. The GATE-11 budget for <code>main_frame.py</code>
+ratchets down to 14,459; the surface-reachability, dialog,
+accessible-name and control-label snapshots were regenerated with their
+tools, and two tests now patch and read the module the code lives
+in.</p>
+<h3
+id="word-documents-work-in-every-installed-and-portable-build-lxml-ships-in-the-shared-runtime-one-office-story-in-the-docs-2026-10-17">Word
+documents work in every installed and portable build: lxml ships in the
+shared runtime; one Office story in the docs (2026-10-17)</h3>
+<p>Jeff’s decision (2026-10-17): “get whatever is needed to make word
+documents fully usable in quill and quill lite, the lxml or whatever it
+is called, get that bundled, do not worry about size.”</p>
+<p><strong>The bug.</strong>
+<code>standalone/runtime/quillville-runtime.spec</code> excluded
+<code>lxml</code>. python-docx is pure Python, so it froze in and
+<code>find_spec("docx")</code> found it, and then
+<code>import docx</code> raised on <code>lxml</code>. Every
+<em>installed</em> QUILL and QUILL Lite (both run on the shared runtime)
+therefore had <code>word_rich_available()</code> False: a
+<code>.docx</code> opened as read-extract text, a real
+<code>.docx</code> could not be saved, and every GLOW audit failed
+(<code>acb_large_print.auditor</code> imports python-docx at module top,
+and the PDF, PowerPoint and Excel auditors import that module). Portable
+builds were fine, because pip installs lxml with python-docx (a base
+dependency). Every build exited 0.</p>
+<p><strong>Runtime.</strong> <code>"lxml"</code> is gone from the spec’s
+<code>excludes</code>. In its place is a comment explaining why it must
+never return. A new <code>word_hidden</code> list names
+<code>lxml</code>, <code>lxml.etree</code>,
+<code>lxml._elementpath</code>, <code>docx</code>, <code>pptx</code>,
+<code>openpyxl</code> and
+<code>collect_submodules("acb_large_print")</code> as hidden imports, so
+the GLOW auditors reached through <code>acb_large_print_core</code>’s
+lazy per-extension imports are frozen on purpose rather than by
+luck.</p>
+<p><strong>Proof inside every bundle.</strong> The new module
+<code>quill/io/word_selfcheck.py</code> is wx-free and has
+<code>WORD_SUPPORT_MODULES</code>,
+<code>word_round_trip_problem()</code> and
+<code>assert_word_round_trip()</code>. It imports the Word stack, writes
+a real <code>.docx</code> with python-docx (a heading, a bold run and a
+table), checks that the fidelity scan sees the table, opens the file
+through <code>docx_open.read_docx_as_rtf</code>, saves it back through
+<code>rtf_to_docx_bytes</code>, and checks that the heading style and
+the bold run survive. Three build steps run it:</p>
+<ul>
+<li><code>scripts/check_runtime_imports.py</code> gains
+<code>WORD_MUST_IMPORT</code> (lxml.etree, docx, pptx, openpyxl, the
+Word reader, writer, <code>docx_open</code>,
+<code>word_selfcheck</code>, <code>quill_glow_core</code> and the four
+GLOW auditors), appended to <code>MUST_IMPORT</code>, and runs the round
+trip as <code>WORD_ROUND_TRIP</code> inside the frozen runtime. A Word
+failure prints a paragraph naming the spec exclude as the likely
+cause.</li>
+<li><code>standalone/studio/scripts/build_portable.py</code>:
+<code>Product.check_word</code>. The step-8 probe imports
+<code>WORD_SUPPORT_MODULES</code> one per statement, then calls
+<code>assert_word_round_trip()</code>. It is on for
+<code>quilllite</code> (which also names the <code>docx</code> group and
+<code>openpyxl</code>) and for <code>quill</code> (which gains the
+<code>docx</code> and <code>office-text</code> groups, so the portable
+QUILL is never behind portable QUILL Lite).</li>
+<li><code>scripts/build_windows_distribution.py</code>:
+<code>_check_word_support</code> runs it in QUILL for All’s embedded
+runtime after pruning.</li>
+</ul>
+<p><strong>The inventory is not hand-edited.</strong> The first runtime
+build after this change will fail
+<code>check_runtime_inventory.py</code> with
+<code>unexpected in _internal: lxml</code>. The gate’s new
+<code>KNOWN_ADDITIONS</code> prints the reason beside that name and
+points to the rebaseline steps, now in
+<code>docs/building-windows-family.md</code> (“Rebaselining after the
+Word support change”). Once the regenerated inventory is committed,
+delete the <code>lxml</code> entry. The portable inventories already
+list lxml.</p>
+<p><strong>Simulated runtime test.</strong>
+<code>tests/unit/scripts/test_word_support_in_runtime.py</code> parses
+the spec’s <code>excludes</code> with <code>ast</code> and blocks every
+one of them in a fresh interpreter through a meta-path finder. In that
+interpreter, every installed module of <code>WORD_MUST_IMPORT</code>
+must still import, and the round trip must pass. Re-adding
+<code>lxml</code> to the excludes fails this test, and it was checked to
+do so. The file also pins the explanatory messages of both gates, the
+portable probes and the distribution check.</p>
+<p><strong>Fallback kept as a safety net.</strong>
+<code>docx_open.word_rich_available()</code> and the standard-library
+readers (<code>office_word</code>, <code>docx_text</code>,
+<code>docx_highlights</code>) are unchanged. Comments that said “the
+shared runtime excludes lxml” now describe those readers as the safety
+net (<code>open_prepare.py</code>, <code>docx_highlights.py</code>,
+<code>docx_text.py</code>, <code>office_word.py</code>,
+<code>test_office_corpus.py</code>,
+<code>test_lite_office.py</code>).</p>
+<p><strong>One Office story in the docs.</strong> Both user guides have
+a new “Office files at a glance” section. It holds a table of each file
+type, what the editor does with it and whether you can save back to it:
+<code>.docx</code> edited and saved as Word; <code>.docm</code>,
+<code>.doc</code> (with LibreOffice), <code>.odt</code>,
+<code>.xlsx</code>, <code>.xls</code>, <code>.pptx</code> and
+<code>.ppt</code> read as text, with Save going to Save As;
+<code>.xlsm</code>, <code>.ods</code> and <code>.odp</code> through
+Import / Convert only. The section also says how to make a
+<code>.docx</code> to edit fully, and when to use Import / Convert
+rather than Open. QUILL’s “Word (.docx and .doc)” section had described
+only the structured view versus the text editor. It now describes the
+actual rich editing path and the “How to open Word files” setting. QUILL
+Lite’s changelog merges the three Unreleased bullets (“Edit Word
+documents”, “Word, Excel and PowerPoint files open as text” and “Save As
+never writes text under a Word name”) into one. Earlier entries below
+that predicted lxml would stay excluded now say what happened. Docs:
+both user guides, both PRDs, both changelogs,
+<code>docs/building-windows-family.md</code>,
+<code>docs/build-machine-sync.md</code> and the manual checks in
+<code>docs/qa/screen-reader-checks-2026-10.md</code>.</p>
+<h3
+id="radio-one-file-per-song-at-each-song-change-marks-in-recordings-browse-and-the-schedule-list-todo-d3-2026-10-17">Radio:
+one file per song at each song change; marks in Recordings, Browse and
+the schedule list (todo D.3; 2026-10-17)</h3>
+<p><strong>Split at song changes (xradio2 4.8), opt-in.</strong> New
+<code>RecordingSettings.split_at_song_changes</code> (default off;
+additive, older builds ignore the key) and a Recording Settings check
+box (Alt+N, F1 help in <code>settings_help.HELP["split_songs"]</code>).
+<code>quill/core/radio/recording_song_watch.py</code> (new) runs one
+watcher per recording that polls the recorded stream’s ICY title every
+10 s (<code>icy.read_stream_title</code>, same egress as What’s Playing)
+and places each change at the midpoint between polls, ignoring
+<code>song_history.is_noise_title</code> (new public wrapper of Song
+History’s rule). <code>quill/core/radio/recording_split.py</code> (new)
+plans the cuts (pre-roll trim subtracted via the new
+<code>OpeningGuard.take_lead_trim</code>, pieces under 20 s folded,
+names <code>&lt;stem&gt; - NN &lt;Artist - Title&gt;&lt;ext&gt;</code>
+sanitised and uniquified) and cuts in one ffmpeg segment-muxer pass with
+<code>-c copy</code>, under the <code>recording_join</code> safety
+contract: private work folder, verify count/size, move into place,
+delete the source last, undo everything on any failure. The recorder
+calls it after join and exact OptiLab and speaks the outcome through
+<code>on_parts_joined</code>; a recording that reconnected is kept
+whole. GATE-11: <code>recording.py</code> stays under budget by moving
+<code>_finalize_move</code> to
+<code>recording_outcome.finalize_move</code> (the old name is an alias).
+Also fixed: Recording Settings’ OK reset <code>exact_optilab</code> to
+False. Tests: <code>tests/unit/core/test_radio_recording_split.py</code>
+(fake runner, fake title reader, fake clock; a conftest guard keeps the
+real title reader out of tests).</p>
+<p><strong>Marks beyond Favorites (xradio2 4.10).</strong>
+<code>quill/ui/radio/marks_shared.py</code> (new) holds the keys
+(<code>.</code>, Delete, Ctrl+Shift+Delete), the menu rows and the
+No-default question; <code>favorites_marks</code> now imports them. New
+<code>recordings_marks.py</code> (finished recordings; one undo for the
+batch), <code>schedule_marks.py</code> (also owns the list’s key handler
+and Shift+F10 menu, moved out of
+<code>schedule_recording_dialog.py</code>, 652 -&gt; 631 lines) and
+<code>browse_marks.py</code> (removable rows only; reuses
+<code>browse_delete.confirm</code> and the new no-question cores
+<code>remove_stored_now</code> / <code>unfavorite_now</code>; the tree’s
+<code>_row_label</code> is now <code>browse_marks.row_text</code>, 941
+-&gt; 940 lines). <code>RowMarks.ignored_note</code> /
+<code>ignored_sentence</code> give the once-per-set “That used the
+selected row only; N rows are still marked for Delete.” to actions that
+act on the selected row. Tests:
+<code>tests/unit/ui/test_radio_list_marks.py</code> (real in-memory
+windows, faked questions, and a guard that fails if a real message box
+would open).</p>
+<p><strong>Beacon and Social menu keys (todo D.9).</strong> Every
+enabled row on both menu bars now shows a key (16 in Beacon, 31 in
+Social had none), with access letters de-duplicated, and
+<code>tests/unit/ui/test_menu_accelerators.py</code> now walks Radio’s,
+Beacon’s and Social’s real menu bars. Social’s menu labels come from its
+own keymap, so a rebound key moves in the menu too. See each app’s
+changelog for the keys.</p>
+<h3
 id="batch-6-ci-the-shared-test-app-kept-alive-and-a-first-run-inkwell-key-bug-it-exposed-2026-10-17">Batch-6
 CI: the shared test App kept alive, and a first-run Inkwell key bug it
 exposed (2026-10-17)</h3>
@@ -878,10 +1147,11 @@ per glyph. Measured 2026-10-17 with the machine 31 % busy: 28-29 ms a
 page untraced, 121-129 ms traced. The clean-page path is not over
 budget, so <code>pdf_select.py</code> is unchanged; the test now traces
 memory in one read and times a second, untraced one.</li>
-<li><strong>GLOW’s PDF audit in the shared runtime (finding, spec
-unchanged).</strong> <code>acb_large_print.pdf_auditor</code> imports
-<code>acb_large_print.auditor</code>, which imports python-docx at
-module top, and python-docx imports <code>lxml</code>, which
+<li><strong>GLOW’s PDF audit in the shared runtime</strong> (finding;
+fixed the same day by “Word documents work in every installed and
+portable build”, above). <code>acb_large_print.pdf_auditor</code>
+imports <code>acb_large_print.auditor</code>, which imports python-docx
+at module top, and python-docx imports <code>lxml</code>, which
 <code>standalone/runtime/quillville-runtime.spec</code> excludes (and
 <code>runtime-inventory.json</code> confirms is absent). Simulated by
 blocking every spec exclude: <code>fitz</code> (PyMuPDF),
@@ -889,12 +1159,9 @@ blocking every spec exclude: <code>fitz</code> (PyMuPDF),
 <code>acb_large_print_core.services</code> import, but every GLOW audit
 (PDF, Word, PowerPoint) fails with <code>No module named 'lxml'</code>.
 QUILL’s own Office readers are unaffected (they fall back to the
-standard library). Not changed here, because un-excluding lxml grows
-every QuillVille installer and needs a runtime-inventory rebaseline; the
-fix, when wanted, is to drop <code>"lxml"</code> from the spec’s
-excludes and add <code>docx</code> and
-<code>acb_large_print.pdf_auditor</code> to
-<code>scripts/check_runtime_imports.py</code> MUST_IMPORT.</li>
+standard library). Jeff then chose to ship lxml whatever the size, and
+that is what happened: the exclude is gone and the import gate holds
+<code>docx</code>, lxml and every GLOW auditor.</li>
 </ul>
 <h3
 id="speech-engines-and-models-every-guide-says-what-the-code-does-2026-10-17">Speech
@@ -1064,14 +1331,14 @@ press from one of three sources: the rich control’s own RTF (through
 runs by words and paragraph, so edits above a passage are followed), the
 Markdown buffer’s <code>highlight=</code> hidden codes
 (<code>passages_from_markdown</code>, buffer offsets), or, for a Word
-file shown as text (QUILL’s read-extract, every Word file in QUILL
-Lite), the <code>.docx</code> on disk through the new standard-library
-reader <code>quill/io/docx_highlights.py</code>. Arrival says “Yellow
-highlight, 2 of 5: words”; the list’s rows are words, colour and
-paragraph; Enter lands on the passage and Escape leaves the caret. The
-palette (<code>quill/core/highlights.py</code>) fixed four round-trip
-bugs found on the way: the RTF writer knew six colour names, so pink and
-turquoise highlights were written as none
+file shown as text (the read-extract answer in either editor, or a
+<code>.docm</code>), the <code>.docx</code> on disk through the new
+standard-library reader <code>quill/io/docx_highlights.py</code>.
+Arrival says “Yellow highlight, 2 of 5: words”; the list’s rows are
+words, colour and paragraph; Enter lands on the passage and Escape
+leaves the caret. The palette (<code>quill/core/highlights.py</code>)
+fixed four round-trip bugs found on the way: the RTF writer knew six
+colour names, so pink and turquoise highlights were written as none
 (<code>RtfTables.highlight_index</code>); <code>docx_writer</code>
 mapped every <code>#RRGGBB</code> value the RTF reader returns to
 yellow; <code>docx_reader</code> dropped Word’s eight dark colours; and
@@ -1469,9 +1736,10 @@ strict-typed), with the readers split into <code>office_word.py</code>
 (Word and ODT XML), <code>office_sheets.py</code> (openpyxl, else the
 workbook XML; ODS) and <code>office_slides.py</code> (PPTX and ODP; the
 slide code moved out of <code>structured.py</code>). Everything falls
-back to the standard library, because the shared runtime also excludes
-lxml (so python-docx cannot import there) and QUILL Lite excludes docx,
-pptx, openpyxl and markitdown. <code>read_office_text</code> never uses
+back to the standard library, because at the time the shared runtime
+excluded lxml (so python-docx could not import there; shipped since
+2026-10-17) and MarkItDown cannot import there at all. The fallback
+stays as the safety net. <code>read_office_text</code> never uses
 MarkItDown; <code>read_office_text_preferring_markitdown</code> tries it
 for DOCX/PPTX/XLSX/XLS/HTML/EPUB/CSV and falls back on <em>any</em>
 exception or an empty result, keeping the reason as
@@ -1521,10 +1789,12 @@ unreadable <code>.xls</code>.</li>
 columns per sheet, up from 50 by 20, and a sheet cut short now says
 so.</li>
 <li><strong>QUILL Lite</strong> opens
-<code>.docx/.docm/.doc/.odt/.xlsx/.xls/.pptx/.ppt</code> as text through
-the same reader (exactly QUILL’s File &gt; Open set, asserted), on the
+<code>.docm/.doc/.odt/.xlsx/.xls/.pptx/.ppt</code> as text through the
+same reader (exactly QUILL’s File &gt; Open set, asserted), on the
 worker, and refuses Save over them; it used to show a
-<code>.docx</code>’s zip bytes.</li>
+<code>.docx</code>’s zip bytes. (<code>.docx</code> was in this list
+until the next day, when it became editable rich text in both
+editors.)</li>
 <li>The OCR and Conversion Services page text moved to
 <code>quill/core/docconvert_services.py</code> and now describes the
 built-in readers.</li>

@@ -15213,8 +15213,10 @@ the shared QuillVille runtime freezes `markitdown` and `magika` in but excludes
 with "The free local converter (MarkItDown) is not installed", pointing at the
 "PDF and Office text extraction" download — which could not help, because the
 frozen copy shadows the downloaded one and `find_spec('markitdown')` keeps
-answering "installed". The same runtime excludes `lxml`, so python-docx cannot
-import there either, and File > Open fell to the flat paragraph walk for Word.
+answering "installed". The same runtime then excluded `lxml`, so python-docx
+could not import there either, and File > Open fell to the flat paragraph walk
+for Word. (lxml ships since 2026-10-17; see "Word documents in every build"
+below.)
 PDFs were fixed first (`convert_pdf_text_layer`, 2026-10-15).
 
 **The decision (Jeff, 2026-10-16): Office files get a path that needs no
@@ -15365,6 +15367,49 @@ lands on a reduced reader stamps `extraction_pack_missing` in
 `source_metadata`, which the intake summary and report turn into a one-line
 pointer at the download — suppressed when python-docx already read the file
 well, so it never nags about 150 MB for a document that came through fine.
+
+### Word documents in every build, and one Office story (2026-10-17)
+
+**The defect.** `standalone/runtime/quillville-runtime.spec` excluded `lxml`.
+python-docx froze in anyway (it is pure Python) and raised on import, so in
+every *installed* build `docx_open.word_rich_available()` was False. A `.docx`
+opened as read-extract text and could not be saved as Word, and every GLOW
+audit failed, because `acb_large_print.auditor`, which the PDF, PowerPoint and
+Excel auditors also import, imports python-docx at module top. Portable builds
+worked, because pip installs lxml with python-docx. Every build passed.
+
+**The decision (Jeff, 2026-10-17): ship lxml, whatever the size.** The exclude
+is gone. The spec names `lxml`, `docx`, `pptx`, `openpyxl` and every
+`acb_large_print` submodule as hidden imports. `quill/io/word_selfcheck.py` is
+the one functional check, and it is run inside the frozen runtime
+(`check_runtime_imports.py`, `WORD_MUST_IMPORT` plus `WORD_ROUND_TRIP`), inside
+the QUILL and QUILL Lite portables (`build_portable.py`, `check_word`), and
+inside QUILL for All's embedded runtime (`build_windows_distribution.py`,
+`_check_word_support`). It writes a `.docx`, opens it through
+`read_docx_as_rtf`, saves it through `rtf_to_docx_bytes` and checks that the
+heading style and a bold run survive. `tests/unit/scripts/test_word_support_in_runtime.py`
+blocks every spec exclude in a fresh interpreter and requires the same. The
+runtime inventory gains `lxml` in `_internal` on the next real build. That
+build fails the inventory gate with an explanation (`KNOWN_ADDITIONS`) until
+the inventory is rebaselined; the steps are in `docs/building-windows-family.md`.
+The read-extract fallback is unchanged, and it is now a safety net only.
+
+**The behaviour both editors document** (QUILL Lite may never be ahead of
+QUILL, and here they are identical except that QUILL also offers its read-only
+structured Word view):
+
+| File type | Opens as | Save back to it |
+| --- | --- | --- |
+| `.docx` | Rich text to edit; the fidelity question when the scan flags something | Yes, as Word; a flagged original is backed up once per session |
+| `.docm` | Text (read-extract); macros never run | No; Save goes to Save As |
+| `.doc`, `.xls`, `.ppt` | Text through a LibreOffice temporary copy; without LibreOffice, `LegacyOfficeFormatError` names the Save As type | No |
+| `.odt`, `.xlsx`, `.pptx` | Text through QUILL's own readers | No |
+| `.xlsm`, `.ods`, `.odp` | Not opened by File > Open; Import / Convert Document reads them | Not applicable (a new untitled document) |
+
+Import / Convert Document always makes a new, untitled document that does not
+point back at the source. File > Open opens the file itself, and only a `.docx`
+saves back to it. Both user guides carry this table as "Office files at a
+glance".
 
 ### Self-voice fallback is logged, not announced (shipped 0.8.1 Beta 1)
 

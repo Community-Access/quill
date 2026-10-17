@@ -37,6 +37,8 @@ from quill.core.radio.recordings_index import (
     recordings_dir,
 )
 from quill.ui.dialog_contract import announce_surface_exit, apply_modal_ids, show_modal_dialog
+from quill.ui.radio import recordings_marks
+from quill.ui.radio.marks_shared import with_ignored_note
 from quill.ui.radio.recordings_queue import RecordingsQueueMixin
 from quill.ui.radio.recordings_row_view import RecordingsRowViewMixin
 
@@ -700,7 +702,7 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
             self._controller.play_station(station)
             # Joins the queue, so shuffle/repeat decide what follows it too.
             self._queue_row = self._list.GetFirstSelected()
-            self._announce(f"Playing recording {entry.name}.")
+            self._announce(with_ignored_note(self, f"Playing recording {entry.name}."))
         self._on_selection_changed()
 
     def _on_stop_recording(self) -> None:
@@ -743,16 +745,10 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
         from quill.core.file_manager import reveal_command
 
         subprocess.Popen(reveal_command(entry.path))  # noqa: S603
-        self._announce(f"Showing {entry.name} in the file manager.")
+        self._announce(with_ignored_note(self, f"Showing {entry.name} in the file manager."))
 
     def _on_remove(self) -> None:
-        from quill.ui.radio import recordings_delete
-
-        recordings_delete.remove_selected(self)
+        recordings_marks.remove(self)  # every marked recording, or the selected one
 
     def _on_key(self, event: Any) -> None:
-        wx = self._wx
-        if event.GetKeyCode() in (wx.WXK_DELETE, wx.WXK_NUMPAD_DELETE):
-            self._on_remove()
-            return
-        event.Skip()
+        recordings_marks.on_key(self, event)  # ., Delete, Ctrl+Shift+Delete

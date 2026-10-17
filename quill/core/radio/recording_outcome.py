@@ -30,7 +30,9 @@ wx-free, strict-typed.
 from __future__ import annotations
 
 import logging
+import os
 import re
+import shutil
 from pathlib import Path
 
 from quill.stability.redaction import format_args_for_log
@@ -127,3 +129,32 @@ def discard_empty_capture(path: Path) -> None:
         path.unlink()
     except OSError:
         logger.debug("could not remove empty capture %s", format_args_for_log([str(path)]))
+
+
+def finalize_move(src: Path, dst: Path) -> Path:
+    """Move a finished recording from the temp dir *src* to its home *dst* (#5).
+
+    Returns where the file actually ended up. ``os.replace`` handles the same
+    volume in one atomic step; a cross-volume move raises ``OSError``, so it
+    falls back to copy-then-delete. If even that fails the file is left in the
+    temp dir (still playable) and *src* is returned, so a finished recording is
+    never lost to a move error.
+    """
+    if not src.exists():
+        return dst
+    try:
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        os.replace(src, dst)
+        return dst
+    except OSError:
+        try:
+            shutil.copy2(src, dst)
+            src.unlink(missing_ok=True)
+            return dst
+        except OSError as exc:
+            logger.warning(
+                "Could not move recording to %s (%s); left it in the temp folder.",
+                format_args_for_log([str(dst)]),
+                exc,
+            )
+            return src

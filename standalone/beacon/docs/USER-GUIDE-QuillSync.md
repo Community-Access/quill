@@ -258,9 +258,61 @@ search, press Ctrl+F, type `type:episode tag:research`, press Enter, then
 Ctrl+Shift+G and give the Smart Collection a name. It appears in the sidebar
 and stays current as your library changes.
 
-Some menu commands have no key yet, among them **Edit > Find Duplicates**,
-**Tools > Trail Editor...** and everything on the Sync menu; reach them
-through their menu.
+## Every menu command has a key
+
+Since 2026-10-17 every command on QuillBeacon's menus has a key of its own,
+shown beside its name, so a screen reader reads it as you arrow through the
+menu. Before that, sixteen commands -- among them Find Duplicates, the Trail
+Editor and the whole Sync menu -- could only be reached by walking the menus.
+Every command also has its own letter in its menu, so you can reach it one key
+at a time with nothing held down: press Alt, the menu's letter, then the
+command's letter. No two commands in one menu share a letter.
+
+The keys that were added, by menu:
+
+- **Edit > Find Duplicates** (Ctrl+Alt+D) lists saved items that point at the
+  same place.
+- **View > Accessibility Settings...** (Ctrl+Shift+Comma) sits beside
+  **View > Preferences...** (Ctrl+Comma).
+- **Media > Play in External Player** (Ctrl+Alt+P) hands the selected episode
+  or station to VLC, mpv or your system player.
+- **Media > Add Radio Station...** (Ctrl+Alt+R) and
+  **Media > Add Radio Program...** (Ctrl+Alt+G).
+- **Tools > Trail Editor...** (Ctrl+Alt+T).
+- **Tools > Smart Collections Manager...** (Ctrl+Alt+Shift+G): the same
+  letter as saving a search as a Smart Collection (Ctrl+Shift+G), with Alt
+  added.
+- **Tools > Revalidate Health...** (Ctrl+Alt+H), and
+  **Tools > Review Location Repair...** (Ctrl+Alt+Shift+H) for what the
+  recheck found broken.
+- **Tools > External Player...** (Ctrl+Alt+Shift+X) chooses the player.
+- **Tools > Status Center...** (Ctrl+Alt+I).
+- **The Sync menu is F9.** **Sync > Sync Now** (F9), **Sync > Sync Settings...**
+  (Ctrl+F9), **Sync > Sync History...** (Shift+F9) and **Sync > Auto Sync...**
+  (Ctrl+Shift+F9).
+- **Help > About** (Alt+F1).
+
+Some access letters moved so that no two commands in one menu share one.
+In the Edit menu: **Archive** is now H, **Bulk Trash Selected** S,
+**Bulk Archive Selected** V, **Bulk Restore Selected** E,
+**Bulk Toggle Favorite** L, **Bulk Remove Tag...** M,
+**Bulk Add to Collection...** I and **Find Duplicates** P. In the View menu:
+**Save Search as Smart Collection...** is M and **Command Palette** is L. In the
+Media menu: **Play in External Player** is X, **Add Radio Station...** T and
+**Add Radio Program...** G. In the Tools menu: **Smart Collections Manager...**
+is M and **Publish Collection...** L.
+
+Example: to sync now without a chord, press Alt+S, then N. To do it with one
+key, press F9. When it finishes you hear "Synced. Pushed 3, pulled 1." (with
+your own numbers), and a count of any conflicts waiting in Sync History. To
+find duplicates, press Alt+E, then P, or Ctrl+Alt+D: you hear how many groups
+of duplicates there are, and a window lists them.
+
+Limits: the keys cannot be changed yet. Several new keys hold Ctrl and Alt
+together; on keyboard layouts where the right Alt key types accented letters,
+such a key may run its command instead of typing the letter while the search
+box has focus, and the menus always work. The keys work in the main window,
+not inside a dialog.
 
 ## Getting started
 

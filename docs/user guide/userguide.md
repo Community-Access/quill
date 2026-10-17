@@ -1342,16 +1342,77 @@ normal text editor. You can remember your choice as the default and still switch
 modes inside the tab at any time. Grid mode is built for the keyboard and for
 screen-reader users who want to edit a table cell by cell without leaving QUILL.
 
+#### Office files at a glance
+
+QUILL handles Office files in two different ways, and it helps to know which
+one you are getting.
+
+- A **Word document** (`.docx`) is a document you can **edit and save as Word**.
+  It opens as rich text, with its headings, lists, bold, links and tables, and
+  **Ctrl+S** writes a real Word document back.
+- **Everything else** from Office or LibreOffice opens as **readable text**, so
+  you can read it, search it and copy from it. QUILL never writes back into
+  those files. **Ctrl+S** opens **Save As** so you can keep your text as a new
+  file, and the original stays as it was.
+
+This works the same in an installed copy of QUILL and in the portable copy:
+both carry everything Word editing needs. QUILL Lite treats each of these files
+the same way, with the same code; it has no structured Word view.
+
+| File type | What QUILL does | Can you save back to it? |
+| --- | --- | --- |
+| Word document (`.docx`) | Opens to edit as rich text. QUILL asks first if the document has things a save would drop, such as comments or pictures. You can also choose the read-only structured Word view (see below) | **Yes.** Ctrl+S saves a real Word document. A document you were warned about is backed up first |
+| Word document with macros (`.docm`) | Opens as text to read and copy. Macros never run | No. Ctrl+S opens Save As |
+| Word 97-2003 document (`.doc`) | Opens as text when LibreOffice is installed. Without LibreOffice, QUILL tells you how to make a `.docx` | No. Ctrl+S opens Save As |
+| OpenDocument text (`.odt`) | Opens as text | No. Ctrl+S opens Save As |
+| Excel workbook (`.xlsx`, or `.xls` with LibreOffice) | Opens as text: a "Sheet:" heading for each sheet, then its cells as a text table | No. Ctrl+S opens Save As |
+| PowerPoint presentation (`.pptx`, or `.ppt` with LibreOffice) | Opens as text: a "Slide" heading for each slide, then its bullets, tables and speaker notes | No. Ctrl+S opens Save As |
+| Excel with macros (`.xlsm`), OpenDocument spreadsheet (`.ods`) or presentation (`.odp`) | **File > Open** does not open these. **Import / Convert Document** reads them into a new document | Not applicable. You get a new, unsaved tab |
+
+**To edit a file that opens as text, make a `.docx` of it.** You can do this
+in either of two ways.
+
+- In Word or LibreOffice Writer, choose **File > Save As**, pick **Word
+  Document (.docx)**, and open the new file in QUILL.
+- In QUILL, open the file, then choose **File > Save As...** with **Word
+  Document (\*.docx)** as the type and a new name. QUILL writes a new Word
+  document from what you see, and the original is not touched.
+
+A `.docm` saved as `.docx` loses its macros, which is why QUILL never edits one
+in place.
+
+**File > Open or Import / Convert Document?** **File > Open** (`Ctrl+O`) opens
+the file itself: the tab takes the file's name, and a Word document saves back
+to it. **File > Import > Import / Convert Document (OCR)...** always makes a
+new, unsaved tab from what it reads, and never points back at the file. Use it
+when you want a copy of the text to work on, or for a file File > Open cannot
+read, such as a `.xlsm`, an `.ods` or a picture of a page. See *Import /
+Convert Document (OCR)* later in this chapter.
+
 #### Word (.docx and .doc)
 
-Word documents open the same way, with a choice between the structured Word view
-and the normal text editor. Again, you can remember a default and switch inside
-the tab.
+When you open a Word document, QUILL first asks how you want to see it: in the
+**structured Word view** or in the **normal text editor**. Check **Remember this
+choice for Word files** to stop the question. To change your answer later, use
+**How to open Word files** in Settings, on the Editing page: **Ask each time**,
+**Plain text** (the normal text editor, where a `.docx` is still edited as rich
+text) or **Structured**.
 
-The structured Word view puts readable structure first. Tables are read out in a
-straight line, headers and then rows, which is easier to follow with a screen
-reader. Normal text mode gives you all of QUILL's editing for making changes
-directly.
+- The **normal text editor** is the one to choose when you want to change the
+  document. A `.docx` opens there as rich text that you can edit and save back
+  as Word. If the file holds things QUILL's editor cannot keep, such as
+  pictures, comments, tracked changes, headers and footers, QUILL names them
+  and asks again. For the details, see *Editing Word documents (.docx)* under
+  *One Editor, Every Format*: the three choices, the backup, tables and the
+  limits. A `.doc` opens there as text, when LibreOffice is installed.
+- The **structured Word view** is for reading, and you cannot type in it. It
+  reads tables in a straight line, headers and then rows, which is easier to
+  follow with a screen reader.
+
+For example, open `agenda.docx` and choose **Open in normal text editor**. You
+hear "Opened as Rich Text. Headings and bold are shown formatted." Press
+`Ctrl+End`, type a line, and press `Ctrl+S`. The file opens in Word with its
+headings still headings and your line at the end.
 
 **Saving to Word.** You can save any document *as* Word. In
 **File > Save As...**, choose **Word Document (\*.docx)** (or **Rich Text Format
@@ -1414,6 +1475,12 @@ in: **File > Open**, **Import / Convert Document**, Recent Documents, a file
 opened from File Explorer, and QUILL Lite. The optional MarkItDown converter is
 asked only when QUILL's own reader cannot read a file, or finds no text in it,
 and MarkItDown can read that format. You never need to install anything.
+
+These readers make the **text** you get from a file that opens as text (see
+*Office files at a glance*): Excel, PowerPoint, OpenDocument, `.docm`, a `.docx`
+you open for reading only, and everything Import / Convert Document reads. A
+`.docx` you open to edit goes through QUILL's Word editing instead, described
+in *Word (.docx and .doc)* above.
 
 **Why it matters: speed.** MarkItDown takes a long time to start: on a test
 computer, the first Word file after starting QUILL from source took 12 to 17
@@ -8141,7 +8208,14 @@ A few things that are good to know while you talk:
 The full list of everything Live Dictation understands is its own page,
 **[Dictation commands](dictation-commands.html)**, built from the same table
 QUILL itself reads. While dictating, say **"what can I say"** to open that list
-in a window.
+in a window. Near its end are **Worked examples** (what you have, what you
+say, what you get: going before and after words, picking the second of three
+matches, Copy All, scratch that, all twelve clips, snippets with spaces in
+their names, every capitals command, an email address spelled with pauses, and
+Markdown) and **Limits**, including what cannot work when dictating into
+another program. Every example there is checked by QUILL's automated tests in
+both QUILL and QUILL Lite. How accurately and how quickly each engine hears you
+has not been measured yet; that waits on the dictation benchmarks.
 
 ##### The command word
 
@@ -8655,6 +8729,14 @@ tango hotel at sign echo x-ray alpha mike papa lima echo dot charlie oscar
 mike, stop spelling" writes `j.smith@example.com`. Say "all caps" and every
 letter after it is a capital, until you say "no caps" or the phrase ends.
 
+**Spelling with pauses.** You do not have to say an address in one breath.
+While spelling, each phrase joins the letters you spelled just before it, with
+no space, so "juliet oscar", a pause, "at sign echo x-ray", a pause, "dot
+charlie oscar" writes `jo@ex.co`. Say "space" when you want a space. Two
+limits: only letters, digits and punctuation are written, so a whole word such
+as "smith" is left out (spell it instead), and if you move the cursor between
+phrases the next letters start fresh, with a space in front as usual.
+
 **Spelling one word.** Say "spell" and the letters, all in one phrase: "spell
 bravo alpha delta" writes *bad*. You do not need to start and stop spelling
 for that. A sentence that only happens to begin with the word "spell" ("spell
@@ -8697,6 +8779,14 @@ cursor is not at the start of a line, QUILL starts a new one first:
 
 Because they only count at the start, "the heading two lines down" in the
 middle of a sentence is written as words, just as you meant it.
+
+**A Markdown link, by voice.** Say "open bracket the guide close bracket open
+paren page close paren" and QUILL writes `[the guide](page)`, with no space
+between the closing bracket and the opening parenthesis, which is what makes
+it a link. It works across two phrases too, if you pause after "close
+bracket". An asterisk and an underscore join the words on both sides
+(`two*three`, `snake_case`), so for bold text say "bold that" with the
+Markdown profile rather than saying the asterisks.
 
 ##### Voice commands
 
@@ -15762,7 +15852,9 @@ braille, has the details.
   once: treat this document as Markdown, convert it to Rich Text, or stay
   plain. Your answer is remembered for that document.
 - **Editing Word documents (.docx):** a .docx can open for real rich editing
-  and save back as a genuine Word file. If the file holds things QUILL's
+  and save back as a genuine Word file, in an installed copy and a portable
+  copy alike (*Office files at a glance* in Chapter 3 lists what every other
+  Office file does). If the file holds things QUILL's
   editor cannot keep (images, comments, tracked changes, headers and
   footers), QUILL asks first. You can open it for reading and plain editing
   (the safe default), edit it as Rich Text with those losses named one by

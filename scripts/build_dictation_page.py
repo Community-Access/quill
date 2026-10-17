@@ -332,9 +332,12 @@ def rendered() -> str:
         "foxtrot, golf, hotel, india, juliet, kilo, lima, mike, november, oscar, papa, "
         "quebec, romeo, sierra, tango, uniform, victor, whiskey, x-ray, yankee, zulu.</li>",
         f"        <li>Numbers are written as digits: {e(digits)}.</li>",
-        "        <li>Punctuation goes in with no spaces while you spell, so an email "
-        'address works: "jay dot smith at sign example dot com". "Dot" and "point" '
-        "are a full stop only while spelling.</li>",
+        "        <li>Punctuation goes in with no spaces while you spell, and each "
+        "phrase joins the letters before it, so you can spell an email address a few "
+        'characters at a time: "jay dot sierra mike india tango hotel", then "at sign '
+        'echo x-ray dot charlie oscar" writes j.smith@ex.co. A whole word that is not '
+        'a letter is left out. "Dot" and "point" are a full stop only while '
+        "spelling.</li>",
         '        <li>Say "all caps" for capitals until you say "no caps" or the phrase ends.</li>',
         '        <li>To spell just one word, say "spell" and the letters: "spell bravo '
         'alpha delta" writes <em>bad</em>. A sentence that only starts with the word '

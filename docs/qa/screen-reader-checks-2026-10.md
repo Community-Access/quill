@@ -1616,3 +1616,108 @@ link), and one with a table and a comment.
 - [ ] All eight with NVDA.
 - [ ] All eight with JAWS.
 - [ ] Checks 1, 5 and 7 with Narrator.
+
+## Word documents in installed copies, and GLOW audits (2026-10-17)
+
+Before 2026-10-17 the shared runtime left out lxml, so an *installed* QUILL or
+QUILL Lite opened every `.docx` as plain text and could not save one, and the
+GLOW audits failed. These checks need the first installers built after that
+change (see *Rebaselining after the Word support change* in
+`docs/building-windows-family.md`). Use the two Word files from the section
+above.
+
+1. Installed QUILL Lite (from its installer, not the portable ZIP): Ctrl+O, the
+   plain file. You hear "Opened as Rich Text. Headings and bold are shown
+   formatted.", not the file as text. Type a line, Ctrl+S, "Saved ...", and the
+   file opens in Word with its headings.
+2. Installed QUILL: the same file, the same result.
+3. Installed QUILL, with GLOW turned on (Settings > Experimental): **GLOW Audit
+   File...** (from the Command Palette) on the Word file, then a PDF,
+   then a PowerPoint file. Each produces a report; none says a module is
+   missing.
+4. Both portable ZIPs, on a computer with nothing installed: checks 1 and 2.
+5. In either editor, open an Excel `.xlsx`: it opens as text with "Sheet:"
+   headings; Ctrl+S explains why and opens Save As with a `.txt` name.
+
+- [ ] All five with NVDA.
+- [ ] Checks 1 and 3 with JAWS.
+
+## Quill Beacon and QUILL Social Menu Keys (D.9, 2026-10-17)
+
+Every menu command in both apps now shows a key, and no two commands in one
+menu share an access letter. Start each app from source with an empty data
+folder.
+
+1. Quill Beacon: walk every menu with Alt and the arrows. Each row reads its
+   name and then its key, for example "Sync Now F9" and "Find Duplicates
+   Ctrl+Alt+D"; no row is read without a key, and Help > About says Alt+F1.
+2. Quill Beacon: press F9. You hear "Synced. Pushed 0, pulled 0." once, or
+   the sync error in a message box if no sync is set up. Ctrl+F9 opens Sync
+   Settings, Shift+F9 Sync History and Ctrl+Shift+F9 Auto Sync; Escape closes
+   each and focus returns to where it was.
+3. Quill Beacon: press Alt+E, then P: duplicates are found (or "No duplicates
+   found") without any other Edit item running first. Press Alt+E, then H on
+   a selected bookmark: it is archived. Alt+V, then L opens the Command
+   Palette, which shows Ctrl+Alt+D beside Find Duplicates.
+4. Quill Beacon: Ctrl+Shift+Comma opens Accessibility Settings; Ctrl+Alt+T the
+   Trail Editor; Ctrl+Alt+Shift+G the Smart Collections Manager; Ctrl+Alt+I
+   the Status Center. With focus in the search box, type ordinary text after
+   each: nothing else opens.
+5. QUILL Social: walk every menu. Each row reads its key, including Listen >
+   Play / Pause (Ctrl+Shift+Space), Next article (Ctrl+Shift+Period) and
+   Studio > Drafts... (Ctrl+Shift+D). Note how your screen reader speaks the
+   period and comma keys.
+6. QUILL Social: open a feed with unread articles, press Ctrl+Shift+L, then
+   Ctrl+Shift+Period (the next article starts), Ctrl+Shift+Comma (back one),
+   Ctrl+Shift+Space twice (pause, then carry on) and Ctrl+Shift+S (silence).
+7. QUILL Social: select a smart folder, press Ctrl+Shift+Delete: the question
+   is asked and No leaves the folder. Select a feed, Ctrl+Alt+U: the same.
+8. QUILL Social: close the app, change `"drafts": "Ctrl+Shift+D"` in
+   keymap.json to `"drafts": "Ctrl+J"`, start it again: Studio > Drafts...
+   reads Ctrl+J, Ctrl+J opens Drafts, Ctrl+Shift+D does nothing, and F1 lists
+   it.
+9. QUILL Social: Alt+I, then K bookmarks the focused post; Alt+D, then T opens
+   New smart folder; Alt+T, then L Notification policies; Alt+T, then G
+   Plugins.
+
+- [ ] All nine with NVDA.
+- [ ] All nine with JAWS.
+- [ ] Checks 1, 3, 5 and 6 with Narrator.
+
+## Quill Radio: One File per Song, and Marks in Three More Lists (D.3, 2026-10-17)
+
+Use a music station that sends song names (What's Playing, Ctrl+T, names the
+song) and a recordings folder with a few finished recordings in it.
+
+1. Record > Recording Settings... (Ctrl+Alt+Shift+I), Alt+N: the check box
+   reads "Split the recording at each song change", not checked; F1 on it
+   explains the split and its limit. Check it and choose OK: you hear
+   "Recording settings saved".
+2. Press Ctrl+R, let at least two songs play, press Ctrl+R again. After a few
+   seconds you hear "Split ... into N songs, starting with ...", said once.
+   Open Radio Recordings (Ctrl+Shift+R): the songs are there, numbered in
+   order, and the long recording is gone. Play two neighbouring songs: no
+   music is missing between them.
+3. Repeat check 2 on a talk station: you hear "Kept ... as one recording: no
+   song change was heard while it recorded."
+4. Radio Recordings: arrow to a finished recording and press period. You hear
+   "Marked. 1 marked." and the row reads "(marked)" when you arrow away and
+   back. Mark a second one, press Delete: the question "Delete 2
+   recordings?" has No chosen; Yes says "Deleted 2 recordings." and focus is on
+   a real row. Ctrl+Z in the main window brings both back.
+5. Radio Recordings: mark one recording, arrow to another and press Enter. It
+   plays and you hear, once, "That used the selected row only; 1 row is still
+   marked for Delete." Press Enter again: no second explanation.
+6. Schedule Recording (Ctrl+Shift+S) with three schedules: mark two with
+   period, then Shift+F10: the menu lists Mark for Deleting, Remove 2
+   Marked... (Delete) and Clear Marks (Ctrl+Shift+Delete) and no one-row
+   Delete. Escape, then Ctrl+Shift+Delete: "Cleared 2 marks." and no row says
+   "(marked)".
+7. Browse Stations: in your saved YouTube videos (or among favorites), mark two
+   rows with period and press Delete: one question, then "Deleted 2 items."
+   and the rows are gone. On a country row, period says which rows can be
+   marked.
+
+- [ ] All seven with NVDA.
+- [ ] All seven with JAWS.
+- [ ] Checks 2, 4 and 7 with Narrator.

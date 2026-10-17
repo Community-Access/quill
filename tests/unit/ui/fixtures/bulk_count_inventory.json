@@ -42,6 +42,7 @@
   "quill/ui/podcasts/storage_reconcile.py::authorize_batch": "no-announce",
   "quill/ui/radio/browse_actions.py::_search_all": "counts-elsewhere",
   "quill/ui/radio/browse_download_actions.py::download_all": "counted",
+  "quill/ui/radio/browse_marks.py::_unmark_all_rows": "no-announce",
   "quill/ui/radio/browse_podcast_actions.py::download_all_episodes": "counted",
   "quill/ui/radio/browse_podcast_actions.py::mark_all_played": "counts-elsewhere",
   "quill/ui/radio/browse_podcast_actions.py::refresh_all_feeds": "counts-elsewhere",

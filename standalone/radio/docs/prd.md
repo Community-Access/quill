@@ -3345,8 +3345,8 @@ built and said to be one.
   window and never saved. The cursor lands on the next surviving station.
 - The spec says `.`; the todo suggested Space. Space stays the tree's own key
   (and pauses the playing row), so `.` it is.
-- Not yet in the Recordings Manager, Browse Stations or the schedule list, which
-  still delete one row at a time.
+- Extended on 2026-10-17 to Radio Recordings, Browse Stations and the
+  Schedule Recording list: see section 29.2.
 
 ### 26.2 Resume earcon (xradio2 4.5)
 
@@ -3512,3 +3512,90 @@ and the player keeps playing: no transport key is taken. Apple's storefront
 rows say "Apple chart for this country, any language", and Podcast Index's By
 Category says it is worldwide and any language, so a country chart is not
 mistaken for a language filter.
+
+## 29. One file per song, and marks in every list (unreleased, 2026-10-17)
+
+Todo D.3. Pitch shift and crossfade (xradio2 4.11 and 4.12) stay deferred, as
+the spec recommends; nothing was built for them and they remain on the list.
+
+### 29.1 Split a recording at each song change (xradio2 4.8)
+
+- **Opt-in.** `RecordingSettings.split_at_song_changes` (default off),
+  **Split the recording at each so&ng change** in Recording Settings (Alt+N).
+  It applies to every kind of recording: Record Now, Record Station and
+  scheduled.
+- **Signal.** While a recording with the setting runs,
+  `quill/core/radio/recording_song_watch.SongSplitter` reads the *recorded*
+  stream's ICY `StreamTitle` every 10 seconds (`icy.read_stream_title`, the
+  same one short side connection What's Playing uses; the recorded stream, not
+  the playing one, because a scheduled recording often runs while something
+  else plays). A change is placed at the midpoint between the last poll that
+  heard the old title and the first that heard the new one. Titles that are the
+  station talking about itself are ignored by Song History's own rule
+  (`song_history.is_noise_title`).
+- **Cut after, never during.** Restarting ffmpeg at each change would drop
+  audio and replay the connection advert into every song. The recording is
+  made as one file; once it is finished (after the pre-roll trim, the join of
+  any reconnect parts and the exact OptiLab pass), `recording_split` cuts it in
+  one ffmpeg pass with the segment muxer and `-c copy -map 0:a
+  -reset_timestamps 1`, so every packet lands in exactly one song file. Cut
+  points move back by whatever the pre-roll guard trimmed from the front
+  (`OpeningGuard.take_lead_trim`).
+- **Safety contract (as `recording_join`).** Songs are written to a private
+  `.quill-splitting-*` folder beside the recording, verified (the planned
+  number of files, none empty, together at least 90% of the source), moved into
+  place, and only then is the whole recording deleted. Any failure removes what
+  the split wrote, leaves the recording exactly as it was, and says why.
+- **Names.** `<recording name> - NN <Artist - Title>.<ext>`: sanitised (no
+  characters Windows forbids, no trailing dot or space, no device names, at
+  most 80 characters of song), numbered so they sort in play order, made unique
+  against the folder and each other with " (2)".
+- **Short pieces.** A change less than 20 seconds after the previous cut is
+  folded in (the later title names the piece); a change within 20 seconds of
+  the end is dropped.
+- **Kept whole, and said so,** when no change was heard, the container cannot
+  be split (`.mp3 .ogg .opus .flac .wav .aac .m4a .ac3 .mka` can), FFmpeg is
+  missing, the parts could not be joined, or the stream dropped and reconnected
+  (the reconnect gap is missing from the file but not the clock, so every later
+  cut would be wrong).
+- **Spoken outcome** through the recorder's `on_parts_joined` sentence
+  callback: "Split X into 12 songs, starting with Y." or "Kept X as one
+  recording: <reason>."
+- Limit: a cut can be a few seconds off (poll interval plus the station's own
+  title lag). No audio is ever lost; it is in the neighbouring file.
+
+### 29.2 Marks in Recordings, Browse and the schedule list (xradio2 4.10)
+
+The favourites' keys, words and question, now shared in
+`quill/ui/radio/marks_shared.py` (favorites_marks re-exports them):
+
+- `.` marks or unmarks the selected row and says "Marked. 3 marked."; the row
+  text gains "(marked)". **Delete** with marks acts on every marked row after
+  one question that says how many (No by default); **Ctrl+Shift+Delete** clears
+  them and says how many. With nothing marked every list behaves as before.
+- **Radio Recordings** (`recordings_marks.py`): finished recordings only (a
+  recording in progress or a scheduled row says why it cannot be marked).
+  "Delete 3 recordings?"; the files are held for one Ctrl+Z that restores them
+  all; the cursor lands on the nearest survivor. The Remove... button follows
+  the same rule as Delete.
+- **Schedule Recording** (`schedule_marks.py`, which also took over the list's
+  key handler and Shift+F10 menu under GATE-11): "Delete 4 schedules?". A
+  single Delete still removes the selected schedule without asking, as before.
+  The Shift+F10 menu gains Mark for Deleting, Remove N Marked... and Clear
+  Marks, and drops its one-row Delete row while marks exist (one claimant per
+  key).
+- **Browse Stations** (`browse_marks.py`): only rows Delete can remove (saved
+  YouTube video or playlist, followed channel, a server you added, a
+  favourite station anywhere in the tree). "Delete 4 items?" through Browse's
+  own question, so its Don't ask me again is honoured; each removal runs the
+  single-row code (`browse_delete.remove_stored_now` / `unfavorite_now`), and
+  every branch that lost a row reloads. Marks are keyed by node id and the row
+  label is drawn through `browse_marks.row_text`, so a reloaded branch keeps
+  "(marked)".
+- **Actions that ignore marks explain themselves.** Play and Open in Folder
+  (Recordings), Edit, Duplicate and Enable/Disable (schedule) and Enter
+  (Browse) act on the selected row; while rows are marked the first such
+  action adds "That used the selected row only; 3 rows are still marked for
+  Delete." Once per set of marks (`RowMarks.ignored_note`), so it is not said
+  on every keystroke.
+- Marks are per window and never saved.
