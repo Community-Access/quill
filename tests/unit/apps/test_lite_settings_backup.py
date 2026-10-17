@@ -15,6 +15,8 @@ from types import SimpleNamespace
 
 import pytest
 
+from tests.wx_session import patch_call_after
+
 pytest.importorskip("wx")
 
 
@@ -181,7 +183,7 @@ def test_failed_settings_save_is_reported_and_retry_clears_state(monkeypatch, ca
     app.shutting_down = closing
     app.frames = [SimpleNamespace(_touch_status=lambda: touched.append(True))]
     app.voice = SimpleNamespace(speak=spoken.append)
-    monkeypatch.setattr(persistence.wx, "CallAfter", queued.append)
+    patch_call_after(monkeypatch, queued.append)
 
     def fail(_settings):
         raise OSError("private document name must not be logged")
@@ -252,7 +254,7 @@ def test_real_settings_write_recovers_after_storage_failure(monkeypatch, tmp_pat
     spoken = []
     queued = []
     app.voice = SimpleNamespace(speak=spoken.append)
-    monkeypatch.setattr(persistence.wx, "CallAfter", queued.append)
+    patch_call_after(monkeypatch, queued.append)
     unavailable = tmp_path / "not-a-directory"
     unavailable.write_text("occupied", encoding="utf-8")
     monkeypatch.setattr(
@@ -284,7 +286,7 @@ def test_shutdown_flushes_pending_settings_warning_once(monkeypatch):
     spoken = []
     queued = []
     app.voice = SimpleNamespace(speak=spoken.append)
-    monkeypatch.setattr(persistence.wx, "CallAfter", queued.append)
+    patch_call_after(monkeypatch, queued.append)
 
     def fail(_settings):
         raise PermissionError("read only")
@@ -390,7 +392,7 @@ def test_queued_settings_failure_is_reported(monkeypatch):
     queued = []
     app.voice = SimpleNamespace(speak=spoken.append)
     app._ensure_write_reports = lambda: None
-    monkeypatch.setattr(persistence.wx, "CallAfter", queued.append)
+    patch_call_after(monkeypatch, queued.append)
 
     def fail(_settings):
         raise PermissionError("private path")

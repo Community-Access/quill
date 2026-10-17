@@ -28,6 +28,8 @@ from pathlib import Path
 
 import pytest  # type: ignore[import-not-found]
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.ui.audio_studio.pages_base import (  # noqa: E402
@@ -46,7 +48,7 @@ _VOICES = {
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

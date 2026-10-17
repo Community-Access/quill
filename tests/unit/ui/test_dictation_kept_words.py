@@ -13,13 +13,14 @@ import pytest
 
 from quill.core.windows_dictation.rescue import DictationKeep
 from quill.core.windows_dictation.review_session import ReviewSession, save_rescue
+from tests.wx_session import shared_wx_app
 
 wx = pytest.importorskip("wx")
 
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
 
 

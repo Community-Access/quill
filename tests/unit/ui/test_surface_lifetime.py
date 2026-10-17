@@ -21,6 +21,7 @@ from pathlib import Path
 import pytest
 
 from quill.ui.surface_lifetime import SurfaceTasks, lifetime_for, surface_tasks
+from tests.wx_session import shared_wx_app
 
 wx = pytest.importorskip("wx")
 
@@ -37,7 +38,7 @@ _LONG_LIVED = {
 
 @pytest.fixture
 def app():
-    application = wx.App()
+    application = shared_wx_app()
     yield application
     application.Destroy()
 

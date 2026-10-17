@@ -8947,6 +8947,10 @@ the front. It never listens in the background.
 Settings opens your `dictation.md`, the same file Locked Dictation reads.
 **Vocabulary** entries correct near misses to your spelling. **Replacements**
 (`say => write`, with `\n` for a new line) are spoken phrases of your own.
+In that file `\t` is a tab and `\\` is one backslash, so a phrase that
+writes the folder `C:\new` is saved as `my folder => C:\\new`. My Words and
+Phrases writes it that way for you; it matters only when you edit the file
+by hand. A single backslash before any other letter is kept as you typed it.
 
 ##### Dictation Settings (Alt+Shift+F6)
 

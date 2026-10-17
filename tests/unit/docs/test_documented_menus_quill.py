@@ -33,6 +33,8 @@ from pathlib import Path
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from tests.unit.docs.menu_claims import (  # noqa: E402
@@ -121,7 +123,7 @@ def _build(data_dir: Path, monkeypatch: pytest.MonkeyPatch, *, everything: bool)
         from quill.core.ai.onboarding import EXPERIENCE_ADVANCED, save_experience_mode
 
         save_experience_mode(EXPERIENCE_ADVANCED)
-    app = wx.App()
+    app = shared_wx_app()
     try:
         with patch.object(MainFrame, "check_for_updates", lambda self, **_kwargs: None):
             frame = MainFrame()

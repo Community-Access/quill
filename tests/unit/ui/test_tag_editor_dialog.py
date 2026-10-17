@@ -12,6 +12,8 @@ from pathlib import Path
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.core.speech.audio_tags import (  # noqa: E402
@@ -39,7 +41,7 @@ _PNG_1X1 = bytes.fromhex(
 def wx_app():
     from quill.ui.app_context_help import ensure_help_provider
 
-    app = wx.App()
+    app = shared_wx_app()
     # Without a wx.HelpProvider every SetHelpText in the app stores nothing
     # and GetHelpText answers "" -- so the help assertions below would pass
     # vacuously on a run that had one and fail on a run that did not.

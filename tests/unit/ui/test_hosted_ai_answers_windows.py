@@ -14,6 +14,8 @@ from typing import Any
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.core.ai import sessions  # noqa: E402
@@ -24,7 +26,7 @@ from quill.core.ai.gateway_client import GatewayLimits  # noqa: E402
 def wx_app():
     from quill.ui.app_context_help import ensure_help_provider
 
-    app = wx.App()
+    app = shared_wx_app()
     # SetHelpText stores nothing without a help provider; the apps install one
     # at activation, and so must a test that reads the sentences back.
     ensure_help_provider()

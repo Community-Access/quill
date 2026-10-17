@@ -11,6 +11,8 @@ import sys
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.ui.main_frame import MainFrame  # noqa: E402
@@ -31,7 +33,7 @@ _darwin_undo_coalescing_skip = pytest.mark.skipif(
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

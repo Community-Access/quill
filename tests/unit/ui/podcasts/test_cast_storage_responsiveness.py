@@ -21,6 +21,7 @@ from quill.ui.podcasts import storage_delete, storage_snapshot
 from quill.ui.podcasts.storage_snapshot import CoherentSnapshot, TurnJob
 from quill.ui.podcasts.storage_tasks import for_host
 from quill.ui.undo_file_jobs import FileJobs
+from tests.wx_session import shared_wx_app
 
 
 class Later:
@@ -702,7 +703,7 @@ def downloads(host, monkeypatch):
 
     from quill.ui.podcasts.downloads_dialog import DownloadsDialog
 
-    app = wx.GetApp() or wx.App(False)
+    app = wx.GetApp() or shared_wx_app()
     loop = wx.GUIEventLoop()
     previous = wx.EventLoop.GetActive()
     wx.EventLoop.SetActive(loop)

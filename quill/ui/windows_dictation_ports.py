@@ -24,6 +24,7 @@ from typing import Any
 
 import wx
 
+from quill.core.text_units import native_length
 from quill.core.windows_dictation.controller import DictationState, Moment
 from quill.ui.atomic_edit import replace_as_one_undo
 
@@ -208,9 +209,11 @@ class EditorDocument:
         last = control.GetLastPosition()
         before = control.GetRange(max(0, caret - 4000), caret)
         after = control.GetRange(caret, min(last, caret + 4000))
-        start = caret - (len(before) - (before.rfind("\n") + 1))
+        # native_length, not len: the control counts an emoji as two positions
+        # and GetRange hands it back as one character.
+        start = caret - native_length(before[before.rfind("\n") + 1 :])
         newline = after.find("\n")
-        end = caret + (newline if newline >= 0 else len(after))
+        end = caret + native_length(after[:newline] if newline >= 0 else after)
         return start, end
 
     def last_position(self) -> int:

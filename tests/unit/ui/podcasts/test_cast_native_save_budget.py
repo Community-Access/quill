@@ -18,6 +18,7 @@ from quill.core.podcasts.models import PodcastEpisode, PodcastShow
 from quill.core.podcasts.subscriptions import PodcastLibrary
 from quill.ui.main_frame_podcast_save import PodcastLibrarySaveMixin
 from quill.ui.podcasts.save_snapshot import save_show
+from tests.wx_session import shared_wx_app
 
 pytestmark = [
     pytest.mark.perf,
@@ -49,7 +50,7 @@ def test_1300_show_snapshot_has_no_ui_turn_over_16ms() -> None:
             for show_index in range(1300)
         ]
     )
-    app = wx.GetApp() or wx.App()
+    app = wx.GetApp() or shared_wx_app()
     previous_loop = wx.EventLoop.GetActive()
     loop = wx.GUIEventLoop()
     wx.EventLoop.SetActive(loop)

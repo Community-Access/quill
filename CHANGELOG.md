@@ -118,6 +118,161 @@ references, and unticked checks in `docs/qa/screen-reader-checks-2026-10.md`.
 Module budgets rebaselined in `module_size_budgets.json`
 (`_rebaseline_2026_10_17_four_contained_improvements`).
 
+### Property-based tests for io, dictation words, fillers and braille, and the three bugs they found (todo P3; 2026-10-17)
+
+Hypothesis was already a dev extra (`pyproject.toml`, `hypothesis>=6.168.1`,
+locked at 6.169.0 in `uv.lock`) with the suite profile in `tests/conftest.py`;
+nothing was added to the dependencies.
+
+- **`tests/unit/io/test_format_round_trip_properties.py`.** Plain text written
+  and read back in UTF-8, UTF-8 with BOM and UTF-16, LF and CRLF, is the same
+  text with the same line ending. A rich document of headings, bullets and
+  paragraphs with bold and italic runs survives RTF and Word with its text,
+  styles and emphasis.
+- **`tests/unit/core/test_dictation_text_properties.py`.** My Words and Phrases
+  saved and reopened gives back the same words, phrases and corrections in
+  order, and a file QUILL wrote is rewritten byte for byte. Filler removal is
+  idempotent in every language tier, removes every filler and keeps every
+  other word in order, and is a no-op when switched off.
+- **`tests/unit/core/test_braille_properties.py`.** A BRF page map covers every
+  character once, in order, in all three page-break modes, with a form feed as
+  the boundary between two pages, and is the same every time; the braille
+  worker's JSON pipe returns any text unchanged; the `lou_translate` route trims
+  only the newline the tool appends; with liblouis present (it is not on this
+  machine, so that one skips), translation is deterministic.
+
+Bugs found and fixed:
+
+- **Bold and italic together did not survive RTF.** `rich_to_markdown` writes
+  a run that is both as `***x***`, and both `rtf.markdown_to_rtf` and
+  `rtf_model._walk_inline` (QUILL's Markdown model, so the rich lens as well)
+  read that as bold `*x` and a stray `*`. Both now take `***` first.
+- **A backslash in a dictation replacement.** The words file escaped new lines
+  and tabs but not the backslash, and the reader replaced `\n` everywhere, so
+  a replacement writing `C:\new` came back as `C:` and a new line. One escape
+  now serves both the window and the recogniser
+  (`dictation_profile.escape_written` / `_unescape`, read in one pass);
+  `\\` is a backslash. A hand-written `C:\temp` still reads as before (a tab).
+- **Known limit, pinned rather than hidden.** Two neighbouring runs with
+  different emphasis (italic, then bold italic) share asterisks in Markdown and
+  merge on the way through RTF; `test_italic_next_to_bold_italic_survives_rtf`
+  is a strict xfail until the serializer separates them.
+
+### GATE-BRAILLE: what QUILL speaks also reaches a braille display (todo P3; 2026-10-17)
+
+Developer-facing. A deafblind user, or anyone reading with speech off, gets
+only what reaches the display; a message that is only spoken does not exist for
+them, and nobody testing by ear notices. Announcements route through three
+layers -- the announcement service (`announce_wiring` installs a `SpeechSink`
+and a `BrailleSink` together and turns the engine's inline braille off), the
+engine (`prism_bridge.AnnouncementEngine.announce`, which mirrors to braille
+itself), and the engine's fallbacks (Narrator's UI Automation notification,
+VoiceOver, the system voice) -- and a speech call could skip braille at any of
+them.
+
+- **`quill/tools/braille_parity_audit.py`**, in `platform_report`: an AST walk
+  of `quill/` for every speech primitive (`announce(..., force_speech=)`,
+  `speak(..., interrupt=)`, `narrator_announce.announce`, `voiceover_announce`,
+  `speak_announcement`, `_enqueue_tts`). A call is *mirrored* when braille is
+  written on the same path: the same statement or a later one in the same body,
+  climbing out of `try`/`with` but stopping at a branch, loop or function, so
+  the engine's Narrator and VoiceOver fallbacks (which return before its braille
+  line) are not counted while the Prism and accessible_output2 paths are.
+- **Reviewed snapshot** `tests/unit/tools/fixtures/braille_parity.json`: every
+  unmirrored call is `delegates` (QUILL Lite's `_announce` to
+  `ScreenReaderVoice.speak`, which mirrors; the app shell's no-service fallback
+  to the engine's still-enabled inline braille) or `speech_only` with its
+  reason (Narrator and VoiceOver braille their own notifications; the system
+  voice and macOS self-voice run only with no screen reader, so no display is
+  driven). First run: 11 speech calls, 5 mirrored, 6 reviewed, none found
+  missing braille. A new unclassified call fails, `--write` adds it as
+  `unreviewed` (still failing), and a row whose call has gone fails as stale.
+- **Behavioural half** (`tests/unit/tools/test_braille_parity_audit.py`): the
+  real `build_announcement_service` with a fake engine writes every spoken
+  routine, warning and error message to braille exactly through the sink (the
+  engine's inline braille switched off), and `AnnouncementEngine.announce` on
+  the Prism path mirrors its own speech.
+
+### Tests: one wx.App per process, and wx.CallAfter patched one way (todo P3 flake risks; 2026-10-17)
+
+Developer-facing; nothing a user sees changes.
+
+- **One App.** 230 test files built their own `wx.App()` (per test, per
+  module or inline) and many destroyed it in teardown. wx supports one App per
+  process, so whether a file met an App whose C++ half another file had
+  destroyed was decided by which files shared an xdist worker. New
+  `tests/wx_session.py` `shared_wx_app()` returns the one live App and builds
+  it on first use; its `Destroy()` is a no-op, so the old teardown lines are
+  harmless and each test still means "I need an App". Fixture form:
+  `wx_session_app` in `tests/conftest.py`. Every `wx.App(...)` call under
+  `tests/unit` was rewritten to `shared_wx_app()` by an AST pass (strings and
+  docstrings untouched), 231 sites.
+- **One way to patch CallAfter.** 33 files did
+  `monkeypatch.setattr(<module>.wx, "CallAfter", ...)`, which is the wx
+  module's attribute and so global, written in a way that does not look it.
+  `patch_call_after(monkeypatch, replacement=None)` is now the only way: always
+  the real `wx`, always through the test's own monkeypatch, `None` meaning run
+  inline, and it returns a capture of every call. Fixture form: `wx_call_after`.
+  46 sites rewritten, each with the same replacement it had.
+- **What the shared App exposed.** Three QUILL Lite AI tests
+  (`test_lite_ai.py`) passed only when no App was alive in their worker: with
+  one alive, `_show_ai_window` defers the focus call and the sign-in window
+  through `wx.CallAfter`, and no unit test runs an event loop. They now run
+  deferred work inline through `wx_call_after()`, so their result no longer
+  depends on which files ran first.
+- **Gate.** `tests/unit/test_wx_test_hygiene.py` fails on any test file that
+  builds a `wx.App`/`wx.PySimpleApp` or patches `wx.CallAfter` by `setattr`,
+  `mock.patch("wx.CallAfter")` or assignment, outside `tests/wx_session.py`. AST,
+  not grep: it follows `import wx as w` and `wx = pytest.importorskip("wx")`.
+  Its `ALLOWED` table may only shrink: `tests/ui_live/conftest.py` and two
+  `tests/integration` files that drive real windows were left unmigrated rather
+  than changed without being run.
+
+### Emoji and other astral characters: typed whole, counted as the control counts them (todo P3; 2026-10-17)
+
+An emoji dictated by QUILL Transcribe into a plain edit control arrived
+without its first half. Two separate unit mistakes, one in each direction, and
+both now have a test that pins them without a real window.
+
+- **Typing into other programs** (`quill/platform/windows/text_injector.py`).
+  An astral character is two UTF-16 units, and each went out as its own
+  down-up `KEYEVENTF_UNICODE` tap, so a key-up sat between the high and low
+  surrogate. The new pure `unicode_key_sequence(text)` sends both key-downs
+  before either key-up (high down, low down, low up, high up), so
+  `TranslateMessage` posts the two `WM_CHAR`s back to back. Separately,
+  `_layout_key` asked `VkKeyScanExW` about astral characters, whose argument is
+  a 16-bit `WCHAR`: ctypes cut U+20041 (CJK Extension B) to U+0041 and the
+  layout answered with the A key, so the ideograph was typed as a letter. Astral
+  characters now always take the Unicode route. Shared by QUILL Transcribe,
+  Quill Inkwell's Dictate Anywhere and abbreviation expansion. Not reproduced
+  against a live window (the overnight rules forbid driving the desktop); the
+  field check is a person's.
+- **Positions inside our own controls.** A Windows Edit or Rich Edit control
+  (so every `wx.TextCtrl` on wxMSW) counts UTF-16 units and hands text back as
+  Python characters; confirmed in memory: with `"hi \U0001f600 there"`,
+  `GetLastPosition()` is 11 and selecting 0 to 4 gives `'hi \ud83d'`, a lone
+  high surrogate. New `quill/core/text_units.py` (`utf16_length`,
+  `native_length`) is the length to add to a control position. Fixed in QUILL
+  Lite: the five `GetValue()[start:end]` slices (the clipboard's selected text, Find's
+  opening needle and its Replace match check, the Review Buffer, the Tools
+  transforms) now read
+  `GetRange(start, end)`, and the four `start + len(text)` caret/selection
+  ends (context-menu and spelling replacements, the Tools transforms) use
+  `native_length`. Fixed in the shared dictation editor port
+  (`windows_dictation_ports.EditorDocument.line_bounds`).
+- **Left as is, on purpose.** `ExternalDocument` (Transcribe's port) counts
+  backspaces in code points, which is right: Windows edit controls delete a
+  surrogate pair with one Backspace. The dictation controller's correction
+  arithmetic (`corrections.py`, `live.py`) adds Python offsets to port
+  positions; for an editor port that is still off by one per emoji before the
+  change, and needs a port-units seam rather than a local patch.
+
+Tests: `tests/unit/platform/windows/test_text_injector.py` (key order, every
+unit sent once, no astral layout key), `tests/unit/core/test_text_units.py`
+(lengths, and `line_bounds` against a control that counts UTF-16), and
+`tests/unit/apps/test_lite_text_tools.py` (a real Rich Edit control: Upper
+Case after an emoji changes the right letters and selects all of them).
+
 ### Menu letters win over buttons, the Media Player's arrows, a key for Carry My Place, and Inkwell's review box (2026-10-17)
 
 Todo items 47 to 51 and 55.

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import pytest  # type: ignore[import-not-found]
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.core.regex_helper.catalog import CATEGORIES, recipes_by_category  # noqa: E402
@@ -12,7 +14,7 @@ from quill.ui.regex_helper_dialog import _explanation_text, _results_text  # noq
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

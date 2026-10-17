@@ -26,6 +26,7 @@ import pytest
 
 from quill.core.radio import calendar_actions
 from quill.core.radio.ics import CalendarEvent
+from tests.wx_session import shared_wx_app
 
 wx = pytest.importorskip("wx")
 
@@ -38,7 +39,7 @@ SHOWTIME = datetime(2026, 8, 26, 19, 0, tzinfo=UTC)
 
 @pytest.fixture(scope="module", autouse=True)
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

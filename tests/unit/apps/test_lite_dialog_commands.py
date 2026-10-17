@@ -25,6 +25,8 @@ from __future__ import annotations
 import pytest
 import wx
 
+from tests.wx_session import patch_call_after
+
 # --------------------------------------------------------------------------- #
 # Read-only windows: About, Shortcuts, Describe Character
 # --------------------------------------------------------------------------- #
@@ -782,7 +784,7 @@ def test_toggle_abbreviations_flips_the_area_and_says_which_way(
     win = lite_window("hello")
     monkeypatch.setattr(win.app, "feature_enabled", lambda _area: start_enabled)
     win.app.features = _features()
-    monkeypatch.setattr(wx, "CallAfter", lambda fn, *a, **k: fn(*a, **k))
+    patch_call_after(monkeypatch, lambda fn, *a, **k: fn(*a, **k))
 
     win.cmd_toggle_abbreviations()
 
@@ -798,7 +800,7 @@ def test_toggle_abbreviations_rebuilds_the_menus_after_the_event_not_during_it(
     """wxMSW does not survive having a menu deleted while it is still
     dispatching that menu's event, so the rebuild goes through CallAfter."""
     deferred: list[object] = []
-    monkeypatch.setattr(wx, "CallAfter", lambda fn, *a, **k: deferred.append(fn))
+    patch_call_after(monkeypatch, lambda fn, *a, **k: deferred.append(fn))
 
     win = lite_window("hello")
     win.app.features = _features()

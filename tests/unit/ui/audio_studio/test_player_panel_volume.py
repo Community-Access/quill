@@ -6,13 +6,13 @@ import pytest
 
 from quill.core.audio_studio.book_prefs import BookPrefs
 from quill.ui.audio_studio.player_panel import PlayerPanel
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture
 def app():
-    import wx
 
-    a = wx.App(False)
+    a = shared_wx_app()
     yield a
     a.Destroy()
 

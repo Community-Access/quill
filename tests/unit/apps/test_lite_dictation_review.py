@@ -16,6 +16,7 @@ from quill.core.windows_dictation import RecognizedPhrase, words_from_text
 from quill.ui import dictation_review_frame as frame_module
 from quill.ui import windows_dictation_commands as shared
 from quill.ui import windows_dictation_review as review
+from tests.wx_session import shared_wx_app
 
 
 class _Recognizer:
@@ -58,7 +59,7 @@ class _Ai:
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
 
 

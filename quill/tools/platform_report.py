@@ -192,6 +192,11 @@ GATES: tuple[Gate, ...] = (
         (sys.executable, "-m", "quill.tools.check_over_announce"),
     ),
     Gate(
+        "braille-parity",
+        "GATE-BRAILLE: what QUILL speaks also reaches a braille display",
+        (sys.executable, "-m", "quill.tools.braille_parity_audit"),
+    ),
+    Gate(
         "access-keys",
         "GATE-14: one Alt letter, one control, per window",
         (sys.executable, "-m", "quill.tools.check_access_keys"),

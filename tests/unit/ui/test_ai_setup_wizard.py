@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import pytest  # type: ignore[import-not-found]
 
+from tests.wx_session import patch_call_after, shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 import quill.core.ai.onboarding as ob  # noqa: E402
@@ -18,7 +20,7 @@ from quill.ui.ai_setup_wizard import (  # noqa: E402
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 
@@ -328,7 +330,7 @@ def test_ollama_host_field_enabled_only_for_local_and_is_verified_against(wx_app
                 self._target()
 
     monkeypatch.setattr(wizard_mod.threading, "Thread", _SyncThread)
-    monkeypatch.setattr(wizard_mod.wx, "CallAfter", lambda fn, *a, **k: fn(*a, **k))
+    patch_call_after(monkeypatch, lambda fn, *a, **k: fn(*a, **k))
     seen_hosts: list[str] = []
     monkeypatch.setattr(
         ob,
@@ -412,7 +414,7 @@ def test_pull_model_success_selects_it_as_the_model(wx_app, monkeypatch):
     import quill.ui.ai_setup_wizard as wizard_mod
 
     monkeypatch.setattr(wizard_mod.threading, "Thread", _SyncThread)
-    monkeypatch.setattr(wizard_mod.wx, "CallAfter", lambda fn, *a, **k: fn(*a, **k))
+    patch_call_after(monkeypatch, lambda fn, *a, **k: fn(*a, **k))
     monkeypatch.setattr(ob, "ollama_installed_models", lambda host="": [])
     pulled: dict[str, str] = {}
 
@@ -454,7 +456,7 @@ def test_pull_model_failure_reenables_button_and_reports_status(wx_app, monkeypa
     import quill.ui.ai_setup_wizard as wizard_mod
 
     monkeypatch.setattr(wizard_mod.threading, "Thread", _SyncThread)
-    monkeypatch.setattr(wizard_mod.wx, "CallAfter", lambda fn, *a, **k: fn(*a, **k))
+    patch_call_after(monkeypatch, lambda fn, *a, **k: fn(*a, **k))
     monkeypatch.setattr(ob, "ollama_installed_models", lambda host="": [])
     monkeypatch.setattr(
         ob, "pull_ollama_model", lambda model, *, host, on_progress=None, **kw: (False, "disk full")
@@ -542,7 +544,7 @@ def test_remove_then_readd_ollama_never_asks_for_a_key(wx_app, monkeypatch):
                 self._target()
 
     monkeypatch.setattr(wizard_mod.threading, "Thread", _SyncThread)
-    monkeypatch.setattr(wizard_mod.wx, "CallAfter", lambda fn, *a, **k: fn(*a, **k))
+    patch_call_after(monkeypatch, lambda fn, *a, **k: fn(*a, **k))
     monkeypatch.setattr(ob, "ollama_status", lambda host="http://localhost:11434": (True, "", "m"))
     monkeypatch.setattr(ob, "remember_provider_key", lambda *a, **k: None)
     monkeypatch.setattr(ob, "grant_provider_consent", lambda *a, **k: None)

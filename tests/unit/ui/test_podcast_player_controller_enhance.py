@@ -13,6 +13,7 @@ import wx
 
 import quill.ui.podcasts.player_controller as player_controller
 from quill.ui.podcasts.player_controller import PodcastPlayerController
+from tests.wx_session import shared_wx_app
 
 # (bass_db, mid_db, treble_db) shorthand for the old named presets.
 BASS_BOOST = (7.0, 0.0, 1.0)
@@ -23,7 +24,7 @@ FLAT = (0.0, 0.0, 0.0)
 
 @pytest.fixture(scope="module", autouse=True)
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

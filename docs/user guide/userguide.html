@@ -10763,7 +10763,12 @@ and Phrases…</strong> in Dictation Settings opens your
 <code>dictation.md</code>, the same file Locked Dictation reads.
 <strong>Vocabulary</strong> entries correct near misses to your
 spelling. <strong>Replacements</strong> (<code>say =&gt; write</code>,
-with <code>\n</code> for a new line) are spoken phrases of your own.</p>
+with <code>\n</code> for a new line) are spoken phrases of your own. In
+that file <code>\t</code> is a tab and <code>\\</code> is one backslash,
+so a phrase that writes the folder <code>C:\new</code> is saved as
+<code>my folder =&gt; C:\\new</code>. My Words and Phrases writes it
+that way for you; it matters only when you edit the file by hand. A
+single backslash before any other letter is kept as you typed it.</p>
 <h5 id="dictation-settings-altshiftf6">Dictation Settings
 (Alt+Shift+F6)</h5>
 <p><strong>Dictation Settings – Alt+Shift+F6</strong> (press

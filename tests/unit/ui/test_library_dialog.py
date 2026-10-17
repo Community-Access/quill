@@ -6,6 +6,8 @@ from pathlib import Path
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.core.library.model import Book  # noqa: E402
@@ -14,7 +16,7 @@ from quill.core.library.model import Book  # noqa: E402
 @pytest.fixture
 def app():
     try:
-        application = wx.App()
+        application = shared_wx_app()
     except Exception:  # pragma: no cover - no display
         pytest.skip("wx cannot initialize in this environment")
     yield application

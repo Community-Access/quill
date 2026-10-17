@@ -17,11 +17,12 @@ import wx
 from quill.core.radio.onboarding import FIRST_RUN_SCREENS, RadioOnboardingState
 from quill.ui.radio import first_run_dialog
 from quill.ui.radio.first_run_dialog import RadioFirstRunDialog, maybe_run_first_run
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture(scope="module", autouse=True)
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

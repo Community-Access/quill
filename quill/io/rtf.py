@@ -200,6 +200,9 @@ def _block_controls(attrs: dict[str, str], *, include_indent: bool) -> str:
     return "".join(parts)
 
 
+_EMPHASIS = (("***", "\\b\\i "), ("**", "\\b "), ("*", "\\i "))  # "***" first (2026-10-17)
+
+
 def _inline_to_rtf(text: str, tables: RtfTables) -> str:
     result: list[str] = []
     index = 0
@@ -222,18 +225,15 @@ def _inline_to_rtf(text: str, tables: RtfTables) -> str:
                 result.append(inner)
             index = span.end()
             continue
-        if text.startswith("**", index):
-            close = text.find("**", index + 2)
+        for marker, control in _EMPHASIS:
+            close = text.find(marker, index + len(marker)) if text.startswith(marker, index) else -1
             if close != -1:
-                result.append("{\\b " + _inline_to_rtf(text[index + 2 : close], tables) + "}")
-                index = close + 2
-                continue
-        if text[index] == "*":
-            close = text.find("*", index + 1)
-            if close != -1:
-                result.append("{\\i " + _inline_to_rtf(text[index + 1 : close], tables) + "}")
-                index = close + 1
-                continue
+                inner = _inline_to_rtf(text[index + len(marker) : close], tables)
+                result.append("{" + control + inner + "}")
+                index = close + len(marker)
+                break
+        if close != -1:
+            continue
         result.append(escape_rtf_text(text[index]))
         index += 1
     return "".join(result)

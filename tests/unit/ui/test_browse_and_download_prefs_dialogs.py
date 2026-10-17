@@ -17,11 +17,12 @@ from quill.core.radio import browse_visibility as bv
 from quill.core.radio.download_prefs import DownloadPrefs
 from quill.ui.radio.browse_sources_dialog import BrowseSourcesDialog, describe_source
 from quill.ui.radio.download_prefs_dialog import DownloadPrefsDialog
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture(scope="module")
 def _app() -> wx.App:
-    return wx.App()
+    return shared_wx_app()
 
 
 def _announcer() -> tuple[list[str], object]:

@@ -13,6 +13,7 @@ import pytest
 from quill.core.radio.favorites import RadioFavoritesStore
 from quill.core.radio.models import RadioStation
 from quill.core.radio.row_marks import RowMarks
+from tests.wx_session import shared_wx_app
 
 wx = pytest.importorskip("wx")
 
@@ -21,7 +22,7 @@ from quill.ui.radio import favorites_marks  # noqa: E402
 
 @pytest.fixture(scope="module", autouse=True)
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

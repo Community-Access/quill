@@ -30,6 +30,7 @@ from quill.core.windows_dictation import DictationController, RecognizedPhrase, 
 from quill.core.windows_dictation.target_lock import LockedTarget
 from quill.core.windows_dictation.word_errors import word_errors
 from quill.ui.windows_dictation_external import ExternalDocument
+from tests.wx_session import shared_wx_app
 
 _ROOT = Path(__file__).resolve().parents[3]
 
@@ -95,7 +96,7 @@ class Host(TranscribeDictationMixin, TranscribeCommandsMixin, TranscribeCoachMix
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App.Get() or wx.App()
+    app = wx.App.Get() or shared_wx_app()
     yield app
 
 

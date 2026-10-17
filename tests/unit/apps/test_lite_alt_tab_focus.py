@@ -36,6 +36,7 @@ from __future__ import annotations
 import pytest
 
 from quill.apps.lite_shell import QuillLiteShell
+from tests.wx_session import patch_call_after, shared_wx_app
 
 
 class _Control:
@@ -205,10 +206,9 @@ class _Event:
 
 
 def _activate(shell: object, event: _Event, monkeypatch: pytest.MonkeyPatch) -> list:
-    import quill.apps.lite_shell as shell_module
 
     deferred: list = []
-    monkeypatch.setattr(shell_module.wx, "CallAfter", lambda fn, *a: deferred.append(fn))
+    patch_call_after(monkeypatch, lambda fn, *a: deferred.append(fn))
     QuillLiteShell._on_activate(shell, event)
     return deferred
 
@@ -297,7 +297,7 @@ def test_live_mdi_container_repair_preserves_text_field_focus() -> None:
 
     import wx
 
-    application = wx.GetApp() or wx.App(False)
+    application = wx.GetApp() or shared_wx_app()
     owner = SimpleNamespace(shutting_down=False, active_frame=None)
     shell = QuillLiteShell(owner, (500, 300))
     child = wx.MDIChildFrame(shell, title="Focus regression document")

@@ -72,6 +72,34 @@ uploaded for testing. The new packages have not been published yet.
   note, play no tap on top. Same setting and same sound as QUILL. User guide:
   "Hearing which lines have notes".
 
+- **Bold italic Markdown stays bold italic in rich text** (2026-10-17). In a
+  Markdown document, a word written `***like this***` is bold and italic. When
+  the document became rich text, or was copied as formatted text, it came out
+  bold with a stray asterisk ("*like this" in bold, then "*"). It now comes out
+  bold and italic. For example: in a Markdown document type `***urgent***`,
+  then press **Format > Switch Document Mode** (Alt+Shift+F) until you hear
+  rich text; "urgent" is bold italic. Limits: an italic word directly followed
+  by a bold italic one (`*a****b***`) can still merge; put a space or a plain
+  word between them.
+- **A backslash in your own dictation phrases is kept** (2026-10-17). A phrase
+  in My Words and Phrases that writes a folder, such as `C:\new\temp`, used to
+  read back as `C:`, a new line, `ew` and a tab. It is now saved with each
+  backslash doubled and reads back exactly as typed. To fix a phrase that
+  already broke, edit it in My Words and Phrases and type it again.
+
+- **Emoji no longer get cut in half by the Tools menu, Find and the
+  spelling fixes** (2026-10-17). The editor counts an emoji as two positions
+  and QUILL Lite counted it as one, so after an emoji the commands that work
+  on a selection were one place off for every emoji in front of it. For
+  example, with "😀 hi there" and "hi there" selected, **Tools > Change Case > UPPERCASE** (Ctrl+Shift+U)
+  changed the wrong letters and left the selection ending one character short;
+  now it changes "hi there" to "HI THERE" and selects exactly that. The same
+  fix covers the selected text Copy works from, the Find box opening with
+  your selection, Replace checking that the selection is a match, the Review
+  Buffer of a selection, choosing a spelling suggestion from the context menu
+  (Shift+F10) and dictation's line commands. Limits: nothing changes for text
+  without emoji or other characters beyond the first 65,536 in Unicode.
+
 - **Go back over an AI conversation, and save it as a file** (2026-10-17). In
   the AI Conversation window, **Alt+1** reads the newest message aloud,
   **Alt+2** the one before it, and so on to **Alt+0** for the tenth newest,

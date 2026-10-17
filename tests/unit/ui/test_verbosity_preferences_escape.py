@@ -15,11 +15,12 @@ import pytest
 import wx
 
 from quill.ui.main_frame_verbosity import VerbosityCommandsMixin
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

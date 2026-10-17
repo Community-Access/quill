@@ -16,12 +16,14 @@ from __future__ import annotations
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 
 @pytest.fixture
 def radio_frame(quill_data_dir):
-    app = wx.App()
+    app = shared_wx_app()
     from quill.apps.radio import RadioAppFrame
     from quill.ui.dialog_contract import set_transition_announcement_policy
 

@@ -36,6 +36,7 @@ import pytest
 import wx
 
 from quill.core.heading_ladder import HEADING_POINT_SIZES, heading_level_for_font
+from tests.wx_session import shared_wx_app
 
 #: Written out rather than escaped: the assertions below are about RTF control
 #: words, and a test that got one backslash wrong would assert nothing.
@@ -44,7 +45,7 @@ _BACKSLASH = chr(92)
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

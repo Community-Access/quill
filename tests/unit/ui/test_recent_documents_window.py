@@ -14,12 +14,13 @@ import wx
 
 from quill.ui import recent_documents_dialog as dialog_mod
 from quill.ui.recent_documents_dialog import RecentDocumentsWindow
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture
 def app():
     existing = wx.GetApp()
-    return existing if existing is not None else wx.App()
+    return existing if existing is not None else shared_wx_app()
 
 
 @pytest.fixture

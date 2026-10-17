@@ -20,11 +20,12 @@ from quill.ui.radio.favorites_manager_dialog import FavoritesManagerDialog
 from quill.ui.radio.schedule_recording_dialog import ScheduleRecordingDialog
 from quill.ui.radio.station_browser_dialog import StationBrowserDialog
 from quill.ui.window_menu import WindowManager
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture(scope="module")
 def _app() -> wx.App:
-    return wx.App()
+    return shared_wx_app()
 
 
 def _make(windows: object | None) -> BrowseTreeDialog:

@@ -11,6 +11,8 @@ from typing import Any
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.core.windows_dictation.review_session import load_rescue  # noqa: E402
@@ -23,7 +25,7 @@ from quill.ui.dictation_review_frame import TITLE, ReviewBoxDocument, ReviewDesk
 def wx_app():
     from quill.ui.app_context_help import ensure_help_provider
 
-    app = wx.App()
+    app = shared_wx_app()
     ensure_help_provider(wx)  # without it SetHelpText stores nothing
     yield app
 

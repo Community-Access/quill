@@ -9,6 +9,8 @@ from types import SimpleNamespace
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.apps.podcasts import PodcastsAppFrame
@@ -221,7 +223,7 @@ def test_closing_does_not_plan_another_native_tree_update(state) -> None:
 
 @pytest.fixture
 def native_tree():
-    app = wx.GetApp() or wx.App(False)
+    app = wx.GetApp() or shared_wx_app()
     previous_loop = wx.EventLoop.GetActive()
     loop = wx.GUIEventLoop()
     wx.EventLoop.SetActive(loop)

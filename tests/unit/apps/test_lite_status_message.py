@@ -20,11 +20,12 @@ from quill.apps.lite_status_cells import _MESSAGE, _MESSAGE_LABEL_CHARS
 from quill.apps.lite_window_status import DocumentStatusMixin
 from quill.core.document_text import DocumentText
 from quill.core.status_message import IDLE_MESSAGE
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

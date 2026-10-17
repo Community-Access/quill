@@ -23,6 +23,8 @@ import re
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 
@@ -48,7 +50,7 @@ def _isolated_profile(quill_data_dir):
 
 @pytest.fixture
 def radio_frame(_isolated_profile):
-    app = wx.App()
+    app = shared_wx_app()
     from quill.apps.radio import RadioAppFrame
     from quill.ui.dialog_contract import set_transition_announcement_policy
 

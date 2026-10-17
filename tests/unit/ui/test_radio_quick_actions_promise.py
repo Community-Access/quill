@@ -18,6 +18,7 @@ from quill.core.quick_actions import QuickActionOrders
 from quill.core.radio.quick_actions import CONTEXT_LABELS, CONTEXTS
 from quill.ui.media.quick_actions_dialog import position_text
 from quill.ui.radio import quick_actions_command
+from tests.wx_session import shared_wx_app
 
 
 def test_radio_positions_name_no_key() -> None:
@@ -79,7 +80,7 @@ def _dialog_text(wx: Any, *, direct_keys: bool) -> str:
 
 def test_the_dialog_text_promises_keys_only_where_they_exist() -> None:
     wx = pytest.importorskip("wx")
-    app = wx.App()
+    app = shared_wx_app()
     try:
         radio = _dialog_text(wx, direct_keys=False)
         assert "Ctrl+1" not in radio

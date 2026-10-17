@@ -31,6 +31,7 @@ from quill.core.radio.models import RadioStation
 from quill.ui.radio import output_device_guard as guard
 from quill.ui.radio.playback_state import RadioPlayerState
 from quill.ui.radio.player_controller import RadioPlayerController
+from tests.wx_session import shared_wx_app
 
 HEADSET = "wasapi/{aaaa}"
 SPEAKERS = "wasapi/{bbbb}"
@@ -97,7 +98,7 @@ class _FakeWx:
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

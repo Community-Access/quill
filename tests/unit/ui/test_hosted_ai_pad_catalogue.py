@@ -13,6 +13,8 @@ from typing import Any
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.core.ai.gateway_catalogue import parse_catalogue  # noqa: E402
@@ -47,7 +49,7 @@ def _limits(features: list[dict] | None = None, max_input: int = 3000) -> Gatewa
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     wx.HelpProvider.Set(wx.SimpleHelpProvider())  # SetHelpText stores nothing without one
     yield app
 

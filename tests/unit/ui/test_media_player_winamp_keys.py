@@ -21,6 +21,7 @@ import pytest
 
 from quill.ui.media.winamp_mixin import MediaWinampKeysMixin
 from quill.ui.radio import winamp_keys as wk
+from tests.wx_session import shared_wx_app
 
 
 class _Player:
@@ -325,7 +326,7 @@ def _press_with_focus(
 ) -> tuple[_Host, _Event]:
     """Press an arrow with a real, unshown wx control as the focus."""
     wx = pytest.importorskip("wx")
-    app = wx.App.Get() or wx.App(False)
+    app = wx.App.Get() or shared_wx_app()
     frame = wx.Frame(None)
     try:
         if control == "Button":

@@ -37,6 +37,7 @@ from tests.unit.docs.menu_claims import (
     chord_identity,
     items_from_wx_menu_bar,
 )
+from tests.wx_session import patch_call_after, shared_wx_app
 
 wx = pytest.importorskip("wx")
 
@@ -79,9 +80,9 @@ def _social_menu_items(monkeypatch: pytest.MonkeyPatch, data_dir) -> list:  # ty
     monkeypatch.setenv("QUILLSOCIAL_DATA", str(data_dir))
     monkeypatch.setattr(Announcer, "_make_speaker", lambda self: None)
     monkeypatch.setattr(social_app, "_make_credential_store", InMemoryCredentialStore)
-    monkeypatch.setattr(wx, "CallAfter", lambda *_a, **_k: None)
+    patch_call_after(monkeypatch, lambda *_a, **_k: None)
     monkeypatch.setattr(wx, "CallLater", lambda *_a, **_k: None)
-    app = wx.App.Get() or wx.App(False)
+    app = wx.App.Get() or shared_wx_app()
     frame = social_app.SocialFrame()
     try:
         return items_from_wx_menu_bar(frame.GetMenuBar())

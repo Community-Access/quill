@@ -34,6 +34,7 @@ from quill.core.transcribe.parity import (
     SHARED_COMMANDS,
     chord,
 )
+from tests.wx_session import shared_wx_app
 
 wx = pytest.importorskip("wx")
 
@@ -114,7 +115,7 @@ class _Host:
 def transcribe_menu(monkeypatch: pytest.MonkeyPatch) -> Any:
     from quill.apps.transcribe_menus import build_menu_bar
 
-    app = wx.App.Get() or wx.App()
+    app = wx.App.Get() or shared_wx_app()
     tables: list[list[Any]] = []
     real_table = wx.AcceleratorTable
 

@@ -24,6 +24,7 @@ from quill.ui.markdown_tag_row import (
     markdown_tag_row_shown,
     sync_menu_row,
 )
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture
@@ -35,7 +36,7 @@ def app():
             return existing
         except Exception:  # noqa: BLE001 - a dead App is not a usable App
             pass
-    return wx.App()
+    return shared_wx_app()
 
 
 def _labels(menu: wx.Menu) -> list[str]:

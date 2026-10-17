@@ -17,13 +17,14 @@ import wx
 from quill.core.radio.link_finder import PageStreamCandidate
 from quill.ui.radio import add_custom_station
 from quill.ui.radio.add_station_dialog import AddStationDialog
+from tests.wx_session import shared_wx_app
 
 _FM_REDIRECT = "https://playerservices.streamtheworld.com/api/livestream-redirect/KKSEFM.mp3"
 
 
 @pytest.fixture(scope="module", autouse=True)
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

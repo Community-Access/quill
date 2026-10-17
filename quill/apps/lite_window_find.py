@@ -65,7 +65,7 @@ class DocumentFindMixin(DocumentFileSearchMixin):  # and across a folder of file
         """What Find should open with: the selection, else the last search."""
         start, end = self.control.GetSelection()
         if end > start:
-            return str(self.control.GetValue()[start:end])
+            return str(self.control.GetRange(start, end))
         return str(self._find_options.get("needle", ""))
 
     def cmd_find(self) -> None:
@@ -354,7 +354,7 @@ class DocumentFindMixin(DocumentFileSearchMixin):  # and across a folder of file
             return
         pattern = compiled.pattern
         start, end = self.control.GetSelection()
-        selected = self.control.GetValue()[start:end]
+        selected = self.control.GetRange(start, end)
         if pattern is not None and end > start and pattern.fullmatch(selected):
             replace_as_one_undo(self.control, start, end, str(options.get("replacement", "")))
             self._set_modified(True)

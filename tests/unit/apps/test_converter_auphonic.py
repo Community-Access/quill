@@ -29,11 +29,12 @@ from quill.core.publish.auphonic_plan import (
     load_pending,
 )
 from quill.ui import converter_auphonic_dialog as dialogs
+from tests.wx_session import patch_call_after, shared_wx_app
 
 
 @pytest.fixture()
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     from quill.ui.app_context_help import ensure_help_provider
 
     ensure_help_provider(wx)  # SetHelpText stores nothing without one
@@ -153,7 +154,7 @@ def env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> dict[str, Any]:
     monkeypatch.setattr(converter_auphonic, "load_token", lambda: "stored-token")
     monkeypatch.setattr(converter_auphonic, "save_token", saved_tokens.append)
     monkeypatch.setattr(converter_auphonic.threading, "Thread", _NowThread)
-    monkeypatch.setattr(converter_auphonic.wx, "CallAfter", lambda fn, *a, **k: fn(*a, **k))
+    patch_call_after(monkeypatch, lambda fn, *a, **k: fn(*a, **k))
     host = _Host(tmp_path, files)
     return {"host": host, "client": client, "store": store, "files": files, "tokens": saved_tokens}
 
@@ -461,7 +462,7 @@ def test_the_account_check_runs_off_the_ui_thread_and_answers_on_it(wx_app, tmp_
     from quill.core.publish.auphonic import AccountInfo, AuphonicError, Preset
 
     monkeypatch.setattr(converter_auphonic.threading, "Thread", _NowThread)
-    monkeypatch.setattr(converter_auphonic.wx, "CallAfter", lambda fn, *a, **k: fn(*a, **k))
+    patch_call_after(monkeypatch, lambda fn, *a, **k: fn(*a, **k))
     monkeypatch.setattr(
         converter_auphonic,
         "check_account",

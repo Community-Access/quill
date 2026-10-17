@@ -44,6 +44,7 @@ from tests.unit.docs.menu_claims import (
     items_from_wx_menu_bar,
     normalise,
 )
+from tests.wx_session import shared_wx_app
 
 wx = pytest.importorskip("wx")
 
@@ -104,7 +105,7 @@ def cast_menus(quill_data_dir: Path, monkeypatch: pytest.MonkeyPatch):
     """The menu items a new public install shows, in each mode, and its commands."""
     from tests.unit.apps.conftest import _close_cast_frame
 
-    app = wx.GetApp() or wx.App()  # held: an unreferenced App is collected
+    app = wx.GetApp() or shared_wx_app()  # held: an unreferenced App is collected
     from quill.apps.podcasts import PodcastsAppFrame
 
     for name in (

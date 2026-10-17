@@ -14,6 +14,7 @@ import pytest
 from quill.core.auth.token_bundle import TokenBundle
 from quill.core.features import FeatureManager
 from quill.core.radio import youtube_oauth as oauth
+from tests.wx_session import shared_wx_app
 
 wx = pytest.importorskip("wx")
 
@@ -69,7 +70,7 @@ def locked_app(monkeypatch, baked_and_signed_in):
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

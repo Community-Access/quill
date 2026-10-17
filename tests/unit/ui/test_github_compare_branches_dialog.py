@@ -17,6 +17,7 @@ from quill.core.github.items_provider import (
     GitHubPullFile,
 )
 from quill.ui.github_compare_branches_dialog import GitHubCompareBranchesDialog
+from tests.wx_session import patch_call_after, shared_wx_app
 
 
 class _FakeProvider:
@@ -32,7 +33,7 @@ class _FakeProvider:
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 
@@ -53,7 +54,7 @@ class _SyncThread:
 @pytest.fixture(autouse=True)
 def _sync_threading(monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr("quill.ui.github_compare_branches_dialog.threading.Thread", _SyncThread)
-    monkeypatch.setattr(wx, "CallAfter", lambda fn, *a, **k: fn(*a, **k))
+    patch_call_after(monkeypatch, lambda fn, *a, **k: fn(*a, **k))
 
 
 def _comparison(**overrides: Any) -> GitHubBranchComparison:

@@ -22,6 +22,8 @@ from typing import Any
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.core.app_keymaps import APP_KEYMAPS  # noqa: E402
@@ -30,7 +32,7 @@ from quill.ui.radio import calendar_wiring  # noqa: E402
 
 @pytest.fixture(scope="module", autouse=True)
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

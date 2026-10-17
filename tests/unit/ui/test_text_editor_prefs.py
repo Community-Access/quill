@@ -18,6 +18,8 @@ from typing import Any
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.core import windows_editor as editor  # noqa: E402
@@ -42,7 +44,7 @@ def app():
             return current
         except Exception:  # noqa: BLE001 - a dead App is no App
             pass
-    return wx.App()
+    return shared_wx_app()
 
 
 @pytest.fixture(autouse=True)

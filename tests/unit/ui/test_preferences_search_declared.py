@@ -16,12 +16,13 @@ import wx
 
 from quill.core.settings_finder import SettingEntry
 from quill.ui.preferences_search import declare_settings, install_preferences_search
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture
 def application():
     existing = wx.GetApp()
-    app = existing or wx.App(False)
+    app = existing or shared_wx_app()
     yield app
     if existing is None:
         app.Destroy()

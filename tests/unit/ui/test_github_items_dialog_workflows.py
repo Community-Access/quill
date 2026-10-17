@@ -13,6 +13,7 @@ import wx
 
 from quill.core.github.items_provider import GitHubItemsError, GitHubWorkflow
 from quill.ui.github_items_dialog import GitHubItemsDialog
+from tests.wx_session import patch_call_after, shared_wx_app
 
 
 class _FakeProvider:
@@ -33,7 +34,7 @@ class _FakeProvider:
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 
@@ -54,7 +55,7 @@ class _SyncThread:
 @pytest.fixture
 def dlg(wx_app, monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr("quill.ui.github_items_dialog_workflows.threading.Thread", _SyncThread)
-    monkeypatch.setattr(wx, "CallAfter", lambda fn, *a, **k: fn(*a, **k))
+    patch_call_after(monkeypatch, lambda fn, *a, **k: fn(*a, **k))
     frame = wx.Frame(None)
     provider = _FakeProvider()
     dialog = GitHubItemsDialog(frame, provider, initial_repo="owner/repo")
