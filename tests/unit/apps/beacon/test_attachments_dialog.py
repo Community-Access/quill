@@ -7,6 +7,8 @@ through the store. They skip if a wx app cannot be created.
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.apps.beacon.db import BeaconStore
@@ -16,7 +18,7 @@ from quill.apps.beacon.model import Attachment, Beacon, Resource
 
 @pytest.fixture
 def app():
-    a = wx.App(False)
+    a = shared_wx_app()
     yield a
     try:
         a.Destroy()

@@ -23,11 +23,12 @@ from quill.core.sound_events import SoundEvent
 from quill.ui.main_frame_radio import RadioMixin
 from quill.ui.radio.playback_state import RadioPlayerState
 from quill.ui.radio.player_controller import RadioPlayerController
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture(scope="module", autouse=True)
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

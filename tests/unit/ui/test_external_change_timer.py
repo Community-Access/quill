@@ -12,12 +12,13 @@ import pytest
 import wx
 
 from quill.ui.external_change_timer import ExternalChangeTimer, modal_window_open
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture
 def application() -> Any:
     existing = wx.GetApp()
-    app = existing or wx.App(False)
+    app = existing or shared_wx_app()
     yield app
     if existing is None:
         app.Destroy()

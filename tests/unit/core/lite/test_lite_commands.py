@@ -30,6 +30,7 @@ import collections
 import pytest
 
 from quill.core.lite.commands import COMMANDS, SUBMENU_SEP, menu_titles, shortcut_text
+from tests.wx_session import shared_wx_app
 
 
 def _items() -> list[tuple[str, str, str, str]]:
@@ -222,7 +223,7 @@ def test_every_handler_actually_exists_on_the_document_window() -> None:
 def test_every_key_is_one_wx_can_actually_parse() -> None:
     """wx drops what it cannot parse, leaving a menu advertising a dead key."""
     wx = pytest.importorskip("wx", reason="wx is not installed")
-    app = wx.App()  # AcceleratorEntry needs an app object on some platforms
+    app = shared_wx_app()  # AcceleratorEntry needs an app object on some platforms
     try:
         unparsed = []
         for menu, label, key, _handler in _items():

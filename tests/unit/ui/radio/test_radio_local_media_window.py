@@ -12,6 +12,8 @@ from types import SimpleNamespace
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.core.radio import transport_commands  # noqa: E402
@@ -52,7 +54,7 @@ class _Host:
 
 @pytest.fixture
 def app(quill_data_dir):
-    application = wx.App()
+    application = shared_wx_app()
     yield application
     for window in wx.GetTopLevelWindows():
         window.Destroy()

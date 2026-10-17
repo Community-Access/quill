@@ -29,6 +29,8 @@ from pathlib import Path
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from tests.unit.docs.menu_claims import (  # noqa: E402
@@ -72,7 +74,7 @@ def radio_menus(quill_data_dir, monkeypatch) -> Iterator[tuple[list[MenuItem], O
     monkeypatch.delenv("QUILL_DEV_BUILD", raising=False)
     monkeypatch.setattr(wx.Frame, "RegisterHotKey", lambda _self, *_a: False, raising=False)
     monkeypatch.setattr(wx.Frame, "UnregisterHotKey", lambda _self, *_a: True, raising=False)
-    app = wx.App()
+    app = shared_wx_app()
     from quill.apps.radio import RadioAppFrame
     from quill.ui.dialog_contract import set_transition_announcement_policy
     from quill.ui.lineups.window import LineupsWindow

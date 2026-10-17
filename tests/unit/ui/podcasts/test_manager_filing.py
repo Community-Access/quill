@@ -10,11 +10,12 @@ from quill.core.podcasts.subscriptions import PodcastLibrary
 from quill.ui.podcasts import manager_filing
 from quill.ui.podcasts.folder_picker_dialog import FolderPickerResult
 from quill.ui.podcasts.manager_lookups import item_key
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture
 def filing_tree():
-    app = wx.GetApp() or wx.App()
+    app = wx.GetApp() or shared_wx_app()
     frame = wx.Frame(None)
     tree = wx.TreeCtrl(frame)
     root = tree.AddRoot("Podcasts")

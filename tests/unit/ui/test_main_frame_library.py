@@ -13,6 +13,7 @@ from pathlib import Path
 import pytest  # type: ignore[import-not-found]
 
 from quill.ui.main_frame_library import LibraryMixin
+from tests.wx_session import shared_wx_app
 
 
 class _Frame:
@@ -79,7 +80,7 @@ def test_open_library_dialog_end_to_end_with_real_widgets(tmp_path: Path, monkey
     wx = pytest.importorskip("wx")
     monkeypatch.setattr("quill.core.paths.app_data_dir", lambda: tmp_path)
 
-    app = wx.App()
+    app = shared_wx_app()
     try:
         host = _Host()
         host.frame = wx.Frame(None)

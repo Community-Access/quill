@@ -18,6 +18,7 @@ import pytest
 
 from quill.core.keymap import DEFAULT_KEYMAP
 from quill.ui.main_frame_classic_editor import ClassicEditorMixin
+from tests.wx_session import shared_wx_app
 
 
 class _Editor:
@@ -69,8 +70,8 @@ def test_the_end_of_the_document_is_an_answer_not_an_error() -> None:
 
 
 def test_the_detail_still_opens_its_readable_window() -> None:
-    wx = pytest.importorskip("wx")
-    app = wx.App()
+    pytest.importorskip("wx")
+    app = shared_wx_app()
     try:
         host = _Host()
         host.describe_character_detail()

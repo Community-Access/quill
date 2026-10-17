@@ -10,13 +10,14 @@ import pytest
 
 from quill.core.abbreviations import AbbreviationLibrary
 from quill.core.autocorrect import lookup
+from tests.wx_session import shared_wx_app
 
 wx = pytest.importorskip("wx")
 
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     # SetHelpText stores nothing without a help provider (CLAUDE.md, F1).
     wx.HelpProvider.Set(wx.SimpleHelpProvider())
     yield app

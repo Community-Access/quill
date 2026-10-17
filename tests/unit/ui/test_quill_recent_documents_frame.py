@@ -15,6 +15,7 @@ from quill.core.settings import Settings
 from quill.ui import recent_documents_dialog
 from quill.ui.main_frame_recent_documents import RecentDocumentsMixin
 from quill.ui.recent_documents_dialog import RecentDocumentsAnswer
+from tests.wx_session import shared_wx_app
 
 
 class _Frame(RecentDocumentsMixin):
@@ -96,7 +97,7 @@ def test_clear_recent_files_keeps_pins(frame: _Frame, monkeypatch) -> None:
 def test_open_recent_numbers_rows_pins_first_and_offers_the_window(frame: _Frame) -> None:
     import wx
 
-    app = wx.GetApp() or wx.App()
+    app = wx.GetApp() or shared_wx_app()
     assert app is not None
     pinned = str(frame.recent_files[2])
     frame._pinned_recent_cache = [pinned]

@@ -14,6 +14,8 @@ from types import SimpleNamespace
 
 import pytest
 
+from tests.wx_session import patch_call_after
+
 wx = pytest.importorskip("wx")
 
 from quill.core.updater import history  # noqa: E402
@@ -39,7 +41,7 @@ def harness(monkeypatch, tmp_path: Path):
     log = tmp_path / "update-history.jsonl"
     real_record = history.record
     monkeypatch.setattr(history, "record", lambda *a, **k: real_record(*a, **{**k, "path": log}))
-    monkeypatch.setattr(background.wx, "CallAfter", lambda fn, *a, **k: fn(*a, **k))
+    patch_call_after(monkeypatch, lambda fn, *a, **k: fn(*a, **k))
     submitted: list[str] = []
 
     def submit(name, func, *, on_success=None, on_failure=None):

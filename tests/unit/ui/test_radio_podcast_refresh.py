@@ -27,6 +27,7 @@ from typing import Any
 import pytest
 
 from quill.ui.radio import podcast_refresh
+from tests.wx_session import shared_wx_app
 
 wx = pytest.importorskip("wx")
 
@@ -35,7 +36,7 @@ said: list[str] = []
 
 @pytest.fixture(scope="module", autouse=True)
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

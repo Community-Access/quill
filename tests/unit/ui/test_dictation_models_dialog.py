@@ -4,12 +4,14 @@ from __future__ import annotations
 
 import pytest
 
+from tests.wx_session import patch_call_after, shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     wx.HelpProvider.Set(wx.SimpleHelpProvider())  # SetHelpText stores nothing without one
     yield app
 
@@ -31,7 +33,7 @@ def dialog_module(monkeypatch, tmp_path):
 
     monkeypatch.setenv(model_store.DOWNLOADS_VARIABLE, str(tmp_path / "models"))
     monkeypatch.setattr(module.threading, "Thread", _NowThread)
-    monkeypatch.setattr(wx, "CallAfter", lambda fn, *args: fn(*args))
+    patch_call_after(monkeypatch, lambda fn, *args: fn(*args))
     monkeypatch.setattr("quill.core.net_metered.connection_cost", lambda: "unmetered")
     return module
 

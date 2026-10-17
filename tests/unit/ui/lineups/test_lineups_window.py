@@ -12,6 +12,8 @@ from typing import Any
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.core.lineups import ops  # noqa: E402
@@ -95,7 +97,7 @@ class _Host(LineupsHost):
 
 @pytest.fixture
 def app(quill_data_dir):
-    application = wx.App()
+    application = shared_wx_app()
     yield application
     for window in wx.GetTopLevelWindows():
         window.Destroy()

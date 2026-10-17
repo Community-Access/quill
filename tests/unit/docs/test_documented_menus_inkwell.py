@@ -15,6 +15,7 @@ from __future__ import annotations
 import pytest
 
 from tests.unit.docs.menu_claims import ROOT, check_documents, items_from_wx_menu_bar
+from tests.wx_session import shared_wx_app
 
 wx = pytest.importorskip("wx")
 
@@ -36,7 +37,7 @@ def test_inkwell_documents_promise_only_what_the_menus_show(
     monkeypatch.delenv("QUILL_DEV_BUILD", raising=False)
     from quill.apps.inkwell import QuillInkwellFrame
 
-    app = wx.App(False)
+    app = shared_wx_app()
     frame = QuillInkwellFrame(safe_mode=True)
     try:
         items = items_from_wx_menu_bar(frame.frame.GetMenuBar())

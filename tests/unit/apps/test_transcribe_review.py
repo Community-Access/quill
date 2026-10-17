@@ -12,7 +12,6 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-import wx
 
 from quill.apps import transcribe_dictation, transcribe_review
 from quill.apps.transcribe_commands import TranscribeCommandsMixin
@@ -31,6 +30,7 @@ from quill.core.windows_dictation import (
 from quill.core.windows_dictation.target_lock import LockedTarget
 from quill.ui import dictation_review_frame as frame_module
 from quill.ui.windows_dictation_external import ExternalDocument
+from tests.wx_session import shared_wx_app
 
 
 class _World:
@@ -151,7 +151,7 @@ class Host(
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
 
 

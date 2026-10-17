@@ -19,6 +19,8 @@ import contextlib
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.ui.dialog_contract import apply_modal_ids  # noqa: E402
@@ -29,7 +31,7 @@ EM_DASH = "—"
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

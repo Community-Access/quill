@@ -11,6 +11,7 @@ from quill.core.radio import station_tags as tags_mod
 from quill.core.radio.favorites import RadioFavoritesStore, load_favorites
 from quill.core.radio.models import RadioStation
 from quill.ui.radio import station_tags_dialog
+from tests.wx_session import shared_wx_app
 
 STATION = RadioStation(name="97.1 The Ticket", stream_url="http://s/wxyt", tags=("sports",))
 
@@ -94,7 +95,7 @@ def test_details_for_never_raises_and_includes_tags(quill_data_dir: Path) -> Non
 
 def test_the_dialog_is_labelled_and_helped() -> None:
     wx = pytest.importorskip("wx")
-    app = wx.App()
+    app = shared_wx_app()
     try:
         seen: list[str] = []
 

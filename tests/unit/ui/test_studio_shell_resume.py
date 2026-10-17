@@ -7,13 +7,13 @@ from pathlib import Path
 import pytest
 
 from quill.core.audio_studio.history import load_history
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture
 def app():
-    import wx
 
-    a = wx.App(False)
+    a = shared_wx_app()
     yield a
     a.Destroy()
 

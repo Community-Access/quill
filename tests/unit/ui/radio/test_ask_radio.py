@@ -7,6 +7,7 @@ from types import SimpleNamespace
 import pytest
 
 from quill.ui.radio import ask_radio_wiring as wiring
+from tests.wx_session import shared_wx_app
 
 
 class _Commands:
@@ -130,7 +131,7 @@ wx_lib = pytest.importorskip("wx")
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx_lib.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

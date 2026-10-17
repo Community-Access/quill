@@ -69,6 +69,8 @@ python scripts/build_app_icons.py
 
 The `tests/conftest.py` fixture sets `quill.core.paths._DEV_BUILD = True` for the whole test session. Any test that sets `QUILL_DATA_DIR` for isolation depends on this; do not remove it.
 
+A test never builds its own `wx.App` or patches `wx.CallAfter` by hand: use the `wx_session_app` fixture (or `shared_wx_app()`) and `wx_call_after` (or `patch_call_after(monkeypatch, ...)`) from `tests/wx_session.py`. One App lives for the whole process and ignores `Destroy()`. Enforced by `tests/unit/test_wx_test_hygiene.py`, whose allowlist may only shrink.
+
 ## Architecture
 
 QUILL is a layered wxPython desktop application with strict import boundaries:

@@ -20,11 +20,12 @@ import wx
 from quill.core.radio.favorites import RadioFavoritesStore
 from quill.core.radio.models import RadioStation
 from quill.ui.radio.favorites_manager_dialog import FavoritesManagerDialog
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture(scope="module")
 def _app() -> wx.App:
-    return wx.App()
+    return shared_wx_app()
 
 
 def _store_az_out_of_order() -> RadioFavoritesStore:

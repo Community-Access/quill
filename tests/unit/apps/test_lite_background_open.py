@@ -27,6 +27,7 @@ import pytest
 from quill.apps import lite_window_open as open_mod
 from quill.apps.lite_window_open import DocumentBackgroundOpenMixin
 from quill.core.lite import open_prepare
+from tests.wx_session import shared_wx_app
 
 # -- prepare: the half that may run anywhere --------------------------------------- #
 
@@ -259,12 +260,12 @@ def test_the_app_creates_one_task_manager_on_first_use() -> None:
 def test_a_real_background_open_reads_on_a_worker_and_commits_on_the_ui_thread(
     tmp_path: Path,
 ) -> None:
-    wx = pytest.importorskip("wx")
+    pytest.importorskip("wx")
     import threading
 
     from quill.stability.task_manager import TaskManager
 
-    app = wx.App()
+    app = shared_wx_app()
     path = tmp_path / "big.txt"
     path.write_text("hello from a large file\n", encoding="utf-8")
     tasks = TaskManager(max_workers=1)

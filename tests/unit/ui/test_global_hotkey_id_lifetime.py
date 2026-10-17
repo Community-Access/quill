@@ -8,6 +8,7 @@ from types import SimpleNamespace
 import pytest
 
 from quill.ui.main_frame_hotkeys import GlobalHotkeysMixin
+from tests.wx_session import shared_wx_app
 
 
 class IdPool:
@@ -69,7 +70,7 @@ def test_unregister_uses_integer_ids_and_keeps_refs_for_reload() -> None:
 
 def test_native_wx_ref_is_kept_alive_with_the_global_route() -> None:
     wx = pytest.importorskip("wx")
-    app = wx.GetApp() or wx.App()
+    app = wx.GetApp() or shared_wx_app()
     host = GlobalHotkeysMixin()
     host._wx = wx
     value = host._global_hotkey_wx_id("podcasts.play_pause")

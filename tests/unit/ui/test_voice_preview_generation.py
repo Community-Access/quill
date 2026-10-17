@@ -10,6 +10,7 @@ import pytest
 import wx
 
 from quill.ui.main_frame import MainFrame
+from tests.wx_session import shared_wx_app
 
 # These tests drive ``wx.CallAfter``/``wx.CallLater`` completions by polling
 # ``wx.YieldIfNeeded()`` in a sleep loop, which requires a live wx event loop
@@ -59,7 +60,7 @@ def _stop_stale_wx_timers() -> int:
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     # Must happen before SetActive below: see _stop_stale_wx_timers.
     _stop_stale_wx_timers()
     # Without a real wx.App().MainLoop() running (never entered in these unit

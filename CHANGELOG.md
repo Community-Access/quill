@@ -2,6 +2,41 @@
 
 ## 1.0.0
 
+### Tests: one wx.App per process, and wx.CallAfter patched one way (todo P3 flake risks; 2026-10-17)
+
+Developer-facing; nothing a user sees changes.
+
+- **One App.** 230 test files built their own `wx.App()` (per test, per
+  module or inline) and many destroyed it in teardown. wx supports one App per
+  process, so whether a file met an App whose C++ half another file had
+  destroyed was decided by which files shared an xdist worker. New
+  `tests/wx_session.py` `shared_wx_app()` returns the one live App and builds
+  it on first use; its `Destroy()` is a no-op, so the old teardown lines are
+  harmless and each test still means "I need an App". Fixture form:
+  `wx_session_app` in `tests/conftest.py`. Every `wx.App(...)` call under
+  `tests/unit` was rewritten to `shared_wx_app()` by an AST pass (strings and
+  docstrings untouched), 231 sites.
+- **One way to patch CallAfter.** 33 files did
+  `monkeypatch.setattr(<module>.wx, "CallAfter", ...)`, which is the wx
+  module's attribute and so global, written in a way that does not look it.
+  `patch_call_after(monkeypatch, replacement=None)` is now the only way: always
+  the real `wx`, always through the test's own monkeypatch, `None` meaning run
+  inline, and it returns a capture of every call. Fixture form: `wx_call_after`.
+  46 sites rewritten, each with the same replacement it had.
+- **What the shared App exposed.** Three QUILL Lite AI tests
+  (`test_lite_ai.py`) passed only when no App was alive in their worker: with
+  one alive, `_show_ai_window` defers the focus call and the sign-in window
+  through `wx.CallAfter`, and no unit test runs an event loop. They now run
+  deferred work inline through `wx_call_after()`, so their result no longer
+  depends on which files ran first.
+- **Gate.** `tests/unit/test_wx_test_hygiene.py` fails on any test file that
+  builds a `wx.App`/`wx.PySimpleApp` or patches `wx.CallAfter` by `setattr`,
+  `mock.patch("wx.CallAfter")` or assignment, outside `tests/wx_session.py`. AST,
+  not grep: it follows `import wx as w` and `wx = pytest.importorskip("wx")`.
+  Its `ALLOWED` table may only shrink: `tests/ui_live/conftest.py` and two
+  `tests/integration` files that drive real windows were left unmigrated rather
+  than changed without being run.
+
 ### Emoji and other astral characters: typed whole, counted as the control counts them (todo P3; 2026-10-17)
 
 An emoji dictated by QUILL Transcribe into a plain edit control arrived

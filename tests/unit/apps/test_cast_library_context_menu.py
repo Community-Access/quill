@@ -13,6 +13,8 @@ from types import SimpleNamespace
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 pytest.importorskip("wx")
 
 from quill.apps.podcasts_library_actions import CastLibraryActionsMixin
@@ -154,7 +156,7 @@ def test_refresh_feed_is_not_offered_for_local_shows_or_in_safe_mode() -> None:
 def test_refresh_feed_is_first_in_the_real_popup_menu() -> None:
     import wx
 
-    app = wx.GetApp() or wx.App(False)
+    app = wx.GetApp() or shared_wx_app()
     assert app is not None
     host = _Host(_feed_library(), ("show", "s1"))
     popup_labels: list[str] = []

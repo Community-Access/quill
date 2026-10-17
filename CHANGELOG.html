@@ -245,6 +245,52 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="tests-one-wxapp-per-process-and-wxcallafter-patched-one-way-todo-p3-flake-risks-2026-10-17">Tests:
+one wx.App per process, and wx.CallAfter patched one way (todo P3 flake
+risks; 2026-10-17)</h3>
+<p>Developer-facing; nothing a user sees changes.</p>
+<ul>
+<li><strong>One App.</strong> 230 test files built their own
+<code>wx.App()</code> (per test, per module or inline) and many
+destroyed it in teardown. wx supports one App per process, so whether a
+file met an App whose C++ half another file had destroyed was decided by
+which files shared an xdist worker. New <code>tests/wx_session.py</code>
+<code>shared_wx_app()</code> returns the one live App and builds it on
+first use; its <code>Destroy()</code> is a no-op, so the old teardown
+lines are harmless and each test still means “I need an App”. Fixture
+form: <code>wx_session_app</code> in <code>tests/conftest.py</code>.
+Every <code>wx.App(...)</code> call under <code>tests/unit</code> was
+rewritten to <code>shared_wx_app()</code> by an AST pass (strings and
+docstrings untouched), 231 sites.</li>
+<li><strong>One way to patch CallAfter.</strong> 33 files did
+<code>monkeypatch.setattr(&lt;module&gt;.wx, "CallAfter", ...)</code>,
+which is the wx module’s attribute and so global, written in a way that
+does not look it.
+<code>patch_call_after(monkeypatch, replacement=None)</code> is now the
+only way: always the real <code>wx</code>, always through the test’s own
+monkeypatch, <code>None</code> meaning run inline, and it returns a
+capture of every call. Fixture form: <code>wx_call_after</code>. 46
+sites rewritten, each with the same replacement it had.</li>
+<li><strong>What the shared App exposed.</strong> Three QUILL Lite AI
+tests (<code>test_lite_ai.py</code>) passed only when no App was alive
+in their worker: with one alive, <code>_show_ai_window</code> defers the
+focus call and the sign-in window through <code>wx.CallAfter</code>, and
+no unit test runs an event loop. They now run deferred work inline
+through <code>wx_call_after()</code>, so their result no longer depends
+on which files ran first.</li>
+<li><strong>Gate.</strong>
+<code>tests/unit/test_wx_test_hygiene.py</code> fails on any test file
+that builds a <code>wx.App</code>/<code>wx.PySimpleApp</code> or patches
+<code>wx.CallAfter</code> by <code>setattr</code>,
+<code>mock.patch("wx.CallAfter")</code> or assignment, outside
+<code>tests/wx_session.py</code>. AST, not grep: it follows
+<code>import wx as w</code> and
+<code>wx = pytest.importorskip("wx")</code>. Its <code>ALLOWED</code>
+table may only shrink: <code>tests/ui_live/conftest.py</code> and two
+<code>tests/integration</code> files that drive real windows were left
+unmigrated rather than changed without being run.</li>
+</ul>
+<h3
 id="emoji-and-other-astral-characters-typed-whole-counted-as-the-control-counts-them-todo-p3-2026-10-17">Emoji
 and other astral characters: typed whole, counted as the control counts
 them (todo P3; 2026-10-17)</h3>

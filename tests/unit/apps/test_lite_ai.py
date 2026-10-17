@@ -595,14 +595,21 @@ def test_every_ai_window_says_where_focus_should_land(lite_window, monkeypatch, 
     assert frame._focus_target is control
 
 
-def test_showing_a_window_actually_gives_it_focus(lite_window, ai_frames, monkeypatch, signed_in):
+def test_showing_a_window_actually_gives_it_focus(
+    lite_window, ai_frames, monkeypatch, signed_in, wx_call_after
+):
     """The outcome, not the mechanism.
 
     An earlier version of this asserted that ``wx.CallAfter`` was used, which is
     a detail that changed the moment the no-running-app path was added. What has
     to stay true is that the window somebody opened ends up with focus -- the
     thing that was broken.
+
+    Deferred work runs inline (``wx_call_after``): whether a wx.App is alive
+    in this worker is decided by which files ran before, and with one alive
+    the focus call waits for an event loop no unit test runs.
     """
+    wx_call_after()
     win = lite_window("some text")
     monkeypatch.setattr(win, "_ai_service", lambda: signed_in)
 
@@ -708,11 +715,12 @@ def test_escaping_the_agreement_says_nothing(lite_window, ai_frames, agreement, 
 
 
 def test_accepting_on_the_way_to_sign_in_does_not_send_you_back_to_sign_in(
-    lite_window, ai_frames, agreement, monkeypatch, connected
+    lite_window, ai_frames, agreement, monkeypatch, connected, wx_call_after
 ):
     """The agreement used to answer "choose Tools, AI, Sign In or Out" to
     somebody who had just chosen exactly that. The window they asked for is the
     answer; the reader announces it when it takes focus."""
+    wx_call_after()  # the window opens after the agreement, deferred
     win = lite_window("text")
     monkeypatch.setattr(win, "_ai_service", lambda: connected)
     win.app.settings.ai_privacy_accepted_version = 0
@@ -741,11 +749,12 @@ def test_the_privacy_door_says_it_took_even_when_the_area_was_already_on(
 
 
 def test_accepting_the_agreement_goes_straight_on_to_connecting(
-    lite_window, ai_frames, agreement, monkeypatch, connected
+    lite_window, ai_frames, agreement, monkeypatch, connected, wx_call_after
 ):
     """Nobody accepts the agreement for any reason but to connect, so a computer
     that is not connected yet lands in the Connect window rather than being told
     to go and find it in a menu (reported 2026-09-25)."""
+    wx_call_after()  # the window opens after the agreement, deferred
     connected.signed_in = False
     win = lite_window("text")
     monkeypatch.setattr(win, "_ai_service", lambda: connected)

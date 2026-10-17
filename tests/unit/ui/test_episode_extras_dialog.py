@@ -12,6 +12,8 @@ from pathlib import Path
 
 import pytest  # type: ignore[import-not-found]
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.core.podcasts.extras import build  # noqa: E402
@@ -33,7 +35,7 @@ _EPISODE = (
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

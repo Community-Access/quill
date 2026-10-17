@@ -8,6 +8,8 @@ from pathlib import Path
 
 import pytest
 
+from tests.wx_session import patch_call_after, shared_wx_app
+
 
 @pytest.fixture
 def app():
@@ -26,7 +28,7 @@ def app():
             a.GetAppName()  # raises once the C++ peer is gone
         except Exception:  # noqa: BLE001 - any failure means "not usable"
             a = None
-    return a if a is not None else wx.App(False)
+    return a if a is not None else shared_wx_app()
 
 
 class _FakePlayer:
@@ -103,8 +105,6 @@ def test_queue_advances_after_finish_then_close(app, tmp_path, monkeypatch) -> N
     monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
     frame = _make_frame(tmp_path)
     try:
-        import wx
-
         # Stage two real files so the advance target exists.
         a = tmp_path / "a.m4b"
         b = tmp_path / "b.m4b"
@@ -125,7 +125,7 @@ def test_queue_advances_after_finish_then_close(app, tmp_path, monkeypatch) -> N
         # Capture CallAfter instead of flushing events (which would also fire
         # the deferred startup update check and hit the network).
         scheduled: list[tuple[object, tuple]] = []
-        monkeypatch.setattr(wx, "CallAfter", lambda fn, *a2: scheduled.append((fn, a2)))
+        patch_call_after(monkeypatch, lambda fn, *a2: scheduled.append((fn, a2)))
         # Simulate book A finishing, then the workbench closing.
         frame._on_book_finished(str(a))
         frame._on_book_closed(str(a), position_ms=1000, chapter=2)
@@ -146,8 +146,6 @@ def test_auto_advance_skips_a_missing_next_file(app, tmp_path, monkeypatch) -> N
     monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
     frame = _make_frame(tmp_path)
     try:
-        import wx
-
         a = tmp_path / "a.m4b"
         c = tmp_path / "c.m4b"
         a.write_bytes(b"")
@@ -168,7 +166,7 @@ def test_auto_advance_skips_a_missing_next_file(app, tmp_path, monkeypatch) -> N
         said: list[str] = []
         monkeypatch.setattr(frame, "_announce", said.append)
         scheduled: list[tuple[object, tuple]] = []
-        monkeypatch.setattr(wx, "CallAfter", lambda fn, *a2: scheduled.append((fn, a2)))
+        patch_call_after(monkeypatch, lambda fn, *a2: scheduled.append((fn, a2)))
         frame._on_book_finished(str(a))
         # Announcement names C (the next PLAYABLE), not the missing B.
         assert said == ["Finished. Up next in the queue: C"]
@@ -186,8 +184,6 @@ def test_auto_advance_all_missing_says_end_of_book(app, tmp_path, monkeypatch) -
     monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
     frame = _make_frame(tmp_path)
     try:
-        import wx
-
         a = tmp_path / "a.m4b"
         a.write_bytes(b"")
         from quill.core.audio_studio.play_queue import (
@@ -205,7 +201,7 @@ def test_auto_advance_all_missing_says_end_of_book(app, tmp_path, monkeypatch) -
         said: list[str] = []
         monkeypatch.setattr(frame, "_announce", said.append)
         scheduled: list[tuple[object, tuple]] = []
-        monkeypatch.setattr(wx, "CallAfter", lambda fn, *a2: scheduled.append((fn, a2)))
+        patch_call_after(monkeypatch, lambda fn, *a2: scheduled.append((fn, a2)))
         frame._on_book_finished(str(a))
         assert said == ["End of book."]  # nothing playable ahead
         frame._on_book_closed(str(a), position_ms=0, chapter=0)

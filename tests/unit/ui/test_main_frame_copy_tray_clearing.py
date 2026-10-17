@@ -17,6 +17,8 @@ from pathlib import Path
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.core.copy_tray import CopyTray  # noqa: E402
@@ -55,7 +57,7 @@ class _Host(CopyTrayMixin):
 
 @pytest.fixture(scope="module")
 def _app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     del app
 

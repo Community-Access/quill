@@ -18,13 +18,14 @@ import pytest
 
 from quill.core.podcasts.models import PodcastShow
 from quill.core.podcasts.models_episode import PodcastEpisode
+from tests.wx_session import shared_wx_app
 
 wx = pytest.importorskip("wx")
 
 
 @pytest.fixture
 def tree():
-    app = wx.App(False)
+    app = shared_wx_app()
     frame = wx.Frame(None)
     control = wx.TreeCtrl(frame, style=wx.TR_HAS_BUTTONS | wx.TR_HIDE_ROOT)
     root = control.AddRoot("root")

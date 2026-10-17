@@ -6,11 +6,12 @@ import pytest
 import wx
 
 from quill.ui.insert_image_dialog import InsertImageDialog
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

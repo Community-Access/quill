@@ -22,6 +22,7 @@ import pytest
 
 from quill.ui.highlight_commands import NO_HIGHLIGHTS, HighlightCommandsMixin
 from quill.ui.main_frame_highlights import HighlightPassagesMixin
+from tests.wx_session import shared_wx_app
 
 wx = pytest.importorskip("wx")
 
@@ -148,7 +149,7 @@ def test_a_word_file_shown_as_text_reads_its_highlights_from_the_file(tmp_path: 
 def rich_control():
     from quill.ui.richedit_rtf_surface import create_richedit_rtf
 
-    app = wx.App(False)
+    app = shared_wx_app()
     frame = wx.Frame(None)
     control = create_richedit_rtf(wx, frame, wx.TE_MULTILINE)
     wrapper = getattr(control, "quill_richedit", None)

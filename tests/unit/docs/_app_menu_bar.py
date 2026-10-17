@@ -28,6 +28,7 @@ from typing import Any
 import pytest
 
 from tests.unit.docs.menu_claims import MenuItem, items_from_wx_menu_bar
+from tests.wx_session import patch_call_after, shared_wx_app
 
 
 class _SilentAnnouncer:
@@ -68,10 +69,10 @@ def real_app_shell(
     monkeypatch.setattr(wx.Frame, "RegisterHotKey", lambda *_a: True, raising=False)
     monkeypatch.setattr(wx.Frame, "UnregisterHotKey", lambda *_a: True, raising=False)
     monkeypatch.setattr(app_shell.AppShellFrame, "_ensure_tray_icon", lambda *_a, **_k: None)
-    monkeypatch.setattr(wx, "CallAfter", lambda *_a, **_k: None)
+    patch_call_after(monkeypatch, lambda *_a, **_k: None)
     monkeypatch.setattr(wx, "CallLater", lambda *_a, **_k: None)
     monkeypatch.setattr(launch_heal, "heal_in_background", lambda *_a, **_k: None)
-    app = wx.App.Get() or wx.App(False)
+    app = wx.App.Get() or shared_wx_app()
     shell = getattr(importlib.import_module(module), cls)()
     try:
         yield shell

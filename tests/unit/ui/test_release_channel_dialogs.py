@@ -14,6 +14,8 @@ from types import SimpleNamespace
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.core.updater import history  # noqa: E402
@@ -30,7 +32,7 @@ from quill.ui.updates.update_history_dialog import (  # noqa: E402
 
 @pytest.fixture
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     # SetHelpText stores nothing without a provider; the apps install one at
     # activation (app_context_help.ensure_help_provider).
     wx.HelpProvider.Set(wx.SimpleHelpProvider())

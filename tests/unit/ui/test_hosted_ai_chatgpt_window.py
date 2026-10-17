@@ -6,6 +6,8 @@ from types import SimpleNamespace
 
 import pytest
 
+from tests.wx_session import patch_call_after, shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.ui import hosted_ai_chatgpt as module  # noqa: E402
@@ -13,7 +15,7 @@ from quill.ui import hosted_ai_chatgpt as module  # noqa: E402
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 
@@ -59,7 +61,7 @@ def run_now(monkeypatch):
             on_failure(name, error)
 
     monkeypatch.setattr(download, "thread_submit", submit)
-    monkeypatch.setattr(wx, "CallAfter", lambda fn, *args: fn(*args))
+    patch_call_after(monkeypatch, lambda fn, *args: fn(*args))
 
 
 def _labels(frame) -> list[str]:

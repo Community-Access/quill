@@ -25,6 +25,7 @@ import pytest
 
 from quill.core.podcasts import audio_export
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow
+from tests.wx_session import shared_wx_app
 
 wx = pytest.importorskip("wx")
 
@@ -37,7 +38,7 @@ from quill.ui.podcasts.export_audio import (  # noqa: E402
 
 @pytest.fixture(scope="module", autouse=True)
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

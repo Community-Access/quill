@@ -7,11 +7,12 @@ import wx
 
 from quill.core.header_footer import HeaderFooterSpec, PageNumberStyle
 from quill.ui.header_footer_dialog import HeaderFooterDialog
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

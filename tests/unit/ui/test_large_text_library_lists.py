@@ -17,11 +17,12 @@ import wx
 
 from quill.core.abbreviations import Abbreviation, AbbreviationLibrary
 from quill.ui.searchable_picker import SHOWN_LIMIT, choose_searchable_option, match_status
+from tests.wx_session import shared_wx_app
 
 
 @pytest.fixture
 def app() -> Iterator[wx.App]:
-    application = wx.App(False)
+    application = shared_wx_app()
     yield application
     application.Destroy()
 

@@ -21,6 +21,7 @@ from quill.core.github.items_provider import (
 )
 from quill.ui.github_items_dialog import VIEW_BRANCHES, VIEW_COMMITS, VIEW_ISSUES, GitHubItemsDialog
 from quill.ui.github_items_view import VIEW_COLUMNS
+from tests.wx_session import patch_call_after, shared_wx_app
 
 
 class _FakeProvider:
@@ -44,7 +45,7 @@ class _FakeProvider:
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 
@@ -70,7 +71,7 @@ class _StubShow:
 @pytest.fixture
 def dlg(wx_app, monkeypatch: pytest.MonkeyPatch):
     monkeypatch.setattr("quill.ui.github_items_dialog.threading.Thread", _SyncThread)
-    monkeypatch.setattr(wx, "CallAfter", lambda fn, *a, **k: fn(*a, **k))
+    patch_call_after(monkeypatch, lambda fn, *a, **k: fn(*a, **k))
     # A real modal ShowModal() would block the test; every compare-branches
     # test that doesn't specifically assert on dialog construction gets a
     # no-op stub here, mirroring _show_modal's short-circuit below.

@@ -19,6 +19,8 @@ from typing import Any
 
 import pytest
 
+from tests.wx_session import patch_call_after
+
 wx = pytest.importorskip("wx")
 
 #: Serialized onto one worker: building the real frame registers system-wide
@@ -445,7 +447,7 @@ def test_large_downloads_place_uses_the_real_cast_route_with_bounded_ui_turns(
             collections.append((generation, perf_counter() - collection_started.pop(generation)))
 
     monkeypatch.setattr(wx, "CallLater", later)
-    monkeypatch.setattr(wx, "CallAfter", after)
+    patch_call_after(monkeypatch, after)
     heartbeat = wx.Timer(frame.frame)
     frame.frame.Bind(wx.EVT_TIMER, lambda _event: heartbeats.append(perf_counter()), heartbeat)
     heartbeat.Start(25)
@@ -712,7 +714,7 @@ def test_large_library_folder_moves_preserve_focus_without_native_churn(
     monkeypatch.setattr(
         wx, "CallLater", lambda delay, cb, *a, **kw: native_later(delay, timed(cb, a, kw))
     )
-    monkeypatch.setattr(wx, "CallAfter", lambda cb, *a, **kw: native_after(timed(cb, a, kw)))
+    patch_call_after(monkeypatch, lambda cb, *a, **kw: native_after(timed(cb, a, kw)))
     for name in ("DeleteAllItems", "Delete", "InsertItem", "PrependItem"):
         method = getattr(tree, name)
 

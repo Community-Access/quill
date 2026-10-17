@@ -6,6 +6,7 @@ import pytest
 
 from quill.ui.audio import audio_engine, output_routing, winrt_engine
 from quill.ui.radio import mpv_radio_engine
+from tests.wx_session import shared_wx_app
 
 MPV_LIST = [("wasapi/{aaaa0000-0000-0000-0000-000000000001}", "Speakers (mpv saw it)")]
 WINDOWS_LIST = [("wasapi/{aaaa0000-0000-0000-0000-000000000001}", "Speakers (Windows saw it)")]
@@ -43,9 +44,8 @@ def test_routing_is_available_with_either_engine(monkeypatch: pytest.MonkeyPatch
 
 @pytest.fixture(scope="module")
 def wx_app():
-    import wx
 
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

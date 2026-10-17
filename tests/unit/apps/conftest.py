@@ -40,6 +40,7 @@ import wx
 
 from quill.ui.extend_selection_mode import ExtendSelectionMixin
 from quill.ui.richedit_rtf_surface import RichEditRtfError
+from tests.wx_session import shared_wx_app
 
 
 class _SkippableEvent:
@@ -735,7 +736,7 @@ def wx_app():
             app.GetAppName()  # cheap probe: raises once the C++ peer is gone
         except Exception:  # noqa: BLE001 - any failure means "not usable"
             app = None
-    return app if app is not None else wx.App()
+    return app if app is not None else shared_wx_app()
 
 
 def _close_cast_frame(frame: Any, *, loop: Any = None) -> bool:

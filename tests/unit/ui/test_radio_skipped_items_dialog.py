@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import pytest
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.core.skipped_files import REASON_CLOUD_ONLY, REASON_IN_USE, SkippedFile  # noqa: E402
@@ -14,7 +16,7 @@ _ROWS = [SkippedFile("a.mp3", REASON_CLOUD_ONLY), SkippedFile("b.mp3", REASON_IN
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

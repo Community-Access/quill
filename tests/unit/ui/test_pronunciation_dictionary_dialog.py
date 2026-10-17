@@ -6,6 +6,8 @@ from pathlib import Path
 
 import pytest  # type: ignore[import-not-found]
 
+from tests.wx_session import shared_wx_app
+
 wx = pytest.importorskip("wx")
 
 from quill.core.speech.pronunciation import (  # noqa: E402
@@ -21,7 +23,7 @@ from quill.ui.pronunciation_dictionary_dialog import (  # noqa: E402
 
 @pytest.fixture(scope="module")
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

@@ -16,6 +16,7 @@ import wx
 from quill.core.radio.models import RadioStation
 from quill.ui.radio.playback_state import RadioPlayerState
 from quill.ui.radio.player_controller import RadioPlayerController
+from tests.wx_session import shared_wx_app
 
 _YOUTUBE = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 _RESOLVED = "https://media.test/audio.m4a"
@@ -23,7 +24,7 @@ _RESOLVED = "https://media.test/audio.m4a"
 
 @pytest.fixture(scope="module", autouse=True)
 def wx_app():
-    app = wx.App()
+    app = shared_wx_app()
     yield app
     app.Destroy()
 

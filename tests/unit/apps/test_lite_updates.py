@@ -16,6 +16,7 @@ from types import SimpleNamespace
 import pytest
 
 from quill.apps import lite_updates
+from tests.wx_session import patch_call_after
 
 
 class _Release(SimpleNamespace):
@@ -69,7 +70,7 @@ def updates(monkeypatch):
 
     monkeypatch.setattr(core_updates, "fetch_app_releases", _fetch)
     monkeypatch.setattr(update_download, "thread_submit", _submit)
-    monkeypatch.setattr(lite_updates.wx, "CallAfter", lambda fn, *a, **k: fn(*a, **k))
+    patch_call_after(monkeypatch, lambda fn, *a, **k: fn(*a, **k))
     monkeypatch.setattr(
         lite_updates,
         "show_message_box",
@@ -199,7 +200,7 @@ def test_queued_launch_check_does_not_start_during_shutdown(monkeypatch):
         settings=SimpleNamespace(check_updates_on_launch=True, last_update_check=""),
         save_settings=lambda: None,
     )
-    monkeypatch.setattr(lite_updates.wx, "CallAfter", scheduled.append)
+    patch_call_after(monkeypatch, scheduled.append)
     monkeypatch.setattr(
         lite_updates, "check_for_updates", lambda *args, **kwargs: checked.append(args)
     )

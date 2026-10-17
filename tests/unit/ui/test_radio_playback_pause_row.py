@@ -16,6 +16,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from quill.core.app_keymaps import APP_KEYMAPS
+from tests.wx_session import shared_wx_app
 
 _ROOT = Path(__file__).resolve().parents[3]
 _MENU = (_ROOT / "quill" / "apps" / "radio_transport_menu.py").read_text(encoding="utf-8")
@@ -34,7 +35,7 @@ def test_pause_has_a_key_and_it_is_one_wx_can_actually_parse() -> None:
     key = APP_KEYMAPS["radio"]["radio.pause"]
     assert key == "Ctrl+Space"
 
-    app = wx.App()  # noqa: F841 - an AcceleratorEntry needs one
+    app = shared_wx_app()  # noqa: F841 - an AcceleratorEntry needs one
     entry = wx.AcceleratorEntry()
     assert entry.FromString(key), key
 

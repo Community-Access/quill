@@ -32,6 +32,7 @@ from tests.unit.docs.menu_claims import (
     chord_identity,
     items_from_wx_menu_bar,
 )
+from tests.wx_session import patch_call_after, shared_wx_app
 
 wx = pytest.importorskip("wx")
 
@@ -66,9 +67,9 @@ def _beacon_menu_items(monkeypatch: pytest.MonkeyPatch, data_dir) -> list:  # ty
     monkeypatch.setattr(beacon_app.BeaconFrame, "_start_capture_bridge", lambda self: None)
     monkeypatch.setattr(beacon_app.BeaconFrame, "_start_tray", lambda self: None)
     monkeypatch.setattr(beacon_app.BeaconFrame, "_setup_auto_sync", lambda self: None)
-    monkeypatch.setattr(wx, "CallAfter", lambda *_a, **_k: None)
+    patch_call_after(monkeypatch, lambda *_a, **_k: None)
     monkeypatch.setattr(wx, "CallLater", lambda *_a, **_k: None)
-    app = wx.App.Get() or wx.App(False)
+    app = wx.App.Get() or shared_wx_app()
     frame = beacon_app.BeaconFrame()
     try:
         return items_from_wx_menu_bar(frame.GetMenuBar())

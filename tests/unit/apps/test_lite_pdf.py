@@ -25,13 +25,13 @@ from typing import Any
 import pytest
 import wx
 
-from quill.apps import lite_window_pdf
 from quill.apps.lite_status_cells import CELLS, SHOWN_ONLY_WITH_TEXT, page_cell_text
 from quill.apps.lite_window_open import DocumentBackgroundOpenMixin
 from quill.core.lite import open_prepare
 from quill.core.lite.filetypes import OPEN_WILDCARD
 from quill.core.lite.open_prepare import PLAIN, PreparedDocument
 from quill.core.pdf_open import ENGINE_OCR, PdfOpen
+from tests.wx_session import patch_call_after
 
 _WORDS = "A page of real words, long enough that nobody would call it scanned at all. "
 _TEXT = f"Page one. {_WORDS}\fPage two. {_WORDS}\fPage three. {_WORDS}\n"
@@ -53,9 +53,7 @@ def _found(**overrides: Any) -> PdfOpen:
 def later(monkeypatch) -> list[tuple[Any, tuple[Any, ...], dict[str, Any]]]:
     """``wx.CallAfter`` recorded, not run: what the window queued, in order."""
     queued: list[tuple[Any, tuple[Any, ...], dict[str, Any]]] = []
-    monkeypatch.setattr(
-        lite_window_pdf.wx, "CallAfter", lambda fn, *a, **k: queued.append((fn, a, k))
-    )
+    patch_call_after(monkeypatch, lambda fn, *a, **k: queued.append((fn, a, k)))
     return queued
 
 
