@@ -832,6 +832,98 @@ you ask for is one request.</p>
 <p>To send everything you say to the review window first, turn on
 <strong>Send dictation to review first</strong> (Alt+V) in More
 Dictation Settings.</p>
+<h3 id="polishing-what-you-said-only-when-you-ask">Polishing what you
+said, only when you ask</h3>
+<p><strong>Polish</strong> tidies punctuation, capital letters and small
+slips without rewording anything, before the words are typed into the
+other program. It is one request you ask for each time, it is off until
+you turn it on, and it never runs by itself.</p>
+<ol type="1">
+<li>Open <strong>Dictation Settings</strong> (Alt+Shift+F6), press
+<strong>More Dictation Settings</strong>, and check <strong>Allow
+polishing my dictation with AI when I ask</strong> (Alt+G). Press OK in
+both windows.</li>
+<li>Dictate into your email as usual. When you want the last phrase
+polished, say <strong>“QUILL polish that”</strong> (or “QUILL polish
+it”). The phrase is backspaced away and opened in Review Dictation, then
+the polish request is made there. If Review Dictation is already open,
+the words in it are polished.</li>
+<li>In the Review Dictation window you can also press
+<strong>Polish</strong> (Ctrl+P). The button is there only while
+polishing is allowed.</li>
+<li>You hear “Polishing”, then what changed. Read the words, then
+<strong>Insert</strong> (Ctrl+Enter, or “QUILL insert it”) types them
+into the field once, or Undo Change (Ctrl+Z) takes the polish back.</li>
+</ol>
+<p>The AI is asked to fix punctuation, capital letters, spelling and
+obvious grammar slips only, and to keep your words, meaning, order and
+tone. It uses the same AI and the same first-time question as the rest
+of the review: nothing is sent until you say yes, and only the words in
+the window go. With AI off the Polish button is greyed out, and with
+polishing not allowed “QUILL polish that” says “Polish my dictation is
+off” and sends nothing.</p>
+<h3 id="correcting-yourself-as-you-talk">Correcting yourself as you
+talk</h3>
+<p>With <strong>Fix it when I correct myself, like Thursday, no,
+Friday</strong> (Alt+X) checked in Dictation Settings, QUILL Transcribe
+types only what you meant when you correct yourself in the middle of a
+sentence:</p>
+<table>
+<thead>
+<tr>
+<th>You say</th>
+<th>QUILL Transcribe types</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>meet on Thursday, no, Friday at noon</td>
+<td>meet on Friday at noon</td>
+</tr>
+<tr>
+<td>in June, no I mean July</td>
+<td>in July</td>
+</tr>
+<tr>
+<td>I have two no three cats</td>
+<td>I have three cats</td>
+</tr>
+<tr>
+<td>call me at 5, sorry, 6</td>
+<td>call me at 6</td>
+</tr>
+<tr>
+<td>send it to Ana, sorry, Maria (both names in My Words)</td>
+<td>send it to Maria</td>
+</tr>
+</tbody>
+</table>
+<p>The marking words are “no”, “I mean”, “no I mean”, “sorry” and
+“scratch that word”, and a correction is made only between two days, two
+months, two numbers or two names from the Vocabulary list in My Words
+and Phrases. Everything else is typed as you said it: “no, I don’t think
+so” and “Is it Thursday? No, Friday.” stay as they are. The fix happens
+on this computer before anything is typed, with no AI. It is off until
+you turn it on.</p>
+<p><strong>Dictation style</strong> (Alt+Y), in the same window, sets
+these choices together: <strong>Verbatim</strong> (every word as you say
+it), <strong>Clean</strong> (no filler words, and your corrections
+fixed) or, only when AI is set up in QUILL, <strong>Polished</strong>
+(Clean, plus Send dictation to review first and Allow polishing my
+dictation with AI). Choosing Polished sends nothing by itself. Change a
+check box yourself and the style shows <strong>Your own mix of the
+settings below</strong>.</p>
+<p><strong>Remembering a correction.</strong> When you fix the same word
+the same way twice with “QUILL correct that” and then “QUILL choose two”
+(see “Correcting in another program”), QUILL Transcribe offers to add it
+to My Words and Phrases, so it comes out right next time. The question
+is spoken, never shown in a window that would take the focus from your
+field: “Add a correction: Ann becomes Anne? Say QUILL yes to add it, or
+QUILL no.” Answer within 30 seconds. Yes adds it to the Corrections
+list, which you can change in My Words and Phrases (Alt+Shift+F10); No,
+silence or anything else adds nothing. Each pair is offered once each
+time QUILL Transcribe runs, and only a word or a short phrase of up to
+four words.</p>
 <h2 id="models">Models</h2>
 <h3 id="choosing-a-model">Choosing a model</h3>
 <p>Open <strong>Choose Model</strong> (Ctrl+M). Every model is listed
@@ -915,12 +1007,14 @@ named microphone stays chosen even if the default changes.</p>
 <h3 id="dictation-settings">Dictation Settings</h3>
 <p><strong>Dictation Settings</strong> (Alt+Shift+F6, the key QUILL and
 QUILL Lite use; Ctrl+, still works) is the same window QUILL and QUILL
-Lite use: language, punctuation, filler words, how long a pause ends a
-phrase, what you hear after each phrase, and your dictation word list.
-QUILL Transcribe keeps its own copy of these settings, so changing them
-here does not change QUILL’s. The wake phrase and holding the key to
-talk work here too, both off until you turn them on (see Holding the key
-to talk, and Starting with your voice).</p>
+Lite use: language, punctuation, filler words, the dictation style and
+fixing it when you correct yourself (see Correcting yourself as you
+talk), how long a pause ends a phrase, what you hear after each phrase,
+and your dictation word list. QUILL Transcribe keeps its own copy of
+these settings, so changing them here does not change QUILL’s. The wake
+phrase and holding the key to talk work here too, both off until you
+turn them on (see Holding the key to talk, and Starting with your
+voice).</p>
 <p><strong>More Dictation Settings</strong> in that window has
 <strong>Tick while a phrase is being worked on</strong>, on by default
 in QUILL Transcribe (see What you hear). Its <strong>Commands</strong>

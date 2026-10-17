@@ -5330,6 +5330,99 @@ and Review Dictation brings them back. Discard throws them away. To send
 everything you dictate to the window first, turn on <strong>Send
 dictation to review first</strong> (<strong>Alt+V</strong>) in More
 Dictation Settings.</p>
+<h4 id="polishing-your-dictation-with-ai-only-when-you-ask">Polishing
+your dictation with AI, only when you ask</h4>
+<p><strong>Polish</strong> tidies punctuation, capitals and small slips
+without rewording anything. It is one request you ask for each time, it
+is off until you turn it on, and it never runs by itself.</p>
+<ol type="1">
+<li>Open <strong>Dictation Settings</strong>
+(<strong>Alt+Shift+F6</strong>), press <strong>More Dictation
+Settings…</strong> (<strong>Alt+A</strong>), and check <strong>Allow
+polishing my dictation with AI when I ask</strong>
+(<strong>Alt+G</strong>). Press OK in both windows.</li>
+<li>Dictate as usual. When you want a phrase polished, say
+<strong>“QUILL polish that”</strong> or “QUILL polish it”. The last
+phrase is taken back out and opened in Review Dictation, and the polish
+request is made there. If Review Dictation is already open, the words in
+it are polished.</li>
+<li>In the Review Dictation window you can also press
+<strong>Polish</strong> (<strong>Ctrl+P</strong>). The button is there
+only while polishing is allowed.</li>
+<li>You hear “Polishing”, then what changed. Read the words, then press
+<strong>Insert</strong> (<strong>Ctrl+Enter</strong>), or take the
+change back with <strong>Undo Change</strong>
+(<strong>Ctrl+Z</strong>).</li>
+</ol>
+<p>The AI is asked to fix punctuation, capital letters, spelling and
+obvious grammar slips only, and to keep your words, meaning, order and
+tone. Polish uses the same AI, account and first-time question as the
+rest of Review Dictation: nothing is sent until you say yes, and only
+the words in the window are sent. With AI off the Polish button is
+greyed out, and with polishing not allowed “QUILL polish that” says
+“Polish my dictation is off” and sends nothing.</p>
+<h4 id="correcting-yourself-as-you-talk">Correcting yourself as you
+talk</h4>
+<p>With <strong>Fix it when I correct myself, like Thursday, no,
+Friday</strong> (<strong>Alt+X</strong>) checked in Dictation Settings,
+QUILL Lite writes only what you meant when you correct yourself
+mid-sentence:</p>
+<table>
+<thead>
+<tr>
+<th>You say</th>
+<th>QUILL Lite writes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>meet on Thursday, no, Friday at noon</td>
+<td>meet on Friday at noon</td>
+</tr>
+<tr>
+<td>in June, no I mean July</td>
+<td>in July</td>
+</tr>
+<tr>
+<td>I have two no three cats</td>
+<td>I have three cats</td>
+</tr>
+<tr>
+<td>call me at 5, sorry, 6</td>
+<td>call me at 6</td>
+</tr>
+<tr>
+<td>send it to Ana, sorry, Maria (both names in My Words)</td>
+<td>send it to Maria</td>
+</tr>
+</tbody>
+</table>
+<p>The marking words are “no”, “I mean”, “no I mean”, “sorry” and
+“scratch that word”, and a correction is made only between two days, two
+months, two numbers or two names from the Vocabulary list in My Words
+and Phrases. Anything else is written as you said it: “no, I don’t think
+so” and “Is it Thursday? No, Friday.” stay exactly as they are. It works
+on this computer with no AI, it is off until you turn it on, and live
+transcripts never use it.</p>
+<p><strong>Dictation style</strong> (<strong>Alt+Y</strong>) sets these
+choices together: <strong>Verbatim</strong> (every word as you say it),
+<strong>Clean</strong> (no filler words, and your corrections fixed) or,
+only when AI help is on, <strong>Polished</strong> (Clean, plus Send
+dictation to review first and Allow polishing my dictation with AI).
+Choosing Polished sends nothing by itself. Change a check box yourself
+and the style shows <strong>Your own mix of the settings
+below</strong>.</p>
+<h4 id="learning-from-your-corrections">Learning from your
+corrections</h4>
+<p>When you correct the same word the same way twice, by “correct that”
+and then “choose two”, or by “correct Ann” and then the new words, a
+window called <strong>Add a Correction</strong> asks, for example, “Add
+a correction: Ann becomes Anne?” <strong>No</strong> is the default.
+<strong>Yes</strong> adds it to the Corrections list in My Words and
+Phrases (<strong>Alt+Shift+F10</strong>), where you can change or remove
+it, and the next phrase uses it. Each pair is asked about once each time
+QUILL Lite runs, only words and short phrases of up to four words are
+offered, and nothing is saved unless you say yes.</p>
 <h3 id="starting-and-stopping-with-your-voice">Starting and stopping
 with your voice</h3>
 <h4 id="the-wake-phrase">The wake phrase</h4>
@@ -5491,6 +5584,12 @@ Windows speech recognition uses the same length.</li>
 <li><strong>Remove filler words like um and uh.</strong> Hesitations
 like um, uh, erm and hmm are left out. Real words are never
 removed.</li>
+<li><strong>Dictation style</strong> (<strong>Alt+Y</strong>). Verbatim,
+Clean or, with AI on, Polished: a quick way to set the next two choices
+together. See “Correcting yourself as you talk”.</li>
+<li><strong>Fix it when I correct myself, like Thursday, no,
+Friday</strong> (<strong>Alt+X</strong>). “Thursday, no, Friday” writes
+Friday. Off at first.</li>
 <li><strong>Stop dictation after silence.</strong> Never, or after 1, 5
 or 10 minutes of hearing nothing, so dictation is not left writing in an
 empty room. With the wake phrase on, it goes back to waiting for the
@@ -5635,6 +5734,18 @@ follow the dictation language</td>
 <tr>
 <td>Remove filler words like um and uh</td>
 <td>Leave hesitations out</td>
+<td>Off</td>
+</tr>
+<tr>
+<td>Dictation style (Alt+Y)</td>
+<td>Verbatim, Clean, or Polished when AI is on; sets the choices
+below</td>
+<td>Verbatim</td>
+</tr>
+<tr>
+<td>Fix it when I correct myself, like Thursday, no, Friday (Alt+X)</td>
+<td>Writes only the second of two days, months, numbers or names from My
+Words</td>
 <td>Off</td>
 </tr>
 <tr>
@@ -5809,6 +5920,12 @@ always works</td>
 <td>Send dictation to review first (Alt+V)</td>
 <td>What you dictate goes into Review Dictation instead, to insert once;
 see “Review before inserting”</td>
+<td>Unchecked</td>
+</tr>
+<tr>
+<td>Allow polishing my dictation with AI when I ask (Alt+G)</td>
+<td>“QUILL polish that” and the Polish button in Review Dictation ask
+the AI to fix punctuation and small slips, keeping your words</td>
 <td>Unchecked</td>
 </tr>
 <tr>
