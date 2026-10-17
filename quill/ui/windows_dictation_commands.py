@@ -252,6 +252,7 @@ class WindowsDictationMixin(
         if answer not in saving:
             return
         self._dictation_save_settings()
+        self._dictation_share_settings()  # the family's copy, when shared (D-13)
         self._dictation_status("Dictation settings saved.")
         self._dictation_rearm()
         if answer == EDIT_WORDS:
@@ -334,6 +335,7 @@ class WindowsDictationMixin(
         if _controller is None and not event.GetActive():
             return
         if event.GetActive():
+            self._dictation_take_family()  # what another program saved (D-13)
             self._dictation_current_host()._dictation_rearm()
             return
         controller = _controller

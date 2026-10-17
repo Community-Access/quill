@@ -100,7 +100,12 @@ def test_save_on_a_window_that_holds_a_word_name_is_refused_too(
 ) -> None:
     win = lite_window(TEXT)
     win.path = tmp_path / "opened.docx"
+    # An opened Word file is read-only like an opened PDF: Save offers Save As
+    # (lite_window_file.save -> refuse_save_over_source) instead of writing.
+    offered: list[bool] = []
+    win.cmd_save_as = lambda: offered.append(True) or False
     assert win.save() is False
+    assert offered == [True]
     assert not (tmp_path / "opened.docx").exists()
 
 

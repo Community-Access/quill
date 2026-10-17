@@ -297,6 +297,7 @@ class AppShellFrame(
         """
         from quill.core.app_keymaps import app_keymap_overrides
 
+        self._app_keymap_id = app_id  # who is asking, for Dictate Here (D-16)
         self.keymap.update(app_keymap_overrides(app_id, self.keymap))
 
     def _menu_label(self, title: str, command_id: str) -> str:

@@ -38,6 +38,7 @@ Testing rebuild: **3.2.0 (build 4)**. The packages have not been published yet.
   Playback item reads **Resume** instead, so to end a paused recording or
   file use Ctrl+Period or the Stop button. The 3.0.3 entry below and the 3.0
   release notes now say this too.
+- **Edit > Dictate Here (Ctrl+F11).** In Search Stations or any other text box, press Ctrl+F11 and QUILL Transcribe dictates into it, starting in the tray if it is not running. Quill Radio has no speech engine of its own; your words and dictation commands are QUILL Transcribe's. Shown when QUILL Transcribe is part of your copy of the family, which is every public build from QUILL Transcribe's release on 1 November 2026 (dict.md D-16).
 
 - **Station Details: find a station by its call sign, frequency or slogan.**
   **View > Station Details...** (Alt+Shift+I) searches stations by name, call

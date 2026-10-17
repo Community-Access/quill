@@ -5716,6 +5716,18 @@ capital letters and small slips in your words, keeping your words. The
 words open in Review Dictation first, you are asked once before anything
 is sent, you hear what changed, and nothing is inserted until you insert
 it. Off by default; it needs AI.</li>
+<li><code>self.share_family</code>: When this is on, the dictation
+settings you save here are used by QUILL, QUILL Lite, QUILL Transcribe
+and Quill Inkwell on this computer, and a change saved in any of them
+reaches this one the next time it comes to the front. The keys, the
+tray, the working tick, strict mode, the read-back’s sound and every
+permission to send your speech somewhere stay with each program. If two
+programs save at once, the last one saved wins; nothing is half written.
+On for a new install, off for one whose settings you had already
+changed, until you turn it on. The first time a program takes the
+family’s settings, its own are kept in a backup file, and if the shared
+copy cannot be saved you are told why. A portable copy shares only with
+programs in its own folder.</li>
 <li><code>self.send</code>: In the AI Conversation window, Ctrl+F11
 dictates your message. When I pause sends it as soon as you stop
 talking, the reply is read aloud, and the microphone waits until it has

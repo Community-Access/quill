@@ -109,6 +109,18 @@ open, and what waits for a later version.
    because the other program's formatting cannot be applied by keystrokes
    QUILL Transcribe can trust.
 
+13. **One settings store, and Dictate Here** (after 1.0.0, 2026-10-16).
+   "Share dictation settings with every QuillVille program" (dict.md D-13) replaces the
+   one-way hand-off as the way settings move: `family_dictation.json` in
+   `%LOCALAPPDATA%\QuillVille\Dictation`, written when Dictation Settings is
+   saved anywhere and read here on the 800 ms clock, behind one check box that
+   is on for a new install and off for one whose settings were changed. Keys,
+   the tray, the working tick, strict mode, the read-back and every consent stay
+   local. The word list moved to the same folder, copied with the old file kept.
+   Quill Cast's and Quill Radio's Edit > Dictate Here (D-16) send a `start`
+   request, or launch QUILL Transcribe with `--tray --dictate-here`. Dictation
+   design record, section 30.
+
 ## Waiting for a later version
 
 - Keeping audio for replay, which stays a separate opt-in that text history

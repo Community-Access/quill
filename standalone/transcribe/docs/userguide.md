@@ -788,8 +788,11 @@ if the default changes.
 still works) is the same window QUILL and QUILL Lite use: language,
 punctuation, filler words, the dictation style and fixing it when you correct
 yourself (see Correcting yourself as you talk), how long a pause ends a phrase,
-what you hear after each phrase, and your dictation word list. QUILL Transcribe keeps its own copy
-of these settings, so changing them here does not change QUILL's. The wake
+what you hear after each phrase, and your dictation word list. **Share dictation settings with every QuillVille program**
+(Alt+Q, in More Dictation Settings) decides whether they are shared: when it
+is checked, what you save here is used by QUILL, QUILL Lite and Quill Inkwell
+too, and what you save in any of them is used here within a second. See
+Sharing dictation settings with the family, below. The wake
 phrase and holding the key to talk work here too, both off until you turn them
 on (see Holding the key to talk, and Starting with your voice).
 
@@ -801,6 +804,34 @@ after the command word (strict mode)** (Alt+E; on in QUILL Transcribe), and
 **Seconds command mode waits for a command** (Alt+D; 8, from 5 to 30). A
 common word, or one of your own words in My Words and Phrases, cannot be the
 command word, and you are told why.
+
+### Sharing dictation settings with the family
+
+When **Share dictation settings with every QuillVille program** is checked, QUILL,
+QUILL Lite, QUILL Transcribe and Quill Inkwell use one set of dictation
+settings.
+
+- **What is shared:** the model and engine, the language, the microphone,
+  automatic punctuation, the pause, filler words, the wake phrase, the command
+  word, review first, the never-type list and the other dictation choices.
+- **What stays QUILL Transcribe's own:** its keys and tray, the working tick
+  and strict mode (both on here), what you hear after each phrase, and every
+  permission to send your speech to a company.
+- **When:** saving Dictation Settings with OK, or changing the language,
+  shares at once. A change saved in QUILL or QUILL Lite is used here within a
+  second, without a word from QUILL Transcribe: it is your own change.
+- **To begin with:** checked for a new install; unchecked if you had already
+  changed your dictation settings, so nothing you chose is replaced. Check it
+  when you want to join in.
+- **Nothing is lost:** the first time QUILL Transcribe takes settings from the
+  family, its own are saved as `before-sharing-transcribe.json` in
+  `%LOCALAPPDATA%\QuillVille\Dictation`. If two programs save at once, the
+  last one saved wins. If the shared copy cannot be saved, you hear "Saved
+  here, but the other QuillVille programs will not see this change", and why.
+
+For example: in QUILL, choose a different model in Dictation Settings and
+press OK. The next phrase you dictate into Outlook with QUILL Transcribe uses
+that model.
 
 ### Your words, the language, and your last phrases
 
@@ -824,7 +855,10 @@ command word, and you are told why.
   the sound, sealed for your Windows account. Turning it off deletes it.
 - **My Words and Phrases** (Alt+Shift+F10, in the Dictation menu) is the same
   window as in QUILL and QUILL Lite, over the same word list as QUILL, so a
-  word you teach one is known to the other. QUILL Lite shares it once you
+  word you teach one is known to the other. The list lives in
+  `%LOCALAPPDATA%\QuillVille\Dictation`; the first time it is needed after
+  the update it is copied there from QUILL's data folder, and the old file is
+  left as it was, as a backup. QUILL Lite shares it once you
   check **Use the shared word list** in its own My Words and Phrases window.
   **Export...** saves the list to a Markdown or CSV file, and **Import...**
   adds the new entries from one after showing you what it will add; nothing
@@ -924,6 +958,26 @@ Quill Inkwell also has Dictate Anywhere. Only one of the two dictates at a time:
 
 The first time QUILL Transcribe runs, it brings over the Dictate Anywhere
 settings and key you chose in Inkwell. Inkwell's own settings are not changed.
+
+## Dictate Here from Quill Cast and Quill Radio
+
+Quill Cast and Quill Radio have no speech engine of their own. Their **Edit >
+Dictate Here** (Ctrl+F11) asks QUILL Transcribe to dictate into the field you
+are in, such as Cast's Add Podcast box or Radio's Search Stations box.
+
+- If QUILL Transcribe is running, it starts dictating there, just as if you had
+  pressed your start and stop key, and you hear its usual "Dictation on".
+- If it is not running, it starts in the tray and begins dictating when it is
+  ready; Cast or Radio says "Starting QUILL Transcribe. Dictation starts here
+  when it is ready." The first time, when QUILL Transcribe opens its window to
+  set up, it does not start dictating; finish setting up, go back to the field
+  and press Ctrl+F11 again.
+- If Quill Inkwell is dictating, you hear that Inkwell is dictating, and
+  nothing starts.
+
+Your words, commands and never-type list all work as usual, because it is
+QUILL Transcribe doing the dictating. Stop with your start and stop key, or say
+"stop dictation".
 
 ## One microphone: QUILL, QUILL Lite and QUILL Transcribe
 

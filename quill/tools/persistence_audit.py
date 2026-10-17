@@ -31,6 +31,7 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
+from quill.tools.persistence_entries_dictation import DICTATION_ENTRIES
 from quill.tools.persistence_entries_radio import RADIO_LISTENER_ENTRIES
 
 _PACKAGE_ROOT = Path(__file__).resolve().parents[1]
@@ -54,15 +55,8 @@ _CLASSIFICATIONS: dict[str, str] = {
 _REVIEWED_PERSISTENCE: dict[str, str] = {
     # --- versioned (the contract) ---
     "core/settings.py::save_settings": "versioned",
-    # Dictation: each document's context (2026-10-05, schema-stamped, additive), the
-    # one-shot hand-off to Quill Inkwell (read once, deleted), D-2's open review.
-    "core/windows_dictation/contexts.py::save": "content",
-    "core/windows_dictation/anywhere.py::write_handoff": "cache",
-    "core/windows_dictation/review_session.py::save_rescue": "content",
-    # D-5 (2026-10-16): words not written, sealed, deleted on delivery; and the
-    # opt-in text history, sealed, schema-stamped (rescue.py).
-    "core/windows_dictation/rescue.py::keep": "content",
-    "core/windows_dictation/rescue.py::_write_history": "content",
+    # Dictation's own stores: persistence_entries_dictation.
+    **DICTATION_ENTRIES,
     "core/transcribe/settings.py::save_settings": "versioned",  # QUILL Transcribe
     "core/dictation_owner.py::claim": "marker",  # who owns Dictate Anywhere; lock-backed
     # qc.md X-03 and X-05 (2026-10-03): small, self-describing, "version": 1 stamped;

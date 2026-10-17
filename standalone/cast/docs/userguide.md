@@ -1680,6 +1680,30 @@ website. Cast tells you when an address has been copied.
 If you would rather be walked through it, Help > Tutorials has a lesson called
 **The first hour**. Its first few steps find and follow a podcast with you.
 
+### Dictating into a search box
+
+Typing a podcast's name is not the only way. If QUILL Transcribe is part of
+your QuillVille family, **Edit > Dictate Here** (**Ctrl+F11**) lets you say it
+instead. Neither Cast nor Radio listens to the microphone itself; QUILL
+Transcribe does the listening and types what you say into the box you are in.
+
+1. Press **Ctrl+N**. Focus is in **Podcast name**.
+2. Press **Ctrl+F11**. If QUILL Transcribe is running, you hear it start,
+   with its usual "Dictation on" or start sound. If it is not, Cast says
+   "Starting QUILL Transcribe. Dictation starts here when it is ready." and it
+   starts in the tray.
+3. Say the name, for example "the daily", and pause. The words are typed into
+   the box.
+4. Press QUILL Transcribe's start and stop key, or say "stop dictation", then
+   press Enter to search.
+
+Ctrl+F11 works in any text box in Cast, including the ones in dialogs such as
+Add Podcast and Search Everywhere. Your own words from My Words and Phrases and the
+dictation commands work as they do everywhere else. If Quill Inkwell is
+dictating, Cast tells you so and nothing starts. If QUILL Transcribe is not in
+your copy of the family, the item is not on the Edit menu; the key then does
+nothing. QUILL Transcribe is released on 1 November 2026, and from then on public builds of Quill Cast and Quill Radio show Dictate Here.
+
 ### Following ACB Media's podcasts
 
 If you would like a full shelf to explore on your first day, Podcasts >
@@ -5381,6 +5405,7 @@ They are listed in full under "Keys in the Lineups window" in Chapter 9.
 | --- | --- |
 | Undo Last Action | Ctrl+Z |
 | Undo History | Ctrl+Shift+Z |
+| Dictate Here (Edit menu, with QUILL Transcribe) | Ctrl+F11 |
 | Repeat Last Result | F9 |
 | Activity | Shift+F9 |
 | Recent Problems | Ctrl+Alt+Shift+P |

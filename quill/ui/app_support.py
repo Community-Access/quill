@@ -17,6 +17,8 @@ So they compose here rather than four times in each app frame:
   the setup to another machine (11.10).
 * :class:`~quill.ui.bookmarks_ui.BookmarksMixin` -- one place you marked, and
   one list of them, shared between the apps (4.4, 4.5).
+* :class:`~quill.ui.dictate_here_ui.DictateHereMixin` -- Edit > Dictate Here,
+  QUILL Transcribe dictating into the field you are in (dict.md D-16).
 
 An app mixes in :class:`ListeningAppSupportMixin`, calls
 :meth:`_init_app_support` before its windows exist and
@@ -29,6 +31,7 @@ from __future__ import annotations
 from typing import Any
 
 from quill.ui.bookmarks_ui import BookmarksMixin
+from quill.ui.dictate_here_ui import DictateHereMixin
 from quill.ui.notification_center import NotificationCenterMixin
 from quill.ui.problems_dialog import RecentProblemsMixin
 from quill.ui.quiet_hours_ui import QuietHoursMixin
@@ -43,8 +46,10 @@ class ListeningAppSupportMixin(
     QuietHoursMixin,
     SetupTransferMixin,
     BookmarksMixin,
+    DictateHereMixin,
 ):
-    """Undo, Recent Problems, Notifications, Quiet Hours, setup transfer, bookmarks."""
+    """Undo, Recent Problems, Notifications, Quiet Hours, setup transfer,
+    bookmarks, Dictate Here."""
 
     def _init_app_support(self) -> None:
         """Claim the process-wide slots. Call before any window can offer them."""
@@ -63,5 +68,6 @@ class ListeningAppSupportMixin(
         self._register_quiet_hours_commands()
         self._register_setup_transfer_commands()
         self._register_bookmark_commands()
+        self._register_dictate_here_command()
         if retries is not None:
             retries.register(self)

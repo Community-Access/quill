@@ -50,6 +50,9 @@ ALLOW: dict[str, str] = {
     "path:tools > add-ons and themes": (
         "Thunderbird's own menu, in the steps for using QUILL as its external editor"
     ),
+    "path:edit > dictate here": (
+        "Quill Cast's and Quill Radio's Edit menu, in the section on dictating into them"
+    ),
     "path:insert > explore equation structure": (
         "a row the bundled math-equations Quillin adds; the in-memory bar loads no Quillins"
     ),
