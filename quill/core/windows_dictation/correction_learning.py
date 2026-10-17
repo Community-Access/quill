@@ -192,14 +192,21 @@ class CorrectionLearningMixin:
 
     def _learn_answer(self, words: tuple[str, ...] | list[str]) -> bool:
         """ "QUILL yes" or "QUILL no" to a spoken offer: ``True`` when it was one."""
+        from quill.core.windows_dictation.vocabulary_es import spanish_answer
+
         pending = getattr(self, "_learn_pending", None)
-        if pending is None or tuple(words) not in (("yes",), ("no",)):
+        if pending is None:
+            return False
+        language = str(getattr(self._preferences(), "speech_language", "en") or "en")
+        # "QUILL sí": a draft, off until a native speaker checks it (vocabulary_es).
+        answer = spanish_answer(words, language) or " ".join(words)
+        if answer not in ("yes", "no"):
             return False
         self._learn_pending = None
         heard, written, until = pending
         if self._clock() > until:
             return False  # lapsed: "yes" is not an answer to anything now
-        if tuple(words) == ("yes",):
+        if answer == "yes":
             self._add_learned(heard, written)
         else:
             self._say("Not added.")
