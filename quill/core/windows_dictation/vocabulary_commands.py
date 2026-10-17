@@ -69,37 +69,46 @@ COMMAND_HELP: tuple[CommandHelp, ...] = (
         "Correcting",
     ),
     CommandHelp(
-        Command.READ_BACK,
-        ("read that", "repeat that"),
-        "Reads the last phrase aloud again.",
+        Command.DELETE_PARAGRAPH,
+        ("delete previous paragraph", "delete last paragraph"),
+        "Deletes the paragraph just before the cursor, from its start up to the "
+        "cursor. In another program, only words dictation typed there.",
         "Correcting",
     ),
     CommandHelp(
+        Command.READ_BACK,
+        ("read that", "repeat that"),
+        "Reads aloud again everything the last phrase, snippet, clip or review put in. "
+        "In another program, only what dictation itself typed can be read.",
+        "Correcting",
+    ),
+    # 2026-10-16 (D-18): the editors' own text, read back. In another program
+    # they are refused, because nothing there can be read.
+    CommandHelp(
         Command.READ_SENTENCE,
         ("read last sentence", "read the last sentence"),
-        "Reads aloud the sentence just before the cursor, with its punctuation "
-        "said. In QUILL's own documents only.",
+        "Reads the sentence just before the cursor, with its punctuation said.",
         "Correcting",
     ),
     CommandHelp(
         Command.READ_PARAGRAPH,
-        ("read last paragraph", "read the last paragraph"),
-        "Reads aloud the paragraph just before the cursor, with its punctuation "
-        "said. In QUILL's own documents only.",
+        ("read last paragraph", "read the last paragraph", "read this paragraph"),
+        "Reads the paragraph the cursor is in.",
         "Correcting",
     ),
     CommandHelp(
         Command.READ_SELECTION,
         ("read selection", "read the selection"),
-        "Reads aloud the selected text, with its punctuation said. In QUILL's own documents only.",
+        "Reads what is selected.",
         "Correcting",
     ),
     CommandHelp(
         Command.CORRECT,
         ("correct that",),
-        "Reads the other things the speech engine thought you said, numbered, "
-        "when it offers them (Windows speech recognition does). Then say choose "
-        "and a number.",
+        "Reads the other things the speech engine thought you said, numbered. "
+        "Windows speech recognition offers its own; with Moonshine, Whisper or a "
+        "downloaded model, the other built-in engine listens to the last phrase "
+        "again and its answer is choice 2. Then say choose and a number.",
         "Correcting",
     ),
     CommandHelp(
@@ -295,6 +304,64 @@ COMMAND_HELP: tuple[CommandHelp, ...] = (
         "Dictate in English from now on.",
         "Dictation itself",
     ),
+    # 2026-10-16 (D-23): bold and italic by voice, and the named profiles
+    # (profiles.py). What "bold that" does depends on the profile's structure.
+    CommandHelp(
+        Command.BOLD_THAT,
+        ("bold that",),
+        "Makes the selection, or the phrase you dictated last, bold: QUILL's own "
+        "Bold in a document that holds formatting, two asterisks either side in "
+        "the Markdown and Coding profiles.",
+        "Profiles and formatting",
+    ),
+    CommandHelp(
+        Command.ITALIC_THAT,
+        ("italic that", "italicize that"),
+        "Makes the selection, or the phrase you dictated last, italic, the same way.",
+        "Profiles and formatting",
+    ),
+    CommandHelp(
+        Command.PROFILE_STANDARD,
+        ("standard mode", "standard profile"),
+        "Switches to the Standard profile, unless Lock Profile is on.",
+        "Profiles and formatting",
+    ),
+    CommandHelp(
+        Command.PROFILE_EMAIL,
+        ("email mode", "email profile"),
+        "Switches to the Email profile, unless Lock Profile is on.",
+        "Profiles and formatting",
+    ),
+    CommandHelp(
+        Command.PROFILE_DOCUMENT,
+        ("document mode", "document profile"),
+        "Switches to the Document profile, unless Lock Profile is on.",
+        "Profiles and formatting",
+    ),
+    CommandHelp(
+        Command.PROFILE_MARKDOWN,
+        ("markdown mode", "markdown profile"),
+        "Switches to the Markdown profile, unless Lock Profile is on.",
+        "Profiles and formatting",
+    ),
+    CommandHelp(
+        Command.PROFILE_CHAT,
+        ("chat mode", "chat profile"),
+        "Switches to the Chat profile, unless Lock Profile is on.",
+        "Profiles and formatting",
+    ),
+    CommandHelp(
+        Command.PROFILE_CODING,
+        ("coding mode", "coding profile"),
+        "Switches to the Coding profile, unless Lock Profile is on.",
+        "Profiles and formatting",
+    ),
+    CommandHelp(
+        Command.PROFILE_VERBATIM,
+        ("verbatim mode", "verbatim profile"),
+        "Switches to the Verbatim profile, unless Lock Profile is on.",
+        "Profiles and formatting",
+    ),
 )
 
 #: Commands said with words after them, in reference order (dict.md 3.2, 3.3,
@@ -331,6 +398,26 @@ PREFIX_HELP: tuple[PrefixHelp, ...] = (
         "words in your document",
         "Selects those words so that what you say next replaces them.",
         "Selecting",
+    ),
+    PrefixHelp(
+        Command.REPLACE_WORDS,
+        ("replace",),
+        "words in your document, then with, then the new words",
+        "Replaces those words with the new ones: replace Tuesday with Wednesday. "
+        "QUILL looks just before the cursor first, then after it; in another "
+        "program, only in the phrase you dictated last. If the words are not "
+        "there, what you said is written as text, as with select; after the "
+        "command word, nothing is written.",
+        "Correcting",
+    ),
+    PrefixHelp(
+        Command.CHANGE_THAT,
+        ("change that to",),
+        "the new words",
+        "Puts the new words in place of the phrase you dictated last: change "
+        "that to see you on Friday. What it said before stays in Recent "
+        "Phrases, marked before correction.",
+        "Correcting",
     ),
     PrefixHelp(
         Command.SPELL_WORDS,

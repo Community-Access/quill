@@ -100,8 +100,10 @@ COMMAND_MODE_HELP: tuple[CommandHelp, ...] = (
     ),
 )
 
-#: Commands with words after them that only count after the command word. Empty
-#: today; D-10's "replace X with Y" is the first planned entry.
+#: Commands with words after them that only count after the command word. Empty:
+#: D-10 and D-19's "replace X with Y" and "change that to Y" joined the one
+#: table instead (vocabulary_commands.PREFIX_HELP), so they work after the
+#: command word and, with strict mode off, on their own.
 COMMAND_MODE_PREFIX_HELP: tuple[PrefixHelp, ...] = ()
 
 _ONLY_AFTER_THE_WORD: dict[tuple[str, ...], Command] = {

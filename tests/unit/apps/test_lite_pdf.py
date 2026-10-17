@@ -381,3 +381,29 @@ def test_reopen_with_encoding_is_not_offered_for_a_pdf(lite_window, tmp_path) ->
     pdf.write_bytes(b"%PDF-1.4")
     _commit(window, pdf, _found())
     assert window._can_reopen_with_encoding() is False
+
+
+# -- item 28: nesting kept for Go To, doubtful pages said -------------------------- #
+
+
+def test_the_outline_levels_ride_with_the_outline(lite_window, tmp_path) -> None:
+    window = _pdf_window(lite_window, tmp_path)
+    _commit(window, tmp_path / "report.pdf", _found(outline_levels=(1, 2)))
+    assert window.pdf_outline_levels == (1, 2)
+    notes = tmp_path / "notes.txt"
+    notes.write_text("plain\n", encoding="utf-8")
+    assert window.load(notes) is True
+    assert window.pdf_outline_levels == ()
+
+
+def test_a_page_that_may_read_poorly_is_named_when_the_pdf_opens(lite_window, tmp_path) -> None:
+    window = _pdf_window(lite_window, tmp_path)
+    found = _found(
+        page_scores=(80, 12, 80),
+        page_engines=("pdfplumber", "pypdf", "pdfplumber"),
+    )
+    _commit(window, tmp_path / "report.pdf", found)
+    assert window.announcements[-1] == (
+        "Opened as text, 3 pages, 2 outline entries in Go To. Page 2 may read poorly. "
+        "Saving makes a new file; the PDF is not changed."
+    )

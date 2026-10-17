@@ -6,6 +6,7 @@ from dataclasses import dataclass, replace
 from datetime import datetime
 from pathlib import Path
 
+from quill.core.list_search import SearchTerms
 from quill.core.paths import app_data_dir
 from quill.core.storage import write_json_atomic
 
@@ -212,6 +213,7 @@ def search_snippets(snippets: list[Snippet], query: str) -> list[Snippet]:
     if not needle:
         return sorted(filtered, key=lambda item: item.name.lower())
 
+    terms = SearchTerms(needle)
     exact_trigger: list[Snippet] = []
     starts_with_name: list[Snippet] = []
     tag_matches: list[Snippet] = []
@@ -228,7 +230,9 @@ def search_snippets(snippets: list[Snippet], query: str) -> list[Snippet]:
             starts_with_name.append(snippet)
         elif any(needle in tag for tag in tags):
             tag_matches.append(snippet)
-        elif needle in name or needle in trigger or needle in description or needle in body:
+        elif terms.found_in_fields((name, trigger, description, body, *tags)):
+            # The whole search anywhere, or every word of it in any order:
+            # "notes meeting" finds "Meeting notes" (quill.core.list_search).
             other_matches.append(snippet)
     return [
         *sorted(exact_trigger, key=lambda item: item.name.lower()),

@@ -28,6 +28,8 @@ from quill.core.windows_dictation.engines import coerce_engine
 from quill.core.windows_dictation.never_type import DEFAULT_NEVER_TYPE, coerce_never_type
 from quill.core.windows_dictation.options import coerce_pause, coerce_silence
 from quill.core.windows_dictation.preview import coerce_preview
+from quill.core.windows_dictation.profiles import DEFAULT_PROFILE, coerce_profile
+from quill.core.windows_dictation.rescue import coerce_history_days
 from quill.core.windows_dictation.speech_language import coerce_speech_language
 from quill.core.windows_dictation.vocabulary import DASH_STYLES
 from quill.core.windows_dictation.wake import DEFAULT_STOP_PHRASE, DEFAULT_WAKE_PHRASE
@@ -94,12 +96,23 @@ class DictationSettings:
     windows_dictation_review_first: bool = False
     windows_dictation_review_consent: int = 0
     windows_dictation_review_context: bool = False
+    # 2026-10-16 (D-5): days of dictation history kept, text only, sealed;
+    # 0 (off) by default, and turning it off deletes it (rescue.py).
+    windows_dictation_history_days: int = 0
     # 2026-10-16 (D-31): cloud speech providers with the person's own account
     # (quill/core/windows_dictation/cloud/). Only the plain fields -- region,
     # project, endpoint ID -- by provider id; secrets live in the credential
     # store, never here. The consent is a version per provider, 0 for never.
     windows_dictation_speech_providers: dict[str, dict[str, str]] = field(default_factory=dict)
     windows_dictation_speech_provider_consent: dict[str, int] = field(default_factory=dict)
+    # 2026-10-16 (D-23): the named dictation profile (profiles.py), and the lock
+    # that stops it being switched by voice.
+    windows_dictation_profile: str = DEFAULT_PROFILE
+    windows_dictation_profile_locked: bool = False
+    # 2026-10-16 (D-20): keep the second of "Thursday, no, Friday" (self_repair.py),
+    # and (P3) allow "polish that", one AI request in Review Dictation. Both off.
+    windows_dictation_self_repair: bool = False
+    windows_dictation_polish: bool = False
 
 
 def load_fields(data: Mapping[str, Any]) -> dict[str, Any]:
@@ -180,12 +193,21 @@ def load_fields(data: Mapping[str, Any]) -> dict[str, Any]:
         "windows_dictation_review_context": bool(
             data.get("windows_dictation_review_context", False)
         ),
+        "windows_dictation_history_days": coerce_history_days(
+            data.get("windows_dictation_history_days", 0)
+        ),
         "windows_dictation_speech_providers": _provider_fields(
             data.get("windows_dictation_speech_providers")
         ),
         "windows_dictation_speech_provider_consent": _provider_consent(
             data.get("windows_dictation_speech_provider_consent")
         ),
+        "windows_dictation_profile": coerce_profile(data.get("windows_dictation_profile")),
+        "windows_dictation_profile_locked": bool(
+            data.get("windows_dictation_profile_locked", False)
+        ),
+        "windows_dictation_self_repair": bool(data.get("windows_dictation_self_repair", False)),
+        "windows_dictation_polish": bool(data.get("windows_dictation_polish", False)),
     }
 
 

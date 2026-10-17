@@ -30,7 +30,7 @@ import wx
 
 from quill.core.lite import APP_NAME
 from quill.core.lite import recovery as recovery_mod
-from quill.core.lite.filetypes import is_rich_path
+from quill.core.lite.filetypes import is_rich_path, is_word_path, word_save_refusal
 from quill.core.lite.open_prepare import PreparedDocument
 from quill.core.lite.open_prepare import prepare as prepare_document
 from quill.core.lite.textfile import (
@@ -142,6 +142,8 @@ class DocumentFileMixin:
             # set_rtf), so the mirror is told here rather than in each branch.
             self.doc_text.invalidate()
         self.path = path
+        # Guarded if somebody guarded this file, or it cannot be written.
+        self.apply_read_only_guard(path)
         self._remember_disk_baseline()
         self._discard_slot()
         self.modified = False
@@ -278,6 +280,8 @@ class DocumentFileMixin:
             return self.cmd_save_as()
         if target is not None and self.refuse_save_as_target(Path(target)):
             return False
+        if self.refuse_word_target(Path(destination)):
+            return False
         if target is None and self._pending_suffix:
             # A mode switch has made this name wrong for what the buffer holds
             # -- rich runs under a .txt, or Markdown under a .rtf. Save proposes
@@ -313,6 +317,23 @@ class DocumentFileMixin:
         self._announce(f"Saved {destination.name}")
         return True
 
+    def refuse_word_target(self, destination: Path) -> bool:
+        """A Word name (``.docx`` and its kin): refuse it rather than write text there.
+
+        QUILL Lite has no Word writer and no Word reader, so text written under
+        a Word name is a file Word will not open and QUILL Lite cannot read back
+        (``quill.core.lite.filetypes.WORD_SUFFIXES``). ``True`` when refused.
+        """
+        if not is_word_path(destination.name):
+            return False
+        show_message_box(
+            word_save_refusal(destination.name),
+            "Format not supported",
+            wx.OK | wx.ICON_INFORMATION,
+            self,
+        )
+        return True
+
     def save_quietly(self) -> str | None:
         """The clipboard collector's save: no window, and no sentence of its own.
 
@@ -329,6 +350,8 @@ class DocumentFileMixin:
 
         if self.path is None or self._pending_suffix:
             return None
+        if is_word_path(Path(self.path).name):
+            return word_save_refusal(Path(self.path).name)
         destination = Path(self.path)
         as_rich = self.editor.mode == RICH
         body = self.control.GetValue()

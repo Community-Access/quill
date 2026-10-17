@@ -1282,6 +1282,15 @@
     "user_guide_section": "writing-and-editing"
   },
   {
+    "id": "format.autocorrect_entries",
+    "title": "AutoCorrect Entries...",
+    "body": "See, add, change, turn off and remove the corrections AutoCorrect makes as you type, such as teh becoming the. The list holds every built-in correction and every one of yours; type in Find to narrow it. Add makes a correction of your own, Edit changes the one you are on, Turn Off stops one without deleting it, and Remove deletes one of yours or puts a built-in one back. Corrections happen only while Correct common misspellings as I type is on in Settings, and never in code or settings files. Your corrections are kept with your abbreviations.",
+    "keystrokes": [
+      "Alt+Shift+9"
+    ],
+    "user_guide_section": "writing-and-editing"
+  },
+  {
     "id": "format.blockquote",
     "title": "Insert Block Quote",
     "body": "Insert a block quote at the cursor, or turn the selected lines into one. Format-aware: it writes Markdown in a Markdown document and HTML in an HTML document.",
@@ -3263,7 +3272,7 @@
   {
     "id": "tools.windows_dictation_recent",
     "title": "Recent Phrases",
-    "body": "The last twenty phrases you dictated this session, newest first. Enter writes the chosen phrase at the cursor again; Copy puts it on the clipboard.",
+    "body": "The last twenty phrases you dictated this session, newest first, then words kept from before: phrases that were not written because dictation was paused or typing stopped, a review that did not finish, and, with Keep a dictation history on in More Dictation Settings, earlier phrases. Enter writes the chosen phrase at the cursor again, and kept words are deleted once written; Copy puts it on the clipboard; Discard deletes kept words unwritten; Clear History deletes the history after asking.",
     "keystrokes": [
       "Shift+F11"
     ],

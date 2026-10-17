@@ -86,10 +86,6 @@ class Command(StrEnum):
     SELECT_PARAGRAPH = "select_paragraph"
     SELECT_SENTENCE = "select_sentence"
     SELECT_LINE = "select_line"
-    # 2026-10-16, D-18: read back more than the last phrase (editors only).
-    READ_SENTENCE = "read_sentence"
-    READ_PARAGRAPH = "read_paragraph"
-    READ_SELECTION = "read_selection"
     SWITCH_SPANISH = "switch_spanish"
     SWITCH_ENGLISH = "switch_english"
     # Commands that take words after them (PrefixHelp).
@@ -116,6 +112,27 @@ class Command(StrEnum):
     REVIEW_RESTORE = "review_restore"
     REVIEW_INSERT = "review_insert"
     REVIEW_DISCARD = "review_discard"
+    # 2026-10-16 (D-23): bold and italic by voice, and the named profiles.
+    BOLD_THAT = "bold_that"
+    ITALIC_THAT = "italic_that"
+    PROFILE_STANDARD = "profile_standard"
+    PROFILE_EMAIL = "profile_email"
+    PROFILE_DOCUMENT = "profile_document"
+    PROFILE_MARKDOWN = "profile_markdown"
+    PROFILE_CHAT = "profile_chat"
+    PROFILE_CODING = "profile_coding"
+    PROFILE_VERBATIM = "profile_verbatim"
+    # 2026-10-16 (P3, "Polish my dictation"): one fixed AI request in the review.
+    REVIEW_POLISH = "review_polish"
+    # 2026-10-16 (D-10, D-19): correcting by replacing, and by paragraph
+    # (corrections.py; in another program, external_edits.py).
+    REPLACE_WORDS = "replace_words"
+    CHANGE_THAT = "change_that"
+    DELETE_PARAGRAPH = "delete_paragraph"
+    # 2026-10-16 (D-18): reading back more than the last phrase, in the editors.
+    READ_SENTENCE = "read_sentence"
+    READ_PARAGRAPH = "read_paragraph"
+    READ_SELECTION = "read_selection"
 
 
 @dataclass(frozen=True, slots=True)

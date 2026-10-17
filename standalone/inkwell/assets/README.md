@@ -1,7 +1,8 @@
 # Quill Inkwell assets
 
 - `quill-inkwell.ico` — the app/installer icon (referenced by
-  `quill-inkwell.spec` and `installer/quill-inkwell.iss`).
+  `installer/quill-inkwell.iss`; Inkwell ships on the shared QuillVille
+  Runtime, so the unused `quill-inkwell.spec` was removed on 2026-10-16).
 
 **Generated — do not edit by hand.** The icon comes from
 `scripts/build_app_icons.py`, which owns the design system for the whole

@@ -35,7 +35,6 @@ from quill.core.windows_dictation.speech_language import fold
 __all__ = [
     "Target",
     "find_target",
-    "last_unit_bounds",
     "line_number",
     "match_names",
     "number_from",
@@ -192,26 +191,6 @@ def unit_bounds(text: str, caret: int, unit: str) -> tuple[int, int]:
         if text[index] in ".?!":
             end = index + 1
             break
-    return start, end
-
-
-def last_unit_bounds(text: str, caret: int, unit: str) -> tuple[int, int]:
-    """The ``sentence`` or ``paragraph`` just before the cursor (D-18).
-
-    "Read last sentence" said straight after dictating means the sentence that
-    just ended, so spaces and line ends before the cursor are skipped first and
-    the unit is the one holding the last character written. It stops at the
-    cursor, and trailing white space is left out of the range.
-    """
-    position = max(0, min(caret, len(text)))
-    while position > 0 and text[position - 1].isspace():
-        position -= 1
-    if position == 0:
-        return 0, 0
-    start, end = unit_bounds(text, position - 1, unit)
-    end = min(end, position)  # what is before the cursor, never after it
-    while end > start and text[end - 1].isspace():
-        end -= 1
     return start, end
 
 

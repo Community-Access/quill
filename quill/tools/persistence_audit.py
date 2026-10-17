@@ -59,6 +59,10 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/windows_dictation/contexts.py::save": "content",
     "core/windows_dictation/anywhere.py::write_handoff": "cache",
     "core/windows_dictation/review_session.py::save_rescue": "content",
+    # D-5 (2026-10-16): words not written, sealed, deleted on delivery; and the
+    # opt-in text history, sealed, schema-stamped (rescue.py).
+    "core/windows_dictation/rescue.py::keep": "content",
+    "core/windows_dictation/rescue.py::_write_history": "content",
     "core/transcribe/settings.py::save_settings": "versioned",  # QUILL Transcribe
     "core/dictation_owner.py::claim": "marker",  # who owns Dictate Anywhere; lock-backed
     # qc.md X-03 and X-05 (2026-10-03): small, self-describing, "version": 1 stamped;
@@ -529,7 +533,8 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/menu_customization.py::save_menu_customization": "versioned",
     "core/profile_startup.py::save_profile_startup_config": "versioned",
     "ui/ai_hub_dialog.py::_save_deepgram_max_speakers": "versioned",
-    "ui/main_frame_power_tools.py::toggle_read_only_guard": "versioned",
+    # The Read-Only Guard list, shared by both editors since 2026-10-16.
+    "core/read_only_guards.py::set": "versioned",
 }
 
 

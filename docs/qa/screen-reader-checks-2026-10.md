@@ -1067,6 +1067,76 @@ JAWS and Narrator:
 - [ ] End QUILL Transcribe from Task Manager with a review open; on the next
   start it says the review was kept, and Review Dictation brings the words back.
 
+### Dictation: rescue, history, snippet blanks and reading back (D-5, D-8, D-18, 2026-10-16)
+
+With a microphone, in a QUILL document, a QUILL Lite document, and Notepad and
+Edge through QUILL Transcribe. Check on NVDA, JAWS and Narrator:
+
+- [ ] NVDA: pause QUILL Transcribe by moving the focus, say two phrases, then
+  end it from Task Manager. On the next start it says "2 dictated phrases were
+  not written last time and are kept. Recent Phrases, Shift+F11, brings them
+  back." once, and Recent Phrases lists them after this run's phrases.
+- [ ] NVDA: in Recent Phrases, each kept row is read with its label ("Not
+  written, held while paused", the time, the words); Discard says
+  "Discarded." once and the list reads the next row; Insert Again types it and
+  the row is gone next time.
+- [ ] NVDA: with Keep a dictation history on Seven days, close and reopen, and
+  the earlier phrases are listed as "Earlier"; Clear History asks with No as
+  the default, and Yes says "Dictation history cleared."
+- [ ] NVDA: in Edge, "QUILL insert snippet bug report" says the snippet's name,
+  its count and "Summary?"; each answer is not typed; after the last blank the
+  whole snippet is typed once and the reader echoes it; "QUILL scratch that"
+  takes all of it back.
+- [ ] NVDA: a choice reads its options; "choose two" picks the second.
+- [ ] NVDA: in a QUILL document, "read last sentence", "read last paragraph" and
+  "read selection" each say the text once, punctuation by name; "read that"
+  after a snippet reads all of it.
+- [ ] NVDA: Review Transcript's Type into a Field says "Switch to the field you
+  want." and types the selection, or all of it, in the field.
+- [ ] JAWS: the same.
+- [ ] Narrator: the same.
+
+### AutoCorrect and Enter in a list (todo items 38 and 40, 2026-10-16)
+
+In QUILL and in QUILL Lite, each in a new `.txt` document and a new `.md`
+document. Turn on **Correct common misspellings as I type** (QUILL: Settings,
+Editing; QUILL Lite: Preferences, with Autocorrect while typing on in
+Customize Features). Check on NVDA, JAWS and Narrator:
+
+- [ ] NVDA: type `I saw teh` and a space. The reader echoes the space, then
+  the word-corrected sound plays and "Corrected to the" is said once. Read the
+  line: it says "I saw the".
+- [ ] NVDA: press Ctrl+Z straight away. Read the line: "I saw teh", no space.
+  Type a space: nothing is said about a correction and the word stays; the
+  status bar says "Kept teh as you typed it".
+- [ ] NVDA: type `Teh` at the start of a line and a space: "Corrected to The".
+  Type `TEH` and a space: no correction.
+- [ ] NVDA: type `teh.example.com` and a space, then `adress@example.com` and
+  a space: nothing is corrected and nothing is said.
+- [ ] NVDA: open a `.py` file and type `teh` and a space: nothing is corrected.
+- [ ] NVDA: press Alt+Shift+9. The reader says "AutoCorrect Entries" and the
+  focused row of the Corrections list ("abscence becomes absence, built in").
+  F1 says what the window is for, then the list's help. Type `teh` in Find
+  (Alt+F): the list narrows and the row is read when you Tab back to it.
+- [ ] NVDA: Add a correction (`qill`, `QUILL`): the AutoCorrect Entry window's
+  two fields and checkbox are read with their labels; OK says "Added: qill
+  becomes QUILL" once. Turn Off on `teh` says "Turned off: teh will no longer be
+  corrected"; the button is then read as "Turn On". Remove on `teh` says
+  "Restored the built-in correction: teh becomes the". Close with Escape and
+  type `qill` and a space in the document: "Corrected to QUILL".
+- [ ] NVDA: in the `.md` document type `1. bread milk`, put the cursor before
+  `milk` and press Enter. "Continued list item" is said once; read the two
+  lines: "1. bread", "2. milk". Ctrl+Z puts back the single line.
+- [ ] NVDA: on an empty `2. ` item press Enter: "Exited list" once, and the
+  marker is gone.
+- [ ] NVDA: in the `.txt` document, `1. one` and Enter starts a plain new line
+  and says nothing; with **Continue lists in plain text** on, the same Enter
+  says "Continued list item" and the new line starts `2. `.
+- [ ] NVDA: QUILL Lite Preferences: both new checkboxes are read with their
+  labels and states, Tab reaches them, and F1 on each reads its help.
+- [ ] JAWS: the same.
+- [ ] Narrator: the same.
+
 ### QUILL Transcribe: holding the key, the wake phrase and braille (D-9, D-6, 2026-10-15)
 
 With a microphone, in Notepad, Word and Outlook through QUILL Transcribe, and a
@@ -1125,3 +1195,73 @@ Check a box once all six held, and write the reader's version beside it:
 - [ ] All six with NVDA.
 - [ ] All six with JAWS.
 - [ ] All six with Narrator.
+
+## Reading guarded documents, Word names in Save As, and typing names in lists (2026-10-16)
+
+Items 37, 41 and 45 of the editor and media completion checks. The code and
+its automated tests are done; none of the checks below has been tried with a
+screen reader yet.
+
+### Read-Only Guard (QUILL and QUILL Lite)
+
+1. **Toggle.** Open a saved document, press Ctrl+Alt+Backspace: you hear
+   "Document is read-only" once, and nothing else. Type a letter: nothing is
+   typed and the reader says nothing odd. Press it again: "Document is
+   editable".
+2. **A refused command.** With the guard on, press Ctrl+V (QUILL Lite) or
+   insert a snippet (QUILL): you hear "Document is read-only" once and no
+   success sentence follows.
+3. **Remembered.** Turn it on, close the app, double-click the same file in
+   File Explorer: it opens locked (type a letter to check), with no extra
+   announcement beyond the usual open.
+4. **Reading still works.** With the guard on, use Find, Go To, the next
+   heading key, set a bookmark (QUILL Lite Ctrl+Shift+B, then F2) and add an
+   inline note (Alt+Shift+I): each works and says what it normally says. The
+   note is offered only as a note kept beside the file.
+5. **QUILL Lite menu.** Tools > Read-Only Guard reads as a checked or
+   unchecked item with Ctrl+Alt+Backspace beside it.
+6. **A long book.** Open a very long Markdown book, turn the guard on, and move
+   by heading in browse mode: each heading is read promptly.
+
+- [ ] All six with NVDA.
+- [ ] All six with JAWS.
+- [ ] All six with Narrator.
+
+### Save As by typed name
+
+1. **QUILL.** In an untitled document, Save As `minutes.docx`: you hear the
+   "Saved as minutes.docx, Word format" sentence; open the file in Word and
+   move by heading.
+2. **QUILL Lite.** Save As `minutes.docx`: one message box saying QUILL Lite
+   cannot save Word documents, naming Rich Text; Enter closes it and focus
+   returns to the document. Nothing is written.
+3. **QUILL Lite, rich document.** In a rich text window, Save As
+   `minutes.docx`: the same message, and no "removes all formatting" question
+   first.
+
+- [ ] All three with NVDA.
+- [ ] All three with JAWS.
+- [ ] All three with Narrator.
+
+### Typing a name in a list
+
+1. **QUILL Lite Snippets** (Ctrl+Alt+Shift+Home) with two snippets whose names
+   start the same ("meeting agenda", "meeting notes"): type `meeting notes` at
+   an ordinary pace. The reader reads the rows as the selection moves, the
+   space does not insert anything, and the list ends on "meeting notes".
+   Enter inserts it.
+2. **A pause.** Type `mee`, wait two seconds, press Space: the selected row
+   opens, as before.
+3. **No match.** Type `zzz`: you hear "No match for z" (or the letters typed)
+   once, and the selection stays.
+4. **QUILL Insert Snippet** with a large library (a few thousand snippets):
+   the window opens without a long wait, the line above the list says how many
+   matched and that only the first 200 are shown, and typing narrows it.
+5. **Manage Abbreviations** (QUILL Lite Ctrl+Alt+A, QUILL Ctrl+Shift+Grave then
+   Shift+A, Inkwell Ctrl+M) with a large list: rows read as "name, N of total", typing a few letters in the
+   list moves to the abbreviation, and searching keeps the selected row when
+   it still matches.
+
+- [ ] All five with NVDA.
+- [ ] All five with JAWS.
+- [ ] All five with Narrator.

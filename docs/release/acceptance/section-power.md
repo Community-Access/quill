@@ -1349,13 +1349,18 @@ that file across sessions) — protect a reference file from accidental typing.
   `plain.txt`.
 
 **Do this**
-1. **Tools menu ▸ Advanced ▸ Toggle Read-Only Guard**. Try to type. Toggle again.
+1. **Tools menu ▸ Advanced ▸ Toggle Read-Only Guard**, or **Ctrl+Alt+Backspace**.
+   Try to type. Insert a snippet. Set a bookmark. Toggle again.
+2. With the guard on, close QUILL and double-click the same file in File
+   Explorer: it opens locked.
 
 **You should see and hear**
 - First toggle announces **"Document is read-only"** and typing is blocked;
   transform commands report **"Document is read-only"** rather than changing text.
   Second toggle announces **"Document is editable"** and typing works again. The
-  read-only state persists for that file when reopened.
+  read-only state persists for that file when reopened, including from File
+  Explorer. The snippet is refused with "Document is read-only" and no
+  "Inserted snippet"; the bookmark is set as usual.
 
 **Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
 `[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________

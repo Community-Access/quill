@@ -239,3 +239,15 @@ def test_scans_failed_url_as_a_page_when_it_looks_like_a_website(
     monkeypatch.setattr(link_finder, "scan_page_for_streams", fake_scan)
     recover_stream(_station(stream_url="https://magic104.com/listen"))
     assert scanned == ["https://magic104.com/listen"]
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "https://evilstreamtheworld.com/KMGLFM",
+        "https://streamtheworld.com.example.com/KMGLFM",
+        "https://example.com/streamtheworld.com/KMGLFM",
+    ],
+)
+def test_a_look_alike_host_is_not_a_streamtheworld_mount(url: str) -> None:
+    assert streamtheworld_mount(url) == ""

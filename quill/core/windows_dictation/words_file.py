@@ -15,22 +15,30 @@ purpose*, a correction is what the engine *keeps getting wrong*. Listing "quill
 light writes QUILL Lite" under "your own phrases" would tell someone to say
 "quill light".
 
+**Lists per context** (D-21): a ``## Context: email`` section holds words
+(one a line) and corrections (``heard => written``) used only while the
+dictation profile of that name is active (D-23 profiles), on top of the main
+lists. :func:`context_list` picks one by name, without case; the general
+profile parser ignores these sections, so they never apply anywhere else.
+
 Saving rewrites the whole file from the model: the explanatory text is
-regenerated, a ``## Commands`` section (QUILL-only, parsed but unused here) is
-carried across verbatim, and anything else is dropped -- the window is the
-editor now. wx-free.
+regenerated, a ``## Commands`` section (QUILL-only, parsed but unused here) and
+the context sections are carried across, and anything else is dropped -- the
+window is the editor now. wx-free.
 """
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from quill.core.speech.dictation_profile import _HEADING_RE, _SEP, _section_of, looks_like_prose
 
-__all__ = ["Entry", "WordsFile", "load_words", "save_words"]
+__all__ = ["ContextList", "Entry", "WordsFile", "context_list", "load_words", "save_words"]
 
 _CORRECTION_HEADINGS = {"corrections"}
+_CONTEXT_HEADING = re.compile(r"^context\s*:\s*(.+?)\s*$", re.IGNORECASE)
 _ESCAPES = (("\n", "\\n"), ("\t", "\\t"), ("\r", "\\r"))
 _UNESCAPES = tuple((token, char) for char, token in _ESCAPES)
 
@@ -54,6 +62,15 @@ class Entry:
 
 
 @dataclass
+class ContextList:
+    """The words and corrections for one context ("email"), D-21."""
+
+    name: str
+    words: list[str] = field(default_factory=list)
+    corrections: list[tuple[str, str]] = field(default_factory=list)
+
+
+@dataclass
 class WordsFile:
     """The three lists, plus any Commands section carried across untouched."""
 
@@ -61,6 +78,8 @@ class WordsFile:
     phrases: list[tuple[str, str]] = field(default_factory=list)
     corrections: list[tuple[str, str]] = field(default_factory=list)
     commands_lines: list[str] = field(default_factory=list)
+    #: Per-context lists, in file order (``## Context: email``).
+    contexts: list[ContextList] = field(default_factory=list)
 
     def entries(self) -> list[Entry]:
         """Every entry, words first, then phrases, then corrections."""
@@ -149,12 +168,21 @@ def parse_words(text: str) -> WordsFile:
     result = WordsFile()
     section: str | None = None
     seen: set[str] = set()
+    context: ContextList | None = None
     for raw in text.splitlines():
         line = raw.strip()
         heading = _HEADING_RE.match(line)
         if heading:
             name = heading.group(1).strip().lower()
-            if name in _CORRECTION_HEADINGS:
+            named = _CONTEXT_HEADING.match(heading.group(1).strip())
+            context = None
+            if named:
+                context = context_list(result, named.group(1))
+                if context is None:
+                    context = ContextList(" ".join(named.group(1).split()))
+                    result.contexts.append(context)
+                section = "context"
+            elif name in _CORRECTION_HEADINGS:
                 section = "corrections"
             else:
                 section = _section_of(heading.group(1))
@@ -168,6 +196,9 @@ def parse_words(text: str) -> WordsFile:
         if line.startswith(("-", "*", "+")):
             line = line[1:].strip()
         if not line:
+            continue
+        if section == "context" and context is not None:
+            _context_line(context, line)
             continue
         if section == "vocabulary":
             if looks_like_prose(line):
@@ -185,6 +216,26 @@ def parse_words(text: str) -> WordsFile:
     return result
 
 
+def _context_line(context: ContextList, line: str) -> None:
+    if _SEP in line:
+        left, right = (part.strip() for part in line.split(_SEP, 1))
+        if left and right and not any(s.lower() == left.lower() for s, _w in context.corrections):
+            context.corrections.append((left, _unescape(right)))
+    elif not looks_like_prose(line) and not any(w.lower() == line.lower() for w in context.words):
+        context.words.append(line)
+
+
+def context_list(words: WordsFile, name: str) -> ContextList | None:
+    """The list for the context (profile) called *name*, without case; ``None``."""
+    wanted = " ".join(str(name or "").split()).lower()
+    if not wanted:
+        return None
+    for context in words.contexts:
+        if context.name.lower() == wanted:
+            return context
+    return None
+
+
 def render_words(words: WordsFile) -> str:
     """The file, regenerated: three sections, each explained in a sentence."""
     lines = [
@@ -192,6 +243,9 @@ def render_words(words: WordsFile) -> str:
         "",
         "Kept up to date by My Words and Phrases in Dictation Settings. You can",
         "also edit it by hand; the next phrase you dictate uses it either way.",
+        "A section headed Context: and a name, such as Context: email, holds",
+        "words and corrections used only while the dictation profile of that",
+        "name is in use, one a line, corrections written heard => write.",
         "",
         "## Vocabulary",
         "",
@@ -217,6 +271,12 @@ def render_words(words: WordsFile) -> str:
         "",
     ]
     lines += [f"{heard} {_SEP} {_escape(written)}" for heard, written in words.corrections]
+    for context in words.contexts:
+        if not context.words and not context.corrections:
+            continue
+        lines += ["", f"## Context: {context.name}", ""]
+        lines += [f"- {word}" for word in context.words]
+        lines += [f"{heard} {_SEP} {_escape(written)}" for heard, written in context.corrections]
     if words.commands_lines:
         lines += ["", "## Commands", ""] + words.commands_lines
     return "\n".join(lines).rstrip("\n") + "\n"

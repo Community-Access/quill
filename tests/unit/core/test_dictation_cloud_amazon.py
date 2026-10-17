@@ -231,6 +231,7 @@ def _wait_for(predicate, seconds: float = 2.0) -> None:  # type: ignore[no-untyp
 
 
 def test_live_session_partial_then_final(monkeypatch: pytest.MonkeyPatch) -> None:
+    pytest.importorskip("numpy")  # the live-dictation extra, not in every CI leg
     wire = install(monkeypatch)
     replies = iter([
         [_transcript_frame("hello", True)],
@@ -270,6 +271,7 @@ def test_live_session_partial_then_final(monkeypatch: pytest.MonkeyPatch) -> Non
 
 
 def test_live_session_exception_frame_is_a_sentence(monkeypatch: pytest.MonkeyPatch) -> None:
+    pytest.importorskip("numpy")  # the live-dictation extra, not in every CI leg
     wire = install(monkeypatch)
     wire.socket_factory = lambda _url, _headers: FakeSocket(
         lambda _m: [_exception_frame("BadRequestException")]

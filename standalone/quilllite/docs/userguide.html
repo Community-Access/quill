@@ -1063,6 +1063,29 @@ Palette…</strong>. Type part of what you want, such as “sort”,
 <p>Each command in the list shows its key beside it. That is a gentle
 way to learn keys as you go. If you have changed a key, the palette
 shows your key.</p>
+<h4 id="typing-a-name-to-reach-it-in-a-list">Typing a name to reach it
+in a list</h4>
+<p>Most lists in QUILL Lite, such as Snippets, Recent Documents, the
+bookmark and heading lists and Recent Clips, let you type the start of a
+row’s name to move to it. You can type the <strong>whole</strong> name,
+spaces included:</p>
+<ol type="1">
+<li>Press <strong>Ctrl+Alt+Shift+Home</strong> to open Snippets.</li>
+<li>Type <code>meeting notes</code> at an ordinary pace. The list moves
+to the first row that starts with “meeting notes”, and stays on it while
+the row still matches.</li>
+<li>Press <strong>Enter</strong> to put that snippet in.</li>
+</ol>
+<p>While you are typing a name, <strong>Space is part of the
+name</strong>. It used to open whatever row the first word had reached,
+so typing “meeting notes” could insert “Meeting agenda”. If you pause
+for about a second, the next key starts a new name, and
+<strong>Space</strong> on its own opens the selected row as before.
+<strong>Enter</strong> always opens the selected row and
+<strong>Escape</strong> always closes the list.</p>
+<p>Typing the same letter again and again steps through the rows that
+start with it. If nothing starts with what you typed, you hear “No match
+for” and what you typed, and the selection stays where it was.</p>
 <h4 id="one-box-for-everything-go-to-anything">One box for everything:
 Go To Anything</h4>
 <p><strong>Navigate &gt; Go To Anything…</strong>
@@ -1240,17 +1263,45 @@ open it from Recent Documents.</p>
 select and copy from it, and change it. What you cannot do is turn it
 back into a PDF: QUILL Lite never writes to a PDF. The PDF you opened
 stays exactly as it was.</p>
-<p>When it opens, QUILL Lite tells you how many pages it has, and
-whether it has an outline.</p>
+<p>When it opens, QUILL Lite tells you how many pages it has, whether it
+has an outline, and which pages, if any, may read poorly.</p>
 <h4 id="what-comes-through-and-what-does-not">What comes through, and
 what does not</h4>
 <p>The words come through, in order, with the lines joined back into
-paragraphs. Each page stays a page. Headings, lists and tables come
-through as ordinary lines of text, and pictures do not come through at
-all. A page set in two columns can come out mixed together. Those are
-the limits of reading a PDF’s text, and QUILL has the same ones.</p>
+paragraphs. Each page stays a page, blank pages included, so page 3 is
+always the third page. Headings, lists and tables come through as
+ordinary lines of text: a heading keeps its own line, a list item keeps
+its own line, and each row of a table stays one line with its numbers in
+order. Pictures do not come through at all. A page set in two clear
+columns is read down the first column and then the second; a page with
+three columns, or columns wrapped around pictures, can still come out
+mixed. Those are the limits of reading a PDF’s text, and QUILL has the
+same ones.</p>
 <p>QUILL Lite reads the first 200 pages of a very long PDF, and tells
 you when it stopped early.</p>
+<h4 id="how-the-text-of-each-page-is-chosen">How the text of each page
+is chosen</h4>
+<p>A PDF can be read more than one way, and the ways do not always
+agree: one may spell a widely spaced line out a letter at a time, or run
+two columns together line by line, where another reads it properly.
+QUILL Lite decides page by page. A page whose first reading is clean is
+kept at once. A page that shows signs of trouble, or looks as if it is
+set in two columns, is read two more ways, and the reading with the
+fewest problems wins: fewest characters that cannot be read, words
+broken into letters, words glued together, and missing text. A short
+title page, a page of figures, or a page in another language is not
+marked down for being short.</p>
+<p>Nothing is uploaded, nothing is guessed, and the PDF is never
+changed. A character the PDF gave no meaning to is left in the text
+rather than deleted, and the page is named so you know to check it.</p>
+<h4 id="when-a-page-may-read-poorly">When a page may read poorly</h4>
+<p>When the PDF opens, QUILL Lite names any page that still reads
+poorly, for example: “Opened as text, 12 pages. Pages 3 and 7 may read
+poorly.” A page is named when every reading of it was poor, when it
+holds characters that could not be read, or when it is only a picture,
+like one scanned page in an otherwise ordinary PDF. Blank pages are
+never named. Go to the page with <strong>Ctrl+G</strong> and check it;
+for a picture page, OCR (below) can read it.</p>
 <h4 id="pages">Pages</h4>
 <p>A PDF keeps its pages:</p>
 <ul>
@@ -1264,8 +1315,12 @@ Arrow to it and pick a page from the list.</li>
 <p>Many PDFs come with an outline: a list of chapters and sections,
 which other programs call bookmarks. When the PDF you open has one,
 <strong>Ctrl+G</strong> has an <strong>Outline</strong> choice. Each
-entry says its title and its page, for example “Chapter 2, page 14”.
-Choose one and press <strong>Enter</strong> to go there.</p>
+entry says its title and its page, for example “Chapter 2, page 14”. An
+entry inside another also says its level, for example “Summary, level 3,
+page 15”. Choose one and press <strong>Enter</strong> to go there: you
+land on the title itself, even when it is halfway down the page, or on
+the top of the page when the title cannot be found there. The level only
+describes the outline; it does not make anything a heading.</p>
 <h4 id="a-pdf-with-a-password">A PDF with a password</h4>
 <p>If the PDF is locked, QUILL Lite asks for its password. Type it and
 press <strong>Enter</strong>. If it is wrong, QUILL Lite says so and
@@ -1304,7 +1359,69 @@ says it cannot save that kind of file, and asks you to choose
 another.</p>
 <p>To make a real PDF, print to <strong>Microsoft Print to PDF</strong>
 instead (see <a href="#printing">Printing</a>).</p>
-<h3 id="saving-1">Saving</h3>
+<h3 id="opening-word-excel-and-powerpoint-files">Opening Word, Excel and
+PowerPoint files</h3>
+<p>QUILL Lite opens Word, Excel and PowerPoint files as their
+<strong>text</strong>, the same way it opens a PDF. Press
+<strong>Ctrl+O</strong>, and in the file type list choose “Word, Excel
+and PowerPoint, opened as text”, or just pick the file from “All
+supported files”. You can also drag one onto the window, or open it from
+Recent Documents. Nothing is downloaded first, and nothing is uploaded:
+QUILL Lite uses the same readers as QUILL.</p>
+<p>It opens these kinds of file:</p>
+<ul>
+<li>Word documents: <code>.docx</code> and <code>.docm</code> (a macro
+is never run)</li>
+<li>Excel workbooks: <code>.xlsx</code></li>
+<li>PowerPoint presentations: <code>.pptx</code></li>
+<li>OpenDocument text, from LibreOffice Writer: <code>.odt</code></li>
+<li>The older Office 97-2003 files, <code>.doc</code>, <code>.xls</code>
+and <code>.ppt</code>, when LibreOffice is installed (see below)</li>
+</ul>
+<h4 id="what-comes-through-and-what-does-not-1">What comes through, and
+what does not</h4>
+<ul>
+<li><strong>Word and OpenDocument text:</strong> each heading keeps its
+own line, marked with <code>#</code> signs the way Markdown marks one
+(<code>##</code> for a level 2 heading); bulleted and numbered lists
+keep their levels; tables become text tables; a line break inside a
+paragraph stays a line break; a picture comes through as its
+description, “[Image: …]”, when the author wrote one.</li>
+<li><strong>Excel:</strong> each sheet starts with a heading, “Sheet:
+Budget”, and its cells follow as a text table whose first row is the
+header row. Dates read as dates and numbers as you would say them. A
+very large sheet is read up to 2,000 rows and 50 columns.</li>
+<li><strong>PowerPoint:</strong> each slide starts with a heading,
+“Slide 2: Figures”, in the order the presentation shows them. The
+bullets come next, then any tables, then the speaker notes under
+“Notes”.</li>
+</ul>
+<p>Bold, italic, fonts and colours do not come through, and nor do
+headers, footers, footnotes, comments, charts or the pictures
+themselves.</p>
+<p>For example, open <code>Budget.xlsx</code>. The document starts at
+“Sheet: Budget”, with the budget’s rows under it, and the next sheet’s
+heading, “Sheet: Notes”, follows the last row.</p>
+<h4 id="older-files-and-files-that-will-not-open">Older files and files
+that will not open</h4>
+<p>QUILL Lite cannot read the Office 97-2003 formats by itself. If
+LibreOffice (free, from libreoffice.org) is installed, QUILL Lite has it
+make a temporary copy in the newer format and opens that; your file is
+not changed. If it is not installed, QUILL Lite says it could not open
+the file and tells you what to do: open it in Word, Excel or PowerPoint
+(or LibreOffice), choose <strong>File &gt; Save As</strong>, pick the
+newer type, such as “Word Document (.docx)”, and open that copy.</p>
+<p>A password-protected file is named as password-protected: remove the
+password in the program that made it, save, and open it again. A damaged
+file is named as damaged.</p>
+<h4 id="saving-1">Saving</h4>
+<p>QUILL Lite cannot write a real Word, Excel or PowerPoint file, so it
+never saves over one. Press <strong>Ctrl+S</strong> and QUILL Lite tells
+you why, then opens <strong>Save As</strong> with the same name ending
+in <code>.txt</code>. Choose text, Markdown or rich text and press
+<strong>Enter</strong>. If you want the result back in Word, save it as
+rich text: Word opens a rich text file properly.</p>
+<h3 id="saving-2">Saving</h3>
 <p><strong>Ctrl+S</strong> saves. <strong>Ctrl+Shift+S</strong> saves
 under a new name.</p>
 <p>QUILL Lite makes you one promise: <strong>open a file, change
@@ -1494,6 +1611,78 @@ nothing at all. A <strong>rich text</strong> document is not offered
 Markdown, because QUILL Lite would have to guess which bold lines you
 meant as headings. Save it as plain text first (QUILL Lite asks before
 it removes the formatting), and then the Markdown choice is there.</p>
+<h4 id="which-kind-of-file-you-get-the-name-you-type-decides">Which kind
+of file you get: the name you type decides</h4>
+<p>When you save with <strong>Ctrl+Shift+S</strong>, the ending you type
+on the name decides what kind of file is written, whatever the
+<strong>Save as type</strong> list happens to show. Capitals do not
+matter: <code>NOTES.TXT</code> is a text file and
+<code>Report.RTF</code> is rich text.</p>
+<table>
+<thead>
+<tr>
+<th>You type</th>
+<th>What QUILL Lite writes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>notes.txt</code>, <code>notes.log</code>, or any other text
+ending</td>
+<td>Your text, exactly as it stands</td>
+</tr>
+<tr>
+<td><code>notes.md</code></td>
+<td>Your text as it stands; an HTML document is converted to Markdown
+(see above)</td>
+</tr>
+<tr>
+<td><code>notes.rtf</code></td>
+<td>Rich text, with its formatting. A plain document becomes a rich
+one</td>
+</tr>
+<tr>
+<td><code>page.html</code></td>
+<td>Your text as it stands. QUILL Lite treats HTML as something you
+write by hand, the way Notepad does</td>
+</tr>
+<tr>
+<td><code>minutes.docx</code></td>
+<td>Nothing. QUILL Lite says so (see below)</td>
+</tr>
+<tr>
+<td><code>budget.xlsx</code>, <code>minutes.pdf</code>,
+<code>old.doc</code></td>
+<td>Nothing. These are formats QUILL Lite can only read or not open at
+all</td>
+</tr>
+</tbody>
+</table>
+<p>If you type a name with no ending at all, Windows adds the ending of
+the row selected in <strong>Save as type</strong>, so <code>notes</code>
+with <strong>Markdown (*.md)</strong> selected is saved as
+<code>notes.md</code>.</p>
+<p><strong>Word documents.</strong> QUILL Lite cannot write a Word
+document. Until October 2026 a name ending in <code>.docx</code> got
+your plain text written under it, which made a file that Word refuses to
+open. Now, if you type <code>minutes.docx</code> (or <code>.docm</code>,
+<code>.dotx</code>, <code>.dotm</code>), QUILL Lite shows a short
+message instead and writes nothing:</p>
+<blockquote>
+<p>QUILL Lite cannot save Word documents, so minutes.docx was not
+written. Choose Rich Text (.rtf), which Word opens, or Text or Markdown
+in the Save as type list. QUILL saves Word documents.</p>
+</blockquote>
+<p>Press <strong>Enter</strong> to close the message; Save As is over,
+and your document is exactly as it was. For example, to send a letter to
+someone who uses Word, save it as <code>letter.rtf</code>: Word opens
+rich text, headings and bold included. If you need a real
+<code>.docx</code>, open the file in QUILL and use its Save As.</p>
+<p>The message comes before anything else. A rich text document is not
+first asked whether to remove its formatting for a save that is not
+going to happen.</p>
+<p>Pressing <strong>Escape</strong> or <strong>Cancel</strong> in the
+Save As window writes nothing, as always.</p>
 <h4 id="if-something-goes-wrong">If something goes wrong</h4>
 <p>While a document has changes you have not saved, QUILL Lite keeps a
 spare copy of it about every thirty seconds. That copy is kept
@@ -2054,6 +2243,62 @@ so you can pick one out by its first word.</li>
 <strong>Alt+Shift+G</strong> goes straight to the bookmark list, and
 <strong>Ctrl+Alt+L</strong> goes straight to the heading list.
 <strong>Ctrl+G</strong> is the one to press when you are not sure.</p>
+<h3 id="reading-without-changing-anything-the-read-only-guard">Reading
+without changing anything: the Read-Only Guard</h3>
+<p>When you open a long reference document only to read it, such as a
+manual, a book or minutes you must not alter, one stray key can change
+it, and a Ctrl+S an hour later saves the change. The <strong>Read-Only
+Guard</strong> locks the document against edits while you read.</p>
+<p><strong>Ctrl+Alt+Backspace</strong>, or <strong>Tools &gt; Read-Only
+Guard</strong>, turns it on and off. The menu row shows a check mark
+while it is on. You hear:</p>
+<ul>
+<li>“Document is read-only” when you turn it on;</li>
+<li>“Document is editable” when you turn it off.</li>
+</ul>
+<p>While it is on:</p>
+<ul>
+<li>Typing, <strong>Backspace</strong>, <strong>Delete</strong>,
+<strong>Enter</strong> and pasting do nothing.</li>
+<li>Commands that would change the text say “Document is read-only” and
+change nothing. That covers cutting, pasting, undo and redo, everything
+in <strong>Edit &gt; Lines</strong>, the <strong>Insert</strong> menu,
+the formatting commands, changing case and indenting, Snippets, and a
+word tool’s <strong>Replace</strong>.</li>
+<li>Everything you use to read still works: the arrow keys and every way
+of moving, <strong>Find</strong> (<strong>Ctrl+F</strong>), <strong>Go
+To</strong> (<strong>Ctrl+G</strong>), the headings list, selecting and
+copying, Say Selection, the dictionary and the thesaurus (looking up,
+not replacing).</li>
+<li><strong>Bookmarks</strong> work as usual. Set one with
+<strong>Ctrl+Shift+B</strong> and come back to it with
+<strong>F2</strong>; a bookmark is kept beside the file, not inside
+it.</li>
+<li><strong>Inline notes</strong> work too. A note you add while the
+guard is on is kept beside the file rather than written into it, so the
+document stays exactly as it was.</li>
+</ul>
+<p>QUILL Lite <strong>remembers</strong> the guard for that file. Close
+QUILL Lite, open the same file tomorrow from File Explorer, from Recent
+Documents or from Ctrl+O, and it opens locked again. It is the same file
+however it was reached, even if File Explorer spells the folder with
+different capitals.</p>
+<p>If QUILL Lite cannot write down that you locked the file, for example
+because its settings folder is on a full disk, the document is still
+locked for now and you hear so, with the reason:</p>
+<blockquote>
+<p>Document is read-only for now, but it could not be remembered for
+next time (There is not enough space on the disk).</p>
+</blockquote>
+<p>A document that has never been saved cannot be remembered either,
+because it has no file name yet; save it first if you want the guard to
+stay.</p>
+<p>A file that Windows itself marks read-only, or one on a share you
+cannot write to, opens locked as well, and QUILL Lite says so as it
+opens. Turn the guard off if you want to type anyway; you can then save
+under a new name.</p>
+<p>The guard is the same command QUILL has, on the same key, so you only
+learn it once.</p>
 <h3 id="bookmarks">Bookmarks</h3>
 <p>A bookmark is a place you want to come back to.</p>
 <table>
@@ -2744,6 +2989,12 @@ without looking for a setting. It is the same switch as the
 Abbreviations box in Customize Features.</p>
 <p>If you also use QUILL or Quill Inkwell, there is a switch in
 Preferences that lets all three share one list of abbreviations.</p>
+<p>Your own AutoCorrect corrections (Chapter 11, Correcting misspellings
+as you type) are kept in this same list, under the category
+<strong>AutoCorrect</strong>. You will see them in Manage Abbreviations
+if you choose that category. They are not abbreviations, though: they
+never expand just because <strong>Expand Abbreviations</strong> is on,
+and they are not in <strong>Snippets</strong>.</p>
 <h3 id="undo-and-getting-text-back">Undo, and getting text back</h3>
 <table>
 <thead>
@@ -2880,6 +3131,42 @@ so keep pressing until you hear the one you want.</p>
 themselves. In Markdown, QUILL Lite writes <code>- </code> or
 <code>1. </code> at the start of the lines you selected, and only those
 lines.</p>
+<h5 id="pressing-enter-in-a-list">Pressing Enter in a list</h5>
+<p>In a Markdown document, <strong>Enter</strong> keeps a list going,
+the way it does in QUILL and in other Markdown editors. QUILL Lite says
+what it did, because your screen reader only hears a new line:</p>
+<ul>
+<li><strong>Enter</strong> at the end of an item starts the next one
+with the next marker: a hyphen after a hyphen, <code>3. </code> after
+<code>2. </code>, <code>3) </code> after <code>2) </code>, and an
+unchecked <code>- [ ] </code> after a task item. A nested item keeps its
+indentation. You hear “Continued list item”.</li>
+<li><strong>Enter</strong> in the middle of an item splits it. In
+<code>1. bread milk</code>, with the cursor before <code>milk</code>,
+you get <code>1. bread</code> and <code>2. milk</code>.</li>
+<li>A new numbered item renumbers the items under it, so adding an item
+after the first of <code>1. 2. 3.</code> gives <code>1. 2. 3. 4.</code>,
+and you hear “Continued list item, renumbered 2 items below”. If your
+list jumps (from <code>2.</code> to <code>7.</code>), your own numbering
+from the jump on is left alone.</li>
+<li><strong>Enter</strong> on an item with nothing after its marker ends
+the list. The marker goes, the empty line stays, and you hear “Exited
+list”.</li>
+<li><strong>Ctrl+Z</strong> straight afterwards takes the whole thing
+back in one step: the new line, its marker and any renumbering.</li>
+</ul>
+<p>This needs the <strong>Markdown and HTML</strong> area switched on in
+Customize Features, like everything else that writes Markdown for
+you.</p>
+<p><strong>In plain text, only if you ask.</strong> Check
+<strong>Continue lists in plain text</strong> in <strong>Tools &gt;
+Preferences</strong> and the same happens in a <code>.txt</code> file or
+a new untitled document. It starts off, because in plain text a line
+that happens to begin with <code>1.</code> is as often a date or a
+version number as a list. It never happens in a source code or settings
+file, whatever the box says, and never in rich text, where
+<strong>Ctrl+Shift+L</strong> makes real lists and
+<strong>Enter</strong> is WordPad’s own.</p>
 <h4 id="keys-that-only-work-in-rich-text">Keys that only work in rich
 text</h4>
 <p>Underneath, every QUILL Lite document uses the same Windows editing
@@ -4754,22 +5041,35 @@ next phrase you say replaces it.</td>
 <td>Deletes the sentence the cursor is at the end of.</td>
 </tr>
 <tr>
+<td>“delete previous paragraph”</td>
+<td>Deletes the paragraph just before the cursor.</td>
+</tr>
+<tr>
+<td>“replace” the words “with” the new words</td>
+<td>Puts the new words in place of the nearest old ones: “replace
+Tuesday with Wednesday”.</td>
+</tr>
+<tr>
+<td>“change that to” and the new words</td>
+<td>Puts the new words in place of the phrase you dictated last.</td>
+</tr>
+<tr>
 <td>“read that” or “repeat that”</td>
-<td>Reads the last phrase aloud again.</td>
+<td>Reads aloud again all of what last went in: a phrase, a whole
+snippet or clip, or reviewed words.</td>
 </tr>
 <tr>
 <td>“read last sentence”</td>
-<td>Reads aloud the sentence just before the cursor, with its
-punctuation said (“Can you send it comma please question mark”). Nothing
-is changed.</td>
+<td>Reads the sentence just before the cursor, with its punctuation
+said.</td>
 </tr>
 <tr>
-<td>“read last paragraph”</td>
-<td>Reads aloud the paragraph just before the cursor, the same way.</td>
+<td>“read last paragraph” or “read this paragraph”</td>
+<td>Reads the paragraph the cursor is in.</td>
 </tr>
 <tr>
 <td>“read selection”</td>
-<td>Reads aloud the text you have selected, the same way.</td>
+<td>Reads what is selected.</td>
 </tr>
 <tr>
 <td>“spell that”</td>
@@ -4784,9 +5084,11 @@ letter by letter to replace it.</td>
 </table>
 <p><strong>Checking your work by ear.</strong> Say “read last sentence”,
 “read last paragraph” or “read selection” as a phrase on its own, and
-QUILL Lite reads that part of your document aloud with every mark named,
-whatever your screen reader’s punctuation level. For example, after you
-dictate “First idea. Can you send it, please?” and pause:</p>
+QUILL Lite reads that part of your document aloud with every mark named
+when <strong>Say punctuation marks in the read-back</strong> (More
+Dictation Settings) is on, whatever your screen reader’s punctuation
+level. For example, after you dictate “First idea. Can you send it,
+please?” and pause:</p>
 <ul>
 <li>“read last sentence” says “Can you send it comma please question
 mark”.</li>
@@ -4795,18 +5097,13 @@ please question mark”.</li>
 <li>Select “send it” with Shift and the arrow keys, then say “read
 selection”: you hear “send it”.</li>
 </ul>
-<p>What is read is what is just before the cursor: spaces and line ends
-right before it are skipped, and nothing after the cursor is read.
-Nothing in your document changes, the cursor stays where it was, and a
-document you can only read can still be read back. If there is nothing
-to read you hear “There is no sentence before the cursor.” (or
-paragraph), or “Nothing is selected.” To hear the words without the mark
-names, clear <strong>Say punctuation marks in the read-back</strong> in
-More Dictation Settings; it works the same way for “read that”. In
-Spanish, say “lee la última frase”, “lee el último párrafo” or “lee la
-selección”. These commands are for QUILL Lite’s own documents only: in
-another program, dictation cannot see the text, so it says so and reads
-nothing; “read that” still repeats your last phrase there.</p>
+<p>Nothing in your document changes and the cursor stays where it was,
+so a read-only document can be read back too. If there is nothing to
+read you hear “There is no sentence here.” (or paragraph), or “Nothing
+is selected.” In Spanish, say “lee la última frase”, “lee el último
+párrafo” or “lee la selección”; “leer” works as well as “lee”. In
+another program only “read that” works, because dictation reads only the
+words it typed there.</p>
 <p><strong>Moving the cursor:</strong> “go to beginning of line”, “go to
 end of line”, “go to top”, “go to end of document”, “go to start of
 paragraph” and “go to end of paragraph”. You can also go to, select or
@@ -4836,14 +5133,59 @@ Ann. 2: write two Ann. Say choose and the number.” Then say
 <strong>“choose one”</strong>, <strong>“choose two”</strong> or
 <strong>“choose three”</strong>, and that guess takes the place of what
 was written. You hear “Changed to:” and the new words.</p>
-<p>Only <strong>Windows speech recognition</strong> keeps other guesses.
-Moonshine, Whisper, the optional models and OpenAI give one answer each,
-so with them “correct that” tells you there is nothing to choose from.
-Say “scratch that” and say it again, or add a correction in <strong>My
-Words and Phrases</strong> so it comes out right next time.</p>
+<p><strong>Windows speech recognition</strong> keeps its own other
+guesses. Moonshine, Whisper and the optional models give one answer
+each, so with them “correct that” asks for a <strong>second
+opinion</strong> instead: the other built-in engine listens to your last
+phrase again. You hear “Listening again with Whisper.” (or Moonshine),
+and a moment later both answers: “1: the whether is nice. 2: the weather
+is nice. Say choose and the number.” Say <strong>“choose two”</strong>
+to take the second. If both engines heard the same words, you are told
+so, and nothing changes. Whisper listens again after Moonshine, and
+Moonshine after Whisper or a downloaded model.</p>
+<p>The second opinion uses only the sound of your last phrase, kept in
+memory until you say the next one: nothing is saved to disk and nothing
+goes over the internet. It is not offered in Spanish, where only Whisper
+understands you, or with OpenAI or a speech company. Then “correct that”
+tells you there is nothing to choose from: say “scratch that” and say it
+again, or add a correction in <strong>My Words and Phrases</strong> so
+it comes out right next time.</p>
+<p>Whatever a correction replaced is not lost. It goes into
+<strong>Recent Phrases</strong> (<strong>Shift+F11</strong>,
+<strong>Tools &gt; Dictation &gt; Recent Phrases…</strong>) marked
+“(before correction)”, just after the corrected words, so you can put it
+back with Insert Again or copy it.</p>
 <p>To fix a word further back, say <strong>“correct”</strong> and the
 word itself, like “correct Ann”. The word is selected, and what you say
 next takes its place. “Moving and selecting by voice” explains how.</p>
+<h4
+id="replace-and-change-that-fixing-words-without-retyping-them">Replace
+and change that: fixing words without retyping them</h4>
+<p>Two commands put new words in place of old ones, so you do not have
+to select anything first. Say each one at the start of a phrase.</p>
+<p><strong>“replace” the words “with” the new words.</strong> Say
+“replace Tuesday with Wednesday” and the nearest “Tuesday” before the
+cursor becomes “Wednesday”; if there is none before the cursor, QUILL
+Lite looks after it. The new words take the capital and the closing full
+stop of the old ones, and the cursor stays where it was, so you can
+carry on dictating. You hear “Replaced Tuesday with Wednesday.” If the
+words are not there, what you said is written as ordinary text, as with
+“select” (you hear “Not found, written as text.”; say “scratch that” to
+take it away). After the command word, “QUILL replace Tuesday with
+Wednesday”, nothing is written when the words are not found.</p>
+<p><strong>“change that to” and the new words</strong> replaces the
+whole phrase you dictated last. You said “see you Thursday.” and meant
+Friday: say “change that to see you Friday”, and you hear “Changed to:
+See you Friday.” The leading space, the capital and the closing full
+stop stay as they were.</p>
+<p><strong>“delete previous paragraph”</strong> (or “delete last
+paragraph”) deletes the paragraph just before the cursor, from its start
+up to the cursor, with the blank line in front of it. Say it again to
+delete the one before. If text is selected, the selection is deleted
+instead.</p>
+<p>Replace and change that keep what they replaced in Recent Phrases,
+marked “(before correction)”. “Scratch that” straight after a replace
+inside your last phrase takes away the whole corrected phrase.</p>
 <h4 id="spelling-a-word">Spelling a word</h4>
 <p>Some names the engine will never get right. For those, say
 <strong>“start spelling”</strong>. Until you say <strong>“stop
@@ -5204,6 +5546,98 @@ only the stop phrase works without the word. Strict mode is off in QUILL
 Lite, so the commands you know keep working. A common word, or one of
 your own words in My Words and Phrases, cannot be the command word; you
 are told why.</p>
+<h4 id="dictation-profiles-the-kind-of-writing-you-are-doing">Dictation
+profiles: the kind of writing you are doing</h4>
+<p>A dictation profile changes dictation for one kind of writing in one
+step, instead of changing several settings each time. There are
+seven:</p>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>What it changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standard</td>
+<td>Nothing: your Dictation Settings as they are. Headings are written
+as Markdown marks, as before. Everybody starts here.</td>
+</tr>
+<tr>
+<td>Email</td>
+<td>Removes filler words and adds punctuation. Headings, bold and italic
+use QUILL Lite’s own formatting.</td>
+</tr>
+<tr>
+<td>Document</td>
+<td>Headings, bold and italic use QUILL Lite’s own formatting.</td>
+</tr>
+<tr>
+<td>Markdown</td>
+<td>Headings, bold and italic are written as Markdown marks.</td>
+</tr>
+<tr>
+<td>Chat</td>
+<td>Removes filler words; plain text, with no heading marks.</td>
+</tr>
+<tr>
+<td>Coding</td>
+<td>Removes filler words, adds no punctuation of its own (you say every
+mark), and waits longer for a pause. Markdown marks.</td>
+</tr>
+<tr>
+<td>Verbatim</td>
+<td>Keeps every word you say, fillers too; plain text.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Choosing one.</strong> Open Dictation Settings
+(<strong>Alt+Shift+F6</strong>), press <strong>More Dictation
+Settings…</strong>, and choose in <strong>Dictation profile, for the
+kind of writing</strong> (<strong>Alt+A</strong>). Or, while dictating,
+say the profile’s name after the command word: “QUILL email mode”,
+“QUILL markdown mode”, “QUILL standard mode” (“email profile” works
+too). You hear “Email profile.” and the choice is kept for next time.
+The status bar shows a profile other than Standard beside the dictation
+modes, so a braille display shows it too.</p>
+<p><strong>Lock the profile so it cannot be switched by voice</strong>
+(<strong>Alt+B</strong>, in More Dictation Settings) stops a spoken
+profile name from switching: you hear “Lock Profile is on, so the
+profile stays Email.” Nothing ever switches profiles on its own.</p>
+<p><strong>Profiles and the Dictation style.</strong> While a profile
+other than Standard is on, its own choice about filler words wins over
+the <strong>Dictation style</strong> in Dictation Settings: Verbatim
+keeps fillers even if the style is Clean, and Email, Chat and Coding
+remove them even if the style is Verbatim. A profile never changes
+<strong>Fix it when I correct myself</strong> or polishing. Standard
+leaves your style exactly as it is.</p>
+<p><strong>Headings, bold and italic by voice.</strong> “heading one” to
+“heading six” at the start of a phrase, and “QUILL bold that” and “QUILL
+italic that” (or “italicize that”), act on the selection, or on the
+phrase you dictated last. What happens depends on the profile:</p>
+<ul>
+<li><strong>Markdown</strong> and <strong>Coding</strong>, and
+<strong>Standard</strong> for headings: the marks are written. “bold
+that” puts two asterisks either side, “italic that” one; one Ctrl+Z
+takes it back.</li>
+<li><strong>Document</strong> and <strong>Email</strong>: In a rich text
+document, QUILL Lite’s own Heading, Bold and Italic commands apply the
+style, as if you had pressed their keys. In a plain text document
+nothing is typed for the heading, and you hear “Headings work in QUILL
+documents or the Markdown profile.” Bold and italic say the same about
+themselves.</li>
+<li><strong>Chat</strong> and <strong>Verbatim</strong>: “heading two”
+starts a new line with your words and nothing else, and bold and italic
+say “This profile writes plain text, so nothing was formatted.”</li>
+</ul>
+<p><strong>Example.</strong> In a letter written as a rich text
+document, choose the Document profile, then say “heading two dear Sam”
+and pause. “Dear Sam” goes on a line of its own with the Heading 2
+style. Select a word, say “QUILL bold that”, and it is bold.</p>
+<p>The settings are <code>windows_dictation_profile</code> and
+<code>windows_dictation_profile_locked</code>, under the same names in
+QUILL, QUILL Lite and QUILL Transcribe.</p>
 <h4 id="review-before-inserting">Review before inserting</h4>
 <p>When you want to check what you said before it goes into the
 document, review it first. Your words wait in the <strong>Review
@@ -5297,6 +5731,99 @@ and Review Dictation brings them back. Discard throws them away. To send
 everything you dictate to the window first, turn on <strong>Send
 dictation to review first</strong> (<strong>Alt+V</strong>) in More
 Dictation Settings.</p>
+<h4 id="polishing-your-dictation-with-ai-only-when-you-ask">Polishing
+your dictation with AI, only when you ask</h4>
+<p><strong>Polish</strong> tidies punctuation, capitals and small slips
+without rewording anything. It is one request you ask for each time, it
+is off until you turn it on, and it never runs by itself.</p>
+<ol type="1">
+<li>Open <strong>Dictation Settings</strong>
+(<strong>Alt+Shift+F6</strong>), press <strong>More Dictation
+Settings…</strong> (<strong>Alt+A</strong>), and check <strong>Allow
+polishing my dictation with AI when I ask</strong>
+(<strong>Alt+G</strong>). Press OK in both windows.</li>
+<li>Dictate as usual. When you want a phrase polished, say
+<strong>“QUILL polish that”</strong> or “QUILL polish it”. The last
+phrase is taken back out and opened in Review Dictation, and the polish
+request is made there. If Review Dictation is already open, the words in
+it are polished.</li>
+<li>In the Review Dictation window you can also press
+<strong>Polish</strong> (<strong>Ctrl+P</strong>). The button is there
+only while polishing is allowed.</li>
+<li>You hear “Polishing”, then what changed. Read the words, then press
+<strong>Insert</strong> (<strong>Ctrl+Enter</strong>), or take the
+change back with <strong>Undo Change</strong>
+(<strong>Ctrl+Z</strong>).</li>
+</ol>
+<p>The AI is asked to fix punctuation, capital letters, spelling and
+obvious grammar slips only, and to keep your words, meaning, order and
+tone. Polish uses the same AI, account and first-time question as the
+rest of Review Dictation: nothing is sent until you say yes, and only
+the words in the window are sent. With AI off the Polish button is
+greyed out, and with polishing not allowed “QUILL polish that” says
+“Polish my dictation is off” and sends nothing.</p>
+<h4 id="correcting-yourself-as-you-talk">Correcting yourself as you
+talk</h4>
+<p>With <strong>Fix it when I correct myself, like Thursday, no,
+Friday</strong> (<strong>Alt+X</strong>) checked in Dictation Settings,
+QUILL Lite writes only what you meant when you correct yourself
+mid-sentence:</p>
+<table>
+<thead>
+<tr>
+<th>You say</th>
+<th>QUILL Lite writes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>meet on Thursday, no, Friday at noon</td>
+<td>meet on Friday at noon</td>
+</tr>
+<tr>
+<td>in June, no I mean July</td>
+<td>in July</td>
+</tr>
+<tr>
+<td>I have two no three cats</td>
+<td>I have three cats</td>
+</tr>
+<tr>
+<td>call me at 5, sorry, 6</td>
+<td>call me at 6</td>
+</tr>
+<tr>
+<td>send it to Ana, sorry, Maria (both names in My Words)</td>
+<td>send it to Maria</td>
+</tr>
+</tbody>
+</table>
+<p>The marking words are “no”, “I mean”, “no I mean”, “sorry” and
+“scratch that word”, and a correction is made only between two days, two
+months, two numbers or two names from the Vocabulary list in My Words
+and Phrases. Anything else is written as you said it: “no, I don’t think
+so” and “Is it Thursday? No, Friday.” stay exactly as they are. It works
+on this computer with no AI, it is off until you turn it on, and live
+transcripts never use it.</p>
+<p><strong>Dictation style</strong> (<strong>Alt+Y</strong>) sets these
+choices together: <strong>Verbatim</strong> (every word as you say it),
+<strong>Clean</strong> (no filler words, and your corrections fixed) or,
+only when AI help is on, <strong>Polished</strong> (Clean, plus Send
+dictation to review first and Allow polishing my dictation with AI).
+Choosing Polished sends nothing by itself. Change a check box yourself
+and the style shows <strong>Your own mix of the settings
+below</strong>.</p>
+<h4 id="learning-from-your-corrections">Learning from your
+corrections</h4>
+<p>When you correct the same word the same way twice, by “correct that”
+and then “choose two”, or by “correct Ann” and then the new words, a
+window called <strong>Add a Correction</strong> asks, for example, “Add
+a correction: Ann becomes Anne?” <strong>No</strong> is the default.
+<strong>Yes</strong> adds it to the Corrections list in My Words and
+Phrases (<strong>Alt+Shift+F10</strong>), where you can change or remove
+it, and the next phrase uses it. Each pair is asked about once each time
+QUILL Lite runs, only words and short phrases of up to four words are
+offered, and nothing is saved unless you say yes.</p>
 <h3 id="starting-and-stopping-with-your-voice">Starting and stopping
 with your voice</h3>
 <h4 id="the-wake-phrase">The wake phrase</h4>
@@ -5458,6 +5985,12 @@ Windows speech recognition uses the same length.</li>
 <li><strong>Remove filler words like um and uh.</strong> Hesitations
 like um, uh, erm and hmm are left out. Real words are never
 removed.</li>
+<li><strong>Dictation style</strong> (<strong>Alt+Y</strong>). Verbatim,
+Clean or, with AI on, Polished: a quick way to set the next two choices
+together. See “Correcting yourself as you talk”.</li>
+<li><strong>Fix it when I correct myself, like Thursday, no,
+Friday</strong> (<strong>Alt+X</strong>). “Thursday, no, Friday” writes
+Friday. Off at first.</li>
 <li><strong>Stop dictation after silence.</strong> Never, or after 1, 5
 or 10 minutes of hearing nothing, so dictation is not left writing in an
 empty room. With the wake phrase on, it goes back to waiting for the
@@ -5602,6 +6135,18 @@ follow the dictation language</td>
 <tr>
 <td>Remove filler words like um and uh</td>
 <td>Leave hesitations out</td>
+<td>Off</td>
+</tr>
+<tr>
+<td>Dictation style (Alt+Y)</td>
+<td>Verbatim, Clean, or Polished when AI is on; sets the choices
+below</td>
+<td>Verbatim</td>
+</tr>
+<tr>
+<td>Fix it when I correct myself, like Thursday, no, Friday (Alt+X)</td>
+<td>Writes only the second of two days, months, numbers or names from My
+Words</td>
 <td>Off</td>
 </tr>
 <tr>
@@ -5776,6 +6321,30 @@ always works</td>
 <td>Send dictation to review first (Alt+V)</td>
 <td>What you dictate goes into Review Dictation instead, to insert once;
 see “Review before inserting”</td>
+<td>Unchecked</td>
+</tr>
+<tr>
+<td>Allow polishing my dictation with AI when I ask (Alt+G)</td>
+<td>“QUILL polish that” and the Polish button in Review Dictation ask
+the AI to fix punctuation and small slips, keeping your words</td>
+<td>Unchecked</td>
+</tr>
+<tr>
+<td>Keep a dictation history (Alt+Y)</td>
+<td>Off, One day, Seven days or Thirty days of the text you dictate,
+never the sound, listed in Recent Phrases; turning it off deletes it;
+see “Recent phrases”</td>
+<td>Off</td>
+</tr>
+<tr>
+<td>Dictation profile, for the kind of writing (Alt+A)</td>
+<td>Standard, Email, Document, Markdown, Chat, Coding or Verbatim; see
+“Dictation profiles”</td>
+<td>Standard</td>
+</tr>
+<tr>
+<td>Lock the profile so it cannot be switched by voice (Alt+B)</td>
+<td>A spoken profile name does not switch profiles</td>
 <td>Unchecked</td>
 </tr>
 </tbody>
@@ -6478,8 +7047,43 @@ Recent Phrases…</strong>) to see the last twenty phrases you dictated,
 newest first. Arrow to one and press <strong>Enter</strong> (Insert
 Again) to write it at the cursor as one undo step, or press
 <strong>Copy</strong> to put it on the clipboard. This is your rescue if
-“scratch that” took away one phrase too many. The list lasts only until
-you close QUILL Lite.</p>
+“scratch that” took away one phrase too many. When “choose”, “replace”
+or “change that to” changed a phrase, the words it had before are in the
+list too, marked “(before correction)”; Insert Again and Copy leave that
+label out. This session’s phrases last only until you close QUILL
+Lite.</p>
+<p>After them come words kept from before, so nothing you said is
+lost:</p>
+<ul>
+<li><strong>Not written</strong>: a phrase that could not be written, or
+words held while dictation was paused. They stay on this computer, even
+through a crash, until you write or discard them, and QUILL Lite says
+once at start how many are waiting.</li>
+<li><strong>Review not finished</strong>: the words of a review you
+closed without inserting.</li>
+<li><strong>Earlier</strong>: with <strong>Keep a dictation
+history</strong> on in More Dictation Settings, the phrases from earlier
+days, newest first.</li>
+</ul>
+<p><strong>Insert Again</strong> writes one at the cursor and deletes it
+from the computer; <strong>Discard</strong> (<strong>Alt+D</strong>)
+deletes it without writing it; <strong>Clear History</strong>
+(<strong>Alt+H</strong>) deletes the whole history after asking, with No
+as the answer unless you choose Yes. Kept words and the history are
+sealed for your Windows account, never kept as sound, and never written
+to the log.</p>
+<p>For example: you are dictating into a document, step away, and
+dictation pauses with two phrases held because the window lost focus.
+Then the computer restarts for an update. The next time QUILL Lite
+starts it says “2 dictated phrases were not written last time and are
+kept. Recent Phrases, Shift+F11, brings them back.” Press
+<strong>Shift+F11</strong>, arrow past this session’s phrases to the
+first “Not written” entry, and press <strong>Enter</strong>: it is
+written at the cursor and deleted from the computer. Do the same for the
+second, or press <strong>Alt+D</strong> to discard it.</p>
+<p>Limits: only text is kept, never sound; the history keeps at most
+2000 phrases; and a kept entry is deleted only when it is written,
+discarded or cleared, never by copying it.</p>
 <h3 id="talking-to-the-ai">Talking to the AI</h3>
 <p>You can have a spoken conversation with AI help. Open the <strong>AI
 Conversation</strong> window (see “Having a conversation” in the AI help
@@ -6635,8 +7239,11 @@ as long as you are still in the same window.</p></li>
 Inkwell share (QUILL’s snippets, the shared abbreviation library, and
 QUILL’s clips): “insert snippet” and its name, “insert abbreviation” and
 its name, and “paste clip” and a number. They are typed as one phrase,
-so “scratch that” takes all of it back. A snippet’s blanks are typed as
-[name], with no questions, and the cursor stays at the end.</p></li>
+so “scratch that” takes all of it back. A snippet’s blanks are asked for
+by voice first: you hear each blank’s name, like “Title?”, and say the
+answer; for a choice, say an option or “choose two”. Say skip, scratch
+that to go back one, or cancel to type nothing. The cursor stays at the
+end.</p></li>
 </ul>
 <p>Some commands need to read the text of the document, and Inkwell
 cannot read another program’s text. So “select”, “go to”, “correct”,
@@ -8267,6 +8874,17 @@ dash.</p>
 <p>Both of these also need <strong>Autocorrect while typing</strong>
 switched on in Customize Features. Neither ever runs in a plain text,
 source code or settings document.</p>
+<p><strong>Correct common misspellings as I type</strong> is off. It
+changes <code>teh</code> to <code>the</code> when you type the space
+after it. It also needs <strong>Autocorrect while typing</strong> in
+Customize Features, and unlike the two above it does run in plain text,
+because a misspelling is as wrong in a <code>.txt</code> file as
+anywhere. It never runs in source code or settings files. <em>Correcting
+misspellings as you type</em>, below, has the details.</p>
+<p><strong>Continue lists in plain text</strong> is off. With it on,
+<strong>Enter</strong> in a plain text list starts the next item, as it
+always does in Markdown. Chapter 6 has the details, under <em>Pressing
+Enter in a list</em>.</p>
 <h5 id="what-you-hear-2">What you hear</h5>
 <p><strong>When a command does something, give me:</strong> <strong>a
 sound</strong>, <strong>the action spoken</strong>,
@@ -8761,22 +9379,102 @@ asks you straight away.</li>
 ever changes in a way that matters, such as what is sent or what is
 kept, you will be asked again.</p>
 <h5 id="how-autocorrect-works">How autocorrect works</h5>
-<p><strong>Autocorrect has two rules, and switching the area on does not
-turn either of them on.</strong> The area decides whether autocorrect
-exists at all. Two check boxes in <strong>Tools &gt;
+<p><strong>Autocorrect has three rules, and switching the area on does
+not turn any of them on.</strong> The area decides whether autocorrect
+exists at all. Three check boxes in <strong>Tools &gt;
 Preferences</strong> decide which rules run:</p>
 <ul>
 <li><strong>Curl quotes as I type</strong></li>
 <li><strong>Turn two hyphens into an em dash</strong></li>
+<li><strong>Correct common misspellings as I type</strong></li>
 </ul>
-<p>Both start off. So after you switch the area on, you also need to
-check the rule you want. They are separate because plenty of people want
-the long dash but not the curly quotes.</p>
-<p>Neither rule ever runs in a plain text, source code or settings
-document, whatever the boxes say. A curly quote in a <code>.json</code>
-file would break it.</p>
-<p>There is no third rule. QUILL Lite does <strong>not</strong>
+<p>All three start off. So after you switch the area on, you also need
+to check the rule you want. They are separate because plenty of people
+want the long dash but not the curly quotes, or the spelling fixes and
+nothing else.</p>
+<p>The two typography rules never run in a plain text, source code or
+settings document, whatever the boxes say. A curly quote in a
+<code>.json</code> file would break it. Misspelling correction runs in
+plain text, Markdown and rich text, and never in source code or settings
+files.</p>
+<p>There is no fourth rule. QUILL Lite does <strong>not</strong>
 capitalise the start of a sentence, and never has.</p>
+<h5 id="correcting-misspellings-as-you-type">Correcting misspellings as
+you type</h5>
+<p>With the rule on, QUILL Lite fixes the misspellings almost everybody
+makes the moment you finish the word. Type <code>teh</code> and a space
+and it becomes <code>the </code>; type <code>recieve</code> and press
+<strong>Enter</strong> and it becomes <code>receive</code> before the
+new line starts. You hear the word-corrected sound and “Corrected to
+the”, because your screen reader only echoes the space and would never
+tell you the word changed.</p>
+<p>The built-in list has about 350 common English misspellings, such as
+<code>teh</code>, <code>seperate</code>, <code>definately</code>,
+<code>occured</code>, <code>untill</code> and <code>wierd</code>. Every
+one was checked against American and British dictionaries before it went
+in, so a word you spelled correctly is never on it. Your capitals are
+kept: <code>Teh</code> becomes <code>The</code>, and
+<code>febuary</code> becomes <code>February</code>. Brackets, quotes and
+punctuation round the word stay where they were, so
+<code>(recieve,</code> becomes <code>(receive,</code>.</p>
+<p>It never touches:</p>
+<ul>
+<li>a word typed all in capitals, such as <code>TEH</code>, which is far
+more often an acronym than a mistake;</li>
+<li>web addresses, email addresses and paths, or any word with a full
+stop, slash, colon, <code>@</code>, digit or underscore inside it, so
+<code>teh.example.com</code> and <code>adress@example.com</code> stay as
+typed;</li>
+<li>anything inside backticks or a fenced code block in Markdown;</li>
+<li>source code and settings files, by their name, the same list that
+keeps spell-check-as-you-type quiet in them.</li>
+</ul>
+<p><strong>Taking one back.</strong> <strong>Ctrl+Z</strong> straight
+after a correction puts back exactly what you typed, as one undo step.
+QUILL Lite then leaves that word alone in this document for the rest of
+the session: type the space again and the word stays, and the status bar
+says “Kept teh as you typed it”.</p>
+<h5 id="autocorrect-entries-altshift9">AutoCorrect Entries
+(Alt+Shift+9)</h5>
+<p><strong>Tools &gt; AutoCorrect Entries…</strong>
+(<strong>Alt+Shift+9</strong>) shows every correction, the built-in ones
+and yours, one per row: “teh becomes the, built in”. It is QUILL’s
+window, on QUILL’s key, so it works the same in both.</p>
+<ul>
+<li><strong>Find</strong> narrows the list as you type.</li>
+<li><strong>Corrections</strong> is the list. <strong>Enter</strong> or
+<strong>Space</strong> on a row edits it.</li>
+<li><strong>Add…</strong> makes a correction of your own: the word as
+you mistype it, what it should become, and whether case must match
+exactly. For example, <code>qill</code> becoming <code>QUILL</code>. The
+word must be letters only (an apostrophe inside is fine); what it
+becomes may be several words.</li>
+<li><strong>Edit…</strong> changes the row you are on. Editing a
+built-in one keeps your version beside it, and the row says “built in,
+changed by you”.</li>
+<li><strong>Turn Off</strong> stops the correction you are on without
+deleting it, and the row ends in “stopped”. The same button, now
+<strong>Turn On</strong>, starts it again. Use this when a correction
+keeps changing a word you meant.</li>
+<li><strong>Remove</strong> deletes one of yours. On a built-in one you
+changed or turned off, it puts it back as it shipped. A built-in
+correction cannot be deleted, so Remove on one turns it off instead and
+tells you so.</li>
+</ul>
+<p>Every button says what it did, and your changes are kept when you
+close the window.</p>
+<p>Your corrections are kept in your abbreviation list, under the
+category <strong>AutoCorrect</strong>: QUILL Lite’s own list, or QUILL’s
+if Preferences says share it, in which case QUILL and QUILL Lite share
+your corrections too. Turning <strong>Abbreviations</strong> off in
+Customize Features does not turn your corrections off. The window needs
+the <strong>Autocorrect while typing</strong> area switched on, like the
+rule itself.</p>
+<p><strong>Limits.</strong> The built-in list is English only. A
+correction happens when a space or <strong>Enter</strong> ends the word.
+AutoCorrect fixes known misspellings, not every misspelling;
+<strong>F7</strong> and the spell check as you type still find the
+rest.</p>
 <h5 id="what-can-never-be-switched-off">What can never be switched
 off</h5>
 <p>Three things always stay. <strong>Tools &gt; Preferences</strong> and
@@ -9738,6 +10436,10 @@ list inside the app.</p>
 <td>All Matches…</td>
 </tr>
 <tr>
+<td><strong>Ctrl+Alt+Shift+F3</strong></td>
+<td>Count Occurrences</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Alt+Shift+F8</strong></td>
 <td>Find in Open Documents…</td>
 </tr>
@@ -9748,10 +10450,6 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+Shift+R</strong></td>
 <td>Replace Across Files…</td>
-</tr>
-<tr>
-<td><strong>Ctrl+Alt+Shift+F3</strong></td>
-<td>Count Occurrences</td>
 </tr>
 </tbody>
 </table>
@@ -9976,7 +10674,7 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Alt+Shift+S</strong></td>
-<td>Clipboard Collector (on or off)</td>
+<td>Clipboard Collector</td>
 </tr>
 <tr>
 <td><strong>Alt+Shift+C</strong></td>
@@ -10438,6 +11136,10 @@ list inside the app.</p>
 <td>File Encoding and Line Endings…</td>
 </tr>
 <tr>
+<td><strong>Ctrl+Alt+Backspace</strong></td>
+<td>Read-Only Guard</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Alt+Shift+Home</strong></td>
 <td>Snippets…</td>
 </tr>
@@ -10448,6 +11150,10 @@ list inside the app.</p>
 <tr>
 <td><strong>Alt+Shift+A</strong></td>
 <td>Expand Abbreviations</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+9</strong></td>
+<td>AutoCorrect Entries…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+,</strong></td>
@@ -10471,7 +11177,7 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Alt+Shift+M</strong></td>
-<td>App Sounds (on or off)</td>
+<td>App Sounds</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Shift+O</strong></td>
@@ -10727,6 +11433,14 @@ list inside the app.</p>
 <tr>
 <td><strong>Alt+F9</strong></td>
 <td>Dictation Status</td>
+</tr>
+<tr>
+<td><strong>F11</strong></td>
+<td>Speak a Command</td>
+</tr>
+<tr>
+<td><strong>Shift+F4</strong></td>
+<td>Review Dictation…</td>
 </tr>
 </tbody>
 </table>

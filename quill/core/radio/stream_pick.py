@@ -75,15 +75,23 @@ class StreamPick:
         return bool(self.url)
 
 
+def _is_stw_host(url: str) -> bool:
+    """True when *url*'s host is streamtheworld.com or one of its subdomains --
+    matched on the parsed host at a dot boundary, so a look-alike such as
+    ``evilstreamtheworld.com`` or ``example.com/?streamtheworld.com`` is not."""
+    host = (urllib.parse.urlsplit(url).hostname or "").lower()
+    return host == "streamtheworld.com" or host.endswith(".streamtheworld.com")
+
+
 def is_resolved_player_mount(url: str) -> bool:
     """True when *url* **is** a page's own resolved stream rather than a guess
     taken off it: a Triton/StreamTheWorld mount, or a SecureNet ice mount."""
-    return "streamtheworld.com" in url.lower() or bool(_SECURENET_MOUNT_RE.match(url))
+    return _is_stw_host(url) or bool(_SECURENET_MOUNT_RE.match(url))
 
 
 def _stw_mount(url: str) -> str:
     parsed = urllib.parse.urlsplit(url)
-    if not (parsed.hostname or "").lower().endswith("streamtheworld.com"):
+    if not _is_stw_host(url):
         return ""
     last = parsed.path.strip("/").rsplit("/", 1)[-1]
     stem, dot, ext = last.rpartition(".")

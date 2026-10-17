@@ -241,6 +241,14 @@ def libreoffice_executable() -> str | None:
     found = shutil.which("soffice")
     if found:
         return found
+    if sys.platform == "win32":
+        # The Windows installer never puts LibreOffice on PATH either; without
+        # this, a .doc/.xls/.ppt was refused on machines that had it (2026-10-16).
+        for variable in ("ProgramFiles", "ProgramFiles(x86)", "ProgramW6432"):
+            root = os.environ.get(variable, "").strip()
+            candidate = Path(root) / "LibreOffice" / "program" / "soffice.exe" if root else None
+            if candidate is not None and candidate.is_file():
+                return str(candidate)
     if sys.platform == "darwin":
         for directory in (_MACOS_LIBREOFFICE_APP_DIR, *_MACOS_FALLBACK_DIRS):
             candidate = Path(directory) / "soffice"

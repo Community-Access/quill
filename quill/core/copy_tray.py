@@ -7,6 +7,7 @@ from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 
+from quill.core.list_search import SearchTerms
 from quill.core.storage import write_json_atomic
 
 
@@ -50,13 +51,12 @@ class CopyTray:
     def copy_to(self, slot: int, text: str) -> None:
         """Store *text* in *slot* (1-12), keeping the slot's label and pin.
 
-        It used to build a fresh ``TraySlot``, and every write path goes
-        through here -- so editing a slot's text dropped the name somebody had
-        given it and un-pinned it at the same time (bad.md C3). A label is how
-        a listener tells slot seven from slot nine without reading either, and
-        a pin is a statement that this one matters; losing both silently, as a
-        side effect of changing the text, is the tray forgetting the two things
-        the person told it.
+        It used to build a fresh ``TraySlot``, and every write path goes through here --
+        so editing a slot's text dropped the name somebody had given it and un-pinned it
+        at the same time (bad.md C3). A label is how a listener tells slot seven from slot
+        nine without reading either, and a pin is a statement that this one matters;
+        losing both silently, as a side effect of changing the text, is the tray
+        forgetting the two things the person told it.
         """
         self._check(slot)
         existing = self._slots[slot - 1]
@@ -114,12 +114,12 @@ class CopyTray:
         return None
 
     def search_slots(self, query: str) -> list[tuple[int, TraySlot]]:
-        """Return (slot_number, slot) pairs whose text or label contains *query*."""
-        q = query.lower()
+        """(slot_number, slot) pairs holding *query*, its words in any order (list_search)."""
+        terms = SearchTerms(query)
         return [
             (n, slot)
             for n, slot in enumerate(self._slots, start=1)
-            if not slot.is_empty() and (q in slot.text.lower() or q in slot.label.lower())
+            if not slot.is_empty() and terms.found_in_fields((slot.text, slot.label))
         ]
 
     # -- persistence --

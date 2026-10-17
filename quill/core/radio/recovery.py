@@ -117,7 +117,9 @@ def streamtheworld_mount(url: str) -> str:
     as an extension, which Triton's lookup does not accept -- so it is dropped.
     """
     parts = urllib.parse.urlsplit(url)
-    if not parts.netloc.lower().endswith("streamtheworld.com"):
+    host = (parts.hostname or "").lower()
+    # The parsed host at a dot boundary: evilstreamtheworld.com is not a mount.
+    if host != "streamtheworld.com" and not host.endswith(".streamtheworld.com"):
         return ""
     last = parts.path.strip("/").split("/")[-1] if parts.path.strip("/") else ""
     stem, dot, ext = last.rpartition(".")
