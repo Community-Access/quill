@@ -58,6 +58,30 @@ page regenerated) and QUILL Lite's guide. QUILL's user guide: *Spelling with
 pauses*, *A Markdown link, by voice*, and a pointer to the examples. Design
 record section 35 has the coverage table.
 
+### `main_frame.py` below 15,000 lines: three feature groups move to mixins (2026-10-17)
+
+Developer-facing refactor; nothing a user sees or hears changes. `quill/ui/main_frame.py`
+went from 15,890 to 14,459 lines (todo D.4) by moving three whole feature groups out
+of `MainFrame`, unchanged, into new under-cap mixins:
+
+- `quill/ui/main_frame_bookmarks.py` (`BookmarksFoldsMixin`): named, temporary and
+  quick bookmarks with their anchors, PDF outline import and per-document memory;
+  code folding; Favorite Folders and Open From Favorite Folder.
+- `quill/ui/main_frame_read_aloud.py` (`ReadAloudMixin`): live Read Aloud with the
+  ElevenLabs consent, Read in Browser, Export to Speech Audio and the controller
+  callbacks.
+- `quill/ui/main_frame_speech_hub.py` (`SpeechHubMixin`): the Speech Hub and its
+  Piper voice and Kokoro model downloads.
+
+The three are listed first in `MainFrame`'s bases so their methods keep the
+precedence they had as class methods. `_NavigatorNode` moved to
+`quill/ui/navigator_node.py` (re-exported from `main_frame`) so a mixin can build
+tree-navigator rows without a circular import. Same command ids, keys, menu rows,
+dialogs and announcements. The GATE-11 budget for `main_frame.py` ratchets down to
+14,459; the surface-reachability, dialog, accessible-name and control-label
+snapshots were regenerated with their tools, and two tests now patch and read
+the module the code lives in.
+
 ### Word editing shared with QUILL Lite; two Word round-trip fixes; table navigation in QUILL Lite (2026-10-17)
 
 **`quill/core/docx_open.py` (new, wx-free).** QUILL's Word open and save

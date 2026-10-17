@@ -89,13 +89,18 @@ def test_pdf_outline_import_is_wired_into_open_and_guards_correctly() -> None:
     # The open flow imports a PDF's embedded outline as bookmarks (source-level
     # guards: PDF-only, first-open-only, resolved via page markers).
     assert "self._import_pdf_outline_bookmarks(loaded, suffix)" in SOURCE
-    assert 'if suffix != ".pdf":' in SOURCE
-    assert 'outline = metadata.get("pdf_outline")' in SOURCE
+    # The importer itself lives with the other bookmark code (moved out of
+    # MainFrame into main_frame_bookmarks.py on 2026-10-17).
+    bookmarks = (
+        Path(__file__).resolve().parents[3] / "quill" / "ui" / "main_frame_bookmarks.py"
+    ).read_text(encoding="utf-8")
+    assert 'if suffix != ".pdf":' in bookmarks
+    assert 'outline = metadata.get("pdf_outline")' in bookmarks
     # Idempotent: skip when the document already has bookmarks.
-    assert 'if getattr(tab, "bookmarks", None):' in SOURCE
+    assert 'if getattr(tab, "bookmarks", None):' in bookmarks
     # Page number -> character offset via the shared page-marker helper, which
     # QUILL Lite's Go To Outline kind uses too.
-    assert "outline_bookmark_offsets(text, outline)" in SOURCE
+    assert "outline_bookmark_offsets(text, outline)" in bookmarks
     shared = (Path(__file__).resolve().parents[3] / "quill" / "core" / "pdf_open.py").read_text(
         encoding="utf-8"
     )

@@ -201,10 +201,12 @@ def test_generating_cue_is_cancelled_when_synthesis_finishes_first(wx_app, monke
         "quill.ui.main_frame_voice_preview.post_sound", lambda event_id: posted.append(event_id)
     )
     monkeypatch.setattr(
-        "quill.ui.main_frame.discover_espeak_executable",
+        "quill.ui.main_frame_voice_preview.discover_espeak_executable",
         lambda *_a, **_k: Path("espeak.exe"),
     )
-    monkeypatch.setattr("quill.ui.main_frame.synthesize_with_espeak", lambda *a, **k: None)
+    monkeypatch.setattr(
+        "quill.ui.main_frame_voice_preview.synthesize_with_espeak", lambda *a, **k: None
+    )
     monkeypatch.setattr(MainFrame, "_play_preview_asset", lambda _self, _path: None)
 
     # A synthesis engine mocked to return instantly: the background thread
