@@ -232,6 +232,14 @@ class WindowsDictationCommandsMixin(WindowsDictationMixin):
                     return None
         return None
 
+    def _dictation_snippet_body(self, name: str) -> str | None:
+        """The snippet's own text, so its blanks are asked for by voice (D-8)."""
+        library = getattr(self, "_snippet_library", None)
+        for snippet in getattr(library, "snippets", []) or []:
+            if snippet.enabled and snippet.name == name:
+                return str(snippet.body)
+        return None
+
     def _dictation_abbreviation_entries(self) -> list[Any]:
         library = getattr(self, "_abbreviation_library", None)
         return list(library.enabled_only()) if library is not None else []

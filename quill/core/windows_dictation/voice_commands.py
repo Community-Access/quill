@@ -92,6 +92,12 @@ _LIBRARY = (
     Command.INSERT_SNIPPET,
     Command.EXPAND,
 )
+#: D-18: what the editors' own text can be read back by.
+_READS = {
+    Command.READ_SENTENCE: "sentence",
+    Command.READ_PARAGRAPH: "paragraph",
+    Command.READ_SELECTION: "selection",
+}
 #: A match this many lines from the cursor or more says which line it is on.
 _FAR_LINES = 3
 _SAID_CHARS = 120
@@ -111,6 +117,8 @@ class VoiceCommandsMixin:
     spelling: bool
     history: PhraseHistory
     recent: Any
+    #: What "read that" says: the whole of the last insertion (D-18).
+    _last_spoken: str
     _preferences: Callable[[], DictationPreferences]
 
     def _say(self, message: str) -> None:  # provided by the controller
@@ -147,6 +155,8 @@ class VoiceCommandsMixin:
         self._spell_once = False
         self._target: Target | None = None
         self._target_mode = Command.SELECT_WORDS
+        #: "correct X": the words and where they start (D-21), until the next phrase.
+        self._correcting: tuple[str, int] | None = None
 
     def _end_voice_modes(self) -> None:
         """Dictation stopped: every mode goes back to normal."""
@@ -154,6 +164,7 @@ class VoiceCommandsMixin:
         self.no_space = False
         self._spell_once = False
         self._target = None
+        self._correcting = None
 
     @property
     def mode_text(self) -> str:
@@ -243,6 +254,8 @@ class VoiceCommandsMixin:
             self._paragraph_edge(command is Command.PARAGRAPH_START)
         elif command is Command.SPELL_THAT:
             self._spell_that()
+        elif command in _READS:
+            self._read_unit(_READS[command], preferences)
         elif command in _LIBRARY:
             self._library_command(parsed, preferences)
         else:
@@ -295,6 +308,7 @@ class VoiceCommandsMixin:
         """Select or move to *target*, and say where, once."""
         matched = _short(text[target.start : target.end])
         mode = self._target_mode
+        self._correcting = None
         if mode is Command.GO_TO_WORDS:
             self._document.select(target.start, target.start)
             said = f"Before {matched}"
@@ -303,6 +317,9 @@ class VoiceCommandsMixin:
             said = f"After {matched}"
         elif mode is Command.CORRECT_WORDS:
             self._document.select(target.start, target.end)
+            # D-21: what the next phrase replaces, so a repeated correction
+            # can be offered for My Words (correction_learning.py).
+            self._correcting = (text[target.start : target.end], target.start)
             said = f"Correcting {matched}. Say the new words"
         else:
             self._document.select(target.start, target.end)
@@ -327,6 +344,42 @@ class VoiceCommandsMixin:
         place = start if at_start else end
         self._document.select(place, place)
         self._say("Start of paragraph." if at_start else "End of paragraph.")
+
+    def _read_unit(self, unit: str, preferences: DictationPreferences) -> None:
+        """ "read last sentence", "read last paragraph", "read selection" (D-18)."""
+        from quill.core.windows_dictation.readback import spoken_marks
+
+        text, caret = self._text_and_caret()
+        if unit == "selection":
+            start, end = self._document.selection()
+            if start == end:
+                self._say("Nothing is selected.")
+                return
+        else:
+            # The last of it before the cursor: back over spaces and line breaks.
+            place = len(text[:caret].rstrip())
+            start, end = unit_bounds(text, max(0, place - 1), unit)
+        words = text[min(start, end) : max(start, end)].strip()
+        if not words:
+            self._say(f"There is no {unit} here.")
+            return
+        if preferences.readback_marks:
+            words = spoken_marks(words, preferences.speech_language)
+        self._say(words)
+
+    def note_inserted(self, text: str) -> None:
+        """*text* went in by another route (Insert in Review Dictation): it is what
+        "read that" reads from now on."""
+        self._last_spoken = self._heard(text, self._preferences())
+
+    @staticmethod
+    def _heard(text: str, preferences: DictationPreferences) -> str:
+        """What "read that" says for an insertion: all of it, marks said by name."""
+        from quill.core.windows_dictation.readback import spoken_marks
+
+        if preferences.readback_marks and any(char.isalnum() for char in text):
+            return spoken_marks(text, preferences.speech_language)
+        return " ".join(text.split())
 
     def _spell_that(self) -> None:
         phrase = self._last_intact()
@@ -417,6 +470,7 @@ class VoiceCommandsMixin:
         self.history.push(DictatedPhrase(written, start, end))
         self._after_insert(written)
         self.recent.appendleft(" ".join(written.split()))
+        self._last_spoken = self._heard(written, preferences)  # read that: all of it (D-18)
         if back:
             place = max(start, end - back)
             self._document.select(place, place)

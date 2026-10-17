@@ -2607,6 +2607,44 @@ providers".
 > call site; failures as one sentence naming the field. The design record's
 > section 23 has the details and what remains.
 
+> **Self-repair, named styles, learning corrections and opt-in polish (D-20,
+> D-21, 2026-10-16).** Requirements, shared by QUILL, QUILL Lite, QUILL
+> Transcribe and Quill Inkwell:
+> - *Self-repair* is local, deterministic and conservative: a repair marker
+>   ("no", "I mean", "no I mean", "sorry", "scratch that word") between two
+>   words of one kind (day, month, number, a name in My Words) keeps the
+>   second; anything else is written as said, and a false-positive table is
+>   tested. Off by default (`windows_dictation_self_repair`); never in a live
+>   transcript.
+> - *Dictation style* names existing choices -- Verbatim, Clean, and Polished
+>   only when AI is on -- and stores nothing of its own; a hand-made mix shows
+>   as "Your own mix".
+> - *Polish my dictation* is opt-in (`windows_dictation_polish`, off), one
+>   fixed request per ask ("QUILL polish that", or Polish, Ctrl+P, in Review
+>   Dictation), never automatic. It reuses Review Dictation's consent and
+>   account routes (ChatGPT subscription or own key; never the free
+>   allowance) and adds no network call site. Automatic AI clean-up of every
+>   phrase stays declined.
+> - *Learning corrections* offers "Add a correction: A becomes B?" after the
+>   second identical voice correction, once per run, and never adds without a
+>   yes: a Yes/No window (No default) in the editors, "QUILL yes" in
+>   Transcribe. Counts live in memory only.
+> - *Per-context lists* (`## Context: email` in `dictation.md`) are parsed and
+>   kept; they take effect with named profiles (D-23), not yet built.
+> The design record's section 28 has the details.
+
+> **Correcting by voice, everywhere (D-19 and D-10, 2026-10-16).** Live
+> Dictation gains "replace X with Y" (nearest X before the cursor, else after),
+> "change that to Y" (the last phrase) and "delete previous paragraph"; "correct
+> that" with a one-answer engine asks the other built-in engine to re-decode the
+> last phrase's audio, kept in memory only, and offers its answer as choice 2;
+> and whatever a correction replaced goes into Recent Phrases labelled "(before
+> correction)". In QUILL Transcribe and Dictate Anywhere the correcting commands
+> work on the session's own words as backspace-and-retype, refused when the
+> focus moved, when the person has typed since, or (for retyping) in Word and
+> Outlook. Shared code (`corrections.py`, `external_edits.py`); design record
+> section 27.
+
 ### 5.25f AI footprint, on-demand acquisition, and optimization
 
 QUILL's guiding aim is to be **as capable as possible on whatever hardware the user

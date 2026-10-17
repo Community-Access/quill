@@ -106,10 +106,9 @@ class QuillTranscribeFrame(
         self._start_ipc_poll()
         self._refresh_view()
         notices = [sentence for sentence in (brought, key_notice) if sentence]
-        if self._review_rescue_path().exists():  # a review that did not finish (D-2)
-            from quill.ui.windows_dictation_review import RESCUE_NOTICE
-
-            notices.append(RESCUE_NOTICE)
+        kept = self.kept_words_notice()  # words from last time (D-2 review, D-5 rescue)
+        if kept:
+            notices.append(kept)
         if safe_mode:
             notices.insert(0, "Safe Mode: QUILL Transcribe does not listen or register keys.")
         if not self._tray_available:
@@ -418,7 +417,11 @@ class QuillTranscribeFrame(
 
     def _exit_application(self) -> None:
         held = self._held_count()
-        if held:
+        # Held words already on disk (D-5) are not lost: Recent Phrases has them
+        # next time, so there is nothing to ask. Only words that could not be
+        # kept are worth the question.
+        on_disk = bool(getattr(getattr(self, "_dictation", None), "held_on_disk", False))
+        if held and not on_disk:
             answer = self._show_message_box(
                 f"Dictation is paused with {held} phrase{'s' if held != 1 else ''} that "
                 "were never written. Exit and throw them away?",

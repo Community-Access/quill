@@ -3448,7 +3448,7 @@ set to expand only manually. Also on Ctrl+K here, and from any program
 on the key you choose with File, Quick Insert Key.</li>
 </ul>
 <h2 id="quill-transcribe">QUILL Transcribe</h2>
-<p>Control coverage: 42 audited sites (42 helped).</p>
+<p>Control coverage: 43 audited sites (43 helped).</p>
 <h3 id="every-window-and-what-it-is-for-5">Every window, and what it is
 for</h3>
 <p><strong>Choose Microphone.</strong> The microphone QUILL Transcribe
@@ -3509,8 +3509,9 @@ they are inserted. Read them, type or keep dictating to change them, ask
 the AI to change them if AI is on, and hear what changed. Control Enter
 inserts them where they were going; nothing is written before that.</p>
 <p><strong>Review Transcript.</strong> A finished transcript of a
-recording, read-only. Copy it, save it as a text file, or open it in
-QUILL; nothing is copied or typed anywhere unless you choose it.</p>
+recording, read-only. Type it, or the part you selected, into a field in
+another program; copy it, save it as a text file, or open it in QUILL.
+Nothing is copied or typed anywhere unless you choose it.</p>
 <p><strong>Review with AI.</strong> Before the first change is asked
 for, this says who receives the words being reviewed and what is sent.
 No is the default and sends nothing.</p>
@@ -3675,6 +3676,10 @@ id="transcriptreviewdialog-quillappstranscribe_filespy">TranscriptReviewDialog
 <li><code>self.text</code>: The transcript, read-only. Read it with the
 arrow keys; select part of it and press Ctrl+C to copy just that
 part.</li>
+<li><code>type_in</code>: Type the transcript, or only the part you
+selected, into another program. Switch to the field you want and it is
+typed there, with the same checks as dictation: never into a password
+field or a program on your never-type list.</li>
 <li><code>copy</code>: Put the whole transcript on the clipboard.</li>
 <li><code>save</code>: Save the transcript as a text file where you
 choose.</li>
@@ -4665,7 +4670,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
-<p>Control coverage: 212 audited sites (212 helped).</p>
+<p>Control coverage: 216 audited sites (216 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
@@ -4942,9 +4947,12 @@ recently, pinned ones first. Enter opens the one you are on; pin the
 ones you come back to and they stay at the top. Removing a row or
 clearing the list never touches the files themselves.</p>
 <p><strong>Recent Phrases.</strong> What you have dictated since the app
-started, newest first. Insert Again writes the phrase you are on at the
-cursor, and Copy puts it on the clipboard. The list is forgotten when
-you close the app.</p>
+started, newest first, then words kept from before: phrases that were
+not written, a review that did not finish, and with a dictation history
+on, earlier phrases. Insert Again writes the phrase you are on at the
+cursor, Copy puts it on the clipboard, and Discard deletes kept words
+without writing them. This session’s phrases are forgotten when you
+close the app.</p>
 <p><strong>Release Channel: QUILL Lite.</strong> Choose which versions
 this app offers you: Stable, the one we recommend; Beta, new features a
 few weeks early; or Dev, work in progress for testers. Arrowing through
@@ -5551,11 +5559,6 @@ how loud it was and, with an engine that runs on this computer, what the
 engine heard. Nothing is kept.</li>
 <li><code>self.test_result</code>: What the last microphone test
 found.</li>
-<li><code>self.feedback</code>: What you hear each time a phrase goes
-into the document. A sound is a short tone. Speech reads back the words
-that were written, so you can hear whether they are the words you said.
-Use headphones if you choose speech: read back through speakers, the
-microphone can hear it and write it down again.</li>
 <li><code>self.dash</code>: What the spoken word dash writes. A hyphen,
 said as hyphen, is always a plain hyphen that joins two words.</li>
 <li><code>self.pause</code>: How long you can stop talking before what
@@ -5563,8 +5566,6 @@ you said is written. Choose Long if dictation cuts you off while you are
 still thinking; Short writes sooner after you stop. Longer and Longest
 are for speaking slowly: every phrase then waits two or three seconds
 before it is written.</li>
-<li><code>self.remove_fillers</code>: Leave out hesitations – um, uh,
-erm, hmm – instead of writing them. Real words are never removed.</li>
 <li><code>self.continuous</code>: For talking in one long run and
 pausing wherever you like. A pause then puts in no full stop, plays no
 sound and reads nothing back, and voice commands are written as words –
@@ -5572,6 +5573,11 @@ only the stop phrase still stops dictation. Punctuation you say still
 works.</li>
 <li><code>self.advice</code>: The model that suits this computer, and
 why. Only advice.</li>
+<li><code>self.feedback</code>: What you hear each time a phrase goes
+into the document. A sound is a short tone. Speech reads back the words
+that were written, so you can hear whether they are the words you said.
+Use headphones if you choose speech: read back through speakers, the
+microphone can hear it and write it down again.</li>
 <li><code>self.cue_sounds</code>: A rising pair of tones when dictation
 starts listening, a falling pair when it stops, and a low double tone
 when something goes wrong. A failure is always spoken as well, whatever
@@ -5609,6 +5615,26 @@ heard so far while you speak, how dictation behaves when you talk to the
 AI, OpenAI with your own key, and My Dictation Instructions.</li>
 </ul>
 <h4
+id="dictationstylemixin-quilluiwindows_dictation_stylepy">DictationStyleMixin
+(<code>quill/ui/windows_dictation_style.py</code>)</h4>
+<ul>
+<li><code>self.style</code>: A name for how your words are written.
+Verbatim: every word as you say it. Clean: filler words left out, and
+when you correct yourself, like Thursday, no, Friday, only Friday is
+written. Polished, offered when AI is on: Clean, and your dictation goes
+to Review Dictation first, where QUILL polish that asks the AI to tidy
+punctuation and small slips, only when you ask and only after you agree
+to send. Choosing a style sets the check boxes below; changing them
+shows Your own mix.</li>
+<li><code>self.remove_fillers</code>: Leave out hesitations – um, uh,
+erm, hmm – instead of writing them. Real words are never removed.</li>
+<li><code>self.self_repair</code>: When you say no, I mean, or sorry
+between two days, months, numbers or names from My Words, only the
+second is written: Thursday, no, Friday writes Friday. Everything else
+is written as you said it, so no, I do not think so stays as it is. Off
+by default.</li>
+</ul>
+<h4
 id="dictationcommandsdialog-quilluidictation_lists_dialogpy">DictationCommandsDialog
 (<code>quill/ui/dictation_lists_dialog.py</code>)</h4>
 <ul>
@@ -5622,13 +5648,23 @@ id="recentphrasesdialog-quilluidictation_lists_dialogpy">RecentPhrasesDialog
 (<code>quill/ui/dictation_lists_dialog.py</code>)</h4>
 <ul>
 <li><code>self.list</code>: What you dictated this session, newest
-first. Enter inserts the one you are on at the cursor again; Copy puts
+first, then words kept from before: phrases that were not written, a
+review that did not finish, and with dictation history on, earlier
+phrases. Enter inserts the one you are on at the cursor again; Copy puts
 it on the clipboard.</li>
 <li><code>insert</code>: Write this phrase at the cursor again, as one
-undo step.</li>
+undo step. Words kept from before are deleted from this computer once
+they are written.</li>
 <li><code>copy</code>: Put this phrase on the clipboard without writing
 it.</li>
+<li><code>discard</code>: Delete these kept words from this computer
+without writing them. This session’s own phrases are not kept, so there
+is nothing to discard for them.</li>
 <li><code>close</code>: Close the list without inserting anything.</li>
+<li><code>clear</code>: Delete the whole dictation history from this
+computer, after a question whose answer is No unless you choose Yes.
+Words not written last time are not part of the history and stay until
+you discard them.</li>
 </ul>
 <h4
 id="moredictationdialog-quilluidictation_more_dialogpy">MoreDictationDialog
@@ -5664,6 +5700,12 @@ goes into the Review Dictation window instead of the document or the
 other program. Read it, change it, and press Control Enter to insert it
 once. Off by default: then say QUILL review that, or press Review
 Dictation, when you want a phrase reviewed.</li>
+<li><code>self.polish</code>: When this is on, saying QUILL polish that,
+or pressing Polish in Review Dictation, asks the AI to fix punctuation,
+capital letters and small slips in your words, keeping your words. The
+words open in Review Dictation first, you are asked once before anything
+is sent, you hear what changed, and nothing is inserted until you insert
+it. Off by default; it needs AI.</li>
 <li><code>self.send</code>: In the AI Conversation window, Ctrl+F11
 dictates your message. When I pause sends it as soon as you stop
 talking, the reply is read aloud, and the microphone waits until it has
@@ -5718,6 +5760,13 @@ text. You can also switch by voice: QUILL email mode.</li>
 mode or another profile’s name does not switch profiles, and dictation
 says the profile stays as it is. You can still choose a profile
 here.</li>
+<li><code>self.history</code>: Off by default. Choose one, seven or
+thirty days to keep the text of what you dictate on this computer, never
+the sound, so Recent Phrases can bring back earlier phrases after the
+program closes. It is kept for this Windows account only, and Clear
+History in Recent Phrases deletes it. Turning it off deletes it too.
+Words that were never written are kept until you insert or discard them,
+whatever this says.</li>
 <li><code>self.command_prefix</code>: Say this word first to give a
 command instead of dictating: QUILL scratch that, QUILL select the cat.
 It counts only as the first word after a pause, so I told Quill about it

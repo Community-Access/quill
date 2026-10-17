@@ -7056,7 +7056,10 @@ passage and transcribes it afterwards, Live Dictation writes as you go.
 The same submenu has more windows:
 
 - **Recent Phrases...** (`Shift+F11`) lists the last twenty phrases of the
-  session, with Insert Again and Copy.
+  session, with Insert Again and Copy. Words a correction replaced are there
+  too, marked "(before correction)", so nothing a correction changed is lost.
+  After them come any words kept from before. See "Words that were not
+  written, and dictation history".
 - **My Words and Phrases...** (`Alt+Shift+F10`) is a window with Add Word, Add
   Phrase, Add Correction, Edit and Remove. It edits your `dictation.md` file for
   you. **Import...** and **Export...** move the list to another computer or
@@ -7156,16 +7159,23 @@ instead of changing several settings each time. There are seven:
 
 **Choosing one.** Open Dictation Settings (`Alt+Shift+F6`), press **More Dictation
 Settings...**, and choose in **Dictation profile, for the kind of writing**
-(**Alt+G**). Or, while dictating, say the profile's name after the command
+(**Alt+A**). Or, while dictating, say the profile's name after the command
 word: "QUILL email mode", "QUILL markdown mode", "QUILL standard mode" ("email
 profile" works too). You hear "Email profile." and the choice is kept for next
 time. The status bar shows a profile other than Standard beside the dictation
 modes, so a braille display shows it too.
 
-**Lock the profile so it cannot be switched by voice** (**Alt+Y**, in More
+**Lock the profile so it cannot be switched by voice** (**Alt+B**, in More
 Dictation Settings) stops a spoken profile name from switching: you hear "Lock
 Profile is on, so the profile stays Email." Nothing ever switches profiles on
 its own.
+
+**Profiles and the Dictation style.** While a profile other than Standard is
+on, its own choice about filler words wins over the **Dictation style** in
+Dictation Settings: Verbatim keeps fillers even if the style is Clean, and
+Email, Chat and Coding remove them even if the style is Verbatim. A profile
+never changes **Fix it when I correct myself** or polishing. Standard leaves
+your style exactly as it is.
 
 **Headings, bold and italic by voice.** "heading one" to "heading six" at the
 start of a phrase, and "QUILL bold that" and "QUILL italic that" (or
@@ -7281,6 +7291,137 @@ The AI, and what is sent:
 To send everything you dictate to the window first, turn on **Send dictation
 to review first** (`Alt+V`) in More Dictation Settings. The first thing you say
 opens the window, and nothing reaches the document until you insert it.
+
+##### Polishing your dictation with AI, only when you ask
+
+Sometimes you want the punctuation and capitals tidied without rewording
+anything. **Polish** does exactly that, as one request you ask for each time.
+It is off until you turn it on, and it never runs by itself.
+
+1. Open Dictation Settings (`Alt+Shift+F6`), press **More Dictation
+   Settings...** (`Alt+A`), and check **Allow polishing my dictation with AI
+   when I ask** (`Alt+G`). Press OK in both windows.
+2. Dictate as usual. When you want a phrase polished, say **"QUILL polish
+   that"** (or "QUILL polish it"). The last phrase is taken back out of the
+   document and opened in Review Dictation, then the polish request is made
+   there. If Review Dictation is already open, the words in it are polished.
+3. In the Review Dictation window you can also press **Polish** (`Ctrl+P`).
+   That button is there only while polishing is allowed.
+4. You hear "Polishing", then what changed, in two sentences at most, worked
+   out by QUILL comparing the words itself. Read the words, then **Insert** (`Ctrl+Enter`)
+   or take the change back with **Undo Change** (`Ctrl+Z`).
+
+What the AI is asked: to fix punctuation, capital letters, spelling and obvious
+grammar slips only, and to keep your words, your meaning, your order and your
+tone. It is the same request every time.
+
+What is sent, and when: polish uses the same AI, the same account and the same
+question as the rest of Review Dictation. The first time, QUILL asks before
+anything is sent and names who receives it; No is the default and sends
+nothing. Only the words in the window are sent. With AI off or in Safe Mode
+the Polish button is greyed out. With polishing not allowed, "QUILL polish
+that" says "Polish my dictation is off" and sends nothing.
+
+##### Correcting yourself as you talk, and dictation styles
+
+People correct themselves mid-sentence: "meet on Thursday, no, Friday". With
+**Fix it when I correct myself, like Thursday, no, Friday** (`Alt+X`) checked
+in Dictation Settings, QUILL writes only what you meant:
+
+| You say | QUILL writes |
+|---|---|
+| meet on Thursday, no, Friday at noon | meet on Friday at noon |
+| in June, no I mean July | in July |
+| I have two no three cats | I have three cats |
+| call me at 5, sorry, 6 | call me at 6 |
+| send it to Ana, I mean Maria (with Maria and Ana in My Words) | send it to Maria |
+| Monday scratch that word Tuesday | Tuesday |
+
+The words that mark a correction are "no", "I mean", "no I mean", "sorry" and
+"scratch that word". A correction is made only between two things of the same
+kind: two days (including today, tomorrow, tonight and yesterday), two months,
+two numbers, or two names from the Vocabulary list in My Words and Phrases.
+Everything else is written exactly as you said it, so these are left alone:
+
+- "no, I don't think so" (nothing before the "no");
+- "Is it Thursday? No, Friday." (a question and its answer);
+- "I said no, Friday" (a word that is not a day before the "no");
+- "I may, no, March" ("may" is a verb unless you say it as the month May).
+
+It all happens on this computer, with no AI and no internet. It is off until
+you turn it on, and a live transcript never uses it, because a transcript
+keeps what the speaker said.
+
+**Dictation style** (`Alt+Y`), just above, is a quick way to set these choices
+together:
+
+- **Verbatim: every word as I say it.** No filler removal, no correction.
+- **Clean: no filler words, and my corrections fixed.** Turns on **Remove
+  filler words** and **Fix it when I correct myself**.
+- **Polished: Clean, then review, and polish with AI when I ask.** Clean,
+  plus **Send dictation to review first** and **Allow polishing my dictation
+  with AI when I ask**. It is offered only when AI help is on. Choosing it
+  sends nothing: you still say "QUILL polish that" or press Polish each time.
+
+If you change a check box yourself, the style shows **Your own mix of the
+settings below**, and choosing that changes nothing.
+
+##### Learning from your corrections
+
+When you correct the same word the same way twice, QUILL offers to remember it,
+so you do not have to correct it a third time. A correction counts when you say
+"QUILL correct that" and then "choose 2", or when you say "QUILL correct Ann"
+and then say the new words.
+
+The second time, a window called **Add a Correction** asks, for example,
+"Add a correction: Ann becomes Anne? It goes into My Words and Phrases, under
+Corrections." **No** is the default. Press **Yes** to add it, or No
+or Escape to leave it. Dictation keeps going while you answer.
+
+On Yes the correction goes into the Corrections list of My Words and Phrases
+(`Alt+Shift+F10`), the same list you can edit by hand, and the next phrase uses
+it. You hear "Added: Ann becomes Anne. It is in My Words and Phrases."
+
+Limits: each pair is offered once each time QUILL runs, whatever you answer.
+Only a single word or a short phrase of up to four words is offered, never a
+sentence. Nothing about your corrections is saved anywhere until you say yes.
+
+**Words for one kind of writing.** My Words and Phrases' file can hold a
+section headed, for example, `## Context: email`, with words (one a line) and
+corrections (`heard => write`) meant only for that kind of writing. QUILL keeps
+these sections when it saves the file. They are ready for named dictation
+profiles, which are not in this version, so for now they are not used.
+##### Words that were not written, and dictation history
+
+Dictation never throws away words it could not write. If dictation pauses
+because its field moved, or Windows stops typing a phrase part-way through, the
+words are kept on this computer until you deal with them, even if QUILL is
+closed, crashes or the computer sleeps. Stopping dictation while words are held
+says so: "1 phrase held while paused was not written. They are kept in Recent
+Phrases." The next time QUILL starts, it says once how many are waiting.
+
+They are in **Recent Phrases** (`Shift+F11`), after this session's phrases,
+labelled "Not written" with the time. So is a review that did not finish,
+labelled "Review not finished". Choose one and:
+
+- **Insert Again** (`Alt+I`, or `Enter`) writes it at the cursor, and then it
+  is deleted from this computer;
+- **Copy** (`Alt+C`) puts it on the clipboard and keeps it;
+- **Discard** (`Alt+D`) deletes it without writing it.
+
+Only words that were never written are kept, and they are sealed for your
+Windows account, so another account on the same computer cannot read them.
+Nothing you dictate is kept as sound.
+
+**Dictation history** is off unless you turn it on. In More Dictation
+Settings, **Keep a dictation history** (`Alt+Y`) can be Off, One day, Seven
+days or Thirty days. While it is on, the text of each phrase you dictate is
+kept for that long, sealed the same way, and Recent Phrases lists the earlier
+ones after the words not written, newest first, labelled "Earlier" with the
+time. **Clear History** (`Alt+H`) in Recent Phrases deletes all of it, after a
+question whose answer is No unless you choose Yes. Turning the history off
+deletes it too. Neither the kept words nor the history ever go into QUILL's
+log or a diagnostic report.
 
 ##### Holding Ctrl+F11 to talk
 
@@ -7449,8 +7590,9 @@ middle of a sentence is written as words, just as you meant it.
 - "undo that"
 - "select that"
 - "capitalize that", "all caps that", "no caps that"
-- "delete word", "delete sentence"
-- "read that"
+- "delete word", "delete sentence", "delete previous paragraph"
+- "read that" reads all of what last went in, a whole snippet included
+- "read last sentence", "read last paragraph", "read selection"
 - "go to beginning of line", "go to end of line", "go to top", "go to end of
   document"
 - "select sentence", "select line", "select paragraph"
@@ -7460,10 +7602,25 @@ middle of a sentence is written as words, just as you meant it.
 - "copy that", "copy all", "show clips", "show snippets"
 - "stop dictation"
 
+**Reading back, a worked example.** You have dictated "Thanks for the notes
+comma I will send the draft on Friday period" and want to check it by ear.
+Say "read last sentence": you hear "Thanks for the notes comma I will send the
+draft on Friday period", with the marks named when **Say punctuation marks in
+the read-back** (More Dictation Settings) is
+on, so a missing comma is easy to catch. "read last paragraph" (or "read this
+paragraph") reads the whole paragraph the cursor is in, and "read selection"
+reads what you selected ("Nothing is selected." when nothing is). "read that"
+reads all of what last went in, so after "insert snippet sign off" it reads the
+whole snippet, not only its name. Reading never moves the cursor or changes
+the text. In another program only "read that" works, because QUILL reads only
+the words it typed there.
+
 **Commands with words after them**, said at the start of a phrase:
 
 - "select" and some words, "go to", "go before" or "go after" and some words,
   "correct" and some words (see "Moving and selecting by voice")
+- "replace" some words "with" new words, and "change that to" and new words
+  (see "Replace and change that")
 - "paste clip three", "insert snippet" and a name, "insert abbreviation" and a
   trigger (see "Snippets and clips by voice")
 - "switch to Spanish" (see "Switching between English and Spanish")
@@ -7541,13 +7698,20 @@ With words after them, at the start of a phrase:
 - **"insert abbreviation"** (or "expand abbreviation") **and its trigger**
   writes what that abbreviation stands for.
 
-A snippet with blanks to fill in is written with each blank as its name in
-square brackets, like `[name]`. Say "select name" and then the real name, and
-the blank is filled.
+A snippet with blanks to fill in asks for each blank by voice before anything
+is written. With the starter Bug Report Template, "insert snippet bug report"
+says "Snippet Bug Report Template, 3 blanks. Say cancel to stop. Summary?". What
+you say next is the answer, with spoken punctuation obeyed. For a choice, such
+as `${choice:NVDA|JAWS|Narrator}`, you hear "Choose NVDA, JAWS or Narrator.":
+say one of them, or "choose two". Say **skip** to leave a blank empty,
+**scratch that** to answer the one before again, or **cancel** to write
+nothing. `${date}` and `${time}` come from this computer's clock, and
+`${cursor}` puts the cursor where the snippet says.
 
 Whatever goes in, it goes in as one phrase: one `Ctrl+Z` takes it out, and so
 does "scratch that". The read-back keeps it short, "Snippet sign off" or
-"Pasted slot 3", rather than reading the whole thing to you. These commands do
+"Pasted slot 3", rather than reading the whole thing to you; say "read that"
+to hear all of it. These commands do
 not work while **Just write what I say** is on, because commands are off then.
 
 ##### Correct that: choosing another guess
@@ -7559,15 +7723,59 @@ and the number." Then say **"choose one"**, **"choose two"** or **"choose
 three"**, and that guess takes the place of what was written. You hear
 "Changed to:" and the new words.
 
-Only **Windows speech recognition** keeps other guesses. Moonshine, Whisper,
-the optional models and OpenAI give one answer each, so with them "correct
-that" tells you there is nothing to choose from. Say "scratch that" and say it
-again, or add a correction in **My Words and Phrases** so it comes out right
-next time.
+**Windows speech recognition** keeps its own other guesses. Moonshine,
+Whisper and the optional models give one answer each, so with them "correct
+that" asks for a **second opinion** instead: the other built-in engine listens
+to your last phrase again. You hear "Listening again with Whisper." (or
+Moonshine), and a moment later both answers: "1: the whether is nice. 2: the
+weather is nice. Say choose and the number." Say **"choose two"** to take the
+second. If both engines heard the same words, you are told so, and nothing
+changes. Whisper listens again after Moonshine, and Moonshine after Whisper or
+a downloaded model.
+
+The second opinion uses only the sound of your last phrase, kept in memory
+until you say the next one: nothing is saved to disk and nothing goes over the
+internet. It is not offered in Spanish, where only Whisper understands you, or
+with OpenAI or a speech company. Then "correct that" tells you there is nothing
+to choose from: say "scratch that" and say it again, or add a correction in
+**My Words and Phrases** so it comes out right next time.
+
+Whatever a correction replaced is not lost. It goes into **Recent Phrases**
+(`Shift+F11`, in the Live Dictation submenu) marked "(before correction)", just after the corrected
+words, so you can put it back with Insert Again or copy it.
 
 With any engine you can also say **"correct" and the words** that came out
 wrong, then say the right ones (see "Moving and selecting by voice"), or **"spell
 that"** to spell the last phrase out (see "Letters, numbers and symbols").
+
+##### Replace and change that: fixing words without retyping them
+
+Two commands put new words in place of old ones, so you do not have to
+select anything first. Say each one at the start of a phrase.
+
+**"replace" the words "with" the new words.** Say "replace Tuesday with
+Wednesday" and the nearest "Tuesday" before the cursor becomes "Wednesday";
+if there is none before the cursor, QUILL looks after it. The new words take
+the capital and the closing full stop of the old ones, and the cursor stays
+where it was, so you can carry on dictating. You hear "Replaced Tuesday with
+Wednesday." If the words are not there, what you said is written as ordinary
+text, as with "select" (you hear "Not found, written as text."; say "scratch
+that" to take it away). After the command word, "QUILL replace Tuesday with
+Wednesday", nothing is written when the words are not found.
+
+**"change that to" and the new words** replaces the whole phrase you dictated
+last. You said "see you Thursday." and meant Friday: say "change that to see
+you Friday", and you hear "Changed to: See you Friday." The leading space, the
+capital and the closing full stop stay as they were.
+
+**"delete previous paragraph"** (or "delete last paragraph") deletes the
+paragraph just before the cursor, from its start up to the cursor, with the
+blank line in front of it. Say it again to delete the one before. If text is
+selected, the selection is deleted instead.
+
+Replace and change that keep what they replaced in Recent Phrases, marked
+"(before correction)". "Scratch that" straight after a replace inside your last
+phrase takes away the whole corrected phrase.
 
 ##### Speech engines for Live Dictation
 
@@ -7631,7 +7839,7 @@ brackets:
   dictation" until you choose your own words, said on their own after a pause.
   "stop dictation" always works too.
 
-Five finer choices sit beside them:
+Six finer choices, and a style that sets two of them, sit beside them:
 
 - **Automatic punctuation** for Moonshine and Whisper
   (`windows_dictation_auto_punctuation`). Turn it off and you say every mark.
@@ -7642,6 +7850,11 @@ Five finer choices sit beside them:
   that long before it is written.
 - **Remove filler words** such as um and uh
   (`windows_dictation_remove_fillers`).
+- **Dictation style** (`Alt+Y`): Verbatim, Clean or, with AI on, Polished;
+  see "Correcting yourself as you talk, and dictation styles". It is a name
+  for the settings it changes and is not saved by itself.
+- **Fix it when I correct myself** (`windows_dictation_self_repair`, `Alt+X`):
+  "Thursday, no, Friday" writes Friday. Off at first.
 - **Stop dictation after silence** (`windows_dictation_silence_minutes`):
   never, 1, 5 or 10 minutes.
 - **Just write what I say** (`windows_dictation_continuous`), for talking in
@@ -7689,8 +7902,10 @@ you change here is saved when you press OK in Dictation Settings.
 | Commands only after the command word (strict mode) (`Alt+E`) | A command said on its own is written as words; the stop phrase always works | Off (on in QUILL Transcribe) |
 | Seconds command mode waits for a command (`Alt+D`) | How long command mode lasts with no command, from 5 to 30 | 8 |
 | Send dictation to review first (`Alt+V`) | What you dictate goes into Review Dictation instead, to insert once; see "Review before inserting" | Off |
-| Dictation profile, for the kind of writing (`Alt+G`) | Standard, Email, Document, Markdown, Chat, Coding or Verbatim; see "Dictation profiles" | Standard |
-| Lock the profile so it cannot be switched by voice (`Alt+Y`) | A spoken profile name does not switch profiles | Off |
+| Allow polishing my dictation with AI when I ask (`Alt+G`) | "QUILL polish that" and the Polish button in Review Dictation ask the AI to fix punctuation and small slips, keeping your words; see "Polishing your dictation with AI, only when you ask" | Off |
+| Keep a dictation history (`Alt+Y`) | Off, One day, Seven days or Thirty days of the text you dictate, never the sound, listed in Recent Phrases; turning it off deletes it; see "Words that were not written, and dictation history" | Off |
+| Dictation profile, for the kind of writing (`Alt+A`) | Standard, Email, Document, Markdown, Chat, Coding or Verbatim; see "Dictation profiles" | Standard |
+| Lock the profile so it cannot be switched by voice (`Alt+B`) | A spoken profile name does not switch profiles | Off |
 
 In settings files these are `windows_dictation_hold_to_talk`,
 `windows_dictation_preview`, `windows_dictation_ai_send`,
@@ -7701,7 +7916,9 @@ In settings files these are `windows_dictation_hold_to_talk`,
 `windows_dictation_never_type`, `windows_dictation_command_prefix`,
 `windows_dictation_command_prefix_required`,
 `windows_dictation_command_timeout`, `windows_dictation_review_first`,
-`windows_dictation_profile` and `windows_dictation_profile_locked`. The
+`windows_dictation_polish`, `windows_dictation_history_days` (0 for off,
+or 1, 7 or 30), `windows_dictation_profile` and
+`windows_dictation_profile_locked`. The
 review window also keeps `windows_dictation_review_context` (its context check
 box) and `windows_dictation_review_consent` (your answer to its question).
 
@@ -8286,8 +8503,11 @@ Backspace for you, so it only works while the same window still has the focus.
 Your snippets, abbreviations and clips work there too, because they only
 insert: "insert snippet" and its name, "insert abbreviation" and its name, and
 "paste clip" and a number. Each is typed as one phrase, so "scratch that" takes
-all of it back. A snippet's blanks are typed as their names in square
-brackets, like [title], with no questions, and the cursor stays at the end.
+all of it back. A snippet's blanks are asked for by voice first, as in a
+document (see "Snippets and clips by voice"), and the cursor stays at the end.
+"read that" reads what dictation typed there; "read last sentence" and the
+other commands that read the text cannot, because nothing in the other program
+is read.
 
 Anything that needs to read what is already in the other program cannot work
 there: "select", "go to", "correct", "copy all" and "show clips". If you say
@@ -8500,7 +8720,9 @@ quick loop:
 4. **"spell that"** is for a name or a word the engine has never heard. Spell
    it with the phonetic alphabet in your next phrase.
 5. **Recent Phrases** (`Shift+F11`) shows what was written for your last twenty
-   phrases, so you can see what went wrong.
+   phrases, so you can see what went wrong, and any words that were never
+   written. Say "read last sentence" to hear a sentence back with its
+   punctuation.
 6. When you are done, **Tidy Dictated Text** (`Ctrl+F3`) can fix sound-alike
    words, names and punctuation in a paragraph or a selection with AI, if you
    have a ChatGPT subscription or your own OpenAI key (see "Tidy Dictated

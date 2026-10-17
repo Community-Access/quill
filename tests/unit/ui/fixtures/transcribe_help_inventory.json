@@ -35,6 +35,7 @@
   "quill/apps/transcribe_files.py::TranscriptReviewDialog.__init__::wx.Button#2": "helped",
   "quill/apps/transcribe_files.py::TranscriptReviewDialog.__init__::wx.Button#3": "helped",
   "quill/apps/transcribe_files.py::TranscriptReviewDialog.__init__::wx.Button#4": "helped",
+  "quill/apps/transcribe_files.py::TranscriptReviewDialog.__init__::wx.Button#5": "helped",
   "quill/apps/transcribe_files.py::TranscriptReviewDialog.__init__::wx.TextCtrl": "helped",
   "quill/apps/transcribe_practice.py::PracticeDictationFrame.__init__::wx.Button": "helped",
   "quill/apps/transcribe_practice.py::PracticeDictationFrame.__init__::wx.TextCtrl": "helped",

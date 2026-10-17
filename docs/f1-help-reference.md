@@ -1384,7 +1384,7 @@ Control coverage: 3 audited sites (3 helped).
 
 ## QUILL Transcribe
 
-Control coverage: 42 audited sites (42 helped).
+Control coverage: 43 audited sites (43 helped).
 
 ### Every window, and what it is for
 
@@ -1420,7 +1420,7 @@ Control coverage: 42 audited sites (42 helped).
 
 **Review Dictation.** Dictated words wait here before they are inserted. Read them, type or keep dictating to change them, ask the AI to change them if AI is on, and hear what changed. Control Enter inserts them where they were going; nothing is written before that.
 
-**Review Transcript.** A finished transcript of a recording, read-only. Copy it, save it as a text file, or open it in QUILL; nothing is copied or typed anywhere unless you choose it.
+**Review Transcript.** A finished transcript of a recording, read-only. Type it, or the part you selected, into a field in another program; copy it, save it as a text file, or open it in QUILL. Nothing is copied or typed anywhere unless you choose it.
 
 **Review with AI.** Before the first change is asked for, this says who receives the words being reviewed and what is sent. No is the default and sends nothing.
 
@@ -1493,6 +1493,7 @@ Control coverage: 42 audited sites (42 helped).
 #### TranscriptReviewDialog (`quill/apps/transcribe_files.py`)
 
 - `self.text`: The transcript, read-only. Read it with the arrow keys; select part of it and press Ctrl+C to copy just that part.
+- `type_in`: Type the transcript, or only the part you selected, into another program. Switch to the field you want and it is typed there, with the same checks as dictation: never into a password field or a program on your never-type list.
 - `copy`: Put the whole transcript on the clipboard.
 - `save`: Save the transcript as a text file where you choose.
 - `quill`: Open the transcript in QUILL to edit it.
@@ -1898,7 +1899,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 212 audited sites (212 helped).
+Control coverage: 216 audited sites (216 helped).
 
 ### Every window, and what it is for
 
@@ -2026,7 +2027,7 @@ Control coverage: 212 audited sites (212 helped).
 
 **Recent Documents.** Every document you opened recently, pinned ones first. Enter opens the one you are on; pin the ones you come back to and they stay at the top. Removing a row or clearing the list never touches the files themselves.
 
-**Recent Phrases.** What you have dictated since the app started, newest first. Insert Again writes the phrase you are on at the cursor, and Copy puts it on the clipboard. The list is forgotten when you close the app.
+**Recent Phrases.** What you have dictated since the app started, newest first, then words kept from before: phrases that were not written, a review that did not finish, and with a dictation history on, earlier phrases. Insert Again writes the phrase you are on at the cursor, Copy puts it on the clipboard, and Discard deletes kept words without writing them. This session's phrases are forgotten when you close the app.
 
 **Release Channel: QUILL Lite.** Choose which versions this app offers you: Stable, the one we recommend; Beta, new features a few weeks early; or Dev, work in progress for testers. Arrowing through the choices only explains them -- nothing changes until you choose Switch.
 
@@ -2261,12 +2262,11 @@ Control coverage: 212 audited sites (212 helped).
 - `self.microphone`: The microphone dictation listens on. The Windows default follows whatever Windows Sound settings choose as the default recording device; choose a named microphone to keep using that one whatever the default becomes. If the chosen microphone is unplugged, starting dictation says so rather than quietly listening on another.
 - `self.test_microphone`: Records four seconds on the chosen microphone -- start speaking when you hear Speak now -- then says how loud it was and, with an engine that runs on this computer, what the engine heard. Nothing is kept.
 - `self.test_result`: What the last microphone test found.
-- `self.feedback`: What you hear each time a phrase goes into the document. A sound is a short tone. Speech reads back the words that were written, so you can hear whether they are the words you said. Use headphones if you choose speech: read back through speakers, the microphone can hear it and write it down again.
 - `self.dash`: What the spoken word dash writes. A hyphen, said as hyphen, is always a plain hyphen that joins two words.
 - `self.pause`: How long you can stop talking before what you said is written. Choose Long if dictation cuts you off while you are still thinking; Short writes sooner after you stop. Longer and Longest are for speaking slowly: every phrase then waits two or three seconds before it is written.
-- `self.remove_fillers`: Leave out hesitations -- um, uh, erm, hmm -- instead of writing them. Real words are never removed.
 - `self.continuous`: For talking in one long run and pausing wherever you like. A pause then puts in no full stop, plays no sound and reads nothing back, and voice commands are written as words -- only the stop phrase still stops dictation. Punctuation you say still works.
 - `self.advice`: The model that suits this computer, and why. Only advice.
+- `self.feedback`: What you hear each time a phrase goes into the document. A sound is a short tone. Speech reads back the words that were written, so you can hear whether they are the words you said. Use headphones if you choose speech: read back through speakers, the microphone can hear it and write it down again.
 - `self.cue_sounds`: A rising pair of tones when dictation starts listening, a falling pair when it stops, and a low double tone when something goes wrong. A failure is always spoken as well, whatever this is set to.
 - `self.announce`: Speak the words as well as, or instead of, the sounds when dictation starts and stops. With both off, the check mark on the Dictation menu item still shows whether it is on.
 - `self.wake`: Start dictation by saying the wake phrase instead of pressing a key. While this is on, the microphone stays open whenever this program is the window in front -- nothing it hears is written, kept or sent anywhere until it hears the wake phrase -- and it closes whenever another program comes to the front. Off unless you turn it on.
@@ -2276,16 +2276,23 @@ Control coverage: 212 audited sites (212 helped).
 - `commands`: The list of everything dictation understands: punctuation, layout, the commands, spelling, and your own phrases. Saying what can I say while dictating opens the same list.
 - `words`: Add, change and remove your own words for dictation in a window: names and jargon to spell your way, phrases that write whatever you choose, and corrections for what the engine keeps hearing wrong. Saves these settings first.
 - `self.more_button`: Holding Ctrl+F11 to talk, the words heard so far while you speak, how dictation behaves when you talk to the AI, OpenAI with your own key, and My Dictation Instructions.
+#### DictationStyleMixin (`quill/ui/windows_dictation_style.py`)
+
+- `self.style`: A name for how your words are written. Verbatim: every word as you say it. Clean: filler words left out, and when you correct yourself, like Thursday, no, Friday, only Friday is written. Polished, offered when AI is on: Clean, and your dictation goes to Review Dictation first, where QUILL polish that asks the AI to tidy punctuation and small slips, only when you ask and only after you agree to send. Choosing a style sets the check boxes below; changing them shows Your own mix.
+- `self.remove_fillers`: Leave out hesitations -- um, uh, erm, hmm -- instead of writing them. Real words are never removed.
+- `self.self_repair`: When you say no, I mean, or sorry between two days, months, numbers or names from My Words, only the second is written: Thursday, no, Friday writes Friday. Everything else is written as you said it, so no, I do not think so stays as it is. Off by default.
 #### DictationCommandsDialog (`quill/ui/dictation_lists_dialog.py`)
 
 - `self.text`: Every phrase dictation acts on and what it does. Read with the arrow keys; Escape closes. The same list is in the user guide.
 - `close`: Close this list.
 #### RecentPhrasesDialog (`quill/ui/dictation_lists_dialog.py`)
 
-- `self.list`: What you dictated this session, newest first. Enter inserts the one you are on at the cursor again; Copy puts it on the clipboard.
-- `insert`: Write this phrase at the cursor again, as one undo step.
+- `self.list`: What you dictated this session, newest first, then words kept from before: phrases that were not written, a review that did not finish, and with dictation history on, earlier phrases. Enter inserts the one you are on at the cursor again; Copy puts it on the clipboard.
+- `insert`: Write this phrase at the cursor again, as one undo step. Words kept from before are deleted from this computer once they are written.
 - `copy`: Put this phrase on the clipboard without writing it.
+- `discard`: Delete these kept words from this computer without writing them. This session's own phrases are not kept, so there is nothing to discard for them.
 - `close`: Close the list without inserting anything.
+- `clear`: Delete the whole dictation history from this computer, after a question whose answer is No unless you choose Yes. Words not written last time are not part of the history and stay until you discard them.
 #### MoreDictationDialog (`quill/ui/dictation_more_dialog.py`)
 
 - `self.hold`: Left off, Ctrl+F11 starts dictating with one press and stops with the next. Turned on, you can also hold Ctrl+F11 while you talk, and dictation stops when you let go, keeping your last phrase. A quick press still turns it on and off.
@@ -2294,6 +2301,7 @@ Control coverage: 212 audited sites (212 helped).
 - `self.working_tick`: When a phrase takes more than a second to turn into text after you pause, play a soft tick every second until it arrives. The first time a phrase takes four seconds, dictation also says Still working on that phrase. While a tick plays the microphone is not listened to, as with every QUILL sound. Off by default in QUILL and QUILL Lite, on in QUILL Transcribe.
 - `self.timestamps`: In a live transcript, start each new paragraph with the time, like 10:42 in square brackets, so you can find a moment later. A new paragraph starts when the speaker pauses for four seconds or more. Off by default.
 - `self.review_first`: When this is on, what you dictate goes into the Review Dictation window instead of the document or the other program. Read it, change it, and press Control Enter to insert it once. Off by default: then say QUILL review that, or press Review Dictation, when you want a phrase reviewed.
+- `self.polish`: When this is on, saying QUILL polish that, or pressing Polish in Review Dictation, asks the AI to fix punctuation, capital letters and small slips in your words, keeping your words. The words open in Review Dictation first, you are asked once before anything is sent, you hear what changed, and nothing is inserted until you insert it. Off by default; it needs AI.
 - `self.send`: In the AI Conversation window, Ctrl+F11 dictates your message. When I pause sends it as soon as you stop talking, the reply is read aloud, and the microphone waits until it has been read before it listens again; Escape listens at once. When I press Enter lets you check the message first.
 - `self.ai_pause`: How long you can stop to think while talking to the AI before what you said is written -- and, with When I pause, sent. Long is the default, so a breath does not send half a question.
 - `self.ai_fillers`: Leave out um, uh and their kin from what you say to the AI. On by default, because the AI does not need them.
@@ -2307,6 +2315,7 @@ Control coverage: 212 audited sites (212 helped).
 - `never_type`: The programs dictation never types into from QUILL Transcribe or Quill Inkwell, such as your password manager: add the program you were just in, add one by its file name, or remove one. Matched by file name, never by a window title.
 - `self.profile`: A profile changes the pause, the filler words and the punctuation for one kind of writing, and how headings, bold and italic are written. Standard is your settings as they are. Markdown writes the marks; Document and Email use QUILL's own formatting and type nothing for a heading elsewhere; Chat and Verbatim write plain text. You can also switch by voice: QUILL email mode.
 - `self.profile_locked`: When this is on, saying QUILL chat mode or another profile's name does not switch profiles, and dictation says the profile stays as it is. You can still choose a profile here.
+- `self.history`: Off by default. Choose one, seven or thirty days to keep the text of what you dictate on this computer, never the sound, so Recent Phrases can bring back earlier phrases after the program closes. It is kept for this Windows account only, and Clear History in Recent Phrases deletes it. Turning it off deletes it too. Words that were never written are kept until you insert or discard them, whatever this says.
 - `self.command_prefix`: Say this word first to give a command instead of dictating: QUILL scratch that, QUILL select the cat. It counts only as the first word after a pause, so I told Quill about it is written as words. If what follows is not a command, nothing is typed, and QUILL type that writes it. Say literal QUILL to write the word itself. Leave it empty to give commands with the Speak a Command key only. A common word, or one of your own words in My Words and Phrases, is refused.
 - `self.command_required`: When this is on, a command said on its own, like scratch that, is written as words, and only QUILL scratch that is a command. The stop phrase always works. On by default in QUILL Transcribe, where a command typed into an email by mistake is hard to take back; off in QUILL and QUILL Lite.
 - `self.command_timeout`: Say QUILL command mode, or press Speak a Command twice, and everything you say is a command until you say dictation mode or give no command for this many seconds. A falling tone says it has ended. From 5 to 30; 8 by default.

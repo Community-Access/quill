@@ -56,6 +56,8 @@
   "quill/ui/dictation_lists_dialog.py::RecentPhrasesDialog.__init__::wx.Button": "helped",
   "quill/ui/dictation_lists_dialog.py::RecentPhrasesDialog.__init__::wx.Button#2": "helped",
   "quill/ui/dictation_lists_dialog.py::RecentPhrasesDialog.__init__::wx.Button#3": "helped",
+  "quill/ui/dictation_lists_dialog.py::RecentPhrasesDialog.__init__::wx.Button#4": "helped",
+  "quill/ui/dictation_lists_dialog.py::RecentPhrasesDialog.__init__::wx.Button#5": "helped",
   "quill/ui/dictation_lists_dialog.py::RecentPhrasesDialog.__init__::wx.ListBox": "helped",
   "quill/ui/dictation_models_dialog.py::SpeechModelsDialog.__init__::wx.Button": "helped",
   "quill/ui/dictation_models_dialog.py::SpeechModelsDialog.__init__::wx.Button#2": "helped",
@@ -80,6 +82,7 @@
   "quill/ui/dictation_more_dialog.py::MoreDictationDialog.__init__::wx.TextCtrl": "helped",
   "quill/ui/dictation_more_dialog.py::MoreDictationDialog._add_command_word::wx.SpinCtrl": "helped",
   "quill/ui/dictation_more_dialog.py::MoreDictationDialog._add_command_word::wx.TextCtrl": "helped",
+  "quill/ui/dictation_more_dialog.py::MoreDictationDialog._add_history::wx.Choice": "helped",
   "quill/ui/dictation_more_dialog.py::MoreDictationDialog._add_profile::wx.Choice": "helped",
   "quill/ui/dictation_review_frame.py::DictationReviewFrame.__init__::wx.Button": "helped",
   "quill/ui/dictation_review_frame.py::DictationReviewFrame.__init__::wx.Button#2": "helped",
@@ -210,5 +213,6 @@
   "quill/ui/windows_dictation_dialog.py::WindowsDictationDialog.__init__::wx.TextCtrl": "helped",
   "quill/ui/windows_dictation_dialog.py::WindowsDictationDialog.__init__::wx.TextCtrl#2": "helped",
   "quill/ui/windows_dictation_dialog.py::WindowsDictationDialog.__init__::wx.TextCtrl#3": "helped",
-  "quill/ui/windows_dictation_dialog.py::WindowsDictationDialog.__init__::wx.TextCtrl#4": "helped"
+  "quill/ui/windows_dictation_dialog.py::WindowsDictationDialog.__init__::wx.TextCtrl#4": "helped",
+  "quill/ui/windows_dictation_style.py::DictationStyleMixin._add_style_controls::wx.Choice": "helped"
 }

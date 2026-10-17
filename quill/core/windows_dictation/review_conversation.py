@@ -32,6 +32,9 @@ from pathlib import Path
 from typing import Any, Protocol
 
 from quill.core.windows_dictation.review_session import (
+    POLISH_INSTRUCTION,
+    POLISH_LABEL,
+    POLISH_OFF,
     ReviewSession,
     clear_rescue,
     consent_question,
@@ -100,8 +103,10 @@ class ReviewConversation:
         rescue: Path | None = None,
         my_instructions: Callable[[], str] = lambda: "",
         context: Callable[[], str] = lambda: "",
+        polish_on: Callable[[], bool] = lambda: False,
     ) -> None:
         self.session = session
+        self._polish_on = polish_on
         self._port = port
         self._ai = ai
         self._rescue = rescue
@@ -144,8 +149,27 @@ class ReviewConversation:
 
     # -- the commands -------------------------------------------------------- #
 
-    def instruct(self, instruction: str) -> None:
-        """Ask the AI to change the words: "make it shorter"."""
+    def polish(self) -> None:
+        """ "Polish my dictation" (P3): one fixed request, only when allowed.
+
+        Opt-in (``windows_dictation_polish``, off by default) and never
+        automatic; the consent question is the review's own, asked before the
+        first request, so nothing is sent without a yes.
+        """
+        try:
+            allowed = bool(self._polish_on())
+        except Exception:  # noqa: BLE001 - unknown is off
+            allowed = False
+        if not allowed:
+            self._port.say(POLISH_OFF)
+            return
+        self.instruct(POLISH_INSTRUCTION, label=POLISH_LABEL)
+
+    def instruct(self, instruction: str, *, label: str = "") -> None:
+        """Ask the AI to change the words: "make it shorter".
+
+        *label* is what the status line and the revision call the request when
+        the instruction itself is long (Polish's fixed wording)."""
         instruction = " ".join(instruction.split())
         if not instruction:
             self._port.say("Say or type what to change first, like make it shorter.")
@@ -177,11 +201,12 @@ class ReviewConversation:
         except Exception:  # noqa: BLE001 - instructions are a preference
             mine = ""
         prompt = review_request(text, instruction, my_instructions=mine, context=context)
-        self._port.status(f"Working: {instruction}. Escape stops it.")
-        self._port.say("Working.")
+        named = label or instruction
+        self._port.status(f"Working: {named}. Escape stops it.")
+        self._port.say("Polishing." if label == POLISH_LABEL else "Working.")
         self._request = ai.ask(
             prompt,
-            lambda reply: self._replied(instruction, text, reply),
+            lambda reply: self._replied(named, text, reply),
             self._failed,
         )
 

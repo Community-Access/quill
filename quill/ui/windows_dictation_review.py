@@ -167,6 +167,15 @@ class DictationReviewMixin:
             agree=self._review_agree,
         )
 
+    def _review_ai_on(self) -> bool:
+        """Whether a review could ask the AI now: Dictation Settings offers
+        the Polished style only then (D-20)."""
+        try:
+            ai = self._review_ai()
+            return bool(ai is not None and not ai.reason())
+        except Exception:  # noqa: BLE001 - unknown is off
+            return False
+
     def _review_ai_off(self) -> str:
         host = getattr(self, "_ai_host", None)
         try:
@@ -204,6 +213,10 @@ class DictationReviewMixin:
 
     def _review_context_setting(self) -> bool:
         return bool(getattr(self._dictation_settings(), "windows_dictation_review_context", False))  # type: ignore[attr-defined]
+
+    def _review_polish_on(self) -> bool:
+        """Allow polishing my dictation with AI (P3, opt-in, off by default)."""
+        return bool(getattr(self._dictation_settings(), "windows_dictation_polish", False))  # type: ignore[attr-defined]
 
     def _review_set_context(self, on: bool) -> None:
         settings = self._dictation_settings()  # type: ignore[attr-defined]
@@ -247,6 +260,7 @@ class DictationReviewMixin:
             for phrase in (original, text):
                 if phrase.strip():
                     controller.recent.appendleft(" ".join(phrase.split()))
+            controller.note_inserted(written)  # "read that" reads all of it (D-18)
         try:
             wx.CallAfter(control.SetFocus)
         except Exception:  # noqa: BLE001 - no event loop (tests)
@@ -265,17 +279,20 @@ class DictationReviewMixin:
             controller.mute_for(seconds)
 
     def _review_tell_rescue(self) -> None:
-        """Once a run, at start: a review that did not finish is waiting."""
+        """Once a run, at start: words from last time are waiting -- a review
+        that did not finish (D-2), or words not written (D-5)."""
         global _rescue_told
         if _rescue_told:
             return
         _rescue_told = True
         try:
-            waiting = self._review_rescue_path().exists()
+            from quill.ui.dictation_kept import kept_at_start
+
+            sentence = kept_at_start(self._dictation_kept(), RESCUE_NOTICE)  # type: ignore[attr-defined]
         except Exception:  # noqa: BLE001 - nothing to tell
             return
-        if waiting:
+        if sentence:
             try:
-                wx.CallLater(1500, self._dictation_say, RESCUE_NOTICE)  # type: ignore[attr-defined]
+                wx.CallLater(1500, self._dictation_say, sentence)  # type: ignore[attr-defined]
             except Exception:  # noqa: BLE001 - no event loop (tests)
                 pass

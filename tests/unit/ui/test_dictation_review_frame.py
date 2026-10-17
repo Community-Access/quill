@@ -216,3 +216,39 @@ def test_dictation_into_the_box_is_one_undo_step_a_phrase(desk: ReviewDesk) -> N
     assert frame.text.GetValue() == "Dear Sam"
     assert frame.conversation is not None
     assert frame.conversation.session.original == "Dear Sam"  # EVT_TEXT kept it
+
+
+def test_polish_is_a_button_and_ctrl_p_only_when_allowed(desk: ReviewDesk) -> None:
+    desk.open("see you thursday")
+    frame = desk.frame
+    assert frame is not None and frame.polish is None  # off by default: no button
+    frame.Destroy()
+    desk.frame = None
+    desk.host._review_polish_on = lambda: True
+    desk.open("see you thursday")
+    frame = desk.frame
+    assert frame is not None and frame.polish is not None
+    assert frame.polish.GetHelpText()  # F1
+    frame._run("polish")
+    ai = desk.host.ai
+    assert len(ai.prompts) == 1 and "Polish this dictation" in ai.prompts[0]
+    assert "see you thursday" in ai.prompts[0]
+    ai.pending.pop()("See you Thursday.")
+    assert frame.text.GetValue() == "See you Thursday."
+    desk.command(Command.REVIEW_POLISH)  # by voice, the same request
+    assert len(ai.prompts) == 2
+
+
+def test_with_ai_off_polish_is_greyed(wx_app, tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.setattr(frame_module, "defer", lambda fn, *args: fn(*args))
+    monkeypatch.setattr(frame_module, "take_focus", lambda _frame: None)
+    host = _Host(tmp_path, _Ai(reason="AI is off in Settings."))
+    host._review_polish_on = lambda: True  # type: ignore[attr-defined]
+    made = ReviewDesk(host)
+    try:
+        made.open("hello")
+        assert made.frame is not None and made.frame.polish is not None
+        assert not made.frame.polish.IsEnabled()
+    finally:
+        if made.frame:
+            made.frame.Destroy()

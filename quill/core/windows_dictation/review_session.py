@@ -68,6 +68,22 @@ _RESCUE_SCHEMA = 1
 
 #: "QUILL review that" with AI off: the phrase stays where it was written.
 AI_OFF = "AI is off. Your words were written as you said them."
+
+#: "Polish my dictation" (P3): the one fixed request "polish that" sends. It
+#: is an ordinary review instruction, so the words stay data, the consent is
+#: the review's, and the result is a revision Undo Change takes back.
+POLISH_INSTRUCTION = (
+    "Polish this dictation: fix punctuation, capital letters, spelling and "
+    "obvious grammar slips only. Keep my words, my meaning, my order and my tone. "
+    "Do not add or remove ideas."
+)
+#: What the status line and "what changed" call that request.
+POLISH_LABEL = "polish"
+#: "polish that" with the setting off. Nothing is sent.
+POLISH_OFF = (
+    "Polish my dictation is off. Turn on Allow polishing my dictation with AI in "
+    "More Dictation Settings."
+)
 NOTHING_TO_REVIEW = "Nothing to review yet. Dictate something first."
 
 _GROUP = "Review before inserting"
@@ -112,6 +128,15 @@ REVIEW_HELP: tuple[CommandHelp, ...] = (
         Command.REVIEW_RESTORE,
         ("back to what i said",),
         "While reviewing: puts back the words exactly as you said them.",
+        _GROUP,
+    ),
+    CommandHelp(
+        Command.REVIEW_POLISH,
+        ("polish that", "polish it"),
+        "Asks the AI to fix punctuation, capitals and small slips in the words, "
+        "keeping your words; opens the last phrase in Review Dictation first. Only "
+        "when Allow polishing my dictation with AI is on, and only after you agree "
+        "to send. You hear what changed; nothing is inserted until you insert it.",
         _GROUP,
     ),
     CommandHelp(

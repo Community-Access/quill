@@ -9,10 +9,13 @@ the task manager. This module only answers the hooks that mixin asks an app
 for -- where to say things, which window is the parent, which task manager --
 and gives the finished text somewhere to go that is not an editor:
 
-**Review Transcript** shows it read-only, to arrow through, with four explicit
-actions: Copy All, Save As, Open in QUILL, Close. Nothing goes to the clipboard
-or into another program unless you choose it. Typing a transcript into another
-program's field is for a later version.
+**Review Transcript** shows it read-only, to arrow through, with five explicit
+actions: Type into a Field, Copy All, Save As, Open in QUILL, Close. Nothing goes
+to the clipboard or into another program unless you choose it. **Type into a
+Field** (D-5) types the transcript -- or only the part selected -- into the
+program you go back to, through Recent Phrases' Insert Again: the same wait for
+another program to come forward, the same field checks and never-type list as a
+dictated phrase, and a part Windows did not take is kept for Recent Phrases.
 """
 
 from __future__ import annotations
@@ -38,6 +41,8 @@ class TranscriptReviewDialog(wx.Dialog):
             parent, title="Review Transcript", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
         self.action = ""
+        #: What Type into a Field types: the selected part, or all of it.
+        self.chosen_text = text
         root = wx.BoxSizer(wx.VERTICAL)
         label = wx.StaticText(self, label="&Transcript:")
         self.text = wx.TextCtrl(self, value=text, style=wx.TE_MULTILINE | wx.TE_READONLY)
@@ -46,6 +51,12 @@ class TranscriptReviewDialog(wx.Dialog):
             "it and press Ctrl+C to copy just that part."
         )
         buttons = wx.BoxSizer(wx.HORIZONTAL)
+        type_in = wx.Button(self, label="Type into a &Field")
+        type_in.SetHelpText(
+            "Type the transcript, or only the part you selected, into another program. "
+            "Switch to the field you want and it is typed there, with the same checks as "
+            "dictation: never into a password field or a program on your never-type list."
+        )
         copy = wx.Button(self, label="&Copy All")
         copy.SetHelpText("Put the whole transcript on the clipboard.")
         save = wx.Button(self, label="&Save As...")
@@ -54,7 +65,7 @@ class TranscriptReviewDialog(wx.Dialog):
         quill.SetHelpText("Open the transcript in QUILL to edit it.")
         close = wx.Button(self, wx.ID_CANCEL, "Close")
         close.SetHelpText("Close the transcript. It stays in Notifications.")
-        for button in (copy, save, quill, close):
+        for button in (type_in, copy, save, quill, close):
             buttons.Add(button, 0, wx.RIGHT, _PAD)
         root.Add(label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         root.Add(self.text, 1, wx.EXPAND | wx.ALL, _PAD)
@@ -63,6 +74,7 @@ class TranscriptReviewDialog(wx.Dialog):
         self.SetSize((680, 520))
         apply_modal_ids(self, cancel_id=wx.ID_CANCEL, escape_id=wx.ID_CANCEL)
         bind_close_button(self, close, modeless=False)
+        type_in.Bind(wx.EVT_BUTTON, lambda _e: self._finish("type"))
         copy.Bind(wx.EVT_BUTTON, lambda _e: self._finish("copy"))
         save.Bind(wx.EVT_BUTTON, lambda _e: self._finish("save"))
         quill.Bind(wx.EVT_BUTTON, lambda _e: self._finish("quill"))
@@ -71,6 +83,9 @@ class TranscriptReviewDialog(wx.Dialog):
 
     def _finish(self, action: str) -> None:
         self.action = action
+        part = str(self.text.GetStringSelection())
+        if action == "type" and part.strip():
+            self.chosen_text = part
         self.EndModal(wx.ID_OK)
 
 
@@ -128,10 +143,12 @@ class TranscribeFilesMixin(DictationTranscribeMixin):
         dialog = TranscriptReviewDialog(self.frame, text)
         try:
             self._dictation_run_modal(dialog, "Review Transcript")
-            action = dialog.action
+            action, chosen = dialog.action, dialog.chosen_text
         finally:
             dialog.Destroy()
-        if action == "copy":
+        if action == "type":
+            self.insert_recent_phrase(chosen)  # type: ignore[attr-defined]
+        elif action == "copy":
             copied = self._copy_to_clipboard(text)  # type: ignore[attr-defined]
             self._dictation_say("Transcript copied." if copied else "Could not copy.")
         elif action == "save":

@@ -26,7 +26,8 @@ phrase rather than the phrase pipeline itself:
   as the next message.
 * **"Correct that"** (dict.md 6): the other things the engine thought you said,
   where it offers them (Windows speech recognition does; the others answer one
-  guess), and "choose 2" to swap.
+  guess), and "choose 2" to swap. The second identical correction offers to
+  remember it (:mod:`~quill.core.windows_dictation.correction_learning`, D-21).
 * The keep-up watchdog's and OpenAI's notices.
 
 wx-free; mixed into the controller, which supplies ``_state``, ``_document``,
@@ -40,6 +41,7 @@ import time
 from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
+from quill.core.windows_dictation.correction_learning import CorrectionLearningMixin
 from quill.core.windows_dictation.history import DictatedPhrase, PhraseHistory
 from quill.core.windows_dictation.preview import PreviewThrottle
 from quill.core.windows_dictation.vocabulary import Command
@@ -57,7 +59,7 @@ _CHOICES = {Command.CHOOSE_1: 0, Command.CHOOSE_2: 1, Command.CHOOSE_3: 2}
 FINISH_SECONDS = 4.0
 
 
-class LiveMixin:
+class LiveMixin(CorrectionLearningMixin):
     """The live preview, the anchor, finishing, muting and "correct that"."""
 
     _state: DictationState
@@ -197,6 +199,7 @@ class LiveMixin:
         written = getattr(self._feedback, "phrase_written", None)
         if callable(written):
             written(text)
+        self._learn_from_correcting(text)  # "correct X", then the new words (D-21)
 
     # -- finishing ------------------------------------------------------------ #
 
@@ -326,3 +329,6 @@ class LiveMixin:
         self.history.replace_last(DictatedPhrase(chosen, start, end))
         self._alternatives = ()
         self._say(f"Changed to: {options[index].strip()}")
+        # D-21: the second time the same word is corrected the same way, offer
+        # to remember it (correction_learning.py). Never added without a yes.
+        self._note_correction(last.inserted, chosen)

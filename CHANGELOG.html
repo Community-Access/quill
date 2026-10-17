@@ -277,7 +277,7 @@ QUILL runs
 <code>format.bold</code>/<code>italic</code>/<code>heading_N</code>,
 QUILL Lite its own <code>cmd_*</code>, in a rich text document (QUILL
 also in Markdown and HTML). More Dictation Settings has the profile
-(Alt+G) and the lock (Alt+Y).</li>
+(Alt+A) and the lock (Alt+B).</li>
 <li><strong>QUILL Transcribe</strong>: Dictation &gt; Dictation Profile…
 (Ctrl+Shift+F, <code>ProfileDialog</code>), Lock Profile (Ctrl+Shift+L),
 Practice Dictation… (Ctrl+Shift+P, new
@@ -302,6 +302,212 @@ regenerated with <code>docs/site/dictation.html</code>.</li>
 <code>test_dictation_formatting_hooks.py</code>. Snapshots regenerated:
 dialog inventory, accessible names, Transcribe help, settings
 documentation and vocabulary, F1 help reference, data formats.</li>
+</ul>
+<h3
+id="dictation-self-repair-named-styles-learning-from-corrections-and-opt-in-polish-d-20-d-21-2026-10-16">Dictation:
+self-repair, named styles, learning from corrections, and opt-in polish
+(D-20, D-21, 2026-10-16)</h3>
+<p>dict.md section 4, “Polish”, “Learn” and “Modes”. Design record
+section 28. QUILL, QUILL Lite, QUILL Transcribe and Quill Inkwell,
+through the shared dictation package.</p>
+<ul>
+<li><strong>Self-repair (D-20)</strong>,
+<code>quill/core/windows_dictation/self_repair.py</code> (new, wx-free).
+A repair marker (“no”, “I mean”, “no I mean”, “sorry”, “scratch that
+word”) between two words of one kind (a day, a month, a number, or a
+name from My Words’ Vocabulary) keeps the second. Only the words either
+side of the marker are looked at; a full stop or question mark before
+it, a different kind, or a lower-case “may”/“march” leaves the phrase
+alone. Run in <code>DictationController.on_phrase</code> after the
+rewrite, behind <code>DictationPreferences.self_repair</code>
+(<code>windows_dictation_self_repair</code>, off). The transcript
+profile forces it off. <code>profile.with_repair_names</code> gives the
+controller the names, in QUILL, QUILL Lite, QUILL Transcribe and
+Inkwell.</li>
+<li><strong>Named styles (D-20).</strong>
+<code>self_repair.STYLE_CHOICES</code> / <code>STYLE_FIELDS</code> /
+<code>style_of</code>: Verbatim, Clean, Polished (only with
+<code>ai_on</code>) and “Your own mix”, mapped onto existing fields;
+nothing new is stored for the style itself. The chooser and the
+self-repair box live in the new
+<code>quill/ui/windows_dictation_style.py</code>
+(<code>DictationStyleMixin</code>), so
+<code>windows_dictation_dialog.py</code> stays under the 600-line cap.
+The dialog takes <code>ai_on=</code>; the editors and Transcribe pass
+<code>_review_ai_on()</code>. The “After each phrase” chooser moved to
+the right column to keep the window under 700 pixels
+(<code>test_the_window_fits_a_small_screen</code>).</li>
+<li><strong>Polish my dictation (P3).</strong>
+<code>Command.REVIEW_POLISH</code> (“polish that”, “polish it”);
+<code>ReviewConversation.polish</code> sends the fixed
+<code>review_session.POLISH_INSTRUCTION</code> through the ordinary
+<code>instruct</code> path, so the D-2 consent, the account routes
+(ChatGPT subscription or own key; never the free allowance), the diff
+summary and Undo Change all apply unchanged.
+<code>windows_dictation_polish</code> (off) gates it; with no review
+open, <code>ReviewMixin._polish_last</code> opens the last phrase first.
+The review frame shows <strong>Polish</strong> (Ctrl+P) only when
+allowed, greyed with AI off. More Dictation Settings has the check box
+(Alt+G). No new network call site: the request is the review’s own
+(<code>network_egress_audit</code> unchanged).</li>
+<li><strong>Learning from corrections (D-21)</strong>,
+<code>quill/core/windows_dictation/correction_learning.py</code> (new,
+wx-free). The second identical “choose N” replacement, or “correct X”
+followed by the new words landing where X was
+(<code>voice_commands._land</code> records it,
+<code>LiveMixin._after_insert</code> checks it), offers “Add a
+correction: A becomes B?” once per run. Editors:
+<code>HostFeedback.confirm_correction</code>, a Yes/No box (No default)
+from the new <code>quill/ui/windows_dictation_learn.py</code>, deferred
+out of the recogniser callback; the focus-loss check stands aside while
+it is up. Transcribe: spoken, answered by “QUILL yes”/“QUILL no” within
+30 seconds (<code>CommandModeMixin</code> asks
+<code>_learn_answer</code> first). Yes writes through
+<code>words_file</code>’s model into Corrections.</li>
+<li><strong>Per-context lists (D-21).</strong> <code>words_file</code>
+parses and round-trips <code>## Context: &lt;name&gt;</code> sections
+(<code>ContextList</code>, <code>context_list</code>);
+<code>profile.context_profile</code> and
+<code>rewriter(path, context=...)</code> apply one on top of the main
+lists. No caller passes a context yet: D-23 profiles are not built.</li>
+<li><strong>Whisper initial prompt (D-21 investigation).</strong>
+sherpa-onnx 1.13.8’s <code>OfflineWhisperModelConfig</code> has no
+prompt field and <code>OfflineRecognizer.from_whisper</code> takes none,
+so local Whisper biasing through a prompt is not possible on the pinned
+version. Recorded in the design record.</li>
+<li>Settings: <code>windows_dictation_self_repair</code>,
+<code>windows_dictation_polish</code> in
+<code>settings_fields.DictationSettings</code> (both editors and
+Transcribe); <code>data_format_audit</code> recorded as additive for
+<code>quill.settings</code> and <code>lite.settings</code>. Generated:
+<code>docs/f1-help-reference.md</code>, both
+<code>dictation-commands.md</code> (new “Correcting yourself as you
+talk” section).</li>
+<li>Tests:
+<code>tests/unit/core/test_dictation_self_repair_and_learning.py</code>
+(new), plus <code>test_dictation_review_frame.py</code>,
+<code>test_dictation_settings_dialog.py</code> and
+<code>test_transcribe_app.py</code>.</li>
+</ul>
+<h3
+id="dictation-replace-change-that-delete-by-paragraph-a-second-opinion-kept-revisions-and-correcting-in-other-programs-d-19-d-10-2026-10-16">Dictation:
+replace, change that, delete by paragraph, a second opinion, kept
+revisions, and correcting in other programs (D-19, D-10,
+2026-10-16)</h3>
+<p>dict.md D-19 and D-10; design record section 27. Shared code, so
+QUILL, QUILL Lite, QUILL Transcribe and Inkwell’s Dictate Anywhere get
+the same commands.</p>
+<ul>
+<li><strong>New commands</strong> in the one table
+(<code>vocabulary_commands.py</code>, so “What can I say” and the
+generated <code>dictation-commands.md</code> follow): “replace X with Y”
+(<code>Command.REPLACE_WORDS</code>, nearest X before the cursor, else
+after, through <code>targets.find_target</code>), “change that to Y”
+(<code>CHANGE_THAT</code>) and “delete previous paragraph” / “delete
+last paragraph” (<code>DELETE_PARAGRAPH</code>). They work bare with
+strict mode off and always after the command word; a replace that finds
+nothing is written as text bare and writes nothing after the word.</li>
+<li><strong>A second opinion for “correct that”</strong>: a model
+engine’s phrase carries its audio (<code>RecognizedPhrase.audio</code>,
+memory only, dropped at the next phrase); with no engine alternates,
+<code>WorkerMixin.second_opinion</code> re-decodes it with the other
+built-in engine on its own thread and offers the answer as choice 2. No
+disk, no network. Not in Spanish.</li>
+<li><strong>Kept revisions</strong>: choose, replace and change that put
+the replaced text in Recent Phrases labelled “(before correction)”;
+<code>phrase_from_entry</code> strips the label for Insert Again and
+Copy.</li>
+<li><strong>Correcting in other programs (D-10)</strong>:
+correct/choose, caps that, uppercase/lowercase that, replace, change
+that, delete last sentence and delete previous paragraph join
+<code>anywhere.EXTERNAL_COMMANDS</code>, acting only on the words the
+session typed, as backspace-and-retype. <code>external_edits.py</code>
+refuses with one sentence when the focus moved, when Windows saw input
+after dictation’s own (<code>OwnWordsGuard</code>,
+<code>GetLastInputInfo</code> in the new read-only
+<code>quill/platform/windows/input_activity.py</code>), or, for retyping
+commands, in Word and Outlook (<code>AUTOCORRECTING_PROGRAMS</code>).
+The other program is never read.</li>
+<li>New modules: <code>corrections.py</code>
+(<code>CorrectionsMixin</code>, first in the controller’s bases) and
+<code>external_edits.py</code>; the controller grew by two lines. Tests:
+<code>tests/unit/core/test_dictation_corrections.py</code> (32, fakes
+only).</li>
+</ul>
+<h3
+id="dictation-never-lose-what-was-said-snippet-blanks-by-voice-reading-back-more-d-5-d-8-d-18-2026-10-16">Dictation:
+never lose what was said, snippet blanks by voice, reading back more
+(D-5, D-8, D-18) (2026-10-16)</h3>
+<p>The rest of D-5, D-8 and D-18 of the dictation gap plan, in shared
+code, so QUILL, QUILL Lite, QUILL Transcribe and (for D-8 and D-18)
+Quill Inkwell behave the same. Design record section 25.</p>
+<ul>
+<li><strong>Rescue (D-5).</strong> New wx-free
+<code>core/windows_dictation/rescue.py</code>
+(<code>DictationKeep</code>, <code>keep_for</code>, <code>Kept</code>,
+<code>kept_notice</code>, <code>HISTORY_CHOICES</code>) keeps only
+uncommitted words, held while paused or a phrase whose writing failed,
+in <code>recovery/live-dictation/&lt;app&gt;-&lt;id&gt;.json</code>,
+atomic, sealed with DPAPI (entropy <code>quill-dictation-rescue</code>);
+unsealable words are not written. New <code>rescue_mixin.py</code>
+(<code>RescueMixin</code> under <code>TargetHoldMixin</code>,
+<code>RecentPhrases</code>, <code>held_text</code>): every change to the
+held list rewrites one entry per pause; Resume and Discard Held Words
+delete it; stop, failure and shut-down keep it (stop adds “They are kept
+in Recent Phrases.”). <code>command_mode_mixin._dictate</code> keeps a
+phrase whose <code>_apply</code> raised. The feedback ports gain the
+optional <code>rescue()</code> (editors: <code>HostFeedback</code>,
+through <code>DictationToolsMixin._dictation_keep</code>; QUILL
+Transcribe: <code>_Feedback</code>). Quill Inkwell has no store and
+keeps held words in memory, as before.</li>
+<li><strong>Recent Phrases lists kept words</strong>
+(<code>ui/dictation_kept.py</code>, <code>KeptWords</code>,
+<code>kept_at_start</code>): this session’s phrases, then “Not written”,
+D-2’s unfinished review read from <code>dictation-review.json</code>
+where it is, and the history. <code>RecentPhrasesDialog</code> gains
+Discard (Alt+D) and Clear History (Alt+H, No-default question); Insert
+Again deletes a kept entry once <code>insert_again</code> returns
+<code>True</code>. One start-up sentence replaces the review’s when kept
+words wait. QUILL Transcribe’s exit no longer asks about held words
+already on disk.</li>
+<li><strong>Opt-in history.</strong>
+<code>windows_dictation_history_days</code> (0, 1, 7 or 30; 0 default)
+in the shared <code>DictationSettings</code>,
+<code>DictationPreferences.history_days</code>, More Dictation Settings’
+Keep a dictation history (Alt+Y). Text only, sealed, pruned on every
+read and write, capped at 2000, deleted when off (at the next phrase, at
+start, and when Recent Phrases opens). <code>quill.settings</code> and
+<code>lite.settings</code> fingerprints accepted as additive.</li>
+<li><strong>Type a reviewed transcript into a field.</strong> QUILL
+Transcribe’s Review Transcript gains Type into a Field (Alt+F), the
+selection or all of it, through Recent Phrases’ Insert Again path and
+checks.</li>
+<li><strong>Snippet blanks by voice (D-8).</strong> New
+<code>core/windows_dictation/snippet_fill.py</code>
+(<code>SnippetFill</code>, <code>SnippetFillMixin</code> between
+<code>ReviewMixin</code> and <code>VoiceCommandsMixin</code>):
+<code>${input:x}</code> and <code>${choice:a|b}</code> are asked for in
+order (“Title?”, “Choose a or b.”; a name, or “choose two”), with skip,
+scratch that (back one) and cancel; the answers are never typed; the
+filled snippet goes through <code>_insert_text</code> as one phrase (or
+is held while paused). <code>${date}</code>/<code>${time}</code> resolve
+locally; <code>${cursor}</code> is dropped externally. The libraries
+gain <code>snippet_body</code> (<code>AnywhereLibrary</code>,
+<code>DictationLibrary</code> over QUILL’s
+<code>_dictation_snippet_body</code>); QUILL Lite’s abbreviation
+snippets have no blanks and keep the old path. Works after the command
+word (D-1).</li>
+<li><strong>Read back more (D-18).</strong> <code>_insert_text</code>
+sets <code>_last_spoken</code> to the whole insertion (marks named), so
+“read that” reads a whole snippet, clip or review insert (editors:
+<code>note_inserted</code>). New commands “read last sentence”, “read
+last paragraph”, “read selection” (<code>Command.READ_*</code>, English
+and Spanish), editors only; refused in other programs. Command
+references and <code>docs/site/dictation.html</code> regenerated.</li>
+<li>Tests: <code>tests/unit/core/test_dictation_rescue.py</code>,
+<code>test_dictation_snippet_fill.py</code>,
+<code>tests/unit/ui/test_dictation_kept_words.py</code>, and a parity
+test in <code>test_dictation_parity.py</code>.</li>
 </ul>
 <h3
 id="quill-radio-station-enrichment-the-signed-station-pack-fts5-search-and-station-details-2026-10-16">Quill

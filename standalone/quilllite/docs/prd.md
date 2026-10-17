@@ -1053,7 +1053,15 @@ a dictation command, key or setting.
 - **Words go where you started** (`EditorDocument.anchor`): measured on speech
   start, honoured even if the caret moved or the focus left.
 - **"Correct that"** and "choose one" to "choose three", with Windows speech
-  recognition's alternates; every other engine says it has none.
+  recognition's alternates. Since 2026-10-16 (D-19), with Moonshine, Whisper or
+  a downloaded model, the other built-in engine re-decodes the last phrase's
+  audio (memory only, dropped at the next phrase) and offers its answer as
+  choice 2; OpenAI, the speech companies and Spanish still say there is none.
+- **Replace, change that, delete by paragraph, kept revisions** (D-19,
+  2026-10-16, `corrections.py`): "replace X with Y" (nearest before the cursor,
+  else after), "change that to Y" (the last phrase), "delete previous
+  paragraph"; what choose, replace and change that replaced goes into Recent
+  Phrases labelled "(before correction)".
 - **Talk to the AI** (`hosted_ai_chat._talk_to_it`): the AI Conversation
   window's message box dictates with the **Talking to AI** profile, sends at the
   pause (or on Enter), and mutes the microphone while the reply is read.
@@ -1068,6 +1076,20 @@ a dictation command, key or setting.
 - **Settings**: eight new `windows_dictation_*` fields, and all 24 now declared
   once (`settings_fields.DictationSettings`), inherited by both editors'
   `Settings`.
+
+### 5.9a Dictation: correcting yourself, styles, polish and learning (2026-10-16)
+
+The same as QUILL (QUILL PRD, the D-20/D-21 addendum; dictation design record
+section 28), through the shared dictation package, so QUILL Lite is never
+ahead. **Fix it when I correct myself** (Alt+X, off) keeps the second of
+"Thursday, no, Friday" between two days, months, numbers or names in My Words,
+locally and conservatively. **Dictation style** (Alt+Y) names Verbatim, Clean
+and, only with AI on, Polished, and stores nothing itself. **Allow polishing my
+dictation with AI when I ask** (Alt+G in More Dictation Settings, off) lets
+"QUILL polish that" and **Polish** (Ctrl+P) in Review Dictation send one fixed
+request through the review's own consent and AI routes; it is never automatic.
+A second identical voice correction offers to add it to Corrections, in a
+Yes/No window with No the default; nothing is stored without a yes.
 
 ### 5.10 Transcribing a recording (2026-10-06)
 

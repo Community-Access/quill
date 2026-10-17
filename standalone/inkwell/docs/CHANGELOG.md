@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- **Fixing it when you correct yourself** (2026-10-16). With **Fix it when I
+  correct myself** (Alt+X) checked in Dictation Settings, "Thursday, no,
+  Friday" types Friday: a "no", "I mean", "sorry" or "scratch that word"
+  between two days, months, numbers or names from My Words keeps the second.
+  Anything else is typed as said, and it is off until you turn it on.
+  **Dictation style** (Alt+Y) sets it and filler removal together, as
+  Verbatim or Clean. The same as in QUILL, QUILL Lite and QUILL Transcribe.
+- **Correcting in Dictate Anywhere** (2026-10-16). "Correct that" and "choose" a number, "capitalize that", "all caps that", "no caps that", "replace" some words "with" new ones, "change that to" and new words, "delete last sentence" and "delete previous paragraph" now work in other programs, on the words dictation typed there itself, by taking them back with Backspace and retyping. Inkwell never reads the other program. A correction is refused, with one sentence and nothing sent, if the focus has moved, if you have typed or clicked since, or, for the commands that retype words, in Word and Outlook. With Moonshine or Whisper, "correct that" asks the other built-in engine to listen again and offers its answer as choice two.
+- **Snippet blanks by voice in Dictate Anywhere** (2026-10-16). "insert snippet" and a name now asks for each blank ("Title?") and each choice ("Choose NVDA, JAWS or Narrator."), then types the whole snippet once. Say skip, scratch that to go back one, or cancel to type nothing. "read that" reads back all of what was typed, not just the snippet's name.
+
 - **Speech providers in Dictate Anywhere** (2026-10-16). Dictation Settings has the editors' **Speech Providers...** button (Alt+V), so Dictate Anywhere can use a speech company you already have an account with. Keys go to Windows Credential Manager, and you are asked before anything is sent.
 
 - **Every release build checks its version against what is published** (2026-10-15). The shared QuillVille runtime carries every app's version number, so a build of one app could make another report a version nobody can download yet, and Check for Updates would then never offer the real one. Quill Inkwell's release builds now run the same check Quill Radio, QUILL Lite, QUILL Cast and Quill Weather already did, and a build of every app at once checks them all again instead of stopping at an app it did not know.

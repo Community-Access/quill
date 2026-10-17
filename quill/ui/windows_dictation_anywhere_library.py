@@ -15,11 +15,11 @@ The controller types the text through the shared external document as one
 phrase (``voice_commands._insert_text``), so "scratch that" takes all of it
 back, and every target check a dictated phrase gets applies.
 
-Two limits, both said in the guides. A snippet's blanks are written as their
-names in square brackets, "[title]", as in the editors; no question is asked
-(spoken prompts are the rest of D-8). And a ``${cursor}`` mark is dropped: the
-cursor cannot be moved back inside another program's text without reading it,
-so it is left at the end.
+A snippet's blanks are asked for by voice (D-8, ``snippet_fill.py``) through
+:meth:`AnywhereLibrary.snippet_body`; :meth:`AnywhereLibrary.snippet_text`, with
+each blank written "[its name]", is only the fallback. A ``${cursor}`` mark is
+dropped: the cursor cannot be moved back inside another program's text without
+reading it, so it is left at the end.
 
 The commands that read or show something -- "copy that", "copy all", "show
 clips", "show snippets" -- stay QUILL's own (``anywhere.EXTERNAL_COMMANDS``).
@@ -56,6 +56,10 @@ class AnywhereLibrary:
 
     def snippet_names(self) -> list[str]:
         return [snippet.name for snippet in self._snippets()]
+
+    def snippet_body(self, name: str) -> str | None:
+        """The snippet's own text, blanks and all, for the spoken prompts (D-8)."""
+        return next((one.body for one in self._snippets() if one.name == name), None)
 
     def snippet_text(self, name: str) -> tuple[str, int] | None:
         from quill.ui.windows_dictation_library import snippet_with_blanks

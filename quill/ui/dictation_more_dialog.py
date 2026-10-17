@@ -23,6 +23,8 @@ the choices nobody needs on the first day:
 * **My Dictation Instructions...**: the file Tidy Dictated Text follows.
 * **Programs Dictation Never Types Into...** (D-24): the never-type list
   (:mod:`quill.ui.dictation_never_type_dialog`), kept until this window's OK.
+* **Keep a dictation history** (D-5): off, or one, seven or thirty days of the
+  text dictated, sealed for this Windows account; Recent Phrases lists it.
 * **Commands** (D-1): the command word ("QUILL"), strict mode and how long
   command mode waits (:mod:`quill.core.windows_dictation.command_mode`). OK is
   refused, with the reason, while the command word is a common word or one of
@@ -164,6 +166,19 @@ class MoreDictationDialog(wx.Dialog):
         )
         root.Add(self.review_first, 0, wx.ALL, _PAD)
 
+        # P3, "Polish my dictation": opt-in, off by default, never automatic.
+        self.polish = wx.CheckBox(self, label="Allow polishin&g my dictation with AI when I ask")
+        self.polish.SetValue(bool(value("windows_dictation_polish", False)))
+        self.polish.SetHelpText(
+            "When this is on, saying QUILL polish that, or pressing Polish in Review "
+            "Dictation, asks the AI to fix punctuation, capital letters and small slips "
+            "in your words, keeping your words. The words open in Review Dictation "
+            "first, you are asked once before anything is sent, you hear what changed, "
+            "and nothing is inserted until you insert it. Off by default; it needs AI."
+        )
+        root.Add(self.polish, 0, wx.ALL, _PAD)
+
+        self._add_history(root, value)
         self._my_words = my_words
         self._add_profile(root, value)  # D-23
         self._add_command_word(root, value)
@@ -305,7 +320,7 @@ class MoreDictationDialog(wx.Dialog):
 
         labels = profile_labels()
         self._profiles = [profile_id for profile_id, _label in labels]
-        label = wx.StaticText(self, label="Dictation profile, for the kind of writin&g:")
+        label = wx.StaticText(self, label="Dict&ation profile, for the kind of writing:")
         self.profile = wx.Choice(self, choices=[text for _id, text in labels])
         self.profile.SetSelection(
             self._profiles.index(
@@ -320,7 +335,7 @@ class MoreDictationDialog(wx.Dialog):
             "write plain text. You can also switch by voice: QUILL email mode."
         )
         self.profile_locked = wx.CheckBox(
-            self, label="Lock the profile so it cannot be switched b&y voice"
+            self, label="Lock the profile so it cannot be switched &by voice"
         )
         self.profile_locked.SetValue(bool(value("windows_dictation_profile_locked", False)))
         self.profile_locked.SetHelpText(
@@ -331,6 +346,31 @@ class MoreDictationDialog(wx.Dialog):
         root.Add(label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         root.Add(self.profile, 0, wx.EXPAND | wx.ALL, _PAD)
         root.Add(self.profile_locked, 0, wx.ALL, _PAD)
+
+    # -- dictation history (D-5) ------------------------------------------------ #
+
+    def _add_history(self, root: Any, value: Callable[[str, Any], Any]) -> None:
+        """How many days of dictated text to keep; off by default."""
+        from quill.core.windows_dictation.rescue import HISTORY_CHOICES, coerce_history_days
+
+        label = wx.StaticText(self, label="Keep a dictation histor&y:")
+        self._history_days = [days for days, _label in HISTORY_CHOICES]
+        self.history = wx.Choice(self, choices=[text for _days, text in HISTORY_CHOICES])
+        self.history.SetSelection(
+            self._history_days.index(
+                coerce_history_days(value("windows_dictation_history_days", 0))
+            )
+        )
+        self.history.SetHelpText(
+            "Off by default. Choose one, seven or thirty days to keep the text of what "
+            "you dictate on this computer, never the sound, so Recent Phrases can bring "
+            "back earlier phrases after the program closes. It is kept for this Windows account "
+            "only, and Clear History in Recent Phrases deletes it. Turning it off deletes "
+            "it too. Words that were never written are kept until you insert or discard "
+            "them, whatever this says."
+        )
+        root.Add(label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+        root.Add(self.history, 0, wx.EXPAND | wx.ALL, _PAD)
 
     # -- the command word (D-1) ------------------------------------------------- #
 
@@ -528,4 +568,8 @@ class MoreDictationDialog(wx.Dialog):
             "windows_dictation_review_first": self.review_first.GetValue(),
             "windows_dictation_profile": self._profiles[max(0, self.profile.GetSelection())],
             "windows_dictation_profile_locked": self.profile_locked.GetValue(),
+            "windows_dictation_polish": self.polish.GetValue(),
+            "windows_dictation_history_days": self._history_days[
+                max(0, self.history.GetSelection())
+            ],
         }

@@ -10,7 +10,10 @@ Dictation has to work well without anybody opening this window. It holds:
 * **What happens after each phrase** (the shared
   :data:`~quill.core.action_feedback.ACTION_FEEDBACK_LABELS`), sounds, and
   saying "Dictation on" and "Dictation off".
-* **The finer choices** (:mod:`quill.core.windows_dictation.options`).
+* **The finer choices** (:mod:`quill.core.windows_dictation.options`), and
+  the named **Dictation style** -- Verbatim, Clean or Polished -- with **Fix it
+  when I correct myself** (D-20, :mod:`quill.core.windows_dictation.self_repair`).
+  Polished is offered only when the host says AI is on (``ai_on``).
 * **Test Microphone**: four seconds on a worker; the result goes into a field
   beside the button and is spoken, because a field changing beside the focused
   button is exactly what a screen reader does not announce.
@@ -72,6 +75,7 @@ from quill.ui.windows_dictation_devices import (
     recognizer_names,
 )
 from quill.ui.windows_dictation_mic_test import MicrophoneTestMixin
+from quill.ui.windows_dictation_style import DictationStyleMixin
 
 __all__ = [
     "DICTATE_ANYWHERE",
@@ -96,7 +100,9 @@ DICTATE_ANYWHERE = 5805  # quill.ui.dictation_more_dialog's, passed on
 _PAD = 8
 
 
-class WindowsDictationDialog(CloudProvidersMixin, MicrophoneTestMixin, wx.Dialog):
+class WindowsDictationDialog(
+    CloudProvidersMixin, MicrophoneTestMixin, DictationStyleMixin, wx.Dialog
+):
     """The dictation settings. Read with :meth:`apply` after OK."""
 
     def __init__(
@@ -107,6 +113,7 @@ class WindowsDictationDialog(CloudProvidersMixin, MicrophoneTestMixin, wx.Dialog
         *,
         my_words: list[str] | None = None,
         help_for: dict[str, str] | None = None,
+        ai_on: bool = False,
     ) -> None:
         super().__init__(parent, title="Dictation Settings")
         self._announce = announce or (lambda _text: None)
@@ -118,6 +125,8 @@ class WindowsDictationDialog(CloudProvidersMixin, MicrophoneTestMixin, wx.Dialog
         self._my_words = my_words
         #: More Dictation Settings' choices, applied with this window's OK.
         self._more: dict[str, object] = {}
+        #: Whether AI is on here, so the Polished style can be offered (D-20).
+        self._ai_on = bool(ai_on)
         # Two columns, so the window fits a 768-pixel-high screen. Tab order is
         # creation order, which runs down the left column and then the right.
         outer = wx.BoxSizer(wx.VERTICAL)
@@ -246,25 +255,6 @@ class WindowsDictationDialog(CloudProvidersMixin, MicrophoneTestMixin, wx.Dialog
         test_row.Add(self.test_result, 1, wx.EXPAND)
         root.Add(test_row, 0, wx.EXPAND | wx.ALL, _PAD)
 
-        feedback_label = wx.StaticText(self, label="After each &phrase is written, give me:")
-        self._feedback_values = [str(mode) for mode, _label in ACTION_FEEDBACK_LABELS]
-        self.feedback = wx.Choice(self, choices=[label for _mode, label in ACTION_FEEDBACK_LABELS])
-        self.feedback.SetHelpText(
-            "What you hear each time a phrase goes into the document. A sound is "
-            "a short tone. Speech reads back the words that were written, so you "
-            "can hear whether they are the words you said. Use headphones if you "
-            "choose speech: read back through speakers, the microphone can hear "
-            "it and write it down again."
-        )
-        mode = str(
-            coerce_feedback(
-                getattr(settings, "windows_dictation_phrase_feedback", DEFAULT_PHRASE_FEEDBACK)
-            )
-        )
-        self.feedback.SetSelection(self._feedback_values.index(mode))
-        root.Add(feedback_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
-        root.Add(self.feedback, 0, wx.EXPAND | wx.ALL, _PAD)
-
         dash_label = wx.StaticText(self, label='Saying "&dash" writes:')
         self._dash_styles = list(DASH_STYLES)
         self.dash = wx.Choice(self, choices=[label for label, _text in DASH_STYLES.values()])
@@ -292,15 +282,7 @@ class WindowsDictationDialog(CloudProvidersMixin, MicrophoneTestMixin, wx.Dialog
         root.Add(pause_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         root.Add(self.pause, 0, wx.EXPAND | wx.ALL, _PAD)
 
-        self.remove_fillers = wx.CheckBox(self, label="Remove filler words li&ke um and uh")
-        self.remove_fillers.SetValue(
-            bool(getattr(settings, "windows_dictation_remove_fillers", False))
-        )
-        self.remove_fillers.SetHelpText(
-            "Leave out hesitations -- um, uh, erm, hmm -- instead of writing them. "
-            "Real words are never removed."
-        )
-        root.Add(self.remove_fillers, 0, wx.ALL, _PAD)
+        self._add_style_controls(root, settings, _PAD)  # windows_dictation_style.py (D-20)
 
         self.continuous = wx.CheckBox(
             self, label="&Just write what I say: nothing happens at a pause"
@@ -325,6 +307,27 @@ class WindowsDictationDialog(CloudProvidersMixin, MicrophoneTestMixin, wx.Dialog
         root.Add(advice_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         root.Add(self.advice, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, _PAD)
         self._show_advice()  # the speech language above is set by now
+        # What you hear after each phrase sits with the other sounds, in the
+        # right column: the left one gave its height to Dictation style (D-20).
+        feedback_label = wx.StaticText(self, label="After each &phrase is written, give me:")
+        self._feedback_values = [str(mode) for mode, _label in ACTION_FEEDBACK_LABELS]
+        self.feedback = wx.Choice(self, choices=[label for _mode, label in ACTION_FEEDBACK_LABELS])
+        self.feedback.SetHelpText(
+            "What you hear each time a phrase goes into the document. A sound is "
+            "a short tone. Speech reads back the words that were written, so you "
+            "can hear whether they are the words you said. Use headphones if you "
+            "choose speech: read back through speakers, the microphone can hear "
+            "it and write it down again."
+        )
+        mode = str(
+            coerce_feedback(
+                getattr(settings, "windows_dictation_phrase_feedback", DEFAULT_PHRASE_FEEDBACK)
+            )
+        )
+        self.feedback.SetSelection(self._feedback_values.index(mode))
+        root.Add(feedback_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+        root.Add(self.feedback, 0, wx.EXPAND | wx.ALL, _PAD)
+
         self.cue_sounds = wx.CheckBox(
             self, label="Play &sounds when dictation starts, stops or fails"
         )
@@ -525,6 +528,7 @@ class WindowsDictationDialog(CloudProvidersMixin, MicrophoneTestMixin, wx.Dialog
                 self._more.update(dialog.values())
         finally:
             dialog.Destroy()
+        self._show_style()  # polishing or review first may have changed there
         if answer == MORE_INSTRUCTIONS:
             self.EndModal(EDIT_INSTRUCTIONS)
         elif answer == MORE_KEY:
@@ -575,6 +579,7 @@ class WindowsDictationDialog(CloudProvidersMixin, MicrophoneTestMixin, wx.Dialog
         settings.windows_dictation_announce = self.announce.GetValue()
         settings.windows_dictation_auto_punctuation = self.auto_punctuation.GetValue()
         settings.windows_dictation_remove_fillers = self.remove_fillers.GetValue()
+        settings.windows_dictation_self_repair = self.self_repair.GetValue()
         settings.windows_dictation_continuous = self.continuous.GetValue()
         pause = self.pause.GetSelection()
         if 0 <= pause < len(self._pauses):
