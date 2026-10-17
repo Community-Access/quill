@@ -1312,6 +1312,73 @@ screen reader yet.
 - [ ] All five with JAWS.
 - [ ] All five with Narrator.
 
+## AI conversations and drive properties (2026-10-17)
+
+Items 44 and 46 of the editor and media completion checks. The code and its
+automated tests are done; none of the checks below has been tried with a
+screen reader yet, so none is checked.
+
+### AI conversations: recent ten, message list, export
+
+In QUILL's Ask Quill (AI menu, with advanced features shown) and in the AI
+Conversation window of both editors (the free AI pad's Have a conversation).
+Have a conversation of at least four messages, one reply containing a heading
+and a table (ask "Compare tea and coffee in a table, with a heading").
+
+1. **Alt+1 to Alt+0.** In the message box, press Alt+1: you hear "Newest,
+   Message 4 of 4, ..." once, and focus stays in the message box with any
+   typed text intact. Alt+3 reads the second message. Alt+7 says "There are
+   only 4 messages so far. Alt+4 reads the oldest." No beep, no menu opening.
+2. **Ask Quill, inside the page.** With focus in Ask Quill's in-page message
+   field, Alt+2 reads the second newest message once (not twice).
+3. **Message list.** Press Messages... (Alt+G) or Message List...: the list
+   opens on the newest row; the row reads "Message 4 of 4, AI: ...". Arrow up,
+   press Enter: the reading window opens; H moves by heading, T to the table,
+   and table navigation reads the column headers. Escape returns to the same
+   row, and the reader says that row, nothing extra.
+4. **Read as Text.** On a row, Read as Text: the message as it arrived, in an
+   edit field you can arrow through; Escape returns to the row.
+5. **Reopen.** Close the list, reopen it: it opens on the row you left.
+6. **Export.** Export Conversation... (Alt+X): the Save As window opens with
+   "AI conversation.docx". Save, open the file in Word, and move by heading:
+   level 2 per message, the reply's heading at level 3, the table as a table.
+   Export again to the same name: Windows asks before replacing. Cancel: you
+   hear nothing more and focus is back where it was. Export as a .txt and read
+   it in Notepad. Your document is unchanged (title bar not marked saved).
+7. **Reading position.** In the AI Conversation window, send a long
+   question, then Shift+Tab into the Conversation box and arrow to the middle
+   before the reply arrives. When the reply is read out, your caret is still
+   where you left it.
+8. **Fallback list** (only on a computer where Ask Quill shows a plain list):
+   Enter on a row opens that message; a new reply does not move your row.
+9. **Braille.** Alt+1 shows the message on the braille display the way other
+   QUILL announcements appear, without the display flickering.
+
+- [ ] All nine with NVDA (QUILL).
+- [ ] All nine with JAWS (QUILL).
+- [ ] Steps 1, 3 to 7 and 9 in QUILL Lite's AI Conversation window with NVDA.
+- [ ] Steps 1, 3 to 7 and 9 in QUILL Lite's AI Conversation window with JAWS.
+- [ ] All nine with Narrator.
+
+### The drive in file properties
+
+1. **Quill Radio.** Local Media, highlight a song on the C drive, Alt+Enter:
+   arrow to the end of the box; four lines: "Drive: C:\ ...", capacity, used
+   with percent, free. Sizes match File Explorer's This PC view for that
+   drive.
+2. **A USB stick.** Add a song from a USB stick, Alt+Enter: "removable
+   drive". Pull the stick out and press Alt+Enter again: the box opens, says
+   "On this computer: no, missing" and one "Drive: not available" line.
+3. **A network share.** A song on a mapped or `\\server\share` path: "network
+   drive". Disconnect the network and repeat: one "network location could not
+   be reached" line; note how long the box takes to open.
+4. **Quill Converter.** Highlight a queued file, Alt+Enter: the drive lines
+   end the File Properties text.
+
+- [ ] All four with NVDA.
+- [ ] All four with JAWS.
+- [ ] All four with Narrator.
+
 ## Spanish review (for a native speaker)
 
 Not a screen-reader check: questions for a native Spanish speaker, to answer

@@ -1195,6 +1195,18 @@ Ctrl+Alt+V); Copy pastes copies and puts paths on the clipboard. Undo is
 the family slot (<code>undo_last_ui</code>), by id, so an old undo never
 loses a newer add. Delete Playlist asks with No as the default and is
 undoable.</li>
+<li><em>Properties and the drive (2026-10-17, todo item 46).</em> Local
+Media Item Properties (<code>local_media_manage.properties_text</code>)
+ends with the drive the file is on, from the shared wx-free
+<code>quill/core/volume_info.describe_volume</code>: identity (root,
+label, kind from <code>GetDriveTypeW</code>, file system), capacity,
+used with percent, and free space available to this user, in File
+Explorer’s 1,024-based units with exact bytes. Read-only and local; a
+removed drive, an unreachable share or a permission refusal is one
+sentence and the rest of the box still shows. The audit found no folder
+or drive properties window anywhere in the family, so the drive is
+reported from the file windows that already exist; no file manager was
+added.</li>
 <li><em>Not done, on purpose.</em> No hardware Next/Previous media keys
 (Radio does not take them from other players), no smart playlists by
 tag, no cross-app sharing with QUILL Cast’s library, and no Local Media

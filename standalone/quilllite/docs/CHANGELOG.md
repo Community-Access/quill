@@ -5,6 +5,21 @@
 Testing rebuild: **1.2.0 (build 5)**, following builds 2, 3 and 4; builds 2 and 3 were
 uploaded for testing. The new packages have not been published yet.
 
+- **Go back over an AI conversation, and save it as a file** (2026-10-17). In
+  the AI Conversation window, **Alt+1** reads the newest message aloud,
+  **Alt+2** the one before it, and so on to **Alt+0** for the tenth newest,
+  each with its place and who said it ("Message 4 of 9, AI: ..."). Focus stays
+  in your message and nothing you had typed is lost; with fewer messages than
+  the key asks for, you hear how many there are. **Messages...** (Alt+G) lists
+  every message: Enter opens one with its headings and tables intact (H and T
+  in browse mode), **Read as Text** shows it exactly as it arrived, and closing
+  it puts you back on the same row. **Export Conversation...** (Alt+X) saves the
+  whole conversation as a Word document or a text file, every message in order
+  with its speaker; it asks before replacing a file and never changes your
+  document. A reply that arrives while you are reading the Conversation box no
+  longer moves your place in it. All of this works the same on the free AI,
+  your own key and a ChatGPT plan. User guide: "Going back over a
+  conversation".
 - **Your braille display no longer flickers while you dictate.** Messages that
   arrive in a quick burst, such as dictation's live preview or a run of status
   changes, now settle on the display: the first shows at once, and a moment

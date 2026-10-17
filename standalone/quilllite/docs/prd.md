@@ -896,6 +896,21 @@ QUILL's Review AI Changes (`quill/ui/ai_diff_review_dialog.py`), offered only
 when Replace is and the answer differs, and applies only accepted changes as one
 undo step. Every control in the three windows has F1 help.
 
+**Going back over a conversation, and exporting it (2026-10-17, todo item
+44).** Shared with QUILL's Ask Quill and AI Conversation window
+(`quill/core/ai/chat_navigation.py`, `quill/ui/ai_conversation_tools.py`), so
+neither editor is ahead (family rule 10). Requirements: Alt+1 to Alt+0 read
+the ten newest messages aloud with position and speaker ("Message 4 of 9, AI:
+..."), never moving focus or the half-typed message, and say how many there
+are when fewer than asked; **Messages...** (Alt+G) lists every message, Enter
+opens one with real headings and tables, Read as Text shows it verbatim, and
+closing returns to the same row; **Export Conversation...** (Alt+X) writes the
+whole conversation, every message with its speaker and in order, to `.docx` or
+`.txt` through the shared document writers, asks before overwriting, and never
+receives the active document; a reply arriving while the transcript has focus
+keeps the reader's caret. The same on the free AI, an own key and a ChatGPT
+plan, each saving to the same `ai-sessions` store.
+
 **Answer delivery and the Chat Key (2026-10-15).** No spec existed, so the
 minimum: the pad's **Put the answer in** list chooses the AI Result window
 (default), the document at the caret (one undo step, read aloud), or the

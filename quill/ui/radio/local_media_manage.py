@@ -347,8 +347,18 @@ def copy_paths(host: Any, items: list[MediaItem]) -> bool:
     return bool(copier(text)) if callable(copier) else False
 
 
-def properties_text(item: MediaItem, playlist: Playlist) -> str:
-    """Everything known about one item, one fact a line (pure)."""
+def properties_text(item: MediaItem, playlist: Playlist, *, volume: Any = None) -> str:
+    """Everything known about one item, one fact a line.
+
+    Ends with the drive the file is on -- which drive, its kind, capacity, used
+    and free space (:func:`quill.core.volume_info.describe_volume`, todo item
+    46) -- because "is that drive full, or gone?" is the next question when a
+    file will not play or a recording will not save. *volume* replaces that
+    reader in a test.
+    """
+    from quill.core.volume_info import describe_volume
+
+    describe = volume or describe_volume
     lines = [f"Title: {item.display_title}"]
     if item.artist:
         lines.append(f"Artist: {item.artist}")
@@ -369,6 +379,7 @@ def properties_text(item: MediaItem, playlist: Playlist) -> str:
             lines.append(f"Size: {size / 1_048_576:.1f} MB")
         except OSError:
             pass
+    lines.extend(describe(Path(item.path)))
     return "\n".join(lines)
 
 
@@ -393,8 +404,9 @@ def properties(host: Any, playlist_id: str, item_id: int) -> None:
         style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
     )
     box.SetHelpText(
-        "What this file says about itself and where it is, one fact a line. Arrow "
-        "through it, or select and copy any of it."
+        "What this file says about itself and where it is, one fact a line, ending "
+        "with the drive it is on: its name, kind, capacity, used and free space. "
+        "Arrow through it, or select and copy any of it."
     )
     box.SetMinSize((520, 260))
     sizer.Add(box, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)

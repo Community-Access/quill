@@ -6612,8 +6612,9 @@ From top to bottom:
    reach it.
 3. **Your message.** This is where you start. Type, then press **Enter** to
    send.
-4. The buttons: **Send**, **New Conversation**, **Copy Last Reply**, **Insert
-   Last Reply Below**, and Close.
+4. The buttons: **Send**, **New Conversation**, **Copy Last Reply**,
+   **Messages...**, **Export Conversation...**, **Saved Conversations**,
+   **Insert Last Reply Below**, and Close.
 5. **Status.** Whether it is working, what answered, or what went wrong.
 
 When a reply arrives, it is read aloud and added to the conversation. You stay
@@ -6630,6 +6631,44 @@ first, each with how it began, how many messages it holds and when it was last
 used. Press **Enter** on one to open it and carry on where it left off, or
 **Delete** to remove it; QUILL Lite asks first. **New Conversation** starts a
 new saved conversation and keeps the old one.
+
+#### Going back over a conversation
+
+In the conversation window:
+
+- **Alt+1** reads the newest message aloud, **Alt+2** the one before it, and so on
+  up to **Alt+0** for the tenth newest. Each is said with its place and its
+  speaker, for example "Message 4 of 9, AI: ...", and the newest starts with
+  "Newest". Focus stays in **Your message** and your half-typed message stays
+  where it is. With fewer messages than the key asks for, you hear how many
+  there are, for example "There are only 2 messages so far. Alt+2 reads the
+  oldest."
+- **Messages...** (**Alt+G**) lists every message, oldest first, one row each. Press
+  **Enter** to open a message in a reading window where its headings and
+  tables are real ones (in browse mode, **H** moves by heading and **T** by
+  table), or **Read as Text** to see it exactly as it arrived in a plain text
+  box. Close it with **Escape** and you are back on the same row; the list opens
+  on that row again next time.
+- **Export Conversation...** (**Alt+X**) saves the whole conversation as a **Word
+  document** or a **Text file** you name. Every message is kept in order with
+  who said it: in Word, each message is a level-2 heading such as "Message 3
+  of 8, AI" with the message beneath it and its tables as real Word tables; in
+  a text file, each message is a paragraph starting "You:" or "AI:". The Save
+  As window asks before replacing a file, **Cancel** writes nothing, and your
+  document is never changed. If the file cannot be written, you hear why and
+  any file already there is left as it was.
+- A reply that arrives while you are reading the **Conversation** box does
+  not move your place in it. If you are not in the box, it shows the end, as
+  before.
+
+Example: you ask "Plan a three-day trip to Lisbon", then "Make day two
+cheaper". Press **Alt+3** to hear the first plan again, and **Export
+Conversation...** to keep both plans in a Word file, each under its own
+heading.
+
+These work the same on QUILL's free AI, with your own OpenAI or Gemini key,
+and with your ChatGPT plan, and every route saves to the same **Saved
+Conversations**.
 
 #### Long conversations on the free AI
 
