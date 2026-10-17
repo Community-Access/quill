@@ -3050,6 +3050,34 @@ affected only by the catalogue decision on the Whisper sizes, because
 whisper.cpp, Faster Whisper and the duplicate providers are QUILL-only. QUILL
 Cast is affected by Vosk only as the chapter engine, which stays.
 
+## 33. Documentation, 2026-10-17: every guide checked against the engines as built
+
+A family-wide pass rebuilt the engine and model story from the code and
+corrected every guide, PRD, release note, help topic and the site's dictation
+page against it (root CHANGELOG, "Speech engines and models: every guide says
+what the code does"). Three findings change what earlier sections imply and
+are recorded here:
+
+* **"A fresh install dictates at once" (section 22) holds for Locked
+  Dictation's transcription, not its pre-flight.** `_dictation_preflight` asks
+  `_speech_provider()`, which falls back to whisper.cpp, and offers the ~8 MB
+  whisper.cpp engine when it is missing; only after that does the ladder's
+  Moonshine tiny step apply. Dictate (Offline), Transcribe Audio or Video,
+  captions and the voice features (with the default Follow main engine) use
+  `_speech_provider()` and `_check_installed_speech_models`, so they need a
+  model for the chosen engine. Choosing QUILL speech models (`sherpa`) is the
+  only way nothing downloads at all. The guides now say exactly this.
+* **Dictate in Other Programs goes to QUILL Transcribe first**
+  (`windows_dictation_extras._dictation_hand_to_transcribe`), and to Inkwell
+  only when QUILL Transcribe is neither running nor released.
+* **Quill Inkwell alone cannot run the built-in models, OpenAI or the
+  providers**: its installer carries neither `dictation-models` nor
+  sherpa-onnx, and OpenAI and the providers still load sherpa-onnx's voice
+  detector (`local_recognizer._check_audio_stack`). On an Inkwell-only
+  computer only Windows speech recognition works; the Inkwell guide says so
+  and points to QUILL Transcribe. Whether Inkwell should ship that part is a
+  product decision, not made.
+
 ## Appendix A: the dict.md section numbers, and where they live now (the first dict.md, 2026-10-05)
 
 | dict.md | What it was | Here |

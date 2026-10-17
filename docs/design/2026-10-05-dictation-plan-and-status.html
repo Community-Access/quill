@@ -5098,6 +5098,42 @@ sizes, because whisper.cpp, Faster Whisper and the duplicate providers
 are QUILL-only. QUILL Cast is affected by Vosk only as the chapter
 engine, which stays.</p>
 <h2
+id="33-documentation-2026-10-17-every-guide-checked-against-the-engines-as-built">33.
+Documentation, 2026-10-17: every guide checked against the engines as
+built</h2>
+<p>A family-wide pass rebuilt the engine and model story from the code
+and corrected every guide, PRD, release note, help topic and the site’s
+dictation page against it (root CHANGELOG, “Speech engines and models:
+every guide says what the code does”). Three findings change what
+earlier sections imply and are recorded here:</p>
+<ul>
+<li><strong>“A fresh install dictates at once” (section 22) holds for
+Locked Dictation’s transcription, not its pre-flight.</strong>
+<code>_dictation_preflight</code> asks <code>_speech_provider()</code>,
+which falls back to whisper.cpp, and offers the ~8 MB whisper.cpp engine
+when it is missing; only after that does the ladder’s Moonshine tiny
+step apply. Dictate (Offline), Transcribe Audio or Video, captions and
+the voice features (with the default Follow main engine) use
+<code>_speech_provider()</code> and
+<code>_check_installed_speech_models</code>, so they need a model for
+the chosen engine. Choosing QUILL speech models (<code>sherpa</code>) is
+the only way nothing downloads at all. The guides now say exactly
+this.</li>
+<li><strong>Dictate in Other Programs goes to QUILL Transcribe
+first</strong>
+(<code>windows_dictation_extras._dictation_hand_to_transcribe</code>),
+and to Inkwell only when QUILL Transcribe is neither running nor
+released.</li>
+<li><strong>Quill Inkwell alone cannot run the built-in models, OpenAI
+or the providers</strong>: its installer carries neither
+<code>dictation-models</code> nor sherpa-onnx, and OpenAI and the
+providers still load sherpa-onnx’s voice detector
+(<code>local_recognizer._check_audio_stack</code>). On an Inkwell-only
+computer only Windows speech recognition works; the Inkwell guide says
+so and points to QUILL Transcribe. Whether Inkwell should ship that part
+is a product decision, not made.</li>
+</ul>
+<h2
 id="appendix-a-the-dictmd-section-numbers-and-where-they-live-now-the-first-dictmd-2026-10-05">Appendix
 A: the dict.md section numbers, and where they live now (the first
 dict.md, 2026-10-05)</h2>

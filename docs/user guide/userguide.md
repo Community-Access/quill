@@ -9397,8 +9397,8 @@ Inkwell**, `Ctrl+Alt+Shift+F11`, offers to fetch it if it is not).
    are saved and handed over. If QUILL Transcribe is running or installed, it
    gets them and starts, and you hear "QUILL Transcribe has your dictation
    settings. Use its start and stop key, or its tray menu, in the program you
-   want to dictate into." Its start and stop key is `Alt+Shift+Backslash`
-   unless you changed it. Otherwise Inkwell gets them and starts.
+   want to dictate into." Its start and stop key is the one you chose when
+   you set up QUILL Transcribe. Otherwise Inkwell gets them and starts.
 3. With Inkwell, if you have not chosen a key for it yet, Inkwell asks you for
    one now. Pick a key you do not use for anything else.
 
