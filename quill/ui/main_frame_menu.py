@@ -1154,6 +1154,7 @@ class MenuBuilderMixin:
             self._menu_label(_("Go to Temporar&y Bookmark"), "navigate.go_to_temp_bookmark"),
         )
         navigate_menu.AppendSubMenu(bookmarks_menu, _("Bookmarks"))
+        self._append_highlight_submenu(navigate_menu)  # main_frame_highlights
         navigate_menu.AppendSeparator()
         notebook_nav_menu = wx.Menu()
         notebook_nav_menu.Append(
@@ -2506,6 +2507,7 @@ class MenuBuilderMixin:
             self._id_speech_batch_export,
             self._menu_label(_("Audiobook && &Batch Speech..."), "tools.speech_batch_export"),
         )
+        self._append_recording_chapters_row(speech_menu)  # main_frame_recording_chapters
         speech_menu.Append(
             self._id_speech_pronunciations,
             self._menu_label(_("M&anage Pronunciations..."), "tools.speech_pronunciations"),

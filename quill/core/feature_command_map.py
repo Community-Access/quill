@@ -168,6 +168,7 @@ COMMAND_FEATURE_MAP: dict[str, str] = {
     "tools.read_aloud_voice": "core.read_aloud",
     "tools.read_aloud_settings": "core.read_aloud",
     "tools.speech_batch_export": "core.read_aloud",
+    "tools.find_recording_chapters": "core.read_aloud",
     "tools.speech_export_audio": "core.read_aloud",
     "tools.speech_export_translated": "core.read_aloud",
     # Audio Studio port-in: the chapter Play Queue rides the read-aloud feature

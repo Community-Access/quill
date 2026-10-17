@@ -158,7 +158,10 @@ class CastPlacesHostMixin(CastPlaceContentMixin):
             show = self._podcast_library.find_show(self._place_opened_show_id)  # type: ignore[attr-defined]
             if show is not None:
                 self._fill_episodes(show)  # type: ignore[attr-defined]
-                self._select_list_key(key) or self._select_list_row(0)  # type: ignore[attr-defined]
+                # Gone after a refresh: the remembered episode's neighbour (item 43).
+                self._select_list_key(key) or self._select_list_row(  # type: ignore[attr-defined]
+                    self._remembered_episode_row(show)
+                )
                 self._refresh_place_counts()
                 return
         self._fill_place(self._current_place, keep=key)
@@ -195,12 +198,18 @@ class CastPlacesHostMixin(CastPlaceContentMixin):
         self._place_opened_show_id = show.id
         pane.show(pane.LIST)
         self._fill_episodes(show)  # type: ignore[attr-defined]
-        self._select_list_row(0)  # type: ignore[attr-defined]
+        self._select_list_row(self._remembered_episode_row(show))  # type: ignore[attr-defined]
         count = unheard_count(show)
         pane.set_heading(f"{show.title} ({count} unheard)")
         pane.focus()
         self._refresh_selection_buttons()  # type: ignore[attr-defined]
         self._refresh_notes_pane()  # type: ignore[attr-defined]
+
+    def _remembered_episode_row(self, show: Any) -> int:
+        """Where the listener was in *show*'s list, by episode identity (item 43)."""
+        from quill.ui.podcasts.episode_cursor_ui import remembered_row
+
+        return remembered_row(self, show, list(getattr(self, "_current_episodes", []) or []))
 
     def _open_playlist_in_place(self, playlist_id: str, *, keep: Any = None) -> None:
         """Playlists > Enter: the playlist's episodes, in place; Backspace returns."""

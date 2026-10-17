@@ -23,12 +23,15 @@ from typing import Any
 
 from quill.ui.html_export_commands import HtmlExportCommandsMixin
 from quill.ui.main_frame_editor_host import QuillEditorHostMixin
+from quill.ui.main_frame_highlights import HighlightPassagesMixin
 from quill.ui.task_list_commands import TaskListCommandsMixin
 
 __all__ = ["ReviewToolsMixin"]
 
 
-class ReviewToolsMixin(QuillEditorHostMixin, TaskListCommandsMixin, HtmlExportCommandsMixin):
+class ReviewToolsMixin(
+    HighlightPassagesMixin, QuillEditorHostMixin, TaskListCommandsMixin, HtmlExportCommandsMixin
+):
     """Registration, one menu row and the Pandoc override. No commands of its own."""
 
     def register_review_commands(self) -> None:
@@ -44,6 +47,7 @@ class ReviewToolsMixin(QuillEditorHostMixin, TaskListCommandsMixin, HtmlExportCo
             self.cmd_export_html,
             self._binding_for("file.export_html"),
         )
+        self.register_highlight_commands()  # main_frame_highlights: Highlighted Passages
 
     def _task_toggle_menu_id(self) -> Any:
         menu_id = getattr(self, "_id_toggle_task_done", None)

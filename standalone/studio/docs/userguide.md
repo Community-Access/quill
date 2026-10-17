@@ -183,6 +183,20 @@ Four steps: Start, Where are the recordings?, Tell me about the book, Review and
 
 Open a book three ways: **Edit a Book...** (a file picker), **Studio > Open Book File...** (Ctrl+O), or press **Enter** on a book in Your books. A chaptered MP3, M4B, or M4A opens with its chapters; a file with no chapter markers opens as one big chapter, ready to carve.
 
+### Chapters for a lecture, a meeting or any recording
+
+The Workbench is not only for audiobooks. **Studio > Find Chapters in a Recording...** (**Ctrl+Shift+R**) asks for any MP3, M4A or M4B -- a two-hour lecture, a recorded meeting, a talk somebody sent you -- opens the Workbench on it, and starts **Propose chapters from silences** straight away.
+
+1. Pick the recording and press Open.
+2. Choose how quiet counts as silence (-30 decibels suits most speech; -40 a noisy room) and how long a pause must last (0.8 seconds catches a speaker drawing breath between topics; 2 or 3 seconds only the real breaks), and press OK.
+3. The scan runs in the background; you can keep listening. Each new chapter starts in the middle of a silence and is titled **Proposed chapter 1**, **Proposed chapter 2** and so on, so a guess never passes for a name somebody chose.
+4. Review them: Enter plays one, **Hear boundary** plays the moments around its start, **Set start to playhead**, **Split at playhead** and the nudge buttons move a boundary, **Merge into previous** removes one, and **Rename** names it.
+5. **Save** writes the chapters (an MP3 in place, touching only its tags; an M4B as a new file), or **Export chapters...** writes a chapter file. Open the recording again and the chapters are there.
+
+If the recording already has chapters of its own, you are asked first: **Keep mine, add proposals** (the default) keeps every chapter you had and adds a proposed one only where a silence is at least ten seconds from yours; **Replace with the proposal** swaps the list; Cancel changes nothing. While the scan runs the button reads **Stop proposing chapters**; press it, or close the Workbench, and the list stays exactly as it was. **Restore original** takes back a whole proposal. A long recording is given time in proportion to its length, so an all-day recording is scanned to the end. FFmpeg is needed; without it you are told so.
+
+**Sleep Timer** (Ctrl+Shift+T) and **Play Queue** (Ctrl+Shift+Q) now work inside the Workbench too, so you can set one while a book plays there.
+
 ### The chapter list
 
 Each row reads in full: "3. The Long Road - starts 1:02:03, runs 12:40". Press **Enter** on a chapter to hear it. Selecting a chapter loads its title into the **Chapter title** field - type a new one and press Enter (or the **Rename** button).
