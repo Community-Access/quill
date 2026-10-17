@@ -152,7 +152,7 @@ radio.md
 radio2.md
 # The 2026-09 working notes, same class as fixes.md and the magic/radio
 # papers above: they describe the work rather than being it. add.md is the
-# AI-features note (own-key limits, Leasey parity), testkspn.md the KSPN
+# AI-features note (own-key limits, parity notes), testkspn.md the KSPN
 # stream-drop test plan. (dict.md, both dictation plans, was retired on
 # 2026-10-05 into docs/design/2026-10-05-dictation-plan-and-status.md.)
 # Listed here because they were untracked by intention and a
@@ -165,7 +165,6 @@ add2.md
 questions.md
 quill-auphonic-integration-proposal.md
 pdf.md
-Leasey.md
 email.md
 email2.md
 # check.md: the 2026-10-04 Downcast OPML import and Cast feed-check report.
