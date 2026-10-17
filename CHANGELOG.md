@@ -2,87 +2,12 @@
 
 ## 1.0.0
 
-### Notice drafted: released portable copies update by hand (todo C.2; 2026-10-17)
+Newest entries (2026-10-17), grouped by area; each entry keeps its own
+heading one level down. Older 1.0.0 entries follow, newest first.
 
-The update helper in a released portable copy (QUILL Lite 1.1.2, any QUILL
-0.9) deletes the user's files in `data` when the new zip carries a `data`
-folder (`docs/release/RELEASE.md`, "Open, and yours to decide"). Jeff decided
-to tell those users to update by hand. The notice is drafted for the website
-in `docs/release/portable-update-by-hand-notice.md` (who is affected, what
-goes wrong, seven steps: back up `data`, download, unzip next to the old copy,
-copy `data` back, check, tidy up; what to do if the data is already gone), and
-a short version is in `docs/release notes/release1.0.0.md` (Staying up to date)
-and QUILL Lite's `release-notes-1.2.md` (If you already use QUILL Lite).
-Nothing published or sent; RELEASE.md records the decision.
+### Documents and file types
 
-### Dictation acceptance tests in both editors; spelling across pauses; a dictated Markdown link (todo D.2; 2026-10-17)
-
-**`tests/unit/apps/test_dictation_acceptance.py` (new, 182 tests).** The
-automated half of dictation acceptance: every editor test runs in QUILL Lite's
-real window mixins and through QUILL's real adapter
-(`WindowsDictationCommandsMixin` on a stand-in frame with MainFrame's own
-`copy_all`), started with `cmd_toggle_dictation`, with a fake recogniser and the
-suite's `FakeControl`. Covered: go to / go before / go after then dictate,
-words not found, repeated matches (select previous / next / again, the ends,
-a far match's line), select by words and through, correct, units, Copy All and
-its aliases, copy that, scratch that (newest first, typed text never taken, a
-phrase typed into left alone), all twelve Copy Tray slots by word and digit,
-named snippets and abbreviations with spaces, every capitals command and mode,
-an email spelled character by character, every Markdown line and inline mark,
-literal, and the insert-only limits in another program (the shipped
-`ExternalDocument` and `AnywhereLibrary` with typing faked: 16 reading commands
-refused, clips and snippets typed, a snippet's cursor mark dropped). Accuracy
-and latency are not covered; they wait on the benchmarks (todo C.15).
-
-**Two fixes the tests found (shared, so QUILL, QUILL Lite, QUILL Transcribe and
-Inkwell all get them).**
-
-- **Spelling across pauses.** In spelling mode each phrase was composed as a new
-  phrase, so "juliet", pause, "oscar" wrote `j o`. A spelled phrase now joins
-  the letters spelled just before it when the cursor is still right after them:
-  `VoiceCommandsMixin._spelling_joins` (`voice_commands.py`), passed to
-  `compose(join_words=...)` by the controller, and a new
-  `DictatedPhrase.spelled` field (`history.py`, defaulted, so nothing else
-  changes). "space", the first spelled phrase after words, "spell that" and
-  "spell" with letters behave as before.
-- **A Markdown link.** `composer.py`: an opening parenthesis straight after a
-  closing bracket takes no space, so "close bracket open paren" writes `](`.
-
-**Documentation.** `quill/core/windows_dictation/reference_examples.py` (new)
-adds *Worked examples* and *Limits* to the generated dictation-commands guides
-and the in-app "What can I say?" list (regenerated with
-`scripts/build_dictation_commands.py`). The spelling example "jay dot smith at
-sign example dot com" was wrong (whole words are left out while spelling) and
-is now spelled out in `reference.py`, `scripts/build_dictation_page.py` (site
-page regenerated) and QUILL Lite's guide. QUILL's user guide: *Spelling with
-pauses*, *A Markdown link, by voice*, and a pointer to the examples. Design
-record section 35 has the coverage table.
-
-### `main_frame.py` below 15,000 lines: three feature groups move to mixins (2026-10-17)
-
-Developer-facing refactor; nothing a user sees or hears changes. `quill/ui/main_frame.py`
-went from 15,890 to 14,459 lines (todo D.4) by moving three whole feature groups out
-of `MainFrame`, unchanged, into new under-cap mixins:
-
-- `quill/ui/main_frame_bookmarks.py` (`BookmarksFoldsMixin`): named, temporary and
-  quick bookmarks with their anchors, PDF outline import and per-document memory;
-  code folding; Favorite Folders and Open From Favorite Folder.
-- `quill/ui/main_frame_read_aloud.py` (`ReadAloudMixin`): live Read Aloud with the
-  ElevenLabs consent, Read in Browser, Export to Speech Audio and the controller
-  callbacks.
-- `quill/ui/main_frame_speech_hub.py` (`SpeechHubMixin`): the Speech Hub and its
-  Piper voice and Kokoro model downloads.
-
-The three are listed first in `MainFrame`'s bases so their methods keep the
-precedence they had as class methods. `_NavigatorNode` moved to
-`quill/ui/navigator_node.py` (re-exported from `main_frame`) so a mixin can build
-tree-navigator rows without a circular import. Same command ids, keys, menu rows,
-dialogs and announcements. The GATE-11 budget for `main_frame.py` ratchets down to
-14,459; the surface-reachability, dialog, accessible-name and control-label
-snapshots were regenerated with their tools, and two tests now patch and read
-the module the code lives in.
-
-### Word documents work in every installed and portable build: lxml ships in the shared runtime; one Office story in the docs (2026-10-17)
+#### Word documents work in every installed and portable build: lxml ships in the shared runtime; one Office story in the docs (2026-10-17)
 
 Jeff's decision (2026-10-17): "get whatever is needed to make word documents
 fully usable in quill and quill lite, the lxml or whatever it is called, get
@@ -167,81 +92,7 @@ Docs: both user guides, both PRDs, both changelogs,
 `docs/building-windows-family.md`, `docs/build-machine-sync.md` and the manual
 checks in `docs/qa/screen-reader-checks-2026-10.md`.
 
-### Radio: one file per song at each song change; marks in Recordings, Browse and the schedule list (todo D.3; 2026-10-17)
-
-**Split at song changes (xradio2 4.8), opt-in.** New
-`RecordingSettings.split_at_song_changes` (default off; additive, older builds
-ignore the key) and a Recording Settings check box (Alt+N, F1 help in
-`settings_help.HELP["split_songs"]`). `quill/core/radio/recording_song_watch.py`
-(new) runs one watcher per recording that polls the recorded stream's ICY
-title every 10 s (`icy.read_stream_title`, same egress as What's Playing) and
-places each change at the midpoint between polls, ignoring
-`song_history.is_noise_title` (new public wrapper of Song History's rule).
-`quill/core/radio/recording_split.py` (new) plans the cuts (pre-roll trim
-subtracted via the new `OpeningGuard.take_lead_trim`, pieces under 20 s
-folded, names `<stem> - NN <Artist - Title><ext>` sanitised and uniquified)
-and cuts in one ffmpeg segment-muxer pass with `-c copy`, under the
-`recording_join` safety contract: private work folder, verify count/size,
-move into place, delete the source last, undo everything on any failure. The
-recorder calls it after join and exact OptiLab and speaks the outcome through
-`on_parts_joined`; a recording that reconnected is kept whole. GATE-11:
-`recording.py` stays under budget by moving `_finalize_move` to
-`recording_outcome.finalize_move` (the old name is an alias). Also fixed:
-Recording Settings' OK reset `exact_optilab` to False. Tests:
-`tests/unit/core/test_radio_recording_split.py` (fake runner, fake title
-reader, fake clock; a conftest guard keeps the real title reader out of
-tests).
-
-**Marks beyond Favorites (xradio2 4.10).** `quill/ui/radio/marks_shared.py`
-(new) holds the keys (`.`, Delete, Ctrl+Shift+Delete), the menu rows and the
-No-default question; `favorites_marks` now imports them. New
-`recordings_marks.py` (finished recordings; one undo for the batch),
-`schedule_marks.py` (also owns the list's key handler and Shift+F10 menu,
-moved out of `schedule_recording_dialog.py`, 652 -> 631 lines) and
-`browse_marks.py` (removable rows only; reuses `browse_delete.confirm` and the
-new no-question cores `remove_stored_now` / `unfavorite_now`; the tree's
-`_row_label` is now `browse_marks.row_text`, 941 -> 940 lines).
-`RowMarks.ignored_note` / `ignored_sentence` give the once-per-set
-"That used the selected row only; N rows are still marked for Delete." to
-actions that act on the selected row. Tests:
-`tests/unit/ui/test_radio_list_marks.py` (real in-memory windows, faked
-questions, and a guard that fails if a real message box would open).
-
-**Beacon and Social menu keys (todo D.9).** Every enabled row on both menu
-bars now shows a key (16 in Beacon, 31 in Social had none), with access
-letters de-duplicated, and `tests/unit/ui/test_menu_accelerators.py` now walks
-Radio's, Beacon's and Social's real menu bars. Social's menu labels come from
-its own keymap, so a rebound key moves in the menu too. See each app's
-changelog for the keys.
-
-### Batch-6 CI: the shared test App kept alive, and a first-run Inkwell key bug it exposed (2026-10-17)
-
-- **Why CI failed.** `tests/unit/ui/test_mac_open_file_app.py` built a real
-  `MacOpenFileApp` (a `wx.App` subclass), a second App in the process, and
-  destroyed it; `shared_wx_app()` then built a new session App. When the
-  replaced session App's last Python reference went, its C++ destructor
-  cleared wx's global App pointer even though the newer App held it, and the
-  rest of that worker failed with "The wx.App object must be created first!"
-  (beacon auto-sync, close-confirm dialogs, labelled field, translated speech
-  export). `tests/wx_session.py` now keeps every App it hands out alive
-  (`_KEEP`); the Mac test builds its subclass with `wx.App.__init__` patched
-  out, so it is no longer `machine_global`; and
-  `tests/unit/test_wx_test_hygiene.py` now also flags building any `wx.App`
-  subclass found under `quill/`.
-- **App-dependent test.** `test_queued_launch_check_does_not_start_during_shutdown`
-  counted every deferred call; with an App alive, launch also queues
-  `_confirm_update_started`. It now counts only the check.
-- **Product bug: Inkwell registered two retired keys on a first run.** With no
-  settings file, `load_settings` fills in the pre-2026-10-05 defaults for Quick
-  Insert (Ctrl+Alt+Shift+K) and Expand Word (Ctrl+Alt+Shift+X), and
-  `take_system_keys` saved and registered them instead of moving them to none.
-  The window test meant to catch it passed only while every test built its own
-  App. Fixed in `quill/core/expansion/settings.py`, pinned by
-  `tests/unit/core/test_show_hide_keys.py`.
-- **mypy.** `rtf_model._EMPHASIS` is now `(marker, bold, italic)` rather than a
-  keyword dict, which strict mypy could not check against `_Attrs`.
-
-### Word editing shared with QUILL Lite; two Word round-trip fixes; table navigation in QUILL Lite (2026-10-17)
+#### Word editing shared with QUILL Lite; two Word round-trip fixes; table navigation in QUILL Lite (2026-10-17)
 
 **`quill/core/docx_open.py` (new, wx-free).** QUILL's Word open and save
 decisions moved out of `quill/ui/main_frame_rich_mode.py` so QUILL Lite can make
@@ -282,7 +133,240 @@ regenerated. Docs: QUILL user guide (Editing Word documents), QUILL PRD,
 QUILL Lite user guide ("Word documents", "Moving through a table"), changelog
 and PRD; manual checks in `docs/qa/screen-reader-checks-2026-10.md`.
 
-### Word-level AI review, one retry ladder for AI, a note-line cue, and browse mode M and F (2026-10-17)
+#### PDF in QUILL Lite, what was left: Import / Convert, the portable reader, page breaks, the 200-page gate (2026-10-17)
+
+Todo item 28 after phases 1 and 2, the P3 PDF items, and todo item 52.
+
+- **Import / Convert Document's words and file list are shared**
+  (`quill/core/import_convert.py`, new, wx-free): `import_wildcard`,
+  `scanned_import_question(name, app_name=)`, `opened_sentence(name, outcome)`
+  per tier, `failed_sentence`, `converted_name`, `CANCELLED_SENTENCE`.
+  `quill/ui/main_frame_docconvert.py` calls them and shrank by about 60 lines;
+  QUILL's wording is byte-for-byte what it was (`test_main_frame_docconvert.py`
+  unchanged). `_import_wildcard` stays importable there as an alias.
+- **QUILL Lite gains File > Import / Convert Document (OCR)...**
+  (`quill/apps/lite_window_import.py`, `cmd_import_convert`), parity
+  `file.import_convert`, which is now in `DEFAULT_KEYMAP` as an unbound id with
+  a rule 9 reason in `UNBOUND_WITH_REASON` (the keyboard reference lists it
+  under "unbound by default"). No second implementation: the router, the
+  readers and every sentence are QUILL's.
+- **A picture of a page goes to whichever on-device engine exists.**
+  `quill.io.docconvert.convert_document` routed images to
+  `convert_with_local_ocr` (Tesseract only), so without Tesseract a `.png` or
+  `.jpg` failed with "Install it from Tools > OCR..." while a scanned PDF
+  already fell back to Windows OCR. Images now go through
+  `convert_with_on_device_ocr` too (`tests/unit/io/test_docconvert_images.py`).
+- **No control character reaches a screen reader inside an announcement.**
+  `quill/core/speakable.py` (new): `speakable_controls` turns form feed and
+  vertical tab into a newline and drops the other C0/C1 controls, keeping tab,
+  CR and LF. Applied in `AnnouncementEngine.announce` and `.braille`
+  (`prism_bridge.py`, which every app's announcements leave through; two
+  comments reflowed to stay inside its budget) and in QUILL Lite's
+  `DocumentFrame._announce` before the status cell. A PDF's page breaks
+  (U+000C) were otherwise able to reach speech as "form feed" whenever an
+  announcement quoted text across a page. `char_describe` names U+000C "Page
+  break" (it was "U+000C Unnamed character"), in both editors.
+- **QUILL Lite portable build inputs.** `build_portable.py`: the `quilllite`
+  product adds the `office-text` and `ocr` groups, and a new `must_import`
+  field per product that step 8 imports inside the bundle (QUILL Lite's lists
+  pdfplumber, pypdf, pypdfium2, `winrt.windows.media.ocr`,
+  `winrt.windows.graphics.imaging`, `quill.io.pdf`, `quill.io.docconvert`).
+  `standalone/quilllite/portable-inventory.json` is NOT hand-edited: the next
+  real build's inventory gate fails on the new packages until it is reviewed
+  and rebaselined with `--write` (see `docs/building-windows-family.md`).
+- **GATE-PERF for PDFs** (`tests/unit/core/test_pdf_open_budget.py`, `perf`):
+  a 200-page synthetic PDF through QUILL Lite's `open_prepare.prepare` (which
+  is QUILL's reader, outline and scanned check) within 150 ms a page, then
+  the Page rows and the last page's position within 500 ms. Measured here at
+  31 ms a page with the machine 31 % busy.
+- **Todo item 52** (`test_clean_pages_pay_for_one_extractor_and_stay_in_budget`,
+  293 ms a page against 250): the test timed a read made under `tracemalloc`,
+  which hooks every allocation pdfminer makes per glyph. Measured 2026-10-17
+  with the machine 31 % busy: 28-29 ms a page untraced, 121-129 ms traced. The
+  clean-page path is not over budget, so `pdf_select.py` is unchanged; the test
+  now traces memory in one read and times a second, untraced one.
+- **GLOW's PDF audit in the shared runtime** (finding; fixed the same day by
+  "Word documents work in every installed and portable build", above).
+  `acb_large_print.pdf_auditor` imports `acb_large_print.auditor`, which
+  imports python-docx at module top, and python-docx imports `lxml`, which
+  `standalone/runtime/quillville-runtime.spec` excludes (and
+  `runtime-inventory.json` confirms is absent). Simulated by blocking every
+  spec exclude: `fitz` (PyMuPDF), `quill_glow_core` and
+  `acb_large_print_core.services` import, but every GLOW audit (PDF, Word,
+  PowerPoint) fails with `No module named 'lxml'`. QUILL's own Office readers
+  are unaffected (they fall back to the standard library). Jeff then chose to
+  ship lxml whatever the size, and that is what happened: the exclude is gone
+  and the import gate holds `docx`, lxml and every GLOW auditor.
+
+### Editing
+
+#### Emoji and other astral characters: typed whole, counted as the control counts them (todo P3; 2026-10-17)
+
+An emoji dictated by QUILL Transcribe into a plain edit control arrived
+without its first half. Two separate unit mistakes, one in each direction, and
+both now have a test that pins them without a real window.
+
+- **Typing into other programs** (`quill/platform/windows/text_injector.py`).
+  An astral character is two UTF-16 units, and each went out as its own
+  down-up `KEYEVENTF_UNICODE` tap, so a key-up sat between the high and low
+  surrogate. The new pure `unicode_key_sequence(text)` sends both key-downs
+  before either key-up (high down, low down, low up, high up), so
+  `TranslateMessage` posts the two `WM_CHAR`s back to back. Separately,
+  `_layout_key` asked `VkKeyScanExW` about astral characters, whose argument is
+  a 16-bit `WCHAR`: ctypes cut U+20041 (CJK Extension B) to U+0041 and the
+  layout answered with the A key, so the ideograph was typed as a letter. Astral
+  characters now always take the Unicode route. Shared by QUILL Transcribe,
+  Quill Inkwell's Dictate Anywhere and abbreviation expansion. Not reproduced
+  against a live window (the overnight rules forbid driving the desktop); the
+  field check is a person's.
+- **Positions inside our own controls.** A Windows Edit or Rich Edit control
+  (so every `wx.TextCtrl` on wxMSW) counts UTF-16 units and hands text back as
+  Python characters; confirmed in memory: with `"hi \U0001f600 there"`,
+  `GetLastPosition()` is 11 and selecting 0 to 4 gives `'hi \ud83d'`, a lone
+  high surrogate. New `quill/core/text_units.py` (`utf16_length`,
+  `native_length`) is the length to add to a control position. Fixed in QUILL
+  Lite: the five `GetValue()[start:end]` slices (the clipboard's selected text, Find's
+  opening needle and its Replace match check, the Review Buffer, the Tools
+  transforms) now read
+  `GetRange(start, end)`, and the four `start + len(text)` caret/selection
+  ends (context-menu and spelling replacements, the Tools transforms) use
+  `native_length`. Fixed in the shared dictation editor port
+  (`windows_dictation_ports.EditorDocument.line_bounds`).
+- **Left as is, on purpose.** `ExternalDocument` (Transcribe's port) counts
+  backspaces in code points, which is right: Windows edit controls delete a
+  surrogate pair with one Backspace. The dictation controller's correction
+  arithmetic (`corrections.py`, `live.py`) adds Python offsets to port
+  positions; for an editor port that is still off by one per emoji before the
+  change, and needs a port-units seam rather than a local patch.
+
+Tests: `tests/unit/platform/windows/test_text_injector.py` (key order, every
+unit sent once, no astral layout key), `tests/unit/core/test_text_units.py`
+(lengths, and `line_bounds` against a control that counts UTF-16), and
+`tests/unit/apps/test_lite_text_tools.py` (a real Rich Edit control: Upper
+Case after an emoji changes the right letters and selects all of them).
+
+### Dictation
+
+#### Dictation acceptance tests in both editors; spelling across pauses; a dictated Markdown link (todo D.2; 2026-10-17)
+
+**`tests/unit/apps/test_dictation_acceptance.py` (new, 182 tests).** The
+automated half of dictation acceptance: every editor test runs in QUILL Lite's
+real window mixins and through QUILL's real adapter
+(`WindowsDictationCommandsMixin` on a stand-in frame with MainFrame's own
+`copy_all`), started with `cmd_toggle_dictation`, with a fake recogniser and the
+suite's `FakeControl`. Covered: go to / go before / go after then dictate,
+words not found, repeated matches (select previous / next / again, the ends,
+a far match's line), select by words and through, correct, units, Copy All and
+its aliases, copy that, scratch that (newest first, typed text never taken, a
+phrase typed into left alone), all twelve Copy Tray slots by word and digit,
+named snippets and abbreviations with spaces, every capitals command and mode,
+an email spelled character by character, every Markdown line and inline mark,
+literal, and the insert-only limits in another program (the shipped
+`ExternalDocument` and `AnywhereLibrary` with typing faked: 16 reading commands
+refused, clips and snippets typed, a snippet's cursor mark dropped). Accuracy
+and latency are not covered; they wait on the benchmarks (todo C.15).
+
+**Two fixes the tests found (shared, so QUILL, QUILL Lite, QUILL Transcribe and
+Inkwell all get them).**
+
+- **Spelling across pauses.** In spelling mode each phrase was composed as a new
+  phrase, so "juliet", pause, "oscar" wrote `j o`. A spelled phrase now joins
+  the letters spelled just before it when the cursor is still right after them:
+  `VoiceCommandsMixin._spelling_joins` (`voice_commands.py`), passed to
+  `compose(join_words=...)` by the controller, and a new
+  `DictatedPhrase.spelled` field (`history.py`, defaulted, so nothing else
+  changes). "space", the first spelled phrase after words, "spell that" and
+  "spell" with letters behave as before.
+- **A Markdown link.** `composer.py`: an opening parenthesis straight after a
+  closing bracket takes no space, so "close bracket open paren" writes `](`.
+
+**Documentation.** `quill/core/windows_dictation/reference_examples.py` (new)
+adds *Worked examples* and *Limits* to the generated dictation-commands guides
+and the in-app "What can I say?" list (regenerated with
+`scripts/build_dictation_commands.py`). The spelling example "jay dot smith at
+sign example dot com" was wrong (whole words are left out while spelling) and
+is now spelled out in `reference.py`, `scripts/build_dictation_page.py` (site
+page regenerated) and QUILL Lite's guide. QUILL's user guide: *Spelling with
+pauses*, *A Markdown link, by voice*, and a pointer to the examples. Design
+record section 35 has the coverage table.
+
+#### Dictation: no polishing box in Quill Inkwell, and Spanish "pule eso" and "sí" drafted behind the switch (2026-10-17)
+
+Two small dictation decisions of Jeff's, 2026-10-16.
+
+**"Hide it."** More Dictation Settings is shared by QUILL, QUILL Lite, QUILL
+Transcribe and Quill Inkwell, and it showed **Allow polishing my dictation with
+AI when I ask** (Alt+G) in Inkwell too, where it did nothing: polishing runs
+only in Review Dictation, which Inkwell does not have. `WindowsDictationDialog`
+and `MoreDictationDialog` take a new keyword, `review` (default `True`);
+Inkwell's `edit_anywhere_settings` passes `review=False`. Then the box is not
+built, `MoreDictationDialog.values()` leaves `windows_dictation_polish` out so
+the saved (possibly family-shared) value is untouched, and
+`DictationStyleMixin` neither reads nor writes the polish and review-first
+fields, so choosing Verbatim or Clean in Inkwell cannot turn polishing off for
+QUILL. QUILL, QUILL Lite and QUILL Transcribe are unchanged. No access key
+moved; GATE-14 holds with and without the box. The box's F1 help now says
+Inkwell does not show it. Both dialog modules stay at or under the 600-line
+default cap (module docstrings were tightened to make room).
+
+**"Draft them, gated."** Spanish forms of "polish that" ("pule eso", "púlelo",
+"mejora eso") and of the spoken answers to the "Add a correction?" offer in
+QUILL Transcribe ("sí", "no"), in `vocabulary_es.SPANISH_REVIEW_HELP` and
+`SPANISH_ANSWERS`. They are matched through `spanish_review_command` and
+`spanish_answer`, which answer only in Spanish dictation with the drafted
+Spanish commands switched on (a development build with
+`QUILL_DICTATION_SPANISH_COMMANDS=1`), so nothing changes for users until a
+native speaker has reviewed them; the questions for that review are a new
+"Spanish review" list at the end of `docs/qa/screen-reader-checks-2026-10.md`.
+The published dictation command reference is unchanged.
+
+Tests: `tests/unit/ui/test_dictation_more_dialog.py` (four new) and the new
+`tests/unit/core/test_dictation_spanish_drafts.py`. Docs: the Inkwell user
+guide and changelog, the dictation design record (sections 9, 10 and 28), the
+screen-reader checks, and the F1 help reference.
+
+#### Speech engines and models: every guide says what the code does (2026-10-17)
+
+Jeff: "I don't think all of its documentation is updated across all apps
+though like the new transcribe models... Make sure all documentation is
+amazing." A family-wide pass built the facts from the code
+(`windows_dictation/engines.py`, `model_catalog.py`, `model_types.py`,
+`model_advice.py`, `cloud/`, `speech/guided_setup.py`, `service.py`, the
+in-memory menu bars), then corrected every guide against them.
+
+- **Stale claims fixed.** Vosk offered as a dictation engine (release notes,
+  announcement); "four engines" lists that omitted downloads and the twelve
+  speech providers; Whisper called English-only; Locked Dictation said to use
+  "the on-device Whisper engine" and to need a model (it needs none: the
+  built-in Moonshine tiny transcribes until the engine has one, though the
+  ~8 MB whisper.cpp engine is still offered on the first Ctrl+F9 unless QUILL
+  speech models is chosen); voice commands said to fall back to Moonshine tiny
+  (they fall back to the main offline engine); Dictate in Other Programs said
+  to go only to Inkwell (it goes to QUILL Transcribe when running or released);
+  QUILL Transcribe's What matters most given two choices, not three; Transcribe
+  PRD decision 4 "only OpenAI".
+- **Written new.** QUILL: "Which speech engine? A guide to choosing" (two
+  systems, tiers, privacy, cloud, a worked example, limits) and a rewritten
+  offline-engine section. QUILL Lite: "Which engine should I choose?" and a full
+  Speech providers section. QUILL Transcribe: the Models chapter rebuilt (15
+  downloads with sizes, tiers and memory, recommendation, Spanish, limits).
+  Quill Inkwell: which engines Dictate Anywhere uses, and what an Inkwell-only
+  computer lacks (the built-in models and sherpa-onnx; only Windows speech
+  recognition works there). Quill Cast and Quill Radio: Dictate Here explained
+  in full. Quill Studio: the speech-recognition engines behind captions. The
+  site's dictation page: choosing an engine, tiers, the recommendation, and
+  speech providers. Release notes and the announcement: the current engine
+  story.
+- **Code.** `engines.engine_list_help()` gives the Speech engine list's F1 the
+  downloads, tiers, OpenAI, the providers and the consent question; the Speech
+  Models button's help no longer cites another product; `reference.py` credits
+  punctuation to every engine but Windows speech recognition (both
+  `dictation-commands.md` regenerated); the Dictation Settings help topic names
+  Speech Models and Speech Providers.
+
+### AI
+
+#### Word-level AI review, one retry ladder for AI, a note-line cue, and browse mode M and F (2026-10-17)
 
 **Review AI Changes: accept or reject single word groups.** `DiffHunk` gains
 `spacing_edits` and `text_with(accepted_words)`, `WordChange` gains
@@ -357,47 +441,80 @@ references, and unticked checks in `docs/qa/screen-reader-checks-2026-10.md`.
 Module budgets rebaselined in `module_size_budgets.json`
 (`_rebaseline_2026_10_17_four_contained_improvements`).
 
-### Property-based tests for io, dictation words, fillers and braille, and the three bugs they found (todo P3; 2026-10-17)
+#### AI conversations: the recent ten on Alt+1 to Alt+0, a message list, export to Word and text; the drive in file properties (2026-10-17)
 
-Hypothesis was already a dev extra (`pyproject.toml`, `hypothesis>=6.168.1`,
-locked at 6.169.0 in `uv.lock`) with the suite profile in `tests/conftest.py`;
-nothing was added to the dependencies.
+todo.md items 44 and 46. Item 44 extends the two conversation windows that
+already existed -- Ask Quill (QUILL) and the AI Conversation window both
+editors open -- rather than adding a third chat. Item 46 audited every
+file/folder properties entry point first and added the drive to the two that
+show a file's properties.
 
-- **`tests/unit/io/test_format_round_trip_properties.py`.** Plain text written
-  and read back in UTF-8, UTF-8 with BOM and UTF-16, LF and CRLF, is the same
-  text with the same line ending. A rich document of headings, bullets and
-  paragraphs with bold and italic runs survives RTF and Word with its text,
-  styles and emphasis.
-- **`tests/unit/core/test_dictation_text_properties.py`.** My Words and Phrases
-  saved and reopened gives back the same words, phrases and corrections in
-  order, and a file QUILL wrote is rewritten byte for byte. Filler removal is
-  idempotent in every language tier, removes every filler and keeps every
-  other word in order, and is a no-op when switched off.
-- **`tests/unit/core/test_braille_properties.py`.** A BRF page map covers every
-  character once, in order, in all three page-break modes, with a form feed as
-  the boundary between two pages, and is the same every time; the braille
-  worker's JSON pipe returns any text unchanged; the `lou_translate` route trims
-  only the newline the tool appends; with liblouis present (it is not on this
-  machine, so that one skips), translation is deterministic.
+- **Shared core, `quill/core/ai/chat_navigation.py` (new, wx-free).** Numbered
+  messages ("Message 3 of 12, AI"), the recent-ten sentence (Alt+1 newest to
+  Alt+0 tenth newest, fewer-than-ten says how many and which key reads the
+  oldest, spoken through `speakable_line` so no Markdown is read out),
+  `nest_reply_headings` (a reply's headings move down so its shallowest is
+  level 3, under the speaker's level 2; fenced code untouched; capped at 6) and
+  `message_view_html` (heading plus the reply with real `<th>` tables).
+- **Export, `quill/core/ai/chat_export.py`.** `export_conversation(messages,
+  path)` writes `.txt` through `quill.io.text.write_text_document` and `.docx`
+  through `quill.io.export.write_docx_document`, on a fresh `Document`: the
+  active document is never passed, so it cannot be changed, renamed or marked
+  saved. Word gets a level-2 heading per message with nested reply headings and
+  real tables; lines inside fenced code are indented so the line-oriented Word
+  writer cannot turn a `# comment` into a heading. Atomic: a failed write
+  leaves an existing file as it was.
+- **Shared UI, `quill/ui/ai_conversation_tools.py` (new).**
+  `RecentMessageReader` (one press seen twice within 0.3 s is said once),
+  `bind_recent_message_keys` (an accelerator table; neither window had one),
+  `recent_digit` for char hooks, `MessageListDialog` (Enter opens the
+  rendered message through `MarkdownPreviewDialog`, Read as Text shows it
+  verbatim; closing returns focus to the same row, and the owner reopens the
+  list on that row), `export_conversation_to_file` (Save As with overwrite
+  prompt; cancel says nothing; every failure is a sentence through
+  `user_facing_message`).
+- **AI Conversation window (`hosted_ai_chat.py`, both editors).** Messages...
+  (Alt+G), Export Conversation... (Alt+X), Alt+1..Alt+0, the keys named in
+  About this conversation. A reply no longer moves the caret of somebody
+  reading the transcript (`_show_transcript` keeps the insertion point when the
+  transcript has focus). New Conversation and opening a saved one forget the
+  list row.
+- **Ask Quill (`assistant_panel.py` + new `assistant_conversation_tools.py`
+  mixin).** Message List... and Export Conversation... in the footer; Alt+1..0
+  from the dialog's char hook and, inside the WebView, from a keydown script
+  that posts over the existing `awv` bridge (`accessible_webview.py`
+  `on_recent`). Reply headings nest under the speaker in the WebView. The
+  fallback list (no WebView) opens a row with Enter, keeps the reader's row
+  when a message arrives while it has focus, and no longer records the
+  greeting as a conversation message.
+- **Collision check.** Alt plus a digit is bound nowhere in either window and
+  no access key in either is a digit (`test_ai_conversation_tools.py`); the
+  editor's Alt+1..9 (go to document) belong to the main window, which these
+  top-level windows do not share accelerators with.
+- **Provider routes.** A test opens the window on the free service, an own
+  key and a ChatGPT plan and asserts the same `ai-sessions` store each time.
+  No model name was added anywhere.
+- **Item 46, `quill/core/volume_info.py` (new, wx-free).** `describe_volume`
+  returns labelled lines (Drive: root, label, kind, file system; capacity,
+  used with percent, free) in File Explorer's 1,024-based units with exact
+  bytes; `GetVolumePathNameW`, `GetVolumeInformationW`, `GetDriveTypeW` and
+  `shutil.disk_usage`, read-only and local. Removed media, unreachable shares
+  and permission refusals become one sentence, never an exception, and a root
+  that is not there is never guessed. Added to Quill Radio's Local Media Item
+  Properties (`properties_text`, injectable `volume=`) and Quill Converter's
+  File Properties. Audit: QUILL and QUILL Lite have no file or folder
+  properties window, so nothing was added there and no file manager was built.
+- **Tests.** `tests/unit/core/ai/test_chat_navigation.py`,
+  `tests/unit/core/ai/test_chat_export_files.py` (real DOCX read back with
+  python-docx: heading order, table cells, Unicode, code comment not a
+  heading), `tests/unit/ui/test_ai_conversation_tools.py`,
+  `tests/unit/core/test_volume_info.py`,
+  `tests/unit/apps/test_storage_properties.py`. Screen-reader passes are in
+  `docs/qa/screen-reader-checks-2026-10.md`, unticked.
 
-Bugs found and fixed:
+### Speech and braille
 
-- **Bold and italic together did not survive RTF.** `rich_to_markdown` writes
-  a run that is both as `***x***`, and both `rtf.markdown_to_rtf` and
-  `rtf_model._walk_inline` (QUILL's Markdown model, so the rich lens as well)
-  read that as bold `*x` and a stray `*`. Both now take `***` first.
-- **A backslash in a dictation replacement.** The words file escaped new lines
-  and tabs but not the backslash, and the reader replaced `\n` everywhere, so
-  a replacement writing `C:\new` came back as `C:` and a new line. One escape
-  now serves both the window and the recogniser
-  (`dictation_profile.escape_written` / `_unescape`, read in one pass);
-  `\\` is a backslash. A hand-written `C:\temp` still reads as before (a tab).
-- **Known limit, pinned rather than hidden.** Two neighbouring runs with
-  different emphasis (italic, then bold italic) share asterisks in Markdown and
-  merge on the way through RTF; `test_italic_next_to_bold_italic_survives_rtf`
-  is a strict xfail until the serializer separates them.
-
-### GATE-BRAILLE: what QUILL speaks also reaches a braille display (todo P3; 2026-10-17)
+#### GATE-BRAILLE: what QUILL speaks also reaches a braille display (todo P3; 2026-10-17)
 
 Developer-facing. A deafblind user, or anyone reading with speech off, gets
 only what reaches the display; a message that is only spoken does not exist for
@@ -432,87 +549,58 @@ them.
   engine's inline braille switched off), and `AnnouncementEngine.announce` on
   the Prism path mirrors its own speech.
 
-### Tests: one wx.App per process, and wx.CallAfter patched one way (todo P3 flake risks; 2026-10-17)
+### Radio and stations
 
-Developer-facing; nothing a user sees changes.
+#### Radio: one file per song at each song change; marks in Recordings, Browse and the schedule list (todo D.3; 2026-10-17)
 
-- **One App.** 230 test files built their own `wx.App()` (per test, per
-  module or inline) and many destroyed it in teardown. wx supports one App per
-  process, so whether a file met an App whose C++ half another file had
-  destroyed was decided by which files shared an xdist worker. New
-  `tests/wx_session.py` `shared_wx_app()` returns the one live App and builds
-  it on first use; its `Destroy()` is a no-op, so the old teardown lines are
-  harmless and each test still means "I need an App". Fixture form:
-  `wx_session_app` in `tests/conftest.py`. Every `wx.App(...)` call under
-  `tests/unit` was rewritten to `shared_wx_app()` by an AST pass (strings and
-  docstrings untouched), 231 sites.
-- **One way to patch CallAfter.** 33 files did
-  `monkeypatch.setattr(<module>.wx, "CallAfter", ...)`, which is the wx
-  module's attribute and so global, written in a way that does not look it.
-  `patch_call_after(monkeypatch, replacement=None)` is now the only way: always
-  the real `wx`, always through the test's own monkeypatch, `None` meaning run
-  inline, and it returns a capture of every call. Fixture form: `wx_call_after`.
-  46 sites rewritten, each with the same replacement it had.
-- **What the shared App exposed.** Three QUILL Lite AI tests
-  (`test_lite_ai.py`) passed only when no App was alive in their worker: with
-  one alive, `_show_ai_window` defers the focus call and the sign-in window
-  through `wx.CallAfter`, and no unit test runs an event loop. They now run
-  deferred work inline through `wx_call_after()`, so their result no longer
-  depends on which files ran first.
-- **Gate.** `tests/unit/test_wx_test_hygiene.py` fails on any test file that
-  builds a `wx.App`/`wx.PySimpleApp` or patches `wx.CallAfter` by `setattr`,
-  `mock.patch("wx.CallAfter")` or assignment, outside `tests/wx_session.py`. AST,
-  not grep: it follows `import wx as w` and `wx = pytest.importorskip("wx")`.
-  Its `ALLOWED` table may only shrink: `tests/ui_live/conftest.py` and two
-  `tests/integration` files that drive real windows were left unmigrated rather
-  than changed without being run.
+**Split at song changes (xradio2 4.8), opt-in.** New
+`RecordingSettings.split_at_song_changes` (default off; additive, older builds
+ignore the key) and a Recording Settings check box (Alt+N, F1 help in
+`settings_help.HELP["split_songs"]`). `quill/core/radio/recording_song_watch.py`
+(new) runs one watcher per recording that polls the recorded stream's ICY
+title every 10 s (`icy.read_stream_title`, same egress as What's Playing) and
+places each change at the midpoint between polls, ignoring
+`song_history.is_noise_title` (new public wrapper of Song History's rule).
+`quill/core/radio/recording_split.py` (new) plans the cuts (pre-roll trim
+subtracted via the new `OpeningGuard.take_lead_trim`, pieces under 20 s
+folded, names `<stem> - NN <Artist - Title><ext>` sanitised and uniquified)
+and cuts in one ffmpeg segment-muxer pass with `-c copy`, under the
+`recording_join` safety contract: private work folder, verify count/size,
+move into place, delete the source last, undo everything on any failure. The
+recorder calls it after join and exact OptiLab and speaks the outcome through
+`on_parts_joined`; a recording that reconnected is kept whole. GATE-11:
+`recording.py` stays under budget by moving `_finalize_move` to
+`recording_outcome.finalize_move` (the old name is an alias). Also fixed:
+Recording Settings' OK reset `exact_optilab` to False. Tests:
+`tests/unit/core/test_radio_recording_split.py` (fake runner, fake title
+reader, fake clock; a conftest guard keeps the real title reader out of
+tests).
 
-### Emoji and other astral characters: typed whole, counted as the control counts them (todo P3; 2026-10-17)
+**Marks beyond Favorites (xradio2 4.10).** `quill/ui/radio/marks_shared.py`
+(new) holds the keys (`.`, Delete, Ctrl+Shift+Delete), the menu rows and the
+No-default question; `favorites_marks` now imports them. New
+`recordings_marks.py` (finished recordings; one undo for the batch),
+`schedule_marks.py` (also owns the list's key handler and Shift+F10 menu,
+moved out of `schedule_recording_dialog.py`, 652 -> 631 lines) and
+`browse_marks.py` (removable rows only; reuses `browse_delete.confirm` and the
+new no-question cores `remove_stored_now` / `unfavorite_now`; the tree's
+`_row_label` is now `browse_marks.row_text`, 941 -> 940 lines).
+`RowMarks.ignored_note` / `ignored_sentence` give the once-per-set
+"That used the selected row only; N rows are still marked for Delete." to
+actions that act on the selected row. Tests:
+`tests/unit/ui/test_radio_list_marks.py` (real in-memory windows, faked
+questions, and a guard that fails if a real message box would open).
 
-An emoji dictated by QUILL Transcribe into a plain edit control arrived
-without its first half. Two separate unit mistakes, one in each direction, and
-both now have a test that pins them without a real window.
+**Beacon and Social menu keys (todo D.9).** Every enabled row on both menu
+bars now shows a key (16 in Beacon, 31 in Social had none), with access
+letters de-duplicated, and `tests/unit/ui/test_menu_accelerators.py` now walks
+Radio's, Beacon's and Social's real menu bars. Social's menu labels come from
+its own keymap, so a rebound key moves in the menu too. See each app's
+changelog for the keys.
 
-- **Typing into other programs** (`quill/platform/windows/text_injector.py`).
-  An astral character is two UTF-16 units, and each went out as its own
-  down-up `KEYEVENTF_UNICODE` tap, so a key-up sat between the high and low
-  surrogate. The new pure `unicode_key_sequence(text)` sends both key-downs
-  before either key-up (high down, low down, low up, high up), so
-  `TranslateMessage` posts the two `WM_CHAR`s back to back. Separately,
-  `_layout_key` asked `VkKeyScanExW` about astral characters, whose argument is
-  a 16-bit `WCHAR`: ctypes cut U+20041 (CJK Extension B) to U+0041 and the
-  layout answered with the A key, so the ideograph was typed as a letter. Astral
-  characters now always take the Unicode route. Shared by QUILL Transcribe,
-  Quill Inkwell's Dictate Anywhere and abbreviation expansion. Not reproduced
-  against a live window (the overnight rules forbid driving the desktop); the
-  field check is a person's.
-- **Positions inside our own controls.** A Windows Edit or Rich Edit control
-  (so every `wx.TextCtrl` on wxMSW) counts UTF-16 units and hands text back as
-  Python characters; confirmed in memory: with `"hi \U0001f600 there"`,
-  `GetLastPosition()` is 11 and selecting 0 to 4 gives `'hi \ud83d'`, a lone
-  high surrogate. New `quill/core/text_units.py` (`utf16_length`,
-  `native_length`) is the length to add to a control position. Fixed in QUILL
-  Lite: the five `GetValue()[start:end]` slices (the clipboard's selected text, Find's
-  opening needle and its Replace match check, the Review Buffer, the Tools
-  transforms) now read
-  `GetRange(start, end)`, and the four `start + len(text)` caret/selection
-  ends (context-menu and spelling replacements, the Tools transforms) use
-  `native_length`. Fixed in the shared dictation editor port
-  (`windows_dictation_ports.EditorDocument.line_bounds`).
-- **Left as is, on purpose.** `ExternalDocument` (Transcribe's port) counts
-  backspaces in code points, which is right: Windows edit controls delete a
-  surrogate pair with one Backspace. The dictation controller's correction
-  arithmetic (`corrections.py`, `live.py`) adds Python offsets to port
-  positions; for an editor port that is still off by one per emoji before the
-  change, and needs a port-units seam rather than a local patch.
+### Menus and keys
 
-Tests: `tests/unit/platform/windows/test_text_injector.py` (key order, every
-unit sent once, no astral layout key), `tests/unit/core/test_text_units.py`
-(lengths, and `line_bounds` against a control that counts UTF-16), and
-`tests/unit/apps/test_lite_text_tools.py` (a real Rich Edit control: Upper
-Case after an emoji changes the right letters and selects all of them).
-
-### Menu letters win over buttons, the Media Player's arrows, a key for Carry My Place, and Inkwell's review box (2026-10-17)
+#### Menu letters win over buttons, the Media Player's arrows, a key for Carry My Place, and Inkwell's review box (2026-10-17)
 
 Todo items 47 to 51 and 55.
 
@@ -587,215 +675,174 @@ Docs: the Media Player guide (two new parts) and PRD; the Studio, QUILL
 Transcribe, Quill Inkwell and Quill Cast guides and changelogs; the Cast PRD;
 the dictation design record; `docs/keyboard-reference.md` (regenerated).
 
-### AI conversations: the recent ten on Alt+1 to Alt+0, a message list, export to Word and text; the drive in file properties (2026-10-17)
+### Releases and updates
 
-todo.md items 44 and 46. Item 44 extends the two conversation windows that
-already existed -- Ask Quill (QUILL) and the AI Conversation window both
-editors open -- rather than adding a third chat. Item 46 audited every
-file/folder properties entry point first and added the drive to the two that
-show a file's properties.
+#### Notice drafted: released portable copies update by hand (todo C.2; 2026-10-17)
 
-- **Shared core, `quill/core/ai/chat_navigation.py` (new, wx-free).** Numbered
-  messages ("Message 3 of 12, AI"), the recent-ten sentence (Alt+1 newest to
-  Alt+0 tenth newest, fewer-than-ten says how many and which key reads the
-  oldest, spoken through `speakable_line` so no Markdown is read out),
-  `nest_reply_headings` (a reply's headings move down so its shallowest is
-  level 3, under the speaker's level 2; fenced code untouched; capped at 6) and
-  `message_view_html` (heading plus the reply with real `<th>` tables).
-- **Export, `quill/core/ai/chat_export.py`.** `export_conversation(messages,
-  path)` writes `.txt` through `quill.io.text.write_text_document` and `.docx`
-  through `quill.io.export.write_docx_document`, on a fresh `Document`: the
-  active document is never passed, so it cannot be changed, renamed or marked
-  saved. Word gets a level-2 heading per message with nested reply headings and
-  real tables; lines inside fenced code are indented so the line-oriented Word
-  writer cannot turn a `# comment` into a heading. Atomic: a failed write
-  leaves an existing file as it was.
-- **Shared UI, `quill/ui/ai_conversation_tools.py` (new).**
-  `RecentMessageReader` (one press seen twice within 0.3 s is said once),
-  `bind_recent_message_keys` (an accelerator table; neither window had one),
-  `recent_digit` for char hooks, `MessageListDialog` (Enter opens the
-  rendered message through `MarkdownPreviewDialog`, Read as Text shows it
-  verbatim; closing returns focus to the same row, and the owner reopens the
-  list on that row), `export_conversation_to_file` (Save As with overwrite
-  prompt; cancel says nothing; every failure is a sentence through
-  `user_facing_message`).
-- **AI Conversation window (`hosted_ai_chat.py`, both editors).** Messages...
-  (Alt+G), Export Conversation... (Alt+X), Alt+1..Alt+0, the keys named in
-  About this conversation. A reply no longer moves the caret of somebody
-  reading the transcript (`_show_transcript` keeps the insertion point when the
-  transcript has focus). New Conversation and opening a saved one forget the
-  list row.
-- **Ask Quill (`assistant_panel.py` + new `assistant_conversation_tools.py`
-  mixin).** Message List... and Export Conversation... in the footer; Alt+1..0
-  from the dialog's char hook and, inside the WebView, from a keydown script
-  that posts over the existing `awv` bridge (`accessible_webview.py`
-  `on_recent`). Reply headings nest under the speaker in the WebView. The
-  fallback list (no WebView) opens a row with Enter, keeps the reader's row
-  when a message arrives while it has focus, and no longer records the
-  greeting as a conversation message.
-- **Collision check.** Alt plus a digit is bound nowhere in either window and
-  no access key in either is a digit (`test_ai_conversation_tools.py`); the
-  editor's Alt+1..9 (go to document) belong to the main window, which these
-  top-level windows do not share accelerators with.
-- **Provider routes.** A test opens the window on the free service, an own
-  key and a ChatGPT plan and asserts the same `ai-sessions` store each time.
-  No model name was added anywhere.
-- **Item 46, `quill/core/volume_info.py` (new, wx-free).** `describe_volume`
-  returns labelled lines (Drive: root, label, kind, file system; capacity,
-  used with percent, free) in File Explorer's 1,024-based units with exact
-  bytes; `GetVolumePathNameW`, `GetVolumeInformationW`, `GetDriveTypeW` and
-  `shutil.disk_usage`, read-only and local. Removed media, unreachable shares
-  and permission refusals become one sentence, never an exception, and a root
-  that is not there is never guessed. Added to Quill Radio's Local Media Item
-  Properties (`properties_text`, injectable `volume=`) and Quill Converter's
-  File Properties. Audit: QUILL and QUILL Lite have no file or folder
-  properties window, so nothing was added there and no file manager was built.
-- **Tests.** `tests/unit/core/ai/test_chat_navigation.py`,
-  `tests/unit/core/ai/test_chat_export_files.py` (real DOCX read back with
-  python-docx: heading order, table cells, Unicode, code comment not a
-  heading), `tests/unit/ui/test_ai_conversation_tools.py`,
-  `tests/unit/core/test_volume_info.py`,
-  `tests/unit/apps/test_storage_properties.py`. Screen-reader passes are in
-  `docs/qa/screen-reader-checks-2026-10.md`, unticked.
+The update helper in a released portable copy (QUILL Lite 1.1.2, any QUILL
+0.9) deletes the user's files in `data` when the new zip carries a `data`
+folder (`docs/release/RELEASE.md`, "Open, and yours to decide"). Jeff decided
+to tell those users to update by hand. The notice is drafted for the website
+in `docs/release/portable-update-by-hand-notice.md` (who is affected, what
+goes wrong, seven steps: back up `data`, download, unzip next to the old copy,
+copy `data` back, check, tidy up; what to do if the data is already gone), and
+a short version is in `docs/release notes/release1.0.0.md` (Staying up to date)
+and QUILL Lite's `release-notes-1.2.md` (If you already use QUILL Lite).
+Nothing published or sent; RELEASE.md records the decision.
 
-### PDF in QUILL Lite, what was left: Import / Convert, the portable reader, page breaks, the 200-page gate (2026-10-17)
+### Documentation
 
-Todo item 28 after phases 1 and 2, the P3 PDF items, and todo item 52.
+#### Beta documentation for QUILL Lite, Quill Radio and QUILL Cast; what "Plain text" means for Word files (2026-10-17)
 
-- **Import / Convert Document's words and file list are shared**
-  (`quill/core/import_convert.py`, new, wx-free): `import_wildcard`,
-  `scanned_import_question(name, app_name=)`, `opened_sentence(name, outcome)`
-  per tier, `failed_sentence`, `converted_name`, `CANCELLED_SENTENCE`.
-  `quill/ui/main_frame_docconvert.py` calls them and shrank by about 60 lines;
-  QUILL's wording is byte-for-byte what it was (`test_main_frame_docconvert.py`
-  unchanged). `_import_wildcard` stays importable there as an alias.
-- **QUILL Lite gains File > Import / Convert Document (OCR)...**
-  (`quill/apps/lite_window_import.py`, `cmd_import_convert`), parity
-  `file.import_convert`, which is now in `DEFAULT_KEYMAP` as an unbound id with
-  a rule 9 reason in `UNBOUND_WITH_REASON` (the keyboard reference lists it
-  under "unbound by default"). No second implementation: the router, the
-  readers and every sentence are QUILL's.
-- **A picture of a page goes to whichever on-device engine exists.**
-  `quill.io.docconvert.convert_document` routed images to
-  `convert_with_local_ocr` (Tesseract only), so without Tesseract a `.png` or
-  `.jpg` failed with "Install it from Tools > OCR..." while a scanned PDF
-  already fell back to Windows OCR. Images now go through
-  `convert_with_on_device_ocr` too (`tests/unit/io/test_docconvert_images.py`).
-- **No control character reaches a screen reader inside an announcement.**
-  `quill/core/speakable.py` (new): `speakable_controls` turns form feed and
-  vertical tab into a newline and drops the other C0/C1 controls, keeping tab,
-  CR and LF. Applied in `AnnouncementEngine.announce` and `.braille`
-  (`prism_bridge.py`, which every app's announcements leave through; two
-  comments reflowed to stay inside its budget) and in QUILL Lite's
-  `DocumentFrame._announce` before the status cell. A PDF's page breaks
-  (U+000C) were otherwise able to reach speech as "form feed" whenever an
-  announcement quoted text across a page. `char_describe` names U+000C "Page
-  break" (it was "U+000C Unnamed character"), in both editors.
-- **QUILL Lite portable build inputs.** `build_portable.py`: the `quilllite`
-  product adds the `office-text` and `ocr` groups, and a new `must_import`
-  field per product that step 8 imports inside the bundle (QUILL Lite's lists
-  pdfplumber, pypdf, pypdfium2, `winrt.windows.media.ocr`,
-  `winrt.windows.graphics.imaging`, `quill.io.pdf`, `quill.io.docconvert`).
-  `standalone/quilllite/portable-inventory.json` is NOT hand-edited: the next
-  real build's inventory gate fails on the new packages until it is reviewed
-  and rebaselined with `--write` (see `docs/building-windows-family.md`).
-- **GATE-PERF for PDFs** (`tests/unit/core/test_pdf_open_budget.py`, `perf`):
-  a 200-page synthetic PDF through QUILL Lite's `open_prepare.prepare` (which
-  is QUILL's reader, outline and scanned check) within 150 ms a page, then
-  the Page rows and the last page's position within 500 ms. Measured here at
-  31 ms a page with the machine 31 % busy.
-- **Todo item 52** (`test_clean_pages_pay_for_one_extractor_and_stay_in_budget`,
-  293 ms a page against 250): the test timed a read made under `tracemalloc`,
-  which hooks every allocation pdfminer makes per glyph. Measured 2026-10-17
-  with the machine 31 % busy: 28-29 ms a page untraced, 121-129 ms traced. The
-  clean-page path is not over budget, so `pdf_select.py` is unchanged; the test
-  now traces memory in one read and times a second, untraced one.
-- **GLOW's PDF audit in the shared runtime** (finding; fixed the same day by
-  "Word documents work in every installed and portable build", above).
-  `acb_large_print.pdf_auditor` imports `acb_large_print.auditor`, which
-  imports python-docx at module top, and python-docx imports `lxml`, which
-  `standalone/runtime/quillville-runtime.spec` excludes (and
-  `runtime-inventory.json` confirms is absent). Simulated by blocking every
-  spec exclude: `fitz` (PyMuPDF), `quill_glow_core` and
-  `acb_large_print_core.services` import, but every GLOW audit (PDF, Word,
-  PowerPoint) fails with `No module named 'lxml'`. QUILL's own Office readers
-  are unaffected (they fall back to the standard library). Jeff then chose to
-  ship lxml whatever the size, and that is what happened: the exclude is gone
-  and the import gate holds `docx`, lxml and every GLOW auditor.
+For the beta group's builds (QUILL Lite 1.2.0 build 5, Quill Radio 3.2.0
+build 4, QUILL Cast 2.0.0 build 5; the build constants in source), each app's
+`## Unreleased` changelog section is rewritten as one current story, grouped
+under area headings, with duplicates merged (two Word entries and two folder
+search entries in QUILL Lite, two Dictate Here entries in Cast and Radio) and
+stale wording dropped (a `.docx` "with no Word component" opening as text;
+"Edit > Matches" for the folder searches). Radio's root `CHANGELOG.md` now
+carries the same section as `docs/CHANGELOG.md`. Two wrong claims were
+removed: Radio and Cast have no Show and Hide Key window, so "Record Key" is
+not theirs (it is in Weather, Converter, the Media Player, Inkwell and
+Transcribe). Each app's release notes lead with a "New in the beta" section
+in place of the build-4 and preview sections. Cast's user guide gains
+"Copying a podcast into a second folder" (Ctrl+Shift+Y), OPML import's
+two-folder rule now says it makes folder copies, and Ask About an Image is
+Ctrl+Alt+F5 in Cast's tables (Ctrl+F5 is Refresh All Now there). QUILL Lite's
+`prd.md` held the whole document twice; the newer copy is kept, with the four
+2026-10-16/17 appendix sections and the type-ahead paragraph that only the
+other copy had. QUILL's user guide explains that **How to open Word files >
+Plain text** means "open in the normal text editor", where a `.docx` is still
+edited as rich text and saved as Word; the setting's label is unchanged (no
+code changed). These newest root entries are grouped by area too.
 
-### Speech engines and models: every guide says what the code does (2026-10-17)
+### Developer notes
 
-Jeff: "I don't think all of its documentation is updated across all apps
-though like the new transcribe models... Make sure all documentation is
-amazing." A family-wide pass built the facts from the code
-(`windows_dictation/engines.py`, `model_catalog.py`, `model_types.py`,
-`model_advice.py`, `cloud/`, `speech/guided_setup.py`, `service.py`, the
-in-memory menu bars), then corrected every guide against them.
+#### `main_frame.py` below 15,000 lines: three feature groups move to mixins (2026-10-17)
 
-- **Stale claims fixed.** Vosk offered as a dictation engine (release notes,
-  announcement); "four engines" lists that omitted downloads and the twelve
-  speech providers; Whisper called English-only; Locked Dictation said to use
-  "the on-device Whisper engine" and to need a model (it needs none: the
-  built-in Moonshine tiny transcribes until the engine has one, though the
-  ~8 MB whisper.cpp engine is still offered on the first Ctrl+F9 unless QUILL
-  speech models is chosen); voice commands said to fall back to Moonshine tiny
-  (they fall back to the main offline engine); Dictate in Other Programs said
-  to go only to Inkwell (it goes to QUILL Transcribe when running or released);
-  QUILL Transcribe's What matters most given two choices, not three; Transcribe
-  PRD decision 4 "only OpenAI".
-- **Written new.** QUILL: "Which speech engine? A guide to choosing" (two
-  systems, tiers, privacy, cloud, a worked example, limits) and a rewritten
-  offline-engine section. QUILL Lite: "Which engine should I choose?" and a full
-  Speech providers section. QUILL Transcribe: the Models chapter rebuilt (15
-  downloads with sizes, tiers and memory, recommendation, Spanish, limits).
-  Quill Inkwell: which engines Dictate Anywhere uses, and what an Inkwell-only
-  computer lacks (the built-in models and sherpa-onnx; only Windows speech
-  recognition works there). Quill Cast and Quill Radio: Dictate Here explained
-  in full. Quill Studio: the speech-recognition engines behind captions. The
-  site's dictation page: choosing an engine, tiers, the recommendation, and
-  speech providers. Release notes and the announcement: the current engine
-  story.
-- **Code.** `engines.engine_list_help()` gives the Speech engine list's F1 the
-  downloads, tiers, OpenAI, the providers and the consent question; the Speech
-  Models button's help no longer cites another product; `reference.py` credits
-  punctuation to every engine but Windows speech recognition (both
-  `dictation-commands.md` regenerated); the Dictation Settings help topic names
-  Speech Models and Speech Providers.
+Developer-facing refactor; nothing a user sees or hears changes. `quill/ui/main_frame.py`
+went from 15,890 to 14,459 lines (todo D.4) by moving three whole feature groups out
+of `MainFrame`, unchanged, into new under-cap mixins:
 
-### Dictation: no polishing box in Quill Inkwell, and Spanish "pule eso" and "sí" drafted behind the switch (2026-10-17)
+- `quill/ui/main_frame_bookmarks.py` (`BookmarksFoldsMixin`): named, temporary and
+  quick bookmarks with their anchors, PDF outline import and per-document memory;
+  code folding; Favorite Folders and Open From Favorite Folder.
+- `quill/ui/main_frame_read_aloud.py` (`ReadAloudMixin`): live Read Aloud with the
+  ElevenLabs consent, Read in Browser, Export to Speech Audio and the controller
+  callbacks.
+- `quill/ui/main_frame_speech_hub.py` (`SpeechHubMixin`): the Speech Hub and its
+  Piper voice and Kokoro model downloads.
 
-Two small dictation decisions of Jeff's, 2026-10-16.
+The three are listed first in `MainFrame`'s bases so their methods keep the
+precedence they had as class methods. `_NavigatorNode` moved to
+`quill/ui/navigator_node.py` (re-exported from `main_frame`) so a mixin can build
+tree-navigator rows without a circular import. Same command ids, keys, menu rows,
+dialogs and announcements. The GATE-11 budget for `main_frame.py` ratchets down to
+14,459; the surface-reachability, dialog, accessible-name and control-label
+snapshots were regenerated with their tools, and two tests now patch and read
+the module the code lives in.
 
-**"Hide it."** More Dictation Settings is shared by QUILL, QUILL Lite, QUILL
-Transcribe and Quill Inkwell, and it showed **Allow polishing my dictation with
-AI when I ask** (Alt+G) in Inkwell too, where it did nothing: polishing runs
-only in Review Dictation, which Inkwell does not have. `WindowsDictationDialog`
-and `MoreDictationDialog` take a new keyword, `review` (default `True`);
-Inkwell's `edit_anywhere_settings` passes `review=False`. Then the box is not
-built, `MoreDictationDialog.values()` leaves `windows_dictation_polish` out so
-the saved (possibly family-shared) value is untouched, and
-`DictationStyleMixin` neither reads nor writes the polish and review-first
-fields, so choosing Verbatim or Clean in Inkwell cannot turn polishing off for
-QUILL. QUILL, QUILL Lite and QUILL Transcribe are unchanged. No access key
-moved; GATE-14 holds with and without the box. The box's F1 help now says
-Inkwell does not show it. Both dialog modules stay at or under the 600-line
-default cap (module docstrings were tightened to make room).
+#### Batch-6 CI: the shared test App kept alive, and a first-run Inkwell key bug it exposed (2026-10-17)
 
-**"Draft them, gated."** Spanish forms of "polish that" ("pule eso", "púlelo",
-"mejora eso") and of the spoken answers to the "Add a correction?" offer in
-QUILL Transcribe ("sí", "no"), in `vocabulary_es.SPANISH_REVIEW_HELP` and
-`SPANISH_ANSWERS`. They are matched through `spanish_review_command` and
-`spanish_answer`, which answer only in Spanish dictation with the drafted
-Spanish commands switched on (a development build with
-`QUILL_DICTATION_SPANISH_COMMANDS=1`), so nothing changes for users until a
-native speaker has reviewed them; the questions for that review are a new
-"Spanish review" list at the end of `docs/qa/screen-reader-checks-2026-10.md`.
-The published dictation command reference is unchanged.
+- **Why CI failed.** `tests/unit/ui/test_mac_open_file_app.py` built a real
+  `MacOpenFileApp` (a `wx.App` subclass), a second App in the process, and
+  destroyed it; `shared_wx_app()` then built a new session App. When the
+  replaced session App's last Python reference went, its C++ destructor
+  cleared wx's global App pointer even though the newer App held it, and the
+  rest of that worker failed with "The wx.App object must be created first!"
+  (beacon auto-sync, close-confirm dialogs, labelled field, translated speech
+  export). `tests/wx_session.py` now keeps every App it hands out alive
+  (`_KEEP`); the Mac test builds its subclass with `wx.App.__init__` patched
+  out, so it is no longer `machine_global`; and
+  `tests/unit/test_wx_test_hygiene.py` now also flags building any `wx.App`
+  subclass found under `quill/`.
+- **App-dependent test.** `test_queued_launch_check_does_not_start_during_shutdown`
+  counted every deferred call; with an App alive, launch also queues
+  `_confirm_update_started`. It now counts only the check.
+- **Product bug: Inkwell registered two retired keys on a first run.** With no
+  settings file, `load_settings` fills in the pre-2026-10-05 defaults for Quick
+  Insert (Ctrl+Alt+Shift+K) and Expand Word (Ctrl+Alt+Shift+X), and
+  `take_system_keys` saved and registered them instead of moving them to none.
+  The window test meant to catch it passed only while every test built its own
+  App. Fixed in `quill/core/expansion/settings.py`, pinned by
+  `tests/unit/core/test_show_hide_keys.py`.
+- **mypy.** `rtf_model._EMPHASIS` is now `(marker, bold, italic)` rather than a
+  keyword dict, which strict mypy could not check against `_Attrs`.
 
-Tests: `tests/unit/ui/test_dictation_more_dialog.py` (four new) and the new
-`tests/unit/core/test_dictation_spanish_drafts.py`. Docs: the Inkwell user
-guide and changelog, the dictation design record (sections 9, 10 and 28), the
-screen-reader checks, and the F1 help reference.
+#### Property-based tests for io, dictation words, fillers and braille, and the three bugs they found (todo P3; 2026-10-17)
+
+Hypothesis was already a dev extra (`pyproject.toml`, `hypothesis>=6.168.1`,
+locked at 6.169.0 in `uv.lock`) with the suite profile in `tests/conftest.py`;
+nothing was added to the dependencies.
+
+- **`tests/unit/io/test_format_round_trip_properties.py`.** Plain text written
+  and read back in UTF-8, UTF-8 with BOM and UTF-16, LF and CRLF, is the same
+  text with the same line ending. A rich document of headings, bullets and
+  paragraphs with bold and italic runs survives RTF and Word with its text,
+  styles and emphasis.
+- **`tests/unit/core/test_dictation_text_properties.py`.** My Words and Phrases
+  saved and reopened gives back the same words, phrases and corrections in
+  order, and a file QUILL wrote is rewritten byte for byte. Filler removal is
+  idempotent in every language tier, removes every filler and keeps every
+  other word in order, and is a no-op when switched off.
+- **`tests/unit/core/test_braille_properties.py`.** A BRF page map covers every
+  character once, in order, in all three page-break modes, with a form feed as
+  the boundary between two pages, and is the same every time; the braille
+  worker's JSON pipe returns any text unchanged; the `lou_translate` route trims
+  only the newline the tool appends; with liblouis present (it is not on this
+  machine, so that one skips), translation is deterministic.
+
+Bugs found and fixed:
+
+- **Bold and italic together did not survive RTF.** `rich_to_markdown` writes
+  a run that is both as `***x***`, and both `rtf.markdown_to_rtf` and
+  `rtf_model._walk_inline` (QUILL's Markdown model, so the rich lens as well)
+  read that as bold `*x` and a stray `*`. Both now take `***` first.
+- **A backslash in a dictation replacement.** The words file escaped new lines
+  and tabs but not the backslash, and the reader replaced `\n` everywhere, so
+  a replacement writing `C:\new` came back as `C:` and a new line. One escape
+  now serves both the window and the recogniser
+  (`dictation_profile.escape_written` / `_unescape`, read in one pass);
+  `\\` is a backslash. A hand-written `C:\temp` still reads as before (a tab).
+- **Known limit, pinned rather than hidden.** Two neighbouring runs with
+  different emphasis (italic, then bold italic) share asterisks in Markdown and
+  merge on the way through RTF; `test_italic_next_to_bold_italic_survives_rtf`
+  is a strict xfail until the serializer separates them.
+
+#### Tests: one wx.App per process, and wx.CallAfter patched one way (todo P3 flake risks; 2026-10-17)
+
+Developer-facing; nothing a user sees changes.
+
+- **One App.** 230 test files built their own `wx.App()` (per test, per
+  module or inline) and many destroyed it in teardown. wx supports one App per
+  process, so whether a file met an App whose C++ half another file had
+  destroyed was decided by which files shared an xdist worker. New
+  `tests/wx_session.py` `shared_wx_app()` returns the one live App and builds
+  it on first use; its `Destroy()` is a no-op, so the old teardown lines are
+  harmless and each test still means "I need an App". Fixture form:
+  `wx_session_app` in `tests/conftest.py`. Every `wx.App(...)` call under
+  `tests/unit` was rewritten to `shared_wx_app()` by an AST pass (strings and
+  docstrings untouched), 231 sites.
+- **One way to patch CallAfter.** 33 files did
+  `monkeypatch.setattr(<module>.wx, "CallAfter", ...)`, which is the wx
+  module's attribute and so global, written in a way that does not look it.
+  `patch_call_after(monkeypatch, replacement=None)` is now the only way: always
+  the real `wx`, always through the test's own monkeypatch, `None` meaning run
+  inline, and it returns a capture of every call. Fixture form: `wx_call_after`.
+  46 sites rewritten, each with the same replacement it had.
+- **What the shared App exposed.** Three QUILL Lite AI tests
+  (`test_lite_ai.py`) passed only when no App was alive in their worker: with
+  one alive, `_show_ai_window` defers the focus call and the sign-in window
+  through `wx.CallAfter`, and no unit test runs an event loop. They now run
+  deferred work inline through `wx_call_after()`, so their result no longer
+  depends on which files ran first.
+- **Gate.** `tests/unit/test_wx_test_hygiene.py` fails on any test file that
+  builds a `wx.App`/`wx.PySimpleApp` or patches `wx.CallAfter` by `setattr`,
+  `mock.patch("wx.CallAfter")` or assignment, outside `tests/wx_session.py`. AST,
+  not grep: it follows `import wx as w` and `wx = pytest.importorskip("wx")`.
+  Its `ALLOWED` table may only shrink: `tests/ui_live/conftest.py` and two
+  `tests/integration` files that drive real windows were left unmigrated rather
+  than changed without being run.
 
 ### Five small fixes: braille bursts, speech-safe answers, Markdown kept, fallbacks asked, the watchdog in QUILL Lite (2026-10-16)
 

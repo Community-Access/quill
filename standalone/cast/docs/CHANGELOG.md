@@ -4,232 +4,191 @@ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the fir
 
 ## Unreleased
 
-- **The user guide explains Dictate Here in full** (2026-10-17). "Dictating into a search box" now says what happens in each case when you press Ctrl+F11 (QUILL Transcribe running, not running, Quill Inkwell dictating, not installed, or not answering), that the speech engine is the one chosen in QUILL Transcribe (Model > Choose Model, Ctrl+M there), that your voice stays on your computer unless you chose OpenAI or a speech provider in QUILL Transcribe, and its limits: Ctrl+F11 starts dictation but does not stop it. The chapters section now says which engine listens for **As long as it takes**: the small Vosk English engine that comes with Cast, used for chapters only.
+Beta: **QUILL Cast 2.0.0 (build 5)**, for the beta group. Builds 3 to 5 have
+not been published; this one keeps everything in them. The changes are
+grouped by area; each says where in the user guide to read more.
 
-- **Cast remembers where you were in each podcast** (2026-10-16). Press Enter
-  on a podcast in Favorites and its list now opens on the episode you last had
-  selected there, after a restart too, instead of on the first row. The
-  episode is found by who it is, so new episodes, a sort change, View > Show
-  and a refresh do not move it; if it has gone, you land on the episode
-  published closest to it. Mixed lists (New Episodes, the Inbox, the Play
-  Queue) never move a podcast's place. See "Where you were in each podcast" in
-  the guide.
+### Podcasts and your library
 
-- **The user guide now matches the menus a new install shows.** Three things it taught were wrong, and are fixed. **New Folder** is **Ctrl+Shift+E** (Podcasts > New Folder...); the guide said Ctrl+Shift+F, which does nothing in Cast. The two **Spotify** rows, Connect to Spotify... (Ctrl+Alt+S) and Browse Spotify Podcasts... (Ctrl+Alt+V), are on the Help menu from the start; the guide said they stayed hidden until you redeemed an unlock code, and no code is needed. And every **Advanced row** the guide teaches, such as Back Up My Podcasts, Restore from a Backup, Export My Data, Clear All Podcast Data, Free Up Space, Run Housekeeping Now, Media Tools, Get FFmpeg and Redeem Unlock Code, now says it is one. The guide also says plainly what was always true: an Advanced row's key belongs to its menu row, so it works only while **View > Advanced Features** (Ctrl+Alt+Shift+G) is on. For example, in Simple mode Ctrl+Alt+Shift+B does nothing; press Ctrl+Shift+P for the Command Palette, type "back up" and press Enter instead, or turn Advanced Features on and press it again. A check now builds Cast's menus exactly as a new install has them, in both modes, and fails when the guide or this changelog names a menu path or key they do not keep.
-- **Every Advanced command is in the Command Palette, as the guide always said.** Simple menus leave the Advanced rows off, and the guide promised the Command Palette (Ctrl+Shift+P) still reaches each one. Seven could not be reached at all in Simple mode, and now can: **Back Up My Podcasts...**, **Restore from a Backup...**, **Choose Columns...**, **Podcast Index Credentials...**, **Media Tools**, **Get FFmpeg...** and **Product Requirements...**. For example, with Simple menus, press Ctrl+Shift+P, type `back up` and press Enter to start a backup. The palette lists these seven without a key, because an Advanced row's key works only while View > Advanced Features is on. Clear All Podcast Data from This Computer is in the palette under the name Delete All Podcast Data.
-
-- **QUILL Transcribe is released on 1 November 2026, so Dictate Here is in every copy.** QUILL Transcribe joins QUILL, Quill Radio, Quill Weather, Quill Converter and Quill Inkwell as a released member of the family. From then on **Edit > Dictate Here** (Ctrl+F11) is on Cast's Edit menu in every build, not only developer builds. For example, press Ctrl+N, then Ctrl+F11 in Podcast name, say "the daily", pause, and press Enter. If QUILL Transcribe is not installed yet, Ctrl+F11 says "Dictate Here needs QUILL Transcribe, which is not installed with this copy."; install it from its download page once it is published. User guide: "Dictating into a search box".
-
-- **Edit > Dictate Here (Ctrl+F11).** Put the cursor in a search box, such as Add Podcast's name box, press Ctrl+F11, and QUILL Transcribe dictates into it, starting in the tray if it is not running. Cast has no speech engine of its own; your words and dictation commands are QUILL Transcribe's. The key works in dialogs as well as the main window. Shown when QUILL Transcribe is part of your copy of the family, which is every public build from QUILL Transcribe's release on 1 November 2026 (dict.md D-16).
-
-- **Help > Notifications... says how many are unread**, such as "Notifications (3 new)...", read again each time the Help menu opens. Shared with Quill Radio (`quill/ui/support_menu.py`).
-
-- **FFmpeg's licence comes with it.** The QUILL Cast installer that carries its own copy of FFmpeg, and the folder it installs from, now have FFmpeg's licence (the GNU General Public License, version 3) and the note on where to get FFmpeg's source, in `tools\ffmpeg` beside the program. They were missing before. The build now stops if either is ever missing, and so does the installer.
-
-- **Updating keeps your library where QUILL Cast looks for it.** A portable copy now updates by putting the new version in the old folder's place and moving your `data` folder across. Run for the first time before release, the new way would have put your data one folder too deep, and the old in-place copy would have deleted it, because every portable zip carries its own small `data` folder. Both are fixed.
-- **A failed update undoes itself properly.** If the new version is stuck, it is closed before the old one is put back, and an undo that can't finish leaves things as they were instead of saying it went back. The installer runs quietly as you, with no administrator prompt; if it doesn't finish, Cast opens again as the version you had and tells you the update could not be installed.
-- **The Beta engine's 335 MB come back.** When the last app on Beta returns to Stable, its separate copy of the shared engine is removed, as the Release Channel window promised.
-
-- **Where QUILL Cast's own sounds play, and Alt+Shift+M to turn them off.** **Preferences > App Sounds Play On...** offers System default, None (no sounds), or any sound card or headset by name, and **Same as its audio**, where it starts: the sounds go wherever the episode plays, and follow it when you move it. After a change one sound plays on the new card, so you hear where it went. If that card is unplugged the sounds play on the system default until it is back, and QUILL Cast says so once. **Alt+Shift+M** turns QUILL Cast's sounds off and back on where they were, and **Episode > App Sounds** shows a check mark while they are on. Each QUILL app keeps its own choice; "Share these choices with my other Quill apps" keeps them in step. Your screen reader is never moved. Asked for on QUILLVille by Rick Lewis.
-
-- **QUILL Lineups.** Named lists of anything Quill Radio and QUILL Cast can play: podcasts you follow and their episodes, plus radio stations, saved places, YouTube videos, playlists and channels, and Radio's Local Media files and recordings. Rules you write bring items in and say when they go (While it matches, Until finished, For a number of days, Until finished or a number of days, Always, and Max kept), and your own hands outrank them: Keep This Item, Remove from Lineup into Removed Items, Recently Left with reasons, Bring Back, Why Is This Here and Undo. One shared file, `lineups.json`, so the same Lineups appear in both apps and both can edit at once. Open it with Episode > Lineups... (Ctrl+U, the same key as in Quill Radio), Go To or the Command Palette; Add to Lineup... is on every episode and podcast menu and is a Quick Action. Playing an episode puts it and the Lineup's later episodes at the front of the Play Queue and plays it, so the queue carries on by itself; stations, YouTube and Local Media are sent to Quill Radio. Start Here (Ctrl+Alt+H) opens a Lineup when Cast starts. A Customize Features area, QUILL Lineups, under Playing; `lineups.json` is in Cast's backup. User guide Chapter 9, PRD section 23.27, and a new tutorial, **Build a lineup that fills itself**.
-- **Save Lineup and Apply Lineup on the Play Queue are QUILL Lineups now.** Save Lineup... saves the queue's order as a Lineup of hand-added episodes (saving over a name replaces it, keeping any rules), and says "Saved lineup Tuesday: 5 episodes, in this order." Apply Lineup... offers every Lineup with episodes and puts them at the front of the queue by the same rule as before, counting what it applied and skipped. Lineups saved the old way, as playlists, are copied into Lineups once at launch; the playlists stay where they were. One meaning of "lineup" across the family.
-
-- **Show notes read as words.** A feed that encodes its text twice (`&amp;#8217;`, common with WordPress podcast plugins) left `&#8217;` in show notes, titles and the feed preview, and a screen reader spelled it out. Notes published as escaped HTML (`&lt;p&gt;`) showed their tags. Both are read properly now, through one shared cleaner, and a test fails if a new reader of publisher text decodes it by hand (`quill/core/display_text.py`).
-- **Feeds over http and https, explained.** The user guide has a new section,
-  "Feeds over http and https" under Feed Check: https is tried first, Player
-  Information marks a feed that really is plain http, a password is never sent
-  over plain http, and what to do when a certificate cannot be verified. Feed
-  Check's list of reasons now quotes the certificate sentence Cast actually says.
-- **One certificate check for everything.** Podcast searches, downloads and
-  Check for Updates now check certificates through the same shared check as
-  feeds, and the certificate sentence comes from one place for every app
-  (`quill/core/net.py`), so Feed Check, Check for Updates and every other app
-  say it in the same words.
-- Playback letters now work only in Now Playing. Main library, Places, and
-  episode lists keep their letter typeahead; Shift+Right scanning moves with
-  the other player keys. This fixes C announcing "Nothing is playing" when
-  trying to jump to a podcast.
-
-Testing rebuild: **2.0.0 (build 5)**. Builds 3 to 5 have not been published.
-
-- **Runs on Python 3.14, and older runtimes are cleaned up.** The shared QuillVille
-  runtime this build installs is Python 3.14. The installer then removes older
-  runtimes (Python 3.13) that no installed QuillVille app uses any more; one that
-  an app or a shortcut still points to is left alone. Portable copies carry their
-  own Python and change nothing outside their folder.
-- **Record Key in Show and Hide Key.** The key box has a **Record Key...**
-  button (Alt+R): press the combination you want and it is written into the box
-  for you. Typing it still works, and is the way for a key another program has
-  already taken, which never reaches the window. Functional,
-installer/portable and signing checks remain required; the 16 ms diagnostic
-target is not a release-blocking cutoff for an isolated native UI update.
-
-- **HTTPS uses the Windows certificate store.** Feed checks, downloads,
-  chapters, transcripts, podcast directories and OPML reachability checks use
-  the shared native certificate-trust helper. Trusted Windows and
-  organization-managed roots can be recognized without disabling hostname or
-  certificate verification. Invalid certificates still fail; diagnostic
-  reports include certificate-verification details without feed credentials.
-  This does not claim to resolve a particular listener's feed without testing
-  that exact URL on their computer.
-
-- **The installers are current-user only.** The Cast installers no longer
-  offer an all-users installation that requires administrator approval. Cast
-  and its shared runtime install for the current Windows account.
-  The release builder applies `-Sign` before deciding the signing policy, so
-  required signing is not accidentally downgraded to optional signing.
-
-- **Start QUILL Cast with Windows.** An opt-in setting under Preferences >
-  When Cast opens starts the installed copy when you sign in to this Windows
-  account. It is machine-local, uses per-user startup settings, and is
-  unavailable to portable copies; it needs no administrator rights.
-
-- **Preferences avoid unnecessary library reloads.** Saving only refreshes
-  the current library place when the changed setting can alter its visible
-  rows (Hide caught-up podcasts). Application-history and family-sharing writes
-  run on the ordered bookkeeping worker too. Cast distinguishes applying the
-  changes from successfully saving them and reports persistence failures.
-
-- **Refresh All Now batches library work.** Cast defers library-tree and
-  Podcast Manager refreshes until the requested feeds have finished, then runs
-  maintenance once, rather than repeating that work for each feed. Periodic
-  saves during a run do not redraw the tree or lose its final pending update.
-
-- **The library cursor stays put while feeds change.** Expanded podcasts update
-  their episode rows in place, keeping unchanged native rows and the selected
-  folder copy. New episodes and updated titles do not briefly select the parent
-  podcast. A necessary tree rebuild restores the expanded episode, and an arrow
-  press during drawing takes precedence over the saved selection. Moving a
-  podcast leaves the cursor on its next sibling, then the previous sibling or
-  containing folder when there is no next row.
-
-- **Folder moves no longer clear the entire podcast tree.** Unchanged native
-  rows remain in place, and the next/previous-row anchor survives an overlapping
-  counts refresh. Explicit moves are shown even during Refresh All. Neighbor
-  lookup uses adjacent siblings, and read-only drawing turns no longer trigger
-  native repaint cycles. Regression tests exercise the actual folder picker,
-  not only the anchor helper.
-
-- **Arrowing and closing do less work in one turn.** Selection changes update
-  button targets on the next UI turn, coalescing rapid moves into the latest
-  selection instead of relabeling inside native tree selection. They do not
-  reread notifications or recount status cells.
-  Closing yields between teardown steps and waits for final file work through
-  asynchronous polling, keeping Windows able to process events.
-
-- **Refresh All and OPML import stay responsive.** All-feed refresh has a
-  reusable, modeless progress window that can be reached without leaving the
-  main window disabled. Closing it hides it. Stop ends the run without waiting
-  for outstanding network requests, and late results from that run are ignored;
-  updates already completed are kept. OPML reading and planning run on a worker,
-  while additions to the live library yield between bounded batches. Stopping
-  the optional reachability check keeps the subscriptions already imported.
-
-- **Library saves no longer write files on the UI thread.** Detached JSON
-  generations are prepared in bounded turns and written atomically on a worker.
-  Episode records are encoded directly instead of allocating another complete
-  catalogue of episode and empty-tag model objects. Writes are
-  serialized so an older save cannot overwrite a newer one. Playback-position
-  updates catch up individual records instead of restarting the whole copy.
-  Long feed-check runs can save periodically, but a snapshot waits for a
-  yielding feed commit to finish before copying its changes.
-
-- **Feed results preserve the live listening state.** Feed merging and routing
-  decisions run on detached data. Applying the result retains the live episode
-  objects, playback positions and listener-owned names. A late result cannot
-  restore an unfollowed show or episodes removed while that request was running.
-  Refresh All uses two dedicated feed workers rather than filling the shared
-  background pool.
-
-- **Unfollow and downloaded-file Undo use background file jobs.** Removing the
-  subscription updates the library without waiting for file moves or deletion.
-  Undo waits asynchronously for any pending file hold, preserves recovery
-  copies after a restore failure, and reports the completed outcome rather
-  than claiming success before the file job finishes. Unfollow removes the
-  show's local queue, playlist, Inbox and folder-copy references; Undo restores
-  that show's references without replacing unrelated current changes.
-
+- **Cast remembers where you were in each podcast.** Press Enter on a podcast
+  in Favorites and its list opens on the episode you last had selected there,
+  after a restart too, instead of on the first row. New episodes, a sort
+  change, View > Show and a refresh do not move it; if the episode has gone,
+  you land on the one published closest to it. Mixed lists (New Episodes, the
+  Inbox, the Play Queue) never move a podcast's place. User guide: "Where you
+  were in each podcast".
 - **Copy a podcast to another folder without following it twice.** Folder
-  copies share one subscription, episode list, listening history and downloads.
-  Move changes the selected placement. OPML export and import preserve multiple
-  placements of the same feed. Unfollowing removes every placement; destructive
-  folder removal warns that copies outside that folder disappear too.
+  copies share one subscription, episode list, listening history and
+  downloads. Move changes the selected placement. OPML export and import keep
+  every placement. Unfollowing removes every placement, and removing a folder
+  warns that copies outside it disappear too.
+- **Show notes read as words.** A feed that encodes its text twice
+  (`&amp;#8217;`) used to leave `&#8217;` in show notes, titles and the feed
+  preview, and notes published as escaped HTML showed their tags. Both read
+  properly now.
+- **Podcasts you have just imported do not arrive as hundreds of new
+  episodes.** The first check of a new show takes it as a starting point.
+  Podcast failures are written in plain words, a web page or an empty feed is
+  no longer read as a podcast, and an OPML file's empty folders are kept on
+  import.
+- **CBC podcasts work again.** Cast now says who is asking in one honest way,
+  which CBC's servers accept.
+- **Refresh All and OPML import stay responsive.** Refresh All has a progress
+  window you can leave and come back to; Stop ends the run at once and keeps the
+  updates already done. OPML import works in the background, and stopping its
+  optional reachability check keeps the subscriptions already imported.
+- **Unfollow and Undo for downloaded files work in the background.** Removing
+  a subscription updates the library at once; Undo waits for the file work and
+  reports what really happened.
 
-- **Podcast and folder shortcuts are consistent.** F5 checks the selected
-  podcast; Ctrl+F5 checks all podcasts. Ctrl+Shift+V moves a podcast,
-  Ctrl+Shift+Y copies it, and Ctrl+Shift+E creates a folder. Favorites moves to
-  Alt+Shift+V and Playlists to Alt+Shift+Y; Notifications remains
-  Ctrl+Shift+N. Cast's image-generation shortcut moves to Ctrl+Alt+F5 so it
-  does not conflict with Refresh All. Mark All as Played moves to
-  Alt+Shift+E, keeping Ctrl+Shift+E exclusively for New Folder. The New
-  Folder menu uses the same selected-parent action and configurable binding
-  as the command palette.
+### QUILL Lineups
 
-- **Arrow keys stay in the control being used.** Left Arrow collapses an
-  expanded folder before leaving the Podcasts tree. Selecting Podcasts in
-  Places does not automatically move focus into the tree, and Up Arrow at the
-  first list row stays in that list. Podcast context menus expose Refresh Feed.
-  Opening an empty podcast starts a check before treating it as genuinely empty.
+- **QUILL Lineups.** Named lists of anything Quill Radio and QUILL Cast can
+  play: podcasts you follow and their episodes, plus radio stations, saved
+  places, YouTube videos, playlists and channels, and Radio's Local Media files
+  and recordings. Rules you write bring items in and say when they go (While it
+  matches, Until finished, For a number of days, Until finished or a number of
+  days, Always, and Max kept), and your own hands outrank them: Keep This Item,
+  Remove from Lineup into Removed Items, Recently Left with reasons, Bring Back,
+  Why Is This Here and Undo. The same Lineups appear in both apps, and both can
+  edit at once. Open it with **Episode > Lineups...** (Ctrl+U, the same key as
+  in Quill Radio), Go To or the Command Palette; Add to Lineup... is on every
+  episode and podcast menu and is a Quick Action. Playing an episode puts it and
+  the Lineup's later episodes at the front of the Play Queue; stations, YouTube
+  and Local Media are sent to Quill Radio. Start Here (Ctrl+Alt+H) opens a
+  Lineup when Cast starts. Lineups are in Cast's backup. User guide Chapter 9,
+  and a new tutorial, **Build a lineup that fills itself**.
+- **Save Lineup and Apply Lineup on the Play Queue are QUILL Lineups now.**
+  Save Lineup... saves the queue's order as a Lineup ("Saved lineup Tuesday: 5
+  episodes, in this order."). Apply Lineup... puts a Lineup's episodes at the
+  front of the queue. Lineups saved the old way, as playlists, are copied into
+  Lineups once at launch; the playlists stay where they were.
 
-- **Embedded playback does not load standalone mpv scripts.** Cast disables
-  mpv's default script loading for its embedded player, avoiding an unnecessary
-  startup and shutdown path while leaving the standalone mpv configuration
-  untouched.
+### Menus and keys
 
-- **Global hotkeys retain their wx identifiers.** The host keeps the allocated
-  ID references while the routes exist, preventing another control or hotkey
-  from recycling an identifier that is still registered with Windows.
+- **Podcast and folder keys are consistent.** F5 checks the selected podcast;
+  Ctrl+F5 checks all podcasts. Ctrl+Shift+V moves a podcast, Ctrl+Shift+Y
+  copies it, and **Ctrl+Shift+E** creates a folder (Podcasts > New Folder...).
+  Favorites moves to Alt+Shift+V and Playlists to Alt+Shift+Y; Notifications
+  stays Ctrl+Shift+N. Image generation moves to Ctrl+Alt+F5, and Mark All as
+  Played to Alt+Shift+E.
+- **Every Advanced command is in the Command Palette.** With Simple menus,
+  **Back Up My Podcasts...**, **Restore from a Backup...**, **Choose
+  Columns...**, **Podcast Index Credentials...**, **Media Tools**, **Get
+  FFmpeg...** and **Product Requirements...** can now be reached: press
+  Ctrl+Shift+P, type `back up` and press Enter to start a backup. The palette
+  lists them without a key, because an Advanced row's key works only while
+  **View > Advanced Features** (Ctrl+Alt+Shift+G) is on. Clear All Podcast Data
+  from This Computer is in the palette as Delete All Podcast Data.
+- **Spotify is on the Help menu from the start.** Connect to Spotify...
+  (Ctrl+Alt+S) and Browse Spotify Podcasts... (Ctrl+Alt+V) need no unlock code.
+- **Arrow keys stay in the control you are using.** Left Arrow collapses an
+  expanded folder before leaving the Podcasts tree; choosing Podcasts in Places
+  does not move focus into the tree; Up Arrow at the first row stays in the
+  list. Podcast context menus have Refresh Feed, and opening an empty podcast
+  checks it before calling it empty.
+- **Playback letters work only in Now Playing.** The library, Places and
+  episode lists keep their letter typeahead, so C no longer says "Nothing is
+  playing" when you meant to jump to a podcast.
+- **The library cursor stays put while feeds change**, while folders move, and
+  while you arrow quickly; moving a podcast leaves the cursor on its next
+  neighbour.
+- **Help > Notifications... says how many are unread**, such as
+  "Notifications (3 new)...".
 
-- **Play/Pause checks backend acceptance.** Rejected transport requests report
-  a playback error instead of changing the reported state to Playing or Paused.
-  A press while an episode loads changes whether it should start paused; pause
-  reaches the audio engine before position bookkeeping. Stopping an mpv episode
-  unloads it without destroying the reusable player; shutdown releases both
-  active and inactive native engines, with parent destruction as a fallback.
+### Sounds and playback
 
-- **Storage checks avoid cloning unrelated feed entries.** Detached storage
-  generations retain every download, queued/recently expired episode, and
-  eligible Inbox-cap candidate, including opt-out Inbox membership. Unrelated
-  catalogue entries are scanned in bounded blocks without allocating duplicate
-  episode/tag graphs or scheduling a separate wx timer turn for each small group.
-  The shared QUILL podcast storage report also uses a native virtual list,
-  avoiding a Windows row insertion/deletion for every podcast when All/Unheard
-  changes. Cast itself continues to open its Downloads place, not that dialog.
+- **Where QUILL Cast's own sounds play, and Alt+Shift+M to turn them off.**
+  **Preferences > App Sounds Play On...** offers **Same as its audio** (where
+  it starts: the sounds follow the episode), System default, None, or any sound
+  card or headset by name. After a change one sound plays on the new card. If
+  that card is unplugged the sounds play on the system default until it is
+  back. **Alt+Shift+M** turns them off and back on, and **Episode > App
+  Sounds** shows a check mark while they are on. Your screen reader is never
+  moved. Asked for on QUILLVille by Rick Lewis.
+- **Play/Pause tells the truth.** A play or pause the player refuses is
+  reported as a playback error instead of being announced as done, and a press
+  while an episode loads decides whether it starts paused.
 
-- **Large views use a lightweight detached catalogue.** View preparation no
-  longer deep-copies every episode and its namespace-tag graph. It captures
-  the fields needed by the existing view rules in bounded UI turns, retains
-  person names for Episode Filters, and streams cross-podcast candidates into
-  bounded sorting. Result publication resolves only the displayed episodes,
-  checks their live identities, and rejects stale generations. Queued selection
-  and notes updates stop when the main window is closing. Opening a large place,
-  publishing native rows, and refreshing transport/status controls yield between
-  UI operations. A delayed opening does not reclaim focus after the listener
-  moves it. Status cells no longer rewrite unchanged labels, names, or help;
-  interrupted refreshes still finish any required layout. The worker shares the
-  interpreter between bounded scan turns and releases its detached episode input
-  and show metadata in bounded batches before delivery. A canceled partial
-  capture retains that input for a separate cleanup worker, including during
-  shutdown, instead of freeing the catalogue on the UI thread.
+### Dictation
 
-  **Responsiveness measurements.** The visible-window native test prepares Downloads
-  for 1,300 podcasts / 195,000 episodes in about four to five seconds rather than
-  the original 24 seconds. One complete run stayed below the 16 ms diagnostic target:
-  All took 4.64 seconds with a 12.85 ms maximum callback, Unheard took
-  3.88 seconds / 8.67 ms, and partial-capture cancellation took 6.25 ms.
-  The next repeat exceeded that diagnostic target: All took
-  5.16 seconds / 16.70 ms, with the longest callback in the native
-  loading-heading update;
-  Unheard took 4.33 seconds / 7.39 ms and cancellation took 5.26 ms.
-  An earlier run also caught a 36.82 ms native item-count update. Startup and
-  phase-specific queued responses remain separately measured, not hidden by
-  these view results. An isolated 16.7 ms native update is not a "Not Responding"
-  freeze and does not by itself hold up packaging. Release checks instead focus
-  on sustained blocking, usable background operations, safe saving/cancellation,
-  and the installer/portable payload. The native view regression retains
-  16 ms as a diagnostic target and rejects callbacks above 100 ms to catch
-  meaningful main-thread stalls without failing a normal 16.7 ms update.
+- **Edit > Dictate Here (Ctrl+F11), in every copy.** QUILL Transcribe is
+  released on 1 November 2026. Put the cursor in a search box, such as Add
+  Podcast's name box, press Ctrl+F11, and QUILL Transcribe dictates into it,
+  starting in the tray if it is not running. For example, press Ctrl+N, then
+  Ctrl+F11 in Podcast name, say "the daily", pause, and press Enter. Cast has no
+  speech engine of its own; your words, commands and engine are QUILL
+  Transcribe's (Model > Choose Model, Ctrl+M there), and your voice stays on
+  your computer unless you chose an online engine there. Ctrl+F11 starts
+  dictation but does not stop it. If QUILL Transcribe is not installed, Ctrl+F11
+  says "Dictate Here needs QUILL Transcribe, which is not installed with this
+  copy." User guide: "Dictating into a search box". The chapters section says
+  which engine listens for **As long as it takes**: the small Vosk English
+  engine that comes with Cast, used for chapters only.
+
+### Security and connections
+
+- **Feeds over http and https, explained.** A new user guide section under
+  Feed Check: https is tried first, Player Information marks a feed that really
+  is plain http, a password is never sent over plain http, and what to do when
+  a certificate cannot be verified.
+- **HTTPS uses the Windows certificate store**, so organization-managed
+  certificates are trusted; invalid certificates still fail. Podcast searches,
+  downloads and Check for Updates use the same certificate check as feeds, and
+  say a certificate problem in the same words.
+
+### Updates and installing
+
+- **Start QUILL Cast with Windows.** An opt-in setting under **Preferences >
+  When Cast opens** starts the installed copy when you sign in. Not available
+  in portable copies; it needs no administrator rights.
+- **Updating keeps your library where QUILL Cast looks for it.** A portable
+  copy now updates by putting the new version in the old folder's place and
+  moving your `data` folder across.
+- **A failed update undoes itself properly.** No administrator prompt: the
+  installers are current-user only and run quietly as you. If an update does
+  not finish, Cast opens again as the version you had.
+- **The Beta engine's 335 MB come back** when the last app on Beta returns to
+  Stable.
+- **Runs on Python 3.14.** The installer removes the older Python 3.13 runtime
+  once no QuillVille app uses it. Portable copies carry their own Python.
+- **FFmpeg's licence comes with it.** The installer that carries FFmpeg, and
+  the folder it installs from, have FFmpeg's licence (GNU GPL version 3) and
+  the note on where to get its source, in `tools\ffmpeg`.
+
+### Documentation
+
+- **The user guide matches the menus a new install shows.** New Folder is
+  Ctrl+Shift+E, not Ctrl+Shift+F; the Spotify rows need no unlock code; and
+  every Advanced row the guide teaches (Back Up My Podcasts, Restore from a
+  Backup, Export My Data, Clear All Podcast Data, Free Up Space, Run
+  Housekeeping Now, Media Tools, Get FFmpeg and Redeem Unlock Code) now says it
+  is one. In Simple mode Ctrl+Alt+Shift+B does nothing; use the Command Palette
+  or turn Advanced Features on. A check now compares the guide and this
+  changelog with Cast's menus in both modes.
+
+### Developer notes
+
+- Library saves are prepared in bounded turns and written atomically on a
+  worker, in order; feed merging runs on detached data and keeps live episode
+  objects, positions and names; Refresh All uses two dedicated feed workers.
+- Preferences reload the library only when a changed setting alters visible
+  rows; selection changes update button targets on the next UI turn; closing
+  yields between teardown steps.
+- Embedded mpv no longer loads standalone mpv scripts; global hotkeys keep
+  their wx identifiers alive while registered.
+- Large views use a lightweight detached catalogue. The visible-window native
+  test prepares Downloads for 1,300 podcasts / 195,000 episodes in about four
+  to five seconds (was 24). The 16 ms callback target is diagnostic; the
+  regression test fails above 100 ms. One run peaked at 16.70 ms in the
+  loading-heading update, and an earlier one at 36.82 ms in a native
+  item-count update. Functional, installer/portable and signing checks remain
+  required.
+- Shared code: `quill/core/display_text.py` (publisher text),
+  `quill/core/net.py` (certificate sentence), `quill/ui/support_menu.py`
+  (notification count). The release builder applies `-Sign` before deciding
+  the signing policy. The build and installer stop if FFmpeg's licence is
+  missing.
 
 ## 2.0.0 -- 2026-10-03
 
