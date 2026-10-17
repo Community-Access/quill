@@ -5,7 +5,10 @@ tiers before anything else, per the OCR/document-conversion PRD:
 
 * **Tier 1 — the existing text layer**: MarkItDown
   (:mod:`quill.io.markitdown_bridge`) for *born-digital* Office, HTML and EPUB
-  files, and QUILL's own PDF reader (:mod:`quill.io.pdf`, pdfplumber then
+  files when it can run, and QUILL's own readers (:mod:`quill.io.office_text`)
+  when it cannot -- which in a shipped build is always, because magika needs
+  onnxruntime and the shared runtime excludes it (2026-10-16); and
+  QUILL's own PDF reader (:mod:`quill.io.pdf`, pdfplumber then
   pypdf) for PDFs that already carry text -- never MarkItDown for a PDF, which
   cannot import in a shipped build (:func:`convert_pdf_text_layer`). Free,
   offline, no upload. Not OCR: a scanned PDF comes back empty here.
@@ -46,6 +49,11 @@ from typing import Any
 
 from quill.core.error_codes import CodedError
 from quill.io.ocr import OcrResult
+from quill.io.office_text import (
+    LegacyConverter,
+    OfficeReadError,
+    read_office_text_preferring_markitdown,
+)
 from quill.io.pdf_raster import PdfRasterError, pdf_page_count, render_pdf_pages
 from quill.io.tesseract_ocr import (
     DEFAULT_LANGUAGE,
@@ -68,13 +76,16 @@ class DocConvertCancelled(DocConvertError):
     """The user cancelled a conversion in progress."""
 
 
-#: Born-digital formats Tier 1 (MarkItDown) handles directly.
+#: Born-digital formats Tier 1 reads (MarkItDown where it runs, QUILL's own
+#: readers in quill.io.office_text everywhere).
 BORN_DIGITAL_EXTENSIONS: frozenset[str] = frozenset({
     ".docx",
+    ".docm",
     ".doc",
     ".pptx",
     ".ppt",
     ".xlsx",
+    ".xlsm",
     ".xls",
     ".html",
     ".htm",
@@ -112,6 +123,9 @@ WEAK_OCR_CONFIDENCE = 60.0
 
 #: Conversion tiers, as recorded on the outcome.
 TIER_MARKITDOWN = "markitdown"
+#: An Office, HTML, EPUB or CSV file read by QUILL's own reader, because
+#: MarkItDown could not run or could not read it (quill.io.office_text).
+TIER_OWN_READER = "own-reader"
 #: A PDF's own text layer, read by QUILL's PDF reader (pdfplumber, then pypdf).
 TIER_PDF_TEXT = "pdf-text"
 TIER_LOCAL_OCR = "local-ocr"
@@ -146,6 +160,12 @@ class ConversionOutcome:
     #: breaks (form feeds) rather than ``<!-- Page N -->`` markers -- the open
     #: flow, where Go To Page and the Page cell read them. Empty for Tier 1.
     pages: tuple[str, ...] = ()
+    #: Which reader produced an Office result ("python-docx", "sheet-xml", ...),
+    #: the same reader in words ("QUILL's own Excel reader"), and its sheet or
+    #: slide count in words ("3 sheets"). Empty for every other tier.
+    engine: str = ""
+    reader: str = ""
+    units: str = ""
 
     @property
     def looks_weak(self) -> bool:
@@ -167,6 +187,8 @@ class _Deps:
     #: Windows OCR: whether it can run here, and the recognizer for one image.
     windows_ocr_ready: Callable[[], bool] | None = None
     windows_ocr_image: Callable[[Path, str | None], OcrResult] | None = None
+    #: Converts a legacy .doc/.xls/.ppt to its modern format (LibreOffice by default).
+    legacy_converter: LegacyConverter | None = None
 
 
 def text_layer_looks_empty(text: str, page_count: int) -> bool:
@@ -182,12 +204,6 @@ def text_layer_looks_empty(text: str, page_count: int) -> bool:
         return True
     pages = max(page_count, 1)
     return meaningful < MIN_CHARS_PER_PAGE * pages
-
-
-def _default_markitdown(path: Path) -> str:
-    from quill.io.markitdown_bridge import convert_with_markitdown
-
-    return convert_with_markitdown(path)
 
 
 def _default_pdf_page_count(path: Path) -> int:
@@ -210,33 +226,43 @@ def convert_born_digital(
 ) -> ConversionOutcome:
     """Tier 1: extract the existing text layer.
 
-    Office, HTML and EPUB files go through MarkItDown. **PDFs never do**: they
-    go through :func:`convert_pdf_text_layer` (QUILL's own PDF reader), because
-    MarkItDown cannot import in a shipped build (see that function). Raises
-    :class:`DocConvertError` with a friendly message when the converter is not
-    available or cannot read the file.
+    Office, HTML, EPUB and CSV files try MarkItDown and, when it cannot run or
+    cannot read them, QUILL's own readers (:mod:`quill.io.office_text`) -- so
+    a missing or broken MarkItDown never fails an import. **PDFs never go to
+    MarkItDown**: they go through :func:`convert_pdf_text_layer` (QUILL's own
+    PDF reader), because MarkItDown cannot import in a shipped build (see that
+    function). Raises :class:`DocConvertError` with a sentence that says what
+    to do when no reader can read the file.
     """
     resolved = deps or _Deps()
     if path.suffix.lower() == PDF_EXTENSION:
         return convert_pdf_text_layer(path, deps=resolved, on_progress=on_progress)
-    run = resolved.markitdown or _default_markitdown
     if on_progress is not None:
-        on_progress(0.1, f"Reading {path.name} with the free local converter...")
+        on_progress(0.1, f"Reading the text in {path.name}...")
+    # Never "MarkItDown is not installed": in a shipped build it cannot import
+    # (magika needs onnxruntime, which the shared runtime excludes) while
+    # find_spec still calls it installed. So nothing asks; office_text tries
+    # it and reads with QUILL's own reader on any failure. The user hears only
+    # QUILL's own reader failing, in a sentence that says what to do.
     try:
-        text = run(path)
-    except ImportError as exc:
-        raise DocConvertError(
-            "The free local converter (MarkItDown) is not installed. Open "
-            'Help > Download Optional Components and download "PDF and '
-            'Office text extraction" to enable born-digital conversion.'
-        ) from exc
-    except ValueError:
-        raise DocConvertError(
-            f"The free local converter produced no text for {path.name}."
-        ) from None
+        found = read_office_text_preferring_markitdown(
+            path, markitdown=resolved.markitdown, legacy_converter=resolved.legacy_converter
+        )
+    except OfficeReadError as exc:
+        raise DocConvertError(exc.sentence) from exc
+    except OSError as exc:
+        raise DocConvertError(f"QUILL could not read {path.name}: {exc.strerror or exc}.") from exc
     if on_progress is not None:
         on_progress(0.9, "Checking the recovered text...")
-    return ConversionOutcome(text=text, tier=TIER_MARKITDOWN, source=path)
+    return ConversionOutcome(
+        text=found.text,
+        tier=TIER_MARKITDOWN if found.engine == "markitdown" else TIER_OWN_READER,
+        source=path,
+        warnings=found.notes,
+        engine=found.engine,
+        reader=found.reader_label,
+        units=found.count_phrase,
+    )
 
 
 def _default_pdf_text(path: Path) -> Any:
@@ -541,6 +567,7 @@ __all__ = [
     "TIER_CLOUD_OCR",
     "TIER_LOCAL_OCR",
     "TIER_MARKITDOWN",
+    "TIER_OWN_READER",
     "TIER_PDF_TEXT",
     "TIER_WINDOWS_OCR",
     "WEAK_OCR_CONFIDENCE",

@@ -60,7 +60,10 @@ RICH_SUFFIXES = frozenset({".rtf"})
 #: The extensions the "all supported files" filter offers, as one wx pattern.
 #: ``.pdf`` joined on 2026-10-15: a PDF opens as its text, read by QUILL's
 #: reader, and is never written back (quill/apps/lite_window_pdf.py).
-_TEXT_LIKE = "*.txt;*.rtf;*.md;*.log;*.csv;*.json;*.py;*.html;*.htm;*.pdf"
+#: Word, Excel, PowerPoint and OpenDocument text joined on 2026-10-16, on the
+#: same terms (quill.core.lite.open_prepare.OFFICE_OPEN_SUFFIXES).
+_OFFICE = "*.docx;*.docm;*.doc;*.odt;*.xlsx;*.xls;*.pptx;*.ppt"
+_TEXT_LIKE = f"*.txt;*.rtf;*.md;*.log;*.csv;*.json;*.py;*.html;*.htm;*.pdf;{_OFFICE}"
 
 OPEN_WILDCARD = (
     f"All supported files ({_TEXT_LIKE})|{_TEXT_LIKE}|"
@@ -69,6 +72,7 @@ OPEN_WILDCARD = (
     "Markdown (*.md;*.markdown)|*.md;*.markdown|"
     "HTML (*.html;*.htm)|*.html;*.htm|"
     "PDF documents, opened as text (*.pdf)|*.pdf|"
+    f"Word, Excel and PowerPoint, opened as text ({_OFFICE})|{_OFFICE}|"
     "All files (*.*)|*.*"
 )
 

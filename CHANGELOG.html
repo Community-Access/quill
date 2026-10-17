@@ -245,6 +245,90 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="office-files-import-without-markitdown-todo-p1-4b-2026-10-16">Office
+files import without MarkItDown (todo P1 4b, 2026-10-16)</h3>
+<p>Jeff’s decision: “Give Office files a fallback that needs no
+MarkItDown.” In a shipped build every Word, Excel and PowerPoint import
+failed with “The free local converter (MarkItDown) is not installed”:
+the QuillVille runtime freezes markitdown and magika in but excludes
+onnxruntime, so <code>import markitdown</code> raises inside magika, and
+the “PDF and Office text extraction” download could not fix it because
+the frozen copy shadows it and <code>find_spec</code> still says
+installed. PDFs were already off MarkItDown (2026-10-15).</p>
+<ul>
+<li><strong>New <code>quill/io/office_text.py</code></strong> (wx-free,
+strict-typed), with the readers split into <code>office_word.py</code>
+(Word and ODT XML), <code>office_sheets.py</code> (openpyxl, else the
+workbook XML; ODS) and <code>office_slides.py</code> (PPTX and ODP; the
+slide code moved out of <code>structured.py</code>). Everything falls
+back to the standard library, because the shared runtime also excludes
+lxml (so python-docx cannot import there) and QUILL Lite excludes docx,
+pptx, openpyxl and markitdown. <code>read_office_text</code> never uses
+MarkItDown; <code>read_office_text_preferring_markitdown</code> tries it
+for DOCX/PPTX/XLSX/XLS/HTML/EPUB/CSV and falls back on <em>any</em>
+exception or an empty result, keeping the reason as
+<code>markitdown_failure</code>. Nothing consults
+<code>find_spec</code>.</li>
+<li><strong>Kept:</strong> headings (style names from
+<code>styles.xml</code>, <code>Title</code>, <code>outlineLvl</code>),
+bulleted vs numbered list items and levels (<code>numbering.xml</code>),
+tables as GFM with <code>|</code> escaped, hard breaks, picture
+descriptions as <code>[Image: ...]</code>,
+<code>## Sheet: &lt;name&gt;</code> per sheet,
+<code># Slide N: &lt;title&gt;</code> per slide in presentation order
+with <code>## Tables</code> and <code>## Notes</code>, hidden slides
+marked. Dates in the XML sheet reader come from the cell’s number
+format. <strong>Not kept:</strong> run formatting, headers/footers,
+footnotes, comments, charts, SmartArt.</li>
+<li><strong>Legacy
+<code>.doc</code>/<code>.xls</code>/<code>.ppt</code>:</strong>
+LibreOffice converts a temporary copy when installed
+(<code>libreoffice_executable</code> now also looks in
+<code>%ProgramFiles%\LibreOffice\program</code>); otherwise
+<code>LegacyOfficeFormatError</code>
+(<code>QUILL-IO-OFFICE-LEGACY</code>) names the Save As type and
+libreoffice.org. Password-protected (OLE magic under an OOXML name) and
+damaged files raise <code>OfficeReadError</code>
+(<code>QUILL-IO-OFFICE-UNREADABLE</code>) with a sentence.</li>
+<li><strong>Entry points:</strong>
+<code>docconvert.convert_born_digital</code> (new
+<code>TIER_OWN_READER</code>,
+<code>ConversionOutcome.engine/reader/units</code>; HTML/EPUB/CSV fall
+back through <code>read_markup_text</code>;
+<code>.docm</code>/<code>.xlsm</code> added to the import list);
+<code>structured.read_structured_document</code> (File &gt; Open and the
+watch folder; 764 -&gt; 302 lines, budget ratcheted); Convert File’s
+MarkItDown engine (<code>markitdown_or_own_reader</code>, announcement
+names the stand-in); the AI Action Builder’s reference files;
+<code>.pages</code> Route B, which also looked for a
+<code>converted.docx</code> LibreOffice never writes.</li>
+<li><strong>Announcements and intake:</strong> Import / Convert says
+“Opened X as editable text, read by QUILL’s own Excel reader. 2 sheets.
+Nothing was uploaded.”; the open summary says “read by <reader>” instead
+of an engine id; the Document Intake Report adds Read by, Contents,
+MarkItDown not used (why) and per-sheet truncation notes.
+<code>extraction_pack_missing</code> is stamped only for a PDF or an
+unreadable <code>.xls</code>.</li>
+<li><strong>Spreadsheet bounds</strong> (PERF-11) are 2,000 rows by 50
+columns per sheet, up from 50 by 20, and a sheet cut short now says
+so.</li>
+<li><strong>QUILL Lite</strong> opens
+<code>.docx/.docm/.doc/.odt/.xlsx/.xls/.pptx/.ppt</code> as text through
+the same reader (exactly QUILL’s File &gt; Open set, asserted), on the
+worker, and refuses Save over them; it used to show a
+<code>.docx</code>’s zip bytes.</li>
+<li>The OCR and Conversion Services page text moved to
+<code>quill/core/docconvert_services.py</code> and now describes the
+built-in readers.</li>
+<li>Tests: <code>tests/corpus/office/build_office_corpus.py</code> and
+its eight fixtures; <code>tests/unit/io/test_office_corpus.py</code>
+(both reader tiers, and the shipped build simulated with onnxruntime
+blocked and <code>find_spec</code> saying installed);
+<code>tests/unit/apps/test_lite_office.py</code>. Docs: both user
+guides, PRD (“QUILL’s own Office readers”, section 5.93.1), both
+changelogs.</li>
+</ul>
+<h3
 id="word-markdown-and-html-saves-no-longer-carry-the-dark-themes-grey-2026-10-16">Word,
 Markdown and HTML saves no longer carry the dark theme’s grey
 (2026-10-16)</h3>

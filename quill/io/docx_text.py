@@ -53,7 +53,7 @@ def read_docx_text(path: Path) -> str | None:
     """
     try:
         import docx  # type: ignore[import-untyped]
-    except ImportError:
+    except Exception:  # noqa: BLE001 - lxml missing (the shared runtime excludes it) or broken
         return None
     try:
         document = docx.Document(str(path))
