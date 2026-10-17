@@ -193,19 +193,24 @@ def test_the_launch_check_still_offers_a_real_update(updates):
 
 
 def test_queued_launch_check_does_not_start_during_shutdown(monkeypatch):
-    scheduled = []
     checked = []
     app = SimpleNamespace(
         shutting_down=False,
         settings=SimpleNamespace(check_updates_on_launch=True, last_update_check=""),
         save_settings=lambda: None,
     )
-    patch_call_after(monkeypatch, scheduled.append)
+    capture = patch_call_after(monkeypatch, lambda *_a, **_k: None)
     monkeypatch.setattr(
         lite_updates, "check_for_updates", lambda *args, **kwargs: checked.append(args)
     )
     lite_updates.check_at_launch(app)
     app.shutting_down = True
+    # Only the check itself: with a wx.App alive in this worker, launch also
+    # queues _confirm_update_started, and whether one is alive depends on which
+    # files ran first -- so count the check, not every deferred call.
+    scheduled = [
+        fn for fn, _a, _k in capture.calls if fn is not lite_updates._confirm_update_started
+    ]
     assert len(scheduled) == 1
     scheduled[0]()
     assert checked == []

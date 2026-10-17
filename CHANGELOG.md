@@ -49,6 +49,33 @@ Radio's, Beacon's and Social's real menu bars. Social's menu labels come from
 its own keymap, so a rebound key moves in the menu too. See each app's
 changelog for the keys.
 
+### Batch-6 CI: the shared test App kept alive, and a first-run Inkwell key bug it exposed (2026-10-17)
+
+- **Why CI failed.** `tests/unit/ui/test_mac_open_file_app.py` built a real
+  `MacOpenFileApp` (a `wx.App` subclass), a second App in the process, and
+  destroyed it; `shared_wx_app()` then built a new session App. When the
+  replaced session App's last Python reference went, its C++ destructor
+  cleared wx's global App pointer even though the newer App held it, and the
+  rest of that worker failed with "The wx.App object must be created first!"
+  (beacon auto-sync, close-confirm dialogs, labelled field, translated speech
+  export). `tests/wx_session.py` now keeps every App it hands out alive
+  (`_KEEP`); the Mac test builds its subclass with `wx.App.__init__` patched
+  out, so it is no longer `machine_global`; and
+  `tests/unit/test_wx_test_hygiene.py` now also flags building any `wx.App`
+  subclass found under `quill/`.
+- **App-dependent test.** `test_queued_launch_check_does_not_start_during_shutdown`
+  counted every deferred call; with an App alive, launch also queues
+  `_confirm_update_started`. It now counts only the check.
+- **Product bug: Inkwell registered two retired keys on a first run.** With no
+  settings file, `load_settings` fills in the pre-2026-10-05 defaults for Quick
+  Insert (Ctrl+Alt+Shift+K) and Expand Word (Ctrl+Alt+Shift+X), and
+  `take_system_keys` saved and registered them instead of moving them to none.
+  The window test meant to catch it passed only while every test built its own
+  App. Fixed in `quill/core/expansion/settings.py`, pinned by
+  `tests/unit/core/test_show_hide_keys.py`.
+- **mypy.** `rtf_model._EMPHASIS` is now `(marker, bold, italic)` rather than a
+  keyword dict, which strict mypy could not check against `_Attrs`.
+
 ### Word editing shared with QUILL Lite; two Word round-trip fixes; table navigation in QUILL Lite (2026-10-17)
 
 **`quill/core/docx_open.py` (new, wx-free).** QUILL's Word open and save
