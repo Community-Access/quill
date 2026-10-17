@@ -330,6 +330,9 @@ class Settings(DictationSettings):
     #: to discover by reading their own file back.
     autoformat_smart_quotes: bool = False
     autoformat_dashes: bool = False
+    #: QUILL's two typing assists, under QUILL's names and defaults (both off).
+    autocorrect_misspellings: bool = False
+    continue_lists_in_plain_text: bool = False
     #: Walk the F7 review by how often each word recurs rather than by
     #: position. QUILL Lite never had this: it was a QUILL-only second command
     #: on a second chord, and became the shared dialog's checkbox on

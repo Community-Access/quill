@@ -26,6 +26,7 @@ is spoken; timers are stopped before the frame goes.
 
 from __future__ import annotations
 
+import gc
 import json
 import sys
 from pathlib import Path
@@ -72,16 +73,19 @@ def _stop_started_timers() -> None:
     rather than imported, because importing ``tests.conftest`` again would give
     a second, empty copy.
     """
+    timers: list[object] = []
     for module in list(sys.modules.values()):
         watched = getattr(module, "_WATCHED_WX_TIMERS", None)
-        if watched is None:
+        if watched is not None:
+            timers.extend(list(watched))
+    # And any the registry missed: every live wx.Timer the frame left armed.
+    timers.extend(obj for obj in gc.get_objects() if isinstance(obj, wx.Timer))
+    for timer in timers:
+        try:
+            if timer.IsRunning():  # type: ignore[attr-defined]
+                timer.Stop()  # type: ignore[attr-defined]
+        except RuntimeError:
             continue
-        for timer in list(watched):
-            try:
-                if timer.IsRunning():
-                    timer.Stop()
-            except RuntimeError:
-                continue
 
 
 def _build(data_dir: Path, monkeypatch: pytest.MonkeyPatch, *, everything: bool) -> list[MenuItem]:
@@ -121,6 +125,7 @@ def _build(data_dir: Path, monkeypatch: pytest.MonkeyPatch, *, everything: bool)
         items = items_from_wx_menu_bar(frame.frame.GetMenuBar())
         _stop_started_timers()
         frame.frame.Destroy()
+        _stop_started_timers()  # and any its teardown armed
     finally:
         set_transition_announcement_policy(None)
         del app

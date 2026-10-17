@@ -114,6 +114,22 @@ now, and Inkwell tells you once after you update.
 **Abbreviations > Manage Abbreviations...** (Ctrl+M) is the full list: search it,
 filter it by category, and add, edit, enable, disable, or delete entries.
 
+**Searching the list.** Type in the search box and the list keeps only the
+abbreviations whose short form, expansion or description holds what you typed.
+The words can come in any order: `address home` finds an expansion that says
+"my home address". The category filter beside it narrows the list further.
+When the search changes, the selection stays on the abbreviation you were on
+if it is still in the list, rather than jumping to whichever one now sits in
+its row.
+
+**Large lists.** The list reads its rows only as you reach them, so a library
+of ten thousand abbreviations opens and filters as quickly as one of ten
+(before October 2026, ten thousand took over three seconds to fill, and again
+after every key typed in the search box). Typing the start of an abbreviation
+while you are in the list moves to it, as in any Windows list; the screen
+reader reads the row and its position, such as "abbr42, 43 of 10000", as
+before.
+
 **Abbreviations > New from Clipboard...** (Ctrl+Shift+N) is the fast path. Copy
 a block of text anywhere, press Ctrl+Shift+N, and Inkwell opens a new entry with
 that text already filled in as the expansion -- you only supply the trigger.

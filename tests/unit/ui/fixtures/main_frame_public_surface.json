@@ -465,6 +465,7 @@
   "open_ai_toc",
   "open_ask_quill_chat",
   "open_ask_quill_conversation",
+  "open_autocorrect_entries",
   "open_braille_ab",
   "open_browse_stations",
   "open_bw_model_manager",

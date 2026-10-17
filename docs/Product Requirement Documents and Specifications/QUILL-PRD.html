@@ -2131,17 +2131,19 @@ images are not extracted.</p>
 the engine choice with speakable outcome descriptions:
 <code>docx_read_engine</code> (auto | markitdown | pandoc — auto is
 MarkItDown-first, then the python-docx render
-(<code>quill/io/docx_text.py</code>: headings, lists, tables), with the
-raw <code>word/document.xml</code> walk as the last resort; the pandoc
-preference degrades to auto when Pandoc is missing, so a preference
-never fails an open) and <code>docx_write_engine</code> (auto | native |
-pandoc — native is the hidden-codes-preserving python-docx writer;
-pandoc maps structure to Word styles and drops run-level
-font/size/color). The Convert File dialog carries a per-operation
-Conversion engine choice (Auto/Pandoc/MarkItDown) whose description
-follows the selection; MarkItDown is honored only where it honestly
-applies (Office/PDF source, Markdown/plain output) and the handler asks
-before substituting Pandoc, never silently. Engine evidence:
+(<code>quill/io/docx_text.py</code>: headings, lists, tables), then the
+standard-library walk in <code>quill/io/office_word.py</code> (the same
+headings, lists and tables, for builds where python-docx cannot import
+because lxml is excluded); the pandoc preference degrades to auto when
+Pandoc is missing, so a preference never fails an open) and
+<code>docx_write_engine</code> (auto | native | pandoc — native is the
+hidden-codes-preserving python-docx writer; pandoc maps structure to
+Word styles and drops run-level font/size/color). The Convert File
+dialog carries a per-operation Conversion engine choice
+(Auto/Pandoc/MarkItDown) whose description follows the selection;
+MarkItDown is honored only where it honestly applies (Office/PDF source,
+Markdown/plain output) and the handler asks before substituting Pandoc,
+never silently. Engine evidence:
 <code>docs/qa/converter-bakeoff.md</code> (2026-07-04) — MarkItDown and
 Pandoc passed the full corpus; the python-docx reader loses
 tables/footnotes/links (fallback only); <strong>pydocx is rejected
@@ -2151,6 +2153,57 @@ decision tree: if a MarkItDown fidelity gap appears, mammoth is the
 candidate and would be bundled (pure-Python; frozen builds cannot
 pip-install at runtime), lazily imported, and offered as a third
 read-engine choice.</p>
+<p><strong>Typed extension, pinned in both editors (2026-10-16, item
+41).</strong> QUILL’s resolver
+(<code>MainFrame._resolve_save_target</code>) gives the typed extension
+precedence over the type list and only uses the selected filter when no
+extension was typed;
+<code>tests/unit/ui/test_save_as_typed_extension_formats.py</code>
+drives <code>save_file_as</code> with the real writers and checks the
+files in their real formats (an untitled document saved as
+<code>.docx</code> and <code>.DOCX</code> reads back through
+python-docx; <code>.txt</code>/<code>.md</code> verbatim;
+<code>.html</code> a page; <code>.rtf</code> RTF; a typed
+<code>.txt</code> under the Word filter stays <code>.txt</code>; no
+extension takes the filter’s; Cancel writes nothing; <code>.xlsx</code>
+is refused; <code>.pdf</code> is routed to Export and never written as
+text). QUILL Lite has no Word writer and no Word reader, so it refuses
+Word names (<code>.docx .docm .dotx .dotm</code>,
+<code>quill/core/lite/filetypes.WORD_SUFFIXES</code>) on Save, Save As
+(before the rich-to-plain question) and the collector’s quiet save,
+naming Rich Text as what Word opens; before this it wrote plain text
+under a <code>.docx</code> name. QUILL Lite writes <code>.html</code>
+verbatim by design (HTML is hand-written there).</p>
+<h5
+id="53a11b-read-only-guard-eds-8-key-memory-and-enforcement-2026-10-16-item-37">5.3a.1.1b
+Read-Only Guard (EDS-8; key, memory and enforcement 2026-10-16, item
+37)</h5>
+<p><strong>Ctrl+Alt+Backspace</strong>
+(<code>power.toggle_read_only_guard</code>, Tools &gt; Advanced) in
+QUILL and QUILL Lite (Tools &gt; Read-Only Guard,
+<code>cmd_toggle_read_only</code>), rule 2. The remembered list is
+<code>quill/core/read_only_guards.py</code>, one per editor’s data
+folder, keyed through <code>DocumentMemory.key_for</code> so every
+per-file memory (bookmarks, last position, notes, the guard) agrees on
+what one file is; older lists are normalised on read. A write that fails
+is reported (“…could not be remembered for next time (reason)”); the
+guard stays on for the session. Enforcement: the control is read-only;
+QUILL’s <code>_replace_document_text</code> and
+<code>_apply_insertion_result</code> raise
+<code>DocumentReadOnlyError</code> and the command registry
+(<code>set_read_only_refusal</code>, so keys, palette, hotkeys and voice
+alike) speaks “Document is read-only”; QUILL Lite refuses
+<code>TEXT_CHANGING_HANDLERS</code> by name at dispatch; word-tool
+replacement refuses through <code>refuse_if_guarded</code>. Not
+affected: caret, selection, Find, Go To, browse navigation, bookmarks,
+and inline notes (kept beside the file while guarded, through the shared
+<code>_host_read_only</code>). An unwritable file opens guarded.
+<strong>Performance:</strong> guarding does not change open time (8 MB:
+<code>SetValue</code> 394 ms, <code>SetEditable</code> 0.02 ms) but
+browse navigation on a guarded document reads <code>document.text</code>
+after one equality check instead of <code>GetValue</code> per key (46.3
+ms to 0.04 ms per heading step on 8 MB). Measurements:
+<code>docs/design/2026-10-16-editor-completion-measurements.md</code>.</p>
 <h5 id="53a12-batch-conversion-wizard">5.3a.1.2 Batch Conversion
 wizard</h5>
 <p><strong>File &gt; Import &gt; Batch Conversion…</strong> and
@@ -4649,10 +4702,29 @@ bound to anything in Preferences &gt; Keyboard Shortcuts.</p>
 (ascending/descending, case-sensitive option, natural-numeric option),
 Remove Duplicate Lines, Reverse Lines, Trim Trailing Whitespace, Convert
 Indent (tabs↔︎spaces), Normalize Whitespace, Wrap to Column N.</li>
-<li><strong>Smart list continuation</strong> (Markdown, opt-in):
-pressing Enter on a <code>-</code>, <code>*</code>, or <code>1.</code>
-line continues the list and increments numeric markers; pressing Enter
-on an empty list item ends the list.</li>
+<li><strong>Smart list continuation</strong>
+(<code>quill/core/list_continuation.py</code>, shared with QUILL Lite;
+updated 2026-10-16). Enter at the end of a <code>-</code>,
+<code>*</code>, <code>+</code>, <code>1.</code> or <code>1)</code> item,
+or a task item, starts the next item with the next marker at the same
+indentation (a numbered task item stays a numbered task item). Enter
+mid-item splits it, dropping the spaces at the split. A new numbered
+item renumbers the following items at the same depth with the same
+separator while they count on from it; numbering the user chose (a jump)
+is left alone, and the walk passes over deeper lines and stops at a
+blank or shallower one. Enter on an empty item removes the marker and
+keeps the line and its newline (it used to join the next line on). The
+change is one write of the changed span, so one undo step. Spoken:
+“Continued list item”, “Continued list item, renumbered N items below”,
+“Exited list”. <strong>When:</strong> Markdown always; plain text only
+with <code>continue_lists_in_plain_text</code> (Settings &gt; Editing,
+<em>Continue lists in plain text</em>, <strong>off by default</strong>)
+and never in a file <code>spellcheck_filetypes.is_code_filename</code>
+names; never in rich text (lists there are <code>ITextPara</code>
+properties, <code>Ctrl+Shift+L</code>) or HTML/YAML. Before 2026-10-16
+QUILL continued lists in every “plain” document unconditionally, which
+<code>infer_markup_kind</code> makes of <code>.py</code>,
+<code>.json</code> and untitled buffers alike.</li>
 <li><strong>Bracket and quote auto-pair</strong> (off by default;
 per-format toggle in Settings). Never enabled in plain text.</li>
 </ul>
@@ -4848,6 +4920,22 @@ Settings.</li>
 Tab expansion. <code>Ctrl+Alt+Space</code> opens Insert Snippet;
 <code>Ctrl+Alt+Shift+Space</code> opens Manage Snippets. Off by default
 in prose, on by default in code. Editable in Settings.</li>
+<li><strong>Named-text lists (2026-10-16, item 45).</strong> The Insert
+Snippet picker (<code>quill/ui/searchable_picker.py</code>, shared by
+Insert HTML Tag and Move Section To) shows at most 200 matches with the
+true count in its status line and, for libraries above that, refills 150
+ms after the last key (Enter and the arrows flush a pending refill
+first); measured fill cost was 0.22-0.3 ms a row, 2.2-3 s for 10,000.
+Snippet, abbreviation and Copy Tray search match the whole query or
+every word in any order (<code>quill/core/list_search.py</code>). The
+Abbreviations manager (QUILL, QUILL Lite, Inkwell) is a virtual report
+list (<code>quill/ui/virtual_report_list.py</code>; native type-ahead
+answered through <code>LVN_ODFINDITEM</code>) that keeps its selection
+by identity. Every <code>apply_listbox_activation</code> list has
+type-ahead through <code>quill.core.type_ahead.TypeAheadBuffer</code>:
+Space while a name is being typed (within 1.2 s) extends the name
+instead of activating the row; Enter activates and Escape closes,
+unchanged.</li>
 <li><strong>Save options</strong> (per document and per workspace): trim
 trailing whitespace on save, ensure final newline, normalise line
 endings on save.</li>
@@ -9423,6 +9511,103 @@ line untouched and Enter behaves normally. Host wiring:
 before Markdown list continuation) →
 <code>QuillinsMenuMixin.dispatch_smart_trigger_line</code>.</p>
 <hr />
+<h3
+id="578b-autocorrect--common-misspellings-corrected-as-you-type-2026-10-16">5.78b
+AutoCorrect — common misspellings corrected as you type
+(2026-10-16)</h3>
+<p>QUILL had typography autoformat (curly quotes, dashes; SET-4) and the
+user’s own abbreviations, and neither is a misspelling corrector.
+AutoCorrect is that feature, shared with QUILL Lite
+(<code>quill/core/autocorrect.py</code>; delivery in
+<code>quill/ui/main_frame_typing_assist.py</code> and
+<code>quill/apps/lite_window_typing_assist.py</code>).</p>
+<p><strong>Opt-in.</strong> <code>autocorrect_misspellings</code>
+(Settings &gt; Editing, <em>Correct common misspellings as I type</em>),
+<strong>off by default</strong> in both editors; in QUILL Lite the
+Autocorrect feature area is also the master switch, as it is for the
+typography rules.</p>
+<p><strong>When it fires.</strong> On a space or Enter (EVT_CHAR_HOOK in
+QUILL, EVT_CHAR / EVT_KEY_DOWN in QUILL Lite), for the word before the
+caret, read from at most 64 characters back (<code>WINDOW</code>; no
+whitespace in that window means no word). The token is trimmed of
+opening (<code>( [ { &lt; " ' “ ‘ * _</code>) and closing
+(<code>. , ; : ! ? ) ] } &gt; " ' ” ’ * _</code>) punctuation, which is
+kept; what remains must be letters with optional internal apostrophes,
+so a URL, email address, path, identifier or anything with a digit never
+matches. A word inside a Markdown code span or fenced block, or a
+URL/email span, is suppressed through
+<code>spellcheck_live.live_alert_suppressed</code>. A word in capitals
+throughout is left alone (acronyms). Prose only
+(<code>autocorrect_allows</code>): never in a file
+<code>is_code_filename</code> names or a literal kind (code, json, yaml,
+toml, ini, conf); plain text, Markdown, rich text and untitled documents
+are corrected, unlike the typography rules, because a corrected word
+cannot break a file format the way a curly quote can.</p>
+<p><strong>Case.</strong> Lower case in, correction as written; an
+initial capital is carried (<code>Teh</code> → <code>The</code>); a
+correction with its own capitals keeps them (<code>febuary</code> →
+<code>February</code>). An entry marked <em>match case</em> fires only
+on the exact typed form and inserts exactly its correction.</p>
+<p><strong>Undo and declining.</strong> The correction, any trailing
+punctuation and the space are written by one
+<code>replace_as_one_undo</code>, so one Ctrl+Z restores the typed word.
+On the next space or Enter, if the corrected word is back as typed at
+the same place (<code>note_declined</code>), its lower-case form joins a
+per-window declined set for the session and it is not corrected again;
+the status line says “Kept X as you typed it”. Enter is never consumed:
+the word is corrected, then list continuation or the control’s new line
+runs.</p>
+<p><strong>Feedback.</strong> The <code>word_corrected</code> earcon
+(<code>cue_typing_assist("autocorrect")</code> in QUILL) and “Corrected
+to X” spoken, because the reader echoes only the space. QUILL also
+records the correction in the edit journal.</p>
+<p><strong>The built-in list.</strong>
+<code>quill/core/data/autocorrect_en.json</code>, 354 pairs of common
+English misspellings, committed as data with its source and rules in the
+file. Every key is rejected by the en_US and en_GB Hunspell dictionaries
+and every word of every correction is accepted by en_US (re-checked by
+<code>tests/unit/core/test_autocorrect.py</code> where pyenchant has
+those dictionaries); real words, surnames and stylistic variants
+(calender, wich, Sargent, everytime) are excluded on purpose.</p>
+<p><strong>User entries, through the shared store.</strong> A user
+correction is an <code>Abbreviation</code> in
+<code>abbreviations.json</code> with the reserved category
+<code>AUTOCORRECT_CATEGORY</code> (“AutoCorrect”); no second file and no
+schema change, so Back Up Settings, the abbreviation-sharing switch in
+QUILL Lite and Manage Abbreviations all see them. A user entry for a
+built-in word overrides it; a disabled entry stops it (a disabled entry
+whose correction equals the built-in one is a plain “stop”); deleting
+the user entry restores the built-in. Every abbreviation matcher
+(<code>try_expand</code>, <code>AbbreviationLibrary.enabled_only</code>,
+<code>find_by_trigger</code>, hence Quick Insert, the snippet gallery
+and Inkwell’s system-wide expansion) skips the category: turning
+abbreviations on never turns corrections on, and corrections work only
+inside QUILL and QUILL Lite.</p>
+<p><strong>AutoCorrect Entries</strong>
+(<code>format.autocorrect_entries</code>, <strong>Insert &gt;
+AutoCorrect Entries…</strong>, <code>Alt+Shift+9</code>; QUILL Lite
+<code>cmd_autocorrect_entries</code>, Tools, same key, rule 2). One
+shared hardened dialog,
+<code>quill/ui/autocorrect_entries_dialog.py</code>:
+<strong>Find</strong> filters by either side;
+<strong>Corrections</strong> is a list box of sentences (“teh becomes
+the, built in”, “…, built in, changed by you”, “…, stopped”),
+Enter/Space/double-click edit; <strong>Add…</strong>,
+<strong>Edit…</strong> (a small <em>AutoCorrect Entry</em> window: word,
+correction, <em>Match case exactly</em>, validated before OK),
+<strong>Turn Off</strong>/<strong>Turn On</strong>,
+<strong>Remove</strong> (deletes yours; restores a changed or stopped
+built-in; on an unchanged built-in it turns it off and says a built-in
+cannot be deleted), and Close (Escape). Inline F1 help on every control;
+every outcome is spoken. The caller saves the library through
+<code>save_abbreviation_library</code> when anything changed.
+Alt+Shift+9 because rule 9 wants a key and every three-modifier F-key is
+a QuillVille launcher or a system-wide show/hide key; Alt+Shift+digits
+were free in both editors and the family and are not AltGr
+characters.</p>
+<p><strong>Limits.</strong> English only. A correction needs a space or
+Enter after the word. Known misspellings only; spell check finds the
+rest.</p>
 <h3 id="579-ask-ai--lightweight-in-editor-ai-chat">5.79 Ask AI —
 lightweight in-editor AI chat</h3>
 <blockquote>
@@ -12440,7 +12625,7 @@ consent dialog.
 
 | Tier | Engine | Handles | Cost / privacy |
 |---|---|---|---|
-| 1 | MarkItDown (`quill/io/markitdown_bridge.py`, the optional `pdf-ocr` extra — not bundled; see &quot;Reader chain and the document-text contract&quot;) | Born-digital DOCX/DOC, PPTX/PPT, XLSX/XLS, HTML, EPUB, CSV, ODT/ODP/ODS | Free, local, no upload |
+| 1 | MarkItDown (`quill/io/markitdown_bridge.py`, the optional `pdf-ocr` extra — not bundled) **when it imports and works**, otherwise QUILL&#39;s own readers (`quill/io/office_text.py`, 2026-10-16; see &quot;QUILL&#39;s own Office readers&quot;) | Born-digital DOCX/DOCM/DOC, PPTX/PPT, XLSX/XLSM/XLS, ODT/ODS/ODP, HTML, EPUB, CSV. MarkItDown is offered only DOCX, PPTX, XLSX, XLS, HTML, EPUB and CSV (it has no OpenDocument or .doc/.ppt reader); any exception from it, including the magika/onnxruntime `ImportError` of a shipped build, falls through | Free, local, no upload |
 | 1 (PDF) | QUILL&#39;s PDF reader (`quill/io/pdf.py`: pdfplumber, then pypdf; bundled) via `convert_pdf_text_layer` | PDFs with a text layer. Never MarkItDown: the shared runtime freezes it in but excludes `onnxruntime`, so it cannot import in a shipped build (2026-10-15) | Free, local, no upload |
 | 2 | Local Tesseract OCR (`quill/io/tesseract_ocr.py`) | Images (PNG/JPG/TIFF/BMP/GIF/WebP) and image-based PDFs; CPU-only, no GPU | Free, local, no upload |
 | 2 (Windows) | Windows OCR (`Windows.Media.Ocr` via the frozen-in `winrt` packages; `quill/io/docconvert_windows.py`, 2026-10-15) | The same pages, when Tesseract is not installed: no download. Reports no confidence, so nothing is flagged weak. A build without `winrt` answers a sentence, never an ImportError | Free, local, no upload |
@@ -25550,6 +25735,122 @@ list styles and direct <code>w:numPr</code> numbering, tables as GFM)
 with the XML walk kept as the last resort
 (<code>read_docx_xml_text</code>). The read chain is therefore:
 MarkItDown when present → python-docx → raw XML.</p>
+<h3 id="quills-own-office-readers-todo-p1-4b-shipped-2026-10-16">QUILL’s
+own Office readers (todo P1 4b, shipped 2026-10-16)</h3>
+<p><strong>The defect.</strong> Import / Convert Document sent every
+Word, Excel and PowerPoint file to MarkItDown, and in a shipped build
+MarkItDown cannot import: the shared QuillVille runtime freezes
+<code>markitdown</code> and <code>magika</code> in but excludes
+<code>onnxruntime</code>, which magika imports at module top. Every
+Office import failed with “The free local converter (MarkItDown) is not
+installed”, pointing at the “PDF and Office text extraction” download —
+which could not help, because the frozen copy shadows the downloaded one
+and <code>find_spec('markitdown')</code> keeps answering “installed”.
+The same runtime excludes <code>lxml</code>, so python-docx cannot
+import there either, and File &gt; Open fell to the flat paragraph walk
+for Word. PDFs were fixed first (<code>convert_pdf_text_layer</code>,
+2026-10-15).</p>
+<p><strong>The decision (Jeff, 2026-10-16): Office files get a path that
+needs no MarkItDown.</strong> <code>quill/io/office_text.py</code> is
+the one entry point:</p>
+<ul>
+<li><code>read_office_text(path)</code> never touches MarkItDown. Word:
+python-docx when it imports, else <code>office_word.read_docx_xml</code>
+(body order; heading levels from the style <em>name</em> looked up in
+<code>styles.xml</code>, <code>Title</code>/<code>Subtitle</code>, or
+direct <code>w:outlineLvl</code>; list items and levels from
+<code>w:numPr</code>, bullets vs numbers from
+<code>numbering.xml</code>; tables as GFM with pipe escaping;
+<code>w:br</code> as a backslash hard break;
+<code>wp:docPr/@descr</code> as <code>[Image: ...]</code>;
+<code>mc:Fallback</code> skipped so drawings are not read twice;
+<code>w:delText</code> and field codes never read). Excel: openpyxl
+(read-only, cached values) else <code>office_sheets</code> over the
+workbook XML (shared and inline strings, booleans, and dates recognised
+from <code>cellXfs</code> number formats, built-in 14–22 and 45–47 or a
+custom code with d/m/y/h/s outside quotes). PowerPoint:
+<code>office_slides</code> in presentation order
+(<code>ppt/presentation.xml</code> <code>sldIdLst</code> through its
+rels, file-number order only as a fallback),
+<code># Slide N: Title</code>, bullets by <code>lvl</code>, tables under
+<code>## Tables</code>, picture <code>descr</code>, hidden slides
+marked, speaker notes under <code>## Notes</code> (the notes page’s
+slide-image and number placeholders skipped). OpenDocument
+<code>.odt</code>/<code>.ods</code>/<code>.odp</code> from
+<code>content.xml</code>, with
+<code>number-rows-repeated</code>/<code>number-columns-repeated</code>
+honoured only for cells that hold something (a blank repeated 1,048,570
+times is “nothing more”).</li>
+<li><code>read_office_text_preferring_markitdown(path)</code> tries
+MarkItDown for the formats it reads and falls back on
+<strong>any</strong> exception or an empty result; the reason (the root
+<code>ImportError</code> text, e.g. “No module named ‘onnxruntime’”) is
+kept as <code>markitdown_failure</code> for provenance, never shown as
+the error. Nothing consults <code>find_spec</code>.</li>
+<li>Legacy <code>.doc</code>/<code>.xls</code>/<code>.ppt</code>:
+LibreOffice converts a temporary copy (now found in
+<code>%ProgramFiles%\LibreOffice\program</code> on Windows as well as on
+PATH and in the macOS app bundle) and the copy is read as above,
+recorded as <code>conversion_engine: libreoffice</code>; without
+LibreOffice, <code>LegacyOfficeFormatError</code>
+(<code>QUILL-IO-OFFICE-LEGACY</code>) carries one paragraph naming the
+Save As type that fixes it (“Word Document (.docx)”) and
+libreoffice.org. MarkItDown is no longer asked for
+<code>.doc</code>/<code>.ppt</code>; it has no reader for them.</li>
+<li>An OLE compound file under an OOXML name is reported as
+password-protected (with <strong>File &gt; Info</strong> as the fix); a
+broken zip or XML as damaged. Both are <code>OfficeReadError</code>
+(<code>QUILL-IO-OFFICE-UNREADABLE</code>), whose <code>.sentence</code>
+is what the user hears.</li>
+<li>Bounds (PERF-11): 2,000 rows × 50 columns per sheet, up from 50 ×
+20; a sheet cut short adds a note to <code>extraction_notes</code>,
+which the open announcement mentions and the Document Intake Report
+names.</li>
+</ul>
+<p><strong>Provenance.</strong> <code>OfficeText.metadata()</code> gives
+<code>engine</code> (<code>markitdown</code>, <code>python-docx</code>,
+<code>word-xml</code>, <code>openpyxl</code>, <code>sheet-xml</code>,
+<code>slide-xml</code>, <code>odf-xml</code>), <code>reader</code> in
+words (“QUILL’s own Excel reader”, “, after LibreOffice converted it”),
+<code>units</code> (“2 sheets”), <code>conversion_engine</code>,
+<code>extraction_notes</code> and <code>markitdown_failure</code>.
+<code>build_intake_summary</code> says “read by <reader>. <units>”
+instead of an engine name, and <code>build_intake_report</code> lists
+all of it. Import / Convert records the new <code>TIER_OWN_READER</code>
+(“own-reader”) with <code>ConversionOutcome.engine/reader/units</code>,
+announces “Opened X as editable text, read by QUILL’s own Excel reader.
+2 sheets. Nothing was uploaded.”, and lists the reader in Review Last
+OCR Result. The <code>extraction_pack_missing</code> hint is now stamped
+only for a PDF or an <code>.xls</code> nothing could read; a good Office
+read no longer points at a download.</p>
+<p><strong>Every entry point.</strong> Import / Convert Document
+(<code>docconvert.convert_born_digital</code>, which also gives
+HTML/EPUB/CSV the same fallback through <code>read_markup_text</code>),
+File &gt; Open and the watch folder
+(<code>structured.read_structured_document</code>, Word behind the
+Pandoc preference), Convert File’s MarkItDown engine
+(<code>markitdown_or_own_reader</code>, which names the stand-in reader
+in the announcement and reads a PDF with QUILL’s PDF reader), the AI
+Action Builder’s reference files, and <code>.pages</code> Route B (which
+also looked for a <code>converted.docx</code> LibreOffice never writes;
+it now reads <code>&lt;stem&gt;.docx</code>). QUILL Lite had no
+MarkItDown entry point; it decoded a <code>.docx</code> as Latin-1. It
+now opens exactly QUILL’s File &gt; Open Office set
+(<code>open_prepare.OFFICE_OPEN_SUFFIXES</code> ⊆
+<code>open_read.OFFICE_STREAM_SUFFIXES</code>, asserted) through the
+same reader on its worker, and refuses to save over them
+(<code>is_read_only_source</code>), since it cannot write a real
+<code>.docx</code>.</p>
+<p><strong>Tests.</strong>
+<code>tests/corpus/office/build_office_corpus.py</code> writes the
+fixtures (python-docx, openpyxl, python-pptx; ODF by hand; two OLE-magic
+stand-ins); <code>tests/unit/io/test_office_corpus.py</code> reads them
+through both reader tiers and simulates the shipped build
+(<code>onnxruntime</code> blocked so <code>import markitdown</code>
+fails, <code>find_spec</code> patched to say “installed”) through Import
+/ Convert, File &gt; Open, Convert File and the intake report;
+<code>tests/unit/apps/test_lite_office.py</code> covers QUILL Lite with
+its excluded packages blocked.</p>
 <p><strong>Packaging: the lean half ships, the heavy half stays
 optional.</strong> Bundling the whole <code>pdf-ocr</code> extra was
 measured, not assumed: MarkItDown hard-requires <code>magika</code>,

@@ -1335,22 +1335,93 @@ tables) becomes real Word styles, so you can move around the result in Word by
 heading, not just look at it. Saving plain text this way gives you a correct but
 unformatted document, because plain text has no structure to carry.
 
+**How long opening takes.** The first Word, PowerPoint or Excel file you open
+after starting QUILL takes longest, because QUILL loads its document converter
+then; later ones in the same session open in under a second for an ordinary
+document. Old-style Word files (`.doc`, from Word 97 to 2003) are converted by
+LibreOffice when it is installed. When it is not, QUILL now tells you so
+straight away, instead of first spending ten seconds or more loading a
+converter that cannot read `.doc` at all. Install LibreOffice, or save the file
+as `.docx` from Word, and open it again. A PDF's time grows with its number of
+pages, because every page is read for its text.
+
 #### EPUB
 
 EPUB books get the navigator and reading chapter by chapter.
 
 #### PowerPoint (.pptx and .ppt)
 
-QUILL keeps a presentation's structure when it brings it in. Slide titles become
-headings, bullets become nested list items, tables become text tables you can
-Tab through, and speaker notes come along when there are any.
+QUILL keeps a presentation's structure when it brings it in. Every slide starts
+with its own heading, "Slide 3: Quarterly results" (just "Slide 3" when the
+slide has no title), so **Next Heading** (`Ctrl+Alt+H`) moves one slide at a
+time and you hear the slide number before the title. Under each heading:
+
+- the slide's bullets, as list items indented by their level;
+- any tables, under a **Tables** heading, as text tables you can Tab through;
+- the description of each picture, as "[Image: ...]", when the author wrote one;
+- the speaker notes, under a **Notes** heading.
+
+Slides arrive in the order the presentation shows them, even when they were
+rearranged in PowerPoint. A hidden slide is included and says "(hidden slide)"
+after its title, because its words are still the author's.
 
 #### Excel-style spreadsheets (.xlsx and .xls)
 
-Spreadsheets come in as text, with their structure kept. QUILL lays each sheet
-out as readable table text, so you can look through the content quickly. If
-optional converters are installed, older and mixed-format files come through
-better.
+Spreadsheets come in as text, with their structure kept. Each sheet starts with
+its own heading, "Sheet: Budget", so **Next Heading** (`Ctrl+Alt+H`) moves
+sheet by sheet. The cells follow as a text table whose first row is the header
+row. Numbers read the way you would say them (950, not 950.0), true and false
+as TRUE and FALSE, and dates as dates (2026-11-01, not the number Excel stores).
+A formula shows the result Excel last calculated. Blank rows are left out.
+
+So that a huge workbook cannot freeze QUILL, each sheet is read up to 2,000
+rows and 50 columns. When a sheet is bigger, QUILL opens what fits and says so
+as the file opens ("part of it was too large and was cut short"), and the
+**Document Intake Report** names the sheet.
+
+#### Office files QUILL reads by itself
+
+QUILL reads Word, Excel, PowerPoint and OpenDocument files with its own
+built-in readers. Nothing has to be downloaded first, and nothing is uploaded.
+Where the optional MarkItDown converter can run on your computer, QUILL asks it
+first; where it cannot (the installed apps leave out a part it needs), QUILL's
+own reader does the job and never tells you to install anything.
+
+| Format | How to open it | What comes through |
+| --- | --- | --- |
+| Word (.docx, .docm) | **File > Open** (`Ctrl+O`) or **Import / Convert Document** | Headings, bulleted and numbered lists with their levels, tables, line breaks, picture descriptions |
+| OpenDocument text (.odt) | **File > Open** or **Import / Convert Document** | Headings, nested lists, tables, line breaks |
+| Excel (.xlsx) | **File > Open** or **Import / Convert Document** | One heading per sheet; each sheet as a table |
+| Excel with macros (.xlsm), OpenDocument spreadsheet (.ods) | **Import / Convert Document** | The same |
+| PowerPoint (.pptx) | **File > Open** or **Import / Convert Document** | One heading per slide; bullets, tables, picture descriptions, speaker notes |
+| OpenDocument presentation (.odp) | **Import / Convert Document** | The same |
+| Word, Excel or PowerPoint 97-2003 (.doc, .xls, .ppt) | Either, when LibreOffice is installed | Whatever LibreOffice carries into the newer format, then as above |
+
+What does not come through: bold, italic, fonts and colours; headers and
+footers; footnotes and comments; charts and SmartArt; and pictures themselves
+(only the descriptions their authors wrote). A macro is never run.
+
+**An example.** Press `Ctrl+O` and open `Budget.xlsx`. QUILL says it opened the
+file, "read by QUILL's own Excel reader", and that it has 2 sheets. The
+document starts at "Sheet: Budget". Press `Ctrl+Alt+H` and you are on
+"Sheet: Notes". Open the same file with **File > Import > Import / Convert
+Document (OCR)...** instead and it opens in a new, unsaved tab, and QUILL says
+"Opened Budget.xlsx as editable text, read by QUILL's own Excel reader.
+2 sheets. Nothing was uploaded."
+
+**Older Office files (.doc, .xls, .ppt).** QUILL has no reader of its own for
+the Office 97-2003 formats. When LibreOffice (free, from libreoffice.org) is
+installed, QUILL asks it to make a temporary copy in the newer format and reads
+that; your file is not changed. When LibreOffice is not installed, QUILL tells
+you what to do instead: open the file in Word, Excel or PowerPoint (or in
+LibreOffice), choose **File > Save As**, pick the newer type (for example
+"Word Document (.docx)"), and open that copy.
+
+**Files QUILL cannot read.** A password-protected Word, Excel or PowerPoint file
+is named as password-protected, with the fix: remove the password in the
+program that made it (in Word, the Info page of its File menu), save, and try again. A damaged file is
+named as damaged, with the advice to open it in the program that made it and
+save it again.
 
 #### PDF and OCR-derived text
 
@@ -1401,6 +1472,41 @@ presentation, what you are editing is text taken out of it, and the original
 file cannot hold your changes. Pressing `Ctrl+S` on one of these never
 overwrites the original. QUILL explains why and opens Save As, so your edits go
 into a new file in a format that can hold them.
+
+#### The name you type decides: a worked example
+
+The ending you type always wins over the **Save as type** list, and capitals do
+not matter. Suppose you have an untitled document of meeting minutes with a
+heading, some bold and a short list:
+
+1. Press `Ctrl+Shift+S` (**File > Save As...**).
+2. Type `Minutes.DOCX` in the name box. The type list can show anything; it is
+   the name that counts.
+3. Press Enter. QUILL writes a real Word document: Word opens it, the heading
+   is a Word heading you can move to by heading, the bold is bold, and the list
+   is a list. You hear "Saved as Minutes.DOCX, Word format. You are still
+   editing QUILL text; each save converts it to Word."
+
+The same document saved under other names:
+
+| You type | What is written |
+|---|---|
+| `minutes.txt` or `MINUTES.TXT` | Your text exactly as it is, markup included |
+| `minutes.md` | Your text exactly as it is |
+| `minutes.html` | A complete web page, with the heading, bold and list as HTML |
+| `minutes.rtf` | Rich text with its formatting |
+| `minutes.docx` | A real Word document, as above |
+| `minutes` with **Word Document** selected | `minutes.docx`, a Word document |
+| `minutes.txt` with **Word Document** selected | `minutes.txt`, plain text: the typed ending wins, and no `minutes.txt.docx` is made |
+| `minutes.pdf`, `.odt` or `.epub` | Nothing yet: QUILL offers **File > Export**, which makes these properly |
+| `budget.xlsx` or another format QUILL only reads | Nothing: QUILL says it cannot save that format |
+
+**Cancel** or **Escape** in the Save As window writes nothing and leaves the
+document as it was.
+
+QUILL Lite has no Word writer. Typing a `.docx` name there gets a short message
+saying so and naming Rich Text (`.rtf`), which Word opens; nothing is written.
+Use QUILL when you need a `.docx`.
 
 #### What carries over between formats
 
@@ -1467,7 +1573,9 @@ when they don't.
 
 - **Word document reading engine** (**Settings > Editing**) decides how a
   `.docx` becomes editable text when you open it. **Auto** (the default) tries
-  MarkItDown first and falls back to a plain extract. **MarkItDown** is fast and
+  MarkItDown first and, when MarkItDown cannot run on this computer, uses
+  QUILL's own Word reader, which keeps headings, lists and tables just the
+  same. **MarkItDown** is fast and
   reliable: headings, lists and tables come through, but images, comments and
   fonts do not. **Pandoc** keeps more of the structure, so footnotes and complex
   tables come through better. It needs Pandoc installed. If Pandoc is missing,
@@ -1485,7 +1593,10 @@ when they don't.
   before you convert. MarkItDown only works when the source is Word, PowerPoint,
   Excel or PDF and the result is Markdown or plain text. If you choose it for
   anything else, QUILL says so and offers Pandoc. It never swaps in an engine
-  you did not pick.
+  you did not pick. If MarkItDown itself cannot run on this computer, QUILL's
+  own reader converts the file instead and the announcement says so, for
+  example "Converted to report.md. MarkItDown could not run here, so QUILL's
+  own Word reader read the file instead."
 
 ### Import and Export
 
@@ -1667,9 +1778,16 @@ without your say-so.
 
 Here is how a conversion goes:
 
-1. **The free local converter runs first.** Word, PowerPoint, Excel, HTML, EPUB,
-   and PDFs that already contain text convert straight away on your computer and
-   open as clean, editable text. No account, no key, no upload and no cost.
+1. **The file's own text is read first.** Word, Excel, PowerPoint,
+   OpenDocument, HTML, EPUB, CSV, and PDFs that already contain text convert
+   straight away on your computer and open as clean, editable text in a new
+   tab. No account, no key, no upload, no cost, and nothing to download: QUILL
+   has its own reader for every one of these (see "Office files QUILL reads by
+   itself"). Where the optional MarkItDown converter can run, QUILL asks it
+   first; where it cannot, QUILL's own reader steps in. Either way QUILL says
+   who read the file and what it found, for example "Opened Budget.xlsx as
+   editable text, read by QUILL's own Excel reader. 2 sheets. Nothing was
+   uploaded." **Review Last OCR Result...** lists the same facts afterwards.
    A PDF is read by the same PDF reader **File > Open** uses, so its pages come
    through with their page breaks, and QUILL tells you how many pages it read.
 2. **A scanned document is noticed, not dumped on you.** If a PDF comes back
@@ -1697,6 +1815,14 @@ extraction" item in its list) instead of claiming it is scanned. The installed a
 this only happens with a pip or source install. A *password-protected* PDF is
 handled separately, as described next: Import / Convert Document tells you to
 open it with **File > Open**, which asks for the password.
+
+Office files get the same kind of plain message. A password-protected Word,
+Excel or PowerPoint file is named as password-protected, with the fix. An Office
+97-2003 file (.doc, .xls or .ppt) is read through LibreOffice when it is
+installed; when it is not, QUILL tells you to save it in the newer format from
+Word, Excel, PowerPoint or LibreOffice and import that copy. Earlier versions
+said "MarkItDown is not installed" for every Office file in the installed app,
+and the download it pointed to could not fix it. That message is gone.
 
 #### Opening a scanned PDF with File > Open
 
@@ -2996,6 +3122,30 @@ To set up and look after snippets:
 Snippets can have blanks such as `${input:name}`, `${choice:a|b}`, `${date}`,
 `${time}` and `${cursor}`.
 
+**Finding a snippet by name.** In **Insert Snippet**, type any part of a
+snippet's name, trigger or text, spaces included, and the list narrows as you
+type. The words can come in any order: `notes meeting` finds "Meeting notes
+for Tuesday" and "Notes from the meeting". Snippets whose name starts with
+what you typed come first. Press Down Arrow to move into the list, Enter to
+insert the top match or the one you are on, and Escape to cancel. The
+Abbreviations manager's search box and **Search Tray Slots** match words in any
+order in the same way.
+
+**Large libraries.** With thousands of snippets, the list shows the first 200
+matches, and the line above it says how many matched in all, for example
+"4,980 matches; showing the first 200. Type more to narrow them." Every
+snippet is still reachable: type a little more of its name. QUILL also waits
+until you pause typing before it refills a long list, so typing a whole name
+fills it once instead of after every letter. Enter never acts on an
+out-of-date list.
+
+**Typing a name in a list.** In lists you arrow through, such as Copy Tray,
+Open Recent, bookmarks and most other pick-one lists, you can type the start of
+a row's name, spaces included, to move to it. While you are typing a name,
+Space is part of the name; after a pause of about a second, Space on its own
+opens the selected row as before. Enter always opens the row and Escape always
+closes the list.
+
 #### Date and time
 
 **Date and Time** (`F5`) types the time and date at the caret and reads it
@@ -3279,6 +3429,111 @@ command instead.
   wins.
 - Export your library now and then, as a backup and to copy it to another
   computer.
+
+### AutoCorrect: fixing common misspellings as you type
+
+AutoCorrect fixes the misspellings almost everybody makes, the moment you
+finish the word. Type `teh` and a space, and QUILL changes it to `the `. Type
+`recieve` and press `Enter`, and it becomes `receive` before the new line
+starts. You hear the word-corrected sound and QUILL says "Corrected to the",
+because your screen reader only echoes the space you typed and would otherwise
+never tell you the word changed.
+
+**It is off to begin with**, like everything else that changes your text
+without being asked. Turn it on in **Settings > Editing > Correct common
+misspellings as I type** (`Ctrl+,` opens Settings; type "misspell" in its
+search box to jump there). QUILL remembers the choice.
+
+#### What it corrects
+
+QUILL ships a list of about 350 common English misspellings, such as `teh`,
+`recieve`, `seperate`, `definately`, `occured`, `untill`, `wierd` and
+`adress`. Every one was checked against two English dictionaries (American
+and British) before it went in: a word that is spelled correctly in either is
+never on the list, and neither is a word that is also a real word or a name,
+such as `calender` (a machine for pressing cloth) or `Sargent`.
+
+QUILL keeps your capital letters. Some examples:
+
+- `teh ` becomes `the `, and `Teh ` at the start of a sentence becomes
+  `The `.
+- `febuary ` becomes `February `, because the correction has its own capital.
+- `(recieve, ` becomes `(receive, `. Brackets, quotes and punctuation around
+  the word stay where they were.
+- `TEH ` is left alone. A word typed all in capitals is far more often an
+  abbreviation or an acronym than a mistake.
+
+#### What it never touches
+
+AutoCorrect looks only at a whole word that a space or `Enter` has just ended.
+It never changes:
+
+- **Code and settings files.** Nothing is corrected in a file whose name
+  marks it as code or configuration (`.py`, `.json`, `.yaml`, `.ini`, `.html`,
+  `.csv` and the rest), the same list that keeps spell-check-as-you-type
+  quiet in those files. Plain text (`.txt`), Markdown, rich text and new
+  untitled documents are all corrected.
+- **Web addresses, email addresses and paths.** A word with a full stop,
+  slash, colon, `@`, digit or underscore inside it is never a misspelling, so
+  `teh.example.com`, `adress@example.com` and `my_recieve_function` stay
+  exactly as typed.
+- **Code inside prose.** In a Markdown document, nothing inside backticks or
+  inside a fenced code block is corrected.
+
+#### Taking a correction back
+
+`Ctrl+Z` straight after a correction puts back exactly what you typed (the
+correction and the space are one undo step). QUILL then leaves that word alone
+in this window for the rest of the session: type the space again and the word
+stays the way you wrote it, and the status line says "Kept teh as you typed
+it". If you never want a correction again, turn it off in AutoCorrect Entries,
+below.
+
+#### AutoCorrect Entries (Alt+Shift+9)
+
+**Insert > AutoCorrect Entries...** (`Alt+Shift+9`) shows every correction,
+the built-in ones and your own, one per row, read as a sentence: "teh becomes
+the, built in". It is the same window, on the same key, in QUILL Lite.
+
+- **Find** narrows the list as you type. Type `rec` and only the corrections
+  with `rec` in the misspelling or the correction remain.
+- **Corrections** is the list. `Enter` or `Space` on a row edits it.
+- **Add...** makes a correction of your own. You type the word as you
+  mistype it, what it should become, and whether case must match exactly.
+  For example, add `qill` becoming `QUILL`, or `adn` becoming `and` if it is
+  not already there. The word to correct must be letters only (an apostrophe
+  inside is fine); what it becomes can be several words.
+- **Edit...** changes the row you are on. Editing a built-in correction saves
+  your version beside it, and the row then says "built in, changed by you".
+- **Turn Off** stops the correction you are on without deleting it; the row
+  then ends in "stopped", and the same button, now **Turn On**, starts it
+  again. This is the answer when a correction keeps changing a word you meant.
+- **Remove** deletes a correction of yours. On a built-in correction you
+  changed or turned off, it puts it back the way QUILL shipped it. A built-in
+  correction cannot be deleted, so Remove on one turns it off instead and
+  tells you so.
+
+Every button says what it did. Your changes are kept when you close the window
+with **Close** or `Escape`.
+
+#### Where your corrections are kept
+
+Your corrections are kept with your abbreviations, in the same
+`abbreviations.json` file in QUILL's data folder, under the category
+**AutoCorrect**. So **Back Up Settings** carries them, and you can see them in
+**Manage Abbreviations** too (choose the AutoCorrect category). They are not
+abbreviations, though: they never expand while only Abbreviation Expansion is
+on, they do not appear in Quick Insert, and Quill Inkwell does not type them in
+other programs. AutoCorrect works inside QUILL and QUILL Lite.
+
+#### Limits
+
+- The built-in list is English only.
+- A correction happens when a space or `Enter` ends the word. A word followed
+  only by a full stop at the very end of your document is corrected when you
+  type the space after the full stop.
+- AutoCorrect fixes known misspellings, not every misspelling. Spell check
+  (`F7`) and spell-check-as-you-type still find the rest.
 
 ### Insert Automation
 
@@ -3564,6 +3819,12 @@ feature itself is. These are the rest:
   ones as you type. Off to begin with.
 - **Autoformat double hyphen to dash** turns two hyphens into a dash as you
   type. Off to begin with.
+- **Correct common misspellings as I type** turns on AutoCorrect, which
+  changes `teh` to `the` when you type the space after it. Off to begin with;
+  Chapter 4's AutoCorrect section has the details.
+- **Continue lists in plain text** makes `Enter` continue a list in a plain
+  text document the way it always does in Markdown. Off to begin with; see
+  Typing in a list in Chapter 5.
 - **Multi-press time window (ms)** is how long QUILL waits for a second or
   third press of the same key before it treats the first as a single press.
   It matters for the Copy Tray and Command Palette keys that do something
@@ -3973,12 +4234,34 @@ document QUILL says the command is unavailable.
 
 #### Typing in a list
 
-Markdown lists behave the way they do in other editors:
+Markdown lists behave the way they do in other editors, and QUILL tells you
+what `Enter` did, because your screen reader only hears a new line:
 
-- `Enter` continues the current bullet, numbered or task item.
-- `Enter` on an empty list marker ends the list.
+- `Enter` at the end of an item starts the next one with the next marker: a
+  hyphen after a hyphen, `3. ` after `2. `, `3) ` after `2) `, and an unchecked
+  `- [ ] ` after any task item. The item's indentation is kept, so a nested
+  item continues at its own depth. QUILL says "Continued list item".
+- `Enter` in the middle of an item splits it there. In `1. bread milk`, with
+  the cursor before `milk`, `Enter` gives `1. bread` and `2. milk`.
+- A new numbered item renumbers the items below it while they still count on
+  from it, so adding an item after the first of `1. 2. 3.` gives `1. 2. 3. 4.`
+  and QUILL says "Continued list item, renumbered 2 items below". A list that
+  jumps (from `2.` to `7.`, say) keeps your numbering from the jump on.
+- `Enter` on an empty list marker ends the list: the marker goes, the empty
+  line stays, and QUILL says "Exited list".
+- `Ctrl+Z` straight afterwards takes back the new line, its marker and any
+  renumbering in one step.
 - On a list item, `Tab` nests it one level deeper and `Shift+Tab` brings it
   back out.
+
+**Plain text** does this only if you ask: turn on **Settings > Editing >
+Continue lists in plain text**. It is off to begin with because, in a `.txt`
+file or a new untitled note, a line that happens to start with `1.` is as often
+a date, a version number or a paragraph you are numbering by hand. Even with
+the setting on, QUILL never continues a list in a code or settings file. In a
+rich text document (`.rtf`, `.docx`) lists are formatting rather than
+characters, and `Ctrl+Shift+L` makes them; `Enter` there is the word
+processor's own.
 
 For bigger changes, open **Insert > List > List Manager...**
 (`Ctrl+Shift+Grave, L`). It shows your list as a tree, where you can move,
@@ -4612,7 +4895,7 @@ the same keys, so what you learn in one editor works in the other.
 Both folder commands open one window. Fill in the **Starting folder** (it
 starts as the folder of the document you have open), a **File pattern** such
 as `*.md` or `*.txt`, and the **Search text**. Under **Match mode** choose
-Plain text, Wildcard or Regular expression, and tick **Case sensitive** or
+Plain text, Wildcard or Regular expression, and check **Case sensitive** or
 **Whole word** if you need them. **Output format** decides how much the results
 tell you: filenames only, filenames with line numbers and counts, counts only,
 or each filename with the matching lines around it. Replace Across Files adds a
@@ -4626,7 +4909,7 @@ and press Enter. QUILL searches in the background, then opens the results in a
 new tab and tells you, for example, "Search complete: 7 match(es) in 3
 file(s)". Arrow through the tab to hear each file and line. If she has
 changed her name, press `Ctrl+Shift+R` instead, fill in the replacement, keep
-Preview before replacing ticked, read the preview tab, and answer Yes.
+Preview before replacing checked, read the preview tab, and answer Yes.
 
 Search in Files reads files only; Replace Across Files changes files on disk
 that are not open in QUILL, so keep the preview on until you are sure of your
@@ -6222,6 +6505,64 @@ transcription, covers them properly.
 
 For the complete reference (every voice mode, every spoken command, and the
 privacy rules) see [Voice Interaction](voice-interaction.md).
+
+### Reading without changing anything: the Read-Only Guard
+
+When you open a document only to read it, such as a manual, a long book or
+minutes you must not alter, one stray key can change it, and a `Ctrl+S` later
+saves the change. The **Read-Only Guard** locks the document against edits
+while you read.
+
+Press `Ctrl+Alt+Backspace`, or choose **Tools > Advanced > Toggle Read-Only
+Guard**. You hear "Document is read-only". Press it again to hear "Document is
+editable".
+
+While the guard is on:
+
+- Typing, `Backspace`, `Delete`, `Enter` and pasting do nothing.
+- Commands that change text say "Document is read-only" on the status bar and
+  change nothing: snippets, the line tools, case changes, Copy Tray pastes,
+  Markdown and HTML inserts, and a thesaurus or dictionary **Replace**, among
+  others. They stop *before* they say anything, so you never hear "Inserted
+  snippet" about a snippet that was not inserted.
+- Reading and moving work as always: the arrow keys, Find (`Ctrl+F`), Go To
+  (`Ctrl+G`), browse-mode navigation by heading, paragraph and link, selecting
+  and copying, Read Aloud.
+- **Bookmarks** work as usual. They are kept beside the document, not inside
+  it, so setting one never changes the file.
+- **Document notes** work too. A note you add with **Add Inline Note**
+  (`Alt+Shift+I`) while the guard is on is kept beside the file instead of
+  written into it, and `Alt+Shift+J` and `Alt+Shift+K` still move between
+  notes.
+
+QUILL **remembers** the guard for that file. Close QUILL, open the same file
+tomorrow by double-clicking it in File Explorer, from **Open Recent** or with
+`Ctrl+O`, and it opens locked again, even if File Explorer spells the folder
+with different capitals. QUILL Lite has the same guard on the same key, with
+its own list.
+
+If QUILL cannot write down that you locked the file, for example because its
+settings folder is on a full disk, the document is still locked for now and
+you hear why:
+
+> Document is read-only for now, but it could not be remembered for next time
+> (There is not enough space on the disk).
+
+An untitled document cannot be remembered either, because it has no file name
+yet. Save it first if you want the lock to stay.
+
+A file Windows marks read-only, or one on a share you cannot write to, opens
+locked as well, and QUILL says so as it opens. Turn the guard off to type
+anyway, then save under a new name.
+
+**Long documents.** Locking a document does not make it open faster: the text
+still has to be put into the editor, which for an eight-megabyte book takes
+about four tenths of a second on a fast computer. What the guard does speed up
+is moving around. Because a locked document cannot change, browse-mode keys
+(next heading, next paragraph, next link) read QUILL's own copy of the text
+instead of copying the whole document out of the editor on every key. On that
+eight-megabyte book a heading jump went from about 46 milliseconds to well
+under one.
 
 ### Tools for Reading, Review, and Inspection
 
@@ -9703,10 +10044,13 @@ travels with you on the drive.
 The list puts the most important first:
 
 - **Pandoc**: document conversion for Word, ODT, EPUB and RTF.
-- **PDF and Office text extraction** (MarkItDown, pdfplumber and pypdf): lets
-  Import read the text out of Word, PowerPoint, Excel and PDF documents
-  without Pandoc or LibreOffice. Scanned or image-only PDFs still need
-  **File > Import > Import / Convert Document (OCR)...** either way.
+- **PDF and Office text extraction** (MarkItDown, pdfplumber and pypdf): an
+  optional second reader for Word, PowerPoint, Excel and PDF documents. You do
+  not need it: QUILL reads all of these with its own readers. Where MarkItDown
+  can run, File > Open and Import / Convert Document try it first. In some
+  builds it cannot run at all (it needs a part the installer leaves out), and
+  then QUILL's own readers do the work and nothing asks you to download it.
+  Scanned or image-only PDFs still need **File > Import > Import / Convert Document (OCR)...** either way.
 - The **braille translation pack**: liblouis tables and BRF profiles for the
   Translation submenu and for BRF and embossing export.
 - **Dictation (offline speech)**: a guided setup covering Whisper.cpp, Faster
@@ -12979,8 +13323,10 @@ there.
 
 #### Editor utilities
 
-- **Toggle Read-Only Guard** stops accidental edits to a document you are
-  reviewing.
+- **Toggle Read-Only Guard** (`Ctrl+Alt+Backspace`) stops accidental edits to a
+  document you are reviewing, and is remembered for that file. Bookmarks and
+  notes keep working. Chapter 8, Reading without changing anything, has the
+  details.
 - **Toggle Clipboard Collector** and **Collect Clipboard Now** gather
   clipboard entries into a running log in the open document. This works
   system-wide, the way EdSharp did: while the collector is on, anything you
@@ -13059,7 +13405,10 @@ writes a heading such as "PDF Extract", or the name of the engine, into the
 file you are reading. Everything about *how* it was read (format, engine,
 pages, quality score, which reader each PDF page's text came from, and the
 pages that may read poorly, with the reason for each) is in the **Document
-Intake Report**, and the short version is announced when the file opens.
+Intake Report**, and the short version is announced when the file opens. For a
+Word, Excel or PowerPoint file the report also says which reader read it, how
+many sheets or slides it has, which sheet was cut short if one was, and, when
+MarkItDown was tried and could not run, why.
 
 #### Shell Integration
 

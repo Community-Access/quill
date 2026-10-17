@@ -48,6 +48,14 @@ def build_intake_summary(document: Document, cursor_position: int | None = None)
         doubtful = doubtful_pages_sentence(_doubtful_pages(metadata))
         if doubtful:
             parts.append(doubtful.rstrip("."))
+    elif metadata.get("reader"):
+        # An Office file (quill.io.office_text, 2026-10-16): who read it, in
+        # words, and its sheets or slides -- not an engine's internal name.
+        parts.append(f"read by {metadata['reader']}")
+        if metadata.get("units"):
+            parts.append(str(metadata["units"]))
+        if metadata.get("extraction_notes"):
+            parts.append("part of it was too large and was cut short; the intake report says where")
     elif source_kind in {"csv", "tsv", "xlsx", "xls"}:
         engine = str(metadata.get("engine", source_kind))
         parts.append(f"{engine} table extract")
@@ -66,6 +74,15 @@ def build_intake_report(document: Document) -> str:
     lines = [f"Document intake report for {document.name}", ""]
     lines.append(f"Format: {metadata.get('source_kind', 'text')}")
     lines.append(f"Engine: {metadata.get('engine', 'plain text')}")
+    if metadata.get("reader"):
+        lines.append(f"Read by: {metadata['reader']}")
+    if metadata.get("units"):
+        lines.append(f"Contents: {metadata['units']}")
+    if metadata.get("markitdown_failure"):
+        lines.append(f"MarkItDown: not used. {metadata['markitdown_failure']}")
+    notes = metadata.get("extraction_notes")
+    for note in notes if isinstance(notes, list) else []:
+        lines.append(f"Note: {note}")
     if document.path is not None:
         lines.append(f"Path: {document.path}")
         writable = document.path.exists() and _is_writable(document.path)

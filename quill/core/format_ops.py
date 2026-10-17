@@ -3,7 +3,6 @@ from __future__ import annotations
 import html
 import random
 import re
-from dataclasses import dataclass
 from pathlib import Path
 
 # parse_first_date is imported (not just used) so callers may keep importing it
@@ -11,45 +10,10 @@ from pathlib import Path
 from quill.core.date_parse import parse_first_date
 from quill.core.links import infer_markup_kind
 
-
-@dataclass(frozen=True, slots=True)
-class MarkdownListContinuation:
-    text: str
-    caret: int
-    exited_list: bool
-
-
-_MARKDOWN_LIST_PATTERN = re.compile(
-    r"^(?P<indent>[ \t]*)(?:(?P<number>\d+)(?P<num_sep>[.)])|(?P<bullet>[-+*]))"
-    r"(?P<spacing>[ \t]+)(?:(?P<task>\[[ xX]\])(?P<task_spacing>[ \t]+))?(?P<body>.*)$"
-)
-
-
-def continue_markdown_list(text: str, caret: int) -> MarkdownListContinuation | None:
-    if caret < 0 or caret > len(text):
-        return None
-    line_start, line_end = _line_bounds(text, caret, caret)
-    line_text = text[line_start:line_end].rstrip("\r\n")
-    match = _MARKDOWN_LIST_PATTERN.match(line_text)
-    if match is None:
-        return None
-
-    marker_end = _marker_end_offset(match)
-    line_offset = caret - line_start
-    if line_offset < marker_end:
-        return None
-
-    before_body = line_text[marker_end:line_offset]
-    after_body = line_text[line_offset:]
-    if not before_body.strip() and not after_body.strip():
-        indent = match.group("indent")
-        updated = text[:line_start] + indent + text[line_end:]
-        return MarkdownListContinuation(updated, line_start + len(indent), exited_list=True)
-
-    continuation_marker = _continuation_marker(match)
-    inserted = "\n" + continuation_marker
-    updated = text[:caret] + inserted + text[caret:]
-    return MarkdownListContinuation(updated, caret + len(inserted), exited_list=False)
+# Enter in a list moved to quill.core.list_continuation when QUILL Lite gained
+# it (GATE-11); re-exported so every existing import keeps working.
+from quill.core.list_continuation import MarkdownListContinuation as MarkdownListContinuation
+from quill.core.list_continuation import continue_markdown_list as continue_markdown_list
 
 
 def indent_lines(
@@ -508,28 +472,6 @@ def _line_bounds(text: str, start: int, end: int) -> tuple[int, int]:
     else:
         line_end += 1
     return line_start, line_end
-
-
-def _marker_end_offset(match: re.Match[str]) -> int:
-    marker = match.group(0)
-    body = match.group("body")
-    return len(marker) - len(body)
-
-
-def _continuation_marker(match: re.Match[str]) -> str:
-    indent = match.group("indent")
-    bullet = match.group("bullet")
-    number = match.group("number")
-    num_sep = match.group("num_sep") or "."
-    spacing = match.group("spacing") or " "
-    task = match.group("task")
-    task_spacing = match.group("task_spacing") or " "
-    if task is not None:
-        return f"{indent}{bullet or '-'} [ ]{task_spacing}"
-    if bullet is not None:
-        return f"{indent}{bullet}{spacing}"
-    next_number = int(number or "1") + 1
-    return f"{indent}{next_number}{num_sep}{spacing}"
 
 
 def _split_lines_keepends(text: str) -> list[str]:

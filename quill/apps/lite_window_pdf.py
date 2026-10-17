@@ -59,13 +59,17 @@ def is_read_only_source(path: Path | str | None) -> bool:
     """True for a file QUILL Lite opened as extracted text and must not write back.
 
     The list is QUILL's own (``EXPORT_ONLY_SUFFIXES``), so the two editors
-    refuse the same files. QUILL Lite opens only one of them today: ``.pdf``.
+    refuse the same files, plus the Office formats QUILL Lite opens as text
+    (2026-10-16). QUILL can write a real ``.docx``; QUILL Lite cannot, so for
+    QUILL Lite a Word file is as read-only as a PDF -- saving the text back
+    into it would leave a file Word cannot open.
     """
     if path is None:
         return False
+    from quill.core.lite.open_prepare import OFFICE_OPEN_SUFFIXES
     from quill.io.export import EXPORT_ONLY_SUFFIXES
 
-    return Path(path).suffix.lower() in EXPORT_ONLY_SUFFIXES
+    return Path(path).suffix.lower() in EXPORT_ONLY_SUFFIXES | OFFICE_OPEN_SUFFIXES
 
 
 class DocumentPdfMixin:

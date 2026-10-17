@@ -87,6 +87,8 @@ _SCAN_GLOBS: tuple[str, ...] = (
     "quill/ui/ai_diff_review_dialog.py",
     "quill/ui/prompt_library_dialog.py",
     "quill/ui/prompt_edit_dialog.py",
+    # AutoCorrect Entries, the same window in both editors (2026-10-16).
+    "quill/ui/autocorrect_entries_dialog.py",
 )
 
 #: Surface constructions whose titles the scan cannot resolve, with the reason

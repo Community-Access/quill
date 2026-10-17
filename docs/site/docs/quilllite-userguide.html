@@ -1063,6 +1063,29 @@ Palette…</strong>. Type part of what you want, such as “sort”,
 <p>Each command in the list shows its key beside it. That is a gentle
 way to learn keys as you go. If you have changed a key, the palette
 shows your key.</p>
+<h4 id="typing-a-name-to-reach-it-in-a-list">Typing a name to reach it
+in a list</h4>
+<p>Most lists in QUILL Lite, such as Snippets, Recent Documents, the
+bookmark and heading lists and Recent Clips, let you type the start of a
+row’s name to move to it. You can type the <strong>whole</strong> name,
+spaces included:</p>
+<ol type="1">
+<li>Press <strong>Ctrl+Alt+Shift+Home</strong> to open Snippets.</li>
+<li>Type <code>meeting notes</code> at an ordinary pace. The list moves
+to the first row that starts with “meeting notes”, and stays on it while
+the row still matches.</li>
+<li>Press <strong>Enter</strong> to put that snippet in.</li>
+</ol>
+<p>While you are typing a name, <strong>Space is part of the
+name</strong>. It used to open whatever row the first word had reached,
+so typing “meeting notes” could insert “Meeting agenda”. If you pause
+for about a second, the next key starts a new name, and
+<strong>Space</strong> on its own opens the selected row as before.
+<strong>Enter</strong> always opens the selected row and
+<strong>Escape</strong> always closes the list.</p>
+<p>Typing the same letter again and again steps through the rows that
+start with it. If nothing starts with what you typed, you hear “No match
+for” and what you typed, and the selection stays where it was.</p>
 <h4 id="one-box-for-everything-go-to-anything">One box for everything:
 Go To Anything</h4>
 <p><strong>Navigate &gt; Go To Anything…</strong>
@@ -1336,7 +1359,69 @@ says it cannot save that kind of file, and asks you to choose
 another.</p>
 <p>To make a real PDF, print to <strong>Microsoft Print to PDF</strong>
 instead (see <a href="#printing">Printing</a>).</p>
-<h3 id="saving-1">Saving</h3>
+<h3 id="opening-word-excel-and-powerpoint-files">Opening Word, Excel and
+PowerPoint files</h3>
+<p>QUILL Lite opens Word, Excel and PowerPoint files as their
+<strong>text</strong>, the same way it opens a PDF. Press
+<strong>Ctrl+O</strong>, and in the file type list choose “Word, Excel
+and PowerPoint, opened as text”, or just pick the file from “All
+supported files”. You can also drag one onto the window, or open it from
+Recent Documents. Nothing is downloaded first, and nothing is uploaded:
+QUILL Lite uses the same readers as QUILL.</p>
+<p>It opens these kinds of file:</p>
+<ul>
+<li>Word documents: <code>.docx</code> and <code>.docm</code> (a macro
+is never run)</li>
+<li>Excel workbooks: <code>.xlsx</code></li>
+<li>PowerPoint presentations: <code>.pptx</code></li>
+<li>OpenDocument text, from LibreOffice Writer: <code>.odt</code></li>
+<li>The older Office 97-2003 files, <code>.doc</code>, <code>.xls</code>
+and <code>.ppt</code>, when LibreOffice is installed (see below)</li>
+</ul>
+<h4 id="what-comes-through-and-what-does-not-1">What comes through, and
+what does not</h4>
+<ul>
+<li><strong>Word and OpenDocument text:</strong> each heading keeps its
+own line, marked with <code>#</code> signs the way Markdown marks one
+(<code>##</code> for a level 2 heading); bulleted and numbered lists
+keep their levels; tables become text tables; a line break inside a
+paragraph stays a line break; a picture comes through as its
+description, “[Image: …]”, when the author wrote one.</li>
+<li><strong>Excel:</strong> each sheet starts with a heading, “Sheet:
+Budget”, and its cells follow as a text table whose first row is the
+header row. Dates read as dates and numbers as you would say them. A
+very large sheet is read up to 2,000 rows and 50 columns.</li>
+<li><strong>PowerPoint:</strong> each slide starts with a heading,
+“Slide 2: Figures”, in the order the presentation shows them. The
+bullets come next, then any tables, then the speaker notes under
+“Notes”.</li>
+</ul>
+<p>Bold, italic, fonts and colours do not come through, and nor do
+headers, footers, footnotes, comments, charts or the pictures
+themselves.</p>
+<p>For example, open <code>Budget.xlsx</code>. The document starts at
+“Sheet: Budget”, with the budget’s rows under it, and the next sheet’s
+heading, “Sheet: Notes”, follows the last row.</p>
+<h4 id="older-files-and-files-that-will-not-open">Older files and files
+that will not open</h4>
+<p>QUILL Lite cannot read the Office 97-2003 formats by itself. If
+LibreOffice (free, from libreoffice.org) is installed, QUILL Lite has it
+make a temporary copy in the newer format and opens that; your file is
+not changed. If it is not installed, QUILL Lite says it could not open
+the file and tells you what to do: open it in Word, Excel or PowerPoint
+(or LibreOffice), choose <strong>File &gt; Save As</strong>, pick the
+newer type, such as “Word Document (.docx)”, and open that copy.</p>
+<p>A password-protected file is named as password-protected: remove the
+password in the program that made it, save, and open it again. A damaged
+file is named as damaged.</p>
+<h4 id="saving-1">Saving</h4>
+<p>QUILL Lite cannot write a real Word, Excel or PowerPoint file, so it
+never saves over one. Press <strong>Ctrl+S</strong> and QUILL Lite tells
+you why, then opens <strong>Save As</strong> with the same name ending
+in <code>.txt</code>. Choose text, Markdown or rich text and press
+<strong>Enter</strong>. If you want the result back in Word, save it as
+rich text: Word opens a rich text file properly.</p>
+<h3 id="saving-2">Saving</h3>
 <p><strong>Ctrl+S</strong> saves. <strong>Ctrl+Shift+S</strong> saves
 under a new name.</p>
 <p>QUILL Lite makes you one promise: <strong>open a file, change
@@ -1526,6 +1611,78 @@ nothing at all. A <strong>rich text</strong> document is not offered
 Markdown, because QUILL Lite would have to guess which bold lines you
 meant as headings. Save it as plain text first (QUILL Lite asks before
 it removes the formatting), and then the Markdown choice is there.</p>
+<h4 id="which-kind-of-file-you-get-the-name-you-type-decides">Which kind
+of file you get: the name you type decides</h4>
+<p>When you save with <strong>Ctrl+Shift+S</strong>, the ending you type
+on the name decides what kind of file is written, whatever the
+<strong>Save as type</strong> list happens to show. Capitals do not
+matter: <code>NOTES.TXT</code> is a text file and
+<code>Report.RTF</code> is rich text.</p>
+<table>
+<thead>
+<tr>
+<th>You type</th>
+<th>What QUILL Lite writes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>notes.txt</code>, <code>notes.log</code>, or any other text
+ending</td>
+<td>Your text, exactly as it stands</td>
+</tr>
+<tr>
+<td><code>notes.md</code></td>
+<td>Your text as it stands; an HTML document is converted to Markdown
+(see above)</td>
+</tr>
+<tr>
+<td><code>notes.rtf</code></td>
+<td>Rich text, with its formatting. A plain document becomes a rich
+one</td>
+</tr>
+<tr>
+<td><code>page.html</code></td>
+<td>Your text as it stands. QUILL Lite treats HTML as something you
+write by hand, the way Notepad does</td>
+</tr>
+<tr>
+<td><code>minutes.docx</code></td>
+<td>Nothing. QUILL Lite says so (see below)</td>
+</tr>
+<tr>
+<td><code>budget.xlsx</code>, <code>minutes.pdf</code>,
+<code>old.doc</code></td>
+<td>Nothing. These are formats QUILL Lite can only read or not open at
+all</td>
+</tr>
+</tbody>
+</table>
+<p>If you type a name with no ending at all, Windows adds the ending of
+the row selected in <strong>Save as type</strong>, so <code>notes</code>
+with <strong>Markdown (*.md)</strong> selected is saved as
+<code>notes.md</code>.</p>
+<p><strong>Word documents.</strong> QUILL Lite cannot write a Word
+document. Until October 2026 a name ending in <code>.docx</code> got
+your plain text written under it, which made a file that Word refuses to
+open. Now, if you type <code>minutes.docx</code> (or <code>.docm</code>,
+<code>.dotx</code>, <code>.dotm</code>), QUILL Lite shows a short
+message instead and writes nothing:</p>
+<blockquote>
+<p>QUILL Lite cannot save Word documents, so minutes.docx was not
+written. Choose Rich Text (.rtf), which Word opens, or Text or Markdown
+in the Save as type list. QUILL saves Word documents.</p>
+</blockquote>
+<p>Press <strong>Enter</strong> to close the message; Save As is over,
+and your document is exactly as it was. For example, to send a letter to
+someone who uses Word, save it as <code>letter.rtf</code>: Word opens
+rich text, headings and bold included. If you need a real
+<code>.docx</code>, open the file in QUILL and use its Save As.</p>
+<p>The message comes before anything else. A rich text document is not
+first asked whether to remove its formatting for a save that is not
+going to happen.</p>
+<p>Pressing <strong>Escape</strong> or <strong>Cancel</strong> in the
+Save As window writes nothing, as always.</p>
 <h4 id="if-something-goes-wrong">If something goes wrong</h4>
 <p>While a document has changes you have not saved, QUILL Lite keeps a
 spare copy of it about every thirty seconds. That copy is kept
@@ -2086,6 +2243,62 @@ so you can pick one out by its first word.</li>
 <strong>Alt+Shift+G</strong> goes straight to the bookmark list, and
 <strong>Ctrl+Alt+L</strong> goes straight to the heading list.
 <strong>Ctrl+G</strong> is the one to press when you are not sure.</p>
+<h3 id="reading-without-changing-anything-the-read-only-guard">Reading
+without changing anything: the Read-Only Guard</h3>
+<p>When you open a long reference document only to read it, such as a
+manual, a book or minutes you must not alter, one stray key can change
+it, and a Ctrl+S an hour later saves the change. The <strong>Read-Only
+Guard</strong> locks the document against edits while you read.</p>
+<p><strong>Ctrl+Alt+Backspace</strong>, or <strong>Tools &gt; Read-Only
+Guard</strong>, turns it on and off. The menu row shows a check mark
+while it is on. You hear:</p>
+<ul>
+<li>“Document is read-only” when you turn it on;</li>
+<li>“Document is editable” when you turn it off.</li>
+</ul>
+<p>While it is on:</p>
+<ul>
+<li>Typing, <strong>Backspace</strong>, <strong>Delete</strong>,
+<strong>Enter</strong> and pasting do nothing.</li>
+<li>Commands that would change the text say “Document is read-only” and
+change nothing. That covers cutting, pasting, undo and redo, everything
+in <strong>Edit &gt; Lines</strong>, the <strong>Insert</strong> menu,
+the formatting commands, changing case and indenting, Snippets, and a
+word tool’s <strong>Replace</strong>.</li>
+<li>Everything you use to read still works: the arrow keys and every way
+of moving, <strong>Find</strong> (<strong>Ctrl+F</strong>), <strong>Go
+To</strong> (<strong>Ctrl+G</strong>), the headings list, selecting and
+copying, Say Selection, the dictionary and the thesaurus (looking up,
+not replacing).</li>
+<li><strong>Bookmarks</strong> work as usual. Set one with
+<strong>Ctrl+Shift+B</strong> and come back to it with
+<strong>F2</strong>; a bookmark is kept beside the file, not inside
+it.</li>
+<li><strong>Inline notes</strong> work too. A note you add while the
+guard is on is kept beside the file rather than written into it, so the
+document stays exactly as it was.</li>
+</ul>
+<p>QUILL Lite <strong>remembers</strong> the guard for that file. Close
+QUILL Lite, open the same file tomorrow from File Explorer, from Recent
+Documents or from Ctrl+O, and it opens locked again. It is the same file
+however it was reached, even if File Explorer spells the folder with
+different capitals.</p>
+<p>If QUILL Lite cannot write down that you locked the file, for example
+because its settings folder is on a full disk, the document is still
+locked for now and you hear so, with the reason:</p>
+<blockquote>
+<p>Document is read-only for now, but it could not be remembered for
+next time (There is not enough space on the disk).</p>
+</blockquote>
+<p>A document that has never been saved cannot be remembered either,
+because it has no file name yet; save it first if you want the guard to
+stay.</p>
+<p>A file that Windows itself marks read-only, or one on a share you
+cannot write to, opens locked as well, and QUILL Lite says so as it
+opens. Turn the guard off if you want to type anyway; you can then save
+under a new name.</p>
+<p>The guard is the same command QUILL has, on the same key, so you only
+learn it once.</p>
 <h3 id="bookmarks">Bookmarks</h3>
 <p>A bookmark is a place you want to come back to.</p>
 <table>
@@ -2776,6 +2989,12 @@ without looking for a setting. It is the same switch as the
 Abbreviations box in Customize Features.</p>
 <p>If you also use QUILL or Quill Inkwell, there is a switch in
 Preferences that lets all three share one list of abbreviations.</p>
+<p>Your own AutoCorrect corrections (Chapter 11, Correcting misspellings
+as you type) are kept in this same list, under the category
+<strong>AutoCorrect</strong>. You will see them in Manage Abbreviations
+if you choose that category. They are not abbreviations, though: they
+never expand just because <strong>Expand Abbreviations</strong> is on,
+and they are not in <strong>Snippets</strong>.</p>
 <h3 id="undo-and-getting-text-back">Undo, and getting text back</h3>
 <table>
 <thead>
@@ -2912,6 +3131,42 @@ so keep pressing until you hear the one you want.</p>
 themselves. In Markdown, QUILL Lite writes <code>- </code> or
 <code>1. </code> at the start of the lines you selected, and only those
 lines.</p>
+<h5 id="pressing-enter-in-a-list">Pressing Enter in a list</h5>
+<p>In a Markdown document, <strong>Enter</strong> keeps a list going,
+the way it does in QUILL and in other Markdown editors. QUILL Lite says
+what it did, because your screen reader only hears a new line:</p>
+<ul>
+<li><strong>Enter</strong> at the end of an item starts the next one
+with the next marker: a hyphen after a hyphen, <code>3. </code> after
+<code>2. </code>, <code>3) </code> after <code>2) </code>, and an
+unchecked <code>- [ ] </code> after a task item. A nested item keeps its
+indentation. You hear “Continued list item”.</li>
+<li><strong>Enter</strong> in the middle of an item splits it. In
+<code>1. bread milk</code>, with the cursor before <code>milk</code>,
+you get <code>1. bread</code> and <code>2. milk</code>.</li>
+<li>A new numbered item renumbers the items under it, so adding an item
+after the first of <code>1. 2. 3.</code> gives <code>1. 2. 3. 4.</code>,
+and you hear “Continued list item, renumbered 2 items below”. If your
+list jumps (from <code>2.</code> to <code>7.</code>), your own numbering
+from the jump on is left alone.</li>
+<li><strong>Enter</strong> on an item with nothing after its marker ends
+the list. The marker goes, the empty line stays, and you hear “Exited
+list”.</li>
+<li><strong>Ctrl+Z</strong> straight afterwards takes the whole thing
+back in one step: the new line, its marker and any renumbering.</li>
+</ul>
+<p>This needs the <strong>Markdown and HTML</strong> area switched on in
+Customize Features, like everything else that writes Markdown for
+you.</p>
+<p><strong>In plain text, only if you ask.</strong> Check
+<strong>Continue lists in plain text</strong> in <strong>Tools &gt;
+Preferences</strong> and the same happens in a <code>.txt</code> file or
+a new untitled document. It starts off, because in plain text a line
+that happens to begin with <code>1.</code> is as often a date or a
+version number as a list. It never happens in a source code or settings
+file, whatever the box says, and never in rich text, where
+<strong>Ctrl+Shift+L</strong> makes real lists and
+<strong>Enter</strong> is WordPad’s own.</p>
 <h4 id="keys-that-only-work-in-rich-text">Keys that only work in rich
 text</h4>
 <p>Underneath, every QUILL Lite document uses the same Windows editing
@@ -8594,6 +8849,17 @@ dash.</p>
 <p>Both of these also need <strong>Autocorrect while typing</strong>
 switched on in Customize Features. Neither ever runs in a plain text,
 source code or settings document.</p>
+<p><strong>Correct common misspellings as I type</strong> is off. It
+changes <code>teh</code> to <code>the</code> when you type the space
+after it. It also needs <strong>Autocorrect while typing</strong> in
+Customize Features, and unlike the two above it does run in plain text,
+because a misspelling is as wrong in a <code>.txt</code> file as
+anywhere. It never runs in source code or settings files. <em>Correcting
+misspellings as you type</em>, below, has the details.</p>
+<p><strong>Continue lists in plain text</strong> is off. With it on,
+<strong>Enter</strong> in a plain text list starts the next item, as it
+always does in Markdown. Chapter 6 has the details, under <em>Pressing
+Enter in a list</em>.</p>
 <h5 id="what-you-hear-2">What you hear</h5>
 <p><strong>When a command does something, give me:</strong> <strong>a
 sound</strong>, <strong>the action spoken</strong>,
@@ -9088,22 +9354,102 @@ asks you straight away.</li>
 ever changes in a way that matters, such as what is sent or what is
 kept, you will be asked again.</p>
 <h5 id="how-autocorrect-works">How autocorrect works</h5>
-<p><strong>Autocorrect has two rules, and switching the area on does not
-turn either of them on.</strong> The area decides whether autocorrect
-exists at all. Two check boxes in <strong>Tools &gt;
+<p><strong>Autocorrect has three rules, and switching the area on does
+not turn any of them on.</strong> The area decides whether autocorrect
+exists at all. Three check boxes in <strong>Tools &gt;
 Preferences</strong> decide which rules run:</p>
 <ul>
 <li><strong>Curl quotes as I type</strong></li>
 <li><strong>Turn two hyphens into an em dash</strong></li>
+<li><strong>Correct common misspellings as I type</strong></li>
 </ul>
-<p>Both start off. So after you switch the area on, you also need to
-check the rule you want. They are separate because plenty of people want
-the long dash but not the curly quotes.</p>
-<p>Neither rule ever runs in a plain text, source code or settings
-document, whatever the boxes say. A curly quote in a <code>.json</code>
-file would break it.</p>
-<p>There is no third rule. QUILL Lite does <strong>not</strong>
+<p>All three start off. So after you switch the area on, you also need
+to check the rule you want. They are separate because plenty of people
+want the long dash but not the curly quotes, or the spelling fixes and
+nothing else.</p>
+<p>The two typography rules never run in a plain text, source code or
+settings document, whatever the boxes say. A curly quote in a
+<code>.json</code> file would break it. Misspelling correction runs in
+plain text, Markdown and rich text, and never in source code or settings
+files.</p>
+<p>There is no fourth rule. QUILL Lite does <strong>not</strong>
 capitalise the start of a sentence, and never has.</p>
+<h5 id="correcting-misspellings-as-you-type">Correcting misspellings as
+you type</h5>
+<p>With the rule on, QUILL Lite fixes the misspellings almost everybody
+makes the moment you finish the word. Type <code>teh</code> and a space
+and it becomes <code>the </code>; type <code>recieve</code> and press
+<strong>Enter</strong> and it becomes <code>receive</code> before the
+new line starts. You hear the word-corrected sound and “Corrected to
+the”, because your screen reader only echoes the space and would never
+tell you the word changed.</p>
+<p>The built-in list has about 350 common English misspellings, such as
+<code>teh</code>, <code>seperate</code>, <code>definately</code>,
+<code>occured</code>, <code>untill</code> and <code>wierd</code>. Every
+one was checked against American and British dictionaries before it went
+in, so a word you spelled correctly is never on it. Your capitals are
+kept: <code>Teh</code> becomes <code>The</code>, and
+<code>febuary</code> becomes <code>February</code>. Brackets, quotes and
+punctuation round the word stay where they were, so
+<code>(recieve,</code> becomes <code>(receive,</code>.</p>
+<p>It never touches:</p>
+<ul>
+<li>a word typed all in capitals, such as <code>TEH</code>, which is far
+more often an acronym than a mistake;</li>
+<li>web addresses, email addresses and paths, or any word with a full
+stop, slash, colon, <code>@</code>, digit or underscore inside it, so
+<code>teh.example.com</code> and <code>adress@example.com</code> stay as
+typed;</li>
+<li>anything inside backticks or a fenced code block in Markdown;</li>
+<li>source code and settings files, by their name, the same list that
+keeps spell-check-as-you-type quiet in them.</li>
+</ul>
+<p><strong>Taking one back.</strong> <strong>Ctrl+Z</strong> straight
+after a correction puts back exactly what you typed, as one undo step.
+QUILL Lite then leaves that word alone in this document for the rest of
+the session: type the space again and the word stays, and the status bar
+says “Kept teh as you typed it”.</p>
+<h5 id="autocorrect-entries-altshift9">AutoCorrect Entries
+(Alt+Shift+9)</h5>
+<p><strong>Tools &gt; AutoCorrect Entries…</strong>
+(<strong>Alt+Shift+9</strong>) shows every correction, the built-in ones
+and yours, one per row: “teh becomes the, built in”. It is QUILL’s
+window, on QUILL’s key, so it works the same in both.</p>
+<ul>
+<li><strong>Find</strong> narrows the list as you type.</li>
+<li><strong>Corrections</strong> is the list. <strong>Enter</strong> or
+<strong>Space</strong> on a row edits it.</li>
+<li><strong>Add…</strong> makes a correction of your own: the word as
+you mistype it, what it should become, and whether case must match
+exactly. For example, <code>qill</code> becoming <code>QUILL</code>. The
+word must be letters only (an apostrophe inside is fine); what it
+becomes may be several words.</li>
+<li><strong>Edit…</strong> changes the row you are on. Editing a
+built-in one keeps your version beside it, and the row says “built in,
+changed by you”.</li>
+<li><strong>Turn Off</strong> stops the correction you are on without
+deleting it, and the row ends in “stopped”. The same button, now
+<strong>Turn On</strong>, starts it again. Use this when a correction
+keeps changing a word you meant.</li>
+<li><strong>Remove</strong> deletes one of yours. On a built-in one you
+changed or turned off, it puts it back as it shipped. A built-in
+correction cannot be deleted, so Remove on one turns it off instead and
+tells you so.</li>
+</ul>
+<p>Every button says what it did, and your changes are kept when you
+close the window.</p>
+<p>Your corrections are kept in your abbreviation list, under the
+category <strong>AutoCorrect</strong>: QUILL Lite’s own list, or QUILL’s
+if Preferences says share it, in which case QUILL and QUILL Lite share
+your corrections too. Turning <strong>Abbreviations</strong> off in
+Customize Features does not turn your corrections off. The window needs
+the <strong>Autocorrect while typing</strong> area switched on, like the
+rule itself.</p>
+<p><strong>Limits.</strong> The built-in list is English only. A
+correction happens when a space or <strong>Enter</strong> ends the word.
+AutoCorrect fixes known misspellings, not every misspelling;
+<strong>F7</strong> and the spell check as you type still find the
+rest.</p>
 <h5 id="what-can-never-be-switched-off">What can never be switched
 off</h5>
 <p>Three things always stay. <strong>Tools &gt; Preferences</strong> and
@@ -10065,6 +10411,10 @@ list inside the app.</p>
 <td>All Matches…</td>
 </tr>
 <tr>
+<td><strong>Ctrl+Alt+Shift+F3</strong></td>
+<td>Count Occurrences</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Alt+Shift+F8</strong></td>
 <td>Find in Open Documents…</td>
 </tr>
@@ -10075,10 +10425,6 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+Shift+R</strong></td>
 <td>Replace Across Files…</td>
-</tr>
-<tr>
-<td><strong>Ctrl+Alt+Shift+F3</strong></td>
-<td>Count Occurrences</td>
 </tr>
 </tbody>
 </table>
@@ -10303,7 +10649,7 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Alt+Shift+S</strong></td>
-<td>Clipboard Collector (on or off)</td>
+<td>Clipboard Collector</td>
 </tr>
 <tr>
 <td><strong>Alt+Shift+C</strong></td>
@@ -10765,6 +11111,10 @@ list inside the app.</p>
 <td>File Encoding and Line Endings…</td>
 </tr>
 <tr>
+<td><strong>Ctrl+Alt+Backspace</strong></td>
+<td>Read-Only Guard</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Alt+Shift+Home</strong></td>
 <td>Snippets…</td>
 </tr>
@@ -10775,6 +11125,10 @@ list inside the app.</p>
 <tr>
 <td><strong>Alt+Shift+A</strong></td>
 <td>Expand Abbreviations</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+9</strong></td>
+<td>AutoCorrect Entries…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+,</strong></td>
@@ -10798,7 +11152,7 @@ list inside the app.</p>
 </tr>
 <tr>
 <td><strong>Alt+Shift+M</strong></td>
-<td>App Sounds (on or off)</td>
+<td>App Sounds</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Shift+O</strong></td>
@@ -11054,6 +11408,14 @@ list inside the app.</p>
 <tr>
 <td><strong>Alt+F9</strong></td>
 <td>Dictation Status</td>
+</tr>
+<tr>
+<td><strong>F11</strong></td>
+<td>Speak a Command</td>
+</tr>
+<tr>
+<td><strong>Shift+F4</strong></td>
+<td>Review Dictation…</td>
 </tr>
 </tbody>
 </table>

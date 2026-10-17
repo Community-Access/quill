@@ -79,7 +79,8 @@ Assert-QuillSiblingVersions -QuillRepo $QuillRepo -Python $Python -Releasing @("
 # Builds used to generate and embed a bundled GitHub "feedback token" here. No
 # QuillVille build does any more: all feedback goes to support@community-access.org
 # by email, so there is no credential to ship. -TokenFile and -SkipToken went with
-# it. The spec excludes quill._feedback_token and refuses to freeze it or
+# it. The shared runtime spec (..\runtime\quillville-runtime.spec) excludes
+# quill._feedback_token and refuses to freeze it or
 # feedback_hub (scripts\check_no_credentials.py), so a stale gitignored copy in
 # the checkout can no longer ride along.
 

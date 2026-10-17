@@ -11,7 +11,14 @@ implementations forget (the reference timings, assessment item 12):
 - when a multi-character buffer stops matching, retry with just the last
   character before declaring failure — the user has started a new search;
 - matching wraps from the current selection so repeated presses cycle;
-- total failure must be *audible*: the caller speaks "No match for X".
+- total failure must be *audible*: the caller speaks "No match for X";
+- a name may contain spaces. While a name is being typed (:meth:`TypeAheadBuffer.typing`)
+  a space belongs to it, so a list that also opens its row on Space must let
+  that space through rather than open whatever row the first word reached
+  (``quill.ui.dialog_contract.apply_listbox_activation``, 2026-10-16);
+- a longer name stays on the row it has reached while that row still matches,
+  rather than hopping to the next match on every key ("Meeting notes 1" and
+  "Meeting notes 2" used to alternate letter by letter).
 
 Pure state machine over injected timestamps: no timers, no wx, strict-typed.
 """
@@ -69,6 +76,14 @@ class TypeAheadBuffer:
         self._last_press_at = 0.0
         self._opened_at: float | None = None
 
+    def typing(self, now: float) -> bool:
+        """True while a name is being typed: the moment Space belongs to it."""
+        return bool(self._buffer) and (now - self._last_press_at) <= self._buffer_timeout
+
+    def reset(self) -> None:
+        """Forget the name (after the row it reached has been opened)."""
+        self._buffer = ""
+
     def surface_opened(self, now: float) -> None:
         """Call when the list surface appears; starts the suppression window."""
         self._opened_at = now
@@ -90,7 +105,11 @@ class TypeAheadBuffer:
             self._buffer = ""
         self._last_press_at = now
         self._buffer += character
-        match = find_match(names, self._buffer, current_index)
+        # One letter steps on from the current row (the list box habit); a
+        # longer name starts *at* the current row, so it stays put while the
+        # row still matches.
+        start = current_index - 1 if len(set(self._buffer.casefold())) > 1 else current_index
+        match = find_match(names, self._buffer, start)
         if match >= 0:
             return TypeAheadResult(index=match, query=self._buffer)
         if len(self._buffer) > 1:

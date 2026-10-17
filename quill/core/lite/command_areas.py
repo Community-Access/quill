@@ -121,6 +121,8 @@ COMMAND_AREA: dict[str, str] = {
     # no area at all, deliberately -- a switch that disappears with the thing it
     # switches can only ever be moved one way.
     "cmd_manage_abbreviations": "abbreviations",
+    # The corrections are the Autocorrect area's, like the rules that use them.
+    "cmd_autocorrect_entries": "autoformat",
     # Not the line tools' any more. It sat there because it was the last row
     # left in the old Tools menu, and the Notepad profile is what made the cost
     # visible: encoding and line endings are the two facts that decide whether

@@ -15,7 +15,9 @@ from quill.core.abbreviations import (
     AbbreviationLibrary,
     save_abbreviation_library,
 )
+from quill.core.list_search import SearchTerms
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
+from quill.ui.virtual_report_list import VirtualReportList
 
 #: Stored value -> the words shown in the edit dialog. Ordered, because the
 #: choice controls are populated from these and read back by index.
@@ -35,6 +37,8 @@ _SOUND_LABELS: dict[str, str] = {
     "on": "Always play",
     "off": "Never play",
 }
+
+_COLUMNS = (("Abbreviation", 120), ("Expansion", 260), ("On", 40), ("Category", 110))
 
 #: The two pseudo-entries at the top of the category filter.
 _ALL_CATEGORIES = "All categories"
@@ -219,15 +223,10 @@ class AbbreviationManagerDialog:
         search_row.Add(self._category_filter, 0)
         root.Add(search_row, 0, wx.EXPAND | wx.ALL, 8)
 
-        self._list = wx.ListCtrl(
-            self.dialog,
-            style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.BORDER_SUNKEN,
-        )
+        # Virtual: rows read on demand, so 10,000 refill as fast as 10 (virtual_report_list).
+        self._list = VirtualReportList(self.dialog, _COLUMNS, self._cell, style=wx.BORDER_SUNKEN)
         self._list.SetName("Abbreviations list")
-        self._list.InsertColumn(0, "Abbreviation", width=120)
-        self._list.InsertColumn(1, "Expansion", width=260)
-        self._list.InsertColumn(2, "On", width=40)
-        self._list.InsertColumn(3, "Category", width=110)
+        self._list.SetHelpText("Matches, any word order. Enter edits; type a name to reach it.")
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
@@ -302,31 +301,31 @@ class AbbreviationManagerDialog:
             entries = [a for a in entries if not a.category]
         elif category != _ALL_CATEGORIES:
             entries = [a for a in entries if a.category == category]
-        if not self._search_query:
-            return entries
-        q = self._search_query.lower()
-        return [
-            a
-            for a in entries
-            if q in a.abbreviation.lower() or q in a.expansion.lower() or q in a.description.lower()
-        ]
+        # Every word, in any order, as the snippet picker and palette match.
+        match = SearchTerms(self._search_query).found_in_fields
+        return [a for a in entries if match((a.abbreviation, a.expansion, a.description))]
+
+    def _cell(self, row: int, column: int) -> str:
+        abbr = self._visible[row]
+        if column == 0:
+            return abbr.abbreviation if abbr.enabled else f"{abbr.abbreviation} (disabled)"
+        if column == 1:
+            return abbr.expansion.replace("\n", " ")[:60]
+        return ("Y" if abbr.enabled else "N") if column == 2 else (abbr.category or _UNCATEGORISED)
 
     def _rebuild_list(self) -> None:
+        """Refill, keeping the selection on the same abbreviation while it is shown.
+
+        By identity, not row number: a search that removed the rows above it
+        used to leave the selection on whatever slid into its place.
+        """
         sel = self._list.GetFirstSelected()
-        self._list.DeleteAllItems()
+        previous = getattr(self, "_visible", [])
+        kept = previous[sel].id if 0 <= sel < len(previous) else None
         self._visible = self._visible_abbreviations()
-        for i, abbr in enumerate(self._visible):
-            label = abbr.abbreviation if abbr.enabled else f"{abbr.abbreviation} (disabled)"
-            self._list.InsertItem(i, label)
-            preview = abbr.expansion.replace("\n", " ")[:60]
-            self._list.SetItem(i, 1, preview)
-            self._list.SetItem(i, 2, "Y" if abbr.enabled else "N")
-            self._list.SetItem(i, 3, abbr.category or _UNCATEGORISED)
-        if 0 <= sel < self._list.GetItemCount():
-            self._list.Select(sel)
-            self._list.EnsureVisible(sel)
-        elif self._list.GetItemCount() > 0:
-            self._list.Select(0)
+        ids = [abbr.id for abbr in self._visible]
+        target = ids.index(kept) if kept in ids else min(max(sel, 0), len(ids) - 1)
+        self._list.show_rows(len(ids), select=target)
 
     def _selected_index(self) -> int:
         return self._list.GetFirstSelected()

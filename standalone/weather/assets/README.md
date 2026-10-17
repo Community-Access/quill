@@ -1,7 +1,8 @@
 # Quill Weather assets
 
 - `quill-weather.ico` — the app/installer icon (referenced by
-  `quill-weather.spec` and `installer/quill-weather.iss`).
+  `installer/quill-weather.iss`; Weather ships on the shared QuillVille
+  Runtime, so the unused `quill-weather.spec` was removed on 2026-10-16).
 
 **Generated — do not edit by hand.** The icon comes from
 `scripts/build_app_icons.py`, which owns the design system for the whole

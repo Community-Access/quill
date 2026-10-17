@@ -124,6 +124,7 @@ class LiteServicesMixin:
 
     def reload_abbreviations(self) -> None:
         """Re-read the library, or drop it when the area is switched off."""
+        self._autocorrect_only_library = None  # re-read on next use, from the right folder
         if not self.feature_enabled("abbreviations"):
             self.abbreviations = None
             return
@@ -143,6 +144,42 @@ class LiteServicesMixin:
             save_abbreviation_library(self.abbreviations, self.abbreviation_dir())
         except Exception:  # noqa: BLE001 - a read-only profile must not lose the editor
             pass
+
+    # -- AutoCorrect's corrections: the same library, the same file -------- #
+
+    def autocorrect_library(self) -> Any:
+        """The library AutoCorrect reads your corrections from.
+
+        The abbreviation library itself when that area is on. When it is off the
+        file is still read -- your corrections are entries in it, and turning
+        abbreviations off must not turn your corrections off -- but nothing is
+        written until you change a correction (:meth:`save_autocorrect_library`).
+        """
+        if self.abbreviations is not None:
+            return self.abbreviations
+        cached = getattr(self, "_autocorrect_only_library", None)
+        if cached is None:
+            from quill.core.abbreviations_store import load_abbreviation_library
+
+            try:
+                cached = load_abbreviation_library(self.abbreviation_dir())
+            except Exception:  # noqa: BLE001 - a bad library must not stop typing
+                return None
+            self._autocorrect_only_library = cached
+        return cached
+
+    def save_autocorrect_library(self) -> None:
+        """Write the corrections back, through the abbreviation store."""
+        library = self.autocorrect_library()
+        if library is None:
+            return
+        from quill.core.abbreviations_store import save_abbreviation_library
+
+        try:
+            save_abbreviation_library(library, self.abbreviation_dir())
+        except Exception:  # noqa: BLE001 - a read-only profile must not lose the editor
+            return
+        self.reload_abbreviations()
 
     # -- the command palette's view of the app ---------------------------- #
 
@@ -165,7 +202,8 @@ class LiteServicesMixin:
             registry.try_register(
                 f"lite.{handler}",
                 f"{plain_label(menu)}: {plain_label(label)}",
-                (lambda h=handler: getattr(frame, h)()),
+                # Through the Read-Only Guard, as the menus and keys are.
+                (lambda h=handler: _run_guarded(frame, h)),
                 keybinding=key,
             )
         return registry
@@ -215,3 +253,12 @@ class LiteServicesMixin:
                 frame.rebuild_menus()
             except RuntimeError:
                 pass
+
+
+def _run_guarded(frame: Any, handler: str) -> None:
+    """Run *handler* on *frame*, unless its Read-Only Guard refuses it."""
+    run = getattr(frame, "run_unless_read_only", None)
+    if callable(run):
+        run(handler)
+    else:
+        getattr(frame, handler)()
