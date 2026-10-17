@@ -41,6 +41,7 @@ from quill.core.markdown_breaks import hard_break_suffix
 from quill.core.safe_archive import open_zip
 from quill.core.safe_xml import fromstring as safe_xml_fromstring
 from quill.io.office_sheets import escape_cell, markdown_table
+from quill.io.omml_text import is_math_element, omml_to_text
 
 __all__ = ["read_docx_xml", "read_odt_xml"]
 
@@ -70,7 +71,46 @@ def _join_blocks(blocks: list[str]) -> str:
             lines.append("")
         lines.append(block)
         previous_list = is_list
-    return "\n".join(lines).strip("\n") + "\n" if lines else ""
+    if not lines:
+        return ""
+    return "\n".join(number_ordered_items("\n".join(lines).split("\n"))).strip("\n") + "\n"
+
+
+_ORDERED = re.compile(r"^( *)1\. ")
+_BULLET = re.compile(r"^( *)- ")
+
+
+def number_ordered_items(lines: list[str]) -> list[str]:
+    """Count numbered list items 1, 2, 3 within each run, instead of 1, 1, 1.
+
+    The readers write every numbered item as ``1.``, which Markdown renders
+    correctly but which a person reading the text itself -- with a screen
+    reader, a braille display, or a Markdown editor -- hears as "one, one,
+    one". Compared against MarkItDown on 2026-10-16, this was the one construct
+    it wrote better. Items count per indent level; a bullet at the same level,
+    a shallower item, a blank line or any other line ends the run. A line after
+    a hard break (a line ending in a backslash) continues the item above it.
+    """
+    counts: dict[int, int] = {}
+    out: list[str] = []
+    for line in lines:
+        ordered = _ORDERED.match(line)
+        bullet = ordered or _BULLET.match(line)
+        if bullet is None:
+            if not (out and out[-1].endswith("\\")):
+                counts.clear()
+            out.append(line)
+            continue
+        indent = len(bullet.group(1))
+        for deeper in [level for level in counts if level > indent]:
+            del counts[deeper]
+        if ordered is None:
+            counts.pop(indent, None)
+            out.append(line)
+            continue
+        counts[indent] = counts.get(indent, 0) + 1
+        out.append(f"{' ' * indent}{counts[indent]}. {line[indent + 3 :]}")
+    return out
 
 
 def _with_breaks(text: str) -> str:
@@ -157,6 +197,15 @@ def _body_blocks(container: Element, context: _WordContext) -> list[str]:
     return blocks
 
 
+def paragraph_text(paragraph: Element) -> str:
+    """A ``<w:p>``'s words, with picture descriptions and equations kept.
+
+    Public for :mod:`quill.io.docx_text`, whose python-docx ``paragraph.text``
+    drops both; it borrows this walk for any paragraph that holds either.
+    """
+    return _run_text(paragraph)
+
+
 def _run_text(paragraph: Element) -> str:
     parts: list[str] = []
     _collect_runs(paragraph, parts)
@@ -169,6 +218,10 @@ def _collect_runs(node: Element, parts: list[str]) -> None:
         if tag == f"{{{_MC}}}Fallback":
             # A drawing is stored twice, modern and legacy, inside one
             # mc:AlternateContent; reading both would say its text twice.
+            continue
+        if is_math_element(child):
+            # A Word equation, as the LaTeX QUILL's Insert Equation writes.
+            parts.append(omml_to_text(child))
             continue
         if tag == _w("t") and child.text:
             parts.append(child.text)

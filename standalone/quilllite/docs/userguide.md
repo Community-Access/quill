@@ -991,6 +991,14 @@ supported files". You can also drag one onto the window, or open it from
 Recent Documents. Nothing is downloaded first, and nothing is uploaded: QUILL
 Lite uses the same readers as QUILL.
 
+These are QUILL's own readers, and they are always used first, in the same
+order QUILL uses. They open a Word file in about a second, and a slide show in
+less, even the first time after you start QUILL Lite. Only if QUILL's own reader cannot read
+a file, or finds no text in it, does QUILL Lite try a second reader
+(MarkItDown) where one is installed; QUILL Lite's own installer does not
+include it, so for most people that second try never happens and the sentence
+you hear explains what was wrong with the file.
+
 It opens these kinds of file:
 
 - Word documents: `.docx` and `.docm` (a macro is never run)
@@ -1006,7 +1014,12 @@ It opens these kinds of file:
   with `#` signs the way Markdown marks one (`##` for a level 2 heading); bulleted and numbered lists keep their levels; tables
   become text tables; a line break inside a paragraph stays a line break; a
   picture comes through as its description, "[Image: ...]", when the author
-  wrote one.
+  wrote one. Numbered items are numbered 1, 2, 3 in the text itself, so you
+  hear the right number on each line. An equation comes through as text, the
+  way an equation is written in Markdown: "Pythagorean theorem:
+  \(a^{2}+b^{2}=c^{2}\)", where `^{2}` means "squared" and `\(` and `\)` mark
+  where the equation starts and ends. (Before October 2026 equations were
+  left out without a word.)
 - **Excel:** each sheet starts with a heading, "Sheet: Budget", and its cells
   follow as a text table whose first row is the header row. Dates read as
   dates and numbers as you would say them. A very large sheet is read up to
