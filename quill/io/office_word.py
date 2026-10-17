@@ -2,9 +2,11 @@
 
 Part of QUILL's own Office readers (:mod:`quill.io.office_text`). These two
 readers need nothing outside Python itself -- no MarkItDown, no python-docx,
-no lxml -- because every one of those can be missing from a shipped build:
-the shared QuillVille runtime excludes ``lxml`` (so python-docx cannot import
-there) and ``onnxruntime`` (so MarkItDown cannot import there either).
+no lxml -- so they work even where those cannot: the shared QuillVille runtime
+excludes ``onnxruntime`` (so MarkItDown cannot import there), and until
+2026-10-17 it excluded ``lxml`` too (so python-docx could not). Every build now
+carries python-docx and lxml; these readers stay as the safety net, and for
+``.docm`` and the formats python-docx does not read.
 
 * :func:`read_docx_xml` walks ``word/document.xml`` in body order. Headings
   come from the paragraph style (looked up by name in ``styles.xml``, so a

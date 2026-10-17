@@ -1704,14 +1704,130 @@ mode, or in the normal text editor. You can remember your choice as the
 default and still switch modes inside the tab at any time. Grid mode is
 built for the keyboard and for screen-reader users who want to edit a
 table cell by cell without leaving QUILL.</p>
+<h4 id="office-files-at-a-glance">Office files at a glance</h4>
+<p>QUILL handles Office files in two different ways, and it helps to
+know which one you are getting.</p>
+<ul>
+<li>A <strong>Word document</strong> (<code>.docx</code>) is a document
+you can <strong>edit and save as Word</strong>. It opens as rich text,
+with its headings, lists, bold, links and tables, and
+<strong>Ctrl+S</strong> writes a real Word document back.</li>
+<li><strong>Everything else</strong> from Office or LibreOffice opens as
+<strong>readable text</strong>, so you can read it, search it and copy
+from it. QUILL never writes back into those files.
+<strong>Ctrl+S</strong> opens <strong>Save As</strong> so you can keep
+your text as a new file, and the original stays as it was.</li>
+</ul>
+<p>This works the same in an installed copy of QUILL and in the portable
+copy: both carry everything Word editing needs. QUILL Lite treats each
+of these files the same way, with the same code; it has no structured
+Word view.</p>
+<table>
+<thead>
+<tr>
+<th>File type</th>
+<th>What QUILL does</th>
+<th>Can you save back to it?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Word document (<code>.docx</code>)</td>
+<td>Opens to edit as rich text. QUILL asks first if the document has
+things a save would drop, such as comments or pictures. You can also
+choose the read-only structured Word view (see below)</td>
+<td><strong>Yes.</strong> Ctrl+S saves a real Word document. A document
+you were warned about is backed up first</td>
+</tr>
+<tr>
+<td>Word document with macros (<code>.docm</code>)</td>
+<td>Opens as text to read and copy. Macros never run</td>
+<td>No. Ctrl+S opens Save As</td>
+</tr>
+<tr>
+<td>Word 97-2003 document (<code>.doc</code>)</td>
+<td>Opens as text when LibreOffice is installed. Without LibreOffice,
+QUILL tells you how to make a <code>.docx</code></td>
+<td>No. Ctrl+S opens Save As</td>
+</tr>
+<tr>
+<td>OpenDocument text (<code>.odt</code>)</td>
+<td>Opens as text</td>
+<td>No. Ctrl+S opens Save As</td>
+</tr>
+<tr>
+<td>Excel workbook (<code>.xlsx</code>, or <code>.xls</code> with
+LibreOffice)</td>
+<td>Opens as text: a “Sheet:” heading for each sheet, then its cells as
+a text table</td>
+<td>No. Ctrl+S opens Save As</td>
+</tr>
+<tr>
+<td>PowerPoint presentation (<code>.pptx</code>, or <code>.ppt</code>
+with LibreOffice)</td>
+<td>Opens as text: a “Slide” heading for each slide, then its bullets,
+tables and speaker notes</td>
+<td>No. Ctrl+S opens Save As</td>
+</tr>
+<tr>
+<td>Excel with macros (<code>.xlsm</code>), OpenDocument spreadsheet
+(<code>.ods</code>) or presentation (<code>.odp</code>)</td>
+<td><strong>File &gt; Open</strong> does not open these. <strong>Import
+/ Convert Document</strong> reads them into a new document</td>
+<td>Not applicable. You get a new, unsaved tab</td>
+</tr>
+</tbody>
+</table>
+<p><strong>To edit a file that opens as text, make a <code>.docx</code>
+of it.</strong> You can do this in either of two ways.</p>
+<ul>
+<li>In Word or LibreOffice Writer, choose <strong>File &gt; Save
+As</strong>, pick <strong>Word Document (.docx)</strong>, and open the
+new file in QUILL.</li>
+<li>In QUILL, open the file, then choose <strong>File &gt; Save
+As…</strong> with <strong>Word Document (*.docx)</strong> as the type
+and a new name. QUILL writes a new Word document from what you see, and
+the original is not touched.</li>
+</ul>
+<p>A <code>.docm</code> saved as <code>.docx</code> loses its macros,
+which is why QUILL never edits one in place.</p>
+<p><strong>File &gt; Open or Import / Convert Document?</strong>
+<strong>File &gt; Open</strong> (<code>Ctrl+O</code>) opens the file
+itself: the tab takes the file’s name, and a Word document saves back to
+it. <strong>File &gt; Import &gt; Import / Convert Document
+(OCR)…</strong> always makes a new, unsaved tab from what it reads, and
+never points back at the file. Use it when you want a copy of the text
+to work on, or for a file File &gt; Open cannot read, such as a
+<code>.xlsm</code>, an <code>.ods</code> or a picture of a page. See
+<em>Import / Convert Document (OCR)</em> later in this chapter.</p>
 <h4 id="word-docx-and-doc">Word (.docx and .doc)</h4>
-<p>Word documents open the same way, with a choice between the
-structured Word view and the normal text editor. Again, you can remember
-a default and switch inside the tab.</p>
-<p>The structured Word view puts readable structure first. Tables are
-read out in a straight line, headers and then rows, which is easier to
-follow with a screen reader. Normal text mode gives you all of QUILL’s
-editing for making changes directly.</p>
+<p>When you open a Word document, QUILL first asks how you want to see
+it: in the <strong>structured Word view</strong> or in the
+<strong>normal text editor</strong>. Check <strong>Remember this choice
+for Word files</strong> to stop the question. To change your answer
+later, use <strong>How to open Word files</strong> in Settings, on the
+Editing page: <strong>Ask each time</strong>, <strong>Plain
+text</strong> (the normal text editor, where a <code>.docx</code> is
+still edited as rich text) or <strong>Structured</strong>.</p>
+<ul>
+<li>The <strong>normal text editor</strong> is the one to choose when
+you want to change the document. A <code>.docx</code> opens there as
+rich text that you can edit and save back as Word. If the file holds
+things QUILL’s editor cannot keep, such as pictures, comments, tracked
+changes, headers and footers, QUILL names them and asks again. For the
+details, see <em>Editing Word documents (.docx)</em> under <em>One
+Editor, Every Format</em>: the three choices, the backup, tables and the
+limits. A <code>.doc</code> opens there as text, when LibreOffice is
+installed.</li>
+<li>The <strong>structured Word view</strong> is for reading, and you
+cannot type in it. It reads tables in a straight line, headers and then
+rows, which is easier to follow with a screen reader.</li>
+</ul>
+<p>For example, open <code>agenda.docx</code> and choose <strong>Open in
+normal text editor</strong>. You hear “Opened as Rich Text. Headings and
+bold are shown formatted.” Press <code>Ctrl+End</code>, type a line, and
+press <code>Ctrl+S</code>. The file opens in Word with its headings
+still headings and your line at the end.</p>
 <p><strong>Saving to Word.</strong> You can save any document
 <em>as</em> Word. In <strong>File &gt; Save As…</strong>, choose
 <strong>Word Document (*.docx)</strong> (or <strong>Rich Text Format
@@ -1778,6 +1894,12 @@ opened from File Explorer, and QUILL Lite. The optional MarkItDown
 converter is asked only when QUILL’s own reader cannot read a file, or
 finds no text in it, and MarkItDown can read that format. You never need
 to install anything.</p>
+<p>These readers make the <strong>text</strong> you get from a file that
+opens as text (see <em>Office files at a glance</em>): Excel,
+PowerPoint, OpenDocument, <code>.docm</code>, a <code>.docx</code> you
+open for reading only, and everything Import / Convert Document reads. A
+<code>.docx</code> you open to edit goes through QUILL’s Word editing
+instead, described in <em>Word (.docx and .doc)</em> above.</p>
 <p><strong>Why it matters: speed.</strong> MarkItDown takes a long time
 to start: on a test computer, the first Word file after starting QUILL
 from source took 12 to 17 seconds to open when MarkItDown read it,
@@ -18606,12 +18728,14 @@ formatting key, QUILL asks once: treat this document as Markdown,
 convert it to Rich Text, or stay plain. Your answer is remembered for
 that document.</p></li>
 <li><p><strong>Editing Word documents (.docx):</strong> a .docx can open
-for real rich editing and save back as a genuine Word file. If the file
-holds things QUILL’s editor cannot keep (images, comments, tracked
-changes, headers and footers), QUILL asks first. You can open it for
-reading and plain editing (the safe default), edit it as Rich Text with
-those losses named one by one, or edit a copy. The first rich save over
-such a file writes a timestamped backup next to it automatically.
+for real rich editing and save back as a genuine Word file, in an
+installed copy and a portable copy alike (<em>Office files at a
+glance</em> in Chapter 3 lists what every other Office file does). If
+the file holds things QUILL’s editor cannot keep (images, comments,
+tracked changes, headers and footers), QUILL asks first. You can open it
+for reading and plain editing (the safe default), edit it as Rich Text
+with those losses named one by one, or edit a copy. The first rich save
+over such a file writes a timestamped backup next to it automatically.
 <strong>Tables are preserved</strong> when you open a Word document for
 rich editing: they appear inline as accessible tables, so you can read
 them and jump to them with single-key table navigation

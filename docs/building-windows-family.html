@@ -377,7 +377,11 @@ sibling app modules. Its output is
 package against <code>pyproject.toml</code>. Rebaseline with
 <code>scripts/check_runtime_inventory.py standalone/runtime/dist/QuillVilleRuntime --write</code>
 only for an intentional package change, then rerun
-<code>build_runtime.ps1</code> so every remaining gate completes.</p>
+<code>build_runtime.ps1</code> so every remaining gate completes. On the
+first runtime build after 2026-10-17, expect the gate to report
+<code>lxml</code> with an explanation, because the runtime now ships
+Word support. Follow <em>Rebaselining after the Word support change</em>
+in section 5.</p>
 <h2 id="3-build-quill-for-all">3. Build QUILL for All</h2>
 <div class="sourceCode" id="cb4"><pre
 class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> scripts<span class="op">/</span>build_windows_distribution<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>bundle-python <span class="op">--</span>compile-installer <span class="op">--</span>iscc-path <span class="va">$iscc</span> <span class="op">--</span>output-dir dist<span class="op">/</span>windows</span></code></pre></div>
@@ -470,6 +474,97 @@ picture of printed text. Note the ZIP’s new size beside the old one
 (299,961,055 bytes for 1.1.2); expect roughly 25 MB more unpacked. The
 checks are also in
 <code>docs/qa/screen-reader-checks-2026-10.md</code>.</p>
+<h3
+id="rebaselining-after-the-word-support-change-first-runtime-build-after-2026-10-17">Rebaselining
+after the Word support change (first runtime build after
+2026-10-17)</h3>
+<p>Jeff’s decision on 2026-10-17 was to make Word documents fully usable
+in QUILL and QUILL Lite, whatever the size. Until then the shared
+runtime spec (<code>standalone/runtime/quillville-runtime.spec</code>)
+listed <code>lxml</code> in its <code>excludes</code>. python-docx is
+pure Python, so it still froze into the runtime, but it raised the
+moment it imported lxml. As a result, every <em>installed</em> copy of
+QUILL and QUILL Lite opened a <code>.docx</code> as plain text and could
+not save a real Word document. The GLOW Word, PDF and PowerPoint audits
+failed too, because every GLOW auditor imports python-docx. Portable
+copies were fine, because pip installs lxml with python-docx.</p>
+<p>The spec no longer excludes lxml. It also names the Word stack
+(<code>lxml</code>, <code>docx</code>, <code>pptx</code>,
+<code>openpyxl</code> and every <code>acb_large_print</code> module) as
+hidden imports, so the Word path no longer depends on which optional
+imports the tracer happens to follow. Expect three things on the first
+runtime build after this change.</p>
+<ol type="1">
+<li><p><strong>The runtime inventory gate stops the build, and says
+why.</strong> <code>check_runtime_inventory.py</code> reports:</p>
+<pre class="text"><code>  unexpected in _internal: lxml
+      expected: lxml was removed from the runtime spec&#39;s excludes on 2026-10-17 so python-docx can import ...</code></pre>
+<p>That reason comes from <code>KNOWN_ADDITIONS</code> in the gate. The
+only new top-level entry should be <code>lxml</code>, the folder holding
+lxml’s compiled <code>.pyd</code> files. If the gate names anything else
+as unexpected, treat it as ordinary drift and investigate it before you
+continue: do not rebaseline it away.</p></li>
+<li><p><strong>Prove Word works before you rebaseline.</strong> Run the
+import gate by hand against the dist the build just made:</p>
+<div class="sourceCode" id="cb9"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> scripts\check_runtime_imports<span class="op">.</span><span class="fu">py</span> standalone\runtime\dist\QuillVilleRuntime</span></code></pre></div>
+<p>It must end with
+<code>Runtime import gate: N modules checked, all correct.</code> Since
+this change it imports <code>lxml.etree</code>, <code>docx</code>,
+<code>pptx</code>, <code>openpyxl</code>, QUILL’s Word reader and
+writer, <code>quill.core.docx_open</code>, <code>quill_glow_core</code>
+and the four GLOW auditors. It then runs
+<code>quill.io.word_selfcheck</code> inside the frozen runtime: that
+writes a real <code>.docx</code> (a heading, a bold word and a table),
+opens it the way both editors do, saves it back to Word and reads the
+result. Any failure prints “Word support is broken in this runtime”
+along with the fix.</p></li>
+<li><p><strong>Rebaseline, then rebuild so every remaining gate
+runs.</strong></p>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> scripts\check_runtime_inventory<span class="op">.</span><span class="fu">py</span> standalone\runtime\dist\QuillVilleRuntime <span class="op">--</span>write</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>git <span class="fu">diff</span> standalone\runtime\runtime-inventory<span class="op">.</span><span class="fu">json</span>   <span class="co"># should add &quot;lxml&quot; to _internal and nothing else</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\runtime\build_runtime<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span></span></code></pre></div>
+<p>Commit the regenerated <code>runtime-inventory.json</code>. In the
+same commit, delete the <code>"lxml"</code> entry from
+<code>KNOWN_ADDITIONS</code> in
+<code>scripts/check_runtime_inventory.py</code>, because once the
+inventory lists lxml the explanation is no longer needed. Never
+hand-edit <code>runtime-inventory.json</code>: it is only correct when
+it is written from a build.</p></li>
+</ol>
+<p>The portable builds need no rebaseline for this change. Every
+portable already carries python-docx and lxml as base dependencies, and
+the QUILL Lite, Radio and Converter portable inventories already list
+<code>lxml</code>. The QUILL Lite product in
+<code>build_portable.py</code> now names the <code>docx</code> group as
+well, which adds no package, and its step-8 check
+(<code>check_word=True</code>) runs the same Word round trip. If that
+check fails, the portable build stops with “Bundled runtime failed the
+import check … the Word open-and-save round trip”. The
+<code>quill</code> product gains the <code>docx</code> and
+<code>office-text</code> groups; it has no committed inventory, so it
+only prints how to adopt one. QUILL for All’s own builder
+(<code>scripts/build_windows_distribution.py</code>) runs the same check
+after it prunes the embedded runtime (<code>_check_word_support</code>)
+and stops with “Word support check failed in the embedded runtime” if
+Word would fall back to text.</p>
+<p><strong>Check by hand after the build.</strong> On a computer where
+QUILL and QUILL Lite are <em>installed</em> from the new installers (not
+portable), do the following:</p>
+<ol type="1">
+<li>Open a <code>.docx</code> in QUILL Lite with Ctrl+O. You should hear
+“Opened as Rich Text. Headings and bold are shown formatted.”, not a
+text version of the file.</li>
+<li>Type a line, then press Ctrl+S. You should hear “Saved”, and the
+file should open in Word with its headings intact.</li>
+<li>Do the same in QUILL.</li>
+<li>Run a GLOW audit on a Word file and on a PDF in QUILL.</li>
+</ol>
+<p>Then repeat steps 1 to 3 from both portable ZIPs. These checks are
+also listed in <code>docs/qa/screen-reader-checks-2026-10.md</code>. The
+runtime grows by a few megabytes, the size of lxml’s compiled
+parser.</p>
 <p>The app directories <code>standalone/player/</code>,
 <code>standalone/radio-mac/</code>, and
 <code>standalone/weather-ios/</code> have no Windows

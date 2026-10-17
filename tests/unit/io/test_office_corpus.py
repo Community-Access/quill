@@ -91,7 +91,8 @@ def test_word_keeps_headings_lists_tables_and_breaks(
     monkeypatch: pytest.MonkeyPatch, blocked: bool
 ) -> None:
     if blocked:
-        # The shared runtime excludes lxml, so python-docx cannot import there.
+        # The safety net: a build without lxml (the shared runtime excluded it
+        # until 2026-10-17) still reads Word through the standard library.
         _block(monkeypatch, "docx", "lxml")
     found = read_office_text(CORPUS / "report.docx")
     assert found.engine == ("word-xml" if blocked else "python-docx")

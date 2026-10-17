@@ -208,6 +208,9 @@ Radio itself imports almost none of the speech and spellcheck stack. The dead
 `faster_whisper`, `vosk`, `kokoro_onnx`, `onnxruntime`, `torch`, `PIL`,
 `pdfminer`, `pypdfium2` and `lxml` by name, with the note that QUILL uses them
 "only for features Radio never touches".
+The shared runtime is the opposite case for `lxml`: it has carried it since
+2026-10-17, because python-docx cannot import without it and QUILL and QUILL
+Lite edit Word documents through python-docx (see `docs/building-windows-family.md`).
 
 That spec is no longer built. Since the 3.0 shared-runtime switch, Radio's
 installer is the delivery vehicle for a runtime deliberately sized as the union

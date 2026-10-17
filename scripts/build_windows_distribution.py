@@ -2235,6 +2235,7 @@ def bundle_embedded_python(
     _stage_table_uia(site_packages, source_root)
     _stage_optilab_adapter(target_dir, source_root)
     _prune_embedded_runtime(site_packages)
+    _check_word_support(python_exe)
 
     if identity is not None:
         _stamp_quill_launcher(
@@ -2442,6 +2443,36 @@ def _prune_embedded_runtime(site_packages: Path) -> None:
             total_removed += size
     mb = total_removed / 1_048_576
     print(f"Pruned {mb:.0f} MB of build-only packages from the runtime.")
+
+
+#: The step that proves Word documents open and save in the bundle just built.
+WORD_SUPPORT_CHECK = (
+    "import quill.io.word_selfcheck as w; w.assert_word_round_trip(); print('Word support ok')"
+)
+
+
+def _check_word_support(python_exe: Path) -> None:
+    """Fail the build when Word documents would not open and save as Word.
+
+    2026-10-17: the shared QuillVille runtime had excluded lxml for months, so
+    python-docx could not import and every installed copy opened Word files as
+    plain text -- with every build exiting 0. This bundle installs python-docx
+    (a base dependency) and lxml with it; this asks the bundle to do the job
+    (quill.io.word_selfcheck: import, write a .docx, open it, save it back).
+    """
+    result = subprocess.run(
+        [str(python_exe), "-c", WORD_SUPPORT_CHECK],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        raise RuntimeError(
+            "Word support check failed in the embedded runtime -- QUILL would open "
+            "Word files as plain text and could not save a real .docx:\n"
+            + (result.stderr or result.stdout)
+        )
+    print(result.stdout.strip() or "Word support ok")
 
 
 def _install_vendored_glow(python_exe: Path, source_root: Path) -> None:

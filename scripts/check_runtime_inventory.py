@@ -72,6 +72,29 @@ _LAYOUTS: dict[str, tuple[tuple[str, str], ...]] = {
 }
 
 
+#: Names a deliberate source change is known to add, with the reason the gate
+#: prints beside them. The inventory is regenerated only from a real build
+#: (never hand-edited), so the first build after such a change fails here --
+#: and the person reading the failure needs to know it is expected and what to
+#: do, not to go hunting for a stray package. Remove an entry once the
+#: committed inventory lists the name.
+KNOWN_ADDITIONS: dict[str, str] = {
+    "lxml": (
+        "expected: lxml was removed from the runtime spec's excludes on 2026-10-17 "
+        "so python-docx can import -- Word documents open and save as Word in "
+        "installed QUILL and QUILL Lite, and the GLOW audits work. Confirm the import "
+        "gate passes, then rebaseline with --write (docs/building-windows-family.md, "
+        '"Rebaselining after the Word support change").'
+    ),
+}
+
+
+def explain(name: str) -> str:
+    """The reason printed beside an unexpected *name*, or an empty string."""
+    reason = KNOWN_ADDITIONS.get(name)
+    return f"\n      {reason}" if reason else ""
+
+
 def inventory(dist_dir: Path, layout: str = "runtime") -> dict[str, list[str]]:
     """The dist's top-level names, normalized, per area of *layout*.
 
@@ -178,7 +201,10 @@ def main() -> int:
         have = set(current.get(area, []))
         want = set(declared.get(area, [])) - optional
         for name in sorted(have - want - optional):
-            print(f"  unexpected in {area}: {name} (swept from this machine; not declared)")
+            if name in KNOWN_ADDITIONS:
+                print(f"  unexpected in {area}: {name}{explain(name)}")
+            else:
+                print(f"  unexpected in {area}: {name} (swept from this machine; not declared)")
             failures += 1
         for name in sorted(want - have):
             print(f"  missing from {area}: {name} (declared, but this build did not produce it)")

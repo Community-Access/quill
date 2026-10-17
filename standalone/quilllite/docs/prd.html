@@ -2487,9 +2487,10 @@ note going beside the file through the shared
 <code>_host_read_only</code>; a word tool’s Replace refuses through
 <code>refuse_if_guarded</code>. A file that cannot be written opens
 guarded, as in QUILL.</p>
-<p><strong>Word names.</strong> QUILL Lite neither opens nor writes Word
-documents; a typed <code>.docx</code>, <code>.docm</code>,
-<code>.dotx</code> or <code>.dotm</code> is refused with one sentence
+<p><strong>Word names.</strong> (As of 2026-10-16; the first clause was
+overtaken the next day, see below.) QUILL Lite then neither opened nor
+wrote Word documents; a typed <code>.docx</code>, <code>.docm</code>,
+<code>.dotx</code> or <code>.dotm</code> was refused with one sentence
 naming Rich Text (<code>filetypes.word_save_refusal</code>) before
 anything else is asked, on Save As, Save and the collector’s quiet save.
 Before this, the window’s text was written under the Word name. QUILL
@@ -4573,9 +4574,10 @@ note going beside the file through the shared
 <code>_host_read_only</code>; a word tool’s Replace refuses through
 <code>refuse_if_guarded</code>. A file that cannot be written opens
 guarded, as in QUILL.</p>
-<p><strong>Word names.</strong> QUILL Lite neither opens nor writes Word
-documents; a typed <code>.docx</code>, <code>.docm</code>,
-<code>.dotx</code> or <code>.dotm</code> is refused with one sentence
+<p><strong>Word names.</strong> (As of 2026-10-16; the first clause was
+overtaken the next day, see below.) QUILL Lite then neither opened nor
+wrote Word documents; a typed <code>.docx</code>, <code>.docm</code>,
+<code>.dotx</code> or <code>.dotm</code> was refused with one sentence
 naming Rich Text (<code>filetypes.word_save_refusal</code>) before
 anything else is asked, on Save As, Save and the collector’s quiet save.
 Before this, the window’s text was written under the Word name. QUILL
@@ -4729,6 +4731,77 @@ QUILL Lite’s roster. Braille gets “note” when the cue is a sound
 (misspelling) and F (page) are QUILL-only: QUILL Lite has no browse
 mode. Its status bar’s Page cell already shows “Page N of M” from the
 same <code>quill.core.navigation.page_position</code>.</p>
+<h2
+id="word-documents-in-every-build-and-one-office-story-2026-10-17">Word
+documents in every build, and one Office story (2026-10-17)</h2>
+<p><strong>Installed copies could not edit Word.</strong> The shared
+QuillVille runtime that the installed QUILL Lite runs on excluded
+<code>lxml</code>, so python-docx (frozen in, but unable to import) left
+<code>docx_open.word_rich_available()</code> False. Every
+<code>.docx</code> took the read-only text path described in <em>PDFs,
+opened as text</em> and the Office readers, and the portable copy, which
+installs lxml with python-docx, was the only one that edited Word.
+Jeff’s decision (2026-10-17) was to ship lxml whatever the size. The
+runtime spec no longer excludes it. The build proves Word works in every
+bundle with <code>quill/io/word_selfcheck.py</code>:
+<code>check_runtime_imports.py</code> runs it in the runtime, and
+<code>build_portable.py</code> (<code>check_word=True</code> for
+<code>quilllite</code>) runs it in the portable, so a build that would
+open Word as text does not finish.
+<code>tests/unit/scripts/test_word_support_in_runtime.py</code>
+simulates the runtime by blocking every spec exclude. The text path
+stays, as the safety net and for the “open for reading and plain
+editing” answer.</p>
+<p><strong>The behaviour, the same as QUILL’s</strong> (QUILL also
+offers its read-only structured Word view; QUILL Lite has none):</p>
+<table>
+<thead>
+<tr>
+<th>File type</th>
+<th>Opens as</th>
+<th>Save back to it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.docx</code></td>
+<td>Rich text to edit (<code>open_mode_for</code> RICH); the fidelity
+question when the scan flags something</td>
+<td>Yes, as Word (<code>saves_as_word</code>); a flagged original is
+backed up once per session</td>
+</tr>
+<tr>
+<td><code>.docm</code></td>
+<td>Text; macros never run</td>
+<td>No: <code>refuse_save_over_source</code>, then Save As with a
+<code>.txt</code> name</td>
+</tr>
+<tr>
+<td><code>.doc</code>, <code>.xls</code>, <code>.ppt</code></td>
+<td>Text through a LibreOffice temporary copy; without it, the reader’s
+sentence naming the Save As type</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>.odt</code>, <code>.xlsx</code>, <code>.pptx</code></td>
+<td>Text through QUILL’s readers</td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>.xlsm</code>, <code>.ods</code>, <code>.odp</code></td>
+<td>Not in <code>OFFICE_OPEN_SUFFIXES</code> (QUILL’s File &gt; Open
+does not open them either); File &gt; Import / Convert Document reads
+them</td>
+<td>Not applicable (a new untitled document)</td>
+</tr>
+</tbody>
+</table>
+<p>Import / Convert always makes a new, untitled document that does not
+point back at the source; Ctrl+O opens the file itself, and only a
+<code>.docx</code> saves back to it. The user guide’s “Office files at a
+glance” carries this table in plain words, and the changelog’s
+Unreleased section has one consolidated entry for it instead of three
+written in build order.</p>
 </main>
 </body>
 </html>
