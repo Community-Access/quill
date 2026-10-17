@@ -1805,10 +1805,33 @@ to work on, or for a file File &gt; Open cannot read, such as a
 it: in the <strong>structured Word view</strong> or in the
 <strong>normal text editor</strong>. Check <strong>Remember this choice
 for Word files</strong> to stop the question. To change your answer
-later, use <strong>How to open Word files</strong> in Settings, on the
-Editing page: <strong>Ask each time</strong>, <strong>Plain
-text</strong> (the normal text editor, where a <code>.docx</code> is
-still edited as rich text) or <strong>Structured</strong>.</p>
+later, use <strong>How to open Word files</strong> in Settings
+(<code>Ctrl+,</code>, then the Editing page; or type “Word files” in its
+search box): <strong>Ask each time</strong>, <strong>Plain text</strong>
+or <strong>Structured</strong>.</p>
+<p><strong>What the “Plain text” choice really does.</strong> Its name
+is misleading. It does not turn a Word document into plain text. It
+means “skip the question and open in the <strong>normal text
+editor</strong>”, the same as answering <strong>Open in normal text
+editor</strong>:</p>
+<ul>
+<li>A <code>.docx</code> still opens <strong>as editable rich
+text</strong>, with its headings, lists, bold, links and tables, and
+<code>Ctrl+S</code> still saves a real Word document. If the file holds
+something a save would drop, QUILL still asks first, exactly as
+described below.</li>
+<li>A <code>.doc</code> opens as readable text (with LibreOffice
+installed), as it does whichever way you answer.</li>
+<li><strong>Structured</strong> means “skip the question and open the
+read-only structured Word view”. <strong>Ask each time</strong> (the
+default) asks.</li>
+</ul>
+<p>So if you want a Word document as bare text with no formatting, this
+setting is not the way: open it, then press <strong>Format &gt; Document
+Format…</strong> (<code>Alt+Shift+F</code>) and choose plain text, or
+use <strong>File &gt; Import / Convert Document (OCR)…</strong> to get
+the text as a new, untitled document. The setting only decides which of
+the two views a Word file opens in.</p>
 <ul>
 <li>The <strong>normal text editor</strong> is the one to choose when
 you want to change the document. A <code>.docx</code> opens there as
@@ -5049,7 +5072,11 @@ time</strong> (the default), <strong>Plain text</strong> or
 <strong>Grid</strong>.</li>
 <li><strong>How to open Word files</strong> is <strong>Ask each
 time</strong> (the default), <strong>Plain text</strong> or
-<strong>Structured</strong>.</li>
+<strong>Structured</strong>. <strong>Plain text</strong> means the
+normal text editor, not plain text: a <code>.docx</code> still opens as
+editable rich text and saves as Word. <strong>Structured</strong> opens
+the read-only structured Word view. See <em>Word (.docx and .doc)</em>
+in Chapter 3 for the full story.</li>
 <li><strong>Autosave interval (seconds)</strong> is how often QUILL
 autosaves the open document, from 5 to 600 seconds. The default is
 30.</li>
