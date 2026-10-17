@@ -152,12 +152,28 @@ This changes Quill Weather only. Your other QUILL apps keep their own choice, un
 
 ## Reaching the other apps
 
-Quill Weather, Quill Radio, and QUILL are separate apps that can open each other.
-The top-level **QuillVille** menu lists the others -- **Open QUILL** and **Open
-Quill Radio** -- and each opens in its own window; if it is already running, it
-simply comes to the front. Every QuillVille app carries the same menu in the same
-place, so getting from one to another is the same three keystrokes everywhere.
-The tray menu offers the same list.
+Quill Weather and the other QuillVille apps are separate apps that can open each
+other. The top-level **QuillVille** menu (Alt+Q) lists the others, and each opens
+in its own window; if it is already running, it simply comes to the front. Every
+row has its own letter, so Alt+Q and then one letter opens an app with nothing
+held down:
+
+- **Open QUILL**: Alt+Q, then Q (or Ctrl+Alt+Shift+F7)
+- **Open Quill Radio**: Alt+Q, then R (or Ctrl+Alt+Shift+F8)
+- **Open Quill Converter**: Alt+Q, then V (or Ctrl+Alt+Shift+F9)
+- **Open Quill Inkwell**: Alt+Q, then I (or Ctrl+Alt+Shift+F10)
+- **Open QUILL Transcribe**: Alt+Q, then T (or Ctrl+Alt+Shift+F11). QUILL
+  Transcribe, released on 1 November 2026, types what you say into any
+  program.
+
+For example, to dictate a note about tomorrow's forecast into your email, press
+Ctrl+Alt+Shift+F11 to open QUILL Transcribe, then go to your email and press its
+start and stop key (Alt+Shift+Backslash unless you changed it). Every
+QuillVille app carries the same menu in the same place, so getting from one to
+another is the same keystrokes everywhere.
+
+The tray menu offers a shorter list: **Open QUILL**, **Open Quill Radio** and
+**Open QUILL Transcribe**.
 
 If the app you pick is not installed yet, Quill Weather does not just tell you
 so. It asks whether you would like to download and install it, and if you say

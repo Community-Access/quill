@@ -245,6 +245,67 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="quill-transcribe-is-released-todo-p2-item-19-release-date-2026-11-01-2026-10-16">QUILL
+Transcribe is released (todo P2 item 19; release date 2026-11-01)
+(2026-10-16)</h3>
+<p>Jeff’s decisions of 2026-10-16. Nothing is tagged, pushed or
+published.</p>
+<ul>
+<li><strong><code>quill/core/app_launcher.py</code></strong>:
+<code>"transcribe"</code> joins <code>RELEASED_APPS</code>, with the
+reason beside the set as Inkwell’s and Converter’s have: QUILL
+Transcribe is the system-wide half of dictation, and Quill Cast’s and
+Quill Radio’s Edit &gt; Dictate Here (Ctrl+F11) has nobody else to ask.
+Consequences, all through <code>is_app_released</code>:
+<code>dictate_here_ui.dictate_here_available()</code> is now true in
+public Cast and Radio builds; every QuillVille menu lists it; the
+companion-install offer
+(<code>companion_install.can_offer_download</code>, asset prefix
+<code>QUILL-Transcribe</code>) covers it.</li>
+<li><strong><code>quill/ui/quillville_menu.py</code></strong>:
+<code>"transcribe"</code> is last in <code>QUILLVILLE_APP_ORDER</code>,
+so every existing row keeps its positional key in every app and
+Transcribe takes the next one (F11 in QUILL, Weather, Converter and
+Inkwell; F10 in Radio, which leaves Inkwell off). The tray’s hard-coded
+<code>("quill", "radio", "weather")</code> becomes
+<code>TRAY_APP_ORDER</code>, which adds <code>"transcribe"</code> (its
+own home is the tray) and is now gated by <code>is_app_released</code>
+like the menu bar.</li>
+<li><strong>No sixth launcher key</strong>
+(<code>quill/core/app_keymaps.py</code>, the comment beside
+<code>SIBLING_APP_ACCELERATORS</code>): a public menu shows at most five
+rows on Ctrl+Alt+Shift+F7 to F11; only a developer build, which also
+lists Cast and Audio Studio, shows rows past the fifth with no key, as
+the Media Player’s developer menu already did. The rest of the
+Ctrl+Alt+Shift F-row is taken.</li>
+<li><strong>Gates</strong>: <code>test_keymap_accelerators.py</code> now
+checks that every <em>public</em> menu fits the keys, and a new test
+builds every app’s real QuillVille menu (apps found from the
+<code>exclude="..."</code> call sites) to assert that a public build has
+no keyless row and that a developer build’s keyless rows never outnumber
+the unreleased apps it lists. <code>test_app_gating.py</code>,
+<code>test_quillville_menu_released.py</code> (Transcribe last on F11;
+the tray list) and <code>test_dictate_here_menu.py</code> (Radio’s real
+bar carries Ctrl+F11 once in a <em>public</em> build) updated
+deliberately.</li>
+<li><strong>Release date 2026-11-01</strong> in QUILL Transcribe’s
+changelogs (the 1.0.0 heading, until now 2026-10-11, a build date for a
+version never published), release notes, PRD status and README, and on
+the site (<code>index.html</code>, <code>faq.html</code>,
+<code>docs.html</code>, <code>dictation.html</code>), with no download
+link to an artifact that does not exist yet. The build scripts and the
+sibling version gate read no release date, so nothing there
+changed.</li>
+<li><strong>Docs</strong>: the QUILL user guide’s QuillVille menu
+section now lists the public menu with its real keys (it listed
+developer-build positions) and Transcribe; the Radio, Weather, Inkwell,
+Converter, Cast, QUILL Lite and QUILL Transcribe user guides and
+changelogs; the Cast and Radio PRDs; the dictation design record section
+30.6; <code>docs/qa/screen-reader-checks-2026-10.md</code> gains a
+release-blocker section (the Outlook, Word, Notepad and browser pass is
+Jeff’s) and checks for the new rows.</li>
+</ul>
+<h3
 id="dictation-one-settings-store-for-the-family-d-13-the-word-lists-new-home-and-dictate-here-in-cast-and-radio-d-16-2026-10-16">Dictation:
 one settings store for the family (D-13), the word list’s new home, and
 Dictate Here in Cast and Radio (D-16) (2026-10-16)</h3>

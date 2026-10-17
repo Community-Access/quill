@@ -4,6 +4,10 @@ All notable changes to Quill Weather are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+- **QUILL Transcribe on the QuillVille menu and the tray.** QUILL Transcribe, which types what you say into any program, is released on 1 November 2026. The **QuillVille** menu (Alt+Q) now lists every released app with its letter and key: QUILL (Q, Ctrl+Alt+Shift+F7), Quill Radio (R, F8), Quill Converter (V, F9), Quill Inkwell (I, F10) and QUILL Transcribe (T, Ctrl+Alt+Shift+F11). The tray menu adds **Open QUILL Transcribe** after QUILL and Quill Radio. If it is not installed yet, Quill Weather offers to download it once it is published, and nothing is downloaded until you say yes. The user guide's "Reaching the other apps" listed only QUILL and Quill Radio; it now lists them all, with an example.
+
 ## [2.2.1] - 2026-10-08
 
 Build 2:

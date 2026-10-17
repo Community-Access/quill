@@ -32,6 +32,15 @@ from quill.core.app_launcher import APP_NAMES, RELEASED_APPS, is_app_released
 
 #: The order siblings are listed in the QuillVille menu (the current app is
 #: skipped via ``exclude``).
+#:
+#: QUILL Transcribe joins last (released 2026-11-01). Rows take their default
+#: launcher key by position, so appending is the one place it can go without
+#: moving a key somebody has already learned: every existing row keeps its
+#: F-key in every app, and Transcribe takes the next one. Last also suits it:
+#: like Inkwell just before it, it is a tray companion that works in other
+#: programs, not a window people move between. In a public build no menu shows
+#: more than five rows (``SIBLING_APP_ACCELERATORS``); a developer build, which
+#: lists the unreleased apps too, shows the rows past the fifth with no key.
 QUILLVILLE_APP_ORDER: tuple[str, ...] = (
     "quill",
     "radio",
@@ -40,7 +49,15 @@ QUILLVILLE_APP_ORDER: tuple[str, ...] = (
     "studio",
     "converter",
     "inkwell",
+    "transcribe",
 )
+
+#: The siblings a tray menu offers, a shorter list than the menu bar's: the
+#: three apps that have always been there, and QUILL Transcribe (2026-11-01),
+#: whose own home is the tray -- a listener who reaches for dictation from the
+#: notification area should find it beside the others. Gated like the menu bar
+#: (:func:`is_app_released`), so a public build never offers an unreleased app.
+TRAY_APP_ORDER: tuple[str, ...] = ("quill", "radio", "weather", "transcribe")
 
 #: ``RELEASED_APPS`` is re-exported from ``quill.core.app_launcher`` (the single
 #: source of truth). Gating uses :func:`is_app_released`, which also honors a
@@ -180,8 +197,8 @@ def append_sibling_items(
 
     host = host if host is not None else getattr(retain, "__self__", None)
     position = 0
-    for key in ("quill", "radio", "weather"):
-        if key == exclude:
+    for key in TRAY_APP_ORDER:
+        if key == exclude or not is_app_released(key):
             continue
         item_id = wx.NewIdRef()
         menu.Append(item_id, _row(key, position, on_launch, host))

@@ -1,5 +1,7 @@
 # QUILL Transcribe 1.0 Release Notes
 
+Released November 1, 2026.
+
 QUILL Transcribe is new. It types what you say into the program you are using,
 with the same speech models and dictation you know from QUILL and QUILL Lite.
 

@@ -675,19 +675,35 @@ chapter, under Windows and tabs.
 
 #### QuillVille
 
-QuillVille opens the other apps in the QUILL family, each on a key of its own:
+QuillVille (`Alt+Q`) opens the other apps in the QUILL family. Each row has
+its own letter, so `Alt+Q` and then one letter opens an app with nothing held
+down, and each has a key of its own:
 
-- **Open Quill Radio** (`Ctrl+Alt+Shift+F7`)
-- **Open Quill Weather** (`Ctrl+Alt+Shift+F8`)
-- **Open Quill Cast** (`Ctrl+Alt+Shift+F12`), the same key that shows and
-  hides Cast from any program once it is running
-- **Open Audio Studio** (`Ctrl+Alt+Shift+F9`)
-- **Open Quill Converter** (`Ctrl+Alt+Shift+F10`), which changes audio and
-  video files from one format to another
-- **Open Quill Inkwell** (`Ctrl+Alt+Shift+F11`)
+- **Open Quill Radio** (`Alt+Q`, `R`, or `Ctrl+Alt+Shift+F7`)
+- **Open Quill Weather** (`Alt+Q`, `W`, or `Ctrl+Alt+Shift+F8`)
+- **Open Quill Converter** (`Alt+Q`, `V`, or `Ctrl+Alt+Shift+F9`), which
+  changes audio and video files from one format to another
+- **Open Quill Inkwell** (`Alt+Q`, `I`, or `Ctrl+Alt+Shift+F10`), which
+  expands your abbreviations in every program
+- **Open QUILL Transcribe** (`Alt+Q`, `T`, or `Ctrl+Alt+Shift+F11`), which
+  types what you say into any program. It is released on 1 November 2026.
+
+For example, to start dictating into an email, press `Ctrl+Alt+Shift+F11`.
+QUILL Transcribe opens (or comes to the front if it is already running), and
+its own start and stop key, Alt+Shift+Backslash unless you changed it, then
+works in your email program. Inside QUILL you do not need it: `Ctrl+F11`
+dictates into the document you are in.
+
+Those five are every row this menu shows. Quill Cast and Audio Studio join it
+when they are released; Cast will keep `Ctrl+Alt+Shift+F12`, the key that
+shows and hides it from any program. Every row is a command you can give a
+different key in **Help > Keyboard Shortcuts...** (`Ctrl+Alt+K`): search for
+"QuillVille: Open".
 
 If an app is not on your computer yet, QUILL offers to download it for you.
-Chapter 14, Projects, notes and the QuillVille family, says more.
+Nothing is downloaded until you say yes. QUILL Transcribe has nothing to
+download until 1 November 2026; before then QUILL says it could not fetch it
+and offers to open the download page instead. Chapter 14, Projects, notes and the QuillVille family, says more.
 
 #### Help
 
@@ -15182,7 +15198,9 @@ Internet radio is not part of QUILL. It is **Quill Radio**, a free app of its
 own in the QuillVille family, with its own window, its own keyboard-first
 design, and its own complete User Guide (open it from the app's Help menu).
 The other companions are the same: **Quill Weather**, **QUILL Audio Studio**,
-**Quill Inkwell**, and the rest.
+**Quill Inkwell**, **Quill Converter**, **QUILL Transcribe** (released on 1
+November 2026, it types what you say into any program, not only into QUILL),
+and the rest.
 
 They share QUILL's code, settings and data where that helps you. A station
 you favorite in Quill Radio, or an abbreviation you add in Quill Inkwell, is

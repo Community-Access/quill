@@ -1698,9 +1698,18 @@ Transcribe does the listening and types what you say into the box you are in.
 Ctrl+F11 works in any text box in Cast, including the ones in dialogs such as
 Add Podcast and Search Everywhere. Your own words from My Words and Phrases and the
 dictation commands work as they do everywhere else. If Quill Inkwell is
-dictating, Cast tells you so and nothing starts. If QUILL Transcribe is not in
-your copy of the family, the item is not on the Edit menu; the key then does
-nothing. QUILL Transcribe is released on 1 November 2026, and from then on public builds of Quill Cast and Quill Radio show Dictate Here.
+dictating, Cast tells you so and nothing starts. QUILL Transcribe is released
+on 1 November 2026, and from then on every copy of Quill Cast and Quill Radio
+shows Dictate Here on its Edit menu, whether or not QUILL Transcribe is
+installed yet.
+
+QUILL Transcribe is a separate, free app in the QuillVille family, beside
+QUILL, Quill Radio, Quill Weather, Quill Converter and Quill Inkwell. It types
+what you say into any program, not only into Cast. If you press Ctrl+F11 and
+it is not installed, Cast says "Dictate Here needs QUILL Transcribe, which is
+not installed with this copy." Install it once from its download page (from
+1 November 2026), open it, and choose a speech model; from then on Ctrl+F11
+in Cast starts it for you when it is not running.
 
 ### Following ACB Media's podcasts
 

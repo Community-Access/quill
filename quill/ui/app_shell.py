@@ -505,7 +505,8 @@ class AppShellFrame(
         self.frame.Raise()
 
     def _append_sibling_app_tray_items(self, menu: wx.Menu, *, exclude: str) -> None:
-        """Add 'Open QUILL / Quill Radio / Quill Weather' items so the sibling
+        """Add 'Open QUILL / Quill Radio / Quill Weather / QUILL Transcribe' items
+        (``quillville_menu.TRAY_APP_ORDER``, released apps only) so the sibling
         apps are always one click apart -- each opens in its own window and tray.
         ``exclude`` is this app's own key, which is left off the list."""
         from quill.ui.quillville_menu import append_sibling_items

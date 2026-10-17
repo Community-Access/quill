@@ -4,6 +4,8 @@ All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the fir
 
 ## Unreleased
 
+- **QUILL Transcribe is released on 1 November 2026, so Dictate Here is in every copy.** QUILL Transcribe joins QUILL, Quill Radio, Quill Weather, Quill Converter and Quill Inkwell as a released member of the family. From then on **Edit > Dictate Here** (Ctrl+F11) is on Cast's Edit menu in every build, not only developer builds. For example, press Ctrl+N, then Ctrl+F11 in Podcast name, say "the daily", pause, and press Enter. If QUILL Transcribe is not installed yet, Ctrl+F11 says "Dictate Here needs QUILL Transcribe, which is not installed with this copy."; install it from its download page once it is published. User guide: "Dictating into a search box".
+
 - **Edit > Dictate Here (Ctrl+F11).** Put the cursor in a search box, such as Add Podcast's name box, press Ctrl+F11, and QUILL Transcribe dictates into it, starting in the tray if it is not running. Cast has no speech engine of its own; your words and dictation commands are QUILL Transcribe's. The key works in dialogs as well as the main window. Shown when QUILL Transcribe is part of your copy of the family, which is every public build from QUILL Transcribe's release on 1 November 2026 (dict.md D-16).
 
 - **Help > Notifications... says how many are unread**, such as "Notifications (3 new)...", read again each time the Help menu opens. Shared with Quill Radio (`quill/ui/support_menu.py`).
