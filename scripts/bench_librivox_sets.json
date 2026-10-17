@@ -1,0 +1,310 @@
+{
+  "_about": "The B-1a LibriVox held-out selections built on 2026-10-17 (dictation design record section 35). Rebuild a set with: bench_librivox.py fetch scripts/bench_librivox_sets.json --set librivox-heldout-en --into DIR, then build-selection the same file and set --audio DIR --aligner whisper_turbo --first-minutes 6 --out OUT. Chosen from the catalogue read on 2026-10-17 (since 2024-10-21, 1,000 projects) with select --minutes-per-reader 6 --max-section-minutes 6 --minutes 75 (English) or 60 (Spanish), seed 20261015. Readers are LibriVox volunteers, named here because the dataset policy attributes every segment to its reader and book. Two Spanish sections (lv21234-026 and -031) could not be downloaded (archive.org answered 500).",
+  "format": 1,
+  "sets": {
+    "librivox-heldout-en": [
+      {
+        "project": 19588,
+        "section": 16,
+        "title": "Chapter 16, Chatterer and Sammy Jay Quarrel",
+        "reader": "Victoria Alice Bell",
+        "ebook": 43596,
+        "catalogued": "2026-08-01",
+        "seconds": 220.0,
+        "listen_url": "https://www.archive.org/download/adventuresofsammyjay_2608_librivox/adventuresofsammyjay_16_burgess_64kb.mp3"
+      },
+      {
+        "project": 19800,
+        "section": 1,
+        "title": "A Five Dollar Bill",
+        "reader": "redrun",
+        "ebook": 70236,
+        "catalogued": "2024-11-01",
+        "seconds": 617.0,
+        "listen_url": "https://www.archive.org/download/oldmill_2411_librivox/secretoftheoldmill_01_dixon_64kb.mp3"
+      },
+      {
+        "project": 20599,
+        "section": 34,
+        "title": "Part Two Chapter Sixteen",
+        "reader": "David Granville Young",
+        "ebook": 60177,
+        "catalogued": "2025-12-01",
+        "seconds": 927.0,
+        "listen_url": "https://www.archive.org/download/throughthedesert_2512_librivox/throughthedesert_34_sienkiewicz_64kb.mp3"
+      },
+      {
+        "project": 20687,
+        "section": 8,
+        "title": "BOOK II: JULIUS DE BARAGLIOUL Chapter 7",
+        "reader": "ToddHW",
+        "ebook": 73838,
+        "catalogued": "2026-06-01",
+        "seconds": 1116.0,
+        "listen_url": "https://www.archive.org/download/vaticanswindle_2606_librivox/vaticanswindle_08_gide_64kb.mp3"
+      },
+      {
+        "project": 20762,
+        "section": 2,
+        "title": "Chapter II, In Lambeth Police Court",
+        "reader": "Tom Shoesmith",
+        "ebook": 56907,
+        "catalogued": "2024-12-01",
+        "seconds": 1017.0,
+        "listen_url": "https://www.archive.org/download/picturesproblemspolicecourts_2412_librivox/picturesandproblems_02_holmes_64kb.mp3"
+      },
+      {
+        "project": 20762,
+        "section": 19,
+        "title": "Chapter XII, How the Poor Live – And Die, Part 1",
+        "reader": "Peter Yearsley",
+        "ebook": 56907,
+        "catalogued": "2024-12-01",
+        "seconds": 1488.0,
+        "listen_url": "https://www.archive.org/download/picturesproblemspolicecourts_2412_librivox/picturesandproblems_19_holmes_64kb.mp3"
+      },
+      {
+        "project": 20848,
+        "section": 4,
+        "title": "IV",
+        "reader": "Cbteddy",
+        "ebook": 5143,
+        "catalogued": "2025-07-01",
+        "seconds": 1623.0,
+        "listen_url": "https://www.archive.org/download/auctionblock_2507_librivox/auctionblock_04_beach_64kb.mp3"
+      },
+      {
+        "project": 20894,
+        "section": 11,
+        "title": "XI The Bluestockings",
+        "reader": "czandra",
+        "ebook": 74300,
+        "catalogued": "2026-04-01",
+        "seconds": 2969.0,
+        "listen_url": "https://www.archive.org/download/ladyofthelastcentury_2604_librivox/ladyofthelastcentury_11_doran_64kb.mp3"
+      },
+      {
+        "project": 20914,
+        "section": 71,
+        "title": "\"The star of the unconquered will\" by H. W. Longfellow",
+        "reader": "Hannah",
+        "ebook": 68639,
+        "catalogued": "2024-12-01",
+        "seconds": 31.0,
+        "listen_url": "https://www.archive.org/download/poemswealllove_2412_librivox/poemswealllove_71_barnet_64kb.mp3"
+      },
+      {
+        "project": 21177,
+        "section": 4,
+        "title": "Christmas-Tide - Read by CLP",
+        "reader": "Chris Pyle",
+        "ebook": 19109,
+        "catalogued": "2024-10-21",
+        "seconds": 74.0,
+        "listen_url": "https://www.archive.org/download/christmas-tide_2412.poem_librivox/christmastide_howard_clp_64kb.mp3"
+      },
+      {
+        "project": 21201,
+        "section": 50,
+        "title": "L. POWER.",
+        "reader": "proboomer",
+        "ebook": 12241,
+        "catalogued": "2026-03-01",
+        "seconds": 35.0,
+        "listen_url": "https://www.archive.org/download/poems3_2603_librivox/poems3_050_dickinson_64kb.mp3"
+      },
+      {
+        "project": 21201,
+        "section": 146,
+        "title": "XL. [Three weeks passed since I had seen her]",
+        "reader": "proboomer",
+        "ebook": 12241,
+        "catalogued": "2026-03-01",
+        "seconds": 51.0,
+        "listen_url": "https://www.archive.org/download/poems3_2603_librivox/poems3_146_dickinson_64kb.mp3"
+      },
+      {
+        "project": 21231,
+        "section": 17,
+        "title": "XVII. Golden Seal Cultivation",
+        "reader": "Amy Gramour",
+        "ebook": 34570,
+        "catalogued": "2025-10-01",
+        "seconds": 827.0,
+        "listen_url": "https://www.archive.org/download/ginseng_2510_librivox/ginseng_17_harding_64kb.mp3"
+      },
+      {
+        "project": 21295,
+        "section": 1,
+        "title": "FROM ROUND THE WORLD",
+        "reader": "ShrimpPhish",
+        "ebook": 75102,
+        "catalogued": "2026-09-01",
+        "seconds": 803.0,
+        "listen_url": "https://www.archive.org/download/nigelbrowning_2609_librivox/nigelbrowning_01_giberne_64kb.mp3"
+      },
+      {
+        "project": 21352,
+        "section": 17,
+        "title": "A French Cook",
+        "reader": "Lynne T",
+        "ebook": 49718,
+        "catalogued": "2026-01-01",
+        "seconds": 350.0,
+        "listen_url": "https://www.archive.org/download/desultoryman_2601_librivox/desultoryman_17_james_64kb.mp3"
+      },
+      {
+        "project": 21361,
+        "section": 140,
+        "title": "Opportunity    BY Edward Rowland Sill",
+        "reader": "Carl Thomas",
+        "ebook": 10763,
+        "catalogued": "2025-07-01",
+        "seconds": 128.0,
+        "listen_url": "https://www.archive.org/download/itcanbedone_2507_librivox/itcanbedone_140_bachelor_64kb.mp3"
+      },
+      {
+        "project": 21492,
+        "section": 59,
+        "title": "Chapter 59",
+        "reader": "Deon Gines",
+        "ebook": 3622,
+        "catalogued": "2025-09-01",
+        "seconds": 1915.0,
+        "listen_url": "https://www.archive.org/download/dukeschildrenver2_2509_librivox/dukeschildren_59_trollope_64kb.mp3"
+      }
+    ],
+    "librivox-heldout-es": [
+      {
+        "project": 10505,
+        "section": 1,
+        "title": "I",
+        "reader": "Charbelí Ramos Chávez",
+        "ebook": 17406,
+        "catalogued": "2025-06-01",
+        "seconds": 1361.0,
+        "listen_url": "https://www.archive.org/download/unviajedenovios_2506_librivox/viajedenovios_01_pardobazan_64kb.mp3"
+      },
+      {
+        "project": 20812,
+        "section": 6,
+        "title": "VI",
+        "reader": "Epachuko",
+        "ebook": 49149,
+        "catalogued": "2024-11-01",
+        "seconds": 1019.0,
+        "listen_url": "https://www.archive.org/download/amor_2411_librivox/amorypedagogia_06_unamuno_64kb.mp3"
+      },
+      {
+        "project": 20927,
+        "section": 10,
+        "title": "Capítulos 28 a 30",
+        "reader": "Meribau",
+        "ebook": 40066,
+        "catalogued": "2024-12-01",
+        "seconds": 942.0,
+        "listen_url": "https://www.archive.org/download/paginassevillanas_2412_librivox/paginassevillanas_10_chavesrey_64kb.mp3"
+      },
+      {
+        "project": 20927,
+        "section": 24,
+        "title": "Capítulos 70 a 72",
+        "reader": "mpinedag",
+        "ebook": 40066,
+        "catalogued": "2024-12-01",
+        "seconds": 977.0,
+        "listen_url": "https://www.archive.org/download/paginassevillanas_2412_librivox/paginassevillanas_24_chavesrey_64kb.mp3"
+      },
+      {
+        "project": 20946,
+        "section": 7,
+        "title": "Los Simbolistas, Segunda Parte",
+        "reader": "Álvaro Ortiz",
+        "ebook": 68787,
+        "catalogued": "2025-03-01",
+        "seconds": 1245.0,
+        "listen_url": "https://www.archive.org/download/cabossueltos_2503_librivox/cabossueltos_07_cejadoryfrauca_64kb.mp3"
+      },
+      {
+        "project": 21132,
+        "section": 9,
+        "title": "La Huachita Cordera",
+        "reader": "rroderick",
+        "ebook": 63424,
+        "catalogued": "2025-02-01",
+        "seconds": 903.0,
+        "listen_url": "https://www.archive.org/download/cuentoschile_2502_librivox/cuentoschile_09_laval_64kb.mp3"
+      },
+      {
+        "project": 21132,
+        "section": 27,
+        "title": "El Diablo y el Campesino",
+        "reader": "Pablocrdz",
+        "ebook": 63424,
+        "catalogued": "2025-02-01",
+        "seconds": 159.0,
+        "listen_url": "https://www.archive.org/download/cuentoschile_2502_librivox/cuentoschile_27_laval_64kb.mp3"
+      },
+      {
+        "project": 21132,
+        "section": 33,
+        "title": "El Vendedor de pequenes",
+        "reader": "Consuelo Aponte",
+        "ebook": 63424,
+        "catalogued": "2025-02-01",
+        "seconds": 78.0,
+        "listen_url": "https://www.archive.org/download/cuentoschile_2502_librivox/cuentoschile_33_laval_64kb.mp3"
+      },
+      {
+        "project": 21132,
+        "section": 39,
+        "title": "El Guairao y el Sapito",
+        "reader": "Consuelo Aponte",
+        "ebook": 63424,
+        "catalogued": "2025-02-01",
+        "seconds": 57.0,
+        "listen_url": "https://www.archive.org/download/cuentoschile_2502_librivox/cuentoschile_39_laval_64kb.mp3"
+      },
+      {
+        "project": 21132,
+        "section": 40,
+        "title": "Los Guairaos y el Sapo",
+        "reader": "Consuelo Aponte",
+        "ebook": 63424,
+        "catalogued": "2025-02-01",
+        "seconds": 66.0,
+        "listen_url": "https://www.archive.org/download/cuentoschile_2502_librivox/cuentoschile_40_laval_64kb.mp3"
+      },
+      {
+        "project": 21234,
+        "section": 26,
+        "title": "Cap. XXVII",
+        "reader": "juanina",
+        "ebook": 58059,
+        "catalogued": "2025-06-01",
+        "seconds": 1833.0,
+        "listen_url": "https://www.archive.org/download/madrenaturaleza_2506_librivox/madrenaturaleza_26_pardobazan_64kb.mp3"
+      },
+      {
+        "project": 21234,
+        "section": 31,
+        "title": "Cap. XXXV y Cap. XXXVI",
+        "reader": "Juan Carlos Ocampo",
+        "ebook": 58059,
+        "catalogued": "2025-06-01",
+        "seconds": 869.0,
+        "listen_url": "https://www.archive.org/download/madrenaturaleza_2506_librivox/madrenaturaleza_31_pardobazan_64kb.mp3"
+      },
+      {
+        "project": 21290,
+        "section": 9,
+        "title": "Segunda parte. Capítulo I",
+        "reader": "Mongope",
+        "ebook": 73965,
+        "catalogued": "2025-06-01",
+        "seconds": 1474.0,
+        "listen_url": "https://www.archive.org/download/cenizas_2506_librivox/cenizas_09_deledda_64kb.mp3"
+      }
+    ]
+  }
+}
