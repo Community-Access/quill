@@ -40,9 +40,9 @@ from quill.core.action_feedback import ACTION_FEEDBACK_LABELS
 from quill.core.action_feedback import coerce as coerce_feedback
 from quill.core.windows_dictation.controller import DEFAULT_PHRASE_FEEDBACK
 from quill.core.windows_dictation.engines import (
-    ENGINES,
     coerce_engine,
     engine_choices,
+    engine_list_help,
     language_model_problem,
 )
 from quill.core.windows_dictation.model_advice import for_this_computer
@@ -138,11 +138,7 @@ class WindowsDictationDialog(
         rows = self._with_cloud_rows(engine_choices(saved_engine), saved_engine)
         self._engine_ids = [engine_id for engine_id, _label in rows]
         self.engine = wx.Choice(self, choices=[label for _id, label in rows])
-        self.engine.SetHelpText(
-            "Which speech recogniser dictation uses. "
-            + " ".join(f"{engine.label}: {engine.description}" for engine in ENGINES)
-            + " Models you download with Better Accuracy: Speech Models are listed too."
-        )
+        self.engine.SetHelpText(engine_list_help())
         self.engine.SetSelection(self._engine_ids.index(saved_engine))
         self._engine_row = self.engine.GetSelection()
         self.engine.Bind(wx.EVT_CHOICE, self._on_engine)
@@ -150,9 +146,9 @@ class WindowsDictationDialog(
         root.Add(self.engine, 0, wx.EXPAND | wx.ALL, _PAD)
         self.speech_models = wx.Button(self, label="&Better Accuracy: Speech Models...")
         self.speech_models.SetHelpText(
-            "Optional, larger speech models for better accuracy -- the ones VS Code "
-            "offers and the rest of the Whisper family -- to download, remove or choose. "
-            "Dictation works without them."
+            "Optional, larger speech models for better accuracy, such as Nemotron, Parakeet "
+            "and the Whisper family, to download, remove or choose; it recommends one for "
+            "this computer. They run here, so speech stays here. Dictation works without them."
         )
         self.speech_models.Bind(wx.EVT_BUTTON, self._on_speech_models)
         engine_buttons = wx.BoxSizer(wx.HORIZONTAL)

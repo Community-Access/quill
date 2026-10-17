@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Dictation in QUILL and QUILL Lite - the complete guide</title>
-  <meta name="description" content="Everything about dictating into QUILL and QUILL Lite: press Ctrl+F11, talk, pause. The speech recognition ships inside both programs, nothing you say leaves your computer, and no recording is kept. Every key, every spoken command, every setting, the four speech engines and how they were chosen, and what to do when it mishears you.">
+  <title>Dictation in QUILL, QUILL Lite and QUILL Transcribe - the complete guide</title>
+  <meta name="description" content="Everything about dictating into QUILL, QUILL Lite and QUILL Transcribe: press Ctrl+F11, talk, pause. The speech recognition ships inside the programs, and unless you choose a cloud service with your own account, nothing you say leaves your computer and no recording is kept. Every key, every spoken command, every setting, every speech engine and model, which one to choose, and what to do when it mishears you.">
   <link rel="stylesheet" href="/assets/style.css">
 </head>
 <body>
@@ -31,18 +31,22 @@
 
   <main id="main" tabindex="-1" class="prose">
     <div class="wrap">
-      <h1>Dictation in QUILL and QUILL Lite</h1>
+      <h1>Dictation in QUILL, QUILL Lite and QUILL Transcribe</h1>
       <p class="lede">
         Press <kbd>Ctrl+F11</kbd>, talk, and pause. Each time you pause, what you said is
         written into the document at the cursor, a soft tone tells you it arrived, and the
         words are read back so you know they are right. Then it keeps listening. The speech
-        recognition ships inside both programs: there is nothing to download, no account to
+        recognition ships inside the programs: there is nothing to download, no account to
         make, nothing you say leaves your computer, and no recording is kept anywhere.
+        Bigger models and cloud services are there if you want them, and only if you
+        choose them.
       </p>
       <p>
         This page covers all of it: every key, every phrase dictation understands, every
-        setting, the four speech engines, and what to do when it mishears you. It covers
-        both programs, and tells you wherever they are different.
+        setting, every speech engine and model and how to choose between them, and what
+        to do when it mishears you. It covers QUILL and QUILL Lite, and tells you wherever
+        they are different. QUILL Transcribe, which dictates into other programs, uses the
+        same engines, models, words and commands; its own guide covers its keys.
       </p>
 
       <nav class="cmp-jump" aria-labelledby="onpage-h">
@@ -55,6 +59,7 @@
           <li><a href="#two-kinds">The two kinds of dictation</a></li>
           <li><a href="#keys">Every dictation key</a></li>
           <li><a href="#engines">The speech engines</a></li>
+          <li><a href="#choose-engine">Choosing an engine</a></li>
           <li><a href="#optional-models">Better accuracy: optional speech models</a></li>
           <li><a href="#say">Everything you can say</a></li>
           <li><a href="#correct">Correct that: choosing another guess</a></li>
@@ -77,6 +82,7 @@
           <li><a href="#transcribe-app">QUILL Transcribe, releasing 1 November 2026</a></li>
           <li><a href="#talk-ai">Talking to the AI</a></li>
           <li><a href="#openai">OpenAI dictation, with your own key</a></li>
+          <li><a href="#providers">Speech providers, with your own account</a></li>
           <li><a href="#live-transcript">Live transcripts</a></li>
           <li><a href="#transcribe">Transcribing an audio file</a></li>
           <li><a href="#tidy">Tidy Dictated Text</a></li>
@@ -244,9 +250,11 @@
       <p>
         <kbd>Ctrl+F9</kbd>, <strong>QUILL only</strong>. Press it once and speak as long as
         you like, across sentences and paragraphs; press it again and QUILL transcribes the
-        whole passage and inserts it as one undoable edit. It uses QUILL's on-device Whisper
-        engine rather than the live engines, so nothing is uploaded here either. Use it when
-        you would rather talk without interruption and read the result afterwards.
+        whole passage and inserts it as one undoable edit. It uses QUILL's offline speech
+        engines on this computer, so nothing is uploaded here either, and it needs no
+        speech model to start (<a href="#locked-engines">which engine Locked Dictation
+        uses</a>). Use it when you would rather talk without interruption
+        and read the result afterwards.
       </p>
       <ul>
         <li>While recording, <kbd>Escape</kbd> stops and <em>keeps</em> what you said for
@@ -261,7 +269,8 @@
       </ul>
       <h3>Dictate (Offline): a simple on and off switch</h3>
       <p>
-        <strong>QUILL only</strong>, on <kbd>Ctrl+Shift+Grave, D</kbd>. Start
+        <strong>QUILL only</strong>, in <strong>Tools, Speech</strong>, on
+        <kbd>Ctrl+Shift+Grave, Shift+D</kbd>. Start
         it, talk, stop it: QUILL transcribes in the background and inserts the text at the
         cursor as one edit, with the word count in the status bar. It shares its engine and
         microphone with Locked Dictation.
@@ -306,6 +315,8 @@
             <tr><th scope="row">Start or stop a live transcript</th><td class="key"><kbd>Ctrl+Alt+Shift+PageDown</kbd></td><td>Writes everything you say into a new document of its own</td></tr>
             <tr><th scope="row">Describe this document for dictation</th><td class="key"><kbd>Ctrl+Alt+Shift+PageUp</kbd></td><td>Dictation Context for This Document, used by OpenAI dictation and Tidy Dictated Text</td></tr>
             <tr><th scope="row">Hear what dictation is doing</th><td class="key"><kbd>Alt+F9</kbd></td><td>Dictation Status. Says it once and changes nothing</td></tr>
+            <tr><th scope="row">Give dictation a command</th><td class="key"><kbd>F11</kbd></td><td>Speak a Command. The next thing you say is a command, as if you had said the command word first. Press it twice for command mode</td></tr>
+            <tr><th scope="row">Review words before they go in</th><td class="key"><kbd>Shift+F4</kbd></td><td>Review Dictation. Takes the last phrase back out into a window where you can read it, change it and insert it once</td></tr>
           </tbody>
         </table>
       </div>
@@ -331,23 +342,25 @@
             <tr><th scope="row">Hear the current state</th><td class="key"><kbd>Alt+F9</kbd></td><td>While Locked Dictation is recording, speaks what it is doing. The rest of the time the same key is Dictation Status, as in QUILL Lite</td></tr>
             <tr><th scope="row">Stop and keep what you said</th><td class="key"><kbd>Escape</kbd></td><td>While recording. The passage is still transcribed</td></tr>
             <tr><th scope="row">Cancel and discard what you said</th><td class="key"><kbd>Shift+Escape</kbd></td><td>While recording. Nothing is transcribed and nothing is inserted</td></tr>
-            <tr><th scope="row">Dictate with the simple toggle</th><td class="key"><kbd>Ctrl+Shift+Grave, D</kbd></td><td>Dictate (Offline): start, talk, stop, and the text arrives at the cursor</td></tr>
+            <tr><th scope="row">Dictate with the simple toggle</th><td><kbd>Ctrl+Shift+Grave, Shift+D</kbd></td><td>Dictate (Offline): start, talk, stop, and the text arrives at the cursor</td></tr>
           </tbody>
         </table>
       </div>
       <p>
-        <strong>Ctrl+Shift+Grave, D</strong> is two presses, not four keys at once: press
-        the QUILL Key (Ctrl+Shift+Grave), let it go, then press D. QUILL Lite does not use
+        <strong>Ctrl+Shift+Grave, Shift+D</strong> is two presses, not five keys at once: press
+        the QUILL Key (Ctrl+Shift+Grave), let it go, then press Shift+D. QUILL Lite does not use
         two-step keys like this. To see what else is different, read
         <a href="/compare.html">how QUILL and QUILL Lite compare</a>.
       </p>
 
       <h2 id="engines" tabindex="-1" class="focus-target">The speech engines</h2>
       <p class="group-verdict">
-        Four choices for Live Dictation, in Dictation Settings. The first two ship inside
-        both programs, so they work with no download and no connection. Larger models you
-        choose to download join the list (<a href="#optional-models">Better accuracy:
-        optional speech models</a>).
+        Choose the engine in Dictation Settings (<kbd>Alt+Shift+F6</kbd>), in the
+        <strong>Speech engine</strong> list. The same list is in QUILL, QUILL Lite and
+        QUILL Transcribe. Moonshine and Whisper ship inside all three, so they work with no
+        download and no connection. Models you download, and cloud services you set up
+        with your own account, join the list. Help with picking one is in
+        <a href="#choose-engine">Choosing an engine</a>.
       </p>
       <div class="cmp-scroll">
         <table class="cmp">
@@ -360,22 +373,65 @@
             </tr>
           </thead>
           <tbody>
-            <tr><th scope="row">Moonshine</th><td>The one it starts with. Fast even on a modest computer, and the most accurate of the field. English<span class="qual">built in</span></td><td>Yes</td></tr>
-            <tr><th scope="row">Whisper</th><td>A little slower. Worth trying if Moonshine often mishears your voice or your microphone. English<span class="qual">built in</span></td><td>Yes</td></tr>
-            <tr><th scope="row">Windows speech recognition</th><td>Windows' own recogniser. Needs nothing extra and can use any speech language installed in Windows, but mishears an untrained voice often<span class="qual">say every mark yourself</span></td><td class="no">No</td></tr>
+            <tr><th scope="row">Moonshine</th><td>The one it starts with, listed as "Moonshine (fast, punctuates for you)". By far the fastest: your text arrives about a fifth of a second after you pause, and it needs about 210 MB of memory, so it suits a modest computer. English only; with the dictation language set to Spanish, the built-in Whisper is used instead<span class="qual">built in, Lightweight</span></td><td>Yes</td></tr>
+            <tr><th scope="row">Whisper</th><td>Listed as "Whisper (accurate, punctuates for you)". A little slower and a little bigger. Worth trying if Moonshine often mishears your voice or your microphone. English and Spanish<span class="qual">built in, Lightweight</span></td><td>Yes</td></tr>
+            <tr><th scope="row">Windows speech recognition</th><td>Windows' own recogniser. Needs nothing extra and can use any speech language installed in Windows, but mishears an untrained voice often. It keeps its own other guesses for "correct that"<span class="qual">say every mark yourself</span></td><td class="no">No</td></tr>
             <tr><th scope="row">Windows voice typing</th><td>Hands over to the panel <kbd>Windows+H</kbd> opens. Windows does the recognising and the typing, so none of dictation's commands, tones, read-back or wake phrase apply<span class="qual">for people who already prefer it</span></td><td>Windows decides</td></tr>
-            <tr><th scope="row">OpenAI</th><td>Only with your own OpenAI key, and only if you choose it and agree: your speech is sent to OpenAI. Very accurate, and can show your words as you speak<span class="qual"><a href="#openai">OpenAI dictation, with your own key</a></span></td><td>Yes</td></tr>
+            <tr><th scope="row">A model you downloaded</th><td>Each one you download from Speech Models is listed with "(downloaded)" and its tier, such as Balanced or High accuracy. More accurate than the built-in two, for more work from the computer. It runs on this computer, and your speech stays on it<span class="qual"><a href="#optional-models">Better accuracy: optional speech models</a></span></td><td>Yes</td></tr>
+            <tr><th scope="row">OpenAI</th><td>Listed only once an OpenAI key is saved, and used only if you choose it and agree: your speech is sent to OpenAI. Very accurate, and can show your words as you speak<span class="qual"><a href="#openai">OpenAI dictation, with your own key</a></span></td><td>Yes</td></tr>
+            <tr><th scope="row">A speech provider</th><td>Twelve cloud services, such as Microsoft Azure AI Speech, Google Cloud Speech-to-Text, Amazon Transcribe and Deepgram, listed once you set one up with your own account. Your speech is sent to that company, and only after you agree<span class="qual"><a href="#providers">Speech providers, with your own account</a></span></td><td>Yes</td></tr>
           </tbody>
         </table>
       </div>
       <p>
-        QUILL's Locked Dictation uses a different set: on-device <strong>Whisper</strong>,
-        or <strong>Parakeet 3</strong> once you install it from <strong>Tools, Speech,
-        Manage Speech Models</strong>. Parakeet is worth having because, when you are
-        silent, Whisper sometimes makes up words, like a stray "thank you". Parakeet only
-        writes what it really hears. Once you install it, QUILL uses it unless you have
-        picked a different engine yourself. If a recording has no speech in it at all,
-        QUILL tells you so instead of guessing.
+        Every engine except Windows speech recognition puts in its own punctuation and
+        capitals, so with them you just talk.
+      </p>
+
+      <h3 id="locked-engines" tabindex="-1" class="focus-target">Which engine Locked Dictation uses, in QUILL</h3>
+      <p>
+        QUILL's Locked Dictation (<kbd>Ctrl+F9</kbd>), Dictate (Offline), Transcribe Audio
+        or Video (Offline), Generate Captions (Offline) and watch folders share a second set
+        of engines, also on this computer. You manage them in <strong>Tools, Speech, Speech
+        and Dictation...</strong> (<kbd>Alt+T</kbd>, <kbd>H</kbd>, <kbd>S</kbd>), which
+        opens Manage Speech Models on its "Dictation (Offline)" tab. To be walked through
+        it instead, choose <strong>Help, Download Optional Components...</strong>
+        (<kbd>Alt+H</kbd>, <kbd>D</kbd>) and the row <strong>Dictation (offline
+        speech)</strong>. There are three engines, in this order:
+      </p>
+      <ol>
+        <li><strong>Whisper.cpp</strong>, the recommended default: light and fast, and works
+          on any computer. The engine itself is small, about 8 MB, and downloads from
+          QUILL's own checked release the first time it is needed. Its models then download
+          in Manage Speech Models, from Tiny (75 MB) and Base (145 MB) to Small (465 MB),
+          the suggested starting point, and larger.</li>
+        <li><strong>QUILL speech models (Parakeet, Nemotron and more)</strong>: the very same
+          models as Live Dictation, QUILL Lite and QUILL Transcribe, in the same folder, so
+          a model you already downloaded is never downloaded twice. This one choice
+          replaced the separate Parakeet and Nemotron engines QUILL used to list.</li>
+        <li><strong>Faster Whisper</strong>: the most accurate, larger, and the only one that
+          can use a graphics card. It installs when you ask for it, where this copy of
+          QUILL can install it.</li>
+      </ol>
+      <p>
+        Which one QUILL uses: an engine you chose yourself always wins. Otherwise an
+        installed Parakeet is used, because when you are silent Whisper sometimes makes up
+        words, like a stray "thank you", and Parakeet only writes what it really hears.
+        Otherwise whisper.cpp, once it has a model. And until there is any model, the
+        built-in Moonshine is used, so <strong>Locked Dictation needs no model</strong>:
+        with whisper.cpp as the engine, the first press of <kbd>Ctrl+F9</kbd> only offers
+        the small whisper.cpp engine itself. Choose QUILL speech models as the engine and
+        nothing is downloaded at all; Dictate (Offline), transcription and captions then
+        work with nothing downloaded too, because the built-in Moonshine and Whisper count
+        as that engine's models. For the same recording and the same model,
+        Locked Dictation and Transcribe a Recording write the same text. If a recording has
+        no speech in it at all, QUILL tells you so instead of guessing.
+      </p>
+      <p>
+        Voice Command, Voice Conversation Mode and Listen for Hey QUILL have their own
+        <strong>Voice recognition engine</strong> setting: follow the main engine,
+        whisper.cpp (accurate), or Moonshine tiny (fast, light). Vosk is no longer a
+        dictation or voice engine; QUILL keeps it only for finding chapters in podcasts.
       </p>
 
       <h3 id="evidence" tabindex="-1" class="focus-target">How the default was chosen</h3>
@@ -413,7 +469,9 @@
         was the most accurate and by far the fastest, so it works well even on an older
         computer. Whisper tiny is there for a voice or microphone that Moonshine struggles
         with. Parakeet 3 is very good but five times the size, so it is an optional
-        download in QUILL rather than something packed into QUILL Lite.
+        download in Speech Models rather than something packed into every installer.
+        Vosk was dropped from dictation on 13 October 2026: it does not punctuate, knows
+        only English, and has had no new release since 2022.
       </p>
       <p>
         <strong>One thing to keep in mind.</strong> For this test, Windows' own computer
@@ -422,6 +480,133 @@
         recognition in particular does much worse with a real voice. We will update these
         numbers after testing with real voices.
       </p>
+
+      <h2 id="choose-engine" tabindex="-1" class="focus-target">Choosing an engine</h2>
+      <p class="group-verdict">
+        The short answer: start with Moonshine, the one dictation starts with. Change only
+        if it often mishears you, and then try the engine that matches what matters most to
+        you.
+      </p>
+      <p>
+        Every choice is a trade. A bigger model makes fewer mistakes with accents, names,
+        fast speech and noisy rooms, but it needs more memory, takes longer to load, and
+        keeps your text waiting a little longer after you pause. A cloud service can be very
+        accurate on any computer, but your speech leaves it. This table puts each concern
+        next to the engines that answer it.
+      </p>
+      <div class="cmp-scroll">
+        <table class="cmp">
+          <caption>Choosing an engine: what matters to you, and which engines suit it.</caption>
+          <thead>
+            <tr>
+              <th scope="col">What matters most</th>
+              <th scope="col">Choose</th>
+              <th scope="col">Why</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Keeping everything private</th><td>Moonshine, Whisper, Windows speech recognition, or any downloaded model</td><td>They run on this computer, and your speech never leaves it. OpenAI and the speech providers send it to a company</td></tr>
+            <tr><th scope="row">No internet</th><td>Moonshine, Whisper, Windows speech recognition, or a model you downloaded earlier</td><td>Once a model is downloaded it needs no connection again</td></tr>
+            <tr><th scope="row">The quickest response</th><td>Moonshine</td><td>Your text arrives about a fifth of a second after you pause, and it leaves your screen reader plenty of room</td></tr>
+            <tr><th scope="row">The fewest mistakes</th><td>A High accuracy model, such as Nemotron, on a capable computer</td><td>The bigger models cope best with accents, names and noise</td></tr>
+            <tr><th scope="row">A modest computer, or a laptop on battery</th><td>Moonshine, or Moonshine base</td><td>Both are Lightweight and keep up even on two cores and 4 GB of memory</td></tr>
+            <tr><th scope="row">Seeing words while you still speak</th><td>Nemotron, OpenAI, or a provider that works live</td><td>The words heard so far show in the status bar and on braille before you pause</td></tr>
+            <tr><th scope="row">Dictating in Spanish</th><td>Whisper, Nemotron, Parakeet TDT 0.6B v3, or a many-language Whisper model</td><td>Moonshine knows only English</td></tr>
+            <tr><th scope="row">Saying punctuation yourself, in any Windows language</th><td>Windows speech recognition</td><td>It does not punctuate by itself, and it uses any speech language installed in Windows</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="tiers" tabindex="-1" class="focus-target">What the tier labels mean</h3>
+      <p>
+        Every model in the Speech engine list and in Speech Models carries one of three
+        tiers, for example "Moonshine (fast, punctuates for you), Lightweight". The tier
+        says how hard the model works your computer, not how good it is.
+      </p>
+      <ul>
+        <li><strong>Lightweight</strong>: keeps up comfortably even on a modest computer.
+          The built-in Moonshine and Whisper, and Moonshine base.</li>
+        <li><strong>Balanced</strong>: more work than the built-in engines; keeps up on a
+          computer with four or more cores. The two Parakeet models, Whisper base and
+          Whisper base.en.</li>
+        <li><strong>High accuracy</strong>: the fewest mistakes, for the most work; needs a
+          capable computer, or patience. Nemotron, Whisper small and larger, and the
+          Distil-Whisper models.</li>
+      </ul>
+
+      <h3 id="recommended" tabindex="-1" class="focus-target">A recommendation for this computer</h3>
+      <p>
+        You do not have to work this out alone. Dictation Settings shows a read-only line,
+        <strong>Recommended for this computer</strong>, with the model that suits your
+        memory and processor and the reason. In Speech Models you can say what matters most
+        and get a recommendation for that:
+      </p>
+      <ol>
+        <li>Open Dictation Settings (<kbd>Alt+Shift+F6</kbd>) and press <strong>Better
+          Accuracy: Speech Models...</strong> (<kbd>Alt+B</kbd>).</li>
+        <li>Move to <strong>What matters most</strong> (<kbd>Alt+W</kbd>) and choose a
+          balance, the quickest response, or the fewest mistakes.</li>
+        <li>Read the <strong>Recommendation</strong> box (<kbd>Alt+C</kbd>). It names a
+          model and says why.</li>
+        <li>Press <strong>Show Recommended Model</strong> (<kbd>Alt+S</kbd>) to move to that
+          model in the list, where Download and Use for Dictation are.</li>
+      </ol>
+      <p>
+        In QUILL Transcribe the same advice is in <strong>Model, Choose Model...</strong>
+        (<kbd>Ctrl+M</kbd>), as <strong>Recommended for this computer</strong>
+        (<kbd>Alt+C</kbd>), and in its Set Up window. A recommendation is only advice: it
+        never changes your engine. Its figures are estimates measured with a computer voice,
+        so your own voice may differ. OpenAI and the speech providers are never
+        recommended, because they send your speech away.
+      </p>
+      <div class="cmp-scroll">
+        <table class="cmp">
+          <caption>What the recommendation says on some typical computers, for each choice of what matters most.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Computer</th>
+              <th scope="col">A balance</th>
+              <th scope="col">The quickest response</th>
+              <th scope="col">The fewest mistakes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">4 GB of memory, 2 cores</th><td>Moonshine</td><td>Moonshine</td><td>Moonshine base</td></tr>
+            <tr><th scope="row">8 GB of memory, 4 cores</th><td>Moonshine base</td><td>Moonshine</td><td>Nemotron</td></tr>
+            <tr><th scope="row">16 GB of memory, 8 cores</th><td>Nemotron</td><td>Moonshine</td><td>Nemotron</td></tr>
+            <tr><th scope="row">8 GB of memory, 4 cores, dictating in Spanish</th><td>Whisper</td><td>Whisper</td><td>Nemotron</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="switch-engine" tabindex="-1" class="focus-target">Switching engine, and a worked example</h3>
+      <p>
+        To switch, open Dictation Settings (<kbd>Alt+Shift+F6</kbd>), move to
+        <strong>Speech engine</strong>, arrow to the one you want, and press Enter for OK.
+        The next time you press <kbd>Ctrl+F11</kbd> it uses the new engine, and
+        <kbd>Alt+F9</kbd> tells you which one is in use. Choosing OpenAI or a speech
+        provider first asks whether your speech may be sent; No is the answer if you just
+        press Enter, and your engine stays as it was.
+      </p>
+      <p>
+        <strong>For example</strong>, Sam writes reports on an 8 GB laptop with four cores,
+        and Moonshine keeps getting the names of Sam's colleagues wrong.
+      </p>
+      <ol>
+        <li>Sam first adds the names to My Words and Phrases (<kbd>Alt+Shift+F10</kbd>).
+          That fixes most of them on any engine.</li>
+        <li>For the rest, Sam opens Speech Models (<kbd>Alt+Shift+F6</kbd>, then
+          <kbd>Alt+B</kbd>), sets What matters most to the fewest mistakes, and reads the
+          recommendation: Nemotron.</li>
+        <li><strong>Show Recommended Model</strong> moves to Nemotron. Sam presses
+          <strong>Download...</strong>, reads the question naming its 682 MB size and
+          licence, and answers Yes.</li>
+        <li>When it is done, Sam presses <strong>Use for Dictation</strong>, then OK in
+          Dictation Settings, and dictates as before. Now the words also appear in the
+          status bar while Sam talks.</li>
+        <li>On battery, when the laptop is too busy to keep up, dictation switches to the
+          built-in engine for a while and says so; Sam's choice stays Nemotron.</li>
+      </ol>
 
       <h2 id="optional-models" tabindex="-1" class="focus-target">Better accuracy: optional speech models</h2>
       <p class="group-verdict">
@@ -432,8 +617,12 @@
       <p>
         Your voice never leaves the computer. The only thing that comes over the internet is
         the model itself, once, when you ask for it. Nothing downloads on its own, and the
-        built-in Moonshine stays your engine until you choose another. Both QUILL and QUILL
-        Lite have this, in the same place, and share the models on one computer.
+        built-in Moonshine stays your engine until you choose another. QUILL, QUILL Lite,
+        QUILL Transcribe and Quill Inkwell all have this window, in the same place in
+        Dictation Settings, and share the models on one computer, so a model is downloaded
+        once. QUILL Transcribe also opens it from <strong>Model, Model Library...</strong>
+        (<kbd>Ctrl+L</kbd>). Every model runs on the processor; a graphics card is not needed
+        and changes nothing.
       </p>
       <h3>Downloading one</h3>
       <ol>
@@ -456,7 +645,7 @@
       </ol>
       <p>
         <strong>Where they go:</strong> <code>%LOCALAPPDATA%\QuillVille\Dictation\models</code>,
-        one folder for both programs. In a portable copy, models are saved inside the portable
+        one folder for every program. In a portable copy, models are saved inside the portable
         folder, so everything travels together. <strong>Remove</strong> in the same window
         frees the space. If a downloaded model goes missing, dictation says so in one sentence
         and carries on with the built-in engine; it never switches silently.
@@ -468,35 +657,37 @@
         or "may lag behind your speech on this computer". You can still choose any of them.
       </p>
       <p>
-        <strong>Words appear when you pause</strong>, with every engine. Nemotron is built to
-        recognise while you speak; showing its words as you talk is planned.
+        <strong>Words appear when you pause</strong> with every downloaded model except
+        Nemotron. Nemotron recognises while you speak, so the words heard so far show in the
+        status bar and on braille as you talk (<a href="#preview">Seeing the words while you
+        speak</a>), and each phrase is written when you pause.
       </p>
 
       <h3 id="model-list" tabindex="-1" class="focus-target">The models, in our suggested order</h3>
       <p>The order is our suggestion, not a measurement: VS Code's own models first, then the rest of Whisper, smallest first.</p>
       <div class="cmp-scroll">
         <table class="cmp">
-          <caption>The optional speech models: what each is good for, its download size and languages.</caption>
+          <caption>The optional speech models: what each is good for, its download size, languages and tier.</caption>
           <thead>
-            <tr><th scope="col">Model</th><th scope="col">Good for</th><th scope="col">Download</th><th scope="col">Languages</th></tr>
+            <tr><th scope="col">Model</th><th scope="col">Good for</th><th scope="col">Download</th><th scope="col">Languages</th><th scope="col">Tier</th></tr>
           </thead>
           <tbody>
-            <tr><th scope="row">NVIDIA Nemotron 3.5 ASR Streaming 0.6B</th><td>Suggested download. Excellent for live dictation; VS Code's default</td><td>682 MB</td><td>English, Spanish</td></tr>
-            <tr><th scope="row">NVIDIA Parakeet Unified 0.6B</th><td>May give slightly better final text in some conditions</td><td>663 MB</td><td>English</td></tr>
-            <tr><th scope="row">NVIDIA Parakeet TDT 0.6B v3</th><td>Excellent recognition of each finished phrase</td><td>670 MB</td><td>English, Spanish</td></tr>
-            <tr><th scope="row">Whisper small</th><td>A VS Code alternative: good</td><td>375 MB</td><td>English, Spanish</td></tr>
-            <tr><th scope="row">Whisper base</th><td>A VS Code alternative: moderate</td><td>161 MB</td><td>English, Spanish</td></tr>
-            <tr><th scope="row">Whisper tiny</th><td>Built in already. Fastest and lightest, weakest accuracy</td><td>built in</td><td>English, Spanish</td></tr>
-            <tr><th scope="row">Whisper base.en</th><td>Light and quick, a little better in English than base</td><td>161 MB</td><td>English</td></tr>
-            <tr><th scope="row">Whisper small.en</th><td>Good English accuracy for a capable computer</td><td>376 MB</td><td>English</td></tr>
-            <tr><th scope="row">Distil-Whisper small.en</th><td>Small's accuracy, made smaller and faster</td><td>299 MB</td><td>English</td></tr>
-            <tr><th scope="row">Distil-Whisper medium.en</th><td>Close to medium's accuracy at a fraction of the work</td><td>573 MB</td><td>English</td></tr>
-            <tr><th scope="row">Whisper medium.en</th><td>Best for accuracy when you can wait</td><td>946 MB</td><td>English</td></tr>
-            <tr><th scope="row">Distil-Whisper large-v3</th><td>Near large-v3 accuracy in English, much faster</td><td>984 MB</td><td>English</td></tr>
-            <tr><th scope="row">Whisper medium</th><td>Best for accuracy when you can wait</td><td>946 MB</td><td>English, Spanish</td></tr>
-            <tr><th scope="row">Whisper large-v3-turbo</th><td>Large-v3 quality, much faster than large-v3</td><td>1.0 GB</td><td>English, Spanish</td></tr>
-            <tr><th scope="row">Whisper large-v3</th><td>The most accurate Whisper; very slow on most computers</td><td>1.8 GB</td><td>English, Spanish</td></tr>
-            <tr><th scope="row">Moonshine base</th><td>A light step up from the built-in Moonshine</td><td>141 MB</td><td>English</td></tr>
+            <tr><th scope="row">NVIDIA Nemotron 3.5 ASR Streaming 0.6B</th><td>Suggested download. Excellent for live dictation; VS Code's default</td><td>682 MB</td><td>English, Spanish</td><td>High accuracy</td></tr>
+            <tr><th scope="row">NVIDIA Parakeet Unified 0.6B</th><td>May give slightly better final text in some conditions</td><td>663 MB</td><td>English</td><td>Balanced</td></tr>
+            <tr><th scope="row">NVIDIA Parakeet TDT 0.6B v3</th><td>Excellent recognition of each finished phrase</td><td>670 MB</td><td>English, Spanish</td><td>Balanced</td></tr>
+            <tr><th scope="row">Whisper small</th><td>A VS Code alternative: good</td><td>375 MB</td><td>English, Spanish</td><td>High accuracy</td></tr>
+            <tr><th scope="row">Whisper base</th><td>A VS Code alternative: moderate</td><td>161 MB</td><td>English, Spanish</td><td>Balanced</td></tr>
+            <tr><th scope="row">Whisper tiny</th><td>Built in already. The lightest Whisper, with the weakest accuracy</td><td>built in</td><td>English, Spanish</td><td>Lightweight</td></tr>
+            <tr><th scope="row">Whisper base.en</th><td>Light and quick, a little better in English than base</td><td>161 MB</td><td>English</td><td>Balanced</td></tr>
+            <tr><th scope="row">Whisper small.en</th><td>Good English accuracy for a capable computer</td><td>376 MB</td><td>English</td><td>High accuracy</td></tr>
+            <tr><th scope="row">Distil-Whisper small.en</th><td>Small's accuracy, made smaller and faster</td><td>299 MB</td><td>English</td><td>High accuracy</td></tr>
+            <tr><th scope="row">Distil-Whisper medium.en</th><td>Close to medium's accuracy at a fraction of the work</td><td>573 MB</td><td>English</td><td>High accuracy</td></tr>
+            <tr><th scope="row">Whisper medium.en</th><td>Best for accuracy when you can wait</td><td>946 MB</td><td>English</td><td>High accuracy</td></tr>
+            <tr><th scope="row">Distil-Whisper large-v3</th><td>Near large-v3 accuracy in English, much faster</td><td>984 MB</td><td>English</td><td>High accuracy</td></tr>
+            <tr><th scope="row">Whisper medium</th><td>Best for accuracy when you can wait</td><td>946 MB</td><td>English, Spanish</td><td>High accuracy</td></tr>
+            <tr><th scope="row">Whisper large-v3-turbo</th><td>Large-v3 quality, much faster than large-v3</td><td>1.0 GB</td><td>English, Spanish</td><td>High accuracy</td></tr>
+            <tr><th scope="row">Whisper large-v3</th><td>The most accurate Whisper; very slow on most computers</td><td>1.8 GB</td><td>English, Spanish</td><td>High accuracy</td></tr>
+            <tr><th scope="row">Moonshine base</th><td>A light step up from the built-in Moonshine</td><td>141 MB</td><td>English</td><td>Lightweight</td></tr>
           </tbody>
         </table>
       </div>
@@ -1251,7 +1442,10 @@
             </tr>
           </thead>
           <tbody>
-            <tr><th scope="row">Speech engine</th><td>Moonshine, Whisper, Windows speech recognition, Windows voice typing, any model you downloaded, or OpenAI with your own key</td><td>Moonshine</td></tr>
+            <tr><th scope="row">Speech engine</th><td>Moonshine, Whisper, Windows speech recognition, Windows voice typing, any model you downloaded, OpenAI with your own key, or a speech provider you set up with your own account</td><td>Moonshine</td></tr>
+            <tr><th scope="row">Recommended for this computer</th><td>A read-only line naming the model that suits this computer, and why. Advice only; it never changes your engine</td><td>Not a setting</td></tr>
+            <tr><th scope="row">Better Accuracy: Speech Models...</th><td>A button (<kbd>Alt+B</kbd>). Opens Speech Models, to download a bigger model, get a recommendation, or remove a model</td><td>Not a setting</td></tr>
+            <tr><th scope="row">Speech Providers...</th><td>A button (<kbd>Alt+V</kbd>). Opens Speech Providers, to set up a cloud speech service with your own account</td><td>Not a setting</td></tr>
             <tr><th scope="row">Automatic punctuation</th><td>The engine puts in the marks you do not say. Moonshine and Whisper only; off, you say every mark</td><td>On</td></tr>
             <tr><th scope="row">Language</th><td>Which installed Windows speech language to use. The other engines understand English</td><td>The Windows default</td></tr>
             <tr><th scope="row">Microphone</th><td>Which microphone to listen on, kept by name so it survives a change of default</td><td>The Windows default</td></tr>
@@ -1274,7 +1468,8 @@
         Three buttons sit below them: <strong>Dictation Commands</strong> opens the full
         spoken list, <strong>My Words and Phrases</strong> saves these settings and opens
         the window described above, and <strong>More Dictation Settings</strong>
-        (<kbd>Alt+A</kbd>) opens the window below.
+        (<kbd>Alt+A</kbd>) opens the window below. The Speech Models and Speech Providers
+        buttons are described in the table above.
       </p>
 
       <h2 id="more-settings" tabindex="-1" class="focus-target">More Dictation Settings, every option</h2>
@@ -1334,8 +1529,10 @@
       </p>
       <h3 id="preview" tabindex="-1" class="focus-target">Seeing the words while you speak</h3>
       <p>
-        With <strong>Nemotron</strong> (an optional download) or <strong>OpenAI
-        dictation</strong>, the program knows your words while you are still saying them.
+        With <strong>Nemotron</strong> (an optional download), <strong>OpenAI
+        dictation</strong>, or a <a href="#providers">speech provider</a> that works live
+        (all of them except Google, Groq and Mistral), the program knows your words while
+        you are still saying them.
         The status bar shows them after the word "Hearing", and a braille display shows
         them as they arrive. They are not in your document yet, because the engine may
         still change its mind; when you pause, the final words go in and the preview goes
@@ -1507,6 +1704,109 @@
         words to expect, so names come out right. To stop sending your speech, choose
         another engine, or turn off <strong>Let OpenAI dictation send my speech to
         OpenAI</strong> in More Dictation Settings.
+      </p>
+
+      <h2 id="providers" tabindex="-1" class="focus-target">Speech providers, with your own account</h2>
+      <p class="group-verdict">
+        Optional, and off until you choose one. If you already pay for a cloud speech
+        service, dictation can use it. The engines on your computer stay the default and
+        the recommendation.
+      </p>
+      <p>
+        QUILL, QUILL Lite, QUILL Transcribe and Quill Inkwell can each send your speech to
+        one of twelve speech services, using an account you already have with that company.
+        You enter only what that service needs, such as a key and a region. The company
+        bills you, not QUILL, and QUILL shows no prices. Nothing goes through QUILL's
+        servers, and QUILL keeps no copy of your voice. Why choose one: a service you trust
+        and already pay for, very good accuracy on a computer too modest for the big local
+        models, or a service tuned for your language or field. Why not: your speech leaves
+        your computer, it needs the internet, and it costs money.
+      </p>
+      <div class="cmp-scroll">
+        <table class="cmp">
+          <caption>The speech providers: who receives your speech, and whether words show while you speak.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Provider</th>
+              <th scope="col">Your speech goes to</th>
+              <th scope="col">Words while you speak</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Microsoft Azure AI Speech</th><td>Microsoft, in the region you choose</td><td>Yes, live</td></tr>
+            <tr><th scope="row">Google Cloud Speech-to-Text (Chirp 3)</th><td>Google</td><td>No, each phrase after you pause</td></tr>
+            <tr><th scope="row">Amazon Transcribe</th><td>Amazon Web Services</td><td>Yes, live</td></tr>
+            <tr><th scope="row">Deepgram</th><td>Deepgram</td><td>Yes, live</td></tr>
+            <tr><th scope="row">AssemblyAI</th><td>AssemblyAI</td><td>Yes, live</td></tr>
+            <tr><th scope="row">Speechmatics</th><td>Speechmatics</td><td>Yes, live</td></tr>
+            <tr><th scope="row">ElevenLabs Scribe</th><td>ElevenLabs</td><td>Yes, live</td></tr>
+            <tr><th scope="row">Gladia</th><td>Gladia</td><td>Yes, live</td></tr>
+            <tr><th scope="row">Rev.ai</th><td>Rev</td><td>Yes, live</td></tr>
+            <tr><th scope="row">Groq</th><td>Groq</td><td>No, each phrase after you pause</td></tr>
+            <tr><th scope="row">Mistral Voxtral</th><td>Mistral AI</td><td>No, each phrase after you pause</td></tr>
+            <tr><th scope="row">IBM Watson Speech to Text</th><td>IBM</td><td>Yes, live</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3 id="providers-setup" tabindex="-1" class="focus-target">Setting one up</h3>
+      <ol>
+        <li>Open Dictation Settings (<kbd>Alt+Shift+F6</kbd>; in Quill Inkwell,
+          <kbd>Ctrl+Alt+D</kbd>) and press <strong>Speech Providers...</strong>
+          (<kbd>Alt+V</kbd>). Focus starts in the list of providers.</li>
+        <li>Arrow to your provider. <strong>About this provider</strong> says what it
+          offers and where your speech goes.</li>
+        <li>Tab to its fields and fill them in: a key, and for some a region, a project or
+          a file. Press <kbd>F1</kbd> on any field to hear where to find that value in your
+          account.</li>
+        <li>Press <strong>Save</strong> (<kbd>Alt+S</kbd>). A key goes straight into Windows
+          Credential Manager, never into QUILL's settings or logs, and a saved key is never
+          shown again. The other fields are saved when you press OK in Dictation
+          Settings.</li>
+        <li>Press <strong>Test Connection</strong> (<kbd>Alt+T</kbd>). It asks the provider
+          about your account and never sends speech. <strong>Last result</strong> says what
+          happened, such as a key that was refused.</li>
+        <li>Close Speech Providers. Your provider is now in the <strong>Speech
+          engine</strong> list, as for example "Azure AI Speech (your own account; sends
+          your speech to Microsoft)". Choose it.</li>
+        <li>A question says exactly what is sent, where, and that the company bills you.
+          Choose Yes to agree. No is the answer if you just press Enter: your engine stays
+          as it was and nothing is sent.</li>
+        <li>Press OK, then dictate with <kbd>Ctrl+F11</kbd> as usual.</li>
+      </ol>
+      <p>
+        <strong>For example</strong>, to use Microsoft's service: in the Azure portal, open
+        your Speech resource and its Keys and Endpoint page, and copy Key 1 and the
+        Location. In Speech Providers, choose Azure AI Speech, paste the key into
+        <strong>Key</strong>, choose the same region in <strong>Region</strong>, press
+        Save, then Test Connection. When Last result says it worked, close the window,
+        choose Azure AI Speech in the Speech engine list, read the question, and answer
+        Yes.
+      </p>
+      <h3 id="providers-sent" tabindex="-1" class="focus-target">What is sent, and what happens when it fails</h3>
+      <ul>
+        <li><strong>Sent:</strong> each phrase the voice detector hears, over an encrypted
+          connection, with the account details you saved. Nothing is sent while nobody is
+          speaking. The words in My Words and Phrases go too, as words to expect, where the
+          provider accepts them. The company's own policies apply to what it receives.</li>
+        <li><strong>The network drops:</strong> that phrase is lost, you hear one sentence
+          saying so, and dictation keeps listening.</li>
+        <li><strong>The key is refused or the account is empty:</strong> dictation stops and
+          says which field to check.</li>
+        <li><strong>Never a silent switch:</strong> dictation never changes to another
+          engine by itself. To stop sending your speech, choose another engine in Dictation
+          Settings.</li>
+        <li><strong>Remove</strong> (<kbd>Alt+M</kbd>) in Speech Providers forgets
+          everything saved for that provider, key included.</li>
+        <li><strong>Safe Mode</strong> refuses both Test Connection and dictating with a
+          provider.</li>
+      </ul>
+      <p>
+        <strong>Limits for now.</strong> The providers are for live dictation; Transcribe a
+        Recording offers only the models on your computer and OpenAI. QUILL Transcribe's
+        Choose Model window does not list providers yet, so choose them in its Dictation
+        Settings (<kbd>Alt+Shift+F6</kbd>). Google has no live words while you speak. And
+        the providers have been tested against recorded answers but not yet against real
+        accounts, so please tell us how yours goes.
       </p>
 
       <h2 id="live-transcript" tabindex="-1" class="focus-target">Live transcripts</h2>
@@ -1694,16 +1994,16 @@
       </p>
       <p>
         OpenAI dictation uses the context to understand you better, and Tidy Dictated
-        Text uses it alongside My Dictation Instructions. Moonshine, Whisper and the
-        Windows engines cannot use it, and the window tells you so. Your context only ever
+        Text uses it alongside My Dictation Instructions. The other engines, downloaded
+        models and speech providers included, cannot use it, and the window tells you so. Your context only ever
         goes where your speech or your text is already going.
       </p>
 
       <h2 id="privacy" tabindex="-1" class="focus-target">What leaves your computer</h2>
       <p class="group-verdict">
-        Dictation sends nothing unless you choose OpenAI dictation with your own key and
-        agree to it. One optional command, Tidy Dictated Text, sends a passage when you
-        press it.
+        Dictation sends nothing unless you choose OpenAI dictation with your own key, or a
+        speech provider with your own account, and agree to it. One optional command, Tidy
+        Dictated Text, sends a passage when you press it.
       </p>
       <div class="cmp-scroll">
         <table class="cmp">
@@ -1716,15 +2016,18 @@
             </tr>
           </thead>
           <tbody>
-            <tr><th scope="row">Recognising what you said</th><td>On this computer, by an engine inside the program, unless you chose OpenAI</td><td>Nothing. The words are recognised, written, and forgotten</td></tr>
+            <tr><th scope="row">Recognising what you said</th><td>On this computer, by an engine inside the program or a model you downloaded, unless you chose OpenAI or a speech provider</td><td>Nothing. The words are recognised, written, and forgotten</td></tr>
+            <tr><th scope="row">Downloading a speech model</th><td>Only the model comes over the internet, from Hugging Face, when you ask for it. Nothing of yours is sent</td><td>The model, until you remove it</td></tr>
             <tr><th scope="row">OpenAI dictation, if you choose it</th><td><strong>Sent</strong> to OpenAI, with your own key: only the speech dictation heard, never silence</td><td>QUILL keeps nothing. OpenAI's own policies apply to what it receives</td></tr>
+            <tr><th scope="row">A speech provider, if you choose it</th><td><strong>Sent</strong> to that company, with your own account: only the speech dictation heard, never silence, and the words in My Words and Phrases where the provider accepts them</td><td>QUILL keeps nothing. Your key stays in Windows Credential Manager. The company's own policies apply to what it receives</td></tr>
+            <tr><th scope="row">Test Connection, in Speech Providers</th><td>A question about your account, sent to the provider when you press it</td><td>Nothing. No speech is sent</td></tr>
             <tr><th scope="row">The list of OpenAI models</th><td>Asked of OpenAI with your key when More Dictation Settings opens, on a computer with an OpenAI key saved</td><td>Nothing of your writing or speech is sent</td></tr>
             <tr><th scope="row">The audio from your microphone</th><td>On this computer, in memory</td><td>No recording is kept<span class="qual">QUILL's Locked Dictation saves a take to a recovery folder until its transcript is safely inserted, then removes it</span></td></tr>
             <tr><th scope="row">The words you teach it</th><td>A plain text file in your own data folder</td><td>Your <code>dictation.md</code>, until you change it</td></tr>
             <tr><th scope="row">Recent phrases</th><td>In memory only</td><td>The last twenty of this session, gone when the program closes</td></tr>
             <tr><th scope="row">Dictation context for a document</th><td>A small file beside your <code>dictation.md</code>. Sent only with OpenAI dictation or Tidy Dictated Text, along with what they already send</td><td>Your contexts, until you change them. An untitled document's context is forgotten when the program closes</td></tr>
-            <tr><th scope="row">Live transcripts</th><td>On this computer, written into a new document, unless you chose OpenAI dictation</td><td>The document, unsaved until you save it</td></tr>
-            <tr><th scope="row">Dictate Anywhere, in Quill Inkwell</th><td>On this computer, typed into the program in front, unless you chose OpenAI dictation</td><td>Nothing. Inkwell keeps only its copy of your dictation settings</td></tr>
+            <tr><th scope="row">Live transcripts</th><td>On this computer, written into a new document, unless you chose OpenAI dictation or a speech provider</td><td>The document, unsaved until you save it</td></tr>
+            <tr><th scope="row">Dictate Anywhere, in Quill Inkwell</th><td>On this computer, typed into the program in front, unless you chose OpenAI dictation or a speech provider</td><td>Nothing. Inkwell keeps only its copy of your dictation settings</td></tr>
             <tr><th scope="row">Listening for the wake phrase</th><td>On this computer, and only while the program is in front</td><td>Nothing, unless what you said begins with the wake phrase</td></tr>
             <tr><th scope="row">Test Microphone</th><td>On this computer</td><td>Nothing</td></tr>
             <tr><th scope="row">Transcribing a recording</th><td>On this computer, unless you choose an OpenAI model and say Yes to the question for that recording</td><td>Only the text you get back. The recording is read, never copied</td></tr>
@@ -1804,7 +2107,8 @@
       <h3>It keeps mishearing me</h3>
       <ul>
         <li>Try <strong>Whisper</strong> instead of Moonshine, or the other way round. They
-          fail on different voices.</li>
+          fail on different voices. Or try a downloaded model: <a href="#choose-engine">Choosing
+          an engine</a> says which.</li>
         <li>Use a <strong>headset microphone</strong> rather than a laptop's built-in one.
           This is the single biggest improvement available to most people.</li>
         <li>If you are using speakers, set the read-back to <strong>a sound only</strong>.
@@ -1863,17 +2167,19 @@
           </thead>
           <tbody>
             <tr><th scope="row">Live Dictation</th><td>Yes<span class="qual">Ctrl+F11, same code, same keys</span></td><td>Yes<span class="qual">Ctrl+F11, same code, same keys</span></td></tr>
-            <tr><th scope="row">The four Live engines</th><td>Yes</td><td>Yes<span class="qual">Moonshine and Whisper ship inside the installer</span></td></tr>
+            <tr><th scope="row">The Live Dictation engines: Moonshine, Whisper and the two Windows ones</th><td>Yes<span class="qual">Moonshine and Whisper ship inside the installer</span></td><td>Yes<span class="qual">Moonshine and Whisper ship inside the installer</span></td></tr>
             <tr><th scope="row">Spoken commands and spelling mode</th><td>Yes</td><td>Yes</td></tr>
             <tr><th scope="row">Wake phrase and stop phrase</th><td>Yes</td><td>Yes</td></tr>
             <tr><th scope="row">Words, phrases and corrections</th><td>Yes<span class="qual">the same file also feeds Locked Dictation</span></td><td>Yes</td></tr>
             <tr><th scope="row">Recent phrases</th><td>Yes</td><td>Yes</td></tr>
             <tr><th scope="row">Tidy Dictated Text and My Dictation Instructions</th><td>Yes<span class="qual">Ctrl+F3</span></td><td>Yes<span class="qual">Ctrl+F3</span></td></tr>
             <tr><th scope="row">Holding Ctrl+F11 to talk</th><td>Yes</td><td>Yes</td></tr>
-            <tr><th scope="row">Seeing the words while you speak</th><td>Yes<span class="qual">with Nemotron or OpenAI</span></td><td>Yes<span class="qual">with Nemotron or OpenAI</span></td></tr>
+            <tr><th scope="row">Seeing the words while you speak</th><td>Yes<span class="qual">with Nemotron, OpenAI or a live speech provider</span></td><td>Yes<span class="qual">with Nemotron, OpenAI or a live speech provider</span></td></tr>
             <tr><th scope="row">Correct that</th><td>Yes</td><td>Yes</td></tr>
             <tr><th scope="row">Talking to the AI</th><td>Yes</td><td>Yes</td></tr>
             <tr><th scope="row">OpenAI dictation, own key</th><td>Yes<span class="qual">off until you choose it</span></td><td>Yes<span class="qual">off until you choose it</span></td></tr>
+            <tr><th scope="row">Speech providers, own account</th><td>Yes<span class="qual">twelve services, off until you choose one</span></td><td>Yes<span class="qual">twelve services, off until you choose one</span></td></tr>
+            <tr><th scope="row">A recommended model for this computer</th><td>Yes<span class="qual">in Dictation Settings and Speech Models</span></td><td>Yes<span class="qual">in Dictation Settings and Speech Models</span></td></tr>
             <tr><th scope="row">Selecting, moving and correcting by voice</th><td>Yes</td><td>Yes</td></tr>
             <tr><th scope="row">Snippets, clips and abbreviations by voice</th><td>Yes</td><td>Yes</td></tr>
             <tr><th scope="row">Switching between English and Spanish</th><td>Yes<span class="qual">Ctrl+Shift+F11</span></td><td>Yes<span class="qual">Ctrl+Shift+F11</span></td></tr>
@@ -1884,7 +2190,7 @@
             <tr><th scope="row">Optional speech models (Speech Models)</th><td>Yes</td><td>Yes<span class="qual">nothing downloads unless you ask</span></td></tr>
             <tr class="gap"><th scope="row">Locked Dictation</th><td>Yes<span class="qual">Ctrl+F9, records then transcribes, with a review list</span></td><td class="no">No</td></tr>
             <tr class="gap"><th scope="row">Dictate (Offline) toggle</th><td>Yes</td><td class="no">No</td></tr>
-            <tr class="gap"><th scope="row">Parakeet 3 for Locked Dictation</th><td>Yes<span class="qual">Manage Speech Models</span></td><td class="no">No<span class="qual">Locked Dictation is QUILL's own</span></td></tr>
+            <tr class="gap"><th scope="row">Offline engines for Locked Dictation: whisper.cpp, QUILL speech models and Faster Whisper</th><td>Yes<span class="qual">Tools, Speech, Speech and Dictation; with QUILL speech models chosen, the built-in Moonshine works with nothing downloaded</span></td><td class="no">No<span class="qual">Locked Dictation is QUILL's own</span></td></tr>
             <tr class="gap"><th scope="row">Transcribing audio and video files</th><td>Yes<span class="qual">including captions, speaker labels, and a watch folder that transcribes what you drop in</span></td><td class="no">No</td></tr>
             <tr class="gap"><th scope="row">Voice commands and conversation mode</th><td>Yes<span class="qual">a safe allowlist; dictation writes, voice commands act</span></td><td class="no">No</td></tr>
           </tbody>

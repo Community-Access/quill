@@ -3263,7 +3263,7 @@
   {
     "id": "tools.windows_dictation_settings",
     "title": "Dictation Settings",
-    "body": "Choose the speech engine, the microphone, the dictation language and what you hear after each phrase. More Dictation Settings holds hold-to-talk, the live preview, Talking to the AI, OpenAI with your own key, and My Dictation Instructions.",
+    "body": "Choose the speech engine, the microphone, the dictation language and what you hear after each phrase. The Speech engine list has the built-in Moonshine (the default) and Whisper, Windows speech recognition and voice typing, every model you downloaded with its tier (Lightweight, Balanced or High accuracy), OpenAI with your own key, and any speech provider you set up. Better Accuracy: Speech Models (Alt+B) downloads larger models and recommends one for this computer; Recommended for this computer names it here. Speech Providers (Alt+V) sets up twelve cloud speech services with your own account; choosing one asks before anything is sent. More Dictation Settings holds hold-to-talk, the live preview, Talking to the AI, OpenAI with your own key, and My Dictation Instructions.",
     "keystrokes": [
       "Alt+Shift+F6"
     ],

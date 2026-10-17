@@ -327,9 +327,12 @@ command, it tells you what it heard and does nothing.</p>
 <li>Open <strong>Settings</strong> and turn on <strong>Voice commands
 (push-to-talk)</strong>. This one switch enables every voice mode
 below.</li>
-<li>Make sure an offline speech model is installed (QUILL offers to
-download one the first time you use voice; it is a one-time on-device
-download).</li>
+<li>Choose what listens (see below). To download nothing at all, set
+<strong>Voice recognition engine</strong> to <strong>Moonshine
+tiny</strong>, a small speech model that comes with QUILL. The default,
+<strong>Follow main engine</strong>, uses your offline engine
+(Whisper.cpp unless you changed it), which needs its engine and a
+model.</li>
 <li>Optionally assign keyboard shortcuts to the voice commands under
 <strong>Settings → Keyboard</strong>, so you can start them without the
 menu.</li>
@@ -354,11 +357,19 @@ only. <strong>Recommended for the always-listening “Hey QUILL” wake
 word</strong>, where a small, quick engine matters more than
 transcription polish.</li>
 </ul>
-<p>For whisper.cpp you need a model installed (download one from
-<strong>Tools → Speech → Manage Speech Models</strong>); Moonshine tiny
-is already there. If the chosen engine or its model isn’t available,
-QUILL automatically falls back to your main engine, so voice always
-works.</p>
+<p>For whisper.cpp you need its engine and a model (download them from
+<strong>Tools → Speech → Speech and Dictation…</strong>, which opens
+Manage Speech Models, or from <strong>Help → Download Optional
+Components…</strong>); Moonshine tiny is already there. If the chosen
+engine or its model isn’t available, QUILL falls back to your main
+offline engine. If that has no model either, QUILL tells you, and
+choosing Moonshine tiny here fixes it with nothing to download.</p>
+<p>This setting is only for the voice modes on this page. Live Dictation
+(<code>Ctrl+F11</code>) has its own engine list in Dictation Settings,
+and Locked Dictation uses the main offline engine described in “Choosing
+a speech engine and model” below. The user guide’s section “Which speech
+engine? A guide to choosing”, at the start of its dictation chapter,
+compares them all.</p>
 <p>Until October 2026 the light choice was <strong>Vosk</strong>. It is
 gone from this list because it knows only English, its last release was
 in 2022 and its models are checked by MD5 only, while Moonshine tiny
@@ -647,20 +658,32 @@ Dictation</strong> and the <strong>Dictate (Offline)</strong>
 toggle.</p>
 <h3 id="choosing-a-speech-engine-and-model">Choosing a speech engine and
 model</h3>
-<p>Dictation is engine-agnostic and fully offline. In <strong>Manage
-Speech Models</strong> you can install and choose:</p>
+<p>Locked Dictation, the Dictate (Offline) toggle and offline
+transcription are engine-agnostic and fully offline. Open <strong>Tools
+→ Speech → Speech and Dictation…</strong> (Manage Speech Models), or run
+the guided setup from <strong>Help → Download Optional
+Components…</strong>, row <strong>Dictation (offline speech)</strong>,
+and choose one of three engines. Nothing has to be downloaded first:
+until an engine has a model, the built-in Moonshine tiny does the
+work.</p>
 <ul>
-<li><strong>Whisper (whisper.cpp)</strong> — the default. The
-<strong>small models are best for most people</strong>: <em>Tiny</em>
-(~75 MB) and <em>Base</em> (~145 MB) are fast and ideal for short voice
-commands; <em>Small</em> (~465 MB) is the recommended all-round choice.
-Larger models (Medium, Large) are more accurate but slower and much
-bigger.</li>
+<li><strong>Whisper (whisper.cpp)</strong> — the default, light and fast
+on any computer. The engine itself (about 8 MB) is fetched from QUILL’s
+own verified release the first time you need it. The <strong>small
+models are best for most people</strong>: <em>Tiny</em> (~75 MB) and
+<em>Base</em> (~145 MB) are fast and ideal for short voice commands;
+<em>Small</em> (~465 MB) is the recommended all-round choice. Larger
+models (Medium, Large) are more accurate but slower and much bigger.
+Only whisper.cpp has <em>Small English with speaker detection</em>,
+which labels who is speaking in a transcript. <strong>Choose it</strong>
+when you are not sure.</li>
 <li><strong>QUILL speech models</strong> (via sherpa-onnx) — the models
-every QUILL app shares, so one download serves QUILL, QUILL Lite and
-QUILL Transcribe. The built-in Moonshine tiny is there from the start,
-and is what voice commands use when Whisper has no model. Among the
-downloads:
+every QUILL app shares, so one download serves QUILL’s Live Dictation,
+QUILL Lite and QUILL Transcribe as well. The built-in Moonshine tiny is
+there from the start, and is the model voice commands prefer when this
+engine is your main one, so with it chosen nothing needs downloading.
+<strong>Choose it</strong> when you already downloaded a model for Live
+Dictation, or want Parakeet 3. Among the downloads:
 <ul>
 <li><strong>Parakeet 3</strong> (NVIDIA) — <strong>the most reliable
 choice for dictation</strong>, and once its ~670 MB model is installed,
@@ -672,8 +695,24 @@ document.</li>
 <li><strong>Nemotron 3.5</strong> (NVIDIA) — a strong English and
 Spanish model that recognises while you speak.</li>
 </ul></li>
-<li><strong>Faster Whisper</strong> — an additional offline option.</li>
+<li><strong>Faster Whisper</strong> — the most accurate, with a larger
+download and more memory, and the only engine that can use a graphics
+card. It installs when you choose it, where your copy of QUILL can
+install it. It has its own models and does not label speakers.
+<strong>Choose it</strong> for long recordings on a capable
+computer.</li>
 </ul>
+<p>For Locked Dictation, if you have not chosen, QUILL picks for you in
+this order: an installed Parakeet 3, then whisper.cpp once it has a
+model, then the built-in Moonshine tiny. Your own choice always wins.
+The other offline tools (Dictate (Offline), transcription, captions and
+voice commands that follow the main engine) use the engine you chose,
+whisper.cpp unless you changed it, and ask for one of its models when it
+has none.</p>
+<p>Every engine here keeps your speech on your computer. Live
+Dictation’s cloud choices (OpenAI and the speech providers, with your
+own account) are never used by voice commands or by these offline
+tools.</p>
 <h2 id="privacy-and-control-at-a-glance">Privacy and control at a
 glance</h2>
 <ul>
@@ -700,8 +739,9 @@ followed: true silence detection (your turn ends when you stop
 speaking), personalized and optionally-spoken prompts with screen-reader
 parity, the Speak Voice Status check, and the editable <strong>dictation
 profile</strong> (<code>dictation.md</code>) are all in place. The one
-genuinely future item is a dedicated low-power keyword spotter for the
-wake word (so always-listening costs even less than it does today).</p>
+genuinely future item is a dedicated low-power keyword spotter (so
+always-listening costs even less than it does today). It is built, but
+not switched on yet.</p>
 </main>
 </body>
 </html>

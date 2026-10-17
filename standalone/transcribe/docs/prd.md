@@ -28,9 +28,15 @@ open, and what waits for a later version.
 3. **Recordings.** Transcribe a Recording is included. It is QUILL's own
    command and pipeline, unchanged; QUILL Transcribe adds only a window to
    review the result and copy it, save it, or open it in QUILL.
-4. **Internet models.** Only OpenAI, which already had QUILL's key storage,
-   consent and network review. It is listed only when a key is saved and asks
-   before anything is sent.
+4. **Internet models.** At 1.0.0, only OpenAI, which already had QUILL's key
+   storage, consent and network review. It is listed only when a key is saved
+   and asks before anything is sent. Since 2026-10-16 (dictation design record
+   section 23, D-31 to D-37), Dictation Settings' **Speech Providers...** adds
+   twelve speech companies with the person's own account (Azure, Google,
+   Amazon, Deepgram, AssemblyAI, Speechmatics, ElevenLabs, Gladia, Rev.ai,
+   Groq, Mistral, IBM Watson), each with its own consent question, keys in
+   Windows Credential Manager, and none recommended. Choose Model (Ctrl+M) does
+   not list them yet; Dictation Settings does. Local models stay the default.
 5. **Where it works.** No list of supported programs is claimed yet. The list
    comes from testing with NVDA, JAWS and Narrator in Outlook, Word, Notepad and
    the three browsers.

@@ -17382,21 +17382,29 @@ chosen cloud-drive folder.</li>
 is post-v2 at earliest. The <code>core/</code> layer has no
 <code>wx</code> so it remains <em>possible</em>, not
 <em>committed</em>.</li>
-<li><strong>Voice input / dictation.</strong> Dictation is the offline,
-on-device Whisper stack (Locked Dictation; the Windows/SAPI path was
-removed). Voice control of QUILL itself shipped in 0.9.0 as <strong>Hey
-QUILL</strong> (Tools &gt; Speech; full reference in the user guide’s
-“Voice Interaction”): <strong>Voice Command (Offline)</strong>
-push-to-talk, <strong>Voice Conversation Mode</strong> (a
-follow-up-window loop with nine retunable audio cues and VAD silence
-detection), and <strong>Listen for “Hey QUILL”</strong> always-listening
-wake word. The light engine for them is the bundled Moonshine tiny (Vosk
-until 2026-10-13; see 5.25f). Every mode runs recognition entirely
-on-device, is bounded by the agent safe-tool allowlist so a misheard
-phrase cannot do damage, is off by default, and is off in Safe Mode; the
-always-listening mode shows a live-mic indicator with a periodic spoken
-reminder. Always-on listening without those explicit opt-ins stays out
-of scope.</li>
+<li><strong>Voice input / dictation.</strong> Dictation is on-device by
+default and comes in two forms: Live Dictation (Ctrl+F11, shared with
+QUILL Lite and QUILL Transcribe: the built-in Moonshine and Whisper
+models, optional downloaded sherpa-onnx models such as Nemotron and
+Parakeet, Windows speech recognition and voice typing, and, only with
+the person’s own account and consent, OpenAI and twelve speech
+providers; dictation design record sections 6, 7, 21 to 23) and the
+record-then-transcribe offline stack (Locked Dictation, Dictate
+(Offline): Whisper.cpp, the shared QUILL speech models, or Faster
+Whisper, falling back to the built-in Moonshine tiny when nothing is
+downloaded). Voice control of QUILL itself shipped in 0.9.0 as
+<strong>Hey QUILL</strong> (Tools &gt; Speech; full reference in the
+user guide’s “Voice Interaction”): <strong>Voice Command
+(Offline)</strong> push-to-talk, <strong>Voice Conversation
+Mode</strong> (a follow-up-window loop with nine retunable audio cues
+and VAD silence detection), and <strong>Listen for “Hey QUILL”</strong>
+always-listening wake word. The light engine for them is the bundled
+Moonshine tiny (Vosk until 2026-10-13; see 5.25f). Every mode runs
+recognition entirely on-device, is bounded by the agent safe-tool
+allowlist so a misheard phrase cannot do damage, is off by default, and
+is off in Safe Mode; the always-listening mode shows a live-mic
+indicator with a periodic spoken reminder. Always-on listening without
+those explicit opt-ins stays out of scope.</li>
 <li><strong>AI authoring assistant.</strong> The current build exposes a
 local Writing Assistant shell, prompt presets, Prompt Studio reusable
 prompt templates, Agent Center guided profiles, AI Hub launch surface,

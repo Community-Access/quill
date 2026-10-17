@@ -2,6 +2,45 @@
 
 ## 1.0.0
 
+### Speech engines and models: every guide says what the code does (2026-10-17)
+
+Jeff: "I don't think all of its documentation is updated across all apps
+though like the new transcribe models... Make sure all documentation is
+amazing." A family-wide pass built the facts from the code
+(`windows_dictation/engines.py`, `model_catalog.py`, `model_types.py`,
+`model_advice.py`, `cloud/`, `speech/guided_setup.py`, `service.py`, the
+in-memory menu bars), then corrected every guide against them.
+
+- **Stale claims fixed.** Vosk offered as a dictation engine (release notes,
+  announcement); "four engines" lists that omitted downloads and the twelve
+  speech providers; Whisper called English-only; Locked Dictation said to use
+  "the on-device Whisper engine" and to need a model (it needs none: the
+  built-in Moonshine tiny transcribes until the engine has one, though the
+  ~8 MB whisper.cpp engine is still offered on the first Ctrl+F9 unless QUILL
+  speech models is chosen); voice commands said to fall back to Moonshine tiny
+  (they fall back to the main offline engine); Dictate in Other Programs said
+  to go only to Inkwell (it goes to QUILL Transcribe when running or released);
+  QUILL Transcribe's What matters most given two choices, not three; Transcribe
+  PRD decision 4 "only OpenAI".
+- **Written new.** QUILL: "Which speech engine? A guide to choosing" (two
+  systems, tiers, privacy, cloud, a worked example, limits) and a rewritten
+  offline-engine section. QUILL Lite: "Which engine should I choose?" and a full
+  Speech providers section. QUILL Transcribe: the Models chapter rebuilt (15
+  downloads with sizes, tiers and memory, recommendation, Spanish, limits).
+  Quill Inkwell: which engines Dictate Anywhere uses, and what an Inkwell-only
+  computer lacks (the built-in models and sherpa-onnx; only Windows speech
+  recognition works there). Quill Cast and Quill Radio: Dictate Here explained
+  in full. Quill Studio: the speech-recognition engines behind captions. The
+  site's dictation page: choosing an engine, tiers, the recommendation, and
+  speech providers. Release notes and the announcement: the current engine
+  story.
+- **Code.** `engines.engine_list_help()` gives the Speech engine list's F1 the
+  downloads, tiers, OpenAI, the providers and the consent question; the Speech
+  Models button's help no longer cites another product; `reference.py` credits
+  punctuation to every engine but Windows speech recognition (both
+  `dictation-commands.md` regenerated); the Dictation Settings help topic names
+  Speech Models and Speech Providers.
+
 ### Three messages that named menu items that do not exist (2026-10-16)
 
 The documentation-versus-menu audit found QUILL itself pointing people at

@@ -43,11 +43,27 @@ write where you are now, or discard it.
 
 ### The model you chose
 
-Choose Model shows every model with what matters: whether it runs on your
-computer or sends your speech over the internet, which languages it knows, and
-whether it is downloaded. The one you choose is the one that runs. If it cannot
-run, you are told, and nothing else is quietly used instead. Use the Built-in
-Model This Time is there when you want to keep going anyway.
+The built-in Moonshine is chosen for you and works with nothing downloaded and
+no internet; the built-in Whisper is there too, and both know Spanish (Moonshine
+through Whisper's multilingual model). Choose Model (Ctrl+M) shows every model
+with what matters: whether it runs on your computer or sends your speech over
+the internet, its tier (Lightweight, Balanced or High accuracy), which
+languages it knows, and whether it is downloaded. **Recommended for this
+computer** names the model that suits your computer, and why. Fifteen larger
+models, from 141 MB to 1.8 GB, download from the Model Library (Ctrl+L) only
+when you ask.
+
+The one you choose is the one that runs. If it cannot run, you are told, and
+nothing else is quietly used instead. Use the Built-in Model This Time (Ctrl+B)
+is there when you want to keep going anyway.
+
+### Your own account, if you want it
+
+OpenAI, with your own key, and twelve speech companies, from Microsoft Azure
+to IBM Watson, can do the listening instead. Set them up in Dictation Settings
+(Speech Providers...); keys go to Windows Credential Manager. Nothing is sent
+until you say yes, and No is the default. Choose Model does not list the
+providers yet: choose them in Dictation Settings.
 
 ### Set up in one page
 
@@ -66,12 +82,25 @@ Only one program dictates at a time. While QUILL Transcribe runs, Inkwell's
 Dictate Anywhere key is passed to it. The first time it runs, QUILL Transcribe
 brings over the settings and key you chose for Dictate Anywhere in Inkwell.
 
+### Dictate Here in Quill Cast and Quill Radio
+
+Quill Cast and Quill Radio have no speech engine of their own. Their Edit >
+Dictate Here (Ctrl+F11) asks QUILL Transcribe to dictate into the box you are
+in, starting it in the tray if it is not running.
+
 ## Good to know
 
 - QUILL Transcribe never reads what is already in the other program.
 - It will not type into password fields, into programs running as
-  administrator, or into QUILL's own windows, and it says why.
-- Nothing is recorded until you start, and nothing you say is kept.
+  administrator, into QUILL's own windows, or into a program on your list of
+  programs dictation never types into (More Dictation Settings, Alt+N), and it
+  says why.
+- Dictation speaks English or Spanish. In Spanish, commands stay in English for
+  now.
+- Nothing is recorded until you start, and recordings of your voice are never
+  kept. Words that could not be typed are kept, sealed for your Windows
+  account, until you write or discard them; a history of what you said is kept
+  only if you turn it on.
 - F1 on any window or control says what it is for.
 
 Questions and problems: Get Help from Support in the Help menu, or

@@ -48,7 +48,7 @@ In scope (all reused from upstream):
 
 Out of scope, by decision (D-1, "basic level of functionality"):
 
-- Speech transcription engines (whisper.cpp / Faster Whisper / Vosk). Feed transcripts are plain downloads and remain fully functional; generating a transcript from audio is full-QUILL territory.
+- Speech transcription engines for transcripts or dictation (whisper.cpp / Faster Whisper / the QUILL speech models). Feed transcripts are plain downloads and remain fully functional; generating a transcript to read from audio is full-QUILL territory. Two deliberate exceptions, neither an engine choice the listener sees: the small bundled Vosk English model, used only to find chapters when **How long to spend looking** is **As long as it takes** (section 16, `Deep transcribes locally`; Vosk does nothing else anywhere in the family since 2026-10-13), and Edit > Dictate Here (Ctrl+F11), which asks QUILL Transcribe to dictate with whatever engine it uses (section 23.28) rather than adding one here.
 - QUILL's editor, AI assistants, braille translation stacks (liblouis tables, BRF authoring), neural TTS voice stacks (Kokoro/Piper), Pandoc conversions. The installer excludes their payloads outright. Braille *announcements* are in scope and are not part of those payloads: they are written through the screen reader's own bridge, which requires no translation stack here.
 - "Send Show Notes to Editor" copies to the clipboard instead (documented standalone difference).
 - QUILL's update extras (signed manifest feed, portable zip swaps, version skipping). Check for Updates downloads the installer in-app and offers Install now; the rest stays in QUILL.

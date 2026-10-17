@@ -477,8 +477,11 @@ to Never; Quick Insert can still reach it.
 ## 20. Dictate Anywhere
 
 Dictate Anywhere lets you talk instead of type in any program: your email, a web
-page, a chat window, a form. It uses the same speech engines as QUILL and QUILL
-Lite, the same words you have taught QUILL in My Words and Phrases (and QUILL
+page, a chat window, a form. It offers the same speech engines as QUILL and
+QUILL Lite, though Inkwell's installer does not carry the built-in ones (see
+"Which speech engine Dictate Anywhere uses" at the end of this section, and
+read it before you start on a computer that has only Inkwell). It uses the
+same words you have taught QUILL in My Words and Phrases (and QUILL
 Lite's, once it is set to use the shared word list), and the same voice
 commands. Inkwell is its home because Inkwell is already running quietly in
 the background, typing into other programs for you.
@@ -620,10 +623,109 @@ apps" in section 3).
 **Safe Mode.** With Safe Mode on, Dictate Anywhere is off.
 
 **Privacy.** Your speech is handled exactly as it is in the editors: on this
-computer with the built-in engines, and sent to OpenAI only if you chose OpenAI
-dictation with your own key. Nothing you say is kept.
+computer with Windows speech recognition and the built-in or downloaded
+models, and sent to a company only if you chose OpenAI or a speech provider
+yourself and said yes when asked. Nothing you say is recorded or kept, and
+words held while dictation is paused are kept in memory only, so they are gone
+if Inkwell closes.
 
-**Speech providers.** Inkwell's Dictation Settings has the same **Speech Providers...** button (Alt+V) as the editors, so Dictate Anywhere can use a speech company you already have an account with, such as Azure, Deepgram or Amazon. Keys go to Windows Credential Manager; you are asked before anything is sent, and No is the default.
+**Spanish.** Say "switch to Spanish" while dictating, or choose Spanish as the
+**Dictation language** in Dictation Settings. Commands stay in English for now:
+say "QUILL scratch that" in Spanish dictation too. The engine has to know
+Spanish: Windows speech recognition needs Spanish installed in Windows.
+
+### Which speech engine Dictate Anywhere uses
+
+The **Speech engine** list in **Dictation > Dictation Settings...**
+(Ctrl+Alt+D) is the same list QUILL, QUILL Lite and QUILL Transcribe show:
+
+- **Moonshine** (the default) and **Whisper**, the built-in models: quick,
+  punctuate for you, and keep your speech on this computer.
+- **Windows speech recognition**: Windows' own recogniser. It needs nothing
+  extra and works in any speech language installed in Windows, but it does not
+  punctuate by itself (say "comma" and "period"), and it often mishears a voice
+  it has not been trained on.
+- **Windows voice typing (Windows+H)**: Windows' own panel. If you prefer it,
+  press Windows+H yourself; none of Inkwell's commands apply to it.
+- **Models you downloaded**, each with "(downloaded)" and its tier:
+  Lightweight, Balanced or High accuracy.
+- **OpenAI (your own key; sends your speech to OpenAI)**, listed only when an
+  OpenAI key is saved.
+- **Speech providers** you have set up, each labelled, for example, "Deepgram
+  (your own account; sends your speech to Deepgram)".
+
+**What Inkwell's installer leaves out.** Inkwell is small because its
+installer does not include the built-in Moonshine and Whisper models, nor the
+speech part that runs them. That speech part also listens for the pauses
+between your phrases, so it is needed for downloaded models, OpenAI and the
+speech providers too. On a computer where only Inkwell is installed, choosing
+any of those and pressing your key says: "The built-in speech engines are not
+included in this copy of QUILL. Choose Windows speech recognition in Dictation
+Settings." Having QUILL or QUILL Lite installed as well does not change this,
+because Inkwell looks for the speech part only beside itself.
+
+**On a computer with only Inkwell, you have two choices:**
+
+1. **Use Windows speech recognition.** Press Ctrl+Alt+D, choose **Windows
+   speech recognition** in the **Speech engine** list, and press OK. Remember
+   to say the punctuation.
+2. **Install QUILL Transcribe** (released on 1 November 2026; Alt+Q, then T
+   offers to download it). Its installer carries the built-in models and the
+   speech part. While QUILL Transcribe is running, it does the dictating
+   whenever you press your Dictate Anywhere key, with its own model, so you
+   get Moonshine, Whisper, downloaded models, OpenAI or a provider, whichever
+   QUILL Transcribe uses. Check **Start QUILL Transcribe when I sign in to
+   Windows** in its setup so it is always there. If QUILL Transcribe is not
+   running, Inkwell dictates by itself again, with the limits above.
+
+**Better Accuracy: Speech Models...** (Alt+B) in Inkwell's Dictation Settings
+opens the shared Speech Models window, where larger models download on
+request after a question naming the size and licence. The models are saved in
+`%LOCALAPPDATA%\QuillVille\Dictation\models`, shared with QUILL, QUILL Lite and
+QUILL Transcribe, so a model downloaded from any of them is downloaded once.
+Inkwell itself can run them only where the speech part is present; on an
+Inkwell-only computer, download them for QUILL Transcribe to use. The window's
+**What matters most** (Alt+W), **Recommendation** (Alt+C) and **Show
+Recommended Model** (Alt+S) suggest a model for this computer; Dictation
+Settings shows the same advice on its **Recommended for this computer** line.
+It is advice only and never changes your engine.
+
+**Speech providers.** **Speech Providers...** (Alt+V), in the same Dictation
+Settings window, sets up a speech company you already have an account with:
+Microsoft Azure AI Speech, Google Cloud Speech-to-Text (Chirp 3), Amazon
+Transcribe, Deepgram, AssemblyAI, Speechmatics, ElevenLabs Scribe, Gladia,
+Rev.ai, Groq, Mistral Voxtral or IBM Watson Speech to Text. Choose the company
+in the **Providers** list, fill in its fields (F1 on a field says where to
+find it), press **Test Connection** (Alt+T), which never sends speech, then
+**Save** (Alt+S). Keys go to Windows Credential Manager at once, never into a
+settings file or a log. Then choose the company in the Speech engine list.
+OpenAI works the same way, with the key from **More Dictation Settings > Add or
+Change OpenAI Key...** (Alt+K).
+
+**Consent.** The first time you choose OpenAI or a provider, Inkwell tells you
+what is sent and to whom, and asks. **No is the default**, and with No nothing
+is sent. What is sent is your speech while you dictate, and your My Words and
+Phrases as hints where the company accepts them. The company bills your own
+account; QUILL's free AI never carries your speech. While one of them has your
+speech, Inkwell's tray icon name ends "Speech goes to" and the company. Safe
+Mode refuses them, as it refuses all of Dictate Anywhere.
+
+**An example.** Alex has only Quill Inkwell, and wants to dictate emails.
+
+1. Alex presses Ctrl+Alt+D, chooses **Windows speech recognition** in the
+   Speech engine list, and presses OK.
+2. In Outlook, Alex presses the Dictate Anywhere key and says "thanks for the
+   notes period". "Thanks for the notes." is typed.
+3. Alex wants punctuation without saying it, so presses Alt+Q, then T, to
+   download QUILL Transcribe, and checks **Start QUILL Transcribe when I sign
+   in to Windows** in its setup.
+4. Back in Outlook, the same Dictate Anywhere key now reaches QUILL
+   Transcribe, which dictates with the built-in Moonshine and punctuates for
+   Alex. Inkwell's status line says "Dictate Anywhere passed to QUILL
+   Transcribe."
+
+QUILL Transcribe's user guide has the full guide to choosing a model, with
+every model's size, languages and tier.
 
 ## Finding a setting or a command
 

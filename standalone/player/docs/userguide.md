@@ -20,8 +20,8 @@ A book you start in one continues in the other, at the same place.
 > **10-band equalizer and DSP**, **DAISY navigation** (single- and multi-file), the
 > **Book Library** (LibriVox), the **sleep timer**, the **mini-player**, the
 > **multi-field status bar** (F6 review), the Magical **welcome-back** recap, the **AI
-> chapter summary/recap**, and **voice commands** — both hands-free (offline Whisper or
-> Nemotron) and say-or-type. Still to come: an **always-on hotword** and **BARD sources**
+> chapter summary/recap**, and **voice commands** — both hands-free (offline, with QUILL's speech
+> engines) and say-or-type. Still to come: an **always-on hotword** and **BARD sources**
 > (pending the NLS contract). Where a feature is still future, this guide says so.
 
 ---
@@ -401,12 +401,17 @@ is no notification-area tray (the app uses the Dock instead).
   - **Hands-free: Listen for a Command (Ctrl+Shift+L).** Press once and the player starts
     listening (you'll hear a "Listening" cue and the book quietens); say your command; press
     Ctrl+Shift+L again to stop. The player transcribes what you said **on your own computer**
-    (offline, using a small Whisper speech model) and carries it out — announcing the result.
+    (offline, with a small, fast speech model) and carries it out — announcing the result.
     The book is *ducked, never paused*, so you don't lose your place, and it restores the
     moment the command finishes. If nothing is recognized the player tells you what it heard so
     you can try again. A safety timer closes the microphone automatically if you forget to stop.
-    (Needs a microphone and a speech model installed in QUILL — open QUILL ▸ download a small
-    Whisper model once.)
+    It uses the speech engine you chose in QUILL (Tools ▸ Speech ▸ Speech and Dictation...) and
+    that engine's smallest fast model, because a command is only a few words. If that engine has no
+    model, it tries Whisper.cpp, then the QUILL speech models (where it prefers the built-in
+    Moonshine tiny), then Faster Whisper. If none has a model, you hear "Voice listening needs a
+    microphone and an installed speech model. Open QUILL and download a small Whisper model
+    first." Open QUILL, press Alt+T, H, S, and download Whisper.cpp's Tiny or Base model once.
+    Vosk is not used for voice commands.
   - **Type it: Type a Voice Command (Ctrl+Shift+V).** Opens a box; type the command — or speak
     it in with your operating system's dictation — for when you'd rather not talk aloud.
   - Either way the commands are the same: *"next chapter"*, *"skip back thirty"*,
@@ -519,7 +524,7 @@ Per-book overrides and importing or exporting settings, specified in the PRD
 | Available now | Still to come |
 | --- | --- |
 | Open file / folder / DAISY, resume | Always-on hotword (say a wake word to start) |
-| **Hands-free voice (offline Whisper/Nemotron)** | Spoken chapter intros / soundscape |
+| **Hands-free voice (offline, QUILL's speech engines)** | Spoken chapter intros / soundscape |
 | Chapter **tree** (multi-level, DAISY) | Spoken chapter intros / soundscape |
 | **Summarize Chapter + AI Recap (AI)** | Automatic (server) cross-device sync |
 | **Copy/Export bookmarks + Sync bundle** | Embedded in-QUILL window; zero-gap gapless |

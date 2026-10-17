@@ -10,6 +10,13 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 Testing rebuild: **3.2.0 (build 4)**. The packages have not been published yet.
 
+- **The user guide explains Dictate Here in full** (2026-10-17). "Dictating a
+  search" now says what happens in each case when you press Ctrl+F11 (QUILL
+  Transcribe running, not running, Quill Inkwell dictating, not installed, or
+  not answering), that the speech engine is the one chosen in QUILL Transcribe
+  (Model > Choose Model, Ctrl+M there), that your voice stays on your computer
+  unless you chose OpenAI or a speech provider in QUILL Transcribe, and its
+  limits: Ctrl+F11 starts dictation but does not stop it.
 - **Corrected: the guide now says Spotify is on the Station menu from the
   start.** It said **Connect to Spotify...** (Ctrl+Alt+P) and **Browse
   Spotify...** (Ctrl+Alt+O) appear only once an experimental feature is turned

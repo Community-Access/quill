@@ -32,6 +32,21 @@ uploaded for testing. The new packages have not been published yet.
   help or timestamped backups, has to say in the same chapter how to switch it
   on. The first run found the Sound Scheme path written as if App Sounds Play On
   were a menu (it is a button in the Sound Scheme window), now corrected.
+- **The user guide helps you choose a speech engine.** Chapter 9 has a new
+  section, "Which engine should I choose?": privacy, speed, accuracy, memory
+  and Spanish in plain words, what the Lightweight, Balanced and High accuracy
+  tiers mean, the **Recommended for this computer** line and Speech Models'
+  **What matters most** (**Alt+W**), **Recommendation** (**Alt+C**) and **Show
+  Recommended Model** (**Alt+S**), with examples and a worked example from
+  advice to download. The engine table now lists every choice, including
+  downloaded models and the speech providers, and says Whisper dictates
+  Spanish too (it said English only). "Speech providers: dictation with your
+  own account" now explains what is sent, the question with No as the default,
+  Windows Credential Manager, Test Connection, which providers show words
+  while you speak, and the limits. The guide also says the models folder is
+  shared with QUILL Transcribe and Quill Inkwell, and that **Dictate in Other
+  Programs...** (**Alt+O**) hands your settings to QUILL Transcribe when it is
+  installed, and to Quill Inkwell otherwise.
 
 - **QUILL Transcribe is released on 1 November 2026.** The user guide's list of QuillVille apps that open full screen and remember their window ("The window") now names QUILL Transcribe, the family app that types what you say into other programs. Nothing changes in QUILL Lite itself: Ctrl+F11 still dictates into your document, and Dictate in Other Programs still hands your settings to QUILL Transcribe when it is running.
 

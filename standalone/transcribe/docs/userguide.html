@@ -280,12 +280,13 @@ read with the arrow keys.</li>
 you name. Press <strong>Test Microphone</strong> to record four seconds
 and hear how loud it was and what it heard. The test stays on your
 computer and nothing is kept.</li>
-<li><strong>Speech model</strong> - the models already on this computer,
-each with its tier (see “Choosing a model”). Moonshine is a good place
-to start: it is quick and adds punctuation for you. Below it,
-<strong>Recommended for this computer</strong> (Alt+P) is one line
-naming the model that suits your computer and why. It is only advice:
-the model in the box above is the one you get.</li>
+<li><strong>Speech model</strong> (Alt+D) - the models already on this
+computer, each with its tier (see “Choosing a model”). Moonshine is
+chosen to begin with, and is a good place to start: it is built in,
+quick, works with nothing downloaded, and adds punctuation for you.
+Below it, <strong>Recommended for this computer</strong> (Alt+P) is one
+line naming the model that suits your computer and why. It is only
+advice: the model in the box above is the one you get.</li>
 <li><strong>Start and stop key</strong> - the key that starts and stops
 dictation from any program. It is <strong>Alt+Shift+Backslash</strong>
 (<code>Alt+Shift+\</code>) unless you change it. Type another, for
@@ -537,8 +538,8 @@ mind about, and never the same word twice.</p>
 <p><strong>Dictation Status</strong> (Alt+F9 in the window, as in QUILL
 and QUILL Lite) says in one sentence what dictation is doing, the
 program it is writing into, the model, and how many phrases are held,
-for example “Dictation is paused in OUTLOOK, using Moonshine Tiny, with
-2 phrases held.” To ask from another program, choose a Dictation Status
+for example “Dictation is paused in OUTLOOK, using Moonshine, with 2
+phrases held.” To ask from another program, choose a Dictation Status
 Key (see Keys).</p>
 <h2 id="when-the-focus-moves-paused-not-lost">When the focus moves:
 paused, not lost</h2>
@@ -593,9 +594,10 @@ file name, like keepass.exe, never by a window title, and words already
 held stay held;</li>
 <li>the chosen model or microphone is not available.</li>
 </ul>
-<p>While you use the OpenAI engine, the state line ends “Speech goes to
-OpenAI.”, because that is the one engine that sends your voice off this
-computer.</p>
+<p>While you use OpenAI or a speech provider, the state line ends
+“Speech goes to” and the company’s name, for example “Speech goes to
+OpenAI.”, because those are the only choices that send your voice off
+this computer (see Models).</p>
 <p>If Windows does not take all of a phrase, QUILL Transcribe stops and
 says part of it may be missing. Check the field before you carry on. It
 never says a phrase went in when it is not sure.</p>
@@ -1130,80 +1132,516 @@ leaves your style exactly as it is.</p>
 QUILL’s and QUILL Lite’s, in QUILL Transcribe’s own copy of the
 dictation settings.</p>
 <h2 id="models">Models</h2>
+<p>A speech model is the part that turns what you say into words. QUILL
+Transcribe works the moment it is installed: the built-in
+<strong>Moonshine</strong> is chosen for you, and it needs nothing
+downloaded and no internet. Everything in this chapter is optional. Read
+it when you want fewer mistakes, faster text, Spanish, or a speech
+company you already pay for.</p>
+<h3 id="what-you-can-choose-from">What you can choose from</h3>
+<table>
+<thead>
+<tr>
+<th>Choice</th>
+<th>Where your speech goes</th>
+<th>Punctuates by itself</th>
+<th>Download</th>
+<th>Listed in Choose Model</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Moonshine, built in (the default)</td>
+<td>Stays on this computer</td>
+<td>Yes</td>
+<td>None: about 124 MB, already installed</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Whisper, built in</td>
+<td>Stays on this computer</td>
+<td>Yes</td>
+<td>None: about 104 MB, already installed</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Windows speech recognition</td>
+<td>Stays on this computer</td>
+<td>No: say “comma”, “period”</td>
+<td>None: part of Windows</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>A model you download</td>
+<td>Stays on this computer</td>
+<td>Yes</td>
+<td>141 MB to 1.8 GB, once</td>
+<td>Yes, marked “not downloaded” until it is</td>
+</tr>
+<tr>
+<td>OpenAI, with your own key</td>
+<td>Sent to OpenAI</td>
+<td>Yes</td>
+<td>None</td>
+<td>Only once an OpenAI key is saved</td>
+</tr>
+<tr>
+<td>A speech provider, with your own account</td>
+<td>Sent to that company</td>
+<td>Yes</td>
+<td>None</td>
+<td>No: choose it in Dictation Settings</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Moonshine</strong> is the quickest by far. It takes about a
+twentieth of a second of computing for each second you speak, uses about
+210 MB of memory, and your words arrive about a fifth of a second after
+you pause. It knows only English: with the dictation language set to
+Spanish, QUILL Transcribe uses the built-in multilingual Whisper
+instead, without you changing anything.</li>
+<li><strong>Whisper</strong> is a little slower: about a fifth of a
+second of computing for each second you speak, and about 300 MB of
+memory. Try it if Moonshine often mishears you. It knows English and
+Spanish.</li>
+<li><strong>Windows speech recognition</strong> is Windows’ own
+recogniser. It needs nothing extra and works in any speech language
+installed in Windows, but it does not punctuate by itself, and it often
+mishears a voice it has not been trained on. Its row says “the languages
+Windows has” and has no tier.</li>
+<li><strong>Windows voice typing</strong> (Windows+H) is in the Speech
+engine list in Dictation Settings, because QUILL and QUILL Lite can hand
+over to it. It is Windows’ own feature, so QUILL Transcribe does not run
+it: with it chosen, dictation does not start, and you are told to press
+Windows+H instead.</li>
+</ul>
+<p>Moonshine and Whisper come in the installer and the portable zip,
+with the part that runs them, so nothing is fetched the first time you
+dictate.</p>
 <h3 id="choosing-a-model">Choosing a model</h3>
-<p>Open <strong>Choose Model</strong> (Ctrl+M). Every model is listed
-with:</p>
+<p>Open <strong>Choose Model</strong> from the Model menu (Ctrl+M). The
+focus starts in the <strong>Models</strong> list (Alt+M). Each row says,
+in this order:</p>
 <ul>
 <li>whether it runs <strong>on this computer</strong> or <strong>sends
 your speech over the internet</strong>;</li>
 <li>its tier: <strong>Lightweight</strong>, <strong>Balanced</strong> or
-<strong>High accuracy</strong>;</li>
+<strong>High accuracy</strong> (Windows speech recognition and OpenAI
+have none, because they are not models on this computer);</li>
 <li>the languages it knows;</li>
-<li>whether it is downloaded yet.</li>
+<li>“not downloaded”, if it is not on this computer yet.</li>
 </ul>
-<p>The box below the list says more about the one you are on: its size,
-what its tier means, who publishes it and its licence. Press <strong>Use
-This Model</strong> to choose it. It stays your model until you choose
-another.</p>
-<p>The tiers say how much work a model is for your computer:</p>
+<p>For example: “Moonshine (on this computer; Lightweight; English and
+Spanish)”, or “Whisper small (on this computer; High accuracy; English
+and Spanish; not downloaded)”. The built-in Moonshine row says English
+and Spanish because, in Spanish, the multilingual Whisper does its
+listening.</p>
+<p><strong>About this model</strong> (Alt+A) says more about the row you
+are on: whether your speech leaves the computer, whether it is ready,
+what its tier means, its languages and size, who publishes it, its
+licence, and one line on what it is good for. Press Enter, or
+<strong>Use This Model</strong>, to choose it. It stays your model until
+you choose another. A model that is not downloaded is listed so you know
+it exists; choosing it says it is not downloaded yet and points you to
+<strong>Model Library…</strong> (Alt+L), which is also a button in this
+window.</p>
+<p>You can also choose in the <strong>Speech engine</strong> list in
+<strong>Dictation Settings</strong> (Alt+Shift+F6). That list shows the
+built-in engines, the models you have downloaded (not the ones you have
+not), OpenAI when a key is saved, and the speech providers you have set
+up. Both windows change the same setting.</p>
+<h3 id="what-the-tiers-mean">What the tiers mean</h3>
+<p>The tier says how much work a model is for your computer, in the same
+words everywhere in QuillVille:</p>
 <ul>
 <li><strong>Lightweight</strong>: keeps up comfortably even on a modest
 computer. The built-in Moonshine and Whisper, and Moonshine base.</li>
-<li><strong>Balanced</strong>: more work than the built-in models; keeps
-up on a computer with four or more cores. Parakeet and Whisper
-base.</li>
+<li><strong>Balanced</strong>: more work than the built-in engines;
+keeps up on a computer with four or more cores. Both Parakeet models,
+Whisper base and Whisper base.en.</li>
 <li><strong>High accuracy</strong>: the fewest mistakes, for the most
-work; needs a capable computer, or patience. Nemotron, and Whisper small
-and larger.</li>
+work; needs a capable computer, or patience. Nemotron, Whisper small and
+larger, and the Distil-Whisper models.</li>
 </ul>
-<p><strong>Recommended for this computer</strong> (Alt+C) is a read-only
-box below that. It names the model that suits your computer and your
-dictation language, and says why: whether it keeps up, about how soon
-your words appear after you pause, and how big the download is, or that
-it is already installed. The figures are estimates, measured with a
-synthetic voice. It is only advice: QUILL Transcribe never changes your
-model by itself. The Model Library has the same advice, with a
-<strong>What matters most</strong> choice (the quickest response, or the
-fewest mistakes) and a <strong>Show Recommended Model</strong>
-button.</p>
-<p>A model that is not downloaded is listed so you know it exists, but
-you cannot use it until it is downloaded. Choose <strong>Model
-Library</strong> to download it.</p>
+<p>“Keeps up” means your words arrive soon after you pause. A model that
+does not keep up still writes everything, only later: you hear the soft
+working sound once a second while you wait (see What you hear).</p>
+<h3 id="the-models-you-can-download">The models you can download</h3>
+<p>All of these run on the processor, so no graphics card is needed, and
+one would not make them faster. All of them keep your speech on this
+computer. “Fits a computer with” is the smallest amount of memory the
+model runs in beside a screen reader.</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Languages</th>
+<th>Download</th>
+<th>Tier</th>
+<th>Fits a computer with</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Moonshine base</td>
+<td>English</td>
+<td>141 MB</td>
+<td>Lightweight</td>
+<td>4 GB</td>
+</tr>
+<tr>
+<td>Whisper base</td>
+<td>English and Spanish</td>
+<td>161 MB</td>
+<td>Balanced</td>
+<td>4 GB</td>
+</tr>
+<tr>
+<td>Whisper base.en</td>
+<td>English</td>
+<td>161 MB</td>
+<td>Balanced</td>
+<td>4 GB</td>
+</tr>
+<tr>
+<td>NVIDIA Parakeet Unified 0.6B</td>
+<td>English</td>
+<td>663 MB</td>
+<td>Balanced</td>
+<td>8 GB</td>
+</tr>
+<tr>
+<td>NVIDIA Parakeet TDT 0.6B v3</td>
+<td>English and Spanish</td>
+<td>670 MB</td>
+<td>Balanced</td>
+<td>8 GB</td>
+</tr>
+<tr>
+<td>Distil-Whisper small.en</td>
+<td>English</td>
+<td>299 MB</td>
+<td>High accuracy</td>
+<td>4 GB</td>
+</tr>
+<tr>
+<td>Whisper small</td>
+<td>English and Spanish</td>
+<td>375 MB</td>
+<td>High accuracy</td>
+<td>8 GB</td>
+</tr>
+<tr>
+<td>Whisper small.en</td>
+<td>English</td>
+<td>376 MB</td>
+<td>High accuracy</td>
+<td>4 GB</td>
+</tr>
+<tr>
+<td>Distil-Whisper medium.en</td>
+<td>English</td>
+<td>573 MB</td>
+<td>High accuracy</td>
+<td>8 GB</td>
+</tr>
+<tr>
+<td>NVIDIA Nemotron 3.5 ASR Streaming 0.6B</td>
+<td>English and Spanish</td>
+<td>682 MB</td>
+<td>High accuracy</td>
+<td>8 GB</td>
+</tr>
+<tr>
+<td>Whisper medium.en</td>
+<td>English</td>
+<td>946 MB</td>
+<td>High accuracy</td>
+<td>16 GB</td>
+</tr>
+<tr>
+<td>Whisper medium</td>
+<td>English and Spanish</td>
+<td>946 MB</td>
+<td>High accuracy</td>
+<td>16 GB</td>
+</tr>
+<tr>
+<td>Distil-Whisper large-v3</td>
+<td>English</td>
+<td>984 MB</td>
+<td>High accuracy</td>
+<td>16 GB</td>
+</tr>
+<tr>
+<td>Whisper large-v3-turbo</td>
+<td>English and Spanish</td>
+<td>1.0 GB</td>
+<td>High accuracy</td>
+<td>16 GB</td>
+</tr>
+<tr>
+<td>Whisper large-v3</td>
+<td>English and Spanish</td>
+<td>1.8 GB</td>
+<td>High accuracy</td>
+<td>16 GB</td>
+</tr>
+</tbody>
+</table>
+<p>A few differences worth knowing:</p>
+<ul>
+<li><strong>Nemotron</strong> shows your words while you are still
+talking: on a braille display you see “Hearing:” and the words so far.
+The others write each phrase when you pause.</li>
+<li><strong>Parakeet</strong> never invents words out of silence.
+Whisper models sometimes write a phantom “thank you” when you said
+nothing.</li>
+<li><strong>Whisper large-v3</strong> is the most accurate Whisper, and
+very slow on most computers. Large-v3-turbo and Distil-Whisper large-v3
+come close to it, much faster.</li>
+</ul>
+<h3 id="which-one-should-i-choose">Which one should I choose?</h3>
+<p>Start from what matters most to you.</p>
+<ul>
+<li><strong>Privacy, and working offline.</strong> Every built-in and
+downloaded model keeps your speech on this computer and works with no
+internet. Only OpenAI and the speech providers send it away.</li>
+<li><strong>Speed.</strong> Moonshine. Nothing else answers as quickly,
+on any computer.</li>
+<li><strong>Fewer mistakes.</strong> A larger downloaded model, if your
+computer can keep up. On a computer with 8 GB of memory and four cores,
+Nemotron is the usual answer.</li>
+<li><strong>Memory.</strong> On a computer with 4 GB, stay with the
+Lightweight tier or the 4 GB rows above, because your screen reader
+needs its share too.</li>
+<li><strong>Spanish.</strong> The built-in Whisper, Nemotron, Parakeet
+TDT, or a Whisper without “.en” in its name.</li>
+<li><strong>No downloads, in any language Windows has.</strong> Windows
+speech recognition, if you do not mind saying the punctuation
+aloud.</li>
+</ul>
+<p>If you are not sure, keep Moonshine and read the recommendation.</p>
+<h3 id="the-recommendation">The recommendation</h3>
+<p><strong>Recommended for this computer</strong> (Alt+C in Choose
+Model) is a read-only box. It names the model that suits your computer
+and your dictation language, and says why: whether it keeps up, about
+how soon your words appear after you pause, its tier, and how big the
+download is, or that it is already installed. Set Up QUILL Transcribe
+has the same line (Alt+P).</p>
+<p>The <strong>Model Library</strong> has three controls for it:</p>
+<ul>
+<li><strong>What matters most</strong> (Alt+W): <strong>A balance of
+speed and accuracy</strong> (where it starts), <strong>The quickest
+response</strong>, or <strong>The fewest mistakes</strong>.</li>
+<li><strong>Recommendation</strong> (Alt+C): the advice for that
+choice.</li>
+<li><strong>Show Recommended Model</strong> (Alt+S): moves to that model
+in the list, so you can read its details and download it.</li>
+</ul>
+<p>It is only advice. QUILL Transcribe never changes your model by
+itself, and OpenAI and the speech providers are never recommended. The
+figures are estimates, measured with a synthetic voice until tests with
+real voices exist. As a guide, this is what it usually suggests:</p>
+<table>
+<thead>
+<tr>
+<th>Computer</th>
+<th>A balance</th>
+<th>The quickest response</th>
+<th>The fewest mistakes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4 GB of memory, 2 cores</td>
+<td>Moonshine</td>
+<td>Moonshine</td>
+<td>Moonshine base</td>
+</tr>
+<tr>
+<td>8 GB of memory, 4 cores</td>
+<td>Moonshine base</td>
+<td>Moonshine</td>
+<td>Nemotron</td>
+</tr>
+<tr>
+<td>16 GB of memory, 8 cores</td>
+<td>Nemotron</td>
+<td>Moonshine</td>
+<td>Nemotron</td>
+</tr>
+<tr>
+<td>8 GB, 4 cores, dictating in Spanish</td>
+<td>Whisper</td>
+<td>Whisper</td>
+<td>Nemotron</td>
+</tr>
+</tbody>
+</table>
+<h3 id="a-worked-example">A worked example</h3>
+<p>Sam has a laptop with 8 GB of memory and four cores, and dictates
+emails in English. Moonshine is quick, but Sam would like fewer
+mistakes.</p>
+<ol type="1">
+<li>Sam presses <strong>Ctrl+L</strong> for the Model Library.</li>
+<li>In <strong>What matters most</strong> (Alt+W), Sam chooses
+<strong>The fewest mistakes</strong>. <strong>Recommendation</strong>
+(Alt+C) now names NVIDIA Nemotron 3.5 ASR Streaming 0.6B, says it keeps
+up on this computer, and that it is a 682 MB download.</li>
+<li>Sam presses <strong>Show Recommended Model</strong> (Alt+S), then
+<strong>Download…</strong> (Alt+D). A question names the size, the
+licence and where it will be saved. Sam answers Yes, and carries on
+working while it downloads.</li>
+<li>When it has finished, Sam presses <strong>Use for Dictation</strong>
+(Alt+U). From the next phrase Nemotron is the model, and the window’s
+Model and microphone field says so.</li>
+<li>A colleague’s name still comes out wrong, so Sam adds it to
+<strong>My Words and Phrases</strong> (Alt+Shift+F10).</li>
+</ol>
+<p>If Nemotron turns out to be too slow while other programs are busy,
+Sam presses <strong>Ctrl+M</strong>, moves to Moonshine, and presses
+Enter. Nemotron stays downloaded for another day.</p>
 <h3 id="the-model-library">The Model Library</h3>
-<p><strong>Model Library</strong> (Ctrl+L) is the same one QUILL uses.
-Each download shows its size first, is your choice, can be cancelled,
+<p><strong>Model Library</strong> (Ctrl+L, in the Model menu) is the
+same Speech Models window QUILL and QUILL Lite open from Dictation
+Settings with <strong>Better Accuracy: Speech Models…</strong> (Alt+B);
+that button is in QUILL Transcribe’s Dictation Settings too. It lists
+every model you can download. For the one you are on:</p>
+<ul>
+<li><strong>Details</strong> (Alt+T) says what it is good for, its size,
+its published accuracy, its licence and where it is saved.</li>
+<li><strong>Download…</strong> (Alt+D) asks first, naming the size, the
+licence and where it goes. Nothing is fetched until you answer Yes. On a
+metered connection it asks about that too. It checks the free space
+first, shows <strong>Progress</strong> (Alt+P), and carries on from
+where it stopped if the connection drops.</li>
+<li><strong>Cancel Download</strong> (Alt+L) stops it.</li>
+<li><strong>Use for Dictation</strong> (Alt+U) makes it your model.</li>
+<li><strong>Remove</strong> (Alt+R) deletes it from this computer.</li>
+</ul>
+<p>Every file comes from Hugging Face, is pinned to one exact version,
 and is checked before it is used. A download that did not finish is
-never marked ready. Models downloaded here are shared with QUILL and
-QUILL Lite, so you only download a model once.</p>
+never marked ready. Models are saved in
+<code>%LOCALAPPDATA%\QuillVille\Dictation\models</code> (a portable copy
+keeps them in its own <code>data\dictation\models</code> folder). That
+folder is shared with QUILL, QUILL Lite and Quill Inkwell, so you only
+download a model once. In Safe Mode nothing downloads.</p>
 <h3 id="when-your-model-cannot-run">When your model cannot run</h3>
 <p>If your chosen model is missing or will not load, QUILL Transcribe
 does not quietly use another one. It says which model could not run and
-what to do.</p>
+what to do, for example “Whisper small is not on this computer yet.
+Download it in the Model Library, choose another model, or use the
+built-in model this time.”</p>
 <p>To dictate anyway, choose <strong>Use the Built-in Model This
 Time</strong> in the Dictation menu (Ctrl+B). It uses Moonshine for one
 session and says so. Your chosen model stays your choice, and the next
 session tries it again.</p>
 <h3 id="openai">OpenAI</h3>
-<p>If you have saved an OpenAI key in QUILL’s Use My Own AI Key, OpenAI
-appears in the list. It is never chosen for you. The first time you
-choose it, QUILL Transcribe tells you exactly what is sent and where,
-and nothing is sent unless you agree. No is the default.</p>
+<p>If you have an OpenAI account, QUILL Transcribe can send your speech
+to OpenAI to be recognised. It is very accurate and punctuates, and it
+needs the internet.</p>
+<ol type="1">
+<li>Save your OpenAI key. Open <strong>Dictation Settings</strong>
+(Alt+Shift+F6), press <strong>More Dictation Settings…</strong>, and
+press <strong>Add or Change OpenAI Key…</strong> (Alt+K). A key you
+already saved in QUILL’s <strong>Use My Own AI Key</strong> is used here
+too. The key is kept in Windows Credential Manager.</li>
+<li>OpenAI now appears in Choose Model, as “OpenAI (sends your speech
+over the internet; many languages)”, and in the Speech engine list. It
+is never chosen for you.</li>
+<li>Choose it. The first time, QUILL Transcribe tells you exactly what
+is sent and where. <strong>No is the default</strong>, and with No
+nothing is sent.</li>
+</ol>
+<p>Which OpenAI model listens is chosen in More Dictation Settings: one
+writes your words as you speak, the other writes each phrase when you
+pause. OpenAI bills your own account. QUILL’s free AI never carries your
+speech. Safe Mode refuses OpenAI. While OpenAI has your speech, the
+window’s state line ends “Speech goes to OpenAI.”</p>
 <h3 id="speech-providers-your-own-account">Speech providers: your own
 account</h3>
 <p>QUILL Transcribe can also use a speech company you already have an
-account with: Azure, Google, Amazon, Deepgram, AssemblyAI, Speechmatics,
-ElevenLabs, Gladia, Rev.ai, Groq, Mistral or IBM Watson. Open
-<strong>Dictation Settings</strong> (Alt+Shift+F6) and choose
-<strong>Speech Providers…</strong> (Alt+V): pick the company, fill in
-what it needs, <strong>Test Connection</strong> (Alt+T), then the Save
-button (Alt+S). Keys go to Windows Credential Manager, never into
-settings; the region and other details are kept in QUILL Transcribe’s
-own settings. Then choose the company as the model in Dictation
-Settings. As with OpenAI, you are told exactly what is sent and where,
-nothing is sent unless you agree, and No is the default. If the company
-cannot be reached, dictation stops with one sentence and your model
-stays your choice; <strong>Use the Built-in Model This Time</strong>
-(Ctrl+B) is there if you need to keep going.</p>
+account with. There are twelve: Microsoft Azure AI Speech, Google Cloud
+Speech-to-Text (Chirp 3), Amazon Transcribe, Deepgram, AssemblyAI,
+Speechmatics, ElevenLabs Scribe, Gladia, Rev.ai, Groq, Mistral Voxtral
+and IBM Watson Speech to Text.</p>
+<p>To set one up:</p>
+<ol type="1">
+<li>Open <strong>Dictation Settings</strong> (Alt+Shift+F6) and press
+<strong>Speech Providers…</strong> (Alt+V). The focus is in the
+<strong>Providers</strong> list.</li>
+<li>Choose the company. <strong>About this provider</strong> says what
+it is and what it needs. Fill in its fields, such as the key, the region
+or the project: press F1 on a field to hear where to find it in your
+account.</li>
+<li>Press <strong>Test Connection</strong> (Alt+T). It asks the company
+whether the account works, and never sends speech. <strong>Last
+result</strong> says what happened.</li>
+<li>Press <strong>Save</strong> (Alt+S), then Close.
+<strong>Remove</strong> (Alt+M) deletes a provider’s details.</li>
+<li>Back in Dictation Settings, choose the company in the <strong>Speech
+engine</strong> list, where it is listed as, for example, “Deepgram
+(your own account; sends your speech to Deepgram)”. You are told exactly
+what is sent and where. <strong>No is the default</strong>, and with No
+nothing is sent. Press OK.</li>
+</ol>
+<p>What you should know:</p>
+<ul>
+<li><strong>Choose Model does not list the providers yet.</strong>
+Choose them in Dictation Settings.</li>
+<li><strong>Keys</strong> go straight to Windows Credential Manager,
+never into a settings file or a log. The region and other plain details
+are kept with your dictation settings when you press OK.</li>
+<li><strong>What is sent:</strong> your speech while you dictate, and
+the words in My Words and Phrases as hints, where the company accepts
+them. Nothing is sent while you are silent.</li>
+<li><strong>Words while you speak:</strong> Azure, Amazon, Deepgram,
+AssemblyAI, Speechmatics, ElevenLabs, Gladia, Rev.ai and IBM Watson show
+your words as you talk. Google, Groq and Mistral write each phrase when
+you pause.</li>
+<li><strong>When something goes wrong:</strong> if the network drops,
+that phrase is lost, you hear one sentence, and dictation keeps
+listening. A refused key or an empty account stops dictation. QUILL
+Transcribe never moves to another model by itself; <strong>Use the
+Built-in Model This Time</strong> (Ctrl+B) is there if you need to keep
+going.</li>
+<li><strong>Cost:</strong> the company bills you. QUILL Transcribe shows
+no prices.</li>
+<li>Providers are for dictation. Transcribe a Recording does not use
+them.</li>
+<li>They are new, and have not yet been tried against every company’s
+real accounts. Safe Mode refuses them. While one has your speech, the
+state line ends “Speech goes to” and the company.</li>
+</ul>
+<h3 id="dictating-in-spanish">Dictating in Spanish</h3>
+<p>Dictation understands English, or <strong>Spanish (new; commands stay
+in English for now)</strong>. Change it in Dictation Settings, with
+<strong>Switch Dictation Language</strong> (Ctrl+Shift+F11), or by
+saying “switch to Spanish” and “cambiar a inglés”.</p>
+<ul>
+<li>The built-in Moonshine and Whisper both use the built-in
+multilingual Whisper for Spanish. Nemotron, Parakeet TDT and the Whisper
+models without “.en” know Spanish too.</li>
+<li>A downloaded model that knows only English does not start in
+Spanish: you are told, and can choose another model or language.</li>
+<li>Windows speech recognition needs Spanish installed in Windows.</li>
+<li><strong>Commands stay in English.</strong> Say “QUILL scratch that”,
+not a Spanish command. The wake phrase and stop phrase have Spanish
+forms: “Quill dicta” and “deja de dictar”.</li>
+<li>Spanish punctuation words such as “coma” and “punto” work while
+automatic punctuation is off, or with Windows speech recognition.</li>
+</ul>
+<h3 id="limits">Limits</h3>
+<ul>
+<li>Choose Model does not list the speech providers yet, nor Windows
+voice typing, which QUILL Transcribe does not run.</li>
+<li>The speed figures and the recommendation are estimates from a
+synthetic voice.</li>
+<li>A graphics card does not speed up any of these models.</li>
+<li>The recognition test’s sentences are in English.</li>
+</ul>
 <h2 id="settings">Settings</h2>
 <h3 id="microphone">Microphone</h3>
 <p><strong>Choose Microphone</strong> (Ctrl+Shift+M) lists your

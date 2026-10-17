@@ -1204,4 +1204,13 @@ example, you can press Alt+U, T to open it and then dictate the new name of a
 converted file into Windows Explorer. If an app is not on your computer yet,
 Quill Converter offers to download it, and nothing is downloaded until you say
 yes.
+
+Quill Converter changes recordings from one format to another; it does not
+listen to them or write down what is said, and it has no speech engine of its
+own. To turn a recording into text, open QUILL Transcribe (Alt+U, then T) and
+choose Transcribe a Recording... on its File menu (Shift+F5 in QUILL
+Transcribe), or in QUILL choose Transcribe Audio or Video (Offline)... under
+Tools, then Speech. Both can do the work entirely on your own computer, with
+the speech engine you chose in that app.
+
 The **Window** menu lists the open windows.

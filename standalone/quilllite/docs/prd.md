@@ -1087,6 +1087,18 @@ a dictation command, key or setting.
   from OpenAI's live list without retiring models, Realtime transcription for
   `gpt-live-transcribe`, never a silent switch, refused in Safe Mode, three
   reviewed egress entries, and a Dictation section in the privacy statement.
+- **Speech providers, own account only** (2026-10-16, dictation design record
+  section 23, D-31 to D-37; the same as QUILL through the shared
+  `quill/core/windows_dictation/cloud/` package and `quill/ui/speech_providers_dialog.py`):
+  Dictation Settings' **Speech Providers...** (Alt+V) sets up Azure, Google,
+  Amazon, Deepgram, AssemblyAI, Speechmatics, ElevenLabs, Gladia, Rev.ai, Groq,
+  Mistral or IBM Watson; secrets in Windows Credential Manager, Test Connection
+  never sends speech, a generated consent with No the default, refused in Safe
+  Mode, never recommended, never a silent switch.
+- **Model tiers and a recommendation** (D-22) and **one sherpa-onnx store**
+  (D-26): Speech Models names Lightweight, Balanced or High accuracy on every
+  model and recommends one for this computer (What matters most, Alt+W);
+  downloads are shared with QUILL and QUILL Transcribe.
 - **My Dictation Instructions** (`instructions.py`) for Tidy Dictated Text.
 - **Kind to a modest computer** (`keep_up.py`): the keep-up watchdog and models
   unloaded five minutes after the last session.

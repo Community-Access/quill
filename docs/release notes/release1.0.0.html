@@ -1431,27 +1431,54 @@ so the export can keep going quietly. Everyday background work, such as
 search and replace, dictation and downloads, does not trigger the
 question. Only jobs that are hard to redo do.</p>
 <h3 id="speech-to-text">Speech to text</h3>
-<p>QUILL turns speech into text on your own computer.</p>
+<p>QUILL turns speech into text on your own computer, and it has two
+kinds of dictation, each with its own choice of engine. The user guide’s
+“Which speech engine? A guide to choosing”, at the start of its
+dictation chapter, compares them all.</p>
+<p><strong>Live Dictation</strong> (<strong>Ctrl+F11</strong>), shared
+with QUILL Lite and QUILL Transcribe, chooses its engine in
+<strong>Dictation Settings</strong> (<strong>Alt+Shift+F6</strong>):</p>
 <ul>
-<li><strong>whisper.cpp</strong> is the engine that comes with
-QUILL.</li>
-<li><strong>Faster Whisper</strong> uses your graphics card for
-speed.</li>
-<li><strong>Vosk</strong> is light and runs on the processor alone.</li>
-<li><strong>NVIDIA Nemotron</strong> (Nemotron Speech Streaming EN) is
-the fourth choice. It is NVIDIA’s 600M streaming model, run int8 through
-sherpa-onnx, the same runtime Visual Studio Code uses for its own
-dictation on your computer. It understands English only, and it runs on
-the processor with no graphics card and no PyTorch. It is an optional
-install: the <code>quill[nemotron]</code> extra, or its entry in
-<strong>Help &gt; Download Optional Components</strong>. Its model
-downloads from QUILL’s own release files with a pinned checksum, and it
-is off in Safe Mode.</li>
+<li><strong>Moonshine</strong>, built in and the default: the fastest,
+and it punctuates for you. English.</li>
+<li><strong>Whisper</strong>, built in: a little slower, and it also
+dictates Spanish.</li>
+<li><strong>Windows speech recognition</strong> and <strong>Windows
+voice typing</strong>.</li>
+<li><strong>Models you download</strong>: NVIDIA’s Nemotron and
+Parakeet, the Whisper family and Moonshine base (below).</li>
+<li><strong>OpenAI</strong> with your own key, and <strong>twelve speech
+providers</strong> with your own account (below). Nothing is sent until
+you choose one and agree.</li>
 </ul>
+<p><strong>Locked Dictation, Dictate (Offline), Transcribe Audio or
+Video and captions</strong> use the offline engines, chosen in
+<strong>Tools &gt; Speech &gt; Speech and Dictation…</strong> (Manage
+Speech Models) or the guided setup in <strong>Help &gt; Download
+Optional Components</strong>:</p>
+<ul>
+<li><strong>Whisper.cpp</strong>, the default. Its small engine (about 8
+MB) downloads the first time you need it, and its models from Manage
+Speech Models.</li>
+<li><strong>QUILL speech models (Parakeet, Nemotron and more)</strong>:
+the same models Live Dictation uses, from the same folder, so nothing is
+downloaded twice. It includes the built-in Moonshine and Whisper, so
+with it chosen nothing needs downloading. Parakeet never invents words
+from silence, and once it is installed QUILL prefers it unless you chose
+an engine yourself.</li>
+<li><strong>Faster Whisper</strong>, which installs when you choose it
+and is the only one that can use a graphics card.</li>
+</ul>
+<p>Locked Dictation needs no model to start: until your engine has one,
+it uses the built-in Moonshine tiny. Vosk is no longer a dictation or
+voice-command engine; QUILL keeps it only to find chapters in
+podcasts.</p>
 <p><strong>Manage Speech Models</strong> looks at your real memory and
 graphics card, warns you when a model is too big for your computer, and
 recommends the best fit. Downloads use a checksum-pinned progress dialog
-you can cancel.</p>
+you can cancel. Every model carries a tier:
+<strong>Lightweight</strong>, <strong>Balanced</strong> or <strong>High
+accuracy</strong>.</p>
 <ul>
 <li><strong>Live Dictation</strong> (<strong>Ctrl+F11</strong>) writes
 as you talk: each phrase lands at the cursor when you pause, with a soft
@@ -1477,8 +1504,14 @@ Whisper small and base – plus the rest of the Whisper family and
 Moonshine base. Each downloads only when you choose it, after a question
 naming its source, size, licence and folder; it runs on the processor
 with no graphics card, resumes if you cancel, is checked before use, and
-is shared with QUILL Lite (inside the portable folder in a portable
-copy). The user guide’s “Better accuracy: optional speech models” has
+is shared with QUILL Lite and QUILL Transcribe (inside the portable
+folder in a portable copy). Every model is labelled
+<strong>Lightweight</strong>, <strong>Balanced</strong> or <strong>High
+accuracy</strong>, and <strong>What matters most</strong>
+(<strong>Alt+W</strong>) with <strong>Show Recommended Model</strong>
+(<strong>Alt+S</strong>) names the one that suits this computer, with
+its reasons. It is only advice: QUILL never changes your engine by
+itself. The user guide’s “Better accuracy: optional speech models” has
 the published accuracy of each.</li>
 <li><strong>Hold Ctrl+F11 to talk, if you like.</strong> Ctrl+F11 starts
 Live Dictation with one press and stops it with the next. If you would
@@ -1488,10 +1521,10 @@ Dictation Settings</strong>. Either way, stopping never cuts off the
 phrase you are finishing. <strong>Dictation On</strong> in <strong>Tools
 &gt; Speech &gt; Live Dictation</strong> is checked while it writes, and
 the status bar says what it is doing.</li>
-<li><strong>See your words while you speak.</strong> With Nemotron or
-OpenAI, the words heard so far appear in the status bar and on a braille
-display as you talk; the final words go in at the pause. Nemotron’s
-questions now end with a question mark.</li>
+<li><strong>See your words while you speak.</strong> With Nemotron,
+OpenAI or a live speech provider, the words heard so far appear in the
+status bar and on a braille display as you talk; the final words go in
+at the pause. Nemotron’s questions now end with a question mark.</li>
 <li><strong>Your words go where you started speaking</strong>, even if
 you move the cursor or switch tabs while a phrase is being
 recognised.</li>
@@ -1504,6 +1537,17 @@ the reply is read aloud, and the microphone waits while it is read.</li>
 choose it and agree to a plain question about what is sent. You pick the
 model from OpenAI’s own current list. The local engines stay the
 default.</li>
+<li><strong>Speech providers, with your own account.</strong>
+<strong>Speech Providers…</strong> (<strong>Alt+V</strong> in Dictation
+Settings) sets up Microsoft Azure AI Speech, Google Cloud
+Speech-to-Text, Amazon Transcribe, Deepgram, AssemblyAI, Speechmatics,
+ElevenLabs Scribe, Gladia, Rev.ai, Groq, Mistral Voxtral or IBM Watson.
+You enter only what that company needs; keys go to Windows Credential
+Manager; <strong>Test Connection</strong> checks your account without
+sending speech; and choosing one asks first, with No as the answer
+unless you choose Yes. Most show your words as you speak; Google, Groq
+and Mistral write each phrase after the pause. The company bills you,
+and nothing goes through QUILL’s servers.</li>
 <li><strong>My Dictation Instructions</strong> tell Tidy Dictated Text
 (<strong>Ctrl+F3</strong>) how you like your writing, and <strong>More
 Dictation Settings…</strong> (<strong>Alt+A</strong> in Dictation
@@ -3106,10 +3150,12 @@ by default, comes with its starter model already there. This mattered
 most: QUILL reaches for whisper.cpp on its own, so an offline edition
 that had to download a model before it could transcribe would not really
 be offline.</li>
-<li><strong>Faster Whisper</strong>, <strong>Vosk</strong> and
-<strong>MP3 chapter-marker support</strong> all install with no
-connection, down to the supporting pieces that other packages leave to
-be downloaded.</li>
+<li><strong>Faster Whisper</strong>, the part that runs the
+<strong>QUILL speech models</strong>, and <strong>MP3 chapter-marker
+support</strong> all install with no connection, down to the supporting
+pieces that other packages leave to be downloaded. (The larger optional
+speech models, such as Nemotron and Parakeet, still download from Speech
+Models when you choose one.)</li>
 <li><strong>Piper</strong> comes with its engine, a check against a
 known fingerprint both when it is built and when it is installed, and a
 starter voice ready to speak (Lessac, US English, medium quality). More

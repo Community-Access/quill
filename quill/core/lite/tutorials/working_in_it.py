@@ -465,15 +465,19 @@ TUTORIALS: tuple[Tutorial, ...] = (
                 title="Find the settings",
                 body=(
                     "Dictation Settings has the speech engine, the microphone and "
-                    "what you hear after each phrase. More Dictation Settings, "
-                    "inside it, lets you hold the key to talk if you prefer, and "
-                    "has the words heard while you speak and talking to the AI."
+                    "what you hear after each phrase. Moonshine, the engine it "
+                    "starts with, needs nothing downloaded. Better Accuracy: "
+                    "Speech Models offers larger models and recommends one for "
+                    "this computer. More Dictation Settings, inside it, lets you "
+                    "hold the key to talk if you prefer, and has the words heard "
+                    "while you speak and talking to the AI."
                 ),
                 command="cmd_dictation_settings",
                 hear="Dictation Settings, on Speech engine.",
                 note=(
                     "Nothing you say leaves the computer unless you choose OpenAI "
-                    "as the speech engine with your own key, and agree to it."
+                    "with your own key, or a speech provider you set up with your "
+                    "own account in Speech Providers, and agree to it."
                 ),
             ),
         ),

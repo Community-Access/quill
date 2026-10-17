@@ -1015,6 +1015,13 @@ To choose how hard Cast tries:
      time.
 4. Press **Save**.
 
+To listen to an episode, Cast uses a small speech engine that comes with it,
+called Vosk. It is already installed, so there is nothing to download, and the
+audio never leaves your computer. It writes down English. Cast uses it for one
+job only, finding chapters: it is not a dictation engine, and there is no other
+engine to choose here. To say something into a search box instead, see
+"Dictating into a search box" in Chapter 4, which uses QUILL Transcribe.
+
 **Work out chapters**, in the same section, chooses whether Cast does this
 never, only for downloaded episodes, or for every episode. The rest of the
 Chapters section lets you choose where Cast looks:
@@ -1391,8 +1398,9 @@ things:
 - **Open Transcript in Editor** opens it in QUILL, if you have it, ready to
   read, quote or copy from.
 
-Transcripts are also how Cast works out chapters when you choose A while in
-Preferences > Chapters.
+Transcripts are also how Cast works out chapters: when **How long to spend
+looking** is **A while** or longer in Preferences > Chapters, Cast reads the
+published transcript to find where the sections start.
 
 ### Keeping a moment
 
@@ -1682,36 +1690,98 @@ If you would rather be walked through it, Help > Tutorials has a lesson called
 
 ### Dictating into a search box
 
-Typing a podcast's name is not the only way. If QUILL Transcribe is part of
-your QuillVille family, **Edit > Dictate Here** (**Ctrl+F11**) lets you say it
-instead. Neither Cast nor Radio listens to the microphone itself; QUILL
-Transcribe does the listening and types what you say into the box you are in.
+Typing a podcast's name is not the only way. **Edit > Dictate Here**
+(**Ctrl+F11**) lets you say it instead. Cast does not listen to the microphone
+itself, and has no speech engine of its own. When you press Ctrl+F11, Cast
+asks QUILL Transcribe, the QuillVille app that types what you say into any
+program, to start dictating into the box you are in. QUILL Transcribe does
+the listening and types the words; Cast only asks.
 
-1. Press **Ctrl+N**. Focus is in **Podcast name**.
+#### Step by step: say a podcast's name
+
+1. Press **Ctrl+N**. The Add Podcast window opens, and focus is in **Podcast
+   name**.
 2. Press **Ctrl+F11**. If QUILL Transcribe is running, you hear it start,
-   with its usual "Dictation on" or start sound. If it is not, Cast says
-   "Starting QUILL Transcribe. Dictation starts here when it is ready." and it
-   starts in the tray.
+   with its own "Dictation on" and start sound. Cast says nothing, so you
+   hear it once.
 3. Say the name, for example "the daily", and pause. The words are typed into
-   the box.
-4. Press QUILL Transcribe's start and stop key, or say "stop dictation", then
-   press Enter to search.
+   the box, and they read back as text like anything you typed.
+4. Stop dictating: press QUILL Transcribe's start and stop key
+   (Alt+Shift+Backslash unless you changed it), or say "stop dictation".
+5. Press Enter to search, and arrow through the results as usual.
 
-Ctrl+F11 works in any text box in Cast, including the ones in dialogs such as
-Add Podcast and Search Everywhere. Your own words from My Words and Phrases and the
-dictation commands work as they do everywhere else. If Quill Inkwell is
-dictating, Cast tells you so and nothing starts. QUILL Transcribe is released
-on 1 November 2026, and from then on every copy of Quill Cast and Quill Radio
-shows Dictate Here on its Edit menu, whether or not QUILL Transcribe is
-installed yet.
+Ctrl+F11 works in any text box in Cast: in the main window, and in the boxes
+inside dialogs such as Add Podcast and Search Everywhere. Put the cursor in
+the box first. Pressing the key does not move the focus, and QUILL Transcribe
+types wherever the focus is.
+
+#### What happens when you press Ctrl+F11
+
+- **QUILL Transcribe is running.** Cast passes the request on, and QUILL
+  Transcribe starts dictating within a second. If it is already dictating,
+  nothing changes: it keeps going, and types into your box because that is
+  where you are.
+- **QUILL Transcribe is installed but not running.** Cast says "Starting
+  QUILL Transcribe. Dictation starts here when it is ready." QUILL Transcribe
+  starts in the system tray, so the box keeps the focus, and starts dictating
+  once it is ready. The very first time, QUILL Transcribe opens its own window
+  instead, to set itself up. Finish that, come back to Cast, and press
+  Ctrl+F11 again.
+- **Quill Inkwell is dictating.** Nothing starts, and Cast says "Quill
+  Inkwell is dictating. Stop it there, then try again." Only one program uses
+  the microphone at a time.
+- **QUILL Transcribe is not installed.** Cast says "Dictate Here needs QUILL
+  Transcribe, which is not installed with this copy." Nothing else happens.
+- **QUILL Transcribe is running but does not answer.** Cast says "QUILL
+  Transcribe is running, and could not be reached." Quit it with Exit QUILL
+  Transcribe on its tray menu, then press Ctrl+F11 again to start it fresh.
+
+#### Which speech engine listens
+
+Because it is QUILL Transcribe dictating, the engine is the one you chose in
+QUILL Transcribe, and everything you set up there applies here too: My Words
+and Phrases, the command word, the dictation commands, the words it must
+never type, and the field lock. There is nothing to set up in Cast.
+
+To see or change the engine, open QUILL Transcribe and choose Model > Choose
+Model... (Ctrl+M in QUILL Transcribe). In brief:
+
+- **Moonshine**, the one it starts with, is built in. It needs nothing
+  downloaded, is the fastest, and puts in punctuation for you. English only.
+- **Whisper** is built in too. It is a little slower, and is worth trying if
+  Moonshine often mishears you. It also writes Spanish.
+- **Larger models**, such as NVIDIA Parakeet or Nemotron and bigger Whisper
+  models, make fewer mistakes for more work. They are free downloads, from
+  Model > Model Library... (Ctrl+L in QUILL Transcribe), and Choose Model
+  shows which one is **Recommended for this computer**.
+
+QUILL Transcribe's own guide explains each engine, the tiers and the
+downloads in full.
+
+#### Your privacy
+
+Cast never records, and never sends your voice anywhere. With the built-in
+engines and the downloaded models, QUILL Transcribe keeps your speech on your
+computer as well. Your voice leaves the computer only if you chose OpenAI or
+a speech provider with your own account as the engine in QUILL Transcribe.
+QUILL Transcribe asks before the first time it sends anything, and No is the
+answer it starts on.
+
+#### Limits
+
+- Ctrl+F11 in Cast starts dictation but does not stop it. Stop with QUILL
+  Transcribe's start and stop key, or say "stop dictation".
+- Dictate Here is for typing into a box. Cast's own commands are still keys
+  and menus: you cannot say "play" to play an episode.
+- QUILL Transcribe is released on 1 November 2026. From then on every copy of
+  Quill Cast and Quill Radio shows Dictate Here on its Edit menu, whether or
+  not QUILL Transcribe is installed yet.
 
 QUILL Transcribe is a separate, free app in the QuillVille family, beside
 QUILL, Quill Radio, Quill Weather, Quill Converter and Quill Inkwell. It types
-what you say into any program, not only into Cast. If you press Ctrl+F11 and
-it is not installed, Cast says "Dictate Here needs QUILL Transcribe, which is
-not installed with this copy." Install it once from its download page (from
-1 November 2026), open it, and choose a speech model; from then on Ctrl+F11
-in Cast starts it for you when it is not running.
+what you say into any program, not only into Cast. Install it once from its
+download page (from 1 November 2026), open it, and let it set itself up; from
+then on Ctrl+F11 in Cast starts it for you when it is not running.
 
 ### Following ACB Media's podcasts
 

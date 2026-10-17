@@ -73,6 +73,7 @@ __all__ = [
     "coerce_engine",
     "engine_choices",
     "engine_info",
+    "engine_list_help",
     "is_model_engine",
     "language_model_problem",
     "model_dir",
@@ -290,6 +291,21 @@ def engine_info(engine_id: str) -> EngineInfo:
         model.description,
         folder=model.folder,
         files=tuple(ModelFile(item.name, item.sha256) for item in model.files),
+    )
+
+
+def engine_list_help() -> str:
+    """F1 for the Speech engine list: every built-in engine in its own words,
+    then the rows that join it -- downloads, OpenAI and the speech providers."""
+    built_in = " ".join(f"{engine.label}: {engine.description}" for engine in ENGINES)
+    return (
+        f"Which speech recogniser dictation uses. {built_in} Models you download with "
+        "Better Accuracy: Speech Models are listed too, each with its tier: "
+        "Lightweight, Balanced or High accuracy. OpenAI is listed when your own OpenAI "
+        "key is saved, and a speech company is listed once you set it up in Speech "
+        "Providers; choosing either asks before anything is sent, and No is the answer "
+        "unless you choose Yes. The built-in engines and downloaded models keep your "
+        "speech on this computer."
     )
 
 

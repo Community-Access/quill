@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [2.2.0] - built, not yet released
 
+- **The user guide explains the speech-recognition engines** (2026-10-17). A new section, "Speech recognition: the engines that listen", says which features listen (Generate Captions (Offline), Ctrl+Shift+C, and Propose AI titles), the three engines and why you would choose each (Whisper.cpp, the default, which downloads the first time; the QUILL speech models such as Parakeet and Nemotron, shared with QUILL Transcribe and QUILL Lite; Faster Whisper, which can use a graphics card), how to download a model with Manage Speech Models (Ctrl+Shift+M) or Download Optional Components (Ctrl+Alt+Shift+D), and a worked captions example. Vosk is no longer offered for speech recognition.
+
 - **The user guide now teaches the menus as they are** (2026-10-16). Its keyboard reference said Alt+V opens the Voices menu. Alt+V opens the **View** menu (Show Status Bar); the Voices menu is **Alt+I**, the underlined letter in "Voices". For example, to open the Speech Hub from the keyboard, press Alt+I and then H. The reference now lists both. The guide and this changelog also wrote **App Sounds Play On...** as if it were a submenu of Preferences; it is a button inside the Preferences window, so open **Studio > Preferences...** (Ctrl+,) and Tab to it. No menu changed.
 
 - **FFmpeg's licence, checked on every build.** FFmpeg's licence (the GNU General Public License, version 3) and the note on where to get its source were already in the `tools\ffmpeg` folder beside FFmpeg. The build and the installer now stop if either is ever missing, so a release cannot ship FFmpeg without them.

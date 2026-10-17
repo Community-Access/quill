@@ -258,7 +258,7 @@ Opens the Publish dialog for this book - save your chapter edits first. See "Pub
 
 ### The Speech Hub
 
-**Voices > Speech Hub (Voices and Engines)...** is the one place to see and set everything: offline voices on one tab, cloud voices on another, and the speech-recognition (dictation/transcription) engines and models alongside. Pick an engine and voice, adjust rate, volume, or speed, preview, and **Set as Default**. Voices you configure here are shared with QUILL - and the hub's "export to audio" action opens the Audio Studio wizard, because in this app that is what export means.
+**Voices > Speech Hub (Voices and Engines)...** (Ctrl+Shift+H) is the one place to see and set everything: offline voices on one tab, cloud voices on another, and the speech-recognition (dictation/transcription) engines and models alongside. Pick an engine and voice, adjust rate, volume, or speed, preview, and **Set as Default**. Voices you configure here are shared with QUILL - and the hub's "export to audio" action opens the Audio Studio wizard, because in this app that is what export means.
 
 ### Pronunciation dictionaries
 
@@ -270,7 +270,43 @@ Every preview speaks the same standard phrase, so voices are directly comparable
 
 ### Generate captions from audio or video
 
-**Voices > Generate Captions (Offline)...** transcribes an audio or video file into a `.srt` or `.vtt` caption file entirely on your own machine - nothing is uploaded. Point it at a recording, a finished chapter, or a video, and it writes captions alongside. It uses the same speech-recognition models as the Studio's other transcription work, so if none is installed yet it offers to fetch one first (see "Downloading voices, engines, and components").
+**Voices > Generate Captions (Offline)...** transcribes an audio or video file into a `.srt` or `.vtt` caption file entirely on your own machine - nothing is uploaded. Point it at a recording, a finished chapter, or a video, and it writes captions alongside. Press **Ctrl+Shift+C** to start it. It uses the same speech-recognition engine and models as the Studio's other transcription work, so if no model is installed yet it offers to open Manage Speech Models first. The next section explains the engines and walks through an example.
+
+### Speech recognition: the engines that listen
+
+Narration is the Studio speaking. A few features need the opposite: the Studio listening to a recording and writing down what was said. Two features do that, both on your own computer: **Generate Captions (Offline)** (Ctrl+Shift+C), and the Workbench's **Propose AI titles...**, which writes down the first minute of each chapter. The Studio has no dictation and no voice commands; for typing by voice, use QUILL Transcribe.
+
+The listening is done by a speech-recognition engine and a model, which is the file of speech knowledge the engine uses. There are three engines to choose from:
+
+- **Whisper.cpp** - the recommended default: light and fast, and works on any computer. The engine is a small download (about 8 MB) from QUILL's own verified release, fetched the first time you need it if your copy does not have it yet. Its models then download in Manage Speech Models: Tiny (75 MB), Base (145 MB), Small (465 MB, a good place to start), a Small English model that can tell speakers apart, and larger ones. Bigger models make fewer mistakes and take longer.
+- **QUILL speech models (Parakeet, Nemotron and more)** - the same models QUILL Transcribe, QUILL Lite and QUILL's live dictation use. A model you downloaded for any of them is already here, and is never downloaded twice. NVIDIA Parakeet understands 25 European languages and never invents text from silence, which matters on a long recording with pauses.
+- **Faster Whisper** - the most accurate, a larger download that uses more memory, and the only engine that can use a graphics card. It installs on demand, and is offered only where this copy of the Studio can install it.
+
+Every engine keeps the audio on your computer. Nothing is uploaded, and the Studio does not use online speech services for captions. Vosk, an engine older guides mentioned, is no longer offered for speech recognition.
+
+#### Choosing an engine and downloading a model
+
+1. Press **Ctrl+Shift+M** (Voices > Manage Speech Models...). It opens the Speech Hub on its offline speech-recognition tab.
+2. Choose an engine, then a model. Each model row says its size and what it can do, such as "detects the spoken language; never invents text from silence", before you download anything.
+3. Download it. Progress is announced, and Cancel works.
+
+If you would rather be walked through it, **Voices > Download Optional Components...** (Ctrl+Alt+Shift+D) has a row called **Dictation (offline speech)**. Choose it and you are offered the three engines in the order above, recommended first, then a model. **Test** on that row proves the engine works once it is installed.
+
+The Studio shares its speech settings with QUILL, so an engine you choose in either one is used by both. If the engine you chose is not ready, the Studio uses Whisper.cpp instead, so captions still work.
+
+#### Example: captions for a finished chapter
+
+1. Press **Ctrl+Shift+C** (Voices > Generate Captions (Offline)...).
+2. If no model is installed yet, the Studio asks "No offline speech model is installed yet. Open Manage Speech Models to download one?" Choose Yes, download Whisper.cpp's Small model, close the window, and press Ctrl+Shift+C again.
+3. Choose the audio or video file, such as chapter 3 of your book.
+4. Wait while it works. The Studio tells you how it is getting on, and says when it has finished.
+5. Choose the caption format, **SubRip captions (.srt)** or **WebVTT captions (.vtt)**, then choose where to save. The file is named after the recording to begin with.
+
+#### Limits
+
+- Generate Captions and model downloads are off in Safe Mode.
+- The audio never leaves your computer. For Propose AI titles, the written-down text of each chapter's opening is sent to the AI you set up, and the Studio asks first.
+- Speech recognition makes mistakes, more of them with music, noise or several people talking at once. Read the captions through before you publish them.
 
 ### Convert audio between formats
 
@@ -290,8 +326,8 @@ The run happens in the background with several files at once, so the window stay
 Everything heavy downloads on demand, with progress and a working Cancel:
 
 - The Speech Hub offers **Download Voice** for Piper voices and the Kokoro model pack, and engine downloads for DECtalk, Piper, and eSpeak-NG right where you would use them.
-- **Voices > Manage Speech Models...** manages the speech-recognition models (used by transcription-backed features such as AI chapter titles), matched to your machine's memory and GPU.
-- **Voices > Download Optional Components...** is the hub for everything else: see what is installed versus available, download, **Test** it in place, or **Remove** it. The audio pack here bundles the mpv player engine and ffmpeg in one download.
+- **Voices > Manage Speech Models...** (Ctrl+Shift+M) manages the speech-recognition engines and models used by Generate Captions and AI chapter titles: Whisper.cpp, the QUILL speech models and Faster Whisper. See "Speech recognition: the engines that listen" above.
+- **Voices > Download Optional Components...** (Ctrl+Alt+Shift+D) is the hub for everything else: see what is installed versus available, download, **Test** it in place, or **Remove** it. The audio pack here bundles the mpv player engine and ffmpeg in one download.
 - **Voices > Get FFmpeg...** is the safety net for ffmpeg alone - the tool behind compressed formats, audiobook assembly, loudness measurement, and silence detection. Both packaged flavors already bundle it.
 
 If a component install fails, the Studio offers to **save a diagnostics bundle** - a small, redacted zip you can send to support so the failure can be read without exposing anything private.
