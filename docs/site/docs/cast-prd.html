@@ -2376,6 +2376,19 @@ a family app.</p>
 the menu) were palette-only. Bookmark This Moment (Ctrl+Alt+A) and Skip
 Silence (Ctrl+Shift+9) gained Episode rows in the same pass; their keys
 never fired in Cast without one.</p>
+<p><strong>Carry My Place gets a key, and three dead bindings go
+(2026-10-17, todo 50).</strong> Carry My Place Between Machines…
+(<code>media.sync_places</code>) is bound to Ctrl+Alt+F10 in
+<code>APP_KEYMAPS["cast"]</code>: rule 9 puts a set-up-once window on an
+F-key past F9, and it sits two along from Restore from a Backup’s
+Ctrl+Alt+F12. It is free in Cast’s menu bar and in the family’s
+system-wide table; Quill Radio’s and Quill Studio’s own Ctrl+Alt+F10
+rows are in other windows. The <code>manage_downloads_id</code>,
+<code>continue_id</code> and <code>queue_id</code> bindings in
+<code>podcasts_menu.py</code> had no menu row and no accelerator, so
+nothing could send them; they were removed, and Downloads (Ctrl+D),
+Continue Listening (Ctrl+Shift+L) and Play Queue (Ctrl+Shift+Q) stay on
+their View rows.</p>
 <h3
 id="2316-phase-5-one-vocabulary-two-settings-windows-refresh-schedules-2026-10-02">23.16
 Phase 5: one vocabulary, two settings windows, refresh schedules
