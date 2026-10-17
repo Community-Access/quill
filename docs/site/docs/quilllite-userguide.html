@@ -288,11 +288,12 @@ recipes to try with the app open in front of you.</li>
 documents, the window, the status bar, the View menu, and finding any
 command by name.</li>
 <li><strong>Chapter 3: Opening, saving and printing.</strong> The four
-kinds of document, how saving keeps your file exactly as it was, getting
-your work back after a crash, reopening last time’s documents, and
-printing.</li>
+kinds of document, editing Word documents, how saving keeps your file
+exactly as it was, getting your work back after a crash, reopening last
+time’s documents, and printing.</li>
 <li><strong>Chapter 4: Moving around a document.</strong> Find, Go To,
-bookmarks, and getting back to where you were.</li>
+reading a table cell by cell, bookmarks, and getting back to where you
+were.</li>
 <li><strong>Chapter 5: Selecting, copying and changing text.</strong>
 Better ways to select, more than one thing on the clipboard, working on
 whole lines, and undo.</li>
@@ -1381,10 +1382,12 @@ another.</p>
 instead (see <a href="#printing">Printing</a>).</p>
 <h3 id="opening-word-excel-and-powerpoint-files">Opening Word, Excel and
 PowerPoint files</h3>
-<p>QUILL Lite opens Word, Excel and PowerPoint files as their
-<strong>text</strong>, the same way it opens a PDF. Press
-<strong>Ctrl+O</strong>, and in the file type list choose “Word, Excel
-and PowerPoint, opened as text”, or just pick the file from “All
+<p>QUILL Lite opens Excel and PowerPoint files, and older Word files, as
+their <strong>text</strong>, the same way it opens a PDF. A Word
+<code>.docx</code> is different: it opens to edit, as rich text, and
+saves as Word (see <em>Word documents</em> below). Press
+<strong>Ctrl+O</strong>, and in the file type list choose “Older Word,
+Excel and PowerPoint, opened as text”, or just pick the file from “All
 supported files”. You can also drag one onto the window, or open it from
 Recent Documents. Nothing is downloaded first, and nothing is uploaded:
 QUILL Lite uses the same readers as QUILL.</p>
@@ -1398,8 +1401,9 @@ second try never happens and the sentence you hear explains what was
 wrong with the file.</p>
 <p>It opens these kinds of file:</p>
 <ul>
-<li>Word documents: <code>.docx</code> and <code>.docm</code> (a macro
-is never run)</li>
+<li>Word documents with macros, <code>.docm</code> (a macro is never
+run), and a <code>.docx</code> when this copy of QUILL Lite cannot edit
+Word documents</li>
 <li>Excel workbooks: <code>.xlsx</code></li>
 <li>PowerPoint presentations: <code>.pptx</code></li>
 <li>OpenDocument text, from LibreOffice Writer: <code>.odt</code></li>
@@ -1481,12 +1485,186 @@ newer type, such as “Word Document (.docx)”, and open that copy.</p>
 password in the program that made it, save, and open it again. A damaged
 file is named as damaged.</p>
 <h4 id="saving-1">Saving</h4>
-<p>QUILL Lite cannot write a real Word, Excel or PowerPoint file, so it
-never saves over one. Press <strong>Ctrl+S</strong> and QUILL Lite tells
-you why, then opens <strong>Save As</strong> with the same name ending
-in <code>.txt</code>. Choose text, Markdown or rich text and press
-<strong>Enter</strong>. If you want the result back in Word, save it as
-rich text: Word opens a rich text file properly.</p>
+<p>A file opened as text is never saved over: the text is not the file.
+Press <strong>Ctrl+S</strong> and QUILL Lite tells you why, then opens
+<strong>Save As</strong> with the same name ending in <code>.txt</code>.
+Choose text, Markdown or rich text and press <strong>Enter</strong>. A
+Word <code>.docx</code> opened <strong>to edit</strong> is different,
+and saves as Word; see <em>Word documents</em>, next.</p>
+<h3 id="word-documents">Word documents</h3>
+<p>Since October 2026 QUILL Lite <strong>edits</strong> Word documents.
+Open a <code>.docx</code> and it arrives as rich text, with its
+headings, lists, bold and links shown formatted; change it; press
+<strong>Ctrl+S</strong>; and what is written is a real Word document
+that Word, and anyone you send it to, opens as one. QUILL Lite does this
+with QUILL’s own Word code, the same code QUILL’s File &gt; Open and
+Save use, so the two programs open, ask, back up and save a Word
+document in exactly the same way.</p>
+<p>This section covers what opens, what is kept, the question you are
+sometimes asked, the backup, tables, saving, and the limits. A worked
+example is at the end.</p>
+<h4 id="what-opens-as-a-word-document">What opens as a Word
+document</h4>
+<ul>
+<li>A <code>.docx</code> file opens as a Word document to edit. Press
+<strong>Ctrl+O</strong>, choose “Word documents (*.docx)” in the file
+type list (or “All supported files”), and press <strong>Enter</strong>.
+Dragging the file onto the window, Recent Documents and opening it from
+File Explorer all do the same.</li>
+<li>A <code>.docm</code> (a Word file with macros), a <code>.doc</code>
+from Word 97-2003 and an OpenDocument <code>.odt</code> still open as
+<strong>text</strong>, read only, as described in <em>Opening Word,
+Excel and PowerPoint files</em> above. A <code>.docm</code> is not
+edited because saving it would drop its macros, and Word refuses a
+<code>.docm</code> without them.</li>
+<li>The file is read in the background, so the window keeps answering.
+You hear “Opening report.docx”, and when it is ready, “Opened as Rich
+Text. Headings and bold are shown formatted.”</li>
+</ul>
+<p>If this copy of QUILL Lite cannot edit Word documents, because the
+part that reads and writes them is not installed, a <code>.docx</code>
+opens as text exactly as it did before, and <strong>Ctrl+S</strong>
+offers Save As. Nothing is lost either way.</p>
+<h4 id="what-is-kept">What is kept</h4>
+<p>Everything QUILL Lite can show in rich text comes in, and goes back
+out when you save:</p>
+<ul>
+<li>headings, Heading 1 to Heading 6, as Word’s own heading styles, so
+Word’s navigation pane and your screen reader’s heading keys find
+them;</li>
+<li>bulleted and numbered lists;</li>
+<li>bold, italic, underline, strikethrough, superscript and
+subscript;</li>
+<li>fonts, sizes, text colours and highlights;</li>
+<li>links;</li>
+<li>paragraph alignment, line spacing, spacing before and after, and
+indents;</li>
+<li>the Title, Subtitle, Quote and Caption styles;</li>
+<li>tables, as tables (see <em>Tables</em> below).</li>
+</ul>
+<p>Some things in a Word document cannot be shown in QUILL Lite’s
+editor, so a save cannot carry them: pictures, comments, tracked
+changes, headers and footers, footnotes and endnotes, more than one
+section, and a table’s own formatting, such as merged cells, borders and
+shading. QUILL Lite looks for these before it opens the file, and if it
+finds any it asks you first.</p>
+<h4 id="the-question-when-a-document-has-things-a-save-would-drop">The
+question, when a document has things a save would drop</h4>
+<p>When the document has any of those things, QUILL Lite names them and
+asks how to open it, in a window titled <strong>Open Word
+document</strong>. For example: “team.docx contains features QUILL
+Lite’s rich editor cannot carry: tables (1), comments. How should it
+open?” Use <strong>Up Arrow</strong> and <strong>Down Arrow</strong> to
+choose, then <strong>Enter</strong>:</p>
+<ol type="1">
+<li><strong>Open for reading and plain editing (recommended).</strong>
+The document opens as text, as it would without Word editing. Nothing
+about the file can change: <strong>Ctrl+S</strong> tells you so and
+offers Save As. This is the row you start on, and
+<strong>Escape</strong> gives the same answer, because it is the one
+that cannot hurt the file.</li>
+<li><strong>Edit as Rich Text, these will not survive a save: …</strong>
+The row names the same things again. The document opens to edit, and the
+first time you save, the original is backed up first (see <em>The
+backup</em>).</li>
+<li><strong>Edit a copy as Rich Text (the original stays
+untouched).</strong> QUILL Lite makes a dated copy beside the original,
+<code>team.backup-20261017-143005.docx</code>, and opens the copy to
+edit, saying “Editing a copy, team.backup-20261017-143005.docx. The
+original is untouched.” Your saves go to the copy; the original is never
+written.</li>
+</ol>
+<p>A document with none of those things opens to edit with no
+question.</p>
+<p>Press <strong>F1</strong> in the window for a summary of the three
+answers.</p>
+<h4 id="the-backup">The backup</h4>
+<p>The first time you save a document you chose to edit with its losses
+named, QUILL Lite copies the original beside itself before writing
+anything, and says so: “Backed up the original to
+team.backup-20261017-143005.docx”. The name is the original’s, then
+<code>backup-</code>, then the date and time (in Coordinated Universal
+Time), then <code>.docx</code>. It happens once each time you open the
+file, not on every save. If you want the pictures or comments back, they
+are all in that copy; open it in Word.</p>
+<p>A document that opened with no question is not backed up: there was
+nothing in it a save would drop. QUILL Lite’s own dated copies
+(<strong>File &gt; Earlier Versions</strong>) are kept as well, as for
+any file.</p>
+<h4 id="tables">Tables</h4>
+<p>A Word table arrives as rows of cells divided by <code>|</code>, with
+a row of dashes under the header row:</p>
+<pre><code>| Name | Role |
+| --- | --- |
+| Ann | Lead |</code></pre>
+<p>When you save, each block of rows like that becomes a real Word table
+again, its first row marked as the header row. Add a row by typing a new
+line in the same shape; add a column by adding a <code>|</code> and a
+cell to every row.</p>
+<p>To read a table cell by cell, use <strong>Navigate &gt;
+Table</strong> (see <em>Moving through a table</em> in Chapter 4). For
+example, with the cursor on “Name”, <strong>Ctrl+Alt+Down</strong> says
+“Row 2 of 2, column 1 of 2: Ann”.</p>
+<h4 id="saving-2">Saving</h4>
+<ul>
+<li><strong>Ctrl+S</strong> writes the Word document. A long document
+can take a moment, so the save runs in the background: the status bar
+says “Saving report.docx”, and you hear “Saved report.docx” when it is
+written. If you press <strong>Ctrl+S</strong> again before then, you
+hear “Still saving report.docx” and nothing else happens; QUILL Lite
+never starts a second save over the first. Closing the window in that
+moment waits too: answer the question again once you have heard
+“Saved”.</li>
+<li>If you type while a save is running, what you typed is not in the
+file yet, so the document still counts as changed. Press
+<strong>Ctrl+S</strong> again afterwards.</li>
+<li><strong>Ctrl+Shift+S</strong> (Save As) opens on the <strong>Word
+document (*.docx)</strong> row with the same name proposed. Type a new
+name ending in <code>.docx</code> to keep a second Word copy, or choose
+Rich Text, Text or Markdown to save in another form.</li>
+<li>Dark mode never reaches the file. While a Word document is being
+saved, QUILL Lite takes the screen’s text colour off the document and
+puts it back afterwards, so somebody opening your file in Word sees
+ordinary black text, not grey.</li>
+<li>Any rich text document can become a Word document: press
+<strong>Ctrl+Shift+S</strong> and type a name ending in
+<code>.docx</code>, or choose <strong>Word document
+(*.docx)</strong>.</li>
+<li>A plain text window cannot save a <code>.docx</code>. Switch it to
+rich text first with <strong>Alt+Shift+F</strong> (Switch Document
+Mode), or choose another kind of file.</li>
+</ul>
+<h4 id="limits">Limits</h4>
+<ul>
+<li>Pictures, comments, tracked changes, headers, footers, footnotes,
+endnotes, extra sections and table formatting are not kept by a save.
+You are always told before you start (see <em>The question</em>).</li>
+<li>Styles other than the headings and the four named above become
+normal paragraphs with the formatting you can see.</li>
+<li>A <code>.docm</code>, <code>.dotx</code> or <code>.dotm</code>
+cannot be saved; QUILL Lite says so and writes nothing.</li>
+<li>A password-protected or damaged <code>.docx</code> does not open,
+and QUILL Lite says which.</li>
+</ul>
+<h4 id="worked-example-a-meeting-agenda">Worked example: a meeting
+agenda</h4>
+<ol type="1">
+<li>Press <strong>Ctrl+O</strong>, choose <code>agenda.docx</code>, and
+press <strong>Enter</strong>. You hear “Opening agenda.docx”, then
+“Opened as Rich Text. Headings and bold are shown formatted.”</li>
+<li>Press <strong>Ctrl+Alt+H</strong> to move to the next heading. You
+hear “Heading 2: Actions”.</li>
+<li>Press <strong>Ctrl+End</strong> to go to the end of the agenda,
+press <strong>Enter</strong>, and type “Book the room by Friday.”</li>
+<li>Press <strong>Ctrl+S</strong>. You hear “Saved agenda.docx”.</li>
+<li>Open <code>agenda.docx</code> in Word. “Actions” is still a Heading
+2 in the navigation pane, and “Book the room by Friday.” is the last
+paragraph.</li>
+</ol>
+<p>The same document with a comment in it would first have asked the
+question above. Choosing <strong>Edit as Rich Text</strong> and saving
+would have said “Backed up the original to agenda.backup-…docx” before
+“Saved agenda.docx”, and the comment would still be in that copy.</p>
 <h3 id="importing-and-converting-a-document">Importing and converting a
 document</h3>
 <p><strong>File &gt; Import / Convert Document (OCR)…</strong> turns a
@@ -1590,7 +1768,7 @@ running, the conversion stops, and nothing opens.</li>
 </ul>
 <p>Any failure is a box you must dismiss, with the reason in it, because
 it cost you the thing you asked for.</p>
-<h3 id="saving-2">Saving</h3>
+<h3 id="saving-3">Saving</h3>
 <p><strong>Ctrl+S</strong> saves. <strong>Ctrl+Shift+S</strong> saves
 under a new name.</p>
 <p>QUILL Lite makes you one promise: <strong>open a file, change
@@ -1817,6 +1995,11 @@ write by hand, the way Notepad does</td>
 </tr>
 <tr>
 <td><code>minutes.docx</code></td>
+<td>A Word document, from a rich text window. From plain text, nothing:
+QUILL Lite says so (see below)</td>
+</tr>
+<tr>
+<td><code>minutes.docm</code>, <code>letter.dotx</code></td>
 <td>Nothing. QUILL Lite says so (see below)</td>
 </tr>
 <tr>
@@ -1831,25 +2014,28 @@ all</td>
 the row selected in <strong>Save as type</strong>, so <code>notes</code>
 with <strong>Markdown (*.md)</strong> selected is saved as
 <code>notes.md</code>.</p>
-<p><strong>Word documents.</strong> QUILL Lite cannot write a Word
-document. Until October 2026 a name ending in <code>.docx</code> got
-your plain text written under it, which made a file that Word refuses to
-open. Now, if you type <code>minutes.docx</code> (or <code>.docm</code>,
-<code>.dotx</code>, <code>.dotm</code>), QUILL Lite shows a short
-message instead and writes nothing:</p>
+<p><strong>Word documents.</strong> A rich text window saves a real Word
+document: type <code>minutes.docx</code>, or choose <strong>Word
+document (*.docx)</strong> in Save as type (see <em>Word documents</em>,
+above). Until October 2026 a name ending in <code>.docx</code> got plain
+text written under it, which made a file Word refuses to open, so a
+plain text window is still refused, and so is every other Word ending
+(<code>.docm</code>, <code>.dotx</code>, <code>.dotm</code>). QUILL Lite
+shows a short message instead and writes nothing:</p>
 <blockquote>
-<p>QUILL Lite cannot save Word documents, so minutes.docx was not
-written. Choose Rich Text (.rtf), which Word opens, or Text or Markdown
-in the Save as type list. QUILL saves Word documents.</p>
+<p>QUILL Lite saves Word documents from rich text, so minutes.docx was
+not written from this plain text window. Switch Document Mode (Alt Shift
+F) to rich text first, or choose Rich Text (.rtf), Text or Markdown in
+the Save as type list.</p>
 </blockquote>
 <p>Press <strong>Enter</strong> to close the message; Save As is over,
-and your document is exactly as it was. For example, to send a letter to
-someone who uses Word, save it as <code>letter.rtf</code>: Word opens
-rich text, headings and bold included. If you need a real
-<code>.docx</code>, open the file in QUILL and use its Save As.</p>
-<p>The message comes before anything else. A rich text document is not
-first asked whether to remove its formatting for a save that is not
-going to happen.</p>
+and your document is exactly as it was. For example, to send a plain
+letter to someone who uses Word, press <strong>Alt+Shift+F</strong>
+until you hear “Rich text mode”, then save it as
+<code>letter.docx</code>.</p>
+<p>The message comes before anything else. A rich text document is never
+asked whether to remove its formatting for a save to <code>.docx</code>:
+nothing is removed.</p>
 <p>Pressing <strong>Escape</strong> or <strong>Cancel</strong> in the
 Save As window writes nothing, as always.</p>
 <h4 id="if-something-goes-wrong">If something goes wrong</h4>
@@ -2465,6 +2651,90 @@ so you can pick one out by its first word.</li>
 <strong>Alt+Shift+G</strong> goes straight to the bookmark list, and
 <strong>Ctrl+Alt+L</strong> goes straight to the heading list.
 <strong>Ctrl+G</strong> is the one to press when you are not sure.</p>
+<h3 id="moving-through-a-table">Moving through a table</h3>
+<p>A table in a document is rows of cells divided by <code>|</code>:
+every Markdown table, and every table in a Word document you open (see
+<em>Word documents</em> in Chapter 3). <strong>Navigate &gt;
+Table</strong> reads one cell at a time and tells you where you are, on
+the same keys as QUILL:</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Alt+Right</strong></td>
+<td>Next Cell</td>
+<td>The next cell in the row</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Left</strong></td>
+<td>Previous Cell</td>
+<td>The previous cell in the row</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Down</strong></td>
+<td>Cell Below</td>
+<td>The cell below, in the same column</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Up</strong></td>
+<td>Cell Above</td>
+<td>The cell above, in the same column</td>
+</tr>
+<tr>
+<td><strong>Alt+Home</strong></td>
+<td>First Cell in Row</td>
+<td>The first cell of this row</td>
+</tr>
+<tr>
+<td><strong>Alt+End</strong></td>
+<td>Last Cell in Row</td>
+<td>The last cell of this row</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Home</strong></td>
+<td>First Cell</td>
+<td>The first cell of the table</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+End</strong></td>
+<td>Last Cell</td>
+<td>The last cell of the table</td>
+</tr>
+</tbody>
+</table>
+<p>Each move puts the cursor at the start of the cell’s text and says
+the cell’s place, then its text: “Row 2 of 4, column 3 of 5: Lead”. An
+empty cell is “blank”. The row of dashes under the header row is
+skipped; it is not a row you read.</p>
+<p>At an edge the cursor stays where it is and you hear why: “No more
+cells” at the end of a row, “No more rows” at the bottom of a column,
+and “No more cells, end of table” on the very last cell. Outside a
+table, every one of these keys says “Not in a table” and does nothing
+else. <strong>Alt+Left</strong> (Go Back) returns from a cell move like
+any other jump.</p>
+<p>For example, in this table:</p>
+<pre><code>| Name | Role |
+| --- | --- |
+| Ann | Lead |
+| Bo | Tester |</code></pre>
+<p>put the cursor on “Name” and press <strong>Ctrl+Alt+Down</strong>:
+you hear “Row 2 of 3, column 1 of 2: Ann”. Press
+<strong>Alt+End</strong>: “Row 2 of 3, column 2 of 2: Lead”. Press
+<strong>Ctrl+Alt+End</strong>: “Row 3 of 3, column 2 of 2: Tester”.
+Press <strong>Ctrl+Alt+Right</strong>: “No more cells, end of
+table”.</p>
+<p>A cell whose own text contains a <code>|</code> is written
+<code>\|</code> and read as the <code>|</code> it stands for, so it
+never makes an extra column. If your screen reader uses
+<strong>Ctrl+Alt</strong> with the arrow keys for its own table
+commands, it may answer these keys first in some modes; the menu rows
+always work.</p>
 <h3 id="reading-without-changing-anything-the-read-only-guard">Reading
 without changing anything: the Read-Only Guard</h3>
 <p>When you open a long reference document only to read it, such as a
@@ -11677,6 +11947,49 @@ list inside the app.</p>
 <tr>
 <td><strong>Ctrl+Alt+Shift+A</strong></td>
 <td>Go To Anything…</td>
+</tr>
+</tbody>
+</table>
+<h4 id="table-in-navigate">Table (in Navigate)</h4>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Ctrl+Alt+Right</strong></td>
+<td>Next Cell</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Left</strong></td>
+<td>Previous Cell</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Down</strong></td>
+<td>Cell Below</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Up</strong></td>
+<td>Cell Above</td>
+</tr>
+<tr>
+<td><strong>Alt+Home</strong></td>
+<td>First Cell in Row</td>
+</tr>
+<tr>
+<td><strong>Alt+End</strong></td>
+<td>Last Cell in Row</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Home</strong></td>
+<td>First Cell</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+End</strong></td>
+<td>Last Cell</td>
 </tr>
 </tbody>
 </table>
