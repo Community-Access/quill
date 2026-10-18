@@ -23,6 +23,13 @@ breaks a launch is not a courtesy.
 answers with a key naming which tools are missing, so a machine that later
 loses a *second* tool is told again, and a machine told once about the same
 state is not told on every launch forever.
+
+**A missing libmpv on Automatic is not news (2026-10-17).** That was the
+original gap this module closed, and it closed it too widely: Automatic means
+"mpv when it is there, Windows Media when it is not", so the notice described
+the setting working as designed, and a listener whose saved signature never
+stuck heard it on every start. It is now spoken only when the listener chose
+mpv by name (:func:`_worth_saying`); otherwise it is logged.
 """
 
 from __future__ import annotations
@@ -64,7 +71,7 @@ def surface_media_health_startup(host: Any) -> None:
     every time is a launch nobody can listen past.
     """
     try:
-        health = current_health()
+        health = _worth_saying(host, current_health())
         if health.healthy:
             # Healthy again after a repair: forget the old signature so a later
             # loss is news rather than a repeat.
@@ -77,6 +84,35 @@ def surface_media_health_startup(host: Any) -> None:
         host._announce(health.notice())
     except Exception:  # noqa: BLE001 - a courtesy must not break a launch
         _log.exception("media health surfacing failed")
+
+
+def _worth_saying(host: Any, health: MediaHealth) -> MediaHealth:
+    """*health* with a missing libmpv left out unless the listener chose mpv.
+
+    Jeff, 2026-10-17: on **Automatic** (the default) a missing libmpv is how
+    Automatic is meant to work -- it uses mpv when mpv is there and Windows
+    Media when it is not -- so announcing it on every start turned an expected
+    choice into an error the listener heard each time. It is said only when
+    the listener explicitly chose **mpv** in Preferences and mpv cannot load;
+    otherwise it goes to the log, and View, then Audio Health
+    (Ctrl+Alt+Shift+M) still reports it on demand. A station that *needs*
+    mpv (Ogg, Opus, HLS) still gets the real reason when it is played
+    (:func:`refusal_for`). FFmpeg is unaffected: no engine choice stands in
+    for recording.
+    """
+    if health.mpv:
+        return health
+    preference = str(
+        getattr(getattr(host, "_radio_history", None), "playback_engine", "auto") or "auto"
+    )
+    if preference == "mpv":
+        return health
+    _log.info(
+        "libmpv is not available; Radio plays through Windows Media "
+        "(engine preference %r, so this is expected and not announced)",
+        preference,
+    )
+    return MediaHealth(ffmpeg=health.ffmpeg, mpv=True)
 
 
 def refusal_for(station_name: str, url: str) -> str:

@@ -260,51 +260,13 @@ worth trying, and QUILLBee tells you what has changed. They’re new
 around here, and <a
 href="https://www.quillforall.org/meet-quillbert-and-quillbee.html">Meet
 QUILLBert and QUILLBee</a> has the proper introductions.</p>
-<h2 id="new-in-the-beta-200-build-5">New in the beta: 2.0.0 (build
-5)</h2>
-<p>This beta build is for testers. It keeps everything in builds 3 and
-4. The full list, grouped by area, is in the changelog
-(<code>CHANGELOG</code> in the docs folder); here are the things to try
-first.</p>
-<p><strong>Your library.</strong> Cast remembers where you were in each
-podcast: Enter on a podcast in Favorites opens its list on the episode
-you last had selected. <strong>Ctrl+Shift+Y</strong> (Podcasts &gt;
-<strong>Copy to Folder…</strong>) puts a podcast in a second folder
-without following it twice, and <strong>Ctrl+Shift+V</strong> moves it.
-Show notes that used to be full of codes such as
-<code>&amp;#8217;</code> read as words. Refresh All and OPML import stay
-responsive, and an import no longer announces hundreds of “new”
-episodes. See “Organising podcasts into folders” and “Where you were in
-each podcast” in the user guide.</p>
-<p><strong>QUILL Lineups.</strong> <strong>Episode &gt;
-Lineups…</strong> (<strong>Ctrl+U</strong>) builds named lists of
-episodes, podcasts and anything Quill Radio can play, by hand or by
-rules you write, shared with Quill Radio. Save Lineup and Apply Lineup
-on the Play Queue use them too. See Chapter 9 and the tutorial
-<strong>Build a lineup that fills itself</strong>.</p>
-<p><strong>Keys.</strong> F5 checks the selected podcast and
-<strong>Ctrl+F5</strong> checks them all. <strong>Ctrl+Shift+E</strong>
-makes a folder. Favorites moved to <strong>Alt+Shift+V</strong>,
-Playlists to <strong>Alt+Shift+Y</strong>, Mark All as Played to
-<strong>Alt+Shift+E</strong>, and Ask About an Image to
-<strong>Ctrl+Alt+F5</strong>. With Simple menus, every Advanced command
-can still be reached from the Command Palette
-(<strong>Ctrl+Shift+P</strong>).</p>
-<p><strong>Sounds.</strong> <strong>Preferences &gt; App Sounds Play
-On…</strong> chooses where Cast’s own sounds play; they start out
-following the episode. <strong>Alt+Shift+M</strong> turns them off and
-back on.</p>
-<p><strong>Dictation.</strong> <strong>Edit &gt; Dictate Here</strong>
-(<strong>Ctrl+F11</strong>) dictates into a search box, such as Add
-Podcast’s name box, through QUILL Transcribe, released on 1 November
-2026. See “Dictating into a search box”.</p>
-<p><strong>Connections and starting up.</strong> Feeds and downloads
-check certificates the way Windows does, and the user guide’s “Feeds
-over http and https” explains what Cast does with each.
-<strong>Preferences &gt; When Cast opens</strong> can start the
-installed copy when you sign in to Windows. This build runs on Python
-3.14 and installs for you alone, with no administrator prompt.</p>
-<p>This beta is not a GitHub release or a Stable-channel promotion.</p>
+<h2 id="this-build-200-build-4">This build: 2.0.0 (build 4)</h2>
+<p>QUILL Cast now runs on Python 3.14. When you install it, older Python
+3.13 runtimes that no QuillVille app uses any more are removed for
+you.</p>
+<p>Choosing a show and hide key is easier: <strong>Record Key…</strong>
+(Alt+R) in the Show and Hide Key window writes out the combination you
+press. You can still type it.</p>
 <h2 id="already-using-cast-before-you-update">Already using Cast? Before
 you update</h2>
 <blockquote>
@@ -696,6 +658,16 @@ done.</p>
 <p>Help &gt; About now shows a build number after the version: this
 release is 2.0.0 (build 1). If a fix comes out without a new version
 number, it is a newer build, and Check for Updates offers it to you.</p>
+<h2 id="dev-preview-200-dev202610062">Dev preview:
+2.0.0-dev.20261006.2</h2>
+<p>This preview is separate from the 2.0.0 (build 1) release above. It
+makes large podcast imports and refreshes easier to work through: OPML
+files are read and planned in the background, and imported subscriptions
+stay in your library if you stop the optional feed check. Refresh All
+has a separate progress window; closing it does not stop the run, while
+<strong>Stop remaining checks</strong> cancels only feeds that have not
+started. In the Podcasts tree, Left Arrow now closes an expanded folder
+without moving focus out of the tree.</p>
 <h2 id="when-you-need-a-hand">When you need a hand</h2>
 <ul>
 <li><strong>F1</strong> anywhere tells you what the window is for and

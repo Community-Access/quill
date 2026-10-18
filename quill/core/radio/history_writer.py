@@ -74,6 +74,23 @@ class RadioHistorySnapshotWriter:
             self._condition.notify_all()
         return self.flush(timeout)
 
+    def _write_with_folder(self, data_dir: Path, snapshot: Snapshot) -> None:
+        """Write, recreating a data folder that vanished under the writer.
+
+        The folder can go between the moment a save is queued and the moment
+        it is written -- a cleanup tool, a synced folder briefly offline, a
+        test's temporary folder removed while its window's last save was in
+        flight. A missing folder is not a reason to lose the listener's
+        settings: it is made again and the write tried once more. Any other
+        failure, or a second one, is reported as before.
+        """
+        try:
+            self._write_snapshot(data_dir, snapshot)
+        except FileNotFoundError:
+            logger.warning("Radio data folder was missing; recreating it: %s", data_dir)
+            data_dir.mkdir(parents=True, exist_ok=True)
+            self._write_snapshot(data_dir, snapshot)
+
     def _run(self) -> None:
         while True:
             with self._condition:
@@ -87,7 +104,7 @@ class RadioHistorySnapshotWriter:
 
             success = True
             try:
-                self._write_snapshot(data_dir, snapshot)
+                self._write_with_folder(data_dir, snapshot)
             except Exception as exc:
                 success = False
                 logger.exception("Radio history write failed at generation %d", generation)

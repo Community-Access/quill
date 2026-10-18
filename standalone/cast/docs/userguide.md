@@ -1897,9 +1897,8 @@ names that another app saved with its punctuation spelled out twice.
 
 A podcast listed twice is imported once, even if one copy has a slightly
 different address. If the file puts one podcast in two folders, Cast follows
-it once and puts a folder copy of it in each of those folders (see "Copying a
-podcast into a second folder" under "Organising podcasts into folders"), so
-your folders look the way they did in your old app. Two different podcasts that happen to share a name are both
+it once, in the first folder it appears in, and the report says where the
+other copy was. Two different podcasts that happen to share a name are both
 imported, whether the other one is already in your list or elsewhere in the
 same file, and the report points them out so you can check. A line in the file
 whose address is not a complete web address, like "http://feed/", is not
@@ -2096,31 +2095,8 @@ To make a folder and fill it:
 
 1. Choose Podcasts > **New Folder...** (Ctrl+Shift+E), type a name and press
    Enter.
-2. Go to a podcast and press **Ctrl+Shift+V** (Podcasts > **Move to
-   Folder...**, also on the Shift+F10 menu).
+2. Go to a podcast, press Shift+F10, and choose **Move to Folder...**.
 3. Pick the folder and press Enter.
-
-#### Copying a podcast into a second folder
-
-A podcast can sit in more than one folder, for example in both News and Long
-Drives, without your following it twice. Go to the podcast and press
-**Ctrl+Shift+Y** (Podcasts > **Copy to Folder...**), pick the second folder
-and press Enter.
-
-- Every copy is the same podcast: one subscription, one episode list, one
-  listening history and one set of downloads. Mark an episode played in one
-  folder and it is played in the other.
-- **Move to Folder...** (Ctrl+Shift+V) moves only the copy you are on.
-- **Unfollowing** a podcast removes every copy of it. If you remove a folder
-  together with the podcasts in it, Cast warns you that their copies in other
-  folders disappear too. (Delete on a folder on its own keeps your podcasts,
-  as below.)
-- **Export OPML** keeps every placement, and **Import OPML** reads such a
-  file back as copies, so your folders survive a move between computers.
-
-Limit: because every copy is the same podcast, there is no way to give one
-copy its own episodes or history; use a Lineup (Chapter 9) for a hand-picked
-list instead.
 
 After moving, focus stays in the podcast tree on the next podcast in the
 source folder, or the previous one if you moved the last podcast. If no
@@ -3883,7 +3859,7 @@ Everything on the AI Features menu:
 | --- | --- | --- |
 | Free AI Assistant | Ctrl+Alt+G | Sum up, explain or shorten the show notes |
 | Ask About These Show Notes | Ctrl+Alt+Z | Ask a question about the notes |
-| Ask About an Image | Ctrl+Alt+F5 | Describe a picture on your computer (Ctrl+F5 is Refresh All Now in Cast) |
+| Ask About an Image | Ctrl+F5 | Describe a picture on your computer |
 | Free AI Usage | Ctrl+Alt+Shift+F2 | How much of this month's free allowance is left |
 | Connect or Sign Out | Ctrl+Alt+Shift+F4 | Sign in to or out of the free service |
 | Privacy Agreement | Alt+Shift+F2 | Read the agreement again, or withdraw it |
@@ -5557,7 +5533,7 @@ They are listed in full under "Keys in the Lineups window" in Chapter 9.
 | --- | --- |
 | Free AI Assistant | Ctrl+Alt+G |
 | Ask About These Show Notes | Ctrl+Alt+Z |
-| Ask About an Image | Ctrl+Alt+F5 |
+| Ask About an Image | Ctrl+F5 |
 | Free AI Usage | Ctrl+Alt+Shift+F2 |
 | Connect or Sign Out | Ctrl+Alt+Shift+F4 |
 | Privacy Agreement | Alt+Shift+F2 |

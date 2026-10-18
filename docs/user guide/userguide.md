@@ -1394,29 +1394,9 @@ Convert Document (OCR)* later in this chapter.
 When you open a Word document, QUILL first asks how you want to see it: in the
 **structured Word view** or in the **normal text editor**. Check **Remember this
 choice for Word files** to stop the question. To change your answer later, use
-**How to open Word files** in Settings (`Ctrl+,`, then the Editing page; or
-type "Word files" in its search box): **Ask each time**, **Plain text** or
-**Structured**.
-
-**What the "Plain text" choice really does.** Its name is misleading. It does
-not turn a Word document into plain text. It means "skip the question and
-open in the **normal text editor**", the same as answering **Open in normal
-text editor**:
-
-- A `.docx` still opens **as editable rich text**, with its headings, lists,
-  bold, links and tables, and `Ctrl+S` still saves a real Word document. If
-  the file holds something a save would drop, QUILL still asks first, exactly
-  as described below.
-- A `.doc` opens as readable text (with LibreOffice installed), as it does
-  whichever way you answer.
-- **Structured** means "skip the question and open the read-only structured
-  Word view". **Ask each time** (the default) asks.
-
-So if you want a Word document as bare text with no formatting, this setting
-is not the way: open it, then press **Format > Document Format...**
-(`Alt+Shift+F`) and choose plain text, or use **File > Import / Convert
-Document (OCR)...** to get the text as a new, untitled document. The setting
-only decides which of the two views a Word file opens in.
+**How to open Word files** in Settings, on the Editing page: **Ask each time**,
+**Plain text** (the normal text editor, where a `.docx` is still edited as rich
+text) or **Structured**.
 
 - The **normal text editor** is the one to choose when you want to change the
   document. A `.docx` opens there as rich text that you can edit and save back
@@ -3976,10 +3956,7 @@ feature itself is. These are the rest:
 - **How to open CSV files** is **Ask each time** (the default), **Plain
   text** or **Grid**.
 - **How to open Word files** is **Ask each time** (the default), **Plain
-  text** or **Structured**. **Plain text** means the normal text editor, not
-  plain text: a `.docx` still opens as editable rich text and saves as Word.
-  **Structured** opens the read-only structured Word view. See *Word (.docx
-  and .doc)* in Chapter 3 for the full story.
+  text** or **Structured**.
 - **Autosave interval (seconds)** is how often QUILL autosaves the open
   document, from 5 to 600 seconds. The default is 30.
 - **Autoformat straight quotes to curly** turns straight quotes into curly

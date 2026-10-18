@@ -21,48 +21,14 @@ trying, and QUILLBee tells you what has changed. They're new around here, and
 [Meet QUILLBert and QUILLBee](https://www.quillforall.org/meet-quillbert-and-quillbee.html)
 has the proper introductions.
 
-## New in the beta: 2.0.0 (build 5)
+## This build: 2.0.0 (build 4)
 
-This beta build is for testers. It keeps everything in builds 3 and 4. The
-full list, grouped by area, is in the changelog (`CHANGELOG` in the docs
-folder); here are the things to try first.
+QUILL Cast now runs on Python 3.14. When you install it, older Python 3.13
+runtimes that no QuillVille app uses any more are removed for you.
 
-**Your library.** Cast remembers where you were in each podcast: Enter on a
-podcast in Favorites opens its list on the episode you last had selected.
-**Ctrl+Shift+Y** (Podcasts > **Copy to Folder...**) puts a podcast in a
-second folder without following it twice, and **Ctrl+Shift+V** moves it.
-Show notes that used to be full of codes such as `&#8217;` read as words.
-Refresh All and OPML import stay responsive, and an import no longer
-announces hundreds of "new" episodes. See "Organising podcasts into folders"
-and "Where you were in each podcast" in the user guide.
-
-**QUILL Lineups.** **Episode > Lineups...** (**Ctrl+U**) builds named lists of
-episodes, podcasts and anything Quill Radio can play, by hand or by rules you
-write, shared with Quill Radio. Save Lineup and Apply Lineup on the Play Queue
-use them too. See Chapter 9 and the tutorial **Build a lineup that fills
-itself**.
-
-**Keys.** F5 checks the selected podcast and **Ctrl+F5** checks them all.
-**Ctrl+Shift+E** makes a folder. Favorites moved to **Alt+Shift+V**,
-Playlists to **Alt+Shift+Y**, Mark All as Played to **Alt+Shift+E**, and Ask
-About an Image to **Ctrl+Alt+F5**. With Simple menus, every Advanced command
-can still be reached from the Command Palette (**Ctrl+Shift+P**).
-
-**Sounds.** **Preferences > App Sounds Play On...** chooses where Cast's own
-sounds play; they start out following the episode. **Alt+Shift+M** turns
-them off and back on.
-
-**Dictation.** **Edit > Dictate Here** (**Ctrl+F11**) dictates into a search
-box, such as Add Podcast's name box, through QUILL Transcribe, released on 1
-November 2026. See "Dictating into a search box".
-
-**Connections and starting up.** Feeds and downloads check certificates the
-way Windows does, and the user guide's "Feeds over http and https" explains
-what Cast does with each. **Preferences > When Cast opens** can start the
-installed copy when you sign in to Windows. This build runs on Python 3.14
-and installs for you alone, with no administrator prompt.
-
-This beta is not a GitHub release or a Stable-channel promotion.
+Choosing a show and hide key is easier: **Record Key...** (Alt+R) in the
+Show and Hide Key window writes out the combination you press. You can still
+type it.
 
 ## Already using Cast? Before you update
 
@@ -450,6 +416,16 @@ History** button shows everything the updater has done.
 Help > About now shows a build number after the version: this release is
 2.0.0 (build 1). If a fix comes out without a new version number, it is a
 newer build, and Check for Updates offers it to you.
+
+## Dev preview: 2.0.0-dev.20261006.2
+
+This preview is separate from the 2.0.0 (build 1) release above. It makes
+large podcast imports and refreshes easier to work through: OPML files are
+read and planned in the background, and imported subscriptions stay in your
+library if you stop the optional feed check. Refresh All has a separate
+progress window; closing it does not stop the run, while **Stop remaining
+checks** cancels only feeds that have not started. In the Podcasts tree, Left
+Arrow now closes an expanded folder without moving focus out of the tree.
 
 ## When you need a hand
 
