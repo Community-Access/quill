@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Beta builds and publishing: QUILL Lite, Quill Radio and QUILL
+Cast</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1
+id="beta-builds-and-publishing-quill-lite-quill-radio-and-quill-cast">Beta
+builds and publishing: QUILL Lite, Quill Radio and QUILL Cast</h1>
+<p>Step-by-step instructions for building beta copies of QUILL Lite,
+Quill Radio and QUILL Cast on Windows, sharing them with a beta group,
+and publishing them to quillforall.org. Written 2026-10-18. For the full
+background see <a href="../building-windows-family.md">Building the
+QUILL Windows family</a> and <a href="RELEASE.md">QUILL Release
+Process</a>.</p>
+<h2 id="1-building-the-beta-copies">1. Building the beta copies</h2>
+<p>Build from an up-to-date main. reference:
+<code>docs/building-windows-family.md</code>.</p>
+<ol type="1">
+<li><strong>Get main.</strong> In PowerShell at <code>D:\QUILL</code>:
+<code>git switch main</code> then <code>git pull</code> (close any
+running QUILL Lite, Radio or Cast first).</li>
+<li><strong>One-time build environment</strong> (skip if done before):
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="va">$python</span> <span class="op">=</span> py <span class="op">-</span><span class="dv">3.14</span> <span class="op">-</span>c <span class="st">&#39;import sys; print(sys.executable)&#39;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> <span class="op">-</span>m pip install <span class="op">--</span>find-links vendor<span class="op">/</span>wheels <span class="op">-</span>e <span class="st">&#39;.[runtime,packaging,dev]&#39;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> scripts<span class="op">/</span>check_build_env<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>groups runtime<span class="op">,</span>packaging <span class="op">--</span>python <span class="va">$python</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> scripts<span class="op">/</span>fetch_build_deps<span class="op">.</span><span class="fu">py</span></span></code></pre></div>
+Inno Setup 7 must be installed. Set <code>QUILL_PODCAST_INDEX_KEY</code>
+and <code>QUILL_PODCAST_INDEX_SECRET</code> (or keep the ignored
+<code>quill/_podcast_index_key.py</code> from an earlier build): the
+runtime refuses to build without them.</li>
+<li><strong>Dry run first</strong>, to hear the plan without building:
+<code>.\build-quill-apps.ps1 lite,radio,cast -DryRun</code></li>
+<li><strong>Build:</strong>
+<code>.\build-quill-apps.ps1 lite,radio,cast</code> It rebuilds the
+shared runtime, checks sibling versions, builds each app in turn with
+spoken-friendly “Step N of M” progress, passes
+<code>-SkipPublishedCheck</code> itself (beta builds are not published
+versions), and leaves unsigned builds. Add <code>-Sign</code> only if
+signing credentials are set up.</li>
+<li><strong>Expect two stops on this first build after 2026-10-17, both
+normal:</strong>
+<ul>
+<li>the runtime inventory gate names <code>lxml</code> (Word support).
+Run
+<code>&amp; $python scripts\check_runtime_imports.py standalone\runtime\dist\QuillVilleRuntime</code>,
+confirm it ends “all correct”, then follow <em>Rebaselining after the
+Word support change</em> in <code>docs/building-windows-family.md</code>
+and run step 4 again;</li>
+<li>QUILL Lite’s portable inventory names the new PDF and OCR packages:
+follow <em>QUILL Lite portable: the PDF reader and OCR</em> in the same
+document, then run step 4 again. Commit the two rebaselined inventory
+files afterwards.</li>
+</ul></li>
+<li><strong>Collect:</strong> everything lands in
+<code>dist\release-builds\&lt;date-time&gt;\</code>: an installer and a
+portable zip per app, a zip per app, an everything zip and
+<code>SHA256SUMS.txt</code>. Share that folder (or the per-app zips)
+with the beta group together with the checksums.</li>
+<li><strong>Before sending, a two-minute smoke test</strong> on each:
+install or unzip, start it, and for QUILL Lite open a
+<code>.docx</code>, edit, save, reopen; for Radio play a station; for
+Cast play an episode.</li>
+<li><strong>Tell testers</strong> that older portable copies should be
+updated by hand
+(<code>docs/release/portable-update-by-hand-notice.md</code>).</li>
+</ol>
+<h2 id="2-getting-the-builds-onto-quillforallorg">2. Getting the builds
+onto quillforall.org</h2>
+<p>How it works: the files live on <strong>GitHub Releases</strong> of
+<code>Community-Access/quill</code>; quillforall.org is <strong>GitHub
+Pages</strong>, built from <code>docs/site</code> by
+<code>.github/workflows/github-pages.yml</code> on every push to main.
+The site’s download links and the apps’ in-app update lists
+(<code>docs/site/updates/v2</code>) point at those GitHub Release files.
+Full reference: <code>docs/release/RELEASE.md</code>, “Publishing to
+Beta”, “Promoting” and “One-time setup (owner)”.</p>
+<p><strong>Once only (owner setup):</strong> the update-list signing key
+stays on your computer (RELEASE.md “The feed key stays on your
+computer”); <code>gh auth login</code> done; Actions allowed to create
+pull requests; <code>stable-promotion</code> environment with you as
+reviewer.</p>
+<p><strong>For each beta app (after A3 built the files):</strong></p>
+<ol type="1">
+<li>Write short notes for the release (copy the “New in the beta”
+section of the app’s release notes, for example
+<code>standalone\radio\docs\release-notes-3.2.md</code>) into a file
+such as <code>notes-radio.md</code>.</li>
+<li>Rehearse first, nothing is created:
+<code>python scripts/publish_release.py --app radio --version 3.2.0 --build 4 --channel beta --dist standalone/radio/dist --notes-file notes-radio.md --dry-run</code></li>
+<li>Publish for real (same command without <code>--dry-run</code>). It
+hashes the files, creates a GitHub <strong>prerelease</strong> (never
+“Latest”), uploads the installer and portable zip, adds the build to the
+<strong>Beta</strong> update list and signs it.</li>
+<li>Repeat for QUILL Lite
+(<code>--app quilllite --version 1.2.0 --build 5 --dist standalone/quilllite/dist</code>)
+and QUILL Cast
+(<code>--app cast --version 2.0.0 --build 5 --dist standalone/cast/dist</code>).
+The script accepts only <code>cast</code>, <code>quill</code>,
+<code>quilllite</code> and <code>radio</code>; leaving out
+<code>--build</code> uses the next build after the newest published tag.
+QUILL Transcribe is not supported by <code>publish_release.py</code>
+yet: for its 2026-11-01 release, the script needs a
+<code>transcribe</code> entry first (or attach its files to a GitHub
+release by hand with <code>gh release create</code> and link them from
+the site).</li>
+<li><strong>Commit the updated update list</strong>
+(<code>docs/site/updates/v2</code>) through a pull request and merge it.
+When main updates, GitHub Pages republishes quillforall.org within a few
+minutes, and Beta-channel users are offered the new build.</li>
+<li><strong>Website download links</strong> (optional for a beta): the
+site’s download pages link to specific release files (for example
+<code>releases/download/quill-radio-v3.0.4/...</code>). For a beta,
+testers can use the GitHub prerelease page directly; when a build is
+promoted to Stable, update those links and merge, and the site updates
+itself.</li>
+<li>Watch the page budget: installed Radio 3.0.4 and Lite 1.1.2 read
+only the first 30 releases; <code>publish_release.py</code> refuses
+unsafe publishes and removes older Beta release objects unless you pass
+<code>--keep-superseded</code>.</li>
+</ol>
+</main>
+</body>
+</html>
