@@ -95,7 +95,7 @@ def _mnemonic(title: str) -> str:
 
 
 @pytest.fixture(scope="module")
-def quill_menu_bar():
+def quill_menu_bar(tmp_path_factory):
     app = shared_wx_app()
     from unittest.mock import patch
 
@@ -107,12 +107,22 @@ def quill_menu_bar():
     # then lands its callback on a wx.App this fixture has already torn down.
     # A menu bar is not worth a network call; patch the one method rather than
     # reaching into settings, so nothing else about startup changes.
-    with patch.object(MainFrame, "check_for_updates", lambda self, **_kwargs: None):
-        frame = MainFrame()
+    # Module-scoped, so it is built (and torn down) outside any test's own
+    # data folder: give those two moments one of their own, or the frame's
+    # recovery and keymap saves land in the real profile
+    # (tests/real_output_guard.py stops that). Each test in between has its
+    # own folder from the conftest default.
+    data = str(tmp_path_factory.mktemp("menu-bar-data"))
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setenv("QUILL_DATA_DIR", data)
+        with patch.object(MainFrame, "check_for_updates", lambda self, **_kwargs: None):
+            frame = MainFrame()
     bar = frame.frame.GetMenuBar()
     bar._quill_main_frame = frame
     yield bar
-    frame.frame.Destroy()
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setenv("QUILL_DATA_DIR", data)
+        frame.frame.Destroy()
     # Building the frame installs a process-global dialog-transition policy;
     # leaving it set leaks this app's preference into every later test.
     set_transition_announcement_policy(None)

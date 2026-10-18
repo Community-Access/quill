@@ -2,7 +2,7 @@
 
 Accessible, screen-reader-first internet radio for Windows, from the QUILL project by Community Access.
 
-Version 3.2.0 (build 4), the beta for testers, October 2026. 3.2.0 is not yet published; the last published version is 3.0.4.
+Version 3.2.0, released to beta testers in October 2026 (build 4). 3.2.0 is not yet published; the last published version is 3.0.4.
 
 Quill Radio is not a fork. The whole application lives in the [quill](https://github.com/Community-Access/quill) package (`quill.apps.radio`) and runs the same radio code QUILL itself uses: the same station browser, favorites, recorder, scheduler and dialogs. This folder (`standalone/radio` in the QUILL repository) holds only what exists because QUILL is not in the picture: the packaging wrapper (entry point), the installer, and this app's own documentation. Everything shared lives in the `quill` package, so Quill Radio tracks QUILL automatically.
 
