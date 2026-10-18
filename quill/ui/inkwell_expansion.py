@@ -58,6 +58,10 @@ class InkwellExpansionMixin:
         wx.CallLater(500, self._confirm_hook_installed)
 
     def _confirm_hook_installed(self) -> None:
+        # Half a second after start: the window may already be closed, and a
+        # deleted status label is falsy rather than None.
+        if not getattr(self, "_status_text", None):
+            return
         if self._hook is not None and not getattr(self._hook, "installed", False):
             self._show_message_box(
                 "Quill Inkwell could not watch for abbreviations.\n\n"

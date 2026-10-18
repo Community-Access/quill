@@ -23,6 +23,8 @@ have said is kept in :data:`SPOKEN` / :data:`SOUNDS` for a test to read:
   runs and still drains, and nothing reaches the sound card.
 - The Narrator UIA notification finds no window to raise from.
 - ``winsound`` records instead of playing; waveOut has no device.
+- Inkwell's system-wide keyboard hook reports itself installed and hooks
+  nothing.
 - The modern Windows Media engine is unavailable, and the classic one is an
   inert stand-in (``wx.media.MediaCtrl`` hosts the real Windows Media Player
   control, which also access-violates deep into a long run -- the reason
@@ -154,6 +156,7 @@ def install() -> None:
     _install_speech()
     _install_message_box()
     _install_audio()
+    _install_keyboard_hook()
 
 
 def _install_speech() -> None:
@@ -230,6 +233,26 @@ def _install_audio() -> None:
             real_init(self, dll_path)
 
         _patch(client, "__init__", guarded_init)
+
+
+def _install_keyboard_hook() -> None:
+    """Inkwell's system-wide keyboard hook is never installed by a test.
+
+    Building an Inkwell window starts ``ExpansionHook``, a low-level keyboard
+    hook on every key the developer types -- in any program -- for as long as
+    the worker lives. Where Windows refuses it, a real "Expansion unavailable"
+    message box follows 500 ms later, in whichever test is running by then.
+    ``start`` reports the hook as installed and starts no threads; ``stop``
+    then has nothing to join.
+    """
+    expansion_hook = _optional("quill.platform.windows.expansion_hook")
+    if expansion_hook is None:
+        return
+
+    def start_without_hooking(self: Any) -> None:
+        self._hook_handle = "test-suite hook (not installed)"
+
+    _patch(expansion_hook.ExpansionHook, "start", start_without_hooking)
 
 
 def drop_real_voice() -> None:
