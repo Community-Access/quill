@@ -2,449 +2,445 @@
 
 ## Unreleased
 
-Beta: **QUILL Lite 1.2.0 (build 5)**, for the beta group. It follows the test
-builds 2, 3 and 4 (builds 2 and 3 were uploaded for testing) and keeps
-everything in them. It has not been published to everyone yet. The changes
-are grouped by area; each says where in the user guide to read more.
+Testing rebuild: **1.2.0 (build 5)**, following builds 2, 3 and 4; builds 2 and 3 were
+uploaded for testing. The new packages have not been published yet.
 
-### Documents and file types
+- **Portable 1.1.2: update by hand** (2026-10-17). The release notes now tell
+  anyone with the portable QUILL Lite 1.1.2 not to use Install and restart now,
+  because the updater inside 1.1.2 can delete the copy's `data` folder, and
+  give the steps to update by hand: back up `data`, unzip the new copy next to
+  the old one, copy `data` back. Installed copies are not affected.
+- **Spell an address with pauses** (2026-10-17). While spelling, each phrase now
+  joins the letters you spelled just before it, with no space. Before, every
+  pause put a space in: "juliet", a pause, then "oscar" wrote *j o*. Now
+  "start spelling", "juliet oscar", "at sign echo x-ray", "dot charlie oscar",
+  "stop spelling" writes *jo@ex.co*. Say "space" when you want a space. Limits:
+  a whole word such as "smith" is not a letter and is left out (the old
+  example in this guide, "jay dot smith at sign example dot com", was wrong
+  about that and is corrected); if you move the cursor between phrases, the
+  next letters start fresh with a space in front.
+- **A Markdown link by voice** (2026-10-17). "open bracket the guide close
+  bracket open paren page close paren" now writes `[the guide](page)`. Before,
+  a space came between the bracket and the parenthesis, which stops it being a
+  link. It works across two phrases too.
+- **Worked examples in the Dictation commands guide** (2026-10-17). The
+  *Dictation commands* file, and the list "what can I say" opens, now end with
+  worked examples (what you have, what you say, what you get) and the limits,
+  including what cannot work in another program. Every example is checked by
+  automated tests in QUILL Lite and QUILL. How accurately and how quickly each
+  engine hears you has not been measured yet.
+- **Edit Word documents** (2026-10-17). A `.docx` now opens to edit, as rich
+  text, and **Ctrl+S** saves it as a real Word document, using QUILL's own Word
+  code, so QUILL and QUILL Lite open, ask, back up and save a Word document the
+  same way. Headings 1 to 6, lists, bold, italic, underline, fonts, colours,
+  highlights, links, alignment and tables come in and go back out; Word's
+  navigation pane still finds your headings. When a document has things a save
+  would drop -- pictures, comments, tracked changes, headers, footers,
+  footnotes, extra sections, table formatting -- QUILL Lite names them first
+  and asks: **open for reading and plain editing** (the default, and what
+  Escape does: the file cannot change), **edit as rich text** (the original is
+  copied to `name.backup-date-time.docx` before your first save), or **edit a
+  copy**. A long save runs in the background; press **Ctrl+S** again before you
+  hear "Saved" and you hear "Still saving report.docx" instead of a second save.
+  **Save As** has a "Word document (*.docx)" row, and any rich text document
+  can be saved as Word. Dark mode never reaches the file. Limits: a `.docm`,
+  `.doc` or `.odt` still opens as text; a plain text window cannot save a
+  `.docx` (switch it to rich text with **Alt+Shift+F** first, and the message
+  says so); if this copy of QUILL Lite has no Word component, a `.docx` opens
+  as text as before. Example: open `agenda.docx`, press **Ctrl+End**, type a
+  line, press **Ctrl+S**, and open it in Word. User guide: "Word documents".
 
-- **Word documents are edited as rich text.** A `.docx` opens to edit, as rich
-  text, in the installed copy and the portable copy alike, and **Ctrl+S** saves
-  it as a real Word document. QUILL Lite uses QUILL's own Word code, so QUILL
-  and QUILL Lite open, ask, back up and save a Word document the same way.
-  Headings 1 to 6, lists, bold, italic, underline, fonts, colours, highlights,
-  links, alignment and tables come in and go back out, and Word's navigation
-  pane still finds your headings. When a document has things a save would drop
-  (pictures, comments, tracked changes, headers, footers, footnotes, extra
-  sections or table formatting), QUILL Lite names them first and asks: **open
-  for reading and plain editing** (the default, and what Escape does, so the
-  file cannot change), **edit as rich text** (the original is copied to
-  `name.backup-date-time.docx` before your first save), or **edit a copy**. A
-  long save runs in the background: press **Ctrl+S** again before you hear
-  "Saved" and you hear "Still saving report.docx" instead of a second save
-  starting. **Save As** has a "Word document (*.docx)" row, and any rich text
-  document can be saved as Word. Dark mode never reaches the file. Example:
-  open `agenda.docx`, press **Ctrl+End**, type a line, press **Ctrl+S**, and
-  open it in Word. Earlier test builds of the installed copy were missing a
-  part Word editing needs and opened every `.docx` as text; that is fixed, and
-  the build now refuses to finish without it. User guide: "Word documents".
-- **Excel, PowerPoint, OpenDocument and other Office files open as readable
-  text, never edited in their own format.** That covers a Word file with macros
-  (`.docm`), OpenDocument text (`.odt`), Excel (`.xlsx`) and PowerPoint
-  (`.pptx`), and with LibreOffice installed the older `.doc`, `.xls` and
-  `.ppt`. Headings stay headings, lists stay lists, tables become text tables,
-  each sheet starts with "Sheet:" and its name, and each slide starts with
-  "Slide" and its number, followed by its speaker notes. Before, QUILL Lite
-  showed the file's raw contents. **Ctrl+S** never writes over these files: it
-  explains why and opens Save As with a `.txt` name. Without LibreOffice, an
-  older file gets a message telling you how to save it as the newer type.
-  `.xlsm`, `.ods` and `.odp` are read by **File > Import / Convert Document
-  (OCR)...**, not Ctrl+O. Example: open `budget.xlsx`; it reads from "Sheet:
-  Budget", and Ctrl+S offers `budget.txt`. User guide: "Office files at a
-  glance" and "Opening Word, Excel and PowerPoint files".
-- **To edit one of those in full, make it a `.docx`.** Save it as Word Document
-  (.docx) from Word or LibreOffice Writer. Or open it here, switch to rich text
-  with **Format > Switch Document Mode** (**Alt+Shift+F**), and save it with
-  **Ctrl+Shift+S** under a new `.docx` name. A plain text window never writes
-  under a Word name: typing `minutes.docx` there used to write plain text that
-  Word refused to open; now QUILL Lite says how to switch to rich text and
-  writes nothing. `.docm`, `.dotx` and `.dotm` are never written.
-- **Headings stay headings in Word, save after save** (also in QUILL). Saving a
-  Word document a second time used to turn its Heading 5s into bold ordinary
-  text, and every save added a blank paragraph at the end. Both are fixed.
-- **Numbered lists and equations in Word files.** Numbered items read 1, 2, 3
-  instead of 1, 1, 1, and an equation comes through as text, for example
-  `\(a^{2}+b^{2}=c^{2}\)`, where it used to be left out. QUILL Lite reads Word,
-  Excel, PowerPoint and OpenDocument files with QUILL's own readers first, so a
-  file opened as text appears in about a second; a second reader (MarkItDown,
-  which QUILL Lite's installer does not include) is tried only if QUILL's own
-  cannot read a file.
-- **Find the highlighted passages in a Word document.** **Navigate >
-  Highlighted Passages**: **Alt+PageDown** goes to the next one and says its
-  colour, its place in the count and its words ("Yellow highlight, 2 of 5: sign
-  and date here"); **Alt+PageUp** goes back; **Ctrl+F2** lists them all with the
-  paragraph each one is in, and Enter goes there while Escape leaves you where
-  you were. It works in a rich text document, including a `.docx` you are
-  editing, and in a Word file opened as text (a `.docm`, or a `.docx` opened
-  for reading only), where the marks used to be simply gone. QUILL's commands
-  and keys. User guide: "Finding the highlighted passages in a Word document".
-- **QUILL Lite opens PDFs.** Press **Ctrl+O** and choose one. It opens as its
-  text, page by page, and says how many pages it has. **Go To** (**Ctrl+G**)
-  takes you to a page, or to an entry in the PDF's own outline (to its title on
-  the page, with its level, such as "Summary, level 3, page 15"), and the
-  status bar says which page you are on. A locked PDF asks for its password,
-  which is used once and never saved. A scanned PDF asks whether to read it
-  with OCR on this computer; nothing is uploaded. QUILL Lite never writes to a
-  PDF: **Ctrl+S** opens **Save As** with a text file of the same name.
-- **PDF pages read more reliably, and you hear which may not.** Each page is
-  read the way that reads best: a widely spaced paragraph comes through as
-  words instead of single letters, a page in two clear columns reads down the
-  first column and then the second, a heading under a long line keeps its own
-  line, two rows of a table stay two rows, and a blank first page no longer
-  shifts every page number by one. When the PDF opens, QUILL Lite names any
-  page that may still read poorly, such as "Pages 3 and 7 may read poorly". The
-  same in QUILL.
-- **A PDF's page breaks are never read out as "form feed".** When something
-  QUILL Lite says quotes text across a page break, the page break is a pause,
-  and the status bar shows it the same way. **Ctrl+Shift+C** on a page break
-  says "Page break", and **Ctrl+Alt+C** explains it. What your screen reader
-  says when you arrow onto the character itself is up to the screen reader.
-  User guide: "Page breaks, and what you hear".
-- **The portable copy reads PDFs too.** It now carries the PDF reader and
-  Windows OCR the installed copy always had (it said "This copy of QUILL Lite
-  has no PDF reader"), and the build refuses to finish if any of them fails to
-  load. The portable zip grows by roughly 25 MB unpacked.
+- **Word, Excel, PowerPoint and OpenDocument files: what QUILL Lite does with
+  each** (2026-10-16 and 2026-10-17; this one entry replaces three earlier
+  ones that described the steps in the order they were built). The table
+  "Office files at a glance" in the user guide sets it out in full.
+  - **Word documents (`.docx`) open to edit and save as Word**, in the
+    installed copy and the portable copy alike. A `.docx` opens as rich text,
+    using QUILL's own Word code, so QUILL and QUILL Lite open, ask, back up and
+    save a Word document the same way. Headings 1 to 6, lists, bold, italic,
+    underline, fonts, colours, highlights, links, alignment and tables come in
+    and go back out, and Word's navigation pane still finds your headings.
+    **Ctrl+S** saves a real Word document. When a document has things a save
+    would drop (pictures, comments, tracked changes, headers, footers,
+    footnotes, extra sections or table formatting), QUILL Lite names them
+    first and asks. You can **open for reading and plain editing** (the
+    default, and what Escape does, so the file cannot change), **edit as rich
+    text** (the original is copied to `name.backup-date-time.docx` before your
+    first save), or **edit a copy**. A long save runs in the background: press
+    **Ctrl+S** again before you hear "Saved" and you hear "Still saving
+    report.docx" instead of a second save starting. **Save As** has a "Word
+    document (*.docx)" row, and any rich text document can be saved as Word.
+    Dark mode never reaches the file. Earlier test builds of the *installed*
+    copy were missing a part Word editing needs and opened every `.docx` as
+    text; that is fixed, and the build now refuses to finish without it.
+  - **Everything else opens as readable text, never edited in its own
+    format.** That covers a Word file with macros (`.docm`), OpenDocument text
+    (`.odt`), Excel (`.xlsx`) and PowerPoint (`.pptx`), and with LibreOffice
+    installed the older `.doc`, `.xls` and `.ppt`. Headings stay headings,
+    lists stay lists, tables become text tables, each sheet starts with
+    "Sheet:" and its name, and each slide starts with "Slide" and its number,
+    followed by its speaker notes. Before this, QUILL Lite showed the file's raw
+    contents, which no one could read. **Ctrl+S** never writes over these
+    files: it explains why and opens Save As with a `.txt` name. Without
+    LibreOffice, an older file gets a message telling you how to save it as the
+    newer type. `.xlsm`, `.ods` and `.odp` are read by File > Import / Convert
+    Document, not Ctrl+O.
+  - **To edit one of those in full, make it a `.docx`.** Save it as Word
+    Document (.docx) from Word or LibreOffice Writer. Or open it here, switch
+    to rich text with **Switch Document Mode** (**Alt+Shift+F**), and save it
+    with **Ctrl+Shift+S** under a new `.docx` name. A plain text window never
+    writes under a Word name: typing `minutes.docx` there used to write plain
+    text that Word refused to open, and now QUILL Lite says how to switch to
+    rich text and writes nothing. `.docm`, `.dotx` and `.dotm` are never
+    written.
+  - Example: open `agenda.docx`, press **Ctrl+End**, type a line, press
+    **Ctrl+S**, and open it in Word. Then open `budget.xlsx`: it reads from
+    "Sheet: Budget", and Ctrl+S offers `budget.txt`. User guide: "Office files
+    at a glance", "Word documents" and "Opening Word, Excel and PowerPoint
+    files".
+
+- **Read a table cell by cell** (2026-10-17). **Navigate > Table** has QUILL's
+  eight table keys: **Ctrl+Alt+Right** and **Ctrl+Alt+Left** for the next and
+  previous cell, **Ctrl+Alt+Down** and **Ctrl+Alt+Up** for the cell below and
+  above, **Alt+Home** and **Alt+End** for the first and last cell in the row,
+  and **Ctrl+Alt+Home** and **Ctrl+Alt+End** for the first and last cell of the
+  table. Each says where you landed and what is there: "Row 2 of 4, column 3
+  of 5: Lead". At an edge you hear "No more cells" or "No more rows", and
+  outside a table "Not in a table". It works on Markdown tables and on the
+  tables in a Word document you open. User guide: "Moving through a table".
+
+- **Headings stay headings in Word, save after save** (2026-10-17, also in
+  QUILL). Saving a Word document a second time used to turn its Heading 5s into
+  bold ordinary text, and every save added a blank paragraph at the end. Both
+  are fixed.
+
+- **Keep some words of an AI change and drop others** (2026-10-17). In **Review
+  AI Changes** (the AI Result window's Review Changes), when one change holds
+  two or more word edits -- usual in prose, where a change is a paragraph -- a
+  second list, **Words in this change** (**Alt+W**), shows each edit with the
+  sentence it is in. Press **Space** to drop one and keep your original words
+  there while the rest of the change still goes in. Example: of "quick" to
+  "rapid", "jumps" to "leaps" and "very" to "rather", uncheck the first and
+  choose Apply Checked; you get "The quick brown fox leaps..." and hear
+  "Applied 1 change, 1 of them in part, as one undo step". Dropping every edit
+  drops the change. **Alt+C** goes back to Changes and **Alt+D** to Change
+  details. Accept All and Reject All work as before, and Ctrl+Z takes back the
+  whole apply. User guide: "Keeping some words of a change and not others".
+
+- **The AI tries again when the service is busy** (2026-10-17). On the free AI,
+  your own OpenAI or Gemini key and a ChatGPT plan alike, a busy, overloaded or
+  timed-out answer is tried up to three times, one second apart and then two,
+  or after the wait the service asks for (up to 20 seconds). You hear nothing
+  while it tries, and only the last failure if every try fails. A request the
+  service says must not be repeated, a used-up allowance or plan, and an answer
+  that had already started to arrive are never sent again. User guide: "When
+  the AI service is busy".
+
+- **A sound when you arrow onto a line with an inline note** (2026-10-17). A
+  soft two-tap tone plays as the cursor arrives on a noted line, once, and not
+  while you move along it. **Preferences > When the caret reaches a line with
+  an inline note** chooses Play a sound (the default), Say "note", or Nothing.
+  With the sound, a braille display also shows "note"; a sound pack without
+  this sound says "note" instead. Next and Previous Inline Note, which read the
+  note, play no tap on top. Same setting and same sound as QUILL. User guide:
+  "Hearing which lines have notes".
+
+- **Bold italic Markdown stays bold italic in rich text** (2026-10-17). In a
+  Markdown document, a word written `***like this***` is bold and italic. When
+  the document became rich text, or was copied as formatted text, it came out
+  bold with a stray asterisk ("*like this" in bold, then "*"). It now comes out
+  bold and italic. For example: in a Markdown document type `***urgent***`,
+  then press **Format > Switch Document Mode** (Alt+Shift+F) until you hear
+  rich text; "urgent" is bold italic. Limits: an italic word directly followed
+  by a bold italic one (`*a****b***`) can still merge; put a space or a plain
+  word between them.
+- **A backslash in your own dictation phrases is kept** (2026-10-17). A phrase
+  in My Words and Phrases that writes a folder, such as `C:\new\temp`, used to
+  read back as `C:`, a new line, `ew` and a tab. It is now saved with each
+  backslash doubled and reads back exactly as typed. To fix a phrase that
+  already broke, edit it in My Words and Phrases and type it again.
+
+- **Emoji no longer get cut in half by the Tools menu, Find and the
+  spelling fixes** (2026-10-17). The editor counts an emoji as two positions
+  and QUILL Lite counted it as one, so after an emoji the commands that work
+  on a selection were one place off for every emoji in front of it. For
+  example, with "😀 hi there" and "hi there" selected, **Tools > Change Case > UPPERCASE** (Ctrl+Shift+U)
+  changed the wrong letters and left the selection ending one character short;
+  now it changes "hi there" to "HI THERE" and selects exactly that. The same
+  fix covers the selected text Copy works from, the Find box opening with
+  your selection, Replace checking that the selection is a match, the Review
+  Buffer of a selection, choosing a spelling suggestion from the context menu
+  (Shift+F10) and dictation's line commands. Limits: nothing changes for text
+  without emoji or other characters beyond the first 65,536 in Unicode.
+
+- **Go back over an AI conversation, and save it as a file** (2026-10-17). In
+  the AI Conversation window, **Alt+1** reads the newest message aloud,
+  **Alt+2** the one before it, and so on to **Alt+0** for the tenth newest,
+  each with its place and who said it ("Message 4 of 9, AI: ..."). Focus stays
+  in your message and nothing you had typed is lost; with fewer messages than
+  the key asks for, you hear how many there are. **Messages...** (Alt+G) lists
+  every message: Enter opens one with its headings and tables intact (H and T
+  in browse mode), **Read as Text** shows it exactly as it arrived, and closing
+  it puts you back on the same row. **Export Conversation...** (Alt+X) saves the
+  whole conversation as a Word document or a text file, every message in order
+  with its speaker; it asks before replacing a file and never changes your
+  document. A reply that arrives while you are reading the Conversation box no
+  longer moves your place in it. All of this works the same on the free AI,
+  your own key and a ChatGPT plan. User guide: "Going back over a
+  conversation".
+
 - **File > Import / Convert Document (OCR)...: turn a document or a picture of
-  a page into new text.** QUILL's command, below Open from URL. It has no key:
-  press **Alt+F**, then **I**. Choose a Word, Excel, PowerPoint or OpenDocument
-  file, a web page, an e-book, a CSV file, a PDF, or a picture such as a photo
-  of a letter, and it opens as a **new, untitled document**, for example
-  "report (converted)", in the window you are in when that window is empty and
-  in a new window otherwise. You hear who read it and what was found, for
-  example "Opened report.docx as editable text, read by QUILL's own Word
-  reader. Nothing was uploaded." A scanned PDF asks first whether to read it
-  with OCR (Yes, No or Cancel); a picture goes straight to OCR, with Windows'
-  own OCR or Tesseract when it is installed (a picture no longer needs
-  Tesseract, in QUILL too). Unlike **Ctrl+O**, the new document does not point
-  back at the file. Limits: a password-protected PDF must be opened with Ctrl+O
-  instead; only the first 200 pages of a long PDF are read, and you are told
-  when it stopped early; closing the window while it runs stops it. User
-  guide: "Importing and converting a document".
-
-### Editing
-
-- **Read a table cell by cell.** **Navigate > Table** has QUILL's eight table
-  keys: **Ctrl+Alt+Right** and **Ctrl+Alt+Left** for the next and previous
-  cell, **Ctrl+Alt+Down** and **Ctrl+Alt+Up** for the cell below and above,
-  **Alt+Home** and **Alt+End** for the first and last cell in the row, and
-  **Ctrl+Alt+Home** and **Ctrl+Alt+End** for the first and last cell of the
-  table. Each says where you landed and what is there: "Row 2 of 4, column 3 of
-  5: Lead". At an edge you hear "No more cells" or "No more rows", and outside
-  a table "Not in a table". It works on Markdown tables and on the tables in a
-  Word document. User guide: "Moving through a table".
-- **Read-Only Guard.** **Tools > Read-Only Guard** (**Ctrl+Alt+Backspace**, the
-  same key as QUILL) locks a document you are only reading: typing does
-  nothing, and commands that would change the text say "Document is read-only".
-  Find, Go To, bookmarks and inline notes keep working. QUILL Lite remembers
-  the lock for that file, and a file Windows marks read-only opens locked too.
-- **AutoCorrect fixes common misspellings as you type.** Check **Correct common
-  misspellings as I type** in **Tools > Preferences** (with **Autocorrect while
-  typing** on in Customize Features) and a space or **Enter** after a
-  misspelling such as `teh`, `recieve` or `seperate` puts the right word in,
-  keeping your capital letter. You hear a sound and "Corrected to the".
-  **Ctrl+Z** straight afterwards puts back what you typed, and that word is then
-  left alone. About 350 common misspellings are built in. Nothing is corrected
-  in source code or settings files, web or email addresses, code in Markdown,
-  or a word in capitals. Off until you turn it on. QUILL has the same setting.
-- **AutoCorrect Entries** (**Alt+Shift+9**, **Tools > AutoCorrect Entries...**)
-  lists every correction, built in and your own. **Add** your own (for example
-  `qill` becoming `QUILL`), **Edit** one, **Turn Off** one that keeps changing a
-  word you meant, or **Remove** one of yours. Your corrections are kept in your
-  abbreviation list under the category AutoCorrect. User guide: "Correcting
-  misspellings as you type".
-- **Enter keeps a Markdown list going.** In a Markdown document, **Enter** at
-  the end of `- item` or `2. item` starts the next item, in the middle of an
-  item splits it, and on an empty item ends the list; a new numbered item
-  renumbers the ones below it. One **Ctrl+Z** takes it all back. In plain text
-  this happens only if you check **Continue lists in plain text** in
-  Preferences. User guide: "Pressing Enter in a list".
-- **Bold italic Markdown stays bold italic in rich text.** A word written
-  `***like this***` used to come out bold with a stray asterisk when the
-  document became rich text or was copied as formatted text; it now comes out
-  bold and italic. Limit: an italic word directly followed by a bold italic one
-  (`*a****b***`) can still merge; put a space or a plain word between them.
-- **Clipboard Collector** (**Alt+Shift+S**, **Edit > Clipboard**): QUILL's
-  system-wide collector. Turn it on in a window and everything you copy, in any
-  program, is added to the end of that window, each distinct copy once. A
-  window that already has a file name is saved after each piece ("Collected and
-  saved"); an untitled window is never saved. **Save after every clip the
-  clipboard collector adds** (**Alt+Y** in Preferences, on by default) turns the
-  saving off. **Collect Selection** moves to **Alt+Shift+C**. Asked for on
-  QUILLVille by Dean Martineau.
-- **Typing a name in a list, spaces and all.** In Snippets and the other
-  pick-one lists, typing "meeting notes" moves to that row; Space while you
-  type a name is part of the name. After a pause Space opens the row as before.
-- **A big abbreviation list opens and searches at once.** Manage Abbreviations
-  fills ten thousand rows instantly, keeps your place when you search, and
-  finds words in any order.
-
-### Finding and searching
-
-- **Find in Open Documents, Search in Files and Replace Across Files are on the
-  Edit menu itself.** Press **Alt+E** and arrow down past **Replace...**: the
-  next three rows are **Find in Open Documents...** (**Ctrl+Alt+Shift+F8**),
-  **Search in Files...** (**Ctrl+Alt+Shift+F**, or **Alt+E** then **S**) and
-  **Replace Across Files...** (**Ctrl+Shift+R**). **Edit > Matches** keeps
-  **All Matches...** (**Ctrl+Shift+F3**) and **Count Occurrences**
-  (**Ctrl+Alt+Shift+F3**). QUILL has the same rows in the same place.
-  **Character Details...** (**Ctrl+Alt+C**) gave its Alt letter S to Search in
-  Files. The three belong to the **Matches and wider searches** area in
-  **Tools > Customize Features...** (**Ctrl+Alt+F10**), on in a new install and
-  off in the Notepad and WordPad profiles.
-- **Find in Open Documents** finds and replaces across every document you have
-  open, unsaved changes and never-saved documents included, and touches
-  nothing on disk. Find Next and Find Previous move from document to document
-  and say each one's name; Find All lists every match; Replace All tells you
-  how many in how many documents and asks, gives each document its own undo,
-  and saves nothing. Read-only documents are searched but left alone. After
-  the window closes, F3 and Shift+F3 keep searching across documents. In QUILL
-  it is Ctrl+Shift+F10. Asked for on QUILLVille by Chris Nova.
-- **Search in Files and Replace Across Files**: QUILL's folder search. Search
-  every file in a folder and its subfolders by file pattern, with plain text,
-  wildcards or a regular expression; the results open in a new window. Replace
-  Across Files shows every change first and asks before any file is written.
-  Both run in the background. Example: press **Ctrl+Alt+Shift+F**, type
-  `*.txt` in File pattern and `Priya` in Search text, and press Enter. Asked
-  for on QUILLVille by Chris Nova.
-
-### Dictation
-
-- **Spell an address with pauses.** While spelling, each phrase joins the
-  letters you spelled just before it, with no space: "start spelling", "juliet
-  oscar", "at sign echo x-ray", "dot charlie oscar", "stop spelling" writes
-  *jo@ex.co*. Say "space" when you want a space. Limits: a whole word such as
-  "smith" is not a letter and is left out; if you move the cursor between
-  phrases, the next letters start fresh with a space in front.
-- **A Markdown link by voice.** "open bracket the guide close bracket open
-  paren page close paren" writes `[the guide](page)`, across two phrases too.
-- **The command word: "QUILL scratch that".** Say QUILL before a command and it
-  is always taken as a command and never written. "QUILL command mode" takes
-  commands without the word until you say "dictation mode", or for eight
-  seconds with none. **Speak a Command** (**F11**, Tools > Dictation) does the
-  same from the keyboard; press it twice for command mode. More Dictation
-  Settings has the command word (**Alt+C**), strict mode (**Alt+E**) and how
-  long command mode waits (**Alt+D**). The same in QUILL and QUILL Transcribe.
-- **Replace, change that, and delete a paragraph by voice.** "replace Tuesday
-  with Wednesday" changes the nearest Tuesday before the cursor, keeping its
-  capital and full stop; "change that to" and new words replaces the phrase you
-  dictated last; "delete previous paragraph" deletes the paragraph before the
-  cursor. User guide: "Replace and change that".
-- **Bold and italic by voice, and dictation profiles.** "QUILL bold that" and
-  "QUILL italic that" format the selection or the phrase you just dictated.
-  More Dictation Settings has **Dictation profile, for the kind of writing**
-  (**Alt+A**): Standard (the default), Email, Document, Markdown, Chat, Coding
-  or Verbatim. Say "QUILL email mode" to switch while dictating, or check
-  **Lock the profile** (**Alt+B**) so a spoken name cannot.
-- **Dictation style** (**Alt+Y** in Dictation Settings): **Verbatim**,
-  **Clean** (no filler words, and your corrections fixed) or, only when AI help
-  is on, **Polished**.
-- **Fix it when I correct myself** (**Alt+X** in Dictation Settings, off until
-  you turn it on). Say "meet on Thursday, no, Friday" and only Friday is
-  written. It works on this computer, with no AI.
-- **Polish my dictation, when you ask.** Check **Allow polishing my dictation
-  with AI when I ask** (**Alt+G** in More Dictation Settings, off by default).
-  Then "QUILL polish that", or **Polish** (**Ctrl+P**) in Review Dictation, asks
-  the AI once to fix punctuation, capitals and small slips while keeping your
-  words. Nothing is sent until you say yes, and it never runs by itself.
-- **Review Dictation** (**Shift+F4**, **Tools > Dictation**). Say "QUILL review
-  that" and the last phrase is held in a window where you can read it, change
-  it, and insert it once with Ctrl+Enter, as one undo step. With AI help on,
-  ask the AI to change it ("QUILL make it shorter"); "QUILL back to what I said"
-  puts your words back exactly. **Send dictation to review first** (**Alt+V**
-  in More Dictation Settings) sends everything you dictate there.
-- **"Correct that" with Moonshine or Whisper.** "Correct that" asks the other
-  built-in engine to listen to your last phrase again and offers what it heard
-  as choice two. The sound stays in memory until your next phrase; nothing is
-  saved or sent.
-- **Learning from your corrections.** Correct the same word the same way twice
-  and a window asks "Add a correction: Ann becomes Anne?", No the default. Yes
-  adds it to the Corrections list in My Words and Phrases.
-- **Nothing you said is lost.** A phrase dictation could not write is kept on
-  this computer, sealed for your Windows account, until you write it or
-  discard it, even through a crash. **Recent Phrases** (**Shift+F11**) lists it,
-  with a new **Discard** button (**Alt+D**); the words a correction replaced are
-  there too, marked "(before correction)".
-- **Dictation history, off unless you want it.** **Keep a dictation history**
-  (**Alt+Y** in More Dictation Settings) keeps the text of what you dictate,
-  never the sound, for one, seven or thirty days. **Clear History** (**Alt+H**)
-  deletes it after asking.
-- **Reading back more.** "read that" reads all of what last went in, a whole
-  clip or snippet included. New: "read last sentence", "read last paragraph"
-  and "read selection", which also work in a document you can only read.
-  Spanish takes "leer" as well as "lee".
-- **Your dictation settings, shared with the family.** More Dictation Settings
-  has **Share dictation settings with every QuillVille program** (**Alt+Q**).
-  Checked, what you save in Dictation Settings is used by QUILL, QUILL
-  Transcribe and Quill Inkwell too. Keys, the working tick, strict mode, what
-  you hear after each phrase and every permission to send your speech stay
-  QUILL Lite's own. Checked for a new install; unchecked if you had already
-  changed your settings. Your own settings are kept in a backup file the first
-  time.
-- **Import and Export in My Words and Phrases** (**Alt+Shift+F10**, then
-  **Alt+I** or **Alt+X**), as Markdown or CSV. Import adds only what is new,
-  keeps your old list as dictation-before-import.md, and says the counts.
-- **Use the shared word list** (**Alt+U** in My Words and Phrases, off by
-  default) uses the same word list as QUILL, QUILL Transcribe and Quill
-  Inkwell. The shared list now lives in `%LOCALAPPDATA%\QuillVille\Dictation`,
-  copied there from QUILL's data folder the first time; the old file is left as
-  a backup. A portable copy keeps its own list.
-- **A backslash in your own dictation phrases is kept.** A phrase that writes a
-  folder, such as `C:\new\temp`, reads back exactly as typed. To fix a phrase
-  that already broke, edit it in My Words and Phrases and type it again.
-- **Which speech model suits this computer, and why.** Speech Models (**Alt+B**
-  in Dictation Settings) recommends one model in a read-only **Recommendation**
-  box (**Alt+C**); **What matters most** (**Alt+W**) asks for the quickest
-  response or the fewest mistakes, and **Show Recommended Model** (**Alt+S**)
-  moves to it. Every model is labelled **Lightweight**, **Balanced** or **High
-  accuracy**. It is only advice: QUILL Lite never changes your engine by
-  itself. User guide: "Which engine should I choose?".
-- **Speech providers: dictation with your own account.** **Speech Providers...**
-  (**Alt+V** in Dictation Settings): Azure, Google, Amazon, Deepgram,
-  AssemblyAI, Speechmatics, ElevenLabs, Gladia, Rev.ai, Groq, Mistral and IBM
-  Watson. **Test Connection** (Alt+T) sends no speech; keys go to Windows
-  Credential Manager. You are asked before anything is sent, and No is the
-  default. The built-in engines stay the default.
-- **Transcribe a Recording translates into English.** For a recording in
-  Spanish, check **Translate into English** (**Alt+E**). It needs the built-in
-  Whisper or a multilingual Whisper you downloaded.
-- **Programs Dictation Never Types Into...** (**Alt+N** in More Dictation
-  Settings): the programs dictation from Quill Inkwell or QUILL Transcribe never
-  types into, starting with the common password managers and the Windows
-  sign-in prompts.
-- **Dictation does not hear the screen reader.** With a headset, your screen
-  reader reading back what you dictated used to be written as a new phrase.
-  The built-in speech models now hear silence while the screen reader (or
-  QUILL Lite's own sounds) are playing; wait for it or press Ctrl. The same
-  phrase said twice is now written twice.
-- **One microphone at a time.** Ctrl+F11 while QUILL Transcribe is listening no
-  longer opens a second microphone; you hear the program and its key, for
-  example "QUILL Transcribe is listening. Press Alt+Shift+Backslash to stop it,
-  then try again." QUILL Transcribe and Quill Inkwell keep out of QUILL Lite's
-  window: their key there says "This is a QUILL window: press Ctrl+F11 to
-  dictate here."
-- **Quieter feedback.** The phrase-written sound is a soft tone (the old one
-  sounded like a spoken "c"). With **Show it, and say new words quietly**, each
-  word is said once, when the engine has settled on it. **Tick while a phrase
-  is being worked on** (More Dictation Settings, **Alt+R**, off unless you check
-  it) plays a soft tick sound while a phrase takes more than a second. The **After each
-  phrase is written, give me** list (**Alt+P**) moved to the right-hand column
-  of Dictation Settings.
-- **Transcripts can be reopened from Notifications.** Each completed
-  transcript is saved privately and its notice opens it; the document you were
-  editing is not changed. Model availability for the recording window is
-  prepared in the background, and local recordings are transcribed reliably
-  on every supported engine.
-
-### AI
-
-- **Keep some words of an AI change and drop others.** In **Review AI
-  Changes** (the AI Result window's Review Changes), when one change holds two
-  or more word edits, **Words in this change** (**Alt+W**) lists each edit with
-  its sentence. Press **Space** to drop one; the rest of the change still goes
-  in, as one undo step. **Alt+C** goes back to Changes and **Alt+D** to Change
-  details. User guide: "Keeping some words of a change and not others".
-- **Go back over an AI conversation, and save it as a file.** In the AI
-  Conversation window, **Alt+1** reads the newest message aloud, **Alt+2** the
-  one before it, and so on to **Alt+0** for the tenth newest. **Messages...**
-  (**Alt+G**) lists every message; **Export Conversation...** (**Alt+X**) saves
-  the whole conversation as a Word document or a text file. A reply that
-  arrives while you are reading no longer moves your place. User guide: "Going
-  back over a conversation".
-- **Saved conversations, your prompt library and word-by-word review.** Every
-  AI conversation is saved on this computer as it goes; **Saved
-  Conversations** (**Alt+V** in the conversation window) opens one again.
-  **Prompt Library** (**Ctrl+7**, Tools > AI) is QUILL's library of prompts.
-  **Review Changes** in the answer window applies only the changes you keep, as
-  one Ctrl+Z.
-- **Where the answer goes, and the Chat Key.** The AI Assistant's **Put the
-  answer in** list sends the answer to the answer window, your document at the
-  cursor, or the clipboard. **Ask AI a Question** (**Ctrl+6**) opens the pad
-  ready for a general question.
-- **Web search on the free AI.** When QUILL's free service offers it, the pad
-  has **Search the web**, ten searches a month, with the sites each answer
-  used. **Web Searches Left** (**Ctrl+9**, Tools > AI) says how many are left.
-- **New AI tools without a new version.** QUILL's free AI service can add a tool
-  to the end of the **What do you want done?** list; F1 on it says what it
-  does. Only on QUILL's free service.
-- **AI answers are read as words, not symbols.** No "star star" or "hash hash",
-  a link by its words, and a block of code as "code block". What goes into
-  your document is the answer exactly as it came. User guide: "How answers are
-  read aloud".
-- **The AI tries again when the service is busy.** A busy, overloaded or
-  timed-out answer is tried up to three times; you hear only the last failure
-  if every try fails. A used-up allowance and an answer that had already
-  started are never sent again. User guide: "When the AI service is busy".
-- **QUILL Lite asks before sending your text to a different AI.** If your own
-  key or your ChatGPT sign-in stops working, a **Send to a Different AI?** box
-  asks before anything goes to QUILL's free AI, and **No**, the default, sends
-  nothing. User guide: "If the AI you use is not available".
-
-### Speech, sounds and braille
+  a page into new text.** QUILL's command, with QUILL's readers and QUILL's
+  words, now on QUILL Lite's File menu, below Open from URL. It has no key, as
+  in QUILL: press **Alt+F**, then **I**. Choose a Word, Excel, PowerPoint or
+  OpenDocument file, a web page, an e-book, a CSV file, a PDF, or a picture
+  such as a photo of a letter, and it opens as a **new, untitled document**
+  named after the file, for example "report (converted)", marked unsaved. It
+  opens in the window you are in when that window is empty, and in a new
+  window otherwise, so nothing you were writing is replaced. You hear who read
+  it and what was found, for example "Opened report.docx as editable text,
+  read by QUILL's own Word reader. Nothing was uploaded." A scanned PDF asks
+  first whether to read it with OCR on this computer (Yes, No or Cancel); a
+  picture goes straight to OCR. The OCR is Windows' own, or Tesseract when it
+  is installed. Nothing is downloaded and nothing is uploaded; QUILL Lite has
+  no cloud OCR. Unlike **Ctrl+O**, the new document does not point back at the
+  file, so it is the way to get text you want to work with, or to read a file
+  Ctrl+O cannot open at all, such as a picture or an e-book. Limits: a
+  password-protected PDF must be opened with Ctrl+O instead; only the first
+  200 pages of a long PDF are read, and you are told when it stopped early;
+  closing the window while it runs stops it. See *Importing and converting a
+  document* in the user guide.
+- **A picture of a page no longer needs Tesseract.** In QUILL too, a `.png`,
+  `.jpg` or other picture given to Import / Convert Document is read with
+  Windows OCR when Tesseract is not installed; before, it stopped with a
+  message about installing it.
+- **A PDF's page breaks are never read out as "form feed" by QUILL Lite.** A
+  PDF keeps one page-break character between its pages, which is what the
+  Page part of the status bar and Go To's Page list count. When something QUILL
+  Lite says quotes text across a page break, such as the first words of a
+  selection, the page break is now a pause, and the status bar shows it the
+  same way; no other control character reaches your screen reader either.
+  **Ctrl+Shift+C** on a page break says "Page break" (it said "Unnamed
+  character"), and **Ctrl+Alt+C** explains it. What your screen reader says
+  when you arrow onto the character itself is up to the screen reader. See
+  *Page breaks, and what you hear*.
+- **The portable copy will read PDFs too.** The installed QUILL Lite has always
+  carried a PDF reader and Windows OCR; the portable zip did not, so a PDF there
+  said "This copy of QUILL Lite has no PDF reader". The next portable build
+  includes the reader (pdfplumber, pypdf, pypdfium2) and Windows OCR, and the
+  build now refuses to finish if any of them fails to load. The portable zip
+  grows by roughly 25 MB unpacked.
 
 - **Your braille display no longer flickers while you dictate.** Messages that
-  arrive in a quick burst settle on the display: the first shows at once, and a
-  moment later the newest replaces the rest. Speech is unchanged. User guide:
-  "On a braille display".
-- **A sound when you arrow onto a line with an inline note.** A soft two-tap
-  tone plays once as the cursor arrives on a noted line. **Preferences > When
-  the caret reaches a line with an inline note** chooses Play a sound (the
-  default), Say "note", or Nothing. User guide: "Hearing which lines have
-  notes".
-- **Where QUILL Lite's own sounds play, and Alt+Shift+M.** The **App Sounds
-  Play On...** button in **Tools > Sound Scheme...** (**Ctrl+Alt+Shift+O**)
-  offers System default, None, or any sound card or headset by name.
-  **Alt+Shift+M** turns QUILL Lite's sounds off and back on, and now silences
-  only the app you are in; **Tools > App Sounds (formerly Quiet Mode)** shows a
-  check mark while they are on. Your screen reader is never moved. Asked for
-  on QUILLVille by Rick Lewis.
-- **If your screen reader stops, your work is saved first.** QUILL Lite checks
-  every thirty seconds that NVDA or JAWS is still running; when it has missed
-  it twice, every document with unsaved changes writes its spare copy at once
-  and the status bar says so. QUILL Lite never closes because of it. User
-  guide: "If your screen reader stops".
+  arrive in a quick burst, such as dictation's live preview or a run of status
+  changes, now settle on the display: the first shows at once, and a moment
+  later the newest replaces the rest. Before, each one replaced the last as fast
+  as it came, faster than a finger could read the first cell. Speech is exactly
+  as before: every message is spoken the moment it happens. QUILL has worked
+  this way for some time, and QUILL Lite now uses the same code. For example,
+  dictate a sentence and pause: the display shows the first words, then the
+  whole phrase, with no blur in between. See *On a braille display* in the user
+  guide.
+- **AI answers are read as words, not symbols.** When an answer goes to the
+  cursor or the clipboard, or arrives in an AI conversation, QUILL Lite reads it
+  without the Markdown: no "star star", no "hash hash", and a link by its words
+  rather than its web address. A block of code is read as "code block". What
+  goes into your document, onto the clipboard or into the conversation is the
+  answer exactly as it came. See *How answers are read aloud*.
+- **QUILL Lite asks before sending your text to a different AI.** If your own
+  key or your ChatGPT sign-in stops working while QUILL Lite is running, the
+  next request no longer goes quietly to QUILL's free AI instead. A **Send to a
+  Different AI?** box asks first, and **No**, the default, sends nothing.
+  Changing it yourself in **Use My Own AI Key** (**Alt+F2**) or **Use My ChatGPT
+  Subscription** (**Alt+F5**) is never questioned. See *If the AI you use is
+  not available*.
+- **If your screen reader stops, your work is saved first.** QUILL Lite now
+  checks every thirty seconds that NVDA or JAWS is still running. When it has
+  missed it twice in a row, every document with unsaved changes writes its
+  spare copy at once, and the status bar says what happened, for example "NVDA
+  appears to have stopped. Your work is safe: 2 documents snapshotted to
+  autosave. QUILL Lite keeps running; restart your screen reader when ready."
+  When the reader is back you hear "NVDA is running again." QUILL Lite never
+  closes because of it, and there is nothing to turn on. QUILL has the same
+  protection, and the two now share the code. See *If your screen reader
+  stops*.
 
-### Updates and installing
+- **Find the highlighted passages in a Word document.** In a Word file opened
+  as text (a `.docm`, or a `.docx` opened for reading only), the highlighter
+  marks used to be simply gone. QUILL Lite now
+  reads them from the file and takes you to them, from **Navigate > Highlighted
+  Passages**: **Alt+PageDown** goes to the next one and says its colour, its
+  place in the count and its words ("Yellow highlight, 2 of 5: sign and date
+  here"); **Alt+PageUp** goes back; **Ctrl+F2** lists them all with the
+  paragraph each one is in, and Enter goes there while Escape leaves you where
+  you were. The same keys work in a rich text document. They are QUILL's
+  commands and QUILL's keys. The guide's "Finding the highlighted passages in a
+  Word document" has an example and the limits.
+- **Find in Open Documents, Search in Files and Replace Across Files are on the
+  Edit menu itself, where you would look for them.** They had been one level
+  down, inside **Edit > Matches**, and nothing in the word "Matches" says a
+  folder search is behind it: arrowing down the Edit menu, you never heard them.
+  Now press **Alt+E** and arrow down past **Replace...**: the next three rows are
+  **Find in Open Documents...** (**Ctrl+Alt+Shift+F8**), **Search in Files...**
+  (**Ctrl+Alt+Shift+F**, or **Alt+E** then **S**) and **Replace Across
+  Files...** (**Ctrl+Shift+R**). Their keys have not changed. **Edit > Matches**
+  keeps the two that are about the document in front of you, **All Matches...**
+  (**Ctrl+Shift+F3**) and **Count Occurrences** (**Ctrl+Alt+Shift+F3**).
+  QUILL now has the same three rows in the same place, so what you learn in one
+  editor works in the other. For example, to find which of the letters in a
+  folder mention Priya: open any one of them, press **Ctrl+Alt+Shift+F**, type
+  `*.txt` in File pattern and `Priya` in Search text, and press Enter; you hear
+  how many matches were found in how many files, and they are listed in a new
+  window. The three still belong to the **Matches and wider searches** area (the
+  new name of "The Matches submenu") in **Tools > Customize Features...**
+  (**Ctrl+Alt+F10**), which is on in a new install and off in the Notepad and
+  WordPad profiles. **Character Details...** (**Ctrl+Alt+C**) gave its Alt
+  letter S to Search in Files and is reached with its key or by arrowing.
+- **The user guide's menu paths are checked against the real menus.** Every
+  menu path and every command named beside its key in this changelog and the
+  user guide is now compared, before each release, with the menus a new install
+  shows. A command that is only there once you switch something on, such as AI
+  help or timestamped backups, has to say in the same chapter how to switch it
+  on. The first run found the Sound Scheme path written as if App Sounds Play On
+  were a menu (it is a button in the Sound Scheme window), now corrected.
+- **The user guide helps you choose a speech engine.** Chapter 9 has a new
+  section, "Which engine should I choose?": privacy, speed, accuracy, memory
+  and Spanish in plain words, what the Lightweight, Balanced and High accuracy
+  tiers mean, the **Recommended for this computer** line and Speech Models'
+  **What matters most** (**Alt+W**), **Recommendation** (**Alt+C**) and **Show
+  Recommended Model** (**Alt+S**), with examples and a worked example from
+  advice to download. The engine table now lists every choice, including
+  downloaded models and the speech providers, and says Whisper dictates
+  Spanish too (it said English only). "Speech providers: dictation with your
+  own account" now explains what is sent, the question with No as the default,
+  Windows Credential Manager, Test Connection, which providers show words
+  while you speak, and the limits. The guide also says the models folder is
+  shared with QUILL Transcribe and Quill Inkwell, and that **Dictate in Other
+  Programs...** (**Alt+O**) hands your settings to QUILL Transcribe when it is
+  installed, and to Quill Inkwell otherwise.
 
-- **Portable 1.1.2: update by hand.** If you use the portable QUILL Lite 1.1.2,
-  do not use Install and restart now: the updater inside 1.1.2 can delete the
-  copy's `data` folder. Back up `data`, unzip the new copy next to the old one,
-  and copy `data` back. Installed copies are not affected. The release notes
-  give the steps.
-- **Updating keeps your settings where QUILL Lite looks for them.** A portable
-  copy now updates by putting the new version in the old folder's place and
-  moving your `data` folder across.
-- **A failed update undoes itself properly**, and the first update after you
-  install says so too when it has to go back.
-- **No administrator prompt.** The installer is current-user only and runs
-  quietly as you; QUILL Lite and the shared runtime go in your Windows profile.
-  If an update does not finish, QUILL Lite opens again as the version you had.
-- **The Beta engine's 335 MB come back** when the last app on Beta returns to
-  Stable.
-- **Runs on Python 3.14.** The installer removes the older Python 3.13 runtime
-  once no QuillVille app uses it. Portable copies carry their own Python.
-- **HTTPS uses the Windows certificate store**, so organization-managed
-  certificates are trusted; invalid certificates still fail.
-- **Settings save in the background.** Failures stay visible in Activity with
-  Retry and Open Folder.
+- **QUILL Transcribe is released on 1 November 2026.** The user guide's list of QuillVille apps that open full screen and remember their window ("The window") now names QUILL Transcribe, the family app that types what you say into other programs. Nothing changes in QUILL Lite itself: Ctrl+F11 still dictates into your document, and Dictate in Other Programs still hands your settings to QUILL Transcribe when it is running.
 
-### Fixes
+- **Reading back in a read-only document.** "read last sentence", "read last paragraph" and "read selection" now work in a document you can only read, since they change nothing, and Spanish takes "leer" as well as "lee".
+- **A calmer spoken preview.** With **Show it, and say new words quietly** chosen for the words heard so far, each word is now said once, when the engine has settled on it, never a word it is still changing its mind about and never the same word twice.
+- **Your dictation settings, shared with the family.** More Dictation Settings has **Share dictation settings with every QuillVille program** (**Alt+Q**). When it is checked, what you save in Dictation Settings is used by QUILL, QUILL Transcribe and Quill Inkwell too, and what you save in any of them reaches QUILL Lite when you come back to it. Keys, the working tick, strict mode, what you hear after each phrase and every permission to send your speech stay QUILL Lite's own. Checked for a new install; unchecked if you had already changed your settings, so nothing is replaced behind your back. Your own settings are kept in a backup file the first time, and a save that cannot reach the others is said aloud.
+- **The shared word list has a new home.** It is now in `%LOCALAPPDATA%\QuillVille\Dictation`, copied there from QUILL's data folder the first time it is needed. The old file is left as it was, as a backup; nothing is deleted. QUILL Lite's own word list is not affected.
+- **Numbered lists and equations in Word files** (2026-10-16). Numbered items now read 1, 2, 3 instead of 1, 1, 1, and an equation in a Word file comes through as text, for example `\(a^{2}+b^{2}=c^{2}\)`, where it used to be left out without a word. QUILL Lite reads Word, Excel, PowerPoint and OpenDocument files with QUILL's own readers first, in the same order as QUILL, so a Word file opened as text appears in about a second; a second reader (MarkItDown, which QUILL Lite's installer does not include) is tried only if QUILL's own cannot read a file. See "Opening Word, Excel and PowerPoint files" in the user guide.
+- **Read-Only Guard** (2026-10-16). **Tools > Read-Only Guard** (**Ctrl+Alt+Backspace**, the same key as QUILL) locks a document you are only reading: typing does nothing, and commands that would change the text say "Document is read-only" instead. Find, Go To, bookmarks and inline notes keep working; a note added while it is on is kept beside the file. QUILL Lite remembers the lock for that file, however you open it next time, and tells you if it could not write that down. A file Windows marks read-only opens locked too.
+- **Typing a name in a list, spaces and all** (2026-10-16). In Snippets and the other pick-one lists, typing "meeting notes" moves to that row; Space while you type a name is part of the name instead of opening the row the first word reached. After a pause Space opens the row as before; Enter and Escape are unchanged.
+- **A big abbreviation list opens and searches at once** (2026-10-16). Manage Abbreviations fills ten thousand rows instantly (it took over three seconds, again after every key), keeps your place when you search, and finds words in any order.
 
-- **Emoji no longer get cut in half.** After an emoji, Tools > Change Case,
-  Copy, Find, Replace, the Review Buffer, spelling suggestions (Shift+F10) and
-  dictation's line commands worked one place off. For example, with "😀 hi
-  there" and "hi there" selected, **Tools > Change Case > UPPERCASE**
-  (Ctrl+Shift+U) now changes exactly "hi there".
-- **Every Alt key in Preferences works.** Four letters were each claimed by two
-  controls. **Look for updates when QUILL Lite starts**, **Turn two hyphens into
-  an em dash**, **Feature profile** and **Change Font...** have no Alt letter
-  now; Tab still reaches them.
+- **Dictation profiles, and bold and italic by voice.** More Dictation Settings has **Dictation profile, for the kind of writing** (**Alt+A**): Standard (your settings as they are, the default), Email, Document, Markdown, Chat, Coding or Verbatim. Each changes the pause, filler words and punctuation, and how headings, bold and italic are written; in a rich text document, Document and Email use QUILL Lite's own Heading, Bold and Italic. Say "QUILL email mode" to switch while dictating, or check **Lock the profile** (**Alt+B**) so a spoken name cannot. "QUILL bold that" and "QUILL italic that" format the selection or the phrase you just dictated. The same in QUILL and QUILL Transcribe.
+- **Fix it when I correct myself** (**Alt+X** in Dictation Settings, off until you turn it on). Say "meet on Thursday, no, Friday" and only Friday is written. A "no", "I mean", "no I mean", "sorry" or "scratch that word" between two days, months, numbers or names from My Words keeps the second; anything else, such as "no, I don't think so", is written as you said it. It works on this computer, with no AI, and never in a live transcript.
+- **Dictation style** (**Alt+Y** in Dictation Settings): **Verbatim** (every word as you say it), **Clean** (no filler words, and your corrections fixed) or, only when AI help is on, **Polished** (Clean, plus Send dictation to review first and polishing allowed). It sets the check boxes; change one yourself and it shows Your own mix.
+- **Polish my dictation, when you ask.** Check **Allow polishing my dictation with AI when I ask** (**Alt+G** in More Dictation Settings, off by default). Then "QUILL polish that", or **Polish** (**Ctrl+P**) in Review Dictation, asks the AI once to fix punctuation, capitals and small slips while keeping your words. It uses Review Dictation's AI and its first-time question, so nothing is sent until you say yes; you hear what changed, Undo Change takes it back, and nothing is inserted until you insert it. It never runs by itself.
+- **Learning from your corrections.** Correct the same word the same way twice ("correct that" then "choose two", or "correct Ann" then the new words) and a window asks "Add a correction: Ann becomes Anne?", No the default. Yes adds it to the Corrections list in My Words and Phrases. Nothing is saved without a yes, and each pair is asked about once each time QUILL Lite runs.
+- The **After each phrase is written, give me** list moved to the right-hand column of Dictation Settings, beside the other sounds, so the window still fits a small screen. Its key (**Alt+P**) is the same.
 
-### Documentation
+- **AutoCorrect fixes common misspellings as you type.** Check **Correct common misspellings as I type** in **Tools > Preferences** (with **Autocorrect while typing** on in Customize Features) and a space or **Enter** after a misspelling such as `teh`, `recieve` or `seperate` puts the right word in, keeping your capital letter. You hear a sound and "Corrected to the". **Ctrl+Z** straight afterwards puts back what you typed, and that word is then left alone. About 350 common misspellings are built in, each checked against American and British dictionaries so a correctly spelled word is never changed. Nothing is ever corrected in source code or settings files, web or email addresses, code in Markdown, or a word in capitals. Off until you turn it on. QUILL has the same setting.
+- **AutoCorrect Entries** (**Alt+Shift+9**, **Tools > AutoCorrect Entries...**) lists every correction, built in and your own. **Add** your own (for example `qill` becoming `QUILL`), **Edit** one, **Turn Off** one that keeps changing a word you meant, or **Remove** one of yours (on a built-in one, Remove puts it back as it shipped). Your corrections are kept in your abbreviation list under the category AutoCorrect, so they are backed up with it, and shared with QUILL if you share abbreviations. The same window on the same key in QUILL. See "Correcting misspellings as you type" in the user guide.
+- **Enter keeps a Markdown list going.** In a Markdown document, **Enter** at the end of `- item` or `2. item` starts the next item, in the middle of an item splits it, and on an empty item ends the list; a new numbered item renumbers the ones below it. You hear what happened, and one **Ctrl+Z** takes it all back. In plain text this happens only if you check **Continue lists in plain text** in Preferences, and never in source code, settings files or rich text. QUILL does the same. See "Pressing Enter in a list" in the user guide.
 
-- **Worked examples in the Dictation commands guide**, and in the list "what
-  can I say" opens: what you have, what you say, what you get, and the limits.
-  Every example is checked by automated tests. How accurately and how quickly
-  each engine hears you has not been measured yet.
-- **The user guide helps you choose a speech engine** ("Which engine should I
-  choose?"), explains speech providers in full, and says the models folder is
-  shared with QUILL Transcribe and Quill Inkwell.
-- **The user guide's menu paths are checked against the real menus** before
-  each release.
-- **QUILL Transcribe is released on 1 November 2026.** The guide's list of
-  QuillVille apps names it. **Dictate in Other Programs...** (**Alt+O**) hands
-  your settings to QUILL Transcribe when it is installed, and to Quill Inkwell
-  otherwise.
+- **Replace, change that, and delete a paragraph by voice.** While dictating, say "replace Tuesday with Wednesday" and the nearest Tuesday before the cursor becomes Wednesday, with its capital and full stop kept. Say "change that to" and new words to replace the phrase you dictated last, or "delete previous paragraph" to delete the paragraph before the cursor. See "Replace and change that" in the user guide.
+- **"Correct that" with Moonshine or Whisper.** These engines give one answer, so "correct that" now asks the other built-in engine to listen to your last phrase again, and offers what it heard as choice two: say "choose two" to take it. The sound stays in memory until your next phrase; nothing is saved or sent.
+- **Nothing a correction changes is lost.** The words a correction replaced go into Recent Phrases (Shift+F11), marked "(before correction)", so Insert Again can put them back.
+- **Nothing you said is lost.** A phrase dictation could not write is kept on this computer, sealed for your Windows account, until you write it or discard it, even through a crash. **Recent Phrases** (**Shift+F11**) lists it after this session's phrases, with a review you did not finish, and has a new **Discard** button (**Alt+D**). QUILL Lite says once at start when words are waiting.
+- **Dictation history, off unless you want it.** **Keep a dictation history** (**Alt+Y** in More Dictation Settings) keeps the text of what you dictate, never the sound, for one, seven or thirty days, and Recent Phrases lists the earlier phrases. **Clear History** (**Alt+H**) deletes it after asking; turning it off deletes it too.
+- **Reading back more.** "read that" now reads all of what last went in, a whole clip or snippet included. New: "read last sentence", "read last paragraph" and "read selection". The same in QUILL and QUILL Transcribe.
+
+- **Transcribe a Recording translates into English.** For a recording in Spanish, check **Translate into English** (**Alt+E**) and the transcript comes out in English. It works with the built-in Whisper or a multilingual Whisper you downloaded; with any other model the box is unavailable. The same in QUILL and QUILL Transcribe, on the same models.
+
+- **Speech providers: dictation with your own account.** Dictation Settings has **Speech Providers...** (**Alt+V**): Azure, Google, Amazon, Deepgram, AssemblyAI, Speechmatics, ElevenLabs, Gladia, Rev.ai, Groq, Mistral and IBM Watson. Fill in what the company needs, **Test Connection** (Alt+T) without sending any speech, save it with the Save button (Alt+S); keys go to Windows Credential Manager, never into settings. Then choose it as the speech engine; you are asked before anything is sent, and No is the default. The built-in engines stay the default. The same in QUILL and QUILL Transcribe.
+
+- **Review Dictation** (**Shift+F4**, **Tools > Dictation**). Say "QUILL review that" and the last phrase is taken back out of the document and held in a window, where you can read it with the arrow keys, type or keep dictating to change it, and insert it once with Ctrl+Enter, as one undo step. With AI help on and your ChatGPT subscription or your own AI key, ask the AI to change it ("QUILL make it shorter", or type the instruction) and hear what changed in two sentences at most; "QUILL what changed" says it again and "QUILL back to what I said" puts your words back exactly. QUILL Lite asks before anything is sent, and only the words and your instruction go. Words in an unfinished review are kept for next time. **Send dictation to review first** (**Alt+V** in More Dictation Settings) sends everything you dictate there.
+- **Every Alt key in Preferences works.** Four letters were each claimed by two controls, so pressing one moved between the pair instead of choosing. **Look for updates when QUILL Lite starts**, **Turn two hyphens into an em dash**, **Feature profile** and **Change Font...** have no Alt letter, because none was free, and Tab still reaches them.
+
+- **The command word: "QUILL scratch that".** Say QUILL before a command and it is always taken as a command and never written: "QUILL scratch that", "QUILL select the cat". If what follows is not a command, nothing is written, and "QUILL type that" writes it. "QUILL command mode" takes commands without the word until you say "dictation mode", or for eight seconds with none. **Speak a Command** (**F11**, Tools > Dictation) does the same from the keyboard: press it, then say the command; press it twice for command mode. More Dictation Settings has the command word (**Alt+C**), strict mode (**Alt+E**, off here: commands said on their own still work) and how long command mode waits (**Alt+D**). Two new sounds, "Live dictation heard the command word" and "Live dictation left command mode", are in the Sound Scheme window. The same in QUILL and QUILL Transcribe.
+
+- **Saved conversations, your prompt library and word-by-word review, from QUILL.** Every AI conversation is now saved on this computer as it goes; **Saved Conversations** (**Alt+V** in the conversation window) opens one again to carry on, or deletes one. **Prompt Library** (**Ctrl+7**, Tools > AI) is QUILL's library of prompts, built-in and your own: choose one and its answer comes from the free AI with your selection filled in; prompt packs import and export the same as in QUILL. **Review Changes** in the answer window compares an answer with your selection change by change, with the words that differ and their sentence, and applies only the changes you keep, as one Ctrl+Z.
+- **Where the answer goes, and the Chat Key.** The AI Assistant has a new list, **Put the answer in**: the answer window (as before), your document at the cursor, or the clipboard. QUILL Lite remembers it. **Ask AI a Question** (**Ctrl+6**, the Chat Key) opens the pad on **Ask a general question** with the caret in the question box: type and press Enter.
+- **Web search on the free AI, and Web Searches Left.** When QUILL's free service switches web search on, the pad offers **Search the web**, ten searches a month, with the sites each answer used. **Web Searches Left** (**Ctrl+9**, Tools > AI) says how many are left this month, or that the service is not offering search right now. The same three keys in QUILL.
+- **New AI tools without a new version.** QUILL's free AI service can now add a tool to the AI Assistant pad without an update to QUILL Lite. A tool it offers that your copy does not have built in appears at the end of the **What do you want done?** list; F1 on it says what it does, and Send runs it like any other choice. Only on QUILL's free service, not with your own API key or ChatGPT plan.
+
+- **Updating keeps your settings where QUILL Lite looks for them.** A portable copy now updates by putting the new version in the old folder's place and moving your `data` folder across. Run for the first time before release, the new way would have put your data one folder too deep, and the old in-place copy would have deleted it, because every portable zip carries its own small `data` folder. Both are fixed.
+- **A failed update undoes itself properly.** If the new version is stuck, it is closed before the old one is put back; an undo that can't finish leaves things as they were instead of saying it went back; and the first update after you install says so too when it has to go back.
+- **No administrator prompt for an update.** The installer runs quietly as you, since QUILL Lite is installed for you alone. If it doesn't finish, QUILL Lite opens again as the version you had and tells you the update could not be installed.
+- **The Beta engine's 335 MB come back.** When the last app on Beta returns to Stable, its separate copy of the shared engine is removed, as the Release Channel window promised.
+
+- **QUILL Lite opens PDFs.** Press **Ctrl+O** and choose one. It opens as its text, page by page, and says how many pages it has. **Go To** (**Ctrl+G**) can take you to a page, or to an entry in the PDF's own outline, and the status bar says which page you are on. A locked PDF asks for its password, which is used once and never saved. A scanned PDF asks whether to read it with OCR on this computer; nothing is uploaded. QUILL Lite never writes to a PDF: **Ctrl+S** opens **Save As** with a text file of the same name.
+- **PDF pages read more reliably, and you hear which may not.** Each page of a PDF is now read the way that reads best, not just the first way that gives any text: a widely spaced paragraph comes through as words instead of single letters, and a page in two clear columns reads down the first column and then the second. A heading under a long line keeps its own line, two rows of a table stay two rows, and a blank first page no longer shifts every page number by one. When the PDF opens, QUILL Lite names any page that may still read poorly, such as "Pages 3 and 7 may read poorly": a page that read badly every way, has characters that could not be read, or is only a picture. A character the PDF gave no meaning to is kept rather than deleted. In **Go To** (**Ctrl+G**), an outline entry takes you to its title on the page, not just the top of the page, and a nested entry says its level, such as "Summary, level 3, page 15". Nothing is uploaded and the PDF is never changed. The same in QUILL.
+
+- **Import and Export in My Words and Phrases** (**Alt+Shift+F10**, then **Alt+I** or **Alt+X**). Export saves your words, phrases and corrections to a Markdown file or a CSV file with say, write and kind columns. Import adds what is new from either kind of file: you see how many will be added first, nothing you have is replaced, your list as it was is kept as dictation-before-import.md, and you hear the counts, such as "Imported 12 words, 3 already there."
+- **Use the shared word list** (**Alt+U** in My Words and Phrases). Off by default. Check it and QUILL Lite uses the same word list as QUILL, QUILL Transcribe and Quill Inkwell, after showing which of your words will be added to it; a word you add in QUILL Lite is then used by all of them from their next phrase. Uncheck it to go back to QUILL Lite's own list, unchanged. A portable copy keeps its own list.
+
+- **Which speech model suits this computer, and why.** Speech Models (**Alt+B** in Dictation Settings) now recommends one model in a read-only **Recommendation** box (**Alt+C**): whether it keeps up on this computer, about how soon your words appear after you pause, and how big the download is. **What matters most** (**Alt+W**) asks for the quickest response or the fewest mistakes instead, and **Show Recommended Model** (**Alt+S**) moves to it in the list. Dictation Settings shows the same advice in one line. It is only advice, labelled an estimate: QUILL Lite never changes your engine by itself. Every model is also labelled **Lightweight**, **Balanced** or **High accuracy** wherever you choose one.
+- **Programs Dictation Never Types Into...** (**Alt+N** in More Dictation Settings). The programs dictation from Quill Inkwell or QUILL Transcribe never types into, starting with the common password managers and the Windows sign-in prompts. Add the program you were just in, or type a file name.
+- **Clipboard Collector** (**Alt+Shift+S**, **Edit > Clipboard**): QUILL's system-wide collector. Turn it on in a window and everything you copy, in any program, is added to the end of that window, each distinct copy once. A window that already has a file name is saved after each piece, and you hear "Collected and saved"; an untitled window is never saved and no Save As window opens. If a save cannot happen you are told why and collecting carries on. **Save after every clip the clipboard collector adds** (**Alt+Y** in Preferences, on by default, the same setting as QUILL's) turns the saving off. It collects into one window at a time and stops when that window closes. **Collect Selection**, which gathers text selected inside QUILL Lite, moves to **Alt+Shift+C** so the two editors agree on Alt+Shift+S. Asked for on QUILLVille by Dean Martineau.
+- **Search in Files** (**Ctrl+Alt+Shift+F**) and **Replace Across Files** (**Ctrl+Shift+R**), on the **Edit** menu: QUILL's folder search, its window and its keys. Search every file in a folder, and the folders inside it, by file pattern, with plain text, wildcards or a regular expression; the results open in a new window. Replace Across Files shows every change first and asks before any file is written. Both run in the background, so a big folder never freezes the window. Asked for on QUILLVille by Chris Nova.
+- **Find in Open Documents** (**Ctrl+Alt+Shift+F8**, on the **Edit** menu). Find and replace across every document you have open, not just the one in front of you, the same window as QUILL, where it is Ctrl+Shift+F10 because QUILL's Ctrl+Alt+Shift+F8 opens Quill Weather. It searches the text as it is in each window, so unsaved changes and never-saved documents are found too, and nothing on disk is touched. Find Next and Find Previous move from document to document and say each one's name; Find All lists every match, and Enter goes there; Replace All tells you how many in how many documents and asks, gives each document its own undo, and saves nothing. Read-only documents are searched but left alone. After the window closes, F3 and Shift+F3 keep searching across documents until you start an ordinary Find. Asked for on QUILLVille by Chris Nova.
+
+- **Where QUILL Lite's own sounds play, and Alt+Shift+M to turn them off.** The **App Sounds Play On...** button in **Tools > Sound Scheme...** (**Ctrl+Alt+Shift+O**) offers System default, None (no sounds), or any sound card or headset by name. After a change one sound plays on the new card, so you hear where it went. If that card is unplugged the sounds play on the system default until it is back, and QUILL Lite says so once. **Alt+Shift+M** turns QUILL Lite's sounds off and back on where they were, and **Tools > App Sounds (formerly Quiet Mode)** shows a check mark while they are on. Each QUILL app keeps its own choice; "Share these choices with my other Quill apps" keeps them in step. Your screen reader is never moved. Asked for on QUILLVille by Rick Lewis.
+  Until now Alt+Shift+M silenced QUILL and QUILL Lite together; it now silences the app you are in. **Sound notifications** in QUILL's Settings still silences every QUILL app at once.
+
+- **Runs on Python 3.14, and older runtimes are cleaned up.** The shared QuillVille
+  runtime this build installs is Python 3.14. The installer then removes older
+  runtimes (Python 3.13) that no installed QuillVille app uses any more; one that
+  an app or a shortcut still points to is left alone. Portable copies carry their
+  own Python and change nothing outside their folder.
+- **Dictation does not hear the screen reader.** With a headset, JAWS, NVDA or
+  Narrator reading back what you dictated was heard by the microphone and
+  written as a new phrase. The built-in speech models now hear silence while the
+  screen reader (or QUILL Lite's own sounds) are playing; words spoken over the
+  reader are not heard, so wait for it or press Ctrl.
+- **The same phrase said twice is written twice.** It was taken for the screen
+  reader's echo and dropped.
+- **The phrase-written sound is a soft tone.** The old one started so sharply
+  that it was heard as a spoken "c".
+- **One microphone at a time.** Ctrl+F11 while QUILL Transcribe is listening no
+  longer opens a second microphone, so nothing is written twice; you hear the
+  program and its key, for example "QUILL Transcribe is listening. Press
+  Alt+Shift+Backslash to stop it, then try again." QUILL Transcribe and QUILL
+  say the same about QUILL Lite while it dictates, naming your Ctrl+F11.
+- **QUILL Transcribe and Quill Inkwell keep out of QUILL Lite's window**, as
+  they always did of QUILL's: their key there says "This is a QUILL window:
+  press Ctrl+F11 to dictate here." Inkwell's abbreviations keep out too, since
+  QUILL Lite expands its own.
+- **Tick while a phrase is being worked on** (More Dictation Settings, Alt+R,
+  off unless you check it): a soft tick once a second while a phrase takes more
+  than a second to turn into text, and "Still working on that phrase." the
+  first time in a session one takes four seconds. With "After each phrase is
+  written, give me" set to words only there is no tick, just the sentence; set
+  to nothing, there is neither. QUILL has it too.
+
+Carried over from build 3:
+
+- **Routine settings saves run in the background.** Preferences, recent
+  files, window/view settings, spelling, page setup, recovery-related settings
+  and update choices queue detached settings snapshots on one ordered writer.
+  Pending requests keep the latest settings; failures remain visible in
+  Activity with Retry and Open Folder. Shutdown waits for queued settings
+  writes; this is not a promise that every shutdown path is nonblocking.
+- **HTTPS uses the Windows certificate store.** Python HTTPS requests use
+  trusted Windows and organization-managed roots without turning off hostname
+  or certificate verification. Genuinely invalid certificates still fail.
+  Portable packaging checks that the declared certificate-store backend is
+  included.
+- **The installer is current-user only.** It no longer offers an all-users
+  install that requires administrator approval; QUILL Lite and the shared
+  runtime go in your Windows profile.
+- **Transcription results can be reopened from Notifications.** QUILL Lite
+  saves each completed transcript privately and adds a completion notice that
+  opens it on activation. The transcript stays separate from the document you
+  were editing.
+- **Transcription model availability is prepared in the background.** The
+  recording dialog no longer performs its potentially slow model inspection
+  while constructing the window. Cloud choices still require a usable key,
+  remain unavailable in Safe Mode, and are never selected automatically.
+- **Build 2's local-audio fix is retained.** The real cancellation-token
+  state is checked for every supported engine, and Windows Media Foundation
+  can supply duration when the other metadata readers cannot. The initial
+  1.2.0 workflow below opened results immediately; build 3 uses the saved
+  Notifications workflow above.
 
 ## 1.2.0 -- 2026-10-03
 

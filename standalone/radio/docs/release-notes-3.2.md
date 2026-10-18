@@ -1,6 +1,8 @@
 # Quill Radio 3.2
 
-Version 3.2.0, released 2026-10-03.
+Version 3.2.0 (build 4), the beta for testers, October 2026. 3.2.0 was
+prepared on 2026-10-03 and is not yet published; the last published version
+is 3.0.4.
 
 Welcome to Quill Radio 3.2. You can now ask the radio about what you are
 hearing and get an answer in words, and the radio keeps a list of everything
@@ -11,55 +13,45 @@ yourself a note on any station. Apple's podcast categories are full lists
 now, and Preferences has a box that finds a setting as you type. And updates
 install themselves properly again, after one last update by hand.
 
-## New in the beta: 3.2.0 (build 4)
+## Testing rebuild: 3.2.0 (build 4)
 
-This beta build is for testers. It keeps everything in the earlier test
-builds of 3.2.0. The full list, grouped by area, is in the changelog
-(`CHANGELOG` in the docs folder); here are the things to try first, with the
-user guide section that explains each.
+Build 3 runs on Python 3.14. Its installer also removes the older Python 3.13
+runtime once no QuillVille app on your computer uses it.
 
-**Finding and adding stations.** **View > Station Details...**
-(**Alt+Shift+I**) finds a station by name, call sign, frequency or slogan
-(the station facts arrive with a later update). **Add Custom Station** now
-accepts a station's web page or "Listen Live" link and finds the real stream
-behind it. In Browse Stations, **Escape** walks back out of a category one
-level at a time. See "Add Custom Station, step by step" in Chapter 6.
+Quill Radio's own sounds now play on the same sound card as the radio. If
+you send the station to a broadcast card, the playing, stopped and stream
+error sounds are there with it, so you can tell by ear that you are on air.
+They follow the radio wherever you move it. If you would rather keep them
+somewhere else, **App Sounds Play On...** in Preferences can leave them on
+the system default, give them any sound card of their own, or turn them off
+with **None**. **Alt+Shift+M** turns them off and back on, the same key in
+every QUILL app. After a change you hear one sound on the new device. If that
+device is unplugged, the sounds play on the system default until it comes
+back, and Quill Radio tells you. Your screen reader is never moved.
 
-**Listening.** The time-shift buffer now holds an hour by default, up to five
-(**Preferences > Time-shift buffer**). **Ctrl+Shift+Left** and
-**Ctrl+Shift+Right** go further the more you tap: 12 seconds, a minute, five
-minutes. **Playback > Lyrics...** (**Ctrl+Alt+B**) shows the words of the
-song on the air, and **Identify This Song** (**Ctrl+K**) names a song a
-station does not announce, once you have set it up. **Audio > Background
-Station on Another Device...** (**Alt+Shift+B**) and **Audio > Mirror to
-Another Device...** (**Alt+Shift+D**) use a second sound card. See
-"Rewinding live radio, and going back to live" in Chapter 4, and "Lyrics,
-step by step" and "Identify This Song" in Chapter 5.
+Choosing a show and hide key is easier: **Record Key...** (Alt+R) in the
+Show and Hide Key window writes out the combination you press. You can still
+type it.
 
-**Recording.** Turn on **Split the recording at each song change** in
-**Record > Recording Settings...** for one file per song. Recordings no
-longer start with the advert a station plays to every new listener. See
-"Station adverts at the start of a recording" in Chapter 8.
+Build 3 keeps everything from build 2:
 
-**Your lists.** Press **.** (period) on several rows, then **Delete** once, in
-your favorites, Radio Recordings, Browse Stations and Schedule Recording.
-**System-Wide Key...** on a favorite's **Shift+F10** menu gives it a key that
-works from any program. **QUILL Lineups** (**Playback > Lineups...**,
-**Ctrl+U**) gather stations, podcasts, videos and files into one list you
-can play straight through, shared with QUILL Cast; see Chapter 17 and the
-tutorial **Build a lineup that fills itself**. Saved places in Favorites now
-survive a restart.
+This rebuild adds **Start Quill Radio with Windows** to Preferences, using the
+same setting as the Station menu. Portable copies do not change Windows startup
+settings. Routine history and preference saves run in the background, and the
+startup update check avoids a synchronous bookkeeping write.
 
-**Knowing what happened.** **Community > What's New** (**Alt+Shift+N**) says
-in one sentence what arrived since you last looked. Reminders wait in **Help >
-Notifications...** and read your note on the station, and the status bar
-counts unread notifications.
+**Record > Recordings...** (Ctrl+Shift+R) opens the recordings list or restores
+its existing window, including when it is minimized. The last public 3.0.4
+build could silently leave that window minimized. The shared opener has now
+also been checked with real Windows controls for empty and populated folders.
 
-**Sounds.** Quill Radio's own sounds play on the radio's sound card, so you
-can hear on a broadcast card that you are on air; **Preferences > App Sounds
-Play On...** changes that, and **Alt+Shift+M** turns them off. Resuming after
-a pause has its own sound. See "Where Quill Radio's own sounds play" in
-Chapter 5.
+You can add or correct a station's website locally without contacting that
+website. Python HTTPS requests use the Windows certificate store while still
+checking certificates and hostnames. The installer is current-user only and
+does not offer an administrator-only installation.
+
+The bundled changelog records the complete build changes. These testing
+packages are not a GitHub release or a Stable-channel promotion.
 
 **Dictation.** **Edit > Dictate Here** (**Ctrl+F11**) dictates into Search
 Stations or any text box through QUILL Transcribe, released on 1 November
@@ -73,6 +65,27 @@ own copy. **Properties...** (**Alt+Enter**) in Local Media now describes the
 drive a file is on. This build runs on Python 3.14, installs for you alone
 with no administrator prompt, and checks secure connections the way Windows
 does.
+
+**Podcasts and archives.** CBC podcasts play again. Podcasts you have just
+imported no longer arrive as hundreds of new episodes, and a podcast that
+fails says why in plain words. **Find** on an Internet Archive folder puts
+the best matches first, so new uploads are found.
+
+**Menus and keys.** **Connect to Spotify...** (**Ctrl+Alt+P**) and **Browse
+Spotify...** (**Ctrl+Alt+O**) are on the Station menu from the start;
+Spotify is still experimental, and nothing is sent until you connect an
+account. To stop what is playing, press **Ctrl+Period** from anywhere, the
+**Stop** button (**Alt+T**), or **Playback > Play** (**Ctrl+P**), which reads
+**Stop** while something plays. **Record > Recordings...**
+(**Ctrl+Shift+R**) brings back a Recordings window that is already open.
+**Ctrl+Alt+Shift+R** shows and hides Quill Radio even while other QUILL
+apps run. **Community > Suggest a Station or Podcast...** sends nothing
+until you choose whether it is a station or a podcast.
+
+**Updates.** A portable copy updates in place and keeps its `data` folder
+where Quill Radio looks for it. A failed update puts back the version you
+had and says so. The Beta engine's 335 MB are removed when the last app on
+Beta returns to Stable.
 
 This beta is not a GitHub release or a Stable-channel promotion.
 
@@ -731,6 +744,20 @@ every other Quill app where you have turned this on. Quill Radio tells you
 when it picks up a choice from another app. Nothing about your keys, your
 cursor or your screen reader is ever shared, and it stays off until you turn
 it on.
+
+## Preview for testers: changes after 3.2.0 (build 1)
+
+These changes are not part of the 3.2.0 (build 1) release above.
+
+- **Correct a station's website locally.** Choose **Edit Website...** on a
+  station row in Browse Stations or Manage Favorite Stations. The correction
+  is saved in this Radio profile only; it does not change the directory, and
+  Quill Radio checks only the address format, not the website itself. Clear
+  the address to return to the directory's version.
+- **Start Quill Radio when you sign in.** The Station-menu item and the
+  Preferences checkbox control the same per-user Windows setting. It is
+  available for an installed copy, needs no administrator rights, and is
+  unavailable for portable copies.
 
 ## Choose Stable, Beta or Dev
 

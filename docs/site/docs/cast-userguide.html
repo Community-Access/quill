@@ -856,7 +856,7 @@ its containing place.</li>
 <p>Walk into an empty place and Cast tells you, once, what fills it. In
 an empty Play Queue you hear “The queue is empty. Space on any episode
 adds it.”</p>
-<p>In development builds, a large place shows <strong>loading…</strong>
+<p>In the beta builds, a large place shows <strong>loading…</strong>
 while Cast prepares its counts and rows from a detached catalogue.
 Choosing another place discards the earlier result rather than moving
 you back when it finishes. Downloads remains a place in this main
@@ -864,9 +864,8 @@ window, not a separate storage-report dialog. Opening, row publication
 and transport/status updates happen in small UI steps. If you move focus
 while an opening is pending, its completion does not take focus back.
 Closing Cast during preparation also retires unfinished detached input
-in the background rather than waiting to free it. Large-library Windows
-responsiveness is still under release validation; build 3 has not been
-published.</p>
+in the background rather than waiting to free it. Responsiveness with a
+very large library is still being checked in the beta builds.</p>
 <p><strong>Ctrl+F5</strong> checks every podcast without repeatedly
 rebuilding the Podcasts tree as each feed answers. Expanded podcasts
 keep your selected episode while new rows and updated titles arrive.
@@ -2342,15 +2341,13 @@ as written, and so do names that another app saved with its punctuation
 spelled out twice.</p>
 <p>A podcast listed twice is imported once, even if one copy has a
 slightly different address. If the file puts one podcast in two folders,
-Cast follows it once and puts a folder copy of it in each of those
-folders (see “Copying a podcast into a second folder” under “Organising
-podcasts into folders”), so your folders look the way they did in your
-old app. Two different podcasts that happen to share a name are both
-imported, whether the other one is already in your list or elsewhere in
-the same file, and the report points them out so you can check. A line
-in the file whose address is not a complete web address, like
-“http://feed/”, is not imported; the report lists it with the
-reason.</p>
+Cast follows it once, in the first folder it appears in, and the report
+says where the other copy was. Two different podcasts that happen to
+share a name are both imported, whether the other one is already in your
+list or elsewhere in the same file, and the report points them out so
+you can check. A line in the file whose address is not a complete web
+address, like “http://feed/”, is not imported; the report lists it with
+the reason.</p>
 <p>The first time Cast reads each new podcast, it takes that as a
 starting point. You will not be told about hundreds of “new” episodes
 from shows you have just brought across, and nothing is downloaded or
@@ -2551,33 +2548,10 @@ with your podcasts inside them.</p>
 <ol type="1">
 <li>Choose Podcasts &gt; <strong>New Folder…</strong> (Ctrl+Shift+E),
 type a name and press Enter.</li>
-<li>Go to a podcast and press <strong>Ctrl+Shift+V</strong> (Podcasts
-&gt; <strong>Move to Folder…</strong>, also on the Shift+F10 menu).</li>
+<li>Go to a podcast, press Shift+F10, and choose <strong>Move to
+Folder…</strong>.</li>
 <li>Pick the folder and press Enter.</li>
 </ol>
-<h4 id="copying-a-podcast-into-a-second-folder">Copying a podcast into a
-second folder</h4>
-<p>A podcast can sit in more than one folder, for example in both News
-and Long Drives, without your following it twice. Go to the podcast and
-press <strong>Ctrl+Shift+Y</strong> (Podcasts &gt; <strong>Copy to
-Folder…</strong>), pick the second folder and press Enter.</p>
-<ul>
-<li>Every copy is the same podcast: one subscription, one episode list,
-one listening history and one set of downloads. Mark an episode played
-in one folder and it is played in the other.</li>
-<li><strong>Move to Folder…</strong> (Ctrl+Shift+V) moves only the copy
-you are on.</li>
-<li><strong>Unfollowing</strong> a podcast removes every copy of it. If
-you remove a folder together with the podcasts in it, Cast warns you
-that their copies in other folders disappear too. (Delete on a folder on
-its own keeps your podcasts, as below.)</li>
-<li><strong>Export OPML</strong> keeps every placement, and
-<strong>Import OPML</strong> reads such a file back as copies, so your
-folders survive a move between computers.</li>
-</ul>
-<p>Limit: because every copy is the same podcast, there is no way to
-give one copy its own episodes or history; use a Lineup (Chapter 9) for
-a hand-picked list instead.</p>
 <p>After moving, focus stays in the podcast tree on the next podcast in
 the source folder, or the previous one if you moved the last podcast. If
 no podcasts remain there, the containing folder is the fallback.
@@ -4443,9 +4417,8 @@ clipboard.</p>
 </tr>
 <tr>
 <td>Ask About an Image</td>
-<td>Ctrl+Alt+F5</td>
-<td>Describe a picture on your computer (Ctrl+F5 is Refresh All Now in
-Cast)</td>
+<td>Ctrl+F5</td>
+<td>Describe a picture on your computer</td>
 </tr>
 <tr>
 <td>Free AI Usage</td>
@@ -5002,8 +4975,8 @@ away and have Cast open again afterwards, or <strong>Install when I
 close</strong> (Alt+C) to keep listening and update the next time you
 close Cast.</li>
 </ol>
-<p>Help &gt; About shows your version with a build number, such as 3.2.0
-(build 2). The build number tells you which build of a version you have:
+<p>Help &gt; About shows your version with a build number, such as 2.0.0
+(build 5). The build number tells you which build of a version you have:
 when a fix comes out without a new version number, it is a newer build,
 and Check for Updates offers it.</p>
 <p>If you are already up to date, Cast tells you so. To turn the daily
@@ -6916,7 +6889,7 @@ Chapter 9.</p>
 </tr>
 <tr>
 <td>Ask About an Image</td>
-<td>Ctrl+Alt+F5</td>
+<td>Ctrl+F5</td>
 </tr>
 <tr>
 <td>Free AI Usage</td>

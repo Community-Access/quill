@@ -1,6 +1,8 @@
 # QUILL Lite User Guide
 
-*For QUILL Lite 1.2.0, released October 3, 2026.*
+*For QUILL Lite 1.2.0 (build 5), the beta for testers, October 2026. 1.2.0
+was prepared on October 3, 2026 and is not yet published; the last published
+version is 1.1.2.*
 
 ## Introduction
 
@@ -8561,7 +8563,7 @@ everywhere.
 If you already have the newest version, a small window tells you so. You always
 get an answer.
 
-Help > About shows your version with a build number, such as 3.2.0 (build 2). The
+Help > About shows your version with a build number, such as 1.2.0 (build 5). The
 build number tells you which build of a version you have: when a fix comes out
 without a new version number, it is a newer build, and Check for Updates offers it.
 

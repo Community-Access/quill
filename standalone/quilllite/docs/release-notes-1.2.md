@@ -1,6 +1,8 @@
 # QUILL Lite 1.2
 
-*Version 1.2.0, released October 3, 2026.*
+*Version 1.2.0 (build 5), the beta for testers, October 2026. 1.2.0 was
+prepared on October 3, 2026 and is not yet published; the last published
+version is 1.1.2.*
 
 Welcome to QUILL Lite 1.2. This is the release about words. QUILL Lite now has
 a thesaurus that finds the word you are really on, a dictionary that works
@@ -16,72 +18,38 @@ Everything works from the keyboard and tells you how it went, the way the rest
 of QUILL Lite does.
 
 
-## New in the beta: 1.2.0 (build 5)
+## New in this build: Find in Open Documents
 
-This beta build is for testers. It keeps everything in the earlier test
-builds and adds a good deal more. The full list, grouped by area, is in the
-changelog (`CHANGELOG` in the docs folder); here are the things to try first, with the user
-guide section that explains each.
+Press **Ctrl+Alt+Shift+F8** to find and replace across every document you have open, not just the one in front of you. It searches what is in each window right now, including changes you have not saved and documents you have never saved. Find Next moves from document to document and tells you each one's name, Find All lists every match, and Replace All tells you how many it found before it changes anything, lets you undo each document on its own, and saves nothing. Afterwards, F3 keeps searching across your documents until you start an ordinary Find. QUILL has it too, on Ctrl+Shift+F10. Thanks to Chris Nova for asking.
 
-**Word documents are edited as rich text.** Open a `.docx` with **Ctrl+O** and
-it opens to edit, with its headings, lists, bold, links and tables, and
-**Ctrl+S** saves a real Word document. If the document has things a save
-would drop, such as pictures or comments, QUILL Lite names them and asks
-first. Excel, PowerPoint and OpenDocument files open as readable text, and
-Ctrl+S never writes over them. See "Office files at a glance" and "Word
-documents".
+QUILL Lite also has QUILL's folder search now: **Search in Files** (**Ctrl+Alt+Shift+F**) and **Replace Across Files** (**Ctrl+Shift+R**), on **Edit > Matches**. They search, or change, every file in a folder without opening them, and Replace Across Files shows you every change and asks first.
 
-**PDFs, and turning anything into text.** **Ctrl+O** opens a PDF as its text,
-page by page, and **Go To** (**Ctrl+G**) takes you to a page or an outline
-entry. **File > Import / Convert Document (OCR)...** (Alt+F, then I) turns a
-document, an e-book or a picture of a page into a new, untitled document. The
-portable copy reads PDFs now too. See "Importing and converting a document".
+And QUILL Lite now has QUILL's **clipboard collector**. Press **Alt+Shift+S** in a window and everything you copy, in any program, lands at the end of it, until you press **Alt+Shift+S** again. Collect Selection, which used that key, is now on **Alt+Shift+C**.
 
-**Tables and highlights.** **Navigate > Table** moves cell by cell
-(**Ctrl+Alt+Right** for the next cell, **Ctrl+Alt+Down** for the cell below)
-and says where you are. **Alt+PageDown** goes to the next highlighted passage
-in a Word document. See "Moving through a table" and "Finding the highlighted
-passages in a Word document".
+## Testing rebuild: 1.2.0 (build 4)
 
-**Finding things.** **Find in Open Documents** (**Ctrl+Alt+Shift+F8**),
-**Search in Files** (**Ctrl+Alt+Shift+F**) and **Replace Across Files**
-(**Ctrl+Shift+R**) are on the **Edit** menu, just below Replace. Thanks to
-Chris Nova for asking.
+Build 4 runs on Python 3.14. Its installer also removes the older Python 3.13
+runtime once no QuillVille app on your computer uses it.
 
-**Typing help.** AutoCorrect (off until you turn it on in **Tools >
-Preferences**) fixes common misspellings as you type, **Tools > AutoCorrect
-Entries...** (**Alt+Shift+9**) lists them, and **Enter** keeps a Markdown list
-going. **Tools > Read-Only Guard** (**Ctrl+Alt+Backspace**) locks a document
-you are only reading. The **clipboard collector** (**Alt+Shift+S**) gathers
-everything you copy, in any program, into one window; Collect Selection is now
-**Alt+Shift+C**. Thanks to Dean Martineau for asking.
+Dictation is kinder to screen reader users with a headset. QUILL Lite no
+longer writes down your screen reader reading back what you said, saying the
+same phrase twice writes it twice, and the sound for a written phrase is a
+soft tone instead of something that sounded like the letter "c".
 
-**Dictation.** Say "QUILL" before a command so it is never written ("QUILL
-scratch that"), or press **F11** and say it. "replace Tuesday with Wednesday",
-"change that to", "QUILL bold that" and "QUILL review that" (**Shift+F4**) edit
-by voice. Spell an address across pauses. Dictation profiles, a dictation
-style, a dictation history you can turn on, and speech providers with your own
-account are in Dictation Settings. With a headset, dictation no longer writes
-down your screen reader. See "Dictation" in the user guide and the Dictation
-commands guide.
+Build 4 keeps everything from build 3:
 
-**AI.** In the AI Conversation window, **Alt+1** to **Alt+0** read back the
-last ten messages and **Export Conversation...** (**Alt+X**) saves the
-conversation. In Review AI Changes, **Words in this change** (**Alt+W**) keeps
-some words of a change and drops others. The AI tries again by itself when the
-service is busy, and asks before sending your text to a different AI.
+Build 3 retains build 2's local-recording transcription fix and Windows audio
+duration fallback. It prepares downloaded model availability in the background,
+and completed transcripts are saved privately for opening from **Notifications**.
+Your current document stays unchanged until you choose to open a result.
 
-**Speech, sounds and braille.** Your braille display no longer flickers while
-you dictate. A soft tone marks a line with an inline note. **App Sounds Play
-On...** in **Tools > Sound Scheme...** chooses where QUILL Lite's sounds play,
-and **Alt+Shift+M** turns them off. If your screen reader stops, your work is
-saved first.
+Routine settings saves also run in the background and still report failures
+through Activity. Python HTTPS requests use the Windows certificate store while
+checking certificates and hostnames. The installer is current-user only and
+does not offer an administrator-only installation.
 
-**Installing.** This build runs on Python 3.14 and installs for you alone,
-with no administrator prompt. If you use the portable 1.1.2, read "If you
-already use QUILL Lite" below before you update.
-
-This beta is not a GitHub release or a Stable-channel promotion.
+The bundled changelog records the complete build changes. These testing
+packages are not a GitHub release or a Stable-channel promotion.
 
 ## If you already use QUILL Lite
 

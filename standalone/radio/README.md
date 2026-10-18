@@ -2,7 +2,7 @@
 
 Accessible, screen-reader-first internet radio for Windows, from the QUILL project by Community Access.
 
-Version 3.2.0, released 2026-10-03.
+Version 3.2.0, released to beta testers in October 2026 (build 4). 3.2.0 is not yet published; the last published version is 3.0.4.
 
 Quill Radio is not a fork. The whole application lives in the [quill](https://github.com/Community-Access/quill) package (`quill.apps.radio`) and runs the same radio code QUILL itself uses: the same station browser, favorites, recorder, scheduler and dialogs. This folder (`standalone/radio` in the QUILL repository) holds only what exists because QUILL is not in the picture: the packaging wrapper (entry point), the installer, and this app's own documentation. Everything shared lives in the `quill` package, so Quill Radio tracks QUILL automatically.
 
@@ -17,7 +17,8 @@ Quill Radio is not a fork. The whole application lives in the [quill](https://gi
 - Every window reaches the player: volume, mute, stop and the rest work from any Quill Radio window.
 - Sound Enhancements (Ctrl+E): equalizer presets, a compressor, mono and one-ear modes, night mode and broadcast polish, applied live.
 - Lives in the system tray, with a system-wide show and hide key (Ctrl+Alt+Shift+R) and the keyboard's media keys.
-- F1 help on every control, 41 guided tutorials (Ctrl+Alt+F1), and a Command Palette (Ctrl+Shift+P).
+- New in 3.2: Station Details (Alt+Shift+I) finds a station by call sign, frequency or slogan; Lyrics (Ctrl+Alt+B); Identify This Song (Ctrl+K); QUILL Lineups (Ctrl+U), shared with QUILL Cast; What's New (Alt+Shift+N); a time-shift buffer of up to five hours; and recordings split into one file per song. The release notes list everything.
+- F1 help on every control, 44 guided tutorials (Ctrl+Alt+F1), and a Command Palette (Ctrl+Shift+P).
 - Shares favorites, settings and recordings with QUILL and QUILL Cast when installed (one data store in `%APPDATA%\Quill`). A portable copy keeps its own.
 
 Deliberately not included: QUILL's editor, AI writing tools, transcription, braille and speech-synthesis stacks. This is the radio, and just the radio.

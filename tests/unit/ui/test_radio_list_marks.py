@@ -100,8 +100,11 @@ def _schedule_entry(index: int) -> RecordingScheduleEntry:
         id=f"s{index}",
         station_name=f"Show {index}",
         stream_url=f"https://s{index}.test/",
-        recurrence="daily",
-        run_at=f"2026-10-17T0{index}:00",
+        # One-time, on fixed future days: the list sorts by next run, and a
+        # daily time that has already passed today moves to tomorrow, so
+        # the row order would depend on the clock (CI failed at 01:12).
+        recurrence="once",
+        run_at=f"2099-01-0{index}T09:00",
     )
 
 
