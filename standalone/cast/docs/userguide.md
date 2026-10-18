@@ -528,7 +528,7 @@ To wander between places:
 Walk into an empty place and Cast tells you, once, what fills it. In an empty
 Play Queue you hear "The queue is empty. Space on any episode adds it."
 
-In development builds, a large place shows **loading...** while Cast prepares
+In the beta builds, a large place shows **loading...** while Cast prepares
 its counts and rows from a detached catalogue. Choosing another place discards
 the earlier result rather than moving you back when it finishes. Downloads
 remains a place in this main window, not a separate storage-report dialog.
@@ -536,8 +536,8 @@ Opening, row publication and transport/status updates happen in small UI
 steps. If you move focus while an opening is pending, its completion does
 not take focus back. Closing Cast during preparation also retires unfinished
 detached input in the background rather than waiting to free it.
-Large-library Windows responsiveness is still under release validation;
-build 3 has not been published.
+Responsiveness with a very large library is still being checked in the
+beta builds.
 
 **Ctrl+F5** checks every podcast without repeatedly rebuilding the Podcasts
 tree as each feed answers. Expanded podcasts keep your selected episode while
@@ -4440,7 +4440,7 @@ unless it finds one. To check now:
    open again afterwards, or **Install when I close** (Alt+C) to keep
    listening and update the next time you close Cast.
 
-Help > About shows your version with a build number, such as 3.2.0 (build 2). The
+Help > About shows your version with a build number, such as 2.0.0 (build 5). The
 build number tells you which build of a version you have: when a fix comes out
 without a new version number, it is a newer build, and Check for Updates offers it.
 

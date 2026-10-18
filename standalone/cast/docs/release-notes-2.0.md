@@ -1,6 +1,7 @@
 # QUILL Cast 2.0
 
-*Version 2.0.0, released October 3, 2026.*
+*Version 2.0.0 (build 5), the beta for testers, October 2026. 2.0.0 was
+prepared on October 3, 2026 and is not yet published.*
 
 I listen to a lot of podcasts, and I do it with a screen reader. For years
 that meant apps where the list I wanted was three windows away, buttons that
@@ -12,7 +13,7 @@ from the keyboard. And when something happens that you would want to know
 about, it tells you in a sentence. QUILL Cast is free, it runs on Windows, and
 it works with JAWS, NVDA and Narrator.
 
-I open it every morning with my protein drink . I hope you end up doing the same.
+I open it every morning with my protein drink. I hope you end up doing the same.
 
 Jeff
 
@@ -61,6 +62,19 @@ way Windows does, and the user guide's "Feeds over http and https" explains
 what Cast does with each. **Preferences > When Cast opens** can start the
 installed copy when you sign in to Windows. This build runs on Python 3.14
 and installs for you alone, with no administrator prompt.
+
+**Playing and moving around.** CBC podcasts play again. Arrow keys stay in
+the control you are using, and the cursor stays put while feeds update.
+Playback letters such as C work only in Now Playing, so in the library they
+jump to a podcast by name again. Play/Pause tells you when the player
+refused. **Help > Notifications...** says how many are unread. **Connect to
+Spotify...** (**Ctrl+Alt+S**) and **Browse Spotify Podcasts...**
+(**Ctrl+Alt+V**) are on the Help menu from the start.
+
+**Updates.** A portable copy updates in place and keeps its `data` folder
+where Cast looks for it. A failed update puts back the version you had. The
+Beta engine's 335 MB are removed when the last app on Beta returns to
+Stable, and the installer carries FFmpeg's licence.
 
 This beta is not a GitHub release or a Stable-channel promotion.
 

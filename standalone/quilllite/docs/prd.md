@@ -1,6 +1,10 @@
 # QUILL Lite — Product Requirements
 
-**Version 1.0.0 · released 2026-09-25 · Windows · MIT · part of the QuillVille family**
+**Version 1.2.0 (build 5) · Windows · MIT · part of the QuillVille family**
+
+Status, 2026-10-17: 1.2.0 is in beta for testers and not yet published; the
+last published version is 1.1.2 (1.0.0 was first released on 2026-09-25).
+Everything in the changelog's Unreleased section is built and documented.
 
 ## 1. Statement
 

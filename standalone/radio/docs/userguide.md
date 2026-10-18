@@ -1,6 +1,8 @@
 # Quill Radio User Guide
 
-Version 3.2.0, released 2026-10-03.
+Version 3.2.0 (build 4), the beta for testers, October 2026. 3.2.0 was
+prepared on 2026-10-03 and is not yet published; the last published version
+is 3.0.4.
 
 ## Welcome
 
@@ -6683,7 +6685,7 @@ Quill Radio comes with.
 
 ### Check for Updates, step by step
 
-Help > About shows your version with a build number, such as 3.2.0 (build 2). The
+Help > About shows your version with a build number, such as 3.2.0 (build 4). The
 build number tells you which build of a version you have: when a fix comes out
 without a new version number, it is a newer build, and Check for Updates offers it.
 

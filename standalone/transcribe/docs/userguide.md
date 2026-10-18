@@ -8,7 +8,7 @@ It uses the same speech models and the same dictation as QUILL and QUILL Lite.
 If you already dictate in QUILL, the words, punctuation and commands you know
 work here too.
 
-Version 1.0.0, released on 1 November 2026: the first public release.
+Version 1.0.0 (build 2), released on 1 November 2026: the first public release.
 
 ## What it promises
 
@@ -432,7 +432,14 @@ These work in any program, after the command word:
   space; a whole word such as "smith" is not a letter and is left out
 - capitals and spacing: "caps on", "all caps on", "no space on" and their "off" forms
 - "switch to Spanish" and "switch to English"
-- punctuation and layout: "comma", "period", "new line", "new paragraph" and the rest
+- punctuation and layout: "comma", "period", "new line", "new paragraph" and the rest.
+  A Markdown link works too: "open bracket the guide close bracket open paren
+  page close paren" types `[the guide](page)`, with no space between the
+  bracket and the parenthesis
+- emoji and rarer characters: a word in My Words that is replaced with an
+  emoji is typed as one character, even in a plain box such as the Run box
+  (Windows+R). A program whose font has no picture for it may show a box,
+  but your screen reader reads it by name
 - your snippets, abbreviations and clips: "insert snippet" and the snippet's
   name, "insert abbreviation" and the abbreviation, "paste clip" and a number
   from one to twelve. They come from the same lists QUILL uses, and are typed
