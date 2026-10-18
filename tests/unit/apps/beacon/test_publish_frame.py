@@ -24,9 +24,21 @@ def frame(monkeypatch):
     app = shared_wx_app()
     from quill.apps.beacon.app import BeaconFrame
 
+    # The tray icon and the capture bridge's HTTP thread are native resources
+    # these tests never use; on the CI runner a frame carrying them crashed the
+    # worker (access violation, 2026-10-18). The Beacon docs test skips them too.
+    monkeypatch.setattr(BeaconFrame, "_start_tray", lambda self: None)
+    monkeypatch.setattr(BeaconFrame, "_start_capture_bridge", lambda self: None)
+    monkeypatch.setattr(BeaconFrame, "_setup_auto_sync", lambda self: None)
     f = BeaconFrame()
     yield f
-    f.Destroy()
+    # Close the way the app closes (test_auto_sync.py has the story): a bare
+    # Destroy() skips _on_close, leaving the sync timer, the capture bridge
+    # thread and the store open, and the timer later fires into freed memory
+    # in whatever test runs next -- the shard-2 access violation of 2026-10-18.
+    f.Close()
+    if f:
+        f.Destroy()
     try:
         app.Destroy()
     except Exception:

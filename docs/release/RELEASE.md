@@ -213,6 +213,10 @@ gets the next build number, goes on Beta, and is promoted from there. Details:
 
 ### Publishing to Beta
 
+For a step-by-step walk-through of building and publishing the QUILL Lite,
+Quill Radio and QUILL Cast betas, see
+[Beta builds and publishing](beta-build-and-publish.md).
+
 A sibling app built on this computer:
 
 ```powershell
