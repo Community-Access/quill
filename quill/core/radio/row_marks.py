@@ -25,6 +25,7 @@ __all__ = [
     "RowMarks",
     "delete_question",
     "deleted_sentence",
+    "ignored_sentence",
     "landing_after",
     "marked_label",
 ]
@@ -39,6 +40,8 @@ class RowMarks:
 
     def __init__(self) -> None:
         self._keys: list[str] = []
+        #: Whether :meth:`ignored_note` has already explained the current set.
+        self._explained = False
 
     def __len__(self) -> int:
         return len(self._keys)
@@ -54,6 +57,7 @@ class RowMarks:
         """Mark *key*, or unmark it if it was marked. Returns whether it is now marked."""
         if not key:
             return False
+        self._explained = False
         if key in self._keys:
             self._keys.remove(key)
             return False
@@ -64,12 +68,26 @@ class RowMarks:
         """Unmark everything; returns how many were marked."""
         count = len(self._keys)
         self._keys.clear()
+        self._explained = False
         return count
 
     def keep_only(self, existing: Iterable[str]) -> None:
         """Forget marks on rows that are no longer in the list."""
         alive = set(existing)
         self._keys = [key for key in self._keys if key in alive]
+
+    def ignored_note(self, verb: str = "Delete") -> str:
+        """What to add when an action used only the selected row while rows
+        are marked; ``""`` when nothing is marked or this set was explained.
+
+        Said once per set of marks, not on every keystroke: the first time
+        tells somebody their marks were not what the action used and are
+        still there; repeating it on every Enter would be noise.
+        """
+        if not self._keys or self._explained:
+            return ""
+        self._explained = True
+        return ignored_sentence(len(self._keys), verb)
 
     def toggle_sentence(self, marked: bool) -> str:
         """What to say after a toggle: the new state and the running count.
@@ -104,6 +122,13 @@ def landing_after(order: list[str], current: str | None, removed: Iterable[str])
         return after[0]
     before = [key for key in order[:index] if key not in gone]
     return before[-1] if before else None
+
+
+def ignored_sentence(count: int, verb: str = "Delete") -> str:
+    """``That used the selected row only; 3 rows are still marked for Delete.``"""
+    rows = plural(count, "row")
+    being = "is" if count == 1 else "are"
+    return f"That used the selected row only; {rows} {being} still marked for {verb}."
 
 
 def marked_label(label: str, marked: bool) -> str:

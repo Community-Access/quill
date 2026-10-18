@@ -1080,6 +1080,20 @@ def _no_live_preroll_reference(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture(autouse=True)
+def _no_live_song_title_reads(monkeypatch: pytest.MonkeyPatch) -> None:
+    """A recording split at song changes never reads a real stream title here.
+
+    With Split the recording at each song change on, the recorder polls the
+    recorded stream's ICY title (``quill/core/radio/recording_song_watch.py``).
+    A test recorder is handed a made-up URL; tests of the watcher pass their
+    own title reader.
+    """
+    from quill.core.radio import recording_song_watch
+
+    monkeypatch.setattr(recording_song_watch, "_read_icy_title", lambda _url: "")
+
+
+@pytest.fixture(autouse=True)
 def _fresh_output_device_list() -> None:
     """Forget the cached sound-card list between tests.
 

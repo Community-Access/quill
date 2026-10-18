@@ -36,6 +36,31 @@ Testing rebuild: **3.2.0 (build 4)**. The packages have not been published yet.
   way (a clean-up tool, a synced folder that went offline for a moment), the
   folder is made again and the save goes through. While Quill Radio is open, a
   save that genuinely fails is still announced, as before.
+- **One file per song** (2026-10-17). Turn on **Split the recording at each
+  song change** in **Record > Recording Settings...** (Ctrl+Alt+Shift+I, then
+  Alt+N). On a station that sends song names, a recording is then cut into one
+  file per song when it finishes, each named after the song and numbered in
+  play order, for example "KXYZ - 2026-10-17 20-00-00 - 02 Queen - Somebody to
+  Love.mp3". You hear "Split ... into 12 songs". Nothing is lost between
+  songs, but a cut can land a few seconds early or late, because stations do
+  not change their song names exactly when the music changes. If the station
+  sends no song names, the stream dropped during the recording, or anything
+  goes wrong, the recording is kept whole and you hear why. Off to begin with.
+  Saving Recording Settings also no longer switches exact OptiLab processing
+  off.
+
+- **Mark several rows in Recordings, Browse and Schedule Recording**
+  (2026-10-17). The keys you already know from the favorites tree now work in
+  three more lists. Press **.** (period) on each row: you hear "Marked" and how
+  many are marked, and the row says "(marked)". Then **Delete** asks once, for
+  example "Delete 3 recordings?", "Delete 4 items?" or "Delete 2 schedules?",
+  and says how many went. **Ctrl+Shift+Delete** clears the marks. In Radio
+  Recordings only finished recordings can be marked, and one Ctrl+Z brings
+  them all back. In Browse Stations you can mark what Delete can remove: saved
+  YouTube videos and playlists, followed channels, your own servers and
+  favorites. If you use Play, Edit or Open in Folder while rows are marked, it
+  works on the row under your cursor and says once that your marks are still
+  there.
 
 - **Properties now tells you about the drive a file is on** (2026-10-17). In
   Local Media, **Properties...** (Alt+Enter) ends with the drive the file lives

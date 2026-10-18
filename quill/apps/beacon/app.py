@@ -397,7 +397,7 @@ class BeaconFrame(wx.Frame):
         self._add(m_edit, "&Open\tEnter", self._on_open, "Open the selected bookmark")
         self._add(m_edit, "&Trash\tDelete", self._on_trash, "Move to trash")
         self._add(m_edit, "&Restore\tShift+Delete", self._on_restore, "Restore from trash")
-        self._add(m_edit, "Archive\tCtrl+Shift+A", self._on_archive, "Archive")
+        self._add(m_edit, "Arc&hive\tCtrl+Shift+A", self._on_archive, "Archive")
         self._add(m_edit, "Toggle &Favorite\tCtrl+D", self._on_favorite, "Toggle favorite")
         self._add(
             m_edit, "Add to &Collection...\tCtrl+L", self._on_add_collection, "Add to collection"
@@ -417,38 +417,38 @@ class BeaconFrame(wx.Frame):
         )
         m_edit.AppendSeparator()
         self._add(
-            m_edit, "Bulk &Trash Selected\tCtrl+Shift+Y", self._on_bulk_trash, "Trash all selected"
+            m_edit, "Bulk Tra&sh Selected\tCtrl+Shift+Y", self._on_bulk_trash, "Trash all selected"
         )
         self._add(
             m_edit,
-            "Bulk &Archive Selected\tCtrl+Shift+H",
+            "Bulk Archi&ve Selected\tCtrl+Shift+H",
             self._on_bulk_archive,
             "Archive all selected",
         )
         self._add(
             m_edit,
-            "Bulk &Restore Selected\tCtrl+Shift+U",
+            "Bulk Restor&e Selected\tCtrl+Shift+U",
             self._on_bulk_restore,
             "Restore all selected from trash",
         )
         self._add(
             m_edit,
-            "Bulk Toggle &Favorite\tCtrl+Shift+D",
+            "Bulk Togg&le Favorite\tCtrl+Shift+D",
             self._on_bulk_favorite,
             "Toggle favorite for all selected",
         )
         self._add(
-            m_edit, "Bulk Add &Tag...\tCtrl+Shift+J", self._on_bulk_tag, "Add a tag to all selected"
+            m_edit, "Bulk Add Ta&g...\tCtrl+Shift+J", self._on_bulk_tag, "Add a tag to all selected"
         )
         self._add(
             m_edit,
-            "Bulk Remove Ta&g...\tCtrl+Shift+V",
+            "Bulk Re&move Tag...\tCtrl+Shift+V",
             self._on_bulk_remove_tag,
             "Remove a tag from all selected",
         )
         self._add(
             m_edit,
-            "Bulk Add to Collec&tion...\tCtrl+Shift+O",
+            "Bulk Add to Collect&ion...\tCtrl+Shift+O",
             self._on_bulk_add_collection,
             "Add all selected to a collection",
         )
@@ -459,7 +459,9 @@ class BeaconFrame(wx.Frame):
             "Permanently delete all selected (undoable)",
         )
         m_edit.AppendSeparator()
-        self._add(m_edit, "&Find Duplicates", self._on_duplicates, "Find duplicate bookmarks")
+        self._add(
+            m_edit, "Find Du&plicates\tCtrl+Alt+D", self._on_duplicates, "Find duplicate bookmarks"
+        )
         mb.Append(m_edit, "&Edit")
 
         m_view = wx.Menu()
@@ -472,16 +474,16 @@ class BeaconFrame(wx.Frame):
         )
         self._add(
             m_view,
-            "&Save Search as Smart Collection...\tCtrl+Shift+G",
+            "Save Search as S&mart Collection...\tCtrl+Shift+G",
             self._on_save_search,
             "Save the current search as a live Smart Collection",
         )
         self._add(
-            m_view, "Command &Palette\tCtrl+Shift+P", self._on_palette, "Open command palette"
+            m_view, "Command Pa&lette\tCtrl+Shift+P", self._on_palette, "Open command palette"
         )
         self._add(
             m_view,
-            "&Accessibility Settings...",
+            "&Accessibility Settings...\tCtrl+Shift+,",
             self._on_a11y_settings,
             "Verbosity, high contrast, text scale, reduced motion",
         )
@@ -519,20 +521,20 @@ class BeaconFrame(wx.Frame):
         )
         self._add(
             m_media,
-            "Play in External &Player",
+            "Play in E&xternal Player\tCtrl+Alt+P",
             self._on_play_external,
             "Hand off to VLC, mpv, or the system player with resume time",
         )
         m_media.AppendSeparator()
         self._add(
             m_media,
-            "Add Radio &Station...",
+            "Add Radio S&tation...\tCtrl+Alt+R",
             self._on_add_station,
             "Save a radio station stream with fallback alternates",
         )
         self._add(
             m_media,
-            "Add Radio &Program...",
+            "Add Radio Pro&gram...\tCtrl+Alt+G",
             self._on_add_program,
             "Capture a radio program with schedule metadata",
         )
@@ -553,42 +555,45 @@ class BeaconFrame(wx.Frame):
             "Edit the selected collection, or create a new one",
         )
         self._add(
-            m_tools, "&Trail Editor...", self._on_trail_editor, "Create or edit a learning trail"
+            m_tools,
+            "&Trail Editor...\tCtrl+Alt+T",
+            self._on_trail_editor,
+            "Create or edit a learning trail",
         )
         self._add(
             m_tools,
-            "Smart &Collections Manager...",
+            "S&mart Collections Manager...\tCtrl+Alt+Shift+G",
             self._on_smart_collections,
             "Edit or delete saved searches (Smart Collections)",
         )
         self._add(
             m_tools,
-            "Review Location &Repair...",
+            "Review Location &Repair...\tCtrl+Alt+Shift+H",
             self._on_repair_review,
             "Review a proposed repair for a broken or shifted location",
         )
         self._add(
             m_tools,
-            "Revalidate &Health...",
+            "Revalidate &Health...\tCtrl+Alt+H",
             self._on_revalidate_health,
             "Re-check whether saved links are still reachable (web links use the network)",
         )
         self._add(
             m_tools,
-            "Publish Collection...\tCtrl+Shift+W",
+            "Pub&lish Collection...\tCtrl+Shift+W",
             self._on_publish,
             "Publish the selected collection as a read-only web page",
         )
         self._add(
             m_tools,
-            "External &Player...",
+            "External &Player...\tCtrl+Alt+Shift+X",
             self._on_external_player,
             "Choose the external media player and per-type defaults",
         )
         m_tools.AppendSeparator()
         self._add(
             m_tools,
-            "&Status Center...",
+            "&Status Center...\tCtrl+Alt+I",
             self._on_status_center,
             "Capture bridge, sync, and library health at a glance",
         )
@@ -599,20 +604,20 @@ class BeaconFrame(wx.Frame):
         m_sync = wx.Menu()
         self._add(
             m_sync,
-            "Sync &Settings...",
+            "Sync &Settings...\tCtrl+F9",
             self._on_sync_settings,
             "Configure sync: folder or server, sign in, unlock the vault",
         )
-        self._add(m_sync, "Sync &Now", self._on_sync_now, "Push and pull changes now")
+        self._add(m_sync, "Sync &Now\tF9", self._on_sync_now, "Push and pull changes now")
         self._add(
             m_sync,
-            "Sync &History...",
+            "Sync &History...\tShift+F9",
             self._on_sync_history,
             "View sync history, conflicts, and roll back",
         )
         self._add(
             m_sync,
-            "&Auto Sync...",
+            "&Auto Sync...\tCtrl+Shift+F9",
             self._on_auto_sync,
             "Set an automatic sync interval (off by default)",
         )
@@ -648,7 +653,7 @@ class BeaconFrame(wx.Frame):
             self._on_get_help,
             "Write to support about a problem, a question or an idea",
         )
-        self._add(m_help, "&About", self._on_about, "About QuillBeacon")
+        self._add(m_help, "&About\tAlt+F1", self._on_about, "About QuillBeacon")
         mb.Append(m_help, "&Help")
 
         self.SetMenuBar(mb)
@@ -1461,7 +1466,7 @@ class BeaconFrame(wx.Frame):
             Command("Export", "Ctrl+E", self._on_export),
             Command("Build Search", "Ctrl+Shift+F", self._on_build_search),
             Command("Save Search as Smart Collection", "Ctrl+Shift+G", self._on_save_search),
-            Command("Find Duplicates", "", self._on_duplicates),
+            Command("Find Duplicates", "Ctrl+Alt+D", self._on_duplicates),
             Command("Open Selected", "Enter", self._on_open),
             Command("Trash Selected", "Delete", self._on_trash),
             Command("Restore Selected", "Shift+Delete", self._on_restore),
@@ -1479,22 +1484,22 @@ class BeaconFrame(wx.Frame):
             Command("Subscribe to Podcast", "Ctrl+Shift+S", self._on_subscribe),
             Command("Refresh Feeds", "Ctrl+Shift+R", self._on_refresh_feeds),
             Command("Play in Player", "Ctrl+Shift+L", self._on_play_in_player),
-            Command("Add Radio Station", "", self._on_add_station),
-            Command("Add Radio Program", "", self._on_add_program),
+            Command("Add Radio Station", "Ctrl+Alt+R", self._on_add_station),
+            Command("Add Radio Program", "Ctrl+Alt+G", self._on_add_program),
             Command("Capture Bridge", "Ctrl+Shift+B", self._on_capture_bridge_info),
-            Command("Collection Editor", "", self._on_collection_editor),
-            Command("Trail Editor", "", self._on_trail_editor),
-            Command("Review Location Repair", "", self._on_repair_review),
-            Command("Sync Settings", "", self._on_sync_settings),
-            Command("Sync Now", "", self._on_sync_now),
-            Command("Sync History", "", self._on_sync_history),
-            Command("Status Center", "", self._on_status_center),
-            Command("Play in External Player", "", self._on_play_external),
+            Command("Collection Editor", "Ctrl+Shift+C", self._on_collection_editor),
+            Command("Trail Editor", "Ctrl+Alt+T", self._on_trail_editor),
+            Command("Review Location Repair", "Ctrl+Alt+Shift+H", self._on_repair_review),
+            Command("Sync Settings", "Ctrl+F9", self._on_sync_settings),
+            Command("Sync Now", "F9", self._on_sync_now),
+            Command("Sync History", "Shift+F9", self._on_sync_history),
+            Command("Status Center", "Ctrl+Alt+I", self._on_status_center),
+            Command("Play in External Player", "Ctrl+Alt+P", self._on_play_external),
             Command("Suggest Tags", "Ctrl+Shift+T", self._on_suggest_tags),
             Command("Suggest Relationships", "Ctrl+Shift+K", self._on_suggest_relationships),
             Command("Summarize Note", "Ctrl+Shift+M", self._on_summarize),
             Command("Where Am I?", "Ctrl+F1", self._on_where_am_i),
-            Command("Accessibility Settings", "", self._on_a11y_settings),
+            Command("Accessibility Settings", "Ctrl+Shift+,", self._on_a11y_settings),
             Command("Preferences", "Ctrl+,", self._on_preferences),
         ]
         dlg = CommandPalette(self, cmds)
