@@ -1,6 +1,8 @@
 # QUILL Lite 1.2
 
-*Version 1.2.0, released October 3, 2026.*
+*Version 1.2.0 (build 5), the beta for testers, October 2026. 1.2.0 was
+prepared on October 3, 2026 and is not yet published; the last published
+version is 1.1.2.*
 
 Welcome to QUILL Lite 1.2. This is the release about words. QUILL Lite now has
 a thesaurus that finds the word you are really on, a dictionary that works

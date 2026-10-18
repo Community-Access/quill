@@ -1,6 +1,6 @@
 # QUILL Transcribe 1.0 Release Notes
 
-Released November 1, 2026.
+Version 1.0.0 (build 2), released November 1, 2026.
 
 QUILL Transcribe is new. It types what you say into the program you are using,
 with the same speech models and dictation you know from QUILL and QUILL Lite.
@@ -10,6 +10,57 @@ with the same speech models and dictation you know from QUILL and QUILL Lite.
 Choose your model, press your key in the field you want, and speak. Your words
 go into that field and nowhere else. Your speech stays on your computer unless
 you choose an internet model yourself.
+
+## New in this release
+
+Everything in QUILL Transcribe is new, but if you tried a test build, these
+are the things that arrived since. The full list, grouped by area, is in the
+changelog (`CHANGELOG` in the docs folder); each part of the user guide named
+here explains one in full.
+
+**Starting and stopping.** The start and stop key is **Alt+Shift+Backslash**
+from the start, chosen in **File > Start and Stop Key...**
+(**Ctrl+Alt+Shift+D**), and every key box has **Record Key**. Hold the key
+to talk, or say the wake phrase "Quill dictate" (both off until you turn
+them on). Three more keys you can choose ask for Dictation Status, resume, or
+discard held words from the program you are in. A list of programs
+dictation never types into is in More Dictation Settings (**Alt+N**).
+
+**What you hear.** Your screen reader no longer says "c" or "period" after
+each phrase. A soft tick plays while a slow phrase is worked on. The words
+heard so far appear on a braille display, and **Dictation Status**
+(**Alt+F9**) says what dictation is doing in one sentence. Emoji are typed
+whole.
+
+**Commands and correcting.** Say "QUILL" before a command so it is never
+typed ("QUILL scratch that"), or press **F11** and say it. Spell an address
+across pauses, say a Markdown link, and insert snippets, abbreviations and
+clips by voice. "Correct that", "replace Tuesday with Wednesday" and
+"delete last sentence" work in other programs on the words QUILL
+Transcribe typed itself. Dictation profiles (**Ctrl+Shift+F**), a dictation
+style, and "QUILL review that" (**Shift+F4**) are there when you want
+them. See "Commands while dictating into other programs".
+
+**Your words and settings.** Your dictation settings can be shared with
+QUILL, QUILL Lite and Quill Inkwell (**Alt+Q** in More Dictation
+Settings). My Words and Phrases (**Alt+Shift+F10**) imports and exports.
+**Recent Phrases** (**Shift+F11**) keeps what could not be typed until you
+type or discard it, and a dictation history is kept only if you turn it on.
+
+**Models.** **Recommended for this computer** says which model suits your
+computer and why, every model has a tier, and twelve speech providers can be
+used with your own account. See "Models".
+
+**Practice.** **Practice Dictation** (**Ctrl+Shift+P**) has a field of its
+own and a recognition test, and **Help > Tutorials...** (**Ctrl+Alt+F1**)
+has five lessons. See "Practice and lessons".
+
+**Recordings and sounds.** Transcribe a Recording can translate Spanish into
+English (**Alt+E**), and Review Transcript can type the transcript into a
+field (**Alt+F**). **Options > App Sounds Play On...** (**Ctrl+Shift+S**)
+chooses where QUILL Transcribe's sounds play, and **Alt+Shift+M** turns them
+off. In the window, **Alt+W** opens the Window menu and **Discard Held
+Words** is **Alt+C**.
 
 ## What is in 1.0
 

@@ -1,6 +1,7 @@
 # QUILL Cast 2.0
 
-*Version 2.0.0, released October 3, 2026.*
+*Version 2.0.0 (build 5), the beta for testers, October 2026. 2.0.0 was
+prepared on October 3, 2026 and is not yet published.*
 
 I listen to a lot of podcasts, and I do it with a screen reader. For years
 that meant apps where the list I wanted was three windows away, buttons that
@@ -12,7 +13,7 @@ from the keyboard. And when something happens that you would want to know
 about, it tells you in a sentence. QUILL Cast is free, it runs on Windows, and
 it works with JAWS, NVDA and Narrator.
 
-I open it every morning with my protein drink . I hope you end up doing the same.
+I open it every morning with my protein drink. I hope you end up doing the same.
 
 Jeff
 
@@ -29,6 +30,56 @@ runtimes that no QuillVille app uses any more are removed for you.
 Choosing a show and hide key is easier: **Record Key...** (Alt+R) in the
 Show and Hide Key window writes out the combination you press. You can still
 type it.
+
+**Your library.** Cast remembers where you were in each podcast: Enter on a
+podcast in Favorites opens its list on the episode you last had selected.
+**Ctrl+Shift+Y** (Podcasts > **Copy to Folder...**) puts a podcast in a
+second folder without following it twice, and **Ctrl+Shift+V** moves it.
+Show notes that used to be full of codes such as `&#8217;` read as words.
+Refresh All and OPML import stay responsive, and an import no longer
+announces hundreds of "new" episodes. See "Organising podcasts into folders"
+and "Where you were in each podcast" in the user guide.
+
+**QUILL Lineups.** **Episode > Lineups...** (**Ctrl+U**) builds named lists of
+episodes, podcasts and anything Quill Radio can play, by hand or by rules you
+write, shared with Quill Radio. Save Lineup and Apply Lineup on the Play Queue
+use them too. See Chapter 9 and the tutorial **Build a lineup that fills
+itself**.
+
+**Keys.** F5 checks the selected podcast and **Ctrl+F5** checks them all.
+**Ctrl+Shift+E** makes a folder. Favorites moved to **Alt+Shift+V**,
+Playlists to **Alt+Shift+Y**, Mark All as Played to **Alt+Shift+E**, and Ask
+About an Image to **Ctrl+Alt+F5**. With Simple menus, every Advanced command
+can still be reached from the Command Palette (**Ctrl+Shift+P**).
+
+**Sounds.** **Preferences > App Sounds Play On...** chooses where Cast's own
+sounds play; they start out following the episode. **Alt+Shift+M** turns
+them off and back on.
+
+**Dictation.** **Edit > Dictate Here** (**Ctrl+F11**) dictates into a search
+box, such as Add Podcast's name box, through QUILL Transcribe, released on 1
+November 2026. See "Dictating into a search box".
+
+**Connections and starting up.** Feeds and downloads check certificates the
+way Windows does, and the user guide's "Feeds over http and https" explains
+what Cast does with each. **Preferences > When Cast opens** can start the
+installed copy when you sign in to Windows. This build runs on Python 3.14
+and installs for you alone, with no administrator prompt.
+
+**Playing and moving around.** CBC podcasts play again. Arrow keys stay in
+the control you are using, and the cursor stays put while feeds update.
+Playback letters such as C work only in Now Playing, so in the library they
+jump to a podcast by name again. Play/Pause tells you when the player
+refused. **Help > Notifications...** says how many are unread. **Connect to
+Spotify...** (**Ctrl+Alt+S**) and **Browse Spotify Podcasts...**
+(**Ctrl+Alt+V**) are on the Help menu from the start.
+
+**Updates.** A portable copy updates in place and keeps its `data` folder
+where Cast looks for it. A failed update puts back the version you had. The
+Beta engine's 335 MB are removed when the last app on Beta returns to
+Stable, and the installer carries FFmpeg's licence.
+
+This beta is not a GitHub release or a Stable-channel promotion.
 
 ## Already using Cast? Before you update
 

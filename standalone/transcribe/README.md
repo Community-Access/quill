@@ -7,8 +7,8 @@ Word. It lives in the system tray, uses QUILL's own speech models on your
 computer, writes only into the field you started in, and pauses rather than
 typing somewhere else when the focus moves.
 
-Version 1.0.0, released on 2026-11-01 (the first public release; not yet
-published as of 2026-10-16). See `docs/userguide.md`,
+Version 1.0.0 (build 2), released on 2026-11-01 (the first public release;
+not yet published as of 2026-10-17). See `docs/userguide.md`,
 `docs/release-notes-1.0.md` and `docs/CHANGELOG.md`.
 
 ## Downloads

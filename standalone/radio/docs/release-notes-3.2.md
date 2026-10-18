@@ -1,6 +1,8 @@
 # Quill Radio 3.2
 
-Version 3.2.0, released 2026-10-03.
+Version 3.2.0 (build 4), the beta for testers, October 2026. 3.2.0 was
+prepared on 2026-10-03 and is not yet published; the last published version
+is 3.0.4.
 
 Welcome to Quill Radio 3.2. You can now ask the radio about what you are
 hearing and get an answer in words, and the radio keeps a list of everything
@@ -50,6 +52,42 @@ does not offer an administrator-only installation.
 
 The bundled changelog records the complete build changes. These testing
 packages are not a GitHub release or a Stable-channel promotion.
+
+**Dictation.** **Edit > Dictate Here** (**Ctrl+F11**) dictates into Search
+Stations or any text box through QUILL Transcribe, released on 1 November
+2026, and the **QuillVille** menu has **Open QUILL Transcribe**. See
+"Dictating a search".
+
+**Settings and installing.** **Start Quill Radio with Windows** is in
+Preferences as well as on the Station menu (installed copies only). Choose
+**Edit Website...** on a station row to correct a station's website in your
+own copy. **Properties...** (**Alt+Enter**) in Local Media now describes the
+drive a file is on. This build runs on Python 3.14, installs for you alone
+with no administrator prompt, and checks secure connections the way Windows
+does.
+
+**Podcasts and archives.** CBC podcasts play again. Podcasts you have just
+imported no longer arrive as hundreds of new episodes, and a podcast that
+fails says why in plain words. **Find** on an Internet Archive folder puts
+the best matches first, so new uploads are found.
+
+**Menus and keys.** **Connect to Spotify...** (**Ctrl+Alt+P**) and **Browse
+Spotify...** (**Ctrl+Alt+O**) are on the Station menu from the start;
+Spotify is still experimental, and nothing is sent until you connect an
+account. To stop what is playing, press **Ctrl+Period** from anywhere, the
+**Stop** button (**Alt+T**), or **Playback > Play** (**Ctrl+P**), which reads
+**Stop** while something plays. **Record > Recordings...**
+(**Ctrl+Shift+R**) brings back a Recordings window that is already open.
+**Ctrl+Alt+Shift+R** shows and hides Quill Radio even while other QUILL
+apps run. **Community > Suggest a Station or Podcast...** sends nothing
+until you choose whether it is a station or a podcast.
+
+**Updates.** A portable copy updates in place and keeps its `data` folder
+where Quill Radio looks for it. A failed update puts back the version you
+had and says so. The Beta engine's 335 MB are removed when the last app on
+Beta returns to Stable.
+
+This beta is not a GitHub release or a Stable-channel promotion.
 
 ## A word about the number
 

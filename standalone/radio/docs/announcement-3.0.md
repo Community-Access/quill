@@ -2,7 +2,7 @@
 
 **A radio that answers the questions you open it with.**
 
-Version 3.2.0, released 2026-10-03.
+Version 3.2.0 (build 4), in beta for testers from October 2026.
 
 Community Access has released **Quill Radio 3.0** for Windows. It is free, it
 is part of the QuillVille family, and it is made for people who listen to
@@ -125,7 +125,7 @@ what that means:
 
 Quill Radio 3.0 is a free download for Windows 10 and 11. It came out on
 2026-09-27 as version 3.0.1, which replaced the withdrawn 3.0.0. The current
-version is 3.2.0, released 2026-10-03. It follows 3.0.4 directly: there was
+version is 3.2.0, in beta for testers from October 2026. It follows 3.0.4 directly: there was
 never a public 3.1. Both downloads are on the QUILL Releases page at
 github.com/Community-Access/quill, under Quill Radio 3.2.0:
 
