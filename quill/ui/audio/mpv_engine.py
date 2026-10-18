@@ -84,10 +84,13 @@ def find_libmpv() -> Path | None:
     # from the tree had no mpv at all -- Preferences offered only Automatic
     # and Windows Media, and no output-device routing -- while the DLL sat
     # in the checkout the whole time (reported 2026-09-29). Never in a
-    # frozen build: a shipped app must not read a build directory.
-    if not getattr(sys, "frozen", False):
-        repo_root = Path(__file__).resolve().parents[3]
-        staged = repo_root / "build" / "deps" / "mpv"
+    # frozen build: a shipped app must not read a build directory. Asked
+    # through quill.core.source_tools, so the test suite can say "nothing
+    # staged" in one place (2026-10-17).
+    from quill.core import source_tools
+
+    staged = source_tools.staged_tool_dir("mpv")
+    if staged is not None:
         candidates += [staged / name for name in _DLL_NAMES]
     for candidate in candidates:
         if candidate.is_file():

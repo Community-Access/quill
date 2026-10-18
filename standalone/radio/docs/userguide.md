@@ -5932,6 +5932,14 @@ These come first:
   works on either engine. You only see "Windows Media (classic)" on a computer
   without Windows' modern media player, and that is the older player Quill
   Radio used before version 1.1.
+
+  If you chose **mpv** here and a later copy of Quill Radio cannot load it,
+  Quill Radio tells you once at start-up and plays through Windows Media. On
+  **Automatic** it says nothing about it, because using Windows Media when mpv
+  is not there is what Automatic means; **View > Audio Health...**
+  (Ctrl+Alt+Shift+M) shows which engine is really playing. For example, with
+  Automatic chosen on a copy without mpv, Quill Radio starts quietly and Audio
+  Health lists Windows Media as the engine in use.
 - **Radio output device**: System default, or a sound card or headset. The
   radio moves, and Quill Radio's own sounds go with it unless **App Sounds
   Play On** says otherwise. Your screen reader stays where Windows puts it.

@@ -2,6 +2,65 @@
 
 ## 1.0.0
 
+### The test suite never speaks through the real screen reader; Radio history saves stay inside their test (2026-10-17)
+
+Jeff, with JAWS running while agents ran tests: "radio settings can not be
+saved and getting errors about libraries missing and using windows media". Both
+sentences were the tests talking. Developer notes:
+
+- **`tests/real_output_guard.py`, installed session-wide by
+  `tests/conftest.py`** (`_no_real_speech_sound_or_message_boxes`). A test that
+  built a real window built a real `AnnouncementEngine`, which acquired the live
+  screen reader through Prism or accessible_output2, so every announcement a
+  test provoked was spoken to whoever sat at the machine; CI has no reader and
+  could never notice. *Recorders* now sit where the app chooses an output:
+  `prism_bridge.import_module` refuses `prism`/`prismatoid`,
+  `_ao2_speaker_singleton` is absent, `_screen_reader_active` is False (what CI
+  sees), the SAPI self-voice is a `RecordingVoice` whose text lands in
+  `real_output_guard.SPOKEN`, the Narrator UIA notification finds no window,
+  `winsound` records into `SOUNDS`, waveOut has no device, the modern Windows
+  Media engine is unavailable and the classic one is `InertMediaEngine`.
+  *Tripwires* sit on the real thing behind them -- `sapi5.create_voice`, a
+  libmpv DLL that exists on disk (`_MpvClient`), and `wx.MessageBox` -- and
+  fail the test that reached one, naming it, at teardown
+  (`_real_outputs_only_for_machine_global`; a teardown failure because the code
+  under test swallows exceptions from exactly these calls). `machine_global`
+  tests get the originals back for their own duration. A test that needs to
+  hear what was said uses `real_output_guard.spoken_during()` and
+  `flush_speech()`. Gate: `tests/unit/test_real_output_guard.py` builds a real
+  `RadioAppFrame` and proves its engine acquired no live reader, its speech went
+  to the recorder, and its player is inert.
+- **Every test has its own data folder by default** (`_own_data_dir_by_default`):
+  `QUILL_DATA_DIR` is named per test under the session basetemp (created only
+  when something writes) unless the test set one. Isolation was opt-in, and a
+  test that forgot reached `%APPDATA%\Quill`: a Radio directory-cache file was
+  written into the developer's real profile on 2026-10-17, and parallel workers
+  replacing one shared `radio_history.json` is a Windows sharing violation --
+  "Radio settings could not be saved", spoken.
+- **The real-profile guard now watches `os.replace` and `os.rename`.**
+  `write_json_atomic` writes through `mkstemp` + `os.fdopen` (a descriptor the
+  open guard cannot see) and lands with `os.replace`, so every settings,
+  history and cache write the app makes had walked past it.
+- **Radio history writers are flushed at each test's teardown**
+  (`_finish_radio_history_saves`), so a save a window queued in its last moment
+  is written -- or fails -- inside the test that made it, not during the next.
+- **`quill/core/source_tools.py`** answers "where does a source checkout stage
+  libmpv" (`build/deps/mpv`) for `find_libmpv`; the suite answers "nowhere", so
+  Radio tests behave the same in the main checkout (which has the staged DLL)
+  as in a worktree or on CI.
+- **Radio history writer** (`quill/core/radio/history_writer.py`,
+  `quill/ui/radio/history_save.py`): a data folder that vanished under the
+  writer is recreated and the write retried once; a save after
+  `close_history_writer` is written synchronously instead of raising "writer is
+  closing" (which was announced as a failure); a failure after the window has
+  closed or is being destroyed is logged, never spoken. Tests:
+  `tests/unit/ui/radio/test_history_save_robustness.py`.
+- **Radio: a missing libmpv on Automatic is logged, not announced**
+  (`quill/ui/radio/media_preflight._worth_saying`). Automatic falling back to
+  Windows Media is the setting working as designed; the start-up notice is now
+  spoken only when the listener chose mpv by name. FFmpeg's notice, Audio
+  Health and the per-station Ogg/Opus/HLS refusal are unchanged.
+
 ### Notice drafted: released portable copies update by hand (todo C.2; 2026-10-17)
 
 The update helper in a released portable copy (QUILL Lite 1.1.2, any QUILL

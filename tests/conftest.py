@@ -474,6 +474,24 @@ def _never_write_to_the_real_profile() -> None:
         _refuse(self, "delete a file in")
         return original_path_unlink(self, *args, **kwargs)
 
+    # The writer QUILL actually uses. ``write_json_atomic`` writes a temp file
+    # through ``mkstemp`` + ``os.fdopen`` -- a file descriptor, which the open
+    # guard above cannot see -- and lands it with ``os.replace``, which nothing
+    # watched. So every settings, history and cache write the app makes walked
+    # past this fixture; a Radio directory-cache file written into the real
+    # profile on 2026-10-17 is how that was noticed. ``Path.replace`` and
+    # ``Path.rename`` call these two.
+    original_replace = os.replace
+    original_rename = os.rename
+
+    def _guarded_replace(src, dst, *args, **kwargs):  # type: ignore[no-untyped-def]
+        _refuse(dst, "replace a file in")
+        return original_replace(src, dst, *args, **kwargs)
+
+    def _guarded_rename(src, dst, *args, **kwargs):  # type: ignore[no-untyped-def]
+        _refuse(dst, "rename a file into")
+        return original_rename(src, dst, *args, **kwargs)
+
     builtins.open = _guarded_open
     io.open = _guarded_open  # type: ignore[assignment]
     shutil.rmtree = _guarded_rmtree  # type: ignore[assignment]
@@ -481,9 +499,13 @@ def _never_write_to_the_real_profile() -> None:
     os.remove = _guarded_remove  # type: ignore[assignment]
     os.rmdir = _guarded_rmdir  # type: ignore[assignment]
     Path.unlink = _guarded_path_unlink  # type: ignore[assignment,method-assign]
+    os.replace = _guarded_replace  # type: ignore[assignment]
+    os.rename = _guarded_rename  # type: ignore[assignment]
     try:
         yield
     finally:
+        os.replace = original_replace  # type: ignore[assignment]
+        os.rename = original_rename  # type: ignore[assignment]
         builtins.open = original_open
         io.open = original_open  # type: ignore[assignment]
         shutil.rmtree = original_rmtree  # type: ignore[assignment]
@@ -795,6 +817,121 @@ def absent_env(monkeypatch: pytest.MonkeyPatch) -> Iterator[Callable[..., None]]
     yield hide
     for name in removed:
         os.environ.pop(name, None)
+
+
+@pytest.fixture(autouse=True, scope="session")
+def _no_real_speech_sound_or_message_boxes() -> None:
+    """No test speaks through the real screen reader, plays sound or shows a box.
+
+    Jeff, 2026-10-17: with JAWS running, the suite read Radio's errors aloud
+    to him. ``tests/real_output_guard.py`` has the whole story; in short,
+    recorders replace the places the app chooses an output (so it behaves as
+    it does on CI, where no reader runs) and tripwires sit on the real devices
+    behind them. Session-wide rather than per test, so an announcement a
+    background thread makes *between* tests is caught too.
+    """
+    from tests import real_output_guard
+
+    real_output_guard.install()
+
+
+@pytest.fixture(autouse=True)
+def _real_outputs_only_for_machine_global(
+    request: pytest.FixtureRequest, monkeypatch: pytest.MonkeyPatch
+) -> Iterator[None]:
+    """machine_global tests get the real devices back; every other test that
+    reaches one fails, naming what it reached."""
+    from tests import real_output_guard
+
+    if request.node.get_closest_marker("machine_global") is not None:
+        real_output_guard.restore_originals(monkeypatch)
+        yield
+        return
+    real_output_guard.drop_real_voice()
+    real_output_guard.take_violations()  # a previous test's leftovers are not ours
+    yield
+    reached = real_output_guard.take_violations()
+    if reached:
+        pytest.fail(
+            "This test reached a real output device: "
+            + "; ".join(reached)
+            + ". Fake it (see tests/real_output_guard.py), or mark the test "
+            "machine_global if driving the real device is its whole point.",
+            pytrace=False,
+        )
+
+
+@pytest.fixture(autouse=True)
+def _own_data_dir_by_default(
+    monkeypatch: pytest.MonkeyPatch, tmp_path_factory: pytest.TempPathFactory
+) -> None:
+    """Every test gets a data folder of its own unless it chose one.
+
+    Isolation used to be opt-in (``quill_data_dir``), so a test that forgot it
+    -- or built a window whose code reached ``app_data_dir()`` three calls
+    away -- used the developer's real profile. Two consequences surfaced on
+    2026-10-17: today's Radio directory-cache write in ``%APPDATA%\\Quill`` came
+    from a test (``write_json_atomic`` writes through ``mkstemp`` and
+    ``os.replace``, which the profile guard below did not watch), and parallel
+    workers replacing one shared ``radio_history.json`` at once is a Windows
+    sharing violation -- "Radio settings could not be saved", spoken.
+
+    The folder is only *named* here; nothing is created until something
+    writes, so the thousands of tests that never touch data pay nothing. A
+    test that sets ``QUILL_DATA_DIR`` itself (or uses ``quill_data_dir``)
+    overrides this, and one that deletes it to exercise the real resolution
+    still can.
+    """
+    global _DEFAULT_DATA_DIR_COUNT
+    _DEFAULT_DATA_DIR_COUNT += 1
+    folder = tmp_path_factory.getbasetemp() / "default-data" / f"t{_DEFAULT_DATA_DIR_COUNT}"
+    if not os.environ.get("QUILL_DATA_DIR"):
+        monkeypatch.setenv("QUILL_DATA_DIR", str(folder / "quill"))
+    # QUILL Lite keeps its own profile (%LOCALAPPDATA%\QuillLite); its saves
+    # write a backup there, and the os.replace guard below found Lite tests
+    # doing so in the developer's real profile on 2026-10-17.
+    if not os.environ.get("QUILL_LITE_DATA_DIR"):
+        monkeypatch.setenv("QUILL_LITE_DATA_DIR", str(folder / "lite"))
+
+
+#: Numbers the folders :func:`_own_data_dir_by_default` names; per process.
+_DEFAULT_DATA_DIR_COUNT = 0
+
+#: Every Radio history writer built in this process (weakly), so each test can
+#: wait for the saves it started before the next test begins.
+_RADIO_HISTORY_WRITERS: weakref.WeakSet[Any] = weakref.WeakSet()
+
+
+@pytest.fixture(autouse=True, scope="session")
+def _track_radio_history_writers() -> None:
+    from quill.core.radio.history_writer import RadioHistorySnapshotWriter
+
+    real_init = RadioHistorySnapshotWriter.__init__
+
+    def tracked_init(self: Any, *args: Any, **kwargs: Any) -> None:
+        real_init(self, *args, **kwargs)
+        _RADIO_HISTORY_WRITERS.add(self)
+
+    RadioHistorySnapshotWriter.__init__ = tracked_init  # type: ignore[method-assign]
+
+
+@pytest.fixture(autouse=True)
+def _finish_radio_history_saves() -> Iterator[None]:
+    """Let a test's queued Radio history saves finish inside that test.
+
+    The writer is a background thread (``quill/core/radio/history_writer.py``):
+    a save a window queued in its last moments used to be written -- or fail,
+    and say so -- while the *next* test ran, into a folder the previous test
+    owned, with an announcement attributed to nobody. Flushing here keeps every
+    save inside the test that made it. Flush, not close: a module-scoped
+    window's writer must keep working for the tests that share it.
+    """
+    yield
+    for writer in list(_RADIO_HISTORY_WRITERS):
+        try:
+            writer.flush(2.0)
+        except Exception:  # noqa: BLE001 - a writer the test broke on purpose
+            pass
 
 
 @pytest.fixture(autouse=True)

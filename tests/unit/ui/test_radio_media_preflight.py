@@ -7,6 +7,11 @@ Preferences and named mpv explicitly. Everyone else got a radio that had
 quietly lost seven capabilities, and a station that would not play with no
 route to the reason.
 
+That closed the gap too widely: on Automatic, Windows Media without libmpv is
+the setting working as designed, and the notice was heard on every start. Since
+2026-10-17 the missing engine is announced only to a listener who chose mpv by
+name; on Automatic it is logged, and View, Audio Health still reports it.
+
 Driven against a stand-in host, like ``live_reconnect``'s tests: the module
 takes a host and touches nothing else, so a real frame would add a window and
 prove nothing extra.
@@ -21,13 +26,17 @@ from quill.ui.radio import media_preflight
 
 
 class _History:
-    def __init__(self, signature: str = "") -> None:
+    def __init__(self, signature: str = "", engine: str = "mpv") -> None:
         self.media_notice_signature = signature
+        self.playback_engine = engine
 
 
 class _Host:
-    def __init__(self, signature: str = "") -> None:
-        self._radio_history = _History(signature)
+    """Defaults to a listener who chose mpv by name: the one case where a
+    missing libmpv is announced (2026-10-17). Automatic is tested below."""
+
+    def __init__(self, signature: str = "", engine: str = "mpv") -> None:
+        self._radio_history = _History(signature, engine)
         self.said: list[str] = []
         self.saves = 0
 
@@ -126,8 +135,36 @@ def test_a_broken_probe_does_not_break_a_launch(monkeypatch) -> None:
     assert host.said == []
 
 
-def test_a_host_with_no_history_is_survivable(health) -> None:
+@pytest.mark.parametrize("engine", ["auto", "wx"])
+def test_automatic_without_libmpv_is_logged_not_announced(health, caplog, engine) -> None:
+    # Jeff, 2026-10-17: Automatic falling back to Windows Media is the setting
+    # working as designed, and was being announced on every start.
+    import logging
+
     health(ffmpeg=True, mpv=False)
+    host = _Host(engine=engine)
+
+    with caplog.at_level(logging.INFO, logger="quill.ui.radio.media_preflight"):
+        media_preflight.surface_media_health_startup(host)
+
+    assert host.said == []
+    assert "libmpv is not available" in caplog.text
+
+
+def test_automatic_still_names_a_missing_ffmpeg_without_mentioning_mpv(health) -> None:
+    health(ffmpeg=False, mpv=False)
+    host = _Host(engine="auto")
+
+    media_preflight.surface_media_health_startup(host)
+
+    assert len(host.said) == 1
+    assert host.said[0].startswith("FFmpeg is missing")
+    assert "mpv" not in host.said[0]
+
+
+def test_a_host_with_no_history_is_survivable(health) -> None:
+    # No history means no engine choice on record: Automatic, so FFmpeg alone.
+    health(ffmpeg=False, mpv=True)
 
     class _Bare:
         said: list[str] = []

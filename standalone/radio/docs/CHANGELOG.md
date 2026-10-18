@@ -10,6 +10,33 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 Testing rebuild: **3.2.0 (build 4)**. The packages have not been published yet.
 
+- **No more "mpv is missing" on every start when Playback engine is Automatic**
+  (2026-10-17). Automatic means "use the mpv engine when this copy has it, and
+  Windows Media when it does not", so playing through Windows Media without mpv
+  is Automatic doing its job, not an error. Quill Radio used to say "The mpv
+  playback engine is missing, so Quill Radio is playing through Windows
+  Media..." at start-up anyway, and if the note that it had already told you was
+  not saved, you heard it on every start. Now that sentence is only spoken when
+  you chose **mpv** yourself in Preferences (Ctrl+Comma, **Playback engine**)
+  and mpv cannot be loaded. On Automatic or Windows Media it is written to the
+  log instead. Nothing else changed: **View > Audio Health...**
+  (Ctrl+Alt+Shift+M) still lists which engine is playing and what you lose
+  without mpv, a station that needs mpv (Ogg, Opus or HLS) still tells you why
+  it will not play, and a missing FFmpeg is still mentioned once, because no
+  engine choice stands in for recording. Example: on a copy without mpv and
+  with Playback engine on Automatic, start Quill Radio and you hear nothing
+  about engines; press Ctrl+Alt+Shift+M to see "Windows Media" as the engine in
+  use. User guide: "Preferences" (Playback engine).
+- **Radio settings saves are steadier when Quill Radio closes** (2026-10-17). A
+  change saved in the last moment before the window closed (a volume change, a
+  timer, a setting) is now written straight away instead of being refused, and
+  a save that fails after the window has closed is written to the log rather
+  than spoken as "Radio settings could not be saved" over whatever you had
+  moved on to. If Quill Radio's data folder disappears while a save is on its
+  way (a clean-up tool, a synced folder that went offline for a moment), the
+  folder is made again and the save goes through. While Quill Radio is open, a
+  save that genuinely fails is still announced, as before.
+
 - **Properties now tells you about the drive a file is on** (2026-10-17). In
   Local Media, **Properties...** (Alt+Enter) ends with the drive the file lives
   on: its letter or network share, its label, what kind of drive it is (local
