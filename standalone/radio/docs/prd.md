@@ -1,6 +1,8 @@
 # Quill Radio -- Product Requirements
 
-Version 3.2.0, released 2026-10-03.
+Version 3.2.0 (build 4). Status, 2026-10-17: in beta for testers, not yet
+published; the last published version is 3.0.4. Everything in the
+changelog's Unreleased section is built and documented.
 
 ## 1. Product statement
 

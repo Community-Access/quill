@@ -43,6 +43,19 @@ def staged(tmp_path, monkeypatch):
     fake_module.parent.mkdir(parents=True)
     fake_module.write_text("", encoding="utf-8")
     monkeypatch.setattr(mpv_engine, "__file__", str(fake_module))
+    # The checkout is found through quill.core.source_tools, which the suite's
+    # real-output guard answers "nothing staged"; put the real lookup back,
+    # pointed at the fake checkout.
+    from quill.core import source_tools
+    from tests import real_output_guard
+
+    real_lookup = next(
+        original
+        for module, name, original, _replacement in real_output_guard._INSTALLED
+        if module is source_tools and name == "staged_tool_dir"
+    )
+    monkeypatch.setattr(source_tools, "_REPO_ROOT", repo)
+    monkeypatch.setattr(source_tools, "staged_tool_dir", real_lookup)
     # None of the shipped locations exist for a source run.
     monkeypatch.delenv("QUILL_LIBMPV", raising=False)
     monkeypatch.delenv("QUILL_APP_ROOT", raising=False)

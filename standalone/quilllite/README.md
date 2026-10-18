@@ -10,7 +10,8 @@ replacement: they install side by side and neither touches the other's settings.
 
 Windows · MIT · part of the QuillVille family
 
-Version 1.2.0, released 2026-10-03.
+Version 1.2.0 (build 5), the beta for testers, October 2026. 1.2.0 is not yet
+published; the last published version is 1.1.2.
 
 ---
 
@@ -32,7 +33,9 @@ Version 1.2.0, released 2026-10-03.
 - **Earcons for the moments speech cannot cover** — cut, copy, paste, delete,
   undo, save, close — every one of them replaceable with a sound of your own,
   and **Alt+Shift+M** silences the lot.
-- **Nine guided lessons**, inside the app on **Ctrl+Alt+F1**, each step saying
+- **Word documents and PDFs.** A `.docx` opens as rich text and saves as a
+  real Word document; a PDF opens as its text, page by page (new in 1.2).
+- **Sixteen guided lessons**, inside the app on **Ctrl+Alt+F1**, each step saying
   what to press, why, and what you should hear when it worked.
 - **Free AI help**, off until you switch it on *and* accept the agreement:
   summarize, rewrite, proofread, explain, and a question about the open

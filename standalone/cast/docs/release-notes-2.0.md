@@ -1,6 +1,7 @@
 # QUILL Cast 2.0
 
-*Version 2.0.0, released October 3, 2026.*
+*Version 2.0.0 (build 5), the beta for testers, October 2026. 2.0.0 was
+prepared on October 3, 2026 and is not yet published.*
 
 I listen to a lot of podcasts, and I do it with a screen reader. For years
 that meant apps where the list I wanted was three windows away, buttons that
@@ -12,7 +13,7 @@ from the keyboard. And when something happens that you would want to know
 about, it tells you in a sentence. QUILL Cast is free, it runs on Windows, and
 it works with JAWS, NVDA and Narrator.
 
-I open it every morning with my protein drink . I hope you end up doing the same.
+I open it every morning with my protein drink. I hope you end up doing the same.
 
 Jeff
 
@@ -21,11 +22,14 @@ trying, and QUILLBee tells you what has changed. They're new around here, and
 [Meet QUILLBert and QUILLBee](https://www.quillforall.org/meet-quillbert-and-quillbee.html)
 has the proper introductions.
 
-## New in the beta: 2.0.0 (build 5)
+## This build: 2.0.0 (build 4)
 
-This beta build is for testers. It keeps everything in builds 3 and 4. The
-full list, grouped by area, is in the changelog (`CHANGELOG` in the docs
-folder); here are the things to try first.
+QUILL Cast now runs on Python 3.14. When you install it, older Python 3.13
+runtimes that no QuillVille app uses any more are removed for you.
+
+Choosing a show and hide key is easier: **Record Key...** (Alt+R) in the
+Show and Hide Key window writes out the combination you press. You can still
+type it.
 
 **Your library.** Cast remembers where you were in each podcast: Enter on a
 podcast in Favorites opens its list on the episode you last had selected.
@@ -61,6 +65,19 @@ way Windows does, and the user guide's "Feeds over http and https" explains
 what Cast does with each. **Preferences > When Cast opens** can start the
 installed copy when you sign in to Windows. This build runs on Python 3.14
 and installs for you alone, with no administrator prompt.
+
+**Playing and moving around.** CBC podcasts play again. Arrow keys stay in
+the control you are using, and the cursor stays put while feeds update.
+Playback letters such as C work only in Now Playing, so in the library they
+jump to a podcast by name again. Play/Pause tells you when the player
+refused. **Help > Notifications...** says how many are unread. **Connect to
+Spotify...** (**Ctrl+Alt+S**) and **Browse Spotify Podcasts...**
+(**Ctrl+Alt+V**) are on the Help menu from the start.
+
+**Updates.** A portable copy updates in place and keeps its `data` folder
+where Cast looks for it. A failed update puts back the version you had. The
+Beta engine's 335 MB are removed when the last app on Beta returns to
+Stable, and the installer carries FFmpeg's licence.
 
 This beta is not a GitHub release or a Stable-channel promotion.
 
@@ -450,6 +467,16 @@ History** button shows everything the updater has done.
 Help > About now shows a build number after the version: this release is
 2.0.0 (build 1). If a fix comes out without a new version number, it is a
 newer build, and Check for Updates offers it to you.
+
+## Dev preview: 2.0.0-dev.20261006.2
+
+This preview is separate from the 2.0.0 (build 1) release above. It makes
+large podcast imports and refreshes easier to work through: OPML files are
+read and planned in the background, and imported subscriptions stay in your
+library if you stop the optional feed check. Refresh All has a separate
+progress window; closing it does not stop the run, while **Stop remaining
+checks** cancels only feeds that have not started. In the Podcasts tree, Left
+Arrow now closes an expanded folder without moving focus out of the tree.
 
 ## When you need a hand
 

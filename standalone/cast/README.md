@@ -8,7 +8,8 @@ It is part of the QUILL family, from Community Access. If you also use QUILL
 or Quill Radio, they share one library with Cast: follow a podcast in one and
 it is there in the others.
 
-Version 2.0.0, released 2026-10-03.
+Version 2.0.0, released to beta testers in October 2026 (build 5). 2.0.0 was
+prepared on 2026-10-03 and is not yet published.
 
 ## What you can do with it
 

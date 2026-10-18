@@ -13,6 +13,13 @@ from quill.core.storage_mode import custom_path, load_storage_mode, save_storage
 pytestmark = pytest.mark.smoke
 
 
+@pytest.fixture(autouse=True)
+def _resolve_without_the_dev_override(monkeypatch: pytest.MonkeyPatch) -> None:
+    """These tests are about how the data folder is resolved *without*
+    ``QUILL_DATA_DIR``, which the root conftest now sets for every test."""
+    monkeypatch.delenv("QUILL_DATA_DIR", raising=False)
+
+
 def _make_portable_bundle(tmp_path: Path) -> Path:
     """Create the *new* portable-bundle layout: quill.exe + data/ at the root.
 

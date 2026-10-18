@@ -1,6 +1,6 @@
 # QUILL Cast -- Product Requirements
 
-Version 2.0.0, released 2026-10-03.
+Version 2.0.0 (build 5). Status, 2026-10-17: in beta for testers, not yet published. Everything in the changelog's Unreleased section is built and documented.
 
 ## 1. Product statement
 
