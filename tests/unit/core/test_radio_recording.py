@@ -762,3 +762,82 @@ def test_reconnect_settings_round_trip_and_clamps() -> None:
     weird = RecordingSettings.from_dict({"reconnect_max_attempts": -3, "reconnect_wait_seconds": 0})
     assert weird.reconnect_max_attempts == 0
     assert weird.reconnect_wait_seconds == 1
+
+
+# -- end-of-recording report and Stop All reach (2026-10-19) ----------------
+
+
+def test_stop_reports_finished_once_and_parts_never_say_saved(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    from quill.core.radio import recording_report
+
+    def _popen(args: list[str], **_k: object) -> _FakeProcess:
+        Path(args[-1]).write_bytes(b"a" * 20_000)  # a real capture, not a header
+        return _FakeProcess()
+
+    monkeypatch.setattr(recording.subprocess, "Popen", _popen)
+    states: list[tuple[bool, Path | None, str]] = []
+    reports: list[recording_report.RecordingReport] = []
+    done = threading.Event()
+
+    def _finished(report: recording_report.RecordingReport) -> None:
+        reports.append(report)
+        done.set()
+
+    recorder = RadioRecorder(
+        on_state_changed=lambda rec, dest, job: states.append((rec, dest, job)),
+        on_finished=_finished,
+    )
+    dest = recorder.start(
+        station_name="WXYZ",
+        stream_url="https://example.com/stream",
+        settings=RecordingSettings(destination_root=str(tmp_path)),
+        duration_minutes=190,
+    )
+    recorder.stop_all()
+    assert done.wait(5)
+    assert len(reports) == 1
+    assert reports[0].how == recording_report.STOPPED
+    assert reports[0].path == dest
+    # The end-of-part state change carries no destination: "saved" is said
+    # once, by the report, not every time a part lands.
+    assert states[-1][0] is False and states[-1][1] is None
+
+
+def test_waiting_count_lets_stop_all_reach_a_recording_between_reconnects() -> None:
+    recorder = RadioRecorder()
+    job = _make_job(_FakeProcess())
+    recorder._reconnect_pending[job.job_id] = job
+    assert recorder.active_count == 0
+    assert recorder.waiting_count == 1
+    recorder.stop_all()
+    assert job.user_stopped is True
+
+
+def test_an_empty_resumed_part_keeps_the_show_recorded_so_far(tmp_path: Path) -> None:
+    # Before: a continuation that caught nothing said "saved nothing, no file
+    # was kept" while part one sat on disk, never joined or mentioned.
+    from quill.core.radio import recording_report
+
+    part_one = tmp_path / "show.mp3"
+    part_one.write_bytes(b"a" * 20_000)
+    empty = tmp_path / "show (part 2).mp3"
+    empty.write_bytes(b"")
+    process = _FakeProcess()
+    process._alive.clear()
+    failures: list[tuple[str, str]] = []
+    reports: list[recording_report.RecordingReport] = []
+    recorder = RadioRecorder(
+        on_capture_failed=lambda station, reason: failures.append((station, reason)),
+        on_finished=reports.append,
+    )
+    job = _make_job(process)
+    job.destination = job.final_destination = empty
+    job.settings = RecordingSettings(destination_root=str(tmp_path), reconnect_enabled=False)
+    recorder._parts[job.job_id] = [part_one]
+    recorder._jobs[job.job_id] = job
+    recorder._monitor(job)
+    assert failures == []
+    assert not empty.exists()
+    assert [r.path for r in reports] == [part_one]

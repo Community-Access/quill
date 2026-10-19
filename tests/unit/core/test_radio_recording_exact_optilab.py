@@ -14,7 +14,6 @@ from typing import Any
 import pytest
 
 from quill.core.audio.exact_optilab import ExactOptilab
-from quill.core.radio import recording as recording_module
 from quill.core.radio.recording import RadioRecorder, RecordingJob, RecordingSettings
 from quill.core.radio.recording_commands import encode_args_for_format
 
@@ -72,8 +71,10 @@ class TestPostPass:
         self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         calls: list[Path] = []
+        from quill.core.radio import recording_exact
+
         monkeypatch.setattr(
-            recording_module,
+            recording_exact,
             "encode_args_for_format",
             lambda *_a, **_k: ["-c:a", "libmp3lame"],
         )

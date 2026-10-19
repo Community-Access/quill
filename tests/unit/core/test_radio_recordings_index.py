@@ -12,6 +12,7 @@ from quill.core.radio.recordings_index import (
     STATUS_RECORDED,
     STATUS_RECORDING,
     STATUS_SCHEDULED,
+    TEMP_FOLDER_DETAIL,
     ActiveRecording,
     format_elapsed,
     list_recordings,
@@ -241,3 +242,47 @@ def test_format_elapsed_mmss_and_hmmss() -> None:
     assert format_elapsed(start, datetime(2026, 7, 14, 9, 2, 3)) == "1:02:03"
     # Never negative -- a clock skew or a future start clamps to zero.
     assert format_elapsed(start, datetime(2026, 7, 14, 7, 59, 0)) == "00:00"
+
+
+def test_raw_captures_are_listed_under_their_codec_extension(tmp_path: Path) -> None:
+    # A raw capture is named by the stream's codec (.aac, .mka, ...), never
+    # ".copy" -- and until 2026-10-19 the window could not see one at all.
+    for name in ("Talk 2026-10-16.aac", "Jazz 2026-10-16.mka", "Opera 2026-10-16.opus"):
+        (tmp_path / name).write_bytes(b"x" * 10)
+    (tmp_path / "notes.txt").write_text("not a recording", encoding="utf-8")
+    rows = list_recordings(_settings(tmp_path))
+    assert sorted(r.name for r in rows) == [
+        "Jazz 2026-10-16",
+        "Opera 2026-10-16",
+        "Talk 2026-10-16",
+    ]
+    assert all(r.status == STATUS_RECORDED for r in rows)
+
+
+def test_a_recording_left_in_the_temp_folder_is_listed_and_says_where(tmp_path: Path) -> None:
+    # finalize_move leaves a file in the temp folder rather than lose it; the
+    # window must show it, or the listener is told it saved and cannot find it.
+    home = tmp_path / "home"
+    temp = tmp_path / "temp"
+    home.mkdir()
+    temp.mkdir()
+    (home / "Moved.mp3").write_bytes(b"a")
+    (temp / "Stranded.mp3").write_bytes(b"b")
+    (temp / "Stranded.trimming.mp3").write_bytes(b"c")
+    settings = RecordingSettings(destination_root=str(home), temp_dir=str(temp))
+    rows = {r.name: r for r in list_recordings(settings)}
+    assert set(rows) == {"Moved", "Stranded"}
+    assert rows["Stranded"].detail == TEMP_FOLDER_DETAIL
+    assert rows["Moved"].detail == ""
+
+
+def test_an_active_recording_in_the_temp_folder_is_not_also_stranded(tmp_path: Path) -> None:
+    home = tmp_path / "home"
+    temp = tmp_path / "temp"
+    home.mkdir()
+    temp.mkdir()
+    live = temp / "Live.mp3"
+    live.write_bytes(b"a")
+    settings = RecordingSettings(destination_root=str(home), temp_dir=str(temp))
+    rows = list_recordings(settings, active=_active(live))
+    assert [r.status for r in rows] == [STATUS_RECORDING]
