@@ -205,6 +205,40 @@ above, plus everything in this section.
 - **Which model suits this computer.** Speech Models now recommends one model
   and says why. It is only advice. The user guide's new "Which engine should I
   choose?" explains the choices in plain words.
+- **Advice from real speech.** We tested every dictation model on recordings
+  of real people, including audiobooks no model had been trained on, and the
+  recommendation now uses those results instead of a computer voice. In
+  English, **NVIDIA Parakeet Unified 0.6B** got 3.2 percent of words wrong,
+  against 6.5 for the built-in Moonshine. In Spanish, **NVIDIA Parakeet TDT
+  0.6B v3** got 4.4 percent wrong on Google's FLEURS Spanish, against 30.5 for
+  the built-in Whisper. So Speech Models now recommends:
+  - Parakeet Unified for English on a computer with 8 GB of memory and four
+    cores;
+  - Parakeet TDT v3 for English on 8 GB with two cores, and for Spanish on
+    8 GB;
+  - the built-in Moonshine (English) and Whisper (Spanish) on 4 GB, or when
+    little memory is free.
+
+  A computer with 8 GB may now give dictation 1.6 GB beside your screen
+  reader (it was 1 GB), and never more than is free, less half a gigabyte.
+  The tiers follow the real speeds: Parakeet TDT v3, Parakeet Unified and
+  Whisper base.en are now Lightweight, and Nemotron is Balanced. The user
+  guide's new "How we chose: tested on real speech" has the tables, and
+  "Nemotron or Parakeet: which should I try?" is rewritten: Parakeet makes
+  fewer mistakes, and Nemotron is still the one that shows your words while
+  you speak.
+- **Five models are being retired.** Distil-Whisper small.en, Whisper
+  small.en, Distil-Whisper medium.en, Whisper medium.en and Distil-Whisper
+  large-v3 are English only, and Parakeet Unified beat each of them on
+  accuracy and speed, in the same memory or less. Each one's line in the list
+  starts "Being retired, use NVIDIA Parakeet Unified 0.6B instead." The first
+  time dictation starts on one, you hear one short sentence saying so, once
+  across every QuillVille program; the measured reason is in that model's
+  details in the list. It keeps working until the next feature release; nothing is
+  switched and nothing is deleted, and none of them is ever recommended.
+- **Moonshine base hears long phrases.** It used to write nothing at all for a
+  phrase longer than about eight and a half seconds. It now hears a long
+  phrase in pieces and joins them.
 - **Shared settings and words.** You can share dictation settings and your
   word list with QUILL, QUILL Transcribe and Quill Inkwell, and import or
   export My Words and Phrases (**Alt+Shift+F10**) as Markdown or CSV.
@@ -526,7 +560,7 @@ now download a larger model: the same local models VS Code offers for its own
 dictation, plus the rest of the Whisper family.
 
 Open Dictation Settings (**Alt+Shift+F6**) and press **Better Accuracy:
-Speech Models...** (**Alt+B**). The list starts with our suggestion, NVIDIA's
+Speech Models...** (**Alt+B**). The list starts with NVIDIA's
 **Nemotron 3.5 ASR Streaming** (VS Code's default), then NVIDIA's two
 **Parakeet** models, **Whisper** small, base and tiny, the rest of Whisper from
 base.en to large-v3, and a lighter **Moonshine base**. Each one says what it is
@@ -546,9 +580,11 @@ whether yours should keep up.
 - Moonshine stays the engine until you choose another. If a downloaded model
   goes missing, dictation tells you in one sentence and uses the built-in one.
 
-The user guide's "Better accuracy: optional speech models" has every model's
-published accuracy, what we measured, and "Nemotron or Parakeet: which should
-I try?".
+The **Recommendation** box (**Alt+C**) names the model that suits this
+computer, from our tests on real speech (see "Advice from real speech" in
+build 5, above). The user guide's "Better accuracy: optional speech models"
+has every model's published accuracy, what we measured on real speech, and
+"Nemotron or Parakeet: which should I try?".
 
 ## Dictation that keeps up with you
 

@@ -1678,7 +1678,10 @@ switch.</li>
 <strong>one sherpa-onnx store</strong> (D-26): Speech Models names
 Lightweight, Balanced or High accuracy on every model and recommends one
 for this computer (What matters most, Alt+W); downloads are shared with
-QUILL and QUILL Transcribe.</li>
+QUILL and QUILL Transcribe. Since 2026-10-22 the advice, tiers and
+memory budgets come from real speech; see “Dictation model advice from
+real speech, and five retirements (2026-10-22)” at the end of this
+document.</li>
 <li><strong>My Dictation Instructions</strong>
 (<code>instructions.py</code>) for Tidy Dictated Text.</li>
 <li><strong>Kind to a modest computer</strong>
@@ -4806,6 +4809,130 @@ point back at the source; Ctrl+O opens the file itself, and only a
 glance” carries this table in plain words, and the changelog’s
 Unreleased section has one consolidated entry for it instead of three
 written in build order.</p>
+<h2
+id="dictation-model-advice-from-real-speech-and-five-retirements-2026-10-22">Dictation
+model advice from real speech, and five retirements (2026-10-22)</h2>
+<p><strong>Why.</strong> Until now the recommendation (D-22) rested on
+ten recordings of a synthetic voice, which flattered every engine: every
+model scored 3 to 5 percent. The 2026-10-22 machine run measured every
+model on real people instead. The record is
+<code>docs/qa/dictation-real-speech-benchmark-2026-10-22.md</code> (data
+beside it in
+<code>dictation-real-speech-benchmark-2026-10-22.json</code>;
+engineering record in section 36 of
+<code>docs/design/2026-10-05-dictation-plan-and-status.md</code>). QUILL
+Lite shares QUILL’s dictation engine and catalogue
+(<code>quill/core/windows_dictation/</code>), so QUILL, QUILL Lite and
+QUILL Transcribe changed together and QUILL Lite is not ahead of QUILL
+(section 2.2).</p>
+<p><strong>How it was measured.</strong>
+<code>scripts/dictbench.py</code>, run by
+<code>scripts/bench_machine_run.py</code>: one phrase at a time, one
+processor thread, processor only, each model in its own process. Sets:
+LibriVox held-out audiobooks in English (101) and Spanish (82),
+catalogued after every model’s training cutoff; LibriSpeech test-clean
+and test-other (200 each); FLEURS English and Spanish (200 each).
+Decisions lean on the held-out audiobooks. One computer (Intel Core
+Ultra 7 265H, 16 cores, 64 GB), one day.</p>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Met by</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The recommendation uses measured real-speech figures, and says
+so</td>
+<td><code>model_types.MEASURED</code> holds the held-out English figure,
+the mean of the two Spanish sets and the peak memory on any set; only
+models with a Spanish figure are offered for Spanish.
+<code>model_advice.ESTIMATE_NOTE</code>: “These figures come from our
+tests with real recordings, on one computer; yours may differ.”</td>
+<td>Benchmark doc, “The results” and “What changed in the apps”</td>
+</tr>
+<tr>
+<td>English on 8 GB with four cores: NVIDIA Parakeet Unified 0.6B</td>
+<td>Fewest words wrong of every model inside the 0.25 one-thread
+budget</td>
+<td>3.2% held-out, 6.3% FLEURS, 0.21 per thread, 1.2 GB peak</td>
+</tr>
+<tr>
+<td>English on 8 GB with two cores, and Spanish on 8 GB: NVIDIA Parakeet
+TDT 0.6B v3</td>
+<td>Most accurate Spanish model measured; quickest of the 0.6B
+models</td>
+<td>Spanish 4.4% FLEURS, 7.3% held-out; English 3.8% held-out; 0.11 per
+thread, 1.1 GB peak</td>
+</tr>
+<tr>
+<td>4 GB, or little memory free: the built-in Moonshine tiny (English)
+and Whisper tiny (Spanish)</td>
+<td>Built in, and inside the 600 MB budget beside a screen reader, where
+the Parakeet models (1.1 GB and more) are not</td>
+<td>Moonshine tiny 6.5% held-out, 584 MB; Whisper tiny 30.5% FLEURS
+Spanish, 27.0% held-out, 521 MB</td>
+</tr>
+<tr>
+<td>“The quickest response” names Moonshine tiny</td>
+<td>Unchanged</td>
+<td>0.06 per thread</td>
+</tr>
+<tr>
+<td>An 8 GB baseline, and free memory counts</td>
+<td><code>model_types.RAM_TIERS</code> gives 1.6 GB on an 8 GB computer
+(was 1 GB), 600 MB on 4 GB; <code>model_advice._FREE_RESERVE_MB</code>
+caps at what is free less 500 MB</td>
+<td>Benchmark doc, “An 8 GB baseline, and free memory counts”</td>
+</tr>
+<tr>
+<td>Tiers follow real speed</td>
+<td>Cost factors against Moonshine tiny from the English FLEURS run:
+Parakeet TDT v3 3.2, Parakeet Unified 3.8, Whisper base.en 4.3
+(Lightweight, at most 5); Nemotron 5.8 (Balanced)</td>
+<td>Benchmark doc, the speed-factor paragraph under the Spanish
+table</td>
+</tr>
+<tr>
+<td>Five English-only models retired with notice, never silently</td>
+<td><code>quill/core/windows_dictation/retiring.py</code>:
+Distil-Whisper small.en, Whisper small.en, Distil-Whisper medium.en,
+Whisper medium.en, Distil-Whisper large-v3. The list line starts “Being
+retired, use NVIDIA Parakeet Unified 0.6B instead.”;
+<code>take_notice</code> says the measured reason once, recorded in
+<code>retiring-notices.json</code> in the family’s shared dictation
+folder, so once across every QuillVille program; the model keeps working
+until the next feature release; nothing is switched or deleted;
+<code>model_advice</code> never names one</td>
+<td>Parakeet Unified 3.2% held-out against 5.9, 4.3, 6.3, 3.6 and 4.5;
+faster per thread in the same memory or less</td>
+</tr>
+<tr>
+<td>Moonshine base hears phrases longer than about 8.5 seconds</td>
+<td>Long phrases are cut into pieces of 8 seconds or less at the
+quietest moment and joined (PR #1683)</td>
+<td>5.9% held-out after the fix; before it, every recording over 8.5
+seconds came back empty</td>
+</tr>
+<tr>
+<td>The user-facing documents tell the same story</td>
+<td>User guide: “Better accuracy: optional speech models”, new “How we
+chose: tested on real speech”, rewritten “Nemotron or Parakeet: which
+should I try?”, “Which engine should I choose?”, “Which model for which
+recording”; release notes build 5; changelog Unreleased;
+announcement</td>
+<td>The guide’s tables are copied from the benchmark doc</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Not settled by this run</strong> (from the benchmark doc): a
+real 4 GB Windows computer with NVDA or JAWS running (B-8: speed,
+memory, screen-reader lag, battery) still needs a person; whether
+Whisper writes the opening “¿” and “¡” itself needs recordings with
+questions; Whisper medium and large-v3-turbo were too slow to re-run and
+keep their earlier figures.</p>
 </main>
 </body>
 </html>

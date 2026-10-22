@@ -2,10 +2,47 @@
 
 ## Unreleased
 
+- **Speech model advice from real speech** (2026-10-22). Every dictation
+  model was tested on recordings of real people, including public-domain
+  audiobooks catalogued after every model was trained, and the
+  recommendation in Speech Models and Dictation Settings now uses those
+  results instead of ten recordings of a computer voice. It says so: "Measured on one computer with real recordings; yours may differ." In English, NVIDIA Parakeet Unified 0.6B got
+  3.2 percent of words wrong on the held-out audiobooks (the built-in
+  Moonshine 6.5); in Spanish, NVIDIA Parakeet TDT 0.6B v3 got 4.4 percent on
+  FLEURS Spanish (the built-in Whisper 30.5). Recommended now: Parakeet
+  Unified for English on 8 GB with four cores; Parakeet TDT v3 for English on
+  8 GB with two cores and for Spanish on 8 GB; the built-in Moonshine
+  (English) and Whisper (Spanish) on 4 GB or when little memory is free. "The
+  quickest response" still names Moonshine. QUILL and QUILL Transcribe are the
+  same.
+- **An 8 GB baseline, and free memory counts** (2026-10-22). On a computer
+  with 8 GB, dictation may now take 1.6 GB beside the screen reader (it was
+  1 GB), and never more than is free when you ask, less half a gigabyte.
+- **Tiers follow real speed** (2026-10-22). Parakeet TDT v3, Parakeet Unified
+  and Whisper base.en are now Lightweight; Nemotron is Balanced.
+- **Five speech models are being retired** (2026-10-22). Distil-Whisper
+  small.en, Whisper small.en, Distil-Whisper medium.en, Whisper medium.en and
+  Distil-Whisper large-v3. NVIDIA Parakeet Unified 0.6B beat each of them on
+  accuracy and speed, in the same memory or less. Each one's line in the model
+  list starts "Being retired, use NVIDIA Parakeet Unified 0.6B instead." The
+  first time dictation starts on one, it says so once, in one short
+  sentence, across every QuillVille program; the measured reason is in that
+  model's details in the list. They keep working until the
+  next feature release; nothing is switched or deleted, and they are never
+  recommended.
 - **Moonshine base no longer loses long sentences** (2026-10-22). With the
   Moonshine base speech model, a phrase longer than about eight and a half
   seconds was written as nothing at all. Long phrases are now heard in pieces
-  and joined, so the whole sentence is written.
+  of eight seconds or less, cut at the quietest moment, and joined, so the
+  whole sentence is written. On the real-speech audiobooks it now gets 5.9
+  percent of words wrong.
+- **The user guide's speech model sections are rewritten** (2026-10-22).
+  "Better accuracy: optional speech models" has a new "How we chose: tested on
+  real speech" with the English and Spanish results; "Nemotron or Parakeet:
+  which should I try?" now says Parakeet makes fewer mistakes and Nemotron is
+  the one that shows your words while you speak; "Which model for which
+  recording" and the tiers follow the same results. The synthetic-voice table
+  of 5 October is gone.
 - **Open Recent numbers its first eight files** (2026-10-22). Alt+Shift+9 was
   both the ninth recent file and **AutoCorrect Entries**, so one of the two did
   nothing. Now **Alt+Shift+1** to **Alt+Shift+8** reopen your recent files,

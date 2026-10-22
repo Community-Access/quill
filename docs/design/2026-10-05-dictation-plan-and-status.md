@@ -3305,7 +3305,8 @@ Spanish row is Whisper tiny's).
 - **Real peaks.** `Measured.peak_mb` is the highest seen on any real set; they
   run 1.5 to 2.8 times the synthetic figures.
 
-**Not changed yet, deliberately: the speed factors.** On real speech Parakeet
+**Speed factors and English: done in section 37.** Recorded here as it stood
+on the first pass: **Not changed yet, deliberately: the speed factors.** On real speech Parakeet
 cost about 1.6 times Moonshine tiny (the catalogue says 6.3), Nemotron 5.5
 (8.0) and Parakeet Unified 3.2 (6.1). With the catalogue's factors Parakeet
 still reads as needing a second processor thread on a four-core 8 GB computer,
@@ -3314,11 +3315,65 @@ Updating the factors also changes English recommendations and relabels tiers,
 so it waits for the English real-voice numbers, to be written in as one
 change.
 
-**Found, and needing a look:** Moonshine base scored 50 to 73 percent wrong on
-every real English set (3.4 on the synthetic voice), while Moonshine tiny
-scored 5.0 to 13.3. Its synthetic figure stays in `MEASURED` until the cause
-is known.
+**Found, and since fixed (section 37):** Moonshine base scored 50 to 73
+percent wrong on every real English set (3.4 on the synthetic voice), while
+Moonshine tiny scored 5.0 to 13.3.
 
 **Also fixed on the way:** dictbench printed transcripts on a cp1252 console
 and crashed on "ş", so every FLEURS Spanish run had failed silently (#1679);
 the driver then decoded the UTF-8 output as cp1252 (#1681).
+
+## 37. As built, 2026-10-22: real English figures, real speed, five models retiring
+
+The English half of the real-speech run, written in as one change so English
+recommendations, Spanish recommendations and the tiers moved together. The
+full record, with every table and the method, is
+`docs/qa/dictation-real-speech-benchmark-2026-10-22.md` and its `.json`.
+
+**Moonshine base, fixed** (#1683). sherpa-onnx 1.13.8's `moonshine_v2`
+decoder fails an ONNX broadcast in encoder attention past about 8.5 seconds,
+catches it and returns an empty result; every long phrase was lost.
+`chunked_offline.ChunkedOffline` cuts a long phrase into pieces of 8 seconds or
+less at the quietest moment and joins the words. Re-measured: 4.8 percent
+clean, 10.7 other, 5.9 held-out, 15.1 FLEURS.
+
+**English, by the held-out audiobooks** (`Measured.word_errors`; percent
+wrong): Parakeet Unified 3.2, Whisper medium.en 3.6, Parakeet TDT v3 3.8,
+Whisper small.en 4.3, Distil-Whisper large-v3 4.5, Whisper small 4.7,
+Nemotron 5.3, Moonshine base 5.9, Whisper base.en 5.9, Distil-Whisper small.en
+5.9, Distil-Whisper medium.en 6.3, Moonshine tiny 6.5, Whisper base 7.4,
+Whisper tiny 8.3. Whisper medium and large-v3-turbo were not re-run.
+
+**Speed factors** (catalogue `cost_factor`, from the English FLEURS run where
+the models ran back to back, against Moonshine tiny): Parakeet TDT v3 3.2
+(was 6.3), Parakeet Unified 3.8 (6.1), Moonshine base 2.2 (1.5), Whisper
+base.en 4.3 (6.8), Nemotron 5.8 (8.0), Whisper base 7.0 (6.8), Distil-Whisper
+small.en 7.9 (18), Whisper small.en 14.5 (24); the built-in Whisper 2.6 (4.0).
+`_LEGACY_SAME_AS` follows. The tiers move with them: Parakeet TDT v3, Parakeet
+Unified and Whisper base.en are Lightweight; Nemotron is Balanced.
+
+**What is recommended now** (balanced): 4 GB two cores, Moonshine tiny /
+Whisper tiny; 8 GB two cores, Parakeet TDT v3 for both languages when the
+two-second check times Moonshine tiny at about 0.07 or less (untimed, a
+two-core computer counts as modest and keeps the built-in models); 8 GB four
+cores and up, Parakeet Unified for English and Parakeet TDT v3 for Spanish.
+"The quickest response" stays Moonshine tiny. Nemotron is not recommended
+anywhere on these numbers; it stays for its live preview.
+
+**Retiring** (section 32.6 policy, applied): Distil-Whisper small.en, Whisper
+small.en, Distil-Whisper medium.en, Whisper medium.en and Distil-Whisper
+large-v3. Each was beaten by Parakeet Unified on the held-out audiobooks, on
+FLEURS where both ran and on noisy LibriSpeech, faster per thread, in the same
+or a smaller memory tier. `retiring.RETIRING` holds the replacement and the
+measured reason; `model_catalog._with_retiring_notes` puts "Being retired, use
+NVIDIA Parakeet Unified 0.6B instead." first in each one's line in every list;
+`model_advice` never names one; the controller says `retiring.notice` once,
+recorded in `retiring-notices.json` beside `family_dictation.json`, so it is
+said once across the family. Nothing is switched and nothing deleted. Remove
+no earlier than the next feature release. Kept, on the evidence: Whisper
+base.en (7.4 FLEURS against Moonshine base's 15.1, in 820 MB) and every
+multilingual Whisper size.
+
+**Still for a person:** B-8 on a real 4 GB computer with NVDA or JAWS; ten
+native Spanish recordings with questions and exclamations (the opening marks
+are now scored, #1684); the native-speaker review of the Spanish commands.

@@ -373,7 +373,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr><th scope="row">Moonshine</th><td>The one it starts with, listed as "Moonshine (fast, punctuates for you)". By far the fastest: your text arrives about a fifth of a second after you pause, and it needs about 210 MB of memory, so it suits a modest computer. English only; with the dictation language set to Spanish, the built-in Whisper is used instead<span class="qual">built in, Lightweight</span></td><td>Yes</td></tr>
+            <tr><th scope="row">Moonshine</th><td>The one it starts with, listed as "Moonshine (fast, punctuates for you)". By far the fastest: your text arrives about a fifth of a second after you pause, and in our tests with real recordings it used at most 584 MB of memory, so it suits a modest computer. English only; with the dictation language set to Spanish, the built-in Whisper is used instead<span class="qual">built in, Lightweight</span></td><td>Yes</td></tr>
             <tr><th scope="row">Whisper</th><td>Listed as "Whisper (accurate, punctuates for you)". A little slower and a little bigger. Worth trying if Moonshine often mishears your voice or your microphone. English and Spanish<span class="qual">built in, Lightweight</span></td><td>Yes</td></tr>
             <tr><th scope="row">Windows speech recognition</th><td>Windows' own recogniser. Needs nothing extra and can use any speech language installed in Windows, but mishears an untrained voice often. It keeps its own other guesses for "correct that"<span class="qual">say every mark yourself</span></td><td class="no">No</td></tr>
             <tr><th scope="row">Windows voice typing</th><td>Hands over to the panel <kbd>Windows+H</kbd> opens. Windows does the recognising and the typing, so none of dictation's commands, tones, read-back or wake phrase apply<span class="qual">for people who already prefer it</span></td><td>Windows decides</td></tr>
@@ -477,8 +477,9 @@
         <strong>One thing to keep in mind.</strong> For this test, Windows' own computer
         voice read the sentences. That is easier to understand than a real person, so every
         engine will make more mistakes with your voice than the table shows. Windows speech
-        recognition in particular does much worse with a real voice. We will update these
-        numbers after testing with real voices.
+        recognition in particular does much worse with a real voice. Moonshine tiny is still
+        the default; the advice about which model to download now comes from tests with
+        real people's recordings, in <a href="#real-speech">Tested on real speech</a>.
       </p>
 
       <h2 id="choose-engine" tabindex="-1" class="focus-target">Choosing an engine</h2>
@@ -508,10 +509,10 @@
             <tr><th scope="row">Keeping everything private</th><td>Moonshine, Whisper, Windows speech recognition, or any downloaded model</td><td>They run on this computer, and your speech never leaves it. OpenAI and the speech providers send it to a company</td></tr>
             <tr><th scope="row">No internet</th><td>Moonshine, Whisper, Windows speech recognition, or a model you downloaded earlier</td><td>Once a model is downloaded it needs no connection again</td></tr>
             <tr><th scope="row">The quickest response</th><td>Moonshine</td><td>Your text arrives about a fifth of a second after you pause, and it leaves your screen reader plenty of room</td></tr>
-            <tr><th scope="row">The fewest mistakes</th><td>A High accuracy model, such as Nemotron, on a capable computer</td><td>The bigger models cope best with accents, names and noise</td></tr>
-            <tr><th scope="row">A modest computer, or a laptop on battery</th><td>Moonshine, or Moonshine base</td><td>Both are Lightweight and keep up even on two cores and 4 GB of memory</td></tr>
+            <tr><th scope="row">The fewest mistakes</th><td>NVIDIA Parakeet Unified 0.6B for English, on a computer with 8 GB of memory</td><td>In our tests with real recordings it got 3.2% of words wrong on audiobooks no model was trained on, the fewest of every model that keeps up on one processor thread</td></tr>
+            <tr><th scope="row">A modest computer, or a laptop on battery</th><td>Moonshine, or the built-in Whisper for Spanish</td><td>Both are built in and Lightweight, and on 4 GB of memory they are the models that fit beside a screen reader</td></tr>
             <tr><th scope="row">Seeing words while you still speak</th><td>Nemotron, OpenAI, or a provider that works live</td><td>The words heard so far show in the status bar and on braille before you pause</td></tr>
-            <tr><th scope="row">Dictating in Spanish</th><td>Whisper, Nemotron, Parakeet TDT 0.6B v3, or a many-language Whisper model</td><td>Moonshine knows only English</td></tr>
+            <tr><th scope="row">Dictating in Spanish</th><td>NVIDIA Parakeet TDT 0.6B v3 on a computer with 8 GB of memory; the built-in Whisper on 4 GB</td><td>Moonshine knows only English. On real Spanish recordings Parakeet TDT v3 got 4.4% of words wrong on FLEURS Spanish and 7.3% on Spanish audiobooks, where the built-in Whisper tiny got 30.5% and 27.0%</td></tr>
             <tr><th scope="row">Saying punctuation yourself, in any Windows language</th><td>Windows speech recognition</td><td>It does not punctuate by itself, and it uses any speech language installed in Windows</td></tr>
           </tbody>
         </table>
@@ -525,14 +526,21 @@
       </p>
       <ul>
         <li><strong>Lightweight</strong>: keeps up comfortably even on a modest computer.
-          The built-in Moonshine and Whisper, and Moonshine base.</li>
+          The built-in Moonshine and Whisper, Moonshine base, the two Parakeet models
+          (NVIDIA Parakeet TDT 0.6B v3 and NVIDIA Parakeet Unified 0.6B) and Whisper
+          base.en.</li>
         <li><strong>Balanced</strong>: more work than the built-in engines; keeps up on a
-          computer with four or more cores. The two Parakeet models, Whisper base and
-          Whisper base.en.</li>
-        <li><strong>High accuracy</strong>: the fewest mistakes, for the most work; needs a
-          capable computer, or patience. Nemotron, Whisper small and larger, and the
-          Distil-Whisper models.</li>
+          computer with four or more cores. Nemotron, Whisper base and Distil-Whisper
+          small.en.</li>
+        <li><strong>High accuracy</strong>: the most work; needs a capable computer, or
+          patience. Whisper small and larger, Whisper small.en and medium.en, and
+          Distil-Whisper medium.en and large-v3.</li>
       </ul>
+      <p>
+        The tiers follow each model's real speed on real recordings, measured on
+        22 October 2026, so a tier can be Lightweight and still among the most
+        accurate: the two Parakeet models are both.
+      </p>
 
       <h3 id="recommended" tabindex="-1" class="focus-target">A recommendation for this computer</h3>
       <p>
@@ -555,9 +563,17 @@
         In QUILL Transcribe the same advice is in <strong>Model, Choose Model...</strong>
         (<kbd>Ctrl+M</kbd>), as <strong>Recommended for this computer</strong>
         (<kbd>Alt+C</kbd>), and in its Set Up window. A recommendation is only advice: it
-        never changes your engine. Its figures are estimates measured with a computer voice,
-        so your own voice may differ. OpenAI and the speech providers are never
-        recommended, because they send your speech away.
+        never changes your engine. Its figures come from our tests with real people's
+        recordings (<a href="#real-speech">Tested on real speech</a>), on one computer, so
+        your own voice and computer may still differ. OpenAI and the speech providers are
+        never recommended, because they send your speech away, and neither is a model
+        being retired.
+      </p>
+      <p>
+        It also counts memory. On a computer with 8 GB, dictation may use up to 1.6 GB
+        beside your screen reader, and never more than is free when you ask, less half a
+        gigabyte. So on a busy 8 GB computer the advice can name a lighter model than the
+        table below.
       </p>
       <div class="cmp-scroll">
         <table class="cmp">
@@ -572,9 +588,11 @@
           </thead>
           <tbody>
             <tr><th scope="row">4 GB of memory, 2 cores</th><td>Moonshine</td><td>Moonshine</td><td>Moonshine base</td></tr>
-            <tr><th scope="row">8 GB of memory, 4 cores</th><td>Moonshine base</td><td>Moonshine</td><td>Nemotron</td></tr>
-            <tr><th scope="row">16 GB of memory, 8 cores</th><td>Nemotron</td><td>Moonshine</td><td>Nemotron</td></tr>
-            <tr><th scope="row">8 GB of memory, 4 cores, dictating in Spanish</th><td>Whisper</td><td>Whisper</td><td>Nemotron</td></tr>
+            <tr><th scope="row">8 GB of memory, 2 cores</th><td>Parakeet TDT 0.6B v3</td><td>Moonshine</td><td>Parakeet Unified 0.6B</td></tr>
+            <tr><th scope="row">8 GB of memory, 4 cores</th><td>Parakeet Unified 0.6B</td><td>Moonshine</td><td>Parakeet Unified 0.6B</td></tr>
+            <tr><th scope="row">16 GB of memory, 8 cores</th><td>Parakeet Unified 0.6B</td><td>Moonshine</td><td>Parakeet Unified 0.6B</td></tr>
+            <tr><th scope="row">4 GB of memory, 2 cores, dictating in Spanish</th><td>Whisper</td><td>Whisper</td><td>Whisper</td></tr>
+            <tr><th scope="row">8 GB of memory, 2 or 4 cores, dictating in Spanish</th><td>Parakeet TDT 0.6B v3</td><td>Whisper</td><td>Parakeet TDT 0.6B v3</td></tr>
           </tbody>
         </table>
       </div>
@@ -597,15 +615,15 @@
           That fixes most of them on any engine.</li>
         <li>For the rest, Sam opens Speech Models (<kbd>Alt+Shift+F6</kbd>, then
           <kbd>Alt+B</kbd>), sets What matters most to the fewest mistakes, and reads the
-          recommendation: Nemotron.</li>
-        <li><strong>Show Recommended Model</strong> moves to Nemotron. Sam presses
-          <strong>Download...</strong>, reads the question naming its 682 MB size and
+          recommendation: NVIDIA Parakeet Unified 0.6B.</li>
+        <li><strong>Show Recommended Model</strong> moves to Parakeet Unified. Sam presses
+          <strong>Download...</strong>, reads the question naming its 663 MB size and
           licence, and answers Yes.</li>
         <li>When it is done, Sam presses <strong>Use for Dictation</strong>, then OK in
-          Dictation Settings, and dictates as before. Now the words also appear in the
-          status bar while Sam talks.</li>
+          Dictation Settings, and dictates as before. Each phrase is written when Sam
+          pauses, as with Moonshine.</li>
         <li>On battery, when the laptop is too busy to keep up, dictation switches to the
-          built-in engine for a while and says so; Sam's choice stays Nemotron.</li>
+          built-in engine for a while and says so; Sam's choice stays Parakeet Unified.</li>
       </ol>
 
       <h2 id="optional-models" tabindex="-1" class="focus-target">Better accuracy: optional speech models</h2>
@@ -664,7 +682,7 @@
       </p>
 
       <h3 id="model-list" tabindex="-1" class="focus-target">The models, in our suggested order</h3>
-      <p>The order is our suggestion, not a measurement: VS Code's own models first, then the rest of Whisper, smallest first.</p>
+      <p>The order is our suggestion: the models that did best on real speech first, then the rest of Whisper, smallest first, and last the five being retired.</p>
       <div class="cmp-scroll">
         <table class="cmp">
           <caption>The optional speech models: what each is good for, its download size, languages and tier.</caption>
@@ -672,29 +690,113 @@
             <tr><th scope="col">Model</th><th scope="col">Good for</th><th scope="col">Download</th><th scope="col">Languages</th><th scope="col">Tier</th></tr>
           </thead>
           <tbody>
-            <tr><th scope="row">NVIDIA Nemotron 3.5 ASR Streaming 0.6B</th><td>Suggested download. Excellent for live dictation; VS Code's default</td><td>682 MB</td><td>English, Spanish</td><td>High accuracy</td></tr>
-            <tr><th scope="row">NVIDIA Parakeet Unified 0.6B</th><td>May give slightly better final text in some conditions</td><td>663 MB</td><td>English</td><td>Balanced</td></tr>
-            <tr><th scope="row">NVIDIA Parakeet TDT 0.6B v3</th><td>Excellent recognition of each finished phrase</td><td>670 MB</td><td>English, Spanish</td><td>Balanced</td></tr>
-            <tr><th scope="row">Whisper small</th><td>A VS Code alternative: good</td><td>375 MB</td><td>English, Spanish</td><td>High accuracy</td></tr>
-            <tr><th scope="row">Whisper base</th><td>A VS Code alternative: moderate</td><td>161 MB</td><td>English, Spanish</td><td>Balanced</td></tr>
+            <tr><th scope="row">NVIDIA Parakeet Unified 0.6B</th><td>The fewest mistakes in English on real speech: 3.2% of words wrong on audiobooks no model was trained on. Recommended for English on 8 GB with four cores</td><td>663 MB</td><td>English</td><td>Lightweight</td></tr>
+            <tr><th scope="row">NVIDIA Parakeet TDT 0.6B v3</th><td>The fewest mistakes in Spanish on real speech, and very good in English. Recommended for Spanish on 8 GB, and for English on 8 GB with two cores</td><td>670 MB</td><td>English, Spanish</td><td>Lightweight</td></tr>
+            <tr><th scope="row">NVIDIA Nemotron 3.5 ASR Streaming 0.6B</th><td>Shows your words while you speak; VS Code's default</td><td>682 MB</td><td>English, Spanish</td><td>Balanced</td></tr>
+            <tr><th scope="row">Moonshine base</th><td>A light step up from the built-in Moonshine, now fixed so it hears long phrases</td><td>141 MB</td><td>English</td><td>Lightweight</td></tr>
+            <tr><th scope="row">Whisper base.en</th><td>Light and quick, a little better in English than base, and good on varied voices</td><td>161 MB</td><td>English</td><td>Lightweight</td></tr>
             <tr><th scope="row">Whisper tiny</th><td>Built in already. The lightest Whisper, with the weakest accuracy</td><td>built in</td><td>English, Spanish</td><td>Lightweight</td></tr>
-            <tr><th scope="row">Whisper base.en</th><td>Light and quick, a little better in English than base</td><td>161 MB</td><td>English</td><td>Balanced</td></tr>
-            <tr><th scope="row">Whisper small.en</th><td>Good English accuracy for a capable computer</td><td>376 MB</td><td>English</td><td>High accuracy</td></tr>
-            <tr><th scope="row">Distil-Whisper small.en</th><td>Small's accuracy, made smaller and faster</td><td>299 MB</td><td>English</td><td>High accuracy</td></tr>
-            <tr><th scope="row">Distil-Whisper medium.en</th><td>Close to medium's accuracy at a fraction of the work</td><td>573 MB</td><td>English</td><td>High accuracy</td></tr>
-            <tr><th scope="row">Whisper medium.en</th><td>Best for accuracy when you can wait</td><td>946 MB</td><td>English</td><td>High accuracy</td></tr>
-            <tr><th scope="row">Distil-Whisper large-v3</th><td>Near large-v3 accuracy in English, much faster</td><td>984 MB</td><td>English</td><td>High accuracy</td></tr>
+            <tr><th scope="row">Whisper base</th><td>A VS Code alternative: moderate</td><td>161 MB</td><td>English, Spanish</td><td>Balanced</td></tr>
+            <tr><th scope="row">Whisper small</th><td>A VS Code alternative: good, in many languages; needs two processor threads</td><td>375 MB</td><td>English, Spanish</td><td>High accuracy</td></tr>
             <tr><th scope="row">Whisper medium</th><td>Best for accuracy when you can wait</td><td>946 MB</td><td>English, Spanish</td><td>High accuracy</td></tr>
             <tr><th scope="row">Whisper large-v3-turbo</th><td>Large-v3 quality, much faster than large-v3</td><td>1.0 GB</td><td>English, Spanish</td><td>High accuracy</td></tr>
             <tr><th scope="row">Whisper large-v3</th><td>The most accurate Whisper; very slow on most computers</td><td>1.8 GB</td><td>English, Spanish</td><td>High accuracy</td></tr>
-            <tr><th scope="row">Moonshine base</th><td>A light step up from the built-in Moonshine</td><td>141 MB</td><td>English</td><td>Lightweight</td></tr>
+            <tr><th scope="row">Whisper small.en</th><td>Being retired, use NVIDIA Parakeet Unified 0.6B instead</td><td>376 MB</td><td>English</td><td>High accuracy</td></tr>
+            <tr><th scope="row">Distil-Whisper small.en</th><td>Being retired, use NVIDIA Parakeet Unified 0.6B instead</td><td>299 MB</td><td>English</td><td>Balanced</td></tr>
+            <tr><th scope="row">Distil-Whisper medium.en</th><td>Being retired, use NVIDIA Parakeet Unified 0.6B instead</td><td>573 MB</td><td>English</td><td>High accuracy</td></tr>
+            <tr><th scope="row">Whisper medium.en</th><td>Being retired, use NVIDIA Parakeet Unified 0.6B instead</td><td>946 MB</td><td>English</td><td>High accuracy</td></tr>
+            <tr><th scope="row">Distil-Whisper large-v3</th><td>Being retired, use NVIDIA Parakeet Unified 0.6B instead</td><td>984 MB</td><td>English</td><td>High accuracy</td></tr>
           </tbody>
         </table>
       </div>
       <p>
+        <strong>Five English-only models are being retired</strong>: Whisper small.en,
+        Distil-Whisper small.en, Distil-Whisper medium.en, Whisper medium.en and
+        Distil-Whisper large-v3. On real recordings, Parakeet Unified beat each of them on
+        accuracy and speed, in the same memory or less. If you use one, it keeps working
+        until the next feature release, and the first time dictation starts on it you are
+        told so once, in every QuillVille program together. Nothing is switched and
+        nothing is deleted; to change, choose another model in Speech Models. They are
+        never recommended.
+      </p>
+      <p>
         <strong>English only, or many languages?</strong> Whisper models ending in ".en", and
         Distil-Whisper, know only English and are a little more accurate in English than the
         many-language model of the same size. The many-language ones also dictate Spanish.
+      </p>
+
+      <h3 id="real-speech" tabindex="-1" class="focus-target">Tested on real speech</h3>
+      <p class="group-verdict">
+        The advice in QUILL, QUILL Lite and QUILL Transcribe comes from tests with
+        recordings of real people, run on 22 October 2026. Before that it rested on ten
+        recordings of a computer voice, which flattered every engine.
+      </p>
+      <p>
+        Each model heard public-domain audiobooks catalogued after every model's training
+        cutoff, so no model can have learned them, plus Google's FLEURS read sentences and
+        the LibriSpeech audiobook test sets. It heard them one phrase at a time on one
+        processor thread, the way dictation does, leaving the rest of the computer for the
+        screen reader. Decisions lean on the held-out audiobooks, because some models may
+        have trained on the public sets.
+      </p>
+      <p>
+        In the tables, "words wrong" is the percentage of words a model got wrong; lower is
+        better. "Speed per thread" is seconds of computing per second of speech on one
+        thread, and dictation's budget is 0.25. "Peak memory" is the most memory the model
+        used on any set. "Not run" means the model was not tested on that set. It was one
+        computer on one day, and other work was running during some sets, so the speeds
+        vary a little.
+      </p>
+      <div class="cmp-scroll">
+        <table class="cmp">
+          <caption>English on real speech: percent of words wrong (lower is better), speed per thread (0.25 is dictation's budget), the most memory used, and what was decided.</caption>
+          <thead>
+            <tr><th scope="col">Model</th><th scope="col">Held-out audiobooks</th><th scope="col">FLEURS</th><th scope="col">LibriSpeech clean</th><th scope="col">LibriSpeech other</th><th scope="col">Speed per thread</th><th scope="col">Peak memory</th><th scope="col">Decision</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">NVIDIA Parakeet Unified 0.6B</th><td>3.2%</td><td>6.3%</td><td>1.8%</td><td>3.2%</td><td>0.21</td><td>1.2 GB</td><td><strong>Recommended</strong> on 8 GB with four cores</td></tr>
+            <tr><th scope="row">Whisper medium.en</th><td>3.6%</td><td>not run</td><td>not run</td><td>not run</td><td>1.55</td><td>3.0 GB</td><td>Being retired</td></tr>
+            <tr><th scope="row">NVIDIA Parakeet TDT 0.6B v3</th><td>3.8%</td><td>9.0%</td><td>2.5%</td><td>5.2%</td><td>0.11</td><td>1.1 GB</td><td>Kept; recommended on 8 GB with two cores</td></tr>
+            <tr><th scope="row">Whisper small.en</th><td>4.3%</td><td>6.3%</td><td>3.4%</td><td>7.8%</td><td>0.43</td><td>1.4 GB</td><td>Being retired</td></tr>
+            <tr><th scope="row">Distil-Whisper large-v3</th><td>4.5%</td><td>not run</td><td>not run</td><td>not run</td><td>0.82</td><td>2.0 GB</td><td>Being retired</td></tr>
+            <tr><th scope="row">Whisper small</th><td>4.7%</td><td>not run</td><td>4.2%</td><td>8.5%</td><td>0.55</td><td>1.4 GB</td><td>Kept; many languages, needs two threads</td></tr>
+            <tr><th scope="row">NVIDIA Nemotron 3.5 Streaming 0.6B</th><td>5.3%</td><td>13.7%</td><td>3.7%</td><td>7.3%</td><td>0.37</td><td>1.5 GB</td><td>Kept; streams words while you speak</td></tr>
+            <tr><th scope="row">Moonshine base</th><td>5.9%</td><td>15.1%</td><td>4.8%</td><td>10.7%</td><td>0.05</td><td>378 MB</td><td>Kept; fixed for long phrases</td></tr>
+            <tr><th scope="row">Whisper base.en</th><td>5.9%</td><td>7.4%</td><td>5.6%</td><td>11.6%</td><td>0.13</td><td>820 MB</td><td>Kept; light, good on varied voices</td></tr>
+            <tr><th scope="row">Distil-Whisper small.en</th><td>5.9%</td><td>7.6%</td><td>4.6%</td><td>9.2%</td><td>0.22</td><td>1.0 GB</td><td>Being retired</td></tr>
+            <tr><th scope="row">Distil-Whisper medium.en</th><td>6.3%</td><td>not run</td><td>4.2%</td><td>not run</td><td>0.47</td><td>1.6 GB</td><td>Being retired</td></tr>
+            <tr><th scope="row">Moonshine tiny (built in)</th><td>6.5%</td><td>13.2%</td><td>5.0%</td><td>13.3%</td><td>0.06</td><td>584 MB</td><td>Kept; the default, and the pick on 4 GB</td></tr>
+            <tr><th scope="row">Whisper base</th><td>7.4%</td><td>10.8%</td><td>not run</td><td>not run</td><td>0.22</td><td>821 MB</td><td>Kept; many languages</td></tr>
+            <tr><th scope="row">Whisper tiny (built in)</th><td>8.3%</td><td>11.7%</td><td>6.7%</td><td>13.9%</td><td>0.07</td><td>521 MB</td><td>Kept; built in</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="cmp-scroll">
+        <table class="cmp">
+          <caption>Spanish on real speech: percent of words wrong (lower is better), speed per thread, the most memory used, and what was decided.</caption>
+          <thead>
+            <tr><th scope="col">Model</th><th scope="col">FLEURS Spanish</th><th scope="col">Held-out Spanish audiobooks</th><th scope="col">Speed per thread</th><th scope="col">Peak memory</th><th scope="col">Decision</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">NVIDIA Parakeet TDT 0.6B v3</th><td>4.4%</td><td>7.3%</td><td>0.12</td><td>1.1 GB</td><td><strong>Recommended</strong> on 8 GB</td></tr>
+            <tr><th scope="row">Whisper small</th><td>6.0%</td><td>7.8%</td><td>0.57</td><td>1.4 GB</td><td>Kept; needs two threads</td></tr>
+            <tr><th scope="row">NVIDIA Nemotron 3.5 Streaming 0.6B</th><td>6.4%</td><td>8.0%</td><td>0.50</td><td>1.5 GB</td><td>Kept</td></tr>
+            <tr><th scope="row">Whisper base</th><td>12.6%</td><td>16.1%</td><td>0.18</td><td>821 MB</td><td>Kept; lighter</td></tr>
+            <tr><th scope="row">Whisper tiny (built in)</th><td>30.5%</td><td>27.0%</td><td>0.10</td><td>521 MB</td><td>Kept; built in, the pick on 4 GB</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Moonshine base used to write nothing at all for a phrase longer than about eight and
+        a half seconds. It now hears long phrases in pieces, and scored 5.9% on the
+        held-out audiobooks. Whisper medium and Whisper large-v3-turbo were too slow to test
+        again, and a real 4 GB computer with a screen reader running still needs testing by
+        a person.
+      </p>
+      <p>
+        <a href="/docs/dictation-real-speech-benchmark-2026-10-22.html">The full record of the real-speech tests, 22 October 2026</a>
+        lists every recording set and its licence, the computer, the limits, and the data
+        behind each row.
       </p>
 
       <h3 id="model-accuracy" tabindex="-1" class="focus-target">How accurate they are</h3>
@@ -718,37 +820,13 @@
         any many-language model beats the built-in tiny by a wide margin.
       </p>
       <p>
-        <strong>What we measured</strong> on our test computer on 5 October 2026: ten sentences
-        and two spoken commands read by Windows' own computer voice, one processor thread, a
-        12-core desktop with 8 GB of memory. A computer voice is easy to understand, so the
-        models scored about the same on accuracy, and all of them heard both commands. The
-        cost is what differs:
-      </p>
-      <div class="cmp-scroll">
-        <table class="cmp">
-          <caption>What we measured: accuracy, speed, delay, memory and load time on one thread.</caption>
-          <thead>
-            <tr><th scope="col">Model</th><th scope="col">Word errors</th><th scope="col">Seconds of computing per second of speech</th><th scope="col">Text after you pause</th><th scope="col">Most memory</th><th scope="col">Load time</th></tr>
-          </thead>
-          <tbody>
-            <tr><th scope="row">Moonshine tiny (built in)</th><td>3.4%</td><td>0.05</td><td>0.2 s</td><td>210 MB</td><td>2.2 s</td></tr>
-            <tr><th scope="row">Whisper tiny.en (built in)</th><td>3.4%</td><td>0.20</td><td>0.7 s</td><td>303 MB</td><td>1.3 s</td></tr>
-            <tr><th scope="row">Moonshine base</th><td>3.4%</td><td>0.08</td><td>0.3 s</td><td>365 MB</td><td>2.0 s</td></tr>
-            <tr><th scope="row">Whisper base</th><td>5.1%</td><td>0.37</td><td>1.4 s</td><td>417 MB</td><td>1.5 s</td></tr>
-            <tr><th scope="row">Parakeet Unified 0.6B</th><td>3.4%</td><td>0.33</td><td>1.2 s</td><td>844 MB</td><td>5.2 s</td></tr>
-            <tr><th scope="row">Parakeet TDT 0.6B v3</th><td>4.2%</td><td>0.34</td><td>1.2 s</td><td>805 MB</td><td>5.1 s</td></tr>
-            <tr><th scope="row">Nemotron 3.5 ASR Streaming</th><td>2.5%</td><td>0.40</td><td>1.5 s</td><td>about 790 MB</td><td>3.2 s</td></tr>
-            <tr><th scope="row">Whisper small</th><td>5.1%</td><td>1.29</td><td>4.7 s</td><td>859 MB</td><td>4.4 s</td></tr>
-            <tr><th scope="row">Whisper medium</th><td>3.4%</td><td>3.04</td><td>11.2 s</td><td>2.1 GB</td><td>9.6 s</td></tr>
-            <tr><th scope="row">Whisper large-v3-turbo</th><td>3.4%</td><td>4.20</td><td>15.4 s</td><td>1.4 GB</td><td>5.3 s</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <p>
-        Dictation uses two threads, and 0.25 is the budget the built-in engines meet so your
-        screen reader always has room. <strong>The built-in model is still the better
-        choice</strong> on an older or dual-core computer, on battery, or when your screen
-        reader must never slow down.
+        <strong>What we measured ourselves</strong> is in
+        <a href="#real-speech">Tested on real speech</a>: recordings of real people, one
+        processor thread, and the most memory each model used. Dictation's budget is 0.25
+        seconds of computing per second of speech on one thread, so your screen reader
+        always has room. <strong>The built-in model is still the better choice</strong> on
+        a 4 GB or older computer, on battery, or when your screen reader must never slow
+        down.
       </p>
 
       <h3 id="nemotron-or-parakeet" tabindex="-1" class="focus-target">Nemotron or Parakeet: which should I try?</h3>
@@ -772,8 +850,8 @@
           only; NVIDIA trained it to work both while you speak and on a finished phrase, and
           QUILL uses it on the finished phrase (663 MB).</li>
       </ul>
-      <p>On our test computer, on one thread, Parakeet Unified needed 0.33 seconds of computing per second of speech, Parakeet TDT 0.34 and Nemotron 0.40; each used about 800 MB of memory. Nemotron, fed at live pace, had its first words about 1.7 seconds into each sentence.</p>
-      <p><strong>Rule of thumb:</strong> for writing as you go, try Nemotron; for dictating a paragraph and then checking it, try Parakeet.</p>
+      <p>On real recordings, on one thread, Parakeet Unified needed 0.21 seconds of computing per second of speech, Parakeet TDT 0.11 and Nemotron 0.37; at most they used 1.2 GB, 1.1 GB and 1.5 GB of memory. Parakeet Unified got 3.2% of words wrong on the held-out audiobooks, Parakeet TDT 3.8% and Nemotron 5.3%.</p>
+      <p><strong>Rule of thumb:</strong> for the fewest mistakes, try Parakeet: Parakeet Unified for English, Parakeet TDT 0.6B v3 for Spanish. If seeing your words while you still speak matters more, try Nemotron.</p>
 
       <h3 id="which-is-better-for-you" tabindex="-1" class="focus-target">How to tell which is more accurate for you</h3>
       <ol>
@@ -1896,7 +1974,7 @@
       </ul>
       <div class="cmp-scroll">
         <table class="cmp">
-          <caption>About how long a one-hour recording takes, worked out from each model's measured speed.</caption>
+          <caption>About how long a one-hour recording takes, worked out from each model's speed measured on real recordings.</caption>
           <thead>
             <tr>
               <th scope="col">Model</th>
@@ -1906,9 +1984,10 @@
           </thead>
           <tbody>
             <tr><th scope="row">Moonshine tiny (built in)</th><td>6 minutes</td><td>3 minutes</td></tr>
-            <tr><th scope="row">Whisper tiny (built in)</th><td>19 minutes</td><td>9 minutes</td></tr>
-            <tr><th scope="row">Parakeet TDT 0.6B v3</th><td>30 minutes</td><td>13 minutes</td></tr>
-            <tr><th scope="row">Nemotron</th><td>37 minutes</td><td>16 minutes</td></tr>
+            <tr><th scope="row">Whisper tiny (built in)</th><td>12 minutes</td><td>6 minutes</td></tr>
+            <tr><th scope="row">Parakeet TDT 0.6B v3</th><td>15 minutes</td><td>7 minutes</td></tr>
+            <tr><th scope="row">Parakeet Unified 0.6B</th><td>18 minutes</td><td>8 minutes</td></tr>
+            <tr><th scope="row">Nemotron</th><td>27 minutes</td><td>12 minutes</td></tr>
             <tr><th scope="row">Whisper small</th><td>1 hour 49 minutes</td><td>46 minutes</td></tr>
             <tr><th scope="row">Whisper large-v3-turbo</th><td>about 6 hours</td><td>about 2 and a half hours</td></tr>
           </tbody>

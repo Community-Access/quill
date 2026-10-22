@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Dictation speech models tested on real speech,
+2026-10-22</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1
+id="dictation-speech-models-tested-on-real-speech-2026-10-22">Dictation
+speech models tested on real speech, 2026-10-22</h1>
+<p>This is the record behind QUILL’s dictation model advice: which
+models QUILL, QUILL Lite and QUILL Transcribe recommend, which are being
+retired, and why. Every number on the help pages, in the release notes
+and in the apps’ own recommendation comes from this run. Until this run,
+the advice rested on ten recordings of a synthetic voice, which
+flattered every engine.</p>
+<h2 id="in-one-minute">In one minute</h2>
+<ul>
+<li><strong>English:</strong> NVIDIA Parakeet Unified 0.6B made the
+fewest mistakes of every model that keeps up on one processor thread:
+3.2 percent of words wrong on audiobook recordings no model had ever
+been trained on, and 6.3 percent on Google’s FLEURS read speech. It is
+now the model QUILL recommends for English on a computer with 8 GB of
+memory and four cores.</li>
+<li><strong>Spanish:</strong> NVIDIA Parakeet TDT 0.6B v3 got 4.4
+percent of words wrong on FLEURS Spanish and 7.3 percent on Spanish
+audiobooks. The built-in Whisper tiny got 30.5 and 27.0, about one word
+in four. Parakeet is now the recommendation for Spanish on an 8 GB
+computer.</li>
+<li><strong>Modest computers:</strong> on 4 GB, or with little memory
+free, the built-in Moonshine (English) and Whisper (Spanish) are still
+recommended. They are the only models that fit beside a screen reader
+there.</li>
+<li><strong>Five English-only models are being retired:</strong>
+Distil-Whisper small.en, Whisper small.en, Distil-Whisper medium.en,
+Whisper medium.en and Distil-Whisper large-v3. Parakeet Unified beat
+each of them on accuracy and speed, in the same memory or less. They
+keep working until the next feature release, and nobody’s model is
+changed for them.</li>
+<li><strong>A bug found and fixed:</strong> Moonshine base wrote nothing
+at all for any phrase longer than about eight and a half seconds. It now
+hears long phrases in pieces (PR #1683), and scores 5.9 percent on the
+audiobooks.</li>
+</ul>
+<h2 id="how-it-was-tested">How it was tested</h2>
+<p><strong>The recordings.</strong> Real people, never a synthetic
+voice:</p>
+<table>
+<thead>
+<tr>
+<th>Set</th>
+<th>What it is</th>
+<th>Recordings</th>
+<th>Licence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LibriVox held-out, English</td>
+<td>Public-domain audiobooks catalogued on LibriVox after every model’s
+training cutoff, scored against the Project Gutenberg text. No model can
+have trained on them, so this is the fairest test.</td>
+<td>101</td>
+<td>Public domain</td>
+</tr>
+<tr>
+<td>LibriVox held-out, Spanish</td>
+<td>The same, in Spanish</td>
+<td>82</td>
+<td>Public domain</td>
+</tr>
+<tr>
+<td>LibriSpeech test-clean</td>
+<td>Read audiobook speech, clear recordings</td>
+<td>200</td>
+<td>CC BY 4.0</td>
+</tr>
+<tr>
+<td>LibriSpeech test-other</td>
+<td>Read audiobook speech, harder voices and recordings</td>
+<td>200</td>
+<td>CC BY 4.0</td>
+</tr>
+<tr>
+<td>FLEURS English (US)</td>
+<td>Google’s read Wikipedia sentences, many speakers and accents</td>
+<td>200</td>
+<td>CC BY 4.0</td>
+</tr>
+<tr>
+<td>FLEURS Spanish</td>
+<td>The same, in Spanish</td>
+<td>200</td>
+<td>CC BY 4.0</td>
+</tr>
+</tbody>
+</table>
+<p>LibriSpeech and FLEURS are public, so some models may have trained on
+them; those results are shown, but the decisions lean on the held-out
+audiobooks.</p>
+<p><strong>The harness.</strong> <code>scripts/dictbench.py</code>, run
+by <code>scripts/bench_machine_run.py</code>, feeds each recording to a
+model the way dictation does: one phrase at a time, on <strong>one
+processor thread</strong> (the speed budget is per thread, because the
+screen reader needs the rest), on the processor only. Each model runs in
+its own process, so its memory figure is its own. Word errors ignore
+capitals and punctuation; for Spanish they also ignore accents.</p>
+<p><strong>The measures.</strong></p>
+<ul>
+<li><strong>Words wrong:</strong> the percentage of the reference’s
+words the model got wrong (substituted, left out or added). Lower is
+better.</li>
+<li><strong>Speed per thread:</strong> seconds of computing per second
+of speech on one thread. Dictation’s budget is 0.25: a quarter of a
+core, leaving the rest for the screen reader. The apps compare a model’s
+cost with the bundled Moonshine tiny’s, measured on your own computer by
+the two-second check, so the advice scales to your machine.</li>
+<li><strong>Peak memory:</strong> the most memory the model used on any
+set, because a model has to fit the worst minute, not the average
+one.</li>
+</ul>
+<p><strong>The computer.</strong> An Intel Core Ultra 7 265H laptop (16
+cores, 64 GB), Windows 11, Python 3.14.8, sherpa-onnx 1.13.8, ONNX
+Runtime 1.31.0. It is much faster than the computers the advice is
+written for, which is why speed is judged as a multiple of Moonshine
+tiny’s rather than in raw seconds.</p>
+<p><strong>The limits.</strong> One computer, one day. Other work was
+running during some of the sets, so the absolute speeds vary from set to
+set; the speed factors in the catalogue come from the English FLEURS
+run, where eight models ran back to back under the same conditions.
+Screen-reader lag, battery draw and a real 4 GB computer with NVDA or
+JAWS running were not measured here; that check (B-8 in the dictation
+plan) still needs a person. Whisper medium and large-v3-turbo were too
+slow to re-run and keep their earlier figures.</p>
+<h2 id="the-results">The results</h2>
+<h3 id="english">English</h3>
+<p>Percent of words wrong (lower is better), speed per thread (0.25 is
+dictation’s budget) and the most memory used.</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Held-out audiobooks</th>
+<th>FLEURS</th>
+<th>LibriSpeech clean</th>
+<th>LibriSpeech other</th>
+<th>Speed per thread</th>
+<th>Peak memory</th>
+<th>Decision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NVIDIA Parakeet Unified 0.6B</td>
+<td>3.2%</td>
+<td>6.3%</td>
+<td>1.8%</td>
+<td>3.2%</td>
+<td>0.21</td>
+<td>1.2 GB</td>
+<td><strong>Recommended</strong> on 8 GB with four cores</td>
+</tr>
+<tr>
+<td>Whisper medium.en</td>
+<td>3.6%</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>1.55</td>
+<td>3.0 GB</td>
+<td>Being retired</td>
+</tr>
+<tr>
+<td>NVIDIA Parakeet TDT 0.6B v3</td>
+<td>3.8%</td>
+<td>9.0%</td>
+<td>2.5%</td>
+<td>5.2%</td>
+<td>0.11</td>
+<td>1.1 GB</td>
+<td>Kept; recommended on 8 GB with two cores</td>
+</tr>
+<tr>
+<td>Whisper small.en</td>
+<td>4.3%</td>
+<td>6.3%</td>
+<td>3.4%</td>
+<td>7.8%</td>
+<td>0.43</td>
+<td>1.4 GB</td>
+<td>Being retired</td>
+</tr>
+<tr>
+<td>Distil-Whisper large-v3</td>
+<td>4.5%</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>0.82</td>
+<td>2.0 GB</td>
+<td>Being retired</td>
+</tr>
+<tr>
+<td>Whisper small</td>
+<td>4.7%</td>
+<td>7.0%</td>
+<td>4.2%</td>
+<td>8.5%</td>
+<td>0.55</td>
+<td>1.4 GB</td>
+<td>Kept; many languages, needs two threads</td>
+</tr>
+<tr>
+<td>NVIDIA Nemotron 3.5 Streaming 0.6B</td>
+<td>5.3%</td>
+<td>13.7%</td>
+<td>3.7%</td>
+<td>7.3%</td>
+<td>0.37</td>
+<td>1.5 GB</td>
+<td>Kept; streams words while you speak</td>
+</tr>
+<tr>
+<td>Moonshine base</td>
+<td>5.9%</td>
+<td>15.1%</td>
+<td>4.8%</td>
+<td>10.7%</td>
+<td>0.05</td>
+<td>378 MB</td>
+<td>Kept; fixed for long phrases</td>
+</tr>
+<tr>
+<td>Whisper base.en</td>
+<td>5.9%</td>
+<td>7.4%</td>
+<td>5.6%</td>
+<td>11.6%</td>
+<td>0.13</td>
+<td>820 MB</td>
+<td>Kept; light, good on varied voices</td>
+</tr>
+<tr>
+<td>Distil-Whisper small.en</td>
+<td>5.9%</td>
+<td>7.6%</td>
+<td>4.6%</td>
+<td>9.2%</td>
+<td>0.22</td>
+<td>1.0 GB</td>
+<td>Being retired</td>
+</tr>
+<tr>
+<td>Distil-Whisper medium.en</td>
+<td>6.3%</td>
+<td>-</td>
+<td>4.2%</td>
+<td>-</td>
+<td>0.47</td>
+<td>1.6 GB</td>
+<td>Being retired</td>
+</tr>
+<tr>
+<td>Moonshine tiny (built in)</td>
+<td>6.5%</td>
+<td>13.2%</td>
+<td>5.0%</td>
+<td>13.3%</td>
+<td>0.06</td>
+<td>584 MB</td>
+<td>Kept; the default, and the pick on 4 GB</td>
+</tr>
+<tr>
+<td>Whisper base</td>
+<td>7.4%</td>
+<td>10.8%</td>
+<td>-</td>
+<td>-</td>
+<td>0.22</td>
+<td>821 MB</td>
+<td>Kept; many languages</td>
+</tr>
+<tr>
+<td>Whisper tiny (built in)</td>
+<td>8.3%</td>
+<td>11.7%</td>
+<td>6.7%</td>
+<td>13.9%</td>
+<td>0.07</td>
+<td>521 MB</td>
+<td>Kept; built in</td>
+</tr>
+</tbody>
+</table>
+<h3 id="spanish">Spanish</h3>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>FLEURS Spanish</th>
+<th>Held-out Spanish audiobooks</th>
+<th>Speed per thread</th>
+<th>Peak memory</th>
+<th>Decision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NVIDIA Parakeet TDT 0.6B v3</td>
+<td>4.4%</td>
+<td>7.3%</td>
+<td>0.12</td>
+<td>1.1 GB</td>
+<td><strong>Recommended</strong> on 8 GB</td>
+</tr>
+<tr>
+<td>Whisper small</td>
+<td>6.0%</td>
+<td>7.8%</td>
+<td>0.57</td>
+<td>1.4 GB</td>
+<td>Kept; needs two threads</td>
+</tr>
+<tr>
+<td>NVIDIA Nemotron 3.5 Streaming 0.6B</td>
+<td>6.4%</td>
+<td>8.0%</td>
+<td>0.50</td>
+<td>1.5 GB</td>
+<td>Kept</td>
+</tr>
+<tr>
+<td>Whisper base</td>
+<td>12.6%</td>
+<td>16.1%</td>
+<td>0.18</td>
+<td>821 MB</td>
+<td>Kept; lighter</td>
+</tr>
+<tr>
+<td>Whisper tiny (built in)</td>
+<td>30.5%</td>
+<td>27.0%</td>
+<td>0.10</td>
+<td>521 MB</td>
+<td>Kept; built in, the pick on 4 GB</td>
+</tr>
+</tbody>
+</table>
+<p>The speed column is each model’s middle value across the sets it ran;
+other work was running during some sets, so these run a little slow. The
+speed factors the apps use come from the English FLEURS run, where the
+models ran back to back: against Moonshine tiny, Parakeet TDT v3 costs
+3.2 times as much, Parakeet Unified 3.8, Whisper base.en 4.3, Nemotron
+5.8, Distil-Whisper small.en 7.9 and Whisper small.en 14.5.</p>
+<h2 id="what-changed-in-the-apps">What changed in the apps</h2>
+<p>QUILL, QUILL Lite and QUILL Transcribe share one dictation engine and
+one catalogue, so all three changed together.</p>
+<ul>
+<li><strong>The recommendation uses these numbers.</strong> English is
+ranked by the held-out audiobooks, Spanish by the mean of its two sets,
+and only models measured in Spanish are offered for Spanish. Speed
+factors and memory peaks are the real ones. The recommendation now says
+its figures come from real recordings.
+<ul>
+<li>4 GB, two cores: Moonshine tiny for English, Whisper tiny for
+Spanish.</li>
+<li>8 GB, two cores: Parakeet TDT v3 for English and Spanish once the
+two-second check shows the computer is quick enough (about 0.07 seconds
+a second or less for Moonshine tiny); a slower or busier two-core
+computer keeps the built-in models.</li>
+<li>8 GB or more, four cores: Parakeet Unified for English, Parakeet TDT
+v3 for Spanish.</li>
+<li>“The quickest response” still names Moonshine tiny.</li>
+</ul></li>
+<li><strong>An 8 GB baseline, and free memory counts.</strong> A
+computer with 8 GB may give dictation 1.6 GB beside the screen reader
+(it was 1 GB), and never more than is free when you ask, less half a
+gigabyte.</li>
+<li><strong>Tiers follow real speed.</strong> Parakeet TDT v3, Parakeet
+Unified and Whisper base.en are now Lightweight: they keep up on a
+modest computer. Nemotron is Balanced.</li>
+<li><strong>Five models are being retired.</strong> Each one’s line in
+the model list starts “Being retired: use NVIDIA Parakeet Unified 0.6B
+instead.” The first time dictation starts on one, QUILL says so once, in
+every QuillVille program together, with the measured reason, and says it
+keeps working until the next feature release. Nothing is switched and
+nothing is deleted. They are never recommended.</li>
+<li><strong>Moonshine base hears long phrases.</strong> Its decoder
+failed on anything over about 8.5 seconds and wrote nothing; long
+phrases are now heard in pieces of 8 seconds or less, cut at the
+quietest moment, and joined.</li>
+</ul>
+<h2 id="what-this-run-could-not-settle">What this run could not
+settle</h2>
+<ul>
+<li><strong>Does Whisper write the opening “¿” and “¡” itself?</strong>
+The scorer now counts them (PR #1684), but FLEURS and the audiobooks
+have almost no questions. Ten recordings from a native Spanish speaker,
+with questions and exclamations, would answer it.</li>
+<li><strong>A real modest computer with a screen reader
+running.</strong> Speed, memory, screen-reader lag and battery on a 4 GB
+Windows 10 computer with NVDA or JAWS (B-8) still need a person.</li>
+<li><strong>Whisper medium and large-v3-turbo</strong> were too slow to
+re-run here.</li>
+</ul>
+<h2 id="the-data">The data</h2>
+<p>Every row above is in
+<code>dictation-real-speech-benchmark-2026-10-22.json</code> beside this
+page: model, set, dataset, words wrong, speed, peak memory, punctuation
+scores and the number of recordings. The harness is in
+<code>scripts/</code> and the datasets, with their licences and
+checksums, are listed in <code>scripts/bench_datasets.json</code>. The
+full engineering record is section 36 of the dictation plan
+(<code>docs/design/2026-10-05-dictation-plan-and-status.md</code>).</p>
+</main>
+</body>
+</html>

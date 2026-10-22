@@ -146,7 +146,9 @@ def test_the_supported_list_is_the_one_catalogue_with_tiers_memory_and_capabilit
     assert "GB of memory or more" in rows["parakeet"].recommended_use
     labels = {row.id: row.label for row in describe_models(_provider(tmp_path), 16.0, False)}
     assert "never invents text from silence" in labels["parakeet"]
-    assert ", Balanced" in labels["parakeet"]  # the catalogue's tier, not a size guess
+    # The catalogue's tier, not a size guess: 670 MB, yet Lightweight because
+    # its real-speech cost is 3.2 times Moonshine tiny.
+    assert ", Lightweight" in labels["parakeet"]
 
 
 def test_built_in_models_cannot_be_downloaded_or_removed(tmp_path) -> None:

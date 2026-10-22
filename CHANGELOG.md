@@ -2,6 +2,32 @@
 
 ## 1.0.0
 
+### Dictation advice from real speech: Parakeet recommended, five English-only models retiring (2026-10-22)
+
+Every dictation model in the shared catalogue was benchmarked on real
+recordings (`docs/qa/dictation-real-speech-benchmark-2026-10-22.md`, its
+`.json`, and dictation plan section 37) and the advice now uses the results:
+
+- `Measured.word_errors` is the LibriVox held-out set (Parakeet Unified 3.2,
+  Parakeet TDT v3 3.8, Nemotron 5.3, Moonshine base 5.9, Moonshine tiny 6.5,
+  Whisper tiny 8.3); catalogue `cost_factor`s are the English FLEURS run's
+  (Parakeet TDT v3 3.2, Parakeet Unified 3.8, Nemotron 5.8, ...; built-in
+  Whisper 2.6); `_LEGACY_SAME_AS` follows. Parakeet TDT v3, Parakeet Unified
+  and Whisper base.en become Lightweight, Nemotron Balanced.
+- Recommended: Parakeet Unified for English on 8 GB with four cores, Parakeet
+  TDT v3 for Spanish there and for both on two cores; Moonshine tiny / Whisper
+  tiny on 4 GB. `ESTIMATE_NOTE` now says the figures are real recordings.
+- New `windows_dictation/retiring.py`: Distil-Whisper small.en, Whisper
+  small.en, Distil-Whisper medium.en, Whisper medium.en and Distil-Whisper
+  large-v3 are **deprecated**, replaced by Parakeet Unified, which beat each on
+  accuracy and speed in the same or a smaller memory tier. Their list line
+  says so (`model_catalog._with_retiring_notes`), the recommendation never
+  names them, and the controller says the measured reason once across the
+  family (`retiring-notices.json` beside `family_dictation.json`). Nothing is
+  switched or deleted; removal no earlier than the next feature release.
+- Tests: `test_dictation_retiring.py`, and the advice, catalogue, dialog and
+  Transcribe tests re-pinned to the decided recommendations.
+
 ### Moonshine base no longer drops a phrase longer than 8.5 seconds (2026-10-22)
 
 The 2026-10-22 real-speech run scored Moonshine base at 50 to 73 percent

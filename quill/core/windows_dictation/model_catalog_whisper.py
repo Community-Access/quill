@@ -133,7 +133,8 @@ WHISPER_VS_CODE: tuple[DownloadableModel, ...] = (
         commit="bb53ee204431c90d314c1cc08d28d23e5b7927cc",
         encoder=(29_120_534, "0b8fb1304b6109976038efff5ace81720e00386f3ff6b54ee8c75291ca0a1e11"),
         decoder=(130_672_026, "9759d217388a01b3a4c7c15533201067b48ae819c4daafc8624e64b9409dc02d"),
-        cost=6.8,
+        # Real speech, 2026-10-22 (English FLEURS, against Moonshine tiny); was 6.8.
+        cost=7.0,
         works_best_on=MODEST,
     ),
 )
@@ -153,7 +154,8 @@ WHISPER_FAMILY: tuple[DownloadableModel, ...] = (
         commit="59eea950fc76df2453efb57e6c0fd334548e8ffe",
         encoder=(29_120_534, "ef6b936f4c9b1d90a3b68634b60c4ed8576b26172b33c2535ec0e933c9edb823"),
         decoder=(130_669_978, "f7162ad6db2dbef16cfaeaa7f945b9d7dd9c1b8d472f6aca82f2273d185e4d41"),
-        cost=6.8,
+        # Real speech, 2026-10-22 (English FLEURS run, against Moonshine tiny); was 6.8.
+        cost=4.3,
         works_best_on=MODEST,
     ),
     _whisper(
@@ -166,7 +168,8 @@ WHISPER_FAMILY: tuple[DownloadableModel, ...] = (
         commit="d9533f69affd85061aee349af7fea5cb2996dbbe",
         encoder=(112_442_483, "8bdac288f369aa94ee2194059238c465ed82ea9d47ee8fa4a8c0a891873e462f"),
         decoder=(262_223_042, "710ccf890e10f3faa15f51ec346081a2723c9f3adb6e4da81c6573a5a6f877fb"),
-        cost=24.0,
+        # Real speech, 2026-10-22 (English FLEURS run, against Moonshine tiny); was 24.
+        cost=14.5,
         works_best_on=STRONG,
     ),
     _whisper(
@@ -182,7 +185,8 @@ WHISPER_FAMILY: tuple[DownloadableModel, ...] = (
         commit="0492324bca9e12a6fca0089bb846f2dd723b50d8",
         encoder=(102_961_431, "397a76d2308c2c1ec91a4ecc12f20fede69bb17be41a1cef050993520328beca"),
         decoder=(195_079_097, "3074092bca078786ecda9c9e88449f14e9ebde1d60be4d41de8cacda55e065e0"),
-        cost=18.0,
+        # Real speech, 2026-10-22 (English FLEURS run, against Moonshine tiny); was 18.
+        cost=7.9,
         works_best_on=STRONG,
     ),
     _whisper(

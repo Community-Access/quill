@@ -429,7 +429,8 @@ def test_downloaded_models_join_and_the_most_accurate_is_suggested(downloaded) -
         "moonshine",
     ]
     assert file_models.default_model(rows).id == "parakeet"
-    assert rows[0].label.endswith("(downloaded; Balanced)")
+    # Parakeet's real-speech cost is 3.2 times Moonshine tiny: Lightweight.
+    assert rows[0].label.endswith("(downloaded; Lightweight)")
 
 
 def test_spanish_lists_only_models_that_know_spanish(downloaded) -> None:

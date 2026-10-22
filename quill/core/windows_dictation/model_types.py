@@ -227,15 +227,17 @@ _HIGH_ACCURACY_WORD_ERRORS = 2.5
 class Measured:
     """What scripts/dictbench.py measured for one model.
 
-    ``word_errors`` and ``after_pause`` are still the 2026-10-05 synthetic-voice
-    figures (ten recordings, one thread; dictation design, section 6), an
-    estimate until B-1's English real-voice run is written in. ``peak_mb`` and
-    ``word_errors_es`` are real speech (2026-10-22 machine run: LibriSpeech,
-    LibriVox held-out, FLEURS), and the peaks are the highest seen on any set,
-    because a model must fit the worst minute, not the average one.
+    Real speech, 2026-10-22 machine run (dictation design, section 36):
+    ``word_errors`` is the LibriVox held-out set (101 audiobook recordings
+    catalogued after every model's training cutoff, so none was trained on
+    them), ``word_errors_es`` the mean of FLEURS Spanish and the Spanish
+    LibriVox held-out set, and ``peak_mb`` the highest seen on any set, because
+    a model must fit the worst minute, not the average one. ``after_pause`` is
+    still the 2026-10-05 measurement. Whisper medium and large-v3-turbo were
+    too slow to re-run and keep their 2026-10-05 synthetic-voice figures.
     """
 
-    #: Percent of words wrong, English (synthetic voice).
+    #: Percent of words wrong, English (real speech, LibriVox held-out).
     word_errors: float
     #: Seconds from the end of speech to the text, on the measuring machine.
     after_pause: float
@@ -250,21 +252,22 @@ class Measured:
 #: Keyed by engine id (built in) or catalogue id (downloads). A model missing
 #: here was not measured and is never recommended: a reason needs a number.
 MEASURED: dict[str, Measured] = {
-    "moonshine": Measured(3.4, 0.2, 584),
+    "moonshine": Measured(6.5, 0.2, 584),
     # Spanish is the multilingual tiny: 30.5 FLEURS, 27.0 LibriVox.
-    "whisper": Measured(3.4, 0.7, 521, word_errors_es=28.8),
-    # Real speech scored 50 to 73 percent wrong on 2026-10-22 against 3.4 on the
-    # synthetic voice: under investigation, so its synthetic figure stays.
-    "moonshine_base": Measured(3.4, 0.3, 461),
+    "whisper": Measured(8.3, 0.7, 521, word_errors_es=28.8),
+    # Measured after the long-phrase fix (chunked_offline); before it, every
+    # recording over 8.5 seconds came back empty.
+    "moonshine_base": Measured(5.9, 0.3, 378),
     # Spanish 12.6 FLEURS, 16.1 LibriVox.
-    "whisper_base": Measured(5.1, 1.4, 806, word_errors_es=14.4),
-    "parakeet_unified": Measured(3.4, 1.2, 1278),
+    "whisper_base": Measured(7.4, 1.4, 821, word_errors_es=14.4),
+    # The most accurate English model measured: 3.2 held-out, 6.3 FLEURS.
+    "parakeet_unified": Measured(3.2, 1.2, 1278),
     # Spanish 4.4 FLEURS, 7.3 LibriVox: the most accurate Spanish model measured.
-    "parakeet": Measured(4.2, 1.2, 1136, word_errors_es=5.9),
+    "parakeet": Measured(3.8, 1.2, 1136, word_errors_es=5.9),
     # Spanish 6.4 FLEURS, 8.0 LibriVox.
-    "nemotron": Measured(2.5, 1.5, 1538, word_errors_es=7.2),
+    "nemotron": Measured(5.3, 1.5, 1538, word_errors_es=7.2),
     # Spanish 6.0 FLEURS, 7.8 LibriVox; accurate, but over the speed budget.
-    "whisper_small": Measured(5.1, 4.7, 1435, word_errors_es=6.9),
+    "whisper_small": Measured(4.7, 4.7, 1435, word_errors_es=6.9),
     "whisper_medium": Measured(3.4, 11.2, 2100),
     "whisper_turbo": Measured(3.4, 15.4, 2128),
 }
@@ -286,8 +289,8 @@ def tier_for(cost_factor: float, word_errors: float | None = None) -> str:
 #: ids; they take the live model's tier, so one model is never two tiers. The
 #: cost factors are the live catalogue's (not imported: it imports this module).
 _LEGACY_SAME_AS: dict[str, tuple[str, float]] = {
-    "nemotron-streaming-en-0.6b": ("nemotron", 8.0),
-    "parakeet-tdt-0.6b-v3": ("parakeet", 6.3),
+    "nemotron-streaming-en-0.6b": ("nemotron", 5.8),
+    "parakeet-tdt-0.6b-v3": ("parakeet", 3.2),
 }
 
 

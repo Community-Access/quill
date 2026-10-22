@@ -245,6 +245,41 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="dictation-advice-from-real-speech-parakeet-recommended-five-english-only-models-retiring-2026-10-22">Dictation
+advice from real speech: Parakeet recommended, five English-only models
+retiring (2026-10-22)</h3>
+<p>Every dictation model in the shared catalogue was benchmarked on real
+recordings
+(<code>docs/qa/dictation-real-speech-benchmark-2026-10-22.md</code>, its
+<code>.json</code>, and dictation plan section 37) and the advice now
+uses the results:</p>
+<ul>
+<li><code>Measured.word_errors</code> is the LibriVox held-out set
+(Parakeet Unified 3.2, Parakeet TDT v3 3.8, Nemotron 5.3, Moonshine base
+5.9, Moonshine tiny 6.5, Whisper tiny 8.3); catalogue
+<code>cost_factor</code>s are the English FLEURS run’s (Parakeet TDT v3
+3.2, Parakeet Unified 3.8, Nemotron 5.8, …; built-in Whisper 2.6);
+<code>_LEGACY_SAME_AS</code> follows. Parakeet TDT v3, Parakeet Unified
+and Whisper base.en become Lightweight, Nemotron Balanced.</li>
+<li>Recommended: Parakeet Unified for English on 8 GB with four cores,
+Parakeet TDT v3 for Spanish there and for both on two cores; Moonshine
+tiny / Whisper tiny on 4 GB. <code>ESTIMATE_NOTE</code> now says the
+figures are real recordings.</li>
+<li>New <code>windows_dictation/retiring.py</code>: Distil-Whisper
+small.en, Whisper small.en, Distil-Whisper medium.en, Whisper medium.en
+and Distil-Whisper large-v3 are <strong>deprecated</strong>, replaced by
+Parakeet Unified, which beat each on accuracy and speed in the same or a
+smaller memory tier. Their list line says so
+(<code>model_catalog._with_retiring_notes</code>), the recommendation
+never names them, and the controller says the measured reason once
+across the family (<code>retiring-notices.json</code> beside
+<code>family_dictation.json</code>). Nothing is switched or deleted;
+removal no earlier than the next feature release.</li>
+<li>Tests: <code>test_dictation_retiring.py</code>, and the advice,
+catalogue, dialog and Transcribe tests re-pinned to the decided
+recommendations.</li>
+</ul>
+<h3
 id="moonshine-base-no-longer-drops-a-phrase-longer-than-85-seconds-2026-10-22">Moonshine
 base no longer drops a phrase longer than 8.5 seconds (2026-10-22)</h3>
 <p>The 2026-10-22 real-speech run scored Moonshine base at 50 to 73
