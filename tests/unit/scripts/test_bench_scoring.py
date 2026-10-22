@@ -256,3 +256,19 @@ def test_a_mixed_folder_names_each_condition_as_a_group(tmp_path: Path) -> None:
     speakers = (out / "speakers.tsv").read_text(encoding="utf-8")
     assert "noise 10 dB" in speakers and "noise 0 dB" in speakers
     assert "!new paragraph" in (out / "transcripts.txt").read_text(encoding="utf-8")
+
+
+def test_spanish_opening_marks_are_scored_on_the_word_they_open() -> None:
+    # dict.md 9.4 D: does the engine write the opening marks itself?
+    from bench_scoring import punctuation_scores
+
+    reference = "¿Dónde está la biblioteca? ¡Qué bien!"
+    wrote_both = punctuation_scores(reference, "¿Dónde está la biblioteca? ¡Qué bien!")
+    assert wrote_both["opening_question"].hits == 1
+    assert wrote_both["opening_exclamation"].hits == 1
+    closing_only = punctuation_scores(reference, "Dónde está la biblioteca? Qué bien!")
+    assert closing_only["opening_question"].missed == 1
+    assert closing_only["opening_exclamation"].missed == 1
+    assert closing_only["question"].hits == 1  # the closing mark still counts
+    extra = punctuation_scores("Dónde está.", "¿Dónde está?")
+    assert extra["opening_question"].extra == 1
