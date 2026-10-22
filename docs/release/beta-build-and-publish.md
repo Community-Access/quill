@@ -66,9 +66,11 @@ done; Actions allowed to create pull requests; `stable-promotion` environment
 with you as reviewer.
 
 **For each beta app (after A3 built the files):**
-1. Write short notes for the release (copy the "New in the beta" section of the
-   app's release notes, for example `standalone\radio\docs\release-notes-3.2.md`)
-   into a file such as `notes-radio.md`.
+1. Write short notes for the release (copy the section for the build you are
+   publishing, such as "Testing rebuild: 3.2.0 (build 4)", from the app's release
+   notes, for example `standalone\radio\docs\release-notes-3.2.md`) into a file
+   such as `notes-radio.md`. First check that it covers everything under
+   [Unreleased] in the app's `CHANGELOG.md`.
 2. Rehearse first, nothing is created:
    `python scripts/publish_release.py --app radio --version 3.2.0 --build 4 --channel beta --dist standalone/radio/dist --notes-file notes-radio.md --dry-run`
 3. Publish for real (same command without `--dry-run`). It hashes the files,

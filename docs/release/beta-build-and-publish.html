@@ -387,10 +387,13 @@ pull requests; <code>stable-promotion</code> environment with you as
 reviewer.</p>
 <p><strong>For each beta app (after A3 built the files):</strong></p>
 <ol type="1">
-<li>Write short notes for the release (copy the “New in the beta”
-section of the app’s release notes, for example
+<li>Write short notes for the release (copy the section for the build
+you are publishing, such as “Testing rebuild: 3.2.0 (build 4)”, from the
+app’s release notes, for example
 <code>standalone\radio\docs\release-notes-3.2.md</code>) into a file
-such as <code>notes-radio.md</code>.</li>
+such as <code>notes-radio.md</code>. First check that it covers
+everything under [Unreleased] in the app’s
+<code>CHANGELOG.md</code>.</li>
 <li>Rehearse first, nothing is created:
 <code>python scripts/publish_release.py --app radio --version 3.2.0 --build 4 --channel beta --dist standalone/radio/dist --notes-file notes-radio.md --dry-run</code></li>
 <li>Publish for real (same command without <code>--dry-run</code>). It
