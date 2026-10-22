@@ -312,7 +312,9 @@ def test_the_scan_reaches_launchers_runtime_menus_and_numbered_rows() -> None:
     assert "QuillVille launcher: Open Quill Cast" in where
     assert any(place.startswith("ui/radio/local_media_window_menu.py") for place, _ in rows)
     assert any(place.startswith("ui/main_frame_weather.py") for place, _ in rows)
-    assert ("core/recent_documents.py", "Alt+Shift+9") in chords
+    assert ("core/recent_documents.py", "Alt+Shift+8") in chords
+    # Open Recent stops at NUMBERED (eight): Alt+Shift+9 is AutoCorrect Entries.
+    assert ("core/recent_documents.py", "Alt+Shift+9") not in chords
     assert ("ui/main_frame_radio.py", "Alt+Shift+1") in chords
 
 

@@ -1101,7 +1101,7 @@ def shortcut_text(keymap: dict[str, str] | None = None) -> str:
         "  Alt+1 to Alt+9: switch to that open window",
         "",
         "File menu, Open Recent",
-        "  Alt+Shift+1 to Alt+Shift+9: reopen that recent file",
+        "  Alt+Shift+1 to Alt+Shift+8: reopen that recent file",
         "",
         "Status bar (F6)",
         "  Left and Right, Home and End: move between cells",

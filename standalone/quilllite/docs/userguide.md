@@ -1814,7 +1814,7 @@ one never means hunting through folders.
 
 **The quick way.** Press **Alt+Shift+1** to reopen the document you opened most
 recently, **Alt+Shift+2** for the one before that, and so on up to
-**Alt+Shift+9**. The same list is on the File menu, under **Open Recent**: press
+**Alt+Shift+8**. The same list is on the File menu, under **Open Recent**: press
 **Alt+F**, then **T**. Each row says the file's name first and then the folder
 it is in, so two files called "notes" are easy to tell apart.
 
@@ -1946,7 +1946,7 @@ it. Only rich text really converts your document, and it asks first.
 line endings and ending kept, and **Ctrl+Alt+E** changes those on purpose. You
 know what happens when a character will not fit, how a spare copy keeps your
 work safe after a crash, and how **File > Earlier Versions...** brings back an
-older copy once backups are on. **Alt+Shift+1** to **Alt+Shift+9** reopen your
+older copy once backups are on. **Alt+Shift+1** to **Alt+Shift+8** reopen your
 recent documents, and **Alt+Shift+0** shows the whole list, where you can pin
 the ones you keep coming back to. QUILL Lite offers your last documents back,
 only asks when there are several or something has moved, and
@@ -9470,7 +9470,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | Key | Command |
 |---|---|
 | **Alt+1** to **Alt+9** | Go to that numbered document |
-| **Alt+Shift+1** to **Alt+Shift+9** | Reopen that recent file |
+| **Alt+Shift+1** to **Alt+Shift+8** | Reopen that recent file |
 
 ### Second keys
 

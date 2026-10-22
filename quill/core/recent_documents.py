@@ -64,8 +64,12 @@ DEFAULT_LIMIT = 10
 #: The range the setting is clamped to, in both editors.
 LIMIT_MIN = 1
 LIMIT_MAX = 50
-#: How many rows of the Open Recent submenu get Alt+Shift+1 to Alt+Shift+9.
-NUMBERED = 9
+#: How many rows of the Open Recent submenu get Alt+Shift+1 to Alt+Shift+8.
+#: Eight, not nine, since 2026-10-22: Alt+Shift+9 is AutoCorrect Entries in
+#: both editors (keymap ``format.autocorrect_entries``), and a key claimed twice
+#: means one of the two silently never fires. The ninth file is still one row
+#: down in Recent Documents (Alt+Shift+0).
+NUMBERED = 8
 
 
 def clamp_limit(value: object) -> int:
@@ -166,7 +170,7 @@ def menu_paths(
 def menu_label(index: int, path: str | Path, *, pinned: bool = False) -> str:
     """One Open Recent row: the name first, because it is what you listen for.
 
-    The first nine carry a digit and Alt+Shift+digit, in both editors. The
+    The first eight carry a digit and Alt+Shift+digit, in both editors. The
     folder follows in brackets, so two files called ``notes.txt`` can be told
     apart without the whole path being read before the name.
     """

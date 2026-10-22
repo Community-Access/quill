@@ -245,7 +245,7 @@ def test_the_shortcut_window_lists_what_is_actually_bound() -> None:
         assert label.replace("&", "") in text, f"{label} is bound but not listed"
     # The two things the table cannot carry, because they are built per window.
     assert "Alt+1 to Alt+9" in text
-    assert "Alt+Shift+1 to Alt+Shift+9" in text
+    assert "Alt+Shift+1 to Alt+Shift+8" in text
     # And the one fact about rich mode that saves a support email.
     assert "20, 16, 14, 12, 11.5" in text
 

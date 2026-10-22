@@ -756,7 +756,8 @@ Default apps and the right-click verbs come from the installer.
 - [ ] QUILL's File menu: Alt+F, P opens Print. Alt+F, X still exits and Alt+F, E
   still opens Export.
 - [ ] QUILL, File > Open Recent: Alt+Shift+1 reopens the most recent document,
-  Alt+Shift+2 the one before, through Alt+Shift+9; Alt+Shift+0 opens Recent
+  Alt+Shift+2 the one before, through Alt+Shift+8 (Alt+Shift+9 is AutoCorrect
+  Entries); Alt+Shift+0 opens Recent
   Documents. Each row of Open Recent says the file's name first, then its
   folder, and says how to reach it from the keyboard.
 

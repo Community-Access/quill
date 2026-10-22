@@ -825,7 +825,6 @@
   ["a QuillVille app", "core/recent_documents.py numbered row", "Alt+Shift+6"],
   ["a QuillVille app", "core/recent_documents.py numbered row", "Alt+Shift+7"],
   ["a QuillVille app", "core/recent_documents.py numbered row", "Alt+Shift+8"],
-  ["a QuillVille app", "core/recent_documents.py numbered row", "Alt+Shift+9"],
   ["a QuillVille app", "ui/lineups/menus.py Add to Up Next", "Ctrl+Alt+Enter"],
   ["a QuillVille app", "ui/lineups/menus.py Close", "Ctrl+W"],
   ["a QuillVille app", "ui/lineups/menus.py Cut", "Ctrl+X"],
