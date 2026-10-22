@@ -7,7 +7,6 @@ from __future__ import annotations
 from pathlib import Path
 from types import SimpleNamespace
 
-import numpy as np
 import pytest
 
 from quill.core.windows_dictation.chunked_offline import RATE, ChunkedOffline, split_points
@@ -33,7 +32,8 @@ class _ShortOnly:
         stream.result = SimpleNamespace(text=words)
 
 
-def _speech(seconds: float, quiet_at: tuple[float, ...] = ()) -> np.ndarray:
+def _speech(seconds: float, quiet_at: tuple[float, ...] = ()) -> object:
+    np = pytest.importorskip("numpy")  # the live-dictation extra, not in every CI leg
     audio = np.full(int(RATE * seconds), 0.3, dtype=np.float32)
     for at in quiet_at:
         start = int(RATE * at)
@@ -90,7 +90,7 @@ def test_an_empty_phrase_is_empty_and_the_rate_is_checked() -> None:
     engine.decode_stream(phrase)
     assert phrase.result.text == ""
     with pytest.raises(ValueError):
-        phrase.accept_waveform(8_000, _speech(1.0))
+        phrase.accept_waveform(8_000, [0.0] * 8_000)
 
 
 def test_the_loader_wraps_moonshine_base(monkeypatch: pytest.MonkeyPatch) -> None:

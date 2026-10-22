@@ -47,10 +47,10 @@ class _HeldPhrase:
         self.result = _Result("")
 
     def accept_waveform(self, rate: int, samples: Any) -> None:
-        import numpy as np
-
         if rate != RATE:
             raise ValueError(f"dictation audio is {RATE} Hz, not {rate}")
+        import numpy as np
+
         self.parts.append(np.asarray(samples, dtype=np.float32))
 
 
@@ -105,11 +105,11 @@ class ChunkedOffline:
         return str(text).strip()
 
     def decode_stream(self, phrase: _HeldPhrase) -> None:
-        import numpy as np
-
         if not phrase.parts:
             phrase.result = _Result("")
             return
+        import numpy as np
+
         audio = np.concatenate(phrase.parts)
         bounds = [0, *split_points(audio, self._max_samples), len(audio)]
         words = [self._hear(audio[a:b]) for a, b in zip(bounds, bounds[1:], strict=False)]
