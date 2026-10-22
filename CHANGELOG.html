@@ -245,6 +245,25 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="moonshine-base-no-longer-drops-a-phrase-longer-than-85-seconds-2026-10-22">Moonshine
+base no longer drops a phrase longer than 8.5 seconds (2026-10-22)</h3>
+<p>The 2026-10-22 real-speech run scored Moonshine base at 50 to 73
+percent of words wrong; every miss was a recording over about 8.5
+seconds returned empty. sherpa-onnx 1.13.8’s <code>moonshine_v2</code>
+decoder fails an ONNX broadcast in encoder attention (“2 by 498”) on
+longer input, catches it and returns <code>""</code>, so dictation
+(phrases up to <code>local_recognizer._MAX_PHRASE_SECONDS</code>, 20 s)
+silently lost every long sentence. New
+<code>windows_dictation/chunked_offline.py</code>:
+<code>ChunkedOffline</code> holds the phrase and, past 8 seconds, cuts
+it into nearly equal pieces planned so each cut can move back up to 1.5
+s to the quietest 20 ms and still keep every piece, the last included,
+within the limit; the words are joined. <code>model_loader.build</code>
+wraps <code>moonshine_v2</code> in it, so dictation, Transcribe a
+Recording and dictbench all get it. A cut can still cost a word at its
+seam (one in the 12-second check); losing the sentence was the
+alternative. Tests: <code>test_dictation_chunked_offline.py</code>.</p>
+<h3
 id="dictation-advice-an-8-gb-baseline-free-memory-and-spanish-ranked-by-real-spanish-speech-2026-10-22">Dictation
 advice: an 8 GB baseline, free memory, and Spanish ranked by real
 Spanish speech (2026-10-22)</h3>

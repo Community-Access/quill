@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- **Moonshine base no longer loses long sentences** (2026-10-22). With the
+  Moonshine base speech model, a phrase longer than about eight and a half
+  seconds was written as nothing at all. Long phrases are now heard in pieces
+  and joined, so the whole sentence is written.
 - **Open Recent numbers its first eight files** (2026-10-22). Alt+Shift+9 was
   both the ninth recent file and **AutoCorrect Entries**, so one of the two did
   nothing. Now **Alt+Shift+1** to **Alt+Shift+8** reopen your recent files,
