@@ -68,7 +68,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "from the Recordings window."
                 ),
                 command="radio.record_toggle",
-                hear="Stopping recording, then Recording saved and the file's name.",
+                hear="Stopping recording, then Recording saved, how long it is, and its folder.",
                 check="recording-finished",
             ),
             Step(

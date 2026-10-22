@@ -761,7 +761,7 @@ Record the station you are listening to, stop it, find the file and play it back
 
 4. **Stop it, and hear where it went.** Use the same command to stop recording the station you are listening to. Once the file is saved, Quill Radio tells you its name. If you are also recording a different station in the background, this does not stop that one. You stop those from the Recordings window.
    - Keys: Ctrl+R
-   - You should hear: Stopping recording, then Recording saved and the file's name.
+   - You should hear: Stopping recording, then Recording saved, how long it is, and its folder.
 
 5. **Open the recordings list.** Radio Recordings lists everything you have recorded, newest first, so yours is near the top. The summary line tells you what is happening first: whether anything is recording, what is scheduled next, how many recordings you have, and which folder they are in.
    - Keys: Ctrl+Shift+R
@@ -852,7 +852,7 @@ Record a station you are not listening to, record several at the same time, stop
 
 4. **Stop one, or stop the lot.** The Stop Recording button stops the one you have selected. Stop All Recordings, on the Record menu, stops them all at once, and it also shows up as a button in this window whenever two or more are running. Record Now only ever stops the recording of the station you are listening to.
    - Keys: Ctrl+Alt+X
-   - You should hear: Stopping all, and how many. Then Recording saved for each file.
+   - You should hear: Stopping all, and how many. Then Recording saved for each one.
 
 5. **Cap it if the machine cannot take it.** Maximum simultaneous recordings, in Recording Settings, starts at 0, which means no limit. On a slower computer or a limited internet plan, set a number. If a booked recording would go over your limit, it waits and tries again while the show is still on, rather than being lost.
    - Keys: Ctrl+Alt+Shift+I

@@ -2,6 +2,53 @@
 
 ## 1.0.0
 
+### Radio recordings say how they ended, and every recording is findable (2026-10-19)
+
+Rick Lewis on QUILLVille: a weekly 190-minute scheduled recording, stopped
+with Stop All near its end, left no recording he could find. Stopping early
+was never the fault -- every format is streamable and `_monitor` keeps a
+user-stopped file -- but the recorder said too little for him to know what
+happened. Developer notes:
+
+- **`core/radio/recording_report.py` (new).** `build_report(job, path, *,
+  dropped, fatal, stderr_tail, now)` returns a frozen `RecordingReport`
+  (`STOPPED` / `FINISHED` / `ENDED_EARLY`, length, `planned_seconds`, reason,
+  reconnects, `left_in_temp`); `describe()` is the one sentence. A drop within
+  90 s of the scheduled end is `FINISHED` (stations cut the stream at the top
+  of the hour). The sentence leads with the fact (saved, how much, where) and
+  ends with "Reason: ..." so a braille reader can stop early; it names the
+  station and `spoken_start()` time, not the file name, which stays in
+  Activity's object name.
+- **`RadioRecorder(on_finished=...)`** fires once per recording, after the
+  reconnect decision and *before* `_join_parts` (the pre-roll guard can hold a
+  short recording's join for minutes; the join keeps part one's name). The
+  per-part `on_state_changed(False, ...)` now always passes `None`, so a part
+  landing is never "saved". `ui/outcome_report.say_recording_finished`
+  replaces `say_recording_saved`: error cue for an early end, kept with
+  `keep_outcome(..., partial=True)` (new `activity.PARTIAL` path that keeps
+  Open Folder).
+- **`RadioRecorder.waiting_count`.** `radio_stop_all_recordings` counted only
+  live processes, so Stop All during a reconnect wait said "Nothing is
+  recording" and the continuation started anyway.
+- **An empty continuation keeps the earlier parts.** `_monitor` reported
+  `on_capture_failed` ("saved nothing, no file was kept") and dropped
+  `_parts[job_id]` whenever the *latest* part was empty; it now only does that
+  when there are no earlier parts, and otherwise discards the empty file and
+  lets the reconnect budget decide.
+- **`recordings_index` sees every recording.** `_RECORDING_SUFFIXES` was built
+  from `RECORD_FORMATS`, whose `"copy"` is not an extension, so raw captures
+  were never listed; it now adds `recording_commands.RAW_CAPTURE_EXTENSIONS`.
+  The settings' `temp_dir` is scanned too, rows marked
+  `TEMP_FOLDER_DETAIL`, skipping the pre-roll guard's `.trimming` work files.
+- **Smaller pieces.** `recording_outcome.reason_from_stderr` is shared by the
+  empty-capture verdict and the report; a successful join is silent
+  (`describe_join` is only spoken when parts were kept); scheduled-start
+  failures are kept in Activity; the "Recording part finished" log line is
+  INFO. The exact-OptiLab pass moved to `core/radio/recording_exact.py`
+  (GATE-11: extract, never rebaseline), leaving `recording.py` at its budget.
+- Tests: `tests/unit/core/radio/test_recording_report.py`, three recorder
+  tests in `test_radio_recording.py`, three index tests, and the earcon tests.
+
 ### The test suite never speaks through the real screen reader; Radio history saves stay inside their test (2026-10-17)
 
 Jeff, with JAWS running while agents ran tests: "radio settings can not be

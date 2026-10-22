@@ -10,6 +10,38 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 Testing rebuild: **3.2.0 (build 4)**. The packages have not been published yet.
 
+- **Every recording ends by telling you how it went** (2026-10-19). Reported
+  on QUILLVille by Rick Lewis, whose 190-minute scheduled recording could not
+  be found afterwards. When a recording is over you now hear one message, once,
+  with the station, when it started, how long it is and the folder it is in:
+  "Recording saved: WNYC, started Friday 4:58 PM, 3 hours 4 minutes, in Quill
+  Radio Recordings." You no longer hear "Recording saved" each time a
+  dropped recording reconnects. If the station goes away for good before the
+  end, you hear the error sound and how much was kept, then why: "WNYC
+  recording ended early. Saved 44 of 190 minutes, in Quill Radio Recordings.
+  Reason: the station stopped responding and did not come back after 5
+  reconnect attempts." Each message is kept in Activity (Shift+F9) with the
+  file name and Open Folder, and an early end is listed as partial. Stopping a
+  recording early always keeps everything recorded so far. User guide: "When a
+  recording ends" and "Cannot find a recording?" in Chapter 8.
+- **Radio Recordings lists every recording** (2026-10-19). Raw stream
+  recordings (`.aac`, `.opus`, `.mka` and the rest) were saved but never
+  appeared in the list, and a file that could not be moved out of the
+  temporary recording folder was invisible too. Both are listed now; the
+  second says "still in the temporary recording folder".
+- **Stop All Recordings reaches a recording that is waiting to reconnect**
+  (2026-10-19). It used to say "Nothing is recording right now" and the
+  recording carried on after its wait. Now it is stopped, and you hear
+  "including 1 waiting to reconnect".
+- **A reconnect that records nothing no longer hides what you have**
+  (2026-10-19). It used to say "saved nothing, no file was kept" while the
+  earlier part of the show sat on disk. Now the parts you have are kept and
+  it counts as one more reconnect try.
+- **A scheduled recording that cannot start is kept in Activity** (2026-10-19),
+  with its reason, so a failure at 4:58 is still there to find at 8:00. A
+  successful join of a reconnected recording's parts is now silent, because
+  the end-of-recording message already says where it is; a join that could
+  not be done is still said.
 - **No more "mpv is missing" on every start when Playback engine is Automatic**
   (2026-10-17). Automatic means "use the mpv engine when this copy has it, and
   Windows Media when it does not", so playing through Windows Media without mpv

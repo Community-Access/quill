@@ -71,7 +71,7 @@ TUTORIALS: tuple[Tutorial, ...] = (
                     "stops the recording of the station you are listening to."
                 ),
                 command="radio.stop_all_recordings",
-                hear="Stopping all, and how many. Then Recording saved for each file.",
+                hear="Stopping all, and how many. Then Recording saved for each one.",
             ),
             Step(
                 title="Cap it if the machine cannot take it",
