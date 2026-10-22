@@ -15,7 +15,10 @@ Used by ``scripts/dictbench.py``; pure Python, no audio, no network.
    reference and of the output are aligned (difflib), and for every pair of
    words that matched, the mark after each is compared. Per-mark precision,
    recall and F1 for the full stop (``!`` counts as one), the comma, the
-   question mark and the new paragraph; and the share of sentences the output
+   question mark and the new paragraph, and Spanish's opening ``¿`` and ``¡``
+   (scored on the word they open, since they come before it: the question
+   dict.md 9.4 D asks is whether multilingual Whisper writes them itself); and
+   the share of sentences the output
    starts with a capital. Quote marks are never scored; a reference that is
    mostly inside quotes is a *dialogue* segment and is reported apart.
 4. **Limits**, said in every report: :data:`LIMITS`.
@@ -48,8 +51,17 @@ __all__ = [
 ]
 
 #: The marks scored, by name. "!" is scored as a full stop; quote marks never.
-SCORED_MARKS = ("period", "comma", "question", "paragraph")
+#: The two opening marks belong to the word *after* them.
+SCORED_MARKS = (
+    "period",
+    "comma",
+    "question",
+    "paragraph",
+    "opening_question",
+    "opening_exclamation",
+)
 _MARK_OF = {".": "period", "!": "period", ",": "comma", "?": "question"}
+_OPENING_OF = {"¿": "opening_question", "¡": "opening_exclamation"}
 _QUOTES = '"“”«»„'
 _WORD = re.compile(r"[\w][\w'’-]*", re.UNICODE)
 _SENTENCE_END = re.compile(r"[.?!]+[\"”’)»]*\s+")
@@ -105,13 +117,16 @@ class Token:
 
 
 def tokens(text: str) -> list[Token]:
-    """*text*'s words, each with the scored marks that follow it."""
+    """*text*'s words, each with the scored marks that follow it, and the
+    opening ``¿`` / ``¡`` that come before it."""
     found: list[Token] = []
     matches = list(_WORD.finditer(text))
     for index, match in enumerate(matches):
         end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
         gap = text[match.end() : end]
+        before = text[matches[index - 1].end() if index else 0 : match.start()]
         marks = {_MARK_OF[c] for c in gap if c in _MARK_OF}
+        marks |= {_OPENING_OF[c] for c in before if c in _OPENING_OF}
         if "\n" in gap:  # unwrapped text: any line break is a paragraph
             marks.add("paragraph")
         word = _fold(match.group().lower().replace("’", "'")).strip("'-")
