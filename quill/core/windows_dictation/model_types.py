@@ -225,31 +225,48 @@ _HIGH_ACCURACY_WORD_ERRORS = 2.5
 
 @dataclass(frozen=True, slots=True)
 class Measured:
-    """What scripts/dictbench.py measured for one model (2026-10-05: ten
-    recordings of a synthetic voice, one thread; dictation design, section 6).
-    An estimate until B-1's real voices exist, and said so wherever it is used."""
+    """What scripts/dictbench.py measured for one model.
 
-    #: Percent of words wrong.
+    ``word_errors`` and ``after_pause`` are still the 2026-10-05 synthetic-voice
+    figures (ten recordings, one thread; dictation design, section 6), an
+    estimate until B-1's English real-voice run is written in. ``peak_mb`` and
+    ``word_errors_es`` are real speech (2026-10-22 machine run: LibriSpeech,
+    LibriVox held-out, FLEURS), and the peaks are the highest seen on any set,
+    because a model must fit the worst minute, not the average one.
+    """
+
+    #: Percent of words wrong, English (synthetic voice).
     word_errors: float
     #: Seconds from the end of speech to the text, on the measuring machine.
     after_pause: float
-    #: Most memory while recognising, in megabytes.
+    #: Most memory while recognising, in megabytes (real speech).
     peak_mb: int
+    #: Percent of words wrong in Spanish, real speech: the mean of FLEURS
+    #: Spanish and the LibriVox Spanish held-out set. ``None`` = not measured,
+    #: and a model with no Spanish figure is never recommended for Spanish.
+    word_errors_es: float | None = None
 
 
 #: Keyed by engine id (built in) or catalogue id (downloads). A model missing
 #: here was not measured and is never recommended: a reason needs a number.
 MEASURED: dict[str, Measured] = {
-    "moonshine": Measured(3.4, 0.2, 210),
-    "whisper": Measured(3.4, 0.7, 303),
-    "moonshine_base": Measured(3.4, 0.3, 365),
-    "whisper_base": Measured(5.1, 1.4, 417),
-    "parakeet_unified": Measured(3.4, 1.2, 844),
-    "parakeet": Measured(4.2, 1.2, 805),
-    "nemotron": Measured(2.5, 1.5, 790),
-    "whisper_small": Measured(5.1, 4.7, 859),
+    "moonshine": Measured(3.4, 0.2, 584),
+    # Spanish is the multilingual tiny: 30.5 FLEURS, 27.0 LibriVox.
+    "whisper": Measured(3.4, 0.7, 521, word_errors_es=28.8),
+    # Real speech scored 50 to 73 percent wrong on 2026-10-22 against 3.4 on the
+    # synthetic voice: under investigation, so its synthetic figure stays.
+    "moonshine_base": Measured(3.4, 0.3, 461),
+    # Spanish 12.6 FLEURS, 16.1 LibriVox.
+    "whisper_base": Measured(5.1, 1.4, 806, word_errors_es=14.4),
+    "parakeet_unified": Measured(3.4, 1.2, 1278),
+    # Spanish 4.4 FLEURS, 7.3 LibriVox: the most accurate Spanish model measured.
+    "parakeet": Measured(4.2, 1.2, 1136, word_errors_es=5.9),
+    # Spanish 6.4 FLEURS, 8.0 LibriVox.
+    "nemotron": Measured(2.5, 1.5, 1538, word_errors_es=7.2),
+    # Spanish 6.0 FLEURS, 7.8 LibriVox; accurate, but over the speed budget.
+    "whisper_small": Measured(5.1, 4.7, 1435, word_errors_es=6.9),
     "whisper_medium": Measured(3.4, 11.2, 2100),
-    "whisper_turbo": Measured(3.4, 15.4, 1400),
+    "whisper_turbo": Measured(3.4, 15.4, 2128),
 }
 
 
@@ -277,9 +294,11 @@ _LEGACY_SAME_AS: dict[str, tuple[str, float]] = {
 # -- memory tiers, tasks and streaming (D-26) --------------------------------- #
 
 #: ``(tier in GB, megabytes dictation may take beside a screen reader there)``.
-#: The same budgets model_advice holds a recommendation to: 600 MB on a 4 GB
-#: computer (dictation design, section 1), 1 GB on an 8 GB one, 2.5 GB above.
-RAM_TIERS: tuple[tuple[int, int], ...] = ((4, 600), (8, 1000), (16, 2500))
+#: The same budgets model_advice holds a recommendation to, and the same as
+#: scripts/bench_machine_run.py's: 600 MB on a 4 GB computer, 1.6 GB on an 8 GB
+#: one (the baseline since 2026-10-22, dictation design section 1), 4 GB above.
+#: model_advice also caps by the memory *free* when it is asked.
+RAM_TIERS: tuple[tuple[int, int], ...] = ((4, 600), (8, 1600), (16, 4000))
 
 #: sherpa-onnx loader kinds that stream (online recognisers).
 STREAMING_KINDS = frozenset({"nemotron"})

@@ -48,7 +48,7 @@ def test_choose_model_shows_the_recommendation_and_tiers(wx_app, advised) -> Non
     try:
         text = dialog.advice.GetValue()
         assert text.startswith("Recommended for this computer: Whisper (built in), Lightweight:")
-        assert "measured in English only" in text
+        assert "real Spanish speakers" in text
         assert advised == ["es"]
         assert dialog.advice.GetHelpText()
         assert "Lightweight" in dialog.list.GetString(0)

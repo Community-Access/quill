@@ -36,12 +36,14 @@ def test_every_model_has_a_ram_tier_tasks_a_source_and_a_licence() -> None:
 
 
 def test_memory_tiers_follow_the_measurements() -> None:
-    assert downloadable("moonshine_base").ram_tier == 4  # 365 MB measured
-    assert downloadable("parakeet").ram_tier == 8  # 805 MB measured
-    assert downloadable("whisper_medium").ram_tier == 16  # 2.1 GB measured
+    # Peaks are real speech since 2026-10-22, the highest seen on any set.
+    assert downloadable("moonshine_base").ram_tier == 4  # 461 MB
+    assert downloadable("parakeet").ram_tier == 8  # 1,136 MB
+    assert downloadable("whisper_medium").ram_tier == 16  # 2.1 GB
     assert ram_tier_for(600) == 4 and ram_tier_for(601) == 8 and ram_tier_for(9999) == 16
-    assert ram_tier_budget_mb(3.8) == 600 and ram_tier_budget_mb(7.9) == 1000
-    assert ram_tier_budget_mb(31.0) == 2500
+    # The 8 GB baseline (2026-10-22): 1.6 GB beside the screen reader.
+    assert ram_tier_budget_mb(3.8) == 600 and ram_tier_budget_mb(7.9) == 1600
+    assert ram_tier_budget_mb(31.0) == 4000
     assert estimated_peak_mb(100_000_000) == 300  # small models: weights plus working memory
 
 
