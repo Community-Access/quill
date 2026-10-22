@@ -135,7 +135,11 @@ def run_one(  # pragma: no cover - runs the models
         command += ["--subset", subset]
     if mode == "live":
         command += ["--latency"]
-    finished = subprocess.run(command, capture_output=True, text=True, check=False)
+    # dictbench writes UTF-8 (2026-10-22); decoding it with the console's
+    # cp1252 raised in the reader thread on a Spanish transcript.
+    finished = subprocess.run(
+        command, capture_output=True, text=True, encoding="utf-8", errors="replace", check=False
+    )
     if finished.returncode != 0 or not target.is_file():
         return {"engine": engine, "set": label, "mode": mode, "failed": finished.stderr[-500:]}
     summary = json.loads(target.read_text(encoding="utf-8"))["summary"]
