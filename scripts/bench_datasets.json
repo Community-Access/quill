@@ -114,8 +114,8 @@
       "contaminated_models": ["moonshine"],
       "layout": "fleurs",
       "archives": [
-        {"url": "https://huggingface.co/datasets/google/fleurs/resolve/main/data/en_us/audio/test.tar.gz", "sha256": null, "bytes": null},
-        {"url": "https://huggingface.co/datasets/google/fleurs/resolve/main/data/en_us/test.tsv", "sha256": null, "bytes": null}
+        {"url": "https://huggingface.co/datasets/google/fleurs/resolve/main/data/en_us/audio/test.tar.gz", "sha256": "d9c2e37b41aacd41bc283554a0a82b5476b36887049774ecb2819dcaaa55a356", "bytes": null},
+        {"url": "https://huggingface.co/datasets/google/fleurs/resolve/main/data/en_us/test.tsv", "sha256": "74c046239374deeb60fa63f258f907388093a32bcaa3140965f70ef05c79f7ca", "bytes": null}
       ],
       "notes": "Archive paths follow the dataset repository's layout and are unverified until first pinned."
     },
