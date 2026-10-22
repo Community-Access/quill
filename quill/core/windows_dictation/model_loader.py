@@ -62,6 +62,8 @@ _PROVIDER = "cpu"
 #: Nemotron 3.5's feature size (128 mel bins, not the 80 of older transducers).
 _NEMOTRON_FEATURES = 128
 _TAIL_SECONDS = 0.4
+#: The longest piece Moonshine base is handed (it fails past about 8.5 s).
+_MOONSHINE_V2_MAX_SECONDS = 8.0
 
 
 class DictationEngine(Protocol):
@@ -283,12 +285,18 @@ def build(
             provider=_PROVIDER,
         )
     if model.kind == "moonshine_v2":
-        return sherpa_onnx.OfflineRecognizer.from_moonshine_v2(
-            encoder=files["encoder"],
-            decoder=files["decoder"],
-            tokens=files["tokens"],
-            num_threads=threads,
-            provider=_PROVIDER,
+        from quill.core.windows_dictation.chunked_offline import ChunkedOffline
+
+        # Its decoder writes nothing past about 8.5 seconds (chunked_offline).
+        return ChunkedOffline(
+            sherpa_onnx.OfflineRecognizer.from_moonshine_v2(
+                encoder=files["encoder"],
+                decoder=files["decoder"],
+                tokens=files["tokens"],
+                num_threads=threads,
+                provider=_PROVIDER,
+            ),
+            _MOONSHINE_V2_MAX_SECONDS,
         )
     if model.kind == "nemo_transducer":
         return sherpa_onnx.OfflineRecognizer.from_transducer(
