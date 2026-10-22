@@ -42,7 +42,7 @@ _END = "<!-- keys:end -->"
 #: many documents or recent files there happen to be.
 _PER_WINDOW = [
     ("**Alt+1** to **Alt+9**", "Go to that numbered document"),
-    ("**Alt+Shift+1** to **Alt+Shift+9**", "Reopen that recent file"),
+    ("**Alt+Shift+1** to **Alt+Shift+8**", "Reopen that recent file"),
 ]
 
 _PREAMBLE = """

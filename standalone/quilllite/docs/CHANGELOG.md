@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- **Open Recent numbers its first eight files** (2026-10-22). Alt+Shift+9 was
+  both the ninth recent file and **AutoCorrect Entries**, so one of the two did
+  nothing. Now **Alt+Shift+1** to **Alt+Shift+8** reopen your recent files,
+  **Alt+Shift+9** is always AutoCorrect Entries, and the ninth file is in
+  **File > Recent Documents** (**Alt+Shift+0**), as before. QUILL is the same.
 Testing rebuild: **1.2.0 (build 5)**, following builds 2, 3 and 4; builds 2 and 3 were
 uploaded for testing. The new packages have not been published yet.
 

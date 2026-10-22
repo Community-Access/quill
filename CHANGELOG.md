@@ -2,6 +2,23 @@
 
 ## 1.0.0
 
+### Open Recent numbers eight rows, so Alt+Shift+9 is only AutoCorrect Entries (2026-10-22)
+
+`format.autocorrect_entries` (QUILL) and `cmd_autocorrect_entries` (QUILL
+Lite) took Alt+Shift+9 on 2026-10-16 as the only family-wide free chord rule 9
+allowed, but `recent_documents.NUMBERED = 9` gave the same key to the ninth
+Open Recent row in both editors, so whichever lost was silent about losing.
+The menu-accelerator gate could not see it: recent rows are dynamic and exist
+only once nine files have been opened, and `family_chords._numbered` assumed
+nine digits for every numbered row. No family-wide key was free to move
+either to (Ctrl+Alt+Shift+Q and R are QUILL's and Radio's system-wide keys,
+rule 9's F-keys are spent, Shift+F12 is Word's Save), so, by Jeff's decision,
+`NUMBERED` is 8: Alt+Shift+1 to 8 reopen recent files and the ninth stays one
+row down in Recent Documents (Alt+Shift+0). `family_chords._row_count` reads
+`NUMBERED`, so the family catalogue and the global-hotkey test now see eight
+rows. The Lite help text, key table, both user guides, the Lite release notes
+and the screen-reader checks follow.
+
 ### Radio recordings say how they ended, and every recording is findable (2026-10-19)
 
 Rick Lewis on QUILLVille: a weekly 190-minute scheduled recording, stopped

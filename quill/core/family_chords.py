@@ -231,9 +231,23 @@ def _is_chord(text: str) -> bool:
     return bool(text) and bool(normalise_chord(text))
 
 
-def _numbered(prefix: str) -> list[str]:
-    """A row label built as ``f"...\\tAlt+Shift+{n}"``: the nine digits it can be."""
-    return [f"{prefix}{digit}" for digit in range(1, 10)]
+def _numbered(prefix: str, count: int = 9) -> list[str]:
+    """A row label built as ``f"...\\tAlt+Shift+{n}"``: the digits it can be."""
+    return [f"{prefix}{digit}" for digit in range(1, count + 1)]
+
+
+def _row_count(relative: str) -> int:
+    """How many numbered rows *relative* builds: nine, unless it caps them.
+
+    Open Recent stops at ``recent_documents.NUMBERED`` (eight since 2026-10-22,
+    because Alt+Shift+9 is AutoCorrect Entries); counting nine there would put
+    back the very clash the cap removed.
+    """
+    if relative.endswith("recent_documents.py"):
+        from quill.core.recent_documents import NUMBERED
+
+        return NUMBERED
+    return 9
 
 
 def _scan_tree(tree: ast.AST, relative: str) -> list[FamilyChord]:
@@ -256,7 +270,7 @@ def _scan_tree(tree: ast.AST, relative: str) -> list[FamilyChord]:
                 if tail.endswith("+") and isinstance(values[index + 1], ast.FormattedValue):
                     found += [
                         FamilyChord(app, f"{relative} numbered row", chord)
-                        for chord in _numbered(tail)
+                        for chord in _numbered(tail, _row_count(relative))
                         if _is_chord(chord)
                     ]
         elif isinstance(node, ast.Tuple):

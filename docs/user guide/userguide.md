@@ -950,9 +950,9 @@ QUILL Lite has all three, on the same key.
 QUILL remembers the documents you open, newest first. There are two quick ways
 back to one.
 
-**The first nine.** `Alt+Shift+1` reopens the document you opened most
-recently, `Alt+Shift+2` the one before that, and so on up to `Alt+Shift+9`.
-They are the first nine rows of **File > Open Recent**, where each row says the
+**The first eight.** `Alt+Shift+1` reopens the document you opened most
+recently, `Alt+Shift+2` the one before that, and so on up to `Alt+Shift+8`.
+They are the first eight rows of **File > Open Recent**, where each row says the
 file's name first and then its folder.
 
 **The whole list.** Press `Alt+Shift+0`, or choose **File > Open Recent >

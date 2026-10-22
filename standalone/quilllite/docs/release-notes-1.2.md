@@ -695,7 +695,7 @@ easy to miss. Now it has a key and a window of its own.
 - Choose how many documents to remember, from 1 to 50, and whether files
   deleted from this computer drop off by themselves.
 
-**Alt+Shift+1** to **Alt+Shift+9** still reopen the first nine straight away,
+**Alt+Shift+1** to **Alt+Shift+8** reopen the first eight straight away,
 and pinned documents now come first there too. QUILL has the same window on
 the same key, and the same quick keys on its Open Recent menu. The user
 guide's "Opening something you worked on recently" has the details.
