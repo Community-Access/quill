@@ -34,9 +34,9 @@ REPORT = REPO / "quill" / "tools" / "platform_report.py"
 #: one should require saying why in this list rather than in a silent pass).
 EXEMPT: frozenset[str] = frozenset()
 
-#: The fake entry key the egress test swaps in. Named, and asserted absent by
-#: tests/unit/structure, so a run that is killed before its restore leaves
-#: something a later run recognises instead of a diff that reads as deliberate.
+#: The fake entry key the egress test swaps in, in memory only. Still asserted
+#: absent from the tracked file by tests/unit/structure, which guards against
+#: any run of the old, tree-editing version of this test.
 _SENTINEL_KEY = "core/nowhere.py::gone"
 
 
@@ -75,39 +75,30 @@ def test_the_egress_gate_fails_when_a_site_is_unreviewed(tmp_path: Path) -> None
     the wiring to it was, and only running the module the way the scorecard
     runs it can tell the difference.
     """
+    # The sentinel key replaces one reviewed entry *in memory*, in the child
+    # process, before the command line imports the audit. Until 2026-10-22 this
+    # test edited the tracked quill/tools/network_egress_entries.py and put it
+    # back in a finally -- which a killed run skips (2026-09-23), and which a
+    # parallel worker reading the tree could catch mid-edit: CI's loadfile
+    # shards put this file beside tests/unit/structure's residue guard on
+    # 2026-10-22 and main went red on a race, not a fault. Not editing the tree
+    # is the only fix the residue guard's own docstring allows.
+    script = "\n".join((
+        "import runpy",
+        "from quill.tools import network_egress_entries as entries",
+        "table = entries._REVIEWED_EGRESS",
+        "real = next(iter(table))",
+        f"table[{_SENTINEL_KEY!r}] = table.pop(real)",
+        "runpy.run_module('quill.tools.network_egress_cli', run_name='__main__')",
+    ))
+    result = subprocess.run(
+        [sys.executable, "-c", script],
+        capture_output=True,
+        text=True,
+        cwd=REPO,
+    )
     entries = REPO / "quill" / "tools" / "network_egress_entries.py"
-    # Self-heal first. This test edits a *tracked source file* and restores it
-    # in a finally, which covers an assertion failure but not being killed --
-    # a pytest timeout, a Ctrl+C or a superseded background run all skip
-    # finally, and 2026-09-23 is the day one did: the sentinel key sat in
-    # quill/tools/network_egress_entries.py looking like a legitimate diff,
-    # and the egress gate stayed red for half an hour before anybody connected
-    # the two. Restoring on the way IN means the damage outlives nothing but
-    # the run that caused it.
-    if _SENTINEL_KEY in entries.read_text(encoding="utf-8"):
-        subprocess.run(
-            ["git", "checkout", "--", str(entries.relative_to(REPO))],
-            cwd=REPO,
-            capture_output=True,
-            check=False,
-        )
-    original = entries.read_bytes()
-    text = original.decode("utf-8")
-    first = re.search(r'^    "([^"]+)": \(', text, re.MULTILINE)
-    assert first is not None, "the entries table changed shape"
-    assert _SENTINEL_KEY not in text, "the tree is still dirty; restore it by hand"
-    try:
-        entries.write_bytes(
-            text.replace(f'"{first.group(1)}": (', f'"{_SENTINEL_KEY}": (', 1).encode("utf-8")
-        )
-        result = subprocess.run(
-            [sys.executable, "-m", "quill.tools.network_egress_cli"],
-            capture_output=True,
-            text=True,
-            cwd=REPO,
-        )
-    finally:
-        entries.write_bytes(original)
+    assert _SENTINEL_KEY not in entries.read_text(encoding="utf-8"), "the tree was edited"
 
     assert result.returncode == 1, "an unreviewed egress site must fail the gate"
     assert "UNREVIEWED" in result.stdout
