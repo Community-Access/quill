@@ -114,8 +114,12 @@ def say_recording_finished(host: Any, report: Any) -> None:
 
     sentence = describe(report)
     early = report.how == ENDED_EARLY
-    cue = SoundEvent.RADIO_STREAM_ERROR if early else SoundEvent.RADIO_RECORDING_STOPPED
-    host._announce(sentence, sound=cue)
+    # Two literal calls, not one with a chosen cue: the sound-event audit can
+    # only credit an event it sees posted, and an expression hides it.
+    if early:
+        host._announce(sentence, sound=SoundEvent.RADIO_STREAM_ERROR)
+    else:
+        host._announce(sentence, sound=SoundEvent.RADIO_RECORDING_STOPPED)
     keep_outcome(
         "Record",
         sentence,
