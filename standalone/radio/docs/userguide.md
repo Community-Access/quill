@@ -3484,7 +3484,9 @@ Good to know:
 - Ways to stop: **Ctrl+R** stops the one for the station you are hearing.
   **Stop Recording** in Radio Recordings stops the one selected there. **Stop
   All Recordings** (Ctrl+Alt+X) stops every one, and you hear "Stopping all"
-  and how many.
+  and how many. A recording that dropped and is waiting to reconnect counts
+  too, and you hear "including 1 waiting to reconnect", so it does not start
+  again after you stopped it.
 
 Recording file names use your computer's time zone, even if it changes while
 Quill Radio is running.
@@ -3611,7 +3613,11 @@ now, the finished ones, and the scheduled ones.
    with your cursor in the list, newest first.
 2. Arrow through the list. Each row gives the name and a status,
    **Recording**, **Recorded** or **Scheduled**, then the size and date. A
-   recording being made grows as you watch.
+   recording being made grows as you watch. Every format is listed, including
+   Raw stream recordings (`.aac`, `.opus`, `.mka` and the rest). A finished
+   recording that could not be moved out of the temporary recording folder is
+   listed too, with "still in the temporary recording folder", so it is never
+   somewhere this list cannot see.
 3. Press **Enter** on a finished recording to play it. Press **Enter** again to
    stop. While it plays, Ctrl+Up and Ctrl+Down change its volume.
 4. Tab to the buttons: **Play** (reads **Stop** while the selected recording
@@ -3710,8 +3716,9 @@ Preferences. Ctrl+Up and Ctrl+Down work either way.
 If the connection drops, Quill Radio waits and carries on in a numbered part
 file, using the reconnect settings in Recording Settings and telling you about
 each try. When the recording finishes, **it joins the parts back into one
-file**, and tells you: "Joined 3 parts into one recording", or "Kept 3 separate
-parts" and the reason.
+file** without a word, because the message at the end (see "When a recording
+ends") already says where it is. Only a join that could not be done is said:
+"Kept 3 separate parts" and the reason.
 
 - Joining is a straight copy, so nothing is lost and it takes seconds. The
   joined file is checked before the parts are removed. If anything goes wrong,
@@ -3724,6 +3731,53 @@ parts" and the reason.
 - File names are never overwritten. A name used twice gets " (2)", " (3)" and
   so on.
 - If Quill Radio is closed or crashes, the recording stops with it.
+- If a reconnect connects but records nothing, the parts you already have are
+  kept. It counts as one more try, not as "saved nothing".
+
+### When a recording ends
+
+Every recording ends with one message, once, when it is really over. You do
+not hear "saved" while a recording is only between reconnects.
+
+- **It finished, or you stopped it.** You hear the station, when it started,
+  how long the recording is, and the folder it is in, for example: "Recording
+  saved: WNYC, started Friday 4:58 PM, 3 hours 4 minutes, in Quill Radio
+  Recordings." Stopping a recording early, with Ctrl+R, Stop Recording or Stop
+  All Recordings, always keeps everything recorded up to that moment.
+- **It ended before its time.** If the station went away and did not come
+  back, you hear the error sound and, for example: "WNYC recording ended early.
+  Saved 44 of 190 minutes, in Quill Radio Recordings. Reason: the station
+  stopped responding and did not come back after 5 reconnect attempts." What
+  was recorded is kept. A recording with no set length says "stopped on its
+  own" instead.
+- **It could not be moved.** If the finished file could not be moved to your
+  recordings folder, the message says "but not in your recordings folder: it
+  is still in the temporary recording folder". Radio Recordings lists it there
+  too.
+- **It recorded nothing at all.** You hear the error sound and "saved nothing"
+  with the reason, and no empty file is kept.
+
+Every one of these messages is kept in **Activity** (Shift+F9) with the file
+name and **Open Folder**, and **F9** says the newest one again. A recording
+that ended early is listed as partial, so it stands out from one that
+finished. A scheduled recording that could not start is kept there too, with
+its reason.
+
+### Cannot find a recording?
+
+1. Press **Shift+F9** for Activity and look for the recording. Its entry has
+   the file name and **Open Folder**, and says whether it ended early and why.
+2. Press **Ctrl+Shift+R** for Radio Recordings. It lists every recording,
+   including Raw stream files and any left in the temporary recording folder.
+3. Check the **Destination folder** and **Temporary folder (while
+   recording)** in Recording Settings, in case either was changed.
+4. A file name uses the time the recording *started*, not when it ended, and a
+   recording that could not be joined is in numbered parts ("(part 2)" and so
+   on).
+5. If none of that finds it, press **Ctrl+Alt+F2** (**Help > Get Help from
+   Support...**) and say which recording and when (see "Getting help from
+   support"). Quill Radio's log records when each recording started, every
+   drop and reconnect, how it ended, and where each file landed.
 
 ### Station adverts at the start of a recording
 
@@ -6543,8 +6597,10 @@ together with what you can do about them.
    to support. **Clear List** (Alt+L) empties the list for this session.
 6. Press **Escape** to close.
 
-Finished recordings are in the list too, as "Recording saved", with Open
-Folder to find the file. So are exports: the calendar, a playlist, and your
+Finished recordings are in the list too, with the file name, how long they
+are, and Open Folder to find the file. A recording that ended early is listed
+as partial with its reason, and a scheduled recording that could not start is
+listed with why. So are exports: the calendar, a playlist, and your
 listening statistics.
 
 **Help > Repeat Last Result** (F9) says the newest result that mattered again.

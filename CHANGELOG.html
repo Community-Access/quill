@@ -245,6 +245,68 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="radio-recordings-say-how-they-ended-and-every-recording-is-findable-2026-10-19">Radio
+recordings say how they ended, and every recording is findable
+(2026-10-19)</h3>
+<p>Rick Lewis on QUILLVille: a weekly 190-minute scheduled recording,
+stopped with Stop All near its end, left no recording he could find.
+Stopping early was never the fault – every format is streamable and
+<code>_monitor</code> keeps a user-stopped file – but the recorder said
+too little for him to know what happened. Developer notes:</p>
+<ul>
+<li><strong><code>core/radio/recording_report.py</code> (new).</strong>
+<code>build_report(job, path, *, dropped, fatal, stderr_tail, now)</code>
+returns a frozen <code>RecordingReport</code> (<code>STOPPED</code> /
+<code>FINISHED</code> / <code>ENDED_EARLY</code>, length,
+<code>planned_seconds</code>, reason, reconnects,
+<code>left_in_temp</code>); <code>describe()</code> is the one sentence.
+A drop within 90 s of the scheduled end is <code>FINISHED</code>
+(stations cut the stream at the top of the hour). The sentence leads
+with the fact (saved, how much, where) and ends with “Reason: …” so a
+braille reader can stop early; it names the station and
+<code>spoken_start()</code> time, not the file name, which stays in
+Activity’s object name.</li>
+<li><strong><code>RadioRecorder(on_finished=...)</code></strong> fires
+once per recording, after the reconnect decision and <em>before</em>
+<code>_join_parts</code> (the pre-roll guard can hold a short
+recording’s join for minutes; the join keeps part one’s name). The
+per-part <code>on_state_changed(False, ...)</code> now always passes
+<code>None</code>, so a part landing is never “saved”.
+<code>ui/outcome_report.say_recording_finished</code> replaces
+<code>say_recording_saved</code>: error cue for an early end, kept with
+<code>keep_outcome(..., partial=True)</code> (new
+<code>activity.PARTIAL</code> path that keeps Open Folder).</li>
+<li><strong><code>RadioRecorder.waiting_count</code>.</strong>
+<code>radio_stop_all_recordings</code> counted only live processes, so
+Stop All during a reconnect wait said “Nothing is recording” and the
+continuation started anyway.</li>
+<li><strong>An empty continuation keeps the earlier parts.</strong>
+<code>_monitor</code> reported <code>on_capture_failed</code> (“saved
+nothing, no file was kept”) and dropped <code>_parts[job_id]</code>
+whenever the <em>latest</em> part was empty; it now only does that when
+there are no earlier parts, and otherwise discards the empty file and
+lets the reconnect budget decide.</li>
+<li><strong><code>recordings_index</code> sees every recording.</strong>
+<code>_RECORDING_SUFFIXES</code> was built from
+<code>RECORD_FORMATS</code>, whose <code>"copy"</code> is not an
+extension, so raw captures were never listed; it now adds
+<code>recording_commands.RAW_CAPTURE_EXTENSIONS</code>. The settings’
+<code>temp_dir</code> is scanned too, rows marked
+<code>TEMP_FOLDER_DETAIL</code>, skipping the pre-roll guard’s
+<code>.trimming</code> work files.</li>
+<li><strong>Smaller pieces.</strong>
+<code>recording_outcome.reason_from_stderr</code> is shared by the
+empty-capture verdict and the report; a successful join is silent
+(<code>describe_join</code> is only spoken when parts were kept);
+scheduled-start failures are kept in Activity; the “Recording part
+finished” log line is INFO. The exact-OptiLab pass moved to
+<code>core/radio/recording_exact.py</code> (GATE-11: extract, never
+rebaseline), leaving <code>recording.py</code> at its budget.</li>
+<li>Tests: <code>tests/unit/core/radio/test_recording_report.py</code>,
+three recorder tests in <code>test_radio_recording.py</code>, three
+index tests, and the earcon tests.</li>
+</ul>
+<h3
 id="the-test-suite-never-speaks-through-the-real-screen-reader-radio-history-saves-stay-inside-their-test-2026-10-17">The
 test suite never speaks through the real screen reader; Radio history
 saves stay inside their test (2026-10-17)</h3>

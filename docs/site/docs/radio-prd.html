@@ -2043,6 +2043,32 @@ GATE-11 was held by extraction throughout:
 the parser it feeds), and <code>ui/radio/recording_markers.py</code>
 took the resume-marker helpers out of
 <code>main_frame_radio.py</code>.</p></li>
+<li><p><strong>Every recording says how it ended, and every recording is
+findable (3.2.0; upstream <code>core/radio/recording_report.py</code>,
+<code>core/radio/recording.py</code>,
+<code>core/radio/recordings_index.py</code>,
+<code>ui/outcome_report.py</code>,
+<code>ui/main_frame_radio.py</code>).</strong> Reported by Rick Lewis on
+QUILLVille (2026-10-18): a weekly 190-minute scheduled recording,
+stopped with Stop All near its end, left nothing he could find. Stopping
+early was never the fault – every format is streamable and a
+user-stopped file is always kept – but the app had said too little.
+Requirements now met: (1) one end-of-recording message per recording,
+never per part, giving station, start time, length and folder; (2) an
+early end (the station went away and did not come back) leads with how
+much was kept (“Saved 44 of 190 minutes”) and ends with the reason, on
+the error cue, kept in Activity as <em>partial</em> with Open Folder;
+(3) Radio Recordings lists Raw stream files (<code>.aac</code>,
+<code>.opus</code>, <code>.mka</code>…) and any file left in the
+temporary recording folder; (4) Stop All reaches a recording waiting out
+a reconnect delay; (5) a reconnect that captures nothing keeps the
+earlier parts instead of reporting “saved nothing”; (6) a scheduled
+start that fails is kept in Activity. Wording was reviewed for speech
+and braille: the key fact first, the cause last as its own sentence, and
+the date-stamped file name left to Activity. Non-goals for this release,
+tracked as follow-ups: a pre-flight check before a scheduled recording
+(stream, disk space, sleep), and Record refusing to start a duplicate of
+a station that is waiting to reconnect.</p></li>
 <li><p><strong>A probe per service (3.0.0;
 <code>S:\radio-probes\</code>).</strong> Quill Radio depends on eighteen
 services it does not control, and the historical way to learn one had

@@ -363,9 +363,19 @@ AI help on and the agreement accepted, unless a row says otherwise.
   Activity with Open Folder. Following a podcast appears too.
 - [ ] Cast: Delete on the third row of the Inbox: the cursor is on the row that
   moved up, not the first.
-- [ ] Radio: a recording that finishes is in Activity, "Recording saved: ...",
-  with Open Folder; one that captured nothing is listed as failed with its
-  reason.
+- [ ] Radio: a recording that finishes is in Activity, "Recording saved: <station>,
+  started <day time>, <length>, in <folder>.", with the file name and Open
+  Folder; one that captured nothing is listed as failed with its reason.
+- [ ] Radio: record a station, then disconnect the network until the reconnect
+  attempts run out. One message, on the error sound: "<station> recording ended
+  early. Saved N of M minutes, in <folder>. Reason: ...". No "Recording saved"
+  was heard at any reconnect. Activity lists it as partial. On a 40-cell braille
+  display the saved amount is on the first line.
+- [ ] Radio: while a dropped recording is waiting to reconnect, Ctrl+Alt+X says
+  "Stopping all 1 recording, including 1 waiting to reconnect..." and the
+  recording does not start again.
+- [ ] Radio: with Format set to Raw stream, the finished recording appears in
+  Radio Recordings (Ctrl+Shift+R).
 - [ ] QUILL Lite: open a large file from a network drive; Shift+F9 while it
   opens, and again after: Opened <name>.
 

@@ -21,11 +21,22 @@ from pathlib import Path
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from quill.core.radio.recording import RECORD_FORMATS
+from quill.core.radio.recording_commands import RAW_CAPTURE_EXTENSIONS
 
-#: Every extension a recording can have (RECORD_FORMATS) -- the scan is
-#: deliberately limited to formats QUILL itself writes, so unrelated files
-#: a user keeps in the same folder never show up as "recordings".
-_RECORDING_SUFFIXES = frozenset(f".{fmt}" for fmt in RECORD_FORMATS)
+#: Every extension a recording can have -- the re-encode formats plus every
+#: container a raw capture is named by (``.aac``, ``.mka``, ...; there is no
+#: ``.copy`` file). The scan is deliberately limited to formats QUILL itself
+#: writes, so unrelated files a user keeps in the same folder never show up as
+#: "recordings". Until 2026-10-19 the raw containers were missing, so a raw
+#: capture saved perfectly and never appeared in the Recordings window.
+_RECORDING_SUFFIXES = frozenset(
+    {f".{fmt}" for fmt in RECORD_FORMATS if fmt != "copy"}
+    | {f".{ext}" for ext in RAW_CAPTURE_EXTENSIONS}
+)
+#: Detail for a finished file still sitting in the temp folder: the move to
+#: the recordings folder failed (``recording_outcome.finalize_move`` leaves it
+#: there rather than lose it), so it is listed where the listener looks.
+TEMP_FOLDER_DETAIL = "still in the temporary recording folder"
 
 STATUS_RECORDING = "Recording"
 STATUS_RECORDED = "Recorded"
@@ -253,13 +264,21 @@ def list_recordings(
         )
 
     files: list[tuple[float, RecordingEntry]] = []
-    try:
-        candidates = sorted(folder.iterdir())
-    except OSError:
-        candidates = []
-    for path in candidates:
+    folders: list[tuple[Path, str]] = [(folder, "")]
+    temp_root = str(getattr(settings, "temp_dir", "") or "")
+    if temp_root and Path(temp_root) != folder:
+        folders.append((Path(temp_root), TEMP_FOLDER_DETAIL))
+    candidates: list[tuple[Path, str]] = []
+    for where, where_detail in folders:
+        try:
+            candidates.extend((path, where_detail) for path in sorted(where.iterdir()))
+        except OSError:
+            continue
+    for path, where_detail in candidates:
         if not path.is_file() or path.suffix.lower() not in _RECORDING_SUFFIXES:
             continue
+        if path.stem.endswith(".trimming"):
+            continue  # the pre-roll guard's work file, never a recording
         resolved = path.resolve()
         # An active file is already a leading row; never also emit it as
         # Recorded (which would double-list it, and on a same-volume temp dir
@@ -282,6 +301,7 @@ def list_recordings(
                 path=path,
                 size_bytes=size,
                 modified=modified,
+                detail=where_detail,
             ),
         ))
     files.sort(key=lambda pair: pair[0], reverse=True)

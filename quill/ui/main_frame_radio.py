@@ -35,7 +35,7 @@ from quill.core.speech.ffmpeg import ffmpeg_available
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.main_frame_radio_callbacks import RadioCallbacksMixin
 from quill.ui.main_frame_radio_status import RadioStatusWindowsMixin
-from quill.ui.outcome_report import say_recording_failed, say_recording_saved
+from quill.ui.outcome_report import keep_outcome, say_recording_failed, say_recording_finished
 from quill.ui.radio import browse_door, playback_status, quick_play, stats_session, youtube_ui
 from quill.ui.radio.link_finder_dialog import LinkFinderDialog
 from quill.ui.radio.playback_state import RadioPlaybackState
@@ -153,6 +153,9 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
             on_capture_failed=lambda station, reason: self._wx.CallAfter(
                 self._radio_announce_capture_failed, station, reason
             ),
+            # Once per recording, when it is over for good: how it ended, how
+            # long it is and where it is (recording_report). Parts are silent.
+            on_finished=lambda report: self._wx.CallAfter(say_recording_finished, self, report),
         )
         # The ACTIVE machinery below fires recordings, shows resume prompts, and
         # speaks missed-recording reports on its own. In a public build the
@@ -475,11 +478,9 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         else:
             # R3: a clean stop clears just this recording's marker -- only a
             # crash/kill leaves markers behind for the next launch to find.
+            # "Saved" is not said here: this edge fires for every part of a
+            # resumed recording. say_recording_finished says it, once (#1302).
             self._clear_radio_recording_marker(job_id)
-            if destination is not None:
-                # The recorder's own stop-and-finalize edge: the one moment a
-                # capture is really over and on disk (#1302).
-                say_recording_saved(self, destination)  # said, and kept (qc.md F-10)
 
     def _radio_announce_capture_failed(self, station: str, reason: str) -> None:
         """Say that a recording captured nothing, and why.
@@ -524,7 +525,10 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
     def _apply_radio_scheduled_recording_fired(self, entry: object, error: str) -> None:
         station_name = getattr(entry, "station_name", "")
         if error:
-            self._announce(f"Scheduled recording of {station_name} could not start: {error}")
+            sentence = f"Scheduled recording of {station_name} could not start: {error}"
+            self._announce(sentence)
+            # Kept, so a failure at 4:58 is still findable in Activity at 8:00.
+            keep_outcome("Record", sentence, object_name=station_name, failed=True, reason=error)
         else:
             self._announce(
                 f"Scheduled recording started: {station_name}",
@@ -668,7 +672,10 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         """Stop every recording at once (concurrent recording). Announces how
         many were stopped, or that nothing was recording."""
         recorder = getattr(self, "_radio_recorder", None)
-        count = int(getattr(recorder, "active_count", 0) or 0)
+        # A recording waiting to reconnect after a drop is not running, but it is
+        # not over either: Stop All must reach it, or it resumes after "stopped".
+        waiting = int(getattr(recorder, "waiting_count", 0) or 0)
+        count = int(getattr(recorder, "active_count", 0) or 0) + waiting
         if count < 1:
             self._announce("Nothing is recording right now.")
             return
@@ -678,7 +685,8 @@ class RadioMixin(RadioCallbacksMixin, RadioStatusWindowsMixin):
         else:
             recorder.stop()
         noun = "recording" if count == 1 else "recordings"
-        self._announce(f"Stopping all {count} {noun}...")
+        also = f", including {waiting} waiting to reconnect" if waiting else ""
+        self._announce(f"Stopping all {count} {noun}{also}...")
         self._refresh_statusbar()
 
     def _radio_recording_filter_graph(self) -> str:

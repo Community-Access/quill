@@ -19,7 +19,7 @@ from typing import Any
 
 from quill.core import activity
 
-__all__ = ["keep_outcome", "report_outcome", "say_recording_failed", "say_recording_saved"]
+__all__ = ["keep_outcome", "report_outcome", "say_recording_failed", "say_recording_finished"]
 
 
 def _open_folder(path: Path) -> str:
@@ -72,9 +72,14 @@ def keep_outcome(
     object_name: str = "",
     path: Path | str | None = None,
     failed: bool = False,
+    partial: bool = False,
     reason: str = "",
 ) -> None:
-    """Record an outcome the caller has already spoken (with its own earcon)."""
+    """Record an outcome the caller has already spoken (with its own earcon).
+
+    *partial* is a result that is real but short of what was asked -- it keeps
+    Open Folder, and still stands out from a clean success in Activity.
+    """
     from quill.ui.activity_window import register_actions
 
     next_actions: tuple[activity.NextAction, ...] = ()
@@ -86,7 +91,7 @@ def keep_outcome(
     result = activity.ActionResult(
         action=action,
         object_name=object_name,
-        outcome=activity.FAILED if failed else activity.COMPLETED,
+        outcome=activity.FAILED if failed else activity.PARTIAL if partial else activity.COMPLETED,
         summary=summary,
         reason=reason,
         next_actions=next_actions,
@@ -96,13 +101,31 @@ def keep_outcome(
         register_actions(result, actions)
 
 
-def say_recording_saved(host: Any, destination: Path) -> None:
-    """Quill Radio: the recorder's stop-and-finalize edge, said with its cue and kept."""
+def say_recording_finished(host: Any, report: Any) -> None:
+    """Quill Radio: a recording is over for good -- how it ended, how long it
+    is and where it is, said with its cue and kept (``recording_report``).
+
+    An early end is still a saved file (Open Folder is offered), but it plays
+    the error cue: a show that ended two hours short must not sound like one
+    that finished.
+    """
+    from quill.core.radio.recording_report import ENDED_EARLY, describe
     from quill.core.sound_events import SoundEvent
 
-    sentence = f"Recording saved: {destination.name}"
-    host._announce(sentence, sound=SoundEvent.RADIO_RECORDING_STOPPED)
-    keep_outcome("Record", f"{sentence}.", path=destination)
+    sentence = describe(report)
+    early = report.how == ENDED_EARLY
+    cue = SoundEvent.RADIO_STREAM_ERROR if early else SoundEvent.RADIO_RECORDING_STOPPED
+    host._announce(sentence, sound=cue)
+    keep_outcome(
+        "Record",
+        sentence,
+        # The file name lives here, not in the sentence: Activity is where
+        # somebody goes looking for the exact file (and Open Folder for it).
+        object_name=report.path.name if report.path else report.station_name,
+        path=report.path,
+        partial=early,
+        reason=report.reason,
+    )
 
 
 def say_recording_failed(host: Any, station: str, reason: str) -> None:

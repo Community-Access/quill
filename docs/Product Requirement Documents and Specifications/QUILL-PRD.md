@@ -5429,6 +5429,20 @@ and the fatal/recovery classifiers that answer the same question.
 `on_state_changed` because the two report opposite facts, and it is spoken on the
 error cue. A listener-stopped capture is exempt.
 
+**A recording says how it ended (Quill Radio 3.2; `core/radio/recording_report.py`).**
+A real report: a 190-minute scheduled recording that the listener could not find
+afterwards. The per-part `on_state_changed(False, path)` edge had been the "saved"
+signal, so every reconnect said "Recording saved", and a show that lost its station
+at minute 40 ended with the same sentence as a complete one. `on_state_changed` now
+always ends with `None`; `RadioRecorder.on_finished(RecordingReport)` fires once per
+recording, after the reconnect decision and before the join, and `describe()` builds
+the sentence: station, start time, length and folder, or, for an early end, how much
+of the planned length was kept and then the reason. It is kept in Activity as
+`PARTIAL` when the recording ended early. The same pass made `recordings_index` list
+raw-capture containers and the temporary folder, let Stop All reach a recording in
+its reconnect wait (`waiting_count`), and kept the earlier parts when a continuation
+captures nothing.
+
 **Song Details (Quill Radio 3.0; `ui/radio/song_facts.py`).** MusicBrainz
 release, year and length for a song in the history — opt-in (a button; a per-row
 lookup would spend a listener's connection on curiosity they did not express), on

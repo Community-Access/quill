@@ -249,6 +249,41 @@ Shift+F1) for the fuller narrative version of the latest release.</p>
 <h2 id="unreleased">[Unreleased]</h2>
 <p>Testing rebuild: 3.2.0 (build 4).</p>
 <ul>
+<li><strong>Every recording ends by telling you how it went</strong>
+(2026-10-19). Reported on QUILLVille by Rick Lewis, whose 190-minute
+scheduled recording could not be found afterwards. When a recording is
+over you now hear one message, once, with the station, when it started,
+how long it is and the folder it is in: “Recording saved: WNYC, started
+Friday 4:58 PM, 3 hours 4 minutes, in Quill Radio Recordings.” You no
+longer hear “Recording saved” each time a dropped recording reconnects.
+If the station goes away for good before the end, you hear the error
+sound and how much was kept, then why: “WNYC recording ended early.
+Saved 44 of 190 minutes, in Quill Radio Recordings. Reason: the station
+stopped responding and did not come back after 5 reconnect attempts.”
+Each message is kept in Activity (Shift+F9) with the file name and Open
+Folder, and an early end is listed as partial. Stopping a recording
+early always keeps everything recorded so far. User guide: “When a
+recording ends” and “Cannot find a recording?” in Chapter 8.</li>
+<li><strong>Radio Recordings lists every recording</strong>
+(2026-10-19). Raw stream recordings (<code>.aac</code>,
+<code>.opus</code>, <code>.mka</code> and the rest) were saved but never
+appeared in the list, and a file that could not be moved out of the
+temporary recording folder was invisible too. Both are listed now; the
+second says “still in the temporary recording folder”.</li>
+<li><strong>Stop All Recordings reaches a recording that is waiting to
+reconnect</strong> (2026-10-19). It used to say “Nothing is recording
+right now” and the recording carried on after its wait. Now it is
+stopped, and you hear “including 1 waiting to reconnect”.</li>
+<li><strong>A reconnect that records nothing no longer hides what you
+have</strong> (2026-10-19). It used to say “saved nothing, no file was
+kept” while the earlier part of the show sat on disk. Now the parts you
+have are kept and it counts as one more reconnect try.</li>
+<li><strong>A scheduled recording that cannot start is kept in
+Activity</strong> (2026-10-19), with its reason, so a failure at 4:58 is
+still there to find at 8:00. A successful join of a reconnected
+recording’s parts is now silent, because the end-of-recording message
+already says where it is; a join that could not be done is still
+said.</li>
 <li><strong>Quill Radio’s own sounds play on the radio’s sound
 card.</strong> The sounds for connecting, playing, stopped, stream
 errors, recording started and stopped, and reminders now go to the same

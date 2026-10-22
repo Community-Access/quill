@@ -210,10 +210,55 @@ def test_a_volume_notification_does_not_re_arm_the_buffering_cue() -> None:
     ]
 
 
-def test_a_finished_recording_cues_recording_stopped() -> None:
+def _report(how: str, *, reason: str = "") -> Any:
+    from datetime import datetime, timedelta
+
+    from quill.core.radio.recording_report import RecordingReport
+
+    start = datetime(2026, 10, 16, 16, 58)
+    return RecordingReport(
+        job_id="job-1",
+        station_name="WXYZ",
+        path=Path("Recordings") / "show.mp3",
+        how=how,
+        started_at=start,
+        ended_at=start + timedelta(minutes=44),
+        planned_seconds=60 * 190 if reason else 0,
+        reason=reason,
+    )
+
+
+def test_a_part_landing_says_nothing() -> None:
+    # Every part of a resumed recording ends with this edge; "saved" there
+    # would say the show is safe while the stream is still dropping.
     host = _host()
     host._apply_radio_recording_changed(False, Path("show.mp3"), "job-1")
-    assert host.spoken == [("Recording saved: show.mp3", SoundEvent.RADIO_RECORDING_STOPPED)]
+    assert host.spoken == []
+
+
+def test_a_finished_recording_cues_recording_stopped() -> None:
+    from quill.core.radio.recording_report import STOPPED
+    from quill.ui.outcome_report import say_recording_finished
+
+    host = _host()
+    say_recording_finished(host, _report(STOPPED))
+    assert host.spoken == [
+        (
+            "Recording saved: WXYZ, started Friday 4:58 PM, 44 minutes, in Recordings.",
+            SoundEvent.RADIO_RECORDING_STOPPED,
+        )
+    ]
+
+
+def test_a_recording_that_ended_early_cues_the_error_sound() -> None:
+    from quill.core.radio.recording_report import ENDED_EARLY
+    from quill.ui.outcome_report import say_recording_finished
+
+    host = _host()
+    say_recording_finished(host, _report(ENDED_EARLY, reason="the connection failed"))
+    sentence, sound = host.spoken[0]
+    assert sentence.startswith("WXYZ recording ended early. Saved 44 of 190 minutes")
+    assert sound == SoundEvent.RADIO_STREAM_ERROR
 
 
 def test_a_scheduled_recording_starting_cues_recording_started() -> None:

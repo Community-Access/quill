@@ -102,6 +102,11 @@ _RAW_EXT_BY_CODEC: dict[str, str] = {
 }
 #: Universal lossless fallback container for stream-copy of an unknown codec.
 _RAW_FALLBACK_EXT = "mka"
+#: Every extension a raw capture can be saved under. A raw capture is named by
+#: the stream's codec, never ``.copy``, so anything listing "the recordings"
+#: must look for these as well as the re-encode formats -- otherwise a raw
+#: capture is a file the app made and then cannot find.
+RAW_CAPTURE_EXTENSIONS = frozenset({*_RAW_EXT_BY_CODEC.values(), _RAW_FALLBACK_EXT})
 
 #: ffmpeg ``-loglevel`` values Quill Radio will pass through (quill-radio #5);
 #: anything else falls back to ``"error"``. Debug mode uses ``"verbose"``.

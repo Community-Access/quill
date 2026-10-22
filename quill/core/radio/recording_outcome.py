@@ -111,11 +111,21 @@ def empty_capture_reason(stderr_tail: list[str]) -> str:
     Falls back to an honest admission rather than a guess: "it stopped before
     anything could be recorded" is a usable answer, and an invented cause is not.
     """
+    return reason_from_stderr(stderr_tail) or "the stream stopped before anything could be recorded"
+
+
+def reason_from_stderr(stderr_tail: list[str]) -> str:
+    """The plain-words cause ffmpeg's last lines name, or ``""`` if none does.
+
+    Shared by the empty-capture verdict and the end-of-recording report
+    (``recording_report``), so a recording that ended early and one that
+    captured nothing describe the same cause in the same words.
+    """
     for line in reversed(stderr_tail):
         for pattern, reason in _EMPTY_CAPTURE_REASONS:
             if pattern.search(line):
                 return reason
-    return "the stream stopped before anything could be recorded"
+    return ""
 
 
 def discard_empty_capture(path: Path) -> None:

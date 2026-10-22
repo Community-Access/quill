@@ -37,7 +37,7 @@ from quill.core import http_client
 from quill.core import paths as _paths
 from quill.core.audio.exact_optilab import ExactOptilab
 from quill.core.error_codes import CodedError
-from quill.core.radio import radio_logging, recording_outcome
+from quill.core.radio import radio_logging, recording_outcome, recording_report
 from quill.core.radio.local_clock import local_now
 from quill.core.radio.recording_commands import (
     RECORD_FORMAT_LABELS,
@@ -45,13 +45,13 @@ from quill.core.radio.recording_commands import (
     build_filename,
     build_probe_codec_command,
     build_record_command,
-    encode_args_for_format,
     format_uses_bitrate,
     parse_probe_codec,
     probe_capture_extension,
     raw_capture_extension,
     uniquify,
 )
+from quill.core.radio.recording_exact import apply_exact_optilab
 from quill.core.radio.recording_join import describe_join, join_recording_parts
 from quill.core.radio.recording_liveness import await_stop as _await_stop
 from quill.core.radio.recording_liveness import wait_for_exit
@@ -344,6 +344,7 @@ class RadioRecorder:
         on_parts_joined: Callable[[str], None] | None = None,
         on_exact_processed: Callable[[str], None] | None = None,
         on_capture_failed: Callable[[str, str], None] | None = None,
+        on_finished: Callable[[recording_report.RecordingReport], None] | None = None,
     ) -> None:
         self._on_state_changed = on_state_changed or (lambda _recording, _dest, _job_id: None)
         #: (attempt, max_attempts) -- fired on a background thread each time a
@@ -364,6 +365,10 @@ class RadioRecorder:
         #: ``on_state_changed`` because the two say opposite things: one reports
         #: a file that exists, and this reports that there is no file.
         self._on_capture_failed = on_capture_failed or (lambda _station, _reason: None)
+        #: Fired once per recording, on a background thread, when it is over for
+        #: good -- never per part -- with how it ended and where it is
+        #: (recording_report). The only "saved" signal: a part landing is not one.
+        self._on_finished = on_finished or (lambda _report: None)
         #: Guards membership of the jobs dict; per-job fields are only mutated
         #: under it (or, for a job's own stderr tail, by that job's single drain
         #: thread, read back under the lock in _monitor).
@@ -410,6 +415,13 @@ class RadioRecorder:
     def active_count(self) -> int:
         """How many recordings are running right now."""
         return len(self._live_jobs())
+
+    @property
+    def waiting_count(self) -> int:
+        """Recordings that dropped and are waiting out the reconnect delay --
+        not running, but not over either, so Stop All must still reach them."""
+        with self._lock:
+            return len(self._reconnect_pending)
 
     def active_jobs(self) -> list[JobSnapshot]:
         """A snapshot of every running recording, oldest first."""
@@ -822,8 +834,8 @@ class RadioRecorder:
         # _finalize_move always returns a Path (dst or the temp src on a move
         # failure), so `landed` is never None here.
         # #5 observability: how a recording ended and where it finalized.
-        logger.debug(
-            "Recording finished (%s) -> %s",
+        logger.info(
+            "Recording part finished (%s) -> %s",
             "dropped/partial" if failed else "stopped/complete",
             format_args_for_log([str(landed)]),
         )
@@ -831,14 +843,13 @@ class RadioRecorder:
         # as one. Announcing "Recording saved" over a zero-byte file -- or one
         # that was never created -- is worse than silence, because it sends
         # somebody looking in a folder for audio that does not exist.
-        if not job.user_stopped and recording_outcome.captured_nothing(landed):
+        empty = not job.user_stopped and recording_outcome.captured_nothing(landed)
+        with self._lock:
+            earlier = bool(self._parts.get(job.job_id))
+        if empty and not earlier:
             reason = recording_outcome.empty_capture_reason(tail_snapshot)
             recording_outcome.discard_empty_capture(landed)
-            logger.info(
-                "Recording captured nothing (%s): %s",
-                job.station_name,
-                reason,
-            )
+            logger.info("Recording captured nothing (%s): %s", job.station_name, reason)
             self._on_state_changed(False, None, job.job_id)
             self._on_capture_failed(job.station_name, reason)
             self._openings.discard(job.job_id)
@@ -846,14 +857,36 @@ class RadioRecorder:
             with self._lock:
                 self._parts.pop(job.job_id, None)
             return
-        self._on_state_changed(False, landed, job.job_id)
-        with self._lock:
-            self._parts.setdefault(job.job_id, []).append(landed)
+        if empty:
+            # A resumed part that caught nothing. The show recorded so far is
+            # safe in the earlier parts, so this is a failed reconnect, not "saved
+            # nothing": drop the empty file and let the attempt budget decide.
+            recording_outcome.discard_empty_capture(landed)
+        # No destination: a part landing is not "saved" -- the recording may be
+        # about to resume. on_finished below says saved, once, when it is over.
+        self._on_state_changed(False, None, job.job_id)
+        if not empty:
+            with self._lock:
+                self._parts.setdefault(job.job_id, []).append(landed)
         # Finalize is "no further continuation will start" -- so it is decided
         # by the reconnect attempt, not guessed at beforehand. Only then are the
         # parts of a dropped-and-resumed recording stitched back together.
         resumed = self._maybe_reconnect(job) if (failed and not fatal) else False
         if not resumed:
+            # Reported before the join: the pre-roll guard can hold a short
+            # recording's join for minutes, and the join keeps part one's name.
+            with self._lock:
+                first = next(iter(self._parts.get(job.job_id, [])), None)
+            report = recording_report.build_report(
+                job,
+                first,
+                dropped=failed,
+                fatal=fatal,
+                stderr_tail=tail_snapshot,
+                now=local_now(),
+            )
+            logger.info("Recording ended (%s): %s", report.how, job.station_name)
+            self._on_finished(report)
             final = self._join_parts(job)
             if final is not None:
                 self._apply_exact_optilab(job, final)
@@ -863,38 +896,8 @@ class RadioRecorder:
                 self._on_parts_joined(note)
 
     def _apply_exact_optilab(self, job: RecordingJob, path: Path) -> None:
-        """Run the real OptiLab engine over the finished recording, if asked.
-
-        Runs *after* the recording is over and after any parts are joined, never
-        during the capture: an adapter fault mid-recording must not be able to
-        cost somebody the recording they were making. The pass writes a temp file
-        and replaces the original only on success, so the worst case here is a
-        file that is exactly what was recorded, plus a spoken explanation.
-        """
-        spec = job.exact
-        if spec is None or not spec.active:
-            return
-        from quill.core.audio import exact_optilab
-
-        if not exact_optilab.available():
-            self._on_exact_processed(
-                f"{path.name} was saved without exact OptiLab processing. "
-                f"{exact_optilab.unavailable_reason()}"
-            )
-            return
-        encode_args = encode_args_for_format(job.settings.format, job.settings.bitrate_kbps)
-        if not encode_args:
-            return  # raw capture; nothing to re-encode into
-        try:
-            exact_optilab.process_in_place(path, spec, encode_args=encode_args)
-        except Exception as exc:  # noqa: BLE001 - the recording itself is safe either way
-            logger.warning("Exact OptiLab processing of %s failed: %s", path.name, exc)
-            self._on_exact_processed(
-                f"{path.name} was saved, but exact OptiLab processing could not be applied: {exc}"
-            )
-            return
-        logger.info("Exact OptiLab processing applied to %s", format_args_for_log([str(path)]))
-        self._on_exact_processed(f"{path.name} was processed with the OptiLab engine.")
+        """The exact-OptiLab pass over the finished file (``recording_exact``)."""
+        apply_exact_optilab(job, path, self._on_exact_processed)
 
     def _join_parts(self, job: RecordingJob) -> Path | None:
         """Stitch a dropped-and-resumed recording's parts into one file.
@@ -919,8 +922,10 @@ class RadioRecorder:
         if len(parts) < 2:
             return parts[0] if parts else None
         outcome = join_recording_parts(parts)
+        # A successful join is silent: the end-of-recording report has already
+        # said where the recording is. Only a join that left parts is news.
         note = describe_join(outcome)
-        if note:
+        if note and not outcome.joined:
             self._on_parts_joined(note)
         # A join that did not happen leaves several files. Returning None then is
         # deliberate: processing part one of a show that is still in pieces would
