@@ -79,6 +79,10 @@ class SpeedCheck:
     #: dictation, whose models all run on the processor). Only the timed check
     #: looks, because the probe runs ``nvidia-smi``.
     has_gpu: bool = False
+    #: Physical memory free when the check ran, in GB, or ``None`` where it is
+    #: not read. The recommendation caps a model by this as well as by the
+    #: total, because a busy 8 GB computer may have two GB to give (2026-10-22).
+    available_gb: float | None = None
 
     @property
     def weak(self) -> bool:
@@ -95,6 +99,17 @@ def _memory_gb() -> float | None:
     except Exception:  # noqa: BLE001 - not Windows, or no answer
         return None
     return round(total, 1) if total > 0 else None
+
+
+def _available_gb() -> float | None:
+    """Memory free right now, from the same reader as the total."""
+    try:
+        from quill.core.speech.service import detect_available_ram_gb
+
+        free = detect_available_ram_gb()
+    except Exception:  # noqa: BLE001 - not Windows, or no answer
+        return None
+    return round(free, 1) if free is not None and free > 0 else None
 
 
 def _gpu() -> bool:
@@ -165,7 +180,11 @@ def run(
     except Exception:  # noqa: BLE001 - no engine, no numpy: fall back to the hardware
         tiny = None
     result = SpeedCheck(
-        tiny=tiny, cores=os.cpu_count() or 1, memory_gb=_memory_gb(), has_gpu=(gpu or _gpu)()
+        tiny=tiny,
+        cores=os.cpu_count() or 1,
+        memory_gb=_memory_gb(),
+        has_gpu=(gpu or _gpu)(),
+        available_gb=_available_gb(),
     )
     if tiny is not None:
         _LAST = result
@@ -174,7 +193,9 @@ def run(
 
 def hardware_only() -> SpeedCheck:
     """The instant answer: cores and memory, nothing timed."""
-    return SpeedCheck(tiny=None, cores=os.cpu_count() or 1, memory_gb=_memory_gb())
+    return SpeedCheck(
+        tiny=None, cores=os.cpu_count() or 1, memory_gb=_memory_gb(), available_gb=_available_gb()
+    )
 
 
 def latest() -> SpeedCheck:

@@ -122,27 +122,48 @@ def downloaded_model_ids() -> set[str]:
     return {spec.id for spec in list_models() if is_downloaded(spec)}
 
 
+def _windows_memory_status() -> tuple[int, int]:
+    """``(total, available)`` physical memory in bytes, from GlobalMemoryStatusEx."""
+    import ctypes
+
+    class _MEMORYSTATUSEX(ctypes.Structure):
+        _fields_ = [
+            ("dwLength", ctypes.c_ulong),
+            ("dwMemoryLoad", ctypes.c_ulong),
+            ("ullTotalPhys", ctypes.c_ulonglong),
+            ("ullAvailPhys", ctypes.c_ulonglong),
+            ("ullTotalPageFile", ctypes.c_ulonglong),
+            ("ullAvailPageFile", ctypes.c_ulonglong),
+            ("ullTotalVirtual", ctypes.c_ulonglong),
+            ("ullAvailVirtual", ctypes.c_ulonglong),
+            ("ullAvailExtendedVirtual", ctypes.c_ulonglong),
+        ]
+
+    stat = _MEMORYSTATUSEX()
+    stat.dwLength = ctypes.sizeof(_MEMORYSTATUSEX)
+    ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(stat))  # type: ignore[attr-defined]
+    return int(stat.ullTotalPhys), int(stat.ullAvailPhys)
+
+
+def available_ram_gb() -> float | None:
+    """Physical memory free right now, in GB, or ``None`` where it is not read.
+
+    Total memory says what a computer *has*; this says what dictation can have
+    *now*, beside Windows, the screen reader and whatever else is open -- on an
+    8 GB laptop that is often two or three (2026-10-22). Windows only; other
+    platforms answer ``None`` and the advice falls back to the total.
+    """
+    if not sys.platform.startswith("win"):
+        return None
+    try:
+        return float(_windows_memory_status()[1]) / (1024**3)
+    except (OSError, AttributeError, ValueError):
+        return None
+
+
 def total_ram_gb() -> float:
     if sys.platform.startswith("win"):
-        import ctypes
-
-        class _MEMORYSTATUSEX(ctypes.Structure):
-            _fields_ = [
-                ("dwLength", ctypes.c_ulong),
-                ("dwMemoryLoad", ctypes.c_ulong),
-                ("ullTotalPhys", ctypes.c_ulonglong),
-                ("ullAvailPhys", ctypes.c_ulonglong),
-                ("ullTotalPageFile", ctypes.c_ulonglong),
-                ("ullAvailPageFile", ctypes.c_ulonglong),
-                ("ullTotalVirtual", ctypes.c_ulonglong),
-                ("ullAvailVirtual", ctypes.c_ulonglong),
-                ("ullAvailExtendedVirtual", ctypes.c_ulonglong),
-            ]
-
-        stat = _MEMORYSTATUSEX()
-        stat.dwLength = ctypes.sizeof(_MEMORYSTATUSEX)
-        ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(stat))
-        return float(stat.ullTotalPhys) / (1024**3)
+        return float(_windows_memory_status()[0]) / (1024**3)
     if sys.platform == "darwin":
         # macOS: query total physical memory via sysctl. Falling through to the
         # flat 8.0 default fed every Mac wrong Whisper model recommendations

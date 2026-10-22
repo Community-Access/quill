@@ -264,6 +264,35 @@ Recording and dictbench all get it. A cut can still cost a word at its
 seam (one in the 12-second check); losing the sentence was the
 alternative. Tests: <code>test_dictation_chunked_offline.py</code>.</p>
 <h3
+id="dictation-advice-an-8-gb-baseline-free-memory-and-spanish-ranked-by-real-spanish-speech-2026-10-22">Dictation
+advice: an 8 GB baseline, free memory, and Spanish ranked by real
+Spanish speech (2026-10-22)</h3>
+<p>Jeff, 2026-10-22: “every computer these days has at least 8gb of
+memory, now usable is a different story.” Three changes, from the first
+real-speech machine run (dictation plan, section 36):</p>
+<ul>
+<li><code>model_types.RAM_TIERS</code> is 600 MB / 1.6 GB / 4 GB (was 1
+GB and 2.5 GB above the first tier), matching
+<code>scripts/bench_machine_run.py</code>.</li>
+<li><code>bw_speech.available_ram_gb</code> (GlobalMemoryStatusEx
+<code>ullAvailPhys</code>, now one shared
+<code>_windows_memory_status</code>) feeds
+<code>SpeedCheck.available_gb</code>; <code>model_advice</code> caps a
+model at what is free less 500 MB, re-reads it on every
+<code>for_this_computer</code>, and says when free memory ruled a model
+out.</li>
+<li><code>Measured.word_errors_es</code> (mean of FLEURS Spanish and the
+LibriVox Spanish held-out set): Spanish is ranked by it and only
+Spanish-measured models are offered for it. Parakeet TDT v3 5.9, Whisper
+small 6.9, Nemotron 7.2, Whisper base 14.4, the bundled Whisper tiny
+28.8. <code>peak_mb</code> is now real speech.</li>
+</ul>
+<p>Not changed: the catalogue’s speed factors (real speech puts Parakeet
+at 1.6 times Moonshine tiny against 6.3); they wait for the English
+real-voice numbers so English recommendations and tiers move once.
+Moonshine base scored 50 to 73 percent wrong on real English and is
+under investigation.</p>
+<h3
 id="open-recent-numbers-eight-rows-so-altshift9-is-only-autocorrect-entries-2026-10-22">Open
 Recent numbers eight rows, so Alt+Shift+9 is only AutoCorrect Entries
 (2026-10-22)</h3>

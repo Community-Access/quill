@@ -60,13 +60,15 @@ NO_MEMORY_READING = SpeedCheck(tiny=0.05, cores=4, memory_gb=None)
         (EIGHT_GB, "en", "speed", "moonshine"),
         (EIGHT_GB, "en", "accuracy", "nemotron"),
         (EIGHT_GB, "es", "balanced", "whisper"),
-        (EIGHT_GB, "es", "accuracy", "nemotron"),
+        # Spanish is ranked by real Spanish speech (2026-10-22): Parakeet
+        # TDT v3 got 5.9 percent wrong, Nemotron 7.2, Whisper tiny 28.8.
+        (EIGHT_GB, "es", "accuracy", "parakeet"),
         # Two cores are a modest computer, whatever the memory.
         (EIGHT_GB_DUAL, "en", "balanced", "moonshine"),
         # 16 GB and up: Nemotron by default (dict.md D-26's tier table).
         (SIXTEEN_GB, "en", "balanced", "nemotron"),
         (SIXTEEN_GB, "en", "speed", "moonshine"),
-        (SIXTEEN_GB, "es", "balanced", "nemotron"),
+        (SIXTEEN_GB, "es", "balanced", "parakeet"),
         (SIXTEEN_GB_GPU, "en", "balanced", "nemotron"),
         # Nothing keeps up: the lightest built-in model, with a warning.
         (VERY_SLOW, "en", "balanced", "moonshine"),
@@ -126,10 +128,37 @@ def test_every_answer_is_marked_an_estimate_and_never_switches() -> None:
     assert advice.details.splitlines()[0] == advice.line
 
 
-def test_spanish_says_accuracy_was_measured_in_english() -> None:
+def test_spanish_cites_real_spanish_speech() -> None:
     advice = recommend(EIGHT_GB, "es")
-    assert any("measured in English only" in r for r in advice.reasons)
-    assert not any("percent of words wrong" in r for r in advice.reasons)
+    assert any("real Spanish speakers" in r for r in advice.reasons)
+    assert not any("measured in English only" in r for r in advice.reasons)
+
+
+def test_spanish_offers_only_models_measured_in_spanish() -> None:
+    from quill.core.windows_dictation.model_types import MEASURED
+
+    for check in (BASELINE, EIGHT_GB, SIXTEEN_GB):
+        for priority in ("balanced", "speed", "accuracy"):
+            chosen = recommend(check, "es", priority=priority).model_id
+            assert MEASURED[chosen].word_errors_es is not None, (check, priority, chosen)
+
+
+def test_free_memory_caps_the_choice_and_says_why() -> None:
+    from dataclasses import replace
+
+    roomy = recommend(SIXTEEN_GB, "es")
+    assert roomy.model_id == "parakeet"
+    # The same 16 GB computer with 1.2 GB free: Parakeet's 1.1 GB peak plus
+    # the half-gigabyte reserve does not fit, so a lighter model is named.
+    busy = recommend(replace(SIXTEEN_GB, available_gb=1.2), "es")
+    assert busy.model_id != "parakeet"
+    assert any("free on this computer right now" in r for r in busy.reasons)
+
+
+def test_unreadable_free_memory_falls_back_to_the_total() -> None:
+    from dataclasses import replace
+
+    assert recommend(replace(SIXTEEN_GB, available_gb=None), "es").model_id == "parakeet"
 
 
 def test_an_untimed_check_says_so() -> None:

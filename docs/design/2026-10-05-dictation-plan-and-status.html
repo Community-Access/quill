@@ -274,9 +274,14 @@ rule that decides everything: a modest computer</h2>
 one they would choose, with a screen reader running that must stay
 instantly responsive.</p>
 <p><strong>The baseline machine</strong> (decided 2026-10-05, Jeff’s
-answer to dict.md question 4): Windows 10, 64-bit, 4 GB of memory, an
-older dual-core processor with no graphics help, NVDA or JAWS running
-beside a browser or mail program, possibly on battery.</p>
+answer to dict.md question 4; memory raised to 8 GB on 2026-10-22, Jeff:
+“every computer these days has at least 8 GB of memory, now usable is a
+different story”): Windows 10, 64-bit, <strong>8 GB of memory</strong>,
+an older dual-core processor with no graphics help, NVDA or JAWS running
+beside a browser or mail program, possibly on battery. Because
+<em>usable</em> memory is the real limit, a recommendation is capped by
+what is <strong>free when it is asked</strong>, not only by the total
+(section 36).</p>
 <p><strong>The budgets</strong> every default must meet there:</p>
 <table>
 <thead>
@@ -295,8 +300,10 @@ thread)</td>
 </tr>
 <tr>
 <td>Memory while dictating</td>
-<td>600 MB or less for dictation</td>
-<td>a 4 GB machine already pages with a browser open</td>
+<td>1.6 GB or less on an 8 GB computer (600 MB on a 4 GB one), and never
+more than is free less 500 MB</td>
+<td>an 8 GB laptop often has two or three GB free with a screen reader
+and a browser open</td>
 </tr>
 <tr>
 <td>Screen-reader delay</td>
@@ -5597,6 +5604,104 @@ code.visualstudio.com/docs/configure/accessibility/voice.</li>
 <code>quill/core/windows_dictation/</code>,
 <code>scripts/dictbench.py</code>.</li>
 </ul>
+<h2
+id="36-measured-2026-10-22-real-speech-spanish-and-an-8-gb-baseline">36.
+Measured, 2026-10-22: real speech, Spanish, and an 8 GB baseline</h2>
+<p>The first machine run on real recordings
+(<code>scripts/bench_machine_run.py</code>; LibriSpeech clean and other,
+the LibriVox held-out sets, FLEURS Spanish; one thread; on the
+development computer, not the baseline machine with a screen reader,
+which B-8 still needs).</p>
+<p><strong>Spanish</strong> (percent of words wrong; lower is
+better):</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>FLEURS Spanish</th>
+<th>LibriVox Spanish</th>
+<th>Peak memory</th>
+<th>Speed per thread</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Whisper tiny (built in)</td>
+<td>30.5</td>
+<td>27.0</td>
+<td>521 MB</td>
+<td>0.06</td>
+</tr>
+<tr>
+<td>Whisper base</td>
+<td>12.6</td>
+<td>16.1</td>
+<td>806 MB</td>
+<td>0.18</td>
+</tr>
+<tr>
+<td>Whisper small</td>
+<td>6.0</td>
+<td>7.8</td>
+<td>1,435 MB</td>
+<td>0.40 to 0.57</td>
+</tr>
+<tr>
+<td>Parakeet TDT v3</td>
+<td><strong>4.4</strong></td>
+<td><strong>7.3</strong></td>
+<td>1,136 MB</td>
+<td>0.07 to 0.11</td>
+</tr>
+<tr>
+<td>Nemotron</td>
+<td>6.4</td>
+<td>8.0</td>
+<td>1,538 MB</td>
+<td>0.13 to 0.37</td>
+</tr>
+</tbody>
+</table>
+<p>The bundled Spanish model gets about one word in four wrong; Parakeet
+about one in seventeen, at a similar speed. Moonshine has no Spanish
+model (its Spanish row is Whisper tiny’s).</p>
+<p><strong>What changed in the code</strong> (Jeff, 2026-10-22, all
+three points agreed):</p>
+<ul>
+<li><strong>The 8 GB baseline.</strong>
+<code>model_types.RAM_TIERS</code> is 600 MB / 1.6 GB / 4 GB (was 600 MB
+/ 1 GB / 2.5 GB), the same as the benchmark driver’s tiers.</li>
+<li><strong>Free memory, not only total.</strong>
+<code>bw_speech.available_ram_gb</code> reads <code>ullAvailPhys</code>;
+<code>SpeedCheck.available_gb</code> carries it, and
+<code>model_advice.for_this_computer</code> re-reads it on every call. A
+model must fit in what is free less 500 MB, and the reason says when
+free memory, not the computer, ruled a model out.</li>
+<li><strong>Spanish by Spanish.</strong>
+<code>Measured.word_errors_es</code> holds the mean of the two Spanish
+sets; Spanish is ranked by it, and only models with a Spanish figure are
+offered for Spanish. The reason now cites real Spanish speakers instead
+of “measured in English only”.</li>
+<li><strong>Real peaks.</strong> <code>Measured.peak_mb</code> is the
+highest seen on any real set; they run 1.5 to 2.8 times the synthetic
+figures.</li>
+</ul>
+<p><strong>Not changed yet, deliberately: the speed factors.</strong> On
+real speech Parakeet cost about 1.6 times Moonshine tiny (the catalogue
+says 6.3), Nemotron 5.5 (8.0) and Parakeet Unified 3.2 (6.1). With the
+catalogue’s factors Parakeet still reads as needing a second processor
+thread on a four-core 8 GB computer, so Spanish there is still Whisper
+tiny unless “The fewest mistakes” is chosen. Updating the factors also
+changes English recommendations and relabels tiers, so it waits for the
+English real-voice numbers, to be written in as one change.</p>
+<p><strong>Found, and needing a look:</strong> Moonshine base scored 50
+to 73 percent wrong on every real English set (3.4 on the synthetic
+voice), while Moonshine tiny scored 5.0 to 13.3. Its synthetic figure
+stays in <code>MEASURED</code> until the cause is known.</p>
+<p><strong>Also fixed on the way:</strong> dictbench printed transcripts
+on a cp1252 console and crashed on “ş”, so every FLEURS Spanish run had
+failed silently (#1679); the driver then decoded the UTF-8 output as
+cp1252 (#1681).</p>
 </main>
 </body>
 </html>
