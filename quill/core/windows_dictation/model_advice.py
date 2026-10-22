@@ -18,7 +18,10 @@ are candidates, because a reason needs a number, and only ones that know the
 language. A candidate must keep up: inside the 0.25 one-thread budget, or, for
 "The fewest mistakes" and on a computer with 16 GB and four cores, on the two
 threads dictation uses. It must also fit beside the screen reader in memory
-(600 MB on a computer under 7 GB, 1 GB under 15 GB). Of those left, the fewest
+(600 MB on a computer under 7 GB, 1.6 GB under 15 GB), and in what is *free*
+when you ask, less half a gigabyte kept back for the screen reader. Spanish is
+ranked by real Spanish speech, and only models measured in Spanish are offered
+for it. Of those left, the fewest
 word errors win; ties go to the bigger model of the pair, except on a modest
 computer, where the built-in model wins a tie because a download that is no
 more accurate is not worth having. "The quickest response" takes the
@@ -43,6 +46,7 @@ from quill.core.windows_dictation.model_catalog import CATALOGUE, downloadable
 from quill.core.windows_dictation.model_types import (
     LIGHTWEIGHT,
     MEASURED,
+    RAM_TIERS,
     TIER_MEANINGS,
     megabytes,
     ram_tier_budget_mb,
@@ -110,6 +114,8 @@ _TIE_ORDER = (
     "whisper_base",
 )
 _LANGUAGE_NAMES = {"en": "English", "es": "Spanish"}
+#: Megabytes kept free beside a model, for the screen reader and the editor.
+_FREE_RESERVE_MB = 500
 
 
 @dataclass(frozen=True, slots=True)
@@ -164,6 +170,14 @@ def engine_tier(engine_id: str) -> str:
     return tier_for(cost, MEASURED[engine_id].word_errors)
 
 
+def _errors(engine_id: str, language: str) -> float:
+    """Percent of words wrong for *language*: Spanish has its own figure."""
+    measured = MEASURED[engine_id]
+    if language == "es" and measured.word_errors_es is not None:
+        return measured.word_errors_es
+    return measured.word_errors
+
+
 def _candidates(language: str) -> list[_Candidate]:
     found = [
         _Candidate(engine_id, _BUILT_IN_NAMES[engine_id], cost, True, 0)
@@ -175,6 +189,8 @@ def _candidates(language: str) -> list[_Candidate]:
         for model in CATALOGUE
         if model.id in MEASURED and language in model.languages
     ]
+    if language == "es":  # a Spanish reason needs a Spanish number
+        found = [c for c in found if MEASURED[c.id].word_errors_es is not None]
     return found
 
 
@@ -184,12 +200,23 @@ def _tiny_here(check: SpeedCheck) -> float:
     return _WEAK_TINY if check.weak else _CAPABLE_TINY
 
 
-def _memory_cap_mb(check: SpeedCheck) -> int:
-    """How much memory dictation may take beside the screen reader here."""
+def _tier_cap_mb(check: SpeedCheck) -> int:
+    """The catalogue's memory tier for this computer's total (D-26)."""
     memory = check.memory_gb
     if memory is None:  # unmeasured: a modest computer is treated as 4 GB, else 8
         return ram_tier_budget_mb(4.0 if check.weak else 8.0)
-    return ram_tier_budget_mb(memory)  # the catalogue's memory tiers (D-26)
+    return ram_tier_budget_mb(memory)
+
+
+def _memory_cap_mb(check: SpeedCheck) -> int:
+    """How much memory dictation may take beside the screen reader here: the
+    tier for the total, and no more than is free now less a reserve. Never
+    below the smallest tier, so the built-in models are always possible."""
+    cap = _tier_cap_mb(check)
+    if check.available_gb is not None:
+        free_mb = int(check.available_gb * 1024) - _FREE_RESERVE_MB
+        cap = min(cap, max(RAM_TIERS[0][1], free_mb))
+    return cap
 
 
 def _machine(check: SpeedCheck) -> str:
@@ -199,10 +226,12 @@ def _machine(check: SpeedCheck) -> str:
     return f"this computer's {round(check.memory_gb)} GB and {cores}"
 
 
-def _sort_key(candidate: _Candidate, *, built_in_first: bool) -> tuple[float, int, int]:
+def _sort_key(
+    candidate: _Candidate, *, built_in_first: bool, language: str = "en"
+) -> tuple[float, int, int]:
     order = _TIE_ORDER.index(candidate.id) if candidate.id in _TIE_ORDER else len(_TIE_ORDER)
     preference = 0 if (candidate.built_in or not built_in_first) else 1
-    return (MEASURED[candidate.id].word_errors, preference, order)
+    return (_errors(candidate.id, language), preference, order)
 
 
 def recommend(
@@ -237,6 +266,8 @@ def recommend(
     def excluded(candidate: _Candidate) -> str:
         """Why *candidate* is not for this computer, or ``""``."""
         if MEASURED[candidate.id].peak_mb > memory_cap:
+            if memory_cap < _tier_cap_mb(check):
+                return "needs more memory than is free on this computer right now"
             return "needs more memory than this computer can spare beside your screen reader"
         if speed(candidate) > 2 * BUDGET:
             return "would lag behind your speech here"
@@ -249,10 +280,13 @@ def recommend(
     if lightest:
         chosen = min((c for c in candidates if c.built_in), key=lambda c: c.cost_factor)
     elif priority == PRIORITY_SPEED:
-        chosen = min(allowed, key=lambda c: (c.cost_factor, MEASURED[c.id].word_errors))
+        chosen = min(allowed, key=lambda c: (c.cost_factor, _errors(c.id, language)))
     else:
         built_in_first = check.weak and priority == PRIORITY_BALANCED
-        chosen = min(allowed, key=lambda c: _sort_key(c, built_in_first=built_in_first))
+        chosen = min(
+            allowed,
+            key=lambda c: _sort_key(c, built_in_first=built_in_first, language=language),
+        )
 
     machine = _machine(check)
     pace = speed(chosen)
@@ -275,13 +309,15 @@ def recommend(
     )
 
     reasons: list[str] = [_CHOSEN_FOR[priority], TIER_MEANINGS[chosen.tier]]
-    if language == "en":
+    if language == "es":
+        errors = _errors(chosen.id, language)
+        reasons.append(
+            f"In our test with recordings of real Spanish speakers it got {errors:g} "
+            "percent of words wrong."
+        )
+    else:
         errors = MEASURED[chosen.id].word_errors
         reasons.append(f"In our test it got {errors:g} percent of words wrong.")
-    else:
-        reasons.append(
-            f"Accuracy was measured in English only; {_LANGUAGE_NAMES[language]} was not measured."
-        )
     if pace > BUDGET and not may_lag:
         reasons.append(
             "It uses more of the processor than the built-in engines, so your screen "
@@ -291,9 +327,9 @@ def recommend(
         (
             c
             for c in candidates
-            if MEASURED[c.id].word_errors < MEASURED[chosen.id].word_errors and excluded(c)
+            if _errors(c.id, language) < _errors(chosen.id, language) and excluded(c)
         ),
-        key=lambda c: _sort_key(c, built_in_first=False),
+        key=lambda c: _sort_key(c, built_in_first=False, language=language),
     )
     if better:
         reasons.append(f"{better[0].name} makes fewer mistakes but {excluded(better[0])}.")
@@ -325,6 +361,10 @@ def for_this_computer(language: str = "en", priority: str = PRIORITY_BALANCED) -
     """:func:`recommend` on this session's timed check, or on the cores and
     memory alone when none has run yet. Instant: for windows that open without
     timing anything (Choose Model, Set Up, Dictation Settings)."""
-    from quill.core.windows_dictation.speed_check import latest
+    from dataclasses import replace
 
-    return recommend(latest(), language, priority=priority)
+    from quill.core.windows_dictation.speed_check import _available_gb, latest
+
+    # The timed check is kept for the session; free memory is read now, because
+    # what was free an hour ago says nothing about what dictation can have.
+    return recommend(replace(latest(), available_gb=_available_gb()), language, priority=priority)

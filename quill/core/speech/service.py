@@ -392,6 +392,15 @@ def detect_total_ram_gb() -> float:
     return total_ram_gb()
 
 
+def detect_available_ram_gb() -> float | None:
+    """Physical memory free right now in GB, or ``None`` where it is not read."""
+    try:
+        from quill.core.bw_speech import available_ram_gb
+    except ImportError:  # bw_speech absent (standalone Audio Studio)
+        return None
+    return available_ram_gb()
+
+
 def describe_models(
     provider: SpeechToTextProvider,
     total_ram_gb: float | None = None,
