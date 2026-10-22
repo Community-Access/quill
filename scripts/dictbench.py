@@ -480,6 +480,14 @@ def run_live(
 
 
 def main(argv: list[str] | None = None) -> int:
+    # Transcripts carry any character a speaker says ("ş" in FLEURS Spanish).
+    # Windows' console default (cp1252) cannot encode them, and printing one
+    # raised before --json was written, so bench_machine_run silently recorded
+    # the whole set as failed (2026-10-22: every fleurs-es run).
+    for stream in (sys.stdout, sys.stderr):
+        reconfigure = getattr(stream, "reconfigure", None)
+        if callable(reconfigure):
+            reconfigure(encoding="utf-8", errors="replace")
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("folder", type=Path, nargs="?", help="recordings plus transcripts.txt")
     parser.add_argument("--engine", default="moonshine", help="moonshine, whisper, or a model id")
