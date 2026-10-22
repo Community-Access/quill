@@ -22,7 +22,11 @@ trying, and QUILLBee tells you what has changed. They're new around here, and
 [Meet QUILLBert and QUILLBee](https://www.quillforall.org/meet-quillbert-and-quillbee.html)
 has the proper introductions.
 
-## This build: 2.0.0 (build 4)
+## This build: 2.0.0 (build 5)
+
+Build 5 has everything that was in build 4, plus the fixes for large
+libraries and long refreshes described below. Builds 3 to 5 are for testers
+and have not been published.
 
 QUILL Cast now runs on Python 3.14. When you install it, older Python 3.13
 runtimes that no QuillVille app uses any more are removed for you.
@@ -35,22 +39,44 @@ type it.
 podcast in Favorites opens its list on the episode you last had selected.
 **Ctrl+Shift+Y** (Podcasts > **Copy to Folder...**) puts a podcast in a
 second folder without following it twice, and **Ctrl+Shift+V** moves it.
+A copy keeps one set of episodes, history and downloads, OPML export and
+import keep every copy, and unfollowing a podcast removes all its copies.
 Show notes that used to be full of codes such as `&#8217;` read as words.
-Refresh All and OPML import stay responsive, and an import no longer
-announces hundreds of "new" episodes. See "Organising podcasts into folders"
-and "Where you were in each podcast" in the user guide.
+See "Organising podcasts into folders" and "Where you were in each podcast"
+in the user guide.
+
+**Big libraries and long refreshes.** Refresh All has its own progress
+window. Closing it does not stop the run, **Stop remaining checks** cancels
+only the feeds that have not started, and updates already finished are kept.
+OPML files are read and planned in the background, an import no longer
+announces hundreds of "new" episodes, and if you stop the optional feed check
+the podcasts already imported stay in your library. Saving, opening a large
+place such as Downloads, and checking disk space no longer hold up the
+window, even with thousands of podcasts.
+
+**Your listening is kept safe.** A feed check that finishes late never undoes
+what you did meanwhile: your place in an episode and your own episode names
+stay, and a podcast you unfollowed does not come back. Ctrl+Z after
+unfollowing puts the podcast back in your queue, playlists, Inbox and
+folders, and tells you how it went once its files are back. If Cast cannot
+save a change to Preferences, it says so.
 
 **QUILL Lineups.** **Episode > Lineups...** (**Ctrl+U**) builds named lists of
 episodes, podcasts and anything Quill Radio can play, by hand or by rules you
 write, shared with Quill Radio. Save Lineup and Apply Lineup on the Play Queue
-use them too. See Chapter 9 and the tutorial **Build a lineup that fills
+use them too. Add to Lineup... is on every episode and podcast menu, and
+**Lineup > Start Here** in the Lineups window makes Cast open in that
+Lineup. See Chapter 9 and the tutorial **Build a lineup that fills
 itself**.
 
 **Keys.** F5 checks the selected podcast and **Ctrl+F5** checks them all.
 **Ctrl+Shift+E** makes a folder. Favorites moved to **Alt+Shift+V**,
 Playlists to **Alt+Shift+Y**, Mark All as Played to **Alt+Shift+E**, and Ask
 About an Image to **Ctrl+Alt+F5**. With Simple menus, every Advanced command
-can still be reached from the Command Palette (**Ctrl+Shift+P**).
+can still be reached from the Command Palette (**Ctrl+Shift+P**). An Advanced
+command's own key works only while **View > Advanced Features**
+(**Ctrl+Alt+Shift+G**) is on, and the user guide now says which commands are
+Advanced.
 
 **Sounds.** **Preferences > App Sounds Play On...** chooses where Cast's own
 sounds play; they start out following the episode. **Alt+Shift+M** turns
@@ -58,16 +84,23 @@ them off and back on.
 
 **Dictation.** **Edit > Dictate Here** (**Ctrl+F11**) dictates into a search
 box, such as Add Podcast's name box, through QUILL Transcribe, released on 1
-November 2026. See "Dictating into a search box".
+November 2026. That section of the user guide now says what happens when
+QUILL Transcribe is running, not running or not installed, and that your
+voice stays on your computer unless you chose an online speech provider in
+QUILL Transcribe.
 
 **Connections and starting up.** Feeds and downloads check certificates the
 way Windows does, and the user guide's "Feeds over http and https" explains
 what Cast does with each. **Preferences > When Cast opens** can start the
-installed copy when you sign in to Windows. This build runs on Python 3.14
-and installs for you alone, with no administrator prompt.
+installed copy when you sign in to Windows. Cast installs for you alone,
+with no administrator prompt.
 
 **Playing and moving around.** CBC podcasts play again. Arrow keys stay in
-the control you are using, and the cursor stays put while feeds update.
+the control you are using: in Podcasts, Left Arrow closes an open folder
+without leaving the list. The cursor stays put while feeds update, and after
+you move a podcast it lands on the next one. A podcast's menu has Refresh
+Feed, and opening a podcast with no episodes checks it before calling it
+empty.
 Playback letters such as C work only in Now Playing, so in the library they
 jump to a podcast by name again. Play/Pause tells you when the player
 refused. **Help > Notifications...** says how many are unread. **Connect to
@@ -465,18 +498,8 @@ had, and tells you so the next time Cast opens. The window's **Update
 History** button shows everything the updater has done.
 
 Help > About now shows a build number after the version: this release is
-2.0.0 (build 1). If a fix comes out without a new version number, it is a
+2.0.0 (build 5). If a fix comes out without a new version number, it is a
 newer build, and Check for Updates offers it to you.
-
-## Dev preview: 2.0.0-dev.20261006.2
-
-This preview is separate from the 2.0.0 (build 1) release above. It makes
-large podcast imports and refreshes easier to work through: OPML files are
-read and planned in the background, and imported subscriptions stay in your
-library if you stop the optional feed check. Refresh All has a separate
-progress window; closing it does not stop the run, while **Stop remaining
-checks** cancels only feeds that have not started. In the Podcasts tree, Left
-Arrow now closes an expanded folder without moving focus out of the tree.
 
 ## When you need a hand
 

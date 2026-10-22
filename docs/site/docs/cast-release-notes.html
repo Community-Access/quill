@@ -261,7 +261,10 @@ worth trying, and QUILLBee tells you what has changed. They’re new
 around here, and <a
 href="https://www.quillforall.org/meet-quillbert-and-quillbee.html">Meet
 QUILLBert and QUILLBee</a> has the proper introductions.</p>
-<h2 id="this-build-200-build-4">This build: 2.0.0 (build 4)</h2>
+<h2 id="this-build-200-build-5">This build: 2.0.0 (build 5)</h2>
+<p>Build 5 has everything that was in build 4, plus the fixes for large
+libraries and long refreshes described below. Builds 3 to 5 are for
+testers and have not been published.</p>
 <p>QUILL Cast now runs on Python 3.14. When you install it, older Python
 3.13 runtimes that no QuillVille app uses any more are removed for
 you.</p>
@@ -273,16 +276,34 @@ podcast: Enter on a podcast in Favorites opens its list on the episode
 you last had selected. <strong>Ctrl+Shift+Y</strong> (Podcasts &gt;
 <strong>Copy to Folder…</strong>) puts a podcast in a second folder
 without following it twice, and <strong>Ctrl+Shift+V</strong> moves it.
-Show notes that used to be full of codes such as
-<code>&amp;#8217;</code> read as words. Refresh All and OPML import stay
-responsive, and an import no longer announces hundreds of “new”
-episodes. See “Organising podcasts into folders” and “Where you were in
-each podcast” in the user guide.</p>
+A copy keeps one set of episodes, history and downloads, OPML export and
+import keep every copy, and unfollowing a podcast removes all its
+copies. Show notes that used to be full of codes such as
+<code>&amp;#8217;</code> read as words. See “Organising podcasts into
+folders” and “Where you were in each podcast” in the user guide.</p>
+<p><strong>Big libraries and long refreshes.</strong> Refresh All has
+its own progress window. Closing it does not stop the run, <strong>Stop
+remaining checks</strong> cancels only the feeds that have not started,
+and updates already finished are kept. OPML files are read and planned
+in the background, an import no longer announces hundreds of “new”
+episodes, and if you stop the optional feed check the podcasts already
+imported stay in your library. Saving, opening a large place such as
+Downloads, and checking disk space no longer hold up the window, even
+with thousands of podcasts.</p>
+<p><strong>Your listening is kept safe.</strong> A feed check that
+finishes late never undoes what you did meanwhile: your place in an
+episode and your own episode names stay, and a podcast you unfollowed
+does not come back. Ctrl+Z after unfollowing puts the podcast back in
+your queue, playlists, Inbox and folders, and tells you how it went once
+its files are back. If Cast cannot save a change to Preferences, it says
+so.</p>
 <p><strong>QUILL Lineups.</strong> <strong>Episode &gt;
 Lineups…</strong> (<strong>Ctrl+U</strong>) builds named lists of
 episodes, podcasts and anything Quill Radio can play, by hand or by
 rules you write, shared with Quill Radio. Save Lineup and Apply Lineup
-on the Play Queue use them too. See Chapter 9 and the tutorial
+on the Play Queue use them too. Add to Lineup… is on every episode and
+podcast menu, and <strong>Lineup &gt; Start Here</strong> in the Lineups
+window makes Cast open in that Lineup. See Chapter 9 and the tutorial
 <strong>Build a lineup that fills itself</strong>.</p>
 <p><strong>Keys.</strong> F5 checks the selected podcast and
 <strong>Ctrl+F5</strong> checks them all. <strong>Ctrl+Shift+E</strong>
@@ -291,7 +312,10 @@ Playlists to <strong>Alt+Shift+Y</strong>, Mark All as Played to
 <strong>Alt+Shift+E</strong>, and Ask About an Image to
 <strong>Ctrl+Alt+F5</strong>. With Simple menus, every Advanced command
 can still be reached from the Command Palette
-(<strong>Ctrl+Shift+P</strong>).</p>
+(<strong>Ctrl+Shift+P</strong>). An Advanced command’s own key works
+only while <strong>View &gt; Advanced Features</strong>
+(<strong>Ctrl+Alt+Shift+G</strong>) is on, and the user guide now says
+which commands are Advanced.</p>
 <p><strong>Sounds.</strong> <strong>Preferences &gt; App Sounds Play
 On…</strong> chooses where Cast’s own sounds play; they start out
 following the episode. <strong>Alt+Shift+M</strong> turns them off and
@@ -299,22 +323,28 @@ back on.</p>
 <p><strong>Dictation.</strong> <strong>Edit &gt; Dictate Here</strong>
 (<strong>Ctrl+F11</strong>) dictates into a search box, such as Add
 Podcast’s name box, through QUILL Transcribe, released on 1 November
-2026. See “Dictating into a search box”.</p>
+2026. That section of the user guide now says what happens when QUILL
+Transcribe is running, not running or not installed, and that your voice
+stays on your computer unless you chose an online speech provider in
+QUILL Transcribe.</p>
 <p><strong>Connections and starting up.</strong> Feeds and downloads
 check certificates the way Windows does, and the user guide’s “Feeds
 over http and https” explains what Cast does with each.
 <strong>Preferences &gt; When Cast opens</strong> can start the
-installed copy when you sign in to Windows. This build runs on Python
-3.14 and installs for you alone, with no administrator prompt.</p>
+installed copy when you sign in to Windows. Cast installs for you alone,
+with no administrator prompt.</p>
 <p><strong>Playing and moving around.</strong> CBC podcasts play again.
-Arrow keys stay in the control you are using, and the cursor stays put
-while feeds update. Playback letters such as C work only in Now Playing,
-so in the library they jump to a podcast by name again. Play/Pause tells
-you when the player refused. <strong>Help &gt; Notifications…</strong>
-says how many are unread. <strong>Connect to Spotify…</strong>
-(<strong>Ctrl+Alt+S</strong>) and <strong>Browse Spotify
-Podcasts…</strong> (<strong>Ctrl+Alt+V</strong>) are on the Help menu
-from the start.</p>
+Arrow keys stay in the control you are using: in Podcasts, Left Arrow
+closes an open folder without leaving the list. The cursor stays put
+while feeds update, and after you move a podcast it lands on the next
+one. A podcast’s menu has Refresh Feed, and opening a podcast with no
+episodes checks it before calling it empty. Playback letters such as C
+work only in Now Playing, so in the library they jump to a podcast by
+name again. Play/Pause tells you when the player refused. <strong>Help
+&gt; Notifications…</strong> says how many are unread. <strong>Connect
+to Spotify…</strong> (<strong>Ctrl+Alt+S</strong>) and <strong>Browse
+Spotify Podcasts…</strong> (<strong>Ctrl+Alt+V</strong>) are on the Help
+menu from the start.</p>
 <p><strong>Updates.</strong> A portable copy updates in place and keeps
 its <code>data</code> folder where Cast looks for it. A failed update
 puts back the version you had. The Beta engine’s 335 MB are removed when
@@ -710,18 +740,8 @@ version you had, and tells you so the next time Cast opens. The window’s
 <strong>Update History</strong> button shows everything the updater has
 done.</p>
 <p>Help &gt; About now shows a build number after the version: this
-release is 2.0.0 (build 1). If a fix comes out without a new version
+release is 2.0.0 (build 5). If a fix comes out without a new version
 number, it is a newer build, and Check for Updates offers it to you.</p>
-<h2 id="dev-preview-200-dev202610062">Dev preview:
-2.0.0-dev.20261006.2</h2>
-<p>This preview is separate from the 2.0.0 (build 1) release above. It
-makes large podcast imports and refreshes easier to work through: OPML
-files are read and planned in the background, and imported subscriptions
-stay in your library if you stop the optional feed check. Refresh All
-has a separate progress window; closing it does not stop the run, while
-<strong>Stop remaining checks</strong> cancels only feeds that have not
-started. In the Podcasts tree, Left Arrow now closes an expanded folder
-without moving focus out of the tree.</p>
 <h2 id="when-you-need-a-hand">When you need a hand</h2>
 <ul>
 <li><strong>F1</strong> anywhere tells you what the window is for and
