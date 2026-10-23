@@ -3401,3 +3401,47 @@ be asked about, so the change is said rather than offered:
 **Still for a person:** B-8 on a real 4 GB computer with NVDA or JAWS; ten
 native Spanish recordings with questions and exclamations (the opening marks
 are now scored, #1684); the native-speaker review of the Spanish commands.
+
+## 38. As built, 2026-10-23: the Spanish tip and Moonshine base's seams
+
+**The Spanish tip** (`spanish_tip.py`, said through `start_notices.py`). The
+only Spanish model in the installers is the built-in Whisper tiny: 30.5
+percent of words wrong on FLEURS Spanish and 27.0 on the Spanish audiobooks,
+about one word in four. Parakeet TDT v3 gets 4.4 and 7.3 (section 36).
+
+- **When.** The first time dictation starts in Spanish on a computer whose own
+  Spanish recommendation (`model_advice.for_this_computer("es")`) is a
+  download, while the Spanish would otherwise go to the built-in Whisper tiny
+  (`engines.model_for`). That is both built-in engines and every English-only
+  download, which hand Spanish to Whisper tiny. In practice it is Parakeet TDT
+  v3 on a computer with 8 GB of memory and four cores; a 4 GB computer hears
+  nothing.
+- **What.** One sentence: "For Spanish, NVIDIA Parakeet TDT 0.6B v3 gets about
+  6 percent of words wrong, against 29 for the built-in model. It is a 670 MB
+  download in the model list." (or "It is already downloaded; choose it in the
+  model list."). The figures are the means of the two Spanish sets
+  (`Measured.word_errors_es`). Nothing is downloaded and nothing is switched.
+- **Once.** Across every QuillVille program, recorded in `spanish-tip.json`
+  beside the family's shared dictation settings, written when it is said. It
+  runs in QUILL, QUILL Lite and QUILL Transcribe, which share the dictation
+  controller.
+- **Order.** At most one start sentence is said each time
+  (`start_notices.start_notice`): a downloaded model that gave way to the
+  built-in one; then a removed model (section 37); then the Spanish tip. A
+  once-only notice that waits its turn is said at a later start.
+
+**Decision** (Jeff, 2026-10-23): the tip, not shipping Whisper base in place of
+tiny. Base gets 12.6 and 16.1 percent wrong at about 820 MB peak; it would have
+made every installer bigger and still left Spanish about three times worse
+than the download. A computer that can run the download is told so once; one
+that cannot loses nothing it had.
+
+**Moonshine base's seams** (`chunked_offline.py`). Section 37's fix cuts a
+phrase over about 8 seconds into pieces, each cut at the quietest moment near
+it. A cut that still landed on a word lost that word: the 12-second check
+dropped one word at each cut. Each piece now reaches half a second
+(`_OVERLAP_SECONDS`) past its cut on both sides, so a word near the cut is
+heard twice, and `join_overlapping` drops the repeat, keeping the later
+piece's copy, which heard what came after it. Where two pieces agree on
+nothing, the words are joined with a space, as before. No word is lost at a
+cut.

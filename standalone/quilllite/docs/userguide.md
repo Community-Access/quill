@@ -5590,6 +5590,15 @@ which language you are in.
   Whisper's multilingual speech model for this. It comes with QUILL Lite, so
   there is nothing to download. Moonshine only knows English, so in Spanish
   you get Whisper whichever of the two you chose.
+- **A better Spanish model, said once.** The built-in Whisper gets about one
+  word in four wrong in Spanish. If your computer can run NVIDIA Parakeet TDT
+  0.6B v3 (in practice, 8 GB of memory and four cores), the first time you
+  dictate in Spanish you hear one sentence saying so, for example: "For
+  Spanish, NVIDIA Parakeet TDT 0.6B v3 gets about 6 percent of words wrong,
+  against 29 for the built-in model. It is a 670 MB download in the model
+  list." Nothing is downloaded or changed; the choice is yours. You hear it
+  once, in whichever QuillVille program you dictate in first. A computer with
+  4 GB hears nothing, because the built-in model is the right one there.
 - **Windows speech recognition** needs Spanish installed in Windows: add
   Spanish (Spain or Mexico) in Windows Settings, Time and language, Speech. If
   it isn't there, dictation tells you when you start.
@@ -5841,7 +5850,8 @@ A dash means that model was not run on that set.
 **What we found along the way.** Moonshine base wrote nothing at all for any
 phrase longer than about eight and a half seconds. That is fixed: it now
 hears a long phrase in pieces and joins them, and scored 5.9 percent on the
-audiobooks.
+audiobooks. The pieces overlap by half a second, so a word that falls where
+two pieces meet is not lost.
 
 **The limits.** This was one fast computer on one day, so speeds are judged
 against the built-in Moonshine's, which Speech Models times on your own

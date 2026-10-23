@@ -301,7 +301,20 @@ where in the user guide to read more.
   (Ctrl+L). User guide: "Models removed in October 2026".
 - **Moonshine base hears long phrases.** It wrote nothing for any phrase
   longer than about eight and a half seconds; it now hears them in pieces and
-  joins them. User guide: "The models you can download".
+  joins them. The pieces overlap by half a second (23 October 2026), so a
+  word that falls where two pieces meet is no longer lost. User guide: "The
+  models you can download".
+- **A better Spanish model, said once** (23 October 2026). The first time you
+  dictate in Spanish on a computer that can run Parakeet TDT v3 (in practice
+  8 GB of memory and four cores), while your Spanish would go to the built-in
+  Whisper, you hear one sentence: "For Spanish, NVIDIA Parakeet TDT 0.6B v3
+  gets about 6 percent of words wrong, against 29 for the built-in model. It
+  is a 670 MB download in the model list." (or "It is already downloaded;
+  choose it in the model list."). Nothing is downloaded or switched, a 4 GB
+  computer hears nothing, and it is said once across every QuillVille
+  program. At most one such sentence is said at each start: a downloaded
+  model that gave way to the built-in one, then a removed model, then this.
+  Shared with QUILL and QUILL Lite. User guide: "Dictating in Spanish".
 
 ### Practice and lessons
 

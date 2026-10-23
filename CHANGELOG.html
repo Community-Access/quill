@@ -244,6 +244,50 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
+<h3
+id="dictation-suggests-parakeet-tdt-v3-once-for-spanish-on-a-computer-that-can-run-it-2026-10-23">Dictation
+suggests Parakeet TDT v3 once for Spanish, on a computer that can run it
+(2026-10-23)</h3>
+<p>The only Spanish model in the installers is the built-in Whisper
+tiny: 30.5 percent of words wrong on FLEURS Spanish and 27.0 on the
+Spanish audiobooks. Parakeet TDT v3 gets 4.4 and 7.3. New
+<code>windows_dictation/spanish_tip.py</code>: the first time dictation
+starts in Spanish on a computer whose own Spanish recommendation
+(<code>model_advice.for_this_computer("es")</code>) is a download, while
+the Spanish would go to Whisper tiny (the built-in engines, or an
+English-only download), dictation says one sentence, for example “For
+Spanish, NVIDIA Parakeet TDT 0.6B v3 gets about 6 percent of words
+wrong, against 29 for the built-in model. It is a 670 MB download in the
+model list.” (or “It is already downloaded; choose it in the model
+list.”). Nothing is downloaded or switched; a 4 GB computer hears
+nothing.</p>
+<ul>
+<li>Said once across the family, recorded in
+<code>spanish-tip.json</code> beside the shared dictation settings when
+it is said. QUILL, QUILL Lite and QUILL Transcribe all get it through
+the shared controller.</li>
+<li>New <code>windows_dictation/start_notices.py</code>: at most one
+start sentence each time, in this order: a downloaded model that gave
+way to the built-in one; a removed model; the Spanish tip. A waiting one
+is said at a later start.</li>
+<li>Chosen (Jeff, 2026-10-23) over shipping Whisper base in place of
+tiny (12.6 and 16.1 percent, about 820 MB peak), which would have made
+every installer bigger and still left Spanish about three times worse
+than the download. Dictation plan section 38.</li>
+<li>Persistence audit: the record is classified as a marker. Tests:
+<code>test_dictation_spanish_tip.py</code>.</li>
+</ul>
+<h3
+id="moonshine-base-no-longer-loses-a-word-at-each-cut-2026-10-23">Moonshine
+base no longer loses a word at each cut (2026-10-23)</h3>
+<p>The long-phrase fix below cut a phrase over about 8 seconds into
+pieces, and a cut that landed on a word lost that word (one in the
+12-second check). In <code>windows_dictation/chunked_offline.py</code>
+each piece now overlaps its neighbour by half a second
+(<code>_OVERLAP_SECONDS</code>), so a word at the cut is heard twice,
+and <code>join_overlapping</code> drops the repeat, keeping the later
+piece’s copy. No word is lost at a cut. Tests:
+<code>test_dictation_chunked_offline.py</code>.</p>
 <h3 id="removed-five-english-only-dictation-models-2026-10-22">Removed:
 five English-only dictation models (2026-10-22)</h3>
 <p>Distil-Whisper small.en, Whisper small.en, Distil-Whisper medium.en,

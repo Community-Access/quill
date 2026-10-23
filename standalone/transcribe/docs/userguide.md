@@ -848,7 +848,8 @@ A few differences worth knowing:
   write a phantom "thank you" when you said nothing.
 - **Moonshine base** now hears long phrases. Before October 2026 it wrote
   nothing at all for a phrase longer than about eight and a half seconds; it
-  now hears long phrases in pieces and joins them.
+  now hears long phrases in pieces and joins them. The pieces overlap by half
+  a second, so a word that falls where two pieces meet is not lost.
 - **Whisper medium, large-v3-turbo and large-v3** are very slow on most
   computers, and too slow for us to test on real speech.
 
@@ -1124,6 +1125,14 @@ inglés".
   with 8 GB, NVIDIA Parakeet TDT 0.6B v3 is recommended instead: 4.4 percent
   of words wrong. Nemotron and the Whisper models without ".en" know Spanish
   too.
+- **A better Spanish model, said once.** If your computer can run Parakeet TDT
+  v3 (in practice, 8 GB of memory and four cores) and your Spanish would
+  otherwise go to the built-in Whisper, the first time you dictate in Spanish
+  you hear one sentence saying so, for example: "For Spanish, NVIDIA Parakeet
+  TDT 0.6B v3 gets about 6 percent of words wrong, against 29 for the built-in
+  model. It is a 670 MB download in the model list." Nothing is downloaded or
+  changed. You hear it once, in whichever QuillVille program you dictate in
+  first. A computer with 4 GB hears nothing.
 - A downloaded model that knows only English does not start in Spanish: you
   are told, and can choose another model or language.
 - Windows speech recognition needs Spanish installed in Windows.

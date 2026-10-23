@@ -9180,6 +9180,15 @@ with one key or by voice; see "Switching between English and Spanish" below.
   Whisper, QUILL uses Whisper's multilingual speech model, which comes with
   QUILL, so there is nothing to download. Moonshine only knows English, so in
   Spanish you get Whisper either way.
+- **A better Spanish model, said once.** The built-in Whisper gets about one
+  word in four wrong in Spanish. If your computer can run NVIDIA Parakeet TDT
+  0.6B v3 (in practice, 8 GB of memory and four cores), the first time you
+  dictate in Spanish you hear one sentence saying so, for example: "For
+  Spanish, NVIDIA Parakeet TDT 0.6B v3 gets about 6 percent of words wrong,
+  against 29 for the built-in model. It is a 670 MB download in the model
+  list." Nothing is downloaded or changed; the choice is yours. You hear it
+  once, in whichever QuillVille program you dictate in first. A computer with
+  4 GB hears nothing, because the built-in model is the right one there.
 - **With Windows speech recognition**, Windows needs Spanish installed: add
   Spanish (Spain or Mexico) in Windows Settings, Time and language, Speech. If
   it isn't there, dictation tells you so when you start.
@@ -9499,7 +9508,8 @@ figures to it.
 **Moonshine base hears long phrases now.** It used to write nothing at all for
 a phrase longer than about eight and a half seconds. It now hears a long
 phrase in pieces of 8 seconds or less, cut at the quietest moment, and joins
-them.
+them. The pieces overlap by half a second, so a word that falls on a cut is
+not lost.
 
 The full record is in QUILL's source, in
 `docs/qa/dictation-real-speech-benchmark-2026-10-22.md`.

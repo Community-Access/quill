@@ -254,9 +254,20 @@ above, plus everything in this section.
   (**Alt+Shift+F6**), press **Better Accuracy: Speech Models...**
   (**Alt+B**), choose NVIDIA Parakeet Unified 0.6B, press **Download...**
   (**Alt+D**), then **Use for Dictation** (**Alt+U**).
+- **A better Spanish model, said once.** The built-in Whisper is the only
+  Spanish model that comes with QUILL Lite, and it gets about one word in four
+  wrong. If your computer can run NVIDIA Parakeet TDT 0.6B v3 (in practice, 8
+  GB of memory and four cores), the first time you dictate in Spanish you hear
+  one sentence saying so. For example: "For Spanish, NVIDIA Parakeet TDT 0.6B
+  v3 gets about 6 percent of words wrong, against 29 for the built-in model.
+  It is a 670 MB download in the model list." Nothing is downloaded or
+  changed. You hear it once across every QuillVille program, and a computer
+  with 4 GB hears nothing. If another start sentence is due, such as a removed
+  model, that one comes first and this one waits for a later start.
 - **Moonshine base hears long phrases.** It used to write nothing at all for a
   phrase longer than about eight and a half seconds. It now hears a long
-  phrase in pieces and joins them.
+  phrase in pieces and joins them. The pieces overlap by half a second, so a
+  word that falls where two pieces meet is not lost.
 - **Shared settings and words.** You can share dictation settings and your
   word list with QUILL, QUILL Transcribe and Quill Inkwell, and import or
   export My Words and Phrases (**Alt+Shift+F10**) as Markdown or CSV.

@@ -2,6 +2,42 @@
 
 ## 1.0.0
 
+### Dictation suggests Parakeet TDT v3 once for Spanish, on a computer that can run it (2026-10-23)
+
+The only Spanish model in the installers is the built-in Whisper tiny: 30.5
+percent of words wrong on FLEURS Spanish and 27.0 on the Spanish audiobooks.
+Parakeet TDT v3 gets 4.4 and 7.3. New `windows_dictation/spanish_tip.py`: the
+first time dictation starts in Spanish on a computer whose own Spanish
+recommendation (`model_advice.for_this_computer("es")`) is a download, while
+the Spanish would go to Whisper tiny (the built-in engines, or an English-only
+download), dictation says one sentence, for example "For Spanish, NVIDIA
+Parakeet TDT 0.6B v3 gets about 6 percent of words wrong, against 29 for the
+built-in model. It is a 670 MB download in the model list." (or "It is
+already downloaded; choose it in the model list."). Nothing is downloaded or
+switched; a 4 GB computer hears nothing.
+
+- Said once across the family, recorded in `spanish-tip.json` beside the
+  shared dictation settings when it is said. QUILL, QUILL Lite and QUILL
+  Transcribe all get it through the shared controller.
+- New `windows_dictation/start_notices.py`: at most one start sentence each
+  time, in this order: a downloaded model that gave way to the built-in one; a
+  removed model; the Spanish tip. A waiting one is said at a later start.
+- Chosen (Jeff, 2026-10-23) over shipping Whisper base in place of tiny (12.6
+  and 16.1 percent, about 820 MB peak), which would have made every installer
+  bigger and still left Spanish about three times worse than the download.
+  Dictation plan section 38.
+- Persistence audit: the record is classified as a marker. Tests:
+  `test_dictation_spanish_tip.py`.
+
+### Moonshine base no longer loses a word at each cut (2026-10-23)
+
+The long-phrase fix below cut a phrase over about 8 seconds into pieces, and a
+cut that landed on a word lost that word (one in the 12-second check). In
+`windows_dictation/chunked_offline.py` each piece now overlaps its neighbour by
+half a second (`_OVERLAP_SECONDS`), so a word at the cut is heard twice, and
+`join_overlapping` drops the repeat, keeping the later piece's copy. No word is
+lost at a cut. Tests: `test_dictation_chunked_offline.py`.
+
 ### Removed: five English-only dictation models (2026-10-22)
 
 Distil-Whisper small.en, Whisper small.en, Distil-Whisper medium.en, Whisper

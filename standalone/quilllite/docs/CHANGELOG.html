@@ -245,6 +245,26 @@
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
 <h2 id="unreleased">Unreleased</h2>
 <ul>
+<li><p><strong>A better Spanish model, said once</strong> (2026-10-23).
+The built-in Whisper, the only Spanish model that comes with QUILL Lite,
+got 30.5 percent of words wrong on FLEURS Spanish and 27.0 on Spanish
+audiobooks; NVIDIA Parakeet TDT 0.6B v3 got 4.4 and 7.3. The first time
+you dictate in Spanish on a computer that can run Parakeet TDT v3 (in
+practice 8 GB of memory and four cores), while your Spanish would go to
+the built-in Whisper, dictation says one sentence: “For Spanish, NVIDIA
+Parakeet TDT 0.6B v3 gets about 6 percent of words wrong, against 29 for
+the built-in model. It is a 670 MB download in the model list.” (or “It
+is already downloaded; choose it in the model list.”). Nothing is
+downloaded or switched, a 4 GB computer hears nothing, and it is said
+once across every QuillVille program. At most one start sentence is said
+each time: a downloaded model that gave way to the built-in one, then a
+removed model, then this. QUILL and QUILL Transcribe are the
+same.</p></li>
+<li><p><strong>Moonshine base no longer loses a word where long phrases
+are cut</strong> (2026-10-23). The pieces a long phrase is heard in now
+overlap by half a second, and the repeated word is dropped, so a word
+that fell on a cut is no longer lost (one was, in the 12-second
+check).</p></li>
 <li><p><strong>Speech model advice from real speech</strong>
 (2026-10-22). Every dictation model was tested on recordings of real
 people, including public-domain audiobooks catalogued after every model

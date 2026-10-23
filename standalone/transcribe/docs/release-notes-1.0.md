@@ -58,8 +58,18 @@ which got 3.2 percent of words wrong on audiobooks no model was trained on,
 against 6.5 for the built-in Moonshine. For Spanish on 8 GB it names NVIDIA
 Parakeet TDT 0.6B v3: 4.4 percent wrong, against 30.5 for the built-in
 Whisper. On 4 GB the built-in models are still the advice. Moonshine base no
-longer drops phrases longer than about eight and a half seconds. See "How we
-chose: tested on real speech".
+longer drops phrases longer than about eight and a half seconds, and no
+longer loses a word where a long phrase is cut: the pieces overlap by half a
+second. See "How we chose: tested on real speech".
+
+**A better Spanish model, said once.** The first time you dictate in Spanish
+on a computer that can run Parakeet TDT v3 (in practice, 8 GB of memory and
+four cores), while your Spanish would go to the built-in Whisper, you hear
+one sentence. For example: "For Spanish, NVIDIA Parakeet TDT 0.6B v3 gets
+about 6 percent of words wrong, against 29 for the built-in model. It is a
+670 MB download in the model list." Nothing is downloaded or changed. You
+hear it once across every QuillVille program, and a computer with 4 GB hears
+nothing. See "Dictating in Spanish".
 
 **Removed: five English-only models.** Distil-Whisper small.en, Whisper
 small.en, Distil-Whisper medium.en, Whisper medium.en and Distil-Whisper

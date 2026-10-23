@@ -796,7 +796,8 @@
       <p>
         Moonshine base used to write nothing at all for a phrase longer than about eight and
         a half seconds. It now hears long phrases in pieces, and scored 5.9% on the
-        held-out audiobooks. Whisper medium and Whisper large-v3-turbo were too slow to test
+        held-out audiobooks. The pieces overlap by half a second, so a word that falls
+        where two pieces meet is not lost. Whisper medium and Whisper large-v3-turbo were too slow to test
         again, and a real 4 GB computer with a screen reader running still needs testing by
         a person.
       </p>
@@ -1369,6 +1370,7 @@
       <h3>What works now</h3>
       <ul>
         <li><strong>Your words come out in Spanish</strong>, accents and all, using Whisper's multilingual model. It comes with the app, so there is nothing to download. Moonshine only knows English, so in Spanish you get Whisper either way.</li>
+        <li><strong>A better Spanish model, said once.</strong> The built-in Whisper gets about one word in four wrong in Spanish. If your computer can run NVIDIA Parakeet TDT 0.6B v3 (in practice, 8 GB of memory and four cores), the first time you dictate in Spanish you hear one sentence saying so, for example: "For Spanish, NVIDIA Parakeet TDT 0.6B v3 gets about 6 percent of words wrong, against 29 for the built-in model. It is a 670 MB download in the model list." Nothing is downloaded or changed; the choice is yours. You hear it once, in whichever QuillVille program you dictate in first. A computer with 4 GB hears nothing, because the built-in model is the right one there.</li>
         <li><strong>Windows speech recognition</strong> needs Spanish installed in Windows: add Spanish (Spain or Mexico) under Windows Settings, Time and language, Speech. If it is missing, dictation tells you when you start.</li>
         <li><strong>The wake and stop phrases</strong> become "Quill dicta" and "deja de dictar". If you typed your own, yours stay.</li>
         <li><strong>Commands stay in English for now.</strong> "Scratch that", "select that", "new paragraph" and the rest work as they do in English. Spanish commands come once a native speaker has checked them. The one exception is switching back: "cambiar a inglés" and "dictado en inglés" work already.</li>

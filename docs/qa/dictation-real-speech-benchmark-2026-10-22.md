@@ -155,7 +155,20 @@ catalogue, so all three changed together.
   (section 32.6); the decision is section 37 of the dictation plan.
 - **Moonshine base hears long phrases.** Its decoder failed on anything over
   about 8.5 seconds and wrote nothing; long phrases are now heard in pieces of
-  8 seconds or less, cut at the quietest moment, and joined.
+  8 seconds or less, cut at the quietest moment, and joined. Since
+  2026-10-23 the pieces overlap by half a second and the repeated word is
+  dropped, so a word that falls on a cut is no longer lost (one was, in the
+  12-second check).
+- **A one-time Spanish tip** (2026-10-23). The first time dictation starts in
+  Spanish on a computer whose own Spanish recommendation is a download (in
+  practice Parakeet TDT v3 on 8 GB and four cores), while the Spanish would go
+  to the built-in Whisper tiny, dictation says one sentence, once across the
+  family: "For Spanish, NVIDIA Parakeet TDT 0.6B v3 gets about 6 percent of
+  words wrong, against 29 for the built-in model. It is a 670 MB download in
+  the model list." Nothing is downloaded or switched; a 4 GB computer hears
+  nothing. Chosen over shipping Whisper base in place of tiny (12.6 and 16.1
+  percent here, about 820 MB peak): bigger installers, and Spanish still
+  about three times worse than the download. Section 38 of the dictation plan.
 
 ## What this run could not settle
 
