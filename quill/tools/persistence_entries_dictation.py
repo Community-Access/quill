@@ -25,6 +25,9 @@ DICTATION_ENTRIES: dict[str, str] = {
     "core/windows_dictation/family_store.py::publish_fields": "versioned",
     "core/windows_dictation/family_store.py::_back_up_once": "content",
     "core/windows_dictation/family_words.py::bring_over": "marker",
+    # 2026-10-22: which retiring models' one-time notice has been said; an
+    # unreadable file reads as none said, which costs one repeated sentence.
+    "core/windows_dictation/retiring.py::take_notice": "marker",
 }
 
 __all__ = ["DICTATION_ENTRIES"]
