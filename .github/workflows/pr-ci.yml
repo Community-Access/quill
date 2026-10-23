@@ -155,6 +155,7 @@ jobs:
             --ignore=tests\unit\ui\test_dialog_inventory.py `
             --ignore=tests\unit\ui\test_rich_heading_organizer.py `
             --ignore=tests\unit\apps\test_cast_peer_windows.py `
+            --ignore=tests\unit\apps\beacon\test_bulk_ops.py `
             --cov=quill.core --cov=quill.io `
             --cov-report=
       - name: Run dialog-inventory gate tests (isolated process)
@@ -165,11 +166,14 @@ jobs:
       - name: Run the native-window tests that can crash a worker (isolated process)
         # A native RichEdit crash in this file took a whole xdist worker down
         # on 2026-10-12, as did test_cast_peer_windows.py's Add Podcast window, and the
-        # shard then sat until the job limit. In its own
+        # shard then sat until the job limit. Beacon's bulk-ops frame joined them on
+        # 2026-10-23: three of four main runs lost shard 4's worker on its first
+        # test, always straight after test_ssh_wiring.py, and never alone. In its own
         # process a crash fails one step quickly instead.
         if: matrix.shard == 1
         run: |
-          pytest tests\unit\ui\test_rich_heading_organizer.py tests\unit\apps\test_cast_peer_windows.py -q `
+          pytest tests\unit\ui\test_rich_heading_organizer.py tests\unit\apps\test_cast_peer_windows.py `
+            tests\unit\apps\beacon\test_bulk_ops.py -q `
             --timeout=300 --timeout-method=thread -p no:cacheprovider
       - name: Keep this shard's coverage data
         run: |
