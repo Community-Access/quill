@@ -72,6 +72,22 @@ class DictationExtrasMixin:
 
     # -- the family's shared settings (dict.md D-13) ------------------------------ #
 
+    def _dictation_offer_old_model(self, before: str, after: str) -> None:
+        """After Dictation Settings saved a switch, offer the old model's files
+        (dictation_models_dialog.offer_to_remove_replaced) -- never while
+        dictation, or the wake phrase, may still hold the old model."""
+        from quill.ui.dictation_models_dialog import offer_to_remove_replaced
+        from quill.ui.windows_dictation_commands import dictation_active, dictation_standing_by
+
+        busy = dictation_active() or dictation_standing_by()
+        offer_to_remove_replaced(
+            self._dictation_parent(),  # type: ignore[attr-defined]
+            before,
+            after,
+            self._dictation_say,  # type: ignore[attr-defined]
+            in_use=busy,
+        )
+
     def _dictation_share_settings(self) -> None:
         """Dictation Settings was saved: give the shared fields to the family,
         when "Share dictation settings with every QuillVille program" is on. A write that

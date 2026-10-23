@@ -473,6 +473,37 @@ def test_the_model_library_choice_becomes_the_model(
     assert host.chosen_engine() == "whisper"
 
 
+def test_a_switch_offers_the_old_models_files_once_saved(
+    host: Host, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import quill.ui.dictation_models_dialog as library
+
+    offered: list[tuple[str, str]] = []
+    monkeypatch.setattr(library, "will_offer", lambda old, new, in_use=False: not in_use)
+    monkeypatch.setattr(
+        library,
+        "offer_to_remove_replaced",
+        lambda _p, old, new, _say, in_use=False: offered.append((old, new)),
+    )
+    before = len(host.said)
+    host._use_model("whisper")
+    assert offered == [("windows", "whisper")]
+    assert load_settings(host._data_dir).dictation["windows_dictation_engine"] == "whisper"
+    # The question says "Now using ..."; a separate announcement would be cut off.
+    assert not any(s.startswith("Model: ") for s in host.said[before:])
+
+
+def test_no_offer_and_the_usual_sentence_without_old_files(
+    host: Host, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import quill.ui.dictation_models_dialog as library
+
+    monkeypatch.setattr(library, "will_offer", lambda old, new, in_use=False: False)
+    monkeypatch.setattr(library, "offer_to_remove_replaced", lambda *_a, **_k: pytest.fail("asked"))
+    host._use_model("whisper")
+    assert host.said[-1] == "Model: Whisper."
+
+
 def test_choose_microphone_saves_it(host: Host, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(transcribe_dialogs, "choose_microphone", lambda _h, _c: "Headset")
     host.choose_microphone()

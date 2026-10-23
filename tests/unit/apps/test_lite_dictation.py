@@ -675,3 +675,40 @@ def test_the_command_word_works_in_quill_lite(lite_window, recognizers, focused)
     assert win.control.GetValue() == "Kept."
     made[0].hear("literal quill is open")
     assert "QUILL is open" in win.control.GetValue()
+
+
+def test_a_saved_switch_offers_the_old_models_files(
+    lite_window, settings_dialog, focused, monkeypatch
+):
+    """The offer comes after OK saved the switch, never from inside Speech
+    Models: cancelling Dictation Settings must not leave a deleted model saved."""
+    import quill.ui.dictation_models_dialog as library
+
+    offered: list[tuple[str, str, bool]] = []
+    monkeypatch.setattr(
+        library,
+        "offer_to_remove_replaced",
+        lambda _p, old, new, _say, in_use=False: offered.append((old, new, in_use)),
+    )
+
+    def switch(self, settings):
+        settings.windows_dictation_engine = "parakeet"
+
+    monkeypatch.setattr(settings_dialog, "apply", switch)
+    win = _window(lite_window, focused)
+    win.app.settings.windows_dictation_engine = "whisper_small"
+    settings_dialog.answer = wx.ID_OK
+    win.cmd_dictation_settings()
+    assert offered == [("whisper_small", "parakeet", False)]
+    offered.clear()
+    for answer in (wx.ID_CANCEL, shared_dialogs().EDIT_WORDS):
+        settings_dialog.answer = answer  # not ahead of a window the person asked for
+        monkeypatch.setattr(win, "cmd_dictation_words", lambda: None)
+        win.cmd_dictation_settings()
+    assert offered == []
+
+
+def shared_dialogs():
+    from quill.ui import windows_dictation_dialog
+
+    return windows_dictation_dialog

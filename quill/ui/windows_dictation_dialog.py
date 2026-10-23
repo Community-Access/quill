@@ -542,6 +542,9 @@ class WindowsDictationDialog(
         language = self._speech_languages[max(0, self.speech_language.GetSelection())]
         chosen = open_speech_models(self, self._announce, language=language) or current
         self._show_advice()  # the timed check may have run there
+        if chosen != current:  # the engine list is not where focus returns to
+            name = dict(engine_choices(chosen)).get(chosen, chosen).split(" (")[0]
+            self._announce(f"Speech engine: {name}. Press OK to keep it.")
         rows = self._with_cloud_rows(engine_choices(chosen), chosen)
         self._engine_ids = [engine_id for engine_id, _label in rows]
         self.engine.Set([label for _id, label in rows])
