@@ -3041,6 +3041,10 @@ been measured on real voices.
   engine pack (for example in `<app data>/engine-packs/`) goes into the same
   offer.
 
+Both tools are built (2026-10-23), as **Switch to Recommended Model** in
+Speech Models and the Delete Old Speech Model offer; section 38.1 records
+them as built and where they depart from the two bullets above.
+
 #### Deprecation policy
 
 1. **Evidence first.** Nothing is deprecated until its replacement has been
@@ -3445,3 +3449,81 @@ heard twice, and `join_overlapping` drops the repeat, keeping the later
 piece's copy, which heard what came after it. Where two pieces agree on
 nothing, the words are joined with a space, as before. No word is lost at a
 cut.
+
+### 38.1 The retirement policy's tools, as built
+
+Section 32.6 promised two tools for people moving off a model: one action to
+move, and an offer to free the old files. Both are built, in the shared Speech
+Models window (`dictation_models_dialog.py`), so QUILL, QUILL Lite and QUILL
+Transcribe's Model Library get them together.
+
+**Switch to Recommended Model** (Alt+H), beside Show Recommended Model. It
+sets the window's `chosen` to D-22's recommendation and closes with OK,
+exactly as Use for Dictation does, so it changes the engine and nothing else:
+My Words, My Dictation Instructions, pauses and punctuation are untouched.
+
+- **Never a download.** A model not on this computer gets "X is not on this
+  computer yet. Download it, then switch." and focus moves to its row, so the
+  next key is Download. The sentence comes before the focus move, so the
+  message box does not cut off the row being read.
+- **Never a silent cancel.** During a download it says "A model is
+  downloading. Wait for it, or press Cancel Download first." Closing would
+  have stopped the download without a word.
+- **Always reachable.** It is enabled whenever there is advice, rather than
+  greyed out when the model is missing, so Tab always reaches it and pressing
+  it explains itself.
+- **Built in Speech Models only**, not also in Dictation Settings as 32.6
+  sketched. Dictation Settings reaches it through Better Accuracy: Speech
+  Models... (Alt+B).
+
+**The offer** (`offer_to_remove_replaced`, with `will_offer` as its
+predicate). After a switch away from a downloaded model still on this computer
+is saved, a Yes/No box captioned "Delete Old Speech Model", No by default:
+"Now using Y. Delete X to free N MB? QUILL, QUILL Lite and QUILL Transcribe
+share its files; any of them still set to X will need it downloaded again."
+Yes removes it through `model_store.remove` and says "X deleted. N MB freed.";
+a failed delete says "X could not be deleted; something may still be using
+it. Remove it in Speech Models later."
+
+- **After the save, not in the window.** In QUILL and QUILL Lite it runs from
+  `_dictation_offer_old_model` (`windows_dictation_extras.py`), called by
+  `windows_dictation_commands.py` only when Dictation Settings closed with a
+  plain OK and the settings are already saved. Speech Models' choice is only
+  provisional until that OK: offering inside Speech Models, or before the
+  save, would let a person delete the old model and then press Cancel,
+  leaving a deleted model as the saved engine. In QUILL Transcribe the choice
+  is saved at once by `_use_model` (Choose Model, or the Model Library), so
+  the offer follows it there.
+- **Not ahead of a window the person asked for.** A Dictation Settings close
+  through My Words and Phrases or another window-opening button gets no
+  question; the person is on their way somewhere.
+- **Not while the old model may be held.** Skipped while dictation is active
+  or standing by for the wake phrase (QUILL, QUILL Lite), or active
+  (Transcribe): the delete would fail on files in use. Remove in Speech Models
+  stays the route later. No question for a built-in engine, a model not on
+  this computer, or no change.
+- **It stands alone.** The question leads with "Now using Y", because it
+  arrives after the window that made the change has closed and is heard with
+  nothing before it. Transcribe skips its own "Model: Y." announcement when
+  `will_offer` says the box is coming, which would otherwise be cut off by it.
+- **Departures from 32.6.** The size is the catalogue's `disk_bytes`, the same
+  figure Speech Models shows, not a measurement of the folder. Shared files
+  are not withheld from the offer when another program still points at them:
+  nothing records which programs use which model, so the question says the
+  files are shared and what that costs, and No is the default. There is no
+  engine pack to include: every catalogue model runs on the bundled
+  sherpa-onnx runtime.
+
+**Accessibility review** (2026-10-23), in the same change:
+
+- Dictation Settings announces "Speech engine: X. Press OK to keep it." when
+  Speech Models returned a different model. Focus comes back to the Better
+  Accuracy button, not the engine list, so the change was otherwise silent,
+  and the reminder that OK keeps it is what makes the save-then-offer order
+  above discoverable.
+- Remove writes "X was removed. N MB freed." to Progress and returns focus to
+  the model list. Remove itself is disabled once the model is gone, and focus
+  left on a disabled button falls to nowhere.
+
+Tests: `test_dictation_models_dialog.py`, `test_lite_dictation.py`,
+`test_transcribe_app.py`.

@@ -912,13 +912,22 @@ says why: whether it keeps up, about how soon your words appear after you
 pause, its tier, and how big the download is, or that it is already
 installed. Set Up QUILL Transcribe has the same line (Alt+P).
 
-The **Model Library** has three controls for it:
+The **Model Library** has four controls for it:
 
 - **What matters most** (Alt+W): **A balance of speed and accuracy** (where it
   starts), **The quickest response**, or **The fewest mistakes**.
 - **Recommendation** (Alt+C): the advice for that choice.
 - **Show Recommended Model** (Alt+S): moves to that model in the list, so you
   can read its details and download it.
+- **Switch to Recommended Model** (Alt+H): makes that model your model and
+  changes nothing else. The Model Library closes. It never downloads
+  anything: if the model is not on this computer yet, you hear "... is not on
+  this computer yet. Download it, then switch.", and you are taken to its row
+  so you can press **Download...** (Alt+D). While a model is downloading, it
+  asks you to wait for the download or press **Cancel Download** first. If you
+  opened the Model Library from Dictation Settings, press **OK** there to keep
+  the change; Dictation Settings says "Speech engine:" and the model's name,
+  then "Press OK to keep it."
 
 It is only advice. QUILL Transcribe never changes your model by itself, and
 OpenAI and the speech providers are never recommended. The figures come from our tests with real recordings, on one
@@ -997,15 +1006,16 @@ English. Moonshine is quick, but Sam would like fewer mistakes.
 3. Sam presses **Show Recommended Model** (Alt+S), then **Download...**
    (Alt+D). A question names the size, the licence and where it will be
    saved. Sam answers Yes, and carries on working while it downloads.
-4. When it has finished, Sam presses **Use for Dictation** (Alt+U). From the
-   next phrase Parakeet Unified is the model, and the window's Model and
+4. When it has finished, Sam presses **Use for Dictation** (Alt+U), or
+   **Switch to Recommended Model** (Alt+H). From the next phrase Parakeet Unified is the model, and the window's Model and
    microphone field says so.
 5. A colleague's name still comes out wrong, so Sam adds it to **My Words and
    Phrases** (Alt+Shift+F10).
 
 If Parakeet Unified turns out to be too slow while other programs are busy,
-Sam presses **Ctrl+M**, moves to Moonshine, and presses Enter. Parakeet
-Unified stays downloaded for another day.
+Sam presses **Ctrl+M**, moves to Moonshine, and presses Enter. A question
+offers to delete Parakeet Unified to free its space; Sam presses Enter for
+No, and Parakeet Unified stays downloaded for another day.
 
 ### The Model Library
 
@@ -1024,7 +1034,24 @@ Settings too. It lists every model you can download. For the one you are on:
   (Alt+P), and carries on from where it stopped if the connection drops.
 - **Cancel Download** (Alt+L) stops it.
 - **Use for Dictation** (Alt+U) makes it your model.
-- **Remove** (Alt+R) deletes it from this computer.
+- **Switch to Recommended Model** (Alt+H) makes the recommended model your
+  model, when it is on this computer (see "The recommendation").
+- **Remove** (Alt+R) deletes it from this computer. **Progress** then says how
+  much space was freed, and focus goes back to the list.
+
+**When you change model, you can free the old one's space.** After you choose
+another model in Choose Model or the Model Library, and the one you were
+using is a downloaded model still on this computer, a question titled
+**Delete Old Speech Model** asks, for example: "Now using NVIDIA Parakeet
+Unified 0.6B. Delete Whisper medium to free 946 MB?" It adds that QUILL,
+QUILL Lite and QUILL Transcribe share its files, so any of them still set to
+it will need it downloaded again. No is the default, so pressing Enter keeps
+the files. Yes deletes them, and you hear the model's name, "deleted", and
+the space freed. If it cannot be deleted, you are told that something may
+still be using it ("Remove it in Speech Models later": Speech Models is the
+Model Library's window). The question
+is not asked while dictation is running (remove the old model later in the
+Model Library), or when you move away from a built-in engine.
 
 Every file comes from Hugging Face, is pinned to one exact version, and is
 checked before it is used. A download that did not finish is never marked

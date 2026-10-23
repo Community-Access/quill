@@ -245,6 +245,56 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="speech-models-switch-to-recommended-model-and-an-offer-to-free-the-old-one-2026-10-23">Speech
+Models: Switch to Recommended Model, and an offer to free the old one
+(2026-10-23)</h3>
+<p>The shared Speech Models window
+(<code>quill/ui/dictation_models_dialog.py</code>; QUILL and QUILL Lite
+through Dictation Settings &gt; Better Accuracy: Speech Models…, QUILL
+Transcribe as the Model Library) gains <strong>Switch to Recommended
+Model</strong> (Alt+H), beside Show Recommended Model. It sets
+<code>chosen</code> to the recommendation and closes with OK, changing
+nothing but the engine. It is enabled whenever there is advice, so Tab
+always reaches it. A model not yet on this computer is never downloaded:
+“X is not on this computer yet. Download it, then switch.”, then focus
+moves to its row. During a download it says “A model is downloading.
+Wait for it, or press Cancel Download first.” rather than closing, which
+would stop the download silently.</p>
+<ul>
+<li><strong>The offer.</strong> New
+<code>offer_to_remove_replaced</code> and <code>will_offer</code>: after
+a switch away from a downloaded model still on this computer is saved, a
+Yes/No box captioned “Delete Old Speech Model”, No by default: “Now
+using Y. Delete X to free N MB? QUILL, QUILL Lite and QUILL Transcribe
+share its files; any of them still set to X will need it downloaded
+again.” Yes calls <code>model_store.remove</code> and announces “X
+deleted. N MB freed.”; a failed delete says “X could not be deleted;
+something may still be using it. Remove it in Speech Models later.”</li>
+<li><strong>Where it runs.</strong> QUILL and QUILL Lite:
+<code>_dictation_offer_old_model</code>
+(<code>windows_dictation_extras.py</code>), called from
+<code>windows_dictation_commands.py</code> only on a plain
+<code>wx.ID_OK</code>, after the settings are saved, so a Cancel never
+leaves a deleted model saved, and never ahead of a window the person
+asked for (My Words and Phrases, instructions). Skipped while dictation
+is active or standing by for the wake phrase. QUILL Transcribe:
+<code>_use_model</code> (<code>transcribe_commands.py</code>), after
+Choose Model or the Model Library, skipped while dictation is active;
+when the box will be shown, the “Model: …” announcement is skipped,
+because the question already leads with “Now using”.</li>
+<li><strong>Accessibility review (2026-10-23).</strong> Dictation
+Settings announces “Speech engine: X. Press OK to keep it.” when Speech
+Models chose a model (<code>windows_dictation_dialog.py</code>), because
+focus does not return to the engine list, so the change was silent.
+Remove now writes “X was removed. N MB freed.” to Progress and returns
+focus to the model list instead of its now-disabled button.</li>
+<li><code>windows_dictation_commands.py</code> budget 600 -&gt; 603.
+Tests: <code>test_dictation_models_dialog.py</code>,
+<code>test_lite_dictation.py</code>,
+<code>test_transcribe_app.py</code>. F1 help reference regenerated.
+Dictation plan section 38.</li>
+</ul>
+<h3
 id="dictation-suggests-parakeet-tdt-v3-once-for-spanish-on-a-computer-that-can-run-it-2026-10-23">Dictation
 suggests Parakeet TDT v3 once for Spanish, on a computer that can run it
 (2026-10-23)</h3>

@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+- **Switch to Recommended Model, and free the old one** (2026-10-23). Speech
+  Models (**Alt+B** in Dictation Settings) has a new button, **Switch to
+  Recommended Model** (**Alt+H**), beside Show Recommended Model. It chooses
+  the recommended model and changes nothing else; press **OK** in Dictation
+  Settings to keep it, which now says "Speech engine:" and the model's name,
+  then "Press OK to keep it." A model not on this computer yet is never
+  downloaded: you are told ("... is not on this computer yet. Download it,
+  then switch.") and taken to its row. While a download is running, it asks
+  you to wait or cancel first. After you switch away from a downloaded model
+  and press a plain **OK**, a question titled **Delete Old Speech Model**
+  offers to delete it, with No as the default: "Now using ... Delete ... to
+  free ...?" It says that QUILL, QUILL Lite and QUILL Transcribe share the
+  files. Yes deletes them and says how much space was freed. It is not asked
+  while dictation is running or waiting for the wake phrase, for a built-in
+  engine, or when you left Dictation Settings with a button that opens
+  another window. **Remove** now puts the space freed in the Progress box,
+  and focus goes back to the list. QUILL and QUILL Transcribe are the same.
 - **A better Spanish model, said once** (2026-10-23). The built-in Whisper,
   the only Spanish model that comes with QUILL Lite, got 30.5 percent of words
   wrong on FLEURS Spanish and 27.0 on Spanish audiobooks; NVIDIA Parakeet TDT

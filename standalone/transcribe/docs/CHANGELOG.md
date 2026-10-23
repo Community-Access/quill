@@ -315,6 +315,24 @@ where in the user guide to read more.
   program. At most one such sentence is said at each start: a downloaded
   model that gave way to the built-in one, then a removed model, then this.
   Shared with QUILL and QUILL Lite. User guide: "Dictating in Spanish".
+- **Switch to Recommended Model** (23 October 2026). The Model Library
+  (Ctrl+L) has a new button beside Show Recommended Model: **Switch to
+  Recommended Model** (Alt+H). It makes the recommended model your model and
+  changes nothing else. A model not on this computer yet is never downloaded:
+  you hear "... is not on this computer yet. Download it, then switch.", and
+  you are taken to its row. While a download is running, it asks you to wait
+  or cancel first. Opened from Dictation Settings, the change is kept when you
+  press OK there, and Dictation Settings says "Speech engine:" and the model's
+  name, then "Press OK to keep it." User guide: "The recommendation".
+- **Free the old model's space** (23 October 2026). After you choose another
+  model in Choose Model or the Model Library, moving away from a downloaded
+  model, a question titled **Delete Old Speech Model** offers to delete it,
+  with No as the default: "Now using ... Delete ... to free ...?" It says
+  that QUILL, QUILL Lite and QUILL Transcribe share its files. Yes deletes
+  them and says how much space was freed. It is not asked while dictation is
+  running, or for a built-in engine. **Remove** now puts the space freed in
+  Progress, and focus goes back to the list. Shared with QUILL and QUILL
+  Lite. User guide: "The Model Library".
 
 ### Practice and lessons
 

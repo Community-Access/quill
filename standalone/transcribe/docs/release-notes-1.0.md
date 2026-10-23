@@ -71,6 +71,18 @@ about 6 percent of words wrong, against 29 for the built-in model. It is a
 hear it once across every QuillVille program, and a computer with 4 GB hears
 nothing. See "Dictating in Spanish".
 
+**Switch to Recommended Model, and free the old one.** The Model Library
+(**Ctrl+L**) has a new button, **Switch to Recommended Model** (**Alt+H**).
+It makes the recommended model your model and changes nothing else. If the
+model is not on this computer yet, nothing is downloaded: you are told, and
+taken to its row so you can download it first. When you move away from a
+downloaded model, in Choose Model or the Model Library, a question offers to
+delete the old one. For example: "Now using NVIDIA Parakeet Unified 0.6B.
+Delete Whisper medium to free 946 MB?" No is the default, and the question
+says that QUILL, QUILL Lite and QUILL Transcribe share its files. It is not
+asked while dictation is running. **Remove** now says how much space was
+freed. See "The recommendation" and "The Model Library".
+
 **Removed: five English-only models.** Distil-Whisper small.en, Whisper
 small.en, Distil-Whisper medium.en, Whisper medium.en and Distil-Whisper
 large-v3 are no longer offered. Whisper base.en and every Whisper model

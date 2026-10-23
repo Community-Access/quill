@@ -268,6 +268,21 @@ above, plus everything in this section.
   phrase longer than about eight and a half seconds. It now hears a long
   phrase in pieces and joins them. The pieces overlap by half a second, so a
   word that falls where two pieces meet is not lost.
+- **Switch to Recommended Model.** Speech Models has a new button beside Show
+  Recommended Model: **Switch to Recommended Model** (**Alt+H**). It chooses
+  the recommended model and changes nothing else. Dictation Settings then says
+  "Speech engine:" and the model's name, then "Press OK to keep it." If the
+  model is not on this computer yet, nothing is downloaded: you are told, and
+  taken to its row so you can download it first. While a download is running,
+  it asks you to wait or cancel first.
+- **Free the space of a model you stopped using.** When you switch away from
+  a downloaded model and press **OK** in Dictation Settings, a question
+  offers to delete the old one. For example: "Now using NVIDIA Parakeet
+  Unified 0.6B. Delete Whisper medium to free 946 MB?" No is the default.
+  QUILL, QUILL Lite and QUILL Transcribe share the model's files, and the
+  question says so. It is not asked while dictation is running or waiting for
+  the wake phrase; remove the model later in Speech Models instead. **Remove**
+  there now says how much space was freed, and focus goes back to the list.
 - **Shared settings and words.** You can share dictation settings and your
   word list with QUILL, QUILL Transcribe and Quill Inkwell, and import or
   export My Words and Phrases (**Alt+Shift+F10**) as Markdown or CSV.

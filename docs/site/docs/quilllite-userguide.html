@@ -5616,14 +5616,16 @@ computer and your dictation language, and why. For more, press
 (<strong>Alt+B</strong>): the <strong>Recommendation</strong> box
 (<strong>Alt+C</strong>) explains the choice, <strong>What matters
 most</strong> (<strong>Alt+W</strong>) changes it to a balance of speed
-and accuracy, the quickest response, or the fewest mistakes, and
+and accuracy, the quickest response, or the fewest mistakes,
 <strong>Show Recommended Model</strong> (<strong>Alt+S</strong>) moves
-to that model in the list so you can download it. The recommendation is
-only advice: QUILL Lite never changes your engine for you, and it never
-recommends OpenAI or a speech provider. Its figures come from our tests
-with real recordings, on one computer; yours may differ. “How we chose:
-tested on real speech”, in “Better accuracy: optional speech models”,
-has the numbers.</p>
+to that model in the list so you can download it, and <strong>Switch to
+Recommended Model</strong> (<strong>Alt+H</strong>) chooses it once it
+is downloaded; press <strong>OK</strong> in Dictation Settings to keep
+it. The recommendation is only advice: QUILL Lite never changes your
+engine for you, and it never recommends OpenAI or a speech provider. Its
+figures come from our tests with real recordings, on one computer; yours
+may differ. “How we chose: tested on real speech”, in “Better accuracy:
+optional speech models”, has the numbers.</p>
 <p>What it suggests depends on the computer, and on how much memory is
 free when you ask: it never suggests more than is free, less half a
 gigabyte kept back for your screen reader. If little memory is free, it
@@ -7453,6 +7455,18 @@ Model</strong> (<strong>Alt+S</strong>) moves to that model in the list,
 so you can read its details and download it. Dictation Settings shows
 the same advice in one line, in the <strong>Recommended for this
 computer</strong> box at the top of its right-hand column.</p>
+<p><strong>Switch to Recommended Model</strong>
+(<strong>Alt+H</strong>), beside it, chooses the recommended model as
+your speech engine and changes nothing else: your words, instructions,
+pauses and punctuation stay as they are. Speech Models closes, and
+Dictation Settings says “Speech engine:” and the model’s name, then
+“Press OK to keep it.” Press <strong>OK</strong> there to keep it, or
+Cancel to keep the engine you had. It never downloads anything. If the
+model is not on this computer yet, you hear that it is not here yet
+(“Download it, then switch.”), and you are taken to its row in the list,
+so you can press <strong>Download…</strong> (<strong>Alt+D</strong>).
+While a model is downloading, it asks you to wait for the download or
+press <strong>Cancel Download</strong> first.</p>
 <p>What it names, in short:</p>
 <ul>
 <li><strong>English, 8 GB of memory and four cores or more:</strong>
@@ -7523,7 +7537,24 @@ itself.</p>
 <p><strong>To remove one</strong>, choose it in Speech Models and press
 <strong>Remove</strong> (<strong>Alt+R</strong>). It frees the space for
 every program that shares the folder. If dictation is using it, choose
-another engine first.</p>
+another engine first. The <strong>Progress</strong> box then says how
+much space was freed, and focus goes back to the list of models.</p>
+<p><strong>When you switch away from a downloaded model</strong>, QUILL
+Lite offers to delete it. After you choose another engine and press a
+plain <strong>OK</strong> in Dictation Settings, a question titled
+<strong>Delete Old Speech Model</strong> says, for example: “Now using
+NVIDIA Parakeet Unified 0.6B. Delete Whisper medium to free 946 MB?” It
+adds that QUILL, QUILL Lite and QUILL Transcribe share the model’s
+files, so any of them still set to it will need it downloaded again. No
+is the default, so pressing Enter keeps the files. Yes deletes them, and
+you hear the model’s name, “deleted”, and the space freed. If it cannot
+be deleted, you are told that something may still be using it, and to
+remove it in Speech Models later.</p>
+<p>The question is not asked while dictation is running or waiting for
+the wake phrase (remove the old model later in Speech Models), when the
+old engine was a built-in one with nothing to delete, or when you left
+Dictation Settings with <strong>My Words and Phrases…</strong> or
+another button that opens a window.</p>
 <p><strong>Will my computer keep up?</strong> When Speech Models opens,
 it spends about two seconds timing the built-in Moonshine on this
 computer, then works out how each model should do here. The details then

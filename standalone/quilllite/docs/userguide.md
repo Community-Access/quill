@@ -4473,8 +4473,10 @@ to it to hear which model suits this computer and your dictation language, and
 why. For more, press **Better Accuracy: Speech Models...** (**Alt+B**): the
 **Recommendation** box (**Alt+C**) explains the choice, **What matters most**
 (**Alt+W**) changes it to a balance of speed and accuracy, the quickest
-response, or the fewest mistakes, and **Show Recommended Model** (**Alt+S**)
-moves to that model in the list so you can download it. The recommendation is
+response, or the fewest mistakes, **Show Recommended Model** (**Alt+S**)
+moves to that model in the list so you can download it, and **Switch to
+Recommended Model** (**Alt+H**) chooses it once it is downloaded; press **OK**
+in Dictation Settings to keep it. The recommendation is
 only advice: QUILL Lite never changes your engine for you, and it never
 recommends OpenAI or a speech provider. Its
 figures come from our tests with real recordings, on one computer; yours may
@@ -5687,6 +5689,17 @@ mistakes this computer can keep up with. **Show Recommended Model**
 download it. Dictation Settings shows the same advice in one line, in the
 **Recommended for this computer** box at the top of its right-hand column.
 
+**Switch to Recommended Model** (**Alt+H**), beside it, chooses the
+recommended model as your speech engine and changes nothing else: your words,
+instructions, pauses and punctuation stay as they are. Speech Models closes,
+and Dictation Settings says "Speech engine:" and the model's name, then "Press
+OK to keep it." Press **OK** there to keep it, or Cancel to keep the engine
+you had. It never downloads anything. If the model is not on this computer
+yet, you hear that it is not here yet ("Download it, then switch."), and you
+are taken to its row in the list, so you can press **Download...**
+(**Alt+D**). While a model is downloading, it asks you to wait for the
+download or press **Cancel Download** first.
+
 What it names, in short:
 
 - **English, 8 GB of memory and four cores or more:** NVIDIA Parakeet Unified
@@ -5755,7 +5768,24 @@ QUILL Lite itself.
 
 **To remove one**, choose it in Speech Models and press **Remove**
 (**Alt+R**). It frees the space for every program that shares the folder. If
-dictation is using it, choose another engine first.
+dictation is using it, choose another engine first. The **Progress** box then
+says how much space was freed, and focus goes back to the list of models.
+
+**When you switch away from a downloaded model**, QUILL Lite offers to delete
+it. After you choose another engine and press a plain **OK** in Dictation
+Settings, a question titled **Delete Old Speech Model** says, for example:
+"Now using NVIDIA Parakeet Unified 0.6B. Delete Whisper medium to free 946
+MB?" It adds that QUILL, QUILL Lite and QUILL Transcribe share the model's
+files, so any of them still set to it will need it downloaded again. No is
+the default, so pressing Enter keeps the files. Yes deletes them, and you
+hear the model's name, "deleted", and the space freed. If it cannot be
+deleted, you are told that something may still be using it, and to remove it
+in Speech Models later.
+
+The question is not asked while dictation is running or waiting for the wake
+phrase (remove the old model later in Speech Models), when the old engine was
+a built-in one with nothing to delete, or when you left Dictation Settings
+with **My Words and Phrases...** or another button that opens a window.
 
 **Will my computer keep up?** When Speech Models opens, it spends about two
 seconds timing the built-in Moonshine on this computer, then works out how

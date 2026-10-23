@@ -1486,7 +1486,7 @@ and your dictation language, and says why: whether it keeps up, about
 how soon your words appear after you pause, its tier, and how big the
 download is, or that it is already installed. Set Up QUILL Transcribe
 has the same line (Alt+P).</p>
-<p>The <strong>Model Library</strong> has three controls for it:</p>
+<p>The <strong>Model Library</strong> has four controls for it:</p>
 <ul>
 <li><strong>What matters most</strong> (Alt+W): <strong>A balance of
 speed and accuracy</strong> (where it starts), <strong>The quickest
@@ -1495,6 +1495,16 @@ response</strong>, or <strong>The fewest mistakes</strong>.</li>
 choice.</li>
 <li><strong>Show Recommended Model</strong> (Alt+S): moves to that model
 in the list, so you can read its details and download it.</li>
+<li><strong>Switch to Recommended Model</strong> (Alt+H): makes that
+model your model and changes nothing else. The Model Library closes. It
+never downloads anything: if the model is not on this computer yet, you
+hear “… is not on this computer yet. Download it, then switch.”, and you
+are taken to its row so you can press <strong>Download…</strong>
+(Alt+D). While a model is downloading, it asks you to wait for the
+download or press <strong>Cancel Download</strong> first. If you opened
+the Model Library from Dictation Settings, press <strong>OK</strong>
+there to keep the change; Dictation Settings says “Speech engine:” and
+the model’s name, then “Press OK to keep it.”</li>
 </ul>
 <p>It is only advice. QUILL Transcribe never changes your model by
 itself, and OpenAI and the speech providers are never recommended. The
@@ -1717,14 +1727,17 @@ computer, and that it is a 663 MB download.</li>
 licence and where it will be saved. Sam answers Yes, and carries on
 working while it downloads.</li>
 <li>When it has finished, Sam presses <strong>Use for Dictation</strong>
-(Alt+U). From the next phrase Parakeet Unified is the model, and the
-window’s Model and microphone field says so.</li>
+(Alt+U), or <strong>Switch to Recommended Model</strong> (Alt+H). From
+the next phrase Parakeet Unified is the model, and the window’s Model
+and microphone field says so.</li>
 <li>A colleague’s name still comes out wrong, so Sam adds it to
 <strong>My Words and Phrases</strong> (Alt+Shift+F10).</li>
 </ol>
 <p>If Parakeet Unified turns out to be too slow while other programs are
 busy, Sam presses <strong>Ctrl+M</strong>, moves to Moonshine, and
-presses Enter. Parakeet Unified stays downloaded for another day.</p>
+presses Enter. A question offers to delete Parakeet Unified to free its
+space; Sam presses Enter for No, and Parakeet Unified stays downloaded
+for another day.</p>
 <h3 id="the-model-library">The Model Library</h3>
 <p><strong>Model Library</strong> (Ctrl+L, in the Model menu) is the
 same Speech Models window QUILL and QUILL Lite open from Dictation
@@ -1744,8 +1757,27 @@ first, shows <strong>Progress</strong> (Alt+P), and carries on from
 where it stopped if the connection drops.</li>
 <li><strong>Cancel Download</strong> (Alt+L) stops it.</li>
 <li><strong>Use for Dictation</strong> (Alt+U) makes it your model.</li>
-<li><strong>Remove</strong> (Alt+R) deletes it from this computer.</li>
+<li><strong>Switch to Recommended Model</strong> (Alt+H) makes the
+recommended model your model, when it is on this computer (see “The
+recommendation”).</li>
+<li><strong>Remove</strong> (Alt+R) deletes it from this computer.
+<strong>Progress</strong> then says how much space was freed, and focus
+goes back to the list.</li>
 </ul>
+<p><strong>When you change model, you can free the old one’s
+space.</strong> After you choose another model in Choose Model or the
+Model Library, and the one you were using is a downloaded model still on
+this computer, a question titled <strong>Delete Old Speech
+Model</strong> asks, for example: “Now using NVIDIA Parakeet Unified
+0.6B. Delete Whisper medium to free 946 MB?” It adds that QUILL, QUILL
+Lite and QUILL Transcribe share its files, so any of them still set to
+it will need it downloaded again. No is the default, so pressing Enter
+keeps the files. Yes deletes them, and you hear the model’s name,
+“deleted”, and the space freed. If it cannot be deleted, you are told
+that something may still be using it (“Remove it in Speech Models
+later”: Speech Models is the Model Library’s window). The question is
+not asked while dictation is running (remove the old model later in the
+Model Library), or when you move away from a built-in engine.</p>
 <p>Every file comes from Hugging Face, is pinned to one exact version,
 and is checked before it is used. A download that did not finish is
 never marked ready. Models are saved in
