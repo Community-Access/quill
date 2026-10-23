@@ -227,18 +227,62 @@ above, plus everything in this section.
   "Nemotron or Parakeet: which should I try?" is rewritten: Parakeet makes
   fewer mistakes, and Nemotron is still the one that shows your words while
   you speak.
-- **Five models are being retired.** Distil-Whisper small.en, Whisper
+- **Removed: five English-only models.** Distil-Whisper small.en, Whisper
   small.en, Distil-Whisper medium.en, Whisper medium.en and Distil-Whisper
-  large-v3 are English only, and Parakeet Unified beat each of them on
-  accuracy and speed, in the same memory or less. Each one's line in the list
-  starts "Being retired, use NVIDIA Parakeet Unified 0.6B instead." The first
-  time dictation starts on one, you hear one short sentence saying so, once
-  across every QuillVille program; the measured reason is in that model's
-  details in the list. It keeps working until the next feature release; nothing is
-  switched and nothing is deleted, and none of them is ever recommended.
+  large-v3 are no longer in the list. On the held-out audiobooks, NVIDIA
+  Parakeet Unified 0.6B got 3.2 percent of words wrong, against 3.6 to 6.3
+  for these five. It was also faster on one thread, in the same or a smaller memory
+  tier. Whisper base.en and every many-language Whisper size stay.
+
+  If you were using one, dictation switches to Parakeet Unified when you
+  update, if you have already downloaded it; otherwise it uses the built-in
+  model. Nothing is downloaded. The next time dictation starts, you hear one
+  sentence, once across every QuillVille program. For example: "Whisper
+  small.en was removed in this release. Dictation now uses Parakeet Unified,
+  which you already have." Or: "Whisper small.en was removed in this release,
+  so dictation uses the built-in model. Parakeet Unified, in the model list,
+  is more accurate."
+
+  Your downloaded files are not deleted. They stay in
+  `%LOCALAPPDATA%\QuillVille\Dictation\models` (in a portable copy,
+  `data\dictation\models` inside the portable folder), in folders named
+  whisper-small.en-int8, whisper-distil-small.en-int8,
+  whisper-medium.en-int8, whisper-distil-medium.en-int8 and
+  whisper-distil-large-v3-int8. Delete the folder to free the space.
+
+  To choose Parakeet Unified instead, open Dictation Settings
+  (**Alt+Shift+F6**), press **Better Accuracy: Speech Models...**
+  (**Alt+B**), choose NVIDIA Parakeet Unified 0.6B, press **Download...**
+  (**Alt+D**), then **Use for Dictation** (**Alt+U**).
+- **A better Spanish model, said once.** The built-in Whisper is the only
+  Spanish model that comes with QUILL Lite, and it gets about one word in four
+  wrong. If your computer can run NVIDIA Parakeet TDT 0.6B v3 (in practice, 8
+  GB of memory and four cores), the first time you dictate in Spanish you hear
+  one sentence saying so. For example: "For Spanish, NVIDIA Parakeet TDT 0.6B
+  v3 gets about 6 percent of words wrong, against 29 for the built-in model.
+  It is a 670 MB download in the model list." Nothing is downloaded or
+  changed. You hear it once across every QuillVille program, and a computer
+  with 4 GB hears nothing. If another start sentence is due, such as a removed
+  model, that one comes first and this one waits for a later start.
 - **Moonshine base hears long phrases.** It used to write nothing at all for a
   phrase longer than about eight and a half seconds. It now hears a long
-  phrase in pieces and joins them.
+  phrase in pieces and joins them. The pieces overlap by half a second, so a
+  word that falls where two pieces meet is not lost.
+- **Switch to Recommended Model.** Speech Models has a new button beside Show
+  Recommended Model: **Switch to Recommended Model** (**Alt+H**). It chooses
+  the recommended model and changes nothing else. Dictation Settings then says
+  "Speech engine:" and the model's name, then "Press OK to keep it." If the
+  model is not on this computer yet, nothing is downloaded: you are told, and
+  taken to its row so you can download it first. While a download is running,
+  it asks you to wait or cancel first.
+- **Free the space of a model you stopped using.** When you switch away from
+  a downloaded model and press **OK** in Dictation Settings, a question
+  offers to delete the old one. For example: "Now using NVIDIA Parakeet
+  Unified 0.6B. Delete Whisper medium to free 946 MB?" No is the default.
+  QUILL, QUILL Lite and QUILL Transcribe share the model's files, and the
+  question says so. It is not asked while dictation is running or waiting for
+  the wake phrase; remove the model later in Speech Models instead. **Remove**
+  there now says how much space was freed, and focus goes back to the list.
 - **Shared settings and words.** You can share dictation settings and your
   word list with QUILL, QUILL Transcribe and Quill Inkwell, and import or
   export My Words and Phrases (**Alt+Shift+F10**) as Markdown or CSV.

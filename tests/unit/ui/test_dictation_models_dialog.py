@@ -244,6 +244,8 @@ def test_remove_asks_then_frees_the_space(wx_app, dialog_module, monkeypatch) ->
         assert "frees 682 MB" in asked[-1]
         assert removed == ["nemotron"]
         assert said[-1] == "NVIDIA Nemotron 3.5 ASR Streaming 0.6B removed."
+        assert dialog.progress.GetValue().endswith("682 MB freed.")
+        assert dialog.FindFocus() is dialog.models  # not the now-disabled Remove
     finally:
         dialog.Destroy()
 
@@ -276,6 +278,7 @@ def test_every_control_has_inline_help(wx_app, dialog_module) -> None:
             dialog.cancel_download,
             dialog.remove,
             dialog.use,
+            dialog.switch_recommended,
         ):
             assert control.GetHelpText(), control.GetName()
     finally:
@@ -296,7 +299,8 @@ def test_dictation_settings_lists_a_downloaded_model_and_opens_speech_models(
     class _Settings:
         windows_dictation_engine = "moonshine"
 
-    dialog = WindowsDictationDialog(None, _Settings())
+    said: list[str] = []
+    dialog = WindowsDictationDialog(None, _Settings(), said.append)
     try:
         labels = [dialog.engine.GetString(i) for i in range(dialog.engine.GetCount())]
         assert "Whisper small (downloaded), High accuracy" in labels
@@ -306,6 +310,8 @@ def test_dictation_settings_lists_a_downloaded_model_and_opens_speech_models(
         )
         dialog._on_speech_models(None)
         assert dialog.engine.GetStringSelection() == "Whisper small (downloaded), High accuracy"
+        # Focus returns to the Speech Models button, not the engine list.
+        assert said[-1] == "Speech engine: Whisper small. Press OK to keep it."
         settings = _Settings()
         dialog.apply(settings)
         assert settings.windows_dictation_engine == "whisper_small"
@@ -431,4 +437,167 @@ def test_dictation_settings_shows_the_recommendation(wx_app, monkeypatch) -> Non
         dialog._on_speech_language(None)
         assert dialog.advice.GetValue().startswith("NVIDIA Parakeet TDT 0.6B v3, Lightweight:")
     finally:
+        dialog.Destroy()
+
+
+# -- Switch to Recommended Model, and the offer after a switch (2026-10-23) ----
+
+
+def test_switch_to_recommended_chooses_it_when_it_is_here(
+    wx_app, dialog_module, monkeypatch
+) -> None:
+    from quill.core.windows_dictation import model_store
+
+    monkeypatch.setattr(model_store, "installed", lambda _m: True)
+    dialog = _open(dialog_module)
+    ended: list[int] = []
+    monkeypatch.setattr(dialog, "EndModal", ended.append)
+    try:
+        assert dialog.switch_recommended.IsEnabled()
+        dialog._on_switch_recommended(None)
+        assert dialog.chosen == "parakeet_unified" and ended == [wx.ID_OK]
+    finally:
+        dialog.Destroy()
+
+
+def test_switch_to_recommended_never_downloads_it(wx_app, dialog_module, monkeypatch) -> None:
+    from quill.core.windows_dictation import model_store
+
+    monkeypatch.setattr(model_store, "installed", lambda _m: False)
+    monkeypatch.setattr(model_store, "download", lambda *a, **k: pytest.fail("downloaded"))
+    told = _questions(monkeypatch, dialog_module, wx.OK)
+    dialog = _open(dialog_module)
+    ended: list[int] = []
+    monkeypatch.setattr(dialog, "EndModal", ended.append)
+    try:
+        dialog.models.SetSelection(0)
+        dialog._on_switch_recommended(None)
+        assert told[-1].startswith("NVIDIA Parakeet Unified 0.6B is not on this computer yet.")
+        assert dialog.selected().id == "parakeet_unified"  # taken to its row
+        assert dialog.chosen is None and ended == []
+    finally:
+        dialog.Destroy()
+
+
+def test_switch_to_a_built_in_recommendation_needs_nothing_downloaded(
+    wx_app, dialog_module, monkeypatch
+) -> None:
+    dialog = _open(dialog_module)
+    ended: list[int] = []
+    monkeypatch.setattr(dialog, "EndModal", ended.append)
+    try:
+        dialog.priority.SetSelection(1)  # the quickest response: Moonshine, built in
+        dialog._on_priority(None)
+        dialog._on_switch_recommended(None)
+        assert dialog.chosen == "moonshine" and ended == [wx.ID_OK]
+    finally:
+        dialog.Destroy()
+
+
+def test_after_a_switch_the_old_files_are_offered_no_by_default(
+    wx_app, dialog_module, monkeypatch
+) -> None:
+    from quill.core.windows_dictation import model_store
+
+    styles: list[int] = []
+    asked: list[str] = []
+
+    def box(message, caption, style, parent=None, **_kw):
+        asked.append(message)
+        styles.append(style)
+        return wx.YES
+
+    removed: list[str] = []
+    said: list[str] = []
+    monkeypatch.setattr(dialog_module, "show_message_box", box)
+    monkeypatch.setattr(model_store, "installed", lambda _m: True)
+    monkeypatch.setattr(model_store, "remove", removed.append)
+    assert dialog_module.offer_to_remove_replaced(None, "whisper_small", "parakeet", said.append)
+    # It leads with the switch: it is heard straight after another window closed.
+    assert asked[-1].startswith(
+        "Now using NVIDIA Parakeet TDT 0.6B v3. Delete Whisper small to free 375 MB?"
+    )
+    assert "will need it downloaded again" in asked[-1]
+    assert styles[-1] & wx.NO_DEFAULT
+    assert removed == ["whisper_small"]
+    assert said == ["Whisper small deleted. 375 MB freed."]
+
+
+def test_no_keeps_the_old_files(wx_app, dialog_module, monkeypatch) -> None:
+    from quill.core.windows_dictation import model_store
+
+    monkeypatch.setattr(model_store, "installed", lambda _m: True)
+    monkeypatch.setattr(model_store, "remove", lambda _id: pytest.fail("deleted"))
+    _questions(monkeypatch, dialog_module, wx.NO)
+    said: list[str] = []
+    assert not dialog_module.offer_to_remove_replaced(
+        None, "whisper_small", "parakeet", said.append
+    )
+    assert said == []
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "here"),
+    [
+        ("moonshine", "parakeet", True),  # built in: nothing to delete
+        ("parakeet", "parakeet", True),  # no switch
+        ("whisper_small", "parakeet", False),  # not on this computer
+        ("", "parakeet", True),
+    ],
+)
+def test_nothing_is_asked_without_files_to_free(
+    wx_app, dialog_module, monkeypatch, old: str, new: str, here: bool
+) -> None:
+    from quill.core.windows_dictation import model_store
+
+    monkeypatch.setattr(model_store, "installed", lambda _m: here)
+    asked = _questions(monkeypatch, dialog_module)
+    assert not dialog_module.offer_to_remove_replaced(None, old, new, lambda _s: None)
+    assert asked == []
+
+
+def test_a_model_in_use_is_kept_and_says_why(wx_app, dialog_module, monkeypatch) -> None:
+    from quill.core.windows_dictation import model_store
+
+    def busy(_id):
+        raise model_store.ModelDownloadError("It could not be deleted; dictation is using it.")
+
+    monkeypatch.setattr(model_store, "installed", lambda _m: True)
+    monkeypatch.setattr(model_store, "remove", busy)
+    asked = _questions(monkeypatch, dialog_module)
+    said: list[str] = []
+    assert not dialog_module.offer_to_remove_replaced(
+        None, "whisper_small", "parakeet", said.append
+    )
+    assert asked[-1].startswith("Whisper small could not be deleted;")
+    assert said == []
+
+
+def test_never_asked_while_dictation_may_hold_the_old_model(
+    wx_app, dialog_module, monkeypatch
+) -> None:
+    from quill.core.windows_dictation import model_store
+
+    monkeypatch.setattr(model_store, "installed", lambda _m: True)
+    asked = _questions(monkeypatch, dialog_module)
+    assert not dialog_module.will_offer("whisper_small", "parakeet", in_use=True)
+    assert not dialog_module.offer_to_remove_replaced(
+        None, "whisper_small", "parakeet", lambda _s: None, in_use=True
+    )
+    assert asked == []
+
+
+def test_switch_waits_for_a_running_download(wx_app, dialog_module, monkeypatch) -> None:
+    from quill.core.windows_dictation import model_store
+
+    monkeypatch.setattr(model_store, "installed", lambda _m: True)
+    told = _questions(monkeypatch, dialog_module, wx.OK)
+    dialog = _open(dialog_module)
+    try:
+        dialog._busy = dialog._rows[0]
+        dialog._on_switch_recommended(None)
+        assert told[-1].startswith("A model is downloading.")
+        assert dialog.chosen is None
+    finally:
+        dialog._busy = None
         dialog.Destroy()

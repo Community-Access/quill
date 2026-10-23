@@ -142,7 +142,7 @@ def test_the_supported_list_is_the_one_catalogue_with_tiers_memory_and_capabilit
     assert "silence-safe" in rows["parakeet"].capabilities
     assert "streaming" in rows["nemotron"].capabilities
     assert "translate" in rows["whisper_small"].capabilities
-    assert "translate" not in rows["whisper_small_en"].capabilities
+    assert "translate" not in rows["whisper_base_en"].capabilities
     assert "GB of memory or more" in rows["parakeet"].recommended_use
     labels = {row.id: row.label for row in describe_models(_provider(tmp_path), 16.0, False)}
     assert "never invents text from silence" in labels["parakeet"]
@@ -223,7 +223,7 @@ def test_translation_goes_to_multilingual_whisper_and_others_refuse(tmp_path) ->
             _request(tmp_path, model_id="parakeet", language="es", translate_to_english=True)
         )
     assert can_translate("whisper", "es") and not can_translate("whisper", "en")
-    assert not can_translate("whisper_small_en", "es")
+    assert not can_translate("whisper_base_en", "es")
 
 
 def test_speaker_labels_are_a_warning_until_a_speaker_model_is_adopted(tmp_path) -> None:

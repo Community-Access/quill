@@ -232,6 +232,7 @@ class WindowsDictationMixin(
         )
 
         settings = self._dictation_settings()
+        before = settings.windows_dictation_engine  # offered for deletion if replaced
         dialog = WindowsDictationDialog(
             self._dictation_parent(),
             settings,
@@ -255,6 +256,8 @@ class WindowsDictationMixin(
         self._dictation_share_settings()  # the family's copy, when shared (D-13)
         self._dictation_status("Dictation settings saved.")
         self._dictation_rearm()
+        if answer == wx.ID_OK:  # not ahead of a window the person asked for
+            self._dictation_offer_old_model(before, settings.windows_dictation_engine)
         if answer == EDIT_WORDS:
             self.cmd_dictation_words()
         elif answer == EDIT_INSTRUCTIONS:

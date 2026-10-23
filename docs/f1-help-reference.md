@@ -1901,7 +1901,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 231 audited sites (231 helped).
+Control coverage: 232 audited sites (232 helped).
 
 ### Every window, and what it is for
 
@@ -2338,6 +2338,7 @@ Control coverage: 231 audited sites (231 helped).
 - `self.priority`: What the recommendation below aims for: a balance of speed and accuracy, the quickest response after you pause, or the fewest mistakes this computer can keep up with. It only changes the advice, never your model.
 - `self.advice`: The model that suits this computer and why: whether it keeps up, about how soon your words appear after you pause, its tier and its download size. The figures are estimates. Nothing changes until you choose a model.
 - `self.show_recommended`: Move to the recommended model in the list below, to read its details and download or use it. It does not download or choose anything.
+- `self.switch_recommended`: Choose the recommended model as the speech engine, changing nothing else. From Dictation Settings, press OK there to keep it. A model not yet on this computer is not downloaded: you are told, and taken to its row.
 - `self.models`: The optional speech models, the ones VS Code offers first and then the rest of the Whisper family. Each row says its tier (Lightweight, Balanced or High accuracy), what the model is good for, its size and whether it is on this computer. Details below say more.
 - `self.details`: About the chosen model: what it is better at, its languages, download and disk size, what computer suits it and whether this one should keep up, its published accuracy, its licence and where it is saved.
 - `self.progress`: How far the current download has got, or how it ended.

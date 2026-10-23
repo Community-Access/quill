@@ -2698,7 +2698,7 @@ providers".
 > Outlook. Shared code (`corrections.py`, `external_edits.py`); design record
 > section 27.
 
-> **Dictation model advice on real speech, and five models retired (D-22, B-1,
+> **Dictation model advice on real speech, and five models removed (D-22, B-1,
 > 2026-10-22).** QUILL, QUILL Lite and QUILL Transcribe share one dictation
 > engine and one catalogue, so all three changed together. Evidence:
 > [`docs/qa/dictation-real-speech-benchmark-2026-10-22.md`](../qa/dictation-real-speech-benchmark-2026-10-22.md)
@@ -2718,7 +2718,8 @@ providers".
 >   cores; NVIDIA Parakeet Unified 0.6B on 8 GB or more with four cores.
 >   Spanish: Whisper tiny (built in) on 4 GB; Parakeet TDT 0.6B v3 on 8 GB.
 >   "The quickest response" still names Moonshine tiny. It never switches a
->   model and never names a retiring one.
+>   model on its own; the only switch is the one-time move off a removed model
+>   below.
 > - *Measured basis.* English, held-out audiobooks: Parakeet Unified 3.2
 >   percent of words wrong (FLEURS 6.3, 1.2 GB peak, 0.21 per thread), Parakeet
 >   TDT v3 3.8 (0.11, 1.1 GB), Nemotron 3.5 Streaming 5.3 (FLEURS 13.7, 0.37,
@@ -2736,21 +2737,27 @@ providers".
 >   phrase over about 8.5 seconds; long phrases are now decoded in pieces of 8
 >   seconds or less, cut at the quietest moment, and joined. 5.9 percent wrong
 >   on the held-out audiobooks.
-> - *Retirement policy applied* (design record section 32.6: evidence first; a
->   full feature release of notice; announced in the changelog, in the model
->   list and in one spoken sentence; never silent). **Applied 2026-10-22** to
->   Distil-Whisper small.en (5.9 percent), Whisper small.en (4.3), Distil-Whisper
->   medium.en (6.3), Whisper medium.en (3.6) and Distil-Whisper large-v3 (4.5):
->   Parakeet Unified beat each on accuracy and speed in the same memory or
->   less. Each one's line in every model list starts "Being retired, use NVIDIA
->   Parakeet Unified 0.6B instead."; dictation says once, across every
->   QuillVille program (`retiring-notices.json` in the family's shared
->   dictation settings), in one short sentence, that it is being retired and
->   nothing changes until another model is chosen; the measured reason is in
->   the model's details (shortened after the 2026-10-22 accessibility review,
->   because it is spoken as the microphone opens). Nothing is switched and
->   nothing is deleted. Removal is due no earlier than the next feature
->   release (`quill/core/windows_dictation/retiring.py`).
+> - *Five models removed in this release* (2026-10-22): Distil-Whisper
+>   small.en (5.9 percent), Whisper small.en (4.3), Distil-Whisper medium.en
+>   (6.3), Whisper medium.en (3.6) and Distil-Whisper large-v3 (4.5). Parakeet
+>   Unified (3.2) beat each on accuracy, ran faster on one thread, and used the
+>   same or a smaller memory tier. Whisper base.en and every multilingual Whisper size
+>   stay. This changes the design record's policy (section 32.6: deprecate for
+>   one release, remove no earlier than the next); the decision is recorded in
+>   section 37 of
+>   [`docs/design/2026-10-05-dictation-plan-and-status.md`](../design/2026-10-05-dictation-plan-and-status.md).
+>   Someone using one is moved on update: to Parakeet Unified if it is already
+>   downloaded, otherwise to the built-in model; nothing is downloaded. The
+>   next time dictation starts it says one sentence, once across every
+>   QuillVille program (`removed-model-notices.json` in the family's shared
+>   dictation settings): "Whisper small.en was removed in this release.
+>   Dictation now uses Parakeet Unified, which you already have." or "Whisper
+>   small.en was removed in this release, so dictation uses the built-in
+>   model. Parakeet Unified, in the model list, is more accurate." (with the
+>   actual model's name). Downloaded files are not deleted; they stay in
+>   `%LOCALAPPDATA%\QuillVille\Dictation\models` (portable:
+>   `data\dictation\models`) for the user to remove
+>   (`quill/core/windows_dictation/removed_models.py`).
 > - *Not settled by this run:* a real 4 GB computer with NVDA or JAWS running
 >   (screen-reader lag, battery; B-8 needs a person), whether Whisper writes
 >   the opening "¿" and "¡" itself, and fresh figures for Whisper medium and

@@ -23,8 +23,17 @@ sits above the list as read-only text: one model for this computer, the
 dictation language and What matters most, with its reasons. It is written
 from the cores and memory at once and rewritten when the timed check ends.
 Show Recommended Model moves to its row; nothing is downloaded or chosen for
-the person. Every row and details box names the model's tier (Lightweight,
-Balanced or High accuracy).
+the person. Switch to Recommended Model chooses it, when it is on this
+computer, and changes nothing but the model. Every row and details box names
+the model's tier (Lightweight, Balanced or High accuracy).
+
+**After a switch** (:func:`offer_to_remove_replaced`), once the new model is
+saved, the old one's files are offered for deletion -- No by default, naming
+the space it frees -- because a switch is when a large download stops earning
+its place, and the person may never come back here to remove it. Never while
+dictation may still hold the old model (the delete would fail), and the
+question leads with what changed, because it arrives after the window that
+made the change has closed (accessibility review, 2026-10-23).
 
 The list is our suggested order: the models VS Code offers first, with
 Nemotron as the suggested download, then the rest of the Whisper family. The
@@ -47,12 +56,13 @@ from quill.core.windows_dictation import model_advice, model_store, speed_check
 from quill.core.windows_dictation.model_catalog import (
     CATALOGUE,
     DownloadableModel,
+    downloadable,
     megabytes,
 )
 from quill.core.windows_dictation.model_types import TIER_MEANINGS
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button, show_message_box
 
-__all__ = ["SpeechModelsDialog", "open_speech_models"]
+__all__ = ["SpeechModelsDialog", "offer_to_remove_replaced", "open_speech_models", "will_offer"]
 
 _PAD = 8
 _TINY_ROW = (
@@ -142,7 +152,17 @@ class SpeechModelsDialog(wx.Dialog):
         root.Add(priority_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, _PAD)
         root.Add(advice_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         root.Add(self.advice, 0, wx.EXPAND | wx.ALL, _PAD)
-        root.Add(self.show_recommended, 0, wx.LEFT | wx.RIGHT, _PAD)
+        self.switch_recommended = wx.Button(self, label="Switc&h to Recommended Model")
+        self.switch_recommended.SetHelpText(
+            "Choose the recommended model as the speech engine, changing nothing else. "
+            "From Dictation Settings, press OK there to keep it. A model not yet on this "
+            "computer is not downloaded: you are told, and taken to its row."
+        )
+        self.switch_recommended.Bind(wx.EVT_BUTTON, self._on_switch_recommended)
+        recommended_row = wx.BoxSizer(wx.HORIZONTAL)
+        recommended_row.Add(self.show_recommended, 0, wx.RIGHT, _PAD)
+        recommended_row.Add(self.switch_recommended, 0)
+        root.Add(recommended_row, 0, wx.LEFT | wx.RIGHT, _PAD)
 
         label = wx.StaticText(self, label="Speech &models:")
         self.models = wx.ListBox(self, choices=[self._row_text(row) for row in self._rows])
@@ -296,6 +316,9 @@ class SpeechModelsDialog(wx.Dialog):
         self._recommendation = advice
         self.advice.SetValue(advice.details)
         self.show_recommended.Enable(self._recommended_row() is not None)
+        # Enabled whenever there is advice, so Tab always reaches it; pressing it
+        # when the model is not here says so rather than sitting greyed out.
+        self.switch_recommended.Enable(bool(advice.model_id))
 
     def _recommended_row(self) -> int | None:
         advice = self._recommendation
@@ -320,6 +343,29 @@ class SpeechModelsDialog(wx.Dialog):
         self.models.SetSelection(index)
         self._show_details()
         self.models.SetFocus()  # the reader says the row it lands on
+
+    def _on_switch_recommended(self, _event: Any) -> None:
+        advice = self._recommendation
+        if advice is None:
+            return
+        if self._busy is not None:  # closing would stop the download silently
+            self._tell(
+                "A model is downloading. Wait for it, or press Cancel Download first.",
+                wx.ICON_INFORMATION,
+            )
+            return
+        if not advice.built_in:
+            model = downloadable(advice.model_id)
+            if model is None or not model_store.installed(model):
+                # Said before focus moves, so the box does not cut off the row.
+                self._tell(
+                    f"{advice.name} is not on this computer yet. Download it, then switch.",
+                    wx.ICON_INFORMATION,
+                )
+                self._on_show_recommended(None)
+                return
+        self.chosen = advice.model_id
+        self.EndModal(wx.ID_OK)
 
     # -- download ----------------------------------------------------------- #
 
@@ -430,8 +476,9 @@ class SpeechModelsDialog(wx.Dialog):
         except model_store.ModelDownloadError as error:
             self._tell(str(error.args[0]), wx.ICON_WARNING)
             return
-        self.progress.SetValue(f"{model.name} was removed.")
+        self.progress.SetValue(f"{model.name} was removed. {megabytes(model.disk_bytes)} freed.")
         self._refresh()
+        self.models.SetFocus()  # Remove is disabled now; focus must not fall to nowhere
         self._announce(f"{model.name} removed.")
 
     def _on_use(self, _event: Any) -> None:
@@ -455,10 +502,77 @@ class SpeechModelsDialog(wx.Dialog):
         show_message_box(sentence, "Speech Models", wx.OK | icon, self)
 
 
+def _engine_name(engine_id: str) -> str:
+    model = downloadable(engine_id)
+    if model is not None:
+        return model.name
+    from quill.core.windows_dictation.engines import engine_info
+
+    return engine_info(engine_id).label.split(" (")[0]
+
+
+def will_offer(old_engine: str, new_engine: str, *, in_use: bool = False) -> bool:
+    """Whether :func:`offer_to_remove_replaced` would ask: a switch away from a
+    downloaded model still on this computer, which dictation is not holding."""
+    if in_use or not old_engine or old_engine == new_engine:
+        return False
+    model = downloadable(old_engine)
+    return model is not None and model_store.installed(model)
+
+
+def offer_to_remove_replaced(
+    parent: Any,
+    old_engine: str,
+    new_engine: str,
+    announce: Callable[[str], None],
+    *,
+    in_use: bool = False,
+) -> bool:
+    """After a switch from *old_engine* to *new_engine* has been saved, offer to
+    delete the old model's files. Returns whether they were deleted.
+
+    No is the default: deleting is the one answer that costs a download to undo.
+    Not asked while dictation may hold the old model (*in_use*), when there is
+    nothing to delete (a built-in engine, a model not here) or nothing changed.
+    The question leads with the switch, so it stands on its own when heard
+    straight after the window that made it; a caller announcing the switch
+    itself should skip that when :func:`will_offer` says the box will say it.
+    """
+    if not will_offer(old_engine, new_engine, in_use=in_use):
+        return False
+    model = downloadable(old_engine)
+    assert model is not None  # will_offer checked
+    freed = megabytes(model.disk_bytes)
+    answer = show_message_box(
+        f"Now using {_engine_name(new_engine)}. Delete {model.name} to free {freed}? "
+        "QUILL, QUILL Lite and QUILL Transcribe share its files; any of them still set "
+        f"to {model.name} will need it downloaded again.",
+        "Delete Old Speech Model",
+        wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
+        parent,
+    )
+    if answer != wx.YES:
+        return False
+    try:
+        model_store.remove(model.id)
+    except model_store.ModelDownloadError:
+        show_message_box(
+            f"{model.name} could not be deleted; something may still be using it. "
+            "Remove it in Speech Models later.",
+            "Delete Old Speech Model",
+            wx.OK | wx.ICON_WARNING,
+            parent,
+        )
+        return False
+    announce(f"{model.name} deleted. {freed} freed.")
+    return True
+
+
 def open_speech_models(
     parent: Any, announce: Callable[[str], None] | None = None, *, language: str = "en"
 ) -> str | None:
-    """Show Speech Models; return the model chosen with Use for Dictation, if any.
+    """Show Speech Models; return the model chosen with Use for Dictation or
+    Switch to Recommended Model, if any.
     *language* is the dictation language, which the recommendation follows."""
     from quill.ui.dialog_contract import show_modal_dialog
 

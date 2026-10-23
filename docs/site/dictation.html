@@ -18,6 +18,7 @@
       <nav class="site" aria-label="Primary">
         <ul>
           <li><a href="/dictation.html" aria-current="page">Dictation</a></li>
+          <li><a href="/dictation-evidence.html">Dictation: the evidence</a></li>
           <li><a href="/index.html">QUILL home</a></li>
           <li><a href="/quilllite.html">QUILL Lite</a></li>
           <li><a href="/compare.html">Compare the two editors</a></li>
@@ -435,6 +436,14 @@
       </p>
 
       <h3 id="evidence" tabindex="-1" class="focus-target">How the default was chosen</h3>
+      <p>
+        <strong>The full, current evidence is on its own page:</strong>
+        <a href="/dictation-evidence.html">why dictation recommends what it does</a>, with
+        every model measured on real people's speech in October 2026, how we tested, how we
+        reasoned, and why your own results will differ. The table below is the first,
+        earlier comparison that chose the built-in default, kept for the record; its
+        figures came from a synthetic voice, which flatters every engine.
+      </p>
       <p class="group-verdict">
         We tried eight engines on ten everyday sentences each, on 25 September 2026. We
         wanted one that keeps up with you on an older Windows 10 computer, puts in its own
@@ -530,11 +539,9 @@
           (NVIDIA Parakeet TDT 0.6B v3 and NVIDIA Parakeet Unified 0.6B) and Whisper
           base.en.</li>
         <li><strong>Balanced</strong>: more work than the built-in engines; keeps up on a
-          computer with four or more cores. Nemotron, Whisper base and Distil-Whisper
-          small.en.</li>
+          computer with four or more cores. Nemotron and Whisper base.</li>
         <li><strong>High accuracy</strong>: the most work; needs a capable computer, or
-          patience. Whisper small and larger, Whisper small.en and medium.en, and
-          Distil-Whisper medium.en and large-v3.</li>
+          patience. Whisper small and larger.</li>
       </ul>
       <p>
         The tiers follow each model's real speed on real recordings, measured on
@@ -558,6 +565,10 @@
           model and says why.</li>
         <li>Press <strong>Show Recommended Model</strong> (<kbd>Alt+S</kbd>) to move to that
           model in the list, where Download and Use for Dictation are.</li>
+        <li>Once it is downloaded, <strong>Switch to Recommended Model</strong>
+          (<kbd>Alt+H</kbd>) chooses it and changes nothing else. Press OK in Dictation
+          Settings to keep it. If it is not on this computer yet, nothing is downloaded:
+          you are told, and taken to its row.</li>
       </ol>
       <p>
         In QUILL Transcribe the same advice is in <strong>Model, Choose Model...</strong>
@@ -566,8 +577,7 @@
         never changes your engine. Its figures come from our tests with real people's
         recordings (<a href="#real-speech">Tested on real speech</a>), on one computer, so
         your own voice and computer may still differ. OpenAI and the speech providers are
-        never recommended, because they send your speech away, and neither is a model
-        being retired.
+        never recommended, because they send your speech away.
       </p>
       <p>
         It also counts memory. On a computer with 8 GB, dictation may use up to 1.6 GB
@@ -665,7 +675,11 @@
         <strong>Where they go:</strong> <code>%LOCALAPPDATA%\QuillVille\Dictation\models</code>,
         one folder for every program. In a portable copy, models are saved inside the portable
         folder, so everything travels together. <strong>Remove</strong> in the same window
-        frees the space. If a downloaded model goes missing, dictation says so in one sentence
+        frees the space and says how much. When you switch away from a downloaded model and
+        press OK, a question offers to delete the old one to free its space, and says that
+        QUILL, QUILL Lite and QUILL Transcribe share its files; No is the answer if you just
+        press Enter. It is not asked while dictation is running. If a downloaded model goes
+        missing, dictation says so in one sentence
         and carries on with the built-in engine; it never switches silently.
       </p>
       <p>
@@ -682,7 +696,7 @@
       </p>
 
       <h3 id="model-list" tabindex="-1" class="focus-target">The models, in our suggested order</h3>
-      <p>The order is our suggestion: the models that did best on real speech first, then the rest of Whisper, smallest first, and last the five being retired.</p>
+      <p>The order is our suggestion: the models that did best on real speech first, then the rest of Whisper, smallest first.</p>
       <div class="cmp-scroll">
         <table class="cmp">
           <caption>The optional speech models: what each is good for, its download size, languages and tier.</caption>
@@ -701,28 +715,38 @@
             <tr><th scope="row">Whisper medium</th><td>Best for accuracy when you can wait</td><td>946 MB</td><td>English, Spanish</td><td>High accuracy</td></tr>
             <tr><th scope="row">Whisper large-v3-turbo</th><td>Large-v3 quality, much faster than large-v3</td><td>1.0 GB</td><td>English, Spanish</td><td>High accuracy</td></tr>
             <tr><th scope="row">Whisper large-v3</th><td>The most accurate Whisper; very slow on most computers</td><td>1.8 GB</td><td>English, Spanish</td><td>High accuracy</td></tr>
-            <tr><th scope="row">Whisper small.en</th><td>Being retired, use NVIDIA Parakeet Unified 0.6B instead</td><td>376 MB</td><td>English</td><td>High accuracy</td></tr>
-            <tr><th scope="row">Distil-Whisper small.en</th><td>Being retired, use NVIDIA Parakeet Unified 0.6B instead</td><td>299 MB</td><td>English</td><td>Balanced</td></tr>
-            <tr><th scope="row">Distil-Whisper medium.en</th><td>Being retired, use NVIDIA Parakeet Unified 0.6B instead</td><td>573 MB</td><td>English</td><td>High accuracy</td></tr>
-            <tr><th scope="row">Whisper medium.en</th><td>Being retired, use NVIDIA Parakeet Unified 0.6B instead</td><td>946 MB</td><td>English</td><td>High accuracy</td></tr>
-            <tr><th scope="row">Distil-Whisper large-v3</th><td>Being retired, use NVIDIA Parakeet Unified 0.6B instead</td><td>984 MB</td><td>English</td><td>High accuracy</td></tr>
           </tbody>
         </table>
       </div>
       <p>
-        <strong>Five English-only models are being retired</strong>: Whisper small.en,
-        Distil-Whisper small.en, Distil-Whisper medium.en, Whisper medium.en and
-        Distil-Whisper large-v3. On real recordings, Parakeet Unified beat each of them on
-        accuracy and speed, in the same memory or less. If you use one, it keeps working
-        until the next feature release, and the first time dictation starts on it you are
-        told so once, in every QuillVille program together. Nothing is switched and
-        nothing is deleted; to change, choose another model in Speech Models. They are
-        never recommended.
+        <strong>Five English-only models were removed in this release</strong>: Whisper
+        small.en, Distil-Whisper small.en, Distil-Whisper medium.en, Whisper medium.en and
+        Distil-Whisper large-v3. On real recordings, Parakeet Unified got 3.2% of words
+        wrong on the held-out audiobooks, against 3.6% to 6.3% for these five, and ran
+        faster on one thread, in the same or a smaller memory tier. Whisper base.en and every
+        many-language Whisper stay.
       </p>
       <p>
-        <strong>English only, or many languages?</strong> Whisper models ending in ".en", and
-        Distil-Whisper, know only English and are a little more accurate in English than the
-        many-language model of the same size. The many-language ones also dictate Spanish.
+        If you were using one, dictation moves when you update: to Parakeet Unified if it
+        is already downloaded, otherwise to the built-in model. Nothing is downloaded. The
+        next time dictation starts it says one sentence, once across every QuillVille
+        program, for example "Whisper small.en was removed in this release. Dictation now
+        uses Parakeet Unified, which you already have." or "Whisper small.en was removed
+        in this release, so dictation uses the built-in model. Parakeet Unified, in the
+        model list, is more accurate." To choose Parakeet Unified, find it in Speech
+        Models, then Download and Use for Dictation.
+      </p>
+      <p>
+        Your downloaded files are not deleted. They stay in
+        <code>%LOCALAPPDATA%\QuillVille\Dictation\models</code> (in a portable copy,
+        <code>data\dictation\models</code> inside the portable folder), in folders named
+        whisper-small.en-int8, whisper-distil-small.en-int8, whisper-medium.en-int8,
+        whisper-distil-medium.en-int8 and whisper-distil-large-v3-int8. Delete the folder
+        to free the space.
+      </p>
+      <p>
+        <strong>English only, or many languages?</strong> Whisper base.en knows only
+        English and is a little more accurate in English than Whisper base. The many-language ones also dictate Spanish.
       </p>
 
       <h3 id="real-speech" tabindex="-1" class="focus-target">Tested on real speech</h3>
@@ -755,16 +779,16 @@
           </thead>
           <tbody>
             <tr><th scope="row">NVIDIA Parakeet Unified 0.6B</th><td>3.2%</td><td>6.3%</td><td>1.8%</td><td>3.2%</td><td>0.21</td><td>1.2 GB</td><td><strong>Recommended</strong> on 8 GB with four cores</td></tr>
-            <tr><th scope="row">Whisper medium.en</th><td>3.6%</td><td>not run</td><td>not run</td><td>not run</td><td>1.55</td><td>3.0 GB</td><td>Being retired</td></tr>
+            <tr><th scope="row">Whisper medium.en</th><td>3.6%</td><td>not run</td><td>not run</td><td>not run</td><td>1.55</td><td>3.0 GB</td><td>Removed</td></tr>
             <tr><th scope="row">NVIDIA Parakeet TDT 0.6B v3</th><td>3.8%</td><td>9.0%</td><td>2.5%</td><td>5.2%</td><td>0.11</td><td>1.1 GB</td><td>Kept; recommended on 8 GB with two cores</td></tr>
-            <tr><th scope="row">Whisper small.en</th><td>4.3%</td><td>6.3%</td><td>3.4%</td><td>7.8%</td><td>0.43</td><td>1.4 GB</td><td>Being retired</td></tr>
-            <tr><th scope="row">Distil-Whisper large-v3</th><td>4.5%</td><td>not run</td><td>not run</td><td>not run</td><td>0.82</td><td>2.0 GB</td><td>Being retired</td></tr>
+            <tr><th scope="row">Whisper small.en</th><td>4.3%</td><td>6.3%</td><td>3.4%</td><td>7.8%</td><td>0.43</td><td>1.4 GB</td><td>Removed</td></tr>
+            <tr><th scope="row">Distil-Whisper large-v3</th><td>4.5%</td><td>not run</td><td>not run</td><td>not run</td><td>0.82</td><td>2.0 GB</td><td>Removed</td></tr>
             <tr><th scope="row">Whisper small</th><td>4.7%</td><td>not run</td><td>4.2%</td><td>8.5%</td><td>0.55</td><td>1.4 GB</td><td>Kept; many languages, needs two threads</td></tr>
             <tr><th scope="row">NVIDIA Nemotron 3.5 Streaming 0.6B</th><td>5.3%</td><td>13.7%</td><td>3.7%</td><td>7.3%</td><td>0.37</td><td>1.5 GB</td><td>Kept; streams words while you speak</td></tr>
             <tr><th scope="row">Moonshine base</th><td>5.9%</td><td>15.1%</td><td>4.8%</td><td>10.7%</td><td>0.05</td><td>378 MB</td><td>Kept; fixed for long phrases</td></tr>
             <tr><th scope="row">Whisper base.en</th><td>5.9%</td><td>7.4%</td><td>5.6%</td><td>11.6%</td><td>0.13</td><td>820 MB</td><td>Kept; light, good on varied voices</td></tr>
-            <tr><th scope="row">Distil-Whisper small.en</th><td>5.9%</td><td>7.6%</td><td>4.6%</td><td>9.2%</td><td>0.22</td><td>1.0 GB</td><td>Being retired</td></tr>
-            <tr><th scope="row">Distil-Whisper medium.en</th><td>6.3%</td><td>not run</td><td>4.2%</td><td>not run</td><td>0.47</td><td>1.6 GB</td><td>Being retired</td></tr>
+            <tr><th scope="row">Distil-Whisper small.en</th><td>5.9%</td><td>7.6%</td><td>4.6%</td><td>9.2%</td><td>0.22</td><td>1.0 GB</td><td>Removed</td></tr>
+            <tr><th scope="row">Distil-Whisper medium.en</th><td>6.3%</td><td>not run</td><td>4.2%</td><td>not run</td><td>0.47</td><td>1.6 GB</td><td>Removed</td></tr>
             <tr><th scope="row">Moonshine tiny (built in)</th><td>6.5%</td><td>13.2%</td><td>5.0%</td><td>13.3%</td><td>0.06</td><td>584 MB</td><td>Kept; the default, and the pick on 4 GB</td></tr>
             <tr><th scope="row">Whisper base</th><td>7.4%</td><td>10.8%</td><td>not run</td><td>not run</td><td>0.22</td><td>821 MB</td><td>Kept; many languages</td></tr>
             <tr><th scope="row">Whisper tiny (built in)</th><td>8.3%</td><td>11.7%</td><td>6.7%</td><td>13.9%</td><td>0.07</td><td>521 MB</td><td>Kept; built in</td></tr>
@@ -789,7 +813,8 @@
       <p>
         Moonshine base used to write nothing at all for a phrase longer than about eight and
         a half seconds. It now hears long phrases in pieces, and scored 5.9% on the
-        held-out audiobooks. Whisper medium and Whisper large-v3-turbo were too slow to test
+        held-out audiobooks. The pieces overlap by half a second, so a word that falls
+        where two pieces meet is not lost. Whisper medium and Whisper large-v3-turbo were too slow to test
         again, and a real 4 GB computer with a screen reader running still needs testing by
         a person.
       </p>
@@ -810,8 +835,8 @@
           per cent on FLEURS Spanish, at the chunk size this download uses (<a href="https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b">NVIDIA's model card</a>).</li>
         <li><strong>Parakeet Unified:</strong> 1.63 per cent on LibriSpeech test-clean, 3.11 on test-other (<a href="https://huggingface.co/nvidia/parakeet-unified-en-0.6b">model card</a>).</li>
         <li><strong>Parakeet TDT v3:</strong> 4.85 per cent on FLEURS English, 3.45 on FLEURS Spanish (<a href="https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3">model card</a>).</li>
-        <li><strong>Whisper</strong> on LibriSpeech test-clean: tiny 7.6, base 5.0, small 3.4, medium 2.9 per cent; tiny.en 5.6, base.en 4.2, small.en 3.1, medium.en 3.1. On Spanish (Common Voice 9): tiny 30.3, base 19.6, small 10.3, medium 6.9 (<a href="https://arxiv.org/abs/2212.04356">OpenAI's Whisper paper, Appendix D</a>).</li>
-        <li><strong>Distil-Whisper and large-v3</strong>, average over short recordings the models were not trained on: large-v3 8.4, distil-large-v3 9.7, distil-medium.en 11.1, distil-small.en 12.1 per cent (<a href="https://huggingface.co/distil-whisper/distil-small.en">Distil-Whisper model card</a>). OpenAI publishes no figure for large-v3-turbo; it says turbo is much faster than large-v3 with a small drop in quality.</li>
+        <li><strong>Whisper</strong> on LibriSpeech test-clean: tiny 7.6, base 5.0, small 3.4, medium 2.9 per cent; tiny.en 5.6, base.en 4.2. On Spanish (Common Voice 9): tiny 30.3, base 19.6, small 10.3, medium 6.9 (<a href="https://arxiv.org/abs/2212.04356">OpenAI's Whisper paper, Appendix D</a>).</li>
+        <li><strong>Whisper large-v3</strong>, average over short recordings the model was not trained on: 8.4 per cent (<a href="https://huggingface.co/distil-whisper/distil-small.en">Distil-Whisper model card</a>). OpenAI publishes no figure for large-v3-turbo; it says turbo is much faster than large-v3 with a small drop in quality.</li>
         <li><strong>Moonshine:</strong> base 10.07 per cent against tiny's 12.66, averaged over the Open ASR Leaderboard's English sets (<a href="https://github.com/moonshine-ai/moonshine">Moonshine AI</a>).</li>
       </ul>
       <p>
@@ -1362,6 +1387,7 @@
       <h3>What works now</h3>
       <ul>
         <li><strong>Your words come out in Spanish</strong>, accents and all, using Whisper's multilingual model. It comes with the app, so there is nothing to download. Moonshine only knows English, so in Spanish you get Whisper either way.</li>
+        <li><strong>A better Spanish model, said once.</strong> The built-in Whisper gets about one word in four wrong in Spanish. If your computer can run NVIDIA Parakeet TDT 0.6B v3 (in practice, 8 GB of memory and four cores), the first time you dictate in Spanish you hear one sentence saying so, for example: "For Spanish, NVIDIA Parakeet TDT 0.6B v3 gets about 6 percent of words wrong, against 29 for the built-in model. It is a 670 MB download in the model list." Nothing is downloaded or changed; the choice is yours. You hear it once, in whichever QuillVille program you dictate in first. A computer with 4 GB hears nothing, because the built-in model is the right one there.</li>
         <li><strong>Windows speech recognition</strong> needs Spanish installed in Windows: add Spanish (Spain or Mexico) under Windows Settings, Time and language, Speech. If it is missing, dictation tells you when you start.</li>
         <li><strong>The wake and stop phrases</strong> become "Quill dicta" and "deja de dictar". If you typed your own, yours stay.</li>
         <li><strong>Commands stay in English for now.</strong> "Scratch that", "select that", "new paragraph" and the rest work as they do in English. Spanish commands come once a native speaker has checked them. The one exception is switching back: "cambiar a inglés" and "dictado en inglés" work already.</li>
@@ -2190,6 +2216,11 @@
           an engine</a> says which.</li>
         <li>Use a <strong>headset microphone</strong> rather than a laptop's built-in one.
           This is the single biggest improvement available to most people.</li>
+        <li>If whole sentences go missing, your microphone may be <strong>too quiet</strong>.
+          With its level set very low, or speaking very softly or far away, dictation can
+          miss speech entirely, especially just after something louder; we saw it happen
+          in <a href="/dictation-evidence.html#quiet">our tests of very quiet speech</a>. Move closer, or raise
+          the level in Windows' sound settings.</li>
         <li>If you are using speakers, set the read-back to <strong>a sound only</strong>.
           Otherwise the microphone hears the read-back and writes it down again.</li>
         <li>Add the names you use often to <strong>My Words and Phrases</strong>

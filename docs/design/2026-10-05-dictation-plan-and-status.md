@@ -3041,6 +3041,10 @@ been measured on real voices.
   engine pack (for example in `<app data>/engine-packs/`) goes into the same
   offer.
 
+Both tools are built (2026-10-23), as **Switch to Recommended Model** in
+Speech Models and the Delete Old Speech Model offer; section 38.1 records
+them as built and where they depart from the two bullets above.
+
 #### Deprecation policy
 
 1. **Evidence first.** Nothing is deprecated until its replacement has been
@@ -3052,7 +3056,9 @@ been measured on real voices.
 2. **Notice period: one full feature release.** Deprecate in release N (the
    engine works, with the notice), and remove no earlier than release N+1.
    For an engine that is the default for some installs (whisper.cpp), the
-   period is two releases.
+   period is two releases. (Set aside once, on 2026-10-22, for five
+   English-only models removed in the release that measured them: section
+   37 says why.)
 3. **Announced three ways:** a "Deprecated" entry in the CHANGELOG and the
    release notes of release N, naming the replacement and the removal
    release; the one-time spoken notice above; and a line in the user guide's
@@ -3323,7 +3329,7 @@ Moonshine tiny scored 5.0 to 13.3.
 and crashed on "ş", so every FLEURS Spanish run had failed silently (#1679);
 the driver then decoded the UTF-8 output as cp1252 (#1681).
 
-## 37. As built, 2026-10-22: real English figures, real speed, five models retiring
+## 37. As built, 2026-10-22: real English figures, real speed, five models removed
 
 The English half of the real-speech run, written in as one change so English
 recommendations, Spanish recommendations and the tiers moved together. The
@@ -3360,20 +3366,207 @@ cores and up, Parakeet Unified for English and Parakeet TDT v3 for Spanish.
 "The quickest response" stays Moonshine tiny. Nemotron is not recommended
 anywhere on these numbers; it stays for its live preview.
 
-**Retiring** (section 32.6 policy, applied): Distil-Whisper small.en, Whisper
-small.en, Distil-Whisper medium.en, Whisper medium.en and Distil-Whisper
-large-v3. Each was beaten by Parakeet Unified on the held-out audiobooks, on
-FLEURS where both ran and on noisy LibriSpeech, faster per thread, in the same
-or a smaller memory tier. `retiring.RETIRING` holds the replacement and the
-measured reason; `model_catalog._with_retiring_notes` puts "Being retired, use
-NVIDIA Parakeet Unified 0.6B instead." first in each one's line in every list;
-`model_advice` never names one; the controller says `retiring.notice` once,
-recorded in `retiring-notices.json` beside `family_dictation.json`, so it is
-said once across the family. Nothing is switched and nothing deleted. Remove
-no earlier than the next feature release. Kept, on the evidence: Whisper
-base.en (7.4 FLEURS against Moonshine base's 15.1, in 820 MB) and every
-multilingual Whisper size.
+**Removed in this release** (decided by Jeff, 2026-10-22): Distil-Whisper
+small.en, Whisper small.en, Distil-Whisper medium.en, Whisper medium.en and
+Distil-Whisper large-v3. Each was beaten by Parakeet Unified on the held-out
+audiobooks (3.2 percent wrong, against 3.6 to 6.3 for these), on FLEURS where
+both ran and on noisy LibriSpeech, faster per thread, in the same or a smaller
+memory tier. Kept, on the evidence: Whisper base.en (7.4 FLEURS against
+Moonshine base's 15.1, in 820 MB) and every multilingual Whisper size.
+
+**This overrides section 32.6's notice period** (deprecate in release N,
+remove no earlier than N+1) for these five, and only these. The reason: a
+release of notice would only have kept offering a slower or heavier way to a
+worse result, and none of the five is a default anywhere. The policy's other
+rules still hold, and the removal kept them: evidence first (section 36 and
+the benchmark record); announced in the CHANGELOG and every app's release
+notes as "Removed"; and never silently, though a removed model can no longer
+be asked about, so the change is said rather than offered:
+
+- `removed_models.REMOVED` records each id, name and folder. The catalogue
+  rows are gone, and with them every "Being retired" line, the
+  `_with_retiring_notes` pass and the `model_advice` filter.
+- `engines.coerce_engine` maps a saved removed id through
+  `removed_models.replacement_for`: Parakeet Unified when it is already
+  downloaded, else the default engine. Nothing is downloaded.
+- The change is recorded in `removed-model-notices.json` beside
+  `family_dictation.json` when it is made (`noticed`), not when it is said,
+  because the next settings save forgets the old id. The controller says it at
+  the next dictation start (`take_notice`), once across the family: "Whisper
+  small.en was removed in this release, so dictation uses the built-in model.
+  Parakeet Unified, in the model list, is more accurate." (or "... Dictation
+  now uses Parakeet Unified, which you already have.").
+- No file is deleted: the old folder stays under the dictation models folder
+  (`%LOCALAPPDATA%\QuillVille\Dictation\models`), and the release notes say
+  so. The removal checklist's other items had nothing to do: these were
+  catalogue rows on the existing sherpa-onnx runtime, with no provider,
+  install path, egress entry or pin of their own.
 
 **Still for a person:** B-8 on a real 4 GB computer with NVDA or JAWS; ten
 native Spanish recordings with questions and exclamations (the opening marks
 are now scored, #1684); the native-speaker review of the Spanish commands.
+
+## 38. As built, 2026-10-23: the Spanish tip and Moonshine base's seams
+
+**The Spanish tip** (`spanish_tip.py`, said through `start_notices.py`). The
+only Spanish model in the installers is the built-in Whisper tiny: 30.5
+percent of words wrong on FLEURS Spanish and 27.0 on the Spanish audiobooks,
+about one word in four. Parakeet TDT v3 gets 4.4 and 7.3 (section 36).
+
+- **When.** The first time dictation starts in Spanish on a computer whose own
+  Spanish recommendation (`model_advice.for_this_computer("es")`) is a
+  download, while the Spanish would otherwise go to the built-in Whisper tiny
+  (`engines.model_for`). That is both built-in engines and every English-only
+  download, which hand Spanish to Whisper tiny. In practice it is Parakeet TDT
+  v3 on a computer with 8 GB of memory and four cores; a 4 GB computer hears
+  nothing.
+- **What.** One sentence: "For Spanish, NVIDIA Parakeet TDT 0.6B v3 gets about
+  6 percent of words wrong, against 29 for the built-in model. It is a 670 MB
+  download in the model list." (or "It is already downloaded; choose it in the
+  model list."). The figures are the means of the two Spanish sets
+  (`Measured.word_errors_es`). Nothing is downloaded and nothing is switched.
+- **Once.** Across every QuillVille program, recorded in `spanish-tip.json`
+  beside the family's shared dictation settings, written when it is said. It
+  runs in QUILL, QUILL Lite and QUILL Transcribe, which share the dictation
+  controller.
+- **Order.** At most one start sentence is said each time
+  (`start_notices.start_notice`): a downloaded model that gave way to the
+  built-in one; then a removed model (section 37); then the Spanish tip. A
+  once-only notice that waits its turn is said at a later start.
+
+**Decision** (Jeff, 2026-10-23): the tip, not shipping Whisper base in place of
+tiny. Base gets 12.6 and 16.1 percent wrong at about 820 MB peak; it would have
+made every installer bigger and still left Spanish about three times worse
+than the download. A computer that can run the download is told so once; one
+that cannot loses nothing it had.
+
+**Moonshine base's seams** (`chunked_offline.py`). Section 37's fix cuts a
+phrase over about 8 seconds into pieces, each cut at the quietest moment near
+it. A cut that still landed on a word lost that word: the 12-second check
+dropped one word at each cut. Each piece now reaches half a second
+(`_OVERLAP_SECONDS`) past its cut on both sides, so a word near the cut is
+heard twice, and `join_overlapping` drops the repeat, keeping the later
+piece's copy, which heard what came after it. Where two pieces agree on
+nothing, the words are joined with a space, as before. No word is lost at a
+cut.
+
+### 38.1 The retirement policy's tools, as built
+
+Section 32.6 promised two tools for people moving off a model: one action to
+move, and an offer to free the old files. Both are built, in the shared Speech
+Models window (`dictation_models_dialog.py`), so QUILL, QUILL Lite and QUILL
+Transcribe's Model Library get them together.
+
+**Switch to Recommended Model** (Alt+H), beside Show Recommended Model. It
+sets the window's `chosen` to D-22's recommendation and closes with OK,
+exactly as Use for Dictation does, so it changes the engine and nothing else:
+My Words, My Dictation Instructions, pauses and punctuation are untouched.
+
+- **Never a download.** A model not on this computer gets "X is not on this
+  computer yet. Download it, then switch." and focus moves to its row, so the
+  next key is Download. The sentence comes before the focus move, so the
+  message box does not cut off the row being read.
+- **Never a silent cancel.** During a download it says "A model is
+  downloading. Wait for it, or press Cancel Download first." Closing would
+  have stopped the download without a word.
+- **Always reachable.** It is enabled whenever there is advice, rather than
+  greyed out when the model is missing, so Tab always reaches it and pressing
+  it explains itself.
+- **Built in Speech Models only**, not also in Dictation Settings as 32.6
+  sketched. Dictation Settings reaches it through Better Accuracy: Speech
+  Models... (Alt+B).
+
+**The offer** (`offer_to_remove_replaced`, with `will_offer` as its
+predicate). After a switch away from a downloaded model still on this computer
+is saved, a Yes/No box captioned "Delete Old Speech Model", No by default:
+"Now using Y. Delete X to free N MB? QUILL, QUILL Lite and QUILL Transcribe
+share its files; any of them still set to X will need it downloaded again."
+Yes removes it through `model_store.remove` and says "X deleted. N MB freed.";
+a failed delete says "X could not be deleted; something may still be using
+it. Remove it in Speech Models later."
+
+- **After the save, not in the window.** In QUILL and QUILL Lite it runs from
+  `_dictation_offer_old_model` (`windows_dictation_extras.py`), called by
+  `windows_dictation_commands.py` only when Dictation Settings closed with a
+  plain OK and the settings are already saved. Speech Models' choice is only
+  provisional until that OK: offering inside Speech Models, or before the
+  save, would let a person delete the old model and then press Cancel,
+  leaving a deleted model as the saved engine. In QUILL Transcribe the choice
+  is saved at once by `_use_model` (Choose Model, or the Model Library), so
+  the offer follows it there.
+- **Not ahead of a window the person asked for.** A Dictation Settings close
+  through My Words and Phrases or another window-opening button gets no
+  question; the person is on their way somewhere.
+- **Not while the old model may be held.** Skipped while dictation is active
+  or standing by for the wake phrase (QUILL, QUILL Lite), or active
+  (Transcribe): the delete would fail on files in use. Remove in Speech Models
+  stays the route later. No question for a built-in engine, a model not on
+  this computer, or no change.
+- **It stands alone.** The question leads with "Now using Y", because it
+  arrives after the window that made the change has closed and is heard with
+  nothing before it. Transcribe skips its own "Model: Y." announcement when
+  `will_offer` says the box is coming, which would otherwise be cut off by it.
+- **Departures from 32.6.** The size is the catalogue's `disk_bytes`, the same
+  figure Speech Models shows, not a measurement of the folder. Shared files
+  are not withheld from the offer when another program still points at them:
+  nothing records which programs use which model, so the question says the
+  files are shared and what that costs, and No is the default. There is no
+  engine pack to include: every catalogue model runs on the bundled
+  sherpa-onnx runtime.
+
+**Accessibility review** (2026-10-23), in the same change:
+
+- Dictation Settings announces "Speech engine: X. Press OK to keep it." when
+  Speech Models returned a different model. Focus comes back to the Better
+  Accuracy button, not the engine list, so the change was otherwise silent,
+  and the reminder that OK keeps it is what makes the save-then-offer order
+  above discoverable.
+- Remove writes "X was removed. N MB freed." to Progress and returns focus to
+  the model list. Remove itself is disabled once the model is gone, and focus
+  left on a disabled button falls to nowhere.
+
+Tests: `test_dictation_models_dialog.py`, `test_lite_dictation.py`,
+`test_transcribe_app.py`.
+
+## 39. Measured, 2026-10-23: Nemotron live, whisper.cpp, and the benchmark gate
+
+The two measurements section 37 left open, and the gate do.md asked for. The
+full record, with every table and the method, is
+`docs/qa/dictation-live-and-whispercpp-2026-10-23.md` and its `.json`; the
+public summary is the website's `dictation-evidence.html`.
+
+**Nemotron live** (`dictbench --latency`: the real recogniser, voice detector
+and `NemotronLive` at real speed). At a normal level, live and phrase scored the
+same on FLEURS (10.0 and 10.1 percent) and live was better on the held-out
+audiobooks (4.6 against 5.3), in about 1.0 GB rather than 1.5, with text 1.1 to
+1.5 seconds after a pause at p95. Phrase mode undersold it, as suspected; and
+FLEURS as published (13.7) undersold it further, because many of its recordings
+are very quiet and Nemotron is level-sensitive (10.1 levelled). No
+recommendation changes: Nemotron stays the model for the live preview.
+
+**Quiet speech in live dictation.** At FLEURS's published levels (-50 to -68
+dBFS) the shared Silero voice detector (threshold 0.5) never reported speech for
+17 of 200 recordings, nearly all straight after a louder one, reproducibly. Every
+engine's live path goes through it. Candidate fixes: level the input before the
+detector, or an adaptive threshold for quiet input; either needs testing with
+real microphones before it ships. The guides now say a microphone set very low
+can make dictation miss speech.
+
+**whisper.cpp base** (Locked Dictation's default, `service.preferred_dictation_provider_id`):
+6.9 percent on the held-out audiobooks and 9.2 on FLEURS, against 7.4 and 10.8
+for sherpa-onnx Whisper base; about 320 MB against 820; but 0.44 per thread
+(twice sherpa-onnx's 0.22) and text 4.7 seconds after a phrase on one thread, 2.7
+on four, because it encodes a 30-second window per run. The decision this
+section 32.6 deferred ("whisper.cpp as the default ... after B-1") now has its
+data; it is not taken here.
+
+**The benchmark gate** (`scripts/dictation_speed_gate.py`, `tests/corpus/dictation`,
+`.github/workflows/dictation-benchmark.yml`). Its data half runs on every pull
+request; its model half weekly. Its first run on this machine failed Whisper
+tiny for Spanish: 5.0 times Moonshine tiny against the catalogue's 2.6, because
+Whisper's cost per second rises on short phrases (2.7 on 8.6-second recordings,
+4.3 to 4.5 on 6- to 7-second ones). Every cost factor was measured on recordings
+of about ten seconds. Re-measuring them all at dictated-sentence length is the
+coherent fix and changes at least one recommendation (the quickest Spanish
+model), so it is a decision for Jeff, not taken here; until then the weekly run
+reports it.

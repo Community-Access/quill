@@ -2,6 +2,41 @@
 
 ## Unreleased
 
+- **Switch to Recommended Model, and free the old one** (2026-10-23). Speech
+  Models (**Alt+B** in Dictation Settings) has a new button, **Switch to
+  Recommended Model** (**Alt+H**), beside Show Recommended Model. It chooses
+  the recommended model and changes nothing else; press **OK** in Dictation
+  Settings to keep it, which now says "Speech engine:" and the model's name,
+  then "Press OK to keep it." A model not on this computer yet is never
+  downloaded: you are told ("... is not on this computer yet. Download it,
+  then switch.") and taken to its row. While a download is running, it asks
+  you to wait or cancel first. After you switch away from a downloaded model
+  and press a plain **OK**, a question titled **Delete Old Speech Model**
+  offers to delete it, with No as the default: "Now using ... Delete ... to
+  free ...?" It says that QUILL, QUILL Lite and QUILL Transcribe share the
+  files. Yes deletes them and says how much space was freed. It is not asked
+  while dictation is running or waiting for the wake phrase, for a built-in
+  engine, or when you left Dictation Settings with a button that opens
+  another window. **Remove** now puts the space freed in the Progress box,
+  and focus goes back to the list. QUILL and QUILL Transcribe are the same.
+- **A better Spanish model, said once** (2026-10-23). The built-in Whisper,
+  the only Spanish model that comes with QUILL Lite, got 30.5 percent of words
+  wrong on FLEURS Spanish and 27.0 on Spanish audiobooks; NVIDIA Parakeet TDT
+  0.6B v3 got 4.4 and 7.3. The first time you dictate in Spanish on a computer
+  that can run Parakeet TDT v3 (in practice 8 GB of memory and four cores),
+  while your Spanish would go to the built-in Whisper, dictation says one
+  sentence: "For Spanish, NVIDIA Parakeet TDT 0.6B v3 gets about 6 percent of
+  words wrong, against 29 for the built-in model. It is a 670 MB download in
+  the model list." (or "It is already downloaded; choose it in the model
+  list."). Nothing is downloaded or switched, a 4 GB computer hears nothing,
+  and it is said once across every QuillVille program. At most one start
+  sentence is said each time: a downloaded model that gave way to the built-in
+  one, then a removed model, then this. QUILL and QUILL Transcribe are the
+  same.
+- **Moonshine base no longer loses a word where long phrases are cut**
+  (2026-10-23). The pieces a long phrase is heard in now overlap by half a
+  second, and the repeated word is dropped, so a word that fell on a cut is no
+  longer lost (one was, in the 12-second check).
 - **Speech model advice from real speech** (2026-10-22). Every dictation
   model was tested on recordings of real people, including public-domain
   audiobooks catalogued after every model was trained, and the
@@ -20,16 +55,20 @@
   1 GB), and never more than is free when you ask, less half a gigabyte.
 - **Tiers follow real speed** (2026-10-22). Parakeet TDT v3, Parakeet Unified
   and Whisper base.en are now Lightweight; Nemotron is Balanced.
-- **Five speech models are being retired** (2026-10-22). Distil-Whisper
-  small.en, Whisper small.en, Distil-Whisper medium.en, Whisper medium.en and
-  Distil-Whisper large-v3. NVIDIA Parakeet Unified 0.6B beat each of them on
-  accuracy and speed, in the same memory or less. Each one's line in the model
-  list starts "Being retired, use NVIDIA Parakeet Unified 0.6B instead." The
-  first time dictation starts on one, it says so once, in one short
-  sentence, across every QuillVille program; the measured reason is in that
-  model's details in the list. They keep working until the
-  next feature release; nothing is switched or deleted, and they are never
-  recommended.
+- **Five speech models are removed** (2026-10-22). Distil-Whisper small.en,
+  Whisper small.en, Distil-Whisper medium.en, Whisper medium.en and
+  Distil-Whisper large-v3. On the held-out audiobooks NVIDIA Parakeet Unified
+  0.6B got 3.2 percent of words wrong, against 3.6 to 6.3 for these five, and
+  was faster on one thread, in the same or a smaller memory tier. Whisper base.en and
+  every many-language Whisper size stay. If you used one, dictation switches
+  to Parakeet Unified if it is already downloaded, or to the built-in model if
+  not; nothing is downloaded. The next time dictation starts it says so in one
+  sentence, once across every QuillVille program. Downloaded files are not
+  deleted: they stay in `%LOCALAPPDATA%\QuillVille\Dictation\models` (in a
+  portable copy, `data\dictation\models`), in folders named
+  whisper-small.en-int8, whisper-distil-small.en-int8, whisper-medium.en-int8,
+  whisper-distil-medium.en-int8 and whisper-distil-large-v3-int8. Delete the
+  folder to free the space.
 - **Moonshine base no longer loses long sentences** (2026-10-22). With the
   Moonshine base speech model, a phrase longer than about eight and a half
   seconds was written as nothing at all. Long phrases are now heard in pieces

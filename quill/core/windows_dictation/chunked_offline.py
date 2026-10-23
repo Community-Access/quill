@@ -14,7 +14,14 @@ rest of dictation uses (``create_stream`` / ``accept_waveform`` /
 ``decode_stream`` / ``result.text``). A phrase no longer than the model's limit
 goes straight through. A longer one is cut into nearly equal pieces under the
 limit, each cut moved to the quietest moment near it so a word is rarely split,
-each piece is recognised on its own, and the words are joined with a space.
+and each piece is recognised on its own.
+
+**The seams.** A cut that still lands on a word lost it: the 12-second check
+dropped one word at each cut. So every piece reaches :data:`_OVERLAP_SECONDS`
+past its cut on both sides, a word near the cut is heard twice, and
+:func:`join_overlapping` drops the repeat -- keeping the later piece's copy,
+which heard what came after it. Where the two pieces agree on nothing, the
+words are joined with a space, as before.
 
 wx-free; numpy is imported where the audio is.
 """
@@ -23,13 +30,17 @@ from __future__ import annotations
 
 from typing import Any
 
-__all__ = ["ChunkedOffline", "split_points"]
+__all__ = ["ChunkedOffline", "join_overlapping", "split_points"]
 
 RATE = 16_000
 #: How far back from a planned cut to look for the quietest moment.
 _SEARCH_SECONDS = 1.5
 #: The frame quietness is measured over (20 ms).
 _FRAME = RATE // 50
+#: How far each piece reaches past its cut, both ways: about one spoken word.
+_OVERLAP_SECONDS = 0.5
+#: The most words a seam is searched for a repeat.
+_MAX_REPEAT = 4
 
 
 class _Result:
@@ -86,12 +97,42 @@ def split_points(audio: Any, max_samples: int) -> list[int]:
     return cuts
 
 
+def _bare(word: str) -> str:
+    return "".join(ch for ch in word.casefold() if ch.isalnum())
+
+
+def join_overlapping(texts: list[str]) -> str:
+    """The pieces' words in order, each seam's repeat said once.
+
+    A seam's repeat is the longest run (up to :data:`_MAX_REPEAT` words) that
+    ends one piece and starts the next, compared without capitals or marks;
+    the earlier copy is dropped.
+    """
+    words: list[str] = []
+    for text in texts:
+        incoming = text.split()
+        if not incoming:
+            continue
+        bare_end = [_bare(w) for w in words[-_MAX_REPEAT:]]
+        bare_start = [_bare(w) for w in incoming[:_MAX_REPEAT]]
+        repeat = 0
+        for size in range(min(len(bare_end), len(bare_start)), 0, -1):
+            if bare_end[-size:] == bare_start[:size] and any(bare_start[:size]):
+                repeat = size
+                break
+        if repeat:
+            del words[-repeat:]
+        words.extend(incoming)
+    return " ".join(words)
+
+
 class ChunkedOffline:
     """*recognizer*, given at most *max_seconds* of a phrase at a time."""
 
     def __init__(self, recognizer: Any, max_seconds: float) -> None:
         self._recognizer = recognizer
         self._max_samples = int(RATE * max_seconds)
+        self._overlap = int(RATE * _OVERLAP_SECONDS)
 
     def create_stream(self) -> _HeldPhrase:
         return _HeldPhrase()
@@ -111,6 +152,15 @@ class ChunkedOffline:
         import numpy as np
 
         audio = np.concatenate(phrase.parts)
-        bounds = [0, *split_points(audio, self._max_samples), len(audio)]
-        words = [self._hear(audio[a:b]) for a, b in zip(bounds, bounds[1:], strict=False)]
-        phrase.result = _Result(" ".join(word for word in words if word))
+        total, reach = len(audio), self._overlap
+        if total <= self._max_samples:
+            phrase.result = _Result(self._hear(audio))
+            return
+        # Cuts planned two overlaps short, so a middle piece with an overlap on
+        # each side still fits the limit.
+        bounds = [0, *split_points(audio, self._max_samples - 2 * reach), total]
+        texts = [
+            self._hear(audio[max(0, a - reach) : min(total, b + reach)])
+            for a, b in zip(bounds, bounds[1:], strict=False)
+        ]
+        phrase.result = _Result(join_overlapping(texts))

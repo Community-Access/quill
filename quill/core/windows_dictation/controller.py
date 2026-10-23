@@ -77,8 +77,8 @@ from quill.core.windows_dictation.profile_mixin import ProfileMixin
 from quill.core.windows_dictation.readback import spoken_marks
 from quill.core.windows_dictation.rescue_mixin import RecentPhrases
 from quill.core.windows_dictation.resilience import ResilienceMixin, engine_failure_message
-from quill.core.windows_dictation.retiring import take_notice
 from quill.core.windows_dictation.self_repair import self_repair
+from quill.core.windows_dictation.start_notices import start_notice
 from quill.core.windows_dictation.target_hold import TargetHoldMixin
 from quill.core.windows_dictation.transcript import TranscriptMixin
 from quill.core.windows_dictation.vocabulary import Command
@@ -319,12 +319,9 @@ class DictationController(
             self._fail(f"Dictation could not start: {error}", preferences)
             return False
         self._recognizer = recognizer
-        # A downloaded model that gave way to the built-in engine: never silently.
-        notice = str(getattr(recognizer, "fallback_notice", "") or "")
-        if notice:
+        # A model that gave way, one removed, or a better Spanish one (start_notices.py).
+        if notice := start_notice(recognizer, preferences):
             self._say(notice)
-        elif retiring := take_notice(str(getattr(preferences, "engine", "") or "")):
-            self._say(retiring)  # a model being retired, said once (retiring.py)
         return True
 
     # -- recogniser events ------------------------------------------------ #

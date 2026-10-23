@@ -9,7 +9,12 @@ from types import SimpleNamespace
 
 import pytest
 
-from quill.core.windows_dictation.chunked_offline import RATE, ChunkedOffline, split_points
+from quill.core.windows_dictation.chunked_offline import (
+    RATE,
+    ChunkedOffline,
+    join_overlapping,
+    split_points,
+)
 
 
 class _ShortOnly:
@@ -75,13 +80,13 @@ def test_a_long_phrase_is_no_longer_lost() -> None:
     inner.decode_stream(plain)
     assert plain.result.text == ""  # the bug, as Moonshine base had it
 
-    engine = ChunkedOffline(_ShortOnly(), 8.0)
+    engine = ChunkedOffline(_Words(), 8.0)
     phrase = engine.create_stream()
-    phrase.accept_waveform(RATE, _speech(6.0))
-    phrase.accept_waveform(RATE, _speech(6.0))  # audio may arrive in parts
+    audio = _numbered_words(12.0)
+    phrase.accept_waveform(RATE, audio[: 6 * RATE])
+    phrase.accept_waveform(RATE, audio[6 * RATE :])  # audio may arrive in parts
     engine.decode_stream(phrase)
-    assert phrase.result.text.count("word") >= 10
-    assert "  " not in phrase.result.text
+    assert phrase.result.text.split() == [f"w{n}" for n in range(1, 25)]
 
 
 def test_an_empty_phrase_is_empty_and_the_rate_is_checked() -> None:
@@ -117,3 +122,78 @@ def test_the_loader_wraps_moonshine_base(monkeypatch: pytest.MonkeyPatch) -> Non
     )
     assert isinstance(engine, ChunkedOffline)
     assert made and made[0]["provider"] == "cpu"
+
+
+# -- the seams: one word was lost at each cut (2026-10-23) ---------------------
+
+
+class _Words:
+    """A recogniser that hears word *n* wherever the audio holds the value
+    ``n / 1000`` (the first sample of each word), and only whole words: one cut
+    through a word loses it, the way Moonshine base did."""
+
+    def __init__(self) -> None:
+        self.lengths: list[float] = []
+
+    def create_stream(self) -> SimpleNamespace:
+        stream = SimpleNamespace(samples=None, result=SimpleNamespace(text=""))
+        stream.accept_waveform = lambda rate, s: setattr(stream, "samples", s)
+        return stream
+
+    def decode_stream(self, stream: SimpleNamespace) -> None:
+        samples = stream.samples
+        self.lengths.append(len(samples) / RATE)
+        heard = []
+        for start in range(0, len(samples) - RATE // 2 + 1):
+            marker = round(float(samples[start]) * 1000)
+            if marker and (start == 0 or samples[start - 1] != samples[start]):
+                if (
+                    start + RATE // 2 <= len(samples)
+                    and samples[start + RATE // 2 - 1] == samples[start]
+                ):
+                    heard.append(f"w{marker}")
+        stream.result = SimpleNamespace(text=" ".join(heard))
+
+
+def _numbered_words(seconds: float) -> object:
+    """Half-second words, w1, w2 ..., each its own constant value."""
+    np = pytest.importorskip("numpy")
+    audio = np.zeros(int(RATE * seconds), dtype=np.float32)
+    for index, start in enumerate(range(0, len(audio) - RATE // 2 + 1, RATE // 2), 1):
+        audio[start : start + RATE // 2] = index / 1000
+    return audio
+
+
+def test_a_word_on_a_cut_is_written_once() -> None:
+    inner = _Words()
+    engine = ChunkedOffline(inner, 8.0)
+    phrase = engine.create_stream()
+    phrase.accept_waveform(RATE, _numbered_words(12.0))
+    engine.decode_stream(phrase)
+    expected = " ".join(f"w{n}" for n in range(1, 25))
+    assert phrase.result.text == expected
+    assert max(inner.lengths) <= 8.0
+
+
+@pytest.mark.parametrize("seconds", [8.01, 12.0, 16.0, 20.0, 47.3])
+def test_overlapped_pieces_never_run_over_the_limit(seconds: float) -> None:
+    inner = _ShortOnly()
+    engine = ChunkedOffline(inner, 8.0)
+    phrase = engine.create_stream()
+    phrase.accept_waveform(RATE, _speech(seconds))
+    engine.decode_stream(phrase)
+    assert inner.lengths and max(inner.lengths) <= 8.0
+
+
+@pytest.mark.parametrize(
+    ("pieces", "joined"),
+    [
+        (["the cat sat on", "on the mat"], "the cat sat on the mat"),
+        (["it was Thursday.", "Thursday, and then"], "it was Thursday, and then"),
+        (["one two", "three four"], "one two three four"),
+        (["", "only this"], "only this"),
+        (["a b c d e", "b c d e f"], "a b c d e f"),
+    ],
+)
+def test_a_seams_repeat_is_said_once(pieces: list[str], joined: str) -> None:
+    assert join_overlapping(pieces) == joined

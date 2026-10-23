@@ -1,0 +1,6 @@
+lv19588-lv19588-016-012.wav: read by Victoria Alice Bell for LibriVox project 19588; book text from ebook 43596
+lv19800-lv19800-001-005.wav: read by redrun for LibriVox project 19800; book text from ebook 70236
+lv20599-lv20599-034-011.wav: read by David Granville Young for LibriVox project 20599; book text from ebook 60177
+lv20687-lv20687-008-016.wav: read by ToddHW for LibriVox project 20687; book text from ebook 73838
+lv20762-lv20762-002-005.wav: read by Tom Shoesmith for LibriVox project 20762; book text from ebook 56907
+lv20848-lv20848-004-007.wav: read by Cbteddy for LibriVox project 20848; book text from ebook 5143

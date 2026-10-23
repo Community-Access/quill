@@ -57,13 +57,49 @@ with 8 GB of memory and four cores it names NVIDIA Parakeet Unified 0.6B,
 which got 3.2 percent of words wrong on audiobooks no model was trained on,
 against 6.5 for the built-in Moonshine. For Spanish on 8 GB it names NVIDIA
 Parakeet TDT 0.6B v3: 4.4 percent wrong, against 30.5 for the built-in
-Whisper. On 4 GB the built-in models are still the advice. Five English-only
-models are being retired (Distil-Whisper small.en, Whisper small.en,
-Distil-Whisper medium.en, Whisper medium.en and Distil-Whisper large-v3):
-they keep working until the next feature release, nothing is switched or
-deleted, and you are told once. Moonshine base no longer drops phrases
-longer than about eight and a half seconds. See "How we chose: tested on real
-speech" and "Models being retired".
+Whisper. On 4 GB the built-in models are still the advice. Moonshine base no
+longer drops phrases longer than about eight and a half seconds, and no
+longer loses a word where a long phrase is cut: the pieces overlap by half a
+second. See "How we chose: tested on real speech".
+
+**A better Spanish model, said once.** The first time you dictate in Spanish
+on a computer that can run Parakeet TDT v3 (in practice, 8 GB of memory and
+four cores), while your Spanish would go to the built-in Whisper, you hear
+one sentence. For example: "For Spanish, NVIDIA Parakeet TDT 0.6B v3 gets
+about 6 percent of words wrong, against 29 for the built-in model. It is a
+670 MB download in the model list." Nothing is downloaded or changed. You
+hear it once across every QuillVille program, and a computer with 4 GB hears
+nothing. See "Dictating in Spanish".
+
+**Switch to Recommended Model, and free the old one.** The Model Library
+(**Ctrl+L**) has a new button, **Switch to Recommended Model** (**Alt+H**).
+It makes the recommended model your model and changes nothing else. If the
+model is not on this computer yet, nothing is downloaded: you are told, and
+taken to its row so you can download it first. When you move away from a
+downloaded model, in Choose Model or the Model Library, a question offers to
+delete the old one. For example: "Now using NVIDIA Parakeet Unified 0.6B.
+Delete Whisper medium to free 946 MB?" No is the default, and the question
+says that QUILL, QUILL Lite and QUILL Transcribe share its files. It is not
+asked while dictation is running. **Remove** now says how much space was
+freed. See "The recommendation" and "The Model Library".
+
+**Removed: five English-only models.** Distil-Whisper small.en, Whisper
+small.en, Distil-Whisper medium.en, Whisper medium.en and Distil-Whisper
+large-v3 are no longer offered. Whisper base.en and every Whisper model
+without ".en" in its name stay. On real recordings, NVIDIA Parakeet Unified
+0.6B got 3.2 percent of words wrong on the held-out audiobooks, against 3.6
+to 6.3 for these five. It also ran faster on one processor thread, in the
+same or a smaller memory tier. If one of them was your model, it becomes Parakeet
+Unified if you have already downloaded it, and otherwise the built-in model.
+Nothing is downloaded, and you are told once, the next time dictation starts.
+The downloaded files are not deleted: they stay in
+`%LOCALAPPDATA%\QuillVille\Dictation\models` (in a portable copy,
+`data\dictation\models` inside the portable folder), in a folder named
+`whisper-small.en-int8`, `whisper-distil-small.en-int8`,
+`whisper-medium.en-int8`, `whisper-distil-medium.en-int8` or
+`whisper-distil-large-v3-int8`. Delete that folder to free the space. To use
+Parakeet Unified, open the Model Library (**Ctrl+L**), download it, and press
+**Use for Dictation** (**Alt+U**). See "Models removed in October 2026".
 
 **Practice.** **Practice Dictation** (**Ctrl+Shift+P**) has a field of its
 own and a recognition test, and **Help > Tutorials...** (**Ctrl+Alt+F1**)
@@ -115,9 +151,8 @@ with what matters: whether it runs on your computer or sends your speech over
 the internet, its tier (Lightweight, Balanced or High accuracy), which
 languages it knows, and whether it is downloaded. **Recommended for this
 computer** names the model that suits your computer, and why, from our tests
-with real recordings. Fifteen larger models, from 141 MB to 1.8 GB, download
-from the Model Library (Ctrl+L) only when you ask; five of them are being
-retired, and say so first in their line.
+with real recordings. Ten larger models, from 141 MB to 1.8 GB, download
+from the Model Library (Ctrl+L) only when you ask.
 
 The one you choose is the one that runs. If it cannot run, you are told, and
 nothing else is quietly used instead. Use the Built-in Model This Time (Ctrl+B)

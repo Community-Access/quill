@@ -2,7 +2,147 @@
 
 ## 1.0.0
 
-### Dictation advice from real speech: Parakeet recommended, five English-only models retiring (2026-10-22)
+### Dictation measured live and with whisper.cpp; a benchmark gate; a public evidence page (2026-10-23)
+
+The two measurements the 2026-10-22 run left open, in
+`docs/qa/dictation-live-and-whispercpp-2026-10-23.md` (and `.json`) and section
+39 of the dictation plan. No recommendation changed.
+
+- **Nemotron live** (`dictbench --latency`, the real recogniser and
+  `NemotronLive`): 4.6 percent of words wrong on the held-out audiobooks against
+  5.3 by phrase, and 10.0 against 10.1 on FLEURS at a normal level, in about 1.0
+  GB rather than 1.5, with text 1.1 to 1.5 seconds after a pause at p95.
+- **Quiet speech:** at FLEURS's published levels (-50 to -68 dBFS) the shared
+  Silero voice detector never reported speech for 17 of 200 recordings, mostly
+  straight after a louder one, reproducibly, so live dictation wrote nothing for
+  them. Not yet fixed; the QUILL, QUILL Lite and QUILL Transcribe guides and the
+  website now say that a microphone set very low can make dictation miss speech.
+- **whisper.cpp** in dictbench (`--engine whispercpp:MODEL`,
+  `scripts/bench_whispercpp.py`), run as QUILL runs it. Base, Locked
+  Dictation's default: 6.9 percent on the held-out audiobooks and 9.2 on FLEURS
+  (sherpa-onnx Whisper base: 7.4 and 10.8), about 320 MB (821), but 0.44 per
+  thread (0.22) and text 4.7 seconds after a phrase on one thread, 2.7 on four.
+- **A benchmark gate:** `scripts/dictation_speed_gate.py`, ten LibriVox
+  recordings in `tests/corpus/dictation`, `test_dictation_speed_gate.py` (the
+  advice keeps to its budget on 72 computers, both languages, every priority:
+  every PR) and the weekly `dictation-benchmark.yml` (every recommendable model
+  on the recordings, against Moonshine tiny on the same runner). Its first run
+  found Whisper tiny costs about 4.5 times Moonshine tiny on 6- to 7-second
+  phrases, against the catalogue's 2.6 from longer recordings; left for a
+  decision on re-measuring every cost at phrase length.
+- **A public evidence page**, `docs/site/dictation-evidence.html`: every
+  recommendation, the measurements, the method and the reasoning, with a
+  plain statement that results change with the room, microphone, voice and
+  computer. Reviewed for accessibility; the site navigation now marks the
+  current page visibly as well as for screen readers.
+
+### Speech Models: Switch to Recommended Model, and an offer to free the old one (2026-10-23)
+
+The shared Speech Models window (`quill/ui/dictation_models_dialog.py`; QUILL
+and QUILL Lite through Dictation Settings > Better Accuracy: Speech Models...,
+QUILL Transcribe as the Model Library) gains **Switch to Recommended Model**
+(Alt+H), beside Show Recommended Model. It sets `chosen` to the
+recommendation and closes with OK, changing nothing but the engine. It is
+enabled whenever there is advice, so Tab always reaches it. A model not yet on
+this computer is never downloaded: "X is not on this computer yet. Download
+it, then switch.", then focus moves to its row. During a download it says "A
+model is downloading. Wait for it, or press Cancel Download first." rather
+than closing, which would stop the download silently.
+
+- **The offer.** New `offer_to_remove_replaced` and `will_offer`: after a
+  switch away from a downloaded model still on this computer is saved, a
+  Yes/No box captioned "Delete Old Speech Model", No by default: "Now using
+  Y. Delete X to free N MB? QUILL, QUILL Lite and QUILL Transcribe share its
+  files; any of them still set to X will need it downloaded again." Yes calls
+  `model_store.remove` and announces "X deleted. N MB freed."; a failed
+  delete says "X could not be deleted; something may still be using it.
+  Remove it in Speech Models later."
+- **Where it runs.** QUILL and QUILL Lite: `_dictation_offer_old_model`
+  (`windows_dictation_extras.py`), called from `windows_dictation_commands.py`
+  only on a plain `wx.ID_OK`, after the settings are saved, so a Cancel never
+  leaves a deleted model saved, and never ahead of a window the person asked
+  for (My Words and Phrases, instructions). Skipped while dictation is active
+  or standing by for the wake phrase. QUILL Transcribe: `_use_model`
+  (`transcribe_commands.py`), after Choose Model or the Model Library, skipped
+  while dictation is active; when the box will be shown, the "Model: ..."
+  announcement is skipped, because the question already leads with "Now
+  using".
+- **Accessibility review (2026-10-23).** Dictation Settings announces
+  "Speech engine: X. Press OK to keep it." when Speech Models chose a model
+  (`windows_dictation_dialog.py`), because focus does not return to the
+  engine list, so the change was silent. Remove now writes "X was removed. N MB
+  freed." to Progress and returns focus to the model list instead of its
+  now-disabled button.
+- `windows_dictation_commands.py` budget 600 -> 603. Tests:
+  `test_dictation_models_dialog.py`, `test_lite_dictation.py`,
+  `test_transcribe_app.py`. F1 help reference regenerated. Dictation plan
+  section 38.
+
+### Dictation suggests Parakeet TDT v3 once for Spanish, on a computer that can run it (2026-10-23)
+
+The only Spanish model in the installers is the built-in Whisper tiny: 30.5
+percent of words wrong on FLEURS Spanish and 27.0 on the Spanish audiobooks.
+Parakeet TDT v3 gets 4.4 and 7.3. New `windows_dictation/spanish_tip.py`: the
+first time dictation starts in Spanish on a computer whose own Spanish
+recommendation (`model_advice.for_this_computer("es")`) is a download, while
+the Spanish would go to Whisper tiny (the built-in engines, or an English-only
+download), dictation says one sentence, for example "For Spanish, NVIDIA
+Parakeet TDT 0.6B v3 gets about 6 percent of words wrong, against 29 for the
+built-in model. It is a 670 MB download in the model list." (or "It is
+already downloaded; choose it in the model list."). Nothing is downloaded or
+switched; a 4 GB computer hears nothing.
+
+- Said once across the family, recorded in `spanish-tip.json` beside the
+  shared dictation settings when it is said. QUILL, QUILL Lite and QUILL
+  Transcribe all get it through the shared controller.
+- New `windows_dictation/start_notices.py`: at most one start sentence each
+  time, in this order: a downloaded model that gave way to the built-in one; a
+  removed model; the Spanish tip. A waiting one is said at a later start.
+- Chosen (Jeff, 2026-10-23) over shipping Whisper base in place of tiny (12.6
+  and 16.1 percent, about 820 MB peak), which would have made every installer
+  bigger and still left Spanish about three times worse than the download.
+  Dictation plan section 38.
+- Persistence audit: the record is classified as a marker. Tests:
+  `test_dictation_spanish_tip.py`.
+
+### Moonshine base no longer loses a word at each cut (2026-10-23)
+
+The long-phrase fix below cut a phrase over about 8 seconds into pieces, and a
+cut that landed on a word lost that word (one in the 12-second check). In
+`windows_dictation/chunked_offline.py` each piece now overlaps its neighbour by
+half a second (`_OVERLAP_SECONDS`), so a word at the cut is heard twice, and
+`join_overlapping` drops the repeat, keeping the later piece's copy. No word is
+lost at a cut. Tests: `test_dictation_chunked_offline.py`.
+
+### Removed: five English-only dictation models (2026-10-22)
+
+Distil-Whisper small.en, Whisper small.en, Distil-Whisper medium.en, Whisper
+medium.en and Distil-Whisper large-v3 are gone from the shared catalogue in
+this release, not one release later as the deprecation entry below first
+planned (Jeff's decision, recorded in dictation plan section 37, which notes
+the one-time exception to section 32.6's notice period). Parakeet Unified got
+3.2 percent of words wrong on the held-out audiobooks against 3.6 to 6.3 for
+these, and was faster, in the same or a smaller memory tier.
+
+- `windows_dictation/retiring.py` is now `removed_models.py`: `REMOVED`
+  records each id, name and folder. The catalogue rows, `FILE_RANK` entries,
+  `model_catalog._with_retiring_notes`, the `model_advice` filter and
+  Transcribe's retiring note are gone.
+- Someone who was using one: `engines.coerce_engine` moves the saved choice to
+  Parakeet Unified when it is already downloaded, otherwise to the built-in
+  model; nothing is downloaded. The change is recorded when it is made
+  (`removed-model-notices.json` beside `family_dictation.json`) and said once
+  across the family at the next dictation start, for example "Whisper small.en
+  was removed in this release, so dictation uses the built-in model. Parakeet
+  Unified, in the model list, is more accurate."
+- No file is deleted: the old model's folder stays under
+  `%LOCALAPPDATA%\QuillVille\Dictation\models` (`whisper-small.en-int8` and
+  so on) until the person removes it.
+- Persistence audit: the notice record is classified as a marker.
+- Tests: `test_dictation_removed_models.py`; tests that used Whisper small.en
+  as "an English-only Whisper" now use base.en.
+
+### Dictation advice from real speech: Parakeet recommended, five English-only models retiring, since removed (2026-10-22)
 
 Every dictation model in the shared catalogue was benchmarked on real
 recordings (`docs/qa/dictation-real-speech-benchmark-2026-10-22.md`, its
@@ -23,8 +163,8 @@ recordings (`docs/qa/dictation-real-speech-benchmark-2026-10-22.md`, its
   accuracy and speed in the same or a smaller memory tier. Their list line
   says so (`model_catalog._with_retiring_notes`), the recommendation never
   names them, and the controller says the measured reason once across the
-  family (`retiring-notices.json` beside `family_dictation.json`). Nothing is
-  switched or deleted; removal no earlier than the next feature release.
+  family (`retiring-notices.json` beside `family_dictation.json`). Superseded
+  the same day: the five were removed in this release (entry above).
 - Tests: `test_dictation_retiring.py`, and the advice, catalogue, dialog and
   Transcribe tests re-pinned to the decided recommendations.
 

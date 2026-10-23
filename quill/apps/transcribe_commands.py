@@ -114,8 +114,17 @@ class TranscribeCommandsMixin:
                 **self._settings.dictation,
                 "windows_dictation_openai_consent": True,
             }
+        previous = self.chosen_engine()
         self._set_dictation_field("windows_dictation_engine", engine)
-        later = " From the next time you start dictation." if self.dictation_active() else ""  # type: ignore[attr-defined]
+        from quill.ui.dictation_models_dialog import offer_to_remove_replaced, will_offer
+
+        busy = bool(self.dictation_active())  # type: ignore[attr-defined]
+        if will_offer(previous, engine, in_use=busy):
+            # The question says "Now using ..."; an announcement too would be cut off.
+            parent = (wx.GetActiveWindow() if wx.GetApp() else None) or self.frame  # type: ignore[attr-defined]
+            offer_to_remove_replaced(parent, previous, engine, self._announce)  # type: ignore[attr-defined]
+            return
+        later = " From the next time you start dictation." if busy else ""
         self._announce(f"Model: {model_name(engine)}.{later}")  # type: ignore[attr-defined]
 
     def choose_model(self) -> None:

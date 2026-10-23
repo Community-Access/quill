@@ -323,10 +323,20 @@ def cloud_line(engine_id: str) -> str:
 
 def coerce_engine(value: object) -> str:
     """The engine *value* names -- built in, or a downloadable model -- or the
-    default for anything else."""
+    default for anything else. A model removed from the catalogue becomes its
+    replacement when that is already downloaded, else the default, and the
+    change is recorded to be said at the next dictation start (removed_models)."""
     text = str(value or "").strip().lower()
     known = text in _BY_ID or downloadable(text) is not None or _cloud_engine(text) is not None
-    return text if known else DEFAULT_ENGINE
+    if known:
+        return text
+    from quill.core.windows_dictation.removed_models import noticed, replacement_for
+
+    replacement = replacement_for(text)
+    if replacement is None:
+        return DEFAULT_ENGINE
+    noticed(text, replacement)
+    return replacement or DEFAULT_ENGINE
 
 
 def is_model_engine(engine_id: str) -> bool:

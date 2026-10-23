@@ -7,9 +7,12 @@ both installers. sherpa-onnx rather than whisper.cpp: on the same recordings
 and one thread it ran Whisper base, small and medium about five times faster
 (dict.md 4.5), and it is the runtime the bundled engines already use.
 
-**English-only or many languages.** The ``.en`` models (and Distil-Whisper)
-are more accurate in English than a many-language model of the same size;
-the many-language ones also dictate Spanish.
+**English-only or many languages.** The ``.en`` models are more accurate in
+English than a many-language model of the same size; the many-language ones
+also dictate Spanish. Only base.en is left of the English-only family: small.en,
+medium.en and the three English Distil-Whisper models were removed on
+2026-10-22, because Parakeet Unified beat each of them on accuracy and speed
+in real recordings (``removed_models.py``; dictation design, sections 36-37).
 
 Pure data and wx-free.
 """
@@ -60,9 +63,7 @@ def _whisper(
 ) -> DownloadableModel:
     """A Whisper entry: the sherpa-onnx export ``<size>-encoder.int8.onnx`` etc."""
     distil = size.startswith("distil")
-    tokens = (
-        (835_554, _TOKENS_EN) if english and size != "distil-large-v3" else (816_730, _TOKENS_MULTI)
-    )
+    tokens = (835_554, _TOKENS_EN) if english else (816_730, _TOKENS_MULTI)
     return DownloadableModel(
         id=model_id,
         name=name or ("Distil-Whisper " if distil else "Whisper ") + size.removeprefix("distil-"),
@@ -139,7 +140,7 @@ WHISPER_VS_CODE: tuple[DownloadableModel, ...] = (
     ),
 )
 
-#: The rest of the family, English-only then many-language, small to large.
+#: The rest of the family: base.en, then many-language, small to large.
 WHISPER_FAMILY: tuple[DownloadableModel, ...] = (
     _whisper(
         "whisper_base_en",
@@ -157,82 +158,6 @@ WHISPER_FAMILY: tuple[DownloadableModel, ...] = (
         # Real speech, 2026-10-22 (English FLEURS run, against Moonshine tiny); was 6.8.
         cost=4.3,
         works_best_on=MODEST,
-    ),
-    _whisper(
-        "whisper_small_en",
-        "small.en",
-        english=True,
-        good_for="Good English accuracy for a capable computer.",
-        description="Whisper small, English only. About 375 MB.",
-        accuracy=_librispeech("3.1"),
-        commit="d9533f69affd85061aee349af7fea5cb2996dbbe",
-        encoder=(112_442_483, "8bdac288f369aa94ee2194059238c465ed82ea9d47ee8fa4a8c0a891873e462f"),
-        decoder=(262_223_042, "710ccf890e10f3faa15f51ec346081a2723c9f3adb6e4da81c6573a5a6f877fb"),
-        # Real speech, 2026-10-22 (English FLEURS run, against Moonshine tiny); was 24.
-        cost=14.5,
-        works_best_on=STRONG,
-    ),
-    _whisper(
-        "distil_small_en",
-        "distil-small.en",
-        english=True,
-        good_for="Whisper small's accuracy, made smaller and faster. English only.",
-        description="Hugging Face's distilled Whisper small, English only. About 299 MB.",
-        accuracy=(
-            "The Distil-Whisper model card: 12.1 percent average word errors on short "
-            f"recordings it was not trained on ({_DISTIL_CARD})."
-        ),
-        commit="0492324bca9e12a6fca0089bb846f2dd723b50d8",
-        encoder=(102_961_431, "397a76d2308c2c1ec91a4ecc12f20fede69bb17be41a1cef050993520328beca"),
-        decoder=(195_079_097, "3074092bca078786ecda9c9e88449f14e9ebde1d60be4d41de8cacda55e065e0"),
-        # Real speech, 2026-10-22 (English FLEURS run, against Moonshine tiny); was 18.
-        cost=7.9,
-        works_best_on=STRONG,
-    ),
-    _whisper(
-        "distil_medium_en",
-        "distil-medium.en",
-        english=True,
-        good_for="Close to medium's accuracy at a fraction of the work. English only.",
-        description="Hugging Face's distilled Whisper medium, English only. About 574 MB.",
-        accuracy=(
-            "The Distil-Whisper model card: 11.1 percent average word errors on short "
-            f"recordings it was not trained on ({_DISTIL_CARD})."
-        ),
-        commit="7cefcb28aa6bcb1f6946066b5fad5fea7098c99e",
-        encoder=(327_915_521, "8d80f145ebcfb1a34f6bf3d27be0f298eed4305531c8a31cf6b5d8eff266a384"),
-        decoder=(244_743_630, "d2b315f45ee321ef6f21eb08c8c24d0855d8933fbaaa3301219bf5f710ad7df2"),
-        cost=40.0,
-        works_best_on=TOO_BIG,
-    ),
-    _whisper(
-        "whisper_medium_en",
-        "medium.en",
-        english=True,
-        good_for="Best for accuracy when you can wait. English only.",
-        description="Whisper medium, English only. About 946 MB.",
-        accuracy=_librispeech("3.1"),
-        commit="251ab4521f354490e8f2c206fbd0b7f3f6b0a7ec",
-        encoder=(374_196_283, "5a8e3a36619e0b67db9320eef3152db59d4b440f5ce0212d2c162a61b750bf80"),
-        decoder=(571_055_161, "7303be339ed4e51f4ffb7ae84f3803b10cf8e67e1dcf8a98cb4d843f0dea0141"),
-        cost=56.0,
-        works_best_on=TOO_BIG,
-    ),
-    _whisper(
-        "distil_large_v3",
-        "distil-large-v3",
-        english=True,
-        good_for="Near large-v3 accuracy in English, much faster than large-v3.",
-        description="Hugging Face's distilled Whisper large-v3, English only. About 984 MB.",
-        accuracy=(
-            "The Distil-Whisper model card: 9.7 percent average word errors on short "
-            f"recordings it was not trained on, against 8.4 for large-v3 ({_DISTIL_CARD})."
-        ),
-        commit="589fe9a7ce0ca4f026841dd4ca073f8dbd09d5b8",
-        encoder=(668_147_591, "b4220a4b837a6d32d2b1e37fbe01123f511655bce92321691385728b49f5ea76"),
-        decoder=(314_871_757, "c7b673da3cda2a0ef3f97c1c26a47ed9879a387cf15a59aca907ee08eb6a6a5b"),
-        cost=75.0,
-        works_best_on=TOO_BIG,
     ),
     _whisper(
         "whisper_medium",

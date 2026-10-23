@@ -200,6 +200,9 @@ header.site .wrap {
 nav.site ul { list-style: none; display: flex; gap: 1.1rem; margin: 0; padding: 0; flex-wrap: wrap; }
 nav.site a { font-weight: 600; text-decoration: none; }
 nav.site a:hover, nav.site a:focus-visible { text-decoration: underline; }
+/* The page you are on: a screen reader says "current page"; a sighted reader
+   sees a heavier underline, which is not colour alone. */
+nav.site a[aria-current="page"] { text-decoration: underline; text-decoration-thickness: 2px; }
 
 /* Hero */
 .hero { padding: 3.5rem 0 2.5rem; }

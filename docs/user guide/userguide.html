@@ -9692,8 +9692,11 @@ in. Answer Yes. You hear “Downloading”, then every quarter of the way.
 <strong>Cancel Download</strong> (<code>Alt+L</code>) stops it, and
 pressing Download again later carries on from where it stopped.</li>
 <li>When it says the model is downloaded, press <strong>Use for
-Dictation</strong> (<code>Alt+U</code>), then <strong>OK</strong> in
-Dictation Settings.</li>
+Dictation</strong> (<code>Alt+U</code>), or <strong>Switch to
+Recommended Model</strong> (<code>Alt+H</code>), then
+<strong>OK</strong> in Dictation Settings. If Sam had downloaded another
+model before, a question offers to delete it to free its space. No is
+the default.</li>
 <li>Press <code>Ctrl+F11</code> and talk. Parakeet Unified writes each
 phrase when you pause.</li>
 </ol>
@@ -11216,6 +11219,16 @@ With Moonshine or Whisper, QUILL uses Whisper’s multilingual speech
 model, which comes with QUILL, so there is nothing to download.
 Moonshine only knows English, so in Spanish you get Whisper either
 way.</li>
+<li><strong>A better Spanish model, said once.</strong> The built-in
+Whisper gets about one word in four wrong in Spanish. If your computer
+can run NVIDIA Parakeet TDT 0.6B v3 (in practice, 8 GB of memory and
+four cores), the first time you dictate in Spanish you hear one sentence
+saying so, for example: “For Spanish, NVIDIA Parakeet TDT 0.6B v3 gets
+about 6 percent of words wrong, against 29 for the built-in model. It is
+a 670 MB download in the model list.” Nothing is downloaded or changed;
+the choice is yours. You hear it once, in whichever QuillVille program
+you dictate in first. A computer with 4 GB hears nothing, because the
+built-in model is the right one there.</li>
 <li><strong>With Windows speech recognition</strong>, Windows needs
 Spanish installed: add Spanish (Spain or Mexico) in Windows Settings,
 Time and language, Speech. If it isn’t there, dictation tells you so
@@ -11333,6 +11346,18 @@ Model</strong> (<strong>Alt+S</strong>) moves to that model in the list,
 so you can read its details and download it. Dictation Settings shows
 the same advice in one line, in the <strong>Recommended for this
 computer</strong> box under the Better Accuracy button.</p>
+<p><strong>Switch to Recommended Model</strong>
+(<strong>Alt+H</strong>), beside it, chooses the recommended model as
+your speech engine and changes nothing else: your words, instructions,
+pauses and punctuation stay as they are. Speech Models closes, and
+Dictation Settings says “Speech engine:” and the model’s name, then
+“Press OK to keep it.” Press <strong>OK</strong> there to keep it, or
+Cancel to keep the engine you had. It never downloads anything. If the
+model is not on this computer yet, you hear that it is not here yet
+(“Download it, then switch.”), and you are taken to its row in the list,
+so you can press <strong>Download…</strong> (<strong>Alt+D</strong>).
+While a model is downloading, it asks you to wait for the download or
+press <strong>Cancel Download</strong> first.</p>
 <p>The recommendation is only advice. QUILL never changes your engine by
 itself; you choose. Its figures come from our tests with real
 recordings, on one computer, and it says so: yours may differ. A
@@ -11401,7 +11426,24 @@ on that drive and tells you if there is not.</p>
 <p><strong>To remove one</strong>, choose it in Speech Models and press
 <strong>Remove</strong> (<strong>Alt+R</strong>). It frees the space for
 every program that shares it. If dictation is using it, choose another
-engine first.</p>
+engine first. The <strong>Progress</strong> box then says how much space
+was freed, and focus goes back to the list of models.</p>
+<p><strong>When you switch away from a downloaded model</strong>, QUILL
+offers to delete it. After you choose another engine and press a plain
+<strong>OK</strong> in Dictation Settings, a question titled
+<strong>Delete Old Speech Model</strong> says, for example: “Now using
+NVIDIA Parakeet Unified 0.6B. Delete Whisper medium to free 946 MB?” It
+adds that QUILL, QUILL Lite and QUILL Transcribe share the model’s
+files, so any of them still set to it will need it downloaded again. No
+is the default, so pressing Enter keeps the files. Yes deletes them, and
+you hear the model’s name, “deleted”, and the space freed. If it cannot
+be deleted, you are told that something may still be using it, and to
+remove it in Speech Models later.</p>
+<p>The question is not asked while dictation is running or waiting for
+the wake phrase (remove the old model later in Speech Models), when the
+old engine was a built-in one with nothing to delete, or when you left
+Dictation Settings with <strong>My Words and Phrases…</strong> or
+another button that opens a window.</p>
 <p><strong>Will my computer keep up?</strong> When Speech Models opens,
 it spends about two seconds timing the built-in Moonshine on this
 computer, then works out how each model should do here. The details then
@@ -11479,36 +11521,6 @@ with two cores</td>
 <td>English</td>
 </tr>
 <tr>
-<td>Whisper small.en</td>
-<td>Being retired, use NVIDIA Parakeet Unified 0.6B instead</td>
-<td>376 MB</td>
-<td>English</td>
-</tr>
-<tr>
-<td>Distil-Whisper small.en</td>
-<td>Being retired, use NVIDIA Parakeet Unified 0.6B instead</td>
-<td>299 MB</td>
-<td>English</td>
-</tr>
-<tr>
-<td>Distil-Whisper medium.en</td>
-<td>Being retired, use NVIDIA Parakeet Unified 0.6B instead</td>
-<td>573 MB</td>
-<td>English</td>
-</tr>
-<tr>
-<td>Whisper medium.en</td>
-<td>Being retired, use NVIDIA Parakeet Unified 0.6B instead</td>
-<td>946 MB</td>
-<td>English</td>
-</tr>
-<tr>
-<td>Distil-Whisper large-v3</td>
-<td>Being retired, use NVIDIA Parakeet Unified 0.6B instead</td>
-<td>984 MB</td>
-<td>English</td>
-</tr>
-<tr>
 <td>Whisper medium</td>
 <td>Many languages, when you can wait</td>
 <td>946 MB</td>
@@ -11534,42 +11546,46 @@ with two cores</td>
 </tr>
 </tbody>
 </table>
-<p><strong>English only, or many languages?</strong> The Whisper models
-ending in “.en” (and Distil-Whisper) only know English. The
-many-language ones also dictate Spanish. If you only dictate English,
-NVIDIA Parakeet Unified 0.6B made fewer mistakes than any of them in our
-tests.</p>
-<h6 id="models-being-retired">Models being retired</h6>
-<p><strong>Five English-only models are being retired:</strong>
-Distil-Whisper small.en, Whisper small.en, Distil-Whisper medium.en,
-Whisper medium.en and Distil-Whisper large-v3. In our tests with real
-recordings, NVIDIA Parakeet Unified 0.6B made fewer mistakes than each
-of them, ran faster, and needed the same memory or less.</p>
+<p><strong>English only, or many languages?</strong> The Whisper model
+ending in “.en” only knows English. The many-language ones also dictate
+Spanish. If you only dictate English, NVIDIA Parakeet Unified 0.6B made
+fewer mistakes than any of them in our tests.</p>
+<h6 id="models-removed-in-this-release">Models removed in this
+release</h6>
+<p><strong>Five English-only models were removed in this
+release:</strong> Distil-Whisper small.en, Whisper small.en,
+Distil-Whisper medium.en, Whisper medium.en and Distil-Whisper large-v3.
+In our tests with real recordings, NVIDIA Parakeet Unified 0.6B got 3.2
+percent of words wrong on the held-out audiobooks, against 3.6 to 6.3
+percent for these five. It also ran faster on one thread, in the same or
+a smaller memory tier. Whisper base.en and every many-language Whisper
+stay.</p>
 <ul>
-<li><strong>In the list</strong>, each one’s line starts “Being retired,
-use NVIDIA Parakeet Unified 0.6B instead.” The same words appear
-wherever the model is listed: Speech Models, Transcribe a Recording,
-Manage Speech Models and QUILL Transcribe.</li>
-<li><strong>Once, the first time dictation starts</strong> on one of
-them, you hear one short sentence, for example “Retiring: Whisper
-small.en. It keeps working, and nothing changes until you choose another
-model; the model list says why.” The measured reason is in that model’s
-details in the list. It is said once across every QuillVille program on
-this computer, not once in each.</li>
-<li><strong>Nothing changes until you choose.</strong> QUILL never
-switches your model and never deletes its files. It keeps working until
-the next feature release. The recommendation never names a model being
-retired.</li>
+<li><strong>If you were using one</strong>, dictation moves for you when
+you update. If Parakeet Unified is already downloaded, dictation
+switches to it. Otherwise dictation uses the built-in model. Nothing is
+downloaded.</li>
+<li><strong>The next time dictation starts</strong>, you hear one
+sentence, for example “Whisper small.en was removed in this release.
+Dictation now uses Parakeet Unified, which you already have.” or
+“Whisper small.en was removed in this release, so dictation uses the
+built-in model. Parakeet Unified, in the model list, is more accurate.”
+It is said once across every QuillVille program on this computer, not
+once in each.</li>
+<li><strong>Your downloaded files are not deleted.</strong> They stay in
+<code>%LOCALAPPDATA%\QuillVille\Dictation\models</code> (in a portable
+copy, <code>data\dictation\models</code> inside the portable folder), in
+folders named whisper-small.en-int8, whisper-distil-small.en-int8,
+whisper-medium.en-int8, whisper-distil-medium.en-int8 and
+whisper-distil-large-v3-int8. Delete the folder to free the space.</li>
 </ul>
-<p><strong>To move to another model:</strong> open Dictation Settings
-(<strong>Alt+Shift+F6</strong>), press <strong>Better Accuracy: Speech
-Models…</strong> (<strong>Alt+B</strong>), choose NVIDIA Parakeet
+<p><strong>To choose Parakeet Unified instead:</strong> open Dictation
+Settings (<strong>Alt+Shift+F6</strong>), press <strong>Better Accuracy:
+Speech Models…</strong> (<strong>Alt+B</strong>), choose NVIDIA Parakeet
 Unified 0.6B (or press <strong>Show Recommended Model</strong>,
 <strong>Alt+S</strong>), press <strong>Download…</strong>
 (<strong>Alt+D</strong>), then <strong>Use for Dictation</strong>
-(<strong>Alt+U</strong>) and <strong>OK</strong>. If you no longer want
-the old model, choose it and press <strong>Remove</strong>
-(<strong>Alt+R</strong>) to free the space.</p>
+(<strong>Alt+U</strong>) and <strong>OK</strong>.</p>
 <h6 id="how-accurate-are-they">How accurate are they?</h6>
 <p>Our own tests on real speech, which the advice uses, are in “How we
 chose: tested on real speech” below. These are the figures each model’s
@@ -11590,16 +11606,14 @@ test-clean and 3.11 percent on test-other
 <li><strong>Whisper</strong>, on LibriSpeech test-clean (OpenAI’s
 Whisper paper, Appendix D, arxiv.org/abs/2212.04356): tiny 7.6, base
 5.0, small 3.4, medium 2.9 percent; English-only tiny.en 5.6, base.en
-4.2, small.en 3.1, medium.en 3.1. On Spanish (Common Voice 9): tiny
-30.3, base 19.6, small 10.3, medium 6.9 percent. That Spanish column is
-the biggest reason to choose a larger Whisper if you dictate
-Spanish.</li>
-<li><strong>Distil-Whisper and large-v3</strong>, average over short
-recordings the models were not trained on (the Distil-Whisper model
-card, huggingface.co/distil-whisper/distil-small.en): large-v3 8.4,
-distil-large-v3 9.7, distil-medium.en 11.1, distil-small.en 12.1
-percent. OpenAI publishes no figure for large-v3-turbo; it describes it
-as much faster than large-v3 with a small drop in quality.</li>
+4.2. On Spanish (Common Voice 9): tiny 30.3, base 19.6, small 10.3,
+medium 6.9 percent. That Spanish column is the biggest reason to choose
+a larger Whisper if you dictate Spanish.</li>
+<li><strong>Whisper large-v3</strong>, average over short recordings the
+model was not trained on (the Distil-Whisper model card,
+huggingface.co/distil-whisper/distil-small.en): 8.4 percent. OpenAI
+publishes no figure for large-v3-turbo; it describes it as much faster
+than large-v3 with a small drop in quality.</li>
 <li><strong>Moonshine:</strong> base 10.07 percent against tiny’s 12.66,
 averaged over the Open ASR Leaderboard’s English test sets (Moonshine
 AI, github.com/moonshine-ai/moonshine).</li>
@@ -11646,7 +11660,7 @@ wrong (lower is better) and the most memory each model used.</p>
 <td>3.6%</td>
 <td>not run</td>
 <td>3.0 GB</td>
-<td>Being retired</td>
+<td>Removed</td>
 </tr>
 <tr>
 <td>NVIDIA Parakeet TDT 0.6B v3</td>
@@ -11660,14 +11674,14 @@ wrong (lower is better) and the most memory each model used.</p>
 <td>4.3%</td>
 <td>6.3%</td>
 <td>1.4 GB</td>
-<td>Being retired</td>
+<td>Removed</td>
 </tr>
 <tr>
 <td>Distil-Whisper large-v3</td>
 <td>4.5%</td>
 <td>not run</td>
 <td>2.0 GB</td>
-<td>Being retired</td>
+<td>Removed</td>
 </tr>
 <tr>
 <td>Whisper small</td>
@@ -11702,14 +11716,14 @@ wrong (lower is better) and the most memory each model used.</p>
 <td>5.9%</td>
 <td>7.6%</td>
 <td>1.0 GB</td>
-<td>Being retired</td>
+<td>Removed</td>
 </tr>
 <tr>
 <td>Distil-Whisper medium.en</td>
 <td>6.3%</td>
 <td>not run</td>
 <td>1.6 GB</td>
-<td>Being retired</td>
+<td>Removed</td>
 </tr>
 <tr>
 <td>Moonshine tiny (built in)</td>
@@ -11790,7 +11804,8 @@ own computer and scales these figures to it.</p>
 <p><strong>Moonshine base hears long phrases now.</strong> It used to
 write nothing at all for a phrase longer than about eight and a half
 seconds. It now hears a long phrase in pieces of 8 seconds or less, cut
-at the quietest moment, and joins them.</p>
+at the quietest moment, and joins them. The pieces overlap by half a
+second, so a word that falls on a cut is not lost.</p>
 <p>The full record is in QUILL’s source, in
 <code>docs/qa/dictation-real-speech-benchmark-2026-10-22.md</code>.</p>
 <p><strong>When the built-in model is still the better choice:</strong>
@@ -12315,6 +12330,11 @@ keep coming out wrong, a headset is the first thing to try.</li>
 Dictation Settings (<code>Alt+Shift+F6</code>) records four seconds and
 tells you how loud you were and what the engine heard. If it says you
 are quiet, move the microphone closer before you turn anything up.</li>
+<li><strong>Too quiet, and it may not hear you at all.</strong> If the
+microphone’s level is set very low, or you speak very softly or far from
+it, dictation can miss a whole sentence, especially just after something
+louder. In our tests with very quiet recordings it missed some entirely.
+Move closer, or raise the level in Windows’ sound settings.</li>
 </ul>
 <h5 id="the-room">The room</h5>
 <p>A quiet room helps more than any setting. A television, a radio or a
@@ -13179,14 +13199,11 @@ and graphics card, and what that allows. The guided offline-speech setup
 shows the same reason below the engine’s description.</li>
 <li>A larger model warns you when there is no GPU, because it will be
 slow on the CPU.</li>
-<li>With <strong>QUILL speech models</strong> chosen as the engine, a
-model being retired says so first in its line: “Being retired, use
-NVIDIA Parakeet Unified 0.6B instead.” That is Distil-Whisper small.en,
+<li>With <strong>QUILL speech models</strong> chosen as the engine, five
+English-only models are no longer in the list: Distil-Whisper small.en,
 Whisper small.en, Distil-Whisper medium.en, Whisper medium.en and
-Distil-Whisper large-v3. They keep working until the next feature
-release, and QUILL never switches or deletes them; to change, choose
-another model and press <strong>Set as Default</strong>. See “Models
-being retired”.</li>
+Distil-Whisper large-v3. They were removed in this release. See “Models
+removed in this release”.</li>
 </ul>
 <p>The tiers of the QUILL speech models come from our tests on real
 recordings; see “How we chose: tested on real speech”.</p>

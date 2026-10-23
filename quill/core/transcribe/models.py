@@ -92,17 +92,6 @@ def _openai_ready() -> bool:
         return False
 
 
-def _note(model: Any) -> str:
-    """The model's line, and for one being retired the measured reason too:
-    Choose Model's details show this line and not the description."""
-    from quill.core.windows_dictation.retiring import RETIRING
-
-    entry = RETIRING.get(model.id)
-    if entry is None:
-        return str(model.good_for)
-    return f"{model.good_for} In our tests with real recordings, {entry.evidence}"
-
-
 def model_rows() -> list[ModelRow]:
     """Every model Transcribe can use, built in first, then downloads, then OpenAI."""
     from quill.core.windows_dictation.model_advice import engine_tier
@@ -138,7 +127,7 @@ def model_rows() -> list[ModelRow]:
                 size=megabytes(model.download_bytes),
                 source=model.source,
                 licence=model.licence,
-                note=_note(model),
+                note=model.good_for,
                 tier=model.tier,
             )
         )

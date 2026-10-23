@@ -189,9 +189,7 @@ def _candidates(language: str) -> list[_Candidate]:
     ]
     if language == "es":  # a Spanish reason needs a Spanish number
         found = [c for c in found if MEASURED[c.id].word_errors_es is not None]
-    from quill.core.windows_dictation.retiring import is_retiring
-
-    return [c for c in found if not is_retiring(c.id)]  # never recommend one leaving
+    return found
 
 
 def _tiny_here(check: SpeedCheck) -> float:

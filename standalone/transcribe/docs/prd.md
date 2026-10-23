@@ -149,17 +149,24 @@ open, and what waits for a later version.
    than is free less 500 MB. Tiers: Parakeet TDT v3, Parakeet Unified and
    Whisper base.en Lightweight; Nemotron Balanced. The advice's note says the
    figures come from real recordings on one computer.
-17. **Retiring models** (after 1.0.0, 2026-10-22, dictation design record
-   section 32.6). Met. Distil-Whisper small.en, Whisper small.en,
-   Distil-Whisper medium.en, Whisper medium.en and Distil-Whisper large-v3
-   were each beaten by Parakeet Unified on the held-out audiobooks (5.9, 4.3,
-   6.3, 3.6 and 4.5 percent against 3.2), faster and in no more memory
-   (`quill/core/windows_dictation/retiring.py`). Their line in the Model
-   Library, and About this model in Choose Model, starts "Being retired, use NVIDIA Parakeet Unified
-   0.6B instead."; the reason is said once, recorded in the family's shared
-   dictation folder so it is said once across every QuillVille program; they
-   keep working until the next feature release; nothing is switched or
-   deleted; they are never recommended.
+17. **Removed models** (after 1.0.0, 2026-10-22, dictation design record
+   section 37, which replaces section 32.6's deprecate-for-one-release
+   policy). Met. Distil-Whisper small.en, Whisper small.en, Distil-Whisper
+   medium.en, Whisper medium.en and Distil-Whisper large-v3 were each beaten
+   by Parakeet Unified on the held-out audiobooks (5.9, 4.3, 6.3, 3.6 and 4.5
+   percent against 3.2), faster on one thread and in no more memory, and are
+   removed from the shared catalogue in the same release
+   (`quill/core/windows_dictation/removed_models.py`). Whisper base.en and
+   every multilingual Whisper size stay. A saved choice of one becomes
+   Parakeet Unified when that is already downloaded, otherwise the built-in
+   model (`engines.coerce_engine`); nothing is downloaded. The change is
+   recorded in the family's shared dictation folder and said once, the next
+   time dictation starts in any QuillVille program. Downloaded files are not
+   deleted: the folders (`whisper-small.en-int8`,
+   `whisper-distil-small.en-int8`, `whisper-medium.en-int8`,
+   `whisper-distil-medium.en-int8`, `whisper-distil-large-v3-int8`) stay under
+   `%LOCALAPPDATA%\QuillVille\Dictation\models` (portable:
+   `data\dictation\models`) until the person deletes them.
 18. **Moonshine base and long phrases** (after 1.0.0, 2026-10-22, PR #1683).
    Met. It returned nothing for any phrase over about 8.5 seconds; long
    phrases are now heard in pieces of 8 seconds or less, cut at the quietest
