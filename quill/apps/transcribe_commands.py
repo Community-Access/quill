@@ -121,7 +121,7 @@ class TranscribeCommandsMixin:
         busy = bool(self.dictation_active())  # type: ignore[attr-defined]
         if will_offer(previous, engine, in_use=busy):
             # The question says "Now using ..."; an announcement too would be cut off.
-            parent = wx.GetActiveWindow() or self.frame  # type: ignore[attr-defined]
+            parent = (wx.GetActiveWindow() if wx.GetApp() else None) or self.frame  # type: ignore[attr-defined]
             offer_to_remove_replaced(parent, previous, engine, self._announce)  # type: ignore[attr-defined]
             return
         later = " From the next time you start dictation." if busy else ""
