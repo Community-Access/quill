@@ -98,6 +98,20 @@ def _data_dir() -> Path:
     return paths.data_dir()
 
 
+class _VirtualRows(wx.ListCtrl):
+    """The bookmarks list: virtual, so wx asks for each row's text as it draws
+    or a screen reader reads it -- and wx asks the *list*, never its frame.
+    Before 2026-10-23 the frame's ``OnGetItemText`` was never called and every
+    row asked failed a wx assertion (on the CI runner, an access violation)."""
+
+    def __init__(self, parent: wx.Window, text_for) -> None:
+        super().__init__(parent, style=wx.LC_REPORT | wx.LC_VIRTUAL)
+        self._text_for = text_for
+
+    def OnGetItemText(self, item: int, column: int) -> str:  # noqa: N802 (wx virtual)
+        return self._text_for(item, column)
+
+
 class BeaconFrame(wx.Frame):
     def __init__(self) -> None:
         super().__init__(None, title=_TITLE, size=(1100, 720))
@@ -733,7 +747,7 @@ class BeaconFrame(wx.Frame):
         search_row.Add(self.sort_combo, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
         right_sizer.Add(search_row, 0, wx.EXPAND)
 
-        self.results = wx.ListCtrl(right, style=wx.LC_REPORT | wx.LC_VIRTUAL)
+        self.results = _VirtualRows(right, self.OnGetItemText)
         self.results.SetName(
             "Bookmarks list. Enter opens, Delete trashes, F2 edits, Ctrl+F1 announces "
             "where you are. Ctrl+Space or Shift+arrows select multiple for bulk actions."
