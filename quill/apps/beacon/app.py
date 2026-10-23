@@ -734,6 +734,9 @@ class BeaconFrame(wx.Frame):
         right_sizer.Add(search_row, 0, wx.EXPAND)
 
         self.results = wx.ListCtrl(right, style=wx.LC_REPORT | wx.LC_VIRTUAL)
+        # A virtual list asks *itself* for each row's text, never its frame: without
+        # this every row drawn or read failed a wx assertion (2026-10-23).
+        self.results.OnGetItemText = self.OnGetItemText
         self.results.SetName(
             "Bookmarks list. Enter opens, Delete trashes, F2 edits, Ctrl+F1 announces "
             "where you are. Ctrl+Space or Shift+arrows select multiple for bulk actions."

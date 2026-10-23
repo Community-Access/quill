@@ -168,8 +168,8 @@ jobs:
         # on 2026-10-12, as did test_cast_peer_windows.py's Add Podcast window, and the
         # shard then sat until the job limit. Beacon's bulk-ops frame joined them on
         # 2026-10-23: three of four main runs lost shard 4's worker on its first
-        # test, and it crashed here too until the fixture stopped selecting a row
-        # from reaching the real speech bridge. In its own
+        # test: the bookmarks list never answered wx's request for a row's text
+        # (fixed in app._VirtualRows), and kept here in case it recurs. In its own
         # process a crash fails one step quickly instead.
         if: matrix.shard == 1
         run: |
