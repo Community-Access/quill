@@ -4463,8 +4463,7 @@ wherever you choose one:
   built-in Moonshine and Whisper, Moonshine base, both Parakeet models and
   Whisper base.en.
 - **Balanced**: more work than the built-in engines; keeps up on a computer
-  with four or more cores. Nemotron, Whisper base and Distil-Whisper
-  small.en.
+  with four or more cores. Nemotron and Whisper base.
 - **High accuracy**: the fewest mistakes, for the most work; needs a capable
   computer, or patience.
 
@@ -4477,7 +4476,7 @@ why. For more, press **Better Accuracy: Speech Models...** (**Alt+B**): the
 response, or the fewest mistakes, and **Show Recommended Model** (**Alt+S**)
 moves to that model in the list so you can download it. The recommendation is
 only advice: QUILL Lite never changes your engine for you, and it never
-recommends OpenAI or a speech provider, or a model that is being retired. Its
+recommends OpenAI or a speech provider. Its
 figures come from our tests with real recordings, on one computer; yours may
 differ. "How we chose: tested on real speech", in
 "Better accuracy: optional speech models", has the numbers.
@@ -5707,20 +5706,33 @@ follow the speeds we measured on real speech. Which models are in which:
 
 - **Lightweight**: the built-in Moonshine and Whisper, Moonshine base, NVIDIA
   Parakeet TDT 0.6B v3, NVIDIA Parakeet Unified 0.6B and Whisper base.en.
-- **Balanced**: NVIDIA Nemotron, Whisper base and Distil-Whisper small.en.
-- **High accuracy**: Whisper small and small.en, Distil-Whisper medium.en and
-  large-v3, and Whisper medium, medium.en, large-v3-turbo and large-v3.
+- **Balanced**: NVIDIA Nemotron and Whisper base.
+- **High accuracy**: Whisper small, medium, large-v3-turbo and large-v3.
 
-**Five models are being retired.** Distil-Whisper small.en, Whisper small.en,
-Distil-Whisper medium.en, Whisper medium.en and Distil-Whisper large-v3 are
-all English only, and in our tests NVIDIA Parakeet Unified 0.6B beat each of
-them on accuracy and speed, in the same memory or less. Each one's line in
-the list starts "Being retired, use NVIDIA Parakeet Unified 0.6B instead."
-If you use one, the first time dictation starts with it you hear that it is
-being retired, why, and that it keeps working until the next feature
-release. That is said once across every QuillVille program, not once in each.
-Nothing is switched and nothing is deleted: it stays your engine until you
-choose another. The recommendation never names one of them.
+**Five models were removed in this release.** Distil-Whisper small.en,
+Whisper small.en, Distil-Whisper medium.en, Whisper medium.en and
+Distil-Whisper large-v3 are no longer in the list. They were all English
+only. On the held-out audiobooks, NVIDIA Parakeet Unified 0.6B got 3.2
+percent of words wrong, against 3.6 to 6.3 for these five. It was also faster
+on one thread, in the same or a smaller memory tier. Whisper base.en and every
+many-language Whisper size stay.
+
+If you were using one, dictation switches to Parakeet Unified when you update,
+if you have already downloaded it. Otherwise dictation uses the built-in
+model. Nothing is downloaded for you. The next time dictation starts, you hear
+one sentence saying so, once across every QuillVille program, not once in
+each. For example: "Whisper small.en was removed in this release. Dictation
+now uses Parakeet Unified, which you already have." Or: "Whisper small.en was
+removed in this release, so dictation uses the built-in model. Parakeet
+Unified, in the model list, is more accurate." To use Parakeet Unified, choose
+it in Speech Models, press **Download...** (**Alt+D**), then **Use for
+Dictation** (**Alt+U**).
+
+Your downloaded files are not deleted. They stay in the models folder (see
+"Where the models go" below), in folders named whisper-small.en-int8,
+whisper-distil-small.en-int8, whisper-medium.en-int8,
+whisper-distil-medium.en-int8 and whisper-distil-large-v3-int8. Delete a
+folder to free its space.
 
 **Where the models go.** One folder for QUILL, QUILL Lite, QUILL Transcribe
 and Quill Inkwell on the same computer, so a model downloaded in one is there
@@ -5771,19 +5783,13 @@ measurements, not this order.
 | Whisper base | A VS Code alternative: moderate | 161 MB | English, Spanish |
 | Whisper tiny | Built in already. Fastest and lightest, weakest accuracy | (built in) | English, Spanish |
 | Whisper base.en | Light and quick, a little better in English than base | 161 MB | English |
-| Whisper small.en | Being retired, use NVIDIA Parakeet Unified 0.6B instead. Good English accuracy for a capable computer | 376 MB | English |
-| Distil-Whisper small.en | Being retired, use NVIDIA Parakeet Unified 0.6B instead. Small's accuracy, made smaller and faster | 299 MB | English |
-| Distil-Whisper medium.en | Being retired, use NVIDIA Parakeet Unified 0.6B instead. Close to medium's accuracy at a fraction of the work | 573 MB | English |
-| Whisper medium.en | Being retired, use NVIDIA Parakeet Unified 0.6B instead. Best for accuracy when you can wait | 946 MB | English |
-| Distil-Whisper large-v3 | Being retired, use NVIDIA Parakeet Unified 0.6B instead. Near large-v3 accuracy in English, much faster | 984 MB | English |
 | Whisper medium | Best for accuracy when you can wait | 946 MB | English, Spanish |
 | Whisper large-v3-turbo | Large-v3 quality, much faster than large-v3 | 1.0 GB | English, Spanish |
 | Whisper large-v3 | The most accurate Whisper; very slow on most computers | 1.8 GB | English, Spanish |
 | Moonshine base | A light step up from the built-in Moonshine | 141 MB | English |
 
-**English only, or many languages?** The Whisper models ending in ".en" (and
-Distil-Whisper) only know English, and are a little more accurate in English
-than the many-language model of the same size. The many-language ones also
+**English only, or many languages?** Whisper base.en only knows English, and
+is a little more accurate in English than the many-language base. The many-language ones also
 dictate Spanish. If you only dictate English, NVIDIA Parakeet Unified 0.6B
 made the fewest mistakes of any model we tested that keeps up; of the Whisper
 models, base.en is the English-only one that stays.
@@ -5806,16 +5812,16 @@ reader) and the most memory used.
 | Model | Held-out audiobooks | FLEURS | Speed per thread | Peak memory | Decision |
 |---|---|---|---|---|---|
 | NVIDIA Parakeet Unified 0.6B | 3.2% | 6.3% | 0.21 | 1.2 GB | Recommended on 8 GB with four cores |
-| Whisper medium.en | 3.6% | - | 1.55 | 3.0 GB | Being retired |
+| Whisper medium.en | 3.6% | - | 1.55 | 3.0 GB | Removed |
 | NVIDIA Parakeet TDT 0.6B v3 | 3.8% | 9.0% | 0.11 | 1.1 GB | Kept; recommended on 8 GB with two cores |
-| Whisper small.en | 4.3% | 6.3% | 0.43 | 1.4 GB | Being retired |
-| Distil-Whisper large-v3 | 4.5% | - | 0.82 | 2.0 GB | Being retired |
+| Whisper small.en | 4.3% | 6.3% | 0.43 | 1.4 GB | Removed |
+| Distil-Whisper large-v3 | 4.5% | - | 0.82 | 2.0 GB | Removed |
 | Whisper small | 4.7% | - | 0.55 | 1.4 GB | Kept; many languages, needs two threads |
 | NVIDIA Nemotron 3.5 Streaming 0.6B | 5.3% | 13.7% | 0.37 | 1.5 GB | Kept; streams words while you speak |
 | Moonshine base | 5.9% | 15.1% | 0.05 | 378 MB | Kept; fixed for long phrases |
 | Whisper base.en | 5.9% | 7.4% | 0.13 | 820 MB | Kept; light, good on varied voices |
-| Distil-Whisper small.en | 5.9% | 7.6% | 0.22 | 1.0 GB | Being retired |
-| Distil-Whisper medium.en | 6.3% | - | 0.47 | 1.6 GB | Being retired |
+| Distil-Whisper small.en | 5.9% | 7.6% | 0.22 | 1.0 GB | Removed |
+| Distil-Whisper medium.en | 6.3% | - | 0.47 | 1.6 GB | Removed |
 | Moonshine tiny (built in) | 6.5% | 13.2% | 0.06 | 584 MB | Kept; the default, and the pick on 4 GB |
 | Whisper base | 7.4% | 10.8% | 0.22 | 821 MB | Kept; many languages |
 | Whisper tiny (built in) | 8.3% | 11.7% | 0.07 | 521 MB | Kept; built in |
@@ -6530,10 +6536,10 @@ earlier in this chapter). Here is how to choose:
   made the fewest mistakes in Spanish, 4.4 percent of words on FLEURS Spanish
   where the built-in Whisper tiny got 30.5. Whisper small and Nemotron were
   next. The list shows only the models that know the language you chose.
-- **Models being retired.** Distil-Whisper small.en, Whisper small.en,
-  Distil-Whisper medium.en, Whisper medium.en and Distil-Whisper large-v3
-  still work for recordings until the next feature release, and their lines
-  say "Being retired". Parakeet Unified did better than each of them.
+- **Models removed in this release.** Distil-Whisper small.en, Whisper
+  small.en, Distil-Whisper medium.en, Whisper medium.en and Distil-Whisper
+  large-v3 are no longer in the list. Parakeet Unified did better than each
+  of them.
 
 A model that is too slow for live dictation is fine for a recording: nobody is
 waiting at the end of each sentence. The estimate tells you the wait before you
@@ -6827,8 +6833,9 @@ voice down while you dictate.
   line in Dictation Settings names the one that suits your computer. On real
   speech, Parakeet made the fewest mistakes; try Nemotron if you want to
   follow your words on braille while you talk.
-- **If your model is being retired**, it keeps working until the next feature
-  release. Switch to NVIDIA Parakeet Unified 0.6B when it suits you.
+- **If your model was removed in this release**, dictation now uses Parakeet
+  Unified if you had already downloaded it, or the built-in model if not. To
+  choose Parakeet Unified, see "Better accuracy: optional speech models".
 - **Judge with your own voice.** Use one model for a day, then another, and
   keep the one that needed fewer fixes.
 

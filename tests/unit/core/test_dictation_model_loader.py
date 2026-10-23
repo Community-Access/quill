@@ -114,7 +114,7 @@ def test_each_kind_loads_through_its_factory_on_the_cpu(model_id, factory, tmp_p
 
 def test_an_english_only_whisper_is_never_asked_for_spanish(tmp_path) -> None:
     sherpa = _Sherpa()
-    model_loader.build(downloadable("whisper_small_en"), tmp_path, sherpa, language="es")
+    model_loader.build(downloadable("whisper_base_en"), tmp_path, sherpa, language="es")
     assert sherpa.calls[-1][1]["language"] == "en"
     model_loader.build(downloadable("whisper_small"), tmp_path, sherpa, language="es")
     assert sherpa.calls[-1][1]["language"] == "es"

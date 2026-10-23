@@ -244,10 +244,43 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
+<h3 id="removed-five-english-only-dictation-models-2026-10-22">Removed:
+five English-only dictation models (2026-10-22)</h3>
+<p>Distil-Whisper small.en, Whisper small.en, Distil-Whisper medium.en,
+Whisper medium.en and Distil-Whisper large-v3 are gone from the shared
+catalogue in this release, not one release later as the deprecation
+entry below first planned (Jeff’s decision, recorded in dictation plan
+section 37, which notes the one-time exception to section 32.6’s notice
+period). Parakeet Unified got 3.2 percent of words wrong on the held-out
+audiobooks against 3.6 to 6.3 for these, and was faster, in the same or
+a smaller memory tier.</p>
+<ul>
+<li><code>windows_dictation/retiring.py</code> is now
+<code>removed_models.py</code>: <code>REMOVED</code> records each id,
+name and folder. The catalogue rows, <code>FILE_RANK</code> entries,
+<code>model_catalog._with_retiring_notes</code>, the
+<code>model_advice</code> filter and Transcribe’s retiring note are
+gone.</li>
+<li>Someone who was using one: <code>engines.coerce_engine</code> moves
+the saved choice to Parakeet Unified when it is already downloaded,
+otherwise to the built-in model; nothing is downloaded. The change is
+recorded when it is made (<code>removed-model-notices.json</code> beside
+<code>family_dictation.json</code>) and said once across the family at
+the next dictation start, for example “Whisper small.en was removed in
+this release, so dictation uses the built-in model. Parakeet Unified, in
+the model list, is more accurate.”</li>
+<li>No file is deleted: the old model’s folder stays under
+<code>%LOCALAPPDATA%\QuillVille\Dictation\models</code>
+(<code>whisper-small.en-int8</code> and so on) until the person removes
+it.</li>
+<li>Persistence audit: the notice record is classified as a marker.</li>
+<li>Tests: <code>test_dictation_removed_models.py</code>; tests that
+used Whisper small.en as “an English-only Whisper” now use base.en.</li>
+</ul>
 <h3
-id="dictation-advice-from-real-speech-parakeet-recommended-five-english-only-models-retiring-2026-10-22">Dictation
+id="dictation-advice-from-real-speech-parakeet-recommended-five-english-only-models-retiring-since-removed-2026-10-22">Dictation
 advice from real speech: Parakeet recommended, five English-only models
-retiring (2026-10-22)</h3>
+retiring, since removed (2026-10-22)</h3>
 <p>Every dictation model in the shared catalogue was benchmarked on real
 recordings
 (<code>docs/qa/dictation-real-speech-benchmark-2026-10-22.md</code>, its
@@ -273,8 +306,8 @@ smaller memory tier. Their list line says so
 (<code>model_catalog._with_retiring_notes</code>), the recommendation
 never names them, and the controller says the measured reason once
 across the family (<code>retiring-notices.json</code> beside
-<code>family_dictation.json</code>). Nothing is switched or deleted;
-removal no earlier than the next feature release.</li>
+<code>family_dictation.json</code>). Superseded the same day: the five
+were removed in this release (entry above).</li>
 <li>Tests: <code>test_dictation_retiring.py</code>, and the advice,
 catalogue, dialog and Transcribe tests re-pinned to the decided
 recommendations.</li>

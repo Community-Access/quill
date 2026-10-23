@@ -5092,7 +5092,9 @@ design record.</li>
 <li><strong>Notice period: one full feature release.</strong> Deprecate
 in release N (the engine works, with the notice), and remove no earlier
 than release N+1. For an engine that is the default for some installs
-(whisper.cpp), the period is two releases.</li>
+(whisper.cpp), the period is two releases. (Set aside once, on
+2026-10-22, for five English-only models removed in the release that
+measured them: section 37 says why.)</li>
 <li><strong>Announced three ways:</strong> a “Deprecated” entry in the
 CHANGELOG and the release notes of release N, naming the replacement and
 the removal release; the one-time spoken notice above; and a line in the
@@ -5704,9 +5706,9 @@ on a cp1252 console and crashed on “ş”, so every FLEURS Spanish run had
 failed silently (#1679); the driver then decoded the UTF-8 output as
 cp1252 (#1681).</p>
 <h2
-id="37-as-built-2026-10-22-real-english-figures-real-speed-five-models-retiring">37.
+id="37-as-built-2026-10-22-real-english-figures-real-speed-five-models-removed">37.
 As built, 2026-10-22: real English figures, real speed, five models
-retiring</h2>
+removed</h2>
 <p>The English half of the real-speech run, written in as one change so
 English recommendations, Spanish recommendations and the tiers moved
 together. The full record, with every table and the method, is
@@ -5744,22 +5746,47 @@ built-in models); 8 GB four cores and up, Parakeet Unified for English
 and Parakeet TDT v3 for Spanish. “The quickest response” stays Moonshine
 tiny. Nemotron is not recommended anywhere on these numbers; it stays
 for its live preview.</p>
-<p><strong>Retiring</strong> (section 32.6 policy, applied):
-Distil-Whisper small.en, Whisper small.en, Distil-Whisper medium.en,
-Whisper medium.en and Distil-Whisper large-v3. Each was beaten by
-Parakeet Unified on the held-out audiobooks, on FLEURS where both ran
-and on noisy LibriSpeech, faster per thread, in the same or a smaller
-memory tier. <code>retiring.RETIRING</code> holds the replacement and
-the measured reason; <code>model_catalog._with_retiring_notes</code>
-puts “Being retired, use NVIDIA Parakeet Unified 0.6B instead.” first in
-each one’s line in every list; <code>model_advice</code> never names
-one; the controller says <code>retiring.notice</code> once, recorded in
-<code>retiring-notices.json</code> beside
-<code>family_dictation.json</code>, so it is said once across the
-family. Nothing is switched and nothing deleted. Remove no earlier than
-the next feature release. Kept, on the evidence: Whisper base.en (7.4
-FLEURS against Moonshine base’s 15.1, in 820 MB) and every multilingual
-Whisper size.</p>
+<p><strong>Removed in this release</strong> (decided by Jeff,
+2026-10-22): Distil-Whisper small.en, Whisper small.en, Distil-Whisper
+medium.en, Whisper medium.en and Distil-Whisper large-v3. Each was
+beaten by Parakeet Unified on the held-out audiobooks (3.2 percent
+wrong, against 3.6 to 6.3 for these), on FLEURS where both ran and on
+noisy LibriSpeech, faster per thread, in the same or a smaller memory
+tier. Kept, on the evidence: Whisper base.en (7.4 FLEURS against
+Moonshine base’s 15.1, in 820 MB) and every multilingual Whisper
+size.</p>
+<p><strong>This overrides section 32.6’s notice period</strong>
+(deprecate in release N, remove no earlier than N+1) for these five, and
+only these. The reason: a release of notice would only have kept
+offering a slower or heavier way to a worse result, and none of the five
+is a default anywhere. The policy’s other rules still hold, and the
+removal kept them: evidence first (section 36 and the benchmark record);
+announced in the CHANGELOG and every app’s release notes as “Removed”;
+and never silently, though a removed model can no longer be asked about,
+so the change is said rather than offered:</p>
+<ul>
+<li><code>removed_models.REMOVED</code> records each id, name and
+folder. The catalogue rows are gone, and with them every “Being retired”
+line, the <code>_with_retiring_notes</code> pass and the
+<code>model_advice</code> filter.</li>
+<li><code>engines.coerce_engine</code> maps a saved removed id through
+<code>removed_models.replacement_for</code>: Parakeet Unified when it is
+already downloaded, else the default engine. Nothing is downloaded.</li>
+<li>The change is recorded in <code>removed-model-notices.json</code>
+beside <code>family_dictation.json</code> when it is made
+(<code>noticed</code>), not when it is said, because the next settings
+save forgets the old id. The controller says it at the next dictation
+start (<code>take_notice</code>), once across the family: “Whisper
+small.en was removed in this release, so dictation uses the built-in
+model. Parakeet Unified, in the model list, is more accurate.” (or “…
+Dictation now uses Parakeet Unified, which you already have.”).</li>
+<li>No file is deleted: the old folder stays under the dictation models
+folder (<code>%LOCALAPPDATA%\QuillVille\Dictation\models</code>), and
+the release notes say so. The removal checklist’s other items had
+nothing to do: these were catalogue rows on the existing sherpa-onnx
+runtime, with no provider, install path, egress entry or pin of their
+own.</li>
+</ul>
 <p><strong>Still for a person:</strong> B-8 on a real 4 GB computer with
 NVDA or JAWS; ten native Spanish recordings with questions and
 exclamations (the opening marks are now scored, #1684); the

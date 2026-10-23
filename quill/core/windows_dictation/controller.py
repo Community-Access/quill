@@ -75,9 +75,9 @@ from quill.core.windows_dictation.preferences import (
 )
 from quill.core.windows_dictation.profile_mixin import ProfileMixin
 from quill.core.windows_dictation.readback import spoken_marks
+from quill.core.windows_dictation.removed_models import take_notice
 from quill.core.windows_dictation.rescue_mixin import RecentPhrases
 from quill.core.windows_dictation.resilience import ResilienceMixin, engine_failure_message
-from quill.core.windows_dictation.retiring import take_notice
 from quill.core.windows_dictation.self_repair import self_repair
 from quill.core.windows_dictation.target_hold import TargetHoldMixin
 from quill.core.windows_dictation.transcript import TranscriptMixin
@@ -323,8 +323,8 @@ class DictationController(
         notice = str(getattr(recognizer, "fallback_notice", "") or "")
         if notice:
             self._say(notice)
-        elif retiring := take_notice(str(getattr(preferences, "engine", "") or "")):
-            self._say(retiring)  # a model being retired, said once (retiring.py)
+        elif removed := take_notice():
+            self._say(removed)  # a saved model that was removed, said once (removed_models.py)
         return True
 
     # -- recogniser events ------------------------------------------------ #

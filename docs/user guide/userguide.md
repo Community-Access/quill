@@ -9372,48 +9372,46 @@ the rest of Whisper, smallest first. The order is not a ranking; for that, see
 | Whisper base | Many languages, lighter | 161 MB | English, Spanish |
 | Whisper tiny | Built in already. Fastest and lightest, weakest accuracy | (built in) | English, Spanish |
 | Whisper base.en | Light and quick, good on varied voices | 161 MB | English |
-| Whisper small.en | Being retired, use NVIDIA Parakeet Unified 0.6B instead | 376 MB | English |
-| Distil-Whisper small.en | Being retired, use NVIDIA Parakeet Unified 0.6B instead | 299 MB | English |
-| Distil-Whisper medium.en | Being retired, use NVIDIA Parakeet Unified 0.6B instead | 573 MB | English |
-| Whisper medium.en | Being retired, use NVIDIA Parakeet Unified 0.6B instead | 946 MB | English |
-| Distil-Whisper large-v3 | Being retired, use NVIDIA Parakeet Unified 0.6B instead | 984 MB | English |
 | Whisper medium | Many languages, when you can wait | 946 MB | English, Spanish |
 | Whisper large-v3-turbo | Large-v3 quality, much faster than large-v3 | 1.0 GB | English, Spanish |
 | Whisper large-v3 | The most accurate Whisper; very slow on most computers | 1.8 GB | English, Spanish |
 | Moonshine base | A light step up from the built-in Moonshine | 141 MB | English |
 
-**English only, or many languages?** The Whisper models ending in ".en" (and
-Distil-Whisper) only know English. The many-language ones also dictate
+**English only, or many languages?** The Whisper model ending in ".en" only
+knows English. The many-language ones also dictate
 Spanish. If you only dictate English, NVIDIA Parakeet Unified 0.6B made fewer
 mistakes than any of them in our tests.
 
-###### Models being retired
+###### Models removed in this release
 
-**Five English-only models are being retired:** Distil-Whisper small.en,
-Whisper small.en, Distil-Whisper medium.en, Whisper medium.en and
+**Five English-only models were removed in this release:** Distil-Whisper
+small.en, Whisper small.en, Distil-Whisper medium.en, Whisper medium.en and
 Distil-Whisper large-v3. In our tests with real recordings, NVIDIA Parakeet
-Unified 0.6B made fewer mistakes than each of them, ran faster, and needed the
-same memory or less.
+Unified 0.6B got 3.2 percent of words wrong on the held-out audiobooks, against
+3.6 to 6.3 percent for these five. It also ran faster on one thread, in the
+same or a smaller memory tier. Whisper base.en and every many-language Whisper stay.
 
-- **In the list**, each one's line starts "Being retired, use NVIDIA Parakeet
-  Unified 0.6B instead." The same words appear wherever the model is listed:
-  Speech Models, Transcribe a Recording, Manage Speech Models and QUILL
-  Transcribe.
-- **Once, the first time dictation starts** on one of them, you hear one
-  short sentence, for example "Retiring: Whisper small.en. It keeps working,
-  and nothing changes until you choose another model; the model list says
-  why." The measured reason is in that model's details in the list. It is said once across every QuillVille program on
-  this computer, not once in each.
-- **Nothing changes until you choose.** QUILL never switches your model and
-  never deletes its files. It keeps working until the next feature release.
-  The recommendation never names a model being retired.
+- **If you were using one**, dictation moves for you when you update. If
+  Parakeet Unified is already downloaded, dictation switches to it.
+  Otherwise dictation uses the built-in model. Nothing is downloaded.
+- **The next time dictation starts**, you hear one sentence, for example
+  "Whisper small.en was removed in this release. Dictation now uses Parakeet
+  Unified, which you already have." or "Whisper small.en was removed in this
+  release, so dictation uses the built-in model. Parakeet Unified, in the
+  model list, is more accurate." It is said once across every QuillVille
+  program on this computer, not once in each.
+- **Your downloaded files are not deleted.** They stay in
+  `%LOCALAPPDATA%\QuillVille\Dictation\models` (in a portable copy,
+  `data\dictation\models` inside the portable folder), in folders named
+  whisper-small.en-int8, whisper-distil-small.en-int8, whisper-medium.en-int8,
+  whisper-distil-medium.en-int8 and whisper-distil-large-v3-int8. Delete the
+  folder to free the space.
 
-**To move to another model:** open Dictation Settings (**Alt+Shift+F6**),
-press **Better Accuracy: Speech Models...** (**Alt+B**), choose NVIDIA
-Parakeet Unified 0.6B (or press **Show Recommended Model**, **Alt+S**), press
-**Download...** (**Alt+D**), then **Use for Dictation** (**Alt+U**) and **OK**.
-If you no longer want the old model, choose it and press **Remove**
-(**Alt+R**) to free the space.
+**To choose Parakeet Unified instead:** open Dictation Settings
+(**Alt+Shift+F6**), press **Better Accuracy: Speech Models...** (**Alt+B**),
+choose NVIDIA Parakeet Unified 0.6B (or press **Show Recommended Model**,
+**Alt+S**), press **Download...** (**Alt+D**), then **Use for Dictation**
+(**Alt+U**) and **OK**.
 
 ###### How accurate are they?
 
@@ -9432,16 +9430,15 @@ within one line.
   Spanish (huggingface.co/nvidia/parakeet-tdt-0.6b-v3).
 - **Whisper**, on LibriSpeech test-clean (OpenAI's Whisper paper, Appendix D,
   arxiv.org/abs/2212.04356): tiny 7.6, base 5.0, small 3.4, medium 2.9
-  percent; English-only tiny.en 5.6, base.en 4.2, small.en 3.1, medium.en 3.1.
+  percent; English-only tiny.en 5.6, base.en 4.2.
   On Spanish (Common Voice 9): tiny 30.3, base 19.6, small 10.3, medium 6.9
   percent. That Spanish column is the biggest reason to choose a larger Whisper
   if you dictate Spanish.
-- **Distil-Whisper and large-v3**, average over short recordings the models
-  were not trained on (the Distil-Whisper model card,
-  huggingface.co/distil-whisper/distil-small.en): large-v3 8.4, distil-large-v3
-  9.7, distil-medium.en 11.1, distil-small.en 12.1 percent. OpenAI publishes no
-  figure for large-v3-turbo; it describes it as much faster than large-v3 with
-  a small drop in quality.
+- **Whisper large-v3**, average over short recordings the model was not
+  trained on (the Distil-Whisper model card,
+  huggingface.co/distil-whisper/distil-small.en): 8.4 percent. OpenAI
+  publishes no figure for large-v3-turbo; it describes it as much faster than
+  large-v3 with a small drop in quality.
 - **Moonshine:** base 10.07 percent against tiny's 12.66, averaged over the
   Open ASR Leaderboard's English test sets (Moonshine AI,
   github.com/moonshine-ai/moonshine).
@@ -9470,16 +9467,16 @@ memory each model used.
 | Model | Held-out audiobooks | FLEURS | Most memory | What QUILL does with it |
 |---|---|---|---|---|
 | NVIDIA Parakeet Unified 0.6B | 3.2% | 6.3% | 1.2 GB | Recommended on 8 GB with four cores |
-| Whisper medium.en | 3.6% | not run | 3.0 GB | Being retired |
+| Whisper medium.en | 3.6% | not run | 3.0 GB | Removed |
 | NVIDIA Parakeet TDT 0.6B v3 | 3.8% | 9.0% | 1.1 GB | Kept; recommended on 8 GB with two cores |
-| Whisper small.en | 4.3% | 6.3% | 1.4 GB | Being retired |
-| Distil-Whisper large-v3 | 4.5% | not run | 2.0 GB | Being retired |
+| Whisper small.en | 4.3% | 6.3% | 1.4 GB | Removed |
+| Distil-Whisper large-v3 | 4.5% | not run | 2.0 GB | Removed |
 | Whisper small | 4.7% | not run | 1.4 GB | Kept; many languages, needs two threads |
 | NVIDIA Nemotron 3.5 Streaming 0.6B | 5.3% | 13.7% | 1.5 GB | Kept; shows words while you speak |
 | Moonshine base | 5.9% | 15.1% | 378 MB | Kept; fixed for long phrases |
 | Whisper base.en | 5.9% | 7.4% | 820 MB | Kept; light, good on varied voices |
-| Distil-Whisper small.en | 5.9% | 7.6% | 1.0 GB | Being retired |
-| Distil-Whisper medium.en | 6.3% | not run | 1.6 GB | Being retired |
+| Distil-Whisper small.en | 5.9% | 7.6% | 1.0 GB | Removed |
+| Distil-Whisper medium.en | 6.3% | not run | 1.6 GB | Removed |
 | Moonshine tiny (built in) | 6.5% | 13.2% | 584 MB | Kept; the default, and the pick on 4 GB |
 | Whisper base | 7.4% | 10.8% | 821 MB | Kept; many languages |
 | Whisper tiny (built in) | 8.3% | 11.7% | 521 MB | Kept; built in |
@@ -10808,13 +10805,10 @@ accuracy and speed, and helps you pick one that will run well on your computer.
   reason below the engine's description.
 - A larger model warns you when there is no GPU, because it will be slow on
   the CPU.
-- With **QUILL speech models** chosen as the engine, a model being retired
-  says so first in its line: "Being retired, use NVIDIA Parakeet Unified 0.6B
-  instead." That is Distil-Whisper small.en, Whisper small.en, Distil-Whisper
-  medium.en, Whisper medium.en and Distil-Whisper large-v3. They keep working
-  until the next feature release, and QUILL never switches or deletes them;
-  to change, choose another model and press **Set as Default**. See "Models
-  being retired".
+- With **QUILL speech models** chosen as the engine, five English-only models
+  are no longer in the list: Distil-Whisper small.en, Whisper small.en,
+  Distil-Whisper medium.en, Whisper medium.en and Distil-Whisper large-v3.
+  They were removed in this release. See "Models removed in this release".
 
 The tiers of the QUILL speech models come from our tests on real recordings;
 see "How we chose: tested on real speech".

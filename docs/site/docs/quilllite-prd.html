@@ -1680,7 +1680,7 @@ Lightweight, Balanced or High accuracy on every model and recommends one
 for this computer (What matters most, Alt+W); downloads are shared with
 QUILL and QUILL Transcribe. Since 2026-10-22 the advice, tiers and
 memory budgets come from real speech; see “Dictation model advice from
-real speech, and five retirements (2026-10-22)” at the end of this
+real speech, and five models removed (2026-10-22)” at the end of this
 document.</li>
 <li><strong>My Dictation Instructions</strong>
 (<code>instructions.py</code>) for Tidy Dictated Text.</li>
@@ -4810,8 +4810,8 @@ glance” carries this table in plain words, and the changelog’s
 Unreleased section has one consolidated entry for it instead of three
 written in build order.</p>
 <h2
-id="dictation-model-advice-from-real-speech-and-five-retirements-2026-10-22">Dictation
-model advice from real speech, and five retirements (2026-10-22)</h2>
+id="dictation-model-advice-from-real-speech-and-five-models-removed-2026-10-22">Dictation
+model advice from real speech, and five models removed (2026-10-22)</h2>
 <p><strong>Why.</strong> Until now the recommendation (D-22) rested on
 ten recordings of a synthetic voice, which flattered every engine: every
 model scored 3 to 5 percent. The 2026-10-22 machine run measured every
@@ -4896,18 +4896,32 @@ Parakeet TDT v3 3.2, Parakeet Unified 3.8, Whisper base.en 4.3
 table</td>
 </tr>
 <tr>
-<td>Five English-only models retired with notice, never silently</td>
-<td><code>quill/core/windows_dictation/retiring.py</code>:
+<td>Five English-only models removed in this release, with one spoken
+notice, never silently</td>
+<td><code>quill/core/windows_dictation/removed_models.py</code>:
 Distil-Whisper small.en, Whisper small.en, Distil-Whisper medium.en,
-Whisper medium.en, Distil-Whisper large-v3. The list line starts “Being
-retired, use NVIDIA Parakeet Unified 0.6B instead.”;
-<code>take_notice</code> says the measured reason once, recorded in
-<code>retiring-notices.json</code> in the family’s shared dictation
-folder, so once across every QuillVille program; the model keeps working
-until the next feature release; nothing is switched or deleted;
-<code>model_advice</code> never names one</td>
+Whisper medium.en, Distil-Whisper large-v3 are gone from the catalogue
+and the model list. Whisper base.en and every multilingual Whisper size
+stay. Someone who was using one moves to Parakeet Unified if it is
+already downloaded, otherwise to the built-in model; nothing is
+downloaded. The next time dictation starts it says one sentence, once
+across every QuillVille program (recorded in
+<code>removed-model-notices.json</code> in the family’s shared dictation
+folder): “Whisper small.en was removed in this release. Dictation now
+uses Parakeet Unified, which you already have.” or “Whisper small.en was
+removed in this release, so dictation uses the built-in model. Parakeet
+Unified, in the model list, is more accurate.” (with the model’s own
+name). Downloaded files are not deleted; they stay in the shared models
+folder (<code>whisper-small.en-int8</code>,
+<code>whisper-distil-small.en-int8</code>,
+<code>whisper-medium.en-int8</code>,
+<code>whisper-distil-medium.en-int8</code>,
+<code>whisper-distil-large-v3-int8</code>). This replaces the plan’s
+deprecate-for-one-release policy (dictation design section 32.6); the
+decision is section 37 of
+<code>docs/design/2026-10-05-dictation-plan-and-status.md</code></td>
 <td>Parakeet Unified 3.2% held-out against 5.9, 4.3, 6.3, 3.6 and 4.5;
-faster per thread in the same memory or less</td>
+faster on one thread, in the same or a smaller memory tier</td>
 </tr>
 <tr>
 <td>Moonshine base hears phrases longer than about 8.5 seconds</td>

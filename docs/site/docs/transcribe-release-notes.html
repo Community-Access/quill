@@ -299,13 +299,31 @@ NVIDIA Parakeet Unified 0.6B, which got 3.2 percent of words wrong on
 audiobooks no model was trained on, against 6.5 for the built-in
 Moonshine. For Spanish on 8 GB it names NVIDIA Parakeet TDT 0.6B v3: 4.4
 percent wrong, against 30.5 for the built-in Whisper. On 4 GB the
-built-in models are still the advice. Five English-only models are being
-retired (Distil-Whisper small.en, Whisper small.en, Distil-Whisper
-medium.en, Whisper medium.en and Distil-Whisper large-v3): they keep
-working until the next feature release, nothing is switched or deleted,
-and you are told once. Moonshine base no longer drops phrases longer
-than about eight and a half seconds. See “How we chose: tested on real
-speech” and “Models being retired”.</p>
+built-in models are still the advice. Moonshine base no longer drops
+phrases longer than about eight and a half seconds. See “How we chose:
+tested on real speech”.</p>
+<p><strong>Removed: five English-only models.</strong> Distil-Whisper
+small.en, Whisper small.en, Distil-Whisper medium.en, Whisper medium.en
+and Distil-Whisper large-v3 are no longer offered. Whisper base.en and
+every Whisper model without “.en” in its name stay. On real recordings,
+NVIDIA Parakeet Unified 0.6B got 3.2 percent of words wrong on the
+held-out audiobooks, against 3.6 to 6.3 for these five. It also ran
+faster on one processor thread, in the same or a smaller memory tier. If
+one of them was your model, it becomes Parakeet Unified if you have
+already downloaded it, and otherwise the built-in model. Nothing is
+downloaded, and you are told once, the next time dictation starts. The
+downloaded files are not deleted: they stay in
+<code>%LOCALAPPDATA%\QuillVille\Dictation\models</code> (in a portable
+copy, <code>data\dictation\models</code> inside the portable folder), in
+a folder named <code>whisper-small.en-int8</code>,
+<code>whisper-distil-small.en-int8</code>,
+<code>whisper-medium.en-int8</code>,
+<code>whisper-distil-medium.en-int8</code> or
+<code>whisper-distil-large-v3-int8</code>. Delete that folder to free
+the space. To use Parakeet Unified, open the Model Library
+(<strong>Ctrl+L</strong>), download it, and press <strong>Use for
+Dictation</strong> (<strong>Alt+U</strong>). See “Models removed in
+October 2026”.</p>
 <p><strong>Practice.</strong> <strong>Practice Dictation</strong>
 (<strong>Ctrl+Shift+P</strong>) has a field of its own and a recognition
 test, and <strong>Help &gt; Tutorials…</strong>
@@ -354,9 +372,8 @@ your computer or sends your speech over the internet, its tier
 (Lightweight, Balanced or High accuracy), which languages it knows, and
 whether it is downloaded. <strong>Recommended for this computer</strong>
 names the model that suits your computer, and why, from our tests with
-real recordings. Fifteen larger models, from 141 MB to 1.8 GB, download
-from the Model Library (Ctrl+L) only when you ask; five of them are
-being retired, and say so first in their line.</p>
+real recordings. Ten larger models, from 141 MB to 1.8 GB, download from
+the Model Library (Ctrl+L) only when you ask.</p>
 <p>The one you choose is the one that runs. If it cannot run, you are
 told, and nothing else is quietly used instead. Use the Built-in Model
 This Time (Ctrl+B) is there when you want to keep going anyway.</p>

@@ -267,16 +267,23 @@ you ask, less half a gigabyte.</p></li>
 <li><p><strong>Tiers follow real speed</strong> (2026-10-22). Parakeet
 TDT v3, Parakeet Unified and Whisper base.en are now Lightweight;
 Nemotron is Balanced.</p></li>
-<li><p><strong>Five speech models are being retired</strong>
-(2026-10-22). Distil-Whisper small.en, Whisper small.en, Distil-Whisper
-medium.en, Whisper medium.en and Distil-Whisper large-v3. NVIDIA
-Parakeet Unified 0.6B beat each of them on accuracy and speed, in the
-same memory or less. Each one’s line in the model list starts “Being
-retired, use NVIDIA Parakeet Unified 0.6B instead.” The first time
-dictation starts on one, it says so once, in one short sentence, across
-every QuillVille program; the measured reason is in that model’s details
-in the list. They keep working until the next feature release; nothing
-is switched or deleted, and they are never recommended.</p></li>
+<li><p><strong>Five speech models are removed</strong> (2026-10-22).
+Distil-Whisper small.en, Whisper small.en, Distil-Whisper medium.en,
+Whisper medium.en and Distil-Whisper large-v3. On the held-out
+audiobooks NVIDIA Parakeet Unified 0.6B got 3.2 percent of words wrong,
+against 3.6 to 6.3 for these five, and was faster on one thread, in the
+same or a smaller memory tier. Whisper base.en and every many-language
+Whisper size stay. If you used one, dictation switches to Parakeet
+Unified if it is already downloaded, or to the built-in model if not;
+nothing is downloaded. The next time dictation starts it says so in one
+sentence, once across every QuillVille program. Downloaded files are not
+deleted: they stay in
+<code>%LOCALAPPDATA%\QuillVille\Dictation\models</code> (in a portable
+copy, <code>data\dictation\models</code>), in folders named
+whisper-small.en-int8, whisper-distil-small.en-int8,
+whisper-medium.en-int8, whisper-distil-medium.en-int8 and
+whisper-distil-large-v3-int8. Delete the folder to free the
+space.</p></li>
 <li><p><strong>Moonshine base no longer loses long sentences</strong>
 (2026-10-22). With the Moonshine base speech model, a phrase longer than
 about eight and a half seconds was written as nothing at all. Long

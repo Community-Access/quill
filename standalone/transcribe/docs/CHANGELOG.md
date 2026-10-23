@@ -266,7 +266,7 @@ where in the user guide to read more.
   model stays your choice. User guide: "Speech providers: your own account".
 - **A proper guide to choosing a model.** The user guide's "Models" chapter
   explains every choice: the built-in Moonshine (the default, nothing to
-  download) and Whisper, Windows speech recognition, the fifteen downloadable
+  download) and Whisper, Windows speech recognition, the ten downloadable
   models with their sizes, languages, tiers and memory, the recommendation,
   OpenAI and the speech providers, with a worked example, "Dictating in
   Spanish" (commands stay in English) and "Limits".
@@ -288,16 +288,17 @@ where in the user guide to read more.
 - **Tiers follow real speed.** Parakeet TDT v3, Parakeet Unified and Whisper
   base.en are now **Lightweight**; Nemotron is **Balanced**. User guide: "What
   the tiers mean".
-- **Five English-only models are being retired:** Distil-Whisper small.en,
-  Whisper small.en, Distil-Whisper medium.en, Whisper medium.en and
-  Distil-Whisper large-v3. Parakeet Unified beat each one on accuracy and
-  speed, in the same memory or less. Each one's line starts "Being retired,
-  use NVIDIA Parakeet Unified 0.6B instead." The first time dictation starts
-  on one, you hear once, across every QuillVille program, that it is being
-  retired and keeps working until you choose another model; the measured
-  reason is in that model's details. Nothing is switched or
-  deleted, and they are never recommended. User guide: "Models being
-  retired".
+- **Removed: five English-only models.** Distil-Whisper small.en, Whisper
+  small.en, Distil-Whisper medium.en, Whisper medium.en and Distil-Whisper
+  large-v3. On real recordings Parakeet Unified got 3.2 percent of words wrong
+  on the held-out audiobooks, against 3.6 to 6.3 for these, and ran faster,
+  in the same or a smaller memory tier. Whisper base.en and the multilingual Whisper
+  models stay. If one was your model, it becomes Parakeet Unified if that is
+  downloaded, otherwise the built-in model; nothing is downloaded, and you
+  are told once, the next time dictation starts. Their files are not deleted:
+  they stay in `%LOCALAPPDATA%\QuillVille\Dictation\models` until you delete
+  the folder. To use Parakeet Unified, download it from the Model Library
+  (Ctrl+L). User guide: "Models removed in October 2026".
 - **Moonshine base hears long phrases.** It wrote nothing for any phrase
   longer than about eight and a half seconds; it now hears them in pieces and
   joins them. User guide: "The models you can download".

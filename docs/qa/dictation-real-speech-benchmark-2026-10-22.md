@@ -1,7 +1,7 @@
 # Dictation speech models tested on real speech, 2026-10-22
 
 This is the record behind QUILL's dictation model advice: which models QUILL,
-QUILL Lite and QUILL Transcribe recommend, which are being retired, and why.
+QUILL Lite and QUILL Transcribe recommend, which were removed, and why.
 Every number on the help pages, in the release notes and in the apps' own
 recommendation comes from this run. Until this run, the advice rested on ten
 recordings of a synthetic voice, which flattered every engine.
@@ -20,11 +20,12 @@ recordings of a synthetic voice, which flattered every engine.
 - **Modest computers:** on 4 GB, or with little memory free, the built-in
   Moonshine (English) and Whisper (Spanish) are still recommended. They are
   the only models that fit beside a screen reader there.
-- **Five English-only models are being retired:** Distil-Whisper small.en,
-  Whisper small.en, Distil-Whisper medium.en, Whisper medium.en and
-  Distil-Whisper large-v3. Parakeet Unified beat each of them on accuracy and
-  speed, in the same memory or less. They keep working until the next feature
-  release, and nobody's model is changed for them.
+- **Five English-only models were removed in this release:** Distil-Whisper
+  small.en, Whisper small.en, Distil-Whisper medium.en, Whisper medium.en and
+  Distil-Whisper large-v3. Parakeet Unified got 3.2 percent of words wrong on
+  the held-out audiobooks against 3.6 to 6.3 for these five, and ran faster on
+  one thread, in the same or a smaller memory tier. Whisper base.en and every
+  multilingual Whisper size stay.
 - **A bug found and fixed:** Moonshine base wrote nothing at all for any
   phrase longer than about eight and a half seconds. It now hears long phrases
   in pieces (PR #1683), and scores 5.9 percent on the audiobooks.
@@ -86,16 +87,16 @@ Percent of words wrong (lower is better), speed per thread (0.25 is dictation's 
 | Model | Held-out audiobooks | FLEURS | LibriSpeech clean | LibriSpeech other | Speed per thread | Peak memory | Decision |
 |---|---|---|---|---|---|---|---|
 | NVIDIA Parakeet Unified 0.6B | 3.2% | 6.3% | 1.8% | 3.2% | 0.21 | 1.2 GB | **Recommended** on 8 GB with four cores |
-| Whisper medium.en | 3.6% | - | - | - | 1.55 | 3.0 GB | Being retired |
+| Whisper medium.en | 3.6% | - | - | - | 1.55 | 3.0 GB | Removed |
 | NVIDIA Parakeet TDT 0.6B v3 | 3.8% | 9.0% | 2.5% | 5.2% | 0.11 | 1.1 GB | Kept; recommended on 8 GB with two cores |
-| Whisper small.en | 4.3% | 6.3% | 3.4% | 7.8% | 0.43 | 1.4 GB | Being retired |
-| Distil-Whisper large-v3 | 4.5% | - | - | - | 0.82 | 2.0 GB | Being retired |
+| Whisper small.en | 4.3% | 6.3% | 3.4% | 7.8% | 0.43 | 1.4 GB | Removed |
+| Distil-Whisper large-v3 | 4.5% | - | - | - | 0.82 | 2.0 GB | Removed |
 | Whisper small | 4.7% | 7.0% | 4.2% | 8.5% | 0.55 | 1.4 GB | Kept; many languages, needs two threads |
 | NVIDIA Nemotron 3.5 Streaming 0.6B | 5.3% | 13.7% | 3.7% | 7.3% | 0.37 | 1.5 GB | Kept; streams words while you speak |
 | Moonshine base | 5.9% | 15.1% | 4.8% | 10.7% | 0.05 | 378 MB | Kept; fixed for long phrases |
 | Whisper base.en | 5.9% | 7.4% | 5.6% | 11.6% | 0.13 | 820 MB | Kept; light, good on varied voices |
-| Distil-Whisper small.en | 5.9% | 7.6% | 4.6% | 9.2% | 0.22 | 1.0 GB | Being retired |
-| Distil-Whisper medium.en | 6.3% | - | 4.2% | - | 0.47 | 1.6 GB | Being retired |
+| Distil-Whisper small.en | 5.9% | 7.6% | 4.6% | 9.2% | 0.22 | 1.0 GB | Removed |
+| Distil-Whisper medium.en | 6.3% | - | 4.2% | - | 0.47 | 1.6 GB | Removed |
 | Moonshine tiny (built in) | 6.5% | 13.2% | 5.0% | 13.3% | 0.06 | 584 MB | Kept; the default, and the pick on 4 GB |
 | Whisper base | 7.4% | 10.8% | - | - | 0.22 | 821 MB | Kept; many languages |
 | Whisper tiny (built in) | 8.3% | 11.7% | 6.7% | 13.9% | 0.07 | 521 MB | Kept; built in |
@@ -140,12 +141,18 @@ catalogue, so all three changed together.
 - **Tiers follow real speed.** Parakeet TDT v3, Parakeet Unified and Whisper
   base.en are now Lightweight: they keep up on a modest computer. Nemotron is
   Balanced.
-- **Five models are being retired.** Each one's line in the model list starts
-  "Being retired: use NVIDIA Parakeet Unified 0.6B instead." The first time
-  dictation starts on one, QUILL says so once, in every QuillVille program
-  together, with the measured reason, and says it keeps working until the next
-  feature release. Nothing is switched and nothing is deleted. They are never
-  recommended.
+- **Five models were removed.** They are no longer in the model list. Someone
+  using one is moved when they update: to Parakeet Unified if it is already
+  downloaded, otherwise to the built-in model. Nothing is downloaded. The next
+  time dictation starts it says one sentence, once across every QuillVille
+  program, for example "Whisper small.en was removed in this release.
+  Dictation now uses Parakeet Unified, which you already have." or "Whisper
+  small.en was removed in this release, so dictation uses the built-in model.
+  Parakeet Unified, in the model list, is more accurate." Downloaded files are
+  not deleted; they stay in `%LOCALAPPDATA%\QuillVille\Dictation\models`
+  (portable: `data\dictation\models`) until the user deletes the folder. This
+  replaces the plan's earlier rule of one release's notice before removal
+  (section 32.6); the decision is section 37 of the dictation plan.
 - **Moonshine base hears long phrases.** Its decoder failed on anything over
   about 8.5 seconds and wrote nothing; long phrases are now heard in pieces of
   8 seconds or less, cut at the quietest moment, and joined.

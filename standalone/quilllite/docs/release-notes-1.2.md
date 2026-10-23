@@ -227,15 +227,33 @@ above, plus everything in this section.
   "Nemotron or Parakeet: which should I try?" is rewritten: Parakeet makes
   fewer mistakes, and Nemotron is still the one that shows your words while
   you speak.
-- **Five models are being retired.** Distil-Whisper small.en, Whisper
+- **Removed: five English-only models.** Distil-Whisper small.en, Whisper
   small.en, Distil-Whisper medium.en, Whisper medium.en and Distil-Whisper
-  large-v3 are English only, and Parakeet Unified beat each of them on
-  accuracy and speed, in the same memory or less. Each one's line in the list
-  starts "Being retired, use NVIDIA Parakeet Unified 0.6B instead." The first
-  time dictation starts on one, you hear one short sentence saying so, once
-  across every QuillVille program; the measured reason is in that model's
-  details in the list. It keeps working until the next feature release; nothing is
-  switched and nothing is deleted, and none of them is ever recommended.
+  large-v3 are no longer in the list. On the held-out audiobooks, NVIDIA
+  Parakeet Unified 0.6B got 3.2 percent of words wrong, against 3.6 to 6.3
+  for these five. It was also faster on one thread, in the same or a smaller memory
+  tier. Whisper base.en and every many-language Whisper size stay.
+
+  If you were using one, dictation switches to Parakeet Unified when you
+  update, if you have already downloaded it; otherwise it uses the built-in
+  model. Nothing is downloaded. The next time dictation starts, you hear one
+  sentence, once across every QuillVille program. For example: "Whisper
+  small.en was removed in this release. Dictation now uses Parakeet Unified,
+  which you already have." Or: "Whisper small.en was removed in this release,
+  so dictation uses the built-in model. Parakeet Unified, in the model list,
+  is more accurate."
+
+  Your downloaded files are not deleted. They stay in
+  `%LOCALAPPDATA%\QuillVille\Dictation\models` (in a portable copy,
+  `data\dictation\models` inside the portable folder), in folders named
+  whisper-small.en-int8, whisper-distil-small.en-int8,
+  whisper-medium.en-int8, whisper-distil-medium.en-int8 and
+  whisper-distil-large-v3-int8. Delete the folder to free the space.
+
+  To choose Parakeet Unified instead, open Dictation Settings
+  (**Alt+Shift+F6**), press **Better Accuracy: Speech Models...**
+  (**Alt+B**), choose NVIDIA Parakeet Unified 0.6B, press **Download...**
+  (**Alt+D**), then **Use for Dictation** (**Alt+U**).
 - **Moonshine base hears long phrases.** It used to write nothing at all for a
   phrase longer than about eight and a half seconds. It now hears a long
   phrase in pieces and joins them.

@@ -778,8 +778,7 @@ Spanish, the multilingual Whisper does its listening.
 **About this model** (Alt+A) says more about the row you are on: whether your
 speech leaves the computer, whether it is ready, what its tier means, its
 languages and size, who publishes it, its licence, and one line on what it is
-good for. For a model being retired, that line starts "Being retired, use
-NVIDIA Parakeet Unified 0.6B instead." (see "Models being retired"). Press Enter, or **Use This Model**, to choose it. It stays your model
+good for. Press Enter, or **Use This Model**, to choose it. It stays your model
 until you choose another. A model that is not downloaded is listed so you know
 it exists; choosing it says it is not downloaded yet and points you to
 **Model Library...** (Alt+L), which is also a button in this window.
@@ -798,11 +797,10 @@ everywhere in QuillVille:
   built-in Moonshine and Whisper, Moonshine base, Whisper base.en, and both
   Parakeet models.
 - **Balanced**: more work than the built-in engines; keeps up on a computer
-  with four or more cores. Nemotron, Whisper base and Distil-Whisper small.en.
+  with four or more cores. Nemotron and Whisper base.
 - **High accuracy**: the most work; needs a capable computer, or patience.
-  Whisper small and larger, Distil-Whisper medium.en and Distil-Whisper
-  large-v3. Despite the name, none of these that we tested on real recordings
-  made fewer mistakes than Parakeet Unified.
+  Whisper small and larger. Despite the name, none of these that we tested on
+  real recordings made fewer mistakes than Parakeet Unified.
 
 The tiers follow how fast each model ran on real speech. Until October 2026
 they followed tests with a synthetic voice, which put both Parakeet models in
@@ -835,11 +833,6 @@ speech"); lower is better, and a dash means it was not tested there.
 | Whisper medium | English and Spanish | 946 MB | High accuracy | 16 GB | - |
 | Whisper large-v3-turbo | English and Spanish | 1.0 GB | High accuracy | 16 GB | - |
 | Whisper large-v3 | English and Spanish | 1.8 GB | High accuracy | 16 GB | - |
-| Distil-Whisper small.en (being retired) | English | 299 MB | Balanced | 4 GB | 5.9% |
-| Whisper small.en (being retired) | English | 376 MB | High accuracy | 4 GB | 4.3% |
-| Distil-Whisper medium.en (being retired) | English | 573 MB | High accuracy | 8 GB | 6.3% |
-| Whisper medium.en (being retired) | English | 946 MB | High accuracy | 8 GB | 3.6% |
-| Distil-Whisper large-v3 (being retired) | English | 984 MB | High accuracy | 8 GB | 4.5% |
 
 A few differences worth knowing:
 
@@ -859,25 +852,33 @@ A few differences worth knowing:
 - **Whisper medium, large-v3-turbo and large-v3** are very slow on most
   computers, and too slow for us to test on real speech.
 
-### Models being retired
+### Models removed in October 2026
 
-Five English-only models are being retired: Distil-Whisper small.en, Whisper
-small.en, Distil-Whisper medium.en, Whisper medium.en and Distil-Whisper
-large-v3. In our tests with real recordings, NVIDIA Parakeet Unified 0.6B made
-fewer mistakes than each of them, ran faster, and needed the same memory or
-less.
+Five English-only models were removed on 22 October 2026: Distil-Whisper
+small.en, Whisper small.en, Distil-Whisper medium.en, Whisper medium.en and
+Distil-Whisper large-v3. Whisper base.en and every Whisper model without
+".en" in its name stay. In our tests with real recordings, NVIDIA Parakeet
+Unified 0.6B got 3.2 percent of words wrong on the held-out audiobooks,
+against 3.6 to 6.3 for these five. It also ran faster on one processor
+thread, in the same or a smaller memory tier.
 
-- Each one's line in the Model Library, and About this model (Alt+A) in
-  Choose Model, starts "Being retired, use NVIDIA Parakeet Unified 0.6B
-  instead."
-- The first time dictation starts on one, you hear one short sentence:
-  that it is being retired and keeps working, and that nothing changes until
-  you choose another model. The measured reason is in About this model, in
-  Choose Model. You hear
-  it once across every QuillVille program, not once in each.
-- Nothing is switched and nothing is deleted. If you use one, it stays your
-  model until you choose another in Choose Model (Ctrl+M).
-- They are never recommended.
+If one of them was your model:
+
+- When you update, your model becomes Parakeet Unified if you have already
+  downloaded it, and otherwise the built-in model. Nothing is downloaded.
+- The next time dictation starts, you hear one sentence saying which model
+  was removed and what dictation uses now. You hear it once across every
+  QuillVille program, not once in each.
+- Its downloaded files are not deleted. They stay in
+  `%LOCALAPPDATA%\QuillVille\Dictation\models` (in a portable copy,
+  `data\dictation\models` inside the portable folder), in a folder named
+  `whisper-small.en-int8`, `whisper-distil-small.en-int8`,
+  `whisper-medium.en-int8`, `whisper-distil-medium.en-int8` or
+  `whisper-distil-large-v3-int8`. Delete that folder to free the space.
+- To use Parakeet Unified instead, press **Ctrl+L** for the Model Library,
+  move to NVIDIA Parakeet Unified 0.6B, press **Download...** (Alt+D), and
+  then **Use for Dictation** (Alt+U). If it is already downloaded, choose it
+  in Choose Model (Ctrl+M).
 
 ### Which one should I choose?
 
@@ -919,8 +920,7 @@ The **Model Library** has three controls for it:
   can read its details and download it.
 
 It is only advice. QUILL Transcribe never changes your model by itself, and
-OpenAI and the speech providers are never recommended, nor is a model being
-retired. The figures come from our tests with real recordings, on one
+OpenAI and the speech providers are never recommended. The figures come from our tests with real recordings, on one
 computer, and the advice says so; yours may differ.
 
 What it recommends depends on memory as well as speed. A model must fit
@@ -963,6 +963,9 @@ English, percent of words wrong (lower is better):
 | Whisper base.en | 5.9% | 7.4% | 0.13 | 820 MB | Kept; light, good on varied voices |
 | Moonshine tiny (built in) | 6.5% | 13.2% | 0.06 | 584 MB | Kept; the default, and the pick on 4 GB |
 | Whisper tiny (built in) | 8.3% | 11.7% | 0.07 | 521 MB | Kept; built in |
+
+The five English-only models removed after this test got 3.6 to 6.3 percent of
+words wrong on the held-out audiobooks (see "Models removed in October 2026").
 
 Spanish, percent of words wrong (lower is better):
 
@@ -1013,8 +1016,7 @@ Settings too. It lists every model you can download. For the one you are on:
 - **Details** (Alt+T) says what it is good for, its tier, its size, the
   accuracy its publisher reports, its licence and where it is saved. The
   publisher's figure comes from their own tests; the recommendation uses
-  ours, on real recordings (see "How we chose: tested on real speech"). A
-  model being retired says so first, in its row and in Details.
+  ours, on real recordings (see "How we chose: tested on real speech").
 - **Download...** (Alt+D) asks first, naming the size, the licence and where
   it goes. Nothing is fetched until you answer Yes. On a metered connection it
   asks about that too. It checks the free space first, shows **Progress**

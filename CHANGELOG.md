@@ -2,7 +2,35 @@
 
 ## 1.0.0
 
-### Dictation advice from real speech: Parakeet recommended, five English-only models retiring (2026-10-22)
+### Removed: five English-only dictation models (2026-10-22)
+
+Distil-Whisper small.en, Whisper small.en, Distil-Whisper medium.en, Whisper
+medium.en and Distil-Whisper large-v3 are gone from the shared catalogue in
+this release, not one release later as the deprecation entry below first
+planned (Jeff's decision, recorded in dictation plan section 37, which notes
+the one-time exception to section 32.6's notice period). Parakeet Unified got
+3.2 percent of words wrong on the held-out audiobooks against 3.6 to 6.3 for
+these, and was faster, in the same or a smaller memory tier.
+
+- `windows_dictation/retiring.py` is now `removed_models.py`: `REMOVED`
+  records each id, name and folder. The catalogue rows, `FILE_RANK` entries,
+  `model_catalog._with_retiring_notes`, the `model_advice` filter and
+  Transcribe's retiring note are gone.
+- Someone who was using one: `engines.coerce_engine` moves the saved choice to
+  Parakeet Unified when it is already downloaded, otherwise to the built-in
+  model; nothing is downloaded. The change is recorded when it is made
+  (`removed-model-notices.json` beside `family_dictation.json`) and said once
+  across the family at the next dictation start, for example "Whisper small.en
+  was removed in this release, so dictation uses the built-in model. Parakeet
+  Unified, in the model list, is more accurate."
+- No file is deleted: the old model's folder stays under
+  `%LOCALAPPDATA%\QuillVille\Dictation\models` (`whisper-small.en-int8` and
+  so on) until the person removes it.
+- Persistence audit: the notice record is classified as a marker.
+- Tests: `test_dictation_removed_models.py`; tests that used Whisper small.en
+  as "an English-only Whisper" now use base.en.
+
+### Dictation advice from real speech: Parakeet recommended, five English-only models retiring, since removed (2026-10-22)
 
 Every dictation model in the shared catalogue was benchmarked on real
 recordings (`docs/qa/dictation-real-speech-benchmark-2026-10-22.md`, its
@@ -23,8 +51,8 @@ recordings (`docs/qa/dictation-real-speech-benchmark-2026-10-22.md`, its
   accuracy and speed in the same or a smaller memory tier. Their list line
   says so (`model_catalog._with_retiring_notes`), the recommendation never
   names them, and the controller says the measured reason once across the
-  family (`retiring-notices.json` beside `family_dictation.json`). Nothing is
-  switched or deleted; removal no earlier than the next feature release.
+  family (`retiring-notices.json` beside `family_dictation.json`). Superseded
+  the same day: the five were removed in this release (entry above).
 - Tests: `test_dictation_retiring.py`, and the advice, catalogue, dialog and
   Transcribe tests re-pinned to the decided recommendations.
 

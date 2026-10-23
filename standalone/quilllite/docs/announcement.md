@@ -502,10 +502,12 @@ What changes for you: on a computer with 8 GB of memory, Speech Models now
 suggests one of the two Parakeet models, both free downloads that keep your
 voice on your computer. On 4 GB, or when memory is tight, it still suggests
 the built-in engines, because they leave your screen reader room to breathe.
-Five older English-only models are being retired, because Parakeet Unified
-beat every one of them. If you use one, it keeps working until the next
-feature release, QUILL Lite tells you once, and nothing changes until you
-choose. And Moonshine base, which used to drop any phrase longer than about
+Five older English-only models are removed in this release, because Parakeet
+Unified made fewer mistakes than every one of them, and was faster. If you
+used one, dictation moves to Parakeet Unified if you already have it, or to
+the built-in model if not, and QUILL Lite tells you once. Nothing is
+downloaded, and your downloaded files stay where they are until you delete
+them. And Moonshine base, which used to drop any phrase longer than about
 eight and a half seconds, now hears every word. The user guide's "How we
 chose: tested on real speech" has the whole table.
 

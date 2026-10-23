@@ -278,34 +278,6 @@ CATALOGUE: tuple[DownloadableModel, ...] = (
 )
 
 
-def _with_retiring_notes(models: tuple[DownloadableModel, ...]) -> tuple[DownloadableModel, ...]:
-    """A retiring model's own line says so first, in every list that shows it
-    (Speech Models, QUILL Transcribe, the shared provider, file models), and its
-    details carry the measured reason."""
-    from dataclasses import replace
-
-    from quill.core.windows_dictation.retiring import RETIRING
-
-    names = {model.id: model.name for model in models}
-    return tuple(
-        replace(
-            model,
-            good_for=(
-                f"Being retired, use {names[RETIRING[model.id].replacement]} instead. "
-                f"{model.good_for}"
-            ),
-            description=(
-                f"Being retired. In our tests with real recordings, "
-                f"{RETIRING[model.id].evidence} {model.description}"
-            ),
-        )
-        if model.id in RETIRING
-        else model
-        for model in models
-    )
-
-
-CATALOGUE = _with_retiring_notes(CATALOGUE)
 _BY_ID = {model.id: model for model in CATALOGUE}
 
 
