@@ -46,8 +46,8 @@ NO_MEMORY_READING = SpeedCheck(tiny=0.05, cores=4, memory_gb=None)
 @pytest.mark.parametrize(
     ("check", "language", "priority", "expected"),
     [
-        # The 4 GB baseline keeps the built-in model: a download that measured
-        # no better is not worth having there.
+        # The 4 GB baseline keeps the built-in model: Parakeet Unified, the
+        # most accurate on real speech, needs more memory than it can spare.
         (BASELINE, "en", "balanced", "moonshine"),
         (BASELINE_UNTIMED, "en", "balanced", "moonshine"),
         (BASELINE, "en", "speed", "moonshine"),
@@ -55,25 +55,32 @@ NO_MEMORY_READING = SpeedCheck(tiny=0.05, cores=4, memory_gb=None)
         # Spanish has only Whisper built in.
         (BASELINE, "es", "balanced", "whisper"),
         (BASELINE, "es", "accuracy", "whisper"),
-        # 8 GB, four cores: Moonshine base; Nemotron only when accuracy is asked.
-        (EIGHT_GB, "en", "balanced", "moonshine_base"),
+        # 8 GB, four cores: Parakeet Unified. On real recordings (2026-10-22)
+        # it got 3.2 percent of words wrong at a cost of 3.8, so it is both
+        # Lightweight and the most accurate English model.
+        (EIGHT_GB, "en", "balanced", "parakeet_unified"),
         (EIGHT_GB, "en", "speed", "moonshine"),
-        (EIGHT_GB, "en", "accuracy", "nemotron"),
-        (EIGHT_GB, "es", "balanced", "whisper"),
+        (EIGHT_GB, "en", "accuracy", "parakeet_unified"),
+        (EIGHT_GB, "es", "balanced", "parakeet"),
         # Spanish is ranked by real Spanish speech (2026-10-22): Parakeet
         # TDT v3 got 5.9 percent wrong, Nemotron 7.2, Whisper tiny 28.8.
         (EIGHT_GB, "es", "accuracy", "parakeet"),
-        # Two cores are a modest computer, whatever the memory.
-        (EIGHT_GB_DUAL, "en", "balanced", "moonshine"),
-        # 16 GB and up: Nemotron by default (dict.md D-26's tier table).
-        (SIXTEEN_GB, "en", "balanced", "nemotron"),
+        # Two cores: Parakeet TDT v3 (3.8 percent wrong on real speech) keeps
+        # up on one thread; Parakeet Unified would need a second.
+        (EIGHT_GB_DUAL, "en", "balanced", "parakeet"),
+        (EIGHT_GB_DUAL, "en", "accuracy", "parakeet_unified"),
+        (EIGHT_GB_DUAL, "es", "balanced", "parakeet"),
+        # 16 GB and up: Parakeet Unified, best on real English speech;
+        # Nemotron (5.3 percent wrong) is no longer the default.
+        (SIXTEEN_GB, "en", "balanced", "parakeet_unified"),
+        (SIXTEEN_GB, "en", "accuracy", "parakeet_unified"),
         (SIXTEEN_GB, "en", "speed", "moonshine"),
         (SIXTEEN_GB, "es", "balanced", "parakeet"),
-        (SIXTEEN_GB_GPU, "en", "balanced", "nemotron"),
+        (SIXTEEN_GB_GPU, "en", "balanced", "parakeet_unified"),
         # Nothing keeps up: the lightest built-in model, with a warning.
         (VERY_SLOW, "en", "balanced", "moonshine"),
         (VERY_SLOW, "es", "balanced", "whisper"),
-        (NO_MEMORY_READING, "en", "balanced", "moonshine_base"),
+        (NO_MEMORY_READING, "en", "balanced", "parakeet_unified"),
     ],
 )
 def test_recommendation_over_machine_profiles(check, language, priority, expected) -> None:
@@ -87,11 +94,12 @@ def test_recommendation_over_machine_profiles(check, language, priority, expecte
 def test_the_sentence_names_the_machine_the_wait_and_privacy() -> None:
     advice = recommend(EIGHT_GB, "en")
     assert advice.sentence == (
-        "Moonshine base, Lightweight: keeps up on this computer's 8 GB and 4 cores, "
-        "about 0.3 seconds after you pause; stays on this computer; a 141 MB download."
+        "NVIDIA Parakeet Unified 0.6B, Lightweight: keeps up on this computer's 8 GB "
+        "and 4 cores, about 1.2 seconds after you pause; stays on this computer; "
+        "a 663 MB download."
     )
     assert not advice.built_in
-    assert advice.download_bytes == downloadable("moonshine_base").download_bytes
+    assert advice.download_bytes == downloadable("parakeet_unified").download_bytes
 
 
 def test_a_built_in_model_says_nothing_to_download() -> None:
@@ -101,15 +109,20 @@ def test_a_built_in_model_says_nothing_to_download() -> None:
 
 
 def test_two_threads_are_said_with_their_cost() -> None:
-    advice = recommend(SIXTEEN_GB, "en")
+    # Two cores, accuracy asked: Parakeet Unified keeps up only on two threads.
+    advice = recommend(EIGHT_GB_DUAL, "en", priority="accuracy")
+    assert advice.model_id == "parakeet_unified"
     assert "using two processor threads" in advice.sentence
     assert any("screen reader may answer a little more slowly" in r for r in advice.reasons)
 
 
 def test_a_better_model_left_out_is_named_with_why() -> None:
-    advice = recommend(EIGHT_GB, "en")
+    # Two cores: Parakeet Unified makes fewer mistakes than Parakeet TDT v3
+    # on real speech but would need a second thread.
+    advice = recommend(EIGHT_GB_DUAL, "en")
     assert any(
-        r.startswith("NVIDIA Nemotron") and "second processor thread" in r for r in advice.reasons
+        r.startswith("NVIDIA Parakeet Unified") and "second processor thread" in r
+        for r in advice.reasons
     )
     memory = recommend(BASELINE, "en", priority="accuracy")
     assert any("more memory than this computer can spare" in r for r in memory.reasons)
@@ -176,12 +189,12 @@ def test_a_graphics_card_is_mentioned_only_to_say_it_changes_nothing() -> None:
 
 def test_priority_labels_and_unknown_priority() -> None:
     assert [value for value, _label in PRIORITIES] == ["balanced", "speed", "accuracy"]
-    assert recommend(EIGHT_GB, "en", priority="nonsense").model_id == "moonshine_base"
+    assert recommend(EIGHT_GB, "en", priority="nonsense").model_id == "parakeet_unified"
 
 
 def test_privacy_other_than_local_still_recommends_a_local_model() -> None:
     advice = recommend(EIGHT_GB, "en", privacy="any")
-    assert advice.model_id == "moonshine_base"
+    assert advice.model_id == "parakeet_unified"
     assert "stays on this computer" in advice.sentence
     assert any("keep your speech on this computer" in r for r in advice.reasons)
 
@@ -228,9 +241,13 @@ def test_tier_from_cost_and_word_errors(cost, errors, tier) -> None:
 def test_every_model_has_a_tier_and_the_known_ones_are_pinned() -> None:
     tiers = {model.id: model.tier for model in CATALOGUE}
     assert set(tiers.values()) <= set(TIERS)
+    # Real-speech costs (2026-10-22): Parakeet 3.2, Parakeet Unified 3.8 and
+    # Whisper base.en 4.3 are all within the Lightweight cost; Nemotron (5.8)
+    # is not, and its 5.3 percent wrong is not High accuracy.
     assert tiers["moonshine_base"] == LIGHTWEIGHT
-    assert tiers["parakeet"] == tiers["parakeet_unified"] == tiers["whisper_base"] == BALANCED
-    assert tiers["nemotron"] == tiers["whisper_small"] == tiers["whisper_large_v3"] == HIGH_ACCURACY
+    assert tiers["parakeet"] == tiers["parakeet_unified"] == tiers["whisper_base_en"] == LIGHTWEIGHT
+    assert tiers["nemotron"] == tiers["whisper_base"] == BALANCED
+    assert tiers["whisper_small"] == tiers["whisper_large_v3"] == HIGH_ACCURACY
     assert engine_tier("moonshine") == engine_tier("whisper") == LIGHTWEIGHT
     assert engine_tier("windows") == engine_tier("voice_typing") == engine_tier("openai") == ""
     assert set(TIER_MEANINGS) == set(TIERS)

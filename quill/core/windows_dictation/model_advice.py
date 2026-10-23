@@ -86,15 +86,13 @@ _CHOSEN_FOR = {
     PRIORITY_SPEED: "Chosen for the quickest response.",
     PRIORITY_ACCURACY: "Chosen for the fewest mistakes this computer can keep up with.",
 }
-ESTIMATE_NOTE = (
-    "These figures are estimates from a synthetic voice, until tests with real voices exist."
-)
+ESTIMATE_NOTE = "Measured on one computer with real recordings; yours may differ."
 _NEVER_SWITCHES = "QUILL never changes your model by itself: choose this one if you want it."
 
 #: The built-in engines' cost against Moonshine tiny: Whisper tiny.en measured
 #: 0.20 against Moonshine tiny's 0.05 (dictation design, section 6). Spanish
 #: runs the multilingual tiny of the same size.
-_BUILT_IN_COST = {"moonshine": 1.0, "whisper": 4.0}
+_BUILT_IN_COST = {"moonshine": 1.0, "whisper": 2.6}  # whisper: real speech, 2026-10-22
 _BUILT_IN_LANGUAGES = {"moonshine": ("en",), "whisper": ("en", "es")}
 _BUILT_IN_NAMES = {"moonshine": "Moonshine (built in)", "whisper": "Whisper (built in)"}
 #: Moonshine tiny on the measuring machine; scales "after you pause" to here.
@@ -191,7 +189,9 @@ def _candidates(language: str) -> list[_Candidate]:
     ]
     if language == "es":  # a Spanish reason needs a Spanish number
         found = [c for c in found if MEASURED[c.id].word_errors_es is not None]
-    return found
+    from quill.core.windows_dictation.retiring import is_retiring
+
+    return [c for c in found if not is_retiring(c.id)]  # never recommend one leaving
 
 
 def _tiny_here(check: SpeedCheck) -> float:
@@ -311,10 +311,7 @@ def recommend(
     reasons: list[str] = [_CHOSEN_FOR[priority], TIER_MEANINGS[chosen.tier]]
     if language == "es":
         errors = _errors(chosen.id, language)
-        reasons.append(
-            f"In our test with recordings of real Spanish speakers it got {errors:g} "
-            "percent of words wrong."
-        )
+        reasons.append(f"With real Spanish speakers, it got {errors:g} percent of words wrong.")
     else:
         errors = MEASURED[chosen.id].word_errors
         reasons.append(f"In our test it got {errors:g} percent of words wrong.")

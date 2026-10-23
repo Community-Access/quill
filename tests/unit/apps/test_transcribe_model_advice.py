@@ -47,7 +47,11 @@ def test_choose_model_shows_the_recommendation_and_tiers(wx_app, advised) -> Non
     dialog = ChooseModelDialog(None, current="moonshine", open_library=lambda: None, language="es")
     try:
         text = dialog.advice.GetValue()
-        assert text.startswith("Recommended for this computer: Whisper (built in), Lightweight:")
+        # Spanish on 8 GB and four cores: Parakeet TDT v3, which got 5.9 percent
+        # of real Spanish speech wrong and is Lightweight at a cost of 3.2.
+        assert text.startswith(
+            "Recommended for this computer: NVIDIA Parakeet TDT 0.6B v3, Lightweight:"
+        )
         assert "real Spanish speakers" in text
         assert advised == ["es"]
         assert dialog.advice.GetHelpText()
@@ -71,7 +75,11 @@ def test_setup_shows_the_one_line_recommendation(wx_app, advised) -> None:
         show_modal=lambda *_a: wx.ID_CANCEL,
     )
     try:
-        assert dialog.advice.GetValue().startswith("Moonshine base, Lightweight: keeps up")
+        # English on 8 GB and four cores: Parakeet Unified, the fewest mistakes
+        # on real recordings (3.2 percent) at a Lightweight cost.
+        assert dialog.advice.GetValue().startswith(
+            "NVIDIA Parakeet Unified 0.6B, Lightweight: keeps up"
+        )
         assert dialog.advice.GetHelpText()
         # Advice, never a switch: the model box still holds what was there.
         ready = [row.id for row in dialog._rows]

@@ -65,7 +65,8 @@ def test_the_list_reads_in_our_suggested_order_with_tiny_in_its_place(
     try:
         rows = [dialog.models.GetString(i) for i in range(dialog.models.GetCount())]
         assert rows[0].startswith("NVIDIA Nemotron 3.5 ASR Streaming 0.6B")
-        assert "Suggested download" in rows[0]
+        # The suggested download is Parakeet Unified since 2026-10-22.
+        assert "Suggested download" in rows[1] and rows[1].startswith("NVIDIA Parakeet Unified")
         assert rows[5].startswith("Whisper tiny, Lightweight: built in")
         assert rows[4].startswith("Whisper base")
         assert all(row.endswith(".") for row in rows)
@@ -76,7 +77,9 @@ def test_the_list_reads_in_our_suggested_order_with_tiny_in_its_place(
 def test_details_say_sizes_languages_licence_where_and_the_speed_verdict(
     wx_app, dialog_module
 ) -> None:
-    dialog = _open(dialog_module, tiny=0.2)
+    # Nemotron's real-speech cost is 5.8 times Moonshine tiny, so tiny at 0.3
+    # seconds a second puts it past the lag limit.
+    dialog = _open(dialog_module, tiny=0.3)
     try:
         text = dialog.details.GetValue()
         for part in (
@@ -347,13 +350,16 @@ def test_the_recommendation_is_text_to_read_with_its_reasons(wx_app, dialog_modu
     dialog = _open(dialog_module)
     try:
         advice = dialog.advice.GetValue()
-        assert advice.startswith("Recommended for this computer: NVIDIA Nemotron")
-        assert "estimates from a synthetic voice" in advice
+        # Parakeet Unified: the fewest mistakes on real recordings (3.2 percent)
+        # at a Lightweight cost.
+        assert advice.startswith("Recommended for this computer: NVIDIA Parakeet Unified")
+        assert "Measured on one computer with real recordings" in advice
         assert dialog.advice.GetHelpText() and dialog.priority.GetHelpText()
         assert dialog.show_recommended.GetHelpText()
         rows = [dialog.models.GetString(i) for i in range(dialog.models.GetCount())]
-        assert rows[0].startswith("NVIDIA Nemotron 3.5 ASR Streaming 0.6B, High accuracy:")
-        assert "Tier: High accuracy:" in dialog.details.GetValue()
+        # Nemotron got 5.3 percent wrong on real speech at a cost of 5.8: Balanced.
+        assert rows[0].startswith("NVIDIA Nemotron 3.5 ASR Streaming 0.6B, Balanced:")
+        assert "Tier: Balanced:" in dialog.details.GetValue()
         assert dialog.chosen is None
     finally:
         dialog.Destroy()
@@ -377,9 +383,9 @@ def test_what_matters_most_changes_the_advice_and_says_so(wx_app, dialog_module)
 def test_show_recommended_moves_to_its_row_and_chooses_nothing(wx_app, dialog_module) -> None:
     dialog = _open(dialog_module)
     try:
-        dialog.models.SetSelection(3)
+        dialog.models.SetSelection(0)  # Nemotron, not the recommendation
         dialog._on_show_recommended(None)
-        assert dialog.selected().id == "nemotron"
+        assert dialog.selected().id == "parakeet_unified"
         assert dialog.chosen is None
     finally:
         dialog.Destroy()
@@ -391,9 +397,10 @@ def test_spanish_advice_follows_the_dictation_language(wx_app, dialog_module) ->
     check = SpeedCheck(tiny=0.05, cores=4, memory_gb=7.8)
     dialog = dialog_module.SpeechModelsDialog(None, None, run_check=lambda: check, language="es")
     try:
-        assert "Whisper (built in)" in dialog.advice.GetValue()
+        # Spanish is ranked by real Spanish speech: Parakeet TDT v3, 5.9 percent.
+        assert "NVIDIA Parakeet TDT 0.6B v3" in dialog.advice.GetValue()
         dialog._on_show_recommended(None)
-        assert dialog.selected() is None  # the built-in Whisper tiny row
+        assert dialog.selected().id == "parakeet"
     finally:
         dialog.Destroy()
 
@@ -416,10 +423,12 @@ def test_dictation_settings_shows_the_recommendation(wx_app, monkeypatch) -> Non
 
     dialog = WindowsDictationDialog(None, _Settings())
     try:
-        assert dialog.advice.GetValue().startswith("Moonshine base, Lightweight: keeps up")
+        assert dialog.advice.GetValue().startswith(
+            "NVIDIA Parakeet Unified 0.6B, Lightweight: keeps up"
+        )
         assert dialog.advice.GetHelpText()
         dialog.speech_language.SetSelection(1)  # Spanish
         dialog._on_speech_language(None)
-        assert dialog.advice.GetValue().startswith("Whisper (built in), Lightweight:")
+        assert dialog.advice.GetValue().startswith("NVIDIA Parakeet TDT 0.6B v3, Lightweight:")
     finally:
         dialog.Destroy()

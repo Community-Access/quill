@@ -65,7 +65,8 @@ def test_the_vs_code_models_come_first_in_the_owners_order() -> None:
         "whisper_small",
         "whisper_base",
     ]
-    assert [m.id for m in CATALOGUE if m.suggested] == ["nemotron"]
+    # Parakeet Unified since 2026-10-22: the fewest mistakes on real speech.
+    assert [m.id for m in CATALOGUE if m.suggested] == ["parakeet_unified"]
     groups = [m.group for m in CATALOGUE]
     assert groups == sorted(groups, key=GROUPS.index), "groups stay together, in order"
 

@@ -440,79 +440,118 @@ without an update.</li>
 </ul>
 <h3 id="dictation">Dictation</h3>
 <ul>
-<li><strong>Dictation profiles.</strong> Choose the kind of writing in
-More Dictation Settings: Email, Document, Markdown, Chat, Coding,
+<li><p><strong>Dictation profiles.</strong> Choose the kind of writing
+in More Dictation Settings: Email, Document, Markdown, Chat, Coding,
 Verbatim or Standard. Each changes pauses, filler words, punctuation and
 headings. Say “QUILL email mode” to switch, and “QUILL bold that” or
 “QUILL italic that” to format. See “Dictation profiles: the kind of
-writing you are doing”.</li>
-<li><strong>Dictation style and fixing your corrections.</strong> Choose
-Verbatim, Clean or, with AI help, Polished. <strong>Fix it when I
+writing you are doing”.</p></li>
+<li><p><strong>Dictation style and fixing your corrections.</strong>
+Choose Verbatim, Clean or, with AI help, Polished. <strong>Fix it when I
 correct myself</strong> writes only “Friday” for “meet on Thursday, no,
-Friday”. It is off until you turn it on.</li>
-<li><strong>Polish when you ask, and learning from you.</strong> With
+Friday”. It is off until you turn it on.</p></li>
+<li><p><strong>Polish when you ask, and learning from you.</strong> With
 polishing allowed, “QUILL polish that” asks the AI once to tidy
 punctuation and slips. Correct the same word the same way twice and
-QUILL Lite offers to remember it; No is the default.</li>
-<li><strong>The command word.</strong> Say “QUILL” before a command and
-it is never written: “QUILL scratch that”. <strong>Speak a
+QUILL Lite offers to remember it; No is the default.</p></li>
+<li><p><strong>The command word.</strong> Say “QUILL” before a command
+and it is never written: “QUILL scratch that”. <strong>Speak a
 Command</strong> (<strong>F11</strong>) does the same from the keyboard.
-The user guide’s section on the command word has the details.</li>
-<li><strong>Review Dictation</strong> (<strong>Shift+F4</strong>). Say
-“QUILL review that” to hold your last phrase in a window, change it by
-typing, dictating or asking the AI, then insert it as one undo step. See
-“Review before inserting”.</li>
-<li><strong>Fix words without retyping.</strong> “Replace Tuesday with
-Wednesday”, “change that to” and “delete previous paragraph”. “Correct
-that” now works with Moonshine and Whisper too, and words a correction
-replaced wait in Recent Phrases. See “Replace and change that”.</li>
-<li><strong>Nothing you said is lost.</strong> A phrase that could not
-be written is kept privately, even through a crash, until you write or
-discard it from <strong>Recent Phrases</strong>
+The user guide’s section on the command word has the details.</p></li>
+<li><p><strong>Review Dictation</strong> (<strong>Shift+F4</strong>).
+Say “QUILL review that” to hold your last phrase in a window, change it
+by typing, dictating or asking the AI, then insert it as one undo step.
+See “Review before inserting”.</p></li>
+<li><p><strong>Fix words without retyping.</strong> “Replace Tuesday
+with Wednesday”, “change that to” and “delete previous paragraph”.
+“Correct that” now works with Moonshine and Whisper too, and words a
+correction replaced wait in Recent Phrases. See “Replace and change
+that”.</p></li>
+<li><p><strong>Nothing you said is lost.</strong> A phrase that could
+not be written is kept privately, even through a crash, until you write
+or discard it from <strong>Recent Phrases</strong>
 (<strong>Shift+F11</strong>). A dictation history, text only, is there
-if you turn it on.</li>
-<li><strong>Reading back more.</strong> “read that” reads all of what
+if you turn it on.</p></li>
+<li><p><strong>Reading back more.</strong> “read that” reads all of what
 last went in, and “read last sentence”, “read last paragraph” and “read
-selection” are new. They work in a read-only document too.</li>
-<li><strong>Spell an address with pauses.</strong> While spelling,
+selection” are new. They work in a read-only document too.</p></li>
+<li><p><strong>Spell an address with pauses.</strong> While spelling,
 letters join the ones before them, so you can pause mid-address. Say
-“space” for a space.</li>
-<li><strong>A Markdown link by voice</strong> now comes out as a working
-link.</li>
-<li><strong>A calmer spoken preview.</strong> Each word heard so far is
-said once, when the engine is sure of it.</li>
-<li><strong>A backslash in My Words and Phrases is kept</strong>, so a
-folder path reads back as you typed it.</li>
-<li><strong>Speech providers.</strong> <strong>Speech
+“space” for a space.</p></li>
+<li><p><strong>A Markdown link by voice</strong> now comes out as a
+working link.</p></li>
+<li><p><strong>A calmer spoken preview.</strong> Each word heard so far
+is said once, when the engine is sure of it.</p></li>
+<li><p><strong>A backslash in My Words and Phrases is kept</strong>, so
+a folder path reads back as you typed it.</p></li>
+<li><p><strong>Speech providers.</strong> <strong>Speech
 Providers…</strong> in Dictation Settings lets you dictate with your own
 account at Azure, Google, Deepgram and others. You are asked before
 anything is sent. See “Speech providers: dictation with your own
-account”.</li>
-<li><strong>Which model suits this computer.</strong> Speech Models now
-recommends one model and says why. It is only advice. The user guide’s
-new “Which engine should I choose?” explains the choices in plain
-words.</li>
-<li><strong>Shared settings and words.</strong> You can share dictation
-settings and your word list with QUILL, QUILL Transcribe and Quill
-Inkwell, and import or export My Words and Phrases
-(<strong>Alt+Shift+F10</strong>) as Markdown or CSV.</li>
-<li><strong>Programs dictation never types into.</strong> Password
+account”.</p></li>
+<li><p><strong>Which model suits this computer.</strong> Speech Models
+now recommends one model and says why. It is only advice. The user
+guide’s new “Which engine should I choose?” explains the choices in
+plain words.</p></li>
+<li><p><strong>Advice from real speech.</strong> We tested every
+dictation model on recordings of real people, including audiobooks no
+model had been trained on, and the recommendation now uses those results
+instead of a computer voice. In English, <strong>NVIDIA Parakeet Unified
+0.6B</strong> got 3.2 percent of words wrong, against 6.5 for the
+built-in Moonshine. In Spanish, <strong>NVIDIA Parakeet TDT 0.6B
+v3</strong> got 4.4 percent wrong on Google’s FLEURS Spanish, against
+30.5 for the built-in Whisper. So Speech Models now recommends:</p>
+<ul>
+<li>Parakeet Unified for English on a computer with 8 GB of memory and
+four cores;</li>
+<li>Parakeet TDT v3 for English on 8 GB with two cores, and for Spanish
+on 8 GB;</li>
+<li>the built-in Moonshine (English) and Whisper (Spanish) on 4 GB, or
+when little memory is free.</li>
+</ul>
+<p>A computer with 8 GB may now give dictation 1.6 GB beside your screen
+reader (it was 1 GB), and never more than is free, less half a gigabyte.
+The tiers follow the real speeds: Parakeet TDT v3, Parakeet Unified and
+Whisper base.en are now Lightweight, and Nemotron is Balanced. The user
+guide’s new “How we chose: tested on real speech” has the tables, and
+“Nemotron or Parakeet: which should I try?” is rewritten: Parakeet makes
+fewer mistakes, and Nemotron is still the one that shows your words
+while you speak.</p></li>
+<li><p><strong>Five models are being retired.</strong> Distil-Whisper
+small.en, Whisper small.en, Distil-Whisper medium.en, Whisper medium.en
+and Distil-Whisper large-v3 are English only, and Parakeet Unified beat
+each of them on accuracy and speed, in the same memory or less. Each
+one’s line in the list starts “Being retired, use NVIDIA Parakeet
+Unified 0.6B instead.” The first time dictation starts on one, you hear
+one short sentence saying so, once across every QuillVille program; the
+measured reason is in that model’s details in the list. It keeps working
+until the next feature release; nothing is switched and nothing is
+deleted, and none of them is ever recommended.</p></li>
+<li><p><strong>Moonshine base hears long phrases.</strong> It used to
+write nothing at all for a phrase longer than about eight and a half
+seconds. It now hears a long phrase in pieces and joins them.</p></li>
+<li><p><strong>Shared settings and words.</strong> You can share
+dictation settings and your word list with QUILL, QUILL Transcribe and
+Quill Inkwell, and import or export My Words and Phrases
+(<strong>Alt+Shift+F10</strong>) as Markdown or CSV.</p></li>
+<li><p><strong>Programs dictation never types into.</strong> Password
 managers and Windows sign-in prompts are on the list to begin with, and
-you can add more. See “Programs dictation never types into”.</li>
-<li><strong>One microphone at a time.</strong> If QUILL Transcribe is
+you can add more. See “Programs dictation never types into”.</p></li>
+<li><p><strong>One microphone at a time.</strong> If QUILL Transcribe is
 already listening, Ctrl+F11 tells you instead of opening a second
 microphone. QUILL Transcribe and Quill Inkwell keep out of QUILL Lite’s
-window.</li>
-<li><strong>A tick while a phrase is worked on</strong>, if you turn it
-on in More Dictation Settings.</li>
-<li><strong>Translate a recording into English.</strong> In Transcribe a
-Recording (<strong>Shift+F5</strong>), check <strong>Translate into
-English</strong> for a Spanish recording.</li>
-<li><strong>The Dictation commands guide</strong> now ends with worked
-examples. The <strong>After each phrase is written, give me</strong>
-list has moved beside the other sounds.</li>
-<li><strong>QUILL Transcribe</strong>, released on 1 November 2026, is
-now in the user guide’s list of QuillVille apps.</li>
+window.</p></li>
+<li><p><strong>A tick while a phrase is worked on</strong>, if you turn
+it on in More Dictation Settings.</p></li>
+<li><p><strong>Translate a recording into English.</strong> In
+Transcribe a Recording (<strong>Shift+F5</strong>), check
+<strong>Translate into English</strong> for a Spanish
+recording.</p></li>
+<li><p><strong>The Dictation commands guide</strong> now ends with
+worked examples. The <strong>After each phrase is written, give
+me</strong> list has moved beside the other sounds.</p></li>
+<li><p><strong>QUILL Transcribe</strong>, released on 1 November 2026,
+is now in the user guide’s list of QuillVille apps.</p></li>
 </ul>
 <h3 id="updates">Updates</h3>
 <ul>
@@ -820,13 +859,13 @@ you can now download a larger model: the same local models VS Code
 offers for its own dictation, plus the rest of the Whisper family.</p>
 <p>Open Dictation Settings (<strong>Alt+Shift+F6</strong>) and press
 <strong>Better Accuracy: Speech Models…</strong>
-(<strong>Alt+B</strong>). The list starts with our suggestion, NVIDIA’s
-<strong>Nemotron 3.5 ASR Streaming</strong> (VS Code’s default), then
-NVIDIA’s two <strong>Parakeet</strong> models, <strong>Whisper</strong>
-small, base and tiny, the rest of Whisper from base.en to large-v3, and
-a lighter <strong>Moonshine base</strong>. Each one says what it is good
-for, how big it is, which languages it knows, which computers suit it
-and whether yours should keep up.</p>
+(<strong>Alt+B</strong>). The list starts with NVIDIA’s <strong>Nemotron
+3.5 ASR Streaming</strong> (VS Code’s default), then NVIDIA’s two
+<strong>Parakeet</strong> models, <strong>Whisper</strong> small, base
+and tiny, the rest of Whisper from base.en to large-v3, and a lighter
+<strong>Moonshine base</strong>. Each one says what it is good for, how
+big it is, which languages it knows, which computers suit it and whether
+yours should keep up.</p>
 <ul>
 <li>Nothing downloads until you press <strong>Download…</strong> and say
 yes to a question that names where it comes from, its size, its licence
@@ -844,8 +883,11 @@ everything travels together.</li>
 model goes missing, dictation tells you in one sentence and uses the
 built-in one.</li>
 </ul>
-<p>The user guide’s “Better accuracy: optional speech models” has every
-model’s published accuracy, what we measured, and “Nemotron or Parakeet:
+<p>The <strong>Recommendation</strong> box (<strong>Alt+C</strong>)
+names the model that suits this computer, from our tests on real speech
+(see “Advice from real speech” in build 5, above). The user guide’s
+“Better accuracy: optional speech models” has every model’s published
+accuracy, what we measured on real speech, and “Nemotron or Parakeet:
 which should I try?”.</p>
 <h2 id="dictation-that-keeps-up-with-you">Dictation that keeps up with
 you</h2>

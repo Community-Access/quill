@@ -238,7 +238,9 @@ def test_the_rolling_context_is_the_last_words_dictated() -> None:
 def test_the_speed_check_warns_plainly_about_a_heavy_model() -> None:
     nemotron = downloadable("nemotron")
     moonshine_base = downloadable("moonshine_base")
-    slow = speed_check.SpeedCheck(tiny=0.2, cores=2, memory_gb=4.0)
+    # Nemotron's real-speech cost is 5.8 times Moonshine tiny: a computer where
+    # tiny takes 0.3 seconds a second puts it past the lag limit.
+    slow = speed_check.SpeedCheck(tiny=0.3, cores=2, memory_gb=4.0)
     fast = speed_check.SpeedCheck(tiny=0.01, cores=12, memory_gb=32.0)
     assert speed_check.LAG_SENTENCE in speed_check.verdict(nemotron, slow)
     assert "keep up comfortably" in speed_check.verdict(moonshine_base, fast)

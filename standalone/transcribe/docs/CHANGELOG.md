@@ -270,6 +270,37 @@ where in the user guide to read more.
   models with their sizes, languages, tiers and memory, the recommendation,
   OpenAI and the speech providers, with a worked example, "Dictating in
   Spanish" (commands stay in English) and "Limits".
+- **Advice from real speech.** The recommendation, the tiers and the figures
+  now come from tests with recordings of real people (22 October 2026), not a
+  synthetic voice, and the advice says so. For English on a computer with
+  8 GB and four cores it names NVIDIA Parakeet Unified 0.6B: 3.2 percent of
+  words wrong on audiobooks no model was trained on, against 6.5 for the
+  built-in Moonshine. With 8 GB and two cores it names Parakeet TDT 0.6B v3.
+  In Spanish on 8 GB it names Parakeet TDT v3: 4.4 percent wrong, against
+  30.5 for the built-in Whisper. On 4 GB, or with little memory free, it
+  stays with the built-in Moonshine (English) and Whisper (Spanish). Shared
+  with QUILL and QUILL Lite. User guide: "How we chose: tested on real
+  speech".
+- **More memory on an 8 GB computer, and free memory counts.** A computer
+  with 8 GB may now give dictation 1.6 GB beside the screen reader (it was
+  1 GB), and never more than is free when you ask, less half a gigabyte. User
+  guide: "The recommendation".
+- **Tiers follow real speed.** Parakeet TDT v3, Parakeet Unified and Whisper
+  base.en are now **Lightweight**; Nemotron is **Balanced**. User guide: "What
+  the tiers mean".
+- **Five English-only models are being retired:** Distil-Whisper small.en,
+  Whisper small.en, Distil-Whisper medium.en, Whisper medium.en and
+  Distil-Whisper large-v3. Parakeet Unified beat each one on accuracy and
+  speed, in the same memory or less. Each one's line starts "Being retired,
+  use NVIDIA Parakeet Unified 0.6B instead." The first time dictation starts
+  on one, you hear once, across every QuillVille program, that it is being
+  retired and keeps working until you choose another model; the measured
+  reason is in that model's details. Nothing is switched or
+  deleted, and they are never recommended. User guide: "Models being
+  retired".
+- **Moonshine base hears long phrases.** It wrote nothing for any phrase
+  longer than about eight and a half seconds; it now hears them in pieces and
+  joins them. User guide: "The models you can download".
 
 ### Practice and lessons
 

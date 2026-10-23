@@ -62,7 +62,7 @@ CATALOGUE: tuple[DownloadableModel, ...] = (
     DownloadableModel(
         id="nemotron",
         name="NVIDIA Nemotron 3.5 ASR Streaming 0.6B",
-        good_for="Suggested download. Excellent for live dictation; VS Code's default.",
+        good_for="Writes your words while you speak; VS Code's default.",
         description=(
             "NVIDIA's streaming model, the one VS Code's dictation downloads. It is built "
             "to recognise while you speak, writes capitals itself, and understands "
@@ -108,14 +108,15 @@ CATALOGUE: tuple[DownloadableModel, ...] = (
         licence="NVIDIA OpenMDW-1.1",
         licence_url="https://openmdw.ai/license/1-1/",
         source=SHERPA_SOURCE,
-        cost_factor=8.0,
+        # Real speech, 2026-10-22 (English FLEURS run, against Moonshine tiny); was 8.0.
+        cost_factor=5.8,
         folder="nemotron-3.5-asr-streaming-int8",
-        suggested=True,
     ),
     DownloadableModel(
         id="parakeet_unified",
         name="NVIDIA Parakeet Unified 0.6B",
-        good_for="May give slightly better final text in some conditions. English only.",
+        # The fewest mistakes on real recordings (2026-10-22, design section 37).
+        good_for="Suggested download: the fewest mistakes in our real-speech tests. English only.",
         description=(
             "NVIDIA's newest English Parakeet, trained to work both while you speak "
             "and on a finished phrase; dictation uses it on each finished phrase. "
@@ -161,8 +162,10 @@ CATALOGUE: tuple[DownloadableModel, ...] = (
         licence="NVIDIA Open Model License",
         licence_url=_NVIDIA_LICENCE,
         source=SHERPA_SOURCE,
-        cost_factor=6.1,
+        # Real speech, 2026-10-22 (English FLEURS run, against Moonshine tiny); was 6.1.
+        cost_factor=3.8,
         folder="parakeet-unified-en-0.6b-int8",
+        suggested=True,
     ),
     DownloadableModel(
         id="parakeet",
@@ -213,7 +216,8 @@ CATALOGUE: tuple[DownloadableModel, ...] = (
         licence="CC BY 4.0",
         licence_url="https://creativecommons.org/licenses/by/4.0/",
         source=SHERPA_SOURCE,
-        cost_factor=6.3,
+        # Real speech, 2026-10-22 (English FLEURS run, against Moonshine tiny); was 6.3.
+        cost_factor=3.2,
         folder="parakeet-tdt-0.6b-v3-int8",
     ),
     *WHISPER_VS_CODE,
@@ -267,11 +271,41 @@ CATALOGUE: tuple[DownloadableModel, ...] = (
         licence="MIT (English Moonshine models)",
         licence_url="https://github.com/moonshine-ai/moonshine/blob/main/LICENSE",
         source=SHERPA_SOURCE,
-        cost_factor=1.5,
+        # Real speech, 2026-10-22 (English FLEURS run, against Moonshine tiny); was 1.5.
+        cost_factor=2.2,
         folder="moonshine-base-en",
     ),
 )
 
+
+def _with_retiring_notes(models: tuple[DownloadableModel, ...]) -> tuple[DownloadableModel, ...]:
+    """A retiring model's own line says so first, in every list that shows it
+    (Speech Models, QUILL Transcribe, the shared provider, file models), and its
+    details carry the measured reason."""
+    from dataclasses import replace
+
+    from quill.core.windows_dictation.retiring import RETIRING
+
+    names = {model.id: model.name for model in models}
+    return tuple(
+        replace(
+            model,
+            good_for=(
+                f"Being retired, use {names[RETIRING[model.id].replacement]} instead. "
+                f"{model.good_for}"
+            ),
+            description=(
+                f"Being retired. In our tests with real recordings, "
+                f"{RETIRING[model.id].evidence} {model.description}"
+            ),
+        )
+        if model.id in RETIRING
+        else model
+        for model in models
+    )
+
+
+CATALOGUE = _with_retiring_notes(CATALOGUE)
 _BY_ID = {model.id: model for model in CATALOGUE}
 
 

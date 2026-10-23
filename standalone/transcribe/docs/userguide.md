@@ -735,14 +735,17 @@ text, Spanish, or a speech company you already pay for.
 | OpenAI, with your own key | Sent to OpenAI | Yes | None | Only once an OpenAI key is saved |
 | A speech provider, with your own account | Sent to that company | Yes | None | No: choose it in Dictation Settings |
 
-- **Moonshine** is the quickest by far. It takes about a twentieth of a second
-  of computing for each second you speak, uses about 210 MB of memory, and
-  your words arrive about a fifth of a second after you pause. It knows only
-  English: with the dictation language set to Spanish, QUILL Transcribe uses
-  the built-in multilingual Whisper instead, without you changing anything.
-- **Whisper** is a little slower: about a fifth of a second of computing for
-  each second you speak, and about 300 MB of memory. Try it if Moonshine
-  often mishears you. It knows English and Spanish.
+- **Moonshine** is the quickest. In our tests with real recordings it took
+  about a twentieth of a second of computing for each second you speak, used
+  at most 584 MB of memory, and got 6.5 percent of words wrong on audiobooks
+  no model was trained on. Your words arrive about a fifth of a second after
+  you pause. It knows only English: with the dictation language set to
+  Spanish, QUILL Transcribe uses the built-in multilingual Whisper instead,
+  without you changing anything.
+- **Whisper** is a little slower, used at most 521 MB, and got 8.3 percent of
+  English words wrong. It knows English and Spanish, but in Spanish it got
+  about one word in four wrong (30.5 and 27.0 percent), so on a computer with
+  8 GB a downloaded model does much better in Spanish.
 - **Windows speech recognition** is Windows' own recogniser. It needs nothing
   extra and works in any speech language installed in Windows, but it does
   not punctuate by itself, and it often mishears a voice it has not been
@@ -775,7 +778,8 @@ Spanish, the multilingual Whisper does its listening.
 **About this model** (Alt+A) says more about the row you are on: whether your
 speech leaves the computer, whether it is ready, what its tier means, its
 languages and size, who publishes it, its licence, and one line on what it is
-good for. Press Enter, or **Use This Model**, to choose it. It stays your model
+good for. For a model being retired, that line starts "Being retired, use
+NVIDIA Parakeet Unified 0.6B instead." (see "Models being retired"). Press Enter, or **Use This Model**, to choose it. It stays your model
 until you choose another. A model that is not downloaded is listed so you know
 it exists; choosing it says it is not downloaded yet and points you to
 **Model Library...** (Alt+L), which is also a button in this window.
@@ -791,13 +795,18 @@ The tier says how much work a model is for your computer, in the same words
 everywhere in QuillVille:
 
 - **Lightweight**: keeps up comfortably even on a modest computer. The
-  built-in Moonshine and Whisper, and Moonshine base.
+  built-in Moonshine and Whisper, Moonshine base, Whisper base.en, and both
+  Parakeet models.
 - **Balanced**: more work than the built-in engines; keeps up on a computer
-  with four or more cores. Both Parakeet models, Whisper base and Whisper
-  base.en.
-- **High accuracy**: the fewest mistakes, for the most work; needs a capable
-  computer, or patience. Nemotron, Whisper small and larger, and the
-  Distil-Whisper models.
+  with four or more cores. Nemotron, Whisper base and Distil-Whisper small.en.
+- **High accuracy**: the most work; needs a capable computer, or patience.
+  Whisper small and larger, Distil-Whisper medium.en and Distil-Whisper
+  large-v3. Despite the name, none of these that we tested on real recordings
+  made fewer mistakes than Parakeet Unified.
+
+The tiers follow how fast each model ran on real speech. Until October 2026
+they followed tests with a synthetic voice, which put both Parakeet models in
+Balanced and Nemotron in High accuracy.
 
 "Keeps up" means your words arrive soon after you pause. A model that does
 not keep up still writes everything, only later: you hear the soft working
@@ -810,34 +819,65 @@ would not make them faster. All of them keep your speech on this computer.
 "Fits a computer with" is the smallest amount of memory the model runs in
 beside a screen reader.
 
-| Model | Languages | Download | Tier | Fits a computer with |
-|---|---|---|---|---|
-| Moonshine base | English | 141 MB | Lightweight | 4 GB |
-| Whisper base | English and Spanish | 161 MB | Balanced | 4 GB |
-| Whisper base.en | English | 161 MB | Balanced | 4 GB |
-| NVIDIA Parakeet Unified 0.6B | English | 663 MB | Balanced | 8 GB |
-| NVIDIA Parakeet TDT 0.6B v3 | English and Spanish | 670 MB | Balanced | 8 GB |
-| Distil-Whisper small.en | English | 299 MB | High accuracy | 4 GB |
-| Whisper small | English and Spanish | 375 MB | High accuracy | 8 GB |
-| Whisper small.en | English | 376 MB | High accuracy | 4 GB |
-| Distil-Whisper medium.en | English | 573 MB | High accuracy | 8 GB |
-| NVIDIA Nemotron 3.5 ASR Streaming 0.6B | English and Spanish | 682 MB | High accuracy | 8 GB |
-| Whisper medium.en | English | 946 MB | High accuracy | 16 GB |
-| Whisper medium | English and Spanish | 946 MB | High accuracy | 16 GB |
-| Distil-Whisper large-v3 | English | 984 MB | High accuracy | 16 GB |
-| Whisper large-v3-turbo | English and Spanish | 1.0 GB | High accuracy | 16 GB |
-| Whisper large-v3 | English and Spanish | 1.8 GB | High accuracy | 16 GB |
+"Words wrong" is the percentage of words each model got wrong on public-domain
+audiobooks no model was trained on (see "How we chose: tested on real
+speech"); lower is better, and a dash means it was not tested there.
+
+| Model | Languages | Download | Tier | Fits a computer with | Words wrong |
+|---|---|---|---|---|---|
+| NVIDIA Parakeet Unified 0.6B | English | 663 MB | Lightweight | 8 GB | 3.2% |
+| NVIDIA Parakeet TDT 0.6B v3 | English and Spanish | 670 MB | Lightweight | 8 GB | 3.8% |
+| Moonshine base | English | 141 MB | Lightweight | 4 GB | 5.9% |
+| Whisper base.en | English | 161 MB | Lightweight | 4 GB | 5.9% |
+| NVIDIA Nemotron 3.5 ASR Streaming 0.6B | English and Spanish | 682 MB | Balanced | 8 GB | 5.3% |
+| Whisper base | English and Spanish | 161 MB | Balanced | 8 GB | 7.4% |
+| Whisper small | English and Spanish | 375 MB | High accuracy | 8 GB | 4.7% |
+| Whisper medium | English and Spanish | 946 MB | High accuracy | 16 GB | - |
+| Whisper large-v3-turbo | English and Spanish | 1.0 GB | High accuracy | 16 GB | - |
+| Whisper large-v3 | English and Spanish | 1.8 GB | High accuracy | 16 GB | - |
+| Distil-Whisper small.en (being retired) | English | 299 MB | Balanced | 4 GB | 5.9% |
+| Whisper small.en (being retired) | English | 376 MB | High accuracy | 4 GB | 4.3% |
+| Distil-Whisper medium.en (being retired) | English | 573 MB | High accuracy | 8 GB | 6.3% |
+| Whisper medium.en (being retired) | English | 946 MB | High accuracy | 8 GB | 3.6% |
+| Distil-Whisper large-v3 (being retired) | English | 984 MB | High accuracy | 8 GB | 4.5% |
 
 A few differences worth knowing:
 
+- **Parakeet Unified** made the fewest English mistakes of every model that
+  keeps up on one processor thread, and is what QUILL Transcribe recommends
+  for English on a computer with 8 GB of memory and four cores.
+- **Parakeet TDT v3** is lighter still, and the most accurate model for
+  Spanish: 4.4 and 7.3 percent of words wrong on the two Spanish sets.
 - **Nemotron** shows your words while you are still talking: on a braille
   display you see "Hearing:" and the words so far. The others write each
   phrase when you pause.
 - **Parakeet** never invents words out of silence. Whisper models sometimes
   write a phantom "thank you" when you said nothing.
-- **Whisper large-v3** is the most accurate Whisper, and very slow on most
-  computers. Large-v3-turbo and Distil-Whisper large-v3 come close to it,
-  much faster.
+- **Moonshine base** now hears long phrases. Before October 2026 it wrote
+  nothing at all for a phrase longer than about eight and a half seconds; it
+  now hears long phrases in pieces and joins them.
+- **Whisper medium, large-v3-turbo and large-v3** are very slow on most
+  computers, and too slow for us to test on real speech.
+
+### Models being retired
+
+Five English-only models are being retired: Distil-Whisper small.en, Whisper
+small.en, Distil-Whisper medium.en, Whisper medium.en and Distil-Whisper
+large-v3. In our tests with real recordings, NVIDIA Parakeet Unified 0.6B made
+fewer mistakes than each of them, ran faster, and needed the same memory or
+less.
+
+- Each one's line in the Model Library, and About this model (Alt+A) in
+  Choose Model, starts "Being retired, use NVIDIA Parakeet Unified 0.6B
+  instead."
+- The first time dictation starts on one, you hear one short sentence:
+  that it is being retired and keeps working, and that nothing changes until
+  you choose another model. The measured reason is in About this model, in
+  Choose Model. You hear
+  it once across every QuillVille program, not once in each.
+- Nothing is switched and nothing is deleted. If you use one, it stays your
+  model until you choose another in Choose Model (Ctrl+M).
+- They are never recommended.
 
 ### Which one should I choose?
 
@@ -847,13 +887,16 @@ Start from what matters most to you.
   your speech on this computer and works with no internet. Only OpenAI and
   the speech providers send it away.
 - **Speed.** Moonshine. Nothing else answers as quickly, on any computer.
-- **Fewer mistakes.** A larger downloaded model, if your computer can keep
-  up. On a computer with 8 GB of memory and four cores, Nemotron is the usual
-  answer.
-- **Memory.** On a computer with 4 GB, stay with the Lightweight tier or the
-  4 GB rows above, because your screen reader needs its share too.
-- **Spanish.** The built-in Whisper, Nemotron, Parakeet TDT, or a Whisper
-  without ".en" in its name.
+- **Fewer mistakes.** On a computer with 8 GB of memory and four cores,
+  NVIDIA Parakeet Unified 0.6B: 3.2 percent of words wrong, against
+  Moonshine's 6.5. With two cores, Parakeet TDT v3 is lighter and nearly as
+  good.
+- **Memory.** On a computer with 4 GB, or with little memory free, stay with
+  the built-in Moonshine (English) or Whisper (Spanish), or the 4 GB rows
+  above, because your screen reader needs its share too.
+- **Spanish.** On a computer with 8 GB, Parakeet TDT v3. On 4 GB, the
+  built-in Whisper. Nemotron and the Whisper models without ".en" in their
+  names know Spanish too.
 - **No downloads, in any language Windows has.** Windows speech recognition,
   if you do not mind saying the punctuation aloud.
 
@@ -876,16 +919,67 @@ The **Model Library** has three controls for it:
   can read its details and download it.
 
 It is only advice. QUILL Transcribe never changes your model by itself, and
-OpenAI and the speech providers are never recommended. The figures are
-estimates, measured with a synthetic voice until tests with real voices
-exist. As a guide, this is what it usually suggests:
+OpenAI and the speech providers are never recommended, nor is a model being
+retired. The figures come from our tests with real recordings, on one
+computer, and the advice says so; yours may differ.
+
+What it recommends depends on memory as well as speed. A model must fit
+beside your screen reader: up to 600 MB on a computer with 4 GB, and up to
+1.6 GB on a computer with 8 GB (it used to be 1 GB). It must also fit in what
+is free when you ask, less half a gigabyte kept back, so on a busy computer
+it may name a lighter model than usual. As a guide, this is what it usually
+suggests:
 
 | Computer | A balance | The quickest response | The fewest mistakes |
 |---|---|---|---|
 | 4 GB of memory, 2 cores | Moonshine | Moonshine | Moonshine base |
-| 8 GB of memory, 4 cores | Moonshine base | Moonshine | Nemotron |
-| 16 GB of memory, 8 cores | Nemotron | Moonshine | Nemotron |
-| 8 GB, 4 cores, dictating in Spanish | Whisper | Whisper | Nemotron |
+| 8 GB of memory, 2 cores | Parakeet TDT v3 | Moonshine | Parakeet Unified |
+| 8 GB of memory, 4 cores | Parakeet Unified | Moonshine | Parakeet Unified |
+| 16 GB of memory, 8 cores | Parakeet Unified | Moonshine | Parakeet Unified |
+| 4 GB, 2 cores, dictating in Spanish | Whisper | Whisper | Whisper |
+| 8 GB, dictating in Spanish | Parakeet TDT v3 | Whisper | Parakeet TDT v3 |
+
+On a slower computer, or one with little memory free, it names a lighter
+model, down to the built-in Moonshine or Whisper.
+
+### How we chose: tested on real speech
+
+The advice and the tiers come from a test on 22 October 2026 with recordings
+of real people, never a synthetic voice. The fairest set is public-domain
+audiobooks published on LibriVox after every model was trained, so no model
+can have learned them. Each model heard each recording one phrase at a time,
+on one processor thread, as it does when you dictate. "Speed per thread" is
+seconds of computing per second of speech; dictation's budget is 0.25, a
+quarter of a core, leaving the rest for your screen reader.
+
+English, percent of words wrong (lower is better):
+
+| Model | Held-out audiobooks | FLEURS | Speed per thread | Peak memory | Decision |
+|---|---|---|---|---|---|
+| NVIDIA Parakeet Unified 0.6B | 3.2% | 6.3% | 0.21 | 1.2 GB | Recommended on 8 GB with four cores |
+| NVIDIA Parakeet TDT 0.6B v3 | 3.8% | 9.0% | 0.11 | 1.1 GB | Kept; recommended on 8 GB with two cores |
+| NVIDIA Nemotron 3.5 Streaming 0.6B | 5.3% | 13.7% | 0.37 | 1.5 GB | Kept; streams words while you speak |
+| Moonshine base | 5.9% | 15.1% | 0.05 | 378 MB | Kept; fixed for long phrases |
+| Whisper base.en | 5.9% | 7.4% | 0.13 | 820 MB | Kept; light, good on varied voices |
+| Moonshine tiny (built in) | 6.5% | 13.2% | 0.06 | 584 MB | Kept; the default, and the pick on 4 GB |
+| Whisper tiny (built in) | 8.3% | 11.7% | 0.07 | 521 MB | Kept; built in |
+
+Spanish, percent of words wrong (lower is better):
+
+| Model | FLEURS Spanish | Held-out Spanish audiobooks | Speed per thread | Peak memory | Decision |
+|---|---|---|---|---|---|
+| NVIDIA Parakeet TDT 0.6B v3 | 4.4% | 7.3% | 0.12 | 1.1 GB | Recommended on 8 GB |
+| Whisper small | 6.0% | 7.8% | 0.57 | 1.4 GB | Kept; needs two threads |
+| NVIDIA Nemotron 3.5 Streaming 0.6B | 6.4% | 8.0% | 0.50 | 1.5 GB | Kept |
+| Whisper base | 12.6% | 16.1% | 0.18 | 821 MB | Kept; lighter |
+| Whisper tiny (built in) | 30.5% | 27.0% | 0.10 | 521 MB | Kept; built in, the pick on 4 GB |
+
+The test ran on one fast laptop, so the apps judge speed against the built-in
+Moonshine's speed on your own computer, measured by a two-second check. What
+it did not settle: how a real 4 GB computer behaves with NVDA or JAWS
+running, which still needs a person to try. The full record, with every model
+and set, is the benchmark report in QUILL's documentation,
+`docs/qa/dictation-real-speech-benchmark-2026-10-22.md`.
 
 ### A worked example
 
@@ -894,20 +988,20 @@ English. Moonshine is quick, but Sam would like fewer mistakes.
 
 1. Sam presses **Ctrl+L** for the Model Library.
 2. In **What matters most** (Alt+W), Sam chooses **The fewest mistakes**.
-   **Recommendation** (Alt+C) now names NVIDIA Nemotron 3.5 ASR Streaming
-   0.6B, says it keeps up on this computer, and that it is a 682 MB download.
+   **Recommendation** (Alt+C) now names NVIDIA Parakeet Unified 0.6B, says it
+   keeps up on this computer, and that it is a 663 MB download.
 3. Sam presses **Show Recommended Model** (Alt+S), then **Download...**
    (Alt+D). A question names the size, the licence and where it will be
    saved. Sam answers Yes, and carries on working while it downloads.
 4. When it has finished, Sam presses **Use for Dictation** (Alt+U). From the
-   next phrase Nemotron is the model, and the window's Model and microphone
-   field says so.
+   next phrase Parakeet Unified is the model, and the window's Model and
+   microphone field says so.
 5. A colleague's name still comes out wrong, so Sam adds it to **My Words and
    Phrases** (Alt+Shift+F10).
 
-If Nemotron turns out to be too slow while other programs are busy, Sam
-presses **Ctrl+M**, moves to Moonshine, and presses Enter. Nemotron stays
-downloaded for another day.
+If Parakeet Unified turns out to be too slow while other programs are busy,
+Sam presses **Ctrl+M**, moves to Moonshine, and presses Enter. Parakeet
+Unified stays downloaded for another day.
 
 ### The Model Library
 
@@ -916,8 +1010,11 @@ QUILL and QUILL Lite open from Dictation Settings with **Better Accuracy:
 Speech Models...** (Alt+B); that button is in QUILL Transcribe's Dictation
 Settings too. It lists every model you can download. For the one you are on:
 
-- **Details** (Alt+T) says what it is good for, its size, its published
-  accuracy, its licence and where it is saved.
+- **Details** (Alt+T) says what it is good for, its tier, its size, the
+  accuracy its publisher reports, its licence and where it is saved. The
+  publisher's figure comes from their own tests; the recommendation uses
+  ours, on real recordings (see "How we chose: tested on real speech"). A
+  model being retired says so first, in its row and in Details.
 - **Download...** (Alt+D) asks first, naming the size, the licence and where
   it goes. Nothing is fetched until you answer Yes. On a metered connection it
   asks about that too. It checks the free space first, shows **Progress**
@@ -1021,8 +1118,10 @@ Language** (Ctrl+Shift+F11), or by saying "switch to Spanish" and "cambiar a
 inglés".
 
 - The built-in Moonshine and Whisper both use the built-in multilingual
-  Whisper for Spanish. Nemotron, Parakeet TDT and the Whisper models without
-  ".en" know Spanish too.
+  Whisper for Spanish, which gets about one word in four wrong. On a computer
+  with 8 GB, NVIDIA Parakeet TDT 0.6B v3 is recommended instead: 4.4 percent
+  of words wrong. Nemotron and the Whisper models without ".en" know Spanish
+  too.
 - A downloaded model that knows only English does not start in Spanish: you
   are told, and can choose another model or language.
 - Windows speech recognition needs Spanish installed in Windows.
@@ -1036,8 +1135,10 @@ inglés".
 
 - Choose Model does not list the speech providers yet, nor Windows voice
   typing, which QUILL Transcribe does not run.
-- The speed figures and the recommendation are estimates from a synthetic
-  voice.
+- The speed and accuracy figures come from tests with real recordings on one
+  computer, so yours may differ. Whisper medium,
+  large-v3-turbo and large-v3 were too slow to test on real speech, and a
+  real 4 GB computer with a screen reader running has not yet been tried.
 - A graphics card does not speed up any of these models.
 - The recognition test's sentences are in English.
 

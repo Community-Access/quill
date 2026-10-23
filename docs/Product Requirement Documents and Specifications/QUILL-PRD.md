@@ -2698,6 +2698,64 @@ providers".
 > Outlook. Shared code (`corrections.py`, `external_edits.py`); design record
 > section 27.
 
+> **Dictation model advice on real speech, and five models retired (D-22, B-1,
+> 2026-10-22).** QUILL, QUILL Lite and QUILL Transcribe share one dictation
+> engine and one catalogue, so all three changed together. Evidence:
+> [`docs/qa/dictation-real-speech-benchmark-2026-10-22.md`](../qa/dictation-real-speech-benchmark-2026-10-22.md)
+> (with its JSON beside it, and design record section 36). Real recordings
+> only: LibriVox audiobooks catalogued after every model's training cutoff
+> (101 English, 82 Spanish), LibriSpeech test-clean and test-other, and FLEURS
+> English and Spanish, fed one phrase at a time on one processor thread on one
+> computer. Before this run the advice rested on ten recordings of a synthetic
+> voice. Requirements, all met:
+> - *The recommendation uses measured real speech.* English is ranked by the
+>   held-out audiobooks, Spanish by the mean of its two sets, and only models
+>   measured in Spanish are offered for Spanish. The reasons say "These figures
+>   come from our tests with real recordings, on one computer; yours may be a
+>   little faster or slower." (`model_advice.ESTIMATE_NOTE`).
+> - *What it names.* English: Moonshine tiny (built in) on 4 GB with two cores
+>   or when little memory is free; NVIDIA Parakeet TDT 0.6B v3 on 8 GB with two
+>   cores; NVIDIA Parakeet Unified 0.6B on 8 GB or more with four cores.
+>   Spanish: Whisper tiny (built in) on 4 GB; Parakeet TDT 0.6B v3 on 8 GB.
+>   "The quickest response" still names Moonshine tiny. It never switches a
+>   model and never names a retiring one.
+> - *Measured basis.* English, held-out audiobooks: Parakeet Unified 3.2
+>   percent of words wrong (FLEURS 6.3, 1.2 GB peak, 0.21 per thread), Parakeet
+>   TDT v3 3.8 (0.11, 1.1 GB), Nemotron 3.5 Streaming 5.3 (FLEURS 13.7, 0.37,
+>   1.5 GB), Moonshine tiny 6.5 (584 MB). Spanish, FLEURS and held-out
+>   audiobooks: Parakeet TDT v3 4.4 and 7.3, Nemotron 6.4 and 8.0, Whisper tiny
+>   30.5 and 27.0.
+> - *Memory.* An 8 GB baseline: dictation may take 1.6 GB beside the screen
+>   reader on 8 GB (was 1 GB), 600 MB on 4 GB and 4 GB on 16 GB, and never more
+>   than is free when asked, less 500 MB.
+> - *Tiers follow real speed* (cost against Moonshine tiny: Parakeet TDT v3
+>   3.2, Parakeet Unified 3.8, Whisper base.en 4.3, Nemotron 5.8). Lightweight:
+>   Parakeet TDT v3, Parakeet Unified, Whisper base.en, Moonshine base and the
+>   built-in models. Balanced: Nemotron and Whisper base.
+> - *Moonshine base hears long phrases* (PR #1683): it wrote nothing for a
+>   phrase over about 8.5 seconds; long phrases are now decoded in pieces of 8
+>   seconds or less, cut at the quietest moment, and joined. 5.9 percent wrong
+>   on the held-out audiobooks.
+> - *Retirement policy applied* (design record section 32.6: evidence first; a
+>   full feature release of notice; announced in the changelog, in the model
+>   list and in one spoken sentence; never silent). **Applied 2026-10-22** to
+>   Distil-Whisper small.en (5.9 percent), Whisper small.en (4.3), Distil-Whisper
+>   medium.en (6.3), Whisper medium.en (3.6) and Distil-Whisper large-v3 (4.5):
+>   Parakeet Unified beat each on accuracy and speed in the same memory or
+>   less. Each one's line in every model list starts "Being retired, use NVIDIA
+>   Parakeet Unified 0.6B instead."; dictation says once, across every
+>   QuillVille program (`retiring-notices.json` in the family's shared
+>   dictation settings), in one short sentence, that it is being retired and
+>   nothing changes until another model is chosen; the measured reason is in
+>   the model's details (shortened after the 2026-10-22 accessibility review,
+>   because it is spoken as the microphone opens). Nothing is switched and
+>   nothing is deleted. Removal is due no earlier than the next feature
+>   release (`quill/core/windows_dictation/retiring.py`).
+> - *Not settled by this run:* a real 4 GB computer with NVDA or JAWS running
+>   (screen-reader lag, battery; B-8 needs a person), whether Whisper writes
+>   the opening "¿" and "¡" itself, and fresh figures for Whisper medium and
+>   large-v3-turbo.
+
 ### 5.25f AI footprint, on-demand acquisition, and optimization
 
 **Hosted-AI route changes ask first (2026-10-16).** `quill/ui/hosted_ai_route_guard.py`

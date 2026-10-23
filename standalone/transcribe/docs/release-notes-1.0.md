@@ -51,6 +51,20 @@ type or discard it, and a dictation history is kept only if you turn it on.
 computer and why, every model has a tier, and twelve speech providers can be
 used with your own account. See "Models".
 
+**Advice tested on real speech.** The recommendation now rests on tests with
+recordings of real people, not a synthetic voice. For English on a computer
+with 8 GB of memory and four cores it names NVIDIA Parakeet Unified 0.6B,
+which got 3.2 percent of words wrong on audiobooks no model was trained on,
+against 6.5 for the built-in Moonshine. For Spanish on 8 GB it names NVIDIA
+Parakeet TDT 0.6B v3: 4.4 percent wrong, against 30.5 for the built-in
+Whisper. On 4 GB the built-in models are still the advice. Five English-only
+models are being retired (Distil-Whisper small.en, Whisper small.en,
+Distil-Whisper medium.en, Whisper medium.en and Distil-Whisper large-v3):
+they keep working until the next feature release, nothing is switched or
+deleted, and you are told once. Moonshine base no longer drops phrases
+longer than about eight and a half seconds. See "How we chose: tested on real
+speech" and "Models being retired".
+
 **Practice.** **Practice Dictation** (**Ctrl+Shift+P**) has a field of its
 own and a recognition test, and **Help > Tutorials...** (**Ctrl+Alt+F1**)
 has five lessons. See "Practice and lessons".
@@ -100,9 +114,10 @@ through Whisper's multilingual model). Choose Model (Ctrl+M) shows every model
 with what matters: whether it runs on your computer or sends your speech over
 the internet, its tier (Lightweight, Balanced or High accuracy), which
 languages it knows, and whether it is downloaded. **Recommended for this
-computer** names the model that suits your computer, and why. Fifteen larger
-models, from 141 MB to 1.8 GB, download from the Model Library (Ctrl+L) only
-when you ask.
+computer** names the model that suits your computer, and why, from our tests
+with real recordings. Fifteen larger models, from 141 MB to 1.8 GB, download
+from the Model Library (Ctrl+L) only when you ask; five of them are being
+retired, and say so first in their line.
 
 The one you choose is the one that runs. If it cannot run, you are told, and
 nothing else is quietly used instead. Use the Built-in Model This Time (Ctrl+B)

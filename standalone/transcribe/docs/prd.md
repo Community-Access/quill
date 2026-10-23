@@ -133,6 +133,43 @@ open, and what waits for a later version.
    Quill Cast's and Quill Radio's Edit > Dictate Here (D-16) send a `start`
    request, or launch QUILL Transcribe with `--tray --dictate-here`. Dictation
    design record, section 30.
+16. **Model advice from real speech** (after 1.0.0, 2026-10-22, D-22 and
+   B-1). Met. The recommendation, tiers, speed factors and memory peaks come
+   from the real-speech machine run recorded in
+   `docs/qa/dictation-real-speech-benchmark-2026-10-22.md` (dictation design
+   record, section 36), shared with QUILL and QUILL Lite through one engine
+   and catalogue. English is ranked by the LibriVox held-out audiobooks:
+   Parakeet Unified 3.2 percent of words wrong at 0.21 per thread, so it is
+   recommended on 8 GB with four cores; Parakeet TDT v3 (3.8, 0.11) on 8 GB
+   with two cores. Spanish is ranked by the mean of FLEURS Spanish and the
+   Spanish audiobooks, only from models measured in Spanish: Parakeet TDT v3
+   (4.4 and 7.3) on 8 GB, against the built-in Whisper's 30.5 and 27.0, which
+   stays the pick on 4 GB with Moonshine for English. The memory cap is
+   600 MB under 7 GB and 1.6 GB under 15 GB (it was 1 GB), and never more
+   than is free less 500 MB. Tiers: Parakeet TDT v3, Parakeet Unified and
+   Whisper base.en Lightweight; Nemotron Balanced. The advice's note says the
+   figures come from real recordings on one computer.
+17. **Retiring models** (after 1.0.0, 2026-10-22, dictation design record
+   section 32.6). Met. Distil-Whisper small.en, Whisper small.en,
+   Distil-Whisper medium.en, Whisper medium.en and Distil-Whisper large-v3
+   were each beaten by Parakeet Unified on the held-out audiobooks (5.9, 4.3,
+   6.3, 3.6 and 4.5 percent against 3.2), faster and in no more memory
+   (`quill/core/windows_dictation/retiring.py`). Their line in the Model
+   Library, and About this model in Choose Model, starts "Being retired, use NVIDIA Parakeet Unified
+   0.6B instead."; the reason is said once, recorded in the family's shared
+   dictation folder so it is said once across every QuillVille program; they
+   keep working until the next feature release; nothing is switched or
+   deleted; they are never recommended.
+18. **Moonshine base and long phrases** (after 1.0.0, 2026-10-22, PR #1683).
+   Met. It returned nothing for any phrase over about 8.5 seconds; long
+   phrases are now heard in pieces of 8 seconds or less, cut at the quietest
+   moment, and joined. Measured after the fix: 5.9 percent on the held-out
+   audiobooks.
+
+Still to check by hand: speed, memory, screen-reader lag and battery on a real
+4 GB Windows 10 computer with NVDA or JAWS running (B-8), and Whisper medium
+and large-v3-turbo, which were too slow to re-run and keep their earlier
+figures.
 
 ## Waiting for a later version
 

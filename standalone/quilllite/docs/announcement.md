@@ -485,6 +485,32 @@ Last Result. The QUILL Lite 1.2 release notes have the whole story.
 
 ---
 
+## Dictation, tested on real voices
+
+**October 22, 2026**
+
+When QUILL Lite suggests a speech model for your computer, that advice now
+comes from real people talking, not a computer voice. We tested every
+dictation model on hundreds of recordings, including public-domain audiobooks
+that were catalogued after every model was trained, so none of them could have
+learned the answers. The best English model, NVIDIA Parakeet Unified, got 3.2
+percent of words wrong, about half as many as the built-in Moonshine. In
+Spanish the difference is bigger still: NVIDIA Parakeet TDT v3 got 4.4 percent
+wrong where the built-in Whisper got 30.5, about three words in ten.
+
+What changes for you: on a computer with 8 GB of memory, Speech Models now
+suggests one of the two Parakeet models, both free downloads that keep your
+voice on your computer. On 4 GB, or when memory is tight, it still suggests
+the built-in engines, because they leave your screen reader room to breathe.
+Five older English-only models are being retired, because Parakeet Unified
+beat every one of them. If you use one, it keeps working until the next
+feature release, QUILL Lite tells you once, and nothing changes until you
+choose. And Moonshine base, which used to drop any phrase longer than about
+eight and a half seconds, now hears every word. The user guide's "How we
+chose: tested on real speech" has the whole table.
+
+---
+
 ## Where to learn more
 
 - **The QUILL Lite User Guide**, in the Start menu beside QUILL Lite, covers
