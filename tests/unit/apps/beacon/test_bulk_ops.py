@@ -29,6 +29,13 @@ def frame(monkeypatch):
     monkeypatch.setattr(BeaconFrame, "_start_tray", lambda self: None)
     monkeypatch.setattr(BeaconFrame, "_start_capture_bridge", lambda self: None)
     monkeypatch.setattr(BeaconFrame, "_setup_auto_sync", lambda self: None)
+    # Selecting a row announces it, and that reaches the real screen-reader and
+    # speech bridge, which these tests never listen to; on the CI runner it took
+    # the process down with an access violation even run alone (2026-10-23).
+    # Stubbed on the class, before the frame binds ``self._announce`` to it.
+    from quill.apps.beacon.announce import Announcer
+
+    monkeypatch.setattr(Announcer, "say", lambda self, *a, **k: None)
     f = BeaconFrame()
     yield f
     # Close the way the app closes (test_auto_sync.py has the story): a bare
