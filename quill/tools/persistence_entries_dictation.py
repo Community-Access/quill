@@ -28,6 +28,8 @@ DICTATION_ENTRIES: dict[str, str] = {
     # 2026-10-22: which removed models' one-time notice is due or said; an
     # unreadable file reads as none, which costs at most one missed sentence.
     "core/windows_dictation/removed_models.py::_write": "marker",
+    # 2026-10-23: whether the one-time Spanish model tip has been said.
+    "core/windows_dictation/spanish_tip.py::_write": "marker",
 }
 
 __all__ = ["DICTATION_ENTRIES"]
