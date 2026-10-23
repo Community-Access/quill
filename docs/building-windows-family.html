@@ -329,11 +329,20 @@ portable zip into one upload folder with a zip per app, an everything
 zip and <code>SHA256SUMS.txt</code>, under
 <code>dist/release-builds/&lt;date-time&gt;/</code>. Builds are unsigned
 unless you pass <code>-Sign</code>; nothing is published.</p>
+<p><strong>A build for distribution needs
+<code>-Release</code>.</strong> Without it the script makes a local dev
+build: every app is passed <code>-SkipPublishedCheck</code>, so none of
+them checks its version and build number against the releases already
+published. With <code>-Release</code> each app keeps that gate (it needs
+the network). The script builds with the system Python 3.14
+(<code>py -3.14</code>) unless you pass <code>-Python</code>; a
+repository <code>.venv</code> is never used unasked, because releases
+build with the system interpreter.</p>
 <div class="sourceCode" id="cb1"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\build-quill-apps<span class="op">.</span><span class="fu">ps1</span> lite<span class="op">,</span>cast<span class="op">,</span>radio<span class="op">,</span>transcribe</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\build-quill-apps<span class="op">.</span><span class="fu">ps1</span> all <span class="op">-</span>KeepGoing</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\build-quill-apps<span class="op">.</span><span class="fu">ps1</span> transcribe <span class="op">-</span>DryRun   <span class="co"># print the commands, build nothing</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">Get-Help</span> <span class="op">.</span>\build-quill-apps<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Detailed    <span class="co"># every option</span></span></code></pre></div>
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\build-quill-apps<span class="op">.</span><span class="fu">ps1</span> all <span class="op">-</span>Release <span class="op">-</span>KeepGoing   <span class="co"># a distribution build of everything</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\build-quill-apps<span class="op">.</span><span class="fu">ps1</span> lite<span class="op">,</span>cast<span class="op">,</span>radio<span class="op">,</span>transcribe</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\build-quill-apps<span class="op">.</span><span class="fu">ps1</span> transcribe <span class="op">-</span>DryRun        <span class="co"># print the commands, build nothing</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">Get-Help</span> <span class="op">.</span>\build-quill-apps<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Detailed        <span class="co"># every option</span></span></code></pre></div>
 <p>App names: <code>quill</code> (QUILL for All), <code>lite</code>,
 <code>inkwell</code>, <code>weather</code>, <code>beacon</code>,
 <code>social</code>, <code>converter</code>, <code>studio</code>,
@@ -350,6 +359,40 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb2-
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> <span class="op">-</span>m pip install <span class="op">--</span>find-links vendor<span class="op">/</span>wheels <span class="op">-</span>e <span class="st">&#39;.[runtime,packaging,dev]&#39;</span></span>
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> scripts<span class="op">/</span>check_build_env<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>groups runtime<span class="op">,</span>packaging <span class="op">--</span>python <span class="va">$python</span></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> scripts<span class="op">/</span>fetch_build_deps<span class="op">.</span><span class="fu">py</span></span></code></pre></div>
+<h3 id="before-a-distribution-build-confirm-everything-is-ready">Before
+a distribution build: confirm everything is ready</h3>
+<p>These checks build nothing, and each takes seconds to a few minutes.
+Run them on the commit you mean to ship; every one should pass. They
+were last run in full on 2026-10-23, on <code>main</code>, and all
+passed.</p>
+<div class="sourceCode" id="cb3"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Every Python package any app&#39;s build installs, in the system interpreter.</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> scripts<span class="op">/</span>check_build_env<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>python <span class="va">$python</span> `</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>groups runtime<span class="op">,</span>packaging<span class="op">,</span>dev<span class="op">,</span>ui<span class="op">,</span>speech<span class="op">,</span>youtube<span class="op">,</span>windows-media<span class="op">,</span>live-dictation<span class="op">,</span>office-text<span class="op">,</span>ocr<span class="op">,</span>docx<span class="op">,</span>mp3<span class="op">,</span>nemotron</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> <span class="op">-</span>m pip check                             <span class="co"># &quot;No broken requirements found.&quot;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># The pinned binaries (ffmpeg, libmpv, deno, piper), the built-in speech</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># models and the updater&#39;s bootstrappers, each checksum-verified.</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> scripts<span class="op">/</span>fetch_build_deps<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> scripts<span class="op">/</span>fetch_dictation_models<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>check</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> scripts<span class="op">/</span>fetch_bootstrappers<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>verify-only</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Versions: one QUILL version everywhere, siblings not ahead of their releases.</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> <span class="op">-</span>m quill<span class="op">.</span><span class="fu">tools</span><span class="op">.</span><span class="fu">check_version_consistency</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> scripts<span class="op">/</span>check_sibling_versions<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>releasing quilllite <span class="op">--</span>releasing inkwell `</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>releasing weather <span class="op">--</span>releasing beacon <span class="op">--</span>releasing social <span class="op">--</span>releasing converter `</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>releasing studio <span class="op">--</span>releasing cast <span class="op">--</span>releasing radio <span class="op">--</span>releasing transcribe</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Every gate, then the whole plan without building anything.</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> <span class="op">-</span>m quill<span class="op">.</span><span class="fu">tools</span><span class="op">.</span><span class="fu">platform_report</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\build-quill-apps<span class="op">.</span><span class="fu">ps1</span> all <span class="op">-</span>Release <span class="op">-</span>DryRun</span></code></pre></div>
+<p>The published-version gate, which <code>-Release</code> keeps,
+refuses a build number the app’s source does not declare. Each app’s
+source says which build it is (<code>_BUILD</code>, or
+<code>APP_BUILD</code>), and the script passes that number, so a version
+shipping for the first time ships as the build its source names, not
+build 1.</p>
+<p>Pandoc 3.10 or later renders the documents. A newer Pandoc than the
+one that rendered the tree changes only the stylesheet in each page’s
+head; re-render a document when its text changes, not to update that
+line.</p>
 <p>The shared runtime requires a Podcast Index key and secret. Set
 <code>QUILL_PODCAST_INDEX_KEY</code> and
 <code>QUILL_PODCAST_INDEX_SECRET</code>, set their <code>_FILE</code>
@@ -364,11 +407,11 @@ to the sibling build step. Without them, the shared runtime correctly
 refuses to package a broken podcast directory integration.</p>
 <h2 id="2-check-the-source-then-build-the-shared-runtime">2. Check the
 source, then build the shared runtime</h2>
-<div class="sourceCode" id="cb3"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> <span class="op">-</span>m pytest <span class="op">-</span>q</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> <span class="op">-</span>m ruff check <span class="op">.</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> <span class="op">-</span>m ruff format <span class="op">--</span>check <span class="op">.</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\runtime\build_runtime<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> <span class="op">-</span>m pytest <span class="op">-</span>q</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> <span class="op">-</span>m ruff check <span class="op">.</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> <span class="op">-</span>m ruff format <span class="op">--</span>check <span class="op">.</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\runtime\build_runtime<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span></span></code></pre></div>
 <p>The runtime must be built <strong>before</strong> the sibling
 installers. It carries the shared <code>quill</code> package and all
 sibling app modules. Its output is
@@ -383,8 +426,8 @@ first runtime build after 2026-10-17, expect the gate to report
 Word support. Follow <em>Rebaselining after the Word support change</em>
 in section 5.</p>
 <h2 id="3-build-quill-for-all">3. Build QUILL for All</h2>
-<div class="sourceCode" id="cb4"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> scripts<span class="op">/</span>build_windows_distribution<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>bundle-python <span class="op">--</span>compile-installer <span class="op">--</span>iscc-path <span class="va">$iscc</span> <span class="op">--</span>output-dir dist<span class="op">/</span>windows</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> scripts<span class="op">/</span>build_windows_distribution<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>bundle-python <span class="op">--</span>compile-installer <span class="op">--</span>iscc-path <span class="va">$iscc</span> <span class="op">--</span>output-dir dist<span class="op">/</span>windows</span></code></pre></div>
 <p>The full installer is in <code>dist/windows/installer/Output/</code>;
 the portable folder is <code>dist/windows/portable/</code>. QUILL uses
 its own distribution builder rather than a
@@ -397,17 +440,17 @@ area. Media apps add or remove ffmpeg and mpv there according to what
 each installer needs. Do not run sibling release scripts in parallel in
 the same checkout. Pass the same <code>$python</code> to every script so
 the release environment check sees the packages installed in step 1.</p>
-<div class="sourceCode" id="cb5"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\quilllite\scripts\build_release<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span> <span class="op">-</span>Iscc <span class="va">$iscc</span> <span class="op">-</span>SkipSharedRuntime</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\inkwell\scripts\build_release<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span> <span class="op">-</span>Iscc <span class="va">$iscc</span> <span class="op">-</span>SkipSharedRuntime</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\weather\scripts\build_release<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span> <span class="op">-</span>Iscc <span class="va">$iscc</span> <span class="op">-</span>SkipSharedRuntime</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\beacon\scripts\build_release<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span> <span class="op">-</span>Iscc <span class="va">$iscc</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\social\scripts\build_release<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span> <span class="op">-</span>Iscc <span class="va">$iscc</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\converter\scripts\build_release<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span> <span class="op">-</span>Iscc <span class="va">$iscc</span> <span class="op">-</span>SkipSharedRuntime</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\studio\scripts\build_release<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span> <span class="op">-</span>Iscc <span class="va">$iscc</span> <span class="op">-</span>SkipSharedRuntime</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\cast\scripts\build_release<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span> <span class="op">-</span>Iscc <span class="va">$iscc</span> <span class="op">-</span>SkipSharedRuntime</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\radio\scripts\build_release<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span> <span class="op">-</span>Iscc <span class="va">$iscc</span> <span class="op">-</span>SkipSharedRuntime</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\transcribe\scripts\build_release<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span> <span class="op">-</span>Iscc <span class="va">$iscc</span> <span class="op">-</span>SkipSharedRuntime</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\quilllite\scripts\build_release<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span> <span class="op">-</span>Iscc <span class="va">$iscc</span> <span class="op">-</span>SkipSharedRuntime</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\inkwell\scripts\build_release<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span> <span class="op">-</span>Iscc <span class="va">$iscc</span> <span class="op">-</span>SkipSharedRuntime</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\weather\scripts\build_release<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span> <span class="op">-</span>Iscc <span class="va">$iscc</span> <span class="op">-</span>SkipSharedRuntime</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\beacon\scripts\build_release<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span> <span class="op">-</span>Iscc <span class="va">$iscc</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\social\scripts\build_release<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span> <span class="op">-</span>Iscc <span class="va">$iscc</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\converter\scripts\build_release<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span> <span class="op">-</span>Iscc <span class="va">$iscc</span> <span class="op">-</span>SkipSharedRuntime</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\studio\scripts\build_release<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span> <span class="op">-</span>Iscc <span class="va">$iscc</span> <span class="op">-</span>SkipSharedRuntime</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\cast\scripts\build_release<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span> <span class="op">-</span>Iscc <span class="va">$iscc</span> <span class="op">-</span>SkipSharedRuntime</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\radio\scripts\build_release<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span> <span class="op">-</span>Iscc <span class="va">$iscc</span> <span class="op">-</span>SkipSharedRuntime</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\transcribe\scripts\build_release<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span> <span class="op">-</span>Iscc <span class="va">$iscc</span> <span class="op">-</span>SkipSharedRuntime</span></code></pre></div>
 <p>Each sibling places its installer and portable ZIP in
 <code>standalone/&lt;app&gt;/dist/</code>. Use <code>-Sign</code> only
 for an approved signed release with signing credentials configured. The
@@ -417,20 +460,20 @@ Dev builds, Radio, Cast, QUILL Lite, Converter, Weather and Transcribe
 accept <code>-SkipPublishedCheck</code>. Production releases must retain
 the published-version gate.</p>
 <h2 id="5-verify-the-artifacts">5. Verify the artifacts</h2>
-<div class="sourceCode" id="cb6"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="va">$apps</span> <span class="op">=</span> <span class="st">&#39;quilllite&#39;</span><span class="op">,</span><span class="st">&#39;inkwell&#39;</span><span class="op">,</span><span class="st">&#39;weather&#39;</span><span class="op">,</span><span class="st">&#39;beacon&#39;</span><span class="op">,</span><span class="st">&#39;social&#39;</span><span class="op">,</span><span class="st">&#39;converter&#39;</span><span class="op">,</span><span class="st">&#39;studio&#39;</span><span class="op">,</span><span class="st">&#39;cast&#39;</span><span class="op">,</span><span class="st">&#39;radio&#39;</span><span class="op">,</span><span class="st">&#39;transcribe&#39;</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="cf">foreach</span> <span class="op">(</span><span class="va">$app</span> <span class="kw">in</span> <span class="va">$apps</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="va">$files</span> <span class="op">=</span> <span class="fu">Get-ChildItem</span> <span class="op">-</span>LiteralPath <span class="st">&quot;standalone/</span><span class="va">$app</span><span class="st">/dist&quot;</span> <span class="op">-</span>File <span class="op">|</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">Where-Object</span> <span class="op">{</span> <span class="va">$_</span><span class="op">.</span><span class="fu">Extension</span> <span class="op">-</span>in <span class="st">&#39;.exe&#39;</span><span class="op">,</span><span class="st">&#39;.zip&#39;</span> <span class="op">-and</span> <span class="va">$_</span><span class="op">.</span><span class="fu">Name</span> <span class="op">-notmatch</span> <span class="st">&#39;(?i)(-Lite-Setup-|Companion)&#39;</span> <span class="op">}</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">((</span><span class="va">$files</span> <span class="op">|</span> <span class="fu">Where-Object</span> Extension <span class="op">-eq</span> <span class="st">&#39;.exe&#39;</span><span class="op">).</span><span class="fu">Count</span> <span class="op">-lt</span> <span class="dv">1</span> <span class="op">-or</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        <span class="op">(</span><span class="va">$files</span> <span class="op">|</span> <span class="fu">Where-Object</span> Extension <span class="op">-eq</span> <span class="st">&#39;.zip&#39;</span><span class="op">).</span><span class="fu">Count</span> <span class="op">-lt</span> <span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">throw</span> <span class="st">&quot;Missing full installer or portable ZIP for </span><span class="va">$app</span><span class="st">&quot;</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="va">$files</span> <span class="op">|</span> Get-FileHash <span class="op">-</span>Algorithm SHA256 <span class="op">|</span> <span class="fu">Select-Object</span> Path<span class="op">,</span>Hash</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(-not</span> <span class="op">(</span><span class="fu">Get-ChildItem</span> <span class="st">&#39;dist/windows/installer/Output/Quill-for-All-Setup-*.exe&#39;</span> <span class="op">-</span>File<span class="op">))</span> <span class="op">{</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">throw</span> <span class="st">&#39;Missing QUILL for All installer&#39;</span></span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="va">$apps</span> <span class="op">=</span> <span class="st">&#39;quilllite&#39;</span><span class="op">,</span><span class="st">&#39;inkwell&#39;</span><span class="op">,</span><span class="st">&#39;weather&#39;</span><span class="op">,</span><span class="st">&#39;beacon&#39;</span><span class="op">,</span><span class="st">&#39;social&#39;</span><span class="op">,</span><span class="st">&#39;converter&#39;</span><span class="op">,</span><span class="st">&#39;studio&#39;</span><span class="op">,</span><span class="st">&#39;cast&#39;</span><span class="op">,</span><span class="st">&#39;radio&#39;</span><span class="op">,</span><span class="st">&#39;transcribe&#39;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="cf">foreach</span> <span class="op">(</span><span class="va">$app</span> <span class="kw">in</span> <span class="va">$apps</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="va">$files</span> <span class="op">=</span> <span class="fu">Get-ChildItem</span> <span class="op">-</span>LiteralPath <span class="st">&quot;standalone/</span><span class="va">$app</span><span class="st">/dist&quot;</span> <span class="op">-</span>File <span class="op">|</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>        <span class="fu">Where-Object</span> <span class="op">{</span> <span class="va">$_</span><span class="op">.</span><span class="fu">Extension</span> <span class="op">-</span>in <span class="st">&#39;.exe&#39;</span><span class="op">,</span><span class="st">&#39;.zip&#39;</span> <span class="op">-and</span> <span class="va">$_</span><span class="op">.</span><span class="fu">Name</span> <span class="op">-notmatch</span> <span class="st">&#39;(?i)(-Lite-Setup-|Companion)&#39;</span> <span class="op">}</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="op">((</span><span class="va">$files</span> <span class="op">|</span> <span class="fu">Where-Object</span> Extension <span class="op">-eq</span> <span class="st">&#39;.exe&#39;</span><span class="op">).</span><span class="fu">Count</span> <span class="op">-lt</span> <span class="dv">1</span> <span class="op">-or</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>        <span class="op">(</span><span class="va">$files</span> <span class="op">|</span> <span class="fu">Where-Object</span> Extension <span class="op">-eq</span> <span class="st">&#39;.zip&#39;</span><span class="op">).</span><span class="fu">Count</span> <span class="op">-lt</span> <span class="dv">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">throw</span> <span class="st">&quot;Missing full installer or portable ZIP for </span><span class="va">$app</span><span class="st">&quot;</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">}</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="va">$files</span> <span class="op">|</span> Get-FileHash <span class="op">-</span>Algorithm SHA256 <span class="op">|</span> <span class="fu">Select-Object</span> Path<span class="op">,</span>Hash</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="op">(-not</span> <span class="op">(</span><span class="fu">Get-ChildItem</span> <span class="st">&#39;dist/windows/installer/Output/Quill-for-All-Setup-*.exe&#39;</span> <span class="op">-</span>File<span class="op">))</span> <span class="op">{</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">throw</span> <span class="st">&#39;Missing QUILL for All installer&#39;</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code></pre></div>
 <h3
 id="quill-lite-portable-the-pdf-reader-and-ocr-first-build-after-2026-10-17">QUILL
 Lite portable: the PDF reader and OCR (first build after
@@ -453,8 +496,8 @@ are expected:</p>
 their <code>*.dist-info</code> names). Check the list holds only those
 and nothing swept from the build machine, then rebaseline from the real
 bundle and run the release script again:</p>
-<div class="sourceCode" id="cb7"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> scripts\check_runtime_inventory<span class="op">.</span><span class="fu">py</span> standalone\quilllite\dist\QuillLite <span class="op">--</span>layout portable <span class="op">--</span>manifest standalone\quilllite\portable-inventory<span class="op">.</span><span class="fu">json</span> <span class="op">--</span>write</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> scripts\check_runtime_inventory<span class="op">.</span><span class="fu">py</span> standalone\quilllite\dist\QuillLite <span class="op">--</span>layout portable <span class="op">--</span>manifest standalone\quilllite\portable-inventory<span class="op">.</span><span class="fu">json</span> <span class="op">--</span>write</span></code></pre></div>
 <p>Never hand-edit <code>portable-inventory.json</code>; it is only
 correct when written from a build.</p></li>
 <li><p><strong>The import check is stricter.</strong> Step 8 now imports
@@ -506,8 +549,8 @@ as unexpected, treat it as ordinary drift and investigate it before you
 continue: do not rebaseline it away.</p></li>
 <li><p><strong>Prove Word works before you rebaseline.</strong> Run the
 import gate by hand against the dist the build just made:</p>
-<div class="sourceCode" id="cb9"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> scripts\check_runtime_imports<span class="op">.</span><span class="fu">py</span> standalone\runtime\dist\QuillVilleRuntime</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> scripts\check_runtime_imports<span class="op">.</span><span class="fu">py</span> standalone\runtime\dist\QuillVilleRuntime</span></code></pre></div>
 <p>It must end with
 <code>Runtime import gate: N modules checked, all correct.</code> Since
 this change it imports <code>lxml.etree</code>, <code>docx</code>,
@@ -521,10 +564,10 @@ result. Any failure prints “Word support is broken in this runtime”
 along with the fix.</p></li>
 <li><p><strong>Rebaseline, then rebuild so every remaining gate
 runs.</strong></p>
-<div class="sourceCode" id="cb10"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> scripts\check_runtime_inventory<span class="op">.</span><span class="fu">py</span> standalone\runtime\dist\QuillVilleRuntime <span class="op">--</span>write</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>git <span class="fu">diff</span> standalone\runtime\runtime-inventory<span class="op">.</span><span class="fu">json</span>   <span class="co"># should add &quot;lxml&quot; to _internal and nothing else</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\runtime\build_runtime<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span></span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> scripts\check_runtime_inventory<span class="op">.</span><span class="fu">py</span> standalone\runtime\dist\QuillVilleRuntime <span class="op">--</span>write</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>git <span class="fu">diff</span> standalone\runtime\runtime-inventory<span class="op">.</span><span class="fu">json</span>   <span class="co"># should add &quot;lxml&quot; to _internal and nothing else</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\runtime\build_runtime<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span></span></code></pre></div>
 <p>Commit the regenerated <code>runtime-inventory.json</code>. In the
 same commit, delete the <code>"lxml"</code> entry from
 <code>KNOWN_ADDITIONS</code> in

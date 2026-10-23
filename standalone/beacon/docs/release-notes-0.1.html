@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Quill Beacon 0.1 Release Notes</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="quill-beacon-01-release-notes">Quill Beacon 0.1 Release
+Notes</h1>
+<p>Version 0.1.0 (build 2).</p>
+<p>Quill Beacon is new. It keeps your bookmarks, and it keeps your
+place.</p>
+<p>A normal bookmark remembers an address. Quill Beacon also remembers
+where you were inside it: a heading on a web page, a passage you
+selected, a moment in a podcast, a radio station, a file or a folder. It
+keeps the reason you saved it, in your own words, and gets you back
+there in seconds.</p>
+<p>It is for anyone who saves more than they can find again, and it was
+built for screen readers and the keyboard from the start. Nothing needs
+a mouse or drag and drop.</p>
+<p>This is the first public release, and the number says so. Quill
+Beacon 0.1 is early. The parts that are here work, and the parts that
+are not are listed plainly under “Known limitations” below.</p>
+<h2 id="downloads">Downloads</h2>
+<p>Two downloads. Choose one. Both run on Windows 10 and Windows 11.</p>
+<ul>
+<li><strong>Quill-Beacon-Setup-Shared-0.1.0.exe</strong> – the
+installer, recommended. It installs the shared QuillVille runtime if the
+computer does not already have it, then the app, with a Start Menu entry
+and an uninstaller. The Documentation component adds the user guide and
+these notes.</li>
+<li><strong>Quill-Beacon-Portable-0.1.0.zip</strong> – unpack it
+anywhere. It keeps your library, captures and settings in its own
+<code>data</code> folder next to the app.</li>
+</ul>
+<h2 id="try-this-first">Try this first</h2>
+<ol type="1">
+<li>Open Quill Beacon. The window has three panes: Destinations, the
+bookmarks list, and Details. <strong>F6</strong> moves between
+them.</li>
+<li>Press <strong>Ctrl+N</strong> for <strong>New Bookmark</strong>, and
+save a page or a file.</li>
+<li>Press <strong>Ctrl+F</strong> to search. Type a word, then press
+Down to reach the results. <strong>Enter</strong> opens the one you are
+on.</li>
+<li>Press <strong>Ctrl+F1</strong> for <strong>Where Am I?</strong> at
+any time.</li>
+<li>Press <strong>F1</strong> on anything you are unsure of. It tells
+you what the window is for and what that control does.</li>
+</ol>
+<h2 id="what-you-can-do-with-it">What you can do with it</h2>
+<h3 id="save-the-exact-place">Save the exact place</h3>
+<p>Save a web page, a file, a folder, a podcast episode or a radio
+station. Add a note, tags and collections. When a saved place moves or
+breaks, Quill Beacon never quietly swaps it for a guess. <strong>Tools
+&gt; Review Location Repair…</strong> shows the old place beside a
+proposed fix, and you choose.</p>
+<h3 id="capture-from-your-browser">Capture from your browser</h3>
+<p>Quill Beacon has browser extensions for Chrome, Edge and Firefox.
+They can save the whole page, the text you selected, a link, the nearest
+heading, or the moment in a video or audio you are playing. To connect
+one, choose <strong>Tools &gt; Capture Bridge…</strong> (Ctrl+Shift+B)
+and copy the token into the extension’s Options. If Quill Beacon is not
+running, the extension says so and saves nothing.</p>
+<h3 id="find-it-again">Find it again</h3>
+<p>Search covers titles, notes, tags and the text you saved. You can
+narrow it by typing filters such as <code>tag:research</code>,
+<code>type:episode</code>, <code>collection:</code>,
+<code>domain:</code>, <code>has:note</code> or
+<code>not:archived</code>. <strong>View &gt; Build Search…</strong>
+(Ctrl+Shift+F) builds the same kind of search from fields instead.</p>
+<p><strong>View &gt; Save Search as Smart Collection…</strong>
+(Ctrl+Shift+G) keeps a search as a live collection in the sidebar. It
+always shows your library as it is now. <strong>Tools &gt; Smart
+Collections Manager…</strong> renames or deletes them. Deleting one
+never deletes the bookmarks it found.</p>
+<p><strong>Edit &gt; Find Duplicates</strong> (Ctrl+Alt+D) lists saved
+items that point at the same place.</p>
+<h3 id="organize">Organize</h3>
+<ul>
+<li>Collections, edited with <strong>Tools &gt; Collection
+Editor…</strong> (Ctrl+Shift+C).</li>
+<li>Trails: ordered paths through saved items, each step with its own
+note. Create one with <strong>Tools &gt; Trail Editor…</strong>
+(Ctrl+Alt+T). In the sidebar, a trail shows its progress, and you can
+step through it and mark steps done.</li>
+<li>Favorites, Archive and Trash, in the sidebar with Inbox, Recent,
+Listen Later, Podcasts, Radio and Needs Attention.</li>
+<li><strong>Edit &gt; Attachments…</strong> (Ctrl+Shift+E) pins a file,
+a link or a note to a saved item.</li>
+<li>Bulk commands on the Edit menu act on everything you selected:
+trash, archive, restore, favorite, add or remove a tag, add to a
+collection, or delete.</li>
+<li><strong>Edit &gt; Undo</strong> (Ctrl+Z) reverses the last change. A
+bulk command comes back as one step, even a permanent delete.</li>
+</ul>
+<h3 id="podcasts-and-radio">Podcasts and radio</h3>
+<ul>
+<li><strong>Media &gt; Subscribe to Podcast…</strong> (Ctrl+Shift+S) and
+<strong>Media &gt; Refresh Feeds</strong> (Ctrl+Shift+R).</li>
+<li><strong>Media &gt; Play in Player</strong> (Ctrl+Shift+L) plays an
+episode in the built-in player, where you can save the exact second you
+want to come back to.</li>
+<li><strong>Media &gt; Play in External Player</strong> (Ctrl+Alt+P)
+hands the item to VLC, mpv or your system player, with the time to
+resume from. Choose the player with <strong>Tools &gt; External
+Player…</strong>.</li>
+<li><strong>Media &gt; Add Radio Station…</strong> saves a station with
+backup stream addresses. <strong>Media &gt; Add Radio Program…</strong>
+saves one show, with its host and air time.</li>
+</ul>
+<h3 id="keep-links-healthy">Keep links healthy</h3>
+<p><strong>Tools &gt; Revalidate Health…</strong> (Ctrl+Alt+H) checks
+whether saved places are still there. Files are checked on your own
+disk. Web links are checked over the internet only after you confirm.
+Broken ones go to Needs Attention.</p>
+<h3 id="bring-your-bookmarks-in-take-them-out">Bring your bookmarks in,
+take them out</h3>
+<p><strong>File &gt; Import…</strong> (Ctrl+I) reads browser bookmark
+files (HTML), OPML, M3U and PLS playlists, CSV, JSON and plain text.
+<strong>File &gt; Export…</strong> (Ctrl+E) writes JSON, HTML, Markdown,
+CSV, OPML, M3U or plain text. Your library is never locked in.</p>
+<h3 id="publish-a-collection">Publish a collection</h3>
+<p>Select a collection, then <strong>Tools &gt; Publish
+Collection…</strong> (Ctrl+Shift+W). Quill Beacon makes a read-only,
+accessible web page from it: an HTML file you can copy or host anywhere,
+plus a preview on this computer. Nothing on the page can change your
+library.</p>
+<h3 id="help-when-you-ask-for-it">Help when you ask for it</h3>
+<p>The Assist menu can <strong>Suggest Tags</strong>, <strong>Suggest
+Relationships</strong> with other saved items, and <strong>Summarize
+Note</strong>. These work on your computer, with no AI service and no
+internet. They only run when you ask, and never change your library on
+their own.</p>
+<h3 id="sync-between-your-own-computers">Sync between your own
+computers</h3>
+<p>Sync is off until you turn it on. Open <strong>Sync &gt; Sync
+Settings…</strong> to choose a folder you already trust, such as
+OneDrive, Dropbox or a shared drive. Your library is encrypted with a
+passphrase only you know before it is written there.</p>
+<ul>
+<li><strong>Sync &gt; Sync Now</strong> (F9) sends and fetches
+changes.</li>
+<li><strong>Sync &gt; Sync History…</strong> shows what synced and lets
+you roll back. If the same note changed on two computers, you choose
+which version to keep.</li>
+<li><strong>Sync &gt; Auto Sync…</strong> syncs on a timer. It is off by
+default.</li>
+<li>To add a second computer, use <strong>Pair Device</strong> in Sync
+Settings, then unlock there with the same passphrase.</li>
+<li>Something you trash on one computer goes to the Trash on the others,
+where you can restore it.</li>
+</ul>
+<h3 id="settings-and-sounds">Settings and sounds</h3>
+<ul>
+<li><strong>View &gt; Preferences…</strong> (Ctrl+Comma) brings
+accessibility, sync, the capture bridge and published pages together in
+one window.</li>
+<li><strong>View &gt; Accessibility Settings…</strong> sets how much
+Quill Beacon says, high contrast, text size and reduced motion.</li>
+<li>Quill Beacon speaks through your screen reader and writes to a
+braille display.</li>
+<li><strong>Tools &gt; App Sounds Play On…</strong> (Ctrl+Alt+S) chooses
+where its sounds play. <strong>Alt+Shift+M</strong> turns them off and
+on.</li>
+<li>Minimizing the window sends Quill Beacon to the system tray. The
+tray icon can show the window, capture, sync, open the Status Center,
+and exit.</li>
+<li><strong>Tools &gt; Status Center…</strong> (Ctrl+Alt+I) shows the
+capture bridge, sync and library health at a glance.</li>
+</ul>
+<h2 id="essential-keys">Essential keys</h2>
+<p>Every command is on a menu, and every menu command shows its key.
+These keys work in the main window.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ctrl+N</td>
+<td>File &gt; New Bookmark</td>
+</tr>
+<tr>
+<td>Enter</td>
+<td>Edit &gt; Open</td>
+</tr>
+<tr>
+<td>Delete</td>
+<td>Edit &gt; Trash</td>
+</tr>
+<tr>
+<td>Shift+Delete</td>
+<td>Edit &gt; Restore</td>
+</tr>
+<tr>
+<td>F2</td>
+<td>Rename the selected bookmark (in the list)</td>
+</tr>
+<tr>
+<td>Ctrl+D</td>
+<td>Edit &gt; Toggle Favorite</td>
+</tr>
+<tr>
+<td>Ctrl+L</td>
+<td>Edit &gt; Add to Collection…</td>
+</tr>
+<tr>
+<td>Ctrl+Shift+A</td>
+<td>Edit &gt; Archive</td>
+</tr>
+<tr>
+<td>Ctrl+Z</td>
+<td>Edit &gt; Undo</td>
+</tr>
+<tr>
+<td>Ctrl+Space or Shift+arrows</td>
+<td>Select several bookmarks (in the list)</td>
+</tr>
+<tr>
+<td>Ctrl+F</td>
+<td>View &gt; Search</td>
+</tr>
+<tr>
+<td>Ctrl+Shift+F</td>
+<td>View &gt; Build Search…</td>
+</tr>
+<tr>
+<td>Ctrl+Shift+P</td>
+<td>View &gt; Command Palette</td>
+</tr>
+<tr>
+<td>Ctrl+F1</td>
+<td>View &gt; Where Am I?</td>
+</tr>
+<tr>
+<td>F6</td>
+<td>View &gt; Next Pane</td>
+</tr>
+<tr>
+<td>F1</td>
+<td>Help for this window and the control you are on</td>
+</tr>
+<tr>
+<td>F9</td>
+<td>Sync &gt; Sync Now</td>
+</tr>
+<tr>
+<td>Ctrl+F9</td>
+<td>Sync &gt; Sync Settings…</td>
+</tr>
+<tr>
+<td>Ctrl+Alt+F2</td>
+<td>Help &gt; Get Help from Support…</td>
+</tr>
+<tr>
+<td>Ctrl+Q</td>
+<td>File &gt; Exit</td>
+</tr>
+</tbody>
+</table>
+<p>The Command Palette lists commands by name with their keys. Type part
+of a name, such as “export”, and press Enter.</p>
+<h2 id="privacy">Privacy</h2>
+<p>Your library lives on your computer. Quill Beacon has no account and
+sends nothing anywhere by default.</p>
+<ul>
+<li><strong>Sync</strong> is off until you turn it on. When it is on,
+your library is encrypted with your passphrase before it leaves your
+computer.</li>
+<li><strong>The capture bridge</strong> starts with the app so your
+browser extension can reach it. It listens only on this computer and
+needs a token.</li>
+<li><strong>Published pages</strong> are previewed on this computer
+only. The HTML file goes wherever you choose to put it.</li>
+<li><strong>The internet is used only when you ask</strong>: subscribing
+to or refreshing a podcast, playing something online, checking web links
+in Revalidate Health after you confirm, or syncing to a server.</li>
+<li><strong>Attachments</strong> stay on your computer. They are not
+synced.</li>
+<li><strong>Assist</strong> runs on your computer and calls no AI
+service.</li>
+</ul>
+<h2 id="known-limitations">Known limitations</h2>
+<p>This is a 0.1 release. Please be patient with the edges.</p>
+<ul>
+<li><strong>The browser extensions are not in these downloads</strong>
+and are not in any browser’s store yet. They are loaded by hand in the
+browser’s developer mode.</li>
+<li><strong>There is no hosted sync service yet.</strong> Sync through a
+folder works today. Sync Settings can also sign in to a QuillSync server
+by email link, but no public server is offered in this release.</li>
+<li><strong>Quill Beacon does not yet connect to QUILL, Quill Radio or
+Quill Cast.</strong> Saving a place from inside those apps, and opening
+a saved place back in them, are planned.</li>
+<li><strong>There is no phone app.</strong></li>
+<li><strong>Keys cannot be changed yet.</strong> They work in the main
+window, not inside dialogs.</li>
+<li><strong>Ctrl+Alt keys and the right Alt key.</strong> On keyboard
+layouts where the right Alt key types accented letters, a Ctrl+Alt key
+may run its command instead of typing the letter while the search box
+has focus. The menus always work.</li>
+<li><strong>The built-in player needs a media engine.</strong> If none
+is available, it says “media backend unavailable”; Play in External
+Player still works.</li>
+<li><strong>Search matches words, not meaning.</strong> Smarter search
+is not included.</li>
+</ul>
+<h2 id="getting-help">Getting help</h2>
+<p>Press F1 on any window or control. For anything else, choose
+<strong>Help &gt; Get Help from Support…</strong> (Ctrl+Alt+F2), or
+write to <a
+href="mailto:support@community-access.org">support@community-access.org</a>.</p>
+</main>
+</body>
+</html>

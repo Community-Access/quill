@@ -1,11 +1,12 @@
-# QuillBeacon -- not part of public QUILL 1.0
+# Quill Beacon -- not opened from QUILL 1.0
 
-> **Not part of the public 1.0 product.** QuillBeacon is one of the five
-> companion apps gated behind `RELEASED_APPS` (`quill/core/app_launcher.py`) for
-> QUILL 1.0.0. It is also the one family member that does not yet live in this
-> repository at all: it is still an independent project (`quille-beacon`, with
-> its own SQLite store) and converges onto the shared app shell only after its
-> data-integrity and security fixes land.
+> **Not opened from QUILL 1.0.** Quill Beacon is one of the companion apps
+> outside `RELEASED_APPS` (`quill/core/app_launcher.py`), so QUILL 1.0.0 does not
+> offer it. Since this note was first written it has moved into this repository
+> (`quill/apps/beacon/`, packaged by `standalone/beacon/`) and has an installer
+> of its own; its user-facing documents are in `standalone/beacon/docs/`,
+> including the 0.1.0 release notes. The paragraphs below record what was
+> relocated out of QUILL's public documents, and are kept as history.
 >
 > QuillBeacon had no chapter in the user guide and no section of its own in the
 > PRD -- only passing mentions inside otherwise public prose about the shared

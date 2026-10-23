@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>QUILLBert and QUILLBee: a guide for people writing about
 QUILL</title>
@@ -317,7 +317,7 @@ apps, and wondering whether one of them belongs in what they’re writing.
 Most of the time the answer is no. When it’s yes, this is how to do it
 well.</p>
 <p>Jeff introduces them to everyone else on the website, at <a
-href="https://quillforall.org/meet-quillbert-and-quillbee.html">Meet
+href="https://www.quillforall.org/meet-quillbert-and-quillbee.html">Meet
 QUILLBert and QUILLBee</a>. Read that first. It sets the tone better
 than any rule here.</p>
 <h2 id="the-one-line-rule">The one-line rule</h2>
@@ -416,34 +416,31 @@ disability or the person reading.</li>
 characters”.</p>
 <h3 id="markup">Markup</h3>
 <div class="sourceCode" id="cb1"><pre
-class="sourceCode html"><code class="sourceCode html"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">aside</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;qv-callout qv-callout--bee&quot;</span><span class="ot"> aria-labelledby</span><span class="op">=</span><span class="st">&quot;qv-docs-bee&quot;</span><span class="dt">&gt;</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;qv-callout__label&quot;</span><span class="ot"> id</span><span class="op">=</span><span class="st">&quot;qv-docs-bee&quot;</span><span class="dt">&gt;</span>QUILLBee&#39;s shortcut<span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
+class="sourceCode html"><code class="sourceCode html"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;qv-callout qv-callout--bee&quot;</span><span class="dt">&gt;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;qv-callout__label&quot;</span><span class="dt">&gt;</span>QUILLBee&#39;s shortcut<span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="dt">&gt;</span>Every guide on this page is built on headings. ...<span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">aside</span><span class="dt">&gt;</span></span></code></pre></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span></code></pre></div>
 <ul>
-<li><code>&lt;aside&gt;</code>, because a callout is related to the page
-but not part of its main flow.</li>
+<li>A plain <code>&lt;div&gt;</code>, not an <code>&lt;aside&gt;</code>
+or any other landmark. A callout is a short aside in the reading flow,
+and you meet it by reading, not by jumping to it.</li>
 <li>The <strong>label</strong> is a real <code>&lt;p&gt;</code> and
 always comes first. It names the character in words (“QUILLBee’s tip”,
 “QUILLBert found something”), so the meaning never depends on colour, a
 border or a picture. It’s what someone hears first.</li>
-<li><code>aria-labelledby</code> points at the label, so the landmark’s
-name is the same words a sighted reader sees. Don’t add
-<code>aria-label</code> with different text, and don’t add
-<code>role="note"</code>.</li>
-<li>Give each label an <code>id</code> that’s unique on the page. The
-convention is <code>qv-&lt;page&gt;-&lt;bert|bee|both&gt;</code>.</li>
+<li>No ARIA at all: no <code>aria-label</code>, no
+<code>aria-labelledby</code>, no <code>role="note"</code>. The visible
+label already says who is talking, and it is the first thing read.</li>
 <li>An optional link goes in its own <code>&lt;p&gt;</code> at the end,
 with link text that makes sense on its own (“Try the QUILL Cast lesson”,
 not “click here”).</li>
 </ul>
-<p>One trade-off, so nobody is surprised by it. When you arrow into a
-callout, a screen reader announces the landmark by name and then reads
-the label, so you hear “QUILLBee’s tip” twice. We accept that because
-the alternatives are worse: a label hidden from the screen reader breaks
-the moment someone turns landmark announcements off, and unnamed
-landmarks all sound the same in the landmarks list. The real fix is the
-one that’s already a rule: keep callouts few.</p>
+<p>Why not a landmark? We tried it first, as a named
+<code>&lt;aside&gt;</code>. A screen reader then said the name twice
+every time you arrowed in: once as the landmark and once as the label.
+Jeff chose to hear it once (2026-10-03). The cost is that the landmark
+key no longer jumps between callouts, which is fine: they are few, and
+they are never where the information you need lives.</p>
 <h3 id="variants">Variants</h3>
 <table>
 <thead>
@@ -480,11 +477,11 @@ character.</p>
 characters)</h3>
 <p>One paragraph per line, with the speaker’s name in text:</p>
 <div class="sourceCode" id="cb2"><pre
-class="sourceCode html"><code class="sourceCode html"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">aside</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;qv-callout qv-callout--both&quot;</span><span class="ot"> aria-labelledby</span><span class="op">=</span><span class="st">&quot;qv-radio-both&quot;</span><span class="dt">&gt;</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;qv-callout__label&quot;</span><span class="ot"> id</span><span class="op">=</span><span class="st">&quot;qv-radio-both&quot;</span><span class="dt">&gt;</span>QUILLBert and QUILLBee<span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
+class="sourceCode html"><code class="sourceCode html"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">div</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;qv-callout qv-callout--both&quot;</span><span class="dt">&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;qv-callout__label&quot;</span><span class="dt">&gt;</span>QUILLBert and QUILLBee<span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;qv-line&quot;</span><span class="dt">&gt;&lt;</span><span class="kw">strong</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;qv-line__who&quot;</span><span class="dt">&gt;</span>QUILLBert:<span class="dt">&lt;/</span><span class="kw">strong</span><span class="dt">&gt;</span> I found something.<span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&lt;</span><span class="kw">p</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;qv-line&quot;</span><span class="dt">&gt;&lt;</span><span class="kw">strong</span><span class="ot"> class</span><span class="op">=</span><span class="st">&quot;qv-line__who&quot;</span><span class="dt">&gt;</span>QUILLBee:<span class="dt">&lt;/</span><span class="kw">strong</span><span class="dt">&gt;</span> You pressed every button again, didn&#39;t you?<span class="dt">&lt;/</span><span class="kw">p</span><span class="dt">&gt;</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">aside</span><span class="dt">&gt;</span></span></code></pre></div>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;/</span><span class="kw">div</span><span class="dt">&gt;</span></span></code></pre></div>
 <p>Paragraphs rather than a list or a table: a list adds “list, four
 items” for no benefit, and a table makes a conversation into a grid. No
 ARIA is needed.</p>

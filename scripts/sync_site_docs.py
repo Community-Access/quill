@@ -85,7 +85,8 @@ SYNC_MAP: dict[str, dict[str, str]] = {
     "weather": {
         "userguide": "userguide.html",
         "prd": "prd.html",
-        "release-notes": "release-notes-2.2.html",
+        # 2.2.1, the version Help > Release Notes opens (quill/apps/weather.py).
+        "release-notes": "release-notes-2.2.1.html",
     },
     "studio": {
         "userguide": "userguide.html",
@@ -95,6 +96,8 @@ SYNC_MAP: dict[str, dict[str, str]] = {
     "inkwell": {
         "userguide": "userguide.html",
         "prd": "prd.html",
+        # The 1.0.0 notes, written for its first public release (2026-10-23).
+        "release-notes": "release-notes-1.0.html",
     },
     "converter": {
         "userguide": "userguide.html",

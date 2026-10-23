@@ -19,7 +19,7 @@ from pathlib import Path
 import pytest
 
 hypothesis = pytest.importorskip("hypothesis")
-from hypothesis import given  # noqa: E402
+from hypothesis import assume, given  # noqa: E402
 from hypothesis import strategies as st  # noqa: E402
 
 from quill.core.document import Document  # noqa: E402
@@ -53,6 +53,11 @@ _editor_text = st.text(
 def test_plain_text_comes_back_exactly_with_its_line_ending(
     text: str, line_ending: str, encoding: str
 ) -> None:
+    # UTF-16's mark followed by a NUL is FF FE 00 00, byte for byte UTF-32's
+    # mark, which the decoder reads as UTF-32 on purpose (text_decoding._decode_bom)
+    # so a UTF-32 file is never misread as UTF-16. The bytes cannot say which was
+    # meant; a document whose first character is NUL is the one that loses.
+    assume(not (encoding == "utf-16" and text.startswith("\x00")))
     with tempfile.TemporaryDirectory() as folder:
         path = Path(folder) / "note.txt"
         write_text_document(Document(text=text, encoding=encoding, line_ending=line_ending), path)

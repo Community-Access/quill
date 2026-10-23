@@ -15,11 +15,19 @@ installer and portable zip into one upload folder with a zip per app, an
 everything zip and `SHA256SUMS.txt`, under `dist/release-builds/<date-time>/`.
 Builds are unsigned unless you pass `-Sign`; nothing is published.
 
+**A build for distribution needs `-Release`.** Without it the script makes a
+local dev build: every app is passed `-SkipPublishedCheck`, so none of them
+checks its version and build number against the releases already published.
+With `-Release` each app keeps that gate (it needs the network). The script
+builds with the system Python 3.14 (`py -3.14`) unless you pass `-Python`; a
+repository `.venv` is never used unasked, because releases build with the
+system interpreter.
+
 ```powershell
+.\build-quill-apps.ps1 all -Release -KeepGoing   # a distribution build of everything
 .\build-quill-apps.ps1 lite,cast,radio,transcribe
-.\build-quill-apps.ps1 all -KeepGoing
-.\build-quill-apps.ps1 transcribe -DryRun   # print the commands, build nothing
-Get-Help .\build-quill-apps.ps1 -Detailed    # every option
+.\build-quill-apps.ps1 transcribe -DryRun        # print the commands, build nothing
+Get-Help .\build-quill-apps.ps1 -Detailed        # every option
 ```
 
 App names: `quill` (QUILL for All), `lite`, `inkwell`, `weather`, `beacon`,
@@ -37,6 +45,41 @@ if (-not (Test-Path -LiteralPath $iscc)) { throw 'Install Inno Setup 7 or set $i
 & $python scripts/check_build_env.py --groups runtime,packaging --python $python
 & $python scripts/fetch_build_deps.py
 ```
+
+### Before a distribution build: confirm everything is ready
+
+These checks build nothing, and each takes seconds to a few minutes. Run them on
+the commit you mean to ship; every one should pass. They were last run in full
+on 2026-10-23, on `main`, and all passed.
+
+```powershell
+# Every Python package any app's build installs, in the system interpreter.
+& $python scripts/check_build_env.py --python $python `
+    --groups runtime,packaging,dev,ui,speech,youtube,windows-media,live-dictation,office-text,ocr,docx,mp3,nemotron
+& $python -m pip check                             # "No broken requirements found."
+# The pinned binaries (ffmpeg, libmpv, deno, piper), the built-in speech
+# models and the updater's bootstrappers, each checksum-verified.
+& $python scripts/fetch_build_deps.py
+& $python scripts/fetch_dictation_models.py --check
+& $python scripts/fetch_bootstrappers.py --verify-only
+# Versions: one QUILL version everywhere, siblings not ahead of their releases.
+& $python -m quill.tools.check_version_consistency
+& $python scripts/check_sibling_versions.py --releasing quilllite --releasing inkwell `
+    --releasing weather --releasing beacon --releasing social --releasing converter `
+    --releasing studio --releasing cast --releasing radio --releasing transcribe
+# Every gate, then the whole plan without building anything.
+& $python -m quill.tools.platform_report
+.\build-quill-apps.ps1 all -Release -DryRun
+```
+
+The published-version gate, which `-Release` keeps, refuses a build number the
+app's source does not declare. Each app's source says which build it is
+(`_BUILD`, or `APP_BUILD`), and the script passes that number, so a version
+shipping for the first time ships as the build its source names, not build 1.
+
+Pandoc 3.10 or later renders the documents. A newer Pandoc than the one that
+rendered the tree changes only the stylesheet in each page's head; re-render a
+document when its text changes, not to update that line.
 
 The shared runtime requires a Podcast Index key and secret. Set `QUILL_PODCAST_INDEX_KEY` and `QUILL_PODCAST_INDEX_SECRET`, set their `_FILE` counterparts to files containing the values, or retain an existing ignored `quill/_podcast_index_key.py` from a prior build. The key file must never be committed. The build stops if neither source supplies a pair.
 

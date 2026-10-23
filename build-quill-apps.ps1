@@ -38,14 +38,25 @@
     Print every command that would run, and run none of them.
 
 .PARAMETER Python
-    The Python 3.14 to build with. Default: the repo's .venv when it is 3.14,
-    otherwise "py -3.14".
+    The Python 3.14 to build with. Default: the system Python, "py -3.14".
+    Releases build with the system interpreter (CLAUDE.md); a repo .venv is
+    dev-only tooling and is never picked up unasked -- on 2026-10-23 it lacked
+    PyInstaller, so a default build would have failed at the shared runtime.
 
 .PARAMETER Iscc
     Inno Setup's ISCC.exe. Default: the usual Inno Setup 7 (then 6) locations.
 
 .PARAMETER Sign
     Sign the builds (needs signing credentials). Off by default.
+
+.PARAMETER Release
+    A distribution build. Each app is still built with -SkipPublishedCheck --
+    a joint release must be (docs/release/RELEASE.md: each app's own sibling
+    check fails on the others, not yet published) -- but before anything is
+    built, scripts/check_release_builds.py checks every app's version and
+    build against the published GitHub releases: not shipped already, and the
+    build its source declares. That is the check the runbook otherwise asks
+    for by hand. Needs the network.
 
 .EXAMPLE
     .\build-quill-apps.ps1 lite,cast,radio,transcribe
@@ -55,6 +66,9 @@
 
 .EXAMPLE
     .\build-quill-apps.ps1 transcribe -DryRun
+
+.EXAMPLE
+    .\build-quill-apps.ps1 all -Release -KeepGoing
 #>
 
 [CmdletBinding()]
@@ -66,7 +80,8 @@ param(
     [switch]$DryRun,
     [string]$Python = "",
     [string]$Iscc = "",
-    [switch]$Sign
+    [switch]$Sign,
+    [switch]$Release
 )
 
 $ErrorActionPreference = "Stop"
@@ -192,23 +207,7 @@ if ($DryRun) { Say "Dry run: nothing will be built." }
 Step "Checking tools"
 $pythonArgs = @()
 if (-not $Python) {
-    $venv = Join-Path $repo ".venv\Scripts\python.exe"
-    # A venv records its base interpreter's absolute path (pyvenv.cfg "home"),
-    # so one made on another machine -- another user profile -- cannot start
-    # here. Probe quietly and say why it was passed over.
-    $venvOk = (Test-Path -LiteralPath $venv) -and
-        ((& $venv -c "import sys; print(sys.version_info[:2] == (3, 14))" 2>$null) -eq "True")
-    if ($venvOk) {
-        $Python = $venv
-    } else {
-        if (Test-Path -LiteralPath $venv) {
-            $cfg = Join-Path $repo ".venv\pyvenv.cfg"
-            $home_ = (Get-Content -LiteralPath $cfg -ErrorAction SilentlyContinue |
-                Where-Object { $_ -match '^\s*home\s*=' }) -replace '^\s*home\s*=\s*', ''
-            Say "  .venv cannot run here (made for $home_); using py -3.14"
-        }
-        $Python = (& py -3.14 -c "import sys; print(sys.executable)").Trim()
-    }
+    $Python = (& py -3.14 -c "import sys; print(sys.executable)").Trim()
 }
 if (-not (Test-Path -LiteralPath $Python)) { throw "Python not found: $Python" }
 $pyVersion = (& $Python -c "import sys; print('%d.%d.%d' % sys.version_info[:3])").Trim()
@@ -242,6 +241,7 @@ $commit = (& git rev-parse --short HEAD).Trim()
 $branch = (& git rev-parse --abbrev-ref HEAD).Trim()
 Say "  Source: $branch at $commit"
 if ($Sign) { Say "  Signing: on" } else { Say "  Signing: off (unsigned builds)" }
+if ($Release) { Say "  Kind: release (build numbers checked against the published releases)" } else { Say "  Kind: dev build (published build numbers not checked)" }
 
 # -- 2. shared runtime ---------------------------------------------------------
 
@@ -279,6 +279,21 @@ if ($siblings) {
     } else {
         Record "Sibling version check" "ok" $t "02-sibling-versions.log"
         Say "  Passed for: $(($siblings | ForEach-Object { $catalog[$_].Id }) -join ', ')."
+    }
+    if ($Release) {
+        # The published-build check each app skips under -SkipPublishedCheck.
+        $t = Get-Date
+        $buildArgs = @("scripts\check_release_builds.py")
+        foreach ($app in $siblings) { $buildArgs += @("--releasing", $catalog[$app].Id) }
+        $code = Invoke-Logged "02-release-builds.log" $Python $buildArgs
+        if ($code -ne 0) {
+            Record "Release build numbers" "FAILED" $t "02-release-builds.log"
+            Say "  FAILED. See logs\02-release-builds.log. An app would ship a build already published, or one its source does not declare."
+            if (-not $KeepGoing) { exit 1 }
+        } else {
+            Record "Release build numbers" "ok" $t "02-release-builds.log"
+            Say "  Release build numbers checked against the published releases."
+        }
     }
 }
 

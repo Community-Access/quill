@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Companion apps that are not part of public QUILL 1.0</title>
   <style>
@@ -11,7 +11,10 @@
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -36,11 +39,16 @@
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -53,11 +61,8 @@
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -86,8 +91,11 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -111,7 +119,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -128,11 +136,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -171,7 +179,6 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -237,18 +244,24 @@
 <main id="main-content" tabindex="-1">
 <h1 id="companion-apps-that-are-not-part-of-public-quill-10">Companion
 apps that are not part of public QUILL 1.0</h1>
-<p>QUILL 1.0.0 ships as the editor plus <strong>two</strong> public
-companion apps: <strong>Quill Radio</strong> and <strong>Quill
-Weather</strong>. Everything documented in this folder is gated out of a
-public build and is verified only for <em>absence</em> from public
-surfaces (<code>docs/planning/signoff/QUILL-1.0.0-SIGNOFF.md</code>,
-section G).</p>
+<p>QUILL 1.0.0 opens these companion apps from its QuillVille menu:
+<strong>Quill Radio</strong>, <strong>Quill Weather</strong>,
+<strong>Quill Inkwell</strong>, <strong>Quill Converter</strong> and
+<strong>QUILL Transcribe</strong> (checked against the code on
+2026-10-23). The apps documented in this folder are not among them:
+QUILL hides them, and the 1.0.0 sign-off checks only that they are
+<em>absent</em> from QUILL’s public surfaces
+(<code>docs/planning/signoff/QUILL-1.0.0-SIGNOFF.md</code>, section
+G).</p>
 <p>The gate is <code>RELEASED_APPS</code> in
 <code>quill/core/app_launcher.py</code>
-(<code>{"quill", "radio", "weather"}</code>), plus
-<code>QUILL_DEV_BUILD=1</code> for developers. With the flag off, the
-QuillVille menu, the command palette, the Explorer shell verb, and the
-build products for these apps are all hidden.</p>
+(<code>{"quill", "radio", "weather", "inkwell", "converter", "transcribe"}</code>),
+plus <code>QUILL_DEV_BUILD=1</code> for developers. With the flag off,
+QUILL’s QuillVille menu, command palette and Explorer shell verb do not
+offer an app outside it. The gate is QUILL’s own: it does not stop an
+app having an installer of its own, and the family build
+(<code>build-quill-apps.ps1 all</code>) makes installers for Quill Cast,
+Audio Studio, Quill Beacon and Quill Social as well.</p>
 <table>
 <thead>
 <tr>
@@ -272,16 +285,10 @@ dev-build-only for 1.0</td>
 <code>app.open_media_player</code></td>
 </tr>
 <tr>
-<td>Quill Converter (standalone audio converter)</td>
-<td><a
-href="converter/README.md"><code>converter/README.md</code></a></td>
-<td><code>RELEASED_APPS</code>; the “Convert with Quill” shell verb is
-gated with it</td>
-</tr>
-<tr>
-<td>QuillBeacon</td>
+<td>Quill Beacon</td>
 <td><a href="beacon/README.md"><code>beacon/README.md</code></a></td>
-<td><code>RELEASED_APPS</code>; still an independent repo</td>
+<td><code>RELEASED_APPS</code>; lives in
+<code>quill/apps/beacon/</code></td>
 </tr>
 <tr>
 <td>Audio Studio (standalone app)</td>
@@ -294,7 +301,10 @@ href="../audio-studio/README.md"><code>../audio-studio/README.md</code></a></td>
 <p>Each file here holds the user-guide and PRD material that was
 <strong>relocated, not deleted</strong>, out of the public docs during
 the 1.0.0 documentation consolidation. When an app ships publicly, its
-file is the material to promote back.</p>
+file is the material to promote back. Quill Converter has: it joined
+<code>RELEASED_APPS</code> with its 1.0.0 release, and <a
+href="converter/README.md"><code>converter/README.md</code></a> stays as
+the record of what moved.</p>
 <p><strong>Two things this folder is not:</strong></p>
 <ul>
 <li><code>docs/podcast/</code> is the 54-episode audio course

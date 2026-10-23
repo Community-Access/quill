@@ -110,7 +110,7 @@ Source: "..\dist\QuillSocial-shared\docs\*"; DestDir: "{app}\docs"; Components: 
 ; Windows checkboxes (TNewCheckBox), which announce checked and not checked.
 ; tests/unit/scripts/test_installer_accessible_checkboxes.py keeps it so.
 Name: "{group}\{#AppName}"; Filename: "{app}\QuillSocial.exe"; IconFilename: "{app}\quill-social.ico"; Components: main
-Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\userguide.md"; Components: docs
+Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\USER_GUIDE.html"; Components: docs
 Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\QuillSocial.exe"; IconFilename: "{app}\quill-social.ico"; Check: WantsDesktopIcon; Components: main
 

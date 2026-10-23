@@ -114,6 +114,13 @@ MUST_IMPORT: tuple[str, ...] = (
     "pypdfium2",
     "quill.io.pdf",
     "quill.io.docconvert",
+    # Quill Social's networks. Social imports them only when an account signs
+    # in (quill_social/adapters/registry.py), so a runtime without one would
+    # pass every other check and fail at the first Mastodon or Bluesky sign-in
+    # (2026-10-23 readiness review).
+    "quill_social",
+    "mastodon",
+    "atproto",
 )
 
 #: The Word stack and GLOW's audits; part of MUST_IMPORT, and named on their

@@ -1,6 +1,10 @@
 # Quill Inkwell changelog
 
-## Unreleased
+Quill Inkwell 1.0.0 has not been published yet. Everything below ships together as
+1.0.0, its first public release: the work since the first build, then the first
+build itself.
+
+## 1.0.0 -- since the first build
 
 - **Dictate Anywhere: spell an address with pauses** (2026-10-17). While
   spelling, each phrase now joins the letters you spelled just before it, with
@@ -145,9 +149,9 @@
   somebody chose is kept (`quill/apps/inkwell_keys.py`,
   `InkwellSettings.take_system_keys`).
 
-## 1.0.0 -- 2026-08-11
+## 1.0.0 -- the first build, 2026-08-11 (never published)
 
-First release. Abbreviation expansion in every Windows application, sharing one
+The first build. Abbreviation expansion in every Windows application, sharing one
 library with QUILL.
 
 ### Added
