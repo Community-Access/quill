@@ -98,7 +98,7 @@ ui = [
     "accessible_output2>=0.17; sys_platform == 'win32'",
     # Pillow: screen capture (PIL.ImageGrab) and clipboard image support.
     # Also a transitive dependency of pillow-heif on platforms where that installs.
-    "Pillow>=12.3.0",
+    "Pillow>=13.0.0",
     # HEIC/HEIF image support for AI image description (iPhone default format).
     # Registers a PIL opener so HEIC files can be read and converted to JPEG
     # in memory before being sent to the vision API.
@@ -276,7 +276,7 @@ pages = ["keynote-parser>=1.14.5.0"]
 pdf-ocr = [
     "markitdown[docx,pptx,xlsx,xls,pdf]>=0.1.8",
     "pdfplumber>=0.11.10",
-    "pypdf>=6.19.0",
+    "pypdf>=6.21.2",
 ]
 # The lean half of pdf-ocr, and the half that actually ships (#1279). MarkItDown
 # is the better reader, but its dependency chain is not lean: magika (its stream
@@ -290,7 +290,7 @@ pdf-ocr = [
 # one-click download for anyone who wants it (Help > Download Optional Components).
 office-text = [
     "pdfplumber>=0.11.10",
-    "pypdf>=6.19.0",
+    "pypdf>=6.21.2",
     "openpyxl>=3.1.5",
 ]
 # GLOW document accessibility engine (audit / fix / convert for docx, pptx,

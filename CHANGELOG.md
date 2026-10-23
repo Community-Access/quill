@@ -2,6 +2,17 @@
 
 ## 1.0.0
 
+### Security: Pillow 13.0.0 and pypdf 6.21.2 (2026-10-23)
+
+Both ship in every app. GitHub's Dependabot had open alerts against the pinned
+versions -- Pillow 12.3.0 (2 critical, 16 high, 9 medium, fixed in 13.0.0) and
+pypdf 6.20.1 (3 medium, fixed in 6.21.0 and later) -- and its own update for
+pypdf could not run, stopping at an unrelated private package index. The
+minimums in `pyproject.toml` are now `Pillow>=13.0.0` and `pypdf>=6.21.2` and
+`uv.lock` follows, so a build cannot ship the old versions. `pip check` is clean,
+the 2,630 image, PDF, OCR, Office and braille tests pass, and every app icon
+regenerates byte for byte.
+
 ### Dictation measured live and with whisper.cpp; a benchmark gate; a public evidence page (2026-10-23)
 
 The two measurements the 2026-10-22 run left open, in

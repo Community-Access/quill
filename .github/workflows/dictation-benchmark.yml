@@ -3,9 +3,12 @@
 # Every model QUILL's dictation advice can recommend is run, on one processor
 # thread, on the ten real recordings committed in tests/corpus/dictation
 # (LibriVox readers, public domain, held out from every model's training). A
-# model fails if it costs more than 1.5 times its catalogue figure -- measured
-# against Moonshine tiny on this same runner, so a slow runner cannot fail it --
-# or gets far more words wrong than the published figure. The data half of the
+# model fails if it costs more than 1.5 times its catalogue figure, measured
+# against Moonshine tiny on this same runner, or gets far more words wrong than
+# the published figure. The ratio depends on the processor as well as the model
+# (the first run, 2026-10-23, failed both Parakeet models here at 6 to 7 times
+# Moonshine tiny, against about 4 on the measuring laptop), so a failure is a
+# reason to re-measure the catalogue, not to loosen the tolerance. The data half of the
 # gate (the advice keeps to its budget on every kind of computer) needs no
 # models and runs in every PR CI shard.
 #

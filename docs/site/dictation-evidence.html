@@ -390,15 +390,19 @@
         Numbers go stale. Ten of the held-out audiobook recordings, six English and four
         Spanish from ten different readers, are kept with QUILL's source code. Every week an
         automatic check runs every model the advice can recommend on them, and compares each
-        one's speed with Moonshine tiny's on the same computer, so the check means the same
-        on any machine. A model that has become much slower or much less accurate than its
-        published figures fails the check. Another check runs with every change to QUILL and
+        one's speed with Moonshine tiny's on the same computer. A model that has become much
+        slower or much less accurate than its published figures fails the check. Another check runs with every change to QUILL and
         confirms that, on 72 kinds of computer, in both languages, the advice never
         recommends a model that would break its own speed and memory rules.
       </p>
       <p>
-        Its first run found something: on a dictated sentence of six or seven seconds, the
-        built-in Whisper tiny takes about four and a half times as long as Moonshine tiny,
+        Its first runs found two things. First, how much longer a model takes than Moonshine
+        tiny depends on the processor: on GitHub's test computers the two Parakeet models
+        took six to seven times as long as Moonshine tiny, against about four on our laptop.
+        So the advice, which scales from Moonshine tiny on your own computer, can
+        underestimate a bigger model on some processors. Second, on a dictated sentence of six
+        or seven seconds, the built-in Whisper tiny takes about four and a half times as long
+        as Moonshine tiny,
         not the 2.6 times we measured on longer recordings, because Whisper always works on
         a 30-second window. Every model takes a little longer per second on short phrases.
         Re-measuring them all at the length of a dictated sentence is the next step for the

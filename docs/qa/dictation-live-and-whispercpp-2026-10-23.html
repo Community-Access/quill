@@ -535,6 +535,18 @@ each second costs, while Moonshine’s cost follows the phrase’s length.
 The catalogue’s 2.6 came from the longer FLEURS recordings; at the
 length of a dictated sentence it is nearer 4.5. Every model’s cost rises
 somewhat on short phrases, Whisper’s most.</p>
+<p><strong>On GitHub’s Windows runner</strong> (the weekly workflow’s
+first run, the same day), the ratios came out differently: Whisper tiny
+for Spanish 3.8 (within its tolerance), but Parakeet TDT v3 6.3 in
+English and 6.8 in Spanish, and Parakeet Unified 7.0, against catalogue
+figures of 3.2 and 3.8 – so both Parakeet models failed. A model’s cost
+against Moonshine tiny depends on the processor as well as the phrase:
+the transducer models are relatively slower on that runner’s processor
+than on the measuring laptop. The apps scale every model from Moonshine
+tiny timed on the person’s own computer, so on such a processor they can
+underestimate the Parakeet models by about half. That belongs with the
+decision on re-measuring the cost factors (below); the gate’s tolerance
+is unchanged.</p>
 <h2 id="what-changed">What changed</h2>
 <ul>
 <li><code>scripts/bench_whispercpp.py</code> and

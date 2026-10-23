@@ -16,8 +16,12 @@ LibriVox, catalogued after every model's training cutoff:
 * **The models keep their numbers** (``--run``, the weekly workflow): each
   recommendable model recognises the committed recordings on one thread. Its
   speed is compared with Moonshine tiny's *on the same machine in the same
-  run*, so the check means the same on any computer: a model must not cost
-  more than :data:`SPEED_TOLERANCE` times its catalogue figure. Its word
+  run*: a model must not cost more than :data:`SPEED_TOLERANCE` times its
+  catalogue figure. The ratio is not machine-independent -- on GitHub's
+  Windows runner (2026-10-23) the Parakeet models cost 6 to 7 times Moonshine
+  tiny against about 4 on the measuring laptop -- so a failure here may be the
+  processor rather than the model, and is a reason to re-measure, not to
+  loosen the tolerance. Its word
   errors must stay within :data:`ERROR_ALLOWANCE` points of the measured
   figure -- loose, because ten recordings are a smoke test, not a benchmark.
 
