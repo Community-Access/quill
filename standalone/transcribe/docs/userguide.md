@@ -1188,6 +1188,12 @@ inglés".
 default follows whatever Windows is set to. A named microphone stays chosen even
 if the default changes.
 
+**Too quiet, and it may not hear you at all.** If the microphone's level is set
+very low, or you speak very softly or far from it, dictation can miss a whole
+sentence, especially just after something louder. In our tests with very quiet
+recordings it missed some entirely. Move closer, or raise the level in Windows'
+sound settings.
+
 ### Dictation Settings
 
 **Dictation Settings** (Alt+Shift+F6, the key QUILL and QUILL Lite use; Ctrl+,

@@ -10051,6 +10051,11 @@ everything else, the better your words come out.
   records four seconds and tells you how loud you were and what the engine
   heard. If it says you are quiet, move the microphone closer before you turn
   anything up.
+- **Too quiet, and it may not hear you at all.** If the microphone's level is
+  set very low, or you speak very softly or far from it, dictation can miss a
+  whole sentence, especially just after something louder. In our tests with
+  very quiet recordings it missed some entirely. Move closer, or raise the
+  level in Windows' sound settings.
 
 ##### The room
 

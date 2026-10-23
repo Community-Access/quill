@@ -12,6 +12,7 @@ said::
     python scripts/dictbench.py RECORDINGS_DIR --model nemotron      # a downloaded model
     python scripts/dictbench.py --list-models                        # every model it knows
     python scripts/dictbench.py --model whisper_small --fetch        # download it first
+    python scripts/dictbench.py RECORDINGS_DIR --engine whispercpp:base  # whisper.cpp
 
 **Any optional model** (``--model ID``, the ids in
 ``quill/core/windows_dictation/model_catalog.py``) is benchmarked from the
@@ -508,6 +509,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--latency", action="store_true", help="live pace, real recogniser, p95")
     parser.add_argument("--pace", type=float, default=1.0, help="--latency: 1.0 is live")
     parser.add_argument("--pause", type=float, default=0.8, help="--latency: pause before writing")
+    parser.add_argument("--whispercpp-exe", help="--engine whispercpp:MODEL: whisper-cli's path")
     args = parser.parse_args(argv)
 
     if args.list_models:
@@ -516,7 +518,10 @@ def main(argv: list[str] | None = None) -> int:
             print(f"{item.id:18} {size:>9}  {item.name} ({item.language_names})")
         return 0
     engine = args.model or args.engine
-    if engine not in {"moonshine", "whisper"} and downloadable(engine) is None:
+    import bench_whispercpp
+
+    whispercpp = bench_whispercpp.is_whispercpp(engine)
+    if not whispercpp and engine not in {"moonshine", "whisper"} and downloadable(engine) is None:
         raise SystemExit(f"Unknown engine or model: {engine}. Try --list-models.")
     if args.fetch and downloadable(engine) is not None:
         fetch_model(engine)
@@ -524,17 +529,33 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     language = coerce_speech_language(args.language)
     folder, entry = resolve_folder(args)
-    refuse_the_aligner(folder, engine)
+    if not whispercpp:
+        refuse_the_aligner(folder, engine)
     transcripts = read_transcripts(folder)
     if args.subset:
         from fetch_bench_audio import subset_names
 
         chosen = subset_names(args.dataset or folder.name, args.subset, folder)
         transcripts = {name: transcripts[name] for name in chosen if name in transcripts}
-    model = model_for(engine, language)
+    model: Any = model_for(engine, language) if not whispercpp else None
     latency: dict[str, Any] | None = None
+    child_peak: float | None = None
     cpu_before, wall_before = time.process_time(), time.perf_counter()
-    if args.latency:
+    if whispercpp:  # a separate program: its own memory, its own CPU (bench_whispercpp.py)
+        from types import SimpleNamespace
+
+        model = SimpleNamespace(id=engine, label=f"whisper.cpp {engine[len('whispercpp:') :]}")
+        results, startup, child_peak = bench_whispercpp.run_files(
+            engine,
+            language,
+            folder,
+            transcripts,
+            args.threads,
+            exe_path=args.whispercpp_exe,
+            score=score,
+            audio_seconds=lambda wav: len(read_wav(wav)) / RATE,
+        )
+    elif args.latency:
         print(f"{model.label}, language {language}, live pace x{args.pace}, CPU only")
         results, latency, startup = run_live(
             engine, language, folder, transcripts, pace=args.pace, pause=args.pause
@@ -555,9 +576,12 @@ def main(argv: list[str] | None = None) -> int:
     cpu = time.process_time() - cpu_before
     overall["average_cpu_percent"] = round(100 * cpu / max(wall, 1e-9))
     overall["startup_seconds"] = round(startup, 2)
-    overall["peak_memory_mb"] = peak_memory_mb() or _windows_peak_mb()
+    overall["peak_memory_mb"] = child_peak or peak_memory_mb() or _windows_peak_mb()
     downloaded = downloadable(model.id)
     overall["model_size"] = megabytes(downloaded.download_bytes) if downloaded else "built in"
+    if whispercpp:
+        size = bench_whispercpp.model_path(bench_whispercpp.model_id(engine)).stat().st_size
+        overall["model_size"] = megabytes(size)
     overall["execution_provider"] = "cpu"
     overall["engine"], overall["language"] = model.id, language
     overall["normalizer"] = normalizer(language)[0]

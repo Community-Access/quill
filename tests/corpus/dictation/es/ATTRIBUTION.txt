@@ -1,0 +1,4 @@
+lv10505-lv10505-001-007.wav: read by Charbelí Ramos Chávez for LibriVox project 10505; book text from ebook 17406
+lv20812-lv20812-006-005.wav: read by Epachuko for LibriVox project 20812; book text from ebook 49149
+lv20927-lv20927-010-007.wav: read by Meribau for LibriVox project 20927; book text from ebook 40066
+lv21132-lv21132-009-020.wav: read by rroderick for LibriVox project 21132; book text from ebook 63424

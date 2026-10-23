@@ -3527,3 +3527,46 @@ it. Remove it in Speech Models later."
 
 Tests: `test_dictation_models_dialog.py`, `test_lite_dictation.py`,
 `test_transcribe_app.py`.
+
+## 39. Measured, 2026-10-23: Nemotron live, whisper.cpp, and the benchmark gate
+
+The two measurements section 37 left open, and the gate do.md asked for. The
+full record, with every table and the method, is
+`docs/qa/dictation-live-and-whispercpp-2026-10-23.md` and its `.json`; the
+public summary is the website's `dictation-evidence.html`.
+
+**Nemotron live** (`dictbench --latency`: the real recogniser, voice detector
+and `NemotronLive` at real speed). At a normal level, live and phrase scored the
+same on FLEURS (10.0 and 10.1 percent) and live was better on the held-out
+audiobooks (4.6 against 5.3), in about 1.0 GB rather than 1.5, with text 1.1 to
+1.5 seconds after a pause at p95. Phrase mode undersold it, as suspected; and
+FLEURS as published (13.7) undersold it further, because many of its recordings
+are very quiet and Nemotron is level-sensitive (10.1 levelled). No
+recommendation changes: Nemotron stays the model for the live preview.
+
+**Quiet speech in live dictation.** At FLEURS's published levels (-50 to -68
+dBFS) the shared Silero voice detector (threshold 0.5) never reported speech for
+17 of 200 recordings, nearly all straight after a louder one, reproducibly. Every
+engine's live path goes through it. Candidate fixes: level the input before the
+detector, or an adaptive threshold for quiet input; either needs testing with
+real microphones before it ships. The guides now say a microphone set very low
+can make dictation miss speech.
+
+**whisper.cpp base** (Locked Dictation's default, `service.preferred_dictation_provider_id`):
+6.9 percent on the held-out audiobooks and 9.2 on FLEURS, against 7.4 and 10.8
+for sherpa-onnx Whisper base; about 320 MB against 820; but 0.44 per thread
+(twice sherpa-onnx's 0.22) and text 4.7 seconds after a phrase on one thread, 2.7
+on four, because it encodes a 30-second window per run. The decision this
+section 32.6 deferred ("whisper.cpp as the default ... after B-1") now has its
+data; it is not taken here.
+
+**The benchmark gate** (`scripts/dictation_speed_gate.py`, `tests/corpus/dictation`,
+`.github/workflows/dictation-benchmark.yml`). Its data half runs on every pull
+request; its model half weekly. Its first run on this machine failed Whisper
+tiny for Spanish: 5.0 times Moonshine tiny against the catalogue's 2.6, because
+Whisper's cost per second rises on short phrases (2.7 on 8.6-second recordings,
+4.3 to 4.5 on 6- to 7-second ones). Every cost factor was measured on recordings
+of about ten seconds. Re-measuring them all at dictated-sentence length is the
+coherent fix and changes at least one recommendation (the quickest Spanish
+model), so it is a decision for Jeff, not taken here; until then the weekly run
+reports it.

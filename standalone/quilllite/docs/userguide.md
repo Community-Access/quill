@@ -6773,6 +6773,10 @@ most of it you only set up once.
 - **Use Test Microphone** in Dictation Settings once, when you first set up.
   If it says "quiet", move the microphone closer or turn up its level in
   Windows. If it says "very loud", the other way.
+- **Too quiet, and it may not hear you at all.** With the level set very low,
+  or speaking very softly or far away, dictation can miss a whole sentence,
+  especially just after something louder. In our tests with very quiet
+  recordings it missed some entirely.
 - **Quieten the room if you can.** Close a window, turn off music, move away
   from a humming fridge. Bigger models cope better with noise, but nothing
   copes as well as quiet.

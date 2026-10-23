@@ -245,6 +245,50 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="dictation-measured-live-and-with-whispercpp-a-benchmark-gate-a-public-evidence-page-2026-10-23">Dictation
+measured live and with whisper.cpp; a benchmark gate; a public evidence
+page (2026-10-23)</h3>
+<p>The two measurements the 2026-10-22 run left open, in
+<code>docs/qa/dictation-live-and-whispercpp-2026-10-23.md</code> (and
+<code>.json</code>) and section 39 of the dictation plan. No
+recommendation changed.</p>
+<ul>
+<li><strong>Nemotron live</strong> (<code>dictbench --latency</code>,
+the real recogniser and <code>NemotronLive</code>): 4.6 percent of words
+wrong on the held-out audiobooks against 5.3 by phrase, and 10.0 against
+10.1 on FLEURS at a normal level, in about 1.0 GB rather than 1.5, with
+text 1.1 to 1.5 seconds after a pause at p95.</li>
+<li><strong>Quiet speech:</strong> at FLEURS’s published levels (-50 to
+-68 dBFS) the shared Silero voice detector never reported speech for 17
+of 200 recordings, mostly straight after a louder one, reproducibly, so
+live dictation wrote nothing for them. Not yet fixed; the QUILL, QUILL
+Lite and QUILL Transcribe guides and the website now say that a
+microphone set very low can make dictation miss speech.</li>
+<li><strong>whisper.cpp</strong> in dictbench
+(<code>--engine whispercpp:MODEL</code>,
+<code>scripts/bench_whispercpp.py</code>), run as QUILL runs it. Base,
+Locked Dictation’s default: 6.9 percent on the held-out audiobooks and
+9.2 on FLEURS (sherpa-onnx Whisper base: 7.4 and 10.8), about 320 MB
+(821), but 0.44 per thread (0.22) and text 4.7 seconds after a phrase on
+one thread, 2.7 on four.</li>
+<li><strong>A benchmark gate:</strong>
+<code>scripts/dictation_speed_gate.py</code>, ten LibriVox recordings in
+<code>tests/corpus/dictation</code>,
+<code>test_dictation_speed_gate.py</code> (the advice keeps to its
+budget on 72 computers, both languages, every priority: every PR) and
+the weekly <code>dictation-benchmark.yml</code> (every recommendable
+model on the recordings, against Moonshine tiny on the same runner). Its
+first run found Whisper tiny costs about 4.5 times Moonshine tiny on 6-
+to 7-second phrases, against the catalogue’s 2.6 from longer recordings;
+left for a decision on re-measuring every cost at phrase length.</li>
+<li><strong>A public evidence page</strong>,
+<code>docs/site/dictation-evidence.html</code>: every recommendation,
+the measurements, the method and the reasoning, with a plain statement
+that results change with the room, microphone, voice and computer.
+Reviewed for accessibility; the site navigation now marks the current
+page visibly as well as for screen readers.</li>
+</ul>
+<h3
 id="speech-models-switch-to-recommended-model-and-an-offer-to-free-the-old-one-2026-10-23">Speech
 Models: Switch to Recommended Model, and an offer to free the old one
 (2026-10-23)</h3>

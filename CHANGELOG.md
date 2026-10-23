@@ -2,6 +2,40 @@
 
 ## 1.0.0
 
+### Dictation measured live and with whisper.cpp; a benchmark gate; a public evidence page (2026-10-23)
+
+The two measurements the 2026-10-22 run left open, in
+`docs/qa/dictation-live-and-whispercpp-2026-10-23.md` (and `.json`) and section
+39 of the dictation plan. No recommendation changed.
+
+- **Nemotron live** (`dictbench --latency`, the real recogniser and
+  `NemotronLive`): 4.6 percent of words wrong on the held-out audiobooks against
+  5.3 by phrase, and 10.0 against 10.1 on FLEURS at a normal level, in about 1.0
+  GB rather than 1.5, with text 1.1 to 1.5 seconds after a pause at p95.
+- **Quiet speech:** at FLEURS's published levels (-50 to -68 dBFS) the shared
+  Silero voice detector never reported speech for 17 of 200 recordings, mostly
+  straight after a louder one, reproducibly, so live dictation wrote nothing for
+  them. Not yet fixed; the QUILL, QUILL Lite and QUILL Transcribe guides and the
+  website now say that a microphone set very low can make dictation miss speech.
+- **whisper.cpp** in dictbench (`--engine whispercpp:MODEL`,
+  `scripts/bench_whispercpp.py`), run as QUILL runs it. Base, Locked
+  Dictation's default: 6.9 percent on the held-out audiobooks and 9.2 on FLEURS
+  (sherpa-onnx Whisper base: 7.4 and 10.8), about 320 MB (821), but 0.44 per
+  thread (0.22) and text 4.7 seconds after a phrase on one thread, 2.7 on four.
+- **A benchmark gate:** `scripts/dictation_speed_gate.py`, ten LibriVox
+  recordings in `tests/corpus/dictation`, `test_dictation_speed_gate.py` (the
+  advice keeps to its budget on 72 computers, both languages, every priority:
+  every PR) and the weekly `dictation-benchmark.yml` (every recommendable model
+  on the recordings, against Moonshine tiny on the same runner). Its first run
+  found Whisper tiny costs about 4.5 times Moonshine tiny on 6- to 7-second
+  phrases, against the catalogue's 2.6 from longer recordings; left for a
+  decision on re-measuring every cost at phrase length.
+- **A public evidence page**, `docs/site/dictation-evidence.html`: every
+  recommendation, the measurements, the method and the reasoning, with a
+  plain statement that results change with the room, microphone, voice and
+  computer. Reviewed for accessibility; the site navigation now marks the
+  current page visibly as well as for screen readers.
+
 ### Speech Models: Switch to Recommended Model, and an offer to free the old one (2026-10-23)
 
 The shared Speech Models window (`quill/ui/dictation_models_dialog.py`; QUILL

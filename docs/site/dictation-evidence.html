@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Why dictation recommends what it does - the evidence - QUILL</title>
+  <meta name="description" content="The measurements behind every speech model QUILL, QUILL Lite and QUILL Transcribe recommend for dictation: which model for which computer and language, how each was tested on real people's speech, how we reasoned from the numbers, and why your own results will differ with your room, your microphone, your voice and your computer.">
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site">
+    <div class="wrap">
+      <a class="brand" href="/">
+        <span class="quill">QUILL</span>
+        <span class="tag">accessible software, built with you</span>
+      </a>
+      <nav class="site" aria-label="Primary">
+        <ul>
+          <li><a href="/dictation.html">Dictation</a></li>
+          <li><a href="/dictation-evidence.html" aria-current="page">Dictation: the evidence</a></li>
+          <li><a href="/index.html">QUILL home</a></li>
+          <li><a href="/quilllite.html">QUILL Lite</a></li>
+          <li><a href="/compare.html">Compare the two editors</a></li>
+          <li><a href="/docs/userguide.html">QUILL user guide</a></li>
+          <li><a href="/docs/quilllite-userguide.html">QUILL Lite user guide</a></li>
+          <li><a href="/faq.html">FAQ</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1" class="prose">
+    <div class="wrap">
+      <h1>Why dictation recommends what it does: the evidence</h1>
+      <p class="lede">
+        QUILL, QUILL Lite and QUILL Transcribe suggest a speech model for your computer and
+        your language. This page shows the measurements behind every suggestion, how we
+        made them, and how we reasoned from them, so you can judge them for yourself.
+      </p>
+
+      <h2 id="first" tabindex="-1" class="focus-target">Read this first: your results will differ</h2>
+      <p>
+        <strong>Every figure on this page was measured on one fast laptop, with people
+        reading aloud from recordings, on two days in October 2026. Your own results will be
+        different, and they may be very different.</strong> How well dictation hears you
+        depends on things no test can stand in for:
+      </p>
+      <ul>
+        <li><strong>Your microphone</strong>, how close it is, and how its level is set.
+          A level set very low can make dictation miss speech altogether; we saw it happen,
+          as the section on <a href="#quiet">very quiet speech</a> explains.</li>
+        <li><strong>Your room</strong>: background noise, echo, a fan, a television, other
+          people talking.</li>
+        <li><strong>Your voice</strong>: accent, speed, clarity, and any speech difference
+          or disability. Every recording here is someone reading aloud from a book or
+          a script, which is easier to recognise than everyday speech.</li>
+        <li><strong>Your words</strong>: names, technical terms and specialist vocabulary
+          are harder than the plain prose most of these recordings contain.</li>
+        <li><strong>Your computer</strong>: its processor, its memory, what else is running
+          (above all your screen reader), and whether it is on battery.</li>
+      </ul>
+      <p>
+        So treat a recommendation as a good place to start, not a promise. If a model
+        mishears you, try another: every model can be chosen, downloaded and removed in
+        the model list, and switching changes nothing else.
+      </p>
+
+      <nav class="cmp-jump" aria-labelledby="onpage-h">
+        <h2 id="onpage-h">On this page</h2>
+        <ul>
+          <li><a href="#choices">What we recommend, and why, at a glance</a></li>
+          <li><a href="#how">How we tested</a></li>
+          <li><a href="#english">English: every model measured</a></li>
+          <li><a href="#spanish">Spanish: every model measured</a></li>
+          <li><a href="#live">Words while you speak: Nemotron live</a></li>
+          <li><a href="#locked">QUILL's Locked Dictation: whisper.cpp</a></li>
+          <li><a href="#reasoning">How we got from numbers to a recommendation</a></li>
+          <li><a href="#quiet">A limit we found: very quiet speech</a></li>
+          <li><a href="#removed">Models we removed, and why</a></li>
+          <li><a href="#checking">How we keep checking</a></li>
+          <li><a href="#open">What we have not measured yet</a></li>
+          <li><a href="#data">The data and the tools</a></li>
+        </ul>
+      </nav>
+
+      <h2 id="choices" tabindex="-1" class="focus-target">What we recommend, and why, at a glance</h2>
+      <p class="group-verdict">
+        For English on a computer with 8 GB of memory, Parakeet Unified made the fewest
+        mistakes; on 4 GB the built-in Moonshine tiny fits best. Measured on one fast laptop
+        with people reading aloud: your results will differ.
+      </p>
+      <p>
+        "Words wrong" is the share of words a model got wrong. For English it is measured on
+        audiobooks no model had heard before (see <a href="#how">how we tested</a>); for
+        Spanish it is the average of two Spanish sets. Lower is better.
+      </p>
+      <div class="cmp-scroll">
+        <table class="cmp">
+          <caption>The recommendation for each kind of computer and language, and the main reason. Lower words wrong is better.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Your computer and language</th>
+              <th scope="col">Recommended model</th>
+              <th scope="col">Words wrong</th>
+              <th scope="col">Why this one</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">English, 8 GB of memory or more, four cores or more</th><td>NVIDIA Parakeet Unified 0.6B (a 663 MB download)</td><td>3.2% (about 3 words in 100)</td><td>The fewest mistakes of any model that keeps up while leaving most of the computer free for your screen reader.</td></tr>
+            <tr><th scope="row">English, 8 GB of memory, two cores, when the computer is quick enough</th><td>NVIDIA Parakeet TDT 0.6B v3 (a 670 MB download)</td><td>3.8% (about 4 words in 100)</td><td>Nearly as accurate as Parakeet Unified and lighter to run, so it keeps up on a two-core computer.</td></tr>
+            <tr><th scope="row">English, 4 GB of memory, or little memory free</th><td>Moonshine tiny (built in)</td><td>6.5% (about 6 words in 100)</td><td>The lightest and quickest model; the only kind that fits beside a screen reader in 4 GB.</td></tr>
+            <tr><th scope="row">English, when you choose the quickest response</th><td>Moonshine tiny (built in)</td><td>6.5% (about 6 words in 100)</td><td>Your words appear soonest after you pause.</td></tr>
+            <tr><th scope="row">English, when you want words to appear as you speak</th><td>NVIDIA Nemotron 3.5 Streaming 0.6B (a 682 MB download)</td><td>4.6% when writing as you speak (about 5 words in 100)</td><td>The only model that writes words while you are still talking, rather than after you pause.</td></tr>
+            <tr><th scope="row">Spanish, 8 GB of memory</th><td>NVIDIA Parakeet TDT 0.6B v3 (a 670 MB download)</td><td>5.9% (about 6 words in 100)</td><td>The most accurate Spanish model measured, by a wide margin.</td></tr>
+            <tr><th scope="row">Spanish, 4 GB of memory</th><td>Whisper tiny (built in)</td><td>28.8% (about 1 word in 4)</td><td>The only Spanish model that fits. Because so many words are wrong, dictation suggests Parakeet once on a computer that can run it.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Nothing is downloaded or switched for you. The recommendation is text to read in
+        the model list, and you choose.
+      </p>
+
+      <h2 id="how" tabindex="-1" class="focus-target">How we tested</h2>
+      <h3>A few words used on this page</h3>
+      <ul>
+        <li><strong>Core:</strong> a processor has several cores, and each one does one job
+          at a time. A computer with four cores can do four things at once.</li>
+        <li><strong>Thread:</strong> one line of work on one core. Dictation is allowed a
+          quarter of one core's time, so that your screen reader stays quick.</li>
+        <li><strong>Held-out audiobooks:</strong> recordings published after every model was
+          built, so no model could have practised on them. They are the fairest test.</li>
+        <li><strong>Memory:</strong> the computer's working memory (RAM), measured in
+          gigabytes (GB) and megabytes (MB).</li>
+      </ul>
+      <h3>The recordings: real people</h3>
+      <p>
+        Until October 2026 our advice rested on ten recordings of a synthetic voice, which
+        flattered every model. Every figure on this page comes from recordings of real
+        people:
+      </p>
+      <div class="cmp-scroll">
+        <table class="cmp">
+          <caption>The recordings each model was tested on.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Set</th>
+              <th scope="col">What it is</th>
+              <th scope="col">Number of recordings</th>
+              <th scope="col">Could a model have practised on it?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Held-out audiobooks, English</th><td>Volunteers reading public-domain books for LibriVox, checked against the book's text from Project Gutenberg.</td><td>101</td><td>No. English decisions rest on this set.</td></tr>
+            <tr><th scope="row">Held-out audiobooks, Spanish</th><td>The same, in Spanish.</td><td>82</td><td>No.</td></tr>
+            <tr><th scope="row">FLEURS, English and Spanish</th><td>Google's recordings of many people, with many accents, reading Wikipedia sentences.</td><td>200 in each language</td><td>Possibly: it is public.</td></tr>
+            <tr><th scope="row">LibriSpeech, clear and harder speech</th><td>Audiobook speech in two halves: clear recordings, and harder voices and recordings.</td><td>200 in each half</td><td>Possibly: it is public.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>The measures</h3>
+      <ul>
+        <li><strong>Words wrong:</strong> the share of the words that were said that the model
+          got wrong, left out or added, ignoring capitals and punctuation (and, for Spanish,
+          accents). Lower is better.</li>
+        <li><strong>Processing time:</strong> seconds of computing for each second of speech,
+          on one thread. Lower is faster. Dictation's limit is 0.25: a quarter of one core.
+          Because computers differ so much, the apps time the built-in Moonshine tiny on
+          your own computer for two seconds and work out every model's processing time from
+          that.</li>
+        <li><strong>Most memory used:</strong> the most memory the model needed on any set,
+          because a model must fit the worst minute, not the average one.</li>
+      </ul>
+      <h3>The computer and the method</h3>
+      <p>
+        One laptop with an Intel Core Ultra 7 265H processor, 16 cores and 64 GB of memory,
+        running Windows 11. That is much faster than the computers the advice is written
+        for, which is why the apps compare each model with Moonshine tiny rather than using
+        these seconds directly. Each model ran on the processor alone, one recording at a
+        time, the way dictation hands over a phrase, and separately from every other model
+        so that its memory figure is its own. The test program, called dictbench, is part
+        of QUILL's source code, and anyone can run it.
+      </p>
+
+      <h2 id="english" tabindex="-1" class="focus-target">English: every model measured</h2>
+      <p class="group-verdict">
+        Parakeet Unified made the fewest mistakes while keeping up. Measured on one fast
+        laptop with people reading aloud: your results will differ.
+      </p>
+      <div class="cmp-scroll">
+        <table class="cmp">
+          <caption>English, measured 22 October 2026. For every number, lower is better.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Model</th>
+              <th scope="col">Words wrong: held-out audiobooks</th>
+              <th scope="col">Words wrong: FLEURS</th>
+              <th scope="col">Processing time (lower is faster; limit 0.25)</th>
+              <th scope="col">Most memory used</th>
+              <th scope="col">What we decided</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">NVIDIA Parakeet Unified 0.6B</th><td>3.2%</td><td>6.3%</td><td>0.21</td><td>1.2 GB</td><td>Recommended on 8 GB with four cores</td></tr>
+            <tr><th scope="row">NVIDIA Parakeet TDT 0.6B v3</th><td>3.8%</td><td>9.0%</td><td>0.11</td><td>1.1 GB</td><td>Recommended on 8 GB with two cores</td></tr>
+            <tr><th scope="row">Whisper small</th><td>4.7%</td><td>7.0%</td><td>0.55</td><td>1.4 GB</td><td>Kept; needs two threads</td></tr>
+            <tr><th scope="row">NVIDIA Nemotron 3.5 Streaming 0.6B</th><td>5.3%</td><td>13.7%</td><td>0.37</td><td>1.5 GB</td><td>Kept for words while you speak; its results writing as you speak are in the Nemotron section</td></tr>
+            <tr><th scope="row">Moonshine base</th><td>5.9%</td><td>15.1%</td><td>0.05</td><td>378 MB</td><td>Kept</td></tr>
+            <tr><th scope="row">Whisper base.en</th><td>5.9%</td><td>7.4%</td><td>0.13</td><td>820 MB</td><td>Kept; light, good on varied voices</td></tr>
+            <tr><th scope="row">Moonshine tiny (built in)</th><td>6.5%</td><td>13.2%</td><td>0.06</td><td>584 MB</td><td>The default, and the pick on 4 GB</td></tr>
+            <tr><th scope="row">Whisper base</th><td>7.4%</td><td>10.8%</td><td>0.22</td><td>821 MB</td><td>Kept; many languages</td></tr>
+            <tr><th scope="row">Whisper tiny (built in)</th><td>8.3%</td><td>11.7%</td><td>0.07</td><td>521 MB</td><td>Kept; built in</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="spanish" tabindex="-1" class="focus-target">Spanish: every model measured</h2>
+      <p class="group-verdict">
+        Parakeet TDT v3 made by far the fewest mistakes. Measured on one fast laptop with
+        people reading aloud: your results will differ.
+      </p>
+      <div class="cmp-scroll">
+        <table class="cmp">
+          <caption>Spanish, measured 22 October 2026. For every number, lower is better.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Model</th>
+              <th scope="col">Words wrong: held-out audiobooks</th>
+              <th scope="col">Words wrong: FLEURS</th>
+              <th scope="col">Processing time (lower is faster; limit 0.25)</th>
+              <th scope="col">Most memory used</th>
+              <th scope="col">What we decided</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">NVIDIA Parakeet TDT 0.6B v3</th><td>7.3%</td><td>4.4%</td><td>0.12</td><td>1.1 GB</td><td>Recommended on 8 GB</td></tr>
+            <tr><th scope="row">Whisper small</th><td>7.8%</td><td>6.0%</td><td>0.57</td><td>1.4 GB</td><td>Kept; needs two threads</td></tr>
+            <tr><th scope="row">NVIDIA Nemotron 3.5 Streaming 0.6B</th><td>8.0%</td><td>6.4%</td><td>0.50</td><td>1.5 GB</td><td>Kept</td></tr>
+            <tr><th scope="row">Whisper base</th><td>16.1%</td><td>12.6%</td><td>0.18</td><td>821 MB</td><td>Kept; lighter</td></tr>
+            <tr><th scope="row">Whisper tiny (built in)</th><td>27.0%</td><td>30.5%</td><td>0.10</td><td>521 MB</td><td>Built in; the pick on 4 GB</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        We considered shipping Whisper base in place of Whisper tiny, so Spanish would start
+        on a better model. We decided against it: every installer would grow, and Spanish
+        would still be about three times worse than Parakeet, which most computers with
+        8 GB can run. Instead, the first time you dictate in Spanish on such a computer,
+        dictation says once that Parakeet would make far fewer mistakes, and where to get it.
+      </p>
+
+      <h2 id="live" tabindex="-1" class="focus-target">Words while you speak: Nemotron live</h2>
+      <p>
+        Nemotron is built to recognise speech while you are still talking, and that is how
+        dictation runs it. Our first test handed it whole phrases instead, which might have
+        undersold it, so on 23 October we played the same recordings at real speed through
+        dictation itself. The last column is how long you wait for your words after you stop
+        talking: for 95 phrases in 100, they appeared within that time.
+      </p>
+      <p class="group-verdict">
+        At a normal microphone level, writing as you speak was as accurate as by phrase, or
+        better. Measured on one fast laptop with people reading aloud: your results will
+        differ.
+      </p>
+      <div class="cmp-scroll">
+        <table class="cmp">
+          <caption>Nemotron by phrase and writing as you speak, on the same recordings, 23 October 2026. Lower is better.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Recordings</th>
+              <th scope="col">Words wrong, by phrase</th>
+              <th scope="col">Words wrong, writing as you speak</th>
+              <th scope="col">Wait for your words after you stop</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Held-out audiobooks</th><td>5.3%</td><td>4.6%</td><td>1.1 seconds</td></tr>
+            <tr><th scope="row">FLEURS, each recording at a normal microphone level</th><td>10.1%</td><td>10.0%</td><td>1.5 seconds</td></tr>
+            <tr><th scope="row">FLEURS, as published (many very quiet)</th><td>13.7%</td><td>26.8%</td><td>3.7 seconds</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Writing as you speak also used about a third less memory: about 1.0 GB rather than
+        1.5 GB. The last row is the exception, and it taught us something about quiet
+        speech, which the section on <a href="#quiet">very quiet speech</a> explains.
+      </p>
+
+      <h2 id="locked" tabindex="-1" class="focus-target">QUILL's Locked Dictation: whisper.cpp</h2>
+      <p>
+        QUILL also has <a href="/dictation.html#two-kinds">Locked Dictation</a>, which
+        records first and writes the words afterwards. It uses whisper.cpp, another speech
+        engine: a separate program that runs Whisper models, with its "base" model unless
+        you choose another. We measured it the way QUILL runs it, against the same Whisper
+        base model run by the engine the rest of dictation uses. The "words appear" column
+        is the average wait after a phrase.
+      </p>
+      <p class="group-verdict">
+        whisper.cpp was a little more accurate and much lighter on memory, but slower.
+        Measured on one fast laptop with people reading aloud: your results will differ.
+      </p>
+      <div class="cmp-scroll">
+        <table class="cmp">
+          <caption>whisper.cpp base against the alternatives, 23 October 2026. Lower is better.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Engine and model</th>
+              <th scope="col">Words wrong: held-out audiobooks</th>
+              <th scope="col">Words wrong: FLEURS</th>
+              <th scope="col">Processing time (lower is faster; limit 0.25)</th>
+              <th scope="col">Average wait for words after a phrase</th>
+              <th scope="col">Most memory used</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">whisper.cpp base, one thread</th><td>6.9%</td><td>9.2%</td><td>0.44</td><td>4.7 seconds</td><td>about 320 MB</td></tr>
+            <tr><th scope="row">whisper.cpp base, four threads (QUILL's setting)</th><td>6.9%</td><td>not run</td><td>0.25 per thread, four threads used</td><td>2.7 seconds</td><td>about 330 MB</td></tr>
+            <tr><th scope="row">Whisper base, the engine the rest of dictation uses</th><td>7.4%</td><td>10.8%</td><td>0.22</td><td>not timed</td><td>821 MB</td></tr>
+            <tr><th scope="row">Parakeet Unified, for comparison</th><td>3.2%</td><td>6.3%</td><td>0.21</td><td>not timed</td><td>1.2 GB</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        whisper.cpp was slightly more accurate than the same model in our other engine and
+        used well under half the memory, but it was twice as slow and kept you waiting longer
+        for your words, because it works on a 30-second window of audio for every phrase,
+        however short. It also accepts a list of words to listen for, which Locked
+        Dictation's profiles use. Whether it should stay Locked Dictation's default is an
+        open decision; this is the evidence it will rest on.
+      </p>
+
+      <h2 id="reasoning" tabindex="-1" class="focus-target">How we got from numbers to a recommendation</h2>
+      <p>The apps apply the same steps, in this order, on your own computer:</p>
+      <ol>
+        <li><strong>It must speak your language.</strong> For Spanish, only models we measured
+          in Spanish are considered: a recommendation needs a number behind it.</li>
+        <li><strong>It must fit beside your screen reader.</strong> Each model's memory is
+          compared with what your computer can spare: about 1.6 GB on a computer with 8 GB,
+          less on 4 GB, and always leaving at least half a gigabyte of what is free right
+          now.</li>
+        <li><strong>It must keep up with you.</strong> The app times a small built-in model on
+          your computer for two seconds, works out from that how hard each model would make
+          your computer work, and leaves out any model that would fall behind your speech or
+          take more of the computer than your screen reader can spare.</li>
+        <li><strong>Of what is left, the fewest mistakes wins</strong>: by the held-out
+          audiobooks for English, or by the two Spanish sets for Spanish. If you choose the
+          quickest response, the quickest wins instead.</li>
+        <li><strong>On a modest computer, a tie goes to what is built in,</strong> so nothing
+          needs downloading where every megabyte counts.</li>
+      </ol>
+      <p>
+        Two consequences are worth saying plainly. First, the recommendation is about this
+        computer, now: open the model list after closing a large program and it may suggest
+        something bigger. Second, it is only as good as the measurements: the figures above
+        are averages over many people reading aloud, and the person who matters is you.
+      </p>
+
+      <h2 id="quiet" tabindex="-1" class="focus-target">A limit we found: very quiet speech</h2>
+      <p>
+        Many of Google's FLEURS recordings are published very quietly, far quieter than a
+        microphone at a normal setting. Played at real speed through dictation, nothing at
+        all was written for 17 of 200 of them. The part of dictation that decides when you
+        have started speaking never heard them start, mostly when a quiet recording came
+        straight after a louder one. Brought up to a normal level, every one of them was
+        heard.
+      </p>
+      <p>
+        <strong>What this means for you:</strong> if your microphone's level is set very low,
+        or you speak very softly or far from it, dictation may miss what you say, especially
+        just after something louder. Raising the microphone level in Windows' sound settings,
+        or moving closer, is the first thing to try. We are working on dictation handling
+        quiet input itself; until then, this is a real limit, and we would rather tell you
+        than have you find it.
+      </p>
+
+      <h2 id="removed" tabindex="-1" class="focus-target">Models we removed, and why</h2>
+      <p>
+        Five English-only models were removed in October 2026: Distil-Whisper small.en,
+        Whisper small.en, Distil-Whisper medium.en, Whisper medium.en and Distil-Whisper
+        large-v3. On the held-out audiobooks they got 3.6% to 6.3% of words wrong, against
+        Parakeet Unified's 3.2%, and each was slower and needed as much memory or more.
+        Keeping them offered only a slower or heavier way to a worse result. Anyone using one
+        was moved to Parakeet Unified if it was already downloaded, or otherwise to the
+        built-in model, and told once; nothing was downloaded and no file was deleted.
+      </p>
+
+      <h2 id="checking" tabindex="-1" class="focus-target">How we keep checking</h2>
+      <p>
+        Numbers go stale. Ten of the held-out audiobook recordings, six English and four
+        Spanish from ten different readers, are kept with QUILL's source code. Every week an
+        automatic check runs every model the advice can recommend on them, and compares each
+        one's speed with Moonshine tiny's on the same computer, so the check means the same
+        on any machine. A model that has become much slower or much less accurate than its
+        published figures fails the check. Another check runs with every change to QUILL and
+        confirms that, on 72 kinds of computer, in both languages, the advice never
+        recommends a model that would break its own speed and memory rules.
+      </p>
+      <p>
+        Its first run found something: on a dictated sentence of six or seven seconds, the
+        built-in Whisper tiny takes about four and a half times as long as Moonshine tiny,
+        not the 2.6 times we measured on longer recordings, because Whisper always works on
+        a 30-second window. Every model takes a little longer per second on short phrases.
+        Re-measuring them all at the length of a dictated sentence is the next step for the
+        advice, and the result will appear here.
+      </p>
+
+      <h2 id="open" tabindex="-1" class="focus-target">What we have not measured yet</h2>
+      <ul>
+        <li><strong>A real modest computer with a screen reader running.</strong> Speed,
+          memory, screen-reader lag and battery on a 4 GB Windows 10 computer with NVDA or
+          JAWS still need a person at the keyboard.</li>
+        <li><strong>Everyday speech.</strong> Every recording here is someone reading. Natural,
+          hesitant or conversational speech is harder.</li>
+        <li><strong>Speech differences and disabilities.</strong> We have not yet measured how
+          each model does with dysarthria, stammering or other speech differences. If you
+          would contribute recordings, please write to us.</li>
+        <li><strong>Noise and microphones.</strong> Noisy rooms and a range of real microphones,
+          including the quiet-speech limit above.</li>
+        <li><strong>Spanish questions and exclamations.</strong> Whether Whisper writes the
+          opening upside-down question and exclamation marks (¿ and ¡) itself needs
+          recordings from a native speaker.</li>
+        <li><strong>Whisper medium and large-v3-turbo</strong> were too slow to re-run with
+          real speech.</li>
+      </ul>
+
+      <h2 id="data" tabindex="-1" class="focus-target">The data and the tools</h2>
+      <p>
+        Every number on this page comes from two engineering records published with QUILL's
+        source code on GitHub, each with a data file holding every result: the
+        <a href="https://github.com/Community-Access/quill/blob/main/docs/qa/dictation-real-speech-benchmark-2026-10-22.md">real-speech test of 22 October 2026 (on GitHub)</a>
+        and the
+        <a href="https://github.com/Community-Access/quill/blob/main/docs/qa/dictation-live-and-whispercpp-2026-10-23.md">live and whisper.cpp tests of 23 October 2026 (on GitHub)</a>.
+        The test program and the scripts that fetch each set of recordings, with their
+        licences and checksums, are in the same place, so anyone can repeat the tests on
+        their own computer. For how to choose and change models, see the
+        <a href="/dictation.html">dictation guide</a>.
+      </p>
+    </div>
+  </main>
+
+  <footer class="site">
+    <div class="wrap">
+      <p class="note">
+        <strong class="quill" style="color:var(--accent)">QUILL</strong> stands for
+        Quality, Usable, Inclusive, Lightweight, Literate. It is a writing program for
+        Windows and macOS, made for people who use screen readers, by people who use
+        them too.
+      </p>
+      <nav aria-label="Documentation">
+        <h2>Documentation</h2>
+        <ul>
+          <li><a href="/docs/userguide.html">QUILL user guide</a></li>
+          <li><a href="/docs/quilllite-userguide.html">QUILL Lite user guide</a></li>
+          <li><a href="/dictation.html">Dictation in QUILL, QUILL Lite and QUILL Transcribe</a></li>
+          <li><a href="/faq.html">QUILL frequently asked questions</a></li>
+          <li><a href="/docs.html">All documentation for every app in the family</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Privacy and security">
+        <h2>Privacy &amp; security</h2>
+        <ul>
+          <li><a href="/docs/privacy.html">QUILL's privacy policy</a></li>
+          <li><a href="/docs/security.html">Reporting a security problem</a></li>
+        </ul>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>
