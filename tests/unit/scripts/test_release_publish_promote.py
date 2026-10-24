@@ -452,3 +452,23 @@ def test_feed_audit_fails_unsigned_and_warns_near_expiry(tmp_path: Path, key, mo
     gate = next(g for g in GATES if g.name == "release-feeds")
     text = render_markdown([GateResult(gate, True, 0.1, "Warning: soon", warning=True)])
     assert "pass, with a warning" in text and "## Warnings" in text and "FAIL" not in text
+
+
+def test_a_blank_signoff_line_does_not_borrow_the_next_line(tmp_path: Path) -> None:
+    """An empty "Tester:" used to pass: the pattern's \s ran onto the next line."""
+    from quill.tools import release_feed as rf
+
+    path = tmp_path / "docs" / "qa" / "signoffs" / "radio-3.2.0.md"
+    path.parent.mkdir(parents=True)
+    path.write_text("Result: pass\nTester:\nScreen readers:\nDate:\n", encoding="utf-8")
+    problems = rf.signoff_problems("radio", "3.2.0", tmp_path)
+    assert problems == [
+        "the sheet has no 'Tester:' line",
+        "the sheet has no 'Screen readers:' line",
+        "the sheet has no 'Date:' line",
+    ]
+    path.write_text(
+        "Result: pass\nTester: Jeff\nScreen readers: NVDA 2026.3\nDate: 2026-10-30\n",
+        encoding="utf-8",
+    )
+    assert rf.signoff_problems("radio", "3.2.0", tmp_path) == []

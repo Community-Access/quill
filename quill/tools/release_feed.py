@@ -542,10 +542,13 @@ def signoff_problems(app_key: str, version: str, root: Path = REPO_ROOT) -> list
         return [f"no sign-off sheet at {path.relative_to(root).as_posix()}"]
     text = path.read_text(encoding="utf-8")
     problems = []
-    if not re.search(r"^Result:\s*pass\b", text, re.M | re.I):
+    # [ \t]* rather than \s*: \s matches the line break, so an empty "Tester:"
+    # line used to pass by reading the first letter of the line after it -- a
+    # blank sheet's three labels all passed (found 2026-10-24).
+    if not re.search(r"^Result:[ \t]*pass\b", text, re.M | re.I):
         problems.append("the sheet does not say 'Result: pass'")
     for label in ("Tester", "Screen readers", "Date"):
-        if not re.search(rf"^{label}:\s*\S", text, re.M | re.I):
+        if not re.search(rf"^{label}:[ \t]*\S", text, re.M | re.I):
             problems.append(f"the sheet has no '{label}:' line")
     return problems
 

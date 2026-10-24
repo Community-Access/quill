@@ -2,6 +2,16 @@
 
 ## 1.0.0
 
+### A release plan for four apps, and a sign-off check that read blank lines (2026-10-24)
+
+`docs/release/release-plan-lite-radio-cast-transcribe.md` takes QUILL Lite 1.2.0,
+Quill Radio 3.2.0, QUILL Cast 2.0.0 and QUILL Transcribe 1.0.0 from one-time setup
+to the website, with a sign-off sheet per app in `docs/qa/signoffs/` (pending).
+Writing them found that the Stable promotion's sign-off check (P9,
+`release_feed.signoff_problems`) accepted empty `Tester:`, `Screen readers:` and
+`Date:` lines: its `\s*` ran onto the next line. It now needs a value on the
+same line.
+
 ### Security: Pillow 13.0.0, pypdf 6.21.2, filelock 4.2.4 and setuptools 84.2.1 (2026-10-23)
 
 Both ship in every app. GitHub's Dependabot had open alerts against the pinned

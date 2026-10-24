@@ -215,7 +215,10 @@ gets the next build number, goes on Beta, and is promoted from there. Details:
 
 For a step-by-step walk-through of building and publishing the QUILL Lite,
 Quill Radio and QUILL Cast betas, see
-[Beta builds and publishing](beta-build-and-publish.md).
+[Beta builds and publishing](beta-build-and-publish.md). For the general
+release of QUILL Lite 1.2, Quill Radio 3.2, QUILL Cast 2.0 and QUILL
+Transcribe 1.0, from one-time setup to the website, see
+[the release plan](release-plan-lite-radio-cast-transcribe.md).
 
 A sibling app built on this computer:
 

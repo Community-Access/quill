@@ -245,6 +245,19 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="a-release-plan-for-four-apps-and-a-sign-off-check-that-read-blank-lines-2026-10-24">A
+release plan for four apps, and a sign-off check that read blank lines
+(2026-10-24)</h3>
+<p><code>docs/release/release-plan-lite-radio-cast-transcribe.md</code>
+takes QUILL Lite 1.2.0, Quill Radio 3.2.0, QUILL Cast 2.0.0 and QUILL
+Transcribe 1.0.0 from one-time setup to the website, with a sign-off
+sheet per app in <code>docs/qa/signoffs/</code> (pending). Writing them
+found that the Stable promotion’s sign-off check (P9,
+<code>release_feed.signoff_problems</code>) accepted empty
+<code>Tester:</code>, <code>Screen readers:</code> and
+<code>Date:</code> lines: its <code>\s*</code> ran onto the next line.
+It now needs a value on the same line.</p>
+<h3
 id="security-pillow-1300-pypdf-6212-filelock-424-and-setuptools-8421-2026-10-23">Security:
 Pillow 13.0.0, pypdf 6.21.2, filelock 4.2.4 and setuptools 84.2.1
 (2026-10-23)</h3>
