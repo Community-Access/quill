@@ -88,7 +88,7 @@ ui = [
     # version without spawning a console process or requesting elevation.
     "psutil>=5.9,<9; sys_platform == 'win32'",
     # CA bundle remains available to tools that need a portable root bundle.
-    "certifi>=2026.7.22",
+    "certifi>=2026.10.19",
     # Prism screen-reader speech bridge (Windows) — routes announcements to
     # NVDA/JAWS/Narrator instead of speaking over them.
     "prismatoid>=0.18.2; sys_platform == 'win32'",
