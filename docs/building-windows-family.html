@@ -483,8 +483,17 @@ Lite portable: the PDF reader and OCR (first build after
 pypdfium2, plus pypdf and openpyxl) and <code>ocr</code> (the
 <code>winrt</code> Windows.Media.Ocr projection), so a portable copy
 opens PDFs and reads scanned pages the way the installed copy always
-has. Two things happen on the first build after this change, and both
-are expected:</p>
+has.</p>
+<p><strong>Done on 2026-10-24:</strong>
+<code>portable-inventory.json</code> was rebaselined from a real bundle.
+Besides the packages below, that build added three files Python 3.14.8’s
+embeddable package ships (<code>_remote_debugging.pyd</code>,
+<code>_zstd.pyd</code>, <code>libtommath.dll</code>; the 3.14 move had
+renamed the 3.13 entries by hand instead of rebaselining),
+<code>psutil</code> (a base dependency since 2026-10-09), and
+pillow-heif’s renamed DLLs. The steps are kept as the record. On the
+first build after this change, two things happened, and both were
+expected:</p>
 <ol type="1">
 <li><p><strong>The inventory gate stops the build.</strong>
 <code>build_portable.py</code> step 8 compares the bundle with
@@ -535,8 +544,20 @@ copies were fine, because pip installs lxml with python-docx.</p>
 (<code>lxml</code>, <code>docx</code>, <code>pptx</code>,
 <code>openpyxl</code> and every <code>acb_large_print</code> module) as
 hidden imports, so the Word path no longer depends on which optional
-imports the tracer happens to follow. Expect three things on the first
-runtime build after this change.</p>
+imports the tracer happens to follow.</p>
+<p><strong>Done on 2026-10-24.</strong> The steps below were followed
+and <code>runtime-inventory.json</code> now lists <code>lxml</code> and
+<code>acb-large-print</code> (the second is
+<code>acb_large_print</code>’s package metadata, which it reads for its
+own version). That build also found five packages swept from the build
+machine through optional imports – <code>orjson</code>,
+<code>bcrypt</code>, <code>h2</code>, and <code>pythonnet</code> with
+<code>clr_loader</code> – so the spec now excludes them, and
+<code>build_runtime.ps1</code> prunes <code>h2</code>’s metadata, which
+<code>urllib3.http2</code> would otherwise pull in by name. A runtime
+build now passes the inventory gate with no rebaseline. The steps are
+kept as the record, and as the pattern for the next intentional
+addition.</p>
 <ol type="1">
 <li><p><strong>The runtime inventory gate stops the build, and says
 why.</strong> <code>check_runtime_inventory.py</code> reports:</p>

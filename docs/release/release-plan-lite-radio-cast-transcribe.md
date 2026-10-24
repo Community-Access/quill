@@ -57,7 +57,9 @@ Only what these four releases need. The Dev-build setup in RELEASE.md (the
    `QUILL_FEED_KEY_FILE` exists. Put the key file back at that path, or set
    `QUILL_FEED_KEY_FILE` to where it is. It is the same key as the v1 feed's
    (`QUILL_FEED_SIGNING_KEY` in CI). Never commit it.
-2. **Code signing.** Stable is always Authenticode-signed, at build time. Your
+2. **Code signing (done 2026-10-24: `python scripts/code_signing.py doctor`
+   says "Ready to sign" and a test signature verified).** Stable is always
+   Authenticode-signed, at build time. Your
    do.md has the Azure Artifact Signing steps; in short:
    - install the client tools once (may need an administrator):
      `winget install -e --id Microsoft.Azure.ArtifactSigningClientTools`;
@@ -94,16 +96,16 @@ git pull
 .\build-quill-apps.ps1 lite,radio,cast,transcribe -Release -Sign
 ```
 
-**Expect two stops on this first build, both normal**, and both explained with
-the exact commands in [Building the QUILL Windows family](../building-windows-family.md):
+The two inventory stops this build used to expect (the runtime's `lxml`, and
+QUILL Lite's portable PDF and OCR packages) were cleared on 2026-10-24 from
+real unsigned builds, so the build should run straight through. If an
+inventory gate stops it anyway, something on this computer has changed: follow
+[Building the QUILL Windows family](../building-windows-family.md), and never
+rebaseline a package you cannot explain.
 
-1. The shared runtime's inventory gate names `lxml` (Word support). Run the
-   import check it describes, rebaseline, and run the build again.
-2. QUILL Lite's portable inventory names its new PDF and OCR packages.
-   Rebaseline from the real bundle, and run the build again.
-
-Commit both rebaselined inventory files (`standalone/runtime/runtime-inventory.json`,
-`standalone/quilllite/portable-inventory.json`) and push them.
+Code signing was proved on 2026-10-24: a test program signed through
+`scripts/code_signing.py` verified as `Valid`, signed by Jeffrey Bishop
+(Microsoft ID Verified CS AOC CA 04), with a Microsoft timestamp.
 
 **Check the signatures** before going further: every installer and every
 program in each portable zip must say `Valid`.
@@ -226,7 +228,7 @@ them. Commit `docs/site/updates/v2` and push.
 | | QUILL Lite 1.2.0 | Quill Radio 3.2.0 | QUILL Cast 2.0.0 | QUILL Transcribe 1.0.0 |
 | --- | --- | --- | --- | --- |
 | Feed key restored (you) | needed | needed | needed | needed |
-| Code signing set up (you) | needed | needed | needed | needed |
+| Code signing set up (you) | done (2026-10-24) | done | done | done |
 | Built signed (Step 3) | to do | to do | to do | to do |
 | Smoke test (Step 4) | to do | to do | to do | to do |
 | Sign-off sheet passed (you) | to do | to do | to do | to do |

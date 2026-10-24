@@ -78,15 +78,7 @@ _LAYOUTS: dict[str, tuple[tuple[str, str], ...]] = {
 #: and the person reading the failure needs to know it is expected and what to
 #: do, not to go hunting for a stray package. Remove an entry once the
 #: committed inventory lists the name.
-KNOWN_ADDITIONS: dict[str, str] = {
-    "lxml": (
-        "expected: lxml was removed from the runtime spec's excludes on 2026-10-17 "
-        "so python-docx can import -- Word documents open and save as Word in "
-        "installed QUILL and QUILL Lite, and the GLOW audits work. Confirm the import "
-        "gate passes, then rebaseline with --write (docs/building-windows-family.md, "
-        '"Rebaselining after the Word support change").'
-    ),
-}
+KNOWN_ADDITIONS: dict[str, str] = {}
 
 
 def explain(name: str) -> str:

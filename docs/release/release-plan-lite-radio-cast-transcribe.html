@@ -408,9 +408,11 @@ computer: neither
 path, or set <code>QUILL_FEED_KEY_FILE</code> to where it is. It is the
 same key as the v1 feed’s (<code>QUILL_FEED_SIGNING_KEY</code> in CI).
 Never commit it.</li>
-<li><strong>Code signing.</strong> Stable is always Authenticode-signed,
-at build time. Your do.md has the Azure Artifact Signing steps; in
-short:
+<li><strong>Code signing (done 2026-10-24:
+<code>python scripts/code_signing.py doctor</code> says “Ready to sign”
+and a test signature verified).</strong> Stable is always
+Authenticode-signed, at build time. Your do.md has the Azure Artifact
+Signing steps; in short:
 <ul>
 <li>install the client tools once (may need an administrator):
 <code>winget install -e --id Microsoft.Azure.ArtifactSigningClientTools</code>;</li>
@@ -453,21 +455,17 @@ class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>git pull</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\build-quill-apps<span class="op">.</span><span class="fu">ps1</span> lite<span class="op">,</span>radio<span class="op">,</span>cast<span class="op">,</span>transcribe <span class="op">-</span>Release <span class="op">-</span>Sign <span class="op">-</span>DryRun   <span class="co"># read the plan</span></span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="op">.</span>\build-quill-apps<span class="op">.</span><span class="fu">ps1</span> lite<span class="op">,</span>radio<span class="op">,</span>cast<span class="op">,</span>transcribe <span class="op">-</span>Release <span class="op">-</span>Sign</span></code></pre></div>
-<p><strong>Expect two stops on this first build, both normal</strong>,
-and both explained with the exact commands in <a
+<p>The two inventory stops this build used to expect (the runtime’s
+<code>lxml</code>, and QUILL Lite’s portable PDF and OCR packages) were
+cleared on 2026-10-24 from real unsigned builds, so the build should run
+straight through. If an inventory gate stops it anyway, something on
+this computer has changed: follow <a
 href="../building-windows-family.md">Building the QUILL Windows
-family</a>:</p>
-<ol type="1">
-<li>The shared runtime’s inventory gate names <code>lxml</code> (Word
-support). Run the import check it describes, rebaseline, and run the
-build again.</li>
-<li>QUILL Lite’s portable inventory names its new PDF and OCR packages.
-Rebaseline from the real bundle, and run the build again.</li>
-</ol>
-<p>Commit both rebaselined inventory files
-(<code>standalone/runtime/runtime-inventory.json</code>,
-<code>standalone/quilllite/portable-inventory.json</code>) and push
-them.</p>
+family</a>, and never rebaseline a package you cannot explain.</p>
+<p>Code signing was proved on 2026-10-24: a test program signed through
+<code>scripts/code_signing.py</code> verified as <code>Valid</code>,
+signed by Jeffrey Bishop (Microsoft ID Verified CS AOC CA 04), with a
+Microsoft timestamp.</p>
 <p><strong>Check the signatures</strong> before going further: every
 installer and every program in each portable zip must say
 <code>Valid</code>.</p>
@@ -611,10 +609,10 @@ key”).</li>
 </tr>
 <tr>
 <td>Code signing set up (you)</td>
-<td>needed</td>
-<td>needed</td>
-<td>needed</td>
-<td>needed</td>
+<td>done (2026-10-24)</td>
+<td>done</td>
+<td>done</td>
+<td>done</td>
 </tr>
 <tr>
 <td>Built signed (Step 3)</td>

@@ -158,12 +158,26 @@ def test_a_word_failure_in_the_gate_says_what_it_means(capsys: pytest.CaptureFix
     assert "python-docx needs lxml" in out and "quillville-runtime.spec" in out
 
 
-def test_the_inventory_gate_explains_the_new_lxml_entry() -> None:
-    """The first build after this change fails the inventory gate; it must say why."""
-    reason = inventory_gate.explain("lxml")
-    assert "expected" in reason and "--write" in reason
-    assert "building-windows-family.md" in reason
-    assert inventory_gate.explain("some-stray-package") == ""
+def test_the_inventory_lists_lxml_and_the_swept_packages_stay_out() -> None:
+    """Rebaselined 2026-10-24: lxml is part of the runtime, so the gate no longer
+    explains it, and the five packages that build swept from the machine through
+    optional imports are excluded rather than baselined."""
+    import json
+
+    listed = json.loads(
+        (_ROOT / "standalone" / "runtime" / "runtime-inventory.json").read_text(encoding="utf-8")
+    )
+    internal = listed["_internal"]
+    assert "lxml" in internal
+    assert inventory_gate.explain("lxml") == ""
+    spec = (_ROOT / "standalone" / "runtime" / "quillville-runtime.spec").read_text(
+        encoding="utf-8"
+    )
+    for swept in ("orjson", "bcrypt", "h2", "clr_loader", "pythonnet"):
+        assert swept not in internal, swept
+        assert f'"{swept}",' in spec, swept
+    script = (_ROOT / "standalone" / "runtime" / "build_runtime.ps1").read_text(encoding="utf-8")
+    assert '"h2-*.dist-info"' in script
 
 
 def test_every_word_capable_portable_round_trips_a_document() -> None:

@@ -97,6 +97,12 @@ Get-ChildItem $internal -Recurse -Include *.chm, *.pdb -ErrorAction SilentlyCont
 # standalone DLL, so PyInstaller `excludes` can't drop it.)
 Get-ChildItem $internal -Filter "libx265*.dll" -ErrorAction SilentlyContinue |
     ForEach-Object { Remove-Item -Force $_.FullName; Write-Host "pruned $($_.Name)" }
+# h2's metadata without h2 itself (the spec excludes it): urllib3.http2 calls
+# importlib.metadata.version("h2"), so PyInstaller copies the dist-info whenever
+# the build interpreter has h2 installed. Present, it would tell a
+# find-the-version check that HTTP/2 is available when it is not.
+Get-ChildItem $internal -Directory -Filter "h2-*.dist-info" -ErrorAction SilentlyContinue |
+    ForEach-Object { Remove-Item -Recurse -Force $_.FullName; Write-Host "pruned $($_.Name)" }
 
 # pyenchant ships a slice of an MSYS2 bin\ as package DATA -- Tcl/Tk, a second
 # CPython, GNU readline, the GCC support libraries, gettext's toolchain, and

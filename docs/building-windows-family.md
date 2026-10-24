@@ -145,7 +145,9 @@ if (-not (Get-ChildItem 'dist/windows/installer/Output/Quill-for-All-Setup-*.exe
 
 ### QUILL Lite portable: the PDF reader and OCR (first build after 2026-10-17)
 
-The QUILL Lite portable ZIP now installs two more dependency groups, `office-text` (pdfplumber, which brings pdfminer.six and pypdfium2, plus pypdf and openpyxl) and `ocr` (the `winrt` Windows.Media.Ocr projection), so a portable copy opens PDFs and reads scanned pages the way the installed copy always has. Two things happen on the first build after this change, and both are expected:
+The QUILL Lite portable ZIP now installs two more dependency groups, `office-text` (pdfplumber, which brings pdfminer.six and pypdfium2, plus pypdf and openpyxl) and `ocr` (the `winrt` Windows.Media.Ocr projection), so a portable copy opens PDFs and reads scanned pages the way the installed copy always has.
+
+**Done on 2026-10-24:** `portable-inventory.json` was rebaselined from a real bundle. Besides the packages below, that build added three files Python 3.14.8's embeddable package ships (`_remote_debugging.pyd`, `_zstd.pyd`, `libtommath.dll`; the 3.14 move had renamed the 3.13 entries by hand instead of rebaselining), `psutil` (a base dependency since 2026-10-09), and pillow-heif's renamed DLLs. The steps are kept as the record. On the first build after this change, two things happened, and both were expected:
 
 1. **The inventory gate stops the build.** `build_portable.py` step 8 compares the bundle with `standalone/quilllite/portable-inventory.json` and reports `unexpected in site-packages:` for the new packages (`pdfplumber`, `pdfminer`, `pypdf`, `pypdfium2`, `pypdfium2_raw`, `openpyxl`, `et_xmlfile`, `winrt` and their `*.dist-info` names). Check the list holds only those and nothing swept from the build machine, then rebaseline from the real bundle and run the release script again:
 
@@ -162,7 +164,9 @@ After the build, verify by hand on a computer without QUILL installed: unzip the
 
 Jeff's decision on 2026-10-17 was to make Word documents fully usable in QUILL and QUILL Lite, whatever the size. Until then the shared runtime spec (`standalone/runtime/quillville-runtime.spec`) listed `lxml` in its `excludes`. python-docx is pure Python, so it still froze into the runtime, but it raised the moment it imported lxml. As a result, every *installed* copy of QUILL and QUILL Lite opened a `.docx` as plain text and could not save a real Word document. The GLOW Word, PDF and PowerPoint audits failed too, because every GLOW auditor imports python-docx. Portable copies were fine, because pip installs lxml with python-docx.
 
-The spec no longer excludes lxml. It also names the Word stack (`lxml`, `docx`, `pptx`, `openpyxl` and every `acb_large_print` module) as hidden imports, so the Word path no longer depends on which optional imports the tracer happens to follow. Expect three things on the first runtime build after this change.
+The spec no longer excludes lxml. It also names the Word stack (`lxml`, `docx`, `pptx`, `openpyxl` and every `acb_large_print` module) as hidden imports, so the Word path no longer depends on which optional imports the tracer happens to follow.
+
+**Done on 2026-10-24.** The steps below were followed and `runtime-inventory.json` now lists `lxml` and `acb-large-print` (the second is `acb_large_print`'s package metadata, which it reads for its own version). That build also found five packages swept from the build machine through optional imports -- `orjson`, `bcrypt`, `h2`, and `pythonnet` with `clr_loader` -- so the spec now excludes them, and `build_runtime.ps1` prunes `h2`'s metadata, which `urllib3.http2` would otherwise pull in by name. A runtime build now passes the inventory gate with no rebaseline. The steps are kept as the record, and as the pattern for the next intentional addition.
 
 1. **The runtime inventory gate stops the build, and says why.** `check_runtime_inventory.py` reports:
 

@@ -111,9 +111,9 @@ ytdlp_datas += copy_metadata("mutagen")
 # .xlsx for Office import and the GLOW Excel audit. The GLOW auditors are
 # reached only through acb_large_print_core's per-extension lazy imports, so
 # they are named rather than trusted to the tracer. Named here so the Word path
-# never again depends on what some optional import happened to reach. The one
-# new top-level entry this adds to _internal is `lxml` -- see the rebaseline
-# steps in docs/building-windows-family.md.
+# never again depends on what some optional import happened to reach. It added
+# `lxml` and `acb-large-print` (metadata) to _internal; the inventory was
+# rebaselined on 2026-10-24 (docs/building-windows-family.md).
 word_hidden = ["lxml", "lxml.etree", "lxml._elementpath", "docx", "pptx", "openpyxl"]
 try:
     word_hidden += collect_submodules("acb_large_print")
@@ -151,6 +151,18 @@ a = Analysis(
         # through some collected package's optional import -- and a test
         # framework has no business in a shipped runtime whatever its size.
         "hypothesis",
+        # Optional imports of collected packages, frozen only when the build
+        # interpreter happens to have them (the 2026-10-24 build swept all five;
+        # none is declared and nothing under quill/ imports them): orjson
+        # (curl_cffi's fast JSON), bcrypt (cryptography's SSH key format), h2
+        # (httpx's HTTP/2, never enabled here), and pythonnet/clr_loader
+        # (pyreadline3's IronPython clipboard).
+        "orjson",
+        "bcrypt",
+        "h2",
+        "clr",
+        "clr_loader",
+        "pythonnet",
         # lxml is NOT excluded (Jeff, 2026-10-17: "get whatever is needed to
         # make word documents fully usable in quill and quill lite ... do not
         # worry about size"). It was listed here until then, and python-docx
