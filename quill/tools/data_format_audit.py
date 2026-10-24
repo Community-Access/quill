@@ -96,6 +96,11 @@ PROBES: dict[str, tuple[str, ...]] = {
         "function:quill.core.media.bookmarks:MediaBookmark.to_dict",
     ),
     "shared.listens": ("function:quill.core.podcasts.radio_listens:record_listen",),
+    "transcribe.settings": (
+        "dataclass:quill.core.transcribe.settings:TranscribeSettings",
+        "function:quill.core.transcribe.settings:save_settings",
+        "constant:quill.core.transcribe.settings:SCHEMA_VERSION",
+    ),
 }
 
 Shape = dict[str, Any]

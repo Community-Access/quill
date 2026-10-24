@@ -244,6 +244,31 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
+<h3 id="quill-transcribe-joins-the-release-channels-2026-10-24">QUILL
+Transcribe joins the release channels (2026-10-24)</h3>
+<p>QUILL Transcribe now takes the same path as QUILL Lite, Quill Radio
+and QUILL Cast: Beta, a soak, then Stable, from one signed update
+list.</p>
+<ul>
+<li><code>release_feed.APPS</code>, so <code>publish_release.py</code>
+and <code>promote_release.py</code> accept <code>transcribe</code> (tag
+<code>quill-transcribe-v</code>, files
+<code>QUILL-Transcribe-*</code>).</li>
+<li><code>updater/profiles.TRANSCRIBE</code>; its joined-Beta snapshot
+zips its settings files (<code>updater/snapshots.py</code>);
+<code>data_formats</code> registers <code>transcribe.settings</code>
+(schema 1, fingerprint baselined) so going back to Stable is judged
+safely.</li>
+<li>Help &gt; Release Channel… (Alt+H, L), and Check for Updates reads
+the installer’s recorded version and follows the channel
+(<code>match_edition=False</code>, as Cast). The Release Channel windows
+answer F1 in Transcribe.</li>
+<li>Its installer needed nothing: it already wrote
+<code>quill-app-version.ini</code>, and the channel lives in the shared
+runtime.</li>
+<li>The release plan, RELEASE.md, the beta walk-through and Transcribe’s
+user guide (“Updates and release channels”) say so.</li>
+</ul>
 <h3
 id="a-release-plan-for-four-apps-and-a-sign-off-check-that-read-blank-lines-2026-10-24">A
 release plan for four apps, and a sign-off check that read blank lines

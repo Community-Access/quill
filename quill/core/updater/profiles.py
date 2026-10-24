@@ -3,7 +3,8 @@
 Release-channels plan 6.9. An app that wants channels adds a profile here, a
 snapshot adapter (:mod:`.snapshots`), and the Help menu item and Preferences row
 that open the shared Release Channel dialog. Phase 1 covers the four apps the
-plan names; the rest of the family joins in Phase 6.
+plan names; QUILL Transcribe joined for its 1.0.0 release (2026-10-24), and the
+rest of the family joins in Phase 6.
 
 wx-free and strict-typed.
 """
@@ -70,8 +71,22 @@ CAST = UpdaterProfile(
     snapshot_leaves="Downloaded episodes are not copied, and updates don't change them.",
 )
 
+TRANSCRIBE = UpdaterProfile(
+    app_key="transcribe",
+    tag_key="transcribe",
+    display_name="QUILL Transcribe",
+    uses_shared_runtime=True,
+    runtime_ref="transcribe",
+    snapshot_covers="your settings and dictation choices",
+    snapshot_leaves=(
+        "Your recordings and transcripts are not copied, and updates don't change them."
+    ),
+)
+
 #: Every app with release channels, in the order the chooser lists siblings.
-PROFILES: dict[str, UpdaterProfile] = {p.app_key: p for p in (QUILL, QUILL_LITE, RADIO, CAST)}
+PROFILES: dict[str, UpdaterProfile] = {
+    p.app_key: p for p in (QUILL, QUILL_LITE, RADIO, CAST, TRANSCRIBE)
+}
 
 
 def profile_for(app_key: str) -> UpdaterProfile:

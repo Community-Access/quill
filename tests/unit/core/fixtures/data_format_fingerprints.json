@@ -1511,6 +1511,30 @@
       },
       "classification": "additive, compatible",
       "note": "fingerprint method moved from ast.dump to ast.unparse (Python 3.12/3.13 stable); shape unchanged"
+    },
+    "transcribe.settings": {
+      "current": 1,
+      "shape": {
+        "dataclass:quill.core.transcribe.settings:TranscribeSettings": {
+          "quill.core.transcribe.settings:TranscribeSettings": {
+            "setup_done": "bool",
+            "dictation_hotkey": "str",
+            "command_hotkey": "str",
+            "status_hotkey": "str",
+            "resume_hotkey": "str",
+            "discard_hotkey": "str",
+            "start_in_tray": "bool",
+            "close_to_tray": "bool",
+            "inkwell_checked": "bool",
+            "dictation": "dict[str, Any]",
+            "read_only": "bool"
+          }
+        },
+        "function:quill.core.transcribe.settings:save_settings": "sha256:04ffd60117d0d9d8",
+        "constant:quill.core.transcribe.settings:SCHEMA_VERSION": "1"
+      },
+      "classification": "baseline",
+      "note": ""
     }
   }
 }

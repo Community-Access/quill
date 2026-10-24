@@ -96,6 +96,17 @@ APPS: dict[str, AppRelease] = {
             "quill/apps/podcasts_menu.py",
             "APP_VERSION",
         ),
+        # QUILL Transcribe joined the channels for its 1.0.0 release
+        # (2026-10-24); its files are QUILL-Transcribe-*.
+        AppRelease(
+            "transcribe",
+            "QUILL Transcribe",
+            "quill-transcribe-v",
+            "QUILL-Transcribe",
+            "standalone/transcribe/docs/CHANGELOG.md",
+            "quill/apps/transcribe.py",
+            "_VERSION",
+        ),
     )
 }
 

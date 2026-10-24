@@ -52,7 +52,13 @@ __all__ = [
 KEEP_PER_APP = 3
 #: A settings copy is tens of kilobytes; anything this large is not settings.
 _MAX_FILE_BYTES = 5 * 1024 * 1024
-_EXTENSIONS = {"quill": ".zip", "quilllite": ".zip", "radio": ".qrbackup", "cast": ".qcbackup"}
+_EXTENSIONS = {
+    "quill": ".zip",
+    "quilllite": ".zip",
+    "radio": ".qrbackup",
+    "cast": ".qcbackup",
+    "transcribe": ".zip",
+}
 
 
 class SnapshotError(CodedError):
@@ -113,6 +119,7 @@ _ADAPTERS: dict[str, _Adapter] = {
     "quilllite": lambda source, dest, _version: _zip_json_files(source, dest),
     "radio": _radio,
     "cast": _cast,
+    "transcribe": lambda source, dest, _version: _zip_json_files(source, dest),
 }
 
 

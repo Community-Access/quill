@@ -16,19 +16,18 @@ screen reader. Everything else is a command you run in PowerShell at
 | QUILL Lite | 1.2.0 build 5 | `quill-lite-v1.2.0-build.5` | Release channels (Beta, then Stable) | Yes; 1.1.2 is current |
 | Quill Radio | 3.2.0 build 4 | `quill-radio-v3.2.0-build.4` | Release channels | Yes; 3.0.4 is current |
 | QUILL Cast | 2.0.0 build 5 | `quill-cast-v2.0.0-build.5` | Release channels | Yes; Cast has never been published |
-| QUILL Transcribe | 1.0.0 build 2 | `quill-transcribe-v1.0.0-build.2` | GitHub release (no channels) | Yes; its site page promises 1 November 2026 |
+| QUILL Transcribe | 1.0.0 build 2 | `quill-transcribe-v1.0.0-build.2` | Release channels | Yes; its site page promises 1 November 2026 |
 
 The build numbers are the ones each app's source declares; the release
 scripts take them from there. All four were checked against the published
 releases on 2026-10-24 (`scripts/check_release_builds.py`): none is published
 yet.
 
-**QUILL Transcribe is different.** The release-channel scripts
-(`publish_release.py`, `promote_release.py`) accept only `cast`, `quill`,
-`quilllite` and `radio`. Transcribe's Check for Updates reads GitHub releases
-directly (files named `QUILL-Transcribe-*`), so it ships as an ordinary GitHub
-release on its release day, with no Beta soak and no update list. Adding it to
-the channels is later work.
+**QUILL Transcribe joined the release channels on 2026-10-24**, so all four
+apps take the same path: Beta, a week's soak, then Stable. It has Help >
+Release Channel... (Alt+H, L), and the publish and promote scripts accept
+`transcribe`. Its site page promises 1 November 2026, so publish its Beta by
+25 October to have the week's soak, or promote with `--skip-soak` and a reason.
 
 ## Already done (2026-10-23 and 24)
 
@@ -137,7 +136,7 @@ Everything lands in `dist\release-builds\<date-time>\upload`, with
    open screen-reader checks are in `docs/qa/screen-reader-checks-2026-10.md`.
    Commit and push the sheets.
 
-## Step 5: publish QUILL Lite, Radio and Cast to Beta
+## Step 5: publish all four to Beta
 
 For each app, write its notes (the build's section of its release notes) into
 a file, rehearse, then publish:
@@ -157,10 +156,15 @@ python scripts/publish_release.py --app cast --version 2.0.0 --build 5 --channel
     --dist standalone/cast/dist --notes-file notes-cast.md --dry-run
 python scripts/publish_release.py --app cast --version 2.0.0 --build 5 --channel beta `
     --dist standalone/cast/dist --notes-file notes-cast.md
+
+python scripts/publish_release.py --app transcribe --version 1.0.0 --build 2 --channel beta `
+    --dist standalone/transcribe/dist --notes-file notes-transcribe.md --dry-run
+python scripts/publish_release.py --app transcribe --version 1.0.0 --build 2 --channel beta `
+    --dist standalone/transcribe/dist --notes-file notes-transcribe.md
 ```
 
 Each creates a GitHub prerelease, uploads the files, lists the build on Beta
-and signs the list. These are the **first** update lists for all three apps
+and signs the list. These are the **first** update lists for all four apps
 (`docs/site/updates/v2/` does not exist yet); until they exist the apps keep
 using the GitHub path. Commit `docs/site/updates/v2` and push to `main`; the
 website republishes within minutes and Beta users are offered the builds.
@@ -183,6 +187,8 @@ python scripts/promote_release.py --app radio --version 3.2.0+4 --to stable --dr
 python scripts/promote_release.py --app radio --version 3.2.0+4 --to stable
 python scripts/promote_release.py --app cast --version 2.0.0+5 --to stable --dry-run
 python scripts/promote_release.py --app cast --version 2.0.0+5 --to stable
+python scripts/promote_release.py --app transcribe --version 1.0.0+2 --to stable --dry-run
+python scripts/promote_release.py --app transcribe --version 1.0.0+2 --to stable
 ```
 
 Every check prints PASS, WARN or FAIL, and one FAIL stops it: the files
@@ -191,21 +197,7 @@ was on Beta, the changelog, the sign-off sheet, and the documentation gates.
 The release notes are rolled up from the changelog for you; the dry run shows
 them. Commit `docs/site/updates/v2` and push.
 
-## Step 8: release QUILL Transcribe (on its release day)
-
-```powershell
-gh release create quill-transcribe-v1.0.0-build.2 `
-    standalone/transcribe/dist/QUILL-Transcribe-*.exe `
-    standalone/transcribe/dist/QUILL-Transcribe-*.zip `
-    --title "QUILL Transcribe 1.0" `
-    --notes-file standalone/transcribe/docs/release-notes-1.0.md
-```
-
-Check the file names start `QUILL-Transcribe-`: that is what its Check for
-Updates looks for. Then confirm the release is not marked "Latest" (only
-QUILL's own Stable release should be): `gh release edit quill-transcribe-v1.0.0-build.2 --latest=false`.
-
-## Step 9: the website and announcements
+## Step 8: the website and announcements
 
 1. **Download links.** The site links to specific release files, today
    `quill-lite-v1.1.2` and `quill-radio-v3.0.4`, on `index.html`,
@@ -221,7 +213,7 @@ QUILL's own Stable release should be): `gh release edit quill-transcribe-v1.0.0-
 4. Publish the portable update-by-hand notice (Step 2).
 5. Push to `main`; GitHub Pages republishes the site.
 
-## Step 10: afterwards
+## Step 9: afterwards
 
 - Watch the support inbox (FreeScout) for the first days.
 - The update lists expire 90 days after they were last written; any publish
@@ -233,12 +225,12 @@ QUILL's own Stable release should be): `gh release edit quill-transcribe-v1.0.0-
 
 | | QUILL Lite 1.2.0 | Quill Radio 3.2.0 | QUILL Cast 2.0.0 | QUILL Transcribe 1.0.0 |
 | --- | --- | --- | --- | --- |
-| Feed key restored (you) | needed | needed | needed | not needed |
+| Feed key restored (you) | needed | needed | needed | needed |
 | Code signing set up (you) | needed | needed | needed | needed |
 | Built signed (Step 3) | to do | to do | to do | to do |
 | Smoke test (Step 4) | to do | to do | to do | to do |
 | Sign-off sheet passed (you) | to do | to do | to do | to do |
-| On Beta (Step 5) | to do | to do | to do | not applicable |
-| 7 days on Beta (Step 6) | to do | to do | to do | not applicable |
-| Stable (Step 7 or 8) | to do | to do | to do | to do |
-| Website and announcement (Step 9) | to do | to do | to do | to do |
+| On Beta (Step 5) | to do | to do | to do | to do |
+| 7 days on Beta (Step 6) | to do | to do | to do | to do |
+| Stable (Step 7) | to do | to do | to do | to do |
+| Website and announcement (Step 8) | to do | to do | to do | to do |

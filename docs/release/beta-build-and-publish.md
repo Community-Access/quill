@@ -78,11 +78,10 @@ with you as reviewer.
    portable zip, adds the build to the **Beta** update list and signs it.
 4. Repeat for QUILL Lite (`--app quilllite --version 1.2.0 --build 5 --dist standalone/quilllite/dist`)
    and QUILL Cast (`--app cast --version 2.0.0 --build 5 --dist standalone/cast/dist`).
-   The script accepts only `cast`, `quill`, `quilllite` and `radio`; leaving out
-   `--build` uses the next build after the newest published tag. QUILL
-   Transcribe is not supported by `publish_release.py` yet: for its 2026-11-01
-   release, the script needs a `transcribe` entry first (or attach its files to a GitHub release by hand
-   with `gh release create` and link them from the site).
+   The script accepts `cast`, `quill`, `quilllite`, `radio` and (since
+   2026-10-24) `transcribe`; leaving out `--build` uses the next build after
+   the newest published tag. QUILL Transcribe publishes the same way:
+   `--app transcribe --version 1.0.0 --build 2 --dist standalone/transcribe/dist`.
 5. **Commit the updated update list** (`docs/site/updates/v2`) through a pull
    request and merge it. When main updates, GitHub Pages republishes
    quillforall.org within a few minutes, and Beta-channel users are offered

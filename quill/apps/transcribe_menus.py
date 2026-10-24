@@ -166,7 +166,10 @@ def build_menu_bar(host: Any, *, title: str, version: str) -> None:
     _add(host, help_menu, "&Tutorials...\tCtrl+Alt+F1", host.open_transcribe_tutorials)  # D-25
     setup = title.replace("Transcribe", "T&ranscribe")
     _add(host, help_menu, f"Set Up {setup}...\tCtrl+Alt+S", host.open_setup)
-    _add(host, help_menu, "Check for &Updates...\tCtrl+Alt+U", host.check_for_updates)
+    updates_id = _add(host, help_menu, "Check for &Updates...\tCtrl+Alt+U", host.check_for_updates)
+    from quill.ui.updates.shell import append_release_channel_item
+
+    host._keep_menu_ids(append_release_channel_item(host, help_menu, "transcribe", updates_id))
     from quill.ui.menu_palette import append_palette_row
     from quill.ui.support_menu import append_get_help_item
 

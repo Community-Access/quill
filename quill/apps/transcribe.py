@@ -41,7 +41,7 @@ from quill.apps.transcribe_keys import TranscribeKeysMixin
 from quill.apps.transcribe_menus import build_menu_bar, build_tray_menu, start_stop_label
 from quill.apps.transcribe_recent import TranscribeRecentMixin
 from quill.apps.transcribe_review import TranscribeReviewMixin
-from quill.core.app_version import describe_version, installed_version
+from quill.core.app_version import describe_version
 from quill.core.net import configure_ssl_trust
 from quill.core.support_message import SUPPORT_EMAIL
 from quill.core.transcribe.settings import TranscribeSettings, load_settings, take_from_inkwell
@@ -360,11 +360,25 @@ class QuillTranscribeFrame(
         )
 
     def check_for_updates(self) -> None:
+        """Help > Check for Updates. The installer's recorded version, not the
+        runtime's constant, so a sibling's newer runtime never makes this copy
+        look up to date; the release channel decides what may be offered
+        (release channels, joined 2026-10-24). Transcribe ships an installer and
+        a portable zip, as Cast does: ``match_edition=False``."""
+        from quill.ui.updates.shell import installed_app_version
+
         self.check_for_app_updates(
             repo_slug=_REPO,
-            current_version=installed_version(_VERSION, build=_BUILD),
+            current_version=installed_app_version("transcribe"),
             app_key="transcribe",
+            match_edition=False,
         )
+
+    def open_release_channel(self) -> None:
+        """Help > Release Channel..."""
+        from quill.ui.updates.shell import open_for_shell
+
+        open_for_shell(self, "transcribe")
 
     # -- a second launch, and Inkwell's requests ------------------------------------- #
 

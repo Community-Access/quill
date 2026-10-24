@@ -100,6 +100,10 @@ FORMATS: tuple[DataFormat, ...] = (
         readable_with_losses_from=1,
     ),
     DataFormat("cast.history", "cast", ("podcast_history.json",), "quill_data", 1, 1),
+    # QUILL Transcribe's own settings (schema_version 1). A newer file is read
+    # but never written back (core/transcribe/settings.py read_only), so an
+    # older build reads it without losing anything.
+    DataFormat("transcribe.settings", "transcribe", ("transcribe.json",), "quill_data", 1, 1),
     DataFormat(
         "shared.media_bookmarks",
         "shared",

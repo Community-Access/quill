@@ -1457,6 +1457,58 @@ If the device you chose is unplugged or asleep, you still hear every sound, on t
 
 This changes QUILL Transcribe only. Your other QUILL apps keep their own choice, unless you have checked "Share these choices with my other Quill apps", which copies a change here to the others that share. Your screen reader is never moved.
 
+## Updates and release channels
+
+**Check for Updates** (Ctrl+Alt+U, on the Help menu and the tray menu) looks
+for a newer QUILL Transcribe and offers to download and install it. Nothing is
+installed unless you say so.
+
+QUILL Transcribe comes in three flavours, and you choose which one your copy
+follows. They are called release channels.
+
+- **Stable** is the version we recommend. It has been checked with JAWS and
+  NVDA, and it is what most people use. Every copy starts here.
+- **Beta** gets new features a few weeks early. It is mostly finished, but some
+  things may not work right yet.
+- **Dev** is the work in progress. Things will break. Only choose it if a
+  developer asked you to, or you enjoy testing.
+
+1. Open the **Help** menu, then choose **Release Channel...** (press **Alt+H**,
+   then **L**).
+2. Arrow through Stable, Beta and Dev. The box below tells you what each one
+   means and what choosing it would do. Nothing changes yet.
+3. Press **Switch** to move, or **Close** (Escape) to leave things as they are.
+4. For Beta or Dev, a short warning comes first: what could go wrong, how your
+   settings are protected, and how to come back. Read it, check the **I
+   understand** box, and choose **Move to Beta** (or **Move to Dev**). **Stay on
+   Stable**, or Escape, changes nothing.
+
+Before it moves, QUILL Transcribe saves a copy of your settings and dictation
+choices. If it cannot, it stays where it is and tells you why. Your recordings
+and transcripts are not copied, and updates do not change them. Then it checks
+for updates on the new channel straight away. After that, Check for Updates
+offers the newest version on your channel.
+
+Beta and Dev versions aren't signed, so when you install one, Windows
+SmartScreen may warn that it comes from an unknown publisher; that's expected,
+and choosing **More info**, then **Run anyway**, installs it.
+
+**When other QuillVille apps are installed too.** They run on one shared engine
+on your computer. When an app moves to Beta or Dev, it gets its own copy of that
+engine, about 335 MB, so the apps you leave on Stable are never touched. It goes
+away by itself when your last app comes back to Stable.
+
+**If an update doesn't start.** After an update, QUILL Transcribe checks that
+the new version really opens. If it doesn't open within two minutes, the update
+undoes itself and puts back the version you had, and the next time QUILL
+Transcribe starts it tells you so.
+
+**Coming back to Stable.** Open Release Channel again and choose **Stable**. If
+you have a newer Beta or Dev version, QUILL Transcribe first checks that Stable
+can read your settings; if it can't yet, it offers to wait for Stable or to put
+back the copy saved when you joined, and saves a copy of how things are now
+first, so nothing is thrown away.
+
 ## Safe Mode
 
 In Safe Mode, QUILL Transcribe does not listen, registers no keys, downloads no

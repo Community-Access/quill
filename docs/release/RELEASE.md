@@ -69,7 +69,8 @@ release notes.
 ## Channels, publishing and promotion
 
 Every QuillVille app with release channels (QUILL, QUILL Lite, Quill Radio,
-QUILL Cast) is offered updates from one signed list per app,
+QUILL Cast, and QUILL Transcribe since 2026-10-24) is offered updates from one
+signed list per app,
 `docs/site/updates/v2/<app>.json` plus `<app>.json.sig`, served from the Pages
 site. A build is made and signed once; after that only the list changes. The
 design is `docs/release-channels-plan.md`.

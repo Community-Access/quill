@@ -53,6 +53,7 @@ def _reset():
 def _resolvers() -> dict[str, Any]:
     from quill.core.podcasts import surface_help as cast
     from quill.core.radio import surface_help as radio
+    from quill.core.transcribe import surface_help as transcribe
     from quill.ui.context_help import quill_window_purpose
 
     return {
@@ -60,6 +61,7 @@ def _resolvers() -> dict[str, Any]:
         "quilllite": lite_surface_help.purpose_for_title,
         "radio": radio.purpose_for_title,
         "cast": cast.purpose_for_title,
+        "transcribe": transcribe.purpose_for_title,
     }
 
 

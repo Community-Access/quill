@@ -13,6 +13,11 @@ where in the user guide to read more.
 
 ### Release and the QuillVille family
 
+- **Release channels: Stable, Beta and Dev** (2026-10-24). Help > Release
+  Channel... (Alt+H, L) chooses which versions your copy is offered, as in QUILL
+  Lite, Quill Radio and QUILL Cast. Joining Beta saves a copy of your settings
+  first, and going back to Stable checks it can read them. Check for Updates
+  follows the channel. User guide: Updates and release channels.
 - **Released on 1 November 2026.** From then QUILL Transcribe is part of every
   public QuillVille build: it is on the QuillVille menu of QUILL, Quill Radio,
   Quill Weather, Quill Converter and Quill Inkwell (Alt+Q, then T; Alt+U, then

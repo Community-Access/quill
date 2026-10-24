@@ -166,6 +166,11 @@ def test_no_key_is_claimed_twice_and_the_1_0_keys_still_work(transcribe_menu: An
     menu_bar, table = transcribe_menu
     claimed: dict[str, list[str]] = collections.defaultdict(list)
     for name, key in _rows(menu_bar):
+        if not key and "(Alt+" in name:
+            # A row with no chord on purpose shows its Alt path instead, as
+            # QUILL's menu_routes do: Release Channel..., which has no chord in
+            # any app (keymap help.release_channel, rules 4 and 9).
+            continue
         assert key, f"{name} shows no key"
         claimed[canonical_binding(key) or key].append(name)
     for method, key in ALIASES.items():

@@ -2,6 +2,24 @@
 
 ## 1.0.0
 
+### QUILL Transcribe joins the release channels (2026-10-24)
+
+QUILL Transcribe now takes the same path as QUILL Lite, Quill Radio and QUILL
+Cast: Beta, a soak, then Stable, from one signed update list.
+
+- `release_feed.APPS`, so `publish_release.py` and `promote_release.py` accept
+  `transcribe` (tag `quill-transcribe-v`, files `QUILL-Transcribe-*`).
+- `updater/profiles.TRANSCRIBE`; its joined-Beta snapshot zips its settings
+  files (`updater/snapshots.py`); `data_formats` registers `transcribe.settings`
+  (schema 1, fingerprint baselined) so going back to Stable is judged safely.
+- Help > Release Channel... (Alt+H, L), and Check for Updates reads the
+  installer's recorded version and follows the channel (`match_edition=False`,
+  as Cast). The Release Channel windows answer F1 in Transcribe.
+- Its installer needed nothing: it already wrote `quill-app-version.ini`, and
+  the channel lives in the shared runtime.
+- The release plan, RELEASE.md, the beta walk-through and Transcribe's user
+  guide ("Updates and release channels") say so.
+
 ### A release plan for four apps, and a sign-off check that read blank lines (2026-10-24)
 
 `docs/release/release-plan-lite-radio-cast-transcribe.md` takes QUILL Lite 1.2.0,

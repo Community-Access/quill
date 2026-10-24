@@ -203,6 +203,9 @@ in, starting it in the tray if it is not running.
   account, until you write or discard them; a history of what you said is kept
   only if you turn it on.
 - F1 on any window or control says what it is for.
+- **Stable, Beta or Dev: you choose.** Help > Release Channel... (Alt+H, L)
+  sets which versions your copy is offered. Every copy starts on Stable;
+  joining Beta saves a copy of your settings first, and you can come back.
 
 Questions and problems: Get Help from Support in the Help menu, or
 support@community-access.org.

@@ -404,14 +404,12 @@ hashes the files, creates a GitHub <strong>prerelease</strong> (never
 (<code>--app quilllite --version 1.2.0 --build 5 --dist standalone/quilllite/dist</code>)
 and QUILL Cast
 (<code>--app cast --version 2.0.0 --build 5 --dist standalone/cast/dist</code>).
-The script accepts only <code>cast</code>, <code>quill</code>,
-<code>quilllite</code> and <code>radio</code>; leaving out
-<code>--build</code> uses the next build after the newest published tag.
-QUILL Transcribe is not supported by <code>publish_release.py</code>
-yet: for its 2026-11-01 release, the script needs a
-<code>transcribe</code> entry first (or attach its files to a GitHub
-release by hand with <code>gh release create</code> and link them from
-the site).</li>
+The script accepts <code>cast</code>, <code>quill</code>,
+<code>quilllite</code>, <code>radio</code> and (since 2026-10-24)
+<code>transcribe</code>; leaving out <code>--build</code> uses the next
+build after the newest published tag. QUILL Transcribe publishes the
+same way:
+<code>--app transcribe --version 1.0.0 --build 2 --dist standalone/transcribe/dist</code>.</li>
 <li><strong>Commit the updated update list</strong>
 (<code>docs/site/updates/v2</code>) through a pull request and merge it.
 When main updates, GitHub Pages republishes quillforall.org within a few

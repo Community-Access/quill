@@ -166,6 +166,13 @@ GENERIC_PURPOSE = (
     "and F1 on any control explains that control."
 )
 
+# Release channels (joined 2026-10-24): the shared windows (quill/ui/updates)
+# take their titles and purposes from one place, as in QUILL Cast, so a title can
+# never ship without its F1 paragraph.
+from quill.core.updater.wording import window_titles as _channel_windows  # noqa: E402
+
+PURPOSES.update(_channel_windows("QUILL Transcribe"))
+
 
 def purpose_for_title(title: str) -> str:
     """The purpose paragraph for a window titled *title* (never empty)."""

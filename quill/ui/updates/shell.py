@@ -1,4 +1,4 @@
-"""Release channels for the apps built on the shared app shell (Radio, Cast).
+"""Release channels for the apps built on the shared app shell (Radio, Cast, Transcribe).
 
 One menu row and one Preferences action, each a line in the app's own module,
 so the apps' menu builders -- already at their size budgets -- grow by the
@@ -28,6 +28,7 @@ __all__ = [
 _LABELS = {
     "radio": "Release Cha&nnel... (Alt+H, N)",
     "cast": "Re&lease Channel... (Alt+H, L)",
+    "transcribe": "Re&lease Channel... (Alt+H, L)",
 }
 
 
@@ -41,6 +42,9 @@ def installed_app_version(app_key: str) -> str:
     elif app_key == "cast":
         from quill.apps.podcasts_menu import APP_BUILD as build
         from quill.apps.podcasts_menu import APP_VERSION as code
+    elif app_key == "transcribe":
+        from quill.apps.transcribe import _BUILD as build
+        from quill.apps.transcribe import _VERSION as code
     else:
         raise KeyError(app_key)
     return installed_version(code, build=build)

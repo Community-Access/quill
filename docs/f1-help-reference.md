@@ -1406,9 +1406,17 @@ Control coverage: 43 audited sites (43 helped).
 
 **Find a Setting or Command.** Every menu command in this app, searchable by name. Type part of a name; Down moves into the matches; Enter does the highlighted one.
 
+**Go back to Stable?.** How to come back to Stable from a newer version. When Stable can read everything you have saved, you can go back now. When it can't, you can wait for Stable to catch up, or go back to the copy saved when you joined. Close changes nothing.
+
+**Going straight back isn't safe yet.** How to come back to Stable from a newer version. When Stable can read everything you have saved, you can go back now. When it can't, you can wait for Stable to catch up, or go back to the copy saved when you joined. Close changes nothing.
+
 **Import Words.** What the file would add to your list, with the counts. Add Them adds them; nothing you already have is replaced.
 
 **More Dictation Settings.** The rest of dictation's settings: pauses, fillers, dashes, wake phrase and the OpenAI model. Some only matter inside QUILL's own documents.
+
+**Move QUILL Transcribe to Beta?.** Says plainly what could go wrong on Beta or Dev, how your settings are protected, and how to come back. Nothing changes unless you check the box and choose Move.
+
+**Move QUILL Transcribe to Dev?.** Says plainly what could go wrong on Beta or Dev, how your settings are protected, and how to come back. Nothing changes unless you check the box and choose Move.
 
 **My Words and Phrases.** The words, phrases and corrections dictation uses, the same list as QUILL. Import adds the new entries from a Markdown or CSV file after showing them; Export saves the list to one.
 
@@ -1419,6 +1427,8 @@ Control coverage: 43 audited sites (43 helped).
 **QUILL Transcribe.** QUILL Transcribe types what you say into the program you are using. This window shows whether dictation is on, which model and microphone it uses, and what happened last. Start dictation from your start and stop key or the tray menu; it writes only into the field you started in, and pauses if you move. Closing this window keeps QUILL Transcribe in the tray.
 
 **QUILL Transcribe Tutorials.** Five short lessons: a first dictation in the Practice window, pausing and resuming, commands with the command word, snippets by voice, and review. Try It runs a step's command for you.
+
+**Release Channel: QUILL Transcribe.** Choose which versions this app offers you: Stable, the one we recommend; Beta, new features a few weeks early; or Dev, work in progress for testers. Arrowing through the choices only explains them -- nothing changes until you choose Switch.
 
 **Review Dictation.** Dictated words wait here before they are inserted. Read them, type or keep dictating to change them, ask the AI to change them if AI is on, and hear what changed. Control Enter inserts them where they were going; nothing is written before that.
 
@@ -1441,6 +1451,8 @@ Control coverage: 43 audited sites (43 helped).
 **Start and Stop Key.** Choose the key that starts and stops dictation from any program. It is Alt+Shift+Backslash unless you change it. Type another, press Record Key to press it instead, or leave the box empty for no key; a key another QuillVille app already uses is refused, and you are told whose it is.
 
 **Transcribe a Recording.** Choose a recording and a model; it is transcribed in the background and the transcript waits in Notifications for you to review.
+
+**Update History: QUILL Transcribe.** A plain record of what the updater did for this app: checks, downloads, channel changes and the copies of your settings it saved. Read-only; nothing here changes anything.
 
 **Update downloaded.** A new QUILL Transcribe is on disk and ready. Install and restart applies it and relaunches -- your settings are kept -- or Open folder shows the installer.
 
