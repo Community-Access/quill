@@ -67,6 +67,14 @@ updates:
   # this entry exists for still get a pull request.
   - package-ecosystem: "uv"
     directory: "/"
+    # Only uv.lock and pyproject.toml. Left to itself the uv updater also read
+    # requirements.txt beside them, met its --extra-index-url for the CPU
+    # wheels, and failed every job with private_source_authentication_failure
+    # (the pypdf security update, 2026-10-23) -- the very host this entry
+    # keeps out of its registries on purpose. requirements.txt is the pip
+    # ecosystem's, which declares that host.
+    exclude-paths:
+      - "requirements*.txt"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 0

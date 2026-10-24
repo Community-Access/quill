@@ -13,7 +13,8 @@ LibriVox, catalogued after every model's training cutoff:
   pace -- this computer's Moonshine tiny times the model's cost -- is inside the
   0.25 one-thread budget, or twice it where two threads are allowed, unless the
   advice itself says it may lag; and it fits the memory the advice allows.
-* **The models keep their numbers** (``--run``, the weekly workflow): each
+* **The models keep their numbers** (``--run``, the weekly workflow, which
+  passes ``--report-only`` since 2026-10-24 -- see below): each
   recommendable model recognises the committed recordings on one thread. Its
   speed is compared with Moonshine tiny's *on the same machine in the same
   run*: a model must not cost more than :data:`SPEED_TOLERANCE` times its
@@ -21,7 +22,11 @@ LibriVox, catalogued after every model's training cutoff:
   Windows runner (2026-10-23) the Parakeet models cost 6 to 7 times Moonshine
   tiny against about 4 on the measuring laptop -- so a failure here may be the
   processor rather than the model, and is a reason to re-measure, not to
-  loosen the tolerance. Its word
+  loosen the tolerance. Until the costs are re-measured on a real modest
+  Windows computer (the B-8 check), the weekly run is ``--report-only``
+  (Jeff, 2026-10-24): it reports every figure in the job summary and as
+  warnings, and fails only on the advice's own budget rules, which stay a
+  hard gate here and in every pull request. Its word
   errors must stay within :data:`ERROR_ALLOWANCE` points of the measured
   figure -- loose, because ten recordings are a smoke test, not a benchmark.
 
@@ -176,6 +181,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--list", action="store_true", help="what the advice can recommend")
     parser.add_argument("--fetch", action="store_true", help="download those models")
     parser.add_argument("--run", action="store_true", help="measure them on this computer")
+    parser.add_argument(
+        "--report-only",
+        action="store_true",
+        help="--run: report the models' figures as warnings, never fail on them",
+    )
     args = parser.parse_args(argv)
     if args.list or not (args.fetch or args.run):
         for model_id, languages in sorted(recommendable().items()):
@@ -187,13 +197,43 @@ def main(argv: list[str] | None = None) -> int:
         for model_id in sorted(recommendable()):
             if model_id not in {"moonshine", "whisper"}:
                 dictbench.fetch_model(model_id)
+    measured: list[str] = []
     if args.run:
         report: list[str] = []
-        problems += run_problems(report)
+        measured = run_problems(report)
         print("\n".join(report))
+        _summary(report, measured, report_only=args.report_only)
     for problem in problems:
         print(f"FAIL: {problem}")
-    return 1 if problems else 0
+    for problem in measured:
+        # ::warning:: is a GitHub Actions annotation; elsewhere it is plain text.
+        print(f"::warning::{problem}" if args.report_only else f"FAIL: {problem}")
+    if args.report_only:
+        measured = []
+    return 1 if problems or measured else 0
+
+
+def _summary(report: list[str], problems: list[str], *, report_only: bool) -> None:
+    """The run's figures in the GitHub job summary, when there is one."""
+    import os
+
+    path = os.environ.get("GITHUB_STEP_SUMMARY", "")
+    if not path:
+        return
+    lines = ["## Dictation models on real speech, this runner", ""]
+    lines += [f"- {line}" for line in report]
+    if problems:
+        lines += ["", "### Outside the catalogue's figures", ""]
+        lines += [f"- {problem}" for problem in problems]
+        if report_only:
+            lines += [
+                "",
+                "Reported, not failed: a cost measured on a shared cloud runner is not "
+                "the computers the advice is for "
+                "(docs/qa/dictation-live-and-whispercpp-2026-10-23.md).",
+            ]
+    with open(path, "a", encoding="utf-8") as out:
+        out.write("\n".join(lines) + "\n")
 
 
 if __name__ == "__main__":

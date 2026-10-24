@@ -143,7 +143,13 @@ runner's processor than on the measuring laptop. The apps scale every model from
 Moonshine tiny timed on the person's own computer, so on such a processor they
 can underestimate the Parakeet models by about half. That belongs with the
 decision on re-measuring the cost factors (below); the gate's tolerance is
-unchanged.
+unchanged. Applying the higher of the two machines' figures was modelled and
+rejected on 2026-10-24: it changed 72 of 432 recommendations, Parakeet ceasing
+to be recommended on most 8 GB computers, on the strength of ten clips on a
+shared cloud machine. Instead the weekly run is report-only (Jeff's decision):
+it writes every figure to the job summary and as warnings, and fails only on
+the advice's own budget rules, until the costs are re-measured on a real modest
+Windows computer (the B-8 check).
 
 ## What changed
 

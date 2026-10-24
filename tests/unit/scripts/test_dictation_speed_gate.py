@@ -97,3 +97,25 @@ def test_the_recommendable_models_keep_their_numbers_on_real_speech() -> None:
     problems = _gate().run_problems(report)
     print("\n".join(report))
     assert problems == []
+
+
+def test_report_only_warns_about_the_models_but_fails_on_the_budget(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The weekly run is report-only (2026-10-24): a model's figures become
+    warnings and a job summary, while the advice's own budget still fails."""
+    gate = _gate()
+    summary = tmp_path / "summary.md"
+    monkeypatch.setenv("GITHUB_STEP_SUMMARY", str(summary))
+    monkeypatch.setattr(
+        gate,
+        "run_problems",
+        lambda report: (report.append("parakeet (en): 6.3 x tiny"), ["slow"])[1],
+    )
+    monkeypatch.setattr(gate, "budget_problems", lambda: [])
+    assert gate.main(["--run", "--report-only"]) == 0
+    assert "::warning::slow" in capsys.readouterr().out
+    assert "Reported, not failed" in summary.read_text(encoding="utf-8")
+    assert gate.main(["--run"]) == 1  # without the flag, the same figures fail
+    monkeypatch.setattr(gate, "budget_problems", lambda: ["over its budget"])
+    assert gate.main(["--run", "--report-only"]) == 1

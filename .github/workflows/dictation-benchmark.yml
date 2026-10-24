@@ -70,5 +70,10 @@ jobs:
       - name: Run the gate
         env:
           QUILL_DICTATION_DOWNLOADS: ${{ runner.temp }}\dictation-downloads
+        # --report-only (Jeff, 2026-10-24): the models' figures go to the job
+        # summary and as warnings, not failures, until the costs are
+        # re-measured on a real modest Windows computer; a shared cloud runner
+        # is not the computers the advice is for. The advice's own budget rules
+        # still fail the run.
         run: |
-          python scripts/dictation_speed_gate.py --run
+          python scripts/dictation_speed_gate.py --run --report-only
