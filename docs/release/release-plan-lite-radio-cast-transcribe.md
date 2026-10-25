@@ -59,8 +59,8 @@ Only what these four releases need. The Dev-build setup in RELEASE.md (the
    (`QUILL_FEED_SIGNING_KEY` in CI). Never commit it.
 2. **Code signing (done 2026-10-24: `python scripts/code_signing.py doctor`
    says "Ready to sign" and a test signature verified).** Stable is always
-   Authenticode-signed, at build time. Your
-   do.md has the Azure Artifact Signing steps; in short:
+   Authenticode-signed, at build time. On another computer, the Azure Artifact
+   Signing steps are in `docs/code-signing.md`; in short:
    - install the client tools once (may need an administrator):
      `winget install -e --id Microsoft.Azure.ArtifactSigningClientTools`;
    - confirm the account, identity validation, certificate profile, and that

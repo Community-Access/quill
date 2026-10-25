@@ -411,8 +411,9 @@ Never commit it.</li>
 <li><strong>Code signing (done 2026-10-24:
 <code>python scripts/code_signing.py doctor</code> says “Ready to sign”
 and a test signature verified).</strong> Stable is always
-Authenticode-signed, at build time. Your do.md has the Azure Artifact
-Signing steps; in short:
+Authenticode-signed, at build time. On another computer, the Azure
+Artifact Signing steps are in <code>docs/code-signing.md</code>; in
+short:
 <ul>
 <li>install the client tools once (may need an administrator):
 <code>winget install -e --id Microsoft.Azure.ArtifactSigningClientTools</code>;</li>
