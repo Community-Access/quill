@@ -25,7 +25,7 @@
 ; /dAppVersion=<version> to ISCC. The literal below is only the fallback for a
 ; manual ISCC run and must be kept in step with build_release.ps1's $version.
 #ifndef AppVersion
-  #define AppVersion "2.2.0"
+  #define AppVersion "2.0.0"
 #endif
 ; The build of this version and the Windows file version (X.Y.Z.B)
 ; (docs/release/RELEASE.md, "Build numbers"). build_release.ps1 passes
@@ -34,7 +34,7 @@
   #define AppBuild "2"
 #endif
 #ifndef AppFileVersion
-  #define AppFileVersion "2.2.0.2"
+  #define AppFileVersion "2.0.0.2"
 #endif
 #define AppPublisher "Community Access"
 #define AppURL "https://github.com/Community-Access/quill"

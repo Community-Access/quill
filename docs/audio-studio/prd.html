@@ -244,8 +244,7 @@
 <main id="main-content" tabindex="-1">
 <h1 id="quill-audio-studio--product-requirements">QUILL Audio Studio –
 Product Requirements</h1>
-<p>Version 2.2.0 (the shared QuillVille family version; there is no
-Audio Studio 2.0 or 2.1 – see CHANGELOG.md)</p>
+<p>Version 2.0.0 (QUILL Studio; see CHANGELOG.md)</p>
 <h2 id="1-product-overview-and-mission">1. Product overview and
 mission</h2>
 <p>QUILL Audio Studio is a standalone Windows desktop application for
@@ -881,9 +880,8 @@ all work out of the box (ffmpeg is bundled; see P-4).</li>
 <code>quill-audio-studio = quill_audio_studio:main</code> (gui-script),
 a thin wrapper over <code>quill.apps.studio</code>; package
 <code>quill-audio-studio</code>, Python 3.13+. The packaging version is
-the shared QuillVille family version (2.2.0), aligned with Quill Radio
-and Quill Weather because the three install on one shared runtime;
-releases remain independent per app.</li>
+2.0.0. Studio uses the shared QuillVille Runtime, with its own
+application version and release schedule.</li>
 <li>P-2. Release builds must exclude the heavy ML runtimes
 (faster-whisper, vosk, kokoro-onnx, onnxruntime, torch) and the large
 libraries the Studio never loads – they install on demand into the

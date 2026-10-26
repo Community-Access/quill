@@ -42,6 +42,16 @@ from quill.core.control_help import (
 
 #: Surface purposes by exact window title.
 PURPOSES: dict[str, str] = {
+    "Capture screen": (
+        "Choose all displays or the active window, a delay and a save folder. "
+        "After starting, switch to the target window before the delay expires. "
+        "No image is sent to AI automatically."
+    ),
+    "Screenshot Inspector": (
+        "Review the saved screenshot's file evidence, read text locally, or "
+        "explicitly send it to your configured AI provider. File checks prove "
+        "decode and integrity; observations do not prove privacy or visual correctness."
+    ),
     "Tag Editor": (
         "Every tag this audio file can carry, over five pages: the main "
         "fields, the details, publishing credits, sort-order fields, and the "

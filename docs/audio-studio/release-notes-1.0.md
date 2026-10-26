@@ -4,7 +4,7 @@ Released 2026-07-18.
 
 Introducing QUILL Audio Studio: the QUILL editor's audiobook and audio production suite as its own standalone Windows and macOS desktop app - screen-reader-first, keyboard-first, and spoken end to end. It is for anyone who wants to turn writing into finished, chaptered, publishable audio without ever touching a waveform display - and then to sit back and listen to it.
 
-> These are the notes for the first release. Everything that has landed since - the shared QuillVille Runtime and the lighter downloads it makes possible, the arrow-navigable status bar, the audio converter, and announcements in braille - is in the 2.2.0 notes, `release-notes-2.2.md`.
+> These are the notes for the first release. Everything that has landed since - the shared QuillVille Runtime and the lighter downloads it makes possible, the arrow-navigable status bar, the audio converter, and announcements in braille - is in the 2.0.0 notes, `release-notes-2.0.md`.
 
 ## What it is
 
@@ -36,7 +36,7 @@ The Studio runs the exact same Audio Studio code that ships inside the QUILL edi
 
 Two downloads shipped with this release: an installer that puts the Studio in its own folder with a Start Menu group and an uninstaller, and a portable zip you extract anywhere - a USB stick included - where a `data` folder next to the program keeps every setting, voice, and book position inside the app folder so the whole studio travels with you. Both bundle ffmpeg and the mpv player engine. You can also run it from a source checkout.
 
-The lighter, shared-runtime editions arrived after this release; see the 2.2.0 notes.
+The lighter, shared-runtime editions arrived after this release; see the 2.0.0 notes.
 
 ## Known limitations
 

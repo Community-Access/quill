@@ -1,0 +1,1894 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QUILL Studio — Accessible Media Creation and
+Verification</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="quill-studio--accessible-media-creation-and-verification">QUILL
+Studio — Accessible Media Creation and Verification</h1>
+<h2 id="consolidated-product-requirements-document">Consolidated Product
+Requirements Document</h2>
+<p><strong>Version:</strong> 1.0 consolidated proposal ·
+<strong>Date:</strong> 2026-10-26 · <strong>Status:</strong> Design
+specification, not a claim of implemented functionality</p>
+<p><strong>Product decision:</strong> Rename <strong>QUILL Audio
+Studio</strong> to <strong>QUILL Studio</strong>, maintaining the
+<em>same</em> application, shared source implementation, library,
+workflows, installation continuity and user data. The larger name
+reflects expansion from audiobooks into sound, images, screen
+demonstrations, video, live production, AI-assisted visual understanding
+and independently verifiable publishing.</p>
+<blockquote>
+<p><strong>North-star acceptance criterion:</strong> A person who is
+totally blind, using only a keyboard, JAWS/NVDA/Narrator or braille, can
+independently capture, construct, inspect, correct, record, mix, export,
+and verify a media artifact without relying on inaccessible visual
+confirmation. Deterministically provable properties must be
+machine-tested; uncertain visual/semantic judgments must be labeled and
+escalated rather than represented as guarantees.</p>
+</blockquote>
+<h2 id="1-decisions-and-evidence-hierarchy">1. Decisions and evidence
+hierarchy</h2>
+<ol type="1">
+<li><strong>Current implementation baseline:</strong>
+<code>prd(20261026-191850).md</code>, <code>userguide(1).md</code>,
+<code>CHANGELOG.md</code>, <code>release-notes-1.0.md</code> and
+<code>release-notes-2.2.md</code> supplied by the project. These are
+documentation evidence, <strong>not proof that each feature was tested
+in an installed build</strong>.</li>
+<li><strong>Expansion baseline:</strong>
+<code>QUILL_Audio_Studio_Expanded_PRD(1).md</code> (2026-10-25). Its
+unconflicted functional requirements remain in scope, but references to
+external products or third-party software are not adopted; only VB-CABLE
+is retained as an explicitly named optional external tool. In particular
+retain its requirements for routing, editor, live playout, video,
+capture, AI, packaging, auditability, and complete keyboard
+operation.</li>
+<li><strong>Availability:</strong> Release notes describe 2.2.0 as
+<strong>built, not yet released</strong>, and some CHANGELOG items as
+<strong>unreleased</strong>. Never market these as publicly shipped
+until confirmed.</li>
+<li><strong>Conflict rule:</strong> Preserve working user journeys and
+the shared <code>quill.apps.studio</code> implementation; these
+consolidated additions supersede any prior plan to create another app or
+to call the expanded application QUILL Audio Studio indefinitely.
+Windows 11-first expansion is not a decision to remove current macOS
+audiobook functionality.</li>
+<li><strong>External-tool scope:</strong> The product specification
+describes QUILL Studio functionality in its own terms. VB-CABLE is the
+only named optional external tool/integration. Existing internal
+implementation dependencies are governed by engineering and license
+compliance, not presented as recommended companion products.</li>
+</ol>
+<h2 id="2-preserve-the-existing-applications-layout-and-behavior">2.
+Preserve the existing application’s layout and behavior</h2>
+<h3 id="21-existing-shell-evolution-not-replacement">2.1 Existing shell:
+evolution, not replacement</h3>
+<p>Keep the startup <strong>book/library tree with initial
+focus</strong>, Favorites, In Progress, Recently Played, Inbox, existing
+folders, accessible status bar (F6 and arrow navigation), full menu bar,
+application tray, command palette (<code>Ctrl+Shift+P</code>), F1 help,
+existing preferences and shared voices, the narration/build wizard,
+Chapter Workbench, Book Tools, Sleep Timer, Play Queue, and
+converter/publisher. Do not displace current keyboard expectations.</p>
+<p><strong>Home design:</strong> One application main frame with a
+default <strong>Library</strong> workspace and a simple
+<strong>Create</strong> task menu/button. Add, in sensible order: Record
+audio, Mix audio, Record a demonstration, Capture or inspect screen,
+Edit audio/video, Create an image, Run a live show, Convert, Publish and
+Verify. The original three journeys—<strong>Narrate Documents, Build
+From Recordings, Edit a Book</strong>—remain first-class, identically
+named entry points. Users may pin their most-used workflows; startup may
+reopen the last workspace but should not silently change existing
+defaults.</p>
+<p><strong>Menus:</strong> File (projects/library/import/export), Create
+(old and new journeys), Capture, Audio, Video, AI &amp; Visual
+Inspector, Tools, View, Help. <strong>Do not steal existing Alt menu
+mnemonics</strong>; keep Alt+B Book Tools, Alt+V View, Alt+I Voices if
+their established menus remain. Add new commands and mnemonics only
+after collision testing against every window/control. Existing command
+palette indexes legacy and new commands. Existing <code>Ctrl+,</code>
+preferences and safe mode stay functional.</p>
+<p><strong>Shell structure:</strong> Native wxPython controls for tree,
+tables, menus, dialogs, inputs and progress. Specialized audio/video
+canvases supply a <em>parallel structured list/tree representation</em>
+with UIA roles, names, values, relationships and fully equivalent
+actions. A canvas or waveform is never the only means to discover/edit
+content. Hide visual complexity until requested rather than presenting a
+giant dashboard.</p>
+<h3 id="22-seamless-rename-and-upgrade">2.2 Seamless rename and
+upgrade</h3>
+<ul>
+<li>Display name, product documentation, Start Menu shortcut, installer
+metadata, taskbar/tray accessible names become <strong>QUILL
+Studio</strong>; old names can remain as discoverable aliases in Help
+and search.</li>
+<li>Retain <code>quill.apps.studio</code>, all shared <code>quill</code>
+audio pipelines, stored book identities, stable library paths, job
+files, <code>%APPDATA%\Quill</code>, portable
+<code>data/storage-mode.json</code>, secrets, voice packs and shared
+QuillVille runtime. Do not fork duplicate engines.</li>
+<li>Introduce an optional <code>studio-project</code> folder/schema for
+new productions and one-way/versioned migrations only after automated
+round-trip tests. Legacy <code>.quilljob</code> and existing books
+remain readable and editable.</li>
+<li>Preserve installer’s ability to upgrade in place and portable zip’s
+ability to run independently; detect and resolve old/new shortcut
+collisions; offer rollback and retain user data.</li>
+<li>Preserve macOS-supported legacy journeys. Windows-only mixer/capture
+functions are reported as unsupported with clear explanations, never
+causing the legacy app to fail at launch.</li>
+<li>Cross-app features (QUILL Editor, Radio, Cast, Lite, Transcribe)
+must communicate by stable shared APIs/asset exchange, not tight UI
+imports.</li>
+</ul>
+<h2 id="3-core-interaction-model-for-totally-blind-users">3. Core
+interaction model for totally blind users</h2>
+<p><strong>UX-001</strong> Every workflow has an explicit start, review,
+action, independent verification and result step. Keyboard-only
+navigation must permit correction at any step.</p>
+<p><strong>UX-002</strong> Every parameter has editable numeric/text
+representation, unit, min/max, current value and reset command. Spatial
+operations accept coordinates, edges, sizes, offsets, timestamps and
+relative instructions rather than dragging.</p>
+<p><strong>UX-003</strong> Include <strong>F6 workspace
+landmarks</strong> (cycling between library, editor, sources, buses,
+verification report, status bar without breaking legacy F6 status
+behavior), carefully chosen configurable chords, context help,
+accelerator reference, shortcut conflict detection, and a searchable
+command palette. Make shortcuts discoverable <em>and</em> configurable.
+Avoid consuming typical JAWS/NVDA/Narrator or OS shortcuts by
+default.</p>
+<p><strong>UX-004</strong> Editing models: spreadsheet-like source/bus
+matrix; sortable but stable source list; timeline with tracks/regions as
+rows and named edit fields; camera controls with textual labels;
+screenshot canvas with OCR-based element list. Every important command
+available from menu, command palette, and keyboard accelerators where
+appropriate.</p>
+<p><strong>UX-005</strong> Never disrupt text fields with live-show
+hotkeys; swap active accelerators when focus is in composite edit
+controls. Do not reorder/remove a focused row during background
+activity. Do not disable the currently focused action button while a
+long-running task executes; handle double activation safely.</p>
+<p><strong>UX-006</strong> Provide three announcement levels: concise,
+standard, detailed. High-frequency meter feedback is
+on-demand/threshold-based rather than repetitive speech. All important
+status remains reviewable as text/braille and in a searchable event log.
+Reuse current live status bar and speech/braille announcement
+service.</p>
+<p><strong>UX-007</strong> Whole-app accessibility regression testing
+must involve JAWS, NVDA and Narrator, keyboard-only testers who are
+totally blind, Windows scaling/high contrast, 8 GB RAM devices, multiple
+sound drivers, offline and portable configurations. Accessibility
+success is evidenced by executable test scripts and actual user outcome
+logs, not simply a WCAG checklist.</p>
+<p><strong>UX-008</strong> Offer <strong>guided mode</strong>
+(plain-language steps), <strong>standard mode</strong> (compact task
+screens) and <strong>advanced mode</strong> (matrix, buses, automation),
+backed by the <em>same saved state</em>. No accessibility tax for
+obtaining professional functions.</p>
+<h2 id="4-persistent-tray-and-background-control">4. Persistent tray and
+background control</h2>
+<p><strong>TRAY-001</strong> Extend the existing tray rather than
+starting a second daemon. Tray menu must expose: Open QUILL Studio,
+recording status, Start/stop/pause recording, marker, mute mic, mute
+public bus, private monitor toggle, active scene, take screenshot,
+instant replay, recent projects, current background jobs, verification
+summary, Safe Mode state, Preferences, Exit.</p>
+<p><strong>TRAY-002</strong> Maintain existing opt-in Alt+F4-to-tray and
+safe close rules. Recording can continue with window minimized/hidden;
+exit/Windows logoff prompts and checkpoints active sessions as
+technically feasible.</p>
+<p><strong>TRAY-003</strong> Tray icon has reliable accessible name and
+descriptive status via Windows shell/UIA; no action accessible solely
+via right-click. All tray operations are also available through
+main-frame menus, global hotkeys (opt-in), and command palette.</p>
+<p><strong>TRAY-004</strong> Global hotkeys use runtime collision
+detection, a keyboard-accessible configuration screen and clear feedback
+when another application intercepts a chord. Emergency stop is
+separately discoverable and robust. Global hotkeys should not steal keys
+needed for screen readers.</p>
+<p><strong>TRAY-005</strong> Status:
+<code>Recording 00:12:31; microphone live; application audio live; screen-reader audio private; frames dropped 0; disk estimated 43 minutes remaining</code>.
+The live status must be queryable without stealing focus or
+contaminating recordings.</p>
+<h2 id="5-audio-source-routing-recording-and-vb-cable">5. Audio source
+routing, recording and VB-CABLE</h2>
+<p><strong>MX-001</strong> Native capture: microphones, Windows render
+endpoints, system loopback, supported per-process/process-tree loopback,
+local media players, virtual input/output devices and supported remote
+sources. Show what can actually be captured and why something
+cannot.</p>
+<p><strong>MX-002</strong> Separate <strong>private monitor</strong>,
+<strong>program/live broadcast</strong>, <strong>main
+recording</strong>, <strong>isolated stems</strong>,
+<strong>cue/preview</strong>, and user AUX buses. Each source/bus has
+independent gain, mute, solo, monitor, record-arm, per-destination send
+and destination device. Source/list aliases are stable across
+reconnects.</p>
+<p><strong>MX-003</strong> Default screen reader speech to
+<strong>private only</strong>. Allow intentional recording/broadcast of
+screen reader speech for demonstration, but require explicit destination
+choice and audible/text confirmation. No unsupported promise of
+independent per-utterance splitting from one screen-reader process.</p>
+<p><strong>MX-004</strong> Integrate <strong>VB-Audio VB-CABLE</strong>
+as a user-installed and supported optional solution—never silently
+bundle/install a driver or require it for basic microphone/loopback
+work. Detect CABLE endpoints, allow named source/destination mapping and
+provide wizard-based test/recovery. Spell out the counterintuitive
+nomenclature: <em>CABLE Input</em> is the Windows playback device QUILL
+sends to; <em>CABLE Output</em> is the Windows recording device another
+app receives from.</p>
+<p><strong>MX-005</strong> <strong>Routing Setup Wizard</strong>: choose
+desired outcome (podcast, conference call, demo, livestream,
+accessibility test), discover sources, choose device(s) and optional
+VB-CABLE routing, play safe probe to chosen destination, measure return
+capture where feasible, check feedback/double-capture, show routing
+diagram <em>as an accessible textual bus table</em>, optionally verify
+with a second participant/receiving app, save preset. State whether a
+complete end-to-end test was possible; no false-positive passed badge
+from mere endpoint detection.</p>
+<p><strong>MX-006</strong> On device removal, driver sample-rate
+changes, process restart, crash or OS default-device switch: preserve
+identity and project settings; announce degradation, protect active
+media files, attempt a configured fallback <em>only when privacy routing
+cannot become broader</em>. Record start/stop/event stamps and sample
+dropouts to integrity log.</p>
+<p><strong>MX-007</strong> Provide audio-interface ASIO/WASAPI
+shared/exclusive capabilities based on tested feasibility,
+buffering/latency diagnostics, clock-drift correction, and feedback loop
+detection. Favor a native real-time helper process for timing-critical
+capture/mixing, bridged to wxPython by versioned IPC; do not do
+real-time DSP on the GUI thread.</p>
+<p><strong>MX-008</strong> Cue, user monitoring and verification speech
+may never enter public/recording buses unless users expressly select
+them; lock default privacy behavior and enforce negative routing
+assertions in test harness.</p>
+<h2 id="6-audio-editing-recording-and-demonstrations">6. Audio editing,
+recording and demonstrations</h2>
+<p><strong>EDIT-001</strong> Timeline with cursor in samples/timecode,
+accessible track-region list, inserts, slips, trims, splits, ripples,
+ripple exclusions, fades, crossfades, markers, named chapters, envelope
+automation, gain/pan, sidechain/ducking, silence detection,
+punch-in/out, loop recording, multi-take comping, noise removal and
+reversible processing.</p>
+<p><strong>EDIT-002</strong> Professional but discoverable controls:
+Ctrl+J-like configurable jump to time, seek by
+frame/second/minute/marker, read region start/end/duration/peak, preview
+before/after, undo history, nondestructive saves and autosave. Dedicated
+accessible keyboard tutorials embedded in help.</p>
+<p><strong>EDIT-003</strong> Effects chain list with order,
+enable/bypass, presets and explicitly typed parameters;
+loudness/true-peak/peak/noise-floor/waveform statistics spoken and
+recorded as text. Record per-source stems for post-production, including
+optional separated screen-reader track if physically or
+process-isolated.</p>
+<p><strong>DEMO-001</strong> Guided <strong>Record a
+Demonstration</strong> workflow: name demo, select
+application/window/display, choose full window or deterministic crop,
+choose pointer/focus highlight, select audio sources and microphone,
+explicitly include/exclude screen reader, privacy scan, trial recording,
+visual/audio preflight, start/pause/marker/stop, review timeline and
+output validation.</p>
+<p><strong>DEMO-002</strong> Support <strong>audio-only demo</strong>,
+<strong>screen-and-audio demo</strong>, <strong>webcam + screen</strong>
+and <strong>screenshot sequence with narrated audio</strong>. Users can
+record spoken descriptions then convert into captions, chapter
+bookmarks, slide callouts and accessible accompanying transcript.</p>
+<p><strong>DEMO-003</strong> Optional interaction-event track: keyboard
+shortcuts (privacy-safe redaction), focused accessible role/name,
+application changes, pointer/click annotations; synchronize it with
+captured frames/audio. Sensitive keystrokes and password fields are
+never logged; warn when determining sensitivity is impossible.</p>
+<p><strong>DEMO-004</strong> Automatic scene suggestions: remove dead
+time, create intro/outro, flag silence, clipping and mismatched audio;
+AI may propose edits but applies none without explicit review, undo and
+preview.</p>
+<h2 id="7-screen-capture-and-accessible-visual-tools">7. Screen capture
+and accessible visual tools</h2>
+<p><strong>CAP-001</strong> Keyboard-triggered full screen, active
+window, named application, UIA element, logical region, selected
+rectangle by numbers, scrolling capture where possible, and
+timed/sequence captures. Clipboard and file destinations; timestamp,
+application/window identity, coordinates, scale factor and
+capture-success metadata.</p>
+<p><strong>CAP-002</strong> <strong>Screenshot Inspector</strong>:
+identify dimensions, OCR all text with confidence and reading order,
+list detected UI elements and their positions, detect cut-off text and
+overlays, compare screenshots, ask follow-up questions about the image,
+find target by text/semantic description, zoom/crop via keyboard, run
+redaction and export alt text or detailed description.</p>
+<p><strong>CAP-003</strong> Annotate <em>without drawing</em>: choose
+arrow/rectangle/spotlight/highlight/text callout, anchor to recognized
+UI element or percentage/coordinates, define size/style/order, preview
+verbally, revalidate target still exists, render to PNG/JPEG and
+optional layered project. Add visual magnification, cursor/focus
+highlight, presentation break timer and spoken countdown.</p>
+<p><strong>CAP-004</strong> Provide built-in, keyboard-accessible region
+snipping, screen recording, zoom and annotation, capture timers, OCR,
+image inspection, image resizing, format conversion, clipboard
+transformations, command discovery, shortcut-conflict detection, and
+saved recording/capture workspaces. Implement these as integrated QUILL
+Studio capabilities with one command registry, one accessibility model
+and shared project state.</p>
+<p><strong>CAP-005</strong> Offer <strong>Capture and Dictate</strong>:
+press screenshot hotkey, speak a description/comment, local or optional
+cloud transcription, return a paired screenshot + verified transcript +
+timestamp, copy/paste as package or export to HTML/Markdown/issue
+tracker. Maintain microphone routing privacy while capturing.</p>
+<p><strong>CAP-006</strong> Capture preflight: protected window/black
+frame, minimized/occluded content, focus lost, unexpected monitor,
+unexpected app title, cropping off edge, masking failures, overlapping
+tooltip/dialog, pointer obstruction and notifications. Report detected
+risks and attempt a correction or offer exact deterministic commands.
+Capture APIs’ limitations must be exposed.</p>
+<h2 id="8-ai-visual-inspector-and-blind-first-visual-confidence">8. AI
+Visual Inspector and blind-first visual confidence</h2>
+<p><strong>VIS-001</strong> Dedicated <strong>Understand What Is On
+Screen</strong> command for live window, selected region, screenshot,
+imported image, webcam frame and video frame. Use both UI Automation
+structure and OCR, then vision model(s); never silently assume model
+interpretations are proven.</p>
+<p><strong>VIS-002</strong> Answers organized in layers: brief scene
+summary; objects/people/layout; extracted exact text; UI controls and
+state; precise coordinates/bounding boxes; colors/contrast; image
+quality; likely composition issues; warnings and uncertainty; user’s
+follow-up question. Provide keyboard navigation through each result.</p>
+<p><strong>VIS-003</strong> <strong>Conversation grounded to
+artifact</strong>: “Is my entire dialog visible?”, “What does the red
+error say?”, “Where is the camera pointing?”, “Is the face centered?”,
+“What changed from last screenshot?”, “Describe the chart and axes.”
+Preserve image hash, source, region, frame index and corresponding
+evidence so the user can ask follow-ups without accidental cross-image
+confusion.</p>
+<p><strong>VIS-004</strong> For deterministic claims, prefer
+pixel/math/metadata/UIA/OCR validation. Examples: pixel dimensions,
+capture rect within display, text detected, named application matching
+intended window, frame blackness threshold, audio/video sync and element
+bounding-box intersection. Combine with AI to identify semantic content,
+but report uncertainty in plain English.</p>
+<p><strong>VIS-005</strong> <strong>Blind camera coach</strong>: startup
+frame analysis, face/object position and crop, horizon/orientation,
+headroom, lighting, motion, blur, exposure and background distractions;
+give incremental directional corrections, recheck after every user
+adjustment. Never assert that a person is visible if visual evidence is
+insufficient; provide no-face/no-confidence warnings.</p>
+<p><strong>VIS-006</strong> Optional provider adapters for local vision
+models when hardware capable, user-supplied cloud vision API keys and
+accessible provider settings. Show image/data selected for sharing,
+where it goes, estimate costs when possible, consent, privacy and safe
+mode. Offline capture/edit should never depend on AI service being
+available.</p>
+<p><strong>VIS-007</strong> Accessible visual revisions: user instructs
+“move annotation right 30 pixels”, “crop left until no toolbar”, “use a
+darker caption box”, “replace image background” (when integrated
+provider supports image editing); preserve originals, preview changes,
+verify export dimensions and report visually uncertain aspects. Every
+operation reversible, with stable artifact versions and provenance.</p>
+<p><strong>VIS-008</strong> Visual accessibility authoring: meaningful
+alt text, extended description, transcript, video audio description
+track, caption contrast and safe-area inspection, and readable
+chart/table reconstruction with confidence caveats. Provide a reviewable
+text representation separate from the rendered visual.</p>
+<h2 id="9-verification-center-near-100-independently-verifiable-path">9.
+Verification Center: near-100% independently verifiable path</h2>
+<p><strong>VERIFY-001</strong> Each workflow produces a machine-readable
+and screen-reader-readable <strong>Evidence Report</strong>
+(<code>.json</code> plus <code>.md/.html</code>) with: user goal; source
+identity; steps completed; configuration; file hashes; audio routing
+graph; intended tracks; actual tracks; media codec; dimensions;
+duration; timing; error logs; AI findings; verification status;
+unresolved risks; export location.</p>
+<p><strong>VERIFY-002</strong> Use explicit result states:
+<strong>Verified</strong> (objective automated check passed),
+<strong>Verified with external loopback</strong> (downstream captured
+sample passed), <strong>Needs human judgment</strong>, <strong>Not
+verified</strong>, <strong>Failed</strong>. Never collapse AI semantic
+confidence into “Verified.” A failed/unknown check blocks an optional
+<strong>Strict Publish</strong> profile until fixed or consciously
+waived with recorded explanation.</p>
+<p><strong>VERIFY-003</strong> Preflight checks: target app/window
+identity; correct crop; nonblack test frames; expected source activity;
+privacy isolation; VB-CABLE send/return; available storage; supported
+format; clipping/noise; camera framing; actual 5–10-second practice
+capture; ask user whether playback sounded right; track any checks that
+cannot be automated.</p>
+<p><strong>VERIFY-004</strong> During recording: recoverable segment
+files, heartbeat, dropped frames, source disconnect, timestamp jitter,
+data flow, disk capacity, peak detection, rendering progress, marker log
+and route changes. Never say “recording safely” when no frames/samples
+are actually arriving.</p>
+<p><strong>VERIFY-005</strong> After recording: reopen exported media
+independently, decode first/middle/last sections, confirm expected
+audio/video streams, positive sample/frame counts, timestamp
+monotonicity, stream alignment, expected duration, loudness,
+freeze/black frame sampling, audible mic samples, absence of disallowed
+sources where technically testable, user-selected screenshot frame
+comparisons, and hash final exports.</p>
+<p><strong>VERIFY-006</strong> For public/private mix isolation,
+distinguish <em>routing configuration verified</em> from <em>actual
+external output verified</em>. If possible capture audio after the
+virtual cable and assert intended audio tone present and private cue
+absent using known test signals. During real content, privacy leakage
+cannot always be conclusively proven; preserve safe defaults and clearly
+disclose that limitation.</p>
+<p><strong>VERIFY-007</strong> <strong>Guided verification
+questions</strong>: “What can I prove?”, “What still needs checking?”,
+“What does the image actually show?”, “What should I fix next?”, “Replay
+the ten seconds around this warning.” Every issue has
+jump-to-time/frame/track and suggested action. Confirmation is not one
+opaque Pass button.</p>
+<p><strong>VERIFY-008</strong> Release benchmark: 100% of mandatory
+machine-testable checks executed; 0 silent failures; 0 inaccessible
+critical controls; 0 published strict-profile outputs with failed
+mandatory checks; truthfully disclose all model-dependent visual
+judgments. This is a robust <em>verification pathway</em>, not an
+impossible claim of 100% semantic accuracy.</p>
+<h2
+id="9a-rehearse-detect-automatically-repair-and-prove-readiness-before-recording">9A.
+Rehearse, detect, automatically repair, and prove readiness before
+recording</h2>
+<p><strong>Product promise:</strong> A creator should not discover,
+after a 30-minute presentation, a defect that a short rehearsal could
+have detected. <strong>QUILL Studio must diagnose failures, safely
+repair those it controls, and give exact accessible recovery
+instructions for everything else.</strong> It must never treat a failed
+test as success merely because it can explain the problem.</p>
+<p><strong>PREFLIGHT-001 — Rehearse before commitment.</strong> Every
+Record Audio, Record Demonstration, Camera, Screen Capture, and Live
+Show journey includes <strong>Test My Setup</strong>. A configurable
+5–15-second rehearsal captures the intended video region and actual
+selected audio output(s), with countdown, pause/cancel,
+visible/tray/announced status, and safe temporary files. Rehearsals can
+include a spoken script, slide change, app switching, mic sample,
+private cue, and recording destination test. No need to start a full
+project or overwrite prior material.</p>
+<p><strong>PREFLIGHT-002 — Tiered readiness.</strong> Issue a
+per-project report with <strong>Ready</strong>, <strong>Ready with
+explicit limitations</strong>, or <strong>Not ready</strong>.
+Strict/assured mode cannot start long recording when mandatory check
+fails; ordinary mode permits a deliberate override with an evidence
+note, except for non-overridable privacy/consent safeguards. Never say
+that AI inferred an inherently unobservable visual fact with
+certainty.</p>
+<p><strong>PREFLIGHT-003 — Remediation engine.</strong> Every failed
+check has structured <code>issue_id</code>, observed evidence, likely
+cause, severity, verified safe auto-fix choices, permissions, affected
+devices/apps, next manual action, retry hook, rollback, and
+plain-language explanation. Workflow is: <strong>detect → explain
+briefly → attempt permitted safe repair → retest from actual source
+through destination → verify → resume</strong>. Suppress repeated
+warning chatter; users can read the full diagnostic log at will.</p>
+<p><strong>PREFLIGHT-004 — Automatic repair policy.</strong> Auto-fix
+silently only when reversible, local, privacy-preserving, and scoped
+entirely to QUILL Studio settings, e.g. restoring a previously verified
+encoder preset, correcting its own capture rectangle to known valid
+bounds, clearing stale target handles, restoring a missing user-approved
+session source, choosing a known functioning app-local output fallback,
+or relaunching a crashed capture worker while preserving fragments.
+Changes to Windows default devices, another application’s settings,
+virtual cable configuration, operating-system permissions,
+microphone/camera access, driver installation, cloud sharing, public
+routing, or publish destination require explanation and explicit
+consent. Never broaden screen-reader or private-audio routing as
+fallback.</p>
+<p><strong>PREFLIGHT-005 — Guided manual repair.</strong> If an issue
+cannot safely be fixed directly, offer one-action keyboard-focused
+instructions stating the exact Windows/app dialog, accessible control
+names when stable, navigation sequence, expected result, and
+<strong>Retest</strong> command. Provide <strong>Open Relevant
+Settings</strong> where trustworthy deep-links are available. Avoid
+fictitious clicks, blanket admin prompts, automatic driver installs, or
+claiming that third-party settings have changed.</p>
+<p><strong>PREFLIGHT-006 — Failure-to-fix examples and
+tests:</strong></p>
+<table>
+<caption>Table: 9A. Rehearse, detect, automatically repair, and prove
+readiness before recording</caption>
+<thead>
+<tr>
+<th scope="col">Failed check</th>
+<th scope="col">Safe software action</th>
+<th scope="col">Assisted action / honest limitation</th>
+<th scope="col">Proof of repair</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">Wrong display/window or partially cropped target</th>
+<td>Restore saved HWND target, recompute crop inside capture bounds,
+show named content region</td>
+<td>Help bring a minimized/occluded app foreground; ask which
+monitor/window is intended</td>
+<td>Capture a fresh frame; validate window identity, bounds, visible
+content and image dimensions; AI judge occlusion with caveat</td>
+</tr>
+<tr>
+<th scope="row">Black/protected video frames</th>
+<td>Reinitialize capture, try supported capture API in project
+scope</td>
+<td>Explain DRM/permission/secure-desktop restrictions; never bypass
+protection</td>
+<td>Actual decoded nonblack motion-bearing trial frames</td>
+</tr>
+<tr>
+<th scope="row">Silent microphone/muted channel</th>
+<td>Restore QUILL-local fader/arm, use preapproved active mic</td>
+<td>Guide hardware mute, Windows mic access and device choice</td>
+<td>Recorded test speech has expected time-aligned nonzero signal and
+intelligibility check</td>
+</tr>
+<tr>
+<th scope="row">Screen reader or private sounds entering published
+bus</th>
+<td>Force known-safe private-routing preset, mute public feed pending
+retest</td>
+<td>Explain VB-CABLE/Windows endpoint setup; never silently reroute
+sensitive output to public</td>
+<td>Isolated pilot tone/cue does not appear in downstream public
+loopback, within stated test limits</td>
+</tr>
+<tr>
+<th scope="row">VB-CABLE disconnected or incorrectly mapped</th>
+<td>Rebind explicitly approved named endpoints, preserve isolation
+lock</td>
+<td>Give step-by-step routing fix; driver installation remains
+user-initiated</td>
+<td>Confirm send/receive path using a recorded loopback probe; do not
+infer from driver name alone</td>
+</tr>
+<tr>
+<th scope="row">Mic clipping, too quiet, high noise</th>
+<td>Adjust QUILL-local gain/limiter/compressor or suggest safer source
+levels</td>
+<td>Guide physical gain, mic distance or environment changes</td>
+<td>New trial sample passes stated level/peak/noise thresholds; assess
+speech content cautiously</td>
+</tr>
+<tr>
+<th scope="row">Camera face off-center, low light, blur</th>
+<td>Adjust available QUILL-controlled crop/zoom/exposure within
+capability</td>
+<td>Provide spoken directional movement coaching and ask user to
+recheck</td>
+<td>Multiple freshly captured frames pass threshold checks; AI judgments
+explicitly qualified</td>
+</tr>
+<tr>
+<th scope="row">Disk low, invalid codec, missing output path</th>
+<td>Allocate safe segment size, select compatible encoder, restore last
+known accessible destination</td>
+<td>Ask permission for alternate volume/location; never delete user
+media automatically</td>
+<td>Real sample file writes, closes, reopens, decodes and reports
+available headroom</td>
+</tr>
+<tr>
+<th scope="row">Audio/video out of sync or dropped frames</th>
+<td>Adjust app-owned capture buffers/preset and retest</td>
+<td>Offer reduced resolution/frame rate or source isolation</td>
+<td>Trial A/V timestamps and sample/frame continuity fall within
+documented tolerance</td>
+</tr>
+<tr>
+<th scope="row">Inaccessible dialog/control during workflow</th>
+<td>Fall back to accessible native alternative if already
+implemented</td>
+<td>Present defect report and keyboard-reachable escape; do not gate
+essential completion on inaccessible UI</td>
+<td>JAWS/NVDA/Narrator automation and blind-user path retested</td>
+</tr>
+</tbody>
+</table>
+<p><strong>PREFLIGHT-007 — Recurring checks and change
+detection.</strong> Record <strong>Setup Fingerprint</strong> including
+source device identities, output bus, virtual cable mappings,
+process/window target, resolution, sample rate, source mute state,
+encoder, storage and privacy policy. Revalidate after driver/device
+change, app restart, Windows output change, scene switch, and restore
+from system sleep. Before a long presentation, offer a quick rehearsal
+when fingerprint differs from last good session.</p>
+<p><strong>PREFLIGHT-008 — Inflight safety and recovery.</strong> While
+recording, continuously monitor input levels, actual frames and samples,
+disk headroom, encoder health, missing application window, clipping and
+timestamp drift. Announce critical issues privately, preserve existing
+segments, recover only within authorized policy, and mark all affected
+intervals. Expose <strong>Pause and Fix</strong>, <strong>Continue with
+Warning</strong>, and <strong>Stop and Save</strong> by keyboard and
+tray. A fallback must never secretly introduce private content into the
+program feed.</p>
+<p><strong>PREFLIGHT-009 — Verify the repair, not the
+intention.</strong> A successful API return or changed setting is not
+sufficient: every repair must run a new downstream measurement against
+the relevant media and source/destination. Report <strong>Fix
+attempted</strong>, <strong>Retest passed</strong>, <strong>Retest
+failed</strong>, or <strong>Cannot independently test</strong>. Use
+precise timestamps and evidence for both initial and final results.</p>
+<p><strong>PREFLIGHT-010 — Wizard user experience.</strong> The action
+sequence is <strong>Choose production goal → Configure sources and
+visual framing → Test My Setup → Review and fix issues → Rehearse and
+audition → Start full session → Monitor → Finish and independently
+validate → Export and verify</strong>. Default guided mode should
+accomplish ordinary demonstrations with minimal Tab navigation, while
+advanced controls remain exposed to power users. At any step F1 explains
+what can fail and what QUILL can repair.</p>
+<p><strong>PREFLIGHT-011 — Measurable acceptance criteria.</strong>
+Regression harness injects at least: unplugged mic, VB-CABLE lost
+endpoint, incorrect capture monitor, black frame, muted mic, disk nearly
+full, malformed output codec, source restart, screen-reader leak, and
+interrupted capture. Every injected condition must produce a
+keyboard-reachable diagnosis, a safe automatic fix or exact next action,
+an actual retest, and truthful evidence state. Zero silent failures in
+critical preflight paths; no public audio leak in controlled privacy
+tests; no false Ready state for machine-detectable critical failures.
+Fully blind users must complete and recover the journeys with keyboard
+and speech/braille feedback alone.</p>
+<h2 id="10-video-studio-live-playout-and-publishing">10. Video studio,
+live playout and publishing</h2>
+<p><strong>VIDEO-001</strong> Screen/video capture at measured frame
+rate, webcams/capture cards where available, resolution/framerate
+control, audio/video synchronized timeline, keyboard cut/trim/fade,
+title and caption overlays positioned numerically, scenes, image cards,
+B-roll, preview at explicit timecode, transcript-linked edits and
+audio-description track.</p>
+<p><strong>VIDEO-002</strong> Offer a readable scene list showing order,
+contents, start/end and accessible visual inspection; segment video into
+navigable shots with OCR/image-change cues. Control camera and crops
+through named anchors as well as coordinates.</p>
+<p><strong>LIVE-001</strong> Adopt accessible <strong>cart
+wall</strong>, named banks, queued tracks, running order, dual
+deck/crossfade, hotkey-triggered audio cues, ducking, emergency silence,
+mic talkover, playlist and live scene changes; guard against bare-key
+activations while typing and background updates that steal focused rows.
+Preserve private preview/cue path.</p>
+<p><strong>LIVE-002</strong> Support recording live program and stems
+simultaneously, reliable long-running scheduling, output to virtual
+cable or documented streaming integration, metadata/now-playing and
+QUILL Radio/Cast handoffs through shared contracts.</p>
+<p><strong>PUB-001</strong> Reuse current audiobook quality checks,
+chapter workbench, built-in conversion pipeline, audiobook rendering,
+RSS feed, metadata and publishing services. Extend to MP4/MKV, social
+clip profiles, VTT/SRT captions, transcript/description packages and
+accessibility verification bundle.</p>
+<p><strong>PUB-002</strong> Publish screen includes concise review:
+title, destination, privacy, rights, captions, transcript, alt text,
+credits, encoder settings, estimated cost, test results and user
+confirmation. Export atomic temp-to-final with failure rollback and no
+silent overwrite.</p>
+<h2
+id="10a-integrated-live-broadcasting-meetings-demonstrations-and-audience-interaction">10A.
+Integrated live broadcasting, meetings, demonstrations and audience
+interaction</h2>
+<p><strong>Product scope:</strong> Live production is an embedded
+<strong>QUILL Studio</strong> journey, not an optional external
+production app. Named <strong>distribution destinations and meeting
+services</strong> (YouTube Live, Icecast, SHOUTcast, Zoom, Microsoft
+Teams) are user-chosen endpoints, not competitor comparisons or required
+companion media-authoring tools. <strong>VB-CABLE remains the only
+explicitly recommended optional external <em>routing
+utility</em>.</strong> All core broadcasting controls, scene creation,
+mixing, rehearsal, failure recovery, recording, and evidence review live
+in QUILL Studio.</p>
+<h3 id="10a1-live-broadcast-workspace-inherit-current-shell">10A.1 Live
+Broadcast workspace: inherit current shell</h3>
+<p><strong>BCAST-001 — Entry and continuity (P0).</strong> Add
+<strong>Create &gt; Start a Live Broadcast…</strong> and <strong>Create
+&gt; Join or Present in a Meeting…</strong> to the existing Create
+journey, menu and command palette. Keep library startup focus and legacy
+shortcuts intact. A live session uses the same source lists,
+private/program/record buses, Chapter/Timeline markers, project saves,
+accessible notifications, F6 status navigation, tray integration and
+Verification Center. User-configurable presets: Live demo, audio-only
+radio, video livestream, interview/guest show, interactive meeting,
+hybrid broadcast + archive.</p>
+<p><strong>BCAST-002 — Keyboard-controlled show desk (P0).</strong>
+Provide structured lists for Scenes, Sources, Outputs, Guests,
+Chat/Questions, Soundboard, Running Order, and Health/Verification.
+Keyboard commands for Preview, Take/Go Live, transition, fade,
+talkover/duck, mic mute, guest mute, private cue, push-to-talk
+(optional), hold screen, emergency stop-to-slate, record marker and
+instant replay. All numeric fades, gains, positions, delays and scene
+durations have accessible text entry; never require dragging, spatial
+hit testing or a visually monitored multiview. Explicit <strong>Preview
+scene</strong> versus <strong>On-air scene</strong> state. Require
+confirmation or arm/disarm on destructive/public actions. When typing in
+chat, text-edit keys must not trigger hotkeys.</p>
+<p><strong>BCAST-003 — Program/monitor mix (P0).</strong> Maintain
+independent buses: <strong>Private monitoring</strong> (screen reader,
+rehearsal cues), <strong>Program broadcast</strong>, <strong>Local
+master recording</strong>, <strong>Isolated guest/source
+tracks</strong>, <strong>Caller/guest mix-minus</strong>,
+<strong>Preview/cue</strong>, and optional remote confidence monitor.
+Explicit rules for injecting screen-reader speech into a tutorial
+intentionally while excluding production-only announcements. Test
+feedback, echo, double capture, and accidental disclosure, including
+with VB-CABLE where installed. Never silently reroute private content to
+public outputs.</p>
+<h3 id="10a2-broadcast-output-destinations-and-adapters">10A.2 Broadcast
+output destinations and adapters</h3>
+<p><strong>BCAST-010 — YouTube Live (P1).</strong> User-authenticated
+live event setup where authorized; stream URL/key workflow when full
+account API integration is not configured; video/audio ingest profile
+checks; title/privacy/visibility/schedule and selected caption approach;
+test stream/preview status; start/stop publishing controls; network and
+audience-state monitoring. Scope and quota/authorization requirements
+are resolved by a versioned YouTube adapter. Do not describe encoder
+connection alone as proof that the public audience sees the stream.
+Read/chat integration is separate from stream transport and must honor
+permissions, quota and moderation API limits.</p>
+<p><strong>BCAST-011 — Icecast and SHOUTcast (P1).</strong> Audio-only
+streaming source-client support: hostname/port/mount or stream ID,
+authentication, TLS where supported, codec/bitrate/sample rate/channel
+controls, reconnect policies, now-playing/artist/title metadata, program
+delay, scheduled playout, fallback playlist and locally recorded master.
+Validate protocol and metadata variant <strong>per server</strong>,
+rather than promising one configuration works identically on every
+Icecast/SHOUTcast deployment. Include listener/relay health where server
+API data is available, and an independent listener loopback with
+measured delay when possible. Preserve QUILL Radio interoperability.</p>
+<p><strong>BCAST-012 — Microsoft Teams (P1/P2).</strong> Support two
+clearly distinct paths: <strong>meeting participant/presenter</strong>
+using the configured application microphone/camera and permitted
+screen-share, with VB-CABLE as an optional audio feed path; and
+<strong>event/meeting encoder ingest</strong> using RTMP-In or SRT-In
+<strong>only when the tenant/meeting policy, organizer role and meeting
+options enable it</strong>. Detect/test ingest availability, check
+account/admin prerequisites, validate format settings, explain exact
+user actions when settings cannot be changed by Studio, and capture
+downstream evidence. Do <strong>not</strong> rely on retired Teams live
+events as the default path; target current meetings and town halls.
+Meeting/chat/attendee controls are enabled only where supported through
+authorized API or accessibility-safe user interaction; never claim
+unrestricted remote control of Teams UI.</p>
+<p><strong>BCAST-013 — Zoom (P1/P2).</strong> Support
+meeting/presentation via Studio audio routing and screen/camera sharing
+using user-approved endpoint selection, optional VB-CABLE, and permitted
+SDK integrations. Distinguish ordinary Zoom desktop-client meeting
+participation from deeper Meeting SDK raw-media capabilities; the latter
+are conditioned on version, host authorization, app approval and
+recording/streaming permissions. Ensure guest/host consent, expose
+whether screen audio and participant tracks are actually separable, and
+fall back cleanly to supported device-based routing. Never promise
+participant isolation or automatic remote meeting controls without
+successful permissions and loopback verification.</p>
+<p><strong>BCAST-014 — Custom RTMP/RTMPS, SRT and compatible
+destinations (P2).</strong> Support generic endpoint profiles,
+TLS/keys/secrets, bitrate ladder/preset validation, transport state,
+retry/backoff, local recording and reconnect after short network loss.
+All destinations use a common <code>BroadcastDestination</code> adapter:
+<code>capabilities</code>, <code>preflight</code>, <code>connect</code>,
+<code>start</code>, <code>health</code>,
+<code>pause_if_supported</code>, <code>stop</code>,
+<code>evidence</code>. Never imply that pause or private test mode
+exists on a destination that does not support it.</p>
+<p><strong>BCAST-015 — Multiple outputs (P2).</strong> Allow simulcast
+profiles (e.g. YouTube video + Icecast audio + local archive) within
+measured CPU, bandwidth and account limits. Per-output status and
+recovery; no single health indicator disguising a failed secondary
+output. No cross-posting chat or identities without user confirmation
+and platform authorization.</p>
+<h3 id="10a3-live-chat-qa-audience-and-guest-experience">10A.3 Live
+chat, Q&amp;A, audience and guest experience</h3>
+<p><strong>CHAT-001 (P1).</strong> <strong>Chat Console</strong> is a
+native accessible list with source, sender (where available), message
+text, timestamp, threading/role where available, and stable focused row.
+Read at a controlled rate; filters for questions, moderator actions and
+mentions; searchable history; copy quote; reply where permitted; flag
+question for later. Default announcements are private, never auto-added
+to the show audio. Offer optional <em>intentional</em> read-aloud of
+selected audience comments with preview first.</p>
+<p><strong>CHAT-002 (P1/P2).</strong> API-based chat support for YouTube
+when permitted; authorized meeting chat/Q&amp;A for Zoom and Teams if
+supported by the chosen integration. Where APIs or policies prohibit
+access, state <strong>Chat unavailable through this integration</strong>
+and offer a documented fallback—do not scrape inaccessible or protected
+interfaces or claim that messages were received. Recognize latency,
+message ordering, rate limits and moderation permissions.</p>
+<p><strong>CHAT-003 (P2).</strong> Moderation workflows: mute/silence
+locally, mark handled, keyword/safety filters, trusted co-host roles,
+approval before on-air reading; poll/question queue, guest
+invitation/return feed where supported, and accessible handoff between
+speakers. Preserve privacy, protect tokens, and warn before archiving
+audience-identifiable messages.</p>
+<h3
+id="10a4-preflight-proof-and-automatic-recovery-for-a-live-event">10A.4
+Preflight, proof and automatic recovery for a live event</h3>
+<p><strong>BCAST-020 — Rehearsal-first invariant (P0).</strong> The
+journey must be <strong>Create show → Select destinations → Configure
+sources and scenes → Test privately → Inspect audio/video/chat paths →
+Apply safe automatic fixes → Retest → Explicitly arm stream → Go Live →
+Monitor and recover → End safely → Verify archive and publish</strong>.
+Support a timed rehearsal of 30–90 seconds using dummy content and
+private test destinations wherever supported. Clearly warn when test
+content would reach a public endpoint; never go live without explicit
+user confirmation.</p>
+<p><strong>BCAST-021 — Rehearsal checks (P0).</strong> Test microphone
+presence and speech level, source isolation, VB-CABLE directionality,
+camera placement/lighting through deterministic frame properties and
+AI-assisted interpretation, complete selected-window capture bounds,
+slide readability/OCR, monitor versus program mix, sample rate/codecs,
+timing drift, available disk and CPU, network upload margin, upstream
+authentication and permission, test ingest acceptance, chat connection
+(where available), and remote audience loopback (where possible). Show
+per-check <strong>Verified</strong>, <strong>Externally loopback
+verified</strong>, <strong>Needs judgment</strong>, <strong>Cannot
+verify</strong>, <strong>Failed</strong>.</p>
+<p><strong>BCAST-022 — Repair loop (P0).</strong> Attempt safe
+self-repair (mute state within Studio, stale endpoint reconnection,
+encoder profile correction, source rebind, resampler correction, restore
+private-audio preset, switch to approved backup network/destination,
+bounded bitrate reduction). Re-run the <em>same failed check with fresh
+media</em>. For external settings/permissions requiring human consent or
+administrator control, open the appropriate workflow where supported and
+give short screen-reader-accessible steps, then retest. Do not claim
+resolution on the strength of an API acknowledgement alone.</p>
+<p><strong>BCAST-023 — Live watchdog (P0).</strong> Monitor encoded
+packets, silence/clipping, dropped frames, ingest connection,
+receive/playback confirmation where observable, output mismatch, source
+disappearance, local archive file growth, drift, and CPU/disk/network
+thresholds. Severity model: informational → warn privately →
+auto-recover within user-approved limits → prompt user → switch to safe
+scene/slate or end only as configured. Log faults, actions, outcomes and
+timecodes in a searchable Evidence Report. Emergency stop and private
+mic mute must stay responsive even when the chat/AI provider or encoder
+is stalled.</p>
+<p><strong>BCAST-024 — Independent verification (P0).</strong> Start
+local recording before public transmission if enabled; record main
+program and selectable stems, with crash-safe segmentation. Verify final
+exports by reopening and decoding. For destination verification,
+differentiate (a) local encoder running, (b) upstream server accepting
+bytes, (c) broadcaster status API reporting live, (d) independently
+captured downstream media, and (e) actual audience reception—which
+cannot generally be guaranteed. Avoid <strong>100% guaranteed
+broadcast</strong> claims when transport/platform/recipient facts are
+unobservable; instead provide maximum available objective evidence and
+explicit uncertainties.</p>
+<p><strong>BCAST-025 — Accessible session operator (P0).</strong> Main
+and tray accessible status:
+<code>OFFLINE / TESTING / ARMED / LIVE / RECONNECTING / ENDING / ENDED</code>;
+destinations with state; elapsed time; live scene; mic and
+private/public routing; stream and local-recording status; warnings;
+next step. One key to ask <strong>Where am I in the show?</strong> and
+<strong>What does the audience currently receive?</strong> Answers must
+say when based only on local/ingest indicators. No unrequested spoken
+alerts on the broadcast bus.</p>
+<h3
+id="10a5-audio-and-video-demonstration-examples-and-acceptance-tests">10A.5
+Audio and video demonstration examples and acceptance tests</h3>
+<ol type="1">
+<li><strong>YouTube live demonstration:</strong> A totally blind
+presenter selects an Edge window, runs short preflight, verifies screen
+bounds and title visibility via OCR and AI with caveats, broadcasts
+intentional screen-reader demo speech but excludes QUILL cues, monitors
+audience questions privately, and records local video/audio/captions.
+Starting live requires clear confirmation and the result records ingest
+and downstream-verification levels.</li>
+<li><strong>Icecast/SHOUTcast radio show:</strong> Presenter chooses an
+audio-only profile, privately cues tracks, talks over music, plays
+station IDs, shows now-playing metadata and listener checks, connects
+securely, and records the master plus mic/music stems. An unplugged
+input triggers safe recover/retest and an accessible on-air
+warning.</li>
+<li><strong>Teams town hall:</strong> A presenter discovers whether
+RTMP-In/SRT-In is permitted; if not, the app explains how to participate
+using allowed meeting capture/share and audio devices. It must never
+misleadingly report an RTMP feed as active when the tenant forbids
+ingest.</li>
+<li><strong>Zoom tutorial:</strong> A host sets mic/program feed through
+approved routing, selects screen/camera sharing, tests echo and private
+speech leakage, verifies authorization for capture, speaks with guests
+and saves separate tracks only when technically available. During an
+interruption, user can issue <strong>Pause and Fix</strong>, recover,
+and resume with a marked discontinuity.</li>
+<li><strong>Mixed audience experience:</strong> Live questions from an
+available authorized chat connector enter a stable keyboard list;
+presenters can prioritize, cue and read them aloud intentionally.
+Private chat/screen-reader announcements never leak to the program mix
+by default.</li>
+</ol>
+<h3 id="10a6-engineering-deliverables-and-release-order">10A.6
+Engineering deliverables and release order</h3>
+<ul>
+<li><strong>P0 foundation:</strong> Shared program/private/record buses;
+Live workspace, reliable local show/record loop, trial run, end-to-end
+objective checks, fault recovery, complete keyboard/tray operation and
+explicit readiness states.</li>
+<li><strong>P1 audio broadcast:</strong> Icecast/SHOUTcast and generic
+streaming profiles; native playlist/cart wall, metadata, listener
+confidence loopback, chat/Q&amp;A infrastructure.</li>
+<li><strong>P1/P2 video and meetings:</strong> YouTube Live endpoint and
+authorized chat; Teams RTMP-In/SRT-In and desktop-client paths; Zoom
+desktop-client routes, then permission-scoped SDK paths. Ship each
+capability only when tested against representative
+accounts/permissions.</li>
+<li><strong>P2 advanced:</strong> Simulcast, participant/guest stems
+where supported, moderation, remote co-producer accessibility, scheduled
+broadcasts and redundancy.</li>
+</ul>
+<p><strong>Specific pass criteria:</strong> a totally blind
+keyboard-only user can create, test, run, inspect and end each supported
+session without visual assistance; no critical preflight defect silently
+passes; no unconsented private-audio leak in controlled tests; every
+failure has clear spoken/braille diagnosis and safe fix or recovery
+path; final recording passes independent decoding; public-reception
+claims reflect only actually observed evidence.</p>
+<hr />
+<h2 id="10b-full-professional-nonvisual-video-editing-environment">10B.
+Full professional, nonvisual video editing environment</h2>
+<p><strong>Status:</strong> Proposed expansion, not a currently
+implemented capability. <strong>Scope:</strong> A professional,
+nondestructive nonlinear video editor integrated in the existing QUILL
+Studio shell and shared project/verification services. Users who are
+totally blind must be able to complete every supported edit with
+keyboard, screen reader and/or braille; graphical affordances are
+supplementary. This work must not replace the existing audiobook Chapter
+Workbench or alter its shortcuts.</p>
+<h3 id="10b1-video-projects-media-and-timeline">10B.1 Video projects,
+media and timeline</h3>
+<ul>
+<li><strong>VID-001 — Project model:</strong> Named projects containing
+sources, nested sequences, audio/video tracks, annotations, effects,
+transitions, chapter and caption tracks, metadata, routing and
+verification history. Preserve immutable originals. Save edits as
+operations with autosave, journaling, recoverable undo/redo and portable
+relinking of missing assets. Separate the project file from source media
+and render outputs.</li>
+<li><strong>VID-002 — Import and conform:</strong> Import video, screen
+recordings, still images, animation sequences, audio files, captions and
+recordings produced within QUILL Studio. Inspect duration, stream types,
+frame size, frame/sample rate, timebase, rotation, audio channels, color
+metadata and decode health. Warn of variable frame rate and
+resampling/conform operations without altering originals.</li>
+<li><strong>VID-003 — Multitrack timeline:</strong> Multiple ordered
+video and audio tracks; clip order, in/out points, source offset,
+synchronization links, lock, mute/visibility, enabled state, track
+groups, gaps, markers, named sections and nested sequences. Show a
+human-readable track/clip list and a detailed property inspector
+alongside any visual timeline. No essential action may depend on
+scrubbing or dragging a waveform.</li>
+<li><strong>VID-004 — Exact navigation:</strong> Move by frame, second,
+marker, chapter, clip boundary, transition boundary, detected speech
+segment, caption, and scene change. Provide editable
+<code>HH:MM:SS:FF</code> or rational timecode, with explicit handling of
+drop-frame and non-drop-frame formats. Announce playhead location and
+selected clip context on demand.</li>
+<li><strong>VID-005 — Fundamental editing:</strong> Split, lift,
+extract, insert, overwrite, move, duplicate, trim, ripple trim, roll,
+slip, slide, ripple delete, shuffle/swap, grouped moves, snap,
+detach/relink audio, align, synchronize and restore. Display the
+expected downstream timing change before destructive-looking ripple
+operations; provide preview, undo and comparison.</li>
+<li><strong>VID-006 — Playback:</strong> Full preview, loop selection,
+shuttle controls, jog frame-by-frame, adjustable speed with optional
+pitch preservation, A/B edit preview, render preview cache and
+audio-only review mode. Announce dropped-preview-frame warnings without
+talking over program audio unless requested.</li>
+</ul>
+<h3 id="10b2-image-composition-effects-and-graphics">10B.2 Image
+composition, effects and graphics</h3>
+<ul>
+<li><strong>VID-007 — Composition:</strong> Numeric crop, trim to
+canvas, rotation, position, scale, aspect preservation, anchor, flip,
+opacity, stacking order, masks and picture-in-picture. Express
+positioning as named screen zones plus exact pixels or percentages, with
+user-selected output aspect ratios and safe areas.</li>
+<li><strong>VID-008 — Titles and overlays:</strong> Fully
+keyboard-editable static and animated titles, lower thirds, intro/outro
+cards, watermarks, callouts, arrows, numbered highlights, focus boxes,
+blurs/redactions, subtitles and credits. Template selection must expose
+font, size, position, contrast, timing and safe-area properties through
+accessible fields.</li>
+<li><strong>VID-009 — Transitions:</strong> Cut, dissolve, dip/fade,
+wipe and configurable transition durations, plus transitions between
+audio tracks and sequences. Recalculate timeline duration and validate
+overlap/handles. The editor must explain a transition’s before/after
+frames and which clips it affects.</li>
+<li><strong>VID-010 — Effects:</strong> Brightness, contrast,
+saturation, white balance, color correction, sharpening, blur,
+stabilization when supported, speed/reverse, freeze frame, chroma key,
+noise cleanup and privacy blur. Provide presets with readable
+explanations, numeric controls and an effects bypass A/B test. Never
+claim that automatic visual correction has been definitively proven by
+AI alone.</li>
+<li><strong>VID-011 — Keyframes:</strong> Accessible keyframe list per
+property with timestamp, easing curve, numeric value, interpolation type
+and next/previous navigation. Offer operations to add/copy/move/delete
+keyframes and preview motion via descriptive before/middle/after
+snapshots. Include safe motion and flashing warnings.</li>
+<li><strong>VID-012 — Zoomed demos:</strong> Keyboard-select an
+application panel or OCR/UIA element, animate a crop/zoom following the
+selected region, and expose actual coordinates and zoom ratio. Validate
+that the target remains inside the final crop over sampled frames;
+report uninspected intervals rather than asserting full coverage.</li>
+<li><strong>VID-013 — Color and export:</strong> Explicit aspect ratio,
+orientation, frame rate, bitrate/quality mode, codec/container, audio
+layout, HDR/SDR metadata where supported; provide meaningful defaults
+for demonstrations, courses, presentations and short-form media. Verify
+actual rendered properties using an independent probe of the output
+file.</li>
+</ul>
+<h3 id="10b3-audio-spoken-narrative-and-captions">10B.3 Audio, spoken
+narrative and captions</h3>
+<ul>
+<li><strong>VID-014 — Embedded professional audio:</strong> Every video
+project supports multiple isolated audio tracks, microphone narration,
+screen-reader-demonstration audio where intentionally routed, guest
+audio, music, ducking, fades, equalization, noise reduction, loudness
+targeting, limiting, channel mapping and stem export. Reuse the
+application’s common audio mixer; don’t create a second competing sound
+engine.</li>
+<li><strong>VID-015 — Record narration into a timeline:</strong>
+Punch-in/punch-out, countdown or optional silent haptic/visual count-in,
+takes, retakes, voice-over replacement, automatic gap alignment,
+prerecorded narration and local recording in parallel. Rehearse and
+verify private-vs-program mix before any take.</li>
+<li><strong>VID-016 — Transcript-driven editing:</strong> Search
+speaker-labeled transcripts; navigate from text to timecode, remove
+approved ranges, locate fillers/silences and propose edits. All edits
+are presented as a reviewable list and confirmed against the resulting
+media; transcript confidence and known omission risks must be
+shown.</li>
+<li><strong>VID-017 — Caption workstation:</strong> Automatic draft
+captions with manual correction; SRT/VTT import/export; caption lanes,
+segmentation, readable timings, speaker labels, terminology glossary and
+caption placement. Check overlap, missing durations, excessive reading
+speed and uncovered speech regions; speech-to-text output alone does not
+establish caption accuracy.</li>
+<li><strong>VID-018 — Audio description:</strong> Author or generate
+candidate descriptions with reserved narration gaps, independent
+audio-description track, ducking and language variants. Verify presence,
+timing and mix levels objectively; semantic adequacy requires
+review.</li>
+</ul>
+<h3
+id="10b4-ai-as-a-controllable-assistant-not-an-invisible-editor">10B.4
+AI as a controllable assistant, not an invisible editor</h3>
+<ul>
+<li><strong>VID-019 — Ask what is visible:</strong> For any frame or
+bounded time span, return a structured description identifying text,
+windows, controls, foreground objects, cursor location, framing,
+relative placement and possible occlusions. Combine OCR, accessibility
+tree/UIA evidence and image analysis when available; label evidence
+provenance and uncertainty.</li>
+<li><strong>VID-020 — Compare visual states:</strong> Summarize
+before/after edits; compare source frame to final render and report text
+clipping, missing controls, aspect/crop changes, unintended overlays,
+transitions and likely blank/black frames. Explicitly distinguish
+full-frame deterministic checks from sampled or model-inferred
+checks.</li>
+<li><strong>VID-021 — Propose, preview, approve:</strong>
+Natural-language requests such as “find when I open Settings, remove 15
+seconds of inactivity, zoom to the settings panel, add a title and
+verify it” must resolve to a previewable edit plan with timecodes,
+target tracks, effects, uncertainties and rollback. Require approval
+before content deletion, audio rerouting, broadcasting or
+publishing.</li>
+<li><strong>VID-022 — Local/cloud choice:</strong> Support configured AI
+services with clear local vs cloud indicators, consent before uploading
+frames/transcripts, redaction options, resource-use estimates and
+graceful offline fallback. No fabricated report that an entire video was
+visually examined when only samples were inspected.</li>
+<li><strong>VID-023 — Reusable templates:</strong> Demonstration,
+tutorial, lecture, podcast-with-video, music session and live-replay
+workflows with named scenes and standard intro/outro/caption/safe-area
+defaults. Templates cannot bypass accessibility or verification
+gates.</li>
+</ul>
+<h3
+id="10b5-preflight-and-proof-of-outcome-before-and-after-editing">10B.5
+Preflight and proof of outcome: before and after editing</h3>
+<ul>
+<li><strong>VID-024 — Trial-run first:</strong> Before long recording,
+offer a short end-to-end rehearsal of the exact intended
+screen/window/camera, audio stems and routing, scenes, microphone
+levels, narration, captions and sample encode. Playback and describe
+representative frames; prompt for fixes, apply safe reversible fixes and
+<strong>retest the captured result</strong>. Always state residual
+uncertainty.</li>
+<li><strong>VID-025 — Edit preflight:</strong> Detect offline/missing
+source media, incompatible frame rates, broken links, silent/overloaded
+tracks, wrong output geometry, caption drift, unsafe title bounds and
+inadequate disk headroom. Offer one-action safe repairs; explain and
+guide through anything requiring user consent or Windows
+configuration.</li>
+<li><strong>VID-026 — Render verification:</strong> On export, decode
+the complete file to check for corruption and expected duration;
+validate frame dimensions, frame/sample rate, channel layout,
+black/frozen-frame candidates, A/V sync thresholds, unexpected silence,
+peak/loudness limits, caption coverage and metadata. Run targeted visual
+inspections on flagged and representative frames, not only the first
+frame. Produce a navigable <strong>Verified / Warning / Unknown /
+Failed</strong> report with per-claim evidence and tests performed.</li>
+<li><strong>VID-027 — Privacy gate:</strong> For demonstrations, detect
+likely unintended private notifications, account details and
+screen-reader speech leakage in sampled material. Warn that absence of a
+detection is <strong>not</strong> proof of absence; require manual
+confirmation or stronger controls for sensitive productions. Never
+silently transmit captured screen data.</li>
+<li><strong>VID-028 — Accessible final review:</strong> Provide a
+chapter/scene inventory, timecoded descriptions, text extracted from
+captured visuals, a transcript, track and cue inventory, sampled frame
+audit, and A/B render comparison. Explain which intervals were
+machine-checked exhaustively and which judgments were sampled or
+AI-assisted. Allow rechecking a specific time span on demand.</li>
+<li><strong>VID-029 — Publishing gate:</strong> Do not display an
+unconditional “perfect” or “100% verified” status. Separate technical
+validation from semantic/aesthetic claims and user sign-off. Publishing
+confirms destinations, file integrity and returned server receipts when
+available; successful ingest does not prove all viewers received the
+content.</li>
+</ul>
+<h3 id="10b6-keyboard-workflows-and-stable-layout">10B.6 Keyboard
+workflows and stable layout</h3>
+<ul>
+<li><strong>VID-030 — Workspace:</strong> Entry via <strong>Create &gt;
+Edit Video</strong>, main project bin, track list, clip inspector,
+preview-information panel, Verification Center and existing status bar.
+Preserve legacy starting focus, Ctrl+Shift+P and F6 status semantics.
+Navigation between regions must be predictable, with focus restored
+after dialogs.</li>
+<li><strong>VID-031 — Structured timeline:</strong> Up/Down change
+tracks or rows; Left/Right move through clips or frames in an explicit
+navigation mode; Enter opens clip actions; context menu lists every
+operation; text fields handle precise time values. Provide a
+discoverable mode indicator, keyboard shortcut reference and editable
+shortcuts without collisions with JAWS/NVDA/Narrator.</li>
+<li><strong>VID-032 — Feedback:</strong> Commands announce action and
+its effect (“trimmed clip 3 by 2.5 seconds; project now 4 minutes 12
+seconds”); current selection and absolute/relative position available on
+demand. Important messages available in status history and braille.
+Never stream every-frame descriptions unsolicited.</li>
+<li><strong>VID-033 — Tray controls:</strong> While recording,
+rendering, or verifying, tray reports progress, pause/resume, safe stop,
+last error, and currently active privacy/program buses. Work may
+continue minimized when safe; long tasks must be cancellable and
+resumable where practical.</li>
+<li><strong>VID-034 — Recovery:</strong> Autosave prior to structural
+edits and at safe intervals; crash restoration must open with an
+accessible review of recovered edits, orphaned takes and media files.
+Recovery must never silently overwrite a successful prior render.</li>
+</ul>
+<h3 id="10b7-minimum-acceptance-scenarios">10B.7 Minimum acceptance
+scenarios</h3>
+<ol type="1">
+<li><strong>Blind timeline editing:</strong> With only a keyboard and
+JAWS, NVDA or Narrator, independently import a 30-minute screen
+recording with multiple audio stems; find a named dialog via transcript
+and visual inspection; cut a 15-second mistake; ripple close the gap;
+undo and redo; verify that the remaining audio/video still aligns.</li>
+<li><strong>Accessible composition:</strong> Add an opening title, lower
+third, privacy blur and picture-in-picture camera view; change every
+property numerically; produce a spoken description of each edited
+composition; verify text bounds and disclose sampled intervals.</li>
+<li><strong>Frame-precise effects:</strong> Add two transitions and
+keyframed zoom; traverse the effects/keyframe list, adjust
+time/value/easing, preview at each keyframe, and detect when a crop
+excludes an intended interface element.</li>
+<li><strong>Captioned tutorial:</strong> Generate caption drafts,
+correct words and timecodes without a mouse, run automated structural
+checks, export video with captions plus independent VTT/SRT, and examine
+coverage/uncertainty reports.</li>
+<li><strong>End-to-end verified render:</strong> Rehearse a short test
+before a 30-minute session, fix failed device/window/routing checks,
+record, edit, render, independently decode the complete export, compare
+output with the approved project, and identify any warnings before
+publishing.</li>
+<li><strong>Recovery and migration:</strong> Force-stop editing
+mid-operation; reopen to recovered project with no damaged original
+media, then open and use preexisting audiobook workspaces unchanged.
+Test portable and installed modes.</li>
+<li><strong>Low-resource behavior:</strong> On a supported 8 GB RAM
+machine, perform basic trim, captions review and standard export with
+progress and user-controlled preview quality; clearly report when costly
+effects or AI models need more resources.</li>
+</ol>
+<p><strong>Definition of done:</strong> All above scenarios pass with
+totally blind testers and documented assistive technologies; no
+workflow-critical mouse interaction, unlabeled custom control,
+inaccessible preview-only property, unexplained auto-edit or unverified
+success claim is accepted. Automated regression includes output probing,
+decoding, sample comparisons, keyboard command collisions and UI
+accessibility tests.</p>
+<h2 id="11-technical-design-and-component-boundaries">11. Technical
+design and component boundaries</h2>
+<p>Use the existing <code>quill.apps.studio</code> shared package,
+wxPython shell and shared data store. Introduce independently tested
+service boundaries, not a duplicated QUILL runtime:</p>
+<ul>
+<li><strong>StudioShell</strong>: wxPython windows, keyboard command
+registry, tray, native UIA, wizard/workspaces, command palette, progress
+and help.</li>
+<li><strong>ProjectService</strong>: manifests, durable asset database,
+edit lists, autosave, backups, old <code>.quilljob</code> import, paths
+and provenance.</li>
+<li><strong>AudioGraphService</strong>: device discovery,
+WASAPI/process-loopback/virtual cable adapters, buses, DSP, monitored
+outputs, stems, realtime recording helper.</li>
+<li><strong>CaptureService</strong>: Windows Graphics Capture /
+supported desktop APIs, screenshots, window/element binding,
+annotations, frame capture, privacy/exclusion policy.</li>
+<li><strong>TimelineService</strong>: synchronized audio/video,
+nondestructive edits, markers, versioned undo and deterministic
+renders.</li>
+<li><strong>IntelligenceService</strong>: OCR, UIA data, local/cloud
+ASR, vision providers, grounded Q&amp;A, scene description,
+caption/alt-text suggestions.</li>
+<li><strong>VerificationService</strong>: preflight/inflight/postflight
+objective assertions, evidence manifest, independent decoder probe,
+privacy test, risk reporting.</li>
+<li><strong>PublishingService</strong>: existing audiobook/podcast
+exports plus new audio/video/description packages; reuses the existing
+media conversion and shared QUILL services.</li>
+<li><strong>CrossAppContracts</strong>: stable serialized media asset
+handoff to QUILL Editor, Cast, Radio, Lite, Transcribe.</li>
+</ul>
+<p><strong>Engineering:</strong> Typed contracts, structured logs, crash
+recovery, no audio DSP on wx event loop, bounded queues, watchdog,
+UI-thread-only UI updates, lazy-loaded AI models, opt-in provider calls,
+Windows Credential Manager or equivalent secure storage, supported
+installer/portable flavors, subprocess sandboxing and process permission
+checks. Maintain license and distribution compliance for the existing
+media processing stack and any bundled dependencies. Avoid co-installing
+drivers without informed user action. Preserve existing media dependency
+license checks.</p>
+<h2 id="12-keyboard-model-and-discoverability-specification">12.
+Keyboard model and discoverability specification</h2>
+<p>Keep all established chords. Reserve a <strong>command
+registry</strong>, not scattered handlers, for new shortcuts. Propose,
+subject to conflict testing: <code>Ctrl+Shift+P</code> command palette
+(existing), <code>Ctrl+,</code> preferences (existing), <code>F1</code>
+contextual help, <code>F6</code> existing status access,
+<code>Ctrl+Alt+Shift+R</code> start/stop demo,
+<code>Ctrl+Alt+Shift+S</code> capture screenshot,
+<code>Ctrl+Alt+Shift+V</code> inspect current visual,
+<code>Ctrl+Alt+Shift+K</code> read verification, and user-configurable
+recording marker, mic/program mute and emergency stop. These are
+suggestions only—<strong>do not install untested shortcuts
+automatically</strong>. Screen reader pass-through and keyboard focus
+safety win over mnemonic cleverness. Every shortcut can be read from the
+menu and searched in a keyboard reference; conflicts identified with OS,
+other QUILL apps, screen readers and system-wide shortcuts.</p>
+<p>Examples of speech results: “Window Microsoft Edge, 1280 by 720,
+target visible; browser address bar not within crop; two possible
+notification overlays; capture ready with warnings.” “Recording started;
+screen and microphone active, JAWS private; VB-CABLE output verified by
+loopback.” “Export completed; audio, 2 minutes 41 seconds, captions
+present; 12 seconds may have clipped titles; verification needs
+review.”</p>
+<h2
+id="13-accessibility-privacy-and-reliability-nonfunctional-requirements">13.
+Accessibility, privacy and reliability nonfunctional requirements</h2>
+<ul>
+<li>No unannounced focus changes, background updates reordering focused
+rows, unlabeled icon-only controls, inaccessible custom scrollbars,
+drag-only editing or silent errors.</li>
+<li>Checkpoints and incremental recording segments to survive process
+crash/power loss where media APIs and storage permit. Atomic exports and
+safe recovery workflow.</li>
+<li>Audio processing and UI accessibility remain functional with cloud
+AI disconnected; explicitly degrade optional features.</li>
+<li>Guarantee no unsolicited capture/upload, screenshot sharing,
+microphone recording or public routing. Show live capture indicator;
+sensitive windows may be excluded by setting/policy.</li>
+<li>Provide text-based self-diagnostics that can be copied/sent with
+private fields redacted and user review. Logs include no raw transcript,
+keys, audio or screenshot without opt-in.</li>
+<li>Quantitative performance budgets and stress tests on 8GB/no-GPU
+Windows machines; document latency/dropped-frame targets <strong>only
+after hardware benchmarks</strong>, not guessed promises.</li>
+<li>JAWS, NVDA, Narrator and keyboard-only manual user testing required
+for every major workflow and migration.</li>
+</ul>
+<h2 id="14-priority-and-incremental-roadmap">14. Priority and
+incremental roadmap</h2>
+<p><strong>Phase 0 — Rename safely and preserve behavior:</strong>
+Name/UI/installer/tray metadata changes, no code forks,
+migration+regression suite, keyboard registry, baseline screenshots/AT
+tests, untouched three old journeys. Ship nothing until a user can
+upgrade and open old books/jobs.</p>
+<p><strong>Phase 1 — Verified recording foundation:</strong> Recorder
+shell and project format, source discovery, mic/system/process loopback,
+VB-CABLE detection and test wizard, private/program/stem buses, tray
+transport controls, short practice capture and Evidence Report v1. This
+has higher value than image generation first.</p>
+<p><strong>Phase 2 — Demonstration and capture:</strong>
+Window/screenshots, numerical cropping, OCR, AI visual inspector and
+grounded conversation, redaction, annotation, spoken screenshot
+dictation, demo recording, synchronized user narration, first-class
+export verification.</p>
+<p><strong>Phase 3 — Editing and production:</strong> Accessible
+multitrack editor, clip operations/effects, image/video timeline,
+text-driven visual callouts, reusable scenes, captions/transcripts,
+audio description, live carts and running order.</p>
+<p><strong>Phase 4 — Advanced creation and services:</strong> Webcam
+coach, richer visual editing/generation, streaming/publishing targets,
+app extensions, model/plugin adapters, deeper QUILL Radio/Cast
+interoperability.</p>
+<p><strong>Exit gates per phase:</strong> Reproduce existing behaviors;
+prove each new task with blind-user end-to-end scenario; accessible
+action coverage and logs; no private-audio leak in controlled test;
+deterministic report; installer/portable tests; undo/recovery;
+regression in Safe Mode and offline.</p>
+<h2 id="15-key-acceptance-scenarios">15. Key acceptance scenarios</h2>
+<h3 id="a-blind-presenter-creates-a-verified-software-demonstration">A.
+Blind presenter creates a verified software demonstration</h3>
+<ol type="1">
+<li>Start from QUILL Studio home → Create → Record a Demonstration,
+keyboard only.</li>
+<li>Select exact app by accessible window name and choose crop by window
+bounds; verify title/size and no unexpected overlap.</li>
+<li>Choose mic and application/process audio; select whether JAWS
+narration is explicitly part of demonstration; private studio cues
+excluded.</li>
+<li>Run 10-second test, review first/middle/last frames using OCR+AI and
+hear return mix; report pass/fail/uncertain separately.</li>
+<li>Record demo with hotkey marker, tray status, stop, review transcript
+and frames, repair an annotation by numerical position.</li>
+<li>Export MP4, SRT/VTT, transcript and Evidence Report; reopen file and
+check real streams, frame count, duration, levels and caption sync.</li>
+<li>Publish only after summary of verified/unverified attributes and
+explicit approval.</li>
+</ol>
+<h3 id="b-blind-podcaster-uses-vb-cable-with-private-cues">B. Blind
+podcaster uses VB-CABLE with private cues</h3>
+<ol type="1">
+<li>Guided mapping identifies CABLE Input as QUILL output and CABLE
+Output as receiver input; source and destination are read as words.</li>
+<li>Play isolated test tone, test downstream capture and report
+dropouts/levels.</li>
+<li>Route mic, music, remote call to program and stems;
+screen-reader/studio announcements go private.</li>
+<li>Capture a rehearsal; verify expected program signal and that
+dedicated test cue is absent from program output.</li>
+<li>On cable/device disconnect, recording fails safe, reports exact
+problem, preserves recoverable stems and offers tested reconnection
+steps.</li>
+</ol>
+<h3 id="c-blind-creator-captures-annotates-and-verifies-an-image">C.
+Blind creator captures, annotates and verifies an image</h3>
+<ol type="1">
+<li>Trigger capture, pick application/window/element via keyboard,
+inspect OCR/UIA and detected crop boundaries.</li>
+<li>Add callout to element by its accessible name, not mouse drag; edit
+offset and dimensions numerically.</li>
+<li>Ask AI what is visible and compare original with new render,
+preserving uncertainty.</li>
+<li>Export PNG plus description, alt text and evidence report; verify
+intended resolution, dimensions, text position checks, and absence of
+known redactions failures.</li>
+</ol>
+<h3 id="d-upgrade-and-legacy-continuity">D. Upgrade and legacy
+continuity</h3>
+<ol type="1">
+<li>Upgrade Audio Studio 1.0 or prerelease 2.2 config to QUILL Studio
+without clearing <code>%APPDATA%\Quill</code>.</li>
+<li>Open old library, run legacy Narrate Documents, Build From
+Recordings, Edit a Book and existing shortcuts.</li>
+<li>Check command palette, status bar F6, tray, sleep timer, play queue,
+engines, offline/portable data and Safe Mode.</li>
+<li>Roll back a failed upgrade with user projects, voices and books
+intact.</li>
+</ol>
+<h2 id="16-open-design-decisions-requiring-engineering-tests">16. Open
+design decisions requiring engineering tests</h2>
+<ul>
+<li>Exact supported Windows API and build matrix for process loopback
+and window capture, audio exclusions, hardware GPU requirement and DRM
+behavior.</li>
+<li>Whether a chosen virtual cable allows external receiver
+monitoring/probing without introducing echo or temporary public leakage;
+include isolated test mode.</li>
+<li>Licensing, attribution and redistribution compliance for existing
+packaged dependencies, without introducing additional named third-party
+tools into the product workflow.</li>
+<li>Live streaming integration interfaces per destination; don’t promise
+guaranteed per-app injection or per-participant capture.</li>
+<li>AI providers, model sizes, CPU 8GB suitability, OCR accuracy, camera
+guidance frequency and privacy terms.</li>
+<li>Precise keyboard assignments and screen-reader conflicts measured
+with NVDA, JAWS and Narrator.</li>
+<li>Consistent current macOS support and compatibility for existing
+journeys as Windows-specific capture expands.</li>
+<li>Project schema and shared-service release policy across
+independently updated QUILL apps.</li>
+</ul>
+<h2 id="17-development-backlog-issue-ready-epics">17. Development
+backlog, issue-ready epics</h2>
+<table>
+<caption>Table: 17. Development backlog, issue-ready epics</caption>
+<thead>
+<tr>
+<th scope="col">Epic</th>
+<th style="text-align: right;" scope="col">Phase</th>
+<th scope="col">Essential done criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">STUDIO-RENAME</th>
+<td style="text-align: right;">0</td>
+<td>Name changes without broken profiles, books, jobs or shortcuts</td>
+</tr>
+<tr>
+<th scope="row">STUDIO-SHELL</th>
+<td style="text-align: right;">0</td>
+<td>Legacy library initial focus, F6/status, menu and command palette
+stable</td>
+</tr>
+<tr>
+<th scope="row">STUDIO-KEYS</th>
+<td style="text-align: right;">0</td>
+<td>Searchable, configurable, collision-tested keyboard registry</td>
+</tr>
+<tr>
+<th scope="row">STUDIO-TRAY</th>
+<td style="text-align: right;">1</td>
+<td>Recording/status/scene/mute reachable from tray and keyboard without
+focus loss</td>
+</tr>
+<tr>
+<th scope="row">STUDIO-ROUTING</th>
+<td style="text-align: right;">1</td>
+<td>Isolated stems and private/program buses; independent routing
+test</td>
+</tr>
+<tr>
+<th scope="row">STUDIO-VBCABLE</th>
+<td style="text-align: right;">1</td>
+<td>Endpoint wizard, readable directionality, test audio, recovery</td>
+</tr>
+<tr>
+<th scope="row">STUDIO-RECORD</th>
+<td style="text-align: right;">1</td>
+<td>Crash-resilient capture, timing and media decode QA</td>
+</tr>
+<tr>
+<th scope="row">STUDIO-VERIFY</th>
+<td style="text-align: right;">1</td>
+<td>Evidence manifest and explicit Verified/Unknown/Failed
+reporting</td>
+</tr>
+<tr>
+<th scope="row">STUDIO-SNIP</th>
+<td style="text-align: right;">2</td>
+<td>Keyboard numerical crop, named-window screenshot and redaction</td>
+</tr>
+<tr>
+<th scope="row">STUDIO-VISION</th>
+<td style="text-align: right;">2</td>
+<td>OCR+UIA+AI grounded questions, artifact provenance and
+uncertainty</td>
+</tr>
+<tr>
+<th scope="row">STUDIO-DEMO</th>
+<td style="text-align: right;">2</td>
+<td>Narrated screen demonstration, private speech policies,
+review/edit/export</td>
+</tr>
+<tr>
+<th scope="row">STUDIO-EDIT</th>
+<td style="text-align: right;">3</td>
+<td>Nonvisual multitrack edit with reversible effect/region
+operations</td>
+</tr>
+<tr>
+<th scope="row">STUDIO-VIDEO</th>
+<td style="text-align: right;">3</td>
+<td>Professional accessible NLE with precise multitrack edits, effects,
+captions and verification</td>
+</tr>
+<tr>
+<th scope="row">STUDIO-VIDEO-EDIT</th>
+<td style="text-align: right;">3</td>
+<td>Ripple/roll/slip/slide edit operations, frame-precise navigation,
+nondestructive undo/redo</td>
+</tr>
+<tr>
+<th scope="row">STUDIO-VIDEO-COMPOSE</th>
+<td style="text-align: right;">3</td>
+<td>Picture-in-picture, numeric crop/position, titles, lower thirds,
+transitions and keyframes</td>
+</tr>
+<tr>
+<th scope="row">STUDIO-VIDEO-AI</th>
+<td style="text-align: right;">3-4</td>
+<td>Timecoded visual inspection, proposed edit plans with human approval
+and provenance</td>
+</tr>
+<tr>
+<th scope="row">STUDIO-VIDEO-QA</th>
+<td style="text-align: right;">3</td>
+<td>Full-file decode, AV sync, caption and output validation, honest
+uncertainty report</td>
+</tr>
+<tr>
+<th scope="row">STUDIO-LIVE</th>
+<td style="text-align: right;">1</td>
+<td>Live workspace, accessible cart wall, preview, running order and
+public bus</td>
+</tr>
+<tr>
+<th scope="row">STUDIO-ON-AIR</th>
+<td style="text-align: right;">1</td>
+<td>Offline/test/armed/live/reconnect states, independent output health
+and tray commands</td>
+</tr>
+<tr>
+<th scope="row">STUDIO-RADIO-STREAM</th>
+<td style="text-align: right;">1</td>
+<td>Icecast/SHOUTcast secure source-client streaming, metadata, loopback
+and recovery</td>
+</tr>
+<tr>
+<th scope="row">STUDIO-YOUTUBE-LIVE</th>
+<td style="text-align: right;">2</td>
+<td>Authenticated or stream-key video ingest, private rehearsal and
+audience chat where authorized</td>
+</tr>
+<tr>
+<th scope="row">STUDIO-TEAMS</th>
+<td style="text-align: right;">2</td>
+<td>Policy-aware RTMP/SRT event ingest plus permitted meeting-presenter
+routing</td>
+</tr>
+<tr>
+<th scope="row">STUDIO-ZOOM</th>
+<td style="text-align: right;">2</td>
+<td>Permission-aware meeting audio/video paths, optional later SDK
+integration</td>
+</tr>
+<tr>
+<th scope="row">STUDIO-LIVE-CHAT</th>
+<td style="text-align: right;">2</td>
+<td>Stable keyboard list, private notifications, moderation and explicit
+on-air reading</td>
+</tr>
+<tr>
+<th scope="row">STUDIO-PUBLISH</th>
+<td style="text-align: right;">3</td>
+<td>Media/accessibility bundles and strict publish gate</td>
+</tr>
+<tr>
+<th scope="row">STUDIO-CAMERA</th>
+<td style="text-align: right;">4</td>
+<td>Blind framing coach with incremental rechecks</td>
+</tr>
+</tbody>
+</table>
+<h2 id="18-requirements-trace-and-notable-gaps-found">18. Requirements
+trace and notable gaps found</h2>
+<p><strong>Already documented in today’s product artifacts:</strong>
+Book-centered library; wizard; narration and assembly; chapter
+workbench; speech/voice engine sharing; source converter; ACX analysis;
+publishing; tray and close policy; configurable Studio app sounds;
+command palette; status bar with F6; accessible announcements and
+braille; portable/shared runtime. These must remain.</p>
+<p><strong>Expanded PRD already anticipated:</strong> Audio graph,
+independent monitoring, optional virtual cable, screen reader isolation,
+video/capture, advanced editing, AI, screen annotation, live playout,
+accessibility acceptance. These are not assumed already shipping.</p>
+<p><strong>Live broadcasting extended:</strong> Native YouTube Live,
+Icecast/SHOUTcast, Zoom and Teams destination workflows; chat/Q&amp;A
+and guest paths; transport/permissions distinctions; rehearsals, safe
+automatic repair, live monitoring, private/program mix isolation,
+simultaneous archival recording and verifiable output evidence.</p>
+<p><strong>Expanded full video editing:</strong> Nondestructive
+professional nonlinear editing, structured screen-reader timeline,
+slip/slide/ripple/roll, effects, keyframes, picture-in-picture,
+transcript editing, captions, audio description, AI-assisted proposals,
+trial runs, independent export verification and detailed acceptance
+tests.</p>
+<p><strong>Newly made explicit here:</strong> Exact QUILL Studio rename;
+no breaking navigation; independent <em>verification center and graded
+evidence</em>; detailed VB-CABLE setup; assistant-powered visual
+comparison and evidence grounding; accessible
+captured-element/annotation positioning; guided narrated demonstrations;
+screenshots+dictation; persistent tray command model; concrete release
+gates and compatibility scenarios.</p>
+<h2
+id="19-supported-external-integration-and-self-contained-feature-policy">19.
+Supported external integration and self-contained feature policy</h2>
+<p><strong>VB-CABLE</strong> is the sole explicitly named optional
+third-party routing utility in the QUILL Studio user-facing
+specification. YouTube, Icecast, SHOUTcast, Zoom and Microsoft Teams are
+supported transmission/meeting destinations rather than recommended
+companion production software. Official reference: <a
+href="https://vb-audio.com/Cable/">VB-Audio VB-CABLE</a>. QUILL Studio
+must remain fully usable for basic capture, recording and editing when
+VB-CABLE is absent. Detect it when present; provide accessible routing
+configuration, test signals, loopback verification, clear installation
+guidance when requested, device-disconnect recovery and truthful
+privacy/isolation status. Never install or reroute the driver
+silently.</p>
+<p>All other functionality—including screenshot creation, OCR,
+annotations, screen/video capture, visual understanding, image
+generation workflows, audio mixing, transcription, command discovery,
+tray controls, video/audio conversion, guided rehearsal and
+remediation—must appear as native QUILL Studio tasks, not referrals to
+or comparisons with other products.</p>
+<p>The existing application’s internal runtime libraries, codecs and
+services may continue to be used where already implemented; their legal
+notices remain in engineering/build documentation. This policy removes
+named external-tool feature comparisons, not the obligation to document
+dependencies and licenses accurately.</p>
+<h2 id="20-final-product-direction">20. Final product direction</h2>
+<p>QUILL Studio should <em>feel like the familiar accessible audiobook
+application</em> until the user chooses a new production task. From
+there it becomes a complete accessible media workstation with precise
+audio routing, repeatable keyboard operation, independently interrogable
+visuals, optional AI assistance and <strong>evidence-backed
+outcomes</strong>. Protect existing users, design first for total
+blindness, and prefer auditable proofs over optimistic “looks good”
+claims.</p>
+<h2
+id="21-accepted-execution-order-and-current-implementation-ledger">21.
+Accepted execution order and current implementation ledger</h2>
+<p>The user has prioritized a small, verifiable screenshot milestone
+immediately after the rename, before video demonstration recording and
+optional sound. This execution order supersedes the order of the broad
+phase headings above without removing any longer-term requirement.</p>
+<p>The rename is committed on local main as <code>529884ec</code>.
+Preserve the existing installation, runtime, data and audiobook
+workflows. The screenshot milestone adds explicit named-window, display,
+full-desktop, active-window and numeric-region selection; configurable
+global screenshot hotkeys; local OCR; image-grounded AI conversation
+with rich editable prompt styles and user-defined prompts; and optional
+automatic AI following explicit connection-specific approval. It saves
+objective file evidence separately from uncertain model findings.</p>
+<p>Implementation and verification are tracked in <a
+href="./quill-studio-capture-milestone.md">the screenshot milestone and
+ecosystem review</a>. That ledger identifies what has been tested and
+what remains unverified. Do not mark the whole CAP, VIS or VERIFY epics
+complete based on this slice. In particular, real screen-reader
+acceptance, installed upgrade testing, live AI-provider runs,
+UIA-element and scrolling capture, annotation/redaction editing,
+video/audio routing and recorded-demo verification remain separate
+gates.</p>
+<p>Automatic AI must remain off by default, honor Safe Mode and AI Off,
+use a named approved provider/model/endpoint, stop unsent work when
+permission is revoked and never silently switch to a new provider or
+screenshot. Users may extend a preset, save a custom prompt, ask their
+own question and converse about the same image without recapturing their
+desktop.</p>
+</main>
+</body>
+</html>

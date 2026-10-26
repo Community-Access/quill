@@ -1,7 +1,6 @@
 # QUILL Studio -- Product Requirements
 
-Version 2.2.0 (the shared QuillVille family version; there is no Audio Studio
-2.0 or 2.1 -- see CHANGELOG.md)
+Version 2.0.0 (QUILL Studio; see CHANGELOG.md)
 
 ## 1. Product overview and mission
 
@@ -547,9 +546,8 @@ requirement, not a layer.
 - P-1. The Python entry point must be `quill-audio-studio =
   quill_audio_studio:main` (gui-script), a thin wrapper over
   `quill.apps.studio`; package `quill-audio-studio`, Python 3.13+. The
-  packaging version is the shared QuillVille family version (2.2.0), aligned
-  with Quill Radio and Quill Weather because the three install on one shared
-  runtime; releases remain independent per app.
+  packaging version is 2.0.0. Studio uses the shared QuillVille Runtime,
+  with its own application version and release schedule.
 - P-2. Release builds must exclude the heavy ML runtimes (faster-whisper,
   vosk, kokoro-onnx, onnxruntime, torch) and the large libraries the Studio
   never loads -- they install on demand into the shared engine-packs store, and

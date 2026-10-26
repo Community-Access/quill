@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QUILL Studio CHANGELOG</title>
+  <title>Changelog</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -180,45 +180,216 @@
       vertical-align: middle;
     }
   </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
 </head>
 <body>
-<header id="title-block-header">
-<h1 class="title">QUILL Studio CHANGELOG</h1>
-</header>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
-<p>All notable changes to QUILL Audio Studio are documented in this
-file.</p>
+<p>All notable changes to QUILL Studio are documented in this file.</p>
 <p>The format is based on <a
 href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>, and
 this project adheres to <a
 href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <h2 id="unreleased">Unreleased</h2>
+<h3
+id="screenshots-global-hotkeys-and-ai-inspection-2026-10-26-unreleased">Screenshots,
+global hotkeys and AI inspection (2026-10-26; unreleased)</h3>
 <ul>
-<li>Rename the application to <strong>QUILL Studio</strong>, preserving
-installer and launcher identities, shared data and existing audiobook
-workflows. Legacy context-help titles and command-line aliases remain
-supported.</li>
+<li><p><strong>Choose exactly what to capture.</strong> Select a named
+visible window with its title and process identity, an individual
+display, the full desktop across all displays, the active window after a
+delay, or a rectangle entered as Left, Top, Width and Height in physical
+pixels. Negative coordinates support displays left of or above the
+primary display. Refresh the target list without silently substituting a
+desktop capture for a missing target. Restore minimized windows before
+selecting them.</p></li>
+<li><p><strong>Delayed, immediate and repeat capture.</strong> Set a
+2-to-60-second delay and an absolute output folder, start, and cancel
+while capture is pending. Immediate commands capture the active window
+or full desktop. Repeat the last selected target with its chosen folder
+and delay. Completion is announced without moving focus away from the
+application being captured.</p></li>
+<li><p><strong>Configurable global screenshot hotkeys.</strong> Capture
+&gt; Screenshot global hotkeys offers active-window, full-desktop,
+repeat-last-target and cancellation actions while Studio is in the tray
+or another application is active. Assign or clear keys in the shared
+native manager. No global capture key is registered by default. Windows
+registration conflicts are reported, only successful registrations
+dispatch, unrelated apps’ saved bindings are preserved, keys are
+released on exit, and Safe Mode leaves global registration
+inactive.</p></li>
+<li><p><strong>Keyboard discovery.</strong> Every capture action is in
+the Capture menu and command palette, with app-scoped in-app shortcuts.
+Capture keeps the established library focus, audiobook journeys, F6
+status, preferences and existing menus. New native controls have
+accessible names and F1 help.</p></li>
+<li><p><strong>Capture the selected window rather than an unrelated
+desktop.</strong> Named windows use direct window-handle capture.
+Recheck process identity, display availability/layout and rectangle
+bounds. A closed, hidden or minimized window, changed identity,
+disconnected display, invalid rectangle, capture failure or dimension
+mismatch reports a failure instead of broadening the source. Shared
+legacy screen capture also rejects invalid target names and handles
+negative-monitor window rectangles.</p></li>
+<li><p><strong>PNG files and objective evidence.</strong> Save each
+screenshot with a unique PNG name. Reopen and fully decode the saved
+bytes; record dimensions, image format, byte count, SHA-256, timestamp,
+requested target and OS-reported source/bounds/backend metadata. Report
+uniform pixels as a possible capture problem. Save JSON and readable
+Markdown verification reports; keep privacy, completeness and visual
+correctness explicitly unverified. Successful file decoding does not
+prove that protected or GPU content was captured correctly.</p></li>
+<li><p><strong>Persistent native Screenshot Inspector.</strong> Review
+the source, hash, objective checks and selectable conversation in one
+keyboard-operable window. Open the latest screenshot or reopen a saved
+PNG; recover prior saved observations only when the sidecar’s image hash
+matches. Copy the image to the clipboard, save an updated evidence
+report or export a text description and conversation.</p></li>
+<li><p><strong>Offline OCR.</strong> Read screenshot text through
+QUILL’s existing local OCR service. Show recognition confidence only
+when the backend supplies it, and state when it is unavailable. OCR
+errors are visible and announced; uncertain recognition does not become
+a verified claim. This slice does not derive keyboard semantics or UIA
+element positions from pixels.</p></li>
+<li><p><strong>Seven rich screenshot prompt presets.</strong>
+Orientation and overview; controls and navigation; exact
+text/errors/tables; framing and capture problems; possible sensitive
+information; alt text and extended description; and chart/diagram
+explanation. Also use the existing shared image styles and your saved
+custom prompts. Edit or extend prompt instructions, ask your own
+separate question, and add/edit/delete reusable prompts through Manage
+prompts.</p></li>
+<li><p><strong>Chat about the intended screenshot.</strong> Ask
+follow-up questions in the same conversation. Each request uses the
+reviewed image’s exact bytes and prior observations, not a fresh capture
+of whichever application is now active. Hash-check a private temporary
+snapshot before sending and remove it afterward. Changed files are
+rejected. Replies arrive asynchronously without closing the chat,
+questions remain editable while waiting, duplicate sends are guarded,
+and failures preserve the screenshot and conversation.</p></li>
+<li><p><strong>Configured AI providers.</strong> Screenshot AI uses
+QUILL’s shared AI connection settings, model selection,
+provider-specific credentials and vision transport: OpenAI, Google
+Gemini, Anthropic Claude, OpenRouter, Ollama (local or cloud), and
+compatible custom endpoints. Select the provider and an image-capable
+model through the shared AI setup. Studio does not require Ollama or
+maintain a separate provider configuration. Provider/model image support
+still applies; a text-only model cannot inspect screenshots. Changing
+the connection pauses previously approved automatic uploads.</p></li>
+<li><p><strong>Explicit AI sharing and Safe Mode.</strong> Manual AI
+requests identify the effective provider, model and endpoint and ask
+before transmitting the complete image. There is no automatic redaction.
+A sensitive-information prompt reviews an image already sent to that
+provider and cannot certify safe sharing. AI Off and Safe Mode block AI
+requests while local capture, OCR and file checks remain available.
+Closing chat cancels unsent work; already sent requests may
+finish.</p></li>
+<li><p><strong>Optional automatic AI.</strong> Off by default. A
+separate approval covers future user-triggered Studio screenshots,
+including full-desktop capture and globally triggered screenshots. Save
+the chosen automatic prompt and any edited instructions. Bind approval
+to the effective provider/model/endpoint; pause on connection changes.
+Recheck permission, cancellation and AI availability before queued
+uploads. Disable future/unsent automatic work without claiming to recall
+images already sent. Background results remain associated with their
+screenshot and are available in its inspector and evidence
+report.</p></li>
+<li><p><strong>Shared architecture and documented acceptance.</strong>
+Reuse QUILL’s existing OCR, provider transport, credential storage,
+prompt library, announcements, task manager, hotkey manager and atomic
+storage. Add target/privacy/grounding tests and an opt-in real Windows
+test that captures only its own named fixture window and checks expected
+pixels. This is an implementation milestone, not a published release or
+a claim of live-model or screen-reader certification.</p></li>
+<li><p><strong>Still pending.</strong> JAWS/NVDA/Narrator/braille
+acceptance; live-provider, mixed-DPI, installer/portable and resource
+testing; UIA-element and scrolling/sequence capture;
+annotation/redaction editing and screenshot comparison; and the later
+video demonstration with optional sound. None is represented as already
+delivered by this milestone.</p></li>
+<li><p>Rename the application to <strong>QUILL Studio</strong>,
+preserving installer and launcher identities, shared data and existing
+audiobook workflows. Legacy context-help titles and command-line aliases
+remain supported.</p></li>
 </ul>
 <h3 id="fixed">Fixed</h3>
 <ul>
 <li><strong>Alt+B opens the Book Tools menu again</strong> (2026-10-17).
-The main window's <strong>Build From Recordings...</strong> button also
+The main window’s <strong>Build From Recordings…</strong> button also
 claimed Alt+B, and when a button and a top-level menu share a letter
 Windows presses the button, so Alt+B started a new book instead of
 opening Book Tools. The button is now <strong>Build From
-&amp;Recordings...</strong>, Alt+R, and Alt+B opens Book Tools. For
+&amp;Recordings…</strong>, Alt+R, and Alt+B opens Book Tools. For
 example, from the books list press Alt+B, then Down, to walk the Book
 Tools menu, or Alt+R to start the Build From Recordings journey; Studio
-&gt; Build From Recordings... (Ctrl+Shift+B) is unchanged. A new test
-builds the real main window and fails if any control takes a menu's
+&gt; Build From Recordings… (Ctrl+Shift+B) is unchanged. A new test
+builds the real main window and fails if any control takes a menu’s
 letter.</li>
 </ul>
-<h2 id="220---built-not-yet-released">[2.2.0] - built, not yet
+<h2 id="200---built-not-yet-released">[2.0.0] - built, not yet
 released</h2>
 <ul>
 <li><p><strong>The user guide explains the speech-recognition
-engines</strong> (2026-10-17). A new section, "Speech recognition: the
-engines that listen", says which features listen (Generate Captions
+engines</strong> (2026-10-17). A new section, “Speech recognition: the
+engines that listen”, says which features listen (Generate Captions
 (Offline), Ctrl+Shift+C, and Propose AI titles), the three engines and
 why you would choose each (Whisper.cpp, the default, which downloads the
 first time; the QUILL speech models such as Parakeet and Nemotron,
@@ -228,106 +399,103 @@ use a graphics card), how to download a model with Manage Speech Models
 worked captions example. Vosk is no longer offered for speech
 recognition.</p></li>
 <li><p><strong>Chapters for any recording</strong> (2026-10-16).
-<strong>Studio &gt; Find Chapters in a Recording...</strong>
-(<strong>Ctrl+Shift+R</strong>) picks any MP3, M4A or M4B -- a lecture
-or a meeting as much as a book -- and opens the Chapter Workbench on it
-with <strong>Propose chapters from silences</strong> already started.
-Proposals are titled "Proposed chapter 1, 2...", so a guess is never
+<strong>Studio &gt; Find Chapters in a Recording…</strong>
+(<strong>Ctrl+Shift+R</strong>) picks any MP3, M4A or M4B – a lecture or
+a meeting as much as a book – and opens the Chapter Workbench on it with
+<strong>Propose chapters from silences</strong> already started.
+Proposals are titled “Proposed chapter 1, 2…”, so a guess is never
 mistaken for a real title. If the recording has chapters of its own you
 are asked whether to keep them and add only new boundaries (the default)
 or replace them, and nothing is replaced silently. Press the button
 again (it reads <strong>Stop proposing chapters</strong>) to stop a
 scan; the list stays as it was. A long recording is given time to
-finish. The guide's "Chapters for a lecture, a meeting or any recording"
+finish. The guide’s “Chapters for a lecture, a meeting or any recording”
 walks through it.</p></li>
 <li><p><strong>Edit a Book opens again</strong> (2026-10-16). Studio
 asked the Chapter Workbench to carry its Sleep Timer and Play Queue
 keys, and the Workbench did not know how, so <strong>Edit a
-Book...</strong> stopped with an error before the window appeared. It
+Book…</strong> stopped with an error before the window appeared. It
 opens, and <strong>Ctrl+Shift+T</strong> and
 <strong>Ctrl+Shift+Q</strong> now work inside it.</p></li>
 <li><p><strong>The user guide now teaches the menus as they are</strong>
 (2026-10-16). Its keyboard reference said Alt+V opens the Voices menu.
 Alt+V opens the <strong>View</strong> menu (Show Status Bar); the Voices
-menu is <strong>Alt+I</strong>, the underlined letter in "Voices". For
+menu is <strong>Alt+I</strong>, the underlined letter in “Voices”. For
 example, to open the Speech Hub from the keyboard, press Alt+I and then
 H. The reference now lists both. The guide and this changelog also wrote
-<strong>App Sounds Play On...</strong> as if it were a submenu of
+<strong>App Sounds Play On…</strong> as if it were a submenu of
 Preferences; it is a button inside the Preferences window, so open
-<strong>Studio &gt; Preferences...</strong> (Ctrl+,) and Tab to it. No
+<strong>Studio &gt; Preferences…</strong> (Ctrl+,) and Tab to it. No
 menu changed.</p></li>
-<li><p><strong>FFmpeg's licence, checked on every build.</strong>
-FFmpeg's licence (the GNU General Public License, version 3) and the
+<li><p><strong>FFmpeg’s licence, checked on every build.</strong>
+FFmpeg’s licence (the GNU General Public License, version 3) and the
 note on where to get its source were already in the
 <code>tools\ffmpeg</code> folder beside FFmpeg. The build and the
 installer now stop if either is ever missing, so a release cannot ship
 FFmpeg without them.</p></li>
 <li><p><strong>Every release build checks its version against what is
 published</strong> (2026-10-15). The shared QuillVille runtime carries
-every app's version number, so a build of one app could make another
+every app’s version number, so a build of one app could make another
 report a version nobody can download yet, and Check for Updates would
-then never offer the real one. QUILL Audio Studio's release builds now
+then never offer the real one. QUILL Audio Studio’s release builds now
 run the same check Quill Radio, QUILL Lite, QUILL Cast and Quill Weather
 already did, and a build of every app at once checks them all again
 instead of stopping at an app it did not know.</p></li>
-<li><p><strong>Where Audio Studio's own sounds play, and Alt+Shift+M to
-turn them off.</strong> The <strong>App Sounds Play On...</strong>
-button in <strong>Studio &gt; Preferences...</strong> (Ctrl+,) offers
-System default, None (no sounds), or any sound card or headset by name.
-After a change one sound plays on the new card, so you hear where it
-went. If that card is unplugged the sounds play on the system default
-until it is back, and Audio Studio says so once.
-<strong>Alt+Shift+M</strong> turns Audio Studio's sounds off and back on
-where they were, and <strong>Studio &gt; App Sounds</strong> shows a
-check mark while they are on. Each QUILL app keeps its own choice;
-"Share these choices with my other Quill apps" keeps them in step. Your
-screen reader is never moved. Asked for on QUILLVille by Rick
-Lewis.</p></li>
+<li><p><strong>Where Audio Studio’s own sounds play, and Alt+Shift+M to
+turn them off.</strong> The <strong>App Sounds Play On…</strong> button
+in <strong>Studio &gt; Preferences…</strong> (Ctrl+,) offers System
+default, None (no sounds), or any sound card or headset by name. After a
+change one sound plays on the new card, so you hear where it went. If
+that card is unplugged the sounds play on the system default until it is
+back, and Audio Studio says so once. <strong>Alt+Shift+M</strong> turns
+Audio Studio’s sounds off and back on where they were, and
+<strong>Studio &gt; App Sounds</strong> shows a check mark while they
+are on. Each QUILL app keeps its own choice; “Share these choices with
+my other Quill apps” keeps them in step. Your screen reader is never
+moved. Asked for on QUILLVille by Rick Lewis.</p></li>
 <li><p><strong>Two downloads, nothing else</strong> (2026-10-11). QUILL
 Audio Studio now comes as the installer and the portable zip. The small
 Lite installer and the Companion zip are gone. If you used the Lite
 installer, take the installer; if you used the Companion zip, take the
 portable zip. Check for Updates already offers the right one.</p></li>
 <li><p><strong>Resume Last Book on Launch is Ctrl+Alt+F10</strong>
-(2026-10-05). It was Ctrl+Alt+Shift+R, Quill Radio's system-wide show
+(2026-10-05). It was Ctrl+Alt+Shift+R, Quill Radio’s system-wide show
 and hide key, so with Radio running the menu key never fired. A set-once
 preference belongs on an F-key past F9 (family rule 9).</p></li>
 </ul>
-<p>Audio Studio jumps from 1.0.0 to 2.2.0 with no 2.0 or 2.1 in between.
-On 2026-07-21 the standalone build shell was rebuilt from the shared
-QuillVille template and adopted the family version number, the same
-number Quill Radio (2026-07-24) and Quill Weather (2026-07-23) carry,
-because all of them now install and run on one shared runtime. The
-number is aligned; the releases are still independent.</p>
+<p>QUILL Studio 2.0.0 is the next Studio release after Audio Studio
+1.0.0. The previously unpublished 2.2.0 build is renumbered to 2.0.0 for
+the QUILL Studio rename. Shared-runtime compatibility does not require
+matching the other apps’ version numbers.</p>
 <p>This version is built but not yet published: Audio Studio is not
-offered in the QuillVille menu, and there is no 2.2.0 download page.
+offered in the QuillVille menu, and there is no 2.0.0 download page.
 Everything below is in the build.</p>
 <h3 id="added">Added</h3>
 <ul>
 <li><p><strong>Parakeet 3 in the transcription engine chooser.</strong>
-The shared speech stack gained NVIDIA's Parakeet 3 (25 languages,
+The shared speech stack gained NVIDIA’s Parakeet 3 (25 languages,
 automatic language detection, CPU-only, ~650 MB, downloaded SHA-verified
-from QUILL's own mirror), and Audio Studio's offline transcription sees
+from QUILL’s own mirror), and Audio Studio’s offline transcription sees
 it wherever engines are offered. Unlike Whisper-family engines it cannot
 invent text from silence — a transducer only emits words it actually
 heard — which matters for exactly the long, pause-heavy recordings a
 studio transcribes. Every model row in the manager now states its
-capabilities in plain language ("detects the spoken language; never
-invents text from silence") <em>before</em> you download, and a silence
+capabilities in plain language (“detects the spoken language; never
+invents text from silence”) <em>before</em> you download, and a silence
 pre-pass trims quiet lead-ins and tails from captured audio in the
-shared dictation flow. Full story: QUILL's changelog, "Dictation stops
-making things up".</p></li>
+shared dictation flow. Full story: QUILL’s changelog, “Dictation stops
+making things up”.</p></li>
 <li><p><strong>QUILL Audio Studio has its own icon.</strong> It used to
-ship a byte-identical copy of Quill Radio's broadcast-wave icon, carried
+ship a byte-identical copy of Quill Radio’s broadcast-wave icon, carried
 over when the standalone shell was scaffolded, so two products wore one
-face in the taskbar, in Alt+Tab and in the tray. Audio Studio's icon is
-now a three-bar waveform on a slate tile -- the same rounded shape and
+face in the taskbar, in Alt+Tab and in the tray. Audio Studio’s icon is
+now a three-bar waveform on a slate tile – the same rounded shape and
 amber accent as the rest of the QuillVille family, with its own
 silhouette and its own colour. The waveform was re-cut once before
 shipping: at 16x16 five bars merged into a solid slab, so there are
 three, with real gaps between them, which is what makes a waveform read
 as bars rather than as a block.</p></li>
-<li><p><strong>The QuillVille Runtime -- install Python once, and every
+<li><p><strong>The QuillVille Runtime – install Python once, and every
 Quill app starts instantly.</strong> Every QuillVille app (QUILL, Quill
 Radio, Quill Weather, and QUILL Audio Studio) now shares one Python
 runtime, the QuillVille Runtime, installed once per user and reused by
@@ -339,12 +507,12 @@ editions arrive that ride the shared runtime:</p>
 <ul>
 <li><strong>Companion edition</strong>
 (<code>QUILL-Audio-Studio-Companion-&lt;version&gt;.zip</code>, about 2
-to 3 MB) -- just the app and its docs. The first time you launch it, if
+to 3 MB) – just the app and its docs. The first time you launch it, if
 the QuillVille Runtime is not already installed, it offers to download
 and install it (about 230 MB, once) with a fully accessible progress
 bar; after that, this app and every other QuillVille app start
 instantly.</li>
-<li><strong>Thin installer</strong> (the <code>-Lite</code> setup) -- a
+<li><strong>Thin installer</strong> (the <code>-Lite</code> setup) – a
 tiny installer that downloads the shared runtime only if it is not
 already present, then installs the app.</li>
 <li>The <strong>full portable</strong> edition is now named
@@ -359,10 +527,10 @@ installs the shared runtime, if it is not already present, plus the
 app.</li>
 </ul></li>
 <li><p><strong>Accessible runtime downloads.</strong> Whenever the
-QuillVille Runtime is downloaded -- by an installer or by an app's own
-first launch -- it shows a fully accessible progress bar that works with
+QuillVille Runtime is downloaded – by an installer or by an app’s own
+first launch – it shows a fully accessible progress bar that works with
 NVDA, JAWS, and Narrator, announcing progress as a percentage.</p></li>
-<li><p><strong>Update in one click -- Audio Studio installs it and
+<li><p><strong>Update in one click – Audio Studio installs it and
 restarts itself.</strong> When an update is available, choose Download,
 then <strong>Install and restart now</strong>: Audio Studio applies the
 update (extracting the new portable files over your folder, or running
@@ -374,51 +542,51 @@ follow from the tray.</strong> The status bar is now arrow-navigable:
 press <strong>F6</strong> to move focus into it, Left and Right to move
 between cells, Enter to act on one, Escape or a second F6 to leave. Its
 cells are Activity, Progress, Sleep timer, Your books, and Time, so
-"what is going on right now" is always one key away instead of something
+“what is going on right now” is always one key away instead of something
 you have to guess at. The Progress cell carries a live narration or
-build run -- percentage, files, and the current step -- and the same
-text is written to the system-tray tooltip, so a long run stays
-reviewable with the window minimized. <strong>View &gt; Show Status
-Bar</strong> turns it on or off, and the choice is remembered.</p></li>
+build run – percentage, files, and the current step – and the same text
+is written to the system-tray tooltip, so a long run stays reviewable
+with the window minimized. <strong>View &gt; Show Status Bar</strong>
+turns it on or off, and the choice is remembered.</p></li>
 <li><p><strong>Convert Audio, right in the Studio.</strong>
-<strong>Voices &gt; Convert Audio...</strong> builds a queue of files
-and folders and converts them between formats -- MP3, M4A/M4B, Opus,
-Ogg, FLAC, WAV, AAC and more -- pulling the audio track out of video
-files (MP4, MKV, MOV, WebM and the rest) along the way. It uses the
-ffmpeg the Studio already bundles, so nothing new to install, nothing
-leaves your machine, and it works in Safe Mode. Ten presets cover the
-usual jobs (Just convert, MP3 at three bitrates, Podcast, Audiobook M4B,
-Voice memo, Web voice Opus, Archival FLAC, and Hearing-aid mono); the
-queue only ever offers formats your ffmpeg can actually encode, so a
-batch cannot die half way for a missing encoder; conversion runs off the
-UI thread with several workers, a real Cancel, and a spoken summary that
+<strong>Voices &gt; Convert Audio…</strong> builds a queue of files and
+folders and converts them between formats – MP3, M4A/M4B, Opus, Ogg,
+FLAC, WAV, AAC and more – pulling the audio track out of video files
+(MP4, MKV, MOV, WebM and the rest) along the way. It uses the ffmpeg the
+Studio already bundles, so nothing new to install, nothing leaves your
+machine, and it works in Safe Mode. Ten presets cover the usual jobs
+(Just convert, MP3 at three bitrates, Podcast, Audiobook M4B, Voice
+memo, Web voice Opus, Archival FLAC, and Hearing-aid mono); the queue
+only ever offers formats your ffmpeg can actually encode, so a batch
+cannot die half way for a missing encoder; conversion runs off the UI
+thread with several workers, a real Cancel, and a spoken summary that
 <strong>names the files that failed</strong> instead of quietly claiming
 success.</p></li>
 <li><p><strong>Advanced processing for a conversion.</strong> The
-converter's Advanced panel adds loudness normalization (Audiobook/ACX at
+converter’s Advanced panel adds loudness normalization (Audiobook/ACX at
 -20 LUFS or Podcast/streaming at -16 LUFS), gain, a high-pass filter,
 silence trimming, pitch-preserving tempo, a compressor, a night-mode
 leveler, fade in and fade out, and a safety limiter. Everything is off
 or neutral by default, so a plain conversion stays a plain
 conversion.</p></li>
 <li><p><strong>Convert from a link.</strong> <strong>Voices &gt; Convert
-from URL...</strong> takes a YouTube link (and the many other sites
-yt-dlp supports), downloads the audio, and drops it straight into the
+from URL…</strong> takes a YouTube link (and the many other sites yt-dlp
+supports), downloads the audio, and drops it straight into the
 converter. The downloader is never bundled: it installs on demand after
 a one-time consent and rights notice. Unavailable in Safe Mode.</p></li>
 <li><p><strong>Announcements now reach your braille display.</strong>
 Reported by a braille user: messages the Studio speaks never appeared in
-braille. The diagnosis was blunter than the report -- nothing had ever
+braille. The diagnosis was blunter than the report – nothing had ever
 been sent to a braille display at all. Braille is now routed at the same
 point as speech, so every message is covered at once. Three rules govern
 it: braille never costs speech (an unplugged display, a reader that
-rejects the call, a bridge without the capability all degrade to "spoke
-but did not braille", never to silence); nothing is truncated, because
+rejects the call, a bridge without the capability all degrade to “spoke
+but did not braille”, never to silence); nothing is truncated, because
 clipping would drop the end of the very thing you asked for; and an
 identical message inside two seconds does not steal the display twice,
 since a flash message replaces whatever is under your fingers. A burst
 of different messages no longer flickers past faster than cell one can
-be read -- the first message of a quiet period writes instantly, and
+be read – the first message of a quiet period writes instantly, and
 anything landing within the next 150 milliseconds settles to the newest
 rather than each shoving the last aside, with errors exempt and always
 written through at once.</p></li>
@@ -434,32 +602,32 @@ braille message is held back, whether an error sticks on the display
 instead of flashing past, whether the companion apps play sound cues,
 whether a cue stands in for speech while Quiet Mode is on, and which
 severities interrupt speech. They live in the store the Studio shares
-with QUILL, so setting them in QUILL's Preferences applies here
+with QUILL, so setting them in QUILL’s Preferences applies here
 too.</p></li>
 </ul>
 <h3 id="changed">Changed</h3>
 <ul>
-<li><strong>Fewer antivirus false positives.</strong> The app's launcher
+<li><strong>Fewer antivirus false positives.</strong> The app’s launcher
 is now a genuine, tiny native program, and the bundled Python is the
 official unmodified build. Earlier versions used a renamed and modified
-copy of Python's <code>pythonw.exe</code> as the launcher, which some
+copy of Python’s <code>pythonw.exe</code> as the launcher, which some
 antivirus tools flagged as a false positive. That pattern is completely
 gone, so the Quill apps are far less likely to be flagged.</li>
-<li><strong>Audio Studio is now built straight from QUILL's own
-source.</strong> The app used to be assembled from a copy of QUILL's
+<li><strong>Audio Studio is now built straight from QUILL’s own
+source.</strong> The app used to be assembled from a copy of QUILL’s
 audio code kept in a separate repository and re-synced by hand. It is
-now built directly from the QUILL package, so the Studio and QUILL's
+now built directly from the QUILL package, so the Studio and QUILL’s
 built-in Audio Studio can never drift apart and a fix upstream is in the
 next Studio build with nothing to copy across. Nothing changes for you
 except that the two stay in step.</li>
 <li><strong>Updates come from one place, per app.</strong> <strong>Help
-&gt; Check for Updates...</strong> now looks at the shared QUILL project
-releases and picks out Audio Studio's own download for the flavor you
+&gt; Check for Updates…</strong> now looks at the shared QUILL project
+releases and picks out Audio Studio’s own download for the flavor you
 run, so each Quill app updates on its own schedule without needing a
 repository of its own. An update to Quill Radio is never mistaken for an
 update to the Studio.</li>
-<li><strong>Piper voices download from the project's own
-mirror.</strong> All 39 Piper voices are now served from the project's
+<li><strong>Piper voices download from the project’s own
+mirror.</strong> All 39 Piper voices are now served from the project’s
 signed component mirror rather than a third-party model host, so voice
 downloads no longer depend on an outside service being up or reachable
 from your network.</li>
@@ -477,41 +645,41 @@ only the packaged documentation is optional.</li>
 </ul>
 <h3 id="fixed-1">Fixed</h3>
 <ul>
-<li><strong>Up is more on every slider.</strong> The player's Position
+<li><strong>Up is more on every slider.</strong> The player’s Position
 and Volume sliders answered Up with less, because a Windows slider on
-its own treats Up as "towards the start", the left end. A Quill Radio
+its own treats Up as “towards the start”, the left end. A Quill Radio
 listener reported the volume slider as backwards, and the fix is
 family-wide: Up and Page Up now raise every slider in every QuillVille
 app and Down and Page Down lower it; Left, Right, Home and End are
 unchanged (<code>quill/ui/slider_keys.py</code>, 2026-09-28, with a gate
 that fails the build for a new slider without it).</li>
 <li><strong>Kokoro narration no longer stops mid-run on a portable
-copy.</strong> A long, dense passage could overrun the neural model's
+copy.</strong> A long, dense passage could overrun the neural model’s
 input window; the Studio then fell back to a heavyweight code path that
-a portable copy does not carry, and reported "Kokoro voices need one
-more component" for a component you had already installed -- 29 chapters
+a portable copy does not carry, and reported “Kokoro voices need one
+more component” for a component you had already installed – 29 chapters
 into a run. The Studio now re-splits that one passage at safe boundaries
 and carries on, so a portable narration completes; the per-passage size
-limit is capped below the model's window everywhere it is used,
+limit is capped below the model’s window everywhere it is used,
 including translated editions; and when a passage genuinely cannot be
 synthesized the message names the real cause and where to find the
 report instead of pointing at a download you do not need.</li>
-<li><strong>A conversion's progress reaches the tray.</strong> Converter
+<li><strong>A conversion’s progress reaches the tray.</strong> Converter
 progress is reported through the same channel as a narration run, so it
-appears in the status bar's Progress cell and the tray tooltip rather
+appears in the status bar’s Progress cell and the tray tooltip rather
 than only inside the dialog.</li>
 </ul>
 <h2 id="100---2026-07-18">[1.0.0] - 2026-07-18</h2>
-<p>First release: the QUILL editor's Audio Studio as a self-contained
+<p>First release: the QUILL editor’s Audio Studio as a self-contained
 standalone app for Windows and macOS, screen-reader-first
 throughout.</p>
 <h3 id="added-1">Added</h3>
 <ul>
 <li>Standalone app frame (<code>quillas.apps.studio</code>): home window
-with the three journey buttons and a "Your books" library, menu bar,
+with the three journey buttons and a “Your books” library, menu bar,
 status bar with spoken 25/50/75 percent run milestones, system tray
 (Open Audio Studio, Resume last book), Ctrl+Shift+P command palette, and
-in-app update checks against this repo's GitHub releases.</li>
+in-app update checks against this repo’s GitHub releases.</li>
 <li>The Audio Studio wizard with three journeys: Narrate Documents
 (source/filters, engine + voice with previews, round-robin rotation,
 voice casting rules, translated editions, chapter shaping with title
@@ -520,13 +688,13 @@ MusicBrainz lookup, plain-sentence summary), Build From Recordings
 (folder of audio to one chaptered master, library mode, silence
 trimming, pre-build chapter review), and Edit a Book.</li>
 <li>The Chapter Workbench: chapter-aware player (mpv engine with
-wx.media fallback, resume positions, pitch-preserved speed, "Where am
-I?"), split at playhead, set start to playhead, merge, rename, restore,
+wx.media fallback, resume positions, pitch-preserved speed, “Where am
+I?”), split at playhead, set start to playhead, merge, rename, restore,
 silence-based chapter proposals, AI-proposed chapter titles (local
 transcription, text-only to the configured AI, reviewable), ACX check,
 chapter list import/export in five formats, split into per-chapter
 files, in-place MP3 saves and lossless M4B Save As.</li>
-<li>The listening layer: the home-window "Your books" library is a tree
+<li>The listening layer: the home-window “Your books” library is a tree
 (Favorites, In Progress, Recently Played, Inbox, plus your own folders)
 that populates as you open books, with a keyboard-complete context menu
 (Open, Reveal in Folder, Favorite, Move to Folder, New Folder, Remove)
@@ -552,7 +720,7 @@ Piper, Kokoro, eSpeak-NG, macOS say; ElevenLabs (installs on demand) and
 OpenAI/Gemini/ElevenLabs cloud voices with user-supplied keys. Speech
 Hub, Manage Speech Models, Pronunciation Dictionaries, Download Optional
 Components (with Test/Remove), and Get FFmpeg in the Voices menu. A
-"Generating preview, please wait" spoken cue for slow live previews (on
+“Generating preview, please wait” spoken cue for slow live previews (on
 by default).</li>
 <li>AI menu with the Set Up AI wizard (cloud provider with your own key,
 or local via Ollama) powering AI chapter titles, translated editions,
@@ -563,7 +731,7 @@ Manager storage, Auphonic mastering), Make a Podcast Feed From a Folder,
 ACX Compliance Check with plain-language recommendations, plus Sleep
 Timer, Play Queue, and Mute Playback.</li>
 <li><code>.quilljob</code> job files: save an exact run from the summary
-page; re-run it from Studio &gt; Open Job File or the wizard's first
+page; re-run it from Studio &gt; Open Job File or the wizard’s first
 page.</li>
 <li>Preferences (Ctrl+Comma): automatic update checks, Alt+F4-to-tray
 (opt-in), spoken run milestones, and the close-window policy (Ask when
@@ -587,5 +755,6 @@ portable zip, bundled ffmpeg and mpv; vendoring tooling
 <code>scripts/vendor_tests.py</code>) to re-sync from the QUILL
 monorepo; vendored unit test suite.</li>
 </ul>
+</main>
 </body>
 </html>

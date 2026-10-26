@@ -44,7 +44,12 @@ SNAPSHOT_PATH = REPO_ROOT / "tests" / "unit" / "ui" / "fixtures" / "studio_help_
 #: The Audio Studio UI surface -- the whole of the standalone Studio, and the
 #: same windows QUILL itself opens for audio production.
 _SCAN_DIRS: tuple[str, ...] = ("quill/ui/audio_studio",)
-_SCAN_GLOBS: tuple[str, ...] = ("quill/apps/studio.py",)
+_SCAN_GLOBS: tuple[str, ...] = (
+    "quill/apps/studio.py",
+    "quill/apps/studio_capture.py",
+    "quill/ui/studio_capture_dialog.py",
+    "quill/ui/studio_capture_chat.py",
+)
 
 #: Surface constructions whose titles the scan cannot resolve, with the
 #: reason they are fine. Keyed ``<module>::<qualname>``.

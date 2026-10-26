@@ -56,3 +56,25 @@ def test_unsupported_message_names_the_action() -> None:
     msg = sc._unsupported_message("Screen capture")
     assert msg.startswith("Screen capture is only available on Windows.")
     assert "Privacy & Security" in msg
+
+
+def test_invalid_target_does_not_fall_back_to_full_desktop(tmp_path):
+    with pytest.raises(sc.ScreenCaptureError, match="Unsupported capture target"):
+        sc.capture_screen(tmp_path, "typo")
+
+
+def test_window_on_negative_monitor_uses_all_displays(tmp_path, monkeypatch):
+    from PIL import Image, ImageGrab
+
+    monkeypatch.setattr(sc, "os", types.SimpleNamespace(name="nt"))
+    monkeypatch.setattr(sc, "_active_window_bbox", lambda: (-120, -20, 0, 100))
+    calls = []
+
+    def grab(**kwargs):
+        calls.append(kwargs)
+        return Image.new("RGB", (120, 120))
+
+    monkeypatch.setattr(ImageGrab, "grab", grab)
+    path = sc.capture_screen(tmp_path, "active_window")
+    assert path.is_file()
+    assert calls == [{"bbox": (-120, -20, 0, 100), "all_screens": True}]

@@ -22,6 +22,16 @@ from quill.core.keymap import DEFAULT_KEYMAP
 
 #: app id -> {command id: binding}.
 APP_KEYMAPS: dict[str, dict[str, str]] = {
+    "studio": {
+        "studio.capture": "Ctrl+Alt+Shift+S",
+        "studio.inspect_capture": "Ctrl+Alt+Shift+I",
+        "studio.cancel_capture": "Ctrl+Alt+Shift+X",
+        "studio.capture_hotkeys": "Ctrl+Alt+Shift+H",
+        "studio.capture_active": "Ctrl+Alt+Shift+F5",
+        "studio.capture_desktop": "Ctrl+Alt+Shift+F6",
+        "studio.capture_selected": "Ctrl+Alt+Shift+F4",
+        "studio.open_capture": "Ctrl+Alt+Shift+O",
+    },
     "radio": {
         # Quick-play favorites. These were Ctrl+Alt+Shift+1..0 in
         # DEFAULT_KEYMAP until 2026-09-16, when numbered tray paste took that

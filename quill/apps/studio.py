@@ -22,6 +22,7 @@ from pathlib import Path
 
 import wx
 
+from quill.apps.studio_capture import StudioCaptureMixin
 from quill.core.app_version import describe_version, installed_version
 from quill.core.audio_studio.book_prefs import (
     get_prefs,
@@ -77,7 +78,7 @@ except ImportError:  # pragma: no cover - non-Windows
 _TITLE = "QUILL Studio"
 #: Studio's own version, not QUILL's: About and Check for Updates both read it,
 #: and it must match standalone/studio (pyproject, installers) -- GATE-APPVER.
-_VERSION = "2.2.0"
+_VERSION = "2.0.0"
 _BUILD = 2  # this version's build (docs/release/RELEASE.md, "Build numbers")
 #: Shared components this app requires, for the component-refcount registry
 #: (ffmpeg for audio processing/export; mpv for the player preview).
@@ -225,7 +226,7 @@ def _await_playback(
     return False
 
 
-class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
+class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
     """The standalone QUILL Studio window."""
 
     #: Voices > Download Optional Components shows only what the audio workflow
@@ -260,6 +261,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         # Mode was a feature silently refusing when the user tried to use it.
         title = f"{_TITLE} (Safe Mode)" if safe_mode else _TITLE
         self._init_app_shell(title, safe_mode=safe_mode, size=(720, 540), app_id="studio")
+        self._apply_app_keymap("studio")
         # F1 context help with the Studio's authored purpose catalogue. The app
         # shell already activated the shared engine (provider + dialog-contract
         # hook + main-frame F1); this re-activation swaps in the Studio's
@@ -303,6 +305,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         self._build_menu_bar()
         self._build_main_panel()
         self._register_commands()
+        self._init_capture_hotkeys()
         self._ensure_tray_icon(self._build_tray_menu, tooltip=_TITLE)
         self._refresh_statusbar()
         # Media keys are grabbed system-wide only while a book is actually open
@@ -1045,6 +1048,8 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         # 2026-08-26 by tests/unit/ui/test_menu_bar_access_keys.py).
         menu_bar.Append(voices, "Vo&ices")
 
+        capture_bindings = self._append_capture_menu(menu_bar)
+
         ai = wx.Menu()
         ai_setup_id = wx.NewIdRef()
         ai.Append(
@@ -1090,6 +1095,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
 
         self.frame.SetMenuBar(menu_bar)
         bindings: list[tuple[object, Callable[[], None]]] = [
+            *capture_bindings,
             (open_id, self.open_studio),
             (narrate_id, lambda: self.open_studio("documents")),
             (narrate_translated_id, self.export_translated_speech),
@@ -1205,6 +1211,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         self._keep_menu_ids(studio_id, resume_id)
 
     def _register_commands(self) -> None:
+        self._register_capture_commands()
         for command_id, title, handler in (
             ("studio.open", "Open QUILL Studio...", self.open_studio),
             ("studio.narrate", "Narrate Documents...", lambda: self.open_studio("documents")),
@@ -2721,6 +2728,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         return "exit" if answer in (wx.YES, wx.ID_YES) else None
 
     def _studio_shutdown(self) -> None:
+        self._unregister_global_hotkeys()
         self._stop_active_voice_preview()
         self._task_manager.shutdown(wait=False)
         self._sleep_watcher.shutdown()

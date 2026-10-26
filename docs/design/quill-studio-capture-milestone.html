@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QUILL Studio: screenshot milestone and ecosystem review</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="quill-studio-screenshot-milestone-and-ecosystem-review">QUILL
+Studio: screenshot milestone and ecosystem review</h1>
+<p>Date: 2026-10-26. Status: implementation and verification ledger, not
+a release announcement.</p>
+<h2 id="agreed-sequence">Agreed sequence</h2>
+<p>The consolidated QUILL Studio PRD supplied for this work is the
+design baseline. The user’s immediate order takes precedence over the
+broad phase numbering: preserve the existing application, rename it,
+complete a useful screenshot/AI/verification journey, then build a
+recorded video demonstration with optional audio in small
+increments.</p>
+<p>The rename is committed on local main as <code>529884ec</code>.
+Capture work is developed separately. No release was published, no
+installed application was overwritten, and the target version is 2.0.0,
+renumbered from the unpublished 2.2.0 build at the user’s request.</p>
+<h2 id="ecosystem-boundaries-examined">Ecosystem boundaries
+examined</h2>
+<ul>
+<li><strong>Studio shell:</strong> <a
+href="../../quill/apps/studio.py">shared application</a>, <a
+href="../../quill/ui/audio_studio/">native audiobook UI</a>, library
+tree, initial focus, F6 status, tray, command palette, app preferences,
+update lookup and lifecycle. New capture commands enter through a
+separate mixin; the old journeys remain.</li>
+<li><strong>Audiobook state:</strong> <a
+href="../../quill/core/audio_studio/">library, history, queue and book
+preferences</a>, and <a href="../../quill/core/speech/job_file.py">job
+files</a>. Existing paths, stable identifiers, job format and voice
+configuration are retained. Capture does not migrate books or create a
+second audio engine.</li>
+<li><strong>Shared speech and media:</strong> <a
+href="../../quill/core/speech/">speech</a>, <a
+href="../../quill/core/audio/">audio</a>, <a
+href="../../quill/core/media/">media</a>, and publishing. Editor,
+Studio, Radio, Cast, Converter, Player and Transcribe use shared
+services in this package. Screenshot work neither records audio nor
+changes output devices or routing.</li>
+<li><strong>Existing visual services:</strong> <a
+href="../../quill/platform/windows/screen_capture.py">screen
+capture</a>, <a href="../../quill/io/ocr.py">local OCR</a>, <a
+href="../../quill/core/ai/vision.py">vision transport</a>, <a
+href="../../quill/core/ai/vision_prompts.py">vision prompts</a> and <a
+href="../../quill/ui/main_frame_image.py">Editor image commands</a>.
+Studio reuses these services and the configured provider’s credential
+storage; it does not deploy a separate model.</li>
+<li><strong>Accessibility and reliability:</strong> <a
+href="../../quill/core/announce/">announcement service</a>, <a
+href="../../quill/ui/app_shell.py">application shell</a>, dialog
+contracts, context help, <a
+href="../../quill/stability/task_manager.py">task manager</a>, atomic
+storage, cancellation and UI-lifetime guards. All new controls are
+native wx controls with text equivalents; image interpretation is never
+the only way to inspect file evidence.</li>
+<li><strong>Global keyboard services:</strong> <a
+href="../../quill/ui/main_frame_hotkeys.py">shared registration and
+dispatch</a>, <a href="../../quill/ui/global_hotkeys_dialog.py">hotkey
+manager</a>, app keymaps, and family chord inventories. Studio’s capture
+allowlist excludes arbitrary editor commands and does not take QUILL’s
+show/hide key. Inkwell’s existing hooks remain independent.</li>
+<li><strong>Companion apps:</strong> Beacon’s browser-content capture
+bridge is a different workflow and is not used as a screenshot upload
+channel. Social and other standalone wrappers are not imported into the
+Studio UI. Cross-app exchange continues through shared services and
+saved assets.</li>
+<li><strong>Packaging:</strong> <a
+href="../../standalone/studio/">standalone Studio</a>, <a
+href="../../scripts/build_native_launcher.py">native launcher
+registry</a> and <a href="../../quill/core/runtime_apps.py">runtime
+application registry</a>. The installer AppId, runtime ref id,
+application identity, executable/package names, release filenames and
+shared profile are intentionally stable. New display branding is not a
+second product installation.</li>
+</ul>
+<h2 id="implemented-screenshot-path">Implemented screenshot path</h2>
+<p>Capture offers named visible windows, individual displays, the full
+virtual desktop, an active window after a delay, and a rectangle entered
+as physical-pixel coordinates. Negative monitor coordinates are
+supported. Window labels include their title and process identity.
+Minimized windows require restoration. Refresh preserves target
+identity; a disappeared window does not silently become a desktop
+capture.</p>
+<p>Named windows use the window-handle backend. Display topology and
+window process identity are rechecked. Target loss, a disconnected
+display, invalid bounds, capture errors and incorrect rectangle
+dimensions are failures rather than reasons to broaden the capture.
+Protected or GPU-rendered content may still be blank despite a
+successful API call; uniform pixels are reported as evidence, not
+treated as proof of privacy or success.</p>
+<p>Screenshots receive unique PNG filenames. The image is reopened,
+fully decoded, measured and SHA-256 hashed. Verification reports are
+saved as JSON and readable Markdown. Clipboard copy and description
+export are explicit actions. Saved PNGs can be reopened for
+inspection.</p>
+<h2 id="ai-and-conversation">AI and conversation</h2>
+<p>Seven screenshot-specific prompt styles cover orientation, controls,
+text/errors/tables, framing problems, possible sensitive information,
+alt text and charts. The existing image prompt library remains
+available, including user-defined prompts. A user may edit the
+instructions and ask an independent question. Responses arrive
+asynchronously into the same native conversation window, without
+replacing the selected screenshot. Follow-ups use the same verified
+image snapshot and prior observations.</p>
+<p><strong>Configured AI providers.</strong> Screenshot AI uses QUILL’s
+shared AI connection settings, model selection, provider-specific
+credentials and vision transport: OpenAI, Google Gemini, Anthropic
+Claude, OpenRouter, Ollama (local or cloud), and compatible custom
+endpoints. Select the provider and an image-capable model through the
+shared AI setup. Studio does not require Ollama or maintain a separate
+provider configuration. Provider/model image support still applies; a
+text-only model cannot inspect screenshots. Changing the connection
+pauses previously approved automatic uploads.</p>
+<p>Manual AI requests require approval naming the effective provider,
+model and endpoint. Local OCR does not send an image to AI. Safe Mode
+and the global AI switch block AI while allowing local capture and
+verification. Confidence is shown only when the OCR backend supplies it;
+unavailable confidence is not invented.</p>
+<p>Automatic AI is off by default. Enabling it requires separate
+approval covering future user-triggered screenshots, including desktop
+captures. Consent is tied to the effective provider/model/endpoint.
+Changing that connection pauses automatic inspection. The saved
+automatic prompt can be updated explicitly. Permission, cancellation and
+the global AI switch are rechecked before a queued upload. Disabling
+automatic mode does not recall a request already sent.</p>
+<p>Each AI request uses a private temporary copy whose bytes match the
+reviewed screenshot hash. It does not recapture the screen or
+accidentally substitute the user’s newly active window. Temporary copies
+are removed on success or failure. AI findings remain unverified
+observations in exported reports.</p>
+<h2 id="global-screenshot-hotkeys">Global screenshot hotkeys</h2>
+<p>The Capture menu exposes a native global-hotkey manager for
+active-window capture, full-desktop capture, repeating the last selected
+target and cancelling a pending capture. Global capture keys are opt-in
+and configurable. Registration failures are reported, and only
+successfully registered keys dispatch. Registration is removed on exit.
+Immediate capture does not restore Studio before determining the active
+target.</p>
+<p>The ordinary in-app capture shortcuts are distinct from system-wide
+registration. No short key is silently claimed from another application
+by default. Real screen-reader and other-application conflicts still
+require the acceptance run below.</p>
+<h2 id="objective-checks-and-remaining-release-gates">Objective checks
+and remaining release gates</h2>
+<p>Automated checks cover saved-byte hashing and decode, corruption,
+replacement after review, stale window identity, disconnected displays,
+invalid/negative rectangles, window-backend selection, consent refusal,
+Safe Mode, global registration failures, editable prompt/question flow
+and image-grounded follow-ups. An opt-in Windows integration test
+creates its own native window, selects it by handle, captures it and
+checks expected pixel content. It captures only the fixture window.</p>
+<p>The rename also passed runtime/launcher identity, version
+consistency, legacy context-help and installer-identity checks. Existing
+library/resume and narration-wizard regressions were exercised. These
+checks are evidence of source behavior, not a claim that an installed
+upgrade was tested.</p>
+<p>Before release, complete and record:</p>
+<ol type="1">
+<li>JAWS, NVDA, Narrator and braille: source selection, numeric region,
+errors, conversation review, typing during responses, close/Escape focus
+return and global keys from another application.</li>
+<li>Actual mixed-DPI/multiple-monitor hardware, protected windows, GPU
+content, remote desktop and display disconnect while a capture is
+pending.</li>
+<li>Installer upgrade, rollback and portable runs with old
+books/jobs/voices; native launcher compilation and shortcut cleanup on
+both installation scopes.</li>
+<li>A user-approved live vision-provider run, supported-model errors,
+offline behavior, latency/cost review and long conversations. Automated
+tests use provider doubles and do not upload the user’s desktop.</li>
+<li>Windows OCR availability and recognition quality on representative
+real applications. OCR semantics and keyboard operability cannot be
+proved from image pixels.</li>
+<li>Resource measurements on the required 8 GB baseline and review of
+all accessibility/manual-verification comments.</li>
+</ol>
+<h2 id="explicitly-later-work">Explicitly later work</h2>
+<p>This slice does not close every CAP/VIS/VERIFY requirement in the
+full PRD. UIA-element capture, scrolling/sequence capture,
+redaction/annotation editing, visual zoom/crop editing and screenshot
+comparison remain separate work. Video recording,
+microphone/system/process audio routing, privacy isolation, rehearsal
+and audiovisual export verification are the next production milestone.
+No AI claim turns those pending checks into a verified result.</p>
+<h2 id="engineering-reference-research">Engineering reference
+research</h2>
+<p><a
+href="https://learn.microsoft.com/en-us/windows/powertoys/zoomit">ZoomIt
+documentation</a> provides useful references for scrolling capture/OCR,
+zoom and annotations, DemoType, DemoMirror, webcam overlays, recording
+and post-recording trimming. The <a
+href="https://github.com/microsoft/PowerToys/blob/main/src/modules/ZoomIt/ZoomIt/Zoomit.cpp">Windows
+source</a> identifies its license as MIT, and the <a
+href="https://github.com/microsoft/PowerToys/blob/main/LICENSE">PowerToys
+license</a> requires preserving notices when code is reused. The <a
+href="https://github.com/microsoft/Zoomit-Mac">Mac source</a> is also
+useful for capture lifecycle, accessibility and platform-specific
+permission research.</p>
+<p>No ZoomIt code or binary has been incorporated in this screenshot
+slice. Reuse decisions must identify the exact upstream revision,
+per-file and dependency licenses, retained notices, native-helper
+boundary and tests. User-facing Studio workflows remain native tasks
+rather than referrals to an external production application.</p>
+<p>The <a
+href="https://pillow.readthedocs.io/en/stable/reference/ImageGrab.html">Pillow
+API</a> documents selected-window and multi-monitor still capture. <a
+href="https://learn.microsoft.com/en-us/windows/apps/develop/media-authoring-processing/screen-capture">Windows
+Graphics Capture</a> is a candidate for the later video-session backend;
+it has not been implemented by this slice.</p>
+</main>
+</body>
+</html>

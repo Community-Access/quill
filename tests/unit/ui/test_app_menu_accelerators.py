@@ -49,6 +49,7 @@ APP_MENU_FILES = (
     # output-device row arrived (2026-09-29); player.py no longer builds one.
     "player_menus.py",
     "studio.py",
+    "studio_capture.py",
     "inkwell.py",
     # Inkwell's Dictation menu, Dictate Anywhere (2026-10-05).
     "inkwell_dictation.py",

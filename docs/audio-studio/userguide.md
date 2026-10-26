@@ -1,8 +1,8 @@
 # QUILL Audio Studio User Guide
 
-Version 2.2.0
+Version 2.0.0
 
-(There is no Audio Studio 2.0 or 2.1: the Studio adopted the shared Quill family version number when it moved onto the shared runtime, so it went straight from 1.0.0 to 2.2.0. See the release notes for the full story.)
+(QUILL Studio 2.0.0 follows Audio Studio 1.0.0. The previously unpublished 2.2.0 build is renumbered for this release.)
 
 QUILL Audio Studio is audiobook and audio production the way a screen reader user would design it: a small home window whose book list has focus the instant it opens, a wizard that asks one question at a time and announces every step, a chapter editor you drive entirely by ear, and spoken progress for every long run. It runs the exact same Audio Studio code that ships inside the QUILL editor and shares QUILL's data store, so a voice you configure here reads aloud in QUILL too, and nothing you set up is ever stranded.
 

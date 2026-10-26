@@ -157,5 +157,16 @@
   "quill/ui/audio_studio/wizard.py::AudioStudioWizard._build_ui::wx.Button#2": "helped",
   "quill/ui/audio_studio/wizard.py::AudioStudioWizard._build_ui::wx.Button#3": "helped",
   "quill/ui/audio_studio/wizard.py::AudioStudioWizard._build_ui::wx.Button#4": "helped",
-  "quill/ui/audio_studio/wizard.py::AudioStudioWizard._build_ui::wx.Button#5": "helped"
+  "quill/ui/audio_studio/wizard.py::AudioStudioWizard._build_ui::wx.Button#5": "helped",
+  "quill/ui/studio_capture_chat.py::ScreenshotChatDialog.__init__::wx.Button": "helped",
+  "quill/ui/studio_capture_chat.py::ScreenshotChatDialog.__init__::wx.Button#2": "helped",
+  "quill/ui/studio_capture_chat.py::ScreenshotChatDialog.__init__::wx.Choice": "helped",
+  "quill/ui/studio_capture_chat.py::ScreenshotChatDialog.__init__::wx.TextCtrl": "helped",
+  "quill/ui/studio_capture_chat.py::ScreenshotChatDialog.__init__::wx.TextCtrl#2": "helped",
+  "quill/ui/studio_capture_chat.py::ScreenshotChatDialog.__init__::wx.TextCtrl#3": "helped",
+  "quill/ui/studio_capture_dialog.py::CaptureSetupDialog.__init__::wx.Button": "helped",
+  "quill/ui/studio_capture_dialog.py::CaptureSetupDialog.__init__::wx.Choice": "helped",
+  "quill/ui/studio_capture_dialog.py::CaptureSetupDialog.__init__::wx.SpinCtrl": "helped",
+  "quill/ui/studio_capture_dialog.py::CaptureSetupDialog.__init__::wx.SpinCtrl#2": "helped",
+  "quill/ui/studio_capture_dialog.py::CaptureSetupDialog.__init__::wx.TextCtrl": "helped"
 }

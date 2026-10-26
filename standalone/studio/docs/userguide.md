@@ -1,6 +1,6 @@
 # QUILL Studio User Guide
 
-Version 2.2.0
+Version 2.0.0
 
 ## Upcoming Preferences Search
 
@@ -10,7 +10,7 @@ to focus one. Control+F returns to search; Escape clears a search before closing
 Search navigates only: OK still saves, Cancel still cancels, and values are not
 indexed. Disabled settings stay disabled.
 
-(There is no Audio Studio 2.0 or 2.1: the Studio adopted the shared Quill family version number when it moved onto the shared runtime, so it went straight from 1.0.0 to 2.2.0. See the release notes for the full story.)
+(QUILL Studio 2.0.0 follows Audio Studio 1.0.0. The previously unpublished 2.2.0 build is renumbered for this release.)
 
 QUILL Studio is audiobook and audio production the way a screen reader user would design it: a small home window whose book list has focus the instant it opens, a wizard that asks one question at a time and announces every step, a chapter editor you drive entirely by ear, and spoken progress for every long run. It runs the exact same Audio Studio code that ships inside the QUILL editor and shares QUILL's data store, so a voice you configure here reads aloud in QUILL too, and nothing you set up is ever stranded.
 
@@ -462,7 +462,7 @@ These settings are shared with QUILL rather than repeated in the Studio's own Pr
 
 **Help > Check for Updates...** compares your version with the newest Quill release, works out which download matches the flavor you run (the installer for an installed copy, the portable zip for a portable one), and fetches it with spoken progress. Then choose **Install and restart now** and the Studio does the rest itself: it applies the update - unpacking the new portable files over your folder, or running the installer quietly - and relaunches, keeping every setting, voice, and saved listening position. There is nothing to unzip and no folder to swap by hand.
 
-Help > About shows your version with a build number, such as 2.2.0 (build 2). The build number tells you which build of a version you have: when a fix comes out without a new version number, it is a newer build, and Check for Updates offers it.
+Help > About shows your version with a build number, such as 2.0.0 (build 2). The build number tells you which build of a version you have: when a fix comes out without a new version number, it is a newer build, and Check for Updates offers it.
 
 All the Quill apps are published from one place, and each one recognizes its own download, so an update to Quill Radio is never offered to the Studio and each app updates on its own schedule. The automatic startup check (on by default, throttled to once a day) is silent unless it actually finds something.
 
@@ -555,3 +555,42 @@ Two Help items are worth knowing before anything else goes wrong. **Help > View 
 - **A translated edition was skipped.** The cloud voice you chose for that language has no API key configured; the run notes the skip and continues rather than stopping.
 - **Closing the window warns about work in progress.** A narration or build run is still going. Choose No to keep the Studio open, or minimize to the tray and let it finish; the "When closing the window" preference sets a fixed answer.
 - **Windows SmartScreen blocks the installer.** The release is not code-signed; choose "More info" then "Run anyway".
+
+
+## Screenshots and the Screenshot Inspector (unreleased)
+
+The new Capture menu keeps screenshot work separate from your book library. It does not record sound or change your audio devices.
+
+Choose **Capture screen** to select a named visible window, one display, the full desktop, an active window after a delay, or a rectangle entered as Left, Top, Width and Height in physical pixels. Displays left of or above your primary display can have negative coordinates. Minimized windows must be restored first. Refresh windows and displays when the list is stale; a missing target remains unavailable rather than silently becoming a desktop screenshot.
+
+Choose an absolute save folder and a delay, then activate **Start capture**. For the active-window option, switch to the intended application during that delay. A selected named window is captured directly. **Cancel pending capture** cancels a capture that has not started. A capture already in progress may finish.
+
+**Screenshot active window now** and **Screenshot full desktop now** are immediate actions. **Repeat last selected target** uses the target, folder and delay you chose in Capture screen. It asks you to choose a target first when none has been selected this session.
+
+Screenshots are saved as uniquely named PNG files, with a JSON verification report and readable Markdown report. File decoding, dimensions and the file hash are objective checks. They do not prove that the intended content is visible or private. Protected content can still be blank. **Screenshot Inspector** opens the latest screenshot; **Open saved screenshot** opens a saved PNG for review.
+
+### Global screenshot hotkeys
+
+Open **Capture > Screenshot global hotkeys**. Select active-window capture, full-desktop capture, repeat-last-target or cancellation, choose Assign and press your preferred combination, then Save. Clear removes a binding. These keys work while Studio is in the tray or another application has focus, provided Windows grants the registration. No global screenshot key is taken by default. An unavailable combination is reported so you can choose another. Safe Mode leaves them inactive. Test your chosen keys with your screen reader and other applications.
+
+### Local OCR and image-grounded AI chat
+
+The Inspector shows the exact image source, hash, file checks and a selectable conversation. **Read text locally** runs the existing offline OCR service. Confidence is reported only when the engine supplies it; OCR availability and recognition accuracy vary.
+
+Choose a **Prompt style**. Screenshot-specific presets cover orientation, controls, text/errors/tables, capture problems, possible sensitive information, alt text and charts. The shared image styles and your custom prompts are available too. **Editable prompt instructions** lets you add detail or replace the preset, and **Your question or additional instructions** accepts a separate question. **Manage prompts** adds, edits or removes reusable prompts in the shared library.
+
+**Configured AI providers.** Screenshot AI uses QUILL's shared AI connection settings, model selection, provider-specific credentials and vision transport: OpenAI, Google Gemini, Anthropic Claude, OpenRouter, Ollama (local or cloud), and compatible custom endpoints. Select the provider and an image-capable model through the shared AI setup. Studio does not require Ollama or maintain a separate provider configuration. Provider/model image support still applies; a text-only model cannot inspect screenshots. Changing the connection pauses previously approved automatic uploads.
+
+Choose **Ask AI** to approve sending the complete screenshot to the named provider, model and endpoint. Private information is not automatically redacted. A privacy-review prompt is a review of an image already sent to that provider, not a guarantee that sharing was safe. AI Off and Safe Mode block AI; local capture and verification continue to work.
+
+The reply appears in the same conversation. Ask follow-ups about that image without capturing again. The image bytes are checked against the original hash before each request. Editing the saved image causes inspection to fail rather than silently answering about a different artifact. You can keep typing while a reply is pending, but a second request waits until the first finishes.
+
+**Save report** exports objective evidence and clearly labeled unverified observations. **Export description** saves a text description and conversation, and **Copy image** copies the PNG to the clipboard. Closing the Inspector cancels unsent chat work; a request already sent may still finish. AI and OCR observations need review even when the file checks pass.
+
+### Optional automatic AI
+
+**Automatically inspect future captures with AI** is off by default. Enabling it asks for separate approval to send every future user-triggered Studio screenshot, including full-desktop captures, to the selected connection. **Use for automatic AI** saves the current prompt instructions for those requests.
+
+Changing the provider, model or endpoint pauses automatic analysis until you approve the new connection. AI Off and Safe Mode override this setting. Clearing the checkbox stops future and queued unsent automatic requests; it cannot recall a request already sent. Capturing remains an explicit user action. The result is available in Screenshot Inspector and the report.
+
+This screenshot milestone does not yet provide video recording, screen/audio mixing, scrolling screenshots, UIA-element selection or annotation/redaction editing. Those are later production steps. Release acceptance still requires JAWS, NVDA, Narrator, braille, mixed-DPI and installed/portable testing.
