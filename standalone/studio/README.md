@@ -39,7 +39,7 @@ These releases are not yet code-signed, so Windows SmartScreen may warn the firs
 pip install ".[ui]"
 python -m quill.apps.studio
 # or, for quick dev testing against a local QUILL checkout:
-.\run-quill-audio-studio.bat
+.\run-quill-studio.bat
 ```
 
 ## Build a release

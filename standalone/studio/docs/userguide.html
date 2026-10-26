@@ -254,13 +254,13 @@ Disabled settings stay disabled.</p>
 <p>(QUILL Studio 2.0.0 follows Audio Studio 1.0.0. The previously
 unpublished 2.2.0 build is renumbered for this release.)</p>
 <p>QUILL Studio is audiobook and audio production the way a screen
-reader user would design it: a small home window whose book list has
-focus the instant it opens, a wizard that asks one question at a time
-and announces every step, a chapter editor you drive entirely by ear,
-and spoken progress for every long run. It runs the exact same Audio
-Studio code that ships inside the QUILL editor and shares QUILL’s data
-store, so a voice you configure here reads aloud in QUILL too, and
-nothing you set up is ever stranded.</p>
+reader user would design it: a small home window with a menu bar, a
+wizard that asks one question at a time and announces every step, a
+chapter editor you drive entirely by ear, and spoken progress for every
+long run. It runs the exact same Audio Studio code that ships inside the
+QUILL editor and shares QUILL’s data store, so a voice you configure
+here reads aloud in QUILL too, and nothing you set up is ever
+stranded.</p>
 <p>Three journeys cover the whole workshop:</p>
 <ul>
 <li><strong>Narrate Documents</strong> - point at a folder of Word,
@@ -362,37 +362,36 @@ positive; the downloads come from the project’s official releases.</p>
 <ul>
 <li><code>pip install -e ".[ui]"</code> then
 <code>python -m quill.apps.studio</code>, or</li>
-<li>run <code>run-quill-audio-studio.bat</code>, which finds a Python
+<li>run <code>run-quill-studio.bat</code>, which finds a Python
 environment for you (this repo’s <code>.venv</code>, then a sibling
 QUILL checkout’s <code>.venv</code>, then whatever <code>python</code>
 is on PATH).</li>
 </ul>
-<p><code>run-quill-audio-studio-safe-mode.bat</code> launches with Safe
-Mode on (see “Safe Mode” below).</p>
+<p><code>run-quill-studio-safe-mode.bat</code> launches with Safe Mode
+on (see “Safe Mode” below).</p>
 <h2 id="the-home-window">The home window</h2>
-<p>The window opens with keyboard focus on your books list. From top to
-bottom:</p>
+<p>The Studio opens as a plain window with a menu bar. Most work happens
+in modal surfaces (the Studio Wizard, the Chapter Workbench, and focused
+dialogs), which you launch from the menus. The home window stays
+intentionally quiet so your books are not front-and-center unless you
+choose to open one.</p>
+<p>From top to bottom:</p>
 <ul>
 <li><strong>Studio activity</strong> (read-only text): what the Studio
-is doing right now - “Ready”, or live progress during a run. The same
-text is mirrored in the status bar.</li>
-<li>Three buttons, one per journey: <strong>Narrate Documents…</strong>
-(Alt+N), <strong>Build From Recordings…</strong> (Alt+R), <strong>Edit a
-Book…</strong> (Alt+E). Build From Recordings was Alt+B until
-2026-10-17, but Alt+B is also the <strong>Book Tools</strong> menu, and
-when a button and a menu share a letter Windows presses the button, so
-the menu could not be opened with Alt+B. Now Alt+B always opens Book
-Tools and Alt+R presses Build From Recordings; for example, press Alt+R
-from the books list to start a new book from a folder of recordings. The
-menu row Studio &gt; Build From Recordings… (Ctrl+Shift+B) does the
-same.</li>
-<li><strong>Your books</strong>: your audiobooks, organized as a tree
-(see below). Press <strong>Enter</strong> to open the selected book in
-the Chapter Workbench. A book whose file has been moved or renamed is
-marked “(missing)”.</li>
+is doing right now — “Ready”, or live progress during a run.</li>
+<li><strong>Status bar</strong> (optional): an arrow-navigable summary
+you can reach with <strong>F6</strong>.</li>
+</ul>
+<p>Start points:</p>
+<ul>
+<li><strong>Studio &gt; Open Studio Wizard…</strong> (Ctrl+N) to narrate
+documents, build from recordings, edit a book, or start a screenshot
+capture.</li>
+<li><strong>Capture</strong> menu for screenshots, inspector, and global
+hotkeys (AI is not required).</li>
 </ul>
 <h3 id="the-status-bar">The status bar</h3>
-<p>The status bar reads “Ready - N books in your library” when idle.
+<p>The status bar reads “Ready - use the menu bar to begin” when idle.
 During a long run it carries per-file progress, and by default the
 Studio also speaks the 25, 50, and 75 percent milestones so you can
 follow an overnight narration from another window (turn this off in
@@ -406,8 +405,9 @@ and <strong>Right</strong> to move between its cells:</p>
 percentage, how many files are done, and the current step.</li>
 <li><strong>Sleep timer</strong> - the timer’s state, when one is
 set.</li>
-<li><strong>Your books</strong> - how many books are in your
-library.</li>
+<li><strong>Your books</strong> - how many books are in your library
+(informational; the home window does not show a book list by
+default).</li>
 <li><strong>Time</strong> - the current time.</li>
 </ul>
 <p>Press <strong>Enter</strong> to act on the cell you are on, use the
@@ -418,7 +418,10 @@ or shows it, and the Studio remembers your choice.</p>
 <p>The Progress text is also written into the system-tray tooltip, so a
 long run is still reviewable when the window is minimized to the
 tray.</p>
-<h3 id="the-library-tree">The library tree</h3>
+<h3 id="the-library-window">The library window</h3>
+<p>The home window does not show your books by default. Open
+<strong>View &gt; Library Window…</strong> (Ctrl+Alt+Y) to browse your
+library in a dedicated window.</p>
 <p>The library fills in as you work: every book you open in the Chapter
 Workbench joins it, and you can shape it yourself with Favorites and
 folders. Books are grouped into four built-in collections and any
@@ -432,12 +435,12 @@ you have not finished.</li>
 recently.</li>
 <li><strong>Inbox</strong> - everything else.</li>
 </ul>
-<p>Expand and collapse the groups with Left and Right. Press
-<strong>Enter</strong> on a book to open it in the Chapter Workbench.
-The context menu (Application key, or Shift+F10) is keyboard-complete on
-both books and folders: <strong>Open</strong>, <strong>Reveal in
-Folder</strong>, <strong>Favorite</strong> (toggle), <strong>Move to
-Folder</strong>, <strong>New Folder</strong>, and
+<p>In the Library Window, expand and collapse the groups with Left and
+Right. Press <strong>Enter</strong> on a book to open it in the Chapter
+Workbench. The context menu (Application key, or Shift+F10) is
+keyboard-complete on both books and folders: <strong>Open</strong>,
+<strong>Reveal in Folder</strong>, <strong>Favorite</strong> (toggle),
+<strong>Move to Folder</strong>, <strong>New Folder</strong>, and
 <strong>Remove</strong>. <strong>Reveal in Folder</strong> opens your
 operating system’s file manager (Windows File Explorer, or the macOS
 Finder) with the book file selected, so you can find it on disk.
@@ -445,7 +448,8 @@ Finder) with the book file selected, so you can find it on disk.
 touches the file on disk, and says so. The tree remembers which book you
 had selected when the library reloads.</p>
 <h2 id="the-studio-wizard">The Studio wizard</h2>
-<p><strong>Studio &gt; Open QUILL Studio…</strong> (Ctrl+N) opens the
+<h2 id="the-studio-wizard-1">The Studio wizard</h2>
+<p><strong>Studio &gt; Open Studio Wizard…</strong> (Ctrl+N) opens the
 wizard. Its first page asks the one question that matters - what would
 you like to make? - and the following steps adapt to your answer. The
 wizard remembers which journey you used last and pre-selects it.</p>
@@ -815,8 +819,8 @@ voices on one tab, cloud voices on another, and the speech-recognition
 (dictation/transcription) engines and models alongside. Pick an engine
 and voice, adjust rate, volume, or speed, preview, and <strong>Set as
 Default</strong>. Voices you configure here are shared with QUILL - and
-the hub’s “export to audio” action opens the Audio Studio wizard,
-because in this app that is what export means.</p>
+the hub’s “export to audio” action opens the Studio Wizard, because in
+this app that is what export means.</p>
 <h3 id="pronunciation-dictionaries">Pronunciation dictionaries</h3>
 <p><strong>Voices &gt; Pronunciation Dictionaries…</strong> opens the
 same manager QUILL uses to teach the speech engines how to say tricky
@@ -1131,13 +1135,13 @@ settings QUILL wrote stay exactly as QUILL wrote them. Speech settings
 configure a voice here and QUILL reads aloud with it too.</p>
 <h2 id="where-the-studios-own-sounds-play">Where the Studio’s own sounds
 play</h2>
-<p>Audio Studio makes short sounds of its own, such as the ones that
-mark a narration run starting and finishing. You choose where they play,
-and you can turn them off.</p>
+<p>The Studio makes short sounds of its own, such as the ones that mark
+a narration run starting and finishing. You choose where they play, and
+you can turn them off.</p>
 <ul>
-<li><strong>Alt+Shift+M</strong> turns Audio Studio’s sounds off. Press
-it again and they come back, on the same sound card as before. You hear
-a short sound as they go off, and another where they now play when they
+<li><strong>Alt+Shift+M</strong> turns the Studio’s sounds off. Press it
+again and they come back, on the same sound card as before. You hear a
+short sound as they go off, and another where they now play when they
 come back on, and both are spoken too. <strong>Studio &gt; App
 Sounds</strong> has a check mark that shows whether they are on.</li>
 <li><strong>App Sounds Play On…</strong>, a button in the Preferences
@@ -1148,7 +1152,7 @@ of its own. The choices are:
 <ul>
 <li><strong>System default</strong>. This is where it starts. The sounds
 go where Windows sends sound.</li>
-<li><strong>None (no sounds)</strong>. Audio Studio makes no sounds at
+<li><strong>None (no sounds)</strong>. The Studio makes no sounds at
 all. Everything it tells you is still spoken.</li>
 <li><strong>Any sound card or headset in the list.</strong> The sounds
 get a device of their own.</li>
@@ -1157,9 +1161,9 @@ get a device of their own.</li>
 <p>After you choose, one sound plays on the new device, so you know
 straight away where it went.</p>
 <p>If the device you chose is unplugged or asleep, you still hear every
-sound, on the system default, and Audio Studio tells you once. When the
+sound, on the system default, and the Studio tells you once. When the
 device comes back, the sounds go back to it by themselves.</p>
-<p>This changes Audio Studio only. Your other QUILL apps keep their own
+<p>This changes the Studio only. Your other QUILL apps keep their own
 choice, unless you have checked “Share these choices with my other Quill
 apps”, which copies a change here to the others that share. Your screen
 reader is never moved.</p>
@@ -1172,10 +1176,11 @@ identical. Every app in the family now has its own - the same rounded
 tile shape and the same gold accent throughout, but its own colour and
 its own picture each.</p>
 <p>While minimized to the tray the Studio keeps running - a long
-narration continues with the window tucked away. Right-click (or
-keyboard-invoke) the tray icon for:</p>
+narration continues with the window tucked away. Use <strong>Studio &gt;
+Minimize to Tray</strong> (Ctrl+Alt+T) to send the window there without
+closing it. Right-click (or keyboard-invoke) the tray icon for:</p>
 <ul>
-<li><strong>Open QUILL Studio…</strong> - restore the window and open
+<li><strong>Open Studio Wizard…</strong> - restore the window and open
 the wizard.</li>
 <li><strong>Resume: <your latest book></strong> - restore the window and
 open your most recent book in the Chapter Workbench.</li>
@@ -1244,7 +1249,7 @@ letters, arrow to the command, press Enter.</p>
 <h2 id="quillins">Quillins</h2>
 <p><strong>Quillins</strong> are QUILL’s small, sandboxed,
 permission-gated add-ons. They run in QUILL, Quill Radio, and QUILL Cast
-today; <strong>Audio Studio does not offer a Quillins menu yet.</strong>
+today; <strong>The Studio does not offer a Quillins menu yet.</strong>
 The groundwork is in place - an add-on can declare that it contributes
 an extra step to the Studio’s audio processing, such as a loudness pass
 at the mastering stage, and a sample add-on demonstrates exactly that -
@@ -1252,100 +1257,107 @@ but the Studio does not load add-ons in this version. When it does, they
 will be off in Safe Mode like everywhere else.</p>
 <h2 id="keyboard-reference">Keyboard reference</h2>
 <table>
-<caption>Table: Keyboard reference</caption>
 <thead>
 <tr>
-<th scope="col">Action</th>
-<th scope="col">Key</th>
+<th>Action</th>
+<th>Key</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th scope="row">Open QUILL Studio (the wizard)</th>
+<td>Open Studio Wizard…</td>
 <td>Ctrl+N</td>
 </tr>
 <tr>
-<th scope="row">Open Book File</th>
+<td>Minimize to Tray</td>
+<td>Ctrl+Alt+T</td>
+</tr>
+<tr>
+<td>Open Library Window</td>
+<td>Ctrl+Alt+Y</td>
+</tr>
+<tr>
+<td>Open Book File</td>
 <td>Ctrl+O</td>
 </tr>
 <tr>
-<th scope="row">Preferences</th>
+<td>Preferences</td>
 <td>Ctrl+Comma</td>
 </tr>
 <tr>
-<th scope="row">Command Palette</th>
+<td>Command Palette</td>
 <td>Ctrl+Shift+P</td>
 </tr>
 <tr>
-<th scope="row">Move focus to the status bar (and back out)</th>
+<td>Move focus to the status bar (and back out)</td>
 <td>F6</td>
 </tr>
 <tr>
-<th scope="row">Open selected book (in Your books)</th>
+<td>Open selected book (Library Window)</td>
 <td>Enter</td>
 </tr>
 <tr>
-<th scope="row">Remove selected book from the list</th>
+<td>Remove selected book from library (Library Window)</td>
 <td>Delete</td>
 </tr>
 <tr>
-<th scope="row">Play selected chapter (Workbench list)</th>
+<td>Play selected chapter (Workbench list)</td>
 <td>Enter</td>
 </tr>
 <tr>
-<th scope="row">Rename chapter (Workbench title field)</th>
+<td>Rename chapter (Workbench title field)</td>
 <td>Enter</td>
 </tr>
 <tr>
-<th scope="row">Mute (player / shell)</th>
+<td>Mute (player / shell)</td>
 <td>Ctrl+M</td>
 </tr>
 <tr>
-<th scope="row">Media Play/Pause (when a Workbench is open)</th>
+<td>Media Play/Pause (when a Workbench is open)</td>
 <td>Media key</td>
 </tr>
 <tr>
-<th scope="row">Media Stop (when a Workbench is open)</th>
+<td>Media Stop (when a Workbench is open)</td>
 <td>Media key</td>
 </tr>
 <tr>
-<th scope="row">Media Next chapter (when a Workbench is open)</th>
+<td>Media Next chapter (when a Workbench is open)</td>
 <td>Media key</td>
 </tr>
 <tr>
-<th scope="row">Media Previous chapter (when a Workbench is open)</th>
+<td>Media Previous chapter (when a Workbench is open)</td>
 <td>Media key</td>
 </tr>
 <tr>
-<th scope="row">Studio menu</th>
+<td>Studio menu</td>
 <td>Alt+S</td>
 </tr>
 <tr>
-<th scope="row">Book Tools menu</th>
+<td>Book Tools menu</td>
 <td>Alt+B</td>
 </tr>
 <tr>
-<th scope="row">Voices menu</th>
+<td>Voices menu</td>
 <td>Alt+I</td>
 </tr>
 <tr>
-<th scope="row">AI menu</th>
+<td>AI menu</td>
 <td>Alt+A</td>
 </tr>
 <tr>
-<th scope="row">View menu</th>
+<td>View menu</td>
 <td>Alt+V</td>
 </tr>
 <tr>
-<th scope="row">Help menu</th>
+<td>Help menu</td>
 <td>Alt+H</td>
 </tr>
 <tr>
-<th scope="row">Build From Recordings button (main window)</th>
+<td>Build From Recordings button (main window)</td>
 <td>Alt+R</td>
 </tr>
 <tr>
-<th scope="row">Your books list (main window)</th>
+<td>Your books list (main window)</td>
 <td>Alt+Y</td>
 </tr>
 </tbody>
@@ -1356,8 +1368,8 @@ letter while the surface has focus.</p>
 <h2 id="safe-mode">Safe Mode</h2>
 <p>Set the environment variable <code>QUILL_SAFE_MODE=1</code> or pass
 <code>--safe-mode</code> (or use
-<code>run-quill-audio-studio-safe-mode.bat</code>). Safe Mode disables
-AI features, publishing, and component downloads; everything local -
+<code>run-quill-studio-safe-mode.bat</code>). Safe Mode disables AI
+features, publishing, and component downloads; everything local -
 narration with installed engines, the Workbench, saving - keeps working.
 Use it to isolate a problem or to run on a machine where network
 features are unwelcome.</p>
@@ -1524,45 +1536,43 @@ commands and default in-app shortcuts</h3>
 are separate, opt-in assignments; the Capture menu displays the current
 in-app bindings.</p>
 <table>
-<caption>Table: Screenshot commands and default in-app
-shortcuts</caption>
 <thead>
 <tr>
-<th scope="col">Action</th>
-<th scope="col">Default in-app shortcut</th>
+<th>Action</th>
+<th>Default in-app shortcut</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th scope="row">Capture screen: choose source and delay</th>
+<td>Capture screen: choose source and delay</td>
 <td>Ctrl+Alt+Shift+S</td>
 </tr>
 <tr>
-<th scope="row">Open saved screenshot</th>
+<td>Open saved screenshot</td>
 <td>Ctrl+Alt+Shift+O</td>
 </tr>
 <tr>
-<th scope="row">Screenshot Inspector</th>
+<td>Screenshot Inspector</td>
 <td>Ctrl+Alt+Shift+I</td>
 </tr>
 <tr>
-<th scope="row">Cancel pending capture</th>
+<td>Cancel pending capture</td>
 <td>Ctrl+Alt+Shift+X</td>
 </tr>
 <tr>
-<th scope="row">Screenshot active window now</th>
+<td>Screenshot active window now</td>
 <td>Ctrl+Alt+Shift+F5</td>
 </tr>
 <tr>
-<th scope="row">Screenshot full desktop now</th>
+<td>Screenshot full desktop now</td>
 <td>Ctrl+Alt+Shift+F6</td>
 </tr>
 <tr>
-<th scope="row">Repeat last selected target</th>
+<td>Repeat last selected target</td>
 <td>Ctrl+Alt+Shift+F4</td>
 </tr>
 <tr>
-<th scope="row">Screenshot global hotkeys configuration</th>
+<td>Screenshot global hotkeys configuration</td>
 <td>Ctrl+Alt+Shift+H</td>
 </tr>
 </tbody>

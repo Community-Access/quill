@@ -7,6 +7,7 @@ import io
 from pathlib import Path
 
 import wx
+from wx.lib.scrolledpanel import ScrolledPanel
 
 from quill.core.settings import load_settings
 from quill.core.studio_capture import save_capture_description, save_capture_report, verify_capture
@@ -37,11 +38,14 @@ class ScreenshotChatDialog(wx.Dialog):
         self.busy = False
         self.settings = load_settings()
         self.preferences = load_capture_ai_preferences()
+        panel = ScrolledPanel(self)
+        self._content = panel
         outer = wx.BoxSizer(wx.VERTICAL)
         self._field_label(outer, "&Verification and conversation")
         self.transcript = wx.TextCtrl(
-            self,
-            value=evidence.summary()
+            panel,
+            value="Screenshot saved. Read its text locally, ask a question, or edit a copy.\n"
+            "File checks passed; review the content before sharing."
             + ("\n\nUNVERIFIED OBSERVATIONS\n" + observations if observations else ""),
             style=wx.TE_MULTILINE | wx.TE_READONLY,
         )
@@ -51,8 +55,27 @@ class ScreenshotChatDialog(wx.Dialog):
             "AI and OCR observations are uncertain. This text can be selected and copied."
         )
         outer.Add(self.transcript, 2, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+        details = wx.CollapsiblePane(panel, label="Advanced: file checks and source details")
+        details.SetHelpText(
+            "Optional dimensions, file hash, source metadata and verification limits."
+        )
+        details_text = wx.TextCtrl(
+            details.GetPane(),
+            value=evidence.summary(),
+            style=wx.TE_MULTILINE | wx.TE_READONLY,
+            size=(-1, 130),
+        )
+        set_accessible_name(details_text, "File checks and source details")
+        details_text.SetHelpText(
+            "Objective file evidence. These checks do not prove privacy or completeness."
+        )
+        details_layout = wx.BoxSizer(wx.VERTICAL)
+        details_layout.Add(details_text, 1, wx.EXPAND)
+        details.GetPane().SetSizer(details_layout)
+        outer.Add(details, 0, wx.EXPAND | wx.ALL, 8)
+        details.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, lambda event: self._layout_content())
         self._field_label(outer, "Prompt st&yle")
-        self.style = wx.Choice(self)
+        self.style = wx.Choice(panel)
         set_accessible_name(self.style, "Prompt style")
         self.style.SetHelpText(
             "Choose a screenshot prompt or a shared image prompt. "
@@ -60,7 +83,7 @@ class ScreenshotChatDialog(wx.Dialog):
         )
         outer.Add(self.style, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
         self._field_label(outer, "Editable &prompt instructions")
-        self.prompt = wx.TextCtrl(self, style=wx.TE_MULTILINE, size=(-1, 90))
+        self.prompt = wx.TextCtrl(panel, style=wx.TE_MULTILINE, size=(-1, 90))
         set_accessible_name(self.prompt, "Editable prompt instructions")
         self.prompt.SetHelpText(
             "Edit or extend the selected prompt before asking AI. "
@@ -70,14 +93,14 @@ class ScreenshotChatDialog(wx.Dialog):
         self._reload_prompts(self.preferences.get("prompt_id", "screen-overview"))
         self.style.Bind(wx.EVT_CHOICE, self._choose_prompt)
         self._field_label(outer, "Your &question or additional instructions")
-        self.question = wx.TextCtrl(self, value=question, style=wx.TE_MULTILINE, size=(-1, 55))
+        self.question = wx.TextCtrl(panel, value=question, style=wx.TE_MULTILINE, size=(-1, 55))
         set_accessible_name(self.question, "Your question or additional instructions")
         self.question.SetHelpText(
             "Ask about this exact screenshot. Follow-ups include the prior "
             "conversation and the same image; they do not capture a new screen."
         )
         outer.Add(self.question, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
-        self.automatic = wx.CheckBox(self, label="Automatically inspect &future captures with AI")
+        self.automatic = wx.CheckBox(panel, label="Automatically inspect &future captures with AI")
         self.automatic.SetValue(self.preferences.get("auto_ai_enabled") is True)
         self.automatic.Bind(wx.EVT_CHECKBOX, self._set_automatic)
         self.automatic.SetHelpText(
@@ -87,7 +110,7 @@ class ScreenshotChatDialog(wx.Dialog):
         )
         outer.Add(self.automatic, 0, wx.ALL, 8)
         self.status = wx.StaticText(
-            self, label="Ready. AI requires permission; local OCR stays offline."
+            panel, label="Ready. AI requires permission; local OCR stays offline."
         )
         outer.Add(self.status, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
         buttons = wx.WrapSizer(wx.HORIZONTAL)
@@ -97,10 +120,11 @@ class ScreenshotChatDialog(wx.Dialog):
             ("&Save report", lambda _e: self._save(False)),
             ("&Export description", lambda _e: self._save(True)),
             ("Copy &image", self._copy_image),
+            ("&Edit a copy...", self._edit_copy),
             ("Manage p&rompts...", self._manage_prompts),
             ("Use for a&utomatic AI...", self._use_automatic_prompt),
         ):
-            button = wx.Button(self, label=label)
+            button = wx.Button(panel, label=label)
             button.Bind(wx.EVT_BUTTON, handler)
             button.SetHelpText(label.replace("&", "") + " for the screenshot identified above.")
             buttons.Add(button, 0, wx.RIGHT | wx.BOTTOM, 6)
@@ -110,18 +134,37 @@ class ScreenshotChatDialog(wx.Dialog):
             "Close the inspector and cancel unsent chat work. "
             "A request already sent to an AI provider may still finish."
         )
-        buttons.Add(close, 0, wx.BOTTOM, 6)
         outer.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
         apply_modal_ids(self, cancel_id=wx.ID_CANCEL, cancel_label="&Close")
-        self.SetSizer(outer)
+        panel.SetSizer(outer)
+        panel.SetupScrolling(scroll_x=False)
+        root = wx.BoxSizer(wx.VERTICAL)
+        root.Add(panel, 1, wx.EXPAND)
+        root.Add(close, 0, wx.ALL, 8)
+        self.SetSizer(root)
         area = wx.GetClientDisplayRect()
         self.SetSize((min(850, area.width), min(720, area.height)))
         self.transcript.SetFocus()
         # a11y: needs manual verification — JAWS/NVDA/Narrator, high contrast,
         # scaling, multiline braille review, tab order and focus return.
 
+    def _layout_content(self):
+        self._content.Layout()
+        self._content.FitInside()
+        self.Layout()
+
     def _field_label(self, sizer, label):
-        sizer.Add(wx.StaticText(self, label=label), 0, wx.ALL, 8)
+        sizer.Add(wx.StaticText(self._content, label=label), 0, wx.ALL, 8)
+
+    def _edit_copy(self, event):
+        from quill.ui.studio_capture_editor import ScreenshotEditorDialog
+
+        dialog = ScreenshotEditorDialog(self.host, self.evidence)
+        try:
+            self.host._show_modal_dialog(dialog, "Screenshot editing and evidence")
+        finally:
+            dialog.stop()
+            dialog.Destroy()
 
     def _say(self, text):
         self.status.SetLabel(text)

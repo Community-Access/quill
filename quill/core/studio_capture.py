@@ -18,7 +18,7 @@ from quill.core.storage import write_json_atomic, write_text_atomic
 
 @dataclass(frozen=True)
 class CaptureTarget:
-    kind: Literal["desktop", "display", "window", "active_window", "region"]
+    kind: Literal["desktop", "display", "window", "active_window", "region", "element"]
     label: str
     bounds: tuple[int, int, int, int] = (0, 0, 0, 0)
     window_handle: int = 0
@@ -26,6 +26,13 @@ class CaptureTarget:
     device: str = ""
     application: str = ""
     reference_bounds: tuple[int, int, int, int] = (0, 0, 0, 0)
+    element_id: tuple[int, ...] = ()
+
+    @property
+    def friendly_label(self) -> str:
+        if self.kind == "display":
+            return self.label.split(":", 1)[0] + (" (primary)" if "; primary" in self.label else "")
+        return self.label.split("; process", 1)[0]
 
 
 REGION_PRESETS = (

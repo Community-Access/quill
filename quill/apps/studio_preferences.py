@@ -76,4 +76,10 @@ def open_preferences(app: Any) -> None:
     ) = checkbox_values
     prefs["close_action"] = _CLOSE_ACTION_VALUES[choice_indices[0]]
     _save_app_prefs(prefs)
-    app._announce("Preferences saved")
+    # Saving preferences is important, but announcing it on close is noisy: the
+    # dialog itself already commits the change, and leaving it should return the
+    # user to what they were doing without extra speech.
+    try:
+        app._set_status_quiet("Preferences saved")
+    except Exception:
+        pass

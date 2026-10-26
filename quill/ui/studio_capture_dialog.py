@@ -7,24 +7,27 @@ from wx.lib.scrolledpanel import ScrolledPanel
 
 from quill.core.studio_capture import REGION_PRESETS, CaptureTarget, guided_region, validate_region
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.studio_capture_options import CaptureOptionsMixin
 
 # a11y: needs manual verification — screen-reader/braille announcements,
 # keyboard focus order, high contrast, and layout at increased Windows scaling.
 
 
-class CaptureSetupDialog(wx.Dialog):
+class CaptureSetupDialog(CaptureOptionsMixin, wx.Dialog):
     def __init__(
         self,
         parent: wx.Window,
         folder: str,
         targets: list[CaptureTarget],
         announce=lambda _text: None,
+        choose_control=None,
     ) -> None:
         super().__init__(
             parent, title="Capture screen", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
         self.targets = targets
         self._announce = announce
+        self.choose_control = choose_control
         self.content = ScrolledPanel(self)
         panel = self.content
         outer = wx.BoxSizer(wx.VERTICAL)
@@ -41,7 +44,7 @@ class CaptureSetupDialog(wx.Dialog):
         )
         outer.Add(hint, 0, wx.ALL, 10)
         outer.Add(wx.StaticText(panel, label="&Target"), 0, wx.LEFT, 10)
-        self.target = wx.Choice(panel, choices=[target.label for target in targets])
+        self.target = wx.Choice(panel, choices=[target.friendly_label for target in targets])
         self.target.SetSelection(0)
         set_accessible_name(self.target, "Target")
         self.target.SetHelpText(
@@ -56,6 +59,13 @@ class CaptureSetupDialog(wx.Dialog):
             "unavailable until you deliberately choose another target."
         )
         outer.Add(refresh, 0, wx.LEFT | wx.RIGHT, 10)
+        controls = wx.Button(panel, label="Choose a specific window &element...")
+        controls.SetHelpText(
+            "Choose a named window in Target first, then find a real accessible "
+            "part by its name or role, such as a button or document. No sizes are needed."
+        )
+        controls.Bind(wx.EVT_BUTTON, self._choose_control)
+        outer.Add(controls, 0, wx.ALL, 10)
         self.region_panel = wx.Panel(panel)
         region_layout = wx.BoxSizer(wx.VERTICAL)
         region_layout.Add(wx.StaticText(self.region_panel, label="Region so&urce"), 0, wx.TOP, 8)
@@ -141,6 +151,7 @@ class CaptureSetupDialog(wx.Dialog):
             "The folder is created if needed; existing images are not overwritten."
         )
         outer.Add(self.folder, 0, wx.EXPAND | wx.ALL, 10)
+        self._build_capture_options(panel, outer)
         panel.SetSizer(outer)
         panel.SetupScrolling(scroll_x=False)
         layout = wx.BoxSizer(wx.VERTICAL)
@@ -161,6 +172,20 @@ class CaptureSetupDialog(wx.Dialog):
         is_region = self.targets[self.target.GetSelection()].kind == "region"
         self.region_panel.Show(is_region)
         self._update_guidance(_event)
+
+    def _choose_control(self, event):
+        target = self.targets[self.target.GetSelection()]
+        if target.kind != "window" or self.choose_control is None:
+            self._announce("Select a named window first to choose one of its accessible controls.")
+            self.target.SetFocus()
+            return
+        selected = self.choose_control(target)
+        if selected is not None:
+            self.targets.append(selected)
+            self.target.Append(selected.friendly_label)
+            self.target.SetSelection(len(self.targets) - 1)
+            self._update_region()
+            self._announce("Control selected. Keep its window still; review after capture.")
 
     def _refresh_region_sources(self):
         previous = (
@@ -189,7 +214,7 @@ class CaptureSetupDialog(wx.Dialog):
                     replace(previous, label="Unavailable source: " + previous.label)
                 )
                 index = len(self.region_sources) - 1
-        self.region_source.SetItems([t.label for t in self.region_sources])
+        self.region_source.SetItems([t.friendly_label for t in self.region_sources])
         self.region_source.SetSelection(index)
 
     def _update_guidance(self, _event=None):
@@ -211,7 +236,7 @@ class CaptureSetupDialog(wx.Dialog):
         try:
             target = self.selected_target()
             if target.kind == "region":
-                message = f"Plan: {target.label}. "
+                message = f"Plan: {target.friendly_label}. "
                 if advanced:
                     message += "The numbers fit within the desktop. Content may still be clipped. "
                 elif self.portion.GetSelection() != 0:
@@ -226,13 +251,13 @@ class CaptureSetupDialog(wx.Dialog):
                 )
             elif target.kind == "window":
                 message = (
-                    f"Plan: capture the whole named window: {target.label}. "
+                    f"Plan: capture the whole named window: {target.friendly_label}. "
                     "No size settings needed. Restore a minimized window first. "
                     "Review local OCR and framing after capture; protected content may be blank."
                 )
             else:
                 message = (
-                    f"Plan: {target.label}. No size settings needed. "
+                    f"Plan: {target.friendly_label}. No size settings needed. "
                     "Desktop and display capture can include unrelated windows and notifications. "
                     "For one application, choose its named window."
                 )
@@ -271,7 +296,7 @@ class CaptureSetupDialog(wx.Dialog):
             updated.append(replace(previous, label="Unavailable target: " + previous.label))
             index = len(updated) - 1
         self.targets = updated
-        self.target.SetItems([target.label for target in updated])
+        self.target.SetItems([target.friendly_label for target in updated])
         self.target.SetSelection(index)
         self._refresh_region_sources()
         self._update_region()

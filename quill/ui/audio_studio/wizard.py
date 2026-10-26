@@ -45,6 +45,9 @@ _log = logging.getLogger(__name__)
 #: Modal return code meaning "reopen the wizard pre-filled from loaded_job".
 RELOAD_WITH_JOB = wx.ID_HIGHEST + 71
 
+#: Modal return code meaning "open Capture screen".
+OPEN_CAPTURE = wx.ID_HIGHEST + 72
+
 
 class AudioStudioWizard(wx.Dialog):
     """The wizard host: stacked page panels with Back/Next/Start/Cancel."""
@@ -109,6 +112,9 @@ class AudioStudioWizard(wx.Dialog):
             "edit": [
                 self.start_page,
                 self.edit_source,
+            ],
+            "capture": [
+                self.start_page,
             ],
         }
         self._all_pages: list[StudioPage] = [
@@ -277,9 +283,12 @@ class AudioStudioWizard(wx.Dialog):
         self._next_btn.Show(idx < total - 1)
         self._skip_btn.Show(0 < idx < total - 2)
         self._start_btn.Show(idx == total - 1)
-        self._start_btn.SetLabel(
-            str(_("&Open in Workbench")) if self.journey() == "edit" else str(_("&Start"))
-        )
+        if self.journey() == "edit":
+            self._start_btn.SetLabel(str(_("&Open in Workbench")))
+        elif self.journey() == "capture":
+            self._start_btn.SetLabel(str(_("Open &Capture Screen")))
+        else:
+            self._start_btn.SetLabel(str(_("&Start")))
         self.Layout()
 
     def _focus_current_page(self) -> None:
@@ -324,6 +333,11 @@ class AudioStudioWizard(wx.Dialog):
                 self._show_page(idx)
                 show_message_box(message, _("Please complete this step"), wx.ICON_INFORMATION, self)
                 return
+        # The capture journey opens the Capture screen dialog in the host app
+        # instead of producing a batch request.
+        if self.journey() == "capture":
+            self.EndModal(OPEN_CAPTURE)
+            return
         # The edit journey opens the Workbench instead of running a batch; the
         # caller reads edit_path() and no request is produced.
         if self.journey() != "edit":

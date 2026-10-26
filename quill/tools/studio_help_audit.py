@@ -47,8 +47,7 @@ _SCAN_DIRS: tuple[str, ...] = ("quill/ui/audio_studio",)
 _SCAN_GLOBS: tuple[str, ...] = (
     "quill/apps/studio.py",
     "quill/apps/studio_capture.py",
-    "quill/ui/studio_capture_dialog.py",
-    "quill/ui/studio_capture_chat.py",
+    "quill/ui/studio_capture_*.py",
 )
 
 #: Surface constructions whose titles the scan cannot resolve, with the

@@ -143,6 +143,10 @@ def resolve_target(requested: CaptureTarget) -> CaptureTarget:
 
     displays = display_targets()
     desktop = desktop_target(displays)
+    if requested.kind == "element":
+        from quill.platform.windows.screenshot_uia import resolve_control
+
+        return resolve_control(requested)
     if requested.kind == "desktop":
         # Never silently include a newly attached display after user review.
         if requested.bounds != desktop.bounds or requested.device != desktop.device:
@@ -164,6 +168,10 @@ def resolve_target(requested: CaptureTarget) -> CaptureTarget:
         current = window_target(handle)
         if requested.kind == "window" and current.process_id != requested.process_id:
             raise ScreenCaptureError("Selected window identity changed. Select it again.")
+        if requested.kind == "window" and current.label != requested.label:
+            raise ScreenCaptureError(
+                "Selected window title or application changed. Select it again."
+            )
         return current
     if requested.kind == "region":
         if requested.device != desktop.device:
@@ -186,13 +194,28 @@ def resolve_target(requested: CaptureTarget) -> CaptureTarget:
 def capture_target(folder: Path, requested: CaptureTarget) -> CaptureEvidence:
     from PIL import ImageGrab
 
+    from quill.platform.windows.screenshot_window import render_window
+
     with physical_pixels():
         target = resolve_target(requested)
         started = datetime.now(UTC).isoformat()
         try:
-            if target.kind == "window":
-                image = ImageGrab.grab(window=target.window_handle)
-                backend = "Pillow window capture (HWND)"
+            if target.kind in {"window", "element"} or (
+                target.kind == "region" and target.window_handle
+            ):
+                image = render_window(target.window_handle)
+                backend = "Windows selected-window rendering"
+                if target.kind != "window":
+                    left, top, right, bottom = target.reference_bounds
+                    expected = (right - left, bottom - top)
+                    if image.size != expected:
+                        raise ScreenCaptureError("Window scale changed. Select the source again.")
+                    crop = tuple(
+                        value - offset
+                        for value, offset in zip(target.bounds, (left, top, left, top), strict=True)
+                    )
+                    image = image.crop(crop)
+                    resolve_target(requested)
                 # Reject a handle reassigned to another process during capture.
                 if window_target(target.window_handle).process_id != target.process_id:
                     raise ScreenCaptureError("Window changed during capture. Capture again.")
@@ -200,7 +223,7 @@ def capture_target(folder: Path, requested: CaptureTarget) -> CaptureEvidence:
                 image = ImageGrab.grab(
                     bbox=target.bounds, all_screens=True, include_layered_windows=True
                 )
-                if requested.kind == "region" and requested.window_handle:
+                if requested.kind in {"region", "element"} and requested.window_handle:
                     resolve_target(requested)  # Reject source movement during the grab too.
                 backend = "Pillow desktop rectangle"
                 expected = (
@@ -225,4 +248,9 @@ def capture_target(folder: Path, requested: CaptureTarget) -> CaptureEvidence:
             "limitations": "Protected/GPU content may be blank; inspect before sharing",
             "uniform_pixels": all(low == high for low, high in image.convert("RGB").getextrema()),
         })
+        if target.window_handle:
+            dpi = ctypes.windll.user32.GetDpiForWindow(target.window_handle)
+            if dpi:
+                metadata["window_dpi"] = dpi
+                metadata["scale_factor"] = dpi / 96
         return replace(evidence, captured_at=started, metadata=metadata)

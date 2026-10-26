@@ -134,7 +134,7 @@ BOOK_FORMATS = ("m4b", "mp3")
 BOOK_FORMAT_INDEX = {fmt: i for i, fmt in enumerate(BOOK_FORMATS)}
 
 # The Studio's journeys, in the order they appear on the start page.
-JOURNEYS = ("documents", "audio", "edit")
+JOURNEYS = ("documents", "audio", "edit", "capture")
 
 __all__ = [
     "ALL_EXTENSIONS",

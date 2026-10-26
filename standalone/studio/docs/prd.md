@@ -108,23 +108,24 @@ requirement, not a layer.
 
 ### 4.1 Home window and library
 
-- AS-1. The app must present a home window with a named activity line, three
-  journey buttons (Narrate Documents, Build From Recordings, Edit a Book), and
-  a "Your books" list that takes focus on launch.
-- AS-2. The books list must show the recent-audiobook MRU, most recent first,
-  flagging entries whose file is missing. Enter or double-click opens the
-  selected book in the Chapter Workbench; Delete removes the entry from the
-  list without touching the file (and says so).
-- AS-3. The menu bar must provide: Studio (Open QUILL Studio Ctrl+N, the three
+- AS-1. The app must present a home window that is intentionally quiet: a named
+  activity line, a status bar, and a menu bar. Books must not be front-and-center
+  in the home window by default.
+- AS-2. A separate Library Window (View > Library Window) must provide the
+  "Your books" tree with the recent-audiobook MRU, most recent first, flagging
+  missing files. Enter opens the selected book in the Chapter Workbench; Delete
+  removes it from the library without touching the file (and says so).
+- AS-3. The menu bar must provide: Studio (Open Studio Wizard Ctrl+N, the three
   journeys, Open Book File Ctrl+O, Open Job File, Resume on launch, Recently
-  Played, Preferences Ctrl+Comma, Exit), Book Tools (Publish a Finished Book,
-  Make a Podcast Feed From a Folder, ACX Compliance Check, Sleep Timer, Mute
-  Playback Ctrl+M, Play Queue), Voices (Speech Hub, Manage Speech Models,
-  Pronunciation Dictionaries, Generate Captions, Convert Audio, Convert from
-  URL, Download Optional Components, Get FFmpeg), AI (Set Up AI), View (Show
-  Status Bar), and Help (User Guide, PRD, Release Notes, Command Palette
-  Ctrl+Shift+P, Check for Updates, Report a Bug, View Log, Save Diagnostics,
-  About).
+  Played, Minimize to Tray Ctrl+Alt+T, Preferences Ctrl+Comma, Exit), View (Show
+  Status Bar, Library Window Ctrl+Alt+Y), Capture (Screenshots, Screenshot
+  Inspector, Global Hotkeys), Book Tools (Publish a Finished Book, Make a
+  Podcast Feed From a Folder, ACX Compliance Check, Sleep Timer, Mute Playback
+  Ctrl+M, Play Queue), Voices (Speech Hub, Manage Speech Models, Pronunciation
+  Dictionaries, Generate Captions, Convert Audio, Convert from URL, Download
+  Optional Components, Get FFmpeg), AI (Set Up AI), and Help (User Guide, PRD,
+  Release Notes, Command Palette Ctrl+Shift+P, Check for Updates, Report a Bug,
+  View Log, Save Diagnostics, About).
 - AS-4. All menu actions must also be registered as commands reachable from
   the command palette.
 - AS-5. The status bar must reflect readiness ("Ready - N books in your
@@ -443,7 +444,7 @@ requirement, not a layer.
   Tray, default Ask). They must persist to the app-local prefs file, written
   atomically, with unreadable prefs falling back to defaults rather than
   crashing.
-- AS-66. The tray icon must always be present, offering Open QUILL Studio and
+- AS-66. The tray icon must always be present, offering Open Studio Wizard and
   "Resume: <most recent book>", both restoring the window first. Sending the
   app to the tray must announce that it is still running.
 - AS-67. Alt+F4-to-tray, when enabled, must intercept before Windows closes
@@ -574,7 +575,7 @@ requirement, not a layer.
 - P-7. The installed docs (User Guide, Release Notes, this PRD) must ship as
   both Markdown and rendered HTML, wired to Help menu items and the installer
   shortcut.
-- P-8. A safe-mode launcher (`run-quill-audio-studio-safe-mode.bat` /
+- P-8. A safe-mode launcher (`run-quill-studio-safe-mode.bat` /
   `--safe-mode`) must ship alongside the normal launcher.
 
 ### 6.1 The QuillVille Runtime and shared-runtime editions

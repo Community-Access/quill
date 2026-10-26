@@ -63,13 +63,13 @@ def test_named_window_uses_window_backend_not_desktop(tmp_path, monkeypatch):
     monkeypatch.setattr(capture, "window_target", lambda handle: target)
     seen = []
 
-    def grab(**kwargs):
-        seen.append(kwargs)
+    def grab(handle):
+        seen.append(handle)
         return Image.new("RGB", (20, 30), "white")
 
-    monkeypatch.setattr(ImageGrab, "grab", grab)
+    monkeypatch.setattr("quill.platform.windows.screenshot_window.render_window", grab)
     evidence = capture.capture_target(tmp_path, target)
-    assert seen == [{"window": 123}]
+    assert seen == [123]
     assert evidence.metadata["window_handle"] == 123
     assert evidence.metadata["uniform_pixels"] is True
     assert Path(evidence.path).is_file()
@@ -118,11 +118,11 @@ def test_guided_region_source_moving_during_grab_saves_no_image(tmp_path, displa
     monkeypatch.setattr(capture, "physical_pixels", nullcontext)
     monkeypatch.setattr(capture, "window_target", lambda handle: current[0])
 
-    def grab(**kwargs):
+    def grab(handle):
         current[0] = replace(source, bounds=(110, 100, 910, 700))
-        return Image.new("RGB", (800, 300), "white")
+        return Image.new("RGB", (800, 600), "white")
 
-    monkeypatch.setattr(ImageGrab, "grab", grab)
+    monkeypatch.setattr("quill.platform.windows.screenshot_window.render_window", grab)
     with pytest.raises(ScreenCaptureError, match="moved, resized or changed"):
         capture.capture_target(tmp_path, region)
     assert not list(tmp_path.glob("*.png"))

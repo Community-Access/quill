@@ -20,6 +20,7 @@ from __future__ import annotations
 from pathlib import Path
 
 try:
+    import winrt.windows.storage.streams  # noqa: F401 - registers WinRT stream projections
     from winrt.windows.globalization import Language  # type: ignore[import-not-found]
     from winrt.windows.graphics.imaging import (  # type: ignore[import-not-found]
         BitmapDecoder,
@@ -64,7 +65,7 @@ def recognize_with_windows_ocr(
         raise OcrUnavailableError(
             "The Windows OCR (winrt) packages are not installed. Install them with: "
             "pip install winrt-Windows.Media.Ocr winrt-Windows.Graphics.Imaging "
-            "winrt-Windows.Globalization winrt-Windows.Storage"
+            "winrt-Windows.Globalization winrt-Windows.Storage winrt-Windows.Storage.Streams"
         )
 
     import asyncio
@@ -85,7 +86,18 @@ def recognize_with_windows_ocr(
                 "No Windows OCR language pack is installed for the requested language."
             )
         ocr_result = await engine.recognize_async(bitmap)
-        lines = [OcrLine(text=line.text, confidence=-1.0) for line in ocr_result.lines]
+        lines = []
+        for line in ocr_result.lines:
+            rectangles = [word.bounding_rect for word in line.words]
+            bounds = None
+            if rectangles:
+                bounds = (
+                    int(min(rect.x for rect in rectangles)),
+                    int(min(rect.y for rect in rectangles)),
+                    int(max(rect.x + rect.width for rect in rectangles) + 0.999),
+                    int(max(rect.y + rect.height for rect in rectangles) + 0.999),
+                )
+            lines.append(OcrLine(text=line.text, confidence=-1.0, bounds=bounds))
         joined = "\n".join(line.text for line in lines)
         return joined, lines
 

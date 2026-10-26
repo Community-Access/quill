@@ -338,58 +338,22 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
     # which takes focus on launch -- Enter re-opens a book for editing.
 
     def _build_main_panel(self) -> None:
+        """Build the Studio's home panel.
+
+        Studio's primary workflows live in modal surfaces (wizard, Workbench,
+        dialogs). The home window stays intentionally quiet: a menu bar and a
+        status surface, without putting the library front-and-center.
+
+        The one static text control exists solely as a named keyboard focus
+        target and for lightweight status feedback.
+        """
         panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
         root = wx.BoxSizer(wx.VERTICAL)
 
-        self._activity_text = wx.StaticText(panel, label="Ready")
+        self._activity_text = wx.StaticText(panel, label="Ready - use the menu bar to begin")
         set_accessible_name(self._activity_text, "Studio activity")
         root.Add(self._activity_text, 0, wx.EXPAND | wx.ALL, 8)
 
-        buttons = wx.BoxSizer(wx.HORIZONTAL)
-        for label, accessible, handler in (
-            (
-                "&Narrate Documents...",
-                "Narrate a folder of documents into speech audio or an audiobook",
-                lambda _e: self.open_studio("documents"),
-            ),
-            (
-                "Build From &Recordings...",
-                "Combine a folder of recordings into one chaptered audiobook",
-                lambda _e: self.open_studio("audio"),
-            ),
-            (
-                "&Edit a Book...",
-                "Open a finished audiobook in the Chapter Workbench: play it, fix "
-                "chapters, edit tags, run the ACX check, publish",
-                lambda _e: self.open_book_picker(),
-            ),
-        ):
-            button = wx.Button(panel, label=label)
-            set_accessible_name(button, accessible)
-            button.Bind(wx.EVT_BUTTON, handler)
-            buttons.Add(button, 0, wx.RIGHT, 6)
-        root.Add(buttons, 0, wx.ALL, 8)
-
-        library_label = wx.StaticText(panel, label="&Your books:")
-        root.Add(library_label, 0, wx.LEFT | wx.RIGHT, 8)
-        self._library_tree = wx.TreeCtrl(panel, style=wx.TR_DEFAULT_STYLE | wx.TR_HIDE_ROOT)
-        self._library_tree.SetName("Your books")
-        set_accessible_name(
-            self._library_tree,
-            "Your books, grouped by Favorites, In Progress, Recently Played, and "
-            "Inbox; Enter opens the selected book in the Chapter Workbench, "
-            "Delete removes it, Application key opens the folder menu",
-        )
-        root.Add(self._library_tree, 1, wx.EXPAND | wx.ALL, 8)
-        self._library_tree.Bind(wx.EVT_TREE_ITEM_ACTIVATED, self._on_tree_activate)
-        self._library_tree.Bind(wx.EVT_TREE_ITEM_MENU, self._on_tree_context_menu)
-        self._library_tree.Bind(wx.EVT_KEY_DOWN, self._on_tree_key)
-
-        # The arrow-navigable status bar lives along the bottom (F6 to reach it,
-        # View > Show Status Bar to hide it). Its cells -- Activity, Progress,
-        # Sleep timer, Your books, Time -- and behaviour live in StudioStatusBar;
-        # the Progress cell is the one a screen-reader user arrows to while a
-        # narration run is going (and it keeps updating in the tray tooltip too).
         from quill.ui.audio_studio.status_bar import StudioStatusBar
 
         self._status_bar = StudioStatusBar(self)
@@ -399,9 +363,32 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
 
         panel.SetSizer(root)
         self._main_panel = panel
-        self._reload_library_list()
         self._status_bar.refresh()
-        self._library_tree.SetFocus()
+        try:
+            self._activity_text.SetFocus()
+        except Exception:  # noqa: BLE001 - focus is best-effort
+            pass
+
+    def _open_library_window(self) -> None:
+        from quill.apps.studio_library_window import ensure_library_window
+
+        def clear_refs() -> None:
+            self._library_window = None
+            self._library_tree = None
+
+        existing = getattr(self, "_library_window", None)
+        frame, tree = ensure_library_window(
+            parent=self.frame,
+            title=f"{_TITLE} Library",
+            existing=existing,
+            reload_tree=self._reload_library_tree,
+            on_activate=self._on_tree_activate,
+            on_context_menu=self._on_tree_context_menu,
+            on_key=self._on_tree_key,
+            on_destroy=clear_refs,
+        )
+        self._library_window = frame
+        self._library_tree = tree
 
     def _recent_books(self) -> list[Path]:
         from quill.core.recent import recent_audiobook_files
@@ -411,7 +398,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
         except Exception:  # noqa: BLE001 - an unreadable MRU is an empty library
             return []
 
-    def _reload_library_list(self) -> None:
+    def _reload_library_tree(self) -> None:
         """Rebuild the library tree from the persisted state + recent files.
 
         Kept under the original list name so the many call sites that refresh
@@ -775,7 +762,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
             save_library(app_data_dir(), self._library_state)
         except Exception:  # noqa: BLE001 - a library save failure is non-fatal
             pass
-        self._reload_library_list()
+        self._reload_library_tree()
 
     def _on_tree_activate(self, _event: wx.TreeEvent) -> None:
         self._open_selected_book()
@@ -939,9 +926,9 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
             wx.NewIdRef() for _ in range(6)
         )
         tags_id, chapters_id = wx.NewIdRef(), wx.NewIdRef()
-        prefs_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
+        prefs_id, minimize_id, exit_id = (wx.NewIdRef() for _ in range(3))
         narrate_translated_id = wx.NewIdRef()
-        studio.Append(open_id, "&Open QUILL Studio...\tCtrl+N", "Open the Studio wizard")
+        studio.Append(open_id, "Open Studio &Wizard...\tCtrl+N", "Open the Studio wizard")
         studio.AppendSeparator()
         studio.Append(
             narrate_id, "Narrate &Documents...\tCtrl+Shift+N", "Documents to speech audio or a book"
@@ -983,11 +970,38 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
         studio.Append(prefs_id, "&Preferences...\tCtrl+,")
         _app_sounds.append_menu_item(self, studio)  # Alt+Shift+M, family-wide
         studio.AppendSeparator()
+        studio.Append(
+            minimize_id, "Minimize to &Tray\tCtrl+Alt+T", "Hide the Studio in the system tray"
+        )
         studio.Append(exit_id, "E&xit\tCtrl+Q")
         menu_bar.Append(studio, "&Studio")
         # Rebuild the Recently Played list each time the Studio menu opens so
         # it reflects books opened this session, not just at launch.
         self.frame.Bind(wx.EVT_MENU_OPEN, self._on_studio_menu_open)
+
+        view_menu = wx.Menu()
+        self._status_bar_item_id = wx.NewIdRef()
+        view_menu.AppendCheckItem(
+            self._status_bar_item_id,
+            "Show Status &Bar\tCtrl+Alt+B",
+            "Show or hide the arrow-navigable status bar; press F6 to move focus to it",
+        )
+        view_menu.Check(
+            self._status_bar_item_id, bool(self._app_prefs.get("show_status_bar", True))
+        )
+        self.frame.Bind(
+            wx.EVT_MENU, lambda _e: self._toggle_show_status_bar(), id=self._status_bar_item_id
+        )
+        self._keep_menu_ids(self._status_bar_item_id)
+        library_window_id = wx.NewIdRef()
+        view_menu.Append(
+            library_window_id,
+            "&Library Window...\tCtrl+Alt+Y",
+            "Open your book library in a separate window",
+        )
+        self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_library_window(), id=library_window_id)
+        self._keep_menu_ids(library_window_id)
+        menu_bar.Append(view_menu, "&View")
 
         book = wx.Menu()
         publish_id, feed_id, acx_id = wx.NewIdRef(), wx.NewIdRef(), wx.NewIdRef()
@@ -1059,22 +1073,6 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
         )
         menu_bar.Append(ai, "&AI")
 
-        view_menu = wx.Menu()
-        self._status_bar_item_id = wx.NewIdRef()
-        view_menu.AppendCheckItem(
-            self._status_bar_item_id,
-            "Show Status &Bar\tCtrl+Alt+B",
-            "Show or hide the arrow-navigable status bar; press F6 to move focus to it",
-        )
-        view_menu.Check(
-            self._status_bar_item_id, bool(self._app_prefs.get("show_status_bar", True))
-        )
-        self.frame.Bind(
-            wx.EVT_MENU, lambda _e: self._toggle_show_status_bar(), id=self._status_bar_item_id
-        )
-        self._keep_menu_ids(self._status_bar_item_id)
-        menu_bar.Append(view_menu, "&View")
-
         help_menu = wx.Menu()
         guide_id, prd_id, notes_id, palette_id = (wx.NewIdRef() for _ in range(4))
         updates_id, bug_id, about_id = (wx.NewIdRef() for _ in range(3))
@@ -1107,6 +1105,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
             (job_id, self.open_job_file),
             (self._resume_menu_item_id, self._toggle_resume_on_launch),
             (prefs_id, self._open_preferences),
+            (minimize_id, self._send_to_tray),
             (exit_id, self.frame.Close),
             (publish_id, self.publish_book),
             (feed_id, self.make_podcast_feed),
@@ -1193,8 +1192,9 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
         self._refresh_statusbar()
 
     def _build_tray_menu(self, menu: wx.Menu) -> None:
+        self._append_capture_tray(menu)
         studio_id, resume_id = wx.NewIdRef(), wx.NewIdRef()
-        menu.Append(studio_id, "Open QUILL Studio...")
+        menu.Append(studio_id, "Open Studio Wizard...")
         menu.Bind(
             wx.EVT_MENU,
             lambda _e: (self._restore_from_tray(), self.open_studio()),
@@ -1213,7 +1213,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
     def _register_commands(self) -> None:
         self._register_capture_commands()
         for command_id, title, handler in (
-            ("studio.open", "Open QUILL Studio...", self.open_studio),
+            ("studio.open", "Open Studio Wizard...", self.open_studio),
             ("studio.narrate", "Narrate Documents...", lambda: self.open_studio("documents")),
             (
                 "studio.narrate_translated",
@@ -1256,6 +1256,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
             ),
             ("studio.ai_setup", "Set Up AI...", self.open_ai_setup),
             ("studio.preferences", "Preferences...", self._open_preferences),
+            ("studio.minimize_to_tray", "Minimize to Tray", self._send_to_tray),
             ("studio.updates", "Check for Updates...", self.check_updates_manual),
         ):
             self.commands.register(command_id, title, handler)
@@ -1277,7 +1278,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
             except Exception:  # noqa: BLE001 - a stale settings object still opens
                 pass
         run_batch_export_to_speech(self)
-        self._reload_library_list()
+        self._reload_library_tree()
 
     def export_translated_speech(self) -> None:
         """Studio > Narrate a Document in Another Language...: pick one document,
@@ -1395,7 +1396,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
                 "Open Book",
                 wx.ICON_WARNING | wx.OK,
             )
-            self._reload_library_list()
+            self._reload_library_tree()
             return
         open_book_in_workbench(
             self,
@@ -1411,7 +1412,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
             propose_silences=propose_silences,
         )
         self._record_play(path)
-        self._reload_library_list()
+        self._reload_library_tree()
 
     def open_job_file(self) -> None:
         """Open a saved .quilljob and land in the wizard with every page pre-filled."""
@@ -1483,7 +1484,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
         runner._persist_choices(self, request)
         runner._save_project_profile(self, request)
         runner._run(self, request)
-        self._reload_library_list()
+        self._reload_library_tree()
 
     # -- book tools ---------------------------------------------------------------
 
@@ -2174,7 +2175,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
             on_success(result)
         finally:
             self._refresh_statusbar()
-            self._reload_library_list()
+            self._reload_library_tree()
 
     # -- voice preview (MainFrame protocol) ---------------------------------------
 
@@ -2492,12 +2493,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
         # tooltip back to the plain app name.
         self._run_progress = None
         self._update_tray_tooltip(_TITLE)
-        books = self._recent_books()
-        if books:
-            plural = "" if len(books) == 1 else "s"
-            self._set_status_quiet(f"Ready - {len(books)} book{plural} in your library")
-        else:
-            self._set_status_quiet("Ready - narrate documents or build from recordings to begin")
+        self._set_status_quiet("Ready - use the menu bar to begin")
 
     # -- arrow-navigable status bar (F6) ------------------------------------------
 
@@ -2508,14 +2504,16 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
             bar.refresh()
 
     def _focus_library(self) -> None:
-        tree = getattr(self, "_library_tree", None)
-        if tree is not None:
+        control = getattr(self, "_activity_text", None)
+        if control is None:
+            control = getattr(self, "_main_panel", None)
+        if control is not None:
             try:
-                tree.SetFocus()
+                control.SetFocus()
             except Exception:  # noqa: BLE001 - focus is best-effort
                 pass
 
-    #: The bar's Escape/leave path hands focus back to the library list.
+    #: The bar's Escape/leave path hands focus back to the home window.
     _focus_initial_control = _focus_library
 
     def _focus_status_bar(self) -> None:
@@ -2528,10 +2526,10 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
             return
         if bar.has_focus():
             self._focus_library()
-            self._announce("Returned to your books")
+            self._announce("Returned to the Studio window")
             return
         bar.refresh()
-        bar.focus_bar(return_focus=getattr(self, "_library_tree", None))
+        bar.focus_bar(return_focus=getattr(self, "_activity_text", None))
 
     def _toggle_show_status_bar(self) -> None:
         """Flip Show Status Bar, persist it, and show/hide the bar right away."""

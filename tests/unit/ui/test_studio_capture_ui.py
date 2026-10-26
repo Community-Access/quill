@@ -106,6 +106,29 @@ def test_capture_setup_has_named_native_fields(parent):
         dialog.Destroy()
 
 
+def test_editing_starts_simple_and_keeps_exact_geometry_under_advanced(parent, capture):
+    from quill.ui.studio_capture_editor import ScreenshotEditorDialog
+
+    host = Host(parent)
+    dialog = ScreenshotEditorDialog(host, capture)
+    try:
+        assert not dialog.position.GetParent().IsShown()
+        assert dialog.action.GetStringSelection() == "Keep only this area"
+        assert "SHA-256" not in dialog.plan.GetValue()
+        dialog.action.SetSelection(1)
+        dialog._add(None)
+        assert len(host._task_manager.jobs) == 1
+        _, work, callbacks = host._task_manager.jobs[0]
+        result = work(cancellation_token=CancellationToken())
+        callbacks["on_success"](None, result)
+        assert dialog.project.operations[0]["kind"] == "redact"
+        assert not dialog.busy
+        assert "Hide private information" in dialog.plan.GetValue()
+    finally:
+        dialog.stop()
+        dialog.Destroy()
+
+
 def test_safe_mode_never_offers_network_send(chat, connected):
     host, dialog = chat(safe=True, consent=wx.YES)
     dialog.send(local=False)
