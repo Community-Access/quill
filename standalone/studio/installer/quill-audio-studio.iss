@@ -1,4 +1,4 @@
-; QUILL Audio Studio installer -- shared-runtime layout.
+; QUILL Studio installer -- shared-runtime layout.
 ;
 ; Promoted from the onedir layout to the shared QuillVille Runtime
 ; (2026-07-24). See standalone\radio\installer\quill-radio.iss for the
@@ -20,7 +20,7 @@
 ;   - the per-app icon at ..\assets\quill-audio-studio.ico;
 ;   - the rendered Studio docs at ..\dist\QuillAudioStudio\docs.
 
-#define AppName "QUILL Audio Studio"
+#define AppName "QUILL Studio"
 ; Version is single-sourced from build_release.ps1, which passes
 ; /dAppVersion=<version> to ISCC. The literal below is only the fallback for a
 ; manual ISCC run and must be kept in step with build_release.ps1's $version.
@@ -37,7 +37,7 @@
   #define AppFileVersion "2.2.0.2"
 #endif
 #define AppPublisher "Community Access"
-#define AppURL "https://github.com/Community-Access/quill-audio-studio"
+#define AppURL "https://github.com/Community-Access/quill"
 
 ; -- shared runtime parameters (read by installer\shared-runtime.iss) ----------
 ; AppRefId is the stable per-app key the fragment uses in
@@ -75,8 +75,8 @@ AppUpdatesURL={#AppURL}
 VersionInfoVersion={#AppFileVersion}
 VersionInfoCompany={#AppPublisher}
 VersionInfoDescription={#AppName} accessible audio production studio (shared runtime)
-DefaultDirName={autopf}\{#AppName}
-DefaultGroupName={#AppName}
+DefaultDirName={autopf}\QUILL Audio Studio
+DefaultGroupName=QUILL Audio Studio
 DisableDirPage=no
 DisableProgramGroupPage=auto
 AllowNoIcons=yes
@@ -159,6 +159,13 @@ Name: "{group}\{#AppName}"; Filename: "{app}\QuillAudioStudio.exe"; IconFilename
 Name: "{group}\{#AppName} User Guide"; Filename: "{app}\docs\userguide.md"; Components: docs
 Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\QuillAudioStudio.exe"; IconFilename: "{app}\quill-audio-studio.ico"; Check: WantsDesktopIcon; Components: main
+
+[InstallDelete]
+; Remove only the old product's known shortcuts during the in-place rename.
+Type: files; Name: "{group}\QUILL Audio Studio.lnk"
+Type: files; Name: "{group}\QUILL Audio Studio User Guide.lnk"
+Type: files; Name: "{group}\Uninstall QUILL Audio Studio.lnk"
+Type: files; Name: "{autodesktop}\QUILL Audio Studio.lnk"
 
 [UninstallDelete]
 ; Remove only Audio Studio's own {app} payload. The shared runtime is

@@ -1,4 +1,4 @@
-# QUILL Audio Studio User Guide
+# QUILL Studio User Guide
 
 Version 2.2.0
 
@@ -12,7 +12,7 @@ indexed. Disabled settings stay disabled.
 
 (There is no Audio Studio 2.0 or 2.1: the Studio adopted the shared Quill family version number when it moved onto the shared runtime, so it went straight from 1.0.0 to 2.2.0. See the release notes for the full story.)
 
-QUILL Audio Studio is audiobook and audio production the way a screen reader user would design it: a small home window whose book list has focus the instant it opens, a wizard that asks one question at a time and announces every step, a chapter editor you drive entirely by ear, and spoken progress for every long run. It runs the exact same Audio Studio code that ships inside the QUILL editor and shares QUILL's data store, so a voice you configure here reads aloud in QUILL too, and nothing you set up is ever stranded.
+QUILL Studio is audiobook and audio production the way a screen reader user would design it: a small home window whose book list has focus the instant it opens, a wizard that asks one question at a time and announces every step, a chapter editor you drive entirely by ear, and spoken progress for every long run. It runs the exact same Audio Studio code that ships inside the QUILL editor and shares QUILL's data store, so a voice you configure here reads aloud in QUILL too, and nothing you set up is ever stranded.
 
 Three journeys cover the whole workshop:
 
@@ -24,7 +24,7 @@ Three journeys cover the whole workshop:
 
 ### The QuillVille Runtime: install Python once, use it everywhere
 
-Every QuillVille app - QUILL, Quill Radio, Quill Weather, and QUILL Audio Studio - now shares one Python runtime, called the **QuillVille Runtime**. It is installed once per user and reused by all of them. Install it a single time (with any Quill app), and every app you add afterward launches instantly, because the shared runtime is already there.
+Every QuillVille app - QUILL, Quill Radio, Quill Weather, and QUILL Studio - now shares one Python runtime, called the **QuillVille Runtime**. It is installed once per user and reused by all of them. Install it a single time (with any Quill app), and every app you add afterward launches instantly, because the shared runtime is already there.
 
 The runtime is reference-counted: it is removed only when the last app that needs it is uninstalled, so removing one app never leaves the others unable to start.
 
@@ -101,7 +101,7 @@ Expand and collapse the groups with Left and Right. Press **Enter** on a book to
 
 ## The Studio wizard
 
-**Studio > Open Audio Studio...** (Ctrl+N) opens the wizard. Its first page asks the one question that matters - what would you like to make? - and the following steps adapt to your answer. The wizard remembers which journey you used last and pre-selects it.
+**Studio > Open QUILL Studio...** (Ctrl+N) opens the wizard. Its first page asks the one question that matters - what would you like to make? - and the following steps adapt to your answer. The wizard remembers which journey you used last and pre-selects it.
 
 Wizard mechanics, the same on every page:
 
@@ -436,11 +436,11 @@ This changes Audio Studio only. Your other QUILL apps keep their own choice, unl
 
 ## The system tray
 
-QUILL Audio Studio's icon is three white-and-gold waveform bars on a dark slate tile. If you have used an earlier build, this is new: the Studio used to share Quill Radio's blue broadcast-wave icon, so on a desktop with more than one QuillVille app installed several of them looked identical. Every app in the family now has its own - the same rounded tile shape and the same gold accent throughout, but its own colour and its own picture each.
+QUILL Studio's icon is three white-and-gold waveform bars on a dark slate tile. If you have used an earlier build, this is new: the Studio used to share Quill Radio's blue broadcast-wave icon, so on a desktop with more than one QuillVille app installed several of them looked identical. Every app in the family now has its own - the same rounded tile shape and the same gold accent throughout, but its own colour and its own picture each.
 
 While minimized to the tray the Studio keeps running - a long narration continues with the window tucked away. Right-click (or keyboard-invoke) the tray icon for:
 
-- **Open Audio Studio...** - restore the window and open the wizard.
+- **Open QUILL Studio...** - restore the window and open the wizard.
 - **Resume: <your latest book>** - restore the window and open your most recent book in the Chapter Workbench.
 
 Double-click the tray icon to bring the window back.
@@ -478,7 +478,7 @@ All the Quill apps are published from one place, and each one recognizes its own
 
 | Action | Key |
 | --- | --- |
-| Open Audio Studio (the wizard) | Ctrl+N |
+| Open QUILL Studio (the wizard) | Ctrl+N |
 | Open Book File | Ctrl+O |
 | Preferences | Ctrl+Comma |
 | Command Palette | Ctrl+Shift+P |
@@ -531,7 +531,7 @@ address to reply to. What you expected and how to reproduce it are optional,
 and worth more than anything else when you can give them.
 
 Press Send and your **own mail program opens with the whole message already
-written**, addressed to support, with Quill Audio Studio's name and version and your Windows
+written**, addressed to support, with QUILL Studio's name and version and your Windows
 version filled in at the bottom. Nothing is sent until you send it there, so you
 can read it over, add anything, or change your mind.
 

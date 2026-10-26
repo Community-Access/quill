@@ -73,9 +73,7 @@ RUNTIME_APPS: tuple[RuntimeApp, ...] = (
     RuntimeApp(
         "converter", "quill.apps.converter", "Quill Converter", "CommunityAccess.QuillConverter"
     ),
-    RuntimeApp(
-        "studio", "quill.apps.studio", "QUILL Audio Studio", "CommunityAccess.QuillAudioStudio"
-    ),
+    RuntimeApp("studio", "quill.apps.studio", "QUILL Studio", "CommunityAccess.QuillAudioStudio"),
     RuntimeApp("inkwell", "quill.apps.inkwell", "Quill Inkwell", "CommunityAccess.QuillInkwell"),
     RuntimeApp(
         "transcribe",

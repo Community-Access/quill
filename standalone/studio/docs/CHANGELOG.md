@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## Unreleased
 
+- Rename the application to **QUILL Studio**, preserving installer and launcher identities, shared data and existing audiobook workflows. Legacy context-help titles and command-line aliases remain supported.
+
 ### Fixed
 
 - **Alt+B opens the Book Tools menu again** (2026-10-17). The main window's **Build From Recordings...** button also claimed Alt+B, and when a button and a top-level menu share a letter Windows presses the button, so Alt+B started a new book instead of opening Book Tools. The button is now **Build From &Recordings...**, Alt+R, and Alt+B opens Book Tools. For example, from the books list press Alt+B, then Down, to walk the Book Tools menu, or Alt+R to start the Build From Recordings journey; Studio > Build From Recordings... (Ctrl+Shift+B) is unchanged. A new test builds the real main window and fails if any control takes a menu's letter.

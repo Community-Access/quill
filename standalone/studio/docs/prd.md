@@ -1,11 +1,11 @@
-# QUILL Audio Studio -- Product Requirements
+# QUILL Studio -- Product Requirements
 
 Version 2.2.0 (the shared QuillVille family version; there is no Audio Studio
 2.0 or 2.1 -- see CHANGELOG.md)
 
 ## 1. Product overview and mission
 
-QUILL Audio Studio is a standalone Windows desktop application for audiobook
+QUILL Studio is a standalone Windows desktop application for audiobook
 and audio production, extracted from the QUILL editor's Audio Studio. Its
 mission: audio production that meets blind and low-vision creators where they
 are. Every step -- narrating a manuscript, assembling recordings into a
@@ -29,7 +29,7 @@ preferences, voice preview, background-task host, and an installer.
 
 ## 2. Relationship to QUILL
 
-QUILL Audio Studio is built from the QUILL repository itself. The whole
+QUILL Studio is built from the QUILL repository itself. The whole
 application lives in the `quill` package (`quill.apps.studio`); this directory
 is the product wrapper only -- entry point, installer, assets, and these docs.
 Superseded: the Studio was originally assembled in a separate repository
@@ -116,7 +116,7 @@ requirement, not a layer.
   flagging entries whose file is missing. Enter or double-click opens the
   selected book in the Chapter Workbench; Delete removes the entry from the
   list without touching the file (and says so).
-- AS-3. The menu bar must provide: Studio (Open Audio Studio Ctrl+N, the three
+- AS-3. The menu bar must provide: Studio (Open QUILL Studio Ctrl+N, the three
   journeys, Open Book File Ctrl+O, Open Job File, Resume on launch, Recently
   Played, Preferences Ctrl+Comma, Exit), Book Tools (Publish a Finished Book,
   Make a Podcast Feed From a Folder, ACX Compliance Check, Sleep Timer, Mute
@@ -444,7 +444,7 @@ requirement, not a layer.
   Tray, default Ask). They must persist to the app-local prefs file, written
   atomically, with unreadable prefs falling back to defaults rather than
   crashing.
-- AS-66. The tray icon must always be present, offering Open Audio Studio and
+- AS-66. The tray icon must always be present, offering Open QUILL Studio and
   "Resume: <most recent book>", both restoring the window first. Sending the
   app to the tray must announce that it is still running.
 - AS-67. Alt+F4-to-tray, when enabled, must intercept before Windows closes

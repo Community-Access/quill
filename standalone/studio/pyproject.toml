@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "quill-audio-studio"
 version = "2.2.0"
-description = "QUILL Audio Studio -- accessible, screen-reader-first audiobook and speech production as a standalone app"
+description = "QUILL Studio -- accessible, screen-reader-first audiobook and speech production as a standalone app"
 readme = "README.md"
 requires-python = ">=3.14"
 license = { text = "MIT" }
@@ -23,6 +23,7 @@ classifiers = [
 dependencies = ["quill[ui,mp3] @ git+https://github.com/Community-Access/quill.git@ca37c60d18b6003c5139ee905ee4bfe84a601cf8"]
 
 [project.gui-scripts]
+quill-studio = "quill_audio_studio:main"
 quill-audio-studio = "quill_audio_studio:main"
 
 [project.urls]

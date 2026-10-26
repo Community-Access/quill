@@ -108,7 +108,7 @@ PRODUCTS: dict[str, Product] = {
     "studio": Product(
         key="studio",
         name="QuillAudioStudio",
-        display="QUILL Audio Studio",
+        display="QUILL Studio",
         module="quill.apps.studio",
         version_from="studio",
         icon_dir="studio",

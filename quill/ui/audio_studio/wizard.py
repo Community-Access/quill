@@ -63,7 +63,7 @@ class AudioStudioWizard(wx.Dialog):
     ) -> None:
         super().__init__(
             parent,
-            title=str(_("QUILL Audio Studio")),
+            title=str(_("QUILL Studio")),
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
             name="audio_studio.wizard",
         )

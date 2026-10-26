@@ -1,4 +1,4 @@
-"""QUILL Audio Studio -- audiobook and audio production as a standalone app.
+"""QUILL Studio -- audiobook and audio production as a standalone app.
 
 The Studio wizard, Chapter Workbench, batch narration pipeline, and publish
 surfaces are the exact same code QUILL ships (vendored here under the
@@ -74,7 +74,7 @@ try:  # winsound is Windows-only; previews fall back to MCI/startfile elsewhere
 except ImportError:  # pragma: no cover - non-Windows
     _winsound = None  # type: ignore[assignment]
 
-_TITLE = "QUILL Audio Studio"
+_TITLE = "QUILL Studio"
 #: Studio's own version, not QUILL's: About and Check for Updates both read it,
 #: and it must match standalone/studio (pyproject, installers) -- GATE-APPVER.
 _VERSION = "2.2.0"
@@ -226,7 +226,7 @@ def _await_playback(
 
 
 class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
-    """The standalone QUILL Audio Studio window."""
+    """The standalone QUILL Studio window."""
 
     #: Voices > Download Optional Components shows only what the audio workflow
     #: uses: the speech engines, the offline dictation/transcription stack (AI
@@ -938,7 +938,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         tags_id, chapters_id = wx.NewIdRef(), wx.NewIdRef()
         prefs_id, exit_id = wx.NewIdRef(), wx.NewIdRef()
         narrate_translated_id = wx.NewIdRef()
-        studio.Append(open_id, "&Open Audio Studio...\tCtrl+N", "Open the Studio wizard")
+        studio.Append(open_id, "&Open QUILL Studio...\tCtrl+N", "Open the Studio wizard")
         studio.AppendSeparator()
         studio.Append(
             narrate_id, "Narrate &Documents...\tCtrl+Shift+N", "Documents to speech audio or a book"
@@ -1188,7 +1188,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
 
     def _build_tray_menu(self, menu: wx.Menu) -> None:
         studio_id, resume_id = wx.NewIdRef(), wx.NewIdRef()
-        menu.Append(studio_id, "Open Audio Studio...")
+        menu.Append(studio_id, "Open QUILL Studio...")
         menu.Bind(
             wx.EVT_MENU,
             lambda _e: (self._restore_from_tray(), self.open_studio()),
@@ -1206,7 +1206,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
 
     def _register_commands(self) -> None:
         for command_id, title, handler in (
-            ("studio.open", "Open Audio Studio...", self.open_studio),
+            ("studio.open", "Open QUILL Studio...", self.open_studio),
             ("studio.narrate", "Narrate Documents...", lambda: self.open_studio("documents")),
             (
                 "studio.narrate_translated",
@@ -1457,7 +1457,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
                 initial_journey="documents",
             )
             try:
-                code = self._show_modal_dialog(dlg, "QUILL Audio Studio")
+                code = self._show_modal_dialog(dlg, "QUILL Studio")
                 if code == RELOAD_WITH_JOB and dlg.loaded_job is not None:
                     defaults = dlg.loaded_job
                     continue

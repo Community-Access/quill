@@ -1,4 +1,4 @@
-"""QUILL Audio Studio — the guided audio-production surface.
+"""QUILL Studio — the guided audio-production surface.
 
 One studio, three journeys: narrate documents into chaptered speech audio or
 an audiobook; combine a folder of recordings into one chaptered master; open
@@ -65,7 +65,7 @@ def show_audio_studio(frame: object) -> BatchSpeechRequest | None:
             initial_journey=last_journey,
         )
         try:
-            code = frame._show_modal_dialog(dlg, str(_("QUILL Audio Studio")))
+            code = frame._show_modal_dialog(dlg, str(_("QUILL Studio")))
             if code == RELOAD_WITH_JOB and dlg.loaded_job is not None:
                 # A .quilljob was loaded: reopen with it as the defaults so
                 # every page pre-fills and Skip to summary is three keystrokes.

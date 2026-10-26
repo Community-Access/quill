@@ -4,6 +4,12 @@ All notable changes to QUILL Audio Studio are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+- Rename the application to **QUILL Studio**. Window, tray, wizard, runtime chooser, installer display name and shortcuts use the new name. Existing audiobook workflows and shortcuts are preserved.
+- Keep the installer AppId, application identity, launcher, package import, release artifact names, shared runtime registration and data paths stable for in-place upgrades. Legacy names remain recognized by context help, and the original command-line entry point remains available alongside `quill-studio`.
+- Installer upgrades remove the old product shortcuts before creating the new names. Installer execution and screen-reader acceptance still require a Windows release verification run.
+
 ## [2.2.0] - built, not yet released
 
 - **Where Audio Studio's own sounds play, and Alt+Shift+M to turn them off.** **Studio > Preferences > App Sounds Play On...** offers System default, None (no sounds), or any sound card or headset by name. After a change one sound plays on the new card, so you hear where it went. If that card is unplugged the sounds play on the system default until it is back, and Audio Studio says so once. **Alt+Shift+M** turns Audio Studio's sounds off and back on where they were, and **Studio > App Sounds** shows a check mark while they are on. Each QUILL app keeps its own choice; "Share these choices with my other Quill apps" keeps them in step. Your screen reader is never moved. Asked for on QUILLVille by Rick Lewis.

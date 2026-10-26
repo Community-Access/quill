@@ -1,8 +1,8 @@
-# QUILL Audio Studio
+# QUILL Studio
 
 Accessible, screen-reader-first audio production as a standalone Windows app, from the QUILL project.
 
-QUILL Audio Studio is not a fork. The whole application lives in the [quill](https://github.com/Community-Access/quill) package (`quill.apps.studio`) and runs the exact same audio feature code QUILL itself uses: the same waveform editing, chapter markers, TTS narration, loudness checks, and publishing. This folder holds only what exists because QUILL is not in the picture: the product wrapper (entry point), the installer, and this app's own documentation. Everything shared stays upstream, so QUILL Audio Studio tracks QUILL automatically.
+QUILL Studio is not a fork. The whole application lives in the [quill](https://github.com/Community-Access/quill) package (`quill.apps.studio`) and runs the exact same audio feature code QUILL itself uses: the same waveform editing, chapter markers, TTS narration, loudness checks, and publishing. This folder holds only what exists because QUILL is not in the picture: the product wrapper (entry point), the installer, and this app's own documentation. Everything shared stays upstream, so QUILL Studio tracks QUILL automatically.
 
 ## What it does
 
@@ -15,6 +15,8 @@ QUILL Audio Studio is not a fork. The whole application lives in the [quill](htt
 - Speak, braille, cue and display every announcement through the shared announcement service, with an arrow-navigable status bar (F6) that keeps a long run reviewable from the tray.
 - Live in the system tray; share settings and voices with QUILL, Quill Radio, and QUILL Cast (one data store in `%APPDATA%\Quill`).
 - Check for its own updates from Help > Check for Updates.
+
+Formerly **QUILL Audio Studio**. The executable, package and download filenames retain their legacy names for upgrade compatibility; the application and shortcuts display **QUILL Studio**.
 
 ## Install
 

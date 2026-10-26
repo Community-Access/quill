@@ -1,4 +1,4 @@
-"""What every QUILL Audio Studio window is *for* -- the F1 help's opening paragraph.
+"""What every QUILL Studio window is *for* -- the F1 help's opening paragraph.
 
 Quill Radio authored the first catalogue (:mod:`quill.core.radio.surface_help`,
 2026-08-23), QUILL Cast followed (2026-08-24), and the F1 engine has been
@@ -11,7 +11,7 @@ Cast's are.
 Keyed by **window title** for the same reasons the others are: the title is
 the one identity a window already announces, and it is what a person quotes
 back in a bug report. One Studio quirk: the home window and the Studio wizard
-deliberately share the title "QUILL Audio Studio", so that entry speaks to
+deliberately share the title "QUILL Studio", so that entry speaks to
 both. Titles that carry live data ("Copy Sections -- interview.mp3") resolve
 by prefix.
 
@@ -59,7 +59,7 @@ PURPOSES: dict[str, str] = {
         "range this chapter is allowed to occupy."
     ),
     # -- the windows -------------------------------------------------------------
-    "QUILL Audio Studio": (
+    "QUILL Studio": (
         "The home window and the Studio wizard share this name. The home "
         "window is three big buttons -- narrate documents, build from "
         "recordings, edit a book -- above Your books, the library tree where "
@@ -67,7 +67,7 @@ PURPOSES: dict[str, str] = {
         "one of those journeys page by page; answer each page, or Skip to "
         "summary when your saved defaults already fit."
     ),
-    "QUILL Audio Studio (Safe Mode)": (
+    "QUILL Studio (Safe Mode)": (
         "The home window, running in Safe Mode: AI, publishing, translation, "
         "and downloading from links politely refuse until you restart "
         "normally. Narrating, building, converting, and editing books all "
@@ -144,7 +144,7 @@ PURPOSES: dict[str, str] = {
         "translating. Each export lands beside the source, named for its "
         "language."
     ),
-    "QUILL Audio Studio Preferences": (
+    "QUILL Studio Preferences": (
         "The Studio's own window behavior: whether launch checks for "
         "updates, whether Alt+F4 tucks the window into the tray with a run "
         "still going, whether long runs speak their 25, 50, and 75 percent "
@@ -159,6 +159,10 @@ PURPOSES: dict[str, str] = {
         "apps, so a voice configured once reads everywhere."
     ),
 }
+
+# Legacy names remain discoverable for old builds and documentation.
+for _title in ("QUILL Studio", "QUILL Studio (Safe Mode)", "QUILL Studio Preferences"):
+    PURPOSES[_title.replace("QUILL Studio", "QUILL Audio Studio")] = PURPOSES[_title]
 
 #: Purposes for windows whose titles carry live data, matched by prefix.
 PREFIX_PURPOSES: tuple[tuple[str, str], ...] = (
@@ -182,7 +186,7 @@ PREFIX_PURPOSES: tuple[tuple[str, str], ...] = (
 #: it exists so a shared or brand-new window still answers F1 with something
 #: true rather than nothing.
 GENERIC_PURPOSE = (
-    "A QUILL Audio Studio window. Tab moves between its controls, Escape "
+    "A QUILL Studio window. Tab moves between its controls, Escape "
     "closes it, and F1 on any control explains that control."
 )
 
