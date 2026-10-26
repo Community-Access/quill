@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Spike: making screen readers see QUILL's tables (October
+2026)</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1
+id="spike-making-screen-readers-see-quills-tables-october-2026">Spike:
+making screen readers see QUILL’s tables (October 2026)</h1>
+<p>Status: spike finished 2026-10-25. Nothing under <code>quill/</code>
+was changed. The prototype and its recorded output are in
+<code>docs/design/spikes/table_uia/</code>.</p>
+<p><strong>Decision, 2026-10-26: no add-ons and no reader
+scripts.</strong> Tables became real RichEdit tables in rich text
+(<code>quill/ui/richedit_tables.py</code>), which gives Narrator
+RichEdit’s own grid, and the editors now own the arrow keys inside a
+table (<code>quill/core/table_nav.py</code>, <code>arrow_move</code>):
+Up and Down move cell to cell and the app says the cell, so every reader
+hears the same thing with nothing installed. The NVDA add-on recommended
+below was started and withdrawn; it is kept here as the record of what
+each reader can and cannot see.</p>
+<h2 id="the-question">The question</h2>
+<p>QUILL and QUILL Lite show a table as Markdown pipe rows
+(<code>| a | b |</code>) inside a stock Windows Rich Edit control
+(<code>RICHEDIT50W</code>, msftedit.dll, reached through
+<code>wx.TextCtrl</code> with <code>TE_RICH2</code>). QUILL’s own
+commands (<code>quill/core/table_nav.py</code>, Navigate &gt; Table,
+Ctrl+Alt+arrows) move cell by cell and announce “Row 2 of 4, column 3 of
+5: text”. The screen reader itself does not know it is in a table: no
+“table with 3 rows” on entry, no braille table indicators, and its own
+table commands do nothing.</p>
+<p>Can QUILL make NVDA, JAWS and Narrator themselves recognise those
+regions as tables, while keeping the stock Rich Edit control?</p>
+<h2 id="how-to-read-this-note">How to read this note</h2>
+<p>Every claim is marked:</p>
+<ul>
+<li><strong>Verified (ran)</strong>: measured on this machine (Windows
+11 build 26200, msftedit.dll 10.0.26100.8117, wxPython 4.3.1, NVDA
+2026.2 installed).</li>
+<li><strong>Verified (read)</strong>: read in source or in shipped
+bytecode.</li>
+<li><strong>Believed</strong>: my understanding of documented or
+observed behaviour, not checked in this spike.</li>
+</ul>
+<h2 id="short-answer">Short answer</h2>
+<ol type="1">
+<li>NVDA does not use UI Automation for a <code>RICHEDIT50W</code>
+window at all, so any UIA work on the stock control (wrapping provider,
+child table elements, custom text attributes) is invisible to NVDA.
+<strong>Verified (read)</strong>: NVDA 2026.2’s <code>UIAHandler</code>
+lists <code>RichEdit</code>, <code>RichEdit20</code> and
+<code>RICHEDIT50W</code> in <code>badUIAWindowClassNames</code>, and
+logs “Window found in badUIAWindowClassNames. Treating as non-UIA”
+unless an app module overrides it. NVDA reads Rich Edit through the Text
+Object Model (TOM) instead, in <code>NVDAObjects/window/edit.py</code>,
+and that module contains no table handling at all (no “table” string in
+its bytecode).</li>
+<li>Rich Edit’s own UIA provider already exposes native Rich Edit
+tables, but only partly, and only Narrator (and any other pure-UIA
+client) would see it. <strong>Verified (ran)</strong>: a three-by-three
+RTF <code>\trowd</code> table appears as a <code>DataGrid</code> child
+named “Rich Edit Table” with the Grid pattern (3 rows, 3 columns), and
+nine <code>DataItem</code> children with GridItem and Value. There is no
+Table or TableItem pattern, so no header relationships, and
+<code>GetEnclosingElement()</code> for text inside a cell returns the
+grid, not the cell. The same table written as pipe rows produces no
+child elements at all.</li>
+<li>Switching QUILL’s editor representation to native Rich Edit tables
+is not the cheaper path. It buys nothing for NVDA, partial semantics for
+Narrator, an unknown amount for JAWS, and it breaks every offset-based
+feature, because the control’s text changes shape (tabs in
+<code>GetValue()</code>, hidden U+FFF9, U+FFFB and BEL marker characters
+in TOM and UIA text).</li>
+<li><strong>Recommendation</strong>: reach NVDA through a small,
+optional NVDA add-on that adds table fields for pipe rows to NVDA’s
+existing Rich Edit support, with a presence handshake so QUILL stops
+making its own table announcements when the add-on is there (GATE-13).
+Prototype first: about 3 days for a go/no-go, about 2 to 3 weeks to
+ship. Narrator and JAWS are follow-ups, ranked below.</li>
+</ol>
+<h2 id="what-the-prototype-measured">What the prototype measured</h2>
+<p><code>docs/design/spikes/table_uia/probe_richedit_table_uia.py</code>
+opens a wx frame with two <code>TE_RICH2</code> controls. One gets a
+real Rich Edit table through <code>EM_SETTEXTEX</code> with RTF (the
+same storage TOM <code>ITextRange2::InsertTable</code> produces); the
+other gets the same table as pipe rows. A second process (a UIA client
+should not run on the provider’s own UI thread) then dumps what UIA
+reports. No screen reader is needed. Full output:
+<code>docs/design/spikes/table_uia/probe_output_2026-10-25.txt</code>.</p>
+<p><strong>Verified (ran)</strong>, both controls:</p>
+<ul>
+<li><code>UiaHasServerSideProvider</code> is true. The element is
+ControlType <code>Document</code>, class <code>RICHEDIT50W</code>, with
+the Text, Text2 and Value patterns. The provider description names
+<code>msftedit.DLL</code> as the main provider, so this is msftedit’s
+own UIA implementation, not the MSAA proxy.</li>
+<li><code>UIA_StyleNameAttributeId</code> and
+<code>UIA_StyleIdAttributeId</code> return
+<code>ReservedNotSupportedValue</code>. Rich Edit’s provider does not
+report named styles.</li>
+</ul>
+<p><strong>Verified (ran)</strong>, native table control:</p>
+<ul>
+<li>Raw-view children: a vertical scroll bar and
+<code>DataGrid "Rich Edit Table"</code>, Grid pattern,
+<code>RowCount=3</code>, <code>ColumnCount=3</code>. Its children are
+<code>DataItem</code> elements named by cell text (“Name”, “Age”, …
+“C3”), each with GridItem (correct row and column) and Value. No
+TableItem, so no column-header relationship, even though RTF has a
+header-row flag.</li>
+<li><code>DocumentRange.GetChildren()</code> returns the one
+<code>DataGrid</code>.</li>
+<li><code>GetEnclosingElement()</code> of a range on “B2” returns the
+<code>DataGrid</code>, whose parent is the edit. The cell is never the
+enclosing element.</li>
+<li>Searching the subtree for the Table pattern finds nothing.</li>
+<li>Text units: the line unit around “B2” is the whole row with markers,
+<code>'\ufff9\rA2\x07B2\x07C2\x07\ufffb\r'</code>; the paragraph unit is
+the single cell, <code>'B2\x07'</code>. The document text carries U+FFF9
+(row start), U+FFFB (row end) and <code>\x07</code> (cell end).</li>
+<li><code>wx.TextCtrl.GetValue()</code> returns the table as
+tab-separated lines: <code>'Name\tAge\tCity\nA2\tB2\tC2\n...'</code>.
+The offsets QUILL computes from <code>GetValue()</code> therefore differ
+from TOM and UIA offsets inside a table.</li>
+</ul>
+<p><strong>Verified (ran)</strong>, pipe control: no children,
+<code>GetChildren()</code> is empty, the enclosing element of “B2” is
+the edit itself, and the line and paragraph units are the plain pipe
+row. That is the baseline: today no screen reader can learn anything
+about the table from the control.</p>
+<h2 id="how-each-reader-consumes-a-rich-edit-control">How each reader
+consumes a Rich Edit control</h2>
+<h3 id="nvda">NVDA</h3>
+<ul>
+<li><strong>Verified (read)</strong>, NVDA 2026.2 bytecode:
+<code>RICHEDIT50W</code> is normalised to <code>RichEdit50</code> and
+served by <code>NVDAObjects/window/edit.py</code> (TOM through
+<code>ITextDocument</code>). UIA is not consulted for this window class.
+An app module can override that with <code>isGoodUIAWindow</code>.</li>
+<li><strong>Verified (read)</strong>: NVDA’s UIA text support does
+understand tables. Its
+<code>UIATextInfo._getControlFieldForUIAObject</code> builds
+<code>table-id</code>, <code>table-rowcount</code>,
+<code>table-columncount</code>, <code>table-rownumber</code>,
+<code>table-columnnumber</code>, the span fields and
+<code>table-columnheadertext</code> from the TableItem pattern and the
+header-items properties of the elements that enclose a text range.</li>
+<li><strong>Believed</strong>: NVDA walks from
+<code>GetEnclosingElement()</code> up to the root to build those control
+fields, and reports a table on entry when one of them has the table role
+with row and column counts. Because Rich Edit’s own provider makes the
+grid, not the cell, the enclosing element, NVDA forced onto UIA would at
+best say “table” without cell coordinates. ScanMaster’s changelog
+(2.21.3) confirms the other half: NVDA discovers embedded objects by
+calling <code>ITextRangeProvider.GetChildren()</code> on the range it
+reads.</li>
+<li><strong>Believed</strong> (ScanMaster 2.22.0-beta.32, and its notes
+in <code>C:\sm\sm.md</code>): NVDA only provides its Ctrl+Alt+arrow
+table commands for Word and web documents, not for a plain edit. QUILL
+keeps its own cell commands whatever is chosen here.</li>
+</ul>
+<h3 id="jaws">JAWS</h3>
+<ul>
+<li><strong>Believed</strong>: JAWS treats <code>RICHEDIT50W</code> as a
+standard edit, using window messages, MSAA and its own Rich Edit
+support, not UIA. ScanMaster found that JAWS “reads nothing via UIA
+without the MSAA role” and only reads through UIA when the MSAA role is
+a text box (2.22.1). Whether JAWS announces native Rich Edit tables (for
+example in WordPad) is untested. That is a 30-minute check with JAWS and
+the probe’s frame, worth doing before any decision that leans on native
+tables.</li>
+</ul>
+<h3 id="narrator">Narrator</h3>
+<ul>
+<li><strong>Verified (ran)</strong> in principle: Narrator is a pure UIA
+client, and msftedit answers with a server-side provider, so Narrator
+would see the native <code>DataGrid</code> and <code>DataItem</code>
+elements. <strong>Believed</strong>: Narrator’s table reading in text
+depends on the enclosing element exposing TableItem or GridItem, so with
+the grid as the enclosing element it may say “table” without cell
+positions. Untested by ear.</li>
+</ul>
+<h2 id="the-options">The options</h2>
+<h3
+id="a-subclass-the-rich-edit-window-and-answer-wm_getobject-with-a-wrapping-provider">(a)
+Subclass the Rich Edit window and answer WM_GETOBJECT with a wrapping
+provider</h3>
+<p>The idea: hook <code>WM_GETOBJECT</code> on the Rich Edit window,
+return our own <code>IRawElementProviderSimple</code>, delegate text to
+msftedit’s provider and add table semantics for pipe ranges.</p>
+<ul>
+<li><strong>Delegation is the hard part.</strong> For a windowed Rich
+Edit there is no supported way to get msftedit’s provider object to
+wrap. Calling the original window procedure with
+<code>WM_GETOBJECT</code> returns an LRESULT meant for UIA core, not a
+pointer. <code>UiaHostProviderFromHwnd</code> (which
+<code>quill/native/table_uia</code> uses) yields only the HWND proxy,
+not msftedit’s Text pattern. <strong>Believed</strong>: msftedit’s
+<code>IRicheditWindowlessAccessibility</code> and
+<code>IRicheditUiaOverrides</code> (textserv.h) exist for windowless
+hosts, which QUILL is not.</li>
+<li><strong>Override providers</strong> are the closest supported route:
+the parent window’s provider implements
+<code>IRawElementProviderHwndOverride</code> and supplies an override
+provider for the edit’s HWND, which UIA merges above msftedit’s.
+<strong>Believed</strong>: patterns merge whole, so supplying a Text
+pattern replaces msftedit’s entirely. Table semantics need the text
+ranges themselves to answer <code>GetEnclosingElement()</code> and
+<code>GetChildren()</code>, so the override ends up as a hand-written
+<code>ITextProvider</code> plus <code>ITextRangeProvider</code> over
+TOM.</li>
+<li>That is exactly ScanMaster 2.19 to 2.21. Its lessons, from its
+changelog: NVDA calls the provider from its own thread while TOM is
+apartment-bound, so every TOM call had to be marshalled to the UI thread
+(2.19.1); <code>GetChildren()</code> had to be really implemented before
+NVDA found embedded objects (2.21.3); hit-testing and caret problems
+surfaced elsewhere (2.21.4). In 2.22 it abandoned Rich Edit for Qt and
+still needed twelve numbered patches to Qt’s UIA text provider:
+paragraph units, wrapped line units, Narrator’s stale
+<code>Select</code>, <code>ScrollIntoView</code> moving the caret,
+JAWS’s blank lines. Writing our own text provider means owning all of
+those.</li>
+<li><strong>Reach</strong>: Narrator only, unless an NVDA app module
+also forces UIA (then NVDA too, through our provider rather than its
+mature TOM support). JAWS: probably none without also changing the MSAA
+role.</li>
+<li><strong>Risk</strong>: high. UIA calls arrive on other threads; a
+provider bug crashes or hangs QUILL’s UI thread, and that affects every
+user, not only screen-reader users.</li>
+<li><strong>Effort</strong>: 6 to 10 weeks for a text provider good
+enough to replace msftedit’s for typing, reading and selection, plus a
+long tail.</li>
+</ul>
+<h3 id="b-pipe-tables-as-uia-child-elements-of-the-edit">(b) Pipe tables
+as UIA child elements of the edit</h3>
+<p>Add <code>Table</code> and <code>DataItem</code> fragments under the
+edit for each pipe region, as <code>quill/native/table_uia</code> does
+for the virtual list.</p>
+<ul>
+<li>Child elements on their own are not enough: NVDA and Narrator learn
+they are in a table from the text range
+(<code>GetEnclosingElement</code>), and the range comes from the Text
+pattern. Without owning the Text pattern, the children are visible to
+object navigation and inspection tools but are not announced as the
+caret moves. So (b) is a part of (a), not an alternative to it.</li>
+<li><strong>Reach</strong>: object navigation in Narrator and Inspect;
+no announcements. <strong>Effort</strong>: 1 to 2 weeks on top of the
+existing provider code, little value alone.</li>
+</ul>
+<h3
+id="c-custom-text-attributes-or-uia_stylenameattributeid-per-range">(c)
+Custom text attributes or UIA_StyleNameAttributeId per range</h3>
+<ul>
+<li><strong>Verified (ran)</strong>: msftedit returns NotSupported for
+StyleName and StyleId. Attributes are answered by
+<code>ITextRangeProvider::GetAttributeValue</code>, so adding any
+attribute again means owning the text provider, as in (a).</li>
+<li>Even if supplied, an attribute such as a style named “Table row 2”
+is not table semantics: no reader turns it into “table with 3 rows” or
+braille table indicators. NVDA can say a style name only with “Report
+style” on.</li>
+<li><strong>Verdict</strong>: not useful for tables.</li>
+</ul>
+<h3 id="d-screen-reader-specific-routes">(d) Screen-reader-specific
+routes</h3>
+<p><strong>NVDA add-on (app module for QUILL’s process).</strong> NVDA
+already reads QUILL’s editor through its TOM-based
+<code>RichEdit50</code> object. An app module can apply an overlay class
+whose TextInfo inserts table control fields (<code>role=TABLE</code>,
+<code>table-id</code>, <code>table-rowcount</code>,
+<code>table-columncount</code>, then per cell
+<code>table-rownumber</code>, <code>table-columnnumber</code>, and
+<code>table-columnheadertext</code> from the header row) around the text
+of pipe rows. NVDA’s speech and braille code already turn those fields
+into “table with 3 rows and 3 columns”, “row 2, column 3”, “out of
+table”, the user’s own “Report tables” and cell-coordinate settings, and
+braille table output.</p>
+<ul>
+<li><strong>Where table structure comes from</strong>: the add-on can
+parse pipe rows itself from the lines around the caret, which is the
+same pure parsing <code>quill/core/table_nav.py</code> does. A port of
+<code>TableGrid</code> parsing is a few hundred lines and keeps the
+add-on free of any QUILL connection.</li>
+<li><strong>What else it can add</strong>: NVDA’s own Ctrl+Alt+arrow
+table scripts, by mixing in NVDA’s document table-navigation support, so
+the reader’s commands match Word. QUILL’s Ctrl+Alt+arrows already do
+this; the add-on should either leave the chords to QUILL or claim them
+and keep the behaviour identical.</li>
+<li><strong>Threading</strong>: none of QUILL’s concern. The add-on runs
+inside NVDA and uses NVDA’s TOM access exactly as NVDA does today.</li>
+<li><strong>Precedent</strong>: ScanMaster ships an NVDA add-on (it
+wires a Hyperlinks List to NVDA+F7). <strong>Believed</strong>: the NV
+Access add-on store accepts app-module add-ons like this.</li>
+<li><strong>Limits</strong>: NVDA only; the user must install it. It
+reports what the pipe text says, so a pipe row typed in prose that
+<code>table_nav</code> would also call a table becomes one. That is
+consistent with QUILL’s own commands.</li>
+<li><strong>Effort</strong>: about 3 days for a prototype that speaks
+entry, exit and cell positions; about 2 to 3 weeks to ship, including
+braille checks, packaging, an installer offer from QUILL, and tests
+against NVDA’s last two releases.</li>
+</ul>
+<p><strong>JAWS scripts.</strong> JAWS scripts for QUILL’s executable
+could detect pipe rows on caret movement and speak and braille table
+information, using JAWS’s own table functions where they accept
+script-supplied data. <strong>Believed</strong>: JAWS scripting has no
+supported way to give its built-in table layer a synthetic table in an
+edit, so the result would be script-spoken announcements; that is close
+to what QUILL already does itself, with different chords. Low value
+until users ask. Effort 1 to 2 weeks, plus a JAWS licence for
+testing.</p>
+<h3 id="e-msaa-or-iaccessible2">(e) MSAA or IAccessible2</h3>
+<ul>
+<li>MSAA has no table model. IAccessible2 has
+<code>IAccessibleTable2</code> and <code>IAccessibleTableCell</code>,
+and <code>IAccessibleText</code> for text, but readers use IAccessible2
+for browsers and a few toolkits. <strong>Believed</strong>: NVDA does
+not apply IAccessible2 to a <code>RICHEDIT50W</code> window, and JAWS’s
+Rich Edit handling does not look for it. Implementing IAccessible2 would
+mean providing our own <code>IAccessibleText</code> too, so it is (a)
+again, with fewer readers.</li>
+<li><strong>Verdict</strong>: no.</li>
+</ul>
+<h2 id="native-rich-edit-tables-instead-of-pipe-rows">Native Rich Edit
+tables instead of pipe rows</h2>
+<p>The question was whether switching the editor representation to
+native Rich Edit tables would be cheaper, since Rich Edit’s own provider
+might already do the work.</p>
+<p><strong>What it would buy</strong> (from the probe and the reader
+notes):</p>
+<ul>
+<li>NVDA: nothing. Its TOM-based Rich Edit support has no tables, and it
+ignores msftedit’s UIA.</li>
+<li>Narrator: a <code>DataGrid</code> with Grid and GridItem, no
+headers, and the grid rather than the cell as the enclosing element.
+Partial at best.</li>
+<li>JAWS: unknown, untested.</li>
+</ul>
+<p><strong>What it would cost</strong> QUILL’s pipe-row features
+(<strong>Verified (read)</strong> in the tree, plus the probe’s text
+shapes):</p>
+<ul>
+<li><code>quill/core/table_nav.py</code>,
+<code>quill/ui/main_frame_table_nav.py</code>,
+<code>quill/apps/lite_window_tables.py</code>,
+<code>quill/apps/lite_window_insert_table.py</code> and
+<code>quill/core/structure_announce.py</code> all parse pipe text. They
+would need a second model that reads table structure through TOM
+(<code>ITextRange2</code> table and cell properties) rather than through
+text.</li>
+<li>Offsets: QUILL’s search, spelling, AI, read-aloud and braille are
+anchored to <code>get_plain_text()</code> offsets. Inside a native
+table, <code>GetValue()</code> gives tabs between cells while TOM and
+UIA count U+FFF9, U+FFFB and <code>\x07</code> markers, so every offset
+map needs a table-aware translation.</li>
+<li><code>quill/io/docx_reader.py</code> turns Word tables into pipe
+rows (“Rich edit has no native table vocabulary”);
+<code>quill/io/docx_writer.py</code> turns pipe rows back into Word
+tables; Markdown round trips rely on pipe rows being the text. All three
+would need native-table paths in both directions, and Markdown files
+would need converting at open and save.</li>
+<li><code>quill/io/rtf_model.py</code> lists <code>\trowd</code> and
+<code>\cell</code> as unsupported features that flatten; QUILL’s markup
+subset has no table vocabulary to carry them.</li>
+<li>QUILL Lite parity (the family rule that Lite may never be ahead of
+QUILL) means both editors change together.</li>
+<li>ScanMaster’s history warns that Rich Edit’s table insertion over COM
+threw on some Word tables and crashed the app until it was caught
+(2.19.4).</li>
+</ul>
+<p>Estimate: 6 to 8 weeks across both editors and the readers and
+writers, for a gain that reaches Narrator partially and NVDA not at all.
+Not the cheaper path.</p>
+<h2 id="coexistence-with-quills-own-announcements-gate-13">Coexistence
+with QUILL’s own announcements (GATE-13)</h2>
+<p>Whatever reaches the reader, QUILL must then stop saying the same
+thing. Today QUILL announces entering and leaving a table and “Row 2 of
+4, column 3 of 5” on its cell commands. Once the reader reports tables
+itself:</p>
+<ul>
+<li>On plain caret movement into or out of a table, QUILL must say
+nothing about the table; the reader will.</li>
+<li>On QUILL’s Ctrl+Alt+arrow cell moves, the reader will report the new
+row and column from the field change, so QUILL should announce only the
+“edge of table” and “no more rows” outcomes the reader cannot know.</li>
+<li>QUILL can only do that if it knows the add-on is active. Proposed
+handshake: the add-on sets a window property (for example
+<code>QuillNvdaTables</code>) on QUILL’s top-level window with
+<code>SetProp</code> when NVDA’s app module loads, and removes it when
+it unloads; QUILL checks the property before a table announcement. This
+is a cross-process <code>SetProp</code> on a window NVDA can already
+reach. No setting for the user, which GATE-13 prefers to a verbosity
+option.</li>
+<li>The announcement change must also keep GATE-BRAILLE parity: the
+announcements QUILL drops are dropped from braille as well, which is
+right, because NVDA brailles the table fields itself.</li>
+</ul>
+<h2 id="recommendation">Recommendation</h2>
+<ol type="1">
+<li><strong>Do not</strong> build a UIA provider over the stock Rich
+Edit for tables (options a, b, c), and do not switch to native Rich Edit
+tables. NVDA ignores the first and gains nothing from the second; both
+are weeks of work with crash risk (a) or broad regressions (native
+tables).</li>
+<li><strong>Do</strong> prototype the NVDA add-on route (option d):
+<ul>
+<li>Day 1: an app module for QUILL’s process that overlays the
+<code>RichEdit50</code> object and injects table control fields for pipe
+rows on the caret’s line and its neighbours, parsed with a port of
+<code>table_nav</code>’s grid code.</li>
+<li>Day 2: check by ear and in NVDA’s log: entry “table with N rows and
+M columns”, cell coordinates on Up and Down within a column, exit, the
+column header text, braille output, and say-all over a table.</li>
+<li>Day 3: the <code>SetProp</code> handshake and a matching change in
+QUILL’s table announcements behind it (a QUILL change, so outside this
+spike), then go/no-go.</li>
+<li>If it works: 2 to 3 weeks to ship as an optional add-on, offered
+from QUILL’s Help or first-run screen, with its source under
+<code>quill/</code> tooling or a sibling repo so the repo-wide gates can
+see it.</li>
+</ul></li>
+<li><strong>Before committing to anything that leans on native
+tables</strong>, spend 30 minutes with JAWS and Narrator against the
+probe’s frame (it stays open only while the dump runs; lengthen the
+<code>CallLater</code> delay or drop the dump to keep it up) to learn
+whether either announces the native table. That result decides whether
+native tables are ever worth revisiting for those two readers.</li>
+<li><strong>Later, only if Narrator users ask</strong>: the
+override-provider route in (a) is the only way to reach Narrator with
+pipe tables, and it means owning a full text provider; revisit it then
+with ScanMaster’s patch list as the test plan.</li>
+</ol>
+<h2 id="files-from-this-spike">Files from this spike</h2>
+<ul>
+<li><code>docs/design/table-uia-spike-2026-10.md</code>: this note.</li>
+<li><code>docs/design/spikes/table_uia/probe_richedit_table_uia.py</code>:
+the probe. Run with
+<code>py -3.14 docs/design/spikes/table_uia/probe_richedit_table_uia.py</code>.</li>
+<li><code>docs/design/spikes/table_uia/probe_output_2026-10-25.txt</code>:
+its output on this machine.</li>
+</ul>
+</main>
+</body>
+</html>

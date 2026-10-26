@@ -1,0 +1,2525 @@
+{
+  "_about": [
+    "The single source of truth for QUILL's third-party notices.",
+    "",
+    "Every bundled or redistributed third-party component of every QUILL family product is one entry in `components`. quill/tools/build_third_party_notices.py renders docs/legal/THIRD_PARTY_NOTICES.md and .txt from this file, and each installer app's standalone/<app>/THIRD-PARTY-NOTICES.txt and LICENSE.txt; its --check mode (and tests/unit/tools/test_third_party_notices.py) fails when a rendered file has drifted, or when a Python distribution in a build inventory has no entry here.",
+    "",
+    "Python versions and licences were read from installed package metadata (py -3.14, 2026-10-26). `--versions` compares them with what is installed now; it reports and does not fail, because the release build, not this file, decides what ships.",
+    "",
+    "`products` is a list of product keys, or [\"all\"]. Every installed app runs on the shared QuillVille Runtime, which is the union of every app's Python dependencies, so a Python library in the runtime is in every app. `delivery` is bundled (in the installer or portable zip), on-request (downloaded from QUILL's own pinned release when the person asks for it, so we still redistribute it), or build-only (never shipped). `review` marks an entry whose licence or terms could not be confirmed, or which carries an obligation the owner should decide on."
+  ],
+  "products": {
+    "quill": {
+      "name": "QUILL for All",
+      "standalone": null
+    },
+    "quilllite": {
+      "name": "QUILL Lite",
+      "standalone": "standalone/quilllite"
+    },
+    "radio": {
+      "name": "Quill Radio",
+      "standalone": "standalone/radio"
+    },
+    "cast": {
+      "name": "QUILL Cast",
+      "standalone": "standalone/cast"
+    },
+    "studio": {
+      "name": "QUILL Studio",
+      "standalone": "standalone/studio"
+    },
+    "weather": {
+      "name": "Quill Weather",
+      "standalone": "standalone/weather"
+    },
+    "inkwell": {
+      "name": "Quill Inkwell",
+      "standalone": "standalone/inkwell"
+    },
+    "converter": {
+      "name": "Quill Converter",
+      "standalone": "standalone/converter"
+    },
+    "transcribe": {
+      "name": "QUILL Transcribe",
+      "standalone": "standalone/transcribe"
+    },
+    "beacon": {
+      "name": "QuillBeacon",
+      "standalone": "standalone/beacon"
+    },
+    "social": {
+      "name": "QUILL Social",
+      "standalone": "standalone/social"
+    },
+    "player": {
+      "name": "Quill Media Player",
+      "standalone": null
+    },
+    "runtime": {
+      "name": "QuillVille Runtime",
+      "standalone": "standalone/runtime"
+    }
+  },
+  "groups": [
+    {
+      "id": "family",
+      "title": "Family components",
+      "intro": "Libraries written by Community Access and Blind Information Technology Solutions (BITS) for the QUILL family and published separately. They are listed so that every package in a build has an entry; they are not third-party."
+    },
+    {
+      "id": "runtime",
+      "title": "Runtime and libraries",
+      "intro": "Python itself and the libraries every app runs on. Installed apps share these through the QuillVille Runtime; portable editions carry their own copy."
+    },
+    {
+      "id": "audio-video",
+      "title": "Audio and video",
+      "intro": "Separate programs and engines for playing, recording and converting media."
+    },
+    {
+      "id": "speech",
+      "title": "Speech and dictation",
+      "intro": "Speech engines, voices and recognition models."
+    },
+    {
+      "id": "data",
+      "title": "Data and dictionaries",
+      "intro": "Word lists, dictionaries, directories and other data files."
+    },
+    {
+      "id": "fonts-sounds",
+      "title": "Fonts, sounds and icons",
+      "intro": "No fonts are bundled: every app uses the fonts Windows already has. The sounds and icons are listed here."
+    },
+    {
+      "id": "build",
+      "title": "Build-time only",
+      "intro": "Used to build or test the family and never shipped to you. Listed for completeness; their licences place no obligation on the products."
+    }
+  ],
+  "licenses": {
+    "0BSD": {
+      "name": "BSD Zero Clause License",
+      "text": "0BSD.txt",
+      "obligations": "None. We reproduce the notice anyway."
+    },
+    "AGPL-3.0": {
+      "name": "GNU Affero General Public License, version 3",
+      "text": "AGPL-3.0.txt",
+      "obligations": "Ship the licence text. Offer the complete corresponding source of the program as distributed, including our own code combined with it (QUILL's source is public), for as long as we distribute it. If people use a modified version over a network, offer them the source too."
+    },
+    "Apache-2.0": {
+      "name": "Apache License, version 2.0",
+      "text": "Apache-2.0.txt",
+      "obligations": "Ship the licence text and keep copyright notices. Pass on any NOTICE file the component carries. Say so if we changed the component."
+    },
+    "BASS": {
+      "name": "BASS licence (Un4seen Developments, proprietary freeware)",
+      "text": null,
+      "url": "https://www.un4seen.com/bass.html#license",
+      "obligations": "Free of charge only in non-commercial software. Credit Un4seen. No source is available and none is owed. The full terms are on un4seen.com and are not reproduced here."
+    },
+    "BSD-2-Clause": {
+      "name": "BSD 2-Clause License",
+      "text": "BSD-2-Clause.txt",
+      "obligations": "Keep the copyright notice, the conditions and the disclaimer in the documentation that ships with the binary."
+    },
+    "BSD-3-Clause": {
+      "name": "BSD 3-Clause License",
+      "text": "BSD-3-Clause.txt",
+      "obligations": "Keep the copyright notice, the conditions and the disclaimer in the documentation that ships with the binary. Do not use the authors' names to promote the product without permission."
+    },
+    "CC-BY-4.0": {
+      "name": "Creative Commons Attribution 4.0 International",
+      "text": "CC-BY-4.0.txt",
+      "obligations": "Credit the creator, link the licence and say whether we changed the work."
+    },
+    "CC0-1.0": {
+      "name": "Creative Commons Zero 1.0 (public domain dedication)",
+      "text": "CC0-1.0.txt",
+      "obligations": "None."
+    },
+    "Commons-Clause": {
+      "name": "Commons Clause License Condition v1.0, with Apache-2.0",
+      "text": "repo:quill/native/optilab/upstream/LICENSE",
+      "obligations": "Everything Apache-2.0 asks, and we may not sell the software itself. QUILL is free and never sold. The upstream NOTICE ships beside the program."
+    },
+    "GPL-2.0": {
+      "name": "GNU General Public License, version 2",
+      "text": "GPL-2.0.txt",
+      "obligations": "Ship the licence text. Provide the complete corresponding source of the component, either alongside it or by a written offer valid for at least three years. Any program that is a derivative work must also be offered under GPL-2.0-compatible terms."
+    },
+    "GPL-3.0": {
+      "name": "GNU General Public License, version 3",
+      "text": "repo:quill/data/notices/ffmpeg/LICENSE.GPLv3.txt",
+      "obligations": "Ship the licence text. Provide the complete corresponding source of the component, or a written offer for it, for as long as we distribute it (and at least three years). Any program that is a derivative work must also be offered under GPL-3.0-compatible terms."
+    },
+    "ISC": {
+      "name": "ISC License",
+      "text": "ISC.txt",
+      "obligations": "Keep the copyright notice and the permission notice."
+    },
+    "LGPL-2.1": {
+      "name": "GNU Lesser General Public License, version 2.1",
+      "text": "LGPL-2.1.txt",
+      "obligations": "Ship the licence text. Keep the library a separate, replaceable file (all are shipped as separate DLLs or modules). Offer the library's source, or point to the exact upstream source of the version we ship."
+    },
+    "LGPL-3.0": {
+      "name": "GNU Lesser General Public License, version 3",
+      "text": "LGPL-3.0.txt",
+      "obligations": "Ship the LGPL-3.0 and GPL-3.0 texts. Keep the library replaceable. Offer the library's source, or point to the exact upstream source of the version we ship."
+    },
+    "MIT": {
+      "name": "MIT License",
+      "text": "MIT.txt",
+      "obligations": "Keep the copyright notice and the permission notice with every copy."
+    },
+    "MIT-0": {
+      "name": "MIT No Attribution License",
+      "text": "MIT-0.txt",
+      "obligations": "None. We reproduce the notice anyway."
+    },
+    "MIT-CMU": {
+      "name": "MIT-CMU (the historical PIL licence), with the licences of Pillow's bundled libraries",
+      "text": "MIT-CMU.txt",
+      "obligations": "Keep the copyright notice and permission notice in the documentation that ships with the binary."
+    },
+    "MPL-2.0": {
+      "name": "Mozilla Public License, version 2.0",
+      "text": "MPL-2.0.txt",
+      "obligations": "Ship the licence text. Make the source of the MPL-covered files available (we ship them unmodified; the upstream source is public) and keep their notices. Our own code is not affected."
+    },
+    "MS-REDIST": {
+      "name": "Microsoft Visual C++ Redistributable licence terms",
+      "text": null,
+      "url": "https://visualstudio.microsoft.com/license-terms/vs2022-cruntime/",
+      "obligations": "Redistribute only the listed runtime files, unmodified, as part of our program. No source is owed."
+    },
+    "NVIDIA-OML": {
+      "name": "NVIDIA Open Model License",
+      "text": null,
+      "url": "https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/",
+      "obligations": "Ship the model's NOTICE and the licence terms with it; keep NVIDIA's attribution. Commercial use and redistribution are allowed."
+    },
+    "PSF-2.0": {
+      "name": "Python Software Foundation License, version 2",
+      "text": "PSF-2.0.txt",
+      "obligations": "Keep the PSF copyright notice and licence with the distribution and summarise any changes we made."
+    },
+    "Public-Domain": {
+      "name": "Public domain",
+      "text": null,
+      "obligations": "None."
+    },
+    "Unicode-3.0": {
+      "name": "Unicode License v3",
+      "text": null,
+      "url": "https://www.unicode.org/license.txt",
+      "obligations": "Keep the Unicode copyright and permission notice with the data or in its documentation. The full text is at unicode.org and is not reproduced here."
+    },
+    "Unlicense": {
+      "name": "The Unlicense (public domain dedication)",
+      "text": "Unlicense.txt",
+      "obligations": "None."
+    },
+    "Unknown": {
+      "name": "Not confirmed",
+      "text": null,
+      "obligations": "Unknown until the licence is confirmed. See the review note on each entry."
+    },
+    "WordNet": {
+      "name": "WordNet 2.1 licence (Princeton University)",
+      "text": "repo:quill/data/th_en_US_WordNet_LICENSE.txt",
+      "obligations": "Keep Princeton's copyright notice and licence with the data and in its documentation."
+    },
+    "Zlib": {
+      "name": "zlib License",
+      "text": "Zlib.txt",
+      "obligations": "Do not misrepresent the origin; mark altered versions; keep the notice in source distributions."
+    },
+    "wxWindows": {
+      "name": "wxWindows Library Licence, version 3.1",
+      "text": "wxWindows.txt",
+      "obligations": "Keep the notice. The licence's exception lets us ship the compiled library with our program on our own terms; changes to the library itself would have to be offered as source."
+    }
+  },
+  "components": [
+    {
+      "id": "acb-large-print",
+      "name": "ACB Large Print",
+      "group": "family",
+      "version": "8.0.0",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2026 BITS - Blind Information Technology Solutions",
+      "homepage": "https://github.com/Community-Access",
+      "what": "Large-print document formatting used by the GLOW tools. A family project, not third-party.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "acb-large-print"
+    },
+    {
+      "id": "quill-social",
+      "name": "quill-social",
+      "group": "family",
+      "version": "0.3.0",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2026 Blind Information Technology Solutions (BITS)",
+      "homepage": "https://github.com/Community-Access/quill-social",
+      "what": "Quill Social's own package. A family project, not third-party.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "quill-social"
+    },
+    {
+      "id": "wx-accessible-webview",
+      "name": "wx-accessible-webview",
+      "group": "family",
+      "version": "0.2.0",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2026 Taylor Arndt and Community Access",
+      "homepage": "https://github.com/Community-Access/wx-accessible-webview",
+      "what": "Accessible web views. A family project, not third-party.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "wx-accessible-webview"
+    },
+    {
+      "id": "accessible-output2",
+      "name": "accessible_output2",
+      "group": "runtime",
+      "version": "0.17",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2019 Christopher Toth and contributors",
+      "homepage": "https://github.com/accessibleapps/accessible_output2",
+      "what": "Fallback speech bridge to screen readers on Windows.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "accessible-output2"
+    },
+    {
+      "id": "attrs",
+      "name": "attrs",
+      "group": "runtime",
+      "version": "26.1.0",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2015 Hynek Schlawack and the attrs contributors",
+      "homepage": "https://www.attrs.org/",
+      "what": "Class helpers used by other libraries.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "attrs"
+    },
+    {
+      "id": "audioop-lts",
+      "name": "audioop-lts",
+      "group": "runtime",
+      "version": "0.2.2",
+      "licenses": [
+        "PSF-2.0"
+      ],
+      "license_label": "PSF-2.0",
+      "copyright": "Copyright (c) 2001-present Python Software Foundation",
+      "homepage": "https://github.com/AbstractUmbra/audioop",
+      "what": "The audioop module that Python 3.13 removed, for audio processing.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "audioop-lts"
+    },
+    {
+      "id": "autoupdate",
+      "name": "autoupdate (vendored)",
+      "group": "runtime",
+      "version": "vendored copy in quill/_vendor/autoupdate",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2012 Christopher Toth",
+      "homepage": "https://github.com/accessibleapps/app_updater",
+      "what": "Downloads and applies updates. Its licence ships beside the source in quill/_vendor/autoupdate/LICENSE.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled"
+    },
+    {
+      "id": "brotli",
+      "name": "Brotli",
+      "group": "runtime",
+      "version": "1.2.0",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2009, 2010, 2013-2016 by the Brotli Authors",
+      "homepage": "https://github.com/google/brotli",
+      "what": "Brotli decompression for web downloads.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "brotli"
+    },
+    {
+      "id": "certifi",
+      "name": "certifi",
+      "group": "runtime",
+      "version": "2026.10.23",
+      "licenses": [
+        "MPL-2.0"
+      ],
+      "license_label": "MPL-2.0",
+      "copyright": "Copyright Kenneth Reitz and contributors; certificate data from Mozilla",
+      "homepage": "https://github.com/certifi/python-certifi",
+      "what": "A bundle of trusted certificate authorities for secure web connections.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "certifi"
+    },
+    {
+      "id": "cffi",
+      "name": "CFFI",
+      "group": "runtime",
+      "version": "2.1.1",
+      "licenses": [
+        "MIT-0"
+      ],
+      "license_label": "MIT-0",
+      "copyright": "Copyright Armin Rigo, Maciej Fijalkowski and contributors",
+      "homepage": "https://cffi.readthedocs.io/",
+      "what": "Calls into native libraries from Python.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "cffi"
+    },
+    {
+      "id": "chardet",
+      "name": "chardet",
+      "group": "runtime",
+      "version": "7.6.0",
+      "licenses": [
+        "0BSD"
+      ],
+      "license_label": "0BSD",
+      "copyright": "Copyright (c) 2026 Dan Blanchard",
+      "homepage": "https://github.com/chardet/chardet",
+      "what": "Guesses the character encoding of text files.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "chardet"
+    },
+    {
+      "id": "charset-normalizer",
+      "name": "charset-normalizer",
+      "group": "runtime",
+      "version": "3.5.2",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2025 TAHRI Ahmed R.",
+      "homepage": "https://github.com/jawah/charset_normalizer",
+      "what": "Character-encoding detection for web responses.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "charset-normalizer"
+    },
+    {
+      "id": "chat-downloader",
+      "name": "chat-downloader",
+      "group": "runtime",
+      "version": "0.2.8",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2021, xenova",
+      "homepage": "https://github.com/xenova/chat-downloader",
+      "what": "Reads live chat from streams in Quill Radio.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "chat-downloader"
+    },
+    {
+      "id": "click",
+      "name": "Click",
+      "group": "runtime",
+      "version": "8.5.0",
+      "licenses": [
+        "BSD-3-Clause"
+      ],
+      "license_label": "BSD-3-Clause",
+      "copyright": "Copyright 2014 Pallets",
+      "homepage": "https://github.com/pallets/click",
+      "what": "Command-line parsing used by other libraries.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "click"
+    },
+    {
+      "id": "colorama",
+      "name": "colorama",
+      "group": "runtime",
+      "version": "0.4.6",
+      "licenses": [
+        "BSD-3-Clause"
+      ],
+      "license_label": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2010 Jonathan Hartley",
+      "homepage": "https://github.com/tartley/colorama",
+      "what": "Console colour support, a dependency of chat-downloader.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "colorama"
+    },
+    {
+      "id": "colorlog",
+      "name": "colorlog",
+      "group": "runtime",
+      "version": "6.12.0",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2012-2021 Sam Clements",
+      "homepage": "https://github.com/borntyping/python-colorlog",
+      "what": "Console log formatting, a dependency of chat-downloader.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "colorlog"
+    },
+    {
+      "id": "comtypes",
+      "name": "comtypes",
+      "group": "runtime",
+      "version": "1.4.17",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2006-2013, Thomas Heller; Copyright (c) 2014, Comtypes Developers",
+      "homepage": "https://github.com/enthought/comtypes",
+      "what": "Windows COM access, used for SAPI 5 speech and Windows shortcuts.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "comtypes"
+    },
+    {
+      "id": "cryptography",
+      "name": "cryptography",
+      "group": "runtime",
+      "version": "50.0.2",
+      "licenses": [
+        "Apache-2.0",
+        "BSD-3-Clause"
+      ],
+      "license_label": "Apache-2.0 OR BSD-3-Clause (your choice)",
+      "copyright": "Copyright (c) Individual contributors and The Python Cryptographic Authority; includes OpenSSL, Copyright (c) The OpenSSL Project Authors",
+      "homepage": "https://github.com/pyca/cryptography",
+      "what": "Encryption for Quill Beacon sync and SSH key handling.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "cryptography"
+    },
+    {
+      "id": "curl-cffi",
+      "name": "curl_cffi",
+      "group": "runtime",
+      "version": "0.16.3",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT (the bundled libcurl-impersonate carries the curl licence, a permissive MIT-style licence, and BoringSSL's OpenSSL/ISC terms)",
+      "copyright": "Copyright (c) 2018 multippt; Copyright (c) 2022 curl_cffi developers; curl: Copyright (c) Daniel Stenberg and contributors",
+      "homepage": "https://github.com/lexiforest/curl_cffi",
+      "what": "Web requests that look like a normal browser, for radio and video sources that refuse plain clients.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "curl_cffi"
+    },
+    {
+      "id": "defusedxml",
+      "name": "defusedxml",
+      "group": "runtime",
+      "version": "0.7.1",
+      "licenses": [
+        "PSF-2.0"
+      ],
+      "license_label": "PSF-2.0",
+      "copyright": "Copyright (c) 2013-2020 Christian Heimes",
+      "homepage": "https://github.com/tiran/defusedxml",
+      "what": "Safe XML parsing.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "defusedxml"
+    },
+    {
+      "id": "docstring-parser",
+      "name": "docstring_parser",
+      "group": "runtime",
+      "version": "0.18.0",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2018 Marcin Kurczewski",
+      "homepage": "https://github.com/rr-/docstring_parser",
+      "what": "A dependency of chat-downloader.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "docstring_parser"
+    },
+    {
+      "id": "et-xmlfile",
+      "name": "et_xmlfile",
+      "group": "runtime",
+      "version": "2.0.0",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2010 openpyxl",
+      "homepage": "https://foss.heptapod.net/openpyxl/et_xmlfile",
+      "what": "Streaming XML writer used by openpyxl.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "et_xmlfile"
+    },
+    {
+      "id": "feedparser",
+      "name": "feedparser",
+      "group": "runtime",
+      "version": "6.0.14",
+      "licenses": [
+        "BSD-2-Clause"
+      ],
+      "license_label": "BSD-2-Clause",
+      "copyright": "Copyright (C) 2010-2025 Kurt McKee; Copyright (C) 2002-2008 Mark Pilgrim",
+      "homepage": "https://github.com/kurtmckee/feedparser",
+      "what": "Reads podcast and news feeds.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "feedparser"
+    },
+    {
+      "id": "feedparser-sgmllib",
+      "name": "feedparser-sgmllib",
+      "group": "runtime",
+      "version": "2.1.0",
+      "licenses": [
+        "PSF-2.0"
+      ],
+      "license_label": "PSF-2.0",
+      "copyright": "Copyright (c) 2001-present Python Software Foundation",
+      "homepage": "https://github.com/kurtmckee/feedparser-sgmllib",
+      "what": "The old sgmllib module, used by feedparser.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "feedparser-sgmllib"
+    },
+    {
+      "id": "git-gh",
+      "name": "Git for Windows (MinGit) and GitHub CLI",
+      "group": "runtime",
+      "version": "MinGit 2.55.0.2; gh 2.96.0",
+      "licenses": [
+        "GPL-2.0",
+        "MIT"
+      ],
+      "license_label": "GPL-2.0 (Git); MIT (GitHub CLI)",
+      "copyright": "Git: Copyright (C) Linus Torvalds and the Git contributors; GitHub CLI: Copyright (c) 2019 GitHub Inc.",
+      "homepage": "https://gitforwindows.org/",
+      "what": "Optional tools for QUILL's GitHub publishing, downloaded on request from QUILL's release and run as separate programs.",
+      "products": [
+        "quill"
+      ],
+      "delivery": "on-request"
+    },
+    {
+      "id": "html-to-text",
+      "name": "html_to_text",
+      "group": "runtime",
+      "version": "1.0.0",
+      "licenses": [
+        "Apache-2.0"
+      ],
+      "license_label": "Apache-2.0",
+      "copyright": "Copyright emludei (https://github.com/emludei/html_to_text)",
+      "homepage": "https://github.com/emludei/html_to_text",
+      "what": "Turns HTML into plain text when pasting.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "html_to_text",
+      "review": "The installed and shipped package is emludei's html_to_text (Apache-2.0). Earlier notices credited AccessibleApps' MIT html_to_text instead. Confirm which project pyproject.toml means to depend on; the two share a name on PyPI."
+    },
+    {
+      "id": "httpcore2",
+      "name": "httpcore2",
+      "group": "runtime",
+      "version": "2.13.1",
+      "licenses": [
+        "BSD-3-Clause"
+      ],
+      "license_label": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2020, Encode OSS Ltd; Copyright (c) 2026 Pydantic Services Inc. and individual contributors",
+      "homepage": "https://github.com/pydantic/httpx2",
+      "what": "Low-level HTTP client used by httpx2.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "httpcore2"
+    },
+    {
+      "id": "httpx2",
+      "name": "httpx2",
+      "group": "runtime",
+      "version": "2.13.1",
+      "licenses": [
+        "BSD-3-Clause"
+      ],
+      "license_label": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2019, Encode OSS Ltd; Copyright (c) 2026 Pydantic Services Inc. and individual contributors",
+      "homepage": "https://github.com/pydantic/httpx2",
+      "what": "HTTP client used by Quill Social.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "httpx2"
+    },
+    {
+      "id": "idna",
+      "name": "idna",
+      "group": "runtime",
+      "version": "3.20",
+      "licenses": [
+        "BSD-3-Clause"
+      ],
+      "license_label": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2013-2026, Kim Davies and contributors",
+      "homepage": "https://github.com/kjd/idna",
+      "what": "International domain names.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "idna"
+    },
+    {
+      "id": "isodate",
+      "name": "isodate",
+      "group": "runtime",
+      "version": "0.7.2",
+      "licenses": [
+        "BSD-3-Clause"
+      ],
+      "license_label": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2009-2018, Gerhard Weis and contributors; Copyright (c) 2021, Hugo van Kemenade and contributors",
+      "homepage": "https://github.com/gweis/isodate/",
+      "what": "ISO 8601 date parsing, a dependency of chat-downloader.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "isodate"
+    },
+    {
+      "id": "keyring",
+      "name": "keyring",
+      "group": "runtime",
+      "version": "25.7.0",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright Kang Zhang, Jason R. Coombs and contributors",
+      "homepage": "https://github.com/jaraco/keyring",
+      "what": "Stores passwords in Windows Credential Manager.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "keyring"
+    },
+    {
+      "id": "latex2mathml",
+      "name": "latex2mathml",
+      "group": "runtime",
+      "version": "3.81.1",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) Ronie Martinez",
+      "homepage": "https://github.com/roniemartinez/latex2mathml",
+      "what": "Converts LaTeX maths to MathML.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "latex2mathml"
+    },
+    {
+      "id": "libffi",
+      "name": "libffi",
+      "group": "runtime",
+      "version": "as shipped with Python 3.14",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 1996-2024 Anthony Green, Red Hat, Inc and others",
+      "homepage": "https://sourceware.org/libffi/",
+      "what": "Lets Python call native code, shipped as part of Python.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled"
+    },
+    {
+      "id": "libipld",
+      "name": "libipld",
+      "group": "runtime",
+      "version": "3.4.1",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2023-2026 Ilya Siamionau",
+      "homepage": "https://github.com/MarshalX/python-libipld",
+      "what": "Decodes Bluesky data for Quill Social.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "libipld"
+    },
+    {
+      "id": "libloader",
+      "name": "libloader",
+      "group": "runtime",
+      "version": "1.4.3",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2019 Christopher Toth",
+      "homepage": "https://github.com/accessibleapps/libloader",
+      "what": "Loads the screen-reader client libraries for accessible_output2.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "libloader"
+    },
+    {
+      "id": "lxml",
+      "name": "lxml",
+      "group": "runtime",
+      "version": "6.1.3",
+      "licenses": [
+        "BSD-3-Clause"
+      ],
+      "license_label": "BSD-3-Clause (bundles libxml2 and libxslt under the MIT licence)",
+      "copyright": "Copyright (c) 2004 Infrae; libxml2: Copyright (C) 1998-2012 Daniel Veillard",
+      "homepage": "https://lxml.de/",
+      "what": "Fast XML and HTML processing, including Word documents.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "lxml"
+    },
+    {
+      "id": "markupsafe",
+      "name": "MarkupSafe",
+      "group": "runtime",
+      "version": "3.0.4",
+      "licenses": [
+        "BSD-3-Clause"
+      ],
+      "license_label": "BSD-3-Clause",
+      "copyright": "Copyright 2010 Pallets",
+      "homepage": "https://github.com/pallets/markupsafe",
+      "what": "Safe string handling for HTML.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "MarkupSafe"
+    },
+    {
+      "id": "msvc-runtime",
+      "name": "Microsoft Visual C++ runtime (vcruntime140, vcruntime140_1, msvcp140)",
+      "group": "runtime",
+      "version": "14.x",
+      "licenses": [
+        "MS-REDIST"
+      ],
+      "license_label": "Microsoft Visual C++ Redistributable licence terms",
+      "copyright": "Copyright (c) Microsoft Corporation",
+      "homepage": "https://learn.microsoft.com/cpp/windows/redistributing-visual-cpp-files",
+      "what": "The C and C++ runtime that Python and the compiled libraries need.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled"
+    },
+    {
+      "id": "mingw-runtime",
+      "name": "MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread)",
+      "group": "runtime",
+      "version": "as bundled by pillow-heif and PyEnchant",
+      "licenses": [
+        "GPL-3.0",
+        "MIT"
+      ],
+      "license_label": "GPL-3.0 with the GCC Runtime Library Exception 3.1 (libgcc, libstdc++), which lets them be shipped with any program; MIT and BSD (libwinpthread)",
+      "copyright": "Copyright (C) Free Software Foundation, Inc.; MinGW-w64 project contributors",
+      "homepage": "https://www.mingw-w64.org/",
+      "what": "Runtime libraries that two of the compiled libraries were built against.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "review": "The GCC Runtime Library Exception 3.1 text is not reproduced here (see https://www.gnu.org/licenses/gcc-exception-3.1.html); add it if the owner wants it bundled."
+    },
+    {
+      "id": "mutagen",
+      "name": "mutagen",
+      "group": "runtime",
+      "version": "1.48.1",
+      "licenses": [
+        "GPL-2.0"
+      ],
+      "license_label": "GPL-2.0-or-later",
+      "copyright": "Copyright (C) 2005 Joe Wreschnig, Michael Urman; Christoph Reiter and contributors",
+      "homepage": "https://mutagen.readthedocs.io",
+      "what": "Reads and writes audio tags and MP3 chapter markers.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "mutagen",
+      "review": "GPL-2.0-or-later library imported by QUILL's own code. Distributing it means the combined program must be offered under GPL-compatible terms with its source. QUILL's own MIT source is public, which satisfies this, but it should be a deliberate, written decision."
+    },
+    {
+      "id": "numpy",
+      "name": "NumPy",
+      "group": "runtime",
+      "version": "2.5.4",
+      "licenses": [
+        "BSD-3-Clause"
+      ],
+      "license_label": "BSD-3-Clause, with parts under 0BSD, MIT, Zlib and CC0-1.0 (texts ship inside the package)",
+      "copyright": "Copyright (c) 2005-2025, NumPy Developers",
+      "homepage": "https://github.com/numpy/numpy",
+      "what": "Numerical arrays for audio processing and dictation.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "numpy"
+    },
+    {
+      "id": "openpyxl",
+      "name": "openpyxl",
+      "group": "runtime",
+      "version": "3.1.5",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2010 openpyxl",
+      "homepage": "https://openpyxl.readthedocs.io",
+      "what": "Reads Excel workbooks.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "openpyxl"
+    },
+    {
+      "id": "openssl",
+      "name": "OpenSSL (libssl and libcrypto)",
+      "group": "runtime",
+      "version": "3.x, as shipped with Python 3.14",
+      "licenses": [
+        "Apache-2.0"
+      ],
+      "license_label": "Apache-2.0",
+      "copyright": "Copyright (c) 1998-2026 The OpenSSL Project Authors",
+      "homepage": "https://www.openssl.org/",
+      "what": "Secure connections, shipped as part of Python.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled"
+    },
+    {
+      "id": "pandoc",
+      "name": "Pandoc",
+      "group": "runtime",
+      "version": "3.10",
+      "licenses": [
+        "GPL-2.0"
+      ],
+      "license_label": "GPL-2.0-or-later",
+      "copyright": "Copyright (C) 2006-2026 John MacFarlane and contributors",
+      "homepage": "https://pandoc.org/",
+      "what": "Converts between document formats. Run as a separate program; downloaded on request or staged in the Offline Edition.",
+      "products": [
+        "quill"
+      ],
+      "delivery": "on-request",
+      "obligations": "Ship the GPL-2.0 text with it and point to its source (https://github.com/jgm/pandoc/releases/tag/3.10). Because it runs as a separate program, our own code is not affected."
+    },
+    {
+      "id": "pdfminer-six",
+      "name": "pdfminer.six",
+      "group": "runtime",
+      "version": "20260107",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2004-2016 Yusuke Shinyama; pdfminer.six contributors",
+      "homepage": "https://github.com/pdfminer/pdfminer.six",
+      "what": "Extracts text from PDF files.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "pdfminer.six"
+    },
+    {
+      "id": "pdfplumber",
+      "name": "pdfplumber",
+      "group": "runtime",
+      "version": "0.11.10",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2015, Jeremy Singer-Vine",
+      "homepage": "https://github.com/jsvine/pdfplumber",
+      "what": "Reads PDF text and tables.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "pdfplumber"
+    },
+    {
+      "id": "pillow",
+      "name": "Pillow",
+      "group": "runtime",
+      "version": "13.0.0",
+      "licenses": [
+        "MIT-CMU"
+      ],
+      "license_label": "MIT-CMU (the historical PIL licence); bundles libjpeg-turbo, libpng, zlib, FreeType, libwebp, libtiff and others under their own permissive licences, all reproduced in the Pillow licence text",
+      "copyright": "Copyright (c) 1997-2011 by Secret Labs AB; Copyright (c) 1995-2011 by Fredrik Lundh and contributors; Copyright (c) 2010 by Jeffrey A. Clark and contributors",
+      "homepage": "https://github.com/python-pillow/Pillow",
+      "what": "Images: screen capture, clipboard pictures and artwork.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "pillow"
+    },
+    {
+      "id": "pillow-heif",
+      "name": "pillow-heif",
+      "group": "runtime",
+      "version": "1.8.1",
+      "licenses": [
+        "BSD-3-Clause",
+        "LGPL-3.0",
+        "GPL-2.0"
+      ],
+      "license_label": "BSD-3-Clause for its own source; the Windows binary wheel as a whole is GPL-2.0, because it bundles x265 (GPL-2.0-or-later), libheif and libde265 (LGPL-3.0) and the MinGW-w64 runtime",
+      "copyright": "Copyright (c) 2021-2023, Pillow-Heif contributors; libheif and libde265: struktur AG; x265: MulticoreWare, Inc.",
+      "homepage": "https://github.com/bigcat88/pillow_heif",
+      "what": "Opens HEIC and HEIF photos (the iPhone default).",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "pillow_heif",
+      "review": "The binary wheel bundles x265 (GPL-2.0-or-later), so the wheel as a whole is GPL-2.0, and it ships in every app through the shared runtime. Same source-offer obligation as other GPL items."
+    },
+    {
+      "id": "pip",
+      "name": "pip",
+      "group": "runtime",
+      "version": "26.2.1",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2008-present The pip developers",
+      "homepage": "https://github.com/pypa/pip",
+      "what": "Python's package installer, present in the portable editions' embedded Python.",
+      "products": [
+        "quill",
+        "quilllite",
+        "radio",
+        "studio",
+        "weather",
+        "inkwell",
+        "converter",
+        "transcribe"
+      ],
+      "delivery": "bundled",
+      "pypi": "pip"
+    },
+    {
+      "id": "platform-utils",
+      "name": "platform_utils",
+      "group": "runtime",
+      "version": "1.6.3",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2019 Christopher Toth",
+      "homepage": "https://github.com/q-continuum/platform_utils",
+      "what": "Platform helpers for the vendored autoupdate library.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "platform_utils"
+    },
+    {
+      "id": "platformdirs",
+      "name": "platformdirs",
+      "group": "runtime",
+      "version": "4.13.0",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2010-202x The platformdirs developers",
+      "homepage": "https://github.com/tox-dev/platformdirs",
+      "what": "Finds the standard folders for settings and data.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "platformdirs"
+    },
+    {
+      "id": "prismatoid",
+      "name": "Prism (prismatoid)",
+      "group": "runtime",
+      "version": "0.18.3",
+      "licenses": [
+        "MPL-2.0",
+        "LGPL-2.1"
+      ],
+      "license_label": "MPL-2.0; bundles the NVDA controller client under LGPL-2.1 and other permissive components, whose texts ship inside the package",
+      "copyright": "Copyright Ethin Probst and contributors",
+      "homepage": "https://github.com/ethindp/prism",
+      "what": "Sends announcements to NVDA, JAWS and Narrator rather than speaking over them.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "prismatoid"
+    },
+    {
+      "id": "psutil",
+      "name": "psutil",
+      "group": "runtime",
+      "version": "7.2.2",
+      "licenses": [
+        "BSD-3-Clause"
+      ],
+      "license_label": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2009, Jay Loden, Dave Daeschler, Giampaolo Rodola",
+      "homepage": "https://github.com/giampaolo/psutil",
+      "what": "Reads which screen reader is running, for the support form.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "psutil"
+    },
+    {
+      "id": "pycparser",
+      "name": "pycparser",
+      "group": "runtime",
+      "version": "3.11",
+      "licenses": [
+        "BSD-3-Clause"
+      ],
+      "license_label": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2008-2027, Eli Bendersky",
+      "homepage": "https://github.com/eliben/pycparser",
+      "what": "C parser used by CFFI.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "pycparser"
+    },
+    {
+      "id": "pydantic",
+      "name": "pydantic",
+      "group": "runtime",
+      "version": "2.14.1",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2017 to present Pydantic Services Inc. and individual contributors",
+      "homepage": "https://github.com/pydantic/pydantic",
+      "what": "Data validation used by the document converters.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "pydantic"
+    },
+    {
+      "id": "pydantic-core",
+      "name": "pydantic-core",
+      "group": "runtime",
+      "version": "2.50.1",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2022 Samuel Colvin",
+      "homepage": "https://github.com/pydantic/pydantic",
+      "what": "The compiled core of pydantic.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "pydantic_core"
+    },
+    {
+      "id": "pyenchant",
+      "name": "PyEnchant",
+      "group": "runtime",
+      "version": "3.3.0",
+      "licenses": [
+        "LGPL-2.1"
+      ],
+      "license_label": "LGPL-2.1-or-later",
+      "copyright": "Copyright (c) 2004-2011 Ryan Kelly; Dimitri Merejkowsky and contributors",
+      "homepage": "https://pyenchant.github.io/pyenchant/",
+      "what": "Spell checking in QUILL.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "pyenchant",
+      "review": "The pruned Enchant payload also ships GLib, libiconv and libintl (LGPL-2.1-or-later), Hunspell (MPL-1.1, GPL-2.0 or LGPL-2.1, at our choice) and PCRE2 (BSD-3-Clause), plus English Hunspell dictionaries whose individual licences were not confirmed."
+    },
+    {
+      "id": "pymupdf",
+      "name": "PyMuPDF (with MuPDF)",
+      "group": "runtime",
+      "version": "1.28.2",
+      "licenses": [
+        "AGPL-3.0"
+      ],
+      "license_label": "AGPL-3.0 (dual-licensed by Artifex; QUILL uses the AGPL option)",
+      "copyright": "Copyright (C) Artifex Software, Inc.",
+      "homepage": "https://github.com/pymupdf/PyMuPDF",
+      "what": "Reads and renders PDF documents.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "pymupdf",
+      "review": "AGPL-3.0. It ships in the shared runtime, so every installed app carries it, not only the editor. AGPL obliges us to offer the complete corresponding source of the combined work (QUILL's source is public under MIT, which is compatible) and, if it is ever reached over a network, to offer source to those users too. Owner decision needed: keep it under these terms, buy Artifex's commercial licence, or replace it with pypdfium2, which is already bundled."
+    },
+    {
+      "id": "pynacl",
+      "name": "PyNaCl (with libsodium)",
+      "group": "runtime",
+      "version": "1.6.2",
+      "licenses": [
+        "Apache-2.0",
+        "ISC"
+      ],
+      "license_label": "Apache-2.0; the bundled libsodium is ISC",
+      "copyright": "Copyright The PyNaCl developers; libsodium: Copyright (c) 2013-2026 Frank Denis",
+      "homepage": "https://github.com/pyca/pynacl/",
+      "what": "Verifies signed Quillins.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "PyNaCl"
+    },
+    {
+      "id": "pypdf",
+      "name": "pypdf",
+      "group": "runtime",
+      "version": "6.21.2",
+      "licenses": [
+        "BSD-3-Clause"
+      ],
+      "license_label": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2006-2008, Mathieu Fenniak; pypdf contributors",
+      "homepage": "https://github.com/py-pdf/pypdf",
+      "what": "Reads PDF structure.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "pypdf"
+    },
+    {
+      "id": "pypdfium2",
+      "name": "pypdfium2 (with PDFium)",
+      "group": "runtime",
+      "version": "5.14.0",
+      "licenses": [
+        "Apache-2.0",
+        "BSD-3-Clause"
+      ],
+      "license_label": "Apache-2.0 or BSD-3-Clause; PDFium's own dependencies (FreeType, ICU, libjpeg-turbo, libpng, OpenJPEG, Little CMS, zlib and others) under their licences, all shipped inside the package",
+      "copyright": "Copyright pypdfium2-team; PDFium: Copyright 2014 The PDFium Authors",
+      "homepage": "https://github.com/pypdfium2-team/pypdfium2",
+      "what": "Renders PDF pages.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "pypdfium2"
+    },
+    {
+      "id": "pyreadline3",
+      "name": "pyreadline3",
+      "group": "runtime",
+      "version": "3.5.6",
+      "licenses": [
+        "BSD-3-Clause"
+      ],
+      "license_label": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2020 Bassem Girgis; Copyright (c) 2006-2020 Jorgen Stenarson and contributors",
+      "homepage": "https://github.com/pyreadline3/pyreadline3",
+      "what": "Console line editing, pulled in by the build.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "pyreadline3"
+    },
+    {
+      "id": "cpython",
+      "name": "Python (CPython)",
+      "group": "runtime",
+      "version": "3.14.8 (embeddable distribution in portable editions; the runtime is frozen from 3.14)",
+      "licenses": [
+        "PSF-2.0"
+      ],
+      "license_label": "PSF-2.0. Python's own LICENSE also lists the third-party code inside it (for example expat, libmpdec, zlib, bzip2, xz and libtommath) with their permissive licences.",
+      "copyright": "Copyright (c) 2001-2026 Python Software Foundation; All Rights Reserved",
+      "homepage": "https://www.python.org/",
+      "what": "The language every app is written in. Portable editions also ship Python's own license.txt beside python.exe.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled"
+    },
+    {
+      "id": "python-dateutil",
+      "name": "python-dateutil",
+      "group": "runtime",
+      "version": "2.9.0.post0",
+      "licenses": [
+        "Apache-2.0",
+        "BSD-3-Clause"
+      ],
+      "license_label": "Apache-2.0 and BSD-3-Clause (dual)",
+      "copyright": "Copyright 2017- Paul Ganssle; Copyright (c) 2003-2011 Gustavo Niemeyer; dateutil contributors",
+      "homepage": "https://github.com/dateutil/dateutil",
+      "what": "Date parsing.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "python-dateutil"
+    },
+    {
+      "id": "python-docx",
+      "name": "python-docx",
+      "group": "runtime",
+      "version": "1.2.0",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2013 Steve Canny",
+      "homepage": "https://github.com/python-openxml/python-docx",
+      "what": "Reads and writes Word documents.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "python-docx"
+    },
+    {
+      "id": "python-pptx",
+      "name": "python-pptx",
+      "group": "runtime",
+      "version": "1.0.2",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2013 Steve Canny",
+      "homepage": "https://github.com/scanny/python-pptx",
+      "what": "Reads PowerPoint presentations.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "python-pptx"
+    },
+    {
+      "id": "sounddevice",
+      "name": "python-sounddevice (with PortAudio)",
+      "group": "runtime",
+      "version": "0.5.6",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT; PortAudio is MIT-style",
+      "copyright": "Copyright (c) 2015-2025 Matthias Geier; PortAudio: Copyright (c) 1999-2011 Ross Bencina and Phil Burk",
+      "homepage": "https://python-sounddevice.readthedocs.io/",
+      "what": "Microphone capture for dictation.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "sounddevice"
+    },
+    {
+      "id": "soundfile",
+      "name": "python-soundfile (with libsndfile)",
+      "group": "runtime",
+      "version": "0.14.0",
+      "licenses": [
+        "BSD-3-Clause",
+        "LGPL-2.1"
+      ],
+      "license_label": "BSD-3-Clause; the bundled libsndfile is LGPL-2.1-or-later",
+      "copyright": "Copyright (c) 2013, Bastian Bechtold; libsndfile: Copyright (C) 1999-2026 Erik de Castro Lopo and contributors",
+      "homepage": "https://github.com/bastibe/python-soundfile",
+      "what": "Reads and writes WAV and FLAC audio.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "soundfile"
+    },
+    {
+      "id": "zstandard",
+      "name": "python-zstandard",
+      "group": "runtime",
+      "version": "0.25.0",
+      "licenses": [
+        "BSD-3-Clause"
+      ],
+      "license_label": "BSD-3-Clause (bundles Zstandard, BSD-3-Clause)",
+      "copyright": "Copyright (c) 2016, Gregory Szorc; Zstandard: Copyright (c) Meta Platforms, Inc.",
+      "homepage": "https://github.com/indygreg/python-zstandard",
+      "what": "Zstandard compression.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "zstandard"
+    },
+    {
+      "id": "pywin32",
+      "name": "pywin32",
+      "group": "runtime",
+      "version": "312",
+      "licenses": [
+        "PSF-2.0"
+      ],
+      "license_label": "PSF-2.0 (Python Software Foundation style licence; the bundled Scintilla is HPND)",
+      "copyright": "Copyright (c) 1994-2026 Mark Hammond and contributors",
+      "homepage": "https://github.com/mhammond/pywin32",
+      "what": "Windows API access: window capture and update hand-off.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "pywin32",
+      "review": "Licence recorded from package metadata as PSF; pywin32 also carries Scintilla (HPND) and adodbapi (LGPL-2.1) texts inside the package. Not re-verified file by file."
+    },
+    {
+      "id": "pywinrt",
+      "name": "PyWinRT (winrt-runtime and the Windows.* projections)",
+      "group": "runtime",
+      "version": "3.2.1",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) Microsoft Corporation and the pywinrt contributors",
+      "homepage": "https://github.com/pywinrt/pywinrt",
+      "what": "Windows Runtime access: built-in Windows OCR, the modern Windows Media engine, output-device routing and the now-playing card. Packages: winrt-runtime, winrt-windows-devices-enumeration, winrt-windows-foundation, winrt-windows-foundation-collections, winrt-windows-globalization, winrt-windows-graphics-imaging, winrt-windows-media, winrt-windows-media-core, winrt-windows-media-devices, winrt-windows-media-ocr, winrt-windows-media-playback, winrt-windows-storage.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "winrt-runtime"
+    },
+    {
+      "id": "pyyaml",
+      "name": "PyYAML",
+      "group": "runtime",
+      "version": "6.0.3",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2017-2021 Ingy dot Net; Copyright (c) 2006-2016 Kirill Simonov",
+      "homepage": "https://pyyaml.org/",
+      "what": "Reads YAML files.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "PyYAML"
+    },
+    {
+      "id": "rapidfuzz",
+      "name": "RapidFuzz",
+      "group": "runtime",
+      "version": "3.14.6 or later (an optional member of the shared runtime)",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2020 Max Bachmann; Copyright (c) 2011 Adam Cohen",
+      "homepage": "https://github.com/rapidfuzz/RapidFuzz",
+      "what": "Speeds up the dictation vocabulary corrector when present.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "rapidfuzz",
+      "review": "Not installed on the machine that built this inventory, so its version and licence were taken from pyproject.toml and upstream, not from installed metadata."
+    },
+    {
+      "id": "regex",
+      "name": "regex",
+      "group": "runtime",
+      "version": "2026.9.29",
+      "licenses": [
+        "Apache-2.0"
+      ],
+      "license_label": "Apache-2.0 AND CNRI-Python (parts derived from Secret Labs' sre)",
+      "copyright": "Copyright (c) 2020 Matthew Barnett; Copyright (c) 1998-2001 by Secret Labs AB",
+      "homepage": "https://github.com/mrabarnett/mrab-regex",
+      "what": "The regular-expression engine behind Find and Replace.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "regex"
+    },
+    {
+      "id": "requests",
+      "name": "Requests",
+      "group": "runtime",
+      "version": "2.34.2",
+      "licenses": [
+        "Apache-2.0"
+      ],
+      "license_label": "Apache-2.0",
+      "copyright": "Copyright Kenneth Reitz",
+      "homepage": "https://requests.readthedocs.io",
+      "what": "Web requests.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "requests"
+    },
+    {
+      "id": "setuptools",
+      "name": "setuptools",
+      "group": "runtime",
+      "version": "84.2.1",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright Jason R. Coombs and the Python Packaging Authority",
+      "homepage": "https://github.com/pypa/setuptools",
+      "what": "Packaging support, pulled in by the build.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "setuptools"
+    },
+    {
+      "id": "sherpa-onnx",
+      "name": "sherpa-onnx (with ONNX Runtime)",
+      "group": "runtime",
+      "version": "1.13.8",
+      "licenses": [
+        "Apache-2.0",
+        "MIT"
+      ],
+      "license_label": "Apache-2.0; the bundled ONNX Runtime is MIT",
+      "copyright": "Copyright (c) Xiaomi Corporation and the sherpa-onnx development team; ONNX Runtime: Copyright (c) Microsoft Corporation",
+      "homepage": "https://github.com/k2-fsa/sherpa-onnx",
+      "what": "Runs the offline dictation and speech models on the processor, without a graphics card.",
+      "products": [
+        "quill",
+        "quilllite",
+        "transcribe"
+      ],
+      "delivery": "bundled",
+      "pypi": "sherpa_onnx"
+    },
+    {
+      "id": "sound-lib",
+      "name": "sound_lib (with the BASS audio libraries)",
+      "group": "runtime",
+      "version": "0.83",
+      "licenses": [
+        "MIT",
+        "BASS"
+      ],
+      "license_label": "MIT for sound_lib; BASS is proprietary freeware from Un4seen Developments, free for non-commercial use",
+      "copyright": "sound_lib: Copyright (c) 2010-2022 Christopher Toth; BASS: Copyright (c) 1999-2026 Un4seen Developments Ltd.",
+      "homepage": "https://github.com/accessibleapps/sound_lib",
+      "what": "Plays sounds, with several mixed at once.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "sound-lib",
+      "review": "BASS is closed-source freeware. Un4seen allows free use in non-commercial software; QUILL is free and never sold, which fits, but the BASS licence text is not bundled with the wheel and must be read on un4seen.com. Confirm the current terms in writing."
+    },
+    {
+      "id": "sqlite",
+      "name": "SQLite",
+      "group": "runtime",
+      "version": "as shipped with Python 3.14",
+      "licenses": [
+        "Public-Domain"
+      ],
+      "license_label": "Public domain",
+      "copyright": "Dedicated to the public domain by D. Richard Hipp and the SQLite developers",
+      "homepage": "https://sqlite.org/",
+      "what": "The database behind the radio catalog, QuillBeacon's library and other stores, shipped as part of Python.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled"
+    },
+    {
+      "id": "tomli",
+      "name": "tomli",
+      "group": "runtime",
+      "version": "2.5.0",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2021 Taneli Hukkinen",
+      "homepage": "https://github.com/hukkin/tomli",
+      "what": "TOML parsing.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "tomli"
+    },
+    {
+      "id": "tqdm",
+      "name": "tqdm",
+      "group": "runtime",
+      "version": "4.70.1",
+      "licenses": [
+        "MPL-2.0",
+        "MIT"
+      ],
+      "license_label": "MPL-2.0 AND MIT",
+      "copyright": "Copyright (c) 2015-2024 Casper da Costa-Luis; Copyright (c) 2013 noamraph",
+      "homepage": "https://tqdm.github.io",
+      "what": "Progress reporting, a dependency of other libraries.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "tqdm"
+    },
+    {
+      "id": "truststore",
+      "name": "truststore",
+      "group": "runtime",
+      "version": "0.10.4",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2022 Seth Michael Larson",
+      "homepage": "https://truststore.readthedocs.io",
+      "what": "Uses the Windows certificate store for secure connections.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "truststore"
+    },
+    {
+      "id": "typing-extensions",
+      "name": "typing_extensions",
+      "group": "runtime",
+      "version": "4.16.0",
+      "licenses": [
+        "PSF-2.0"
+      ],
+      "license_label": "PSF-2.0",
+      "copyright": "Copyright (c) 2001-present Python Software Foundation",
+      "homepage": "https://github.com/python/typing_extensions",
+      "what": "Typing support used by other libraries.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "typing_extensions"
+    },
+    {
+      "id": "tzdata",
+      "name": "tzdata",
+      "group": "runtime",
+      "version": "2026.5",
+      "licenses": [
+        "Apache-2.0"
+      ],
+      "license_label": "Apache-2.0; the IANA time zone data inside is in the public domain",
+      "copyright": "Copyright (c) 2020, Paul Ganssle (Google); Copyright (c) 2026, Stan Ulbrych",
+      "homepage": "https://github.com/python/tzdata",
+      "what": "Time zone names, which Windows does not provide to Python.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "tzdata"
+    },
+    {
+      "id": "urllib3",
+      "name": "urllib3",
+      "group": "runtime",
+      "version": "2.8.0",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2008-2020 Andrey Petrov and contributors",
+      "homepage": "https://github.com/urllib3/urllib3",
+      "what": "HTTP connection handling.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "urllib3"
+    },
+    {
+      "id": "websocket-client",
+      "name": "websocket-client",
+      "group": "runtime",
+      "version": "1.9.2",
+      "licenses": [
+        "Apache-2.0"
+      ],
+      "license_label": "Apache-2.0",
+      "copyright": "Copyright liris and contributors",
+      "homepage": "https://github.com/websocket-client/websocket-client",
+      "what": "WebSocket connections for live chat.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "websocket-client"
+    },
+    {
+      "id": "websockets",
+      "name": "websockets",
+      "group": "runtime",
+      "version": "17.2",
+      "licenses": [
+        "BSD-3-Clause"
+      ],
+      "license_label": "BSD-3-Clause",
+      "copyright": "Copyright (c) Aymeric Augustin and contributors",
+      "homepage": "https://github.com/python-websockets/websockets",
+      "what": "WebSocket connections for live transcription.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "websockets"
+    },
+    {
+      "id": "werkzeug",
+      "name": "Werkzeug",
+      "group": "runtime",
+      "version": "3.1.9",
+      "licenses": [
+        "BSD-3-Clause"
+      ],
+      "license_label": "BSD-3-Clause",
+      "copyright": "Copyright 2007 Pallets",
+      "homepage": "https://github.com/pallets/werkzeug",
+      "what": "A small local web server used by sign-in callbacks.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "Werkzeug"
+    },
+    {
+      "id": "wxpython",
+      "name": "wxPython and wxWidgets",
+      "group": "runtime",
+      "version": "4.3.1",
+      "licenses": [
+        "wxWindows"
+      ],
+      "license_label": "wxWindows Library Licence 3.1 (LGPL-2.0-or-later with an exception for binary distribution); bundles Microsoft's WebView2Loader and cairo under their own terms",
+      "copyright": "wxPython: Copyright (c) 1998-2026 Robin Dunn and contributors; wxWidgets: Copyright (c) 1998-2005 Julian Smart, Robert Roebling et al",
+      "homepage": "https://wxpython.org/",
+      "what": "The windows, menus and controls of every app.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "wxPython"
+    },
+    {
+      "id": "yt-dlp",
+      "name": "yt-dlp",
+      "group": "runtime",
+      "version": "2026.8.19",
+      "licenses": [
+        "Unlicense"
+      ],
+      "license_label": "Unlicense (public domain dedication)",
+      "copyright": "Dedicated to the public domain by the yt-dlp authors",
+      "homepage": "https://github.com/yt-dlp/yt-dlp",
+      "what": "Opens video and audio links (Quill Radio, Quill Converter).",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "yt-dlp"
+    },
+    {
+      "id": "yt-dlp-ejs",
+      "name": "yt-dlp-ejs",
+      "group": "runtime",
+      "version": "0.8.0",
+      "licenses": [
+        "Unlicense",
+        "MIT",
+        "ISC"
+      ],
+      "license_label": "Unlicense AND MIT AND ISC",
+      "copyright": "Copyright Simon Sawicki and the yt-dlp authors",
+      "homepage": "https://github.com/yt-dlp/ejs",
+      "what": "JavaScript challenge solving scripts for yt-dlp.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "yt-dlp-ejs"
+    },
+    {
+      "id": "deno",
+      "name": "Deno (deno.exe)",
+      "group": "audio-video",
+      "version": "2.9.7",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright 2018-2026 the Deno authors",
+      "homepage": "https://github.com/denoland/deno",
+      "what": "A JavaScript runtime yt-dlp uses for YouTube's challenges. Ships in tools\\deno with its own licence as DENO-LICENSE.txt.",
+      "products": [
+        "radio",
+        "converter",
+        "runtime"
+      ],
+      "delivery": "bundled"
+    },
+    {
+      "id": "ffmpeg",
+      "name": "FFmpeg (ffmpeg.exe and ffprobe.exe)",
+      "group": "audio-video",
+      "version": "8.1.2 (gyan.dev essentials build, SHA-256 pinned)",
+      "licenses": [
+        "GPL-3.0"
+      ],
+      "license_label": "GPL-3.0-or-later (this build is configured with --enable-gpl --enable-version3)",
+      "copyright": "Copyright (c) 2000-2026 the FFmpeg developers. FFmpeg is a trademark of Fabrice Bellard.",
+      "homepage": "https://ffmpeg.org/",
+      "what": "Records, converts and inspects audio and video. Run as a separate, unmodified program. LICENSE.GPLv3.txt and README-SOURCE.txt (the source offer) ship beside every ffmpeg.exe; scripts/check_ffmpeg_notices.py fails a build otherwise.",
+      "products": [
+        "quill",
+        "radio",
+        "cast",
+        "studio",
+        "converter",
+        "runtime"
+      ],
+      "delivery": "bundled",
+      "obligations": "Ship the GPL-3.0 text and the corresponding source or a written offer. Source: https://ffmpeg.org/releases/ffmpeg-8.1.2.tar.xz, and the README-SOURCE.txt beside the program. Because it runs as a separate program, our own code is not affected."
+    },
+    {
+      "id": "libmpv",
+      "name": "libmpv (libmpv-2.dll)",
+      "group": "audio-video",
+      "version": "mpv v0.41.0-era (shinchiro mpv-winbuild, git a58dd8a, 2025-12-28)",
+      "licenses": [
+        "GPL-3.0"
+      ],
+      "license_label": "GPL-3.0 as built (mpv itself is GPL-2.0-or-later; the bundled FFmpeg inside it is GPL)",
+      "copyright": "Copyright (c) the mpv developers; Copyright (c) 2000-2026 the FFmpeg developers",
+      "homepage": "https://mpv.io/",
+      "what": "The playback engine: recording-while-playing, output-device routing, volume boost and stream titles. Its licence texts and source offer ship beside the DLL in tools\\mpv.",
+      "products": [
+        "quill",
+        "radio",
+        "studio",
+        "converter",
+        "player",
+        "beacon",
+        "runtime"
+      ],
+      "delivery": "bundled",
+      "review": "libmpv is loaded into the same process as the app. A GPL library loaded in-process makes the combined program subject to the GPL when distributed. QUILL's own source is public under MIT, which is GPL-compatible, so this is satisfiable, but the obligation (offer the complete source of the combined program) should be acknowledged by the owner."
+    },
+    {
+      "id": "optilab",
+      "name": "OptiLab Core",
+      "group": "audio-video",
+      "version": "1.4.0 (vendored unmodified in quill/native/optilab/upstream)",
+      "licenses": [
+        "Commons-Clause"
+      ],
+      "license_label": "Apache-2.0 with the Commons Clause License Condition v1.0",
+      "copyright": "Copyright 2026 Lanes Audio (OptiLab Core, by dgl1984)",
+      "homepage": "https://github.com/dgl1984/optilab",
+      "what": "Broadcast-style sound polishing (Podcast Leveler, Stream Polish, Smooth Limiter). The engine is compiled into quill-optilab.exe; the live-playback modes are ffmpeg filter chains adapted from it. Its LICENSE and NOTICE ship beside the program as OptiLabCore-LICENSE.txt and OptiLabCore-NOTICE.txt.",
+      "products": [
+        "radio",
+        "converter",
+        "runtime"
+      ],
+      "delivery": "bundled",
+      "review": "The Commons Clause forbids selling the software. QUILL is free and never sold, and the upstream NOTICE grants royalty-free use for producing and streaming audio, so this fits today; it would block any paid edition."
+    },
+    {
+      "id": "dectalk",
+      "name": "DECtalk",
+      "group": "speech",
+      "version": "2023-10-30 build (dectalk/dectalk on GitHub)",
+      "licenses": [
+        "Unknown"
+      ],
+      "license_label": "Not confirmed",
+      "copyright": "Originally Digital Equipment Corporation; later Fonix Corporation and others",
+      "homepage": "https://github.com/dectalk/dectalk",
+      "what": "The classic DECtalk voices. Bundled in QUILL Studio's portable edition and the QUILL Offline Edition; otherwise downloaded on request. QUILL also ships DECtalk voice samples in Voice Previews.",
+      "products": [
+        "quill",
+        "studio"
+      ],
+      "delivery": "bundled",
+      "review": "Redistribution rights are not established. The public source tree descends from code whose owners never published it under an open licence; earlier records here said both 'BSD-licensed' and 'proprietary, redistributable where licensed', and neither is backed by a licence file. Owner decision needed before shipping it again: obtain written permission from the rights holder, or stop bundling and redistributing DECtalk and its samples."
+    },
+    {
+      "id": "dictation-models",
+      "name": "Dictation models: Moonshine tiny (English), Whisper tiny.en and tiny (ONNX), Silero VAD",
+      "group": "speech",
+      "version": "sherpa-onnx conversions, SHA-256 pinned in quill/core/windows_dictation/engines.py",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT (each model); converted and distributed by the sherpa-onnx project (Apache-2.0)",
+      "copyright": "Moonshine: Copyright (c) 2024 Useful Sensors; Whisper: Copyright (c) 2022 OpenAI; Silero VAD: Copyright (c) 2020-present Silero Team",
+      "homepage": "https://github.com/k2-fsa/sherpa-onnx",
+      "what": "Offline dictation. A NOTICE file beside the models names each one and its licence.",
+      "products": [
+        "quilllite",
+        "transcribe",
+        "quill"
+      ],
+      "delivery": "bundled"
+    },
+    {
+      "id": "espeak-ng",
+      "name": "eSpeak NG",
+      "group": "speech",
+      "version": "1.52.0",
+      "licenses": [
+        "GPL-3.0"
+      ],
+      "license_label": "GPL-3.0-or-later",
+      "copyright": "Copyright (C) 2005-2026 Jonathan Duddington, Reece H. Dunn and contributors",
+      "homepage": "https://github.com/espeak-ng/espeak-ng",
+      "what": "A compact speech synthesiser, and the phoneme source for Piper and Kokoro. Run as a separate program or library.",
+      "products": [
+        "quill",
+        "studio"
+      ],
+      "delivery": "bundled",
+      "obligations": "Ship the GPL-3.0 text and the corresponding source or a written offer (upstream source for 1.52.0: https://github.com/espeak-ng/espeak-ng/releases/tag/1.52.0)."
+    },
+    {
+      "id": "kokoro",
+      "name": "Kokoro-82M voices and kokoro-onnx",
+      "group": "speech",
+      "version": "model-files-v1.0; kokoro-onnx 0.6.1",
+      "licenses": [
+        "Apache-2.0",
+        "MIT"
+      ],
+      "license_label": "Apache-2.0 (Kokoro model and voices); MIT (kokoro-onnx and ONNX Runtime)",
+      "copyright": "Kokoro: Copyright hexgrad; kokoro-onnx: Copyright thewh1teagle; ONNX Runtime: Copyright (c) Microsoft Corporation",
+      "homepage": "https://huggingface.co/hexgrad/Kokoro-82M",
+      "what": "Natural-sounding offline neural voices. The model is bundled in the QUILL Offline Edition's optional component and QUILL Studio's portable edition, otherwise downloaded on request; Voice Previews has Kokoro samples.",
+      "products": [
+        "quill",
+        "studio"
+      ],
+      "delivery": "bundled",
+      "review": "kokoro-onnx installs phonemizer (GPL-3.0) and espeakng-loader alongside it; their versions and licences in the shipped engine pack were not re-read for this inventory."
+    },
+    {
+      "id": "mathcat",
+      "name": "MathCAT",
+      "group": "speech",
+      "version": "0.7.6-beta.5",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) Neil Soiffer and the DAISY Consortium",
+      "homepage": "https://github.com/daisy/MathCATForC",
+      "what": "Speaks and brailles mathematics. Downloaded on request from QUILL's release.",
+      "products": [
+        "quill"
+      ],
+      "delivery": "on-request"
+    },
+    {
+      "id": "nemotron",
+      "name": "NVIDIA Nemotron Speech Streaming, English 0.6B (int8)",
+      "group": "speech",
+      "version": "0.6b int8",
+      "licenses": [
+        "NVIDIA-OML"
+      ],
+      "license_label": "NVIDIA Open Model License",
+      "copyright": "Copyright (c) NVIDIA Corporation",
+      "homepage": "https://huggingface.co/nvidia/nemotron-speech-streaming-en-0.6b",
+      "what": "An optional offline English dictation model, downloaded when you choose it in Manage Speech Models. Its NOTICE.txt travels with it.",
+      "products": [
+        "quill"
+      ],
+      "delivery": "on-request",
+      "review": "The licence text itself is not reproduced in this document; it is on nvidia.com. Commercial use and redistribution are permitted."
+    },
+    {
+      "id": "piper",
+      "name": "Piper text-to-speech engine",
+      "group": "speech",
+      "version": "2023.11.14-2",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2022 Michael Hansen",
+      "homepage": "https://github.com/rhasspy/piper",
+      "what": "A fast offline neural voice. Bundled in QUILL Studio's portable edition; otherwise downloaded on request. Piper uses eSpeak NG's phoneme data.",
+      "products": [
+        "quill",
+        "studio"
+      ],
+      "delivery": "bundled"
+    },
+    {
+      "id": "piper-voices",
+      "name": "Piper voices",
+      "group": "speech",
+      "version": "per voice",
+      "licenses": [
+        "Unknown"
+      ],
+      "license_label": "Varies by voice (each voice's MODEL_CARD names its dataset and licence; several are CC-BY-4.0, CC0-1.0 or MIT, and some datasets restrict commercial use)",
+      "copyright": "Each voice's trainer and dataset owner",
+      "homepage": "https://huggingface.co/rhasspy/piper-voices",
+      "what": "Voices for Piper, downloaded on request, and the short Piper samples in Voice Previews.",
+      "products": [
+        "quill",
+        "studio"
+      ],
+      "delivery": "on-request",
+      "review": "Not confirmed voice by voice. QUILL redistributes some voices (from its own release) and ships samples of 39 of them in quill/data/voice-previews/piper. Each voice's MODEL_CARD must be checked and its licence and attribution recorded here."
+    },
+    {
+      "id": "vosk-model",
+      "name": "Vosk small English model (vosk-model-small-en-us-0.15)",
+      "group": "speech",
+      "version": "0.15",
+      "licenses": [
+        "Apache-2.0"
+      ],
+      "license_label": "Apache-2.0",
+      "copyright": "Copyright Alpha Cephei Inc.",
+      "homepage": "https://alphacephei.com/vosk/models",
+      "what": "The recognition model Vosk uses, staged beside the app.",
+      "products": [
+        "quill",
+        "cast"
+      ],
+      "delivery": "bundled"
+    },
+    {
+      "id": "vosk",
+      "name": "Vosk speech recognition (with Kaldi)",
+      "group": "speech",
+      "version": "0.3.45",
+      "licenses": [
+        "Apache-2.0"
+      ],
+      "license_label": "Apache-2.0",
+      "copyright": "Copyright 2019-2026 Alpha Cephei Inc.; Kaldi: Copyright Johns Hopkins University and others",
+      "homepage": "https://github.com/alphacep/vosk-api",
+      "what": "Offline speech recognition: QUILL Cast's chapter finder and an optional dictation engine in QUILL.",
+      "products": [
+        "quill",
+        "cast"
+      ],
+      "delivery": "bundled"
+    },
+    {
+      "id": "whisper-models",
+      "name": "Whisper models (GGML format)",
+      "group": "speech",
+      "version": "tiny (bundled in Offline Editions); others on request",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2022 OpenAI",
+      "homepage": "https://huggingface.co/ggerganov/whisper.cpp",
+      "what": "Speech recognition models for whisper.cpp.",
+      "products": [
+        "quill",
+        "studio",
+        "runtime"
+      ],
+      "delivery": "bundled"
+    },
+    {
+      "id": "whispercpp",
+      "name": "whisper.cpp",
+      "group": "speech",
+      "version": "1.9.1",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2023-2026 The ggml authors",
+      "homepage": "https://github.com/ggml-org/whisper.cpp",
+      "what": "The default offline transcription engine. Bundled in the Offline Editions and QUILL Studio's portable edition; otherwise downloaded on request.",
+      "products": [
+        "quill",
+        "studio",
+        "runtime"
+      ],
+      "delivery": "bundled"
+    },
+    {
+      "id": "emoji-data",
+      "name": "Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data)",
+      "group": "data",
+      "version": "as generated into quill/data/emoji_catalog.json",
+      "licenses": [
+        "Unicode-3.0",
+        "MIT"
+      ],
+      "license_label": "Unicode License v3 (Unicode and CLDR data); MIT (iamcal/emoji-data)",
+      "copyright": "Copyright (c) 1991-2026 Unicode, Inc.; emoji-data: Copyright (c) 2013 Cal Henderson",
+      "homepage": "https://www.unicode.org/",
+      "what": "Names, groups and search words for the emoji picker.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "review": "The Unicode License v3 text should be bundled beside the catalog; it is referenced here, not reproduced."
+    },
+    {
+      "id": "th-en-us",
+      "name": "English thesaurus (th_en_US_v2, MyThes format)",
+      "group": "data",
+      "version": "v2",
+      "licenses": [
+        "GPL-2.0"
+      ],
+      "license_label": "GPL-2.0, per the licence file that ships with it (quill/data/th_en_US_LICENSE.txt)",
+      "copyright": "Copyright Kevin B. Hendricks and the OpenOffice.org / LibreOffice thesaurus contributors; WordNet data Copyright Princeton University",
+      "homepage": "https://github.com/LibreOffice/dictionaries",
+      "what": "Synonyms for the thesaurus. Every build ships quill/data, so every product carries it.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "review": "Records disagree: the licence file shipped beside the data is GPL-2.0, earlier notices said LGPL-2.1, and the upstream MyThes code is BSD. Confirm the data's licence from the LibreOffice dictionaries README for this exact file. It is data, not code, so it does not affect the apps' own licence, but the GPL-2.0 source offer applies to the file itself (it is its own source)."
+    },
+    {
+      "id": "hunspell-dictionaries",
+      "name": "Hunspell dictionaries",
+      "group": "data",
+      "version": "English set bundled with PyEnchant; others from LibreOffice dictionaries at commit 93d537d",
+      "licenses": [
+        "MPL-2.0",
+        "GPL-3.0",
+        "LGPL-3.0"
+      ],
+      "license_label": "Per language. The downloadable languages (es_ES, fr_FR and others) are GPL-3.0, LGPL-3.0 or MPL-2.0 as their own README states; each zip carries those files.",
+      "copyright": "Each dictionary's authors (for English: Kevin Atkinson's SCOWL and contributors; for Spanish: RLA-ES; for French: Dicollecte)",
+      "homepage": "https://github.com/LibreOffice/dictionaries",
+      "what": "Spelling dictionaries for QUILL's spell checker.",
+      "products": [
+        "quill",
+        "runtime"
+      ],
+      "delivery": "bundled",
+      "review": "The English dictionaries that ship inside PyEnchant's payload (en_US, en_GB, en_AU and other en_* variants) were not checked one by one; their README files are not in the pruned payload. Confirm and keep their licence files with them."
+    },
+    {
+      "id": "liblouis",
+      "name": "liblouis (QUILL Braille Pack)",
+      "group": "data",
+      "version": "3.38.0",
+      "licenses": [
+        "LGPL-2.1",
+        "GPL-3.0"
+      ],
+      "license_label": "LGPL-2.1-or-later (library); the translation tables carry their own licences, and the pack ships COPYING (GPL-3.0) and COPYING.LESSER",
+      "copyright": "Copyright (C) the liblouis project contributors (ViewPlus Technologies, JJB Software, and others)",
+      "homepage": "https://github.com/liblouis/liblouis",
+      "what": "Braille translation and back-translation. An optional component; its licence texts and source ship inside the pack.",
+      "products": [
+        "quill"
+      ],
+      "delivery": "on-request"
+    },
+    {
+      "id": "noaa-directory",
+      "name": "NOAA weather radio and forecast directory",
+      "group": "data",
+      "version": "as committed (quill/data/noaa_directory.json)",
+      "licenses": [
+        "Public-Domain"
+      ],
+      "license_label": "Public domain (United States government work)",
+      "copyright": "US National Oceanic and Atmospheric Administration (NOAA)",
+      "homepage": "https://www.weather.gov/",
+      "what": "Weather office and NOAA Weather Radio data for Quill Weather and Quill Radio.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled"
+    },
+    {
+      "id": "radio-catalog",
+      "name": "Radio station catalog seed",
+      "group": "data",
+      "version": "built per release (quill/data/radio-catalog/seed.db.xz)",
+      "licenses": [
+        "Unknown",
+        "Public-Domain",
+        "CC0-1.0"
+      ],
+      "license_label": "Radio Browser directory data (terms not confirmed); SomaFM channel list; Project Gutenberg audio records (public domain works); Wikidata (CC0-1.0)",
+      "copyright": "Radio Browser community (radio-browser.info); SomaFM; Project Gutenberg; Wikidata contributors",
+      "homepage": "https://www.radio-browser.info/",
+      "what": "A starting directory of stations and audio books, so searching works offline on first launch. It ships in quill/data, so every product carries it.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "review": "The licence of the Radio Browser data dump and of SomaFM's channel list was not confirmed. Check both sites' terms and record them here."
+    },
+    {
+      "id": "voice-previews",
+      "name": "Voice Previews (synthesised samples)",
+      "group": "data",
+      "version": "as committed (quill/data/voice-previews)",
+      "licenses": [
+        "Unknown"
+      ],
+      "license_label": "Generated by QUILL from the voices named in each sample; the terms follow each voice",
+      "copyright": "Samples made by the QUILL project with Piper, Kokoro, eSpeak NG, DECtalk and Windows SAPI 5 voices",
+      "homepage": "",
+      "what": "Short recordings so you can hear a voice before downloading it.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "review": "Synthesised output is usually free of the engine's licence, but voice models trained on restricted datasets, and DECtalk, may limit use of their output. Confirm alongside the Piper voices and DECtalk entries."
+    },
+    {
+      "id": "wordnet",
+      "name": "WordNet 2.1",
+      "group": "data",
+      "version": "2.1",
+      "licenses": [
+        "WordNet"
+      ],
+      "license_label": "WordNet 2.1 licence",
+      "copyright": "Copyright 2005 by Princeton University. All rights reserved.",
+      "homepage": "https://wordnet.princeton.edu/",
+      "what": "The lexical database behind the thesaurus. Licence in quill/data/th_en_US_WordNet_LICENSE.txt.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled"
+    },
+    {
+      "id": "words-alpha",
+      "name": "words_alpha (dwyl/english-words)",
+      "group": "data",
+      "version": "snapshot",
+      "licenses": [
+        "Unlicense"
+      ],
+      "license_label": "Unlicense (public domain)",
+      "copyright": "Dedicated to the public domain by the dwyl/english-words contributors",
+      "homepage": "https://github.com/dwyl/english-words",
+      "what": "An English word list, used for word completion and checks.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled"
+    },
+    {
+      "id": "app-icons",
+      "name": "App icons",
+      "group": "fonts-sounds",
+      "version": "generated",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT (QUILL's own work)",
+      "copyright": "Copyright (c) 2026 Blind Information Technology Solutions (BITS)",
+      "homepage": "https://github.com/Community-Access/quill",
+      "what": "Every app's icon, drawn by scripts/build_app_icons.py. No third-party artwork.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled"
+    },
+    {
+      "id": "page-turn",
+      "name": "Page-turn sound (quill/assets/audio/page_turn.wav)",
+      "group": "fonts-sounds",
+      "version": "as committed",
+      "licenses": [
+        "Unknown"
+      ],
+      "license_label": "Not confirmed",
+      "copyright": "Unknown",
+      "homepage": "",
+      "what": "The default sound between chapters in spoken audiobooks.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "review": "Its commit says it was converted from the ACB audio pipeline's reference MP3; the original source and licence are not recorded. Confirm provenance, or replace it with a generated sound."
+    },
+    {
+      "id": "sound-packs",
+      "name": "QUILL sound packs (Ink and the indent-tone packs)",
+      "group": "fonts-sounds",
+      "version": "generated",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT (QUILL's own work)",
+      "copyright": "Copyright (c) 2026 Blind Information Technology Solutions (BITS)",
+      "homepage": "https://github.com/Community-Access/quill",
+      "what": "Interface sounds, synthesised by scripts/gen_ink_sounds.py and scripts/gen_indent_tones.py. No third-party recordings.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled"
+    },
+    {
+      "id": "weather-alert-sound",
+      "name": "Weather alert sound (quill/assets/audio/weather_alert.wav)",
+      "group": "fonts-sounds",
+      "version": "generated",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT (QUILL's own work)",
+      "copyright": "Copyright (c) 2026 Blind Information Technology Solutions (BITS)",
+      "homepage": "https://github.com/Community-Access/quill",
+      "what": "The weather alert tone, synthesised by scripts/gen_ink_sounds.py.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled"
+    },
+    {
+      "id": "inno-setup",
+      "name": "Inno Setup",
+      "group": "build",
+      "version": "7.1",
+      "licenses": [
+        "Unknown"
+      ],
+      "license_label": "Inno Setup licence (free, permissive; modified-BSD style)",
+      "copyright": "Copyright (C) 1997-2026 Jordan Russell and Martijn Laan",
+      "homepage": "https://jrsoftware.org/isinfo.php",
+      "what": "Builds the Windows installers. The installer engine is inside every Setup.exe.",
+      "products": [
+        "all"
+      ],
+      "delivery": "build-only",
+      "review": "Inno Setup's own licence text is not reproduced; it permits free distribution of installers built with it. Add the text if the owner wants it bundled."
+    },
+    {
+      "id": "pandoc-docs",
+      "name": "Pandoc (documentation build)",
+      "group": "build",
+      "version": "3.10 or later",
+      "licenses": [
+        "GPL-2.0"
+      ],
+      "license_label": "GPL-2.0-or-later",
+      "copyright": "Copyright (C) 2006-2026 John MacFarlane and contributors",
+      "homepage": "https://pandoc.org/",
+      "what": "Renders the user guides to HTML and EPUB. The rendered guides are QUILL's own text.",
+      "products": [
+        "all"
+      ],
+      "delivery": "build-only"
+    },
+    {
+      "id": "pyinstaller",
+      "name": "PyInstaller",
+      "group": "build",
+      "version": "build machine",
+      "licenses": [
+        "GPL-2.0"
+      ],
+      "license_label": "GPL-2.0-or-later with the PyInstaller bootloader exception (programs it builds may ship under any licence)",
+      "copyright": "Copyright (c) 2010-2026 PyInstaller Development Team",
+      "homepage": "https://pyinstaller.org/",
+      "what": "Freezes the QuillVille Runtime and some app editions. Its bootloader is inside QuillVilleRuntime.exe under the bootloader exception.",
+      "products": [
+        "all"
+      ],
+      "delivery": "build-only"
+    },
+    {
+      "id": "dev-tools",
+      "name": "Test and lint tools (pytest, ruff, mypy and their plugins)",
+      "group": "build",
+      "version": "dev extra",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Their respective authors",
+      "homepage": "https://pytest.org/",
+      "what": "Run the test suite and the code gates.",
+      "products": [
+        "all"
+      ],
+      "delivery": "build-only"
+    }
+  ]
+}

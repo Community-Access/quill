@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>What's new in QUILL Cast 2.0</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="whats-new-in-quill-cast-20">What’s new in QUILL Cast 2.0</h1>
+<p>QUILL Cast 2.0 is one window with everything in it, every list works
+from the keyboard, and when something happens you would want to know
+about, it tells you in a sentence. Your podcasts, folders, place in
+every episode, notes and settings carry on as they were.</p>
+<h2 id="before-you-update-what-works-differently">Before you update:
+what works differently</h2>
+<ul>
+<li><strong>Cast is one window.</strong> Podcasts is Ctrl+Shift+S, the
+Play Queue Ctrl+Shift+Q, Now Playing Ctrl+2, and Go To (Ctrl+G) lists
+every place.</li>
+<li><strong>Follow, not subscribe.</strong> The Subscriptions menu is
+now Podcasts, and Unsubscribe is Unfollow.</li>
+<li><strong>Keys that moved:</strong> show and hide Cast from anywhere
+is Ctrl+Alt+Shift+F12, Restore from a Backup Ctrl+Alt+F12, Mark as
+Played and Next Ctrl+Alt+Shift+Down, Favorites Alt+Shift+V and Playlists
+Alt+Shift+Y.</li>
+<li><strong>Save and Close instead of OK and Cancel</strong> in windows
+that change settings, so you can try something and adjust it.</li>
+</ul>
+<h2 id="finding-and-following">Finding and following</h2>
+<ul>
+<li><strong>Add Podcast (Ctrl+N)</strong>: type a name, hear what a
+podcast is about, and follow it with Alt+O. Follow ACB Media Podcasts
+(Ctrl+Alt+B) follows the whole directory at once.</li>
+<li><strong>Folders</strong>: Copy to Folder (Ctrl+Shift+Y) puts a
+podcast in a second folder without following it twice; Ctrl+Shift+V
+moves it.</li>
+<li>Enter on a podcast opens its list on the episode you last had
+selected.</li>
+</ul>
+<h2 id="listening">Listening</h2>
+<ul>
+<li>Ctrl+Right skips ahead 30 seconds, Ctrl+Left goes back 15, Ctrl+P
+pauses and picks up where you stopped.</li>
+<li><strong>QUILL Lineups (Ctrl+U)</strong>: named lists of episodes,
+podcasts and anything Quill Radio can play, by hand or by rules, shared
+with Quill Radio.</li>
+<li>Cast’s own sounds can play where you choose; Alt+Shift+M turns them
+off and on.</li>
+<li><strong>Slider Keys</strong> in Preferences: Up is more (Home is 100
+percent), or the Windows slider keys, for every Quill app at once.
+Ctrl+Up and Ctrl+Down are not changed.</li>
+</ul>
+<h2 id="big-libraries-kept-safe">Big libraries, kept safe</h2>
+<ul>
+<li><strong>Refresh All has its own progress window</strong>, and Stop
+remaining checks cancels only the feeds that have not started.</li>
+<li>A feed check that finishes late never undoes what you did meanwhile,
+and Ctrl+Z after Unfollow puts a podcast back with its queue, playlists
+and folders.</li>
+<li>Saving, opening Downloads and checking disk space no longer hold up
+the window, even with thousands of podcasts.</li>
+</ul>
+<h2 id="also-new">Also new</h2>
+<ul>
+<li><strong>Dictate Here (Ctrl+F11)</strong> dictates into a search box
+through QUILL Transcribe.</li>
+<li>Connect to Spotify (Ctrl+Alt+S) and Browse Spotify Podcasts
+(Ctrl+Alt+V) are on the Help menu.</li>
+<li>A portable copy updates in place, and a failed update puts back the
+version you had.</li>
+</ul>
+<p>Everything that changed: Help &gt; What’s New (Ctrl+Shift+F1). The
+full release notes: Help &gt; Release Notes (Ctrl+Alt+R). Tutorials:
+Ctrl+Alt+F1. Stuck? Help &gt; Get Help from Support.</p>
+</main>
+</body>
+</html>

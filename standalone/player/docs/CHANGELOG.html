@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Changelog</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="changelog">Changelog</h1>
+<p>All notable changes to Quill Media Player are documented in this
+file.</p>
+<p>The format is based on <a
+href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>, and
+this project adheres to <a
+href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+<p>Quill Media Player runs the same player code as QUILL from the shared
+<code>quill</code> package, so a fix lands in both at once;
+<code>standalone/player</code> carries only the wrapper, launcher and
+docs.</p>
+<h2 id="100">1.0.0</h2>
+<p>Testing build: <strong>1.0.0 (build 2)</strong>. Quill Media Player
+has not been published yet: the other QuillVille apps do not list it in
+their QuillVille menus, and QUILL’s <strong>Tools &gt; Media &gt; Media
+Player</strong> row appears once it is released. Everything below is in
+the build.</p>
+<h3 id="opening-and-listening-to-books">Opening and listening to
+books</h3>
+<ul>
+<li><strong>Open what you have.</strong> <strong>Open File</strong>
+(Ctrl+O) plays an audio file or audiobook (MP3, M4B, M4A, AAC, OGG/Opus,
+FLAC, WAV and more); <strong>Open Folder as Book</strong> plays a folder
+of audio as one book; <strong>File &gt; Open DAISY Book…</strong> reads
+a DAISY book’s heading structure from its <code>.ncx</code>, single-file
+and multi-file alike.</li>
+<li><strong>The Book Library.</strong> <strong>File &gt; Book
+Library…</strong> (Ctrl+L) searches the free LibriVox catalog; pick a
+book and press Play, and its sections appear in the Chapters tree.</li>
+<li><strong>Chapters as a tree.</strong> A multi-level table of contents
+keeps its parts with their chapters nested beneath; a flat book shows
+one level. Z and B (or the Previous chapter and Next chapter buttons)
+move by chapter and announce it, Enter in the tree jumps, and a book
+split across several files loads the right file. When one track
+finishes, the player rolls into the next.</li>
+<li><strong>Go to Position</strong> (Ctrl+G): Hours, Minutes and Seconds
+fields, or a timecode typed as <code>1:23:45</code>, <code>83:45</code>,
+<code>5025</code> or <code>1h23m45s</code>. A time past the end says so
+and moves you to the end.</li>
+<li><strong>Picking up where you left off.</strong> A book you have
+heard before resumes where you stopped, announced as a welcome back.
+Your place is saved every fifteen seconds and again when you close the
+player, and it is tied to the audio itself, so a moved or renamed copy
+of the same recording resumes while a different recording of the same
+title keeps its own place. A position in the first few seconds is not
+kept.</li>
+<li><strong>Sleep timer.</strong> <strong>Playback &gt; Sleep
+Timer</strong> stops after 15, 30 or 60 minutes, or at the end of the
+chapter, then pauses, saves your place and says goodnight.</li>
+<li><strong>Lyrics</strong> (2026-10-15). <strong>Playback &gt;
+Lyrics…</strong> (Ctrl+Alt+L) shows the words of the playing song from
+LRCLIB, found from the file’s tags or an “Artist - Title” file name.
+With timed words, <strong>Current line</strong> shows the line being
+sung and <strong>Follow playback</strong> keeps the cursor on it;
+nothing is read out as lines change, and <strong>Say Current
+Line</strong> speaks the line once. Lyrics are looked up only when you
+ask, never in Safe Mode, and kept in memory only.</li>
+</ul>
+<h3 id="bookmarks-and-notes">Bookmarks and notes</h3>
+<ul>
+<li><strong>Bookmarks</strong> with Ctrl+B, or with a note on
+Ctrl+Shift+B; <strong>Navigation &gt; Edit Bookmark Note…</strong>
+(Ctrl+Alt+N); <strong>Navigation &gt; Go to Bookmarks List</strong>
+(Ctrl+Alt+M) and back to the player controls with Ctrl+Alt+P.
+Ctrl+Shift+C copies a paste-ready <code>[1:23:45] note — Title</code>
+line for a QUILL document.</li>
+<li><strong>Export and sync.</strong> <strong>File &gt; Bookmarks &amp;
+Sync</strong> exports a book’s bookmarks to Markdown (Ctrl+Alt+E) and
+exports (Ctrl+Alt+S) or imports (Ctrl+Alt+I) a sync bundle that moves
+bookmarks between machines, merged on import and never overwriting.</li>
+<li><strong>Hearing your notes as you reach them.</strong> A bookmark
+with a note is read aloud when playback reaches it, on by default under
+<strong>Playback &gt; Read My Notes Aloud as I Reach Them</strong>. Only
+bookmarks with a note speak, a label is read first (or “Note:” without
+one), and seeking, skipping back or pausing never triggers or repeats
+one.</li>
+</ul>
+<h3 id="sound-volume-and-the-sliders">Sound, volume and the sliders</h3>
+<ul>
+<li><strong>Volume, speed and the Audio page.</strong> Ctrl+Up and
+Ctrl+Down change the volume from anywhere in the window, the Mute button
+mutes and unmuting restores your level, and volume is remembered per
+book. Speed runs from 0.5x to 3x, pitch preserved. The Audio page has
+volume boost and loudness normalization, a 10-band equalizer whose bands
+speak their gain in decibels (presets Flat, Voice, Bass, Treble, Night
+and Podcast), and skip silence. These run on the bundled libmpv engine;
+where it cannot load they are disabled and the player says why.</li>
+<li><strong>Up is more on every slider, and Slider Keys to
+choose</strong> (2026-09-28, 2026-10-26). Up and Page Up raise the
+position and volume sliders and Down and Page Down lower them, and Home
+and End go with them: Home is full volume, 100 percent, and End is 0.
+<strong>File &gt; Preferences…</strong> (Ctrl+,) has a <strong>Slider
+Keys…</strong> button that chooses between <strong>Up is more</strong>
+(the default) and <strong>As Windows sliders</strong> (Down, Page Down
+and End raise a slider; Up, Page Up and Home lower it). It is one choice
+for every Quill app at once. Right is always more and Left less, each
+key press tells the screen reader the new value, and Ctrl+Up and
+Ctrl+Down are not changed.</li>
+<li><strong>Where the player’s own sounds play.</strong> <strong>App
+Sounds Play On…</strong> in Preferences sends the earcons to the book’s
+own device (the default), the system default, any sound card or headset
+by name, or nowhere. <strong>Alt+Shift+M</strong> (<strong>Playback &gt;
+App Sounds</strong>) turns them off and back on. If the chosen device is
+unplugged the sounds play on the system default and the player says so
+once. <strong>Playback &gt; Audio Output Device…</strong> (Ctrl+Shift+K)
+chooses where the book plays.</li>
+</ul>
+<h3 id="the-window-and-the-keyboard">The window and the keyboard</h3>
+<ul>
+<li><strong>Winamp’s classic keys.</strong> X plays, C pauses, V stops
+(Shift+V too), B and Z step track or chapter, Left and Right seek five
+seconds (thirty with Shift) and T says the time elapsed or remaining, on
+the same letters as Quill Radio’s Recordings player and QUILL Cast.</li>
+<li><strong>Alt letters that do not fight the menus</strong>
+(2026-10-17). Alt+P pressed Play instead of opening the Playback menu,
+and Alt+V, Alt+W, Alt+F and Alt+N did the same to View, Window, File and
+Navigation. The menus keep their letters and the buttons moved: Play or
+Pause is Alt+A, Stop Alt+T, Previous chapter Alt+C, Next chapter Alt+X,
+Rewind Alt+R, Forward Alt+O, Where am I? Alt+I, Mute Alt+U, Speed Alt+D,
+Add Bookmark Alt+M, Remove Bookmark Alt+K, Equalizer preset Alt+E,
+Volume boost Alt+B, Normalize loudness Alt+L and Skip silence
+Alt+S.</li>
+<li><strong>Arrows that belong to the focused control</strong>
+(2026-10-17). In the Chapters tree Left closes a part and Right opens
+it, the sliders keep their arrows (so Left on the volume slider is
+quieter rather than a seek), and Left and Right change page on the
+Chapters, Bookmarks and Audio tabs.</li>
+<li><strong>The status bar.</strong> State, Position, Chapter, Sleep and
+Backend fields: F6 (<strong>Navigation &gt; Review Status
+Field</strong>) moves across them and Shift+F6 (<strong>Navigation &gt;
+Read Status Bar</strong>) speaks them all.</li>
+<li><strong>Tray and show-and-hide key.</strong> The player lives in the
+notification area; <strong>File &gt; Minimize to Tray</strong> (Ctrl+W)
+keeps it playing and Exit (Ctrl+Q) quits. <strong>File &gt; Show and
+Hide Key…</strong> (Ctrl+Alt+Shift+H) chooses a key that shows and hides
+the player from any program; there is none until you choose one.
+Ctrl+Alt+Shift+P, which earlier builds used, belongs to other QuillVille
+apps and is off, and the player says so once after the update.</li>
+<li><strong>Mini Player and views.</strong> <strong>View &gt; Mini
+Player</strong> (Ctrl+Shift+M), <strong>Compact Mode</strong>
+(Ctrl+Alt+K), <strong>Magical Mode</strong> (Ctrl+Shift+G, a spoken
+welcome-back recap) and <strong>Always on Top</strong>
+(Ctrl+Shift+T).</li>
+<li><strong>Preferences</strong> (Ctrl+,) gathers the Audio Output
+Device…, App Sounds Play On… and Slider Keys… buttons, a “This session
+only” box, and a <strong>Find a setting</strong> box that also reaches
+the Audio page.</li>
+</ul>
+<h3 id="ai-and-voice">AI and voice</h3>
+<ul>
+<li><strong>Summarize This Chapter (AI)</strong> and <strong>AI Recap of
+Where I Am</strong> in the Playback menu, using the AI set up in QUILL’s
+AI Hub; for pure audio they transcribe the passage first. Off in Safe
+Mode, and never run on protected BARD content.</li>
+<li><strong>Voice commands.</strong> <strong>Listen for a
+Command</strong> (Ctrl+Shift+L) transcribes a spoken command offline
+with a small speech model while the book is ducked, never paused;
+<strong>Type a Voice Command</strong> (Ctrl+Shift+V) takes it typed.
+Commands such as “next chapter”, “go to 1:20:00”, “bookmark this” or
+“sleep in twenty” all also have a key or menu row.</li>
+</ul>
+<h3 id="help">Help</h3>
+<ul>
+<li><strong>Help &gt; What’s New</strong> (Ctrl+Shift+F1) opens this
+changelog in your browser, on the same key as every other Quill app.
+Until this file was written, the player had no changelog and the command
+said it was not found in the build.</li>
+<li><strong>Help &gt; Find a Setting or Command</strong>
+(Ctrl+Alt+Shift+S) searches every menu; <strong>Help &gt; Get Help from
+Support…</strong> (Ctrl+Alt+F2) writes a message to Community Access in
+your own mail program; <strong>Help &gt; Check for Updates…</strong>
+(Ctrl+Alt+U) and <strong>About</strong> (Ctrl+Alt+A).</li>
+</ul>
+<h3 id="privacy-and-safety">Privacy and safety</h3>
+<ul>
+<li>No network calls except to the sources you choose, and no telemetry.
+Safe Mode turns off every network source; local playback still works.
+BARD sign-ins and keys live only in the operating system’s secure
+vault.</li>
+</ul>
+</main>
+</body>
+</html>

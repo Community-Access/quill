@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>What's new in QUILL Lite 1.2</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="whats-new-in-quill-lite-12">What’s new in QUILL Lite 1.2</h1>
+<p>QUILL Lite 1.2 is about words, and about never missing what happened.
+Your settings, recent files and recovered work come with you.</p>
+<h2 id="before-you-update">Before you update</h2>
+<ul>
+<li><strong>Using the portable QUILL Lite 1.1.2? Update by hand this
+once.</strong> In that copy, Install and restart can delete its data
+folder. Close QUILL Lite, copy the data folder next to QuillLite.exe
+somewhere safe, unzip the new portable zip into a new folder, and copy
+your data folder into it. An installed copy is not affected.</li>
+<li><strong>Keys that moved:</strong> Keyboard Manager is now
+Ctrl+Alt+Shift+Space, Snippets Ctrl+Alt+Shift+Home, Remove Quote Marks
+Alt+Shift+. (period), Collect Selection Alt+Shift+C, and Trim Trailing
+Spaces Ctrl+Alt+R.</li>
+</ul>
+<h2 id="finding-the-right-word">Finding the right word</h2>
+<ul>
+<li><strong>Thesaurus (Shift+F7)</strong> finds the meaning of the word
+you are on, and the word you choose goes into your sentence in the right
+form.</li>
+<li><strong>Look Up Word (Alt+F10)</strong> is a dictionary that works
+without the internet. The AI dictionary reads your word in its own
+sentence and tells you whether it is the right one.</li>
+</ul>
+<h2 id="word-documents-pdfs-and-other-files">Word documents, PDFs and
+other files</h2>
+<ul>
+<li><strong>Word documents open as rich text, and Ctrl+S saves a real
+Word document</strong>, with headings, lists, tables and links. If a
+save would lose something, QUILL Lite names it first.</li>
+<li><strong>PDFs open as text</strong>, page by page, in the installed
+and portable copies. A scanned page is read with Windows OCR on this
+computer; nothing is uploaded.</li>
+<li><strong>Excel, PowerPoint and OpenDocument files open as readable
+text</strong>, each sheet and slide named.</li>
+</ul>
+<h2 id="tables">Tables</h2>
+<ul>
+<li><strong>Insert &gt; Table (Ctrl+Alt+T)</strong> makes a table in any
+document. In rich text it is a real table, which your screen reader,
+Word and WordPad see as one.</li>
+<li><strong>The arrows read a table cell by cell</strong>: Up and Down
+go to the cell above and below and say it. Tab and Shift+Tab move cell
+to cell, and Tab in the last cell adds a row.</li>
+<li><strong>Navigate &gt; Table</strong> has the table keys, such as
+Ctrl+Alt+Right for the next cell, and adds or deletes rows and
+columns.</li>
+</ul>
+<h2 id="writing-and-editing">Writing and editing</h2>
+<ul>
+<li><strong>Find in Open Documents (Ctrl+Alt+Shift+F8)</strong> searches
+and replaces across every document you have open. Search in Files
+(Ctrl+Alt+Shift+F) and Replace Across Files (Ctrl+Shift+R) work on a
+whole folder.</li>
+<li><strong>Inline notes (Alt+Shift+I)</strong> leave a comment on a
+line; Alt+Shift+Enter lists them.</li>
+<li><strong>Recent Documents (Alt+Shift+0)</strong>, with pinning.
+<strong>Toggle Task Done (Ctrl+Alt+Enter)</strong>. <strong>Export as
+HTML (Ctrl+Alt+Shift+End)</strong>. <strong>AutoCorrect</strong>, off
+until you turn it on.</li>
+<li><strong>The clipboard collector (Alt+Shift+S)</strong> gathers
+everything you copy, in any program, into one document.</li>
+</ul>
+<h2 id="knowing-what-happened">Knowing what happened</h2>
+<ul>
+<li><strong>Activity (Shift+F9)</strong> lists everything QUILL Lite has
+told you, and <strong>F9</strong> says the last important thing
+again.</li>
+<li><strong>If NVDA or JAWS stops, your unsaved work is saved
+first.</strong> Braille no longer flickers during a burst of
+messages.</li>
+</ul>
+<h2 id="dictation-and-ai">Dictation and AI</h2>
+<ul>
+<li><strong>Dictation profiles</strong> for email, documents, Markdown,
+chat and code, Spanish dictation, and optional speech models that make
+fewer mistakes.</li>
+<li><strong>The AI asks before switching</strong> to QUILL’s free AI,
+tries again when it is busy, and reads answers without Markdown symbols.
+Prompt Library is on Ctrl+7.</li>
+</ul>
+<h2 id="more">More</h2>
+<p><strong>Help &gt; What’s New</strong> (Alt+H, W) opens the full
+changelog, and with every document closed the menu bar still has File,
+Tools and Help. Faster opening of big files and network drives, and many
+smaller fixes. The full release notes: <a
+href="https://www.quillforall.org/docs/quilllite-release-notes.html">https://www.quillforall.org/docs/quilllite-release-notes.html</a>.
+Stuck? Help &gt; Get Help from Support (Ctrl+Alt+F2).</p>
+</main>
+</body>
+</html>

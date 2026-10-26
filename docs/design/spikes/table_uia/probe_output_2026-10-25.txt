@@ -1,0 +1,64 @@
+
+===== native (hwnd 0x1e115dc) =====
+UiaHasServerSideProvider: True
+element: Document name='RichEdit Control' class='RICHEDIT50W' patterns=['Text', 'Text2', 'Value']
+provider: [pid:90336,providerId:0x1E115DC Main:Nested [pid:81596,providerId:0x1E115DC Annotation(parent link):Microsoft: Annotation Proxy (unmanaged:UIAutomationCore.DLL); Main:Unidentified Provider (unmanaged:msftedit.DLL)]; Nonclient:Microsoft: Non-Client Proxy (unmanaged:UIAutomationCore.DLL); Hwnd(parent link):Microsoft: HWND Proxy (unmanaged:UIAutomationCore.DLL)]
+  raw child: 50014 name='Vertical' class='' patterns=[]
+    raw child: 50000 name='Line up' class='' patterns=[]
+    raw child: 50000 name='Line down' class='' patterns=[]
+  raw child: DataGrid name='Rich Edit Table' class='' patterns=['Grid']
+    Grid rows=3 cols=3
+    raw child: DataItem name='Name' class='' patterns=['GridItem', 'Value']
+      GridItem row=0 col=0
+    raw child: DataItem name='Age' class='' patterns=['GridItem', 'Value']
+      GridItem row=0 col=1
+    raw child: DataItem name='City' class='' patterns=['GridItem', 'Value']
+      GridItem row=0 col=2
+    raw child: DataItem name='A2' class='' patterns=['GridItem', 'Value']
+      GridItem row=1 col=0
+    raw child: DataItem name='B2' class='' patterns=['GridItem', 'Value']
+      GridItem row=1 col=1
+    raw child: DataItem name='C2' class='' patterns=['GridItem', 'Value']
+      GridItem row=1 col=2
+    raw child: DataItem name='A3' class='' patterns=['GridItem', 'Value']
+      GridItem row=2 col=0
+    raw child: DataItem name='B3' class='' patterns=['GridItem', 'Value']
+      GridItem row=2 col=1
+    raw child: DataItem name='C3' class='' patterns=['GridItem', 'Value']
+      GridItem row=2 col=2
+raw children: 2
+document text: 'Before the table.\r\ufff9\rName\x07Age\x07City\x07\ufffb\r\ufff9\rA2\x07B2\x07C2\x07\ufffb\r\ufff9\rA3\x07B3\x07C3\x07\ufffb\rAfter the table.'
+DocumentRange.GetChildren() length: 1
+  child: DataGrid name='Rich Edit Table' class='' patterns=['Grid']
+B2 enclosing element: DataGrid name='Rich Edit Table' class='' patterns=['Grid']
+  ancestor: Document name='RichEdit Control' class='RICHEDIT50W' patterns=['Text', 'Text2', 'Value']
+  ancestor: Pane name='panel' class='wxWindowNR' patterns=[]
+  ancestor: Window name='Table UIA probe' class='wxWindowNR' patterns=[]
+  ancestor: Pane name='Desktop 1' class='#32769' patterns=[]
+B2 StyleName: NotSupported
+B2 StyleId: NotSupported
+B2 line unit: '\ufff9\rA2\x07B2\x07C2\x07\ufffb\r'
+B2 paragraph unit: 'B2\x07'
+
+===== pipe (hwnd 0x68170e) =====
+UiaHasServerSideProvider: True
+element: Document name='RichEdit Control' class='RICHEDIT50W' patterns=['Text', 'Text2', 'Value']
+provider: [pid:90336,providerId:0x68170E Main:Nested [pid:81596,providerId:0x68170E Annotation(parent link):Microsoft: Annotation Proxy (unmanaged:UIAutomationCore.DLL); Main:Unidentified Provider (unmanaged:msftedit.DLL)]; Nonclient:Microsoft: Non-Client Proxy (unmanaged:UIAutomationCore.DLL); Hwnd(parent link):Microsoft: HWND Proxy (unmanaged:UIAutomationCore.DLL)]
+  raw child: 50014 name='Vertical' class='' patterns=[]
+    raw child: 50000 name='Line up' class='' patterns=[]
+    raw child: 50000 name='Line down' class='' patterns=[]
+raw children: 1
+document text: 'Before the table.\r| Name | Age | City |\r| --- | --- | --- |\r| A2 | B2 | C2 |\r| A3 | B3 | C3 |\rAfter the table.\r'
+DocumentRange.GetChildren() length: 0
+B2 enclosing element: Document name='RichEdit Control' class='RICHEDIT50W' patterns=['Text', 'Text2', 'Value']
+  ancestor: Pane name='panel' class='wxWindowNR' patterns=[]
+  ancestor: Window name='Table UIA probe' class='wxWindowNR' patterns=[]
+  ancestor: Pane name='Desktop 1' class='#32769' patterns=[]
+B2 StyleName: NotSupported
+B2 StyleId: NotSupported
+B2 line unit: '| A2 | B2 | C2 |\r'
+B2 paragraph unit: '| A2 | B2 | C2 |\r'
+
+native: descendants with Table pattern: 0
+set_rtf returned 1
+native GetValue: 'Before the table.\nName\tAge\tCity\nA2\tB2\tC2\nA3\tB3\tC3\nAfter the table.'
