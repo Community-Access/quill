@@ -21,7 +21,7 @@ The rename is committed on local main as `529884ec`. Capture work is developed s
 
 ## Implemented screenshot path
 
-Capture offers named visible windows, individual displays, the full virtual desktop, an active window after a delay, and a rectangle entered as physical-pixel coordinates. Negative monitor coordinates are supported. Window labels include their title and process identity. Minimized windows require restoration. Refresh preserves target identity; a disappeared window does not silently become a desktop capture.
+Capture offers named visible windows, individual displays, the full virtual desktop, an active window after a delay, and a guided source/portion selection with optional advanced physical-pixel coordinates. Whole-source capture needs no pixel calculations; the readable plan explains exclusions and review steps. Negative monitor coordinates are supported. Window labels include their title and process identity. Minimized windows require restoration. Refresh preserves target identity; a disappeared window does not silently become a desktop capture.
 
 Named windows use the window-handle backend. Display topology and window process identity are rechecked. Target loss, a disconnected display, invalid bounds, capture errors and incorrect rectangle dimensions are failures rather than reasons to broaden the capture. Protected or GPU-rendered content may still be blank despite a successful API call; uniform pixels are reported as evidence, not treated as proof of privacy or success.
 
@@ -71,3 +71,7 @@ This slice does not close every CAP/VIS/VERIFY requirement in the full PRD. UIA-
 No ZoomIt code or binary has been incorporated in this screenshot slice. Reuse decisions must identify the exact upstream revision, per-file and dependency licenses, retained notices, native-helper boundary and tests. User-facing Studio workflows remain native tasks rather than referrals to an external production application.
 
 The [Pillow API](https://pillow.readthedocs.io/en/stable/reference/ImageGrab.html) documents selected-window and multi-monitor still capture. [Windows Graphics Capture](https://learn.microsoft.com/en-us/windows/apps/develop/media-authoring-processing/screen-capture) is a candidate for the later video-session backend; it has not been implemented by this slice.
+
+## Requirement-by-requirement audit
+
+The [screenshot coverage audit](./quill-studio-screenshot-coverage.md) maps both user-supplied PRDs to working behavior and gaps, including CAP, VIS, VERIFY, CP and GATE-08/09. The full screenshot requirements are not complete. Guided portions reduce coordinate burden but do not implement UIA selection or guarantee complete semantic content.

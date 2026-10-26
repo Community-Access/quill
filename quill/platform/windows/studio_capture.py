@@ -131,7 +131,9 @@ def list_capture_targets() -> list[CaptureTarget]:
             *sorted(windows, key=lambda target: target.label.casefold()),
             CaptureTarget("active_window", "Active window after the delay"),
             CaptureTarget(
-                "region", "Numeric rectangle on the desktop", device=desktop_target(displays).device
+                "region",
+                "Guided region (choose a window or display, then a portion)",
+                device=desktop_target(displays).device,
             ),
         ]
 
@@ -166,6 +168,16 @@ def resolve_target(requested: CaptureTarget) -> CaptureTarget:
     if requested.kind == "region":
         if requested.device != desktop.device:
             raise ScreenCaptureError("Display layout changed. Review the rectangle again.")
+        if requested.window_handle:
+            reference = window_target(requested.window_handle)
+            if (
+                reference.process_id != requested.process_id
+                or reference.bounds != requested.reference_bounds
+            ):
+                raise ScreenCaptureError(
+                    "The region's source window moved, resized or changed. "
+                    "Refresh and review the guided region before capturing again."
+                )
         validate_region(requested.bounds, desktop.bounds)
         return requested
     raise ScreenCaptureError("Unsupported capture target. No image was captured.")
@@ -188,6 +200,8 @@ def capture_target(folder: Path, requested: CaptureTarget) -> CaptureEvidence:
                 image = ImageGrab.grab(
                     bbox=target.bounds, all_screens=True, include_layered_windows=True
                 )
+                if requested.kind == "region" and requested.window_handle:
+                    resolve_target(requested)  # Reject source movement during the grab too.
                 backend = "Pillow desktop rectangle"
                 expected = (
                     target.bounds[2] - target.bounds[0],

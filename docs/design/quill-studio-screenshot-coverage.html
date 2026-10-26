@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QUILL Studio screenshot requirements coverage</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1
+id="quill-studio-screenshot-requirements-coverage-and-remaining-work">QUILL
+Studio screenshot requirements: coverage and remaining work</h1>
+<p>Audit date: 2026-10-26. Target application version:
+<strong>2.0.0</strong>. This is an implementation audit, not release
+certification.</p>
+<h2 id="answer-and-scope">Answer and scope</h2>
+<p><strong>The screenshot requirements in both source PRDs are not yet
+complete.</strong> The implementation provides a useful first
+capture-and-inspection journey. It does not yet pass the expanded PRD’s
+GATE-08, which requires keyboard UIA-control capture, OCR, a numbered
+annotation, and image plus evidence export.</p>
+<p>This audit examines the user-supplied
+<code>QUILL_Studio_PRD.md</code> and
+<code>QUILL_Audio_Studio_Expanded_PRD.md</code> in the main checkout.
+The former consolidates the latter; their requirements remain visible
+below rather than being reduced to the smaller first milestone. The
+user’s later instructions authorize configurable screenshot hotkeys,
+rich editable/custom prompts, any configured image-capable provider, and
+explicitly approved optional automatic AI. Those instructions supersede
+the older blanket ban on automatic uploads; they do not authorize
+unconsented sharing.</p>
+<p>The implementation is on branch <code>agents/continue</code>, whose
+initial screenshot milestone is commit <code>4b385a57</code>; the rename
+is commit <code>529884ec</code>. The main-checkout changelog the user
+linked does not include the branch’s screenshot feature entries at audit
+time. Read the <a
+href="../../standalone/studio/docs/CHANGELOG.md">branch changelog</a>
+for implemented behavior. No screenshot release has been published.</p>
+<p>Status terms: <strong>Partial</strong> means working pieces exist but
+the whole requirement is not satisfied; <strong>Pending</strong> means
+no delivered end-to-end workflow; <strong>Unverified</strong> means
+implementation or research exists but required outcome evidence is
+missing. An automated test passing does not substitute for blind-user
+acceptance.</p>
+<h2 id="consolidated-capture-requirements">Consolidated capture
+requirements</h2>
+<table>
+<caption>Table: Consolidated capture requirements</caption>
+<thead>
+<tr>
+<th scope="col">Requirement</th>
+<th scope="col">Status</th>
+<th scope="col">Present behavior and remaining work</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">CAP-001: capture modes and metadata</th>
+<td>Partial</td>
+<td>Named visible window, active window, display, full desktop, guided
+portions, optional exact rectangle, one-shot delay, PNG, clipboard copy
+and source/hash/time evidence exist. UIA element, semantic logical
+region, scrolling capture, timed sequences and actual scale-factor
+evidence remain. A single delay is not a sequence.</td>
+</tr>
+<tr>
+<th scope="row">CAP-002: Screenshot Inspector</th>
+<td>Partial</td>
+<td>Dimensions, selectable local OCR, available engine confidence,
+editable prompts, grounded follow-ups, image copy and description export
+exist. Missing structured element/position list, guaranteed OCR reading
+order, independent clipping/overlay checks, comparison, semantic target
+search, keyboard zoom/crop and redaction. AI suggestions are not those
+tools.</td>
+</tr>
+<tr>
+<th scope="row">CAP-003: annotations and presentation tools</th>
+<td>Pending</td>
+<td>No keyboard annotation objects, anchoring/revalidation, verbal
+preview, layering, magnification, pointer/focus highlight, break timer
+or spoken countdown.</td>
+</tr>
+<tr>
+<th scope="row">CAP-004: integrated capture workspace</th>
+<td>Partial</td>
+<td>Native menu, command palette, in-app accelerators, opt-in global
+keys, capture delay, local OCR, AI inspection and PNG clipboard copy
+exist. Missing persistent named workspaces, recording, zoom/annotation,
+image resizing/conversion and broader clipboard transformations.</td>
+</tr>
+<tr>
+<th scope="row">CAP-005: Capture and Dictate</th>
+<td>Pending</td>
+<td>No screenshot-plus-dictation/transcript package or
+issue-tracker/HTML export journey. Existing transcription elsewhere in
+QUILL does not complete this workflow.</td>
+</tr>
+<tr>
+<th scope="row">CAP-006: comprehensive preflight</th>
+<td>Partial</td>
+<td>Invalid bounds, changed monitor topology, closed/minimized windows,
+changed window process and moved/resized guided-region source fail
+explicitly; uniform pixels and API limitations are recorded. Missing
+independent checks/corrections for occlusion, overlays, pointer
+obstruction, notifications, masking, unexpected titles and semantic
+completeness.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="visual-inspection-requirements-relevant-to-screenshots">Visual
+inspection requirements relevant to screenshots</h2>
+<table>
+<caption>Table: Visual inspection requirements relevant to
+screenshots</caption>
+<thead>
+<tr>
+<th scope="col">Requirement</th>
+<th scope="col">Status</th>
+<th scope="col">Present behavior and remaining work</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">VIS-001: understand on-screen content</th>
+<td>Partial</td>
+<td>Saved/reopened PNGs and newly captured windows/regions can be
+inspected with OCR or shared AI. No combined UIA/OCR/vision pipeline or
+unified live/window/webcam/video-frame command.</td>
+</tr>
+<tr>
+<th scope="row">VIS-002: layered structured answers</th>
+<td>Partial</td>
+<td>Rich presets request scene, text, controls, quality, privacy and
+chart explanations. Replies are selectable text; structured navigable
+result layers, measured boxes and contrast calculations remain. A model
+inventing a location is not measured evidence.</td>
+</tr>
+<tr>
+<th scope="row">VIS-003: artifact-grounded conversation</th>
+<td>Partial</td>
+<td>Requests verify the same image hash, use an immutable temporary copy
+and retain prior conversation for follow-ups. Source evidence is
+recorded for new captures. Video frame references and cross-image
+comparison remain; reopening an image does not guarantee restoration of
+all original source metadata.</td>
+</tr>
+<tr>
+<th scope="row">VIS-004: deterministic evidence before
+interpretation</th>
+<td>Partial</td>
+<td>Full image decode, nonzero dimensions, SHA-256, bounds and source
+identity checks exist. No UIA intersections, exhaustive
+text/completeness checks or video/audio proofs. Uniform-pixel reporting
+does not prove protected-content detection.</td>
+</tr>
+<tr>
+<th scope="row">VIS-005: blind camera coach</th>
+<td>Pending; later camera work</td>
+<td>Not implemented by the still-screenshot milestone.</td>
+</tr>
+<tr>
+<th scope="row">VIS-006: configured providers and privacy</th>
+<td>Partial</td>
+<td>Shared provider adapters, provider-specific credentials, configured
+image-capable models, provider/model/endpoint consent, AI Off, Safe Mode
+and offline capture/OCR are reused. Live-provider acceptance, cost
+estimates and complete provider/price disclosure remain.</td>
+</tr>
+<tr>
+<th scope="row">VIS-007: accessible visual revisions</th>
+<td>Pending</td>
+<td>No reversible keyboard/natural-language crop, annotation adjustment,
+background editing or versioned visual-edit workflow. Prompt editing
+does not edit the image.</td>
+</tr>
+<tr>
+<th scope="row">VIS-008: accessibility authoring</th>
+<td>Partial</td>
+<td>Reviewable alt-text, extended-description, chart/text prompts and
+text export exist. Measured caption contrast/safe-area checks and
+video/audio-description authoring remain.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="expanded-prd-capture-requirements">Expanded PRD capture
+requirements</h2>
+<table>
+<caption>Table: Expanded PRD capture requirements</caption>
+<thead>
+<tr>
+<th scope="col">Requirement</th>
+<th scope="col">Status</th>
+<th scope="col">Present behavior and remaining work</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">CP-010: upstream compile and inventory spike</th>
+<td>Unverified</td>
+<td>Official source/license research is documented. No independent build
+of permitted upstream modules or completed dependency/packaging
+inventory. No upstream code has been imported.</td>
+</tr>
+<tr>
+<th scope="row">CP-011: zoom/presentation adapter</th>
+<td>Pending</td>
+<td>No integrated zoom, annotation, magnification, timer, mirroring or
+screen-recording adapter. Current still capture uses existing
+Windows/Pillow dependencies.</td>
+</tr>
+<tr>
+<th scope="row">CP-012: capture targets and geometry</th>
+<td>Partial</td>
+<td>Full monitor, chosen window, guided portions and optional numeric
+rectangle exist. UIA control selection and dedicated keyboard
+move/resize increments remain.</td>
+</tr>
+<tr>
+<th scope="row">CP-013: named regions, combining, annotation</th>
+<td>Pending</td>
+<td>The in-session repeat recipe is not multiple saved named regions. No
+combined shots or keyboard annotations.</td>
+</tr>
+<tr>
+<th scope="row">CP-014: local OCR</th>
+<td>Partial</td>
+<td>Shared offline OCR returns selectable text; description export
+includes observations and confidence when supplied. Real-engine
+availability/quality and complete copy/export acceptance need
+testing.</td>
+</tr>
+<tr>
+<th scope="row">CP-015: scrolling/panoramic capture</th>
+<td>Pending</td>
+<td>No stitching, preview or partial-stitch recovery/warnings.</td>
+</tr>
+<tr>
+<th scope="row">CP-016: accessibility evidence bundle</th>
+<td>Partial</td>
+<td>PNG plus JSON/Markdown evidence, source metadata and unverified
+observations exist. Reproduction steps, control details, annotation
+metadata and a bundled package remain.</td>
+</tr>
+<tr>
+<th scope="row">CP-017: keyboard alternatives to upstream pointer
+actions</th>
+<td>Unverified</td>
+<td>Current controls are native and keyboard-oriented; no upstream
+pointer surface has been integrated. This does not prove keyboard parity
+for the future adapter.</td>
+</tr>
+<tr>
+<th scope="row">CP-018: accessible drawing-object model</th>
+<td>Pending</td>
+<td>No drawing surface or object list, focus, selection, order or
+editable geometry model.</td>
+</tr>
+</tbody>
+</table>
+<p>Expanded AI-011/012/013/014/016/017/018 are partially covered by
+shared providers, explicit sharing, OCR/description, source/model labels
+and reviewable text. Quotas/gateway, estimated cost, richer provenance,
+contextual authoring acceptance and publication review gates are not
+complete. AI-010 image generation and AI-015 reversible image-edit
+acceptance remain separate work.</p>
+<h2 id="verification-requirements-and-release-gates">Verification
+requirements and release gates</h2>
+<table>
+<caption>Table: Verification requirements and release gates</caption>
+<thead>
+<tr>
+<th scope="col">Requirement</th>
+<th scope="col">Status</th>
+<th scope="col">Present behavior and remaining work</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">VERIFY-001: complete evidence report</th>
+<td>Partial</td>
+<td>JSON plus readable Markdown include image identity, dimensions,
+hash, decode results and unverified observations. No complete
+user-goal/configuration/steps/error/provenance/export schema covering
+the whole PRD.</td>
+</tr>
+<tr>
+<th scope="row">VERIFY-002: result states and Strict Publish</th>
+<td>Partial</td>
+<td>Objective checks are distinguished from unverified visual/privacy
+findings. No full state machine or Strict Publish gate/waiver
+workflow.</td>
+</tr>
+<tr>
+<th scope="row">VERIFY-003: comprehensive preflight</th>
+<td>Partial</td>
+<td>Geometry and source checks exist; full privacy/semantic preflight,
+storage estimates and practice-video checks do not.</td>
+</tr>
+<tr>
+<th scope="row">VERIFY-004/005/006: recording/export/routing proof</th>
+<td>Pending; later audiovisual work</td>
+<td>Still-image decode/hash evidence is not recording recovery, media
+sampling, audiovisual timing or external privacy-isolation proof.</td>
+</tr>
+<tr>
+<th scope="row">VERIFY-007: guided verification questions</th>
+<td>Partial</td>
+<td>Readable capture guidance and framing prompts help users choose and
+review sources. No complete actionable issue list with
+jump-to-target/frame/track and correction history.</td>
+</tr>
+<tr>
+<th scope="row">VERIFY-008: release benchmark</th>
+<td>Unverified</td>
+<td>Mandatory checks and human outcome evidence are not all complete. Do
+not claim screenshot release readiness.</td>
+</tr>
+<tr>
+<th scope="row">Expanded GATE-08: UIA capture plus numbered
+annotation</th>
+<td>Not passed</td>
+<td>UIA selection and annotation are missing, so OCR and PNG evidence
+alone cannot pass it.</td>
+</tr>
+<tr>
+<th scope="row">Expanded GATE-09: authorized cloud transmission</th>
+<td>Partial</td>
+<td>Consent refusal, AI Off, Safe Mode, exact-image grounding and queued
+automatic-permission revocation are tested. Live-provider/price
+disclosure and network observation acceptance remain.</td>
+</tr>
+<tr>
+<th scope="row">Expanded GATE-10 and consolidated upgrade/accessibility
+gates</th>
+<td>Unverified</td>
+<td>Source identity/version/legacy regressions have tests.
+Installed/portable upgrade, rollback, shortcut behavior and actual
+JAWS/NVDA/Narrator/braille outcomes remain.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="guided-capture-for-blind-users">Guided capture for blind
+users</h2>
+<p>Users must not need to calculate pixels to obtain a useful first
+screenshot. The first recommendation is <strong>the whole named
+window</strong>. Studio derives its dimensions. One display is
+appropriate for several windows on that screen; full desktop includes
+every display and can expose unrelated content.</p>
+<p>Guided region selection names a window/display, then offers
+<strong>Whole source</strong>, <strong>Top half</strong>, <strong>Bottom
+half</strong>, <strong>Left half</strong>, <strong>Right half</strong>,
+or <strong>Middle quarter</strong>. Whole source is the default. A
+readable capture plan explains exclusions and the next review step.
+Exact coordinates remain optional advanced settings, rather than a
+prerequisite. Portions refer to the source rectangle, not to recognized
+controls: “top half” cannot guarantee an entire toolbar or dialog is
+included.</p>
+<p>A guided region is a screen-area capture. Unlike direct whole-window
+capture, an overlapping application or notification may appear. If its
+anchor window moves, resizes, closes or changes process before capture,
+the request fails and asks for refreshed selection. The implementation
+does not silently enlarge the region or choose another source.</p>
+<p>After capture, review local OCR and, if authorized, use the framing
+prompt. Ask “Is any text cut off?”, “Is the whole dialog visible?” or
+“What should I change before sharing?” Findings remain uncertain.
+Content-aware UIA selection and correction are still necessary to
+complete the PRD’s more demanding guided-capture requirements.</p>
+<h2 id="cross-cutting-screenshot-acceptance">Cross-cutting screenshot
+acceptance</h2>
+<table>
+<caption>Table: Cross-cutting screenshot acceptance</caption>
+<thead>
+<tr>
+<th scope="col">Requirements</th>
+<th scope="col">Status and evidence still needed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th scope="row">UX-001/002/004/008; A11Y-004/008</th>
+<td>Partial: named sources, guided portions, optional typed geometry,
+readable plan and inspection steps exist. No complete
+guided/standard/advanced workspace with structured OCR-element
+navigation or correction loop.</td>
+</tr>
+<tr>
+<th scope="row">UX-003; A11Y-009</th>
+<td>Partial: Capture menu, command palette, configurable in-app keys,
+global manager and authored F1 help exist. Full F6 workspace landmarks
+and end-to-end shortcut collision/AT acceptance remain.</td>
+</tr>
+<tr>
+<th scope="row">UX-005; A11Y-014/015/016/017</th>
+<td>Partial: busy chat rejects duplicate submissions without disabling
+its focused action. Source refresh preserves missing selections. Real
+focus stability, composite-field input and refresh behavior require AT
+testing; these tests do not certify all shell interactions.</td>
+</tr>
+<tr>
+<th scope="row">UX-006; A11Y-005/011/012</th>
+<td>Partial: shared speech/braille/text announcements and selectable
+guidance are reused. Full verbosity modes, searchable screenshot-event
+history and measured announcement behavior remain unverified.</td>
+</tr>
+<tr>
+<th scope="row">UX-007; A11Y-001/002/003/006/007/010/013</th>
+<td>Unverified: native controls, names/help, scrolling layout and
+explicit errors exist. JAWS/NVDA/Narrator, braille, contrast, 200–400%
+scaling, visible focus, keyboard-only completion and 8 GB hardware
+require outcome logs.</td>
+</tr>
+<tr>
+<th scope="row">TRAY-001/003/004</th>
+<td>Partial: opt-in global screenshot actions work without restoring
+Studio; registration failure is reported. A dedicated take-screenshot
+tray entry, background job/verification summaries and full tray
+accessibility remain. Global keys are not equivalent to completing the
+tray menu.</td>
+</tr>
+<tr>
+<th scope="row">Expanded SEC-004; consolidated privacy preflight</th>
+<td>Partial: consent and AI state are checked. No unified accessible
+privacy dashboard or independently proved absence of sensitive
+screenshot content.</td>
+</tr>
+<tr>
+<th scope="row">Expanded REL-001–006; consolidated seamless upgrade</th>
+<td>Unverified: stable identities/data paths and version-consistency
+regressions exist. Installed upgrade/rollback, portable acceptance,
+signed release assets/checksums and complete release documentation
+require release evidence.</td>
+</tr>
+<tr>
+<th scope="row">Expanded sections 14, 15.1 and 20</th>
+<td>Unverified: no complete resource, hardware, fault-injection or
+observed blind-user outcome matrix. Required capture gates must pass
+before claiming this phase complete.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="next-small-steps-in-order">Next small steps, in order</h2>
+<ol type="1">
+<li>Finish the guided-selection usability run with totally blind
+keyboard users and the required screen readers; test mixed-DPI display
+changes and source movement.</li>
+<li>Add shared UIA discovery/selection and structured OCR locations,
+with safe handling of protected/offscreen elements and no claim that
+inferred controls are real accessible controls.</li>
+<li>Add nondestructive keyboard crop/zoom/redaction and an accessible
+annotation-object list; preserve originals, preview in text and verify
+exports.</li>
+<li>Add named region/workspace persistence, sequence/scrolling capture,
+comparison and evidence-bundle reproduction steps.</li>
+<li>Close GATE-08 plus provider/privacy/installer/resource acceptance
+before calling the screenshot requirements complete. Proceed to the
+separately scoped video-with-optional-sound demo after that acceptance
+decision.</li>
+</ol>
+<p>The UIA work should extend the existing shared Windows boundaries
+rather than create another automation engine. <a
+href="../../quill/platform/windows/external_target.py">External target
+inspection</a> already reads bounded focused-element identity, role and
+password state; <a
+href="../../quill/platform/windows/selection_capture.py">selection
+capture</a> reads bounded selected text with identity checks; <a
+href="../../quill/platform/windows/text_target.py">text target
+inspection</a> queries editability. These are useful foundations, but
+none currently provides screenshot control enumeration,
+bounding-rectangle selection and capture. Their presence must not be
+counted as delivery of CAP-001/CP-012.</p>
+<p>See the <a href="./quill-studio-capture-milestone.md">implementation
+ledger</a> for architecture and test limits and the <a
+href="../../standalone/studio/docs/userguide.md">user guide</a> for
+current workflows.</p>
+</main>
+</body>
+</html>

@@ -49,3 +49,33 @@ def test_ai_observations_never_become_verified_checks(tmp_path):
     )
     assert report["observations_unverified"] == "Everything is safe"
     assert "Everything is safe" not in report["verified"]
+
+
+@pytest.mark.parametrize(
+    "preset,expected",
+    [
+        (0, (-1200, -100, -400, 500)),
+        (1, (-1200, -100, -400, 200)),
+        (2, (-1200, 200, -400, 500)),
+        (3, (-1200, -100, -800, 500)),
+        (4, (-800, -100, -400, 500)),
+        (5, (-1000, 50, -600, 350)),
+    ],
+)
+def test_guided_portions_derive_geometry_without_pixel_input(preset, expected):
+    from quill.core.studio_capture import CaptureTarget, guided_region
+
+    source = CaptureTarget("window", "Editor", (-1200, -100, -400, 500), 123, 456)
+    region = guided_region(source, preset, "layout")
+    assert region.bounds == expected
+    assert region.window_handle == 123 and region.process_id == 456
+    assert region.reference_bounds == source.bounds
+    assert region.device == "layout"
+
+
+def test_guided_portions_do_not_create_zero_sized_regions():
+    from quill.core.studio_capture import REGION_PRESETS, CaptureTarget, guided_region
+
+    source = CaptureTarget("display", "Tiny fixture", (0, 0, 1, 1))
+    for preset in range(len(REGION_PRESETS)):
+        assert guided_region(source, preset, "layout").bounds == source.bounds

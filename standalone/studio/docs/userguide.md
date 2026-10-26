@@ -561,13 +561,44 @@ Two Help items are worth knowing before anything else goes wrong. **Help > View 
 
 The new Capture menu keeps screenshot work separate from your book library. It does not record sound or change your audio devices.
 
-Choose **Capture screen** to select a named visible window, one display, the full desktop, an active window after a delay, or a rectangle entered as Left, Top, Width and Height in physical pixels. Displays left of or above your primary display can have negative coordinates. Minimized windows must be restored first. Refresh windows and displays when the list is stale; a missing target remains unavailable rather than silently becoming a desktop screenshot.
+Choose **Capture screen** to select a named visible window, one display, the full desktop, an active window after a delay, or a guided region. For the easiest first capture, choose the whole named window: no size settings are needed. Guided regions use familiar portions of a window or display; exact coordinates are optional advanced settings. Displays left of or above your primary display can have negative coordinates. Minimized windows must be restored first. Refresh windows and displays when the list is stale; a missing target remains unavailable rather than silently becoming a desktop screenshot.
 
 Choose an absolute save folder and a delay, then activate **Start capture**. For the active-window option, switch to the intended application during that delay. A selected named window is captured directly. **Cancel pending capture** cancels a capture that has not started. A capture already in progress may finish.
 
 **Screenshot active window now** and **Screenshot full desktop now** are immediate actions. **Repeat last selected target** uses the target, folder and delay you chose in Capture screen. It asks you to choose a target first when none has been selected this session.
 
 Screenshots are saved as uniquely named PNG files, with a JSON verification report and readable Markdown report. File decoding, dimensions and the file hash are objective checks. They do not prove that the intended content is visible or private. Protected content can still be blank. **Screenshot Inspector** opens the latest screenshot; **Open saved screenshot** opens a saved PNG for review.
+
+### Guided regions: no pixel calculations required
+
+Choose **Guided region** from Target. In **Region source**, choose the window or display containing the material. In **Capture portion**, start with **Whole source (recommended; keeps all visible context)**. Studio calculates the screen position and size.
+
+For a smaller area, choose **Top half**, **Bottom half**, **Left half**, **Right half**, or **Middle quarter**. These describe portions of the source rectangle, not recognized controls. For example, the top half may include a dialog heading while excluding its buttons. If you do not know which part contains your content, keep Whole source or capture the whole named window instead.
+
+Read **Capture plan and guidance** before Start capture. It explains the source, exclusions, possible clipping, and next review steps. Guidance is selectable text, and changed selections are announced. The content area scrolls while Start capture and Cancel remain outside it. Use Tab to visit labeled controls; native choice controls use arrow keys.
+
+A guided region captures an area of the desktop. Overlapping windows and notifications can appear in it. Direct named-window capture is the better choice when you need the whole application window. Keep a guided region's source still during the delay. If it moves, resizes, disappears or changes process, refresh and choose again; Studio will not silently switch sources.
+
+**Enter exact coordinates (advanced)** is optional. Enabling it starts with the current guided portion's values. Left and Top locate its upper-left corner; Width and Height measure its size in physical screen dots. A screen left of or above your primary display can have negative Left or Top. Studio rejects values beyond the desktop, but valid numbers alone cannot prove that text is readable or the intended dialog is complete.
+
+After capture, use local OCR to check expected text. If you approve AI sharing, choose the framing preset and ask “Is the whole dialog visible, including its buttons?”, “Is any text cut off?”, or “What should I change before sharing?” AI gives uncertain advice; no setting guarantees semantic correctness.
+
+### Screenshot commands and default in-app shortcuts
+
+These shortcuts operate inside Studio. System-wide screenshot keys are separate, opt-in assignments; the Capture menu displays the current in-app bindings.
+
+| Action | Default in-app shortcut |
+|---|---|
+| Capture screen: choose source and delay | Ctrl+Alt+Shift+S |
+| Open saved screenshot | Ctrl+Alt+Shift+O |
+| Screenshot Inspector | Ctrl+Alt+Shift+I |
+| Cancel pending capture | Ctrl+Alt+Shift+X |
+| Screenshot active window now | Ctrl+Alt+Shift+F5 |
+| Screenshot full desktop now | Ctrl+Alt+Shift+F6 |
+| Repeat last selected target | Ctrl+Alt+Shift+F4 |
+| Screenshot global hotkeys configuration | Ctrl+Alt+Shift+H |
+
+Immediate full-desktop capture includes every display. Repeat uses the last source/folder/delay selected in this session; there is no repeat recipe after a fresh launch until you select one. A previously approved automatic-AI setting also applies to screenshots triggered by global keys.
 
 ### Global screenshot hotkeys
 
@@ -594,3 +625,48 @@ The reply appears in the same conversation. Ask follow-ups about that image with
 Changing the provider, model or endpoint pauses automatic analysis until you approve the new connection. AI Off and Safe Mode override this setting. Clearing the checkbox stops future and queued unsent automatic requests; it cannot recall a request already sent. Capturing remains an explicit user action. The result is available in Screenshot Inspector and the report.
 
 This screenshot milestone does not yet provide video recording, screen/audio mixing, scrolling screenshots, UIA-element selection or annotation/redaction editing. Those are later production steps. Release acceptance still requires JAWS, NVDA, Narrator, braille, mixed-DPI and installed/portable testing.
+
+### Worked example: an error dialog for a support request
+
+1. Open the application and error dialog you want to document. Avoid showing passwords, private messages or unrelated personal material.
+2. Open Capture screen and choose that named window. If a dialog has its own window entry, choose its title. Use Refresh windows and displays if it is missing; restore minimized windows first.
+3. Keep the whole window for the first attempt. Choose an absolute save folder and enough delay to return to the application, then Start capture.
+4. Open Screenshot Inspector. Review the source name and file evidence. Read text locally and check that the expected error code and message appear. Missing OCR text might mean recognition failed; it does not by itself prove that the capture is wrong.
+5. If you want AI help, choose the text/errors preset, add “Preserve the exact error code; mark uncertain characters,” and enter your question. Ask AI presents the configured destination before sending. Declining leaves the screenshot saved locally.
+6. Ask a follow-up such as “Are any buttons or message lines clipped?” The same image is used again. Capture a new image when the application changes; a follow-up does not inspect the live desktop.
+7. Save report and Export description. Copy image only when ready to paste it into the intended destination. Review the exported text and image before sharing. The evidence report labels AI/OCR observations as unverified.
+
+### Worked example: use your configured AI provider
+
+Use **AI > Set Up AI** and QUILL's shared connection controls to choose OpenAI, Google Gemini, Anthropic Claude, OpenRouter, Ollama or a compatible custom service. Configure the endpoint, credential and an image-capable model there. The Screenshot Inspector uses that active shared connection; it does not have a separate provider selector or separate key store. Switching providers in shared settings affects other QUILL features that use the same connection.
+
+Open a saved PNG or make a new screenshot. Choose a prompt, edit its instructions, type a question and activate Ask AI. Check the provider, effective model and endpoint in the consent message. Local OCR works independently of a cloud key. A provider being configured does not prove that every one of its models accepts images. Provider errors should be resolved through the shared connection/model settings, rather than by sending the image to another service without approval.
+
+### Customize a reusable prompt and keep the conversation grounded
+
+Choose a built-in style for a starting point. Add your purpose in Editable prompt instructions, for example: “I am writing a bug report. Separate the exact visible error text from your explanation. Describe positions as top/bottom/left/right; do not invent keyboard shortcuts.” Add a separate question such as “What information should I include in my report?”
+
+Edits in the prompt field apply to that request. Use Manage prompts to add or edit a reusable custom prompt in the shared image-prompt library. Choosing another style fills the editor with that style, so save reusable wording through Manage prompts before changing styles. Use for automatic AI explicitly saves the current instructions for future automatic requests; editing a manual question does not grant automatic-sharing consent.
+
+Follow-ups include earlier observations about the current image. A provider may misunderstand the text or layout. Ask it to identify uncertainties and verify important strings locally. Replacing or editing the PNG changes its hash; reopen it as a new review artifact instead of continuing under the old verification.
+
+### What the evidence proves
+
+The PNG is the saved screenshot. The same-named verification JSON is machine-readable; the verification Markdown is readable text. A description export contains file evidence and recorded observations. Full decode, dimensions and SHA-256 establish that the saved image is decodable and identify its bytes. They do not establish privacy, completeness, visual quality, accessibility or that the intended dialog is visible. “Uniform pixels” can indicate an empty-looking result; it cannot identify every protected or failed capture.
+
+AI and OCR findings are separate from objective checks. AI does not automatically fix, redact, annotate or publish an image. This milestone exports PNG; JPEG conversion, editable annotation layers and comprehensive evidence bundles are still pending.
+
+### Screenshot troubleshooting
+
+- **The window is not listed.** Restore it, then Refresh windows and displays. If it still cannot be captured, read the failure rather than choosing a broader source accidentally. Protected or GPU-rendered content can remain blank.
+- **The guided region moved or changed.** Keep the source still, refresh and choose it again. Repeat last selected target retains the prior recipe; it does not authorize capturing a newly positioned region silently.
+- **The plan says a region cannot be captured.** Choose Whole source or the whole named window. Advanced users can correct the bounds. A window partly beyond the desktop may be unsuitable as a desktop region.
+- **The image is clipped or contains an overlay.** Capture the whole named window, dismiss the unrelated overlay, or deliberately select a different source and capture again. A half-region is not a content-aware crop.
+- **OCR is unavailable or inaccurate.** Check the shared offline OCR support and try clearer/larger source text. Confidence is not supplied by every engine. Optional image-capable AI can help, but requires sharing approval and is not proof.
+- **AI fails.** Check AI Off, Safe Mode, the shared endpoint/key/model and whether the model accepts images. The PNG remains available even when AI fails. No provider is silently substituted.
+- **Automatic AI has paused.** The approved provider, model or endpoint may have changed. Review the new destination and explicitly approve it. Turning automatic mode off stops future/unsent work; it cannot recall a sent request.
+- **A global hotkey does nothing.** Confirm it was assigned and Windows reported registration success. Safe Mode leaves global keys inactive. Another application or screen reader may own the combination; choose and test another.
+
+### Completion status and next steps
+
+The full screenshot PRD is not complete. UIA control selection, content-aware regions, scrolling/sequence capture, comparison, named workspaces, keyboard crop/zoom, annotation/redaction and Capture and Dictate remain. Actual JAWS/NVDA/Narrator/braille usability, mixed-DPI hardware, live-provider privacy and installer/portable acceptance also remain. See the [requirement coverage audit](../../../docs/design/quill-studio-screenshot-coverage.md). Video demonstrations with optional sound are a separate later milestone.

@@ -86,7 +86,7 @@ class StudioCaptureMixin(StudioCaptureHotkeysMixin):
                     break
                 except ValueError as error:
                     self._show_message_box(str(error), "Capture screen", wx.OK | wx.ICON_ERROR)
-                    dialog.folder.SetFocus()
+                    dialog.focus_invalid_input()
             else:
                 return
         finally:

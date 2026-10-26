@@ -166,7 +166,10 @@
   "quill/ui/studio_capture_chat.py::ScreenshotChatDialog.__init__::wx.TextCtrl#3": "helped",
   "quill/ui/studio_capture_dialog.py::CaptureSetupDialog.__init__::wx.Button": "helped",
   "quill/ui/studio_capture_dialog.py::CaptureSetupDialog.__init__::wx.Choice": "helped",
+  "quill/ui/studio_capture_dialog.py::CaptureSetupDialog.__init__::wx.Choice#2": "helped",
+  "quill/ui/studio_capture_dialog.py::CaptureSetupDialog.__init__::wx.Choice#3": "helped",
   "quill/ui/studio_capture_dialog.py::CaptureSetupDialog.__init__::wx.SpinCtrl": "helped",
   "quill/ui/studio_capture_dialog.py::CaptureSetupDialog.__init__::wx.SpinCtrl#2": "helped",
-  "quill/ui/studio_capture_dialog.py::CaptureSetupDialog.__init__::wx.TextCtrl": "helped"
+  "quill/ui/studio_capture_dialog.py::CaptureSetupDialog.__init__::wx.TextCtrl": "helped",
+  "quill/ui/studio_capture_dialog.py::CaptureSetupDialog.__init__::wx.TextCtrl#2": "helped"
 }

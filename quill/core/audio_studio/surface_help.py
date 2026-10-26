@@ -43,9 +43,12 @@ from quill.core.control_help import (
 #: Surface purposes by exact window title.
 PURPOSES: dict[str, str] = {
     "Capture screen": (
-        "Choose all displays or the active window, a delay and a save folder. "
-        "After starting, switch to the target window before the delay expires. "
-        "No image is sent to AI automatically."
+        "Choose a named window for a whole-window screenshot without entering sizes. "
+        "Or choose a display, full desktop, delayed active window or guided region. "
+        "For a guided region, choose a source and Whole source, top, bottom, left, "
+        "right or middle. Review Capture plan and guidance before starting. "
+        "Exact coordinates are optional advanced settings. Review local OCR or "
+        "framing afterward. AI sharing requires approval or previously enabled automatic AI."
     ),
     "Screenshot Inspector": (
         "Review the saved screenshot's file evidence, read text locally, or "

@@ -234,3 +234,53 @@ def test_refresh_does_not_replace_missing_window_with_desktop(parent, monkeypatc
         assert "Unavailable" in selected.label
     finally:
         dialog.Destroy()
+
+
+def test_guided_region_needs_no_pixel_values_and_explains_clipping(parent):
+    desktop = CaptureTarget("desktop", "Full desktop", (0, 0, 1920, 1080))
+    window = CaptureTarget("window", "My document", (100, 100, 900, 700), 12, 34)
+    dialog = CaptureSetupDialog(
+        parent,
+        "C:/captures",
+        [
+            desktop,
+            window,
+            CaptureTarget("region", "Guided region"),
+        ],
+    )
+    try:
+        dialog.target.SetSelection(2)
+        dialog._update_region()
+        assert not dialog.advanced.GetValue()
+        assert not dialog.numeric_panel.IsShown()
+        assert dialog.selected_target().bounds == window.bounds
+        assert dialog.region_source.GetName() == "Region source"
+        dialog.portion.SetSelection(1)
+        dialog._update_guidance()
+        assert dialog.selected_target().bounds == (100, 100, 900, 400)
+        assert "may cut off words or controls" in dialog.guidance.GetValue()
+        assert "overlapping windows" in dialog.guidance.GetValue()
+    finally:
+        dialog.Destroy()
+
+
+def test_advanced_coordinates_are_optional_and_invalid_values_explained(parent):
+    dialog = CaptureSetupDialog(
+        parent,
+        "C:/captures",
+        [
+            CaptureTarget("desktop", "Full desktop", (0, 0, 1920, 1080)),
+            CaptureTarget("region", "Guided region"),
+        ],
+    )
+    try:
+        dialog.target.SetSelection(1)
+        dialog.advanced.SetValue(True)
+        dialog.coordinates[0].SetValue(5000)
+        dialog._update_region()
+        assert dialog.numeric_panel.IsShown()
+        assert "Cannot capture this region" in dialog.guidance.GetValue()
+        with pytest.raises(ValueError):
+            dialog.selected_target()
+    finally:
+        dialog.Destroy()

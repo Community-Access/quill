@@ -317,11 +317,13 @@ second product installation.</li>
 </ul>
 <h2 id="implemented-screenshot-path">Implemented screenshot path</h2>
 <p>Capture offers named visible windows, individual displays, the full
-virtual desktop, an active window after a delay, and a rectangle entered
-as physical-pixel coordinates. Negative monitor coordinates are
-supported. Window labels include their title and process identity.
-Minimized windows require restoration. Refresh preserves target
-identity; a disappeared window does not silently become a desktop
+virtual desktop, an active window after a delay, and a guided
+source/portion selection with optional advanced physical-pixel
+coordinates. Whole-source capture needs no pixel calculations; the
+readable plan explains exclusions and review steps. Negative monitor
+coordinates are supported. Window labels include their title and process
+identity. Minimized windows require restoration. Refresh preserves
+target identity; a disappeared window does not silently become a desktop
 capture.</p>
 <p>Named windows use the window-handle backend. Display topology and
 window process identity are rechecked. Target loss, a disconnected
@@ -449,6 +451,14 @@ API</a> documents selected-window and multi-monitor still capture. <a
 href="https://learn.microsoft.com/en-us/windows/apps/develop/media-authoring-processing/screen-capture">Windows
 Graphics Capture</a> is a candidate for the later video-session backend;
 it has not been implemented by this slice.</p>
+<h2 id="requirement-by-requirement-audit">Requirement-by-requirement
+audit</h2>
+<p>The <a href="./quill-studio-screenshot-coverage.md">screenshot
+coverage audit</a> maps both user-supplied PRDs to working behavior and
+gaps, including CAP, VIS, VERIFY, CP and GATE-08/09. The full screenshot
+requirements are not complete. Guided portions reduce coordinate burden
+but do not implement UIA selection or guarantee complete semantic
+content.</p>
 </main>
 </body>
 </html>

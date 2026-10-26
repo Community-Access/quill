@@ -32,7 +32,8 @@ SCREENSHOT_PROMPTS: dict[str, tuple[str, str]] = {
     "screen-controls": (
         "Screenshot: controls and navigation",
         "Describe visible controls in reading order, with their text, apparent type, selected or "
-        "disabled state, and approximate location in image pixels. "
+        "disabled state, and location in familiar terms such as top, bottom, left or right. "
+        "Include coordinates only as optional supporting detail. "
         "Explain what each appears to do. "
         "Do not invent shortcuts, accessibility names, focus, or keyboard operability from pixels. "
         "Flag anything obscured or ambiguous.",
@@ -48,7 +49,8 @@ SCREENSHOT_PROMPTS: dict[str, tuple[str, str]] = {
         "Screenshot: framing and capture problems",
         "Inspect for clipping, offscreen content, blank or protected areas, tooltips, dialogs, "
         "notifications, overlapping windows, cursor obstruction and text too small to read. "
-        "Give approximate image coordinates and specific corrective suggestions. Distinguish "
+        "Give plain-language directions and specific corrective suggestions, such as choosing "
+        "the whole named window to retain context; coordinates are optional detail. Distinguish "
         "visible problems from concerns that require a fresh capture or human judgment.",
     ),
     "screen-privacy": (

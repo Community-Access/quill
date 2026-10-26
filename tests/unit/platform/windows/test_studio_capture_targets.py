@@ -87,3 +87,42 @@ def test_closed_window_fails_without_grabbing(tmp_path, monkeypatch):
     monkeypatch.setattr(ImageGrab, "grab", lambda **k: pytest.fail("Grabbed a different target"))
     with pytest.raises(ScreenCaptureError, match="closed"):
         capture.capture_target(tmp_path, CaptureTarget("window", "Gone"))
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"bounds": (110, 100, 910, 700)},
+        {"bounds": (100, 100, 1000, 700)},
+        {"process_id": 999},
+    ],
+)
+def test_guided_region_rejects_moved_resized_or_replaced_source(displays, monkeypatch, changes):
+    from quill.core.studio_capture import guided_region
+
+    source = CaptureTarget("window", "Editor", (100, 100, 900, 700), 123, 456)
+    region = guided_region(source, 1, capture.desktop_target(displays).device)
+    monkeypatch.setattr(capture, "window_target", lambda handle: replace(source, **changes))
+    with pytest.raises(ScreenCaptureError, match="moved, resized or changed"):
+        capture.resolve_target(region)
+
+
+def test_guided_region_source_moving_during_grab_saves_no_image(tmp_path, displays, monkeypatch):
+    from contextlib import nullcontext
+
+    from quill.core.studio_capture import guided_region
+
+    source = CaptureTarget("window", "Editor", (100, 100, 900, 700), 123, 456)
+    current = [source]
+    region = guided_region(source, 1, capture.desktop_target(displays).device)
+    monkeypatch.setattr(capture, "physical_pixels", nullcontext)
+    monkeypatch.setattr(capture, "window_target", lambda handle: current[0])
+
+    def grab(**kwargs):
+        current[0] = replace(source, bounds=(110, 100, 910, 700))
+        return Image.new("RGB", (800, 300), "white")
+
+    monkeypatch.setattr(ImageGrab, "grab", grab)
+    with pytest.raises(ScreenCaptureError, match="moved, resized or changed"):
+        capture.capture_target(tmp_path, region)
+    assert not list(tmp_path.glob("*.png"))
