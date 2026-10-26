@@ -6,11 +6,23 @@ Built, not yet released.
 
 QUILL Studio 2.0.0 follows Audio Studio 1.0.0. The previously unpublished 2.2.0 build is renumbered to 2.0.0 with the QUILL Studio rename. Studio continues to use the shared QuillVille Runtime; each app has its own release version.
 
-This build has not been published. Audio Studio is not yet offered in the cross-app menu and there is no 2.0.0 download page. What follows is what is in the build, waiting on the release.
+This build has not been published. QUILL Studio is not yet offered in the cross-app menu and there is no 2.0.0 download page. What follows is what is in the build, waiting on the release.
 
 ## A new name: QUILL Studio
 
 QUILL Audio Studio is now **QUILL Studio**. The window, the tray, the wizard, the installer and the shortcuts use the new name. Nothing else moves: an installed copy upgrades in place, your books, voices, settings and shared data stay where they are, and the old command-line name still works.
+
+## Screenshots, global hotkeys, and a Screenshot Inspector (AI optional)
+
+A new **Capture** menu adds screenshot capture tools directly in Studio. These features are available without enabling AI; AI inspection is an optional extra for describing or discussing what is in an image.
+
+Highlights:
+
+- **Capture menu and command palette coverage.** Every capture action is available from the menu bar and **Help > Command Palette...** (Ctrl+Shift+P).
+- **Wizard entry point.** **Studio > Open Studio Wizard...** (Ctrl+N) includes a Capture journey so you can start a screenshot run from one place.
+- **Minimize-to-tray on demand.** **Studio > Minimize to Tray** (Ctrl+Alt+T) hides the window in the system tray without exiting.
+- **Library window instead of a book-centric home.** The home window stays intentionally quiet; open **View > Library Window...** (Ctrl+Alt+Y) to browse and manage books.
+- **Preferences close is silent.** Leaving Preferences updates the status line but does not speak "Preferences saved".
 
 ## Chapters for any recording
 
@@ -42,7 +54,7 @@ The Studio's launcher is now a genuine, tiny native program, and the bundled Pyt
 
 When an update is available, choose **Download**, then **Install and restart now**. The Studio applies the update itself - extracting the new portable files over your folder, or running the installer quietly - and relaunches, keeping every setting, voice, and book position. No closing the app, unzipping, and swapping folders by hand.
 
-**Help > Check for Updates...** now looks at the shared Quill project releases and picks out Audio Studio's own download for the flavor you run. Each app updates on its own schedule from that one place, so an update to Quill Radio is never mistaken for an update to the Studio.
+**Help > Check for Updates...** now looks at the shared Quill project releases and picks out the Studio's own download for the flavor you run. Each app updates on its own schedule from that one place, so an update to Quill Radio is never mistaken for an update to the Studio.
 
 ## A status bar you can actually read
 
