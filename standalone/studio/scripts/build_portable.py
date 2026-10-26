@@ -33,7 +33,7 @@ Usage::
 
     python standalone/studio/scripts/build_portable.py --product studio \
         --out standalone/studio/dist/QuillAudioStudio \
-        --source-root . --ffmpeg-dir <dir> --mpv-dir <dir> --version 2.2.0
+        --source-root . --ffmpeg-dir <dir> --mpv-dir <dir> --version 2.0.0
 """
 
 from __future__ import annotations
@@ -610,7 +610,7 @@ def main() -> int:
         default=Path(os.environ.get("APPDATA", "")) / "Quill",
         help="Local Quill app-data dir to source offline engine trees from (studio).",
     )
-    parser.add_argument("--version", default="2.2.0")
+    parser.add_argument("--version", default="2.0.0")
     parser.add_argument("--cache-dir", type=Path, default=None)
     args = parser.parse_args()
 

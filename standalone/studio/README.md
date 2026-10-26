@@ -20,7 +20,7 @@ Formerly **QUILL Audio Studio**. The executable, package and download filenames 
 
 ## Install
 
-Audio Studio is built at 2.2.0 -- the shared QuillVille family version -- but has **not been publicly released yet**, so there is no download page for it. When it ships it will be published, like every QuillVille app, from the [quill](https://github.com/Community-Access/quill) Releases page, where each app recognizes its own downloads. There are two:
+QUILL Studio targets version 2.0.0 and has **not been publicly released yet**, so there is no download page for it. When it ships it will be published, like every QuillVille app, from the [quill](https://github.com/Community-Access/quill) Releases page, where each app recognizes its own downloads. There are two:
 
 - **`QUILL-Audio-Studio-Setup-Shared-<version>.exe`** -- the system install: its own directory, Start Menu entry, uninstaller. Choose per-user or per-machine at install time. Installs the shared QuillVille Runtime if it is not already present, plus the app. Uses the shared Quill data in your Windows profile.
 - **`QUILL-Audio-Studio-Portable-Lean-<version>.zip`** -- extract anywhere (a USB stick included) and run `QuillAudioStudio\QuillAudioStudio.exe`. Fully self-contained: a genuine, unmodified CPython plus the offline speech engines, ffmpeg, and mpv. The bundled `data` folder keeps your settings inside the app folder, so the whole thing travels -- exactly like QUILL portable.
@@ -39,7 +39,7 @@ These releases are not yet code-signed, so Windows SmartScreen may warn the firs
 pip install ".[ui]"
 python -m quill.apps.studio
 # or, for quick dev testing against a local QUILL checkout:
-.\run-quill-audio-studio.bat
+.\run-quill-studio.bat
 ```
 
 ## Build a release
@@ -57,7 +57,7 @@ The portable bundle is a genuine, unmodified CPython embeddable runtime with a s
 ## Documentation
 
 - [User Guide](docs/userguide.md)
-- [Release Notes 2.2](docs/release-notes-2.2.md) -- the current build
+- [Release Notes 2.0](docs/release-notes-2.0.md) -- the current build
 - [Release Notes 1.0](docs/release-notes-1.0.md) -- the first release
 - [Changelog](CHANGELOG.md)
 - [Product Requirements](docs/prd.md)

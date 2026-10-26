@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### QUILL Studio screenshot milestone (2026-10-26)
+
+- Add explicit screenshot source selection, opt-in global capture hotkeys, local OCR, objective file evidence, rich editable/custom prompts, image-grounded chat and separately approved automatic AI in the shared Studio implementation. The [Studio changelog](standalone/studio/docs/CHANGELOG.md) lists every screenshot feature, privacy behavior and remaining acceptance gate.
+- Harden the shared legacy Windows capture helper: reject invalid targets rather than falling back to a full desktop, preserve negative-monitor window coordinates and report screenshot failures clearly. Existing audiobook data, job formats, runtime identity and media engines are unchanged.
+
 ## 1.0.0
 
 ### QUILL Transcribe joins the release channels (2026-10-24)

@@ -26,6 +26,7 @@ class StartPage(StudioPage):
                 _("Narrate documents into an audiobook or speech audio"),
                 _("Combine audio files into one chaptered audiobook"),
                 _("Edit an existing audiobook (chapters, tags, and cover)"),
+                _("Capture a screenshot (verify, OCR, and optional AI inspection)"),
             ],
             majorDimension=1,
             style=wx.RA_SPECIFY_COLS,
@@ -50,7 +51,9 @@ class StartPage(StudioPage):
                     "Combining audio files merges a folder of recordings into one\n"
                     "book, one chapter per file, with a review step before the merge.\n"
                     "Editing opens a finished MP3 or M4B in the Chapter Workbench:\n"
-                    "listen, rename, split at the playhead, retime, fix tags, save."
+                    "listen, rename, split at the playhead, retime, fix tags, save.\n"
+                    "Capturing a screenshot opens the Capture screen dialog so you can\n"
+                    "pick a target, save it as PNG, verify the file, and review it."
                 ),
                 name="audio_studio.start_explainer",
             ),

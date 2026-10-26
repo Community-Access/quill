@@ -72,13 +72,14 @@ __all__ = [
 APPS: frozenset[str] = frozenset({"transcribe", "inkwell"})
 #: The programs that may hold the microphone: the two that type into other
 #: programs, and the two editors' Ctrl+F11 dictation.
-MICROPHONE_APPS: frozenset[str] = frozenset({"transcribe", "inkwell", "quill", "lite"})
+MICROPHONE_APPS: frozenset[str] = frozenset({"transcribe", "inkwell", "quill", "lite", "studio"})
 #: Each one's name, as a refusal says it.
 APP_NAMES: dict[str, str] = {
     "transcribe": "QUILL Transcribe",
     "inkwell": "Quill Inkwell",
     "quill": "QUILL",
     "lite": "QUILL Lite",
+    "studio": "QUILL Studio",
 }
 
 #: The programs that may *send* a request: the two owners, and Quill Cast and

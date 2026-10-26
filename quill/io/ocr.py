@@ -45,6 +45,7 @@ class OcrLine:
 
     text: str
     confidence: float = -1.0
+    bounds: tuple[int, int, int, int] | None = None
 
     @property
     def is_low_confidence(self) -> bool:

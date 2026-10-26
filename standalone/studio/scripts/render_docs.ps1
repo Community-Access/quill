@@ -54,9 +54,15 @@ Invoke-WithSourceDateEpoch {
         # A stable identifier plus the pinned SOURCE_DATE_EPOCH make the EPUB a
         # pure function of its source; Pandoc otherwise stamps a random UUID and
         # the current time, so every rebuild rewrote every file.
-        $relativePath = [System.IO.Path]::GetRelativePath($quillRoot, $_.FullName).Replace([char]92, '/')
+        $full = [System.IO.Path]::GetFullPath($_.FullName)
+        $base = ([System.IO.Path]::GetFullPath($quillRoot)).TrimEnd([char]92) + [char]92
+        if (-not $full.StartsWith($base, [System.StringComparison]::OrdinalIgnoreCase)) {
+            throw "Doc path $full is not under repo root $base"
+        }
+        $relativePath = $full.Substring($base.Length).Replace([char]92, '/')
         $epubId = Get-QuillEpubIdentifier -RepoRelativePath $relativePath
         & $pandocExe $_.FullName -f gfm+smart -t epub3 --metadata "identifier=$epubId" -o $epubOut
         if ($LASTEXITCODE -ne 0) { throw "Pandoc EPUB render failed for $($_.Name)" }
     }
 }
+

@@ -123,6 +123,8 @@ def capture_screen(dest_dir: Path, target: ScreenTarget = "screen") -> Path:
     ``"active_window"`` (the foreground window's rectangle). Returns the saved
     PNG path; raises :class:`ScreenCaptureError` on any failure.
     """
+    if target not in ("screen", "active_window"):
+        raise ScreenCaptureError(f"Unsupported capture target: {target}")
     if os.name != "nt":  # pragma: no cover - Windows-only feature surface
         raise ScreenCaptureError(_unsupported_message("Screen capture"))
     try:
@@ -132,11 +134,15 @@ def capture_screen(dest_dir: Path, target: ScreenTarget = "screen") -> Path:
             "Pillow is required for screen capture but is not installed."
         ) from exc
 
-    if target == "active_window":
-        bbox = _active_window_bbox()
-        image = ImageGrab.grab(bbox=bbox)
-    else:
-        image = ImageGrab.grab(all_screens=True)
+    try:
+        if target == "active_window":
+            bbox = _active_window_bbox()
+            # A window can be left of the primary display (negative x/y).
+            image = ImageGrab.grab(bbox=bbox, all_screens=True)
+        else:
+            image = ImageGrab.grab(all_screens=True)
+    except OSError as exc:
+        raise ScreenCaptureError(f"Could not capture the screen: {exc}") from exc
 
     dest = _new_capture_path(dest_dir, f"{target}-ocr")
     try:

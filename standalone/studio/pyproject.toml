@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "quill-audio-studio"
-version = "2.2.0"
+version = "2.0.0"
 description = "QUILL Studio -- accessible, screen-reader-first audiobook and speech production as a standalone app"
 readme = "README.md"
 requires-python = ">=3.14"

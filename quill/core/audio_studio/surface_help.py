@@ -42,6 +42,39 @@ from quill.core.control_help import (
 
 #: Surface purposes by exact window title.
 PURPOSES: dict[str, str] = {
+    "Capture screen": (
+        "Choose a named window for a whole-window screenshot without entering sizes. "
+        "Or choose a display, full desktop, delayed active window or guided region. "
+        "For a guided region, choose a source and Whole source, top, bottom, left, "
+        "right or middle. Review Capture plan and guidance before starting. "
+        "Exact coordinates are optional advanced settings. Review local OCR or "
+        "framing afterward. AI sharing requires approval or previously enabled automatic AI."
+    ),
+    "Screenshot Inspector": (
+        "Review the saved screenshot's file evidence, read text locally, or "
+        "explicitly send it to your configured AI provider. File checks prove "
+        "decode and integrity; observations do not prove privacy or visual correctness."
+    ),
+    "Choose screenshot control": (
+        "Choose a specific part of the selected window by its name or role. "
+        "Search filters real accessible controls without AI. Password and offscreen "
+        "items are excluded. Use control selects a screenshot area; it does not press the control."
+    ),
+    "Screenshot editing and evidence": (
+        "Edit a copy of your screenshot. Choose a plain-language action and a named area, "
+        "then Add edit. Undo and Redo preserve the original. Find text to select offers "
+        "recognized text as an anchor. More options reveals specialist geometry, layers, "
+        "comparison and evidence exports. Review the edited result before sharing."
+    ),
+    "Screenshot visual preview": (
+        "An optional magnified visual preview. Use scrolling keys to inspect it. "
+        "The editing window retains a text plan and object list for nonvisual review."
+    ),
+    "Add a spoken screenshot note": (
+        "Start explicitly opens the shared microphone. Stop and recognize uses an installed "
+        "offline speech model. Review and correct the words before Use reviewed note. "
+        "Closing stops recording; temporary audio is deleted. No cloud upload occurs."
+    ),
     "Tag Editor": (
         "Every tag this audio file can carry, over five pages: the main "
         "fields, the details, publishing credits, sort-order fields, and the "

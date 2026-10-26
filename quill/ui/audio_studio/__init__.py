@@ -38,7 +38,7 @@ def show_audio_studio(frame: object) -> BatchSpeechRequest | None:
         else:
             frame._set_status(str(_("Choose a voice to preview")))
 
-    from quill.ui.audio_studio.wizard import RELOAD_WITH_JOB
+    from quill.ui.audio_studio.wizard import OPEN_CAPTURE, RELOAD_WITH_JOB
 
     defaults = runner._defaults(frame)
     # Pre-select the journey the user used last so the second run lands
@@ -71,6 +71,11 @@ def show_audio_studio(frame: object) -> BatchSpeechRequest | None:
                 # every page pre-fills and Skip to summary is three keystrokes.
                 defaults = dlg.loaded_job
                 continue
+            if code == OPEN_CAPTURE:
+                # Convenience entry point into the screen-capture dialog;
+                # does not run an audio batch.
+                frame.capture_screen()
+                return None
             edit_path = dlg.edit_path() if code == wx.ID_OK else None
             tags_only = dlg.tags_only() if code == wx.ID_OK else False
             request = dlg.result() if code == wx.ID_OK else None

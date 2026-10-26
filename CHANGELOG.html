@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Changelog</title>
+  <title>QUILL changelog</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -243,6 +243,23 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
+<h2 id="unreleased">Unreleased</h2>
+<h3 id="quill-studio-screenshot-milestone-2026-10-26">QUILL Studio
+screenshot milestone (2026-10-26)</h3>
+<ul>
+<li>Add explicit screenshot source selection, opt-in global capture
+hotkeys, local OCR, objective file evidence, rich editable/custom
+prompts, image-grounded chat and separately approved automatic AI in the
+shared Studio implementation. The <a
+href="standalone/studio/docs/CHANGELOG.md">Studio changelog</a> lists
+every screenshot feature, privacy behavior and remaining acceptance
+gate.</li>
+<li>Harden the shared legacy Windows capture helper: reject invalid
+targets rather than falling back to a full desktop, preserve
+negative-monitor window coordinates and report screenshot failures
+clearly. Existing audiobook data, job formats, runtime identity and
+media engines are unchanged.</li>
+</ul>
 <h2 id="100">1.0.0</h2>
 <h3 id="quill-transcribe-joins-the-release-channels-2026-10-24">QUILL
 Transcribe joins the release channels (2026-10-24)</h3>
@@ -8007,29 +8024,31 @@ rich text, they want two asterisks, and they know it.</p>
 <p>A plain document now has a <strong>language</strong> – Markdown,
 HTML, or none – and it decides four things at once:</p>
 <table>
+<caption>Table: A plain document has a language, and the keys follow
+it</caption>
 <thead>
 <tr>
-<th>In a</th>
-<th><code>Ctrl+B</code> writes</th>
-<th><code>Ctrl+Alt+2</code> writes</th>
-<th>Tag picker offered</th>
+<th scope="col">In a</th>
+<th scope="col"><code>Ctrl+B</code> writes</th>
+<th scope="col"><code>Ctrl+Alt+2</code> writes</th>
+<th scope="col">Tag picker offered</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Markdown document</td>
+<th scope="row">Markdown document</th>
 <td><code>**bold**</code></td>
 <td><code>## Heading</code></td>
 <td>Insert Markdown Tag</td>
 </tr>
 <tr>
-<td>HTML document</td>
+<th scope="row">HTML document</th>
 <td><code>&lt;strong&gt;bold&lt;/strong&gt;</code></td>
 <td><code>&lt;h2&gt;Heading&lt;/h2&gt;</code></td>
 <td>Insert HTML Tag</td>
 </tr>
 <tr>
-<td>Plain text document</td>
+<th scope="row">Plain text document</th>
 <td>nothing, and says why</td>
 <td>nothing, and says why</td>
 <td>neither; both dimmed</td>
@@ -9555,35 +9574,36 @@ do now”, because a document cannot see what you have already done. All
 four apps now have guided tutorials that can, on the same key everywhere
 – <strong>Help &gt; Tutorials… (Ctrl+Alt+F1)</strong>:</p>
 <table>
+<caption>Table: Every app learns to teach (2026-08-28)</caption>
 <thead>
 <tr>
-<th>App</th>
-<th>Lessons</th>
-<th>Steps</th>
-<th>Tracks</th>
+<th scope="col">App</th>
+<th scope="col">Lessons</th>
+<th scope="col">Steps</th>
+<th scope="col">Tracks</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Quill Radio</td>
+<th scope="row">Quill Radio</th>
 <td>36</td>
 <td>251</td>
 <td>6</td>
 </tr>
 <tr>
-<td>QUILL</td>
+<th scope="row">QUILL</th>
 <td>23</td>
 <td>136</td>
 <td>6</td>
 </tr>
 <tr>
-<td>QUILL Cast</td>
+<th scope="row">QUILL Cast</th>
 <td>24</td>
 <td>149</td>
 <td>5</td>
 </tr>
 <tr>
-<td>Quill Weather</td>
+<th scope="row">Quill Weather</th>
 <td>11</td>
 <td>60</td>
 <td>3</td>

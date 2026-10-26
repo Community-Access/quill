@@ -226,6 +226,7 @@ ocr = [
     "winrt-Windows.Graphics.Imaging>=3.2.1; sys_platform == 'win32'",
     "winrt-Windows.Globalization>=3.2.1; sys_platform == 'win32'",
     "winrt-Windows.Storage>=3.2.1; sys_platform == 'win32'",
+    "winrt-Windows.Storage.Streams~=3.2.1; sys_platform == 'win32'",
 ]
 # The modern Windows Media engine (quill/ui/audio/winrt_engine.py, 2026-09-29):
 # Windows.Media.Playback.MediaPlayer, which can be pointed at an output device,
