@@ -164,9 +164,11 @@ def test_every_tab_gets_the_paragraph_capabilities_not_just_quilllite() -> None:
 def test_rtf_uses_the_text_object_model_not_the_crashing_callback() -> None:
     # RTF I/O must go through the TOM (ITextDocument Open/Save), NOT the ctypes
     # EM_STREAM callback that hard-crashes msftedit (see the §8 post-mortem).
+    import quill.ui.richedit_rtf_io as io_mod
     import quill.ui.richedit_rtf_surface as mod
 
-    source = inspect.getsource(mod)
+    # The RTF I/O methods live in their own mixin since 2026-10-25 (GATE-11).
+    source = inspect.getsource(mod) + inspect.getsource(io_mod)
     assert "EM_GETOLEINTERFACE" in source
     assert "ITextDocument" in source
     assert "_TOM_RTF" in source and ".Open(" in source and ".Save(" in source

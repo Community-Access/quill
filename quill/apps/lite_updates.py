@@ -270,6 +270,12 @@ class DocumentUpdatesMixin:
         """Help > Release Channel... -- Stable, Beta or Dev (no key; rules 4 and 9)."""
         open_release_channel_for(self)
 
+    def cmd_whats_new(self) -> None:
+        """Help > What's New: QUILL Lite's changelog, as HTML in the browser (no key)."""
+        from quill.ui.whats_new import open_whats_new
+
+        open_whats_new("quilllite", APP_NAME, self._announce)
+
 
 def open_release_channel_for(window: Any, *, check: bool = True) -> None:
     """The shared Release Channel window, for QUILL Lite (menu and Preferences).

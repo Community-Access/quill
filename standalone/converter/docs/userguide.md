@@ -1187,7 +1187,7 @@ every key in a read-only window you can arrow through.
 | Find a Setting or Command... | Ctrl+Alt+Shift+S |
 | User Guide | Ctrl+F1 |
 | Release Notes | Shift+F1 |
-| Changelog | Ctrl+Shift+F1 |
+| What's New (the changelog) | Ctrl+Shift+F1 |
 | Product Requirements | Alt+Shift+F1 |
 | Keyboard Shortcuts... | Ctrl+Alt+K |
 | Get Help from Support... | Ctrl+Alt+F2 |

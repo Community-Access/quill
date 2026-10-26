@@ -402,7 +402,12 @@ def _index_of(choices: tuple[tuple[str, str], ...], value: str) -> int:
 
 
 def show_text_window(
-    parent: wx.Window, title: str, body: str, *, on_ready: Callable[[Any], None] | None = None
+    parent: wx.Window,
+    title: str,
+    body: str,
+    *,
+    on_ready: Callable[[Any], None] | None = None,
+    notices: str | None = None,
 ) -> None:
     """A read-only text window (the key list, the About box).
 
@@ -425,6 +430,15 @@ def show_text_window(
         help_text="Read with the arrow keys. Escape closes this window.",
         multiline=True,
     )
+    if notices is not None:  # About: the licences, one button away (quill.ui.about_notices)
+        from quill.core.lite import APP_NAME
+        from quill.ui.about_notices import NOTICES_BUTTON_LABEL, open_notices
+
+        licences = wx.Button(dialog, label=NOTICES_BUTTON_LABEL)
+        licences.SetHelpText("Open the licences of QUILL Lite and what it includes, as text.")
+        speak = getattr(parent, "_announce", lambda _message: None)
+        licences.Bind(wx.EVT_BUTTON, lambda _e: open_notices(notices, APP_NAME, speak))
+        root.Add(licences, 0, wx.ALIGN_RIGHT | wx.LEFT | wx.RIGHT, _PAD)
     close_btn = wx.Button(dialog, wx.ID_CANCEL, "Close")
     close_btn.SetHelpText("Close this window and go back to your document.")
     root.Add(close_btn, 0, wx.ALIGN_RIGHT | wx.ALL, _PAD)

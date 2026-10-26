@@ -42,6 +42,8 @@ Node id grammar, all opaque to the caller (see :mod:`browse_nodes`)::
                                     Television (iptv.org); "antennaweb" is a
                                     browser link-out for over-the-air coverage
     radioparadise                   Radio Paradise, every channel at every quality
+    one81 | one81:<genre>           181.FM, the whole network by its own genres
+    lautfm | lautfm:<genre>         laut.fm, by its most-listened genres
     apple | apple:<storefront>      Apple Podcasts, keyless
     podcastindex | pitrending | pitrending:<category> | picategories
     pishow:<feed-url>               a Podcast Index show's episodes, unsubscribed
@@ -73,13 +75,11 @@ from quill.core.radio import browse_youtube_extra as _youtube_extra
 from quill.core.radio import browse_youtube_more as _youtube_more
 from quill.core.radio import (
     iheart,
-    m3u_catalog,
     networks,
     radio_browser,
     shoutcast,
     source_health,
     tunein,
-    xiph,
 )
 from quill.core.radio.browse_directories import (
     browse_extdir as _browse_extdir,
@@ -144,6 +144,7 @@ from quill.core.radio.browse_free_music import (
 from quill.core.radio.browse_free_music import (
     browse_mixcloud_format as _browse_mixcloud_format,
 )
+from quill.core.radio.browse_genres import GENRE_MODULES, browse_genre_source
 from quill.core.radio.browse_helpers import (
     iheart_letter_groups,
     letter_groups,
@@ -240,6 +241,8 @@ ROOT_SOURCES: tuple[tuple[str, str], ...] = (
     ("reading", "Radio Reading Services"),
     ("westwood", "Westwood One Sports"),
     ("soma", "SomaFM"),
+    ("one81", "181.FM"),  # whole networks, 2026-10-25 (browse_genres.py)
+    ("lautfm", "laut.fm"),
     ("tunein", "TuneIn"),
     ("iheart", "iHeart"),
     ("networks", "Networks"),
@@ -268,13 +271,9 @@ ROOT_SOURCES: tuple[tuple[str, str], ...] = (
 
 _FLAT = FLAT  # quill/core/radio/browse_flat.py -- where flat branches grow
 
-#: Sources that expose the shared genre protocol (fetch_genres / genre_display /
-#: fetch_genre_stations). One code path for three catalogs.
-_GENRE_MODULES = {
-    "rbgenre": radio_browser,
-    "m3u": m3u_catalog,
-    "xiph": xiph,
-}
+#: Sources that share the genre protocol, and their one handler (browse_genres).
+_GENRE_MODULES = GENRE_MODULES
+_browse_genre_source = browse_genre_source
 
 
 def _stations(rows: Sequence[RadioStation]) -> list[BrowseNode]:
@@ -315,16 +314,6 @@ def _browse_favorites(args: list[str], *, safe_mode: bool, favorites: object) ->
         count = sum(1 for fav in ordered if fav.folder == name)
         nodes.append(folder(make_id("favorites", name), name, child_count=count))
     return nodes
-
-
-def _browse_genre_source(kind: str, args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
-    module = _GENRE_MODULES[kind]
-    if args and args[0]:
-        return _stations(module.fetch_genre_stations(args[0], safe_mode=safe_mode))
-    return [
-        folder(make_id(kind, slug), module.genre_display(slug))
-        for slug in module.fetch_genres(safe_mode=safe_mode)
-    ]
 
 
 def _browse_country(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:

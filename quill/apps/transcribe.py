@@ -49,7 +49,7 @@ from quill.ui.app_shell import AppShellFrame
 
 _TITLE = "QUILL Transcribe"
 _VERSION = "1.0.0"
-_BUILD = 2  # this version's build (docs/release/RELEASE.md, "Build numbers")
+_BUILD = 3  # this version's build (docs/release/RELEASE.md, "Build numbers")
 _REPO = "Community-Access/quill"
 _IPC_SLOT = "transcribe"
 _PAD = 10
@@ -349,14 +349,17 @@ class QuillTranscribeFrame(
     # -- about --------------------------------------------------------------------- #
 
     def _show_about(self) -> None:
-        self._show_message_box(
+        from quill.ui.about_notices import show_app_about
+
+        show_app_about(
+            self,
             f"{_TITLE} {describe_version(_VERSION, build=_BUILD)}\n\n"
             "Say it, and it is typed into the program you are using, with QUILL's "
             "own speech models. Your speech stays on this computer unless you choose "
             "an internet model.\n\nFree, and part of the QuillVille family."
             f"\n\nSupport: {SUPPORT_EMAIL}",
-            f"About {_TITLE}",
-            wx.ICON_INFORMATION | wx.OK,
+            app="transcribe",
+            app_name=_TITLE,
         )
 
     def check_for_updates(self) -> None:

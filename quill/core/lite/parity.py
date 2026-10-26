@@ -85,12 +85,6 @@ NOT_ALIASES: dict[str, str] = {
 #: a collision -- and the gate prints the reason when it reports the pair, so
 #: the next person reads the argument rather than re-having it.
 DIVERGENCES: dict[str, str] = {
-    "cmd_trim_trailing_space": (
-        "Ctrl+Alt+T is Insert Table in QUILL, an authorized x.md authoring "
-        "chord for a verb that builds structure, deliberately kept over one "
-        "that strips whitespace (decided 2026-09-16). QUILL's trim is "
-        "Ctrl+Alt+R. The one row in bad.md 3.2 that does not converge."
-    ),
     "cmd_toggle_fold": (
         "QUILL's folds are Ctrl+Shift+[ and ] beside its indent pair, which is "
         "where every code editor puts folding, and that freed Ctrl+Shift+F for "
@@ -318,6 +312,15 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     "cmd_insert_html_tag": "format.insert_html_tag",
     "cmd_insert_line_break": "power.insert_line_break",
     "cmd_insert_link": "edit.insert_link",
+    # Both editors since 2026-10-25, on QUILL's Ctrl+Alt+T; Trim Trailing Spaces
+    # moved to QUILL's Ctrl+Alt+R, which closed the last bad.md 3.2 divergence.
+    "cmd_insert_table": "format.insert_table",
+    # Editing a table (quill.core.table_edit), keyless in both editors.
+    "cmd_table_insert_row_below": "table.insert_row_below",
+    "cmd_table_insert_column_right": "table.insert_column_right",
+    "cmd_table_delete_row": "table.delete_row",
+    "cmd_table_delete_column": "table.delete_column",
+    "cmd_table_tidy": "table.tidy",
     "cmd_insert_markdown_tag": "format.insert_markdown_tag",
     "cmd_insert_special_character": "power.insert_special_character",
     "cmd_italic": "format.italic",
@@ -373,6 +376,8 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     # Release channels: one shared window, and no chord in any of the four
     # channel apps (rules 4 and 9; keymap.py's help.release_channel says why).
     "cmd_release_channel": "help.release_channel",
+    # The changelog in the browser, keyless in both (quill.ui.whats_new).
+    "cmd_whats_new": "help.whats_new",
     "cmd_remember_clip": "edit.keep_selection_in_clip_library",
     "cmd_remove_blank_lines": "power.remove_blank_lines",
     "cmd_remove_duplicate_lines": "edit.remove_duplicate_lines",

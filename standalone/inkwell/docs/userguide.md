@@ -791,6 +791,12 @@ Enter does exactly what choosing that row from its menu would do. For an
 option, it switches it and tells you whether it is now on or off. Escape
 closes the window without doing anything.
 
+## What's New
+
+**Help > What's New** (**Ctrl+Shift+F1**) opens Inkwell's changelog in your
+browser: what changed in the version you have, grouped by subject. Every
+QuillVille app has the same door on the same key.
+
 ## Getting help
 
 Support is run by **Community Access**, and the address is

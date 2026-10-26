@@ -174,6 +174,10 @@ class DocumentTypingMixin(DocumentAbbreviationsMixin, DocumentTypingAssistMixin)
             return
         if code == wx.WXK_TAB and self._handle_tab(event):
             return
+        # In a table the arrows move by cell and say it (lite_window_tables.py).
+        table_arrow = getattr(self, "_table_arrow", None)
+        if table_arrow is not None and table_arrow(event):
+            return
         # Enter: correct the word it ends, then continue a list if it is one
         # (lite_window_typing_assist.py). Plain Enter only; Shift+Enter is a
         # line break, not a new item.
@@ -312,6 +316,12 @@ class DocumentTypingMixin(DocumentAbbreviationsMixin, DocumentTypingAssistMixin)
         reader does not read back: the count is the only way to hear what the
         keystroke actually did.
         """
+        # In a table, Tab and Shift+Tab move cell to cell, as in Word, whatever
+        # the Tab mode is (lite_window_tables.py).
+        held = [getattr(event, name, lambda: False)() for name in ("ControlDown", "AltDown")]
+        table_tab = getattr(self, "_table_tab", None)  # composed in lite_window_tables.py
+        if not any(held) and table_tab is not None and table_tab(backwards=event.ShiftDown()):
+            return True
         if event.ShiftDown():
             self.cmd_outdent(announce=False)
         elif self._tab_types_a_tab():

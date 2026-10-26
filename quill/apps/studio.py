@@ -68,6 +68,7 @@ from quill.ui.audio_studio.library_tree import (
 )
 from quill.ui.dialog_contract import set_accessible_name
 from quill.ui.main_frame_speech_downloads import SpeechDownloadsMixin
+from quill.ui.whats_new import open_whats_new
 
 try:  # winsound is Windows-only; previews fall back to MCI/startfile elsewhere
     import winsound as _winsound
@@ -1077,6 +1078,10 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         help_menu.Append(guide_id, "User &Guide\tCtrl+Alt+G")
         help_menu.Append(prd_id, "&Product Requirements (PRD)\tCtrl+Alt+P")
         help_menu.Append(notes_id, "&Release Notes\tCtrl+Alt+R")
+        # The changelog in the browser, on the key every standalone QuillVille
+        # app gives it (quill.ui.whats_new).
+        whats_new_id = wx.NewIdRef()
+        help_menu.Append(whats_new_id, "&What's New\tCtrl+Shift+F1")
         help_menu.AppendSeparator()
         help_menu.Append(palette_id, "&Command Palette...\tCtrl+Shift+P")
         help_menu.AppendSeparator()
@@ -1121,6 +1126,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
             (guide_id, lambda: self._open_studio_doc("userguide")),
             (prd_id, lambda: self._open_studio_doc("prd")),
             (notes_id, lambda: self._open_studio_doc("release-notes-1.0")),
+            (whats_new_id, lambda: open_whats_new("studio", _TITLE, self._announce)),
             (palette_id, self.open_command_palette),
             (updates_id, self.check_updates_manual),
             (bug_id, lambda: self.report_app_bug(source_app=_TITLE, app_version=_VERSION)),
@@ -2633,14 +2639,17 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin):
         )
 
     def _show_about(self) -> None:
-        self._show_message_box(
+        from quill.ui.about_notices import show_app_about
+
+        show_app_about(
+            self,
             f"{_TITLE} {describe_version(_VERSION, build=_BUILD)}\n"
             "Audiobook and audio production from QUILL, as a standalone app.\n\n"
-            "Runs the same Audio Studio code as QUILL itself and shares its "
+            "Runs the same QUILL Studio code as QUILL itself and shares its "
             "settings, voices, and downloaded speech engines.\n"
             f"https://github.com/{_REPO}\n\nSupport: support@community-access.org",
-            f"About {_TITLE}",
-            wx.ICON_INFORMATION | wx.OK,
+            app="studio",
+            app_name=_TITLE,
         )
 
     def check_updates_manual(self) -> None:

@@ -154,6 +154,8 @@ the work to it. Only one of the two dictates at a time.
   off and on.
 - **Help > Find a Setting or Command** (**Ctrl+Alt+Shift+S**) searches every
   menu at once. Type part of a name and press Enter on the row you want.
+- **Help > What's New** (**Ctrl+Shift+F1**) opens Inkwell's changelog in your
+  browser, on the same key as every other QuillVille app.
 - The **QuillVille** menu opens the other apps in the family. For example,
   press **Alt+Q**, then R, to open Quill Radio. If an app is not installed,
   Inkwell offers to download it, and nothing downloads until you say yes.

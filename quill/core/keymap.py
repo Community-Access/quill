@@ -403,6 +403,10 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # No chord in any channel app: Alt+Shift+F4 (until 2026-10-03) is Alt+F4 to a
     # dialog and closed it (rule 4); once a year needs a way in, not a chord (rule 9).
     "help.release_channel": "",
+    # The changelog as HTML in the browser, the row every QuillVille app has
+    # (quill.ui.whats_new). No chord free in both editors: Ctrl+Shift+F1, the
+    # standalone apps' What's New, is the User Guide here. Rule 9: Alt+H, W.
+    "help.whats_new": "",
     "help.about_quill": "Shift+F1",
     # Open User Guide carried "Ctrl+F1" as a LITERAL after a tab in its menu
     # label, outside the keymap: absent from the generated reference,
@@ -988,6 +992,13 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "table.cell_above": "Ctrl+Alt+Up",  # §edsharp-ok — table cell navigation
     "table.first_cell": "Ctrl+Alt+Home",  # §edsharp-ok — table cell navigation
     "table.last_cell": "Ctrl+Alt+End",  # §edsharp-ok — table cell navigation
+    # Editing a table (quill.core.table_edit), as in QUILL Lite: no keys, as in
+    # Word -- the Table submenu reaches them, and Tab in the last cell adds a row.
+    "table.insert_row_below": "",
+    "table.insert_column_right": "",
+    "table.delete_row": "",
+    "table.delete_column": "",
+    "table.tidy": "",
     # Announce Headings, on the family's function-key range. Ctrl+Alt+F1 is
     # Tutorials and Ctrl+Alt+F2 is Get Help from Support; F3 joins them, and the
     # same reasoning exempts it from the Ctrl+Alt policy (menu_lint.py): the
@@ -1092,12 +1103,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "power.trim_blank_lines": "Ctrl+Shift+Enter",  # §4.22 Trim Blanks parity
     # QUILL Lite's two whitespace verbs, on QUILL Lite's chords where the
     # chord was free. Remove Every Blank Line takes Ctrl+Alt+K, freed by
-    # Insert Link moving to Word's Ctrl+K. Trim Trailing Spaces CANNOT take
-    # QUILL Lite's Ctrl+Alt+T, which is Insert Table here -- an authorized
-    # x.md authoring chord for a verb that builds structure, deliberately
-    # kept over one that strips whitespace (decided 2026-09-16). That is a
-    # documented divergence, the only one in bad.md 3.2 that does not
-    # converge, and it is in the parity gate's exception table.
+    # Insert Link moving to Word's Ctrl+K. Trim Trailing Spaces could not take
+    # QUILL Lite's Ctrl+Alt+T, which is Insert Table here -- an authorized x.md
+    # authoring chord for a verb that builds structure (decided 2026-09-16).
+    # On 2026-10-25 QUILL Lite gained Insert Table too, and rule 2 settled it
+    # both ways: Ctrl+Alt+T is Insert Table and Ctrl+Alt+R is Trim, in both.
     "power.remove_blank_lines": "Ctrl+Alt+K",
     "edit.trim_trailing_whitespace": "Ctrl+Alt+R",
     # QUILL Lite's chord, freed by the AI class vacating (bad.md P1.1, P1.11).
@@ -1708,71 +1718,6 @@ def import_keymap(source: Path) -> dict[str, str]:
     return merged
 
 
-KQP_EXTENSION = ".kqp"
-_KQP_VERSION = 1
-
-
-def export_keyboard_pack(
-    target: Path,
-    keymap: dict[str, str],
-    name: str,
-    description: str,
-    author: str = "",
-    version: str = "1.0",
-) -> None:
-    """Write a .kqp (Keyboard Quill Pack) file.
-
-    Only bindings that differ from DEFAULT_KEYMAP are stored so the file
-    captures intent rather than a snapshot of defaults that may change.
-    """
-    delta: dict[str, str] = {k: v for k, v in keymap.items() if v != DEFAULT_KEYMAP.get(k)}
-    payload: dict[str, object] = {
-        "kqp_version": _KQP_VERSION,
-        "name": name.strip(),
-        "description": description.strip(),
-        "author": author.strip(),
-        "version": version.strip(),
-        "bindings": delta,
-    }
-    write_json_atomic(target, payload)
-
-
-def import_keyboard_pack(source: Path) -> tuple[str, str, dict[str, str]]:
-    """Read a .kqp file. Return (name, description, merged_keymap).
-
-    Raises ValueError if the file is missing, malformed, uses an unsupported
-    kqp_version, or fails the kqp validator.  The merged keymap is persisted
-    via save_keymap *only* after validation succeeds (finding #42: a bad
-    pack must never silently overwrite the user's bindings).
-    """
-    raw = read_json(source, default=None)
-    if not isinstance(raw, dict):
-        raise ValueError(f"{source.name} is not a valid Keyboard Quill Pack (expected JSON object)")
-    file_version = raw.get("kqp_version")
-    if file_version != _KQP_VERSION:
-        raise ValueError(
-            f"{source.name}: unsupported kqp_version {file_version!r} "
-            f"(this build supports version {_KQP_VERSION})"
-        )
-    name = str(raw.get("name", source.stem)) or source.stem
-    description = str(raw.get("description", ""))
-    bindings = raw.get("bindings", {})
-    if not isinstance(bindings, dict):
-        raise ValueError(f"{source.name}: 'bindings' must be a JSON object")
-    # Re-write the parsed payload to a temp buffer and run the same validator
-    # the standalone ``quill.tools.kqp_validator`` runs, so the import path
-    # uses the same rules as the CLI.
-    from quill.tools.kqp_validator import validate_file  # local import: avoid cycles
-
-    issues = validate_file(source, strict=False)
-    if issues:
-        joined = "; ".join(issues)
-        raise ValueError(f"{source.name} failed keyboard pack validation: {joined}")
-    merged = merge_keymaps(bindings)
-    save_keymap(merged)
-    return name, description, merged
-
-
 def reset_keymap() -> dict[str, str]:
     defaults = DEFAULT_KEYMAP.copy()
     save_keymap(defaults)
@@ -1799,8 +1744,14 @@ def find_keymap_conflict(
     return conflicts[0] if conflicts else None
 
 
-# The profile loader lives in keymap_profiles -- a separate concern, extracted
-# rather than grown (GATE-11). At the bottom: it reads DEFAULT_KEYMAP.
+# The profile loader lives in keymap_profiles and the .kqp pack format in
+# keymap_kqp -- separate concerns, extracted rather than grown (GATE-11). At
+# the bottom: both read DEFAULT_KEYMAP.
+from quill.core.keymap_kqp import (  # noqa: E402
+    KQP_EXTENSION,
+    export_keyboard_pack,
+    import_keyboard_pack,
+)
 from quill.core.keymap_profiles import (  # noqa: E402
     list_keymap_profiles,
     load_keymap_profile,

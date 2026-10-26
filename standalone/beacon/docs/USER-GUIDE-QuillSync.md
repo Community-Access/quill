@@ -290,6 +290,8 @@ The keys that were added, by menu:
 - **The Sync menu is F9.** **Sync > Sync Now** (F9), **Sync > Sync Settings...**
   (Ctrl+F9), **Sync > Sync History...** (Shift+F9) and **Sync > Auto Sync...**
   (Ctrl+Shift+F9).
+- **Help > What's New** (Ctrl+Shift+F1) opens QuillBeacon's changelog in your
+  browser, on the same key as every other QuillVille app.
 - **Help > About** (Alt+F1).
 
 Some access letters moved so that no two commands in one menu share one.

@@ -236,8 +236,8 @@ effects and output folder are remembered for next time.
 ### Help that matches the family
 
 The Help menu now has the same doors as Quill Radio and QUILL Lite, on the same
-keys: F1 for the window you are in, the User Guide, Release Notes, Changelog and
-Product Requirements, a Keyboard Shortcuts list (Ctrl+Alt+K), Get Help from
+keys: F1 for the window you are in, the User Guide, Release Notes, What's New
+(the changelog, Ctrl+Shift+F1) and Product Requirements, a Keyboard Shortcuts list (Ctrl+Alt+K), Get Help from
 Support (Ctrl+Alt+F2), Get FFmpeg for repair, and Check for Updates.
 
 Support is by email, to a person: **support@community-access.org**. Get Help
@@ -266,6 +266,29 @@ whether it is on or off.
 Quill Converter now appears on the QuillVille menu of the other apps, and QUILL's
 own **Convert with Quill** Explorer entry, which opens Quill Converter, is
 available in public builds.
+
+### New in build 2
+
+- **Process with Auphonic.** If you have an Auphonic account, **Convert >
+  Process with Auphonic...** (Ctrl+Shift+A) sends the queue's sound files to it
+  for post-production, as separate productions or as one multitrack production,
+  and saves the results under your output folder. One confirmation lists every
+  file that will and will not be sent before anything is uploaded. A production
+  Auphonic has started is remembered, so **Convert > Auphonic Work Waiting...**
+  (Ctrl+Alt+A) fetches it later. Nothing contacts Auphonic until you ask, Safe
+  Mode turns it off, and converting itself stays on your computer.
+- **File Properties tells you about the drive.** File Properties (Alt+Enter)
+  ends with the drive the file is on: its letter or share, label, kind, file
+  system, capacity, used and free space, so you can check there is room before a
+  long conversion.
+- **Your own sounds, where you want them.** **App Sounds Play On...** in **File >
+  Preferences...** sends Quill Converter's sounds to the system default, any sound
+  card or headset by name, or nowhere, and **Alt+Shift+M** turns them off and on.
+- **Help > What's New** (Ctrl+Shift+F1) opens the changelog in your browser; it
+  was called Changelog until now, on the same key.
+- **QUILL Transcribe** joins the QuillVille menu (Alt+U, then T, or
+  Ctrl+Alt+Shift+F11). Quill Converter does not transcribe; the user guide
+  points to QUILL Transcribe and QUILL for that.
 
 ## Fixes since the July build
 

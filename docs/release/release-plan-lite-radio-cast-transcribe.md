@@ -140,29 +140,34 @@ Everything lands in `dist\release-builds\<date-time>\upload`, with
 
 ## Step 5: publish all four to Beta
 
-For each app, write its notes (the build's section of its release notes) into
-a file, rehearse, then publish:
+Each app's "What's new" is already written, in `docs/release/whats-new/`. It is
+what people read in the update window when Check for Updates offers the build,
+and the GitHub release's text, so it is short enough to show whole (the window
+stops at 60 lines or 4,000 characters, and `tests/unit/docs/test_whats_new_fits.py`
+fails a file that would be cut). It puts anything to do before updating first:
+portable QUILL Lite 1.1.2 and Quill Radio 3.0.4 must update by hand this once.
+Rehearse, then publish:
 
 ```powershell
 python scripts/publish_release.py --app quilllite --version 1.2.0 --build 5 --channel beta `
-    --dist standalone/quilllite/dist --notes-file notes-quilllite.md --dry-run
+    --dist standalone/quilllite/dist --notes-file docs/release/whats-new/whats-new-quilllite-1.2.0.md --dry-run
 python scripts/publish_release.py --app quilllite --version 1.2.0 --build 5 --channel beta `
-    --dist standalone/quilllite/dist --notes-file notes-quilllite.md
+    --dist standalone/quilllite/dist --notes-file docs/release/whats-new/whats-new-quilllite-1.2.0.md
 
 python scripts/publish_release.py --app radio --version 3.2.0 --build 4 --channel beta `
-    --dist standalone/radio/dist --notes-file notes-radio.md --dry-run
+    --dist standalone/radio/dist --notes-file docs/release/whats-new/whats-new-radio-3.2.0.md --dry-run
 python scripts/publish_release.py --app radio --version 3.2.0 --build 4 --channel beta `
-    --dist standalone/radio/dist --notes-file notes-radio.md
+    --dist standalone/radio/dist --notes-file docs/release/whats-new/whats-new-radio-3.2.0.md
 
 python scripts/publish_release.py --app cast --version 2.0.0 --build 5 --channel beta `
-    --dist standalone/cast/dist --notes-file notes-cast.md --dry-run
+    --dist standalone/cast/dist --notes-file docs/release/whats-new/whats-new-cast-2.0.0.md --dry-run
 python scripts/publish_release.py --app cast --version 2.0.0 --build 5 --channel beta `
-    --dist standalone/cast/dist --notes-file notes-cast.md
+    --dist standalone/cast/dist --notes-file docs/release/whats-new/whats-new-cast-2.0.0.md
 
 python scripts/publish_release.py --app transcribe --version 1.0.0 --build 2 --channel beta `
-    --dist standalone/transcribe/dist --notes-file notes-transcribe.md --dry-run
+    --dist standalone/transcribe/dist --notes-file docs/release/whats-new/whats-new-transcribe-1.0.0.md --dry-run
 python scripts/publish_release.py --app transcribe --version 1.0.0 --build 2 --channel beta `
-    --dist standalone/transcribe/dist --notes-file notes-transcribe.md
+    --dist standalone/transcribe/dist --notes-file docs/release/whats-new/whats-new-transcribe-1.0.0.md
 ```
 
 Each creates a GitHub prerelease, uploads the files, lists the build on Beta
@@ -183,21 +188,31 @@ shorter soak needs a reason, recorded in the list:
 ## Step 7: promote to Stable
 
 ```powershell
-python scripts/promote_release.py --app quilllite --version 1.2.0+5 --to stable --dry-run
-python scripts/promote_release.py --app quilllite --version 1.2.0+5 --to stable
-python scripts/promote_release.py --app radio --version 3.2.0+4 --to stable --dry-run
-python scripts/promote_release.py --app radio --version 3.2.0+4 --to stable
-python scripts/promote_release.py --app cast --version 2.0.0+5 --to stable --dry-run
-python scripts/promote_release.py --app cast --version 2.0.0+5 --to stable
-python scripts/promote_release.py --app transcribe --version 1.0.0+2 --to stable --dry-run
-python scripts/promote_release.py --app transcribe --version 1.0.0+2 --to stable
+python scripts/promote_release.py --app quilllite --version 1.2.0+5 --to stable --dry-run `
+    --notes-file docs/release/whats-new/whats-new-quilllite-1.2.0.md
+python scripts/promote_release.py --app quilllite --version 1.2.0+5 --to stable `
+    --notes-file docs/release/whats-new/whats-new-quilllite-1.2.0.md
+python scripts/promote_release.py --app radio --version 3.2.0+4 --to stable --dry-run `
+    --notes-file docs/release/whats-new/whats-new-radio-3.2.0.md
+python scripts/promote_release.py --app radio --version 3.2.0+4 --to stable `
+    --notes-file docs/release/whats-new/whats-new-radio-3.2.0.md
+python scripts/promote_release.py --app cast --version 2.0.0+5 --to stable --dry-run `
+    --notes-file docs/release/whats-new/whats-new-cast-2.0.0.md
+python scripts/promote_release.py --app cast --version 2.0.0+5 --to stable `
+    --notes-file docs/release/whats-new/whats-new-cast-2.0.0.md
+python scripts/promote_release.py --app transcribe --version 1.0.0+2 --to stable --dry-run `
+    --notes-file docs/release/whats-new/whats-new-transcribe-1.0.0.md
+python scripts/promote_release.py --app transcribe --version 1.0.0+2 --to stable `
+    --notes-file docs/release/whats-new/whats-new-transcribe-1.0.0.md
 ```
 
 Every check prints PASS, WARN or FAIL, and one FAIL stops it: the files
 download with the hashes in the list, the list's signature, a signed build that
 was on Beta, the changelog, the sign-off sheet, and the documentation gates.
-The release notes are rolled up from the changelog for you; the dry run shows
-them. Commit `docs/site/updates/v2` and push.
+The `--notes-file` keeps Stable's "What's new" the same as Beta's. Without it,
+the notes are rolled up from the changelog, which for these first update lists
+runs far past what the update window shows (QUILL Lite's would merge every
+section back to 1.0.0). Commit `docs/site/updates/v2` and push.
 
 ## Step 8: the website and announcements
 

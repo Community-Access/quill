@@ -248,9 +248,23 @@
 href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>, and
 this project adheres to <a
 href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
-<h2 id="unreleased">Unreleased</h2>
-<h3 id="added">Added</h3>
+<h2 id="221---2026-10-08">[2.2.1] - 2026-10-08</h2>
+<p>Current build: <strong>2.2.1 (build 2)</strong>. Build 2 keeps
+everything in build 1 and adds the work marked “build 2” below, together
+with everything recorded since (the Command Palette and Product
+Requirements doors, What’s New, QUILL Transcribe on the QuillVille menu,
+and the user guide corrections).</p>
+<h3 id="places-and-conditions">Places and conditions</h3>
 <ul>
+<li>Current conditions, Quick Weather, and local time use the saved
+friendly name when one is set. (build 2)</li>
+</ul>
+<h3 id="help-tutorials-and-finding-a-command">Help, tutorials and
+finding a command</h3>
+<ul>
+<li><strong>Help &gt; What’s New</strong> (Ctrl+Shift+F1) opens this
+changelog in your browser, on the same key as every other QuillVille
+app.</li>
 <li><strong>Help &gt; Command Palette… (Ctrl+Shift+P).</strong> Since
 2.2.1 every Quill Weather command has had a name the Command Palette can
 find, but nothing in the app opened the palette, so the notes promised a
@@ -268,8 +282,73 @@ watch covers – and the Help menu had no such item. It opens the document
 that ships in the <code>docs</code> folder beside the app, in your
 browser, with no internet connection needed. Alt+Shift+F1 is the same
 key Quill Radio and Quill Converter use for their own.</li>
+<li>Help exposes Activity and Repeat Last Result, with the same F9 and
+Shift+F9 keys as the other apps. (build 2)</li>
+<li><strong>Help &gt; Tutorials… (Ctrl+Alt+F1)</strong> – 11 guided
+tutorials, 60 steps, in three tracks: your first ten minutes, being
+warned, and making it yours. The middle track is the app’s whole reason
+for existing, so it is five lessons: start the watch, rehearse an alert,
+decide what gets through, keep the watch running, and NOAA Weather
+Radio.</li>
+<li><strong>A step names a command, not a key</strong>; <strong>Try
+it</strong> runs it; and <strong>Follow me</strong> watches the app once
+a second and moves you on when it can see you have done the step – your
+saved places growing, the watch starting, alert checks pausing. It
+watches state rather than keystrokes, so the menu, the key, the tray and
+the palette all count.</li>
+<li><strong>Quill Weather has command ids at all now.</strong> Every
+weather verb was a bound menu item and nothing else, so the Command
+Palette – which this app carries – could not reach a single one of them,
+and a tutorial step could not name one. The ids are registered with the
+keys the menu labels already advertise, so the menus are unchanged; they
+simply have names now.</li>
 </ul>
-<h3 id="fixed">Fixed</h3>
+<h3 id="sound">Sound</h3>
+<ul>
+<li><strong>Where Quill Weather’s own sounds play, and Alt+Shift+M to
+turn them off.</strong> <strong>Options &gt; App Sounds Play
+On…</strong> (Ctrl+Shift+S) offers System default, None (no sounds), or
+any sound card or headset by name; a weather alert is still spoken when
+its sound is off. After a change one sound plays on the new card, so you
+hear where it went. If that card is unplugged the sounds play on the
+system default until it is back, and Quill Weather says so once.
+<strong>Alt+Shift+M</strong> turns Quill Weather’s sounds off and back
+on where they were, and <strong>Options &gt; App Sounds</strong> shows a
+check mark while they are on. Each QUILL app keeps its own choice;
+“Share these choices with my other Quill apps” keeps them in step. Your
+screen reader is never moved. Asked for on QUILLVille by Rick Lewis.
+(build 2)</li>
+</ul>
+<h3 id="keys-the-tray-and-the-quillville-menu">Keys, the tray and the
+QuillVille menu</h3>
+<ul>
+<li><strong>No show and hide key until you choose one</strong>
+(2026-10-05). The app registered Ctrl+Alt+Shift+W system-wide, and other
+QuillVille apps use that key for menu commands, so while this app ran
+theirs never fired. It now has no key by default; <strong>File &gt; Show
+and Hide Key…</strong> (Ctrl+Alt+Shift+H) lets you type one, or leave it
+empty for none, and refuses a key any QuillVille app uses as a command
+or as its own show and hide key, in one sentence naming the app.
+Somebody who had the old key is moved to none and told once, at the next
+launch; a key somebody chose is kept
+(<code>quill/core/family_chords.py</code>,
+<code>quill/core/show_hide_keys.py</code>,
+<code>quill/ui/show_hide_key_picker.py</code>).</li>
+<li><strong>QUILL Transcribe on the QuillVille menu and the
+tray.</strong> QUILL Transcribe, which types what you say into any
+program, is released on 1 November 2026. The <strong>QuillVille</strong>
+menu (Alt+Q) now lists every released app with its letter and key: QUILL
+(Q, Ctrl+Alt+Shift+F7), Quill Radio (R, F8), Quill Converter (V, F9),
+Quill Inkwell (I, F10) and QUILL Transcribe (T, Ctrl+Alt+Shift+F11). The
+tray menu adds <strong>Open QUILL Transcribe</strong> after QUILL and
+Quill Radio. If it is not installed yet, Quill Weather offers to
+download it once it is published, and nothing is downloaded until you
+say yes. The user guide’s “Reaching the other apps” listed only QUILL
+and Quill Radio; it now lists them all, with an example.</li>
+<li>Tray preferences and Windows startup/background choices report
+failed changes and keep their menu checks accurate. (build 2)</li>
+</ul>
+<h3 id="the-user-guide">The user guide</h3>
 <ul>
 <li><strong>The user guide now teaches the right key for Start Weather
 Monitoring.</strong> It said Ctrl+Shift+M, which Quill Weather has never
@@ -284,87 +363,15 @@ Radio’s.</strong> “Station &gt; Start Quill Radio with Windows” and
 Quill Weather’s, and the guide pointed at a Station menu chapter it does
 not have.</li>
 </ul>
-<h2 id="unreleased-1">[Unreleased]</h2>
+<h3 id="downloads-and-installing">Downloads and installing</h3>
 <ul>
-<li><strong>QUILL Transcribe on the QuillVille menu and the
-tray.</strong> QUILL Transcribe, which types what you say into any
-program, is released on 1 November 2026. The <strong>QuillVille</strong>
-menu (Alt+Q) now lists every released app with its letter and key: QUILL
-(Q, Ctrl+Alt+Shift+F7), Quill Radio (R, F8), Quill Converter (V, F9),
-Quill Inkwell (I, F10) and QUILL Transcribe (T, Ctrl+Alt+Shift+F11). The
-tray menu adds <strong>Open QUILL Transcribe</strong> after QUILL and
-Quill Radio. If it is not installed yet, Quill Weather offers to
-download it once it is published, and nothing is downloaded until you
-say yes. The user guide’s “Reaching the other apps” listed only QUILL
-and Quill Radio; it now lists them all, with an example.</li>
-</ul>
-<h2 id="221---2026-10-08">[2.2.1] - 2026-10-08</h2>
-<p>Build 2:</p>
-<ul>
-<li><p><strong>Where Quill Weather’s own sounds play, and Alt+Shift+M to
-turn them off.</strong> <strong>Options &gt; App Sounds Play
-On…</strong> (Ctrl+Shift+S) offers System default, None (no sounds), or
-any sound card or headset by name; a weather alert is still spoken when
-its sound is off. After a change one sound plays on the new card, so you
-hear where it went. If that card is unplugged the sounds play on the
-system default until it is back, and Quill Weather says so once.
-<strong>Alt+Shift+M</strong> turns Quill Weather’s sounds off and back
-on where they were, and <strong>Options &gt; App Sounds</strong> shows a
-check mark while they are on. Each QUILL app keeps its own choice;
-“Share these choices with my other Quill apps” keeps them in step. Your
-screen reader is never moved. Asked for on QUILLVille by Rick
-Lewis.</p></li>
-<li><p>Current conditions, Quick Weather, and local time use the saved
-friendly name when one is set.</p></li>
-<li><p>Distribution uses the shared installer and portable zip; updates
-choose between those two editions.</p></li>
-<li><p>The per-user installer records Weather’s version independently of
+<li>Distribution uses the shared installer and portable zip; updates
+choose between those two editions. (build 2)</li>
+<li>The per-user installer records Weather’s version independently of
 the shared runtime. Portable Weather keeps its launcher offline and does
-not register host startup entries or background tasks.</p></li>
-<li><p>Help exposes Activity and Repeat Last Result, with the same F9
-and Shift+F9 keys as the other apps.</p></li>
-<li><p>Tray preferences and Windows startup/background choices report
-failed changes and keep their menu checks accurate.</p></li>
+not register host startup entries or background tasks. (build 2)</li>
 </ul>
-<h3 id="changed">Changed</h3>
-<ul>
-<li><strong>No show and hide key until you choose one</strong>
-(2026-10-05). The app registered Ctrl+Alt+Shift+W system-wide, and other
-QuillVille apps use that key for menu commands, so while this app ran
-theirs never fired. It now has no key by default; <strong>File &gt; Show
-and Hide Key…</strong> (Ctrl+Alt+Shift+H) lets you type one, or leave it
-empty for none, and refuses a key any QuillVille app uses as a command
-or as its own show and hide key, in one sentence naming the app.
-Somebody who had the old key is moved to none and told once, at the next
-launch; a key somebody chose is kept
-(<code>quill/core/family_chords.py</code>,
-<code>quill/core/show_hide_keys.py</code>,
-<code>quill/ui/show_hide_key_picker.py</code>).</li>
-</ul>
-<h3 id="added-1">Added</h3>
-<ul>
-<li><p><strong>Help &gt; Tutorials… (Ctrl+Alt+F1)</strong> – 11 guided
-tutorials, 60 steps, in three tracks: your first ten minutes, being
-warned, and making it yours. The middle track is the app’s whole reason
-for existing, so it is five lessons: start the watch, rehearse an alert,
-decide what gets through, keep the watch running, and NOAA Weather
-Radio.</p></li>
-<li><p><strong>A step names a command, not a key</strong>; <strong>Try
-it</strong> runs it; and <strong>Follow me</strong> watches the app once
-a second and moves you on when it can see you have done the step – your
-saved places growing, the watch starting, alert checks pausing. It
-watches state rather than keystrokes, so the menu, the key, the tray and
-the palette all count.</p></li>
-<li><p><strong>Quill Weather has command ids at all now.</strong> Every
-weather verb was a bound menu item and nothing else, so the Command
-Palette – which this app carries – could not reach a single one of them,
-and a tutorial step could not name one. The ids are registered with the
-keys the menu labels already advertise, so the menus are unchanged; they
-simply have names now.</p></li>
-<li><p><strong>The book is generated from the lessons</strong>
-(<code>docs/tutorials.md</code>, GATE-TUTDOC).</p></li>
-</ul>
-<h3 id="fixed-1">Fixed</h3>
+<h3 id="fixes-and-under-the-hood">Fixes and under the hood</h3>
 <ul>
 <li><strong>Quill Weather has its own icon.</strong> It used to ship a
 byte-identical copy of Quill Radio’s broadcast-wave icon, carried over
@@ -373,6 +380,8 @@ the taskbar, in Alt+Tab and in the tray. Quill Weather’s icon is now a
 sun behind a cloud on a sky-blue tile – the same rounded shape and amber
 accent as the rest of the QuillVille family, with its own silhouette and
 its own colour.</li>
+<li><strong>The book is generated from the lessons</strong>
+(<code>docs/tutorials.md</code>, GATE-TUTDOC).</li>
 </ul>
 <h2 id="220---2026-08-12">[2.2.0] - 2026-08-12</h2>
 <p>2.2.0 was never published, so everything that had accumulated under
@@ -381,7 +390,7 @@ the alert watch now covers <strong>every</strong> place you have saved
 rather than only your primary one, the app is delivered on the shared
 QuillVille Runtime with two much lighter downloads, and everything Quill
 Weather says now reaches a braille display as well as speech.</p>
-<h3 id="added-2">Added</h3>
+<h3 id="added">Added</h3>
 <ul>
 <li><strong>Weather Guardian now watches every place you have saved, not
 just one.</strong> Before this, the alert watch covered your primary
@@ -492,7 +501,7 @@ copy of Python’s <code>pythonw.exe</code> as the launcher, which some
 antivirus tools flagged as a false positive. That pattern is completely
 gone, so the Quill apps are far less likely to be flagged.</li>
 </ul>
-<h3 id="changed-1">Changed</h3>
+<h3 id="changed">Changed</h3>
 <ul>
 <li><strong>Quill Weather’s download is less than half the size it
 was.</strong> The portable ZIP dropped from about 176 MB to 79 MB, and

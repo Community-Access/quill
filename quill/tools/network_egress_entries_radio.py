@@ -407,6 +407,26 @@ RADIO_EGRESS: dict[str, str] = {
         "verified TLS context with a bounded timeout. Disabled in Safe Mode "
         "via soma_fm.refuse_in_safe_mode."
     ),
+    "core/radio/one_eighty_one.py::_fetch": (
+        "Single egress site for the 181.FM network (Browse Stations > 181.FM, "
+        "and its search): reads 181.FM's own site, www.181.fm, for the genre "
+        "table its published script carries -- the station list the site itself "
+        "plays from. 181.FM's support page permits its stream links in your own "
+        "player. Only www.181.fm is ever fetched; cached for a day, with a "
+        "checked-in snapshot when it cannot be read. Reached by opening the "
+        "branch or searching, never a background poll. HTTPS-only over a "
+        "verified TLS context, 15-second timeout, 4 MB cap. Disabled in Safe "
+        "Mode via one_eighty_one.refuse_in_safe_mode."
+    ),
+    "core/radio/laut_fm.py::_fetch": (
+        "Single egress site for laut.fm (Browse Stations > laut.fm, and its "
+        "search): laut.fm's documented, keyless public API at api.laut.fm "
+        "(https://docs.api.laut.fm/) -- the genre list (cached for a day), one "
+        "genre's stations, or a search. Reached by opening the branch or "
+        "searching, never a background poll. HTTPS-only over a verified TLS "
+        "context, 15-second timeout, 8 MB cap. Disabled in Safe Mode via "
+        "laut_fm.refuse_in_safe_mode."
+    ),
     "core/radio/icy.py::read_stream_title": (
         "What's Playing / announce-track-titles: one short side connection to "
         "the SAME stream URL the user is already playing (no third party), "

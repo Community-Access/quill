@@ -403,6 +403,7 @@
   "quill.ui.single_convert_dialog": "reachable",
   "quill.ui.skill_library_dialog": "reachable",
   "quill.ui.sleep_timer_dialog": "reachable",
+  "quill.ui.slider_keys": "reachable",
   "quill.ui.sound_enhance_dialog": "reachable",
   "quill.ui.sound_scheme_dialog": "reachable",
   "quill.ui.special_character_dialog": "reachable",

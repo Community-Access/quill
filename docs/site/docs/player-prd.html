@@ -1729,11 +1729,15 @@ player via <strong>Tools ▸ Media ▸ Media Player</strong>, which launches
 the standalone app (shared library / bookmarks / positions). The
 embedded-window design in this PRD is a documented future option
 (Section 18).</li>
-<li><strong>Settings today are menu-driven.</strong> The searchable
-Preferences dialog (Section 10) is on the roadmap; the shipped controls
-live on the Audio page and the Playback / View menus, with the full
-<code>media_*</code> catalogue defaulted in
-<code>quill/core/media/config.py</code>.</li>
+<li><strong>Settings are mostly menu-driven, with a small Preferences
+window.</strong> <strong>File &gt; Preferences…</strong> (Ctrl+,) holds
+the Audio Output Device…, App Sounds Play On… and Slider Keys… buttons,
+a “This session only” box (Compact mode, Magical mode, Always on top,
+Sleep timer) and a <strong>Find a setting</strong> box that also reaches
+the Audio page’s controls. The full searchable dialog of Section 10 is
+still to come; the other shipped controls live on the Audio page and the
+Playback / View menus, with the full <code>media_*</code> catalogue
+defaulted in <code>quill/core/media/config.py</code>.</li>
 <li><strong>Timed lyrics (2026-10-15).</strong> <strong>Playback &gt;
 Lyrics…</strong> (Ctrl+Alt+L) looks the playing file up on LRCLIB
 through the shared client (<code>quill/core/lyrics/lrclib.py</code>, the
@@ -1770,6 +1774,20 @@ arrows. Still not built, and still listed in section 18: global media
 keys, close behaviour, a Keyboard Shortcuts editor, a Where am I? key,
 the verbosity, earcon, self-voicing and braille status-line settings,
 and per-book overrides with settings import and export.</li>
+<li><strong>Slider Keys and What’s New (2026-10-25,
+2026-10-26).</strong> Preferences has the family’s <strong>Slider
+Keys…</strong> button (<code>quill/ui/slider_keys.py</code>,
+<code>quill/core/slider_key_layout.py</code>): <strong>Up is
+more</strong>, the default (Up, Page Up and Home raise the position and
+volume sliders, Home being 100 percent on the volume), or <strong>As
+Windows sliders</strong> (Down, Page Down and End raise them). The
+choice is one file shared by every Quill app, read at each key press,
+and each move raises a value-change event so the screen reader speaks
+the new value. Right is more and Left less in both; Ctrl+Up and
+Ctrl+Down are not changed. <strong>Help &gt; What’s New</strong>
+(Ctrl+Shift+F1, <code>quill/ui/whats_new.py</code>) opens
+<code>docs/CHANGELOG.html</code> in the browser; the player had no
+changelog until then, so one was written for 1.0.0.</li>
 </ul>
 </main>
 </body>

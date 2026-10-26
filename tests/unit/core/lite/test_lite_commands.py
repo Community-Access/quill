@@ -63,6 +63,21 @@ KEYLESS_WITH_REASON: dict[str, str] = {
     "cmd_import_convert": "As in QUILL, where Import / Convert Document has no key either "
     "(rule 2; rule 9 for an occasional command): the next thing it does is ask which "
     "file, so a chord saves nothing. Alt+F, I reaches it.",
+    **{
+        handler: "As in QUILL (rule 2), and as in Word, which has no keys for these either: "
+        "the table's own submenu reaches them (Alt+N, T), and Tab in a table's last cell "
+        "adds a row without any menu at all."
+        for handler in (
+            "cmd_table_insert_row_below",
+            "cmd_table_insert_column_right",
+            "cmd_table_delete_row",
+            "cmd_table_delete_column",
+            "cmd_table_tidy",
+        )
+    },
+    "cmd_whats_new": "As in QUILL, where What's New has no key either (rule 2): no chord "
+    "is free in both editors -- Ctrl+Shift+F1, the standalone apps' key for it, is "
+    "QUILL's User Guide. Rule 9: read once per update, so Alt+H, W is enough.",
 }
 
 

@@ -120,7 +120,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # inventory -- the read half of an export rather than a store of its own.
     # Every file it writes is one the audit already classifies on its own line.
     "core/setup_transfer.py::import_setup_report": "export",
-    "core/keymap.py::export_keyboard_pack": "export",
+    "core/keymap_kqp.py::export_keyboard_pack": "export",  # out of keymap.py (GATE-11)
     "core/keymap.py::export_keymap": "export",
     "core/features.py::export_feature_profile_file": "export",
     "core/share_package.py::write_package_file": "export",
@@ -173,6 +173,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # names hardware on one computer and nothing on the next.
     "ui/media/output_device_apps.py::save_device_pref": "marker",
     "core/app_sounds_store.py::save": "marker",
+    "core/slider_key_layout.py::save": "marker",
     "core/radio/download_prefs.py::save": "content",
     "core/library/catalogs.py::save": "content",
     "core/publish/destinations.py::save_destinations": "content",

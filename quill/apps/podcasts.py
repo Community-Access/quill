@@ -603,8 +603,10 @@ class PodcastsAppFrame(
 
     def _show_about(self) -> None:
         from quill.core.app_version import describe_version
+        from quill.ui.about_notices import show_app_about
 
-        self._show_message_box(
+        show_app_about(
+            self,
             f"{_TITLE} {describe_version(_VERSION, build=APP_BUILD)}\n"
             "Podcasts from Quill, as a standalone app.\n\n"
             "Runs the same podcast feature code as QUILL itself and shares "
@@ -614,8 +616,8 @@ class PodcastsAppFrame(
             "- Podcast data from the Podcast Index, an open, independent "
             "podcast directory (https://podcastindex-org.github.io/docs-api/)."
             "\n\nSupport: support@community-access.org",
-            f"About {_TITLE}",
-            wx.ICON_INFORMATION | wx.OK,
+            app="cast",
+            app_name=_TITLE,
         )
 
     # -- show notes: no in-editor buffer standalone, so copy to clipboard ----

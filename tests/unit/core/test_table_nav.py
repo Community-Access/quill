@@ -35,16 +35,18 @@ def test_no_table_outside_it() -> None:
 
 def test_next_and_previous_cell_in_row() -> None:
     grid, off = _grid()
-    assert t.move(grid, off, "next").announcement == "Row 2 of 3, column 2 of 2: Smith"
+    assert (
+        t.move(grid, off, "next").announcement == "Column 2, Last Name: Smith"
+    )  # header: new column
     smith = _DOC.index("Smith")
-    assert t.move(grid, smith, "previous").announcement == "Row 2 of 3, column 1 of 2: Alice"
+    assert t.move(grid, smith, "previous").announcement == ("Column 1, First Name: Alice")
     # Edge: no cell to the right of the last column.
     assert t.move(grid, smith, "next") == t.Move(None, "No more cells")
 
 
 def test_up_and_down_cell_in_column() -> None:
     grid, off = _grid()
-    assert t.move(grid, off, "down").announcement == "Row 3 of 3, column 1 of 2: Bob"
+    assert t.move(grid, off, "down").announcement == "Row 3: Bob"
     assert t.move(grid, _DOC.index("First"), "up") == t.Move(None, "No more rows")
     assert t.move(grid, _DOC.index("Bob"), "down") == t.Move(None, "No more rows")
 
@@ -54,7 +56,7 @@ def test_row_and_table_ends() -> None:
     assert t.move(grid, off, "row_end").announcement.endswith("Smith")
     assert t.move(grid, _DOC.index("Smith"), "row_start").announcement.endswith("Alice")
     assert t.move(grid, off, "table_start").announcement.endswith("First Name")
-    assert t.move(grid, off, "table_end").announcement == "Row 3 of 3, column 2 of 2: Jones"
+    assert t.move(grid, off, "table_end").announcement == "Row 3, column 2, Last Name: Jones"
 
 
 def test_blank_cell_says_blank() -> None:
@@ -71,8 +73,8 @@ def test_single_pipe_line_is_not_a_table() -> None:
 def test_describe_position_reads_row_and_column_of_totals() -> None:
     grid, off = _grid()
     assert t.describe_position(grid, 1, 1) == "Row 2 of 3, column 2 of 2"
-    # Every landing announcement leads with the same position phrase.
-    assert t.move(grid, off, "next").announcement.startswith(t.describe_position(grid, 1, 1))
+    # A move says only what changed: along a row, the column (2026-10-25).
+    assert t.move(grid, off, "next").announcement.startswith("Column 2")
 
 
 def test_last_cell_of_table_is_flagged() -> None:
@@ -116,7 +118,7 @@ def test_escaped_pipe_cell_announces_unescaped_and_aligns_columns() -> None:
     grid = t.find_table_at(_ESCAPED, _ESCAPED.index("Alpha"))
     assert grid is not None
     up = t.move(grid, _ESCAPED.index("3"), "up")
-    assert up.announcement == "Row 1 of 2, column 2 of 3: Size | Units"
+    assert up.announcement == "Row 1: Size | Units"
     # The caret lands on the cell's own text, not on the escape.
     assert up.offset is not None
     assert _ESCAPED[up.offset :].startswith("Size")

@@ -29,6 +29,13 @@ def open_doc(host: Any, stem: str) -> None:
     )
 
 
+def open_whats_new(host: Any) -> None:
+    """Help > What's New: Quill Radio's changelog, as HTML in the browser."""
+    from quill.ui.whats_new import open_whats_new as show
+
+    show("radio", "Quill Radio", host._announce)
+
+
 def open_tutorials(host: Any, slug: str = "") -> None:
     """Open the Tutorials window, optionally straight into one lesson."""
     from quill.ui.radio.tutorials import open_tutorials as show
@@ -52,20 +59,29 @@ def install_help_items(host: Any, help_menu: Any, wx: Any) -> list[Any]:
     reached for far more often. Ctrl+Alt+Shift+F1 was not available: it is a
     QuillVille launcher (``SIBLING_APP_ACCELERATORS``).
 
+    **Ctrl+Shift+F1 is What's New** (2026-10-25): the changelog as HTML in the
+    browser, on the key every standalone QuillVille app gives it
+    (:mod:`quill.ui.whats_new`). N rather than W, which What Is This? owns.
+
     The returned ids are the caller's to keep alive: ``wx.NewIdRef`` ids are
     recycled once nothing references them, and a recycled id is a menu item
     that stops firing.
     """
-    ids = {name: wx.NewIdRef() for name in ("what_is_this", "tutorials", "guide", "notes", "prd")}
+    ids = {
+        name: wx.NewIdRef()
+        for name in ("what_is_this", "tutorials", "guide", "notes", "whats_new", "prd")
+    }
     help_menu.Append(ids["what_is_this"], "&What Is This?\tF1")
     help_menu.Append(ids["tutorials"], host._menu_label("&Tutorials...", "radio.tutorials"))
     help_menu.Append(ids["guide"], "&User Guide\tCtrl+F1")
     help_menu.Append(ids["notes"], "&Release Notes\tShift+F1")
+    help_menu.Append(ids["whats_new"], "What's &New\tCtrl+Shift+F1")
     help_menu.Append(ids["prd"], "Produ&ct Requirements...\tAlt+Shift+F1")
 
     frame = host.frame
     frame.Bind(wx.EVT_MENU, lambda _e: host._radio_show_context_help(), id=ids["what_is_this"])
     frame.Bind(wx.EVT_MENU, lambda _e: host.open_radio_tutorials(), id=ids["tutorials"])
+    frame.Bind(wx.EVT_MENU, lambda _e: open_whats_new(host), id=ids["whats_new"])
     for name, stem in (
         ("guide", "userguide"),
         ("notes", "release-notes-3.2"),

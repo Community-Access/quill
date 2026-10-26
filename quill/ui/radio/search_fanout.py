@@ -21,7 +21,16 @@ from __future__ import annotations
 
 from typing import Any
 
-from quill.core.radio import iptv, live365, radio_paradise, shoutcast, soma_fm
+from quill.core.error_codes import CodedError
+from quill.core.radio import (
+    iptv,
+    laut_fm,
+    live365,
+    one_eighty_one,
+    radio_paradise,
+    shoutcast,
+    soma_fm,
+)
 from quill.core.radio.directory_search import (
     iheart_variants,
     radio_browser_variants,
@@ -103,6 +112,14 @@ def run_search(
             extras += live365.search_stations(query, safe_mode=safe_mode)
         if host._source_on("radioparadise"):
             extras += radio_paradise.search_stations(query, safe_mode=safe_mode)
+        # The two whole networks (2026-10-25). Each raises its own error on a
+        # failed fetch; a network that cannot answer leaves the rest intact.
+        for source_id, network in (("181fm", one_eighty_one), ("lautfm", laut_fm)):
+            if host._source_on(source_id):
+                try:
+                    extras += network.search_stations(query, safe_mode=safe_mode)
+                except CodedError:
+                    pass
         if host._source_on("tv"):
             extras += iptv.search_stations(query, safe_mode=safe_mode)
         # NOAA Weather Radio: a SAME code, callsign, or "County, ST"/state

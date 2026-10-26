@@ -97,7 +97,7 @@ def test_the_guard_sits_on_the_one_funnel_every_route_uses() -> None:
 
     source = _P("quill/apps/lite.py").read_text(encoding="utf-8")
     start = source.index("def open_path(")
-    open_path = source[start : source.index("def open_from_dialog(", start)]
+    open_path = source[start : source.index("\n    def ", start)]
     assert "_confirm_large_file" in open_path
 
 

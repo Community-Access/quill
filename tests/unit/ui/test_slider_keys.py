@@ -165,3 +165,102 @@ def test_every_horizontal_slider_in_the_family_binds_up_means_more() -> None:
         if horizontal and "bind_up_means_more(" not in source:
             offenders.append(str(path.relative_to(_QUILL.parent)))
     assert offenders == [], f"horizontal wx.Slider without bind_up_means_more: {offenders}"
+
+
+# -- Home and End, and the family's choice of layout (2026-10-26) ---------------
+
+
+@pytest.mark.parametrize(
+    ("key", "expected"),
+    [
+        (wx.WXK_HOME, +100),
+        (wx.WXK_NUMPAD_HOME, +100),
+        (wx.WXK_END, -100),
+        (wx.WXK_NUMPAD_END, -100),
+    ],
+)
+def test_home_is_the_top_and_end_the_bottom(key: int, expected: int) -> None:
+    assert step_for_key(key, line_size=1, page_size=10, span=100) == expected
+
+
+@pytest.mark.parametrize(
+    ("key", "expected"),
+    [
+        (wx.WXK_UP, -1),
+        (wx.WXK_DOWN, +1),
+        (wx.WXK_PAGEUP, -10),
+        (wx.WXK_HOME, -100),
+        (wx.WXK_END, +100),
+    ],
+)
+def test_the_windows_layout_turns_every_vertical_key_round(key: int, expected: int) -> None:
+    from quill.core.slider_key_layout import WINDOWS
+
+    assert step_for_key(key, 1, 10, span=100, layout=WINDOWS) == expected
+
+
+def test_the_choice_is_read_at_each_key_press(wx_app: wx.App, tmp_path, monkeypatch) -> None:
+    from quill.core import slider_key_layout
+    from quill.ui import slider_keys
+
+    monkeypatch.setattr(slider_keys, "_data_dir", lambda: tmp_path)
+    frame, slider, heard = _slider_with_handler()
+    try:
+        _press(slider, _Key(wx.WXK_HOME))
+        assert slider.GetValue() == 100 and heard == [100]  # Home is full volume
+        _press(slider, _Key(wx.WXK_END))
+        assert slider.GetValue() == 0
+        slider_key_layout.save(tmp_path, slider_key_layout.WINDOWS)
+        _press(slider, _Key(wx.WXK_END))
+        assert slider.GetValue() == 100  # the Windows keys: End is the top
+        _press(slider, _Key(wx.WXK_UP))
+        assert slider.GetValue() == 99
+    finally:
+        frame.Destroy()
+
+
+def test_choosing_saves_for_the_family_and_says_so(wx_app: wx.App, tmp_path, monkeypatch) -> None:
+    from quill.core import slider_key_layout
+    from quill.ui import slider_keys
+
+    monkeypatch.setattr(slider_keys, "_data_dir", lambda: tmp_path)
+
+    class _Dialog:
+        def __init__(self, *_args) -> None:
+            self.selection = 0
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_exc) -> None:
+            return None
+
+        def SetSelection(self, index: int) -> None:  # noqa: N802
+            assert index == 0  # the default is offered first
+
+        def ShowModal(self) -> int:  # noqa: N802
+            return wx.ID_OK
+
+        def GetSelection(self) -> int:  # noqa: N802
+            return 1
+
+    monkeypatch.setattr(slider_keys.wx, "SingleChoiceDialog", _Dialog)
+    said: list[str] = []
+
+    class _Host:
+        frame = None
+
+        def _announce(self, text: str) -> None:
+            said.append(text)
+
+    monkeypatch.setattr("quill.ui.modal_stack.parent_window", lambda parent: None)
+    slider_keys.choose(_Host())
+    assert slider_key_layout.current(tmp_path) == slider_key_layout.WINDOWS
+    assert said == [slider_key_layout.describe(slider_key_layout.WINDOWS)]
+
+
+def test_an_unreadable_choice_is_the_default(tmp_path) -> None:
+    from quill.core import slider_key_layout
+
+    (tmp_path / slider_key_layout.FILE_NAME).write_text("not json", encoding="utf-8")
+    assert slider_key_layout.current(tmp_path) == slider_key_layout.UP_IS_MORE

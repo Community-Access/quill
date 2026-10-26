@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QUILL Audio Studio -- Product Requirements</title>
+  <title>QUILL Studio -- Product Requirements</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -242,13 +242,13 @@
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
-<h1 id="quill-audio-studio--product-requirements">QUILL Audio Studio –
-Product Requirements</h1>
+<h1 id="quill-studio--product-requirements">QUILL Studio – Product
+Requirements</h1>
 <p>Version 2.2.0 (the shared QuillVille family version; there is no
 Audio Studio 2.0 or 2.1 – see CHANGELOG.md)</p>
 <h2 id="1-product-overview-and-mission">1. Product overview and
 mission</h2>
-<p>QUILL Audio Studio is a standalone Windows desktop application for
+<p>QUILL Studio is a standalone Windows desktop application for
 audiobook and audio production, extracted from the QUILL editor’s Audio
 Studio. Its mission: audio production that meets blind and low-vision
 creators where they are. Every step – narrating a manuscript, assembling
@@ -270,8 +270,8 @@ standalone product needs around them: a home window, menu bar, status
 bar, system tray, preferences, voice preview, background-task host, and
 an installer.</p>
 <h2 id="2-relationship-to-quill">2. Relationship to QUILL</h2>
-<p>QUILL Audio Studio is built from the QUILL repository itself. The
-whole application lives in the <code>quill</code> package
+<p>QUILL Studio is built from the QUILL repository itself. The whole
+application lives in the <code>quill</code> package
 (<code>quill.apps.studio</code>); this directory is the product wrapper
 only – entry point, installer, assets, and these docs. Superseded: the
 Studio was originally assembled in a separate repository (S:\QUILL-AS)
@@ -363,7 +363,7 @@ Book), and a “Your books” list that takes focus on launch.</li>
 first, flagging entries whose file is missing. Enter or double-click
 opens the selected book in the Chapter Workbench; Delete removes the
 entry from the list without touching the file (and says so).</li>
-<li>AS-3. The menu bar must provide: Studio (Open Audio Studio Ctrl+N,
+<li>AS-3. The menu bar must provide: Studio (Open QUILL Studio Ctrl+N,
 the three journeys, Open Book File Ctrl+O, Open Job File, Resume on
 launch, Recently Played, Preferences Ctrl+Comma, Exit), Book Tools
 (Publish a Finished Book, Make a Podcast Feed From a Folder, ACX
@@ -734,7 +734,7 @@ on), Alt+F4 minimizes to tray (default off), speak progress milestones
 Minimize to Tray, default Ask). They must persist to the app-local prefs
 file, written atomically, with unreadable prefs falling back to defaults
 rather than crashing.</li>
-<li>AS-66. The tray icon must always be present, offering Open Audio
+<li>AS-66. The tray icon must always be present, offering Open QUILL
 Studio and “Resume: <most recent book>”, both restoring the window
 first. Sending the app to the tray must announce that it is still
 running.</li>
@@ -772,6 +772,17 @@ longer exists. The choice must persist across launches.</li>
 <li>AS-84. The Studio menu must offer a Recently Played submenu, rebuilt
 on open, listing the most recently played books from
 <code>history.py</code>; choosing one opens it in the Workbench.</li>
+<li>AS-93. Help must offer What’s New (Ctrl+Shift+F1), opening the app’s
+changelog as HTML in the browser through the family’s shared
+<code>quill.ui.whats_new</code>, and saying so when no changelog is in
+the build.</li>
+<li>AS-94. Preferences must offer the family’s Slider Keys… button
+(<code>quill.ui.slider_keys</code>): Up is more (the default; Up, Page
+Up and Home raise a slider, Home being 100 percent) or As Windows
+sliders (Down, Page Down and End raise it). The choice is one file
+shared by every Quill app, read at each key press, and each move raises
+a value-change event so the screen reader speaks the new value. Right is
+more and Left less in both; Ctrl+Up and Ctrl+Down are not changed.</li>
 </ul>
 <h3 id="412-background-work-and-close-protection">4.12 Background work
 and close protection</h3>

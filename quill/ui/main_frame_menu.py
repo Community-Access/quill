@@ -1155,6 +1155,7 @@ class MenuBuilderMixin:
         )
         navigate_menu.AppendSubMenu(bookmarks_menu, _("Bookmarks"))
         self._append_highlight_submenu(navigate_menu)  # main_frame_highlights
+        self._append_table_submenu(navigate_menu)  # main_frame_table_nav, as in QUILL Lite
         navigate_menu.AppendSeparator()
         notebook_nav_menu = wx.Menu()
         notebook_nav_menu.Append(
@@ -3321,7 +3322,7 @@ class MenuBuilderMixin:
         # duplicate Help-menu toggle).
         help_menu.Append(self._id_check_updates, _("Check for &Updates..."))
         self._install_release_channel_item(help_menu)  # main_frame_updates.py
-        help_menu.Append(self._id_whats_new, _("What's New..."))
+        self._install_whats_new_item(help_menu)  # main_frame_updates.py
         if self._feature_enabled("core.glow"):
             help_menu.Append(self._id_check_glow_updates, _("Chec&k for GLOW Updates..."))
         # On macOS the Application menu already shows "About Quill" via the

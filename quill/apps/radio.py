@@ -39,7 +39,7 @@ _TITLE = "Quill Radio"
 from quill.core.app_version import describe_version, installed_version  # noqa: E402
 
 _VERSION = "3.2.0"
-_BUILD = 4  # this version's build (docs/release/RELEASE.md, "Build numbers")
+_BUILD = 5  # this version's build (docs/release/RELEASE.md, "Build numbers")
 _REPO = "Community-Access/quill"
 #: Two downloads since 3.0.0 (installer, portable zip): Check for Updates asks "portable,
 #: or not" and nothing else, as QUILL Lite does (AppShell.check_for_app_updates says why).
@@ -1046,17 +1046,20 @@ class RadioAppFrame(
         )
 
     def _show_about(self) -> None:
-        self._show_message_box(
+        from quill.ui.about_notices import show_app_about
+
+        show_app_about(
+            self,
             f"{_TITLE} {describe_version(_VERSION, build=_BUILD)}\n"
             "Accessible internet radio, podcasts, and audio from Quill.\n\n"
             f"https://github.com/{_REPO}\n\n"
             "Credits and thanks:\n"
             "- Broadcast polish adapted from OptiLab Core by dgl1984 "
-            "(https://github.com/dgl1984/optilab, Apache-2.0).\n"
+            "(https://github.com/dgl1984/optilab, Apache-2.0 with the Commons Clause).\n"
             "- Podcast data from the Podcast Index (podcastindex-org.github.io)."
             "\n\nSupport: support@community-access.org",
-            f"About {_TITLE}",
-            wx.ICON_INFORMATION | wx.OK,
+            app="radio",
+            app_name=_TITLE,
         )
 
     # -- status ---------------------------------------------------------------

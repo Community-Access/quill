@@ -130,9 +130,9 @@ def test_pending_release_build_numbers_match_the_source() -> None:
     from quill.apps import podcasts_menu, radio
     from quill.core import lite
 
-    assert (radio._VERSION, radio._BUILD) == ("3.2.0", 4)
-    assert (podcasts_menu.APP_VERSION, podcasts_menu.APP_BUILD) == ("2.0.0", 5)
-    assert (lite.APP_VERSION, lite.APP_BUILD) == ("1.2.0", 5)
+    assert (radio._VERSION, radio._BUILD) == ("3.2.0", 5)
+    assert (podcasts_menu.APP_VERSION, podcasts_menu.APP_BUILD) == ("2.0.0", 6)
+    assert (lite.APP_VERSION, lite.APP_BUILD) == ("1.2.0", 6)
     assert __build__ == 2
 
 
@@ -244,8 +244,8 @@ def test_quills_installer_file_version_carries_the_build() -> None:
 
 def test_the_launcher_file_version_carries_the_build() -> None:
     launcher = _script("build_native_launcher")
-    assert launcher.product_file_version(launcher.PRODUCTS["radio"]) == "3.2.0.4"
-    assert launcher.product_file_version(launcher.PRODUCTS["cast"]) == "2.0.0.5"
+    assert launcher.product_file_version(launcher.PRODUCTS["radio"]) == "3.2.0.5"
+    assert launcher.product_file_version(launcher.PRODUCTS["cast"]) == "2.0.0.6"
     for product in launcher.PRODUCTS.values():
         parts = launcher.product_file_version(product).split(".")
         assert len(parts) == 4 and all(p.isdigit() for p in parts)
@@ -274,24 +274,25 @@ def test_gate_vc_reads_the_file_version_fallback(tmp_path: Path) -> None:
 
 def test_the_release_script_takes_the_next_build_and_checks_the_source() -> None:
     script = _script("release_build_number")
-    assert script.source_build("radio") == 4
-    # Builds 1 to 3 were already released; build 4 is the current source build.
+    assert script.source_build("radio") == 5
+    # Builds 1 to 4 were already released; build 5 is the current source build.
     tags = [
         "quill-radio-v3.1.1",
         "quill-radio-v3.2.0-build.1",
         "quill-radio-v3.2.0-build.2",
         "quill-radio-v3.2.0-build.3",
+        "quill-radio-v3.2.0-build.4",
     ]
     assert script.resolve("radio", "3.2.0", tags=lambda: tags) == (
-        4,
-        "3.2.0.4",
+        5,
+        "3.2.0.5",
         "",
     )
-    # Build 3 is out: build 4 is now the next release and matches source.
+    # Build 4 is out: build 5 is now the next release and matches source.
     build, file_version, problem = script.resolve("radio", "3.2.0", tags=lambda: tags)
-    assert build == 4 and file_version == "3.2.0.4" and not problem
-    build, file_version, problem = script.resolve("radio", "3.2.0", build=5, tags=lambda: tags)
-    assert build == 5 and file_version == "" and "_BUILD = 4" in problem
+    assert build == 5 and file_version == "3.2.0.5" and not problem
+    build, file_version, problem = script.resolve("radio", "3.2.0", build=6, tags=lambda: tags)
+    assert build == 6 and file_version == "" and "_BUILD = 5" in problem
 
 
 def test_the_release_script_refuses_a_published_build() -> None:

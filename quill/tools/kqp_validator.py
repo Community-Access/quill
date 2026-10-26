@@ -22,7 +22,8 @@ import json
 import sys
 from pathlib import Path
 
-from quill.core.keymap import _KQP_VERSION, DEFAULT_KEYMAP  # type: ignore[attr-defined]
+from quill.core.keymap import DEFAULT_KEYMAP
+from quill.core.keymap_kqp import _KQP_VERSION
 
 _REQUIRED_FIELDS = ("kqp_version", "name", "bindings")
 

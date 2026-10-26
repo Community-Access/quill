@@ -2611,7 +2611,9 @@ from the shared weather feature set above.
    since the family shares one settings store per machine. Quill Weather does
    expose the shared **Repeat Last Announcement** and **Announcement Self-Test**
    commands through its Command Palette. Its Help menu also exposes **Activity**
-   (Shift+F9) and **Repeat Last Result** (F9), using the shared session result log.
+   (Shift+F9) and **Repeat Last Result** (F9), using the shared session result log. **What's New**
+   (Ctrl+Shift+F1) opens the app's changelog as HTML in the browser through the
+   family's shared `quill.ui.whats_new`, as in every QuillVille app.
 
 ### Distribution model: editions and the QuillVille Runtime
 

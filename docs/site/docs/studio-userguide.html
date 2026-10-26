@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QUILL Audio Studio User Guide</title>
+  <title>QUILL Studio User Guide</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -242,8 +242,7 @@
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
-<h1 id="quill-audio-studio-user-guide">QUILL Audio Studio User
-Guide</h1>
+<h1 id="quill-studio-user-guide">QUILL Studio User Guide</h1>
 <p>Version 2.2.0</p>
 <h2 id="upcoming-preferences-search">Upcoming Preferences Search</h2>
 <p>Preferences gains <strong>Find a setting</strong> in the next
@@ -256,7 +255,7 @@ Disabled settings stay disabled.</p>
 Quill family version number when it moved onto the shared runtime, so it
 went straight from 1.0.0 to 2.2.0. See the release notes for the full
 story.)</p>
-<p>QUILL Audio Studio is audiobook and audio production the way a screen
+<p>QUILL Studio is audiobook and audio production the way a screen
 reader user would design it: a small home window whose book list has
 focus the instant it opens, a wizard that asks one question at a time
 and announces every step, a chapter editor you drive entirely by ear,
@@ -281,11 +280,11 @@ check, publish.</li>
 id="the-quillville-runtime-install-python-once-use-it-everywhere">The
 QuillVille Runtime: install Python once, use it everywhere</h3>
 <p>Every QuillVille app - QUILL, Quill Radio, Quill Weather, and QUILL
-Audio Studio - now shares one Python runtime, called the
-<strong>QuillVille Runtime</strong>. It is installed once per user and
-reused by all of them. Install it a single time (with any Quill app),
-and every app you add afterward launches instantly, because the shared
-runtime is already there.</p>
+Studio - now shares one Python runtime, called the <strong>QuillVille
+Runtime</strong>. It is installed once per user and reused by all of
+them. Install it a single time (with any Quill app), and every app you
+add afterward launches instantly, because the shared runtime is already
+there.</p>
 <p>The runtime is reference-counted: it is removed only when the last
 app that needs it is uninstalled, so removing one app never leaves the
 others unable to start.</p>
@@ -448,7 +447,7 @@ Finder) with the book file selected, so you can find it on disk.
 touches the file on disk, and says so. The tree remembers which book you
 had selected when the library reloads.</p>
 <h2 id="the-studio-wizard">The Studio wizard</h2>
-<p><strong>Studio &gt; Open Audio Studio…</strong> (Ctrl+N) opens the
+<p><strong>Studio &gt; Open QUILL Studio…</strong> (Ctrl+N) opens the
 wizard. Its first page asks the one question that matters - what would
 you like to make? - and the following steps adapt to your answer. The
 wizard remembers which journey you used last and pre-selects it.</p>
@@ -716,6 +715,25 @@ change is announced.</li>
 the player <strong>remembers where you stopped</strong> in each book and
 resumes there next time.</li>
 </ul>
+<p><strong>Slider Keys: which way the arrows move a slider.</strong> On
+the Position and Volume sliders, Right is always more and Left less. Up
+and Down, Page Up and Page Down, and Home and End follow one choice made
+for every Quill app at once, in <strong>Studio &gt;
+Preferences…</strong> (Ctrl+,): Tab to the <strong>Slider Keys…</strong>
+button and press Space.</p>
+<ul>
+<li><strong>Up is more</strong>, the default: Up, Page Up and Home raise
+a slider, Home being the top (100 percent on a volume), and Down, Page
+Down and End lower it, End being 0.</li>
+<li><strong>As Windows sliders</strong>: the keys a standard Windows
+slider uses. Down, Page Down and End raise it (End is 100 percent), and
+Up, Page Up and Home lower it (Home is 0).</li>
+</ul>
+<p>Change it in any Quill app and every other app follows at your next
+key press. Each key press tells your screen reader the new value, so it
+is never read from before the key. Ctrl+Up and Ctrl+Down, the volume
+keys that work from anywhere in the apps that have them, are not
+changed.</p>
 <p>The player also <strong>remembers your volume and mute choice per
 book</strong> - turn one book down to 40% and mute another, close them,
 and each reopens at the level you left it.</p>
@@ -1138,16 +1156,17 @@ play</h2>
 mark a narration run starting and finishing. You choose where they play,
 and you can turn them off.</p>
 <ul>
-<li><strong>Alt+Shift+M</strong> turns Audio Studio’s sounds off. Press
-it again and they come back, on the same sound card as before. You hear
-a short sound as they go off, and another where they now play when they
-come back on, and both are spoken too. <strong>Studio &gt; App
-Sounds</strong> has a check mark that shows whether they are on.</li>
-<li><strong>App Sounds Play On…</strong>, a button in the Preferences
+<li><p><strong>Alt+Shift+M</strong> turns Audio Studio’s sounds off.
+Press it again and they come back, on the same sound card as before. You
+hear a short sound as they go off, and another where they now play when
+they come back on, and both are spoken too. <strong>Studio &gt; App
+Sounds</strong> has a check mark that shows whether they are
+on.</p></li>
+<li><p><strong>App Sounds Play On…</strong>, a button in the Preferences
 window, lets you pick where they play. Open <strong>Studio &gt;
 Preferences…</strong> (Ctrl+,), press Tab until you reach the button,
 and press Space. It is a button rather than a menu row, so it has no key
-of its own. The choices are:
+of its own. The choices are:</p>
 <ul>
 <li><strong>System default</strong>. This is where it starts. The sounds
 go where Windows sends sound.</li>
@@ -1167,18 +1186,18 @@ choice, unless you have checked “Share these choices with my other Quill
 apps”, which copies a change here to the others that share. Your screen
 reader is never moved.</p>
 <h2 id="the-system-tray">The system tray</h2>
-<p>QUILL Audio Studio’s icon is three white-and-gold waveform bars on a
-dark slate tile. If you have used an earlier build, this is new: the
-Studio used to share Quill Radio’s blue broadcast-wave icon, so on a
-desktop with more than one QuillVille app installed several of them
-looked identical. Every app in the family now has its own - the same
-rounded tile shape and the same gold accent throughout, but its own
-colour and its own picture each.</p>
+<p>QUILL Studio’s icon is three white-and-gold waveform bars on a dark
+slate tile. If you have used an earlier build, this is new: the Studio
+used to share Quill Radio’s blue broadcast-wave icon, so on a desktop
+with more than one QuillVille app installed several of them looked
+identical. Every app in the family now has its own - the same rounded
+tile shape and the same gold accent throughout, but its own colour and
+its own picture each.</p>
 <p>While minimized to the tray the Studio keeps running - a long
 narration continues with the window tucked away. Right-click (or
 keyboard-invoke) the tray icon for:</p>
 <ul>
-<li><strong>Open Audio Studio…</strong> - restore the window and open
+<li><strong>Open QUILL Studio…</strong> - restore the window and open
 the wizard.</li>
 <li><strong>Resume: <your latest book></strong> - restore the window and
 open your most recent book in the Chapter Workbench.</li>
@@ -1227,6 +1246,9 @@ itself: it applies the update - unpacking the new portable files over
 your folder, or running the installer quietly - and relaunches, keeping
 every setting, voice, and saved listening position. There is nothing to
 unzip and no folder to swap by hand.</p>
+<p><strong>Help &gt; What’s New</strong> (Ctrl+Shift+F1) opens the
+Studio’s changelog in your browser, so you can read what changed in the
+version you have. Every Quill app has the same door on the same key.</p>
 <p>Help &gt; About shows your version with a build number, such as 2.2.0
 (build 2). The build number tells you which build of a version you have:
 when a fix comes out without a new version number, it is a newer build,
@@ -1263,7 +1285,7 @@ will be off in Safe Mode like everywhere else.</p>
 </thead>
 <tbody>
 <tr>
-<td>Open Audio Studio (the wizard)</td>
+<td>Open QUILL Studio (the wizard)</td>
 <td>Ctrl+N</td>
 </tr>
 <tr>
@@ -1277,6 +1299,10 @@ will be off in Safe Mode like everywhere else.</p>
 <tr>
 <td>Command Palette</td>
 <td>Ctrl+Shift+P</td>
+</tr>
+<tr>
+<td>What’s New (the changelog)</td>
+<td>Ctrl+Shift+F1</td>
 </tr>
 <tr>
 <td>Move focus to the status bar (and back out)</td>
@@ -1393,7 +1419,7 @@ happened, and – if you want an answer – an email address to reply to.
 What you expected and how to reproduce it are optional, and worth more
 than anything else when you can give them.</p>
 <p>Press Send and your <strong>own mail program opens with the whole
-message already written</strong>, addressed to support, with Quill Audio
+message already written</strong>, addressed to support, with QUILL
 Studio’s name and version and your Windows version filled in at the
 bottom. Nothing is sent until you send it there, so you can read it
 over, add anything, or change your mind.</p>

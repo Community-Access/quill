@@ -112,9 +112,9 @@ def test_imported_word_table_navigates_cell_by_cell(tmp_path: Path) -> None:
 
     assert grid is not None
     assert (grid.row_count, grid.col_count) == (3, 2)
-    assert table_nav.move(grid, caret, "next").announcement == "Row 2 of 3, column 2 of 2: 2"
-    assert table_nav.move(grid, caret, "down").announcement == "Row 3 of 3, column 1 of 2: Cols"
-    assert table_nav.move(grid, caret, "up").announcement == "Row 1 of 3, column 1 of 2: Name"
+    assert table_nav.move(grid, caret, "next").announcement == "Column 2, Value: 2"
+    assert table_nav.move(grid, caret, "down").announcement == "Row 3: Cols"
+    assert table_nav.move(grid, caret, "up").announcement == "Row 1: Name"
     assert table_nav.move(grid, caret, "table_end").announcement.endswith(": 2")
     # Prose either side of the table is outside it.
     assert table_nav.find_table_at(text, text.index("Intro")) is None
@@ -134,4 +134,4 @@ def test_imported_word_cell_containing_a_pipe_keeps_the_column_count(tmp_path: P
     assert grid.col_count == 3
     assert [cell.text for cell in grid.rows[0]] == ["Name", "Size | Units", "Notes"]
     moved = table_nav.move(grid, text.index("Alpha"), "next")
-    assert moved.announcement == "Row 2 of 2, column 2 of 3: 3"
+    assert moved.announcement == "Column 2, Size | Units: 3"

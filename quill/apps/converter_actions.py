@@ -41,6 +41,7 @@ from quill.core.audio.convert import (
 from quill.core.audio.effect_recipes import CUSTOM_RECIPE_ID, recipe_by_id, recipe_filters
 from quill.core.audio.formats import AUDIO_EXTENSIONS, format_label
 from quill.core.audio.presets import preset_by_id, preset_spec
+from quill.ui.about_notices import show_app_about
 
 _TITLE = "Quill Converter"
 
@@ -488,16 +489,18 @@ class ConverterActionsMixin:
         )
 
     def _show_about(self) -> None:
-        self._show_message_box(
+        show_app_about(
+            self,
             f"{_TITLE} {_version()}\n\n"
             "Convert audio and video between formats -- sound to sound, video to "
             "sound, and video to video -- with presets, effects you can preview, "
             "Join into One File and Split by Chapters. Converting happens on this "
             "computer; nothing is uploaded unless you choose Process with Auphonic "
             "and confirm.\n\n"
-            "Includes FFmpeg (LGPL/GPL), yt-dlp (Unlicense) and mutagen (GPL).\n\n"
+            "Includes FFmpeg (GPL-3.0), yt-dlp (Unlicense) and mutagen (GPL-2.0).\n\n"
             "Support: support@community-access.org",
-            f"About {_TITLE}",
+            app="converter",
+            app_name=_TITLE,
         )
 
     # -- single instance: a second launch hands over its files ---------------------

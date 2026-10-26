@@ -930,7 +930,7 @@ def lite_window(tmp_path, lite_settings):
         DocumentSectionCommandsMixin,
         DocumentHistoryMixin,
         # Navigate > Table, 2026-10-17: QUILL's cell moves over quill.core.table_nav.
-        DocumentTableNavMixin,
+        DocumentTableNavMixin,  # with Insert > Table (2026-10-25), its base
         DocumentTypingMixin,
         # The View menu and the Spelling menu, added 2026-09-10. Both are the
         # same shape as the ones already here -- a state change plus a sentence --

@@ -182,6 +182,20 @@ def _find_radio_paradise(query: str, *, safe_mode: bool) -> tuple[list[BrowseNod
     return [leaf(station) for station in rows], "searched Radio Paradise"
 
 
+def _find_one81(query: str, *, safe_mode: bool) -> tuple[list[BrowseNode], str]:
+    from quill.core.radio import one_eighty_one
+
+    rows = one_eighty_one.search_stations(query, safe_mode=safe_mode)
+    return [leaf(station) for station in rows], "searched 181.FM"
+
+
+def _find_lautfm(query: str, *, safe_mode: bool) -> tuple[list[BrowseNode], str]:
+    from quill.core.radio import laut_fm
+
+    rows = laut_fm.search_stations(query, safe_mode=safe_mode)
+    return [leaf(station) for station in rows], "searched laut.fm"
+
+
 def _find_tv(query: str, *, safe_mode: bool) -> tuple[list[BrowseNode], str]:
     from quill.core.radio import iptv
 
@@ -229,6 +243,8 @@ _PREFIX_ROUTES: tuple[tuple[str, Any], ...] = (
     ("shoutcast", _find_shoutcast),
     ("live365", _find_live365),
     ("radioparadise", _find_radio_paradise),
+    ("one81", _find_one81),
+    ("lautfm", _find_lautfm),
     ("tv", _find_tv),
     ("wx", _find_wx),
     ("audius", _find_free_music),

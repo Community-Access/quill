@@ -43,9 +43,8 @@ def open_tutorials(host: Any, slug: str = "") -> None:
 
 
 def show_about(host: Any, wx: Any, title: str, version: str) -> None:
-    """The About box, in the app shell's own message-box gate."""
-    host._show_message_box(
-        f"{title} {version}\n{ABOUT_BODY}",
-        f"About {title}",
-        wx.OK | wx.ICON_INFORMATION,
-    )
+    """The About box, with Licences and Notices, through the app shell's modal path."""
+    del wx  # kept in the signature for the shell's one-line caller
+    from quill.ui.about_notices import show_app_about
+
+    show_app_about(host, f"{title} {version}\n{ABOUT_BODY}", app="weather", app_name=title)

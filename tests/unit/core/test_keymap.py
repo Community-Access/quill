@@ -822,10 +822,10 @@ def test_authoring_chords_are_the_defaults() -> None:
     Ctrl+Alt+I to format.insert_markdown_tag, which is QUILL Lite's chord for it
     and was listed as such in bad.md 3.7 before either moved.
 
-    Kept, deliberately: format.insert_table stays on Ctrl+Alt+T, which is Trim
-    Trailing Spaces in QUILL Lite. An authorized chord for a verb that builds
-    structure outranks one that strips whitespace, so QUILL's trim took
-    Ctrl+Alt+R and that pair is the one documented divergence in bad.md 3.2.
+    Kept, deliberately: format.insert_table stays on Ctrl+Alt+T. An authorized
+    chord for a verb that builds structure outranks one that strips whitespace,
+    so QUILL's trim took Ctrl+Alt+R -- and since 2026-10-25, when QUILL Lite
+    gained Insert Table, QUILL Lite's trim is on Ctrl+Alt+R too (rule 2).
     """
     from quill.core.keymap import DEFAULT_KEYMAP
 

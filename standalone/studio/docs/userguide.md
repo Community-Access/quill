@@ -1,6 +1,6 @@
 # QUILL Studio User Guide
 
-Version 2.2.0
+Version 2.0.0
 
 ## Upcoming Preferences Search
 
@@ -10,9 +10,9 @@ to focus one. Control+F returns to search; Escape clears a search before closing
 Search navigates only: OK still saves, Cancel still cancels, and values are not
 indexed. Disabled settings stay disabled.
 
-(There is no Audio Studio 2.0 or 2.1: the Studio adopted the shared Quill family version number when it moved onto the shared runtime, so it went straight from 1.0.0 to 2.2.0. See the release notes for the full story.)
+(QUILL Studio 2.0.0 follows Audio Studio 1.0.0. The previously unpublished 2.2.0 build is renumbered for this release.)
 
-QUILL Studio is audiobook and audio production the way a screen reader user would design it: a small home window whose book list has focus the instant it opens, a wizard that asks one question at a time and announces every step, a chapter editor you drive entirely by ear, and spoken progress for every long run. It runs the exact same Audio Studio code that ships inside the QUILL editor and shares QUILL's data store, so a voice you configure here reads aloud in QUILL too, and nothing you set up is ever stranded.
+QUILL Studio is audiobook and audio production the way a screen reader user would design it: a small home window with a menu bar, a wizard that asks one question at a time and announces every step, a chapter editor you drive entirely by ear, and spoken progress for every long run. It runs the exact same Audio Studio code that ships inside the QUILL editor and shares QUILL's data store, so a voice you configure here reads aloud in QUILL too, and nothing you set up is ever stranded.
 
 Three journeys cover the whole workshop:
 
@@ -60,35 +60,46 @@ The Studio's launcher is now a genuine, tiny native program, and the bundled Pyt
 From a checkout of the repository:
 
 - `pip install -e ".[ui]"` then `python -m quill.apps.studio`, or
-- run `run-quill-audio-studio.bat`, which finds a Python environment for you (this repo's `.venv`, then a sibling QUILL checkout's `.venv`, then whatever `python` is on PATH).
+- run `run-quill-studio.bat`, which finds a Python environment for you (this repo's `.venv`, then a sibling QUILL checkout's `.venv`, then whatever `python` is on PATH).
 
-`run-quill-audio-studio-safe-mode.bat` launches with Safe Mode on (see "Safe Mode" below).
+`run-quill-studio-safe-mode.bat` launches with Safe Mode on (see "Safe Mode" below).
 
 ## The home window
 
-The window opens with keyboard focus on your books list. From top to bottom:
+The Studio opens as a plain window with a menu bar. Most work happens in modal
+surfaces (the Studio Wizard, the Chapter Workbench, and focused dialogs),
+which you launch from the menus. The home window stays intentionally quiet
+so your books are not front-and-center unless you choose to open one.
 
-- **Studio activity** (read-only text): what the Studio is doing right now - "Ready", or live progress during a run. The same text is mirrored in the status bar.
-- Three buttons, one per journey: **Narrate Documents...** (Alt+N), **Build From Recordings...** (Alt+R), **Edit a Book...** (Alt+E). Build From Recordings was Alt+B until 2026-10-17, but Alt+B is also the **Book Tools** menu, and when a button and a menu share a letter Windows presses the button, so the menu could not be opened with Alt+B. Now Alt+B always opens Book Tools and Alt+R presses Build From Recordings; for example, press Alt+R from the books list to start a new book from a folder of recordings. The menu row Studio > Build From Recordings... (Ctrl+Shift+B) does the same.
-- **Your books**: your audiobooks, organized as a tree (see below). Press **Enter** to open the selected book in the Chapter Workbench. A book whose file has been moved or renamed is marked "(missing)".
+From top to bottom:
+
+- **Studio activity** (read-only text): what the Studio is doing right now — "Ready", or live progress during a run.
+- **Status bar** (optional): an arrow-navigable summary you can reach with **F6**.
+
+Start points:
+
+- **Studio > Open Studio Wizard...** (Ctrl+N) to narrate documents, build from recordings, edit a book, or start a screenshot capture.
+- **Capture** menu for screenshots, inspector, and global hotkeys (AI is not required).
 
 ### The status bar
 
-The status bar reads "Ready - N books in your library" when idle. During a long run it carries per-file progress, and by default the Studio also speaks the 25, 50, and 75 percent milestones so you can follow an overnight narration from another window (turn this off in Preferences).
+The status bar reads "Ready - use the menu bar to begin" when idle. During a long run it carries per-file progress, and by default the Studio also speaks the 25, 50, and 75 percent milestones so you can follow an overnight narration from another window (turn this off in Preferences).
 
 You can read the bar rather than wait for it to speak. Press **F6** to move focus into it, then **Left** and **Right** to move between its cells:
 
 - **Activity** - what the Studio is doing right now.
 - **Progress** - a live narration or build run: the percentage, how many files are done, and the current step.
 - **Sleep timer** - the timer's state, when one is set.
-- **Your books** - how many books are in your library.
+- **Your books** - how many books are in your library (informational; the home window does not show a book list by default).
 - **Time** - the current time.
 
 Press **Enter** to act on the cell you are on, use the context menu (Application key, or Shift+F10) for what that cell offers, and press **Escape** or F6 again to leave the bar and return to the window. **View > Show Status Bar** hides or shows it, and the Studio remembers your choice.
 
 The Progress text is also written into the system-tray tooltip, so a long run is still reviewable when the window is minimized to the tray.
 
-### The library tree
+### The library window
+
+The home window does not show your books by default. Open **View > Library Window...** (Ctrl+Alt+Y) to browse your library in a dedicated window.
 
 The library fills in as you work: every book you open in the Chapter Workbench joins it, and you can shape it yourself with Favorites and folders. Books are grouped into four built-in collections and any folders you create:
 
@@ -97,11 +108,12 @@ The library fills in as you work: every book you open in the Chapter Workbench j
 - **Recently Played** - the books you have opened most recently.
 - **Inbox** - everything else.
 
-Expand and collapse the groups with Left and Right. Press **Enter** on a book to open it in the Chapter Workbench. The context menu (Application key, or Shift+F10) is keyboard-complete on both books and folders: **Open**, **Reveal in Folder**, **Favorite** (toggle), **Move to Folder**, **New Folder**, and **Remove**. **Reveal in Folder** opens your operating system's file manager (Windows File Explorer, or the macOS Finder) with the book file selected, so you can find it on disk. **Remove** takes the book out of your library but never touches the file on disk, and says so. The tree remembers which book you had selected when the library reloads.
+In the Library Window, expand and collapse the groups with Left and Right. Press **Enter** on a book to open it in the Chapter Workbench. The context menu (Application key, or Shift+F10) is keyboard-complete on both books and folders: **Open**, **Reveal in Folder**, **Favorite** (toggle), **Move to Folder**, **New Folder**, and **Remove**. **Reveal in Folder** opens your operating system's file manager (Windows File Explorer, or the macOS Finder) with the book file selected, so you can find it on disk. **Remove** takes the book out of your library but never touches the file on disk, and says so. The tree remembers which book you had selected when the library reloads.
 
 ## The Studio wizard
+## The Studio wizard
 
-**Studio > Open QUILL Studio...** (Ctrl+N) opens the wizard. Its first page asks the one question that matters - what would you like to make? - and the following steps adapt to your answer. The wizard remembers which journey you used last and pre-selects it.
+**Studio > Open Studio Wizard...** (Ctrl+N) opens the wizard. Its first page asks the one question that matters - what would you like to make? - and the following steps adapt to your answer. The wizard remembers which journey you used last and pre-selects it.
 
 Wizard mechanics, the same on every page:
 
@@ -272,7 +284,7 @@ Opens the Publish dialog for this book - save your chapter edits first. See "Pub
 
 ### The Speech Hub
 
-**Voices > Speech Hub (Voices and Engines)...** (Ctrl+Shift+H) is the one place to see and set everything: offline voices on one tab, cloud voices on another, and the speech-recognition (dictation/transcription) engines and models alongside. Pick an engine and voice, adjust rate, volume, or speed, preview, and **Set as Default**. Voices you configure here are shared with QUILL - and the hub's "export to audio" action opens the Audio Studio wizard, because in this app that is what export means.
+**Voices > Speech Hub (Voices and Engines)...** (Ctrl+Shift+H) is the one place to see and set everything: offline voices on one tab, cloud voices on another, and the speech-recognition (dictation/transcription) engines and models alongside. Pick an engine and voice, adjust rate, volume, or speed, preview, and **Set as Default**. Voices you configure here are shared with QUILL - and the hub's "export to audio" action opens the Studio Wizard, because in this app that is what export means.
 
 ### Pronunciation dictionaries
 
@@ -420,27 +432,27 @@ These preferences are stored in a small app-local file, so the shared settings Q
 
 ## Where the Studio's own sounds play
 
-Audio Studio makes short sounds of its own, such as the ones that mark a narration run starting and finishing. You choose where they play, and you can turn them off.
+The Studio makes short sounds of its own, such as the ones that mark a narration run starting and finishing. You choose where they play, and you can turn them off.
 
-- **Alt+Shift+M** turns Audio Studio's sounds off. Press it again and they come back, on the same sound card as before. You hear a short sound as they go off, and another where they now play when they come back on, and both are spoken too. **Studio > App Sounds** has a check mark that shows whether they are on.
+- **Alt+Shift+M** turns the Studio's sounds off. Press it again and they come back, on the same sound card as before. You hear a short sound as they go off, and another where they now play when they come back on, and both are spoken too. **Studio > App Sounds** has a check mark that shows whether they are on.
 - **App Sounds Play On...**, a button in the Preferences window, lets you pick where they play. Open **Studio > Preferences...** (Ctrl+,), press Tab until you reach the button, and press Space. It is a button rather than a menu row, so it has no key of its own. The choices are:
   - **System default**. This is where it starts. The sounds go where Windows sends sound.
-  - **None (no sounds)**. Audio Studio makes no sounds at all. Everything it tells you is still spoken.
+  - **None (no sounds)**. The Studio makes no sounds at all. Everything it tells you is still spoken.
   - **Any sound card or headset in the list.** The sounds get a device of their own.
 
 After you choose, one sound plays on the new device, so you know straight away where it went.
 
-If the device you chose is unplugged or asleep, you still hear every sound, on the system default, and Audio Studio tells you once. When the device comes back, the sounds go back to it by themselves.
+If the device you chose is unplugged or asleep, you still hear every sound, on the system default, and the Studio tells you once. When the device comes back, the sounds go back to it by themselves.
 
-This changes Audio Studio only. Your other QUILL apps keep their own choice, unless you have checked "Share these choices with my other Quill apps", which copies a change here to the others that share. Your screen reader is never moved.
+This changes the Studio only. Your other QUILL apps keep their own choice, unless you have checked "Share these choices with my other Quill apps", which copies a change here to the others that share. Your screen reader is never moved.
 
 ## The system tray
 
 QUILL Studio's icon is three white-and-gold waveform bars on a dark slate tile. If you have used an earlier build, this is new: the Studio used to share Quill Radio's blue broadcast-wave icon, so on a desktop with more than one QuillVille app installed several of them looked identical. Every app in the family now has its own - the same rounded tile shape and the same gold accent throughout, but its own colour and its own picture each.
 
-While minimized to the tray the Studio keeps running - a long narration continues with the window tucked away. Right-click (or keyboard-invoke) the tray icon for:
+While minimized to the tray the Studio keeps running - a long narration continues with the window tucked away. Use **Studio > Minimize to Tray** (Ctrl+Alt+T) to send the window there without closing it. Right-click (or keyboard-invoke) the tray icon for:
 
-- **Open QUILL Studio...** - restore the window and open the wizard.
+- **Open Studio Wizard...** - restore the window and open the wizard.
 - **Resume: <your latest book>** - restore the window and open your most recent book in the Chapter Workbench.
 
 Double-click the tray icon to bring the window back.
@@ -462,7 +474,7 @@ These settings are shared with QUILL rather than repeated in the Studio's own Pr
 
 **Help > Check for Updates...** compares your version with the newest Quill release, works out which download matches the flavor you run (the installer for an installed copy, the portable zip for a portable one), and fetches it with spoken progress. Then choose **Install and restart now** and the Studio does the rest itself: it applies the update - unpacking the new portable files over your folder, or running the installer quietly - and relaunches, keeping every setting, voice, and saved listening position. There is nothing to unzip and no folder to swap by hand.
 
-Help > About shows your version with a build number, such as 2.2.0 (build 2). The build number tells you which build of a version you have: when a fix comes out without a new version number, it is a newer build, and Check for Updates offers it.
+Help > About shows your version with a build number, such as 2.0.0 (build 2). The build number tells you which build of a version you have: when a fix comes out without a new version number, it is a newer build, and Check for Updates offers it.
 
 All the Quill apps are published from one place, and each one recognizes its own download, so an update to Quill Radio is never offered to the Studio and each app updates on its own schedule. The automatic startup check (on by default, throttled to once a day) is silent unless it actually finds something.
 
@@ -472,19 +484,21 @@ All the Quill apps are published from one place, and each one recognizes its own
 
 ## Quillins
 
-**Quillins** are QUILL's small, sandboxed, permission-gated add-ons. They run in QUILL, Quill Radio, and QUILL Cast today; **Audio Studio does not offer a Quillins menu yet.** The groundwork is in place - an add-on can declare that it contributes an extra step to the Studio's audio processing, such as a loudness pass at the mastering stage, and a sample add-on demonstrates exactly that - but the Studio does not load add-ons in this version. When it does, they will be off in Safe Mode like everywhere else.
+**Quillins** are QUILL's small, sandboxed, permission-gated add-ons. They run in QUILL, Quill Radio, and QUILL Cast today; **The Studio does not offer a Quillins menu yet.** The groundwork is in place - an add-on can declare that it contributes an extra step to the Studio's audio processing, such as a loudness pass at the mastering stage, and a sample add-on demonstrates exactly that - but the Studio does not load add-ons in this version. When it does, they will be off in Safe Mode like everywhere else.
 
 ## Keyboard reference
 
 | Action | Key |
 | --- | --- |
-| Open QUILL Studio (the wizard) | Ctrl+N |
+| Open Studio Wizard... | Ctrl+N |
+| Minimize to Tray | Ctrl+Alt+T |
+| Open Library Window | Ctrl+Alt+Y |
 | Open Book File | Ctrl+O |
 | Preferences | Ctrl+Comma |
 | Command Palette | Ctrl+Shift+P |
 | Move focus to the status bar (and back out) | F6 |
-| Open selected book (in Your books) | Enter |
-| Remove selected book from the list | Delete |
+| Open selected book (Library Window) | Enter |
+| Remove selected book from library (Library Window) | Delete |
 | Play selected chapter (Workbench list) | Enter |
 | Rename chapter (Workbench title field) | Enter |
 | Mute (player / shell) | Ctrl+M |
@@ -505,7 +519,7 @@ Every button and field in the wizard, the Workbench, and the dialogs also has an
 
 ## Safe Mode
 
-Set the environment variable `QUILL_SAFE_MODE=1` or pass `--safe-mode` (or use `run-quill-audio-studio-safe-mode.bat`). Safe Mode disables AI features, publishing, and component downloads; everything local - narration with installed engines, the Workbench, saving - keeps working. Use it to isolate a problem or to run on a machine where network features are unwelcome.
+Set the environment variable `QUILL_SAFE_MODE=1` or pass `--safe-mode` (or use `run-quill-studio-safe-mode.bat`). Safe Mode disables AI features, publishing, and component downloads; everything local - narration with installed engines, the Workbench, saving - keeps working. Use it to isolate a problem or to run on a machine where network features are unwelcome.
 
 ## Sharing data with QUILL
 
@@ -555,3 +569,119 @@ Two Help items are worth knowing before anything else goes wrong. **Help > View 
 - **A translated edition was skipped.** The cloud voice you chose for that language has no API key configured; the run notes the skip and continues rather than stopping.
 - **Closing the window warns about work in progress.** A narration or build run is still going. Choose No to keep the Studio open, or minimize to the tray and let it finish; the "When closing the window" preference sets a fixed answer.
 - **Windows SmartScreen blocks the installer.** The release is not code-signed; choose "More info" then "Run anyway".
+
+
+## Screenshots and the Screenshot Inspector (unreleased)
+
+The new Capture menu keeps screenshot work separate from your book library. It does not record sound or change your audio devices.
+
+Choose **Capture screen** to select a named visible window, one display, the full desktop, an active window after a delay, or a guided region. For the easiest first capture, choose the whole named window: no size settings are needed. Guided regions use familiar portions of a window or display; exact coordinates are optional advanced settings. Displays left of or above your primary display can have negative coordinates. Minimized windows must be restored first. Refresh windows and displays when the list is stale; a missing target remains unavailable rather than silently becoming a desktop screenshot.
+
+Choose an absolute save folder and a delay, then activate **Start capture**. For the active-window option, switch to the intended application during that delay. A selected named window is captured directly. **Cancel pending capture** cancels a capture that has not started. A capture already in progress may finish.
+
+**Screenshot active window now** and **Screenshot full desktop now** are immediate actions. **Repeat last selected target** uses the target, folder and delay you chose in Capture screen. It asks you to choose a target first when none has been selected this session.
+
+Screenshots are saved as uniquely named PNG files, with a JSON verification report and readable Markdown report. File decoding, dimensions and the file hash are objective checks. They do not prove that the intended content is visible or private. Protected content can still be blank. **Screenshot Inspector** opens the latest screenshot; **Open saved screenshot** opens a saved PNG for review.
+
+### Guided regions: no pixel calculations required
+
+Choose **Guided region** from Target. In **Region source**, choose the window or display containing the material. In **Capture portion**, start with **Whole source (recommended; keeps all visible context)**. Studio calculates the screen position and size.
+
+For a smaller area, choose **Top half**, **Bottom half**, **Left half**, **Right half**, or **Middle quarter**. These describe portions of the source rectangle, not recognized controls. For example, the top half may include a dialog heading while excluding its buttons. If you do not know which part contains your content, keep Whole source or capture the whole named window instead.
+
+Read **Capture plan and guidance** before Start capture. It explains the source, exclusions, possible clipping, and next review steps. Guidance is selectable text, and changed selections are announced. The content area scrolls while Start capture and Cancel remain outside it. Use Tab to visit labeled controls; native choice controls use arrow keys.
+
+A guided region captures an area of the desktop. Overlapping windows and notifications can appear in it. Direct named-window capture is the better choice when you need the whole application window. Keep a guided region's source still during the delay. If it moves, resizes, disappears or changes process, refresh and choose again; Studio will not silently switch sources.
+
+**Enter exact coordinates (advanced)** is optional. Enabling it starts with the current guided portion's values. Left and Top locate its upper-left corner; Width and Height measure its size in physical screen dots. A screen left of or above your primary display can have negative Left or Top. Studio rejects values beyond the desktop, but valid numbers alone cannot prove that text is readable or the intended dialog is complete.
+
+After capture, use local OCR to check expected text. If you approve AI sharing, choose the framing preset and ask “Is the whole dialog visible, including its buttons?”, “Is any text cut off?”, or “What should I change before sharing?” AI gives uncertain advice; no setting guarantees semantic correctness.
+
+### Screenshot commands and default in-app shortcuts
+
+These shortcuts operate inside Studio. System-wide screenshot keys are separate, opt-in assignments; the Capture menu displays the current in-app bindings.
+
+| Action | Default in-app shortcut |
+|---|---|
+| Capture screen: choose source and delay | Ctrl+Alt+Shift+S |
+| Open saved screenshot | Ctrl+Alt+Shift+O |
+| Screenshot Inspector | Ctrl+Alt+Shift+I |
+| Cancel pending capture | Ctrl+Alt+Shift+X |
+| Screenshot active window now | Ctrl+Alt+Shift+F5 |
+| Screenshot full desktop now | Ctrl+Alt+Shift+F6 |
+| Repeat last selected target | Ctrl+Alt+Shift+F4 |
+| Screenshot global hotkeys configuration | Ctrl+Alt+Shift+H |
+
+Immediate full-desktop capture includes every display. Repeat uses the last source/folder/delay selected in this session; there is no repeat recipe after a fresh launch until you select one. A previously approved automatic-AI setting also applies to screenshots triggered by global keys.
+
+### Global screenshot hotkeys
+
+Open **Capture > Screenshot global hotkeys**. Select active-window capture, full-desktop capture, repeat-last-target or cancellation, choose Assign and press your preferred combination, then Save. Clear removes a binding. These keys work while Studio is in the tray or another application has focus, provided Windows grants the registration. No global screenshot key is taken by default. An unavailable combination is reported so you can choose another. Safe Mode leaves them inactive. Test your chosen keys with your screen reader and other applications.
+
+### Local OCR and image-grounded AI chat
+
+The Inspector shows the exact image source, hash, file checks and a selectable conversation. **Read text locally** runs the existing offline OCR service. Confidence is reported only when the engine supplies it; OCR availability and recognition accuracy vary.
+
+Choose a **Prompt style**. Screenshot-specific presets cover orientation, controls, text/errors/tables, capture problems, possible sensitive information, alt text and charts. The shared image styles and your custom prompts are available too. **Editable prompt instructions** lets you add detail or replace the preset, and **Your question or additional instructions** accepts a separate question. **Manage prompts** adds, edits or removes reusable prompts in the shared library.
+
+**Configured AI providers.** Screenshot AI uses QUILL's shared AI connection settings, model selection, provider-specific credentials and vision transport: OpenAI, Google Gemini, Anthropic Claude, OpenRouter, Ollama (local or cloud), and compatible custom endpoints. Select the provider and an image-capable model through the shared AI setup. Studio does not require Ollama or maintain a separate provider configuration. Provider/model image support still applies; a text-only model cannot inspect screenshots. Changing the connection pauses previously approved automatic uploads.
+
+Choose **Ask AI** to approve sending the complete screenshot to the named provider, model and endpoint. Private information is not automatically redacted. A privacy-review prompt is a review of an image already sent to that provider, not a guarantee that sharing was safe. AI Off and Safe Mode block AI; local capture and verification continue to work.
+
+The reply appears in the same conversation. Ask follow-ups about that image without capturing again. The image bytes are checked against the original hash before each request. Editing the saved image causes inspection to fail rather than silently answering about a different artifact. You can keep typing while a reply is pending, but a second request waits until the first finishes.
+
+**Save report** exports objective evidence and clearly labeled unverified observations. **Export description** saves a text description and conversation, and **Copy image** copies the PNG to the clipboard. Closing the Inspector cancels unsent chat work; a request already sent may still finish. AI and OCR observations need review even when the file checks pass.
+
+### Optional automatic AI
+
+**Automatically inspect future captures with AI** is off by default. Enabling it asks for separate approval to send every future user-triggered Studio screenshot, including full-desktop captures, to the selected connection. **Use for automatic AI** saves the current prompt instructions for those requests.
+
+Changing the provider, model or endpoint pauses automatic analysis until you approve the new connection. AI Off and Safe Mode override this setting. Clearing the checkbox stops future and queued unsent automatic requests; it cannot recall a request already sent. Capturing remains an explicit user action. The result is available in Screenshot Inspector and the report.
+
+This screenshot milestone does not yet provide video recording, screen/audio mixing, scrolling screenshots, UIA-element selection or annotation/redaction editing. Those are later production steps. Release acceptance still requires JAWS, NVDA, Narrator, braille, mixed-DPI and installed/portable testing.
+
+### Worked example: an error dialog for a support request
+
+1. Open the application and error dialog you want to document. Avoid showing passwords, private messages or unrelated personal material.
+2. Open Capture screen and choose that named window. If a dialog has its own window entry, choose its title. Use Refresh windows and displays if it is missing; restore minimized windows first.
+3. Keep the whole window for the first attempt. Choose an absolute save folder and enough delay to return to the application, then Start capture.
+4. Open Screenshot Inspector. Review the source name and file evidence. Read text locally and check that the expected error code and message appear. Missing OCR text might mean recognition failed; it does not by itself prove that the capture is wrong.
+5. If you want AI help, choose the text/errors preset, add “Preserve the exact error code; mark uncertain characters,” and enter your question. Ask AI presents the configured destination before sending. Declining leaves the screenshot saved locally.
+6. Ask a follow-up such as “Are any buttons or message lines clipped?” The same image is used again. Capture a new image when the application changes; a follow-up does not inspect the live desktop.
+7. Save report and Export description. Copy image only when ready to paste it into the intended destination. Review the exported text and image before sharing. The evidence report labels AI/OCR observations as unverified.
+
+### Worked example: use your configured AI provider
+
+Use **AI > Set Up AI** and QUILL's shared connection controls to choose OpenAI, Google Gemini, Anthropic Claude, OpenRouter, Ollama or a compatible custom service. Configure the endpoint, credential and an image-capable model there. The Screenshot Inspector uses that active shared connection; it does not have a separate provider selector or separate key store. Switching providers in shared settings affects other QUILL features that use the same connection.
+
+Open a saved PNG or make a new screenshot. Choose a prompt, edit its instructions, type a question and activate Ask AI. Check the provider, effective model and endpoint in the consent message. Local OCR works independently of a cloud key. A provider being configured does not prove that every one of its models accepts images. Provider errors should be resolved through the shared connection/model settings, rather than by sending the image to another service without approval.
+
+### Customize a reusable prompt and keep the conversation grounded
+
+Choose a built-in style for a starting point. Add your purpose in Editable prompt instructions, for example: “I am writing a bug report. Separate the exact visible error text from your explanation. Describe positions as top/bottom/left/right; do not invent keyboard shortcuts.” Add a separate question such as “What information should I include in my report?”
+
+Edits in the prompt field apply to that request. Use Manage prompts to add or edit a reusable custom prompt in the shared image-prompt library. Choosing another style fills the editor with that style, so save reusable wording through Manage prompts before changing styles. Use for automatic AI explicitly saves the current instructions for future automatic requests; editing a manual question does not grant automatic-sharing consent.
+
+Follow-ups include earlier observations about the current image. A provider may misunderstand the text or layout. Ask it to identify uncertainties and verify important strings locally. Replacing or editing the PNG changes its hash; reopen it as a new review artifact instead of continuing under the old verification.
+
+### What the evidence proves
+
+The PNG is the saved screenshot. The same-named verification JSON is machine-readable; the verification Markdown is readable text. A description export contains file evidence and recorded observations. Full decode, dimensions and SHA-256 establish that the saved image is decodable and identify its bytes. They do not establish privacy, completeness, visual quality, accessibility or that the intended dialog is visible. “Uniform pixels” can indicate an empty-looking result; it cannot identify every protected or failed capture.
+
+AI and OCR findings are separate from objective checks. AI does not automatically fix, redact, annotate or publish an image. This milestone exports PNG; JPEG conversion, editable annotation layers and comprehensive evidence bundles are still pending.
+
+### Screenshot troubleshooting
+
+- **The window is not listed.** Restore it, then Refresh windows and displays. If it still cannot be captured, read the failure rather than choosing a broader source accidentally. Protected or GPU-rendered content can remain blank.
+- **The guided region moved or changed.** Keep the source still, refresh and choose it again. Repeat last selected target retains the prior recipe; it does not authorize capturing a newly positioned region silently.
+- **The plan says a region cannot be captured.** Choose Whole source or the whole named window. Advanced users can correct the bounds. A window partly beyond the desktop may be unsuitable as a desktop region.
+- **The image is clipped or contains an overlay.** Capture the whole named window, dismiss the unrelated overlay, or deliberately select a different source and capture again. A half-region is not a content-aware crop.
+- **OCR is unavailable or inaccurate.** Check the shared offline OCR support and try clearer/larger source text. Confidence is not supplied by every engine. Optional image-capable AI can help, but requires sharing approval and is not proof.
+- **AI fails.** Check AI Off, Safe Mode, the shared endpoint/key/model and whether the model accepts images. The PNG remains available even when AI fails. No provider is silently substituted.
+- **Automatic AI has paused.** The approved provider, model or endpoint may have changed. Review the new destination and explicitly approve it. Turning automatic mode off stops future/unsent work; it cannot recall a sent request.
+- **A global hotkey does nothing.** Confirm it was assigned and Windows reported registration success. Safe Mode leaves global keys inactive. Another application or screen reader may own the combination; choose and test another.
+
+### Completion status and next steps
+
+The full screenshot PRD is not complete. UIA control selection, content-aware regions, scrolling/sequence capture, comparison, named workspaces, keyboard crop/zoom, annotation/redaction and Capture and Dictate remain. Actual JAWS/NVDA/Narrator/braille usability, mixed-DPI hardware, live-provider privacy and installer/portable acceptance also remain. See the [requirement coverage audit](../../../docs/design/quill-studio-screenshot-coverage.md). Video demonstrations with optional sound are a separate later milestone.
+

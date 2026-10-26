@@ -18,6 +18,10 @@ Build 2:
 - The installer is per-user and records Weather's own version; the portable launcher stays offline and cannot register Windows startup or scheduled background checks.
 - Help now exposes Activity and Repeat Last Result, which were already available through the shared app shell.
 - Tray settings and Windows startup/background toggles now report failed changes and restore the menu's actual state.
+- **Help > What's New** (Ctrl+Shift+F1) opens the changelog in your browser, on the same key as every other QuillVille app.
+- **Help > Command Palette...** (Ctrl+Shift+P) and **Help > Product Requirements...** (Alt+Shift+F1) are on the Help menu.
+- **QUILL Transcribe on the QuillVille menu and the tray**, released on 1 November 2026.
+- The user guide teaches Ctrl+Alt+Shift+M for Start Weather Monitoring, no longer describes a Quillins menu, and marks Quill Radio's own commands as Radio's.
 
 ### Show and hide key off by default (2026-10-05)
 

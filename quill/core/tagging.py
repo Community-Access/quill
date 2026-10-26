@@ -506,7 +506,9 @@ def build_html_table(
         lines.append("  <thead>")
         lines.append("    <tr>")
         for index in range(1, column_count + 1):
-            lines.append(f"      <th>Column {index}</th>")
+            # scope="col": the header a screen reader announces for each cell
+            # below it, which is the reason to have a header row at all.
+            lines.append(f'      <th scope="col">Column {index}</th>')
         lines.append("    </tr>")
         lines.append("  </thead>")
     lines.append("  <tbody>")
