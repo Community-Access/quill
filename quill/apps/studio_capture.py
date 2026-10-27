@@ -83,7 +83,7 @@ class StudioCaptureMixin(StudioCaptureHotkeysMixin):
         from quill.ui.studio_capture_dialog import CaptureSetupDialog
 
         try:
-            targets = list_capture_targets()
+            targets = list_capture_targets(include_all_windows=False)
         except Exception as error:
             self._show_message_box(str(error), "Capture screen", wx.OK | wx.ICON_ERROR)
             return

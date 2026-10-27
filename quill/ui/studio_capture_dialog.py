@@ -59,13 +59,28 @@ class CaptureSetupDialog(CaptureOptionsMixin, wx.Dialog):
             "unavailable until you deliberately choose another target."
         )
         outer.Add(refresh, 0, wx.LEFT | wx.RIGHT, 10)
-        controls = wx.Button(panel, label="Choose a specific window &element...")
-        controls.SetHelpText(
+        self.all_windows = wx.CheckBox(panel, label="Show &all windows (advanced)")
+        set_accessible_name(self.all_windows, "Show all windows")
+        self.all_windows.SetHelpText(
+            "Include every visible window, including tool and helper windows. "
+            "Leave unchecked for a shorter list of top-level task windows (recommended)."
+        )
+        self.all_windows.Bind(wx.EVT_CHECKBOX, self._refresh_targets)
+        outer.Add(self.all_windows, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
+        self.properties = wx.Button(panel, label="Window &properties...")
+        self.properties.SetHelpText(
+            "Show advanced details about the selected named window, such as its process, "
+            "bounds, and internal identifiers."
+        )
+        self.properties.Bind(wx.EVT_BUTTON, self._show_window_properties)
+        outer.Add(self.properties, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
+        self.controls_button = wx.Button(panel, label="Choose a specific window &element...")
+        self.controls_button.SetHelpText(
             "Choose a named window in Target first, then find a real accessible "
             "part by its name or role, such as a button or document. No sizes are needed."
         )
-        controls.Bind(wx.EVT_BUTTON, self._choose_control)
-        outer.Add(controls, 0, wx.ALL, 10)
+        self.controls_button.Bind(wx.EVT_BUTTON, self._choose_control)
+        outer.Add(self.controls_button, 0, wx.ALL, 10)
         self.region_panel = wx.Panel(panel)
         region_layout = wx.BoxSizer(wx.VERTICAL)
         region_layout.Add(wx.StaticText(self.region_panel, label="Region so&urce"), 0, wx.TOP, 8)
@@ -171,7 +186,34 @@ class CaptureSetupDialog(CaptureOptionsMixin, wx.Dialog):
     def _update_region(self, _event=None):
         is_region = self.targets[self.target.GetSelection()].kind == "region"
         self.region_panel.Show(is_region)
+        self._sync_window_actions()
         self._update_guidance(_event)
+
+    def _sync_window_actions(self):
+        target = self.targets[self.target.GetSelection()]
+        self.properties.Enable(target.kind == "window")
+        self.controls_button.Enable(target.kind == "window")
+
+    def _show_window_properties(self, _event):
+        target = self.targets[self.target.GetSelection()]
+        if target.kind != "window":
+            self._announce("Select a named window in Target first.")
+            self.target.SetFocus()
+            return
+        details = _window_details_text(target)
+        _copy_to_clipboard(details)
+        message = (
+            "Window properties copied to the clipboard.\n\n"
+            + details
+            + "\n\nThis information is optional. It can help when reporting a capture issue."
+        )
+        dialog = wx.MessageDialog(
+            self,
+            message=message,
+            caption="Window properties",
+            style=wx.OK | wx.ICON_INFORMATION,
+        )
+        self.ShowModal(dialog)
 
     def _choose_control(self, event):
         target = self.targets[self.target.GetSelection()]
@@ -259,7 +301,8 @@ class CaptureSetupDialog(CaptureOptionsMixin, wx.Dialog):
                 message = (
                     f"Plan: {target.friendly_label}. No size settings needed. "
                     "Desktop and display capture can include unrelated windows and notifications. "
-                    "For one application, choose its named window."
+                    "For one application, choose its named window. "
+                    "To pick a specific window element, choose a named window target first."
                 )
         except ValueError as error:
             message = (
@@ -276,7 +319,7 @@ class CaptureSetupDialog(CaptureOptionsMixin, wx.Dialog):
 
         previous = self.targets[self.target.GetSelection()]
         try:
-            updated = list_capture_targets()
+            updated = list_capture_targets(include_all_windows=self.all_windows.GetValue())
         except Exception as error:
             self._announce(f"Could not refresh targets: {error}")
             return
@@ -331,3 +374,58 @@ class CaptureSetupDialog(CaptureOptionsMixin, wx.Dialog):
             field.SetFocus()
             return
         self.folder.SetFocus()
+
+
+def _window_details_text(target: CaptureTarget) -> str:
+    title = target.label
+    if title.lower().startswith("window:"):
+        title = title.split(":", 1)[1].strip()
+    left, top, right, bottom = target.bounds
+    width = right - left
+    height = bottom - top
+    handle_hex = hex(target.window_handle) if target.window_handle else "0x0"
+    class_name = ""
+    process_name = target.application or ""
+    executable = ""
+    try:
+        import win32gui
+    except Exception:
+        win32gui = None
+    if win32gui is not None and target.window_handle:
+        try:
+            class_name = win32gui.GetClassName(target.window_handle)
+        except Exception:
+            class_name = ""
+    try:
+        import psutil
+    except Exception:
+        psutil = None
+    if psutil is not None and target.process_id:
+        try:
+            process = psutil.Process(target.process_id)
+            process_name = process_name or process.name()
+            executable = process.exe() or ""
+        except Exception:
+            pass
+    lines = [
+        f"Title: {title}",
+        f"Application: {process_name or 'Unknown'}",
+        f"Process ID: {target.process_id or 'Unknown'}",
+        f"Window handle: {target.window_handle} ({handle_hex})",
+        f"Class name: {class_name or 'Unknown'}",
+        f"Bounds: left {left}, top {top}, width {width}, height {height}",
+    ]
+    if executable:
+        lines.append(f"Executable: {executable}")
+    return "\n".join(lines)
+
+
+def _copy_to_clipboard(text: str) -> None:
+    if not text:
+        return
+    data = wx.TextDataObject(text)
+    if wx.TheClipboard.Open():
+        try:
+            wx.TheClipboard.SetData(data)
+        finally:
+            wx.TheClipboard.Close()

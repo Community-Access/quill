@@ -849,6 +849,7 @@
   "quill/ui/sticky_notes_browser.py::StickyNotesBrowserDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/studio_capture_chat.py::ScreenshotChatDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/studio_capture_controls.py::ScreenshotControlDialog::subclass:wx.Dialog": "hardened_custom",
+  "quill/ui/studio_capture_dialog.py::CaptureSetupDialog._show_window_properties::wx.MessageDialog": "native",
   "quill/ui/studio_capture_dialog.py::CaptureSetupDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/studio_capture_editor.py::ScreenshotEditorDialog._path::wx.FileDialog": "native",
   "quill/ui/studio_capture_editor.py::ScreenshotEditorDialog::subclass:wx.Dialog": "hardened_custom",

@@ -100,8 +100,7 @@ def window_target(handle: int) -> CaptureTarget:
         raise ScreenCaptureError("The selected window has no capture area.")
     return CaptureTarget(
         "window",
-        f"Window: {title or 'Untitled'} ({application or 'application unknown'}); "
-        f"process {pid}; id {handle}",
+        f"Window: {title or 'Untitled'}",
         bounds,
         handle,
         pid,
@@ -109,8 +108,47 @@ def window_target(handle: int) -> CaptureTarget:
     )
 
 
-def list_capture_targets() -> list[CaptureTarget]:
-    """Snapshot selectable displays and named, visible, non-minimized windows."""
+def _is_user_window(handle: int) -> bool:
+    """Return True when the handle resembles an Alt+Tab/task window.
+
+    Studio's capture dialog should meet users where they are: start with the
+    same kinds of windows they can already switch to with Alt+Tab. Power users
+    can opt into the full EnumWindows inventory.
+    """
+
+    import win32con
+    import win32gui
+
+    try:
+        ex_style = win32gui.GetWindowLong(handle, win32con.GWL_EXSTYLE)
+    except win32gui.error:
+        return False
+
+    if ex_style & win32con.WS_EX_TOOLWINDOW:
+        return False
+    owner = win32gui.GetWindow(handle, win32con.GW_OWNER)
+    if owner and not (ex_style & win32con.WS_EX_APPWINDOW):
+        return False
+
+    try:
+        dwmapi = ctypes.windll.dwmapi
+    except AttributeError:
+        return True
+    cloaked = ctypes.c_uint(0)
+    size = ctypes.sizeof(cloaked)
+    # DWMWA_CLOAKED = 14
+    if dwmapi.DwmGetWindowAttribute(handle, 14, ctypes.byref(cloaked), size) == 0:
+        return cloaked.value == 0
+    return True
+
+
+def list_capture_targets(*, include_all_windows: bool = False) -> list[CaptureTarget]:
+    """Snapshot selectable displays and visible, named windows.
+
+    By default the list is filtered to task windows (roughly what Alt+Tab shows)
+    so the window picker is short and readable. Callers may request every
+    visible window handle by setting ``include_all_windows``.
+    """
     with physical_pixels():
         import win32gui
 
@@ -118,7 +156,12 @@ def list_capture_targets() -> list[CaptureTarget]:
         windows = []
 
         def collect(handle, _context):
-            if win32gui.IsWindowVisible(handle) and win32gui.GetWindowText(handle).strip():
+            if not win32gui.IsWindowVisible(handle):
+                return
+            if not win32gui.GetWindowText(handle).strip():
+                return
+            if not include_all_windows and not _is_user_window(handle):
+                return
                 try:
                     windows.append(window_target(handle))
                 except ScreenCaptureError:

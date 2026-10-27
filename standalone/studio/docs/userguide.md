@@ -575,7 +575,11 @@ Two Help items are worth knowing before anything else goes wrong. **Help > View 
 
 The new Capture menu keeps screenshot work separate from your book library. It does not record sound or change your audio devices.
 
-Choose **Capture screen** to select a named visible window, one display, the full desktop, an active window after a delay, or a guided region. For the easiest first capture, choose the whole named window: no size settings are needed. Guided regions use familiar portions of a window or display; exact coordinates are optional advanced settings. Displays left of or above your primary display can have negative coordinates. Minimized windows must be restored first. Refresh windows and displays when the list is stale; a missing target remains unavailable rather than silently becoming a desktop screenshot.
+Choose **Capture screen** to select a named visible window, one display, the full desktop, an active window after a delay, or a guided region. For the easiest first capture, choose the whole named window: no size settings are needed. Guided regions use familiar portions of a window or display; exact coordinates are optional advanced settings. Displays left of or above your primary display can have negative coordinates. Minimized windows must be restored first.
+
+By default, the window list aims to stay short by listing top-level task windows (similar to what Alt+Tab shows). Use **Show all windows (advanced)** when you need tool windows or helper dialogs that are not normally listed. If you need more than a window title to decide, use **Window properties...** for the selected window.
+
+Refresh windows and displays when the list is stale; a missing target remains unavailable rather than silently becoming a desktop screenshot.
 
 Choose an absolute save folder and a delay, then activate **Start capture**. For the active-window option, switch to the intended application during that delay. A selected named window is captured directly. **Cancel pending capture** cancels a capture that has not started. A capture already in progress may finish.
 
