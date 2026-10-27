@@ -213,7 +213,10 @@ class CaptureSetupDialog(CaptureOptionsMixin, wx.Dialog):
             caption="Window properties",
             style=wx.OK | wx.ICON_INFORMATION,
         )
-        self.ShowModal(dialog)
+        try:
+            dialog.ShowModal()
+        finally:
+            dialog.Destroy()
 
     def _choose_control(self, event):
         target = self.targets[self.target.GetSelection()]
