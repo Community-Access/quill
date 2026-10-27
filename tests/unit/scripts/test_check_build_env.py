@@ -73,7 +73,8 @@ def test_a_satisfied_environment_reports_nothing(monkeypatch: pytest.MonkeyPatch
     requirements = _expand("runtime", optional, set())
     satisfying = {}
     for requirement in requirements:
-        pinned = [s for s in requirement.specifier if s.operator in ("==", ">=")]
+        # ~= too: the pywinrt family is pinned to the 3.2 line (pyproject).
+        pinned = [s for s in requirement.specifier if s.operator in ("==", ">=", "~=")]
         version = pinned[0].version if pinned else "99.0.0"
         satisfying[requirement.name.lower().replace("_", "-")] = version
     monkeypatch.setattr("scripts.check_build_env._installed", lambda python: satisfying)

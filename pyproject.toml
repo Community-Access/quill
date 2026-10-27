@@ -220,12 +220,16 @@ elevenlabs = ["elevenlabs>=2.69.0,<3"]
 # quill/platform/windows/windows_ocr.py). Only the directly-imported namespaces
 # plus winrt-runtime are listed; pywinrt pulls the rest (Foundation,
 # Storage.Streams, ...) transitively.
+# Pinned to the 3.2 line (~=3.2.1, 2026-10-27): pywinrt 4.x (epoch 4!10.0.x)
+# arrived and no longer pulls Foundation and Foundation.Collections in, so a
+# fresh resolve broke QUILL Lite's portable inventory. Moving to 4.x is its
+# own change, tested against the OCR and media engines.
 ocr = [
-    "winrt-runtime>=3.2.1; sys_platform == 'win32'",
-    "winrt-Windows.Media.Ocr>=3.2.1; sys_platform == 'win32'",
-    "winrt-Windows.Graphics.Imaging>=3.2.1; sys_platform == 'win32'",
-    "winrt-Windows.Globalization>=3.2.1; sys_platform == 'win32'",
-    "winrt-Windows.Storage>=3.2.1; sys_platform == 'win32'",
+    "winrt-runtime~=3.2.1; sys_platform == 'win32'",
+    "winrt-Windows.Media.Ocr~=3.2.1; sys_platform == 'win32'",
+    "winrt-Windows.Graphics.Imaging~=3.2.1; sys_platform == 'win32'",
+    "winrt-Windows.Globalization~=3.2.1; sys_platform == 'win32'",
+    "winrt-Windows.Storage~=3.2.1; sys_platform == 'win32'",
     "winrt-Windows.Storage.Streams~=3.2.1; sys_platform == 'win32'",
 ]
 # The modern Windows Media engine (quill/ui/audio/winrt_engine.py, 2026-09-29):
@@ -234,18 +238,18 @@ ocr = [
 # namespace the engine imports is listed, because pywinrt resolves them lazily
 # and PyInstaller only freezes what an import statement names.
 windows-media = [
-    "winrt-runtime>=3.2.1; sys_platform == 'win32'",
-    "winrt-Windows.Media.Playback>=3.2.1; sys_platform == 'win32'",
-    "winrt-Windows.Media.Core>=3.2.1; sys_platform == 'win32'",
-    "winrt-Windows.Media.Devices>=3.2.1; sys_platform == 'win32'",
+    "winrt-runtime~=3.2.1; sys_platform == 'win32'",
+    "winrt-Windows.Media.Playback~=3.2.1; sys_platform == 'win32'",
+    "winrt-Windows.Media.Core~=3.2.1; sys_platform == 'win32'",
+    "winrt-Windows.Media.Devices~=3.2.1; sys_platform == 'win32'",
     # Windows.Media itself, for SystemMediaTransportControls: the "now
     # playing" card on the volume flyout and the lock screen, and the
     # hardware media keys (and a Bluetooth headset's button) that come with
     # it. quill/ui/audio/now_playing.py.
-    "winrt-Windows.Media>=3.2.1; sys_platform == 'win32'",
-    "winrt-Windows.Devices.Enumeration>=3.2.1; sys_platform == 'win32'",
-    "winrt-Windows.Foundation>=3.2.1; sys_platform == 'win32'",
-    "winrt-Windows.Foundation.Collections>=3.2.1; sys_platform == 'win32'",
+    "winrt-Windows.Media~=3.2.1; sys_platform == 'win32'",
+    "winrt-Windows.Devices.Enumeration~=3.2.1; sys_platform == 'win32'",
+    "winrt-Windows.Foundation~=3.2.1; sys_platform == 'win32'",
+    "winrt-Windows.Foundation.Collections~=3.2.1; sys_platform == 'win32'",
 ]
 # Kokoro neural TTS (offline, no GPU/torch required). kokoro-onnx runs the Kokoro
 # voice model through onnxruntime (CPU). Voice model files (~114 MB) are downloaded
