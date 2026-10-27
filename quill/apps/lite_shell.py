@@ -56,6 +56,7 @@ from typing import Any
 
 import wx
 
+from quill.apps.lite_shell_menu import ShellMenuMixin
 from quill.core.lite import APP_NAME
 
 logger = logging.getLogger(__name__)
@@ -67,8 +68,12 @@ __all__ = ["QuillLiteShell"]
 MAX_NUMBERED = 9
 
 
-class QuillLiteShell(wx.MDIParentFrame):
-    """The one top-level window. Documents live inside it, numbered."""
+class QuillLiteShell(ShellMenuMixin, wx.MDIParentFrame):
+    """The one top-level window. Documents live inside it, numbered.
+
+    Its own menu bar -- the one shown with every document closed -- is
+    :class:`~quill.apps.lite_shell_menu.ShellMenuMixin`'s.
+    """
 
     def __init__(self, app: Any, size: tuple[int, int]) -> None:
         super().__init__(None, title=APP_NAME, size=size)
@@ -248,29 +253,6 @@ class QuillLiteShell(wx.MDIParentFrame):
     def _on_menu_close(self, event: wx.MenuEvent) -> None:
         self._menu_open = False
         event.Skip()
-
-    def _build_placeholder_menu(self) -> None:
-        """The bar shown when no document is open.
-
-        Two items, because there are only two things that can be done with no
-        document. An MDI parent with no menu bar at all reads to a screen reader
-        as a window with nothing in it, which is worse than a short menu.
-        """
-        menu_bar = wx.MenuBar()
-        file_menu = wx.Menu()
-        new_item = file_menu.Append(wx.ID_ANY, "&New\tCtrl+N")
-        open_item = file_menu.Append(wx.ID_ANY, "&Open...\tCtrl+O")
-        file_menu.AppendSeparator()
-        exit_item = file_menu.Append(wx.ID_ANY, "E&xit QuillLite\tCtrl+Q")
-        menu_bar.Append(file_menu, "&File")
-        self.SetMenuBar(menu_bar)
-        self.Bind(
-            wx.EVT_MENU,
-            lambda _e: self.app.new_window(self.app.settings.default_mode),
-            new_item,
-        )
-        self.Bind(wx.EVT_MENU, lambda _e: self.app.open_from_dialog(self), open_item)
-        self.Bind(wx.EVT_MENU, lambda _e: self.app.exit_all(), exit_item)
 
     def _on_close(self, event: wx.CloseEvent) -> None:
         """Closing the shell closes everything, and asks about each document.

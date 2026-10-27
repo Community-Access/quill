@@ -239,6 +239,9 @@ class QuillInkwellFrame(
         from quill.ui.support_menu import append_get_help_item
 
         append_get_help_item(self, help_menu, wx, source_app=_TITLE, app_version=_VERSION)
+        from quill.ui.whats_new import append_whats_new_item
+
+        append_whats_new_item(self, help_menu, "inkwell", _TITLE)  # the changelog
         help_menu.Append(about_id, "&About Quill Inkwell\tCtrl+Alt+I")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._show_about(), id=about_id)
         menu_bar.Append(help_menu, "&Help")
@@ -530,13 +533,16 @@ class QuillInkwellFrame(
     # -- lifecycle ---------------------------------------------------------------
 
     def _show_about(self) -> None:
-        self._show_message_box(
+        from quill.ui.about_notices import show_app_about
+
+        show_app_about(
+            self,
             f"{_TITLE} {describe_version(_VERSION, build=_BUILD)}\n\n"
             "Abbreviation expansion in every application, sharing one library "
             "with QUILL.\n\nFree, and part of the QuillVille family."
             "\n\nSupport: support@community-access.org",
-            f"About {_TITLE}",
-            wx.ICON_INFORMATION | wx.OK,
+            app="inkwell",
+            app_name=_TITLE,
         )
 
     def _start_ipc_poll(self) -> None:

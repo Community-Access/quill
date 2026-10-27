@@ -164,6 +164,8 @@ COMMAND_AREA: dict[str, str] = {
     "cmd_insert_html_tag": "markup",
     "cmd_set_language": "markup",
     "cmd_insert_emoji": "",
+    # A table in every kind of document: pipe rows, or <table> in HTML.
+    "cmd_insert_table": "",
     # Both caret cues are always present. They are the app's answer to something
     # the screen reader cannot do, and each already has its own toggle one
     # keystroke away -- putting them behind a second switch in Customize

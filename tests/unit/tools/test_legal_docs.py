@@ -41,10 +41,38 @@ def test_legal_notices_doc_exists() -> None:
     assert "QUILL for All" in text
 
 
-def test_trademark_notices_doc_exists() -> None:
-    text = _read("docs/legal/trademark-notices.md")
-    assert "QUILL for All" in text
-    assert "Community Access" in text
+def test_trademarks_doc_names_every_family_product() -> None:
+    """trademark-notices.md was merged into TRADEMARKS.md on 2026-10-26."""
+    assert not (ROOT / "docs/legal/trademark-notices.md").exists()
+    text = _read("docs/legal/TRADEMARKS.md")
+    for name in (
+        "QUILL for All",
+        "QUILL Lite",
+        "QUILL Cast",
+        "QUILL Studio",
+        "QUILL Transcribe",
+        "QUILL Social",
+        "Quill Radio",
+        "Quill Weather",
+        "Quill Inkwell",
+        "Quill Converter",
+        "Quill Media Player",
+        "QuillBeacon",
+    ):
+        assert f"**{name}**" in text, name
+
+
+def test_legal_index_lists_every_legal_document() -> None:
+    text = _read("docs/legal/legal-index.md")
+    for rel in (
+        "legal-notices.md",
+        "TRADEMARKS.md",
+        "PRIVACY.md",
+        "RESPONSIBLE_AI_USE.md",
+        "THIRD_PARTY_NOTICES.md",
+    ):
+        assert f"]({rel})" in text, rel
+        assert (ROOT / "docs/legal" / rel).is_file(), rel
 
 
 def test_readme_introduces_quill_for_all() -> None:
@@ -73,7 +101,6 @@ def test_legal_docs_do_not_claim_trademark_registration() -> None:
         "docs/legal/TRADEMARKS.md",
         "NOTICE",
         "docs/legal/legal-notices.md",
-        "docs/legal/trademark-notices.md",
     ):
         text = _read(rel).lower()
         # We do not assert any specific trademark registration status.

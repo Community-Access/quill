@@ -129,6 +129,9 @@ saved items, and **Summarize Note**. These work on your computer, with no AI
 service and no internet. They only run when you ask, and never change your
 library on their own.
 
+**Help > What's New** (Ctrl+Shift+F1) opens the changelog in your browser, on
+the same key as every other QuillVille app.
+
 ### Sync between your own computers
 
 Sync is off until you turn it on. Open **Sync > Sync Settings...** to choose

@@ -25,7 +25,10 @@ import re
 from dataclasses import dataclass
 
 #: A row of only pipes, dashes, colons and spaces -- the header/body separator.
-_SEPARATOR = re.compile(r"^\s*\|?[\s:\-|]+\|?\s*$")
+#: At least one dash: a row of empty cells ("|  |  |") is pipes and spaces too,
+#: and until 2026-10-25 it was skipped as a separator, so every blank row of a
+#: new table (or of a Word table with an empty row) was missing from the grid.
+_SEPARATOR = re.compile(r"^\s*\|?(?=.*-)[\s:\-|]+\|?\s*$")
 
 
 @dataclass(frozen=True, slots=True)
@@ -47,6 +50,12 @@ class TableGrid:
     rows: tuple[tuple[Cell, ...], ...]
     span_start: int
     span_end: int
+    #: The first row is a header row: a ``| --- |`` separator stands under it.
+    header: bool = False
+    #: A real (RichEdit) table read from the rich surface's aligned text
+    #: (:mod:`quill.core.native_tables`), rather than rows of pipes. Moving is
+    #: the same; changing it goes through the rich surface, not the text.
+    native: bool = False
 
     @property
     def row_count(self) -> int:
@@ -98,6 +107,22 @@ def _is_table_row(line: str) -> bool:
     return bool(_bar_positions(line)) and not _looks_blank(line)
 
 
+def is_table_row(line: str) -> bool:
+    """Whether *line* is a pipe row -- the same test navigation uses, shared with
+    the RTF table conversion (:mod:`quill.io.rtf_tables`) so the two agree."""
+    return _is_table_row(line)
+
+
+def is_separator_row(line: str) -> bool:
+    """Whether *line* is the ``| --- | --- |`` row under a header."""
+    return bool(_SEPARATOR.match(line))
+
+
+def split_row(line: str) -> list[str]:
+    """The cell texts of one pipe row, escapes undone (``"| a | b |"`` -> a, b)."""
+    return [text for text, _offset in _split_cells(line, 0)]
+
+
 def _looks_blank(line: str) -> bool:
     return not line.strip()
 
@@ -138,6 +163,12 @@ def find_table_at(text: str, offset: int) -> TableGrid | None:
     """
     if offset < 0 or offset > len(text):
         return None
+    if "￹" in text:  # a rich document with a real table: read that first
+        from quill.core.native_tables import find_native_table_at
+
+        native = find_native_table_at(text, offset)
+        if native is not None:
+            return native
     line_bounds: list[tuple[int, int, str]] = []
     start = 0
     for line in text.splitlines(keepends=True):
@@ -173,7 +204,8 @@ def find_table_at(text: str, offset: int) -> TableGrid | None:
         rows.append(cells)
     if not rows:
         return None
-    return TableGrid(tuple(rows), line_bounds[top][0], line_bounds[bottom][1])
+    header = bottom > top and bool(_SEPARATOR.match(line_bounds[top + 1][2]))
+    return TableGrid(tuple(rows), line_bounds[top][0], line_bounds[bottom][1], header)
 
 
 def locate_cell(grid: TableGrid, offset: int) -> tuple[int, int]:
@@ -225,9 +257,37 @@ def is_last_cell(grid: TableGrid, row: int, col: int) -> bool:
     return row == last_row and col == len(grid.rows[last_row]) - 1
 
 
-def _say_cell(grid: TableGrid, cell: Cell) -> str:
+def column_header(grid: TableGrid, col: int) -> str:
+    """The header row's text for *col*, or "" (no header row, or an empty one)."""
+    if not grid.header:
+        return ""
+    cell = grid.cell(0, col)
+    return cell.text if cell is not None else ""
+
+
+def _say_cell(grid: TableGrid, cell: Cell, *, from_row: int, from_col: int) -> str:
+    """What changed, then what is in the cell -- and nothing already known.
+
+    Along a row the row has not changed, so only the column is said: "Column 3,
+    Role: Lead". Down a column, only the row: "Row 4: Tester". Both change on a
+    wrap or a jump: "Row 3, column 1, Name: Bo". The totals are not repeated --
+    entering the table said its size -- and a new column in a table with a header
+    row says its header, the way a screen reader does in Word (not on the header
+    row itself, whose cells *are* the headers).
+    """
+    parts: list[str] = []
+    if cell.row != from_row:
+        parts.append(f"row {cell.row + 1}")
+    if cell.col != from_col:
+        parts.append(f"column {cell.col + 1}")
+        header = column_header(grid, cell.col) if cell.row > 0 else ""
+        if header:
+            parts.append(header)
+    where = ", ".join(parts)
     value = cell.text or "blank"
-    return f"{describe_position(grid, cell.row, cell.col)}: {value}"
+    if not where:
+        return value
+    return f"{where[0].upper()}{where[1:]}: {value}"
 
 
 def move(grid: TableGrid, offset: int, action: str) -> Move:
@@ -248,7 +308,7 @@ def move(grid: TableGrid, offset: int, action: str) -> Move:
             if is_last_cell(grid, row, col):
                 edge = f"{edge}, end of table"
             return Move(None, edge)
-        return Move(target.offset, _say_cell(grid, target))
+        return Move(target.offset, _say_cell(grid, target, from_row=row, from_col=col))
     if action == "row_start":
         target = grid.cell(row, 0)
     elif action == "row_end":
@@ -262,4 +322,142 @@ def move(grid: TableGrid, offset: int, action: str) -> Move:
         return Move(None, "")
     if target is None:
         return Move(None, "No more cells")
-    return Move(target.offset, _say_cell(grid, target))
+    return Move(target.offset, _say_cell(grid, target, from_row=row, from_col=col))
+
+
+@dataclass(frozen=True, slots=True)
+class TabMove:
+    """Where Tab or Shift+Tab takes the caret inside a table.
+
+    ``insert`` is ``(position, text)`` when Tab in the last cell adds a row: the
+    caller inserts *text* at *position* first, then puts the caret at ``offset``
+    (which already counts the inserted text).
+    """
+
+    offset: int | None
+    announcement: str
+    insert: tuple[int, str] | None = None
+    #: A real table's last cell: the caller adds the row through the rich
+    #: surface (a real table's rows are not text to insert), then lands in it.
+    add_row: bool = False
+
+
+def blank_row(columns: int) -> str:
+    """An empty pipe row of *columns* cells, in the shape Insert Table writes."""
+    return "| " + " | ".join("" for _ in range(max(1, columns))) + " |"
+
+
+def tab_move(text: str, offset: int, *, backwards: bool = False) -> TabMove | None:
+    """Tab and Shift+Tab in a table, or ``None`` outside one (Tab means Tab).
+
+    Tab goes to the next cell, on to the first cell of the next row, and in the
+    very last cell adds a row and goes to its first cell -- what Tab does in a
+    Word table. Shift+Tab goes back the same way and stops at the first cell.
+    """
+    grid = find_table_at(text, offset)
+    if grid is None:
+        return None
+    row, col = locate_cell(grid, offset)
+    if backwards:
+        target = grid.cell(row, col - 1)
+        if target is None and row > 0:
+            target = grid.cell(row - 1, len(grid.rows[row - 1]) - 1)
+        if target is None:
+            return TabMove(None, "No more cells, start of table")
+        return TabMove(target.offset, _say_cell(grid, target, from_row=row, from_col=col))
+    target = grid.cell(row, col + 1)
+    if target is None and row + 1 < grid.row_count:
+        target = grid.cell(row + 1, 0)
+    if target is not None:
+        return TabMove(target.offset, _say_cell(grid, target, from_row=row, from_col=col))
+    # The last cell: add a row under the table, and go to its first cell.
+    count = grid.row_count + 1
+    if grid.native:
+        return TabMove(None, f"Added row {count}, column 1", add_row=True)
+    last_line_end = grid.span_end
+    if text[last_line_end - 1 : last_line_end] == "\n":
+        last_line_end -= 1
+    new_row = blank_row(grid.col_count)
+    said = f"Added row {count}, column 1"
+    return TabMove(last_line_end + 3, said, (last_line_end, "\n" + new_row))
+
+
+#: The four arrow keys :func:`arrow_move` answers, by name.
+ARROWS = ("up", "down", "left", "right")
+
+
+def arrow_move(text: str, offset: int, key: str) -> TabMove | None:
+    """A plain arrow key in or into a table, or ``None`` to leave it to the editor.
+
+    The editor's own arrows read a table badly: Up and Down land somewhere in
+    the next row and the screen reader reads the whole row, every cell, as one
+    line; Left and Right cross from one cell to the next in silence. So inside
+    a table the arrows move by cell and the app says the cell -- the same words
+    as the table keys (:func:`_say_cell`), only what changed:
+
+    * Up and Down go to the cell above and below, in the same column. Past the
+      first or last row they are the editor's again, and leave the table.
+    * Left at the start of a cell goes to the end of the cell before it (the
+      row before's last cell, at a row's start); Right at the end of a cell goes
+      to the start of the next one. Inside a cell's text they are the editor's,
+      so a word can still be read letter by letter.
+    * Arriving -- Down from the line above, Up from the line below -- lands in
+      the first cell of the row arrived at, and says the table's shape once:
+      "Table, 3 rows, 2 columns. Name".
+
+    ``offset`` of the result is where the caret goes; ``None`` there never
+    happens (an edge is the editor's), so the caller only has to move and say.
+    """
+    if key not in ARROWS:
+        return None
+    grid = find_table_at(text, offset)
+    if grid is None:
+        return _arrive(text, offset, key)
+    row, col = locate_cell(grid, offset)
+    here = grid.rows[row][col]
+    target: Cell | None = None
+    land_at_end = False
+    if key in ("up", "down"):
+        new_row = row + (1 if key == "down" else -1)
+        if 0 <= new_row < grid.row_count and grid.rows[new_row]:
+            target = grid.cell(new_row, min(col, len(grid.rows[new_row]) - 1))
+    elif key == "left" and offset <= here.offset:
+        target = grid.cell(row, col - 1)
+        if target is None and row > 0:
+            target = grid.cell(row - 1, len(grid.rows[row - 1]) - 1)
+        land_at_end = True
+    elif key == "right" and offset >= here.offset + len(here.text):
+        target = grid.cell(row, col + 1)
+        if target is None and row + 1 < grid.row_count:
+            target = grid.cell(row + 1, 0)
+    if target is None:
+        return None
+    landing = target.offset + (len(target.text) if land_at_end else 0)
+    return TabMove(landing, _say_cell(grid, target, from_row=row, from_col=col))
+
+
+def _arrive(text: str, offset: int, key: str) -> TabMove | None:
+    """Down onto a table's first row, or Up onto its last, from just outside it."""
+    if key == "down":
+        line_end = text.find("\n", offset)
+        if line_end < 0:
+            return None
+        probe = line_end + 1
+    elif key == "up":
+        line_start = text.rfind("\n", 0, offset)
+        if line_start <= 0:
+            return None
+        probe = line_start - 1
+    else:
+        return None
+    if probe >= len(text) and key == "down":
+        return None
+    grid = find_table_at(text, probe)
+    if grid is None or not grid.rows:
+        return None
+    row = grid.rows[0] if key == "down" else grid.rows[-1]
+    if not row:
+        return None
+    cell = row[0]
+    shape = f"Table, {grid.row_count} rows, {grid.col_count} columns"
+    return TabMove(cell.offset, f"{shape}. {cell.text or 'blank'}")

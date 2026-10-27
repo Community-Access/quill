@@ -227,7 +227,8 @@ In scope for 1.0.0:
 - **Family.** The shared QuillVille menu lists the released siblings, and the
   siblings list Quill Converter.
 - **Help.** The family Help menu, on Quill Radio's and QUILL Lite's keys: F1
-  help for the window and control, User Guide, Release Notes, Changelog,
+  help for the window and control, User Guide, Release Notes, What's New (the
+  changelog),
   Product Requirements, Keyboard Shortcuts (a read-only list of every key), Get
   Help from Support, Get FFmpeg (repair), Check for Updates, and About. Find a
   Setting or Command (Ctrl+Alt+Shift+S) searches every menu row and runs the

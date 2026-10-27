@@ -515,6 +515,24 @@ letter does not jump to it there.</p>
 </tr>
 </tbody>
 </table>
+<p><strong>Slider Keys: which way the arrows move a slider.</strong> On
+the position and volume sliders Right is always more and Left less. Up
+and Down, Page Up and Page Down, and Home and End follow one choice made
+for every Quill app at once: open <strong>File &gt;
+Preferences…</strong> (<strong>Ctrl+,</strong>) and choose the
+<strong>Slider Keys…</strong> button.</p>
+<ul>
+<li><strong>Up is more</strong>, the default: Up, Page Up and Home raise
+a slider, Home being the top (100 percent on a volume), and Down, Page
+Down and End lower it, End being 0.</li>
+<li><strong>As Windows sliders</strong>: the keys a standard Windows
+slider uses. Down, Page Down and End raise it (End is 100 percent), and
+Up, Page Up and Home lower it (Home is 0).</li>
+</ul>
+<p>Change it in any Quill app and every other app follows at your next
+key press. Each key press tells your screen reader the new value, so it
+is never read from before the key. Ctrl+Up and Ctrl+Down, the volume
+keys that work from anywhere in the window, are not changed.</p>
 <p><strong>Where am I?</strong> is a button in the player controls: it
 speaks the title, current chapter, how far in you are, and how much
 remains. It has no key of its own; for a quick reading without leaving
@@ -738,8 +756,10 @@ equalizer</h2>
 <ul>
 <li><strong>Volume</strong> — <strong>Ctrl+Up</strong> and
 <strong>Ctrl+Down</strong> from anywhere in the window, or Up and Down
-on the Volume slider; the <strong>Mute</strong> button mutes, and
-unmuting restores your level. Volume is remembered per book.</li>
+on the Volume slider (Home is full volume and End silence, unless you
+chose the Windows slider keys under <strong>Slider Keys…</strong>); the
+<strong>Mute</strong> button mutes, and unmuting restores your level.
+Volume is remembered per book.</li>
 <li><strong>Speed</strong> — the Speed choice in the player controls,
 from 0.5× to 3×, pitch-preserving.</li>
 <li><strong>Volume boost / normalization</strong> lifts quiet recordings
@@ -956,15 +976,17 @@ to your computer.</p>
 <hr />
 <h2 id="14-settings">14. Settings</h2>
 <p><strong>File &gt; Preferences…</strong> (Ctrl+,) gathers the player’s
-settings in one window: <strong>Audio Output Device…</strong> and
-<strong>App Sounds Play On…</strong> (buttons that open their own
-windows), and, in a box labelled <strong>This session only</strong>,
-Compact mode, Magical mode, Always on top and the Sleep timer, which
-reset when the player closes. Each does exactly what its menu row does.
-Its <strong>Find a setting</strong> box searches these and the settings
-that stay in the main window: type “skip silence”, press Down to the
-match and press Enter, and Preferences closes, the Audio page comes
-forward and the focus lands on Skip silence.</p>
+settings in one window: <strong>Audio Output Device…</strong>,
+<strong>App Sounds Play On…</strong> and <strong>Slider Keys…</strong>
+(buttons that open their own windows; Slider Keys is described under
+“Arrows in the Chapters tree, sliders and page tabs”), and, in a box
+labelled <strong>This session only</strong>, Compact mode, Magical mode,
+Always on top and the Sleep timer, which reset when the player closes.
+Each does exactly what its menu row does. Its <strong>Find a
+setting</strong> box searches these and the settings that stay in the
+main window: type “skip silence”, press Down to the match and press
+Enter, and Preferences closes, the Audio page comes forward and the
+focus lands on Skip silence.</p>
 <p>The same settings are also in the menus: the <strong>Audio</strong>
 page for the equalizer, boost, normalize, and skip-silence;
 <strong>Playback &gt; Sleep Timer</strong>; <strong>Playback &gt; Audio
@@ -997,8 +1019,11 @@ secure vault, never in a settings file or the app itself.</li>
 braille-announced.</li>
 <li>Sliders are arrow-adjustable and speak their values: Up and Right
 mean more (louder, further on), Down and Left less, Page Up and Page
-Down in bigger steps. Lists read a full sentence per row and support
-first-letter search; reordering never needs a drag.</li>
+Down in bigger steps, and Home and End go to the top and the bottom.
+<strong>Slider Keys…</strong> in Preferences turns Up, Down, Page Up,
+Page Down, Home and End round to match a standard Windows slider
+instead, in every Quill app at once. Lists read a full sentence per row
+and support first-letter search; reordering never needs a drag.</li>
 <li>The player honors your system High Contrast, dark mode,
 reduced-motion, and text scaling.</li>
 <li>Nothing important is conveyed by color alone.</li>
@@ -1015,8 +1040,12 @@ isn’t loaded on this system; core playback still works.</li>
 notification-area tray), or Windows has hidden it in the overflow area
 (press Windows+B, then the arrow keys); otherwise use the window
 itself.</li>
-<li><strong>It didn’t resume where I expected</strong> — resume is saved
-per file; a renamed or moved file is treated as new.</li>
+<li><strong>It didn’t resume where I expected</strong> — your place is
+tied to the audio itself, so a moved or renamed copy of the same
+recording resumes; a <em>different</em> recording of the same title
+(another narrator, another edition) is a separate book with its own
+place, and a position in the first few seconds is not kept (see “Picking
+up where you left off”).</li>
 </ul>
 <hr />
 <h2 id="18-feature-availability-at-a-glance">18. Feature availability at
@@ -1096,6 +1125,24 @@ in. An option also says whether it is on or off.</li>
 <p>Enter does exactly what choosing that row from its menu would do. For
 an option, it switches it and tells you whether it is now on or off.
 Escape closes the window without doing anything.</p>
+<h2 id="whats-new">What’s New</h2>
+<p><strong>Help &gt; What’s New</strong>
+(<strong>Ctrl+Shift+F1</strong>) opens the player’s changelog in your
+browser: what changed in the version you have, grouped by subject. Every
+Quill app has the same door on the same key.</p>
+<h2 id="licences-and-notices">Licences and notices</h2>
+<p>Quill Media Player is free and released under the MIT License. It
+also includes software, data and sounds from other projects, each under
+its own licence.</p>
+<p>To read them, open the Help menu, choose About Quill Media Player,
+and then choose the Licences and Notices button. The list opens as a
+plain text file, with one heading for each component: what it is, its
+licence, who holds the copyright and what the licence asks of us. The
+full licence texts are at the end.</p>
+<p>The same file, THIRD-PARTY-NOTICES.txt, and Quill Media Player’s own
+licence, LICENSE.txt, are also in the folder where Quill Media Player is
+installed or unpacked, so you can open them without starting the
+app.</p>
 <h2 id="getting-help">Getting help</h2>
 <p>Support is run by <strong>Community Access</strong>, and the address
 is <strong><a

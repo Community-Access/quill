@@ -25,6 +25,7 @@ from quill.core.net import configure_ssl_trust
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.dialog_contract import set_accessible_name
 from quill.ui.main_frame_weather import WeatherMixin
+from quill.ui.whats_new import append_whats_new_item
 
 _TITLE = "Quill Weather"
 #: Shared a version line with Quill Radio up to 2.2.0, when the two shipped the
@@ -213,6 +214,7 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin):
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_weather_tutorials(), id=tutorials_id)
         help_menu.Append(guide_id, "&User Guide...\tCtrl+Alt+G")
         help_menu.Append(notes_id, "&Release Notes...\tCtrl+Alt+R")
+        append_whats_new_item(self, help_menu, "weather", "Quill Weather")  # the changelog
         # The roadmap the guide's "What's coming later" points to, on the PRD key
         # of Quill Radio's and Quill Converter's Help menus (Alt+Shift+F1).
         prd_id = wx.NewIdRef()

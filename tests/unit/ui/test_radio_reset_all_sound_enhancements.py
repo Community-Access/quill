@@ -187,17 +187,19 @@ def test_open_preferences_passes_a_reset_all_action(monkeypatch: pytest.MonkeyPa
     RadioAppFrame._open_preferences(frame)
 
     actions = _FakePreferencesDialog.instances[0].kwargs["actions"]
-    # Six utility buttons now: App Sounds Play On (2026-10-15, every app's
-    # Preferences), Reset All, the Data Folder dialog (2026-08-17), Change
+    # Seven utility buttons now: App Sounds Play On (2026-10-15, every app's
+    # Preferences), Slider Keys (2026-10-26, the same), Reset All, the Data
+    # Folder dialog (2026-08-17), Change
     # Release Channel (2026-10-04), the YouTube group's cookies.txt picker
     # (2026-10-03) and Make Quill Radio My Media Player in Windows and your
     # files (2026-10-04). This test owns Reset All; the exact count is pinned
     # so a silently dropped action still fails here.
-    assert len(actions) == 6
+    assert len(actions) == 7
     assert "App Sounds Play On" in actions[0].name
-    assert actions[1].on_click == frame._reset_all_sound_enhancements
-    assert "Data Fol" in actions[2].name
-    assert "Release Channel" in actions[3].name
-    assert "cookies.t&xt" in actions[4].name
-    assert "My Media Player" in actions[5].name
-    assert actions[5].group == "Windows and your files"
+    assert actions[1].name == "Slider Keys..."
+    assert actions[2].on_click == frame._reset_all_sound_enhancements
+    assert "Data Fol" in actions[3].name
+    assert "Release Channel" in actions[4].name
+    assert "cookies.t&xt" in actions[5].name
+    assert "My Media Player" in actions[6].name
+    assert actions[6].group == "Windows and your files"

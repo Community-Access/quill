@@ -328,6 +328,24 @@ class UpdatesMixin:
 
     # -- release channels (Help > Release Channel..., plan 7) ---------------
 
+    def _install_whats_new_item(self, help_menu: object) -> None:
+        """Help > What's New: the changelog in the browser (:mod:`quill.ui.whats_new`).
+
+        Registered here, beside Release Channel, so the command, its menu row
+        and its binding are one place. Keyless, as in QUILL Lite -- keymap.py's
+        help.whats_new says why -- so Alt+H, W is the route.
+        """
+        from quill.core.i18n import _
+
+        self.commands.try_register(
+            "help.whats_new",
+            "What's New",
+            self.show_whats_new,
+            self._binding_for("help.whats_new"),
+        )
+        label = self._menu_label(_("&What's New"), "help.whats_new")
+        help_menu.Append(self._id_whats_new, label)  # type: ignore[attr-defined]
+
     def _install_release_channel_item(self, help_menu: object) -> None:
         """Help > Release Channel..., beside Check for Updates.
 
@@ -611,11 +629,18 @@ class UpdatesMixin:
         return "later"
 
     def show_whats_new(self) -> None:
-        """Show the running build's abbreviated release notes on demand.
+        """Help > What's New: QUILL's changelog, as HTML in the browser.
 
-        Lets users see the same notes the Check-for-Updates dialog shows, even
-        between updates, so the format is familiar when an update lands.
+        The same row and the same document every QuillVille app opens
+        (:mod:`quill.ui.whats_new`). Only a build with no changelog at all falls
+        back to the abbreviated release notes the Check-for-Updates dialog
+        shows, so the command never does nothing.
         """
+        from quill.ui.whats_new import find_changelog, open_whats_new
+
+        if find_changelog("quill") is not None:
+            open_whats_new("quill", "QUILL", self._set_status)
+            return
         from quill import build_info
         from quill.core.release_notes import current_release_notes
 

@@ -248,6 +248,10 @@ you hear the one-line summary, exactly as if you had pressed Ctrl+Shift+Q.
 Escape closes the palette without running anything. It lists only Quill
 Weather's own commands, not those of the other QuillVille apps.
 
+**Help > What's New (Ctrl+Shift+F1)** opens Quill Weather's changelog in your
+browser: what changed in the version you have, grouped by subject. Every
+QuillVille app has the same door on the same key.
+
 ## Tutorials
 
 **Help > Tutorials... (Ctrl+Alt+F1)** opens 11 guided tutorials -- 60 steps,
@@ -293,7 +297,7 @@ keys the app ships with; only the window can know the ones you rebound.
 
 ## Updating
 
-Help > About shows your version with a build number, such as 2.2.1 (build 1). The
+Help > About shows your version with a build number, such as 2.2.1 (build 2). The
 build number tells you which build of a version you have: when a fix comes out
 without a new version number, it is a newer build, and Check for Updates offers it.
 
@@ -524,6 +528,20 @@ continuously generated weather channels, and choosing exactly which of your save
 places the alert watch covers. See the Product Requirements document
 (Help > Product Requirements) for the full roadmap.
 
+
+## Licences and notices
+
+Quill Weather is free and released under the MIT License. It also includes software,
+data and sounds from other projects, each under its own licence.
+
+To read them, open the Help menu, choose About Quill Weather, and then choose the
+Licences and Notices button. The list opens as a plain text file, with one
+heading for each component: what it is, its licence, who holds the copyright
+and what the licence asks of us. The full licence texts are at the end.
+
+The same file, THIRD-PARTY-NOTICES.txt, and Quill Weather's own licence, LICENSE.txt,
+are also in the folder where Quill Weather is installed or unpacked, so you can open
+them without starting the app.
 
 ## Getting help
 

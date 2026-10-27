@@ -2634,6 +2634,8 @@ class MainFrame(
                 return
             if self._handle_markdown_list_return():
                 return
+        if self._table_arrow(event):  # in a table, arrows move by cell
+            return
         tab_key = getattr(wx, "WXK_TAB", None)
         if tab_key is not None and event.GetKeyCode() == tab_key:
             self._commit_pending_extend_selection()
@@ -2643,6 +2645,12 @@ class MainFrame(
             # text it types a tab, which is what every plain-text editor on
             # Windows does. Shift+Tab still outdents either way, so a stray
             # indent can be undone without first changing the mode.
+            # In a table, Tab and Shift+Tab move cell to cell first, as in Word
+            # and in QUILL Lite (main_frame_table_nav.py).
+            if not (event.ControlDown() or event.AltDown()) and self._table_tab(
+                backwards=event.ShiftDown()
+            ):
+                return
             if self._tab_types_a_tab() and not event.ShiftDown():
                 self.editor.WriteText("\t")
                 return
@@ -7934,16 +7942,9 @@ class MainFrame(
             self._set_status(f"User guide saved to {target_path}")
 
     def open_third_party_notices(self) -> None:
-        from quill.core.compliance import render_full_third_party_notices
+        from quill.ui.about_notices import quill_notices_text
 
-        project_root = self._project_root_path()
-        pyproject_path = self._pyproject_path()
-        if not pyproject_path.exists():
-            notices = (
-                "# Third-Party Notices\n\nDependency metadata is not available in this build.\n"
-            )
-        else:
-            notices = render_full_third_party_notices(pyproject_path, project_root)
+        notices = quill_notices_text(self._project_root_path(), self._pyproject_path())
         self._create_document_tab(
             Document(text=notices, path=None, modified=False),
             select=True,
@@ -12070,6 +12071,8 @@ class MainFrame(
         if not self._feature_enabled("core.format"):
             self._set_status("Table is unavailable in this profile")
             return
+        if self._insert_real_table():  # rich text: RichEdit's own table
+            return
         surface = self._resolve_structured_markup("a table")
         if surface is None:
             self._set_status("Insert table cancelled")
@@ -12272,52 +12275,12 @@ class MainFrame(
         return InsertionResult(selected_text or "text", len(selected_text or "text"))
 
     def _prompt_table_shape(self) -> tuple[int, int, bool] | None:
-        wx = self._wx
+        """The shared Insert Table questions (quill/ui/table_shape_prompt.py)."""
+        from quill.ui.table_shape_prompt import prompt_table_shape
 
-        def prompt_dimension(message: str, minimum: int, maximum: int) -> int | None:
-            while True:
-                with wx.TextEntryDialog(
-                    self.frame,
-                    message,
-                    "Insert Table",
-                    value="2",
-                ) as dialog:
-                    if self._show_modal_dialog(dialog, "Insert Table") != wx.ID_OK:
-                        return None
-                    raw_value = dialog.GetValue().strip()
-                try:
-                    value = int(raw_value)
-                except ValueError:
-                    self._show_message_box(
-                        "Rows and columns must be whole numbers.",
-                        "Insert Table",
-                        wx.ICON_ERROR | wx.OK,
-                    )
-                    continue
-                if value < minimum or value > maximum:
-                    label = "Columns" if maximum == 12 else "Rows"
-                    self._show_message_box(
-                        f"{label} must be between {minimum} and {maximum}.",
-                        "Insert Table",
-                        wx.ICON_ERROR | wx.OK,
-                    )
-                    continue
-                return value
-
-        columns = prompt_dimension("Enter number of columns (1-12):", 1, 12)
-        if columns is None:
-            return None
-        rows = prompt_dimension("Enter number of rows (1-50):", 1, 50)
-        if rows is None:
-            return None
-        with wx.MessageDialog(
-            self.frame,
-            "Include a header row?",
-            "Insert Table",
-            wx.YES_NO | wx.ICON_QUESTION,
-        ) as header_dialog:
-            include_header = self._show_modal_dialog(header_dialog, "Insert Table") == wx.ID_YES
-        return rows, columns, include_header
+        return prompt_table_shape(
+            self.frame, self._show_modal_dialog, self._show_message_box, wx_module=self._wx
+        )
 
     def _prompt_code_language(self) -> str | None:
         wx = self._wx

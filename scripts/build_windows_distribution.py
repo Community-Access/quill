@@ -2577,6 +2577,17 @@ def _stage_distribution_docs(portable_dir: Path, source_root: Path) -> list[Path
                 shutil.copy2(rendered, docs_dir / rendered.name)
         staged.append(target)
     _complete_docs(docs_dir, source_root)
+    # The licences sit beside quill.exe, where Help > Open Third-Party Notices
+    # finds them (quill/tools/build_third_party_notices.py generates the first).
+    for name, source in (
+        (
+            "THIRD-PARTY-NOTICES.txt",
+            source_root / "docs" / "legal" / "THIRD-PARTY-NOTICES-QUILL.txt",
+        ),
+        ("LICENSE.txt", source_root / "LICENSE"),
+    ):
+        if source.is_file():
+            shutil.copy2(source, portable_dir / name)
     return staged
 
 

@@ -2704,14 +2704,28 @@ with Note (Navigation menu) adds words to it.</li>
 <li><code>self._remove_bm_btn</code>: Delete the highlighted bookmark
 from this book; the audio and your place stay.</li>
 </ul>
-<h2 id="quill-audio-studio">QUILL Audio Studio</h2>
-<p>Control coverage: 159 audited sites (157 helped, 2 named-help).</p>
+<h2 id="quill-studio">QUILL Studio</h2>
+<p>Control coverage: 197 audited sites (11 help-elsewhere, 186
+helped).</p>
 <h3 id="every-window-and-what-it-is-for-3">Every window, and what it is
 for</h3>
 <p><strong>ACX check.</strong> The verdict of measuring this book
 against Audible’s ACX submission window: loudness, true peak, and noise
 floor, each with its limit, plus plain recommendations for anything
 failing. Read-only – Escape closes it and nothing was changed.</p>
+<p><strong>Add a spoken screenshot note.</strong> Start explicitly opens
+the shared microphone. Stop and recognize uses an installed offline
+speech model. Review and correct the words before Use reviewed note.
+Closing stops recording; temporary audio is deleted. No cloud upload
+occurs.</p>
+<p><strong>Capture screen.</strong> Choose a named window for a
+whole-window screenshot without entering sizes. Or choose a display,
+full desktop, delayed active window or guided region. For a guided
+region, choose a source and Whole source, top, bottom, left, right or
+middle. Review Capture plan and guidance before starting. Exact
+coordinates are optional advanced settings. Review local OCR or framing
+afterward. AI sharing requires approval or previously enabled automatic
+AI.</p>
 <p><strong>Chapter Workbench.</strong> One audiobook or any recording –
 a lecture, a meeting – open for surgery: listen with the chapter-aware
 player, rename chapters, split at the playhead, move a start, merge, or
@@ -2724,6 +2738,10 @@ chapters of its own. Keep mine, add proposals keeps every one of them
 and adds only the boundaries that are new; Replace with the proposal
 swaps the whole list. Cancel changes nothing, and Restore original
 undoes either answer.</p>
+<p><strong>Choose screenshot control.</strong> Choose a specific part of
+the selected window by its name or role. Search filters real accessible
+controls without AI. Password and offscreen items are excluded. Use
+control selects a screenshot area; it does not press the control.</p>
 <p><strong>Convert Audio.</strong> Convert audio files or whole folders
 between formats, on this machine. Build the queue, pick the output
 format, preset, and destination folder, and Convert runs in the
@@ -2777,6 +2795,35 @@ the window into the tray with a run still going, whether long runs speak
 their 25, 50, and 75 percent milestones, and what the titlebar X does.
 Voices and speech defaults are not here – they live in the Speech Hub,
 shared with QUILL.</p>
+<p><strong>QUILL Studio.</strong> The home window and the Studio wizard
+share this name. The home window is three big buttons – narrate
+documents, build from recordings, edit a book – above Your books, the
+library tree where Enter opens a book and F6 reaches the status bar. The
+wizard walks one of those journeys page by page; answer each page, or
+Skip to summary when your saved defaults already fit.</p>
+<p><strong>QUILL Studio (Safe Mode).</strong> The home window, running
+in Safe Mode: AI, publishing, translation, and downloading from links
+politely refuse until you restart normally. Narrating, building,
+converting, and editing books all still work.</p>
+<p><strong>QUILL Studio Preferences.</strong> The Studio’s own window
+behavior: whether launch checks for updates, whether Alt+F4 tucks the
+window into the tray with a run still going, whether long runs speak
+their 25, 50, and 75 percent milestones, and what the titlebar X does.
+Voices and speech defaults are not here – they live in the Speech Hub,
+shared with QUILL.</p>
+<p><strong>Screenshot Inspector.</strong> Review the saved screenshot’s
+file evidence, read text locally, or explicitly send it to your
+configured AI provider. File checks prove decode and integrity;
+observations do not prove privacy or visual correctness.</p>
+<p><strong>Screenshot editing and evidence.</strong> Edit a copy of your
+screenshot. Choose a plain-language action and a named area, then Add
+edit. Undo and Redo preserve the original. Find text to select offers
+recognized text as an anchor. More options reveals specialist geometry,
+layers, comparison and evidence exports. Review the edited result before
+sharing.</p>
+<p><strong>Screenshot visual preview.</strong> An optional magnified
+visual preview. Use scrolling keys to inspect it. The editing window
+retains a text plan and object list for nonvisual review.</p>
 <p><strong>Sleep Timer.</strong> Stop playback by itself. Turn the timer
 on and give it a delay in minutes, or choose to stop at the end of the
 current chapter instead. It fires once and then turns itself off –
@@ -3371,6 +3418,134 @@ while it works. In the edit journey this reads Open in Workbench and
 opens the chosen book instead.</li>
 <li><code>self._cancel_btn</code>: Closes the wizard without starting
 anything.</li>
+</ul>
+<h4
+id="screenshotchatdialog-quilluistudio_capture_chatpy">ScreenshotChatDialog
+(<code>quill/ui/studio_capture_chat.py</code>)</h4>
+<ul>
+<li><code>self.transcript</code>: Read the source, hash, proven file
+checks and conversation. AI and OCR observations are uncertain. This
+text can be selected and copied.</li>
+<li><code>details</code>: Optional dimensions, file hash, source
+metadata and verification limits.</li>
+<li><code>details_text</code>: Objective file evidence. These checks do
+not prove privacy or completeness.</li>
+<li><code>self.style</code>: Choose a screenshot prompt or a shared
+image prompt. It fills the editable instructions; your question is kept
+separately.</li>
+<li><code>self.prompt</code>: Edit or extend the selected prompt before
+asking AI. Use Manage prompts to save reusable custom prompts in the
+shared library.</li>
+<li><code>self.question</code>: Ask about this exact screenshot.
+Follow-ups include the prior conversation and the same image; they do
+not capture a new screen.</li>
+<li><code>self.automatic</code>: Off by default. Enabling requires
+explicit approval to send future user-triggered screenshots to the
+approved AI connection. AI Off and Safe Mode override it.</li>
+<li><code>close</code>: Close the inspector and cancel unsent chat work.
+A request already sent to an AI provider may still finish.</li>
+</ul>
+<h4
+id="screenshotcontroldialog-quilluistudio_capture_controlspy">ScreenshotControlDialog
+(<code>quill/ui/studio_capture_controls.py</code>)</h4>
+<ul>
+<li><code>self.search</code>: Filter the selected application’s real UIA
+controls. No AI is used.</li>
+<li><code>self.items</code>: Arrow through controls. Enter selects a
+capture target; it does not press or invoke the application’s
+control.</li>
+</ul>
+<h4
+id="capturesetupdialog-quilluistudio_capture_dialogpy">CaptureSetupDialog
+(<code>quill/ui/studio_capture_dialog.py</code>)</h4>
+<ul>
+<li><code>self.target</code>: A named window needs no size settings.
+Guided region uses familiar portions of a named window or display. Full
+desktop includes all screens.</li>
+<li><code>refresh</code>: Refresh windows and displays. A missing target
+stays selected and unavailable until you deliberately choose another
+target.</li>
+<li><code>self.show_advanced</code>: Show optional advanced capture
+tools, such as listing every window, viewing window properties, or
+choosing a specific window element.</li>
+<li><code>self.all_windows</code>: Include every visible window,
+including tool and helper windows. Leave unchecked for a shorter list of
+top-level task windows (recommended).</li>
+<li><code>self.properties</code>: Show advanced details about the
+selected named window, such as its process, bounds, and internal
+identifiers.</li>
+<li><code>self.region_source</code>: Choose the window or display that
+contains what you want to show. The program calculates its position and
+size; no pixels are needed.</li>
+<li><code>self.portion</code>: Whole source is recommended to keep
+context. Half and middle portions can cut off text or controls. Review
+the result before sharing.</li>
+<li><code>self.advanced</code>: Optional physical-pixel coordinates.
+Leave unchecked for guided portions. Numbers describe screen dots, not
+text size or accessibility quality.</li>
+<li><code>self.guidance</code>: Review what will be included, what may
+be cut off, and what to check next. Geometry checks cannot prove that
+the screenshot shows the intended content.</li>
+<li><code>self.delay</code>: Wait this many seconds before capture. For
+active-window capture, switch to the intended window during the
+delay.</li>
+<li><code>self.folder</code>: An absolute folder for PNG screenshots and
+their verification reports. The folder is created if needed; existing
+images are not overwritten.</li>
+<li><code>self.controls_button</code>: Choose a named window in Target
+first, then find an accessible element (for example, a button or
+document) by name or role.</li>
+<li><code>field</code>: Rectangle coordinates use physical desktop
+pixels. Negative left and top values are allowed for displays left of or
+above the primary display.</li>
+</ul>
+<h4
+id="screenshoteditordialog-quilluistudio_capture_editorpy">ScreenshotEditorDialog
+(<code>quill/ui/studio_capture_editor.py</code>)</h4>
+<ul>
+<li><code>self.privacy</code>: Human review acknowledgment, not
+automatic privacy certification. Any later edit resets it.</li>
+<li><code>self.content_review</code>: Acknowledge content review. Any
+later edit resets it.</li>
+<li><code>self.strict</code>: Block bundle export until both reviews are
+acknowledged or a waiver is recorded.</li>
+<li><code>advanced</code>: Show exact positions, edit layers, resizing,
+comparison, project files and specialist evidence exports.
+Optional.</li>
+</ul>
+<h4
+id="screenshotnotedialog-quilluistudio_capture_notepy">ScreenshotNoteDialog
+(<code>quill/ui/studio_capture_note.py</code>)</h4>
+<ul>
+<li><code>start</code>: Open the shared microphone explicitly. Another
+QUILL recording blocks this action.</li>
+<li><code>stop</code>: Close the microphone and recognize the note
+locally, then review its text.</li>
+<li><code>self.text</code>: Edit the words before using them with this
+screenshot. Recognition can be wrong.</li>
+<li><code>self.reviewed</code>: Check this after reviewing the words.
+Editing clears the acknowledgment.</li>
+</ul>
+<h4
+id="captureoptionsmixin-quilluistudio_capture_optionspy">CaptureOptionsMixin
+(<code>quill/ui/studio_capture_options.py</code>)</h4>
+<ul>
+<li><code>self.mode</code>: Several screenshots repeats the chosen
+target. Scrolling page moves a supported window through its content and
+tries to join matching overlaps. Scrolling may expose hidden content.
+Partial results are marked.</li>
+<li><code>self.count</code>: From 1 to 30. Scrolling needs at least 2.
+This bounds storage and memory use.</li>
+<li><code>self.interval</code>: From 1 to 60 seconds between repeated
+screenshots. Does not affect scrolling.</li>
+<li><code>self.countdown</code>: Optional spoken/text countdown during
+the selected delay. Off by default.</li>
+<li><code>self.setup_name</code>: Save a capture setup. AI permission
+and output destinations are never saved.</li>
+<li><code>self.setups</code>: Saved windows are rechecked. Select again
+if the application closed or restarted.</li>
+<li><code>self.extra_options</code>: Optional repeated shots, scrolling
+and saved setups. One shot is the default.</li>
 </ul>
 <h2 id="quill-inkwell">Quill Inkwell</h2>
 <p>Control coverage: 3 audited sites (3 helped).</p>
@@ -4704,7 +4879,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
-<p>Control coverage: 232 audited sites (232 helped).</p>
+<p>Control coverage: 233 audited sites (233 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
@@ -5135,6 +5310,8 @@ this window is open; the file itself is not changed.</li>
 encoding you choose, for a file whose letters came out wrong. Unsaved
 changes are discarded and nothing on disk changes. Afterwards it saves
 in that encoding, or choose UTF-8 here to convert it when you save.</li>
+<li><code>licences</code>: Open the licences of QUILL Lite and what it
+includes, as text.</li>
 </ul>
 <h4 id="module-level-quillappslite_dialogs_entrypy">(module level)
 (<code>quill/apps/lite_dialogs_entry.py</code>)</h4>

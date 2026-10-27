@@ -32,6 +32,7 @@ __all__ = [
     "app_for_module",
     "claim_taskbar_identity",
     "installed_apps",
+    "installed_launcher",
 ]
 
 
@@ -52,7 +53,11 @@ class RuntimeApp:
     #: running app claim that id: Windows then pins the *shortcut*, which goes
     #: through the app's launcher, instead of the bare runtime. Claiming it
     #: without the shortcut would split the app's taskbar button in two.
-    shortcuts_carry_id: bool = False
+    #: Every app's shortcuts carry it since 2026-10-26: QUILL Lite pinned from
+    #: its running window pinned the bare runtime, which opened the "Several
+    #: QuillVille apps are installed" chooser and then ran without its
+    #: launcher (Radio alone had been fixed, in 3.0.2).
+    shortcuts_carry_id: bool = True
 
     @property
     def launcher_exe(self) -> str:
@@ -66,7 +71,7 @@ class RuntimeApp:
 
 #: Every app the shared runtime can start, in the order a chooser lists them.
 RUNTIME_APPS: tuple[RuntimeApp, ...] = (
-    RuntimeApp("radio", "quill.apps.radio", "Quill Radio", "CommunityAccess.QuillRadio", True),
+    RuntimeApp("radio", "quill.apps.radio", "Quill Radio", "CommunityAccess.QuillRadio"),
     RuntimeApp("quilllite", "quill.apps.lite", "QUILL Lite", "CommunityAccess.QuillLite"),
     RuntimeApp("weather", "quill.apps.weather", "Quill Weather", "CommunityAccess.QuillWeather"),
     RuntimeApp("cast", "quill.apps.podcasts", "QUILL Cast", "CommunityAccess.QuillCast"),
@@ -129,3 +134,55 @@ def claim_taskbar_identity(module: str) -> bool:
     except Exception:  # noqa: BLE001 - grouping is cosmetic; never cost the launch
         return False
     return bool(result == 0)
+
+
+#: Where Windows lists installed programs; each Inno installer writes its
+#: ``InstallLocation`` there.
+_UNINSTALL_KEYS = (
+    r"Software\Microsoft\Windows\CurrentVersion\Uninstall",
+    r"Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall",
+)
+
+
+def installed_launcher(app: RuntimeApp) -> Path | None:
+    """The installed copy of *app*'s own launcher (``QuillLite.exe``), or None.
+
+    A bare runtime start -- an old taskbar pin -- knows which app to run but
+    not where it is installed, and the app's launcher is what exports
+    ``QUILL_LAUNCHER_DIR``, without which QUILL Lite's speech engines and
+    everything else kept beside the app cannot be found (reported 2026-10-26:
+    "The built-in speech engines are not included in this copy"). So the
+    runtime hands over to the launcher it finds here. Windows only; never
+    raises.
+    """
+    import sys
+
+    if sys.platform != "win32":
+        return None
+    try:
+        import winreg
+    except ImportError:
+        return None
+    for hive in (winreg.HKEY_CURRENT_USER, winreg.HKEY_LOCAL_MACHINE):
+        for key_path in _UNINSTALL_KEYS:
+            try:
+                root = winreg.OpenKey(hive, key_path)
+            except OSError:
+                continue
+            with root:
+                index = 0
+                while True:
+                    try:
+                        name = winreg.EnumKey(root, index)
+                    except OSError:
+                        break
+                    index += 1
+                    try:
+                        with winreg.OpenKey(root, name) as entry:
+                            location = str(winreg.QueryValueEx(entry, "InstallLocation")[0])
+                    except OSError:
+                        continue
+                    candidate = Path(location) / app.launcher_exe
+                    if location and candidate.is_file():
+                        return candidate
+    return None

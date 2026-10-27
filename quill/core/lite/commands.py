@@ -26,6 +26,7 @@ from __future__ import annotations
 from quill.core.lite import APP_NAME, APP_VERSION
 from quill.core.lite.commands_ai import AI_ASK_ROWS, AI_SEARCH_ROWS
 from quill.core.lite.commands_dictation import DICTATION_ROWS
+from quill.core.lite.commands_help import HELP_ROWS
 from quill.core.lite.commands_review import EXPORT_ROWS, NOTE_ROWS, NOTE_SUBMENU_ROWS, TASK_ROWS
 from quill.core.lite.commands_words import DICTIONARY_ROWS, DICTIONARY_STATUS_ROWS, WORD_ROWS
 
@@ -271,7 +272,9 @@ COMMANDS: list[CommandRow] = [
     ("&Edit|&Lines", "", "", "", "sep"),
     ("&Edit|&Lines", "Remove Every &Blank Line", "Ctrl+Alt+K", "cmd_remove_blank_lines", ""),
     ("&Edit|&Lines", "Remove Dup&licate Lines", "Ctrl+Alt+D", "cmd_remove_duplicate_lines", ""),
-    ("&Edit|&Lines", "&Trim Trailing Spaces", "Ctrl+Alt+T", "cmd_trim_trailing_space", ""),
+    # QUILL's trim key since 2026-10-25, when Insert Table arrived with its
+    # Ctrl+Alt+T (rule 2: the command both products have keeps the chord).
+    ("&Edit|&Lines", "&Trim Trailing Spaces", "Ctrl+Alt+R", "cmd_trim_trailing_space", ""),
     ("&Edit|&Lines", "", "", "", "sep"),
     # QUILL Lite's PRD accepts that people edit .py, .json and .conf here -- it
     # silences the spell checker in them for exactly that reason -- and a
@@ -522,6 +525,9 @@ COMMANDS: list[CommandRow] = [
     # ever written anything has inserted, and QUILL Lite had the Markdown and
     # HTML kinds, a tag picker for each, and no way to make it (bad.md 4.2).
     ("&Insert", "Lin&k...", "Ctrl+K", "cmd_insert_link", ""),
+    # QUILL's Insert Table on QUILL's key (rule 2): pipe rows the table keys
+    # read cell by cell, or a real <table> in HTML (lite_window_insert_table.py).
+    ("&Insert", "&Table...", "Ctrl+Alt+T", "cmd_insert_table", ""),
     ("&Insert", "", "", "", "sep"),
     # The two tag pickers. Markdown Tag is on the menu only in a Markdown
     # document, in both editors (owner's decision, 2026-10-04: "unavailable" in
@@ -751,6 +757,14 @@ COMMANDS: list[CommandRow] = [
     ("&Navigate|&Table", "Last Cell in R&ow", "Alt+End", "cmd_table_row_end", ""),
     ("&Navigate|&Table", "&First Cell", "Ctrl+Alt+Home", "cmd_table_first_cell", ""),
     ("&Navigate|&Table", "&Last Cell", "Ctrl+Alt+End", "cmd_table_last_cell", ""),
+    # Editing the table (2026-10-25, quill.core.table_edit), in both editors. No
+    # keys: Word has none for these either, and Tab in the last cell adds a row.
+    ("&Navigate|&Table", "", "", "", "sep"),
+    ("&Navigate|&Table", "&Insert Row Below", "", "cmd_table_insert_row_below", ""),
+    ("&Navigate|&Table", "Insert Colu&mn Right", "", "cmd_table_insert_column_right", ""),
+    ("&Navigate|&Table", "&Delete Row", "", "cmd_table_delete_row", ""),
+    ("&Navigate|&Table", "Delete Col&umn", "", "cmd_table_delete_column", ""),
+    ("&Navigate|&Table", "&Tidy Table", "", "cmd_table_tidy", ""),
     # -- Navigate > Bookmarks ------------------------------------------------
     # A place you meant to come back to. There is no scrollbar thumb to remember
     # the position of and no glance that finds the place again, so a bookmark is
@@ -1016,24 +1030,7 @@ COMMANDS: list[CommandRow] = [
     # route back to one document was Ctrl+W sixty-eight times, with a save
     # prompt on each. Ctrl+F4 closes this one; Ctrl+Shift+F4 closes the others.
     ("&Window", "&Close Other Documents", "Ctrl+Shift+F4", "cmd_close_other_windows", ""),
-    # -- Help ---------------------------------------------------------------
-    # F1 belongs to the family's context help (quill.ui.app_context_help): it
-    # answers with what *this* window is for and then what the focused control
-    # does. The static key list moved to Ctrl+F1 rather than taking F1 from the
-    # engine every other QuillVille app answers with.
-    ("&Help", "&Help for This Window", "F1", "cmd_context_help", ""),
-    # The family key for lessons, and the family window. Ctrl+Alt+F1 is what
-    # Radio, Cast, Weather and QUILL answer with (bad.md P3.2).
-    ("&Help", "&Tutorials...", "Ctrl+Alt+F1", "cmd_tutorials", ""),
-    ("&Help", "&Keyboard Shortcuts", "Ctrl+F1", "cmd_shortcuts", ""),
-    ("&Help", "Activit&y...", "Shift+F9", "cmd_activity", ""),
-    ("&Help", "&Repeat Last Result", "F9", "cmd_repeat_last_result", ""),
-    # The family item and key: Lite's users least know where else to write.
-    ("&Help", "&Get Help from Support...", "Ctrl+Alt+F2", "cmd_get_help_from_support", ""),
-    ("&Help", "Check for &Updates...", "Ctrl+Alt+U", "cmd_check_updates", ""),
-    # No key (rules 4 and 9; keymap.py): Alt+H, C. See KEYLESS_WITH_REASON.
-    ("&Help", "Release &Channel...", "", "cmd_release_channel", ""),
-    ("&Help", "&About QUILL Lite", "Shift+F1", "cmd_about", ""),
+    *HELP_ROWS,  # the Help menu (commands_help.py)
 ]
 
 #: Menu-bar labels, in bar order, deduplicated by first appearance.

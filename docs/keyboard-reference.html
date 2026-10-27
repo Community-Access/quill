@@ -255,7 +255,7 @@ cannot drift from the code. Bindings shown as
 release, then the second key. Every binding here is a <em>default</em> –
 the in-app reference (Help &gt; Open Keyboard Reference) always shows
 your own customised keymap.</p>
-<p>Editor commands with default bindings: 510.</p>
+<p>Editor commands with default bindings: 516.</p>
 <h2 id="the-quill-editor">The QUILL editor</h2>
 <h3 id="files">Files</h3>
 <table>
@@ -2179,6 +2179,11 @@ your own customised keymap.</p>
 <td><code>help.release_channel</code></td>
 </tr>
 <tr>
+<td>(unbound by default)</td>
+<td>What’s New</td>
+<td><code>help.whats_new</code></td>
+</tr>
+<tr>
 <td>Alt+F1</td>
 <td>Why Is This Unavailable?</td>
 <td><code>help.why_unavailable</code></td>
@@ -2469,6 +2474,31 @@ your own customised keymap.</p>
 <td>(unbound by default)</td>
 <td>Sync Folder with GitHub…</td>
 <td><code>sync.sync_folder</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Delete Column</td>
+<td><code>table.delete_column</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Delete Row</td>
+<td><code>table.delete_row</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Insert Column Right</td>
+<td><code>table.insert_column_right</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Insert Row Below</td>
+<td><code>table.insert_row_below</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Tidy Table</td>
+<td><code>table.tidy</code></td>
 </tr>
 <tr>
 <td>(unbound by default)</td>
@@ -2924,6 +2954,60 @@ your own customised keymap.</p>
 <td>]</td>
 <td>QUILL Quick Nav: Skip Forward Past Container</td>
 <td><code>quill.quick_nav.skip_forward</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="studio-app-keys">Studio (app keys)</h2>
+<p>App keys, not editor keys: these apply inside the app named above and
+never inside the QUILL editor.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+<th>Command id</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ctrl+Alt+Shift+F4</td>
+<td>Capture selected</td>
+<td><code>studio.capture_selected</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+F5</td>
+<td>Capture active</td>
+<td><code>studio.capture_active</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+F6</td>
+<td>Capture desktop</td>
+<td><code>studio.capture_desktop</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+H</td>
+<td>Capture hotkeys</td>
+<td><code>studio.capture_hotkeys</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+I</td>
+<td>Inspect capture</td>
+<td><code>studio.inspect_capture</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+O</td>
+<td>Open capture</td>
+<td><code>studio.open_capture</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+S</td>
+<td>Capture</td>
+<td><code>studio.capture</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+X</td>
+<td>Cancel capture</td>
+<td><code>studio.cancel_capture</code></td>
 </tr>
 </tbody>
 </table>

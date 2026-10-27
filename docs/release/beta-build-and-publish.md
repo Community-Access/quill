@@ -66,18 +66,20 @@ done; Actions allowed to create pull requests; `stable-promotion` environment
 with you as reviewer.
 
 **For each beta app (after A3 built the files):**
-1. Write short notes for the release (copy the section for the build you are
-   publishing, such as "Testing rebuild: 3.2.0 (build 4)", from the app's release
-   notes, for example `standalone\radio\docs\release-notes-3.2.md`) into a file
-   such as `notes-radio.md`. First check that it covers everything under
-   [Unreleased] in the app's `CHANGELOG.md`.
+1. Use the app's "What's new" from `docs/release/whats-new/`, such as
+   `whats-new-radio-3.2.0.md`. It is what the update window shows when Check
+   for Updates offers the build, so it must show whole: at most 60 lines and
+   4,000 characters (`tests/unit/docs/test_whats_new_fits.py`). For a later
+   build, add a new file the same way rather than pasting a section of the
+   release notes, which run far longer.
 2. Rehearse first, nothing is created:
-   `python scripts/publish_release.py --app radio --version 3.2.0 --build 4 --channel beta --dist standalone/radio/dist --notes-file notes-radio.md --dry-run`
+   `python scripts/publish_release.py --app radio --version 3.2.0 --build 4 --channel beta --dist standalone/radio/dist --notes-file docs/release/whats-new/whats-new-radio-3.2.0.md --dry-run`
 3. Publish for real (same command without `--dry-run`). It hashes the files,
    creates a GitHub **prerelease** (never "Latest"), uploads the installer and
    portable zip, adds the build to the **Beta** update list and signs it.
 4. Repeat for QUILL Lite (`--app quilllite --version 1.2.0 --build 5 --dist standalone/quilllite/dist`)
-   and QUILL Cast (`--app cast --version 2.0.0 --build 5 --dist standalone/cast/dist`).
+   and QUILL Cast (`--app cast --version 2.0.0 --build 5 --dist standalone/cast/dist`),
+   each with its own file from `docs/release/whats-new/`.
    The script accepts `cast`, `quill`, `quilllite`, `radio` and (since
    2026-10-24) `transcribe`; leaving out `--build` uses the next build after
    the newest published tag. QUILL Transcribe publishes the same way:

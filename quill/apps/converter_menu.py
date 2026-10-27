@@ -6,8 +6,8 @@ menu carries the same doors as Quill Radio's and QUILL Lite's, on the same
 keys wherever the two agree:
 
 * F1 -- help for the window and control you are on;
-* Ctrl+F1 the User Guide, Shift+F1 the Release Notes, Ctrl+Shift+F1 the
-  Changelog, Alt+Shift+F1 the Product Requirements (Radio's ladder);
+* Ctrl+F1 the User Guide, Shift+F1 the Release Notes, Ctrl+Shift+F1 What's
+  New (the changelog), Alt+Shift+F1 the Product Requirements (Radio's ladder);
 * Ctrl+Alt+K -- every key in this app, in one read-only list;
 * Ctrl+Alt+F2 -- Get Help from Support, the family's one door to a person;
 * Ctrl+Alt+F -- Get FFmpeg, the repair door for the one tool the app needs;
@@ -21,11 +21,12 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.ui.whats_new import open_whats_new
+
 #: Which document each Help item opens, by file stem -> window title.
 DOC_TITLES: dict[str, str] = {
     "userguide": "Quill Converter User Guide",
     "release-notes-1.0": "Quill Converter Release Notes",
-    "CHANGELOG": "Quill Converter Changelog",
     "prd": "Quill Converter Product Requirements",
 }
 
@@ -142,7 +143,13 @@ def build_menu_bar(host: Any, wx: Any, *, title: str, version: str, repo: str) -
     ids.append(append_palette_row(host, help_menu))  # qc.md X-01
     add(help_menu, "&User Guide\tCtrl+F1", lambda: open_doc(host, "userguide"))
     add(help_menu, "&Release Notes\tShift+F1", lambda: open_doc(host, "release-notes-1.0"))
-    add(help_menu, "Chan&gelog\tCtrl+Shift+F1", lambda: open_doc(host, "CHANGELOG"))
+    # What every QuillVille app calls its changelog door (quill.ui.whats_new);
+    # it was "Changelog" here, on the same key, until 2026-10-25.
+    add(
+        help_menu,
+        "&What's New\tCtrl+Shift+F1",
+        lambda: open_whats_new("converter", title, host._announce),
+    )
     add(help_menu, "Product Re&quirements\tAlt+Shift+F1", lambda: open_doc(host, "prd"))
     add(help_menu, "&Keyboard Shortcuts...\tCtrl+Alt+K", host.show_keyboard_shortcuts)
     help_menu.AppendSeparator()

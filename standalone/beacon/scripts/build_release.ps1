@@ -99,6 +99,11 @@ if ($stageMpv) {
 # -- stage docs (Help > User Guide / PRD; prefers pre-rendered .html) ----------
 $docsDir = Join-Path $appDir "docs"
 New-Item -ItemType Directory -Force $docsDir | Out-Null
+# The licences (quill/tools/build_third_party_notices.py) sit beside the
+# program in every artifact, where Help > About > Licences and Notices looks.
+foreach ($legal in @("THIRD-PARTY-NOTICES.txt", "LICENSE.txt")) {
+    Copy-Item (Join-Path $repoRoot $legal) $appDir -Force
+}
 Get-ChildItem (Join-Path $repoRoot "docs") -File | ForEach-Object { Copy-Item $_.FullName $docsDir -Force }
 Copy-Item (Join-Path $repoRoot "README.md") (Join-Path $appDir "README-QuillBeacon.md") -Force
 

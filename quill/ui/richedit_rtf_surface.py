@@ -35,9 +35,7 @@ brick the editor.
 
 from __future__ import annotations
 
-import os
 import sys
-import tempfile
 from collections.abc import Iterator
 from contextlib import contextmanager
 from typing import Any
@@ -48,8 +46,9 @@ from quill.core.heading_ladder import (
     heading_level_for_font,
 )
 from quill.core.highlights import highlight_from_colorref, highlight_hex
-from quill.io.rtf_heading_promotion import promote_heading_styles_in_file
 from quill.io.rtf_styles import parse_color
+from quill.ui.richedit_rtf_io import RtfIoMixin
+from quill.ui.richedit_tables import install_aligned_text
 
 SURFACE_KIND = "richedit_rtf"
 
@@ -231,7 +230,7 @@ def _window_class_name(hwnd: int) -> str:
         return ""
 
 
-class QuillRichEdit:
+class QuillRichEdit(RtfIoMixin):
     """Thin, replaceable wrapper API over the native Rich Edit control.
 
     Phase 1 wires native RTF load/save through the TOM (``get_rtf``/``set_rtf``/
@@ -244,6 +243,9 @@ class QuillRichEdit:
 
     def __init__(self, surface: Any) -> None:
         self._surface = surface
+        # GetValue aligned with caret positions once a real table is in the
+        # document (quill/ui/richedit_tables.py); unchanged until then.
+        install_aligned_text(surface, lambda: _get_text_document(self.hwnd()))
 
     # -- identity / handle -------------------------------------------------- #
 
@@ -261,46 +263,8 @@ class QuillRichEdit:
         """
         return bool(_TOM_AVAILABLE and self.hwnd())
 
-    # -- RTF I/O (Phase 1, via the Text Object Model) ----------------------- #
-
-    def load_rtf(self, path: str) -> None:
-        """Load an RTF file into the control via ``ITextDocument::Open``."""
-        itd = _get_text_document(self.hwnd())
-        try:
-            itd.Open(str(path), _TOM_OPEN_EXISTING | _TOM_RTF, 0)
-        except Exception as exc:  # noqa: BLE001 - map COM/file errors to our type
-            raise RichEditRtfError(f"Could not open RTF file: {exc}") from exc
-
-    def save_rtf(self, path: str) -> None:
-        """Save the control's content to an RTF file via ``ITextDocument::Save``."""
-        itd = _get_text_document(self.hwnd())
-        try:
-            itd.Save(str(path), _TOM_CREATE_ALWAYS | _TOM_RTF, 0)
-        except Exception as exc:  # noqa: BLE001
-            raise RichEditRtfError(f"Could not save RTF file: {exc}") from exc
-        promote_heading_styles_in_file(str(path))
-
-    def get_rtf(self) -> bytes:
-        """Return the document as RTF bytes (TOM Save to a temp file)."""
-        with tempfile.TemporaryDirectory() as tmp:
-            path = os.path.join(tmp, "quill.rtf")
-            self.save_rtf(path)
-            try:
-                with open(path, "rb") as handle:
-                    return handle.read()
-            except OSError as exc:
-                raise RichEditRtfError(f"Could not read the saved RTF: {exc}") from exc
-
-    def set_rtf(self, data: bytes) -> None:
-        """Replace the document with RTF bytes (TOM Open from a temp file)."""
-        with tempfile.TemporaryDirectory() as tmp:
-            path = os.path.join(tmp, "quill.rtf")
-            try:
-                with open(path, "wb") as handle:
-                    handle.write(data)
-            except OSError as exc:
-                raise RichEditRtfError(f"Could not stage RTF for loading: {exc}") from exc
-            self.load_rtf(path)
+    # -- RTF I/O: load_rtf / save_rtf / get_rtf / set_rtf live in RtfIoMixin
+    # (quill/ui/richedit_rtf_io.py), with real tables in the editor.
 
     def get_plain_text(self) -> str:
         """The control's plain text -- what search/spell/AI/read-aloud consume."""

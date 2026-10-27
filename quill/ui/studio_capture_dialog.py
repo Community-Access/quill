@@ -70,7 +70,7 @@ class CaptureSetupDialog(CaptureOptionsMixin, wx.Dialog):
 
         self.advanced_panel = wx.Panel(panel)
         advanced_layout = wx.BoxSizer(wx.VERTICAL)
-        self.all_windows = wx.CheckBox(self.advanced_panel, label="Show &all windows")
+        self.all_windows = wx.CheckBox(self.advanced_panel, label="Show all wi&ndows")
         set_accessible_name(self.all_windows, "Show all windows")
         self.all_windows.SetHelpText(
             "Include every visible window, including tool and helper windows. Leave unchecked "
@@ -111,7 +111,7 @@ class CaptureSetupDialog(CaptureOptionsMixin, wx.Dialog):
             "The program calculates its position and size; no pixels are needed."
         )
         region_layout.Add(self.region_source, 0, wx.EXPAND | wx.BOTTOM, 8)
-        region_layout.Add(wx.StaticText(self.region_panel, label="Capture &portion"), 0)
+        region_layout.Add(wx.StaticText(self.region_panel, label="&Capture portion"), 0)
         self.portion = wx.Choice(self.region_panel, choices=list(REGION_PRESETS))
         self.portion.SetSelection(0)
         set_accessible_name(self.portion, "Capture portion")

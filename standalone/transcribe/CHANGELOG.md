@@ -4,27 +4,21 @@ All notable changes to QUILL Transcribe are recorded here. The fuller version
 lives in `docs/CHANGELOG.md` (and its HTML and EPUB twins) and ships with the
 app.
 
-## Unreleased
+## 1.0.0 - 2026-11-01
 
-Version 1.0.0 (build 2), released on 1 November 2026: the first public
-release. Everything here ships in it. This is the short list, grouped by area
-in the same order as `docs/CHANGELOG.md`, which has the detail.
+Testing rebuild: **1.0.0 (build 3)**. The packages have not been published
+yet. 1.0.0 is the first public release, planned for 1 November 2026, so
+everything here is new in it, including what the first test builds already
+did. This is the short list, grouped by area in the same order as
+`docs/CHANGELOG.md`, which has the detail.
 
-### Release and the QuillVille family
+### Dictating into other programs
 
-- Released on 1 November 2026, and from then on the QuillVille menu and tray
-  menus of the other apps (Alt+Q, then T; Alt+U, then T in Quill Converter),
-  with a download offer that asks first. Its own QuillVille menu opens the
-  others on Ctrl+Alt+Shift+F7 to F11.
-- Quill Cast's and Quill Radio's **Edit > Dictate Here** (Ctrl+F11) dictates
-  into the box you are in through QUILL Transcribe, in every copy.
-- One microphone across QUILL (Locked Dictation too), QUILL Lite, QUILL
-  Transcribe and Quill Inkwell: a second start is refused with the name of the
-  program listening and the key that stops it. QUILL Lite's window is refused
-  like QUILL's, with "press Ctrl+F11 to dictate here".
-
-### Starting, stopping and where it types
-
+- The first release: dictation into the program you are using, locked to the
+  field you started in, paused and held when the focus moves, with QUILL's own
+  local speech models, a tray menu, setup, and Transcribe a Recording.
+  Password fields, programs running as administrator and QUILL's own windows
+  are refused with a sentence that says why.
 - The start and stop key is Alt+Shift+Backslash from the start, chosen in
   **File > Start and Stop Key...** (Ctrl+Alt+Shift+D), and every key box has
   Record Key. Three more optional keys: Dictation Status, Resume and Discard
@@ -75,11 +69,14 @@ in the same order as `docs/CHANGELOG.md`, which has the detail.
   type or discard them, and a dictation history that is off unless you turn
   it on.
 
-### Models and speech providers
+### Models, microphone and speech providers
 
+- Choose Model and Choose Microphone; the model you chose is the one that runs.
 - Recommended for this computer, with tiers (Lightweight, Balanced, High
-  accuracy); twelve speech providers with your own account; a full "Models"
-  chapter in the user guide.
+  accuracy), from tests on real speech; Switch to Recommended Model and an
+  offer to delete the old model's files; five English-only models removed;
+  twelve speech providers with your own account; a full "Models" chapter in
+  the user guide.
 
 ### Practice and lessons
 
@@ -91,19 +88,33 @@ in the same order as `docs/CHANGELOG.md`, which has the detail.
 - Transcribe a Recording translates Spanish into English (Alt+E), and Review
   Transcript can type the transcript into a field (Alt+F).
 
-### Sounds and the window
+### Setup, the window, the tray and sounds
 
 - **Options > App Sounds Play On...** (Ctrl+Shift+S) and Alt+Shift+M to turn
   QUILL Transcribe's sounds off. Alt+W opens the Window menu again; Discard Held
   Words is Alt+C.
 
-### Installing
+### QUILL Transcribe and the QuillVille family
+
+- Released on 1 November 2026, and from then on the QuillVille menu and tray
+  menus of the other apps (Alt+Q, then T; Alt+U, then T in Quill Converter),
+  with a download offer that asks first. Its own QuillVille menu opens the
+  others on Ctrl+Alt+Shift+F7 to F11.
+- Quill Cast's and Quill Radio's **Edit > Dictate Here** (Ctrl+F11) dictates
+  into the box you are in through QUILL Transcribe, in every copy.
+- One microphone across QUILL (Locked Dictation too), QUILL Lite, QUILL
+  Transcribe and Quill Inkwell: a second start is refused with the name of the
+  program listening and the key that stops it. QUILL Lite's window is refused
+  like QUILL's, with "press Ctrl+F11 to dictate here".
+
+### Help, updates and release channels
+
+- **Help > What's New** (Ctrl+Shift+F1, new in build 3) opens the changelog in
+  your browser.
+- Help > Release Channel... (Alt+H, L): Stable, Beta or Dev.
+
+### Installing and Safe Mode
 
 - Runs on Python 3.14; older Python 3.13 runtimes no app uses are removed by
   the installer.
-
-## 1.0.0 - 2026-11-01
-
-- The first release: dictation into the program you are using, locked to the
-  field you started in, with QUILL's own local speech models, a tray menu,
-  setup, and Transcribe a Recording.
+- Safe Mode listens to nothing, registers no keys and downloads nothing.

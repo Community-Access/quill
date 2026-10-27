@@ -2332,4 +2332,32 @@ stops and on close (a close-task step). Only a single podcast's list records:
 New Episodes, the Inbox and the Play Queue never move a feed's cursor. QUILL's
 Podcast Manager uses the same store.
 
+### 23.30 Slider Keys, one choice for the family (2026-10-26)
+
+Every slider bound through `quill/ui/slider_keys.py` (Now Playing's volume,
+the Sound Enhancements sliders) moves by `bind_up_means_more`: Up and Page Up
+by the line and page sizes, Home and End by the whole span, so in the default
+layout Home is the top, 100 percent on a volume, and End is 0. Preferences >
+When Cast opens has a **Slider Keys...** row (`slider_keys.choose`) offering
+**Up is more** (the default) or **As Windows sliders**, where Down, Page Down
+and End raise the value. Right is more and Left less in both. The choice is
+one file for every Quill app, `slider_keys.json` in the shared data folder
+(`quill/core/slider_key_layout.py`), read with a modification-time check at
+each key press, so a change in Quill Radio applies in Cast at once. Ctrl, Shift
+and Alt chords are left to the frame, so Ctrl+Up and Ctrl+Down, the volume
+keys that work from anywhere, are not changed. Because `SetValue` is not
+reported to a screen reader, each move raises `EVENT_OBJECT_VALUECHANGE`
+itself, and the reader speaks the new value. The Position slider keeps its
+own keys (Home and End are the start and the end of the episode).
+
+### 23.31 Help > What's New (2026-10-25)
+
+Help > What's New (Ctrl+Shift+F1, `append_whats_new_item` in
+`quill/apps/podcasts_menu.py`) opens this app's `CHANGELOG` as HTML in the
+browser, from the packaged build's `docs\` or, in a checkout,
+`standalone/cast/docs` (`quill/ui/whats_new.py`). It sits after Release Notes:
+the release notes welcome a listener to 2.0, and the changelog is the complete
+record. Every standalone Quill app has the same row on the same key; a missing
+changelog is said, never silent.
+
 See `CHANGELOG.md` for the full, versioned history.

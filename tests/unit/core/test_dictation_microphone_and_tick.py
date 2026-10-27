@@ -360,9 +360,14 @@ def test_closing_the_window_lets_go(tmp_path: Path) -> None:
     assert not gate.held and microphone_holder(folder=tmp_path) is None
 
 
-def test_the_wake_phrase_waits_silently_while_another_program_listens(tmp_path: Path) -> None:
-    """Arming for the wake phrase is not a request from the person, so a refusal
-    there says nothing; the next time the window comes forward it tries again."""
+def test_the_wake_phrase_says_once_that_another_program_has_the_microphone(
+    tmp_path: Path,
+) -> None:
+    """Arming for the wake phrase is not a key press, so a refusal there plays no
+    error tone -- but the person switched the wake phrase on, and one that is
+    silently not listened for reads as "it never hears me" (2026-10-26). Said
+    once, shown every time; the next time the window comes forward it tries
+    again."""
     held = MicrophoneLock("transcribe", folder=tmp_path)
     assert held.take() == ""
     made: list[_Recognizer] = []
@@ -374,7 +379,13 @@ def test_the_wake_phrase_waits_silently_while_another_program_listens(tmp_path: 
         wake_enabled=True,
     )
     controller.arm()
-    assert not controller.standing_by and made == [] and feedback.said == []
+    assert not controller.standing_by and made == []
+    assert len(feedback.said) == 1
+    assert feedback.said[0].startswith("The wake phrase is not being listened for. ")
+    assert "QUILL Transcribe" in feedback.said[0]
+    assert Moment.ERROR not in feedback.cues
+    controller.arm()  # the window came forward again: shown, not said again
+    assert len(feedback.said) == 1 and len(feedback.shown) == 2
     held.release()
     controller.arm()
     assert controller.standing_by

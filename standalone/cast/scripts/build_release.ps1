@@ -169,6 +169,11 @@ Write-Host "Staging the Vosk chapter model..."
 if ($LASTEXITCODE -ne 0) { throw "Could not stage the Vosk chapter model." }
 $docsDir = Join-Path $appDir "docs"
 New-Item -ItemType Directory -Force $docsDir | Out-Null
+# The licences (quill/tools/build_third_party_notices.py) sit beside the
+# program in every artifact, where Help > About > Licences and Notices looks.
+foreach ($legal in @("THIRD-PARTY-NOTICES.txt", "LICENSE.txt")) {
+    Copy-Item (Join-Path $repoRoot $legal) $appDir -Force
+}
 # .md + .html for every doc (Help > User Guide / Release Notes / Product
 # Requirements... prefers the pre-rendered .html; .md is the fallback source
 # if a build ever ships without render_docs.ps1 having run).

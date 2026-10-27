@@ -17,10 +17,13 @@ The gate is optional, so a controller built in a test against fakes has none
 and behaves exactly as before.
 
 A refusal is said like any other failed start -- the error tone when tones are
-on, and the words -- except while the controller is quietly opening the
-microphone for the wake phrase: then nothing is said, because the person did
-not ask for anything, and the next time the window comes forward it tries
-again.
+on, and the words. While the controller is quietly opening the microphone for
+the wake phrase it is said **once**, with no tone, and shown on the status bar
+every time: the person did not press anything, but they did switch the wake
+phrase on, and a wake phrase that is silently not being listened for reads as
+"it never hears me" (reported 2026-10-26). Once, because the window tries again
+every time it comes forward, and the same sentence on every Alt+Tab would be
+noise. A different refusal, or the microphone coming free, resets it.
 
 **The screen reader** (moved here from the controller, GATE-11): whether the
 reader was talking over a phrase, for an engine that hears the microphone
@@ -78,13 +81,30 @@ class MicrophoneOwnerMixin:
         except Exception:  # noqa: BLE001 - a lock that cannot be asked never stops dictation
             return False
         if not refusal:
+            self._quiet_refusal = ""
             return False
         from quill.core.windows_dictation.ports import DictationState
 
         self._set_state(DictationState.OFF)
         if report and not quiet:
             self._fail(refusal, preferences)
+        elif report:
+            self._refused_quietly(refusal)
         return True
+
+    #: The last refusal said while quietly arming the wake phrase.
+    _quiet_refusal = ""
+
+    def _refused_quietly(self, refusal: str) -> None:
+        """The wake phrase could not have the microphone: shown, and said once."""
+        message = f"The wake phrase is not being listened for. {refusal}"
+        try:
+            if refusal != self._quiet_refusal:
+                self._feedback.say(message)
+            self._feedback.show(message)
+        except Exception:  # noqa: BLE001 - a status line is never worth a session
+            pass
+        self._quiet_refusal = refusal
 
     def _release_microphone(self) -> None:
         gate = self._microphone

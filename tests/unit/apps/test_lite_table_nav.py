@@ -23,14 +23,21 @@ def _at(text: str, needle: str) -> int:
 @pytest.mark.parametrize(
     ("start", "move", "landed", "said"),
     [
-        ("Name", lambda w: w.cmd_table_next_cell(), "Role", "Row 1 of 3, column 2 of 2: Role"),
-        ("Role", lambda w: w.cmd_table_previous_cell(), "Name", "Row 1 of 3, column 1 of 2: Name"),
-        ("Name", lambda w: w.cmd_table_cell_below(), "Ann", "Row 2 of 3, column 1 of 2: Ann"),
-        ("Lead", lambda w: w.cmd_table_cell_above(), "Role", "Row 1 of 3, column 2 of 2: Role"),
-        ("Lead", lambda w: w.cmd_table_row_start(), "Ann", "Row 2 of 3, column 1 of 2: Ann"),
-        ("Ann", lambda w: w.cmd_table_row_end(), "Lead", "Row 2 of 3, column 2 of 2: Lead"),
-        ("Tester", lambda w: w.cmd_table_first_cell(), "Name", "Row 1 of 3, column 1 of 2: Name"),
-        ("Name", lambda w: w.cmd_table_last_cell(), "Tester", "Row 3 of 3, column 2 of 2: Tester"),
+        ("Name", lambda w: w.cmd_table_next_cell(), "Role", "Column 2: Role"),
+        ("Role", lambda w: w.cmd_table_previous_cell(), "Name", "Column 1: Name"),
+        ("Name", lambda w: w.cmd_table_cell_below(), "Ann", "Row 2: Ann"),
+        ("Lead", lambda w: w.cmd_table_cell_above(), "Role", "Row 1: Role"),
+        # A new column in a body row says its header (2026-10-25); the header
+        # row's own cells, and moves within one column, do not.
+        ("Lead", lambda w: w.cmd_table_row_start(), "Ann", "Column 1, Name: Ann"),
+        ("Ann", lambda w: w.cmd_table_row_end(), "Lead", "Column 2, Role: Lead"),
+        ("Tester", lambda w: w.cmd_table_first_cell(), "Name", "Row 1, column 1: Name"),
+        (
+            "Name",
+            lambda w: w.cmd_table_last_cell(),
+            "Tester",
+            "Row 3, column 2, Role: Tester",
+        ),
     ],
 )
 def test_each_move_lands_on_its_cell_and_says_where(
@@ -100,7 +107,7 @@ def test_a_word_table_opened_to_edit_is_navigable(lite_window, tmp_path) -> None
     text = win.control.GetValue()
     win.control.SetInsertionPoint(text.index("City"))
     win.cmd_table_cell_below()
-    assert win.announcements[-1] == "Row 2 of 2, column 1 of 2: Oslo"
+    assert win.announcements[-1] == "Row 2: Oslo"
 
 
 def test_the_keys_are_quills_keys() -> None:
@@ -113,4 +120,5 @@ def test_the_keys_are_quills_keys() -> None:
     for handler, quill_id in COMMAND_EQUIVALENTS.items():
         if handler.startswith("cmd_table_"):
             assert rows[handler] == DEFAULT_KEYMAP[quill_id], handler
-    assert sum(handler.startswith("cmd_table_") for handler in rows) == 8
+    # Eight moves, and since 2026-10-25 five edits (keyless in both editors).
+    assert sum(handler.startswith("cmd_table_") for handler in rows) == 13

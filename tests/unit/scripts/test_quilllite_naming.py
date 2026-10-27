@@ -38,8 +38,9 @@ IDENTIFIER = "QuillLite"
 #: lowercase ``quilllite`` folder/identifier key cannot trip them.
 WRONG = ("Quill Lite", "Quill-Lite", "QUILLLITE", "Quill lite", "QUILL LITE")
 
-#: ``QuillLite`` as an identifier: the exe, a folder in a path, an asset prefix.
-_IDENTIFIER_USE = re.compile(r"(?<=[\\/])QuillLite|QuillLite(?=[\\/\-.])")
+#: ``QuillLite`` as an identifier: the exe, a folder in a path, an asset prefix,
+#: or the taskbar identity ``CommunityAccess.QuillLite`` (AppUserModelID).
+_IDENTIFIER_USE = re.compile(r"(?<=[\\/.])QuillLite|QuillLite(?=[\\/\-.])")
 
 
 def _iss_text(path: Path) -> str:

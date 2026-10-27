@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QUILL changelog</title>
+  <title>Changelog</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -261,6 +261,159 @@ clearly. Existing audiobook data, job formats, runtime identity and
 media engines are unchanged.</li>
 </ul>
 <h2 id="100">1.0.0</h2>
+<h3
+id="tables-whats-new-and-sliders-the-latest-work-2026-10-25-and-2026-10-26">Tables,
+What’s New and sliders: the latest work (2026-10-25 and 2026-10-26)</h3>
+<p>This block gathers the last two days of work by theme. Earlier table
+work is under “Word editing shared with QUILL Lite; two Word round-trip
+fixes; table navigation in QUILL Lite (2026-10-17)” further down.</p>
+<h4 id="tables">Tables</h4>
+<ul>
+<li><strong>Real tables in rich text</strong> (2026-10-26). In a rich
+text document a table is now a real table, RichEdit’s own: a grid on
+screen, with no <code>|</code> characters, that a screen reader, Word
+and WordPad all read as a table. This works the same in QUILL and QUILL
+Lite. <strong>Insert &gt; Insert Table…</strong>
+(<code>Ctrl+Alt+T</code>) puts one at the caret as one undo step. A Word
+or RTF document’s tables open as real tables, and a <code>|</code> table
+in a Markdown document switched to rich text becomes one. Saved as
+<code>.rtf</code> or Word, a real table stays a table with its first row
+marked as the header row; switching back to Markdown or plain text turns
+it into <code>|</code> rows. This replaces the earlier limit, recorded
+further down this changelog, that a table saved to RTF was readable pipe
+text rather than a real RTF table.</li>
+<li><strong>Insert Table, one set of questions in both editors</strong>
+(2026-10-25). Columns (1 to 12), rows (1 to 50) and whether the first
+row is a header, asked the same way in QUILL and QUILL Lite; a number
+out of range is answered with the range and asked again. An HTML
+document gets a real <code>&lt;table&gt;</code> whose header cells are
+marked <code>scope="col"</code>, so a screen reader announces the column
+for each cell; Markdown and plain text get <code>|</code> rows. QUILL
+Lite gained Insert Table on QUILL’s <code>Ctrl+Alt+T</code>, and its
+Trim Trailing Spaces moved to QUILL’s <code>Ctrl+Alt+R</code>, so the
+two keys now mean the same in both editors.</li>
+<li><strong>The arrows read a table cell by cell</strong> (2026-10-26),
+in both editors and in rich text and <code>|</code> tables alike.
+<strong>Up</strong> and <strong>Down</strong> move to the cell above and
+below in the same column and say it; <strong>Right</strong> at the end
+of a cell’s text and <strong>Left</strong> at its start step to the next
+or previous cell; inside a cell’s text they move letter by letter as
+always. <strong>Down</strong> onto a table lands in its first cell and
+says its shape once; moving past the first or last row leaves the table
+with “Out of table”. Shift with the arrows still selects. QUILL consumes
+the key, so the screen reader does not also read the whole row. There is
+no add-on or reader script: JAWS, NVDA and Narrator alike. JAWS keeps
+<code>Ctrl+Alt</code> with the arrows for its own table commands, so
+with JAWS use the arrows, Tab and the Navigate &gt; Table menu.</li>
+<li><strong>Tab and Shift+Tab move cell to cell</strong> (2026-10-25),
+on to the next row at the end of one, as in Word; <strong>Tab</strong>
+in the very last cell adds a row and lands in its first cell, in a real
+table and a <code>|</code> table alike.</li>
+<li><strong>Editing a table</strong> (2026-10-25). <strong>Insert Row
+Below</strong>, <strong>Insert Column Right</strong>, <strong>Delete
+Row</strong>, <strong>Delete Column</strong> and <strong>Tidy
+Table</strong>, each one undo step that says what it did (“Added row 3”,
+“Deleted column 2, City. 4 columns left”). They have no keys, as in
+Word; the Navigate &gt; Table submenu reaches them. Deleting a header
+row makes the next row the header. Tidy Table pads every cell to its
+column’s widest, and says a real table is already lined up. Adding or
+deleting a row or column of a real table rebuilds it with its text in
+place, but character formatting inside its cells does not survive the
+rebuild.</li>
+<li><strong>Navigate &gt; Table in QUILL</strong> (2026-10-25), the
+submenu QUILL Lite had and QUILL did not: the cell keys and the five
+edits above, in one place.</li>
+<li><strong>What a move says</strong> (2026-10-25). Each move says what
+changed and then the contents: along a row the column (“Column 3:
+Portland”), down a column the row (“Row 4: Portland”), both after a
+jump. The table’s size is said once, on arrival, not on every cell. In a
+table with a header row (a <code>| --- |</code> row under its first row,
+or a real table’s first row), moving into a new column also says that
+column’s header: “Column 3, City: Portland”.</li>
+<li><strong>QUILL Lite’s table cue</strong> (2026-10-25): “Table, N
+rows, M columns” on entering and “Out of table” on leaving, with its
+heading cues switch, as QUILL has had.</li>
+<li><strong>Fixed: blank rows were missing from a table</strong>
+(2026-10-25). A row of empty cells (<code>|  |  |</code>) was taken for
+the <code>| --- |</code> separator and skipped by the table keys, so
+every blank row of a new table, or of a Word table with an empty row,
+was missing from the grid.</li>
+</ul>
+<h4 id="help">Help</h4>
+<ul>
+<li><strong>Help &gt; What’s New</strong> (2026-10-25) opens QUILL’s
+changelog, this file, as a page in your browser, in place of the short
+release notes it used to show (they remain the fallback for a build with
+no changelog). It is keyless in QUILL and QUILL Lite, where
+<code>Ctrl+Shift+F1</code> is the User Guide: press <code>Alt+H</code>,
+then <code>W</code>. Every other QuillVille app has the same command on
+<code>Ctrl+Shift+F1</code>, so What’s New is now in every app.</li>
+<li><strong>QUILL Lite with no document open</strong> (2026-10-25) shows
+File, Tools and the whole Help menu rather than File alone, so
+Preferences, Check for Updates, What’s New and About are reachable
+without opening a blank page.</li>
+</ul>
+<h4 id="sound-and-volume">Sound and volume</h4>
+<ul>
+<li><strong>Home and End on a slider follow Up and Down</strong>
+(2026-10-26). In the sliders the family shares, such as the volume in
+QUILL Studio’s player and the Sound Enhance and caption settings
+windows, Up, Page Up and <strong>Home</strong> raise the value, Home
+being the top (100 percent on a volume), and Down, Page Down and
+<strong>End</strong> lower it, End being 0. Each key press also tells
+the screen reader the new value, so it is never read from before the
+key.</li>
+<li><strong>Slider Keys</strong> (2026-10-26) lets a listener choose the
+Windows slider keys instead (Down, Page Down and End raise it). It is
+one choice for every Quill app, made with the <strong>Slider
+Keys…</strong> button in the Preferences of Quill Radio, QUILL Cast,
+Quill Media Player or QUILL Studio; QUILL has no button of its own and
+follows that choice. Right is always more and Left less, and
+<code>Ctrl+Up</code> and <code>Ctrl+Down</code>, the volume keys that
+work from anywhere, are not changed.</li>
+</ul>
+<h4 id="under-the-hood">Under the hood</h4>
+<ul>
+<li>Tables: <code>table_nav.tab_move</code> and
+<code>table_nav.arrow_move</code>; the shared edits in
+<code>quill/core/table_edit.py</code>; the shared prompt in
+<code>quill/ui/table_shape_prompt.py</code> (moved out of
+<code>main_frame.py</code>). Real tables: Insert Table goes in through
+<code>EM_SETTEXTEX</code> as one undo step
+(<code>quill/ui/richedit_tables.py</code>); the table keys and Tab read
+RichEdit’s row and cell marks
+(<code>quill/core/native_tables.py</code>), with <code>GetValue</code>
+aligned to caret positions once a table is present; row and column edits
+rebuild the table in place through <code>table_edit</code>.
+<code>quill/io/rtf_tables.py</code> is the bridge: pipe rows load as
+real tables, a save marks each table’s first row <code>\trhdr</code>
+(RichEdit drops it), and <code>get_rtf</code> still hands out pipe rows
+for Save as Word and the switches to Markdown and plain text. The RTF
+I/O methods moved to <code>quill/ui/richedit_rtf_io.py</code>
+(GATE-11).</li>
+<li>What’s New: one module for the family,
+<code>quill/ui/whats_new.py</code>, which opens each app’s rendered
+changelog (or renders the Markdown one into the data folder).
+<code>extract_version_section</code> now accepts Keep a Changelog’s
+bracketed <code>## [3.2.0] - date</code> headings.</li>
+<li>QUILL Lite’s empty-window bar is built from the command table
+(<code>apps/lite_shell_menu.py</code>), so it shows the same labels and
+resolved keys as a document’s bar.</li>
+<li>Sliders: the family’s choice is <code>slider_keys.json</code> in the
+shared data folder (<code>quill/core/slider_key_layout.py</code>), read
+at each key press; <code>quill/ui/slider_keys.py</code> raises
+<code>EVENT_OBJECT_VALUECHANGE</code> after each move.</li>
+<li>The shared radio code that Quill Radio runs gained 181.FM and
+laut.fm as whole networks, and Big R Radio and 1.FM under Networks &gt;
+Music; Quill Radio’s changelog has the details.</li>
+<li><code>.kqp</code> keyboard packs moved to
+<code>quill/core/keymap_kqp.py</code> (GATE-11); the keymap module
+re-exports both functions.</li>
+<li><strong>Table screen-reader spike</strong>
+(<code>docs/design/table-uia-spike-2026-10.md</code>): NVDA does not
+read RichEdit through UIA, so a UIA table layer cannot reach it; an NVDA
+add-on is the recommended route.</li>
+</ul>
 <h3 id="quill-transcribe-joins-the-release-channels-2026-10-24">QUILL
 Transcribe joins the release channels (2026-10-24)</h3>
 <p>QUILL Transcribe now takes the same path as QUILL Lite, Quill Radio
@@ -8024,31 +8177,29 @@ rich text, they want two asterisks, and they know it.</p>
 <p>A plain document now has a <strong>language</strong> – Markdown,
 HTML, or none – and it decides four things at once:</p>
 <table>
-<caption>Table: A plain document has a language, and the keys follow
-it</caption>
 <thead>
 <tr>
-<th scope="col">In a</th>
-<th scope="col"><code>Ctrl+B</code> writes</th>
-<th scope="col"><code>Ctrl+Alt+2</code> writes</th>
-<th scope="col">Tag picker offered</th>
+<th>In a</th>
+<th><code>Ctrl+B</code> writes</th>
+<th><code>Ctrl+Alt+2</code> writes</th>
+<th>Tag picker offered</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th scope="row">Markdown document</th>
+<td>Markdown document</td>
 <td><code>**bold**</code></td>
 <td><code>## Heading</code></td>
 <td>Insert Markdown Tag</td>
 </tr>
 <tr>
-<th scope="row">HTML document</th>
+<td>HTML document</td>
 <td><code>&lt;strong&gt;bold&lt;/strong&gt;</code></td>
 <td><code>&lt;h2&gt;Heading&lt;/h2&gt;</code></td>
 <td>Insert HTML Tag</td>
 </tr>
 <tr>
-<th scope="row">Plain text document</th>
+<td>Plain text document</td>
 <td>nothing, and says why</td>
 <td>nothing, and says why</td>
 <td>neither; both dimmed</td>
@@ -9574,36 +9725,35 @@ do now”, because a document cannot see what you have already done. All
 four apps now have guided tutorials that can, on the same key everywhere
 – <strong>Help &gt; Tutorials… (Ctrl+Alt+F1)</strong>:</p>
 <table>
-<caption>Table: Every app learns to teach (2026-08-28)</caption>
 <thead>
 <tr>
-<th scope="col">App</th>
-<th scope="col">Lessons</th>
-<th scope="col">Steps</th>
-<th scope="col">Tracks</th>
+<th>App</th>
+<th>Lessons</th>
+<th>Steps</th>
+<th>Tracks</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th scope="row">Quill Radio</th>
+<td>Quill Radio</td>
 <td>36</td>
 <td>251</td>
 <td>6</td>
 </tr>
 <tr>
-<th scope="row">QUILL</th>
+<td>QUILL</td>
 <td>23</td>
 <td>136</td>
 <td>6</td>
 </tr>
 <tr>
-<th scope="row">QUILL Cast</th>
+<td>QUILL Cast</td>
 <td>24</td>
 <td>149</td>
 <td>5</td>
 </tr>
 <tr>
-<th scope="row">Quill Weather</th>
+<td>Quill Weather</td>
 <td>11</td>
 <td>60</td>
 <td>3</td>

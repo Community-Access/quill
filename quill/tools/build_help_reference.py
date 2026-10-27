@@ -75,10 +75,10 @@ APPS: tuple[AppConfig, ...] = (
         "player_help_inventory.json",
     ),
     AppConfig(
-        "QUILL Audio Studio",
+        "QUILL Studio",
         "quill.core.audio_studio.surface_help",
         ("quill/ui/audio_studio",),
-        ("quill/apps/studio.py",),
+        ("quill/apps/studio.py", "quill/apps/studio_capture.py", "quill/ui/studio_capture_*.py"),
         "studio_help_inventory.json",
     ),
     AppConfig(

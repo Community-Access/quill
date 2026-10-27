@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QUILL Audio Studio 2.2.0 - Release Notes</title>
+  <title>QUILL Studio 2.0.0 - Release Notes</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -242,21 +242,94 @@
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
-<h1 id="quill-audio-studio-220---release-notes">QUILL Audio Studio 2.2.0
-- Release Notes</h1>
+<h1 id="quill-studio-200---release-notes">QUILL Studio 2.0.0 - Release
+Notes</h1>
 <p>Built, not yet released.</p>
-<h2 id="why-the-version-jumps-from-100-to-220">Why the version jumps
-from 1.0.0 to 2.2.0</h2>
-<p>There is no Audio Studio 2.0 or 2.1. On 2026-07-21 the Studio’s build
-was rebuilt from the shared template every Quill app now uses, and it
-took the family’s version number with it - the same 2.2.0 that Quill
-Weather (2026-07-23) and Quill Radio (2026-07-24) carry. The number is
-shared because the apps now install and run on one shared runtime; the
-releases stay independent, so each app still updates on its own
-schedule.</p>
-<p>This build has not been published. Audio Studio is not yet offered in
-the cross-app menu and there is no 2.2.0 download page. What follows is
+<h2 id="quill-studio-200-follows-audio-studio-100">QUILL Studio 2.0.0
+follows Audio Studio 1.0.0</h2>
+<p>QUILL Studio 2.0.0 follows Audio Studio 1.0.0. The previously
+unpublished 2.2.0 build is renumbered to 2.0.0 with the QUILL Studio
+rename. Studio continues to use the shared QuillVille Runtime; each app
+has its own release version.</p>
+<p>This build has not been published. QUILL Studio is not yet offered in
+the cross-app menu and there is no 2.0.0 download page. What follows is
 what is in the build, waiting on the release.</p>
+<h2 id="a-new-name-quill-studio">A new name: QUILL Studio</h2>
+<p>QUILL Audio Studio is now <strong>QUILL Studio</strong>. The window,
+the tray, the wizard, the installer and the shortcuts use the new name.
+Nothing else moves: an installed copy upgrades in place, your books,
+voices, settings and shared data stay where they are, and the old
+command-line name still works.</p>
+<h2
+id="screenshots-global-hotkeys-and-a-screenshot-inspector-ai-optional">Screenshots,
+global hotkeys, and a Screenshot Inspector (AI optional)</h2>
+<p>A new <strong>Capture</strong> menu adds screenshot capture tools
+directly in Studio. These features are available without enabling AI; AI
+inspection is an optional extra for describing or discussing what is in
+an image.</p>
+<p>Highlights:</p>
+<ul>
+<li><strong>Capture menu and command palette coverage.</strong> Every
+capture action is available from the menu bar and <strong>Help &gt;
+Command Palette…</strong> (Ctrl+Shift+P).</li>
+<li><strong>A shorter window list with an escape hatch.</strong> Capture
+screen lists top-level task windows by title (similar to Alt+Tab) so the
+picker is readable. Enable “Show all windows (advanced)” when you need
+tool windows, and use “Window properties…” for process IDs and other
+identifiers. If you only see Desktop/Display targets, update: a preview
+build had a regression that hid windows from the picker.</li>
+<li><strong>Wizard entry point.</strong> <strong>Studio &gt; Open Studio
+Wizard…</strong> (Ctrl+N) includes a Capture journey so you can start a
+screenshot run from one place.</li>
+<li><strong>Minimize-to-tray on demand.</strong> <strong>Studio &gt;
+Minimize to Tray</strong> (Ctrl+Alt+T) hides the window in the system
+tray without exiting.</li>
+<li><strong>Library window instead of a book-centric home.</strong> The
+home window stays intentionally quiet; open <strong>View &gt; Library
+Window…</strong> (Ctrl+Alt+Y) to browse and manage books.</li>
+<li><strong>Preferences close is silent.</strong> Leaving Preferences
+updates the status line but does not speak “Preferences saved”.</li>
+</ul>
+<h2 id="chapters-for-any-recording">Chapters for any recording</h2>
+<p><strong>Studio &gt; Find Chapters in a Recording…</strong>
+(Ctrl+Shift+R) picks any MP3, M4A or M4B – a lecture or a meeting as
+much as a book – and opens the Chapter Workbench on it with
+<strong>Propose chapters from silences</strong> already started.
+Proposals are titled “Proposed chapter 1, 2…”, so a guess is never
+mistaken for a real title. If the recording has chapters of its own you
+are asked whether to keep them and add only new boundaries (the default)
+or replace them; nothing is replaced silently. Press the button again
+(it reads <strong>Stop proposing chapters</strong>) to stop a scan.</p>
+<h2
+id="sliders-that-go-the-way-you-expect-and-slider-keys-to-choose">Sliders
+that go the way you expect, and Slider Keys to choose</h2>
+<p>Up and Page Up raise the player’s Position and Volume sliders and
+Down and Page Down lower them, in every Quill app. Home and End go with
+them: Home is the top of a volume slider, 100 percent, and End the
+bottom. If you would rather have the keys a standard Windows slider
+uses, open <strong>Studio &gt; Preferences…</strong> (Ctrl+,) and choose
+the <strong>Slider Keys…</strong> button: <strong>Up is more</strong>
+(the default) or <strong>As Windows sliders</strong> (Down, Page Down
+and End raise it). It is one choice for every Quill app at once. Right
+is always more and Left less, and each key press tells your screen
+reader the new value. Ctrl+Up and Ctrl+Down, the volume keys that work
+from anywhere in the apps that have them, are not changed.</p>
+<h2 id="the-studios-own-sounds-where-you-want-them">The Studio’s own
+sounds, where you want them</h2>
+<p>The <strong>App Sounds Play On…</strong> button in <strong>Studio
+&gt; Preferences…</strong> (Ctrl+,) sends the Studio’s own sounds to the
+system default, to any sound card or headset by name, or nowhere.
+<strong>Alt+Shift+M</strong> turns them off and back on where they were,
+and <strong>Studio &gt; App Sounds</strong> shows a check mark while
+they are on. Your screen reader is never moved.</p>
+<h2 id="whats-new-and-a-guide-that-matches-the-menus">What’s New, and a
+guide that matches the menus</h2>
+<p><strong>Help &gt; What’s New</strong> (Ctrl+Shift+F1) opens the
+Studio’s changelog in your browser, on the same key as every other Quill
+app. The user guide has a new section on the speech-recognition engines
+(Whisper.cpp, the QUILL speech models such as Parakeet and Nemotron, and
+Faster Whisper) and how to download them, and its keyboard reference now
+matches the menus: Alt+V is the View menu and Alt+I the Voices menu.</p>
 <h2
 id="install-python-once-and-every-quill-app-starts-instantly">Install
 Python once, and every Quill app starts instantly</h2>
@@ -293,7 +366,7 @@ the installer quietly - and relaunches, keeping every setting, voice,
 and book position. No closing the app, unzipping, and swapping folders
 by hand.</p>
 <p><strong>Help &gt; Check for Updates…</strong> now looks at the shared
-Quill project releases and picks out Audio Studio’s own download for the
+Quill project releases and picks out the Studio’s own download for the
 flavor you run. Each app updates on its own schedule from that one
 place, so an update to Quill Radio is never mistaken for an update to
 the Studio.</p>
@@ -438,6 +511,16 @@ first attempt with five bars merged into a solid slab. There are three,
 with real gaps between them, because gaps are what make a waveform read
 as bars rather than as a block.</p>
 <h2 id="fixed">Fixed</h2>
+<p><strong>Alt+B opens the Book Tools menu again.</strong> The main
+window’s Build From Recordings button also claimed Alt+B, so Alt+B
+started a new book. The button is now <strong>Build From
+Recordings…</strong> on Alt+R, and Alt+B opens Book Tools.</p>
+<p><strong>Edit a Book opens again.</strong> It stopped with an error
+before its window appeared. It opens, and Ctrl+Shift+T (Sleep Timer) and
+Ctrl+Shift+Q (Play Queue) now work inside it.</p>
+<p><strong>Resume Last Book on Launch is Ctrl+Alt+F10.</strong> It was
+Ctrl+Alt+Shift+R, Quill Radio’s system-wide show and hide key, so with
+Radio running the menu key never fired.</p>
 <p><strong>Kokoro narration no longer stops mid-run on a portable
 copy.</strong> A long, dense passage could overrun the neural model’s
 input window; the Studio then fell back to a heavyweight code path a

@@ -8,7 +8,7 @@ It uses the same speech models and the same dictation as QUILL and QUILL Lite.
 If you already dictate in QUILL, the words, punctuation and commands you know
 work here too.
 
-Version 1.0.0 (build 2), released on 1 November 2026: the first public release.
+Version 1.0.0 (build 3), released on 1 November 2026: the first public release.
 
 ## What it promises
 
@@ -1457,6 +1457,13 @@ If the device you chose is unplugged or asleep, you still hear every sound, on t
 
 This changes QUILL Transcribe only. Your other QUILL apps keep their own choice, unless you have checked "Share these choices with my other Quill apps", which copies a change here to the others that share. Your screen reader is never moved.
 
+## What's New
+
+**What's New** (Ctrl+Shift+F1, on the Help menu) opens QUILL Transcribe's
+changelog in your browser: everything that changed, grouped by area. It is on
+the same key in every standalone QuillVille app. If a build has no changelog,
+QUILL Transcribe says so instead of doing nothing.
+
 ## Updates and release channels
 
 **Check for Updates** (Ctrl+Alt+U, on the Help menu and the tray menu) looks
@@ -1535,6 +1542,20 @@ so you can look at your settings.
   word list and your settings in place, because QUILL and the other apps use
   them too.
 
+## Licences and notices
+
+QUILL Transcribe is free and released under the MIT License. It also includes software,
+data and sounds from other projects, each under its own licence.
+
+To read them, open the Help menu, choose About QUILL Transcribe, and then choose the
+Licences and Notices button. The list opens as a plain text file, with one
+heading for each component: what it is, its licence, who holds the copyright
+and what the licence asks of us. The full licence texts are at the end.
+
+The same file, THIRD-PARTY-NOTICES.txt, and QUILL Transcribe's own licence, LICENSE.txt,
+are also in the folder where QUILL Transcribe is installed or unpacked, so you can open
+them without starting the app.
+
 ## Keyboard shortcuts
 
 In the QUILL Transcribe window:
@@ -1567,6 +1588,7 @@ In the QUILL Transcribe window:
 | User guide | Ctrl+F1 |
 | Tutorials | Ctrl+Alt+F1 |
 | Set up QUILL Transcribe | Ctrl+Alt+S |
+| What's new | Ctrl+Shift+F1 |
 | Check for updates | Ctrl+Alt+U |
 | About QUILL Transcribe | Ctrl+Alt+I |
 

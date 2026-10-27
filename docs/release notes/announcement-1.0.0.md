@@ -42,6 +42,14 @@ You hear the level even right after **Ctrl+Home**, when your screen reader start
 talking again. Each of these cues has a key that switches it off where you are, for
 the times you are reading a document and do not need to hear its structure.
 
+Inside a table, the arrow keys read it cell by cell: **Up** and **Down** go to the
+cell above and below and say it, and **Right** and **Left** step from one cell to the
+next, so your screen reader no longer reads a whole row as one line. **Tab** moves
+cell to cell as in Word, and adds a row in the last cell. In a rich text document a
+table is a real table, one your screen reader, Word and WordPad all read as a table;
+**Insert Table** (**Ctrl+Alt+T**) makes one. It works the same with JAWS, NVDA and
+Narrator, with nothing to install.
+
 It helps you write markup other people can use, too. The HTML picker offers 111
 elements and, above them, **twenty whole form controls**: a labelled dropdown, a
 radio group in a fieldset with one shared name, a required field tied to its hint
@@ -196,7 +204,8 @@ open in place of Notepad if you ask it to.
 
 **Help > Release Channel...** lets you stay on Stable, the version we recommend, or
 try new features early on Beta. QUILL saves a copy of your settings before it
-moves, and coming back to Stable is the same window.
+moves, and coming back to Stable is the same window. **Help > What's New** opens
+the list of everything that changed, in your browser.
 
 ## Or take the small one
 

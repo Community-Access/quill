@@ -12,14 +12,37 @@ engine under `quill/core/audio/` -- so a fix to the engine lands in QUILL's
 Audio Studio at the same time. The `standalone/converter` folder carries only
 the launcher, installer, icon and these documents.
 
-## Unreleased
+## 1.0.0 -- 2026-09-28
+
+The first public release. The app was first built in July 2026 as an audio
+converter; that build was never published as an installer, and everything it
+had is included here.
+
+### New in build 2
+
+Build 2 keeps everything in build 1 and adds the following.
+
+#### Sending sound to Auphonic
+
+- **Process with Auphonic** (2026-10-15). If you have an Auphonic account, Convert > Process with Auphonic... (Ctrl+Shift+A) sends the queue's sound files to it for post-production and saves the results back under your output folder, without Auphonic's website. Send them as separate productions, one after another, or as one multitrack production with a track per file in queue order. Check your account and load your presets without uploading anything, then keep the preset's processing or choose Quick cleanup (leveling, loudness and filtering, with background-noise reduction only if you turn it on), and keep the preset's outputs or choose MP3, AAC, Opus, FLAC or WAV. One confirmation lists every file that will be sent and every one that will not, and why, before anything is uploaded; Cancel sends nothing. Progress, Stop (Ctrl+Enter) and the report (Ctrl+R) work as they do for a conversion, a failed file does not stop the rest, only sound files are downloaded, and nothing is ever overwritten. A production Auphonic has started is remembered on this computer, so Stop, a lost connection or closing the app never loses it: Convert > Auphonic Work Waiting... (Ctrl+Alt+A) fetches it later. The API token is the one the Audio Studio uses, kept in Windows Credential Manager. Nothing contacts Auphonic until you ask, and Safe Mode turns this off. Converting itself is still entirely on your computer.
+
+#### Files and drives
 
 - **File Properties tells you about the drive** (2026-10-17). File Properties (Alt+Enter) now ends with the drive the highlighted file is on: its letter or network share, its label, its kind (local disk, removable drive, network drive, CD or DVD drive) and file system, then its capacity, used space with the percentage, and free space. Sizes use File Explorer's units with the exact bytes beside them, so you can check there is room before a long conversion. A drive that has been removed, a network share that cannot be reached, or one Windows will not let you read is one plain line, and the rest of the file's details still show. Nothing on the drive is changed. User guide: "Managing the queue", under File Properties.
 
-- **The user guide says where transcription lives** (2026-10-17). Quill Converter has no speech engine and does not transcribe. The guide's "Anywhere" section now says so, and points to QUILL Transcribe (Alt+U, then T) and QUILL for turning a recording into text.
-- **QUILL Transcribe on the QuillVille menu** (2026-10-16). QUILL Transcribe, which types what you say into any program, is released on 1 November 2026, and the **QuillVille** menu (Alt+U) lists it last: Alt+U, then T, or Ctrl+Alt+Shift+F11. QUILL, Quill Radio, Quill Weather and Quill Inkwell keep Ctrl+Alt+Shift+F7 to F10, so no key you know has moved. If it is not installed, Quill Converter offers to download it once it is published, and nothing is downloaded until you say yes. User guide: "Keyboard reference", under "Anywhere".
+#### Sound
 
-- **Process with Auphonic** (2026-10-15). If you have an Auphonic account, Convert > Process with Auphonic... (Ctrl+Shift+A) sends the queue's sound files to it for post-production and saves the results back under your output folder, without Auphonic's website. Send them as separate productions, one after another, or as one multitrack production with a track per file in queue order. Check your account and load your presets without uploading anything, then keep the preset's processing or choose Quick cleanup (leveling, loudness and filtering, with background-noise reduction only if you turn it on), and keep the preset's outputs or choose MP3, AAC, Opus, FLAC or WAV. One confirmation lists every file that will be sent and every one that will not, and why, before anything is uploaded; Cancel sends nothing. Progress, Stop (Ctrl+Enter) and the report (Ctrl+R) work as they do for a conversion, a failed file does not stop the rest, only sound files are downloaded, and nothing is ever overwritten. A production Auphonic has started is remembered on this computer, so Stop, a lost connection or closing the app never loses it: Convert > Auphonic Work Waiting... (Ctrl+Alt+A) fetches it later. The API token is the one the Audio Studio uses, kept in Windows Credential Manager. Nothing contacts Auphonic until you ask, and Safe Mode turns this off. Converting itself is still entirely on your computer.
+- **Where Quill Converter's own sounds play, and Alt+Shift+M to turn them off.** **File > Preferences > App Sounds Play On...** offers System default, None (no sounds), or any sound card or headset by name. After a change one sound plays on the new card, so you hear where it went. If that card is unplugged the sounds play on the system default until it is back, and Quill Converter says so once. **Alt+Shift+M** turns Quill Converter's sounds off and back on where they were, and **File > App Sounds** shows a check mark while they are on. Each QUILL app keeps its own choice; "Share these choices with my other Quill apps" keeps them in step. Your screen reader is never moved. Asked for on QUILLVille by Rick Lewis.
+
+#### Help and the QuillVille menu
+
+- **Help > What's New** (Ctrl+Shift+F1) opens this changelog in your browser,
+  the door every QuillVille app has on the same key. It was called
+  Changelog, on the same key, until 2026-10-25; only the name changed.
+- **QUILL Transcribe on the QuillVille menu** (2026-10-16). QUILL Transcribe, which types what you say into any program, is released on 1 November 2026, and the **QuillVille** menu (Alt+U) lists it last: Alt+U, then T, or Ctrl+Alt+Shift+F11. QUILL, Quill Radio, Quill Weather and Quill Inkwell keep Ctrl+Alt+Shift+F7 to F10, so no key you know has moved. If it is not installed, Quill Converter offers to download it once it is published, and nothing is downloaded until you say yes. User guide: "Keyboard reference", under "Anywhere".
+- **The user guide says where transcription lives** (2026-10-17). Quill Converter has no speech engine and does not transcribe. The guide's "Anywhere" section now says so, and points to QUILL Transcribe (Alt+U, then T) and QUILL for turning a recording into text.
+
+#### Under the hood
 
 - **FFmpeg's licence, checked on every build.** FFmpeg's licence (the GNU
   General Public License, version 3) and the note on where to get its source
@@ -28,16 +51,6 @@ the launcher, installer, icon and these documents.
   without them.
 
 - **Every release build checks its version against what is published** (2026-10-15). The shared QuillVille runtime carries every app's version number, so a build of one app could make another report a version nobody can download yet, and Check for Updates would then never offer the real one. Quill Converter's release builds now run the same check Quill Radio, QUILL Lite, QUILL Cast and Quill Weather already did, and a build of every app at once checks them all again instead of stopping at an app it did not know.
-
-## 1.0.0 -- 2026-09-28
-
-The first public release. The app was first built in July 2026 as an audio
-converter; that build was never published as an installer, and everything it
-had is included here.
-
-Build 2:
-
-- **Where Quill Converter's own sounds play, and Alt+Shift+M to turn them off.** **File > Preferences > App Sounds Play On...** offers System default, None (no sounds), or any sound card or headset by name. After a change one sound plays on the new card, so you hear where it went. If that card is unplugged the sounds play on the system default until it is back, and Quill Converter says so once. **Alt+Shift+M** turns Quill Converter's sounds off and back on where they were, and **File > App Sounds** shows a check mark while they are on. Each QUILL app keeps its own choice; "Share these choices with my other Quill apps" keeps them in step. Your screen reader is never moved. Asked for on QUILLVille by Rick Lewis.
 
 ### Found before release (2026-10-05)
 
@@ -308,8 +321,8 @@ Build 2:
 ### Help menu and support
 
 - The Help menu matches Quill Radio's and QUILL Lite's: Help for This Window
-  (F1), User Guide (Ctrl+F1), Release Notes (Shift+F1), Changelog
-  (Ctrl+Shift+F1), Product Requirements (Alt+Shift+F1), Keyboard Shortcuts
+  (F1), User Guide (Ctrl+F1), Release Notes (Shift+F1), What's New, the
+  changelog (Ctrl+Shift+F1; called Changelog until build 2), Product Requirements (Alt+Shift+F1), Keyboard Shortcuts
   (Ctrl+Alt+K), Get Help from Support (Ctrl+Alt+F2), Get FFmpeg (Ctrl+Alt+F),
   Check for Updates (Ctrl+Alt+U) and About (Alt+F1).
 - Keyboard Shortcuts is a read-only list of every key in the app.

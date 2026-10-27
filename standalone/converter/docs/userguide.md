@@ -1128,6 +1128,20 @@ F1 explains wherever you are, Troubleshooting covers the common problems, and
 Help > Get Help from Support... (Ctrl+Alt+F2) writes to a person. The keyboard
 reference below lists every key, so it is a good page to come back to.
 
+## Licences and notices
+
+Quill Converter is free and released under the MIT License. It also includes software,
+data and sounds from other projects, each under its own licence.
+
+To read them, open the Help menu, choose About Quill Converter, and then choose the
+Licences and Notices button. The list opens as a plain text file, with one
+heading for each component: what it is, its licence, who holds the copyright
+and what the licence asks of us. The full licence texts are at the end.
+
+The same file, THIRD-PARTY-NOTICES.txt, and Quill Converter's own licence, LICENSE.txt,
+are also in the folder where Quill Converter is installed or unpacked, so you can open
+them without starting the app.
+
 ## Keyboard reference
 
 The same list is in the app: Help > Keyboard Shortcuts... (Ctrl+Alt+K) shows
@@ -1187,7 +1201,7 @@ every key in a read-only window you can arrow through.
 | Find a Setting or Command... | Ctrl+Alt+Shift+S |
 | User Guide | Ctrl+F1 |
 | Release Notes | Shift+F1 |
-| Changelog | Ctrl+Shift+F1 |
+| What's New (the changelog) | Ctrl+Shift+F1 |
 | Product Requirements | Alt+Shift+F1 |
 | Keyboard Shortcuts... | Ctrl+Alt+K |
 | Get Help from Support... | Ctrl+Alt+F2 |

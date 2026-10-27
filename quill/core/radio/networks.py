@@ -63,6 +63,10 @@ class Network:
     country: str = ""
     note: str = ""
     limit: int = 80
+    #: Keep only stations whose name starts with this (case-insensitive). For a
+    #: network whose name is a common substring: a search for "1.FM" also
+    #: returns "011.FM" and "Radio 1.FM", which are not the network.
+    name_prefix: str = ""
 
 
 #: The catalog. SomaFM stays a built-in source (its own channels.json), so it is
@@ -147,6 +151,20 @@ NETWORKS: tuple[Network, ...] = (
     # -- Music ---------------------------------------------------------------
     Network("radio-paradise", "Radio Paradise", GROUP_MUSIC, query="Radio Paradise"),
     Network("fip", "FIP (Radio France)", GROUP_MUSIC, query="FIP"),
+    # 2026-10-25. 181.FM also has its own branch with the network's genres
+    # (one_eighty_one.py); this is its place among the networks. Big R Radio and
+    # 1.FM publish no station list a player may use -- 1.FM's needs a private
+    # key -- so the directory's own entries for them are the honest route.
+    Network("181fm", "181.FM", GROUP_MUSIC, query="181.FM", name_prefix="181.FM", limit=200),
+    Network(
+        "big-r-radio",
+        "Big R Radio",
+        GROUP_MUSIC,
+        query="Big R Radio",
+        name_prefix="Big R Radio",
+        limit=120,
+    ),
+    Network("1fm", "1.FM", GROUP_MUSIC, query="1.FM", name_prefix="1.FM", limit=400),
 )
 
 
@@ -170,12 +188,23 @@ def network_stations(network: Network, *, safe_mode: bool = False) -> list[Radio
     """Playable stations for *network*, via a curated Radio Browser query.
 
     Reuses the integrated Radio Browser client, so no new egress site is
-    introduced. Safe Mode is enforced by ``search_stations`` itself.
+    introduced. Safe Mode is enforced by ``search_stations`` itself. A network
+    with a ``name_prefix`` keeps only stations named for it, each stream once.
     """
-    return radio_browser.search_stations(
+    stations = radio_browser.search_stations(
         network.query,
         tag=network.tag,
         country=network.country,
         limit=network.limit,
         safe_mode=safe_mode,
     )
+    if not network.name_prefix:
+        return stations
+    prefix = network.name_prefix.casefold()
+    seen: set[str] = set()
+    kept: list[RadioStation] = []
+    for station in stations:
+        if station.name.casefold().startswith(prefix) and station.stream_url not in seen:
+            seen.add(station.stream_url)
+            kept.append(station)
+    return kept

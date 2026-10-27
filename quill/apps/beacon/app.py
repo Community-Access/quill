@@ -653,6 +653,14 @@ class BeaconFrame(wx.Frame):
             self._on_get_help,
             "Write to support about a problem, a question or an idea",
         )
+        # The changelog in the browser, on the key every standalone QuillVille
+        # app gives it (quill.ui.whats_new).
+        self._add(
+            m_help,
+            "&What's New\tCtrl+Shift+F1",
+            self._on_whats_new,
+            "Open QuillBeacon's changelog in your browser",
+        )
         self._add(m_help, "&About\tAlt+F1", self._on_about, "About QuillBeacon")
         mb.Append(m_help, "&Help")
 
@@ -1541,15 +1549,26 @@ class BeaconFrame(wx.Frame):
 
         open_support_message(self, source_app=_TITLE, app_version=_VERSION)
 
+    def _on_whats_new(self, _e) -> None:
+        from quill.ui.whats_new import open_whats_new
+
+        open_whats_new("beacon", _TITLE, self._announce)
+
     def _on_about(self, _e) -> None:
-        show_message_box(
-            f"{_TITLE} {_VERSION} (build {_BUILD})\nSchema v{SCHEMA_VERSION}\n"
+        from quill.ui.about_notices import show_about_dialog
+        from quill.ui.dialog_contract import show_modal_dialog
+
+        show_about_dialog(
+            self,
+            app="beacon",
+            app_name=_TITLE,
+            body=f"{_TITLE} {_VERSION} (build {_BUILD})\nSchema v{SCHEMA_VERSION}\n"
             "Find your way back to anything.\n\n"
             "Local-first. No account required. Library: "
             f"{self.data_dir / 'beacons.db'}"
             f"\n\nSupport: {SUPPORT_EMAIL}",
-            "About QuillBeacon",
-            wx.OK,
+            announce=self.announcer.say,
+            show_modal=show_modal_dialog,
         )
 
     # -- media (Phase 3) ------------------------------------------------------

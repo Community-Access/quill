@@ -791,6 +791,26 @@ Enter does exactly what choosing that row from its menu would do. For an
 option, it switches it and tells you whether it is now on or off. Escape
 closes the window without doing anything.
 
+## What's New
+
+**Help > What's New** (**Ctrl+Shift+F1**) opens Inkwell's changelog in your
+browser: what changed in the version you have, grouped by subject. Every
+QuillVille app has the same door on the same key.
+
+## Licences and notices
+
+Quill Inkwell is free and released under the MIT License. It also includes software,
+data and sounds from other projects, each under its own licence.
+
+To read them, open the Help menu, choose About Quill Inkwell, and then choose the
+Licences and Notices button. The list opens as a plain text file, with one
+heading for each component: what it is, its licence, who holds the copyright
+and what the licence asks of us. The full licence texts are at the end.
+
+The same file, THIRD-PARTY-NOTICES.txt, and Quill Inkwell's own licence, LICENSE.txt,
+are also in the folder where Quill Inkwell is installed or unpacked, so you can open
+them without starting the app.
+
 ## Getting help
 
 Support is run by **Community Access**, and the address is

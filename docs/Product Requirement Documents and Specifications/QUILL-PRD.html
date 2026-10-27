@@ -2147,8 +2147,10 @@ Word tables <em>read</em> → GFM tables
 (<code>_table_block_length</code>/<code>_emit_table</code> in
 <code>docx_writer</code>), with the header row bold and marked
 <code>&lt;w:tblHeader&gt;</code> (repeating header,
-screen-reader-announced). RTF remains the exception — a table written to
-RTF is pipe-text, not a native RTF table.</li>
+screen-reader-announced). RTF was the exception until 2026-10-26,
+writing a table as pipe-text; since then a table in rich text is a real
+RichEdit table and is saved to RTF as a native table with its first row
+marked <code>\trhdr</code> (<code>quill/io/rtf_tables.py</code>).</li>
 <li>Image references round-trip in Markdown and render as
 <code>&lt;img&gt;</code> in HTML; images are not embedded into Word, and
 embedded Word images are not read.</li>
@@ -2172,10 +2174,11 @@ round-trip as real tables between Markdown, HTML, and Word:
 <code>&lt;w:tblHeader&gt;</code> header row — so Markdown→Word and
 HTML→Word (via the hub) now produce editable Word tables, and
 Word→Markdown/HTML already preserved them. Remaining honest gaps: RTF
-drops alignment and page breaks and writes tables as pipe-text; docx
-drops page breaks on read; inline formatting inside a Markdown-authored
-table cell flattens to plain text on the way to Word; Word-embedded
-images are not extracted.</p>
+drops alignment and page breaks (it wrote tables as pipe-text until
+2026-10-26; they are native RTF tables now); docx drops page breaks on
+read; inline formatting inside a Markdown-authored table cell flattens
+to plain text on the way to Word; Word-embedded images are not
+extracted.</p>
 <p><strong>Conversion engine preferences.</strong> Two settings expose
 the engine choice with speakable outcome descriptions:
 <code>docx_read_engine</code> (auto | markitdown | pandoc — auto is
@@ -4862,6 +4865,22 @@ the column header in the title.</li>
 and pads columns on every edit so the underlying text stays readable as
 plain text.</li>
 </ul>
+<p><strong>Status (2026-10-26): shipped differently from the sketch
+above.</strong> There is no separate Table Mode and none of the chords
+above are table keys (<code>Ctrl+Alt+T</code> is Insert Table and
+<code>Ctrl+Alt+R</code> Trim Trailing Whitespace). What shipped, the
+same in QUILL and QUILL Lite: <code>Ctrl+Alt+arrows</code> move cell by
+cell, <code>Alt+Home</code>/<code>Alt+End</code> to the ends of a row
+and <code>Ctrl+Alt+Home</code>/<code>Ctrl+Alt+End</code> to the ends of
+the table; the plain arrows also read a table cell by cell; Tab and
+Shift+Tab move cell to cell and Tab in the last cell adds a row;
+entering says “Table, N rows, M columns” and leaving “Out of table”; a
+new column in a table with a header row says its header. Insert Row
+Below, Insert Column Right, Delete Row, Delete Column and Tidy Table are
+keyless, as in Word, on Navigate &gt; Table. In rich text a table is a
+real (RichEdit) table, not pipe rows. See “Tables in both editors: real
+tables in rich text, the arrows by cell (2026-10-25 and 2026-10-26)”
+below.</p>
 <h3 id="521a-structured-list-studio-f2--shipped">5.21a Structured List
 Studio (F2) — shipped</h3>
 <p>Build and edit lists by concept, not syntax, so the user never types
@@ -20637,9 +20656,10 @@ notice strings.</p>
 <td>Short, accessible summary shown in the Legal tab</td>
 </tr>
 <tr>
-<td><code>docs/legal/trademark-notices.md</code></td>
+<td><code>docs/legal/TRADEMARKS.md</code></td>
 <td>Detailed reference</td>
-<td>Full vendor acknowledgements with links</td>
+<td>Naming policy and full vendor acknowledgements with links (merged
+2026-10-26)</td>
 </tr>
 </tbody>
 </table>
@@ -26305,6 +26325,50 @@ them</td>
 does not point back at the source. File &gt; Open opens the file itself,
 and only a <code>.docx</code> saves back to it. Both user guides carry
 this table as “Office files at a glance”.</p>
+<h3
+id="tables-in-both-editors-real-tables-in-rich-text-the-arrows-by-cell-2026-10-25-and-2026-10-26">Tables
+in both editors: real tables in rich text, the arrows by cell
+(2026-10-25 and 2026-10-26)</h3>
+<p>Shipped in QUILL and QUILL Lite alike, from shared code, so neither
+editor is ahead of the other.</p>
+<ul>
+<li><strong>Real tables in rich text.</strong> In a rich document a
+table is RichEdit’s own: a grid on screen and a table to a screen
+reader, Word and WordPad. <strong>Insert &gt; Insert Table…</strong>
+(<code>Ctrl+Alt+T</code> in both editors) asks columns (1-12), rows
+(1-50) and a header row (<code>quill/ui/table_shape_prompt.py</code>)
+and inserts a real table in rich text, a <code>&lt;table&gt;</code> with
+<code>scope="col"</code> headers in HTML, and pipe rows in Markdown and
+plain text. Word and RTF tables open as real tables; saved to RTF or
+Word a table stays one, its first row the header.</li>
+<li><strong>Reading.</strong> The <code>Ctrl+Alt</code> table keys, and
+the plain arrows: Up and Down to the cell above and below, Right at a
+cell’s end and Left at its start to the next or previous cell, Down onto
+a table into its first cell with its shape. The key is consumed so the
+reader does not also read the whole row; no add-on or reader script.
+Each move says only what changed, and a new column says its header when
+the table has a header row.</li>
+<li><strong>Editing.</strong> Tab and Shift+Tab move cell to cell; Tab
+in the last cell adds a row. Insert Row Below, Insert Column Right,
+Delete Row, Delete Column and Tidy Table
+(<code>quill/core/table_edit.py</code>) are keyless on Navigate &gt;
+Table, each one undo step. A row or column edit rebuilds a real table
+with its text kept; character formatting inside its cells is not kept (a
+known cost, in both user guides).</li>
+<li><strong>Out of scope for now:</strong> a UIA table layer. NVDA does
+not read RichEdit through UIA
+(<code>docs/design/table-uia-spike-2026-10.md</code>); an NVDA add-on is
+the recommended route if more is wanted.</li>
+</ul>
+<h3 id="help--whats-new-in-every-app-2026-10-25">Help &gt; What’s New in
+every app (2026-10-25)</h3>
+<p>Every QuillVille app has <strong>Help &gt; What’s New</strong>,
+opening its own changelog as HTML in the browser
+(<code>quill/ui/whats_new.py</code>): <code>Ctrl+Shift+F1</code> in the
+standalone apps, keyless in QUILL and QUILL Lite (<code>Alt+H</code>,
+<code>W</code>), where <code>Ctrl+Shift+F1</code> is the User Guide. A
+build with no changelog says so rather than doing nothing; QUILL falls
+back to its short release notes.</p>
 <h3
 id="self-voice-fallback-is-logged-not-announced-shipped-081-beta-1">Self-voice
 fallback is logged, not announced (shipped 0.8.1 Beta 1)</h3>

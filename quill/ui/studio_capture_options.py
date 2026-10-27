@@ -19,6 +19,9 @@ class CaptureOptionsMixin:
     def _build_capture_options(self, panel, layout):
         advanced_panel = wx.Panel(panel)
         advanced_layout = wx.BoxSizer(wx.VERTICAL)
+        # The label before the control: a screen reader names a control from
+        # the static text built just before it (GATE-CTLLABEL).
+        advanced_layout.Add(wx.StaticText(advanced_panel, label="Capture mode"), 0, wx.TOP, 8)
         self.mode = wx.Choice(advanced_panel, choices=list(MODES))
         self.mode.SetSelection(0)
         set_accessible_name(self.mode, "Capture mode")
@@ -27,7 +30,6 @@ class CaptureOptionsMixin:
             "moves a supported window through its content and tries to join matching overlaps. "
             "Scrolling may expose hidden content. Partial results are marked."
         )
-        advanced_layout.Add(wx.StaticText(advanced_panel, label="Capture mode"), 0, wx.TOP, 8)
         advanced_layout.Add(self.mode, 0, wx.EXPAND)
         advanced_layout.Add(
             wx.StaticText(

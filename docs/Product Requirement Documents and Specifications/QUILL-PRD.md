@@ -623,10 +623,10 @@ Post-conversion prompt rule (issue #262): when the target format is editable in 
 
 1. Hidden-codes markup (`[text]{…}` spans / `::: {…}` divs) in Markdown; materialised natively on HTML/Word/RTF export.
 2. Markdown-native and native in HTML; literal markers in Word/RTF (the RichDocument model has no blockquote/code/hr structure).
-3. Tables round-trip as real tables across Markdown, HTML, and Word: Word tables *read* → GFM tables (`_table_to_rich_paragraphs`), and GFM-table paragraphs *written to* Word are reconstructed into native `w:tbl` objects (`_table_block_length`/`_emit_table` in `docx_writer`), with the header row bold and marked `<w:tblHeader>` (repeating header, screen-reader-announced). RTF remains the exception — a table written to RTF is pipe-text, not a native RTF table.
+3. Tables round-trip as real tables across Markdown, HTML, and Word: Word tables *read* → GFM tables (`_table_to_rich_paragraphs`), and GFM-table paragraphs *written to* Word are reconstructed into native `w:tbl` objects (`_table_block_length`/`_emit_table` in `docx_writer`), with the header row bold and marked `<w:tblHeader>` (repeating header, screen-reader-announced). RTF was the exception until 2026-10-26, writing a table as pipe-text; since then a table in rich text is a real RichEdit table and is saved to RTF as a native table with its first row marked `\trhdr` (`quill/io/rtf_tables.py`).
 4. Image references round-trip in Markdown and render as `<img>` in HTML; images are not embedded into Word, and embedded Word images are not read.
 
-**Round-trip improvements (0.9.0, `quill/io`).** docx hyperlinks round-trip both ways — `rich_to_docx` writes a real `w:hyperlink` with an OPC relationship, `read_docx_rich` recovers the href via `iter_inner_content` (previously links degraded to plain text). Numbered lists are first-class: a `numbered` `RichParagraph` style plus `list_number` carried through `markdown_to_rich`/`rich_to_markdown` (identity, keeps a non-1 start), docx `List Number` read/write (sequential numbering assigned on read), and the offset map. `markdown_to_html` now emits `<img>` for images and `<blockquote>` for quote lines. Tables round-trip as real tables between Markdown, HTML, and Word: `docx_writer` detects consecutive GFM-table paragraphs (`_table_block_length`) and rebuilds a native `w:tbl` (`_emit_table`) with a bold, repeating `<w:tblHeader>` header row — so Markdown→Word and HTML→Word (via the hub) now produce editable Word tables, and Word→Markdown/HTML already preserved them. Remaining honest gaps: RTF drops alignment and page breaks and writes tables as pipe-text; docx drops page breaks on read; inline formatting inside a Markdown-authored table cell flattens to plain text on the way to Word; Word-embedded images are not extracted.
+**Round-trip improvements (0.9.0, `quill/io`).** docx hyperlinks round-trip both ways — `rich_to_docx` writes a real `w:hyperlink` with an OPC relationship, `read_docx_rich` recovers the href via `iter_inner_content` (previously links degraded to plain text). Numbered lists are first-class: a `numbered` `RichParagraph` style plus `list_number` carried through `markdown_to_rich`/`rich_to_markdown` (identity, keeps a non-1 start), docx `List Number` read/write (sequential numbering assigned on read), and the offset map. `markdown_to_html` now emits `<img>` for images and `<blockquote>` for quote lines. Tables round-trip as real tables between Markdown, HTML, and Word: `docx_writer` detects consecutive GFM-table paragraphs (`_table_block_length`) and rebuilds a native `w:tbl` (`_emit_table`) with a bold, repeating `<w:tblHeader>` header row — so Markdown→Word and HTML→Word (via the hub) now produce editable Word tables, and Word→Markdown/HTML already preserved them. Remaining honest gaps: RTF drops alignment and page breaks (it wrote tables as pipe-text until 2026-10-26; they are native RTF tables now); docx drops page breaks on read; inline formatting inside a Markdown-authored table cell flattens to plain text on the way to Word; Word-embedded images are not extracted.
 
 **Conversion engine preferences.** Two settings expose the engine choice with speakable outcome descriptions: `docx_read_engine` (auto | markitdown | pandoc — auto is MarkItDown-first, then the python-docx render (`quill/io/docx_text.py`: headings, lists, tables), then the standard-library walk in `quill/io/office_word.py` (the same headings, lists and tables, for builds where python-docx cannot import because lxml is excluded); the pandoc preference degrades to auto when Pandoc is missing, so a preference never fails an open) and `docx_write_engine` (auto | native | pandoc — native is the hidden-codes-preserving python-docx writer; pandoc maps structure to Word styles and drops run-level font/size/color). The Convert File dialog carries a per-operation Conversion engine choice (Auto/Pandoc/MarkItDown) whose description follows the selection; MarkItDown is honored only where it honestly applies (Office/PDF source, Markdown/plain output) and the handler asks before substituting Pandoc, never silently. Engine evidence: `docs/qa/converter-bakeoff.md` (2026-07-04) — MarkItDown and Pandoc passed the full corpus; the python-docx reader loses tables/footnotes/links (fallback only); **pydocx is rejected permanently** (cannot import on Python 3.10+, last release 2016); **mammoth is not adopted** (no current gap) with a standing decision tree: if a MarkItDown fidelity gap appears, mammoth is the candidate and would be bundled (pure-Python; frozen builds cannot pip-install at runtime), lazily imported, and offered as a third read-engine choice.
 
@@ -2096,6 +2096,8 @@ When the editor cursor enters a Markdown pipe table, a Markdown grid table, or a
 - `Ctrl+Alt+R`: delete the current row; `Ctrl+Alt+C`: delete the current column. Both confirm.
 - `Ctrl+Alt+H`: toggle the current row as the header row (Markdown only).
 - Tables remain valid Markdown or HTML on save: Quill re-aligns pipes and pads columns on every edit so the underlying text stays readable as plain text.
+
+**Status (2026-10-26): shipped differently from the sketch above.** There is no separate Table Mode and none of the chords above are table keys (`Ctrl+Alt+T` is Insert Table and `Ctrl+Alt+R` Trim Trailing Whitespace). What shipped, the same in QUILL and QUILL Lite: `Ctrl+Alt+arrows` move cell by cell, `Alt+Home`/`Alt+End` to the ends of a row and `Ctrl+Alt+Home`/`Ctrl+Alt+End` to the ends of the table; the plain arrows also read a table cell by cell; Tab and Shift+Tab move cell to cell and Tab in the last cell adds a row; entering says "Table, N rows, M columns" and leaving "Out of table"; a new column in a table with a header row says its header. Insert Row Below, Insert Column Right, Delete Row, Delete Column and Tidy Table are keyless, as in Word, on Navigate > Table. In rich text a table is a real (RichEdit) table, not pipe rows. See "Tables in both editors: real tables in rich text, the arrows by cell (2026-10-25 and 2026-10-26)" below.
 
 ### 5.21a Structured List Studio (F2) — shipped
 
@@ -11512,7 +11514,7 @@ by a CI check that asserts each file contains the required notice strings.
 | `NOTICE` | All | Attribution notices and the independence statement |
 | `TRADEMARKS.md` | End users, contributors | Trademark acknowledgements and usage rules |
 | `docs/legal/legal-notices.md` | Embedded in About | Short, accessible summary shown in the Legal tab |
-| `docs/legal/trademark-notices.md` | Detailed reference | Full vendor acknowledgements with links |
+| `docs/legal/TRADEMARKS.md` | Detailed reference | Naming policy and full vendor acknowledgements with links (merged 2026-10-26) |
 
 The `tests/unit/tools/test_legal_docs.py` gate ensures:
 
@@ -15489,6 +15491,42 @@ Import / Convert Document always makes a new, untitled document that does not
 point back at the source. File > Open opens the file itself, and only a `.docx`
 saves back to it. Both user guides carry this table as "Office files at a
 glance".
+
+### Tables in both editors: real tables in rich text, the arrows by cell (2026-10-25 and 2026-10-26)
+
+Shipped in QUILL and QUILL Lite alike, from shared code, so neither editor is
+ahead of the other.
+
+- **Real tables in rich text.** In a rich document a table is RichEdit's own: a
+  grid on screen and a table to a screen reader, Word and WordPad.
+  **Insert > Insert Table...** (`Ctrl+Alt+T` in both editors) asks columns
+  (1-12), rows (1-50) and a header row (`quill/ui/table_shape_prompt.py`) and
+  inserts a real table in rich text, a `<table>` with `scope="col"` headers in
+  HTML, and pipe rows in Markdown and plain text. Word and RTF tables open as
+  real tables; saved to RTF or Word a table stays one, its first row the header.
+- **Reading.** The `Ctrl+Alt` table keys, and the plain arrows: Up and Down to
+  the cell above and below, Right at a cell's end and Left at its start to the
+  next or previous cell, Down onto a table into its first cell with its shape.
+  The key is consumed so the reader does not also read the whole row; no add-on
+  or reader script. Each move says only what changed, and a new column says its
+  header when the table has a header row.
+- **Editing.** Tab and Shift+Tab move cell to cell; Tab in the last cell adds a
+  row. Insert Row Below, Insert Column Right, Delete Row, Delete Column and
+  Tidy Table (`quill/core/table_edit.py`) are keyless on Navigate > Table, each
+  one undo step. A row or column edit rebuilds a real table with its text kept;
+  character formatting inside its cells is not kept (a known cost, in both
+  user guides).
+- **Out of scope for now:** a UIA table layer. NVDA does not read RichEdit
+  through UIA (`docs/design/table-uia-spike-2026-10.md`); an NVDA add-on is the
+  recommended route if more is wanted.
+
+### Help > What's New in every app (2026-10-25)
+
+Every QuillVille app has **Help > What's New**, opening its own changelog as
+HTML in the browser (`quill/ui/whats_new.py`): `Ctrl+Shift+F1` in the
+standalone apps, keyless in QUILL and QUILL Lite (`Alt+H`, `W`), where
+`Ctrl+Shift+F1` is the User Guide. A build with no changelog says so rather
+than doing nothing; QUILL falls back to its short release notes.
 
 ### Self-voice fallback is logged, not announced (shipped 0.8.1 Beta 1)
 

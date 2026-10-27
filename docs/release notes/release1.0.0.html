@@ -274,6 +274,42 @@ anything, lets you undo each document on its own, and saves nothing.
 Afterwards, F3 keeps searching across your documents until you start an
 ordinary Find. QUILL Lite has it too, on Ctrl+Alt+Shift+F8. Thanks to
 Chris Nova for asking.</p>
+<h2 id="new-in-this-build-tables-you-can-read-and-build">New in this
+build: tables you can read and build</h2>
+<p><strong>Real tables in rich text.</strong> In a rich text document a
+table is now a real table: a grid on screen, with no <code>|</code>
+characters, that your screen reader, Word and WordPad all read as a
+table. <strong>Insert &gt; Insert Table…</strong>
+(<strong>Ctrl+Alt+T</strong>) asks how many columns and rows and whether
+the first row is a header, then makes one. Word and RTF tables open as
+real tables, and saved to RTF or Word a table stays one. In Markdown and
+plain text a table is still <code>|</code> rows, and in HTML a real
+<code>&lt;table&gt;</code> whose header cells your screen reader
+announces.</p>
+<p><strong>The arrows read a table cell by cell.</strong> Inside a
+table, <strong>Up</strong> and <strong>Down</strong> go to the cell
+above and below and say it, instead of your screen reader reading the
+whole row as one line. <strong>Right</strong> at the end of a cell and
+<strong>Left</strong> at its start step to the next or previous cell.
+Arrowing down onto a table says its shape, “Table, 3 rows, 2 columns”,
+and leaving it says “Out of table”. It works the same with JAWS, NVDA
+and Narrator, with nothing to install. The <strong>Ctrl+Alt</strong>
+arrow keys still move cell by cell too.</p>
+<p><strong>Tab works as in Word.</strong> <strong>Tab</strong> and
+<strong>Shift+Tab</strong> move cell to cell, and <strong>Tab</strong>
+in the last cell adds a row. <strong>Navigate &gt; Table</strong>
+gathers the table keys and five edits: Insert Row Below, Insert Column
+Right, Delete Row, Delete Column and Tidy Table, each one Undo. One
+thing to know: adding or deleting a row or column of a real table keeps
+its text, but not bold, italic or a font inside its cells, so format
+cell text once the table has its shape.</p>
+<p>QUILL Lite has all of this too, on the same keys.</p>
+<h2 id="new-in-this-build-help--whats-new">New in this build: Help &gt;
+What’s New</h2>
+<p><strong>Help &gt; What’s New</strong> opens QUILL’s changelog, the
+list of everything that changed, in your web browser. Press
+<strong>Alt+H</strong>, then <strong>W</strong>. Every app in the
+QuillVille family has it on its Help menu now.</p>
 <h2 id="try-this-first">Try this first</h2>
 <ol type="1">
 <li>Open QUILL. The first time, a short welcome asks what kind of
@@ -1991,9 +2027,11 @@ moves between Markdown, HTML and Word.</li>
 header row that repeats and that your screen reader reads as column
 headers.</li>
 </ul>
-<p>A few things depend on the format. A table saved to RTF is written as
-readable pipe text, not a native RTF table. Images embedded in Word are
-not pulled into the text. Plain text never carries formatting.</p>
+<p>A few things depend on the format. In rich text, and saved to RTF, a
+table is a real table with its first row marked as the header row;
+switched to Markdown or plain text it becomes <code>|</code> rows.
+Images embedded in Word are not pulled into the text. Plain text never
+carries formatting.</p>
 <p><strong>DAISY 2.02 text-only talking book export</strong>
 (<strong>File &gt; Export &gt; DAISY Talking Book</strong>) makes a
 talking book you can move through by heading, from any document.</p>

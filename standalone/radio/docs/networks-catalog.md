@@ -103,6 +103,11 @@ All are RB-addable by name/country; most also publish Direct streams.
 | --- | --- | --- |
 | SomaFM | Built-in | via SomaFM's own `channels.json` |
 | Radio Paradise | Built-in | its own Browse Stations branch, every channel in every quality |
+| 181.FM | Built-in, and Networks > Music | its own branch from the station list 181.FM's site plays from (`one_eighty_one.py`), with a shipped snapshot; also an RB node filtered to "181.FM" names (2026-10-25) |
+| laut.fm | Built-in | its own branch through laut.fm's documented public API (`laut_fm.py`), by its most-listened genres (2026-10-25) |
+| Big R Radio | Networks > Music (RB) | no publisher list a player may use; the RB node keeps only "Big R Radio" names (2026-10-25) |
+| 1.FM | Networks > Music (RB) | its site's API needs a private key, so not used; the RB node keeps only "1.FM" names (2026-10-25) |
+| DI.FM | Not added | a paid service; nothing is integrated that would bypass its subscription |
 | FIP (Radio France) | Direct/RB | genre-blend music |
 | KEXP, dublab, NTS | RB / Direct | tastemaker stations |
 | Radio Swiss Jazz/Classic/Pop | Direct/RB | commercial-free |

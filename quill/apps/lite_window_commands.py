@@ -472,14 +472,14 @@ class DocumentCommandsMixin(
         body = (
             f"{APP_NAME} {version_label()}\n\n"
             "A small notepad and wordpad replacement for screen reader users.\n"
-            "Numbered documents in one window. Plain text or rich text, and\n"
-            "nothing else.\n\n"
+            "Numbered documents in one window. Plain text or rich text, and\nnothing else.\n\n"
             "QUILL Lite is a companion to QUILL for All, not a replacement for it. "
-            "Conversion, comparison, publishing and extensions all live in\n"
-            "QUILL.\n\n"
+            "Conversion, comparison, publishing and extensions all live in\nQUILL.\n\n"
             "Part of the QuillVille family by Community Access (MIT licence).\n"
             "https://github.com/Community-Access/quill\n\n"
             f"Settings and recovered work: {self.app.data_dir}\n\n"
             f"Support: {SUPPORT_EMAIL}"
         )
-        show_text_window(self, f"About {APP_NAME}", body, on_ready=self.ai_about_usage)
+        show_text_window(
+            self, f"About {APP_NAME}", body, on_ready=self.ai_about_usage, notices="quilllite"
+        )

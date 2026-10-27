@@ -1,6 +1,4 @@
 {
-  "quill/apps/studio.py::StudioAppFrame._build_main_panel::wx.Button": "named-help",
-  "quill/apps/studio.py::StudioAppFrame._build_main_panel::wx.TreeCtrl": "named-help",
   "quill/ui/audio_studio/chapter_workbench.py::ChapterWorkbenchDialog.__init__::wx.Button": "helped",
   "quill/ui/audio_studio/chapter_workbench.py::ChapterWorkbenchDialog.__init__::wx.Button#10": "helped",
   "quill/ui/audio_studio/chapter_workbench.py::ChapterWorkbenchDialog.__init__::wx.Button#11": "helped",
@@ -169,6 +167,7 @@
   "quill/ui/studio_capture_controls.py::ScreenshotControlDialog.__init__::wx.TextCtrl": "helped",
   "quill/ui/studio_capture_dialog.py::CaptureSetupDialog.__init__::wx.Button": "helped",
   "quill/ui/studio_capture_dialog.py::CaptureSetupDialog.__init__::wx.Button#2": "helped",
+  "quill/ui/studio_capture_dialog.py::CaptureSetupDialog.__init__::wx.Button#3": "helped",
   "quill/ui/studio_capture_dialog.py::CaptureSetupDialog.__init__::wx.Choice": "helped",
   "quill/ui/studio_capture_dialog.py::CaptureSetupDialog.__init__::wx.Choice#2": "helped",
   "quill/ui/studio_capture_dialog.py::CaptureSetupDialog.__init__::wx.Choice#3": "helped",

@@ -564,7 +564,10 @@ through six stops, in this order.
 5. **Mute**, a button that stays pressed while the radio is muted. It always
    shows the real state, even if you muted from somewhere else.
 6. **Volume** (Alt+O), a slider. Up and Right make it louder, Down and Left
-   make it quieter, and Page Up and Page Down move in bigger steps. The
+   make it quieter, Page Up and Page Down move in bigger steps, Home is full
+   volume and End is silent. If you prefer a standard Windows slider,
+   **Preferences > Slider Keys...** turns Up, Down, Page Up, Page Down, Home
+   and End round; see "Which way the slider keys go" in Chapter 5. The
    slider, Ctrl+Up and Ctrl+Down, and the Volume cell in the status bar always
    agree, including with each station's remembered volume.
 
@@ -1116,8 +1119,11 @@ chords" in Chapter 14.
 - **What Is This?** (F1): help for the window you are in and the control you
   are on.
 - **Tutorials...** (Ctrl+Alt+F1).
-- **User Guide** (Ctrl+F1), **Release Notes** (Shift+F1) and **Product
-  Requirements...** (Alt+Shift+F1). Each opens in your web browser.
+- **User Guide** (Ctrl+F1), **Release Notes** (Shift+F1), **What's New**
+  (Ctrl+Shift+F1) and **Product Requirements...** (Alt+Shift+F1). Each opens
+  in your web browser. What's New is the changelog: every change, newest
+  version first. It is not the Community menu's What's New (Alt+Shift+N),
+  which tells you what arrived since you last looked.
 - **Check for Updates...** (Ctrl+Alt+U).
 - **Release Channel...**: Stable, Beta or Dev. See "Release channels" in
   Chapter 16.
@@ -1763,6 +1769,32 @@ Your history stays on your computer.
 - **The last level you set is remembered** for everything else, from one day to
   the next.
 
+#### Which way the slider keys go (Slider Keys)
+
+On the **Volume** slider in the main window (Alt+O), and on Quill Radio's
+other sliders, the arrow keys follow one choice that every Quill app shares:
+**Preferences (Ctrl+,) > Slider Keys...**.
+
+- **Up is more**, the default. Up, Page Up and Home raise the slider, and
+  Home is the top: 100 percent on a volume. Down, Page Down and End lower it,
+  and End is 0.
+- **As Windows sliders**. The keys a standard Windows slider uses: Down, Page
+  Down and End raise it (End is 100 percent), and Up, Page Up and Home lower
+  it (Home is 0).
+
+Right is more and Left is less either way. Ctrl+Up and Ctrl+Down, the volume
+keys that work from anywhere, are not changed. Each key press tells your
+screen reader the new value straight away. Change the choice in any Quill app
+and every other app follows at your next key press.
+
+1. Press **Ctrl+,** for Preferences, move to the **Slider Keys...** button and
+   press Enter. A list of the two choices opens, on the one you have now.
+2. Arrow to the choice you want and press Enter. Quill Radio says which way
+   the keys now go; if you kept the same one, it says "Slider keys
+   unchanged."
+3. Tab to the Volume slider in the main window and press **Home**. With Up is
+   more, you should hear 100.
+
 #### One volume for every station
 
 1. Press **Ctrl+Alt+V** (**Audio > Use One Volume for All Stations**). You
@@ -2185,30 +2217,37 @@ After **Search All Sources...**, the branches are:
     the NCAA tournaments, the NFL and other big events, each one carries a
     different game.
 16. **SomaFM**.
-17. **TuneIn**: TuneIn's own folders, from continent down to city.
-18. **iHeart**: **By City** first, then genres.
-19. **Networks**: well-known broadcasters, grouped by type.
-20. **Community M3U (Music Genres)**.
-21. **Xiph / Icecast Directory**: switched off to begin with.
-22. **SHOUTcast Directory**: the live Top 500, then 313 genres.
-23. **Live365**: about 5,500 independent stations, A to Z.
-24. **Quillin Sources**: only when an installed Quillin adds a source.
-25. **Radio Paradise**: including lossless FLAC.
-26. **Podcasts (Apple)**: your Subscriptions, then 16 national storefronts.
-27. **Podcast Index**.
-28. **Internet Archive**.
-29. **LibriVox Audiobooks**.
-30. **Project Gutenberg Audiobooks**.
-31. **AudioPub (Community Audio)**.
-32. **Audius (Independent Music)**.
-33. **Mixcloud (Shows & DJ Sets)**.
-34. **ccMixter (Creative Commons)**.
-35. **My Servers**: Icecast or SHOUTcast servers you add yourself.
-36. **Television (iptv.org)**.
-37. **YouTube**: channels, playlists and videos you save.
-38. **Explore (Wikidata)**: switched off to begin with.
+17. **181.FM**: the whole 181.FM network, about eighty channels, by its own
+    genres, with **All stations** first. Explicit channels say so, and the
+    Christmas genre is marked seasonal.
+18. **laut.fm**: thousands of stations people run themselves, by the
+    platform's most-listened genres.
+19. **TuneIn**: TuneIn's own folders, from continent down to city.
+20. **iHeart**: **By City** first, then genres.
+21. **Networks**: well-known broadcasters, grouped by type. **Music** includes
+    181.FM, Big R Radio and 1.FM, each showing only that network's own
+    stations.
+22. **Community M3U (Music Genres)**.
+23. **Xiph / Icecast Directory**: switched off to begin with.
+24. **SHOUTcast Directory**: the live Top 500, then 313 genres.
+25. **Live365**: about 5,500 independent stations, A to Z.
+26. **Quillin Sources**: only when an installed Quillin adds a source.
+27. **Radio Paradise**: including lossless FLAC.
+28. **Podcasts (Apple)**: your Subscriptions, then 16 national storefronts.
+29. **Podcast Index**.
+30. **Internet Archive**.
+31. **LibriVox Audiobooks**.
+32. **Project Gutenberg Audiobooks**.
+33. **AudioPub (Community Audio)**.
+34. **Audius (Independent Music)**.
+35. **Mixcloud (Shows & DJ Sets)**.
+36. **ccMixter (Creative Commons)**.
+37. **My Servers**: Icecast or SHOUTcast servers you add yourself.
+38. **Television (iptv.org)**.
+39. **YouTube**: channels, playlists and videos you save.
+40. **Explore (Wikidata)**: switched off to begin with.
 
-That is 36 sources. A new installation shows 34 of them, because Xiph and
+That is 38 sources. A new installation shows 36 of them, because Xiph and
 Wikidata start switched off. Quillin Sources only appears when something adds
 to it. You can switch branches on and off with **Choose Browse Sources**,
 described later in this chapter.
@@ -2249,7 +2288,17 @@ described later in this chapter.
   BBC, NPR, CBC, ABC Australia, Radio France and Deutschlandfunk, plus US news
   and talk, sports, music, and syndicators. A syndicator such as Westwood One
   has no single stream, so it opens a search across the stations that carry
-  it, and its name tells you so.
+  it, and its name tells you so. **Music** includes 181.FM, Big R Radio and
+  1.FM; each shows only stations named for that network, so a search for 1.FM
+  does not bring in "Radio 1.FM" or "011.FM".
+- **181.FM** opens on **All stations**, then the network's own genres. Explicit
+  channels say so, and the Christmas genre is marked seasonal. The list comes
+  from the one 181.FM's own website plays from; Quill Radio keeps the last good
+  copy for a day and has a copy of its own to fall back on, so the branch is
+  never empty. Every channel says what song is playing.
+- **laut.fm** lists the platform's most-listened genres. Open one for its
+  stations, each run by a listener rather than a broadcaster, and each saying
+  what is playing.
 - **SHOUTcast Directory** starts with **Top 500 (most listeners right now)**,
   then 313 genres. Each genre is sorted by how many people are listening, most
   first. SHOUTcast gives at most 500 stations per genre. A SHOUTcast station
@@ -2476,8 +2525,8 @@ which it used:
   without the internet.
 - On **LibriVox**, the **Internet Archive**, **TuneIn**, **iHeart**, **NOAA**
   (by call sign, SAME code, or "County, ST"), **Project Gutenberg**,
-  **SomaFM**, **Audius**, **Mixcloud** and **ccMixter**, it uses that source's
-  own search.
+  **SomaFM**, **181.FM**, **laut.fm**, **Audius**, **Mixcloud** and
+  **ccMixter**, it uses that source's own search.
 - On a **podcast show**, it searches the episodes, show notes included.
 - Anywhere else it looks through the folder itself, within limits, and tells
   you if it only showed the first results.
@@ -2707,9 +2756,9 @@ menu.
 #### Search Sources, step by step
 
 Search Sources decides which directories Search Stations asks. There are
-twelve, all on to begin with: Radio Browser, TuneIn, iHeart, SomaFM,
-SHOUTcast, Live365, TV, Radio Paradise, NOAA Weather Radio, Radio Reading
-Service, Spotify and YouTube. "YouTube in Search Stations" in Chapter 11 says
+fourteen, all on to begin with: Radio Browser, TuneIn, iHeart, SomaFM,
+SHOUTcast, Live365, TV, Radio Paradise, 181.FM, laut.fm, NOAA Weather Radio,
+Radio Reading Service, Spotify and YouTube. "YouTube in Search Stations" in Chapter 11 says
 what the YouTube one finds.
 
 1. Press **Ctrl+Alt+Shift+U** (**Station > Search Sources...**). The Search
@@ -5136,7 +5185,8 @@ Stations, YouTube, on this computer. No account is needed.
 1. Arrow to a channel row and press **Shift+F10** (or the Applications key).
 2. Choose **Follow This Channel in Quill Radio** (F).
 3. You should hear "Following Rick Steves' Europe in Quill Radio." The channel
-   now has its own row under **YouTube**.
+   now has its own row under **YouTube**. The channels you follow are listed A
+   to Z, so typing the first letters of a name jumps to it.
 
 To stop, press **Shift+F10** on the channel and choose **Stop Following This
 Channel** (P).
@@ -5486,7 +5536,7 @@ any time and Quill Radio goes back to asking YouTube as a guest.
    - **Home**: what YouTube recommends for you.
    - **Subscriptions**: **New from Your Subscriptions** (the newest videos
      from every channel you subscribe to) and **Your Channels** (the channels
-     themselves).
+     themselves, A to Z: type the first letters of a name to jump to it).
    - **Watch Later**.
    - **Liked Videos**.
    Videos that are for members only, or that YouTube keeps for grown-ups, play
@@ -7876,6 +7926,20 @@ The tutorial **Build a lineup that fills itself**, in the **More than radio**
 track, walks through it with you. The Keyboard reference below has the keys
 for the whole of Quill Radio.
 
+## Licences and notices
+
+Quill Radio is free and released under the MIT License. It also includes software,
+data and sounds from other projects, each under its own licence.
+
+To read them, open the Help menu, choose About Quill Radio, and then choose the
+Licences and Notices button. The list opens as a plain text file, with one
+heading for each component: what it is, its licence, who holds the copyright
+and what the licence asks of us. The full licence texts are at the end.
+
+The same file, THIRD-PARTY-NOTICES.txt, and Quill Radio's own licence, LICENSE.txt,
+are also in the folder where Quill Radio is installed or unpacked, so you can open
+them without starting the app.
+
 ## Keyboard reference
 
 Every menu item shows its own key, and if you changed a key, it shows yours.
@@ -8034,7 +8098,7 @@ In every other window, Alt+S is the Station menu and Alt+W is the Window menu. S
 | Use My ChatGPT Subscription | Alt+F5 |
 | ACB Media Schedule | Ctrl+Shift+N |
 | What Is On Now | Ctrl+Alt+H |
-| What's New | Alt+Shift+N |
+| What's New (since you last looked) | Alt+Shift+N |
 | Upcoming | Ctrl+Alt+Shift+F |
 | Refresh the Schedule | F5 |
 | ACB Media Podcasts | Ctrl+Alt+I |
@@ -8075,6 +8139,7 @@ In every other window, Alt+S is the Station menu and Alt+W is the Window menu. S
 | What Is This? (context help) | F1 |
 | User Guide | Ctrl+F1 |
 | Release Notes | Shift+F1 |
+| What's New (the changelog) | Ctrl+Shift+F1 |
 | Product Requirements | Alt+Shift+F1 |
 | About Quill Radio | Alt+F1 |
 | Tutorials | Ctrl+Alt+F1 |

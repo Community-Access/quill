@@ -135,9 +135,9 @@ class TestTableBoundaries:
         said = _walk(announcer, text, [0, _at(text, "Only")])
         assert said[-1] == "Table, 1 row, 1 column"
 
-    def test_quilllite_never_hears_about_tables(self) -> None:
-        # Table navigation is a full-QUILL feature; a boundary cue for a grid
-        # the small editor cannot navigate would advertise what is not there.
+    def test_switching_the_table_cue_off_silences_it(self) -> None:
+        # What either editor passes with its heading cues switched off (QUILL
+        # Lite left the cue out entirely until it gained the table keys).
         announcer = StructureAnnouncer()
         said = _walk(
             announcer,

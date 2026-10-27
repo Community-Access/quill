@@ -593,7 +593,9 @@ which every path out of a session goes through (stop, an error, the one silent
 restart, a language switch, the window closing, `shut_down`); the kernel lets go
 when the program exits. The gate is a constructor argument, so a controller in a
 test has none (`quill/core/windows_dictation/microphone_owner.py`). Opening for
-the wake phrase is refused silently, because nobody asked for anything.
+the wake phrase is refused, and said once ("The wake phrase is not being
+listened for", and who has the microphone) since 2026-10-27: a wake phrase
+that silently never listened read as a broken one (QUILLVille report).
 
 The sentences (`busy_sentence`) name the program and the key that stops it, as
 that program has it bound: each holder writes its live key into the lock's note

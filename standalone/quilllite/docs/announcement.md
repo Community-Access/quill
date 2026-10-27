@@ -513,6 +513,33 @@ chose: tested on real speech" has the whole table.
 
 ---
 
+## Tables, in every kind of document
+
+**October 26, 2026**
+
+QUILL Lite can now make a table and read it to you one cell at a time, the
+same way as QUILL. Press **Ctrl+Alt+T** for **Insert > Table**, say how many
+columns and rows you want and whether the first row is a header, and you are
+in the first cell. In a rich text document it is a real table, which your
+screen reader, Word and WordPad all see as a table; in Markdown and plain
+text it is rows of cells divided by bars; in a web page it is a proper HTML
+table.
+
+Inside a table the arrow keys move by cell: Up and Down go to the cell above
+and below and say what is there, so you no longer hear the whole row at once.
+Tab and Shift+Tab move cell to cell as in Word, Tab in the last cell adds a
+row, and **Navigate > Table** adds and deletes rows and columns. It works the
+same with JAWS, NVDA and Narrator, with nothing to install. Trim Trailing
+Spaces, which used to be on Ctrl+Alt+T, is now on **Ctrl+Alt+R**, as in QUILL.
+
+Two smaller things arrived with it. **Help > What's New** (**Alt+H**, then
+**W**) opens the full list of changes in your browser, as in every QUILL
+family app. And when you close your last document, the window keeps a full
+menu bar, File, Tools and Help, so you can reach Preferences or Help without
+opening a blank page first.
+
+---
+
 ## Where to learn more
 
 - **The QUILL Lite User Guide**, in the Start menu beside QUILL Lite, covers

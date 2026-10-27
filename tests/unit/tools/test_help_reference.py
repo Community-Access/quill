@@ -46,7 +46,7 @@ _AUDITS = {
     "Quill Radio": "radio",
     "QUILL Cast": "cast",
     "QUILL Media Player": "player",
-    "QUILL Audio Studio": "studio",
+    "QUILL Studio": "studio",
     "Quill Inkwell": "inkwell",
     "QUILL Transcribe": "transcribe",
     "Quill Weather": "weather",

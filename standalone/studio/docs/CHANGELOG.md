@@ -4,19 +4,25 @@ All notable changes to QUILL Studio are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [2.0.0] - built, not yet released
 
-### Screenshots, global hotkeys and AI inspection (2026-10-26; unreleased)
+QUILL Studio 2.0.0 is the next Studio release after Audio Studio 1.0.0. The previously unpublished 2.2.0 build is renumbered to 2.0.0 for the QUILL Studio rename. Shared-runtime compatibility does not require matching the other apps' version numbers.
+
+This version is built but not yet published: Audio Studio is not offered in the QuillVille menu, and there is no 2.0.0 download page. Everything below is in the build.
+
+Testing build: **2.0.0 (build 2)**. Builds since the first have not been published.
+
+### The new name: QUILL Studio
+
+- Rename the application to **QUILL Studio**, preserving installer and launcher identities, shared data and existing audiobook workflows. Legacy context-help titles and command-line aliases remain supported.
+
+### Screenshots, global hotkeys and AI inspection (2026-10-26)
 
 - **Choose exactly what to capture.** Select a named visible window (listed by title), an individual display, the full desktop across all displays, the active window after a delay, or a rectangle entered as Left, Top, Width and Height in physical pixels. The window list stays short by default by showing top-level task windows (similar to Alt+Tab); enable the advanced "show all windows" option when you need tool windows or helper dialogs, and use the window properties view for process IDs and identifiers. If you only see desktop/display targets, update to a build with this release note: a preview build had a regression that hid named windows. Negative coordinates support displays left of or above the primary display. Refresh the target list without silently substituting a desktop capture for a missing target. Restore minimized windows before selecting them.
 - **Delayed, immediate and repeat capture.** Set a 2-to-60-second delay and an absolute output folder, start, and cancel while capture is pending. Immediate commands capture the active window or full desktop. Repeat the last selected target with its chosen folder and delay. Completion is announced without moving focus away from the application being captured.
 - **Guided capture without pixel calculations.** Recommend the whole named window; guided regions derive Whole source, Top/Bottom/Left/Right half or Middle quarter from a named source. Read a selectable, announced capture plan explaining exclusions, overlap and review steps. Keep exact coordinates optional under advanced settings, initialize them from the selected portion, reject moved/resized/replaced source windows and keep actions available beside scrolling content. Richer user-guide examples, troubleshooting and a PRD coverage audit distinguish this from still-pending UIA selection, annotations and full screenshot acceptance.
 - **Configurable global screenshot hotkeys.** Capture > Screenshot global hotkeys offers active-window, full-desktop, repeat-last-target and cancellation actions while Studio is in the tray or another application is active. Assign or clear keys in the shared native manager. No global capture key is registered by default. Windows registration conflicts are reported, only successful registrations dispatch, unrelated apps' saved bindings are preserved, keys are released on exit, and Safe Mode leaves global registration inactive.
 - **Keyboard discovery.** Every capture action is in the Capture menu and command palette, with app-scoped in-app shortcuts. Capture keeps the established library focus, audiobook journeys, F6 status, preferences and existing menus. New native controls have accessible names and F1 help.
-- **Minimize to tray on demand.** **Studio > Minimize to Tray** (Ctrl+Alt+T) sends the window to the tray without closing it.
-- **Library window instead of a book-centric home.** The home window stays intentionally quiet; open **View > Library Window...** (Ctrl+Alt+Y) to browse and manage books.
-- **Capture is a wizard option.** The Studio Wizard includes a Capture journey so you can start a screenshot run from one place.
-- **Preferences close is silent.** Leaving Preferences updates the status line but does not speak "Preferences saved".
 - **Capture the selected window rather than an unrelated desktop.** Named windows use direct window-handle capture. Recheck process identity, display availability/layout and rectangle bounds. A closed, hidden or minimized window, changed identity, disconnected display, invalid rectangle, capture failure or dimension mismatch reports a failure instead of broadening the source. Shared legacy screen capture also rejects invalid target names and handles negative-monitor window rectangles.
 - **PNG files and objective evidence.** Save each screenshot with a unique PNG name. Reopen and fully decode the saved bytes; record dimensions, image format, byte count, SHA-256, timestamp, requested target and OS-reported source/bounds/backend metadata. Report uniform pixels as a possible capture problem. Save JSON and readable Markdown verification reports; keep privacy, completeness and visual correctness explicitly unverified. Successful file decoding does not prove that protected or GPU content was captured correctly.
 - **Persistent native Screenshot Inspector.** Review the source, hash, objective checks and selectable conversation in one keyboard-operable window. Open the latest screenshot or reopen a saved PNG; recover prior saved observations only when the sidecar's image hash matches. Copy the image to the clipboard, save an updated evidence report or export a text description and conversation.
@@ -29,27 +35,39 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Shared architecture and documented acceptance.** Reuse QUILL's existing OCR, provider transport, credential storage, prompt library, announcements, task manager, hotkey manager and atomic storage. Add target/privacy/grounding tests and an opt-in real Windows test that captures only its own named fixture window and checks expected pixels. This is an implementation milestone, not a published release or a claim of live-model or screen-reader certification.
 - **Still pending.** JAWS/NVDA/Narrator/braille acceptance; live-provider, mixed-DPI, installer/portable and resource testing; UIA-element and scrolling/sequence capture; annotation/redaction editing and screenshot comparison; and the later video demonstration with optional sound. None is represented as already delivered by this milestone.
 
-- Rename the application to **QUILL Studio**, preserving installer and launcher identities, shared data and existing audiobook workflows. Legacy context-help titles and command-line aliases remain supported.
+### The window, the tray and Preferences
 
-### Fixed
+- **Minimize to tray on demand.** **Studio > Minimize to Tray** (Ctrl+Alt+T) sends the window to the tray without closing it.
+- **Library window instead of a book-centric home.** The home window stays intentionally quiet; open **View > Library Window...** (Ctrl+Alt+Y) to browse and manage books.
+- **Capture is a wizard option.** The Studio Wizard includes a Capture journey so you can start a screenshot run from one place.
+- **Preferences close is silent.** Leaving Preferences updates the status line but does not speak "Preferences saved".
 
-- **Alt+B opens the Book Tools menu again** (2026-10-17). The main window's **Build From Recordings...** button also claimed Alt+B, and when a button and a top-level menu share a letter Windows presses the button, so Alt+B started a new book instead of opening Book Tools. The button is now **Build From &Recordings...**, Alt+R, and Alt+B opens Book Tools. For example, from the books list press Alt+B, then Down, to walk the Book Tools menu, or Alt+R to start the Build From Recordings journey; Studio > Build From Recordings... (Ctrl+Shift+B) is unchanged. A new test builds the real main window and fails if any control takes a menu's letter.
+### Sound, volume and the sliders
 
-## [2.0.0] - built, not yet released
+- **Slider Keys: choose which way the arrow keys move a slider** (2026-10-26). **Studio > Preferences...** (Ctrl+,) has a **Slider Keys...** button with two choices. **Up is more**, the default: Up, Page Up and Home raise the volume, Home being the top (100 percent), and Down, Page Down and End lower it, End being 0. Until now Home went to the bottom of the slider, so a full volume read as the bottom of the scale. Or **As Windows sliders**: the trackbar's own keys, where Down, Page Down and End raise it. Right is always more and Left less. It is one choice for every Quill app with a volume slider (QUILL Studio, Quill Radio, QUILL Cast and Quill Media Player), so changing it in one changes it in the others at the next key press. Each key press also tells the screen reader the new value, so it is never read from before the key. Ctrl+Up and Ctrl+Down, the volume keys that work from anywhere in the apps that have them, are not changed.
 
-- **The user guide explains the speech-recognition engines** (2026-10-17). A new section, "Speech recognition: the engines that listen", says which features listen (Generate Captions (Offline), Ctrl+Shift+C, and Propose AI titles), the three engines and why you would choose each (Whisper.cpp, the default, which downloads the first time; the QUILL speech models such as Parakeet and Nemotron, shared with QUILL Transcribe and QUILL Lite; Faster Whisper, which can use a graphics card), how to download a model with Manage Speech Models (Ctrl+Shift+M) or Download Optional Components (Ctrl+Alt+Shift+D), and a worked captions example. Vosk is no longer offered for speech recognition.
+- **Where Audio Studio's own sounds play, and Alt+Shift+M to turn them off.** The **App Sounds Play On...** button in **Studio > Preferences...** (Ctrl+,) offers System default, None (no sounds), or any sound card or headset by name. After a change one sound plays on the new card, so you hear where it went. If that card is unplugged the sounds play on the system default until it is back, and Audio Studio says so once. **Alt+Shift+M** turns Audio Studio's sounds off and back on where they were, and **Studio > App Sounds** shows a check mark while they are on. Each QUILL app keeps its own choice; "Share these choices with my other Quill apps" keeps them in step. Your screen reader is never moved. Asked for on QUILLVille by Rick Lewis.
+
+### Chapters and books
 
 - **Chapters for any recording** (2026-10-16). **Studio > Find Chapters in a Recording...** (**Ctrl+Shift+R**) picks any MP3, M4A or M4B -- a lecture or a meeting as much as a book -- and opens the Chapter Workbench on it with **Propose chapters from silences** already started. Proposals are titled "Proposed chapter 1, 2...", so a guess is never mistaken for a real title. If the recording has chapters of its own you are asked whether to keep them and add only new boundaries (the default) or replace them, and nothing is replaced silently. Press the button again (it reads **Stop proposing chapters**) to stop a scan; the list stays as it was. A long recording is given time to finish. The guide's "Chapters for a lecture, a meeting or any recording" walks through it.
 
 - **Edit a Book opens again** (2026-10-16). Studio asked the Chapter Workbench to carry its Sleep Timer and Play Queue keys, and the Workbench did not know how, so **Edit a Book...** stopped with an error before the window appeared. It opens, and **Ctrl+Shift+T** and **Ctrl+Shift+Q** now work inside it.
 
+- **Resume Last Book on Launch is Ctrl+Alt+F10** (2026-10-05). It was
+  Ctrl+Alt+Shift+R, Quill Radio's system-wide show and hide key, so with
+  Radio running the menu key never fired. A set-once preference belongs on
+  an F-key past F9 (family rule 9).
+
+### Help and the user guide
+
+- **Help > What's New** (Ctrl+Shift+F1, 2026-10-25) opens this changelog in your browser, the same command every app in the QuillVille family now has.
+
+- **The user guide explains the speech-recognition engines** (2026-10-17). A new section, "Speech recognition: the engines that listen", says which features listen (Generate Captions (Offline), Ctrl+Shift+C, and Propose AI titles), the three engines and why you would choose each (Whisper.cpp, the default, which downloads the first time; the QUILL speech models such as Parakeet and Nemotron, shared with QUILL Transcribe and QUILL Lite; Faster Whisper, which can use a graphics card), how to download a model with Manage Speech Models (Ctrl+Shift+M) or Download Optional Components (Ctrl+Alt+Shift+D), and a worked captions example. Vosk is no longer offered for speech recognition.
+
 - **The user guide now teaches the menus as they are** (2026-10-16). Its keyboard reference said Alt+V opens the Voices menu. Alt+V opens the **View** menu (Show Status Bar); the Voices menu is **Alt+I**, the underlined letter in "Voices". For example, to open the Speech Hub from the keyboard, press Alt+I and then H. The reference now lists both. The guide and this changelog also wrote **App Sounds Play On...** as if it were a submenu of Preferences; it is a button inside the Preferences window, so open **Studio > Preferences...** (Ctrl+,) and Tab to it. No menu changed.
 
-- **FFmpeg's licence, checked on every build.** FFmpeg's licence (the GNU General Public License, version 3) and the note on where to get its source were already in the `tools\ffmpeg` folder beside FFmpeg. The build and the installer now stop if either is ever missing, so a release cannot ship FFmpeg without them.
-
-- **Every release build checks its version against what is published** (2026-10-15). The shared QuillVille runtime carries every app's version number, so a build of one app could make another report a version nobody can download yet, and Check for Updates would then never offer the real one. QUILL Audio Studio's release builds now run the same check Quill Radio, QUILL Lite, QUILL Cast and Quill Weather already did, and a build of every app at once checks them all again instead of stopping at an app it did not know.
-
-- **Where Audio Studio's own sounds play, and Alt+Shift+M to turn them off.** The **App Sounds Play On...** button in **Studio > Preferences...** (Ctrl+,) offers System default, None (no sounds), or any sound card or headset by name. After a change one sound plays on the new card, so you hear where it went. If that card is unplugged the sounds play on the system default until it is back, and Audio Studio says so once. **Alt+Shift+M** turns Audio Studio's sounds off and back on where they were, and **Studio > App Sounds** shows a check mark while they are on. Each QUILL app keeps its own choice; "Share these choices with my other Quill apps" keeps them in step. Your screen reader is never moved. Asked for on QUILLVille by Rick Lewis.
+### Downloads, installing and updating
 
 - **Two downloads, nothing else** (2026-10-11). QUILL Audio Studio now comes as the
   installer and the portable zip. The small Lite installer and the Companion
@@ -57,16 +75,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   used the Companion zip, take the portable zip. Check for Updates already
   offers the right one.
 
-- **Resume Last Book on Launch is Ctrl+Alt+F10** (2026-10-05). It was
-  Ctrl+Alt+Shift+R, Quill Radio's system-wide show and hide key, so with
-  Radio running the menu key never fired. A set-once preference belongs on
-  an F-key past F9 (family rule 9).
+- **Every release build checks its version against what is published** (2026-10-15). The shared QuillVille runtime carries every app's version number, so a build of one app could make another report a version nobody can download yet, and Check for Updates would then never offer the real one. QUILL Audio Studio's release builds now run the same check Quill Radio, QUILL Lite, QUILL Cast and Quill Weather already did, and a build of every app at once checks them all again instead of stopping at an app it did not know.
 
-QUILL Studio 2.0.0 is the next Studio release after Audio Studio 1.0.0. The previously unpublished 2.2.0 build is renumbered to 2.0.0 for the QUILL Studio rename. Shared-runtime compatibility does not require matching the other apps' version numbers.
+- **FFmpeg's licence, checked on every build.** FFmpeg's licence (the GNU General Public License, version 3) and the note on where to get its source were already in the `tools\ffmpeg` folder beside FFmpeg. The build and the installer now stop if either is ever missing, so a release cannot ship FFmpeg without them.
 
-This version is built but not yet published: Audio Studio is not offered in the QuillVille menu, and there is no 2.0.0 download page. Everything below is in the build.
-
-### Added
+### Also added in 2.0.0
 
 - **Parakeet 3 in the transcription engine chooser.** The shared speech stack
   gained NVIDIA's Parakeet 3 (25 languages, automatic language detection,
@@ -96,7 +109,7 @@ This version is built but not yet published: Audio Studio is not offered in the 
 - **Announcements now reach your braille display.** Reported by a braille user: messages the Studio speaks never appeared in braille. The diagnosis was blunter than the report -- nothing had ever been sent to a braille display at all. Braille is now routed at the same point as speech, so every message is covered at once. Three rules govern it: braille never costs speech (an unplugged display, a reader that rejects the call, a bridge without the capability all degrade to "spoke but did not braille", never to silence); nothing is truncated, because clipping would drop the end of the very thing you asked for; and an identical message inside two seconds does not steal the display twice, since a flash message replaces whatever is under your fingers. A burst of different messages no longer flickers past faster than cell one can be read -- the first message of a quiet period writes instantly, and anything landing within the next 150 milliseconds settles to the newest rather than each shoving the last aside, with errors exempt and always written through at once.
 - **Every announcement channel in one place.** Speech, braille, sound, and the status line are now delivered by one shared announcement service, the same one QUILL uses, so a message the Studio makes reaches every channel you rely on instead of only the ones that happened to be wired. Announcements are also recorded, so a message that passed while you were reading something else is not simply gone. New shared accessibility settings control the braille style (the full spoken string, or the compact position-first form), how long an identical braille message is held back, whether an error sticks on the display instead of flashing past, whether the companion apps play sound cues, whether a cue stands in for speech while Quiet Mode is on, and which severities interrupt speech. They live in the store the Studio shares with QUILL, so setting them in QUILL's Preferences applies here too.
 
-### Changed
+### Also changed in 2.0.0
 
 - **Fewer antivirus false positives.** The app's launcher is now a genuine, tiny native program, and the bundled Python is the official unmodified build. Earlier versions used a renamed and modified copy of Python's `pythonw.exe` as the launcher, which some antivirus tools flagged as a false positive. That pattern is completely gone, so the Quill apps are far less likely to be flagged.
 - **Audio Studio is now built straight from QUILL's own source.** The app used to be assembled from a copy of QUILL's audio code kept in a separate repository and re-synced by hand. It is now built directly from the QUILL package, so the Studio and QUILL's built-in Audio Studio can never drift apart and a fix upstream is in the next Studio build with nothing to copy across. Nothing changes for you except that the two stay in step.
@@ -106,15 +119,16 @@ This version is built but not yet published: Audio Studio is not offered in the 
 - **A smaller download.** The build now leaves out the large libraries the Studio never loads, so the installer and the portable zip are meaningfully lighter without giving anything up.
 - **A choice at install time.** The installer offers Full, Compact (program only, no bundled documentation), and Custom setups; the shared runtime and the app itself are always installed, and only the packaged documentation is optional.
 
-### Fixed
+### Fixed in 2.0.0
 
+- **Alt+B opens the Book Tools menu again** (2026-10-17). The main window's **Build From Recordings...** button also claimed Alt+B, and when a button and a top-level menu share a letter Windows presses the button, so Alt+B started a new book instead of opening Book Tools. The button is now **Build From &Recordings...**, Alt+R, and Alt+B opens Book Tools. For example, from the books list press Alt+B, then Down, to walk the Book Tools menu, or Alt+R to start the Build From Recordings journey; Studio > Build From Recordings... (Ctrl+Shift+B) is unchanged. A new test builds the real main window and fails if any control takes a menu's letter.
 - **Up is more on every slider.** The player's Position and Volume sliders
   answered Up with less, because a Windows slider on its own treats Up as
   "towards the start", the left end. A Quill Radio listener reported the
   volume slider as backwards, and the fix is family-wide: Up and Page Up now
   raise every slider in every QuillVille app and Down and Page Down lower it;
   Left, Right, Home and End are unchanged (`quill/ui/slider_keys.py`, 2026-09-28,
-  with a gate that fails the build for a new slider without it).
+  with a gate that fails the build for a new slider without it). Since 2026-10-26 Home and End follow Up and Down as well, and the direction is the family's Slider Keys choice (see Sound, volume and the sliders above).
 - **Kokoro narration no longer stops mid-run on a portable copy.** A long, dense passage could overrun the neural model's input window; the Studio then fell back to a heavyweight code path that a portable copy does not carry, and reported "Kokoro voices need one more component" for a component you had already installed -- 29 chapters into a run. The Studio now re-splits that one passage at safe boundaries and carries on, so a portable narration completes; the per-passage size limit is capped below the model's window everywhere it is used, including translated editions; and when a passage genuinely cannot be synthesized the message names the real cause and where to find the report instead of pointing at a download you do not need.
 - **A conversion's progress reaches the tray.** Converter progress is reported through the same channel as a narration run, so it appears in the status bar's Progress cell and the tray tooltip rather than only inside the dialog.
 

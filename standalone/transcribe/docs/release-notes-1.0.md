@@ -1,6 +1,6 @@
 # QUILL Transcribe 1.0 Release Notes
 
-Version 1.0.0 (build 2), released November 1, 2026.
+Version 1.0.0 (build 3), released November 1, 2026.
 
 QUILL Transcribe is new. It types what you say into the program you are using,
 with the same speech models and dictation you know from QUILL and QUILL Lite.
@@ -10,6 +10,19 @@ with the same speech models and dictation you know from QUILL and QUILL Lite.
 Choose your model, press your key in the field you want, and speak. Your words
 go into that field and nowhere else. Your speech stays on your computer unless
 you choose an internet model yourself.
+
+## New in build 3
+
+**Help > What's New** (Ctrl+Shift+F1) opens QUILL Transcribe's changelog in
+your browser, on the same key as in every standalone QuillVille app.
+
+**Pinned to the taskbar, QUILL Transcribe opens as itself.** Its shortcuts now carry
+its own taskbar identity, as Quill Radio's have since 3.0.2, so pinning
+the running QUILL Transcribe pins its shortcut. An older pin that asks "Several
+QuillVille apps are installed" now opens the app you pick through its own
+launcher, with all of its settings. To replace an old pin, unpin it and pin
+QUILL Transcribe again after you update. Reported on QUILLVille for QUILL Lite; every
+QuillVille app has the fix.
 
 ## New in this release
 
@@ -202,7 +215,8 @@ in, starting it in the tray if it is not running.
   kept. Words that could not be typed are kept, sealed for your Windows
   account, until you write or discard them; a history of what you said is kept
   only if you turn it on.
-- F1 on any window or control says what it is for.
+- F1 on any window or control says what it is for, and **Help > What's New**
+  (Ctrl+Shift+F1) opens the changelog in your browser.
 - **Stable, Beta or Dev: you choose.** Help > Release Channel... (Alt+H, L)
   sets which versions your copy is offered. Every copy starts on Stable;
   joining Beta saves a copy of your settings first, and you can come back.

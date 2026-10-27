@@ -1672,9 +1672,8 @@ Notes:
    table you *open* in QUILL becomes a clean Markdown (GFM) table that you can
    edit and move around in. Markdown and HTML tables stay as they are. A table
    you *save to* Word becomes a real, editable Word table with a header row that
-   repeats, so a screen reader announces the column headers. The one exception
-   is RTF: a table saved to `.rtf` is written as readable pipe text, not a real
-   RTF table.
+   repeats, so a screen reader announces the column headers. In rich text, and
+   in an `.rtf` file, a table is a real table with its header row marked.
 4. **Images**: an image *reference* (`![alt](path)`) survives a trip through
    Markdown and becomes `<img>` in HTML. QUILL does not put image files inside
    Word documents, and images inside a Word document you open are not brought
@@ -3186,6 +3185,12 @@ Block quote, horizontal rule, table and image write Markdown in a Markdown
 document and HTML in an HTML document. If the document's format is not set yet
 (a new or plain document), QUILL asks **"Markdown or HTML?"** the first time,
 then remembers your answer for that document and stops asking.
+
+A table is the one insert that also has a rich text form: in a rich text
+document **Insert Table** makes a real table, a grid your screen reader, Word
+and WordPad all read as a table, not rows of `|` characters.
+[Moving through a table cell by cell](#moving-through-a-table-cell-by-cell)
+covers reading and editing it.
 
 Some have keys of their own:
 
@@ -5328,21 +5333,70 @@ it tells you what is there.
 - `Ctrl+Alt+Home` and `Ctrl+Alt+End` jump to the first or last cell of the
   whole table.
 
-Each move speaks the position and the contents together: "Row 2 of 6, column
-3 of 5: Portland". An empty cell is called "blank". When there is nowhere to
+Each move says what changed and then the contents: along a row, the column
+("Column 3: Portland"); down a column, the row ("Row 4: Portland"); a jump to
+another row and column, both. The table's size is said once, when you arrive.
+An empty cell is called "blank". When there is nowhere to
 go, QUILL says so and stays put: "No more cells" at the end of a row, "No more
 rows" at the end of a column, and "No more cells, end of table" (or "No more
 rows, end of table") on the very last cell. That way you know whether the row
 stopped or the whole table did.
 
-When you arrow into a table in the ordinary way, you hear its shape, "Table,
-6 rows, 5 columns", and leaving it says "Out of table". Outside a table these
-keys do no harm; QUILL just says "Not in a table".
+**The arrow keys read a table cell by cell.** Inside a table, **Up** and
+**Down** go to the cell above and below in the same column and say it, "Row
+3: Ann", instead of the screen reader reading the whole row as one line.
+**Right** at the end of a cell's text goes to the next cell, and **Left** at
+its start to the end of the cell before, "Column 2, Role: Lead"; inside a
+cell's text they move letter by letter as always. **Down** from the line above
+a table lands in its first cell and says its shape once, "Table, 3 rows, 2
+columns. Name"; **Up** past the first row or **Down** past the last leaves
+the table, and you hear "Out of table". Shift with the arrows still selects.
+This works the same with JAWS, NVDA and Narrator, in rich text and in `|`
+tables, with nothing to install. JAWS keeps **Ctrl+Alt** with the arrows for
+its own table commands, so with JAWS use the arrows, **Tab** and the
+**Navigate > Table** menu.
+
+Outside a table the table keys do no harm; QUILL just says "Not in a table".
+
+When a table has a header row (a `| --- |` row under its first row), moving
+into a new column also says the column's header: "Column 3, City: Portland". Moving up or down the same column does not repeat it.
+
+All of these are also on **Navigate > Table**, the same submenu as in QUILL
+Lite.
 
 This works on Markdown tables you type yourself and on tables QUILL brings in
 from Word. A `.docx` table arrives as a real table laid out as Markdown rows,
-so the same keys and announcements apply. A cell whose text contains a `|`
-character stays one cell and does not throw the column count off.
+so the same keys and announcements apply. So does a real table in an `.rtf`
+file. A cell whose text contains a `|` character stays one cell and does not
+throw the column count off.
+
+#### Editing a table
+
+- **Tab** and **Shift+Tab** move to the next and previous cell, on to the next
+  row at the end of one, as in Word. **Tab** in the very last cell adds a row
+  and puts you in its first cell.
+- **Navigate > Table** also has **Insert Row Below**, **Insert Column Right**,
+  **Delete Row**, **Delete Column** and **Tidy Table**. Each is one Undo, and
+  each says what it did: "Added row 3",
+  "Deleted column 2, City. 4 columns left". Deleting a header row makes the next
+  row the header. Tidy Table lines the columns up by padding every cell to its
+  column's widest, so the table is easier to read on screen; the cells you hear
+  are unchanged.
+- **Insert > Insert Table...** (`Ctrl+Alt+T`) makes a new one.
+
+**Real tables in rich text.** In a rich text document a table is a real table:
+a grid on screen, with no `|` characters, which your screen reader, Word and
+WordPad all see as a table. Insert Table makes one there, and a Word or RTF
+document's tables open as them. Every key above works on a real table the
+same way, and Tab in its last cell adds a row. Tidy Table says a real table is
+already lined up. Adding or deleting a row or a column rebuilds a real table
+with its text in place, but bold, italic or a font *inside* its cells does not
+survive the rebuild, so format cell text once the table has its shape.
+
+Saved as `.rtf` or as a Word document, a real table stays one, its first row
+marked as the header row. A `|` table in a Markdown document you switch to
+rich text becomes a real table, and switching back to Markdown or plain text
+turns a real table into `|` rows.
 
 ### QUILL Quick Nav Mode
 
@@ -16028,7 +16082,7 @@ braille, has the details.
   says "Backed up the original to ..." on the status bar. Inside the document,
   **Ctrl+Alt+Right**, **Ctrl+Alt+Left**, **Ctrl+Alt+Down** and
   **Ctrl+Alt+Up** move cell by cell through a table and say where you are
-  ("Row 2 of 3, column 1 of 2: Ann"); **Alt+Home** and **Alt+End** go to the
+  ("Row 2: Ann"); **Alt+Home** and **Alt+End** go to the
   ends of the row, **Ctrl+Alt+Home** and **Ctrl+Alt+End** to the ends of the
   table.
 
@@ -16645,6 +16699,10 @@ do the same thing in QUILL Lite, Quill Radio and QUILL Cast.
   download, and can close QUILL so setup runs straight away. Installed and
   portable copies are handled differently;
   [Checking for Updates](#checking-for-updates) explains both.
+- **What's New** opens QUILL's changelog, the list of everything that changed
+  in each version, in your web browser. It has no shortcut of its own, because
+  `Ctrl+Shift+F1` is the User Guide here; press `Alt+H`, then `W`. Every
+  QuillVille app has the same command on its Help menu.
 - **About Quill** shows the version, publisher details, and the third-party
   components QUILL uses, each with its license and version. The version has a
   build number, such as 1.0.0 (build 2): the build number tells you which build
@@ -23548,6 +23606,21 @@ any of them in **Preferences > Keyboard**. In menus, the Keyboard Reference, the
 status bar and the cheat sheet, these chords are written `QUILL Key + <key>`. In
 `keymap.json` and the Keymap Editor, the same chord is written
 `Ctrl+Shift+Grave, <key>`.
+
+## Licences and notices
+
+QUILL is free and released under the MIT License. It also includes software,
+data and sounds from other projects, each under its own licence.
+
+To read them, open the Help menu and choose Open Third-Party Notices, or choose
+the same button in Help > About QUILL. The list opens in a new document tab, so
+you can read and search it like any other document. It has one heading for each
+component: what it is, which products include it, its licence, who holds the
+copyright and what the licence asks of us. The full licence texts are at the end.
+
+The same list is THIRD-PARTY-NOTICES.txt in the folder where QUILL is installed
+or unpacked, beside QUILL's own licence, LICENSE.txt. The notices for the whole
+QUILL family are in the project's docs/legal folder.
 
 ## Getting help
 

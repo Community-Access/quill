@@ -31,12 +31,10 @@ The discipline is the whole design. Two things are announced and nothing else:
   editor owes it. :mod:`quill.core.list_structure` does the reading; this
   decides what of it is worth saying.
 
-The table half is **QUILL only** and QUILL Lite passes ``include_tables=False``.
-That is a deliberate product line, not an oversight: accessible table navigation
-is a full-QUILL feature, and a boundary cue for a grid the small editor cannot
-then navigate would announce a capability that is not there. It does not offend
-the QUILL Lite rule in CLAUDE.md, which forbids Lite being *ahead* of QUILL --
-never the other way about. Headings go to both editors.
+Both editors include the table half with their heading switch. Until 2026-10-25
+QUILL Lite left it out, because a boundary cue for a grid the small editor could
+not navigate would have announced a capability that was not there; QUILL Lite
+has had the table keys (Navigate > Table) since 2026-10-17.
 
 Everything else stays silent, and the :class:`StructureAnnouncer` latch is what
 keeps it that way: moving the caret *within* a heading says nothing, because you
@@ -174,10 +172,9 @@ def point_from_text(
     identity in markup mode and a serviceable one anywhere the buffer mirrors the
     visible text.
 
-    ``include_tables=False`` skips table detection entirely -- QUILL Lite's
-    setting, because table navigation is a full-QUILL feature and a boundary cue
-    for a grid you cannot navigate is worse than silence. It also skips the scan,
-    which is the whole per-keystroke cost of this module.
+    ``include_tables=False`` skips table detection entirely -- what both editors
+    pass with their heading cues switched off. It also skips the scan, which is
+    the whole per-keystroke cost of this module.
 
     ``list_markup`` is the document's language (``"markdown"`` or ``"html"``)
     when list cues are wanted, and ``None`` when they are not -- either because
@@ -211,7 +208,10 @@ def _line_has_pipe(text: str, offset: int) -> bool:
     """
     line_start = text.rfind("\n", 0, offset) + 1
     line_end = text.find("\n", offset)
-    return "|" in text[line_start : line_end if line_end != -1 else len(text)]
+    line = text[line_start : line_end if line_end != -1 else len(text)]
+    # A real table's row line (quill.core.native_tables) carries its row marks
+    # instead: the start mark on the line before, the end mark on the row's own.
+    return "|" in line or "￻" in line or "￹" in line
 
 
 def _plural(count: int, noun: str) -> str:

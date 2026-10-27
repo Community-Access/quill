@@ -2635,6 +2635,8 @@ the app's own Ctrl+Up and the Windows mixer already said Up is louder, and the
 WinUI slider in Settings does too. Requirement: on every horizontal slider in
 the family, Up and Page Up mean more and Down and Page Down less; Left, Right,
 Home, End, the mouse and every chord are untouched (`quill/ui/slider_keys.py`).
+(Since 3.2.0 build 5, Home and End go with Up and Down, and the family can
+choose the Windows keys instead: see section 30.2.)
 Family-wide on purpose -- a slider one app fixes and another leaves native is
 a worse bug than the one reported -- and enforced: a new horizontal
 `wx.Slider` whose module does not bind the helper fails the build.
@@ -3602,3 +3604,67 @@ The favourites' keys, words and question, now shared in
   Delete." Once per set of marks (`RowMarks.ignored_note`), so it is not said
   on every keystroke.
 - Marks are per window and never saved.
+
+## 30. Whole networks, Slider Keys, and Help > What's New (3.2.0 build 5, 2026-10-25 and 26)
+
+### 30.1 181.FM, laut.fm, Big R Radio and 1.FM
+
+A listener in Hawaii asked for 181.FM by name.
+
+- **181.FM** is a Browse Stations root branch (`one81`), between SomaFM and
+  TuneIn: every channel the network lists, about eighty, by the network's own
+  genres with **All stations** first, explicit channels named as such and the
+  Christmas genre marked seasonal. It reads the station list 181.FM's own site
+  plays from (`quill/core/radio/one_eighty_one.py`), keeps the last good copy
+  for a day, and falls back to a snapshot shipped with the app
+  (`one_eighty_one_snapshot.py`), so it never browses empty.
+- **laut.fm** is the next branch (`lautfm`): listener-run stations by the
+  platform's most-listened genres, through laut.fm's documented public API
+  (`quill/core/radio/laut_fm.py`). Both branches share the genre protocol
+  handler (`browse_genres.py`).
+- **Search.** Both are Search Stations sources (`181fm`, `lautfm`; fourteen
+  sources, all on by default), Search All Sources targets, and Find in this
+  folder uses each one's own search (`branch_find.py`). A network that cannot
+  answer leaves the other sources' results intact.
+- **Networks > Music** gains 181.FM, Big R Radio and 1.FM as Radio Browser
+  nodes with a `name_prefix`, so each keeps only stations named for it, each
+  stream once ("1.FM" must not bring in "011.FM" or "Radio 1.FM"). Big R and
+  1.FM publish no station list a player may use (1.FM's needs a private key),
+  so the directory's own entries are the honest route. DI.FM is not added: it
+  is a paid service.
+- **Existing profiles** see the new branches and search sources once
+  (`SOURCES_EPOCH` 5, `SEARCH_SOURCES_EPOCH` 3), even if they chose their
+  sources before these existed. Every new stream carries now-playing.
+
+### 30.2 Slider Keys, one choice for the family
+
+A listener said his full volume read as the bottom of the scale: Home on the
+trackbar is its start. Requirement: in the default layout, **Up is more**,
+Home and End go with Up and Down -- Up, Page Up and Home raise a slider (Home
+is the top, 100 percent on a volume) and Down, Page Down and End lower it (End
+is 0). Some listeners know the trackbar's own keys and expect them, so the
+family offers **As Windows sliders** too: Down, Page Down and End raise it, Up,
+Page Up and Home lower it. Right is more and Left is less in both.
+
+- One choice for every app, not a field in each app's settings:
+  `slider_keys.json` in the shared data folder (`quill/core/slider_key_layout.py`),
+  read with a modification-time check at each key press, so a change in one
+  app applies in the others at once.
+- A **Slider Keys...** button in Preferences of Quill Radio, QUILL Cast, the
+  Media Player and QUILL Studio, with no access key (GATE-14): a two-row
+  single-choice list, on the current choice; the outcome is spoken, or "Slider
+  keys unchanged."
+- Ctrl+Up and Ctrl+Down, the volume keys that work from anywhere, are not
+  changed; Shift, Ctrl and Alt chords are left to the frame.
+- Because the keys move the slider through `SetValue`, which Windows does not
+  report as a value change, each move raises `EVENT_OBJECT_VALUECHANGE`
+  itself, so the screen reader speaks the new value rather than the old one.
+
+### 30.3 Help > What's New
+
+**What's &New** (Ctrl+Shift+F1), on the Help menu after Release Notes, opens
+the changelog as HTML in the browser (`quill/ui/whats_new.py`), on the key
+every standalone QuillVille app gives it. N rather than W, which What Is This?
+owns. It is distinct from **Community > What's New** (Alt+Shift+N), which says
+what arrived since the listener last looked. A changelog that cannot be found
+is said, not silent.

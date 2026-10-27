@@ -113,8 +113,10 @@ def test_favorites_without_a_store_is_empty_not_an_error() -> None:
 
 
 def test_a_genre_source_lists_folders_then_stations(monkeypatch) -> None:
-    monkeypatch.setattr(bs.xiph, "fetch_genres", lambda **_kw: ["jazz", "rock"])
-    monkeypatch.setattr(bs.xiph, "fetch_genre_stations", lambda g, **_kw: [_station(f"{g} FM")])
+    from quill.core.radio import xiph  # browsed through browse_genres since 2026-10-25
+
+    monkeypatch.setattr(xiph, "fetch_genres", lambda **_kw: ["jazz", "rock"])
+    monkeypatch.setattr(xiph, "fetch_genre_stations", lambda g, **_kw: [_station(f"{g} FM")])
     folders = bs.browse("xiph")
     assert [n.label for n in folders] == ["Jazz", "Rock"]
     assert all(n.is_folder for n in folders)

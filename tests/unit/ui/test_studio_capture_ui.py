@@ -250,7 +250,7 @@ def test_refresh_does_not_replace_missing_window_with_desktop(parent, monkeypatc
     dialog = CaptureSetupDialog(parent, "C:/captures", [desktop, window])
     try:
         dialog.target.SetSelection(1)
-        monkeypatch.setattr(platform, "list_capture_targets", lambda: [desktop])
+        monkeypatch.setattr(platform, "list_capture_targets", lambda **_kw: [desktop])
         dialog._refresh_targets(None)
         selected = dialog.selected_target()
         assert selected.kind == "window" and selected.window_handle == 12

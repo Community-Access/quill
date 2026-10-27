@@ -1,6 +1,6 @@
 # QUILL Cast 2.0
 
-*Version 2.0.0 (build 5), the beta for testers, October 2026. 2.0.0 was
+*Version 2.0.0 (build 6), the beta for testers, October 2026. 2.0.0 was
 prepared on October 3, 2026 and is not yet published.*
 
 I listen to a lot of podcasts, and I do it with a screen reader. For years
@@ -22,7 +22,29 @@ trying, and QUILLBee tells you what has changed. They're new around here, and
 [Meet QUILLBert and QUILLBee](https://www.quillforall.org/meet-quillbert-and-quillbee.html)
 has the proper introductions.
 
-## This build: 2.0.0 (build 5)
+## This build: 2.0.0 (build 6)
+
+Build 6 keeps everything from build 5, below, and adds **Help > What's New**
+(Ctrl+Shift+F1), which opens QUILL Cast's changelog in your browser.
+
+**Slider Keys** is new in Preferences (Ctrl+,), in the When Cast opens
+section, and it is one choice for every Quill app at once. **Up is more**
+stays the default: Up, Page Up and Home raise the volume slider and the
+Sound Enhancements sliders, and Home is now the top, 100 percent, with End
+the bottom. Or choose **As Windows sliders**, where Down, Page Down and End
+raise a slider. Right is more and Left is less either way, and Ctrl+Up and
+Ctrl+Down, the volume keys that work from anywhere, are not changed. Each key
+press also tells your screen reader the new value straight away.
+
+**Pinned to the taskbar, QUILL Cast opens as itself.** Its shortcuts now carry
+its own taskbar identity, as Quill Radio's have since 3.0.2, so pinning
+the running QUILL Cast pins its shortcut. An older pin that asks "Several
+QuillVille apps are installed" now opens the app you pick through its own
+launcher, with all of its settings. To replace an old pin, unpin it and pin
+QUILL Cast again after you update. Reported on QUILLVille for QUILL Lite; every
+QuillVille app has the fix.
+
+## Build 5
 
 Build 5 has everything that was in build 4, plus the fixes for large
 libraries and long refreshes described below. Builds 3 to 5 are for testers
@@ -266,6 +288,9 @@ from "Try this first" will carry you a long way. A few more worth knowing:
   without anyone sounding rushed.
 - **Ctrl+E** opens Sound Enhancements, and **Ctrl+Shift+K** chooses which
   speakers or headphones Cast plays through.
+- On the volume slider and the Sound Enhancements sliders, Up and Home are
+  more. If you know the Windows slider keys and would rather have them,
+  choose **Slider Keys...** in Preferences.
 
 Speed can belong to a podcast. Speed up the slow talker, leave the fast one
 alone, and each podcast remembers its own. The same goes for loudness: give
@@ -498,7 +523,7 @@ had, and tells you so the next time Cast opens. The window's **Update
 History** button shows everything the updater has done.
 
 Help > About now shows a build number after the version: this release is
-2.0.0 (build 5). If a fix comes out without a new version number, it is a
+2.0.0 (build 6). If a fix comes out without a new version number, it is a
 newer build, and Check for Updates offers it to you.
 
 ## When you need a hand
@@ -515,6 +540,9 @@ newer build, and Check for Updates offers it to you.
 - If Cast cannot save your settings or your library, perhaps because the disk
   is full, it tells you once, with the reason, and offers Retry. When a later
   save works, you hear that too.
+- **Help > What's New** (Ctrl+Shift+F1) opens Cast's changelog in your
+  browser: everything that changed, grouped by subject, so you can move
+  through it by heading.
 - **Help > Get Help from Support** (Ctrl+Alt+F2) starts an email to support
   with Cast's version filled in. You can also write to
   support@community-access.org yourself. A person reads every message.

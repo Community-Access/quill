@@ -1150,7 +1150,8 @@ roar. **Sound Enhancements** lets you shape the sound.
 2. Choose a **Quick preset**: Flat, Bass Boost, Voice Clarity or Podcast.
    Voice Clarity is a good first try for a muddy recording.
 3. If you want finer control, move the **Bass**, **Mid** and **Treble**
-   sliders. Up is more.
+   sliders. Up is more, unless you chose the Windows keys in Slider Keys
+   (see "Which way the arrow keys move a slider", below).
 4. Check **Even Out Volume** to bring quiet and loud parts closer together.
    It is lovely for a laughing guest and a softly spoken host.
 5. Press **Apply** (Alt+Y). Playback picks up at the same spot with the new
@@ -1196,6 +1197,27 @@ Preferences > Playing, or in Settings for This Podcast for one podcast.
 headphones Cast plays through. If Cast cannot switch devices itself, it says
 so and offers to open the Windows sound settings, where you can send Cast to
 any device. Windows remembers your choice.
+
+#### Which way the arrow keys move a slider
+
+The volume slider in Now Playing and the sliders in Sound Enhancements answer
+the arrow keys the same way, and you choose which way that is. Press
+**Ctrl+,** for Preferences, go to the **When Cast opens** section, and press
+**Slider Keys...** (beside App Sounds Play On):
+
+- **Up is more** is where it starts. Up, Page Up and Home raise a slider, Home
+  being the top, which is 100 percent on a volume. Down, Page Down and End
+  lower it, End being 0.
+- **As Windows sliders** gives you the keys a standard Windows slider uses:
+  Down, Page Down and End raise it, and Up, Page Up and Home lower it.
+
+Right is more and Left is less either way. Ctrl+Up and Ctrl+Down, the volume
+keys that work from anywhere, are not changed. Each key press tells your
+screen reader the new value straight away, so you never hear the value from
+before the key.
+
+This is one choice for every Quill app. Change it here and Quill Radio,
+Quill Media Player and QUILL Studio follow at your next key press.
 
 ### When an episode ends
 
@@ -1280,7 +1302,8 @@ your library in the way.
    - **Pause**, **Stop**, **Back 30 Seconds**, **Forward 30 Seconds**,
      **Previous Chapter** and **Next Chapter**.
    - **Speed**, a list of speeds plus **Custom...** for a speed you type.
-   - **Volume**, a slider, and **Mute**.
+   - **Volume**, a slider, and **Mute**. Up and Home make it louder, Home
+     being 100 percent, unless you chose the Windows keys in Slider Keys.
    - The sleep timer, with **Set...**, **At End of Episode**, and **Extend by
      5 Minutes**.
    - **Chapters**. The playing one says "playing". Press Enter on any row to go
@@ -3259,7 +3282,8 @@ Here is what each of the nine sections is for, so you know where to look:
 - **When Cast opens.** Where Cast puts you when it starts, whether it picks up
   the last episode straight away, whether it checks your podcasts on opening,
   whether it starts when you sign in to Windows, and whether it looks for a
-  new version of Cast.
+  new version of Cast. Where Cast's own sounds play, and which way the arrow
+  keys move a slider (Slider Keys), are here too.
 - **Playing.** Skip distances, skipping intros, what happens when an episode
   ends, the Winamp keys, and how show notes are copied.
 - **Fetching.** How often Cast looks for new episodes, how many it downloads
@@ -3335,6 +3359,9 @@ chapter where you would use them, and F1 on any row tells you more.
 - **Start QUILL Cast with Windows**: open the installed copy when you sign in
   to this Windows account; portable copies cannot change startup settings.
 - **Check for updates on launch**: look for a new version once a day.
+- **App Sounds Play On...**: where Cast's own sounds play, or none.
+- **Slider Keys...**: which way the arrow keys move a slider, in every Quill
+  app at once. Up is more (Home is 100 percent), or the Windows slider keys.
 - **Check when Cast opens**, **Check when the computer wakes** and **Catch up
   on a missed check at the next launch**: when Cast looks for new episodes
   without being asked.
@@ -4416,7 +4443,7 @@ unless it finds one. To check now:
    open again afterwards, or **Install when I close** (Alt+C) to keep
    listening and update the next time you close Cast.
 
-Help > About shows your version with a build number, such as 2.0.0 (build 5). The
+Help > About shows your version with a build number, such as 2.0.0 (build 6). The
 build number tells you which build of a version you have: when a fix comes out
 without a new version number, it is a newer build, and Check for Updates offers it.
 
@@ -4427,6 +4454,11 @@ off, open Preferences (Ctrl+,), choose **When Cast opens**, and clear
 The user guide, the release notes and the version you have are on the Help
 menu too: **User Guide** (Ctrl+Alt+D), **Release Notes** (Ctrl+Alt+R) and
 **About QUILL Cast** (Ctrl+Alt+O).
+
+**Help > What's New** (Ctrl+Shift+F1) opens QUILL Cast's changelog in your
+browser: every change in every version, newest first, grouped by subject so
+you can move through it by heading. The release notes welcome you to a
+version; What's New is the full list of what changed.
 
 ### Release channels: Stable, Beta and Dev
 
@@ -5286,6 +5318,20 @@ one later, open Cast in a Lineup, and share them all with Quill Radio.
 The Keyboard reference that follows lists every key Cast comes with, for the
 days you want them all in one place. Happy listening.
 
+## Licences and notices
+
+QUILL Cast is free and released under the MIT License. It also includes software,
+data and sounds from other projects, each under its own licence.
+
+To read them, open the Help menu, choose About QUILL Cast, and then choose the
+Licences and Notices button. The list opens as a plain text file, with one
+heading for each component: what it is, its licence, who holds the copyright
+and what the licence asks of us. The full licence texts are at the end.
+
+The same file, THIRD-PARTY-NOTICES.txt, and QUILL Cast's own licence, LICENSE.txt,
+are also in the folder where QUILL Cast is installed or unpacked, so you can open
+them without starting the app.
+
 ## Keyboard reference
 
 These are the keys Cast comes with. If you change one, the Keyboard
@@ -5518,6 +5564,7 @@ They are listed in full under "Keys in the Lineups window" in Chapter 9.
 | Get Help from Support | Ctrl+Alt+F2 |
 | User Guide | Ctrl+Alt+D |
 | Release Notes | Ctrl+Alt+R |
+| What's New (the changelog) | Ctrl+Shift+F1 |
 | Product Requirements (Advanced) | Ctrl+Alt+Y |
 | Check for Updates | Ctrl+Alt+U |
 | About QUILL Cast | Ctrl+Alt+O |

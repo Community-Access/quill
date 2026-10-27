@@ -182,7 +182,9 @@ def browse_my_channels(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
     if not _signed_in(safe_mode):
         return []
     info = _flat(CHANNELS_PAGE, size=500)
-    return [to_node(result) for result in parse_results(info, CHANNEL, cap=500)]
+    nodes = [to_node(result) for result in parse_results(info, CHANNEL, cap=500)]
+    # A to Z, not YouTube's own "most relevant" order (asked for, 2026-10-26).
+    return sorted(nodes, key=lambda node: node.label.casefold())
 
 
 def browse_my_playlists(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:

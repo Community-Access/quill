@@ -96,18 +96,84 @@ def _same_word(said: str, wanted: str) -> bool:
     return levenshtein(said, wanted) <= limit
 
 
+def _sounds(text: str) -> str:
+    """*text*'s letters spelled roughly as they sound, for comparing a phrase
+    the recogniser split or joined in the wrong places: "ck", "c" and "qu" as
+    the k they say, "d" as "t" (a recogniser hears one for the other at a word
+    boundary), "y" as "i", and every doubled letter once."""
+    for spelled, said in _SOUNDS:
+        text = text.replace(spelled, said)
+    collapsed: list[str] = []
+    for letter in text:
+        if not collapsed or collapsed[-1] != letter:
+            collapsed.append(letter)
+    return "".join(collapsed)
+
+
+_SOUNDS = (
+    ("ck", "k"),
+    ("qu", "kw"),
+    ("c", "k"),
+    ("ph", "f"),
+    ("x", "ks"),
+    ("z", "s"),
+    ("d", "t"),
+    ("y", "i"),
+)
+
+
+def _joined_match(heard: list[str], wanted: list[str]) -> int | None:
+    """The words the wake phrase used when the recogniser cut it differently.
+
+    Moonshine and Whisper hear "Quill dictate" said at an ordinary pace as
+    "Quilt it take", "Quiltic tape" or "Quilty take" -- every sound there, the
+    word boundaries in the wrong places (measured 2026-10-26: ten of twenty
+    synthesised samples). A word-by-word match cannot see that. So the start of
+    the phrase is compared **as one run of sounds** against the wake phrase's,
+    allowing one difference in every five letters, and with the first word
+    still having to sound like the wake phrase's first word. "Will it take
+    long" and "Kill it today" open the right way and are still too far from
+    the rest of it to wake anything. A one-word phrase (the command word) is
+    allowed no difference at all here, so "will" and "kill" never become it.
+    """
+    target = _sounds("".join(wanted))
+    limit = len(target) // 5
+    first = wanted[0]
+    opening = heard[0]
+    if not (
+        _same_word(opening, first)
+        or _same_word(opening[: len(first)], first)
+        # "Kill" and "will" for "Quill": one sound apart, where Soundex's first
+        # letter and the spelling's two edits both miss it.
+        or levenshtein(_sounds(opening), _sounds(first)) <= 1
+    ):
+        return None
+    best: tuple[int, int] | None = None
+    for used in range(1, min(len(heard), len(wanted) + 2) + 1):
+        distance = levenshtein(_sounds("".join(heard[:used])), target)
+        if distance <= limit and (best is None or distance < best[0]):
+            best = (distance, used)
+    return None if best is None else best[1]
+
+
 def match_wake(heard: list[str], phrase: str) -> int | None:
     """How many of *heard*'s words the wake phrase used, or ``None`` if absent.
 
     *heard* is the phrase's words, lower-cased and stripped of punctuation.
+    Word by word first, each word forgiven as :func:`_same_word` says; then,
+    for a phrase the recogniser split or joined in the wrong places, the
+    opening sounds as one run (:func:`_joined_match`). The command word
+    (:mod:`~quill.core.windows_dictation.command_mode`) and the stop phrase
+    are matched here too, so the three forgive alike.
     """
     wanted = wake_words(phrase)
-    if not wanted or len(heard) < len(wanted):
+    if not wanted or not heard:
         return None
-    for said, want in zip(heard, wanted, strict=False):
-        if not _same_word(said, want):
-            return None
-    return len(wanted)
+    if len(heard) >= len(wanted) and all(
+        _same_word(said, want) for said, want in zip(heard, wanted, strict=False)
+    ):
+        return len(wanted)
+    return _joined_match(heard, wanted)
 
 
 def is_stop_phrase(heard: list[str], phrase: str) -> bool:

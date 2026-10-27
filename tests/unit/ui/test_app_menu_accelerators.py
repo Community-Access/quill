@@ -66,9 +66,12 @@ APP_MENU_FILES = (
     # the coverage test below sees the file rather than reporting it as an app
     # that escaped the gate.
     "lite_window_menus.py",
-    # The MDI shell's own two-item bar, shown only when no document is open.
-    # Literal labels, so the scan reads these ones directly.
+    # The MDI shell's own bar, shown only when no document is open. It is built
+    # from the same command table since 2026-10-25, filtered to the commands
+    # that need no document, so it is checked the way lite_window_menus.py is
+    # (and tests/unit/apps/test_lite_empty_window_menu.py walks the real bar).
     "lite_shell.py",
+    "lite_shell_menu.py",
 )
 
 _APPEND_KINDS = ("Append", "AppendCheckItem", "AppendRadioItem")

@@ -232,6 +232,15 @@ Playback uses the bundled mpv engine when it is available (gapless audio, exact 
 
 While a Workbench is open, your **media keys** drive the active player: Play/Pause, Stop, Next chapter, and Previous chapter work from any window. With no Workbench open they are silent. (Media keys are a Windows feature.)
 
+#### Which way the slider keys go (Slider Keys)
+
+On the **Volume** slider, the arrow keys follow the family's **Slider Keys** choice, made in **Preferences** (Ctrl+Comma) with the **Slider Keys...** button:
+
+- **Up is more** (the default): Up, Page Up and Home raise the volume, and Home is the top, 100 percent. Down, Page Down and End lower it, and End is 0.
+- **As Windows sliders**: the keys of a standard Windows slider. Down, Page Down and End raise it (End is 100 percent); Up, Page Up and Home lower it (Home is 0).
+
+Right is always more and Left always less. It is one choice for every Quill app with a volume slider -- QUILL Studio, Quill Radio, QUILL Cast and Quill Media Player -- so changing it here changes it there at the next key press. Each key press also tells your screen reader the new value. Ctrl+Up and Ctrl+Down, the volume keys that work from anywhere in the apps that have them, are not changed.
+
 ### Chapter surgery
 
 All by ear:
@@ -512,6 +521,7 @@ All the Quill apps are published from one place, and each one recognizes its own
 | AI menu | Alt+A |
 | View menu | Alt+V |
 | Help menu | Alt+H |
+| What's New (the changelog, in your browser) | Ctrl+Shift+F1 |
 | Build From Recordings button (main window) | Alt+R |
 | Your books list (main window) | Alt+Y |
 
@@ -554,6 +564,24 @@ the whole message on your clipboard and tells you the address, so nothing you
 typed is lost. And writing to **support@community-access.org** yourself always
 works just as well: there is no form you have to use. Say which app you were
 using and what happened.
+
+## What's New
+
+**Help > What's New** (Ctrl+Shift+F1) opens QUILL Studio's changelog in your browser: everything that has changed, newest first, grouped by subject so you can move through it by heading. Every app in the QuillVille family has the same command.
+
+## Licences and notices
+
+QUILL Studio is free and released under the MIT License. It also includes software,
+data and sounds from other projects, each under its own licence.
+
+To read them, open the Help menu, choose About QUILL Studio, and then choose the
+Licences and Notices button. The list opens as a plain text file, with one
+heading for each component: what it is, its licence, who holds the copyright
+and what the licence asks of us. The full licence texts are at the end.
+
+The same file, THIRD-PARTY-NOTICES.txt, and QUILL Studio's own licence, LICENSE.txt,
+are also in the folder where QUILL Studio is installed or unpacked, so you can open
+them without starting the app.
 
 ## Troubleshooting
 
@@ -687,5 +715,5 @@ AI and OCR findings are separate from objective checks. AI does not automaticall
 
 ### Completion status and next steps
 
-The full screenshot PRD is not complete. UIA control selection, content-aware regions, scrolling/sequence capture, comparison, named workspaces, keyboard crop/zoom, annotation/redaction and Capture and Dictate remain. Actual JAWS/NVDA/Narrator/braille usability, mixed-DPI hardware, live-provider privacy and installer/portable acceptance also remain. See the [requirement coverage audit](../../../docs/design/quill-studio-screenshot-coverage.md). Video demonstrations with optional sound are a separate later milestone.
+The full screenshot PRD is not complete. UIA control selection, content-aware regions, scrolling/sequence capture, comparison, named workspaces, keyboard crop/zoom, annotation/redaction and Capture and Dictate remain. Actual JAWS/NVDA/Narrator/braille usability, mixed-DPI hardware, live-provider privacy and installer/portable acceptance also remain. The requirement coverage audit, `docs/design/quill-studio-screenshot-coverage.md` in QUILL's source, lists each one. Video demonstrations with optional sound are a separate later milestone.
 

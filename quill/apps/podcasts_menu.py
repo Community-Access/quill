@@ -17,6 +17,7 @@ from __future__ import annotations
 import wx
 
 from quill.core import http_client
+from quill.ui.whats_new import append_whats_new_item
 
 #: QUILL Cast's identity. It lives beside the menu bar because that is where
 #: every one of these is *displayed* -- About, Report a Bug, Check for Updates
@@ -24,7 +25,7 @@ from quill.core import http_client
 #: import the other direction would need.
 APP_TITLE = "QUILL Cast"
 APP_VERSION = "2.0.0"
-APP_BUILD = 5  # this version's build (docs/release/RELEASE.md, "Build numbers")
+APP_BUILD = 6  # this version's build (docs/release/RELEASE.md, "Build numbers")
 APP_REPO = "Community-Access/quill"
 # Every feed, episode and directory request names QUILL Cast and its release
 # (check.md bug 1), the way Quill Radio and Quill Weather already do.
@@ -474,6 +475,8 @@ class CastMenuBarMixin:
         self.frame.Bind(wx.EVT_MENU, lambda _e: self.open_cast_tutorials(), id=tutorials_id)
         help_menu.Append(guide_id, "&User Guide\tCtrl+Alt+D")
         help_menu.Append(notes_id, "&Release Notes\tCtrl+Alt+R")
+        # The changelog, on the key every standalone QuillVille app gives it.
+        self._cast_whats_new_id = append_whats_new_item(self, help_menu, "cast", "QUILL Cast")
         self._advanced_row(help_menu, "prd", prd_id, "Pro&duct Requirements...\tCtrl+Alt+Y")
         self.frame.Bind(wx.EVT_MENU, lambda _e: self._open_podcasts_doc("userguide"), id=guide_id)
         self.frame.Bind(

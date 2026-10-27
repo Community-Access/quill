@@ -66,7 +66,7 @@ def test_build_markdown_table_with_custom_dimensions() -> None:
 def test_build_html_table_with_header() -> None:
     result = build_html_table(2, 3, include_header=True)
     assert "<thead>" in result.inserted_text
-    assert result.inserted_text.count("<th>") == 3
+    assert result.inserted_text.count('<th scope="col">') == 3
     assert result.inserted_text.count("<td></td>") == 6
 
 

@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from quill.ui import app_sounds
+from quill.ui import app_sounds, slider_keys
 
 
 def open_preferences(app: Any) -> None:
@@ -62,7 +62,7 @@ def open_preferences(app: Any) -> None:
                 close_index,
             ),
         ],
-        actions=[app_sounds.preference_action(app)],  # ui/app_sounds
+        actions=[app_sounds.preference_action(app), slider_keys.preference_action(app)],
         announce_cb=app._announce,
     )
     result = dialog.show()

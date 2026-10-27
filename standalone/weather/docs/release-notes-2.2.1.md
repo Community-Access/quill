@@ -36,6 +36,14 @@ name empty, Weather continues to use the place name from the search result.
   from Radio in the taskbar, tray, and Alt+Tab.
 - **Show and hide key by choice.** Weather no longer reserves a system-wide key
   by default. Choose one under File > Show and Hide Key if you want it.
+- **Your own sounds, where you want them.** **Options > App Sounds Play On...**
+  (Ctrl+Shift+S) sends Weather's own sounds to the system default, any sound
+  card or headset by name, or nowhere; **Alt+Shift+M** turns them off and on.
+- **What's New.** Help > What's New (Ctrl+Shift+F1) opens the changelog in your
+  browser, on the same key as every other QuillVille app. Help also has the
+  Command Palette (Ctrl+Shift+P) and Product Requirements (Alt+Shift+F1).
+- **QUILL Transcribe on the QuillVille menu.** The QuillVille menu and the tray
+  list QUILL Transcribe, released on 1 November 2026.
 
 ## Download and install
 

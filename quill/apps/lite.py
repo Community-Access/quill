@@ -305,22 +305,6 @@ class QuillLiteApp(
         self.focus_frame(frame)
         return True
 
-    def open_from_dialog(self, parent: wx.Window) -> None:
-        """File > Open from the shell's own menu, when no document is open."""
-        from quill.core.lite.filetypes import OPEN_WILDCARD
-
-        with wx.FileDialog(
-            parent,
-            "Open",
-            wildcard=OPEN_WILDCARD,
-            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE,
-        ) as dialog:
-            if dialog.ShowModal() != wx.ID_OK:
-                return
-            paths = [Path(chosen) for chosen in dialog.GetPaths()]
-        for path in paths:
-            self.open_path(path)
-
     def _frame_for(self, path: Path) -> DocumentFrame | None:
         """The window already editing *path*, if any (case- and link-tolerant)."""
         for frame in self.frames:
@@ -418,6 +402,11 @@ class QuillLiteApp(
             self.active_frame = None
         self.save_settings()
         self.refresh_all_menus()
+        if not self.frames and self.shell is not None:
+            # The empty bar shows again now, so bring it up to date with any key
+            # or feature changed since it was built -- after the child is gone,
+            # not while its bar still holds the slot (ShellMenuMixin).
+            wx.CallAfter(self.shell.rebuild_empty_menu)
 
     def exit_all(self) -> None:
         """Close every document, asking about each. One refusal cancels the lot.

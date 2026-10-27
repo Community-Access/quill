@@ -34,10 +34,10 @@ from over-announcing:
   line the heading is on, and a naive latch reads that as "you have arrived at a
   heading" and says so in the middle of typing. So a move that follows a change
   in the text only re-latches; it never speaks.
-* **Tables are QUILL's, not QUILL Lite's.** ``include_tables=False`` is passed on
-  every call. Cell navigation is a full-QUILL feature and announcing the edge of
-  a grid the small editor cannot then navigate would advertise something that is
-  not there.
+* **Tables ride with the heading switch, as in QUILL** (since 2026-10-25). They
+  were left out while cell navigation was QUILL's alone, because announcing the
+  edge of a grid the small editor could not navigate advertised something that
+  was not there; QUILL Lite has had the table keys since 2026-10-17.
 """
 
 from __future__ import annotations
@@ -126,9 +126,10 @@ class DocumentHeadingsMixin:
             heading_text=(
                 heading_text_at(text, caret, markup_kind=surface or "plain") if level else ""
             ),
-            # Tables are QUILL's. Announcing the edge of a grid the small editor
-            # cannot then navigate would advertise something that is not there.
-            include_tables=False,
+            # "Table, 4 rows, 3 columns" on the way in, "Out of table" on the way
+            # out -- with the heading switch, as in QUILL, since QUILL Lite has
+            # had the table keys to act on it (Navigate > Table) since 2026-10-17.
+            include_tables=bool(getattr(settings, "announce_headings", True)),
             list_markup=list_markup,
         )
 

@@ -2,7 +2,7 @@
 
 All notable changes to Quill Converter are documented here in summary. The
 itemized list is `docs/CHANGELOG.md`, which is the one the app's Help menu
-opens (Help > Changelog); `docs/release-notes-1.0.md` is the narrative version.
+opens (Help > What's New, Ctrl+Shift+F1); `docs/release-notes-1.0.md` is the narrative version.
 
 Quill Converter is the product wrapper; the application code lives in the
 `quill` package, so the entries below are drawn from the history of
@@ -19,6 +19,14 @@ published as an installer, and everything in it is part of 1.0.0.
 
 Build 2:
 
+- **Also in build 2:** Process with Auphonic (Ctrl+Shift+A) and Auphonic Work
+  Waiting (Ctrl+Alt+A); File Properties (Alt+Enter) ends with the drive's
+  details and free space; Help > Changelog is now **Help > What's New** on the
+  same key, Ctrl+Shift+F1; QUILL Transcribe on the QuillVille menu (Alt+U, then
+  T, or Ctrl+Alt+Shift+F11); the user guide says where transcription lives;
+  FFmpeg's licence files are checked on every build; and every release build
+  checks its version against what is published. Itemized in
+  `docs/CHANGELOG.md`.
 - **Where Quill Converter's own sounds play, and Alt+Shift+M to turn them off.** **File > Preferences > App Sounds Play On...** offers System default, None (no sounds), or any sound card or headset by name. After a change one sound plays on the new card, so you hear where it went. If that card is unplugged the sounds play on the system default until it is back, and Quill Converter says so once. **Alt+Shift+M** turns Quill Converter's sounds off and back on where they were, and **File > App Sounds** shows a check mark while they are on. Each QUILL app keeps its own choice; "Share these choices with my other Quill apps" keeps them in step. Your screen reader is never moved. Asked for on QUILLVille by Rick Lewis.
 
 - **Found before release (2026-10-05):** no show and hide key until you choose

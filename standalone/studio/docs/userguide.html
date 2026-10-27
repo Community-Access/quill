@@ -728,6 +728,26 @@ broken engine can never take playback away.</p>
 active player: Play/Pause, Stop, Next chapter, and Previous chapter work
 from any window. With no Workbench open they are silent. (Media keys are
 a Windows feature.)</p>
+<h4 id="which-way-the-slider-keys-go-slider-keys">Which way the slider
+keys go (Slider Keys)</h4>
+<p>On the <strong>Volume</strong> slider, the arrow keys follow the
+family’s <strong>Slider Keys</strong> choice, made in
+<strong>Preferences</strong> (Ctrl+Comma) with the <strong>Slider
+Keys…</strong> button:</p>
+<ul>
+<li><strong>Up is more</strong> (the default): Up, Page Up and Home
+raise the volume, and Home is the top, 100 percent. Down, Page Down and
+End lower it, and End is 0.</li>
+<li><strong>As Windows sliders</strong>: the keys of a standard Windows
+slider. Down, Page Down and End raise it (End is 100 percent); Up, Page
+Up and Home lower it (Home is 0).</li>
+</ul>
+<p>Right is always more and Left always less. It is one choice for every
+Quill app with a volume slider – QUILL Studio, Quill Radio, QUILL Cast
+and Quill Media Player – so changing it here changes it there at the
+next key press. Each key press also tells your screen reader the new
+value. Ctrl+Up and Ctrl+Down, the volume keys that work from anywhere in
+the apps that have them, are not changed.</p>
 <h3 id="chapter-surgery">Chapter surgery</h3>
 <p>All by ear:</p>
 <ol type="1">
@@ -1353,6 +1373,10 @@ will be off in Safe Mode like everywhere else.</p>
 <td>Alt+H</td>
 </tr>
 <tr>
+<td>What’s New (the changelog, in your browser)</td>
+<td>Ctrl+Shift+F1</td>
+</tr>
+<tr>
 <td>Build From Recordings button (main window)</td>
 <td>Alt+R</td>
 </tr>
@@ -1413,6 +1437,24 @@ so nothing you typed is lost. And writing to <strong><a
 href="mailto:support@community-access.org">support@community-access.org</a></strong>
 yourself always works just as well: there is no form you have to use.
 Say which app you were using and what happened.</p>
+<h2 id="whats-new">What’s New</h2>
+<p><strong>Help &gt; What’s New</strong> (Ctrl+Shift+F1) opens QUILL
+Studio’s changelog in your browser: everything that has changed, newest
+first, grouped by subject so you can move through it by heading. Every
+app in the QuillVille family has the same command.</p>
+<h2 id="licences-and-notices">Licences and notices</h2>
+<p>QUILL Studio is free and released under the MIT License. It also
+includes software, data and sounds from other projects, each under its
+own licence.</p>
+<p>To read them, open the Help menu, choose About QUILL Studio, and then
+choose the Licences and Notices button. The list opens as a plain text
+file, with one heading for each component: what it is, its licence, who
+holds the copyright and what the licence asks of us. The full licence
+texts are at the end.</p>
+<p>The same file, THIRD-PARTY-NOTICES.txt, and QUILL Studio’s own
+licence, LICENSE.txt, are also in the folder where QUILL Studio is
+installed or unpacked, so you can open them without starting the
+app.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <p>Two Help items are worth knowing before anything else goes wrong.
 <strong>Help &gt; View Log…</strong> opens the Studio’s own log, so you
@@ -1776,9 +1818,9 @@ content-aware regions, scrolling/sequence capture, comparison, named
 workspaces, keyboard crop/zoom, annotation/redaction and Capture and
 Dictate remain. Actual JAWS/NVDA/Narrator/braille usability, mixed-DPI
 hardware, live-provider privacy and installer/portable acceptance also
-remain. See the <a
-href="../../../docs/design/quill-studio-screenshot-coverage.md">requirement
-coverage audit</a>. Video demonstrations with optional sound are a
+remain. The requirement coverage audit,
+<code>docs/design/quill-studio-screenshot-coverage.md</code> in QUILL’s
+source, lists each one. Video demonstrations with optional sound are a
 separate later milestone.</p>
 </main>
 </body>

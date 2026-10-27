@@ -59,6 +59,7 @@ class ScreenshotChatDialog(wx.Dialog):
         details.SetHelpText(
             "Optional dimensions, file hash, source metadata and verification limits."
         )
+        details_label = wx.StaticText(details.GetPane(), label="File checks and source details")
         details_text = wx.TextCtrl(
             details.GetPane(),
             value=evidence.summary(),
@@ -70,6 +71,7 @@ class ScreenshotChatDialog(wx.Dialog):
             "Objective file evidence. These checks do not prove privacy or completeness."
         )
         details_layout = wx.BoxSizer(wx.VERTICAL)
+        details_layout.Add(details_label, 0, wx.BOTTOM, 4)
         details_layout.Add(details_text, 1, wx.EXPAND)
         details.GetPane().SetSizer(details_layout)
         outer.Add(details, 0, wx.EXPAND | wx.ALL, 8)

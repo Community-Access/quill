@@ -106,6 +106,16 @@ BROWSE_SOURCES: tuple[BrowseSourceInfo, ...] = (
         network=False,
     ),
     BrowseSourceInfo("soma", "SomaFM", "Curated, commercial-free channels."),
+    BrowseSourceInfo(
+        "one81",
+        "181.FM",
+        "The whole 181.FM network, about eighty channels, by its own genres.",
+    ),
+    BrowseSourceInfo(
+        "lautfm",
+        "laut.fm",
+        "Thousands of listener-run stations, by laut.fm's most-listened genres.",
+    ),
     BrowseSourceInfo("tunein", "TuneIn", "TuneIn's own category tree."),
     BrowseSourceInfo("iheart", "iHeart", "iHeart by city and by genre."),
     BrowseSourceInfo(
@@ -254,11 +264,13 @@ INTRODUCED_BY_EPOCH: dict[int, tuple[str, ...]] = {
     3: ("tv", "quillins"),
     # 2026-10-03: Local Media, your own files in playlists.
     4: ("localmedia",),
+    # 2026-10-25: two whole networks, 181.FM and laut.fm.
+    5: ("one81", "lautfm"),
 }
 
 #: The highest epoch this build knows. A profile stamped with a lower one is
 #: shown the branches introduced since, once, and then stamped with this.
-SOURCES_EPOCH = 4
+SOURCES_EPOCH = 5
 
 
 def introduced_since(epoch: int) -> tuple[str, ...]:

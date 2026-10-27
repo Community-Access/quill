@@ -2005,13 +2005,20 @@ class SocialFrame(wx.Frame):
         PreferencesDialog(self, self.a11y).run_and_apply(self)
 
     def _on_about(self, _e) -> None:
-        wx.MessageBox(
-            f"{__title__} {__version__}\n\n"
+        # The family's About: the same text, plus Licences and Notices, which
+        # opens the THIRD-PARTY-NOTICES.txt the installer puts beside the app.
+        from quill.ui.about_notices import show_about_dialog
+        from quill.ui.dialog_contract import show_modal_dialog
+
+        show_about_dialog(
+            self,
+            app="social",
+            app_name="QUILL Social",
+            body=f"{__title__} {__version__}\n\n"
             "Accessibility-first social workspace for Mastodon and Bluesky.\n"
             "Every conversation within reach.",
-            "About QUILL Social",
-            wx.OK | wx.ICON_INFORMATION,
-            self,
+            announce=self.announcer.say,
+            show_modal=show_modal_dialog,
         )
 
     def _on_close(self, _e) -> None:

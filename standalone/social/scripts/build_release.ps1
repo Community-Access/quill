@@ -87,6 +87,11 @@ if (-not (Test-Path (Join-Path $appDir "QuillSocial.exe"))) {
 
 # -- stage docs (both artifacts ship these) -----------------------------------
 $stagedDocs = Join-Path $appDir "docs"
+# The licences (quill/tools/build_third_party_notices.py) sit beside the
+# program in every artifact, where Help > About > Licences and Notices looks.
+foreach ($legal in @("THIRD-PARTY-NOTICES.txt", "LICENSE.txt")) {
+    Copy-Item (Join-Path $repoRoot $legal) $appDir -Force
+}
 New-Item -ItemType Directory -Force $stagedDocs | Out-Null
 Get-ChildItem (Join-Path $repoRoot "docs") -File |
     Where-Object { $_.Extension -in ".md", ".html" } |

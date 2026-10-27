@@ -1,6 +1,6 @@
 # QUILL Lite 1.2
 
-*Version 1.2.0 (build 5), the beta for testers, October 2026. 1.2.0 was
+*Version 1.2.0 (build 6), the beta for testers, October 2026. 1.2.0 was
 prepared on October 3, 2026 and is not yet published; the last published
 version is 1.1.2.*
 
@@ -18,7 +18,72 @@ Everything works from the keyboard and tells you how it went, the way the rest
 of QUILL Lite does.
 
 
-## New in this build: Find in Open Documents
+## New in build 6: tables in every document
+
+Build 6 keeps everything from build 5, below, and adds tables, Help > What's
+New and a full menu bar when every document is closed. It is the same work as
+in QUILL, on the same keys.
+
+### Making a table
+
+- **Insert > Table...** (**Ctrl+Alt+T**, QUILL's key) asks how many columns and
+  rows and whether the first row is a header, then leaves the cursor in the
+  first cell. In a rich text document it makes a **real table**: a grid on
+  screen, and a table to your screen reader, to Word and to WordPad, with no
+  `|` characters. In Markdown and plain text it makes rows of cells divided by
+  `|`; in HTML, a `<table>` whose header cells are marked for screen readers.
+- A Word or RTF document's tables open as real tables too. Saved as RTF or
+  Word, a table's first row is marked as the header row. Switching a rich
+  document to Markdown or plain text turns its tables into `|` rows, and back.
+- **Trim Trailing Spaces** moves to **Ctrl+Alt+R**, as in QUILL, to give
+  Insert Table its key.
+
+### Reading a table
+
+- **The arrows read a table cell by cell.** Up and Down go to the cell above
+  and below and say it ("Row 3: Ann"), instead of your screen reader reading
+  the whole row. Right at the end of a cell and Left at its start step to the
+  next or previous cell; inside a cell they move letter by letter as always.
+  Down onto a table lands in its first cell and says its shape, such as
+  "Table, 3 rows, 2 columns". It works the same with JAWS, NVDA and Narrator,
+  with nothing to install.
+- **Tab and Shift+Tab** move cell to cell, as in Word, and Tab in the last cell
+  adds a row.
+- A move says only what changed: the column, with its header when the table
+  has a header row ("Column 3, Role: Lead"), the row, or both. With Announce
+  Headings on, arrowing into a table says its shape and leaving it says "Out
+  of table".
+
+### Changing a table
+
+- **Navigate > Table** gains **Insert Row Below**, **Insert Column Right**,
+  **Delete Row**, **Delete Column** and **Tidy Table**. As in Word they have no
+  keys: press **Alt+N**, then **T**. Each is one undo step. In a real table
+  they keep the text in the cells, but not bold or other formatting inside
+  them.
+- A blank row is no longer skipped by the table keys.
+
+### Menus and help
+
+- **Pinned to the taskbar, QUILL Lite opens as itself.** Reported on
+  QUILLVille: QUILL Lite pinned to the taskbar from its running window asked
+  "Several QuillVille apps are installed. Which one do you want to open?",
+  and the copy it then opened ignored your settings and said its speech
+  engines were not included. Windows had pinned the shared QuillVille runtime
+  instead of QUILL Lite. QUILL Lite's shortcuts now carry its own taskbar
+  identity, so a new pin opens QUILL Lite through its own launcher, like the
+  desktop icon. An older pin still asks once which app you want, then opens
+  it the same proper way. To replace an old pin, unpin it and pin QUILL Lite
+  again after you update. Every QuillVille app has the same fix.
+- **Help > What's New** opens the changelog in your browser. It has no key:
+  press **Alt+H**, then **W**. Every QUILL family app has the same item.
+- **A full menu bar with every document closed.** Close the last document and
+  the window still has **File** (New, Open, Recent Documents, Reopen Last
+  Session and Exit), **Tools** (Preferences, the Keyboard Manager, the Sound
+  Scheme, and backing up and restoring settings) and **Help**, on the same
+  keys as a document window.
+
+## New in build 5: Find in Open Documents, folder search and the clipboard collector
 
 Press **Ctrl+Alt+Shift+F8** to find and replace across every document you have open, not just the one in front of you. It searches what is in each window right now, including changes you have not saved and documents you have never saved. Find Next moves from document to document and tells you each one's name, Find All lists every match, and Replace All tells you how many it found before it changes anything, lets you undo each document on its own, and saves nothing. Afterwards, F3 keeps searching across your documents until you start an ordinary Find. QUILL has it too, on Ctrl+Shift+F10. Thanks to Chris Nova for asking.
 
@@ -28,7 +93,7 @@ And QUILL Lite now has QUILL's **clipboard collector**. Press **Alt+Shift+S** in
 
 ## Testing rebuild: 1.2.0 (build 5)
 
-Build 5 is the beta being tested now. It keeps everything from build 4, below,
+Build 5 keeps everything from build 4, below,
 and adds Find in Open Documents, folder search and the clipboard collector
 above, plus everything in this section.
 
@@ -61,9 +126,9 @@ above, plus everything in this section.
   cell, **Ctrl+Alt+Down** and **Ctrl+Alt+Up** for the cell below and above,
   **Alt+Home** and **Alt+End** for the first and last cell in the row, and
   **Ctrl+Alt+Home** and **Ctrl+Alt+End** for the first and last cell of the
-  table. You hear where you are, such as "Row 2 of 4, column 3 of 5: Lead".
-  It works in Markdown tables and Word documents. See "Moving through a
-  table".
+  table. You hear what changed and what is there, such as "Column 3, Role:
+  Lead". It works in Markdown tables, real tables in rich text and Word
+  documents. See "Moving through a table".
 - **QUILL Lite opens PDFs.** Press **Ctrl+O** and choose one. It opens as its
   text, page by page, and **Go To** (**Ctrl+G**) takes you to a page or to an
   entry in the PDF's own outline. A locked PDF asks for its password and never
@@ -162,6 +227,19 @@ above, plus everything in this section.
 
 ### Dictation
 
+- **"Quill dictate" is heard the way the engines write it.** Reported on
+  QUILLVille: QUILL Lite loaded the chosen speech engine but never answered
+  the wake phrase. The built-in engines often write it as "Quilt it take",
+  "Quiltic tape" or "Quilldictate", and QUILL Lite only accepted the two
+  words exactly. It now accepts a phrase that sounds like the wake phrase at
+  the start of what you say, while ordinary openings such as "Will it take
+  long" or "Kill it today" still do nothing; the command word and the stop
+  phrase forgive in the same way. If another QuillVille program is already
+  using the microphone, QUILL Lite now says once that the wake phrase is not
+  being listened for, and which program has the microphone, instead of
+  waiting in silence. If the wake phrase is still missed, start QUILL Lite
+  with the environment variable `QUILL_DICTATION_TRACE=1`: `quill.log` then
+  records what the engine heard each time, to send to support.
 - **Dictation profiles.** Choose the kind of writing in More Dictation
   Settings: Email, Document, Markdown, Chat, Coding, Verbatim or Standard.
   Each changes pauses, filler words, punctuation and headings. Say "QUILL
@@ -359,11 +437,21 @@ installed copy is not affected. Instead of Install and restart now:
 If your settings are already gone, QUILL Lite cannot bring them back; look for
 a backup or your computer's File History.
 
-One key has moved. **Tools > Keyboard Manager** is now
-**Ctrl+Alt+Shift+Space**. Its old key, Ctrl+Alt+Shift+R, shows and hides Quill
-Radio from anywhere, so while Quill Radio was running the Keyboard Manager
-never opened. QUILL moved its Keyboard Manager to the same key, so the two
-still match.
+Some keys have moved:
+
+- **Tools > Keyboard Manager** is now **Ctrl+Alt+Shift+Space**. Its old key,
+  Ctrl+Alt+Shift+R, shows and hides Quill Radio from anywhere, so while Quill
+  Radio was running the Keyboard Manager never opened. QUILL moved its
+  Keyboard Manager to the same key, so the two still match.
+- **Trim Trailing Spaces** is now **Ctrl+Alt+R**, as in QUILL; **Ctrl+Alt+T** is
+  Insert Table.
+- **Remove Quote Marks** is now **Alt+Shift+.** (the period), and
+  **Snippets** is **Ctrl+Alt+Shift+Home**.
+- **Collect Selection** is now **Alt+Shift+C**; **Alt+Shift+S** is the
+  clipboard collector, as in QUILL.
+- **Alt+Shift+1** to **Alt+Shift+8** reopen your first eight recent files, and
+  **Alt+Shift+9** is always **AutoCorrect Entries**. The ninth file is in
+  **File > Recent Documents** (**Alt+Shift+0**).
 
 ## Try this first
 
@@ -905,12 +993,18 @@ reviewing AI-written plans. Thank you, Andre.
 | **Ctrl+Alt+Shift+PageUp** | Dictation Context for This Document |
 | **Alt+F9** | Dictation Status |
 | **Ctrl+Alt+Backspace** | Read-Only Guard |
+| **Ctrl+Alt+T** | Insert Table |
+| **Ctrl+Alt+R** | Trim Trailing Spaces, on its new key |
 | **Ctrl+Alt+Right** / **Ctrl+Alt+Left** | Next and Previous Cell in a table |
 | **Ctrl+Alt+Down** / **Ctrl+Alt+Up** | Cell Below and Cell Above |
 | **Alt+Home** / **Alt+End** | First and Last Cell in the row |
 | **Ctrl+Alt+Home** / **Ctrl+Alt+End** | First and Last Cell of the table |
 | **Alt+PageDown** / **Alt+PageUp** | Next and Previous Highlighted Passage |
 | **Ctrl+F2** | List Highlighted Passages |
+| **Alt+Shift+9** | AutoCorrect Entries |
+| **Alt+Shift+S** | Clipboard Collector |
+| **Ctrl+Alt+Shift+F** | Search in Files |
+| **Ctrl+Shift+R** | Replace Across Files |
 | **Ctrl+6** | Ask AI a Question |
 | **Ctrl+7** | Prompt Library |
 | **Ctrl+9** | Web Searches Left |

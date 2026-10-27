@@ -91,7 +91,7 @@ SYNC_MAP: dict[str, dict[str, str]] = {
     "studio": {
         "userguide": "userguide.html",
         "prd": "prd.html",
-        "release-notes": "release-notes-2.2.html",
+        "release-notes": "release-notes-2.0.html",
     },
     "inkwell": {
         "userguide": "userguide.html",

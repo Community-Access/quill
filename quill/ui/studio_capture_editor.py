@@ -57,9 +57,12 @@ class ScreenshotEditorDialog(wx.Dialog):
         advanced_panel = wx.Panel(panel)
         advanced_body = wx.BoxSizer(wx.VERTICAL)
 
-        def field(label, control, help_text):
-            container = advanced_body if control.GetParent() is advanced_panel else body
-            container.Add(wx.StaticText(control.GetParent(), label=label), 0, wx.TOP, 6)
+        def field(label, make, help_text, parent):
+            # The label first, then the control (make): a screen reader pairs
+            # them by creation order (check_dialog_zorder.py, A11Y-Z-ORDER).
+            container = advanced_body if parent is advanced_panel else body
+            container.Add(wx.StaticText(parent, label=label), 0, wx.TOP, 6)
+            control = make()
             set_accessible_name(control, label.replace("&", ""))
             control.SetHelpText(help_text)
             container.Add(control, 0, wx.EXPAND | wx.BOTTOM, 4)
@@ -67,7 +70,7 @@ class ScreenshotEditorDialog(wx.Dialog):
 
         self.plan = field(
             "Edit &plan and results",
-            wx.TextCtrl(
+            lambda: wx.TextCtrl(
                 panel,
                 value=self.project.describe(simple=True),
                 style=wx.TE_MULTILINE | wx.TE_READONLY,
@@ -75,59 +78,69 @@ class ScreenshotEditorDialog(wx.Dialog):
             ),
             "Read the original identity, edits and measured results. "
             "This is the text alternative to the visual preview.",
+            panel,
         )
         self.objects = field(
             "&Objects and edit order",
-            wx.ListBox(advanced_panel),
+            lambda: wx.ListBox(advanced_panel),
             "Each operation is listed in render order. Select one to remove or move it. "
             "Numbered annotations are identified by text as well as colour.",
+            advanced_panel,
         )
         self.action = field(
             "What would you like to &do?",
-            wx.Choice(panel, choices=list(ACTION_LABELS)),
+            lambda: wx.Choice(panel, choices=list(ACTION_LABELS)),
             "Crop, redact with solid black, or add a numbered annotation. "
             "The original is never overwritten. A redaction export does not include the original.",
+            panel,
         )
         self.action.SetSelection(0)
         self.region = field(
             "&Area to change",
-            wx.Choice(panel, choices=list(self.anchors)),
+            lambda: wx.Choice(panel, choices=list(self.anchors)),
             "Start with a named area. Find text to select adds recognized text locations. "
             "Choose an anchor before adding an operation. OCR can be wrong; review before sharing.",
+            panel,
         )
         self.region.SetSelection(0)
         self.caption = field(
             "&Label or callout text",
-            wx.TextCtrl(panel),
+            lambda: wx.TextCtrl(panel),
             "Optional text for an annotation. A visible number is added automatically.",
+            panel,
         )
         self.position = field(
             "E&xact percentages: left, top, width, height",
-            wx.TextCtrl(advanced_panel),
+            lambda: wx.TextCtrl(advanced_panel),
             "Optional four comma-separated percentages, for example 0, 0, 100, 50. "
             "Leave blank to use the named region. No pixel knowledge is needed.",
+            advanced_panel,
         )
         self.size = field(
             "Resize as percentage of current &size",
-            wx.SpinCtrl(advanced_panel, min=10, max=400, initial=100),
+            lambda: wx.SpinCtrl(advanced_panel, min=10, max=400, initial=100),
             "Resize proportionally from 10 through 400 percent. "
             "Dimensions are verified after export. Enlarging does not restore missing detail.",
+            advanced_panel,
         )
         self.zoom = field(
             "Visual preview &zoom",
-            wx.Choice(advanced_panel, choices=["25%", "50%", "100%", "200%", "400%"]),
+            lambda: wx.Choice(advanced_panel, choices=["25%", "50%", "100%", "200%", "400%"]),
             "Optional visual magnification. The text plan remains available without sight.",
+            advanced_panel,
         )
         self.zoom.SetSelection(2)
         self.goal = field(
             "Intended &use and description",
-            wx.TextCtrl(panel),
+            lambda: wx.TextCtrl(panel),
             "Describe why you need this screenshot. Included in your evidence bundle.",
+            panel,
         )
         self.steps = field(
             "Steps to &reproduce",
-            wx.TextCtrl(advanced_panel, style=wx.TE_MULTILINE, size=(-1, 60)),
+            lambda: wx.TextCtrl(advanced_panel, style=wx.TE_MULTILINE, size=(-1, 60)),
             "Type the actions that produced the screen. Review this text for secrets.",
+            advanced_panel,
         )
         self.privacy = wx.CheckBox(
             advanced_panel, label="I reviewed the rendered export for private information"
@@ -151,8 +164,9 @@ class ScreenshotEditorDialog(wx.Dialog):
         advanced_body.Add(self.strict, 0, wx.TOP, 8)
         self.waiver = field(
             "Review &waiver and reason",
-            wx.TextCtrl(advanced_panel),
+            lambda: wx.TextCtrl(advanced_panel),
             "Optional conscious exception to strict review. The reason is included in the bundle.",
+            advanced_panel,
         )
         buttons = wx.WrapSizer(wx.HORIZONTAL)
         simple_buttons = wx.WrapSizer(wx.HORIZONTAL)

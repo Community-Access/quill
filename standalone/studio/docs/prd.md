@@ -21,6 +21,14 @@ The product is one studio with three journeys:
 3. Edit a Book -- open a finished audiobook in the Chapter Workbench: play it,
    fix chapters and tags, run the ACX check, publish.
 
+Since 2.0.0 the studio also captures, inspects, edits and verifies
+screenshots (section 4.14): a named window, a display, the whole desktop, a
+guided portion of one of them, or one accessible element inside a window, each
+saved with a verification report that separates what was measured from what an
+AI only suggested. Recording video is not yet part of the product; it is
+specified as the next thing to build in the QUILL Studio planning PRD
+(`docs/planning/QUILL-Studio-PRD.md`, section 7A).
+
 The wizard, Chapter Workbench, batch narration pipeline, and publish surfaces
 are the exact same code QUILL ships. This app supplies what a standalone
 product needs around them: a home window, menu bar, status bar, system tray,
@@ -118,8 +126,10 @@ requirement, not a layer.
 - AS-3. The menu bar must provide: Studio (Open Studio Wizard Ctrl+N, the three
   journeys, Open Book File Ctrl+O, Open Job File, Resume on launch, Recently
   Played, Minimize to Tray Ctrl+Alt+T, Preferences Ctrl+Comma, Exit), View (Show
-  Status Bar, Library Window Ctrl+Alt+Y), Capture (Screenshots, Screenshot
-  Inspector, Global Hotkeys), Book Tools (Publish a Finished Book, Make a
+  Status Bar, Library Window Ctrl+Alt+Y), Capture (Capture screen, Open saved
+  screenshot, Screenshot Inspector, Cancel pending capture, Screenshot active
+  window now, Screenshot full desktop now, Repeat last selected target,
+  Screenshot global hotkeys; see AS-93), Book Tools (Publish a Finished Book, Make a
   Podcast Feed From a Folder, ACX Compliance Check, Sleep Timer, Mute Playback
   Ctrl+M, Play Queue), Voices (Speech Hub, Manage Speech Models, Pronunciation
   Dictionaries, Generate Captions, Convert Audio, Convert from URL, Download
@@ -156,14 +166,17 @@ requirement, not a layer.
 
 ### 4.2 The Studio wizard (shared by both build journeys)
 
-- AS-7. The wizard's start page must offer the three journeys as a radio box
-  plus a "Load a job file..." button. The last-used journey
+- AS-7. The wizard's start page must offer the three journeys, plus a fourth
+  entry, "Capture a screenshot (verify, OCR, and optional AI inspection)", as a
+  radio box plus a "Load a job file..." button. The last-used journey
   (`audio_studio_last_journey`, shared setting) must be pre-selected and must
   be persisted on every journey change.
 - AS-8. Page flow must adapt to the journey: documents = Start > What to read
   > Voices > Chapters > Output > Book > Summary; audio = Start > Recordings
   folder > Book > Summary; edit = Start > Open a book, with the final button
-  relabeled "Open in Workbench".
+  relabeled "Open in Workbench"; capture = Start only, with the final button
+  relabeled "Open Capture Screen", which closes the wizard and opens the
+  Capture screen dialog (AS-94).
 - AS-9. Navigation must provide Back, Next, Skip to summary (fast-forward that
   stops at the first invalid page), Start, Cancel, and a "Step N of M" label.
   Next and Start must validate pages and report the failure message.
@@ -381,15 +394,19 @@ requirement, not a layer.
   keys, free-model paths). API keys must be stored in the Windows Credential
   Manager / DPAPI, never in plain settings files.
 - AS-53. AI-powered features are exactly: chapter title proposals (AS-40),
-  translated editions (AS-14), and cloud TTS voices (ElevenLabs and
-  provider-backed voices). Each must be consent-gated and cost-surfaced where
-  money is involved.
+  translated editions (AS-14), cloud TTS voices (ElevenLabs and
+  provider-backed voices), and screenshot inspection (AS-105 to AS-107). Each
+  must be consent-gated and cost-surfaced where money is involved; where a
+  price cannot be estimated (screenshot inspection), the consent prompt must
+  say so rather than show a guess.
 - AS-54. Translation must retry with bounded exponential backoff, cache
   repeated strings, and halt a language entirely on persistent failure rather
   than emit half-translated audio.
 - AS-55. Safe Mode (`QUILL_SAFE_MODE=1` or `--safe-mode`, plus the shipped
-  safe-mode launcher) must disable AI setup, AI chapter titles, and all
-  publishing surfaces, each refusal announced in a plain sentence.
+  safe-mode launcher) must disable AI setup, AI chapter titles, screenshot AI
+  (manual and automatic), system-wide screenshot hotkeys, and all publishing
+  surfaces, each refusal announced in a plain sentence. Screenshot capture,
+  local OCR, editing and verification stay available in Safe Mode.
 
 ### 4.9 Publishing
 
@@ -444,9 +461,11 @@ requirement, not a layer.
   Tray, default Ask). They must persist to the app-local prefs file, written
   atomically, with unreadable prefs falling back to defaults rather than
   crashing.
-- AS-66. The tray icon must always be present, offering Open Studio Wizard and
-  "Resume: <most recent book>", both restoring the window first. Sending the
-  app to the tray must announce that it is still running.
+- AS-66. The tray icon must always be present, offering the screenshot items
+  of AS-112, Open Studio Wizard and "Resume: <most recent book>", each
+  restoring the window first. Studio > Minimize to Tray (Ctrl+Alt+T) must send
+  the app to the tray on demand, and sending the app to the tray must announce
+  that it is still running.
 - AS-67. Alt+F4-to-tray, when enabled, must intercept before Windows closes
   the window so a long narration run keeps going; the titlebar X and Exit must
   keep the configured close action.
@@ -512,6 +531,185 @@ requirement, not a layer.
   name on every focusable control and route through the shared modal contract
   like every other Studio dialog.
 
+### 4.14 Screen capture, inspection and screenshot evidence (2.0.0)
+
+Shipped in the 2.0.0 build (built, not yet released): commits `4b385a57`,
+`e8a15444`, `5cc0023f` (merged as `8d2e1c49`) and the picker refinements
+`51df692c` to `fbddf261`. The code is the Studio adapter
+`quill/apps/studio_capture.py` over shared modules: `quill/core/studio_capture.py`
+(targets, verification, reports), `quill/core/studio_capture_ai.py`,
+`quill/core/screenshot_project.py`, `quill/core/screenshot_sequences.py`,
+`quill/core/screenshot_workspaces.py`, `quill/core/screenshot_note.py`,
+`quill/platform/windows/studio_capture.py`, `screenshot_window.py`,
+`screenshot_uia.py` and `screenshot_scroll.py`, and the dialogs
+`quill/ui/studio_capture_*.py`. These requirements describe source behaviour;
+screen-reader, braille, mixed-DPI and installed-upgrade acceptance are still
+open (`docs/design/quill-studio-capture-milestone.md`).
+
+- AS-93. A Capture menu must offer eight commands, each also in the command
+  palette, with these default in-app chords from `APP_KEYMAPS["studio"]`
+  (labels render whatever is actually bound): Capture screen...
+  (Ctrl+Alt+Shift+S), Open saved screenshot... (Ctrl+Alt+Shift+O), Screenshot
+  Inspector... (Ctrl+Alt+Shift+I), Cancel pending capture (Ctrl+Alt+Shift+X),
+  Screenshot active window now (Ctrl+Alt+Shift+F5), Screenshot full desktop now
+  (Ctrl+Alt+Shift+F6), Repeat last selected target (Ctrl+Alt+Shift+F4), and
+  Screenshot global hotkeys... (Ctrl+Alt+Shift+H). These are in-app keys;
+  system-wide keys are AS-111.
+- AS-94. Capture screen must list, in one Target choice: the full desktop (all
+  displays), each display by number with its size and origin (primary marked),
+  each named top-level task window, "Active window after the delay", and
+  "Guided region". The window list must by default show roughly what Alt+Tab
+  shows (no tool windows, no owned windows unless they are app windows, no
+  cloaked windows); an advanced "Show all windows" check box must list every
+  visible titled window. Refresh windows and displays must keep the selected
+  target by identity (kind, window handle, process, display device); a target
+  that disappeared must stay selected and be labelled "Unavailable target",
+  never silently replaced.
+- AS-95. Window targets must be labelled for listening: the title reduced to
+  its first meaningful part, the application's own name stripped from it and
+  repeated once in parentheses in a friendly form (for example "Microsoft
+  Edge" rather than msedge.exe), at most 80 characters. Process IDs and handles
+  must not be read in the list.
+- AS-96. Advanced options must be hidden behind a "Show advanced options"
+  check box. They hold Show all windows, Window properties..., and Choose a
+  specific window element.... Window properties must show the selected named
+  window's title, application, process ID, window handle (decimal and hex),
+  class name, bounds and executable, and copy the same text to the clipboard
+  for a bug report; it is enabled only for a named window.
+- AS-97. Choose a specific window element must read the selected window's UI
+  Automation tree in the background, read-only (no control is invoked),
+  bounded to 1,000 elements and 8 seconds, cancellable, excluding password
+  controls, their descendants and offscreen elements. The user filters by name
+  or role and picks one; the element becomes a capture target. Before capture
+  it must be found again by its runtime ID, and capture must fail, not
+  substitute, if the element moved, changed name, disappeared or its window
+  changed.
+- AS-98. Guided region must need no pixel input: choose a window or display as
+  the source, then Whole source (the default), Top half, Bottom half, Left
+  half, Right half, or Middle quarter. An "Enter exact coordinates (advanced)"
+  check box must offer left, top, width and height in physical desktop pixels
+  (negative left and top allowed for displays left of or above the primary),
+  prefilled from the guided choice and validated to lie within the desktop. A
+  read-only "Capture plan and guidance" field must say what will be included,
+  what may be cut off, and that geometry cannot prove the intended content is
+  complete.
+- AS-99. Capture must use physical-pixel coordinates (per-thread DPI
+  awareness, restored afterward). A named window or element must be rendered
+  from its own window by handle (PrintWindow), never by sampling the desktop
+  behind it; displays, the desktop and screen-area regions are grabbed as a
+  rectangle and their dimensions checked. Immediately before and after the
+  capture the target must be re-resolved and must fail with a spoken reason,
+  never broaden, when: the window closed, is minimized or hung, its process or
+  title changed, a display disconnected or the display layout changed, or a
+  region's source window moved or resized. No capture ever falls back to the
+  full desktop.
+- AS-100. Capture screen must offer a delay of 2 to 60 seconds (default 5) and,
+  under "More capture options", an optional spoken countdown. Only one capture
+  may be pending; a second request is refused with a spoken reason. Cancel
+  pending capture (menu, tray, or global key) must cancel a waiting capture and
+  say that one already under way may finish. Completing a capture must not
+  move focus away from the application being captured; the outcome goes to the
+  status bar.
+- AS-101. More capture options must offer Several screenshots (1 to 30
+  captures, 1 to 60 seconds apart) and Scrolling page. Scrolling page needs a
+  named window and a limit of 2 to 30; it must move the window's scrollable
+  element through UI Automation's scroll pattern, capture each position, join
+  the images only where their overlap matches, restore the original scroll
+  position, and mark a result that hit its limit, could not be joined, or could
+  not restore scrolling as needing review (spoken). Both modes must write a
+  manifest that records an interrupted run as Incomplete with the files it did
+  capture.
+- AS-102. Capture setups must be savable by name (up to 100 setups, names up to
+  100 characters) holding target, delay, count, interval and mode only; the
+  output folder and any AI permission must never be saved. Loading must read an
+  explicit schema (unknown or out-of-range values rejected), and a saved window
+  is rechecked like any other target (AS-99).
+- AS-103. Every screenshot must be saved as a uniquely named PNG (existing
+  files never overwritten) in the chosen absolute folder (default
+  `studio-captures` in the data folder), then reopened, fully decoded, measured
+  and SHA-256 hashed from the same bytes. Beside it Studio must write
+  `<name>.verification.json` (schema version, evidence, the checks performed,
+  and the checks not performed: target identity, privacy, completeness, visual
+  correctness) and a readable `<name>.verification.md`. Metadata must record the
+  backend, coordinate units, capture time, window DPI and scale factor where
+  available, and whether every pixel was the same colour, reported as evidence
+  of possibly protected content, not as proof.
+- AS-104. Open saved screenshot must accept a PNG, verify it as in AS-103, and
+  restore the original target, time, metadata and unverified observations from
+  its verification report only when the hashes match.
+- AS-105. The Screenshot Inspector must work on the last or an opened
+  screenshot: Read text locally (offline OCR, with confidence only when the
+  engine reports it), Ask AI, Save report, Export description
+  (`<name>.description.txt`), Copy image, and Edit a copy. It must offer seven
+  screenshot prompt styles (overview, controls, text and errors, framing
+  problems, possible sensitive information, alt text, charts) alongside the
+  shared image prompt library and the user's own prompts, editable
+  instructions, and a free question. Follow-up questions must use the same
+  image, verified by hash, and the prior conversation; they never recapture.
+  A file-checks pane must show the source evidence.
+- AS-106. Each Ask AI request must first ask for approval naming the provider,
+  model and endpoint, stating that the image may hold private information,
+  that no redaction was applied, and that the price cannot be estimated. It
+  uses the shared AI connection, credentials and vision transport (no separate
+  provider settings) and sends a private temporary copy whose hash matches the
+  reviewed image, deleted afterwards. AI Off, Safe Mode, or no connected
+  provider must refuse with a spoken reason while capture and OCR continue.
+  AI text is saved only as unverified observations.
+- AS-107. Automatic inspection of future captures must be off by default and
+  turned on only with its own approval, bound to the approved provider, model
+  and endpoint. A changed connection, AI Off or Safe Mode must pause it (said
+  once), and permission must be rechecked immediately before each upload.
+- AS-108. Edit a copy must open a nondestructive screenshot editor whose text
+  "Edit plan and results" field is the full alternative to the visual preview.
+  Operations: Keep only this area (crop), Hide private information (solid
+  black redaction, flattened on export), Add a numbered box, Point with an
+  arrow, Highlight an area, Spotlight an area, Add a note. Areas are chosen by
+  name (whole image, halves, middle, quarters), by recognised text ("Find text
+  to select" adds OCR lines as anchors), or by four percentages. Under More
+  options: an ordered object list, remove, move and grow or shrink by 1
+  percent, resize 10 to 400 percent, visual preview at 25 to 400 percent, pixel
+  comparison with another image (changed pixels, share and bounding box,
+  never a judgment), save and open a layered project (`.screenshot.json`), and
+  export to PNG, JPEG or WEBP without the source's hidden metadata. Undo and
+  redo cover every edit; a project holds at most 200 edits; an invalid edit is
+  rejected without losing the previous state; the original file is never
+  changed, and a changed original is refused before export.
+- AS-109. Export evidence bundle must write a ZIP holding the rendered image,
+  `evidence.json` (export hash, parent hash, goal, steps to reproduce, review
+  state, waiver, public annotation list), `description.md` and
+  `description.html`; the original image and its paths are excluded so a
+  redaction cannot be undone from the bundle. Two review check boxes (private
+  information, intended content) are human acknowledgments, cleared by any
+  later edit. Strict evidence export must refuse until both are checked or a
+  waiver reason is written, and the waiver goes into the bundle.
+- AS-110. Add a spoken note must record from the user's chosen microphone only
+  on an explicit Start, through the shared microphone lock (another QUILL
+  recording refuses it), stop at two minutes, recognise the speech locally
+  with an installed speech model, reject a recording of pure digital silence,
+  delete the audio afterwards, and write `<name>.note.json` tied to the
+  screenshot's hash with "Recognition unverified". The text is edited and
+  acknowledged before it becomes the screenshot's description. Nothing is sent
+  to AI.
+- AS-111. System-wide screenshot hotkeys must be opt-in with no defaults, set
+  in Screenshot global hotkeys... through QUILL's shared hotkey manager and
+  limited to four commands: screenshot the active window, screenshot the full
+  desktop, screenshot the last selected target, and cancel a pending
+  screenshot. Saving must preserve other apps' global bindings; a chord another
+  program holds must be reported as not registered; registrations are removed
+  on exit; Safe Mode disables them. A global capture must not restore Studio
+  before choosing the active window.
+- AS-112. The tray menu must begin with Take a screenshot..., Review
+  screenshot..., and Cancel pending screenshot, each showing its bound chord
+  and restoring the window before acting.
+- AS-113. Every capture, inspector, editor, element and note control must carry
+  authored inline F1 help (`quill/core/audio_studio/surface_help.py`, audited
+  by `quill/tools/studio_help_audit.py`), every dialog must use the shared
+  modal contract, and a long operation in the editor, inspector or note dialog
+  must refuse a second press with a spoken line rather than disable the
+  focused button. Known exception in 2.0.0: Window properties (AS-96) is a
+  `wx.MessageDialog` shown with a bare `ShowModal()` from inside Capture
+  screen; it should move to the host's modal contract.
+
 ## 5. Non-functional requirements
 
 - N-1. Threading: the UI thread owns all wx widgets. Worker threads must never
@@ -524,8 +722,10 @@ requirement, not a layer.
   voice downloads (Ed25519-signed where supported), the app's own GitHub
   update check, and explicit user actions -- consented metadata lookup,
   consented cover fetch, user-initiated SFTP/Auphonic publishing, and
-  configured AI/cloud-TTS/translation calls (cost-confirmed when paid). No
-  other outbound calls. Book building, chapter editing, ACX checks, local and
+  configured AI/cloud-TTS/translation calls (cost-confirmed when paid),
+  including screenshot inspection only after per-request approval or the
+  separately approved automatic mode (AS-106, AS-107). No other outbound calls;
+  capture, OCR, editing, notes and evidence bundles are entirely local. Book building, chapter editing, ACX checks, local and
   folder feeds are entirely local.
 - N-4. Privacy: passwords, API keys, and tokens live only in the Windows
   Credential Manager / DPAPI; nothing secret on disk. AI chapter titling sends
@@ -618,6 +818,10 @@ requirement, not a layer.
   not a target.
 - Bundling neural voices or ML runtimes in the installer. Engines and voices
   are download-on-demand, always.
+- Screen or video recording, audio mixing and routing, and live broadcasting
+  in 2.0.0. They are planned, not shipped; see the QUILL Studio planning PRD
+  (`docs/planning/QUILL-Studio-PRD.md`), whose section 7A specifies the
+  recorded demonstration as the next feature.
 - Direct platform publishing (WordPress and similar) -- deferred upstream to
   QUILL 2.0; when it lands there, it arrives here on the next build.
 - A second pipeline. Any narration or assembly behavior that diverges from
@@ -638,6 +842,13 @@ accept them, so Edit a Book failed before the Workbench opened.
 
 ## 8. Future directions
 
+- The QUILL Studio planning PRD (`docs/planning/QUILL-Studio-PRD.md`) holds
+  everything planned beyond this document: audio routing, recording,
+  demonstrations, video editing, live shows and the Verification Center. Its
+  next item is the recorded demonstration (a window or the desktop, with
+  chosen sounds, saved as one video file; section 7A there). When a planned
+  requirement ships it moves here and the planning PRD keeps one line pointing
+  at it.
 - Watch-folder auto rebuild surfaced in the UI: the shared
   `core/watch_audiobook.py` has no Studio surface yet.
 - Quillins in Audio Studio. QUILL, Quill Radio, and QUILL Cast host Quillins;

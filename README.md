@@ -376,4 +376,6 @@ organisation. All trademarks are the property of their respective owners.
 
 See [TRADEMARKS.md](docs/legal/TRADEMARKS.md), [NOTICE](NOTICE), and
 [THIRD_PARTY_NOTICES.md](docs/legal/THIRD_PARTY_NOTICES.md) for more
-information.
+information. Every legal document is listed in
+[docs/legal/legal-index.md](docs/legal/legal-index.md). In each app, Help >
+About > Licences and Notices opens the licences of everything it includes.

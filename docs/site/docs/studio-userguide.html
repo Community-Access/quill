@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QUILL Audio Studio User Guide</title>
+  <title>QUILL Studio User Guide</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -242,9 +242,8 @@
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
-<h1 id="quill-audio-studio-user-guide">QUILL Audio Studio User
-Guide</h1>
-<p>Version 2.2.0</p>
+<h1 id="quill-studio-user-guide">QUILL Studio User Guide</h1>
+<p>Version 2.0.0</p>
 <h2 id="upcoming-preferences-search">Upcoming Preferences Search</h2>
 <p>Preferences gains <strong>Find a setting</strong> in the next
 maintenance update. Type a term from a setting’s label or help, press
@@ -252,18 +251,16 @@ Down for matching settings, then Enter to focus one. Control+F returns
 to search; Escape clears a search before closing. Search navigates only:
 OK still saves, Cancel still cancels, and values are not indexed.
 Disabled settings stay disabled.</p>
-<p>(There is no Audio Studio 2.0 or 2.1: the Studio adopted the shared
-Quill family version number when it moved onto the shared runtime, so it
-went straight from 1.0.0 to 2.2.0. See the release notes for the full
-story.)</p>
-<p>QUILL Audio Studio is audiobook and audio production the way a screen
-reader user would design it: a small home window whose book list has
-focus the instant it opens, a wizard that asks one question at a time
-and announces every step, a chapter editor you drive entirely by ear,
-and spoken progress for every long run. It runs the exact same Audio
-Studio code that ships inside the QUILL editor and shares QUILL’s data
-store, so a voice you configure here reads aloud in QUILL too, and
-nothing you set up is ever stranded.</p>
+<p>(QUILL Studio 2.0.0 follows Audio Studio 1.0.0. The previously
+unpublished 2.2.0 build is renumbered for this release.)</p>
+<p>QUILL Studio is audiobook and audio production the way a screen
+reader user would design it: a small home window with a menu bar, a
+wizard that asks one question at a time and announces every step, a
+chapter editor you drive entirely by ear, and spoken progress for every
+long run. It runs the exact same Audio Studio code that ships inside the
+QUILL editor and shares QUILL’s data store, so a voice you configure
+here reads aloud in QUILL too, and nothing you set up is ever
+stranded.</p>
 <p>Three journeys cover the whole workshop:</p>
 <ul>
 <li><strong>Narrate Documents</strong> - point at a folder of Word,
@@ -281,11 +278,11 @@ check, publish.</li>
 id="the-quillville-runtime-install-python-once-use-it-everywhere">The
 QuillVille Runtime: install Python once, use it everywhere</h3>
 <p>Every QuillVille app - QUILL, Quill Radio, Quill Weather, and QUILL
-Audio Studio - now shares one Python runtime, called the
-<strong>QuillVille Runtime</strong>. It is installed once per user and
-reused by all of them. Install it a single time (with any Quill app),
-and every app you add afterward launches instantly, because the shared
-runtime is already there.</p>
+Studio - now shares one Python runtime, called the <strong>QuillVille
+Runtime</strong>. It is installed once per user and reused by all of
+them. Install it a single time (with any Quill app), and every app you
+add afterward launches instantly, because the shared runtime is already
+there.</p>
 <p>The runtime is reference-counted: it is removed only when the last
 app that needs it is uninstalled, so removing one app never leaves the
 others unable to start.</p>
@@ -365,37 +362,36 @@ positive; the downloads come from the project’s official releases.</p>
 <ul>
 <li><code>pip install -e ".[ui]"</code> then
 <code>python -m quill.apps.studio</code>, or</li>
-<li>run <code>run-quill-audio-studio.bat</code>, which finds a Python
+<li>run <code>run-quill-studio.bat</code>, which finds a Python
 environment for you (this repo’s <code>.venv</code>, then a sibling
 QUILL checkout’s <code>.venv</code>, then whatever <code>python</code>
 is on PATH).</li>
 </ul>
-<p><code>run-quill-audio-studio-safe-mode.bat</code> launches with Safe
-Mode on (see “Safe Mode” below).</p>
+<p><code>run-quill-studio-safe-mode.bat</code> launches with Safe Mode
+on (see “Safe Mode” below).</p>
 <h2 id="the-home-window">The home window</h2>
-<p>The window opens with keyboard focus on your books list. From top to
-bottom:</p>
+<p>The Studio opens as a plain window with a menu bar. Most work happens
+in modal surfaces (the Studio Wizard, the Chapter Workbench, and focused
+dialogs), which you launch from the menus. The home window stays
+intentionally quiet so your books are not front-and-center unless you
+choose to open one.</p>
+<p>From top to bottom:</p>
 <ul>
 <li><strong>Studio activity</strong> (read-only text): what the Studio
-is doing right now - “Ready”, or live progress during a run. The same
-text is mirrored in the status bar.</li>
-<li>Three buttons, one per journey: <strong>Narrate Documents…</strong>
-(Alt+N), <strong>Build From Recordings…</strong> (Alt+R), <strong>Edit a
-Book…</strong> (Alt+E). Build From Recordings was Alt+B until
-2026-10-17, but Alt+B is also the <strong>Book Tools</strong> menu, and
-when a button and a menu share a letter Windows presses the button, so
-the menu could not be opened with Alt+B. Now Alt+B always opens Book
-Tools and Alt+R presses Build From Recordings; for example, press Alt+R
-from the books list to start a new book from a folder of recordings. The
-menu row Studio &gt; Build From Recordings… (Ctrl+Shift+B) does the
-same.</li>
-<li><strong>Your books</strong>: your audiobooks, organized as a tree
-(see below). Press <strong>Enter</strong> to open the selected book in
-the Chapter Workbench. A book whose file has been moved or renamed is
-marked “(missing)”.</li>
+is doing right now — “Ready”, or live progress during a run.</li>
+<li><strong>Status bar</strong> (optional): an arrow-navigable summary
+you can reach with <strong>F6</strong>.</li>
+</ul>
+<p>Start points:</p>
+<ul>
+<li><strong>Studio &gt; Open Studio Wizard…</strong> (Ctrl+N) to narrate
+documents, build from recordings, edit a book, or start a screenshot
+capture.</li>
+<li><strong>Capture</strong> menu for screenshots, inspector, and global
+hotkeys (AI is not required).</li>
 </ul>
 <h3 id="the-status-bar">The status bar</h3>
-<p>The status bar reads “Ready - N books in your library” when idle.
+<p>The status bar reads “Ready - use the menu bar to begin” when idle.
 During a long run it carries per-file progress, and by default the
 Studio also speaks the 25, 50, and 75 percent milestones so you can
 follow an overnight narration from another window (turn this off in
@@ -409,8 +405,9 @@ and <strong>Right</strong> to move between its cells:</p>
 percentage, how many files are done, and the current step.</li>
 <li><strong>Sleep timer</strong> - the timer’s state, when one is
 set.</li>
-<li><strong>Your books</strong> - how many books are in your
-library.</li>
+<li><strong>Your books</strong> - how many books are in your library
+(informational; the home window does not show a book list by
+default).</li>
 <li><strong>Time</strong> - the current time.</li>
 </ul>
 <p>Press <strong>Enter</strong> to act on the cell you are on, use the
@@ -421,7 +418,10 @@ or shows it, and the Studio remembers your choice.</p>
 <p>The Progress text is also written into the system-tray tooltip, so a
 long run is still reviewable when the window is minimized to the
 tray.</p>
-<h3 id="the-library-tree">The library tree</h3>
+<h3 id="the-library-window">The library window</h3>
+<p>The home window does not show your books by default. Open
+<strong>View &gt; Library Window…</strong> (Ctrl+Alt+Y) to browse your
+library in a dedicated window.</p>
 <p>The library fills in as you work: every book you open in the Chapter
 Workbench joins it, and you can shape it yourself with Favorites and
 folders. Books are grouped into four built-in collections and any
@@ -435,12 +435,12 @@ you have not finished.</li>
 recently.</li>
 <li><strong>Inbox</strong> - everything else.</li>
 </ul>
-<p>Expand and collapse the groups with Left and Right. Press
-<strong>Enter</strong> on a book to open it in the Chapter Workbench.
-The context menu (Application key, or Shift+F10) is keyboard-complete on
-both books and folders: <strong>Open</strong>, <strong>Reveal in
-Folder</strong>, <strong>Favorite</strong> (toggle), <strong>Move to
-Folder</strong>, <strong>New Folder</strong>, and
+<p>In the Library Window, expand and collapse the groups with Left and
+Right. Press <strong>Enter</strong> on a book to open it in the Chapter
+Workbench. The context menu (Application key, or Shift+F10) is
+keyboard-complete on both books and folders: <strong>Open</strong>,
+<strong>Reveal in Folder</strong>, <strong>Favorite</strong> (toggle),
+<strong>Move to Folder</strong>, <strong>New Folder</strong>, and
 <strong>Remove</strong>. <strong>Reveal in Folder</strong> opens your
 operating system’s file manager (Windows File Explorer, or the macOS
 Finder) with the book file selected, so you can find it on disk.
@@ -448,7 +448,8 @@ Finder) with the book file selected, so you can find it on disk.
 touches the file on disk, and says so. The tree remembers which book you
 had selected when the library reloads.</p>
 <h2 id="the-studio-wizard">The Studio wizard</h2>
-<p><strong>Studio &gt; Open Audio Studio…</strong> (Ctrl+N) opens the
+<h2 id="the-studio-wizard-1">The Studio wizard</h2>
+<p><strong>Studio &gt; Open Studio Wizard…</strong> (Ctrl+N) opens the
 wizard. Its first page asks the one question that matters - what would
 you like to make? - and the following steps adapt to your answer. The
 wizard remembers which journey you used last and pre-selects it.</p>
@@ -727,6 +728,26 @@ broken engine can never take playback away.</p>
 active player: Play/Pause, Stop, Next chapter, and Previous chapter work
 from any window. With no Workbench open they are silent. (Media keys are
 a Windows feature.)</p>
+<h4 id="which-way-the-slider-keys-go-slider-keys">Which way the slider
+keys go (Slider Keys)</h4>
+<p>On the <strong>Volume</strong> slider, the arrow keys follow the
+family’s <strong>Slider Keys</strong> choice, made in
+<strong>Preferences</strong> (Ctrl+Comma) with the <strong>Slider
+Keys…</strong> button:</p>
+<ul>
+<li><strong>Up is more</strong> (the default): Up, Page Up and Home
+raise the volume, and Home is the top, 100 percent. Down, Page Down and
+End lower it, and End is 0.</li>
+<li><strong>As Windows sliders</strong>: the keys of a standard Windows
+slider. Down, Page Down and End raise it (End is 100 percent); Up, Page
+Up and Home lower it (Home is 0).</li>
+</ul>
+<p>Right is always more and Left always less. It is one choice for every
+Quill app with a volume slider – QUILL Studio, Quill Radio, QUILL Cast
+and Quill Media Player – so changing it here changes it there at the
+next key press. Each key press also tells your screen reader the new
+value. Ctrl+Up and Ctrl+Down, the volume keys that work from anywhere in
+the apps that have them, are not changed.</p>
 <h3 id="chapter-surgery">Chapter surgery</h3>
 <p>All by ear:</p>
 <ol type="1">
@@ -818,8 +839,8 @@ voices on one tab, cloud voices on another, and the speech-recognition
 (dictation/transcription) engines and models alongside. Pick an engine
 and voice, adjust rate, volume, or speed, preview, and <strong>Set as
 Default</strong>. Voices you configure here are shared with QUILL - and
-the hub’s “export to audio” action opens the Audio Studio wizard,
-because in this app that is what export means.</p>
+the hub’s “export to audio” action opens the Studio Wizard, because in
+this app that is what export means.</p>
 <h3 id="pronunciation-dictionaries">Pronunciation dictionaries</h3>
 <p><strong>Voices &gt; Pronunciation Dictionaries…</strong> opens the
 same manager QUILL uses to teach the speech engines how to say tricky
@@ -1134,13 +1155,13 @@ settings QUILL wrote stay exactly as QUILL wrote them. Speech settings
 configure a voice here and QUILL reads aloud with it too.</p>
 <h2 id="where-the-studios-own-sounds-play">Where the Studio’s own sounds
 play</h2>
-<p>Audio Studio makes short sounds of its own, such as the ones that
-mark a narration run starting and finishing. You choose where they play,
-and you can turn them off.</p>
+<p>The Studio makes short sounds of its own, such as the ones that mark
+a narration run starting and finishing. You choose where they play, and
+you can turn them off.</p>
 <ul>
-<li><strong>Alt+Shift+M</strong> turns Audio Studio’s sounds off. Press
-it again and they come back, on the same sound card as before. You hear
-a short sound as they go off, and another where they now play when they
+<li><strong>Alt+Shift+M</strong> turns the Studio’s sounds off. Press it
+again and they come back, on the same sound card as before. You hear a
+short sound as they go off, and another where they now play when they
 come back on, and both are spoken too. <strong>Studio &gt; App
 Sounds</strong> has a check mark that shows whether they are on.</li>
 <li><strong>App Sounds Play On…</strong>, a button in the Preferences
@@ -1151,7 +1172,7 @@ of its own. The choices are:
 <ul>
 <li><strong>System default</strong>. This is where it starts. The sounds
 go where Windows sends sound.</li>
-<li><strong>None (no sounds)</strong>. Audio Studio makes no sounds at
+<li><strong>None (no sounds)</strong>. The Studio makes no sounds at
 all. Everything it tells you is still spoken.</li>
 <li><strong>Any sound card or headset in the list.</strong> The sounds
 get a device of their own.</li>
@@ -1160,25 +1181,26 @@ get a device of their own.</li>
 <p>After you choose, one sound plays on the new device, so you know
 straight away where it went.</p>
 <p>If the device you chose is unplugged or asleep, you still hear every
-sound, on the system default, and Audio Studio tells you once. When the
+sound, on the system default, and the Studio tells you once. When the
 device comes back, the sounds go back to it by themselves.</p>
-<p>This changes Audio Studio only. Your other QUILL apps keep their own
+<p>This changes the Studio only. Your other QUILL apps keep their own
 choice, unless you have checked “Share these choices with my other Quill
 apps”, which copies a change here to the others that share. Your screen
 reader is never moved.</p>
 <h2 id="the-system-tray">The system tray</h2>
-<p>QUILL Audio Studio’s icon is three white-and-gold waveform bars on a
-dark slate tile. If you have used an earlier build, this is new: the
-Studio used to share Quill Radio’s blue broadcast-wave icon, so on a
-desktop with more than one QuillVille app installed several of them
-looked identical. Every app in the family now has its own - the same
-rounded tile shape and the same gold accent throughout, but its own
-colour and its own picture each.</p>
+<p>QUILL Studio’s icon is three white-and-gold waveform bars on a dark
+slate tile. If you have used an earlier build, this is new: the Studio
+used to share Quill Radio’s blue broadcast-wave icon, so on a desktop
+with more than one QuillVille app installed several of them looked
+identical. Every app in the family now has its own - the same rounded
+tile shape and the same gold accent throughout, but its own colour and
+its own picture each.</p>
 <p>While minimized to the tray the Studio keeps running - a long
-narration continues with the window tucked away. Right-click (or
-keyboard-invoke) the tray icon for:</p>
+narration continues with the window tucked away. Use <strong>Studio &gt;
+Minimize to Tray</strong> (Ctrl+Alt+T) to send the window there without
+closing it. Right-click (or keyboard-invoke) the tray icon for:</p>
 <ul>
-<li><strong>Open Audio Studio…</strong> - restore the window and open
+<li><strong>Open Studio Wizard…</strong> - restore the window and open
 the wizard.</li>
 <li><strong>Resume: <your latest book></strong> - restore the window and
 open your most recent book in the Chapter Workbench.</li>
@@ -1227,7 +1249,7 @@ itself: it applies the update - unpacking the new portable files over
 your folder, or running the installer quietly - and relaunches, keeping
 every setting, voice, and saved listening position. There is nothing to
 unzip and no folder to swap by hand.</p>
-<p>Help &gt; About shows your version with a build number, such as 2.2.0
+<p>Help &gt; About shows your version with a build number, such as 2.0.0
 (build 2). The build number tells you which build of a version you have:
 when a fix comes out without a new version number, it is a newer build,
 and Check for Updates offers it.</p>
@@ -1247,7 +1269,7 @@ letters, arrow to the command, press Enter.</p>
 <h2 id="quillins">Quillins</h2>
 <p><strong>Quillins</strong> are QUILL’s small, sandboxed,
 permission-gated add-ons. They run in QUILL, Quill Radio, and QUILL Cast
-today; <strong>Audio Studio does not offer a Quillins menu yet.</strong>
+today; <strong>The Studio does not offer a Quillins menu yet.</strong>
 The groundwork is in place - an add-on can declare that it contributes
 an extra step to the Studio’s audio processing, such as a loudness pass
 at the mastering stage, and a sample add-on demonstrates exactly that -
@@ -1263,8 +1285,16 @@ will be off in Safe Mode like everywhere else.</p>
 </thead>
 <tbody>
 <tr>
-<td>Open Audio Studio (the wizard)</td>
+<td>Open Studio Wizard…</td>
 <td>Ctrl+N</td>
+</tr>
+<tr>
+<td>Minimize to Tray</td>
+<td>Ctrl+Alt+T</td>
+</tr>
+<tr>
+<td>Open Library Window</td>
+<td>Ctrl+Alt+Y</td>
 </tr>
 <tr>
 <td>Open Book File</td>
@@ -1283,11 +1313,11 @@ will be off in Safe Mode like everywhere else.</p>
 <td>F6</td>
 </tr>
 <tr>
-<td>Open selected book (in Your books)</td>
+<td>Open selected book (Library Window)</td>
 <td>Enter</td>
 </tr>
 <tr>
-<td>Remove selected book from the list</td>
+<td>Remove selected book from library (Library Window)</td>
 <td>Delete</td>
 </tr>
 <tr>
@@ -1343,6 +1373,10 @@ will be off in Safe Mode like everywhere else.</p>
 <td>Alt+H</td>
 </tr>
 <tr>
+<td>What’s New (the changelog, in your browser)</td>
+<td>Ctrl+Shift+F1</td>
+</tr>
+<tr>
 <td>Build From Recordings button (main window)</td>
 <td>Alt+R</td>
 </tr>
@@ -1358,8 +1392,8 @@ letter while the surface has focus.</p>
 <h2 id="safe-mode">Safe Mode</h2>
 <p>Set the environment variable <code>QUILL_SAFE_MODE=1</code> or pass
 <code>--safe-mode</code> (or use
-<code>run-quill-audio-studio-safe-mode.bat</code>). Safe Mode disables
-AI features, publishing, and component downloads; everything local -
+<code>run-quill-studio-safe-mode.bat</code>). Safe Mode disables AI
+features, publishing, and component downloads; everything local -
 narration with installed engines, the Workbench, saving - keeps working.
 Use it to isolate a problem or to run on a machine where network
 features are unwelcome.</p>
@@ -1393,7 +1427,7 @@ happened, and – if you want an answer – an email address to reply to.
 What you expected and how to reproduce it are optional, and worth more
 than anything else when you can give them.</p>
 <p>Press Send and your <strong>own mail program opens with the whole
-message already written</strong>, addressed to support, with Quill Audio
+message already written</strong>, addressed to support, with QUILL
 Studio’s name and version and your Windows version filled in at the
 bottom. Nothing is sent until you send it there, so you can read it
 over, add anything, or change your mind.</p>
@@ -1403,6 +1437,24 @@ so nothing you typed is lost. And writing to <strong><a
 href="mailto:support@community-access.org">support@community-access.org</a></strong>
 yourself always works just as well: there is no form you have to use.
 Say which app you were using and what happened.</p>
+<h2 id="whats-new">What’s New</h2>
+<p><strong>Help &gt; What’s New</strong> (Ctrl+Shift+F1) opens QUILL
+Studio’s changelog in your browser: everything that has changed, newest
+first, grouped by subject so you can move through it by heading. Every
+app in the QuillVille family has the same command.</p>
+<h2 id="licences-and-notices">Licences and notices</h2>
+<p>QUILL Studio is free and released under the MIT License. It also
+includes software, data and sounds from other projects, each under its
+own licence.</p>
+<p>To read them, open the Help menu, choose About QUILL Studio, and then
+choose the Licences and Notices button. The list opens as a plain text
+file, with one heading for each component: what it is, its licence, who
+holds the copyright and what the licence asks of us. The full licence
+texts are at the end.</p>
+<p>The same file, THIRD-PARTY-NOTICES.txt, and QUILL Studio’s own
+licence, LICENSE.txt, are also in the folder where QUILL Studio is
+installed or unpacked, so you can open them without starting the
+app.</p>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <p>Two Help items are worth knowing before anything else goes wrong.
 <strong>Help &gt; View Log…</strong> opens the Studio’s own log, so you
@@ -1451,6 +1503,325 @@ window” preference sets a fixed answer.</li>
 <li><strong>Windows SmartScreen blocks the installer.</strong> The
 release is not code-signed; choose “More info” then “Run anyway”.</li>
 </ul>
+<h2 id="screenshots-and-the-screenshot-inspector-unreleased">Screenshots
+and the Screenshot Inspector (unreleased)</h2>
+<p>The new Capture menu keeps screenshot work separate from your book
+library. It does not record sound or change your audio devices.</p>
+<p>Choose <strong>Capture screen</strong> to select a named visible
+window, one display, the full desktop, an active window after a delay,
+or a guided region. For the easiest first capture, choose the whole
+named window: no size settings are needed. Guided regions use familiar
+portions of a window or display; exact coordinates are optional advanced
+settings. Displays left of or above your primary display can have
+negative coordinates. Minimized windows must be restored first.</p>
+<p>By default, the window list aims to stay short by listing top-level
+task windows (similar to what Alt+Tab shows). Use <strong>Show all
+windows (advanced)</strong> when you need tool windows or helper dialogs
+that are not normally listed. If you need more than a window title to
+decide, use <strong>Window properties…</strong> for the selected window.
+If the window list shows only Desktop/Display targets, update: a preview
+build had a regression that hid named windows.</p>
+<p>Refresh windows and displays when the list is stale; a missing target
+remains unavailable rather than silently becoming a desktop
+screenshot.</p>
+<p>Choose an absolute save folder and a delay, then activate
+<strong>Start capture</strong>. For the active-window option, switch to
+the intended application during that delay. A selected named window is
+captured directly. <strong>Cancel pending capture</strong> cancels a
+capture that has not started. A capture already in progress may
+finish.</p>
+<p><strong>Screenshot active window now</strong> and <strong>Screenshot
+full desktop now</strong> are immediate actions. <strong>Repeat last
+selected target</strong> uses the target, folder and delay you chose in
+Capture screen. It asks you to choose a target first when none has been
+selected this session.</p>
+<p>Screenshots are saved as uniquely named PNG files, with a JSON
+verification report and readable Markdown report. File decoding,
+dimensions and the file hash are objective checks. They do not prove
+that the intended content is visible or private. Protected content can
+still be blank. <strong>Screenshot Inspector</strong> opens the latest
+screenshot; <strong>Open saved screenshot</strong> opens a saved PNG for
+review.</p>
+<h3 id="guided-regions-no-pixel-calculations-required">Guided regions:
+no pixel calculations required</h3>
+<p>Choose <strong>Guided region</strong> from Target. In <strong>Region
+source</strong>, choose the window or display containing the material.
+In <strong>Capture portion</strong>, start with <strong>Whole source
+(recommended; keeps all visible context)</strong>. Studio calculates the
+screen position and size.</p>
+<p>For a smaller area, choose <strong>Top half</strong>, <strong>Bottom
+half</strong>, <strong>Left half</strong>, <strong>Right half</strong>,
+or <strong>Middle quarter</strong>. These describe portions of the
+source rectangle, not recognized controls. For example, the top half may
+include a dialog heading while excluding its buttons. If you do not know
+which part contains your content, keep Whole source or capture the whole
+named window instead.</p>
+<p>Read <strong>Capture plan and guidance</strong> before Start capture.
+It explains the source, exclusions, possible clipping, and next review
+steps. Guidance is selectable text, and changed selections are
+announced. The content area scrolls while Start capture and Cancel
+remain outside it. Use Tab to visit labeled controls; native choice
+controls use arrow keys.</p>
+<p>A guided region captures an area of the desktop. Overlapping windows
+and notifications can appear in it. Direct named-window capture is the
+better choice when you need the whole application window. Keep a guided
+region’s source still during the delay. If it moves, resizes, disappears
+or changes process, refresh and choose again; Studio will not silently
+switch sources.</p>
+<p><strong>Enter exact coordinates (advanced)</strong> is optional.
+Enabling it starts with the current guided portion’s values. Left and
+Top locate its upper-left corner; Width and Height measure its size in
+physical screen dots. A screen left of or above your primary display can
+have negative Left or Top. Studio rejects values beyond the desktop, but
+valid numbers alone cannot prove that text is readable or the intended
+dialog is complete.</p>
+<p>After capture, use local OCR to check expected text. If you approve
+AI sharing, choose the framing preset and ask “Is the whole dialog
+visible, including its buttons?”, “Is any text cut off?”, or “What
+should I change before sharing?” AI gives uncertain advice; no setting
+guarantees semantic correctness.</p>
+<h3 id="screenshot-commands-and-default-in-app-shortcuts">Screenshot
+commands and default in-app shortcuts</h3>
+<p>These shortcuts operate inside Studio. System-wide screenshot keys
+are separate, opt-in assignments; the Capture menu displays the current
+in-app bindings.</p>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Default in-app shortcut</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Capture screen: choose source and delay</td>
+<td>Ctrl+Alt+Shift+S</td>
+</tr>
+<tr>
+<td>Open saved screenshot</td>
+<td>Ctrl+Alt+Shift+O</td>
+</tr>
+<tr>
+<td>Screenshot Inspector</td>
+<td>Ctrl+Alt+Shift+I</td>
+</tr>
+<tr>
+<td>Cancel pending capture</td>
+<td>Ctrl+Alt+Shift+X</td>
+</tr>
+<tr>
+<td>Screenshot active window now</td>
+<td>Ctrl+Alt+Shift+F5</td>
+</tr>
+<tr>
+<td>Screenshot full desktop now</td>
+<td>Ctrl+Alt+Shift+F6</td>
+</tr>
+<tr>
+<td>Repeat last selected target</td>
+<td>Ctrl+Alt+Shift+F4</td>
+</tr>
+<tr>
+<td>Screenshot global hotkeys configuration</td>
+<td>Ctrl+Alt+Shift+H</td>
+</tr>
+</tbody>
+</table>
+<p>Immediate full-desktop capture includes every display. Repeat uses
+the last source/folder/delay selected in this session; there is no
+repeat recipe after a fresh launch until you select one. A previously
+approved automatic-AI setting also applies to screenshots triggered by
+global keys.</p>
+<h3 id="global-screenshot-hotkeys">Global screenshot hotkeys</h3>
+<p>Open <strong>Capture &gt; Screenshot global hotkeys</strong>. Select
+active-window capture, full-desktop capture, repeat-last-target or
+cancellation, choose Assign and press your preferred combination, then
+Save. Clear removes a binding. These keys work while Studio is in the
+tray or another application has focus, provided Windows grants the
+registration. No global screenshot key is taken by default. An
+unavailable combination is reported so you can choose another. Safe Mode
+leaves them inactive. Test your chosen keys with your screen reader and
+other applications.</p>
+<h3 id="local-ocr-and-image-grounded-ai-chat">Local OCR and
+image-grounded AI chat</h3>
+<p>The Inspector shows the exact image source, hash, file checks and a
+selectable conversation. <strong>Read text locally</strong> runs the
+existing offline OCR service. Confidence is reported only when the
+engine supplies it; OCR availability and recognition accuracy vary.</p>
+<p>Choose a <strong>Prompt style</strong>. Screenshot-specific presets
+cover orientation, controls, text/errors/tables, capture problems,
+possible sensitive information, alt text and charts. The shared image
+styles and your custom prompts are available too. <strong>Editable
+prompt instructions</strong> lets you add detail or replace the preset,
+and <strong>Your question or additional instructions</strong> accepts a
+separate question. <strong>Manage prompts</strong> adds, edits or
+removes reusable prompts in the shared library.</p>
+<p><strong>Configured AI providers.</strong> Screenshot AI uses QUILL’s
+shared AI connection settings, model selection, provider-specific
+credentials and vision transport: OpenAI, Google Gemini, Anthropic
+Claude, OpenRouter, Ollama (local or cloud), and compatible custom
+endpoints. Select the provider and an image-capable model through the
+shared AI setup. Studio does not require Ollama or maintain a separate
+provider configuration. Provider/model image support still applies; a
+text-only model cannot inspect screenshots. Changing the connection
+pauses previously approved automatic uploads.</p>
+<p>Choose <strong>Ask AI</strong> to approve sending the complete
+screenshot to the named provider, model and endpoint. Private
+information is not automatically redacted. A privacy-review prompt is a
+review of an image already sent to that provider, not a guarantee that
+sharing was safe. AI Off and Safe Mode block AI; local capture and
+verification continue to work.</p>
+<p>The reply appears in the same conversation. Ask follow-ups about that
+image without capturing again. The image bytes are checked against the
+original hash before each request. Editing the saved image causes
+inspection to fail rather than silently answering about a different
+artifact. You can keep typing while a reply is pending, but a second
+request waits until the first finishes.</p>
+<p><strong>Save report</strong> exports objective evidence and clearly
+labeled unverified observations. <strong>Export description</strong>
+saves a text description and conversation, and <strong>Copy
+image</strong> copies the PNG to the clipboard. Closing the Inspector
+cancels unsent chat work; a request already sent may still finish. AI
+and OCR observations need review even when the file checks pass.</p>
+<h3 id="optional-automatic-ai">Optional automatic AI</h3>
+<p><strong>Automatically inspect future captures with AI</strong> is off
+by default. Enabling it asks for separate approval to send every future
+user-triggered Studio screenshot, including full-desktop captures, to
+the selected connection. <strong>Use for automatic AI</strong> saves the
+current prompt instructions for those requests.</p>
+<p>Changing the provider, model or endpoint pauses automatic analysis
+until you approve the new connection. AI Off and Safe Mode override this
+setting. Clearing the checkbox stops future and queued unsent automatic
+requests; it cannot recall a request already sent. Capturing remains an
+explicit user action. The result is available in Screenshot Inspector
+and the report.</p>
+<p>This screenshot milestone does not yet provide video recording,
+screen/audio mixing, scrolling screenshots, UIA-element selection or
+annotation/redaction editing. Those are later production steps. Release
+acceptance still requires JAWS, NVDA, Narrator, braille, mixed-DPI and
+installed/portable testing.</p>
+<h3 id="worked-example-an-error-dialog-for-a-support-request">Worked
+example: an error dialog for a support request</h3>
+<ol type="1">
+<li>Open the application and error dialog you want to document. Avoid
+showing passwords, private messages or unrelated personal material.</li>
+<li>Open Capture screen and choose that named window. If a dialog has
+its own window entry, choose its title. Use Refresh windows and displays
+if it is missing; restore minimized windows first.</li>
+<li>Keep the whole window for the first attempt. Choose an absolute save
+folder and enough delay to return to the application, then Start
+capture.</li>
+<li>Open Screenshot Inspector. Review the source name and file evidence.
+Read text locally and check that the expected error code and message
+appear. Missing OCR text might mean recognition failed; it does not by
+itself prove that the capture is wrong.</li>
+<li>If you want AI help, choose the text/errors preset, add “Preserve
+the exact error code; mark uncertain characters,” and enter your
+question. Ask AI presents the configured destination before sending.
+Declining leaves the screenshot saved locally.</li>
+<li>Ask a follow-up such as “Are any buttons or message lines clipped?”
+The same image is used again. Capture a new image when the application
+changes; a follow-up does not inspect the live desktop.</li>
+<li>Save report and Export description. Copy image only when ready to
+paste it into the intended destination. Review the exported text and
+image before sharing. The evidence report labels AI/OCR observations as
+unverified.</li>
+</ol>
+<h3 id="worked-example-use-your-configured-ai-provider">Worked example:
+use your configured AI provider</h3>
+<p>Use <strong>AI &gt; Set Up AI</strong> and QUILL’s shared connection
+controls to choose OpenAI, Google Gemini, Anthropic Claude, OpenRouter,
+Ollama or a compatible custom service. Configure the endpoint,
+credential and an image-capable model there. The Screenshot Inspector
+uses that active shared connection; it does not have a separate provider
+selector or separate key store. Switching providers in shared settings
+affects other QUILL features that use the same connection.</p>
+<p>Open a saved PNG or make a new screenshot. Choose a prompt, edit its
+instructions, type a question and activate Ask AI. Check the provider,
+effective model and endpoint in the consent message. Local OCR works
+independently of a cloud key. A provider being configured does not prove
+that every one of its models accepts images. Provider errors should be
+resolved through the shared connection/model settings, rather than by
+sending the image to another service without approval.</p>
+<h3
+id="customize-a-reusable-prompt-and-keep-the-conversation-grounded">Customize
+a reusable prompt and keep the conversation grounded</h3>
+<p>Choose a built-in style for a starting point. Add your purpose in
+Editable prompt instructions, for example: “I am writing a bug report.
+Separate the exact visible error text from your explanation. Describe
+positions as top/bottom/left/right; do not invent keyboard shortcuts.”
+Add a separate question such as “What information should I include in my
+report?”</p>
+<p>Edits in the prompt field apply to that request. Use Manage prompts
+to add or edit a reusable custom prompt in the shared image-prompt
+library. Choosing another style fills the editor with that style, so
+save reusable wording through Manage prompts before changing styles. Use
+for automatic AI explicitly saves the current instructions for future
+automatic requests; editing a manual question does not grant
+automatic-sharing consent.</p>
+<p>Follow-ups include earlier observations about the current image. A
+provider may misunderstand the text or layout. Ask it to identify
+uncertainties and verify important strings locally. Replacing or editing
+the PNG changes its hash; reopen it as a new review artifact instead of
+continuing under the old verification.</p>
+<h3 id="what-the-evidence-proves">What the evidence proves</h3>
+<p>The PNG is the saved screenshot. The same-named verification JSON is
+machine-readable; the verification Markdown is readable text. A
+description export contains file evidence and recorded observations.
+Full decode, dimensions and SHA-256 establish that the saved image is
+decodable and identify its bytes. They do not establish privacy,
+completeness, visual quality, accessibility or that the intended dialog
+is visible. “Uniform pixels” can indicate an empty-looking result; it
+cannot identify every protected or failed capture.</p>
+<p>AI and OCR findings are separate from objective checks. AI does not
+automatically fix, redact, annotate or publish an image. This milestone
+exports PNG; JPEG conversion, editable annotation layers and
+comprehensive evidence bundles are still pending.</p>
+<h3 id="screenshot-troubleshooting">Screenshot troubleshooting</h3>
+<ul>
+<li><strong>The window is not listed.</strong> Restore it, then Refresh
+windows and displays. If it still cannot be captured, read the failure
+rather than choosing a broader source accidentally. Protected or
+GPU-rendered content can remain blank.</li>
+<li><strong>The guided region moved or changed.</strong> Keep the source
+still, refresh and choose it again. Repeat last selected target retains
+the prior recipe; it does not authorize capturing a newly positioned
+region silently.</li>
+<li><strong>The plan says a region cannot be captured.</strong> Choose
+Whole source or the whole named window. Advanced users can correct the
+bounds. A window partly beyond the desktop may be unsuitable as a
+desktop region.</li>
+<li><strong>The image is clipped or contains an overlay.</strong>
+Capture the whole named window, dismiss the unrelated overlay, or
+deliberately select a different source and capture again. A half-region
+is not a content-aware crop.</li>
+<li><strong>OCR is unavailable or inaccurate.</strong> Check the shared
+offline OCR support and try clearer/larger source text. Confidence is
+not supplied by every engine. Optional image-capable AI can help, but
+requires sharing approval and is not proof.</li>
+<li><strong>AI fails.</strong> Check AI Off, Safe Mode, the shared
+endpoint/key/model and whether the model accepts images. The PNG remains
+available even when AI fails. No provider is silently substituted.</li>
+<li><strong>Automatic AI has paused.</strong> The approved provider,
+model or endpoint may have changed. Review the new destination and
+explicitly approve it. Turning automatic mode off stops future/unsent
+work; it cannot recall a sent request.</li>
+<li><strong>A global hotkey does nothing.</strong> Confirm it was
+assigned and Windows reported registration success. Safe Mode leaves
+global keys inactive. Another application or screen reader may own the
+combination; choose and test another.</li>
+</ul>
+<h3 id="completion-status-and-next-steps">Completion status and next
+steps</h3>
+<p>The full screenshot PRD is not complete. UIA control selection,
+content-aware regions, scrolling/sequence capture, comparison, named
+workspaces, keyboard crop/zoom, annotation/redaction and Capture and
+Dictate remain. Actual JAWS/NVDA/Narrator/braille usability, mixed-DPI
+hardware, live-provider privacy and installer/portable acceptance also
+remain. The requirement coverage audit,
+<code>docs/design/quill-studio-screenshot-coverage.md</code> in QUILL’s
+source, lists each one. Video demonstrations with optional sound are a
+separate later milestone.</p>
 </main>
 </body>
 </html>

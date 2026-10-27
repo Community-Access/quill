@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 510.
+Editor commands with default bindings: 516.
 
 ## The QUILL editor
 
@@ -422,6 +422,7 @@ Editor commands with default bindings: 510.
 | Key | Command | Command id |
 | --- | --- | --- |
 | (unbound by default) | Release Channel... | `help.release_channel` |
+| (unbound by default) | What's New | `help.whats_new` |
 | Alt+F1 | Why Is This Unavailable? | `help.why_unavailable` |
 | Alt+Shift+/ or Ctrl+F1 | Key Cheatsheet | `help.key_cheatsheet` |
 | Alt+Shift+P | Switch Feature Profile... | `help.switch_feature_profile` |
@@ -483,6 +484,11 @@ Editor commands with default bindings: 510.
 | (unbound by default) | Internet Radio: Sound Enhancements... | `radio.sound_enhancements` |
 | (unbound by default) | Story Studio... | `story.open_studio` |
 | (unbound by default) | Sync Folder with GitHub... | `sync.sync_folder` |
+| (unbound by default) | Delete Column | `table.delete_column` |
+| (unbound by default) | Delete Row | `table.delete_row` |
+| (unbound by default) | Insert Column Right | `table.insert_column_right` |
+| (unbound by default) | Insert Row Below | `table.insert_row_below` |
+| (unbound by default) | Tidy Table | `table.tidy` |
 | (unbound by default) | Show Backlinks | `vault.backlinks` |
 | (unbound by default) | Complete Link or Tag... | `vault.complete` |
 | (unbound by default) | Vault Explorer... | `vault.explorer` |
@@ -574,6 +580,21 @@ Editor commands with default bindings: 510.
 | TAB | QUILL Quick Nav: Block | `quill.quick_nav.block` |
 | [ | QUILL Quick Nav: Skip Backward Past Container | `quill.quick_nav.skip_backward` |
 | ] | QUILL Quick Nav: Skip Forward Past Container | `quill.quick_nav.skip_forward` |
+
+## Studio (app keys)
+
+App keys, not editor keys: these apply inside the app named above and never inside the QUILL editor.
+
+| Key | Command | Command id |
+| --- | --- | --- |
+| Ctrl+Alt+Shift+F4 | Capture selected | `studio.capture_selected` |
+| Ctrl+Alt+Shift+F5 | Capture active | `studio.capture_active` |
+| Ctrl+Alt+Shift+F6 | Capture desktop | `studio.capture_desktop` |
+| Ctrl+Alt+Shift+H | Capture hotkeys | `studio.capture_hotkeys` |
+| Ctrl+Alt+Shift+I | Inspect capture | `studio.inspect_capture` |
+| Ctrl+Alt+Shift+O | Open capture | `studio.open_capture` |
+| Ctrl+Alt+Shift+S | Capture | `studio.capture` |
+| Ctrl+Alt+Shift+X | Cancel capture | `studio.cancel_capture` |
 
 ## Quill Radio (app keys)
 

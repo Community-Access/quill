@@ -66,9 +66,11 @@ def browse_youtube(args: list[str], *, safe_mode: bool) -> list[BrowseNode]:
         nodes = [action("searchyoutube", "Search YouTube...", note="videos, playlists, channels")]
         if signed_in:
             nodes.append(folder("myyoutube", "My YouTube", note="from your YouTube sign-in"))
+        # A to Z, so a channel is found by its name (asked for on QUILLVille,
+        # 2026-10-26); they used to come in the order they were followed.
         nodes += [
             folder(make_id("youtubechannel", channel.url), channel.display_name)
-            for channel in yt.ChannelStore().all()
+            for channel in sorted(yt.ChannelStore().all(), key=lambda c: c.display_name.casefold())
         ]
         saved = youtube_saved.SavedStore()
         nodes += [

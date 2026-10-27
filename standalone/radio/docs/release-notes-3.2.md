@@ -1,6 +1,6 @@
 # Quill Radio 3.2
 
-Version 3.2.0 (build 4), the beta for testers, October 2026. 3.2.0 was
+Version 3.2.0 (build 5), the beta for testers, October 2026. 3.2.0 was
 prepared on 2026-10-03 and is not yet published; the last published version
 is 3.0.4.
 
@@ -13,10 +13,42 @@ yourself a note on any station. Apple's podcast categories are full lists
 now, and Preferences has a box that finds a setting as you type. And updates
 install themselves properly again, after one last update by hand.
 
-## Testing rebuild: 3.2.0 (build 4)
+## Testing rebuild: 3.2.0 (build 5)
 
-Build 4 runs on Python 3.14. Its installer also removes the older Python 3.13
-runtime once no QuillVille app on your computer uses it.
+This beta is not a GitHub release or a Stable-channel promotion. Builds 2 to 5
+are testing rebuilds of 3.2.0, and everything they added is part of 3.2.0. It
+is gathered here by subject; the rest of these notes describe 3.2.0 as first
+prepared. **Help > What's New** (**Ctrl+Shift+F1**) opens the changelog in
+your browser, with every change and when it arrived.
+
+What build 5 added: Slider Keys in Preferences, the 181.FM and laut.fm
+branches with three more music networks, and Help > What's New. Build 4 ran
+Quill Radio on Python 3.14 and added most of what follows. Builds 2 and 3
+added Start Quill Radio with Windows in Preferences, editing a station's
+website in your own copy, and the fixes under "Updates and installing".
+
+### New stations and networks
+
+A listener in Hawaii asked for 181.FM by name, and it is now a branch of its
+own in Browse Stations: every channel the network lists, about eighty of them,
+by 181.FM's own genres, with **All stations** first. Explicit channels say so,
+and the Christmas genre is marked seasonal. **laut.fm** is another new branch:
+thousands of stations that people run themselves, by the platform's
+most-listened genres. Search Stations finds both, and so do Search All Sources
+and Find inside either branch. In **Networks > Music** you will also find
+181.FM, Big R Radio and 1.FM, each showing only that network's own stations.
+If you chose your sources before these existed, they are switched on for you
+once.
+
+### Volume and sound
+
+**Slider Keys** is new in Preferences (**Ctrl+,**), for every Quill app at
+once. **Up is more** stays the default: Up, Page Up and Home raise the volume
+slider, and Home is now the top, 100 percent, with End the bottom. Or choose
+**As Windows sliders**, where Down, Page Down and End raise it. Right is more
+and Left is less either way. Ctrl+Up and Ctrl+Down, the volume keys that work
+from anywhere, are not changed. Each key press also tells your screen reader
+the new value straight away.
 
 Quill Radio's own sounds now play on the same sound card as the radio. If
 you send the station to a broadcast card, the playing, stopped and stream
@@ -29,11 +61,24 @@ every QUILL app. After a change you hear one sound on the new device. If that
 device is unplugged, the sounds play on the system default until it comes
 back, and Quill Radio tells you. Your screen reader is never moved.
 
-Choosing a show and hide key is easier: **Record Key...** (Alt+R) in the
-Show and Hide Key window writes out the combination you press. You can still
-type it.
+- **A sound for resuming.** Resuming after a pause plays a short sound of its
+  own, so you can tell carrying on from starting a new station. **Alt+Shift+M**
+  turns it off with Quill Radio's other sounds.
+- **A background station on another device.** **Audio > Background Station
+  on Another Device...** (**Alt+Shift+B**) plays one of your favorites quietly
+  on a second sound card or headset, underneath whatever else is playing.
+  Press **Alt+Shift+B** again to turn it off.
+- **Mirror to another device.** **Audio > Mirror to Another Device...**
+  (**Alt+Shift+D**) plays the same station on a second device as well,
+  following the main player in everything. This and the background station
+  both need the mpv playback engine. See "A second device: a background
+  station, or a mirror" in Chapter 5.
+- **No more "mpv is missing" at every start.** With **Playback engine** on
+  Automatic in Preferences, Quill Radio no longer warns about mpv each time it
+  starts, because playing through Windows Media is what Automatic is for. You
+  still hear it if you chose **mpv** yourself and it cannot be loaded.
 
-Also new in build 4:
+### Recording
 
 - **Every recording says how it went.** When a recording is over you hear one
   message, once, with the station, when it started, how long it is and the
@@ -45,6 +90,11 @@ Also new in build 4:
   AAC or Opus files, are in the list now. So is a file that could not leave the
   temporary recording folder, and it says "still in the temporary recording
   folder".
+- **Recordings comes back when it is already open.** **Record > Recordings...**
+  (**Ctrl+Shift+R**) opens the recordings list or restores its existing
+  window, including when it is minimized. The last public 3.0.4 build could
+  silently leave that window minimized. The shared opener has been checked
+  with real Windows controls, with empty and with full recordings folders.
 - **Stop All Recordings stops a recording that is waiting to reconnect.** It
   used to say nothing was recording, and the recording carried on after its
   wait. Now it stops, and you hear "including 1 waiting to reconnect".
@@ -63,47 +113,9 @@ Also new in build 4:
   into one file per song, named after the song and numbered in play order. A
   cut can land a few seconds early or late, and if the split cannot be done,
   the recording is kept whole and you hear why.
-- **QUILL Lineups.** **Playback > Lineups...** (**Ctrl+U**) keeps named lists
-  of anything Quill Radio and QUILL Cast can play: stations, podcasts and
-  episodes, YouTube videos, Local Media files and recordings. Fill one by hand
-  with **Add to Lineup...**, or give it rules that fill it for you, then play
-  it straight through. See Chapter 17, QUILL Lineups, and the tutorial **Build
-  a lineup that fills itself**.
-- **Saved places in Favorites come back.** A genre, country or other place you
-  saved to Favorites is still there after Quill Radio restarts.
-- **Mark several rows, then delete them with one question.** In your
-  favorites, Manage Favorites, Radio Recordings, Browse Stations and Schedule
-  Recording, press **.** (period) on each row you want; you hear how many are
-  marked. **Delete** then asks once, for example "Delete 5 stations?", and
-  **Ctrl+Shift+Delete** clears the marks.
-- **A key that plays a favorite from anywhere.** Choose **System-Wide Key...**
-  on a favorite's **Shift+F10** menu to give that station its own key, which
-  works even with another program in front. A key that is already taken is
-  refused, with the reason.
-- **Escape walks back out of Browse Stations one level at a time.** Inside a
-  branch, Escape goes back to the row you opened it from and folds it. Only on
-  a top-level branch does it close the window, and playback carries on.
-- **Station Details finds a station by its call sign, frequency or slogan.**
-  **View > Station Details...** (**Alt+Shift+I**) searches by name, call sign,
-  frequency, slogan, format or city, and says why each result matched. No
-  station pack ships yet, so for now the window says so.
-- **Add Custom Station accepts a station's web page.** Paste a home page or a
-  "Listen Live" player link into **Stream URL**, and Test and OK find the real
-  stream behind it. See "Add Custom Station, step by step" in Chapter 6.
-- **Show notes read as words.** Apostrophes and other punctuation in show
-  notes, titles and station descriptions are read as themselves, not as a
-  string of symbols and numbers.
-- **View Show Notes.** An episode with notes has **View Show Notes...** on its
-  context menu. The notes open with working links you can Tab between, and
-  Save As keeps them as links.
-- **Podcasts over http and https.** A new user guide section, "Podcasts with
-  http and https addresses", explains that https is tried first, that a
-  password is never sent over plain http, and what to try when a certificate
-  cannot be verified.
-- **Certificate problems said plainly.** Every secure connection now checks
-  certificates the way Windows does. When one cannot be verified, Browse
-  Stations says so in one sentence with what to check, instead of "could not
-  be reached", and the Troubleshooting chapter has a section on it.
+
+### Listening
+
 - **Lyrics.** **Playback > Lyrics...** (**Ctrl+Alt+B**) opens the words of the
   song on the air as text to arrow through and copy, and the **Lyrics** button
   (**Alt+Y**) in Song History does the same for a song heard earlier. Lyrics
@@ -120,21 +132,83 @@ Also new in build 4:
   free AcoustID key in Preferences and Chromaprint's fpcalc program, and until
   both are there it tells you what is missing. See "Identify This Song" in
   Chapter 5.
-- **A background station on another device.** **Audio > Background Station
-  on Another Device...** (**Alt+Shift+B**) plays one of your favorites quietly
-  on a second sound card or headset, underneath whatever else is playing.
-  Press **Alt+Shift+B** again to turn it off.
-- **Mirror to another device.** **Audio > Mirror to Another Device...**
-  (**Alt+Shift+D**) plays the same station on a second device as well,
-  following the main player in everything. This and the background station
-  both need the mpv playback engine. See "A second device: a background
-  station, or a mirror" in Chapter 5.
-- **A sound for resuming.** Resuming after a pause plays a short sound of its
-  own, so you can tell carrying on from starting a new station. **Alt+Shift+M**
-  turns it off with Quill Radio's other sounds.
-- **What's New, in one key.** **Community > What's New** (**Alt+Shift+N**)
-  tells you in one sentence what arrived since you last looked: new episodes,
-  new videos from channels you follow, and reminders that went off.
+- **QUILL Lineups.** **Playback > Lineups...** (**Ctrl+U**) keeps named lists
+  of anything Quill Radio and QUILL Cast can play: stations, podcasts and
+  episodes, YouTube videos, Local Media files and recordings. Fill one by hand
+  with **Add to Lineup...**, or give it rules that fill it for you, then play
+  it straight through. See Chapter 17, QUILL Lineups, and the tutorial **Build
+  a lineup that fills itself**.
+- **Stopping, three ways.** To stop what is playing, press **Ctrl+Period**
+  from anywhere, the **Stop** button (**Alt+T**), or **Playback > Play**
+  (**Ctrl+P**), which reads **Stop** while something plays.
+- **Properties describes the drive.** **Properties...** (**Alt+Enter**) in
+  Local Media now describes the drive a file is on.
+
+### Finding and keeping stations
+
+- **Your YouTube channels are in A to Z order.** Asked for on QUILLVille: the
+  channels you follow, under **YouTube** in Browse Stations, and **My YouTube
+  > Subscriptions > Your Channels** are both listed alphabetically, so you
+  can type the first letters of a channel's name and land on it. They used to
+  come in the order you followed them, or in YouTube's own order.
+- **Mark several rows, then delete them with one question.** In your
+  favorites, Manage Favorites, Radio Recordings, Browse Stations and Schedule
+  Recording, press **.** (period) on each row you want; you hear how many are
+  marked. **Delete** then asks once, for example "Delete 5 stations?", and
+  **Ctrl+Shift+Delete** clears the marks.
+- **A key that plays a favorite from anywhere.** Choose **System-Wide Key...**
+  on a favorite's **Shift+F10** menu to give that station its own key, which
+  works even with another program in front. A key that is already taken is
+  refused, with the reason.
+- **Saved places in Favorites come back.** A genre, country or other place you
+  saved to Favorites is still there after Quill Radio restarts.
+- **Escape walks back out of Browse Stations one level at a time.** Inside a
+  branch, Escape goes back to the row you opened it from and folds it. Only on
+  a top-level branch does it close the window, and playback carries on.
+- **Station Details finds a station by its call sign, frequency or slogan.**
+  **View > Station Details...** (**Alt+Shift+I**) searches by name, call sign,
+  frequency, slogan, format or city, and says why each result matched. No
+  station pack ships yet, so for now the window says so.
+- **Add Custom Station accepts a station's web page.** Paste a home page or a
+  "Listen Live" player link into **Stream URL**, and Test and OK find the real
+  stream behind it. See "Add Custom Station, step by step" in Chapter 6.
+- **Correct a station's website in your own copy.** Choose **Edit
+  Website...** on a station row in Browse Stations or Manage Favorite
+  Stations. The correction is saved in this Radio profile only; it does not
+  change the directory, and Quill Radio checks only the address format, not
+  the website itself. Clear the address to return to the directory's version.
+- **Spotify is on the Station menu from the start.** **Connect to
+  Spotify...** (**Ctrl+Alt+P**) and **Browse Spotify...** (**Ctrl+Alt+O**) are
+  there in a new install. Spotify is still experimental, and nothing is sent
+  until you connect an account.
+- **Community > Suggest a Station or Podcast...** sends nothing until you
+  choose whether it is a station or a podcast.
+
+### Podcasts and show notes
+
+- **CBC podcasts play again.** Podcasts you have just imported no longer
+  arrive as hundreds of new episodes, and a podcast that fails says why in
+  plain words.
+- **Find** on an Internet Archive folder puts the best matches first, so new
+  uploads are found.
+- **Show notes read as words.** Apostrophes and other punctuation in show
+  notes, titles and station descriptions are read as themselves, not as a
+  string of symbols and numbers.
+- **View Show Notes.** An episode with notes has **View Show Notes...** on its
+  context menu. The notes open with working links you can Tab between, and
+  Save As keeps them as links.
+- **Podcasts over http and https.** A new user guide section, "Podcasts with
+  http and https addresses", explains that https is tried first, that a
+  password is never sent over plain http, and what to try when a certificate
+  cannot be verified.
+
+### Notifications and reminders
+
+- **Community > What's New, in one key.** **Community > What's New**
+  (**Alt+Shift+N**) tells you in one sentence what arrived since you last
+  looked: new episodes, new videos from channels you follow, and reminders
+  that went off. It is not the same as **Help > What's New**
+  (**Ctrl+Shift+F1**), which opens the changelog.
 - **How many notifications are unread.** The status bar has a
   **Notifications** cell, such as "3 new", and **Help > Notifications...**
   shows the count too whenever some are unread.
@@ -142,69 +216,56 @@ Also new in build 4:
   **Help > Notifications...** (**Ctrl+Alt+Shift+F3**), so you can find it if
   you were away, and Enter on a station reminder plays the station. A reminder also
   reads the **Note to Self** you keep on that station.
+
+### Dictation and the QuillVille family
+
+**Edit > Dictate Here** (**Ctrl+F11**) dictates into Search Stations or any
+text box through QUILL Transcribe, coming on 1 November 2026, and the
+**QuillVille** menu has **Open QUILL Transcribe**. See "Dictating a search".
+
+**Ctrl+Alt+Shift+R** shows and hides Quill Radio even while other QUILL apps
+run.
+
+- **A pin on the taskbar opens Quill Radio's own window, every time.** Every
+  QuillVille app now does what Quill Radio has done since 3.0.2: its
+  shortcuts carry its own taskbar identity, so pinning the running app pins
+  its shortcut. An older pin that still opens "Several QuillVille apps are
+  installed" now opens the app you pick through its own launcher, with all of
+  its settings, instead of a copy that cannot find its speech engines.
+
+### Settings, keys and saving
+
+- **Start Quill Radio when you sign in.** **Start Quill Radio with Windows**
+  is in Preferences as well as on the Station menu. Both control the same
+  per-user Windows setting. It is available for an installed copy, needs no
+  administrator rights, and is unavailable for portable copies, which do not
+  change Windows startup settings.
+- **Choosing a show and hide key is easier.** **Record Key...** (**Alt+R**) in
+  the Show and Hide Key window writes out the combination you press. You can
+  still type it.
 - **Settings saves are steadier when Quill Radio closes.** A change made just
   before the window closes is saved, and a save that fails after closing no
-  longer speaks over whatever you have moved on to.
-- **No more "mpv is missing" at every start.** With **Playback engine** on
-  Automatic in Preferences, Quill Radio no longer warns about mpv each time it
-  starts, because playing through Windows Media is what Automatic is for. You
-  still hear it if you chose **mpv** yourself and it cannot be loaded.
+  longer speaks over whatever you have moved on to. Routine history and
+  preference saves run in the background.
+- **Certificate problems said plainly.** Every secure connection now checks
+  certificates the way Windows does, using the Windows certificate store while
+  still checking certificates and hostnames. When one cannot be verified,
+  Browse Stations says so in one sentence with what to check, instead of
+  "could not be reached", and the Troubleshooting chapter has a section on it.
 
-Build 4 keeps everything from build 3, which carried over build 2:
+### Updates and installing
 
-This rebuild adds **Start Quill Radio with Windows** to Preferences, using the
-same setting as the Station menu. Portable copies do not change Windows startup
-settings. Routine history and preference saves run in the background, and the
-startup update check avoids a synchronous bookkeeping write.
-
-**Record > Recordings...** (Ctrl+Shift+R) opens the recordings list or restores
-its existing window, including when it is minimized. The last public 3.0.4
-build could silently leave that window minimized. The shared opener has now
-also been checked with real Windows controls for empty and populated folders.
-
-You can add or correct a station's website locally without contacting that
-website. Python HTTPS requests use the Windows certificate store while still
-checking certificates and hostnames. The installer is current-user only and
-does not offer an administrator-only installation.
-
-The bundled changelog records the complete build changes. These testing
-packages are not a GitHub release or a Stable-channel promotion.
-
-**Dictation.** **Edit > Dictate Here** (**Ctrl+F11**) dictates into Search
-Stations or any text box through QUILL Transcribe, coming on 1 November
-2026, and the **QuillVille** menu has **Open QUILL Transcribe**. See
-"Dictating a search".
-
-**Settings and installing.** **Start Quill Radio with Windows** is in
-Preferences as well as on the Station menu (installed copies only). Choose
-**Edit Website...** on a station row to correct a station's website in your
-own copy. **Properties...** (**Alt+Enter**) in Local Media now describes the
-drive a file is on. This build runs on Python 3.14, installs for you alone
-with no administrator prompt, and checks secure connections the way Windows
-does.
-
-**Podcasts and archives.** CBC podcasts play again. Podcasts you have just
-imported no longer arrive as hundreds of new episodes, and a podcast that
-fails says why in plain words. **Find** on an Internet Archive folder puts
-the best matches first, so new uploads are found.
-
-**Menus and keys.** **Connect to Spotify...** (**Ctrl+Alt+P**) and **Browse
-Spotify...** (**Ctrl+Alt+O**) are on the Station menu from the start;
-Spotify is still experimental, and nothing is sent until you connect an
-account. To stop what is playing, press **Ctrl+Period** from anywhere, the
-**Stop** button (**Alt+T**), or **Playback > Play** (**Ctrl+P**), which reads
-**Stop** while something plays. **Record > Recordings...**
-(**Ctrl+Shift+R**) brings back a Recordings window that is already open.
-**Ctrl+Alt+Shift+R** shows and hides Quill Radio even while other QUILL
-apps run. **Community > Suggest a Station or Podcast...** sends nothing
-until you choose whether it is a station or a podcast.
-
-**Updates.** A portable copy updates in place and keeps its `data` folder
-where Quill Radio looks for it. A failed update puts back the version you
-had and says so. The Beta engine's 335 MB are removed when the last app on
-Beta returns to Stable.
-
-This beta is not a GitHub release or a Stable-channel promotion.
+- **Python 3.14.** Build 4 and later run on Python 3.14. The installer also
+  removes the older Python 3.13 runtime once no QuillVille app on your
+  computer uses it.
+- **No administrator prompt.** The installer is for you alone and does not
+  offer an administrator-only installation. The startup update check no
+  longer makes a bookkeeping write while the window opens.
+- **A portable copy updates in place** and keeps its `data` folder where
+  Quill Radio looks for it.
+- **A failed update puts back the version you had** and says so.
+- **The Beta engine's 335 MB are removed** when the last app on Beta returns
+  to Stable.
 
 ## A word about the number
 
@@ -862,20 +923,6 @@ when it picks up a choice from another app. Nothing about your keys, your
 cursor or your screen reader is ever shared, and it stays off until you turn
 it on.
 
-## Preview for testers: changes after 3.2.0 (build 1)
-
-These changes are not part of the 3.2.0 (build 1) release above.
-
-- **Correct a station's website locally.** Choose **Edit Website...** on a
-  station row in Browse Stations or Manage Favorite Stations. The correction
-  is saved in this Radio profile only; it does not change the directory, and
-  Quill Radio checks only the address format, not the website itself. Clear
-  the address to return to the directory's version.
-- **Start Quill Radio when you sign in.** The Station-menu item and the
-  Preferences checkbox control the same per-user Windows setting. It is
-  available for an installed copy, needs no administrator rights, and is
-  unavailable for portable copies.
-
 ## Choose Stable, Beta or Dev
 
 New in this version: **Release Channel...**, on the Help menu. Every copy
@@ -961,10 +1008,11 @@ The user guide, **Help > User Guide** (**Ctrl+F1**), covers everything here:
 
 - Chapter 3, Finding your way around, for the main window and its Play and
   Website buttons.
-- Chapter 5, What's playing, and how it sounds, for What's Playing and Output
-  Device.
-- Chapter 6, Finding something to listen to, for Double Tap Live, Apple's
-  podcast categories, the Podcast Index, hiding sources and notes to yourself.
+- Chapter 5, What's playing, and how it sounds, for What's Playing, Output
+  Device and Slider Keys.
+- Chapter 6, Finding something to listen to, for Double Tap Live, 181.FM and
+  laut.fm, Apple's podcast categories, the Podcast Index, hiding sources and
+  notes to yourself.
 - Chapter 9, Podcasts, books, video and more, for checking your podcasts.
 - Chapter 10, Local Media, your own music and audiobooks, for playlists of
   the files on your computer.

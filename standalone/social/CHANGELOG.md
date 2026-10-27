@@ -4,10 +4,14 @@ All notable changes to QUILL Social are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/), and the project aims to follow
 semantic versioning once it reaches a stable release.
 
-## [Unreleased]
+## [0.3.0] - 2026-07-19
 
-QUILL Social became a feed reader as well as a social client, and grew an
-installer of its own.
+Version 0.3.0 (build 2) is QUILL Social's first public release, so the work
+since the first 0.3.0 build belongs to 0.3.0. In it QUILL Social became a feed
+reader as well as a social client, and grew an installer of its own. That work
+comes first, grouped by subject; the 0.3.0 build of 2026-07-19 follows it.
+
+### Keys and menus
 
 - **Every menu command has a key you can change** (2026-10-17). Thirty-one
   commands could only be reached by walking the menus. Each now has a key,
@@ -77,19 +81,6 @@ installer of its own.
   keys, and a section on finding text. A check now builds QUILL Social's real
   menus during testing and fails if either document names a menu path or a
   key the menus do not have, or if two menu rows show the same key.
-
-- **Feeds check certificates the way Windows does** (2026-10-15). Feed
-  downloads now use the same certificate check as every other QUILL app, so a
-  feed served behind a school's or company's own certificate loads, and a
-  certificate that really is bad gets the same plain sentence everywhere.
-
-- **Every release build checks its version against what is published** (2026-10-15). The shared QuillVille runtime carries every app's version number, so a build of one app could make another report a version nobody can download yet, and Check for Updates would then never offer the real one. QUILL Social's release builds now run the same check Quill Radio, QUILL Lite, QUILL Cast and Quill Weather already did, and a build of every app at once checks them all again instead of stopping at an app it did not know.
-
-- **Two downloads, nothing else** (2026-10-11). QUILL Social now comes as the
-  installer and the portable zip. The small Lite installer and the Companion
-  zip are gone. If you used the Lite installer, take the installer; if you
-  used the Companion zip, take the portable zip. Check for Updates already
-  offers the right one.
 
 ### Added — QUILL Social has an application icon
 
@@ -177,6 +168,10 @@ installer of its own.
   that says how many.
 - Unread rows are shown in bold as a secondary low-vision cue; read state is
   still spoken, never colour-only.
+- **Feeds check certificates the way Windows does** (2026-10-15). Feed
+  downloads now use the same certificate check as every other QUILL app, so a
+  feed served behind a school's or company's own certificate loads, and a
+  certificate that really is bad gets the same plain sentence everywhere.
 
 ### Added — Lemmy, and adapter groundwork for more
 
@@ -240,6 +235,12 @@ installer of its own.
 - Rendered HTML documentation now uses a shared accessible template: a
   language attribute, a descriptive page title taken from the document's own
   heading, a skip link, and a `main` landmark.
+- **Two downloads, nothing else** (2026-10-11). QUILL Social now comes as the
+  installer and the portable zip. The small Lite installer and the Companion
+  zip are gone. If you used the Lite installer, take the installer; if you
+  used the Companion zip, take the portable zip. Check for Updates already
+  offers the right one.
+- **Every release build checks its version against what is published** (2026-10-15). The shared QuillVille runtime carries every app's version number, so a build of one app could make another report a version nobody can download yet, and Check for Updates would then never offer the real one. QUILL Social's release builds now run the same check Quill Radio, QUILL Lite, QUILL Cast and Quill Weather already did, and a build of every app at once checks them all again instead of stopping at an app it did not know.
 
 ### Changed
 
@@ -250,18 +251,22 @@ installer of its own.
 
 ### Known issues
 
-- The new Feeds, Listen, and Find commands are menu-only: they are not in
-  the command center, and their keys cannot be changed.
-- The F1 Keyboard Guide lists only the keys you can change, so it does not
-  show the Feeds, Listen and Find keys; **Help > Keyboard Reference** and the
-  User Guide do.
+- The keys work in the main window, not inside dialogs, and are changed by
+  editing `keymap.json` with QUILL Social closed; there is no key editor yet.
+- Until 2026-10-17 the Feeds, Listen and Find commands were menu-only, not in
+  the command center, and their keys could not be changed, so the F1 Keyboard
+  Guide did not show them. Every command now has a key you can change and the
+  Command Center shows it (see "Keys and menus" above); **Help > Keyboard
+  Reference** and the User Guide list every key.
+- QUILL Social has no What's New command yet: Ctrl+Shift+F1, the key the
+  other QuillVille apps give it, is Keyboard Reference here.
 
-## [0.3.0] - 2026-07-19
+### The 0.3.0 build of 2026-07-19
 
 Made the full roadmap reachable from the app and wired live network sign-in.
 409 tests passing, ruff-clean.
 
-### Added — every service now reachable in the shell
+#### Added — every service now reachable in the shell
 
 - New **Studio** menu: Drafts (open a draft back into the composer), Agenda /
   Calendar, Queue schedule, Approvals.
@@ -274,14 +279,14 @@ Made the full roadmap reachable from the app and wired live network sign-in.
   `ui/media_player.py`): every control labelled and named, report-mode lists,
   keyboard-complete, no mouse-only paths.
 
-### Added — deeper composer (PRD 15)
+#### Added — deeper composer (PRD 15)
 
 - Media attachments with per-attachment alt-text editing, a poll builder
   (options, single/multiple, duration), a schedule date/time, and a template
   picker sourced from the saved-reply library. The composition report reflects
   media, alt-text gaps, and poll options live.
 
-### Added — live network sign-in (PRD 22, 23, 24, 31)
+#### Added — live network sign-in (PRD 22, 23, 24, 31)
 
 - Mastodon, Bluesky, and GitHub adapters now have real dual-mode
   implementations: with a client (built by the registry from a stored
@@ -295,7 +300,7 @@ Made the full roadmap reachable from the app and wired live network sign-in.
   the database only ever holds a reference.
 - Add Account collects an access token / app password and stores it securely.
 
-### Added — live local scheduler
+#### Added — live local scheduler
 
 - A `wx.Timer` drives the local scheduler every 30 seconds while the app is
   open, so due plans actually publish (with the same backoff and

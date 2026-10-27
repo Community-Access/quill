@@ -29,7 +29,10 @@ def main() -> int:
         description="Generate third-party notices and enforce license gate."
     )
     parser.add_argument("--pyproject", type=Path, default=Path("pyproject.toml"))
-    parser.add_argument("--output", type=Path, default=Path("docs/legal/THIRD_PARTY_NOTICES.txt"))
+    # Not docs/legal/THIRD_PARTY_NOTICES.txt: that file is generated from the
+    # curated catalogue by quill/tools/build_third_party_notices.py, and this
+    # metadata table would overwrite it. This script is the licence gate.
+    parser.add_argument("--output", type=Path, default=Path("build/dependency-licenses.txt"))
     parser.add_argument("--project-root", type=Path, default=Path("."))
     args = parser.parse_args()
 
@@ -37,6 +40,7 @@ def main() -> int:
         args.pyproject,
         args.project_root,
     )
+    args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(notices, encoding="utf-8")
     dependency_rows = build_dependency_notices(
         args.pyproject,

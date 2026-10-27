@@ -989,9 +989,13 @@ source of truth where it differs from earlier prose):
 - **In-QUILL entry is launch-based.** QUILL opens the player via **Tools ▸ Media ▸ Media
   Player**, which launches the standalone app (shared library / bookmarks / positions).
   The embedded-window design in this PRD is a documented future option (Section 18).
-- **Settings today are menu-driven.** The searchable Preferences dialog (Section 10) is on
-  the roadmap; the shipped controls live on the Audio page and the Playback / View menus,
-  with the full `media_*` catalogue defaulted in `quill/core/media/config.py`.
+- **Settings are mostly menu-driven, with a small Preferences window.** **File >
+  Preferences...** (Ctrl+,) holds the Audio Output Device..., App Sounds Play On... and
+  Slider Keys... buttons, a "This session only" box (Compact mode, Magical mode, Always
+  on top, Sleep timer) and a **Find a setting** box that also reaches the Audio page's
+  controls. The full searchable dialog of Section 10 is still to come; the other
+  shipped controls live on the Audio page and the Playback / View menus, with the full
+  `media_*` catalogue defaulted in `quill/core/media/config.py`.
 - **Timed lyrics (2026-10-15).** **Playback > Lyrics...** (Ctrl+Alt+L) looks
   the playing file up on LRCLIB through the shared client
   (`quill/core/lyrics/lrclib.py`, the same one Quill Radio uses): the exact
@@ -1024,3 +1028,13 @@ source of truth where it differs from earlier prose):
   Keyboard Shortcuts editor, a Where am I? key, the verbosity, earcon,
   self-voicing and braille status-line settings, and per-book overrides with
   settings import and export.
+- **Slider Keys and What's New (2026-10-25, 2026-10-26).** Preferences has the
+  family's **Slider Keys...** button (`quill/ui/slider_keys.py`,
+  `quill/core/slider_key_layout.py`): **Up is more**, the default (Up, Page Up and
+  Home raise the position and volume sliders, Home being 100 percent on the volume),
+  or **As Windows sliders** (Down, Page Down and End raise them). The choice is one
+  file shared by every Quill app, read at each key press, and each move raises a
+  value-change event so the screen reader speaks the new value. Right is more and
+  Left less in both; Ctrl+Up and Ctrl+Down are not changed. **Help > What's New**
+  (Ctrl+Shift+F1, `quill/ui/whats_new.py`) opens `docs/CHANGELOG.html` in the
+  browser; the player had no changelog until then, so one was written for 1.0.0.

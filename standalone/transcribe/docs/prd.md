@@ -172,6 +172,11 @@ open, and what waits for a later version.
    phrases are now heard in pieces of 8 seconds or less, cut at the quietest
    moment, and joined. Measured after the fix: 5.9 percent on the held-out
    audiobooks.
+19. **Help > What's New** (build 3, 2026-10-25). Met. The Help menu has
+   **What's New** on Ctrl+Shift+F1, the key every standalone QuillVille app
+   gives it: QUILL Transcribe's changelog (`docs/CHANGELOG`) opened as HTML in
+   the browser through the family's shared `quill/ui/whats_new.py`. A build
+   with no changelog says so rather than doing nothing.
 
 Still to check by hand: speed, memory, screen-reader lag and battery on a real
 4 GB Windows 10 computer with NVDA or JAWS running (B-8), and Whisper medium

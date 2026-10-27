@@ -59,6 +59,13 @@ TEXT_CHANGING_HANDLERS: frozenset[str] = frozenset({
     "cmd_insert_emoji",
     "cmd_insert_line_break",
     "cmd_insert_link",
+    "cmd_insert_table",
+    # Navigate > Table's editing rows
+    "cmd_table_insert_row_below",
+    "cmd_table_insert_column_right",
+    "cmd_table_delete_row",
+    "cmd_table_delete_column",
+    "cmd_table_tidy",
     "cmd_insert_markdown_tag",
     "cmd_insert_html_tag",
     # Format: the rows that write, not Describe, Editor Font or Language

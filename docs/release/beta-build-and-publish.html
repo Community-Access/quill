@@ -387,15 +387,16 @@ pull requests; <code>stable-promotion</code> environment with you as
 reviewer.</p>
 <p><strong>For each beta app (after A3 built the files):</strong></p>
 <ol type="1">
-<li>Write short notes for the release (copy the section for the build
-you are publishing, such as “Testing rebuild: 3.2.0 (build 4)”, from the
-app’s release notes, for example
-<code>standalone\radio\docs\release-notes-3.2.md</code>) into a file
-such as <code>notes-radio.md</code>. First check that it covers
-everything under [Unreleased] in the app’s
-<code>CHANGELOG.md</code>.</li>
+<li>Use the app’s “What’s new” from
+<code>docs/release/whats-new/</code>, such as
+<code>whats-new-radio-3.2.0.md</code>. It is what the update window
+shows when Check for Updates offers the build, so it must show whole: at
+most 60 lines and 4,000 characters
+(<code>tests/unit/docs/test_whats_new_fits.py</code>). For a later
+build, add a new file the same way rather than pasting a section of the
+release notes, which run far longer.</li>
 <li>Rehearse first, nothing is created:
-<code>python scripts/publish_release.py --app radio --version 3.2.0 --build 4 --channel beta --dist standalone/radio/dist --notes-file notes-radio.md --dry-run</code></li>
+<code>python scripts/publish_release.py --app radio --version 3.2.0 --build 4 --channel beta --dist standalone/radio/dist --notes-file docs/release/whats-new/whats-new-radio-3.2.0.md --dry-run</code></li>
 <li>Publish for real (same command without <code>--dry-run</code>). It
 hashes the files, creates a GitHub <strong>prerelease</strong> (never
 “Latest”), uploads the installer and portable zip, adds the build to the
@@ -403,8 +404,9 @@ hashes the files, creates a GitHub <strong>prerelease</strong> (never
 <li>Repeat for QUILL Lite
 (<code>--app quilllite --version 1.2.0 --build 5 --dist standalone/quilllite/dist</code>)
 and QUILL Cast
-(<code>--app cast --version 2.0.0 --build 5 --dist standalone/cast/dist</code>).
-The script accepts <code>cast</code>, <code>quill</code>,
+(<code>--app cast --version 2.0.0 --build 5 --dist standalone/cast/dist</code>),
+each with its own file from <code>docs/release/whats-new/</code>. The
+script accepts <code>cast</code>, <code>quill</code>,
 <code>quilllite</code>, <code>radio</code> and (since 2026-10-24)
 <code>transcribe</code>; leaving out <code>--build</code> uses the next
 build after the newest published tag. QUILL Transcribe publishes the

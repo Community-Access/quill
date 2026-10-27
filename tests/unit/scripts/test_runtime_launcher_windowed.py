@@ -35,6 +35,8 @@ def windowed(monkeypatch):
     from quill.core import runtime_apps
 
     monkeypatch.setattr(runtime_apps, "claim_taskbar_identity", lambda _module: False)
+    # Never find (and start) a real installed launcher from the test process.
+    monkeypatch.setattr(runtime_apps, "installed_launcher", lambda _app: None)
     return launcher, told
 
 
@@ -191,3 +193,72 @@ def test_the_app_claims_its_taskbar_identity_before_it_runs(windowed, monkeypatc
 
     assert launcher.main() == 0
     assert order == ["id:quill.apps.radio", "run"]
+
+
+def test_a_bare_launch_hands_over_to_the_app_s_installed_launcher(
+    windowed, monkeypatch, tmp_path
+) -> None:
+    """An old taskbar pin starts the runtime bare; the app's own launcher sets
+    up QUILL_LAUNCHER_DIR, without which QUILL Lite cannot find its speech
+    engines (reported 2026-10-26). So the runtime starts that launcher."""
+    from quill.core import runtime_apps
+
+    launcher, _told = windowed
+    _installed(monkeypatch, "quilllite")
+    exe = tmp_path / "QuillLite.exe"
+    monkeypatch.setattr(runtime_apps, "installed_launcher", lambda app: exe)
+    started: list[list[str]] = []
+    monkeypatch.setattr(
+        launcher.subprocess if hasattr(launcher, "subprocess") else __import__("subprocess"),
+        "Popen",
+        lambda args, **_k: started.append(list(args)),
+    )
+    monkeypatch.setattr(launcher.runpy, "run_module", lambda *a, **k: pytest.fail("ran here"))
+    monkeypatch.setattr(sys, "argv", ["QuillVilleRuntime.exe"])
+    assert launcher.main() == 0
+    assert started == [[str(exe)]]
+
+
+def test_installed_launcher_reads_the_install_location(monkeypatch, tmp_path) -> None:
+    import types
+
+    from quill.core import runtime_apps
+
+    (tmp_path / "QuillLite.exe").write_bytes(b"")
+    keys = {("hkcu", runtime_apps._UNINSTALL_KEYS[0]): ["{other}_is1", "{lite}_is1"]}
+    locations = {"{other}_is1": "C:/nowhere", "{lite}_is1": str(tmp_path)}
+
+    class _Key:
+        def __init__(self, name: str) -> None:
+            self.name = name
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_exc) -> None:
+            return None
+
+    def open_key(hive, path):
+        if isinstance(hive, _Key):
+            return _Key(path)
+        if (hive, path) not in keys:
+            raise OSError
+        return _Key(path)
+
+    def enum_key(key, index):
+        names = keys.get(("hkcu", key.name), [])
+        if index >= len(names):
+            raise OSError
+        return names[index]
+
+    fake = types.SimpleNamespace(
+        HKEY_CURRENT_USER="hkcu",
+        HKEY_LOCAL_MACHINE="hklm",
+        OpenKey=open_key,
+        EnumKey=enum_key,
+        QueryValueEx=lambda key, _name: (locations[key.name], 1),
+    )
+    monkeypatch.setitem(sys.modules, "winreg", fake)
+    monkeypatch.setattr(sys, "platform", "win32")
+    lite = next(app for app in runtime_apps.RUNTIME_APPS if app.ref_id == "quilllite")
+    assert runtime_apps.installed_launcher(lite) == tmp_path / "QuillLite.exe"

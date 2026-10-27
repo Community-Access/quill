@@ -127,6 +127,24 @@ def _pick(names: list[str]) -> int:
     return index if chosen else -1
 
 
+def _hand_over_to_launcher(module: str, rest: list[str]) -> bool:
+    """Start *module*'s installed launcher instead of running it here. True when
+    it started; False leaves this process to run the app as before."""
+    try:
+        import subprocess
+
+        from quill.core.runtime_apps import app_for_module, installed_launcher
+
+        app = app_for_module(module)
+        launcher = installed_launcher(app) if app is not None else None
+        if launcher is None:
+            return False
+        subprocess.Popen([str(launcher), *rest], close_fds=True)  # noqa: S603 - our own launcher
+    except Exception:  # noqa: BLE001 - running here is still a working launch
+        return False
+    return True
+
+
 def _looks_like_module(text: str) -> bool:
     return (
         bool(text)
@@ -151,6 +169,11 @@ def main() -> int:
         module, rest = _choose_app(), argv
         if not module:
             return 2
+        # Hand over to the app's own launcher where it is installed: it sets up
+        # what the app needs beside it (QUILL_LAUNCHER_DIR: QUILL Lite's speech
+        # engines, reported 2026-10-26), exactly as the desktop icon does.
+        if _hand_over_to_launcher(module, rest):
+            return 0
     # Started without an app launcher -- a taskbar pin Windows made from the
     # running process targets this exe directly -- nothing exported the app
     # root, and every "bundled beside the runtime" lookup (libmpv, ffmpeg)

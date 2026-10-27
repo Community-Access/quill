@@ -243,7 +243,7 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
 <h1 id="quill-lite-12">QUILL Lite 1.2</h1>
-<p><em>Version 1.2.0 (build 5), the beta for testers, October 2026.
+<p><em>Version 1.2.0 (build 6), the beta for testers, October 2026.
 1.2.0 was prepared on October 3, 2026 and is not yet published; the last
 published version is 1.1.2.</em></p>
 <p>Welcome to QUILL Lite 1.2. This is the release about words. QUILL
@@ -256,8 +256,83 @@ again, and if something goes wrong while you are busy elsewhere, it
 waits for you rather than slipping past.</p>
 <p>Everything works from the keyboard and tells you how it went, the way
 the rest of QUILL Lite does.</p>
-<h2 id="new-in-this-build-find-in-open-documents">New in this build:
-Find in Open Documents</h2>
+<h2 id="new-in-build-6-tables-in-every-document">New in build 6: tables
+in every document</h2>
+<p>Build 6 keeps everything from build 5, below, and adds tables, Help
+&gt; What’s New and a full menu bar when every document is closed. It is
+the same work as in QUILL, on the same keys.</p>
+<h3 id="making-a-table">Making a table</h3>
+<ul>
+<li><strong>Insert &gt; Table…</strong> (<strong>Ctrl+Alt+T</strong>,
+QUILL’s key) asks how many columns and rows and whether the first row is
+a header, then leaves the cursor in the first cell. In a rich text
+document it makes a <strong>real table</strong>: a grid on screen, and a
+table to your screen reader, to Word and to WordPad, with no
+<code>|</code> characters. In Markdown and plain text it makes rows of
+cells divided by <code>|</code>; in HTML, a <code>&lt;table&gt;</code>
+whose header cells are marked for screen readers.</li>
+<li>A Word or RTF document’s tables open as real tables too. Saved as
+RTF or Word, a table’s first row is marked as the header row. Switching
+a rich document to Markdown or plain text turns its tables into
+<code>|</code> rows, and back.</li>
+<li><strong>Trim Trailing Spaces</strong> moves to
+<strong>Ctrl+Alt+R</strong>, as in QUILL, to give Insert Table its
+key.</li>
+</ul>
+<h3 id="reading-a-table">Reading a table</h3>
+<ul>
+<li><strong>The arrows read a table cell by cell.</strong> Up and Down
+go to the cell above and below and say it (“Row 3: Ann”), instead of
+your screen reader reading the whole row. Right at the end of a cell and
+Left at its start step to the next or previous cell; inside a cell they
+move letter by letter as always. Down onto a table lands in its first
+cell and says its shape, such as “Table, 3 rows, 2 columns”. It works
+the same with JAWS, NVDA and Narrator, with nothing to install.</li>
+<li><strong>Tab and Shift+Tab</strong> move cell to cell, as in Word,
+and Tab in the last cell adds a row.</li>
+<li>A move says only what changed: the column, with its header when the
+table has a header row (“Column 3, Role: Lead”), the row, or both. With
+Announce Headings on, arrowing into a table says its shape and leaving
+it says “Out of table”.</li>
+</ul>
+<h3 id="changing-a-table">Changing a table</h3>
+<ul>
+<li><strong>Navigate &gt; Table</strong> gains <strong>Insert Row
+Below</strong>, <strong>Insert Column Right</strong>, <strong>Delete
+Row</strong>, <strong>Delete Column</strong> and <strong>Tidy
+Table</strong>. As in Word they have no keys: press
+<strong>Alt+N</strong>, then <strong>T</strong>. Each is one undo step.
+In a real table they keep the text in the cells, but not bold or other
+formatting inside them.</li>
+<li>A blank row is no longer skipped by the table keys.</li>
+</ul>
+<h3 id="menus-and-help">Menus and help</h3>
+<ul>
+<li><strong>Pinned to the taskbar, QUILL Lite opens as itself.</strong>
+Reported on QUILLVille: QUILL Lite pinned to the taskbar from its
+running window asked “Several QuillVille apps are installed. Which one
+do you want to open?”, and the copy it then opened ignored your settings
+and said its speech engines were not included. Windows had pinned the
+shared QuillVille runtime instead of QUILL Lite. QUILL Lite’s shortcuts
+now carry its own taskbar identity, so a new pin opens QUILL Lite
+through its own launcher, like the desktop icon. An older pin still asks
+once which app you want, then opens it the same proper way. To replace
+an old pin, unpin it and pin QUILL Lite again after you update. Every
+QuillVille app has the same fix.</li>
+<li><strong>Help &gt; What’s New</strong> opens the changelog in your
+browser. It has no key: press <strong>Alt+H</strong>, then
+<strong>W</strong>. Every QUILL family app has the same item.</li>
+<li><strong>A full menu bar with every document closed.</strong> Close
+the last document and the window still has <strong>File</strong> (New,
+Open, Recent Documents, Reopen Last Session and Exit),
+<strong>Tools</strong> (Preferences, the Keyboard Manager, the Sound
+Scheme, and backing up and restoring settings) and
+<strong>Help</strong>, on the same keys as a document window.</li>
+</ul>
+<h2
+id="new-in-build-5-find-in-open-documents-folder-search-and-the-clipboard-collector">New
+in build 5: Find in Open Documents, folder search and the clipboard
+collector</h2>
 <p>Press <strong>Ctrl+Alt+Shift+F8</strong> to find and replace across
 every document you have open, not just the one in front of you. It
 searches what is in each window right now, including changes you have
@@ -284,9 +359,9 @@ in any program, lands at the end of it, until you press
 key, is now on <strong>Alt+Shift+C</strong>.</p>
 <h2 id="testing-rebuild-120-build-5">Testing rebuild: 1.2.0 (build
 5)</h2>
-<p>Build 5 is the beta being tested now. It keeps everything from build
-4, below, and adds Find in Open Documents, folder search and the
-clipboard collector above, plus everything in this section.</p>
+<p>Build 5 keeps everything from build 4, below, and adds Find in Open
+Documents, folder search and the clipboard collector above, plus
+everything in this section.</p>
 <h3 id="word-documents-pdfs-and-other-files">Word documents, PDFs and
 other files</h3>
 <ul>
@@ -323,9 +398,9 @@ the next and previous cell, <strong>Ctrl+Alt+Down</strong> and
 <strong>Alt+Home</strong> and <strong>Alt+End</strong> for the first and
 last cell in the row, and <strong>Ctrl+Alt+Home</strong> and
 <strong>Ctrl+Alt+End</strong> for the first and last cell of the table.
-You hear where you are, such as “Row 2 of 4, column 3 of 5: Lead”. It
-works in Markdown tables and Word documents. See “Moving through a
-table”.</li>
+You hear what changed and what is there, such as “Column 3, Role: Lead”.
+It works in Markdown tables, real tables in rich text and Word
+documents. See “Moving through a table”.</li>
 <li><strong>QUILL Lite opens PDFs.</strong> Press
 <strong>Ctrl+O</strong> and choose one. It opens as its text, page by
 page, and <strong>Go To</strong> (<strong>Ctrl+G</strong>) takes you to
@@ -440,6 +515,21 @@ without an update.</li>
 </ul>
 <h3 id="dictation">Dictation</h3>
 <ul>
+<li><p><strong>“Quill dictate” is heard the way the engines write
+it.</strong> Reported on QUILLVille: QUILL Lite loaded the chosen speech
+engine but never answered the wake phrase. The built-in engines often
+write it as “Quilt it take”, “Quiltic tape” or “Quilldictate”, and QUILL
+Lite only accepted the two words exactly. It now accepts a phrase that
+sounds like the wake phrase at the start of what you say, while ordinary
+openings such as “Will it take long” or “Kill it today” still do
+nothing; the command word and the stop phrase forgive in the same way.
+If another QuillVille program is already using the microphone, QUILL
+Lite now says once that the wake phrase is not being listened for, and
+which program has the microphone, instead of waiting in silence. If the
+wake phrase is still missed, start QUILL Lite with the environment
+variable <code>QUILL_DICTATION_TRACE=1</code>: <code>quill.log</code>
+then records what the engine heard each time, to send to
+support.</p></li>
 <li><p><strong>Dictation profiles.</strong> Choose the kind of writing
 in More Dictation Settings: Email, Document, Markdown, Chat, Coding,
 Verbatim or Standard. Each changes pauses, filler words, punctuation and
@@ -660,11 +750,28 @@ settings, then delete the old folder when you are sure.</li>
 </ol>
 <p>If your settings are already gone, QUILL Lite cannot bring them back;
 look for a backup or your computer’s File History.</p>
-<p>One key has moved. <strong>Tools &gt; Keyboard Manager</strong> is
-now <strong>Ctrl+Alt+Shift+Space</strong>. Its old key,
-Ctrl+Alt+Shift+R, shows and hides Quill Radio from anywhere, so while
-Quill Radio was running the Keyboard Manager never opened. QUILL moved
-its Keyboard Manager to the same key, so the two still match.</p>
+<p>Some keys have moved:</p>
+<ul>
+<li><strong>Tools &gt; Keyboard Manager</strong> is now
+<strong>Ctrl+Alt+Shift+Space</strong>. Its old key, Ctrl+Alt+Shift+R,
+shows and hides Quill Radio from anywhere, so while Quill Radio was
+running the Keyboard Manager never opened. QUILL moved its Keyboard
+Manager to the same key, so the two still match.</li>
+<li><strong>Trim Trailing Spaces</strong> is now
+<strong>Ctrl+Alt+R</strong>, as in QUILL; <strong>Ctrl+Alt+T</strong> is
+Insert Table.</li>
+<li><strong>Remove Quote Marks</strong> is now
+<strong>Alt+Shift+.</strong> (the period), and <strong>Snippets</strong>
+is <strong>Ctrl+Alt+Shift+Home</strong>.</li>
+<li><strong>Collect Selection</strong> is now
+<strong>Alt+Shift+C</strong>; <strong>Alt+Shift+S</strong> is the
+clipboard collector, as in QUILL.</li>
+<li><strong>Alt+Shift+1</strong> to <strong>Alt+Shift+8</strong> reopen
+your first eight recent files, and <strong>Alt+Shift+9</strong> is
+always <strong>AutoCorrect Entries</strong>. The ninth file is in
+<strong>File &gt; Recent Documents</strong>
+(<strong>Alt+Shift+0</strong>).</li>
+</ul>
 <h2 id="try-this-first">Try this first</h2>
 <ol type="1">
 <li>Put the cursor on a word you are not happy with and press
@@ -1326,6 +1433,14 @@ same echo and is fixed too.</li>
 <td>Read-Only Guard</td>
 </tr>
 <tr>
+<td><strong>Ctrl+Alt+T</strong></td>
+<td>Insert Table</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+R</strong></td>
+<td>Trim Trailing Spaces, on its new key</td>
+</tr>
+<tr>
 <td><strong>Ctrl+Alt+Right</strong> /
 <strong>Ctrl+Alt+Left</strong></td>
 <td>Next and Previous Cell in a table</td>
@@ -1349,6 +1464,22 @@ same echo and is fixed too.</li>
 <tr>
 <td><strong>Ctrl+F2</strong></td>
 <td>List Highlighted Passages</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+9</strong></td>
+<td>AutoCorrect Entries</td>
+</tr>
+<tr>
+<td><strong>Alt+Shift+S</strong></td>
+<td>Clipboard Collector</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Alt+Shift+F</strong></td>
+<td>Search in Files</td>
+</tr>
+<tr>
+<td><strong>Ctrl+Shift+R</strong></td>
+<td>Replace Across Files</td>
 </tr>
 <tr>
 <td><strong>Ctrl+6</strong></td>

@@ -1,10 +1,11 @@
 # QUILL Lite — Product Requirements
 
-**Version 1.2.0 (build 5) · Windows · MIT · part of the QuillVille family**
+**Version 1.2.0 (build 6) · Windows · MIT · part of the QuillVille family**
 
-Status, 2026-10-17: 1.2.0 is in beta for testers and not yet published; the
+Status, 2026-10-26: 1.2.0 is in beta for testers and not yet published; the
 last published version is 1.1.2 (1.0.0 was first released on 2026-09-25).
-Everything in the changelog's Unreleased section is built and documented.
+Everything in the changelog's 1.2.0 section, through build 6, is built and
+documented.
 
 ## 1. Statement
 
@@ -3414,7 +3415,7 @@ Still saving; typing during a save), `test_lite_save_as_typed_extensions.py`,
 | `.odt`, `.xlsx`, `.pptx` | Text through QUILL's readers | No |
 | `.xlsm`, `.ods`, `.odp` | Not in `OFFICE_OPEN_SUFFIXES` (QUILL's File > Open does not open them either); File > Import / Convert Document reads them | Not applicable (a new untitled document) |
 
-Import / Convert always makes a new, untitled document that does not point back at the source; Ctrl+O opens the file itself, and only a `.docx` saves back to it. The user guide's "Office files at a glance" carries this table in plain words, and the changelog's Unreleased section has one consolidated entry for it instead of three written in build order.
+Import / Convert always makes a new, untitled document that does not point back at the source; Ctrl+O opens the file itself, and only a `.docx` saves back to it. The user guide's "Office files at a glance" carries this table in plain words, and the changelog's 1.2.0 section has one consolidated entry for it instead of three written in build order.
 
 ## Dictation model advice from real speech, and five models removed (2026-10-22)
 
@@ -3433,6 +3434,54 @@ Import / Convert always makes a new, untitled document that does not point back 
 | Tiers follow real speed | Cost factors against Moonshine tiny from the English FLEURS run: Parakeet TDT v3 3.2, Parakeet Unified 3.8, Whisper base.en 4.3 (Lightweight, at most 5); Nemotron 5.8 (Balanced) | Benchmark doc, the speed-factor paragraph under the Spanish table |
 | Five English-only models removed in this release, with one spoken notice, never silently | `quill/core/windows_dictation/removed_models.py`: Distil-Whisper small.en, Whisper small.en, Distil-Whisper medium.en, Whisper medium.en, Distil-Whisper large-v3 are gone from the catalogue and the model list. Whisper base.en and every multilingual Whisper size stay. Someone who was using one moves to Parakeet Unified if it is already downloaded, otherwise to the built-in model; nothing is downloaded. The next time dictation starts it says one sentence, once across every QuillVille program (recorded in `removed-model-notices.json` in the family's shared dictation folder): "Whisper small.en was removed in this release. Dictation now uses Parakeet Unified, which you already have." or "Whisper small.en was removed in this release, so dictation uses the built-in model. Parakeet Unified, in the model list, is more accurate." (with the model's own name). Downloaded files are not deleted; they stay in the shared models folder (`whisper-small.en-int8`, `whisper-distil-small.en-int8`, `whisper-medium.en-int8`, `whisper-distil-medium.en-int8`, `whisper-distil-large-v3-int8`). This replaces the plan's deprecate-for-one-release policy (dictation design section 32.6); the decision is section 37 of `docs/design/2026-10-05-dictation-plan-and-status.md` | Parakeet Unified 3.2% held-out against 5.9, 4.3, 6.3, 3.6 and 4.5; faster on one thread, in the same or a smaller memory tier |
 | Moonshine base hears phrases longer than about 8.5 seconds | Long phrases are cut into pieces of 8 seconds or less at the quietest moment and joined (PR #1683) | 5.9% held-out after the fix; before it, every recording over 8.5 seconds came back empty |
-| The user-facing documents tell the same story | User guide: "Better accuracy: optional speech models", new "How we chose: tested on real speech", rewritten "Nemotron or Parakeet: which should I try?", "Which engine should I choose?", "Which model for which recording"; release notes build 5; changelog Unreleased; announcement | The guide's tables are copied from the benchmark doc |
+| The user-facing documents tell the same story | User guide: "Better accuracy: optional speech models", new "How we chose: tested on real speech", rewritten "Nemotron or Parakeet: which should I try?", "Which engine should I choose?", "Which model for which recording"; release notes build 5; changelog 1.2.0; announcement | The guide's tables are copied from the benchmark doc |
 
 **Not settled by this run** (from the benchmark doc): a real 4 GB Windows computer with NVDA or JAWS running (B-8: speed, memory, screen-reader lag, battery) still needs a person; whether Whisper writes the opening "¿" and "¡" itself needs recordings with questions; Whisper medium and large-v3-turbo were too slow to re-run and keep their earlier figures.
+
+## Tables: making, reading and editing them, real tables in rich text (2026-10-25 and 2026-10-26)
+
+**Why.** QUILL Lite has read tables cell by cell since 2026-10-17 (*Word
+documents and table navigation*) but had no way to make one, and the arrows
+read a table badly: Up and Down landed somewhere in the next row and the screen
+reader read every cell of it as one line. In a rich document a table was rows
+of `|` characters, which Word, WordPad and a screen reader do not see as a
+table. QUILL had Insert Table; QUILL Lite did not. Both editors changed
+together, through shared code, so QUILL Lite is not ahead of QUILL (section
+2.2).
+
+| Requirement | Met by |
+|---|---|
+| Insert > Table on QUILL's key (rule 2) | `cmd_insert_table` on **Ctrl+Alt+T** (`quill/apps/lite_window_insert_table.py`), the same questions as QUILL (`quill/ui/table_shape_prompt.py`: columns 1 to 12, rows 1 to 50, header row) and the same builders (`quill/core/tagging.py`). Trim Trailing Spaces gives up Ctrl+Alt+T and takes QUILL's **Ctrl+Alt+R**. |
+| What is inserted follows the document | Rich text: a real RichEdit table (`quill/ui/richedit_tables.py`, one undo step through `EM_SETTEXTEX`). Markdown and plain text: `\|` rows. HTML: a `<table>` with `scope="col"` header cells. A caret mid-line gets a line break first. |
+| Real tables in rich text are readable by every feature | The rich surface hands features the aligned text (marks kept, one character per caret position); `quill/core/native_tables.py` finds the table around the caret and returns the same `TableGrid` a `\|` table gives. `quill/io/rtf_tables.py` loads `\|` rows as real tables, marks each table's first row as the header row on save, and gives `\|` rows back for Save as Word and the switch to Markdown or plain text. |
+| The arrows read a table cell by cell | `table_nav.arrow_move`, called from the typing path (`_table_arrow` in `quill/apps/lite_window_tables.py`): Up and Down to the cell above and below, Left at a cell's start and Right at its end to the neighbouring cell, arriving says the shape once. The key is consumed so the screen reader does not also read the row. No add-on or reader script. |
+| Tab and Shift+Tab move cell to cell; Tab in the last cell adds a row | `table_nav.tab_move`, whatever the Tab mode; a real table's new row goes through the rich surface. |
+| Rows and columns can be changed | Navigate > Table: Insert Row Below, Insert Column Right, Delete Row, Delete Column, Tidy Table (`quill/core/table_edit.py`), keyless as in Word, each one undo step. A real table is rebuilt from its cells in place: the text is kept, character formatting inside the cells is not (documented in the user guide). All six, with Insert Table, are refused under Read-Only Guard (`quill/core/lite/read_only.py`). |
+| Say only what changed | `table_nav._say_cell`: the column (with its header when the table has a header row), the row, or both. Entering and leaving by line movement ("Table, N rows, M columns", "Out of table") ride with Announce Headings, as in QUILL (`quill/apps/lite_window_headings.py`). |
+| A blank row is a row | The separator pattern needs a dash, so `\|  \|  \|` is no longer skipped. |
+
+**Not settled.** NVDA does not read RichEdit through UI Automation, so a UIA
+table layer cannot make the reader's own table commands work on a real table;
+the record is `docs/design/table-uia-spike-2026-10.md`. The arrows and the
+table keys are QUILL Lite's own answer meanwhile. Manual checks with JAWS, NVDA
+and Narrator are listed in `docs/qa/screen-reader-checks-2026-10.md`.
+
+## Help > What's New, and a menu bar with no document open (2026-10-25)
+
+**Help > What's New** (`cmd_whats_new`, `quill/apps/lite_updates.py`) opens the
+changelog as HTML in the browser through the family's shared
+`quill/ui/whats_new.py`. It is keyless in both editors, where Ctrl+Shift+F1 is
+the User Guide (keymap `help.whats_new`, rule 9): Alt+H, W. Every standalone
+app has the same row on Ctrl+Shift+F1.
+
+**With every document closed** the shell window's menu bar is built from the
+command table, filtered to `NO_DOCUMENT_COMMANDS`
+(`quill/apps/lite_shell_menu.py`): File (New, New Rich Text Document, New Plain
+Text Document, Open, Recent Documents, Reopen Last Session, Exit), Tools
+(Preferences, Keyboard Manager, Sound Scheme, Back Up Settings, Restore
+Settings) and Help (everything except Activity and Repeat Last Result). The
+labels, order and resolved keys are a document window's, a feature switched off
+in Customize Features stays off, and the handlers are the document window's
+own, run with the shell standing in (checked by
+`tests/unit/apps/test_lite_empty_window_menu.py`). Until 2026-10-25 the empty
+bar was File alone: New, Open and Exit.

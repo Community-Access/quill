@@ -244,12 +244,12 @@
 <main id="main-content" tabindex="-1">
 <h1 id="quill-lite--product-requirements">QUILL Lite — Product
 Requirements</h1>
-<p><strong>Version 1.2.0 (build 5) · Windows · MIT · part of the
+<p><strong>Version 1.2.0 (build 6) · Windows · MIT · part of the
 QuillVille family</strong></p>
-<p>Status, 2026-10-17: 1.2.0 is in beta for testers and not yet
+<p>Status, 2026-10-26: 1.2.0 is in beta for testers and not yet
 published; the last published version is 1.1.2 (1.0.0 was first released
-on 2026-09-25). Everything in the changelog’s Unreleased section is
-built and documented.</p>
+on 2026-09-25). Everything in the changelog’s 1.2.0 section, through
+build 6, is built and documented.</p>
 <h2 id="1-statement">1. Statement</h2>
 <p>QUILL Lite is QUILL with everything removed except the editor. One
 document per window, plain text or rich text, and nothing else.</p>
@@ -4806,9 +4806,9 @@ them</td>
 <p>Import / Convert always makes a new, untitled document that does not
 point back at the source; Ctrl+O opens the file itself, and only a
 <code>.docx</code> saves back to it. The user guide’s “Office files at a
-glance” carries this table in plain words, and the changelog’s
-Unreleased section has one consolidated entry for it instead of three
-written in build order.</p>
+glance” carries this table in plain words, and the changelog’s 1.2.0
+section has one consolidated entry for it instead of three written in
+build order.</p>
 <h2
 id="dictation-model-advice-from-real-speech-and-five-models-removed-2026-10-22">Dictation
 model advice from real speech, and five models removed (2026-10-22)</h2>
@@ -4935,8 +4935,7 @@ seconds came back empty</td>
 <td>User guide: “Better accuracy: optional speech models”, new “How we
 chose: tested on real speech”, rewritten “Nemotron or Parakeet: which
 should I try?”, “Which engine should I choose?”, “Which model for which
-recording”; release notes build 5; changelog Unreleased;
-announcement</td>
+recording”; release notes build 5; changelog 1.2.0; announcement</td>
 <td>The guide’s tables are copied from the benchmark doc</td>
 </tr>
 </tbody>
@@ -4947,6 +4946,126 @@ memory, screen-reader lag, battery) still needs a person; whether
 Whisper writes the opening “¿” and “¡” itself needs recordings with
 questions; Whisper medium and large-v3-turbo were too slow to re-run and
 keep their earlier figures.</p>
+<h2
+id="tables-making-reading-and-editing-them-real-tables-in-rich-text-2026-10-25-and-2026-10-26">Tables:
+making, reading and editing them, real tables in rich text (2026-10-25
+and 2026-10-26)</h2>
+<p><strong>Why.</strong> QUILL Lite has read tables cell by cell since
+2026-10-17 (<em>Word documents and table navigation</em>) but had no way
+to make one, and the arrows read a table badly: Up and Down landed
+somewhere in the next row and the screen reader read every cell of it as
+one line. In a rich document a table was rows of <code>|</code>
+characters, which Word, WordPad and a screen reader do not see as a
+table. QUILL had Insert Table; QUILL Lite did not. Both editors changed
+together, through shared code, so QUILL Lite is not ahead of QUILL
+(section 2.2).</p>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Met by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Insert &gt; Table on QUILL’s key (rule 2)</td>
+<td><code>cmd_insert_table</code> on <strong>Ctrl+Alt+T</strong>
+(<code>quill/apps/lite_window_insert_table.py</code>), the same
+questions as QUILL (<code>quill/ui/table_shape_prompt.py</code>: columns
+1 to 12, rows 1 to 50, header row) and the same builders
+(<code>quill/core/tagging.py</code>). Trim Trailing Spaces gives up
+Ctrl+Alt+T and takes QUILL’s <strong>Ctrl+Alt+R</strong>.</td>
+</tr>
+<tr>
+<td>What is inserted follows the document</td>
+<td>Rich text: a real RichEdit table
+(<code>quill/ui/richedit_tables.py</code>, one undo step through
+<code>EM_SETTEXTEX</code>). Markdown and plain text: <code>|</code>
+rows. HTML: a <code>&lt;table&gt;</code> with <code>scope="col"</code>
+header cells. A caret mid-line gets a line break first.</td>
+</tr>
+<tr>
+<td>Real tables in rich text are readable by every feature</td>
+<td>The rich surface hands features the aligned text (marks kept, one
+character per caret position); <code>quill/core/native_tables.py</code>
+finds the table around the caret and returns the same
+<code>TableGrid</code> a <code>|</code> table gives.
+<code>quill/io/rtf_tables.py</code> loads <code>|</code> rows as real
+tables, marks each table’s first row as the header row on save, and
+gives <code>|</code> rows back for Save as Word and the switch to
+Markdown or plain text.</td>
+</tr>
+<tr>
+<td>The arrows read a table cell by cell</td>
+<td><code>table_nav.arrow_move</code>, called from the typing path
+(<code>_table_arrow</code> in
+<code>quill/apps/lite_window_tables.py</code>): Up and Down to the cell
+above and below, Left at a cell’s start and Right at its end to the
+neighbouring cell, arriving says the shape once. The key is consumed so
+the screen reader does not also read the row. No add-on or reader
+script.</td>
+</tr>
+<tr>
+<td>Tab and Shift+Tab move cell to cell; Tab in the last cell adds a
+row</td>
+<td><code>table_nav.tab_move</code>, whatever the Tab mode; a real
+table’s new row goes through the rich surface.</td>
+</tr>
+<tr>
+<td>Rows and columns can be changed</td>
+<td>Navigate &gt; Table: Insert Row Below, Insert Column Right, Delete
+Row, Delete Column, Tidy Table (<code>quill/core/table_edit.py</code>),
+keyless as in Word, each one undo step. A real table is rebuilt from its
+cells in place: the text is kept, character formatting inside the cells
+is not (documented in the user guide). All six, with Insert Table, are
+refused under Read-Only Guard
+(<code>quill/core/lite/read_only.py</code>).</td>
+</tr>
+<tr>
+<td>Say only what changed</td>
+<td><code>table_nav._say_cell</code>: the column (with its header when
+the table has a header row), the row, or both. Entering and leaving by
+line movement (“Table, N rows, M columns”, “Out of table”) ride with
+Announce Headings, as in QUILL
+(<code>quill/apps/lite_window_headings.py</code>).</td>
+</tr>
+<tr>
+<td>A blank row is a row</td>
+<td>The separator pattern needs a dash, so <code>|  |  |</code> is no
+longer skipped.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Not settled.</strong> NVDA does not read RichEdit through UI
+Automation, so a UIA table layer cannot make the reader’s own table
+commands work on a real table; the record is
+<code>docs/design/table-uia-spike-2026-10.md</code>. The arrows and the
+table keys are QUILL Lite’s own answer meanwhile. Manual checks with
+JAWS, NVDA and Narrator are listed in
+<code>docs/qa/screen-reader-checks-2026-10.md</code>.</p>
+<h2
+id="help--whats-new-and-a-menu-bar-with-no-document-open-2026-10-25">Help
+&gt; What’s New, and a menu bar with no document open (2026-10-25)</h2>
+<p><strong>Help &gt; What’s New</strong> (<code>cmd_whats_new</code>,
+<code>quill/apps/lite_updates.py</code>) opens the changelog as HTML in
+the browser through the family’s shared
+<code>quill/ui/whats_new.py</code>. It is keyless in both editors, where
+Ctrl+Shift+F1 is the User Guide (keymap <code>help.whats_new</code>,
+rule 9): Alt+H, W. Every standalone app has the same row on
+Ctrl+Shift+F1.</p>
+<p><strong>With every document closed</strong> the shell window’s menu
+bar is built from the command table, filtered to
+<code>NO_DOCUMENT_COMMANDS</code>
+(<code>quill/apps/lite_shell_menu.py</code>): File (New, New Rich Text
+Document, New Plain Text Document, Open, Recent Documents, Reopen Last
+Session, Exit), Tools (Preferences, Keyboard Manager, Sound Scheme, Back
+Up Settings, Restore Settings) and Help (everything except Activity and
+Repeat Last Result). The labels, order and resolved keys are a document
+window’s, a feature switched off in Customize Features stays off, and
+the handlers are the document window’s own, run with the shell standing
+in (checked by
+<code>tests/unit/apps/test_lite_empty_window_menu.py</code>). Until
+2026-10-25 the empty bar was File alone: New, Open and Exit.</p>
 </main>
 </body>
 </html>

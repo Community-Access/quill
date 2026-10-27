@@ -189,9 +189,8 @@ def test_imported_table_navigates_after_the_rich_edit_rtf_round_trip(tmp_path: P
 
     assert grid is not None
     assert (grid.row_count, grid.col_count) == (2, 2)
-    assert table_nav.move(grid, text.index("Depth"), "up").announcement == (
-        "Row 1 of 2, column 1 of 2: Metric"
-    )
+    # Only what changed is said (the row, or the column), never the unchanged half.
+    assert table_nav.move(grid, text.index("Depth"), "up").announcement == "Row 1: Metric"
     assert table_nav.move(grid, text.index("Metric"), "next").announcement == (
-        "Row 1 of 2, column 2 of 2: Size | Units"
+        "Column 2: Size | Units"
     )

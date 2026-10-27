@@ -187,14 +187,14 @@ def test_a_failing_text_object_model_falls_back_to_silence_not_a_crash() -> None
     assert win.announcements == []
 
 
-def test_quilllite_never_announces_a_table() -> None:
-    # Accessible table navigation is a full-QUILL feature. Announcing the edge
-    # of a grid the small editor cannot navigate advertises what is not there.
+def test_quilllite_announces_a_table_as_quill_does() -> None:
+    # QUILL Lite navigates tables now (Navigate > Table, 2026-10-17), so entering
+    # one says so, once -- and moving inside it says nothing more.
     win = _Window()
     win.at("Section")
     win.at("| a | b |")
     win.at("| c | d |")
-    assert all("Table" not in said for said in win.announcements)
+    assert win.announcements == ["Table, 2 rows, 2 columns"]
 
 
 def test_a_reset_makes_the_next_position_silent() -> None:

@@ -166,6 +166,16 @@ def build_menu_bar(host: Any, *, title: str, version: str) -> None:
     _add(host, help_menu, "&Tutorials...\tCtrl+Alt+F1", host.open_transcribe_tutorials)  # D-25
     setup = title.replace("Transcribe", "T&ranscribe")
     _add(host, help_menu, f"Set Up {setup}...\tCtrl+Alt+S", host.open_setup)
+    # The changelog in the browser, on the key every standalone QuillVille app
+    # gives it (quill.ui.whats_new).
+    from quill.ui.whats_new import open_whats_new
+
+    _add(
+        host,
+        help_menu,
+        "&What's New\tCtrl+Shift+F1",
+        lambda: open_whats_new("transcribe", title, host._announce),
+    )
     updates_id = _add(host, help_menu, "Check for &Updates...\tCtrl+Alt+U", host.check_for_updates)
     from quill.ui.updates.shell import append_release_channel_item
 

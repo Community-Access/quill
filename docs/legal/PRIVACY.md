@@ -1,38 +1,64 @@
 # Privacy Statement
 
-This document describes how QUILL handles privacy for local and AI-assisted workflows.
+This statement covers QUILL and every app in the QuillVille family: QUILL Lite, Quill Radio, QUILL Cast, QUILL Studio, Quill Weather, Quill Inkwell, Quill Converter, QUILL Transcribe, QuillBeacon, Quill Media Player and QUILL Social. Where it says QUILL, it means all of them unless it names one.
 
 ## Core privacy commitments
 
 1. QUILL is local-first by design. Your documents stay on your computer; nothing you write, dictate or record is sent anywhere unless you choose an action that sends it.
 2. QUILL does not persist AI chat session transcripts by default.
-3. **QUILL contains no tracking, analytics, advertising or usage reporting of any kind, and no identifier for your copy or your machine.** There is nothing that reports that you installed it, opened it, or what you did in it.
+3. **QUILL contains no tracking, analytics or advertising, and nothing reports that you installed it, opened it, or what you did in it.** The one exception is QUILL's free AI service, which is off until you turn it on: connecting a computer to it creates an account with no name on it (a device token, shown to you as a Support ID), and the service records how many requests that account makes, how big they were, which features you used and what they cost. It never records what you wrote or what came back. See "QUILL's free AI service" below.
 4. QUILL does not store document content in API-key storage or credential vault records.
 5. A few features do contact the internet before you press anything, and they are listed under "Network requests you did not press a button for" below. QUILL used to claim here that it sent no network request without explicit user action; that was not true of every app in the family, and an unverifiable promise is worth less than an accurate list.
 
 ## Network requests you did not press a button for
 
-Every one of these can be switched off, and all of them are off in Safe Mode
-(`--safe-mode`).
+Every one of these can be switched off. In QUILL itself, Safe Mode (`--safe-mode`)
+turns all of them off. In the other apps Safe Mode turns off everything except
+the update check, which still runs on its own schedule.
 
 | What | Where it goes | Default | Switch |
 |---|---|---|---|
-| Update check at launch | `api.github.com` -- asks for the list of releases; sends no version, account or machine detail | On | *Check for updates on launch*, in Preferences (each app has its own) |
-| Quill Radio's station-catalogue refresh | `radio-browser.info` (and SomaFM) -- refreshes the local catalogue when the copy on disk is over six hours old, at launch and then daily | On | *Keep a local station catalogue* and *Check for station catalogue updates when Quill Radio starts* |
+| Update check, at most once a day at launch | `community-access.github.io` (a signed list of releases), falling back to `api.github.com`. The request carries a generic User-Agent and no version, account or machine detail. On the Beta and Dev release channels, an update it finds is also downloaded in the background; it is never installed without asking | On | In each app's Preferences, under a name of its own: for example *Check for updates on startup* in QUILL, *Look for updates when QUILL Lite starts* in QUILL Lite |
+| Quill Radio's station-catalogue refresh | `radio-browser.info`, SomaFM and the Icecast directory (`dir.xiph.org`) -- refreshes the local catalogue when the copy on disk is over six hours old, at launch and then daily | On | *Keep a local station catalogue* and *Check for station catalogue updates when Quill Radio starts* |
 | Quill Radio's community play count | `radio-browser.info` -- when you play one of that directory's own stations, tells it so; sends the station's id and nothing about you | On | *Share play counts with the RadioBrowser directory* |
 | Quill Radio's now-playing title | The station you are already listening to -- re-reads the current track title every 30 seconds. No third party is involved | On while playing | Stops with playback |
 | Quill Radio's stream recovery | The failing station's own website, plus its provider's public address service -- only after a stream fails to play, once per station per session | On | *Recover failed streams from the station's website* |
+| Quill Weather's alert watch | `api.weather.gov` -- checks the alerts for your saved locations every 10 minutes, and every minute while an alert is active; it keeps running in the tray after the window closes | On in the Quill Weather app once you add a location (off in the editor's weather features) | *Start Monitoring* / *Stop Monitoring* |
+| QUILL Social's timelines and feeds | Each account's own server (Mastodon, Bluesky) at launch, and each RSS feed you follow, by default every 15 minutes; posts you scheduled are published at their time | On for the accounts and feeds you added | Remove the account or feed. QUILL Social has no Safe Mode, and its RSS requests name the app and its version in the User-Agent |
 | Quill Radio's new-video check | `youtube.com` -- for each channel you asked to be told about, reads its five newest uploads on the podcast refresh schedule; sends nothing about you unless you turned on the browser sign-in | Off (per channel) | *Notify Me About New Videos* on the channel |
 
 Everything else -- every directory search, every AI request, every file
-transfer, every podcast feed -- happens because you asked for it.
+transfer, every podcast feed -- happens because you asked for it, or because
+you set a schedule yourself. Those schedules are all off until you set them:
+checking podcasts for new episodes, downloading new episodes automatically,
+and Quill Radio's resume-on-launch. Opening a window can also fetch what it
+shows: Quill Radio's Browse Stations loads its directories, Weather Now
+refreshes the forecast, and the free AI windows ask the service for your
+remaining allowance.
 
-Every outbound call site in QUILL is inventoried in a build gate
+Every outbound call site in the apps built from the `quill` package -- every app
+except QUILL Social, which has its own code base -- is inventoried in a build gate
 (`quill/tools/network_egress_audit.py`): a new network call that is not
 reviewed and listed fails the build. That is the mechanism this statement rests
 on, rather than a promise to be careful.
 
 ## AI interaction data
+
+### QUILL's free AI service
+
+The free AI help in QUILL and QUILL Lite is off until you turn it on and agree to
+what it sends. When you use it, the passage you ask about (or a few excerpts
+QUILL picks on your computer, or only your question) goes over an encrypted
+connection to QUILL's own service at `ai.community-access.org`, and from there
+to OpenAI, which writes the answer. Connecting a computer creates an account
+with no name on it; its token is kept in Windows Credential Manager. The service
+keeps how many requests the account made, how big they were, which features
+were used and what they cost, and nothing else: not what you wrote, not what
+came back, not your name or email address. What OpenAI keeps is set by OpenAI's
+own terms. If you use your own AI provider account instead, QUILL's service is
+never involved.
+
+### Other AI providers
 
 When you use cloud AI providers, the prompt content you choose to send is transmitted to that provider. Provider-side storage, retention, and policy behavior are controlled by that provider's terms and settings, not QUILL.
 
@@ -43,7 +69,11 @@ QUILL does not persist Ask Quill chat transcripts or Writing Assistant interacti
 Dictation in QUILL and QUILL Lite recognises your speech on your own computer.
 The microphone opens only while dictation is on, or, if you switched on the
 wake phrase, while QUILL is the window in front. No recording is kept, and
-nothing is sent anywhere, with one exception that you have to choose.
+nothing is sent anywhere unless you choose a cloud speech engine: OpenAI with
+your own key (below), or one of the providers on the Speech Providers page
+(for example Azure, Google, Amazon, Deepgram, AssemblyAI, Speechmatics,
+ElevenLabs, Gladia, Rev.ai, Groq, Mistral and IBM). Each asks first, the answer
+is No unless you choose Yes, and all of them are refused in Safe Mode.
 
 **OpenAI dictation, with your own key** (added October 2026). If you save your
 own OpenAI key in Use My Own AI Key and then choose OpenAI as the dictation
@@ -84,7 +114,7 @@ ChatGPT subscription, only when you press it.
 
 ## Key and credential handling
 
-QUILL stores API keys using Windows Credential Manager when available. If Credential Manager is unavailable, QUILL falls back to DPAPI-encrypted local secret storage.
+Installed copies keep API keys and sign-in tokens in Windows Credential Manager. Portable copies keep them in a DPAPI-encrypted `keys.enc` file in the portable folder, so they travel with it and can only be read by your Windows account. A key can also come from an environment variable you set yourself. If an installed copy cannot reach Credential Manager, the key is not saved at all; QUILL does not fall back to another store.
 
 QUILL does not store API keys in plaintext.
 
@@ -101,15 +131,13 @@ These files are local to your machine and are not uploaded by default.
 
 ### Developer Console history
 
-If you use the QUILL Developer Console (QDC), each command you run is appended to a `history.jsonl` file in the app-data directory (up to 500 entries; oldest are removed first). Entries are passed through QUILL's redaction layer before being written, so API keys and tokens that match known patterns (GitHub PATs, OpenAI keys, AWS access keys, Slack tokens, and long alphanumeric tokens) are replaced with `[TOKEN]` in the history file.
+If you use the QUILL Developer Console (QDC), each command you run is appended to `console\history.jsonl` in the app-data directory (up to 500 entries; oldest are removed first). Entries are passed through QUILL's redaction layer before being written, so API keys and tokens that match known patterns (GitHub PATs, OpenAI keys, AWS access keys, Slack tokens, and long alphanumeric tokens) are replaced with `[TOKEN]`, web tokens (JWTs) with `[JWT]`, and a user name and password written into a web address are removed.
 
 If you believe sensitive data was stored before the redaction layer was active, you can delete the `history.jsonl` file from the app-data directory manually.
 
 ### GitHub temporary files
 
-When you open a file from a GitHub repository using **File > Open from Remote**, QUILL downloads the file into a `github-temp` subdirectory of the app-data folder. These files are not automatically deleted when you close the tab or exit QUILL.
-
-If you work with private repositories, review the `github-temp` directory periodically and delete files you no longer need. The directory is local to your machine and is not shared or uploaded.
+When you open a file from a GitHub repository using **File > Open from Remote** (GitHub Repository or GitHub File URL), QUILL downloads the file into a `github-temp` subdirectory of the app-data folder. When you exit QUILL, it deletes every file there that is not still open in a tab. The directory is local to your machine and is not shared or uploaded.
 
 ### Read Document in Browser (experimental)
 
@@ -130,6 +158,13 @@ Quill Radio uses YouTube API Services. By using its YouTube features you agree t
 **Connect YouTube Account** (the official Google sign-in, when it is available). You sign in on Google's own page in your browser. QUILL asks Google for permission to read the channels and playlists you follow, and only if you then use a feature that needs it, to post comments, replies and live chat messages you write, to subscribe or unsubscribe, to rate videos, and to add videos to your playlists. QUILL does these things only when you press the button for them. The permission Google gives QUILL is kept in Windows' secure credential store, never in QUILL's own files and never on any server. QUILL has no servers that receive your data, and what it reads from YouTube stays on your computer. Disconnect YouTube Account forgets the sign-in on your computer and also removes QUILL's access at Google. You can also remove QUILL's access at any time from your Google account at <https://myaccount.google.com/permissions>.
 
 QUILL's use of information received from Google APIs adheres to the [Google API Services User Data Policy](https://developers.google.com/terms/api-services-user-data-policy), including the Limited Use requirements.
+
+## Support messages
+
+Help > Get Help from Support in each app prepares an email to
+support@community-access.org in your own mail program, with the app's version
+and your Windows version filled in so you can read them first. QUILL sends
+nothing itself; the message goes only if you send it.
 
 ## User responsibility
 

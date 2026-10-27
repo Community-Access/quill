@@ -57,8 +57,8 @@ The chapters follow the order you are likely to want things.
    editing Word documents, how saving keeps your file exactly as it was,
    getting your work back after a crash, reopening last time's documents, and
    printing.
-4. **Chapter 4: Moving around a document.** Find, Go To, reading a table cell
-   by cell, bookmarks, and getting back to where you were.
+4. **Chapter 4: Moving around a document.** Find, Go To, making a table and
+   reading it cell by cell, bookmarks, and getting back to where you were.
 5. **Chapter 5: Selecting, copying and changing text.** Better ways to
    select, more than one thing on the clipboard, working on whole lines, and
    undo.
@@ -1260,8 +1260,17 @@ well, as for any file.
 
 #### Tables
 
-A Word table arrives as rows of cells divided by `|`, with a row of dashes
-under the header row:
+A Word document you edit as rich text keeps its tables as **real tables**: a
+grid on screen, which your screen reader sees as a table. The arrow keys,
+**Tab** and **Navigate > Table** read and change them one cell at a time (see
+"Moving through a table" and "Editing a table"). When you save, each one is a
+real Word table again, its first row marked as the header row. Add a row with
+**Tab** in the last cell or **Navigate > Table > Insert Row Below**, and a
+column with **Insert Column Right**.
+
+A Word document opened for reading and plain editing is text, so there a table
+arrives as rows of cells divided by `|`, with a row of dashes under the header
+row:
 
 ```
 | Name | Role |
@@ -1269,13 +1278,11 @@ under the header row:
 | Ann | Lead |
 ```
 
-When you save, each block of rows like that becomes a real Word table again,
-its first row marked as the header row. Add a row by typing a new line in the
-same shape; add a column by adding a `|` and a cell to every row.
+The same table keys read it cell by cell.
 
 To read a table cell by cell, use **Navigate > Table** (see *Moving through a
 table* in Chapter 4). For example, with the cursor on "Name", **Ctrl+Alt+Down**
-says "Row 2 of 2, column 1 of 2: Ann".
+says "Row 2: Ann".
 
 #### Saving
 
@@ -2218,12 +2225,35 @@ If you already know which kind you want, there are quicker keys.
 straight to the heading list. **Ctrl+G** is the one to press when you are not
 sure.
 
+### Making a table
+
+**Insert > Table...** (**Ctrl+Alt+T**, the same key as in QUILL) asks three
+questions: how many columns (1 to 12), how many rows (1 to 50), and whether
+the first row is a header row. Then it puts the table on lines of its own and
+leaves the cursor in the first cell, ready to type.
+
+What you get depends on the kind of document:
+
+- In a **rich text** document (**Alt+Shift+F** switches to it), the table is a
+  **real table**: a grid on screen, with no `|` characters anywhere, which
+  your screen reader, Word and WordPad all see as a table. Its first row is
+  the header row when you asked for one. Save the document as `.rtf` or as a
+  Word document and it stays a real table, the header row marked so a screen
+  reader in Word announces the column headers.
+- In a **Markdown** or **plain text** document, the table is rows of cells
+  divided by `|`, the shape described below.
+- In an **HTML** document, the table is a real `<table>`, with its header
+  cells marked so a screen reader in a browser announces each cell's column.
+
+Either way the table keys work on it at once.
+
 ### Moving through a table
 
-A table in a document is rows of cells divided by `|`: every Markdown table,
-and every table in a Word document you open (see *Word documents* in
-Chapter 3). **Navigate > Table** reads one cell at a time and tells you where
-you are, on the same keys as QUILL:
+**Navigate > Table** works on every table QUILL Lite shows: a real table in
+rich text (every table you make there, and every table in a Word or RTF
+document you open as rich text), and rows of cells divided by `|` in Markdown
+and plain text. It reads one cell at a time and tells you where you are, on
+the same keys as QUILL:
 
 | Key | Command | What it does |
 |---|---|---|
@@ -2237,8 +2267,10 @@ you are, on the same keys as QUILL:
 | **Ctrl+Alt+End** | Last Cell | The last cell of the table |
 
 Each move puts the cursor at the start of the cell's text and says the cell's
-place, then its text: "Row 2 of 4, column 3 of 5: Lead". An empty cell is
-"blank". The row of dashes under the header row is skipped; it is not a row
+place, then its text -- but only the part that changed. Moving along a row
+says the column, "Column 3: Lead"; moving down a column says the row, "Row
+4: Lead"; a jump to another row and column says both. The table's size is
+said once, when you arrive in it. An empty cell is "blank". The row of dashes under the header row is skipped; it is not a row
 you read.
 
 At an edge the cursor stays where it is and you hear why: "No more cells" at
@@ -2256,15 +2288,52 @@ For example, in this table:
 | Bo | Tester |
 ```
 
-put the cursor on "Name" and press **Ctrl+Alt+Down**: you hear "Row 2 of 3,
-column 1 of 2: Ann". Press **Alt+End**: "Row 2 of 3, column 2 of 2: Lead".
-Press **Ctrl+Alt+End**: "Row 3 of 3, column 2 of 2: Tester". Press
-**Ctrl+Alt+Right**: "No more cells, end of table".
+put the cursor on "Name" and press **Ctrl+Alt+Down**: you hear "Row 2:
+Ann". Press **Alt+End**: "Column 2, Role: Lead" -- a new column says its
+header, because this table has a header row. Press **Ctrl+Alt+End**: "Row 3:
+Tester" (the same column, so neither the column nor its header is repeated). Press **Ctrl+Alt+Right**: "No more cells, end
+of table".
+
+**The arrow keys read a table cell by cell.** Inside a table, **Up** and
+**Down** go to the cell above and below in the same column and say it, "Row
+3: Ann", instead of the screen reader reading the whole row as one line.
+**Right** at the end of a cell's text goes to the next cell, and **Left** at
+its start to the end of the cell before, "Column 2, Role: Lead"; inside a
+cell's text they move letter by letter as always. **Down** from the line above
+a table lands in its first cell and says its shape once, "Table, 3 rows, 2
+columns. Name"; **Up** past the first row or **Down** past the last leaves
+the table, and you hear "Out of table". Shift with the arrows still selects.
+This works the same with JAWS, NVDA and Narrator, in rich text and in `|`
+tables, with nothing to install. JAWS keeps **Ctrl+Alt** with the arrows for
+its own table commands, so with JAWS use the arrows, **Tab** and the
+**Navigate > Table** menu.
+
+The shape and "Out of table" go with **Announce Headings** in the View menu.
 
 A cell whose own text contains a `|` is written `\|` and read as the `|` it
 stands for, so it never makes an extra column. If your screen reader uses
 **Ctrl+Alt** with the arrow keys for its own table commands, it may answer
 these keys first in some modes; the menu rows always work.
+
+### Editing a table
+
+- **Tab** and **Shift+Tab** move to the next and previous cell, on to the next
+  row at the end of one, as in Word. **Tab** in the very last cell adds a row
+  and puts you in its first cell. Outside a table, Tab works as it always has.
+- **Navigate > Table** also has **Insert Row Below**, **Insert Column Right**,
+  **Delete Row**, **Delete Column** and **Tidy Table**, the same as in QUILL.
+  Each is one Undo and says what it did, such as "Added row 3" or "Deleted
+  column 2, Role. 1 columns left". Tidy Table pads every cell to its column's
+  widest, so the columns of a `|` table line up on screen; a real table
+  already lines up, and says so.
+- In a real table, adding or deleting a row or a column rebuilds the table
+  with its text in place. Bold, italic or a font *inside* its cells does not
+  survive that rebuild; type the formatting after the table has its shape.
+
+A real table in rich text is saved as a real table: in an `.rtf` file with its
+first row marked as the header row, and in a Word document the same way. A
+`|` table in a Markdown document you switch to rich text becomes a real table,
+and switching back to Markdown or plain text turns a real table into `|` rows.
 
 ### Reading without changing anything: the Read-Only Guard
 
@@ -2284,8 +2353,10 @@ While it is on:
 - Typing, **Backspace**, **Delete**, **Enter** and pasting do nothing.
 - Commands that would change the text say "Document is read-only" and change
   nothing. That covers cutting, pasting, undo and redo, everything in
-  **Edit > Lines**, the **Insert** menu, the formatting commands, changing
-  case and indenting, Snippets, and a word tool's **Replace**.
+  **Edit > Lines**, the **Insert** menu (Insert Table too), the row and column
+  commands on **Navigate > Table**, the formatting commands, changing case and
+  indenting, Snippets, and a word tool's **Replace**. The table keys and the
+  arrows still move through a table.
 - Everything you use to read still works: the arrow keys and every way of
   moving, **Find** (**Ctrl+F**), **Go To** (**Ctrl+G**), the headings list,
   selecting and copying, Say Selection, the dictionary and the thesaurus
@@ -2719,7 +2790,9 @@ To clean up:
   counts as empty. This is great for text from a web page that arrives
   double-spaced, but you probably do not want it on a letter.
 - **Remove Duplicate Lines** (**Ctrl+Alt+D**) keeps one copy of each line.
-- **Trim Trailing Spaces** (**Ctrl+Alt+T**) removes spaces at the ends of lines.
+- **Trim Trailing Spaces** (**Ctrl+Alt+R**) removes spaces at the ends of lines.
+  It was Ctrl+Alt+T until version 1.2.0; that key is now Insert Table, as it
+  is in QUILL.
 - **Tidy Whitespace** (**Ctrl+Alt+Shift+T**) shrinks runs of spaces and tabs,
   the kind that often come along with pasted text.
 
@@ -3364,6 +3437,7 @@ The Insert menu is for anything you put into your document other than typing.
 | **Ctrl+Shift+F2** | Special Character: 357 of them, in 15 groups, searchable by name or code point |
 | **Alt+.** | Emoji: search or browse, with a description of each one |
 | **Shift+Enter** | A line break that does not start a new paragraph |
+| **Ctrl+Alt+T** | Table: the columns and rows you ask for, a real table in rich text (see "Making a table") |
 | **Ctrl+Alt+I** | Markdown Tag: everything Markdown can write (Markdown documents only) |
 | **Ctrl+Alt+O** | HTML Tag: 111 tags and 20 whole form fields, searchable by what they do |
 
@@ -8723,6 +8797,27 @@ Help > About shows your version with a build number, such as 1.2.0 (build 5). Th
 build number tells you which build of a version you have: when a fix comes out
 without a new version number, it is a newer build, and Check for Updates offers it.
 
+#### What changed: Help > What's New
+
+**Help > What's New** (press **Alt+H**, then **W**) opens QUILL Lite's
+changelog in your web browser: every change, newest first. It has no shortcut
+key, as in QUILL, because you read it once after an update rather than every
+day. Every app in the QUILL family has the same item in its Help menu; in the
+apps other than the two editors it is on **Ctrl+Shift+F1**.
+
+#### With every document closed
+
+If you close the last document, QUILL Lite's window stays open with a full
+menu bar of what works without a document: **File** (New, New Rich Text
+Document, New Plain Text Document, Open, Recent Documents, Reopen Last Session
+and Exit), **Tools** (Preferences, the Keyboard Manager, the Sound Scheme and
+backing up or restoring your settings) and **Help** (Help for This Window,
+Tutorials, Keyboard Shortcuts, Get Help from Support, Check for Updates,
+Release Channel, What's New and About). The keys are the same ones the
+document windows use, including any you have changed, and a feature you
+switched off in Customize Features is off here too. Activity and Repeat Last
+Result need a document window.
+
 #### When there is a new version
 
 If there is something newer, the window opens on the release notes for that
@@ -9204,6 +9299,20 @@ keys that explain where you are: **F1**, **F6** and **Ctrl+F1**.
 After this chapter comes the Keyboard reference: every key QUILL Lite has,
 menu by menu.
 
+## Licences and notices
+
+QUILL Lite is free and released under the MIT License. It also includes software,
+data and sounds from other projects, each under its own licence.
+
+To read them, open the Help menu, choose About QUILL Lite, and then choose the
+Licences and Notices button. The list opens as a plain text file, with one
+heading for each component: what it is, its licence, who holds the copyright
+and what the licence asks of us. The full licence texts are at the end.
+
+The same file, THIRD-PARTY-NOTICES.txt, and QUILL Lite's own licence, LICENSE.txt,
+are also in the folder where QUILL Lite is installed or unpacked, so you can open
+them without starting the app.
+
 ## Keyboard reference
 
 This is every key QUILL Lite has, grouped by menu, the same way the menus are
@@ -9291,7 +9400,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Alt+Shift+N** | Number Lines |
 | **Ctrl+Alt+K** | Remove Every Blank Line |
 | **Ctrl+Alt+D** | Remove Duplicate Lines |
-| **Ctrl+Alt+T** | Trim Trailing Spaces |
+| **Ctrl+Alt+R** | Trim Trailing Spaces |
 | **Ctrl+/** | Toggle Line Comment |
 | **Ctrl+Shift+Q** | Quote Lines |
 | **Alt+Shift+.** | Remove Quote Marks |
@@ -9367,6 +9476,7 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Alt+.** | Emoji... |
 | **Shift+Enter** | Line Break |
 | **Ctrl+K** | Link... |
+| **Ctrl+Alt+T** | Table... |
 | **Ctrl+Alt+I** | Markdown Tag... |
 | **Ctrl+Alt+O** | HTML Tag... |
 
@@ -9452,6 +9562,11 @@ what is actually bound. **Ctrl+F1** shows this list inside the app.
 | **Alt+End** | Last Cell in Row |
 | **Ctrl+Alt+Home** | First Cell |
 | **Ctrl+Alt+End** | Last Cell |
+
+Insert Row Below, Insert Column Right, Delete Row, Delete Column and Tidy
+Table are on the same submenu with no keys, as in Word. In a table, the arrow
+keys also move cell by cell, and **Tab** and **Shift+Tab** move to the next and
+previous cell.
 
 #### Bookmarks (in Navigate)
 

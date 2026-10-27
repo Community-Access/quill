@@ -19,7 +19,7 @@ from quill.apps import radio_preferences_listening, radio_preferences_load
 from quill.apps import radio_preferences_rows as rows
 from quill.apps.radio_preferences_load import PreferencesDataLoad, podcast_schedule_help
 from quill.core.radio import main_view, reminders
-from quill.ui import app_sounds
+from quill.ui import app_sounds, slider_keys
 
 
 def _open_data_folder(app: Any) -> None:
@@ -365,6 +365,8 @@ def open_preferences(app: Any) -> None:
             # Where Quill Radio's own sounds play (ui/app_sounds), one window
             # for the whole family.
             app_sounds.preference_action(app),
+            # Which way the arrow keys move a slider, for the whole family.
+            slider_keys.preference_action(app),
             PreferenceAction(
                 "Reset &All Stations' Sound Enhancements...",
                 "Reset all stations' Sound Enhancements to the shared default",

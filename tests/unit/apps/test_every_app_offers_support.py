@@ -76,7 +76,8 @@ def test_beacon_and_quilllite_have_it_too() -> None:
     """Neither is in APP_NAMES -- one is a browser companion, the other the
     editor-only sibling -- and both are somebody's whole experience of Quill."""
     assert "Get Help from &Support" in _source("quill/apps/beacon/app.py")
-    assert "cmd_get_help_from_support" in _source("quill/core/lite/commands.py")
+    # QUILL Lite's Help rows live in commands_help.py since 2026-10-25 (GATE-11).
+    assert "cmd_get_help_from_support" in _source("quill/core/lite/commands_help.py")
 
 
 def test_every_launchable_app_is_accounted_for() -> None:

@@ -190,6 +190,20 @@ UNBOUND_WITH_REASON: dict[str, str] = {
     "Alt+F4 -- a dialog, a separate Quill Radio window -- and rule 4 fixes "
     "destructive habits first. Rule 9: once a year needs a way in, not a short "
     "chord; Help > Release Channel... and the Preferences row are it.",
+    **{
+        command: "Reached another way: the Table submenu, in both editors, and as in Word, "
+        "which has no keys for these either; Tab in a table's last cell adds a row."
+        for command in (
+            "table.insert_row_below",
+            "table.insert_column_right",
+            "table.delete_row",
+            "table.delete_column",
+            "table.tidy",
+        )
+    },
+    "help.whats_new": "Reached another way: Help > What's New, in both editors. No chord "
+    "is free in both -- Ctrl+Shift+F1, the standalone apps' What's New, is the User "
+    "Guide here -- and rule 9 asks a once-per-update read for a way in, not a chord.",
 }
 
 

@@ -220,3 +220,37 @@ def test_every_new_kind_is_registered_with_the_browse_tree() -> None:
 
     for kind in more.HANDLERS:
         assert browse_sources.is_expandable(f"{kind}:x"), kind
+
+
+# -- channels A to Z (asked for on QUILLVille, 2026-10-26) -----------------------
+
+
+def test_followed_channels_are_listed_a_to_z(quill_data_dir, recorded) -> None:
+    from quill.core.radio import browse_yours
+    from quill.core.radio import youtube_channels as yt
+
+    store = yt.ChannelStore()
+    for url, name in (
+        ("https://www.youtube.com/@zed", "Zed Talks"),
+        ("https://www.youtube.com/@apple", "apple news"),
+        ("https://www.youtube.com/@mid", "Middle Radio"),
+    ):
+        store.add(url, name)
+    labels = [n.label for n in browse_yours.browse_youtube([], safe_mode=False)]
+    channels = [label for label in labels if label in {"Zed Talks", "apple news", "Middle Radio"}]
+    assert channels == ["apple news", "Middle Radio", "Zed Talks"]  # case does not matter
+
+
+def test_your_channels_from_youtube_are_listed_a_to_z(signed_in, recorded) -> None:
+    answers, _asked = recorded
+    answers[more.CHANNELS_PAGE] = {
+        "entries": [
+            {"id": "UCz", "url": "https://www.youtube.com/channel/UCz", "title": "Zed Talks",
+             "ie_key": "YoutubeTab"},
+            {"id": "UCa", "url": "https://www.youtube.com/channel/UCa", "title": "apple news",
+             "ie_key": "YoutubeTab"},
+        ]
+    }  # fmt: skip
+    labels = [n.label for n in more.browse_my_channels([], safe_mode=False)]
+    assert len(labels) == 2
+    assert labels == sorted(labels, key=str.casefold)

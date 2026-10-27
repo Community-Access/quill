@@ -444,6 +444,8 @@ class DictationController(
         heard_words = [word.display for word in phrase.words]
         heard = wake_words(" ".join(heard_words))
         used = match_wake(heard, preferences.wake_phrase)
+        # What the engine wrote: how a wake phrase that never wakes can be seen.
+        _trace("standby: heard %r, wake phrase %s", " ".join(heard_words), used is not None)
         if used is None:
             return  # not for us: dropped, never written, never kept
         if self.on_wake is not None:
@@ -452,11 +454,12 @@ class DictationController(
         if not self.active:
             return
         # The rest of the phrase is dictation: skip the words the wake phrase used.
+        # Counted as match_wake counts: "Quill-dictate" is two (split_phrase).
         remainder: list[str] = []
         counted = 0
         for word in heard_words:
             if counted < used and wake_words(word):
-                counted += 1
+                counted += len(wake_words(word))
                 continue
             remainder.append(word)
         if remainder:

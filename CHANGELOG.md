@@ -9,6 +9,133 @@
 
 ## 1.0.0
 
+### Tables, What's New and sliders: the latest work (2026-10-25 and 2026-10-26)
+
+This block gathers the last two days of work by theme. Earlier table work is
+under "Word editing shared with QUILL Lite; two Word round-trip fixes; table
+navigation in QUILL Lite (2026-10-17)" further down.
+
+#### Tables
+
+- **Real tables in rich text** (2026-10-26). In a rich text document a table
+  is now a real table, RichEdit's own: a grid on screen, with no `|`
+  characters, that a screen reader, Word and WordPad all read as a table. This
+  works the same in QUILL and QUILL Lite. **Insert > Insert Table...**
+  (`Ctrl+Alt+T`) puts one at the caret as one undo step. A Word or RTF
+  document's tables open as real tables, and a `|` table in a Markdown document
+  switched to rich text becomes one. Saved as `.rtf` or Word, a real table
+  stays a table with its first row marked as the header row; switching back to
+  Markdown or plain text turns it into `|` rows. This replaces the earlier
+  limit, recorded further down this changelog, that a table saved to RTF was
+  readable pipe text rather than a real RTF table.
+- **Insert Table, one set of questions in both editors** (2026-10-25). Columns
+  (1 to 12), rows (1 to 50) and whether the first row is a header, asked the
+  same way in QUILL and QUILL Lite; a number out of range is answered with the
+  range and asked again. An HTML document gets a real `<table>` whose header
+  cells are marked `scope="col"`, so a screen reader announces the column for
+  each cell; Markdown and plain text get `|` rows. QUILL Lite gained Insert
+  Table on QUILL's `Ctrl+Alt+T`, and its Trim Trailing Spaces moved to QUILL's
+  `Ctrl+Alt+R`, so the two keys now mean the same in both editors.
+- **The arrows read a table cell by cell** (2026-10-26), in both editors and
+  in rich text and `|` tables alike. **Up** and **Down** move to the cell above
+  and below in the same column and say it; **Right** at the end of a cell's
+  text and **Left** at its start step to the next or previous cell; inside a
+  cell's text they move letter by letter as always. **Down** onto a table lands
+  in its first cell and says its shape once; moving past the first or last row
+  leaves the table with "Out of table". Shift with the arrows still selects.
+  QUILL consumes the key, so the screen reader does not also read the whole
+  row. There is no add-on or reader script: JAWS, NVDA and Narrator alike. JAWS
+  keeps `Ctrl+Alt` with the arrows for its own table commands, so with JAWS use
+  the arrows, Tab and the Navigate > Table menu.
+- **Tab and Shift+Tab move cell to cell** (2026-10-25), on to the next row at
+  the end of one, as in Word; **Tab** in the very last cell adds a row and
+  lands in its first cell, in a real table and a `|` table alike.
+- **Editing a table** (2026-10-25). **Insert Row Below**, **Insert Column
+  Right**, **Delete Row**, **Delete Column** and **Tidy Table**, each one undo
+  step that says what it did ("Added row 3", "Deleted column 2, City. 4 columns
+  left"). They have no keys, as in Word; the Navigate > Table submenu reaches
+  them. Deleting a header row makes the next row the header. Tidy Table pads
+  every cell to its column's widest, and says a real table is already lined up.
+  Adding or deleting a row or column of a real table rebuilds it with its text
+  in place, but character formatting inside its cells does not survive the
+  rebuild.
+- **Navigate > Table in QUILL** (2026-10-25), the submenu QUILL Lite had and
+  QUILL did not: the cell keys and the five edits above, in one place.
+- **What a move says** (2026-10-25). Each move says what changed and then the
+  contents: along a row the column ("Column 3: Portland"), down a column the
+  row ("Row 4: Portland"), both after a jump. The table's size is said once, on
+  arrival, not on every cell. In a table with a header row (a `| --- |` row
+  under its first row, or a real table's first row), moving into a new column
+  also says that column's header: "Column 3, City: Portland".
+- **QUILL Lite's table cue** (2026-10-25): "Table, N rows, M columns" on
+  entering and "Out of table" on leaving, with its heading cues switch, as
+  QUILL has had.
+- **Fixed: blank rows were missing from a table** (2026-10-25). A row of empty
+  cells (`|  |  |`) was taken for the `| --- |` separator and skipped by the
+  table keys, so every blank row of a new table, or of a Word table with an
+  empty row, was missing from the grid.
+
+#### Help
+
+- **Help > What's New** (2026-10-25) opens QUILL's changelog, this file, as a
+  page in your browser, in place of the short release notes it used to show
+  (they remain the fallback for a build with no changelog). It is keyless in
+  QUILL and QUILL Lite, where `Ctrl+Shift+F1` is the User Guide: press `Alt+H`,
+  then `W`. Every other QuillVille app has the same command on
+  `Ctrl+Shift+F1`, so What's New is now in every app.
+- **QUILL Lite with no document open** (2026-10-25) shows File, Tools and the
+  whole Help menu rather than File alone, so Preferences, Check for Updates,
+  What's New and About are reachable without opening a blank page.
+
+#### Sound and volume
+
+- **Home and End on a slider follow Up and Down** (2026-10-26). In the sliders
+  the family shares, such as the volume in QUILL Studio's player and the Sound
+  Enhance and caption settings windows, Up, Page Up and **Home** raise the
+  value, Home being the top (100 percent on a volume), and Down, Page Down and
+  **End** lower it, End being 0. Each key press also tells the screen reader
+  the new value, so it is never read from before the key.
+- **Slider Keys** (2026-10-26) lets a listener choose the Windows slider keys
+  instead (Down, Page Down and End raise it). It is one choice for every Quill
+  app, made with the **Slider Keys...** button in the Preferences of Quill
+  Radio, QUILL Cast, Quill Media Player or QUILL Studio; QUILL has no button of
+  its own and follows that choice. Right is always more and Left less, and
+  `Ctrl+Up` and `Ctrl+Down`, the volume keys that work from anywhere, are not
+  changed.
+
+#### Under the hood
+
+- Tables: `table_nav.tab_move` and `table_nav.arrow_move`; the shared edits
+  in `quill/core/table_edit.py`; the shared prompt in
+  `quill/ui/table_shape_prompt.py` (moved out of `main_frame.py`). Real tables:
+  Insert Table goes in through `EM_SETTEXTEX` as one undo step
+  (`quill/ui/richedit_tables.py`); the table keys and Tab read RichEdit's row
+  and cell marks (`quill/core/native_tables.py`), with `GetValue` aligned to
+  caret positions once a table is present; row and column edits rebuild the
+  table in place through `table_edit`. `quill/io/rtf_tables.py` is the bridge:
+  pipe rows load as real tables, a save marks each table's first row `\trhdr`
+  (RichEdit drops it), and `get_rtf` still hands out pipe rows for Save as Word
+  and the switches to Markdown and plain text. The RTF I/O methods moved to
+  `quill/ui/richedit_rtf_io.py` (GATE-11).
+- What's New: one module for the family, `quill/ui/whats_new.py`, which opens
+  each app's rendered changelog (or renders the Markdown one into the data
+  folder). `extract_version_section` now accepts Keep a Changelog's bracketed
+  `## [3.2.0] - date` headings.
+- QUILL Lite's empty-window bar is built from the command table
+  (`apps/lite_shell_menu.py`), so it shows the same labels and resolved keys as
+  a document's bar.
+- Sliders: the family's choice is `slider_keys.json` in the shared data folder
+  (`quill/core/slider_key_layout.py`), read at each key press;
+  `quill/ui/slider_keys.py` raises `EVENT_OBJECT_VALUECHANGE` after each move.
+- The shared radio code that Quill Radio runs gained 181.FM and laut.fm as
+  whole networks, and Big R Radio and 1.FM under Networks > Music; Quill
+  Radio's changelog has the details.
+- `.kqp` keyboard packs moved to `quill/core/keymap_kqp.py` (GATE-11); the
+  keymap module re-exports both functions.
+- **Table screen-reader spike** (`docs/design/table-uia-spike-2026-10.md`):
+  NVDA does not read RichEdit through UIA, so a UIA table layer cannot reach
+  it; an NVDA add-on is the recommended route.
+
 ### QUILL Transcribe joins the release channels (2026-10-24)
 
 QUILL Transcribe now takes the same path as QUILL Lite, Quill Radio and QUILL

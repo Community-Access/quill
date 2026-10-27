@@ -207,6 +207,9 @@ class MediaPlayerMenuMixin:
         from quill.ui.support_menu import append_get_help_item
 
         append_get_help_item(self, help_menu, wx, source_app=_TITLE, app_version=_VERSION)
+        from quill.ui.whats_new import append_whats_new_item
+
+        append_whats_new_item(self, help_menu, "player", _TITLE)  # the changelog
         help_menu.Append(about_id, "&About Quill Media Player\tCtrl+Alt+A")
         self.frame.Bind(
             wx.EVT_MENU,
@@ -244,11 +247,14 @@ class MediaPlayerMenuMixin:
     def _show_about(self) -> None:
         from quill.apps.player import _BUILD, _TITLE, _VERSION
         from quill.core.app_version import describe_version
+        from quill.ui.about_notices import show_app_about
 
-        self._show_message_box(
+        show_app_about(
+            self,
             f"{_TITLE} {describe_version(_VERSION, build=_BUILD)}\n\n"
             "The accessible QUILL media player: audiobooks and audio with chapter "
             "navigation, resume, bookmarks, and precise Go to Position -- offline, "
             "keyboard- and screen-reader-first.\n\nSupport: support@community-access.org",
-            f"About {_TITLE}",
+            app="player",
+            app_name=_TITLE,
         )

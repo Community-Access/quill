@@ -32,7 +32,9 @@ import ast
 from pathlib import Path
 
 from quill.tools.persistence_entries_dictation import DICTATION_ENTRIES
+from quill.tools.persistence_entries_family import FAMILY_ENTRIES
 from quill.tools.persistence_entries_radio import RADIO_LISTENER_ENTRIES
+from quill.tools.persistence_entries_studio import STUDIO_ENTRIES
 
 _PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 
@@ -120,7 +122,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # inventory -- the read half of an export rather than a store of its own.
     # Every file it writes is one the audit already classifies on its own line.
     "core/setup_transfer.py::import_setup_report": "export",
-    "core/keymap.py::export_keyboard_pack": "export",
+    "core/keymap_kqp.py::export_keyboard_pack": "export",  # out of keymap.py (GATE-11)
     "core/keymap.py::export_keymap": "export",
     "core/features.py::export_feature_profile_file": "export",
     "core/share_package.py::write_package_file": "export",
@@ -167,12 +169,12 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     # once-only thing; a key that is present is the listener's and is never
     # rewritten by a later build.
     "core/show_hide_keys.py::save_show_hide_key": "versioned",
-    # The sound card a player app (or, for App Sounds, an app's own sounds) was
-    # last sent to, per app ("" = Windows' choice). A lost file is the system
-    # default, where every app starts. NOT in a portable backup: a device id
-    # names hardware on one computer and nothing on the next.
+    # The sound card a player app was last sent to ("" = Windows' choice); a lost
+    # file is the system default. NOT in a portable backup: a device id names
+    # hardware on one computer and nothing on the next.
     "ui/media/output_device_apps.py::save_device_pref": "marker",
-    "core/app_sounds_store.py::save": "marker",
+    **FAMILY_ENTRIES,  # App Sounds and Slider Keys: persistence_entries_family
+    **STUDIO_ENTRIES,  # QUILL Studio's capture files: persistence_entries_studio
     "core/radio/download_prefs.py::save": "content",
     "core/library/catalogs.py::save": "content",
     "core/publish/destinations.py::save_destinations": "content",

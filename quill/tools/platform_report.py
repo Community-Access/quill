@@ -222,6 +222,11 @@ GATES: tuple[Gate, ...] = (
         (sys.executable, "-m", "quill.tools.build_help_reference", "--check"),
     ),
     Gate(
+        "third-party-notices",
+        "GATE-NOTICES: every notices file matches the catalogue, which covers every build",
+        (sys.executable, "-m", "quill.tools.build_third_party_notices", "--check"),
+    ),
+    Gate(
         "tutorial-reference",
         "GATE-TUTDOC: the tutorial book matches the lessons the app teaches",
         (sys.executable, "-m", "quill.tools.build_tutorials_reference"),
