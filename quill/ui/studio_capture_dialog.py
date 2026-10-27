@@ -393,6 +393,12 @@ def _window_details_text(target: CaptureTarget) -> str:
         win32gui = None
     if win32gui is not None and target.window_handle:
         try:
+            live_title = win32gui.GetWindowText(target.window_handle).strip()
+            if live_title:
+                title = live_title
+        except Exception:
+            pass
+        try:
             class_name = win32gui.GetClassName(target.window_handle)
         except Exception:
             class_name = ""

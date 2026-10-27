@@ -73,6 +73,41 @@ def desktop_target(displays: list[CaptureTarget]) -> CaptureTarget:
     return CaptureTarget("desktop", "Full desktop (all displays)", bounds, device=topology)
 
 
+def _friendly_application_name(application: str) -> str:
+    if not application:
+        return ""
+    name = application.strip()
+    lower = name.casefold()
+    friendly = {
+        "code.exe": "Visual Studio Code",
+        "explorer.exe": "File Explorer",
+        "msedge.exe": "Microsoft Edge",
+        "chrome.exe": "Chrome",
+        "firefox.exe": "Firefox",
+    }.get(lower)
+    if friendly:
+        return friendly
+    if lower.endswith(".exe"):
+        return name[:-4]
+    return name
+
+
+def _simplify_window_label(title: str, application: str) -> str:
+    title = (title or "").strip() or "Untitled"
+    app = _friendly_application_name(application)
+    parts = [part.strip() for part in title.split(" - ") if part.strip()]
+    if app:
+        parts = [part for part in parts if part.casefold() != app.casefold()]
+    noise = {"deleted", "page", "document"}
+    parts = [part for part in parts if part.casefold() not in noise]
+    simplified = parts[0] if parts else title
+    if len(simplified) > 80:
+        simplified = simplified[:77] + "..."
+    if app and simplified.casefold() != app.casefold():
+        return f"{simplified} ({app})"
+    return simplified
+
+
 def window_target(handle: int) -> CaptureTarget:
     import win32gui
     import win32process
@@ -98,9 +133,10 @@ def window_target(handle: int) -> CaptureTarget:
     bounds = tuple(win32gui.GetWindowRect(handle))
     if bounds[2] <= bounds[0] or bounds[3] <= bounds[1]:
         raise ScreenCaptureError("The selected window has no capture area.")
+    label = _simplify_window_label(title, application)
     return CaptureTarget(
         "window",
-        f"Window: {title or 'Untitled'}",
+        label,
         bounds,
         handle,
         pid,
