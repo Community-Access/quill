@@ -218,12 +218,12 @@ elevenlabs = ["elevenlabs>=2.69.0,<3"]
 # the legacy ``winsdk`` monolith, whose wheels stopped at cp312 and so blocked
 # the embedded-runtime move to Python 3.13; the projected API is identical (see
 # quill/platform/windows/windows_ocr.py). Only the directly-imported namespaces
-# plus winrt-runtime are listed; pywinrt pulls the rest (Foundation,
-# Storage.Streams, ...) transitively.
+# plus winrt-runtime are listed, with Foundation and Storage.Streams named
+# too, because 3.2.1 does not pull them in.
 # Pinned to the 3.2 line (~=3.2.1, 2026-10-27): pywinrt 4.x (epoch 4!10.0.x)
-# arrived and no longer pulls Foundation and Foundation.Collections in, so a
-# fresh resolve broke QUILL Lite's portable inventory. Moving to 4.x is its
-# own change, tested against the OCR and media engines.
+# arrived, and the open-ended >=3.2.1 let a fresh resolve (QUILL Lite's
+# portable build) mix the two lines. Everything here is tested against 3.2.1;
+# moving to 4.x is its own change, tested against the OCR and media engines.
 ocr = [
     "winrt-runtime~=3.2.1; sys_platform == 'win32'",
     "winrt-Windows.Media.Ocr~=3.2.1; sys_platform == 'win32'",
@@ -231,6 +231,11 @@ ocr = [
     "winrt-Windows.Globalization~=3.2.1; sys_platform == 'win32'",
     "winrt-Windows.Storage~=3.2.1; sys_platform == 'win32'",
     "winrt-Windows.Storage.Streams~=3.2.1; sys_platform == 'win32'",
+    # Listed, not left to chance: OcrEngine.recognize_async returns a
+    # Windows.Foundation async operation, projected lazily -- 3.2.1 does not
+    # pull these in, so a portable copy without them would fail at first use.
+    "winrt-Windows.Foundation~=3.2.1; sys_platform == 'win32'",
+    "winrt-Windows.Foundation.Collections~=3.2.1; sys_platform == 'win32'",
 ]
 # The modern Windows Media engine (quill/ui/audio/winrt_engine.py, 2026-09-29):
 # Windows.Media.Playback.MediaPlayer, which can be pointed at an output device,
