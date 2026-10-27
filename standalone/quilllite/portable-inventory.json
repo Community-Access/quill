@@ -38,6 +38,7 @@
     "scripts",
     "select.pyd",
     "sqlite3.dll",
+    "third-party-notices.txt",
     "unicodedata.pyd",
     "vcruntime140.dll",
     "vcruntime140_1.dll",
@@ -151,6 +152,7 @@
     "th_en_us_license.txt",
     "th_en_us_v2.dat",
     "th_en_us_wordnet_license.txt",
+    "third_party",
     "voice-previews",
     "words_alpha.license.txt",
     "words_alpha.txt"
