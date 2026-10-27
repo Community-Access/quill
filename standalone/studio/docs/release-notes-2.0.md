@@ -19,7 +19,7 @@ A new **Capture** menu adds screenshot capture tools directly in Studio. These f
 Highlights:
 
 - **Capture menu and command palette coverage.** Every capture action is available from the menu bar and **Help > Command Palette...** (Ctrl+Shift+P).
-- **A shorter window list with an escape hatch.** Capture screen lists top-level task windows by title (similar to Alt+Tab) so the picker is readable. Enable "Show all windows (advanced)" when you need tool windows, and use "Window properties..." for process IDs and other identifiers.
+- **A shorter window list with an escape hatch.** Capture screen lists top-level task windows by title (similar to Alt+Tab) so the picker is readable. Enable "Show all windows (advanced)" when you need tool windows, and use "Window properties..." for process IDs and other identifiers. If you only see Desktop/Display targets, update: a preview build had a regression that hid windows from the picker.
 - **Wizard entry point.** **Studio > Open Studio Wizard...** (Ctrl+N) includes a Capture journey so you can start a screenshot run from one place.
 - **Minimize-to-tray on demand.** **Studio > Minimize to Tray** (Ctrl+Alt+T) hides the window in the system tray without exiting.
 - **Library window instead of a book-centric home.** The home window stays intentionally quiet; open **View > Library Window...** (Ctrl+Alt+Y) to browse and manage books.

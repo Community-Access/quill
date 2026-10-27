@@ -162,10 +162,10 @@ def list_capture_targets(*, include_all_windows: bool = False) -> list[CaptureTa
                 return
             if not include_all_windows and not _is_user_window(handle):
                 return
-                try:
-                    windows.append(window_target(handle))
-                except ScreenCaptureError:
-                    pass  # Closed/minimized between EnumWindows and GetWindowRect.
+            try:
+                windows.append(window_target(handle))
+            except ScreenCaptureError:
+                pass  # Closed/minimized between EnumWindows and GetWindowRect.
 
         win32gui.EnumWindows(collect, None)
         return [
