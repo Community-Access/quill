@@ -278,7 +278,7 @@ class CaptureSetupDialog(CaptureOptionsMixin, wx.Dialog):
         try:
             target = self.selected_target()
             if target.kind == "region":
-                message = f"Plan: {target.friendly_label}. "
+                message = f"Guided region: {target.friendly_label}. "
                 if advanced:
                     message += "The numbers fit within the desktop. Content may still be clipped. "
                 elif self.portion.GetSelection() != 0:
@@ -293,13 +293,13 @@ class CaptureSetupDialog(CaptureOptionsMixin, wx.Dialog):
                 )
             elif target.kind == "window":
                 message = (
-                    f"Plan: capture the whole named window: {target.friendly_label}. "
+                    f"Capture whole window: {target.friendly_label}. "
                     "No size settings needed. Restore a minimized window first. "
                     "Review local OCR and framing after capture; protected content may be blank."
                 )
             else:
                 message = (
-                    f"Plan: {target.friendly_label}. No size settings needed. "
+                    f"Capture {target.friendly_label}. No size settings needed. "
                     "Desktop and display capture can include unrelated windows and notifications. "
                     "For one application, choose its named window. "
                     "To pick a specific window element, choose a named window target first."
@@ -311,8 +311,6 @@ class CaptureSetupDialog(CaptureOptionsMixin, wx.Dialog):
         self.guidance.ChangeValue(message)
         self.content.Layout()
         self.content.FitInside()
-        if _event is not None:
-            self._announce(message)
 
     def _refresh_targets(self, _event):
         from quill.platform.windows.studio_capture import list_capture_targets
