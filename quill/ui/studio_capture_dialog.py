@@ -59,28 +59,47 @@ class CaptureSetupDialog(CaptureOptionsMixin, wx.Dialog):
             "unavailable until you deliberately choose another target."
         )
         outer.Add(refresh, 0, wx.LEFT | wx.RIGHT, 10)
-        self.all_windows = wx.CheckBox(panel, label="Show &all windows (advanced)")
+        self.show_advanced = wx.CheckBox(panel, label="Show &advanced options")
+        set_accessible_name(self.show_advanced, "Show advanced options")
+        self.show_advanced.SetHelpText(
+            "Show optional advanced capture tools, such as listing every window, viewing "
+            "window properties, or choosing a specific window element."
+        )
+        self.show_advanced.Bind(wx.EVT_CHECKBOX, self._toggle_advanced)
+        outer.Add(self.show_advanced, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
+
+        self.advanced_panel = wx.Panel(panel)
+        advanced_layout = wx.BoxSizer(wx.VERTICAL)
+        self.all_windows = wx.CheckBox(self.advanced_panel, label="Show &all windows")
         set_accessible_name(self.all_windows, "Show all windows")
         self.all_windows.SetHelpText(
-            "Include every visible window, including tool and helper windows. "
-            "Leave unchecked for a shorter list of top-level task windows (recommended)."
+            "Include every visible window, including tool and helper windows. Leave unchecked "
+            "for a shorter list of top-level task windows (recommended)."
         )
         self.all_windows.Bind(wx.EVT_CHECKBOX, self._refresh_targets)
-        outer.Add(self.all_windows, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
-        self.properties = wx.Button(panel, label="Window &properties...")
+        advanced_layout.Add(self.all_windows, 0, wx.BOTTOM, 8)
+        self.properties = wx.Button(self.advanced_panel, label="Window &properties...")
         self.properties.SetHelpText(
             "Show advanced details about the selected named window, such as its process, "
             "bounds, and internal identifiers."
         )
         self.properties.Bind(wx.EVT_BUTTON, self._show_window_properties)
-        outer.Add(self.properties, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
-        self.controls_button = wx.Button(panel, label="Choose a specific window &element...")
-        self.controls_button.SetHelpText(
-            "Choose a named window in Target first, then find a real accessible "
-            "part by its name or role, such as a button or document. No sizes are needed."
-        )
-        self.controls_button.Bind(wx.EVT_BUTTON, self._choose_control)
-        outer.Add(self.controls_button, 0, wx.ALL, 10)
+        advanced_layout.Add(self.properties, 0, wx.BOTTOM, 8)
+        self.controls_button = None
+        if self.choose_control is not None:
+            self.controls_button = wx.Button(
+                self.advanced_panel, label="Choose a specific window &element..."
+            )
+            self.controls_button.SetHelpText(
+                "Choose a named window in Target first, then find an accessible element "
+                "(for example, a button or document) by name or role."
+            )
+            self.controls_button.Bind(wx.EVT_BUTTON, self._choose_control)
+            advanced_layout.Add(self.controls_button, 0)
+        self.advanced_panel.SetSizer(advanced_layout)
+        self.advanced_panel.Hide()
+        outer.Add(self.advanced_panel, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
+
         self.region_panel = wx.Panel(panel)
         region_layout = wx.BoxSizer(wx.VERTICAL)
         region_layout.Add(wx.StaticText(self.region_panel, label="Region so&urce"), 0, wx.TOP, 8)
@@ -192,7 +211,14 @@ class CaptureSetupDialog(CaptureOptionsMixin, wx.Dialog):
     def _sync_window_actions(self):
         target = self.targets[self.target.GetSelection()]
         self.properties.Enable(target.kind == "window")
-        self.controls_button.Enable(target.kind == "window")
+        if self.controls_button is not None:
+            self.controls_button.Enable(target.kind == "window")
+
+    def _toggle_advanced(self, _event=None):
+        show = self.show_advanced.GetValue()
+        self.advanced_panel.Show(show)
+        self.content.Layout()
+        self.content.FitInside()
 
     def _show_window_properties(self, _event):
         target = self.targets[self.target.GetSelection()]
