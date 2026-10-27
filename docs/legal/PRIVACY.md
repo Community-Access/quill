@@ -14,11 +14,12 @@ This statement covers QUILL and every app in the QuillVille family: QUILL Lite, 
 
 Every one of these can be switched off. In QUILL itself, Safe Mode (`--safe-mode`)
 turns all of them off. In the other apps Safe Mode turns off everything except
-the update check, which still runs on its own schedule.
+an automatic update check where that app provides one; that check still runs on
+its own schedule.
 
 | What | Where it goes | Default | Switch |
 |---|---|---|---|
-| Update check, at most once a day at launch | `community-access.github.io` (a signed list of releases), falling back to `api.github.com`. The request carries a generic User-Agent and no version, account or machine detail. On the Beta and Dev release channels, an update it finds is also downloaded in the background; it is never installed without asking | On | In each app's Preferences, under a name of its own: for example *Check for updates on startup* in QUILL, *Look for updates when QUILL Lite starts* in QUILL Lite |
+| App update check, at most once a day at launch (QUILL, QUILL Lite, Quill Radio, QUILL Cast and QUILL Studio) | `community-access.github.io` (a signed list of releases), falling back to `api.github.com`. The request carries a generic User-Agent and no version, account or machine detail. On the Beta and Dev release channels, an update it finds is also downloaded in the background; it is never installed without asking | On by default in those five apps | In each app's Preferences; for example *Check for updates on startup* in QUILL and *Look for updates when QUILL Lite starts* in QUILL Lite |
 | Quill Radio's station-catalogue refresh | `radio-browser.info`, SomaFM and the Icecast directory (`dir.xiph.org`) -- refreshes the local catalogue when the copy on disk is over six hours old, at launch and then daily | On | *Keep a local station catalogue* and *Check for station catalogue updates when Quill Radio starts* |
 | Quill Radio's community play count | `radio-browser.info` -- when you play one of that directory's own stations, tells it so; sends the station's id and nothing about you | On | *Share play counts with the RadioBrowser directory* |
 | Quill Radio's now-playing title | The station you are already listening to -- re-reads the current track title every 30 seconds. No third party is involved | On while playing | Stops with playback |
@@ -26,6 +27,11 @@ the update check, which still runs on its own schedule.
 | Quill Weather's alert watch | `api.weather.gov` -- checks the alerts for your saved locations every 10 minutes, and every minute while an alert is active; it keeps running in the tray after the window closes | On in the Quill Weather app once you add a location (off in the editor's weather features) | *Start Monitoring* / *Stop Monitoring* |
 | QUILL Social's timelines and feeds | Each account's own server (Mastodon, Bluesky) at launch, and each RSS feed you follow, by default every 15 minutes; posts you scheduled are published at their time | On for the accounts and feeds you added | Remove the account or feed. QUILL Social has no Safe Mode, and its RSS requests name the app and its version in the User-Agent |
 | Quill Radio's new-video check | `youtube.com` -- for each channel you asked to be told about, reads its five newest uploads on the podcast refresh schedule; sends nothing about you unless you turned on the browser sign-in | Off (per channel) | *Notify Me About New Videos* on the channel |
+
+Quill Weather, Quill Inkwell, Quill Converter, Quill Media Player and QUILL
+Transcribe do not check for app updates automatically at launch. They check
+only when you choose **Help > Check for Updates**. QuillBeacon has no in-app
+update check.
 
 Everything else -- every directory search, every AI request, every file
 transfer, every podcast feed -- happens because you asked for it, or because

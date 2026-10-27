@@ -39,6 +39,11 @@ installer-smoke*/
 /local/
 /dev.md
 
+# User-local working ledger and Leasey comparison notes; never commit.
+/do.md
+/leasey.md
+/sm.md
+
 *.log
 .quill-reqs.sha256
 kokoro/_hf_cache/

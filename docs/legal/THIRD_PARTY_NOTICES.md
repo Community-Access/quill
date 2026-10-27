@@ -119,7 +119,7 @@ Libraries written by Community Access and Blind Information Technology Solutions
 
 ## Runtime and libraries
 
-Python itself and the libraries every app runs on. Installed apps share these through the QuillVille Runtime; portable editions carry their own copy.
+Python itself and libraries shipped in the shared runtime or an app's own dependency set. Installed apps share the runtime; portable editions carry only the dependencies selected for that product.
 
 ### accessible_output2
 
@@ -722,15 +722,16 @@ Python itself and the libraries every app runs on. Installed apps share these th
 
 ### PyMuPDF (with MuPDF)
 
-- **What it is:** Reads and renders PDF documents.
-- **Included in:** Every product in the family.
+- **What it is:** PDF parsing and rendering used by QUILL's GLOW document backend; included in the shared runtime.
+- **Included in:** The QuillVille Runtime and installed app editions that include it. Standalone portable editions are scoped by their own dependency inventories.
 - **Version:** 1.28.2
 - **Licence:** AGPL-3.0 (dual-licensed by Artifex; QUILL uses the AGPL option)
 - **Copyright:** Copyright (C) Artifex Software, Inc.
 - **Upstream:** https://github.com/pymupdf/PyMuPDF
-- **How it reaches you:** Bundled: it is inside the installer or the portable zip.
-- **What the licence asks of us:** Ship the licence text. Offer the complete corresponding source of the program as distributed, including our own code combined with it (QUILL's source is public), for as long as we distribute it. If people use a modified version over a network, offer them the source too.
-- **Needs review:** AGPL-3.0. It ships in the shared runtime, so every installed app carries it, not only the editor. AGPL obliges us to offer the complete corresponding source of the combined work (QUILL's source is public under MIT, which is compatible) and, if it is ever reached over a network, to offer source to those users too. Owner decision needed: keep it under these terms, buy Artifex's commercial licence, or replace it with pypdfium2, which is already bundled.
+- **Source distribution:** https://files.pythonhosted.org/packages/a3/fb/b6761fa2d5266f2cdb24c3b91f4023070ab7848381417678e7a289a1d52a/pymupdf-1.28.2.tar.gz (SHA-256: 5e0be7908a715aa20333caddd73f1d6f01e4cd0c26e869fa2dd0b7f344da2249)
+- **How it reaches you:** Bundled in the QuillVille Runtime used by installed app editions. A standalone portable includes it only when that app's declared dependencies require it.
+- **What the licence asks of us:** Keep the copyright and licence notices and provide Corresponding Source when required for a covered work; sections 4–6 distinguish source and object-code conveyance. Section 13's remote-network offer applies when a modified covered program supports remote network interaction. Whether QUILL packaging creates a covered combined work, and the resulting source scope, require legal review.
+- **Needs review:** Decision recorded: retain PyMuPDF under AGPL-3.0 and preserve existing PDF behavior. The installed QuillVille Runtime includes PyMuPDF; installed app editions carry it through that runtime. QUILL's GLOW feature uses it; QUILL's ordinary PDF reader uses pdfplumber and pypdf, with pypdfium2 for scanned-page rendering. Current standalone portable dependency groups omit the GLOW extra, and the committed portable inventories omit pymupdf; verify staged portable artifacts independently. The exact 1.28.2 source archive and checksum are listed above. Legal review is required before the next public release to determine whether QUILL's shared runtime and application packages form a covered combined work, the Corresponding Source scope, and whether section 13 applies to any modified network-facing covered work. This entry does not declare all original QUILL code relicensed under AGPL; the MIT boundary and any exceptions need counsel's review.
 
 ### PyNaCl (with libsodium)
 
@@ -867,9 +868,9 @@ Python itself and the libraries every app runs on. Installed apps share these th
 
 ### PyWinRT (winrt-runtime and the Windows.* projections)
 
-- **What it is:** Windows Runtime access: built-in Windows OCR, the modern Windows Media engine, output-device routing and the now-playing card. Packages: winrt-runtime, winrt-windows-devices-enumeration, winrt-windows-foundation, winrt-windows-foundation-collections, winrt-windows-globalization, winrt-windows-graphics-imaging, winrt-windows-media, winrt-windows-media-core, winrt-windows-media-devices, winrt-windows-media-ocr, winrt-windows-media-playback, winrt-windows-storage.
+- **What it is:** Windows Runtime access: built-in Windows OCR, the modern Windows Media engine, output-device routing and the now-playing card. PyWinRT 4.0.3 runtime with Windows SDK 10.0.28000.2705 projections. Packages: winrt-runtime, winrt-windows-devices-enumeration, winrt-windows-foundation, winrt-windows-foundation-collections, winrt-windows-globalization, winrt-windows-graphics-imaging, winrt-windows-media, winrt-windows-media-core, winrt-windows-media-devices, winrt-windows-media-ocr, winrt-windows-media-playback, winrt-windows-storage, winrt-windows-storage-streams.
 - **Included in:** Every product in the family.
-- **Version:** 3.2.1
+- **Version:** 4.0.3
 - **Licence:** MIT
 - **Copyright:** Copyright (c) Microsoft Corporation and the pywinrt contributors
 - **Upstream:** https://github.com/pywinrt/pywinrt
@@ -1494,9 +1495,9 @@ Used to build or test the family and never shipped to you. Listed for completene
 
 ## Source code offer
 
-Some components are under the GNU GPL, LGPL or AGPL, or the Mozilla Public License. For each of them we offer the complete corresponding source code of the version we ship, at no charge beyond the cost of providing it, for at least three years after we last distribute that version.
+Some components are under the GNU GPL, LGPL or AGPL, or the Mozilla Public License. Their source requirements depend on the licence and the work being conveyed. Each entry identifies the version and, where recorded, a version-specific source location. QUILL keeps release-specific source and build instructions according to the applicable terms; to request source materials or a written offer, write to support@community-access.org.
 
-QUILL's own source code is public at https://github.com/Community-Access/quill. Each entry above names its upstream project, where the source of the version we ship is published. To ask for a copy of any of it, write to support@community-access.org.
+QUILL's own source code is public at https://github.com/Community-Access/quill. For PyMuPDF, the entry above names the exact source archive and its SHA-256 checksum. The source scope for a QUILL work combined with an AGPL component is subject to legal review; this notice does not make a blanket relicensing claim.
 
 ## Appendix: licence texts
 
@@ -1525,7 +1526,7 @@ PERFORMANCE OF THIS SOFTWARE.
 
 Used by: PyMuPDF (with MuPDF).
 
-What it asks of us: Ship the licence text. Offer the complete corresponding source of the program as distributed, including our own code combined with it (QUILL's source is public), for as long as we distribute it. If people use a modified version over a network, offer them the source too.
+What it asks of us: Keep the copyright and licence notices and provide Corresponding Source when required for a covered work; sections 4–6 distinguish source and object-code conveyance. Section 13's remote-network offer applies when a modified covered program supports remote network interaction. Whether QUILL packaging creates a covered combined work, and the resulting source scope, require legal review.
 
 ````text
 GNU AFFERO GENERAL PUBLIC LICENSE

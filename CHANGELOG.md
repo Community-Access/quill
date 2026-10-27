@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+### Windows runtime, media shutdown and licensing (2026-10-27)
+
+- Move the Windows OCR and Media projections to PyWinRT 4.0.3 with the
+  Windows SDK 10.0.28000.2705 projection line. OCR, local playback, seeking,
+  device routing and frozen-runtime collection retain their existing behavior.
+- Stop keeping WinRT audio-device objects in a process-wide cache. The
+  Windows Media engine now resolves a selected endpoint from a fresh filtered
+  query and removes its event handlers at termination. This fixes the
+  `0xC0000005` process-exit crash after audio-device enumeration or switching.
+- Retain PyMuPDF 1.28.2 under AGPL-3.0. The exact source archive, generated
+  notices, Corresponding Source review and pre-release legal gate are
+  documented; PDF behavior is unchanged.
+- Verify and document which family apps check for updates automatically at
+  launch in the published privacy statement.
+
 ### QUILL Studio screenshot milestone (2026-10-26)
 
 - Add explicit screenshot source selection, opt-in global capture hotkeys, local OCR, objective file evidence, rich editable/custom prompts, image-grounded chat and separately approved automatic AI in the shared Studio implementation. The [Studio changelog](standalone/studio/docs/CHANGELOG.md) lists every screenshot feature, privacy behavior and remaining acceptance gate.

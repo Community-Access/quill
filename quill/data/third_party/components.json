@@ -6,7 +6,7 @@
     "",
     "Python versions and licences were read from installed package metadata (py -3.14, 2026-10-26). `--versions` compares them with what is installed now; it reports and does not fail, because the release build, not this file, decides what ships.",
     "",
-    "`products` is a list of product keys, or [\"all\"]. Every installed app runs on the shared QuillVille Runtime, which is the union of every app's Python dependencies, so a Python library in the runtime is in every app. `delivery` is bundled (in the installer or portable zip), on-request (downloaded from QUILL's own pinned release when the person asks for it, so we still redistribute it), or build-only (never shipped). `review` marks an entry whose licence or terms could not be confirmed, or which carries an obligation the owner should decide on."
+    "`products` is a list of product keys, or [\"all\"]. Every installed app uses the shared QuillVille Runtime, whose dependency set is the union of the app requirements, so a library in that runtime is included by each installer that carries it. Standalone portable editions use app-specific dependency groups and inventories; do not infer their contents from the shared runtime. `delivery` is bundled, shared-runtime, on-request (downloaded from QUILL's own pinned release when the person asks for it, so we still redistribute it), or build-only (never shipped). `review` marks an entry whose licence or terms could not be confirmed, or which carries an obligation the owner should decide on."
   ],
   "products": {
     "quill": {
@@ -71,7 +71,7 @@
     {
       "id": "runtime",
       "title": "Runtime and libraries",
-      "intro": "Python itself and the libraries every app runs on. Installed apps share these through the QuillVille Runtime; portable editions carry their own copy."
+      "intro": "Python itself and libraries shipped in the shared runtime or an app's own dependency set. Installed apps share the runtime; portable editions carry only the dependencies selected for that product."
     },
     {
       "id": "audio-video",
@@ -108,7 +108,7 @@
     "AGPL-3.0": {
       "name": "GNU Affero General Public License, version 3",
       "text": "AGPL-3.0.txt",
-      "obligations": "Ship the licence text. Offer the complete corresponding source of the program as distributed, including our own code combined with it (QUILL's source is public), for as long as we distribute it. If people use a modified version over a network, offer them the source too."
+      "obligations": "Keep the copyright and licence notices and provide Corresponding Source when required for a covered work; sections 4–6 distinguish source and object-code conveyance. Section 13's remote-network offer applies when a modified covered program supports remote network interaction. Whether QUILL packaging creates a covered combined work, and the resulting source scope, require legal review."
     },
     "Apache-2.0": {
       "name": "Apache License, version 2.0",
@@ -1295,13 +1295,15 @@
       "license_label": "AGPL-3.0 (dual-licensed by Artifex; QUILL uses the AGPL option)",
       "copyright": "Copyright (C) Artifex Software, Inc.",
       "homepage": "https://github.com/pymupdf/PyMuPDF",
-      "what": "Reads and renders PDF documents.",
+      "what": "PDF parsing and rendering used by QUILL's GLOW document backend; included in the shared runtime.",
       "products": [
         "all"
       ],
-      "delivery": "bundled",
+      "delivery": "shared-runtime",
       "pypi": "pymupdf",
-      "review": "AGPL-3.0. It ships in the shared runtime, so every installed app carries it, not only the editor. AGPL obliges us to offer the complete corresponding source of the combined work (QUILL's source is public under MIT, which is compatible) and, if it is ever reached over a network, to offer source to those users too. Owner decision needed: keep it under these terms, buy Artifex's commercial licence, or replace it with pypdfium2, which is already bundled."
+      "source_url": "https://files.pythonhosted.org/packages/a3/fb/b6761fa2d5266f2cdb24c3b91f4023070ab7848381417678e7a289a1d52a/pymupdf-1.28.2.tar.gz",
+      "source_sha256": "5e0be7908a715aa20333caddd73f1d6f01e4cd0c26e869fa2dd0b7f344da2249",
+      "review": "Decision recorded: retain PyMuPDF under AGPL-3.0 and preserve existing PDF behavior. The installed QuillVille Runtime includes PyMuPDF; installed app editions carry it through that runtime. QUILL's GLOW feature uses it; QUILL's ordinary PDF reader uses pdfplumber and pypdf, with pypdfium2 for scanned-page rendering. Current standalone portable dependency groups omit the GLOW extra, and the committed portable inventories omit pymupdf; verify staged portable artifacts independently. The exact 1.28.2 source archive and checksum are listed above. Legal review is required before the next public release to determine whether QUILL's shared runtime and application packages form a covered combined work, the Corresponding Source scope, and whether section 13 applies to any modified network-facing covered work. This entry does not declare all original QUILL code relicensed under AGPL; the MIT boundary and any exceptions need counsel's review."
     },
     {
       "id": "pynacl",
@@ -1527,14 +1529,14 @@
       "id": "pywinrt",
       "name": "PyWinRT (winrt-runtime and the Windows.* projections)",
       "group": "runtime",
-      "version": "3.2.1",
+      "version": "4.0.3",
       "licenses": [
         "MIT"
       ],
       "license_label": "MIT",
       "copyright": "Copyright (c) Microsoft Corporation and the pywinrt contributors",
       "homepage": "https://github.com/pywinrt/pywinrt",
-      "what": "Windows Runtime access: built-in Windows OCR, the modern Windows Media engine, output-device routing and the now-playing card. Packages: winrt-runtime, winrt-windows-devices-enumeration, winrt-windows-foundation, winrt-windows-foundation-collections, winrt-windows-globalization, winrt-windows-graphics-imaging, winrt-windows-media, winrt-windows-media-core, winrt-windows-media-devices, winrt-windows-media-ocr, winrt-windows-media-playback, winrt-windows-storage.",
+      "what": "Windows Runtime access: built-in Windows OCR, the modern Windows Media engine, output-device routing and the now-playing card. PyWinRT 4.0.3 runtime with Windows SDK 10.0.28000.2705 projections. Packages: winrt-runtime, winrt-windows-devices-enumeration, winrt-windows-foundation, winrt-windows-foundation-collections, winrt-windows-globalization, winrt-windows-graphics-imaging, winrt-windows-media, winrt-windows-media-core, winrt-windows-media-devices, winrt-windows-media-ocr, winrt-windows-media-playback, winrt-windows-storage, winrt-windows-storage-streams.",
       "products": [
         "all"
       ],

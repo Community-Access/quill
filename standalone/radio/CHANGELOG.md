@@ -2,6 +2,14 @@
 
 All notable changes to Quill Radio are documented here. See `docs/release-notes-3.2.md` (Help > Release Notes, Shift+F1) for the fuller narrative version of the latest release.
 
+## Unreleased
+
+- **Windows Media closes cleanly after device enumeration.** Device selection
+  still uses the Windows render endpoints and keeps the selected route. QUILL
+  no longer retains COM-backed device objects in a module cache, which fixes a
+  process-exit access violation after opening audio preferences or switching
+  the output device. The player unregisters its WinRT events before shutdown.
+
 ## [3.2.0] - 2026-10-03
 
 Testing rebuild: **3.2.0 (build 5)**. The packages have not been published yet.

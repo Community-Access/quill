@@ -4,22 +4,23 @@ Reported 2026-09-29: "why is it taking two seconds or longer to bring up
 preferences in quill radio?"
 
 Because the device list behind that window swept every device on the machine.
-pywinrt does not accept ``DeviceInformation.find_all_async``'s overloads
-positionally -- ``find_all_async(DeviceClass.AUDIO_RENDER)`` and
-``find_all_async(aqs_string)`` both raise "Invalid parameter count" -- so the
-first version of this engine enumerated everything and filtered in Python. On
-the reporter's machine that was **4,048 devices in 2.4 seconds**, against
-**2 devices in 8 milliseconds** for the named overload
-``find_all_async_device_class``. Preferences ran it on the UI thread every time
-it opened, and the family list ran it twice and hit its own five-second timeout.
+The 3.x PyWinRT projection exposed the audio-render overload under the generated
+name ``find_all_async_device_class``. PyWinRT 4.0 removes those aliases and
+unifies the overloads as ``find_all_async(DeviceClass.AUDIO_RENDER)``. On the
+reporter's machine the unfiltered sweep returned **4,048 devices in 2.4
+seconds**, against **2 devices in 8 milliseconds** for the filtered query.
+Preferences ran it on the UI thread every time it opened, and the family list
+ran it twice and hit its own five-second timeout.
 
 So the rule these tests hold: ask for the audio endpoints when the runtime can
-be asked, and only sweep when it genuinely cannot. The sweep stays because the
-named overload is a pywinrt spelling rather than a WinRT guarantee -- a build
-without it should be slow, not broken.
+be asked, and only sweep when it genuinely cannot. A projection without the
+filtered overload should be slow, not broken.
 """
 
 from __future__ import annotations
+
+import gc
+import weakref
 
 import pytest
 
@@ -52,18 +53,20 @@ def statics(monkeypatch):
             self.by_class_calls = 0
             self.sweep_calls = 0
             self.by_class_available = True
+            self.audio_render = object()
+            self.by_class_argument = None
             self.devices = [
                 _endpoint("aaaaaaaa-0000-0000-0000-000000000001", "Speakers (Realtek)"),
                 _endpoint("bbbbbbbb-0000-0000-0000-000000000002", "Speakers (Logi USB Headset)"),
             ]
 
-        def find_all_async_device_class(self, _device_class):
-            self.by_class_calls += 1
-            if not self.by_class_available:
-                raise TypeError("Invalid parameter count")
-            return ("by_class", self.devices)
-
-        def find_all_async(self):
+        def find_all_async(self, *args):
+            if args:
+                self.by_class_calls += 1
+                self.by_class_argument = args[0]
+                if not self.by_class_available:
+                    raise TypeError("Invalid parameter count")
+                return ("by_class", self.devices)
             self.sweep_calls += 1
             # The sweep returns the whole machine; only two are sound cards.
             noise = [_Device(rf"\\?\USB#VID_046D#{i}", f"Some USB thing {i}") for i in range(50)]
@@ -71,18 +74,20 @@ def statics(monkeypatch):
 
     fake = _Statics()
 
+    class _DeviceClass:
+        pass
+
+    _DeviceClass.AUDIO_RENDER = fake.audio_render
+
     class _Module:
         DeviceInformation = fake
-
-        class DeviceClass:
-            AUDIO_RENDER = object()
+        DeviceClass = _DeviceClass
 
     import sys
 
     monkeypatch.setitem(sys.modules, "winrt.windows.devices.enumeration", _Module)
     monkeypatch.setattr(winrt_engine, "_wait", lambda op, timeout=5.0: op[1])
     monkeypatch.setattr(winrt_engine, "winrt_media_available", lambda: True)
-    monkeypatch.setattr(winrt_engine, "_known_devices", {})
     return fake
 
 
@@ -90,6 +95,7 @@ def test_the_audio_endpoints_are_asked_for_by_class(statics) -> None:
     """The whole fix: ask for sound cards, do not sweep the machine."""
     devices = winrt_engine.list_audio_devices()
     assert statics.by_class_calls == 1
+    assert statics.by_class_argument is statics.audio_render
     assert statics.sweep_calls == 0, "the machine-wide sweep is what took two seconds"
     assert len(devices) == 2
 
@@ -132,3 +138,23 @@ def test_a_query_that_times_out_is_an_empty_list_not_a_crash(statics, monkeypatc
 def test_no_engine_means_no_query_at_all(monkeypatch) -> None:
     monkeypatch.setattr(winrt_engine, "winrt_media_available", lambda: False)
     assert winrt_engine.list_audio_devices() == []
+
+
+def test_listing_does_not_keep_native_device_proxies_alive(monkeypatch) -> None:
+    """DeviceInformation COM proxies must not survive until interpreter exit.
+
+    Holding them in a module cache caused Windows to exit with 0xC0000005
+    while Python was tearing down the WinRT projections.
+    """
+    device = _endpoint("aaaaaaaa-0000-0000-0000-000000000001", "Speakers")
+    device_ref = weakref.ref(device)
+    pending = [device]
+    monkeypatch.setattr(winrt_engine, "_find_audio_endpoints", lambda: [pending.pop()])
+    monkeypatch.setattr(winrt_engine, "winrt_media_available", lambda: True)
+
+    assert winrt_engine.list_audio_devices() == [
+        ("wasapi/{aaaaaaaa-0000-0000-0000-000000000001}", "Speakers")
+    ]
+    del device
+    gc.collect()
+    assert device_ref() is None

@@ -335,6 +335,11 @@ def import_check_source(product: Product) -> str:
     return "; ".join(lines)
 
 
+def import_check_command(python_exe: Path, product: Product) -> list[str]:
+    """Run the bundle probe without writing caches into the payload inventory."""
+    return [str(python_exe), "-B", "-c", import_check_source(product)]
+
+
 def _download(url: str, target: Path, expected_sha256: str | None) -> None:
     target.parent.mkdir(parents=True, exist_ok=True)
     print(f"  downloading {url}")
@@ -690,7 +695,7 @@ def main() -> int:
     if not (out_dir / "pythonw.exe").is_file():
         raise RuntimeError("Bundle missing genuine pythonw.exe")
     check = subprocess.run(
-        [str(out_dir / "python.exe"), "-c", import_check_source(product)],
+        import_check_command(out_dir / "python.exe", product),
         capture_output=True,
         text=True,
     )

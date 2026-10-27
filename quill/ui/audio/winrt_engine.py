@@ -111,42 +111,35 @@ def _wait(operation: Any, timeout: float = _ASYNC_TIMEOUT_SECONDS) -> Any:
     return operation.get_results()
 
 
-#: GUID -> DeviceInformation, from the last enumeration; set_audio_device
-#: needs the object, not the id, and the lookup is async.
-_known_devices: dict[str, Any] = {}
-
-
 def _find_audio_endpoints() -> Any:
     """Windows' audio render endpoints, asking for only those where we can.
 
-    pywinrt does not take the overloads positionally -- ``find_all_async(x)``
-    raises "Invalid parameter count" whether *x* is a ``DeviceClass`` or an AQS
-    string -- which is why this used to sweep every device on the machine and
-    filter in Python. It names its overloads instead, and the named one is not
-    a small win: on a developer's machine the unfiltered sweep returned 4,048
-    devices in 2.4 seconds, and ``find_all_async_device_class`` returns the 2
+    PyWinRT 4.0 gives overloaded methods one name again, so the audio-render
+    overload is ``find_all_async(DeviceClass.AUDIO_RENDER)``. Its 3.x generated
+    alias, ``find_all_async_device_class``, no longer exists. The filtered
+    overload is not a small win: on a developer's machine the unfiltered sweep
+    returned 4,048 devices in 2.4 seconds, and the filtered query returns the 2
     real sound cards in 8 milliseconds. That sweep ran every time a Preferences
     window was opened, and it is what made opening one take two seconds.
 
-    The unfiltered sweep stays as the fallback, because the named overload is a
-    pywinrt spelling rather than a WinRT guarantee: a build that does not have
-    it gets a slow answer instead of no answer.
+    The unfiltered sweep stays as the fallback: a projection that does not
+    support this overload gets a slow answer instead of no answer.
     """
     from winrt.windows.devices.enumeration import DeviceClass, DeviceInformation
 
-    by_class = getattr(DeviceInformation, "find_all_async_device_class", None)
-    if callable(by_class):
+    find_all_async = getattr(DeviceInformation, "find_all_async", None)
+    if callable(find_all_async):
         try:
-            return _wait(by_class(DeviceClass.AUDIO_RENDER))
+            return _wait(find_all_async(DeviceClass.AUDIO_RENDER))
         except TimeoutError:
             raise
         except Exception:  # noqa: BLE001 - an unusable overload is not a failure
-            _log.debug("find_all_async_device_class unavailable; sweeping", exc_info=True)
+            _log.debug("find_all_async(DeviceClass) unavailable; sweeping", exc_info=True)
     return _wait(DeviceInformation.find_all_async())
 
 
 def _enumerate() -> list[Any]:
-    """Every enabled audio render endpoint, freshest first in ``_known_devices``."""
+    """Return fresh objects for every enabled audio render endpoint."""
     found = []
     for device in _find_audio_endpoints():
         try:
@@ -157,7 +150,6 @@ def _enumerate() -> list[Any]:
         match = _ENDPOINT_GUID.search(device.id)
         if match is None:
             continue
-        _known_devices[match.group(1).lower()] = device
         found.append(device)
     return found
 
@@ -236,17 +228,59 @@ class WinRtMediaEngine:
         self._player.auto_play = False
         self._session = self._player.playback_session
         self._generation = 0
+        self._terminated = False
         self._loaded = False
         self._finish_fired = False
         self._bounded = False
         self._device = ""
         self._volume = 100
-        self._player.add_media_opened(self._media_opened)
-        self._player.add_media_failed(self._media_failed)
-        self._player.add_media_ended(self._media_ended)
-        self._session.add_buffering_started(lambda _s, _a: self._buffering(True))
-        self._session.add_buffering_ended(lambda _s, _a: self._buffering(False))
+        # WinRT publishers keep delegates alive until their event tokens are
+        # removed. Retain the delegates as well as the tokens so shutdown can
+        # detach them deterministically before MediaPlayer is closed.
+        self._event_registrations: list[tuple[Any, str, Any, Callable[..., Any]]] = []
+        self._add_event_handler(
+            self._player, "add_media_opened", "remove_media_opened", self._media_opened
+        )
+        self._add_event_handler(
+            self._player, "add_media_failed", "remove_media_failed", self._media_failed
+        )
+        self._add_event_handler(
+            self._player, "add_media_ended", "remove_media_ended", self._media_ended
+        )
+        self._add_event_handler(
+            self._session,
+            "add_buffering_started",
+            "remove_buffering_started",
+            lambda _s, _a: self._buffering(True),
+        )
+        self._add_event_handler(
+            self._session,
+            "add_buffering_ended",
+            "remove_buffering_ended",
+            lambda _s, _a: self._buffering(False),
+        )
         self.set_audio_device(audio_device)
+
+    def _add_event_handler(
+        self,
+        source: Any,
+        add_name: str,
+        remove_name: str,
+        handler: Callable[..., Any],
+    ) -> None:
+        token = getattr(source, add_name)(handler)
+        self._event_registrations.append((source, remove_name, token, handler))
+
+    def _remove_event_handlers(self) -> None:
+        """Unsubscribe from WinRT events while keeping failed delegates alive."""
+        remaining: list[tuple[Any, str, Any, Callable[..., Any]]] = []
+        for source, remove_name, token, handler in reversed(self._event_registrations):
+            try:
+                getattr(source, remove_name)(token)
+            except Exception:  # noqa: BLE001 - cleanup must continue through every event
+                _log.debug("Could not remove Windows Media event %s", remove_name, exc_info=True)
+                remaining.append((source, remove_name, token, handler))
+        self._event_registrations = list(reversed(remaining))
 
     # -- device -----------------------------------------------------------------
 
@@ -264,13 +298,16 @@ class WinRtMediaEngine:
             self._device = ""
             return
         guid = device_guid(name)
-        device = _known_devices.get(guid) if guid else None
-        if device is None and guid:
+        device = None
+        if guid:
             try:
-                _enumerate()
+                for candidate in _enumerate():
+                    match = _ENDPOINT_GUID.search(candidate.id)
+                    if match is not None and match.group(1).lower() == guid:
+                        device = candidate
+                        break
             except Exception:  # noqa: BLE001
                 _log.exception("Windows audio device enumeration failed")
-            device = _known_devices.get(guid)
         if device is None:
             _log.warning("Windows Media has no device named %r; keeping the previous one", name)
             return
@@ -319,6 +356,14 @@ class WinRtMediaEngine:
 
     def terminate(self) -> None:
         """Release the player itself (process exit)."""
+        if self._terminated:
+            return
+        self._terminated = True
+        # Invalidate callbacks already queued on the UI thread, then remove
+        # the WinRT delegates before closing their publisher objects.
+        self._generation += 1
+        self._loaded = False
+        self._remove_event_handlers()
         self.close()
         try:
             self._player.close()
@@ -478,10 +523,12 @@ class WinRtMediaEngine:
     # -- events (WinRT threads -> UI thread) ------------------------------------
 
     def _media_opened(self, _sender: Any, _args: Any) -> None:
+        if self._terminated:
+            return
         generation = self._generation
 
         def deliver() -> None:
-            if generation != self._generation:
+            if self._terminated or generation != self._generation:
                 return
             self._loaded = True
             self._on_loaded(self.length_ms())
@@ -489,6 +536,8 @@ class WinRtMediaEngine:
         _dispatch(deliver)
 
     def _media_failed(self, _sender: Any, args: Any) -> None:
+        if self._terminated:
+            return
         generation = self._generation
         try:
             reason = _ERROR_REASONS.get(int(args.error), "unknown")
@@ -501,7 +550,7 @@ class WinRtMediaEngine:
         _log.warning("Windows Media load failed: %s", message)
 
         def deliver() -> None:
-            if generation != self._generation:
+            if self._terminated or generation != self._generation:
                 return
             self._loaded = False
             self._on_error(message)
@@ -509,10 +558,12 @@ class WinRtMediaEngine:
         _dispatch(deliver)
 
     def _media_ended(self, _sender: Any, _args: Any) -> None:
+        if self._terminated:
+            return
         generation = self._generation
 
         def deliver() -> None:
-            if generation != self._generation or self._finish_fired:
+            if self._terminated or generation != self._generation or self._finish_fired:
                 return
             self._finish_fired = True
             self._on_finished()
@@ -520,12 +571,17 @@ class WinRtMediaEngine:
         _dispatch(deliver)
 
     def _buffering(self, active: bool) -> None:
-        if self._on_buffering is None:
+        if self._terminated or self._on_buffering is None:
             return
         generation = self._generation
 
         def deliver() -> None:
-            if generation == self._generation and self._loaded and self._on_buffering:
+            if (
+                not self._terminated
+                and generation == self._generation
+                and self._loaded
+                and self._on_buffering
+            ):
                 self._on_buffering(active)
 
         _dispatch(deliver)

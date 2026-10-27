@@ -73,7 +73,7 @@ def test_a_satisfied_environment_reports_nothing(monkeypatch: pytest.MonkeyPatch
     requirements = _expand("runtime", optional, set())
     satisfying = {}
     for requirement in requirements:
-        # ~= too: the pywinrt family is pinned to the 3.2 line (pyproject).
+        # ~= too: PyWinRT runtime and projection constraints use compatible-release pins.
         pinned = [s for s in requirement.specifier if s.operator in ("==", ">=", "~=")]
         version = pinned[0].version if pinned else "99.0.0"
         satisfying[requirement.name.lower().replace("_", "-")] = version

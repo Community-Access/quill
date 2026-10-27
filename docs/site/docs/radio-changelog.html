@@ -251,6 +251,15 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <p>Quill Radio runs the same radio code as QUILL from the shared
 <code>quill</code> package, so features and fixes land in both at once;
 this repository carries only the wrapper, installer, icon, and docs.</p>
+<h2 id="unreleased">Unreleased</h2>
+<ul>
+<li><strong>Windows Media closes cleanly after device
+enumeration.</strong> Device selection still uses the Windows render
+endpoints and keeps the selected route. QUILL no longer retains
+COM-backed device objects in a module cache, which fixes a process-exit
+access violation after opening audio preferences or switching the output
+device. The player unregisters its WinRT events before shutdown.</li>
+</ul>
 <h2 id="320---2026-10-03">[3.2.0] - 2026-10-03</h2>
 <p>Testing rebuild: <strong>3.2.0 (build 5)</strong>. The packages have
 not been published yet.</p>
@@ -1175,10 +1184,10 @@ Quill’s own bell, mirroring Notify Me About This Podcast: off for every
 channel until you turn it on, checked on the podcast schedule (the same
 timer, the same launch check, one channel at a time, a flat listing of
 the five newest uploads), the first look a baseline rather than news,
-and each new upload one Notifications entry, “New on <channel>:
-<title>”, with one desktop notice and one sound per check under the same
-quiet hours. Enter on the notice plays the video. Stop Following turns
-the bell off too
+and each new upload one Notifications entry, “New on
+<code>&lt;channel&gt;: &lt;title&gt;</code>”, with one desktop notice
+and one sound per check under the same quiet hours. Enter on the notice
+plays the video. Stop Following turns the bell off too
 (<code>quill/core/radio/youtube_channel_alerts.py</code>).</li>
 <li><strong>My YouTube, with your own sign-in (Preferences, off by
 default).</strong> <strong>Use my YouTube sign-in from my web

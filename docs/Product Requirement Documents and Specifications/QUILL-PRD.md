@@ -3831,10 +3831,48 @@ pre-existing (previously undocumented) Vault Sync call sites.
 
 ### 5.60 Read-only document mode
 
-- `View → Read-Only Mode` (`Ctrl+Shift+L` by default) toggles the editor's editability without touching file permissions.
-- Toggle state is per-document; announced when toggled (`Read-only mode on` / `off`).
-- Status bar's **Modified state** cell shows `Read-only` while on; attempts to type are silently ignored and a single discreet announcement (`Editor is read-only; press Ctrl+Shift+L to allow editing`) fires the first time per session.
-- All navigation, Find, Outline, Read Aloud, Statistics, and Accessibility Audit continue to work.
+- **Tools → Advanced → Toggle Read-Only Guard** (`Ctrl+Alt+Backspace`) protects
+  the current document from accidental edits. The toggle is remembered per
+  file; files Windows marks read-only open guarded automatically.
+- The guard makes the current editor non-editable and rejects text-changing
+  commands through the shared command path. Reading, navigation, Find,
+  bookmarks and document notes continue to work. A note remains beside the
+  document rather than changing the protected file.
+- The QUILL Lite editor uses the same key and shared guard policy.
+
+### 5.60a Fast Reading View — proposed performance study
+
+The current guard locks editing while leaving the same document editor and
+view in place. A separate reading view is a product proposal, not a shipped
+capability. The supplied Leasey manual documents a quick switch to a plain-text
+reading surface while retaining formatting, unsaved edits, undo history,
+bookmarks, notes, Find, selection and copy; the choice is remembered per saved
+document. The supplied application does not expose the implementation source,
+so its internal performance technique cannot be confirmed from that manual.
+The manual gives no comparable timing measurements.
+
+**QUILL prototype direction:** keep the loaded rich document as the canonical
+state and build a read-only text projection for browsing. Do not convert or
+save the source document to enter the view. First compare a lightweight
+projection over the existing buffer with a separate virtualized text control;
+profile activation time, arrow-key-to-announcement latency, and memory use on
+long rich documents before choosing an editor backend. The existing Read-Only
+Guard remains a distinct edit-protection setting.
+
+**Acceptance for a prototype:**
+
+- Entering the view never marks the document modified or changes its source
+  bytes. Leaving it restores the original formatting, unsaved content, caret,
+  selection and undo history.
+- Navigation, headings, tables, bookmarks, notes, Find and copy remain
+  available to keyboard and screen-reader users. Text-changing commands and
+  saves are unavailable while the projection is active.
+- The selected view can be remembered per saved document; new documents open
+  for editing.
+- A repeatable long-document benchmark records entry time, navigation
+  latency and memory against today's editor. Claim a speed benefit only when
+  the measurements show one without losing the state or accessibility
+  behavior above.
 
 ### 5.61 File-related menu helpers
 

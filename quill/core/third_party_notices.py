@@ -54,6 +54,11 @@ LICENSE_DIR = DATA_DIR / "licenses"
 
 _DELIVERY = {
     "bundled": "Bundled: it is inside the installer or the portable zip.",
+    "shared-runtime": (
+        "Bundled in the QuillVille Runtime used by installed app editions. "
+        "A standalone portable includes it only when that app's declared "
+        "dependencies require it."
+    ),
     "on-request": (
         "Downloaded only when you ask for it, from QUILL's own pinned release, "
         "so QUILL still redistributes it."
@@ -83,6 +88,8 @@ class Component:
     obligations: str = ""
     review: str = ""
     pypi: str = ""
+    source_url: str = ""
+    source_sha256: str = ""
 
     def ships_in(self, product: str | None) -> bool:
         """Whether *product* carries this component (None means the family)."""
@@ -145,6 +152,8 @@ def load_catalogue(path: Path = CATALOGUE_PATH) -> Catalogue:
             obligations=raw.get("obligations", ""),
             review=raw.get("review", ""),
             pypi=raw.get("pypi", ""),
+            source_url=raw.get("source_url", ""),
+            source_sha256=raw.get("source_sha256", ""),
         )
         unknown = [key for key in item.licenses if key not in licenses]
         if unknown:
@@ -164,6 +173,12 @@ def load_catalogue(path: Path = CATALOGUE_PATH) -> Catalogue:
 
 
 def _included_in(cat: Catalogue, item: Component) -> str:
+    if item.delivery == "shared-runtime":
+        return (
+            "The QuillVille Runtime and installed app editions that include it. "
+            "Standalone portable editions are scoped by their own dependency "
+            "inventories."
+        )
     if ALL in item.products:
         return "Every product in the family."
     names = [cat.product_name(key) for key in cat.products if key in item.products]
@@ -192,6 +207,11 @@ def _fields(cat: Catalogue, item: Component, *, family: bool) -> list[tuple[str,
     ]
     if item.homepage:
         rows.append(("Upstream", item.homepage))
+    if item.source_url:
+        source = item.source_url
+        if item.source_sha256:
+            source += f" (SHA-256: {item.source_sha256})"
+        rows.append(("Source distribution", source))
     rows += [
         ("How it reaches you", _DELIVERY[item.delivery]),
         ("What the licence asks of us", _obligations(cat, item)),
@@ -244,12 +264,15 @@ def _intro(cat: Catalogue, product: str | None) -> list[str]:
 def _source_offer() -> list[str]:
     return [
         "Some components are under the GNU GPL, LGPL or AGPL, or the Mozilla Public "
-        "License. For each of them we offer the complete corresponding source code of "
-        "the version we ship, at no charge beyond the cost of providing it, for at "
-        "least three years after we last distribute that version.",
-        f"QUILL's own source code is public at {_SOURCE_URL}. Each entry above names "
-        "its upstream project, where the source of the version we ship is published. "
-        f"To ask for a copy of any of it, write to {_SUPPORT}.",
+        "License. Their source requirements depend on the licence and the work being "
+        "conveyed. Each entry identifies the version and, where recorded, a "
+        "version-specific source location. QUILL keeps release-specific source and "
+        "build instructions according to the applicable terms; to request source "
+        f"materials or a written offer, write to {_SUPPORT}.",
+        f"QUILL's own source code is public at {_SOURCE_URL}. For PyMuPDF, the entry "
+        "above names the exact source archive and its SHA-256 checksum. The source "
+        "scope for a QUILL work combined with an AGPL component is subject to legal "
+        "review; this notice does not make a blanket relicensing claim.",
     ]
 
 

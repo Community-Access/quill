@@ -74,6 +74,14 @@ def test_shipped_files_carry_no_maintainer_review_notes(catalogue) -> None:
     assert "Needs review" in tpn.render_markdown(catalogue)
 
 
+def test_pymupdf_notice_distinguishes_shared_runtime_from_portables(catalogue) -> None:
+    pymupdf = next(item for item in catalogue.components if item.id == "pymupdf")
+    assert pymupdf.delivery == "shared-runtime"
+    assert "QuillVille Runtime" in tpn._included_in(catalogue, pymupdf)
+    assert "standalone portable" in tpn._DELIVERY[pymupdf.delivery]
+    assert "portable inventories" in pymupdf.review
+
+
 def test_build_only_components_stay_out_of_the_product_files(catalogue) -> None:
     text = tpn.render_text(catalogue, "radio")
     assert "Inno Setup" not in text

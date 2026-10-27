@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>PyMuPDF AGPL-3.0 Distribution Review</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="pymupdf-agpl-30-distribution-review">PyMuPDF AGPL-3.0
+Distribution Review</h1>
+<p><strong>Decision:</strong> Retain PyMuPDF in QUILL. Do not replace it
+with pypdfium2 solely for licensing reasons or alter existing PDF
+behavior.</p>
+<p><strong>Status:</strong> The repository inventory, notice wording,
+and release gate are updated. This is an engineering record, not a legal
+opinion. Counsel or Artifex must resolve the open scope questions below
+before the next public release that carries the shared runtime.</p>
+<h2 id="dependency-and-product-inventory">Dependency and product
+inventory</h2>
+<p>The dependency chain is:</p>
+<ol type="1">
+<li>The <code>runtime</code> extra in <a
+href="../../pyproject.toml">pyproject.toml</a> includes
+<code>quill[glow]</code>.</li>
+<li>The <code>glow</code> extra includes <code>quill-glow-core</code>
+and <code>acb-large-print</code>.</li>
+<li><code>acb-large-print</code> depends on PyMuPDF. The current lock
+and notice catalogue record PyMuPDF 1.28.2; the shared runtime inventory
+records the bundled <code>pymupdf</code> package.</li>
+<li>The installed QuillVille Runtime is the union of app dependencies.
+The standalone portable builder uses app-specific dependency groups, so
+its output does not automatically contain the full runtime union.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>QUILL distribution</th>
+<th>PyMuPDF present?</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QuillVille Runtime</td>
+<td>Yes, 1.28.2, in <code>runtime-inventory.json</code></td>
+<td>Provides the shared GLOW backend dependency.</td>
+</tr>
+<tr>
+<td>Installed QUILL for All, QUILL Lite, Quill Radio, QUILL Cast, QUILL
+Studio, Quill Weather, Quill Inkwell, Quill Converter, QUILL Transcribe,
+QuillBeacon and QUILL Social</td>
+<td>Yes, through the shared runtime each installer installs</td>
+<td>Only QUILL’s GLOW feature uses it; the other installed apps carry it
+because the runtime has not been split into app-specific layers.</td>
+</tr>
+<tr>
+<td>Standalone portable builds</td>
+<td>No in the current build definitions</td>
+<td>Their dependency groups omit the <code>glow</code> extra. The
+committed portable inventories for Radio, QUILL Lite, Converter and
+Transcribe also omit <code>pymupdf</code>; confirm actual staged
+artifacts for every release.</td>
+</tr>
+</tbody>
+</table>
+<p>Quill Media Player has no separate installer
+(<code>standalone: null</code> in the catalogue); it runs as a feature
+of its host product. A host that installs the shared runtime receives
+PyMuPDF with that runtime.</p>
+<p>This inventory distinguishes distribution from feature use. QUILL’s
+GLOW commands delegate through <code>quill.core.glow</code> and
+<code>quill_glow_core</code> to the <code>acb-large-print</code>
+backend. GLOW is experimental and opt-in. QUILL’s ordinary PDF text
+reader uses pdfplumber and pypdf, and scanned-page rendering uses
+pypdfium2. These existing paths remain unchanged.</p>
+<p>QUILL’s ordinary PDF text reader in <a
+href="../../quill/io/pdf.py">quill/io/pdf.py</a> uses pdfplumber and
+pypdf. Scanned-page rendering in <a
+href="../../quill/io/pdf_raster.py">quill/io/pdf_raster.py</a> uses
+pypdfium2. These paths remain unchanged.</p>
+<p>The catalogue’s product list and current runtime inventory are <a
+href="../../quill/data/third_party/components.json">components.json</a>,
+<a
+href="../../standalone/runtime/app-profiles.json">app-profiles.json</a>,
+and <a
+href="../../standalone/runtime/runtime-inventory.json">runtime-inventory.json</a>.
+The portable build definitions are in <a
+href="../../standalone/studio/scripts/build_portable.py">build_portable.py</a>,
+and the committed per-app portable inventories are under
+<code>standalone/*/portable-inventory.json</code>. The release build
+must verify the version and files in each actual staged runtime,
+installer and portable artifact; the shared-runtime inventory is not a
+substitute for a portable inventory.</p>
+<h2 id="agpl-obligations-and-mit-boundary">AGPL obligations and MIT
+boundary</h2>
+<p>QUILL chooses PyMuPDF’s AGPL-3.0 option. The Artifex copyright notice
+and full AGPL-3.0 text are included in the generated third-party notices
+and in each runtime/app distribution. The full text is maintained at <a
+href="../../quill/data/third_party/licenses/AGPL-3.0.txt">AGPL-3.0.txt</a>.</p>
+<p>AGPL sections 4–6 describe notices and source requirements for source
+and object-code conveyance. “Corresponding Source” is defined by the
+licence and includes the source and scripts needed to generate, install,
+and run the covered work. Section 5 also distinguishes an aggregate of
+separate, independent works from a larger combined program. Packaging a
+component in a runtime does not, by itself, settle which category a
+particular distribution falls into.</p>
+<p>Section 13’s remote-network source offer is tied to a
+<strong>modified version of the covered Program</strong> that supports
+remote network interaction. A network feature elsewhere in QUILL does
+not alone establish that condition. Whether QUILL changes, combines, or
+exposes a covered work in a way that triggers section 13 needs legal
+review.</p>
+<p>QUILL’s own files remain identified under MIT in the project licence
+and component catalogue. This review does not assert that every QUILL
+file is automatically relicensed under AGPL, or that MIT compatibility
+resolves the scope question. Counsel must identify any source files that
+form part of a covered combined work and the license terms that may
+apply to those files.</p>
+<h2 id="version-specific-source-and-build-instructions">Version-specific
+source and build instructions</h2>
+<p>The current catalogue and <code>uv.lock</code> record PyMuPDF 1.28.2.
+The PyPI source archive is:</p>
+<ul>
+<li>URL: <a
+href="https://files.pythonhosted.org/packages/a3/fb/b6761fa2d5266f2cdb24c3b91f4023070ab7848381417678e7a289a1d52a/pymupdf-1.28.2.tar.gz">https://files.pythonhosted.org/packages/a3/fb/b6761fa2d5266f2cdb24c3b91f4023070ab7848381417678e7a289a1d52a/pymupdf-1.28.2.tar.gz</a></li>
+<li>SHA-256:
+<code>5e0be7908a715aa20333caddd73f1d6f01e4cd0c26e869fa2dd0b7f344da2249</code></li>
+<li>Version page: <a
+href="https://pypi.org/project/PyMuPDF/1.28.2/">https://pypi.org/project/PyMuPDF/1.28.2/</a></li>
+</ul>
+<p>For QUILL’s current Windows runtime build, use a clean checkout at
+the exact source commit and follow <a
+href="../building-windows-family.md">Building the QUILL Windows
+family</a>. The relevant commands are:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="va">$python</span> <span class="op">=</span> py <span class="op">-</span><span class="dv">3.14</span> <span class="op">-</span>c <span class="st">&#39;import sys; print(sys.executable)&#39;</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> <span class="op">-</span>m pip install <span class="op">--</span>find-links vendor<span class="op">/</span>wheels <span class="op">-</span>e <span class="st">&#39;.[runtime,packaging,dev]&#39;</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> scripts<span class="op">/</span>check_build_env<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>groups runtime<span class="op">,</span>packaging <span class="op">--</span>python <span class="va">$python</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="va">$python</span> scripts<span class="op">/</span>fetch_build_deps<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\runtime\build_runtime<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Python <span class="va">$python</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="op">&amp;</span> <span class="op">.</span>\standalone\runtime\build_runtime_installer<span class="op">.</span><span class="fu">ps1</span> <span class="op">-</span>Channel stable</span></code></pre></div>
+<p>The runtime build checks the declared environment and packages the
+shared runtime. <code>build_runtime_installer.ps1</code> packages that
+staged runtime; it does not rebuild PyMuPDF. To reproduce PyMuPDF
+itself, obtain the exact source archive above, verify its SHA-256, and
+follow Artifex’s version-specific upstream build instructions. QUILL
+does not patch PyMuPDF. If either the runtime’s PyMuPDF version or its
+artifact changes, refresh the source URL, checksum, notices, and release
+record from the staged artifact rather than assuming the lockfile alone
+describes what shipped.</p>
+<h2 id="release-controls">Release controls</h2>
+<p><a href="../release/RELEASE.md">RELEASE.md</a> now makes this a
+pre-tag gate for public runtime and app releases:</p>
+<ol type="1">
+<li>Inspect the built runtime and record the actual PyMuPDF version and
+binary hash. Update the notice catalogue to match.</li>
+<li>Regenerate the family, runtime, and app notices. Confirm each
+includes the Artifex copyright, full AGPL text, exact PyMuPDF source
+archive, and its SHA-256.</li>
+<li>Preserve a source snapshot tied to the exact build: QUILL source
+commit, lockfile, vendored build inputs, PyMuPDF source archive, and
+build instructions. Publish the source location alongside the matching
+binary release. Runtime slot tags move, so a moving tag alone is not an
+immutable source reference.</li>
+<li>Retain the source and access instructions for the period required by
+the applicable conveyance method. A release must not rely on an expired
+URL or an unmaintained moving tag as its source offer.</li>
+<li>Before the next public release, obtain counsel or Artifex guidance
+on the combined-work/source scope, section 13, and whether QUILL’s
+source-offer method satisfies the requirements for its installer,
+portable, and runtime-repair distribution paths. Record the answer and
+any resulting release changes here.</li>
+</ol>
+<h2 id="questions-for-counsel-or-artifex">Questions for counsel or
+Artifex</h2>
+<ul>
+<li>Does the shared Python runtime’s inclusion and import-time
+integration of PyMuPDF through <code>acb-large-print</code> make the
+runtime, QUILL app, or any app package a combined work under AGPL-3.0,
+or can any distribution be treated as an aggregate? What source files
+are Corresponding Source in each case?</li>
+<li>Does the answer differ between QUILL’s editor (which exposes GLOW)
+and the other family apps that carry the runtime but do not expose
+GLOW?</li>
+<li>Does QUILL modify any AGPL-covered program in a way that triggers
+section 13 for a remote user, and what exact notice/source-offer
+placement would be required for the installer, portable copy, and
+runtime repair flow?</li>
+<li>Does the proposed release-specific source snapshot and adjacent
+source link satisfy the applicable conveyance option and retention
+period, or is a written offer or another delivery method required?</li>
+</ul>
+<p>Until these questions are answered, the project should preserve the
+existing MIT notices for its original components, ship the AGPL notice
+and exact PyMuPDF source locator, keep the documented source/build
+materials, and hold the next public runtime/app release for legal
+review.</p>
+</main>
+</body>
+</html>

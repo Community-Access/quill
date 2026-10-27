@@ -275,8 +275,8 @@ list.</li>
 requests you did not press a button for</h2>
 <p>Every one of these can be switched off. In QUILL itself, Safe Mode
 (<code>--safe-mode</code>) turns all of them off. In the other apps Safe
-Mode turns off everything except the update check, which still runs on
-its own schedule.</p>
+Mode turns off everything except an automatic update check where that
+app provides one; that check still runs on its own schedule.</p>
 <table>
 <thead>
 <tr>
@@ -288,16 +288,17 @@ its own schedule.</p>
 </thead>
 <tbody>
 <tr>
-<td>Update check, at most once a day at launch</td>
+<td>App update check, at most once a day at launch (QUILL, QUILL Lite,
+Quill Radio, QUILL Cast and QUILL Studio)</td>
 <td><code>community-access.github.io</code> (a signed list of releases),
 falling back to <code>api.github.com</code>. The request carries a
 generic User-Agent and no version, account or machine detail. On the
 Beta and Dev release channels, an update it finds is also downloaded in
 the background; it is never installed without asking</td>
-<td>On</td>
-<td>In each app’s Preferences, under a name of its own: for example
-<em>Check for updates on startup</em> in QUILL, <em>Look for updates
-when QUILL Lite starts</em> in QUILL Lite</td>
+<td>On by default in those five apps</td>
+<td>In each app’s Preferences; for example <em>Check for updates on
+startup</em> in QUILL and <em>Look for updates when QUILL Lite
+starts</em> in QUILL Lite</td>
 </tr>
 <tr>
 <td>Quill Radio’s station-catalogue refresh</td>
@@ -359,6 +360,10 @@ sends nothing about you unless you turned on the browser sign-in</td>
 </tr>
 </tbody>
 </table>
+<p>Quill Weather, Quill Inkwell, Quill Converter, Quill Media Player and
+QUILL Transcribe do not check for app updates automatically at launch.
+They check only when you choose <strong>Help &gt; Check for
+Updates</strong>. QuillBeacon has no in-app update check.</p>
 <p>Everything else – every directory search, every AI request, every
 file transfer, every podcast feed – happens because you asked for it, or
 because you set a schedule yourself. Those schedules are all off until

@@ -27,6 +27,12 @@ Quill Radio on Python 3.14 and added most of what follows. Builds 2 and 3
 added Start Quill Radio with Windows in Preferences, editing a station's
 website in your own copy, and the fixes under "Updates and installing".
 
+### Later Windows testing update (2026-10-27)
+
+Quill Radio now closes cleanly after Windows audio-device enumeration or a
+device switch. This fixes a process-exit crash; choosing an output device and
+playing through Windows Media work as before.
+
 ### New stations and networks
 
 A listener in Hawaii asked for 181.FM by name, and it is now a branch of its

@@ -55,6 +55,10 @@ The same notices reach people in three places:
 Some components are under the GNU GPL, LGPL or AGPL. The source code of the
 version we ship is available on request, as the Third-Party Notices explain;
 QUILL's own source code is public at https://github.com/Community-Access/quill.
+QUILL retains PyMuPDF under AGPL-3.0. Its full licence text and version-specific
+source archive details appear in every applicable notice. The scope of
+Corresponding Source for QUILL's shared runtime and application packages is
+under legal review; see the [PyMuPDF licensing review](PYMUPDF-AGPL-REVIEW.md).
 
 ## Privacy and AI
 

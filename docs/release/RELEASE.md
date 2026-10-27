@@ -28,6 +28,31 @@ release notes.
    archive rather than appear as directories in `_internal`, so verify
    archive contents before concluding that an absent directory means the
    dependency is missing.
+   **PyMuPDF source and license gate.** PyMuPDF is part of the shared runtime
+   through GLOW. Every installed app edition that installs that runtime carries
+   it, even where the app does not expose GLOW. Standalone portable builds use
+   app-specific dependency groups and currently omit the GLOW extra. Before
+   each public release:
+   - Inspect the staged shared runtime, each installer package, and each
+     portable artifact. Record which contain PyMuPDF; do not infer portable
+     contents from the shared-runtime inventory.
+   - For every artifact that contains PyMuPDF, verify its version and binary
+     hash; update the catalogue's source URL and checksum if the version changes.
+   - Regenerate the notices with
+     `python -m quill.tools.build_third_party_notices --write`. Confirm the
+     Artifex copyright, full AGPL-3.0 text, exact source archive, and checksum
+     appear in the runtime and app notices.
+   - Preserve an immutable source snapshot for the build: the exact QUILL
+     commit, dependency lock and vendored inputs, the PyMuPDF source archive,
+     and the build instructions in
+     `docs/legal/PYMUPDF-AGPL-REVIEW.md`. Publish the source location next to
+     the corresponding binary release and retain it for the period required
+     by the applicable licence. Moving runtime slot tags are not source
+     snapshots.
+   - Do not make the next public runtime or app release until counsel or
+     Artifex has reviewed the combined-work/source-scope and section 13
+     questions in `docs/legal/PYMUPDF-AGPL-REVIEW.md`, and the release source
+     offer has been checked against that advice.
 4. **Translations template current.** `quill/locale/quill.pot` shows the
    target version stamp and a fresh `POT-Creation-Date`.
 5. **No `.po` or `.mo` files ship.** Verified with

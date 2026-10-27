@@ -11,8 +11,10 @@ into unrelated test failures. No ``wx`` imports.
 
 The backend is the Microsoft pywinrt ``winrt-*`` namespace packages, which
 ship wheels for current CPython (including 3.13). They replace the legacy
-``winsdk`` monolith, whose wheels stopped at cp312; the projected API
-(class and async-method names) is identical, so only the import roots differ.
+``winsdk`` monolith, whose wheels stopped at cp312. PyWinRT 4 retains the OCR
+types and async methods used below, while unifying generated overload aliases
+for overloaded APIs; Windows Media device enumeration was updated for that
+change.
 """
 
 from __future__ import annotations
