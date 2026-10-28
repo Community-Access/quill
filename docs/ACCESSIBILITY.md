@@ -425,9 +425,10 @@ described in [accessibility-resources.md](accessibility-resources.md).
 We follow the
 [Open Source Accessibility Framework](https://open-source-accessibility.github.io/Open-Source-Accessibility-Framework/)
 in its four phases. Progress is self-reported, action by action, against each
-action's definition of done, and it is not a certification. The public
-tracking issue in the framework's repository will be linked here once it is
-open. As of October 2026:
+action's definition of done, and it is not a certification. Our public
+tracking issue in the framework's repository is
+[QUILL for All, issue 53](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework/issues/53),
+where every action's state is checked off as it is met. As of October 2026:
 
 - **Foundational:** this document, and the `accessibility` label, which the
   issue form applies to every report.

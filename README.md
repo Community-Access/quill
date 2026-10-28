@@ -359,7 +359,11 @@ an improvement framework rather than a certification; our progress, the
 [core-task test procedures](docs/accessibility-testing.md), the
 [progress updates](docs/accessibility-progress.md) and the
 [resources other projects can reuse](docs/accessibility-resources.md) are
-linked from there.
+linked from there. Our progress is tracked in public, action by action, in
+[QUILL for All, issue 53](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework/issues/53)
+in the framework's repository.
+
+[![Open Source Accessibility Framework progress for QUILL for All](https://img.shields.io/badge/Accessibility%20Framework-QUILL%20for%20All-F143AB?logo=github&logoColor=000000)](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework/issues/53)
 
 ## Contributing
 
