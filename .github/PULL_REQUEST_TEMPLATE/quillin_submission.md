@@ -31,9 +31,14 @@ capability (`fs.read`, `fs.write`, `net`) and how a refusal is handled.
 
 ## Accessibility
 
+Check each item that applies; see the
+[contributor expectations in ACCESSIBILITY.md](https://github.com/Community-Access/quill/blob/main/docs/ACCESSIBILITY.md#contributor-expectations).
+
 - [ ] Every command announces a clear outcome (NVDA/JAWS/Narrator parity)
 - [ ] Fully keyboard-operable; no focus traps or surprise focus changes
 - [ ] Plain-text-first; uses stock controls / sanctioned surfaces
+- [ ] Hotkeys do not claim a chord the editor already binds
+- [ ] Screen reader and version I tested with: <!-- for example NVDA 2026.3 -->
 
 ## Author Covenant
 

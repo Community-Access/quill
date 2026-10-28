@@ -53,6 +53,15 @@ release notes.
      Artifex has reviewed the combined-work/source-scope and section 13
      questions in `docs/legal/PYMUPDF-AGPL-REVIEW.md`, and the release source
      offer has been checked against that advice.
+   **Accessibility.** Before each public release:
+   - Add the release's entry to `docs/accessibility-progress.md` (completed,
+     open, known limitations, links) and link it from the release notes.
+   - Record any keyboard, screen reader or manual runs in
+     `docs/accessibility-testing.md`, and update "Known limitations" and
+     "Supported environments" in `docs/ACCESSIBILITY.md` to match.
+   - Credit accessibility contributions in the release notes only with each
+     contributor's consent and in the form they chose; describe the work,
+     never the person's disability or assistive technology.
 4. **Translations template current.** `quill/locale/quill.pot` shows the
    target version stamp and a fresh `POT-Creation-Date`.
 5. **No `.po` or `.mo` files ship.** Verified with

@@ -152,3 +152,36 @@
 - name: "source:support"
   color: "7057ff"
   description: Raised from a Community Access support conversation. The FreeScout ticket is authoritative.
+
+# Contribution labels named by the Open Source Accessibility Framework
+# (docs/ACCESSIBILITY.md). Combined with `accessibility` they mark work for a
+# first contribution and work where experienced help is wanted.
+
+- name: "good first issue"
+  color: "7057ff"
+  description: Small, well-scoped work with enough context for a first contribution.
+
+- name: "help wanted"
+  color: "008672"
+  description: We would welcome help, often from someone with specific experience.
+
+# Labels that already exist on the repository and are applied by other
+# automation (reports filed from inside the apps, Dependabot). Listed so the
+# sync workflow keeps them rather than removing them from the open issues and
+# pull requests that carry them.
+
+- name: crash
+  color: "ededed"
+  description: A crash report, usually filed from inside an app.
+
+- name: needs-triage
+  color: "ededed"
+  description: Not yet triaged by a maintainer.
+
+- name: "source:app"
+  color: "ededed"
+  description: Filed from inside an app.
+
+- name: "python:uv"
+  color: "2b67c6"
+  description: Pull requests that update python:uv code

@@ -1,5 +1,8 @@
 blank_issues_enabled: true
 contact_links:
+  - name: Report an accessibility barrier privately or without GitHub
+    url: mailto:support@community-access.org
+    about: Email us if GitHub is hard to use for you or you would rather not post in public. docs/ACCESSIBILITY.md says how we respond.
   - name: User support (in-app flow)
     url: https://github.com/Community-Access/quill/blob/main/docs/user%20guide/userguide.md#how-to-report-a-problem-from-inside-quill
     about: For end-user support, use Help -> Report a Bug in QUILL first.

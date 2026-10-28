@@ -95,7 +95,9 @@ accurate summary of the architecture).
 `docs/README.md` is the in-tree index of everything below.
 
 - `docs/` (top level) — community and governance docs (`CONTRIBUTING.md`,
-  `CODE_OF_CONDUCT.md`, `SECURITY.md`, `GOVERNANCE.md`, `MAINTAINERS.md`),
+  `CODE_OF_CONDUCT.md`, `SECURITY.md`, `GOVERNANCE.md`, `MAINTAINERS.md`,
+  `ACCESSIBILITY.md` with its companions `accessibility-testing.md`,
+  `accessibility-progress.md` and `accessibility-resources.md`),
   plus `CONTROL_REFERENCE.md` (generated from `quill/core/help/topics.json`
   by `python -m quill.tools.build_docs` — do not hand-edit) and `signing.md`.
 - `docs/Product Requirement Documents and Specifications/` — the PRD
