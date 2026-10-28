@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.12" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Quill Converter -- the standalone audio converter app (not part
 of public QUILL 1.0)</title>
@@ -294,14 +294,14 @@ surfaces and the deferred build entry</td>
 </tbody>
 </table>
 <hr />
-<h1 id="part-1--relocated-user-guide-material">Part 1 – relocated user
-guide material</h1>
+<h2 id="part-1--relocated-user-guide-material">Part 1 – relocated user
+guide material</h2>
 <p><em>Moved from the user guide’s “The Universal Audio Converter”
 section, which stays public and now describes <strong>three</strong>
 doors (the dialog, the CLI, and Convert from URL) instead of
 five.</em></p>
-<h2 id="the-standalone-app-as-a-door-onto-the-shared-engine">The
-standalone app, as a door onto the shared engine</h2>
+<h3 id="the-standalone-app-as-a-door-onto-the-shared-engine">The
+standalone app, as a door onto the shared engine</h3>
 <ul>
 <li><strong>Quill Converter</strong> – a standalone tray app, launched
 with <code>python -m quill.apps.converter</code> (or its own icon). It
@@ -313,8 +313,8 @@ Integration -&gt; Offer “Convert with QUILL”</strong> and right-clicking
 an audio or video file gains a <strong>Convert with Quill</strong> entry
 that opens the standalone converter with that file already queued.</li>
 </ul>
-<h2 id="advanced-mode-in-the-standalone-app">Advanced mode in the
-standalone app</h2>
+<h3 id="advanced-mode-in-the-standalone-app">Advanced mode in the
+standalone app</h3>
 <p>The user guide’s Advanced-mode paragraph described the panel as “a
 checkbox that reveals more controls, or the <strong>Advanced…</strong>
 button in the standalone app”. The public text now names only the
@@ -323,14 +323,14 @@ bit rate, sample rate, channels, bit depth, loudness targets, gain,
 high-pass, trim silence, speed, compressor, leveler, and fades – through
 its <strong>Advanced…</strong> button.</p>
 <hr />
-<h1 id="part-2--relocated-prd-material">Part 2 – relocated PRD
-material</h1>
+<h2 id="part-2--relocated-prd-material">Part 2 – relocated PRD
+material</h2>
 <p><em>Moved from
 <code>docs/Product Requirement Documents and Specifications/QUILL-PRD.md</code>.
 The PRD keeps 5.25g for the public engine and its three public surfaces
 and points here for the app.</em></p>
-<h2 id="prd-525g--the-standalone-surfaces">PRD 5.25g – the standalone
-surfaces</h2>
+<h3 id="prd-525g--the-standalone-surfaces">PRD 5.25g – the standalone
+surfaces</h3>
 <p>The single wx-free engine (<code>core/audio/convert.py</code>,
 <code>presets.py</code>, <code>dsp.py</code>,
 <code>url_import.py</code>, <code>convert_cli.py</code>) is also
@@ -349,8 +349,8 @@ public build never registers it.</li>
 <p><strong>Deferred:</strong> the standalone app’s PyInstaller build
 entry + launcher tile icon (after the build refactor settles); the app
 runs today via <code>python -m quill.apps.converter</code>.</p>
-<h2 id="prd-351-the-quill-converter-family-entry">PRD 35.1 The Quill
-Converter family entry</h2>
+<h3 id="prd-351-the-quill-converter-family-entry">PRD 35.1 The Quill
+Converter family entry</h3>
 <p><em>Moved from <code>## 35. The QuillVille family</code> /
 <code>### 35.1 The apps</code>, whose inventory now lists only the
 publicly released apps and points here for the gated ones.</em></p>
