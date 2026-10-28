@@ -24,18 +24,18 @@
 
 ---
 
-# Part 1 -- relocated user guide material
+## Part 1 -- relocated user guide material
 
 _Moved from the user guide's "The Universal Audio Converter" section, which
 stays public and now describes **three** doors (the dialog, the CLI, and Convert
 from URL) instead of five._
 
-## The standalone app, as a door onto the shared engine
+### The standalone app, as a door onto the shared engine
 
 - **Quill Converter** -- a standalone tray app, launched with `python -m quill.apps.converter` (or its own icon). It carries the QuillVille menu like the other family apps, minimizes to the tray, and can have a show/hide hotkey of your choosing (File > Show and Hide Key, Ctrl+Alt+Shift+H; none by default).
 - **Windows Explorer** -- turn on **Settings -> Integration -> Offer "Convert with QUILL"** and right-clicking an audio or video file gains a **Convert with Quill** entry that opens the standalone converter with that file already queued.
 
-## Advanced mode in the standalone app
+### Advanced mode in the standalone app
 
 The user guide's Advanced-mode paragraph described the panel as "a checkbox that
 reveals more controls, or the **Advanced...** button in the standalone app". The
@@ -46,13 +46,13 @@ through its **Advanced...** button.
 
 ---
 
-# Part 2 -- relocated PRD material
+## Part 2 -- relocated PRD material
 
 _Moved from `docs/Product Requirement Documents and Specifications/QUILL-PRD.md`.
 The PRD keeps 5.25g for the public engine and its three public surfaces and
 points here for the app._
 
-## PRD 5.25g -- the standalone surfaces
+### PRD 5.25g -- the standalone surfaces
 
 The single wx-free engine (`core/audio/convert.py`, `presets.py`, `dsp.py`,
 `url_import.py`, `convert_cli.py`) is also surfaced through:
@@ -68,7 +68,7 @@ The single wx-free engine (`core/audio/convert.py`, `presets.py`, `dsp.py`,
 (after the build refactor settles); the app runs today via
 `python -m quill.apps.converter`.
 
-## PRD 35.1 The Quill Converter family entry
+### PRD 35.1 The Quill Converter family entry
 
 _Moved from `## 35. The QuillVille family` / `### 35.1 The apps`, whose inventory
 now lists only the publicly released apps and points here for the gated ones._

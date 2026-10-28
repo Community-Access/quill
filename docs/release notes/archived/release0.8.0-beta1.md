@@ -1,6 +1,6 @@
 # QUILL — Meet You Where You Are
 
-### The screen-reader-first writing studio, built by the people who depend on it. This is the public beta, build 0.8.0 Beta 1.
+**The screen-reader-first writing studio, built by the people who depend on it. This is the public beta, build 0.8.0 Beta 1.**
 
 *From Community Access. Free. Optional by design. Private by default. Yours to make quiet.*
 
