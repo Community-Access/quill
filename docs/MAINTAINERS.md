@@ -8,6 +8,9 @@ This file describes maintainer responsibilities and operational expectations.
 |---|---|---|
 | Code Maintainer | Jeff Bishop | jeff@jeffbishop.com |
 
+Accessibility is owned by Jeff Bishop; the owner's responsibilities are in
+[ACCESSIBILITY.md](ACCESSIBILITY.md#ownership-and-maintenance).
+
 ## Maintainer team
 
 - Community Access maintainers (`@Community-Access`)

@@ -36,6 +36,11 @@ quick index for the docs tree itself.
 - [CONTRIBUTING](CONTRIBUTING.md) · [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md) ·
   [SECURITY](SECURITY.md) · [GOVERNANCE](GOVERNANCE.md) ·
   [MAINTAINERS](MAINTAINERS.md)
+- [ACCESSIBILITY](ACCESSIBILITY.md) - our accessibility commitments, how to
+  report a barrier and how we respond, with the
+  [core-task accessibility tests](accessibility-testing.md), the
+  [progress updates](accessibility-progress.md) and
+  [reusable accessibility resources](accessibility-resources.md).
 - [legal/](legal/) — privacy, responsible AI use, trademarks, third-party
   notices.
 - [signing](signing.md) — artifact signing workflow for Quillin Hub
