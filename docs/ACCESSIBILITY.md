@@ -455,7 +455,8 @@ in its four phases. Progress is self-reported, action by action, against each
 action's definition of done, and it is not a certification. Our public
 tracking issue in the framework's repository is
 [QUILL for All, issue 53](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework/issues/53),
-where every action's state is checked off as it is met. As of October 2026:
+where every action's state is checked off as it is met. As of October 2026,
+20 of its 24 actions are done:
 
 - **Foundational:** this document, and the `accessibility` label, which the
   issue form applies to every report.
@@ -475,9 +476,15 @@ where every action's state is checked off as it is met. As of October 2026:
   complete.
 - **Community:** ways to take part and a private route for accommodations; a
   Code of Conduct; a monthly feedback and progress issue; published progress
-  updates; shared resources. Crediting contributions publicly waits on
-  contributors' consent, and responding to reports under the guidance above is
-  ongoing practice.
+  updates; shared resources; and responding constructively to reports, under
+  [How we respond](#how-we-respond) above and, since 29 October 2026, the
+  accessibility-reports workflow (`.github/workflows/accessibility-reports.yml`),
+  which acknowledges every report, reminds the owner after 5 business days
+  without a reply, reopens a report closed without a documented outcome (a
+  merged fix or an `Outcome:` line), and invites the reporter to confirm a
+  fix. Past reports are not reopened: earlier gaps, such as reports closed
+  without a written outcome (#804, #999), are history that the rule now
+  prevents. Crediting contributions publicly waits on contributors' consent.
 
 ## Feedback
 
