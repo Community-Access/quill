@@ -103,7 +103,7 @@ class SimpleOpenMixin:
         wx = self._wx
         with wx.FileDialog(
             self.frame,
-            "Open text file",
+            "Open document",
             defaultDir=initial_dir if initial_dir is not None else self._file_dialog_default_dir(),
             wildcard=(
                 "Supported files"
@@ -132,7 +132,7 @@ class SimpleOpenMixin:
             ),
             style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
         ) as dialog:
-            if self._show_modal_dialog(dialog, "Open text file") != wx.ID_OK:
+            if self._show_modal_dialog(dialog, "Open document") != wx.ID_OK:
                 return None
             chosen = Path(dialog.GetPath())
             self._last_file_dir = str(chosen.parent)

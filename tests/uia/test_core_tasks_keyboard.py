@@ -92,6 +92,18 @@ def _focused_handle_chain() -> list[int]:
     return handles
 
 
+def _focused_name() -> str:
+    """The accessible name and type of whatever has keyboard focus."""
+    from pywinauto.uia_defines import IUIA
+    from pywinauto.uia_element_info import UIAElementInfo
+
+    try:
+        info = UIAElementInfo(IUIA().get_focused_element())
+        return f"{info.name} ({info.control_type})"
+    except Exception as exc:  # noqa: BLE001 - diagnostics only
+        return f"(unknown: {exc})"
+
+
 def _assert_focus_inside(window, what: str) -> None:
     handle = int(window.wrapper_object().handle)
     assert handle in _focused_handle_chain(), f"keyboard focus left {what}"
@@ -232,13 +244,25 @@ def test_core_task_5_change_a_setting(quill_app) -> None:
     dialog = _open_window(quill_app, "^,", "Settings")
     _assert_named(dialog, "Settings")
     _tab_round(dialog, "the Settings dialog", presses=15)
+    from pywinauto.keyboard import send_keys
+
+    # After the first key, send_keys types into whatever has focus, as hands
+    # do; type_keys would refocus the dialog before every string.
     dialog.type_keys("^f")
-    dialog.type_keys("wrap find searches", with_spaces=True)
-    quill_app.wait_spoken("matching settings", timeout=15)
-    dialog.type_keys("{ENTER}")
     time.sleep(0.5)
-    dialog.type_keys("{SPACE}")
-    dialog.type_keys("{ENTER}")
+    in_search = _focused_name()
+    send_keys("wrap find searches", with_spaces=True)
+    try:
+        quill_app.wait_spoken("matching settings", timeout=15)
+    except AssertionError as exc:
+        raise AssertionError(
+            f"{exc}; focus after Ctrl+F was on {in_search!r}, now on {_focused_name()!r}"
+        ) from exc
+    send_keys("{ENTER}")
+    time.sleep(0.5)
+    send_keys("{SPACE}")
+    time.sleep(0.3)
+    send_keys("{ENTER}")
     _assert_closes(dialog, "the Settings dialog")
     deadline = time.monotonic() + 15
     saved: dict[str, object] = {}
