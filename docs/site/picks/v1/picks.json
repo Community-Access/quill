@@ -1,7 +1,7 @@
 {
   "format": "quillville-picks",
   "version": 1,
-  "updated": "2026-10-12T02:37:40Z",
+  "updated": "2026-10-29T18:11:28Z",
   "title": "QuillVille Community Picks",
   "description": "Stations, podcasts and places the community recommends.",
   "collections": [
@@ -524,6 +524,15 @@
       "title": "Community suggestions",
       "description": "Suggested by the community and approved.",
       "items": [
+        {
+          "id": "aircheck-radio",
+          "type": "stream",
+          "title": "AIRCHECK RADIO",
+          "added": "2026-10-29",
+          "description": "This is where actual radio broadcasts of the past from anywhere within the US and CANADA are showcased.",
+          "language": "en-US",
+          "stream_url": "https://sonic.radiostream.ca/8034/stream"
+        },
         {
           "id": "funk-the-planet",
           "type": "stream",
