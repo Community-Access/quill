@@ -470,6 +470,29 @@ works.</li>
 <li>We thank you for the report, and credit you in the release notes
 only if you agree (see <a href="#recognition">Recognition</a>).</li>
 </ul>
+<p>Two workflows hold us to this for reports opened from 29 October 2026
+on. Their logic and its tests are in
+<code>.github/scripts/a11y-community.mjs</code>.</p>
+<ul>
+<li><strong>When you report a barrier,</strong> a bot replies once: it
+thanks you, says a maintainer will reply with a status and a next step
+within 5 business days, points you to <a href="#known-limitations">Known
+limitations</a>, and invites, but never requires, details of your setup.
+The issue is labelled <code>a11y: awaiting response</code> until a
+maintainer comments.</li>
+<li><strong>If no maintainer has replied after 5 business days</strong>
+(Monday to Friday), the issue is labelled
+<code>a11y: response overdue</code> and the accessibility owner is
+reminded on the issue.</li>
+<li><strong>A report cannot close without an outcome.</strong>
+Maintainers close it from the pull request or commit that fixes it, or
+write a comment with a line that starts <code>Outcome:</code>, after the
+reporter’s last comment, saying what changed or why it cannot. A report
+closed without either is reopened automatically, with a note saying how
+to add one. When a report closes as fixed, you are invited to confirm
+that the fix works for you, and the issue is labelled
+<code>a11y: validation requested</code>.</li>
+</ul>
 <h3 id="resolution-expectations">Resolution expectations</h3>
 <p>After triage each accessibility issue has a severity, an owner and a
 status.</p>
@@ -568,6 +591,15 @@ handle, or no credit at all. We describe the work, never the person: we
 do not mention anyone’s disability, diagnosis or assistive technology
 unless they ask us to. The release checklist in <a
 href="release/RELEASE.md">release/RELEASE.md</a> includes this step.</p>
+<p>A workflow does the asking. When an accessibility pull request from
+outside the maintainers is merged, or your report closes as fixed, a bot
+asks you once how you would like to be credited, and you reply with one
+line: <code>credit: @handle</code>,
+<code>credit: name &lt;Name&gt;</code>, <code>credit: anonymous</code>
+or <code>credit: no</code>. Only your own reply counts, you can change
+it later, and nothing about you beyond the credit you choose is
+published. The answer is recorded as a <code>credit:</code> label, and
+each release’s credits are listed from those labels.</p>
 <h2 id="ownership-and-maintenance">Ownership and maintenance</h2>
 <p>Accessibility is owned by <strong>Jeff Bishop</strong>, project
 maintainer (<a href="https://github.com/accesswatch">@accesswatch</a> on

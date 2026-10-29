@@ -1,0 +1,9 @@
+{
+  "projectName": "QUILL",
+  "accessibilityLabel": "accessibility",
+  "installDate": "2026-10-29",
+  "owner": "accesswatch",
+  "accessibilityDoc": "https://github.com/Community-Access/quill/blob/main/docs/ACCESSIBILITY.md",
+  "responseBusinessDays": 5,
+  "creditReminderDays": 14
+}

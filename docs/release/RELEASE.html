@@ -376,7 +376,13 @@ limitations” and “Supported environments” in
 <code>docs/ACCESSIBILITY.md</code> to match.</li>
 <li>Credit accessibility contributions in the release notes only with
 each contributor’s consent and in the form they chose; describe the
-work, never the person’s disability or assistive technology.</li>
+work, never the person’s disability or assistive technology. Run
+<code>node .github/scripts/a11y-credits.mjs --since &lt;previous tag&gt;</code>
+and paste the block it prints: items labelled <code>credit: yes</code>
+or <code>credit: anonymous</code> closed since that tag, as code and
+other contributions. It also warns about <code>credit: asked</code>
+items with no answer after 14 days; leave those contributors out, or ask
+them again.</li>
 </ul></li>
 <li><strong>Translations template current.</strong>
 <code>quill/locale/quill.pot</code> shows the target version stamp and a
