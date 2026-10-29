@@ -154,6 +154,15 @@ def test_core_task_2_open_and_move_by_heading(quill_app) -> None:
     quill_app.wait_spoken("Third section", timeout=15)
 
 
+def _file_name_box(dialog) -> str:
+    """What the common file dialog's File name box holds (1001 is its id)."""
+    try:
+        box = dialog.child_window(auto_id="1001", control_type="Edit")
+        return str(box.get_value())
+    except Exception as exc:  # noqa: BLE001 - diagnostics only
+        return f"(unreadable: {exc})"
+
+
 def test_core_task_3_write_and_save(quill_app) -> None:
     # Type a heading and a paragraph, Ctrl+S on the untitled document opens
     # Save As; type a path, Enter; the file is written and the title says so.
@@ -167,12 +176,21 @@ def test_core_task_3_write_and_save(quill_app) -> None:
     dialog = _open_window(quill_app, "^s", "Save")
     # Alt+N is the common file dialog's own key for "File name:", so the path
     # lands there whichever pane the dialog chose to focus first.
-    dialog.type_keys("%n^a" + _literal(str(target)) + "{ENTER}", with_spaces=True)
+    dialog.type_keys("%n^a" + _literal(str(target)), with_spaces=True)
+    typed = _file_name_box(dialog)
+    dialog.type_keys("{ENTER}")
+    # The file name box autocompletes, and Enter can be spent closing its
+    # suggestion list. Alt+S is the dialog's own Save button key.
+    try:
+        _assert_closes(dialog, "Save file as", timeout=3)
+    except AssertionError:
+        dialog.type_keys("%s")
     try:
         _wait_title(quill_app, "written-by-keyboard")
     except AssertionError as exc:
         raise AssertionError(
-            f"{exc}; windows open: {_window_titles(quill_app)!r}; spoken: {quill_app.spoken()!r}"
+            f"{exc}; file name box held {typed!r}; windows open: "
+            f"{_window_titles(quill_app)!r}; spoken: {quill_app.spoken()!r}"
         ) from exc
     _wait_title(quill_app, "[modified]", present=False)
     text = target.read_text(encoding="utf-8")
@@ -258,6 +276,10 @@ def test_core_task_6_help_and_support(quill_app) -> None:
     _assert_focus_back_in_main(quill_app)
 
 
+@pytest.mark.xfail(
+    reason="#1703: Ctrl+Alt+F2 sent by pywinauto opened nothing on the CI runner",
+    strict=False,
+)
 def test_core_task_6_support_chord(quill_app) -> None:
     # The documented chord for Get Help from Support, Ctrl+Alt+F2. Kept apart
     # from the menu route so a chord problem cannot hide the task passing.
