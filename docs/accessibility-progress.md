@@ -19,7 +19,17 @@ are counts of work, not a score: no number here says how accessible QUILL is.
   dependency list and known limitations; an improved accessibility issue form
   with an email route; an accessibility checklist in the pull request
   templates; documented [core-task tests](accessibility-testing.md); and
-  [resources other projects can reuse](accessibility-resources.md).
+  [resources other projects can reuse](accessibility-resources.md). 20 of
+  the framework's 24 actions are done, as recorded in
+  [our tracking issue](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework/issues/53).
+- **Every accessibility report gets a response and an outcome** (from
+  2026-10-29). The accessibility-reports workflow acknowledges every report,
+  reminds the owner after 5 business days without a reply, reopens a report
+  closed without a documented outcome (a merged fix or an `Outcome:` line),
+  and invites the reporter to confirm a fix. Past reports are not reopened:
+  earlier gaps such as #804 and #999, closed without a written outcome, are
+  history that the rule now prevents. See "How we respond" in
+  [ACCESSIBILITY.md](ACCESSIBILITY.md#how-we-respond).
 - **Tables are real tables in rich text** (2026-10-26). A screen reader, Word
   and WordPad all read them as tables, and saved as RTF or Word the first row
   stays marked as the header row. Insert Table (`Ctrl+Alt+T`) asks whether the
