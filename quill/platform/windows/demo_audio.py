@@ -195,7 +195,7 @@ def list_microphones() -> list[Microphone]:
     import sounddevice as sd
 
     apis = {index: api["name"] for index, api in enumerate(sd.query_hostapis())}
-    preference = {"Windows WASAPI": 0, "MME": 1, "Windows DirectSound": 2}
+    preference = {"ASIO": 0, "Windows WASAPI": 1, "MME": 2, "Windows DirectSound": 3}
     best: dict[str, Microphone] = {}
     for index, device in enumerate(sd.query_devices()):
         if int(device.get("max_input_channels", 0)) <= 0:
@@ -204,6 +204,9 @@ def list_microphones() -> list[Microphone]:
         if api not in preference:
             continue
         name = str(device["name"]).strip()
+        if api == "ASIO":
+            # One ASIO driver often carries the same name as its WASAPI twin.
+            name = f"{name} (ASIO)"
         candidate = Microphone(index, name, api, int(device["max_input_channels"]))
         current = best.get(name)
         if current is None or preference[api] < preference[current.host_api]:
@@ -384,7 +387,9 @@ class MicrophoneSource(_Source):
             self._sink(bytes(data), time.time() - frames / RATE)
 
         extra = None
-        if device.host_api == "Windows WASAPI":
+        if device.host_api == "ASIO":
+            self.channels = max(1, min(2, device.channels))
+        elif device.host_api == "Windows WASAPI":
             # Shared mode runs at the device's own rate; let Windows convert to 48 kHz.
             extra = sd.WasapiSettings(auto_convert=True)
         try:

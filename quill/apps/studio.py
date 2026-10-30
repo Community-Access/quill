@@ -135,6 +135,9 @@ _PREFS_DEFAULTS: dict[str, object] = {
     "alt_f4_to_tray": False,
     "close_action": "ask",
     "announce_run_milestones": True,
+    # Off by default: an ASIO driver is loaded at start-up only when asked for,
+    # because a misbehaving one can stall or crash the program that loads it.
+    "use_asio": False,
     "show_status_bar": True,
     "last_update_check": "",
 }
@@ -2770,6 +2773,10 @@ def main() -> int:
     from quill.stability.logging_config import configure_logging
 
     log_listener = configure_logging(app_data_dir() / "logs")
+    # ASIO sound cards (roadmap M13): PortAudio's ASIO build must be chosen
+    # before sounddevice is first imported, so this is read at launch.
+    if bool(_load_app_prefs().get("use_asio")):
+        os.environ["SD_ENABLE_ASIO"] = "1"
     from quill.core import components
 
     components.register_running_app("studio", REQUIRED_COMPONENTS)

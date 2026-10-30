@@ -71,3 +71,24 @@ def test_microphone_resolves_only_the_same_device(monkeypatch):
     assert resolve_microphone("Headset Microphone (Logitech US") is None
     assert resolve_microphone("Microphone Array (Realtek High").index == 3
     assert resolve_microphone("USB Camera Microphone") is None
+
+
+def test_asio_inputs_are_listed_first_and_named(monkeypatch):
+    import sounddevice as sd
+
+    monkeypatch.setattr(
+        sd,
+        "query_hostapis",
+        lambda: [{"name": "MME"}, {"name": "ASIO"}, {"name": "Windows WASAPI"}],
+    )
+    monkeypatch.setattr(
+        sd,
+        "query_devices",
+        lambda: [
+            {"name": "Focusrite USB", "hostapi": 1, "max_input_channels": 2},
+            {"name": "Focusrite USB", "hostapi": 2, "max_input_channels": 2},
+            {"name": "Speakers", "hostapi": 2, "max_input_channels": 0},
+        ],
+    )
+    names = [(m.name, m.host_api) for m in demo_audio.list_microphones()]
+    assert names == [("Focusrite USB", "Windows WASAPI"), ("Focusrite USB (ASIO)", "ASIO")]

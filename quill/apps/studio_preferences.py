@@ -51,6 +51,13 @@ def open_preferences(app: Any) -> None:
                 "percent so you can follow progress without checking the window",
                 bool(prefs["announce_run_milestones"]),
             ),
+            PreferenceCheckbox(
+                "Use AS&IO sound cards (after restarting Studio)",
+                "Let recordings and the mixer use professional audio interfaces through "
+                "their ASIO drivers, for the lowest delay. Takes effect the next time Studio "
+                "starts. Most ASIO drivers allow one program at a time",
+                bool(prefs.get("use_asio", False)),
+            ),
         ],
         choices=[
             PreferenceChoice(
@@ -73,6 +80,7 @@ def open_preferences(app: Any) -> None:
         prefs["check_updates_on_startup"],
         prefs["alt_f4_to_tray"],
         prefs["announce_run_milestones"],
+        prefs["use_asio"],
     ) = checkbox_values
     prefs["close_action"] = _CLOSE_ACTION_VALUES[choice_indices[0]]
     _save_app_prefs(prefs)

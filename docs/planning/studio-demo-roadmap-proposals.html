@@ -708,20 +708,26 @@ everything except that meeting’s own sound, held by stable identity.
 <li><strong>M12. Controllers</strong>: MIDI faders and buttons and
 Stream Deck keys mapped to any mixer action, with the same spoken
 feedback as the keyboard (MX-157). (M)</li>
-<li><strong>M13. ASIO sound cards (wanted).</strong> Professional audio
-interfaces through ASIO, beside WASAPI, for the lowest delay and for
-interfaces whose Windows drivers are poor. Each input channel of an ASIO
-card becomes a named source in the mixer and in Record a demonstration
-(“Input 1, Shure SM7B”), and outputs can carry the Monitor or Stream
-bus. Plain-word settings: buffer size shown as milliseconds of delay,
-sample rate, and which channels to use. Studio warns when another
-program has the ASIO card, because most ASIO drivers allow only one
-program at a time. How: a PortAudio build with ASIO enabled, used
-through <code>sounddevice</code> (the ASIO SDK is free from Steinberg
-under its licence, which is recorded in third-party notices before
-shipping; nothing is compiled from the SDK into QUILL’s own code). Where
-a card has no ASIO driver, FlexASIO or ASIO4ALL are explained as
-optional, user-installed choices, never bundled. (L)</li>
+<li><strong>M13. ASIO sound cards (wanted).</strong> <strong>Built in
+part</strong> 2026-10-29: an opt-in preference loads the ASIO-enabled
+PortAudio already shipped inside <code>sounddevice</code>, and ASIO
+inputs appear as microphones for recording. Still to do: ASIO outputs
+for the Monitor and Stream buses (with the live engine), the buffer-size
+setting, and the third-party notice for the ASIO SDK in that DLL, which
+must be in <code>docs/legal/</code> before a release turns this on.
+Professional audio interfaces through ASIO, beside WASAPI, for the
+lowest delay and for interfaces whose Windows drivers are poor. Each
+input channel of an ASIO card becomes a named source in the mixer and in
+Record a demonstration (“Input 1, Shure SM7B”), and outputs can carry
+the Monitor or Stream bus. Plain-word settings: buffer size shown as
+milliseconds of delay, sample rate, and which channels to use. Studio
+warns when another program has the ASIO card, because most ASIO drivers
+allow only one program at a time. How: a PortAudio build with ASIO
+enabled, used through <code>sounddevice</code> (the ASIO SDK is free
+from Steinberg under its licence, which is recorded in third-party
+notices before shipping; nothing is compiled from the SDK into QUILL’s
+own code). Where a card has no ASIO driver, FlexASIO or ASIO4ALL are
+explained as optional, user-installed choices, never bundled. (L)</li>
 <li><strong>M14. WASAPI exclusive mode</strong> as the other low-delay
 choice for a single interface, with a plain warning that other programs
 (including the screen reader, if it uses that card) go silent on that
