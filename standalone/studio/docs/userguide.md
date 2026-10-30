@@ -837,8 +837,8 @@ Studio hides itself, keeps its own windows out of the picture, puts "Recording" 
 | Recording status | Ctrl+Alt+Shift+T | Elapsed time, sounds in, screen reader in or out, dropped frames, space left |
 | Show the Recording status window | Ctrl+Alt+Shift+W | |
 | Emergency stop and save | Ctrl+Alt+Shift+End | A second stop key, in case one is swallowed |
-| Discard this recording | Ctrl+Alt+Shift+F9 | Asks before deleting anything |
-| Recover unfinished recordings | Ctrl+Alt+Shift+F7 | |
+| Discard this recording | Ctrl+Alt+Shift+Delete | Asks before deleting anything |
+| Recover unfinished recordings | Ctrl+Alt+Shift+L | |
 
 Those keys work while Studio has focus. While you are demonstrating, focus is somewhere else, so assign system-wide keys: **Assign keys** in the Record a demonstration window, or **Capture > Capture global hotkeys...**. None is assigned for you, because a system-wide key takes that key away from every other program. Until you assign some, use the tray icon's menu, which has Stop and save, Pause, Add a marker, Recording status and the status window, and acts without bringing Studio back into the picture.
 
@@ -877,7 +877,7 @@ Beside each recording:
 
 ### Recovering an unfinished recording
 
-If Studio or the computer stops in the middle of a recording, nothing is lost up to that point: Studio records in short pieces as it goes. The next time Studio starts it says so on the status line. Choose **Capture > Recover unfinished recordings** (Ctrl+Alt+Shift+F7) to finish and check them; each becomes an ordinary recording with the same checks.
+If Studio or the computer stops in the middle of a recording, nothing is lost up to that point: Studio records in short pieces as it goes. The next time Studio starts it says so on the status line. Choose **Capture > Recover unfinished recordings** (Ctrl+Alt+Shift+L) to finish and check them; each becomes an ordinary recording with the same checks.
 
 ### Worked example: a screen reader demonstration for a blog post
 

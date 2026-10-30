@@ -46,8 +46,10 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         "studio.record_emergency_stop": "Ctrl+Alt+Shift+End",
         # Rare and destructive (family rule 9): a key, not a short one, and it
         # asks before deleting anything.
-        "studio.record_discard": "Ctrl+Alt+Shift+F9",
-        "studio.record_recover": "Ctrl+Alt+Shift+F7",
+        # Not F7 to F11: those are the QuillVille launcher keys, and a launcher
+        # always wins, so a command there would never fire.
+        "studio.record_discard": "Ctrl+Alt+Shift+Delete",
+        "studio.record_recover": "Ctrl+Alt+Shift+L",
         "studio.camera_check": "Ctrl+Alt+Shift+C",
         # MX-150 proposes Ctrl+Alt+M for the mixer; the three-modifier form
         # keeps Studio's capture keys one family.

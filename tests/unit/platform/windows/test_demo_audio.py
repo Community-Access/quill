@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import importlib.util
 import wave
 
 import pytest
@@ -16,12 +17,18 @@ from quill.platform.windows.demo_audio import (
 
 RATE = 48_000
 
+#: The live-dictation extra, not in every CI leg (the accessibility leg has no numpy).
+needs_numpy = pytest.mark.skipif(
+    importlib.util.find_spec("numpy") is None, reason="numpy is not installed"
+)
+
 
 def _frames(path):
     with wave.open(str(path), "rb") as handle:
         return handle.getnframes()
 
 
+@needs_numpy
 def test_gap_between_packets_is_filled_with_silence(tmp_path):
     stream = WavStream(tmp_path / "a.wav", start_hint=100.0)
     tone = (1000).to_bytes(2, "little", signed=True) * 2 * 480  # 10 ms stereo
@@ -34,6 +41,7 @@ def test_gap_between_packets_is_filled_with_silence(tmp_path):
     assert not level.digital_silence and level.present
 
 
+@needs_numpy
 def test_nothing_arriving_is_a_full_segment_of_silence(tmp_path):
     stream = WavStream(tmp_path / "b.wav", start_hint=10.0)
     stream.finish(12.0)
@@ -42,6 +50,7 @@ def test_nothing_arriving_is_a_full_segment_of_silence(tmp_path):
     assert level_from_wav(tmp_path / "b.wav", "Quiet").digital_silence
 
 
+@needs_numpy
 def test_muted_source_writes_zeros_but_keeps_time(tmp_path):
     stream = WavStream(tmp_path / "c.wav")
     stream.muted = True
@@ -51,6 +60,7 @@ def test_muted_source_writes_zeros_but_keeps_time(tmp_path):
     assert _frames(tmp_path / "c.wav") == 480
 
 
+@needs_numpy
 def test_header_is_true_before_close_so_a_crash_leaves_a_readable_file(tmp_path):
     stream = WavStream(tmp_path / "d.wav")
     stream.write(b"\x01\x00" * 2 * 4800, 1.0)
@@ -73,6 +83,7 @@ def test_microphone_resolves_only_the_same_device(monkeypatch):
     assert resolve_microphone("USB Camera Microphone") is None
 
 
+@needs_numpy
 def test_asio_inputs_are_listed_first_and_named(monkeypatch):
     import sounddevice as sd
 

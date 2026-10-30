@@ -139,11 +139,11 @@ def parse_image(provider: ImageProvider, payload: Any) -> bytes:
 
 def generate_image(request: ImageRequest, *, opener: Callable[..., Any] | None = None) -> bytes:
     """Ask the provider for one picture; its PNG (or JPEG) bytes."""
-    from quill.core.assistant_ai import _context_for
+    from quill.core.net import context_for
 
     endpoint, headers, body = build_request(request)
     outgoing = Request(endpoint, data=body, headers=headers, method="POST")
-    context = _context_for(endpoint)
+    context = context_for(endpoint)
     try:
         if opener is None:
             reply = urlopen(outgoing, timeout=_TIMEOUT_S, context=context)

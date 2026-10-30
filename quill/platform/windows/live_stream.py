@@ -18,7 +18,6 @@ from __future__ import annotations
 
 import logging
 import socket
-import ssl
 import subprocess
 import threading
 import time
@@ -255,9 +254,9 @@ class LiveStream:
         try:
             sock = socket.create_connection(address, timeout=10)
             if self.settings.secure:
-                sock = ssl.create_default_context().wrap_socket(
-                    sock, server_hostname=self.settings.host
-                )
+                from quill.core.net import verified_ssl_context
+
+                sock = verified_ssl_context().wrap_socket(sock, server_hostname=self.settings.host)
             sock.sendall(login)
             reply = sock.recv(256).decode("utf-8", "replace")
             if not reply.startswith("OK"):
@@ -354,7 +353,9 @@ class LiveStream:
 
         url, headers = metadata_request(self.settings, self._password, title)
         try:
-            with urlopen(Request(url, headers=headers), timeout=10):
+            from quill.core.net import context_for
+
+            with urlopen(Request(url, headers=headers), timeout=10, context=context_for(url)):
                 return ""
         except (URLError, OSError) as error:
             return f"The title could not be updated: {error}"

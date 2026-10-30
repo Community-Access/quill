@@ -40,7 +40,7 @@ Highlights:
 - **Control from anywhere.** Pause, markers, microphone mute, a spoken status, a status window that never takes focus, an emergency stop and discard, from the Capture menu, the tray icon's menu, or system-wide keys you assign.
 - **Problems are said once and marked.** A window closing, a program or your screen reader quitting, a microphone unplugged, a display change, the camera stopping, or the disk running low are announced once and marked in the recording. A different microphone is never swapped in.
 - **The finished file is checked independently.** After Stop the file is reopened and checked: its streams, length, frame count, clean decoding at the start, middle and end, black stretches, and that each sound source is really there. You hear one sentence, and the result is Verified, Needs review or Failed. A readable report and a JSON report are saved beside the video.
-- **Nothing is lost.** Studio records in short pieces. If Studio or the computer stops, Recover unfinished recordings (Ctrl+Alt+Shift+F7) finishes and checks what was recorded.
+- **Nothing is lost.** Studio records in short pieces. If Studio or the computer stops, Recover unfinished recordings (Ctrl+Alt+Shift+L) finishes and checks what was recorded.
 - **Captions and a transcript.** The result window makes SRT and VTT captions and a plain transcript on your computer, with the speech recognition you already use. Nothing is sent anywhere.
 
 ## The Studio Mixer
