@@ -227,6 +227,7 @@
   "quill/ui/studio_demo_result.py::DemoResultDialog.__init__::wx.Button#3": "helped",
   "quill/ui/studio_demo_result.py::DemoResultDialog.__init__::wx.Button#4": "helped",
   "quill/ui/studio_demo_result.py::DemoResultDialog.__init__::wx.Button#5": "helped",
+  "quill/ui/studio_demo_result.py::DemoResultDialog.__init__::wx.Button#6": "helped",
   "quill/ui/studio_demo_result.py::DemoResultDialog.__init__::wx.TextCtrl": "helped",
   "quill/ui/studio_demo_status.py::RecordingStatusFrame.__init__::wx.Button": "helped",
   "quill/ui/studio_demo_status.py::RecordingStatusFrame.__init__::wx.Button#2": "helped",
@@ -251,5 +252,10 @@
   "quill/ui/studio_picture_video.py::PictureVideoDialog.__init__::wx.TextCtrl": "helped",
   "quill/ui/studio_picture_video.py::PictureVideoDialog.__init__::wx.TextCtrl#2": "helped",
   "quill/ui/studio_picture_video.py::PictureVideoDialog._file_row::wx.Button": "helped",
-  "quill/ui/studio_picture_video.py::PictureVideoDialog._file_row::wx.TextCtrl": "helped"
+  "quill/ui/studio_picture_video.py::PictureVideoDialog._file_row::wx.TextCtrl": "helped",
+  "quill/ui/studio_video_question.py::VideoQuestionDialog.__init__::wx.Button": "helped",
+  "quill/ui/studio_video_question.py::VideoQuestionDialog.__init__::wx.Choice": "helped",
+  "quill/ui/studio_video_question.py::VideoQuestionDialog.__init__::wx.TextCtrl": "helped",
+  "quill/ui/studio_video_question.py::VideoQuestionDialog.__init__::wx.TextCtrl#2": "helped",
+  "quill/ui/studio_video_question.py::VideoQuestionDialog.__init__::wx.TextCtrl#3": "helped"
 }

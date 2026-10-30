@@ -53,6 +53,7 @@ _SCAN_GLOBS: tuple[str, ...] = (
     "quill/ui/studio_mixer.py",
     "quill/apps/studio_picture_video.py",
     "quill/ui/studio_picture_video.py",
+    "quill/ui/studio_video_question.py",
 )
 
 #: Surface constructions whose titles the scan cannot resolve, with the

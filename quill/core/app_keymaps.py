@@ -54,6 +54,9 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         "studio.mixer": "Ctrl+Alt+Shift+M",
         # Y for YouTube: a picture and a sound made into one video (roadmap V3).
         "studio.picture_video": "Ctrl+Alt+Shift+Y",
+        # K for asK: AI about the whole video or a stretch (roadmap A1). Not Q,
+        # which is QUILL's system-wide show/hide (family_chords.SHOW_HIDE_DEFAULTS).
+        "studio.ask_ai_video": "Ctrl+Alt+Shift+K",
     },
     "radio": {
         # Quick-play favorites. These were Ctrl+Alt+Shift+1..0 in

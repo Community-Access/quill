@@ -82,6 +82,11 @@ PURPOSES: dict[str, str] = {
         "exactly as it is. The video and its YouTube title and description are saved beside "
         "the sound."
     ),
+    "Ask AI questions about a video": (
+        "Choose a video and the whole of it or a stretch. Studio takes frames from that "
+        "stretch, lays them out as one labelled picture with the transcript if there is one, "
+        "and opens a conversation about it. Nothing is sent until you approve it there."
+    ),
     "Studio Mixer": (
         "Every program's sound and every sound card in one window. Programs: each "
         "program's volume, mute and the sound card it plays on, as Windows Settings does. "

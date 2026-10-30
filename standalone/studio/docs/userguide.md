@@ -793,6 +793,10 @@ To record new sound first, use Record a demonstration with the screen and the ca
 
 Press **Make the video**. The video is saved beside the sound as "name - video.mp4", checked the same way as a recording, and a text file beside it ("name - video.youtube.txt") holds the title and the description with chapter timestamps, ready to paste into YouTube's upload page.
 
+### Ask AI about a video
+
+**Capture > Ask AI questions about a video** (Ctrl+Alt+Shift+K), or **Ask AI about this video** in a recording's result window, lets you ask about the whole video or a stretch of it, from one time to another, written like 1:05. Studio takes 4 to 16 frames spread across that stretch, lays them out as one picture with each frame's time written on it, and, if captions exist beside the video, adds what was said in the same stretch. It then opens the same conversation window as the Screenshot Inspector, with a question already describing the picture. Nothing is sent until you approve it, using your usual AI connection, and Safe Mode blocks it as it blocks screenshot AI. Answers cite the times of the frames they rely on.
+
 ### Check, then start
 
 Press **Check**. It takes a few seconds: Studio takes a trial picture, records three seconds of the screen at your settings to see whether the computer keeps up, opens each sound source briefly, looks for the camera, and checks FFmpeg, the folder and its free space, whether the computer is on battery, and whether Windows Update is waiting to restart it. The result lands in the **Check result** field and your screen reader reads it once. It says what will be recorded, which sounds are in and which are left out (always naming your screen reader), where the file goes, and then every problem. **Stop** means it cannot record until you fix it. **Warn** means it can, but something might spoil it, for example a microphone that is delivering pure digital silence because Windows privacy settings are blocking it.

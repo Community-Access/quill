@@ -154,6 +154,9 @@ class StudioDemoFinishMixin:
             if temporary or path.suffix.lower() != ".mp4"
             else (lambda: self._inspect_demo_frame(path)),
             title=title or f"Demonstration: {verification.state}",
+            ask_ai=None
+            if temporary or path.suffix.lower() != ".mp4"
+            else (lambda: wx.CallAfter(self.ask_ai_about_video, str(path))),
             make_captions=None
             if temporary
             else (lambda: wx.CallAfter(self._caption_recording, path)),

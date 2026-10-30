@@ -31,6 +31,7 @@ class DemoResultDialog(wx.Dialog):
         title: str = "Demonstration saved",
         make_video: Callable[[], None] | None = None,
         make_captions: Callable[[], None] | None = None,
+        ask_ai: Callable[[], None] | None = None,
     ) -> None:
         super().__init__(parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         layout = wx.BoxSizer(wx.VERTICAL)
@@ -63,6 +64,14 @@ class DemoResultDialog(wx.Dialog):
             )
             inspect.Bind(wx.EVT_BUTTON, lambda _e: inspect_frame())
             row.Add(inspect, 0, wx.RIGHT, 6)
+        if ask_ai is not None:
+            ask = wx.Button(self, label="&Ask AI about this video...")
+            ask.SetHelpText(
+                "Ask questions about the whole video or a stretch of it. Nothing is sent "
+                "until you approve it."
+            )
+            ask.Bind(wx.EVT_BUTTON, lambda _e: (self.EndModal(wx.ID_CANCEL), ask_ai()))
+            row.Add(ask, 0, wx.RIGHT, 6)
         if make_captions is not None:
             captions = wx.Button(self, label="Make captions and a &transcript")
             captions.SetHelpText(

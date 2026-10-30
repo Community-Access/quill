@@ -1110,7 +1110,7 @@ Control coverage: 39 audited sites (26 helped, 13 named-help).
 
 ## QUILL Studio
 
-Control coverage: 253 audited sites (11 help-elsewhere, 242 helped).
+Control coverage: 259 audited sites (11 help-elsewhere, 248 helped).
 
 ### Every window, and what it is for
 
@@ -1121,6 +1121,8 @@ Control coverage: 253 audited sites (11 help-elsewhere, 242 helped).
 **Add a spoken screenshot note.** Start explicitly opens the shared microphone. Stop and recognize uses an installed offline speech model. Review and correct the words before Use reviewed note. Closing stops recording; temporary audio is deleted. No cloud upload occurs.
 
 **Add marker.** Type an optional label for this moment in the recording, then press Enter.
+
+**Ask AI questions about a video.** Choose a video and the whole of it or a stretch. Studio takes frames from that stretch, lays them out as one labelled picture with the transcript if there is one, and opens a conversation about it. Nothing is sent until you approve it there.
 
 **Capture screen.** Choose a named window for a whole-window screenshot without entering sizes. Or choose a display, full desktop, delayed active window or guided region. For a guided region, choose a source and Whole source, top, bottom, left, right or middle. Review Capture plan and guidance before starting. Exact coordinates are optional advanced settings. Review local OCR or framing afterward. AI sharing requires approval or previously enabled automatic AI.
 

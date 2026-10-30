@@ -220,3 +220,18 @@ def test_picture_and_sound_make_a_checked_youtube_video(tmp_path, options):
     assert verification.state == "Verified", verification.sentence
     assert "4 seconds" in verification.sentence
     assert (tmp_path / "talk - video.youtube.txt").read_text("utf-8").startswith("Title:\nTalk")
+
+
+def test_contact_sheet_from_a_real_video(tmp_path):
+    from PIL import Image
+
+    from quill.core.video_review import Section
+    from quill.platform.windows.video_review import contact_sheet
+
+    video = tmp_path / "clip.mkv"
+    _video(video, 4, "640x360")
+    sheet = tmp_path / "frames.png"
+    times = contact_sheet(FFMPEG, video, Section(0, 4), 4, sheet)
+    assert len(times) == 4
+    with Image.open(sheet) as image:
+        assert image.size[0] == 2 * 480

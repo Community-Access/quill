@@ -67,6 +67,11 @@ class StudioDemoMixin(StudioDemoSetupMixin, StudioDemoFinishMixin, StudioPicture
             ("studio.camera_check", "Check camera &framing...", self.check_camera_framing),
             ("studio.mixer", "Studio Mi&xer...", self.open_mixer),
             (
+                "studio.ask_ai_video",
+                "Ask AI &questions about a video...",
+                self.ask_ai_about_video,
+            ),
+            (
                 "studio.picture_video",
                 "Make a &YouTube video from a picture and sound...",
                 self.make_picture_video,

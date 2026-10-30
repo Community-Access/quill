@@ -63,6 +63,70 @@ class StudioPictureVideoMixin:
             ui_lifetime=self._demo_lifetime(),
         )
 
+    def ask_ai_about_video(self, video: str = "") -> None:
+        """Roadmap A1: the whole video or a stretch, as one labelled picture, in the
+        Screenshot Inspector's conversation (its consent and Safe Mode rules apply)."""
+        ffmpeg = self._demo_ffmpeg()
+        if not ffmpeg:
+            self._announce("Asking about a video needs FFmpeg. Use Voices, Get FFmpeg.")
+            return
+        from quill.core.demo_recording import DemoRecordingError
+        from quill.ui.studio_video_question import VideoQuestionDialog
+
+        dialog = VideoQuestionDialog(self.frame, choose_file=self._choose_media_file, video=video)
+        try:
+            if self._show_modal_dialog(dialog, dialog.GetTitle()) != wx.ID_OK:
+                return
+            path, start, end, frames, use_transcript = dialog.choices()
+        finally:
+            dialog.Destroy()
+        if not path.is_file():
+            self._announce("Choose a video file first.")
+            return
+        self._announce("Taking frames from the video.")
+
+        def work(*, cancellation_token, **_kwargs):
+            from quill.core.paths import app_data_dir
+            from quill.core.speech.ffmpeg import probe_duration_ms
+            from quill.core.studio_capture import verify_capture
+            from quill.core.video_review import (
+                captions_beside,
+                question_prompt,
+                section,
+                transcript_excerpt,
+            )
+            from quill.platform.windows.video_review import contact_sheet
+
+            duration = probe_duration_ms(path) / 1000
+            part = section(duration, start, end)
+            sheet = app_data_dir() / "studio-captures" / f"{path.stem} - frames.png"
+            times = contact_sheet(ffmpeg, path, part, frames, sheet, cancellation_token)
+            transcript = ""
+            captions = captions_beside(path) if use_transcript else None
+            if captions is not None:
+                transcript = transcript_excerpt(captions.read_text(encoding="utf-8"), part)
+            evidence = verify_capture(sheet, f"Frames from {path.name}")
+            return evidence, question_prompt(path, part, times, transcript)
+
+        def done(_task, result):
+            evidence, prompt = result
+            self._last_capture = evidence
+            self._review_capture(evidence, question=prompt)
+
+        def failed(_task, error):
+            message = str(error)
+            if isinstance(error, DemoRecordingError):
+                message = error.args[0] if error.args else message
+            self._announce(f"The video question could not be prepared: {message}")
+
+        self._task_manager.submit(
+            "Prepare a video question",
+            work,
+            on_success=done,
+            on_failure=failed,
+            ui_lifetime=self._demo_lifetime(),
+        )
+
     def _choose_media_file(self, parent: wx.Window, what: str, wildcard: str) -> str | None:
         dialog = wx.FileDialog(
             parent,
