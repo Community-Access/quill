@@ -90,7 +90,7 @@ The window gets two check boxes, **Screen** and **Camera**, and the Sound source
 - **A2. Pre-recording coach.** A trial frame, 10 seconds of sound and the stated goal; back come recommendations you accept or ignore. (S after A1)
 - **A3. After-recording review**: suggested chapters with titles, long silences, restarts, filler words, a title, description and tags for YouTube, a plain summary. Markers and text only. (M)
 - **A4. Camera coach beyond faces** (VIS-005): lighting, headroom, background, blur, from one approved frame. The local face detector stays the free default. (S)
-- **A5. Captions and transcript files** beside the video, transcribed locally (SRT, VTT, plain text). Optional burned-in captions as a recording option. (S)
+- **A5. Captions and transcript files** (**Built** 2026-10-29 from the result window; burned-in captions still to do) beside the video, transcribed locally (SRT, VTT, plain text). Optional burned-in captions as a recording option. (S)
 - **A6. Audio description draft** (VIS-008): AI drafts descriptions of visual events at their times, for a human to review and record. (M)
 - **A7. Live co-pilot while recording**, opt-in and silent unless asked: "did the dialog open?" answered from the latest frame, through a system-wide key. Spoken into headphones only; never into the recording. (M)
 - **A8. Local-only AI path**: the same questions answered by a local vision model through Ollama when the hardware allows, so nothing leaves the machine. (S, reuses shared AI settings)

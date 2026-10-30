@@ -30,6 +30,7 @@ class DemoResultDialog(wx.Dialog):
         inspect_frame: Callable[[], None] | None,
         title: str = "Demonstration saved",
         make_video: Callable[[], None] | None = None,
+        make_captions: Callable[[], None] | None = None,
     ) -> None:
         super().__init__(parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         layout = wx.BoxSizer(wx.VERTICAL)
@@ -62,6 +63,14 @@ class DemoResultDialog(wx.Dialog):
             )
             inspect.Bind(wx.EVT_BUTTON, lambda _e: inspect_frame())
             row.Add(inspect, 0, wx.RIGHT, 6)
+        if make_captions is not None:
+            captions = wx.Button(self, label="Make captions and a &transcript")
+            captions.SetHelpText(
+                "Transcribe the speech on this computer and save captions (SRT and VTT) and a "
+                "plain transcript beside the file. Nothing is sent anywhere."
+            )
+            captions.Bind(wx.EVT_BUTTON, lambda _e: (self.EndModal(wx.ID_CANCEL), make_captions()))
+            row.Add(captions, 0, wx.RIGHT, 6)
         if make_video is not None:
             video = wx.Button(self, label="Make a &video with a picture...")
             video.SetHelpText(

@@ -154,6 +154,9 @@ class StudioDemoFinishMixin:
             if temporary or path.suffix.lower() != ".mp4"
             else (lambda: self._inspect_demo_frame(path)),
             title=title or f"Demonstration: {verification.state}",
+            make_captions=None
+            if temporary
+            else (lambda: wx.CallAfter(self._caption_recording, path)),
             make_video=None
             if temporary or path.suffix.lower() == ".mp4"
             else (lambda: wx.CallAfter(self.make_picture_video, str(path))),
@@ -164,6 +167,11 @@ class StudioDemoFinishMixin:
             dialog.Destroy()
             if temporary is not None:
                 shutil.rmtree(temporary, ignore_errors=True)
+
+    def _caption_recording(self, path: Path) -> None:
+        from quill.ui.audio_studio.captions_command import generate_captions
+
+        generate_captions(self, source=path)
 
     def _inspect_demo_frame(self, video: Path) -> None:
         from quill.core.studio_capture import verify_capture

@@ -523,3 +523,25 @@ def test_a_whole_sound_card_can_be_added(parent, tmp_path):
         assert added.device == "{0.0.0.00000000}.{x}" and added.enabled
     finally:
         dialog.Destroy()
+
+
+def test_captions_and_transcript_are_saved_beside_a_recording(tmp_path):
+    from quill.ui.audio_studio.captions_command import _save_beside
+
+    spoken = []
+    host = SimpleNamespace(_announce=spoken.append)
+    segments = (
+        SimpleNamespace(start_seconds=0.0, end_seconds=1.5, text="Hello and welcome."),
+        SimpleNamespace(start_seconds=1.5, end_seconds=3.0, text="This is the demo."),
+    )
+    source = tmp_path / "Demo.mp4"
+    source.write_bytes(b"x")
+    (tmp_path / "Demo.srt").write_text("old", encoding="utf-8")
+    _save_beside(host, SimpleNamespace(segments=segments), source)
+    assert (tmp_path / "Demo.srt").read_text(encoding="utf-8") == "old"  # never replaced
+    assert "Hello and welcome." in (tmp_path / "Demo (2).srt").read_text(encoding="utf-8")
+    assert (tmp_path / "Demo.vtt").read_text(encoding="utf-8").startswith("WEBVTT")
+    assert (tmp_path / "Demo.transcript.txt").read_text(encoding="utf-8") == (
+        "Hello and welcome.\nThis is the demo.\n"
+    )
+    assert spoken == ["Captions and a transcript saved beside Demo.mp4."]
