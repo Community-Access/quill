@@ -32,6 +32,7 @@ from quill.core.net import certificate_problem
 from quill.core.paths import app_data_dir
 from quill.core.settings import save_settings
 from quill.core.text_utils import strip_md_to_plain as _strip_md_to_plain
+from quill.ui.spoken_name import set_spoken_name
 
 
 class UpdatesMixin:
@@ -783,6 +784,7 @@ class UpdatesMixin:
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_AUTO_URL | wx.TE_RICH2,
             name="update_body",
         )
+        set_spoken_name(body, "Download details")
         sizer.Add(body, 1, wx.EXPAND | wx.ALL, 12)
         btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
         btn_sizer.AddStretchSpacer()

@@ -63,6 +63,8 @@ class AIAgentResultDialog:
         self._build_ui()
 
     def _build_ui(self) -> None:
+        from quill.ui.spoken_name import set_spoken_name
+
         wx = self._wx
         result = self._result
         root = wx.BoxSizer(wx.VERTICAL)
@@ -76,6 +78,7 @@ class AIAgentResultDialog:
                 style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.BORDER_SIMPLE,
             )
             self._step_list.SetName("Agent steps")
+            set_spoken_name(self._step_list, "Agent steps")
             self._step_list.InsertColumn(0, "#", width=36)
             self._step_list.InsertColumn(1, "Step", width=200)
             self._step_list.InsertColumn(2, "Output preview", width=440)
@@ -96,6 +99,7 @@ class AIAgentResultDialog:
             style=wx.TE_MULTILINE | wx.TE_READONLY,
         )
         self._output_ctrl.SetName("Agent output")
+        set_spoken_name(self._output_ctrl, "Agent output")
         out_sizer.Add(self._output_ctrl, 1, wx.EXPAND | wx.ALL, 4)
         root.Add(out_sizer, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 

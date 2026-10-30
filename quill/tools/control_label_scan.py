@@ -38,6 +38,9 @@ enclosing function**:
 * ``named-only`` -- ``SetName`` and/or ``SetHelpText`` is written for it and no
   static text precedes it. **This is the bug.**
 * ``unlabelled`` -- neither. Announces as a bare role.
+* ``spoken``     -- no static text precedes it, but the same function passes it to
+  :func:`quill.ui.spoken_name.set_spoken_name`, which sets the MSAA ``accName``
+  the reader actually speaks (#1693). Not an offender.
 
 (``reviewed`` is a fourth state, applied by the gate from its snapshot rather
 than decided here: the scanner reports what the source says and a human overrides
@@ -129,9 +132,16 @@ NAMING_METHODS: frozenset[str] = frozenset({"SetName", "SetHelpText", "set_acces
 #: already wrote the sentence and only needs it moved into a label.
 NAMING_HELPERS: frozenset[str] = frozenset({"_name", "set_accessible_name", "name_control"})
 
+#: Helpers that set the name a Windows screen reader *speaks*, not just the wx
+#: window name. Called as ``set_spoken_name(control, "name")``. Kept apart from
+#: :data:`NAMING_HELPERS` because those are exactly the calls this gate exists to
+#: distrust; this one is verified to reach MSAA ``accName`` (#1693).
+SPEAKING_HELPERS: frozenset[str] = frozenset({"set_spoken_name"})
+
 LABELLED = "labelled"
 NAMED_ONLY = "named-only"
 UNLABELLED = "unlabelled"
+SPOKEN = "spoken"
 REVIEWED = "reviewed"
 
 #: The two that fail a build. Kept as a set so the gate and the report cannot
@@ -285,6 +295,8 @@ class _ControlVisitor(ast.NodeVisitor):
         self.events: dict[str, list[tuple[int, int, str, str]]] = {}
         #: scope -> the expressions something wrote a name for
         self.named: dict[str, set[str]] = {}
+        #: scope -> the expressions given a spoken name (``set_spoken_name``)
+        self.spoken: dict[str, set[str]] = {}
 
     @property
     def _key(self) -> str:
@@ -326,6 +338,11 @@ class _ControlVisitor(ast.NodeVisitor):
             self._record_named(func.value)
         elif isinstance(func, ast.Name) and func.id in NAMING_HELPERS and node.args:
             self._record_named(node.args[0])
+        elif isinstance(func, ast.Name) and func.id in SPEAKING_HELPERS and node.args:
+            try:
+                self.spoken.setdefault(self._key, set()).add(ast.unparse(node.args[0]))
+            except Exception:  # pragma: no cover - unparse is total in practice
+                pass
         called = func.attr if isinstance(func, ast.Attribute) else getattr(func, "id", "")
         if kind is None and called in self._helpers:
             # A call to a label helper *is* a label in the z-order chain. It is
@@ -356,6 +373,7 @@ def _classify_scope(
     qualname: str,
     events: list[tuple[int, int, str, str]],
     named: set[str],
+    spoken: frozenset[str] | set[str] = frozenset(),
 ) -> Iterator[ControlSite]:
     """Walk one function's constructions in source order and classify each.
 
@@ -372,6 +390,8 @@ def _classify_scope(
             continue
         if previous_was_label:
             status = LABELLED
+        elif assigned and assigned in spoken:
+            status = SPOKEN
         elif assigned and assigned in named:
             status = NAMED_ONLY
         else:
@@ -388,7 +408,15 @@ def classify_tree(tree: ast.Module, path: str, helpers: frozenset[str]) -> list[
     visitor.visit(tree)
     sites: list[ControlSite] = []
     for qualname, events in visitor.events.items():
-        sites.extend(_classify_scope(path, qualname, events, visitor.named.get(qualname, set())))
+        sites.extend(
+            _classify_scope(
+                path,
+                qualname,
+                events,
+                visitor.named.get(qualname, set()),
+                visitor.spoken.get(qualname, set()),
+            )
+        )
     return sites
 
 

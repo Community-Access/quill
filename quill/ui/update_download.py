@@ -32,6 +32,7 @@ from quill.core.file_manager import reveal_command
 from quill.core.net import certificate_problem
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.spoken_name import set_spoken_name
 
 __all__ = [
     "Submit",
@@ -233,6 +234,7 @@ def offer_install(
         name="update_body",
     )
     set_accessible_name(body, "Update details, read-only")
+    set_spoken_name(body, "Update details")
     sizer.Add(body, 1, wx.EXPAND | wx.ALL, 12)
     buttons = wx.BoxSizer(wx.HORIZONTAL)
     buttons.AddStretchSpacer()

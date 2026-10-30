@@ -24,6 +24,7 @@ from quill.core.weather import nws, render
 from quill.core.weather import settings as settings_mod
 from quill.core.weather.models import WeatherLocation, WeatherReport
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.spoken_name import set_spoken_name
 from quill.ui.surface_lifetime import surface_tasks
 from quill.ui.weather.center_text import (
     _alert_detail_text,
@@ -262,6 +263,7 @@ class WeatherCenterDialog:
         # -- status + close --
         self._status = wx.TextCtrl(self._surface, style=wx.TE_READONLY)
         set_accessible_name(self._status, "Weather source and freshness status")
+        set_spoken_name(self._status, "Weather source and freshness status")
         self._status.SetHelpText(
             "Where this report came from and how it is doing: the National "
             "Weather Service office and zone, the observing station, and "

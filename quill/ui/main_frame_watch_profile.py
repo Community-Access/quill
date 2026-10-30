@@ -19,6 +19,7 @@ from quill.core.watch_profiles import (
     WatchProfile,
 )
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.spoken_name import set_spoken_name
 
 
 class WatchProfileDialogMixin:
@@ -135,6 +136,7 @@ class WatchProfileDialogMixin:
             set_accessible_name(start_hour, "Schedule start hour")
             start_minute = wx.SpinCtrl(dialog, min=0, max=59, initial=start_m)
             set_accessible_name(start_minute, "Schedule start minute")
+            set_spoken_name(start_minute, "Schedule start minute")
             time_row.Add(start_hour, 0, wx.RIGHT, 2)
             time_row.Add(start_minute, 0, wx.RIGHT, 12)
             time_row.Add(
@@ -144,6 +146,7 @@ class WatchProfileDialogMixin:
             set_accessible_name(end_hour, "Schedule end hour")
             end_minute = wx.SpinCtrl(dialog, min=0, max=59, initial=end_m)
             set_accessible_name(end_minute, "Schedule end minute")
+            set_spoken_name(end_minute, "Schedule end minute")
             time_row.Add(end_hour, 0, wx.RIGHT, 2)
             time_row.Add(end_minute, 0)
             root.Add(time_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)

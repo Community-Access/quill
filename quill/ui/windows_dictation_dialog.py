@@ -67,6 +67,7 @@ from quill.core.windows_dictation.wake import (
 )
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
 from quill.ui.dictation_lists_dialog import DictationCommandsDialog, RecentPhrasesDialog
+from quill.ui.spoken_name import set_spoken_name
 from quill.ui.windows_dictation_cloud import CloudProvidersMixin
 from quill.ui.windows_dictation_devices import (
     default_microphone_name,
@@ -248,6 +249,7 @@ class WindowsDictationDialog(
         self.test_result = wx.TextCtrl(self, style=wx.TE_READONLY)
         self.test_result.SetHelpText("What the last microphone test found.")
         self.test_result.SetName("Microphone test result")
+        set_spoken_name(self.test_result, "Microphone test result")
         test_row.Add(self.test_microphone, 0, wx.RIGHT, _PAD)
         test_row.Add(self.test_result, 1, wx.EXPAND)
         root.Add(test_row, 0, wx.EXPAND | wx.ALL, _PAD)

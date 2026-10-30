@@ -38,6 +38,7 @@ from quill.ui.dialog_contract import (
 )
 from quill.ui.preferences_search import registry_page_index
 from quill.ui.preferences_search_registry import declare_hub_settings, declare_settings_pages
+from quill.ui.spoken_name import set_spoken_name
 
 
 class PreferencesMixin:
@@ -500,6 +501,7 @@ class PreferencesMixin:
                             choices=[opt.label for opt in available_browser_options()],
                         )
                         c.SetName(_sl)
+                        set_spoken_name(c, _sl)
                         c.SetStringSelection(browser_choice_label_for_value(_cur))
                         return c
 
@@ -525,6 +527,7 @@ class PreferencesMixin:
                         _t = wx.TextCtrl(_pp)
                         _t.SetValue(_cur)
                         _t.SetName(_sl)
+                        set_spoken_name(_t, _sl)
                         _t.SetHint(
                             "e.g. /Users/YourName/Documents (blank = Documents)"
                             if sys.platform == "darwin"
@@ -577,6 +580,7 @@ class PreferencesMixin:
                         _t = wx.TextCtrl(_pp)
                         _t.SetValue(_cur)
                         _t.SetName(_sl)
+                        set_spoken_name(_t, _sl)
                         _t.SetHint("blank = default beep")
                         _b = wx.Button(_pp, label="Choose WAV file...")
                         _b.SetName(f"Choose WAV file for {_sl}")
@@ -623,6 +627,7 @@ class PreferencesMixin:
                         t = wx.TextCtrl(_pp)
                         t.SetValue(_cur)
                         t.SetName(_sl)
+                        set_spoken_name(t, _sl)
                         t.SetHint("e.g. en, fr, es (blank = OS language)")
                         return t
 
@@ -645,6 +650,7 @@ class PreferencesMixin:
                         _t = wx.TextCtrl(_pp)
                         _t.SetValue(_cur)
                         _t.SetName(_sl)
+                        set_spoken_name(_t, _sl)
                         _t.SetHint("blank = default system sound")
                         _b = wx.Button(_pp, label="Choose WAV file...")
                         _b.SetName(f"Choose WAV file for {_sl}")
@@ -698,6 +704,7 @@ class PreferencesMixin:
                         _t = wx.TextCtrl(_pp)
                         _t.SetValue(_cur)
                         _t.SetName(_sl)
+                        set_spoken_name(_t, _sl)
                         _t.SetHint("blank = bundled Ink pack")
                         _b = wx.Button(_pp, label="Choose Sound Pack...")
                         _b.SetName(f"Choose sound pack folder or file for {_sl}")
@@ -794,9 +801,11 @@ class PreferencesMixin:
                     ):
                         c = wx.Choice(_pp, choices=_ls)
                         c.SetName(_sl)
+                        set_spoken_name(c, _sl)
                         c.SetStringSelection(_lv.get(_cv, _ls[0]))
                         spin = wx.SpinCtrl(_pp, min=_cmin, max=_cmax, value=str(_cur))
                         set_accessible_name(spin, _custom_sl)
+                        set_spoken_name(spin, _custom_sl)
                         ms_label = wx.StaticText(_pp, label="ms")
                         ms_label.SetName(_custom_sl + " (milliseconds)")
                         # Wire enable/disable of the spin to the chooser.
@@ -851,6 +860,7 @@ class PreferencesMixin:
                     ):
                         c = wx.Choice(_pp, choices=_ls)
                         c.SetName(_sl)
+                        set_spoken_name(c, _sl)
                         c.SetStringSelection(_lv.get(_cv, _ls[0]))
                         return c
 
@@ -879,6 +889,7 @@ class PreferencesMixin:
                         # support#69: VoiceOver reads the inner TextCtrl, not the
                         # composite's Name -- the helper names both (#1012).
                         set_accessible_name(s, _spec.label)
+                        set_spoken_name(s, _spec.label)
                         return s
 
                     spin = _add_field_row(parent_panel, sizer, spec.label, _make_spin_int)
@@ -895,6 +906,7 @@ class PreferencesMixin:
                             s.SetRange(float(_spec.minimum), float(_spec.maximum))
                         s.SetValue(_cur)
                         set_accessible_name(s, _spec.label)
+                        set_spoken_name(s, _spec.label)
                         return s
 
                     spin = _add_field_row(parent_panel, sizer, spec.label, _make_spin_float)
@@ -909,6 +921,7 @@ class PreferencesMixin:
                     t = wx.TextCtrl(_pp)
                     t.SetValue(_cur)
                     t.SetName(_sl)
+                    set_spoken_name(t, _sl)
                     return t
 
                 text = _add_field_row(parent_panel, sizer, spec.label, _make_text)
@@ -958,6 +971,7 @@ class PreferencesMixin:
                 def _make_mode_choice(_pp=_p):
                     c = wx.Choice(_pp, choices=_mode_labels)
                     c.SetName("Data location")
+                    set_spoken_name(c, "Data location")
                     c.SetSelection(_mode_values.index(_current_mode))
                     return c
 

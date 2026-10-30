@@ -53,6 +53,7 @@ from quill.ui.radio.results_view import ResultsViewMixin
 from quill.ui.radio.search_fanout import run_search
 from quill.ui.radio.search_recents import RecentSearchesMixin
 from quill.ui.radio.volume_row import add_volume_slider
+from quill.ui.spoken_name import set_spoken_name
 from quill.ui.surface_lifetime import surface_tasks
 
 _FAVORITES = "Favorites"
@@ -387,6 +388,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         results_col.Add(facet_row, 0, wx.BOTTOM, 4)
         self._results = wx.ListCtrl(self._surface, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
         self._results.SetName("Station results; arrow through to hear details of each")
+        set_spoken_name(self._results, "Station results")
         # The columns are the listener's, not the author's: View > Choose
         # Columns... decides which of them exist and in what order, and a report
         # row is read out column by column, so that choice is the sentence every
@@ -404,6 +406,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         self._tunein_tree.SetName(
             "TuneIn categories; press Enter to open a folder or play a station"
         )
+        set_spoken_name(self._tunein_tree, "TuneIn categories")
         self._tunein_tree.Hide()
         results_col.Add(self._tunein_tree, 1, wx.EXPAND)
         body.Add(results_col, 2, wx.EXPAND)

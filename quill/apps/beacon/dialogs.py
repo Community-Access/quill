@@ -13,6 +13,7 @@ import wx
 from quill.apps.beacon.model import ALL_TYPES
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
 from quill.ui.preferences_search import install_preferences_context_help as _context_help
+from quill.ui.spoken_name import set_spoken_name
 
 
 def _name(ctrl: wx.Control, name: str) -> None:
@@ -670,6 +671,7 @@ class TrailEditorDialog(wx.Dialog):
         steps_box = wx.StaticBoxSizer(wx.VERTICAL, self, "&Steps")
         self.step_list = wx.ListBox(steps_box.GetStaticBox(), style=wx.LB_SINGLE)
         _name(self.step_list, "Trail steps. Select to edit note or remove.")
+        set_spoken_name(self.step_list, "Trail steps")
         self.step_list.SetHelpText(
             "The trail's steps in order: each row shows its number, a "
             "[done] mark when completed, and the bookmark it points to. "
@@ -682,6 +684,7 @@ class TrailEditorDialog(wx.Dialog):
         step_row = wx.BoxSizer(wx.HORIZONTAL)
         self.step_note = wx.TextCtrl(self, size=(240, -1))
         _name(self.step_note, "Note for the selected step")
+        set_spoken_name(self.step_note, "Note for the selected step")
         self.step_note.SetHelpText(
             "The note for the next step you add: fill it in before pressing "
             "Add Selected Beacon. It is shown when stepping through the "
@@ -1045,6 +1048,7 @@ class StatusCenterDialog(wx.Dialog):
             self, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2, size=(420, 240)
         )
         _name(self.text, "Status center. Capture bridge, sync, and library health.")
+        set_spoken_name(self.text, "Status report")
         self.text.SetHelpText(
             "The current report, one line per fact: capture bridge, sync "
             "transport and vault state, library and trash counts, and how "
@@ -1114,6 +1118,7 @@ class PreferencesDialog(wx.Dialog):
         # Left: section list.
         self.sections = wx.ListBox(self, choices=self.SECTIONS, size=(160, -1))
         _name(self.sections, "Preferences sections")
+        set_spoken_name(self.sections, "Preferences sections")
         self.sections.SetHelpText(
             "The preference sections. Selecting one shows its panel to the "
             "right: Accessibility, Sync, Capture Bridge, Published Pages, "
@@ -1759,6 +1764,7 @@ class SmartCollectionsDialog(wx.Dialog):
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.list = wx.ListBox(self, size=(440, 200))
         _name(self.list, "Smart collections. Enter to edit, Delete to remove.")
+        set_spoken_name(self.list, "Smart collections")
         self.list.SetHelpText(
             "Your saved searches, one per row with the query each one "
             "runs. Double-click or Edit opens the editor for the selected "
@@ -1991,6 +1997,7 @@ class TrailStepDialog(wx.Dialog):
             size=(440, 90),
         )
         _name(self.note, "Note for the current step")
+        set_spoken_name(self.note, "Note for the current step")
         self.note.SetHelpText(
             "The note saved with the current step, read-only here. Notes "
             "are written in the Trail Editor."
@@ -2157,6 +2164,7 @@ class AttachmentsDialog(wx.Dialog):
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.list = wx.ListBox(self, size=(420, 180))
         _name(self.list, "Attachments list")
+        set_spoken_name(self.list, "Attachments")
         self.list.SetHelpText(
             "The files, URLs, and notes attached to this bookmark, one per "
             "row with its kind in brackets. Double-click or View opens the "
@@ -2474,6 +2482,7 @@ class SyncSettingsDialog(wx.Dialog):
         fbox = wx.StaticBoxSizer(wx.HORIZONTAL, self, "Folder &path")
         self.folder = wx.TextCtrl(fbox.GetStaticBox(), value=cfg.folder, size=(300, -1))
         _name(self.folder, "Folder path for folder transport")
+        set_spoken_name(self.folder, "Folder path")
         self.folder.SetHelpText(
             "The folder your devices sync through -- typically one inside "
             "iCloud Drive, OneDrive, or Dropbox. Used only when the "
@@ -2537,6 +2546,7 @@ class SyncSettingsDialog(wx.Dialog):
         link_row.Add(self.send_link, 0, wx.RIGHT, 6)
         self.token = wx.TextCtrl(mbox.GetStaticBox(), size=(220, -1))
         _name(self.token, "Paste the link or token you received")
+        set_spoken_name(self.token, "Sign-in link or token")
         self.token.SetHelpText(
             "Paste the sign-in link you received, or just its token -- "
             "both forms are accepted. Verify redeems it."

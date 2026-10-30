@@ -271,6 +271,8 @@ class AppFeaturesDialog:
     # -- construction -------------------------------------------------------- #
 
     def _build_profile_row(self):  # type: ignore[no-untyped-def]
+        from quill.ui.spoken_name import set_spoken_name
+
         wx = self._wx
         row = wx.BoxSizer(wx.HORIZONTAL)
         label = wx.StaticText(self.dialog, label="&Profile:")
@@ -313,6 +315,7 @@ class AppFeaturesDialog:
             size=(_HINT_WRAP, self.dialog.GetCharHeight() * _IMPACT_LINES),
         )
         set_accessible_name(self.profile_description, "What this profile does")
+        set_spoken_name(self.profile_description, "What this profile does")
         column.Add(self.profile_description, 0, wx.EXPAND | wx.TOP, 4)
         return column
 
