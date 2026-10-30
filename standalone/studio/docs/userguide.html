@@ -448,7 +448,6 @@ Finder) with the book file selected, so you can find it on disk.
 touches the file on disk, and says so. The tree remembers which book you
 had selected when the library reloads.</p>
 <h2 id="the-studio-wizard">The Studio wizard</h2>
-<h2 id="the-studio-wizard-1">The Studio wizard</h2>
 <p><strong>Studio &gt; Open Studio Wizard…</strong> (Ctrl+N) opens the
 wizard. Its first page asks the one question that matters - what would
 you like to make? - and the following steps adapt to your answer. The
@@ -1384,6 +1383,26 @@ will be off in Safe Mode like everywhere else.</p>
 <td>Your books list (main window)</td>
 <td>Alt+Y</td>
 </tr>
+<tr>
+<td>Capture menu (screenshots, recording, mixer, broadcasting)</td>
+<td>Alt+C</td>
+</tr>
+<tr>
+<td>Record a demonstration, or stop and save</td>
+<td>Ctrl+Alt+Shift+V</td>
+</tr>
+<tr>
+<td>Studio Mixer</td>
+<td>Ctrl+Alt+Shift+M</td>
+</tr>
+<tr>
+<td>Broadcast live</td>
+<td>Ctrl+Alt+Shift+G</td>
+</tr>
+<tr>
+<td>Mute everything public (while live)</td>
+<td>Ctrl+Alt+Shift+Z</td>
+</tr>
 </tbody>
 </table>
 <p>Every button and field in the wizard, the Workbench, and the dialogs
@@ -1695,11 +1714,10 @@ setting. Clearing the checkbox stops future and queued unsent automatic
 requests; it cannot recall a request already sent. Capturing remains an
 explicit user action. The result is available in Screenshot Inspector
 and the report.</p>
-<p>This screenshot milestone does not yet provide video recording,
-screen/audio mixing, scrolling screenshots, UIA-element selection or
-annotation/redaction editing. Those are later production steps. Release
-acceptance still requires JAWS, NVDA, Narrator, braille, mixed-DPI and
-installed/portable testing.</p>
+<p>Screenshots do not yet offer scrolling capture, UIA-element selection
+or annotation and redaction editing. Video recording with sound is in
+“Record a demonstration” below. Release acceptance still requires JAWS,
+NVDA, Narrator, braille, mixed-DPI and installed/portable testing.</p>
 <h3 id="worked-example-an-error-dialog-for-a-support-request">Worked
 example: an error dialog for a support request</h3>
 <ol type="1">
@@ -1820,44 +1838,101 @@ Dictate remain. Actual JAWS/NVDA/Narrator/braille usability, mixed-DPI
 hardware, live-provider privacy and installer/portable acceptance also
 remain. The requirement coverage audit,
 <code>docs/design/quill-studio-screenshot-coverage.md</code> in QUILL’s
-source, lists each one. Video demonstrations with sound are described in
-the next section.</p>
+source, lists each one. Video demonstrations with sound, the Studio
+Mixer, picture making, YouTube videos, asking AI about a video and live
+broadcasting each have their own section below.</p>
 <h2 id="record-a-demonstration-unreleased">Record a demonstration
 (unreleased)</h2>
 <p>This records what you are showing and what you choose to let people
-hear, as one MP4 video you can post or send. It is built for a presenter
-who cannot see the screen: everything is set up from lists and check
-boxes, you hear one summary before you start, and you are told
-afterwards what is actually in the file.</p>
-<p>Open <strong>Capture &gt; Record a demonstration</strong>
-(Ctrl+Alt+Shift+V). The window goes top to bottom in the order you
-decide things.</p>
+hear, as one MP4 video you can post or send, or as a sound file when
+there is no picture. It is built for a presenter who cannot see the
+screen: everything is set up from lists and check boxes, you hear one
+summary before you start, and afterwards you are told what is actually
+in the file, not what Studio meant to put there.</p>
+<p>Open <strong>Capture &gt; Record a demonstration…</strong>
+(Ctrl+Alt+Shift+V). The window goes from top to bottom in the order you
+decide things: what to record, which sounds go in, the camera, the
+picture and the file, and then Check.</p>
+<h3 id="the-short-version">The short version</h3>
+<ol type="1">
+<li>Open the program you want to demonstrate.</li>
+<li>Press Ctrl+Alt+Shift+V. Choose that program under
+<strong>Target</strong>.</li>
+<li>In <strong>Sound sources</strong>, put in what people should hear:
+usually the program’s own sound and your microphone. Your screen reader
+is left out unless you put it in.</li>
+<li>Press <strong>Check</strong> and listen to the summary. Fix anything
+it calls Stop.</li>
+<li>Press <strong>Start recording</strong>. Studio counts down, hides
+itself, and records.</li>
+<li>Press Ctrl+Alt+Shift+V (or a system-wide key you assigned) to stop.
+You hear what was saved and whether it checked out.</li>
+</ol>
 <h3 id="what-to-record">What to record</h3>
 <p>Two check boxes decide the picture, and the Sound sources list
 decides the sound. Any mix works:</p>
+<table>
+<thead>
+<tr>
+<th>You want</th>
+<th>Include the screen picture</th>
+<th>Include the camera picture</th>
+<th>Sound sources</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A software demonstration</td>
+<td>On</td>
+<td>Off</td>
+<td>Program sound, microphone</td>
+</tr>
+<tr>
+<td>A demonstration with your face in a corner</td>
+<td>On</td>
+<td>On</td>
+<td>Program sound, microphone</td>
+</tr>
+<tr>
+<td>A talking-head video</td>
+<td>Off</td>
+<td>On (Camera only)</td>
+<td>Microphone</td>
+</tr>
+<tr>
+<td>A podcast or voice-over</td>
+<td>Off</td>
+<td>Off</td>
+<td>Microphone, any programs</td>
+</tr>
+<tr>
+<td>A silent screen video</td>
+<td>On</td>
+<td>Off</td>
+<td>Nothing</td>
+</tr>
+</tbody>
+</table>
 <ul>
-<li><strong>Include the screen picture</strong> on, camera off: the
-screen, as most demonstrations want.</li>
-<li>Screen on and <strong>Include the camera picture</strong> on: the
-screen with your camera in a corner.</li>
-<li>Screen off, camera on: your camera fills the picture.</li>
-<li>Both off: sound only, saved as an audio file. Choose the kind under
+<li>Both pictures off gives a sound-only file. Choose the kind under
 <strong>Sound-only file format</strong>: M4A for most uses, MP3 to play
 anywhere, WAV or FLAC to keep every detail, or Opus for the smallest
 speech files.</li>
 <li>A picture with no sound source: <strong>Give a video with no sound a
 silent soundtrack</strong> is on by default, because some websites
 refuse a video without one. Turn it off for no soundtrack at all.</li>
+<li>If nothing at all is chosen, the check says so and recording cannot
+start.</li>
 </ul>
-<p>If nothing at all is chosen, the check says so and recording cannot
-start.</p>
 <p><strong>Target</strong> is a named window, one display or the full
 desktop, from the same list Capture screen uses. It applies only when
 the screen picture is on. A named window is selected first when there is
 one. A window recording records that window’s area of the screen, so
 anything that covers it, such as a notification, is recorded too, and if
 you move the window the recording does not follow it. If that matters,
-record the display instead.</p>
+record the display instead. <strong>Refresh windows and
+displays</strong> brings the list up to date after you open or close a
+program.</p>
 <h3 id="which-sounds-go-in">Which sounds go in</h3>
 <p><strong>Sound sources</strong> is a list. Each row says either “In
 the recording” or “Left out”, and Space switches the row you are on.
@@ -1866,22 +1941,26 @@ recorded.</p>
 <ul>
 <li><strong>The program’s own sound</strong> (for example “msedge
 sound”) is in by default when you chose a window. It is that program’s
-sound and nothing else, so your screen reader is not in it.</li>
+sound and nothing else, so your screen reader is not in it. Windows
+records it directly from the program, so it does not matter which sound
+card the program plays on, or whether you have muted it for
+yourself.</li>
 <li><strong>System sound</strong> is everything your computer plays. It
 starts left out. With <strong>Leave the screen reader out of system
 sound</strong> checked, which is the default, Studio records everything
 except your screen reader. Studio’s own sounds are switched off while it
 records the system and come back when you stop.</li>
 <li><strong>Microphone</strong> starts left out, every time. Studio
-never remembers that it was on. Choose which microphone under
-<strong>Microphone device</strong>. If another QUILL app is dictating,
-the check tells you which one.</li>
+never remembers that it was on, so you never record your voice by
+accident. Choose which microphone under <strong>Microphone
+device</strong>. If another QUILL app is dictating, the check tells you
+which one.</li>
 <li><strong>Screen reader speech</strong> (for example “JAWS speech”)
 starts left out. Putting it in asks you to confirm, because everything
 your screen reader says while you record ends up in the file. While it
 is in, Studio stops talking to you through it except to report a
-failure; confirmations become sounds.</li>
-<li><strong>Add a program’s sound</strong> adds any other program that
+failure; confirmations become sounds instead.</li>
+<li><strong>Add a program’s sound…</strong> adds any other program that
 is playing sound, such as a media player, as a row of its own. The same
 list ends with <strong>Everything playing on</strong> each sound card,
 to record all a card plays, such as your headphones. If your screen
@@ -1889,68 +1968,54 @@ reader speaks on that card, its speech is recorded too, and the check
 says so. <strong>Remove program</strong> takes a row off again.</li>
 </ul>
 <p><strong>Level of the selected source</strong> sets how loud that row
-is in the recording, from minus 60 to plus 12 decibels.</p>
-<p><strong>Professional audio interfaces (ASIO).</strong> If your
-interface has an ASIO driver, open <strong>Studio &gt;
-Preferences</strong>, turn on <strong>Use ASIO sound cards</strong>, and
-restart Studio. Its inputs then appear under <strong>Microphone
-device</strong> with “(ASIO)” after the name, listed first, for the
-lowest delay. Most ASIO drivers let only one program use the interface
-at a time, so close other audio programs first. It is off by default
-because a faulty ASIO driver can stall the program that loads it.</p>
-<h3 id="the-studio-mixer">The Studio Mixer</h3>
-<p><strong>Capture &gt; Studio Mixer</strong> (Ctrl+Alt+Shift+M, or
-<strong>Mixer: sounds you hear</strong> in the Record a demonstration
-window) changes what <em>you</em> hear, not just what is recorded. It
-has two tabs; Ctrl+Tab moves between them.</p>
-<ul>
-<li><strong>Programs</strong> lists every program playing sound: whether
-you hear it and how loud, whether it is playing now, and which sound
-card it plays on. Space mutes or unmutes the program you are on.
-<strong>Volume</strong> sets it from 0 to 100 percent (Up and Down by 1,
-Page Up and Page Down by 10). <strong>Sound card</strong> moves the
-program to another card, for example a browser to the speakers while
-your screen reader stays in your headset, exactly as Windows Settings
-does; choose <strong>Windows default</strong> to send it back. Windows
-remembers these choices.</li>
-<li><strong>Devices</strong> lists your playback and recording devices.
-<strong>Make default</strong> and <strong>Make communications
-device</strong> change what Windows uses; for a microphone,
-<strong>Recording level</strong> and <strong>Mute this input</strong>
-set how it records for every program.</li>
-</ul>
-<p>A program muted here is silent for you and for any recording of the
-system sound.</p>
+is in the recording, from minus 60 to plus 12 decibels. A level of 0
+leaves it as it is. Lower a loud program by 6 to 10 decibels so your
+voice stays on top.</p>
+<p><strong>Professional audio interfaces (ASIO).</strong> See “ASIO
+sound cards” below. Once it is on, your interface’s inputs appear under
+<strong>Microphone device</strong> with “(ASIO)” after the name.</p>
 <h3 id="the-camera">The camera</h3>
 <p>Check <strong>Include the camera picture</strong> to record your
 camera as well. Choose the camera, which corner it goes in (or
 <strong>Camera only</strong>, which records the camera instead of the
 screen picture), and how big it is.</p>
-<p><strong>Check camera framing</strong> (Ctrl+Alt+Shift+C) opens the
-camera and tells you, as you move, whether your face is in view: “No
-face in view”, “Face in view, centred”, or which way to go, such as
-“move a little to your left”, “move back from the camera” or “tilt the
-camera down or sit up taller”. Directions are from your side of the
-camera. If they send you the wrong way, your camera gives a mirror
-image: check <strong>The camera gives a mirror image</strong>. Face
-detection is the one built into Windows and runs on this computer.
-Nothing is recorded or saved while you check.</p>
+<p><strong>Check camera framing…</strong> (Ctrl+Alt+Shift+C, or the
+button in this window) opens the camera and tells you, as you move,
+whether your face is in view: “No face in view”, “Face in view,
+centred”, or which way to go, such as “move a little to your left”,
+“move back from the camera” or “tilt the camera down or sit up taller”.
+Directions are from your side of the camera. If they send you the wrong
+way, your camera gives a mirror image: check <strong>The camera gives a
+mirror image</strong>. Face detection is the one built into Windows and
+runs on this computer. Nothing is recorded, saved or sent anywhere while
+you check.</p>
 <p>With <strong>Tell me when my face leaves the camera view</strong>
 checked, Studio says so during the recording, and again when you are
 back. If your screen reader’s speech is being recorded, Studio adds a
-marker instead of speaking.</p>
+marker instead of speaking, so the announcement does not end up in the
+video.</p>
+<p>Tips for good framing: sit an arm’s length from the camera, put a
+light in front of you rather than behind you, and run the framing check
+with the same lighting you will record in.</p>
 <h3 id="the-picture-and-the-file">The picture and the file</h3>
-<p>Frame rate is 30 frames a second unless you choose 15, 24 or 60.
-<strong>Maximum picture size</strong> can scale a large screen down to
-1080p or 720p. <strong>Include the mouse pointer</strong> is on by
-default. <strong>Countdown</strong> is how many seconds Studio counts
-aloud before it starts, so you have time to move to the program you are
-demonstrating.</p>
-<p>Recordings go to your Videos folder, in a QUILL Studio folder, unless
-you choose another one. The name is “Demo -”, the target, and the date
-and time. An existing file is never replaced. <strong>Also keep each
-sound source as its own WAV file</strong> keeps a separate file per
-source beside the video for later editing.</p>
+<ul>
+<li><strong>Frame rate</strong> is 30 frames a second unless you choose
+15, 24 or 60. 30 suits software demonstrations; 60 makes fast movement
+smoother but makes bigger files and works the computer harder.</li>
+<li><strong>Maximum picture size</strong> can scale a large screen down
+to 1080p or 720p. Smaller pictures make smaller files and help a slower
+computer keep up.</li>
+<li><strong>Include the mouse pointer</strong> is on by default.</li>
+<li><strong>Countdown</strong> is how many seconds Studio counts aloud
+before it starts, so you have time to move to the program you are
+demonstrating.</li>
+<li><strong>Save in</strong> is your Videos folder, in a QUILL Studio
+folder, unless you choose another one. The name is “Demo -”, the target,
+and the date and time. An existing file is never replaced.</li>
+<li><strong>Also keep each sound source as its own WAV file</strong>
+keeps a separate file per source beside the video, so the microphone and
+the program can be edited separately later.</li>
+</ul>
 <h3 id="keeping-the-computer-awake-and-notifications-quiet">Keeping the
 computer awake and notifications quiet</h3>
 <p><strong>Keep the computer awake while recording</strong> and
@@ -1958,146 +2023,62 @@ computer awake and notifications quiet</h3>
 unless you turn them off. The first stops sleep, the screen turning off
 and the screen saver. The second silences Windows notifications so none
 slides into the picture or the sound. When you stop, both go back to
-exactly how they were. If Studio or the computer stops in the middle, Do
-Not Disturb is put back the next time Studio starts. If Windows does not
-let Studio change Do Not Disturb, the check tells you, so you can turn
-it on yourself.</p>
-<h3 id="make-a-picture-with-ai">Make a picture with AI</h3>
-<p><strong>Capture &gt; New picture with AI</strong> (Ctrl+Alt+Shift+J)
-makes a picture from your description, using the AI provider you set up
-in AI, Set Up AI, when that provider makes pictures: OpenAI or Google
-Gemini. Other providers are told plainly that they cannot.</p>
-<p>Describe the whole picture, choose its <strong>Shape</strong> (wide
-for a YouTube video, square for a cover, tall for Shorts), and press
-<strong>Make the picture</strong>. Studio asks first, naming the
-provider, model and address the description goes to, and that charges
-may apply. The picture is saved in a “QUILL Studio Pictures” folder
-beside your recordings folder, then your vision model looks at it
-separately and describes it: subject, layout, colours, any text exactly
-as written, and anything odd. You hear that description, not the
-generator’s claim about what it drew.</p>
-<p>To change it, type only the change, such as “make the background
-darker” or “add the title QUILL Talk at the top in large white letters”,
-and press <strong>Make the change</strong>. Every earlier request is
-kept, and every version stays in <strong>Versions</strong>; choose one
-to hear its description again. <strong>Make a video with this
-picture</strong> opens the YouTube video window with that picture. A
-text file beside each picture holds what you asked for and its
-description. AI off and Safe Mode both stop picture making.</p>
-<h3 id="a-picture-and-sound-as-a-youtube-video">A picture and sound as a
-YouTube video</h3>
-<p><strong>Capture &gt; Make a YouTube video from a picture and
-sound</strong> (Ctrl+Alt+Shift+Y) turns a recording or any audio file
-into a video YouTube accepts, showing a picture for the whole length.
-The sound goes in exactly as it is.</p>
-<p>To record new sound first, use Record a demonstration with the screen
-and the camera turned off. When that finishes, its result window has
-<strong>Make a video with a picture</strong>, which opens this window
-with the sound already filled in.</p>
-<ul>
-<li><strong>Picture</strong> and <strong>Sound</strong>: type a path or
-use the Browse buttons. The picture defaults to your last screenshot. It
-is fitted to the video, never stretched; any space left over is
-black.</li>
-<li><strong>Shape</strong>: YouTube video (1920 by 1080), square for
-social posts, vertical for Shorts, or the picture’s own size.</li>
-<li><strong>A slow zoom on the picture</strong> makes the picture move
-gently closer through the video.</li>
-<li><strong>Show a sound wave along the bottom</strong> adds a white
-wave that moves with the sound, so viewers can see that sound is
-playing.</li>
-<li><strong>Use the recording’s markers as chapters</strong> is
-available when the sound came from a recording with markers. YouTube
-shows chapters only when there are at least three, ten seconds or more
-apart, starting at 0:00, so Studio keeps the ones that qualify and adds
-a “Start” chapter at 0:00 when needed.</li>
-<li><strong>Title</strong> and <strong>Description</strong> are what
-viewers see.</li>
-</ul>
-<p>Press <strong>Make the video</strong>. The video is saved beside the
-sound as “name - video.mp4”, checked the same way as a recording, and a
-text file beside it (“name - video.youtube.txt”) holds the title and the
-description with chapter timestamps, ready to paste into YouTube’s
-upload page.</p>
-<h3 id="ask-ai-about-a-video">Ask AI about a video</h3>
-<p><strong>Capture &gt; Ask AI questions about a video</strong>
-(Ctrl+Alt+Shift+K), or <strong>Ask AI about this video</strong> in a
-recording’s result window, lets you ask about the whole video or a
-stretch of it, from one time to another, written like 1:05. Studio takes
-4 to 16 frames spread across that stretch, lays them out as one picture
-with each frame’s time written on it, and, if captions exist beside the
-video, adds what was said in the same stretch. It then opens the same
-conversation window as the Screenshot Inspector, with a question already
-describing the picture. Nothing is sent until you approve it, using your
-usual AI connection, and Safe Mode blocks it as it blocks screenshot AI.
-Answers cite the times of the frames they rely on.</p>
-<h3 id="broadcast-live-to-icecast-or-shoutcast">Broadcast live to
-Icecast or SHOUTcast</h3>
-<p><strong>Capture &gt; Broadcast live</strong> (Ctrl+Alt+Shift+G)
-streams a show to your own Icecast or SHOUTcast server, the kind
-internet radio stations use. You decide exactly what listeners hear.</p>
-<ul>
-<li><strong>Server</strong>: the type (Icecast or SHOUTcast), the
-address (such as stream.example.org, without http), the port, then the
-mount (Icecast, such as /live) or the stream number (SHOUTcast, usually
-1), the user name (Icecast, usually source) and the password. Studio
-keeps the password in Windows Credential Manager, never in its settings
-or logs. <strong>Use a secure connection</strong> only if your server
-offers it.</li>
-<li><strong>About the show</strong>: title, description, genre, website,
-and whether to list it in public directories.</li>
-<li><strong>Sound quality</strong>: Speech (smallest, clear voices),
-Talk and music, Music (best sound), or Custom, which unlocks the format
-(MP3, AAC, Ogg Vorbis, Ogg Opus or FLAC), the bit rate, stereo or mono,
-and the sample rate. <strong>Loudness</strong> can keep the stream
-sounding even, at a level suited to talk, music or broadcast, with a
-limiter against distortion; Off sends your mix exactly as it is.</li>
-<li><strong>What goes into the stream</strong> is a list like the
-recording one: your microphone, system sound without the screen reader,
-the screen reader’s speech, and every program playing sound. Space puts
-a sound in or leaves it out; each has its own level, separate from any
-recording. Everything starts left out, and the screen reader asks first.
-Studio’s own sounds can never reach listeners.</li>
-<li><strong>Save a copy of the show on this computer</strong> keeps a
-FLAC copy in the folder you choose, even through a dropped connection.
-Off by default; you decide each time.</li>
-</ul>
-<p>Press <strong>Check</strong>: you hear where the stream goes, what is
-in it, and every problem. <strong>Test the connection</strong> sends two
-seconds of silence privately to check the address and password. When
-nothing stops it, press Enter or <strong>Go live</strong>. While live,
-the computer is kept awake and Do Not Disturb is on, and both are put
-back afterwards.</p>
-<p>The <strong>Live broadcast</strong> window, which does not take
-focus, shows the status, takes a <strong>Now playing</strong> title for
-listeners, and has <strong>Mute everything public</strong>
-(Ctrl+Alt+Shift+Z), which gives listeners silence at once without
-disconnecting, and <strong>Stop broadcasting</strong>
-(Ctrl+Alt+Shift+E). Both can be given system-wide keys in Capture global
-hotkeys. If the connection drops, Studio says so once and keeps trying,
-with growing pauses.</p>
+exactly how they were: if Do Not Disturb was already on, it stays on. If
+Studio or the computer stops in the middle, Do Not Disturb is put back
+the next time Studio starts. If Windows does not let Studio change Do
+Not Disturb, the check tells you, so you can turn it on yourself from
+the Windows notification centre.</p>
 <h3 id="check-then-start">Check, then start</h3>
 <p>Press <strong>Check</strong>. It takes a few seconds: Studio takes a
 trial picture, records three seconds of the screen at your settings to
 see whether the computer keeps up, opens each sound source briefly,
 looks for the camera, and checks FFmpeg, the folder and its free space,
 whether the computer is on battery, and whether Windows Update is
-waiting to restart it. The result lands in the <strong>Check
-result</strong> field and your screen reader reads it once. It says what
-will be recorded, which sounds are in and which are left out (always
-naming your screen reader), where the file goes, and then every problem.
-<strong>Stop</strong> means it cannot record until you fix it.
-<strong>Warn</strong> means it can, but something might spoil it, for
-example a microphone that is delivering pure digital silence because
-Windows privacy settings are blocking it.</p>
+waiting to restart it.</p>
+<p>The result lands in the <strong>Check result</strong> field and your
+screen reader reads it once. It says what will be recorded, which sounds
+are in and which are left out (always naming your screen reader), where
+the file goes, and then every problem:</p>
+<ul>
+<li><strong>Stop</strong> means it cannot record until you fix it, for
+example no folder, no FFmpeg, or nothing chosen to record.</li>
+<li><strong>Warn</strong> means it can, but something might spoil it.
+Examples: a microphone that is delivering pure digital silence because
+Windows privacy settings are blocking it; the trial recording dropped
+frames; the computer is on battery; a Windows Update restart is waiting;
+free space runs out in a stated number of minutes; your screen reader
+may be on a sound card you chose to record.</li>
+</ul>
 <p>When nothing says Stop, press Enter in the result field, or
 <strong>Start recording</strong>. If you change anything after the
 check, Studio asks you to check again.</p>
 <p><strong>Record a quick test</strong> records with exactly these
 settings to a temporary file, for as long as <strong>Test length,
 seconds</strong> says (5 seconds to 10 minutes, so a longer test is a
-rehearsal), checks it the same way as a real recording, and lets you
-play it. The test file is deleted when you close its window.</p>
+full rehearsal), checks it the same way as a real recording, and lets
+you play it. The test file is deleted when you close its window.</p>
+<h3 id="before-a-long-recording">Before a long recording</h3>
+<p>An hour-long demonstration is a big investment. Before you start
+one:</p>
+<ol type="1">
+<li>Plug the computer in. The check warns on battery and says how many
+minutes it thinks are left.</li>
+<li>Restart first if the check says Windows Update is waiting. An update
+restart in the middle ends the recording.</li>
+<li>Make sure the check’s free-space estimate is well over your planned
+length. Studio warns two minutes before space runs out and stops and
+saves before it does, but it cannot make more room.</li>
+<li>Record a quick test of two or three minutes with the real programs,
+microphone and camera, and play it back. Listen for your voice level
+against the program’s sound.</li>
+<li>If the trial dropped frames, lower <strong>Frame rate</strong> or
+<strong>Maximum picture size</strong>, close other heavy programs, and
+check again.</li>
+<li>Assign system-wide keys (see “While you record”) so you can pause,
+mark and stop without coming back to Studio.</li>
+<li>Add a marker (Ctrl+Alt+Shift+B) at each new topic. Markers become
+YouTube chapters later and make the recording easy to navigate.</li>
+</ol>
 <h3 id="while-you-record">While you record</h3>
 <p>Studio hides itself, keeps its own windows out of the picture, puts
 “Recording” at the front of its title, and shows a small
@@ -2163,18 +2144,25 @@ space left</td>
 <p>Those keys work while Studio has focus. While you are demonstrating,
 focus is somewhere else, so assign system-wide keys: <strong>Assign
 keys</strong> in the Record a demonstration window, or <strong>Capture
-&gt; Capture global hotkeys</strong>. None is assigned for you. Until
+&gt; Capture global hotkeys…</strong>. None is assigned for you, because
+a system-wide key takes that key away from every other program. Until
 you assign some, use the tray icon’s menu, which has Stop and save,
 Pause, Add a marker, Recording status and the status window, and acts
 without bringing Studio back into the picture.</p>
 <p>If something goes wrong while you record, you hear it once and it is
-marked at that moment: the window closing (the recording stops and saves
-what it has), a program or your screen reader quitting (that sound is
-silent until the same program starts again), a microphone being
-unplugged (silent until the same microphone comes back; a different one
-is never swapped in), the display changing (the recording pauses), the
-camera stopping, falling behind, or the disk running low (a warning at
-two minutes left, and a stop and save before it runs out).</p>
+marked at that moment:</p>
+<ul>
+<li>The window you are recording closes: the recording stops and saves
+what it has.</li>
+<li>A program or your screen reader quits: that sound is silent until
+the same program starts again.</li>
+<li>A microphone is unplugged: silent until the same microphone comes
+back. A different microphone is never swapped in.</li>
+<li>The display changes: the recording pauses.</li>
+<li>The camera stops or falls behind.</li>
+<li>The disk runs low: a warning at two minutes left, then a stop and
+save before it runs out.</li>
+</ul>
 <h3 id="when-you-stop">When you stop</h3>
 <p>Studio joins the pieces, mixes the sounds at your levels, adds the
 camera picture, and then checks the finished file on its own, without
@@ -2188,24 +2176,485 @@ screen reader left out.”</p>
 <p>The result is <strong>Verified</strong> when every check passed,
 <strong>Needs review</strong> when it plays but something may be
 spoiled, or <strong>Failed</strong> when a stream is missing or it does
-not decode, in which case the recorded pieces are kept. The result
-window has every check, and buttons to play the file, open its folder,
-copy its path, inspect a frame in the Screenshot Inspector, or
-<strong>Make captions and a transcript</strong>: Studio transcribes the
-speech on this computer with the speech recognition you already use for
-captions, and saves SRT and VTT captions and a plain transcript beside
-the file. Nothing is sent anywhere. A readable report and a JSON report
-are saved beside the video.</p>
+not decode, in which case the recorded pieces are kept so nothing is
+lost.</p>
+<p>The result window lists every check, and has buttons to:</p>
+<ul>
+<li>play the file, open its folder, or copy its path;</li>
+<li><strong>Inspect a frame…</strong> in the Screenshot Inspector;</li>
+<li><strong>Ask AI about this video…</strong> (see “Ask AI about a
+video”);</li>
+<li><strong>Make captions and a transcript</strong>: Studio transcribes
+the speech on this computer with the speech recognition you already use
+for captions, and saves SRT and VTT captions and a plain transcript
+beside the file. Nothing is sent anywhere;</li>
+<li><strong>Make a video with a picture…</strong>, for a sound-only
+recording (see “Make a YouTube video from a picture and sound”).</li>
+</ul>
+<h3 id="what-is-saved">What is saved</h3>
+<p>Beside each recording:</p>
+<ul>
+<li>the video (MP4) or sound file;</li>
+<li>a readable report and a JSON report of the checks;</li>
+<li>a markers file, when you added markers;</li>
+<li>one WAV file per sound source, when you asked for them;</li>
+<li>captions (SRT and VTT) and a transcript, when you made them.</li>
+</ul>
+<h3 id="recovering-an-unfinished-recording">Recovering an unfinished
+recording</h3>
 <p>If Studio or the computer stops in the middle of a recording, nothing
-is lost up to that point. The next time Studio starts it says so on the
-status line; choose <strong>Capture &gt; Recover unfinished
-recordings</strong> to finish and check them.</p>
+is lost up to that point: Studio records in short pieces as it goes. The
+next time Studio starts it says so on the status line. Choose
+<strong>Capture &gt; Recover unfinished recordings</strong>
+(Ctrl+Alt+Shift+F7) to finish and check them; each becomes an ordinary
+recording with the same checks.</p>
+<h3
+id="worked-example-a-screen-reader-demonstration-for-a-blog-post">Worked
+example: a screen reader demonstration for a blog post</h3>
+<p>You want to show how to fill in a web form with your screen reader,
+with your voice explaining and the screen reader audible.</p>
+<ol type="1">
+<li>Open the form in your browser.</li>
+<li>In Record a demonstration, choose the browser window under
+<strong>Target</strong>.</li>
+<li>In <strong>Sound sources</strong>: leave the browser sound in, put
+<strong>Microphone</strong> in, and put your screen reader’s speech in,
+confirming when asked. Set the browser to minus 6 decibels.</li>
+<li>Turn the camera off. Leave <strong>Keep the computer awake</strong>
+and <strong>Do Not Disturb</strong> on.</li>
+<li><strong>Assign keys</strong> for stop and marker, for example
+Ctrl+Alt+Shift+F11 and Ctrl+Alt+Shift+F12, so they work from the
+browser.</li>
+<li><strong>Check</strong>, then <strong>Record a quick test</strong> of
+20 seconds and play it. Your voice and the screen reader should both be
+clear.</li>
+<li>Start recording, demonstrate, add a marker at each step of the form,
+and stop.</li>
+<li>In the result window, choose <strong>Make captions and a
+transcript</strong>, then post the video with its captions file.</li>
+</ol>
+<h3 id="worked-example-a-podcast-episode-with-no-picture">Worked
+example: a podcast episode with no picture</h3>
+<ol type="1">
+<li>Turn off both <strong>Include the screen picture</strong> and
+<strong>Include the camera picture</strong>.</li>
+<li>Choose <strong>Sound-only file format</strong>: MP3 for a podcast
+feed.</li>
+<li>Put <strong>Microphone</strong> in. If a guest calls in on Zoom or
+Teams, add that program’s sound with <strong>Add a program’s
+sound…</strong>, so you record the guest without your screen reader or
+other programs.</li>
+<li>Check, record, and stop. The result is an MP3 beside its
+report.</li>
+<li>To put it on YouTube, choose <strong>Make a video with a
+picture…</strong> in the result window.</li>
+</ol>
+<h3 id="recording-troubleshooting">Recording troubleshooting</h3>
+<ul>
+<li><strong>The check says the microphone is silent.</strong> Windows
+privacy settings may be blocking microphone access for desktop apps.
+Open Windows Settings, Privacy and security, Microphone, and allow
+desktop apps. Or another program has the microphone in exclusive mode;
+close it.</li>
+<li><strong>The check says frames were dropped.</strong> Lower the frame
+rate or picture size, close heavy programs, and plug in the
+computer.</li>
+<li><strong>My screen reader is in the recording and I did not want
+it.</strong> Check which rows are in. “Everything playing on” a sound
+card includes your screen reader if it speaks on that card; use the
+program’s own sound or System sound with “Leave the screen reader out”
+instead.</li>
+<li><strong>A covering window is in the video.</strong> A window
+recording records the window’s area of the screen. Bring the window to
+the front, turn on Do Not Disturb, or record the whole display.</li>
+<li><strong>My stop key does nothing.</strong> Studio’s own keys work
+only while Studio has focus. Assign system-wide keys, or use the tray
+icon’s menu.</li>
+<li><strong>The result says Needs review.</strong> Open the result
+window’s list of checks: it says which check did not pass, such as a
+long black stretch or a sound source that was silent throughout.</li>
+<li><strong>Do Not Disturb did not turn on.</strong> Some Windows
+editions and policies do not allow it. Turn it on yourself before you
+start.</li>
+</ul>
 <h3 id="what-this-does-not-do-yet">What this does not do yet</h3>
-<p>Windows recording follows the window’s area of the screen rather than
-the window itself, so a covering window is recorded and moving the
-window is not followed. There is no trimming or editing, captions, click
-highlighting or live streaming yet. Real screen-reader, braille and
+<p>A window recording follows the window’s area of the screen rather
+than the window itself, so a covering window is recorded and moving the
+window is not followed. There is no trimming or editing, no click
+highlighting, and no virtual camera. Real screen-reader, braille and
 hardware acceptance runs are still to be done.</p>
+<h2 id="the-studio-mixer-unreleased">The Studio Mixer (unreleased)</h2>
+<p><strong>Capture &gt; Studio Mixer…</strong> (Ctrl+Alt+Shift+M, or
+<strong>Mixer: sounds you hear</strong> in the Record a demonstration
+window) changes what <em>you</em> hear, not just what is recorded. It
+does what the Windows volume mixer and sound settings do, in one window
+you can use entirely from the keyboard. It has two tabs; Ctrl+Tab moves
+between them.</p>
+<h3 id="programs">Programs</h3>
+<p>The list has every program playing sound, with whether you hear it,
+how loud it is, whether it is playing now, and which sound card it plays
+on.</p>
+<ul>
+<li><strong>Space</strong> mutes or unmutes the program you are on.</li>
+<li><strong>Volume</strong> sets it from 0 to 100 percent: Up and Down
+move by 1, Page Up and Page Down by 10.</li>
+<li><strong>Sound card</strong> moves the program to another card,
+exactly as Windows Settings does. Choose <strong>Windows
+default</strong> to send it back. Windows remembers these choices for
+the next time the program runs.</li>
+</ul>
+<p>A program has to be playing, or have played, to appear and to be
+moved: Windows only knows about a program’s sound once it has made
+some.</p>
+<h3 id="devices">Devices</h3>
+<p>The list has your playback and recording devices.</p>
+<ul>
+<li><strong>Make default</strong> makes the selected device the one
+Windows uses for most sound.</li>
+<li><strong>Make communications device</strong> makes it the one calls
+use, such as Zoom and Teams.</li>
+<li>For a microphone, <strong>Recording level</strong> and <strong>Mute
+this input</strong> set how it records for every program.</li>
+</ul>
+<h3
+id="worked-example-your-screen-reader-in-the-headset-everything-else-on-the-speakers">Worked
+example: your screen reader in the headset, everything else on the
+speakers</h3>
+<ol type="1">
+<li>Set your headset as the Windows default so your screen reader uses
+it.</li>
+<li>Open the Studio Mixer and, on Programs, select your browser.</li>
+<li>Under <strong>Sound card</strong>, choose your speakers. The browser
+now plays on the speakers while your screen reader stays in your
+headset.</li>
+<li>Lower the browser’s <strong>Volume</strong> if it is too loud.</li>
+</ol>
+<p>A program muted in the mixer is silent for you and in any recording
+of the system sound. A recording of that program’s own sound still has
+it, because that is taken directly from the program.</p>
+<h2 id="asio-sound-cards-unreleased">ASIO sound cards (unreleased)</h2>
+<p>If you have a professional audio interface with an ASIO driver,
+Studio can record from its inputs with the lowest delay.</p>
+<ol type="1">
+<li>Open <strong>Studio &gt; Preferences…</strong> (Ctrl+,).</li>
+<li>Turn on <strong>Use ASIO sound cards</strong>.</li>
+<li>Restart Studio.</li>
+</ol>
+<p>The interface’s inputs then appear under <strong>Microphone
+device</strong> in Record a demonstration, listed first, with “(ASIO)”
+after the name. Most ASIO drivers let only one program use the interface
+at a time, so close other audio programs first. The setting is off by
+default because a faulty ASIO driver can stall the program that loads
+it. If Studio misbehaves after you turn it on, turn it off again and
+restart Studio.</p>
+<h2 id="make-a-picture-with-ai-unreleased">Make a picture with AI
+(unreleased)</h2>
+<p><strong>Capture &gt; New picture with AI…</strong> (Ctrl+Alt+Shift+J)
+makes a picture from your description, such as a cover for a podcast or
+the picture for a YouTube video. You describe it in words and change it
+in words; you never have to see it.</p>
+<p>It uses the AI provider you set up in <strong>AI &gt; Set Up
+AI</strong>, when that provider makes pictures: OpenAI or Google Gemini.
+Other providers are told plainly that they cannot.</p>
+<h3 id="making-the-first-picture">Making the first picture</h3>
+<ol type="1">
+<li>In <strong>Describe the picture, or the change you want</strong>,
+describe the whole picture: the subject, the style, the colours, and any
+words on it exactly as they should be written.</li>
+<li>Choose <strong>Shape</strong>: wide for a YouTube video (16 by 9),
+square for a cover or social post, or tall for Shorts or a phone (9 by
+16).</li>
+<li>Press <strong>Make the picture</strong>. Studio asks first, naming
+the provider, model and address the description goes to, and that
+charges may apply.</li>
+</ol>
+<p>The picture is saved in a “QUILL Studio Pictures” folder beside your
+recordings folder. Then your vision model looks at it separately and
+describes it: subject, layout, colours, any text exactly as written, and
+anything odd. You hear that description, not the generator’s claim about
+what it drew, so a misspelt title or an extra hand is reported to
+you.</p>
+<h3 id="changing-it">Changing it</h3>
+<p>Type only the change, such as “make the background darker” or “add
+the title QUILL Talk at the top in large white letters”, and press
+<strong>Make the change</strong>. Every earlier request is kept, so the
+change is applied to the picture you have rather than starting
+again.</p>
+<p>Every version stays in <strong>Versions</strong>; choose one to hear
+its description again in <strong>Description of the chosen
+version</strong>. <strong>Make a video with this picture…</strong> opens
+the YouTube video window with that picture. <strong>Open folder</strong>
+opens the pictures folder. A text file beside each picture holds what
+you asked for and its description.</p>
+<h3 id="privacy-and-cost">Privacy and cost</h3>
+<p>Your description is sent to the provider you approved; nothing is
+sent until you press the button and approve. Picture making is charged
+by most providers per picture. AI off and Safe Mode both stop picture
+making.</p>
+<h3 id="worked-example-a-podcast-cover">Worked example: a podcast
+cover</h3>
+<ol type="1">
+<li>Describe: “A square podcast cover. A vintage microphone in warm gold
+light on a deep blue background. The words QUILL Talk in large white
+letters across the top.”</li>
+<li>Shape: Square. Make the picture.</li>
+<li>Listen to the description. If it says the words read “QUIL Talk”,
+type “the title must read QUILL Talk, spelled Q U I L L” and make the
+change.</li>
+<li>When the description matches what you want, choose <strong>Make a
+video with this picture…</strong> to pair it with your episode.</li>
+</ol>
+<h2 id="make-a-youtube-video-from-a-picture-and-sound-unreleased">Make a
+YouTube video from a picture and sound (unreleased)</h2>
+<p><strong>Capture &gt; Make a YouTube video from a picture and
+sound…</strong> (Ctrl+Alt+Shift+Y) turns a recording or any audio file
+into a video YouTube accepts, showing a picture for the whole length.
+The sound goes in exactly as it is.</p>
+<p>To record new sound first, use Record a demonstration with the screen
+and the camera turned off. When that finishes, its result window has
+<strong>Make a video with a picture…</strong>, which opens this window
+with the sound already filled in.</p>
+<ul>
+<li><strong>Picture</strong> and <strong>Sound</strong>: type a path or
+use the Browse buttons. The picture can be PNG, JPEG, WebP or BMP, and
+defaults to your last screenshot. It is fitted to the video, never
+stretched; any space left over is black.</li>
+<li><strong>Shape</strong>: YouTube video (1920 by 1080), square (1080
+by 1080) for social posts, vertical (1080 by 1920) for Shorts, or the
+picture’s own size.</li>
+<li><strong>A slow zoom on the picture</strong> makes the picture move
+gently closer through the video, so it does not look frozen.</li>
+<li><strong>Show a sound wave along the bottom</strong> adds a white
+wave that moves with the sound, so viewers can see that sound is
+playing.</li>
+<li><strong>Use the recording’s markers as chapters</strong> is
+available when the sound came from a recording with markers. YouTube
+shows chapters only when there are at least three, ten seconds or more
+apart, starting at 0:00, so Studio keeps the ones that qualify and adds
+a “Start” chapter at 0:00 when needed.</li>
+<li><strong>Title</strong> and <strong>Description</strong> are what
+viewers see.</li>
+</ul>
+<p>Press <strong>Make the video</strong>. The video is saved beside the
+sound as “name - video.mp4” and checked the same way as a recording. A
+text file beside it (“name - video.youtube.txt”) holds the title and the
+description with chapter timestamps, ready to paste into YouTube’s
+upload page.</p>
+<h3 id="uploading-to-youtube">Uploading to YouTube</h3>
+<ol type="1">
+<li>On YouTube, choose Create, then Upload videos, and choose the “name
+- video.mp4” file.</li>
+<li>Open “name - video.youtube.txt”. Paste its title into the title
+field and the rest into the description. The chapter times in the
+description become YouTube chapters.</li>
+<li>If you made captions for the recording, upload the SRT file under
+Subtitles.</li>
+</ol>
+<p>Studio never uploads anything itself.</p>
+<h2 id="ask-ai-about-a-video-unreleased">Ask AI about a video
+(unreleased)</h2>
+<p><strong>Capture &gt; Ask AI questions about a video…</strong>
+(Ctrl+Alt+Shift+K), or <strong>Ask AI about this video…</strong> in a
+recording’s result window, lets you ask what is on screen in a video:
+whether a dialog appeared, whether the text was readable, what a viewer
+sees at a given moment.</p>
+<ol type="1">
+<li><strong>Video</strong>: the file to ask about;
+<strong>Browse…</strong> to choose one.</li>
+<li>Choose <strong>The whole video</strong>, or <strong>A stretch of
+it</strong> and set <strong>From</strong> and <strong>To</strong> in
+minutes and seconds, written like 1:05.</li>
+<li><strong>Number of frames</strong>: how many pictures to take across
+that stretch: 4, 6, 9, 12 or 16. More frames see more, but cost more and
+give the AI more to read.</li>
+<li><strong>Include the transcript of that stretch</strong>, when
+captions exist beside the video, adds what was said in the same
+stretch.</li>
+<li>Press <strong>Prepare the question</strong>.</li>
+</ol>
+<p>Studio takes the frames at even times across the stretch, lays them
+out as one picture with each frame’s time written on it, and opens the
+same conversation window as the Screenshot Inspector, with a question
+already describing the picture. Ask your own question, and follow-ups
+after it. Nothing is sent until you approve it, using your usual AI
+connection, and Safe Mode blocks it as it blocks screenshot AI. Answers
+cite the times of the frames they rely on, so you can go to that point
+in the video.</p>
+<p>The AI sees only the frames, not the moving video, so something that
+appears and disappears between two frames can be missed. Ask about a
+shorter stretch to look more closely.</p>
+<h3 id="worked-example-did-the-error-message-show">Worked example: did
+the error message show?</h3>
+<ol type="1">
+<li>After recording, choose <strong>Ask AI about this video…</strong> in
+the result window.</li>
+<li>Choose <strong>A stretch of it</strong>, from 2:10 to 2:40, with 12
+frames.</li>
+<li>Ask: “Is an error dialog visible in any frame? If so, quote its text
+and give the frame time.”</li>
+<li>Follow up: “Is any text cut off or too small to read?”</li>
+</ol>
+<h2 id="broadcast-live-to-icecast-or-shoutcast-unreleased">Broadcast
+live to Icecast or SHOUTcast (unreleased)</h2>
+<p><strong>Capture &gt; Broadcast live…</strong> (Ctrl+Alt+Shift+G)
+streams a show to your own Icecast or SHOUTcast server, the kind
+internet radio stations use. You decide exactly what listeners hear,
+separately from what you hear and from any recording.</p>
+<p>You need a server: one you run, or one from a streaming host. Your
+host gives you the address, port, mount or stream number, and the source
+password.</p>
+<h3 id="server">Server</h3>
+<ul>
+<li><strong>Server type</strong>: Icecast or SHOUTcast.</li>
+<li><strong>Server address</strong>: such as stream.example.org, without
+http.</li>
+<li><strong>Port</strong>: as your host gave it, often 8000.</li>
+<li><strong>Mount (Icecast)</strong>: such as /live. <strong>Stream
+number (SHOUTcast)</strong>: usually 1.</li>
+<li><strong>User name (Icecast)</strong>: usually source.</li>
+<li><strong>Password</strong>: the source password. Studio keeps it in
+Windows Credential Manager, never in its settings or logs, and fills it
+in next time.</li>
+<li><strong>Use a secure connection</strong> only if your server offers
+it.</li>
+</ul>
+<h3 id="about-the-show">About the show</h3>
+<p><strong>Show title</strong>, <strong>Description</strong>,
+<strong>Genre</strong> and <strong>Website</strong> are what listeners’
+players and directories show. <strong>List this stream in public
+directories</strong> asks the server to list it; leave it off for a
+private stream.</p>
+<h3 id="sound-quality">Sound quality</h3>
+<p><strong>Sound quality</strong> offers plain-word presets:</p>
+<table>
+<thead>
+<tr>
+<th>Preset</th>
+<th>Sound</th>
+<th>Upload needed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Speech: smallest, clear voices</td>
+<td>MP3, 64 kilobits a second, mono</td>
+<td>About 64 kilobits a second</td>
+</tr>
+<tr>
+<td>Talk and music: a good balance</td>
+<td>MP3, 128 kilobits a second, stereo</td>
+<td>About 128 kilobits a second</td>
+</tr>
+<tr>
+<td>Music: best sound</td>
+<td>MP3, 192 kilobits a second, stereo</td>
+<td>About 192 kilobits a second</td>
+</tr>
+<tr>
+<td>Custom: choose everything</td>
+<td>Your choice</td>
+<td>Depends on your choice</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Custom</strong> unlocks <strong>Format</strong> (MP3, AAC,
+Ogg Vorbis, Ogg Opus or FLAC; SHOUTcast takes MP3 and AAC), <strong>Bit
+rate</strong> (16 to 320 kilobits a second), <strong>Channels</strong>
+(stereo or mono) and <strong>Sample rate</strong> (22,050 to 48,000
+hertz).</p>
+<p><strong>Loudness</strong> can keep the stream sounding even, with a
+limiter against distortion:</p>
+<ul>
+<li>Off: send the mix exactly as it is.</li>
+<li>Even, for talk (minus 16 LUFS), the usual podcast level.</li>
+<li>Even, for music (minus 14 LUFS), the usual music-service level.</li>
+<li>Broadcast standard (minus 23 LUFS), the European broadcast
+level.</li>
+</ul>
+<h3 id="what-goes-into-the-stream">What goes into the stream</h3>
+<p><strong>What goes into the stream</strong> is a list like the
+recording one: your microphone, system sound without the screen reader,
+the screen reader’s speech, and every program playing sound. Space puts
+a sound in or leaves it out. <strong>Level in the stream,
+decibels</strong> sets each one’s level, separately from any recording.
+Everything starts left out, and the screen reader asks first. Studio’s
+own sounds can never reach listeners.</p>
+<h3 id="a-saved-copy">A saved copy</h3>
+<p><strong>Save a copy of the show on this computer</strong> keeps a
+FLAC copy in <strong>Folder for the saved copy</strong>, even through a
+dropped connection. It is off by default: you decide each time, and the
+check reminds you when no copy is being saved.</p>
+<h3 id="check-test-and-go-live">Check, test and go live</h3>
+<p>Press <strong>Check</strong>: you hear where the stream goes, what is
+in it, and every problem. A <strong>Stop</strong> blocks going live, for
+example no password stored or nothing in the stream. A
+<strong>Warn</strong> does not, for example the microphone not being in
+the stream, the screen reader being in it, or a quality needing more
+upload speed than your connection measured.</p>
+<p><strong>Test the connection</strong> sends two seconds of silence
+privately to check the address and password, without going live.</p>
+<p>When nothing says Stop, press Enter or <strong>Go live</strong>.
+While live, the computer is kept awake and Do Not Disturb is on, and
+both are put back afterwards.</p>
+<h3 id="while-you-are-live">While you are live</h3>
+<p>The <strong>Live broadcast</strong> window, which does not take
+focus, shows the <strong>Status</strong>: how long you have been live,
+whether you are connected, and how many times the stream has
+reconnected.</p>
+<ul>
+<li><strong>Now playing</strong> and <strong>Update the title</strong>
+change the title listeners see, such as the name of the current
+segment.</li>
+<li><strong>Mute everything public</strong> (Ctrl+Alt+Shift+Z) gives
+listeners silence at once without disconnecting. Press it again to bring
+the sound back. Use it for a cough, a phone call, or anything you do not
+want broadcast.</li>
+<li><strong>Stop broadcasting</strong> (Ctrl+Alt+Shift+E) ends the
+show.</li>
+</ul>
+<p>Both keys work while Studio has focus. Give them system-wide keys in
+<strong>Capture &gt; Capture global hotkeys…</strong> so they work from
+any program; Mute everything public is the one to have under your
+fingers.</p>
+<p>If the connection drops, Studio says so once and keeps trying: after
+2 seconds, then waiting twice as long each time up to 30 seconds, for up
+to 10 tries. The saved copy keeps recording throughout. If it cannot
+reconnect, it says so and stops the stream; the saved copy continues
+until you stop.</p>
+<h3 id="worked-example-a-weekly-talk-show">Worked example: a weekly talk
+show</h3>
+<ol type="1">
+<li>Server: Icecast, your host’s address, port 8000, mount /live, user
+name source, and the password. Press <strong>Test the
+connection</strong>.</li>
+<li>Show title “Tech Talk Tuesday”, genre “Talk”. Sound quality: Talk
+and music. Loudness: Even, for talk.</li>
+<li>In the stream: your microphone at 0, and your media player at minus
+8 for music beds. Leave your screen reader out.</li>
+<li>Turn on <strong>Save a copy of the show on this computer</strong> so
+you can post it as a podcast later.</li>
+<li>Assign a system-wide key for Mute everything public.</li>
+<li><strong>Check</strong>, then <strong>Go live</strong>. Update
+<strong>Now playing</strong> at each segment, and stop at the end.</li>
+<li>Use the saved FLAC copy with <strong>Make a YouTube video from a
+picture and sound</strong> to post the show afterwards.</li>
+</ol>
+<h3 id="broadcasting-troubleshooting">Broadcasting troubleshooting</h3>
+<ul>
+<li><strong>Test the connection fails.</strong> Check the address (no
+http), port, mount or stream number, and password with your host. Some
+hosts give a separate source port for SHOUTcast.</li>
+<li><strong>Listeners hear silence.</strong> Check that something is in
+the stream, and that Mute everything public is off.</li>
+<li><strong>Listeners hear your screen reader.</strong> Take it out of
+the stream list. System sound without the screen reader leaves it out
+automatically.</li>
+<li><strong>The stream keeps dropping.</strong> Choose a lower quality.
+The check warns when a quality needs more than about 70 percent of your
+measured upload speed.</li>
+<li><strong>The password is not remembered.</strong> Windows Credential
+Manager may be unavailable; enter it each time.</li>
+</ul>
 </main>
 </body>
 </html>
