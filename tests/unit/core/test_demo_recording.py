@@ -439,3 +439,22 @@ def test_whole_sound_card_source_warns_about_the_reader(tmp_path):
     warns = _texts(preflight(plan, PreflightFacts(hotkeys_assigned=1)), "Warn")
     assert any("whole sound card" in t for t in warns)
     assert "may be heard if it speaks" in screen_reader_sentence(plan)
+
+
+def test_readiness_warnings_for_long_recordings(tmp_path):
+    facts = PreflightFacts(
+        hotkeys_assigned=1,
+        trial_dropped_share=0.12,
+        on_battery=True,
+        battery_percent=40,
+        battery_minutes=55,
+        restart_pending=True,
+    )
+    warns = _texts(preflight(_on(_plan(tmp_path), "microphone"), facts), "Warn")
+    assert any("12 percent of frames were dropped" in t for t in warns)
+    assert any("on battery at 40 percent, about 55 minutes left" in t for t in warns)
+    assert any("Windows Update is waiting to restart" in t for t in warns)
+    quiet = PreflightFacts(hotkeys_assigned=1, trial_dropped_share=0.01)
+    assert not any(
+        "dropped" in t for t in _texts(preflight(_on(_plan(tmp_path), "microphone"), quiet), "Warn")
+    )

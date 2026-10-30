@@ -94,6 +94,23 @@ def sound_findings(plan: DemoPlan, facts: PreflightFacts, stop: Any, warn: Any) 
 def tool_findings(plan: DemoPlan, facts: PreflightFacts, stop: Any, warn: Any) -> None:
     from quill.core.demo_recording import minutes_left, space_needed
 
+    share = facts.trial_dropped_share
+    if plan.screen and share is not None and share > 0.05:
+        warn(
+            f"In a 3-second trial at these settings, {round(share * 100)} percent of frames "
+            "were dropped because the computer fell behind. Choose a lower frame rate or the "
+            "1080p or 720p size."
+        )
+    if facts.on_battery:
+        left = f", about {facts.battery_minutes} minutes left" if facts.battery_minutes >= 0 else ""
+        charge = f" at {facts.battery_percent} percent" if facts.battery_percent >= 0 else ""
+        warn(f"The computer is on battery{charge}{left}. Plug it in for a long recording.")
+    if facts.restart_pending:
+        warn(
+            "Windows Update is waiting to restart this computer, which could end a long "
+            "recording. Restart first if you can."
+        )
+
     if not facts.ffmpeg_found:
         stop("FFmpeg was not found. Use Voices, Get FFmpeg, then check again.")
     elif plan.has_picture and not facts.h264_encoder:

@@ -219,8 +219,22 @@ def gather_facts(plan: DemoPlan, context: CheckContext, scratch: Path) -> Prefli
     folder = Path(plan.folder)
     problem = folder_problem(folder)
     from quill.platform.windows.focus_guard import dnd_state
+    from quill.platform.windows.readiness import dropped_share, power, restart_pending
 
+    share = None
+    if plan.screen and context.ffmpeg and backend and not trial_error:
+        share = dropped_share(context.ffmpeg, plan, backend, context.caps.h264_encoder)
+    battery = power()
+    try:
+        restart = restart_pending()
+    except OSError:
+        restart = False
     return PreflightFacts(
+        trial_dropped_share=share,
+        on_battery=bool(battery and battery.on_battery),
+        battery_percent=battery.percent if battery else -1,
+        battery_minutes=battery.minutes_left if battery else -1,
+        restart_pending=restart,
         dnd_available=dnd_state() is not None,
         target_problem=target_problem,
         target_is_studio=is_studio,

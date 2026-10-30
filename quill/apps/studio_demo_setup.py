@@ -161,7 +161,7 @@ class StudioDemoSetupMixin:
         finally:
             dialog.Destroy()
 
-    def _run_demo_test(self, plan: DemoPlan, ffmpeg: str, caps) -> None:
+    def _run_demo_test(self, plan: DemoPlan, ffmpeg: str, caps, seconds: int = 5) -> None:
         if getattr(self, "_demo", None) is not None or getattr(self, "_demo_busy", ""):
             self._announce("A recording is already running.")
             return
@@ -171,7 +171,7 @@ class StudioDemoSetupMixin:
         folder = Path(tempfile.mkdtemp(prefix="studio-demo-test-"))
         test_plan = replace(plan, folder=str(folder), countdown=0, keep_stems=False)
         self._demo_busy = "A test recording is running"
-        self._announce("Recording a 5-second test.")
+        self._announce(f"Recording a {seconds}-second test.")
 
         def work(*, cancellation_token, **_kwargs):
             from quill.platform.windows.screen_recorder import DemoRecorder
@@ -179,7 +179,7 @@ class StudioDemoSetupMixin:
             recorder = DemoRecorder(test_plan, ffmpeg=ffmpeg, caps=caps, on_event=lambda *_a: None)
             recorder.open_sources()
             recorder.start()
-            cancellation_token.event.wait(5.0)
+            cancellation_token.event.wait(float(seconds))
             return recorder.finish(cancellation_token)
 
         def finished(_task, verification):

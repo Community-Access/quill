@@ -36,6 +36,7 @@ from quill.core.demo_recording import (
 )
 from quill.core.studio_capture import CaptureTarget
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.studio_demo_actions import DemoActionsMixin
 from quill.ui.studio_demo_picture import DemoPictureMixin
 from quill.ui.studio_demo_sources import DemoSourcesMixin, recordable
 
@@ -52,7 +53,7 @@ class DemoCallbacks:
         self,
         *,
         check: Callable[[DemoPlan, Callable[[str, bool], None]], None],
-        test: Callable[[DemoPlan], None],
+        test: Callable[[DemoPlan, int], None],
         camera_check: Callable[[str, bool], None],
         sounds: Callable[[], None],
         assign_keys: Callable[[], None],
@@ -82,7 +83,7 @@ class DemoCallbacks:
         self.display_info = display_info
 
 
-class RecordDemoDialog(DemoSourcesMixin, DemoPictureMixin, wx.Dialog):
+class RecordDemoDialog(DemoSourcesMixin, DemoPictureMixin, DemoActionsMixin, wx.Dialog):
     def __init__(
         self,
         parent: wx.Window,
@@ -422,13 +423,27 @@ class RecordDemoDialog(DemoSourcesMixin, DemoPictureMixin, wx.Dialog):
         )
         self.check_button.Bind(wx.EVT_BUTTON, self._check)
         actions.Add(self.check_button, 0, wx.RIGHT, 8)
-        test = wx.Button(panel, label="Record a &5-second test")
+        test = wx.Button(panel, label="Record a &quick test")
         test.SetHelpText(
-            "Record five seconds with exactly these settings to a temporary file, check it, "
-            "and offer to play it. The test file is deleted afterwards."
+            "Record a short test with exactly these settings to a temporary file, check it "
+            "the same way as a real recording, and offer to play it. The test file is "
+            "deleted afterwards."
         )
         test.Bind(wx.EVT_BUTTON, self._test)
         actions.Add(test, 0, wx.RIGHT, 8)
+        self.test_seconds = wx.SpinCtrl(panel, min=5, max=600, initial=5)
+        set_accessible_name(self.test_seconds, "Test length, seconds")
+        self.test_seconds.SetHelpText(
+            "How long the test records, from 5 seconds to 10 minutes. A longer test is a "
+            "rehearsal: it shows whether the settings hold up."
+        )
+        actions.Add(
+            wx.StaticText(panel, label="Test length, seconds"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
+            4,
+        )
+        actions.Add(self.test_seconds, 0, wx.RIGHT, 8)
         keys = wx.Button(panel, label="Assi&gn keys...")
         keys.SetHelpText(
             "Assign system-wide keys to stop, pause, mark and check a recording from inside "
@@ -537,57 +552,3 @@ class RecordDemoDialog(DemoSourcesMixin, DemoPictureMixin, wx.Dialog):
         )
         validate_plan(plan)
         return plan
-
-    def _stale(self, _event: wx.Event | None) -> None:
-        if self.checked_plan is not None:
-            self.checked_plan = None
-            self.summary.ChangeValue("Settings changed since the check. Press Check again.")
-        if getattr(self, "start_button", None) is not None:
-            self.start_button.Enable(False)
-        if _event is not None:
-            _event.Skip()
-
-    def _check(self, _event: wx.Event) -> None:
-        if self._checking:
-            return
-        try:
-            plan = self.build_plan()
-        except DemoRecordingError as error:
-            self.summary.ChangeValue(f"Stop: {error}")
-            self.summary.SetFocus()
-            return
-        self._checking = True
-        self.check_button.Enable(False)
-        self.summary.ChangeValue("Checking. This takes a few seconds.")
-
-        def done(text: str, ok: bool) -> None:
-            if not self:
-                return
-            self._checking = False
-            self.check_button.Enable(True)
-            self.summary.ChangeValue(text)
-            self.checked_plan = plan if ok else None
-            if self.start_button is not None:
-                self.start_button.Enable(ok)
-            self.summary.SetInsertionPoint(0)
-            self.summary.SetFocus()
-
-        self.callbacks.check(plan, done)
-
-    def _summary_key(self, event: wx.KeyEvent) -> None:
-        # A read-only multi-line field keeps Enter for itself; here it starts.
-        if event.GetKeyCode() in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
-            if self.checked_plan is not None and self.start_button is not None:
-                if self.start_button.IsEnabled():
-                    self.EndModal(wx.ID_OK)
-                    return
-        event.Skip()
-
-    def _test(self, _event: wx.Event) -> None:
-        try:
-            plan = self.build_plan()
-        except DemoRecordingError as error:
-            self.summary.ChangeValue(f"Stop: {error}")
-            self.summary.SetFocus()
-            return
-        self.callbacks.test(plan)

@@ -48,7 +48,7 @@ def _callbacks(**changes):
 
     values = dict(
         check=check,
-        test=lambda plan: calls["test"].append(plan),
+        test=lambda plan, seconds: calls["test"].append((plan, seconds)),
         camera_check=lambda device, mirrored: calls["camera"].append((device, mirrored)),
         sounds=lambda: None,
         assign_keys=lambda: None,

@@ -795,11 +795,11 @@ Press **Make the video**. The video is saved beside the sound as "name - video.m
 
 ### Check, then start
 
-Press **Check**. It takes a few seconds: Studio takes a trial picture, opens each sound source briefly, looks for the camera, and checks FFmpeg, the folder and its free space. The result lands in the **Check result** field and your screen reader reads it once. It says what will be recorded, which sounds are in and which are left out (always naming your screen reader), where the file goes, and then every problem. **Stop** means it cannot record until you fix it. **Warn** means it can, but something might spoil it, for example a microphone that is delivering pure digital silence because Windows privacy settings are blocking it.
+Press **Check**. It takes a few seconds: Studio takes a trial picture, records three seconds of the screen at your settings to see whether the computer keeps up, opens each sound source briefly, looks for the camera, and checks FFmpeg, the folder and its free space, whether the computer is on battery, and whether Windows Update is waiting to restart it. The result lands in the **Check result** field and your screen reader reads it once. It says what will be recorded, which sounds are in and which are left out (always naming your screen reader), where the file goes, and then every problem. **Stop** means it cannot record until you fix it. **Warn** means it can, but something might spoil it, for example a microphone that is delivering pure digital silence because Windows privacy settings are blocking it.
 
 When nothing says Stop, press Enter in the result field, or **Start recording**. If you change anything after the check, Studio asks you to check again.
 
-**Record a 5-second test** records five seconds with exactly these settings to a temporary file, checks it the same way as a real recording, and lets you play it. The test file is deleted when you close its window.
+**Record a quick test** records with exactly these settings to a temporary file, for as long as **Test length, seconds** says (5 seconds to 10 minutes, so a longer test is a rehearsal), checks it the same way as a real recording, and lets you play it. The test file is deleted when you close its window.
 
 ### While you record
 

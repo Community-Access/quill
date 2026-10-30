@@ -256,7 +256,7 @@ class StudioDemoMixin(StudioDemoSetupMixin, StudioDemoFinishMixin, StudioPicture
             microphones = []
         callbacks = DemoCallbacks(
             check=lambda plan, done: self._run_demo_check(plan, done, ffmpeg, caps),
-            test=lambda plan: self._run_demo_test(plan, ffmpeg, caps),
+            test=lambda plan, seconds: self._run_demo_test(plan, ffmpeg, caps, seconds),
             camera_check=lambda device, mirrored: self._camera_check_dialog(
                 ffmpeg, device, mirrored
             ),

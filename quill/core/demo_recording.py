@@ -227,6 +227,12 @@ class PreflightFacts:
     studio_process_in_capture: bool = False
     #: Whether Windows lets Studio read and set Do Not Disturb.
     dnd_available: bool = True
+    #: Share of frames dropped in a 3-second trial at these settings (P3).
+    trial_dropped_share: float | None = None
+    on_battery: bool = False
+    battery_percent: int = -1
+    battery_minutes: int = -1
+    restart_pending: bool = False
 
 
 @dataclass

@@ -1110,7 +1110,7 @@ Control coverage: 39 audited sites (26 helped, 13 named-help).
 
 ## QUILL Studio
 
-Control coverage: 251 audited sites (11 help-elsewhere, 240 helped).
+Control coverage: 252 audited sites (11 help-elsewhere, 241 helped).
 
 ### Every window, and what it is for
 
