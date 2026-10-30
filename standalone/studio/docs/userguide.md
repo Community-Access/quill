@@ -749,7 +749,7 @@ If nothing at all is chosen, the check says so and recording cannot start.
 
 **Level of the selected source** sets how loud that row is in the recording, from minus 60 to plus 12 decibels.
 
-**Professional audio interfaces (ASIO).** If your interface has an ASIO driver, turn on **Studio > Preferences > Use ASIO sound cards** and restart Studio. Its inputs then appear under **Microphone device** with "(ASIO)" after the name, listed first, for the lowest delay. Most ASIO drivers let only one program use the interface at a time, so close other audio programs first. It is off by default because a faulty ASIO driver can stall the program that loads it.
+**Professional audio interfaces (ASIO).** If your interface has an ASIO driver, open **Studio > Preferences**, turn on **Use ASIO sound cards**, and restart Studio. Its inputs then appear under **Microphone device** with "(ASIO)" after the name, listed first, for the lowest delay. Most ASIO drivers let only one program use the interface at a time, so close other audio programs first. It is off by default because a faulty ASIO driver can stall the program that loads it.
 
 ### The Studio Mixer
 

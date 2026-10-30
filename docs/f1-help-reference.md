@@ -1453,6 +1453,146 @@ Control coverage: 296 audited sites (11 help-elsewhere, 285 helped).
 - `self.setup_name`: Save a capture setup. AI permission and output destinations are never saved.
 - `self.setups`: Saved windows are rechecked. Select again if the application closed or restarted.
 - `self.extra_options`: Optional repeated shots, scrolling and saved setups. One shot is the default.
+#### CameraCheckDialog (`quill/ui/studio_demo_camera.py`)
+
+- `self.advice`: The latest framing advice: no face, face in view and centred, or which way to move. Studio also says it aloud when it changes.
+- `self.mirror`: Turn on if the advice sends you the wrong way; some cameras flip left and right.
+- `close`: Close the camera check; the camera is released.
+#### RecordDemoDialog (`quill/ui/studio_demo_dialog.py`)
+
+- `self.target`: What to record: a named window, one display, or the full desktop. A window recording records that window's area of the screen; anything covering it is recorded too, and moving the window is not followed.
+- `refresh`: Read the list of windows and displays again.
+- `self.screen_on`: Record the target above. Turn it off to record only the camera, or, with the camera off too, only sound.
+- `self.source_list`: Every sound that can go into the recording. Space puts the selected source in or leaves it out. The screen reader and the microphone start left out; nothing you hear changes, only what is recorded.
+- `self.level`: How loud the selected source is in the recording, from minus 60 to plus 12 decibels. 0 leaves it as it is. This never changes what you hear.
+- `add`: Choose another program that is playing sound, such as a media player, and add its sound as a source of its own.
+- `self.remove`: Remove a program you added. Built-in sources cannot be removed.
+- `hear`: Mute or unmute what you hear from any program, as the Windows volume mixer does. A program you mute there is silent for you and for every recording.
+- `self.microphone`: Which microphone the Microphone source records. It opens only while you record and only when the Microphone source is in the recording.
+- `self.reader`: The screen reader whose speech Studio keeps private. Its speech is left out of the recording unless you put Screen reader speech in.
+- `self.exclude_reader`: When System sound is in the recording, record everything except your screen reader. Studio's own sounds are silenced while it records the system.
+- `self.camera_on`: Record your camera too. It is off unless you turn it on, and the camera opens only while you check its framing or record.
+- `self.camera`: Which camera to record.
+- `self.position`: Which corner of the video shows your camera picture, or Camera only to record the camera instead of the screen picture.
+- `self.camera_size`: How wide the camera picture is, as a share of the video.
+- `self.face_alerts`: While recording, Studio says when your face leaves the camera's view and when it returns, using face detection that runs on this computer. When your screen reader's speech is being recorded, Studio adds a marker instead of speaking.
+- `self.mirrored`: Turn this on if positioning advice sends you the wrong way: some cameras flip their picture left to right.
+- `self.camera_check_button`: Open the camera and hear, as you move, whether your face is in view and centred, and which way to move. Nothing is recorded or saved.
+- `self.fps`: 30 suits most demonstrations. 60 is smoother and needs a display target and desktop duplication; 15 makes smaller files.
+- `self.ceiling`: Native size keeps every pixel. 1080p or 720p scales a larger picture down, keeping its shape, for smaller files.
+- `self.countdown`: Seconds Studio counts down aloud before recording begins, so you can move to the program you are demonstrating. 0 starts at once.
+- `self.pointer`: Draw the mouse pointer in the video.
+- `self.folder`: An absolute folder for the video and its check reports. An existing file is never replaced.
+- `browse`: Choose the save folder.
+- `self.stems`: Beside the video, keep one WAV per sound source for later editing.
+- `self.keep_awake`: Stop the computer sleeping, the screen turning off and the screen saver starting while you record or stream. Released as soon as you stop.
+- `self.do_not_disturb`: Silence Windows notifications so none slides into the picture or the sound. Studio puts Do Not Disturb back the way it was when you stop, even after a crash.
+- `self.silent_track`: Some websites refuse a video with no soundtrack. On adds a silent one when no sound source is in the recording; off leaves the soundtrack out.
+- `self.sound_format`: The kind of file Studio saves when there is no picture, only sound. M4A suits most uses; WAV and FLAC keep every detail; Opus is smallest for speech.
+- `self.check_button`: Check everything before recording: the target, a trial picture, each sound source, the microphone, the camera, FFmpeg, the folder and its free space. The result appears below and is read once.
+- `test`: Record a short test with exactly these settings to a temporary file, check it the same way as a real recording, and offer to play it. The test file is deleted afterwards.
+- `self.test_seconds`: How long the test records, from 5 seconds to 10 minutes. A longer test is a rehearsal: it shows whether the settings hold up.
+- `keys`: Assign system-wide keys to stop, pause, mark and check a recording from inside the program you are demonstrating.
+- `self.summary`: What will be recorded, which sounds are in and out, where the file goes, then every problem. Stop means recording cannot start; Warn means it can but may be spoiled. Press Enter here to start recording when nothing stops it.
+- `self.start_button`: Start the countdown and record. Available after a check finds no Stop.
+- `cancel`: Close without recording.
+#### DemoResultDialog (`quill/ui/studio_demo_result.py`)
+
+- `self.text`: Verified means every objective check passed. Needs review means the file plays but something may be spoiled, such as a silent source or black stretches. Failed means a stream is missing or the file does not decode.
+- `close`: Close this window.
+- `inspect`: Take a picture from the middle of the video and open it in the Screenshot Inspector, to read its text or ask AI about it with your approval.
+- `ask`: Ask questions about the whole video or a stretch of it. Nothing is sent until you approve it.
+- `captions`: Transcribe the speech on this computer and save captions (SRT and VTT) and a plain transcript beside the file. Nothing is sent anywhere.
+- `video`: Turn this sound into a video YouTube accepts, with a picture you choose.
+#### RecordingStatusFrame (`quill/ui/studio_demo_status.py`)
+
+- `self.text`: Elapsed time, the sounds being recorded, whether the screen reader is in the recording, dropped frames and disk space left. It updates every second.
+- `self.pause_button`: Pause the recording; nothing is recorded until you resume. The same button resumes.
+- `marker_button`: Note this moment, with an optional label, in the marker list.
+- `self.mute_button`: Silence the microphone in the recording; the device stays open and the muted stretch is marked. Press again to unmute.
+- `status_button`: Say the status line now.
+- `stop_button`: Stop recording, finish the video, check it and save it.
+- `discard_button`: Stop and delete this recording after you confirm.
+- `close`: Hide this window; recording continues. Reopen it from the tray or the Capture menu.
+#### StudioMixerDialog (`quill/ui/studio_mixer.py`)
+
+- `self.book`: Programs: what each program plays. Devices: your sound cards.
+- `close`: Close the mixer. Changes stay as you made them.
+- `self.programs`: Each program with sound: whether you hear it and how loud, whether it is playing now, and its sound card. Space mutes or unmutes it; Up and Down choose a program.
+- `self.mute`: Mute the selected program for you, or unmute it.
+- `self.volume`: The selected program's own volume, 0 to 100 percent. Up and Down change it by 1, Page Up and Page Down by 10.
+- `self.card`: Which sound card the selected program plays on, as in Windows Settings. Windows default follows whatever the default device is. Windows remembers the choice.
+- `refresh`: Read the programs and sound cards again. F5 does the same.
+- `self.playback`: Speakers and headphones Windows can use, and which is the default.
+- `self.recording`: Microphones and line inputs, which is the default, and each one's level.
+- `self.input_level`: How loud the selected input records, 0 to 100 percent.
+- `self.input_mute`: Silence the selected input for every program.
+#### PictureVideoDialog (`quill/ui/studio_picture_video.py`)
+
+- `self.shape`: The video's size: YouTube's usual 1920 by 1080, square for social posts, vertical for Shorts, or the picture's own size.
+- `self.zoom`: The picture moves gently closer over the video, instead of staying still.
+- `self.wave`: A white wave that moves with the sound, so viewers can see sound is playing.
+- `self.chapters`: Markers you added while recording become chapters in the video and timestamps in the description. YouTube needs at least three, ten seconds apart.
+- `self.title_field`: The video's title, up to 100 characters.
+- `self.description`: What viewers read under the video. Chapters are added at the end.
+#### VideoQuestionDialog (`quill/ui/studio_video_question.py`)
+
+- `self.video`: The video to ask about.
+- `browse`: Choose the video file.
+- `self.whole`: Look across the whole video.
+- `self.stretch`: Look only between the two times below.
+- `self.start`: Where the stretch starts, like 1:05 or 1:02:03.
+- `self.end`: Where the stretch ends. Leave empty for the end of the video.
+- `self.frames`: More frames show more of what happened; fewer make each frame larger and clearer.
+- `self.transcript`: When captions exist beside the video, send what was said in the same stretch with the picture. Make captions from the recording's result window.
+#### PictureMakerDialog (`quill/ui/studio_picture_maker.py`)
+
+- `self.words`: First, describe the whole picture. After that, say only what to change, such as make the background darker; every earlier request is kept.
+- `self.shape`: Wide for a YouTube video, square for a cover, tall for Shorts.
+- `self.make`: Send the description to your AI provider after you approve it, then have the picture described to you.
+- `self.list`: Every picture made so far, newest last. Choose one to hear its description.
+- `self.description`: What the vision model sees in the picture, from a separate look, not the generator's own claim.
+- `self.video`: Use the chosen version as the picture of a YouTube video.
+- `self.folder`: Open the folder where the pictures are saved.
+- `close`: Close. The pictures stay saved.
+#### GoLiveDialog (`quill/ui/studio_go_live.py`)
+
+- `self.kind`: Which kind of server your stream host runs. Your host's settings page says.
+- `self.host`: The server's address, such as stream.example.org, without http.
+- `self.port`: The server's port, often 8000.
+- `self.mount`: Icecast only: the mount point, starting with a slash, such as /live.
+- `self.stream_id`: SHOUTcast only: the stream number on the server, usually 1.
+- `self.user`: Icecast only: usually source.
+- `self.password`: The source password. Studio keeps it in Windows Credential Manager, never in its settings or logs.
+- `self.secure`: Only if your server offers TLS. Most radio servers do not.
+- `self.title_field`: What listeners and directories see as the stream's name.
+- `self.description`: A sentence about the show.
+- `self.genre`: Such as Talk, Music or Podcast.
+- `self.website`: Your show's web address, if any.
+- `self.public`: Off keeps the stream unlisted: only people with the address find it.
+- `self.quality`: Speech is smallest; Music sounds best; Custom shows every technical choice below.
+- `self.format`: The kind of sound listeners receive. SHOUTcast takes MP3 or AAC.
+- `self.bitrate`: Higher sounds better and needs a faster upload.
+- `self.channels`: Mono halves the size and suits a single voice.
+- `self.rate`: 44100 suits most streams.
+- `self.loudness`: An automatic level so the stream sounds even, with a limiter against distortion. Off sends the mix exactly as it is.
+- `self.list`: Each sound and whether listeners hear it. Space puts the selected one in or leaves it out. Your screen reader starts left out and asks first.
+- `self.level`: How loud the selected sound is in the stream; recordings are separate.
+- `self.archive`: Keep a copy as FLAC while you broadcast, even through reconnects.
+- `self.folder`: Where the saved copy goes.
+- `check`: Check everything before going live. The result is read once.
+- `test`: A private two-second test of the address and password. Nobody hears it.
+- `self.result`: Where the stream goes, what is in it, then every Stop and Warn.
+- `self.go`: Start broadcasting. Available after a check finds no Stop.
+- `cancel`: Close without broadcasting.
+#### LiveStatusFrame (`quill/ui/studio_live_status.py`)
+
+- `self.text`: On air or reconnecting, time live, sounds in the stream, reconnects.
+- `self.now`: The title listeners see. Press Enter or Update the title to send it.
+- `send`: Send the now-playing title to the server.
+- `self.mute`: Listeners hear silence at once; the connection and any saved copy continue. Press again to unmute.
+- `stop_button`: End the broadcast and finish the saved copy.
+- `close`: Hide this window; the broadcast continues.
 
 ## Quill Inkwell
 
