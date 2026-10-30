@@ -34,6 +34,7 @@ import wx
 
 from quill.core.spelling.voicing import LETTER_STYLES, SpellAloudPolicy, spell_out
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_modal_dialog
+from quill.ui.spoken_name import set_spoken_name
 
 __all__ = ["edit_spelling_voice"]
 
@@ -160,6 +161,7 @@ def edit_spelling_voice(
     # what a screen reader does not read by itself.
     example = wx.TextCtrl(letters_panel, value="", style=wx.TE_READONLY)
     set_accessible_name(example, "Example")
+    set_spoken_name(example, "Example")
     example.SetHelpText("What MacDonald would sound like with the choices above.")
     example_label = wx.StaticText(letters_panel, label="&Example:")
     letters_box.Add(example_label, 0, wx.LEFT | wx.TOP, _PAD // 2)

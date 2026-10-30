@@ -23,6 +23,7 @@ from quill.core.github.items_provider import GitHubBranchComparison, GitHubItems
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 from quill.ui.dpi import dip_size
 from quill.ui.github_items_view import pull_diff_file_label, render_pull_file_diff
+from quill.ui.spoken_name import set_spoken_name
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -91,6 +92,7 @@ class GitHubCompareBranchesDialog:
             files_panel, choices=[pull_diff_file_label(f) for f in comparison.files]
         )
         self._files.SetName("Changed files; select one to hear its differences")
+        set_spoken_name(self._files, "Changed files; select one to hear its differences")
         files_sizer.Add(self._files, 1, wx.EXPAND | wx.ALL, 6)
         files_sizer.Add(wx.StaticText(files_panel, label="Differences"), 0, wx.LEFT | wx.TOP, 6)
         self._detail = wx.TextCtrl(

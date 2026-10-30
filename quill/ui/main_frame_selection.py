@@ -36,6 +36,7 @@ from quill.core.selection import (
 )
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
+from quill.ui.spoken_name import set_spoken_name
 
 
 class SelectionMarksMixin:
@@ -348,6 +349,7 @@ class SelectionMarksMixin:
                 style=wx.TE_MULTILINE | wx.TE_READONLY | wx.HSCROLL,
             )
             ctrl.SetName("Review buffer — read-only copy of the selected text")
+            set_spoken_name(ctrl, "Review buffer")
             ctrl.SetFocus()
             sizer.Add(ctrl, 1, wx.EXPAND | wx.ALL, 8)
             close_btn = wx.Button(dlg, wx.ID_CLOSE, "Close")

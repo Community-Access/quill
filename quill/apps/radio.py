@@ -35,6 +35,7 @@ from quill.ui.main_frame_unlock_codes import UnlockCodesMixin
 from quill.ui.main_frame_weather import WeatherMixin
 from quill.ui.radio.volume_keys import volume_chord_handled
 from quill.ui.slider_keys import bind_up_means_more
+from quill.ui.spoken_name import set_spoken_name
 
 _TITLE = "Quill Radio"
 from quill.core.app_version import describe_version, installed_version  # noqa: E402
@@ -292,6 +293,7 @@ class RadioAppFrame(
             size=dip_size(panel, -1, 54),
         )
         set_accessible_name(self._now_playing_text, "Now playing")
+        set_spoken_name(self._now_playing_text, "Now playing")
         self._now_playing_text.SetHelpText(
             "What is playing. Ctrl+Shift+W says where you are in it; Ctrl+T opens the full details."
         )

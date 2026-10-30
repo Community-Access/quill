@@ -77,6 +77,7 @@ try:  # pragma: no cover - wx present in the app, absent in some test envs
     import wx
 
     from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+    from quill.ui.spoken_name import set_spoken_name
 
     class SpotifyBrowseDialog(wx.Dialog):
         """Search Spotify and play the selected item, accessibly.
@@ -116,6 +117,7 @@ try:  # pragma: no cover - wx present in the app, absent in some test envs
 
             self._list = wx.ListBox(self, style=wx.LB_SINGLE)
             set_accessible_name(self._list, "Spotify results")
+            set_spoken_name(self._list, "Spotify results")
             outer.Add(self._list, 1, wx.EXPAND | wx.ALL, 8)
 
             self._status = wx.StaticText(self, label="")

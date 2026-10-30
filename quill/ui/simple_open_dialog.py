@@ -39,6 +39,7 @@ from quill.ui.dialog_contract import (
     show_modal_dialog,
 )
 from quill.ui.dpi import dip_size
+from quill.ui.spoken_name import set_spoken_name
 
 
 def _toggle_hidden_key_pressed(event: wx.KeyEvent) -> bool:
@@ -204,6 +205,7 @@ class SimpleOpenDialog:
         # --- File list ----------------------------------------------------
         self._list = wx.ListBox(self.dialog, style=wx.LB_SINGLE)
         self._list.SetName("Files")
+        set_spoken_name(self._list, "Files")
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         # --- Status line --------------------------------------------------

@@ -22,6 +22,7 @@ from quill.core.verbosity.channels import VISUAL_ALWAYS_ON_NAME, Channel
 from quill.core.verbosity.profiles import BUILTIN_PROFILES, DEFAULT_PROFILE
 from quill.core.verbosity.registry import VerbRegistry, default_registry
 from quill.ui.dpi import dip_size
+from quill.ui.spoken_name import set_spoken_name
 
 __all__ = ["VerbosityPrefsPanel"]
 
@@ -121,10 +122,12 @@ class VerbosityPrefsPanel(wx.Panel):
         split = wx.BoxSizer(wx.HORIZONTAL)
         self._verb_list = wx.ListBox(self, style=wx.LB_SINGLE)
         self._verb_list.SetName("Verbs")
+        set_spoken_name(self._verb_list, "Verbs")
         self._verb_list.SetMinSize(dip_size(self._verb_list, 220, 180))
         split.Add(self._verb_list, 1, wx.EXPAND | wx.RIGHT, 8)
         self._detail = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP)
         self._detail.SetName("Verb details")
+        set_spoken_name(self._detail, "Verb details")
         self._detail.SetMinSize(dip_size(self._detail, 260, 180))
         split.Add(self._detail, 1, wx.EXPAND)
         root.Add(split, 1, wx.EXPAND | wx.ALL, 10)

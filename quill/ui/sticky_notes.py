@@ -16,6 +16,7 @@ from quill.ui.dialog_contract import (
     show_modal_dialog,
 )
 from quill.ui.dpi import dip, dip_size
+from quill.ui.spoken_name import set_spoken_name
 
 _SR_DETECTED: bool | None = None
 
@@ -230,6 +231,7 @@ class StickyNotesVaultDialog:
             size=dip_size(self.dialog, -1, 140),
         )
         set_accessible_name(self.preview, "Note preview")
+        set_spoken_name(self.preview, "Note preview")
         root.Add(self.preview, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)

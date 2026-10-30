@@ -19,6 +19,7 @@ from typing import Any
 
 from quill.ui.dialog_contract import set_accessible_name
 from quill.ui.dpi import dip_size
+from quill.ui.spoken_name import set_spoken_name
 
 # The community store for every shareable QUILL artifact type.
 #
@@ -134,6 +135,7 @@ def open_hub_submission(
         size=dip_size(dialog, 560, 300),
     )
     set_accessible_name(text, "Submission check results")
+    set_spoken_name(text, "Submission check results")
     sizer.Add(text, 1, wx.EXPAND | wx.ALL, 8)
 
     buttons = wx.BoxSizer(wx.HORIZONTAL)

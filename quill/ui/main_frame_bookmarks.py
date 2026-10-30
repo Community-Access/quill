@@ -40,6 +40,7 @@ from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
 from quill.ui.navigator_node import _NavigatorNode
 from quill.ui.sound_manager import post_sound
+from quill.ui.spoken_name import set_spoken_name
 
 
 class BookmarksFoldsMixin:
@@ -445,6 +446,7 @@ class BookmarksFoldsMixin:
         root.Add(recursive_check, 0, wx.ALL, 8)
         results = wx.ListBox(dialog)
         results.SetName("Matching files")
+        set_spoken_name(results, "Matching files")
         root.Add(results, 1, wx.ALL | wx.EXPAND, 8)
         buttons = dialog.CreateButtonSizer(wx.OK | wx.CANCEL)
         if buttons is not None:

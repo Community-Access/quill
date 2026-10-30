@@ -37,6 +37,7 @@ from quill.tools.check_control_labels import (
 from quill.tools.control_label_scan import (
     LABELLED,
     NAMED_ONLY,
+    SPOKEN,
     UNLABELLED,
     classify_source,
     safe_parse,
@@ -181,6 +182,17 @@ def test_a_field_with_setname_and_no_preceding_label_is_the_reported_bug() -> No
     )
     assert [site.status for site in sites] == [NAMED_ONLY]
     assert sites[0].kind == "wx.TextCtrl"
+
+
+def test_a_field_given_a_spoken_name_is_not_an_offender() -> None:
+    """``set_spoken_name`` sets the MSAA name itself (#1693), unlike SetName."""
+    sites = classify_source(
+        "def build(self):\n"
+        "    self._url = wx.TextCtrl(self.dialog)\n"
+        "    self._url.SetName('The podcast feed URL')\n"
+        "    set_spoken_name(self._url, 'The podcast feed URL')\n"
+    )
+    assert [site.status for site in sites] == [SPOKEN]
 
 
 def test_a_field_with_a_static_text_built_before_it_is_labelled() -> None:

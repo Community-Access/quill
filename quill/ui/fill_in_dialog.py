@@ -19,6 +19,7 @@ import wx
 from quill.core.expansion.fields import FieldSpec
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip
+from quill.ui.spoken_name import set_spoken_name
 
 #: Above this many fields the form scrolls rather than growing off-screen.
 _SCROLL_AFTER = 6
@@ -63,6 +64,7 @@ class FillInDialog:
             # The visible label and the accessible name agree, so speech and
             # braille match what is on screen.
             field.SetName(spec.label)
+            set_spoken_name(field, spec.label)
             grid.Add(field, 1, wx.EXPAND)
             self._controls.append(field)
 

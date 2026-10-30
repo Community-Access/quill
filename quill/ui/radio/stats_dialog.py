@@ -19,6 +19,7 @@ from typing import Any
 from quill.core.media_stats import PERIODS
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
+from quill.ui.spoken_name import set_spoken_name
 
 TITLE = "Listening Statistics"
 
@@ -64,6 +65,7 @@ class RadioStatsDialog:
             self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2
         )
         self._report.SetName("Your listening, by station and by network")
+        set_spoken_name(self._report, "Your listening, by station and by network")
         root.Add(self._report, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)

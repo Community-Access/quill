@@ -29,6 +29,7 @@ from quill.ui.dialog_contract import (
     show_message_box,
 )
 from quill.ui.dpi import dip_size
+from quill.ui.spoken_name import set_spoken_name
 
 if TYPE_CHECKING:
     from quill.core.settings import Settings
@@ -488,6 +489,7 @@ class _SkillParameterDialog:
         # announce each field by name (the StaticText label alone is not reliably
         # associated across screen readers).
         ctrl.SetName(param.label or param.name)
+        set_spoken_name(ctrl, param.label or param.name)
         return ctrl
 
     def show(self) -> int:

@@ -36,6 +36,7 @@ from quill.ui.dialog_contract import (
     show_modal_dialog,
 )
 from quill.ui.dpi import dip_size
+from quill.ui.spoken_name import set_spoken_name
 from quill.ui.surface_lifetime import surface_tasks
 
 _TIMEZONE_CHOICES = sorted(available_timezones())
@@ -133,6 +134,7 @@ class EditPublishingConnectionDialog:
         self.secret_plain = wx.TextCtrl(panel)
         self.secret_plain.SetValue(self._secret)
         self.secret_plain.SetName("Application password")
+        set_spoken_name(self.secret_plain, "Application password")
         self.secret_plain.Hide()
         self.secret = self.secret_masked
         self.secret_stack.Add(self.secret_masked, 1, wx.EXPAND)

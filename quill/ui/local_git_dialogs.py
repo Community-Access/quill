@@ -21,6 +21,7 @@ from typing import TYPE_CHECKING
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
 from quill.ui.dpi import dip_size
 from quill.ui.github_items_view import render_pull_file_diff
+from quill.ui.spoken_name import set_spoken_name
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -67,6 +68,7 @@ class UncommittedChangesDialog:
 
         self._list = wx.ListCtrl(panel, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
         self._list.SetName("Changed files; select a file to see its differences")
+        set_spoken_name(self._list, "Changed files; select a file to see its differences")
         self._list.InsertColumn(0, "Staged")
         self._list.InsertColumn(1, "Unstaged")
         self._list.InsertColumn(2, "File")

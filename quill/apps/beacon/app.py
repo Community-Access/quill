@@ -64,6 +64,7 @@ from quill.ui import app_sounds
 from quill.ui.companion_cues import init_app_sound
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.dpi import dip, dip_size
+from quill.ui.spoken_name import set_spoken_name
 from quill.ui.surface_lifetime import stop_timer_on_destroy
 
 _TITLE = "QuillBeacon"
@@ -719,6 +720,7 @@ class BeaconFrame(wx.Frame):
         self.search_box = wx.SearchCtrl(right)
         self.search_box.SetDescriptiveText("Search bookmarks  (type:episode tag:research ...)")
         _name(self.search_box, "Search bookmarks. Press Enter to search, Escape to clear.")
+        set_spoken_name(self.search_box, "Search bookmarks")
         self.search_box.SetHelpText(
             "Search the library with plain words or the query grammar: "
             'type:episode, tag:research, collection:"News", health:broken, '
@@ -733,6 +735,7 @@ class BeaconFrame(wx.Frame):
         )
         self.sort_combo.SetSelection(0)
         _name(self.sort_combo, "Sort order")
+        set_spoken_name(self.sort_combo, "Sort order")
         self.sort_combo.SetHelpText(
             "The order of the bookmark list: added (newest first, the "
             "default), title, opened (most recently opened), mostOpened, "
@@ -750,6 +753,7 @@ class BeaconFrame(wx.Frame):
             "Bookmarks list. Enter opens, Delete trashes, F2 edits, Ctrl+F1 announces "
             "where you are. Ctrl+Space or Shift+arrows select multiple for bulk actions."
         )
+        set_spoken_name(self.results, "Bookmarks")
         self.results.SetHelpText(
             "One row per bookmark with its type, location, collection, tags, "
             "date, and link health. Enter opens the row with its normal "

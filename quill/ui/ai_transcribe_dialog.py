@@ -44,6 +44,8 @@ class AITranscribeDialog:
         self._build_ui()
 
     def _build_ui(self) -> None:
+        from quill.ui.spoken_name import set_spoken_name
+
         wx = self._wx
         root = wx.BoxSizer(wx.VERTICAL)
 
@@ -52,6 +54,7 @@ class AITranscribeDialog:
         file_sizer = wx.StaticBoxSizer(file_box, wx.HORIZONTAL)
         self._file_path_ctrl = wx.TextCtrl(self.dialog)
         self._file_path_ctrl.SetName("Audio file path")
+        set_spoken_name(self._file_path_ctrl, "Audio file path")
         browse_btn = wx.Button(self.dialog, label="&Browse...")
         file_sizer.Add(self._file_path_ctrl, 1, wx.EXPAND | wx.RIGHT, 6)
         file_sizer.Add(browse_btn, 0)

@@ -17,6 +17,7 @@ import wx
 
 from quill.core.print_pagination import PageSetOption, PrintPreview, describe_preview
 from quill.ui.dpi import dip_size
+from quill.ui.spoken_name import set_spoken_name
 
 
 class PrintStudioDialog:
@@ -44,6 +45,7 @@ class PrintStudioDialog:
             self.dialog, value=describe_preview(preview), style=wx.TE_READONLY
         )
         self._preview_ctrl.SetName("Print preview summary")
+        set_spoken_name(self._preview_ctrl, "Print preview summary")
         root.Add(self._preview_ctrl, 0, wx.EXPAND | wx.ALL, 8)
 
         root.Add(wx.StaticText(self.dialog, label="Pages &to print:"), 0, wx.LEFT | wx.RIGHT, 8)

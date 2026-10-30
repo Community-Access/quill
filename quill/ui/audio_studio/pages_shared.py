@@ -16,6 +16,7 @@ from quill.ui.audio_studio.request import (
 )
 from quill.ui.dialog_contract import show_message_box
 from quill.ui.dpi import dip_size
+from quill.ui.spoken_name import set_spoken_name
 
 
 class BookPage(StudioPage):
@@ -451,6 +452,7 @@ class SummaryPage(StudioPage):
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
             name="audio_studio.summary_text",
         )
+        set_spoken_name(self._text, _("Summary of your choices"))
         self._text.SetHelpText(
             "Every choice from the earlier pages as plain sentences, one per "
             "line, read-only. Arrow through it to review; press Back to "

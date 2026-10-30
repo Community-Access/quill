@@ -46,6 +46,7 @@ from quill.ui.dpi import dip_size
 from quill.ui.radio import browse_feedback, browse_keys, browse_position, transport_keys
 from quill.ui.radio.browse_marks import row_text
 from quill.ui.radio.volume_row import add_volume_slider
+from quill.ui.spoken_name import set_spoken_name
 from quill.ui.surface_lifetime import surface_tasks
 
 #: Item data for the "Loading..." child that makes a node look expandable.
@@ -182,6 +183,7 @@ class BrowseTreeDialog:
             self._surface, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
         self._details.SetName("Details of the highlighted station")
+        set_spoken_name(self._details, "Details of the highlighted station")
         root.Add(self._details, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
         if not show_details:
             root.Hide(self._details)  # View > Show Station Details (honored per surface)

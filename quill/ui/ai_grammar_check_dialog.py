@@ -44,6 +44,8 @@ class AIGrammarCheckDialog:
         self._build_ui()
 
     def _build_ui(self) -> None:
+        from quill.ui.spoken_name import set_spoken_name
+
         wx = self._wx
         root = wx.BoxSizer(wx.VERTICAL)
 
@@ -77,6 +79,7 @@ class AIGrammarCheckDialog:
             style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.BORDER_SIMPLE,
         )
         self._list.SetName("Grammar issues")
+        set_spoken_name(self._list, "Grammar issues")
         self._list.InsertColumn(0, "#", width=dip(self._list, 40))
         self._list.InsertColumn(1, "Category", width=dip(self._list, 110))
         self._list.InsertColumn(2, "Original", width=dip(self._list, 180))

@@ -39,6 +39,7 @@ from quill.ui.media.listen_mixin import MediaListenMixin
 from quill.ui.media.note_cue_actions import NoteCuesMixin
 from quill.ui.media.now_playing_apps import refresh_player_card
 from quill.ui.media.winamp_mixin import MediaWinampKeysMixin
+from quill.ui.spoken_name import set_spoken_name
 
 _TITLE = "Quill Media Player"
 _VERSION = "1.0.0"
@@ -165,6 +166,7 @@ class QuillMediaPlayerFrame(
             panel, style=wx.TE_READONLY | wx.TE_MULTILINE, size=dip_size(panel, -1, 44)
         )
         set_accessible_name(self._now_playing, "Now playing")
+        set_spoken_name(self._now_playing, "Now playing")
         self._now_playing.SetHelpText(
             "The title of the open book or file, as read-only text you can "
             "arrow through and copy. It fills in when you open something; "
@@ -195,6 +197,7 @@ class QuillMediaPlayerFrame(
             style=wx.TR_HIDE_ROOT | wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT | wx.TR_SINGLE,
         )
         set_accessible_name(self._chapter_tree, "Chapters")
+        set_spoken_name(self._chapter_tree, "Chapters")
         self._chapter_tree.SetHelpText(
             "The book's table of contents. Enter on a heading jumps playback "
             "there -- a seek within the current file, or the right section "
@@ -213,6 +216,7 @@ class QuillMediaPlayerFrame(
         bm_sizer = wx.BoxSizer(wx.VERTICAL)
         self._bookmarks_list = wx.ListBox(bm_page, name="Bookmarks")
         set_accessible_name(self._bookmarks_list, "Bookmarks")
+        set_spoken_name(self._bookmarks_list, "Bookmarks")
         self._bookmarks_list.SetHelpText(
             "Your bookmarks in this book, each with its note and position. "
             "Enter jumps playback to the highlighted bookmark; a bookmark "

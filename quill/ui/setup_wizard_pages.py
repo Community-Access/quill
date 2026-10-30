@@ -45,6 +45,7 @@ from quill.core.onboarding_profiles import (
 from quill.core.settings import Settings
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
+from quill.ui.spoken_name import set_spoken_name
 
 _log = logging.getLogger(__name__)
 
@@ -79,6 +80,16 @@ def _is_sr_active() -> bool:
 # ---------------------------------------------------------------------------
 # Wizard preview widget (replaces the read-only TextCtrl).
 # ---------------------------------------------------------------------------
+
+
+# What a screen reader speaks for each preview field; the window names
+# passed in are lookup keys, not phrases (#1693).
+_PREVIEW_SPOKEN_NAMES = {
+    "wizard.welcome_preview": lazy_gettext("Welcome preview"),
+    "wizard.intent_preview": lazy_gettext("Setup choices preview"),
+    "wizard.extras_preview": lazy_gettext("Extras preview"),
+    "wizard.summary_text": lazy_gettext("Setup summary"),
+}
 
 
 class _WizardPreview:
@@ -137,6 +148,7 @@ class _WizardPreview:
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP,
             name=name,
         )
+        set_spoken_name(ctrl, str(_PREVIEW_SPOKEN_NAMES.get(name, _("Preview"))))
         ctrl.SetMinSize((-1, _PREVIEW_MIN_HEIGHT))
         return ctrl
 

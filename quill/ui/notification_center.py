@@ -122,6 +122,7 @@ def open_notification_center(host: Any, *, on_open: Any = None, path: Path | Non
     )
     from quill.ui.accessible_names import set_accessible_name
     from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids
+    from quill.ui.spoken_name import set_spoken_name
 
     say = getattr(host, "_announce", None) or (lambda _m: None)
     # Stored oldest-first, read newest-first: the order it is asked about.
@@ -138,6 +139,7 @@ def open_notification_center(host: Any, *, on_open: Any = None, path: Path | Non
         "notification was about, where there is something to open."
     )
     set_accessible_name(listbox, "Notifications")
+    set_spoken_name(listbox, "Notifications")
     listbox.SetHelpText(_list_help)
     root.Add(listbox, 1, wx.EXPAND | wx.ALL, 8)
 

@@ -29,6 +29,8 @@ class CompareDialog:
     def __init__(self, parent: object, svc: CompareService) -> None:
         import wx
 
+        from quill.ui.spoken_name import set_spoken_name
+
         self._svc = svc
         self._wx = wx
         g0 = svc.first()
@@ -69,6 +71,7 @@ class CompareDialog:
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2,
         )
         self._detail.SetName("Difference detail")
+        set_spoken_name(self._detail, "Difference detail")
         root.Add(self._detail, 1, wx.ALL | wx.EXPAND, 8)
 
         # Whitespace toggle checkbox.

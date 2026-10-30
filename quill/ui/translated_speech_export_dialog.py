@@ -25,6 +25,7 @@ from quill.ui.dialog_contract import (
     show_message_box,
 )
 from quill.ui.dpi import dip_size
+from quill.ui.spoken_name import set_spoken_name
 
 # Output formats in the order they appear in the format Choice.
 _FORMAT_CHOICES = ("mp3", "m4b", "wav")
@@ -91,6 +92,7 @@ class TranslatedSpeechExportDialog:
         self._lang.Bind(wx.EVT_CHOICE, lambda _e: self._reload_voices())
         self._voice = wx.Choice(self.dialog, choices=[])
         self._voice.SetName("Translation voice")
+        set_spoken_name(self._voice, "Translation voice")
         add = wx.Button(self.dialog, label="A&dd")
         add.Bind(wx.EVT_BUTTON, lambda _e: self._on_add())
         add_row.Add(self._lang, 1, wx.EXPAND | wx.RIGHT, 6)
@@ -100,6 +102,7 @@ class TranslatedSpeechExportDialog:
 
         self._list = wx.ListBox(self.dialog, style=wx.LB_SINGLE)
         self._list.SetName("Languages to export")
+        set_spoken_name(self._list, "Languages to export")
         apply_listbox_activation(self._list, lambda _e: self._lang.SetFocus())
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
         rm_row = wx.BoxSizer(wx.HORIZONTAL)

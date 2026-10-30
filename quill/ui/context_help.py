@@ -30,6 +30,7 @@ import wx
 from quill.core.help import HelpRenderer, HelpTopic
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
+from quill.ui.spoken_name import set_spoken_name
 
 _log = logging.getLogger(__name__)
 
@@ -191,6 +192,7 @@ class ContextHelpDialog(wx.Dialog):
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2 | wx.TE_AUTO_URL,
             name="help_body",
         )
+        set_spoken_name(body_text, "Help text")
         body_text.SetMinSize(dip_size(body_text, -1, 120))
         sizer.Add(body_text, proportion=1, flag=wx.EXPAND | wx.ALL, border=12)
 

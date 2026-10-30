@@ -32,6 +32,7 @@ def show_about_quill_native(
     """
     from quill.core.about_info import AboutInfo
     from quill.ui.dialog_contract import apply_modal_ids, focus_primary_control
+    from quill.ui.spoken_name import set_spoken_name
 
     assert isinstance(about_info, AboutInfo)
     dialog = wx.Dialog(
@@ -67,6 +68,7 @@ def show_about_quill_native(
         style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP,
         name="about_overview",
     )
+    set_spoken_name(overview_text, "Overview")
     overview_text.SetMinSize(dip_size(overview_text, -1, 320))
     ov_sizer.Add(overview_text, 1, wx.EXPAND | wx.ALL, 8)
     overview.SetSizer(ov_sizer)
@@ -288,11 +290,14 @@ def _build_golden_quills_tab(notebook: Any, wx: Any, about_info: Any) -> None:
 
 
 def _build_dependency_list(parent: Any, wx: Any, rows: Any) -> Any:
+    from quill.ui.spoken_name import set_spoken_name
+
     list_ctrl = wx.ListCtrl(
         parent,
         style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.LC_VRULES | wx.LC_HRULES,
         name="about_dependency_list",
     )
+    set_spoken_name(list_ctrl, "Dependencies")
     list_ctrl.AppendColumn("Dependency", width=dip(list_ctrl, 200))
     list_ctrl.AppendColumn("Version", width=dip(list_ctrl, 140))
     list_ctrl.AppendColumn("License", width=dip(list_ctrl, 160))
@@ -306,11 +311,14 @@ def _build_dependency_list(parent: Any, wx: Any, rows: Any) -> Any:
 
 
 def _build_link_list(parent: Any, wx: Any, links: Any) -> Any:
+    from quill.ui.spoken_name import set_spoken_name
+
     list_ctrl = wx.ListCtrl(
         parent,
         style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.LC_HRULES,
         name="about_link_list",
     )
+    set_spoken_name(list_ctrl, "Links")
     list_ctrl.AppendColumn("Name", width=dip(list_ctrl, 260))
     list_ctrl.AppendColumn("URL", width=dip(list_ctrl, 420))
     for i, link in enumerate(links):
@@ -374,6 +382,7 @@ def show_whisperer_about_native(
 ) -> None:
     """Modal About QUILL Whisperer dialog with tabbed native ListCtrls."""
     from quill.ui.dialog_contract import apply_modal_ids, focus_primary_control
+    from quill.ui.spoken_name import set_spoken_name
 
     dialog = wx.Dialog(
         parent,
@@ -404,6 +413,7 @@ def show_whisperer_about_native(
         style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2,
         name="whisperer_about_overview",
     )
+    set_spoken_name(ov_text, "Overview")
     ov_sizer.Add(ov_text, 1, wx.EXPAND | wx.ALL, 8)
     overview_panel.SetSizer(ov_sizer)
     nb.AddPage(overview_panel, "Overview")
@@ -416,6 +426,7 @@ def show_whisperer_about_native(
         style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.LC_VRULES,
         name="whisperer_roadmap",
     )
+    set_spoken_name(roadmap_list, "Roadmap")
     roadmap_list.AppendColumn("Capability", width=dip(roadmap_list, 180))
     roadmap_list.AppendColumn("Whisperer Source", width=dip(roadmap_list, 180))
     roadmap_list.AppendColumn("Phase", width=dip(roadmap_list, 70))
@@ -437,6 +448,7 @@ def show_whisperer_about_native(
         style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.LC_VRULES,
         name="whisperer_principles",
     )
+    set_spoken_name(principles_list, "Principles")
     principles_list.AppendColumn("Principle", width=dip(principles_list, 180))
     principles_list.AppendColumn("How it applies", width=dip(principles_list, 460))
     for i, (principle, detail) in enumerate(principles_rows):
@@ -473,6 +485,7 @@ def show_bw_capability_matrix_native(
 ) -> None:
     """Modal QUILL Whisperer Capability Matrix dialog with a native ListCtrl."""
     from quill.ui.dialog_contract import apply_modal_ids
+    from quill.ui.spoken_name import set_spoken_name
 
     dialog = wx.Dialog(
         parent,
@@ -487,6 +500,7 @@ def show_bw_capability_matrix_native(
         style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.LC_VRULES,
         name="bw_capability_matrix",
     )
+    set_spoken_name(cap_list, "Capability matrix")
     cap_list.AppendColumn("Capability", width=dip(cap_list, 220))
     cap_list.AppendColumn("Phase", width=dip(cap_list, 80))
     cap_list.AppendColumn("Status", width=dip(cap_list, 90))
@@ -512,6 +526,7 @@ def show_bw_capability_matrix_native(
         style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2,
         name="bw_snapshot",
     )
+    set_spoken_name(snap_ctrl, "Current configuration")
     snap_ctrl.SetMinSize(dip_size(snap_ctrl, -1, 90))
     sizer.Add(snap_ctrl, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
 

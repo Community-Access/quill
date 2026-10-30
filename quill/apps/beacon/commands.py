@@ -10,6 +10,7 @@ import wx
 
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
+from quill.ui.spoken_name import set_spoken_name
 
 
 def _name(ctrl: wx.Control, name: str) -> None:
@@ -40,6 +41,7 @@ class CommandPalette(wx.Dialog):
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.filter = wx.TextCtrl(self, style=wx.TE_PROCESS_ENTER)
         _name(self.filter, "Type to filter commands")
+        set_spoken_name(self.filter, "Filter commands")
         self.filter.SetHelpText(
             "Type part of a command's name to filter the list below. Enter "
             "runs the highlighted command, Down arrow moves into the list, "
@@ -49,6 +51,7 @@ class CommandPalette(wx.Dialog):
 
         self.list = wx.ListBox(self, style=wx.LB_SINGLE)
         _name(self.list, "Commands")
+        set_spoken_name(self.list, "Commands")
         self.list.SetHelpText(
             "Every command in the app, with its keyboard shortcut in "
             "parentheses when it has one. Enter or double-click runs the "

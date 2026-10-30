@@ -22,6 +22,7 @@ from quill.core.copy_tray import CopyTray
 from quill.core.multi_press import MultiPressDispatcher
 from quill.ui.dpi import dip_size
 from quill.ui.sound_manager import post_sound
+from quill.ui.spoken_name import set_spoken_name
 
 
 class _TraySearchDialog:
@@ -60,6 +61,7 @@ class _TraySearchDialog:
 
         self._results = wx.ListBox(self.dialog, style=wx.LB_SINGLE)
         self._results.SetName("Matching slots")
+        set_spoken_name(self._results, "Matching slots")
         root.Add(self._results, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)

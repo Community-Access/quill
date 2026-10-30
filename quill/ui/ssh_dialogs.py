@@ -26,6 +26,7 @@ from quill.ui.dialog_contract import (
     show_modal_dialog,
 )
 from quill.ui.dpi import dip_size
+from quill.ui.spoken_name import set_spoken_name
 
 _AUTH_LABELS = [
     ("Password", AUTH_PASSWORD),
@@ -96,6 +97,7 @@ class QuickConnectDialog:
         key_picker = wx.BoxSizer(wx.HORIZONTAL)
         self.key_path = wx.TextCtrl(self.dialog, value=site.key_path)
         self.key_path.SetName("Private key file path")
+        set_spoken_name(self.key_path, "Private key file path")
         self.key_path.SetToolTip(
             "Path to your SSH private key file on disk. OpenSSH, PEM, and PuTTY "
             "(.ppk) formats are supported. The file itself is not opened until "
@@ -209,6 +211,7 @@ class SiteEditDialog:
         self.key_path_picker = wx.BoxSizer(wx.HORIZONTAL)
         self.key_path = wx.TextCtrl(self.dialog, value=site.key_path)
         self.key_path.SetName("Private key file path")
+        set_spoken_name(self.key_path, "Private key file path")
         self.key_path.SetToolTip(
             "Path to your SSH private key file on disk. OpenSSH, PEM, and PuTTY "
             "(.ppk) formats are supported. The file itself is not opened until "
