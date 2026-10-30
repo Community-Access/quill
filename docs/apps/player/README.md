@@ -25,9 +25,9 @@
 
 ---
 
-# Relocated material
+## Relocated material
 
-## The dictation profile applies to the Media Player too
+### The dictation profile applies to the Media Player too
 
 _From the user guide's "Teach dictation your words" bullet, and from
 `voice-interaction.md`'s "Teaching dictation your words" section. Both now list
@@ -38,7 +38,7 @@ spoken-to-written replacements, and custom spoken command phrases -- applies
 everywhere dictation transcribes: **Locked Dictation**, the **Dictate (Offline)**
 toggle, and the **Media Player's** hands-free voice commands.
 
-## The Media Player's speech engine
+### The Media Player's speech engine
 
 _From `voice-interaction.md`, "Choosing a speech engine and model". The public
 text now ends with the list of engines._
@@ -47,7 +47,7 @@ The engine you set as default in QUILL is the one the Media Player uses for
 hands-free voice too. For short commands the player automatically prefers a
 small, fast model.
 
-## Roadmap entry
+### Roadmap entry
 
 _From `voice-interaction.md`, "Roadmap". The public list of shipped polish
 refinements no longer names the player._
@@ -57,7 +57,7 @@ interaction polish refinements, alongside true silence detection, personalized
 and optionally-spoken prompts with screen-reader parity, the Speak Voice Status
 check, and the editable dictation profile (`dictation.md`).
 
-## Gating reference
+### Gating reference
 
 - Command id: `app.open_media_player` (`quill/ui/main_frame_media_player.py`).
 - Menu path when released: **Tools > Media > Media Player...**

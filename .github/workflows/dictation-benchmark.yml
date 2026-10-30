@@ -53,7 +53,7 @@ jobs:
           pip install -e .[dev,live-dictation]
 
       - name: Restore the models
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             build/dictation-models

@@ -36,6 +36,22 @@ Examples of unacceptable behavior include:
 - Other conduct which could reasonably be considered inappropriate in a
   professional setting.
 
+### Accessibility and disability
+
+QUILL is made by and for people who use assistive technology, so this project
+adds these examples of unacceptable behavior to the list above:
+
+- Disability-related harassment, including mocking how a person reads, types,
+  speaks or uses a computer.
+- Dismissing or belittling an accessibility report, or demanding that someone
+  prove a barrier is real or explain a disability or diagnosis.
+- Sharing anyone's disability, diagnosis, assistive technology use or
+  accommodation request without their permission.
+
+An accommodation can always be requested privately, without public disclosure;
+see [ACCESSIBILITY.md](ACCESSIBILITY.md#taking-part). Reports under this
+section follow the same enforcement process as any other.
+
 ## Enforcement Responsibilities
 
 Community leaders are responsible for clarifying and enforcing our standards of

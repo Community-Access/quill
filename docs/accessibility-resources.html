@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Accessibility Resources Other Projects Can Reuse</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="accessibility-resources-other-projects-can-reuse">Accessibility
+Resources Other Projects Can Reuse</h1>
+<p>QUILL is built by and for screen reader users, and much of how it
+stays accessible is written down as files and tests that other projects
+can copy. This page lists them: what problem each solves, what you need
+to use it, where it does not apply, and where to find it. Everything
+here is under QUILL’s MIT license unless the file says otherwise. Our
+own accessibility commitments are in <a
+href="ACCESSIBILITY.md">ACCESSIBILITY.md</a>.</p>
+<p><strong>Maintained by</strong> the accessibility owner named in <a
+href="ACCESSIBILITY.md#ownership-and-maintenance">ACCESSIBILITY.md</a>,
+currently Jeff Bishop (<a
+href="https://github.com/accesswatch">@accesswatch</a>). These resources
+are reviewed with each monthly accessibility feedback and progress
+issue, and whenever the file they describe changes. Report a problem
+with one through the <a
+href="https://github.com/Community-Access/quill/issues/new?template=accessibility.yml">accessibility
+issue form</a>.</p>
+<h2 id="project-process">Project process</h2>
+<h3 id="accessibility-issue-form">Accessibility issue form</h3>
+<ul>
+<li><strong>Where:</strong> <a
+href="https://github.com/Community-Access/quill/blob/main/.github/ISSUE_TEMPLATE/accessibility.yml">.github/ISSUE_TEMPLATE/accessibility.yml</a></li>
+<li><strong>Solves:</strong> reports that arrive without the steps, the
+screen reader and its version, or what was heard, so they cannot be
+reproduced.</li>
+<li><strong>How it works:</strong> only the description is required; it
+asks for what the screen reader said word for word, offers an email
+route for people who cannot or will not use GitHub, never asks about
+disability, and applies the <code>accessibility</code> label.</li>
+<li><strong>Needs:</strong> GitHub issue forms. Change the app list and
+the contact address.</li>
+<li><strong>Does not fit:</strong> projects without a desktop app may
+want browser fields instead of the app list.</li>
+</ul>
+<h3 id="pull-request-accessibility-checklist">Pull request accessibility
+checklist</h3>
+<ul>
+<li><strong>Where:</strong> <a
+href="https://github.com/Community-Access/quill/blob/main/.github/pull_request_template.md">.github/pull_request_template.md</a></li>
+<li><strong>Solves:</strong> accessibility review that depends on the
+reviewer remembering to ask.</li>
+<li><strong>How it works:</strong> separate groups for documentation
+changes and interface changes, each item checkable or marked N/A, and a
+notes field for which screen reader and version the contributor tested
+with.</li>
+<li><strong>Needs:</strong> nothing beyond GitHub. The interface items
+are specific to a wxPython desktop app; replace them with your toolkit’s
+equivalents.</li>
+</ul>
+<h3 id="accessibilitymd">ACCESSIBILITY.md</h3>
+<ul>
+<li><strong>Where:</strong> <a
+href="ACCESSIBILITY.md">ACCESSIBILITY.md</a></li>
+<li><strong>Solves:</strong> having nowhere public to say what a project
+commits to, how to report a barrier and what happens next.</li>
+<li><strong>How it works:</strong> follows the section order of the Open
+Source Accessibility Framework: priorities, contributor expectations,
+reporting and severity, response, ownership, dependencies, supported
+environments and known limitations.</li>
+<li><strong>Does not fit:</strong> it is not a conformance statement and
+makes no WCAG conformance claim.</li>
+</ul>
+<h3 id="monthly-accessibility-feedback-and-progress-issue">Monthly
+accessibility feedback and progress issue</h3>
+<ul>
+<li><strong>Where:</strong> <a
+href="https://github.com/Community-Access/quill/blob/main/.github/workflows/accessibility-review.yml">.github/workflows/accessibility-review.yml</a></li>
+<li><strong>Solves:</strong> progress updates and reviews of known
+limitations that are meant to recur and quietly stop.</li>
+<li><strong>How it works:</strong> on the first of each month a
+scheduled workflow opens one public issue with the review checklist and
+an invitation to give feedback, and closes the previous month’s
+issue.</li>
+<li><strong>Needs:</strong> GitHub Actions with
+<code>issues: write</code>, and an <code>accessibility</code>
+label.</li>
+<li><strong>Limits:</strong> it creates the reminder, not the update. A
+person still writes the progress entry.</li>
+</ul>
+<h2 id="testing">Testing</h2>
+<h3 id="core-task-test-procedures-and-record">Core-task test procedures
+and record</h3>
+<ul>
+<li><strong>Where:</strong> <a
+href="accessibility-testing.md">accessibility-testing.md</a>, with the
+deeper plans in <a
+href="release/qa-core-journeys.md">release/qa-core-journeys.md</a> and
+<a
+href="release/screen-reader-test-plan.md">release/screen-reader-test-plan.md</a></li>
+<li><strong>Solves:</strong> manual testing that is never written down,
+so nobody knows what was tested with which screen reader.</li>
+<li><strong>How it works:</strong> keyboard-only, screen reader, manual
+and documentation check lists for six core tasks of a desktop writing
+app, and a record template that captures the date, build, Windows
+version, screen reader and version, and what was heard.</li>
+<li><strong>Limits:</strong> written for Windows screen readers (NVDA,
+JAWS, Narrator) and a desktop app. Web projects should add landmarks and
+reflow checks.</li>
+</ul>
+<h3 id="screen-reader-sign-off-sheets">Screen reader sign-off
+sheets</h3>
+<ul>
+<li><strong>Where:</strong> <a href="qa/README.md">qa/README.md</a> and
+the sheets it lists</li>
+<li><strong>Solves:</strong> release testing that has no clear pass or
+fail.</li>
+<li><strong>How it works:</strong> numbered steps with exact keys and
+the speech to expect, a short run and a full run, and a sign-off block
+(build, date, screen reader, Windows version, ship or do not ship).</li>
+<li><strong>Lesson learned:</strong> writing the expected speech down
+word for word is what makes a failure reportable; “it sounded wrong” is
+not.</li>
+</ul>
+<h2 id="gates-that-enforce-accessibility-in-code">Gates that enforce
+accessibility in code</h2>
+<p>These are Python tests and tools for a wxPython app, but each idea
+carries to any desktop toolkit. Each runs in continuous integration and
+fails the build.</p>
+<h3 id="do-not-announce-what-the-screen-reader-already-says-gate-13">Do
+not announce what the screen reader already says (GATE-13)</h3>
+<ul>
+<li><strong>Where:</strong> <a
+href="https://github.com/Community-Access/quill/blob/main/quill/tools/check_over_announce.py">quill/tools/check_over_announce.py</a></li>
+<li><strong>Solves:</strong> “chatty” apps. Over-announcing is rarely
+reported as a bug; people just learn to dislike the app.</li>
+<li><strong>How it works:</strong> flags an announcement inside a focus
+handler, and an announcement of a window title.</li>
+<li><strong>Lesson learned:</strong> a verbosity setting is not the fix;
+saying less is.</li>
+</ul>
+<h3 id="speech-also-reaches-braille-gate-braille">Speech also reaches
+braille (GATE-BRAILLE)</h3>
+<ul>
+<li><strong>Where:</strong> <a
+href="https://github.com/Community-Access/quill/blob/main/quill/tools/braille_parity_audit.py">quill/tools/braille_parity_audit.py</a></li>
+<li><strong>Solves:</strong> messages that are only spoken, which do not
+exist for a deafblind user or anyone reading with speech off.</li>
+<li><strong>How it works:</strong> walks the code for every speech call
+and fails unless braille is written on the same path, or the call is
+classified with a reason.</li>
+</ul>
+<h3 id="unique-access-keys-per-window-gate-14">Unique access keys per
+window (GATE-14)</h3>
+<ul>
+<li><strong>Where:</strong> <a
+href="https://github.com/Community-Access/quill/blob/main/quill/tools/check_access_keys.py">quill/tools/check_access_keys.py</a></li>
+<li><strong>Solves:</strong> two controls sharing an <code>&amp;</code>
+mnemonic, where Windows cycles between them and one silently cannot be
+reached. The first sweep found 128 collisions across 76 windows.</li>
+<li><strong>Lesson learned:</strong> OK, Cancel and Close need no access
+key at all; Enter and Escape already serve them, and the letters they
+free resolve collisions elsewhere.</li>
+</ul>
+<h3 id="every-menu-item-shows-its-key">Every menu item shows its
+key</h3>
+<ul>
+<li><strong>Where:</strong> <a
+href="https://github.com/Community-Access/quill/blob/main/tests/unit/ui/test_menu_accelerators.py">tests/unit/ui/test_menu_accelerators.py</a></li>
+<li><strong>Solves:</strong> walking a menu to discover a command has no
+shortcut, and two items claiming one key so that one never fires.</li>
+</ul>
+<h3
+id="rendered-documentation-keeps-its-tables-and-skip-link-gate-doca11y">Rendered
+documentation keeps its tables and skip link (GATE-DOCA11Y)</h3>
+<ul>
+<li><strong>Where:</strong> <a
+href="https://github.com/Community-Access/quill/blob/main/tests/unit/docs/test_generated_doc_a11y.py">tests/unit/docs/test_generated_doc_a11y.py</a>
+and the Pandoc template <a
+href="https://github.com/Community-Access/quill/blob/main/docs/pandoc/quill-accessible.html5">pandoc/quill-accessible.html5</a></li>
+<li><strong>Solves:</strong> Pandoc’s default styles give tables a block
+display, which removes tables from the accessibility tree, and its
+default template has no language, skip link or main landmark.</li>
+<li><strong>Needs:</strong> Pandoc 3.10 or newer. Useful to any project
+that publishes documentation with Pandoc.</li>
+</ul>
+<h3 id="every-internal-link-on-the-site-resolves-gate-site-links">Every
+internal link on the site resolves (GATE-SITE-LINKS)</h3>
+<ul>
+<li><strong>Where:</strong> <a
+href="https://github.com/Community-Access/quill/blob/main/tests/unit/docs/test_site_links.py">tests/unit/docs/test_site_links.py</a></li>
+<li><strong>Solves:</strong> broken links and podcast episodes without
+transcripts on a static site, found by nobody because nothing
+checked.</li>
+</ul>
+<h2 id="related-resources">Related resources</h2>
+<ul>
+<li><a
+href="https://open-source-accessibility.github.io/Open-Source-Accessibility-Framework/">Open
+Source Accessibility Framework</a>, which this project follows.</li>
+<li><a
+href="https://github.com/open-source-accessibility/accessibility-toolkit">Accessibility
+Toolkit</a>, the framework’s reference examples.</li>
+<li><a href="https://accessibility.github.com/documentation">GitHub
+accessibility documentation</a>.</li>
+<li><a href="https://community-access.org/">Community Access</a>, which
+makes QUILL, and its <a
+href="https://community-access.org/git-going-with-github/">GIT Going
+with GitHub</a> course for screen reader users.</li>
+</ul>
+</main>
+</body>
+</html>

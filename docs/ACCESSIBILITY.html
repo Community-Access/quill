@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Accessibility in QUILL</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="accessibility-in-quill">Accessibility in QUILL</h1>
+<p>QUILL for All exists because its maintainer is blind, uses a screen
+reader every day, and wanted a writing studio built around the keyboard
+and the ear from the first line. Accessibility is not a feature of
+QUILL; it is the reason the project exists. Everyone, including people
+who use a screen reader, a braille display, magnification, high
+contrast, voice control, a switch or the keyboard alone, should be able
+to install QUILL and its companion apps, use them for real work, read
+their documentation and contribute to them.</p>
+<p>This document covers QUILL and the QuillVille family built from this
+repository (QUILL, QUILL Lite, Quill Radio, QUILL Cast, QUILL Transcribe
+and the other companion apps), their installers, their documentation and
+the website at <a href="https://quillforall.org/">quillforall.org</a>.
+It describes our accessibility priorities, what we ask of contributors,
+how to report a barrier, how we respond, who owns this work, what we
+support and test, and what we know is not yet good enough.</p>
+<p>We follow GitHub’s <a
+href="https://open-source-accessibility.github.io/Open-Source-Accessibility-Framework/">Open
+Source Accessibility Framework</a>, an improvement framework, not a
+certification. Participating in it is not a claim that QUILL is fully
+accessible. Our progress is in <a
+href="#open-source-accessibility-framework">the framework section</a>
+below.</p>
+<h2 id="priorities">Priorities</h2>
+<ul>
+<li><strong>Screen reader first.</strong> Every task in every app is
+designed to work with NVDA, JAWS and Narrator on Windows, and with
+VoiceOver on macOS. QUILL speaks only what the screen reader cannot
+already know (a background result, a state change, the outcome of an
+action), and never repeats a window title, a control name or a focus
+move the reader announces itself.</li>
+<li><strong>What is spoken is also brailled.</strong> A message that
+only reaches speech does not exist for a deafblind user or anyone
+reading with speech off, so announcements go through the announcement
+service, which writes braille on the same path, and the build fails a
+speech call that skips braille unless it has a recorded reason.</li>
+<li><strong>Keyboard for everything.</strong> Every command has a key or
+a written reason why not; every enabled menu item shows its key; no two
+controls in one window share an access key; dialogs answer Enter and
+Escape and give focus back to where it was.</li>
+<li><strong>Names that match what you see.</strong> Our rule is that
+every control has a real label, created immediately before it, because
+that label is the name Windows screen readers speak. Buttons that act on
+something say what in their visible label.</li>
+<li><strong>Help where you are.</strong> F1 answers in every window of
+every app, with the window’s purpose and then the focused control’s own
+help.</li>
+<li><strong>Low vision.</strong> The editor follows the colours Windows
+uses, including high contrast themes, offers dark mode, reports its own
+contrast ratio on request, and changes text size with
+<code>Ctrl+=</code>, <code>Ctrl+-</code> and <code>Ctrl+0</code>.</li>
+<li><strong>Documentation that works with assistive technology.</strong>
+Real headings and lists, descriptive link text, alternative text for
+every image, tables with header rows, and HTML pages with a language, a
+skip link and a main landmark.</li>
+<li><strong>Target.</strong> For the website and the HTML documentation
+we work toward <a href="https://www.w3.org/TR/WCAG22/">WCAG 2.2</a>
+Level AA. For the desktop apps we apply the same principles through the
+Windows and macOS accessibility APIs. This is a goal that guides our
+work, not a claim of verified conformance.</li>
+</ul>
+<h2 id="contributor-expectations">Contributor expectations</h2>
+<p>These apply to every pull request. <a
+href="CONTRIBUTING.md">CONTRIBUTING.md</a> explains how to set up and
+run the checks, and the pull request template carries the same list as a
+checklist.</p>
+<h3 id="checks-the-build-runs">Checks the build runs</h3>
+<p>Most of QUILL’s accessibility rules are enforced in code, so a pull
+request that breaks one fails its checks. They run in continuous
+integration on every pull request, and
+<code>python -m quill.tools.platform_report</code> runs them all locally
+as one scorecard.</p>
+<ul>
+<li><strong>Accessibility CI</strong>
+(<code>.github/workflows/accessibility-ci.yml</code>) runs
+<code>tests/accessibility</code> (announcement grammar, screen reader
+detection), the Windows platform bridge tests and the dialog keyboard
+contract tests.</li>
+<li><strong>GATE-13</strong>: an announcement that repeats what the
+screen reader already says (a focus move, a window title) fails the
+build.</li>
+<li><strong>GATE-BRAILLE</strong>: a speech call that does not also
+write braille fails unless it is classified with a reason.</li>
+<li><strong>GATE-14</strong>: two controls in one window with the same
+access key fail.</li>
+<li><strong>Menu accelerators</strong>: every enabled menu item must
+show a working key, and no key may be claimed twice in one menu
+bar.</li>
+<li><strong>F1 help</strong>: every window and control must have
+authored help, written inline where the control is built.</li>
+<li><strong>Dialogs</strong>: every modal dialog goes through the shared
+helper that applies the keyboard contract; a Close or Cancel button must
+be bound so it works in a modeless window too.</li>
+<li><strong>Accessible names</strong> and <strong>surface
+reachability</strong>: controls must carry names, and every window must
+be reachable from an app entry point.</li>
+<li><strong>Documentation</strong>: GATE-DOCA11Y keeps rendered pages’
+tables in the accessibility tree and their skip link working; the
+documentation chord and menu gates fail a guide that teaches a key or a
+menu that does not exist.</li>
+</ul>
+<h3 id="interface-requirements">Interface requirements</h3>
+<p>For any change to a window, dialog, menu or control:</p>
+<ul>
+<li>Do a keyboard-only pass: everything can be reached with Tab,
+Shift+Tab, the arrow keys and access keys; everything can be operated;
+focus is visible and follows a logical order; there is no keyboard trap;
+Escape closes a dialog and focus returns to where it was.</li>
+<li>Give every control a real visible label, created immediately before
+the control, and put the object of an action in a button’s label.</li>
+<li>Announce only what the screen reader does not already say, through
+the announcement service, so it reaches braille too.</li>
+<li>Keep system colours and high contrast themes working; never convey
+meaning by colour alone.</li>
+<li>Write F1 help for every new control with <code>SetHelpText</code>
+where it is built.</li>
+<li>Do a screen reader spot check with NVDA, JAWS or Narrator (VoiceOver
+for macOS work), and say in the pull request which reader and version
+you used. The procedures are in <a
+href="accessibility-testing.md">accessibility-testing.md</a>.</li>
+</ul>
+<h3 id="documentation-and-content">Documentation and content</h3>
+<ul>
+<li>Use one H1 per page, a logical heading hierarchy and real
+lists.</li>
+<li>Write unique, descriptive link text; never “click here” or “read
+more”.</li>
+<li>Give every image meaningful alternative text, or mark it decorative,
+and add a text description near any diagram.</li>
+<li>Give every table a header row and a sentence before it saying what
+it holds.</li>
+<li>Put code and commands in fenced blocks, as text, never as
+pictures.</li>
+<li>Do not convey meaning by colour, position or styling alone.</li>
+<li>Use plain language, and spell out an abbreviation the first
+time.</li>
+<li>Say “check” and “checked” for check boxes, as screen readers
+do.</li>
+<li>Regenerate the <code>.html</code> and <code>.epub</code> beside any
+Markdown file you change under <code>docs/</code>.</li>
+</ul>
+<h3 id="dependencies">Dependencies</h3>
+<p>A new dependency that users meet (a UI toolkit, a control, a speech
+or braille library, a web view, a document converter) needs a short
+accessibility review before it is adopted: how it exposes names, roles
+and states to the Windows and macOS accessibility APIs, its known
+accessibility issues upstream, and how QUILL will work around them.
+Write the review in the pull request and add the dependency to <a
+href="#dependencies-and-upstream-blockers">Dependencies and upstream
+blockers</a>.</p>
+<h2 id="reporting-accessibility-issues">Reporting accessibility
+issues</h2>
+<p>If something in QUILL, its installers, its documentation or the
+website is hard or impossible for you to use, please tell us.
+Accessibility reports are expertise, not complaints, and partial reports
+are welcome.</p>
+<ul>
+<li><strong>Inside any QuillVille app:</strong> Help &gt; Get Help from
+Support… (<code>Ctrl+Alt+F2</code>) asks a few questions, then opens
+your own mail program with the message to <a
+href="mailto:support@community-access.org">support@community-access.org</a>
+already written. Nothing is sent until you press Send there, and you do
+not need a GitHub account.</li>
+<li><strong>On GitHub:</strong> open an issue with the <a
+href="https://github.com/Community-Access/quill/issues/new?template=accessibility.yml">accessibility
+issue form</a>.</li>
+<li><strong>By email, if GitHub is a barrier for you or you would rather
+not post in public:</strong> write to <a
+href="mailto:support@community-access.org"><span>support@community-access.org</span></a>,
+or to the accessibility owner at <a
+href="mailto:jeff@jeffbishop.com"><span>jeff@jeffbishop.com</span></a>.
+We will file the issue for you if you want one, and keep your details
+private if you ask.</li>
+</ul>
+<p>Helpful details, all optional:</p>
+<ul>
+<li>What you were trying to do, and what happened instead.</li>
+<li>Which app and window, and the steps or keys that lead there.</li>
+<li>What your screen reader said, word for word, if you use one, and
+what you expected to hear.</li>
+<li>The app version (Help &gt; About), your Windows or macOS version,
+and your assistive technology and its version, including any braille
+display.</li>
+<li>How much it gets in your way (see <a
+href="#severity">Severity</a>).</li>
+</ul>
+<p>You never need to tell us about a disability or diagnosis. Please
+never include document text, passwords or keys in a report.</p>
+<h3 id="severity">Severity</h3>
+<p>Severity describes how strongly a barrier affects your ability to
+complete a task. Reporters do not need to choose one; we assign or
+confirm it in triage.</p>
+<ul>
+<li><strong>Critical:</strong> you cannot complete a core task, such as
+installing an app, opening, writing or saving a document, or reaching a
+command at all.</li>
+<li><strong>Serious:</strong> you can complete the task only with real
+difficulty or a workaround.</li>
+<li><strong>Moderate:</strong> the task works but is confusing, slow or
+inconsistent, such as speech that is repeated, missing or out of
+order.</li>
+<li><strong>Minor:</strong> a small problem with little effect on
+getting things done.</li>
+</ul>
+<h3 id="how-we-respond">How we respond</h3>
+<ul>
+<li>We acknowledge every accessibility report within <strong>5 business
+days</strong>, the same target <a
+href="MAINTAINERS.md">MAINTAINERS.md</a> sets for every new issue,
+respectfully, and say what happens next.</li>
+<li>We do not ask you to justify your experience or disclose personal
+information. If we need more detail, we ask specific questions about the
+steps and your setup, never whether the barrier is real.</li>
+<li>We label the issue <code>accessibility</code>, give it a severity,
+and say who is working on it. Accessibility issues are exempt from the
+stale bot, so they are never closed for inactivity.</li>
+<li>Where we can, we offer a workaround while a fix is in progress, and
+add the barrier to <a href="#known-limitations">Known limitations</a> if
+it affects others.</li>
+<li>We post an update on the issue whenever its status or expected
+timing changes, and link the pull request or commit that fixes it.</li>
+<li>Before closing, we write down the outcome: what changed, in which
+version, or why it cannot be fixed yet and what to do instead. When a
+fix lands we invite you, or another person affected, to confirm it
+works.</li>
+<li>We thank you for the report, and credit you in the release notes
+only if you agree (see <a href="#recognition">Recognition</a>).</li>
+</ul>
+<p>Two workflows hold us to this for reports opened from 29 October 2026
+on. Their logic and its tests are in
+<code>.github/scripts/a11y-community.mjs</code>.</p>
+<ul>
+<li><strong>When you report a barrier,</strong> a bot replies once: it
+thanks you, says a maintainer will reply with a status and a next step
+within 5 business days, points you to <a href="#known-limitations">Known
+limitations</a>, and invites, but never requires, details of your setup.
+The issue is labelled <code>a11y: awaiting response</code> until a
+maintainer comments.</li>
+<li><strong>If no maintainer has replied after 5 business days</strong>
+(Monday to Friday), the issue is labelled
+<code>a11y: response overdue</code> and the accessibility owner is
+reminded on the issue.</li>
+<li><strong>A report cannot close without an outcome.</strong>
+Maintainers close it from the pull request or commit that fixes it, or
+write a comment with a line that starts <code>Outcome:</code>, after the
+reporter’s last comment, saying what changed or why it cannot. A report
+closed without either is reopened automatically, with a note saying how
+to add one. When a report closes as fixed, you are invited to confirm
+that the fix works for you, and the issue is labelled
+<code>a11y: validation requested</code>.</li>
+</ul>
+<h3 id="resolution-expectations">Resolution expectations</h3>
+<p>After triage each accessibility issue has a severity, an owner and a
+status.</p>
+<ul>
+<li><strong>Critical</strong> barriers are labelled <code>p0</code>,
+which this project defines as a release blocker: a release does not ship
+with a known critical barrier unless a workaround is published in <a
+href="#known-limitations">Known limitations</a>.</li>
+<li><strong>Serious</strong> barriers are labelled <code>p1</code> and
+are scheduled ahead of feature work.</li>
+<li><strong>Moderate</strong> and <strong>minor</strong> barriers are
+scheduled with other work, and are often good first issues.</li>
+</ul>
+<p>If we cannot fix something soon, we say why on the issue, share any
+workaround, and keep it open and visible.</p>
+<h2 id="taking-part">Taking part</h2>
+<p>Everything in this project can be done asynchronously and in text.
+There are no required meetings, calls, cameras or spoken
+participation.</p>
+<ul>
+<li><strong>Asynchronous:</strong> issues and pull requests on GitHub,
+<a href="https://github.com/Community-Access/quill/discussions">GitHub
+Discussions</a> for questions and ideas, the Community Access <a
+href="https://github.com/Community-Access/support">support hub</a>, and
+email to the addresses above.</li>
+<li><strong>Synchronous:</strong> none is required. If we hold a call or
+a live event, the agenda and materials are posted in advance, notes are
+posted afterwards in text, and everything decided there is written on
+the issue it concerns.</li>
+<li><strong>Work that is not code is welcome:</strong> testing with
+assistive technology, reproducing reports, reviewing documentation,
+translating, and writing sign-off records.</li>
+<li><strong>Accommodations:</strong> if a tool or process we use is a
+barrier for you, or you need an accommodation to contribute, email <a
+href="mailto:jeff@jeffbishop.com"><span>jeff@jeffbishop.com</span></a>
+or <a
+href="mailto:support@community-access.org"><span>support@community-access.org</span></a>
+privately. You do not need to explain why.</li>
+</ul>
+<p>Everyone who takes part follows the <a href="CODE_OF_CONDUCT.md">Code
+of Conduct</a>, which treats dismissing someone’s accessibility report,
+mocking how a person uses a computer, or sharing someone’s disability or
+assistive technology without permission as violations.</p>
+<h3 id="how-to-help">How to help</h3>
+<ul>
+<li><a
+href="https://github.com/Community-Access/quill/issues?q=is%3Aopen+label%3Aaccessibility+label%3A%22good+first+issue%22">Accessibility
+issues for a first contribution</a> (labelled <code>accessibility</code>
+and <code>good first issue</code>).</li>
+<li><a
+href="https://github.com/Community-Access/quill/issues?q=is%3Aopen+label%3Aaccessibility+label%3A%22help+wanted%22">Accessibility
+issues where we need experienced help</a> (labelled
+<code>accessibility</code> and <code>help wanted</code>), each saying
+what experience would help.</li>
+<li><a
+href="https://github.com/Community-Access/quill/issues?q=is%3Aopen+label%3Aaccessibility">All
+open accessibility issues</a>.</li>
+<li>Each month an <strong>Accessibility feedback and progress</strong>
+issue is opened automatically
+(<code>.github/workflows/accessibility-review.yml</code>). Comment there
+to tell us what works and what does not; it is our standing feedback
+loop.</li>
+</ul>
+<p>Questions go to GitHub Discussions or to the accessibility owner; the
+owner answers them or finds someone who can.</p>
+<h3 id="collaboration-tools-we-have-reviewed">Collaboration tools we
+have reviewed</h3>
+<p>The tools this project asks people to use, and what we know about
+each. This is a desk review, made on 2026-10-28, against each tool’s own
+accessibility documentation and how the tool is used in this project; it
+is not a test with assistive technology. If one of them is a barrier for
+you, the alternative is always email.</p>
+<ul>
+<li><strong>GitHub issues, pull requests and Discussions:</strong>
+usable with a keyboard and screen reader; GitHub documents its
+accessibility at <a
+href="https://accessibility.github.com/documentation">accessibility.github.com</a>.
+Issue forms are standard form fields. Alternative: email, and we file
+it.</li>
+<li><strong>Help &gt; Get Help from Support in the apps:</strong> a
+QUILL dialog, covered by the same keyboard, F1 and naming gates as every
+other window. It hands the message to your own mail program, so the last
+step is as accessible as the mail program you already use.</li>
+<li><strong>Email:</strong> works with any mail program and screen
+reader.</li>
+<li><strong>The website and documentation:</strong> static HTML with a
+language, a skip link and a main landmark on every rendered page, plus
+EPUB copies of every document for reading in a book reader.</li>
+</ul>
+<h2 id="recognition">Recognition</h2>
+<p>We credit accessibility contributions, including testing, reports,
+reviews and documentation, in release notes and in the contributors list
+in <a href="CONTRIBUTING.md">CONTRIBUTING.md</a>, but only with the
+contributor’s consent and in the form they choose: a name, a GitHub
+handle, or no credit at all. We describe the work, never the person: we
+do not mention anyone’s disability, diagnosis or assistive technology
+unless they ask us to. The release checklist in <a
+href="release/RELEASE.md">release/RELEASE.md</a> includes this step.</p>
+<p>A workflow does the asking. When an accessibility pull request from
+outside the maintainers is merged, or your report closes as fixed, a bot
+asks you once how you would like to be credited, and you reply with one
+line: <code>credit: @handle</code>,
+<code>credit: name &lt;Name&gt;</code>, <code>credit: anonymous</code>
+or <code>credit: no</code>. Only your own reply counts, you can change
+it later, and nothing about you beyond the credit you choose is
+published. The answer is recorded as a <code>credit:</code> label, and
+each release’s credits are listed from those labels.</p>
+<h2 id="ownership-and-maintenance">Ownership and maintenance</h2>
+<p>Accessibility is owned by <strong>Jeff Bishop</strong>, project
+maintainer (<a href="https://github.com/accesswatch">@accesswatch</a> on
+GitHub, <a
+href="mailto:jeff@jeffbishop.com"><span>jeff@jeffbishop.com</span></a>).</p>
+<p>The accessibility owner:</p>
+<ul>
+<li>triages accessibility reports, assigns severity and keeps them
+labelled;</li>
+<li>marks suitable issues <code>good first issue</code> or
+<code>help wanted</code>, with scope, context and acceptance
+criteria;</li>
+<li>reviews pull requests that touch the interface against the
+contributor expectations above (changes under <code>quill/ui/</code> and
+<code>tests/accessibility/</code> are routed to the owner for review
+through <a
+href="https://github.com/Community-Access/quill/blob/main/.github/CODEOWNERS">CODEOWNERS</a>);</li>
+<li>reviews the accessibility of new dependencies before they are
+adopted;</li>
+<li>keeps this document, the known limitations, the testing records and
+the framework progress current, reviewing them with each monthly
+feedback and progress issue and at each release;</li>
+<li>escalates unresolved accessibility risks to the other maintainers in
+<a href="MAINTAINERS.md">MAINTAINERS.md</a>.</li>
+</ul>
+<p>If ownership changes, this section is updated in the same pull
+request that changes CODEOWNERS and MAINTAINERS.md.</p>
+<h2 id="dependencies-and-upstream-blockers">Dependencies and upstream
+blockers</h2>
+<p>The third-party components that shape what users meet, what each
+affects, and what we know about its accessibility. Revisit this list
+whenever one of them is added, upgraded or replaced.</p>
+<ul>
+<li><strong>wxPython 4.3.1</strong> (wxWidgets): every window and
+control. On Windows it uses native Win32 controls, so names, roles and
+states reach screen readers through Microsoft Active Accessibility and
+UI Automation; a control’s name is the label created before it. Upstream
+blocker: a name set in code is not read, and a picture-only button has
+no name, until wxPython exposes <code>SetAccessibleName</code>
+(wxWidgets <a
+href="https://github.com/wxWidgets/wxWidgets/pull/27056">PR #27056</a>
+and <a href="https://github.com/wxWidgets/wxWidgets/pull/27051">PR
+#27051</a>, both merged in September 2026). Tracked in <a
+href="https://github.com/Community-Access/quill/issues/1693">#1693</a>.
+Mitigation: every control gets a real label created before it, and
+buttons carry their object in the visible label. On macOS, VoiceOver
+ignores wx window names, so <code>quill/ui/accessible_names.py</code>
+sets native accessibility labels (<a
+href="https://github.com/Community-Access/quill/issues/1012">#1012</a>).</li>
+<li><strong>Prism</strong> (the <code>prismatoid</code> package): routes
+announcements to NVDA, JAWS and other screen readers, with speech and
+braille. Fallbacks: accessible_output2, Narrator’s UI Automation
+notifications, VoiceOver, and the system voice.</li>
+<li><strong>accessible_output2</strong>: the fallback speech and braille
+output when Prism cannot reach the running screen reader.</li>
+<li><strong>liblouis</strong>: braille translation and back-translation
+for the optional QUILL Braille Pack. Nemeth and UEB mathematics braille
+are not available yet.</li>
+<li><strong>Microsoft Edge WebView2</strong> (through
+<code>wx.html2</code>): the AI chat and HTML previews, presented as
+accessible web pages.</li>
+<li><strong>Pandoc</strong>: renders the documentation to HTML and EPUB
+through <code>docs/pandoc/quill-accessible.html5</code>, which adds the
+language, skip link and main landmark that Pandoc’s default template
+lacks, and keeps tables in the accessibility tree.</li>
+<li><strong>pywinauto</strong>: test-only; drives the UI Automation
+regression suite in <code>tests/uia</code>. It never runs on a live
+screen reader desktop.</li>
+</ul>
+<h2 id="supported-environments">Supported environments</h2>
+<p>What we support, and what has been evaluated:</p>
+<ul>
+<li><strong>Operating systems:</strong> Windows 10 and Windows 11
+(64-bit), which every installer requires. macOS builds exist and are
+under validation (<a
+href="qa/macos-platform-validation.md">macos-platform-validation.md</a>);
+treat them as less tested than Windows.</li>
+<li><strong>Screen readers:</strong> NVDA, JAWS and Narrator on Windows;
+VoiceOver on macOS. QUILL’s maintainer writes and uses QUILL with a
+screen reader every day. The user guide describes the stable release
+channel as checked with JAWS and NVDA; those checks are not yet recorded
+per release (see <a href="#known-limitations">Known
+limitations</a>).</li>
+<li><strong>Braille:</strong> braille displays through NVDA and JAWS,
+and Narrator for the notifications QUILL sends; QUILL’s own Braille mode
+and Braille Pack for braille files.</li>
+<li><strong>Input:</strong> keyboard, with every command reachable from
+it. Dictation is built in (QUILL Transcribe dictates into other
+programs). Pointer input works but is not the design focus; touch,
+switch access and voice control software have not been specifically
+tested.</li>
+<li><strong>Low vision:</strong> Windows high contrast themes and system
+colours, dark mode, an on-request contrast ratio report, and editor text
+size from 6 to 72 points. Windows Magnifier and display scaling have not
+been specifically tested.</li>
+<li><strong>Documentation:</strong> HTML pages in current browsers, and
+EPUB copies of every document.</li>
+</ul>
+<p>What is checked automatically on every pull request is listed under
+<a href="#checks-the-build-runs">Checks the build runs</a>. The manual
+procedures, and the record of which were run in which environment, are
+in <a href="accessibility-testing.md">accessibility-testing.md</a>.</p>
+<h2 id="known-limitations">Known limitations</h2>
+<p>These are the barriers we know about. Please report any we have
+missed.</p>
+<ul>
+<li><strong>Manual screen reader testing is not yet recorded per
+release.</strong> Detailed checklists exist (<code>docs/qa/</code>), but
+the sign-off records for QUILL Lite 1.2.0, Quill Radio 3.2.0, QUILL Cast
+2.0.0 and QUILL Transcribe 1.0.0 are still pending, and 316 checks for
+work from September and October 2026 are listed in <a
+href="qa/screen-reader-checks-2026-10.md">screen-reader-checks-2026-10.md</a>
+without results. Until they are recorded, treat a combination of app,
+screen reader and version that is not in a record as untested. Help is
+wanted in <a
+href="https://github.com/Community-Access/quill/issues/1694">#1694</a>.</li>
+<li><strong>A control without a visible label can be announced without a
+name</strong> on Windows, because the toolkit does not yet let QUILL set
+one (see <a
+href="https://github.com/Community-Access/quill/issues/1693">#1693</a>).
+Our rule is that every control has a label; if you find one that does
+not, please report it.</li>
+<li><strong>The screen reader does not say a paragraph is a
+heading</strong> by itself in the editor, because no Windows edit
+control exposes paragraph styles. QUILL says it for you instead
+(“Heading 2, Installing”) when you arrive on one.</li>
+<li><strong>Mathematics in braille:</strong> Nemeth and UEB maths
+braille are not available yet. With JAWS, its Math Viewer works once an
+equation is exported as a native Word equation.</li>
+<li><strong>macOS</strong> is newer than Windows and less tested; its
+validation checklist is still being worked through.</li>
+<li><strong>Settings search</strong> is not yet available in Quill
+Converter, the Media Player and Inkwell, and it does not search inside
+dialogs that are not open.</li>
+<li><strong>Some documents have heading structure</strong> that is
+harder to navigate than it should be (a second top-level heading, or a
+skipped level). Tracked in <a
+href="https://github.com/Community-Access/quill/issues/1695">#1695</a>.</li>
+</ul>
+<h2 id="progress-updates">Progress updates</h2>
+<p>We publish accessibility progress in <a
+href="accessibility-progress.md">accessibility-progress.md</a>, newest
+first: what was completed, what is still open, the known limitations and
+links to the work. A scheduled workflow opens an <strong>Accessibility
+feedback and progress</strong> issue on the first of each month, with
+the checklist for writing the next update, and each release’s notes link
+to the latest one.</p>
+<p>Resources from this work that other projects can reuse, such as our
+issue form, pull request checklist, test procedures and accessibility
+gates, are described in <a
+href="accessibility-resources.md">accessibility-resources.md</a>.</p>
+<h2 id="open-source-accessibility-framework">Open Source Accessibility
+Framework</h2>
+<p>We follow the <a
+href="https://open-source-accessibility.github.io/Open-Source-Accessibility-Framework/">Open
+Source Accessibility Framework</a> in its four phases. Progress is
+self-reported, action by action, against each action’s definition of
+done, and it is not a certification. Our public tracking issue in the
+framework’s repository is <a
+href="https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework/issues/53">QUILL
+for All, issue 53</a>, where every action’s state is checked off as it
+is met. As of October 2026, 20 of its 24 actions are done:</p>
+<ul>
+<li><strong>Foundational:</strong> this document, and the
+<code>accessibility</code> label, which the issue form applies to every
+report.</li>
+<li><strong>Workflow:</strong> priorities and contributor expectations
+above, referenced from <a href="CONTRIBUTING.md">CONTRIBUTING.md</a>;
+the accessibility issue form with in-app and email alternatives;
+severity, response and resolution expectations; an accessibility
+checklist in the pull request templates; beginner-friendly and
+expert-help accessibility issues; an owner; documentation checked by the
+documentation gates; interface requirements enforced by the build and by
+review; and the dependency list above, with its upstream blocker
+tracked.</li>
+<li><strong>Testing:</strong> automated accessibility checks on every
+pull request; a review of representative documentation; supported
+environments and known limitations above. Documented keyboard, screen
+reader and manual checks for the core tasks are in <a
+href="accessibility-testing.md">accessibility-testing.md</a>, but have
+not yet been run and recorded, so those three actions are not yet
+complete.</li>
+<li><strong>Community:</strong> ways to take part and a private route
+for accommodations; a Code of Conduct; a monthly feedback and progress
+issue; published progress updates; shared resources; and responding
+constructively to reports, under <a href="#how-we-respond">How we
+respond</a> above and, since 29 October 2026, the accessibility-reports
+workflow (<code>.github/workflows/accessibility-reports.yml</code>),
+which acknowledges every report, reminds the owner after 5 business days
+without a reply, reopens a report closed without a documented outcome (a
+merged fix or an <code>Outcome:</code> line), and invites the reporter
+to confirm a fix. Past reports are not reopened: earlier gaps, such as
+reports closed without a written outcome (#804, #999), are history that
+the rule now prevents. Crediting contributions publicly waits on
+contributors’ consent.</li>
+</ul>
+<h2 id="feedback">Feedback</h2>
+<p>To suggest an improvement to this document or to how we work, open an
+issue or a pull request, comment on the monthly feedback issue, or write
+to either address above. Thank you for helping make QUILL usable by
+everyone.</p>
+</main>
+</body>
+</html>

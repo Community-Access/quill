@@ -21,6 +21,10 @@ check_translation: OK — fr: 87% (412/474 strings)
 - [ ] Placeholders (`{name}`, `%(name)s`) preserved and not translated
 - [ ] Plural forms header matches language rules (if language has non-English plurals)
 - [ ] Screen reader strings (`# SPEECH:` comments in .pot) reviewed for natural speech
+- [ ] Translated access keys (`&`) do not collide within one window or menu
+
+Translations are part of QUILL's accessibility; see the
+[contributor expectations in ACCESSIBILITY.md](https://github.com/Community-Access/quill/blob/main/docs/ACCESSIBILITY.md#contributor-expectations).
 
 ## Notes for reviewers
 

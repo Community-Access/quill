@@ -13,6 +13,46 @@ accessible defaults, and clear user control.
 2. Review project conduct rules in `CODE_OF_CONDUCT.md`.
 3. Check existing issues and pull requests before starting overlapping work.
 4. Review project decision process in `GOVERNANCE.md`.
+5. Read the [accessibility contributor expectations](ACCESSIBILITY.md#contributor-expectations)
+   in `ACCESSIBILITY.md`. They apply to every pull request.
+
+## Accessibility expectations
+
+Accessibility is the reason QUILL exists, so every contribution follows the
+[contributor expectations in ACCESSIBILITY.md](ACCESSIBILITY.md#contributor-expectations):
+the checks the build runs, the interface requirements (keyboard access, visible
+labels created before their controls, announcements only of what the screen
+reader cannot know, braille parity, F1 help), the documentation rules, and the
+accessibility review a new dependency needs. The pull request template carries
+the same list as a checklist; check each item that applies and mark the rest
+N/A.
+
+- **Test what you change.** Run `pytest tests/accessibility -q` and
+  `python -m quill.tools.platform_report`. For an interface change, do a
+  keyboard-only pass and a screen reader spot check, using the procedures in
+  [accessibility-testing.md](accessibility-testing.md), and say in the pull
+  request which screen reader and version you used.
+- **Report a barrier** with the
+  [accessibility issue form](https://github.com/Community-Access/quill/issues/new?template=accessibility.yml),
+  from inside any app with Help > Get Help from Support..., or by email as
+  described in [ACCESSIBILITY.md](ACCESSIBILITY.md#reporting-accessibility-issues)
+  if GitHub is a barrier for you.
+- **Find accessibility work.** Issues that suit a first contribution are
+  labelled `accessibility` and `good first issue`; issues where we need
+  experienced help are labelled `accessibility` and `help wanted`, and say what
+  experience would help.
+
+## Ways to take part
+
+Everything here can be done asynchronously and in text: issues and pull
+requests, GitHub Discussions for questions and ideas, and email to
+support@community-access.org. No meetings or calls are required. Testing with
+assistive technology, reproducing reports, reviewing documentation and
+translating are all contributions. If a tool or process we use is a barrier
+for you, or you need an accommodation, email the accessibility owner named in
+[ACCESSIBILITY.md](ACCESSIBILITY.md#ownership-and-maintenance) privately; you
+do not need to explain why. See
+[Taking part](ACCESSIBILITY.md#taking-part) for the full detail.
 
 ## Architecture overview
 
@@ -134,7 +174,8 @@ If your change updates `docs/*.md`, regenerate matching artifacts:
 A strong PR includes:
 
 1. A clear summary of what changed and why.
-2. Notes on accessibility impact, if any.
+2. The accessibility checklist from the pull request template, with each
+   applicable item checked and the screen reader and version you tested with.
 3. Notes on risk or migration impact, if any.
 4. Evidence of the checks you ran.
 
@@ -186,6 +227,8 @@ Contributors who integrate third-party libraries from AccessibleApps or other op
   - actual behavior
   - reproduction steps
   - environment details
+- Accessibility barriers have their own form and an email route; see
+  [Reporting accessibility issues](ACCESSIBILITY.md#reporting-accessibility-issues).
 - Use the most specific issue template available (accessibility, AI, intake,
   snippets, dictation, performance, Quillin submission, or general bug/feature).
 - Use GitHub Discussions for Q&A and early design exploration.
@@ -212,6 +255,11 @@ Localization contributors should follow:
 
 The following people have contributed code, tests, accessibility feedback, or
 documentation to QUILL. Thank you.
+
+We add a name here, or credit someone in release notes, only with their
+consent and in the form they choose (a name, a GitHub handle, or no credit),
+and we describe the work, never the person's disability or assistive
+technology. See [Recognition](ACCESSIBILITY.md#recognition).
 
 - Taylor Arndt ([@taylorarndt](https://github.com/taylorarndt))
 - Michael Doise ([@mikedoise](https://github.com/mikedoise))
