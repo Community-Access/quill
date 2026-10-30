@@ -606,6 +606,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+V | Record demo | `studio.record_demo` |
 | Ctrl+Alt+Shift+W | Record window | `studio.record_window` |
 | Ctrl+Alt+Shift+X | Cancel capture | `studio.cancel_capture` |
+| Ctrl+Alt+Shift+Y | Picture video | `studio.picture_video` |
 
 ## Quill Radio (app keys)
 

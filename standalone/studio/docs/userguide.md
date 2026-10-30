@@ -776,6 +776,21 @@ Recordings go to your Videos folder, in a QUILL Studio folder, unless you choose
 
 **Keep the computer awake while recording** and **Turn on Do Not Disturb while recording** are both on unless you turn them off. The first stops sleep, the screen turning off and the screen saver. The second silences Windows notifications so none slides into the picture or the sound. When you stop, both go back to exactly how they were. If Studio or the computer stops in the middle, Do Not Disturb is put back the next time Studio starts. If Windows does not let Studio change Do Not Disturb, the check tells you, so you can turn it on yourself.
 
+### A picture and sound as a YouTube video
+
+**Capture > Make a YouTube video from a picture and sound** (Ctrl+Alt+Shift+Y) turns a recording or any audio file into a video YouTube accepts, showing a picture for the whole length. The sound goes in exactly as it is.
+
+To record new sound first, use Record a demonstration with the screen and the camera turned off. When that finishes, its result window has **Make a video with a picture**, which opens this window with the sound already filled in.
+
+- **Picture** and **Sound**: type a path or use the Browse buttons. The picture defaults to your last screenshot. It is fitted to the video, never stretched; any space left over is black.
+- **Shape**: YouTube video (1920 by 1080), square for social posts, vertical for Shorts, or the picture's own size.
+- **A slow zoom on the picture** makes the picture move gently closer through the video.
+- **Show a sound wave along the bottom** adds a white wave that moves with the sound, so viewers can see that sound is playing.
+- **Use the recording's markers as chapters** is available when the sound came from a recording with markers. YouTube shows chapters only when there are at least three, ten seconds or more apart, starting at 0:00, so Studio keeps the ones that qualify and adds a "Start" chapter at 0:00 when needed.
+- **Title** and **Description** are what viewers see.
+
+Press **Make the video**. The video is saved beside the sound as "name - video.mp4", checked the same way as a recording, and a text file beside it ("name - video.youtube.txt") holds the title and the description with chapter timestamps, ready to paste into YouTube's upload page.
+
 ### Check, then start
 
 Press **Check**. It takes a few seconds: Studio takes a trial picture, opens each sound source briefly, looks for the camera, and checks FFmpeg, the folder and its free space. The result lands in the **Check result** field and your screen reader reads it once. It says what will be recorded, which sounds are in and which are left out (always naming your screen reader), where the file goes, and then every problem. **Stop** means it cannot record until you fix it. **Warn** means it can, but something might spoil it, for example a microphone that is delivering pure digital silence because Windows privacy settings are blocking it.

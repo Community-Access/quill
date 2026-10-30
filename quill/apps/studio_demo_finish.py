@@ -154,6 +154,9 @@ class StudioDemoFinishMixin:
             if temporary or path.suffix.lower() != ".mp4"
             else (lambda: self._inspect_demo_frame(path)),
             title=title or f"Demonstration: {verification.state}",
+            make_video=None
+            if temporary or path.suffix.lower() == ".mp4"
+            else (lambda: wx.CallAfter(self.make_picture_video, str(path))),
         )
         try:
             self._show_modal_dialog(dialog, dialog.GetTitle())

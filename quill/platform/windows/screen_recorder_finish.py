@@ -262,10 +262,12 @@ def verify(
                 errors.append(f"at {start:.0f} seconds: {detail}")
         except (OSError, subprocess.TimeoutExpired) as error:
             errors.append(str(error))
-    try:
-        black = parse_black(_run(black_check_command(ffmpeg, path), 900).stderr or "")
-    except (OSError, subprocess.TimeoutExpired):
-        black = []
+    black: list[tuple[float, float]] = []
+    if plan.has_picture:
+        try:
+            black = parse_black(_run(black_check_command(ffmpeg, path), 900).stderr or "")
+        except (OSError, subprocess.TimeoutExpired):
+            black = []
     folder_label = _spoken_folder(path.parent)
     verification = classify(
         plan,

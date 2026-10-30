@@ -224,6 +224,7 @@
   "quill/ui/studio_demo_result.py::DemoResultDialog.__init__::wx.Button": "helped",
   "quill/ui/studio_demo_result.py::DemoResultDialog.__init__::wx.Button#2": "helped",
   "quill/ui/studio_demo_result.py::DemoResultDialog.__init__::wx.Button#3": "helped",
+  "quill/ui/studio_demo_result.py::DemoResultDialog.__init__::wx.Button#4": "helped",
   "quill/ui/studio_demo_result.py::DemoResultDialog.__init__::wx.TextCtrl": "helped",
   "quill/ui/studio_demo_status.py::RecordingStatusFrame.__init__::wx.Button": "helped",
   "quill/ui/studio_demo_status.py::RecordingStatusFrame.__init__::wx.Button#2": "helped",
@@ -243,5 +244,10 @@
   "quill/ui/studio_mixer.py::StudioMixerDialog._programs_page::wx.Button#2": "helped",
   "quill/ui/studio_mixer.py::StudioMixerDialog._programs_page::wx.Choice": "helped",
   "quill/ui/studio_mixer.py::StudioMixerDialog._programs_page::wx.ListCtrl": "helped",
-  "quill/ui/studio_mixer.py::StudioMixerDialog._programs_page::wx.SpinCtrl": "helped"
+  "quill/ui/studio_mixer.py::StudioMixerDialog._programs_page::wx.SpinCtrl": "helped",
+  "quill/ui/studio_picture_video.py::PictureVideoDialog.__init__::wx.Choice": "helped",
+  "quill/ui/studio_picture_video.py::PictureVideoDialog.__init__::wx.TextCtrl": "helped",
+  "quill/ui/studio_picture_video.py::PictureVideoDialog.__init__::wx.TextCtrl#2": "helped",
+  "quill/ui/studio_picture_video.py::PictureVideoDialog._file_row::wx.Button": "helped",
+  "quill/ui/studio_picture_video.py::PictureVideoDialog._file_row::wx.TextCtrl": "helped"
 }

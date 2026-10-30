@@ -485,3 +485,28 @@ def test_preferences_file_is_read_safely(parent, tmp_path, monkeypatch):
     monkeypatch.setenv("QUILL_DATA_DIR", str(tmp_path))
     (Path(tmp_path) / "studio-demo-recording.json").write_text("[1, 2]", encoding="utf-8")
     assert Host(parent)._demo_preferences() == {}
+
+
+def test_picture_video_window_builds_a_plan_with_markers(parent, tmp_path):
+    from PIL import Image
+
+    from quill.ui.studio_picture_video import PictureVideoDialog
+
+    picture = tmp_path / "cover.png"
+    Image.new("RGB", (20, 20)).save(picture)
+    sound = tmp_path / "Show 4.m4a"
+    sound.write_bytes(b"x")
+    (tmp_path / "Show 4.markers.txt").write_text("00:00:30.0  Part two\n", encoding="utf-8")
+    dialog = PictureVideoDialog(
+        parent, choose_file=lambda *_a: None, picture=str(picture), sound=str(sound)
+    )
+    try:
+        assert dialog.chapters.IsEnabled() and dialog.chapters.GetValue()
+        assert dialog.title_field.GetValue() == "Show 4"
+        dialog.wave.SetValue(True)
+        dialog.shape.SetSelection(1)
+        plan = dialog.build_plan()
+        assert plan.output.name == "Show 4 - video.mp4" and plan.shape == "square" and plan.wave
+        assert plan.chapters[0].title == "Part two"
+    finally:
+        dialog.Destroy()

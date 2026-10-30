@@ -503,17 +503,19 @@ valid, including nothing but sound, a picture with no sound, and a
 screen with a camera corner. A recording with nothing chosen at all is a
 Stop in the check.</p>
 <ul>
-<li><strong>R1. Screen and Camera check boxes.</strong> Screen on and
-Camera off records the screen (today’s behaviour). Camera on adds the
-corner picture, or fills the frame when Screen is off. Both off is a
-sound-only recording. (M)</li>
-<li><strong>R2. Sound-only formats.</strong> WAV (lossless), FLAC, M4A
-(AAC), MP3 and Opus, with bit rate. The after-check becomes “one audio
-stream, right length, each source present, no clipping, loudness
-measured”. (S)</li>
-<li><strong>R3. Picture with no sound.</strong> A silent soundtrack
-(some sites reject video without one) or no audio stream; the check and
-result say which. (S)</li>
+<li><strong>R1. Screen and Camera check boxes.</strong>
+<strong>Built</strong> 2026-10-29. Screen on and Camera off records the
+screen (today’s behaviour). Camera on adds the corner picture, or fills
+the frame when Screen is off. Both off is a sound-only recording.
+(M)</li>
+<li><strong>R2. Sound-only formats.</strong> <strong>Built</strong>
+2026-10-29 (M4A, MP3, WAV, FLAC, Opus). WAV (lossless), FLAC, M4A (AAC),
+MP3 and Opus, with bit rate. The after-check becomes “one audio stream,
+right length, each source present, no clipping, loudness measured”.
+(S)</li>
+<li><strong>R3. Picture with no sound.</strong> <strong>Built</strong>
+2026-10-29. A silent soundtrack (some sites reject video without one) or
+no audio stream; the check and result say which. (S)</li>
 <li><strong>R4. Loop-back recording of any playback device</strong> as a
 one-step preset: “Record what my headphones are playing”. (S)</li>
 <li><strong>R5. Camera capabilities probed, not assumed:</strong>
@@ -571,11 +573,12 @@ destinations and folder. The microphone’s on state is still never saved
 <li><strong>P6. Setup fingerprint</strong> (PREFLIGHT-007): when
 devices, displays or the screen reader changed since the last good
 session, say what changed and offer a rehearsal. (S)</li>
-<li><strong>P7. Do Not Disturb and keep awake (must have).</strong> Two
-options in the Record a demonstration window and in every stream setup:
-<strong>Turn on Do Not Disturb while recording</strong> and <strong>Keep
-the computer awake while recording</strong>. On by default for a planned
-length over 15 minutes, and offered for any recording. Keep awake uses
+<li><strong>P7. Do Not Disturb and keep awake (must have).</strong>
+<strong>Built</strong> 2026-10-29. Two options in the Record a
+demonstration window and in every stream setup: <strong>Turn on Do Not
+Disturb while recording</strong> and <strong>Keep the computer awake
+while recording</strong>. On by default for a planned length over 15
+minutes, and offered for any recording. Keep awake uses
 <code>SetThreadExecutionState</code> (system and display) and also stops
 the screen saver; it lasts exactly as long as the recording or stream
 and is released on stop, discard, crash recovery and exit. Do Not
@@ -639,9 +642,10 @@ recording inputs with level and mute, loop-back recording, Refresh, and
 screen reader routing, plus buses, monitoring and safety. One window,
 tabs, Ctrl+Alt+Shift+M (Sounds you hear becomes its first tab).</p>
 <ul>
-<li><strong>M1. Programs, just like Windows</strong> (part
-<strong>Built</strong> as Sounds you hear: volume, mute, playing now).
-Every program that is playing sound, with:
+<li><strong>M1. Programs, just like Windows</strong>
+(<strong>Built</strong> 2026-10-29 in the Studio Mixer: volume, mute,
+playing now and the sound card; balance and “only this program” still to
+do). Every program that is playing sound, with:
 <ul>
 <li><strong>Volume up and down</strong> with the arrow keys (1 percent)
 and Page Up and Page Down (10 percent), the new level spoken by the
@@ -660,10 +664,13 @@ session has two channels.</li>
 <li>Spoken peak level on request, and “only this program for me” (every
 other program muted for the listener) with one key to restore. (M)</li>
 </ul></li>
-<li><strong>M2. Devices</strong>: playback and recording devices; Set
-default and Set communications; input level and mute; a test sound;
-Refresh. Safety rule from do.md F01: a change can never leave the screen
-reader silent without a spoken “restore my sound” key. (M)</li>
+<li><strong>M2. Devices</strong> (<strong>Built</strong> 2026-10-29:
+default and communications devices, recording level and mute; test sound
+and the “restore my sound” key still to do): playback and recording
+devices; Set default and Set communications; input level and mute; a
+test sound; Refresh. Safety rule from do.md F01: a change can never
+leave the screen reader silent without a spoken “restore my sound” key.
+(M)</li>
 <li><strong>M3. Sources and buses</strong>, the heart of it (PRD 5.2,
 UX-004): a spreadsheet-like list, one row per source, with columns for
 level, mute, solo, and a send to each bus: <strong>Monitor</strong>
@@ -931,22 +938,25 @@ for screenshots. (L)</li>
 at YouTube’s sizes, contrast of any words, nothing cut off at the edges,
 and an alt text you approve. Uses OCR first and AI only with approval.
 (S)</li>
-<li><strong>V3. Picture plus sound becomes a video.</strong> Choose a
-picture (made in V1, a file, a screenshot, or a camera photo) and a
-sound: record it now (microphone, a program, the system, any mix of
-sources, through Record a demonstration with the picture off) or choose
-an audio file. Studio makes an MP4 that YouTube accepts: 1920 by 1080
-(or the picture’s own size, padded rather than stretched), H.264 at a
-low frame rate suited to a still picture, AAC sound at 48 kHz, and the
-same independent check as a recording. No audio is edited; the sound
-goes in exactly as it is. (M)</li>
-<li><strong>V4. Options for the video, all optional</strong>: a gentle
-slow zoom on the picture; several pictures changing at chapter markers
-or at set times; a title card at the start; burned-in captions from a
-local transcript (A5); a sound wave or level bar along the bottom
-(“audiogram”), so viewers can see that sound is playing; and chapters
-written into the file and into the YouTube description as timestamps.
-(M)</li>
+<li><strong>V3. Picture plus sound becomes a video.</strong>
+<strong>Built</strong> 2026-10-29 (Capture &gt; Make a YouTube video
+from a picture and sound). Choose a picture (made in V1, a file, a
+screenshot, or a camera photo) and a sound: record it now (microphone, a
+program, the system, any mix of sources, through Record a demonstration
+with the picture off) or choose an audio file. Studio makes an MP4 that
+YouTube accepts: 1920 by 1080 (or the picture’s own size, padded rather
+than stretched), H.264 at a low frame rate suited to a still picture,
+AAC sound at 48 kHz, and the same independent check as a recording. No
+audio is edited; the sound goes in exactly as it is. (M)</li>
+<li><strong>V4. Options for the video, all optional</strong>
+(<strong>Built</strong> so far: slow zoom, sound wave, chapters from
+markers into the file and the description; still to do: several
+pictures, title card, burned-in captions): a gentle slow zoom on the
+picture; several pictures changing at chapter markers or at set times; a
+title card at the start; burned-in captions from a local transcript
+(A5); a sound wave or level bar along the bottom (“audiogram”), so
+viewers can see that sound is playing; and chapters written into the
+file and into the YouTube description as timestamps. (M)</li>
 <li><strong>V5. Ready to upload.</strong> Studio writes the title,
 description (with chapter timestamps), tags and the thumbnail beside the
 video, with A3’s AI suggestions offered for each field. With your

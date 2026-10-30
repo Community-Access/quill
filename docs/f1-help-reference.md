@@ -1110,7 +1110,7 @@ Control coverage: 39 audited sites (26 helped, 13 named-help).
 
 ## QUILL Studio
 
-Control coverage: 245 audited sites (11 help-elsewhere, 234 helped).
+Control coverage: 251 audited sites (11 help-elsewhere, 240 helped).
 
 ### Every window, and what it is for
 
@@ -1143,6 +1143,8 @@ Control coverage: 245 audited sites (11 help-elsewhere, 234 helped).
 **Export a Document to Translated Speech.** One document, spoken in other languages: pick the output format, add each target language with the voice that will read it, and choose whether your AI provider or a local LibreTranslate does the translating. Each export lands beside the source, named for its language.
 
 **Folder Podcast Feed.** One folder of finished audio treated as a whole show: name it, describe it, say where the audio will live online, and give any episode its own title or description. Write feed.rss builds the feed with every episode; everything here is local files -- uploading is your server's business.
+
+**Make a YouTube video from a picture and sound.** Choose a picture and a sound file, the shape of the video, and optionally a slow zoom, a sound wave and chapters from the recording's markers. The sound is used exactly as it is. The video and its YouTube title and description are saved beside the sound.
 
 **Play Queue.** The books lined up to play in order. Add a book, jump to the next one, remove or clear entries -- Delete on the list removes the highlighted row. The current book is marked in words, and a row whose file has moved says missing rather than failing silently.
 
@@ -1193,6 +1195,8 @@ Control coverage: 245 audited sites (11 help-elsewhere, 234 helped).
 **Windows titled "Help:...".** This is the help window itself: the purpose of the window you were in, then the control you were on. Escape returns you to it.
 
 **Windows titled "Recovered:...".** An interrupted recording was finished and checked. Play it, open its folder, copy its path or inspect a frame.
+
+**Windows titled "Video:...".** The video was made and checked. Play it, open its folder or copy its path. The title and description for YouTube are in the text file beside it.
 
 ### Every authored control help sentence
 

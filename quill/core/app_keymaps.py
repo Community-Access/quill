@@ -52,6 +52,8 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # MX-150 proposes Ctrl+Alt+M for the mixer; the three-modifier form
         # keeps Studio's capture keys one family.
         "studio.mixer": "Ctrl+Alt+Shift+M",
+        # Y for YouTube: a picture and a sound made into one video (roadmap V3).
+        "studio.picture_video": "Ctrl+Alt+Shift+Y",
     },
     "radio": {
         # Quick-play favorites. These were Ctrl+Alt+Shift+1..0 in

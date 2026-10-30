@@ -34,9 +34,13 @@ from quill.core.speech.ffmpeg import find_ffmpeg, find_ffprobe
 from quill.stability.safe_subprocess import run_subprocess_safely
 
 FFMPEG = find_ffmpeg()
-pytestmark = pytest.mark.skipif(
-    FFMPEG is None or find_ffprobe() is None, reason="FFmpeg and ffprobe are needed"
-)
+pytestmark = [
+    pytest.mark.skipif(
+        FFMPEG is None or find_ffprobe() is None, reason="FFmpeg and ffprobe are needed"
+    ),
+    # Several real FFmpeg runs per test; the suite's 30-second default is for unit tests.
+    pytest.mark.timeout(180),
+]
 
 
 def _video(path: Path, seconds: float, size: str, fps: int = 30) -> None:
@@ -191,3 +195,28 @@ def test_every_combination_finishes_and_verifies(tmp_path, label, options, expec
     assert verification.state == "Verified", (label, verification.sentence)
     assert expect in verification.sentence, (label, verification.sentence)
     assert "6 seconds" in verification.sentence
+
+
+@pytest.mark.parametrize("options", [{}, {"zoom": True}, {"wave": True, "shape": "square"}])
+def test_picture_and_sound_make_a_checked_youtube_video(tmp_path, options):
+    from PIL import Image
+
+    from quill.core.picture_video import Chapter, PictureVideoPlan
+    from quill.platform.windows.picture_video_maker import make_picture_video
+
+    picture = tmp_path / "cover.png"
+    Image.new("RGB", (800, 600), (40, 90, 160)).save(picture)
+    sound = tmp_path / "talk.wav"
+    _tone(sound, 4.0)
+    plan = PictureVideoPlan(
+        picture=picture,
+        sound=sound,
+        output=tmp_path / "talk - video.mp4",
+        title="Talk",
+        chapters=(Chapter(0, "Start"), Chapter(1, "Too soon")),
+        **options,
+    )
+    verification = make_picture_video(FFMPEG, plan)
+    assert verification.state == "Verified", verification.sentence
+    assert "4 seconds" in verification.sentence
+    assert (tmp_path / "talk - video.youtube.txt").read_text("utf-8").startswith("Title:\nTalk")

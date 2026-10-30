@@ -76,6 +76,12 @@ PURPOSES: dict[str, str] = {
         "view and centred, and which way to move. Face detection runs on this computer; "
         "nothing is recorded or saved."
     ),
+    "Make a YouTube video from a picture and sound": (
+        "Choose a picture and a sound file, the shape of the video, and optionally a slow "
+        "zoom, a sound wave and chapters from the recording's markers. The sound is used "
+        "exactly as it is. The video and its YouTube title and description are saved beside "
+        "the sound."
+    ),
     "Studio Mixer": (
         "Every program's sound and every sound card in one window. Programs: each "
         "program's volume, mute and the sound card it plays on, as Windows Settings does. "
@@ -248,6 +254,11 @@ PREFIX_PURPOSES: tuple[tuple[str, str], ...] = (
         "check passed; Needs review means it plays but something may be spoiled; Failed "
         "means a stream is missing or it does not decode. Play it, open its folder, copy "
         "its path or inspect a frame.",
+    ),
+    (
+        "Video:",
+        "The video was made and checked. Play it, open its folder or copy its path. The "
+        "title and description for YouTube are in the text file beside it.",
     ),
     (
         "Recovered:",

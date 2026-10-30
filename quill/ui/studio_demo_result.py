@@ -29,6 +29,7 @@ class DemoResultDialog(wx.Dialog):
         copy_path: Callable[[], None],
         inspect_frame: Callable[[], None] | None,
         title: str = "Demonstration saved",
+        make_video: Callable[[], None] | None = None,
     ) -> None:
         super().__init__(parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         layout = wx.BoxSizer(wx.VERTICAL)
@@ -61,6 +62,13 @@ class DemoResultDialog(wx.Dialog):
             )
             inspect.Bind(wx.EVT_BUTTON, lambda _e: inspect_frame())
             row.Add(inspect, 0, wx.RIGHT, 6)
+        if make_video is not None:
+            video = wx.Button(self, label="Make a &video with a picture...")
+            video.SetHelpText(
+                "Turn this sound into a video YouTube accepts, with a picture you choose."
+            )
+            video.Bind(wx.EVT_BUTTON, lambda _e: (self.EndModal(wx.ID_CANCEL), make_video()))
+            row.Add(video, 0, wx.RIGHT, 6)
         close = wx.Button(self, wx.ID_CANCEL, label="Close")
         close.SetHelpText("Close this window.")
         row.Add(close, 0)

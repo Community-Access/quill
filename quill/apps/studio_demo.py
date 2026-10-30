@@ -24,6 +24,7 @@ import wx
 
 from quill.apps.studio_demo_finish import StudioDemoFinishMixin
 from quill.apps.studio_demo_setup import StudioDemoSetupMixin
+from quill.apps.studio_picture_video import StudioPictureVideoMixin
 from quill.core.demo_recording import (
     MICROPHONE_KEY,
     DemoPlan,
@@ -41,7 +42,7 @@ _PREFS_FILE = "studio-demo-recording.json"
 _SUPPRESSED = "Recording a demonstration"
 
 
-class StudioDemoMixin(StudioDemoSetupMixin, StudioDemoFinishMixin):
+class StudioDemoMixin(StudioDemoSetupMixin, StudioDemoFinishMixin, StudioPictureVideoMixin):
     # -- commands, menu, tray -----------------------------------------------------
 
     def _demo_command_specs(self):
@@ -65,6 +66,11 @@ class StudioDemoMixin(StudioDemoSetupMixin, StudioDemoFinishMixin):
             ),
             ("studio.camera_check", "Check camera &framing...", self.check_camera_framing),
             ("studio.mixer", "Studio Mi&xer...", self.open_mixer),
+            (
+                "studio.picture_video",
+                "Make a &YouTube video from a picture and sound...",
+                self.make_picture_video,
+            ),
         )
 
     def _append_demo_menu(self, capture: wx.Menu) -> list:
