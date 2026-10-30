@@ -545,3 +545,53 @@ def test_captions_and_transcript_are_saved_beside_a_recording(tmp_path):
         "Hello and welcome.\nThis is the demo.\n"
     )
     assert spoken == ["Captions and a transcript saved beside Demo.mp4."]
+
+
+def test_picture_maker_keeps_every_turn_and_version(parent, tmp_path):
+    from quill.ui.studio_picture_maker import PictureMakerDialog
+
+    requests = []
+
+    def request(turns, size, done, failed):
+        requests.append((list(turns), size))
+        done(tmp_path / f"v{len(requests)}.png", f"Description {len(requests)}")
+
+    dialog = PictureMakerDialog(
+        parent, request=request, make_video=lambda p: None, announce=lambda t: None
+    )
+    try:
+        dialog._on_make(None)  # nothing typed: nothing sent
+        assert requests == []
+        dialog.words.SetValue("A warm podcast cover")
+        dialog.shape.SetSelection(1)
+        dialog._on_make(None)
+        assert dialog.make.GetLabel() == "&Make the change"
+        dialog.words.SetValue("Darker background")
+        dialog._on_make(None)
+        assert requests == [
+            (["A warm podcast cover"], "square"),
+            (["A warm podcast cover", "Darker background"], "square"),
+        ]
+        assert dialog.list.GetCount() == 2 and dialog.description.GetValue() == "Description 2"
+        dialog.list.SetSelection(0)
+        dialog._on_version(None)
+        assert dialog.description.GetValue() == "Description 1"
+    finally:
+        dialog.Destroy()
+
+
+def test_picture_request_refused_when_provider_cannot_draw(parent, monkeypatch):
+    from quill.core import assistant_ai
+    from quill.core.ai import model_manager
+
+    host = Host(parent)
+    monkeypatch.setattr(model_manager, "load_ai_enabled", lambda: True)
+    monkeypatch.setattr(
+        assistant_ai,
+        "load_assistant_connection_settings",
+        lambda: SimpleNamespace(provider="anthropic"),
+    )
+    failures = []
+    host._request_picture(["A cover"], "square", lambda *_a: None, failures.append)
+    assert failures == ["No picture was made."]
+    assert "does not make pictures" in host.spoken[0]

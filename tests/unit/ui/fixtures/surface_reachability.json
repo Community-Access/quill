@@ -433,6 +433,7 @@
   "quill.ui.studio_demo_result": "reachable",
   "quill.ui.studio_demo_status": "reachable",
   "quill.ui.studio_mixer": "reachable",
+  "quill.ui.studio_picture_maker": "reachable",
   "quill.ui.studio_picture_video": "reachable",
   "quill.ui.studio_video_question": "reachable",
   "quill.ui.support_dialog": "reachable",

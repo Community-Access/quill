@@ -1110,7 +1110,7 @@ Control coverage: 39 audited sites (26 helped, 13 named-help).
 
 ## QUILL Studio
 
-Control coverage: 259 audited sites (11 help-elsewhere, 248 helped).
+Control coverage: 267 audited sites (11 help-elsewhere, 256 helped).
 
 ### Every window, and what it is for
 
@@ -1147,6 +1147,8 @@ Control coverage: 259 audited sites (11 help-elsewhere, 248 helped).
 **Folder Podcast Feed.** One folder of finished audio treated as a whole show: name it, describe it, say where the audio will live online, and give any episode its own title or description. Write feed.rss builds the feed with every episode; everything here is local files -- uploading is your server's business.
 
 **Make a YouTube video from a picture and sound.** Choose a picture and a sound file, the shape of the video, and optionally a slow zoom, a sound wave and chapters from the recording's markers. The sound is used exactly as it is. The video and its YouTube title and description are saved beside the sound.
+
+**Make a picture with AI.** Describe the picture you want, choose its shape and press Make the picture. Then ask for changes in words and press it again; every version is kept with a description from a separate look by your vision model. Every request is approved first.
 
 **Play Queue.** The books lined up to play in order. Add a book, jump to the next one, remove or clear entries -- Delete on the list removes the highlighted row. The current book is marked in words, and a row whose file has moved says missing rather than failing silently.
 

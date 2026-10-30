@@ -778,6 +778,14 @@ Recordings go to your Videos folder, in a QUILL Studio folder, unless you choose
 
 **Keep the computer awake while recording** and **Turn on Do Not Disturb while recording** are both on unless you turn them off. The first stops sleep, the screen turning off and the screen saver. The second silences Windows notifications so none slides into the picture or the sound. When you stop, both go back to exactly how they were. If Studio or the computer stops in the middle, Do Not Disturb is put back the next time Studio starts. If Windows does not let Studio change Do Not Disturb, the check tells you, so you can turn it on yourself.
 
+### Make a picture with AI
+
+**Capture > New picture with AI** (Ctrl+Alt+Shift+J) makes a picture from your description, using the AI provider you set up in AI, Set Up AI, when that provider makes pictures: OpenAI or Google Gemini. Other providers are told plainly that they cannot.
+
+Describe the whole picture, choose its **Shape** (wide for a YouTube video, square for a cover, tall for Shorts), and press **Make the picture**. Studio asks first, naming the provider, model and address the description goes to, and that charges may apply. The picture is saved in a "QUILL Studio Pictures" folder beside your recordings folder, then your vision model looks at it separately and describes it: subject, layout, colours, any text exactly as written, and anything odd. You hear that description, not the generator's claim about what it drew.
+
+To change it, type only the change, such as "make the background darker" or "add the title QUILL Talk at the top in large white letters", and press **Make the change**. Every earlier request is kept, and every version stays in **Versions**; choose one to hear its description again. **Make a video with this picture** opens the YouTube video window with that picture. A text file beside each picture holds what you asked for and its description. AI off and Safe Mode both stop picture making.
+
 ### A picture and sound as a YouTube video
 
 **Capture > Make a YouTube video from a picture and sound** (Ctrl+Alt+Shift+Y) turns a recording or any audio file into a video YouTube accepts, showing a picture for the whole length. The sound goes in exactly as it is.

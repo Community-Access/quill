@@ -44,6 +44,15 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "sent. Pauses between videos on long runs. Refused in Safe Mode "
         "(_refuse_in_safe_mode)."
     ),
+    "core/ai/image_generation.py::generate_image": (
+        "QUILL Studio's Make a picture with AI (Studio roadmap V1). One POST of "
+        "the person's own description, with their own stored key, to the image "
+        "endpoint of the provider they already chose in Set Up AI: OpenAI "
+        "(/v1/images/generations) or Google Gemini Imagen (:predict). Never "
+        "silent and never scheduled: each request is a button the person "
+        "pressed and then approved in a message naming the provider, model and "
+        "endpoint. HTTPS only. Refused in Safe Mode and when AI is turned off."
+    ),
     "core/ai/gateway_client.py::_urlopen_json": (
         "The family's free hosted AI (quill-ai-gateway-spec.md sections 12 "
         "and 14). The single "

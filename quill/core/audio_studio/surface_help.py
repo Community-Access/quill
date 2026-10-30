@@ -87,6 +87,11 @@ PURPOSES: dict[str, str] = {
         "stretch, lays them out as one labelled picture with the transcript if there is one, "
         "and opens a conversation about it. Nothing is sent until you approve it there."
     ),
+    "Make a picture with AI": (
+        "Describe the picture you want, choose its shape and press Make the picture. Then ask "
+        "for changes in words and press it again; every version is kept with a description "
+        "from a separate look by your vision model. Every request is approved first."
+    ),
     "Studio Mixer": (
         "Every program's sound and every sound card in one window. Programs: each "
         "program's volume, mute and the sound card it plays on, as Windows Settings does. "

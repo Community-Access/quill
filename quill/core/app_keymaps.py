@@ -57,6 +57,8 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # K for asK: AI about the whole video or a stretch (roadmap A1). Not Q,
         # which is QUILL's system-wide show/hide (family_chords.SHOW_HIDE_DEFAULTS).
         "studio.ask_ai_video": "Ctrl+Alt+Shift+K",
+        # J: the one letter left on this bar; a picture made by talking (roadmap V1).
+        "studio.make_picture": "Ctrl+Alt+Shift+J",
     },
     "radio": {
         # Quick-play favorites. These were Ctrl+Alt+Shift+1..0 in
