@@ -31,3 +31,24 @@ def test_settings_search_gets_an_announcer_with_cues_off(monkeypatch) -> None:
 
     assert seen["announce"] is None
     assert callable(seen["search_announce"])
+
+
+def test_settings_dialog_sets_its_own_sizer() -> None:
+    # Without a top-level sizer the Settings dialog had no layout, and Find a
+    # setting, which wraps the dialog's sizer, was silently never installed.
+    import ast
+    import inspect
+    import textwrap
+
+    from quill.ui.main_frame_preferences import PreferencesMixin
+
+    source = textwrap.dedent(inspect.getsource(PreferencesMixin.open_general_preferences))
+    calls = [
+        node
+        for node in ast.walk(ast.parse(source))
+        if isinstance(node, ast.Call)
+        and getattr(node.func, "attr", "") in {"SetSizer", "SetSizerAndFit"}
+        and isinstance(node.func.value, ast.Name)
+        and node.func.value.id == "dialog"
+    ]
+    assert calls, "open_general_preferences never gives the Settings dialog a sizer"
