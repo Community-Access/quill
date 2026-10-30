@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+### Quill Radio: Victor Stream XSPF import and more reading services (2026-10-29)
+
+- XSPF import (`quill/core/radio/xspf.py`) recovers each track of a malformed
+  document instead of returning nothing, reads `<annotation>`, `<info>` and
+  `<image>`, and takes a web-address `<creator>` as the home page, which is the
+  shape a HumanWare Victor Stream export has. The import file window also
+  offers `*.xspf.txt`. XSPF export writes `<info>` and `<image>`.
+- `quill/data/reading_services.json` gains fifteen services from the list on
+  #1691, each stream checked live on 2026-10-29, and the entry named WUFT is
+  renamed Minnesota Radio Talking Book, which is what that stream carries.
+  (#1691)
+
 ### Windows runtime, media shutdown and licensing (2026-10-27)
 
 - Move the Windows OCR and Media projections to PyWinRT 4.0.3 with the

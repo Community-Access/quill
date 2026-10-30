@@ -1,0 +1,77 @@
+<playlist version="1" xmlns="http://xspf.org/ns/0/">
+	<extension application="http://humanware.com">
+		<au-en>Radio Reading</au-en>
+		<ca-en>Modified by Debee</ca-en>
+		<ca-fr>Anglais Amérique du Nord</ca-fr>
+		<de-de>Englisch Nordamerika</de-de>
+		<defaultName>Radio Reading service stations</defaultName>
+		<editable>0</editable>
+		<fr-fr>Anglais Amérique du Nord</fr-fr>
+		<hr-hr>Sjeverna Amerika engleski</hr-hr>
+		<languageCode>ca-en</languageCode>
+		<persistent>1</persistent>
+		<uk-en>English North America</uk-en>
+		<us-en>English North America</us-en>
+	</extension>
+<trackList>
+<track>
+<location>http://tektite.streamguys1.com:5210/live</location>
+<creator>www.omnimedia.org</creator>
+<identifier>7D88104200711C22</identifier>
+<info>Blind Reading</info>
+<title>Los Angeles Radio Reading Service - L.A.R.R.S. - Los Angeles California</title>
+<extension application="http://humanware.com">
+<alternate>ootunes</alternate>
+</extension>
+</track>
+<track>
+<location>https://kpbs-rrs.streamguys1.com/kpbs-rrs</location>
+<creator>www.kpbsreadingservice.org</creator>
+<identifier>7705E01D06C62244</identifier>
+<info>Blind Reading Service Spoken Word Talk</info>
+<title>KPBS Radio Reading Service - San Diego California</title>
+<extension application="http://humanware.com">
+<alternate>ootunes</alternate>
+</extension>
+</track>
+<track>
+<location>https://streaming.wkar.msu.edu/rrs-64-mp3</location>
+<creator>www.wkar.org/radioreadingservice/</creator>
+<identifier>F539FD65F24A6AE8</identifier>
+<info>Reading Blind Spoken Word</info>
+< >WKAR Radio Reading Service - A radio reading service of WKAR - Michigan State University - East Lansing Michigan</ >
+<extension application="http://humanware.com">
+<alternate>ootunes</alternate>
+</extension>
+</track>
+<track>
+<location>http://peridot.streamguys.com:5360/live.m3u</location>
+<creator>www.sightintosound.org</creator>
+<identifier>1734ACE992686596</identifier>
+<info>Reading Spoken Word Books Blind</info>
+< >Sight Into Sound - formerly HTBR Houston Taping for the Blind - Streaming Audio - Houston Texas</ >
+<extension application="http://humanware.com">
+<alternate>ootunes</alternate>
+</extension>
+</track>
+<track>
+<location>ootunes</location>
+<creator>www.radioeye.org</creator>
+<identifier>E60C0FBE780016B7</identifier>
+<info>Talk Audio Information Spoken Word Blind</info><title>Radio Eye Louisville Stream - Research Guides at University of Kentucky Libraries - Louisville Kentucky</title>
+ </track>
+<track>
+ <location>ootunes</location>
+ <creator>www.wjct.org</creator>
+ <identifier>F539FD65F24A6ACD</identifier>
+ <info>Reading Blind Spoken word</info>
+ <title>89.9FM WJCT Radio Readiong Service RS - Jacksonville Florida</title>
+ </track>
+<track>
+<location>http://ice23.securenetsystems.net/AMIAUDIO</location>
+<identifier>56F9479F9AA7550C</identifier>
+<info>Reading Spoken Word News Blind</info>
+<title>AMI-audio Stream - Accessible Media Inc. - Canada</title>
+</track>
+</trackList>
+</playlist>
