@@ -248,6 +248,35 @@ def _open(
     return client, capture
 
 
+def _open_endpoint(device_id: str, *, rate: int, channels: int) -> tuple[Any, Any]:
+    """Loopback of everything one playback device plays (WASAPI endpoint loopback)."""
+    from quill.platform.windows.audio_routing import _CLSID_ENUMERATOR, _IID_ENUMERATOR, _create
+    from quill.platform.windows.face_detect import _GUID, _method, _release
+
+    com = _interfaces()
+    enumerator = _create(_CLSID_ENUMERATOR, _IID_ENUMERATOR)
+    try:
+        device = c_void_p()
+        _method(enumerator, 5, wintypes.LPCWSTR, POINTER(c_void_p))(device_id, byref(device))
+        try:
+            raw = c_void_p()
+            iid = _GUID.parse(str(com["client"]._iid_).strip("{}"))
+            _method(device, 3, POINTER(_GUID), wintypes.DWORD, c_void_p, POINTER(c_void_p))(
+                byref(iid), 23, None, byref(raw)
+            )
+        finally:
+            _release(device)
+    finally:
+        _release(enumerator)
+    client = ctypes.cast(raw, POINTER(com["client"]))
+    block = channels * 2
+    fmt = _WAVEFORMATEX(1, channels, rate, rate * block, block, 16, 0)
+    client.Initialize(0, _LOOPBACK_FLAGS, 2_000_000, 0, byref(fmt), None)
+    capture = ctypes.cast(client.GetService(byref(com["capture"]._iid_)), POINTER(com["capture"]))
+    client.Start()
+    return client, capture
+
+
 def _rms(data: Any, frames: int) -> float:
     import numpy as np
 
@@ -355,7 +384,10 @@ class PcmLoopback:
         exclude: bool = False,
         rate: int = 48_000,
         channels: int = 2,
+        device_id: str = "",
     ) -> None:
+        #: A playback device's id instead of a process: record all it plays.
+        self.device_id = device_id
         self.pid = pid
         self.sink = sink
         self.exclude = exclude
@@ -376,9 +408,14 @@ class PcmLoopback:
         except OSError:
             pass
         try:
-            client, capture = _open(
-                self.pid, exclude=self.exclude, rate=self.rate, channels=self.channels
-            )
+            if self.device_id:
+                client, capture = _open_endpoint(
+                    self.device_id, rate=self.rate, channels=self.channels
+                )
+            else:
+                client, capture = _open(
+                    self.pid, exclude=self.exclude, rate=self.rate, channels=self.channels
+                )
         except Exception as exc:  # noqa: BLE001 - reported to the caller, never raised
             self.error = str(exc) or type(exc).__name__
             self.opened.set()

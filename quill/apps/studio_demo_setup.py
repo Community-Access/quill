@@ -28,27 +28,44 @@ class StudioDemoSetupMixin:
             dialog.Destroy()
 
     def _choose_program(self):
+        """A program, or a whole sound card, to add as a sound source.
+
+        Returns ``("program", pid, name)`` or ``("device", device_id, name)``.
+        """
+        from quill.platform.windows.audio_routing import RENDER, AudioRoutingError, list_devices
         from quill.platform.windows.audio_sessions import AudioSessionError, list_sessions
 
+        choices: list[tuple[str, object, str]] = []
+        labels: list[str] = []
         try:
-            sessions = [s for s in list_sessions() if s.process_id not in (0, os.getpid())]
+            for session in list_sessions():
+                if session.process_id in (0, os.getpid()):
+                    continue
+                state = "playing now" if session.peak > 0.001 else "quiet"
+                choices.append(("program", session.process_id, session.name))
+                labels.append(f"{session.name}, {state}")
         except AudioSessionError as error:
             self._announce(str(error))
-            return None
-        if not sessions:
-            self._announce("No other program has a sound session now. Start its sound first.")
+        try:
+            for device in list_devices(RENDER):
+                choices.append(("device", device.device_id, device.name))
+                labels.append(f"Everything playing on {device.name}")
+        except AudioRoutingError as error:
+            self._announce(str(error))
+        if not choices:
+            self._announce("No program or sound card can be added now.")
             return None
         dialog = wx.SingleChoiceDialog(
             self.frame,
-            "Programs with sound. Choose one to add as its own sound source.",
+            "Programs with sound, then whole sound cards. Choose one to add as its own "
+            "sound source.",
             "Add a program's sound",
-            [f"{s.name}, {'playing now' if s.peak > 0.001 else 'quiet'}" for s in sessions],
+            labels,
         )
         try:
             if self._show_modal_dialog(dialog, "Add a program's sound") != wx.ID_OK:
                 return None
-            chosen = sessions[dialog.GetSelection()]
-            return chosen.process_id, chosen.name
+            return choices[dialog.GetSelection()]
         finally:
             dialog.Destroy()
 

@@ -22,11 +22,11 @@ from collections.abc import Iterable, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Literal
+from typing import Literal
 
 from quill.core.error_codes import CodedError
 
-SourceKind = Literal["application", "system", "microphone", "screen_reader"]
+SourceKind = Literal["application", "system", "microphone", "screen_reader", "device"]
 TargetKind = Literal["window", "display", "desktop"]
 Severity = Literal["Stop", "Warn"]
 CameraPosition = Literal["bottom right", "bottom left", "top right", "top left"]
@@ -361,6 +361,8 @@ def minutes_left(free_bytes: int, plan: DemoPlan) -> float:
 
 def preflight(plan: DemoPlan, facts: PreflightFacts) -> list[Finding]:
     """Every Stop and Warn for *plan*, in the order the summary speaks them."""
+    from quill.core.demo_recording_rules import screen_findings, sound_findings, tool_findings
+
     findings: list[Finding] = []
 
     def stop(text: str) -> None:
@@ -372,112 +374,10 @@ def preflight(plan: DemoPlan, facts: PreflightFacts) -> list[Finding]:
     if not plan.has_picture and not plan.enabled_sources():
         stop("Nothing to record: turn on the screen, the camera or a sound source.")
     if plan.screen:
-        _screen_findings(plan, facts, stop, warn)
-    _sound_findings(plan, facts, stop, warn)
-    _tool_findings(plan, facts, stop, warn)
+        screen_findings(plan, facts, stop, warn)
+    sound_findings(plan, facts, stop, warn)
+    tool_findings(plan, facts, stop, warn)
     return findings
-
-
-def _screen_findings(plan: DemoPlan, facts: PreflightFacts, stop: Any, warn: Any) -> None:
-    if facts.target_problem:
-        stop(facts.target_problem)
-    if facts.target_is_studio:
-        warn("The target is Studio itself, so the recording will show Studio's controls.")
-    if plan.target_kind == "desktop" and facts.display_count > 1:
-        warn(
-            f"The full desktop spans {facts.display_count} displays; everything on all of them "
-            "is recorded, including notifications."
-        )
-    if plan.target_kind == "window":
-        warn(
-            "Window recording captures the window's area of the screen: anything that covers "
-            "it, such as a notification, is recorded too, and moving the window is not followed."
-        )
-    if facts.trial_grab_error:
-        stop(f"The trial picture could not be taken: {facts.trial_grab_error}")
-    elif facts.trial_grab_uniform:
-        warn(
-            "Every pixel of the trial picture is the same colour. The content may be protected, "
-            "blank or black."
-        )
-
-
-def _sound_findings(plan: DemoPlan, facts: PreflightFacts, stop: Any, warn: Any) -> None:
-    if plan.has_picture and not plan.enabled_sources():
-        warn(
-            "No sound source is on: the video will have "
-            + ("a silent soundtrack." if plan.silent_track else "no soundtrack at all.")
-        )
-    for source in plan.enabled_sources():
-        error = facts.source_errors.get(source.source_id)
-        if error:
-            stop(f"{source.label} cannot be opened: {error}")
-        elif source.source_id in facts.digital_silence:
-            warn(
-                f"{source.label} delivers exact digital silence. It is probably blocked; for a "
-                "microphone check Windows Settings, Privacy and security, Microphone."
-            )
-    mic = plan.source("microphone")
-    if mic is not None and facts.microphone_holder:
-        stop(f"The microphone is in use: {facts.microphone_holder}")
-    system = plan.source("system")
-    reader = plan.source("screen_reader")
-    if system is not None and reader is None and plan.screen_reader:
-        if system.exclude_process_id == 0:
-            warn(
-                "System sound is on while the screen reader is left out. A recording of the "
-                "whole system cannot subtract the screen reader; turn on the application's own "
-                "sound instead, or leave the screen reader out of system sound."
-            )
-    if reader is not None:
-        warn(
-            "Screen reader speech is on: everything your screen reader says while you record "
-            "will be in the file. Studio will speak only failures."
-        )
-    if system is not None and any(s.kind == "application" for s in plan.enabled_sources()):
-        warn(
-            "System sound and an application's sound are both on, so that application will be "
-            "heard twice."
-        )
-    if system is not None and reader is not None and system.exclude_process_id == 0:
-        warn("System sound already contains the screen reader, so it will be heard twice.")
-    if facts.studio_process_in_capture:
-        stop("Studio's own process is in the capture set; its private sounds would be recorded.")
-
-
-def _tool_findings(plan: DemoPlan, facts: PreflightFacts, stop: Any, warn: Any) -> None:
-    if not facts.ffmpeg_found:
-        stop("FFmpeg was not found. Use Voices, Get FFmpeg, then check again.")
-    elif plan.has_picture and not facts.h264_encoder:
-        stop("This FFmpeg has no H.264 video encoder. Use Voices, Get FFmpeg to replace it.")
-    elif plan.screen and plan.target_kind != "window" and facts.video_backend == "gdigrab":
-        warn("Only the GDI grabber is available for this display, which uses more processor.")
-    if plan.screen and plan.fps == 60 and facts.video_backend != "ddagrab":
-        warn("60 frames a second needs desktop duplication; expect dropped frames.")
-    if facts.folder_error:
-        stop(f"The save folder cannot be written: {facts.folder_error}")
-    elif facts.free_bytes >= 0 and facts.free_bytes < space_needed(plan):
-        warn(
-            f"Free space is low: about {int(minutes_left(facts.free_bytes, plan))} minutes of "
-            "recording at these settings."
-        )
-    if plan.camera.enabled:
-        if facts.camera_error:
-            stop(f"The camera cannot be opened: {facts.camera_error}")
-        elif facts.camera_guidance and not facts.camera_guidance.startswith("Face in view"):
-            warn(f"Camera: {facts.camera_guidance}")
-    if plan.do_not_disturb and not facts.dnd_available:
-        warn(
-            "Windows did not let Studio control Do Not Disturb. Turn it on yourself, or "
-            "notifications may appear in the recording."
-        )
-    if not plan.do_not_disturb and plan.screen:
-        warn("Do Not Disturb is off, so a notification could appear in the picture.")
-    if facts.hotkeys_assigned == 0:
-        warn(
-            "No system-wide recording keys are assigned. Control the recording from the tray "
-            "or the Recording status window, or choose Assign keys."
-        )
 
 
 def can_start(findings: Iterable[Finding]) -> bool:
@@ -556,6 +456,8 @@ def screen_reader_sentence(plan: DemoPlan) -> str:
     system = plan.source("system")
     if system is not None and system.exclude_process_id == 0:
         return f"Screen reader: {name} may be heard, because system sound includes it."
+    if plan.source("device") is not None:
+        return f"Screen reader: {name} may be heard if it speaks on the recorded sound card."
     return f"Screen reader: {name} is left out of the recording."
 
 

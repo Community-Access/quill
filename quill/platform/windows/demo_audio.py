@@ -307,6 +307,8 @@ class LoopbackSource(_Source):
         self._capture: Any = None
 
     def _target(self) -> tuple[int, bool]:
+        if self.source.kind == "device":
+            return (0, False)
         if self.source.kind == "system":
             # Exclude mode needs a live pid; Studio's own excludes Studio's sounds.
             return (self.source.exclude_process_id or self.studio_pid, True)
@@ -317,11 +319,19 @@ class LoopbackSource(_Source):
         from quill.platform.windows.process_loopback import PcmLoopback
 
         pid, exclude = self._target()
-        if not pid:
+        if self.source.kind == "device":
+            if not self.source.device:
+                return "no sound card was chosen"
+        elif not pid:
             return f"{self.source.process_name or 'the program'} is not running"
         if not exclude and pid == self.studio_pid:
             return "Studio's own sounds are never recorded"
-        capture = PcmLoopback(pid, self._sink, exclude=exclude)
+        capture = PcmLoopback(
+            pid,
+            self._sink,
+            exclude=exclude,
+            device_id=self.source.device if self.source.kind == "device" else "",
+        )
         self._capture = capture
         thread = threading.Thread(
             target=self._run,

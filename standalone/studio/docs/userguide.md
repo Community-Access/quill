@@ -745,7 +745,7 @@ If nothing at all is chosen, the check says so and recording cannot start.
 - **System sound** is everything your computer plays. It starts left out. With **Leave the screen reader out of system sound** checked, which is the default, Studio records everything except your screen reader. Studio's own sounds are switched off while it records the system and come back when you stop.
 - **Microphone** starts left out, every time. Studio never remembers that it was on. Choose which microphone under **Microphone device**. If another QUILL app is dictating, the check tells you which one.
 - **Screen reader speech** (for example "JAWS speech") starts left out. Putting it in asks you to confirm, because everything your screen reader says while you record ends up in the file. While it is in, Studio stops talking to you through it except to report a failure; confirmations become sounds.
-- **Add a program's sound** adds any other program that is playing sound, such as a media player, as a row of its own. **Remove program** takes it off again.
+- **Add a program's sound** adds any other program that is playing sound, such as a media player, as a row of its own. The same list ends with **Everything playing on** each sound card, to record all a card plays, such as your headphones. If your screen reader speaks on that card, its speech is recorded too, and the check says so. **Remove program** takes a row off again.
 
 **Level of the selected source** sets how loud that row is in the recording, from minus 60 to plus 12 decibels.
 

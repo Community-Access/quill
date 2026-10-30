@@ -425,3 +425,17 @@ def test_quiet_options_are_named_and_checked(tmp_path):
     warns = _texts(preflight(off, PreflightFacts(hotkeys_assigned=1)), "Warn")
     assert any("Do Not Disturb is off" in t for t in warns)
     assert "keep_awake" in preferences_from_plan(plan)
+
+
+def test_whole_sound_card_source_warns_about_the_reader(tmp_path):
+    plan = _plan(tmp_path)
+    plan = replace(
+        plan,
+        sources=(
+            *plan.sources,
+            SoundSource("device", "Everything on Speakers", "card", enabled=True),
+        ),
+    )
+    warns = _texts(preflight(plan, PreflightFacts(hotkeys_assigned=1)), "Warn")
+    assert any("whole sound card" in t for t in warns)
+    assert "may be heard if it speaks" in screen_reader_sentence(plan)

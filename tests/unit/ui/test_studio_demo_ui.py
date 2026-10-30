@@ -52,7 +52,7 @@ def _callbacks(**changes):
         camera_check=lambda device, mirrored: calls["camera"].append((device, mirrored)),
         sounds=lambda: None,
         assign_keys=lambda: None,
-        choose_program=lambda: (333, "vlc.exe"),
+        choose_program=lambda: ("program", 333, "vlc.exe"),
         list_targets=lambda: [DESKTOP, DISPLAY, EDGE],
         cameras=["Surface Camera Front"],
         microphones=["Microphone (Logi USB Headset)"],
@@ -508,5 +508,18 @@ def test_picture_video_window_builds_a_plan_with_markers(parent, tmp_path):
         plan = dialog.build_plan()
         assert plan.output.name == "Show 4 - video.mp4" and plan.shape == "square" and plan.wave
         assert plan.chapters[0].title == "Part two"
+    finally:
+        dialog.Destroy()
+
+
+def test_a_whole_sound_card_can_be_added(parent, tmp_path):
+    dialog, _ = _dialog(
+        parent, tmp_path, choose_program=lambda: ("device", "{0.0.0.00000000}.{x}", "Speakers")
+    )
+    try:
+        dialog._add_program(None)
+        added = dialog.sources[-1]
+        assert added.kind == "device" and added.label == "Everything playing on Speakers"
+        assert added.device == "{0.0.0.00000000}.{x}" and added.enabled
     finally:
         dialog.Destroy()

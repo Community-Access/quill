@@ -56,7 +56,7 @@ class DemoCallbacks:
         camera_check: Callable[[str, bool], None],
         sounds: Callable[[], None],
         assign_keys: Callable[[], None],
-        choose_program: Callable[[], tuple[int, str] | None],
+        choose_program: Callable[[], tuple[str, object, str] | None],
         list_targets: Callable[[], list[CaptureTarget]],
         cameras: list[str],
         microphones: list[str],

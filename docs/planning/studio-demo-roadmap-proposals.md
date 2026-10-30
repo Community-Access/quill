@@ -63,7 +63,7 @@ The window gets two check boxes, **Screen** and **Camera**, and the Sound source
 - **R1. Screen and Camera check boxes.** **Built** 2026-10-29. Screen on and Camera off records the screen (today's behaviour). Camera on adds the corner picture, or fills the frame when Screen is off. Both off is a sound-only recording. (M)
 - **R2. Sound-only formats.** **Built** 2026-10-29 (M4A, MP3, WAV, FLAC, Opus). WAV (lossless), FLAC, M4A (AAC), MP3 and Opus, with bit rate. The after-check becomes "one audio stream, right length, each source present, no clipping, loudness measured". (S)
 - **R3. Picture with no sound.** **Built** 2026-10-29. A silent soundtrack (some sites reject video without one) or no audio stream; the check and result say which. (S)
-- **R4. Loop-back recording of any playback device** as a one-step preset: "Record what my headphones are playing". (S)
+- **R4. Loop-back recording of any playback device** (**Built** 2026-10-29 as "Everything playing on" a sound card) as a one-step preset: "Record what my headphones are playing". (S)
 - **R5. Camera capabilities probed, not assumed:** resolutions and frame rates from DirectShow; camera-only recordings use the camera's own size. (S)
 - **R6. More output choices.** MP4 (H.264), MKV, WebM (VP9 and Opus), MOV; H.265 and AV1 when the encoder exists; hardware encoders (NVENC, Quick Sync, AMF, Media Foundation) as an opt-in with a speed test. (M)
 - **R7. Several sound tracks inside one video**, one per source, beside the mixed track, for people who edit elsewhere. This is a recording choice, not editing in Studio. (S)

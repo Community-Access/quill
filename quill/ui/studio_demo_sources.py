@@ -172,23 +172,31 @@ class DemoSourcesMixin:
         chosen = self.callbacks.choose_program()
         if chosen is None:
             return
-        pid, name = chosen
+        kind, identity, name = chosen
         source_id = f"added-{name.lower()}"
         if any(s.source_id == source_id for s in self.sources):
             self._fill_sources(
                 next(i for i, s in enumerate(self.sources) if s.source_id == source_id)
             )
             return
-        self.sources.append(
-            SoundSource(
+        if kind == "device":
+            source = SoundSource(
+                "device",
+                f"Everything playing on {name}",
+                source_id,
+                enabled=True,
+                device=str(identity),
+            )
+        else:
+            source = SoundSource(
                 "application",
                 f"{name.removesuffix('.exe')} sound",
                 source_id,
                 enabled=True,
-                process_id=pid,
+                process_id=int(identity),  # type: ignore[call-overload]
                 process_name=name,
             )
-        )
+        self.sources.append(source)
         self._fill_sources(len(self.sources) - 1)
         self.source_list.SetFocus()
 
