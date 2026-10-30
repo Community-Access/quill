@@ -587,13 +587,24 @@ App keys, not editor keys: these apply inside the app named above and never insi
 
 | Key | Command | Command id |
 | --- | --- | --- |
+| Ctrl+Alt+Shift+B | Record marker | `studio.record_marker` |
+| Ctrl+Alt+Shift+C | Camera check | `studio.camera_check` |
+| Ctrl+Alt+Shift+End | Record emergency stop | `studio.record_emergency_stop` |
 | Ctrl+Alt+Shift+F4 | Capture selected | `studio.capture_selected` |
 | Ctrl+Alt+Shift+F5 | Capture active | `studio.capture_active` |
 | Ctrl+Alt+Shift+F6 | Capture desktop | `studio.capture_desktop` |
+| Ctrl+Alt+Shift+F7 | Record recover | `studio.record_recover` |
+| Ctrl+Alt+Shift+F9 | Record discard | `studio.record_discard` |
 | Ctrl+Alt+Shift+H | Capture hotkeys | `studio.capture_hotkeys` |
 | Ctrl+Alt+Shift+I | Inspect capture | `studio.inspect_capture` |
+| Ctrl+Alt+Shift+M | Sounds you hear | `studio.sounds_you_hear` |
 | Ctrl+Alt+Shift+O | Open capture | `studio.open_capture` |
+| Ctrl+Alt+Shift+P | Record pause | `studio.record_pause` |
 | Ctrl+Alt+Shift+S | Capture | `studio.capture` |
+| Ctrl+Alt+Shift+T | Record status | `studio.record_status` |
+| Ctrl+Alt+Shift+U | Record mute | `studio.record_mute` |
+| Ctrl+Alt+Shift+V | Record demo | `studio.record_demo` |
+| Ctrl+Alt+Shift+W | Record window | `studio.record_window` |
 | Ctrl+Alt+Shift+X | Cancel capture | `studio.cancel_capture` |
 
 ## Quill Radio (app keys)

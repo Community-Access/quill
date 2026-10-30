@@ -31,6 +31,27 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         "studio.capture_desktop": "Ctrl+Alt+Shift+F6",
         "studio.capture_selected": "Ctrl+Alt+Shift+F4",
         "studio.open_capture": "Ctrl+Alt+Shift+O",
+        # Record a Demonstration (Studio PRD 7A.3). Not Ctrl+Alt+Shift+R, the
+        # first proposal: that is Quill Radio's system-wide show/hide
+        # (family_chords.SHOW_HIDE_DEFAULTS), which wins while Radio runs.
+        # V for video. The rest are the PRD's proposals, free on this bar.
+        "studio.record_demo": "Ctrl+Alt+Shift+V",
+        "studio.record_pause": "Ctrl+Alt+Shift+P",
+        "studio.record_marker": "Ctrl+Alt+Shift+B",
+        "studio.record_mute": "Ctrl+Alt+Shift+U",
+        "studio.record_status": "Ctrl+Alt+Shift+T",
+        "studio.record_window": "Ctrl+Alt+Shift+W",
+        # A second Stop and save: a screen reader's keyboard hook can swallow
+        # one chord invisibly (TRAY-007).
+        "studio.record_emergency_stop": "Ctrl+Alt+Shift+End",
+        # Rare and destructive (family rule 9): a key, not a short one, and it
+        # asks before deleting anything.
+        "studio.record_discard": "Ctrl+Alt+Shift+F9",
+        "studio.record_recover": "Ctrl+Alt+Shift+F7",
+        "studio.camera_check": "Ctrl+Alt+Shift+C",
+        # MX-150 proposes Ctrl+Alt+M for the mixer; the three-modifier form
+        # keeps Studio's capture keys one family.
+        "studio.sounds_you_hear": "Ctrl+Alt+Shift+M",
     },
     "radio": {
         # Quick-play favorites. These were Ctrl+Alt+Shift+1..0 in

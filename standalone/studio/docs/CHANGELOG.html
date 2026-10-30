@@ -395,6 +395,59 @@ annotation/redaction editing and screenshot comparison; and the later
 video demonstration with optional sound. None is represented as already
 delivered by this milestone.</li>
 </ul>
+<h3 id="record-a-demonstration-2026-10-29">Record a demonstration
+(2026-10-29)</h3>
+<ul>
+<li><strong>Screen, sound and camera as one checked video.</strong>
+Capture &gt; Record a demonstration (Ctrl+Alt+Shift+V) records a named
+window, one display or the full desktop to an MP4 (H.264 and AAC)
+through the bundled FFmpeg, using desktop duplication where it can reach
+the display and the GDI grabber otherwise. Frame rate 15 to 60, an
+optional 1080p or 720p ceiling, the mouse pointer on or off, a spoken
+countdown, and Studio’s own windows kept out of the picture.</li>
+<li><strong>You choose every sound, and your screen reader stays
+private.</strong> Sound sources are a list with a state column: the
+target program’s own sound (Windows process loopback), system sound with
+the screen reader left out by default, the microphone of your choice,
+screen reader speech (with confirmation), and any other program playing
+sound. Each has its own level. The microphone and screen reader always
+start left out, the microphone’s on state is never saved, and Studio’s
+own process is never recorded.</li>
+<li><strong>Sounds you hear.</strong> Mute, unmute or set the volume of
+any program for yourself, as the Windows mixer does
+(Ctrl+Alt+Shift+M).</li>
+<li><strong>Camera and face framing.</strong> Add your camera in any
+corner, or record the camera alone. Check camera framing
+(Ctrl+Alt+Shift+C) says whether your face is in view and which way to
+move, and during a recording Studio can say when your face leaves the
+view and returns. Face detection is Windows’ own, on this computer; no
+frame is saved by the check.</li>
+<li><strong>One spoken check before you start.</strong> Check takes a
+trial picture, opens each source, looks for digital silence (a blocked
+microphone), the microphone lock, the camera, FFmpeg’s real
+capabilities, the folder and its free space, and system-wide keys. Stops
+block the start; Warns are named. Any change afterwards asks for a new
+check. A 5-second test records and checks the exact setup.</li>
+<li><strong>Control from anywhere.</strong> Pause and resume as separate
+segments, markers, microphone mute, a status line, emergency stop and
+discard, from the Capture menu, the tray (without restoring Studio) and
+a focus-safe Recording status window. All join the opt-in system-wide
+hotkey list; none is assigned by default.</li>
+<li><strong>Independent check and recovery.</strong> After Stop the
+finished file is reopened and checked (streams, length, frame count,
+decoding at start, middle and end, black stretches, each source’s level,
+SHA-256) and reported as Verified, Needs review or Failed in one
+sentence and in JSON and Markdown reports beside it. Failures during a
+recording are spoken once and marked. Recordings are written as
+crash-safe segments in a hidden folder, and Capture &gt; Recover
+unfinished recordings finishes any that a crash left behind.</li>
+<li><strong>Still pending.</strong> Window targets record the window’s
+screen area (Windows.Graphics.Capture is not yet used, so a covering
+window is recorded and movement is not followed); JAWS, NVDA, Narrator
+and braille acceptance; long-recording audio and video alignment on
+reference hardware; and a live check of face detection with a person in
+front of the camera.</li>
+</ul>
 <h3 id="the-window-the-tray-and-preferences">The window, the tray and
 Preferences</h3>
 <ul>

@@ -642,13 +642,13 @@ These shortcuts operate inside Studio. System-wide screenshot keys are separate,
 | Screenshot active window now | Ctrl+Alt+Shift+F5 |
 | Screenshot full desktop now | Ctrl+Alt+Shift+F6 |
 | Repeat last selected target | Ctrl+Alt+Shift+F4 |
-| Screenshot global hotkeys configuration | Ctrl+Alt+Shift+H |
+| Capture global hotkeys configuration | Ctrl+Alt+Shift+H |
 
 Immediate full-desktop capture includes every display. Repeat uses the last source/folder/delay selected in this session; there is no repeat recipe after a fresh launch until you select one. A previously approved automatic-AI setting also applies to screenshots triggered by global keys.
 
 ### Global screenshot hotkeys
 
-Open **Capture > Screenshot global hotkeys**. Select active-window capture, full-desktop capture, repeat-last-target or cancellation, choose Assign and press your preferred combination, then Save. Clear removes a binding. These keys work while Studio is in the tray or another application has focus, provided Windows grants the registration. No global screenshot key is taken by default. An unavailable combination is reported so you can choose another. Safe Mode leaves them inactive. Test your chosen keys with your screen reader and other applications.
+Open **Capture > Capture global hotkeys**. Select active-window capture, full-desktop capture, repeat-last-target or cancellation, choose Assign and press your preferred combination, then Save. Clear removes a binding. These keys work while Studio is in the tray or another application has focus, provided Windows grants the registration. No global screenshot key is taken by default. An unavailable combination is reported so you can choose another. Safe Mode leaves them inactive. Test your chosen keys with your screen reader and other applications.
 
 ### Local OCR and image-grounded AI chat
 
@@ -715,5 +715,85 @@ AI and OCR findings are separate from objective checks. AI does not automaticall
 
 ### Completion status and next steps
 
-The full screenshot PRD is not complete. UIA control selection, content-aware regions, scrolling/sequence capture, comparison, named workspaces, keyboard crop/zoom, annotation/redaction and Capture and Dictate remain. Actual JAWS/NVDA/Narrator/braille usability, mixed-DPI hardware, live-provider privacy and installer/portable acceptance also remain. The requirement coverage audit, `docs/design/quill-studio-screenshot-coverage.md` in QUILL's source, lists each one. Video demonstrations with optional sound are a separate later milestone.
+The full screenshot PRD is not complete. UIA control selection, content-aware regions, scrolling/sequence capture, comparison, named workspaces, keyboard crop/zoom, annotation/redaction and Capture and Dictate remain. Actual JAWS/NVDA/Narrator/braille usability, mixed-DPI hardware, live-provider privacy and installer/portable acceptance also remain. The requirement coverage audit, `docs/design/quill-studio-screenshot-coverage.md` in QUILL's source, lists each one. Video demonstrations with sound are described in the next section.
+
+## Record a demonstration (unreleased)
+
+This records what you are showing and what you choose to let people hear, as one MP4 video you can post or send. It is built for a presenter who cannot see the screen: everything is set up from lists and check boxes, you hear one summary before you start, and you are told afterwards what is actually in the file.
+
+Open **Capture > Record a demonstration** (Ctrl+Alt+Shift+V). The window goes top to bottom in the order you decide things.
+
+### What to record
+
+**Target** is a named window, one display or the full desktop, from the same list Capture screen uses. A named window is selected first when there is one. A window recording records that window's area of the screen, so anything that covers it, such as a notification, is recorded too, and if you move the window the recording does not follow it. If that matters, record the display instead.
+
+### Which sounds go in
+
+**Sound sources** is a list. Each row says either "In the recording" or "Left out", and Space switches the row you are on. Nothing on this list changes what you hear; it only decides what is recorded.
+
+- **The program's own sound** (for example "msedge sound") is in by default when you chose a window. It is that program's sound and nothing else, so your screen reader is not in it.
+- **System sound** is everything your computer plays. It starts left out. With **Leave the screen reader out of system sound** checked, which is the default, Studio records everything except your screen reader. Studio's own sounds are switched off while it records the system and come back when you stop.
+- **Microphone** starts left out, every time. Studio never remembers that it was on. Choose which microphone under **Microphone device**. If another QUILL app is dictating, the check tells you which one.
+- **Screen reader speech** (for example "JAWS speech") starts left out. Putting it in asks you to confirm, because everything your screen reader says while you record ends up in the file. While it is in, Studio stops talking to you through it except to report a failure; confirmations become sounds.
+- **Add a program's sound** adds any other program that is playing sound, such as a media player, as a row of its own. **Remove program** takes it off again.
+
+**Level of the selected source** sets how loud that row is in the recording, from minus 60 to plus 12 decibels.
+
+### Sounds you hear
+
+**Sounds you hear** (also in the Capture menu, Ctrl+Alt+Shift+M) is a different thing: it mutes or unmutes what *you* hear from any program, or sets its volume, the way the Windows volume mixer does. Space mutes or unmutes the program you are on. A program muted here is silent for you and for any recording of the system sound, and Windows remembers it until you unmute it.
+
+### The camera
+
+Check **Include the camera picture** to record your camera as well. Choose the camera, which corner it goes in (or **Camera only**, which records the camera instead of the screen picture), and how big it is.
+
+**Check camera framing** (Ctrl+Alt+Shift+C) opens the camera and tells you, as you move, whether your face is in view: "No face in view", "Face in view, centred", or which way to go, such as "move a little to your left", "move back from the camera" or "tilt the camera down or sit up taller". Directions are from your side of the camera. If they send you the wrong way, your camera gives a mirror image: check **The camera gives a mirror image**. Face detection is the one built into Windows and runs on this computer. Nothing is recorded or saved while you check.
+
+With **Tell me when my face leaves the camera view** checked, Studio says so during the recording, and again when you are back. If your screen reader's speech is being recorded, Studio adds a marker instead of speaking.
+
+### The picture and the file
+
+Frame rate is 30 frames a second unless you choose 15, 24 or 60. **Maximum picture size** can scale a large screen down to 1080p or 720p. **Include the mouse pointer** is on by default. **Countdown** is how many seconds Studio counts aloud before it starts, so you have time to move to the program you are demonstrating.
+
+Recordings go to your Videos folder, in a QUILL Studio folder, unless you choose another one. The name is "Demo -", the target, and the date and time. An existing file is never replaced. **Also keep each sound source as its own WAV file** keeps a separate file per source beside the video for later editing.
+
+### Check, then start
+
+Press **Check**. It takes a few seconds: Studio takes a trial picture, opens each sound source briefly, looks for the camera, and checks FFmpeg, the folder and its free space. The result lands in the **Check result** field and your screen reader reads it once. It says what will be recorded, which sounds are in and which are left out (always naming your screen reader), where the file goes, and then every problem. **Stop** means it cannot record until you fix it. **Warn** means it can, but something might spoil it, for example a microphone that is delivering pure digital silence because Windows privacy settings are blocking it.
+
+When nothing says Stop, press Enter in the result field, or **Start recording**. If you change anything after the check, Studio asks you to check again.
+
+**Record a 5-second test** records five seconds with exactly these settings to a temporary file, checks it the same way as a real recording, and lets you play it. The test file is deleted when you close its window.
+
+### While you record
+
+Studio hides itself, keeps its own windows out of the picture, puts "Recording" at the front of its title, and shows a small **Recording status** window that does not take focus. Focus stays in the program you are demonstrating.
+
+| Action | In Studio | Notes |
+|---|---|---|
+| Record a demonstration, or stop and save | Ctrl+Alt+Shift+V | |
+| Pause or resume | Ctrl+Alt+Shift+P | A pause is a gap in the file, not a frozen picture |
+| Add a marker | Ctrl+Alt+Shift+B | Saved beside the video as a markers file |
+| Mute or unmute the microphone in the recording | Ctrl+Alt+Shift+U | The microphone stays open; the muted stretch is marked |
+| Recording status | Ctrl+Alt+Shift+T | Elapsed time, sounds in, screen reader in or out, dropped frames, space left |
+| Show the Recording status window | Ctrl+Alt+Shift+W | |
+| Emergency stop and save | Ctrl+Alt+Shift+End | A second stop key, in case one is swallowed |
+| Discard this recording | Ctrl+Alt+Shift+F9 | Asks before deleting anything |
+| Recover unfinished recordings | Ctrl+Alt+Shift+F7 | |
+
+Those keys work while Studio has focus. While you are demonstrating, focus is somewhere else, so assign system-wide keys: **Assign keys** in the Record a demonstration window, or **Capture > Capture global hotkeys**. None is assigned for you. Until you assign some, use the tray icon's menu, which has Stop and save, Pause, Add a marker, Recording status and the status window, and acts without bringing Studio back into the picture.
+
+If something goes wrong while you record, you hear it once and it is marked at that moment: the window closing (the recording stops and saves what it has), a program or your screen reader quitting (that sound is silent until the same program starts again), a microphone being unplugged (silent until the same microphone comes back; a different one is never swapped in), the display changing (the recording pauses), the camera stopping, falling behind, or the disk running low (a warning at two minutes left, and a stop and save before it runs out).
+
+### When you stop
+
+Studio joins the pieces, mixes the sounds at your levels, adds the camera picture, and then checks the finished file on its own, without trusting anything it measured while recording: one picture stream and one sound stream, the right length and frame count, clean decoding at the start, middle and end, no long black stretches, and each sound source actually present. You hear one sentence, for example "Demonstration saved, 2 minutes 41 seconds, 1920 by 1080 at 30 frames a second. Picture and sound checked. msedge sound and Microphone present; screen reader left out."
+
+The result is **Verified** when every check passed, **Needs review** when it plays but something may be spoiled, or **Failed** when a stream is missing or it does not decode, in which case the recorded pieces are kept. The result window has every check, and buttons to play the video, open its folder, copy its path, or inspect a frame in the Screenshot Inspector. A readable report and a JSON report are saved beside the video.
+
+If Studio or the computer stops in the middle of a recording, nothing is lost up to that point. The next time Studio starts it says so on the status line; choose **Capture > Recover unfinished recordings** to finish and check them.
+
+### What this does not do yet
+
+Windows recording follows the window's area of the screen rather than the window itself, so a covering window is recorded and moving the window is not followed. There is no trimming or editing, captions, click highlighting or live streaming yet. Real screen-reader, braille and hardware acceptance runs are still to be done.
 

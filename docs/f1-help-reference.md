@@ -1110,13 +1110,17 @@ Control coverage: 39 audited sites (26 helped, 13 named-help).
 
 ## QUILL Studio
 
-Control coverage: 197 audited sites (11 help-elsewhere, 186 helped).
+Control coverage: 238 audited sites (11 help-elsewhere, 227 helped).
 
 ### Every window, and what it is for
 
 **ACX check.** The verdict of measuring this book against Audible's ACX submission window: loudness, true peak, and noise floor, each with its limit, plus plain recommendations for anything failing. Read-only -- Escape closes it and nothing was changed.
 
+**Add a program's sound.** Choose a program that is playing sound to add as a sound source of its own.
+
 **Add a spoken screenshot note.** Start explicitly opens the shared microphone. Stop and recognize uses an installed offline speech model. Review and correct the words before Use reviewed note. Closing stops recording; temporary audio is deleted. No cloud upload occurs.
+
+**Add marker.** Type an optional label for this moment in the recording, then press Enter.
 
 **Capture screen.** Choose a named window for a whole-window screenshot without entering sizes. Or choose a display, full desktop, delayed active window or guided region. For a guided region, choose a source and Whole source, top, bottom, left, right or middle. Review Capture plan and guidance before starting. Exact coordinates are optional advanced settings. Review local OCR or framing afterward. AI sharing requires approval or previously enabled automatic AI.
 
@@ -1124,9 +1128,15 @@ Control coverage: 197 audited sites (11 help-elsewhere, 186 helped).
 
 **Chapters already here.** This recording already has chapters of its own. Keep mine, add proposals keeps every one of them and adds only the boundaries that are new; Replace with the proposal swaps the whole list. Cancel changes nothing, and Restore original undoes either answer.
 
+**Check camera framing.** The camera is open while this window is: Studio says whether your face is in view and centred, and which way to move. Face detection runs on this computer; nothing is recorded or saved.
+
 **Choose screenshot control.** Choose a specific part of the selected window by its name or role. Search filters real accessible controls without AI. Password and offscreen items are excluded. Use control selects a screenshot area; it does not press the control.
 
+**Choose the save folder.** Choose the folder where demonstrations are saved.
+
 **Convert Audio.** Convert audio files or whole folders between formats, on this machine. Build the queue, pick the output format, preset, and destination folder, and Convert runs in the background with spoken progress. The Advanced options only override what you deliberately change; untouched controls leave the preset alone.
+
+**Discard this recording.** Confirm deleting the recording in progress. It cannot be recovered.
 
 **Edit chapter.** This chapter's title and its exact start and end, typed rather than set by ear, plus the optional link and image a Podcasting 2.0 player can show. Moving the start moves the end of the chapter before it, so the book stays gapless; the sentence at the top tells you the range this chapter is allowed to occupy.
 
@@ -1152,6 +1162,14 @@ Control coverage: 197 audited sites (11 help-elsewhere, 186 helped).
 
 **QUILL Studio Preferences.** The Studio's own window behavior: whether launch checks for updates, whether Alt+F4 tucks the window into the tray with a run still going, whether long runs speak their 25, 50, and 75 percent milestones, and what the titlebar X does. Voices and speech defaults are not here -- they live in the Speech Hub, shared with QUILL.
 
+**Record a demonstration.** Record a screen-and-sound demonstration as one video. Choose what to record, which sounds go in -- your screen reader and microphone start left out -- the camera, the picture and the folder, then press Check. The result is read once; Start recording is available when nothing stops it. Nothing you hear changes.
+
+**Recording status.** The recording in progress: elapsed time, the sounds being recorded, whether your screen reader is in it, dropped frames and disk space. Pause, add a marker, mute the microphone, or stop and save. Closing this window hides it; recording continues.
+
+**Recover unfinished recordings.** Recordings interrupted by a crash or power cut were found. Studio can join, check and save each one beside its folder.
+
+**Screen reader speech.** Confirm putting your screen reader's speech in the recording: everything it says while you record will be in the file.
+
 **Screenshot Inspector.** Review the saved screenshot's file evidence, read text locally, or explicitly send it to your configured AI provider. File checks prove decode and integrity; observations do not prove privacy or visual correctness.
 
 **Screenshot editing and evidence.** Edit a copy of your screenshot. Choose a plain-language action and a named area, then Add edit. Undo and Redo preserve the original. Find text to select offers recognized text as an anchor. More options reveals specialist geometry, layers, comparison and evidence exports. Review the edited result before sharing.
@@ -1160,13 +1178,21 @@ Control coverage: 197 audited sites (11 help-elsewhere, 186 helped).
 
 **Sleep Timer.** Stop playback by itself. Turn the timer on and give it a delay in minutes, or choose to stop at the end of the current chapter instead. It fires once and then turns itself off -- arming it again is a fresh visit here.
 
+**Sounds you hear.** Programs playing sound now. Mute or unmute any of them for you, or set its volume, as the Windows volume mixer does. A program muted here is also silent in any recording of the system sound.
+
 **Speech Settings.** The Speech Hub: every speech engine and voice in one place -- preview them, download the offline ones, and set the defaults. What you choose here is shared with QUILL and the other Quill apps, so a voice configured once reads everywhere.
 
 **Tag Editor.** Every tag this audio file can carry, over five pages: the main fields, the details, publishing credits, sort-order fields, and the cover art. Control+Tab moves between pages. Nothing is written until you press OK and then save -- this window hands the edit back, it never touches the file itself. It is the same editor QUILL Audio Studio and podHarvest both show, from the same table, so a file edited in either reads back unchanged in the other.
 
+**Test recording.** The result of a 5-second test with your exact settings: what the check found in the file. The test file is deleted when this window closes.
+
 **Windows titled "Copy Sections...".** Mark pieces of the file you are listening to and collect them into one new file. Mark a start and an end at the playhead, preview exactly what you marked, add it to the list, and keep going -- then save the collection as a new file or onto an existing one. The original recording is never changed.
 
+**Windows titled "Demonstration...".** The demonstration was saved and checked independently. Verified means every check passed; Needs review means it plays but something may be spoiled; Failed means a stream is missing or it does not decode. Play it, open its folder, copy its path or inspect a frame.
+
 **Windows titled "Help:...".** This is the help window itself: the purpose of the window you were in, then the control you were on. Escape returns you to it.
+
+**Windows titled "Recovered:...".** An interrupted recording was finished and checked. Play it, open its folder, copy its path or inspect a frame.
 
 ### Every authored control help sentence
 

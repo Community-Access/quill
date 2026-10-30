@@ -348,7 +348,7 @@ Each source has a routing matrix with independent sends to:
 
 ## 7A. Record a Demonstration, version 1 (next to build)
 
-**Status:** implementable specification; nothing in this section is built. **Priority:** next. It is the first vertical slice of DEMO-001 and DEMO-002 (a screen-and-audio demonstration), the *screen recording* part of CAP-004, the first recording items of TRAY-001, and VERIFY-005 for one file. It reuses the capture picker, target identity rules, evidence reports, F1 help and hotkey services that shipped in 2.0.0 (Studio PRD section 4.14), and the shared FFmpeg.
+**Status:** built 2026-10-29 on branch `feat/studio-demo-recording`, not yet released; see section 7A.7 for what differs from this specification and what is still unverified. **Priority:** next. It is the first vertical slice of DEMO-001 and DEMO-002 (a screen-and-audio demonstration), the *screen recording* part of CAP-004, the first recording items of TRAY-001, and VERIFY-005 for one file. It reuses the capture picker, target identity rules, evidence reports, F1 help and hotkey services that shipped in 2.0.0 (Studio PRD section 4.14), and the shared FFmpeg.
 
 **User story.** *I am a blind presenter. I choose Edge from the same list I use for screenshots, turn on "Edge's sound" and "my microphone", leave my screen reader out, hear one spoken summary that says everything is ready, press one key, demonstrate, press the same key, and am told the file is saved, how long it is, and that its picture and sound were checked. Nothing private I hear went into it unless I asked.*
 
@@ -496,6 +496,23 @@ Webcam and picture-in-picture; guided regions, UI Automation elements and severa
 13. With screen reader speech on: only the intended speech and Studio's failure lines are in the file.
 14. The Key Describer names every chord; the setup and status windows work in high contrast and at 200 percent text scaling.
 15. On an 8 GB machine without a discrete GPU, a 30-minute 1080p30 display recording drops under 1 percent of frames and stays within REC-008's alignment target.
+
+### 7A.7 As built (2026-10-29)
+
+The journey above is what ships, with these differences, each deliberate:
+
+- **Window targets record the window's screen area**, through desktop duplication cropped to the window (or the GDI grabber when duplication cannot reach that display). Windows.Graphics.Capture (spike S1) is not implemented, so a covering window is recorded and moving the window is not followed. The spoken check says so as a Warn on every window target rather than hiding it, and the user guide names it. REC-003's "no silent fallback" holds: nothing is substituted without being said.
+- **Display backend selection is measured, not assumed.** `ddagrab`'s `output_idx` is matched to the chosen display by DXGI device name on the default adapter (`screen_recorder.dxgi_output_index`); a display on another adapter, or the multi-display full desktop, uses `gdigrab`.
+- **System sound can leave the screen reader out.** Process loopback's *exclude* mode records everything except one process tree, so "System sound" defaults to "everything except your screen reader" and the REC-011 Warn appears only when the user turns that off. Studio's own cues are muted for the recording and restored afterwards.
+- **Sounds you hear** (`quill/platform/windows/audio_sessions.py`, `quill/ui/studio_demo_sounds.py`) mutes, unmutes and sets the volume of any program's Windows audio session, the MX-121 "operating-system session mute", kept separately named from "left out of the recording".
+- **Camera and face framing were brought into version 1** (7A.4 had them out of scope). FFmpeg's DirectShow input records the camera to its own segment, overlaid in a chosen corner at a chosen width, or alone ("Camera only"). Framing advice uses Windows' own `Windows.Media.FaceAnalysis.FaceDetector`, reached through the WinRT ABI directly (`quill/platform/windows/face_detect.py`), so it adds no package, model download, network call or AI consent. One FFmpeg process owns the camera and tees small grey frames to the detector during a recording. Advice is from the presenter's side ("move a little to your left"), with a mirrored-camera switch; `quill/core/demo_camera.py` holds the wording and the steadiness rule.
+- **Keys.** Record or stop is `Ctrl+Alt+Shift+V`, not `R`, which is Quill Radio's system-wide show/hide. Every command has a Studio app key (including Discard, `Ctrl+Alt+Shift+F9`, because the menu-accelerator rule admits no exception; it still confirms). The recording commands join `RECORDING_HOTKEY_COMMANDS`, opt-in with no defaults.
+- **Markers from a key are unnamed** ("Marker 3"); the Recording status window's button asks for a label. Prompting from a system-wide key would take focus from the demonstrated program.
+- **Recovery is announced, not offered modally**, at launch: the status line names the count and Capture > Recover unfinished recordings finishes them.
+
+Code: `quill/core/demo_recording.py` (plan, preflight, summary, naming, persistence), `demo_recording_ffmpeg.py` (argument builders), `demo_recording_verify.py` (REC-014), `demo_camera.py`; `quill/platform/windows/screen_recorder.py`, `demo_media.py`, `demo_audio.py`, `audio_sessions.py`, `face_detect.py`, and the PCM API added to `process_loopback.py` (the dictation gate is unchanged); `quill/apps/studio_demo.py`; `quill/ui/studio_demo_*.py`.
+
+Verified on the build machine: a 5-second display recording with a tone-playing process as application sound, paused and resumed, came back Verified (one H.264 and one AAC stream, length and frame count within tolerance, the tone present); the camera overlay, offsets, mixing, concat and recovery paths run against the real FFmpeg on synthetic inputs (`tests/integration/test_demo_recording_finish.py`); the face detector runs on live camera frames. Not yet verified: a positive face detection with a person in front of the camera, a live microphone or camera recording, acceptance tests 12 to 15 (screen readers, braille, high contrast, 8 GB hardware), and spike S5's 30-minute alignment.
 
 ## 8. AI Visual Inspector and blind-first visual confidence
 

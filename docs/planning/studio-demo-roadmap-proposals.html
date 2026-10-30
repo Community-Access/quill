@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>QUILL Studio: record, preview, mix and broadcast</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="quill-studio-record-preview-mix-and-broadcast">QUILL Studio:
+record, preview, mix and broadcast</h1>
+<p>Date: 2026-10-29 (second revision, the same night). For Jeff to
+review. Nothing here is built unless it says <strong>Built</strong>.</p>
+<p>Sources: <code>do.md</code> (section 8, F01, F02); the earlier media
+parity study (its Media section: sound control, loop-back recording,
+recording your own voice);
+<code>docs/planning/QUILL-Studio-PRD.md</code> (sections 1.3, 5, 6, 7A,
+8, 9, 9A, 10A, 10C);
+<code>docs/design/quill-studio-capture-milestone.md</code>. Audio
+editing and multitrack editing are out of scope, as asked; nothing below
+cuts, trims or arranges recorded audio.</p>
+<p>Every item has an ID so a review can say “yes R1 to R6, later D4, no
+X2”. Effort: <strong>S</strong> an evening, <strong>M</strong> a day or
+two, <strong>L</strong> several days, <strong>XL</strong> a project of
+its own.</p>
+<h2 id="decisions-already-made">Decisions already made</h2>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Answer</th>
+<th>Date</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>How to choose picture sources</td>
+<td>Separate <strong>Screen</strong> and <strong>Camera</strong> check
+boxes, each on or off; no four-way choice</td>
+<td>2026-10-29</td>
+</tr>
+<tr>
+<td>Direct streaming to Icecast and SHOUTcast</td>
+<td>Wanted. This reverses PRD section 10C.5, which listed it under
+“considered and not adopted”; the PRD is updated when this is built</td>
+<td>2026-10-29</td>
+</tr>
+<tr>
+<td>Ambition of this document</td>
+<td>Dream large: the greatest flexibility, without giving up privacy,
+safety or the “nothing is changed without you” rule</td>
+<td>2026-10-29</td>
+</tr>
+<tr>
+<td>What AI reviews</td>
+<td>The <strong>whole video</strong>, or a <strong>section the user
+chooses</strong> (from a start time to an end time, or between two
+markers)</td>
+<td>2026-10-29</td>
+</tr>
+<tr>
+<td>The Mixer</td>
+<td><strong>One window</strong> with tabs: Programs, Devices, Sources
+and buses, Scenes, Stream</td>
+<td>2026-10-29</td>
+</tr>
+<tr>
+<td>Archiving a stream</td>
+<td><strong>Offered, and the user decides</strong> each time and in each
+saved setup; nothing is assumed</td>
+<td>2026-10-29</td>
+</tr>
+<tr>
+<td>Stream options</td>
+<td><strong>Rich and in plain words</strong>: title, description, genre,
+website, format, quality, stereo or mono, sample rate, and more (section
+6, S15)</td>
+<td>2026-10-29</td>
+</tr>
+<tr>
+<td>Next large items</td>
+<td><strong>Both</strong>: window recording that follows the window
+(R10), and the live engine for preview, monitoring and buses (P1 with
+M3)</td>
+<td>2026-10-29</td>
+</tr>
+<tr>
+<td>ASIO sound cards</td>
+<td><strong>Wanted</strong>: professional audio interfaces through ASIO,
+beside WASAPI (section 5, M13)</td>
+<td>2026-10-29</td>
+</tr>
+<tr>
+<td>Pictures and YouTube videos</td>
+<td><strong>Wanted</strong>: make a picture with AI in conversation,
+then turn a picture and an audio file (recorded or chosen) into a video
+ready for YouTube (section 6B)</td>
+<td>2026-10-29</td>
+</tr>
+<tr>
+<td>Getting to main</td>
+<td>Land in QUILL’s <code>main</code> only through a pull request with
+green checks; nothing is pushed or merged without that</td>
+<td>2026-10-29</td>
+</tr>
+<tr>
+<td>Language</td>
+<td>Simple and understandable for users everywhere: plain words first,
+technical names only where a user needs them to match a server’s
+settings</td>
+<td>2026-10-29</td>
+</tr>
+<tr>
+<td>Do Not Disturb and keep awake</td>
+<td><strong>Must have.</strong> Both are options in every recording and
+stream, on by default for recordings planned over 15 minutes, and always
+restored afterwards</td>
+<td>2026-10-29</td>
+</tr>
+</tbody>
+</table>
+<h2 id="where-things-stand-tonight">Where things stand tonight</h2>
+<p><strong>Built</strong> in <code>S:\QUILL-demo</code>, branch
+<code>feat/studio-demo-recording</code>, not committed yet: screen,
+sound and camera recording to one checked MP4; per-source sound with the
+screen reader private by default; system sound without the screen
+reader; Sounds you hear (per-program mute and volume for the listener);
+camera overlay with on-device face framing advice; the spoken check;
+5-second test; pause, markers, microphone mute, status, emergency stop,
+discard and crash recovery; the independent after-check with Verified,
+Needs review and Failed; user guide, changelogs and PRD 7A.7. 116
+feature tests pass; the four modules that were over GATE-11’s size
+budget are split; the full gate scorecard is rerunning.</p>
+<p>Not verified: a live microphone or camera recording (not allowed
+unattended), a positive face detection with a person in front of the
+camera, screen-reader acceptance, and a 30-minute alignment run.</p>
+<h2 id="1-kernel-mode-drivers-do-we-need-one">1. Kernel-mode drivers: do
+we need one?</h2>
+<p><strong>Short answer: no, for everything in this document except one
+thing, and that one thing has a good no-driver alternative.</strong>
+QUILL keeps its PRD rule (section 1.3): no feature <em>requires</em> a
+virtual audio kernel driver, and QUILL never ships or silently installs
+one.</p>
+<table>
+<thead>
+<tr>
+<th>What we want to do</th>
+<th>User-mode Windows API that does it</th>
+<th>Driver needed?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Record one program’s sound, or everything except one program (the
+screen reader)</td>
+<td>Process loopback (<code>ActivateAudioInterfaceAsync</code>, include
+or exclude a process tree), Windows 10 2004 and later.
+<strong>Built.</strong></td>
+<td>No</td>
+</tr>
+<tr>
+<td>Record everything a playback device plays</td>
+<td>WASAPI endpoint loopback</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Record any microphone or line input</td>
+<td>WASAPI capture (shared or exclusive)</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Mute, unmute or set the volume of any program for the listener</td>
+<td>Core Audio sessions (<code>ISimpleAudioVolume</code>).
+<strong>Built.</strong></td>
+<td>No</td>
+</tr>
+<tr>
+<td>Move one program to a different sound card (per-app output
+device)</td>
+<td>The Windows audio policy interface behind Settings, App volume and
+device preferences (Windows 10 1803 and later), user-mode</td>
+<td>No (undocumented interface, so wrapped and checked)</td>
+</tr>
+<tr>
+<td>Set the Windows default and communications devices</td>
+<td>The <code>IPolicyConfig</code> COM interface that Windows sound
+utilities use</td>
+<td>No (undocumented interface, so wrapped and tested defensively)</td>
+</tr>
+<tr>
+<td>Change a recording input’s level and mute</td>
+<td><code>IAudioEndpointVolume</code> on the capture endpoint</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Live monitoring of the mix in headphones, mixing, effects,
+meters</td>
+<td>A user-mode real-time engine (WASAPI or PortAudio callbacks) in a
+helper process</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Stream to Icecast, SHOUTcast, RTMP or SRT servers</td>
+<td>Network output from FFmpeg or Studio’s own source client</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Send Studio’s <strong>video</strong> into Zoom, Teams or OBS as a
+camera</td>
+<td><code>MFCreateVirtualCamera</code>, Windows 11 (build 22000 and
+later), user-mode and driver-free</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Send Studio’s <strong>audio mix</strong> into Zoom, Teams or Discord
+<strong>as a microphone</strong></td>
+<td>Windows has no user-mode virtual microphone API. Options: (a) the
+user installs VB-CABLE or a similar signed driver (PRD MX-004, never
+bundled); (b) the meeting program listens to a real output Studio plays
+into (“CABLE Input”); (c) stream to the meeting through its own RTMP
+ingest where it has one (Teams and Zoom both offer RTMP for
+webinars).</td>
+<td><strong>Yes, for a true virtual microphone only</strong></td>
+</tr>
+<tr>
+<td>Split one screen reader’s speech into “demo” and “private”
+utterances</td>
+<td>Not possible from outside the reader. Possible with reader
+cooperation: an NVDA add-on or JAWS script that sends tutorial speech to
+a second synthesizer instance on a different device (MX-141)</td>
+<td>No driver; reader cooperation</td>
+</tr>
+<tr>
+<td>Capture protected (DRM) video or the secure desktop</td>
+<td>Not done, ever. Recorded as black and reported</td>
+<td>Never</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Should QUILL ever write its own driver?</strong> Not
+recommended. A kernel audio driver needs an EV code-signing certificate,
+Microsoft attestation signing or WHQL through Partner Center, the
+Hardware Lab Kit, and a driver-level support burden (blue screens are
+the failure mode, on the machines of blind users who cannot see a stop
+error). The one gap it fills, a virtual microphone, is covered by
+VB-CABLE for users who want it and by the streaming and output-device
+routes for everyone else. If Microsoft ships a user-mode virtual audio
+device API (as it did for cameras), QUILL adopts it at once
+(<strong>K3</strong>).</p>
+<ul>
+<li><strong>K1. VB-CABLE awareness, never installation</strong> (MX-004,
+MX-127, MX-128). Detect CABLE endpoints, name them in plain words
+(“CABLE Input is where Studio plays; CABLE Output is what Zoom
+records”), map them as a mixer destination, and run the cable test (tone
+out, record back, report nothing, gaps or clean). Offer the vendor’s
+download page with consent; never fetch or run an installer. (M)</li>
+<li><strong>K2. Driver-free virtual camera</strong> on Windows 11: send
+Studio’s picture (screen, camera, overlays, captions) into any meeting
+or broadcast program as a camera named “QUILL Studio”. (L)</li>
+<li><strong>K3. Watch for a user-mode virtual audio API</strong> and
+adopt it when one exists. (tracking item)</li>
+</ul>
+<h2 id="2-every-combination-of-picture-and-sound">2. Every combination
+of picture and sound</h2>
+<p>The window gets two check boxes, <strong>Screen</strong> and
+<strong>Camera</strong>, and the Sound sources list. Any combination is
+valid, including nothing but sound, a picture with no sound, and a
+screen with a camera corner. A recording with nothing chosen at all is a
+Stop in the check.</p>
+<ul>
+<li><strong>R1. Screen and Camera check boxes.</strong> Screen on and
+Camera off records the screen (today’s behaviour). Camera on adds the
+corner picture, or fills the frame when Screen is off. Both off is a
+sound-only recording. (M)</li>
+<li><strong>R2. Sound-only formats.</strong> WAV (lossless), FLAC, M4A
+(AAC), MP3 and Opus, with bit rate. The after-check becomes “one audio
+stream, right length, each source present, no clipping, loudness
+measured”. (S)</li>
+<li><strong>R3. Picture with no sound.</strong> A silent soundtrack
+(some sites reject video without one) or no audio stream; the check and
+result say which. (S)</li>
+<li><strong>R4. Loop-back recording of any playback device</strong> as a
+one-step preset: “Record what my headphones are playing”. (S)</li>
+<li><strong>R5. Camera capabilities probed, not assumed:</strong>
+resolutions and frame rates from DirectShow; camera-only recordings use
+the camera’s own size. (S)</li>
+<li><strong>R6. More output choices.</strong> MP4 (H.264), MKV, WebM
+(VP9 and Opus), MOV; H.265 and AV1 when the encoder exists; hardware
+encoders (NVENC, Quick Sync, AMF, Media Foundation) as an opt-in with a
+speed test. (M)</li>
+<li><strong>R7. Several sound tracks inside one video</strong>, one per
+source, beside the mixed track, for people who edit elsewhere. This is a
+recording choice, not editing in Studio. (S)</li>
+<li><strong>R8. Several cameras and several screens</strong> at once,
+each with a position and size, laid out by name (“camera 2 top left, 20
+percent”). (L)</li>
+<li><strong>R9. Region recording</strong> that keeps the picker’s guided
+portions (top half, middle quarter) and UI Automation elements, with the
+same “never broaden” rule as screenshots. (M)</li>
+<li><strong>R10. Window recording that follows the window</strong>
+(Windows.Graphics.Capture, PRD spike S1): a covering window is not
+recorded and moving the window is followed. The biggest remaining
+version 1 gap. (L)</li>
+<li><strong>R11. Scheduled recordings</strong>: start at a time, for a
+length, with the same check run first and its result kept. (M)</li>
+<li><strong>R12. Instant replay buffer</strong>: keep the last 30
+seconds to 10 minutes in memory, saved only on a key (“save that”), for
+the moment something went right without warning. Off by default; the
+microphone and screen reader rules still apply. (M)</li>
+</ul>
+<h2 id="3-preview-and-rehearsal-before-a-long-recording">3. Preview and
+rehearsal before a long recording</h2>
+<ul>
+<li><strong>P1. Live preview: hear the exact mix before you
+record</strong>, in headphones, with spoken levels on request. Never
+recorded. Shares the real-time engine with the mixer (M3). (M)</li>
+<li><strong>P2. Rehearsal recordings</strong> of any length, kept until
+deleted, with the full after-check and AI review (A1). (S)</li>
+<li><strong>P3. “Ready for an hour?” check</strong>, added when the
+planned length is over 15 minutes: disk space for the length plus
+margin; a 10-second encoding speed test at the chosen settings with a
+suggestion if this computer cannot keep up; battery level, estimated
+time and power plan; sleep, screen saver and display-off timers (Studio
+keeps the computer awake while recording and says so); notifications and
+Do Not Disturb; a pending Windows Update restart; microphone noise floor
+and headroom from a “say a sentence” check; the demonstrated program’s
+text size versus the output size, from OCR of the trial picture.
+(M)</li>
+<li><strong>P4. Planned length and safety splits</strong>: start a new
+file every 30 or 60 minutes if wanted, so one failure never costs the
+whole hour. (S)</li>
+<li><strong>P5. Named setups</strong> (“JAWS tutorial”, “Zoom demo”,
+“Friday show”) holding target, sources, levels, camera, streaming
+destinations and folder. The microphone’s on state is still never saved
+(MX-179). (S)</li>
+<li><strong>P6. Setup fingerprint</strong> (PREFLIGHT-007): when
+devices, displays or the screen reader changed since the last good
+session, say what changed and offer a rehearsal. (S)</li>
+<li><strong>P7. Do Not Disturb and keep awake (must have).</strong> Two
+options in the Record a demonstration window and in every stream setup:
+<strong>Turn on Do Not Disturb while recording</strong> and <strong>Keep
+the computer awake while recording</strong>. On by default for a planned
+length over 15 minutes, and offered for any recording. Keep awake uses
+<code>SetThreadExecutionState</code> (system and display) and also stops
+the screen saver; it lasts exactly as long as the recording or stream
+and is released on stop, discard, crash recovery and exit. Do Not
+Disturb uses Windows’ own notification setting (Focus on Windows 11,
+Focus Assist on Windows 10), remembers what it was before, and restores
+that afterwards, even after a crash (restored on next launch). The check
+says which are on and warns when Do Not Disturb could not be set, so
+notifications may appear in the picture. (S)</li>
+<li><strong>P8. Other one-key fixes where safe</strong>: close a named
+notification app, switch the screen reader to a second sound card, pause
+Windows Update for the length of the recording, each confirmed and
+undone afterwards. Never a blanket admin prompt or a driver install
+(PREFLIGHT-005). (M)</li>
+</ul>
+<h2
+id="4-ai-that-helps-before-and-after-opt-in-consent-per-provider-off-in-safe-mode">4.
+AI that helps before and after (opt-in, consent per provider, off in
+Safe Mode)</h2>
+<ul>
+<li><strong>A1. Ask AI about a recording or rehearsal: the whole video,
+or a section you choose.</strong> Choose <strong>Whole video</strong>,
+or a section by start and end time or between two markers (“from marker
+3 to marker 4”, “the last 2 minutes”). Studio sends the video itself to
+providers that accept video (Gemini, and others as they add it), with
+sound, so the AI hears and sees what happened; for providers that take
+only images, it sends frames from the chosen stretch (every second or
+two and at every scene change) plus a local transcript of the same
+stretch. A long video is sent in pieces the provider accepts, each
+answered in context. Answers cite times, and the frame inspector jumps
+to any cited time. The approval names the provider, the stretch, its
+length and size, and an estimate of the cost where the provider
+publishes one. Follow-up questions stay grounded in the same stretch
+unless you choose another. (M)</li>
+<li><strong>A2. Pre-recording coach.</strong> A trial frame, 10 seconds
+of sound and the stated goal; back come recommendations you accept or
+ignore. (S after A1)</li>
+<li><strong>A3. After-recording review</strong>: suggested chapters with
+titles, long silences, restarts, filler words, a title, description and
+tags for YouTube, a plain summary. Markers and text only. (M)</li>
+<li><strong>A4. Camera coach beyond faces</strong> (VIS-005): lighting,
+headroom, background, blur, from one approved frame. The local face
+detector stays the free default. (S)</li>
+<li><strong>A5. Captions and transcript files</strong> beside the video,
+transcribed locally (SRT, VTT, plain text). Optional burned-in captions
+as a recording option. (S)</li>
+<li><strong>A6. Audio description draft</strong> (VIS-008): AI drafts
+descriptions of visual events at their times, for a human to review and
+record. (M)</li>
+<li><strong>A7. Live co-pilot while recording</strong>, opt-in and
+silent unless asked: “did the dialog open?” answered from the latest
+frame, through a system-wide key. Spoken into headphones only; never
+into the recording. (M)</li>
+<li><strong>A8. Local-only AI path</strong>: the same questions answered
+by a local vision model through Ollama when the hardware allows, so
+nothing leaves the machine. (S, reuses shared AI settings)</li>
+</ul>
+<h2 id="5-the-studio-mixer">5. The Studio Mixer</h2>
+<p>All of Windows sound in one place: output devices with Set default
+and Set communications, every program’s volume, mute and sound card,
+recording inputs with level and mute, loop-back recording, Refresh, and
+screen reader routing, plus buses, monitoring and safety. One window,
+tabs, Ctrl+Alt+Shift+M (Sounds you hear becomes its first tab).</p>
+<ul>
+<li><strong>M1. Programs, just like Windows</strong> (part
+<strong>Built</strong> as Sounds you hear: volume, mute, playing now).
+Every program that is playing sound, with:
+<ul>
+<li><strong>Volume up and down</strong> with the arrow keys (1 percent)
+and Page Up and Page Down (10 percent), the new level spoken by the
+control itself, and a number field for an exact percentage.</li>
+<li><strong>Mute and unmute</strong> with Space.</li>
+<li><strong>Sound card</strong>: move a program to a different output,
+such as a browser to the speakers while the screen reader stays in the
+headset, exactly as Windows Settings, App volume and device preferences
+does. Choose “Default” to send it back. Windows remembers the choice for
+that program. This uses the same user-mode Windows interface that
+Settings uses (no driver); because Microsoft does not document it,
+Studio checks the result and says plainly when a Windows version
+refuses.</li>
+<li><strong>Balance</strong> (left and right) where the program’s
+session has two channels.</li>
+<li>Spoken peak level on request, and “only this program for me” (every
+other program muted for the listener) with one key to restore. (M)</li>
+</ul></li>
+<li><strong>M2. Devices</strong>: playback and recording devices; Set
+default and Set communications; input level and mute; a test sound;
+Refresh. Safety rule from do.md F01: a change can never leave the screen
+reader silent without a spoken “restore my sound” key. (M)</li>
+<li><strong>M3. Sources and buses</strong>, the heart of it (PRD 5.2,
+UX-004): a spreadsheet-like list, one row per source, with columns for
+level, mute, solo, and a send to each bus: <strong>Monitor</strong>
+(your headphones), <strong>Recording</strong>, <strong>Stream</strong>
+(section 6), <strong>Meeting</strong> (a VB-CABLE or chosen output), and
+user buses. Keys from MX-151: Space mute, Left and Right fine level,
+Shift for coarse, S solo, H monitor, R record, L live (stream), Enter
+details, F find. Units always spoken. (L)</li>
+<li><strong>M4. Independent monitor level</strong> (MX-177), so
+headphone comfort never changes the recording. (S)</li>
+<li><strong>M5. Effects per source</strong>, all as native lists and
+number fields (MX-131, MX-139): high-pass, noise gate, compressor,
+limiter, EQ, de-esser, noise reduction (RNNoise or FFmpeg’s
+<code>arnndn</code>), delay for sync. Bypass and reset per effect.
+(L)</li>
+<li><strong>M6. Ducking</strong> (MX-134, MX-138): music ducks under the
+microphone, keyed by the microphone being open, with depth and timing in
+dB and milliseconds. (M)</li>
+<li><strong>M7. Meters and loudness on request</strong> (MX-136): peak,
+RMS, integrated LUFS and true peak of any source or bus, spoken when
+asked; a clipping sound in headphones only. (S)</li>
+<li><strong>M8. Scenes</strong> (MX-160 to MX-165): save, load, import
+and export mixer states; any change that newly sends private sound to a
+public bus is previewed in words and confirmed (MX-123, MX-166).
+(M)</li>
+<li><strong>M9. Screen-reader routing helpers</strong> (do.md F01): show
+and change which device JAWS or NVDA speaks on, so speech stays in
+headphones while the program plays on speakers. (M)</li>
+<li><strong>M10. Emergency keys</strong> (MX-178, TRAY-007): Mute
+everything public, and Stop all recording, each with a second chord,
+confirmation-free. (S)</li>
+<li><strong>M11. Mix-minus for calls</strong> (MX-129): send a meeting
+everything except that meeting’s own sound, held by stable identity.
+(M)</li>
+<li><strong>M12. Controllers</strong>: MIDI faders and buttons and
+Stream Deck keys mapped to any mixer action, with the same spoken
+feedback as the keyboard (MX-157). (M)</li>
+<li><strong>M13. ASIO sound cards (wanted).</strong> Professional audio
+interfaces through ASIO, beside WASAPI, for the lowest delay and for
+interfaces whose Windows drivers are poor. Each input channel of an ASIO
+card becomes a named source in the mixer and in Record a demonstration
+(“Input 1, Shure SM7B”), and outputs can carry the Monitor or Stream
+bus. Plain-word settings: buffer size shown as milliseconds of delay,
+sample rate, and which channels to use. Studio warns when another
+program has the ASIO card, because most ASIO drivers allow only one
+program at a time. How: a PortAudio build with ASIO enabled, used
+through <code>sounddevice</code> (the ASIO SDK is free from Steinberg
+under its licence, which is recorded in third-party notices before
+shipping; nothing is compiled from the SDK into QUILL’s own code). Where
+a card has no ASIO driver, FlexASIO or ASIO4ALL are explained as
+optional, user-installed choices, never bundled. (L)</li>
+<li><strong>M14. WASAPI exclusive mode</strong> as the other low-delay
+choice for a single interface, with a plain warning that other programs
+(including the screen reader, if it uses that card) go silent on that
+device while Studio holds it. (M)</li>
+<li><strong>M15. Automation of levels over time is not offered</strong>:
+that is editing, out of scope by request.</li>
+</ul>
+<h2 id="6-live-streaming-to-icecast-shoutcast-and-beyond">6. Live
+streaming to Icecast, SHOUTcast and beyond</h2>
+<p>Studio becomes a source client: what you hear on the Stream bus goes
+to the server, and nothing else. It works for an audio-only radio show
+(the PRD’s scenario 2), a demonstration streamed while it is recorded,
+or both at once.</p>
+<p><strong>Control of what goes out is the whole point:</strong></p>
+<ul>
+<li>The <strong>Stream bus</strong> is its own send in the mixer (M3).
+Each source has a Stream on or off and its own stream level, independent
+of the recording.</li>
+<li>The screen reader’s send to Stream is off by default and needs
+confirmation, exactly as for recording (MX-122).</li>
+<li>Studio’s own cues, previews and monitor-only material can never
+reach the Stream bus (MX-008, MX-127).</li>
+<li><strong>Going live runs a spoken preflight</strong> (MX-166): where
+it goes, what is in it, whether the microphone is in it, and every Stop
+and Warn (wrong password, mount in use, bit rate not accepted,
+microphone absent from the stream, stream silent). Enter goes live.</li>
+<li><strong>Mute everything public</strong> (M10) cuts the stream to
+silence or a holding sound without disconnecting; the recording
+continues if wanted.</li>
+</ul>
+<p><strong>Servers and formats:</strong></p>
+<ul>
+<li><strong>S1. Icecast 2</strong> (HTTP PUT source protocol, with the
+legacy SOURCE method for older servers): MP3, AAC, Ogg Vorbis, Ogg Opus,
+FLAC in Ogg; mount point, user, password, public or private listing,
+stream name, description, genre and URL. TLS where the server offers it.
+(M)</li>
+<li><strong>S2. SHOUTcast v1 and v2 (DNAS 2.x)</strong>: the v1 password
+handshake and v2 stream IDs, MP3 and AAC. Studio carries its own small
+source client for these, because FFmpeg speaks Icecast but not
+SHOUTcast’s handshake. (M)</li>
+<li><strong>S3. Now-playing metadata</strong>: title and artist sent
+through Icecast’s admin metadata update and SHOUTcast’s
+<code>updinfo</code>, typed by hand, taken from the cart or playlist
+(S9), or from a marker. Ogg streams carry it in-band. (S)</li>
+<li><strong>S4. Several destinations at once</strong> (BCAST-015):
+Icecast and SHOUTcast together, each with its own format and bit rate,
+each with its own status; a failed second destination is never hidden
+behind one green light. (M)</li>
+<li><strong>S5. Reconnect without leaving dead air</strong>: automatic
+reconnect with back-off, a spoken notice once, a marker, and the local
+archive keeps recording through the outage. (S)</li>
+<li><strong>S6. Listener confidence check</strong> (BCAST, VERIFY-006):
+Studio connects to its own public stream as a listener, measures the
+delay, and confirms the far end carries sound, not silence; “Verified
+with external loopback”. (S)</li>
+<li><strong>S7. Listener statistics</strong> on request: current and
+peak listeners from the server’s status page, spoken when asked.
+(S)</li>
+<li><strong>S8. Archive while streaming</strong>: the same Stream bus
+mix saved locally, with the recording’s after-check. (S)</li>
+<li><strong>S9. A small show kit, not an editor</strong>: a playlist of
+files to play into the stream in order, a cart wall of sound clips on
+keys (PRD 10C, the parts that are playback), a station ID on a timer,
+and talk-over with ducking (M6). (L)</li>
+<li><strong>S10. Video streaming</strong> beside audio: RTMP and RTMPS
+(YouTube Live, Twitch, Facebook, Teams and Zoom webinar ingest), SRT,
+and WHIP to WebRTC servers, with the Screen and Camera choices from
+section 2. (L)</li>
+<li><strong>S11. Credentials stored safely</strong>: passwords and
+stream keys in Windows Credential Manager through QUILL’s DPAPI store,
+never in settings JSON, never in logs (redaction), never in exported
+setups. (S)</li>
+<li><strong>S12. Consent and audit</strong>: every server is a network
+destination the user typed; each connection goes through QUILL’s network
+egress audit; Safe Mode does not block local recording but does block
+streaming unless confirmed. (S)</li>
+<li><strong>S13. Relay and listen-in</strong>: optionally re-stream
+another Icecast stream (for example a partner station) into the Stream
+bus with its own level, and Quill Radio can open your own stream from a
+“Listen to my show” key. (M)</li>
+<li><strong>S14. Scheduled shows</strong>: go live at a set time with
+the preflight result kept, end after a set length, and archive if you
+chose to. (M)</li>
+<li><strong>S15. Stream settings, in plain words.</strong> Every setting
+has a plain name first and the technical name beside it only where a
+server’s form uses it:
+<ul>
+<li><strong>About the show</strong>: title, description, genre, website,
+and whether the server lists it publicly (“Show this stream in public
+directories”). Title and description can include today’s date or the
+show number automatically.</li>
+<li><strong>Sound quality</strong>: a simple choice of Speech
+(smallest), Talk and music, Music (best), or Custom. Custom offers the
+format (MP3, AAC, AAC+ (HE-AAC), Ogg Vorbis, Opus, FLAC), the quality as
+a bit rate from 16 to 320 kilobits a second, or a variable quality
+level, stereo or mono, and the sample rate (22.05, 32, 44.1 or 48 kHz).
+Studio says how much internet upload each choice needs and warns when it
+is more than the connection measured.</li>
+<li><strong>Loudness</strong>: an optional automatic level so the stream
+sounds even, aimed at a chosen loudness (for example minus 16 LUFS for
+talk), with a safety limiter that stops distortion. Off means the mix
+goes out exactly as it is.</li>
+<li><strong>Connection</strong>: server address and port, mount point or
+stream number, user name, password, secure connection where the server
+offers it, and how hard to try reconnecting.</li>
+<li><strong>Now playing</strong>: what listeners see as the current
+title, typed, taken from the playlist or cart, or left as the show
+title.</li>
+<li><strong>Save a copy (archive)</strong>: off or on, chosen each time
+and saved with the setup; when on, the copy’s own format and quality can
+differ from the stream’s (for example FLAC at home, MP3 to listeners),
+and long shows can be split into hours.</li>
+<li><strong>Delay</strong>: an optional broadcast delay of a few
+seconds, with Studio saying what it is, so a slip can be cut before
+listeners hear it (the Mute everything public key acts on the delayed
+sound).</li>
+<li><strong>Test before going live</strong>: a private test connection
+that checks the password, the mount, and that the server accepts the
+format, without anyone hearing it. (L, across S1 to S14)</li>
+</ul></li>
+</ul>
+<h2
+id="6a-meetings-zoom-and-teams-in-a-recording-a-stream-or-both-ways">6A.
+Meetings: Zoom and Teams in a recording, a stream, or both ways</h2>
+<p>The goal: put the people in a Zoom or Teams meeting into a
+demonstration or a stream, and send Studio’s sound (your microphone, a
+demo program, music) into the meeting, with no echo and no loop of the
+meeting hearing itself.</p>
+<p><strong>How the echo is avoided (the rule for everything
+below).</strong> Studio never records or streams “everything the
+computer plays” when a meeting is in it. It takes the meeting’s sound
+from the meeting program alone (process loopback of
+<code>Zoom.exe</code> or <code>ms-teams.exe</code>), and whatever Studio
+sends <em>to</em> the meeting is a <strong>mix-minus</strong>:
+everything except the meeting’s own sound (MX-129). The meeting is heard
+in your headphones only, never on speakers that the microphone could
+pick up. Each piece is checked in the spoken check and named in plain
+words.</p>
+<ul>
+<li><strong>Z1. The meeting as a sound source</strong> (works today’s
+way, no driver): a “Zoom meeting” or “Teams meeting” row in Sound
+sources, found by name, with its own level, in or out of the recording
+and the stream. The far-end speakers are recorded cleanly because only
+the meeting program’s sound is taken; your screen reader and other
+programs are not in it. (S)</li>
+<li><strong>Z2. Send to the meeting, the plain way</strong> (no driver):
+both programs can share computer sound with a screen share (Zoom “Share
+sound”, Teams “Include computer sound”). Studio explains the exact steps
+for the version found, plays its mix-minus to the device the meeting
+shares, and checks with the cable test that the meeting is not hearing
+itself. Best for a demonstration inside a meeting. (S)</li>
+<li><strong>Z3. Send to the meeting as a microphone</strong> (needs a
+virtual cable the user installs, section 1): Studio plays the mix-minus
+into “CABLE Input”, and the meeting’s microphone is set to “CABLE
+Output”. Studio tells you exactly which setting to change in Zoom or
+Teams and confirms it worked by listening for its own test tone coming
+back through the meeting’s sound. Your real microphone stays in Studio’s
+mix, so you can add music, a demo program or sound clips to what the
+meeting hears. (M)</li>
+<li><strong>Z4. Meeting-friendly sound in Zoom</strong>: Studio’s guide
+for Zoom’s “Original sound for musicians” and echo cancellation settings
+when it is sending a clean mix, so Zoom does not fight the mix. (S)</li>
+<li><strong>Z5. Studio’s picture into the meeting as a camera</strong>
+(no driver on Windows 11, K2): the screen, the camera, captions and
+overlays arrive in Zoom or Teams as a camera called “QUILL Studio”.
+(L)</li>
+<li><strong>Z6. The meeting into a live stream</strong>: the Z1 source
+on the Stream bus, so an Icecast show or an RTMP video stream carries
+the guests, with your microphone and music, and the guests hear you
+through Z2 or Z3 without hearing themselves. (S once S1 and M3
+exist)</li>
+<li><strong>Z7. Meeting controls from Studio’s keys</strong>: mute and
+unmute yourself in the meeting, raise a hand, start or stop sharing, by
+sending the meeting program its own documented keys (Zoom Alt+A, Teams
+Ctrl+Shift+M) or its accessibility controls, with spoken confirmation.
+Opt-in, and only to a meeting window you chose. (M)</li>
+<li><strong>Z8. Separate tracks for later</strong>: the meeting and your
+microphone kept as separate files beside the recording (R7), so a
+podcast made from a call can be balanced later in another program.
+(S)</li>
+<li><strong>Z9. Deeper integrations, considered for later</strong>:
+Zoom’s Meeting SDK raw audio and its real-time media streams, and Teams
+media bots through Microsoft Graph, can give each participant as a
+separate source. They need developer accounts, app review and server
+components, so they are recorded here as possibilities, not plans.
+Webinar RTMP output from Zoom and Teams can already feed a server Studio
+streams to. (XL)</li>
+</ul>
+<h2
+id="6b-pictures-made-with-ai-and-a-picture-with-sound-as-a-youtube-video">6B.
+Pictures made with AI, and a picture with sound as a YouTube video</h2>
+<p>The goal: a podcast episode, a talk or a song becomes a video YouTube
+accepts, with a picture you made by describing it, without editing any
+audio.</p>
+<ul>
+<li><strong>V1. Make a picture by talking about it</strong> (PRD
+VIS-009). A conversation like the Screenshot Inspector’s: describe what
+you want (“a warm cover for a podcast about blind travel, a suitcase and
+a cane, no text”), the AI asks what it needs, an image is generated with
+the image model of your choice (the shared AI providers that make
+images, such as OpenAI’s image models or Google’s Imagen, and local
+generation where the computer can run it), and then you hear a detailed
+description of what was made, from a separate look by the vision model,
+so you are not relying on the generator’s own claims. Ask for changes in
+words (“make the background darker”, “move the suitcase left”, “add the
+title QUILL Talk at the top in large white letters”) and each version is
+kept so you can go back. Sizes offered in plain words: “YouTube video
+(1920 by 1080)”, “Square cover (3000 by 3000)”, “YouTube thumbnail (1280
+by 720)”. Every picture is saved with its prompt, its description and
+its alt text. Consent, cost notice and Safe Mode rules are the same as
+for screenshots. (L)</li>
+<li><strong>V2. Check a picture before using it</strong>: text readable
+at YouTube’s sizes, contrast of any words, nothing cut off at the edges,
+and an alt text you approve. Uses OCR first and AI only with approval.
+(S)</li>
+<li><strong>V3. Picture plus sound becomes a video.</strong> Choose a
+picture (made in V1, a file, a screenshot, or a camera photo) and a
+sound: record it now (microphone, a program, the system, any mix of
+sources, through Record a demonstration with the picture off) or choose
+an audio file. Studio makes an MP4 that YouTube accepts: 1920 by 1080
+(or the picture’s own size, padded rather than stretched), H.264 at a
+low frame rate suited to a still picture, AAC sound at 48 kHz, and the
+same independent check as a recording. No audio is edited; the sound
+goes in exactly as it is. (M)</li>
+<li><strong>V4. Options for the video, all optional</strong>: a gentle
+slow zoom on the picture; several pictures changing at chapter markers
+or at set times; a title card at the start; burned-in captions from a
+local transcript (A5); a sound wave or level bar along the bottom
+(“audiogram”), so viewers can see that sound is playing; and chapters
+written into the file and into the YouTube description as timestamps.
+(M)</li>
+<li><strong>V5. Ready to upload.</strong> Studio writes the title,
+description (with chapter timestamps), tags and the thumbnail beside the
+video, with A3’s AI suggestions offered for each field. With your
+consent and your own Google sign-in, it can upload to YouTube directly
+(private or unlisted first, by default), and it reports the processing
+result. Without sign-in, Open folder and the written files make a manual
+upload quick. (M for files, L for direct upload)</li>
+<li><strong>V6. The same for other places</strong>: square video for
+social posts, a vertical version for Shorts, and an audio file with
+embedded cover art and chapters for podcast hosts. (S)</li>
+</ul>
+<h2
+id="7-more-from-the-parity-study-and-the-prd-no-editing-no-multitrack">7.
+More from the parity study and the PRD (no editing, no multitrack)</h2>
+<ul>
+<li><strong>O1. Keystroke and focus track</strong> (DEMO-003): optional
+timed record of keys pressed (passwords never) and the screen reader’s
+focus, as a text file and as optional on-screen captions. (M)</li>
+<li><strong>O2. Click and focus highlight, and zoom</strong> (CAP-003,
+ZoomIt): a ring around the focused control, click marks, and a keyboard
+zoom that follows focus. (M)</li>
+<li><strong>O3. Markers become chapters</strong> inside MP4, M4A and MP3
+so every player shows them, after a backup copy. (S)</li>
+<li><strong>O4. Tags on the output</strong>: title, artist, album, year,
+comment, cover image. (S)</li>
+<li><strong>O5. Intro and outro sounds</strong>, and one sound on a key,
+played into the recording (playback, not editing). (S)</li>
+<li><strong>O6. Identify the music</strong> in any source (do.md F02).
+(S)</li>
+<li><strong>O7. Share</strong>: post a link to Mastodon through QUILL’s
+existing posting; upload to YouTube or PeerTube with consent, title and
+description from A3. (M)</li>
+<li><strong>O8. Screenshot sequence with narration</strong> (DEMO-002’s
+fourth mode), saved as a narrated slideshow video. (M)</li>
+<li><strong>O9. Guest and remote sources</strong>: a caller over a
+meeting program’s output, or a phone over a USB interface, as named
+sources with their own mix-minus (M11). (M)</li>
+<li><strong>O10. Text overlays</strong> typed in words: name and title
+strip, a “Recording” badge, a website address, positioned by name, not
+by dragging. (M)</li>
+<li><strong>O11. Background blur or replace for the camera</strong>, on
+the device, with a privacy check that the effect is really on before
+going live. (L)</li>
+<li><strong>O12. Sign language window</strong>: a second camera fixed in
+a corner at a size suited to signing, with a check that hands stay in
+frame. (S after R8)</li>
+</ul>
+<h2 id="8-finishing-version-1-continuing-tonight">8. Finishing version 1
+(continuing tonight)</h2>
+<ul>
+<li><strong>F1.</strong> GATE-11 splits done; snapshots regenerated;
+full scorecard and Studio suites rerunning.</li>
+<li><strong>F2.</strong> <code>docs/audio-studio/</code> holds the older
+Audio Studio copies; only <code>standalone/studio/docs/</code> (QUILL
+Studio’s current docs) was updated. Decide whether to retire the old
+copies.</li>
+<li><strong>F3.</strong> Live checks for you: a 1-minute recording with
+the microphone and camera on, Check camera framing with you in front of
+the camera, and the keys from inside another program with JAWS and
+NVDA.</li>
+<li><strong>F4.</strong> Commit to the branch at the end of the night;
+no push and no PR unless you say so.</li>
+</ul>
+<h2 id="order-of-work">Order of work</h2>
+<p>Tonight, in this order, each with tests, gates and documentation
+before the next starts:</p>
+<ol type="1">
+<li>F1, then <strong>R1</strong> (Screen and Camera check boxes),
+<strong>R2</strong>, <strong>R3</strong>, <strong>R4</strong> (all
+combinations of picture and sound).</li>
+<li><strong>P7</strong> (Do Not Disturb and keep awake, must have), then
+<strong>P2</strong>, <strong>P3</strong>, <strong>P4</strong> (rehearsal
+and the long-recording check).</li>
+<li><strong>M1</strong> and <strong>M2</strong> (the Mixer window with
+Programs and Devices tabs, including moving a program to another sound
+card).</li>
+<li><strong>V3</strong> and <strong>V4</strong> (picture plus sound as a
+YouTube video), <strong>A5</strong> (local captions), then
+<strong>A1</strong> (Ask AI about the whole video or a chosen section)
+and <strong>V1</strong> (pictures made with AI).</li>
+<li><strong>S1</strong>, <strong>S3</strong>, <strong>S5</strong>,
+<strong>S8</strong>, <strong>S11</strong>, <strong>S12</strong> (Icecast
+streaming with a Stream bus send per source, metadata, reconnect,
+archive, safe credentials, consent) and <strong>S2</strong>
+(SHOUTcast).</li>
+<li>If something has to wait, it is the broadcasting pieces (section 6):
+everything else comes first.</li>
+</ol>
+<p>Then the two large items, both chosen: <strong>R10</strong> (window
+recording that follows the window) and <strong>P1 with M3</strong> (the
+live engine: preview, monitoring, buses, the Stream bus). After them: M4
+to M12, S4, S6, S9, S10, S15 in full, K1, K2, O1 to O12.</p>
+<h2 id="decisions-still-open">Decisions still open</h2>
+<p>None tonight. New questions will be added here as they come up.</p>
+</main>
+</body>
+</html>

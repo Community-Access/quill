@@ -55,6 +55,48 @@ PURPOSES: dict[str, str] = {
         "explicitly send it to your configured AI provider. File checks prove "
         "decode and integrity; observations do not prove privacy or visual correctness."
     ),
+    "Record a demonstration": (
+        "Record a screen-and-sound demonstration as one video. Choose what to record, "
+        "which sounds go in -- your screen reader and microphone start left out -- the "
+        "camera, the picture and the folder, then press Check. The result is read once; "
+        "Start recording is available when nothing stops it. Nothing you hear changes."
+    ),
+    "Recording status": (
+        "The recording in progress: elapsed time, the sounds being recorded, whether "
+        "your screen reader is in it, dropped frames and disk space. Pause, add a "
+        "marker, mute the microphone, or stop and save. Closing this window hides it; "
+        "recording continues."
+    ),
+    "Test recording": (
+        "The result of a 5-second test with your exact settings: what the check found "
+        "in the file. The test file is deleted when this window closes."
+    ),
+    "Check camera framing": (
+        "The camera is open while this window is: Studio says whether your face is in "
+        "view and centred, and which way to move. Face detection runs on this computer; "
+        "nothing is recorded or saved."
+    ),
+    "Sounds you hear": (
+        "Programs playing sound now. Mute or unmute any of them for you, or set its "
+        "volume, as the Windows volume mixer does. A program muted here is also silent "
+        "in any recording of the system sound."
+    ),
+    "Add a program's sound": (
+        "Choose a program that is playing sound to add as a sound source of its own."
+    ),
+    "Add marker": ("Type an optional label for this moment in the recording, then press Enter."),
+    "Choose the save folder": "Choose the folder where demonstrations are saved.",
+    "Discard this recording": (
+        "Confirm deleting the recording in progress. It cannot be recovered."
+    ),
+    "Recover unfinished recordings": (
+        "Recordings interrupted by a crash or power cut were found. Studio can join, "
+        "check and save each one beside its folder."
+    ),
+    "Screen reader speech": (
+        "Confirm putting your screen reader's speech in the recording: everything it "
+        "says while you record will be in the file."
+    ),
     "Choose screenshot control": (
         "Choose a specific part of the selected window by its name or role. "
         "Search filters real accessible controls without AI. Password and offscreen "
@@ -199,6 +241,18 @@ for _title in ("QUILL Studio", "QUILL Studio (Safe Mode)", "QUILL Studio Prefere
 
 #: Purposes for windows whose titles carry live data, matched by prefix.
 PREFIX_PURPOSES: tuple[tuple[str, str], ...] = (
+    (
+        "Demonstration",
+        "The demonstration was saved and checked independently. Verified means every "
+        "check passed; Needs review means it plays but something may be spoiled; Failed "
+        "means a stream is missing or it does not decode. Play it, open its folder, copy "
+        "its path or inspect a frame.",
+    ),
+    (
+        "Recovered:",
+        "An interrupted recording was finished and checked. Play it, open its folder, "
+        "copy its path or inspect a frame.",
+    ),
     (
         "Copy Sections",
         "Mark pieces of the file you are listening to and collect them into "

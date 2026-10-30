@@ -172,6 +172,19 @@ def toggle_mute() -> bool:
     return False
 
 
+def set_muted(muted: bool) -> bool:
+    """Set the mute state and return the previous one (to restore it later).
+
+    Studio's demonstration recorder mutes its own cues while it records the
+    whole system mix, so they cannot reach the file (Studio PRD REC-007).
+    """
+    if _manager is None:
+        return False
+    previous = bool(_manager.player.muted)
+    _manager.player.set_muted(muted)
+    return previous
+
+
 def is_active() -> bool:
     """Return True when the manager is initialised and sound is enabled."""
     return _manager is not None and _manager.enabled

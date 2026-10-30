@@ -328,6 +328,8 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
         # Deferred (CallAfter), not inline: this touches the network, and a
         # launch is not the place to do that before the window is even up.
         wx.CallAfter(self._maybe_check_updates_on_startup)
+        # An interrupted demonstration recording is named, never auto-opened.
+        wx.CallAfter(self._offer_demo_recovery)
         if self._history.resume_on_launch:
             wx.CallAfter(self._maybe_resume_last_book)
 
@@ -2735,6 +2737,7 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
         return "exit" if answer in (wx.YES, wx.ID_YES) else None
 
     def _studio_shutdown(self) -> None:
+        self._demo_shutdown()
         self._unregister_global_hotkeys()
         self._stop_active_voice_preview()
         self._task_manager.shutdown(wait=False)
