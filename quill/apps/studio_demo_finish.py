@@ -308,6 +308,7 @@ class StudioDemoFinishMixin:
 
     def _demo_shutdown(self) -> None:
         """On exit mid-recording: close the segment so the next launch can recover it."""
+        self._stream_shutdown()
         recorder = getattr(self, "_demo", None)
         if recorder is None:
             return

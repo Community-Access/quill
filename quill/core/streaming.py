@@ -183,6 +183,10 @@ def preflight(settings: StreamSettings, *, password: str, measured_kbps: int = 0
     return findings
 
 
+def can_start_stream(findings: Sequence[Finding]) -> bool:
+    return not any(finding.severity == "Stop" for finding in findings)
+
+
 def summary(settings: StreamSettings, findings: Sequence[Finding]) -> str:
     effective = settings.effective
     where = (

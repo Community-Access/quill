@@ -805,6 +805,20 @@ Press **Make the video**. The video is saved beside the sound as "name - video.m
 
 **Capture > Ask AI questions about a video** (Ctrl+Alt+Shift+K), or **Ask AI about this video** in a recording's result window, lets you ask about the whole video or a stretch of it, from one time to another, written like 1:05. Studio takes 4 to 16 frames spread across that stretch, lays them out as one picture with each frame's time written on it, and, if captions exist beside the video, adds what was said in the same stretch. It then opens the same conversation window as the Screenshot Inspector, with a question already describing the picture. Nothing is sent until you approve it, using your usual AI connection, and Safe Mode blocks it as it blocks screenshot AI. Answers cite the times of the frames they rely on.
 
+### Broadcast live to Icecast or SHOUTcast
+
+**Capture > Broadcast live** (Ctrl+Alt+Shift+G) streams a show to your own Icecast or SHOUTcast server, the kind internet radio stations use. You decide exactly what listeners hear.
+
+- **Server**: the type (Icecast or SHOUTcast), the address (such as stream.example.org, without http), the port, then the mount (Icecast, such as /live) or the stream number (SHOUTcast, usually 1), the user name (Icecast, usually source) and the password. Studio keeps the password in Windows Credential Manager, never in its settings or logs. **Use a secure connection** only if your server offers it.
+- **About the show**: title, description, genre, website, and whether to list it in public directories.
+- **Sound quality**: Speech (smallest, clear voices), Talk and music, Music (best sound), or Custom, which unlocks the format (MP3, AAC, Ogg Vorbis, Ogg Opus or FLAC), the bit rate, stereo or mono, and the sample rate. **Loudness** can keep the stream sounding even, at a level suited to talk, music or broadcast, with a limiter against distortion; Off sends your mix exactly as it is.
+- **What goes into the stream** is a list like the recording one: your microphone, system sound without the screen reader, the screen reader's speech, and every program playing sound. Space puts a sound in or leaves it out; each has its own level, separate from any recording. Everything starts left out, and the screen reader asks first. Studio's own sounds can never reach listeners.
+- **Save a copy of the show on this computer** keeps a FLAC copy in the folder you choose, even through a dropped connection. Off by default; you decide each time.
+
+Press **Check**: you hear where the stream goes, what is in it, and every problem. **Test the connection** sends two seconds of silence privately to check the address and password. When nothing stops it, press Enter or **Go live**. While live, the computer is kept awake and Do Not Disturb is on, and both are put back afterwards.
+
+The **Live broadcast** window, which does not take focus, shows the status, takes a **Now playing** title for listeners, and has **Mute everything public** (Ctrl+Alt+Shift+Z), which gives listeners silence at once without disconnecting, and **Stop broadcasting** (Ctrl+Alt+Shift+E). Both can be given system-wide keys in Capture global hotkeys. If the connection drops, Studio says so once and keeps trying, with growing pauses.
+
 ### Check, then start
 
 Press **Check**. It takes a few seconds: Studio takes a trial picture, records three seconds of the screen at your settings to see whether the computer keeps up, opens each sound source briefly, looks for the camera, and checks FFmpeg, the folder and its free space, whether the computer is on battery, and whether Windows Update is waiting to restart it. The result lands in the **Check result** field and your screen reader reads it once. It says what will be recorded, which sounds are in and which are left out (always naming your screen reader), where the file goes, and then every problem. **Stop** means it cannot record until you fix it. **Warn** means it can, but something might spoil it, for example a microphone that is delivering pure digital silence because Windows privacy settings are blocking it.

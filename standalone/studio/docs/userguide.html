@@ -2031,6 +2031,51 @@ conversation window as the Screenshot Inspector, with a question already
 describing the picture. Nothing is sent until you approve it, using your
 usual AI connection, and Safe Mode blocks it as it blocks screenshot AI.
 Answers cite the times of the frames they rely on.</p>
+<h3 id="broadcast-live-to-icecast-or-shoutcast">Broadcast live to
+Icecast or SHOUTcast</h3>
+<p><strong>Capture &gt; Broadcast live</strong> (Ctrl+Alt+Shift+G)
+streams a show to your own Icecast or SHOUTcast server, the kind
+internet radio stations use. You decide exactly what listeners hear.</p>
+<ul>
+<li><strong>Server</strong>: the type (Icecast or SHOUTcast), the
+address (such as stream.example.org, without http), the port, then the
+mount (Icecast, such as /live) or the stream number (SHOUTcast, usually
+1), the user name (Icecast, usually source) and the password. Studio
+keeps the password in Windows Credential Manager, never in its settings
+or logs. <strong>Use a secure connection</strong> only if your server
+offers it.</li>
+<li><strong>About the show</strong>: title, description, genre, website,
+and whether to list it in public directories.</li>
+<li><strong>Sound quality</strong>: Speech (smallest, clear voices),
+Talk and music, Music (best sound), or Custom, which unlocks the format
+(MP3, AAC, Ogg Vorbis, Ogg Opus or FLAC), the bit rate, stereo or mono,
+and the sample rate. <strong>Loudness</strong> can keep the stream
+sounding even, at a level suited to talk, music or broadcast, with a
+limiter against distortion; Off sends your mix exactly as it is.</li>
+<li><strong>What goes into the stream</strong> is a list like the
+recording one: your microphone, system sound without the screen reader,
+the screen reader’s speech, and every program playing sound. Space puts
+a sound in or leaves it out; each has its own level, separate from any
+recording. Everything starts left out, and the screen reader asks first.
+Studio’s own sounds can never reach listeners.</li>
+<li><strong>Save a copy of the show on this computer</strong> keeps a
+FLAC copy in the folder you choose, even through a dropped connection.
+Off by default; you decide each time.</li>
+</ul>
+<p>Press <strong>Check</strong>: you hear where the stream goes, what is
+in it, and every problem. <strong>Test the connection</strong> sends two
+seconds of silence privately to check the address and password. When
+nothing stops it, press Enter or <strong>Go live</strong>. While live,
+the computer is kept awake and Do Not Disturb is on, and both are put
+back afterwards.</p>
+<p>The <strong>Live broadcast</strong> window, which does not take
+focus, shows the status, takes a <strong>Now playing</strong> title for
+listeners, and has <strong>Mute everything public</strong>
+(Ctrl+Alt+Shift+Z), which gives listeners silence at once without
+disconnecting, and <strong>Stop broadcasting</strong>
+(Ctrl+Alt+Shift+E). Both can be given system-wide keys in Capture global
+hotkeys. If the connection drops, Studio says so once and keeps trying,
+with growing pauses.</p>
 <h3 id="check-then-start">Check, then start</h3>
 <p>Press <strong>Check</strong>. It takes a few seconds: Studio takes a
 trial picture, records three seconds of the screen at your settings to

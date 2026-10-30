@@ -26,6 +26,7 @@ from quill.apps.studio_demo_finish import StudioDemoFinishMixin
 from quill.apps.studio_demo_setup import StudioDemoSetupMixin
 from quill.apps.studio_picture_maker import StudioPictureMakerMixin
 from quill.apps.studio_picture_video import StudioPictureVideoMixin
+from quill.apps.studio_streaming import StudioStreamingMixin
 from quill.core.demo_recording import (
     MICROPHONE_KEY,
     DemoPlan,
@@ -44,7 +45,11 @@ _SUPPRESSED = "Recording a demonstration"
 
 
 class StudioDemoMixin(
-    StudioDemoSetupMixin, StudioDemoFinishMixin, StudioPictureVideoMixin, StudioPictureMakerMixin
+    StudioDemoSetupMixin,
+    StudioDemoFinishMixin,
+    StudioPictureVideoMixin,
+    StudioPictureMakerMixin,
+    StudioStreamingMixin,
 ):
     # -- commands, menu, tray -----------------------------------------------------
 
@@ -69,6 +74,9 @@ class StudioDemoMixin(
             ),
             ("studio.camera_check", "Check camera &framing...", self.check_camera_framing),
             ("studio.mixer", "Studio Mi&xer...", self.open_mixer),
+            ("studio.broadcast", "&Broadcast live...", self.broadcast_live),
+            ("studio.broadcast_mute", "Mute everything public", self.mute_broadcast),
+            ("studio.broadcast_stop", "Stop the &live broadcast", self.stop_broadcast),
             ("studio.make_picture", "&New picture with AI...", self.make_picture_with_ai),
             (
                 "studio.ask_ai_video",

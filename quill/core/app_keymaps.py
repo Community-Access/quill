@@ -59,6 +59,11 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         "studio.ask_ai_video": "Ctrl+Alt+Shift+K",
         # J: the one letter left on this bar; a picture made by talking (roadmap V1).
         "studio.make_picture": "Ctrl+Alt+Shift+J",
+        # Broadcasting (roadmap section 6): G for go live, Z for the emergency
+        # mute of everything public (MX-178), E for end.
+        "studio.broadcast": "Ctrl+Alt+Shift+G",
+        "studio.broadcast_mute": "Ctrl+Alt+Shift+Z",
+        "studio.broadcast_stop": "Ctrl+Alt+Shift+E",
     },
     "radio": {
         # Quick-play favorites. These were Ctrl+Alt+Shift+1..0 in

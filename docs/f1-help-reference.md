@@ -1110,7 +1110,7 @@ Control coverage: 39 audited sites (26 helped, 13 named-help).
 
 ## QUILL Studio
 
-Control coverage: 267 audited sites (11 help-elsewhere, 256 helped).
+Control coverage: 296 audited sites (11 help-elsewhere, 285 helped).
 
 ### Every window, and what it is for
 
@@ -1123,6 +1123,8 @@ Control coverage: 267 audited sites (11 help-elsewhere, 256 helped).
 **Add marker.** Type an optional label for this moment in the recording, then press Enter.
 
 **Ask AI questions about a video.** Choose a video and the whole of it or a stretch. Studio takes frames from that stretch, lays them out as one labelled picture with the transcript if there is one, and opens a conversation about it. Nothing is sent until you approve it there.
+
+**Broadcast live.** Stream to an Icecast or SHOUTcast server. Fill in the server, the show and the sound quality, choose what goes into the stream (your screen reader starts left out), and whether to save a copy. Press Check; Go live is available when nothing stops it. Test the connection privately first if you like.
 
 **Capture screen.** Choose a named window for a whole-window screenshot without entering sizes. Or choose a display, full desktop, delayed active window or guided region. For a guided region, choose a source and Whole source, top, bottom, left, right or middle. Review Capture plan and guidance before starting. Exact coordinates are optional advanced settings. Review local OCR or framing afterward. AI sharing requires approval or previously enabled automatic AI.
 
@@ -1145,6 +1147,8 @@ Control coverage: 267 audited sites (11 help-elsewhere, 256 helped).
 **Export a Document to Translated Speech.** One document, spoken in other languages: pick the output format, add each target language with the voice that will read it, and choose whether your AI provider or a local LibreTranslate does the translating. Each export lands beside the source, named for its language.
 
 **Folder Podcast Feed.** One folder of finished audio treated as a whole show: name it, describe it, say where the audio will live online, and give any episode its own title or description. Write feed.rss builds the feed with every episode; everything here is local files -- uploading is your server's business.
+
+**Live broadcast.** The show on air: its status, the now-playing title, Mute everything public (listeners hear silence at once) and Stop broadcasting. Closing this window hides it.
 
 **Make a YouTube video from a picture and sound.** Choose a picture and a sound file, the shape of the video, and optionally a slow zoom, a sound wave and chapters from the recording's markers. The sound is used exactly as it is. The video and its YouTube title and description are saved beside the sound.
 
@@ -1173,6 +1177,8 @@ Control coverage: 267 audited sites (11 help-elsewhere, 256 helped).
 **Recording status.** The recording in progress: elapsed time, the sounds being recorded, whether your screen reader is in it, dropped frames and disk space. Pause, add a marker, mute the microphone, or stop and save. Closing this window hides it; recording continues.
 
 **Recover unfinished recordings.** Recordings interrupted by a crash or power cut were found. Studio can join, check and save each one beside its folder.
+
+**Screen reader in the stream.** Confirm putting your screen reader's speech in the stream: listeners hear everything it says while you are live.
 
 **Screen reader speech.** Confirm putting your screen reader's speech in the recording: everything it says while you record will be in the file.
 

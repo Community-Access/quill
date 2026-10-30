@@ -774,26 +774,29 @@ continues if wanted.</li>
 </ul>
 <p><strong>Servers and formats:</strong></p>
 <ul>
-<li><strong>S1. Icecast 2</strong> (HTTP PUT source protocol, with the
-legacy SOURCE method for older servers): MP3, AAC, Ogg Vorbis, Ogg Opus,
-FLAC in Ogg; mount point, user, password, public or private listing,
-stream name, description, genre and URL. TLS where the server offers it.
+<li><strong>S1. Icecast 2</strong> (<strong>Built</strong> 2026-10-29)
+(HTTP PUT source protocol, with the legacy SOURCE method for older
+servers): MP3, AAC, Ogg Vorbis, Ogg Opus, FLAC in Ogg; mount point,
+user, password, public or private listing, stream name, description,
+genre and URL. TLS where the server offers it. (M)</li>
+<li><strong>S2. SHOUTcast v1 and v2 (DNAS 2.x)</strong>
+(<strong>Built</strong> 2026-10-29): the v1 password handshake and v2
+stream IDs, MP3 and AAC. Studio carries its own small source client for
+these, because FFmpeg speaks Icecast but not SHOUTcast’s handshake.
 (M)</li>
-<li><strong>S2. SHOUTcast v1 and v2 (DNAS 2.x)</strong>: the v1 password
-handshake and v2 stream IDs, MP3 and AAC. Studio carries its own small
-source client for these, because FFmpeg speaks Icecast but not
-SHOUTcast’s handshake. (M)</li>
-<li><strong>S3. Now-playing metadata</strong>: title and artist sent
-through Icecast’s admin metadata update and SHOUTcast’s
-<code>updinfo</code>, typed by hand, taken from the cart or playlist
-(S9), or from a marker. Ogg streams carry it in-band. (S)</li>
+<li><strong>S3. Now-playing metadata</strong> (<strong>Built</strong>
+2026-10-29, typed by hand): title and artist sent through Icecast’s
+admin metadata update and SHOUTcast’s <code>updinfo</code>, typed by
+hand, taken from the cart or playlist (S9), or from a marker. Ogg
+streams carry it in-band. (S)</li>
 <li><strong>S4. Several destinations at once</strong> (BCAST-015):
 Icecast and SHOUTcast together, each with its own format and bit rate,
 each with its own status; a failed second destination is never hidden
 behind one green light. (M)</li>
-<li><strong>S5. Reconnect without leaving dead air</strong>: automatic
-reconnect with back-off, a spoken notice once, a marker, and the local
-archive keeps recording through the outage. (S)</li>
+<li><strong>S5. Reconnect without leaving dead air</strong>
+(<strong>Built</strong> 2026-10-29): automatic reconnect with back-off,
+a spoken notice once, a marker, and the local archive keeps recording
+through the outage. (S)</li>
 <li><strong>S6. Listener confidence check</strong> (BCAST, VERIFY-006):
 Studio connects to its own public stream as a listener, measures the
 delay, and confirms the far end carries sound, not silence; “Verified
@@ -801,8 +804,9 @@ with external loopback”. (S)</li>
 <li><strong>S7. Listener statistics</strong> on request: current and
 peak listeners from the server’s status page, spoken when asked.
 (S)</li>
-<li><strong>S8. Archive while streaming</strong>: the same Stream bus
-mix saved locally, with the recording’s after-check. (S)</li>
+<li><strong>S8. Archive while streaming</strong> (<strong>Built</strong>
+2026-10-29 as an optional FLAC copy): the same Stream bus mix saved
+locally, with the recording’s after-check. (S)</li>
 <li><strong>S9. A small show kit, not an editor</strong>: a playlist of
 files to play into the stream in order, a cart wall of sound clips on
 keys (PRD 10C, the parts that are playback), a station ID on a timer,
@@ -811,14 +815,17 @@ and talk-over with ducking (M6). (L)</li>
 (YouTube Live, Twitch, Facebook, Teams and Zoom webinar ingest), SRT,
 and WHIP to WebRTC servers, with the Screen and Camera choices from
 section 2. (L)</li>
-<li><strong>S11. Credentials stored safely</strong>: passwords and
-stream keys in Windows Credential Manager through QUILL’s DPAPI store,
-never in settings JSON, never in logs (redaction), never in exported
-setups. (S)</li>
-<li><strong>S12. Consent and audit</strong>: every server is a network
-destination the user typed; each connection goes through QUILL’s network
-egress audit; Safe Mode does not block local recording but does block
-streaming unless confirmed. (S)</li>
+<li><strong>S11. Credentials stored safely</strong>
+(<strong>Built</strong> 2026-10-29): passwords and stream keys in
+Windows Credential Manager through QUILL’s DPAPI store, never in
+settings JSON, never in logs (redaction), never in exported setups.
+(S)</li>
+<li><strong>S12. Consent and audit</strong> (<strong>Built</strong>
+2026-10-29: reviewed egress entries; every connection is a button the
+person pressed): every server is a network destination the user typed;
+each connection goes through QUILL’s network egress audit; Safe Mode
+does not block local recording but does block streaming unless
+confirmed. (S)</li>
 <li><strong>S13. Relay and listen-in</strong>: optionally re-stream
 another Icecast stream (for example a partner station) into the Stream
 bus with its own level, and Quill Radio can open your own stream from a
@@ -826,9 +833,12 @@ bus with its own level, and Quill Radio can open your own stream from a
 <li><strong>S14. Scheduled shows</strong>: go live at a set time with
 the preflight result kept, end after a set length, and archive if you
 chose to. (M)</li>
-<li><strong>S15. Stream settings, in plain words.</strong> Every setting
-has a plain name first and the technical name beside it only where a
-server’s form uses it:
+<li><strong>S15. Stream settings, in plain words.</strong>
+(<strong>Built in part</strong> 2026-10-29: show details, presets,
+Custom format, bit rate, channels, sample rate, loudness, saved copy,
+private test; date placeholders, delay and per-copy format still to do)
+Every setting has a plain name first and the technical name beside it
+only where a server’s form uses it:
 <ul>
 <li><strong>About the show</strong>: title, description, genre, website,
 and whether the server lists it publicly (“Show this stream in public

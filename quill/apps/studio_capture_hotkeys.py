@@ -21,6 +21,8 @@ RECORDING_HOTKEY_COMMANDS = (
     ("studio.record_mute", "Studio: Mute or unmute the microphone in the recording", False),
     ("studio.record_status", "Studio: Say the recording status", False),
     ("studio.record_emergency_stop", "Studio: Emergency stop and save", False),
+    ("studio.broadcast_mute", "Studio: Mute everything public in the live broadcast", False),
+    ("studio.broadcast_stop", "Studio: Stop the live broadcast", False),
 )
 
 CAPTURE_HOTKEY_COMMANDS = SCREENSHOT_HOTKEY_COMMANDS + RECORDING_HOTKEY_COMMANDS

@@ -595,3 +595,70 @@ def test_picture_request_refused_when_provider_cannot_draw(parent, monkeypatch):
     host._request_picture(["A cover"], "square", lambda *_a: None, failures.append)
     assert failures == ["No picture was made."]
     assert "does not make pictures" in host.spoken[0]
+
+
+def test_go_live_window_builds_settings_and_gates_on_the_check(parent):
+    from quill.core.streaming import StreamSettings, StreamSource
+    from quill.ui.studio_go_live import GoLiveDialog
+
+    sources = (
+        StreamSource("microphone", "Microphone"),
+        StreamSource("screen-reader", "Screen reader speech", is_screen_reader=True),
+    )
+    answers = {"confirm": False}
+    checks = []
+    dialog = GoLiveDialog(
+        parent,
+        StreamSettings(host="radio.example.org", sources=sources),
+        "pw",
+        check=lambda s, p, done: checks.append((s, p, done)),
+        test=lambda s, p: None,
+        confirm=lambda text, title: answers["confirm"],
+    )
+    try:
+        dialog.list.Select(0)
+        dialog.toggle()
+        dialog.list.Select(1)
+        dialog.toggle()  # refused: the screen reader stays out
+        assert [s.on for s in dialog.sources] == [True, False]
+        answers["confirm"] = True
+        dialog.toggle()
+        assert dialog.sources[1].on
+        dialog.quality.SetSelection(0)  # Speech
+        dialog._quality_changed(None)
+        assert not dialog.bitrate.IsEnabled()
+        settings = dialog.build()
+        assert settings.host == "radio.example.org" and settings.effective.bitrate == 64
+        dialog._on_check(None)
+        _s, password, done = checks[0]
+        assert password == "pw"
+        done("Stop: something.", False)
+        assert not dialog.go.IsEnabled()
+        done("Fine.", True)
+        assert dialog.go.IsEnabled() and dialog.checked is not None
+        dialog.title_field.SetValue("Changed")
+        dialog._stale(None)
+        assert not dialog.go.IsEnabled()
+    finally:
+        dialog.Destroy()
+
+
+def test_stream_check_and_mute_from_studio(parent):
+    from quill.core.streaming import StreamSettings, StreamSource
+
+    host = Host(parent)
+    results = []
+    settings = StreamSettings(
+        host="h.example", sources=(StreamSource("microphone", "Mic", on=True),)
+    )
+    host._check_stream(settings, "", lambda text, ok: results.append((text, ok)))
+    assert results[0][1] is False and "No password" in results[0][0]
+    host.mute_broadcast()
+    assert host.spoken[-1] == "Nothing is being broadcast."
+    live = SimpleNamespace(
+        mixer=SimpleNamespace(public_muted=False),
+        set_public_muted=lambda muted: setattr(live.mixer, "public_muted", muted),
+    )
+    host._live = live
+    host.mute_broadcast()
+    assert live.mixer.public_muted and host.spoken[-1] == "Everything public is muted."

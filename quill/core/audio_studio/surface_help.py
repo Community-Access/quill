@@ -92,6 +92,20 @@ PURPOSES: dict[str, str] = {
         "for changes in words and press it again; every version is kept with a description "
         "from a separate look by your vision model. Every request is approved first."
     ),
+    "Broadcast live": (
+        "Stream to an Icecast or SHOUTcast server. Fill in the server, the show and the "
+        "sound quality, choose what goes into the stream (your screen reader starts left "
+        "out), and whether to save a copy. Press Check; Go live is available when nothing "
+        "stops it. Test the connection privately first if you like."
+    ),
+    "Live broadcast": (
+        "The show on air: its status, the now-playing title, Mute everything public (listeners "
+        "hear silence at once) and Stop broadcasting. Closing this window hides it."
+    ),
+    "Screen reader in the stream": (
+        "Confirm putting your screen reader's speech in the stream: listeners hear everything "
+        "it says while you are live."
+    ),
     "Studio Mixer": (
         "Every program's sound and every sound card in one window. Programs: each "
         "program's volume, mute and the sound card it plays on, as Windows Settings does. "

@@ -589,12 +589,14 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | --- | --- | --- |
 | Ctrl+Alt+Shift+B | Record marker | `studio.record_marker` |
 | Ctrl+Alt+Shift+C | Camera check | `studio.camera_check` |
+| Ctrl+Alt+Shift+E | Broadcast stop | `studio.broadcast_stop` |
 | Ctrl+Alt+Shift+End | Record emergency stop | `studio.record_emergency_stop` |
 | Ctrl+Alt+Shift+F4 | Capture selected | `studio.capture_selected` |
 | Ctrl+Alt+Shift+F5 | Capture active | `studio.capture_active` |
 | Ctrl+Alt+Shift+F6 | Capture desktop | `studio.capture_desktop` |
 | Ctrl+Alt+Shift+F7 | Record recover | `studio.record_recover` |
 | Ctrl+Alt+Shift+F9 | Record discard | `studio.record_discard` |
+| Ctrl+Alt+Shift+G | Broadcast | `studio.broadcast` |
 | Ctrl+Alt+Shift+H | Capture hotkeys | `studio.capture_hotkeys` |
 | Ctrl+Alt+Shift+I | Inspect capture | `studio.inspect_capture` |
 | Ctrl+Alt+Shift+J | Make picture | `studio.make_picture` |
@@ -609,6 +611,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+W | Record window | `studio.record_window` |
 | Ctrl+Alt+Shift+X | Cancel capture | `studio.cancel_capture` |
 | Ctrl+Alt+Shift+Y | Picture video | `studio.picture_video` |
+| Ctrl+Alt+Shift+Z | Broadcast mute | `studio.broadcast_mute` |
 
 ## Quill Radio (app keys)
 
