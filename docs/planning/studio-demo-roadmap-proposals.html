@@ -354,21 +354,34 @@ restored afterwards</td>
 </tr>
 </tbody>
 </table>
-<h2 id="where-things-stand-tonight">Where things stand tonight</h2>
-<p><strong>Built</strong> in <code>S:\QUILL-demo</code>, branch
-<code>feat/studio-demo-recording</code>, not committed yet: screen,
-sound and camera recording to one checked MP4; per-source sound with the
-screen reader private by default; system sound without the screen
-reader; Sounds you hear (per-program mute and volume for the listener);
-camera overlay with on-device face framing advice; the spoken check;
-5-second test; pause, markers, microphone mute, status, emergency stop,
-discard and crash recovery; the independent after-check with Verified,
-Needs review and Failed; user guide, changelogs and PRD 7A.7. 116
-feature tests pass; the four modules that were over GATE-11’s size
-budget are split; the full gate scorecard is rerunning.</p>
-<p>Not verified: a live microphone or camera recording (not allowed
-unattended), a positive face detection with a person in front of the
-camera, screen-reader acceptance, and a 30-minute alignment run.</p>
+<h2 id="where-things-stand-morning-of-2026-10-30">Where things stand
+(morning of 2026-10-30)</h2>
+<p>All of this is on branch <code>feat/studio-demo-recording</code> in
+the worktree <code>S:\QUILL-demo</code>, in 15 commits from
+<code>f2419caa</code>. Nothing is pushed or merged. All 51 repository
+gates pass (<code>python -m quill.tools.platform_report</code>), and 237
+feature and Studio tests pass, including real FFmpeg runs and broadcasts
+to fake Icecast and SHOUTcast servers on this computer.</p>
+<p><strong>Built:</strong> every combination of screen, camera and sound
+(R1 to R4); Do Not Disturb and keep awake (P7); the quick test as a
+rehearsal of up to 10 minutes and the long-recording checks (P2, P3 in
+part); the Studio Mixer with each program’s volume, mute and sound card,
+and the Devices tab (M1, M2); ASIO inputs, opt-in (M13 in part); a
+picture and sound as a YouTube video (V3, V4 in part); captions and a
+transcript beside a recording (A5); asking AI about the whole video or a
+stretch (A1 in part); making a picture with AI (V1); broadcasting to
+Icecast and SHOUTcast with a stream-only mix (S1, S2, S3, S5, S8, S11,
+S12, S15 in part).</p>
+<p><strong>Not yet verified, and needed before release:</strong> a real
+recording with the microphone and camera (not opened unattended); face
+detection with a person in front of the camera; JAWS, NVDA, Narrator and
+braille passes; a real Icecast or SHOUTcast server; a real picture
+request (tests use stand-ins, so no charge was made); the ASIO SDK
+notice in <code>docs/legal</code>; a 30-minute alignment run.</p>
+<p><strong>Getting to main:</strong> <code>main</code> takes changes
+only through a pull request with green checks. The branch is ready for
+one; it was not opened overnight because of the unverified items above
+and because opening it publishes the branch.</p>
 <h2 id="1-kernel-mode-drivers-do-we-need-one">1. Kernel-mode drivers: do
 we need one?</h2>
 <p><strong>Short answer: no, for everything in this document except one

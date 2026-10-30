@@ -24,11 +24,15 @@ Every item has an ID so a review can say "yes R1 to R6, later D4, no X2". Effort
 | Language | Simple and understandable for users everywhere: plain words first, technical names only where a user needs them to match a server's settings | 2026-10-29 |
 | Do Not Disturb and keep awake | **Must have.** Both are options in every recording and stream, on by default for recordings planned over 15 minutes, and always restored afterwards | 2026-10-29 |
 
-## Where things stand tonight
+## Where things stand (morning of 2026-10-30)
 
-**Built** in `S:\QUILL-demo`, branch `feat/studio-demo-recording`, not committed yet: screen, sound and camera recording to one checked MP4; per-source sound with the screen reader private by default; system sound without the screen reader; Sounds you hear (per-program mute and volume for the listener); camera overlay with on-device face framing advice; the spoken check; 5-second test; pause, markers, microphone mute, status, emergency stop, discard and crash recovery; the independent after-check with Verified, Needs review and Failed; user guide, changelogs and PRD 7A.7. 116 feature tests pass; the four modules that were over GATE-11's size budget are split; the full gate scorecard is rerunning.
+All of this is on branch `feat/studio-demo-recording` in the worktree `S:\QUILL-demo`, in 15 commits from `f2419caa`. Nothing is pushed or merged. All 51 repository gates pass (`python -m quill.tools.platform_report`), and 237 feature and Studio tests pass, including real FFmpeg runs and broadcasts to fake Icecast and SHOUTcast servers on this computer.
 
-Not verified: a live microphone or camera recording (not allowed unattended), a positive face detection with a person in front of the camera, screen-reader acceptance, and a 30-minute alignment run.
+**Built:** every combination of screen, camera and sound (R1 to R4); Do Not Disturb and keep awake (P7); the quick test as a rehearsal of up to 10 minutes and the long-recording checks (P2, P3 in part); the Studio Mixer with each program's volume, mute and sound card, and the Devices tab (M1, M2); ASIO inputs, opt-in (M13 in part); a picture and sound as a YouTube video (V3, V4 in part); captions and a transcript beside a recording (A5); asking AI about the whole video or a stretch (A1 in part); making a picture with AI (V1); broadcasting to Icecast and SHOUTcast with a stream-only mix (S1, S2, S3, S5, S8, S11, S12, S15 in part).
+
+**Not yet verified, and needed before release:** a real recording with the microphone and camera (not opened unattended); face detection with a person in front of the camera; JAWS, NVDA, Narrator and braille passes; a real Icecast or SHOUTcast server; a real picture request (tests use stand-ins, so no charge was made); the ASIO SDK notice in `docs/legal`; a 30-minute alignment run.
+
+**Getting to main:** `main` takes changes only through a pull request with green checks. The branch is ready for one; it was not opened overnight because of the unverified items above and because opening it publishes the branch.
 
 ## 1. Kernel-mode drivers: do we need one?
 
