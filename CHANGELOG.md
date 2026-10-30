@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### QUILL Studio: record, mix, broadcast and make videos (2026-10-30)
+
+- Add demonstration recording to the shared Studio implementation: the screen, a camera and any chosen sounds, in any combination, with a spoken check before you start, keep awake and Do Not Disturb, and an independent check of the finished file. Your screen reader can be kept out of the recording.
+- Add the Studio Mixer (each program's volume, mute and sound card, plus default devices and recording levels), optional ASIO inputs, a YouTube video from a picture and sound, Ask AI about a video, New picture with AI (OpenAI or Google Gemini), and live broadcasting to Icecast or SHOUTcast with its own mix. The [Studio changelog](standalone/studio/docs/CHANGELOG.md) lists every feature, what is still pending and what has not been verified live.
+- Shared changes: Windows process loopback can now leave out a program as well as record one, and can record a whole sound card; captions can be saved beside any recording; the shared sound manager can be muted. Existing behavior is unchanged.
+
 ### Windows runtime, media shutdown and licensing (2026-10-27)
 
 - Move the Windows OCR and Media projections to PyWinRT 4.0.3 with the
