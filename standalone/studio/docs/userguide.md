@@ -749,9 +749,14 @@ If nothing at all is chosen, the check says so and recording cannot start.
 
 **Level of the selected source** sets how loud that row is in the recording, from minus 60 to plus 12 decibels.
 
-### Sounds you hear
+### The Studio Mixer
 
-**Sounds you hear** (also in the Capture menu, Ctrl+Alt+Shift+M) is a different thing: it mutes or unmutes what *you* hear from any program, or sets its volume, the way the Windows volume mixer does. Space mutes or unmutes the program you are on. A program muted here is silent for you and for any recording of the system sound, and Windows remembers it until you unmute it.
+**Capture > Studio Mixer** (Ctrl+Alt+Shift+M, or **Mixer: sounds you hear** in the Record a demonstration window) changes what *you* hear, not just what is recorded. It has two tabs; Ctrl+Tab moves between them.
+
+- **Programs** lists every program playing sound: whether you hear it and how loud, whether it is playing now, and which sound card it plays on. Space mutes or unmutes the program you are on. **Volume** sets it from 0 to 100 percent (Up and Down by 1, Page Up and Page Down by 10). **Sound card** moves the program to another card, for example a browser to the speakers while your screen reader stays in your headset, exactly as Windows Settings does; choose **Windows default** to send it back. Windows remembers these choices.
+- **Devices** lists your playback and recording devices. **Make default** and **Make communications device** change what Windows uses; for a microphone, **Recording level** and **Mute this input** set how it records for every program.
+
+A program muted here is silent for you and for any recording of the system sound.
 
 ### The camera
 

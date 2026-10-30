@@ -76,10 +76,11 @@ PURPOSES: dict[str, str] = {
         "view and centred, and which way to move. Face detection runs on this computer; "
         "nothing is recorded or saved."
     ),
-    "Sounds you hear": (
-        "Programs playing sound now. Mute or unmute any of them for you, or set its "
-        "volume, as the Windows volume mixer does. A program muted here is also silent "
-        "in any recording of the system sound."
+    "Studio Mixer": (
+        "Every program's sound and every sound card in one window. Programs: each "
+        "program's volume, mute and the sound card it plays on, as Windows Settings does. "
+        "Devices: choose the default and communications devices, and set a microphone's "
+        "level and mute. Ctrl+Tab moves between the tabs."
     ),
     "Add a program's sound": (
         "Choose a program that is playing sound to add as a sound source of its own."

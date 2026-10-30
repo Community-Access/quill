@@ -177,7 +177,7 @@ class RecordDemoDialog(DemoSourcesMixin, DemoPictureMixin, wx.Dialog):
         self.remove.SetHelpText("Remove a program you added. Built-in sources cannot be removed.")
         self.remove.Bind(wx.EVT_BUTTON, self._remove_program)
         buttons.Add(self.remove, 0, wx.RIGHT, 8)
-        hear = wx.Button(panel, label="Sounds you &hear...")
+        hear = wx.Button(panel, label="Mixer: sounds you &hear...")
         hear.SetHelpText(
             "Mute or unmute what you hear from any program, as the Windows volume mixer does. "
             "A program you mute there is silent for you and for every recording."

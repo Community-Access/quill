@@ -267,29 +267,57 @@ def test_status_frame_updates_and_close_only_hides(wx_session_app):
         frame.finish()
 
 
-def test_sounds_you_hear_mutes_with_space(parent, monkeypatch):
-    from quill.platform.windows import audio_sessions
-    from quill.ui.studio_demo_sounds import SoundsYouHearDialog
+def test_mixer_mutes_sets_volume_and_moves_a_program(parent, monkeypatch):
+    from quill.platform.windows import audio_routing, audio_sessions
+    from quill.ui.studio_mixer import StudioMixerDialog
 
     session = audio_sessions.AudioSession(321, "vlc.exe", False, 0.8, 0.2)
-    changes = []
+    speakers = audio_routing.AudioDevice("{spk}", "Speakers", 0, True, True)
+    headset = audio_routing.AudioDevice("{hs}", "Headset", 0)
+    mic = audio_routing.AudioDevice("{mic}", "Microphone", 1, True, True)
+    calls = []
     monkeypatch.setattr(audio_sessions, "list_sessions", lambda: [session])
     monkeypatch.setattr(
-        audio_sessions, "set_process_mute", lambda pid, muted: changes.append((pid, muted)) or 1
+        audio_sessions, "set_process_mute", lambda pid, muted: calls.append(("mute", pid, muted))
     )
     monkeypatch.setattr(
-        audio_sessions, "set_process_volume", lambda pid, level: changes.append((pid, level)) or 1
+        audio_sessions, "set_process_volume", lambda pid, level: calls.append(("vol", pid, level))
     )
-    dialog = SoundsYouHearDialog(parent, announce=lambda _t: None)
+    monkeypatch.setattr(
+        audio_routing,
+        "list_devices",
+        lambda flow=0: [speakers, headset] if flow == audio_routing.RENDER else [mic],
+    )
+    monkeypatch.setattr(audio_routing, "app_output", lambda pid: "")
+    monkeypatch.setattr(
+        audio_routing, "set_app_output", lambda pid, device: calls.append(("card", pid, device))
+    )
+    monkeypatch.setattr(audio_routing, "input_level", lambda device: (0.5, False))
+    monkeypatch.setattr(
+        audio_routing,
+        "set_default_device",
+        lambda device, communications=False: calls.append(("default", device, communications)),
+    )
+    dialog = StudioMixerDialog(parent, announce=lambda _t: None)
     try:
-        assert dialog.list.GetItemText(0, 1) == "Yes, 80 percent"
-        assert dialog.list.GetItemText(0, 2) == "Playing"
-        dialog._toggle()
-        assert changes == [(321, True)]
-        assert dialog.list.GetItemText(0, 1) == "Muted"
+        assert dialog.programs.GetItemText(0, 1) == "Yes, 80 percent"
+        assert dialog.programs.GetItemText(0, 3) == "Windows default"
+        dialog._toggle_mute()
+        assert dialog.programs.GetItemText(0, 1) == "Muted"
         dialog.volume.SetValue(50)
         dialog._volume_changed(None)
-        assert changes[-1] == (321, 0.5)
+        dialog.card.SetSelection(2)  # Headset
+        dialog._card_changed(None)
+        assert dialog.programs.GetItemText(0, 3) == "Headset"
+        dialog.playback.Select(1)
+        dialog._make_default(0, False)
+        assert calls == [
+            ("mute", 321, True),
+            ("vol", 321, 0.5),
+            ("card", 321, "{hs}"),
+            ("default", "{hs}", False),
+        ]
+        assert dialog.recording.GetItemText(0, 2) == "50 percent"
     finally:
         dialog.Destroy()
 

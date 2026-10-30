@@ -597,7 +597,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+F9 | Record discard | `studio.record_discard` |
 | Ctrl+Alt+Shift+H | Capture hotkeys | `studio.capture_hotkeys` |
 | Ctrl+Alt+Shift+I | Inspect capture | `studio.inspect_capture` |
-| Ctrl+Alt+Shift+M | Sounds you hear | `studio.sounds_you_hear` |
+| Ctrl+Alt+Shift+M | Mixer | `studio.mixer` |
 | Ctrl+Alt+Shift+O | Open capture | `studio.open_capture` |
 | Ctrl+Alt+Shift+P | Record pause | `studio.record_pause` |
 | Ctrl+Alt+Shift+S | Capture | `studio.capture` |

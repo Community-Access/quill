@@ -1110,7 +1110,7 @@ Control coverage: 39 audited sites (26 helped, 13 named-help).
 
 ## QUILL Studio
 
-Control coverage: 239 audited sites (11 help-elsewhere, 228 helped).
+Control coverage: 245 audited sites (11 help-elsewhere, 234 helped).
 
 ### Every window, and what it is for
 
@@ -1178,9 +1178,9 @@ Control coverage: 239 audited sites (11 help-elsewhere, 228 helped).
 
 **Sleep Timer.** Stop playback by itself. Turn the timer on and give it a delay in minutes, or choose to stop at the end of the current chapter instead. It fires once and then turns itself off -- arming it again is a fresh visit here.
 
-**Sounds you hear.** Programs playing sound now. Mute or unmute any of them for you, or set its volume, as the Windows volume mixer does. A program muted here is also silent in any recording of the system sound.
-
 **Speech Settings.** The Speech Hub: every speech engine and voice in one place -- preview them, download the offline ones, and set the defaults. What you choose here is shared with QUILL and the other Quill apps, so a voice configured once reads everywhere.
+
+**Studio Mixer.** Every program's sound and every sound card in one window. Programs: each program's volume, mute and the sound card it plays on, as Windows Settings does. Devices: choose the default and communications devices, and set a microphone's level and mute. Ctrl+Tab moves between the tabs.
 
 **Tag Editor.** Every tag this audio file can carry, over five pages: the main fields, the details, publishing credits, sort-order fields, and the cover art. Control+Tab moves between pages. Nothing is written until you press OK and then save -- this window hands the edit back, it never touches the file itself. It is the same editor QUILL Audio Studio and podHarvest both show, from the same table, so a file edited in either reads back unchanged in the other.
 

@@ -861,7 +861,7 @@
   "quill/ui/studio_demo_camera.py::CameraCheckDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/studio_demo_dialog.py::RecordDemoDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/studio_demo_result.py::DemoResultDialog::subclass:wx.Dialog": "hardened_custom",
-  "quill/ui/studio_demo_sounds.py::SoundsYouHearDialog::subclass:wx.Dialog": "hardened_custom",
+  "quill/ui/studio_mixer.py::StudioMixerDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/ui/support_dialog.py::_SupportDialog.show::wx.Dialog": "hardened_custom",
   "quill/ui/sync_places_dialog.py::SyncPlacesDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/sync_places_dialog.py::SyncPlacesDialog.browse::wx.DirDialog": "native",

@@ -64,7 +64,7 @@ class StudioDemoMixin(StudioDemoSetupMixin, StudioDemoFinishMixin):
                 self.recover_demonstrations,
             ),
             ("studio.camera_check", "Check camera &framing...", self.check_camera_framing),
-            ("studio.sounds_you_hear", "Sounds &you hear...", self.open_sounds_you_hear),
+            ("studio.mixer", "Studio Mi&xer...", self.open_mixer),
         )
 
     def _append_demo_menu(self, capture: wx.Menu) -> list:
@@ -254,7 +254,7 @@ class StudioDemoMixin(StudioDemoSetupMixin, StudioDemoFinishMixin):
             camera_check=lambda device, mirrored: self._camera_check_dialog(
                 ffmpeg, device, mirrored
             ),
-            sounds=self.open_sounds_you_hear,
+            sounds=self.open_mixer,
             assign_keys=self.open_capture_hotkeys,
             choose_program=self._choose_program,
             list_targets=lambda: list_capture_targets(include_all_windows=False),

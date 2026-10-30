@@ -134,13 +134,13 @@ class StudioDemoSetupMixin:
             ffmpeg, device if device in cameras else cameras[0], bool(camera.get("mirrored"))
         )
 
-    def open_sounds_you_hear(self) -> None:
-        from quill.ui.studio_demo_sounds import SoundsYouHearDialog
+    def open_mixer(self) -> None:
+        from quill.ui.studio_mixer import StudioMixerDialog
 
         parent = getattr(self, "_demo_dialog", None) or self.frame
-        dialog = SoundsYouHearDialog(parent, announce=self._announce)
+        dialog = StudioMixerDialog(parent, announce=self._announce)
         try:
-            self._show_modal_dialog(dialog, "Sounds you hear")
+            self._show_modal_dialog(dialog, "Studio Mixer")
         finally:
             dialog.Destroy()
 

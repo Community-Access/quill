@@ -51,7 +51,7 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         "studio.camera_check": "Ctrl+Alt+Shift+C",
         # MX-150 proposes Ctrl+Alt+M for the mixer; the three-modifier form
         # keeps Studio's capture keys one family.
-        "studio.sounds_you_hear": "Ctrl+Alt+Shift+M",
+        "studio.mixer": "Ctrl+Alt+Shift+M",
     },
     "radio": {
         # Quick-play favorites. These were Ctrl+Alt+Shift+1..0 in
