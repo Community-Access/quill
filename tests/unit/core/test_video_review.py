@@ -10,6 +10,7 @@ from quill.core.demo_recording import DemoRecordingError
 from quill.core.video_review import (
     Section,
     frame_times,
+    frame_width,
     grid,
     parse_time,
     question_prompt,
@@ -66,3 +67,16 @@ def test_prompt_says_what_the_picture_is_and_asks_for_times():
     assert "cite the frame times" in prompt and "Transcript of the same stretch" in prompt
     whole = question_prompt(Path("Demo.mp4"), Section(0, 60), [30.0], "")
     assert "the whole video" in whole and "Transcript" not in whole
+
+
+def test_fewer_frames_are_drawn_bigger_and_no_sheet_outgrows_a_provider():
+    # Shrinking a picture until a model takes it invents text (Kelly Ford's Quick Describe).
+    assert frame_width(4) == 960 and frame_width(9) == 682 and frame_width(16) == 512
+    for count in (4, 6, 9, 12, 16):
+        assert grid(count)[0] * frame_width(count) <= 2048
+
+
+def test_the_prompt_asks_for_honesty_about_small_text_and_gaps():
+    prompt = question_prompt(Path("Demo.mp4"), Section(0, 60), [30.0], "")
+    assert "say so instead of guessing" in prompt
+    assert "between two frames" in prompt

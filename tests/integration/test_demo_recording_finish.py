@@ -225,7 +225,7 @@ def test_picture_and_sound_make_a_checked_youtube_video(tmp_path, options):
 def test_contact_sheet_from_a_real_video(tmp_path):
     from PIL import Image
 
-    from quill.core.video_review import Section
+    from quill.core.video_review import Section, frame_width
     from quill.platform.windows.video_review import contact_sheet
 
     video = tmp_path / "clip.mkv"
@@ -234,4 +234,4 @@ def test_contact_sheet_from_a_real_video(tmp_path):
     times = contact_sheet(FFMPEG, video, Section(0, 4), 4, sheet)
     assert len(times) == 4
     with Image.open(sheet) as image:
-        assert image.size[0] == 2 * 480
+        assert image.size[0] == 2 * frame_width(4)

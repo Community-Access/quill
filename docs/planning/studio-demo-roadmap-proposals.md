@@ -32,6 +32,8 @@ All of this is on branch `feat/studio-demo-recording` in the worktree `S:\QUILL-
 
 **Not yet verified, and needed before release:** a real recording with the microphone and camera (not opened unattended); face detection with a person in front of the camera; JAWS, NVDA, Narrator and braille passes; a real Icecast or SHOUTcast server; a real picture request (tests use stand-ins, so no charge was made); the ASIO SDK notice in `docs/legal`; a 30-minute alignment run.
 
+**Lessons adopted from Quick Describe (2026-10-30):** Kelly Ford's [Quick Describe](https://github.com/TheIdeaPlace/QuickDescribe) records what it learned the hard way, and Studio took these, with thanks to Kelly for the ideas and for all Kelly gives to the community: the Recording status window can stay visible to magnifiers and screen sharing; Ask AI about a video draws fewer frames bigger, labels times legibly, and tells the AI not to guess at small text or at what happened between frames; a stalled face detector is replaced and gives up out loud after three failures; a paused automatic screenshot AI is said once; diagnostic bundles replace the user name as a whole word; and a test catches text garbled by a wrong encoding. Still to consider from the same source: capturing the area around the focused control, Windows' on-device image description on Copilot+ PCs through a small packaged helper, and a hotkey check that refuses modifier sets which take keys from every program.
+
 **Getting to main:** `main` takes changes only through a pull request with green checks. The branch is ready for one; it was not opened overnight because of the unverified items above and because opening it publishes the branch.
 
 ## 1. Kernel-mode drivers: do we need one?

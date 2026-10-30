@@ -455,7 +455,11 @@ class StudioDemoMixin(
     def _exclude_studio_windows(self, exclude: bool) -> None:
         from quill.platform.windows.screen_recorder_check import exclude_from_capture
 
-        exclude_from_capture([int(w.GetHandle()) for w in wx.GetTopLevelWindows() if w], exclude)
+        demo = getattr(self, "_demo", None)
+        shown = demo is not None and demo.plan.show_status_window
+        visible = getattr(self, "_demo_status", None) if shown else None
+        windows = [w for w in wx.GetTopLevelWindows() if w and w is not visible]
+        exclude_from_capture([int(w.GetHandle()) for w in windows], exclude)
 
     def _open_demo_status(self) -> None:
         from quill.ui.studio_demo_status import RecordingStatusFrame

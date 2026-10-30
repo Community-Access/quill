@@ -1487,6 +1487,7 @@ Control coverage: 296 audited sites (11 help-elsewhere, 285 helped).
 - `self.stems`: Beside the video, keep one WAV per sound source for later editing.
 - `self.keep_awake`: Stop the computer sleeping, the screen turning off and the screen saver starting while you record or stream. Released as soon as you stop.
 - `self.do_not_disturb`: Silence Windows notifications so none slides into the picture or the sound. Studio puts Do Not Disturb back the way it was when you stop, even after a crash.
+- `self.show_status`: Studio keeps its windows out of the recording, which can also hide them from a magnifier and from screen sharing. Check this to keep the Recording status window visible; it is then recorded too if it is inside what you record.
 - `self.silent_track`: Some websites refuse a video with no soundtrack. On adds a silent one when no sound source is in the recording; off leaves the soundtrack out.
 - `self.sound_format`: The kind of file Studio saves when there is no picture, only sound. M4A suits most uses; WAV and FLAC keep every detail; Opus is smallest for speech.
 - `self.check_button`: Check everything before recording: the target, a trial picture, each sound source, the microphone, the camera, FFmpeg, the folder and its free space. The result appears below and is read once.

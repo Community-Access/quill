@@ -75,6 +75,10 @@ Professional audio interfaces with an ASIO driver can be used as microphones wit
 - **Keeps going.** A dropped connection is announced once and retried automatically. An optional FLAC copy of the show is saved on your computer throughout; you decide each time.
 - **Your password stays private.** It is kept in Windows Credential Manager, never in settings or logs.
 
+## Lessons from Quick Describe, with thanks to Kelly Ford
+
+Kelly Ford's Quick Describe, a free, open-source app that describes the screen with Windows' own AI, shares what it learned the hard way, and Studio took several of those lessons. The Recording status window can now stay visible to magnifiers and screen sharing. Ask AI about a video draws fewer frames bigger, labels their times clearly, and tells the AI to say when text is too small rather than guess. A face detector that stops answering is replaced, and gives up out loud rather than going quiet. "Automatic screenshot AI is paused" is said once, not with every screenshot. Diagnostic bundles leave out your user name. Thank you, Kelly, for the ideas and for all you give to the community.
+
 ## Not yet verified
 
 These features are built and tested with real FFmpeg runs and with stand-in servers and services, but the following have not yet been done: recordings with a real microphone and camera, face detection with a person in front of the camera, JAWS, NVDA, Narrator and braille passes, a real Icecast or SHOUTcast server, and a real AI picture request. A window recording records the window's area of the screen, so a covering window is recorded and a moved window is not followed.

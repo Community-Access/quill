@@ -420,11 +420,17 @@ class StudioCaptureMixin(StudioDemoMixin, StudioCaptureHotkeysMixin):
         if not auto_ai_allowed(
             preferences, connection, ai_enabled=load_ai_enabled(), safe_mode=self._safe_mode
         ):
-            self._announce(
-                "Automatic screenshot AI is paused. "
-                "AI is disabled or the approved connection changed."
-            )
+            # Said once, not with every screenshot, until it can run again: a
+            # limitation repeated with each result is noise (Kelly Ford's Quick
+            # Describe learned this on PCs that cannot describe pictures).
+            if not getattr(self, "_auto_ai_pause_said", False):
+                self._auto_ai_pause_said = True
+                self._announce(
+                    "Automatic screenshot AI is paused. AI is disabled or the approved "
+                    "connection changed. Screenshots are still saved; this is said once."
+                )
             return
+        self._auto_ai_pause_said = False
         instructions = capture_prompt(
             preferences.get("prompt_id", "screen-overview"), load_settings()
         )

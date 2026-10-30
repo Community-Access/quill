@@ -42,6 +42,12 @@ logger = logging.getLogger(__name__)
 
 _NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)
 
+FACE_FAILURES_BEFORE_GIVING_UP = 3
+FACE_DETECTION_STOPPED = (
+    "Face detection stopped answering, so framing advice has stopped. "
+    "Close the camera check and open it again, or restart the computer if it keeps happening."
+)
+
 
 def probe_capabilities(ffmpeg: str) -> Capabilities:
     """What this FFmpeg can actually do -- probed, never assumed (REC-009)."""
@@ -238,6 +244,11 @@ class FaceWatcher:
             self.error = str(error)
             self.on_framing(Framing(0, f"Face detection is unavailable: {error}"))
             return
+        # A detector that stops answering is replaced, not asked again, and after
+        # three failures in a row the advice stops with one sentence rather than
+        # going quiet. Learned from Kelly Ford's Quick Describe, whose Windows AI
+        # helper kept reporting itself ready while it had stopped answering.
+        failures = 0
         try:
             while not self._stop.is_set():
                 self._ready.wait(1.0)
@@ -249,7 +260,17 @@ class FaceWatcher:
                     boxes = detector.detect(frame, width, height)
                 except FaceDetectionError as error:
                     self.error = str(error)
+                    failures += 1
+                    detector.close()
+                    try:
+                        if failures >= FACE_FAILURES_BEFORE_GIVING_UP:
+                            raise FaceDetectionError(str(error))
+                        detector = FaceDetector()
+                    except FaceDetectionError:
+                        self.on_framing(Framing(0, FACE_DETECTION_STOPPED))
+                        return
                     continue
+                failures = 0
                 self.on_framing(framing(boxes, width, height, mirrored=self.mirrored))
         finally:
             detector.close()

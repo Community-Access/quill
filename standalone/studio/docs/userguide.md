@@ -587,6 +587,10 @@ The same file, THIRD-PARTY-NOTICES.txt, and QUILL Studio's own licence, LICENSE.
 are also in the folder where QUILL Studio is installed or unpacked, so you can open
 them without starting the app.
 
+## Thanks
+
+Several things in Studio's recording and screenshot features come from lessons Kelly Ford shared in [Quick Describe](https://github.com/TheIdeaPlace/QuickDescribe), a free, open-source app that describes the screen with Windows' own AI. Among them: keeping the Recording status window visible to magnifiers, drawing fewer video frames bigger so the AI guesses less, replacing a face detector that stops answering, saying a lasting limitation once rather than with every result, and keeping your user name out of diagnostic bundles. Thank you, Kelly, for the ideas and for all you give to the community.
+
 ## Troubleshooting
 
 Two Help items are worth knowing before anything else goes wrong. **Help > View Log...** opens the Studio's own log, so you can read what happened during a run instead of guessing. **Help > Save Diagnostics...** writes a small, redacted zip - the log plus what the Studio can tell about your machine and settings, with anything private scrubbed - which is exactly what to attach to a bug report. **Help > Get Help from Support...** (Ctrl+Alt+F2) writes to a person for you, already tagged with this app's name and version.
@@ -776,6 +780,8 @@ Check **Include the camera picture** to record your camera as well. Choose the c
 
 With **Tell me when my face leaves the camera view** checked, Studio says so during the recording, and again when you are back. If your screen reader's speech is being recorded, Studio adds a marker instead of speaking, so the announcement does not end up in the video.
 
+If the face detector stops answering, Studio starts a fresh one. After three failures in a row it says "Face detection stopped answering, so framing advice has stopped": close the camera check and open it again, or restart the computer if it keeps happening.
+
 Tips for good framing: sit an arm's length from the camera, put a light in front of you rather than behind you, and run the framing check with the same lighting you will record in.
 
 ### The picture and the file
@@ -790,6 +796,8 @@ Tips for good framing: sit an arm's length from the camera, put a light in front
 ### Keeping the computer awake and notifications quiet
 
 **Keep the computer awake while recording** and **Turn on Do Not Disturb while recording** are both on unless you turn them off. The first stops sleep, the screen turning off and the screen saver. The second silences Windows notifications so none slides into the picture or the sound. When you stop, both go back to exactly how they were: if Do Not Disturb was already on, it stays on. If Studio or the computer stops in the middle, Do Not Disturb is put back the next time Studio starts. If Windows does not let Studio change Do Not Disturb, the check tells you, so you can turn it on yourself from the Windows notification centre.
+
+Studio keeps its own windows out of the recording. Windows does that by hiding them from capture, which can also hide them from a magnifier and from screen sharing. If you use a magnifier, or share your screen during a recording, check **Let magnifiers and screen sharing see the Recording status window**. The window is then recorded too if it is inside what you record, so put it on another display or outside the window you record. The check reminds you when this is on.
 
 ### Check, then start
 
@@ -1007,13 +1015,13 @@ Studio never uploads anything itself.
 
 1. **Video**: the file to ask about; **Browse...** to choose one.
 2. Choose **The whole video**, or **A stretch of it** and set **From** and **To** in minutes and seconds, written like 1:05.
-3. **Number of frames**: how many pictures to take across that stretch: 4, 6, 9, 12 or 16. More frames see more, but cost more and give the AI more to read.
+3. **Number of frames**: how many pictures to take across that stretch: 4, 6, 9, 12 or 16. Fewer frames are drawn bigger, so the AI can read small text better: 4 frames are each 960 pixels wide, 16 are 512. More frames see more moments, but each is smaller.
 4. **Include the transcript of that stretch**, when captions exist beside the video, adds what was said in the same stretch.
 5. Press **Prepare the question**.
 
 Studio takes the frames at even times across the stretch, lays them out as one picture with each frame's time written on it, and opens the same conversation window as the Screenshot Inspector, with a question already describing the picture. Ask your own question, and follow-ups after it. Nothing is sent until you approve it, using your usual AI connection, and Safe Mode blocks it as it blocks screenshot AI. Answers cite the times of the frames they rely on, so you can go to that point in the video.
 
-The AI sees only the frames, not the moving video, so something that appears and disappears between two frames can be missed. Ask about a shorter stretch to look more closely.
+The AI sees only the frames, not the moving video, so something that appears and disappears between two frames can be missed. Ask about a shorter stretch to look more closely. The AI is told to quote text only where it can read it clearly and to say when it is too small, rather than guess; check anything important against the transcript or a frame in the Screenshot Inspector.
 
 ### Worked example: did the error message show?
 

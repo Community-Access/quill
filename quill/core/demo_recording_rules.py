@@ -136,6 +136,11 @@ def tool_findings(plan: DemoPlan, facts: PreflightFacts, stop: Any, warn: Any) -
             "Windows did not let Studio control Do Not Disturb. Turn it on yourself, or "
             "notifications may appear in the recording."
         )
+    if plan.show_status_window and plan.screen:
+        warn(
+            "The Recording status window is left visible to magnifiers and screen sharing, "
+            "so it is recorded too if it is inside what you record."
+        )
     if not plan.do_not_disturb and plan.screen:
         warn("Do Not Disturb is off, so a notification could appear in the picture.")
     if facts.hotkeys_assigned == 0:

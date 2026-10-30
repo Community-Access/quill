@@ -395,6 +395,48 @@ annotation/redaction editing and screenshot comparison; and the later
 video demonstration with optional sound. None is represented as already
 delivered by this milestone.</li>
 </ul>
+<h3
+id="lessons-from-quick-describe-with-thanks-to-kelly-ford-2026-10-30">Lessons
+from Quick Describe, with thanks to Kelly Ford (2026-10-30)</h3>
+<p>Kelly Ford’s <a
+href="https://github.com/TheIdeaPlace/QuickDescribe">Quick Describe</a>,
+a free, open-source app that describes the screen with Windows’ own AI,
+shares what it learned the hard way. Studio adopted these lessons, with
+thanks to Kelly for the ideas and for giving so much to the
+community.</p>
+<ul>
+<li><strong>The Recording status window and magnifiers.</strong> Keeping
+a window out of a recording can also hide it from a magnifier and from
+screen sharing. Record a demonstration has a new check box, Let
+magnifiers and screen sharing see the Recording status window, off by
+default; the check says when it is on, because the window is then
+recorded too if it is inside what you record.</li>
+<li><strong>Ask AI about a video reads more clearly, and guesses
+less.</strong> Fewer frames are now drawn bigger (4 frames at 960 pixels
+wide each, 16 at 512), so no sheet is wider than about 2048 pixels and a
+provider has little reason to shrink it. Frame times are drawn in a
+larger font, so answers can cite them. The AI is told to quote text only
+where it can read it clearly, to say when text is too small, and not to
+describe what happened between frames. Quick Describe found that a
+picture shrunk until a model accepts it comes back with invented
+text.</li>
+<li><strong>A face detector that stops answering is replaced.</strong>
+Check camera framing starts a fresh detector after a failure, and after
+three failures in a row says once that framing advice has stopped,
+instead of going quiet. Quick Describe found that Windows’ AI can report
+itself ready while it has stopped answering.</li>
+<li><strong>“Automatic screenshot AI is paused” is said once,</strong>
+not with every screenshot, until automatic AI can run again. A
+limitation repeated with each result is noise.</li>
+<li><strong>Your user name leaves diagnostic bundles.</strong> Paths
+were already cut at the user folder; now the name on its own is replaced
+too, as a whole word only, so a user called Al does not turn Alt into a
+placeholder.</li>
+<li><strong>No garbled text.</strong> A new test fails if any of the
+app’s text, or any app’s user guide, has text garbled by a wrong
+encoding, such as a dash turned into three characters a screen reader
+reads out one by one.</li>
+</ul>
 <h3 id="record-a-demonstration-2026-10-29">Record a demonstration
 (2026-10-29)</h3>
 <ul>

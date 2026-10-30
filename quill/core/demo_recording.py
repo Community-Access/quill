@@ -152,6 +152,11 @@ class DemoPlan:
     keep_awake: bool = True
     #: Turn on Windows Do Not Disturb while recording, and put it back after.
     do_not_disturb: bool = True
+    #: Leave the Recording status window visible to magnifiers and screen
+    #: sharing. Keeping a window out of a recording hides it from them too, so
+    #: Kelly Ford's Quick Describe keeps a window out only for the moment of a
+    #: capture; a recording lasts longer, so here it is the presenter's choice.
+    show_status_window: bool = False
 
     @property
     def has_picture(self) -> bool:

@@ -387,6 +387,17 @@ class RecordDemoDialog(DemoSourcesMixin, DemoPictureMixin, DemoActionsMixin, wx.
         )
         self.do_not_disturb.Bind(wx.EVT_CHECKBOX, self._stale)
         outer.Add(self.do_not_disturb, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
+        self.show_status = wx.CheckBox(
+            panel, label="Let magnifiers and screen sharing see the Recording status window"
+        )
+        self.show_status.SetValue(bool(preferences.get("show_status_window", False)))
+        self.show_status.SetHelpText(
+            "Studio keeps its windows out of the recording, which can also hide them from a "
+            "magnifier and from screen sharing. Check this to keep the Recording status window "
+            "visible; it is then recorded too if it is inside what you record."
+        )
+        self.show_status.Bind(wx.EVT_CHECKBOX, self._stale)
+        outer.Add(self.show_status, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
         self.silent_track = wx.CheckBox(
             panel, label="Give a video with no sound a silent soundtrack"
         )
@@ -526,6 +537,7 @@ class RecordDemoDialog(DemoSourcesMixin, DemoPictureMixin, DemoActionsMixin, wx.
             silent_track=self.silent_track.GetValue(),
             keep_awake=self.keep_awake.GetValue(),
             do_not_disturb=self.do_not_disturb.GetValue(),
+            show_status_window=self.show_status.GetValue(),
             bounds=target.bounds,
             folder=os.path.expanduser(self.folder.GetValue().strip()),
             window_handle=target.window_handle,

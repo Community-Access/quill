@@ -20,6 +20,12 @@ from pathlib import Path
 from quill.core.demo_recording import DemoRecordingError
 
 FRAME_CHOICES = (4, 6, 9, 12, 16)
+#: The sheet is made about this wide, so a provider that shrinks large pictures
+#: has little to shrink: fewer frames are each drawn bigger rather than the
+#: same size with room to spare. Kelly Ford's Quick Describe found that a
+#: picture shrunk until a model accepts it comes back with invented text.
+SHEET_WIDTH = 2048
+FRAME_WIDTH_RANGE = (480, 960)
 _TIME = re.compile(r"^\s*(?:(\d+):)?(\d{1,2}):(\d{2})(?:\.(\d))?\s*$")
 _SRT_TIME = re.compile(r"(\d+):(\d\d):(\d\d)[,.](\d{3})\s*-->\s*(\d+):(\d\d):(\d\d)[,.](\d{3})")
 
@@ -78,6 +84,13 @@ def grid(count: int) -> tuple[int, int]:
     return columns, rows
 
 
+def frame_width(count: int) -> int:
+    """How wide each frame is drawn on a sheet of *count* frames."""
+    columns, _rows = grid(max(1, count))
+    low, high = FRAME_WIDTH_RANGE
+    return max(low, min(high, SHEET_WIDTH // columns))
+
+
 def transcript_excerpt(srt_text: str, part: Section, limit: int = 6000) -> str:
     """The captions that fall inside *part*, each with its time, from SRT or VTT text."""
     lines: list[str] = []
@@ -117,7 +130,10 @@ def question_prompt(video: Path, part: Section, times: list[float], transcript: 
     lines = [
         f"This picture is a contact sheet of {len(times)} frames from {where} of the video "
         f'"{video.name}", read left to right and top to bottom. Each frame is labelled '
-        "with its time. Answer from what is visible, and cite the frame times you rely on.",
+        "with its time. Answer from what is visible, and cite the frame times you rely on. "
+        "Quote text only where you can read it clearly; when text is too small or blurred, "
+        "say so instead of guessing. Anything that happened between two frames is not "
+        "visible to you, so do not describe it.",
     ]
     if transcript:
         lines += ["", "Transcript of the same stretch, with times:", transcript]

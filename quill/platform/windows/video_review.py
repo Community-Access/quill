@@ -13,21 +13,22 @@ from pathlib import Path
 from typing import Any
 
 from quill.core.demo_recording import DemoRecordingError
-from quill.core.video_review import Section, frame_times, grid, spoken_time
+from quill.core.video_review import Section, frame_times, frame_width, grid, spoken_time
 from quill.stability.safe_subprocess import run_subprocess_safely
 
-_FRAME_WIDTH = 480
+_LABEL_SIZE = 26
 
 
 def contact_sheet(
     ffmpeg: str, video: Path, part: Section, count: int, destination: Path, cancellation: Any = None
 ) -> list[float]:
     """Write the sheet to *destination*; return the frame times it shows."""
-    from PIL import Image, ImageDraw
+    from PIL import Image, ImageDraw, ImageFont
 
     times = frame_times(part, count)
     if not times:
         raise DemoRecordingError("That stretch has no length to look at.")
+    width = frame_width(len(times))
     frames: list[Any] = []
     with tempfile.TemporaryDirectory(prefix="studio-video-question-") as scratch:
         for index, moment in enumerate(times):
@@ -47,7 +48,7 @@ def contact_sheet(
                 "-frames:v",
                 "1",
                 "-vf",
-                f"scale={_FRAME_WIDTH}:-2",
+                f"scale={width}:-2",
                 "-update",
                 "1",
                 str(target),
@@ -62,15 +63,20 @@ def contact_sheet(
     if not frames:
         raise DemoRecordingError("No frames could be taken from the video.")
     columns, rows = grid(len(frames))
-    width = _FRAME_WIDTH
     height = max(image.height for _moment, image in frames)
-    label = 28
+    # A time drawn in the default bitmap font is too small to survive a provider
+    # shrinking the sheet, and an answer cannot cite a time it cannot read.
+    try:
+        font: Any = ImageFont.load_default(size=_LABEL_SIZE)
+    except TypeError:  # Pillow before 10.1 has one fixed size
+        font = ImageFont.load_default()
+    label = _LABEL_SIZE + 12
     sheet = Image.new("RGB", (columns * width, rows * (height + label)), "black")
     draw = ImageDraw.Draw(sheet)
     for index, (moment, image) in enumerate(frames):
         column, row = index % columns, index // columns
         left, top = column * width, row * (height + label)
-        draw.text((left + 8, top + 6), spoken_time(moment), fill="white")
+        draw.text((left + 8, top + 5), spoken_time(moment), fill="white", font=font)
         sheet.paste(image, (left, top + label))
     destination.parent.mkdir(parents=True, exist_ok=True)
     sheet.save(destination, format="PNG")

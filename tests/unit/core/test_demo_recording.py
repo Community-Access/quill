@@ -427,6 +427,18 @@ def test_quiet_options_are_named_and_checked(tmp_path):
     assert "keep_awake" in preferences_from_plan(plan)
 
 
+def test_a_visible_status_window_is_a_choice_that_the_check_names(tmp_path):
+    # Kept out of the recording by default; left visible for magnifiers on request.
+    plan = _on(_plan(tmp_path), "microphone")
+    assert plan.show_status_window is False
+    warns = _texts(preflight(plan, PreflightFacts(hotkeys_assigned=1)), "Warn")
+    assert not any("Recording status window" in t for t in warns)
+    shown = replace(plan, show_status_window=True)
+    warns = _texts(preflight(shown, PreflightFacts(hotkeys_assigned=1)), "Warn")
+    assert any("visible to magnifiers" in t for t in warns)
+    assert preferences_from_plan(shown)["show_status_window"] is True
+
+
 def test_whole_sound_card_source_warns_about_the_reader(tmp_path):
     plan = _plan(tmp_path)
     plan = replace(
