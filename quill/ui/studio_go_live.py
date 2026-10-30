@@ -48,7 +48,9 @@ class GoLiveDialog(wx.Dialog):
         )
         from wx.lib.scrolledpanel import ScrolledPanel
 
-        self._check_cb, self._test_cb, self._confirm = check, test, confirm
+        self._check_cb = check
+        self._test_cb = test
+        self._confirm = confirm
         self.sources = list(settings.sources)
         self.checked: tuple[StreamSettings, str] | None = None
         panel = ScrolledPanel(self)
@@ -56,58 +58,71 @@ class GoLiveDialog(wx.Dialog):
         grid = wx.FlexGridSizer(cols=2, hgap=8, vgap=6)
         grid.AddGrowableCol(1)
 
-        def field(label: str, control: wx.Window) -> wx.Window:
-            grid.Add(wx.StaticText(panel, label=label), 0, wx.ALIGN_CENTER_VERTICAL)
-            set_accessible_name(control, label.replace("&", ""))
-            grid.Add(control, 1, wx.EXPAND)
-            return control
+        def label(text: str) -> None:
+            # The label is created first, so it comes before its field in tab order.
+            grid.Add(wx.StaticText(panel, label=text), 0, wx.ALIGN_CENTER_VERTICAL)
 
+        def place(control: wx.Window, text: str) -> None:
+            set_accessible_name(control, text.replace("&", ""))
+            grid.Add(control, 1, wx.EXPAND)
+
+        label("Server t&ype")
         self.kind = wx.Choice(panel, choices=["Icecast", "SHOUTcast"])
         self.kind.SetHelpText(
             "Which kind of server your stream host runs. Your host's settings page says."
         )
-        field("Server t&ype", self.kind)
+        place(self.kind, "Server t&ype")
         self.kind.SetSelection(0 if settings.kind == "icecast" else 1)
+        label("Server &address")
         self.host = wx.TextCtrl(panel, value=settings.host)
         self.host.SetHelpText("The server's address, such as stream.example.org, without http.")
-        field("Server &address", self.host)
+        place(self.host, "Server &address")
+        label("&Port")
         self.port = wx.SpinCtrl(panel, min=1, max=65535, initial=settings.port)
         self.port.SetHelpText("The server's port, often 8000.")
-        field("&Port", self.port)
+        place(self.port, "&Port")
+        label("&Mount (Icecast)")
         self.mount = wx.TextCtrl(panel, value=settings.mount)
         self.mount.SetHelpText(
             "Icecast only: the mount point, starting with a slash, such as /live."
         )
-        field("&Mount (Icecast)", self.mount)
+        place(self.mount, "&Mount (Icecast)")
+        label("Stream &number (SHOUTcast)")
         self.stream_id = wx.SpinCtrl(panel, min=1, max=99, initial=settings.stream_id)
         self.stream_id.SetHelpText("SHOUTcast only: the stream number on the server, usually 1.")
-        field("Stream &number (SHOUTcast)", self.stream_id)
+        place(self.stream_id, "Stream &number (SHOUTcast)")
+        label("&User name (Icecast)")
         self.user = wx.TextCtrl(panel, value=settings.user)
         self.user.SetHelpText("Icecast only: usually source.")
-        field("&User name (Icecast)", self.user)
+        place(self.user, "&User name (Icecast)")
+        label("Pass&word")
         self.password = wx.TextCtrl(panel, value=password, style=wx.TE_PASSWORD)
         self.password.SetHelpText(
             "The source password. Studio keeps it in Windows Credential Manager, "
             "never in its settings or logs."
         )
-        field("Pass&word", self.password)
+        place(self.password, "Pass&word")
         self.secure = wx.CheckBox(panel, label="Use a secure connection")
         self.secure.SetValue(settings.secure)
         self.secure.SetHelpText("Only if your server offers TLS. Most radio servers do not.")
         grid.AddSpacer(1)
         grid.Add(self.secure)
+        label("Show &title")
         self.title_field = wx.TextCtrl(panel, value=settings.title)
         self.title_field.SetHelpText("What listeners and directories see as the stream's name.")
-        field("Show &title", self.title_field)
+        place(self.title_field, "Show &title")
+        label("&Description")
         self.description = wx.TextCtrl(panel, value=settings.description)
         self.description.SetHelpText("A sentence about the show.")
-        field("&Description", self.description)
+        place(self.description, "&Description")
+        label("&Genre")
         self.genre = wx.TextCtrl(panel, value=settings.genre)
         self.genre.SetHelpText("Such as Talk, Music or Podcast.")
-        field("&Genre", self.genre)
+        place(self.genre, "&Genre")
+        label("Webs&ite")
         self.website = wx.TextCtrl(panel, value=settings.website)
         self.website.SetHelpText("Your show's web address, if any.")
-        field("Webs&ite", self.website)
+        place(self.website, "Webs&ite")
         self.public = wx.CheckBox(panel, label="List this stream in public directories")
         self.public.SetValue(settings.public)
         self.public.SetHelpText(
@@ -115,40 +130,46 @@ class GoLiveDialog(wx.Dialog):
         )
         grid.AddSpacer(1)
         grid.Add(self.public)
+        label("Sound &quality")
         self.quality = wx.Choice(panel, choices=[v[0] for v in QUALITY_PRESETS.values()])
         self.quality.SetHelpText(
             "Speech is smallest; Music sounds best; Custom shows every technical choice below."
         )
-        field("Sound &quality", self.quality)
+        place(self.quality, "Sound &quality")
         self.quality.SetSelection(
             list(QUALITY_PRESETS).index(settings.quality)
             if settings.quality in QUALITY_PRESETS
             else 1
         )
+        label("&Format")
         self.format = wx.Choice(panel, choices=[v[0] for v in FORMATS.values()])
         self.format.SetHelpText("The kind of sound listeners receive. SHOUTcast takes MP3 or AAC.")
-        field("&Format", self.format)
+        place(self.format, "&Format")
         self.format.SetSelection(list(FORMATS).index(settings.format))
+        label("&Bit rate, kilobits a second")
         self.bitrate = wx.Choice(panel, choices=[str(b) for b in BITRATES])
         self.bitrate.SetHelpText("Higher sounds better and needs a faster upload.")
-        field("&Bit rate, kilobits a second", self.bitrate)
+        place(self.bitrate, "&Bit rate, kilobits a second")
         self.bitrate.SetSelection(
             BITRATES.index(settings.bitrate) if settings.bitrate in BITRATES else 6
         )
+        label("&Channels")
         self.channels = wx.Choice(panel, choices=["Stereo", "Mono"])
         self.channels.SetHelpText("Mono halves the size and suits a single voice.")
-        field("&Channels", self.channels)
+        place(self.channels, "&Channels")
         self.channels.SetSelection(0 if settings.channels == 2 else 1)
+        label("Sample &rate, hertz")
         self.rate = wx.Choice(panel, choices=[str(r) for r in SAMPLE_RATES])
         self.rate.SetHelpText("44100 suits most streams.")
-        field("Sample &rate, hertz", self.rate)
+        place(self.rate, "Sample &rate, hertz")
         self.rate.SetSelection(SAMPLE_RATES.index(settings.sample_rate))
+        label("&Loudness")
         self.loudness = wx.Choice(panel, choices=[v[0] for v in LOUDNESS.values()])
         self.loudness.SetHelpText(
             "An automatic level so the stream sounds even, with a limiter against "
             "distortion. Off sends the mix exactly as it is."
         )
-        field("&Loudness", self.loudness)
+        place(self.loudness, "&Loudness")
         self.loudness.SetSelection(
             list(LOUDNESS).index(settings.loudness) if settings.loudness in LOUDNESS else 0
         )
@@ -187,6 +208,7 @@ class GoLiveDialog(wx.Dialog):
             "Keep a copy as FLAC while you broadcast, even through reconnects."
         )
         outer.Add(self.archive, 0, wx.ALL, 10)
+        outer.Add(wx.StaticText(panel, label="Folder for the saved copy"), 0, wx.LEFT, 10)
         self.folder = wx.TextCtrl(panel, value=settings.archive_folder)
         set_accessible_name(self.folder, "Folder for the saved copy")
         self.folder.SetHelpText("Where the saved copy goes.")

@@ -431,17 +431,17 @@ class RecordDemoDialog(DemoSourcesMixin, DemoPictureMixin, DemoActionsMixin, wx.
         )
         test.Bind(wx.EVT_BUTTON, self._test)
         actions.Add(test, 0, wx.RIGHT, 8)
-        self.test_seconds = wx.SpinCtrl(panel, min=5, max=600, initial=5)
-        set_accessible_name(self.test_seconds, "Test length, seconds")
-        self.test_seconds.SetHelpText(
-            "How long the test records, from 5 seconds to 10 minutes. A longer test is a "
-            "rehearsal: it shows whether the settings hold up."
-        )
         actions.Add(
             wx.StaticText(panel, label="Test length, seconds"),
             0,
             wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
             4,
+        )
+        self.test_seconds = wx.SpinCtrl(panel, min=5, max=600, initial=5)
+        set_accessible_name(self.test_seconds, "Test length, seconds")
+        self.test_seconds.SetHelpText(
+            "How long the test records, from 5 seconds to 10 minutes. A longer test is a "
+            "rehearsal: it shows whether the settings hold up."
         )
         actions.Add(self.test_seconds, 0, wx.RIGHT, 8)
         keys = wx.Button(panel, label="Assi&gn keys...")
