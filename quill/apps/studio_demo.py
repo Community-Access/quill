@@ -357,6 +357,7 @@ class StudioDemoMixin(StudioDemoSetupMixin, StudioDemoFinishMixin):
             if plan.screen and not target_is_studio and self.frame.IsShown():
                 self.frame.Hide()  # Studio stays out of its own recording.
             self._demo_protect(True)
+            self._demo_quiet_start(plan)
             if plan.screen:
                 self._exclude_studio_windows(True)
             if plan.source("system") is not None:
@@ -394,6 +395,30 @@ class StudioDemoMixin(StudioDemoSetupMixin, StudioDemoFinishMixin):
             on_progress=lambda _task, text: self._announce(str(text)),
             ui_lifetime=self._demo_lifetime(),
         )
+
+    def _demo_quiet_start(self, plan: DemoPlan) -> None:
+        """Keep awake and Do Not Disturb for the length of the recording (P7)."""
+        from quill.platform.windows.focus_guard import DoNotDisturb, KeepAwake
+
+        if plan.keep_awake:
+            self._demo_awake = KeepAwake()
+            if not self._demo_awake.acquire():
+                self._set_status_quiet("Windows did not keep the computer awake.")
+        if plan.do_not_disturb:
+            self._demo_dnd = DoNotDisturb(app_data_dir())
+            problem = self._demo_dnd.start()
+            if problem:
+                self._demo_say(problem, failure=True)
+
+    def _demo_quiet_stop(self) -> None:
+        awake = getattr(self, "_demo_awake", None)
+        if awake is not None:
+            awake.release()
+            self._demo_awake = None
+        dnd = getattr(self, "_demo_dnd", None)
+        if dnd is not None:
+            dnd.stop()
+            self._demo_dnd = None
 
     def _demo_protect(self, on: bool) -> None:
         jobs = getattr(self, "_protected_background_jobs", None)

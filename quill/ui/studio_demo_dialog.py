@@ -370,6 +370,22 @@ class RecordDemoDialog(DemoSourcesMixin, DemoPictureMixin, wx.Dialog):
         self.stems.SetValue(bool(preferences.get("keep_stems", False)))
         self.stems.SetHelpText("Beside the video, keep one WAV per sound source for later editing.")
         outer.Add(self.stems, 0, wx.LEFT | wx.RIGHT, 10)
+        self.keep_awake = wx.CheckBox(panel, label="Keep the computer awake while recording")
+        self.keep_awake.SetValue(bool(preferences.get("keep_awake", True)))
+        self.keep_awake.SetHelpText(
+            "Stop the computer sleeping, the screen turning off and the screen saver starting "
+            "while you record or stream. Released as soon as you stop."
+        )
+        self.keep_awake.Bind(wx.EVT_CHECKBOX, self._stale)
+        outer.Add(self.keep_awake, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
+        self.do_not_disturb = wx.CheckBox(panel, label="Turn on Do Not Disturb while recording")
+        self.do_not_disturb.SetValue(bool(preferences.get("do_not_disturb", True)))
+        self.do_not_disturb.SetHelpText(
+            "Silence Windows notifications so none slides into the picture or the sound. "
+            "Studio puts Do Not Disturb back the way it was when you stop, even after a crash."
+        )
+        self.do_not_disturb.Bind(wx.EVT_CHECKBOX, self._stale)
+        outer.Add(self.do_not_disturb, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
         self.silent_track = wx.CheckBox(
             panel, label="Give a video with no sound a silent soundtrack"
         )
@@ -493,6 +509,8 @@ class RecordDemoDialog(DemoSourcesMixin, DemoPictureMixin, wx.Dialog):
             screen=self.screen_on.GetValue(),
             sound_format=list(SOUND_FORMATS)[max(0, self.sound_format.GetSelection())],  # type: ignore[arg-type]
             silent_track=self.silent_track.GetValue(),
+            keep_awake=self.keep_awake.GetValue(),
+            do_not_disturb=self.do_not_disturb.GetValue(),
             bounds=target.bounds,
             folder=os.path.expanduser(self.folder.GetValue().strip()),
             window_handle=target.window_handle,

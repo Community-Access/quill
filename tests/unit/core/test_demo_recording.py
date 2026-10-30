@@ -411,3 +411,17 @@ def test_old_camera_only_setting_becomes_screen_off(tmp_path):
     data["camera"] = {"enabled": True, "device": "Cam", "position": "camera only"}
     plan = plan_from_dict(data)
     assert plan.camera_fills and plan.camera.position == "bottom right"
+
+
+# -- keep awake and Do Not Disturb (P7) ----------------------------------------------
+
+
+def test_quiet_options_are_named_and_checked(tmp_path):
+    plan = _on(_plan(tmp_path), "microphone")
+    assert "kept awake and Do Not Disturb is turned on" in summary(plan, [])
+    warns = _texts(preflight(plan, PreflightFacts(hotkeys_assigned=1, dnd_available=False)), "Warn")
+    assert any("did not let Studio control Do Not Disturb" in t for t in warns)
+    off = replace(plan, do_not_disturb=False)
+    warns = _texts(preflight(off, PreflightFacts(hotkeys_assigned=1)), "Warn")
+    assert any("Do Not Disturb is off" in t for t in warns)
+    assert "keep_awake" in preferences_from_plan(plan)

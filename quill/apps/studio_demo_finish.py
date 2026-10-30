@@ -18,6 +18,7 @@ from quill.core.paths import app_data_dir
 
 class StudioDemoFinishMixin:
     def _demo_cleanup(self, recorder) -> None:
+        self._demo_quiet_stop()
         status = getattr(self, "_demo_status", None)
         self._demo_status = None
         if status:
@@ -212,6 +213,15 @@ class StudioDemoFinishMixin:
 
     def _offer_demo_recovery(self) -> None:
         """At launch: say once that unfinished recordings exist; never open a modal."""
+        try:
+            from quill.platform.windows.focus_guard import restore_after_crash
+
+            if restore_after_crash(app_data_dir()):
+                self._set_status_quiet(
+                    "Do Not Disturb was put back after an interrupted recording."
+                )
+        except Exception:  # noqa: BLE001 - never disturb a launch
+            pass
         try:
             found = find_unfinished(self._demo_folders())
         except Exception:  # noqa: BLE001 - recovery must never disturb a launch

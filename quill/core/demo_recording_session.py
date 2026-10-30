@@ -45,6 +45,8 @@ def preferences_from_plan(plan: DemoPlan) -> dict[str, Any]:
         "screen": plan.screen,
         "sound_format": plan.sound_format,
         "silent_track": plan.silent_track,
+        "keep_awake": plan.keep_awake,
+        "do_not_disturb": plan.do_not_disturb,
         "pointer": plan.pointer,
         "size_ceiling": plan.size_ceiling,
         "keep_stems": plan.keep_stems,

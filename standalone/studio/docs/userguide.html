@@ -1833,12 +1833,31 @@ afterwards what is actually in the file.</p>
 (Ctrl+Alt+Shift+V). The window goes top to bottom in the order you
 decide things.</p>
 <h3 id="what-to-record">What to record</h3>
+<p>Two check boxes decide the picture, and the Sound sources list
+decides the sound. Any mix works:</p>
+<ul>
+<li><strong>Include the screen picture</strong> on, camera off: the
+screen, as most demonstrations want.</li>
+<li>Screen on and <strong>Include the camera picture</strong> on: the
+screen with your camera in a corner.</li>
+<li>Screen off, camera on: your camera fills the picture.</li>
+<li>Both off: sound only, saved as an audio file. Choose the kind under
+<strong>Sound-only file format</strong>: M4A for most uses, MP3 to play
+anywhere, WAV or FLAC to keep every detail, or Opus for the smallest
+speech files.</li>
+<li>A picture with no sound source: <strong>Give a video with no sound a
+silent soundtrack</strong> is on by default, because some websites
+refuse a video without one. Turn it off for no soundtrack at all.</li>
+</ul>
+<p>If nothing at all is chosen, the check says so and recording cannot
+start.</p>
 <p><strong>Target</strong> is a named window, one display or the full
-desktop, from the same list Capture screen uses. A named window is
-selected first when there is one. A window recording records that
-window’s area of the screen, so anything that covers it, such as a
-notification, is recorded too, and if you move the window the recording
-does not follow it. If that matters, record the display instead.</p>
+desktop, from the same list Capture screen uses. It applies only when
+the screen picture is on. A named window is selected first when there is
+one. A window recording records that window’s area of the screen, so
+anything that covers it, such as a notification, is recorded too, and if
+you move the window the recording does not follow it. If that matters,
+record the display instead.</p>
 <h3 id="which-sounds-go-in">Which sounds go in</h3>
 <p><strong>Sound sources</strong> is a list. Each row says either “In
 the recording” or “Left out”, and Space switches the row you are on.
@@ -1905,6 +1924,17 @@ you choose another one. The name is “Demo -”, the target, and the date
 and time. An existing file is never replaced. <strong>Also keep each
 sound source as its own WAV file</strong> keeps a separate file per
 source beside the video for later editing.</p>
+<h3 id="keeping-the-computer-awake-and-notifications-quiet">Keeping the
+computer awake and notifications quiet</h3>
+<p><strong>Keep the computer awake while recording</strong> and
+<strong>Turn on Do Not Disturb while recording</strong> are both on
+unless you turn them off. The first stops sleep, the screen turning off
+and the screen saver. The second silences Windows notifications so none
+slides into the picture or the sound. When you stop, both go back to
+exactly how they were. If Studio or the computer stops in the middle, Do
+Not Disturb is put back the next time Studio starts. If Windows does not
+let Studio change Do Not Disturb, the check tells you, so you can turn
+it on yourself.</p>
 <h3 id="check-then-start">Check, then start</h3>
 <p>Press <strong>Check</strong>. It takes a few seconds: Studio takes a
 trial picture, opens each sound source briefly, looks for the camera,

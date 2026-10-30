@@ -218,7 +218,10 @@ def gather_facts(plan: DemoPlan, context: CheckContext, scratch: Path) -> Prefli
             camera_error = f"{plan.camera.device} is not connected"
     folder = Path(plan.folder)
     problem = folder_problem(folder)
+    from quill.platform.windows.focus_guard import dnd_state
+
     return PreflightFacts(
+        dnd_available=dnd_state() is not None,
         target_problem=target_problem,
         target_is_studio=is_studio,
         display_count=display_count,

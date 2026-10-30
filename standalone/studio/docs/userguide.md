@@ -725,7 +725,17 @@ Open **Capture > Record a demonstration** (Ctrl+Alt+Shift+V). The window goes to
 
 ### What to record
 
-**Target** is a named window, one display or the full desktop, from the same list Capture screen uses. A named window is selected first when there is one. A window recording records that window's area of the screen, so anything that covers it, such as a notification, is recorded too, and if you move the window the recording does not follow it. If that matters, record the display instead.
+Two check boxes decide the picture, and the Sound sources list decides the sound. Any mix works:
+
+- **Include the screen picture** on, camera off: the screen, as most demonstrations want.
+- Screen on and **Include the camera picture** on: the screen with your camera in a corner.
+- Screen off, camera on: your camera fills the picture.
+- Both off: sound only, saved as an audio file. Choose the kind under **Sound-only file format**: M4A for most uses, MP3 to play anywhere, WAV or FLAC to keep every detail, or Opus for the smallest speech files.
+- A picture with no sound source: **Give a video with no sound a silent soundtrack** is on by default, because some websites refuse a video without one. Turn it off for no soundtrack at all.
+
+If nothing at all is chosen, the check says so and recording cannot start.
+
+**Target** is a named window, one display or the full desktop, from the same list Capture screen uses. It applies only when the screen picture is on. A named window is selected first when there is one. A window recording records that window's area of the screen, so anything that covers it, such as a notification, is recorded too, and if you move the window the recording does not follow it. If that matters, record the display instead.
 
 ### Which sounds go in
 
@@ -756,6 +766,10 @@ With **Tell me when my face leaves the camera view** checked, Studio says so dur
 Frame rate is 30 frames a second unless you choose 15, 24 or 60. **Maximum picture size** can scale a large screen down to 1080p or 720p. **Include the mouse pointer** is on by default. **Countdown** is how many seconds Studio counts aloud before it starts, so you have time to move to the program you are demonstrating.
 
 Recordings go to your Videos folder, in a QUILL Studio folder, unless you choose another one. The name is "Demo -", the target, and the date and time. An existing file is never replaced. **Also keep each sound source as its own WAV file** keeps a separate file per source beside the video for later editing.
+
+### Keeping the computer awake and notifications quiet
+
+**Keep the computer awake while recording** and **Turn on Do Not Disturb while recording** are both on unless you turn them off. The first stops sleep, the screen turning off and the screen saver. The second silences Windows notifications so none slides into the picture or the sound. When you stop, both go back to exactly how they were. If Studio or the computer stops in the middle, Do Not Disturb is put back the next time Studio starts. If Windows does not let Studio change Do Not Disturb, the check tells you, so you can turn it on yourself.
 
 ### Check, then start
 

@@ -148,6 +148,10 @@ class DemoPlan:
     #: The picker's full label, used to confirm the window or display is the
     #: same one at check and start time (``target_label`` is the short name).
     target_identity: str = ""
+    #: Hold off sleep, display-off and the screen saver while recording.
+    keep_awake: bool = True
+    #: Turn on Windows Do Not Disturb while recording, and put it back after.
+    do_not_disturb: bool = True
 
     @property
     def has_picture(self) -> bool:
@@ -221,6 +225,8 @@ class PreflightFacts:
     camera_error: str = ""
     camera_guidance: str = ""
     studio_process_in_capture: bool = False
+    #: Whether Windows lets Studio read and set Do Not Disturb.
+    dnd_available: bool = True
 
 
 @dataclass
@@ -460,6 +466,13 @@ def _tool_findings(plan: DemoPlan, facts: PreflightFacts, stop: Any, warn: Any) 
             stop(f"The camera cannot be opened: {facts.camera_error}")
         elif facts.camera_guidance and not facts.camera_guidance.startswith("Face in view"):
             warn(f"Camera: {facts.camera_guidance}")
+    if plan.do_not_disturb and not facts.dnd_available:
+        warn(
+            "Windows did not let Studio control Do Not Disturb. Turn it on yourself, or "
+            "notifications may appear in the recording."
+        )
+    if not plan.do_not_disturb and plan.screen:
+        warn("Do Not Disturb is off, so a notification could appear in the picture.")
     if facts.hotkeys_assigned == 0:
         warn(
             "No system-wide recording keys are assigned. Control the recording from the tray "
@@ -511,6 +524,13 @@ def summary(plan: DemoPlan, findings: Sequence[Finding]) -> str:
     else:
         lines.append("Camera: off.")
     lines.append(f"Saved in: {plan.folder}.")
+    quiet = []
+    if plan.keep_awake:
+        quiet.append("the computer is kept awake")
+    if plan.do_not_disturb:
+        quiet.append("Do Not Disturb is turned on")
+    if quiet:
+        lines.append("While recording, " + " and ".join(quiet) + "; both are put back after.")
     if plan.countdown:
         lines.append(f"Recording starts after a {plan.countdown} second countdown.")
     stops = [f for f in findings if f.severity == "Stop"]
