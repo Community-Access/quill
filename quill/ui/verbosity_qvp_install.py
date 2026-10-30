@@ -15,6 +15,7 @@ import wx
 
 from quill.core.verbosity.qvp import QVPInstallResult, install_pack
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 __all__ = ["VerbosityQvpInstallDialog"]
 
@@ -38,7 +39,7 @@ class VerbosityQvpInstallDialog:
         self.dialog = wx.Dialog(
             parent, title="Install verbosity pack", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize(wx.Size(520, 380))
+        self.dialog.SetMinSize(dip_size(self.dialog, 520, 380))
         root = wx.BoxSizer(wx.VERTICAL)
 
         path_row = wx.BoxSizer(wx.HORIZONTAL)
@@ -60,7 +61,7 @@ class VerbosityQvpInstallDialog:
             self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
         self._result_ctrl.SetName("Install result")
-        self._result_ctrl.SetMinSize(wx.Size(-1, 200))
+        self._result_ctrl.SetMinSize(dip_size(self._result_ctrl, -1, 200))
         root.Add(self._result_ctrl, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 4)
 
         btns = wx.BoxSizer(wx.HORIZONTAL)

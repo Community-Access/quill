@@ -26,6 +26,7 @@ from typing import Any
 import wx
 
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
+from quill.ui.dpi import dip_size
 from quill.ui.windows_dictation_transcribe import DictationTranscribeMixin
 
 __all__ = ["TranscribeFilesMixin", "TranscriptReviewDialog"]
@@ -71,7 +72,7 @@ class TranscriptReviewDialog(wx.Dialog):
         root.Add(self.text, 1, wx.EXPAND | wx.ALL, _PAD)
         root.Add(buttons, 0, wx.ALL, _PAD)
         self.SetSizer(root)
-        self.SetSize((680, 520))
+        self.SetSize(dip_size(self, 680, 520))
         apply_modal_ids(self, cancel_id=wx.ID_CANCEL, escape_id=wx.ID_CANCEL)
         bind_close_button(self, close, modeless=False)
         type_in.Bind(wx.EVT_BUTTON, lambda _e: self._finish("type"))

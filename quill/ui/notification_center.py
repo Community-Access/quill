@@ -36,6 +36,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
+from quill.ui.dpi import dip_size
+
 __all__ = ["TITLE", "NotificationCenterMixin", "open_notification_center", "row_label"]
 
 TITLE = "Notifications"
@@ -230,7 +232,7 @@ def open_notification_center(host: Any, *, on_open: Any = None, path: Path | Non
     _refresh()
     apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
     dialog.SetSizerAndFit(root)
-    dialog.SetSize((640, 420))
+    dialog.SetSize(dip_size(dialog, 640, 420))
     listbox.SetFocus()
 
     shower = getattr(host, "_show_modal_dialog", None)

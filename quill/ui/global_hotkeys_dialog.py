@@ -14,6 +14,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 
 #: Keys we can format back into the "Ctrl+Alt+X" strings _parse_keybinding
 #: reads. Letters, digits, and function keys cover the practical space.
@@ -114,7 +115,7 @@ class GlobalHotkeysDialog:
         self.dialog = wx.Dialog(
             parent, title="Global Hotkeys", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize((620, 440))
+        self.dialog.SetMinSize(dip_size(self.dialog, 620, 440))
         root = wx.BoxSizer(wx.VERTICAL)
 
         intro = wx.StaticText(

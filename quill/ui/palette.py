@@ -11,6 +11,7 @@ from quill.core.palette import (
     save_palette_usage,
 )
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.dpi import dip_size
 
 
 class CommandPaletteDialog:
@@ -76,7 +77,7 @@ class CommandPaletteDialog:
         # generic hook in place, which is how their palettes gained F1 at all.
         if on_help is not None:
             self.dialog._quill_owns_f1 = True
-        self.dialog.SetSize((700, 500))
+        self.dialog.SetSize(dip_size(self.dialog, 700, 500))
 
         root = wx.BoxSizer(wx.VERTICAL)
         self.search = wx.SearchCtrl(self.dialog, style=wx.TE_PROCESS_ENTER)
@@ -337,7 +338,7 @@ class GoToAnythingDialog:
         self.dialog.SetName(
             "Go to Anything — type to search headings and commands, Enter to go, Escape to close"
         )
-        self.dialog.SetSize((700, 520))
+        self.dialog.SetSize(dip_size(self.dialog, 700, 520))
 
         root = wx.BoxSizer(wx.VERTICAL)
         self.search = wx.SearchCtrl(self.dialog, style=wx.TE_PROCESS_ENTER)

@@ -29,6 +29,7 @@ from quill.core.optional_components import (
     status_label_for,
 )
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
+from quill.ui.dpi import dip, dip_size
 
 
 class ComponentsController(Protocol):
@@ -93,7 +94,7 @@ def show_optional_components_picker(
         else "Download Optional Components",
         style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
     )
-    dialog.SetSize((760, 560))
+    dialog.SetSize(dip_size(dialog, 760, 560))
     sizer = wx.BoxSizer(wx.VERTICAL)
 
     if _offline:
@@ -122,17 +123,17 @@ def show_optional_components_picker(
         style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.LC_HRULES,
         name="optional_components_list",
     )
-    listing.AppendColumn("Component", width=300)
-    listing.AppendColumn("Status", width=150)
-    listing.AppendColumn("Size", width=90)
-    listing.AppendColumn("Category", width=150)
+    listing.AppendColumn("Component", width=dip(listing, 300))
+    listing.AppendColumn("Status", width=dip(listing, 150))
+    listing.AppendColumn("Size", width=dip(listing, 90))
+    listing.AppendColumn("Category", width=dip(listing, 150))
     sizer.Add(listing, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
     # Rich, read-only, multiline description of the focused component.
     detail = wx.TextCtrl(
         dialog,
         style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_NO_VSCROLL,
-        size=(-1, 110),
+        size=dip_size(dialog, -1, 110),
         name="optional_components_detail",
     )
     sizer.Add(detail, 0, wx.EXPAND | wx.ALL, 10)

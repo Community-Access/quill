@@ -23,6 +23,7 @@ from quill.core.recovery import (
     read_recovery_snapshot,
 )
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 
 
 class CrashRecoveryMixin:
@@ -274,7 +275,7 @@ class CrashRecoveryMixin:
         logs_path = prepared["logs_path"]
         preview_text = prepared["preview_text"]
 
-        dialog = wx.Dialog(self.frame, title="Crash Recovery", size=(780, 520))
+        dialog = wx.Dialog(self.frame, title="Crash Recovery", size=dip_size(self.frame, 780, 520))
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
             wx.StaticText(dialog, label=intro),

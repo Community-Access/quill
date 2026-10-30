@@ -63,6 +63,7 @@ from quill.core.support_message import SUPPORT_EMAIL
 from quill.ui import app_sounds
 from quill.ui.companion_cues import init_app_sound
 from quill.ui.dialog_contract import show_message_box
+from quill.ui.dpi import dip, dip_size
 from quill.ui.surface_lifetime import stop_timer_on_destroy
 
 _TITLE = "QuillBeacon"
@@ -100,12 +101,12 @@ def _data_dir() -> Path:
 
 class BeaconFrame(wx.Frame):
     def __init__(self) -> None:
-        super().__init__(None, title=_TITLE, size=(1100, 720))
+        super().__init__(None, title=_TITLE, size=dip_size(None, 1100, 720))
         # Maximized by default, and remembered after that, like every other app
         # in the family (quill/core/window_geometry.py).
         from quill.ui.window_state import apply_window_geometry
 
-        apply_window_geometry(self, "beacon", default_size=(1100, 720))
+        apply_window_geometry(self, "beacon", default_size=dip_size(self, 1100, 720))
         self.SetTitle(_TITLE)
         self.data_dir = _data_dir()
         self.store = db.BeaconStore(self.data_dir / "beacons.db")
@@ -756,13 +757,13 @@ class BeaconFrame(wx.Frame):
             "and Ctrl+Space or Shift+arrows select several rows for the Bulk "
             "commands on the Edit menu."
         )
-        self.results.AppendColumn("Title", width=260)
-        self.results.AppendColumn("Type", width=110)
-        self.results.AppendColumn("Location", width=200)
-        self.results.AppendColumn("Collection", width=120)
-        self.results.AppendColumn("Tags", width=120)
-        self.results.AppendColumn("Date", width=120)
-        self.results.AppendColumn("Health", width=90)
+        self.results.AppendColumn("Title", width=dip(self.results, 260))
+        self.results.AppendColumn("Type", width=dip(self.results, 110))
+        self.results.AppendColumn("Location", width=dip(self.results, 200))
+        self.results.AppendColumn("Collection", width=dip(self.results, 120))
+        self.results.AppendColumn("Tags", width=dip(self.results, 120))
+        self.results.AppendColumn("Date", width=dip(self.results, 120))
+        self.results.AppendColumn("Health", width=dip(self.results, 90))
         right_sizer.Add(self.results, 1, wx.EXPAND | wx.ALL, 6)
 
         details_label = wx.StaticText(right, label="D&etails")
@@ -1919,6 +1920,9 @@ class BeaconFrame(wx.Frame):
 
 def run() -> int:
     """Entry point: create the wx app and show the frame."""
+    from quill.platform.windows.dpi_awareness import enable_dpi_awareness
+
+    enable_dpi_awareness()  # before the first window, or Windows stretches it (#1702)
     app = wx.App()
     frame = BeaconFrame()
     frame.Show()

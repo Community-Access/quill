@@ -30,6 +30,7 @@ from quill.core.pick_suggestion import (
 )
 from quill.core.support_message import SUPPORT_EMAIL
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip
 from quill.ui.support_dialog import send_by_mail
 
 TITLE = "Suggest a Station or Podcast"
@@ -140,7 +141,9 @@ class _SuggestDialog:
         # and a screen reader names a field from the static text before it.
         grid.Add(wx.StaticText(self.dialog, label=label), 0, wx.ALIGN_CENTER_VERTICAL)
         style = wx.TE_MULTILINE if multiline else 0
-        control = wx.TextCtrl(self.dialog, style=style, size=(340, 66 if multiline else -1))
+        control = wx.TextCtrl(
+            self.dialog, style=style, size=(dip(self.dialog, 340), 66 if multiline else -1)
+        )
         control.SetName(help_text)
         control.SetHelpText(help_text)
         grid.Add(control, 1, wx.EXPAND)

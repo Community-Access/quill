@@ -33,6 +33,7 @@ from quill.ui.dialog_contract import (
     set_accessible_name,
     show_message_box,
 )
+from quill.ui.dpi import dip_size
 
 
 class PronunciationEntryDialog:
@@ -216,7 +217,7 @@ class PronunciationDictionaryDialog:
             title="Pronunciation Dictionaries",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize(wx.Size(640, 480))
+        self.dialog.SetMinSize(dip_size(self.dialog, 640, 480))
 
         # Load a working copy; enabled flag is seeded from the saved selection.
         self._dicts: list[PronunciationDictionary] = load_dictionaries(project_dir)

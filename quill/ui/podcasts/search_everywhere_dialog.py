@@ -26,6 +26,7 @@ from collections.abc import Callable
 
 from quill.core.podcasts.filtering import SearchResult
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 from quill.ui.podcasts.say_status import say_status
 
 
@@ -57,7 +58,7 @@ class SearchEverywhereDialog:
             title="Search Everywhere",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize((520, 440))
+        self.dialog.SetMinSize(dip_size(self.dialog, 520, 440))
         root = wx.BoxSizer(wx.VERTICAL)
 
         search_row = wx.BoxSizer(wx.HORIZONTAL)

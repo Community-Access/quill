@@ -28,6 +28,7 @@ from quill.core.podcasts.list_columns import DOWNLOADS
 from quill.core.podcasts.storage_maintenance import StoragePlan, StorageUsage, UsageRow
 from quill.core.podcasts.subscriptions import PodcastLibrary
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
+from quill.ui.dpi import dip_size
 from quill.ui.media.list_columns_view import build_columns
 from quill.ui.podcasts.storage_reconcile import StorageOutcome
 from quill.ui.podcasts.storage_report import UsageReport
@@ -80,7 +81,7 @@ class DownloadsDialog:
         self._lifetime = lifetime_for(self.dialog)
         self._window_id = self.dialog.GetId()
         self.dialog.Bind(wx.EVT_WINDOW_DESTROY, self._on_destroy)
-        self.dialog.SetMinSize((620, 520))
+        self.dialog.SetMinSize(dip_size(self.dialog, 620, 520))
         root = wx.BoxSizer(wx.VERTICAL)
 
         self._summary = wx.StaticText(self.dialog, label="")

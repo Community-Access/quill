@@ -38,6 +38,7 @@ from quill.core.keymap_query import (
 from quill.core.platform_nouns import primary_command_chord_label
 from quill.core.reserved_keys import reservation_for
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 from quill.ui.hotkey_conflict import claim_sentence
 
 #: Commands that take part in the QUILL Quick Nav single-key browse layer. They
@@ -113,7 +114,7 @@ class KeymapEditorMixin:
             return
         prefix = self._quill_key_prefix()
 
-        dialog = wx.Dialog(self.frame, title="Keymap Editor", size=(720, 560))
+        dialog = wx.Dialog(self.frame, title="Keymap Editor", size=dip_size(self.frame, 720, 560))
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
             wx.StaticText(
@@ -553,7 +554,7 @@ class KeymapEditorMixin:
         buttons.Realize()
         root.Add(buttons, 0, wx.ALL | wx.EXPAND, 8)
         dialog.SetSizer(root)
-        dialog.SetSize((420, 180))
+        dialog.SetSize(dip_size(dialog, 420, 180))
 
         def on_key(event: object) -> None:
             key_code = event.GetKeyCode()

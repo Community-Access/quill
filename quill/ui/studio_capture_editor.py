@@ -12,6 +12,7 @@ from quill.core.screenshot_project import ScreenshotProject, compare_screenshots
 from quill.core.studio_capture import verify_capture
 from quill.stability.task_manager import UiLifetimeToken
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 
 PORTIONS = {
     "Whole image": (0, 0, 100, 100),
@@ -42,7 +43,7 @@ class ScreenshotEditorDialog(wx.Dialog):
         super().__init__(
             host.frame,
             title="Screenshot editing and evidence",
-            size=(850, 780),
+            size=dip_size(host.frame, 850, 780),
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
         self.host = host
@@ -74,7 +75,7 @@ class ScreenshotEditorDialog(wx.Dialog):
                 panel,
                 value=self.project.describe(simple=True),
                 style=wx.TE_MULTILINE | wx.TE_READONLY,
-                size=(-1, 130),
+                size=dip_size(panel, -1, 130),
             ),
             "Read the original identity, edits and measured results. "
             "This is the text alternative to the visual preview.",
@@ -138,7 +139,9 @@ class ScreenshotEditorDialog(wx.Dialog):
         )
         self.steps = field(
             "Steps to &reproduce",
-            lambda: wx.TextCtrl(advanced_panel, style=wx.TE_MULTILINE, size=(-1, 60)),
+            lambda: wx.TextCtrl(
+                advanced_panel, style=wx.TE_MULTILINE, size=dip_size(advanced_panel, -1, 60)
+            ),
             "Type the actions that produced the screen. Review this text for secrets.",
             advanced_panel,
         )

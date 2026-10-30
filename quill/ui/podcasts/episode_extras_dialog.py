@@ -35,6 +35,7 @@ from quill.core.podcasts.extras import (
     Extras,
     Row,
 )
+from quill.ui.dpi import dip_size
 
 TITLE = "About This Episode"
 
@@ -79,8 +80,8 @@ class EpisodeExtrasWindow:
         self._notebook: Any = None
         self._heading: Any = None
 
-        self.frame = wx.Frame(parent, title=TITLE, size=(660, 480))
-        self.frame.SetMinSize((620, 440))
+        self.frame = wx.Frame(parent, title=TITLE, size=dip_size(parent, 660, 480))
+        self.frame.SetMinSize(dip_size(self.frame, 620, 440))
         self._panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
         root = wx.BoxSizer(wx.VERTICAL)
         self._body = wx.BoxSizer(wx.VERTICAL)

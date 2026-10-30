@@ -32,6 +32,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.ui.dpi import dip_size
+
 __all__ = ["LABEL", "build", "describe", "edit_note", "edit_tags", "refresh"]
 
 #: The pane's own label. "&J" because every letter this window's other controls
@@ -60,7 +62,7 @@ def build(dialog: Any, surface: Any, sizer: Any) -> Any:
     pane = wx.TextCtrl(surface, value="", style=wx.TE_MULTILINE | wx.TE_READONLY)
     pane.SetName("Details and your note")
     pane.SetHelpText(_HELP)
-    pane.SetMinSize((-1, 90))
+    pane.SetMinSize(dip_size(pane, -1, 90))
     sizer.Add(pane, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
     dialog._details = pane
     return pane

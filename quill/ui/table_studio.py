@@ -22,6 +22,7 @@ import wx
 
 from quill.core.table_studio import Change, TableController, TableDocumentModel
 from quill.ui import table_studio_native
+from quill.ui.dpi import dip_size
 from quill.ui.table_studio_accessible import attach_list_accessibility, fire_focus_child
 
 
@@ -412,7 +413,7 @@ class TableStudioDialog(wx.Dialog):
         save_csv_cb: Callable[[TableDocumentModel, str | None], bool] | None = None,
     ) -> None:
         super().__init__(parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
-        self.SetSize(wx.Size(900, 560))
+        self.SetSize(dip_size(self, 900, 560))
         self.model = model
         self._announce = announce
         self._save_csv_cb = save_csv_cb

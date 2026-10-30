@@ -24,6 +24,7 @@ from quill.ui.dialog_contract import (
     set_accessible_name,
     show_message_box,
 )
+from quill.ui.dpi import dip_size
 
 # Output formats in the order they appear in the format Choice.
 _FORMAT_CHOICES = ("mp3", "m4b", "wav")
@@ -61,7 +62,7 @@ class TranslatedSpeechExportDialog:
             title="Export to Translated Speech Audio",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize(wx.Size(560, 460))
+        self.dialog.SetMinSize(dip_size(self.dialog, 560, 460))
         root = wx.BoxSizer(wx.VERTICAL)
 
         def label(text: str) -> None:

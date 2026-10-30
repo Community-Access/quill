@@ -41,6 +41,7 @@ from quill.core.windows_dictation.words_exchange import (
 )
 from quill.core.windows_dictation.words_file import WordsFile, load_words, save_words
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 __all__ = [
     "ImportPreviewDialog",
@@ -76,7 +77,7 @@ class ImportPreviewDialog(wx.Dialog):
             "Words and Phrases. Entries already in your list are not shown, and "
             "where the file differs from yours, yours is kept."
         )
-        self.list.SetMinSize((520, 220))
+        self.list.SetMinSize(dip_size(self.list, 520, 220))
         root.Add(label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         root.Add(self.list, 1, wx.EXPAND | wx.ALL, _PAD)
         buttons = wx.StdDialogButtonSizer()

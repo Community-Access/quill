@@ -29,6 +29,7 @@ from quill.core.net import configure_ssl_trust
 from quill.ui.app_quillins import QuillinsAppMixin
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.app_support import ListeningAppSupportMixin
+from quill.ui.dpi import dip_size
 from quill.ui.keymap_editor import KeymapEditorMixin
 from quill.ui.main_frame_hotkeys import GlobalHotkeysMixin
 from quill.ui.main_frame_media_sleep_timer import MediaSleepTimerMixin
@@ -102,7 +103,9 @@ class PodcastsAppFrame(
     ListeningAppSupportMixin,
 ):
     def __init__(self, *, safe_mode: bool = False) -> None:
-        self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 360), app_id="cast")
+        self._init_app_shell(
+            _TITLE, safe_mode=safe_mode, size=dip_size(None, 460, 360), app_id="cast"
+        )
         from quill.ui.podcasts.lifecycle import install
 
         install(self)
@@ -701,6 +704,9 @@ def main() -> int:
     from quill.core.podcasts.opml_cli import opml_path_from_argv
 
     components.register_running_app("cast", REQUIRED_COMPONENTS)
+    from quill.platform.windows.dpi_awareness import enable_dpi_awareness
+
+    enable_dpi_awareness()  # before the first window, or Windows stretches it (#1702)
     app = wx.App()
     frame = PodcastsAppFrame(safe_mode=safe_mode)
     frame.frame.Show()

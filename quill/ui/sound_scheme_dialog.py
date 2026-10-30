@@ -56,6 +56,7 @@ from quill.ui.dialog_contract import (
     show_message_box,
     show_modal_dialog,
 )
+from quill.ui.dpi import dip_size
 from quill.ui.sound_event_labels import EVENT_GROUPS, GROUP_FOR, label_for
 
 __all__ = ["SoundSchemeDialog", "SoundSchemeResult", "draft_for_pack", "known_events"]
@@ -176,7 +177,7 @@ class SoundSchemeDialog:
     def _build_list(self):  # type: ignore[no-untyped-def]
         column = wx.BoxSizer(wx.VERTICAL)
         label = wx.StaticText(self.dialog, label="&Events:")
-        self.events = wx.ListBox(self.dialog, size=_LIST_SIZE)
+        self.events = wx.ListBox(self.dialog, size=dip_size(self.dialog, *_LIST_SIZE))
         set_accessible_name(self.events, "Events")
         self.events.SetHelpText(
             "Every moment this app can make a sound for. Each row says whether it "
@@ -207,7 +208,7 @@ class SoundSchemeDialog:
         # and lays the group out wrong on Windows.
         panel = box.GetStaticBox()
         self.detail = wx.TextCtrl(
-            panel, value="", style=wx.TE_READONLY | wx.TE_MULTILINE, size=(-1, 44)
+            panel, value="", style=wx.TE_READONLY | wx.TE_MULTILINE, size=dip_size(panel, -1, 44)
         )
         set_accessible_name(self.detail, "About this event")
         self.detail.SetHelpText("What this event means, and what it currently plays.")

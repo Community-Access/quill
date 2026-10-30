@@ -37,6 +37,7 @@ from quill.core.markdown_sections import (
 )
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box, show_modal_dialog
+from quill.ui.dpi import dip_size
 
 __all__ = ["ORGANIZER_KINDS", "organize_headings", "organize_rich_headings"]
 
@@ -159,7 +160,7 @@ def _show_dialog(
         parent,
         title="Heading Organizer",
         style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
-        size=(920, 620),
+        size=dip_size(parent, 920, 620),
     )
     working = [replace(heading) for heading in headings]
     originals = {heading.source_index: heading for heading in headings}

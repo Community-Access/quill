@@ -17,6 +17,7 @@ import wx
 
 from quill.apps.lite_dialogs import _PAD, _plain_label, _stack
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_modal_dialog
+from quill.ui.dpi import dip
 
 __all__ = ["ask_link", "ask_text"]
 
@@ -46,7 +47,7 @@ def ask_text(
     _stack(root, static, entry)
     root.Add(dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL), 0, wx.ALIGN_RIGHT | wx.ALL, _PAD)
     dialog.SetSizerAndFit(root)
-    dialog.SetSize((480, dialog.GetSize().GetHeight()))
+    dialog.SetSize((dip(dialog, 480), dialog.GetSize().GetHeight()))
     apply_modal_ids(dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
     entry.Bind(wx.EVT_TEXT_ENTER, lambda _e: dialog.EndModal(wx.ID_OK))
     entry.SetFocus()
@@ -90,7 +91,7 @@ def ask_link(parent: wx.Window, *, text: str = "") -> tuple[str, str] | None:
 
     root.Add(dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL), 0, wx.ALIGN_RIGHT | wx.ALL, _PAD)
     dialog.SetSizerAndFit(root)
-    dialog.SetSize((520, dialog.GetSize().GetHeight()))
+    dialog.SetSize((dip(dialog, 520), dialog.GetSize().GetHeight()))
     apply_modal_ids(dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
     url.Bind(wx.EVT_TEXT_ENTER, lambda _e: dialog.EndModal(wx.ID_OK))
     (url if text else display).SetFocus()

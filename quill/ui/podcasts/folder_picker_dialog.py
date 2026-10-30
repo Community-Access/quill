@@ -16,6 +16,7 @@ from dataclasses import dataclass
 
 from quill.core.podcasts.subscriptions import PodcastLibrary
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 _TOP_LEVEL_LABELS = {
     "library": "Library (top level)",
@@ -108,7 +109,7 @@ class FolderPickerDialog:
         self.dialog = wx.Dialog(
             parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize((480, 460))
+        self.dialog.SetMinSize(dip_size(self.dialog, 480, 460))
         root = wx.BoxSizer(wx.VERTICAL)
 
         search_row = wx.BoxSizer(wx.HORIZONTAL)

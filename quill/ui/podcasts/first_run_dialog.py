@@ -26,6 +26,7 @@ from quill.core.podcasts.onboarding import (
     needs_first_run,
 )
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 TITLE = "Welcome to QUILL Cast"
 
@@ -117,7 +118,7 @@ class FirstRunDialog:
         buttons.Add(skip, 0)
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, 12)
         self._dialog.SetSizer(root)
-        self._dialog.SetMinSize((560, 400))
+        self._dialog.SetMinSize(dip_size(self._dialog, 560, 400))
         apply_modal_ids(
             self._dialog, affirmative_id=wx.ID_OK, affirmative_label="Done", cancel_id=wx.ID_CANCEL
         )

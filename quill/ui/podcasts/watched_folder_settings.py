@@ -12,6 +12,7 @@ from typing import Any
 from quill.core.podcasts.local_import import SUPPORTED_AUDIO_EXTENSIONS
 from quill.core.podcasts.speed_choices import OFFERED
 from quill.core.podcasts.watched_folders import ARRIVALS, ORIGINALS, TELLS, WatchedFolder
+from quill.ui.dpi import dip_size
 
 __all__ = ["TITLE", "WatchedFolderSettingsDialog", "edit_folder_settings"]
 
@@ -156,7 +157,7 @@ class WatchedFolderSettingsDialog:
         apply_modal_ids(
             self.dialog, affirmative_id=wx.ID_OK, affirmative_label="Save", cancel_id=wx.ID_CANCEL
         )
-        self.dialog.SetSize((620, 560))
+        self.dialog.SetSize(dip_size(self.dialog, 620, 560))
         self._name.SetFocus()
 
     def read(self) -> None:

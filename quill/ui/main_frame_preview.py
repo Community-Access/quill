@@ -24,6 +24,7 @@ from quill.core.browser_preview import (
     render_preview_html,
 )
 from quill.core.paths import app_data_dir
+from quill.ui.dpi import dip_size
 
 
 @dataclass(slots=True)
@@ -155,7 +156,7 @@ class PreviewMixin:
         try:
             import wx.html2
 
-            sentinel = self._wx.Panel(self.frame, size=(1, 1))
+            sentinel = self._wx.Panel(self.frame, size=dip_size(None, 1, 1))
             sentinel.Hide()
             # WebView.New() alone is enough to trigger WebView2 process
             # initialisation — no page load required.  WebView2 fires

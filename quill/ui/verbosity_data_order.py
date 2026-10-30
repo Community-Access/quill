@@ -13,6 +13,7 @@ import wx
 
 from quill.core.verbosity.data_order import DataOrder
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 __all__ = ["VerbosityDataOrderDialog"]
 
@@ -38,7 +39,7 @@ class VerbosityDataOrderDialog:
             title=f"Data order — {order.verb_id}",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize(wx.Size(420, 360))
+        self.dialog.SetMinSize(dip_size(self.dialog, 420, 360))
         root = wx.BoxSizer(wx.VERTICAL)
 
         root.Add(
@@ -49,7 +50,7 @@ class VerbosityDataOrderDialog:
         )
         self._list = wx.ListBox(self.dialog, style=wx.LB_SINGLE)
         self._list.SetName("Announcement fields")
-        self._list.SetMinSize(wx.Size(-1, 200))
+        self._list.SetMinSize(dip_size(self._list, -1, 200))
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 4)
 
         btns = wx.BoxSizer(wx.HORIZONTAL)

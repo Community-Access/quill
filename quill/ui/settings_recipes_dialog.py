@@ -17,6 +17,7 @@ from __future__ import annotations
 from typing import Any
 
 from quill.core import settings_recipes as sr
+from quill.ui.dpi import dip_size
 
 __all__ = ["TITLE", "open_settings_recipes"]
 
@@ -78,7 +79,9 @@ def open_settings_recipes(host: Any) -> None:
     )
     root.Add(listbox, 1, wx.EXPAND | wx.ALL, 8)
     root.Add(wx.StaticText(dialog, label="What it &changes:"), 0, wx.LEFT, 8)
-    preview = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(-1, 140))
+    preview = wx.TextCtrl(
+        dialog, style=wx.TE_MULTILINE | wx.TE_READONLY, size=dip_size(dialog, -1, 140)
+    )
     preview.SetHelpText("The settings the highlighted row would change, from what to what.")
     root.Add(preview, 0, wx.EXPAND | wx.ALL, 8)
     session = wx.CheckBox(dialog, label="Turn a working mode on for this &session only")
@@ -101,7 +104,7 @@ def open_settings_recipes(host: Any) -> None:
     buttons.Add(close, 0)
     root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
     dialog.SetSizer(root)
-    dialog.SetSize((640, 520))
+    dialog.SetSize(dip_size(dialog, 640, 520))
     apply_modal_ids(dialog, cancel_id=wx.ID_CANCEL, escape_id=wx.ID_CANCEL)
 
     def _current() -> sr.Bundle | None:

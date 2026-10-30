@@ -5,6 +5,7 @@ from __future__ import annotations
 import wx
 
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 
 class ScreenshotPreviewDialog(wx.Dialog):
@@ -12,7 +13,7 @@ class ScreenshotPreviewDialog(wx.Dialog):
         super().__init__(
             parent,
             title="Screenshot visual preview",
-            size=(800, 600),
+            size=dip_size(parent, 800, 600),
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
         size = (max(1, round(image.width * scale)), max(1, round(image.height * scale)))

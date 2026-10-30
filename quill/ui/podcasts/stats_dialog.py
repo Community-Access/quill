@@ -23,6 +23,7 @@ from pathlib import Path
 from typing import Any
 
 from quill.core.podcasts import stats
+from quill.ui.dpi import dip_size
 
 
 def format_report(
@@ -118,8 +119,8 @@ class PodcastStatsWindow:
         # Opt-in, and off unless the listener asked. See _streak_line.
         self._streaks_enabled = streaks_enabled
 
-        self.frame = wx.Frame(parent, title="Listening Statistics", size=(620, 560))
-        self.frame.SetMinSize((580, 520))
+        self.frame = wx.Frame(parent, title="Listening Statistics", size=dip_size(parent, 620, 560))
+        self.frame.SetMinSize(dip_size(self.frame, 580, 520))
         panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
         root = wx.BoxSizer(wx.VERTICAL)
 

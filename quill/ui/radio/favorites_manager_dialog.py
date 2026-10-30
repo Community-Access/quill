@@ -25,6 +25,7 @@ from quill.ui.dialog_contract import (
     bind_close_button,
     show_modal_dialog,
 )
+from quill.ui.dpi import dip_size
 from quill.ui.radio import favorites_details, favorites_marks
 
 _TOP_LEVEL_CHOICE = "(Top level -- no folder)"
@@ -129,7 +130,7 @@ class FavoritesManagerDialog:
             )
             self._surface = self._win
         self.dialog = self._win  # top-level window; child dialogs parent to it
-        self._win.SetMinSize((720, 560))
+        self._win.SetMinSize(dip_size(self._win, 720, 560))
         root = wx.BoxSizer(wx.VERTICAL)
 
         search_row = wx.BoxSizer(wx.HORIZONTAL)

@@ -26,6 +26,7 @@ from quill.core.speech.pronunciation import (
     validate_ssml_fragment,
 )
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_message_box
+from quill.ui.dpi import dip_size
 
 
 class SsmlBuilderDialog:
@@ -51,7 +52,7 @@ class SsmlBuilderDialog:
             title="SSML Builder",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize(wx.Size(560, 520))
+        self.dialog.SetMinSize(dip_size(self.dialog, 560, 520))
         root = wx.BoxSizer(wx.VERTICAL)
 
         root.Add(wx.StaticText(self.dialog, label="&Word or phrase:"), 0, wx.ALL, 6)
@@ -82,7 +83,7 @@ class SsmlBuilderDialog:
             self.dialog, value=fragment, style=wx.TE_MULTILINE | wx.TE_DONTWRAP
         )
         set_accessible_name(self._fragment, "SSML fragment")
-        self._fragment.SetMinSize(wx.Size(-1, 90))
+        self._fragment.SetMinSize(dip_size(self._fragment, -1, 90))
         self._fragment.Bind(wx.EVT_TEXT, lambda _e: self._validate())
         root.Add(self._fragment, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
 

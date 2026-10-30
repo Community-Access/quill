@@ -35,6 +35,7 @@ from quill.ui.dialog_contract import (
     show_message_box,
     show_modal_dialog,
 )
+from quill.ui.dpi import dip_size
 from quill.ui.surface_lifetime import surface_tasks
 
 _TIMEZONE_CHOICES = sorted(available_timezones())
@@ -60,7 +61,7 @@ class EditPublishingConnectionDialog:
             title="Edit Publishing Connection",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize((760, 560))
+        self.dialog.SetSize(dip_size(self.dialog, 760, 560))
 
         self._profile = profile or PublishingConnectionProfile()
         self._secret = load_publishing_secret(self._profile.id) if self._profile.id else ""
@@ -321,7 +322,7 @@ class BrowsePublishingContentDialog:
             title="Browse Publishing Content",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize((860, 620))
+        self.dialog.SetSize(dip_size(self.dialog, 860, 620))
 
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
@@ -397,7 +398,7 @@ class BrowsePublishingContentDialog:
         self.summary = wx.TextCtrl(
             self.dialog,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.BORDER_SIMPLE,
-            size=(-1, 140),
+            size=dip_size(self.dialog, -1, 140),
         )
         self.summary.SetName("Selected publishing content details")
         root.Add(self.summary, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
@@ -620,7 +621,7 @@ class PublishingConnectionsDialog:
             title="Publishing Connections",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize((820, 520))
+        self.dialog.SetSize(dip_size(self.dialog, 820, 520))
 
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
@@ -642,7 +643,7 @@ class PublishingConnectionsDialog:
         self.summary = wx.TextCtrl(
             self.dialog,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.BORDER_SIMPLE,
-            size=(-1, 120),
+            size=dip_size(self.dialog, -1, 120),
         )
         self.summary.SetName("Selected publishing connection details")
         root.Add(self.summary, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
@@ -816,7 +817,7 @@ class SchedulePublishDialog:
             title="Schedule Publish",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize((520, 380))
+        self.dialog.SetSize(dip_size(self.dialog, 520, 380))
 
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(

@@ -18,6 +18,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
+from quill.ui.dpi import dip_size
+
 __all__ = ["TITLE", "NewFeedDialog", "find_new_feed_for"]
 
 #: The window title; a key in ``surface_help.PURPOSES``.
@@ -46,7 +48,7 @@ class NewFeedDialog:
         self.dialog = wx.Dialog(
             parent, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize((620, 360))
+        self.dialog.SetMinSize(dip_size(self.dialog, 620, 360))
         root = wx.BoxSizer(wx.VERTICAL)
 
         self._summary = wx.StaticText(self.dialog, label=summary)

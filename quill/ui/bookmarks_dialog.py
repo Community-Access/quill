@@ -34,6 +34,7 @@ from typing import Any
 from quill.core import bookmark_anchors, bookmark_ops
 from quill.core.media.bookmarks import BookmarkStore, MediaBookmark, bookmarks_to_markdown
 from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids
+from quill.ui.dpi import dip_size
 
 TITLE = "Bookmarks"
 
@@ -88,7 +89,7 @@ def show_bookmarks(host: Any, *, store: BookmarkStore | None = None, anchor: str
     rows: list[tuple[str, MediaBookmark]] = _rows()
 
     dialog = wx.Dialog(host.frame, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
-    dialog.SetSize(wx.Size(760, 460))
+    dialog.SetSize(dip_size(dialog, 760, 460))
     root = wx.BoxSizer(wx.VERTICAL)
 
     summary_label = wx.StaticText(dialog, label=bookmark_ops.summarise(rows))

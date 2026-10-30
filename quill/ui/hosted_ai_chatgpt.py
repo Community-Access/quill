@@ -36,6 +36,7 @@ import wx
 
 from quill.core.ai.chatgpt_account import USAGE_URL, ChatGptAccount
 from quill.ui.accessible_names import set_accessible_name
+from quill.ui.dpi import dip_size
 from quill.ui.hosted_ai_dialogs import (
     _PAD,
     _close_row,
@@ -103,7 +104,7 @@ class ChatGptFrame(wx.Frame):
         self._sizer = wx.BoxSizer(wx.VERTICAL)
         panel.SetSizer(self._sizer)
         self._panel = panel
-        self.SetInitialSize((620, 520))
+        self.SetInitialSize(dip_size(self, 620, 520))
         self.Centre()
         if account.signed_in:
             self._show_signed_in()

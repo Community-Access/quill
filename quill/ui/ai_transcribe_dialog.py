@@ -7,6 +7,7 @@ from pathlib import Path
 
 from quill.core.ai.transcription import SUPPORTED_AUDIO_EXTENSIONS, SUPPORTED_LANGUAGES
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 
 
 class AITranscribeDialog:
@@ -39,7 +40,7 @@ class AITranscribeDialog:
             title="Transcribe Audio File",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize(wx.Size(640, 440))
+        self.dialog.SetSize(dip_size(self.dialog, 640, 440))
         self._build_ui()
 
     def _build_ui(self) -> None:
@@ -219,7 +220,7 @@ class AITranscriptionResultDialog:
             title=f"Transcript - {file_name}",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize(wx.Size(760, 560))
+        self.dialog.SetSize(dip_size(self.dialog, 760, 560))
         self._build_ui()
 
     def _build_ui(self) -> None:
@@ -333,7 +334,7 @@ class AIProgressDialog:
             title=title,
             style=wx.DEFAULT_DIALOG_STYLE,
         )
-        self.dialog.SetSize(wx.Size(480, 180))
+        self.dialog.SetSize(dip_size(self.dialog, 480, 180))
         root = wx.BoxSizer(wx.VERTICAL)
         self._label = wx.StaticText(self.dialog, label=message)
         self._label.Wrap(440)

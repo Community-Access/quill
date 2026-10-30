@@ -32,6 +32,7 @@ from quill.core.podcasts import title_cleanup
 from quill.core.podcasts.settings_resolver import LEVEL_SHOW, set_value, value_of
 from quill.core.podcasts.settings_types import SettingDef
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.dpi import dip_size
 
 TITLE = "Edit List"
 
@@ -105,7 +106,7 @@ class ListSettingDialog:
         self.dialog = wx.Dialog(
             parent, title=self._title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize((560, 460))
+        self.dialog.SetMinSize(dip_size(self.dialog, 560, 460))
         root = wx.BoxSizer(wx.VERTICAL)
 
         intro = wx.StaticText(self.dialog, label=caveat)

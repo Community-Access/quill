@@ -41,6 +41,7 @@ from quill.ui.dialog_contract import (
     apply_modal_ids,
     show_message_box,
 )
+from quill.ui.dpi import dip_size
 from quill.ui.prompt_edit_dialog import PromptEditDialog
 from quill.ui.skill_library_dialog import (
     _SkillCancelled,
@@ -130,7 +131,7 @@ class AILibraryDialog:
             title="AI Library",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize(wx.Size(760, 520))
+        self.dialog.SetMinSize(dip_size(self.dialog, 760, 520))
 
         root = wx.BoxSizer(wx.VERTICAL)
         self._notebook = wx.Notebook(self.dialog)
@@ -813,7 +814,7 @@ class _PromotedAgentDialog:
             title=f"Promote to Agent — {skill_name}",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize(wx.Size(620, 480))
+        self.dialog.SetMinSize(dip_size(self.dialog, 620, 480))
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
             wx.StaticText(

@@ -45,6 +45,7 @@ from quill.ui.dialog_contract import (
     set_accessible_name,
     show_modal_dialog,
 )
+from quill.ui.dpi import dip_size
 
 __all__ = [
     "ask_line_number",
@@ -168,7 +169,7 @@ def choose_from_rows(
     help_text: str,
     rows: list[tuple[object, str]],
     extra_button: str = "",
-    size: tuple[int, int] = (560, 400),
+    size: tuple[int, int] | wx.Size | None = None,
     on_highlight: Callable[[object], None] | None = None,
 ) -> tuple[object, str] | object | None:
     """One list, one choice. Returns the chosen row's key, or ``None``.
@@ -207,7 +208,7 @@ def choose_from_rows(
     buttons = dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
     root.Add(buttons, 0, wx.ALIGN_RIGHT | wx.ALL, _PAD)
     dialog.SetSizerAndFit(root)
-    dialog.SetSize(size)
+    dialog.SetSize(size if size is not None else dip_size(dialog, 560, 400))
     apply_modal_ids(dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
     # Enter and double-click both accept: a wx.ListBox raises no activated event
     # of its own, so without this the list is choose-with-the-mouse only.
@@ -284,7 +285,7 @@ def choose_bookmark(parent: wx.Window, marks: list[Any]) -> tuple[str, int] | No
         ),
         rows=[(mark.number, f"{mark.number}: {mark.label}") for mark in marks],
         extra_button="&Remove",
-        size=(560, 360),
+        size=dip_size(None, 560, 360),
     )
     if chosen is None:
         return None
@@ -443,7 +444,7 @@ def show_text_window(
     close_btn.SetHelpText("Close this window and go back to your document.")
     root.Add(close_btn, 0, wx.ALIGN_RIGHT | wx.ALL, _PAD)
     dialog.SetSizerAndFit(root)
-    dialog.SetSize((640, 480))
+    dialog.SetSize(dip_size(dialog, 640, 480))
     apply_modal_ids(dialog, cancel_id=wx.ID_CANCEL, escape_id=wx.ID_CANCEL)
     bind_close_button(dialog, close_btn, modeless=False)
     field.SetFocus()
@@ -503,7 +504,7 @@ def choose_searchable(
     root.Add(listbox, 1, wx.EXPAND | wx.ALL, _PAD)
     root.Add(dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL), 0, wx.ALIGN_RIGHT | wx.ALL, _PAD)
     dialog.SetSizerAndFit(root)
-    dialog.SetSize((520, 460))
+    dialog.SetSize(dip_size(dialog, 520, 460))
     apply_modal_ids(dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
     apply_listbox_activation(listbox, lambda _event: dialog.EndModal(wx.ID_OK))
 
@@ -579,7 +580,7 @@ def choose_document_language(parent: wx.Window, *, current: str, default_label: 
     root.Add(listbox, 1, wx.EXPAND | wx.ALL, _PAD)
     root.Add(dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL), 0, wx.ALIGN_RIGHT | wx.ALL, _PAD)
     dialog.SetSizerAndFit(root)
-    dialog.SetSize((460, 300))
+    dialog.SetSize(dip_size(dialog, 460, 300))
     apply_modal_ids(dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
     apply_listbox_activation(listbox, lambda _event: dialog.EndModal(wx.ID_OK))
     listbox.SetSelection(_index_of(tuple(rows), current))

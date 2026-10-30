@@ -30,6 +30,7 @@ import wx
 
 from quill.core.windows_dictation.never_type import friendly_name, normalise_image_name
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 __all__ = ["NeverTypeDialog", "program_in_front"]
 
@@ -129,7 +130,7 @@ class NeverTypeDialog(wx.Dialog):
         buttons = self.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, _PAD)
         self.SetSizer(root)
-        self.SetSize((560, 420))
+        self.SetSize(dip_size(self, 560, 420))
         self.Bind(wx.EVT_BUTTON, self._on_ok, id=wx.ID_OK)
         apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
         self.list.SetFocus()

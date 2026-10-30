@@ -13,6 +13,7 @@ from __future__ import annotations
 from typing import Any
 
 from quill.core.podcasts import places as places_model
+from quill.ui.dpi import dip_size
 
 __all__ = ["PlacesChooser", "open_places_chooser"]
 
@@ -96,7 +97,7 @@ class PlacesChooser:
         closing.Add(cancel, 0)
         root.Add(closing, 0, wx.EXPAND | wx.ALL, 8)
         self.dialog.SetSizer(root)
-        self.dialog.SetSize((520, 420))
+        self.dialog.SetSize(dip_size(self.dialog, 520, 420))
         apply_modal_ids(
             self.dialog, affirmative_id=wx.ID_OK, affirmative_label="Save", cancel_id=wx.ID_CANCEL
         )

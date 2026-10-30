@@ -9,6 +9,7 @@ from __future__ import annotations
 import wx
 
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 
 def _name(ctrl: wx.Control, name: str) -> None:
@@ -57,7 +58,7 @@ class CommandPalette(wx.Dialog):
         self._populate("")
 
         self.SetSizer(sizer)
-        self.SetSize((420, 360))
+        self.SetSize(dip_size(self, 420, 360))
         self.filter.SetFocus()
 
         self.filter.Bind(wx.EVT_TEXT, self._on_text)

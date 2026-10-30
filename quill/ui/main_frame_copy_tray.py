@@ -20,6 +20,7 @@ import wx
 
 from quill.core.copy_tray import CopyTray
 from quill.core.multi_press import MultiPressDispatcher
+from quill.ui.dpi import dip_size
 from quill.ui.sound_manager import post_sound
 
 
@@ -44,7 +45,7 @@ class _TraySearchDialog:
             title="Search Copy Tray Slots",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize(wx.Size(440, 320))
+        self.dialog.SetMinSize(dip_size(self.dialog, 440, 320))
 
         root = wx.BoxSizer(wx.VERTICAL)
 

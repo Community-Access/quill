@@ -9,6 +9,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip, dip_size
 
 
 class AIAgentResultDialog:
@@ -59,7 +60,7 @@ class AIAgentResultDialog:
             title=title,
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize(wx.Size(760, 620))
+        self.dialog.SetSize(dip_size(self.dialog, 760, 620))
         self._build_ui()
 
     def _build_ui(self) -> None:
@@ -76,14 +77,14 @@ class AIAgentResultDialog:
                 style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.BORDER_SIMPLE,
             )
             self._step_list.SetName("Agent steps")
-            self._step_list.InsertColumn(0, "#", width=36)
-            self._step_list.InsertColumn(1, "Step", width=200)
-            self._step_list.InsertColumn(2, "Output preview", width=440)
+            self._step_list.InsertColumn(0, "#", width=dip(self._step_list, 36))
+            self._step_list.InsertColumn(1, "Step", width=dip(self._step_list, 200))
+            self._step_list.InsertColumn(2, "Output preview", width=dip(self._step_list, 440))
             for i, step in enumerate(result.steps):
                 self._step_list.InsertItem(i, str(i + 1))
                 self._step_list.SetItem(i, 1, step.label)
                 self._step_list.SetItem(i, 2, step.output[:80].replace("\n", " "))
-            self._step_list.SetMinSize(wx.Size(-1, 100))
+            self._step_list.SetMinSize(dip_size(self._step_list, -1, 100))
             log_sizer.Add(self._step_list, 1, wx.EXPAND | wx.ALL, 4)
             root.Add(log_sizer, 0, wx.EXPAND | wx.ALL, 8)
 

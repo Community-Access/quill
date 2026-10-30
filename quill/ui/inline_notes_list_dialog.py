@@ -26,6 +26,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from quill.core.inline_notes_list import NoteRow
+from quill.ui.dpi import dip_size
 
 __all__ = ["NotesListHost", "show_inline_notes_list"]
 
@@ -53,7 +54,7 @@ def show_inline_notes_list(
     chosen: dict[str, NoteRow | None] = {"row": None}
     rows: list[NoteRow] = []
     dialog = wx.Dialog(parent, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
-    dialog.SetSize((760, 460))
+    dialog.SetSize(dip_size(dialog, 760, 460))
     sizer = wx.BoxSizer(wx.VERTICAL)
     label = wx.StaticText(dialog, label="&Notes:")
     sizer.Add(label, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)

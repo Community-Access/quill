@@ -33,6 +33,7 @@ from quill.core.speech.chapter_io import format_timestamp
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.dialog_contract import apply_listbox_activation
+from quill.ui.dpi import dip_size
 from quill.ui.media.go_to_position_dialog import GoToPositionDialog
 from quill.ui.media.listen_mixin import MediaListenMixin
 from quill.ui.media.note_cue_actions import NoteCuesMixin
@@ -67,7 +68,9 @@ class QuillMediaPlayerFrame(
     _STATUS_LABELS = ("State", "Position", "Chapter", "Sleep", "Backend")
 
     def __init__(self, *, safe_mode: bool = False, initial_paths: list[Path] | None = None) -> None:
-        self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(620, 520), app_id="player")
+        self._init_app_shell(
+            _TITLE, safe_mode=safe_mode, size=dip_size(None, 620, 520), app_id="player"
+        )
         # F1 context help with the Media Player's authored purpose catalogue.
         # The app shell already activated the shared engine (provider +
         # dialog-contract hook + main-frame F1); this re-activation swaps in
@@ -159,7 +162,7 @@ class QuillMediaPlayerFrame(
         root = wx.BoxSizer(wx.VERTICAL)
 
         self._now_playing = wx.TextCtrl(
-            panel, style=wx.TE_READONLY | wx.TE_MULTILINE, size=(-1, 44)
+            panel, style=wx.TE_READONLY | wx.TE_MULTILINE, size=dip_size(panel, -1, 44)
         )
         set_accessible_name(self._now_playing, "Now playing")
         self._now_playing.SetHelpText(
@@ -935,6 +938,9 @@ def main() -> int:
     from quill.stability.logging_config import configure_logging
 
     log_listener = configure_logging(app_data_dir() / "logs")
+    from quill.platform.windows.dpi_awareness import enable_dpi_awareness
+
+    enable_dpi_awareness()  # before the first window, or Windows stretches it (#1702)
     app = wx.App()
     frame = QuillMediaPlayerFrame(safe_mode=safe_mode, initial_paths=initial_paths)
     frame._log_listener = log_listener

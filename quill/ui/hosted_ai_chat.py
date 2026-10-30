@@ -60,6 +60,7 @@ from quill.ui.ai_conversation_tools import (
     export_conversation_to_file,
     show_message_list,
 )
+from quill.ui.dpi import dip_size
 from quill.ui.hosted_ai_dialogs import _PAD, _close_row, _read_only, focus_on, show_problem
 
 __all__ = ["AiChatFrame", "follow_up_seed", "open_for"]
@@ -186,7 +187,7 @@ class AiChatFrame(wx.Frame):
 
         self.recent = RecentMessageReader(self._pairs, self._announce)
         bind_recent_message_keys(self, self.recent)
-        self.SetInitialSize((680, 640))
+        self.SetInitialSize(dip_size(self, 680, 640))
         self.Centre()
         focus_on(self, self._message)
         if first_message.strip():

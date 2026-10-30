@@ -29,6 +29,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.dpi import dip, dip_size
 from quill.ui.virtual_list import virtual_report_list
 
 _FAVORITES = "Favorites"
@@ -63,8 +64,8 @@ class EmojiPickerDialog:
             title="Insert Emoji",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize((640, 480))
-        self.dialog.SetSize((720, 560))
+        self.dialog.SetMinSize(dip_size(self.dialog, 640, 480))
+        self.dialog.SetSize(dip_size(self.dialog, 720, 560))
         panel = wx.Panel(self.dialog)
         root = wx.BoxSizer(wx.VERTICAL)
 
@@ -102,8 +103,8 @@ class EmojiPickerDialog:
         # costs a screen reader nothing.
         self._results = virtual_report_list(wx, panel, self._result_cell, style=wx.BORDER_SIMPLE)
         self._results.SetName("Emoji results; arrow through to hear the description of each")
-        self._results.InsertColumn(0, "Symbol", width=70)
-        self._results.InsertColumn(1, "Name", width=260)
+        self._results.InsertColumn(0, "Symbol", width=dip(self._results, 70))
+        self._results.InsertColumn(1, "Name", width=dip(self._results, 260))
         results_col.Add(self._results, 1, wx.EXPAND)
         body.Add(results_col, 2, wx.EXPAND)
 

@@ -55,6 +55,7 @@ from quill.ui.dialog_contract import (
     bind_close_button,
     show_modal_dialog,
 )
+from quill.ui.dpi import dip_size
 
 __all__ = [
     "LIST_TITLE",
@@ -204,7 +205,7 @@ class MessageListDialog(wx.Dialog):
             last = len(messages) - 1
             chosen = last if start is None else max(0, min(start, last))
             self.list.SetSelection(chosen)
-        self.SetInitialSize((620, 440))
+        self.SetInitialSize(dip_size(self, 620, 440))
         self.list.SetFocus()
 
     @property
@@ -276,7 +277,7 @@ class _MessageTextDialog(wx.Dialog):
             "The message exactly as it arrived, Markdown and all. Arrow through it, "
             "or select and copy any of it."
         )
-        self.text.SetMinSize((560, 300))
+        self.text.SetMinSize(dip_size(self.text, 560, 300))
         sizer.Add(self.text, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
         close = wx.Button(self, wx.ID_CANCEL, label="Close")
         close.SetHelpText("Closes this and goes back to the list of messages.")

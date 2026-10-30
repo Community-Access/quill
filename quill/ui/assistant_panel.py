@@ -16,6 +16,7 @@ import time
 from quill.ui.assistant_conversation_tools import AssistantConversationToolsMixin
 from quill.ui.assistant_reply_delivery import AssistantReplyDeliveryMixin
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.dpi import dip_size
 
 SUGGESTED_PROMPTS: tuple[str, ...] = (
     "Summarize this document",
@@ -137,7 +138,7 @@ class AskQuillChatDialog(AssistantReplyDeliveryMixin, AssistantConversationTools
             title="Ask Quill",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize((760, 760))
+        self.dialog.SetSize(dip_size(self.dialog, 760, 760))
         outer = wx.BoxSizer(wx.VERTICAL)
 
         self._per_provider_models: dict[str, str] = {}
@@ -321,12 +322,12 @@ class AskQuillChatDialog(AssistantReplyDeliveryMixin, AssistantConversationTools
         row.Add(self._setup_provider, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 12)
 
         row.Add(wx.StaticText(panel, label="Model:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
-        self._setup_model = wx.TextCtrl(panel, size=wx.Size(200, -1))
+        self._setup_model = wx.TextCtrl(panel, size=dip_size(panel, 200, -1))
         self._setup_model.SetName("Model name or ID")
         row.Add(self._setup_model, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 12)
 
         self._setup_key_lbl = wx.StaticText(panel, label="API Key:")
-        self._setup_key = wx.TextCtrl(panel, style=wx.TE_PASSWORD, size=wx.Size(180, -1))
+        self._setup_key = wx.TextCtrl(panel, style=wx.TE_PASSWORD, size=dip_size(panel, 180, -1))
         self._setup_key.SetName("API key")
         row.Add(self._setup_key_lbl, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
         row.Add(self._setup_key, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 12)

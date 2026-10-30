@@ -33,6 +33,7 @@ from quill.core.podcasts.sorting import (
 )
 from quill.core.podcasts.subscriptions import PodcastLibrary
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 from quill.ui.media.list_columns_view import fill_row
 from quill.ui.podcasts.manager_actions import ManagerActionsMixin
 from quill.ui.podcasts.manager_downloads import ManagerDownloadsMixin
@@ -164,8 +165,8 @@ class PodcastManagerDialog(
         self.dialog = wx.Dialog(
             parent, title="Podcasts", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize((820, 600))
-        self.dialog.SetSize((960, 680))
+        self.dialog.SetMinSize(dip_size(self.dialog, 820, 600))
+        self.dialog.SetSize(dip_size(self.dialog, 960, 680))
         root_sizer = wx.BoxSizer(wx.VERTICAL)
 
         self._build_phase4_row(root_sizer)

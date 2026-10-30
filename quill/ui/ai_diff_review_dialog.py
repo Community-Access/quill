@@ -27,6 +27,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_modal_dialog
+from quill.ui.dpi import dip_size
 
 __all__ = ["DiffReviewDialog"]
 
@@ -75,7 +76,7 @@ class DiffReviewDialog:
             title=title,
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize((880, 680))
+        self.dialog.SetSize(dip_size(self.dialog, 880, 680))
 
         panel = wx.Panel(self.dialog)
         root = wx.BoxSizer(wx.VERTICAL)
@@ -126,7 +127,7 @@ class DiffReviewDialog:
         self.word_list = wx.CheckListBox(  # A11Y-SR-1-OK: word groups of one hunk
             panel,
             choices=[],
-            size=(-1, 120),
+            size=dip_size(panel, -1, 120),
         )
         set_accessible_name(self.word_list, "Words in this change")
         self.word_list.SetHelpText(
@@ -142,7 +143,7 @@ class DiffReviewDialog:
         self.details = wx.TextCtrl(
             panel,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.BORDER_SIMPLE,
-            size=(-1, 150),
+            size=dip_size(panel, -1, 150),
         )
         set_accessible_name(self.details, "Change details")
         self.details.SetHelpText(

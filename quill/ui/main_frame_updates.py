@@ -32,6 +32,7 @@ from quill.core.net import certificate_problem
 from quill.core.paths import app_data_dir
 from quill.core.settings import save_settings
 from quill.core.text_utils import strip_md_to_plain as _strip_md_to_plain
+from quill.ui.dpi import dip_size
 
 
 class UpdatesMixin:
@@ -775,7 +776,7 @@ class UpdatesMixin:
         dialog = wx.Dialog(
             self.frame, title="Update downloaded", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        dialog.SetSize((500, 260))
+        dialog.SetSize(dip_size(dialog, 500, 260))
         sizer = wx.BoxSizer(wx.VERTICAL)
         body = wx.TextCtrl(
             dialog,

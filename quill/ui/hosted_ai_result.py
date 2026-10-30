@@ -18,6 +18,7 @@ from collections.abc import Callable
 import wx
 
 from quill.core.ai.writing_tools import ACTION_TITLES
+from quill.ui.dpi import dip_size
 from quill.ui.hosted_ai_dialogs import _close_row, _read_only, focus_on
 
 __all__ = ["AiResultFrame"]
@@ -137,7 +138,7 @@ class AiResultFrame(wx.Frame):
                 grow=False,
             )
 
-        self.SetInitialSize((620, 460))
+        self.SetInitialSize(dip_size(self, 620, 460))
         self.Centre()
         # Focus lands on the answer, so the reader reads it. Nothing is
         # announced on top of that (GATE-13): the window title and the focused

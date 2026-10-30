@@ -28,6 +28,7 @@ import html
 import json
 
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.dpi import dip_size
 
 FieldSpec = dict
 
@@ -55,7 +56,7 @@ def show_web_form(
     intro: str = "",
     save_label: str = "Save",
     cancel_label: str = "Cancel",
-    size: tuple[int, int] = (720, 560),
+    size: tuple[int, int] | None = None,
     auto_focus_first_field: bool = True,
     settings: bool = False,
 ) -> dict | None:
@@ -68,7 +69,7 @@ def show_web_form(
         intro=intro,
         save_label=save_label,
         cancel_label=cancel_label,
-        size=size,
+        size=size if size is not None else dip_size(parent, 720, 560),
         auto_focus_first_field=auto_focus_first_field,
         settings=settings,
     )

@@ -21,6 +21,7 @@ from quill.core.lineups.model import NEW_ITEMS_LABELS, NEW_ITEMS_PLACES, Lineup
 from quill.core.lineups.ops import items_of_rule
 from quill.core.lineups.refs import KIND_EPISODE
 from quill.core.lineups.rules import Rule, evaluate, new_rule
+from quill.ui.dpi import dip_size
 from quill.ui.lineups import dialogs
 from quill.ui.lineups.rule_edit_dialog import RuleEditor
 
@@ -46,7 +47,7 @@ class RulesDialog:
         root.Add(
             wx.StaticText(self.dialog, label=f"&Rules for {lineup.name}:"), 0, wx.LEFT | wx.TOP, 10
         )
-        self._list = wx.ListBox(self.dialog, size=(640, 180))
+        self._list = wx.ListBox(self.dialog, size=dip_size(self.dialog, 640, 180))
         self._list.SetName(f"Rules for {lineup.name}")
         self._list.SetHelpText(
             "Each rule as one sentence: what it brings in, how long its items stay, and "

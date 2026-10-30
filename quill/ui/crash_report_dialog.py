@@ -51,6 +51,7 @@ from quill.stability.crash_submit import (
     render_crash_report_preview,
 )
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.dpi import dip_size
 
 # ---------------------------------------------------------------------------
 # Result
@@ -126,8 +127,8 @@ class CrashReportDialog:
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
         self.dialog.SetName("crash_report_dialog")
-        self.dialog.SetSize((720, 620))
-        self.dialog.SetMinSize((560, 480))
+        self.dialog.SetSize(dip_size(self.dialog, 720, 620))
+        self.dialog.SetMinSize(dip_size(self.dialog, 560, 480))
 
         root = wx.BoxSizer(wx.VERTICAL)
 
@@ -162,7 +163,7 @@ class CrashReportDialog:
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
         )
         self._preview.SetName("Report preview")
-        self._preview.SetMinSize((560, 200))
+        self._preview.SetMinSize(dip_size(self._preview, 560, 200))
         root.Add(self._preview, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         # --- User-supplied context fields ---------------------------------
@@ -171,7 +172,7 @@ class CrashReportDialog:
         root.Add(what_label, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
         self._what_ctrl = wx.TextCtrl(self.dialog, style=wx.TE_MULTILINE)
         self._what_ctrl.SetName("What were you doing")
-        self._what_ctrl.SetMinSize((560, 60))
+        self._what_ctrl.SetMinSize(dip_size(self._what_ctrl, 560, 60))
         root.Add(self._what_ctrl, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         trigger_label = wx.StaticText(
@@ -188,7 +189,7 @@ class CrashReportDialog:
         root.Add(expect_label, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
         self._expect_ctrl = wx.TextCtrl(self.dialog, style=wx.TE_MULTILINE)
         self._expect_ctrl.SetName("Expected behaviour")
-        self._expect_ctrl.SetMinSize((560, 60))
+        self._expect_ctrl.SetMinSize(dip_size(self._expect_ctrl, 560, 60))
         root.Add(self._expect_ctrl, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         # --- Buttons row --------------------------------------------------

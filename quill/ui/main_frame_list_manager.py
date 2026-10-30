@@ -12,6 +12,7 @@ from dataclasses import dataclass
 
 from quill.core.selection import line_span
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 
 
 @dataclass(slots=True)
@@ -189,7 +190,7 @@ class ListManagerMixin:
             for item in state.items
         ]
         selected_index: int | None = 0 if working_items else None
-        dialog = wx.Dialog(self.frame, title="List Manager", size=(1020, 700))
+        dialog = wx.Dialog(self.frame, title="List Manager", size=dip_size(self.frame, 1020, 700))
         splitter = wx.SplitterWindow(dialog, style=wx.SP_LIVE_UPDATE)
         tree = wx.TreeCtrl(
             splitter,

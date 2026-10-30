@@ -45,6 +45,7 @@ from quill.core.library import catalogs as catalogs_module
 from quill.core.library import works as works_module
 from quill.core.library.model import Book, LibraryError
 from quill.core.library.works import Work
+from quill.ui.dpi import dip_size
 
 # Display label -> source ids passed to library.search. "Everywhere" is first
 # and is the default: somebody looking for a book wants the book, and choosing
@@ -172,7 +173,9 @@ class LibraryDialog(wx.Dialog):
         find_row.Add(self.find_btn, 0)
         sizer.Add(find_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
 
-        self.status = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(-1, 48))
+        self.status = wx.TextCtrl(
+            self, style=wx.TE_MULTILINE | wx.TE_READONLY, size=dip_size(self, -1, 48)
+        )
         self.status.SetName("Status")
         sizer.Add(self.status, 0, wx.EXPAND | wx.ALL, 6)
 
@@ -204,7 +207,7 @@ class LibraryDialog(wx.Dialog):
         apply_modal_ids(self, cancel_id=wx.ID_CANCEL, cancel_label="Close")
 
         self.SetSizer(sizer)
-        self.SetSize((560, 520))
+        self.SetSize(dip_size(self, 560, 520))
         self.query.SetFocus()
 
         self.search_btn.Bind(wx.EVT_BUTTON, self._on_search)

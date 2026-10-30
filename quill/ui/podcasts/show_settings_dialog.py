@@ -48,6 +48,7 @@ from quill.core.podcasts.settings_types import (
     SettingDef,
 )
 from quill.core.podcasts.subscriptions import PodcastLibrary
+from quill.ui.dpi import dip_size
 from quill.ui.podcasts.show_settings_panel import (
     SettingControl,
     apply_controls,
@@ -105,8 +106,8 @@ class ShowSettingsWindow:
         self._announce = announce_cb or (lambda _m: None)
         self._host = host
         self._body: Any = None
-        self.frame = wx.Frame(parent, title="Settings for", size=(660, 760))
-        self.frame.SetMinSize((620, 620))
+        self.frame = wx.Frame(parent, title="Settings for", size=dip_size(parent, 660, 760))
+        self.frame.SetMinSize(dip_size(self.frame, 620, 620))
         self.frame.SetSizer(wx.BoxSizer(wx.VERTICAL))
         self.load(library=library, show=show, on_saved=on_saved)
         self.frame.CentreOnParent()

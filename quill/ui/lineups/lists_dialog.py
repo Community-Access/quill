@@ -13,6 +13,7 @@ from typing import Any
 
 from quill.core.lineups.model import Lineup
 from quill.core.lineups.refs import KIND_LABELS, ItemRef
+from quill.ui.dpi import dip_size
 
 TITLES = {"removed": "Removed Items", "left": "Recently Left"}
 
@@ -77,7 +78,10 @@ def choose_entries(window: Any, lineup: Lineup, which: str) -> tuple[list[ItemRe
     label = "&Items you removed:" if which == "removed" else "&Items the rules let go:"
     sizer.Add(wx.StaticText(dialog, label=label), 0, wx.LEFT | wx.TOP, 10)
     listing = wx.ListBox(
-        dialog, choices=[text for _ref, text in rows], style=wx.LB_EXTENDED, size=(560, 220)
+        dialog,
+        choices=[text for _ref, text in rows],
+        style=wx.LB_EXTENDED,
+        size=dip_size(dialog, 560, 220),
     )
     listing.SetName(title)
     listing.SetHelpText(

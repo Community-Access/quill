@@ -41,6 +41,7 @@ from quill.core.podcasts.settings_types import (
     LEVEL_GLOBAL,
     SettingDef,
 )
+from quill.ui.dpi import dip_size
 
 __all__ = ["AppRow", "CastPreferencesWindow", "SECTIONS", "section_of", "TITLE"]
 
@@ -231,8 +232,8 @@ class CastPreferencesWindow:
         buttons.Add(cancel, 0)
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
         self.dialog.SetSizer(root)
-        self.dialog.SetSize((720, 560))
-        self.dialog.SetMinSize((560, 400))
+        self.dialog.SetSize(dip_size(self.dialog, 720, 560))
+        self.dialog.SetMinSize(dip_size(self.dialog, 560, 400))
         apply_modal_ids(
             self.dialog, affirmative_id=wx.ID_OK, affirmative_label="Save", cancel_id=wx.ID_CANCEL
         )

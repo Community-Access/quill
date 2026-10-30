@@ -24,6 +24,7 @@ from typing import Any
 
 from quill.core.radio import reminders as rem
 from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids
+from quill.ui.dpi import dip_size
 
 TITLE = "Upcoming"
 
@@ -47,7 +48,7 @@ def show_upcoming(host: Any) -> None:
     rows: list[tuple[str, Any]] = []
 
     dialog = wx.Dialog(host.frame, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
-    dialog.SetSize(wx.Size(760, 460))
+    dialog.SetSize(dip_size(dialog, 760, 460))
     root = wx.BoxSizer(wx.VERTICAL)
 
     summary = wx.StaticText(dialog, label="")

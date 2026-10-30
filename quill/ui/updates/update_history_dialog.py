@@ -18,6 +18,7 @@ from quill.core.updater.history import UpdateEvent
 from quill.core.updater.wording import history_title
 from quill.core.versioning import display_version
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
+from quill.ui.dpi import dip_size
 
 __all__ = ["UpdateHistoryDialog", "details_text"]
 
@@ -50,7 +51,9 @@ class UpdateHistoryDialog(wx.Dialog):  # type: ignore[misc]
         sizer = wx.BoxSizer(wx.VERTICAL)
         list_label = wx.StaticText(self, label="&Events, newest first:")
         sizer.Add(list_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, 12)
-        self._list = wx.ListCtrl(self, style=wx.LC_REPORT | wx.LC_SINGLE_SEL, size=(-1, 220))
+        self._list = wx.ListCtrl(
+            self, style=wx.LC_REPORT | wx.LC_SINGLE_SEL, size=dip_size(self, -1, 220)
+        )
         self._list.SetName("Events, newest first")
         self._list.SetHelpText(
             "Everything the updater did for this app, newest first. The box below "
@@ -71,7 +74,7 @@ class UpdateHistoryDialog(wx.Dialog):  # type: ignore[misc]
         details_label = wx.StaticText(self, label="&Details:")
         sizer.Add(details_label, 0, wx.LEFT | wx.RIGHT, 12)
         self._details = wx.TextCtrl(
-            self, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2, size=(-1, 90)
+            self, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2, size=dip_size(self, -1, 90)
         )
         self._details.SetName("Details")
         self._details.SetHelpText("Every detail of the row selected above. Read-only.")
@@ -85,7 +88,7 @@ class UpdateHistoryDialog(wx.Dialog):  # type: ignore[misc]
         buttons.Add(close, 0)
         sizer.Add(buttons, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
         self.SetSizerAndFit(sizer)
-        self.SetSize((640, 480))
+        self.SetSize(dip_size(self, 640, 480))
         apply_modal_ids(self, escape_id=wx.ID_CANCEL)
         self._list.Bind(wx.EVT_LIST_ITEM_SELECTED, self._on_select)
         if self._list.GetItemCount():

@@ -39,6 +39,7 @@ from typing import Any
 
 from quill.ui.app_context_help import ensure_help_provider
 from quill.ui.dialog_contract import bind_close_button
+from quill.ui.dpi import dip_size
 
 TITLE = "Braille A/B: system edit fix"
 
@@ -97,7 +98,7 @@ def open_braille_ab(host: Any) -> Any:
 
     from quill.ui.richedit_rtf_surface import create_richedit_rtf
 
-    frame = wx.Frame(host.frame, title=TITLE, size=(720, 520))
+    frame = wx.Frame(host.frame, title=TITLE, size=dip_size(host.frame, 720, 520))
     frame.SetHelpText(_HELP_WINDOW)
     panel = wx.Panel(frame)
     panel.SetHelpText(_HELP_WINDOW)

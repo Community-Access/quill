@@ -29,6 +29,7 @@ from quill.core.watch_queue import (
 )
 from quill.io.pandoc import convert_document_with_pandoc
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 
 class WatchFolderRuntimeMixin:
@@ -144,7 +145,7 @@ class WatchFolderRuntimeMixin:
         if buttons is not None:
             root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
         dialog.SetSizerAndFit(root)
-        dialog.SetSize((640, 460))
+        dialog.SetSize(dip_size(dialog, 640, 460))
 
         def _selected_item() -> QueueItem | None:
             index = listbox.GetSelection()
@@ -303,7 +304,7 @@ class WatchFolderRuntimeMixin:
             if buttons is not None:
                 root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
             dialog.SetSizerAndFit(root)
-            dialog.SetSize((620, 440))
+            dialog.SetSize(dip_size(dialog, 620, 440))
 
             def _refresh_list(select: int = -1) -> None:
                 profiles = self._watch_service.profiles()

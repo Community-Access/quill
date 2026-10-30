@@ -40,6 +40,7 @@ from quill.core.sync import recovery_phrase, vault_file
 from quill.core.sync.listening_places import new_device_id as _new_device_id
 from quill.core.sync.places_config import PlacesConfig, default_device_name
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 TITLE = "Carry My Place Between Machines"
 
@@ -170,7 +171,9 @@ class SyncPlacesDialog:
         root.Add(shared, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         self._status = wx.TextCtrl(
-            self._dialog, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(-1, 60)
+            self._dialog,
+            style=wx.TE_MULTILINE | wx.TE_READONLY,
+            size=dip_size(self._dialog, -1, 60),
         )
         self._status.SetName("What happened")
         self._status.SetValue(config.describe())
@@ -184,7 +187,7 @@ class SyncPlacesDialog:
         root.Add(buttons, 0, wx.ALL, 10)
 
         self._dialog.SetSizer(root)
-        self._dialog.SetMinSize((640, 520))
+        self._dialog.SetMinSize(dip_size(self._dialog, 640, 520))
         self._dialog.Fit()
         apply_modal_ids(self._dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
 

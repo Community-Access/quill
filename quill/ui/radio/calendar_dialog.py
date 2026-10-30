@@ -35,6 +35,7 @@ from typing import Any
 
 from quill.core.radio import acb_calendar, calendar_actions
 from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids
+from quill.ui.dpi import dip_size
 from quill.ui.surface_lifetime import surface_tasks
 
 TITLE = "ACB Media Schedule"
@@ -119,7 +120,7 @@ class _CalendarWindow:
         self.dialog = wx.Dialog(
             self._host.frame, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetSize(wx.Size(860, 560))
+        self.dialog.SetSize(dip_size(self.dialog, 860, 560))
         root = wx.BoxSizer(wx.VERTICAL)
 
         # A read-only edit field, not a StaticText. The summary is the sentence
@@ -133,7 +134,7 @@ class _CalendarWindow:
             self.dialog,
             value="Loading the schedule...",
             style=wx.TE_READONLY | wx.TE_MULTILINE | wx.TE_NO_VSCROLL,
-            size=wx.Size(-1, 48),
+            size=dip_size(self.dialog, -1, 48),
         )
         # SetName is what focus announces; SetHelpText is what F1
         # answers. Different mechanisms, so both, spelled out -- the

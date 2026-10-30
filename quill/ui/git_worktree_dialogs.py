@@ -25,6 +25,7 @@ from typing import TYPE_CHECKING
 
 from quill.core.path_input import clean_typed_path
 from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids, show_modal_dialog
+from quill.ui.dpi import dip_size
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Sequence
@@ -87,7 +88,7 @@ class WorktreesDialog:
         self.dialog = wx.Dialog(
             parent, title="Worktrees", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize((640, 400))
+        self.dialog.SetMinSize(dip_size(self.dialog, 640, 400))
         root = wx.BoxSizer(wx.VERTICAL)
 
         intro = wx.StaticText(

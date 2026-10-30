@@ -15,6 +15,7 @@ from quill.ui.audio_studio.request import (
     BatchSpeechRequest,
 )
 from quill.ui.dialog_contract import show_message_box
+from quill.ui.dpi import dip_size
 
 
 class BookPage(StudioPage):
@@ -455,7 +456,7 @@ class SummaryPage(StudioPage):
             "line, read-only. Arrow through it to review; press Back to "
             "change anything, or Start to begin the run."
         )
-        self._text.SetMinSize(wx.Size(-1, 240))
+        self._text.SetMinSize(dip_size(self._text, -1, 240))
         self.sizer.Add(self._text, proportion=1, flag=wx.EXPAND | wx.ALL, border=12)
         self._latest: BatchSpeechRequest | None = None
         save_job_btn = wx.Button(self, label=_("Save a &job file..."))

@@ -33,6 +33,7 @@ from quill.core.github.items_provider import (
     GitHubItemsProvider,
 )
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.dpi import dip, dip_size
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -67,8 +68,8 @@ class ArtifactsDialog:
             title=f"Artifacts - {run_label}",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize((520, 380))
-        self.dialog.SetSize((600, 420))
+        self.dialog.SetMinSize(dip_size(self.dialog, 520, 380))
+        self.dialog.SetSize(dip_size(self.dialog, 600, 420))
         panel = wx.Panel(self.dialog)
         root = wx.BoxSizer(wx.VERTICAL)
 
@@ -76,11 +77,13 @@ class ArtifactsDialog:
         intro.Wrap(560)
         root.Add(intro, 0, wx.ALL, 10)
 
-        self._list = wx.ListCtrl(panel, style=wx.LC_REPORT | wx.LC_SINGLE_SEL, size=(-1, 220))
+        self._list = wx.ListCtrl(
+            panel, style=wx.LC_REPORT | wx.LC_SINGLE_SEL, size=dip_size(panel, -1, 220)
+        )
         self._list.SetName("Artifacts")
-        self._list.InsertColumn(0, "Name", width=280)
-        self._list.InsertColumn(1, "Size", width=90)
-        self._list.InsertColumn(2, "Status", width=90)
+        self._list.InsertColumn(0, "Name", width=dip(self._list, 280))
+        self._list.InsertColumn(1, "Size", width=dip(self._list, 90))
+        self._list.InsertColumn(2, "Status", width=dip(self._list, 90))
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)

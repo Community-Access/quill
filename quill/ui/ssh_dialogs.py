@@ -25,6 +25,7 @@ from quill.ui.dialog_contract import (
     apply_modal_ids,
     show_modal_dialog,
 )
+from quill.ui.dpi import dip_size
 
 _AUTH_LABELS = [
     ("Password", AUTH_PASSWORD),
@@ -304,7 +305,7 @@ class SiteManagerDialog:
         self.dialog = wx.Dialog(
             parent, title="SSH Site Manager", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetSize((520, 460))
+        self.dialog.SetSize(dip_size(self.dialog, 520, 460))
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
             wx.StaticText(self.dialog, label="Saved sites"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 12
@@ -422,7 +423,7 @@ class RemoteBrowserDialog:
         self.dialog = wx.Dialog(
             parent, title="Open Remote File", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetSize((620, 520))
+        self.dialog.SetSize(dip_size(self.dialog, 620, 520))
         root = wx.BoxSizer(wx.VERTICAL)
         self.path_label = wx.StaticText(self.dialog, label=self._cwd)
         root.Add(self.path_label, 0, wx.ALL, 10)

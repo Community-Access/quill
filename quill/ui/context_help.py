@@ -29,6 +29,7 @@ import wx
 
 from quill.core.help import HelpRenderer, HelpTopic
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 _log = logging.getLogger(__name__)
 
@@ -170,7 +171,7 @@ class ContextHelpDialog(wx.Dialog):
         self._user_guide_opener = user_guide_opener
         self._ctrl_topic = ctrl_topic
         self._body_text = self._build_ui(dialog_topic, ctrl_topic)
-        self.SetMinSize((440, 220))
+        self.SetMinSize(dip_size(self, 440, 220))
         self.Fit()
         self.CentreOnParent()
         apply_modal_ids(self, affirmative_id=wx.ID_OK, escape_id=wx.ID_OK)
@@ -190,7 +191,7 @@ class ContextHelpDialog(wx.Dialog):
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2 | wx.TE_AUTO_URL,
             name="help_body",
         )
-        body_text.SetMinSize((-1, 120))
+        body_text.SetMinSize(dip_size(body_text, -1, 120))
         sizer.Add(body_text, proportion=1, flag=wx.EXPAND | wx.ALL, border=12)
 
         btn_sizer = wx.StdDialogButtonSizer()

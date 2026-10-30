@@ -41,8 +41,10 @@ def run_check() -> int:
     # run_check on the --check path, so a top-level import back into it would be
     # circular.
     from quill.apps.lite import _TITLE, ScreenReaderVoice
+    from quill.platform.windows.dpi_awareness import enable_dpi_awareness
     from quill.ui.richedit_editing import create_richedit_document
 
+    enable_dpi_awareness()  # before the first window, or Windows stretches it (#1702)
     app = wx.App(redirect=False)
     frame = wx.Frame(None, title=_TITLE)
     surface = create_richedit_document(wx, frame, wx.TE_MULTILINE, RICH)

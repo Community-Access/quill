@@ -39,6 +39,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
+from quill.ui.dpi import dip_size
+
 #: What the video surface tells assistive technology it is. Not "graphic": it is
 #: a container the application draws into, and there is no alt text to find.
 SURFACE_DESCRIPTION = (
@@ -78,7 +80,7 @@ class VideoWindow:
         self._on_closed = on_closed or (lambda: None)
 
         self._frame = wx.Frame(parent, title="Quill Radio Video", style=wx.DEFAULT_FRAME_STYLE)
-        self._frame.SetMinSize((480, 320))
+        self._frame.SetMinSize(dip_size(self._frame, 480, 320))
         root = wx.BoxSizer(wx.VERTICAL)
 
         self._surface = wx.Panel(self._frame, style=wx.TAB_TRAVERSAL)
@@ -97,7 +99,7 @@ class VideoWindow:
             "A read-on-demand status line -- it never announces itself. Arrow "
             "through it for the title, position, chapter and audio track."
         )
-        self._status.SetMinSize((-1, 56))
+        self._status.SetMinSize(dip_size(self._status, -1, 56))
         root.Add(self._status, 0, wx.EXPAND)
 
         self._frame.SetSizer(root)

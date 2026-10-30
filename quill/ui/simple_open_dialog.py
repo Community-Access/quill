@@ -38,6 +38,7 @@ from quill.ui.dialog_contract import (
     apply_modal_ids,
     show_modal_dialog,
 )
+from quill.ui.dpi import dip_size
 
 
 def _toggle_hidden_key_pressed(event: wx.KeyEvent) -> bool:
@@ -157,8 +158,8 @@ class SimpleOpenDialog:
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
         self.dialog.SetName("simple_open")
-        self.dialog.SetSize((720, 540))
-        self.dialog.SetMinSize((560, 400))
+        self.dialog.SetSize(dip_size(self.dialog, 720, 540))
+        self.dialog.SetMinSize(dip_size(self.dialog, 560, 400))
 
         root = wx.BoxSizer(wx.VERTICAL)
 

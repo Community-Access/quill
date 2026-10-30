@@ -21,6 +21,7 @@ import wx
 
 from quill.core.ai.transcript_actions import BUILTIN_TRANSCRIPT_ACTIONS, action_to_skill_source
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
+from quill.ui.dpi import dip_size
 
 _BLANK = "Blank (write my own)"
 
@@ -97,7 +98,7 @@ class ActionBuilderDialog:
             title="Build an AI Action",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize(wx.Size(560, 480))
+        self.dialog.SetMinSize(dip_size(self.dialog, 560, 480))
         root = wx.BoxSizer(wx.VERTICAL)
 
         intro = wx.StaticText(

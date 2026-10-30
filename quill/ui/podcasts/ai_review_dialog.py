@@ -11,6 +11,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.ui.dpi import dip_size
+
 __all__ = ["review"]
 
 
@@ -53,7 +55,7 @@ def review(host: Any, title: str, intro: str, rows: list[str]) -> list[int] | No
     buttons.Add(cancel, 0)
     root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
     dialog.SetSizer(root)
-    dialog.SetSize((700, 460))
+    dialog.SetSize(dip_size(dialog, 700, 460))
     apply_modal_ids(
         dialog, affirmative_id=wx.ID_OK, affirmative_label="Apply Selected", cancel_id=wx.ID_CANCEL
     )

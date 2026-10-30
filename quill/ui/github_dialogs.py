@@ -20,6 +20,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from quill.ui.dialog_contract import apply_modal_ids, dialog_alive, show_modal_dialog
+from quill.ui.dpi import dip, dip_size
 
 if TYPE_CHECKING:
     from quill.core.github.github_provider import GitHubRemoteProvider
@@ -287,7 +288,7 @@ class GitHubRepositoryBrowserDialog:
             title="GitHub Repository Browser",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize((560, 420))
+        self.dialog.SetMinSize(dip_size(self.dialog, 560, 420))
         panel = wx.Panel(self.dialog)
         sizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -333,9 +334,9 @@ class GitHubRepositoryBrowserDialog:
             style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.BORDER_SIMPLE,
         )
         self._list.SetName("Repository contents")
-        self._list.InsertColumn(0, "Name", width=280)
-        self._list.InsertColumn(1, "Type", width=70)
-        self._list.InsertColumn(2, "Size", width=80)
+        self._list.InsertColumn(0, "Name", width=dip(self._list, 280))
+        self._list.InsertColumn(1, "Type", width=dip(self._list, 70))
+        self._list.InsertColumn(2, "Size", width=dip(self._list, 80))
         sizer.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, border=10)
 
         # Status label

@@ -15,6 +15,7 @@ import wx
 from quill.core.verbosity.parser import validate
 from quill.core.verbosity.registry import VerbRegistry, default_registry
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 __all__ = ["VerbosityChordEditorDialog"]
 
@@ -42,13 +43,13 @@ class VerbosityChordEditorDialog:
         self.dialog = wx.Dialog(
             parent, title="Chord overrides", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize(wx.Size(480, 360))
+        self.dialog.SetMinSize(dip_size(self.dialog, 480, 360))
         root = wx.BoxSizer(wx.VERTICAL)
 
         root.Add(wx.StaticText(self.dialog, label="&Chord:"), 0, wx.LEFT | wx.TOP, 8)
         self._list = wx.ListBox(self.dialog, style=wx.LB_SINGLE, choices=self._chords)
         self._list.SetName("Chord-fired verbs")
-        self._list.SetMinSize(wx.Size(-1, 150))
+        self._list.SetMinSize(dip_size(self._list, -1, 150))
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 4)
 
         root.Add(

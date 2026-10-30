@@ -23,6 +23,7 @@ import wx
 
 from quill.core.ai.word_tools import INSERT, WordChoice
 from quill.ui.dialog_contract import apply_listbox_activation
+from quill.ui.dpi import dip_size
 from quill.ui.hosted_ai_dialogs import _close_row, _read_only, focus_on
 
 __all__ = ["WordAnswerFrame"]
@@ -129,7 +130,7 @@ class WordAnswerFrame(wx.Frame):
             extra.append(again)
 
         _close_row(self, sizer, *extra)
-        self.SetInitialSize((640, 480))
+        self.SetInitialSize(dip_size(self, 640, 480))
         self.Centre()
         # Focus lands on the answer, so the reader reads it. Nothing is said on
         # top of that (GATE-13): the title and the focused field are both

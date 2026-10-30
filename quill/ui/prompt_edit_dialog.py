@@ -13,6 +13,7 @@ import wx
 
 from quill.core.prompt_library import CATEGORIES, Prompt
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 __all__ = ["PromptEditDialog"]
 
@@ -28,7 +29,7 @@ class PromptEditDialog:
             title="New Prompt" if is_new else "Edit Prompt",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize(wx.Size(560, 420))
+        self.dialog.SetMinSize(dip_size(self.dialog, 560, 420))
 
         root = wx.BoxSizer(wx.VERTICAL)
 

@@ -23,6 +23,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from quill.core import activity
+from quill.ui.dpi import dip_size
 
 __all__ = ["CheckRun", "finish_sentence", "start", "step"]
 
@@ -137,7 +138,7 @@ class _FeedProgressWindow:
         outer = wx.BoxSizer(wx.VERTICAL)
         outer.Add(panel, 1, wx.EXPAND)
         self.frame.SetSizer(outer)
-        self.frame.SetMinSize((440, 240))
+        self.frame.SetMinSize(dip_size(self.frame, 440, 240))
         self.stop.Bind(wx.EVT_BUTTON, lambda _event: cancel_remaining(host))
 
     def focus_target(self) -> Any:

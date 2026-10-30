@@ -36,6 +36,7 @@ from quill.ui.dialog_contract import (
     set_accessible_name,
     show_modal_dialog,
 )
+from quill.ui.dpi import dip_size
 
 __all__ = ["GoToResult", "GoToTarget", "ask_go_to"]
 
@@ -116,7 +117,7 @@ def ask_go_to(
 
     root.Add(dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL), 0, wx.EXPAND | wx.ALL, _PAD)
     dialog.SetSizerAndFit(root)
-    dialog.SetSize((480, 420))
+    dialog.SetSize(dip_size(dialog, 480, 420))
 
     def _chosen_kind() -> str:
         return names[max(0, kind_box.GetSelection())]

@@ -39,6 +39,7 @@ from quill.core.lists import (
 )
 from quill.core.lists.render import DefinitionProfileError, render_definition_with_choice
 from quill.ui.dialog_contract import set_accessible_name
+from quill.ui.dpi import dip_size
 
 _TYPE_CHOICES: list[tuple[str, ListType]] = [
     ("Bulleted", ListType.BULLET),
@@ -147,7 +148,9 @@ class ListStudioDialog:
             10,
         )
         self._preview = wx.TextCtrl(
-            dlg, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP, size=(-1, 120)
+            dlg,
+            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
+            size=dip_size(dlg, -1, 120),
         )
         set_accessible_name(self._preview, "Generated source, read-only")
         outer.Add(self._preview, 0, wx.EXPAND | wx.ALL, 10)
@@ -162,7 +165,7 @@ class ListStudioDialog:
     def finalize(self) -> None:
         """Lay out the dialog and load initial content (after the caller adds buttons)."""
         self.dialog.SetSizerAndFit(self._outer_sizer)
-        self.dialog.SetSize((760, 620))
+        self.dialog.SetSize(dip_size(self.dialog, 760, 620))
         self._sync_type_visibility()
         self._reload_outline(select=0)
 

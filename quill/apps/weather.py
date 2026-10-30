@@ -24,6 +24,7 @@ from quill.core.app_version import describe_version, installed_version
 from quill.core.net import configure_ssl_trust
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.dialog_contract import set_accessible_name
+from quill.ui.dpi import dip_size
 from quill.ui.main_frame_weather import WeatherMixin
 from quill.ui.whats_new import append_whats_new_item
 
@@ -68,7 +69,9 @@ class WeatherAppFrame(AppShellFrame, WeatherMixin):
     """A tray-resident window whose job is to keep the alert watch running."""
 
     def __init__(self, *, safe_mode: bool = False) -> None:
-        self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 300), app_id="weather")
+        self._init_app_shell(
+            _TITLE, safe_mode=safe_mode, size=dip_size(None, 460, 300), app_id="weather"
+        )
         # F1 context help with Weather's authored purpose catalogue. The app
         # shell already activated the shared engine (provider + dialog-contract
         # hook + main-frame F1); this re-activation swaps in Weather's
@@ -565,11 +568,13 @@ def _show_alert_toast(title: str, body: str) -> None:
     try:
         import wx.adv
 
+        from quill.platform.windows.dpi_awareness import enable_dpi_awareness
         from quill.ui.toast import show_toast
 
         # The App and the pump below are this call site's own concern -- a
         # headless check has no window and no loop -- but the notification
         # itself is the shared one (quill/ui/toast.py).
+        enable_dpi_awareness()  # before the first window, or Windows stretches it (#1702)
         app = wx.App(False)
         show_toast(title, body, icon=wx.ICON_WARNING)
         # Give the OS a moment to hand the toast off before the process exits.
@@ -607,6 +612,9 @@ def main() -> int:
     from quill.stability.logging_config import configure_logging
 
     log_listener = configure_logging(app_data_dir() / "logs")
+    from quill.platform.windows.dpi_awareness import enable_dpi_awareness
+
+    enable_dpi_awareness()  # before the first window, or Windows stretches it (#1702)
     app = wx.App()
     frame = WeatherAppFrame(safe_mode=safe_mode)
     frame._log_listener = log_listener

@@ -61,6 +61,7 @@ from quill.core.quillins.smart_triggers import (
     resolve_smart_trigger,
 )
 from quill.plugins import THIRD_PARTY_PLUGINS_FEATURE
+from quill.ui.dpi import dip_size
 from quill.ui.main_frame_quillins_host import _EditorHostServices
 
 _QUILLINS_MANAGER_COMMAND = "tools.quillins_manager"
@@ -814,7 +815,7 @@ class QuillinsMenuMixin:
         body.Add(button_sizer, 0, wx.EXPAND | wx.ALL, 8)
 
         dialog.SetSizerAndFit(body)
-        dialog.SetSize((640, 560))
+        dialog.SetSize(dip_size(dialog, 640, 560))
         if hasattr(dialog, "CentreOnParent"):
             dialog.CentreOnParent()
 

@@ -41,6 +41,7 @@ import wx
 
 from quill.core import special_characters as catalogue
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_modal_dialog
+from quill.ui.dpi import dip, dip_size
 from quill.ui.virtual_list import virtual_report_list
 
 __all__ = ["SpecialCharacterDialog", "choose_special_character"]
@@ -69,7 +70,7 @@ class SpecialCharacterDialog:
         self.dialog = wx.Dialog(
             parent, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize((640, 460))
+        self.dialog.SetMinSize(dip_size(self.dialog, 640, 460))
         panel = wx.Panel(self.dialog)
         root = wx.BoxSizer(wx.VERTICAL)
 
@@ -112,9 +113,9 @@ class SpecialCharacterDialog:
             "Arrow through them to hear each one described, and press Enter to put the "
             "one you are on into the document at the cursor."
         )
-        self._results.InsertColumn(0, "Character", width=90)
-        self._results.InsertColumn(1, "Name", width=300)
-        self._results.InsertColumn(2, "Code point", width=100)
+        self._results.InsertColumn(0, "Character", width=dip(self._results, 90))
+        self._results.InsertColumn(1, "Name", width=dip(self._results, 300))
+        self._results.InsertColumn(2, "Code point", width=dip(self._results, 100))
         list_col.Add(list_label, 0, wx.BOTTOM, 4)
         list_col.Add(self._results, 1, wx.EXPAND)
         body.Add(list_col, 2, wx.EXPAND)
@@ -160,7 +161,7 @@ class SpecialCharacterDialog:
         outer = wx.BoxSizer(wx.VERTICAL)
         outer.Add(panel, 1, wx.EXPAND)
         self.dialog.SetSizer(outer)
-        self.dialog.SetSize((760, 560))
+        self.dialog.SetSize(dip_size(self.dialog, 760, 560))
 
         self._search.Bind(wx.EVT_TEXT, self._on_search)
         self._search.Bind(wx.EVT_TEXT_ENTER, self._on_search_enter)

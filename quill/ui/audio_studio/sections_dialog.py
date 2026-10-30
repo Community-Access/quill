@@ -39,6 +39,7 @@ from quill.core.audio.sections import (
     save_sections,
 )
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 
 class CopySectionsDialog:
@@ -182,7 +183,7 @@ class CopySectionsDialog:
         root.Add(buttons, 0, wx.ALL, 10)
 
         self._dialog.SetSizer(root)
-        self._dialog.SetMinSize((620, 460))
+        self._dialog.SetMinSize(dip_size(self._dialog, 620, 460))
         apply_modal_ids(self._dialog, cancel_id=wx.ID_CANCEL)
 
         self._mark_start_btn.Bind(wx.EVT_BUTTON, lambda _e: self.mark_start())

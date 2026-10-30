@@ -33,6 +33,7 @@ import logging
 from typing import Any
 
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button, set_accessible_name
+from quill.ui.dpi import dip_size
 
 logger = logging.getLogger(__name__)
 
@@ -140,7 +141,7 @@ def show_station_details(host: Any, store: Any) -> None:
     from quill.core.radio.enrichment.store import SearchHit
 
     dialog = wx.Dialog(host.frame, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
-    dialog.SetMinSize(wx.Size(620, 480))
+    dialog.SetMinSize(dip_size(dialog, 620, 480))
     root = wx.BoxSizer(wx.VERTICAL)
 
     status = wx.StaticText(dialog, label=status_sentence(store))

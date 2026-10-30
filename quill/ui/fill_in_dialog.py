@@ -18,6 +18,7 @@ import wx
 
 from quill.core.expansion.fields import FieldSpec
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip
 
 #: Above this many fields the form scrolls rather than growing off-screen.
 _SCROLL_AFTER = 6
@@ -33,7 +34,7 @@ class FillInDialog:
         self.dialog = wx.Dialog(
             parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize(wx.Size(420, min(140 + 46 * len(specs), 480)))
+        self.dialog.SetMinSize(wx.Size(dip(self.dialog, 420), min(140 + 46 * len(specs), 480)))
 
         root = wx.BoxSizer(wx.VERTICAL)
         host: wx.Window = self.dialog

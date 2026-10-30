@@ -22,6 +22,7 @@ from quill.core.updater.channels import CHANNELS, ChannelState, channel_label, c
 from quill.core.updater.switch import SwitchPlan
 from quill.core.updater.wording import chooser_title
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
+from quill.ui.dpi import dip_size
 
 __all__ = ["ReleaseChannelDialog", "SiblingRow"]
 
@@ -75,7 +76,7 @@ class ReleaseChannelDialog(wx.Dialog):  # type: ignore[misc]
         self._meaning = wx.TextCtrl(
             self,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2,
-            size=(-1, 150),
+            size=dip_size(self, -1, 150),
         )
         self._meaning.SetName("What this means")
         self._meaning.SetHelpText(
@@ -122,7 +123,7 @@ class ReleaseChannelDialog(wx.Dialog):  # type: ignore[misc]
         sizer.Add(buttons, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
 
         self.SetSizerAndFit(sizer)
-        self.SetSize((560, -1))
+        self.SetSize(dip_size(self, 560, -1))
         apply_modal_ids(self, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
         self._choices.Bind(wx.EVT_RADIOBOX, self._refresh)
         self._refresh(None)

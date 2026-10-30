@@ -13,6 +13,7 @@ the mouse.
 from __future__ import annotations
 
 import wx
+from quill.ui.dpi import dip_size
 
 from quill_social.services.feed_filters import FEED_ACTIONS
 from quill_social.services.subscriptions import Subscription
@@ -143,7 +144,7 @@ class FeedConfigDialog(wx.Dialog):
 
         sizer.Add(self.CreateButtonSizer(wx.OK | wx.CANCEL), 0, wx.ALIGN_RIGHT | wx.ALL, 8)
         self.SetSizer(sizer)
-        self.SetSize((560, 620))
+        self.SetSize(dip_size(self, 560, 620))
 
         self.add_btn.Bind(wx.EVT_BUTTON, self._on_add_rule)
         self.keyword.Bind(wx.EVT_TEXT_ENTER, self._on_add_rule)

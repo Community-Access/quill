@@ -20,6 +20,7 @@ import wx
 from quill.core.ai import local_setup as ls
 from quill.core.ai import onboarding as ob
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 _LOCAL_HOST = "http://localhost:11434"
 
@@ -39,7 +40,7 @@ class LocalAISetupWizard:
             title="Set Up Local AI (Ollama)",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize(wx.Size(620, 520))
+        self.dialog.SetMinSize(dip_size(self.dialog, 620, 520))
 
         root = wx.BoxSizer(wx.VERTICAL)
         self._heading = wx.StaticText(self.dialog, label="")
@@ -69,7 +70,7 @@ class LocalAISetupWizard:
         self.dialog.SetSizer(root)
         # SetMinSize only constrains shrinking; open at the intended size so the
         # read-only prose wraps as full lines rather than a few words per line.
-        self.dialog.SetSize(wx.Size(620, 520))
+        self.dialog.SetSize(dip_size(self.dialog, 620, 520))
         self.dialog.Centre()
         # Affirmative deliberately ID_CANCEL: Enter must never fire a download.
         apply_modal_ids(self.dialog, affirmative_id=wx.ID_CANCEL, cancel_id=wx.ID_CANCEL)

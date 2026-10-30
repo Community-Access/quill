@@ -24,6 +24,7 @@ from typing import Any
 import wx
 
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
+from quill.ui.dpi import dip_size
 
 __all__ = ["ProfileDialog", "TranscribeCoachMixin"]
 
@@ -72,7 +73,7 @@ class ProfileDialog(wx.Dialog):
         root.Add(self.lock, 0, wx.ALL, _PAD)
         root.Add(buttons, 0, wx.ALL, _PAD)
         self.SetSizer(root)
-        self.SetSize((520, 420))
+        self.SetSize(dip_size(self, 520, 420))
         apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
         bind_close_button(self, cancel, modeless=False)
         self.list.Bind(wx.EVT_LISTBOX, lambda _e: self._describe())

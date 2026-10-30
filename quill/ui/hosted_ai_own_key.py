@@ -65,6 +65,7 @@ from quill.core.ai.own_key_models import (
     list_models,
 )
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 __all__ = ["OPENAI_USAGE_URL", "OwnKeyDialog", "OwnKeyUsageFrame", "own_key_about_text"]
 
@@ -133,7 +134,7 @@ class OwnKeyDialog(wx.Dialog):
             self,
             value=_explanation(self._provider),
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2,
-            size=(-1, 150),
+            size=dip_size(self, -1, 150),
         )
         self.about.SetHelpText(
             "Where your text goes with your own key, and where to make one. Read "
@@ -168,7 +169,7 @@ class OwnKeyDialog(wx.Dialog):
 
         cost_label = wx.StaticText(self, label="&Cost estimate:")
         self.cost = wx.TextCtrl(
-            self, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2, size=(-1, 80)
+            self, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2, size=dip_size(self, -1, 80)
         )
         self.cost.SetHelpText(
             "What the chosen model might cost for a typical request, and where the "
@@ -512,7 +513,7 @@ class OwnKeyUsageFrame(wx.Frame):
         usage.Bind(wx.EVT_BUTTON, self._on_usage)
         _close_row(self, sizer, usage)
         focus_on(self, self.body)
-        self.SetInitialSize((520, 380))
+        self.SetInitialSize(dip_size(self, 520, 380))
         self.Centre()
 
     def _on_usage(self, _event: Any) -> None:

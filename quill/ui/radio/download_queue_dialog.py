@@ -33,6 +33,7 @@ from quill.ui.dialog_contract import (
     apply_listbox_activation,
     apply_modal_ids,
 )
+from quill.ui.dpi import dip_size
 
 TITLE = "Downloads"
 
@@ -157,7 +158,7 @@ class DownloadQueueDialog:
             outer = wx.BoxSizer(wx.VERTICAL)
             outer.Add(self._surface, 1, wx.EXPAND)
             self._dialog.SetSizer(outer)
-        self._dialog.SetMinSize((680, 420))
+        self._dialog.SetMinSize(dip_size(self._dialog, 680, 420))
         self._dialog.Fit()
         if not self._modeless:
             apply_modal_ids(self._dialog, cancel_id=wx.ID_CANCEL, cancel_label="Close")

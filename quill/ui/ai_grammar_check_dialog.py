@@ -6,6 +6,7 @@ from collections.abc import Callable
 
 from quill.core.ai.grammar_check import CATEGORIES, GrammarIssue, apply_grammar_fixes
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip, dip_size
 
 
 class AIGrammarCheckDialog:
@@ -39,7 +40,7 @@ class AIGrammarCheckDialog:
             title=f"AI Grammar Check - {n} suggestion{'s' if n != 1 else ''}",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize(wx.Size(820, 600))
+        self.dialog.SetSize(dip_size(self.dialog, 820, 600))
         self._build_ui()
 
     def _build_ui(self) -> None:
@@ -76,11 +77,11 @@ class AIGrammarCheckDialog:
             style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.BORDER_SIMPLE,
         )
         self._list.SetName("Grammar issues")
-        self._list.InsertColumn(0, "#", width=40)
-        self._list.InsertColumn(1, "Category", width=110)
-        self._list.InsertColumn(2, "Original", width=180)
-        self._list.InsertColumn(3, "Suggestion", width=180)
-        self._list.InsertColumn(4, "Context", width=220)
+        self._list.InsertColumn(0, "#", width=dip(self._list, 40))
+        self._list.InsertColumn(1, "Category", width=dip(self._list, 110))
+        self._list.InsertColumn(2, "Original", width=dip(self._list, 180))
+        self._list.InsertColumn(3, "Suggestion", width=dip(self._list, 180))
+        self._list.InsertColumn(4, "Context", width=dip(self._list, 220))
         self._populate_list()
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 

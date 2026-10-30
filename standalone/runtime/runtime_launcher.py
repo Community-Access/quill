@@ -109,6 +109,9 @@ def _pick(names: list[str]) -> int:
     try:
         import wx
 
+        from quill.platform.windows.dpi_awareness import enable_dpi_awareness
+
+        enable_dpi_awareness()  # before the first window, or Windows stretches it (#1702)
         app = wx.App(False)
         dialog = wx.SingleChoiceDialog(
             None,

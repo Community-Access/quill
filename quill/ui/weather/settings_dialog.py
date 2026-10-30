@@ -16,6 +16,7 @@ from quill.core.weather.settings import (
     WeatherSettings,
 )
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 
 _SEVERITY_LABELS = {
     "all": "Show all alerts",
@@ -281,7 +282,7 @@ class WeatherSettingsDialog:
             "nothing."
         )
         self._muted.SetValue("\n".join(settings.muted_events))
-        self._muted.SetMinSize((-1, 70))
+        self._muted.SetMinSize(dip_size(self._muted, -1, 70))
         root.Add(self._muted, 1, wx.EXPAND | wx.ALL, 12)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)

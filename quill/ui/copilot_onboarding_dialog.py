@@ -36,6 +36,7 @@ from quill.core.ai.sdk_install import (
     manual_install_hint,
 )
 from quill.ui.dialog_contract import apply_modal_ids, focus_primary_control
+from quill.ui.dpi import dip_size
 
 _PACK_ID = "copilot"
 
@@ -62,7 +63,7 @@ class CopilotOnboardingDialog:
             title="Set Up GitHub Copilot",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize(wx.Size(560, 440))
+        self.dialog.SetSize(dip_size(self.dialog, 560, 440))
         self._build_ui()
         self._refresh_state()
 
@@ -90,7 +91,7 @@ class CopilotOnboardingDialog:
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2,
         )
         self.status.SetName("Setup status")
-        self.status.SetMinSize(wx.Size(520, 160))
+        self.status.SetMinSize(dip_size(self.status, 520, 160))
         root.Add(self.status, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 12)
 
         self.gauge = wx.Gauge(self.dialog, range=100)
