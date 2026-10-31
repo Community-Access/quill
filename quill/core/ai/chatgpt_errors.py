@@ -1,6 +1,6 @@
 """What can go wrong with a ChatGPT subscription, each with its own code.
 
-Five branches, because the five need five different next steps and a person
+Six branches, because the six need five different next steps and a person
 hearing the sentence cannot open the failing request to see which one it was.
 Each carries a ``user_hint`` naming the concrete thing to do, in the same
 shape as :mod:`quill.core.ai.gateway_errors` (GATE-EC).
@@ -18,6 +18,7 @@ __all__ = [
     "ChatGptSignInError",
     "ChatGptSignedOutError",
     "ChatGptUnavailableError",
+    "ChatGptUnsupportedError",
 ]
 
 
@@ -72,4 +73,17 @@ class ChatGptUnavailableError(ChatGptError):
     user_hint = (
         "Using a ChatGPT plan from other apps is not available on this account "
         "just now. Try again later, or use QUILL's free AI or your own API key."
+    )
+
+
+class ChatGptUnsupportedError(ChatGptError):
+    """The plan does not take something in the request: an input, a tool or a model.
+
+    OpenAI's guidance is to remove the item rather than resend the same body, so
+    this is final: nothing retries it and nothing routes it elsewhere."""
+
+    code = "QUILL-AI-CHATGPT-UNSUPPORTED"
+    user_hint = (
+        "ChatGPT plans used from other apps do not take this kind of request. "
+        "Nothing was retried; use an AI provider with your own key for it instead."
     )
