@@ -16,6 +16,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.dpi import dip
 
 
 class ResumeRecordingDialog:
@@ -152,7 +153,7 @@ class ResumeRecordingsBatchDialog:
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
         )
         listing.SetName("Interrupted recordings; review with the arrow keys")
-        listing.SetMinSize((420, min(200, 24 * max(1, count) + 16)))
+        listing.SetMinSize((dip(listing, 420), min(200, 24 * max(1, count) + 16)))
         root.Add(listing, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         prompt = wx.StaticText(self.dialog, label="Resume all of them for their remaining time?")

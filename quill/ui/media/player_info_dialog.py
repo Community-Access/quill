@@ -15,6 +15,7 @@ import wx
 
 from quill.core.media.player_info import PlayerInfo, player_info_text
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 
 class PlayerInfoDialog:
@@ -28,7 +29,7 @@ class PlayerInfoDialog:
         self.dialog = wx.Dialog(
             parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize(wx.Size(460, 340))
+        self.dialog.SetMinSize(dip_size(self.dialog, 460, 340))
 
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(wx.StaticText(self.dialog, label="Player &information:"), 0, wx.LEFT | wx.TOP, 10)

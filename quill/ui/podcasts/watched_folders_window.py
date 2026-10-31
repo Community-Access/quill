@@ -20,6 +20,7 @@ import wx
 
 from quill.core.podcasts.watched_folder_words import row_text
 from quill.core.podcasts.watched_folders import WatchedFolder
+from quill.ui.dpi import dip_size
 
 __all__ = ["TITLE", "WatchedFoldersWindow", "open_watched_folders_window"]
 
@@ -36,7 +37,7 @@ class WatchedFoldersWindow:
     def __init__(self, host: Any) -> None:
         self._host = host
         self._folders: list[WatchedFolder] = []
-        self.frame = wx.Frame(host.frame, title=TITLE, size=(720, 440))
+        self.frame = wx.Frame(host.frame, title=TITLE, size=dip_size(host.frame, 720, 440))
         panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(wx.StaticText(panel, label="&List of folders:"), 0, wx.LEFT | wx.TOP, 8)

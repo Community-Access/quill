@@ -17,6 +17,7 @@ from typing import Any
 
 import wx
 
+from quill.ui.dpi import dip_size
 from quill.ui.transcript_reader import TranscriptReader
 
 __all__ = ["TITLE", "TranscriptWindow", "open_transcript_window"]
@@ -49,8 +50,8 @@ class TranscriptWindow:
 
     def __init__(self, parent: Any, **content: Any) -> None:
         self.reader: _PeerReader | None = None
-        self.frame = wx.Frame(parent, title="Transcript", size=(1000, 760))
-        self.frame.SetMinSize((640, 520))
+        self.frame = wx.Frame(parent, title="Transcript", size=dip_size(parent, 1000, 760))
+        self.frame.SetMinSize(dip_size(self.frame, 640, 520))
         self.frame.SetSizer(wx.BoxSizer(wx.VERTICAL))
         self.load(**content)
         self.frame.CentreOnParent()

@@ -12,6 +12,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from quill.ui.dialog_contract import announce_surface_exit, apply_modal_ids
+from quill.ui.dpi import dip_size
 from quill.ui.spoken_name import set_spoken_name
 
 #: The one open modeless viewer, if any. This window is a snapshot -- of a
@@ -87,7 +88,7 @@ class NowPlayingDialog:
             )
             self._surface = self._win
         self.dialog = self._win  # back-compat alias for callers that reference it
-        self._win.SetSize(wx.Size(480, 240))
+        self._win.SetSize(dip_size(self._win, 480, 240))
         self._build_ui()
 
     def _build_surface_menu_bar(self) -> None:

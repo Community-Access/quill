@@ -13,6 +13,7 @@ import wx
 
 from quill.core.verbosity.history import AnnouncementHistory
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 __all__ = ["VerbosityHistoryDialog"]
 
@@ -36,7 +37,7 @@ class VerbosityHistoryDialog:
         self.dialog = wx.Dialog(
             parent, title="Announcement history", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize(wx.Size(600, 460))
+        self.dialog.SetMinSize(dip_size(self.dialog, 600, 460))
         root = wx.BoxSizer(wx.VERTICAL)
 
         filter_row = wx.BoxSizer(wx.HORIZONTAL)
@@ -52,7 +53,7 @@ class VerbosityHistoryDialog:
         root.Add(wx.StaticText(self.dialog, label="&Announcements:"), 0, wx.LEFT | wx.TOP, 8)
         self._list = wx.ListBox(self.dialog, style=wx.LB_SINGLE)
         self._list.SetName("Recent announcements")
-        self._list.SetMinSize(wx.Size(-1, 170))
+        self._list.SetMinSize(dip_size(self._list, -1, 170))
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 4)
 
         root.Add(wx.StaticText(self.dialog, label="E&xplanation:"), 0, wx.LEFT | wx.TOP, 8)
@@ -60,7 +61,7 @@ class VerbosityHistoryDialog:
             self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
         self._detail.SetName("Why did QUILL say that")
-        self._detail.SetMinSize(wx.Size(-1, 110))
+        self._detail.SetMinSize(dip_size(self._detail, -1, 110))
         root.Add(self._detail, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 4)
 
         btns = wx.BoxSizer(wx.HORIZONTAL)

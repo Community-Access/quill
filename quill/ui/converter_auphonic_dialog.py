@@ -41,6 +41,7 @@ from quill.core.publish.auphonic_plan import (
 )
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
+from quill.ui.dpi import dip_size
 
 PROCESS_TITLE = "Process with Auphonic"
 CONFIRM_TITLE = "Send to Auphonic?"
@@ -85,7 +86,9 @@ class AuphonicDialog(wx.Dialog):
         root = wx.BoxSizer(wx.VERTICAL)
 
         root.Add(wx.StaticText(self, label="Files to &send, in queue order:"), 0, wx.ALL, 8)
-        self._list = wx.ListBox(self, choices=[path.name for path in files], size=(-1, 110))
+        self._list = wx.ListBox(
+            self, choices=[path.name for path in files], size=dip_size(self, -1, 110)
+        )
         set_accessible_name(self._list, "Files to send")
         self._list.SetHelpText(
             "The sound files that will be sent, in the order they are in the queue. "
@@ -157,7 +160,10 @@ class AuphonicDialog(wx.Dialog):
         root.Add(check_row, 0, wx.LEFT | wx.RIGHT, 8)
         root.Add(wx.StaticText(self, label="Account:"), 0, wx.LEFT | wx.TOP, 8)
         self._status = wx.TextCtrl(
-            self, value="Not checked yet.", style=wx.TE_READONLY | wx.TE_MULTILINE, size=(-1, 44)
+            self,
+            value="Not checked yet.",
+            style=wx.TE_READONLY | wx.TE_MULTILINE,
+            size=dip_size(self, -1, 44),
         )
         set_accessible_name(self._status, "Account")
         self._status.SetHelpText(
@@ -381,7 +387,10 @@ class AuphonicConfirmDialog(wx.Dialog):
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(wx.StaticText(self, label="&What will happen:"), 0, wx.LEFT | wx.TOP, 8)
         self._body = wx.TextCtrl(
-            self, value=text, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2, size=(560, 300)
+            self,
+            value=text,
+            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2,
+            size=dip_size(self, 560, 300),
         )
         set_accessible_name(self._body, "What will happen")
         self._body.SetHelpText(
@@ -441,7 +450,7 @@ class AuphonicWaitingDialog(wx.Dialog):
         self._dismiss = dismiss
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(wx.StaticText(self, label="&Productions not fetched yet:"), 0, wx.ALL, 8)
-        self._list = wx.ListBox(self, size=(560, 140))
+        self._list = wx.ListBox(self, size=dip_size(self, 560, 140))
         set_accessible_name(self._list, "Productions not fetched yet")
         self._list.SetHelpText(
             "Productions Auphonic accepted whose results have not been saved yet, "

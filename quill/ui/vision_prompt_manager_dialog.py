@@ -24,6 +24,7 @@ from quill.ui.dialog_contract import (
     ok_cancel_platform_order,
     show_modal_dialog,
 )
+from quill.ui.dpi import dip_size
 
 if TYPE_CHECKING:
     from quill.core.settings import Settings
@@ -42,7 +43,7 @@ class VisionPromptManagerDialog:
             title="Manage Image Prompts",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize((720, 560))
+        self.dialog.SetSize(dip_size(self.dialog, 720, 560))
         self.dialog.SetName("Manage Image Prompts")
 
         panel = wx.Panel(self.dialog)
@@ -74,7 +75,7 @@ class VisionPromptManagerDialog:
         self._preview = wx.TextCtrl(
             panel,
             style=wx.TE_MULTILINE | wx.TE_READONLY,
-            size=(-1, 120),
+            size=dip_size(panel, -1, 120),
         )
         self._preview.SetName("Prompt text preview")
         root.Add(self._preview, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
@@ -335,7 +336,7 @@ class VisionPromptManagerDialog:
             title=title,
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        dlg.SetSize((500, 400))
+        dlg.SetSize(dip_size(dlg, 500, 400))
         dlg.SetName(title)
 
         panel = wx.Panel(dlg)
@@ -365,7 +366,7 @@ class VisionPromptManagerDialog:
             style=wx.TE_MULTILINE,
         )
         prompt_ctrl.SetName("Prompt text")
-        prompt_ctrl.SetMinSize((460, 200))
+        prompt_ctrl.SetMinSize(dip_size(prompt_ctrl, 460, 200))
         root.Add(prompt_ctrl, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         # Buttons

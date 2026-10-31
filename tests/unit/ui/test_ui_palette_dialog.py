@@ -159,6 +159,8 @@ def _install_fake_wx() -> None:
         SearchCtrl=_SearchCtrl,
         StaticText=_StaticText,
         ListBox=_ListBox,
+        # quill.ui.dpi.dip_size builds its result with wx.Size (#1702).
+        Size=lambda width, height: (width, height),
         DEFAULT_DIALOG_STYLE=0,
         RESIZE_BORDER=0,
         TE_PROCESS_ENTER=0,

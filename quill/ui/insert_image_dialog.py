@@ -30,6 +30,7 @@ from dataclasses import dataclass
 import wx
 
 from quill.core.inline_image_alt import build_image_markdown
+from quill.ui.dpi import dip, dip_size
 
 
 @dataclass(frozen=True, slots=True)
@@ -65,7 +66,7 @@ class InsertImageDialog:
         self.dialog = wx.Dialog(
             parent, title="Insert Image", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize(wx.Size(480, 320 if html_mode else 260))
+        self.dialog.SetMinSize(wx.Size(dip(self.dialog, 480), 320 if html_mode else 260))
         root = wx.BoxSizer(wx.VERTICAL)
 
         root.Add(
@@ -117,7 +118,7 @@ class InsertImageDialog:
                 wx.ALIGN_CENTER_VERTICAL | wx.LEFT,
                 4,
             )
-            self._width_ctrl = wx.TextCtrl(self.dialog, size=wx.Size(64, -1))
+            self._width_ctrl = wx.TextCtrl(self.dialog, size=dip_size(self.dialog, 64, -1))
             self._width_ctrl.SetName("Image width in pixels, optional")
             size_box.Add(self._width_ctrl, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 4)
             size_box.Add(
@@ -126,7 +127,7 @@ class InsertImageDialog:
                 wx.ALIGN_CENTER_VERTICAL | wx.LEFT,
                 8,
             )
-            self._height_ctrl = wx.TextCtrl(self.dialog, size=wx.Size(64, -1))
+            self._height_ctrl = wx.TextCtrl(self.dialog, size=dip_size(self.dialog, 64, -1))
             self._height_ctrl.SetName("Image height in pixels, optional")
             size_box.Add(self._height_ctrl, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 4)
             self._responsive_check = wx.CheckBox(

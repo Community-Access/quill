@@ -20,6 +20,7 @@ import webbrowser
 from quill.core.mastodon import accounts as account_store
 from quill.core.mastodon import client
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.dpi import dip_size
 
 #: Post language presets offered in the compose dialog (#922). The first entry
 #: is the "let the instance decide" default (no language field sent). The rest
@@ -77,7 +78,7 @@ class MastodonComposeDialog:
             title="Post to Mastodon",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize((560, 520))
+        self.dialog.SetSize(dip_size(self.dialog, 560, 520))
         root = wx.BoxSizer(wx.VERTICAL)
 
         root.Add(wx.StaticText(self.dialog, label="Post from &account:"), 0, wx.LEFT | wx.TOP, 12)
@@ -258,7 +259,7 @@ class MastodonAccountsDialog:
             title="Mastodon Accounts",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize((520, 360))
+        self.dialog.SetSize(dip_size(self.dialog, 520, 360))
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(wx.StaticText(self.dialog, label="Acc&ounts:"), 0, wx.LEFT | wx.TOP, 12)
         self._list = wx.ListBox(self.dialog)

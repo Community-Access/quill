@@ -41,6 +41,7 @@ from quill.core.lineups.rules import (
     with_scope,
 )
 from quill.core.podcasts.filter_conditions import OP_PHRASES
+from quill.ui.dpi import dip_size
 from quill.ui.lineups.host import LineupsHost
 
 TITLE = "Edit Rule"
@@ -237,7 +238,7 @@ class RuleEditor:
         _values_label = wx.StaticText(box, label="&Values:")
         # A multiple-selection list, not a CheckListBox (banned, A11Y-SR-1: readers do
         # not say a check box's state as you arrow). Selected is said on every row.
-        self._values = wx.ListBox(box, size=(-1, 110), style=wx.LB_MULTIPLE)
+        self._values = wx.ListBox(box, size=dip_size(box, -1, 110), style=wx.LB_MULTIPLE)
         self._values.SetHelpText(
             "Select every value to look in: Space selects or deselects the value under the cursor. "
             "Any selected value counts."
@@ -246,7 +247,7 @@ class RuleEditor:
         tests = self._group("Tests")
         box = tests.GetStaticBox()
         _tests_label = wx.StaticText(box, label="T&ests:")
-        self._tests = wx.ListBox(box, size=(-1, 90))
+        self._tests = wx.ListBox(box, size=dip_size(box, -1, 90))
         self._tests.SetHelpText(
             "What an item must be. With no tests, everything in the places above is found."
         )
@@ -326,7 +327,7 @@ class RuleEditor:
         self._try.Bind(wx.EVT_BUTTON, lambda _e: self._try_it())
         trial.Add(self._try, 0, wx.ALL, 4)
         self._matches_label = _matches_label = wx.StaticText(box, label="Matc&hes:")
-        self._matches = wx.ListBox(box, size=(-1, 90))
+        self._matches = wx.ListBox(box, size=dip_size(box, -1, 90))
         self._matches.SetHelpText("What the rule finds now, in its order.")
         self._place(trial, _matches_label, self._matches)
         self._matches.SetName("Matches")

@@ -27,6 +27,7 @@ from quill.ui.dialog_contract import (
     bind_close_button,
     show_message_box,
 )
+from quill.ui.dpi import dip_size
 
 __all__ = ["ChooseModelDialog", "SetupDialog", "choose_microphone"]
 
@@ -224,7 +225,7 @@ class SetupDialog(wx.Dialog):
         buttons.Add(skip, 0)
         root.Add(buttons, 0, wx.ALL, _PAD)
         self.SetSizer(root)
-        self.SetSize((620, 700))
+        self.SetSize(dip_size(self, 620, 700))
         apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
         bind_close_button(self, skip, modeless=False)
         self.intro.SetFocus()
@@ -333,7 +334,7 @@ class ChooseModelDialog(wx.Dialog):
         root.Add(self.advice, 1, wx.EXPAND | wx.ALL, _PAD)
         root.Add(buttons, 0, wx.ALL, _PAD)
         self.SetSizer(root)
-        self.SetSize((640, 680))
+        self.SetSize(dip_size(self, 640, 680))
         apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
         bind_close_button(self, cancel, modeless=False)
         self.Bind(wx.EVT_BUTTON, self._on_use, id=wx.ID_OK)

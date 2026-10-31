@@ -43,6 +43,7 @@ from quill.ui.dialog_contract import (
     focus_primary_control,
     show_modal_dialog,
 )
+from quill.ui.dpi import dip_size
 from quill.ui.keybinding_parse import KeybindingParseMixin
 from quill.ui.show_hide_key_picker import ShowHideKeyMixin
 
@@ -82,11 +83,13 @@ class AppShellFrame(
         title: str,
         *,
         safe_mode: bool = False,
-        size: tuple[int, int] = (480, 360),
+        size: tuple[int, int] | wx.Size | None = None,
         app_id: str = "",
     ) -> None:
         self._wx = wx
         self._safe_mode = safe_mode
+        if size is None:
+            size = dip_size(None, 480, 360)
         self.frame = wx.Frame(None, title=title, size=size)
         # Maximized on a fresh machine, and the way you left it on one you have
         # used. *size* stops being "the window" and becomes the fallback for a

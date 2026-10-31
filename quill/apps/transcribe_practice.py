@@ -37,6 +37,7 @@ import wx
 from quill.core.transcribe.practice import SENTENCES
 from quill.ui.dialog_contract import bind_close_button
 from quill.ui.dictation_review_frame import ReviewBoxDocument
+from quill.ui.dpi import dip_size
 
 __all__ = ["TITLE", "PracticeDictationFrame", "PracticeFieldDocument"]
 
@@ -155,7 +156,7 @@ class PracticeDictationFrame(wx.Frame):
 
         self._start_or_stop = start_or_stop
         self._keys()
-        self.SetInitialSize((640, 480))
+        self.SetInitialSize(dip_size(self, 640, 480))
         self.Centre()
 
     def _button(

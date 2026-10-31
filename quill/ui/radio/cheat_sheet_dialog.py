@@ -25,6 +25,7 @@ from quill.core.radio.cheat_sheet import (
     summary,
 )
 from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids
+from quill.ui.dpi import dip_size
 
 TITLE = "Keyboard Shortcuts Sheet"
 
@@ -98,7 +99,7 @@ def show_cheat_sheet(host: Any) -> None:
     shown: list[CheatRow] = list(rows)
 
     dialog = wx.Dialog(host.frame, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
-    dialog.SetSize(wx.Size(760, 560))
+    dialog.SetSize(dip_size(dialog, 760, 560))
     root = wx.BoxSizer(wx.VERTICAL)
 
     root.Add(wx.StaticText(dialog, label="&Filter (a key, or what you want to do):"), 0, wx.ALL, 8)

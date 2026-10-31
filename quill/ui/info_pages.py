@@ -9,6 +9,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
+from quill.ui.dpi import dip, dip_size
+
 
 def show_about_quill_native(
     parent: Any,
@@ -38,7 +40,7 @@ def show_about_quill_native(
         title=f"About {about_info.product_name}",
         style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
     )
-    dialog.SetSize((760, 580))
+    dialog.SetSize(dip_size(dialog, 760, 580))
     sizer = wx.BoxSizer(wx.VERTICAL)
 
     notebook = wx.Notebook(dialog, name="About sections")
@@ -67,7 +69,7 @@ def show_about_quill_native(
         name="about_overview",
     )
     set_spoken_name(overview_text, "Overview")
-    overview_text.SetMinSize((-1, 320))
+    overview_text.SetMinSize(dip_size(overview_text, -1, 320))
     ov_sizer.Add(overview_text, 1, wx.EXPAND | wx.ALL, 8)
     overview.SetSizer(ov_sizer)
     notebook.AddPage(overview, "Overview")
@@ -96,7 +98,7 @@ def show_about_quill_native(
         style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP,
         name="about_legal_text",
     )
-    legal_text.SetMinSize((-1, 240))
+    legal_text.SetMinSize(dip_size(legal_text, -1, 240))
     legal_sizer.Add(legal_text, 1, wx.EXPAND | wx.ALL, 8)
     legal_panel.SetSizer(legal_sizer)
     notebook.AddPage(legal_panel, "Legal")
@@ -242,7 +244,7 @@ def _build_golden_quills_tab(notebook: Any, wx: Any, about_info: Any) -> None:
         style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP,
         name="golden_quills_intro",
     )
-    intro.SetMinSize((-1, 130))
+    intro.SetMinSize(dip_size(intro, -1, 130))
     sizer.Add(intro, 0, wx.EXPAND | wx.ALL, 10)
 
     roll_label = wx.StaticText(panel, label="Our Golden Quills", name="golden_quills_roll_label")
@@ -254,7 +256,7 @@ def _build_golden_quills_tab(notebook: Any, wx: Any, about_info: Any) -> None:
         style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.LC_NO_HEADER | wx.LC_HRULES,
         name="golden_quills_list",
     )
-    roll.AppendColumn("Supporter", width=420)
+    roll.AppendColumn("Supporter", width=dip(roll, 420))
     names = list(getattr(about_info, "golden_quills", ()) or ())
     if names:
         for i, name in enumerate(names):
@@ -296,10 +298,10 @@ def _build_dependency_list(parent: Any, wx: Any, rows: Any) -> Any:
         name="about_dependency_list",
     )
     set_spoken_name(list_ctrl, "Dependencies")
-    list_ctrl.AppendColumn("Dependency", width=200)
-    list_ctrl.AppendColumn("Version", width=140)
-    list_ctrl.AppendColumn("License", width=160)
-    list_ctrl.AppendColumn("Homepage", width=220)
+    list_ctrl.AppendColumn("Dependency", width=dip(list_ctrl, 200))
+    list_ctrl.AppendColumn("Version", width=dip(list_ctrl, 140))
+    list_ctrl.AppendColumn("License", width=dip(list_ctrl, 160))
+    list_ctrl.AppendColumn("Homepage", width=dip(list_ctrl, 220))
     for i, row in enumerate(rows):
         list_ctrl.InsertItem(i, row.name)
         list_ctrl.SetItem(i, 1, row.version)
@@ -317,8 +319,8 @@ def _build_link_list(parent: Any, wx: Any, links: Any) -> Any:
         name="about_link_list",
     )
     set_spoken_name(list_ctrl, "Links")
-    list_ctrl.AppendColumn("Name", width=260)
-    list_ctrl.AppendColumn("URL", width=420)
+    list_ctrl.AppendColumn("Name", width=dip(list_ctrl, 260))
+    list_ctrl.AppendColumn("URL", width=dip(list_ctrl, 420))
     for i, link in enumerate(links):
         list_ctrl.InsertItem(i, link.name)
         list_ctrl.SetItem(i, 1, link.url)
@@ -387,7 +389,7 @@ def show_whisperer_about_native(
         title="About QUILL Whisperer",
         style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
     )
-    dialog.SetSize((760, 540))
+    dialog.SetSize(dip_size(dialog, 760, 540))
     sizer = wx.BoxSizer(wx.VERTICAL)
     nb = wx.Notebook(dialog)
     nb.SetName("About sections")
@@ -425,10 +427,10 @@ def show_whisperer_about_native(
         name="whisperer_roadmap",
     )
     set_spoken_name(roadmap_list, "Roadmap")
-    roadmap_list.AppendColumn("Capability", width=180)
-    roadmap_list.AppendColumn("Whisperer Source", width=180)
-    roadmap_list.AppendColumn("Phase", width=70)
-    roadmap_list.AppendColumn("Quill Plan", width=240)
+    roadmap_list.AppendColumn("Capability", width=dip(roadmap_list, 180))
+    roadmap_list.AppendColumn("Whisperer Source", width=dip(roadmap_list, 180))
+    roadmap_list.AppendColumn("Phase", width=dip(roadmap_list, 70))
+    roadmap_list.AppendColumn("Quill Plan", width=dip(roadmap_list, 240))
     for i, (cap, source, phase, notes) in enumerate(roadmap_rows):
         roadmap_list.InsertItem(i, cap)
         roadmap_list.SetItem(i, 1, source)
@@ -447,8 +449,8 @@ def show_whisperer_about_native(
         name="whisperer_principles",
     )
     set_spoken_name(principles_list, "Principles")
-    principles_list.AppendColumn("Principle", width=180)
-    principles_list.AppendColumn("How it applies", width=460)
+    principles_list.AppendColumn("Principle", width=dip(principles_list, 180))
+    principles_list.AppendColumn("How it applies", width=dip(principles_list, 460))
     for i, (principle, detail) in enumerate(principles_rows):
         principles_list.InsertItem(i, principle)
         principles_list.SetItem(i, 1, detail)
@@ -490,7 +492,7 @@ def show_bw_capability_matrix_native(
         title="QUILL Whisperer Capability Matrix",
         style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
     )
-    dialog.SetSize((760, 500))
+    dialog.SetSize(dip_size(dialog, 760, 500))
     sizer = wx.BoxSizer(wx.VERTICAL)
 
     cap_list = wx.ListCtrl(
@@ -499,10 +501,10 @@ def show_bw_capability_matrix_native(
         name="bw_capability_matrix",
     )
     set_spoken_name(cap_list, "Capability matrix")
-    cap_list.AppendColumn("Capability", width=220)
-    cap_list.AppendColumn("Phase", width=80)
-    cap_list.AppendColumn("Status", width=90)
-    cap_list.AppendColumn("Notes", width=310)
+    cap_list.AppendColumn("Capability", width=dip(cap_list, 220))
+    cap_list.AppendColumn("Phase", width=dip(cap_list, 80))
+    cap_list.AppendColumn("Status", width=dip(cap_list, 90))
+    cap_list.AppendColumn("Notes", width=dip(cap_list, 310))
     for i, (name, phase, status, notes) in enumerate(capability_rows):
         cap_list.InsertItem(i, name)
         cap_list.SetItem(i, 1, phase)
@@ -525,7 +527,7 @@ def show_bw_capability_matrix_native(
         name="bw_snapshot",
     )
     set_spoken_name(snap_ctrl, "Current configuration")
-    snap_ctrl.SetMinSize((-1, 90))
+    snap_ctrl.SetMinSize(dip_size(snap_ctrl, -1, 90))
     sizer.Add(snap_ctrl, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
 
     btn_sizer = wx.StdDialogButtonSizer()

@@ -21,6 +21,7 @@ import wx
 from quill.apps.beacon import capture, media
 from quill.apps.beacon.announce import Announcer
 from quill.ui.audio.audio_engine import AudioEngine, create_engine
+from quill.ui.dpi import dip_size
 
 
 def _name(ctrl: wx.Control, name: str) -> None:
@@ -31,7 +32,7 @@ class PlayerFrame(wx.Frame):
     """Accessible player for one episode beacon."""
 
     def __init__(self, parent, store, beacon_id: str):
-        super().__init__(parent, title="QuillBeacon Player", size=(640, 560))
+        super().__init__(parent, title="QuillBeacon Player", size=dip_size(parent, 640, 560))
         self.store = store
         self.beacon_id = beacon_id
         self.beacon = store.get_beacon(beacon_id)

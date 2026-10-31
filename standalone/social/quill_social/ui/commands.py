@@ -13,6 +13,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 
 import wx
+from quill.ui.dpi import dip_size
 
 
 @dataclass
@@ -44,8 +45,9 @@ class CommandPalette(wx.Dialog):
     """Modal palette over a list of Commands (PRD 10.2)."""
 
     def __init__(self, parent, commands: list[Command]):
-        super().__init__(parent, title="Command Center",
-                         style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+        super().__init__(
+            parent, title="Command Center", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+        )
         self._commands = commands
         self._chosen: Command | None = None
 
@@ -65,7 +67,7 @@ class CommandPalette(wx.Dialog):
         sizer.Add(self.reason, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         self.SetSizer(sizer)
-        self.SetSize((480, 420))
+        self.SetSize(dip_size(self, 480, 420))
         self._populate("")
         self.filter.SetFocus()
 
@@ -91,7 +93,8 @@ class CommandPalette(wx.Dialog):
         cmd = self._current()
         if cmd and not cmd.is_available():
             self.reason.SetLabel(
-                cmd.unavailable_reason or "This command is not available right now.")
+                cmd.unavailable_reason or "This command is not available right now."
+            )
         else:
             self.reason.SetLabel("")
 
@@ -117,7 +120,8 @@ class CommandPalette(wx.Dialog):
             return
         if not cmd.is_available():
             self.reason.SetLabel(
-                cmd.unavailable_reason or "This command is not available right now.")
+                cmd.unavailable_reason or "This command is not available right now."
+            )
             return
         self._chosen = cmd
         self.EndModal(wx.ID_OK)

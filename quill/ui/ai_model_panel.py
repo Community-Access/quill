@@ -28,6 +28,7 @@ from quill.core.ai.model_tiers import (
     switch_active_tier,
 )
 from quill.ui.dialog_contract import apply_modal_ids, dialog_alive, show_modal_dialog
+from quill.ui.dpi import dip_size
 
 
 def _uses_foundation_models() -> bool:
@@ -56,7 +57,7 @@ class AIModelDialog:
         self.dialog = wx.Dialog(
             parent, title="AI Model & Connection", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetSize((560, 520))
+        self.dialog.SetSize(dip_size(self.dialog, 560, 520))
         root = wx.BoxSizer(wx.VERTICAL)
 
         wrap = 520

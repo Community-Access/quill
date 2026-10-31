@@ -32,6 +32,7 @@ from quill.core.podcasts import chapter_edits
 from quill.core.podcasts.chapter_edits import ChapterEditError
 from quill.core.podcasts.chapters import PodcastChapter
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 #: How far one nudge moves a mark. Five seconds is about a sentence -- small
 #: enough to land on the turn, big enough to be worth a keystroke.
@@ -70,7 +71,7 @@ class ChapterReviewDialog:
             title=f"Review Chapters -- {episode_title}",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize((640, 520))
+        self.dialog.SetMinSize(dip_size(self.dialog, 640, 520))
         root = wx.BoxSizer(wx.VERTICAL)
 
         self._summary = wx.StaticText(

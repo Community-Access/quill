@@ -28,6 +28,7 @@ from datetime import datetime
 
 from quill.core.radio.song_history import BACKGROUND_DISCLAIMER, SongHistory, SongPlay
 from quill.ui.dialog_contract import announce_surface_exit, apply_modal_ids
+from quill.ui.dpi import dip_size
 
 
 def _heard_at(iso: str) -> str:
@@ -127,7 +128,7 @@ class SongHistoryDialog:
             )
             self._surface = self._win
         self.dialog = self._win  # top-level window; child dialogs parent to it
-        self._win.SetSize(wx.Size(620, 520))
+        self._win.SetSize(dip_size(self._win, 620, 520))
         self._build_ui()
         self._reload_songs()
 

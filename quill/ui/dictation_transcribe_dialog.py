@@ -39,6 +39,7 @@ from quill.core.windows_dictation.file_models import (
 )
 from quill.core.windows_dictation.speech_language import SPEECH_LANGUAGES
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 __all__ = ["STOP_TRANSCRIBING", "TranscribeChoice", "TranscribeFileDialog"]
 
@@ -167,7 +168,9 @@ class TranscribeFileDialog(wx.Dialog):
         )
         self.model.Bind(wx.EVT_CHOICE, self._on_model_choice)
         about_label = wx.StaticText(self, label="About this model and this recording:")
-        self.about = wx.TextCtrl(self, style=wx.TE_READONLY | wx.TE_MULTILINE, size=(-1, 90))
+        self.about = wx.TextCtrl(
+            self, style=wx.TE_READONLY | wx.TE_MULTILINE, size=dip_size(self, -1, 90)
+        )
         self.about.SetName("About this model and this recording")
         self.about.SetHelpText(
             "What the chosen model is good for, how long the recording is, and about "

@@ -15,6 +15,7 @@ import wx
 from quill.core.verbosity.engine import VerbosityEngine
 from quill.core.verbosity.preview import BUILTIN_SCENARIOS, preview_scenario
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 __all__ = ["VerbosityPreviewLabDialog"]
 
@@ -35,7 +36,7 @@ class VerbosityPreviewLabDialog:
         self.dialog = wx.Dialog(
             parent, title="Verbosity preview lab", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize(wx.Size(600, 460))
+        self.dialog.SetMinSize(dip_size(self.dialog, 600, 460))
         root = wx.BoxSizer(wx.VERTICAL)
 
         root.Add(wx.StaticText(self.dialog, label="S&cenario:"), 0, wx.LEFT | wx.TOP, 8)
@@ -43,7 +44,7 @@ class VerbosityPreviewLabDialog:
             self.dialog, style=wx.LB_SINGLE, choices=[s.name for s in BUILTIN_SCENARIOS]
         )
         self._list.SetName("Preview scenarios")
-        self._list.SetMinSize(wx.Size(-1, 170))
+        self._list.SetMinSize(dip_size(self._list, -1, 170))
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 4)
 
         root.Add(wx.StaticText(self.dialog, label="&Output:"), 0, wx.LEFT | wx.TOP, 8)
@@ -51,7 +52,7 @@ class VerbosityPreviewLabDialog:
             self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
         self._output.SetName("Scenario output")
-        self._output.SetMinSize(wx.Size(-1, 150))
+        self._output.SetMinSize(dip_size(self._output, -1, 150))
         root.Add(self._output, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 4)
 
         btns = wx.BoxSizer(wx.HORIZONTAL)

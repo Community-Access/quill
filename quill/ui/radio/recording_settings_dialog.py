@@ -14,6 +14,7 @@ from quill.core.radio.recording import (
     format_uses_bitrate,
 )
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 _BITRATE_CHOICES = (96, 128, 160, 192, 256, 320)
 
@@ -40,7 +41,7 @@ class RecordingSettingsDialog:
             title="Recording Settings",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize((520, 420))
+        self.dialog.SetMinSize(dip_size(self.dialog, 520, 420))
         root = wx.BoxSizer(wx.VERTICAL)
 
         grid = wx.FlexGridSizer(cols=2, gap=(6, 8))

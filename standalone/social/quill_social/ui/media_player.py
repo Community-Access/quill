@@ -16,6 +16,7 @@ places a quotable ``"text @ mm:ss"`` string on :attr:`quoted_text`.
 from __future__ import annotations
 
 import wx
+from quill.ui.dpi import dip, dip_size
 
 from quill_social.model import Media
 from quill_social.services import transcripts as transcripts_svc
@@ -120,9 +121,7 @@ class MediaPlayerDialog(wx.Dialog):
             wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
             6,
         )
-        self.volume = wx.Slider(
-            self, value=100, minValue=0, maxValue=100, style=wx.SL_HORIZONTAL
-        )
+        self.volume = wx.Slider(self, value=100, minValue=0, maxValue=100, style=wx.SL_HORIZONTAL)
         self.volume.SetName("Volume")
         sv.Add(self.volume, 1)
         outer.Add(sv, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
@@ -138,9 +137,9 @@ class MediaPlayerDialog(wx.Dialog):
             outer.Add(wx.StaticText(self, label="Transcript cues:"), 0, wx.LEFT, 8)
             self.cues = wx.ListCtrl(self, style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
             self.cues.SetName("Transcript cues")
-            self.cues.InsertColumn(0, "Start", width=90)
-            self.cues.InsertColumn(1, "End", width=90)
-            self.cues.InsertColumn(2, "Text", width=420)
+            self.cues.InsertColumn(0, "Start", width=dip(self.cues, 90))
+            self.cues.InsertColumn(1, "End", width=dip(self.cues, 90))
+            self.cues.InsertColumn(2, "Text", width=dip(self.cues, 420))
             for cue in self._transcript.cues:
                 idx = self.cues.InsertItem(self.cues.GetItemCount(), _fmt_ms(cue.start_ms))
                 self.cues.SetItem(idx, 1, _fmt_ms(cue.end_ms))
@@ -159,7 +158,7 @@ class MediaPlayerDialog(wx.Dialog):
         outer.Add(close_btn, 0, wx.ALIGN_RIGHT | wx.ALL, 8)
 
         self.SetSizer(outer)
-        self.SetSize((720, 620))
+        self.SetSize(dip_size(self, 720, 620))
 
         self.play_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_toggle())
         self.stop_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_stop())

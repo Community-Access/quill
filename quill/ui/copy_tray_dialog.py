@@ -12,6 +12,7 @@ from collections.abc import Callable
 import wx
 
 from quill.core.copy_tray import CopyTray
+from quill.ui.dpi import dip_size
 
 
 def _slot_row_text(n: int, slot_text: str, slot_label: str, pinned: bool = False) -> str:
@@ -46,7 +47,7 @@ class CopyTrayDialog:
             title="Copy Tray",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize(wx.Size(640, 400))
+        self.dialog.SetMinSize(dip_size(self.dialog, 640, 400))
 
         root = wx.BoxSizer(wx.VERTICAL)
         body = wx.BoxSizer(wx.HORIZONTAL)

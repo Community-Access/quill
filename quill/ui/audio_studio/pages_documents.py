@@ -28,6 +28,7 @@ from quill.ui.audio_studio.request import (
     BatchSpeechRequest,
 )
 from quill.ui.dialog_contract import apply_listbox_activation
+from quill.ui.dpi import dip_size
 
 # (label, engine_id) pairs, mirroring the Speech Hub's engine list.
 EngineOptions = list[tuple[str, str]]
@@ -804,7 +805,7 @@ class ChaptersPage(StudioPage):
             "numbered, filled in by the Preview chapter titles button. "
             "Read-only -- change the level and preview again to compare."
         )
-        self.title_preview.SetMinSize(wx.Size(-1, 120))
+        self.title_preview.SetMinSize(dip_size(self.title_preview, -1, 120))
         self.sizer.Add(self.title_preview, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 12)
 
         self.speak_headings = wx.CheckBox(self, label=_("Speak each &heading aloud"))

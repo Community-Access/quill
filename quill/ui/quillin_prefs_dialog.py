@@ -14,6 +14,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.ui.dpi import dip_size
+
 
 class _Ref:
     """Slim bundle that tracks one rendered setting control."""
@@ -243,7 +245,7 @@ def build_quillin_pref_dialog(
         title=f"{title} Settings",
         style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
     )
-    dialog.SetSize((520, 560))
+    dialog.SetSize(dip_size(dialog, 520, 560))
     root = wx.BoxSizer(wx.VERTICAL)
     tabs = sorted(page.get("tabs", []), key=lambda t: t.get("order", 0))
     refs: list[_Ref] = []

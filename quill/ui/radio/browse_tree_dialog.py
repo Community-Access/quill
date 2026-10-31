@@ -42,6 +42,7 @@ from quill.ui.dialog_contract import (
     bind_close_button,
     dialog_alive,
 )
+from quill.ui.dpi import dip_size
 from quill.ui.radio import browse_feedback, browse_keys, browse_position, transport_keys
 from quill.ui.radio.browse_marks import row_text
 from quill.ui.radio.volume_row import add_volume_slider
@@ -139,7 +140,7 @@ class BrowseTreeDialog:
         # frame: the main window's own Ctrl+F is Search Stations.
         (self._surface if self._embedded else self._win).Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
         if not self._embedded:
-            self._win.SetMinSize((560, 460))
+            self._win.SetMinSize(dip_size(self._win, 560, 460))
         root = wx.BoxSizer(wx.VERTICAL)
 
         # Above the tree, and one control rather than three: see

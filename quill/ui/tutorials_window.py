@@ -43,6 +43,7 @@ from quill.core.tutorials.progress import (
 )
 from quill.ui import tutorial_checks, tutorials_contents
 from quill.ui.dialog_contract import announce_surface_exit
+from quill.ui.dpi import dip_size
 
 #: How often Follow me asks the app whether the step happened. A second is
 #: slow enough to cost nothing and fast enough that the answer feels immediate.
@@ -132,7 +133,7 @@ class TutorialsWindow:
         self._build_surface_menu_bar()
         self._win.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
         self._win.Bind(wx.EVT_CLOSE, self._on_close)
-        self._win.SetSize(wx.Size(820, 620))
+        self._win.SetSize(dip_size(self._win, 820, 620))
         self._timer = wx.Timer(self._win)
         self._win.Bind(wx.EVT_TIMER, self._on_tick, self._timer)
         self._build_ui()

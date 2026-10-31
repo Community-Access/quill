@@ -23,6 +23,7 @@ from quill.core.updater.going_back import ReturnAssessment
 from quill.core.updater.wording import RETURN_SAFE_TITLE, RETURN_UNSAFE_TITLE, return_text
 from quill.core.versioning import ReleaseVersion
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
+from quill.ui.dpi import dip_size
 
 __all__ = ["ReturnAnswer", "ReturnToStableDialog"]
 
@@ -57,7 +58,7 @@ class ReturnToStableDialog(wx.Dialog):  # type: ignore[misc]
             self,
             value=return_text(assessment, app_name, channel),
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2,
-            size=(-1, 240),
+            size=dip_size(self, -1, 240),
         )
         self._text.SetName("What going back means")
         self._text.SetHelpText(
@@ -104,7 +105,7 @@ class ReturnToStableDialog(wx.Dialog):  # type: ignore[misc]
         sizer.Add(buttons, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
 
         self.SetSizerAndFit(sizer)
-        self.SetSize((600, -1))
+        self.SetSize(dip_size(self, 600, -1))
         apply_modal_ids(self, escape_id=wx.ID_CANCEL)
         self._text.SetFocus()
 

@@ -42,6 +42,7 @@ import wx as _wx_default
 
 from quill.core.text_utils import strip_md_to_plain
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 __all__ = [
     "CLOSE_LABEL",
@@ -174,7 +175,7 @@ def present_release_notes(
     """
     wx = wx_module or _wx_default
     dialog = wx.Dialog(parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
-    dialog.SetSize((560, 520))
+    dialog.SetSize(dip_size(dialog, 560, 520))
     sizer = wx.BoxSizer(wx.VERTICAL)
     if header:
         heading = wx.StaticText(dialog, label=header)

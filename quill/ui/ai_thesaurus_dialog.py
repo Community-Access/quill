@@ -10,6 +10,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from quill.ui.dialog_contract import apply_modal_ids, dialog_alive
+from quill.ui.dpi import dip, dip_size
 
 
 class AIThesaurusDialog:
@@ -56,7 +57,7 @@ class AIThesaurusDialog:
             title="AI Thesaurus",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize(wx.Size(600, 480))
+        self.dialog.SetSize(dip_size(self.dialog, 600, 480))
         self._build_ui(initial_word)
 
     def _build_ui(self, initial_word: str) -> None:
@@ -91,8 +92,8 @@ class AIThesaurusDialog:
             style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.BORDER_SIMPLE,
         )
         self._list.SetName("Synonyms")
-        self._list.InsertColumn(0, "Synonym", width=160)
-        self._list.InsertColumn(1, "Usage note", width=380)
+        self._list.InsertColumn(0, "Synonym", width=dip(self._list, 160))
+        self._list.InsertColumn(1, "Usage note", width=dip(self._list, 380))
         root.Add(self._list, 1, wx.EXPAND | wx.ALL, 8)
 
         # Status

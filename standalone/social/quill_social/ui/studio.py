@@ -12,6 +12,7 @@ store and call into ``quill_social.services`` for all reasoning.
 from __future__ import annotations
 
 import wx
+from quill.ui.dpi import dip, dip_size
 
 from quill_social.model import now_ms
 from quill_social.services import approvals as approvals_svc
@@ -69,10 +70,10 @@ class DraftsDialog(wx.Dialog):
 
         self.list = wx.ListCtrl(self, style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
         self.list.SetName("Drafts")
-        self.list.InsertColumn(0, "Name", width=160)
-        self.list.InsertColumn(1, "Preview", width=320)
-        self.list.InsertColumn(2, "Targets", width=80)
-        self.list.InsertColumn(3, "Updated", width=140)
+        self.list.InsertColumn(0, "Name", width=dip(self.list, 160))
+        self.list.InsertColumn(1, "Preview", width=dip(self.list, 320))
+        self.list.InsertColumn(2, "Targets", width=dip(self.list, 80))
+        self.list.InsertColumn(3, "Updated", width=dip(self.list, 140))
         outer.Add(self.list, 1, wx.EXPAND | wx.ALL, 8)
 
         btns = wx.BoxSizer(wx.HORIZONTAL)
@@ -87,7 +88,7 @@ class DraftsDialog(wx.Dialog):
         outer.Add(btns, 0, wx.ALIGN_RIGHT | wx.ALL, 8)
 
         self.SetSizer(outer)
-        self.SetSize((760, 420))
+        self.SetSize(dip_size(self, 760, 420))
 
         self.edit_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_edit())
         self.delete_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_delete())
@@ -178,21 +179,21 @@ class AgendaDialog(wx.Dialog):
         outer.Add(wx.StaticText(self, label="Agenda:"), 0, wx.LEFT, 8)
         self.list = wx.ListCtrl(self, style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
         self.list.SetName("Agenda")
-        self.list.InsertColumn(0, "Group", width=110)
-        self.list.InsertColumn(1, "When", width=170)
-        self.list.InsertColumn(2, "Account", width=110)
-        self.list.InsertColumn(3, "Network", width=80)
-        self.list.InsertColumn(4, "Campaign", width=110)
-        self.list.InsertColumn(5, "State", width=90)
-        self.list.InsertColumn(6, "Approval", width=90)
-        self.list.InsertColumn(7, "Preview", width=220)
+        self.list.InsertColumn(0, "Group", width=dip(self.list, 110))
+        self.list.InsertColumn(1, "When", width=dip(self.list, 170))
+        self.list.InsertColumn(2, "Account", width=dip(self.list, 110))
+        self.list.InsertColumn(3, "Network", width=dip(self.list, 80))
+        self.list.InsertColumn(4, "Campaign", width=dip(self.list, 110))
+        self.list.InsertColumn(5, "State", width=dip(self.list, 90))
+        self.list.InsertColumn(6, "Approval", width=dip(self.list, 90))
+        self.list.InsertColumn(7, "Preview", width=dip(self.list, 220))
         outer.Add(self.list, 1, wx.EXPAND | wx.ALL, 8)
 
         outer.Add(wx.StaticText(self, label="Conflicts:"), 0, wx.LEFT, 8)
         self.conflicts = wx.TextCtrl(
             self,
             style=wx.TE_MULTILINE | wx.TE_READONLY,
-            size=(-1, 90),
+            size=dip_size(self, -1, 90),
         )
         self.conflicts.SetName("Scheduling conflicts")
         outer.Add(self.conflicts, 0, wx.EXPAND | wx.ALL, 8)
@@ -202,7 +203,7 @@ class AgendaDialog(wx.Dialog):
         outer.Add(close_btn, 0, wx.ALIGN_RIGHT | wx.ALL, 8)
 
         self.SetSizer(outer)
-        self.SetSize((900, 520))
+        self.SetSize(dip_size(self, 900, 520))
 
         self.view.Bind(wx.EVT_CHOICE, lambda _e: self._refresh())
         self.spacing.Bind(wx.EVT_SPINCTRL, lambda _e: self._refresh())
@@ -340,9 +341,7 @@ class QueueScheduleDialog(wx.Dialog):
             wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
             6,
         )
-        self.daily_limit = wx.SpinCtrl(
-            self, min=0, max=100, initial=self.schedule.daily_limit
-        )
+        self.daily_limit = wx.SpinCtrl(self, min=0, max=100, initial=self.schedule.daily_limit)
         self.daily_limit.SetName("Daily limit")
         limits.Add(self.daily_limit, 0)
         outer.Add(limits, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
@@ -351,8 +350,8 @@ class QueueScheduleDialog(wx.Dialog):
         outer.Add(wx.StaticText(self, label="Weekly slots:"), 0, wx.LEFT, 8)
         self.slots_list = wx.ListCtrl(self, style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
         self.slots_list.SetName("Weekly slots")
-        self.slots_list.InsertColumn(0, "Weekday", width=120)
-        self.slots_list.InsertColumn(1, "Time", width=100)
+        self.slots_list.InsertColumn(0, "Weekday", width=dip(self.slots_list, 120))
+        self.slots_list.InsertColumn(1, "Time", width=dip(self.slots_list, 100))
         outer.Add(self.slots_list, 1, wx.EXPAND | wx.ALL, 8)
 
         slot_row = wx.BoxSizer(wx.HORIZONTAL)
@@ -396,9 +395,9 @@ class QueueScheduleDialog(wx.Dialog):
         outer.Add(wx.StaticText(self, label="Blackout windows:"), 0, wx.LEFT, 8)
         self.blackout_list = wx.ListCtrl(self, style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
         self.blackout_list.SetName("Blackout windows")
-        self.blackout_list.InsertColumn(0, "Start (ms UTC)", width=140)
-        self.blackout_list.InsertColumn(1, "End (ms UTC)", width=140)
-        self.blackout_list.InsertColumn(2, "Reason", width=200)
+        self.blackout_list.InsertColumn(0, "Start (ms UTC)", width=dip(self.blackout_list, 140))
+        self.blackout_list.InsertColumn(1, "End (ms UTC)", width=dip(self.blackout_list, 140))
+        self.blackout_list.InsertColumn(2, "Reason", width=dip(self.blackout_list, 200))
         outer.Add(self.blackout_list, 0, wx.EXPAND | wx.ALL, 8)
 
         bo_row = wx.BoxSizer(wx.HORIZONTAL)
@@ -442,7 +441,7 @@ class QueueScheduleDialog(wx.Dialog):
         self.preview = wx.TextCtrl(
             self,
             style=wx.TE_MULTILINE | wx.TE_READONLY,
-            size=(-1, 90),
+            size=dip_size(self, -1, 90),
         )
         self.preview.SetName("Next slots preview")
         outer.Add(self.preview, 0, wx.EXPAND | wx.ALL, 8)
@@ -457,7 +456,7 @@ class QueueScheduleDialog(wx.Dialog):
         outer.Add(btns, 0, wx.ALIGN_RIGHT | wx.ALL, 8)
 
         self.SetSizer(outer)
-        self.SetSize((820, 720))
+        self.SetSize(dip_size(self, 820, 720))
 
         self.add_slot_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_add_slot())
         self.remove_slot_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_remove_slot())
@@ -615,17 +614,17 @@ class ApprovalsDialog(wx.Dialog):
         outer.Add(wx.StaticText(self, label="Approval records:"), 0, wx.LEFT, 8)
         self.list = wx.ListCtrl(self, style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
         self.list.SetName("Approval records")
-        self.list.InsertColumn(0, "Record", width=160)
-        self.list.InsertColumn(1, "Draft", width=160)
-        self.list.InsertColumn(2, "State", width=140)
-        self.list.InsertColumn(3, "Audit steps", width=100)
+        self.list.InsertColumn(0, "Record", width=dip(self.list, 160))
+        self.list.InsertColumn(1, "Draft", width=dip(self.list, 160))
+        self.list.InsertColumn(2, "State", width=dip(self.list, 140))
+        self.list.InsertColumn(3, "Audit steps", width=dip(self.list, 100))
         outer.Add(self.list, 1, wx.EXPAND | wx.ALL, 8)
 
         outer.Add(wx.StaticText(self, label="Audit trail:"), 0, wx.LEFT, 8)
         self.audit = wx.TextCtrl(
             self,
             style=wx.TE_MULTILINE | wx.TE_READONLY,
-            size=(-1, 120),
+            size=dip_size(self, -1, 120),
         )
         self.audit.SetName("Audit trail")
         outer.Add(self.audit, 0, wx.EXPAND | wx.ALL, 8)
@@ -644,7 +643,7 @@ class ApprovalsDialog(wx.Dialog):
         outer.Add(btns, 0, wx.ALIGN_RIGHT | wx.ALL, 8)
 
         self.SetSizer(outer)
-        self.SetSize((820, 560))
+        self.SetSize(dip_size(self, 820, 560))
 
         self.list.Bind(wx.EVT_LIST_ITEM_SELECTED, lambda _e: self._show_audit())
         self.request_btn.Bind(wx.EVT_BUTTON, lambda _e: self._on_request())

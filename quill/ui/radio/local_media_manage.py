@@ -25,6 +25,7 @@ from typing import Any
 
 from quill.core.radio import local_media
 from quill.core.radio.local_media import MediaItem, Playlist
+from quill.ui.dpi import dip_size
 from quill.ui.radio import local_media_ui as ui
 
 __all__ = [
@@ -408,7 +409,7 @@ def properties(host: Any, playlist_id: str, item_id: int) -> None:
         "with the drive it is on: its name, kind, capacity, used and free space. "
         "Arrow through it, or select and copy any of it."
     )
-    box.SetMinSize((520, 260))
+    box.SetMinSize(dip_size(box, 520, 260))
     sizer.Add(box, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
     close = wx.Button(dialog, wx.ID_CANCEL, label="Close")
     close.SetHelpText("Closes this and goes back to the list.")

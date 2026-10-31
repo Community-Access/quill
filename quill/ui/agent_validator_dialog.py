@@ -18,6 +18,7 @@ from pathlib import Path
 from quill.core.ai.agent_catalog import bundled_agents_dir
 from quill.tools.agent_lint import ERROR, WARNING, Finding, lint_dir, lint_path
 from quill.ui.dialog_contract import apply_modal_ids, focus_primary_control
+from quill.ui.dpi import dip_size
 
 
 class AgentValidatorDialog:
@@ -42,7 +43,7 @@ class AgentValidatorDialog:
             title="Validate Agents",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize(wx.Size(680, 480))
+        self.dialog.SetSize(dip_size(self.dialog, 680, 480))
         self._build_ui()
         self._run()
 

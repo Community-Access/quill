@@ -13,6 +13,7 @@ from collections.abc import Callable
 
 from quill.core.ai.field_apply import ApplySession, FieldSuggestion
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_modal_dialog
+from quill.ui.dpi import dip_size
 
 
 class FieldApplyDialog:
@@ -39,7 +40,7 @@ class FieldApplyDialog:
             title=title,
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize((720, 540))
+        self.dialog.SetSize(dip_size(self.dialog, 720, 540))
         root = wx.BoxSizer(wx.VERTICAL)
 
         intro = wx.StaticText(
@@ -63,7 +64,7 @@ class FieldApplyDialog:
         self.details = wx.TextCtrl(
             self.dialog,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.BORDER_SIMPLE,
-            size=(-1, 150),
+            size=dip_size(self.dialog, -1, 150),
         )
         set_accessible_name(self.details, "Suggestion details")
         root.Add(self.details, 0, wx.EXPAND | wx.ALL, 8)

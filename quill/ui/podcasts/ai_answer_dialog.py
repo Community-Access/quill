@@ -9,6 +9,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.ui.dpi import dip_size
+
 __all__ = ["show_answer"]
 
 
@@ -36,7 +38,7 @@ def show_answer(host: Any, title: str, text: str) -> None:
     buttons.Add(close, 0)
     root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
     dialog.SetSizer(root)
-    dialog.SetSize((640, 420))
+    dialog.SetSize(dip_size(dialog, 640, 420))
     apply_modal_ids(dialog, cancel_id=wx.ID_CANCEL, escape_id=wx.ID_CANCEL)
 
     def _copy(_event: Any) -> None:

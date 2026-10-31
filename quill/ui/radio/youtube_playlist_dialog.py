@@ -26,6 +26,7 @@ from collections.abc import Callable, Sequence
 
 from quill.core.radio.youtube import YouTubePlaylistEntry
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 
 def describe_entry(index: int, entry: YouTubePlaylistEntry) -> str:
@@ -79,7 +80,7 @@ class YouTubePlaylistDialog:
             title=self._title,
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize(wx.Size(620, 480))
+        self.dialog.SetSize(dip_size(self.dialog, 620, 480))
         self._build_ui(playlist_title)
 
     def _build_ui(self, playlist_title: str) -> None:

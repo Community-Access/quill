@@ -42,6 +42,7 @@ import wx
 
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
+from quill.ui.dpi import dip_size
 
 __all__ = [
     "AiSignInFrame",
@@ -247,7 +248,7 @@ class AiSignInFrame(wx.Frame):
         panel.SetSizer(self._sizer)
         self._panel = panel
 
-        self.SetInitialSize((560, 440))
+        self.SetInitialSize(dip_size(self, 560, 440))
         self.Centre()
         if service.signed_in:
             self._show_connected(service.support_id, already=True)
@@ -424,7 +425,7 @@ class AiUsageFrame(wx.Frame):
         _close_row(self, self._sizer, self._sign_out, copy)
         focus_on(self, self._body)
 
-        self.SetInitialSize((520, 380))
+        self.SetInitialSize(dip_size(self, 520, 380))
         self.Centre()
         service.fetch_quota(on_done=self._show, on_error=self._failed)
 
@@ -546,7 +547,7 @@ def ask_ai_privacy_agreement(parent: wx.Window, *, accepted: bool = False) -> bo
     sizer.Add(buttons, 0, wx.EXPAND | wx.ALL, _PAD)
 
     dialog.SetSizer(sizer)
-    dialog.SetInitialSize((620, 520))
+    dialog.SetInitialSize(dip_size(dialog, 620, 520))
     dialog.Centre()
     apply_modal_ids(dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
     # Focus the text, not the button: the reader then reads the agreement rather
@@ -581,7 +582,7 @@ def _review_agreement(dialog: wx.Dialog, sizer: wx.Sizer, buttons: wx.BoxSizer, 
     sizer.Add(buttons, 0, wx.EXPAND | wx.ALL, _PAD)
 
     dialog.SetSizer(sizer)
-    dialog.SetInitialSize((620, 520))
+    dialog.SetInitialSize(dip_size(dialog, 620, 520))
     dialog.Centre()
     apply_modal_ids(dialog, affirmative_id=wx.ID_CANCEL, cancel_id=wx.ID_CANCEL)
     wx.CallAfter(body.SetFocus)

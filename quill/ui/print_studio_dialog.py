@@ -16,6 +16,7 @@ from collections.abc import Callable
 import wx
 
 from quill.core.print_pagination import PageSetOption, PrintPreview, describe_preview
+from quill.ui.dpi import dip_size
 from quill.ui.spoken_name import set_spoken_name
 
 
@@ -37,7 +38,7 @@ class PrintStudioDialog:
         self.dialog = wx.Dialog(
             parent, title="Print Studio", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize(wx.Size(440, 320))
+        self.dialog.SetMinSize(dip_size(self.dialog, 440, 320))
         root = wx.BoxSizer(wx.VERTICAL)
 
         self._preview_ctrl = wx.TextCtrl(

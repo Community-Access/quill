@@ -17,6 +17,7 @@ from quill.core.abbreviations import (
 )
 from quill.core.list_search import SearchTerms
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
+from quill.ui.dpi import dip_size
 from quill.ui.virtual_report_list import VirtualReportList
 
 #: Stored value -> the words shown in the edit dialog. Ordered, because the
@@ -72,7 +73,7 @@ class _AbbreviationEditDialog:
             title=title,
             style=wx.DEFAULT_DIALOG_STYLE,
         )
-        self.dialog.SetMinSize(wx.Size(420, 280))
+        self.dialog.SetMinSize(dip_size(self.dialog, 420, 280))
 
         root = wx.BoxSizer(wx.VERTICAL)
         grid = wx.FlexGridSizer(cols=2, hgap=8, vgap=6)
@@ -85,7 +86,9 @@ class _AbbreviationEditDialog:
 
         grid.Add(wx.StaticText(self.dialog, label="&Expansion:"), 0, wx.ALIGN_CENTER_VERTICAL)
         self._exp_ctrl = wx.TextCtrl(
-            self.dialog, style=wx.TE_MULTILINE | wx.TE_PROCESS_ENTER, size=(-1, 70)
+            self.dialog,
+            style=wx.TE_MULTILINE | wx.TE_PROCESS_ENTER,
+            size=dip_size(self.dialog, -1, 70),
         )
         self._exp_ctrl.SetName("Expansion text — use ${cursor}, ${date}, ${time}, ${clipboard}")
         grid.Add(self._exp_ctrl, 1, wx.EXPAND)
@@ -196,7 +199,7 @@ class AbbreviationManagerDialog:
             title="Manage Abbreviations",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize(wx.Size(620, 440))
+        self.dialog.SetMinSize(dip_size(self.dialog, 620, 440))
 
         root = wx.BoxSizer(wx.VERTICAL)
 

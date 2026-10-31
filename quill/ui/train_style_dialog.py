@@ -11,6 +11,7 @@ import threading
 
 from quill.core.ai.style import add_sample, build_guide, load_style, save_style
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.dpi import dip_size
 
 
 class TrainStyleDialog:
@@ -26,7 +27,7 @@ class TrainStyleDialog:
         self.dialog = wx.Dialog(
             parent, title="Train Writing Style", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetSize((640, 620))
+        self.dialog.SetSize(dip_size(self.dialog, 640, 620))
         outer = wx.BoxSizer(wx.VERTICAL)
 
         self.enabled = wx.CheckBox(self.dialog, label="Write in my style when Quill generates text")
@@ -41,7 +42,7 @@ class TrainStyleDialog:
         )
         self.sample = wx.TextCtrl(self.dialog, style=wx.TE_MULTILINE)
         self.sample.SetName("Writing sample")
-        self.sample.SetMinSize((-1, 110))
+        self.sample.SetMinSize(dip_size(self.sample, -1, 110))
         outer.Add(self.sample, 0, wx.EXPAND | wx.ALL, 14)
 
         sample_row = wx.BoxSizer(wx.HORIZONTAL)

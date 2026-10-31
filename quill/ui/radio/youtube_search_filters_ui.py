@@ -13,6 +13,7 @@ from __future__ import annotations
 from typing import Any
 
 from quill.core.radio import youtube_search_filters as sf
+from quill.ui.dpi import dip_size
 
 TITLE = "Search YouTube with Filters"
 
@@ -29,7 +30,7 @@ def ask_filters(app: Any) -> tuple[str, sf.Filters] | None:
         grid.Add(wx.StaticText(dialog, label=text), 0, wx.ALIGN_CENTER_VERTICAL)
 
     _label("&Search for:")
-    words = wx.TextCtrl(dialog, size=(320, -1))
+    words = wx.TextCtrl(dialog, size=dip_size(dialog, 320, -1))
     words.SetName("Search for")
     words.SetHelpText("The words to search YouTube for, as you would type them on YouTube.")
     grid.Add(words, 1, wx.EXPAND)

@@ -27,6 +27,7 @@ from quill.core.podcasts.models_filters import (
     EpisodeFilterRule,
 )
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.dpi import dip_size
 
 #: The window title. Named in ``core/podcasts/surface_help.py`` so F1 answers
 #: here (GATE-CAST-HELP).
@@ -136,7 +137,7 @@ class EpisodeFilterRuleDialog:
         root.Add(grid, 0, wx.EXPAND | wx.ALL, 10)
 
         root.Add(wx.StaticText(self.dialog, label="More test&s:"), 0, wx.LEFT | wx.RIGHT, 10)
-        self._tests = wx.ListBox(self.dialog, size=(-1, 90))
+        self._tests = wx.ListBox(self.dialog, size=dip_size(self.dialog, -1, 90))
         self._tests.SetName("More tests")
         self._tests.SetHelpText(settings_help.FILTER_HELP["rule_tests"])
         root.Add(self._tests, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
@@ -167,7 +168,7 @@ class EpisodeFilterRuleDialog:
         root.Add(try_btn, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
         root.Add(wx.StaticText(self.dialog, label="Try it res&ult:"), 0, wx.LEFT | wx.RIGHT, 10)
         self._trial = wx.TextCtrl(
-            self.dialog, size=(440, 70), style=wx.TE_MULTILINE | wx.TE_READONLY
+            self.dialog, size=dip_size(self.dialog, 440, 70), style=wx.TE_MULTILINE | wx.TE_READONLY
         )
         self._trial.SetName("Try it result")
         self._trial.SetHelpText(settings_help.FILTER_HELP["rule_try_result"])

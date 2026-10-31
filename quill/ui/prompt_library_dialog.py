@@ -30,6 +30,7 @@ from quill.ui.dialog_contract import (
     apply_modal_ids,
     show_message_box,
 )
+from quill.ui.dpi import dip_size
 from quill.ui.prompt_edit_dialog import PromptEditDialog
 
 if TYPE_CHECKING:
@@ -68,7 +69,7 @@ class PromptLibraryDialog:
             title="Prompt Library",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize(wx.Size(700, 480))
+        self.dialog.SetMinSize(dip_size(self.dialog, 700, 480))
 
         root = wx.BoxSizer(wx.VERTICAL)
         body = wx.BoxSizer(wx.HORIZONTAL)

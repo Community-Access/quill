@@ -19,6 +19,7 @@ from quill.core.watch_profiles import (
     WatchProfile,
 )
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 from quill.ui.spoken_name import set_spoken_name
 
 
@@ -276,7 +277,7 @@ class WatchProfileDialogMixin:
                 dialog,
                 value=str(base.action_options.get("code", "")),
                 style=wx.TE_MULTILINE,
-                size=(-1, 80),
+                size=dip_size(dialog, -1, 80),
             )
             python_code.SetName("Python transform code")
             root.Add(python_code, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)

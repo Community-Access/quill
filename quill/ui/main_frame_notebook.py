@@ -16,6 +16,7 @@ from quill.core.notebook_store import (
     save_notebook,
 )
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 from quill.ui.notebook_navigator_page import _NotebookNode, build_notebook_nodes
 
 
@@ -218,7 +219,7 @@ class NotebookUIMixin:
                 wx.OK | wx.ICON_INFORMATION,
             )
             return
-        dialog = wx.Dialog(self.frame, title="Manage Versions", size=(520, 420))
+        dialog = wx.Dialog(self.frame, title="Manage Versions", size=dip_size(self.frame, 520, 420))
         outer = wx.BoxSizer(wx.VERTICAL)
         outer.Add(wx.StaticText(dialog, label="Versions:"), 0, wx.ALL, 8)
         listbox = wx.ListBox(dialog, style=wx.LB_SINGLE)

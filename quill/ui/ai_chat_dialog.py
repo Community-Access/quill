@@ -15,6 +15,7 @@ import wx
 
 from quill.core.i18n import _
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 
 class AIResponseDialog:
@@ -34,7 +35,7 @@ class AIResponseDialog:
             title=_("AI Response"),
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize(wx.Size(560, 440))
+        self.dialog.SetMinSize(dip_size(self.dialog, 560, 440))
 
         root = wx.BoxSizer(wx.VERTICAL)
 

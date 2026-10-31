@@ -38,6 +38,7 @@ from quill.ui.dialog_contract import (
     set_accessible_name,
     show_modal_dialog,
 )
+from quill.ui.dpi import dip_size
 
 __all__ = [
     "RecentDocumentsAnswer",
@@ -122,7 +123,7 @@ class RecentDocumentsWindow:
         root = wx.BoxSizer(wx.VERTICAL)
 
         list_label = wx.StaticText(dialog, label="&Documents, pinned first, then newest:")
-        self.listbox = wx.ListBox(dialog, size=(560, 260))
+        self.listbox = wx.ListBox(dialog, size=dip_size(dialog, 560, 260))
         set_accessible_name(self.listbox, "Documents, pinned first, then newest")
         self.listbox.SetHelpText(
             "Every document you opened recently, pinned ones first. Enter opens the one "

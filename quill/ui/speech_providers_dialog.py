@@ -51,6 +51,7 @@ from quill.ui.dialog_contract import (
     dialog_alive,
     show_message_box,
 )
+from quill.ui.dpi import dip_size
 
 __all__ = ["SpeechProvidersDialog", "about_provider"]
 
@@ -121,7 +122,9 @@ class SpeechProvidersDialog(wx.Dialog):
         outer.Add(self.providers, 1, wx.EXPAND | wx.ALL, _PAD)
 
         about_label = wx.StaticText(self, label="Abo&ut this provider:")
-        self.about = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(-1, 110))
+        self.about = wx.TextCtrl(
+            self, style=wx.TE_MULTILINE | wx.TE_READONLY, size=dip_size(self, -1, 110)
+        )
         self.about.SetHelpText(
             "What the chosen provider is, whether it gives words while you speak, "
             "whether it learns your words, where your speech goes, and its usage page."
@@ -179,7 +182,7 @@ class SpeechProvidersDialog(wx.Dialog):
         if self._providers:
             self.providers.SetSelection(0)
             self._show(0)
-        self.SetMinSize((560, 560))
+        self.SetMinSize(dip_size(self, 560, 560))
         self.Fit()
         self.providers.SetFocus()
 

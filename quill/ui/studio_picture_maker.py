@@ -16,6 +16,7 @@ import wx
 
 from quill.core.ai.image_generation import IMAGE_SIZES
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 
 # a11y: needs manual verification -- screen-reader/braille announcements,
 # keyboard focus order, high contrast, and layout at increased Windows scaling.
@@ -48,7 +49,7 @@ class PictureMakerDialog(wx.Dialog):
             wx.LEFT | wx.TOP,
             10,
         )
-        self.words = wx.TextCtrl(self, style=wx.TE_MULTILINE, size=(560, 80))
+        self.words = wx.TextCtrl(self, style=wx.TE_MULTILINE, size=dip_size(self, 560, 80))
         set_accessible_name(self.words, "Describe the picture, or the change you want")
         self.words.SetHelpText(
             "First, describe the whole picture. After that, say only what to change, such as "
@@ -71,7 +72,7 @@ class PictureMakerDialog(wx.Dialog):
         row.Add(self.make, 0)
         layout.Add(row, 0, wx.LEFT | wx.RIGHT, 10)
         layout.Add(wx.StaticText(self, label="&Versions"), 0, wx.LEFT | wx.TOP, 10)
-        self.list = wx.ListBox(self, size=(560, 90))
+        self.list = wx.ListBox(self, size=dip_size(self, 560, 90))
         set_accessible_name(self.list, "Versions")
         self.list.SetHelpText(
             "Every picture made so far, newest last. Choose one to hear its description."
@@ -80,7 +81,7 @@ class PictureMakerDialog(wx.Dialog):
         layout.Add(self.list, 0, wx.EXPAND | wx.ALL, 10)
         layout.Add(wx.StaticText(self, label="Description of the chosen version"), 0, wx.LEFT, 10)
         self.description = wx.TextCtrl(
-            self, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(560, 110)
+            self, style=wx.TE_MULTILINE | wx.TE_READONLY, size=dip_size(self, 560, 110)
         )
         set_accessible_name(self.description, "Description of the chosen version")
         self.description.SetHelpText(

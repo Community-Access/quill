@@ -19,6 +19,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.dpi import dip_size
 from quill.ui.github_items_view import render_pull_file_diff
 from quill.ui.spoken_name import set_spoken_name
 
@@ -60,8 +61,8 @@ class UncommittedChangesDialog:
         self.dialog = wx.Dialog(
             parent, title="Uncommitted Changes", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize((640, 460))
-        self.dialog.SetSize((760, 560))
+        self.dialog.SetMinSize(dip_size(self.dialog, 640, 460))
+        self.dialog.SetSize(dip_size(self.dialog, 760, 560))
         panel = wx.Panel(self.dialog)
         root = wx.BoxSizer(wx.VERTICAL)
 
@@ -196,13 +197,15 @@ class MergeConflictDialog:
         self._status.SetName("Conflict position")
         root.Add(self._status, 0, wx.ALL, 10)
 
-        self._ours_box = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(500, 100))
+        self._ours_box = wx.TextCtrl(
+            panel, style=wx.TE_MULTILINE | wx.TE_READONLY, size=dip_size(panel, 500, 100)
+        )
         self._ours_box.SetName("Your version")
         root.Add(wx.StaticText(panel, label="Your version:"), 0, wx.LEFT, 10)
         root.Add(self._ours_box, 0, wx.EXPAND | wx.ALL, 10)
 
         self._theirs_box = wx.TextCtrl(
-            panel, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(500, 100)
+            panel, style=wx.TE_MULTILINE | wx.TE_READONLY, size=dip_size(panel, 500, 100)
         )
         self._theirs_box.SetName("Their version")
         root.Add(wx.StaticText(panel, label="Their version:"), 0, wx.LEFT, 10)
@@ -216,7 +219,7 @@ class MergeConflictDialog:
         self._choice.SetName("Which version to keep for this conflict")
         root.Add(self._choice, 0, wx.EXPAND | wx.ALL, 10)
 
-        self._manual_ctrl = wx.TextCtrl(panel, style=wx.TE_MULTILINE, size=(500, 80))
+        self._manual_ctrl = wx.TextCtrl(panel, style=wx.TE_MULTILINE, size=dip_size(panel, 500, 80))
         self._manual_ctrl.SetName("Manual replacement text")
         root.Add(self._manual_ctrl, 0, wx.EXPAND | wx.ALL, 10)
 
@@ -324,7 +327,7 @@ class InteractiveRebaseDialog:
         self.dialog = wx.Dialog(
             parent, title="Interactive Rebase", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize((560, 400))
+        self.dialog.SetMinSize(dip_size(self.dialog, 560, 400))
         panel = wx.Panel(self.dialog)
         root = wx.BoxSizer(wx.VERTICAL)
 

@@ -42,6 +42,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
+from quill.ui.dpi import dip_size
+
 __all__ = ["FeedCheckWindow", "open_feed_check"]
 
 _COLUMNS: tuple[tuple[str, int], ...] = (
@@ -89,8 +91,8 @@ class FeedCheckWindow:
         self._find_new_feed = find_new_feed
         self._rows: list[Any] = []
 
-        self.frame = wx.Frame(parent, title="Feed Check", size=(1000, 480))
-        self.frame.SetMinSize((720, 420))
+        self.frame = wx.Frame(parent, title="Feed Check", size=dip_size(parent, 1000, 480))
+        self.frame.SetMinSize(dip_size(self.frame, 720, 420))
         panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
         root = wx.BoxSizer(wx.VERTICAL)
 

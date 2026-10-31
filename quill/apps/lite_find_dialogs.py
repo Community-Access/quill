@@ -34,6 +34,7 @@ from quill.ui.dialog_contract import (
     bind_close_button,
     set_accessible_name,
 )
+from quill.ui.dpi import dip_size
 
 __all__ = [
     "SEARCH_MODES",
@@ -388,6 +389,6 @@ def choose_match(
             "The list is every match, in order, with the words around each one."
         ),
         rows=[(offset, text) for text, offset in rows],
-        size=(720, 420),
+        size=dip_size(None, 720, 420),
     )
     return None if chosen is None else int(chosen)  # type: ignore[arg-type]

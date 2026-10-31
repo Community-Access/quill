@@ -40,6 +40,7 @@ from quill.core.windows_dictation.vocabulary import Command
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.atomic_edit import replace_as_one_undo
 from quill.ui.dialog_contract import bind_close_button, show_message_box
+from quill.ui.dpi import dip_size
 from quill.ui.hosted_ai_dialogs import _PAD, _read_only, focus_on, take_focus
 
 __all__ = ["TITLE", "DictationReviewFrame", "ReviewBoxDocument", "ReviewDesk", "defer"]
@@ -275,7 +276,7 @@ class DictationReviewFrame(wx.Frame):
             self.context.Bind(wx.EVT_CHECKBOX, lambda _e: desk.set_context(self._context_on()))
         self.Bind(wx.EVT_CLOSE, self._on_close)
         self._keys()
-        self.SetInitialSize((700, 560))
+        self.SetInitialSize(dip_size(self, 700, 560))
         self.Centre()
         focus_on(self, self.text)
 

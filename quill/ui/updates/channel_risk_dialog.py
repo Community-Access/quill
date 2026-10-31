@@ -22,6 +22,7 @@ from quill.core.updater.channels import BETA, DEV, channel_label
 from quill.core.updater.switch import RiskContext
 from quill.core.updater.wording import risk_confirm_label, risk_text, risk_title
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
+from quill.ui.dpi import dip_size
 
 __all__ = ["RiskAnswer", "RiskDialog", "TICK_FIRST"]
 
@@ -54,7 +55,7 @@ class RiskDialog(wx.Dialog):  # type: ignore[misc]
             self,
             value=risk_text(context),
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2,
-            size=(-1, 300),
+            size=dip_size(self, -1, 300),
         )
         self._text.SetName("Before you move")
         self._text.SetHelpText(
@@ -90,7 +91,7 @@ class RiskDialog(wx.Dialog):  # type: ignore[misc]
         sizer.Add(buttons, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
 
         self.SetSizerAndFit(sizer)
-        self.SetSize((600, -1))
+        self.SetSize(dip_size(self, 600, -1))
         apply_modal_ids(self, escape_id=wx.ID_CANCEL)
         self._text.SetFocus()
 

@@ -31,6 +31,7 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.lyrics.lrclib import LrcLine, Lyrics, line_at, parse_lrc
+from quill.ui.dpi import dip_size
 
 __all__ = ["TITLE_PREFIX", "LyricsWindow"]
 
@@ -69,7 +70,7 @@ class LyricsWindow:
         self._index = -1
 
         self._frame = wx.Frame(parent, title=f"Lyrics: {song}", style=wx.DEFAULT_FRAME_STYLE)
-        self._frame.SetMinSize((480, 320))
+        self._frame.SetMinSize(dip_size(self._frame, 480, 320))
         root = wx.BoxSizer(wx.VERTICAL)
 
         root.Add(wx.StaticText(self._frame, label="&Lyrics"), 0, wx.LEFT | wx.TOP, 8)

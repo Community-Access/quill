@@ -15,6 +15,7 @@ from collections.abc import Callable
 
 from quill.core.ai.translation import LANGUAGE_NAMES, SUPPORTED_LANGUAGES
 from quill.ui.dialog_contract import apply_modal_ids, dialog_alive
+from quill.ui.dpi import dip_size
 
 _DEFAULT_LIBRETRANSLATE_URL = "http://localhost:5000"
 
@@ -68,7 +69,7 @@ class AITranslationDialog:
             title=title,
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize(wx.Size(800, 620))
+        self.dialog.SetSize(dip_size(self.dialog, 800, 620))
         self._build_ui()
 
     def _build_ui(self) -> None:

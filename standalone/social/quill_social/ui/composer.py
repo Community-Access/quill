@@ -18,6 +18,7 @@ import re
 from datetime import UTC, datetime
 
 import wx
+from quill.ui.dpi import dip, dip_size
 
 from quill_social import model
 from quill_social.capabilities import Capabilities
@@ -91,8 +92,7 @@ class ComposerDialog(wx.Dialog):
         now_ms: int | None = None,
     ):
         title = "Reply" if reply_to else "Compose"
-        super().__init__(parent, title=title,
-                         style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
+        super().__init__(parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
         self._accounts = accounts
         self._caps = caps
         self._store = store
@@ -114,10 +114,10 @@ class ComposerDialog(wx.Dialog):
         outer = wx.BoxSizer(wx.VERTICAL)
 
         # Target accounts.
-        outer.Add(wx.StaticText(self, label="Post from these accounts:"),
-                  0, wx.LEFT | wx.TOP, 8)
+        outer.Add(wx.StaticText(self, label="Post from these accounts:"), 0, wx.LEFT | wx.TOP, 8)
         self.accounts_box = wx.CheckListBox(
-            self, choices=[f"{a.label} ({a.network})" for a in accounts])
+            self, choices=[f"{a.label} ({a.network})" for a in accounts]
+        )
         self.accounts_box.SetName("Target accounts")
         for i, a in enumerate(accounts):
             if a.is_default or len(accounts) == 1:
@@ -126,8 +126,9 @@ class ComposerDialog(wx.Dialog):
 
         # Content warning.
         cw_row = wx.BoxSizer(wx.HORIZONTAL)
-        cw_row.Add(wx.StaticText(self, label="Content warning:"),
-                   0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
+        cw_row.Add(
+            wx.StaticText(self, label="Content warning:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6
+        )
         self.cw = wx.TextCtrl(self)
         self.cw.SetName("Content warning")
         cw_row.Add(self.cw, 1)
@@ -148,7 +149,8 @@ class ComposerDialog(wx.Dialog):
         # Live report (read-only, screen-reader reviewable).
         outer.Add(wx.StaticText(self, label="Status:"), 0, wx.LEFT, 8)
         self.report = wx.TextCtrl(
-            self, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(-1, 90))
+            self, style=wx.TE_MULTILINE | wx.TE_READONLY, size=dip_size(self, -1, 90)
+        )
         self.report.SetName("Composition status")
         outer.Add(self.report, 0, wx.EXPAND | wx.ALL, 8)
 
@@ -163,8 +165,8 @@ class ComposerDialog(wx.Dialog):
         outer.Add(btns, 0, wx.ALIGN_RIGHT | wx.ALL, 8)
 
         self.SetSizer(outer)
-        self.SetMinSize((560, 620))
-        self.SetSize((640, 860))
+        self.SetMinSize(dip_size(self, 560, 620))
+        self.SetSize(dip_size(self, 640, 860))
 
         self.editor.Bind(wx.EVT_TEXT, lambda _e: self._refresh_report())
         self.cw.Bind(wx.EVT_TEXT, lambda _e: self._refresh_report())
@@ -194,8 +196,9 @@ class ComposerDialog(wx.Dialog):
             except Exception:  # pragma: no cover - defensive against store errors
                 self._templates = []
         row = wx.BoxSizer(wx.HORIZONTAL)
-        row.Add(wx.StaticText(self, label="Insert template:"),
-                0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
+        row.Add(
+            wx.StaticText(self, label="Insert template:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6
+        )
         choices = [t.name or "(untitled)" for t in self._templates]
         self.template_choice = wx.Choice(self, choices=choices)
         self.template_choice.SetName("Template to insert")
@@ -214,10 +217,11 @@ class ComposerDialog(wx.Dialog):
     def _build_media_section(self, outer: wx.Sizer) -> None:
         outer.Add(wx.StaticText(self, label="Attachments:"), 0, wx.LEFT, 8)
         self.media_list = wx.ListCtrl(
-            self, style=wx.LC_REPORT | wx.LC_SINGLE_SEL, size=(-1, 90))
+            self, style=wx.LC_REPORT | wx.LC_SINGLE_SEL, size=dip_size(self, -1, 90)
+        )
         self.media_list.SetName("Attachments")
-        self.media_list.InsertColumn(0, "File", width=260)
-        self.media_list.InsertColumn(1, "Alt text", width=260)
+        self.media_list.InsertColumn(0, "File", width=dip(self.media_list, 260))
+        self.media_list.InsertColumn(1, "Alt text", width=dip(self.media_list, 260))
         outer.Add(self.media_list, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
         row = wx.BoxSizer(wx.HORIZONTAL)
         self.media_add_btn = wx.Button(self, label="&Add media")
@@ -240,13 +244,14 @@ class ComposerDialog(wx.Dialog):
         self.poll_toggle.Bind(wx.EVT_CHECKBOX, lambda _e: self._on_poll_toggle())
 
         outer.Add(wx.StaticText(self, label="Poll options:"), 0, wx.LEFT, 8)
-        self.poll_options_box = wx.ListBox(self, size=(-1, 70))
+        self.poll_options_box = wx.ListBox(self, size=dip_size(self, -1, 70))
         self.poll_options_box.SetName("Poll options")
         outer.Add(self.poll_options_box, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         opt_row = wx.BoxSizer(wx.HORIZONTAL)
-        opt_row.Add(wx.StaticText(self, label="Option text:"),
-                    0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
+        opt_row.Add(
+            wx.StaticText(self, label="Option text:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6
+        )
         self.poll_option_text = wx.TextCtrl(self)
         self.poll_option_text.SetName("New poll option text")
         opt_row.Add(self.poll_option_text, 1, wx.RIGHT, 6)
@@ -262,8 +267,9 @@ class ComposerDialog(wx.Dialog):
         self.poll_multiple = wx.CheckBox(self, label="Allow multiple choices")
         self.poll_multiple.SetName("Allow multiple choices")
         cfg_row.Add(self.poll_multiple, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 12)
-        cfg_row.Add(wx.StaticText(self, label="Poll duration:"),
-                    0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
+        cfg_row.Add(
+            wx.StaticText(self, label="Poll duration:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6
+        )
         self.poll_duration = wx.Choice(self, choices=[d[0] for d in _POLL_DURATIONS])
         self.poll_duration.SetName("Poll duration")
         self.poll_duration.SetSelection(2)  # default 1 day
@@ -277,10 +283,8 @@ class ComposerDialog(wx.Dialog):
 
     def _build_options_row(self, outer: wx.Sizer) -> None:
         opt = wx.BoxSizer(wx.HORIZONTAL)
-        opt.Add(wx.StaticText(self, label="Visibility:"),
-                0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
-        self.visibility = wx.Choice(
-            self, choices=["public", "unlisted", "followers", "direct"])
+        opt.Add(wx.StaticText(self, label="Visibility:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
+        self.visibility = wx.Choice(self, choices=["public", "unlisted", "followers", "direct"])
         self.visibility.SetName("Visibility")
         self.visibility.SetSelection(0)
         opt.Add(self.visibility, 0, wx.RIGHT, 12)
@@ -290,16 +294,23 @@ class ComposerDialog(wx.Dialog):
         outer.Add(opt, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
     def _build_schedule_row(self, outer: wx.Sizer) -> None:
-        default_dt = datetime.fromtimestamp(
-            (self._now + _ONE_HOUR_MS) / 1000, tz=UTC)
+        default_dt = datetime.fromtimestamp((self._now + _ONE_HOUR_MS) / 1000, tz=UTC)
         row = wx.BoxSizer(wx.HORIZONTAL)
-        row.Add(wx.StaticText(self, label="Schedule date (YYYY-MM-DD):"),
-                0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
+        row.Add(
+            wx.StaticText(self, label="Schedule date (YYYY-MM-DD):"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
+            6,
+        )
         self.schedule_date = wx.TextCtrl(self, value=default_dt.strftime("%Y-%m-%d"))
         self.schedule_date.SetName("Schedule date")
         row.Add(self.schedule_date, 0, wx.RIGHT, 12)
-        row.Add(wx.StaticText(self, label="Time UTC (HH:MM):"),
-                0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
+        row.Add(
+            wx.StaticText(self, label="Time UTC (HH:MM):"),
+            0,
+            wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
+            6,
+        )
         self.schedule_time = wx.TextCtrl(self, value=default_dt.strftime("%H:%M"))
         self.schedule_time.SetName("Schedule time")
         row.Add(self.schedule_time, 0)
@@ -309,14 +320,14 @@ class ComposerDialog(wx.Dialog):
 
     def _on_add_media(self) -> None:
         with wx.FileDialog(
-            self, "Choose media to attach",
+            self,
+            "Choose media to attach",
             style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE,
         ) as dlg:
             if dlg.ShowModal() != wx.ID_OK:
                 return
             for path in dlg.GetPaths():
-                self._media.append(
-                    Media(kind=media_kind_for_path(path), local_path=path))
+                self._media.append(Media(kind=media_kind_for_path(path), local_path=path))
         self._sync_media_list()
         self._refresh_report()
 
@@ -326,13 +337,16 @@ class ComposerDialog(wx.Dialog):
     def _on_edit_alt(self) -> None:
         idx = self._selected_media_index()
         if idx < 0:
-            wx.MessageBox("Select an attachment first.", "Composer",
-                          wx.OK | wx.ICON_INFORMATION, self)
+            wx.MessageBox(
+                "Select an attachment first.", "Composer", wx.OK | wx.ICON_INFORMATION, self
+            )
             return
         media = self._media[idx]
         with wx.TextEntryDialog(
-            self, f"Alt text for {os.path.basename(media.local_path)}",
-            "Edit alt text", value=media.alt_text,
+            self,
+            f"Alt text for {os.path.basename(media.local_path)}",
+            "Edit alt text",
+            value=media.alt_text,
         ) as dlg:
             if dlg.ShowModal() != wx.ID_OK:
                 return
@@ -366,8 +380,12 @@ class ComposerDialog(wx.Dialog):
     def _sync_poll_enabled(self) -> None:
         on = self.poll_toggle.GetValue()
         for ctrl in (
-            self.poll_options_box, self.poll_option_text, self.poll_add_btn,
-            self.poll_remove_btn, self.poll_multiple, self.poll_duration,
+            self.poll_options_box,
+            self.poll_option_text,
+            self.poll_add_btn,
+            self.poll_remove_btn,
+            self.poll_multiple,
+            self.poll_duration,
         ):
             ctrl.Enable(on)
 
@@ -470,21 +488,25 @@ class ComposerDialog(wx.Dialog):
     def _finish(self, action: str) -> None:
         draft = self._build_draft()
         if not draft.targets:
-            wx.MessageBox("Select at least one account.", "Composer",
-                          wx.OK | wx.ICON_INFORMATION, self)
+            wx.MessageBox(
+                "Select at least one account.", "Composer", wx.OK | wx.ICON_INFORMATION, self
+            )
             return
         if not draft.text.strip() and not draft.media:
-            wx.MessageBox("Write something first.", "Composer",
-                          wx.OK | wx.ICON_INFORMATION, self)
+            wx.MessageBox("Write something first.", "Composer", wx.OK | wx.ICON_INFORMATION, self)
             return
         schedule_at: int | None = None
         if action == "schedule":
             schedule_at = schedule_to_ms(
-                self.schedule_date.GetValue(), self.schedule_time.GetValue())
+                self.schedule_date.GetValue(), self.schedule_time.GetValue()
+            )
             if schedule_at is None:
                 wx.MessageBox(
                     "Enter a valid schedule date (YYYY-MM-DD) and time (HH:MM).",
-                    "Composer", wx.OK | wx.ICON_INFORMATION, self)
+                    "Composer",
+                    wx.OK | wx.ICON_INFORMATION,
+                    self,
+                )
                 return
         self.result_action = action
         self.result_draft = draft

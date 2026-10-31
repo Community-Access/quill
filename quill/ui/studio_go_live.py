@@ -25,6 +25,7 @@ from quill.core.streaming import (
     validate,
 )
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 
 # a11y: needs manual verification -- screen-reader/braille announcements,
 # keyboard focus order, high contrast, and layout at increased Windows scaling.
@@ -176,7 +177,9 @@ class GoLiveDialog(wx.Dialog):
         outer.Add(grid, 0, wx.EXPAND | wx.ALL, 10)
 
         outer.Add(wx.StaticText(panel, label="What goes into the &stream"), 0, wx.LEFT, 10)
-        self.list = wx.ListCtrl(panel, style=wx.LC_REPORT | wx.LC_SINGLE_SEL, size=(-1, 130))
+        self.list = wx.ListCtrl(
+            panel, style=wx.LC_REPORT | wx.LC_SINGLE_SEL, size=dip_size(panel, -1, 130)
+        )
         set_accessible_name(self.list, "What goes into the stream")
         self.list.SetHelpText(
             "Each sound and whether listeners hear it. Space puts the selected one in or leaves "
@@ -224,7 +227,9 @@ class GoLiveDialog(wx.Dialog):
         actions.Add(test, 0)
         outer.Add(actions, 0, wx.ALL, 10)
         outer.Add(wx.StaticText(panel, label="Check result"), 0, wx.LEFT, 10)
-        self.result = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(-1, 140))
+        self.result = wx.TextCtrl(
+            panel, style=wx.TE_MULTILINE | wx.TE_READONLY, size=dip_size(panel, -1, 140)
+        )
         set_accessible_name(self.result, "Check result")
         self.result.SetHelpText("Where the stream goes, what is in it, then every Stop and Warn.")
         self.result.ChangeValue("Fill in your server, then press Check.")

@@ -28,6 +28,7 @@ from typing import Any
 
 from quill.core.podcasts.pick_list import MANUAL, PickList
 from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 
 
 @dataclass(frozen=True, slots=True)
@@ -108,7 +109,7 @@ class _CataloguePicker:
         self.dialog = wx.Dialog(
             self._host.frame, title=self._title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetSize(wx.Size(900, 620))
+        self.dialog.SetSize(dip_size(self.dialog, 900, 620))
         root = wx.BoxSizer(wx.VERTICAL)
 
         intro = wx.StaticText(self.dialog, label=self._heading)

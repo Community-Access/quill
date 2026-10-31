@@ -13,6 +13,7 @@ from typing import Any
 
 from quill.core.podcasts.models import PLAYLIST_STATUS_MODES, PlaylistRules, PodcastShow
 from quill.core.podcasts.sorting import EPISODE_SORT_MODES
+from quill.ui.dpi import dip_size
 
 _STATUS_LABELS = ("Any status", "Unplayed", "In progress", "Played")
 _SORT_LABELS = (
@@ -52,8 +53,8 @@ class PlaylistRulesWindow:
         self._wx = wx
         self._announce = announce_cb or (lambda _m: None)
         self._body: Any = None
-        self.frame = wx.Frame(parent, title="Smart Playlist Rules", size=(520, 760))
-        self.frame.SetMinSize((460, 480))
+        self.frame = wx.Frame(parent, title="Smart Playlist Rules", size=dip_size(parent, 520, 760))
+        self.frame.SetMinSize(dip_size(self.frame, 460, 480))
         self.frame.SetSizer(wx.BoxSizer(wx.VERTICAL))
         self.load(shows=shows, rules=rules, library=library, on_save=on_save, key=key)
         self.frame.CentreOnParent()
@@ -102,7 +103,7 @@ class PlaylistRulesWindow:
         # navigated, only the label text -- a real wx.CheckBox always
         # speaks its own state.
         self._shows_scroll = wx.ScrolledWindow(
-            body, style=wx.VSCROLL | wx.BORDER_SUNKEN, size=(-1, 130)
+            body, style=wx.VSCROLL | wx.BORDER_SUNKEN, size=dip_size(body, -1, 130)
         )
         self._shows_scroll.SetScrollRate(0, 20)
         scroll_sizer = wx.BoxSizer(wx.VERTICAL)

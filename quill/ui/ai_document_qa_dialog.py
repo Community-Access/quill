@@ -11,6 +11,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 from quill.ui.dialog_contract import apply_modal_ids, dialog_alive
+from quill.ui.dpi import dip, dip_size
 
 
 class AIDocumentQADialog:
@@ -52,7 +53,7 @@ class AIDocumentQADialog:
             title=f"Document Q&A - {document_title}",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize(wx.Size(820, 660))
+        self.dialog.SetSize(dip_size(self.dialog, 820, 660))
         self._build_ui()
 
     def _build_ui(self) -> None:
@@ -98,9 +99,9 @@ class AIDocumentQADialog:
             style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.BORDER_SIMPLE,
         )
         self._history.SetName("Q&A history")
-        self._history.InsertColumn(0, "#", width=36)
-        self._history.InsertColumn(1, "Question", width=280)
-        self._history.InsertColumn(2, "Answer (preview)", width=360)
+        self._history.InsertColumn(0, "#", width=dip(self._history, 36))
+        self._history.InsertColumn(1, "Question", width=dip(self._history, 280))
+        self._history.InsertColumn(2, "Answer (preview)", width=dip(self._history, 360))
         root.Add(self._history, 1, wx.EXPAND | wx.ALL, 8)
 
         # Answer detail panel
