@@ -7,6 +7,7 @@ from collections.abc import Callable
 
 from quill.core.podcasts.chapters import PodcastChapter
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 
 def _format_timestamp(start_ms: int) -> str:
@@ -49,7 +50,7 @@ class ChaptersDialog:
             title=f"Chapters -- {episode_title}",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize((480, 420))
+        self.dialog.SetMinSize(dip_size(self.dialog, 480, 420))
         root = wx.BoxSizer(wx.VERTICAL)
 
         # Where the chapters came from is part of the label, not a footnote:

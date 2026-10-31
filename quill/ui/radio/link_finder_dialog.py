@@ -16,6 +16,7 @@ from typing import Any
 from quill.core.radio.link_finder import PageStreamCandidate, scan_page_for_streams
 from quill.core.radio.models import RadioStation
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip, dip_size
 from quill.ui.surface_lifetime import surface_tasks
 
 
@@ -51,7 +52,7 @@ class LinkFinderDialog:
             title="Find Streams from a Website",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize((640, 460))
+        self.dialog.SetMinSize(dip_size(self.dialog, 640, 460))
         root = wx.BoxSizer(wx.VERTICAL)
 
         intro = wx.StaticText(
@@ -82,8 +83,8 @@ class LinkFinderDialog:
         root.Add(wx.StaticText(self.dialog, label="&Candidates found"), 0, wx.LEFT | wx.TOP, 10)
         self._results = wx.ListCtrl(self.dialog, style=wx.LC_REPORT | wx.BORDER_SIMPLE)
         self._results.SetName("Candidate stream links found on the page")
-        self._results.InsertColumn(0, "Link", width=340)
-        self._results.InsertColumn(1, "Why it was flagged", width=180)
+        self._results.InsertColumn(0, "Link", width=dip(self._results, 340))
+        self._results.InsertColumn(1, "Why it was flagged", width=dip(self._results, 180))
         root.Add(self._results, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
 
         self._status = wx.StaticText(self.dialog, label="")

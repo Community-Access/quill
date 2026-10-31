@@ -12,6 +12,7 @@ import wx
 
 from quill.apps.beacon.model import ALL_TYPES
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
+from quill.ui.dpi import dip_size
 from quill.ui.preferences_search import install_preferences_context_help as _context_help
 from quill.ui.spoken_name import set_spoken_name
 
@@ -68,7 +69,7 @@ class QuickCaptureDialog(wx.Dialog):
             "&Note:",
             "",
             style=wx.TE_MULTILINE | wx.TE_PROCESS_ENTER,
-            size=(320, 60),
+            size=dip_size(None, 320, 60),
             help_text=(
                 "Your own free-text note, stored with the bookmark and "
                 "found by search (has:note matches every bookmark that has "
@@ -287,7 +288,7 @@ class BuildSearchDialog(wx.Dialog):
 
     def _row(self, sizer, label, value, *, help_text="") -> wx.TextCtrl:
         lbl = wx.StaticText(self, label=label)
-        ctrl = wx.TextCtrl(self, value=value, size=(320, -1))
+        ctrl = wx.TextCtrl(self, value=value, size=dip_size(self, 320, -1))
         _name(ctrl, label.replace("&", "").replace(":", "").strip())
         if help_text:
             ctrl.SetHelpText(help_text)
@@ -373,7 +374,7 @@ class CollectionEditorDialog(wx.Dialog):
             "&Description:",
             collection.description if editing else "",
             style=wx.TE_MULTILINE,
-            size=(320, 60),
+            size=dip_size(None, 320, 60),
             help_text="Free text about what belongs in this collection. Optional.",
         )
         self.parent = self._row(
@@ -519,7 +520,7 @@ class PublishDialog(wx.Dialog):
         url_box = wx.BoxSizer(wx.HORIZONTAL)
         url_lbl = wx.StaticText(self, label="P&review URL:")
         _name(url_lbl, "Preview URL")
-        self.url = wx.TextCtrl(self, value="", style=wx.TE_READONLY, size=(420, -1))
+        self.url = wx.TextCtrl(self, value="", style=wx.TE_READONLY, size=dip_size(self, 420, -1))
         self.url.SetName("Preview URL")
         self.url.SetHelpText(
             "The local preview address of the published page, served by the "
@@ -663,7 +664,7 @@ class TrailEditorDialog(wx.Dialog):
             "&Description:",
             trail.description if editing else "",
             style=wx.TE_MULTILINE,
-            size=(360, 60),
+            size=dip_size(None, 360, 60),
             help_text=("Text shown at the top of the trail when you step through it. Optional."),
         )
         sizer.Add(form, 1, wx.EXPAND | wx.ALL, 10)
@@ -682,7 +683,7 @@ class TrailEditorDialog(wx.Dialog):
         sizer.Add(steps_box, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         step_row = wx.BoxSizer(wx.HORIZONTAL)
-        self.step_note = wx.TextCtrl(self, size=(240, -1))
+        self.step_note = wx.TextCtrl(self, size=dip_size(self, 240, -1))
         _name(self.step_note, "Note for the selected step")
         set_spoken_name(self.step_note, "Note for the selected step")
         self.step_note.SetHelpText(
@@ -834,7 +835,9 @@ class RepairReviewDialog(wx.Dialog):
         sizer.Add(wx.StaticText(self, label=f"Beacon: {beacon_title}"), 0, wx.ALL, 10)
 
         info = wx.TextCtrl(
-            self, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2, size=(420, 160)
+            self,
+            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2,
+            size=dip_size(self, 420, 160),
         )
         _name(info, "Repair details. Previous location and proposed repair.")
         info.SetHelpText(
@@ -983,7 +986,7 @@ class RadioProgramDialog(wx.Dialog):
 
     def _row(self, sizer, label, value, *, help_text="") -> wx.TextCtrl:
         lbl = wx.StaticText(self, label=label)
-        ctrl = wx.TextCtrl(self, value=value, size=(320, -1))
+        ctrl = wx.TextCtrl(self, value=value, size=dip_size(self, 320, -1))
         _name(ctrl, label.replace("&", "").replace(":", "").strip())
         if help_text:
             ctrl.SetHelpText(help_text)
@@ -1045,7 +1048,9 @@ class StatusCenterDialog(wx.Dialog):
 
         sizer = wx.BoxSizer(wx.VERTICAL)
         self.text = wx.TextCtrl(
-            self, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2, size=(420, 240)
+            self,
+            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2,
+            size=dip_size(self, 420, 240),
         )
         _name(self.text, "Status center. Capture bridge, sync, and library health.")
         set_spoken_name(self.text, "Status report")
@@ -1116,7 +1121,7 @@ class PreferencesDialog(wx.Dialog):
         body = wx.BoxSizer(wx.HORIZONTAL)
 
         # Left: section list.
-        self.sections = wx.ListBox(self, choices=self.SECTIONS, size=(160, -1))
+        self.sections = wx.ListBox(self, choices=self.SECTIONS, size=dip_size(self, 160, -1))
         _name(self.sections, "Preferences sections")
         set_spoken_name(self.sections, "Preferences sections")
         self.sections.SetHelpText(
@@ -1339,7 +1344,7 @@ class PreferencesDialog(wx.Dialog):
         )
         _name(info, "Published pages info")
         v.Add(info, 0, wx.BOTTOM, 8)
-        self._pub_list = wx.ListBox(p, size=(-1, 120))
+        self._pub_list = wx.ListBox(p, size=dip_size(p, -1, 120))
         _name(self._pub_list, "Published pages list")
         self._pub_list.SetHelpText(
             "Every collection currently published as a read-only page, "
@@ -1371,7 +1376,7 @@ class PreferencesDialog(wx.Dialog):
         info.Wrap(420)
         _name(info, "Routing rules info")
         v.Add(info, 0, wx.BOTTOM, 8)
-        self._routing_list = wx.ListBox(p, size=(-1, 140))
+        self._routing_list = wx.ListBox(p, size=dip_size(p, -1, 140))
         _name(self._routing_list, "Routing rules, ordered by priority")
         self._routing_list.SetHelpText(
             "The filing rules, in the order they are tried -- the first "
@@ -1597,7 +1602,7 @@ class RoutingRuleDialog(wx.Dialog):
         lbl = wx.StaticText(self, label="URL &keyword (domain or text):")
         _name(lbl, "URL keyword")
         form.Add(lbl)
-        self.keyword = wx.TextCtrl(self, value=keyword, size=(280, -1))
+        self.keyword = wx.TextCtrl(self, value=keyword, size=dip_size(self, 280, -1))
         _name(self.keyword, "URL keyword, a domain or any text the URL contains")
         self.keyword.SetHelpText(
             "The text to look for in a new web bookmark's address -- a "
@@ -1762,7 +1767,7 @@ class SmartCollectionsDialog(wx.Dialog):
         self.store = store
 
         sizer = wx.BoxSizer(wx.VERTICAL)
-        self.list = wx.ListBox(self, size=(440, 200))
+        self.list = wx.ListBox(self, size=dip_size(self, 440, 200))
         _name(self.list, "Smart collections. Enter to edit, Delete to remove.")
         set_spoken_name(self.list, "Smart collections")
         self.list.SetHelpText(
@@ -1871,7 +1876,7 @@ class SmartCollectionEditorDialog(wx.Dialog):
         form.AddGrowableCol(1, proportion=1)
 
         form.Add(wx.StaticText(self, label="&Name:"))
-        self.name = wx.TextCtrl(self, value=ss.name if ss else "", size=(320, -1))
+        self.name = wx.TextCtrl(self, value=ss.name if ss else "", size=dip_size(self, 320, -1))
         _name(self.name, "Smart collection name")
         self.name.SetHelpText(
             "The smart collection's name, shown in the sidebar with a [smart] mark. Required."
@@ -1879,7 +1884,7 @@ class SmartCollectionEditorDialog(wx.Dialog):
         form.Add(self.name, 1, wx.EXPAND)
 
         form.Add(wx.StaticText(self, label="&Query:"))
-        self.query = wx.TextCtrl(self, value=ss.query if ss else "", size=(320, -1))
+        self.query = wx.TextCtrl(self, value=ss.query if ss else "", size=dip_size(self, 320, -1))
         _name(self.query, "Search query (Section 15 grammar)")
         self.query.SetHelpText(
             "The live search this collection evaluates each time it is "
@@ -1900,7 +1905,9 @@ class SmartCollectionEditorDialog(wx.Dialog):
         form.Add(self.sort, 1, wx.EXPAND)
 
         form.Add(wx.StaticText(self, label="Scope &collection (optional):"))
-        self.scope = wx.TextCtrl(self, value=ss.scope_collection if ss else "", size=(320, -1))
+        self.scope = wx.TextCtrl(
+            self, value=ss.scope_collection if ss else "", size=dip_size(self, 320, -1)
+        )
         _name(self.scope, "Scope collection")
         self.scope.SetHelpText(
             "Limit the search to one collection, by name. Blank searches the whole library."
@@ -1981,7 +1988,7 @@ class TrailStepDialog(wx.Dialog):
         _name(self.progress, "Trail progress")
         sizer.Add(self.progress, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 10)
 
-        self.list = wx.ListBox(self, size=(440, 200))
+        self.list = wx.ListBox(self, size=dip_size(self, 440, 200))
         _name(self.list, "Trail steps. Enter to open the current step.")
         self.list.SetHelpText(
             "The trail's steps in order. The * marks your current step and "
@@ -1994,7 +2001,7 @@ class TrailStepDialog(wx.Dialog):
         self.note = wx.TextCtrl(
             note_box.GetStaticBox(),
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2,
-            size=(440, 90),
+            size=dip_size(None, 440, 90),
         )
         _name(self.note, "Note for the current step")
         set_spoken_name(self.note, "Note for the current step")
@@ -2162,7 +2169,7 @@ class AttachmentsDialog(wx.Dialog):
         self.beacon_id = beacon_id
 
         sizer = wx.BoxSizer(wx.VERTICAL)
-        self.list = wx.ListBox(self, size=(420, 180))
+        self.list = wx.ListBox(self, size=dip_size(self, 420, 180))
         _name(self.list, "Attachments list")
         set_spoken_name(self.list, "Attachments")
         self.list.SetHelpText(
@@ -2331,7 +2338,7 @@ class AttachmentAddDialog(wx.Dialog):
         form = wx.FlexGridSizer(cols=2, vgap=6, hgap=8)
         form.AddGrowableCol(1, proportion=1)
         form.Add(wx.StaticText(self, label="N&ame:"))
-        self.name = wx.TextCtrl(self, size=(300, -1))
+        self.name = wx.TextCtrl(self, size=dip_size(self, 300, -1))
         _name(self.name, "Attachment name")
         self.name.SetHelpText(
             "A display name for the attachment. Left blank, the list shows "
@@ -2341,7 +2348,7 @@ class AttachmentAddDialog(wx.Dialog):
         sizer.Add(form, 0, wx.EXPAND | wx.ALL, 8)
 
         self.path_label = wx.StaticText(self, label="&Path:")
-        self.path = wx.TextCtrl(self, size=(360, -1))
+        self.path = wx.TextCtrl(self, size=dip_size(self, 360, -1))
         _name(self.path, "File path")
         self.path.SetHelpText(
             "The full path of the file to attach. The file stays where it "
@@ -2359,14 +2366,14 @@ class AttachmentAddDialog(wx.Dialog):
         sizer.Add(prow, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         self.url_label = wx.StaticText(self, label="U&RL:")
-        self.url = wx.TextCtrl(self, size=(360, -1))
+        self.url = wx.TextCtrl(self, size=dip_size(self, 360, -1))
         _name(self.url, "Attachment URL")
         self.url.SetHelpText("The web address to attach to the bookmark.")
         sizer.Add(self.url_label, 0, wx.LEFT | wx.TOP, 8)
         sizer.Add(self.url, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         self.note_label = wx.StaticText(self, label="Note &text:")
-        self.note = wx.TextCtrl(self, size=(360, 120), style=wx.TE_MULTILINE)
+        self.note = wx.TextCtrl(self, size=dip_size(self, 360, 120), style=wx.TE_MULTILINE)
         _name(self.note, "Attachment note text")
         self.note.SetHelpText("The note's text, stored inside the library with the bookmark.")
         sizer.Add(self.note_label, 0, wx.LEFT | wx.TOP, 8)
@@ -2480,7 +2487,9 @@ class SyncSettingsDialog(wx.Dialog):
 
         # Folder row.
         fbox = wx.StaticBoxSizer(wx.HORIZONTAL, self, "Folder &path")
-        self.folder = wx.TextCtrl(fbox.GetStaticBox(), value=cfg.folder, size=(300, -1))
+        self.folder = wx.TextCtrl(
+            fbox.GetStaticBox(), value=cfg.folder, size=dip_size(None, 300, -1)
+        )
         _name(self.folder, "Folder path for folder transport")
         set_spoken_name(self.folder, "Folder path")
         self.folder.SetHelpText(
@@ -2544,7 +2553,7 @@ class SyncSettingsDialog(wx.Dialog):
             "sign-in link to that address. No password exists to remember."
         )
         link_row.Add(self.send_link, 0, wx.RIGHT, 6)
-        self.token = wx.TextCtrl(mbox.GetStaticBox(), size=(220, -1))
+        self.token = wx.TextCtrl(mbox.GetStaticBox(), size=dip_size(None, 220, -1))
         _name(self.token, "Paste the link or token you received")
         set_spoken_name(self.token, "Sign-in link or token")
         self.token.SetHelpText(
@@ -2639,7 +2648,7 @@ class SyncSettingsDialog(wx.Dialog):
 
     def _row(self, parent, sizer, label, value, *, style=0, help_text="") -> wx.TextCtrl:
         lbl = wx.StaticText(parent, label=label)
-        ctrl = wx.TextCtrl(parent, value=value, style=style, size=(300, -1))
+        ctrl = wx.TextCtrl(parent, value=value, style=style, size=dip_size(parent, 300, -1))
         _name(ctrl, label.replace("&", "").replace(":", "").strip())
         if help_text:
             ctrl.SetHelpText(help_text)
@@ -3119,7 +3128,7 @@ class PlayerSettingsDialog(wx.Dialog):
 
     def _row(self, sizer, label, value, *, help_text="") -> wx.TextCtrl:
         lbl = wx.StaticText(self, label=label)
-        ctrl = wx.TextCtrl(self, value=value, size=(320, -1))
+        ctrl = wx.TextCtrl(self, value=value, size=dip_size(self, 320, -1))
         _name(ctrl, label.replace("&", "").replace(":", "").strip())
         if help_text:
             ctrl.SetHelpText(help_text)

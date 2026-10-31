@@ -17,6 +17,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from quill.ui.dpi import dip_size
+
 __all__ = ["MenuRow", "append_palette_row", "find", "menu_rows", "open_menu_palette"]
 
 TITLE = "Find a Setting or Command"
@@ -131,7 +133,7 @@ def open_menu_palette(host: Any) -> None:
     buttons.Add(cancel, 0)
     root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
     dialog.SetSizer(root)
-    dialog.SetSize((620, 420))
+    dialog.SetSize(dip_size(dialog, 620, 420))
     apply_modal_ids(
         dialog, affirmative_id=wx.ID_OK, affirmative_label="Do It", cancel_id=wx.ID_CANCEL
     )

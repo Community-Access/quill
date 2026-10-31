@@ -24,6 +24,7 @@ from quill.core.notifications import (
     mark_read,
     newest_first,
 )
+from quill.ui.dpi import dip_size
 from quill.ui.notification_center import row_label
 
 __all__ = ["NotificationsWindow", "open_notifications_window"]
@@ -41,7 +42,7 @@ class NotificationsWindow:
     def __init__(self, host: Any) -> None:
         self._host = host
         self._notices: list[Any] = []
-        self.frame = wx.Frame(host.frame, title=TITLE, size=(680, 440))
+        self.frame = wx.Frame(host.frame, title=TITLE, size=dip_size(host.frame, 680, 440))
         panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(

@@ -15,6 +15,7 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.podcasts import refresh_schedule as rs
+from quill.ui.dpi import dip_size
 
 __all__ = ["ScheduleDialog", "change_schedule"]
 
@@ -159,7 +160,7 @@ class ScheduleDialog:
         )
         self._pinned = schedule.pinned
         self._show_rows()
-        self.dialog.SetSize((620, 460))
+        self.dialog.SetSize(dip_size(self.dialog, 620, 460))
         self._kind.SetFocus()
 
     # -- rows per kind ----------------------------------------------------------- #

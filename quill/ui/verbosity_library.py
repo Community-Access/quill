@@ -15,6 +15,7 @@ import wx
 
 from quill.core.verbosity.library import TemplateLibrary
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
+from quill.ui.dpi import dip_size
 
 __all__ = ["VerbosityLibraryDialog"]
 
@@ -37,19 +38,19 @@ class VerbosityLibraryDialog:
         self.dialog = wx.Dialog(
             parent, title="Verbosity templates", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize(wx.Size(560, 440))
+        self.dialog.SetMinSize(dip_size(self.dialog, 560, 440))
         root = wx.BoxSizer(wx.VERTICAL)
 
         root.Add(wx.StaticText(self.dialog, label="&Templates:"), 0, wx.LEFT | wx.TOP, 8)
         self._list = wx.ListBox(self.dialog, style=wx.LB_SINGLE)
         self._list.SetName("Saved templates")
-        self._list.SetMinSize(wx.Size(-1, 160))
+        self._list.SetMinSize(dip_size(self._list, -1, 160))
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 4)
 
         root.Add(wx.StaticText(self.dialog, label="Template &body:"), 0, wx.LEFT | wx.TOP, 8)
         self._body = wx.TextCtrl(self.dialog, style=wx.TE_MULTILINE)
         self._body.SetName("Template body")
-        self._body.SetMinSize(wx.Size(-1, 60))
+        self._body.SetMinSize(dip_size(self._body, -1, 60))
         root.Add(self._body, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 4)
 
         name_row = wx.BoxSizer(wx.HORIZONTAL)

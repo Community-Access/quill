@@ -21,6 +21,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
+from quill.ui.dpi import dip_size
+
 __all__ = [
     "TITLE",
     "ask_tags",
@@ -72,7 +74,7 @@ def ask_tags(
         wx.LEFT | wx.RIGHT,
         10,
     )
-    tags_box = wx.TextCtrl(dialog, value=current, size=(420, -1))
+    tags_box = wx.TextCtrl(dialog, value=current, size=dip_size(dialog, 420, -1))
     tags_box.SetName("Your tags, separated by commas")
     tags_box.SetHelpText(
         "Words you want to find this station by, separated by commas -- for "
@@ -91,7 +93,7 @@ def ask_tags(
         dialog,
         value=directory or "The directory gave this station no tags.",
         style=wx.TE_READONLY | wx.TE_MULTILINE,
-        size=(420, 60),
+        size=dip_size(dialog, 420, 60),
     )
     directory_box.SetName("Directory tags, read-only")
     directory_box.SetHelpText(

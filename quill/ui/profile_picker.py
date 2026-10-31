@@ -17,6 +17,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.dpi import dip_size
 
 # One row in the picker: (kind, profile_id, name, description).
 ProfileEntry = tuple[str, str, str, str]
@@ -52,7 +53,7 @@ class ProfilePickerDialog:
             title="Choose a Profile",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize((640, 600))
+        self.dialog.SetSize(dip_size(self.dialog, 640, 600))
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
             wx.StaticText(self.dialog, label="Profile"),
@@ -74,7 +75,7 @@ class ProfilePickerDialog:
         self.description = wx.TextCtrl(
             self.dialog,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP | wx.BORDER_SIMPLE,
-            size=(-1, 220),
+            size=dip_size(self.dialog, -1, 220),
         )
         self.description.SetName("Profile description")
         root.Add(self.description, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)

@@ -36,6 +36,7 @@ from quill.core.demo_recording import (
 )
 from quill.core.studio_capture import CaptureTarget
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 from quill.ui.studio_demo_actions import DemoActionsMixin
 from quill.ui.studio_demo_picture import DemoPictureMixin
 from quill.ui.studio_demo_sources import DemoSourcesMixin, recordable
@@ -465,7 +466,9 @@ class RecordDemoDialog(DemoSourcesMixin, DemoPictureMixin, DemoActionsMixin, wx.
         outer.Add(actions, 0, wx.ALL, 10)
         outer.Add(wx.StaticText(panel, label="Check result"), 0, wx.LEFT, 10)
         self.summary = wx.TextCtrl(
-            panel, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2, size=(-1, 160)
+            panel,
+            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2,
+            size=dip_size(panel, -1, 160),
         )
         set_accessible_name(self.summary, "Check result")
         self.summary.SetHelpText(

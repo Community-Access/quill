@@ -16,6 +16,7 @@ from typing import Any
 import wx
 
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 __all__ = ["DictationContextDialog"]
 
@@ -33,7 +34,9 @@ class DictationContextDialog(wx.Dialog):
         root = wx.BoxSizer(wx.VERTICAL)
 
         about_label = wx.StaticText(self, label="This &document is:")
-        self.about = wx.TextCtrl(self, value=current, style=wx.TE_MULTILINE, size=(420, 80))
+        self.about = wx.TextCtrl(
+            self, value=current, style=wx.TE_MULTILINE, size=dip_size(self, 420, 80)
+        )
         self.about.SetName("This document is")
         self.about.SetHelpText(
             "A sentence or two about this document, in plain words: a formal letter to "

@@ -310,6 +310,7 @@ from quill.ui.dialog_contract import (
     set_accessible_name,
     show_modal_dialog,
 )
+from quill.ui.dpi import dip_size
 from quill.ui.extend_selection_mode import ExtendSelectionMixin
 from quill.ui.html_paste_cleaner import analyze_paste
 from quill.ui.keybinding_parse import KeybindingParseMixin
@@ -574,7 +575,7 @@ class _IntellisensePopup:
             title="Word Prediction",
             style=wx.FRAME_NO_TASKBAR | wx.STAY_ON_TOP | wx.BORDER_SIMPLE,
         )
-        self.frame.SetSize((420, 220))
+        self.frame.SetSize(dip_size(self.frame, 420, 220))
         root = wx.BoxSizer(wx.VERTICAL)
         self.status = wx.StaticText(self.frame, label="")
         root.Add(self.status, 0, wx.EXPAND | wx.ALL, 6)
@@ -1283,7 +1284,7 @@ class MainFrame(
         # that see the Win32 HWND before Show() is called don't announce
         # "Untitled" combined with any transient status-bar text. _refresh_title()
         # sets the real document-name title as soon as the editor is ready.
-        self.frame = wx.Frame(None, title="Quill", size=(1000, 700))
+        self.frame = wx.Frame(None, title="Quill", size=dip_size(None, 1000, 700))
         # Maximized on a fresh machine, and the way you left it on one you have
         # used. Until now QUILL opened at 1000x700 every launch and forgot
         # whatever you did to the window -- which on a small window is where the
@@ -1292,7 +1293,7 @@ class MainFrame(
         # (quill/core/window_geometry.py).
         from quill.ui.window_state import apply_window_geometry
 
-        apply_window_geometry(self.frame, "quill", default_size=(1000, 700))
+        apply_window_geometry(self.frame, "quill", default_size=dip_size(self.frame, 1000, 700))
         # Radio/podcast player controllers parent themselves on self.frame, so
         # they must be built after the frame exists (AttributeError otherwise).
         self._init_radio()
@@ -1341,7 +1342,7 @@ class MainFrame(
         from quill.ui.reveal_codes_pane import RevealCodesPane
 
         self._reveal_pane = RevealCodesPane(wx, self.frame, self)
-        self._reveal_pane.panel.SetMinSize((-1, 160))
+        self._reveal_pane.panel.SetMinSize(dip_size(self._reveal_pane.panel, -1, 160))
         self._reveal_last_state: tuple[int, int, int] | None = None
         layout.Add(self._reveal_pane.panel, 0, wx.EXPAND)
         self._reveal_pane.panel.Show(bool(getattr(self.settings, "reveal_codes_visible", False)))
@@ -3819,7 +3820,7 @@ class MainFrame(
             title="Key Cheatsheet",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        dialog.SetSize((720, 560))
+        dialog.SetSize(dip_size(dialog, 720, 560))
         root = wx.BoxSizer(wx.VERTICAL)
 
         search = wx.SearchCtrl(dialog, style=wx.TE_PROCESS_ENTER)
@@ -4006,7 +4007,7 @@ class MainFrame(
             title=f"Magic Paste: {content_type} detected",
             style=wx.DEFAULT_DIALOG_STYLE,
         )
-        dialog.SetSize((480, 280))
+        dialog.SetSize(dip_size(dialog, 480, 280))
         root = wx.BoxSizer(wx.VERTICAL)
 
         label_text = f"Clipboard contains {content_type}. How would you like to paste it?"
@@ -4782,7 +4783,7 @@ class MainFrame(
             self.frame,
             title=title,
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
-            size=(560, 420),
+            size=dip_size(self.frame, 560, 420),
         )
         try:
             inner = wx.BoxSizer(wx.VERTICAL)
@@ -4940,7 +4941,7 @@ class MainFrame(
                 title=caption,
                 style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
             )
-            dlg.SetMinSize((420, -1))
+            dlg.SetMinSize(dip_size(dlg, 420, -1))
             root = wx.BoxSizer(wx.VERTICAL)
 
             msg_label = wx.StaticText(dlg, label=message)
@@ -4957,7 +4958,7 @@ class MainFrame(
                 style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP,
             )
             set_accessible_name(hint_ctrl, "What to try next")
-            hint_ctrl.SetMinSize((-1, 80))
+            hint_ctrl.SetMinSize(dip_size(hint_ctrl, -1, 80))
             hint_ctrl.Hide()
             root.Add(hint_ctrl, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 12)
 
@@ -8039,7 +8040,7 @@ class MainFrame(
         dialog = wx.Dialog(
             self.frame,
             title="External Tools and Format Support",
-            size=(860, 620),
+            size=dip_size(self.frame, 860, 620),
         )
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
@@ -8459,7 +8460,7 @@ class MainFrame(
             self.frame,
             title="Quick Nav",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
-            size=(640, 640),
+            size=dip_size(self.frame, 640, 640),
         )
         chosen: dict[str, NavItem | None] = {"item": None}
         try:
@@ -9096,7 +9097,9 @@ class MainFrame(
     def _show_yaml_structure_editor(self) -> str | None:
         wx = self._wx
         working_text = self.editor.GetValue()
-        dialog = wx.Dialog(self.frame, title="YAML Structure Editor", size=(1020, 700))
+        dialog = wx.Dialog(
+            self.frame, title="YAML Structure Editor", size=dip_size(self.frame, 1020, 700)
+        )
         splitter = wx.SplitterWindow(dialog, style=wx.SP_LIVE_UPDATE)
         tree = wx.TreeCtrl(
             splitter,
@@ -9431,7 +9434,7 @@ class MainFrame(
         nodes: list[_NavigatorNode],
     ) -> object | None:
         wx = self._wx
-        dialog = wx.Dialog(self.frame, title=title, size=(900, 620))
+        dialog = wx.Dialog(self.frame, title=title, size=dip_size(self.frame, 900, 620))
         splitter = wx.SplitterWindow(dialog, style=wx.SP_LIVE_UPDATE)
         tree = wx.TreeCtrl(splitter, style=wx.TR_HAS_BUTTONS | wx.TR_HIDE_ROOT)
         set_accessible_name(tree, root_label)
@@ -9683,7 +9686,7 @@ class MainFrame(
 
     def _show_notifications_dialog(self) -> int:
         wx = self._wx
-        dialog = wx.Dialog(self.frame, title="Notifications", size=(900, 520))
+        dialog = wx.Dialog(self.frame, title="Notifications", size=dip_size(self.frame, 900, 520))
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
             wx.StaticText(
@@ -10105,7 +10108,7 @@ class MainFrame(
         body.Add(button_sizer, 0, wx.EXPAND | wx.ALL, 8)
 
         dialog.SetSizerAndFit(body)
-        dialog.SetSize((600, 520))
+        dialog.SetSize(dip_size(dialog, 600, 520))
         if hasattr(dialog, "CentreOnParent"):
             dialog.CentreOnParent()
 
@@ -12918,7 +12921,7 @@ class MainFrame(
         buttons = dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
         dialog.SetSizerAndFit(root)
-        dialog.SetMinSize((420, 320))
+        dialog.SetMinSize(dip_size(dialog, 420, 320))
         apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
         chooser.SetFocus()
         try:
@@ -13228,7 +13231,9 @@ class MainFrame(
             key=lambda item: (item[1].category, item[1].name),
         )
 
-        dialog = wx.Dialog(self.frame, title="Manage Individual Features", size=(700, 680))
+        dialog = wx.Dialog(
+            self.frame, title="Manage Individual Features", size=dip_size(self.frame, 700, 680)
+        )
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
             wx.StaticText(
@@ -13416,7 +13421,7 @@ class MainFrame(
 
     def manage_macros(self) -> None:
         wx = self._wx
-        dialog = wx.Dialog(self.frame, title="Manage Macros", size=(720, 420))
+        dialog = wx.Dialog(self.frame, title="Manage Macros", size=dip_size(self.frame, 720, 420))
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
             wx.StaticText(dialog, label="Recorded macros are reusable command sequences."),
@@ -13536,7 +13541,9 @@ class MainFrame(
 
     def open_profiles_and_features_settings(self) -> None:
         wx = self._wx
-        dialog = wx.Dialog(self.frame, title="Profiles and Features", size=(820, 700))
+        dialog = wx.Dialog(
+            self.frame, title="Profiles and Features", size=dip_size(self.frame, 820, 700)
+        )
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
             wx.StaticText(
@@ -13700,7 +13707,7 @@ class MainFrame(
                 dialog,
                 title="Create Custom Profile - Description",
                 style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
-                size=(520, 360),
+                size=dip_size(dialog, 520, 360),
             ) as desc_dlg:
                 desc_root = wx.BoxSizer(wx.VERTICAL)
                 desc_root.Add(
@@ -13719,7 +13726,7 @@ class MainFrame(
                 desc_ctrl = wx.TextCtrl(
                     desc_dlg,
                     style=wx.TE_MULTILINE | wx.TE_WORDWRAP,
-                    size=(-1, 180),
+                    size=dip_size(desc_dlg, -1, 180),
                 )
                 desc_ctrl.SetName("Profile description")
                 desc_root.Add(desc_ctrl, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
@@ -13947,7 +13954,7 @@ class MainFrame(
         keyboard_preview = wx.TextCtrl(
             dialog,
             style=wx.TE_MULTILINE | wx.TE_READONLY,
-            size=(-1, 160),
+            size=dip_size(dialog, -1, 160),
         )
         set_accessible_name(keyboard_preview, "Keyboard pack preview")
         set_spoken_name(keyboard_preview, "Keyboard pack preview")
@@ -14350,13 +14357,15 @@ def run_app(
     persona_name: str | None = None,
     document_kind: str | None = None,
 ) -> None:
-    from quill.ui.mac_open_file_app import MacOpenFileApp
-
     # MacOpenFileApp is a plain wx.App subclass on every platform; the
     # MacOpenFile/MacOpenFiles overrides it adds are only ever invoked by
     # wx on macOS (Finder "Open With", drag-onto-Dock-icon, `open -a Quill
     # file.txt` from Terminal all arrive as an Apple Event, not argv --
     # without this override QUILL silently opened a blank document).
+    from quill.platform.windows.dpi_awareness import enable_dpi_awareness
+    from quill.ui.mac_open_file_app import MacOpenFileApp
+
+    enable_dpi_awareness()  # before the first window, or Windows stretches it (#1702)
     app = MacOpenFileApp(False)
     # #27: without an explicit app name, wx falls back to the running
     # executable/script's name for the macOS application-menu Hide/Quit

@@ -21,6 +21,7 @@ from typing import TYPE_CHECKING
 
 from quill.core.github.items_provider import GitHubBranchComparison, GitHubItemsError
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.dpi import dip_size
 from quill.ui.github_items_view import pull_diff_file_label, render_pull_file_diff
 from quill.ui.spoken_name import set_spoken_name
 
@@ -56,8 +57,8 @@ class GitHubCompareBranchesDialog:
             title=f"Compare {comparison.base}...{comparison.head}"[:120],
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize((680, 480))
-        self.dialog.SetSize((820, 600))
+        self.dialog.SetMinSize(dip_size(self.dialog, 680, 480))
+        self.dialog.SetSize(dip_size(self.dialog, 820, 600))
         panel = wx.Panel(self.dialog)
         root = wx.BoxSizer(wx.VERTICAL)
 

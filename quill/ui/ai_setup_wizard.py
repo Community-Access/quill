@@ -23,6 +23,7 @@ import wx
 
 from quill.core.ai import onboarding as ob
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 from quill.ui.spoken_name import set_spoken_name
 
 _STEP_WELCOME = 0
@@ -68,7 +69,7 @@ class AISetupWizard:
             title="Set Up AI",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize(wx.Size(620, 520))
+        self.dialog.SetMinSize(dip_size(self.dialog, 620, 520))
 
         root = wx.BoxSizer(wx.VERTICAL)
         self._heading = wx.StaticText(self.dialog, label="")
@@ -107,7 +108,7 @@ class AISetupWizard:
         # this the dialog opens at wx's small default (~400 wide) and the read-only prose
         # wraps into a few words per line — painful to arrow through with a screen reader.
         # Open it at the intended size so each wrapped line is a full line of text.
-        self.dialog.SetSize(wx.Size(620, 520))
+        self.dialog.SetSize(dip_size(self.dialog, 620, 520))
         self.dialog.Centre()
         apply_modal_ids(self.dialog, affirmative_id=wx.ID_CANCEL, cancel_id=wx.ID_CANCEL)
         self._back_btn.Bind(wx.EVT_BUTTON, lambda _e: self._go_back())

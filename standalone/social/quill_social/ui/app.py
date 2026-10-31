@@ -19,6 +19,7 @@ from datetime import UTC
 from pathlib import Path
 
 import wx
+from quill.ui.dpi import dip, dip_size
 
 from quill_social import __title__, __version__, paths
 from quill_social import a11y as a11y_mod
@@ -138,7 +139,7 @@ NAV_TREE = [
 
 class SocialFrame(wx.Frame):
     def __init__(self) -> None:
-        super().__init__(None, title=__title__, size=(1180, 760))
+        super().__init__(None, title=__title__, size=dip_size(None, 1180, 760))
         self.data_dir = paths.data_dir()
         self.store = SocialStore(paths.db_path())
         self.a11y = a11y_mod.load(self.data_dir)
@@ -505,7 +506,7 @@ class SocialFrame(wx.Frame):
 
         self.list = wx.ListCtrl(top, style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.LC_NO_HEADER)
         self.list.SetName("Timeline")
-        self.list.InsertColumn(0, "Post", width=760)
+        self.list.InsertColumn(0, "Post", width=dip(self.list, 760))
         tsz.Add(self.list, 1, wx.EXPAND | wx.ALL, 4)
         top.SetSizer(tsz)
 
@@ -2069,7 +2070,7 @@ class TextReportDialog(wx.Dialog):
         sizer.Add(ctrl, 1, wx.EXPAND | wx.ALL, 8)
         sizer.Add(self.CreateButtonSizer(wx.OK), 0, wx.ALIGN_RIGHT | wx.ALL, 8)
         self.SetSizer(sizer)
-        self.SetSize((620, 520))
+        self.SetSize(dip_size(self, 620, 520))
         ctrl.SetFocus()
         ctrl.SetInsertionPoint(0)
 
@@ -2105,7 +2106,7 @@ class HelpDialog(wx.Dialog):
         sizer.Add(text, 1, wx.EXPAND | wx.ALL, 8)
         sizer.Add(self.CreateButtonSizer(wx.OK), 0, wx.ALIGN_RIGHT | wx.ALL, 8)
         self.SetSizer(sizer)
-        self.SetSize((560, 520))
+        self.SetSize(dip_size(self, 560, 520))
 
 
 def _folder_choice_entries(folders) -> list[tuple[str, str]]:
@@ -2207,13 +2208,15 @@ class AddFeedDialog(wx.Dialog):
         self.folder.SetSelection(0)
         sizer.Add(self.folder, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
 
-        self.status = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(-1, 48))
+        self.status = wx.TextCtrl(
+            self, style=wx.TE_MULTILINE | wx.TE_READONLY, size=dip_size(self, -1, 48)
+        )
         self.status.SetName("Status")
         sizer.Add(self.status, 0, wx.EXPAND | wx.ALL, 6)
 
         sizer.Add(self.CreateButtonSizer(wx.OK | wx.CANCEL), 0, wx.ALIGN_RIGHT | wx.ALL, 8)
         self.SetSizer(sizer)
-        self.SetSize((540, 480))
+        self.SetSize(dip_size(self, 540, 480))
         self.url.SetFocus()
 
         self.find_btn.Bind(wx.EVT_BUTTON, self._on_find)
@@ -2488,7 +2491,7 @@ class AddAccountDialog(wx.Dialog):
 
         sizer.Add(self.CreateButtonSizer(wx.OK | wx.CANCEL), 0, wx.ALIGN_RIGHT | wx.ALL, 8)
         self.SetSizer(sizer)
-        self.SetSize((480, 560))
+        self.SetSize(dip_size(self, 480, 560))
 
         self.network.Bind(wx.EVT_CHOICE, self._on_network)
         self.signin_btn.Bind(wx.EVT_BUTTON, self._on_signin)
@@ -2724,6 +2727,9 @@ def _fmt_ms(ms: int | None) -> str:
 
 
 def run() -> int:
+    from quill.platform.windows.dpi_awareness import enable_dpi_awareness
+
+    enable_dpi_awareness()  # before the first window, or Windows stretches it (#1702)
     app = wx.App()
     frame = SocialFrame()
     frame.Show()

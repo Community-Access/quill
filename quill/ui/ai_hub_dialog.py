@@ -17,6 +17,7 @@ from collections.abc import Callable
 from quill.core.i18n import _, lazy_gettext
 from quill.core.platform_nouns import credential_store_name
 from quill.ui.dialog_contract import apply_modal_ids, dialog_alive, set_accessible_name
+from quill.ui.dpi import dip_size
 
 _PROVIDER_CHOICES: tuple[tuple[str, object], ...] = (
     ("off", lazy_gettext("Off (AI disabled)")),
@@ -167,7 +168,7 @@ class AIHubDialog:
             title=_("AI Hub"),
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize(wx.Size(740, 600))
+        self.dialog.SetSize(dip_size(self.dialog, 740, 600))
         self._build_ui()
 
     # ------------------------------------------------------------------
@@ -1040,7 +1041,7 @@ class AIHubDialog:
         )
         self._inst_editor = wx.TextCtrl(page, style=wx.TE_MULTILINE | wx.TE_RICH2)
         self._inst_editor.SetName("Instruction text")
-        self._inst_editor.SetMinSize(wx.Size(400, 200))
+        self._inst_editor.SetMinSize(dip_size(self._inst_editor, 400, 200))
         right.Add(self._inst_editor, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
 
         right.Add(wx.StaticLine(page), 0, wx.EXPAND | wx.ALL, 6)
@@ -1052,7 +1053,7 @@ class AIHubDialog:
         )
         self._default_display = wx.TextCtrl(page, style=wx.TE_MULTILINE | wx.TE_READONLY)
         self._default_display.SetName("Built-in default instruction")
-        self._default_display.SetMinSize(wx.Size(400, 120))
+        self._default_display.SetMinSize(dip_size(self._default_display, 400, 120))
         right.Add(self._default_display, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)
@@ -1130,7 +1131,7 @@ class AIHubDialog:
         )
         self._img_editor = wx.TextCtrl(page, style=wx.TE_MULTILINE | wx.TE_RICH2)
         self._img_editor.SetName("Image prompt override")
-        self._img_editor.SetMinSize(wx.Size(400, 200))
+        self._img_editor.SetMinSize(dip_size(self._img_editor, 400, 200))
         right.Add(self._img_editor, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
 
         right.Add(wx.StaticLine(page), 0, wx.EXPAND | wx.ALL, 6)
@@ -1142,7 +1143,7 @@ class AIHubDialog:
         )
         self._img_default_display = wx.TextCtrl(page, style=wx.TE_MULTILINE | wx.TE_READONLY)
         self._img_default_display.SetName("Built-in image prompt")
-        self._img_default_display.SetMinSize(wx.Size(400, 120))
+        self._img_default_display.SetMinSize(dip_size(self._img_default_display, 400, 120))
         right.Add(self._img_default_display, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 6)
 
         btn_row = wx.BoxSizer(wx.HORIZONTAL)

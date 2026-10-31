@@ -38,6 +38,7 @@ from quill.core.i18n import _, lazy_gettext
 from quill.core.settings import Settings
 from quill.ui.batch_wizard import BatchRequest
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
+from quill.ui.dpi import dip_size
 
 _log = logging.getLogger(__name__)
 
@@ -125,7 +126,7 @@ class _IntroPage(_WizardPage):
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
             name="batch_wizard.intro_preview",
         )
-        preview.SetMinSize((-1, 220))
+        preview.SetMinSize(dip_size(preview, -1, 220))
         sizer.Add(preview, proportion=1, flag=wx.EXPAND | wx.ALL, border=12)
 
         # Live Pandoc version status. We probe synchronously here because the
@@ -412,7 +413,7 @@ class _SummaryPage(_WizardPage):
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
             name="batch_wizard.summary_text",
         )
-        self._summary_text.SetMinSize((-1, 200))
+        self._summary_text.SetMinSize(dip_size(self._summary_text, -1, 200))
         sizer.Add(self._summary_text, proportion=1, flag=wx.EXPAND | wx.ALL, border=12)
 
         self.SetSizer(sizer)
@@ -513,7 +514,7 @@ class BatchWizardDialog(wx.Dialog):
         self._build_ui()
         self._show_page(0)
 
-        self.SetMinSize((620, 540))
+        self.SetMinSize(dip_size(self, 620, 540))
         self.Fit()
         self.CentreOnParent()
         apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)

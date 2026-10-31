@@ -23,6 +23,7 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.podcasts.show_notes import html_to_plain_text, strip_html_images
+from quill.ui.dpi import dip_size
 
 
 class ShowNotesWindow:
@@ -58,8 +59,8 @@ class ShowNotesWindow:
         self._wx = wx
         self._announce = announce_cb or (lambda _m: None)
         self._body: Any = None
-        self.frame = wx.Frame(parent, title="Show Notes", size=(760, 640))
-        self.frame.SetMinSize((620, 520))
+        self.frame = wx.Frame(parent, title="Show Notes", size=dip_size(parent, 760, 640))
+        self.frame.SetMinSize(dip_size(self.frame, 620, 520))
         self.frame.SetSizer(wx.BoxSizer(wx.VERTICAL))
         self.load(
             episode_title=episode_title,

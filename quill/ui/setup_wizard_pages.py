@@ -44,6 +44,7 @@ from quill.core.onboarding_profiles import (
 )
 from quill.core.settings import Settings
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 from quill.ui.spoken_name import set_spoken_name
 
 _log = logging.getLogger(__name__)
@@ -327,7 +328,7 @@ class _IntentPage(_WizardPage):
             style=wx.LB_SINGLE,
             name="wizard.intent_list",
         )
-        self._list.SetMinSize((-1, 160))
+        self._list.SetMinSize(dip_size(self._list, -1, 160))
         sizer.Add(self._list, flag=wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, border=12)
 
         about_label = wx.StaticText(
@@ -978,7 +979,7 @@ class SetupWizardDialog(wx.Dialog):
 
         self._build_ui()
         self._show_page(0)
-        self.SetMinSize((540, 560))
+        self.SetMinSize(dip_size(self, 540, 560))
         self.Fit()
         self.CentreOnParent()
         apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)

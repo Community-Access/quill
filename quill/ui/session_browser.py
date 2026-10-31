@@ -18,6 +18,7 @@ from quill.core.ai.sessions import (
     summarize_session,
 )
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.dpi import dip_size
 
 
 class SessionBrowserDialog:
@@ -34,7 +35,7 @@ class SessionBrowserDialog:
             title="AI Writing Sessions — Branches",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize((600, 520))
+        self.dialog.SetSize(dip_size(self.dialog, 600, 520))
         root = wx.BoxSizer(wx.VERTICAL)
 
         summary = wx.StaticText(self.dialog, label=summarize_session(session))

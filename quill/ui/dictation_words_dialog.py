@@ -28,6 +28,7 @@ from quill.core.windows_dictation.words_exchange import SharedWords
 from quill.core.windows_dictation.words_file import Entry, WordsFile, load_words, save_words
 from quill.ui import dictation_words_exchange as exchange
 from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids, bind_close_button
+from quill.ui.dpi import dip_size
 
 __all__ = ["DictationWordsDialog"]
 
@@ -84,7 +85,7 @@ class _EntryDialog(wx.Dialog):
                 self, value=entry.written if entry else "", style=wx.TE_MULTILINE
             )
             self._written.SetHelpText(written_help)
-            self._written.SetMinSize((320, 72))
+            self._written.SetMinSize(dip_size(self._written, 320, 72))
             grid.Add(self._written, 1, wx.EXPAND)
         root.Add(grid, 1, wx.EXPAND | wx.ALL, _PAD)
         root.Add(self.CreateButtonSizer(wx.OK | wx.CANCEL), 0, wx.EXPAND | wx.ALL, _PAD)
@@ -209,7 +210,7 @@ class DictationWordsDialog(wx.Dialog):
         root.Add(bottom, 0, wx.ALL, _PAD)
 
         self.SetSizer(root)
-        self.SetSize((640, 460))
+        self.SetSize(dip_size(self, 640, 460))
         apply_modal_ids(self, cancel_id=wx.ID_CANCEL, escape_id=wx.ID_CANCEL)
         bind_close_button(self, close, modeless=False)
         apply_listbox_activation(self.list, self._on_edit)  # Enter, Space and double-click

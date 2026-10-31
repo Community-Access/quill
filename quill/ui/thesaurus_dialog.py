@@ -42,6 +42,7 @@ from typing import Any
 
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids
+from quill.ui.dpi import dip_size
 
 
 class ThesaurusDialog:
@@ -99,7 +100,7 @@ class ThesaurusDialog:
         self.dialog = wx.Dialog(
             parent,
             title=f'Thesaurus: "{word}"',
-            size=(760, 460),
+            size=dip_size(parent, 760, 460),
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
         root = wx.BoxSizer(wx.VERTICAL)

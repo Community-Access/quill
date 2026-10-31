@@ -13,6 +13,7 @@ from zoneinfo import available_timezones
 from quill.core.radio.recording_schedule import RecordingScheduleEntry, new_id, next_occurrence
 from quill.core.radio.wake_timer import parse_time_of_day
 from quill.ui.dialog_contract import announce_surface_exit, apply_modal_ids, bind_close_button
+from quill.ui.dpi import dip_size
 from quill.ui.radio import schedule_marks
 from quill.ui.radio.marks_shared import say_ignored, with_ignored_note
 
@@ -173,7 +174,7 @@ class ScheduleRecordingDialog:
             )
             self._surface = self._win
         self.dialog = self._win  # back-compat alias for callers that reference it
-        self._win.SetMinSize((560, 520))
+        self._win.SetMinSize(dip_size(self._win, 560, 520))
         root = wx.BoxSizer(wx.VERTICAL)
 
         root.Add(

@@ -20,6 +20,7 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_message_box
+from quill.ui.dpi import dip, dip_size
 
 
 class DictationHistoryDialog:
@@ -46,7 +47,7 @@ class DictationHistoryDialog:
             title="Dictation History & Review",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize(wx.Size(620, 420))
+        self.dialog.SetMinSize(dip_size(self.dialog, 620, 420))
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
             wx.StaticText(self.dialog, label="Dictation recordings &awaiting review:"),
@@ -56,9 +57,9 @@ class DictationHistoryDialog:
         )
         self._list = wx.ListCtrl(self.dialog, style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
         set_accessible_name(self._list, "Dictation recordings awaiting review")
-        self._list.InsertColumn(0, "When", width=150)
-        self._list.InsertColumn(1, "State", width=140)
-        self._list.InsertColumn(2, "Transcript preview", width=300)
+        self._list.InsertColumn(0, "When", width=dip(self._list, 150))
+        self._list.InsertColumn(1, "State", width=dip(self._list, 140))
+        self._list.InsertColumn(2, "Transcript preview", width=dip(self._list, 300))
         self._list.Bind(wx.EVT_LIST_ITEM_ACTIVATED, lambda _e: self._on_insert_clicked())
         root.Add(self._list, 1, wx.EXPAND | wx.ALL, 8)
 

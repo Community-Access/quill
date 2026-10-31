@@ -50,6 +50,7 @@ from quill.core.podcasts.transcripts import (
     cues_to_vtt,
 )
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 from quill.ui.radio.bounded_playback_ui import spoken_duration
 
 #: Save As formats, in the order the dialog offers them. Text first because it
@@ -176,8 +177,8 @@ class TranscriptReader:
         # something that is often an hour of speech ("can we make the
         # transcript window larger to show more text?", 2026-08-18). It is
         # resizable, and this is a starting point worth reading in.
-        self._dialog.SetMinSize((640, 520))
-        self._dialog.SetSize((1000, 760))
+        self._dialog.SetMinSize(dip_size(self._dialog, 640, 520))
+        self._dialog.SetSize(dip_size(self._dialog, 1000, 760))
         root = wx.BoxSizer(wx.VERTICAL)
 
         heading = "&Transcript"
@@ -194,7 +195,7 @@ class TranscriptReader:
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP | wx.TE_PROCESS_ENTER,
         )
         self._text.SetName("Transcript. Enter on a line plays from there; Ctrl+F finds")
-        self._text.SetMinSize((-1, 480))
+        self._text.SetMinSize(dip_size(self._text, -1, 480))
         root.Add(self._text, 1, wx.EXPAND | wx.ALL, 10)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)

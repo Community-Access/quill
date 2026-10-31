@@ -17,6 +17,7 @@ from quill.core.weather import geocoding
 from quill.core.weather import locations as loc_store
 from quill.core.weather.models import WeatherLocation
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 from quill.ui.surface_lifetime import surface_tasks
 
 
@@ -46,7 +47,7 @@ class AddLocationDialog:
         self.dialog = wx.Dialog(
             parent, title="Add Weather Location", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize((520, 420))
+        self.dialog.SetMinSize(dip_size(self.dialog, 520, 420))
         root = wx.BoxSizer(wx.VERTICAL)
 
         root.Add(

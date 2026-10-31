@@ -15,6 +15,7 @@ from __future__ import annotations
 from typing import Any
 
 from quill.core.ai.context_builder import ContextPreview
+from quill.ui.dpi import dip_size
 
 __all__ = ["confirm_context_share"]
 
@@ -32,7 +33,7 @@ def confirm_context_share(
     dialog = wx.Dialog(
         controller.frame, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
     )
-    dialog.SetSize((640, 480))
+    dialog.SetSize(dip_size(dialog, 640, 480))
     outer = wx.BoxSizer(wx.VERTICAL)
 
     summary = wx.StaticText(dialog, label=preview.speakable_summary())

@@ -11,6 +11,7 @@ from __future__ import annotations
 from typing import Any
 
 from quill.ui.dialog_contract import apply_modal_ids, focus_primary_control
+from quill.ui.dpi import dip, dip_size
 from quill.ui.spoken_name import set_spoken_name
 
 
@@ -25,7 +26,7 @@ class HelpStatusDialog:
             title="Application Status",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize((820, 620))
+        self.dialog.SetSize(dip_size(self.dialog, 820, 620))
         sizer = wx.BoxSizer(wx.VERTICAL)
         nb = wx.Notebook(self.dialog)
         nb.SetName("System status sections")
@@ -39,9 +40,9 @@ class HelpStatusDialog:
         )
         self._status_list.SetName("Status overview")
         set_spoken_name(self._status_list, "Status overview")
-        self._status_list.AppendColumn("Section", width=130)
-        self._status_list.AppendColumn("Setting", width=220)
-        self._status_list.AppendColumn("Value", width=380)
+        self._status_list.AppendColumn("Section", width=dip(self._status_list, 130))
+        self._status_list.AppendColumn("Setting", width=dip(self._status_list, 220))
+        self._status_list.AppendColumn("Value", width=dip(self._status_list, 380))
         sp_sizer.Add(self._status_list, 1, wx.EXPAND | wx.ALL, 6)
         status_panel.SetSizer(sp_sizer)
         nb.AddPage(status_panel, "Status")
@@ -55,11 +56,11 @@ class HelpStatusDialog:
         )
         self._tasks_list.SetName("Tasks and downloads")
         set_spoken_name(self._tasks_list, "Tasks and downloads")
-        self._tasks_list.AppendColumn("Task / Model", width=220)
-        self._tasks_list.AppendColumn("Status", width=90)
-        self._tasks_list.AppendColumn("Progress", width=90)
-        self._tasks_list.AppendColumn("Started", width=160)
-        self._tasks_list.AppendColumn("Finished", width=160)
+        self._tasks_list.AppendColumn("Task / Model", width=dip(self._tasks_list, 220))
+        self._tasks_list.AppendColumn("Status", width=dip(self._tasks_list, 90))
+        self._tasks_list.AppendColumn("Progress", width=dip(self._tasks_list, 90))
+        self._tasks_list.AppendColumn("Started", width=dip(self._tasks_list, 160))
+        self._tasks_list.AppendColumn("Finished", width=dip(self._tasks_list, 160))
         tp_sizer.Add(self._tasks_list, 1, wx.EXPAND | wx.ALL, 6)
         tasks_panel.SetSizer(tp_sizer)
         nb.AddPage(tasks_panel, "Tasks & Downloads")
@@ -73,10 +74,10 @@ class HelpStatusDialog:
         )
         self._features_list.SetName("Features")
         set_spoken_name(self._features_list, "Features")
-        self._features_list.AppendColumn("Feature ID", width=230)
-        self._features_list.AppendColumn("Name", width=210)
-        self._features_list.AppendColumn("Category", width=130)
-        self._features_list.AppendColumn("Status", width=80)
+        self._features_list.AppendColumn("Feature ID", width=dip(self._features_list, 230))
+        self._features_list.AppendColumn("Name", width=dip(self._features_list, 210))
+        self._features_list.AppendColumn("Category", width=dip(self._features_list, 130))
+        self._features_list.AppendColumn("Status", width=dip(self._features_list, 80))
         fp_sizer.Add(self._features_list, 1, wx.EXPAND | wx.ALL, 6)
         features_panel.SetSizer(fp_sizer)
         nb.AddPage(features_panel, "Features")

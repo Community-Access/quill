@@ -22,6 +22,7 @@ from dataclasses import replace
 import wx
 
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip, dip_size
 
 # a11y: needs manual verification -- screen-reader/braille announcements,
 # keyboard focus order, high contrast, and layout at increased Windows scaling.
@@ -59,7 +60,9 @@ class StudioMixerDialog(wx.Dialog):
         page = wx.Panel(self.book)
         layout = wx.BoxSizer(wx.VERTICAL)
         layout.Add(wx.StaticText(page, label="&Programs playing sound"), 0, wx.ALL, 6)
-        self.programs = wx.ListCtrl(page, style=wx.LC_REPORT | wx.LC_SINGLE_SEL, size=(560, 220))
+        self.programs = wx.ListCtrl(
+            page, style=wx.LC_REPORT | wx.LC_SINGLE_SEL, size=dip_size(page, 560, 220)
+        )
         set_accessible_name(self.programs, "Programs playing sound")
         self.programs.SetHelpText(
             "Each program with sound: whether you hear it and how loud, whether it is playing "
@@ -116,13 +119,15 @@ class StudioMixerDialog(wx.Dialog):
         page = wx.Panel(self.book)
         layout = wx.BoxSizer(wx.VERTICAL)
         layout.Add(wx.StaticText(page, label="Pla&yback devices"), 0, wx.ALL, 6)
-        self.playback = wx.ListCtrl(page, style=wx.LC_REPORT | wx.LC_SINGLE_SEL, size=(560, 110))
+        self.playback = wx.ListCtrl(
+            page, style=wx.LC_REPORT | wx.LC_SINGLE_SEL, size=dip_size(page, 560, 110)
+        )
         set_accessible_name(self.playback, "Playback devices")
         self.playback.SetHelpText(
             "Speakers and headphones Windows can use, and which is the default."
         )
-        self.playback.InsertColumn(0, "Device", width=360)
-        self.playback.InsertColumn(1, "Role", width=180)
+        self.playback.InsertColumn(0, "Device", width=dip(self.playback, 360))
+        self.playback.InsertColumn(1, "Role", width=dip(self.playback, 180))
         layout.Add(self.playback, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
         row = wx.BoxSizer(wx.HORIZONTAL)
         for label, help_text, flow, communications in (
@@ -138,14 +143,16 @@ class StudioMixerDialog(wx.Dialog):
             row.Add(button, 0, wx.RIGHT, 8)
         layout.Add(row, 0, wx.ALL, 6)
         layout.Add(wx.StaticText(page, label="Recordin&g devices"), 0, wx.ALL, 6)
-        self.recording = wx.ListCtrl(page, style=wx.LC_REPORT | wx.LC_SINGLE_SEL, size=(560, 110))
+        self.recording = wx.ListCtrl(
+            page, style=wx.LC_REPORT | wx.LC_SINGLE_SEL, size=dip_size(page, 560, 110)
+        )
         set_accessible_name(self.recording, "Recording devices")
         self.recording.SetHelpText(
             "Microphones and line inputs, which is the default, and each one's level."
         )
-        self.recording.InsertColumn(0, "Device", width=300)
-        self.recording.InsertColumn(1, "Role", width=140)
-        self.recording.InsertColumn(2, "Level", width=100)
+        self.recording.InsertColumn(0, "Device", width=dip(self.recording, 300))
+        self.recording.InsertColumn(1, "Role", width=dip(self.recording, 140))
+        self.recording.InsertColumn(2, "Level", width=dip(self.recording, 100))
         self.recording.Bind(wx.EVT_LIST_ITEM_SELECTED, self._input_selected)
         layout.Add(self.recording, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
         row = wx.BoxSizer(wx.HORIZONTAL)

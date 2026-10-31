@@ -36,6 +36,7 @@ from quill.ui.dialog_contract import (
     focus_primary_control,
     set_accessible_name,
 )
+from quill.ui.dpi import dip_size
 from quill.ui.preferences_search import registry_page_index
 from quill.ui.preferences_search_registry import declare_hub_settings, declare_settings_pages
 from quill.ui.spoken_name import set_spoken_name
@@ -1432,7 +1433,7 @@ class PreferencesMixin:
                 wx.CallAfter(_pages.focus, focus_key, self._announce)
 
             apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
-            dialog.SetSize(wx.Size(720, 580))
+            dialog.SetSize(dip_size(dialog, 720, 580))
             dialog.Layout()
 
             result = self._show_modal_dialog(dialog, "Settings")

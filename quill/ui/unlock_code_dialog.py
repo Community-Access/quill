@@ -6,6 +6,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 
 class UnlockCodeDialog:
@@ -23,7 +24,7 @@ class UnlockCodeDialog:
         self._announce = announce_cb or (lambda _m: None)
 
         self.dialog = wx.Dialog(parent, title="Redeem Unlock Code")
-        self.dialog.SetMinSize((420, 180))
+        self.dialog.SetMinSize(dip_size(self.dialog, 420, 180))
         root = wx.BoxSizer(wx.VERTICAL)
 
         root.Add(

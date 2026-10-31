@@ -68,6 +68,7 @@ from quill.ui.audio_studio.library_tree import (
     selected_key,
 )
 from quill.ui.dialog_contract import set_accessible_name
+from quill.ui.dpi import dip_size
 from quill.ui.main_frame_speech_downloads import SpeechDownloadsMixin
 from quill.ui.whats_new import open_whats_new
 
@@ -264,7 +265,9 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
         # spoken by a screen reader on focus -- otherwise the only sign of Safe
         # Mode was a feature silently refusing when the user tried to use it.
         title = f"{_TITLE} (Safe Mode)" if safe_mode else _TITLE
-        self._init_app_shell(title, safe_mode=safe_mode, size=(720, 540), app_id="studio")
+        self._init_app_shell(
+            title, safe_mode=safe_mode, size=dip_size(None, 720, 540), app_id="studio"
+        )
         self._apply_app_keymap("studio")
         # F1 context help with the Studio's authored purpose catalogue. The app
         # shell already activated the shared engine (provider + dialog-contract
@@ -2791,6 +2794,9 @@ def main() -> int:
     from quill.core.speech.engine_install import activate_engine_packs
 
     activate_engine_packs()
+    from quill.platform.windows.dpi_awareness import enable_dpi_awareness
+
+    enable_dpi_awareness()  # before the first window, or Windows stretches it (#1702)
     app = wx.App()
     # Single-instance guard: a second launch would duplicate the tray icon and
     # silently steal the media-key registration from the first window. Refuse it

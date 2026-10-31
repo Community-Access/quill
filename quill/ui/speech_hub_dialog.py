@@ -19,6 +19,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quill.ui.dialog_contract import apply_modal_ids, focus_primary_control
+from quill.ui.dpi import dip_size
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -79,8 +80,8 @@ class SpeechHubDialog:
             title="Speech Settings",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize(wx.Size(640, 580))
-        self.dialog.SetSize(wx.Size(740, 660))
+        self.dialog.SetMinSize(dip_size(self.dialog, 640, 580))
+        self.dialog.SetSize(dip_size(self.dialog, 740, 660))
 
         root = wx.BoxSizer(wx.VERTICAL)
         self._nb = wx.Notebook(self.dialog)

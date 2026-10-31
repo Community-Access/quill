@@ -10,6 +10,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from typing import Any
 
+from quill.ui.dpi import dip_size
 from quill.ui.lineups.host import LineupsHost
 
 
@@ -99,7 +100,10 @@ def show_why(host: LineupsHost, parent: Any, text: str) -> None:
     sizer = wx.BoxSizer(wx.VERTICAL)
     sizer.Add(wx.StaticText(dialog, label="&Reason:"), 0, wx.LEFT | wx.TOP, 10)
     box = wx.TextCtrl(
-        dialog, value=text, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2, size=(520, 160)
+        dialog,
+        value=text,
+        style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2,
+        size=dip_size(dialog, 520, 160),
     )
     box.SetName(title)
     box.SetHelpText("Read with the arrow keys. OK or Escape closes.")

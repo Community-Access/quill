@@ -38,6 +38,7 @@ from collections.abc import Callable, Sequence
 from typing import Any
 
 from quill.core.radio import live_captions
+from quill.ui.dpi import dip_size
 
 #: How often the window asks the player where it is. Captions change on the
 #: order of seconds; polling four times a second is imperceptibly late and
@@ -78,7 +79,7 @@ class CaptionsWindow:
         # captions", and which video they belong to is on the control that is
         # actually read (below), where somebody navigating to it is told.
         self._frame = wx.Frame(parent, title="Quill Radio Captions", style=wx.DEFAULT_FRAME_STYLE)
-        self._frame.SetMinSize((460, 240))
+        self._frame.SetMinSize(dip_size(self._frame, 460, 240))
         root = wx.BoxSizer(wx.VERTICAL)
 
         heading = "&Captions"

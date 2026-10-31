@@ -43,6 +43,7 @@ from quill.ui.dialog_contract import (
     ok_cancel_platform_order,
     show_message_box,
 )
+from quill.ui.dpi import dip_size
 
 
 class DialogMode(Enum):
@@ -134,7 +135,9 @@ class RemoteSitesDialog(wx.Dialog):
         mode: DialogMode = DialogMode.OPEN,
         title: str = "Open from Remote",
     ) -> None:
-        super().__init__(parent, title=title, size=(820, 480), style=wx.DEFAULT_DIALOG_STYLE)
+        super().__init__(
+            parent, title=title, size=dip_size(parent, 820, 480), style=wx.DEFAULT_DIALOG_STYLE
+        )
         self._mode = mode
         self._result: RemoteSitesResult | None = None
         self._build_ui()
@@ -344,7 +347,7 @@ class _SiteEditorDialog(wx.Dialog):
         super().__init__(
             parent,
             title="New Remote Site" if site is None else f"Edit {site.name}",
-            size=(480, 360),
+            size=dip_size(parent, 480, 360),
             style=wx.DEFAULT_DIALOG_STYLE,
         )
         self._site = site

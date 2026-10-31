@@ -13,6 +13,7 @@ from collections.abc import Callable
 import wx
 
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 
 # a11y: needs manual verification -- screen-reader/braille announcements,
 # keyboard focus order, high contrast, and layout at increased Windows scaling.
@@ -37,7 +38,7 @@ class DemoResultDialog(wx.Dialog):
         layout = wx.BoxSizer(wx.VERTICAL)
         layout.Add(wx.StaticText(self, label="Result"), 0, wx.LEFT | wx.TOP, 10)
         self.text = wx.TextCtrl(
-            self, value=text, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(560, 260)
+            self, value=text, style=wx.TE_MULTILINE | wx.TE_READONLY, size=dip_size(self, 560, 260)
         )
         set_accessible_name(self.text, "Result")
         self.text.SetHelpText(

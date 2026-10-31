@@ -37,6 +37,7 @@ from quill.core.radio.recordings_index import (
     recordings_dir,
 )
 from quill.ui.dialog_contract import announce_surface_exit, apply_modal_ids, show_modal_dialog
+from quill.ui.dpi import dip_size
 from quill.ui.radio import recordings_marks
 from quill.ui.radio.marks_shared import with_ignored_note
 from quill.ui.radio.recordings_queue import RecordingsQueueMixin
@@ -104,7 +105,7 @@ class RecordingsManagerDialog(RecordingsQueueMixin, RecordingsRowViewMixin):
             self._surface = self._win
         self.dialog = self._win  # top-level window; child dialogs parent to it
         if not self._embedded:
-            self._win.SetMinSize((760, 520))
+            self._win.SetMinSize(dip_size(self._win, 760, 520))
         root = wx.BoxSizer(wx.VERTICAL)
 
         root.Add(

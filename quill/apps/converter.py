@@ -45,6 +45,7 @@ from quill.core.audio.presets import preset_choices
 from quill.core.net import configure_ssl_trust
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.app_shell import AppShellFrame
+from quill.ui.dpi import dip_size
 
 _TITLE = "Quill Converter"
 _VERSION = "1.0.0"
@@ -82,7 +83,9 @@ class QuillConverterFrame(
     """The Converter window: a queue, four choices, and Convert."""
 
     def __init__(self, *, safe_mode: bool = False, initial_paths: list[Path] | None = None) -> None:
-        self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(620, 560), app_id="converter")
+        self._init_app_shell(
+            _TITLE, safe_mode=safe_mode, size=dip_size(None, 620, 560), app_id="converter"
+        )
         # Swap in the Converter's own window-purpose resolver so the authored
         # paragraphs lead every F1 answer (GATE-CONVERTER-HELP).
         from quill.core import converter_surface_help
@@ -568,6 +571,9 @@ def main() -> int:
     from quill.stability.logging_config import configure_logging
 
     log_listener = configure_logging(app_data_dir() / "logs")
+    from quill.platform.windows.dpi_awareness import enable_dpi_awareness
+
+    enable_dpi_awareness()  # before the first window, or Windows stretches it (#1702)
     app = wx.App()
     frame = QuillConverterFrame(safe_mode=safe_mode, initial_paths=initial_paths)
     frame._log_listener = log_listener

@@ -28,6 +28,7 @@ from __future__ import annotations
 from typing import Any
 
 from quill.core.radio.local_media import Playlist
+from quill.ui.dpi import dip_size
 from quill.ui.radio import local_media_playback as playback
 from quill.ui.radio import local_media_ui as ui
 from quill.ui.radio import local_media_window_menu as menus
@@ -82,7 +83,7 @@ class LocalMediaWindow(LocalMediaCommandsMixin):
             )
             self._surface = self._win
         self.dialog = self._win
-        self._win.SetMinSize((780, 520))
+        self._win.SetMinSize(dip_size(self._win, 780, 520))
         self._build()
         if self._modeless:
             self._menu_items = menus.install_menu_bar(self, wx, self.run)
@@ -128,7 +129,7 @@ class LocalMediaWindow(LocalMediaCommandsMixin):
             "deletes it after asking, Alt+Shift+Up and Down move it, and the "
             "Applications key opens everything else."
         )
-        self._playlists.SetMinSize((240, 300))
+        self._playlists.SetMinSize(dip_size(self._playlists, 240, 300))
         left.Add(self._playlists, 1, wx.EXPAND)
         lists.Add(left, 0, wx.EXPAND | wx.RIGHT, 10)
 

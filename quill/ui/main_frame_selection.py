@@ -35,6 +35,7 @@ from quill.core.selection import (
     shrink_selection as shrink_selection_span,
 )
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 from quill.ui.spoken_name import set_spoken_name
 
 
@@ -357,7 +358,7 @@ class SelectionMarksMixin:
             btn_row.Add(close_btn, 0)
             sizer.Add(btn_row, 0, wx.EXPAND | wx.ALL, 8)
             dlg.SetSizer(sizer)
-            dlg.SetSize((500, 400))
+            dlg.SetSize(dip_size(dlg, 500, 400))
             close_btn.Bind(wx.EVT_BUTTON, lambda _e: dlg.EndModal(wx.ID_CLOSE))
             apply_modal_ids(dlg, affirmative_id=wx.ID_CLOSE, escape_id=wx.ID_CLOSE)
             self._show_modal_dialog(dlg, "Review Buffer")

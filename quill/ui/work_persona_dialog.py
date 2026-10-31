@@ -15,6 +15,7 @@ import wx
 from quill.core.features import PROFILE_DEFINITIONS
 from quill.core.keymap import list_keymap_profiles
 from quill.core.work_persona import WorkPersona, WorkPersonaStore
+from quill.ui.dpi import dip_size
 
 _NO_KEYMAP_CHANGE = "(leave keymap unchanged)"
 
@@ -40,7 +41,7 @@ class WorkPersonaDialog:
         self.dialog = wx.Dialog(
             parent, title="Work Personas", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize(wx.Size(700, 480))
+        self.dialog.SetMinSize(dip_size(self.dialog, 700, 480))
         root = wx.BoxSizer(wx.VERTICAL)
         body = wx.BoxSizer(wx.HORIZONTAL)
 

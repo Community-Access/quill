@@ -46,6 +46,7 @@ from quill.core.net import configure_ssl_trust
 from quill.core.support_message import SUPPORT_EMAIL
 from quill.core.transcribe.settings import TranscribeSettings, load_settings, take_from_inkwell
 from quill.ui.app_shell import AppShellFrame
+from quill.ui.dpi import dip_size
 
 _TITLE = "QUILL Transcribe"
 _VERSION = "1.0.0"
@@ -74,7 +75,9 @@ class QuillTranscribeFrame(
     """The status window for a dictation service that lives in the tray."""
 
     def __init__(self, *, safe_mode: bool = False) -> None:
-        self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(600, 480), app_id="transcribe")
+        self._init_app_shell(
+            _TITLE, safe_mode=safe_mode, size=dip_size(None, 600, 480), app_id="transcribe"
+        )
         from quill.core.paths import app_data_dir
         from quill.ui.window_menu import WindowManager
 
@@ -487,6 +490,9 @@ def main() -> int:
     from quill.stability.logging_config import configure_logging
 
     log_listener = configure_logging(app_data_dir() / "logs")
+    from quill.platform.windows.dpi_awareness import enable_dpi_awareness
+
+    enable_dpi_awareness()  # before the first window, or Windows stretches it (#1702)
     app = wx.App()
     frame = QuillTranscribeFrame(safe_mode=safe_mode)
     frame._log_listener = log_listener

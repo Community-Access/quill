@@ -41,6 +41,7 @@ from collections.abc import Callable, Sequence
 
 from quill.core.text_links import Link, describe
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
+from quill.ui.dpi import dip_size
 
 
 class LinkListDialog:
@@ -68,7 +69,7 @@ class LinkListDialog:
         self.dialog = wx.Dialog(
             parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize((640, 400))
+        self.dialog.SetMinSize(dip_size(self.dialog, 640, 400))
         root = wx.BoxSizer(wx.VERTICAL)
 
         heading = describe(self._links)

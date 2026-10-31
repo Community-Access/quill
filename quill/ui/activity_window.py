@@ -26,6 +26,7 @@ from typing import Any
 
 from quill.core import activity
 from quill.core.activity import ActionResult
+from quill.ui.dpi import dip_size
 
 TITLE = "Activity"
 
@@ -132,7 +133,7 @@ def show_activity(host: Any) -> None:
     results = activity.LOG.recent()
     parent = getattr(host, "frame", None) or getattr(host, "_ai_parent", lambda: None)()
     dialog = wx.Dialog(parent, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
-    dialog.SetSize(wx.Size(760, 520))
+    dialog.SetSize(dip_size(dialog, 760, 520))
     root = wx.BoxSizer(wx.VERTICAL)
 
     summary_label = wx.StaticText(dialog, label=_summary(results))
@@ -148,7 +149,9 @@ def show_activity(host: Any) -> None:
 
     root.Add(wx.StaticText(dialog, label="&Details:"), 0, wx.LEFT | wx.RIGHT, 8)
     details = wx.TextCtrl(
-        dialog, size=(-1, 110), style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP
+        dialog,
+        size=dip_size(dialog, -1, 110),
+        style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
     )
     details.SetHelpText(
         "Everything about the selected result: the full sentence, the reason, "

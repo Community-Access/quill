@@ -24,6 +24,7 @@ from quill.core.weather import nws, render
 from quill.core.weather import settings as settings_mod
 from quill.core.weather.models import WeatherLocation, WeatherReport
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 from quill.ui.spoken_name import set_spoken_name
 from quill.ui.surface_lifetime import surface_tasks
 from quill.ui.weather.center_text import (
@@ -81,7 +82,7 @@ class WeatherCenterDialog:
             )
             self._surface = self._win
         self.dialog = self._win  # top-level window; child dialogs parent to it
-        self._win.SetMinSize((620, 560))
+        self._win.SetMinSize(dip_size(self._win, 620, 560))
         root = wx.BoxSizer(wx.VERTICAL)
 
         # -- location row --
@@ -175,7 +176,7 @@ class WeatherCenterDialog:
             "and more. Read-only and copyable, with the observation time at "
             "the end."
         )
-        self._current.SetMinSize((-1, 150))
+        self._current.SetMinSize(dip_size(self._current, -1, 150))
         root.Add(self._current, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         # -- forecast --
@@ -202,7 +203,7 @@ class WeatherCenterDialog:
             "list above, with abbreviations spelled out for speech. "
             "Read-only and copyable; it follows the list selection."
         )
-        self._period_detail.SetMinSize((-1, 72))
+        self._period_detail.SetMinSize(dip_size(self._period_detail, -1, 72))
         root.Add(self._period_detail, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         # -- hourly forecast (NWS forecastHourly) --
@@ -228,7 +229,7 @@ class WeatherCenterDialog:
             "wraps instead of scrolling off the edge. It follows the hourly "
             "list's selection."
         )
-        self._hourly_detail.SetMinSize((-1, 48))
+        self._hourly_detail.SetMinSize(dip_size(self._hourly_detail, -1, 48))
         root.Add(self._hourly_detail, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         # -- extended daily outlook (Open-Meteo, past the NWS 7 days) --
@@ -257,7 +258,7 @@ class WeatherCenterDialog:
             "wraps instead of scrolling off the edge. It follows the daily "
             "outlook's selection."
         )
-        self._daily_detail.SetMinSize((-1, 60))
+        self._daily_detail.SetMinSize(dip_size(self._daily_detail, -1, 60))
         root.Add(self._daily_detail, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         # -- status + close --

@@ -13,6 +13,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 
 @dataclass(slots=True)
@@ -57,11 +58,15 @@ class FeedCredentialsDialog:
         grid = wx.FlexGridSizer(cols=2, gap=(6, 8))
         grid.AddGrowableCol(1, 1)
         grid.Add(wx.StaticText(self.dialog, label="&Username:"), 0, wx.ALIGN_CENTER_VERTICAL)
-        self._username_ctrl = wx.TextCtrl(self.dialog, value=username, size=(280, -1))
+        self._username_ctrl = wx.TextCtrl(
+            self.dialog, value=username, size=dip_size(self.dialog, 280, -1)
+        )
         self._username_ctrl.SetName("The username this feed requires")
         grid.Add(self._username_ctrl, 1, wx.EXPAND)
         grid.Add(wx.StaticText(self.dialog, label="&Password:"), 0, wx.ALIGN_CENTER_VERTICAL)
-        self._password_ctrl = wx.TextCtrl(self.dialog, style=wx.TE_PASSWORD, size=(280, -1))
+        self._password_ctrl = wx.TextCtrl(
+            self.dialog, style=wx.TE_PASSWORD, size=dip_size(self.dialog, 280, -1)
+        )
         self._password_ctrl.SetName("The password this feed requires")
         grid.Add(self._password_ctrl, 1, wx.EXPAND)
         root.Add(grid, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)

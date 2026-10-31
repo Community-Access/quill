@@ -19,6 +19,7 @@ from quill.core.abbreviations import (
     quick_insert_order,
 )
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip, dip_size
 from quill.ui.spoken_name import set_spoken_name
 
 
@@ -35,7 +36,7 @@ class QuickInsertDialog:
             title="Quick Insert",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize(wx.Size(520, 380))
+        self.dialog.SetMinSize(dip_size(self.dialog, 520, 380))
 
         root = wx.BoxSizer(wx.VERTICAL)
 
@@ -53,13 +54,13 @@ class QuickInsertDialog:
         )
         self._list.SetName("Abbreviations")
         set_spoken_name(self._list, "Abbreviations")
-        self._list.InsertColumn(0, "Abbreviation", width=130)
-        self._list.InsertColumn(1, "Expands to", width=290)
-        self._list.InsertColumn(2, "Category", width=90)
+        self._list.InsertColumn(0, "Abbreviation", width=dip(self._list, 130))
+        self._list.InsertColumn(1, "Expands to", width=dip(self._list, 290))
+        self._list.InsertColumn(2, "Category", width=dip(self._list, 90))
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         self._preview = wx.TextCtrl(
-            self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(-1, 70)
+            self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY, size=dip_size(self.dialog, -1, 70)
         )
         self._preview.SetName("Full expansion of the selected abbreviation")
         set_spoken_name(self._preview, "Full expansion of the selected abbreviation")

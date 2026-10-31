@@ -50,6 +50,7 @@ from quill.core.podcasts.models_filters import (
 )
 from quill.core.podcasts.subscriptions import PodcastLibrary
 from quill.ui.dialog_contract import show_message_box
+from quill.ui.dpi import dip_size
 
 #: The title's stable opening; the podcast's name follows it. Answered by
 #: prefix in ``core/podcasts/surface_help.py`` (GATE-CAST-HELP).
@@ -89,8 +90,8 @@ class EpisodeFiltersWindow:
         self._wx = wx
         self._announce = announce_cb or (lambda _m: None)
         self._panel: Any = None
-        self.frame = wx.Frame(parent, title=TITLE, size=(660, 760))
-        self.frame.SetMinSize((620, 620))
+        self.frame = wx.Frame(parent, title=TITLE, size=dip_size(parent, 660, 760))
+        self.frame.SetMinSize(dip_size(self.frame, 620, 620))
         self.load(
             library=library, show=show, playing=playing, suggestion=suggestion, on_saved=on_saved
         )
@@ -220,7 +221,7 @@ class EpisodeFiltersWindow:
             scope_sizer.Add(box, 0, wx.EXPAND | wx.ALL, 4)
             self._scope_boxes[scope] = box
         scope_panel.SetSizer(scope_sizer)
-        scope_panel.SetMinSize((-1, 180))
+        scope_panel.SetMinSize(dip_size(scope_panel, -1, 180))
         root.Add(scope_panel, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         preview_row = wx.BoxSizer(wx.HORIZONTAL)

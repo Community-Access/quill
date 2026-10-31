@@ -28,6 +28,7 @@ from quill.core.verbosity.parser import render_template, validate
 from quill.core.verbosity.preview import BUILTIN_SCENARIOS
 from quill.core.verbosity.verbs import VerbSpec
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 __all__ = ["VerbosityTokenEditorDialog"]
 
@@ -52,7 +53,7 @@ class VerbosityTokenEditorDialog:
             title=f"Edit announcement — {verb.human_name}",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize(wx.Size(560, 420))
+        self.dialog.SetMinSize(dip_size(self.dialog, 560, 420))
         root = wx.BoxSizer(wx.VERTICAL)
 
         self._view = wx.RadioBox(
@@ -68,7 +69,7 @@ class VerbosityTokenEditorDialog:
         self._template = wx.TextCtrl(self.dialog, value=template, style=wx.TE_MULTILINE)
         self._template.SetName("Announcement template")
         self._template.SetHint("e.g. Line {line} of {total}")
-        self._template.SetMinSize(wx.Size(-1, 70))
+        self._template.SetMinSize(dip_size(self._template, -1, 70))
         root.Add(self._template, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 4)
 
         root.Add(wx.StaticText(self.dialog, label="Avai&lable tokens:"), 0, wx.LEFT | wx.TOP, 8)
@@ -76,7 +77,7 @@ class VerbosityTokenEditorDialog:
         self._tokens.SetName("Available tokens")
         for spec in verb.supported_tokens:
             self._tokens.Append(f"{{{spec.name}}} — {spec.description}")
-        self._tokens.SetMinSize(wx.Size(-1, 90))
+        self._tokens.SetMinSize(dip_size(self._tokens, -1, 90))
         root.Add(self._tokens, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 4)
 
         root.Add(wx.StaticText(self.dialog, label="&Review:"), 0, wx.LEFT | wx.TOP, 8)
@@ -84,7 +85,7 @@ class VerbosityTokenEditorDialog:
             self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
         self._review.SetName("Validation and preview")
-        self._review.SetMinSize(wx.Size(-1, 80))
+        self._review.SetMinSize(dip_size(self._review, -1, 80))
         root.Add(self._review, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 4)
 
         btns = wx.BoxSizer(wx.HORIZONTAL)

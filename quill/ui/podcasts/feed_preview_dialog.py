@@ -23,6 +23,7 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
+from quill.ui.dpi import dip_size
 
 __all__ = ["FeedPreviewDialog"]
 
@@ -54,7 +55,7 @@ class FeedPreviewDialog:
             title=f"Preview -- {title}",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize((560, 520))
+        self.dialog.SetMinSize(dip_size(self.dialog, 560, 520))
         root = wx.BoxSizer(wx.VERTICAL)
 
         publisher = str(getattr(feed, "author", "") or getattr(feed, "publisher", "") or "")

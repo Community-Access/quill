@@ -20,6 +20,7 @@ from quill.core.studio_capture_ai import (
 )
 from quill.stability.task_manager import UiLifetimeToken
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button, set_accessible_name
+from quill.ui.dpi import dip_size
 
 
 class ScreenshotChatDialog(wx.Dialog):
@@ -27,7 +28,7 @@ class ScreenshotChatDialog(wx.Dialog):
         super().__init__(
             host.frame,
             title="Screenshot Inspector",
-            size=(850, 720),
+            size=dip_size(host.frame, 850, 720),
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
         self.host = host
@@ -64,7 +65,7 @@ class ScreenshotChatDialog(wx.Dialog):
             details.GetPane(),
             value=evidence.summary(),
             style=wx.TE_MULTILINE | wx.TE_READONLY,
-            size=(-1, 130),
+            size=dip_size(None, -1, 130),
         )
         set_accessible_name(details_text, "File checks and source details")
         details_text.SetHelpText(
@@ -85,7 +86,7 @@ class ScreenshotChatDialog(wx.Dialog):
         )
         outer.Add(self.style, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
         self._field_label(outer, "Editable &prompt instructions")
-        self.prompt = wx.TextCtrl(panel, style=wx.TE_MULTILINE, size=(-1, 90))
+        self.prompt = wx.TextCtrl(panel, style=wx.TE_MULTILINE, size=dip_size(panel, -1, 90))
         set_accessible_name(self.prompt, "Editable prompt instructions")
         self.prompt.SetHelpText(
             "Edit or extend the selected prompt before asking AI. "
@@ -95,7 +96,9 @@ class ScreenshotChatDialog(wx.Dialog):
         self._reload_prompts(self.preferences.get("prompt_id", "screen-overview"))
         self.style.Bind(wx.EVT_CHOICE, self._choose_prompt)
         self._field_label(outer, "Your &question or additional instructions")
-        self.question = wx.TextCtrl(panel, value=question, style=wx.TE_MULTILINE, size=(-1, 55))
+        self.question = wx.TextCtrl(
+            panel, value=question, style=wx.TE_MULTILINE, size=dip_size(panel, -1, 55)
+        )
         set_accessible_name(self.question, "Your question or additional instructions")
         self.question.SetHelpText(
             "Ask about this exact screenshot. Follow-ups include the prior "

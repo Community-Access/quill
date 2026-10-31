@@ -15,6 +15,7 @@ from quill.core.quillins.loader import extensions_root, set_enabled
 from quill.core.quillins.model import MENU_PARENTS
 from quill.core.quillins.validation import validate_manifest
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 _ALL_MENU_PARENTS: list[str] = list(MENU_PARENTS)
 _QUILLINS_WIZARD_COMMAND = "tools.quillin_wizard"
@@ -182,7 +183,7 @@ def open_quillin_wizard(
 
     id_box.Add(grid, 0, wx.ALL | wx.EXPAND, 8)
     id_box.Add(wx.StaticText(scrolled, label="&Description"), 0, wx.LEFT | wx.RIGHT, 8)
-    desc_ctrl = wx.TextCtrl(scrolled, style=wx.TE_MULTILINE, size=(-1, 56))
+    desc_ctrl = wx.TextCtrl(scrolled, style=wx.TE_MULTILINE, size=dip_size(scrolled, -1, 56))
     desc_ctrl.SetName("Description")
     id_box.Add(desc_ctrl, 0, wx.ALL | wx.EXPAND, 8)
     body.Add(id_box, 0, wx.ALL | wx.EXPAND, 8)
@@ -192,7 +193,7 @@ def open_quillin_wizard(
     cmd_box = wx.StaticBoxSizer(wx.StaticBox(scrolled, label="Commands"), wx.VERTICAL)
 
     cmd_box.Add(wx.StaticText(scrolled, label="Commands &list:"), 0, wx.LEFT | wx.TOP, 8)
-    chooser = wx.ListBox(scrolled, choices=["(untitled 1)"], size=(-1, 76))
+    chooser = wx.ListBox(scrolled, choices=["(untitled 1)"], size=dip_size(scrolled, -1, 76))
     chooser.SetName("Commands list")
     chooser.SetSelection(0)
     cmd_box.Add(chooser, 0, wx.ALL | wx.EXPAND, 8)
@@ -235,7 +236,7 @@ def open_quillin_wizard(
         wx.LEFT | wx.RIGHT,
         8,
     )
-    snippet_ctrl = wx.TextCtrl(scrolled, style=wx.TE_MULTILINE, size=(-1, 70))
+    snippet_ctrl = wx.TextCtrl(scrolled, style=wx.TE_MULTILINE, size=dip_size(scrolled, -1, 70))
     snippet_ctrl.SetName("Snippet body")
     detail_box.Add(snippet_ctrl, 0, wx.ALL | wx.EXPAND, 8)
 
@@ -246,7 +247,7 @@ def open_quillin_wizard(
         8,
     )
     menu_chooser = wx.CheckListBox(
-        scrolled, choices=_ALL_MENU_PARENTS, size=(-1, 110)
+        scrolled, choices=_ALL_MENU_PARENTS, size=dip_size(scrolled, -1, 110)
     )  # A11Y-SR-1-OK: Quillin menu parent picker; convert to CheckBox list in follow-up
     menu_chooser.SetName("Parent menus")
     detail_box.Add(menu_chooser, 0, wx.ALL | wx.EXPAND, 8)
@@ -283,7 +284,7 @@ def open_quillin_wizard(
     preview_ctrl = wx.TextCtrl(
         scrolled,
         style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
-        size=(-1, 120),
+        size=dip_size(scrolled, -1, 120),
     )
     preview_ctrl.SetName("JSON preview")
     body.Add(preview_ctrl, 0, wx.ALL | wx.EXPAND, 8)
@@ -306,7 +307,7 @@ def open_quillin_wizard(
     outer.Add(action_row, 0, wx.ALL | wx.EXPAND, 8)
 
     dialog.SetSizer(outer)
-    dialog.SetSize((740, 720))
+    dialog.SetSize(dip_size(dialog, 740, 720))
     if hasattr(dialog, "CentreOnParent"):
         dialog.CentreOnParent()
 

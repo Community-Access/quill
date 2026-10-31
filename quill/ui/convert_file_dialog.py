@@ -28,6 +28,7 @@ import wx
 from quill.core import convert_formats
 from quill.core.i18n import _
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.dpi import dip_size
 
 _log = logging.getLogger(__name__)
 
@@ -77,7 +78,7 @@ class ConvertFileDialog:
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
         self.dialog.SetName(_("Convert File — choose a source, format, and output folder"))
-        self.dialog.SetSize((760, 420))
+        self.dialog.SetSize(dip_size(self.dialog, 760, 420))
 
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(

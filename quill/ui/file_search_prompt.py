@@ -17,6 +17,7 @@ from typing import Any
 
 from quill.core.search import SearchOptions
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 __all__ = ["FileSearchRequest", "prompt_file_search"]
 
@@ -56,7 +57,7 @@ def prompt_file_search(
     wx = wx_module
 
     dialog_label = "Replace Across Files" if replace else "Search in Files"
-    dialog = wx.Dialog(parent, title=dialog_label, size=(700, 0))
+    dialog = wx.Dialog(parent, title=dialog_label, size=dip_size(parent, 700, 0))
     root = wx.BoxSizer(wx.VERTICAL)
     form = wx.FlexGridSizer(0, 3, 8, 8)
     form.AddGrowableCol(1, 1)

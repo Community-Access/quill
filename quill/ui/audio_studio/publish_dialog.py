@@ -37,6 +37,7 @@ from quill.core.publish.destinations import (
 from quill.core.speech.book_file import BookFile
 from quill.ui.audio_studio.pages_base import set_accessible_name
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
+from quill.ui.dpi import dip_size
 
 _log = logging.getLogger(__name__)
 
@@ -287,7 +288,7 @@ class PublishDialog(wx.Dialog):
         root.Add(btn_row, 0, wx.EXPAND | wx.ALL, 10)
 
         apply_modal_ids(self, cancel_id=wx.ID_CANCEL)
-        self.SetMinSize(wx.Size(640, 560))
+        self.SetMinSize(dip_size(self, 640, 560))
         self.SetSizer(root)
         self.Fit()
         self.CentreOnParent()

@@ -48,6 +48,7 @@ from quill.core.expansion.settings import (
 from quill.core.net import configure_ssl_trust
 from quill.ui import app_sounds
 from quill.ui.app_shell import AppShellFrame
+from quill.ui.dpi import dip, dip_size
 from quill.ui.inkwell_expansion import InkwellExpansionMixin
 
 _TITLE = "Quill Inkwell"
@@ -63,7 +64,9 @@ class QuillInkwellFrame(
     """The manager window for a system-wide expander that runs in the tray."""
 
     def __init__(self, *, safe_mode: bool = False) -> None:
-        self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(560, 420), app_id="inkwell")
+        self._init_app_shell(
+            _TITLE, safe_mode=safe_mode, size=dip_size(None, 560, 420), app_id="inkwell"
+        )
         from quill.core.paths import app_data_dir
         from quill.ui.window_menu import WindowManager
 
@@ -309,9 +312,9 @@ class QuillInkwellFrame(
             "the Manage Abbreviations button (Ctrl+M); this list follows the "
             "same library QUILL's editor expands from."
         )
-        self._list.InsertColumn(0, "Abbreviation", width=120)
-        self._list.InsertColumn(1, "Expands to", width=290)
-        self._list.InsertColumn(2, "Category", width=100)
+        self._list.InsertColumn(0, "Abbreviation", width=dip(self._list, 120))
+        self._list.InsertColumn(1, "Expands to", width=dip(self._list, 290))
+        self._list.InsertColumn(2, "Category", width=dip(self._list, 100))
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
@@ -597,6 +600,9 @@ def main() -> int:
     from quill.stability.logging_config import configure_logging
 
     log_listener = configure_logging(app_data_dir() / "logs")
+    from quill.platform.windows.dpi_awareness import enable_dpi_awareness
+
+    enable_dpi_awareness()  # before the first window, or Windows stretches it (#1702)
     app = wx.App()
     frame = QuillInkwellFrame(safe_mode=safe_mode)
     frame._log_listener = log_listener

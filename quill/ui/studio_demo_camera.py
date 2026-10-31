@@ -15,6 +15,7 @@ import wx
 
 from quill.core.demo_camera import Framing, FramingAnnouncer
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 
 # a11y: needs manual verification -- screen-reader/braille announcements,
 # keyboard focus order, high contrast, and layout at increased Windows scaling.
@@ -47,7 +48,9 @@ class CameraCheckDialog(wx.Dialog):
         intro.Wrap(460)
         layout.Add(intro, 0, wx.ALL, 10)
         layout.Add(wx.StaticText(self, label="&Framing"), 0, wx.LEFT, 10)
-        self.advice = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(460, 70))
+        self.advice = wx.TextCtrl(
+            self, style=wx.TE_MULTILINE | wx.TE_READONLY, size=dip_size(self, 460, 70)
+        )
         set_accessible_name(self.advice, "Framing")
         self.advice.SetHelpText(
             "The latest framing advice: no face, face in view and centred, or which way to "

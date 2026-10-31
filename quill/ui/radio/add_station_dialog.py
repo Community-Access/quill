@@ -26,6 +26,7 @@ from quill.core.radio.live365 import normalize_live365
 from quill.core.radio.models import RadioStation
 from quill.core.radio.youtube import canonical_youtube_url, is_youtube_url
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 
 class AddStationDialog:
@@ -67,7 +68,7 @@ class AddStationDialog:
         self.dialog = wx.Dialog(
             parent, title="Add Custom Station", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize((520, 340))
+        self.dialog.SetMinSize(dip_size(self.dialog, 520, 340))
         root = wx.BoxSizer(wx.VERTICAL)
 
         grid = wx.FlexGridSizer(cols=2, gap=(6, 8))

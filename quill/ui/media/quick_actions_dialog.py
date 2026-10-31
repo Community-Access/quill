@@ -21,6 +21,7 @@ from collections.abc import Callable, Sequence
 
 from quill.core.quick_actions import DIRECT_KEY_COUNT, QuickAction, QuickActionOrders
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 
 def position_text(index: int, count: int, direct_keys: bool = True) -> str:
@@ -74,7 +75,7 @@ class QuickActionsDialog:
         self.dialog = wx.Dialog(
             parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize((560, 520))
+        self.dialog.SetMinSize(dip_size(self.dialog, 560, 520))
         root = wx.BoxSizer(wx.VERTICAL)
 
         intro = wx.StaticText(

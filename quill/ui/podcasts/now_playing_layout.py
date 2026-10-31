@@ -14,6 +14,7 @@ from typing import Any
 
 import wx
 
+from quill.ui.dpi import dip_size
 from quill.ui.notes_reader import NotesReader
 from quill.ui.slider_keys import bind_up_means_more
 
@@ -32,7 +33,7 @@ def _button(panel: Any, label: str, help_text: str) -> Any:
 
 def build_controls(self: Any, host: Any) -> None:
     """Create every widget on *self*, the :class:`NowPlayingWindow`."""
-    self.frame = wx.Frame(host.frame, title=TITLE, size=(760, 720))
+    self.frame = wx.Frame(host.frame, title=TITLE, size=dip_size(host.frame, 760, 720))
     panel = wx.Panel(self.frame)
     self.panel = panel
     root = wx.BoxSizer(wx.VERTICAL)
@@ -130,7 +131,7 @@ def build_controls(self: Any, host: Any) -> None:
         ("Status", 90),
     )):
         self._chapters.InsertColumn(index, name, width=width)
-    self._chapters.SetMinSize((-1, 120))
+    self._chapters.SetMinSize(dip_size(self._chapters, -1, 120))
     self._chapters.SetHelpText(
         "This episode's chapters. Enter jumps to the selected one; the playing "
         "chapter says so in its Status column and the list follows playback "
@@ -155,7 +156,7 @@ def build_controls(self: Any, host: Any) -> None:
     # -- your note --------------------------------------------------------
     self._note_caption = wx.StaticText(panel, label="&Your note:")
     self._note = wx.TextCtrl(panel, style=wx.TE_MULTILINE)
-    self._note.SetMinSize((-1, 60))
+    self._note.SetMinSize(dip_size(self._note, -1, 60))
     self._note.SetHelpText(
         "A note of your own about this episode, kept with your episode notes. "
         "Saved when you leave the field; empty removes it."

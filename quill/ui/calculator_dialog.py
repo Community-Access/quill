@@ -25,6 +25,7 @@ from quill.core.calc import data_ops
 from quill.core.calc.data_ops import AGGREGATES, DataError
 from quill.core.calc.evaluator import CalculatorError, evaluate, format_result
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 
 _SCOPES = ("All numbers", "Down each column", "Across each row", "Full summary")
 
@@ -65,7 +66,7 @@ class CalculatorDialog:
         )
         self._input = wx.TextCtrl(self.dialog, style=wx.TE_MULTILINE)
         set_accessible_name(self._input, "Calculation or data to work on")
-        self._input.SetMinSize((-1, 90))
+        self._input.SetMinSize(dip_size(self._input, -1, 90))
         self._input.SetValue(initial_text)
         root.Add(self._input, 1, wx.EXPAND | wx.ALL, 10)
 
@@ -115,7 +116,7 @@ class CalculatorDialog:
             self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP
         )
         set_accessible_name(self._result, "Result")
-        self._result.SetMinSize((-1, 80))
+        self._result.SetMinSize(dip_size(self._result, -1, 80))
         root.Add(self._result, 1, wx.EXPAND | wx.ALL, 10)
 
         # -- buttons --
@@ -132,7 +133,7 @@ class CalculatorDialog:
 
         self.dialog.SetSizer(root)
         root.Fit(self.dialog)
-        self.dialog.SetMinSize((560, 460))
+        self.dialog.SetMinSize(dip_size(self.dialog, 560, 460))
 
         self._calc_btn.Bind(wx.EVT_BUTTON, lambda _e: self._calculate())
         self._apply_btn.Bind(wx.EVT_BUTTON, lambda _e: self._apply_data_op())

@@ -35,6 +35,7 @@ from quill.core.lexical import (
     render_lookup,
 )
 from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids, dialog_alive
+from quill.ui.dpi import dip_size
 from quill.ui.update_download import thread_submit
 
 __all__ = ["TITLE", "ONLINE_LABEL", "show_lookup"]
@@ -72,7 +73,7 @@ def show_lookup(
 
     caption = wx.StaticText(dialog, label="&Result:")  # before the field: its name on wxMSW
     field = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP)
-    field.SetMinSize((560, 260))
+    field.SetMinSize(dip_size(field, 560, 260))
     field.SetHelpText(
         "What the dictionary and thesaurus know about the word: definitions and "
         "an encyclopedia summary when online sources are on, then synonyms, "
@@ -93,7 +94,7 @@ def show_lookup(
 
     list_caption = wx.StaticText(dialog, label="&Words you can use:")
     words = wx.ListBox(dialog, style=wx.LB_SINGLE)
-    words.SetMinSize((560, 140))
+    words.SetMinSize(dip_size(words, 560, 140))
     words.SetHelpText(
         "Synonyms, opposites, related words and rhymes, each saying which it is. "
         "Enter, or Replace Word, puts the selected one in place of the word you "

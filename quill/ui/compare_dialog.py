@@ -13,6 +13,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from quill.ui.dpi import dip_size
+
 if TYPE_CHECKING:
     from quill.core.compare_service import CompareService, DifferenceGroup
 
@@ -36,7 +38,7 @@ class CompareDialog:
         self.dialog = wx.Dialog(
             parent,
             title="Compare",
-            size=(820, 560),
+            size=dip_size(parent, 820, 560),
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
         panel = wx.Panel(self.dialog)

@@ -21,6 +21,7 @@ from quill.core.podcasts.episode_notes import (
     format_timestamp as _format_timestamp,
 )
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 
 class EpisodeNotesDialog:
@@ -60,7 +61,7 @@ class EpisodeNotesDialog:
             title=f"My Notes -- {episode_title}",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize((480, 420))
+        self.dialog.SetMinSize(dip_size(self.dialog, 480, 420))
         root = wx.BoxSizer(wx.VERTICAL)
 
         root.Add(wx.StaticText(self.dialog, label="&Notes"), 0, wx.LEFT | wx.TOP, 10)

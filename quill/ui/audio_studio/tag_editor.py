@@ -53,6 +53,7 @@ from quill.core.speech.audio_tags import (
 )
 from quill.ui.audio_studio.pages_base import set_accessible_name
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
+from quill.ui.dpi import dip_size
 
 #: The longest edge of the cover thumbnail, in pixels.
 _THUMBNAIL_PX = 160
@@ -102,7 +103,7 @@ class TagPagePanel(wx.Panel):
         grid.Add(wx.StaticText(self, label=tag_field.label), 0, wx.ALIGN_CENTER_VERTICAL)
         if tag_field.kind == "pair":
             row = wx.BoxSizer(wx.HORIZONTAL)
-            number = wx.TextCtrl(self, size=wx.Size(70, -1))
+            number = wx.TextCtrl(self, size=dip_size(self, 70, -1))
             number.SetHelpText(tag_field.help)
             set_accessible_name(number, f"{_plain(tag_field.label)}, number")
             row.Add(number, 0, wx.RIGHT, 6)
@@ -112,7 +113,7 @@ class TagPagePanel(wx.Panel):
                 wx.ALIGN_CENTER_VERTICAL | wx.RIGHT,
                 6,
             )
-            total = wx.TextCtrl(self, size=wx.Size(70, -1))
+            total = wx.TextCtrl(self, size=dip_size(self, 70, -1))
             total.SetHelpText(tag_field.help)
             set_accessible_name(total, f"{_plain(tag_field.label)}, total")
             row.Add(total, 0)
@@ -398,7 +399,7 @@ class TagEditorDialog(wx.Dialog):
             cancel_label=str(_("Cancel")),
         )
         self.SetSizer(root)
-        self.SetMinSize(wx.Size(640, 560))
+        self.SetMinSize(dip_size(self, 640, 560))
         self.Fit()
         self.CentreOnParent()
 

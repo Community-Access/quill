@@ -5,6 +5,7 @@ from collections.abc import Callable
 import wx
 
 from quill.core.a11y import set_accessible_name
+from quill.ui.dpi import dip_size
 
 
 def ensure_library_window(
@@ -50,7 +51,7 @@ def ensure_library_window(
     root.Add(tree, 1, wx.EXPAND | wx.ALL, 8)
 
     panel.SetSizer(root)
-    frame.SetSize((720, 520))
+    frame.SetSize(dip_size(frame, 720, 520))
 
     reload_tree(tree)
 

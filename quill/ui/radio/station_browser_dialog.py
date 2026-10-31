@@ -46,6 +46,7 @@ from quill.ui.dialog_contract import (
     bind_close_button,
     readable_min_size,
 )
+from quill.ui.dpi import dip_size
 from quill.ui.media.list_columns_view import build_columns
 from quill.ui.radio import library_search, lineups_commands, transport_keys
 from quill.ui.radio.results_view import ALL_SOURCES as _ALL_SOURCES
@@ -285,8 +286,8 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
             self._surface = self._win
         self.dialog = self._win  # back-compat alias for callers that reference it
         if not self._embedded:
-            self._win.SetMinSize((700, 520))
-            self._win.SetSize((820, 600))
+            self._win.SetMinSize(dip_size(self._win, 700, 520))
+            self._win.SetSize(dip_size(self._win, 820, 600))
         root = wx.BoxSizer(wx.VERTICAL)
 
         search_box = wx.StaticBoxSizer(wx.HORIZONTAL, self._surface, "Search Stations")

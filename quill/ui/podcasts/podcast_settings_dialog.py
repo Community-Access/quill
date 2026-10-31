@@ -13,6 +13,7 @@ from quill.core.podcasts import settings_help, volume_boost
 from quill.core.podcasts.models import SPEED_MAX, SPEED_MIN, PodcastSettings
 from quill.core.podcasts.speed_scale import SPEED_STEP
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 from quill.ui.podcasts.podcast_settings_choices import (
     _AUTO_DOWNLOAD_LABELS,
     _AUTO_DOWNLOAD_VALUES,
@@ -57,7 +58,7 @@ class PodcastSettingsDialog:
         # 1.1.0 added the acquisition, storage, and session rows; the dialog
         # is sized to its content (Fit below) with a floor, rather than a
         # fixed height that would clip the new controls off the bottom.
-        self.dialog.SetMinSize((620, 640))
+        self.dialog.SetMinSize(dip_size(self.dialog, 620, 640))
         root = wx.BoxSizer(wx.VERTICAL)
 
         grid = wx.FlexGridSizer(cols=2, gap=(6, 8))

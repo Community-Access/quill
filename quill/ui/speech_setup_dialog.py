@@ -15,6 +15,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from quill.ui.dialog_contract import apply_modal_ids, focus_primary_control
+from quill.ui.dpi import dip_size
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -195,8 +196,8 @@ class SpeechSetupDialog:
                 title="Manage Speech Models",
                 style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
             )
-            self.dialog.SetMinSize(wx.Size(560, 460))
-            self.dialog.SetSize(wx.Size(700, 540))
+            self.dialog.SetMinSize(dip_size(self.dialog, 560, 460))
+            self.dialog.SetSize(dip_size(self.dialog, 700, 540))
             self._root = self.dialog
             self._embed_mode = False
 
@@ -302,7 +303,7 @@ class SpeechSetupDialog:
         )
         self._model_list = wx.ListBox(parent, style=wx.LB_SINGLE)
         self._model_list.SetName("Models")
-        self._model_list.SetMinSize(wx.Size(-1, 140))
+        self._model_list.SetMinSize(dip_size(self._model_list, -1, 140))
         self._populate_model_list()
         root.Add(self._model_list, 1, wx.EXPAND | wx.ALL, 10)
 
