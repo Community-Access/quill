@@ -205,7 +205,10 @@ class NotesReader:
         link_font = wx.Font(base)
         link_font.SetUnderlined(True)
         link_attr.SetFont(link_font)
-        link_attr.SetTextColour(wx.Colour(0, 0, 238))
+        # The system link colour, which a high contrast theme sets; a fixed
+        # #0000EE was 2.2:1 on a dark theme's black. The underline stays, so
+        # a link never depends on colour alone.
+        link_attr.SetTextColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_HOTLIGHT))
         for span in (*self._doc.links, *self._doc.timestamps):
             self.field.SetStyle(span.start, span.end, link_attr)
 
