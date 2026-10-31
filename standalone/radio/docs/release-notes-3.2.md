@@ -4,15 +4,14 @@ Version 3.2.0 (build 5), the beta for testers, October 2026. 3.2.0 was
 prepared on 2026-10-03 and is not yet published; the last published version
 is 3.0.4.
 
-## Unreleased changes after the testing build
+## Since testing build 5: SomaFM and the shared runtime
 
 The shared Radio code retires the built-in SomaFM source in response to its
 published third-party-client terms. Known catalogue entries and direct
 playback and recording paths are filtered or blocked. Indirect paths, existing
 user data and previously published packages still need review; this is not a
 new public release. The shared Windows Media runtime also moves to PyWinRT
-4.0.3 and the Windows SDK 10.0.28000.2705 projections, with device objects
-and event handlers released cleanly at shutdown.
+4.0.3 and the Windows SDK 10.0.28000.2705 projections.
 
 Installed editions use the shared QuillVille Runtime, which currently includes
 PyMuPDF 1.28.2 under AGPL-3.0. Radio does not itself expose GLOW, the feature
@@ -47,6 +46,25 @@ website in your own copy, and the fixes under "Updates and installing".
 Quill Radio now closes cleanly after Windows audio-device enumeration or a
 device switch. This fixes a process-exit crash; choosing an output device and
 playing through Windows Media work as before.
+
+### Later testing update (2026-10-29 to 2026-10-31)
+
+Text stays sharp at 125, 150 and 200 percent display scaling and on monitors
+with different scaling, and windows and list columns keep their
+proportions. Controls that had no label, such as Now playing, the station
+details in Browse, the calendar's schedule and the sleep timer's custom
+minutes, now have a spoken name, so your screen reader says what they are
+instead of just "edit" or "list".
+
+**Bring your Victor Stream stations across.** Import Stations from Playlist
+(Ctrl+I) reads the XSPF list a HumanWare Victor Stream or Victor Trek
+exports, even one whose name ends in `.xspf.txt` or that has a damaged line,
+and each station's website comes with it. Radio Reading Services has
+fifteen more services from that list, and the one listed as WUFT is now
+called Minnesota Radio Talking Book, which is what it always was.
+
+**Your ChatGPT plan stays signed in.** A brief problem on OpenAI's side no
+longer signs you out of Ask QUILL Radio.
 
 ### New stations and networks
 

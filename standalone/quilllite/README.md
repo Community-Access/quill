@@ -10,8 +10,9 @@ replacement: they install side by side and neither touches the other's settings.
 
 Windows · MIT · part of the QuillVille family
 
-Version 1.2.0 (build 5), the beta for testers, October 2026. 1.2.0 is not yet
-published; the last published version is 1.1.2.
+Version 2.0.0 (build 1), the beta for testers, October 2026. 2.0.0 is not yet
+published; the last published version is 1.1.2. It was prepared as 1.2.0
+through six testing builds and renumbered 2.0.0 on 2026-10-31.
 
 ---
 
@@ -34,7 +35,7 @@ published; the last published version is 1.1.2.
   undo, save, close — every one of them replaceable with a sound of your own,
   and **Alt+Shift+M** silences the lot.
 - **Word documents and PDFs.** A `.docx` opens as rich text and saves as a
-  real Word document; a PDF opens as its text, page by page (new in 1.2).
+  real Word document; a PDF opens as its text, page by page (new in 2.0).
 - **Sixteen guided lessons**, inside the app on **Ctrl+Alt+F1**, each step saying
   what to press, why, and what you should hear when it worked.
 - **Free AI help**, off until you switch it on *and* accept the agreement:
@@ -50,7 +51,7 @@ one-page version, written for somebody who has never opened it.
 Full detail is in [the user guide](docs/userguide.md); the reasoning is in
 [the product requirements](docs/prd.md); what changed and why is in
 [the changelog](docs/CHANGELOG.md) and
-[the release notes](docs/release-notes-1.2.md).
+[the release notes](docs/release-notes-2.0.md).
 
 ---
 

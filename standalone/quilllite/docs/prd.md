@@ -1,13 +1,14 @@
 # QUILL Lite — Product Requirements
 
-**Version 1.2.0 (build 6) · Windows · MIT · part of the QuillVille family**
+**Version 2.0.0 (build 1) · Windows · MIT · part of the QuillVille family**
 
-Status, 2026-10-26: 1.2.0 is in beta for testers and not yet published; the
-last published version is 1.1.2 (1.0.0 was first released on 2026-09-25).
-Everything in the changelog's 1.2.0 section, through build 6, is built and
+Status, 2026-10-31: 2.0.0 (prepared as 1.2.0 through six testing builds) is
+in beta for testers and not yet published; the last published version is
+1.1.2 (1.0.0 was first released on 2026-09-25).
+Everything in the changelog's 2.0.0 section is built and
 documented.
 
-Unreleased runtime update: the shared Windows OCR projections move to PyWinRT
+Runtime update in 2.0.0: the shared Windows OCR projections move to PyWinRT
 4.0.3 and Windows SDK 10.0.28000.2705. Existing OCR behavior remains the
 requirement; this dependency change is not a new public release.
 

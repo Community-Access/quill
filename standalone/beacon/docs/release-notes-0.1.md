@@ -17,6 +17,12 @@ This is the first public release, and the number says so. Quill Beacon 0.1 is
 early. The parts that are here work, and the parts that are not are listed
 plainly under "Known limitations" below.
 
+## Sharp at any display scaling
+
+QuillBeacon handles each monitor's scaling itself, so text stays sharp at 125, 150
+and 200 percent and on monitors with different scaling, and windows and list
+columns keep their proportions.
+
 ## Downloads
 
 Two downloads. Choose one. Both run on Windows 10 and Windows 11.

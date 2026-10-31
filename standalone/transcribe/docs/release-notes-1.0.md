@@ -3,7 +3,7 @@
 Version 1.0.0 (build 3), planned for November 1, 2026; the packages have not
 yet been published.
 
-## Unreleased distribution note
+## A note on the shared runtime's licence
 
 Installed Transcribe uses the shared QuillVille Runtime, which currently
 includes PyMuPDF 1.28.2 under AGPL-3.0 through GLOW. Transcribe does not
@@ -31,6 +31,10 @@ QuillVille apps are installed" now opens the app you pick through its own
 launcher, with all of its settings. To replace an old pin, unpin it and pin
 QUILL Transcribe again after you update. Reported on QUILLVille for QUILL Lite; every
 QuillVille app has the fix.
+
+**Sharp at any display scaling.** QUILL Transcribe handles each monitor's
+scaling itself, so its windows stay sharp at 125, 150 and 200 percent and on
+monitors with different scaling.
 
 ## New in this release
 

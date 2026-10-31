@@ -2,7 +2,7 @@
 
 Version 2.0.0 (QUILL Studio; see CHANGELOG.md)
 
-Unreleased runtime update: Windows OCR and Media use the shared PyWinRT 4.0.3
+Runtime update in 2.0.0: Windows OCR and Media use the shared PyWinRT 4.0.3
 runtime and Windows SDK 10.0.28000.2705 projections; Windows Media releases
 device references and event handlers on shutdown. DECtalk is not distributed
 or downloaded by QUILL and must be installed separately. Broader production,

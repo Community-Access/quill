@@ -253,20 +253,33 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <code>quill</code> package, so a fix lands in both at once;
 <code>standalone/player</code> carries only the wrapper, launcher and
 docs.</p>
-<h2 id="unreleased">Unreleased</h2>
-<ul>
-<li><strong>Host-runtime licensing.</strong> Media Player has no
-separate installer. When its host uses the QuillVille Runtime, that
-runtime currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the
-shared GLOW dependency; the player does not itself expose GLOW.
-Release-specific source and legal review remain open.</li>
-</ul>
 <h2 id="100">1.0.0</h2>
 <p>Testing build: <strong>1.0.0 (build 2)</strong>. Quill Media Player
 has not been published yet: the other QuillVille apps do not list it in
 their QuillVille menus, and QUILL’s <strong>Tools &gt; Media &gt; Media
 Player</strong> row appears once it is released. Everything below is in
 the build.</p>
+<h3 id="since-build-2-2026-10-30-and-2026-10-31">Since build 2
+(2026-10-30 and 2026-10-31)</h3>
+<ul>
+<li><strong>Host-runtime licensing.</strong> Media Player has no
+separate installer. When its host uses the QuillVille Runtime, that
+runtime currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the
+shared GLOW dependency; the player does not itself expose GLOW.
+Release-specific source and legal review remain open.</li>
+<li><strong>Controls that had no label now have a spoken name</strong>
+(2026-10-30). JAWS, NVDA and Narrator used to announce them as a bare
+role, such as “edit” or “list”. Now playing, the Chapters tree and the
+Bookmarks list now say what they are.</li>
+<li><strong>Sharp text at any display scaling</strong> (2026-10-31).
+QUILL Media Player now handles each monitor’s scaling itself instead of
+letting Windows stretch it, so text stays sharp at 125, 150 and 200
+percent and on monitors with different scaling, and windows and list
+columns keep their proportions. Setting the environment variable
+<code>QUILL_DPI_UNAWARE</code> to <code>1</code> turns this off, for
+diagnosing a display problem (#1702). User guide: “Text looks blurry, or
+a window is the wrong size”.</li>
+</ul>
 <h3 id="opening-and-listening-to-books">Opening and listening to
 books</h3>
 <ul>

@@ -243,7 +243,125 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
-<h2 id="unreleased">Unreleased</h2>
+<h2 id="100">1.0.0</h2>
+<h3
+id="chatgpt-plan-sign-in-holds-through-a-brief-problem-2026-10-31">ChatGPT
+plan sign-in holds through a brief problem (2026-10-31)</h3>
+<ul>
+<li>In QUILL, QUILL Lite, Quill Radio and QUILL Cast, a temporary
+failure while renewing the ChatGPT plan sign-in (a 5xx, an empty body or
+an unknown error code) no longer clears the stored sign-in; only
+<code>invalid_grant</code>, <code>refresh_token_reused</code>,
+<code>refresh_token_expired</code> and <code>invalid_client</code>
+do.</li>
+<li>A rotated refresh token that cannot be saved is retried once and
+then reported, instead of being swallowed until the next renewal signed
+the person out.</li>
+<li>The plan’s model list keeps OpenAI’s order; the ordinary API list is
+still ranked. Open ChatGPT Usage goes to
+<code>https://chatgpt.com/settings/usage</code> (#1715).</li>
+</ul>
+<h3 id="quill-lites-next-version-is-200-2026-10-31">QUILL Lite’s next
+version is 2.0.0 (2026-10-31)</h3>
+<ul>
+<li>The QUILL Lite release prepared as 1.2.0, and tested through six
+builds under that number, is renumbered 2.0.0 (build 1). Its release
+notes are now
+<code>standalone/quilllite/docs/release-notes-2.0.md</code>, its What’s
+New <code>docs/release/whats-new/whats-new-quilllite-2.0.0.md</code>,
+and its sign-off sheet
+<code>docs/qa/signoffs/quilllite-2.0.0.md</code>.</li>
+</ul>
+<h3 id="sharp-text-at-any-display-scaling-in-every-app-2026-10-31">Sharp
+text at any display scaling, in every app (2026-10-31)</h3>
+<ul>
+<li>Windows used to stretch every QuillVille app at 150 and 200 percent
+display scaling, which blurred the text. QUILL, QUILL Lite, Radio, Cast,
+Player, Weather, Converter, Inkwell, Studio, Transcribe, Beacon and
+Social now declare per-monitor DPI awareness before their first window,
+so text stays sharp at 125, 150 and 200 percent and when a window moves
+to a monitor with different scaling (#1702).</li>
+<li>Every fixed window size, minimum size and list column width is now
+given in device-independent pixels and scaled for the monitor, so
+windows and columns keep their proportions instead of shrinking.</li>
+<li>Setting the environment variable <code>QUILL_DPI_UNAWARE</code> to
+<code>1</code> turns the declaration off, for diagnosing a display
+problem. User guide: “Text looks blurry, or a window is the wrong
+size”.</li>
+<li>A new gate (GATE-DPI) fails the build on an app that does not
+declare DPI awareness or on a new raw pixel size.</li>
+</ul>
+<h3
+id="keys-that-did-nothing-now-work-find-a-setting-works-2026-10-30">Keys
+that did nothing now work; Find a setting works (2026-10-30)</h3>
+<ul>
+<li>Ten commands had a key in the keymap and in the keyboard reference,
+but were registered without it, so pressing the key did nothing. They
+work now: Get Help from Support (<code>Ctrl+Alt+F2</code>), Duplicate
+Selection (<code>Ctrl+Alt+Q</code>), Toggle Case
+(<code>Ctrl+Alt+Shift+N</code>), Join Lines
+(<code>Ctrl+Alt+Shift+J</code>), Sort Lines Z to A
+(<code>Ctrl+Alt+Shift+S</code>), Normalize Whitespace
+(<code>Ctrl+Alt+Shift+T</code>), Toggle Overwrite Mode
+(<code>Ctrl+Alt+Shift+W</code>), Dictionary Status
+(<code>Alt+Shift+;</code>), Keymap Editor
+(<code>Ctrl+Alt+Shift+Space</code>) and Switch Feature Profile
+(<code>Alt+Shift+P</code>). A new test keeps the keymap and the
+registered commands in step (#1703).</li>
+<li><strong>Find a setting</strong> in Settings works. The Settings
+dialog never set its own layout, so the search box was never added and
+<code>Ctrl+F</code> did nothing. It also says how many settings match
+now, even with dialog entry and exit cues turned off.</li>
+<li><strong>High contrast keeps your theme.</strong> With the system
+theme and Windows high contrast on, QUILL used to force black on white
+with a yellow frame, which overrode a dark high contrast theme. It now
+uses the theme you picked.</li>
+<li>Simple Open’s error message keeps the system text colour instead of
+red (red was 3.5:1), and links in podcast show notes use the system link
+colour instead of a fixed blue that was 2.2:1 on a dark theme. Links
+stay underlined.</li>
+<li>The Open dialog is titled “Open document” rather than “Open text
+file”, since it opens Word, PDF, EPUB and more.</li>
+<li>Keyboard-only runs of the core tasks were added to the UIA test
+suite; they are what found the dead keys and the missing search
+box.</li>
+</ul>
+<h3
+id="screen-readers-say-what-unlabelled-controls-are-2026-10-30">Screen
+readers say what unlabelled controls are (2026-10-30)</h3>
+<ul>
+<li>Controls with no label in front of them used to be announced as a
+bare role, such as “edit” or “list”. Dozens of windows now give them a
+spoken name, on JAWS, NVDA and Narrator alike. In QUILL that includes
+the AI result, document question, grammar check and library windows, the
+AI and local AI setup wizards, Compare, Fill-in fields, the GitHub
+windows, Heading Organizer, Library, local Git, bookmarks, the Copy
+Tray, List Manager, Settings, the notebook, Notification Center,
+Optional Components, the command palette, Print Studio, Quick Insert,
+Reveal Codes, the setup wizard, Simple Open, Skill Library, the sleep
+timer, Sound Scheme, Sticky Notes, Sync Places, the vault, verbosity,
+Windows Dictation and Word view. Radio, Cast, Player, Weather, Beacon,
+Studio and QUILL Lite get the same fix; their changelogs name the
+windows.</li>
+<li>List rows still speak as rows, and F1 help is unchanged. #1693 stays
+open until a wxPython release makes the fallback unnecessary.</li>
+</ul>
+<h3 id="accessibility-framework-adopted-2026-10-28">Accessibility
+framework adopted (2026-10-28)</h3>
+<ul>
+<li>QUILL follows the Open Source Accessibility Framework.
+<code>docs/ACCESSIBILITY.md</code> says how to report an accessibility
+problem, how severity is judged, that every report is acknowledged
+within 5 business days, who owns the work, and how the people who report
+and fix problems are credited, always with their consent. A new
+accessibility issue form, labels and review workflows go with it, and a
+workflow enforces the report and credit rules.</li>
+<li>Reports and fixes from before the consent rule are credited by
+GitHub account under “Earlier accessibility contributions”, linked from
+<code>docs/CONTRIBUTING.md</code>.</li>
+<li>Five documents were fixed to have one top-level heading and no
+skipped heading levels.</li>
+</ul>
 <h3
 id="quill-studio-record-mix-broadcast-and-make-videos-2026-10-30">QUILL
 Studio: record, mix, broadcast and make videos (2026-10-30)</h3>
@@ -284,17 +402,51 @@ and QUILL Lite share the code, so both get both.</p>
 file names in every document. Checking <code>www.example.com</code> no
 longer stops on <code>www</code>, <code>example</code> and
 <code>com</code>. This covers checking as you type, the F7 review, next
-and previous misspelling, the misspelling list and the context
-menu.</li>
-<li>In Markdown it also skips code and link addresses; in web pages and
-XML it reads the text and the readable attributes (<code>alt</code>,
-<code>title</code>, <code>aria-label</code>, <code>placeholder</code>);
-in code it reads only strings and comments, and skips placeholders,
-escapes and identifiers inside them. The file’s extension picks the
-rule.</li>
+and previous misspelling, the misspelling list, the context menu and, in
+QUILL, browse mode.</li>
+<li>The file’s extension picks one of four rules, and the rule follows
+the document’s current name, so an unsaved document is read as writing
+and a Save As to a new extension changes the rule at the next check.
+<ul>
+<li><strong>Writing</strong>: plain text, an unsaved document, any
+extension not listed below, and <code>.log</code>, <code>.csv</code>,
+<code>.tsv</code>, <code>.diff</code> and <code>.patch</code>.</li>
+<li><strong>Markdown</strong> (<code>.md</code>, <code>.markdown</code>,
+<code>.mdown</code>, <code>.mkd</code>, <code>.mdx</code>): also skips
+inline code, fenced code blocks, link and image addresses, reference
+definitions and inline HTML tags. Link text and alt text are still
+checked.</li>
+<li><strong>Markup</strong> (<code>.html</code>, <code>.htm</code>,
+<code>.xhtml</code>, <code>.xml</code>, <code>.xsl</code>,
+<code>.xslt</code>, <code>.svg</code>, <code>.opml</code>,
+<code>.rss</code>, <code>.atom</code>): reads the text between tags and
+comments, and of the attributes only <code>alt</code>,
+<code>title</code>, <code>aria-label</code>,
+<code>aria-description</code> and <code>placeholder</code>.
+<code>&lt;script&gt;</code> and <code>&lt;style&gt;</code> are read as
+code.</li>
+<li><strong>Code</strong>: only strings and comments, in C, C++, C#,
+Java, Go, Rust, Swift, Objective-C, Kotlin, Scala, D, Pascal, Fortran,
+assembly, Python, Ruby, Perl, PHP, Lua, Tcl, R, Julia, Dart, Groovy,
+Visual Basic, VBScript, JavaScript, TypeScript, Vue, Svelte, CSS, SCSS,
+Sass, Less, Stylus, the shells, PowerShell, batch files, makefiles,
+CMake, Gradle, Inno Setup, JSON, YAML, TOML, INI and other settings
+files, SQL, GraphQL and Protocol Buffers. Inside strings and comments it
+still skips placeholders (<code>{0}</code>, <code>{name}</code>,
+<code>%s</code>, <code>%(name)s</code>, <code>${x}</code>,
+<code>$name</code>), escapes (<code>\n</code>, <code>\u00e9</code>), and
+words shaped like code names (<code>snake_case</code>,
+<code>camelCase</code>, <code>HTTPServer</code>, anything with a
+digit).</li>
+</ul></li>
 <li>Code and markup are read with Pygments, now a declared dependency,
-bundled in the shared runtime and listed in the third-party notices. A
-small built-in reader takes over if Pygments or a lexer is missing.</li>
+bundled in the shared runtime and listed in the third-party notices of
+every app that uses the runtime. It loads on the first code file, not at
+startup. A built-in reader for the main comment and string shapes takes
+over when Pygments or a lexer for the extension is missing, or the file
+is over 100,000 characters.</li>
+<li>User guide: <strong>What spell check reads</strong> has the full
+list.</li>
 <li>A word in single quotes in SQL, CSS or a script is no longer
 reported with its closing quote attached.</li>
 <li>The recovery window in QUILL Lite quotes the first few words of each
@@ -380,7 +532,6 @@ negative-monitor window coordinates and report screenshot failures
 clearly. Existing audiobook data, job formats, runtime identity and
 media engines are unchanged.</li>
 </ul>
-<h2 id="100">1.0.0</h2>
 <h3
 id="tables-whats-new-and-sliders-the-latest-work-2026-10-25-and-2026-10-26">Tables,
 What’s New and sliders: the latest work (2026-10-25 and 2026-10-26)</h3>
@@ -1020,7 +1171,7 @@ affected, what goes wrong, seven steps: back up <code>data</code>,
 download, unzip next to the old copy, copy <code>data</code> back,
 check, tidy up; what to do if the data is already gone), and a short
 version is in <code>docs/release notes/release1.0.0.md</code> (Staying
-up to date) and QUILL Lite’s <code>release-notes-1.2.md</code> (If you
+up to date) and QUILL Lite’s <code>release-notes-2.0.md</code> (If you
 already use QUILL Lite). Nothing published or sent; RELEASE.md records
 the decision.</p>
 <h3
@@ -5902,7 +6053,8 @@ numbers: Quill Radio 3.2.0, QUILL Lite 1.2.0, QUILL Cast 2.0.0
 Release Notes opens them, and the site sync points there).</li>
 <li>QUILL Lite 1.2.0 follows 1.1.2 and delivers everything the 1.1 notes
 promised for 1.2.0; its notes are
-<code>standalone/quilllite/docs/release-notes-1.2.md</code>.</li>
+<code>standalone/quilllite/docs/release-notes-2.0.md</code> (1.2.0 was
+renumbered 2.0.0).</li>
 <li>QUILL Cast is 2.0.0 everywhere: its menus, README, changelog, PRD
 and release notes.</li>
 </ul>

@@ -484,6 +484,15 @@ Options > Insert by pasting (section 12).
 **An abbreviation fires when I do not want it.** Set that entry's *Expand after*
 to Never; Quick Insert can still reach it.
 
+**Text looks blurry, or a window is the wrong size.** Quill Inkwell scales itself for each monitor. Text stays sharp at 125, 150 or 200
+percent, and when you move a window to a monitor with different scaling;
+windows and list columns keep their proportions. If a window looks wrong at
+your scaling, you can turn this off to see whether it is the cause. Search
+Windows for "Edit environment variables for your account", add a variable
+named `QUILL_DPI_UNAWARE` with the value `1`, and start Quill Inkwell again.
+Windows then stretches it the old way, so text is blurrier. Delete the
+variable to put scaling back, and tell support what you saw.
+
 ## 20. Dictate Anywhere
 
 Dictate Anywhere lets you talk instead of type in any program: your email, a web

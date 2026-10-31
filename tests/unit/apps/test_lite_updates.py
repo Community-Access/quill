@@ -122,20 +122,20 @@ def test_a_hand_edited_timestamp_does_not_silently_switch_checking_off():
 
 
 def test_a_newer_release_is_offered_with_its_notes(updates):
-    updates.releases = [_Release("2.0.0")]
+    updates.releases = [_Release("99.0.0")]
     lite_updates.check_for_updates(_Window())
-    assert updates.offered == ["2.0.0"]
+    assert updates.offered == ["99.0.0"]
 
 
 def test_saying_update_starts_the_download(updates):
-    updates.releases = [_Release("2.0.0")]
+    updates.releases = [_Release("99.0.0")]
     updates.answer = "update"
     lite_updates.check_for_updates(_Window())
-    assert updates.downloaded == ["2.0.0"]
+    assert updates.downloaded == ["99.0.0"]
 
 
 def test_saying_close_downloads_nothing(updates):
-    updates.releases = [_Release("2.0.0")]
+    updates.releases = [_Release("99.0.0")]
     updates.answer = "close"
     lite_updates.check_for_updates(_Window())
     assert updates.downloaded == []
@@ -184,9 +184,9 @@ def test_the_launch_check_says_nothing_when_the_network_is_down(updates):
 
 def test_the_launch_check_still_offers_a_real_update(updates):
     """QUILL Lite has no notification centre to defer it to."""
-    updates.releases = [_Release("2.0.0")]
+    updates.releases = [_Release("99.0.0")]
     lite_updates.check_for_updates(_Window(), silent_no_update=True)
-    assert updates.offered == ["2.0.0"]
+    assert updates.offered == ["99.0.0"]
 
 
 # -- the menu item --------------------------------------------------------

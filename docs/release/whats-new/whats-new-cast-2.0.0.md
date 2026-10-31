@@ -33,5 +33,6 @@ QUILL Cast 2.0 is one window with everything in it, every list works from the ke
 - **Dictate Here (Ctrl+F11)** dictates into a search box through QUILL Transcribe.
 - Connect to Spotify (Ctrl+Alt+S) and Browse Spotify Podcasts (Ctrl+Alt+V) are on the Help menu.
 - A portable copy updates in place, and a failed update puts back the version you had.
+- Sharp text at 150 and 200 percent display scaling; show notes links follow a high contrast theme.
 
 Everything that changed: Help > What's New (Ctrl+Shift+F1). The full release notes: Help > Release Notes (Ctrl+Alt+R). Tutorials: Ctrl+Alt+F1. Stuck? Help > Get Help from Support.

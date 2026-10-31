@@ -248,7 +248,21 @@
 href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>, and
 this project adheres to <a
 href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
-<h2 id="unreleased">Unreleased</h2>
+<h2 id="200---built-not-yet-released">[2.0.0] - built, not yet
+released</h2>
+<p>QUILL Studio 2.0.0 is the next Studio release after Audio Studio
+1.0.0. The previously unpublished 2.2.0 build is renumbered to 2.0.0 for
+the QUILL Studio rename. Shared-runtime compatibility does not require
+matching the other apps’ version numbers.</p>
+<p>This version is built but not yet published: Audio Studio is not
+offered in the QuillVille menu, and there is no 2.0.0 download page.
+Everything below is in the build.</p>
+<p>Testing build: <strong>2.0.0 (build 2)</strong>. Builds since the
+first have not been published.</p>
+<h3
+id="display-scaling-named-controls-licensing-and-packaging-2026-10-27-to-2026-10-31">Display
+scaling, named controls, licensing and packaging (2026-10-27 to
+2026-10-31)</h3>
 <ul>
 <li><strong>Shared-runtime licensing.</strong> Installed editions use
 the QuillVille Runtime, which currently carries PyMuPDF 1.28.2 under
@@ -274,18 +288,25 @@ handlers on shutdown.</li>
 proposes a shared Converter round trip and reviewable local or
 explicitly consented cloud transcription. These proposals are not
 delivered features.</li>
+<li><strong>Controls that had no label now have a spoken name</strong>
+(2026-10-30). JAWS, NVDA and Narrator used to announce them as a bare
+role, such as “edit” or “list”. Now they say what they are: the choices
+and number boxes in Convert Audio, the summary of your choices at the
+end of the wizard, and the translation voice and languages to export in
+the translated speech export.</li>
+<li><strong>Sharp text at any display scaling</strong> (2026-10-31).
+QUILL Studio now handles each monitor’s scaling itself instead of
+letting Windows stretch it, so text stays sharp at 125, 150 and 200
+percent and on monitors with different scaling, and windows and list
+columns keep their proportions. Setting the environment variable
+<code>QUILL_DPI_UNAWARE</code> to <code>1</code> turns this off, for
+diagnosing a display problem (#1702). User guide: “Text looks blurry, or
+a window is the wrong size”.</li>
+<li><strong>Pygments in the notices</strong> (2026-10-31). The shared
+runtime now bundles Pygments, which QUILL and QUILL Lite use to read
+code and web pages for spell check, so QUILL Studio’s third-party
+notices list it.</li>
 </ul>
-<h2 id="200---built-not-yet-released">[2.0.0] - built, not yet
-released</h2>
-<p>QUILL Studio 2.0.0 is the next Studio release after Audio Studio
-1.0.0. The previously unpublished 2.2.0 build is renumbered to 2.0.0 for
-the QUILL Studio rename. Shared-runtime compatibility does not require
-matching the other apps’ version numbers.</p>
-<p>This version is built but not yet published: Audio Studio is not
-offered in the QuillVille menu, and there is no 2.0.0 download page.
-Everything below is in the build.</p>
-<p>Testing build: <strong>2.0.0 (build 2)</strong>. Builds since the
-first have not been published.</p>
 <h3 id="the-new-name-quill-studio">The new name: QUILL Studio</h3>
 <ul>
 <li>Rename the application to <strong>QUILL Studio</strong>, preserving

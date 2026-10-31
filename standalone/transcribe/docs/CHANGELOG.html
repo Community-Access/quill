@@ -246,16 +246,6 @@
 <p>All notable changes to QUILL Transcribe are recorded here, newest
 first. The release notes (<code>release-notes-1.0.md</code>) tell the
 same story as a narrative; this file is the itemized list.</p>
-<h2 id="unreleased">Unreleased</h2>
-<ul>
-<li><strong>Shared-runtime licensing.</strong> Installed editions use
-the QuillVille Runtime, which currently carries PyMuPDF 1.28.2 under
-AGPL-3.0 through the shared GLOW dependency; Transcribe does not itself
-expose GLOW. Release-specific source and legal review are required
-before the next public release. Portable contents must be checked
-separately. See Licences and Notices and the PyMuPDF distribution
-review.</li>
-</ul>
 <h2 id="100---2026-11-01">1.0.0 - 2026-11-01</h2>
 <p>Testing rebuild: <strong>1.0.0 (build 3)</strong>. The packages have
 not been published yet. QUILL Transcribe 1.0.0 is the first public
@@ -264,6 +254,27 @@ version, so everything below is new in 1.0.0, including what the first
 test builds (builds 1 and 2) already did. Build 3 adds Help &gt; What’s
 New and keeps everything else. The changes are grouped by area; most say
 where in the user guide to read more.</p>
+<h3 id="since-build-3-2026-10-31">Since build 3 (2026-10-31)</h3>
+<ul>
+<li><strong>Shared-runtime licensing.</strong> Installed editions use
+the QuillVille Runtime, which currently carries PyMuPDF 1.28.2 under
+AGPL-3.0 through the shared GLOW dependency; Transcribe does not itself
+expose GLOW. Release-specific source and legal review are required
+before the next public release. Portable contents must be checked
+separately. See Licences and Notices and the PyMuPDF distribution
+review.</li>
+<li><strong>Sharp text at any display scaling</strong> (2026-10-31).
+QUILL Transcribe now handles each monitor’s scaling itself instead of
+letting Windows stretch it, so text stays sharp at 125, 150 and 200
+percent and on monitors with different scaling, and windows and list
+columns keep their proportions. Setting the environment variable
+<code>QUILL_DPI_UNAWARE</code> to <code>1</code> turns this off, for
+diagnosing a display problem (#1702).</li>
+<li><strong>Pygments in the notices</strong> (2026-10-31). The shared
+runtime now bundles Pygments, which QUILL and QUILL Lite use to read
+code and web pages for spell check, so QUILL Transcribe’s third-party
+notices list it.</li>
+</ul>
 <h3 id="dictating-into-other-programs">Dictating into other
 programs</h3>
 <ul>
