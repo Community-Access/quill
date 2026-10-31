@@ -246,6 +246,11 @@
 <p>Version 3.2.0 (build 4), the beta for testers, October 2026. 3.2.0
 was prepared on 2026-10-03 and is not yet published; the last published
 version is 3.0.4.</p>
+<p><strong>Unreleased source change:</strong> The built-in SomaFM source
+has been retired in the shared Radio code in response to its published
+third-party-client terms. Known catalogue entries and direct playback
+and recording paths are filtered or blocked; indirect paths, existing
+user data and previously published packages remain under review.</p>
 <h2 id="welcome">Welcome</h2>
 <p>Welcome, and thank you for giving Quill Radio a try.</p>
 <p>Quill Radio is internet radio for people who listen with a screen
@@ -2826,7 +2831,6 @@ aloud for blind and print-disabled listeners.</li>
 <li><strong>Westwood One Sports</strong>: Westwood One’s ten live event
 channels. During the NCAA tournaments, the NFL and other big events,
 each one carries a different game.</li>
-<li><strong>SomaFM</strong>.</li>
 <li><strong>181.FM</strong>: the whole 181.FM network, about eighty
 channels, by its own genres, with <strong>All stations</strong> first.
 Explicit channels say so, and the Christmas genre is marked
@@ -3191,10 +3195,9 @@ get France’s jazz stations, with or without the internet.</li>
 <li>On <strong>LibriVox</strong>, the <strong>Internet Archive</strong>,
 <strong>TuneIn</strong>, <strong>iHeart</strong>, <strong>NOAA</strong>
 (by call sign, SAME code, or “County, ST”), <strong>Project
-Gutenberg</strong>, <strong>SomaFM</strong>, <strong>181.FM</strong>,
-<strong>laut.fm</strong>, <strong>Audius</strong>,
-<strong>Mixcloud</strong> and <strong>ccMixter</strong>, it uses that
-source’s own search.</li>
+Gutenberg</strong>, <strong>181.FM</strong>, <strong>laut.fm</strong>,
+<strong>Audius</strong>, <strong>Mixcloud</strong> and
+<strong>ccMixter</strong>, it uses that source’s own search.</li>
 <li>On a <strong>podcast show</strong>, it searches the episodes, show
 notes included.</li>
 <li>Anywhere else it looks through the folder itself, within limits, and
@@ -3373,13 +3376,13 @@ playing.</li>
 (Alt+O) are drop-down lists filled from the directory. Choosing one
 searches straight away.</li>
 <li><strong>Source</strong> (Alt+U) shows results from just one
-directory: All sources, Radio Browser, iHeart, TuneIn, Podcasts, SomaFM,
-ACB Media, Community M3U, Xiph, Spotify, YouTube or Website. It filters
-what you have without searching again.</li>
+directory: All sources, Radio Browser, iHeart, TuneIn, Podcasts, ACB
+Media, Community M3U, Xiph, Spotify, YouTube or Website. It filters what
+you have without searching again.</li>
 <li><strong>Category</strong> (Alt+Y) switches the window to a list
-instead of a search: Favorites, Popular Stations, ACB Media, SomaFM,
-TuneIn, Music Genres, Xiph Directory or Search Results. The window opens
-on Favorites.</li>
+instead of a search: Favorites, Popular Stations, ACB Media, TuneIn,
+Music Genres, Xiph Directory or Search Results. The window opens on
+Favorites.</li>
 <li>In the <strong>Station name</strong> field, press <strong>Down
 Arrow</strong> for searches you ran before, newest first. Choosing one
 brings back the name, tag and country together. It remembers
@@ -3453,10 +3456,10 @@ Red Wings”. See “Your own tags on a station” above.</li>
 </ul>
 <h4 id="search-sources-step-by-step">Search Sources, step by step</h4>
 <p>Search Sources decides which directories Search Stations asks. There
-are fourteen, all on to begin with: Radio Browser, TuneIn, iHeart,
-SomaFM, SHOUTcast, Live365, TV, Radio Paradise, 181.FM, laut.fm, NOAA
-Weather Radio, Radio Reading Service, Spotify and YouTube. “YouTube in
-Search Stations” in Chapter 11 says what the YouTube one finds.</p>
+are thirteen, all on to begin with: Radio Browser, TuneIn, iHeart,
+SHOUTcast, Live365, TV, Radio Paradise, 181.FM, laut.fm, NOAA Weather
+Radio, Radio Reading Service, Spotify and YouTube. “YouTube in Search
+Stations” in Chapter 11 says what the YouTube one finds.</p>
 <ol type="1">
 <li>Press <strong>Ctrl+Alt+Shift+U</strong> (<strong>Station &gt; Search
 Sources…</strong>). The Search Sources window opens with your cursor in
@@ -3542,9 +3545,9 @@ playing on it right now.</li>
 </ol>
 <h3 id="the-station-catalog">The Station Catalog</h3>
 <p>Quill Radio comes with a directory of working stations built in: more
-than 62,000 stations from 240 countries, plus SomaFM and the Project
-Gutenberg audiobook shelf. It keeps them in a catalog on your own
-computer. That makes a real difference:</p>
+than 62,000 stations from 240 countries, plus the Project Gutenberg
+audiobook shelf. It keeps them in a catalog on your own computer. That
+makes a real difference:</p>
 <ul>
 <li><strong>Browsing answers at once, with or without the
 internet.</strong> By Country, By Language, By Genre and By Quality
@@ -3568,8 +3571,8 @@ morning.”, and carries on working.</li>
 <h4 id="what-is-stored-and-what-is-not">What is stored, and what is
 not</h4>
 <p>The catalog holds Radio Browser’s stations and every way of browsing
-them, SomaFM, and the Project Gutenberg audiobook shelf. Everything else
-stays live and needs the internet, each for a reason: <strong>Apple
+them, and the Project Gutenberg audiobook shelf. Everything else stays
+live and needs the internet, each for a reason: <strong>Apple
 Podcasts</strong> (Apple’s terms do not allow storing its charts),
 <strong>TuneIn</strong> (its folders may not be stored),
 <strong>iHeart</strong> (its terms do not allow storing its listings),
@@ -7940,14 +7943,14 @@ your own computer that nothing outside can reach. On the mpv engine, the
 enhancements happen inside the player.</li>
 <li><strong>Searching and browsing for stations</strong> talks to public
 directories, none of which need a key or an account: RadioBrowser,
-SomaFM, iHeart, TuneIn, SHOUTcast, Live365, Radio Paradise, a community
-M3U list on GitHub, iptv.org, the Internet Archive, LibriVox, Project
-Gutenberg, AudioPub, Audius, Mixcloud, ccMixter, Apple’s podcast
-storefront and Podcast Index. Xiph and Wikidata start switched off.
-<strong>Choose Browse Sources</strong> lists every one, each saying
-whether it is on. A branch that is off is never contacted while you
-browse, and not to refresh the catalog either. <strong>Search All
-Sources</strong> asks every directory.</li>
+iHeart, TuneIn, SHOUTcast, Live365, Radio Paradise, a community M3U list
+on GitHub, iptv.org, the Internet Archive, LibriVox, Project Gutenberg,
+AudioPub, Audius, Mixcloud, ccMixter, Apple’s podcast storefront and
+Podcast Index. Xiph and Wikidata start switched off. <strong>Choose
+Browse Sources</strong> lists every one, each saying whether it is on. A
+branch that is off is never contacted while you browse, and not to
+refresh the catalog either. <strong>Search All Sources</strong> asks
+every directory.</li>
 <li><strong>Identify This Song</strong> sends your AcoustID key and a
 fingerprint of the last minute of sound to AcoustID, only when you press
 Ctrl+K. No audio is sent, and with no key entered (where it starts)

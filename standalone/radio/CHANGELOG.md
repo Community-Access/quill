@@ -4,6 +4,21 @@ All notable changes to Quill Radio are documented here. See `docs/release-notes-
 
 ## Unreleased
 
+- **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
+  which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
+  GLOW dependency; Radio does not itself expose GLOW. Release-specific source
+  and legal review are required before the next public release. Portable
+  contents must be checked separately. See Licences and Notices and the
+  PyMuPDF distribution review.
+- **SomaFM source retired.** Its published terms no longer approve new
+  third-party clients. The shared Radio code removes the built-in source and
+  filters known catalogue entries and direct play/record paths. Review of
+  indirect paths, existing user data and previously published packages remains
+  open; this change has not been published as a new release.
+- **PyWinRT 4 migration.** The shared Windows Media runtime uses PyWinRT
+  4.0.3 and Windows SDK 10.0.28000.2705 projections; this does not change the
+  choice of player or the selected output device.
+
 - **Victor Stream playlists import, and fifteen more reading services.**
   Import Stations from Playlist (Ctrl+I) reads XSPF lists exported from a
   HumanWare Victor Stream or Victor Trek, including one whose file name ends in

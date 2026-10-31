@@ -1,5 +1,11 @@
 # QuillBeacon Product Requirements Document
 
+**Distribution licensing:** Installed Beacon editions use the QuillVille
+Runtime, which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through
+GLOW, although Beacon does not expose GLOW. Release-specific source and legal
+review are required before the next public release; inspect portable builds
+separately. See the PyMuPDF distribution review and Licences and Notices.
+
 **Working product name:** QuillBeacon  
 **Tagline:** *Find your way back to anything.*  
 **Suite:** QuillVille accessible applications  

@@ -11,7 +11,7 @@ requires-python = ">=3.14"
 license = { text = "MIT" }
 authors = [
   { name = "Community Access" },
-  { name = "Community Access" },
+  { name = "Jeff Bishop" },
 ]
 classifiers = [
   "Programming Language :: Python :: 3",

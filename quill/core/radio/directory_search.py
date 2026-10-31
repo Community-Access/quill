@@ -2,7 +2,7 @@
 RadioStation results.
 
 The station browser fans a search out across several sources and merges the
-results into one list. RadioBrowser and SomaFM already return
+results into one list. RadioBrowser already returns
 :class:`~quill.core.radio.models.RadioStation` objects directly; TuneIn and
 iHeart return their own directory rows whose playable stream must still be
 resolved. These two helpers do that resolution and the conversion, bounded and

@@ -117,9 +117,9 @@
     },
     "BASS": {
       "name": "BASS licence (Un4seen Developments, proprietary freeware)",
-      "text": null,
+      "text": "BASS-License-Terms.txt",
       "url": "https://www.un4seen.com/bass.html#license",
-      "obligations": "Free of charge only in non-commercial software. Credit Un4seen. No source is available and none is owed. The full terms are on un4seen.com and are not reproduced here."
+      "obligations": "Free use is limited to non-commercial entities and products that make no money. Confirm that the QUILL publisher and product qualify before distribution; otherwise obtain a commercial BASS licence. Keep Un4seen attribution and these terms."
     },
     "BSD-2-Clause": {
       "name": "BSD 2-Clause License",
@@ -199,9 +199,9 @@
     },
     "NVIDIA-OML": {
       "name": "NVIDIA Open Model License",
-      "text": null,
+      "text": "NVIDIA-Open-Model-License-2025-10-24.txt",
       "url": "https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/",
-      "obligations": "Ship the model's NOTICE and the licence terms with it; keep NVIDIA's attribution. Commercial use and redistribution are allowed."
+      "obligations": "Keep NVIDIA attribution and the model NOTICE, and provide this agreement with the model. Comply with the agreement’s use restrictions, guardrail requirements and any updated terms."
     },
     "PSF-2.0": {
       "name": "Python Software Foundation License, version 2",
@@ -215,9 +215,9 @@
     },
     "Unicode-3.0": {
       "name": "Unicode License v3",
-      "text": null,
+      "text": "Unicode-3.0.txt",
       "url": "https://www.unicode.org/license.txt",
-      "obligations": "Keep the Unicode copyright and permission notice with the data or in its documentation. The full text is at unicode.org and is not reproduced here."
+      "obligations": "Keep the Unicode copyright and permission notice with the data or its documentation; the complete licence text is reproduced here."
     },
     "Unlicense": {
       "name": "The Unlicense (public domain dedication)",
@@ -243,6 +243,23 @@
       "name": "wxWindows Library Licence, version 3.1",
       "text": "wxWindows.txt",
       "obligations": "Keep the notice. The licence's exception lets us ship the compiled library with our program on our own terms; changes to the library itself would have to be offered as source."
+    },
+    "GCC-Runtime-Library-Exception-3.1": {
+      "name": "GCC Runtime Library Exception, version 3.1",
+      "text": "GCC-Runtime-Library-Exception-3.1.txt",
+      "url": "https://www.gnu.org/licenses/gcc-exception-3.1.html",
+      "obligations": "Keep this exception with GPL-3.0 for the covered GCC runtime files. It permits eligible combinations with independent modules; it does not remove GPL obligations for the runtime libraries themselves."
+    },
+    "HPND": {
+      "name": "Historical Permission Notice and Disclaimer (HPND)",
+      "text": "Scintilla-HPND.txt",
+      "obligations": "Keep the copyright and permission notices in the documentation; retain the warranty disclaimer."
+    },
+    "InnoSetup": {
+      "name": "Inno Setup License",
+      "text": "Inno-Setup-License.txt",
+      "url": "https://jrsoftware.org/files/is/license.txt",
+      "obligations": "Retain the upstream copyright notices and website addresses in binary redistributions; do not misrepresent origin or modifications. Commercial redistribution is permitted."
     }
   },
   "components": [
@@ -725,13 +742,13 @@
       "license_label": "Apache-2.0",
       "copyright": "Copyright emludei (https://github.com/emludei/html_to_text)",
       "homepage": "https://github.com/emludei/html_to_text",
-      "what": "Turns HTML into plain text when pasting.",
+      "what": "A PyPI HTML processing library included in the runtime. QUILL's paste cleaner expects a different project's API and falls back when this package is installed.",
       "products": [
         "all"
       ],
       "delivery": "bundled",
       "pypi": "html_to_text",
-      "review": "The installed and shipped package is emludei's html_to_text (Apache-2.0). Earlier notices credited AccessibleApps' MIT html_to_text instead. Confirm which project pyproject.toml means to depend on; the two share a name on PyPI."
+      "review": "The declared PyPI package is emludei's html_to_text 1.0.0 (Apache-2.0); it does not export the html_to_text function the paste cleaner imports. AccessibleApps' separately installed project documents that API and is MIT-licensed. Choose and test the intended dependency and packaging before pinning or replacing either."
     },
     {
       "id": "httpcore2",
@@ -954,17 +971,18 @@
       "version": "as bundled by pillow-heif and PyEnchant",
       "licenses": [
         "GPL-3.0",
-        "MIT"
+        "GCC-Runtime-Library-Exception-3.1",
+        "MIT",
+        "BSD-2-Clause"
       ],
-      "license_label": "GPL-3.0 with the GCC Runtime Library Exception 3.1 (libgcc, libstdc++), which lets them be shipped with any program; MIT and BSD (libwinpthread)",
+      "license_label": "GPL-3.0 with GCC Runtime Library Exception 3.1 (libgcc and libstdc++); MIT and BSD (libwinpthread)",
       "copyright": "Copyright (C) Free Software Foundation, Inc.; MinGW-w64 project contributors",
       "homepage": "https://www.mingw-w64.org/",
       "what": "Runtime libraries that two of the compiled libraries were built against.",
       "products": [
         "all"
       ],
-      "delivery": "bundled",
-      "review": "The GCC Runtime Library Exception 3.1 text is not reproduced here (see https://www.gnu.org/licenses/gcc-exception-3.1.html); add it if the owner wants it bundled."
+      "delivery": "bundled"
     },
     {
       "id": "mutagen",
@@ -1530,9 +1548,11 @@
       "group": "runtime",
       "version": "312",
       "licenses": [
-        "PSF-2.0"
+        "PSF-2.0",
+        "HPND",
+        "LGPL-2.1"
       ],
-      "license_label": "PSF-2.0 (Python Software Foundation style licence; the bundled Scintilla is HPND)",
+      "license_label": "PSF-2.0 (pywin32); HPND (Scintilla); LGPL-2.1 (adodbapi)",
       "copyright": "Copyright (c) 1994-2026 Mark Hammond and contributors",
       "homepage": "https://github.com/mhammond/pywin32",
       "what": "Windows API access: window capture and update hand-off.",
@@ -1541,7 +1561,7 @@
       ],
       "delivery": "bundled",
       "pypi": "pywin32",
-      "review": "Licence recorded from package metadata as PSF; pywin32 also carries Scintilla (HPND) and adodbapi (LGPL-2.1) texts inside the package. Not re-verified file by file."
+      "review": "The wheel also contains Scintilla and adodbapi license notices; their HPND and LGPL-2.1 texts are included here. Recheck the file-level contents when the PyWin32 wheel version changes."
     },
     {
       "id": "pywinrt",
@@ -1691,7 +1711,7 @@
       ],
       "delivery": "bundled",
       "pypi": "sound-lib",
-      "review": "BASS is closed-source freeware. Un4seen allows free use in non-commercial software; QUILL is free and never sold, which fits, but the BASS licence text is not bundled with the wheel and must be read on un4seen.com. Confirm the current terms in writing."
+      "review": "BASS terms allow free use only for non-commercial entities and products that make no money. The publisher’s eligibility has not been established. Obtain a commercial licence or confirm the non-commercial grant before release."
     },
     {
       "id": "sqlite",
@@ -2026,13 +2046,13 @@
       "license_label": "Not confirmed",
       "copyright": "Originally Digital Equipment Corporation; later Fonix Corporation and others",
       "homepage": "https://github.com/dectalk/dectalk",
-      "what": "The classic DECtalk voices. Bundled in QUILL Studio's portable edition and the QUILL Offline Edition; otherwise downloaded on request. QUILL also ships DECtalk voice samples in Voice Previews.",
+      "what": "The classic DECtalk voices, supported only when installed separately by the user. QUILL does not distribute the runtime or DECtalk voice previews.",
       "products": [
         "quill",
         "studio"
       ],
-      "delivery": "bundled",
-      "review": "Redistribution rights are not established. The public source tree descends from code whose owners never published it under an open licence; earlier records here said both 'BSD-licensed' and 'proprietary, redistributable where licensed', and neither is backed by a licence file. Owner decision needed before shipping it again: obtain written permission from the rights holder, or stop bundling and redistributing DECtalk and its samples."
+      "delivery": "user-installed",
+      "review": "Redistribution rights are not established. Do not redistribute DECtalk or its voice samples without written permission from the rights holder. Previously published builds must be reviewed separately."
     },
     {
       "id": "dictation-models",
@@ -2076,12 +2096,13 @@
       "id": "kokoro",
       "name": "Kokoro-82M voices and kokoro-onnx",
       "group": "speech",
-      "version": "model-files-v1.0; kokoro-onnx 0.6.1",
+      "version": "model-files-v1.0; kokoro-onnx 0.6.1; phonemizer 3.4.0; espeakng-loader 0.2.4",
       "licenses": [
         "Apache-2.0",
-        "MIT"
+        "MIT",
+        "GPL-3.0"
       ],
-      "license_label": "Apache-2.0 (Kokoro model and voices); MIT (kokoro-onnx and ONNX Runtime)",
+      "license_label": "Apache-2.0 (Kokoro model); MIT (kokoro-onnx and ONNX Runtime); GPL-3.0 (phonemizer and eSpeak NG runtime/data)",
       "copyright": "Kokoro: Copyright hexgrad; kokoro-onnx: Copyright thewh1teagle; ONNX Runtime: Copyright (c) Microsoft Corporation",
       "homepage": "https://huggingface.co/hexgrad/Kokoro-82M",
       "what": "Natural-sounding offline neural voices. The model is bundled in the QUILL Offline Edition's optional component and QUILL Studio's portable edition, otherwise downloaded on request; Voice Previews has Kokoro samples.",
@@ -2090,7 +2111,7 @@
         "studio"
       ],
       "delivery": "bundled",
-      "review": "kokoro-onnx installs phonemizer (GPL-3.0) and espeakng-loader alongside it; their versions and licences in the shipped engine pack were not re-read for this inventory."
+      "review": "The locked Kokoro runtime includes GPL-3.0 phonemizer and eSpeak NG components. Confirm the staged engine pack carries their source/licence notices and exact versions before release."
     },
     {
       "id": "mathcat",
@@ -2124,8 +2145,7 @@
       "products": [
         "quill"
       ],
-      "delivery": "on-request",
-      "review": "The licence text itself is not reproduced in this document; it is on nvidia.com. Commercial use and redistribution are permitted."
+      "delivery": "on-request"
     },
     {
       "id": "piper",
@@ -2254,8 +2274,7 @@
       "products": [
         "all"
       ],
-      "delivery": "bundled",
-      "review": "The Unicode License v3 text should be bundled beside the catalog; it is referenced here, not reproduced."
+      "delivery": "bundled"
     },
     {
       "id": "th-en-us",
@@ -2272,8 +2291,7 @@
       "products": [
         "all"
       ],
-      "delivery": "bundled",
-      "review": "Records disagree: the licence file shipped beside the data is GPL-2.0, earlier notices said LGPL-2.1, and the upstream MyThes code is BSD. Confirm the data's licence from the LibreOffice dictionaries README for this exact file. It is data, not code, so it does not affect the apps' own licence, but the GPL-2.0 source offer applies to the file itself (it is its own source)."
+      "delivery": "bundled"
     },
     {
       "id": "hunspell-dictionaries",
@@ -2337,19 +2355,17 @@
       "group": "data",
       "version": "built per release (quill/data/radio-catalog/seed.db.xz)",
       "licenses": [
-        "Unknown",
         "Public-Domain",
         "CC0-1.0"
       ],
-      "license_label": "Radio Browser directory data (terms not confirmed); SomaFM channel list; Project Gutenberg audio records (public domain works); Wikidata (CC0-1.0)",
-      "copyright": "Radio Browser community (radio-browser.info); SomaFM; Project Gutenberg; Wikidata contributors",
+      "license_label": "Radio Browser directory data (public domain); Project Gutenberg catalog records; Wikidata (CC0-1.0)",
+      "copyright": "Radio Browser community; Project Gutenberg contributors; Wikidata contributors",
       "homepage": "https://www.radio-browser.info/",
       "what": "A starting directory of stations and audio books, so searching works offline on first launch. It ships in quill/data, so every product carries it.",
       "products": [
         "all"
       ],
-      "delivery": "bundled",
-      "review": "The licence of the Radio Browser data dump and of SomaFM's channel list was not confirmed. Check both sites' terms and record them here."
+      "delivery": "bundled"
     },
     {
       "id": "voice-previews",
@@ -2360,14 +2376,14 @@
         "Unknown"
       ],
       "license_label": "Generated by QUILL from the voices named in each sample; the terms follow each voice",
-      "copyright": "Samples made by the QUILL project with Piper, Kokoro, eSpeak NG, DECtalk and Windows SAPI 5 voices",
+      "copyright": "Samples made by the QUILL project with Piper, Kokoro, eSpeak NG and Windows SAPI 5 voices",
       "homepage": "",
       "what": "Short recordings so you can hear a voice before downloading it.",
       "products": [
         "all"
       ],
       "delivery": "bundled",
-      "review": "Synthesised output is usually free of the engine's licence, but voice models trained on restricted datasets, and DECtalk, may limit use of their output. Confirm alongside the Piper voices and DECtalk entries."
+      "review": "Voice models trained on restricted datasets may limit use of their output. Confirm each remaining voice's terms alongside the Piper voice entries."
     },
     {
       "id": "wordnet",
@@ -2424,19 +2440,18 @@
       "id": "page-turn",
       "name": "Page-turn sound (quill/assets/audio/page_turn.wav)",
       "group": "fonts-sounds",
-      "version": "as committed",
+      "version": "generated by scripts/gen_page_turn.py",
       "licenses": [
-        "Unknown"
+        "MIT"
       ],
-      "license_label": "Not confirmed",
-      "copyright": "Unknown",
-      "homepage": "",
-      "what": "The default sound between chapters in spoken audiobooks.",
+      "license_label": "MIT (QUILL project)",
+      "copyright": "Copyright (c) 2026 Blind Information Technology Solutions (BITS); Copyright (c) 2026 Jeff Bishop",
+      "homepage": "https://github.com/Community-Access/quill",
+      "what": "An original synthesized page-turn-like default sound between chapters in spoken audiobooks; no sampled audio is used.",
       "products": [
         "all"
       ],
-      "delivery": "bundled",
-      "review": "Its commit says it was converted from the ACB audio pipeline's reference MP3; the original source and licence are not recorded. Confirm provenance, or replace it with a generated sound."
+      "delivery": "bundled"
     },
     {
       "id": "sound-packs",
@@ -2478,17 +2493,17 @@
       "group": "build",
       "version": "7.1",
       "licenses": [
-        "Unknown"
+        "InnoSetup"
       ],
       "license_label": "Inno Setup licence (free, permissive; modified-BSD style)",
       "copyright": "Copyright (C) 1997-2026 Jordan Russell and Martijn Laan",
       "homepage": "https://jrsoftware.org/isinfo.php",
-      "what": "Builds the Windows installers. The installer engine is inside every Setup.exe.",
+      "what": "Build-time installer engine. The compiler is not shipped, but Inno Setup code is embedded in the Windows Setup.exe files.",
       "products": [
         "all"
       ],
       "delivery": "build-only",
-      "review": "Inno Setup's own licence text is not reproduced; it permits free distribution of installers built with it. Add the text if the owner wants it bundled."
+      "review": "The full licence is included in the family notices. Confirm a built Setup.exe retains the upstream copyright and website strings after compiler upgrades."
     },
     {
       "id": "pandoc-docs",

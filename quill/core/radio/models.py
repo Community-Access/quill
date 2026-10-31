@@ -7,6 +7,7 @@ wx-free, strict-typed.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from urllib.parse import urlsplit
 
 from quill.core.display_text import clean_display_text
 
@@ -23,6 +24,26 @@ def _coerce_int(value: object, default: int = 0) -> int:
         except ValueError:
             return default
     return default
+
+
+def is_somafm_url(value: object) -> bool:
+    """Whether *value* names a SomaFM-owned host."""
+    try:
+        host = (urlsplit(str(value or "")).hostname or "").lower().rstrip(".")
+    except ValueError:
+        return False
+    return host == "somafm.com" or host.endswith(".somafm.com")
+
+
+def is_retired_somafm_station(
+    *, stream_url: object = "", homepage: object = "", source: object = ""
+) -> bool:
+    """Whether a station belongs to the retired SomaFM integration."""
+    return (
+        str(source or "").strip().casefold() == "somafm"
+        or is_somafm_url(stream_url)
+        or is_somafm_url(homepage)
+    )
 
 
 @dataclass(slots=True)
@@ -43,7 +64,7 @@ class RadioStation:
     codec: str = ""
     bitrate_kbps: int = 0
     votes: int = 0
-    #: Which directory this station came from ("iHeart", "TuneIn", "SomaFM",
+    #: Which directory this station came from ("iHeart", "TuneIn",
     #: "ACB Media", "Website"), for the unified Find Stations source badge/filter.
     #: Empty means a Radio Browser result (it filters/labels under "Radio Browser")
     #: -- also the value for stations loaded before this field existed (back-compat).
@@ -52,7 +73,7 @@ class RadioStation:
     #: as duplicates (see ``directory_search.merge_and_rank``). A search-only,
     #: transient field: it lets the Source filter still show a station under a
     #: directory it appeared in even when a different directory won the de-dup
-    #: (e.g. a SomaFM channel RadioBrowser also lists). Not persisted, and
+    #: (e.g. a station another directory also lists). Not persisted, and
     #: excluded from equality so it never changes a station's identity.
     alt_sources: tuple[str, ...] = field(default=(), compare=False)
     #: True when this is a **finished recording** rather than a live stream: an
@@ -205,6 +226,8 @@ class RadioStation:
     def from_dict(cls, data: dict[str, object]) -> RadioStation | None:
         name = str(data.get("name", "")).strip()
         stream_url = str(data.get("stream_url", "")).strip()
+        homepage = str(data.get("homepage", ""))
+        source = str(data.get("source", "") or "")
         # A saved browse *place* (``favorites.place_station``) has no stream on
         # purpose; its identity is the ``browse:`` node id. Refusing an empty
         # stream URL here is what made every saved place vanish on restart.
@@ -218,7 +241,7 @@ class RadioStation:
             name=name,
             stream_url=stream_url,
             station_uuid=str(data.get("station_uuid", "")),
-            homepage=str(data.get("homepage", "")),
+            homepage=homepage,
             favicon=str(data.get("favicon", "")),
             country=str(data.get("country", "")),
             language=str(data.get("language", "")),
@@ -229,5 +252,5 @@ class RadioStation:
             # Absent in favorites saved before 3.0, which is correct: everything
             # saved before then was a live station.
             is_recording=bool(data.get("is_recording", False)),
-            source=str(data.get("source", "") or ""),
+            source=source,
         )

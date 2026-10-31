@@ -4,6 +4,15 @@ All notable changes to QUILL Transcribe are recorded here, newest first. The
 release notes (`release-notes-1.0.md`) tell the same story as a narrative; this
 file is the itemized list.
 
+## Unreleased
+
+- **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
+  which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
+  GLOW dependency; Transcribe does not itself expose GLOW. Release-specific
+  source and legal review are required before the next public release.
+  Portable contents must be checked separately. See Licences and Notices and
+  the PyMuPDF distribution review.
+
 ## 1.0.0 - 2026-11-01
 
 Testing rebuild: **1.0.0 (build 3)**. The packages have not been published

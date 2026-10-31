@@ -4,6 +4,15 @@ All notable changes to Quill Weather are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+- **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
+  which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
+  GLOW dependency; Weather does not itself expose GLOW. Release-specific
+  source and legal review are required before the next public release.
+  Portable contents must be checked separately. See Licences and Notices and
+  the PyMuPDF distribution review.
+
 ## [2.2.1] - 2026-10-08
 
 Current build: **2.2.1 (build 2)**. Build 2 keeps everything in build 1 and

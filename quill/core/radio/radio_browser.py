@@ -33,7 +33,7 @@ import urllib.request
 from quill.core import http_client
 from quill.core.error_codes import CodedError
 from quill.core.net import verified_ssl_context
-from quill.core.radio.models import RadioStation, _coerce_int
+from quill.core.radio.models import RadioStation, _coerce_int, is_retired_somafm_station
 
 _ALL_HOSTS = "all.api.radio-browser.info"
 #: A RadioBrowser station id. Used to keep other directories' ids out of the
@@ -160,7 +160,12 @@ def _coerce_check(value: object) -> bool | None:
 def _station_from_json(entry: dict[str, object]) -> RadioStation | None:
     name = str(entry.get("name", "")).strip()
     stream_url = str(entry.get("url_resolved") or entry.get("url") or "").strip()
-    if not name or not stream_url:
+    homepage = str(entry.get("homepage", "")).strip()
+    if (
+        not name
+        or not stream_url
+        or is_retired_somafm_station(stream_url=stream_url, homepage=homepage)
+    ):
         return None
     tags_raw = str(entry.get("tags", ""))
     tags = tuple(t.strip() for t in tags_raw.split(",") if t.strip())
@@ -170,7 +175,7 @@ def _station_from_json(entry: dict[str, object]) -> RadioStation | None:
         name=name,
         stream_url=stream_url,
         station_uuid=str(entry.get("stationuuid", "")),
-        homepage=str(entry.get("homepage", "")),
+        homepage=homepage,
         favicon=str(entry.get("favicon", "")),
         country=str(entry.get("country", "")),
         language=str(entry.get("language", "")),

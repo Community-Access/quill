@@ -44,6 +44,15 @@ _GEN_RE = re.compile(r"^catalog\.(\d+)\.db$")
 
 SCHEMA_VERSION = 1
 
+# Filtered from old profiles as well as future refreshes. SomaFM's source was
+# removed during the licensing review; catalogs are derived data and can drop
+# these records without touching listener-owned favorites or recordings.
+_ACTIVE_STATION_SQL = (
+    "source_id <> 'soma_fm' "
+    "AND LOWER(stream_url) NOT LIKE '%somafm.com%' "
+    "AND LOWER(homepage) NOT LIKE '%somafm.com%'"
+)
+
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS catalog_meta(
   key   TEXT PRIMARY KEY,
@@ -305,7 +314,7 @@ class CatalogStore:
         stamps = [
             value
             for (value,) in self._connect().execute(
-                "SELECT last_refresh FROM sources WHERE last_status='ok'"
+                "SELECT last_refresh FROM sources WHERE last_status='ok' AND id <> 'soma_fm'"
             )
             if value
         ]
@@ -321,7 +330,7 @@ class CatalogStore:
             ._connect()
             .execute(
                 "SELECT id, last_refresh, last_status, last_error, station_count "
-                "FROM sources ORDER BY id"
+                "FROM sources WHERE id <> 'soma_fm' ORDER BY id"
             )
             .fetchall()
         )
@@ -334,7 +343,7 @@ class CatalogStore:
             (str(name), int(count))
             for name, count in self._connect().execute(
                 "SELECT country, COUNT(*) FROM stations "
-                "WHERE country<>'' AND vanished_at IS NULL "
+                f"WHERE {_ACTIVE_STATION_SQL} AND country<>'' AND vanished_at IS NULL "
                 "GROUP BY country ORDER BY country"
             )
         ]
@@ -344,7 +353,8 @@ class CatalogStore:
             str(state)
             for (state,) in self._connect().execute(
                 "SELECT DISTINCT state FROM stations "
-                "WHERE country=? AND state<>'' AND vanished_at IS NULL ORDER BY state",
+                f"WHERE {_ACTIVE_STATION_SQL} AND country=? AND state<>'' "
+                "AND vanished_at IS NULL ORDER BY state",
                 (country,),
             )
         ]
@@ -354,7 +364,7 @@ class CatalogStore:
             (str(name), int(count))
             for name, count in self._connect().execute(
                 "SELECT language, COUNT(*) FROM stations "
-                "WHERE language<>'' AND vanished_at IS NULL "
+                f"WHERE {_ACTIVE_STATION_SQL} AND language<>'' AND vanished_at IS NULL "
                 "GROUP BY language ORDER BY COUNT(*) DESC LIMIT 400"
             )
         ]
@@ -364,7 +374,7 @@ class CatalogStore:
             (str(name), int(count))
             for name, count in self._connect().execute(
                 "SELECT codec, COUNT(*) FROM stations "
-                "WHERE codec<>'' AND vanished_at IS NULL "
+                f"WHERE {_ACTIVE_STATION_SQL} AND codec<>'' AND vanished_at IS NULL "
                 "GROUP BY codec ORDER BY COUNT(*) DESC"
             )
         ]
@@ -374,7 +384,8 @@ class CatalogStore:
         is computed in Python over one indexed scan - measured acceptable."""
         counts: dict[str, int] = {}
         for (tags,) in self._connect().execute(
-            "SELECT tags FROM stations WHERE tags<>'' AND vanished_at IS NULL"
+            f"SELECT tags FROM stations WHERE {_ACTIVE_STATION_SQL} "
+            "AND tags<>'' AND vanished_at IS NULL"
         ):
             for tag in str(tags).split(","):
                 if tag:
@@ -390,7 +401,7 @@ class CatalogStore:
     def _rows(self, where: str, args: tuple[object, ...], *, limit: int) -> list[StationRow]:
         sql = (
             f"SELECT {self._ROW_COLUMNS} FROM stations "
-            f"WHERE vanished_at IS NULL AND {where} "
+            f"WHERE {_ACTIVE_STATION_SQL} AND vanished_at IS NULL AND {where} "
             f"ORDER BY votes DESC, name LIMIT {int(limit)}"
         )
         return [StationRow(*row) for row in self._connect().execute(sql, args)]
@@ -410,7 +421,7 @@ class CatalogStore:
         needle = tag.strip().lower()
         sql = (
             f"SELECT {self._ROW_COLUMNS} FROM stations "
-            "WHERE vanished_at IS NULL AND rowid IN "
+            f"WHERE {_ACTIVE_STATION_SQL} AND vanished_at IS NULL AND rowid IN "
             "(SELECT rowid FROM stations_fts WHERE stations_fts MATCH ?) "
             f"ORDER BY votes DESC, name LIMIT {int(limit)}"
         )
@@ -443,7 +454,7 @@ class CatalogStore:
         if not text:
             return []
         quoted = " ".join('"' + part.replace('"', '""') + '"*' for part in text.split())
-        where = ["vanished_at IS NULL"]
+        where = [_ACTIVE_STATION_SQL, "vanished_at IS NULL"]
         params: list[object] = []
         for column, value in (
             ("country", country),
@@ -515,6 +526,14 @@ class CatalogStore:
             shutil.copyfile(_generation_path(self._root, current), path)
         con = sqlite3.connect(path)
         con.executescript(_SCHEMA)
+        # A SomaFM source was present in older generations. The catalog is
+        # derived data, so retire those rows when publishing any new generation.
+        con.execute(
+            "DELETE FROM stations WHERE source_id='soma_fm' "
+            "OR LOWER(stream_url) LIKE '%somafm.com%' "
+            "OR LOWER(homepage) LIKE '%somafm.com%'"
+        )
+        con.execute("DELETE FROM sources WHERE id='soma_fm'")
         con.execute(
             "INSERT OR REPLACE INTO catalog_meta(key, value) VALUES ('schema_version', ?)",
             (str(SCHEMA_VERSION),),

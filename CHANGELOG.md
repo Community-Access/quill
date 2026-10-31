@@ -32,6 +32,27 @@ Lite share the code, so both get both.
   document, and QUILL's Crash Recovery says how the document begins. The date
   alone didn't say which piece of work it was.
 
+### Distribution and station-source changes
+
+- Replace the chapter page-turn sound of unconfirmed origin with an original,
+  reproducibly synthesized cue. Custom chapter sounds remain available.
+- Retire the built-in SomaFM source in the shared Radio implementation in
+  response to its published third-party-client terms. Known SomaFM catalogue
+  entries and direct playback and recording paths are filtered or blocked.
+  Review of indirect paths, old user data and previously published releases
+  remains open; this is not a claim that every possible route is eliminated.
+- Stop distributing or downloading a legacy voice engine for QUILL and Studio
+  because its redistribution terms remain unclear. Separately installed copies
+  still work; complete removal is in progress, and existing saved voice
+  selections will need an explicit replacement choice. Previously published
+  packages and other distribution paths still require review.
+- Stage only the supported Piper and eSpeak-NG directories from the Studio
+  portable build's speech data, rather than copying all speech data. The main
+  Windows builder also rejects unrecognized bundled-tool destinations.
+- Correct the licensing inventory for the installed PyPI `html_to_text`
+  package. It does not provide the API currently imported by QUILL, so choosing
+  and testing the intended dependency remains open.
+
 ### Quill Radio: Victor Stream XSPF import and more reading services (2026-10-29)
 
 - XSPF import (`quill/core/radio/xspf.py`) recovers each track of a malformed

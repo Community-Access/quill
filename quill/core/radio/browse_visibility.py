@@ -105,7 +105,6 @@ BROWSE_SOURCES: tuple[BrowseSourceInfo, ...] = (
         "Westwood One's ten live event channels: NCAA tournaments, the NFL and more.",
         network=False,
     ),
-    BrowseSourceInfo("soma", "SomaFM", "Curated, commercial-free channels."),
     BrowseSourceInfo(
         "one81",
         "181.FM",

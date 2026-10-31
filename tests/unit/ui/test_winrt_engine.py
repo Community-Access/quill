@@ -74,7 +74,7 @@ def test_local_paths_are_told_from_addresses() -> None:
     assert winrt_engine._looks_like_local_path("C:\\Music\\a.mp3")
     assert winrt_engine._looks_like_local_path("S:/QUILL/x.mp3")
     assert winrt_engine._looks_like_local_path("\\\\server\\share\\a.mp3")
-    assert not winrt_engine._looks_like_local_path("https://ice1.somafm.com/groovesalad-128-mp3")
+    assert not winrt_engine._looks_like_local_path("https://stream.example.org/live.mp3")
     assert not winrt_engine._looks_like_local_path("http://127.0.0.1:8123/relay")
 
 

@@ -66,6 +66,24 @@ def _make_dialog(frame, *, preview_fn, preview_stop_fn=None):
     return dlg
 
 
+def test_missing_dectalk_has_no_download_button(wx_app, tmp_path) -> None:
+    from quill.ui.voice_browser_dialog import VoiceBrowserDialog
+
+    frame = wx.Frame(None)
+    dlg = VoiceBrowserDialog(
+        frame,
+        engine_options=[("DECtalk", "dectalk")],
+        current_engine="dectalk",
+        piper_model_dir=tmp_path,
+        settings=type("S", (), {})(),
+        preview_fn=lambda *_args, **_kwargs: None,
+        engine_available={"dectalk": False},
+    )
+    assert not dlg._download_btn.IsShown()
+    assert "QUILL does not distribute it" in dlg._detail_lbl.GetLabel()
+    frame.Destroy()
+
+
 def test_preview_button_toggles_to_stop_while_active(wx_app) -> None:
     states: list[str] = []
 

@@ -16,7 +16,7 @@ Node id grammar, all opaque to the caller (see :mod:`browse_nodes`)::
     favorites                       your saved stations and folders
     favorites:<folder>
     popular | trending | recent     Radio Browser rankings
-    acb | nfb | reading | soma      flat, mostly bundled
+    acb | nfb | reading             flat, mostly bundled
     rbgenre | rbgenre:<tag>         Radio Browser by genre
     rbcountry | rbcountry:<country> ...then states, or stations when there are none
     rbstate:<country>\\t<state>
@@ -240,7 +240,6 @@ ROOT_SOURCES: tuple[tuple[str, str], ...] = (
     ("nfb", "NFB Radio"),
     ("reading", "Radio Reading Services"),
     ("westwood", "Westwood One Sports"),
-    ("soma", "SomaFM"),
     ("one81", "181.FM"),  # whole networks, 2026-10-25 (browse_genres.py)
     ("lautfm", "laut.fm"),
     ("tunein", "TuneIn"),
