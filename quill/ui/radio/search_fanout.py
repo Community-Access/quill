@@ -29,7 +29,6 @@ from quill.core.radio import (
     one_eighty_one,
     radio_paradise,
     shoutcast,
-    soma_fm,
 )
 from quill.core.radio.directory_search import (
     iheart_variants,
@@ -96,11 +95,6 @@ def run_search(
     extras: list[RadioStation] = []
     query = name or tag
     if query:
-        if host._source_on("somafm"):
-            try:
-                extras += soma_fm.search_stations(query, safe_mode=safe_mode)
-            except soma_fm.SomaFmError:
-                pass
         if host._source_on("tunein"):
             extras += tunein_variants(query, safe_mode=safe_mode)
         # SHOUTcast, Live365 and Radio Paradise each swallow their own

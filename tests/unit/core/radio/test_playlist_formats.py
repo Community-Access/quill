@@ -23,14 +23,14 @@ from quill.core.radio.playlist_formats import (
 
 _PLS = """[playlist]
 NumberOfEntries=3
-File1=https://ice1.somafm.com/groovesalad-128-mp3
-Title1=SomaFM Groove Salad
+File1=https://stream.example.org/chill-128-mp3
+Title1=Chill Radio
 Length1=-1
-File2=https://ice2.somafm.com/groovesalad-128-mp3
-Title2=SomaFM Groove Salad (2)
+File2=https://stream2.example.org/chill-128-mp3
+Title2=Chill Radio (2)
 Length2=-1
-File3=https://ice4.somafm.com/groovesalad-128-mp3
-Title3=SomaFM Groove Salad (3)
+File3=https://stream3.example.org/chill-128-mp3
+Title3=Chill Radio (3)
 Version=2
 """
 
@@ -131,8 +131,8 @@ def test_an_hls_manifest_named_m3u_is_still_detected() -> None:
 def test_parse_pls_reads_files_and_titles() -> None:
     stations = parse_pls(_PLS)
     assert len(stations) == 3
-    assert stations[0].name == "SomaFM Groove Salad"
-    assert stations[0].stream_url == "https://ice1.somafm.com/groovesalad-128-mp3"
+    assert stations[0].name == "Chill Radio"
+    assert stations[0].stream_url == "https://stream.example.org/chill-128-mp3"
 
 
 def test_parse_pls_matches_titles_by_number_not_position() -> None:

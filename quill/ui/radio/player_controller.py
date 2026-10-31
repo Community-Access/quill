@@ -42,7 +42,7 @@ from quill.core.audio import exact_optilab
 from quill.core.audio.exact_optilab import ExactOptilab
 from quill.core.audio_enhance import EnhanceRelay
 from quill.core.optilab import optilab_active
-from quill.core.radio.models import RadioStation
+from quill.core.radio.models import RadioStation, is_retired_somafm_station
 from quill.core.sound_events import SoundEvent
 from quill.core.spotify.models import is_spotify_uri
 from quill.ui.audio.audio_engine import create_windows_engine
@@ -308,6 +308,24 @@ class RadioPlayerController(PlaybackUrlMixin, PlayerTracksMixin):
         on a worker thread, and playback starts when it lands. Every other
         station plays synchronously, exactly as before.
         """
+        if is_retired_somafm_station(
+            stream_url=station.stream_url,
+            homepage=station.homepage,
+            source=station.source,
+        ):
+            # Older favorites remain the listener's data, but cannot be sent
+            # through the generic stream player now that SomaFM's terms do not
+            # authorize new third-party apps to use its streams.
+            self.stop()
+            self._set_state(
+                RadioPlayerState.ERROR,
+                station=station,
+                message=(
+                    "SomaFM streams are not available in QUILL under SomaFM's "
+                    "current terms. Remove this favorite or choose another station."
+                ),
+            )
+            return
         if is_youtube_station(station) and not consent_granted(self):
             return  # declined: the ask says so out loud, and nothing changes
         self._play_token += 1

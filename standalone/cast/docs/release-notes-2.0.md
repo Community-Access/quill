@@ -3,6 +3,13 @@
 *Version 2.0.0 (build 6), the beta for testers, October 2026. 2.0.0 was
 prepared on October 3, 2026 and is not yet published.*
 
+## Unreleased distribution note
+
+Installed Cast uses the shared QuillVille Runtime, which currently includes
+PyMuPDF 1.28.2 under AGPL-3.0 through GLOW. Cast does not itself expose GLOW.
+Release-specific source and legal review remain open; portable packages must
+be checked separately.
+
 I listen to a lot of podcasts, and I do it with a screen reader. For years
 that meant apps where the list I wanted was three windows away, buttons that
 said "Play" without saying what they would play, and news that went by while

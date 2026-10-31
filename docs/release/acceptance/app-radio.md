@@ -113,7 +113,7 @@ view and the fastest path to your first favorite.
 1. Press the **Browse Stations…** button, or **Station menu (Alt, S) ▸ Browse
    Stations…**.
 2. In the **Stations (expand a source to browse it)** tree, arrow to a source
-   (e.g. **Popular Stations** or **SomaFM**) and press **Right Arrow / Enter** to
+   (e.g. **Popular Stations**) and press **Right Arrow / Enter** to
    expand it; wait for it to load.
 3. Arrow onto a station and press **Enter** (or the **Play** button) to play it.
 4. Press **Add to Favorites**. Then try the **Find in this folder** field: type a

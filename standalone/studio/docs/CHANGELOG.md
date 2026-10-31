@@ -4,6 +4,28 @@ All notable changes to QUILL Studio are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+- **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
+  which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
+  GLOW dependency; Studio does not itself expose GLOW. Release-specific source
+  and legal review are required before the next public release. Portable
+  contents must be checked separately. See Licences and Notices and the
+  PyMuPDF distribution review.
+- **Chapter sound provenance.** The default page-turn-like cue is now generated
+  from scratch by QUILL rather than using a recording with unconfirmed origin.
+  Custom chapter sounds remain available.
+- **Speech packaging.** Studio portable builds now copy only supported speech
+  engine folders, rather than all speech data. Distribution of a legacy voice
+  engine has stopped pending licensing review. A separately installed copy
+  still works; complete removal and previous package review remain open.
+- **Shared Windows runtime.** Windows OCR and Media projections move to
+  PyWinRT 4.0.3 and the Windows SDK 10.0.28000.2705 line. The Windows Media
+  engine releases device references and event handlers on shutdown.
+- **Production planning.** The consolidated Studio plan proposes a shared
+  Converter round trip and reviewable local or explicitly consented cloud
+  transcription. These proposals are not delivered features.
+
 ## [2.0.0] - built, not yet released
 
 QUILL Studio 2.0.0 is the next Studio release after Audio Studio 1.0.0. The previously unpublished 2.2.0 build is renumbered to 2.0.0 for the QUILL Studio rename. Shared-runtime compatibility does not require matching the other apps' version numbers.
@@ -131,7 +153,7 @@ Kelly Ford's [Quick Describe](https://github.com/TheIdeaPlace/QuickDescribe), a 
 - **The QuillVille Runtime -- install Python once, and every Quill app starts instantly.** Every QuillVille app (QUILL, Quill Radio, Quill Weather, and QUILL Audio Studio) now shares one Python runtime, the QuillVille Runtime, installed once per user and reused by all of them. Install it a single time and every app you add afterward launches immediately. The runtime is reference-counted: it is removed only when the last app that needs it is uninstalled. Alongside the existing full portable and full installer builds, two new lightweight editions arrive that ride the shared runtime:
   - **Companion edition** (`QUILL-Audio-Studio-Companion-<version>.zip`, about 2 to 3 MB) -- just the app and its docs. The first time you launch it, if the QuillVille Runtime is not already installed, it offers to download and install it (about 230 MB, once) with a fully accessible progress bar; after that, this app and every other QuillVille app start instantly.
   - **Thin installer** (the `-Lite` setup) -- a tiny installer that downloads the shared runtime only if it is not already present, then installs the app.
-  - The **full portable** edition is now named `QUILL-Audio-Studio-Portable-Lean-<version>.zip` (about 675 MB): fully self-contained, runs from a USB stick with no installation and no internet, bundling a genuine unmodified copy of Python plus the offline speech and text-to-speech engines (whisper.cpp, DECtalk, eSpeak-NG, Piper, and neural Kokoro). The **full installer** (`QUILL-Audio-Studio-Setup-Shared-<version>.exe`) installs the shared runtime, if it is not already present, plus the app.
+  - The **full portable** edition is named `QUILL-Audio-Studio-Portable-Lean-<version>.zip`: it runs from a USB stick and bundles Python and offline speech engines. Earlier builds included DECtalk; new staging excludes it as noted above. The **full installer** (`QUILL-Audio-Studio-Setup-Shared-<version>.exe`) installs the shared runtime, if it is not already present, plus the app.
 - **Accessible runtime downloads.** Whenever the QuillVille Runtime is downloaded -- by an installer or by an app's own first launch -- it shows a fully accessible progress bar that works with NVDA, JAWS, and Narrator, announcing progress as a percentage.
 - **Update in one click -- Audio Studio installs it and restarts itself.** When an update is available, choose Download, then **Install and restart now**: Audio Studio applies the update (extracting the new portable files over your folder, or running the installer silently) and relaunches automatically, keeping all your settings and data. No more closing the app, unzipping, and swapping folders by hand. Shared across every Quill app.
 - **A status bar you can read, and a running job you can follow from the tray.** The status bar is now arrow-navigable: press **F6** to move focus into it, Left and Right to move between cells, Enter to act on one, Escape or a second F6 to leave. Its cells are Activity, Progress, Sleep timer, Your books, and Time, so "what is going on right now" is always one key away instead of something you have to guess at. The Progress cell carries a live narration or build run -- percentage, files, and the current step -- and the same text is written to the system-tray tooltip, so a long run stays reviewable with the window minimized. **View > Show Status Bar** turns it on or off, and the choice is remembered.
@@ -174,7 +196,7 @@ First release: the QUILL editor's Audio Studio as a self-contained standalone ap
 - The Audio Studio wizard with three journeys: Narrate Documents (source/filters, engine + voice with previews, round-robin rotation, voice casting rules, translated editions, chapter shaping with title preview, output and diagnostics, book details with Open Library / MusicBrainz lookup, plain-sentence summary), Build From Recordings (folder of audio to one chaptered master, library mode, silence trimming, pre-build chapter review), and Edit a Book.
 - The Chapter Workbench: chapter-aware player (mpv engine with wx.media fallback, resume positions, pitch-preserved speed, "Where am I?"), split at playhead, set start to playhead, merge, rename, restore, silence-based chapter proposals, AI-proposed chapter titles (local transcription, text-only to the configured AI, reviewable), ACX check, chapter list import/export in five formats, split into per-chapter files, in-place MP3 saves and lossless M4B Save As.
 - The listening layer: the home-window "Your books" library is a tree (Favorites, In Progress, Recently Played, Inbox, plus your own folders) that populates as you open books, with a keyboard-complete context menu (Open, Reveal in Folder, Favorite, Move to Folder, New Folder, Remove) built on `quillas/ui/audio_studio/library_tree.py` over `quillas/core/audio_studio/library.py`; Resume on launch (Studio menu, opt-in) that reopens the most recently played book at its saved position, silently skipping if the file is gone; a Recently Played submenu (Studio menu); media keys while a Workbench is open (Play/Pause, Stop, Next chapter, Previous chapter route to the active player, unregistered on exit); per-book volume and mute (each book remembers its own level and mute state, Ctrl+M toggles mute); a Sleep Timer (Book Tools menu) that stops playback after N minutes or at the end of the current chapter, with a cancellable watcher; and a Play Queue (Book Tools menu) that auto-advances to the next book when the current one finishes and the Workbench is closed. `open_book_in_workbench` threads optional host callbacks (`on_player_ready`, `on_finished`, `on_volume`, `on_mute`, `on_closed`) to the player so the shell drives media keys, per-book prefs, history, and queue auto-advance.
-- Voice engines with on-demand downloads: Windows SAPI 5, DECtalk, Piper, Kokoro, eSpeak-NG, macOS say; ElevenLabs (installs on demand) and OpenAI/Gemini/ElevenLabs cloud voices with user-supplied keys. Speech Hub, Manage Speech Models, Pronunciation Dictionaries, Download Optional Components (with Test/Remove), and Get FFmpeg in the Voices menu. A "Generating preview, please wait" spoken cue for slow live previews (on by default).
+- Voice engines: Windows SAPI 5, Piper, Kokoro, eSpeak-NG and macOS say; ElevenLabs (installs on demand) and OpenAI/Gemini/ElevenLabs cloud voices with user-supplied keys. DECtalk was formerly offered as a download; it now requires a separate installation as noted above. Speech Hub, Manage Speech Models, Pronunciation Dictionaries, Download Optional Components (with Test/Remove), and Get FFmpeg in the Voices menu. A "Generating preview, please wait" spoken cue for slow live previews (on by default).
 - AI menu with the Set Up AI wizard (cloud provider with your own key, or local via Ollama) powering AI chapter titles, translated editions, and cloud narration voices.
 - Book Tools menu: Publish a Finished Book (local RSS feed, folder show feed with accessible show notes, SFTP upload with Credential Manager storage, Auphonic mastering), Make a Podcast Feed From a Folder, ACX Compliance Check with plain-language recommendations, plus Sleep Timer, Play Queue, and Mute Playback.
 - `.quilljob` job files: save an exact run from the summary page; re-run it from Studio > Open Job File or the wizard's first page.

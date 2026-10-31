@@ -75,16 +75,16 @@ def test_copy_says_link_for_a_recording_and_stream_for_a_station() -> None:
 
 
 def test_a_playing_row_offers_stop_rather_than_play() -> None:
-    assert _ids(actions_for("soma", station=_Row(), playing=True))[0] == row_actions.STOP
+    assert _ids(actions_for("tunein", station=_Row(), playing=True))[0] == row_actions.STOP
 
 
 def test_a_saved_row_offers_removal() -> None:
-    ids = _ids(actions_for("soma", station=_Row(), saved=True))
+    ids = _ids(actions_for("tunein", station=_Row(), saved=True))
     assert row_actions.FAVORITE_REMOVE in ids and row_actions.FAVORITE_ADD not in ids
 
 
 def test_a_row_with_no_homepage_does_not_offer_to_open_one() -> None:
-    ids = _ids(actions_for("soma", station=_Row()))
+    ids = _ids(actions_for("tunein", station=_Row()))
     assert row_actions.OPEN_SITE not in ids
     assert row_actions.EDIT_WEBSITE in ids
 
@@ -370,7 +370,6 @@ def test_every_searchable_source_maps_to_a_real_facet() -> None:
         "iHeart",
         "TuneIn",
         "Podcasts",
-        "SomaFM",
         "ACB Media",
         "Community M3U",
         "Xiph",
@@ -391,9 +390,9 @@ def test_a_live_station_offers_record_and_schedule_when_the_host_can() -> None:
 
 
 def test_a_saved_row_offers_rename_favorite() -> None:
-    saved = _ids(actions_for("soma", station=_Row(), saved=True))
+    saved = _ids(actions_for("tunein", station=_Row(), saved=True))
     assert row_actions.RENAME_FAVORITE in saved
-    unsaved = _ids(actions_for("soma", station=_Row(), saved=False))
+    unsaved = _ids(actions_for("tunein", station=_Row(), saved=False))
     assert row_actions.RENAME_FAVORITE not in unsaved
 
 
@@ -519,7 +518,7 @@ def test_another_source_does_not_offer_them() -> None:
     ids = [
         a.id
         for a in row_actions.actions_for(
-            "soma", is_folder=True, folder_state=row_actions.FolderState(root_source=True)
+            "tunein", is_folder=True, folder_state=row_actions.FolderState(root_source=True)
         )
     ]
 

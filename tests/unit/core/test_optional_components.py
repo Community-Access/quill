@@ -665,6 +665,14 @@ def test_status_label_and_download_allowed_normal_install(monkeypatch) -> None:
     assert oc.download_allowed(_comp(True)) is False
 
 
+def test_dectalk_requires_a_separately_installed_copy(monkeypatch) -> None:
+    component = oc.OptionalComponent("dectalk", "DECtalk", "desc", oc.VOICES, False, "")
+    for offline in (False, True):
+        monkeypatch.setattr(oc, "_offline_edition", lambda offline=offline: offline)
+        assert oc.status_label_for(component) == "Install separately"
+        assert not oc.download_allowed(component)
+
+
 def test_status_label_and_download_allowed_offline_edition(monkeypatch) -> None:
     """In the Offline Edition Download is always suppressed and labels say why."""
     monkeypatch.setattr(oc, "_offline_edition", lambda: True)

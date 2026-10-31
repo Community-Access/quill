@@ -12,6 +12,16 @@
   windows from the same afternoon are easy to tell apart. Also suggested by
   Chris Nova.
 
+- **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
+  which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
+  GLOW dependency; Lite does not itself expose GLOW. Release-specific source
+  and legal review are required before the next public release. Portable
+  contents must be checked separately. See Licences and Notices and the
+  PyMuPDF distribution review.
+- **Windows OCR runtime.** The shared Windows OCR projections move to PyWinRT
+  4.0.3 and the Windows SDK 10.0.28000.2705 line. This is a dependency
+  migration, not a new OCR feature or a claim that new packages are published.
+
 ## 1.2.0 -- 2026-10-03
 
 Testing rebuild: **1.2.0 (build 6)**, following builds 2, 3, 4 and 5; builds 2

@@ -150,7 +150,7 @@ def test_an_empty_internet_branch_says_it_might_be_unreachable() -> None:
     # listener concludes a working source is broken, or the reverse.
     d = _dialog()
     root = _Node()
-    d._tree.SetItemData(root, {"node_id": "soma", "label": "SomaFM"})
+    d._tree.SetItemData(root, {"node_id": "tunein", "label": "TuneIn"})
     d._add_children(root, [])
     assert "could not be reached" in d._announced[-1]
 

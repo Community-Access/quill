@@ -1288,80 +1288,14 @@ class SpeechDownloadsMixin:
         ).start()
 
     def download_dectalk_exe(self, *, on_done: Callable[[bool], None] | None = None) -> None:
-        """Download the DECtalk runtime (~30 MB) on demand.
-
-        DECtalk is a classic American English synthesizer with 9 distinct voices.
-        The runtime is downloaded from the dectalk/dectalk GitHub release, verified
-        with a pinned SHA-256 (SEC-6), and saved to the managed speech folder so
-        ``discover_dectalk_executable()`` finds it automatically on next use.
-        Runs on a worker thread behind a progress dialog.
-        """
-        import threading
-
-        from quill.core.dectalk_runtime import download_dectalk_runtime
-        from quill.core.paths import app_data_dir
-        from quill.core.read_aloud import discover_dectalk_executable
-        from quill.core.settings import save_settings
-        from quill.ui.ai_transcribe_dialog import AIProgressDialog
-
-        wx = self._wx
-        configured = getattr(self.settings, "read_aloud_dectalk_executable", "")
-        if discover_dectalk_executable(configured) is not None:
-            self._show_message_box(
-                "DECtalk is already installed. Open Manage Voices to select a voice.",
-                "Download DECtalk",
-                wx.ICON_INFORMATION | wx.OK,
-            )
-            # Reopen the components hub the caller closed to dispatch this, so an
-            # already-installed engine does not dump the user on the home window
-            # (parity with the Kokoro/audio_extras already-installed branches).
-            if on_done:
-                on_done(True)
-            return
-        confirm = self._show_message_box(
-            "Download the DECtalk speech runtime (~30 MB) from GitHub?\n\n"
-            "DECtalk is a classic American English synthesizer with 9 distinct "
-            "voices (Paul, Betty, Harry, and more). The download is SHA-256 "
-            "verified before extraction.",
-            "Download DECtalk",
-            wx.ICON_QUESTION | wx.YES_NO,
+        """Explain the retired download to callers from older UI paths."""
+        self._show_message_box(
+            "QUILL no longer distributes DECtalk. You can use a separately installed copy.",
+            "DECtalk",
+            self._wx.ICON_INFORMATION | self._wx.OK,
         )
-        if confirm != wx.YES:
-            return
-        speech_root = app_data_dir() / "speech" / "dectalk"
-        progress = AIProgressDialog(
-            self.frame,
-            "Downloading DECtalk",
-            "Downloading DECtalk runtime...",
-            on_cancel=None,
-            announce_fn=self._announce,
-        )
-        progress.show()
-        self._announce("Downloading DECtalk runtime.")
-
-        def _run() -> None:
-            try:
-                exe = download_dectalk_runtime(speech_root)
-                self.settings.read_aloud_dectalk_executable = str(exe)
-                save_settings(self.settings)
-            except Exception as exc:  # noqa: BLE001
-                wx.CallAfter(progress.close)
-                wx.CallAfter(
-                    self._set_status, f"DECtalk download failed: {user_facing_message(exc)}"
-                )
-                wx.CallAfter(self._announce, f"DECtalk download failed. {user_facing_message(exc)}")
-                return
-            done = "DECtalk is ready. Click OK to open Manage Voices and choose a voice."
-            wx.CallAfter(self._set_status, "DECtalk ready.")
-            wx.CallAfter(self._announce, "DECtalk ready.")
-            progress.switch_to_ok(
-                done,
-                on_ok=(lambda: on_done(True)) if on_done else self.choose_read_aloud_configuration,
-            )
-
-        threading.Thread(  # GATE-40-OK: DECtalk runtime download worker.
-            target=_run, daemon=True
-        ).start()
+        if on_done:
+            on_done(False)
 
     def download_piper_exe(self, *, on_done: Callable[[bool], None] | None = None) -> None:
         """Download the Piper TTS engine (~22 MB) on demand.

@@ -1,6 +1,14 @@
 # QUILL Transcribe 1.0 Release Notes
 
-Version 1.0.0 (build 3), released November 1, 2026.
+Version 1.0.0 (build 3), planned for November 1, 2026; the packages have not
+yet been published.
+
+## Unreleased distribution note
+
+Installed Transcribe uses the shared QuillVille Runtime, which currently
+includes PyMuPDF 1.28.2 under AGPL-3.0 through GLOW. Transcribe does not
+itself expose GLOW. Release-specific source and legal review remain open;
+portable packages must be checked separately.
 
 QUILL Transcribe is new. It types what you say into the program you are using,
 with the same speech models and dictation you know from QUILL and QUILL Lite.

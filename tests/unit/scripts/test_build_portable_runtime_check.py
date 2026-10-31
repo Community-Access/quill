@@ -25,3 +25,40 @@ def test_sanity_import_disables_bytecode_writes() -> None:
         "-c",
         _BUILDER.import_check_source(product),
     ]
+
+
+def test_engine_staging_excludes_dectalk(tmp_path: Path) -> None:
+    source = tmp_path / "source" / "speech"
+    (source / "DECtalk").mkdir(parents=True)
+    (source / "DECtalk" / "DECtalk.dll").write_bytes(b"test")
+    (source / "piper").mkdir()
+    (source / "piper" / "piper.exe").write_bytes(b"test")
+    output = tmp_path / "output"
+    output.mkdir()
+
+    _BUILDER._stage_engines(output, tmp_path / "source")
+
+    assert not (output / "data" / "speech" / "DECtalk").exists()
+    assert (output / "data" / "speech" / "piper" / "piper.exe").is_file()
+
+
+def test_engine_staging_only_copies_supported_speech_directories(tmp_path: Path) -> None:
+    source = tmp_path / "source" / "speech"
+    for engine, executable in (
+        ("piper", "piper.exe"),
+        ("espeak-ng", "espeak-ng.exe"),
+        ("unrecognized", "engine.exe"),
+    ):
+        (source / engine).mkdir(parents=True)
+        (source / engine / executable).write_bytes(b"test")
+    (source / "personal-data.txt").write_text("private", encoding="utf-8")
+    output = tmp_path / "output"
+    output.mkdir()
+
+    staged = _BUILDER._stage_engines(output, tmp_path / "source")
+
+    assert set(staged) == {"speech/piper", "speech/espeak-ng"}
+    assert (output / "data" / "speech" / "piper" / "piper.exe").is_file()
+    assert (output / "data" / "speech" / "espeak-ng" / "espeak-ng.exe").is_file()
+    assert not (output / "data" / "speech" / "unrecognized").exists()
+    assert not (output / "data" / "speech" / "personal-data.txt").exists()

@@ -1,6 +1,13 @@
 # Quill Inkwell 1.0 Release Notes
 
-Version 1.0.0 (build 2). This is Quill Inkwell's first public release.
+Version 1.0.0 (build 2). This first public release is not yet published.
+
+## Unreleased distribution note
+
+Installed Inkwell uses the shared QuillVille Runtime, which currently includes
+PyMuPDF 1.28.2 under AGPL-3.0 through GLOW. Inkwell does not itself expose
+GLOW. Release-specific source and legal review remain open; portable packages
+must be checked separately.
 
 Quill Inkwell expands abbreviations in every Windows program. Type a short
 word, press space, and Inkwell types what you saved in its place: a phrase, an

@@ -1,5 +1,9 @@
 # Quill Radio -- sign-off checklist
 
+**Source retirement:** The shared Radio code has retired SomaFM. Do not use
+the SomaFM stream example in this historical checklist for current builds;
+substitute a permitted, non-SomaFM stream when testing generic playlist import.
+
 One pass, top to bottom, checking boxes. Every step says exactly what to press,
 exactly what to type, and the one thing that decides pass or fail. Nothing here
 needs an account or a key except Block M (Spotify), which is optional.
