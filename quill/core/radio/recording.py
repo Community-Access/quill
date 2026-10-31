@@ -39,7 +39,7 @@ from quill.core.audio.exact_optilab import ExactOptilab
 from quill.core.error_codes import CodedError
 from quill.core.radio import radio_logging, recording_outcome, recording_report
 from quill.core.radio.local_clock import local_now
-from quill.core.radio.models import is_somafm_url
+from quill.core.radio.models import _coerce_int, is_somafm_url
 from quill.core.radio.recording_commands import (
     RECORD_FORMAT_LABELS,
     RECORD_FORMATS,
@@ -209,19 +209,6 @@ class RecordingSettings:
             max_concurrent_recordings=max(0, _coerce_int(data.get("max_concurrent_recordings"), 0)),
             split_at_song_changes=bool(data.get("split_at_song_changes", False)),
         )
-
-
-def _coerce_int(value: object, default: int) -> int:
-    if isinstance(value, bool):
-        return default
-    if isinstance(value, (int, float)):
-        return int(value)
-    if isinstance(value, str):
-        try:
-            return int(float(value)) if value.strip() else default
-        except ValueError:
-            return default
-    return default
 
 
 @dataclass(slots=True)

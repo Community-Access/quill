@@ -40,6 +40,7 @@ from quill.core.sync import recovery_phrase, vault_file
 from quill.core.sync.listening_places import new_device_id as _new_device_id
 from quill.core.sync.places_config import PlacesConfig, default_device_name
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.spoken_name import set_spoken_name
 
 TITLE = "Carry My Place Between Machines"
 
@@ -173,6 +174,7 @@ class SyncPlacesDialog:
             self._dialog, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(-1, 60)
         )
         self._status.SetName("What happened")
+        set_spoken_name(self._status, "What happened")
         self._status.SetValue(config.describe())
         root.Add(self._status, 0, wx.EXPAND | wx.ALL, 10)
 

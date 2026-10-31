@@ -488,7 +488,7 @@ _REVIEWED_PERSISTENCE: dict[str, str] = {
     "core/sticky_notes.py::save_sticky_notes": "content",
     "core/undo_store.py::save_undo_history": "content",
     "core/spelling/session.py::undo_last": "content",
-    "core/spellcheck.py::add_word_to_scope": "content",
+    "core/spell_dictionaries.py::add_word_to_scope": "content",
     "core/speech/voice_blacklist.py::save_blacklist": "content",
     "core/verbosity/storage.py::save_custom": "content",
     "core/trust.py::save_trusted_locations": "content",

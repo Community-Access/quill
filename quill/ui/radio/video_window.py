@@ -39,6 +39,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
+from quill.ui.spoken_name import set_spoken_name
+
 #: What the video surface tells assistive technology it is. Not "graphic": it is
 #: a container the application draws into, and there is no alt text to find.
 SURFACE_DESCRIPTION = (
@@ -93,6 +95,7 @@ class VideoWindow:
             self._frame, style=wx.TE_READONLY | wx.TE_MULTILINE | wx.TE_NO_VSCROLL
         )
         self._status.SetName("Video status: title, position, chapter and audio track")
+        set_spoken_name(self._status, "Video status")
         self._status.SetHelpText(
             "A read-on-demand status line -- it never announces itself. Arrow "
             "through it for the title, position, chapter and audio track."

@@ -1,6 +1,6 @@
 # QUILL 0.9.0 - The Last Feature Beta: Everything We Promised, By Ear
 
-### The screen-reader-first writing studio, built by the people who depend on it.
+**The screen-reader-first writing studio, built by the people who depend on it.**
 
 *From Community Access. Free. Optional by design. Private by default. Yours to make quiet.*
 

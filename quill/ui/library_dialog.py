@@ -45,6 +45,7 @@ from quill.core.library import catalogs as catalogs_module
 from quill.core.library import works as works_module
 from quill.core.library.model import Book, LibraryError
 from quill.core.library.works import Work
+from quill.ui.spoken_name import set_spoken_name
 
 # Display label -> source ids passed to library.search. "Everywhere" is first
 # and is the default: somebody looking for a book wants the book, and choosing
@@ -174,6 +175,7 @@ class LibraryDialog(wx.Dialog):
 
         self.status = wx.TextCtrl(self, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(-1, 48))
         self.status.SetName("Status")
+        set_spoken_name(self.status, "Status")
         sizer.Add(self.status, 0, wx.EXPAND | wx.ALL, 6)
 
         btns = wx.BoxSizer(wx.HORIZONTAL)

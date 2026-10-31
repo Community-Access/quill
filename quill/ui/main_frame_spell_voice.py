@@ -118,7 +118,9 @@ class SpellVoiceMixin:
         # wants to know: what word did you just finish, and is it a word?
         from quill.core.spellcheck import misspelling_behind
 
-        item = misspelling_behind(text, cursor, dictionary)
+        item = misspelling_behind(
+            text, cursor, dictionary, filename=getattr(self.document, "path", None)
+        )
         if item is None or self.spell_ignores().skips(text, item):
             self._last_live_misspelling_feedback = None
             return

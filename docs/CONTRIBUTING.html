@@ -323,7 +323,55 @@ architecture overview below.</li>
 <li>Check existing issues and pull requests before starting overlapping
 work.</li>
 <li>Review project decision process in <code>GOVERNANCE.md</code>.</li>
+<li>Read the <a
+href="ACCESSIBILITY.md#contributor-expectations">accessibility
+contributor expectations</a> in <code>ACCESSIBILITY.md</code>. They
+apply to every pull request.</li>
 </ol>
+<h2 id="accessibility-expectations">Accessibility expectations</h2>
+<p>Accessibility is the reason QUILL exists, so every contribution
+follows the <a
+href="ACCESSIBILITY.md#contributor-expectations">contributor
+expectations in ACCESSIBILITY.md</a>: the checks the build runs, the
+interface requirements (keyboard access, visible labels created before
+their controls, announcements only of what the screen reader cannot
+know, braille parity, F1 help), the documentation rules, and the
+accessibility review a new dependency needs. The pull request template
+carries the same list as a checklist; check each item that applies and
+mark the rest N/A.</p>
+<ul>
+<li><strong>Test what you change.</strong> Run
+<code>pytest tests/accessibility -q</code> and
+<code>python -m quill.tools.platform_report</code>. For an interface
+change, do a keyboard-only pass and a screen reader spot check, using
+the procedures in <a
+href="accessibility-testing.md">accessibility-testing.md</a>, and say in
+the pull request which screen reader and version you used.</li>
+<li><strong>Report a barrier</strong> with the <a
+href="https://github.com/Community-Access/quill/issues/new?template=accessibility.yml">accessibility
+issue form</a>, from inside any app with Help &gt; Get Help from
+Support…, or by email as described in <a
+href="ACCESSIBILITY.md#reporting-accessibility-issues">ACCESSIBILITY.md</a>
+if GitHub is a barrier for you.</li>
+<li><strong>Find accessibility work.</strong> Issues that suit a first
+contribution are labelled <code>accessibility</code> and
+<code>good first issue</code>; issues where we need experienced help are
+labelled <code>accessibility</code> and <code>help wanted</code>, and
+say what experience would help.</li>
+</ul>
+<h2 id="ways-to-take-part">Ways to take part</h2>
+<p>Everything here can be done asynchronously and in text: issues and
+pull requests, GitHub Discussions for questions and ideas, and email to
+<a
+href="mailto:support@community-access.org">support@community-access.org</a>.
+No meetings or calls are required. Testing with assistive technology,
+reproducing reports, reviewing documentation and translating are all
+contributions. If a tool or process we use is a barrier for you, or you
+need an accommodation, email the accessibility owner named in <a
+href="ACCESSIBILITY.md#ownership-and-maintenance">ACCESSIBILITY.md</a>
+privately; you do not need to explain why. See <a
+href="ACCESSIBILITY.md#taking-part">Taking part</a> for the full
+detail.</p>
 <h2 id="architecture-overview">Architecture overview</h2>
 <p>QUILL is a layered desktop application with strict boundaries that
 exist to preserve accessibility behavior and testability. The canonical,
@@ -466,7 +514,9 @@ artifacts:</p>
 <p>A strong PR includes:</p>
 <ol type="1">
 <li>A clear summary of what changed and why.</li>
-<li>Notes on accessibility impact, if any.</li>
+<li>The accessibility checklist from the pull request template, with
+each applicable item checked and the screen reader and version you
+tested with.</li>
 <li>Notes on risk or migration impact, if any.</li>
 <li>Evidence of the checks you ran.</li>
 </ol>
@@ -555,6 +605,9 @@ rather than this public repository.</li>
 <li>reproduction steps</li>
 <li>environment details</li>
 </ul></li>
+<li>Accessibility barriers have their own form and an email route; see
+<a href="ACCESSIBILITY.md#reporting-accessibility-issues">Reporting
+accessibility issues</a>.</li>
 <li>Use the most specific issue template available (accessibility, AI,
 intake, snippets, dictation, performance, Quillin submission, or general
 bug/feature).</li>
@@ -580,6 +633,15 @@ shell-interpolated.</li>
 <h2 id="contributors">Contributors</h2>
 <p>The following people have contributed code, tests, accessibility
 feedback, or documentation to QUILL. Thank you.</p>
+<p>We add a name here, or credit someone in release notes, only with
+their consent and in the form they choose (a name, a GitHub handle, or
+no credit), and we describe the work, never the person’s disability or
+assistive technology. See <a
+href="ACCESSIBILITY.md#recognition">Recognition</a>. Accessibility
+reports and fixes from before that rule started, on 29 October 2026, are
+credited by GitHub account in <a
+href="ACCESSIBILITY.md#earlier-accessibility-contributions">Earlier
+accessibility contributions</a>.</p>
 <ul>
 <li>Taylor Arndt (<a
 href="https://github.com/taylorarndt">@taylorarndt</a>)</li>

@@ -59,6 +59,21 @@ release notes.
    corresponding source and build inputs for each shipped artifact. Obtain
    legal review of combined-work and source-offer obligations where unresolved;
    a separate process or a repository link alone is not proof of compliance.
+
+   **Accessibility.** Before each public release:
+   - Add the release's entry to `docs/accessibility-progress.md` (completed,
+     open, known limitations, links) and link it from the release notes.
+   - Record any keyboard, screen reader or manual runs in
+     `docs/accessibility-testing.md`, and update "Known limitations" and
+     "Supported environments" in `docs/ACCESSIBILITY.md` to match.
+   - Credit accessibility contributions in the release notes only with each
+     contributor's consent and in the form they chose; describe the work,
+     never the person's disability or assistive technology. Run
+     `node .github/scripts/a11y-credits.mjs --since <previous tag>` and paste
+     the block it prints: items labelled `credit: yes` or `credit: anonymous`
+     closed since that tag, as code and other contributions. It also warns
+     about `credit: asked` items with no answer after 14 days; leave those
+     contributors out, or ask them again.
 4. **Translations template current.** `quill/locale/quill.pot` shows the
    target version stamp and a fresh `POT-Creation-Date`.
 5. **No `.po` or `.mo` files ship.** Verified with

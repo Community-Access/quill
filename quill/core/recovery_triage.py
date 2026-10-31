@@ -41,6 +41,7 @@ the first and discards the rest can never silently drop one on the floor --
 from __future__ import annotations
 
 import hashlib
+import re
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -56,6 +57,8 @@ __all__ = [
     "describe_tidy",
     "fingerprint",
     "is_untitled",
+    "opening_words",
+    "opening_words_of_text",
     "row_label",
     "size_phrase",
     "summarise_recovery",
@@ -217,6 +220,59 @@ def triage[S: Recoverable](
     )
 
 
+#: How many words of a document the chooser quotes. Enough to tell "Dear
+#: Margaret, thank you for" from "Meeting notes for Tuesday", short enough that
+#: a row is still one breath (asked for on the QUILLVille list, 2026-10-30:
+#: "Sometimes the date/time isn't enough").
+OPENING_WORDS = 8
+
+#: Read no more than this to find them. Plain text needs a line or two; rich
+#: text is mostly RTF envelope before the first word, so it gets more room.
+_PLAIN_READ_LIMIT = 16_384
+_RICH_READ_LIMIT = 2_000_000
+
+#: Markdown and list marks that start a line but are not words anybody wrote.
+_MARKS = re.compile(r"[#*_>`~|\[\]]+")
+
+
+def opening_words_of_text(text: str, count: int = OPENING_WORDS) -> str:
+    """The first *count* words of *text*, with "..." when there are more.
+
+    "" for a document with no words in it -- the row then says nothing about
+    its opening rather than quoting an empty pair of quote marks.
+    """
+    words = _MARKS.sub(" ", text).split()
+    if not words:
+        return ""
+    quote = " ".join(words[:count])
+    return f"{quote}..." if len(words) > count else quote
+
+
+def opening_words(slot: Recoverable, count: int = OPENING_WORDS) -> str:
+    """How the slot's document begins, in its own words, or "".
+
+    The date says when, the size says how much, and neither says *which*: two
+    untitled windows from yesterday are indistinguishable until one of them is
+    quoted. Rich text is read through the RTF reader so the quote is the words,
+    not the control codes. Anything unreadable quotes nothing, because a row
+    that cannot be described is still a row that can be restored.
+    """
+    limit = _RICH_READ_LIMIT if slot.mode == "rich" else _PLAIN_READ_LIMIT
+    try:
+        with slot.content_path.open("rb") as handle:
+            text = handle.read(limit).decode("utf-8", errors="replace")
+    except OSError:
+        return ""
+    if slot.mode == "rich":
+        try:
+            from quill.io.rtf import rtf_to_markdown
+
+            text = rtf_to_markdown(text)
+        except Exception:  # noqa: BLE001 - a damaged copy still gets a row
+            return ""
+    return opening_words_of_text(text, count)
+
+
 def size_phrase(slot: Recoverable) -> str:
     """How much is in this slot, in words somebody can judge it by.
 
@@ -267,7 +323,7 @@ def when_phrase(slot: Recoverable, now: float | None = None) -> str:
 
 
 def row_label(slot: Recoverable, copies: int = 1, now: float | None = None) -> str:
-    """One row of the chooser: what it is, how much of it, and when.
+    """One row of the chooser: what it is, how it begins, how much, and when.
 
     The name leads because that is what somebody is looking for. The copy count
     is last and only when there is one, because "67 identical copies" is the
@@ -276,7 +332,9 @@ def row_label(slot: Recoverable, copies: int = 1, now: float | None = None) -> s
     the yes-or-no it replaces.
     """
     where = "" if is_untitled(slot) else f"  --  {slot.original_path}"
-    label = f"{slot.title}{where}  --  {size_phrase(slot)}, {when_phrase(slot, now)}"
+    opening = opening_words(slot)
+    begins = f'  --  begins "{opening}"' if opening else ""
+    label = f"{slot.title}{where}{begins}  --  {size_phrase(slot)}, {when_phrase(slot, now)}"
     if copies > 1:
         label += f"  ({copies} identical copies, kept as one)"
     return label

@@ -194,7 +194,9 @@ def test_an_ogg_station_with_mpv_present_keeps_the_ordinary_error(health) -> Non
     # mpv is here, so whatever went wrong was not this.
     health(ffmpeg=True, mpv=True)
 
-    assert media_preflight.refusal_for("Jazz FM", "https://stream.example.org/groovesalad.ogg") == ""
+    assert (
+        media_preflight.refusal_for("Jazz FM", "https://stream.example.org/groovesalad.ogg") == ""
+    )
 
 
 def test_an_mp3_station_is_never_blamed_on_the_missing_engine(health) -> None:

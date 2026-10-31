@@ -85,10 +85,14 @@ class SecondOutput:
         own_volume: int = rule.DEFAULT_BACKGROUND_VOLUME,
     ) -> None:
         self.stop()
-        if mode == rule.BACKGROUND and station is not None and is_retired_somafm_station(
-            stream_url=getattr(station, "stream_url", ""),
-            homepage=getattr(station, "homepage", ""),
-            source=getattr(station, "source", ""),
+        if (
+            mode == rule.BACKGROUND
+            and station is not None
+            and is_retired_somafm_station(
+                stream_url=getattr(station, "stream_url", ""),
+                homepage=getattr(station, "homepage", ""),
+                source=getattr(station, "source", ""),
+            )
         ):
             return
         self.mode = mode

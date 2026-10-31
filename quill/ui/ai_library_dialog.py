@@ -47,6 +47,7 @@ from quill.ui.skill_library_dialog import (
     _SkillParameterDialog,
     _SkillResultDialog,
 )
+from quill.ui.spoken_name import set_spoken_name
 
 if TYPE_CHECKING:
     from quill.core.settings import Settings
@@ -674,6 +675,7 @@ class _LibraryPage:
         left.Add(self._search, 0, wx.EXPAND | wx.BOTTOM, 4)
         self._list = wx.ListBox(self.panel, style=wx.LB_SINGLE)
         self._list.SetName(noun.capitalize())
+        set_spoken_name(self._list, noun.capitalize())
         left.Add(self._list, 1, wx.EXPAND)
         root.Add(left, 2, wx.EXPAND | wx.RIGHT, 8)
 

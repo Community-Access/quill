@@ -1653,14 +1653,16 @@ semantic region must say how it was found and fail rather than guess
 when the landmark is ambiguous.</p>
 <h2 id="7a-record-a-demonstration-version-1-next-to-build">7A. Record a
 Demonstration, version 1 (next to build)</h2>
-<p><strong>Status:</strong> implementable specification; nothing in this
-section is built. <strong>Priority:</strong> next. It is the first
-vertical slice of DEMO-001 and DEMO-002 (a screen-and-audio
-demonstration), the <em>screen recording</em> part of CAP-004, the first
-recording items of TRAY-001, and VERIFY-005 for one file. It reuses the
-capture picker, target identity rules, evidence reports, F1 help and
-hotkey services that shipped in 2.0.0 (Studio PRD section 4.14), and the
-shared FFmpeg.</p>
+<p><strong>Status:</strong> built 2026-10-29 on branch
+<code>feat/studio-demo-recording</code>, not yet released; see section
+7A.7 for what differs from this specification and what is still
+unverified. <strong>Priority:</strong> next. It is the first vertical
+slice of DEMO-001 and DEMO-002 (a screen-and-audio demonstration), the
+<em>screen recording</em> part of CAP-004, the first recording items of
+TRAY-001, and VERIFY-005 for one file. It reuses the capture picker,
+target identity rules, evidence reports, F1 help and hotkey services
+that shipped in 2.0.0 (Studio PRD section 4.14), and the shared
+FFmpeg.</p>
 <p><strong>User story.</strong> <em>I am a blind presenter. I choose
 Edge from the same list I use for screenshots, turn on “Edge’s sound”
 and “my microphone”, leave my screen reader out, hear one spoken summary
@@ -2307,6 +2309,84 @@ names every chord; the setup and status windows work in high contrast
 and at 200 percent text scaling. 15. On an 8 GB machine without a
 discrete GPU, a 30-minute 1080p30 display recording drops under 1
 percent of frames and stays within REC-008’s alignment target.</p>
+<h3 id="7a7-as-built-2026-10-29">7A.7 As built (2026-10-29)</h3>
+<p>The journey above is what ships, with these differences, each
+deliberate:</p>
+<ul>
+<li><strong>Window targets record the window’s screen area</strong>,
+through desktop duplication cropped to the window (or the GDI grabber
+when duplication cannot reach that display). Windows.Graphics.Capture
+(spike S1) is not implemented, so a covering window is recorded and
+moving the window is not followed. The spoken check says so as a Warn on
+every window target rather than hiding it, and the user guide names it.
+REC-003’s “no silent fallback” holds: nothing is substituted without
+being said.</li>
+<li><strong>Display backend selection is measured, not assumed.</strong>
+<code>ddagrab</code>’s <code>output_idx</code> is matched to the chosen
+display by DXGI device name on the default adapter
+(<code>screen_recorder.dxgi_output_index</code>); a display on another
+adapter, or the multi-display full desktop, uses
+<code>gdigrab</code>.</li>
+<li><strong>System sound can leave the screen reader out.</strong>
+Process loopback’s <em>exclude</em> mode records everything except one
+process tree, so “System sound” defaults to “everything except your
+screen reader” and the REC-011 Warn appears only when the user turns
+that off. Studio’s own cues are muted for the recording and restored
+afterwards.</li>
+<li><strong>Sounds you hear</strong>
+(<code>quill/platform/windows/audio_sessions.py</code>,
+<code>quill/ui/studio_demo_sounds.py</code>) mutes, unmutes and sets the
+volume of any program’s Windows audio session, the MX-121
+“operating-system session mute”, kept separately named from “left out of
+the recording”.</li>
+<li><strong>Camera and face framing were brought into version 1</strong>
+(7A.4 had them out of scope). FFmpeg’s DirectShow input records the
+camera to its own segment, overlaid in a chosen corner at a chosen
+width, or alone (“Camera only”). Framing advice uses Windows’ own
+<code>Windows.Media.FaceAnalysis.FaceDetector</code>, reached through
+the WinRT ABI directly
+(<code>quill/platform/windows/face_detect.py</code>), so it adds no
+package, model download, network call or AI consent. One FFmpeg process
+owns the camera and tees small grey frames to the detector during a
+recording. Advice is from the presenter’s side (“move a little to your
+left”), with a mirrored-camera switch;
+<code>quill/core/demo_camera.py</code> holds the wording and the
+steadiness rule.</li>
+<li><strong>Keys.</strong> Record or stop is
+<code>Ctrl+Alt+Shift+V</code>, not <code>R</code>, which is Quill
+Radio’s system-wide show/hide. Every command has a Studio app key
+(including Discard, <code>Ctrl+Alt+Shift+Delete</code>, because the
+menu-accelerator rule admits no exception; it still confirms). The
+recording commands join <code>RECORDING_HOTKEY_COMMANDS</code>, opt-in
+with no defaults.</li>
+<li><strong>Markers from a key are unnamed</strong> (“Marker 3”); the
+Recording status window’s button asks for a label. Prompting from a
+system-wide key would take focus from the demonstrated program.</li>
+<li><strong>Recovery is announced, not offered modally</strong>, at
+launch: the status line names the count and Capture &gt; Recover
+unfinished recordings finishes them.</li>
+</ul>
+<p>Code: <code>quill/core/demo_recording.py</code> (plan, preflight,
+summary, naming, persistence), <code>demo_recording_ffmpeg.py</code>
+(argument builders), <code>demo_recording_verify.py</code> (REC-014),
+<code>demo_camera.py</code>;
+<code>quill/platform/windows/screen_recorder.py</code>,
+<code>demo_media.py</code>, <code>demo_audio.py</code>,
+<code>audio_sessions.py</code>, <code>face_detect.py</code>, and the PCM
+API added to <code>process_loopback.py</code> (the dictation gate is
+unchanged); <code>quill/apps/studio_demo.py</code>;
+<code>quill/ui/studio_demo_*.py</code>.</p>
+<p>Verified on the build machine: a 5-second display recording with a
+tone-playing process as application sound, paused and resumed, came back
+Verified (one H.264 and one AAC stream, length and frame count within
+tolerance, the tone present); the camera overlay, offsets, mixing,
+concat and recovery paths run against the real FFmpeg on synthetic
+inputs (<code>tests/integration/test_demo_recording_finish.py</code>);
+the face detector runs on live camera frames. Not yet verified: a
+positive face detection with a person in front of the camera, a live
+microphone or camera recording, acceptance tests 12 to 15 (screen
+readers, braille, high contrast, 8 GB hardware), and spike S5’s
+30-minute alignment.</p>
 <h2 id="8-ai-visual-inspector-and-blind-first-visual-confidence">8. AI
 Visual Inspector and blind-first visual confidence</h2>
 <p><strong>VIS-001</strong> Dedicated <strong>Understand What Is On

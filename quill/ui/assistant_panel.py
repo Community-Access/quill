@@ -75,6 +75,8 @@ class AskQuillChatDialog(AssistantReplyDeliveryMixin, AssistantConversationTools
     ) -> None:
         import wx
 
+        from quill.ui.spoken_name import set_spoken_name
+
         self._wx = wx
         self._assistant = assistant
         # Voice conversation mode (Companion). ``voice`` is a VoiceServices for mic
@@ -211,6 +213,7 @@ class AskQuillChatDialog(AssistantReplyDeliveryMixin, AssistantConversationTools
         insert_row.Add(self._insert_scope, 0, wx.RIGHT, 6)
         self._insert_format = wx.Choice(self.dialog, choices=["Plain text", "Markdown", "HTML"])
         self._insert_format.SetName("Insert format")
+        set_spoken_name(self._insert_format, "Insert format")
         self._insert_format.SetSelection(0)
         insert_row.Add(self._insert_format, 0, wx.RIGHT, 6)
         self._insert_button = wx.Button(self.dialog, label="Insert")

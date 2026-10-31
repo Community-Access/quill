@@ -29,6 +29,7 @@ from quill.core.optional_components import (
     status_label_for,
 )
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
+from quill.ui.spoken_name import set_spoken_name
 
 
 class ComponentsController(Protocol):
@@ -135,6 +136,7 @@ def show_optional_components_picker(
         size=(-1, 110),
         name="optional_components_detail",
     )
+    set_spoken_name(detail, "Component details")
     sizer.Add(detail, 0, wx.EXPAND | wx.ALL, 10)
 
     chosen = {"id": ""}

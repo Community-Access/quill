@@ -1,48 +1,114 @@
-name: Accessibility issue
-description: Report a screen reader, keyboard, focus, contrast, or announcement problem.
+name: Accessibility barrier
+description: Something in QUILL, a QuillVille app, an installer, the documentation or the website is hard or impossible to use with your setup, including a screen reader, braille display, magnifier or keyboard alone.
 title: "[A11y]: "
 labels: ["accessibility"]
 body:
   - type: markdown
     attributes:
       value: |
-        Accessibility issues are a priority. Tell us what's wrong — only the first field is required.
+        Thank you for telling us. Accessibility reports are expertise, not complaints, and partial reports are welcome: only the first field is required.
+
+        You never need to tell us about a disability or diagnosis. Please never include document text, passwords or keys.
+
+        Other ways to report, if this form is hard to use or you would rather not post in public:
+        - Inside any QuillVille app, use Help > Get Help from Support... (Ctrl+Alt+F2). No GitHub account is needed.
+        - Email support@community-access.org, or the accessibility owner at jeff@jeffbishop.com. We will file the issue for you if you want one, and keep your details private if you ask.
+
+        We acknowledge accessibility reports within 5 business days. How we triage and respond is in [ACCESSIBILITY.md](https://github.com/Community-Access/quill/blob/main/docs/ACCESSIBILITY.md#reporting-accessibility-issues).
+
   - type: textarea
     id: summary
     attributes:
-      label: What's the accessibility problem?
-      description: Describe what's announced, focused, or rendered now, and what should happen instead.
+      label: What happened
+      description: What you were trying to do, and what got in the way. Your own words are best. If you use a screen reader, what did it say, word for word?
       placeholder: |
-        When I ..., my screen reader said/did ....
-        I expected it to ... instead.
+        When I ..., my screen reader said ....
+        I expected it to say or do ... instead.
     validations:
       required: true
+
+  - type: dropdown
+    id: app
+    attributes:
+      label: Which app or part of the project
+      description: Optional.
+      options:
+        - Not sure
+        - QUILL (the editor)
+        - QUILL Lite
+        - Quill Radio
+        - QUILL Cast
+        - QUILL Transcribe
+        - Another QuillVille app (Weather, Converter, Inkwell, Studio, Player, Beacon)
+        - An installer or updater
+        - Documentation or the website (quillforall.org)
+        - The GitHub repository, issue or pull request templates
+    validations:
+      required: false
+
+  - type: dropdown
+    id: a11y_area
+    attributes:
+      label: What kind of barrier
+      description: Optional. Choose the closest; we will refine it in triage.
+      options:
+        - Not sure
+        - Screen reader announcement wording, timing, or something not announced
+        - Something announced twice or too much
+        - A control with no name or the wrong name
+        - Focus order, lost focus, or a keyboard trap
+        - A command or control that cannot be reached by keyboard
+        - Region navigation (F6 / Shift+F6)
+        - Status bar
+        - Dialog labels or descriptions
+        - Braille output
+        - Contrast, high contrast theme, colour or text size
+        - Magnification or display scaling
+        - Documentation structure, links, images or tables
+        - Something else
+    validations:
+      required: false
+
   - type: textarea
     id: steps
     attributes:
       label: Steps to reproduce (keyboard-only is ideal)
+      description: Optional but very helpful. The menu, keys or file that lead to the problem.
       placeholder: |
         1. Open ...
         2. Press ...
-        3. Listen / observe ...
+        3. Listen or observe ...
     validations:
       required: false
-  - type: dropdown
-    id: a11y_area
+
+  - type: textarea
+    id: expected
     attributes:
-      label: Which area?
+      label: What you expected
       description: Optional.
+    validations:
+      required: false
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: How much it gets in your way
+      description: |
+        Optional; we confirm severity during triage.
+        - Critical: I cannot complete the task at all.
+        - Serious: I can complete it only with real difficulty or a workaround.
+        - Moderate: it works but is confusing, slow or inconsistent.
+        - Minor: a small problem with little effect.
       options:
         - Not sure
-        - Screen reader announcement wording or timing
-        - Focus order or keyboard trap
-        - Region navigation (F6 / Shift+F6)
-        - Status bar accessibility
-        - Dialog labels / descriptions
-        - Contrast or theme behavior
-        - Command discoverability / keyboard flow
+        - Critical
+        - Serious
+        - Moderate
+        - Minor
+      default: 0
     validations:
       required: false
+
   - type: dropdown
     id: screen_reader
     attributes:
@@ -52,20 +118,33 @@ body:
         - NVDA
         - JAWS
         - Narrator
+        - VoiceOver (macOS)
         - Other
     validations:
       required: false
+
+  - type: input
+    id: assistive_technology
+    attributes:
+      label: Assistive technology versions
+      description: Optional. Your screen reader's version, and anything else you use, such as a braille display, magnifier, voice control or switch access.
+      placeholder: "NVDA 2026.3 with a Focus 40 braille display; ZoomText 2026"
+    validations:
+      required: false
+
   - type: input
     id: version
     attributes:
-      label: QUILL version and OS
-      placeholder: "Example: 0.1.2 on Windows 11 24H2"
+      label: App version and operating system
+      description: Optional. Help > About shows the version.
+      placeholder: "QUILL 1.0.0 on Windows 11 24H2"
     validations:
       required: false
-  - type: checkboxes
-    id: checklist
+
+  - type: textarea
+    id: context
     attributes:
-      label: Before submitting
-      options:
-        - label: I searched existing issues for this problem.
-          required: true
+      label: Anything else
+      description: Optional. Workarounds you have tried, related issues, or a recording if you are comfortable sharing one.
+    validations:
+      required: false

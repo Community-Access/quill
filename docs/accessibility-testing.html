@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.12.1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Accessibility Testing for QUILL's Core Tasks</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
+      background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        color-scheme: light only;
+      }
+      html, body, pre, code {
+        background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
+        color: black;
+      }
+      pre, code {
+        padding: 0;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a, a:visited {
+      color: inherit;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
+      color: #606060;
+      color: light-dark(#606060, #b6b6b6);
+    }
+    code {
+      white-space: pre-wrap;
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid currentColor;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+    }
+    th {
+      border-top: 1px solid currentColor;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: 1.5em;}
+    div.column{flex: auto;}
+    @media screen {
+    div.columns{gap: min(4vw, 1.5em);}
+    div.column{overflow-x: auto;}
+    }
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    /* CSS for syntax highlighting */
+    html { -webkit-text-size-adjust: 100%; }
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { color: #008000; } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { color: #008000; font-weight: bold; } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <style>
+    /* Accessible skip link: off-screen until it receives keyboard focus. */
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      background: #ffffff;
+      color: #1a1a1a;
+      padding: 0.5em 1em;
+      border: 2px solid #1a1a1a;
+      z-index: 1000;
+    }
+    .skip-link:focus { left: 0; }
+    /* The skip link above targets main, and a focusable main needs a ring for
+       the sighted keyboard user. These pages load no external stylesheet, so it
+       has to be inline; the colour is the site theme's --focus, hardcoded
+       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
+       makes main the click-focus target for every paragraph inside it, so
+       :focus would box the whole page on any ordinary click. The offset is inset
+       because main is full-bleed and an outset ring gets clipped into two
+       vertical lines. */
+    main[tabindex="-1"]:focus-visible {
+      outline: 3px solid #b8540a;
+      outline-offset: -3px;
+    }
+    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
+       low-contrast default syntax-highlight token colors. */
+    code span.al, code span.er { color: #c00000; }
+    code span.an, code span.co, code span.cv { color: #5a5a5a; }
+    code span.ss { color: #8a3a5a; }
+    /* Pandoc's own styles.html partial, injected near the top of this template,
+       ships `table { display: block; overflow-x: auto; }`. display: block takes
+       the table role out of the accessibility tree in Blink and Gecko, and the
+       row and cell roles go with it, so every rendered table reads as a flat run
+       of words -- 62 of them in QUILL Lite's user guide alone, all of them
+       keyboard reference tables, on a site whose readers are overwhelmingly
+       screen-reader users. Restoring display: table is not a preference.
+
+       The scroll affordance it was there for is given up rather than moved,
+       because Pandoc emits a bare table with no wrapper element to hang overflow
+       on -- the wrapper pattern compare.html uses is not available here. So the
+       exchange is a certain and total loss of table semantics against a possible
+       sideways page scroll on the widest tables, and the cells are taught to
+       break so that stays possible rather than likely.
+
+       This override also covers the governance pages built by
+       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
+       version nobody pins -- whatever styles.html that ships, this wins. */
+    table {
+      display: table;
+      overflow-x: visible;
+    }
+    table th,
+    table td {
+      overflow-wrap: break-word;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
+<main id="main-content" tabindex="-1">
+<h1 id="accessibility-testing-for-quills-core-tasks">Accessibility
+Testing for QUILL’s Core Tasks</h1>
+<p>This page is the short, repeatable accessibility test for QUILL: the
+core tasks a new user must be able to complete, the keyboard-only,
+screen reader, manual and documentation checks for each, and the record
+of every run. It is part of QUILL’s <a
+href="ACCESSIBILITY.md">accessibility commitments</a>.</p>
+<p>It does not replace the detailed plans. Those go much deeper, and
+this page points to them:</p>
+<ul>
+<li><a href="release/qa-core-journeys.md">qa-core-journeys.md</a>: nine
+end-to-end editor journeys with sample files and exact expected
+speech.</li>
+<li><a
+href="release/screen-reader-test-plan.md">screen-reader-test-plan.md</a>:
+one case for every accessibility, focus and keyboard fix.</li>
+<li><a href="qa/dialogs.md">dialogs.md</a>: every QUILL dialog, by
+keyboard.</li>
+<li>The app sign-off sheets in <a href="qa/README.md">docs/qa</a> for
+QUILL Lite, Quill Radio, QUILL Cast and QUILL Transcribe.</li>
+</ul>
+<h2 id="what-the-build-already-checks">What the build already
+checks</h2>
+<p>Do not spend a manual pass on what the machine checks; those rules
+fail the build on their own. They are listed under “Checks the build
+runs” in <a
+href="ACCESSIBILITY.md#checks-the-build-runs">ACCESSIBILITY.md</a>: the
+accessibility suite, the dialog keyboard contract, unique access keys,
+menu keys, F1 help, announcement and braille parity, and the
+documentation gates. They run on every pull request in
+<code>.github/workflows/accessibility-ci.yml</code> and
+<code>.github/workflows/pr-ci.yml</code>, and locally with:</p>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pytest tests<span class="op">/</span>accessibility <span class="op">-</span>q</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>python <span class="op">-</span>m quill<span class="op">.</span><span class="fu">tools</span><span class="op">.</span><span class="fu">platform_report</span></span></code></pre></div>
+<p>Automated checks find some barriers, never all. The checks below need
+a person.</p>
+<h2 id="the-core-tasks">The core tasks</h2>
+<p>These are the tasks every new user meets in their first session. Each
+check list below covers all of them.</p>
+<ol type="1">
+<li><strong>Install and first run</strong>: run the installer, start
+QUILL, and get through the setup wizard to an empty document.</li>
+<li><strong>Open a document and move by heading</strong>: open a
+Markdown or Word file with File &gt; Open (<code>Ctrl+O</code>), and
+move through its headings with Next Heading (<code>Ctrl+Alt+H</code>)
+and the screen reader’s own heading keys.</li>
+<li><strong>Write, format and save</strong>: type a paragraph, make a
+line a heading, save with <code>Ctrl+S</code>, and save a copy in
+another format with File &gt; Save As.</li>
+<li><strong>Find and replace</strong>: find a word with
+<code>Ctrl+F</code>, then replace it with <code>Ctrl+H</code>.</li>
+<li><strong>Change a setting</strong>: open Preferences
+(<code>Ctrl+,</code>), find a setting with “Find a setting”, change it,
+and close with OK.</li>
+<li><strong>Get help and report a problem</strong>: press F1 on a
+control, then open Help &gt; Get Help from Support…
+(<code>Ctrl+Alt+F2</code>) and review the report without sending
+it.</li>
+</ol>
+<h2 id="keyboard-only-checks">Keyboard-only checks</h2>
+<p>Run each core task with the mouse unplugged or untouched. For every
+link and control the task uses:</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />It can be reached with Tab and
+Shift+Tab, the arrow keys, its access key or a menu.</label></li>
+<li><label><input type="checkbox" />It can be operated from the
+keyboard: Enter, Space, the arrow keys where expected, and its shortcut
+if it has one.</label></li>
+<li><label><input type="checkbox" />A visible focus indicator is always
+present: the caret in text, the focus rectangle or highlight on controls
+and list rows, including in a high contrast theme.</label></li>
+<li><label><input type="checkbox" />Focus order is logical: it follows
+the visual and reading order, with no jumps.</label></li>
+<li><label><input type="checkbox" />There is no keyboard trap: focus can
+move into and out of every dialog, list, tree, editor and menu, Escape
+closes a dialog, and focus returns to where it was.</label></li>
+<li><label><input type="checkbox" />The task can be completed end to
+end.</label></li>
+</ul>
+<h2 id="screen-reader-checks">Screen reader checks</h2>
+<p>Run each core task with a screen reader: NVDA, JAWS or Narrator on
+Windows (VoiceOver for macOS builds), and with a braille display if you
+use one.</p>
+<ul class="task-list">
+<li><label><input type="checkbox" />Every control is announced with a
+name that matches its visible label and purpose, and its role (button,
+edit, check box, list, tab).</label></li>
+<li><label><input type="checkbox" />States are announced: checked, not
+checked, selected, expanded, collapsed, disabled,
+read-only.</label></li>
+<li><label><input type="checkbox" />Lists, trees and tab groups say what
+they are and where you are in them.</label></li>
+<li><label><input type="checkbox" />Outcomes the reader cannot see are
+announced once: a file saved, a search with no match, a background task
+finished, an error with what to do next.</label></li>
+<li><label><input type="checkbox" />Nothing is said twice: QUILL does
+not repeat a window title, a control name or a focus move the reader
+already announced.</label></li>
+<li><label><input type="checkbox" />What is spoken also appears on the
+braille display.</label></li>
+<li><label><input type="checkbox" />In the editor, the reading order is
+the document’s order, and headings are announced with their
+level.</label></li>
+<li><label><input type="checkbox" />The task can be completed end to
+end.</label></li>
+</ul>
+<h2 id="manual-checks">Manual checks</h2>
+<p>For each core task:</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Keyboard:</strong> the
+keyboard-only checks above pass.</label></li>
+<li><label><input type="checkbox" /><strong>Descriptive text:</strong>
+window titles, headings, control labels, status messages and error
+messages say what they are for; an error names the specific problem and
+the next step.</label></li>
+<li><label><input type="checkbox" /><strong>Plain language:</strong> no
+unexplained jargon; abbreviations are spelled out on first use in
+dialogs and help.</label></li>
+<li><label><input type="checkbox" /><strong>Text size and zoom:</strong>
+with the editor at a large size (<code>Ctrl+=</code> up to 24 point or
+more) and with Windows “Make text bigger” at 200 percent, no text is cut
+off, no control overlaps another, and nothing is lost.</label></li>
+<li><label><input type="checkbox" /><strong>Magnification:</strong> with
+Windows Magnifier at 200 percent or more, focus and the caret stay in
+view as you move.</label></li>
+<li><label><input type="checkbox" /><strong>Contrast and
+colour:</strong> in the default theme, dark mode and a Windows high
+contrast theme, text and controls are readable, focus is visible, and
+colour is never the only way something is shown.</label></li>
+<li><label><input type="checkbox" />The QUILL key then
+<code>Shift+C</code> (Announce Contrast Ratio) reports a ratio of at
+least 4.5 to 1 for the editor text.</label></li>
+</ul>
+<h2 id="documentation-checks">Documentation checks</h2>
+<p>For every documentation change, and for a representative set before
+each release (the README, CONTRIBUTING.md, ACCESSIBILITY.md, the user
+guide’s getting-started chapter, the latest release notes, and the issue
+and pull request templates):</p>
+<ul class="task-list">
+<li><label><input type="checkbox" /><strong>Structure:</strong> one H1,
+no skipped heading levels, real lists.</label></li>
+<li><label><input type="checkbox" /><strong>Alternatives:</strong> every
+image has meaningful alternative text or is marked decorative; every
+diagram has a text description nearby.</label></li>
+<li><label><input type="checkbox" /><strong>Links:</strong> link text
+says where it goes; no “click here” or bare URLs as link text; in-page
+links resolve.</label></li>
+<li><label><input type="checkbox" /><strong>Captions:</strong> every
+video has captions, and every podcast episode has a transcript
+(GATE-SITE-LINKS fails an episode without one).</label></li>
+<li><label><input type="checkbox" /><strong>Tables:</strong> a header
+row, and a sentence before the table saying what it holds; rendered
+pages keep tables in the accessibility tree (GATE-DOCA11Y).</label></li>
+<li><label><input type="checkbox" /><strong>Code blocks:</strong> code
+and commands are text in fenced blocks, never pictures, and long
+commands are explained in prose.</label></li>
+<li><label><input type="checkbox" />The <code>.html</code> and
+<code>.epub</code> copies are regenerated
+(<code>python scripts/check_docs_artifacts.py</code>).</label></li>
+</ul>
+<h2 id="test-record">Test record</h2>
+<p>Each run is recorded here: the date, who ran it, the build, the
+environment, and the result of each check. A check nobody has run says
+“not yet run”. Failures are filed as issues with the
+<code>accessibility</code> label and linked from the result. Copy the
+template below for each run.</p>
+<pre class="text"><code>### &lt;task number and name&gt; -- &lt;keyboard | screen reader | manual&gt;
+
+Date:
+Run by:
+QUILL version (Help &gt; About):
+Windows version:
+Screen reader and version (and braille display, if any):
+
+Result: pass, or each failure with what was heard and its issue number.</code></pre>
+<h3 id="runs-so-far">Runs so far</h3>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Keyboard-only</th>
+<th>Screen reader</th>
+<th>Manual</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Install and first run</td>
+<td>Not yet run</td>
+<td>Not yet run</td>
+<td>Not yet run</td>
+</tr>
+<tr>
+<td>2. Open a document and move by heading</td>
+<td>Not yet run</td>
+<td>Not yet run</td>
+<td>Not yet run</td>
+</tr>
+<tr>
+<td>3. Write, format and save</td>
+<td>Not yet run</td>
+<td>Not yet run</td>
+<td>Not yet run</td>
+</tr>
+<tr>
+<td>4. Find and replace</td>
+<td>Not yet run</td>
+<td>Not yet run</td>
+<td>Not yet run</td>
+</tr>
+<tr>
+<td>5. Change a setting</td>
+<td>Not yet run</td>
+<td>Not yet run</td>
+<td>Not yet run</td>
+</tr>
+<tr>
+<td>6. Get help and report a problem</td>
+<td>Not yet run</td>
+<td>Not yet run</td>
+<td>Not yet run</td>
+</tr>
+</tbody>
+</table>
+<p>Help running these is wanted in <a
+href="https://github.com/Community-Access/quill/issues/1694">issue
+#1694</a>.</p>
+<h3 id="documentation-review-2026-10-28">Documentation review,
+2026-10-28</h3>
+<p>A review of the documentation’s Markdown sources, made while adopting
+the Open Source Accessibility Framework. It was an automated scan of all
+393 Markdown files in the repository plus a reading of the
+representative set above; it was not a screen reader test of the
+rendered pages.</p>
+<ul>
+<li><strong>Structure:</strong> no skipped heading levels in the README,
+CONTRIBUTING.md, ACCESSIBILITY.md, the user guide or the current release
+notes. Five other documents have a second H1 or a skipped level; tracked
+in <a href="https://github.com/Community-Access/quill/issues/1695">issue
+#1695</a>. Several long design documents and PRDs combine parts under
+more than one H1; they are references for developers and are left as
+they are for now.</li>
+<li><strong>Alternatives:</strong> no Markdown image without alternative
+text. The eight places the scan flagged as HTML images without
+<code>alt</code> were prose about the <code>&lt;img&gt;</code> element,
+not images.</li>
+<li><strong>Links:</strong> no “click here”, “read more” or “here” link
+text found.</li>
+<li><strong>Captions:</strong> no embedded video in the Markdown
+documentation. Podcast episodes and transcripts are kept in step by
+GATE-SITE-LINKS.</li>
+<li><strong>Tables:</strong> every table is a Markdown table with a
+header row; rendered tables keep their table role (GATE-DOCA11Y).</li>
+<li><strong>Code blocks:</strong> all code is text. 133 fenced blocks
+have no language name, which does not affect how they are read, so they
+are left as they are.</li>
+</ul>
+</main>
+</body>
+</html>

@@ -4,12 +4,28 @@ from __future__ import annotations
 
 from quill.ui.main_frame_hotkeys import GlobalHotkeysMixin
 
-CAPTURE_HOTKEY_COMMANDS = (
+SCREENSHOT_HOTKEY_COMMANDS = (
     ("studio.capture_active", "Studio: Screenshot the active window", False),
     ("studio.capture_desktop", "Studio: Screenshot the full desktop", False),
     ("studio.capture_selected", "Studio: Screenshot the last selected target", False),
     ("studio.cancel_capture", "Studio: Cancel pending screenshot", False),
 )
+
+#: Record a Demonstration (Studio PRD REC-013): opt-in with no defaults, since
+#: focus is in the demonstrated program while recording and only a
+#: system-wide key reaches Studio from there.
+RECORDING_HOTKEY_COMMANDS = (
+    ("studio.record_demo", "Studio: Record a demonstration, or stop and save", False),
+    ("studio.record_pause", "Studio: Pause or resume the recording", False),
+    ("studio.record_marker", "Studio: Add a recording marker", False),
+    ("studio.record_mute", "Studio: Mute or unmute the microphone in the recording", False),
+    ("studio.record_status", "Studio: Say the recording status", False),
+    ("studio.record_emergency_stop", "Studio: Emergency stop and save", False),
+    ("studio.broadcast_mute", "Studio: Mute everything public in the live broadcast", False),
+    ("studio.broadcast_stop", "Studio: Stop the live broadcast", False),
+)
+
+CAPTURE_HOTKEY_COMMANDS = SCREENSHOT_HOTKEY_COMMANDS + RECORDING_HOTKEY_COMMANDS
 
 
 class StudioCaptureHotkeysMixin(GlobalHotkeysMixin):
@@ -56,11 +72,11 @@ class StudioCaptureHotkeysMixin(GlobalHotkeysMixin):
         registered = set(getattr(self, "_global_hotkey_map", {}).values())
         missing = set(self._global_hotkey_bindings()) - registered
         if self._safe_mode:
-            self._announce("Screenshot hotkeys saved; global hotkeys are disabled in Safe Mode.")
+            self._announce("Capture hotkeys saved; global hotkeys are disabled in Safe Mode.")
         elif missing:
             self._announce(
-                "Screenshot hotkeys saved, but some could not register. "
+                "Capture hotkeys saved, but some could not register. "
                 "Another app may own them. Review the status bar and choose other keys."
             )
         else:
-            self._announce(f"Screenshot global hotkeys saved; {len(registered)} registered.")
+            self._announce(f"Capture global hotkeys saved; {len(registered)} registered.")

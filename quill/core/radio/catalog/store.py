@@ -314,8 +314,7 @@ class CatalogStore:
         stamps = [
             value
             for (value,) in self._connect().execute(
-                "SELECT last_refresh FROM sources "
-                "WHERE last_status='ok' AND id <> 'soma_fm'"
+                "SELECT last_refresh FROM sources WHERE last_status='ok' AND id <> 'soma_fm'"
             )
             if value
         ]

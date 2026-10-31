@@ -2,6 +2,36 @@
 
 ## Unreleased
 
+### QUILL Studio: record, mix, broadcast and make videos (2026-10-30)
+
+- Add demonstration recording to the shared Studio implementation: the screen, a camera and any chosen sounds, in any combination, with a spoken check before you start, keep awake and Do Not Disturb, and an independent check of the finished file. Your screen reader can be kept out of the recording.
+- Add the Studio Mixer (each program's volume, mute and sound card, plus default devices and recording levels), optional ASIO inputs, a YouTube video from a picture and sound, Ask AI about a video, New picture with AI (OpenAI or Google Gemini), and live broadcasting to Icecast or SHOUTcast with its own mix. The [Studio changelog](standalone/studio/docs/CHANGELOG.md) lists every feature, what is still pending and what has not been verified live.
+- Adopt lessons from Kelly Ford's Quick Describe, with thanks to Kelly for the ideas and for giving so much to the community: the Recording status window can stay visible to magnifiers, Ask AI about a video draws fewer frames bigger and asks the AI not to guess at small text, a stalled face detector is replaced, a paused automatic AI is said once, diagnostic bundles leave out the user name as a whole word, and a new test catches text garbled by a wrong encoding.
+- Shared changes: Windows process loopback can now leave out a program as well as record one, and can record a whole sound card; captions can be saved beside any recording; the shared sound manager can be muted. Existing behavior is unchanged.
+
+### Spell check reads only what you wrote, and recovery says how each document begins (2026-10-30)
+
+Both from Chris Nova of Mystic Access on the QUILLVille list. QUILL and QUILL
+Lite share the code, so both get both.
+
+- Spell check skips web addresses, email addresses, file paths and file names
+  in every document. Checking `www.example.com` no longer stops on `www`,
+  `example` and `com`. This covers checking as you type, the F7 review, next
+  and previous misspelling, the misspelling list and the context menu.
+- In Markdown it also skips code and link addresses; in web pages and XML it
+  reads the text and the readable attributes (`alt`, `title`, `aria-label`,
+  `placeholder`); in code it reads only strings and comments, and skips
+  placeholders, escapes and identifiers inside them. The file's extension
+  picks the rule.
+- Code and markup are read with Pygments, now a declared dependency, bundled in
+  the shared runtime and listed in the third-party notices. A small built-in
+  reader takes over if Pygments or a lexer is missing.
+- A word in single quotes in SQL, CSS or a script is no longer reported with
+  its closing quote attached.
+- The recovery window in QUILL Lite quotes the first few words of each
+  document, and QUILL's Crash Recovery says how the document begins. The date
+  alone didn't say which piece of work it was.
+
 ### Distribution and station-source changes
 
 - Replace the chapter page-turn sound of unconfirmed origin with an original,

@@ -35,6 +35,7 @@ from typing import Any
 
 from quill.core.radio import acb_calendar, calendar_actions
 from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids
+from quill.ui.spoken_name import set_spoken_name
 from quill.ui.surface_lifetime import surface_tasks
 
 TITLE = "ACB Media Schedule"
@@ -148,6 +149,7 @@ class _CalendarWindow:
         )
         self._summary.SetName(_help)
         self._summary.SetHelpText(_help)
+        set_spoken_name(self._summary, "Schedule summary")
         root.Add(self._summary, 0, wx.EXPAND | wx.ALL, 8)
 
         filters = wx.BoxSizer(wx.HORIZONTAL)
@@ -220,6 +222,7 @@ class _CalendarWindow:
         )
         self._list.SetName(_help)
         self._list.SetHelpText(_help)
+        set_spoken_name(self._list, "Programme schedule")
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         root.Add(self._buttons(), 0, wx.ALL, 8)

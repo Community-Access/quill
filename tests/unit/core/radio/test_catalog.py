@@ -192,22 +192,25 @@ def test_retired_somafm_rows_are_hidden_and_removed_on_next_generation(tmp_path:
 def test_radio_browser_catalog_rows_omit_somafm_urls_and_homepages() -> None:
     from quill.core.radio.catalog.sources import row_from_radio_browser
 
-    assert row_from_radio_browser(
-        {
+    assert (
+        row_from_radio_browser({
             "name": "Owned stream",
             "url": "https://ice.somafm.com/groovesalad",
-        }
-    ) is None
-    assert row_from_radio_browser(
-        {
+        })
+        is None
+    )
+    assert (
+        row_from_radio_browser({
             "name": "Owned homepage",
             "url": "https://cdn.example.org/audio",
             "homepage": "https://somafm.com/groovesalad/",
-        }
-    ) is None
-    assert row_from_radio_browser(
-        {"name": "Other station", "url": "https://radio.example.org/live"}
-    ) is not None
+        })
+        is None
+    )
+    assert (
+        row_from_radio_browser({"name": "Other station", "url": "https://radio.example.org/live"})
+        is not None
+    )
 
 
 # -- reads: parity with the live shape ---------------------------------------

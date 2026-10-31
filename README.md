@@ -348,9 +348,29 @@ it -- with a clipboard-and-browser fallback for users with no GitHub setup.
 On GitHub, use Discussions for questions and ideas, Issues for confirmed
 bugs and scoped requests.
 
+## Accessibility of this project
+
+Accessibility is the reason QUILL exists. How we work on it, what we ask of
+contributors, how to report a barrier (in the app, on GitHub or by email), how
+we respond, what we support and test, and what we know is not yet good enough
+are all in **[ACCESSIBILITY.md](docs/ACCESSIBILITY.md)**. We follow GitHub's
+[Open Source Accessibility Framework](https://open-source-accessibility.github.io/Open-Source-Accessibility-Framework/),
+an improvement framework rather than a certification; our progress, the
+[core-task test procedures](docs/accessibility-testing.md), the
+[progress updates](docs/accessibility-progress.md) and the
+[resources other projects can reuse](docs/accessibility-resources.md) are
+linked from there. Our progress is tracked in public, action by action, in
+[QUILL for All, issue 53](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework/issues/53)
+in the framework's repository.
+
+[![Open Source Accessibility Framework progress for QUILL for All](https://img.shields.io/badge/Accessibility%20Framework-QUILL%20for%20All-F143AB?logo=github&logoColor=000000)](https://github.com/open-source-accessibility/Open-Source-Accessibility-Framework/issues/53)
+
 ## Contributing
 
 Community contributions are welcome.
+
+- **[ACCESSIBILITY.md](docs/ACCESSIBILITY.md)** -- the accessibility
+  expectations every contribution follows, and how to report a barrier.
 
 - **[CONTRIBUTING.md](docs/CONTRIBUTING.md)** -- setup, workflow, and PR
   expectations.

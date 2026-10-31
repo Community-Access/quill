@@ -34,10 +34,10 @@ This file is generated from quill/data/third_party/components.json by quill/tool
 - Python Software Foundation License, version 2: 6 components
 - GNU Lesser General Public License, version 2.1: 5 components
 - Mozilla Public License, version 2.0: 4 components
+- BSD 2-Clause License: 3 components
 - Public domain: 3 components
 - Not confirmed: 3 components
 - The Unlicense (public domain dedication): 3 components
-- BSD 2-Clause License: 2 components
 - ISC License: 2 components
 - GNU Lesser General Public License, version 3: 2 components
 - BSD Zero Clause License: 1 component
@@ -348,6 +348,17 @@ Python itself and libraries shipped in the shared runtime or an app's own depend
 - **Upstream:** https://github.com/kurtmckee/feedparser-sgmllib
 - **How it reaches you:** Bundled: it is inside the installer or the portable zip.
 - **What the licence asks of us:** Keep the PSF copyright notice and licence with the distribution and summarise any changes we made.
+
+### Pygments
+
+- **What it is:** Finds the strings and comments in code, so spell check reads only those.
+- **Included in:** Every product in the family.
+- **Version:** 2.21.0
+- **Licence:** BSD-2-Clause
+- **Copyright:** Copyright (c) 2006-2022 by the respective authors (see AUTHORS file)
+- **Upstream:** https://pygments.org/
+- **How it reaches you:** Bundled: it is inside the installer or the portable zip.
+- **What the licence asks of us:** Keep the copyright notice, the conditions and the disclaimer in the documentation that ships with the binary.
 
 ### Git for Windows (MinGit) and GitHub CLI
 
@@ -2423,7 +2434,7 @@ get in touch
 
 ### BSD 2-Clause License
 
-Used by: feedparser, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread).
+Used by: feedparser, Pygments, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread).
 
 What it asks of us: Keep the copyright notice, the conditions and the disclaimer in the documentation that ships with the binary.
 

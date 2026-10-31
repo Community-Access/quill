@@ -696,6 +696,24 @@
       "pypi": "feedparser-sgmllib"
     },
     {
+      "id": "pygments",
+      "name": "Pygments",
+      "group": "runtime",
+      "version": "2.21.0",
+      "licenses": [
+        "BSD-2-Clause"
+      ],
+      "license_label": "BSD-2-Clause",
+      "copyright": "Copyright (c) 2006-2022 by the respective authors (see AUTHORS file)",
+      "homepage": "https://pygments.org/",
+      "what": "Finds the strings and comments in code, so spell check reads only those.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "pygments"
+    },
+    {
       "id": "git-gh",
       "name": "Git for Windows (MinGit) and GitHub CLI",
       "group": "runtime",

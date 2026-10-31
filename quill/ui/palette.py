@@ -11,6 +11,7 @@ from quill.core.palette import (
     save_palette_usage,
 )
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.spoken_name import set_spoken_name
 
 
 class CommandPaletteDialog:
@@ -81,6 +82,7 @@ class CommandPaletteDialog:
         root = wx.BoxSizer(wx.VERTICAL)
         self.search = wx.SearchCtrl(self.dialog, style=wx.TE_PROCESS_ENTER)
         self.search.SetName("Search commands")
+        set_spoken_name(self.search, "Search commands")
         self.search.ShowSearchButton(True)
         self.search.ShowCancelButton(True)
         self.search.SetDescriptiveText("Type command (>, :, ?, ~ prefixes supported)")
@@ -342,6 +344,7 @@ class GoToAnythingDialog:
         root = wx.BoxSizer(wx.VERTICAL)
         self.search = wx.SearchCtrl(self.dialog, style=wx.TE_PROCESS_ENTER)
         self.search.SetName("Search headings and commands")
+        set_spoken_name(self.search, "Search headings and commands")
         self.search.ShowSearchButton(True)
         self.search.ShowCancelButton(True)
         self.search.SetDescriptiveText(

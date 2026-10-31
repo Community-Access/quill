@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+### Spell check and recovery (2026-10-30)
+
+- Spell check no longer stops on the parts of a web address. It skips web
+  addresses, email addresses, file paths and file names in every document,
+  and in code or a web page it reads only what someone wrote as language.
+  User guide: **What spell check reads**. Suggested by Chris Nova.
+- The recovery window quotes how each document begins, so two untitled
+  windows from the same afternoon are easy to tell apart. Also suggested by
+  Chris Nova.
+
 - **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
   which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
   GLOW dependency; Lite does not itself expose GLOW. Release-specific source

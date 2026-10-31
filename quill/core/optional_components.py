@@ -20,6 +20,8 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+from quill.core.stt_word_match import covers_enough_words as _fuzzy_match
+
 _LOG = logging.getLogger(__name__)
 
 # Categories (also the dialog's grouping labels).
@@ -445,19 +447,6 @@ class DownloadFailure:
         if self.detail:
             lines.extend(["", "Detail:", self.detail])
         return "\n".join(lines)
-
-
-def _fuzzy_match(expected: str, heard: str, *, threshold: float = 0.4) -> bool:
-    """True when *heard* covers enough of *expected*'s words (STT is imperfect)."""
-    import re
-
-    def toks(text: str) -> set[str]:
-        return set(re.findall(r"[a-z0-9']+", text.lower()))
-
-    want = toks(expected)
-    if not want:
-        return False
-    return len(want & toks(heard)) / len(want) >= threshold
 
 
 def verify_component(component_id: str) -> VerifyResult:
