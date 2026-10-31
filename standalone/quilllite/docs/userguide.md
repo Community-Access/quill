@@ -1,8 +1,8 @@
 # QUILL Lite User Guide
 
-*For QUILL Lite 1.2.0 (build 5), the beta for testers, October 2026. 1.2.0
-was prepared on October 3, 2026 and is not yet published; the last published
-version is 1.1.2.*
+*For QUILL Lite 2.0.0 (build 1), the beta for testers, October 2026. 2.0.0
+was prepared as 1.2.0 on October 3, 2026, renumbered on October 31, and is
+not yet published; the last published version is 1.1.2.*
 
 ## Introduction
 
@@ -1742,6 +1742,17 @@ buttons:
 You can change your mind about that last one later. In Preferences, turn on
 **Offer untitled unsaved work back after a crash**.
 
+#### Text looks blurry, or a window is the wrong size
+
+QUILL Lite scales itself for each monitor. Text stays sharp at 125, 150 or 200
+percent, and when you move a window to a monitor with different scaling;
+windows and list columns keep their proportions. If a window looks wrong at
+your scaling, you can turn this off to see whether it is the cause. Search
+Windows for "Edit environment variables for your account", add a variable
+named `QUILL_DPI_UNAWARE` with the value `1`, and start QUILL Lite again.
+Windows then stretches it the old way, so text is blurrier. Delete the
+variable to put scaling back, and tell support what you saw.
+
 #### Going back to an earlier version
 
 There is also a **timestamped backups** option, in **Tools > Customize
@@ -2794,7 +2805,7 @@ To clean up:
   double-spaced, but you probably do not want it on a letter.
 - **Remove Duplicate Lines** (**Ctrl+Alt+D**) keeps one copy of each line.
 - **Trim Trailing Spaces** (**Ctrl+Alt+R**) removes spaces at the ends of lines.
-  It was Ctrl+Alt+T until version 1.2.0; that key is now Insert Table, as it
+  It was Ctrl+Alt+T until version 2.0.0; that key is now Insert Table, as it
   is in QUILL.
 - **Tidy Whitespace** (**Ctrl+Alt+Shift+T**) shrinks runs of spaces and tabs,
   the kind that often come along with pasted text.
@@ -2912,7 +2923,7 @@ is on.
 #### Snippets (Ctrl+Alt+Shift+Home)
 
 **Ctrl+Alt+Shift+Home** opens **Snippets...**. (It was
-**Alt+Shift+I** before version 1.2, which is now Add Inline Note, the same as
+**Alt+Shift+I** before version 2.0, which is now Add Inline Note, the same as
 in QUILL.) It lists every abbreviation you have,
 the ones you use most at the top, with a preview of what each one writes. Pick
 one and press **Enter**, and it goes in at your cursor.
@@ -3646,27 +3657,106 @@ Preferences.
 
 Spell check reads what you wrote as language, and passes over the rest. This
 applies everywhere: checking as you type, the **F7** review, next and previous
-misspelling, the list of every misspelling, and the context menu, exactly as in QUILL.
+misspelling, the list of every misspelling and the context menu, exactly
+as in QUILL, which shares this code.
 
-- **In any document**, it skips web addresses (`www.example.com`,
-  `https://...`, or a bare `example.com`), email addresses, file paths and file
-  names such as `notes.txt`. Before this, checking `www.example.com` stopped
-  on `www`, `example` and `com` one by one.
-- **In Markdown**, it also skips inline code, fenced code blocks, HTML tags and
-  link addresses. It still checks the link text, because someone wrote that to
-  be read.
-- **In a web page or XML file**, it checks the text between the tags and the
-  comments. It skips the tags themselves, but it does check the words people
-  read or hear: `alt`, `title`, `aria-label` and `placeholder`.
-- **In code**, such as Python, JavaScript, C#, SQL, CSS, PowerShell or JSON,
-  it checks only the strings and the comments. Inside those it still skips
-  placeholders like `{0}` and `%s`, escapes like `\n`, and names such as
-  `snake_case` or `camelCase`.
+The file's extension picks one of four rules: writing, Markdown, markup or
+code. The rule follows the document's name at the moment you check, so a new
+document is read as writing, and once you save it as `notes.md` or
+`script.py` the next check uses the Markdown or code rule.
 
-The file's extension decides which rule applies, and an unsaved document is
-treated as ordinary writing. Code is read with Pygments, which knows over five
-hundred languages; if it ever can't load, a simpler built-in reader does the
-same job.
+**Every rule** skips these, wherever they appear:
+
+- web addresses: `https://...`, `www.example.com`, `mailto:` and `file:`
+  links, and a bare `example.com` (a common ending such as `.com`, `.org`,
+  `.io` or `.uk`, or any domain followed by a path);
+- email addresses;
+- file paths: `C:\Users\...`, `\\server\share`, `./notes`, `~/notes`,
+  `/usr/local/bin` and `docs\guide`;
+- file names with an extension people recognise, such as `notes.txt`,
+  `report.docx`, `song.mp3` or `setup.exe`.
+
+Before this, checking `www.example.com` stopped on `www`, `example` and `com`
+one by one.
+
+**Writing.** Plain text, a document you have never saved, and any extension
+not named below. The only things skipped are the ones above. Logs, tables and
+patches (`.log`, `.csv`, `.tsv`, `.diff`, `.patch`) are read this way too,
+because there is no code in them to find.
+
+**Markdown.** `.md`, `.markdown`, `.mdown`, `.mkd` and `.mdx`. The writing
+rule, and it also skips:
+
+- inline code, with any number of backticks;
+- fenced code blocks, between ```` ``` ```` or `~~~` lines;
+- link and image addresses, and the address in a reference line such as
+  `[1]: https://...`;
+- HTML tags, and an HTML comment on one line.
+
+It still checks link text and image alt text, because someone wrote those to
+be read.
+
+**Markup.** `.html`, `.htm`, `.xhtml`, `.xml`, `.xsl`, `.xslt`, `.svg`,
+`.opml`, `.rss` and `.atom`. Spell check reads the text between the tags and
+the comments. It skips the tags, attribute names and attribute values, except
+the values people read or hear: `alt`, `title`, `aria-label`,
+`aria-description` and `placeholder`. Inside `<script>` and `<style>` it reads
+only the strings and comments, as it would in code.
+
+**Code.** Only string literals and comments are checked. These extensions use
+the code rule:
+
+- C, C++ and other compiled languages: `.c`, `.h`, `.cc`, `.cpp`, `.cxx`,
+  `.hpp`, `.hxx`, C# (`.cs`), Java, Go, Rust (`.rs`), Swift, Objective-C
+  (`.m`, `.mm`), Kotlin (`.kt`, `.kts`), Scala, D (`.d`), Pascal (`.pas`),
+  Fortran (`.f`, `.f90`) and assembly (`.asm`, `.s`);
+- scripting: Python (`.py`, `.pyi`, `.pyw`), Ruby, Perl (`.pl`, `.pm`), PHP,
+  Lua, Tcl, R, Julia (`.jl`), Dart, Groovy, Visual Basic and VBScript (`.vb`,
+  `.vbs`);
+- the web: JavaScript (`.js`, `.jsx`, `.mjs`, `.cjs`), TypeScript (`.ts`,
+  `.tsx`), Vue, Svelte, and CSS with `.scss`, `.sass`, `.less` and `.styl`;
+- shells and builds: `.sh`, `.bash`, `.zsh`, `.fish`, PowerShell (`.ps1`,
+  `.psm1`, `.psd1`), batch files (`.bat`, `.cmd`), makefiles (`.mk`), CMake,
+  Gradle, Inno Setup (`.iss`) and `.spec`;
+- settings and data: JSON (`.json`, `.jsonc`, `.json5`), YAML (`.yaml`,
+  `.yml`), TOML, `.ini`, `.cfg`, `.conf`, `.properties`, `.env`, `.plist`,
+  `.reg`, `.lock`, `.map`, SQL, GraphQL (`.graphql`, `.gql`) and Protocol
+  Buffers (`.proto`).
+
+Inside a string or a comment it still skips:
+
+- placeholders: `{0}`, `{name}`, `{0:N2}`, `{{` and `}}`, `%s`, `%d`,
+  `%(name)s`, `${x}`, `$name` and `$(name)`;
+- escapes such as `\n`, `\t`, `\x41` and `\u00e9`;
+- words shaped like names in code: `snake_case`, any word with a digit in it,
+  `camelCase`, and names like `HTTPServer`;
+- the quote marks, and a string's prefix such as the `f` in `f"..."`, so a
+  misspelled word in single quotes is reported without a quote stuck to it.
+
+**How code and markup are read.** QUILL Lite uses Pygments, which knows over five
+hundred languages, to find the strings, comments and text. With Pygments it
+also passes over regular expressions, single characters, the interpolated
+parts of a string, preprocessor lines such as `#include`, and the `#!` line at
+the top of a script. Pygments loads the first time you check a code or markup
+file, so it costs nothing when QUILL Lite starts.
+
+A simpler built-in reader takes over when Pygments cannot load, when it has no
+reader for an extension, or when the file is over 100,000 characters, where
+Pygments would be slow. It knows the comments and strings of these families:
+
+- `#` comments: Python, Ruby, Perl, the shells, PowerShell, R, Julia, Tcl,
+  YAML, TOML, CMake, makefiles, `.conf`, `.properties`, `.env`, GraphQL and
+  `.spec`;
+- CSS and its relatives; SQL, with `--` comments; Lua; JSON, including `//`
+  and `/* */` comments;
+- Visual Basic and VBScript; batch files (`rem` and `::`); `.ini`, `.cfg`,
+  `.reg` and `.iss` (`;` and `#` comments);
+- everything else in the code list is read the C way: `//` and `/* */`
+  comments and strings in double quotes, single quotes or backticks.
+
+For markup, the built-in reader reads the text, comments and the attributes
+above, reads `<script>` and `<style>` as code, and skips character entities
+such as `&amp;`. It is less precise than Pygments, but it is never silent.
 
 #### The spelling keys
 
@@ -7769,13 +7859,19 @@ why, as described above.
 
 ### Using your ChatGPT subscription
 
-If you already pay for ChatGPT (Plus, Pro, Team or Enterprise), QUILL Lite can
+If you already pay for ChatGPT (a paid plan such as Plus or Pro), QUILL Lite can
 use that plan for every AI command, and you never handle a key. You sign in
 once, in your browser, just as you sign in to ChatGPT itself.
 
 From then on, the pad, its seventeen choices, Ask About This Document and
-conversations all run on your plan. There is **no monthly allowance, no size
-limit and no per-request bill**, and nothing passes through QUILL's servers.
+conversations all run on your plan. There is **no per-request bill**, and
+nothing passes through QUILL's servers.
+
+Requests draw on your plan's own usage limits, which are shared with ChatGPT
+itself and any other app you have connected. In ChatGPT, **Settings > Usage**
+shows how much each app used and lets you set a weekly limit for it. When the
+limit is reached, QUILL Lite says so and does not switch to an API key; you can
+wait for it to reset, or choose another AI yourself.
 
 You also get two things the free service cannot do: **descriptions of
 pictures**, and **web search** when you want an answer about something
@@ -8822,7 +8918,7 @@ everywhere.
 If you already have the newest version, a small window tells you so. You always
 get an answer.
 
-Help > About shows your version with a build number, such as 1.2.0 (build 5). The
+Help > About shows your version with a build number, such as 2.0.0 (build 1). The
 build number tells you which build of a version you have: when a fix comes out
 without a new version number, it is a newer build, and Check for Updates offers it.
 
@@ -9233,7 +9329,7 @@ key.
 8. **Screen reader** (Alt+A) is which one you use, if any. It is already filled
    in with the screen reader that is running, so usually you can leave it.
 9. A line under the fields tells you what else is included, for example "Also
-   included: QUILL Lite 1.2.0, your QUILL AI support ID (...), and your Windows
+   included: QUILL Lite 2.0.0, your QUILL AI support ID (...), and your Windows
    version."
 
 ##### Sending it
@@ -9244,7 +9340,7 @@ key.
    **Enter** to close it, fix the field, and send again.
 3. Otherwise your **own mail program opens with the whole message already
    written**, addressed to support@community-access.org, with a subject such as
-   "[QUILL Lite 1.2.0] Spelling stops after I paste". You hear "Your mail
+   "[QUILL Lite 2.0.0] Spelling stops after I paste". You hear "Your mail
    program is opening with the message ready. Nothing is sent until you send it
    there." The Get Help window closes.
 4. **Press Send in your mail program.** Nothing leaves your computer until you

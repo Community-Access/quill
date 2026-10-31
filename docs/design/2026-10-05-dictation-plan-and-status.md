@@ -420,7 +420,7 @@ which marks were written (including "¿" and "¡"), speed per thread against the
 Built 2026-10-05 at the owner's request ("we do need a way to pass a mp3 and
 get it transcribed in the background as a part of the dictation logic and
 they should be able to select a model for this"), in both editors on
-**Shift+F5**, shipping in QUILL Lite 1.2 and QUILL 1.0.
+**Shift+F5**, shipping in QUILL Lite 2.0 and QUILL 1.0.
 
 **Shared, like the rest of dictation.** One command
 (`cmd_transcribe_audio_file`, `tools.windows_dictation_transcribe_file`) on

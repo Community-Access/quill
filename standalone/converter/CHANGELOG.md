@@ -17,6 +17,18 @@ The first public release. The app was first built in July 2026 as an audio
 converter (an entry here once dated it 2026-07-31); that build was never
 published as an installer, and everything in it is part of 1.0.0.
 
+Since build 2:
+
+- **Sharp text at any display scaling** (2026-10-31). Quill Converter now handles
+  each monitor's scaling itself instead of letting Windows stretch it, so
+  text stays sharp at 125, 150 and 200 percent and on monitors with
+  different scaling, and windows and list columns keep their proportions.
+  Setting the environment variable `QUILL_DPI_UNAWARE` to `1` turns this off,
+  for diagnosing a display problem (#1702). User guide: "Text looks blurry, or a window is the wrong size".
+- **Pygments in the notices** (2026-10-31). The shared runtime now bundles
+  Pygments, which QUILL and QUILL Lite use to read code and web pages for
+  spell check, so Quill Converter's third-party notices list it.
+
 Build 2:
 
 - **Also in build 2:** Process with Auphonic (Ctrl+Shift+A) and Auphonic Work

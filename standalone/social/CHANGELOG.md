@@ -11,6 +11,18 @@ since the first 0.3.0 build belongs to 0.3.0. In it QUILL Social became a feed
 reader as well as a social client, and grew an installer of its own. That work
 comes first, grouped by subject; the 0.3.0 build of 2026-07-19 follows it.
 
+### Display scaling (2026-10-31)
+
+- **Sharp text at any display scaling** (2026-10-31). QUILL Social now handles
+  each monitor's scaling itself instead of letting Windows stretch it, so
+  text stays sharp at 125, 150 and 200 percent and on monitors with
+  different scaling, and windows and list columns keep their proportions.
+  Setting the environment variable `QUILL_DPI_UNAWARE` to `1` turns this off,
+  for diagnosing a display problem (#1702).
+- **Pygments in the notices** (2026-10-31). The shared runtime now bundles
+  Pygments, which QUILL and QUILL Lite use to read code and web pages for
+  spell check, so QUILL Social's third-party notices list it.
+
 ### Keys and menus
 
 - **Every menu command has a key you can change** (2026-10-17). Thirty-one

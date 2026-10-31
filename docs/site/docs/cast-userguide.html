@@ -5220,6 +5220,17 @@ is missing</h4>
 <p>It may be an Advanced row, or a feature switched off in Customize
 Features (Ctrl+Alt+C). The Command Palette (Ctrl+Shift+P) finds it
 either way and tells you which.</p>
+<h4 id="text-looks-blurry-or-a-window-is-the-wrong-size">Text looks
+blurry, or a window is the wrong size</h4>
+<p>QUILL Cast scales itself for each monitor. Text stays sharp at 125,
+150 or 200 percent, and when you move a window to a monitor with
+different scaling; windows and list columns keep their proportions. If a
+window looks wrong at your scaling, you can turn this off to see whether
+it is the cause. Search Windows for “Edit environment variables for your
+account”, add a variable named <code>QUILL_DPI_UNAWARE</code> with the
+value <code>1</code>, and start QUILL Cast again. Windows then stretches
+it the old way, so text is blurrier. Delete the variable to put scaling
+back, and tell support what you saw.</p>
 <h3 id="what-you-learned-and-where-to-go-next-7">What you learned, and
 where to go next</h3>
 <p>You now know where to turn when you are stuck. F1 explains whatever

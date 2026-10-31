@@ -79,6 +79,10 @@ Professional audio interfaces with an ASIO driver can be used as microphones wit
 
 Kelly Ford's Quick Describe, a free, open-source app that describes the screen with Windows' own AI, shares what it learned the hard way, and Studio took several of those lessons. The Recording status window can now stay visible to magnifiers and screen sharing. Ask AI about a video draws fewer frames bigger, labels their times clearly, and tells the AI to say when text is too small rather than guess. A face detector that stops answering is replaced, and gives up out loud rather than going quiet. "Automatic screenshot AI is paused" is said once, not with every screenshot. Diagnostic bundles leave out your user name. Thank you, Kelly, for the ideas and for all you give to the community.
 
+## Sharp at any display scaling, and named controls
+
+QUILL Studio handles each monitor's scaling itself, so text stays sharp at 125, 150 and 200 percent and on monitors with different scaling. Controls that had no label, in Convert Audio, the wizard's summary and the translated speech export, now have a spoken name.
+
 ## Not yet verified
 
 These features are built and tested with real FFmpeg runs and with stand-in servers and services, but the following have not yet been done: recordings with a real microphone and camera, face detection with a person in front of the camera, JAWS, NVDA, Narrator and braille passes, a real Icecast or SHOUTcast server, and a real AI picture request. A window recording records the window's area of the screen, so a covering window is recorded and a moved window is not followed.

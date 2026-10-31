@@ -436,7 +436,7 @@ the record of which were run in which environment, are in
 These are the barriers we know about. Please report any we have missed.
 
 - **Manual screen reader testing is not yet recorded per release.** Detailed
-  checklists exist (`docs/qa/`), but the sign-off records for QUILL Lite 1.2.0,
+  checklists exist (`docs/qa/`), but the sign-off records for QUILL Lite 2.0.0,
   Quill Radio 3.2.0, QUILL Cast 2.0.0 and QUILL Transcribe 1.0.0 are still
   pending, and 316 checks for work from September and October 2026 are listed
   in [screen-reader-checks-2026-10.md](qa/screen-reader-checks-2026-10.md)

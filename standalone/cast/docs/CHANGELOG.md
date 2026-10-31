@@ -19,6 +19,30 @@ the main window, listening, sound and volume, your library, feeds, dictation
 and AI, help and notifications, Preferences and keys, updates and installing,
 and speed and reliability.
 
+### Since build 6 (2026-10-27 to 2026-10-31)
+
+- **Windows Media closes cleanly after an audio device change** (2026-10-27).
+  The shared player no longer keeps Windows audio-device objects in a cache and
+  removes its event handlers when it stops. This fixes a crash on exit after the
+  output device was listed or switched; choosing a device and playing work as
+  before.
+- **Controls that had no label now have a spoken name** (2026-10-30).
+  JAWS, NVDA and Narrator used to announce them as a bare role, such as
+  "edit" or "list". The sleep timer's custom minutes box now says what it is.
+- **Show notes links follow your colours** (2026-10-30). Links in show
+  notes use the system link colour, which a Windows high contrast theme sets,
+  instead of a fixed blue that was 2.2:1 on a dark theme. They stay
+  underlined, so a link never depends on colour alone.
+- **Sharp text at any display scaling** (2026-10-31). QUILL Cast now handles
+  each monitor's scaling itself instead of letting Windows stretch it, so
+  text stays sharp at 125, 150 and 200 percent and on monitors with
+  different scaling, and windows and list columns keep their proportions.
+  Setting the environment variable `QUILL_DPI_UNAWARE` to `1` turns this off,
+  for diagnosing a display problem (#1702). User guide: "Text looks blurry, or a window is the wrong size".
+- **Pygments in the notices** (2026-10-31). The shared runtime now bundles
+  Pygments, which QUILL and QUILL Lite use to read code and web pages for
+  spell check, so QUILL Cast's third-party notices list it.
+
 ### The main window and getting around
 
 - **One window of places.** The Places list (Inbox, New Episodes, Continue

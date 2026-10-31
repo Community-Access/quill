@@ -243,9 +243,10 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
 <h1 id="quill-lite-user-guide">QUILL Lite User Guide</h1>
-<p><em>For QUILL Lite 1.2.0 (build 5), the beta for testers, October
-2026. 1.2.0 was prepared on October 3, 2026 and is not yet published;
-the last published version is 1.1.2.</em></p>
+<p><em>For QUILL Lite 2.0.0 (build 1), the beta for testers, October
+2026. 2.0.0 was prepared as 1.2.0 on October 3, 2026, renumbered on
+October 31, and is not yet published; the last published version is
+1.1.2.</em></p>
 <h2 id="introduction">Introduction</h2>
 <p>Welcome, and thank you for giving QUILL Lite a try.</p>
 <p>QUILL Lite is a text editor for people who use a screen reader. You
@@ -2230,6 +2231,17 @@ back.</li>
 <p>You can change your mind about that last one later. In Preferences,
 turn on <strong>Offer untitled unsaved work back after a
 crash</strong>.</p>
+<h4 id="text-looks-blurry-or-a-window-is-the-wrong-size">Text looks
+blurry, or a window is the wrong size</h4>
+<p>QUILL Lite scales itself for each monitor. Text stays sharp at 125,
+150 or 200 percent, and when you move a window to a monitor with
+different scaling; windows and list columns keep their proportions. If a
+window looks wrong at your scaling, you can turn this off to see whether
+it is the cause. Search Windows for “Edit environment variables for your
+account”, add a variable named <code>QUILL_DPI_UNAWARE</code> with the
+value <code>1</code>, and start QUILL Lite again. Windows then stretches
+it the old way, so text is blurrier. Delete the variable to put scaling
+back, and tell support what you saw.</p>
 <h4 id="going-back-to-an-earlier-version">Going back to an earlier
 version</h4>
 <p>There is also a <strong>timestamped backups</strong> option, in
@@ -3530,7 +3542,7 @@ double-spaced, but you probably do not want it on a letter.</li>
 (<strong>Ctrl+Alt+D</strong>) keeps one copy of each line.</li>
 <li><strong>Trim Trailing Spaces</strong> (<strong>Ctrl+Alt+R</strong>)
 removes spaces at the ends of lines. It was Ctrl+Alt+T until version
-1.2.0; that key is now Insert Table, as it is in QUILL.</li>
+2.0.0; that key is now Insert Table, as it is in QUILL.</li>
 <li><strong>Tidy Whitespace</strong> (<strong>Ctrl+Alt+Shift+T</strong>)
 shrinks runs of spaces and tabs, the kind that often come along with
 pasted text.</li>
@@ -3647,7 +3659,7 @@ part of the status bar tells you which mode is on.</p>
 <h4 id="snippets-ctrlaltshifthome">Snippets (Ctrl+Alt+Shift+Home)</h4>
 <p><strong>Ctrl+Alt+Shift+Home</strong> opens
 <strong>Snippets…</strong>. (It was <strong>Alt+Shift+I</strong> before
-version 1.2, which is now Add Inline Note, the same as in QUILL.) It
+version 2.0, which is now Add Inline Note, the same as in QUILL.) It
 lists every abbreviation you have, the ones you use most at the top,
 with a preview of what each one writes. Pick one and press
 <strong>Enter</strong>, and it goes in at your cursor.</p>
@@ -4591,32 +4603,139 @@ turn that off in Preferences.</p>
 <p>Spell check reads what you wrote as language, and passes over the
 rest. This applies everywhere: checking as you type, the
 <strong>F7</strong> review, next and previous misspelling, the list of
-every misspelling, and the context menu, exactly as in QUILL.</p>
+every misspelling and the context menu, exactly as in QUILL, which
+shares this code.</p>
+<p>The file’s extension picks one of four rules: writing, Markdown,
+markup or code. The rule follows the document’s name at the moment you
+check, so a new document is read as writing, and once you save it as
+<code>notes.md</code> or <code>script.py</code> the next check uses the
+Markdown or code rule.</p>
+<p><strong>Every rule</strong> skips these, wherever they appear:</p>
 <ul>
-<li><strong>In any document</strong>, it skips web addresses
-(<code>www.example.com</code>, <code>https://...</code>, or a bare
-<code>example.com</code>), email addresses, file paths and file names
-such as <code>notes.txt</code>. Before this, checking
-<code>www.example.com</code> stopped on <code>www</code>,
-<code>example</code> and <code>com</code> one by one.</li>
-<li><strong>In Markdown</strong>, it also skips inline code, fenced code
-blocks, HTML tags and link addresses. It still checks the link text,
-because someone wrote that to be read.</li>
-<li><strong>In a web page or XML file</strong>, it checks the text
-between the tags and the comments. It skips the tags themselves, but it
-does check the words people read or hear: <code>alt</code>,
-<code>title</code>, <code>aria-label</code> and
-<code>placeholder</code>.</li>
-<li><strong>In code</strong>, such as Python, JavaScript, C#, SQL, CSS,
-PowerShell or JSON, it checks only the strings and the comments. Inside
-those it still skips placeholders like <code>{0}</code> and
-<code>%s</code>, escapes like <code>\n</code>, and names such as
-<code>snake_case</code> or <code>camelCase</code>.</li>
+<li>web addresses: <code>https://...</code>,
+<code>www.example.com</code>, <code>mailto:</code> and
+<code>file:</code> links, and a bare <code>example.com</code> (a common
+ending such as <code>.com</code>, <code>.org</code>, <code>.io</code> or
+<code>.uk</code>, or any domain followed by a path);</li>
+<li>email addresses;</li>
+<li>file paths: <code>C:\Users\...</code>, <code>\\server\share</code>,
+<code>./notes</code>, <code>~/notes</code>, <code>/usr/local/bin</code>
+and <code>docs\guide</code>;</li>
+<li>file names with an extension people recognise, such as
+<code>notes.txt</code>, <code>report.docx</code>, <code>song.mp3</code>
+or <code>setup.exe</code>.</li>
 </ul>
-<p>The file’s extension decides which rule applies, and an unsaved
-document is treated as ordinary writing. Code is read with Pygments,
-which knows over five hundred languages; if it ever can’t load, a
-simpler built-in reader does the same job.</p>
+<p>Before this, checking <code>www.example.com</code> stopped on
+<code>www</code>, <code>example</code> and <code>com</code> one by
+one.</p>
+<p><strong>Writing.</strong> Plain text, a document you have never
+saved, and any extension not named below. The only things skipped are
+the ones above. Logs, tables and patches (<code>.log</code>,
+<code>.csv</code>, <code>.tsv</code>, <code>.diff</code>,
+<code>.patch</code>) are read this way too, because there is no code in
+them to find.</p>
+<p><strong>Markdown.</strong> <code>.md</code>, <code>.markdown</code>,
+<code>.mdown</code>, <code>.mkd</code> and <code>.mdx</code>. The
+writing rule, and it also skips:</p>
+<ul>
+<li>inline code, with any number of backticks;</li>
+<li>fenced code blocks, between <code>```</code> or <code>~~~</code>
+lines;</li>
+<li>link and image addresses, and the address in a reference line such
+as <code>[1]: https://...</code>;</li>
+<li>HTML tags, and an HTML comment on one line.</li>
+</ul>
+<p>It still checks link text and image alt text, because someone wrote
+those to be read.</p>
+<p><strong>Markup.</strong> <code>.html</code>, <code>.htm</code>,
+<code>.xhtml</code>, <code>.xml</code>, <code>.xsl</code>,
+<code>.xslt</code>, <code>.svg</code>, <code>.opml</code>,
+<code>.rss</code> and <code>.atom</code>. Spell check reads the text
+between the tags and the comments. It skips the tags, attribute names
+and attribute values, except the values people read or hear:
+<code>alt</code>, <code>title</code>, <code>aria-label</code>,
+<code>aria-description</code> and <code>placeholder</code>. Inside
+<code>&lt;script&gt;</code> and <code>&lt;style&gt;</code> it reads only
+the strings and comments, as it would in code.</p>
+<p><strong>Code.</strong> Only string literals and comments are checked.
+These extensions use the code rule:</p>
+<ul>
+<li>C, C++ and other compiled languages: <code>.c</code>,
+<code>.h</code>, <code>.cc</code>, <code>.cpp</code>, <code>.cxx</code>,
+<code>.hpp</code>, <code>.hxx</code>, C# (<code>.cs</code>), Java, Go,
+Rust (<code>.rs</code>), Swift, Objective-C (<code>.m</code>,
+<code>.mm</code>), Kotlin (<code>.kt</code>, <code>.kts</code>), Scala,
+D (<code>.d</code>), Pascal (<code>.pas</code>), Fortran
+(<code>.f</code>, <code>.f90</code>) and assembly (<code>.asm</code>,
+<code>.s</code>);</li>
+<li>scripting: Python (<code>.py</code>, <code>.pyi</code>,
+<code>.pyw</code>), Ruby, Perl (<code>.pl</code>, <code>.pm</code>),
+PHP, Lua, Tcl, R, Julia (<code>.jl</code>), Dart, Groovy, Visual Basic
+and VBScript (<code>.vb</code>, <code>.vbs</code>);</li>
+<li>the web: JavaScript (<code>.js</code>, <code>.jsx</code>,
+<code>.mjs</code>, <code>.cjs</code>), TypeScript (<code>.ts</code>,
+<code>.tsx</code>), Vue, Svelte, and CSS with <code>.scss</code>,
+<code>.sass</code>, <code>.less</code> and <code>.styl</code>;</li>
+<li>shells and builds: <code>.sh</code>, <code>.bash</code>,
+<code>.zsh</code>, <code>.fish</code>, PowerShell (<code>.ps1</code>,
+<code>.psm1</code>, <code>.psd1</code>), batch files (<code>.bat</code>,
+<code>.cmd</code>), makefiles (<code>.mk</code>), CMake, Gradle, Inno
+Setup (<code>.iss</code>) and <code>.spec</code>;</li>
+<li>settings and data: JSON (<code>.json</code>, <code>.jsonc</code>,
+<code>.json5</code>), YAML (<code>.yaml</code>, <code>.yml</code>),
+TOML, <code>.ini</code>, <code>.cfg</code>, <code>.conf</code>,
+<code>.properties</code>, <code>.env</code>, <code>.plist</code>,
+<code>.reg</code>, <code>.lock</code>, <code>.map</code>, SQL, GraphQL
+(<code>.graphql</code>, <code>.gql</code>) and Protocol Buffers
+(<code>.proto</code>).</li>
+</ul>
+<p>Inside a string or a comment it still skips:</p>
+<ul>
+<li>placeholders: <code>{0}</code>, <code>{name}</code>,
+<code>{0:N2}</code>, <code>{{</code> and <code>}}</code>,
+<code>%s</code>, <code>%d</code>, <code>%(name)s</code>,
+<code>${x}</code>, <code>$name</code> and <code>$(name)</code>;</li>
+<li>escapes such as <code>\n</code>, <code>\t</code>, <code>\x41</code>
+and <code>\u00e9</code>;</li>
+<li>words shaped like names in code: <code>snake_case</code>, any word
+with a digit in it, <code>camelCase</code>, and names like
+<code>HTTPServer</code>;</li>
+<li>the quote marks, and a string’s prefix such as the <code>f</code> in
+<code>f"..."</code>, so a misspelled word in single quotes is reported
+without a quote stuck to it.</li>
+</ul>
+<p><strong>How code and markup are read.</strong> QUILL Lite uses
+Pygments, which knows over five hundred languages, to find the strings,
+comments and text. With Pygments it also passes over regular
+expressions, single characters, the interpolated parts of a string,
+preprocessor lines such as <code>#include</code>, and the
+<code>#!</code> line at the top of a script. Pygments loads the first
+time you check a code or markup file, so it costs nothing when QUILL
+Lite starts.</p>
+<p>A simpler built-in reader takes over when Pygments cannot load, when
+it has no reader for an extension, or when the file is over 100,000
+characters, where Pygments would be slow. It knows the comments and
+strings of these families:</p>
+<ul>
+<li><code>#</code> comments: Python, Ruby, Perl, the shells, PowerShell,
+R, Julia, Tcl, YAML, TOML, CMake, makefiles, <code>.conf</code>,
+<code>.properties</code>, <code>.env</code>, GraphQL and
+<code>.spec</code>;</li>
+<li>CSS and its relatives; SQL, with <code>--</code> comments; Lua;
+JSON, including <code>//</code> and <code>/* */</code> comments;</li>
+<li>Visual Basic and VBScript; batch files (<code>rem</code> and
+<code>::</code>); <code>.ini</code>, <code>.cfg</code>,
+<code>.reg</code> and <code>.iss</code> (<code>;</code> and
+<code>#</code> comments);</li>
+<li>everything else in the code list is read the C way: <code>//</code>
+and <code>/* */</code> comments and strings in double quotes, single
+quotes or backticks.</li>
+</ul>
+<p>For markup, the built-in reader reads the text, comments and the
+attributes above, reads <code>&lt;script&gt;</code> and
+<code>&lt;style&gt;</code> as code, and skips character entities such as
+<code>&amp;amp;</code>. It is less precise than Pygments, but it is
+never silent.</p>
 <h4 id="the-spelling-keys">The spelling keys</h4>
 <table>
 <thead>
@@ -10005,14 +10124,19 @@ your settings say, as it always has. A request that simply
 above.</p>
 <h3 id="using-your-chatgpt-subscription">Using your ChatGPT
 subscription</h3>
-<p>If you already pay for ChatGPT (Plus, Pro, Team or Enterprise), QUILL
-Lite can use that plan for every AI command, and you never handle a key.
-You sign in once, in your browser, just as you sign in to ChatGPT
+<p>If you already pay for ChatGPT (a paid plan such as Plus or Pro),
+QUILL Lite can use that plan for every AI command, and you never handle
+a key. You sign in once, in your browser, just as you sign in to ChatGPT
 itself.</p>
 <p>From then on, the pad, its seventeen choices, Ask About This Document
-and conversations all run on your plan. There is <strong>no monthly
-allowance, no size limit and no per-request bill</strong>, and nothing
-passes through QUILL’s servers.</p>
+and conversations all run on your plan. There is <strong>no per-request
+bill</strong>, and nothing passes through QUILL’s servers.</p>
+<p>Requests draw on your plan’s own usage limits, which are shared with
+ChatGPT itself and any other app you have connected. In ChatGPT,
+<strong>Settings &gt; Usage</strong> shows how much each app used and
+lets you set a weekly limit for it. When the limit is reached, QUILL
+Lite says so and does not switch to an API key; you can wait for it to
+reset, or choose another AI yourself.</p>
 <p>You also get two things the free service cannot do:
 <strong>descriptions of pictures</strong>, and <strong>web
 search</strong> when you want an answer about something current. Both
@@ -11201,8 +11325,8 @@ app in the QUILL family uses this same key and the same window, so once
 you know it here, you know it everywhere.</p>
 <p>If you already have the newest version, a small window tells you so.
 You always get an answer.</p>
-<p>Help &gt; About shows your version with a build number, such as 1.2.0
-(build 5). The build number tells you which build of a version you have:
+<p>Help &gt; About shows your version with a build number, such as 2.0.0
+(build 1). The build number tells you which build of a version you have:
 when a fix comes out without a new version number, it is a newer build,
 and Check for Updates offers it.</p>
 <h4 id="what-changed-help--whats-new">What changed: Help &gt; What’s
@@ -11683,7 +11807,7 @@ want the answer to go somewhere else.</li>
 It is already filled in with the screen reader that is running, so
 usually you can leave it.</li>
 <li>A line under the fields tells you what else is included, for example
-“Also included: QUILL Lite 1.2.0, your QUILL AI support ID (…), and your
+“Also included: QUILL Lite 2.0.0, your QUILL AI support ID (…), and your
 Windows version.”</li>
 </ol>
 <h5 id="sending-it">Sending it</h5>
@@ -11697,7 +11821,7 @@ again.</li>
 <li>Otherwise your <strong>own mail program opens with the whole message
 already written</strong>, addressed to <a
 href="mailto:support@community-access.org">support@community-access.org</a>,
-with a subject such as “[QUILL Lite 1.2.0] Spelling stops after I
+with a subject such as “[QUILL Lite 2.0.0] Spelling stops after I
 paste”. You hear “Your mail program is opening with the message ready.
 Nothing is sent until you send it there.” The Get Help window
 closes.</li>

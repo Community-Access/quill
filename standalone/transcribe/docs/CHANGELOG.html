@@ -254,6 +254,20 @@ version, so everything below is new in 1.0.0, including what the first
 test builds (builds 1 and 2) already did. Build 3 adds Help &gt; What’s
 New and keeps everything else. The changes are grouped by area; most say
 where in the user guide to read more.</p>
+<h3 id="since-build-3-2026-10-31">Since build 3 (2026-10-31)</h3>
+<ul>
+<li><strong>Sharp text at any display scaling</strong> (2026-10-31).
+QUILL Transcribe now handles each monitor’s scaling itself instead of
+letting Windows stretch it, so text stays sharp at 125, 150 and 200
+percent and on monitors with different scaling, and windows and list
+columns keep their proportions. Setting the environment variable
+<code>QUILL_DPI_UNAWARE</code> to <code>1</code> turns this off, for
+diagnosing a display problem (#1702).</li>
+<li><strong>Pygments in the notices</strong> (2026-10-31). The shared
+runtime now bundles Pygments, which QUILL and QUILL Lite use to read
+code and web pages for spell check, so QUILL Transcribe’s third-party
+notices list it.</li>
+</ul>
 <h3 id="dictating-into-other-programs">Dictating into other
 programs</h3>
 <ul>

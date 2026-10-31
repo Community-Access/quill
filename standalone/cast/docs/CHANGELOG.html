@@ -264,6 +264,36 @@ under “Speed and reliability”.</p>
 heading: the main window, listening, sound and volume, your library,
 feeds, dictation and AI, help and notifications, Preferences and keys,
 updates and installing, and speed and reliability.</p>
+<h3 id="since-build-6-2026-10-27-to-2026-10-31">Since build 6
+(2026-10-27 to 2026-10-31)</h3>
+<ul>
+<li><strong>Windows Media closes cleanly after an audio device
+change</strong> (2026-10-27). The shared player no longer keeps Windows
+audio-device objects in a cache and removes its event handlers when it
+stops. This fixes a crash on exit after the output device was listed or
+switched; choosing a device and playing work as before.</li>
+<li><strong>Controls that had no label now have a spoken name</strong>
+(2026-10-30). JAWS, NVDA and Narrator used to announce them as a bare
+role, such as “edit” or “list”. The sleep timer’s custom minutes box now
+says what it is.</li>
+<li><strong>Show notes links follow your colours</strong> (2026-10-30).
+Links in show notes use the system link colour, which a Windows high
+contrast theme sets, instead of a fixed blue that was 2.2:1 on a dark
+theme. They stay underlined, so a link never depends on colour
+alone.</li>
+<li><strong>Sharp text at any display scaling</strong> (2026-10-31).
+QUILL Cast now handles each monitor’s scaling itself instead of letting
+Windows stretch it, so text stays sharp at 125, 150 and 200 percent and
+on monitors with different scaling, and windows and list columns keep
+their proportions. Setting the environment variable
+<code>QUILL_DPI_UNAWARE</code> to <code>1</code> turns this off, for
+diagnosing a display problem (#1702). User guide: “Text looks blurry, or
+a window is the wrong size”.</li>
+<li><strong>Pygments in the notices</strong> (2026-10-31). The shared
+runtime now bundles Pygments, which QUILL and QUILL Lite use to read
+code and web pages for spell check, so QUILL Cast’s third-party notices
+list it.</li>
+</ul>
 <h3 id="the-main-window-and-getting-around">The main window and getting
 around</h3>
 <ul>

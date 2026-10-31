@@ -2,14 +2,6 @@
 
 All notable changes to Quill Radio are documented here. See `docs/release-notes-3.2.md` (Help > Release Notes, Shift+F1) for the fuller narrative version of the latest release.
 
-## Unreleased
-
-- **Windows Media closes cleanly after device enumeration.** Device selection
-  still uses the Windows render endpoints and keeps the selected route. QUILL
-  no longer retains COM-backed device objects in a module cache, which fixes a
-  process-exit access violation after opening audio preferences or switching
-  the output device. The player unregisters its WinRT events before shutdown.
-
 ## [3.2.0] - 2026-10-03
 
 Testing rebuild: **3.2.0 (build 5)**. The packages have not been published yet.
@@ -19,6 +11,32 @@ everything they added belongs to 3.2.0, so it is grouped below by subject rather
 than by build. A date in brackets says when a change arrived.
 
 **Everything 3.1 was going to be, and the two things that stopped an update from arriving.** Check for Updates now reads the version this computer actually installed instead of the version the shared runtime happens to carry, so it stops offering an update you already have; and Install and restart survives the launcher closing, so a one-click update installs instead of quietly doing nothing. It was prepared as 3.1.1 and never published under that number, so it ships as 3.2.0 (see below). **Five new things, and fourteen fixes.** Quill Radio checks your subscribed podcasts on its own and tells you what arrived, in the way each podcast asks for; there is a list of everything you have been told; you can leave yourself a note on any station or podcast; and Ask QUILL Radio answers questions about what is playing, on the ChatGPT plan you already pay for; and a Website button beside Play and Stop opens the station's own site. Then: the sound card switches, or says why it cannot and puts the setting back; Windows Media gets a route to a device of its own; Preferences names only the engines this copy has; a minimized window comes back when its menu item or key asks for it; a stale "start with Windows" entry is repaired by the installer rather than waiting for a launch; Preferences opens in a blink instead of two seconds; and four smaller things that came in the same week. **Also in 3.2.0:** Apple's podcast categories fill up and the Podcast Index says why when it cannot; browsing long lists stays smooth; Preferences has Find a setting; Undo History lists the last ten things you can take back; and a few choices can be shared with your other Quill apps.
+
+### Since build 5 (2026-10-27 to 2026-10-31)
+
+- **Windows Media closes cleanly after device enumeration** (2026-10-27).
+  Device selection still uses the Windows render endpoints and keeps the
+  selected route. QUILL no longer retains COM-backed device objects in a
+  module cache, which fixes a process-exit access violation after opening
+  audio preferences or switching the output device. The player unregisters
+  its WinRT events before shutdown.
+- **Controls that had no label now have a spoken name** (2026-10-30).
+  JAWS, NVDA and Narrator used to announce them as a bare role, such as
+  "edit" or "list". Now they say what they are: Now playing (in the main window, the player
+  and the Now Playing window), the details of the highlighted station in
+  Browse, the schedule summary and programme schedule in the calendar,
+  station results and TuneIn categories in the station browser, the
+  listening report in Stats, the video window's status, the sleep timer's
+  custom minutes, and Spotify results.
+- **Sharp text at any display scaling** (2026-10-31). Quill Radio now handles
+  each monitor's scaling itself instead of letting Windows stretch it, so
+  text stays sharp at 125, 150 and 200 percent and on monitors with
+  different scaling, and windows and list columns keep their proportions.
+  Setting the environment variable `QUILL_DPI_UNAWARE` to `1` turns this off,
+  for diagnosing a display problem (#1702). User guide: "Text looks blurry, or a window is the wrong size".
+- **Pygments in the notices** (2026-10-31). The shared runtime now bundles
+  Pygments, which QUILL and QUILL Lite use to read code and web pages for
+  spell check, so Quill Radio's third-party notices list it.
 
 ### What each testing rebuild added
 

@@ -1,6 +1,89 @@
 # Changelog
 
-## Unreleased
+## 1.0.0
+
+### QUILL Lite's next version is 2.0.0 (2026-10-31)
+
+- The QUILL Lite release prepared as 1.2.0, and tested through six builds under
+  that number, is renumbered 2.0.0 (build 1). Its release notes are now
+  `standalone/quilllite/docs/release-notes-2.0.md`, its What's New
+  `docs/release/whats-new/whats-new-quilllite-2.0.0.md`, and its sign-off
+  sheet `docs/qa/signoffs/quilllite-2.0.0.md`.
+
+### Sharp text at any display scaling, in every app (2026-10-31)
+
+- Windows used to stretch every QuillVille app at 150 and 200 percent display
+  scaling, which blurred the text. QUILL, QUILL Lite, Radio, Cast, Player,
+  Weather, Converter, Inkwell, Studio, Transcribe, Beacon and Social now
+  declare per-monitor DPI awareness before their first window, so text stays
+  sharp at 125, 150 and 200 percent and when a window moves to a monitor with
+  different scaling (#1702).
+- Every fixed window size, minimum size and list column width is now given in
+  device-independent pixels and scaled for the monitor, so windows and columns
+  keep their proportions instead of shrinking.
+- Setting the environment variable `QUILL_DPI_UNAWARE` to `1` turns the
+  declaration off, for diagnosing a display problem. User guide: "Text looks
+  blurry, or a window is the wrong size".
+- A new gate (GATE-DPI) fails the build on an app that does not declare DPI
+  awareness or on a new raw pixel size.
+
+### Keys that did nothing now work; Find a setting works (2026-10-30)
+
+- Ten commands had a key in the keymap and in the keyboard reference, but were
+  registered without it, so pressing the key did nothing. They work now:
+  Get Help from Support (`Ctrl+Alt+F2`), Duplicate Selection (`Ctrl+Alt+Q`),
+  Toggle Case (`Ctrl+Alt+Shift+N`), Join Lines (`Ctrl+Alt+Shift+J`), Sort
+  Lines Z to A (`Ctrl+Alt+Shift+S`), Normalize Whitespace
+  (`Ctrl+Alt+Shift+T`), Toggle Overwrite Mode (`Ctrl+Alt+Shift+W`),
+  Dictionary Status (`Alt+Shift+;`), Keymap Editor (`Ctrl+Alt+Shift+Space`)
+  and Switch Feature Profile (`Alt+Shift+P`). A new test keeps the keymap and
+  the registered commands in step (#1703).
+- **Find a setting** in Settings works. The Settings dialog never set its own
+  layout, so the search box was never added and `Ctrl+F` did nothing. It also
+  says how many settings match now, even with dialog entry and exit cues
+  turned off.
+- **High contrast keeps your theme.** With the system theme and Windows high
+  contrast on, QUILL used to force black on white with a yellow frame, which
+  overrode a dark high contrast theme. It now uses the theme you picked.
+- Simple Open's error message keeps the system text colour instead of red
+  (red was 3.5:1), and links in podcast show notes use the system link colour
+  instead of a fixed blue that was 2.2:1 on a dark theme. Links stay
+  underlined.
+- The Open dialog is titled "Open document" rather than "Open text file",
+  since it opens Word, PDF, EPUB and more.
+- Keyboard-only runs of the core tasks were added to the UIA test suite; they
+  are what found the dead keys and the missing search box.
+
+### Screen readers say what unlabelled controls are (2026-10-30)
+
+- Controls with no label in front of them used to be announced as a bare
+  role, such as "edit" or "list". Dozens of windows now give them a
+  spoken name, on JAWS, NVDA and Narrator alike. In QUILL that includes the
+  AI result, document question, grammar check and library windows, the AI
+  and local AI setup wizards, Compare, Fill-in fields, the GitHub windows,
+  Heading Organizer, Library, local Git, bookmarks, the Copy Tray, List
+  Manager, Settings, the notebook, Notification Center, Optional Components,
+  the command palette, Print Studio, Quick Insert, Reveal Codes, the setup
+  wizard, Simple Open, Skill Library, the sleep timer, Sound Scheme, Sticky
+  Notes, Sync Places, the vault, verbosity, Windows Dictation and Word view.
+  Radio, Cast, Player, Weather, Beacon, Studio and QUILL Lite get the same
+  fix; their changelogs name the windows.
+- List rows still speak as rows, and F1 help is unchanged. #1693 stays open
+  until a wxPython release makes the fallback unnecessary.
+
+### Accessibility framework adopted (2026-10-28)
+
+- QUILL follows the Open Source Accessibility Framework. `docs/ACCESSIBILITY.md`
+  says how to report an accessibility problem, how severity is judged, that
+  every report is acknowledged within 5 business days, who owns the work, and
+  how the people who report and fix problems are credited, always with their
+  consent. A new accessibility issue form, labels and review workflows go with
+  it, and a workflow enforces the report and credit rules.
+- Reports and fixes from before the consent rule are credited by GitHub
+  account under "Earlier accessibility contributions", linked from
+  `docs/CONTRIBUTING.md`.
+- Five documents were fixed to have one top-level heading and no skipped
+  heading levels.
 
 ### QUILL Studio: record, mix, broadcast and make videos (2026-10-30)
 
@@ -17,15 +100,37 @@ Lite share the code, so both get both.
 - Spell check skips web addresses, email addresses, file paths and file names
   in every document. Checking `www.example.com` no longer stops on `www`,
   `example` and `com`. This covers checking as you type, the F7 review, next
-  and previous misspelling, the misspelling list and the context menu.
-- In Markdown it also skips code and link addresses; in web pages and XML it
-  reads the text and the readable attributes (`alt`, `title`, `aria-label`,
-  `placeholder`); in code it reads only strings and comments, and skips
-  placeholders, escapes and identifiers inside them. The file's extension
-  picks the rule.
+  and previous misspelling, the misspelling list, the context menu and, in
+  QUILL, browse mode.
+- The file's extension picks one of four rules, and the rule follows the
+  document's current name, so an unsaved document is read as writing and a
+  Save As to a new extension changes the rule at the next check.
+  - **Writing**: plain text, an unsaved document, any extension not listed
+    below, and `.log`, `.csv`, `.tsv`, `.diff` and `.patch`.
+  - **Markdown** (`.md`, `.markdown`, `.mdown`, `.mkd`, `.mdx`): also skips
+    inline code, fenced code blocks, link and image addresses, reference
+    definitions and inline HTML tags. Link text and alt text are still checked.
+  - **Markup** (`.html`, `.htm`, `.xhtml`, `.xml`, `.xsl`, `.xslt`, `.svg`,
+    `.opml`, `.rss`, `.atom`): reads the text between tags and comments, and
+    of the attributes only `alt`, `title`, `aria-label`, `aria-description`
+    and `placeholder`. `<script>` and `<style>` are read as code.
+  - **Code**: only strings and comments, in C, C++, C#, Java, Go, Rust, Swift,
+    Objective-C, Kotlin, Scala, D, Pascal, Fortran, assembly, Python, Ruby,
+    Perl, PHP, Lua, Tcl, R, Julia, Dart, Groovy, Visual Basic, VBScript,
+    JavaScript, TypeScript, Vue, Svelte, CSS, SCSS, Sass, Less, Stylus, the
+    shells, PowerShell, batch files, makefiles, CMake, Gradle, Inno Setup,
+    JSON, YAML, TOML, INI and other settings files, SQL, GraphQL and Protocol
+    Buffers. Inside strings and comments it still skips placeholders (`{0}`,
+    `{name}`, `%s`, `%(name)s`, `${x}`, `$name`), escapes (`\n`, `\u00e9`),
+    and words shaped like code names (`snake_case`, `camelCase`, `HTTPServer`,
+    anything with a digit).
 - Code and markup are read with Pygments, now a declared dependency, bundled in
-  the shared runtime and listed in the third-party notices. A small built-in
-  reader takes over if Pygments or a lexer is missing.
+  the shared runtime and listed in the third-party notices of every app that
+  uses the runtime. It loads on the first code file, not at startup. A
+  built-in reader for the main comment and string shapes takes over when
+  Pygments or a lexer for the extension is missing, or the file is over
+  100,000 characters.
+- User guide: **What spell check reads** has the full list.
 - A word in single quotes in SQL, CSS or a script is no longer reported with
   its closing quote attached.
 - The recovery window in QUILL Lite quotes the first few words of each
@@ -51,8 +156,6 @@ Lite share the code, so both get both.
 
 - Add explicit screenshot source selection, opt-in global capture hotkeys, local OCR, objective file evidence, rich editable/custom prompts, image-grounded chat and separately approved automatic AI in the shared Studio implementation. The [Studio changelog](standalone/studio/docs/CHANGELOG.md) lists every screenshot feature, privacy behavior and remaining acceptance gate.
 - Harden the shared legacy Windows capture helper: reject invalid targets rather than falling back to a full desktop, preserve negative-monitor window coordinates and report screenshot failures clearly. Existing audiobook data, job formats, runtime identity and media engines are unchanged.
-
-## 1.0.0
 
 ### Tables, What's New and sliders: the latest work (2026-10-25 and 2026-10-26)
 
@@ -558,7 +661,7 @@ in `docs/release/portable-update-by-hand-notice.md` (who is affected, what
 goes wrong, seven steps: back up `data`, download, unzip next to the old copy,
 copy `data` back, check, tidy up; what to do if the data is already gone), and
 a short version is in `docs/release notes/release1.0.0.md` (Staying up to date)
-and QUILL Lite's `release-notes-1.2.md` (If you already use QUILL Lite).
+and QUILL Lite's `release-notes-2.0.md` (If you already use QUILL Lite).
 Nothing published or sent; RELEASE.md records the decision.
 
 ### Dictation acceptance tests in both editors; spelling across pauses; a dictated Markdown link (todo D.2; 2026-10-17)
@@ -4254,7 +4357,7 @@ copy of the code.
   `standalone/radio/docs/release-notes-3.2.md` (Help > Release Notes opens
   them, and the site sync points there).
 - QUILL Lite 1.2.0 follows 1.1.2 and delivers everything the 1.1 notes
-  promised for 1.2.0; its notes are `standalone/quilllite/docs/release-notes-1.2.md`.
+  promised for 1.2.0; its notes are `standalone/quilllite/docs/release-notes-2.0.md` (1.2.0 was renumbered 2.0.0).
 - QUILL Cast is 2.0.0 everywhere: its menus, README, changelog, PRD and
   release notes.
 

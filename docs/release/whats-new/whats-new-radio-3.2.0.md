@@ -39,6 +39,8 @@ You can now ask the radio about what you are hearing, keep your own music and au
 
 ## Fixed
 
+Sharp text at 150 and 200 percent display scaling, and controls that had no label now have a spoken name.
+
 Start with Windows works again, live stations stay close to live after a hiccup, Preferences opens at once, and backups name anything they leave out.
 
 The full release notes: Help > Release Notes (Shift+F1). Stuck? Help > Get Help from Support (Ctrl+Alt+F2).

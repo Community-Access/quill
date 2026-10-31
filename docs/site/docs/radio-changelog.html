@@ -251,15 +251,6 @@ href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
 <p>Quill Radio runs the same radio code as QUILL from the shared
 <code>quill</code> package, so features and fixes land in both at once;
 this repository carries only the wrapper, installer, icon, and docs.</p>
-<h2 id="unreleased">Unreleased</h2>
-<ul>
-<li><strong>Windows Media closes cleanly after device
-enumeration.</strong> Device selection still uses the Windows render
-endpoints and keeps the selected route. QUILL no longer retains
-COM-backed device objects in a module cache, which fixes a process-exit
-access violation after opening audio preferences or switching the output
-device. The player unregisters its WinRT events before shutdown.</li>
-</ul>
 <h2 id="320---2026-10-03">[3.2.0] - 2026-10-03</h2>
 <p>Testing rebuild: <strong>3.2.0 (build 5)</strong>. The packages have
 not been published yet.</p>
@@ -292,6 +283,37 @@ and the Podcast Index says why when it cannot; browsing long lists stays
 smooth; Preferences has Find a setting; Undo History lists the last ten
 things you can take back; and a few choices can be shared with your
 other Quill apps.</p>
+<h3 id="since-build-5-2026-10-27-to-2026-10-31">Since build 5
+(2026-10-27 to 2026-10-31)</h3>
+<ul>
+<li><strong>Windows Media closes cleanly after device
+enumeration</strong> (2026-10-27). Device selection still uses the
+Windows render endpoints and keeps the selected route. QUILL no longer
+retains COM-backed device objects in a module cache, which fixes a
+process-exit access violation after opening audio preferences or
+switching the output device. The player unregisters its WinRT events
+before shutdown.</li>
+<li><strong>Controls that had no label now have a spoken name</strong>
+(2026-10-30). JAWS, NVDA and Narrator used to announce them as a bare
+role, such as “edit” or “list”. Now they say what they are: Now playing
+(in the main window, the player and the Now Playing window), the details
+of the highlighted station in Browse, the schedule summary and programme
+schedule in the calendar, station results and TuneIn categories in the
+station browser, the listening report in Stats, the video window’s
+status, the sleep timer’s custom minutes, and Spotify results.</li>
+<li><strong>Sharp text at any display scaling</strong> (2026-10-31).
+Quill Radio now handles each monitor’s scaling itself instead of letting
+Windows stretch it, so text stays sharp at 125, 150 and 200 percent and
+on monitors with different scaling, and windows and list columns keep
+their proportions. Setting the environment variable
+<code>QUILL_DPI_UNAWARE</code> to <code>1</code> turns this off, for
+diagnosing a display problem (#1702). User guide: “Text looks blurry, or
+a window is the wrong size”.</li>
+<li><strong>Pygments in the notices</strong> (2026-10-31). The shared
+runtime now bundles Pygments, which QUILL and QUILL Lite use to read
+code and web pages for spell check, so Quill Radio’s third-party notices
+list it.</li>
+</ul>
 <h3 id="what-each-testing-rebuild-added">What each testing rebuild
 added</h3>
 <ul>

@@ -1,27 +1,65 @@
 # QUILL Lite changelog
 
-## Unreleased
+## 2.0.0
 
-### Spell check and recovery (2026-10-30)
+Testing build: **2.0.0 (build 1)**. The new packages have not been published
+yet; the last published version is 1.1.2.
 
-- Spell check no longer stops on the parts of a web address. It skips web
-  addresses, email addresses, file paths and file names in every document,
-  and in code or a web page it reads only what someone wrote as language.
-  User guide: **What spell check reads**. Suggested by Chris Nova.
-- The recovery window quotes how each document begins, so two untitled
-  windows from the same afternoon are easy to tell apart. Also suggested by
-  Chris Nova.
+This version was prepared as 1.2.0 on 2026-10-03 and went through six testing
+builds under that number (builds 2 and 3 were uploaded for testing). It was
+renumbered 2.0.0 on 2026-10-31, and its first build under the new number is
+build 1. Everything made since 2026-10-03 is part of 2.0.0, and is grouped
+below by subject rather than by date, so related changes sit together. The
+sixth 1.2.0 testing build added tables in every kind of document (real tables
+in rich text, and arrows that read a table cell by cell), Help > What's New,
+and a full menu bar when every document is closed. Where an entry below says
+"1.2.0" or names a build, it means that testing build.
 
-## 1.2.0 -- 2026-10-03
+### Spell check, recovery and display scaling (2026-10-30 and 2026-10-31)
 
-Testing rebuild: **1.2.0 (build 6)**, following builds 2, 3, 4 and 5; builds 2
-and 3 were uploaded for testing. The new packages have not been published yet.
-
-1.2.0 was first prepared on 2026-10-03. Everything made since then, through
-build 6, is part of 1.2.0, and is grouped below by subject rather than by date,
-so related changes sit together. Build 6 adds tables in every kind of document
-(real tables in rich text, and arrows that read a table cell by cell), Help >
-What's New, and a full menu bar when every document is closed.
+- **Spell check reads only what you wrote** (2026-10-30). It no longer stops
+  on the parts of a web address. In every document it skips web addresses,
+  email addresses, file paths and file names such as `notes.txt`. This covers
+  checking as you type, F7, next and previous misspelling, the misspelling
+  list and the context menu. Suggested by Chris Nova of Mystic Access.
+- **The file's extension picks the rule**, and the rule follows the
+  document's current name: an unsaved document is read as writing, and after
+  Save As to a new extension the next check uses the new rule.
+  - Writing: plain text, an unsaved document, any extension not listed
+    below, and `.log`, `.csv`, `.tsv`, `.diff` and `.patch`.
+  - Markdown (`.md`, `.markdown`, `.mdown`, `.mkd`, `.mdx`): also skips
+    inline code, fenced code blocks, link and image addresses and HTML tags.
+    Link text and alt text are still checked.
+  - Web pages and XML (`.html`, `.htm`, `.xhtml`, `.xml`, `.xsl`, `.xslt`,
+    `.svg`, `.opml`, `.rss`, `.atom`): the text between tags, comments, and
+    the `alt`, `title`, `aria-label`, `aria-description` and `placeholder`
+    attributes. `<script>` and `<style>` are read as code.
+  - Code: only strings and comments, in C, C++, C#, Java, Go, Rust, Swift,
+    Objective-C, Kotlin, Scala, D, Pascal, Fortran, assembly, Python, Ruby,
+    Perl, PHP, Lua, Tcl, R, Julia, Dart, Groovy, Visual Basic, VBScript,
+    JavaScript, TypeScript, Vue, Svelte, CSS and its relatives, the shells,
+    PowerShell, batch files, makefiles, CMake, Gradle, Inno Setup, JSON,
+    YAML, TOML, INI and other settings files, SQL, GraphQL and Protocol
+    Buffers. Inside them it skips placeholders such as `{0}`, `%s` and
+    `${x}`, escapes such as `\n`, and names such as `snake_case` and
+    `camelCase`.
+- **Pygments reads the code** (2026-10-30), bundled in the shared runtime and
+  listed in the third-party notices. A built-in reader takes over when
+  Pygments or a reader for the extension is missing, or the file is over
+  100,000 characters. User guide: **What spell check reads** has the full
+  list.
+- **The recovery window quotes how each document begins** (2026-10-30), so
+  two untitled windows from the same afternoon are easy to tell apart. Also
+  suggested by Chris Nova.
+- **Controls that had no label now have a spoken name** (2026-10-30).
+  JAWS, NVDA and Narrator used to announce them as a bare role, such as
+  "edit" or "list". In Preferences, the description of the chosen profile is now read as "What this profile does".
+- **Sharp text at any display scaling** (2026-10-31). QUILL Lite now handles
+  each monitor's scaling itself instead of letting Windows stretch it, so
+  text stays sharp at 125, 150 and 200 percent and on monitors with
+  different scaling, and windows and list columns keep their proportions.
+  Setting the environment variable `QUILL_DPI_UNAWARE` to `1` turns this off,
+  for diagnosing a display problem (#1702). User guide: "Text looks blurry, or a window is the wrong size".
 
 ### Tables
 
@@ -295,7 +333,7 @@ All of it is shared with QUILL, on QUILL's keys.
   discarding unsaved edits on a conflict** and **External-change debounce
   (milliseconds)**, plus **Forget remembered file-change answers**.
 - The user guide no longer says the Heading Organizer cannot work in rich text.
-  It has since 1.2.0.
+  It has since 2.0.0.
 
 #### Large and networked files open without freezing the window (F-05)
 
@@ -1162,7 +1200,7 @@ words (QUILL: Tools > Speech > Live Dictation; QUILL Lite: Tools > Dictation).
 - A portable copy unpacked to a folder whose name has a space in it said it did
   not start. The QuillVille launcher passed its own path to Python unquoted,
   so Python read it as two words; the same mistake split a document opened
-  from File Explorer out of such a folder. Every release before 1.2 had it
+  from File Explorer out of such a folder. Every release before 2.0 had it
   (`quill/native/launcher/cmdline.c`).
 
 #### QUILL Lite as your Windows text editor (2026-10-03)
@@ -1885,7 +1923,7 @@ in the same release.
 
 - **Quote Lines (Ctrl+Shift+Q)** and **Remove Quote Marks (Alt+Shift+.)**,
   for replying to email and quoting a log excerpt. (Remove Quote Marks was
-  on Ctrl+Alt+Shift+Q until 1.2.0.)
+  on Ctrl+Alt+Shift+Q until 2.0.0.)
 
 - **Hard Wrap Lines (Alt+Shift+W)** asks for a width and re-flows to it, keeping
   paragraphs apart and never breaking a word. This changes the document, unlike
@@ -2015,7 +2053,7 @@ in the same release.
 
 #### Abbreviations and snippets
 
-- **Snippets — Ctrl+Alt+Shift+Home.** (It was Alt+Shift+I until 1.2.) A list
+- **Snippets — Ctrl+Alt+Shift+Home.** (It was Alt+Shift+I until 2.0.) A list
   of every abbreviation, most used first, with a preview of what each one writes. Abbreviations expand when you
   type the trigger, which is perfect for the six you use daily and no help at
   all for the fortieth one, whose trigger you cannot remember.

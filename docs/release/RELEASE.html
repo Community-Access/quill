@@ -472,7 +472,7 @@ update notices and the Release Channel window. Release notes, changelog
 headings and file names keep saying <code>3.2.0</code>.</li>
 <li><strong>Tags.</strong> A build is tagged as a pre-release
 identifier, never with a plus: <code>quill-radio-v3.2.0-build.2</code>,
-<code>quill-lite-v1.2.0-build.1</code>, <code>v1.0.0-build.1</code>,
+<code>quill-lite-v2.0.0-build.1</code>, <code>v1.0.0-build.1</code>,
 <code>v1.1.0-beta.1.build.3</code>. Copies installed before build
 numbers read a <code>+</code> in a sibling’s tag as no version at all
 and in QUILL’s own tag as part of the patch number
@@ -598,7 +598,7 @@ goes on Beta, and is promoted from there. Details:
 <p>For a step-by-step walk-through of building and publishing the QUILL
 Lite, Quill Radio and QUILL Cast betas, see <a
 href="beta-build-and-publish.md">Beta builds and publishing</a>. For the
-general release of QUILL Lite 1.2, Quill Radio 3.2, QUILL Cast 2.0 and
+general release of QUILL Lite 2.0, Quill Radio 3.2, QUILL Cast 2.0 and
 QUILL Transcribe 1.0, from one-time setup to the website, see <a
 href="release-plan-lite-radio-cast-transcribe.md">the release
 plan</a>.</p>
@@ -881,7 +881,7 @@ by hand. Copies from the next release on carry the fixed helper.
 <strong>Decided (Jeff, 2026-10-17): tell them to update by
 hand.</strong> The notice is drafted in
 <code>docs/release/portable-update-by-hand-notice.md</code> (for the
-website), and a short version is in QUILL Lite’s 1.2 release notes and
+website), and a short version is in QUILL Lite’s 2.0 release notes and
 QUILL’s 1.0 release notes. Nothing has been published or sent.</p>
 <h3 id="the-update-helper-swap-health-check-and-undo">The update helper:
 swap, health check and undo</h3>
@@ -955,7 +955,7 @@ list and its CI key (decided 2026-10-04)</h3>
 still signed in CI by <code>windows-release.yml</code> with the
 <code>QUILL_FEED_SIGNING_KEY</code> secret, because copies from before
 release channels read it. Leave that alone for now. Once every app’s
-channel-aware release (QUILL 1.0.0, QUILL Lite 1.2.0, Quill Radio 3.2.0,
+channel-aware release (QUILL 1.0.0, QUILL Lite 2.0.0, Quill Radio 3.2.0,
 QUILL Cast 2.0.0) has been out for one full release cycle, remove the
 secret from CI and stop signing the v1 list. Until then, do not touch
 it.</p>

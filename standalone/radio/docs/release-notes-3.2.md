@@ -33,6 +33,15 @@ Quill Radio now closes cleanly after Windows audio-device enumeration or a
 device switch. This fixes a process-exit crash; choosing an output device and
 playing through Windows Media work as before.
 
+### Later testing update (2026-10-30 and 2026-10-31)
+
+Text stays sharp at 125, 150 and 200 percent display scaling and on monitors
+with different scaling, and windows and list columns keep their
+proportions. Controls that had no label, such as Now playing, the station
+details in Browse, the calendar's schedule and the sleep timer's custom
+minutes, now have a spoken name, so your screen reader says what they are
+instead of just "edit" or "list".
+
 ### New stations and networks
 
 A listener in Hawaii asked for 181.FM by name, and it is now a branch of its

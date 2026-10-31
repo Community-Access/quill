@@ -19,6 +19,12 @@ hear before you commit, chapters that survive every conversion, joining and
 splitting, an Explorer right-click, and reasons instead of error codes when
 something fails.
 
+## Sharp at any display scaling
+
+Quill Converter handles each monitor's scaling itself, so text stays sharp at 125, 150
+and 200 percent and on monitors with different scaling, and windows and list
+columns keep their proportions.
+
 ## Downloads
 
 Two downloads. Choose one.

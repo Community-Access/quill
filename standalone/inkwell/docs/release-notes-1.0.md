@@ -19,6 +19,12 @@ browser, your email or a form, then a space or a punctuation mark, and it
 expands. Press **Backspace** straight away if you did not want it. Nothing you
 type is kept, and nothing is sent anywhere.
 
+## Sharp at any display scaling
+
+Quill Inkwell handles each monitor's scaling itself, so text stays sharp at 125, 150
+and 200 percent and on monitors with different scaling, and windows and list
+columns keep their proportions.
+
 ## What you can do with it
 
 ### Expand abbreviations anywhere you type

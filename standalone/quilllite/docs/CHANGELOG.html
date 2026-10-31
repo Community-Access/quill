@@ -243,29 +243,81 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
 <h1 id="quill-lite-changelog">QUILL Lite changelog</h1>
-<h2 id="unreleased">Unreleased</h2>
-<h3 id="spell-check-and-recovery-2026-10-30">Spell check and recovery
-(2026-10-30)</h3>
+<h2 id="200">2.0.0</h2>
+<p>Testing build: <strong>2.0.0 (build 1)</strong>. The new packages
+have not been published yet; the last published version is 1.1.2.</p>
+<p>This version was prepared as 1.2.0 on 2026-10-03 and went through six
+testing builds under that number (builds 2 and 3 were uploaded for
+testing). It was renumbered 2.0.0 on 2026-10-31, and its first build
+under the new number is build 1. Everything made since 2026-10-03 is
+part of 2.0.0, and is grouped below by subject rather than by date, so
+related changes sit together. The sixth 1.2.0 testing build added tables
+in every kind of document (real tables in rich text, and arrows that
+read a table cell by cell), Help &gt; What’s New, and a full menu bar
+when every document is closed. Where an entry below says “1.2.0” or
+names a build, it means that testing build.</p>
+<h3
+id="spell-check-recovery-and-display-scaling-2026-10-30-and-2026-10-31">Spell
+check, recovery and display scaling (2026-10-30 and 2026-10-31)</h3>
 <ul>
-<li>Spell check no longer stops on the parts of a web address. It skips
-web addresses, email addresses, file paths and file names in every
-document, and in code or a web page it reads only what someone wrote as
-language. User guide: <strong>What spell check reads</strong>. Suggested
-by Chris Nova.</li>
-<li>The recovery window quotes how each document begins, so two untitled
-windows from the same afternoon are easy to tell apart. Also suggested
-by Chris Nova.</li>
+<li><strong>Spell check reads only what you wrote</strong> (2026-10-30).
+It no longer stops on the parts of a web address. In every document it
+skips web addresses, email addresses, file paths and file names such as
+<code>notes.txt</code>. This covers checking as you type, F7, next and
+previous misspelling, the misspelling list and the context menu.
+Suggested by Chris Nova of Mystic Access.</li>
+<li><strong>The file’s extension picks the rule</strong>, and the rule
+follows the document’s current name: an unsaved document is read as
+writing, and after Save As to a new extension the next check uses the
+new rule.
+<ul>
+<li>Writing: plain text, an unsaved document, any extension not listed
+below, and <code>.log</code>, <code>.csv</code>, <code>.tsv</code>,
+<code>.diff</code> and <code>.patch</code>.</li>
+<li>Markdown (<code>.md</code>, <code>.markdown</code>,
+<code>.mdown</code>, <code>.mkd</code>, <code>.mdx</code>): also skips
+inline code, fenced code blocks, link and image addresses and HTML tags.
+Link text and alt text are still checked.</li>
+<li>Web pages and XML (<code>.html</code>, <code>.htm</code>,
+<code>.xhtml</code>, <code>.xml</code>, <code>.xsl</code>,
+<code>.xslt</code>, <code>.svg</code>, <code>.opml</code>,
+<code>.rss</code>, <code>.atom</code>): the text between tags, comments,
+and the <code>alt</code>, <code>title</code>, <code>aria-label</code>,
+<code>aria-description</code> and <code>placeholder</code> attributes.
+<code>&lt;script&gt;</code> and <code>&lt;style&gt;</code> are read as
+code.</li>
+<li>Code: only strings and comments, in C, C++, C#, Java, Go, Rust,
+Swift, Objective-C, Kotlin, Scala, D, Pascal, Fortran, assembly, Python,
+Ruby, Perl, PHP, Lua, Tcl, R, Julia, Dart, Groovy, Visual Basic,
+VBScript, JavaScript, TypeScript, Vue, Svelte, CSS and its relatives,
+the shells, PowerShell, batch files, makefiles, CMake, Gradle, Inno
+Setup, JSON, YAML, TOML, INI and other settings files, SQL, GraphQL and
+Protocol Buffers. Inside them it skips placeholders such as
+<code>{0}</code>, <code>%s</code> and <code>${x}</code>, escapes such as
+<code>\n</code>, and names such as <code>snake_case</code> and
+<code>camelCase</code>.</li>
+</ul></li>
+<li><strong>Pygments reads the code</strong> (2026-10-30), bundled in
+the shared runtime and listed in the third-party notices. A built-in
+reader takes over when Pygments or a reader for the extension is
+missing, or the file is over 100,000 characters. User guide:
+<strong>What spell check reads</strong> has the full list.</li>
+<li><strong>The recovery window quotes how each document begins</strong>
+(2026-10-30), so two untitled windows from the same afternoon are easy
+to tell apart. Also suggested by Chris Nova.</li>
+<li><strong>Controls that had no label now have a spoken name</strong>
+(2026-10-30). JAWS, NVDA and Narrator used to announce them as a bare
+role, such as “edit” or “list”. In Preferences, the description of the
+chosen profile is now read as “What this profile does”.</li>
+<li><strong>Sharp text at any display scaling</strong> (2026-10-31).
+QUILL Lite now handles each monitor’s scaling itself instead of letting
+Windows stretch it, so text stays sharp at 125, 150 and 200 percent and
+on monitors with different scaling, and windows and list columns keep
+their proportions. Setting the environment variable
+<code>QUILL_DPI_UNAWARE</code> to <code>1</code> turns this off, for
+diagnosing a display problem (#1702). User guide: “Text looks blurry, or
+a window is the wrong size”.</li>
 </ul>
-<h2 id="120--2026-10-03">1.2.0 – 2026-10-03</h2>
-<p>Testing rebuild: <strong>1.2.0 (build 6)</strong>, following builds
-2, 3, 4 and 5; builds 2 and 3 were uploaded for testing. The new
-packages have not been published yet.</p>
-<p>1.2.0 was first prepared on 2026-10-03. Everything made since then,
-through build 6, is part of 1.2.0, and is grouped below by subject
-rather than by date, so related changes sit together. Build 6 adds
-tables in every kind of document (real tables in rich text, and arrows
-that read a table cell by cell), Help &gt; What’s New, and a full menu
-bar when every document is closed.</p>
 <h3 id="tables">Tables</h3>
 <p>QUILL Lite can now make a table, read it cell by cell and change its
 shape, in every kind of document, on the same keys as QUILL. This brings
@@ -637,7 +689,7 @@ unsaved edits on a conflict</strong> and <strong>External-change
 debounce (milliseconds)</strong>, plus <strong>Forget remembered
 file-change answers</strong>.</li>
 <li>The user guide no longer says the Heading Organizer cannot work in
-rich text. It has since 1.2.0.</li>
+rich text. It has since 2.0.0.</li>
 </ul>
 <h4
 id="large-and-networked-files-open-without-freezing-the-window-f-05">Large
@@ -1987,7 +2039,7 @@ copies start from a folder with a space in its name (2026-10-04)</h4>
 said it did not start. The QuillVille launcher passed its own path to
 Python unquoted, so Python read it as two words; the same mistake split
 a document opened from File Explorer out of such a folder. Every release
-before 1.2 had it (<code>quill/native/launcher/cmdline.c</code>).</li>
+before 2.0 had it (<code>quill/native/launcher/cmdline.c</code>).</li>
 </ul>
 <h4 id="quill-lite-as-your-windows-text-editor-2026-10-03">QUILL Lite as
 your Windows text editor (2026-10-03)</h4>
@@ -2834,7 +2886,7 @@ none of its formatting.</p></li>
 <li><p><strong>Quote Lines (Ctrl+Shift+Q)</strong> and <strong>Remove
 Quote Marks (Alt+Shift+.)</strong>, for replying to email and quoting a
 log excerpt. (Remove Quote Marks was on Ctrl+Alt+Shift+Q until
-1.2.0.)</p></li>
+2.0.0.)</p></li>
 <li><p><strong>Hard Wrap Lines (Alt+Shift+W)</strong> asks for a width
 and re-flows to it, keeping paragraphs apart and never breaking a word.
 This changes the document, unlike View, Word Wrap.</p></li>
@@ -2978,7 +3030,7 @@ way to tell which one broke the search.</p></li>
 <h4 id="abbreviations-and-snippets">Abbreviations and snippets</h4>
 <ul>
 <li><p><strong>Snippets — Ctrl+Alt+Shift+Home.</strong> (It was
-Alt+Shift+I until 1.2.) A list of every abbreviation, most used first,
+Alt+Shift+I until 2.0.) A list of every abbreviation, most used first,
 with a preview of what each one writes. Abbreviations expand when you
 type the trigger, which is perfect for the six you use daily and no help
 at all for the fortieth one, whose trigger you cannot remember.</p></li>

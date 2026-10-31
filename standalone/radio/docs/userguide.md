@@ -5867,7 +5867,7 @@ presenter just said, the answer comes from what the assistant knows about the
 programme, not from hearing it.
 
 **Before your first question, sign in.** Ask QUILL Radio only works with your
-own ChatGPT plan: Plus, Pro, Team or Enterprise. See "Use My ChatGPT
+own paid ChatGPT plan, such as Plus or Pro. See "Use My ChatGPT
 Subscription, step by step" below. If you have not signed in, Ctrl+Shift+8
 tells you so and opens that window instead.
 
@@ -5951,7 +5951,10 @@ Usage** in the account window shows when it resets.
    story a presenter mentioned, or a new album, and tell you what it found. It
    is saved as soon as you change it, and Space again turns it off.
 6. **Open ChatGPT Usage** (Alt+U) opens your plan's usage page in your
-   browser. **Sign Out** (Alt+O, press it twice) asks OpenAI to cancel Quill
+   browser. Your questions draw on your plan's own usage limits, shared with
+   ChatGPT itself and any other app you have connected, and that page lets you
+   set a weekly limit for Quill Radio. When the limit is reached, Quill Radio
+   says so and does not switch to an API key. **Sign Out** (Alt+O, press it twice) asks OpenAI to cancel Quill
    Radio's sign-in and forgets it here. **Forget on This Computer** (Alt+F)
    only forgets it here, which is handy on a computer with no internet or for
    a sign-in you already removed in ChatGPT's settings. Both only appear while
@@ -7293,6 +7296,17 @@ site.
   **Ctrl+Alt+Shift+M** for Audio Health, then write to support with
   **Ctrl+Alt+F2**. Copy All in Recent Problems gives support the details
   without any passwords.
+
+#### Text looks blurry, or a window is the wrong size
+
+Quill Radio scales itself for each monitor. Text stays sharp at 125, 150 or 200
+percent, and when you move a window to a monitor with different scaling;
+windows and list columns keep their proportions. If a window looks wrong at
+your scaling, you can turn this off to see whether it is the cause. Search
+Windows for "Edit environment variables for your account", add a variable
+named `QUILL_DPI_UNAWARE` with the value `1`, and start Quill Radio again.
+Windows then stretches it the old way, so text is blurrier. Delete the
+variable to put scaling back, and tell support what you saw.
 
 ### What you learned, and where to go next
 

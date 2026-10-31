@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>QUILL Lite 1.2</title>
+  <title>QUILL Lite 2.0</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -242,11 +242,15 @@
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
-<h1 id="quill-lite-12">QUILL Lite 1.2</h1>
-<p><em>Version 1.2.0 (build 6), the beta for testers, October 2026.
-1.2.0 was prepared on October 3, 2026 and is not yet published; the last
-published version is 1.1.2.</em></p>
-<p>Welcome to QUILL Lite 1.2. This is the release about words. QUILL
+<h1 id="quill-lite-20">QUILL Lite 2.0</h1>
+<p><em>Version 2.0.0 (build 1), the beta for testers, October 2026.
+2.0.0 is not yet published; the last published version is
+1.1.2.</em></p>
+<p><em>This release was prepared as 1.2.0 on October 3, 2026 and tested
+under that number through six builds. It was renumbered 2.0.0 on October
+31, 2026, so the sections below that name a 1.2.0 build describe those
+testing builds.</em></p>
+<p>Welcome to QUILL Lite 2.0. This is the release about words. QUILL
 Lite now has a thesaurus that finds the word you are really on, a
 dictionary that works without AI, and an AI dictionary that reads your
 word in its own sentence and tells you whether it is the right one.</p>
@@ -256,8 +260,29 @@ again, and if something goes wrong while you are busy elsewhere, it
 waits for you rather than slipping past.</p>
 <p>Everything works from the keyboard and tells you how it went, the way
 the rest of QUILL Lite does.</p>
-<h2 id="new-in-build-6-tables-in-every-document">New in build 6: tables
-in every document</h2>
+<h2 id="new-in-200-build-1-spell-check-that-reads-what-you-wrote">New in
+2.0.0 (build 1): spell check that reads what you wrote</h2>
+<ul>
+<li><strong>Spell check skips web addresses, email addresses, file paths
+and file names</strong>, so <code>www.example.com</code> is no longer
+three misspellings. The file’s extension picks what is read: everything
+in plain text, the writing but not the code or link addresses in
+Markdown, the text and the readable attributes in a web page or XML
+file, and only the strings and comments in code, in over sixty kinds of
+source and settings file from Python and JavaScript to PowerShell, SQL
+and JSON. Suggested by Chris Nova of Mystic Access. See “What spell
+check reads” in the user guide.</li>
+<li><strong>The recovery window quotes how each document
+begins</strong>, so you can tell which piece of work is which.</li>
+<li><strong>Sharp text at any display scaling.</strong> QUILL Lite
+handles each monitor’s scaling itself, so text stays sharp at 150 and
+200 percent and on mixed monitors. See “Text looks blurry, or a window
+is the wrong size”.</li>
+<li><strong>A spoken name for the profile description</strong> in
+Preferences.</li>
+</ul>
+<h2 id="new-in-120-build-6-tables-in-every-document">New in 1.2.0 build
+6: tables in every document</h2>
 <p>Build 6 keeps everything from build 5, below, and adds tables, Help
 &gt; What’s New and a full menu bar when every document is closed. It is
 the same work as in QUILL, on the same keys.</p>
@@ -330,9 +355,9 @@ Scheme, and backing up and restoring settings) and
 <strong>Help</strong>, on the same keys as a document window.</li>
 </ul>
 <h2
-id="new-in-build-5-find-in-open-documents-folder-search-and-the-clipboard-collector">New
-in build 5: Find in Open Documents, folder search and the clipboard
-collector</h2>
+id="new-in-120-build-5-find-in-open-documents-folder-search-and-the-clipboard-collector">New
+in 1.2.0 build 5: Find in Open Documents, folder search and the
+clipboard collector</h2>
 <p>Press <strong>Ctrl+Alt+Shift+F8</strong> to find and replace across
 every document you have open, not just the one in front of you. It
 searches what is in each window right now, including changes you have
@@ -729,12 +754,12 @@ promotion.</p>
 Lite</h2>
 <p>Your settings, recent files and recovered work come with you exactly
 as they are, and <strong>Help &gt; Check for Updates</strong>
-(<strong>Ctrl+Alt+U</strong>) offers 1.2.0 like any other update.</p>
+(<strong>Ctrl+Alt+U</strong>) offers 2.0.0 like any other update.</p>
 <p><strong>If you use the portable QUILL Lite 1.1.2, update by hand this
 time.</strong> In that copy, <strong>Install and restart now</strong>
 can delete everything in its <code>data</code> folder: your settings,
 keys and recovered work. The fault is in the updater inside 1.1.2, so
-1.2.0 cannot fix it for you; 1.2.0 carries a fixed one. An installed
+2.0.0 cannot fix it for you; 2.0.0 carries a fixed one. An installed
 copy is not affected. Instead of Install and restart now:</p>
 <ol type="1">
 <li>Close QUILL Lite.</li>
@@ -1188,9 +1213,9 @@ asks before each recording is sent.</li>
 including which model suits which recording.</p>
 <h2 id="follow-up-for-testers-reopen-a-completed-transcript">Follow-up
 for testers: reopen a completed transcript</h2>
-<p>This is a follow-up after the 1.2.0 release, not part of 1.2.0. A
-completed transcript is now saved privately and linked from its
-completion notice in Notifications. Activate the notice when you are
+<p>This is a follow-up after the first 1.2.0 testing build, and is part
+of 2.0.0. A completed transcript is now saved privately and linked from
+its completion notice in Notifications. Activate the notice when you are
 ready to open the result; it stays separate from the document you were
 editing.</p>
 <h2 id="your-recent-documents-one-key-away">Your recent documents, one
@@ -1265,7 +1290,7 @@ can also drag files onto the window to open them.</p>
 <h2 id="careful-with-your-files">Careful with your files</h2>
 <ul>
 <li>An older file that is not UTF-8 now keeps every byte when you save
-it. Before 1.2, five rare characters in such a file could be lost. QUILL
+it. Before 2.0, five rare characters in such a file could be lost. QUILL
 Lite also tells you, once, when a file is not UTF-8.</li>
 <li>If an old file’s letters come out wrong, <strong>Reopen with
 Encoding…</strong> in the File Encoding and Line Endings window
@@ -1319,7 +1344,7 @@ a rich document you used to hear it twice, “Heading 1: Two” and then
 “Heading 1, Two” a moment later. Now you hear it once. QUILL had the
 same echo and is fixed too.</li>
 </ul>
-<h2 id="keys-new-in-12">Keys new in 1.2</h2>
+<h2 id="keys-new-in-20">Keys new in 2.0</h2>
 <table>
 <thead>
 <tr>

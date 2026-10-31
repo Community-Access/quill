@@ -24,6 +24,10 @@ launcher, with all of its settings. To replace an old pin, unpin it and pin
 QUILL Transcribe again after you update. Reported on QUILLVille for QUILL Lite; every
 QuillVille app has the fix.
 
+**Sharp at any display scaling.** QUILL Transcribe handles each monitor's
+scaling itself, so its windows stay sharp at 125, 150 and 200 percent and on
+monitors with different scaling.
+
 ## New in this release
 
 Everything in QUILL Transcribe is new, but if you tried a test build, these

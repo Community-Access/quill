@@ -4656,6 +4656,17 @@ It may be an Advanced row, or a feature switched off in Customize Features
 (Ctrl+Alt+C). The Command Palette (Ctrl+Shift+P) finds it either way and tells
 you which.
 
+#### Text looks blurry, or a window is the wrong size
+
+QUILL Cast scales itself for each monitor. Text stays sharp at 125, 150 or 200
+percent, and when you move a window to a monitor with different scaling;
+windows and list columns keep their proportions. If a window looks wrong at
+your scaling, you can turn this off to see whether it is the cause. Search
+Windows for "Edit environment variables for your account", add a variable
+named `QUILL_DPI_UNAWARE` with the value `1`, and start QUILL Cast again.
+Windows then stretches it the old way, so text is blurrier. Delete the
+variable to put scaling back, and tell support what you saw.
+
 ### What you learned, and where to go next
 
 You now know where to turn when you are stuck. F1 explains whatever you are

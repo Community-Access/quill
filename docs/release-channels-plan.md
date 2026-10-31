@@ -742,7 +742,7 @@ Installed Radio and Lite read only the first 30 releases.
 
 ### 9.3 Bridge releases (the first channel-aware versions)
 
-- **Radio 3.2.0, Lite 1.2.0, QUILL 1.0.0 and Cast 2.0.0** are the first builds with the v2 updater. They ship as ordinary Stable releases, so every old copy is offered them through its old path.
+- **Radio 3.2.0, Lite 2.0.0 (renumbered from 1.2.0), QUILL 1.0.0 and Cast 2.0.0** are the first builds with the v2 updater. They ship as ordinary Stable releases, so every old copy is offered them through its old path.
 - They must:
   - Read the legacy settings (`beta_updates` becomes channel Beta; nothing to read for the others) and write `channels.json`.
   - Start the format ledger at once ("start the clock"), recording today's formats as version 1 (`quill.settings` 2).

@@ -1,6 +1,6 @@
-# What's new in QUILL Lite 1.2
+# What's new in QUILL Lite 2.0
 
-QUILL Lite 1.2 is about words, and about never missing what happened. Your settings, recent files and recovered work come with you.
+QUILL Lite 2.0 is about words, and about never missing what happened. Your settings, recent files and recovered work come with you.
 
 ## Before you update
 
@@ -30,6 +30,11 @@ QUILL Lite 1.2 is about words, and about never missing what happened. Your setti
 - **Inline notes (Alt+Shift+I)** leave a comment on a line; Alt+Shift+Enter lists them.
 - **Recent Documents (Alt+Shift+0)**, with pinning. **Toggle Task Done (Ctrl+Alt+Enter)**. **Export as HTML (Ctrl+Alt+Shift+End)**. **AutoCorrect**, off until you turn it on.
 - **The clipboard collector (Alt+Shift+S)** gathers everything you copy, in any program, into one document.
+
+## Spell check and display
+
+- **Spell check reads only what you wrote.** Web addresses, email addresses, file paths and file names are skipped everywhere; Markdown skips code and link addresses; web pages are read for their text; and in code only strings and comments are checked. The file's extension picks the rule.
+- **Recovery quotes how each document begins**, and text stays sharp at 150 and 200 percent display scaling.
 
 ## Knowing what happened
 

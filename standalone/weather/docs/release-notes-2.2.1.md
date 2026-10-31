@@ -8,6 +8,9 @@ name empty, Weather continues to use the place name from the search result.
 
 ## What changed
 
+- **Sharp at any display scaling.** Quill Weather handles each monitor's
+  scaling itself, so text stays sharp at 125, 150 and 200 percent, and the
+  Weather Center's status line has a spoken name.
 - **Friendly names throughout weather reports.** The Location chooser, loading
   message, current conditions, Quick Weather, local-time sentence, and alert
   monitoring now consistently use your saved name.

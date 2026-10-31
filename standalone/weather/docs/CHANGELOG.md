@@ -11,6 +11,21 @@ adds the work marked "build 2" below, together with everything recorded since
 (the Command Palette and Product Requirements doors, What's New, QUILL
 Transcribe on the QuillVille menu, and the user guide corrections).
 
+### Since build 2 (2026-10-30 and 2026-10-31)
+
+- **Controls that had no label now have a spoken name** (2026-10-30).
+  JAWS, NVDA and Narrator used to announce them as a bare role, such as
+  "edit" or "list". The Weather Center's status line now says "Weather source and freshness status".
+- **Sharp text at any display scaling** (2026-10-31). Quill Weather now handles
+  each monitor's scaling itself instead of letting Windows stretch it, so
+  text stays sharp at 125, 150 and 200 percent and on monitors with
+  different scaling, and windows and list columns keep their proportions.
+  Setting the environment variable `QUILL_DPI_UNAWARE` to `1` turns this off,
+  for diagnosing a display problem (#1702).
+- **Pygments in the notices** (2026-10-31). The shared runtime now bundles
+  Pygments, which QUILL and QUILL Lite use to read code and web pages for
+  spell check, so Quill Weather's third-party notices list it.
+
 ### Places and conditions
 
 - Current conditions, Quick Weather, and local time use the saved friendly name when one is set. (build 2)

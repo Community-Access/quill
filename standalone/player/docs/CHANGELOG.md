@@ -10,6 +10,18 @@ Quill Media Player runs the same player code as QUILL from the shared `quill` pa
 
 Testing build: **1.0.0 (build 2)**. Quill Media Player has not been published yet: the other QuillVille apps do not list it in their QuillVille menus, and QUILL's **Tools > Media > Media Player** row appears once it is released. Everything below is in the build.
 
+### Since build 2 (2026-10-30 and 2026-10-31)
+
+- **Controls that had no label now have a spoken name** (2026-10-30).
+  JAWS, NVDA and Narrator used to announce them as a bare role, such as
+  "edit" or "list". Now playing, the Chapters tree and the Bookmarks list now say what they are.
+- **Sharp text at any display scaling** (2026-10-31). QUILL Media Player now handles
+  each monitor's scaling itself instead of letting Windows stretch it, so
+  text stays sharp at 125, 150 and 200 percent and on monitors with
+  different scaling, and windows and list columns keep their proportions.
+  Setting the environment variable `QUILL_DPI_UNAWARE` to `1` turns this off,
+  for diagnosing a display problem (#1702). User guide: "Text looks blurry, or a window is the wrong size".
+
 ### Opening and listening to books
 
 - **Open what you have.** **Open File** (Ctrl+O) plays an audio file or audiobook (MP3, M4B, M4A, AAC, OGG/Opus, FLAC, WAV and more); **Open Folder as Book** plays a folder of audio as one book; **File > Open DAISY Book...** reads a DAISY book's heading structure from its `.ncx`, single-file and multi-file alike.

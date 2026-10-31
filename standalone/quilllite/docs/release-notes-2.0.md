@@ -1,10 +1,13 @@
-# QUILL Lite 1.2
+# QUILL Lite 2.0
 
-*Version 1.2.0 (build 6), the beta for testers, October 2026. 1.2.0 was
-prepared on October 3, 2026 and is not yet published; the last published
-version is 1.1.2.*
+*Version 2.0.0 (build 1), the beta for testers, October 2026. 2.0.0 is not
+yet published; the last published version is 1.1.2.*
 
-Welcome to QUILL Lite 1.2. This is the release about words. QUILL Lite now has
+*This release was prepared as 1.2.0 on October 3, 2026 and tested under that
+number through six builds. It was renumbered 2.0.0 on October 31, 2026, so
+the sections below that name a 1.2.0 build describe those testing builds.*
+
+Welcome to QUILL Lite 2.0. This is the release about words. QUILL Lite now has
 a thesaurus that finds the word you are really on, a dictionary that works
 without AI, and an AI dictionary that reads your word in its own sentence and
 tells you whether it is the right one.
@@ -18,7 +21,24 @@ Everything works from the keyboard and tells you how it went, the way the rest
 of QUILL Lite does.
 
 
-## New in build 6: tables in every document
+## New in 2.0.0 (build 1): spell check that reads what you wrote
+
+- **Spell check skips web addresses, email addresses, file paths and file
+  names**, so `www.example.com` is no longer three misspellings. The file's
+  extension picks what is read: everything in plain text, the writing but
+  not the code or link addresses in Markdown, the text and the readable
+  attributes in a web page or XML file, and only the strings and comments in
+  code, in over sixty kinds of source and settings file from Python and
+  JavaScript to PowerShell, SQL and JSON. Suggested by Chris Nova of Mystic
+  Access. See "What spell check reads" in the user guide.
+- **The recovery window quotes how each document begins**, so you can tell
+  which piece of work is which.
+- **Sharp text at any display scaling.** QUILL Lite handles each monitor's
+  scaling itself, so text stays sharp at 150 and 200 percent and on mixed
+  monitors. See "Text looks blurry, or a window is the wrong size".
+- **A spoken name for the profile description** in Preferences.
+
+## New in 1.2.0 build 6: tables in every document
 
 Build 6 keeps everything from build 5, below, and adds tables, Help > What's
 New and a full menu bar when every document is closed. It is the same work as
@@ -83,7 +103,7 @@ in QUILL, on the same keys.
   Scheme, and backing up and restoring settings) and **Help**, on the same
   keys as a document window.
 
-## New in build 5: Find in Open Documents, folder search and the clipboard collector
+## New in 1.2.0 build 5: Find in Open Documents, folder search and the clipboard collector
 
 Press **Ctrl+Alt+Shift+F8** to find and replace across every document you have open, not just the one in front of you. It searches what is in each window right now, including changes you have not saved and documents you have never saved. Find Next moves from document to document and tells you each one's name, Find All lists every match, and Replace All tells you how many it found before it changes anything, lets you undo each document on its own, and saves nothing. Afterwards, F3 keeps searching across your documents until you start an ordinary Find. QUILL has it too, on Ctrl+Shift+F10. Thanks to Chris Nova for asking.
 
@@ -417,12 +437,12 @@ packages are not a GitHub release or a Stable-channel promotion.
 
 Your settings, recent
 files and recovered work come with you exactly as they are, and **Help >
-Check for Updates** (**Ctrl+Alt+U**) offers 1.2.0 like any other update.
+Check for Updates** (**Ctrl+Alt+U**) offers 2.0.0 like any other update.
 
 **If you use the portable QUILL Lite 1.1.2, update by hand this time.** In
 that copy, **Install and restart now** can delete everything in its `data`
 folder: your settings, keys and recovered work. The fault is in the updater
-inside 1.1.2, so 1.2.0 cannot fix it for you; 1.2.0 carries a fixed one. An
+inside 1.1.2, so 2.0.0 cannot fix it for you; 2.0.0 carries a fixed one. An
 installed copy is not affected. Instead of Install and restart now:
 
 1. Close QUILL Lite.
@@ -843,7 +863,7 @@ which model suits which recording.
 
 ## Follow-up for testers: reopen a completed transcript
 
-This is a follow-up after the 1.2.0 release, not part of 1.2.0. A completed
+This is a follow-up after the first 1.2.0 testing build, and is part of 2.0.0. A completed
 transcript is now saved privately and linked from its completion notice in
 Notifications. Activate the notice when you are ready to open the result; it
 stays separate from the document you were editing.
@@ -916,7 +936,7 @@ can also drag files onto the window to open them.
 ## Careful with your files
 
 - An older file that is not UTF-8 now keeps every byte when you save it. Before
-  1.2, five rare characters in such a file could be lost. QUILL Lite also tells
+  2.0, five rare characters in such a file could be lost. QUILL Lite also tells
   you, once, when a file is not UTF-8.
 - If an old file's letters come out wrong, **Reopen with Encoding...** in the
   File Encoding and Line Endings window (**Ctrl+Alt+E**) reads it again in the
@@ -963,7 +983,7 @@ reviewing AI-written plans. Thank you, Andre.
   used to hear it twice, "Heading 1: Two" and then "Heading 1, Two" a moment
   later. Now you hear it once. QUILL had the same echo and is fixed too.
 
-## Keys new in 1.2
+## Keys new in 2.0
 
 | Key | What it does |
 |---|---|
