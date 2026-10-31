@@ -851,7 +851,7 @@ If something goes wrong while you record, you hear it once and it is marked at t
 - The camera stops or falls behind.
 - The disk runs low: a warning at two minutes left, then a stop and save before it runs out.
 
-**Known limitations.** Some of this does not yet work reliably, and is being fixed:
+**Known limitations.** Some of this does not yet work reliably, and is being fixed. Thanks to Tony Gebhard (TG Studios), who wrote TG Drop Deck (MIT licence, [github.com/tonygeb23/tg-drop-deck](https://github.com/tonygeb23/tg-drop-deck)) and published the measurements and fixes that showed us these gaps:
 
 - If a program you are recording, or your screen reader, quits, Studio may not notice. That sound stays silent for the rest of the recording, nothing is said, and it is not picked up again when the program starts again.
 - If your screen reader is left out of the recording and it restarts, its speech can get into the recording.

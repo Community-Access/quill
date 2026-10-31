@@ -1052,7 +1052,7 @@ Verified on the build machine: a 5-second display recording with a tone-playing 
 
 ## 10C. Live-show playout: running order
 
-This section carries the expanded PRD's lessons from TG Drop Deck. It details LIVE-001's running order. It is engineering evidence and a licensing record (LIC-007, LIC-008), not a user-facing referral to another product (section 19).
+This section carries the expanded PRD's lessons from TG Drop Deck. It details LIVE-001's running order. It is engineering evidence and a licensing record (LIC-007, LIC-008), not a user-facing referral to another product (section 19). Thanks to Tony Gebhard (TG Studios), who wrote TG Drop Deck and published it under the MIT licence at [github.com/tonygeb23/tg-drop-deck](https://github.com/tonygeb23/tg-drop-deck), for publishing the measurements and fixes this section and the requirements that cite it are built on.
 
 ### 10C.1 What it is
 
