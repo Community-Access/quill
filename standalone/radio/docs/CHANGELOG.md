@@ -8,6 +8,19 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
 
 ## Unreleased
 
+- **Victor Stream playlists import, and fifteen more reading services.**
+  Import Stations from Playlist (Ctrl+I) reads XSPF lists exported from a
+  HumanWare Victor Stream or Victor Trek, including one whose file name ends in
+  `.xspf.txt` and one with a damaged line, which used to import nothing at
+  all. Each station's website comes along with it. Browse Stations > Radio
+  Reading Services gains fifteen services from the same list: Los Angeles
+  Radio Reading Service, Sun Sounds of Arizona in Tucson and Flagstaff, CGR
+  Radio 1, Radio Talking Book Service, AudioReader, the Illinois Radio Reader,
+  MindsEye Radio, the Georgia Radio Reading Service, Sight Into Sound, the
+  Triangle Radio Reading Service, Audio Journal, BTC/UCP Reading Service, The
+  WHRO Voice and the WQCS Radio Reading Service. The service listed as WUFT
+  was always Minnesota Radio Talking Book, and is now called that. Exporting
+  favorites as XSPF now includes each station's website and logo. (#1691)
 - **Windows Media closes cleanly after device enumeration.** Device selection
   still uses the Windows render endpoints and keeps the selected route. QUILL
   no longer retains COM-backed device objects in a module cache, which fixes a

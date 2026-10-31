@@ -92,10 +92,21 @@ def export_xspf(favorites: Iterable[FavoriteStation]) -> str:
         "  <title>Quill Radio Favorites</title>",
         "  <trackList>",
     ]
-    for label, url in _playable_entries(favorites):
+    for fav in favorites:
+        url = (fav.station.stream_url or "").strip()
+        if not url:
+            continue
         lines.append("    <track>")
         lines.append(f"      <location>{escape(url)}</location>")
-        lines.append(f"      <title>{escape(label)}</title>")
+        lines.append(f"      <title>{escape(_clean_label(fav.display_label))}</title>")
+        # The home page and logo travel too (#1691): they are the spec's
+        # <info> and <image>, and our own importer reads them back.
+        homepage = (fav.station.homepage or "").strip()
+        if homepage.lower().startswith(("http://", "https://")):
+            lines.append(f"      <info>{escape(homepage)}</info>")
+        favicon = (fav.station.favicon or "").strip()
+        if favicon.lower().startswith(("http://", "https://")):
+            lines.append(f"      <image>{escape(favicon)}</image>")
         lines.append("    </track>")
     lines.append("  </trackList>")
     lines.append("</playlist>")
