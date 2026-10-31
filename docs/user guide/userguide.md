@@ -12074,6 +12074,8 @@ paste and no bill per request.
    plan.
 3. Come back to QUILL. You are signed in.
 
+You stay signed in until you sign out or remove the app in ChatGPT's settings; a brief problem on OpenAI's side no longer signs you out.
+
 From then on the pad, its seventeen choices, Ask About This Document and
 conversations go straight from this computer to OpenAI on your plan, with no
 charge per request and nothing through QUILL's servers.

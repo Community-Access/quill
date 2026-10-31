@@ -41,6 +41,8 @@ You can now ask the radio about what you are hearing, keep your own music and au
 
 Sharp text at 150 and 200 percent display scaling, and controls that had no label now have a spoken name.
 
+Import Stations from Playlist (Ctrl+I) reads a Victor Stream's XSPF list, Radio Reading Services has fifteen more services, and a brief problem on OpenAI's side no longer signs you out of your ChatGPT plan.
+
 Start with Windows works again, live stations stay close to live after a hiccup, Preferences opens at once, and backups name anything they leave out.
 
 The full release notes: Help > Release Notes (Shift+F1). Stuck? Help > Get Help from Support (Ctrl+Alt+F2).

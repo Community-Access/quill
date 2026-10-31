@@ -244,6 +244,23 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
+<h3
+id="chatgpt-plan-sign-in-holds-through-a-brief-problem-2026-10-31">ChatGPT
+plan sign-in holds through a brief problem (2026-10-31)</h3>
+<ul>
+<li>In QUILL, QUILL Lite, Quill Radio and QUILL Cast, a temporary
+failure while renewing the ChatGPT plan sign-in (a 5xx, an empty body or
+an unknown error code) no longer clears the stored sign-in; only
+<code>invalid_grant</code>, <code>refresh_token_reused</code>,
+<code>refresh_token_expired</code> and <code>invalid_client</code>
+do.</li>
+<li>A rotated refresh token that cannot be saved is retried once and
+then reported, instead of being swallowed until the next renewal signed
+the person out.</li>
+<li>The plan’s model list keeps OpenAI’s order; the ordinary API list is
+still ranked. Open ChatGPT Usage goes to
+<code>https://chatgpt.com/settings/usage</code> (#1715).</li>
+</ul>
 <h3 id="quill-lites-next-version-is-200-2026-10-31">QUILL Lite’s next
 version is 2.0.0 (2026-10-31)</h3>
 <ul>
@@ -462,6 +479,24 @@ destinations.</li>
 <code>html_to_text</code> package. It does not provide the API currently
 imported by QUILL, so choosing and testing the intended dependency
 remains open.</li>
+</ul>
+<h3
+id="quill-radio-victor-stream-xspf-import-and-more-reading-services-2026-10-29">Quill
+Radio: Victor Stream XSPF import and more reading services
+(2026-10-29)</h3>
+<ul>
+<li>XSPF import (<code>quill/core/radio/xspf.py</code>) recovers each
+track of a malformed document instead of returning nothing, reads
+<code>&lt;annotation&gt;</code>, <code>&lt;info&gt;</code> and
+<code>&lt;image&gt;</code>, and takes a web-address
+<code>&lt;creator&gt;</code> as the home page, which is the shape a
+HumanWare Victor Stream export has. The import file window also offers
+<code>*.xspf.txt</code>. XSPF export writes <code>&lt;info&gt;</code>
+and <code>&lt;image&gt;</code>.</li>
+<li><code>quill/data/reading_services.json</code> gains fifteen services
+from the list on #1691, each stream checked live on 2026-10-29, and the
+entry named WUFT is renamed Minnesota Radio Talking Book, which is what
+that stream carries. (#1691)</li>
 </ul>
 <h3 id="windows-runtime-media-shutdown-and-licensing-2026-10-27">Windows
 runtime, media shutdown and licensing (2026-10-27)</h3>

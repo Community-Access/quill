@@ -3899,7 +3899,7 @@ subscription or your own Gemini key.
 Each Quill app signs in to ChatGPT on its own, so signing in here does not
 sign in QUILL or Quill Radio, and signing out of one leaves the others
 signed in. If another Quill app is already signed in, your browser remembers
-you and it takes one Allow.
+you and it takes one Allow. You stay signed in until you sign out or remove the app in ChatGPT's settings; a brief problem on OpenAI's side no longer signs you out.
 
 The last step of the **Show notes, and what else the podcast sent** lesson, in
 Help > Tutorials, turns AI help on with you.

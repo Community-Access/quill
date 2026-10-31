@@ -21,6 +21,11 @@ and speed and reliability.
 
 ### Since build 6 (2026-10-27 to 2026-10-31)
 
+- **ChatGPT plan sign-in holds through a brief problem** (2026-10-31).
+  A temporary failure on OpenAI's side while renewing the sign-in no longer
+  signs you out, a renewed sign-in that cannot be saved is reported, the
+  plan's model list keeps OpenAI's order, and Open ChatGPT Usage goes to
+  chatgpt.com/settings/usage (#1715).
 - **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
   which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
   GLOW dependency; Cast does not itself expose GLOW. Release-specific source

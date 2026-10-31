@@ -47,7 +47,7 @@ Quill Radio now closes cleanly after Windows audio-device enumeration or a
 device switch. This fixes a process-exit crash; choosing an output device and
 playing through Windows Media work as before.
 
-### Later testing update (2026-10-30 and 2026-10-31)
+### Later testing update (2026-10-29 to 2026-10-31)
 
 Text stays sharp at 125, 150 and 200 percent display scaling and on monitors
 with different scaling, and windows and list columns keep their
@@ -55,6 +55,16 @@ proportions. Controls that had no label, such as Now playing, the station
 details in Browse, the calendar's schedule and the sleep timer's custom
 minutes, now have a spoken name, so your screen reader says what they are
 instead of just "edit" or "list".
+
+**Bring your Victor Stream stations across.** Import Stations from Playlist
+(Ctrl+I) reads the XSPF list a HumanWare Victor Stream or Victor Trek
+exports, even one whose name ends in `.xspf.txt` or that has a damaged line,
+and each station's website comes with it. Radio Reading Services has
+fifteen more services from that list, and the one listed as WUFT is now
+called Minnesota Radio Talking Book, which is what it always was.
+
+**Your ChatGPT plan stays signed in.** A brief problem on OpenAI's side no
+longer signs you out of Ask QUILL Radio.
 
 ### New stations and networks
 

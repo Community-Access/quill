@@ -14,6 +14,27 @@ than by build. A date in brackets says when a change arrived.
 
 ### Since build 5 (2026-10-27 to 2026-10-31)
 
+- **Victor Stream playlists import, and fifteen more reading services**
+  (2026-10-29).
+  Import Stations from Playlist (Ctrl+I) reads XSPF lists exported from a
+  HumanWare Victor Stream or Victor Trek, including one whose file name ends in
+  `.xspf.txt` and one with a damaged line, which used to import nothing at
+  all. Each station's website comes along with it. Browse Stations > Radio
+  Reading Services gains fifteen services from the same list: Los Angeles
+  Radio Reading Service, Sun Sounds of Arizona in Tucson and Flagstaff, CGR
+  Radio 1, Radio Talking Book Service, AudioReader, the Illinois Radio Reader,
+  MindsEye Radio, the Georgia Radio Reading Service, Sight Into Sound, the
+  Triangle Radio Reading Service, Audio Journal, BTC/UCP Reading Service, The
+  WHRO Voice and the WQCS Radio Reading Service. The service listed as WUFT
+  was always Minnesota Radio Talking Book, and is now called that. Exporting
+  favorites as XSPF now includes each station's website and logo. (#1691)
+- **ChatGPT plan sign-in holds through a brief problem** (2026-10-31).
+  A temporary failure on OpenAI's side while renewing the sign-in, such as a
+  server error or an empty answer, no longer signs you out; only an answer
+  that says the sign-in is really over does. A renewed sign-in that cannot be
+  saved is tried once more and then reported, instead of being lost until the
+  next renewal signed you out. The plan's model list keeps OpenAI's own order,
+  and Open ChatGPT Usage goes to chatgpt.com/settings/usage (#1715).
 - **SomaFM source retired** (2026-10-31). Its published terms no longer approve new
   third-party clients. The shared Radio code removes the built-in source and
   filters known catalogue entries and direct play/record paths. Review of

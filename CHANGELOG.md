@@ -2,6 +2,19 @@
 
 ## 1.0.0
 
+### ChatGPT plan sign-in holds through a brief problem (2026-10-31)
+
+- In QUILL, QUILL Lite, Quill Radio and QUILL Cast, a temporary failure while renewing the
+  ChatGPT plan sign-in (a 5xx, an empty body or an unknown error code) no
+  longer clears the stored sign-in; only `invalid_grant`,
+  `refresh_token_reused`, `refresh_token_expired` and `invalid_client` do.
+- A rotated refresh token that cannot be saved is retried once and then
+  reported, instead of being swallowed until the next renewal signed the
+  person out.
+- The plan's model list keeps OpenAI's order; the ordinary API list is still
+  ranked. Open ChatGPT Usage goes to `https://chatgpt.com/settings/usage`
+  (#1715).
+
 ### QUILL Lite's next version is 2.0.0 (2026-10-31)
 
 - The QUILL Lite release prepared as 1.2.0, and tested through six builds under
@@ -157,6 +170,18 @@ Lite share the code, so both get both.
 - Correct the licensing inventory for the installed PyPI `html_to_text`
   package. It does not provide the API currently imported by QUILL, so choosing
   and testing the intended dependency remains open.
+
+### Quill Radio: Victor Stream XSPF import and more reading services (2026-10-29)
+
+- XSPF import (`quill/core/radio/xspf.py`) recovers each track of a malformed
+  document instead of returning nothing, reads `<annotation>`, `<info>` and
+  `<image>`, and takes a web-address `<creator>` as the home page, which is the
+  shape a HumanWare Victor Stream export has. The import file window also
+  offers `*.xspf.txt`. XSPF export writes `<info>` and `<image>`.
+- `quill/data/reading_services.json` gains fifteen services from the list on
+  #1691, each stream checked live on 2026-10-29, and the entry named WUFT is
+  renamed Minnesota Radio Talking Book, which is what that stream carries.
+  (#1691)
 
 ### Windows runtime, media shutdown and licensing (2026-10-27)
 

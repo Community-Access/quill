@@ -7889,6 +7889,9 @@ current. Both are described later in this chapter.
 5. Come back to QUILL Lite. The window says "Signed in with ChatGPT as" and
    your email address. You are done.
 
+You stay signed in until you sign out or remove the app in ChatGPT's
+settings; a brief problem on OpenAI's side no longer signs you out.
+
 If the browser did not open, press **Copy the Sign-In Address** and paste it
 into any browser on this computer. **Stop Waiting** gives up without changing
 anything.

@@ -17,6 +17,13 @@ and a full menu bar when every document is closed. Where an entry below says
 
 ### Shared runtime and licensing (2026-10-27 and 2026-10-31)
 
+- **ChatGPT plan sign-in holds through a brief problem** (2026-10-31).
+  A temporary failure on OpenAI's side while renewing the sign-in, such as a
+  server error or an empty answer, no longer signs you out; only an answer
+  that says the sign-in is really over does. A renewed sign-in that cannot be
+  saved is tried once more and then reported, instead of being lost until the
+  next renewal signed you out. The plan's model list keeps OpenAI's own order,
+  and Open ChatGPT Usage goes to chatgpt.com/settings/usage (#1715).
 - **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
   which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
   GLOW dependency; Lite does not itself expose GLOW. Release-specific source
