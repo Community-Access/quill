@@ -711,6 +711,10 @@ module = [
     "dns",
     "dns.*",
     "feedparser",
+    # Pygments (spell check lexes code, core/spellcheck_lexers.py); imported
+    # lazily and ships no type stubs.
+    "pygments",
+    "pygments.*",
     "regex",
     "enchant",
     "keynote_parser.*",

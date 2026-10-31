@@ -208,7 +208,9 @@ _LENGTH_BUCKETS_BY_WORDLIST_ID: dict[int, dict[int, list[str]]] = {}
 # cheap.  The key includes the dictionary's frozenset identity so a
 # user edit to the personal/document/project dictionaries invalidates
 # the cache automatically.
-_MISSPELLINGS_CACHE: dict[tuple[str, int], list[Misspelling]] = {}
+#: Keyed on the text, the dictionary, and the spell rule and extension the
+#: file name picked, because the same text checks differently as a script.
+_MISSPELLINGS_CACHE: dict[tuple[str, int, str, str], list[Misspelling]] = {}
 
 
 @dataclass(frozen=True, slots=True)
