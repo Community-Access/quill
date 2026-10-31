@@ -786,7 +786,7 @@ Check **Include the camera picture** to record your camera as well. Choose the c
 
 **Check camera framing...** (Ctrl+Alt+Shift+C, or the button in this window) opens the camera and tells you, as you move, whether your face is in view: "No face in view", "Face in view, centred", or which way to go, such as "move a little to your left", "move back from the camera" or "tilt the camera down or sit up taller". Directions are from your side of the camera. If they send you the wrong way, your camera gives a mirror image: check **The camera gives a mirror image**. Face detection is the one built into Windows and runs on this computer. Nothing is recorded, saved or sent anywhere while you check.
 
-With **Tell me when my face leaves the camera view** checked, Studio says so during the recording, and again when you are back. If your screen reader's speech is being recorded, Studio adds a marker instead of speaking, so the announcement does not end up in the video.
+With **Tell me when my face leaves the camera view** checked, Studio says so during the recording, and again when you are back. A camera takes a moment to send its first picture, and its first pictures can be dark, so Studio says nothing about your face until the camera has been sending pictures for about a second and a half. If your screen reader's speech is being recorded, Studio adds a marker instead of speaking, so the announcement does not end up in the video.
 
 If the face detector stops answering, Studio starts a fresh one. After three failures in a row it says "Face detection stopped answering, so framing advice has stopped": close the camera check and open it again, or restart the computer if it keeps happening.
 
@@ -834,7 +834,9 @@ An hour-long demonstration is a big investment. Before you start one:
 
 ### While you record
 
-Studio hides itself, keeps its own windows out of the picture, puts "Recording" at the front of its title, and shows a small **Recording status** window that does not take focus. Focus stays in the program you are demonstrating.
+Studio hides itself, keeps its own windows out of the picture, puts "Recording" at the front of its title, and shows a small **Recording status** window that does not take focus. Focus stays in the program you are demonstrating. You hear "Recording started"; stopping says "Recording stopped" before Studio saves and checks the file.
+
+When you start, pause, mark, mute or stop from a menu or the tray icon's menu, Studio waits until the menu has closed and your screen reader has said where focus went, then speaks. The sentence is not cut off, and the status bar shows it at once.
 
 | Action | In Studio | Notes |
 |---|---|---|
@@ -1100,7 +1102,7 @@ The **Live broadcast** window, which does not take focus, shows the **Status**: 
 
 - **Now playing** and **Update the title** change the title listeners see, such as the name of the current segment.
 - **Mute everything public** (Ctrl+Alt+Shift+Z) gives listeners silence at once without disconnecting. Press it again to bring the sound back. Use it for a cough, a phone call, or anything you do not want broadcast.
-- **Stop broadcasting** (Ctrl+Alt+Shift+E) ends the show.
+- **Stop broadcasting** (Ctrl+Alt+Shift+E) ends the show. You hear "Broadcast ended", and "A copy was saved" when one was; the saved copy's full path is in the status bar rather than read aloud.
 
 Both keys work while Studio has focus. Give them system-wide keys in **Capture > Capture global hotkeys...** so they work from any program; Mute everything public is the one to have under your fingers.
 

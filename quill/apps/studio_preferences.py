@@ -8,9 +8,26 @@ the order they are unpacked in sit side by side.
 
 from __future__ import annotations
 
+import os
+from collections.abc import MutableMapping
 from typing import Any
 
 from quill.ui import app_sounds, slider_keys
+
+
+def apply_asio_preference(
+    prefs: dict[str, object], environ: MutableMapping[str, str] | None = None
+) -> bool:
+    """Turn on PortAudio's ASIO build when Use ASIO sound cards is on.
+
+    Read once at launch, because the choice only counts before sounddevice is
+    first imported -- which is why the setting says "after restarting Studio".
+    Returns whether ASIO was asked for.
+    """
+    wanted = bool(prefs.get("use_asio"))
+    if wanted:
+        (os.environ if environ is None else environ)["SD_ENABLE_ASIO"] = "1"
+    return wanted
 
 
 def open_preferences(app: Any) -> None:
