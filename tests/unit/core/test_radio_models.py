@@ -33,8 +33,8 @@ def test_details_text_includes_key_fields() -> None:
     assert "jazz, smooth" in text
     assert "MP3" in text and "128 kbps" in text
     assert "42" in text
-    assert "https://example.com" in text.split()
-    assert "https://example.com/stream" in text.split()
+    homepage, stream = "https://example.com", "https://example.com/stream"
+    assert {homepage, stream} <= set(text.split())
 
 
 def test_to_dict_from_dict_round_trip() -> None:
