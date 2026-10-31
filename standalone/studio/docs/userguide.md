@@ -851,6 +851,14 @@ If something goes wrong while you record, you hear it once and it is marked at t
 - The camera stops or falls behind.
 - The disk runs low: a warning at two minutes left, then a stop and save before it runs out.
 
+**Known limitations.** Some of this does not yet work reliably, and is being fixed:
+
+- If a program you are recording, or your screen reader, quits, Studio may not notice. That sound stays silent for the rest of the recording, nothing is said, and it is not picked up again when the program starts again.
+- If your screen reader is left out of the recording and it restarts, its speech can get into the recording.
+- If the sound card you record system sound from disconnects or changes its settings, that sound is not reopened when the card comes back.
+
+Until these are fixed, if a program or your screen reader restarts while you record, stop and start a new recording.
+
 ### When you stop
 
 Studio joins the pieces, mixes the sounds at your levels, adds the camera picture, and then checks the finished file on its own, without trusting anything it measured while recording: one picture stream and one sound stream, the right length and frame count, clean decoding at the start, middle and end, no long black stretches, and each sound source actually present. You hear one sentence, for example "Demonstration saved, 2 minutes 41 seconds, 1920 by 1080 at 30 frames a second. Picture and sound checked. msedge sound and Microphone present; screen reader left out."

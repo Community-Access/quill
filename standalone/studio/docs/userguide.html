@@ -2188,6 +2188,21 @@ back. A different microphone is never swapped in.</li>
 <li>The disk runs low: a warning at two minutes left, then a stop and
 save before it runs out.</li>
 </ul>
+<p><strong>Known limitations.</strong> Some of this does not yet work
+reliably, and is being fixed:</p>
+<ul>
+<li>If a program you are recording, or your screen reader, quits, Studio
+may not notice. That sound stays silent for the rest of the recording,
+nothing is said, and it is not picked up again when the program starts
+again.</li>
+<li>If your screen reader is left out of the recording and it restarts,
+its speech can get into the recording.</li>
+<li>If the sound card you record system sound from disconnects or
+changes its settings, that sound is not reopened when the card comes
+back.</li>
+</ul>
+<p>Until these are fixed, if a program or your screen reader restarts
+while you record, stop and start a new recording.</p>
 <h3 id="when-you-stop">When you stop</h3>
 <p>Studio joins the pieces, mixes the sounds at your levels, adds the
 camera picture, and then checks the finished file on its own, without

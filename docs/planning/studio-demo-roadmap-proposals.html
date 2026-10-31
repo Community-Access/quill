@@ -816,8 +816,8 @@ these, because FFmpeg speaks Icecast but not SHOUTcast’s handshake.
 <li><strong>S3. Now-playing metadata</strong> (<strong>Built</strong>
 2026-10-29, typed by hand): title and artist sent through Icecast’s
 admin metadata update and SHOUTcast’s <code>updinfo</code>, typed by
-hand, taken from the cart or playlist (S9), or from a marker. Ogg
-streams carry it in-band. (S)</li>
+hand, taken from the playlist (S9), or from a marker. Ogg streams carry
+it in-band. (S)</li>
 <li><strong>S4. Several destinations at once</strong> (BCAST-015):
 Icecast and SHOUTcast together, each with its own format and bit rate,
 each with its own status; a failed second destination is never hidden
@@ -837,9 +837,8 @@ peak listeners from the server’s status page, spoken when asked.
 2026-10-29 as an optional FLAC copy): the same Stream bus mix saved
 locally, with the recording’s after-check. (S)</li>
 <li><strong>S9. A small show kit, not an editor</strong>: a playlist of
-files to play into the stream in order, a cart wall of sound clips on
-keys (PRD 10C, the parts that are playback), a station ID on a timer,
-and talk-over with ducking (M6). (L)</li>
+files to play into the stream in order (PRD 10C, the running order), a
+station ID on a timer, and talk-over with ducking (M6). (L)</li>
 <li><strong>S10. Video streaming</strong> beside audio: RTMP and RTMPS
 (YouTube Live, Twitch, Facebook, Teams and Zoom webinar ingest), SRT,
 and WHIP to WebRTC servers, with the Screen and Camera choices from
@@ -888,8 +887,7 @@ goes out exactly as it is.</li>
 stream number, user name, password, secure connection where the server
 offers it, and how hard to try reconnecting.</li>
 <li><strong>Now playing</strong>: what listeners see as the current
-title, typed, taken from the playlist or cart, or left as the show
-title.</li>
+title, typed, taken from the playlist, or left as the show title.</li>
 <li><strong>Save a copy (archive)</strong>: off or on, chosen each time
 and saved with the setup; when on, the copy’s own format and quality can
 differ from the stream’s (for example FLAC at home, MP3 to listeners),
