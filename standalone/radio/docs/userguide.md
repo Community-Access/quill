@@ -2264,10 +2264,12 @@ described later in this chapter.
   place, such as "KHB36 162.550 MHz Manassas". Enter plays the best internet
   stream of it available. The whole directory of 1,035 transmitters comes
   with Quill Radio, so this branch works with no internet.
-- **Radio Reading Services** comes with twenty trusted services, including
-  WRBH 88.3 Reading Radio, Sun Sounds of Arizona, CRIS Radio, the KPBS and
-  WKAR reading services, ACB Media 1 to 5 and the NFB Radio Network. Play,
-  favorite, record and schedule them like any other station.
+- **Radio Reading Services** comes with thirty-five trusted services, including
+  WRBH 88.3 Reading Radio, Sun Sounds of Arizona in Tempe, Tucson and
+  Flagstaff, CRIS Radio, the KPBS and WKAR reading services, AudioReader,
+  the Illinois Radio Reader, Audio Journal, The WHRO Voice, ACB Media 1 to 5
+  and the NFB Radio Network. Play, favorite, record and schedule them like any
+  other station.
 - **iHeart** opens into **By City** (317 markets) and then genres. Each genre
   opens into A to Z letter folders of stations.
 - **By Country, By Language, Trending Now** and **Recently Added or Changed**
@@ -3085,6 +3087,16 @@ Station names come from the playlist itself. A bare address is named after the
 website it comes from. An M3U8 file that is really a live stream, not a list
 of stations, is recognised and politely refused. XSPF and ASX files are read
 safely, and a file built to grow to an enormous size is refused out loud.
+
+A list exported from a HumanWare Victor Stream or Victor Trek is an XSPF file,
+and it imports the same way. If the file came to you attached to an email or a
+web page, it may be called something like `Radio Reading Services.xspf.txt`.
+That is fine: the file window shows it under **Playlists**, and Quill Radio
+looks at what is inside rather than at the name. A Victor list can also hold
+stations that only play through the Victor's own directory. Those have no web
+address, so they are left out, and the count you hear is the stations that
+came in. If one line of the file is damaged, you lose at most that station's
+name, never the rest of the list.
 
 ### What you learned, and where to go next
 

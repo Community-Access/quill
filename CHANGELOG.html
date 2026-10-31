@@ -328,6 +328,24 @@ destinations.</li>
 imported by QUILL, so choosing and testing the intended dependency
 remains open.</li>
 </ul>
+<h3
+id="quill-radio-victor-stream-xspf-import-and-more-reading-services-2026-10-29">Quill
+Radio: Victor Stream XSPF import and more reading services
+(2026-10-29)</h3>
+<ul>
+<li>XSPF import (<code>quill/core/radio/xspf.py</code>) recovers each
+track of a malformed document instead of returning nothing, reads
+<code>&lt;annotation&gt;</code>, <code>&lt;info&gt;</code> and
+<code>&lt;image&gt;</code>, and takes a web-address
+<code>&lt;creator&gt;</code> as the home page, which is the shape a
+HumanWare Victor Stream export has. The import file window also offers
+<code>*.xspf.txt</code>. XSPF export writes <code>&lt;info&gt;</code>
+and <code>&lt;image&gt;</code>.</li>
+<li><code>quill/data/reading_services.json</code> gains fifteen services
+from the list on #1691, each stream checked live on 2026-10-29, and the
+entry named WUFT is renamed Minnesota Radio Talking Book, which is what
+that stream carries. (#1691)</li>
+</ul>
 <h3 id="windows-runtime-media-shutdown-and-licensing-2026-10-27">Windows
 runtime, media shutdown and licensing (2026-10-27)</h3>
 <ul>

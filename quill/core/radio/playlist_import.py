@@ -74,12 +74,15 @@ def parse_m3u(text: str) -> list[RadioStation]:
 #: The Import Stations file-dialog filter. Until 2026-09-25 it offered only
 #: M3U/M3U8 while PLS, XSPF and ASX parsers sat unused in ``playlist_formats``
 #: -- and a "Listen Live" link a listener saved is as likely to be one of those.
+#: ``*.xspf.txt`` is there because that is what an XSPF becomes when it is
+#: attached to a GitHub issue or an email that refuses ``.xspf`` (#1691); the
+#: body is sniffed, so the extra ``.txt`` changes nothing once it is chosen.
 IMPORT_WILDCARD = (
     "Playlists (*.m3u;*.m3u8;*.pls;*.xspf;*.asx;*.wax;*.wvx)"
-    "|*.m3u;*.m3u8;*.pls;*.xspf;*.asx;*.wax;*.wvx"
+    "|*.m3u;*.m3u8;*.pls;*.xspf;*.xspf.txt;*.asx;*.wax;*.wvx"
     "|M3U playlist (*.m3u;*.m3u8)|*.m3u;*.m3u8"
     "|PLS playlist (*.pls)|*.pls"
-    "|XSPF playlist (*.xspf)|*.xspf"
+    "|XSPF playlist (*.xspf)|*.xspf;*.xspf.txt"
     "|ASX playlist (*.asx;*.wax;*.wvx)|*.asx;*.wax;*.wvx"
     "|All files (*.*)|*.*"
 )

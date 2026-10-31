@@ -26,11 +26,11 @@
       "codec": "MP3"
     },
     {
-      "name": "WUFT Radio Reading Service",
+      "name": "Minnesota Radio Talking Book - St. Paul, MN",
       "stream_url": "http://amber.streamguys.com:5230/live",
-      "state": "Florida",
+      "state": "Minnesota",
       "station_uuid": "b729fc66-1c6f-467a-941c-b50290e26125",
-      "homepage": "https://www.wuft.org/rrs",
+      "homepage": "https://mn.gov/deed/ssb/",
       "codec": "MP3"
     },
     {
@@ -159,6 +159,126 @@
       "state": "Delaware",
       "station_uuid": "d363687a-23ad-4a63-9d6d-1b92c423c96f",
       "homepage": "http://95alive.net:8000/",
+      "codec": "MP3"
+    },
+    {
+      "name": "Los Angeles Radio Reading Service (L.A.R.R.S.) - Los Angeles, CA",
+      "stream_url": "http://tektite.streamguys1.com:5210/live",
+      "state": "California",
+      "station_uuid": "",
+      "homepage": "https://www.omnimedia.org/",
+      "codec": "MP3"
+    },
+    {
+      "name": "Sun Sounds of Arizona - Tucson",
+      "stream_url": "http://stream.sunsounds.org/sstucson_mp3_64",
+      "state": "Arizona",
+      "station_uuid": "",
+      "homepage": "https://www.sunsounds.org/",
+      "codec": "MP3"
+    },
+    {
+      "name": "Sun Sounds of Arizona - Flagstaff",
+      "stream_url": "http://stream.sunsounds.org/ssflagstaff_mp3",
+      "state": "Arizona",
+      "station_uuid": "",
+      "homepage": "https://www.sunsounds.org/",
+      "codec": "MP3"
+    },
+    {
+      "name": "CGR Radio 1 - Mainstream Radio Reading Service - Sifton, WA",
+      "stream_url": "http://s7.voscast.com:10150",
+      "state": "Washington",
+      "station_uuid": "",
+      "homepage": "https://cgradionetwork.simplesite.com/",
+      "codec": "MP3"
+    },
+    {
+      "name": "Radio Talking Book Service - Omaha, NE",
+      "stream_url": "http://rtbs.streamon.fm:8000/RTBS-64k-m.mp3",
+      "state": "Nebraska",
+      "station_uuid": "",
+      "homepage": "https://www.rtbs.org/",
+      "codec": "MP3"
+    },
+    {
+      "name": "AudioReader - University of Kansas - Lawrence, KS",
+      "stream_url": "http://streaming.kansaspublicradio.org:8000/audioreader",
+      "state": "Kansas",
+      "station_uuid": "",
+      "homepage": "https://reader.ku.edu/",
+      "codec": "MP3"
+    },
+    {
+      "name": "Illinois Radio Reader (WILL) - Urbana, IL",
+      "stream_url": "https://icecast.will.illinois.edu/WILL-IRR",
+      "state": "Illinois",
+      "station_uuid": "",
+      "homepage": "https://will.illinois.edu/",
+      "codec": "MP3"
+    },
+    {
+      "name": "MindsEye Radio - Belleville, IL and St. Louis, MO",
+      "stream_url": "https://mindseye.streamguys1.com/xstream",
+      "state": "Illinois",
+      "station_uuid": "",
+      "homepage": "https://www.mindseyeradio.org/",
+      "codec": "MP3"
+    },
+    {
+      "name": "Georgia Radio Reading Service (GPB) - Atlanta, GA",
+      "stream_url": "http://gpb.streamguys1.com/gpb-reading-radio-web",
+      "state": "Georgia",
+      "station_uuid": "",
+      "homepage": "https://www.garrs.org/",
+      "codec": "AAC"
+    },
+    {
+      "name": "Sight Into Sound - Houston, TX",
+      "stream_url": "http://peridot.streamguys.com:5360/live",
+      "state": "Texas",
+      "station_uuid": "",
+      "homepage": "https://www.sightintosound.org/",
+      "codec": "MP3"
+    },
+    {
+      "name": "Triangle Radio Reading Service - Raleigh, NC",
+      "stream_url": "http://audio-mp3.ibiblio.org:8000/trrs.mp3",
+      "state": "North Carolina",
+      "station_uuid": "",
+      "homepage": "https://www.trianglereadingservice.org/",
+      "codec": "MP3"
+    },
+    {
+      "name": "Audio Journal - Worcester, MA",
+      "stream_url": "http://node-12.zeno.fm/nvbenz3c19duv",
+      "state": "Massachusetts",
+      "station_uuid": "",
+      "homepage": "https://audiojournal.org/",
+      "codec": "MP3"
+    },
+    {
+      "name": "BTC/UCP Reading Service - Massachusetts",
+      "stream_url": "http://tic2.b2netsolutions.com:8000/",
+      "state": "Massachusetts",
+      "station_uuid": "",
+      "homepage": "https://ticnetwork.org/",
+      "codec": "MP3"
+    },
+    {
+      "name": "The WHRO Voice - Norfolk, VA",
+      "stream_url": "http://thewhrovoice.mediaplayer.whro.org/128",
+      "state": "Virginia",
+      "station_uuid": "",
+      "homepage": "https://www.whro.org/",
+      "codec": "MP3"
+    },
+    {
+      "name": "WQCS Radio Reading Service - Fort Pierce, FL",
+      "stream_url": "http://playerservices.streamtheworld.com/api/livestream-redirect/WQCSFM_RRS.mp3",
+      "state": "Florida",
+      "station_uuid": "",
+      "homepage": "https://www.wqcs.org/",
       "codec": "MP3"
     }
   ]

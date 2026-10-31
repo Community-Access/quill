@@ -154,25 +154,17 @@ def parse_xspf(text: str) -> list[RadioStation]:
     XSPF is namespaced XML, and real files vary on whether they declare the
     namespace, so tags are matched on their local name. Each ``<track>``
     contributes its ``<location>`` as the stream and its ``<title>``, falling
-    back to ``<creator>``, then to the host.
+    back to ``<annotation>``, ``<creator>``, then the host. The reading lives
+    in :mod:`quill.core.radio.xspf`, which also recovers the tracks of a
+    malformed document one at a time (a hand-edited Victor Stream export,
+    #1691) instead of losing all of them to one bad element.
 
     Raises :class:`PlaylistFormatError` only for *hostile* XML (a DTD or entity
-    payload); malformed-but-harmless XML yields an empty list, like every other
-    parser here.
+    payload); malformed-but-harmless XML yields whatever tracks survive.
     """
-    root = _parse_xml(text)
-    if root is None:
-        return []
-    pairs: list[tuple[str, str]] = []
-    for element in root.iter():
-        if _local(element.tag) != "track":
-            continue
-        location = _find_child_text(element, "location")
-        if not location:
-            continue
-        name = _find_child_text(element, "title") or _find_child_text(element, "creator")
-        pairs.append((name, location))
-    return _stations(pairs)
+    from quill.core.radio.xspf import parse_xspf_entries, stations_from_entries
+
+    return stations_from_entries(parse_xspf_entries(text))
 
 
 # --- ASX (and its WAX / WMX / WVX siblings) ----------------------------------
