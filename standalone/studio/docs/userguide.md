@@ -692,9 +692,23 @@ Screenshots do not yet offer scrolling capture, UIA-element selection or annotat
 
 ### Worked example: use your configured AI provider
 
-Use **AI > Set Up AI** and QUILL's shared connection controls to choose OpenAI, Google Gemini, Anthropic Claude, OpenRouter, Ollama or a compatible custom service. Configure the endpoint, credential and an image-capable model there. The Screenshot Inspector uses that active shared connection; it does not have a separate provider selector or separate key store. Switching providers in shared settings affects other QUILL features that use the same connection.
+Use **AI > Set Up AI** and QUILL's shared connection controls to choose OpenAI, Google Gemini, Anthropic Claude, OpenRouter, Ollama or a compatible custom service. Configure the endpoint, credential and an image-capable model there. The Screenshot Inspector uses that active shared connection, or your ChatGPT plan (below); it has no key store of its own. Switching providers in shared settings affects other QUILL features that use the same connection.
 
 Open a saved PNG or make a new screenshot. Choose a prompt, edit its instructions, type a question and activate Ask AI. Check the provider, effective model and endpoint in the consent message. Local OCR works independently of a cloud key. A provider being configured does not prove that every one of its models accepts images. Provider errors should be resolved through the shared connection/model settings, rather than by sending the image to another service without approval.
+
+### Use your ChatGPT plan instead of a key
+
+If you pay for ChatGPT, Studio can use your plan to answer questions about pictures: Ask AI in the Screenshot Inspector, automatic screenshot analysis and **Ask AI questions about a video**. There's no key to paste and nothing to pay per request; what you send counts toward your plan's own usage.
+
+Studio signs in on its own, as QUILL Studio, the same way QUILL and QUILL Lite each do. It never uses their sign-in. If you have no AI set up when you ask about a picture, Studio offers to sign in with your ChatGPT plan right there; say Yes and the **Use My ChatGPT Subscription** window opens. Choose Continue with ChatGPT and allow QUILL Studio in your browser. If QUILL or QUILL Lite is already signed in on this computer, the browser is usually already signed in too, so it's one Allow. You can open the window yourself from the Capture menu to choose the model or sign out.
+
+If you have both a plan and an AI provider set up, Studio asks which one to use for each picture, starting on the one you chose last time. Before anything is sent, Studio asks your approval, naming your plan and account and saying the picture goes to OpenAI on your account.
+
+The plan reads pictures up to 20 MB in PNG, JPEG, WebP or GIF. A larger picture, or another format, is scaled and converted before it goes; ordinary screenshots and video frame sheets are sent as they are. A video is always one sheet of frames, never the video itself.
+
+When your plan's usage limit is reached, Studio says so, sends nothing, and offers to open ChatGPT's Usage settings. It never switches to your API key by itself; to use another AI, ask again and choose it. If the plan can't take a request from other apps, Studio explains and doesn't retry. If OpenAI stops accepting Studio's sign-in, sign in again from the Capture menu.
+
+Making a picture with AI still needs an OpenAI or Gemini API key, because ChatGPT plans don't make pictures for other apps.
 
 ### Customize a reusable prompt and keep the conversation grounded
 
@@ -1019,7 +1033,7 @@ Studio never uploads anything itself.
 4. **Include the transcript of that stretch**, when captions exist beside the video, adds what was said in the same stretch.
 5. Press **Prepare the question**.
 
-Studio takes the frames at even times across the stretch, lays them out as one picture with each frame's time written on it, and opens the same conversation window as the Screenshot Inspector, with a question already describing the picture. Ask your own question, and follow-ups after it. Nothing is sent until you approve it, using your usual AI connection, and Safe Mode blocks it as it blocks screenshot AI. Answers cite the times of the frames they rely on, so you can go to that point in the video.
+Studio takes the frames at even times across the stretch, lays them out as one picture with each frame's time written on it, and opens the same conversation window as the Screenshot Inspector, with a question already describing the picture. Ask your own question, and follow-ups after it. Nothing is sent until you approve it, using your usual AI connection or your ChatGPT plan, and Safe Mode blocks it as it blocks screenshot AI. Answers cite the times of the frames they rely on, so you can go to that point in the video.
 
 The AI sees only the frames, not the moving video, so something that appears and disappears between two frames can be missed. Ask about a shorter stretch to look more closely. The AI is told to quote text only where it can read it clearly and to say when it is too small, rather than guess; check anything important against the transcript or a frame in the Screenshot Inspector.
 

@@ -30,6 +30,7 @@ from quill.core.ai.chatgpt_errors import (
     ChatGptError,
     ChatGptLimitError,
     ChatGptUnavailableError,
+    ChatGptUnsupportedError,
 )
 from quill.core.ai.chatgpt_http import Opener, StreamOpener, get_json, stream_sse
 
@@ -278,4 +279,6 @@ def _failure(payload: dict[str, Any]) -> ChatGptError:
         return ChatGptLimitError(message or "Your ChatGPT plan's usage limit was reached.")
     if code == "subscription_sharing_usage_unavailable":
         return ChatGptUnavailableError(message or "ChatGPT plan usage is not available right now.")
+    if code == "subscription_sharing_unsupported_capability":
+        return ChatGptUnsupportedError(message or "Your ChatGPT plan does not take this request.")
     return ChatGptError(f"OpenAI did not answer ({code}). {message}".strip())

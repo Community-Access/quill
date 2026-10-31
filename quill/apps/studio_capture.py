@@ -8,12 +8,13 @@ import wx
 
 from quill.apps.studio_capture_hotkeys import StudioCaptureHotkeysMixin
 from quill.apps.studio_demo import StudioDemoMixin
+from quill.apps.studio_vision_route import StudioVisionRouteMixin
 from quill.core.paths import app_data_dir
 from quill.core.studio_capture import save_capture_report
 from quill.stability.task_manager import UiLifetimeToken
 
 
-class StudioCaptureMixin(StudioDemoMixin, StudioCaptureHotkeysMixin):
+class StudioCaptureMixin(StudioDemoMixin, StudioCaptureHotkeysMixin, StudioVisionRouteMixin):
     def _capture_command_specs(self):
         return (
             ("studio.capture", "&Capture screen...", self.capture_screen),
@@ -28,6 +29,8 @@ class StudioCaptureMixin(StudioDemoMixin, StudioCaptureHotkeysMixin):
                 self.capture_selected_target,
             ),
             ("studio.capture_hotkeys", "Capture global &hotkeys...", self.open_capture_hotkeys),
+            # No access key: the Capture menu has none left (GATE-14).
+            ("studio.chatgpt_account", "Use My ChatGPT Subscription...", self.open_chatgpt_account),
         )
 
     def _append_capture_menu(self, menu_bar):
@@ -319,31 +322,6 @@ class StudioCaptureMixin(StudioDemoMixin, StudioCaptureHotkeysMixin):
         except Exception as error:
             self._show_message_box(str(error), "Open saved screenshot", wx.OK | wx.ICON_ERROR)
 
-    def _approve_capture_ai(self):
-        from quill.core.ai.model_manager import load_ai_enabled
-        from quill.core.assistant_ai import load_assistant_connection_settings
-        from quill.core.studio_capture_ai import connection_identity
-
-        if self._safe_mode or not load_ai_enabled():
-            self._announce("AI is disabled. Capture and local verification remain available.")
-            return None
-        connection = load_assistant_connection_settings()
-        if connection.provider.strip().lower() == "off":
-            self._announce("No AI provider connected. Use AI > Set Up AI first.")
-            return None
-        identity = connection_identity(connection)
-        result = self._show_message_box(
-            f"Send this complete screenshot to {identity['provider']}?\n"
-            f"Model: {identity['model']}\nEndpoint: {identity['host']}\n\n"
-            "The image may contain private information. No automatic redaction has been applied.\n"
-            "The image and your conversation are sent to the endpoint above. Service charges may "
-            "apply; Studio cannot reliably estimate this request's price.\n"
-            "AI observations are uncertain and do not verify privacy or correctness.",
-            "Send screenshot to AI",
-            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
-        )
-        return connection if result == wx.YES else None
-
     def _submit_capture_inspection(
         self,
         evidence,
@@ -373,18 +351,18 @@ class StudioCaptureMixin(StudioDemoMixin, StudioCaptureHotkeysMixin):
 
         def auto_permission():
             from quill.core.ai.model_manager import load_ai_enabled
-            from quill.core.assistant_ai import load_assistant_connection_settings
             from quill.core.studio_capture_ai import (
                 auto_ai_allowed,
                 connection_identity,
                 load_capture_ai_preferences,
             )
 
-            actual = load_assistant_connection_settings()
+            preferences = load_capture_ai_preferences()
+            actual = self._automatic_vision_connection(preferences)
             return connection_identity(actual) == connection_identity(
                 connection
             ) and auto_ai_allowed(
-                load_capture_ai_preferences(),
+                preferences,
                 actual,
                 ai_enabled=load_ai_enabled(),
                 safe_mode=self._safe_mode,
@@ -405,7 +383,6 @@ class StudioCaptureMixin(StudioDemoMixin, StudioCaptureHotkeysMixin):
 
     def _maybe_auto_inspect(self, evidence):
         from quill.core.ai.model_manager import load_ai_enabled
-        from quill.core.assistant_ai import load_assistant_connection_settings
         from quill.core.settings import load_settings
         from quill.core.studio_capture_ai import (
             auto_ai_allowed,
@@ -416,7 +393,7 @@ class StudioCaptureMixin(StudioDemoMixin, StudioCaptureHotkeysMixin):
         preferences = load_capture_ai_preferences()
         if preferences.get("auto_ai_enabled") is not True:
             return
-        connection = load_assistant_connection_settings()
+        connection = self._automatic_vision_connection(preferences)
         if not auto_ai_allowed(
             preferences, connection, ai_enabled=load_ai_enabled(), safe_mode=self._safe_mode
         ):
