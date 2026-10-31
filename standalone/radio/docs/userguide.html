@@ -246,7 +246,7 @@
 <p>Version 3.2.0 (build 4), the beta for testers, October 2026. 3.2.0
 was prepared on 2026-10-03 and is not yet published; the last published
 version is 3.0.4.</p>
-<p><strong>Unreleased source change:</strong> The built-in SomaFM source
+<p><strong>Source change in 3.2.0:</strong> The built-in SomaFM source
 has been retired in the shared Radio code in response to its published
 third-party-client terms. Known catalogue entries and direct playback
 and recording paths are filtered or blocked; indirect paths, existing
@@ -7062,8 +7062,8 @@ tells you so. If you ask about something a presenter just said, the
 answer comes from what the assistant knows about the programme, not from
 hearing it.</p>
 <p><strong>Before your first question, sign in.</strong> Ask QUILL Radio
-only works with your own ChatGPT plan: Plus, Pro, Team or Enterprise.
-See “Use My ChatGPT Subscription, step by step” below. If you have not
+only works with your own paid ChatGPT plan, such as Plus or Pro. See
+“Use My ChatGPT Subscription, step by step” below. If you have not
 signed in, Ctrl+Shift+8 tells you so and opens that window instead.</p>
 <h4 id="ask-quill-radio-step-by-step">Ask QUILL Radio, step by step</h4>
 <ol type="1">
@@ -7146,7 +7146,8 @@ as” and your email address, and your cursor is on
 <strong>Model</strong>, a list of every model your plan offers, read
 from your account. The first one is chosen for you; arrow to another and
 it is saved as soon as you land on it. <strong>Refresh Models</strong>
-reads the list again.</li>
+reads the list again. You stay signed in until you sign out; a brief
+problem on OpenAI’s side no longer signs you out.</li>
 <li><strong>Allow web search</strong> (Alt+W) starts off. Press
 <strong>Alt+W</strong>, then <strong>Space</strong>, and you hear “Web
 search is allowed.” With it on, the assistant may look things up on the
@@ -7154,12 +7155,15 @@ web through OpenAI, such as a station’s schedule, a news story a
 presenter mentioned, or a new album, and tell you what it found. It is
 saved as soon as you change it, and Space again turns it off.</li>
 <li><strong>Open ChatGPT Usage</strong> (Alt+U) opens your plan’s usage
-page in your browser. <strong>Sign Out</strong> (Alt+O, press it twice)
-asks OpenAI to cancel Quill Radio’s sign-in and forgets it here.
-<strong>Forget on This Computer</strong> (Alt+F) only forgets it here,
-which is handy on a computer with no internet or for a sign-in you
-already removed in ChatGPT’s settings. Both only appear while you are
-signed in.</li>
+page in your browser. Your questions draw on your plan’s own usage
+limits, shared with ChatGPT itself and any other app you have connected,
+and that page lets you set a weekly limit for Quill Radio. When the
+limit is reached, Quill Radio says so and does not switch to an API key.
+<strong>Sign Out</strong> (Alt+O, press it twice) asks OpenAI to cancel
+Quill Radio’s sign-in and forgets it here. <strong>Forget on This
+Computer</strong> (Alt+F) only forgets it here, which is handy on a
+computer with no internet or for a sign-in you already removed in
+ChatGPT’s settings. Both only appear while you are signed in.</li>
 <li>Press <strong>Escape</strong> to close.</li>
 </ol>
 <p>If the browser did not open, the window tells you and offers
@@ -8640,6 +8644,17 @@ normally afterwards brings everything back.</li>
 support with <strong>Ctrl+Alt+F2</strong>. Copy All in Recent Problems
 gives support the details without any passwords.</li>
 </ul>
+<h4 id="text-looks-blurry-or-a-window-is-the-wrong-size">Text looks
+blurry, or a window is the wrong size</h4>
+<p>Quill Radio scales itself for each monitor. Text stays sharp at 125,
+150 or 200 percent, and when you move a window to a monitor with
+different scaling; windows and list columns keep their proportions. If a
+window looks wrong at your scaling, you can turn this off to see whether
+it is the cause. Search Windows for “Edit environment variables for your
+account”, add a variable named <code>QUILL_DPI_UNAWARE</code> with the
+value <code>1</code>, and start Quill Radio again. Windows then
+stretches it the old way, so text is blurrier. Delete the variable to
+put scaling back, and tell support what you saw.</p>
 <h3 id="what-you-learned-and-where-to-go-next-15">What you learned, and
 where to go next</h3>
 <p>You know where to turn when you need help: the tutorials for learning

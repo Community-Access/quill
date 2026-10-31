@@ -6,24 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 Quill Radio runs the same radio code as QUILL from the shared `quill` package, so features and fixes land in both at once; this repository carries only the wrapper, installer, icon, and docs.
 
-## Unreleased
+## [3.2.0] - 2026-10-03
 
-- **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
-  which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
-  GLOW dependency; Radio does not itself expose GLOW. Release-specific source
-  and legal review are required before the next public release. Portable
-  contents must be checked separately. See Licences and Notices and the
-  PyMuPDF distribution review.
-- **SomaFM source retired.** Its published terms no longer approve new
-  third-party clients. The shared Radio code removes the built-in source and
-  filters known catalogue entries and direct play/record paths. Review of
-  indirect paths, existing user data and previously published packages remains
-  open; this change has not been published as a new release.
-- **PyWinRT 4 migration.** The shared Windows Media runtime uses PyWinRT
-  4.0.3 and Windows SDK 10.0.28000.2705 projections; this does not change the
-  choice of player or the selected output device.
+Testing rebuild: **3.2.0 (build 5)**. The packages have not been published yet.
 
-- **Victor Stream playlists import, and fifteen more reading services.**
+3.2.0 was prepared on 2026-10-03. Builds 2 to 5 are testing rebuilds of it, and
+everything they added belongs to 3.2.0, so it is grouped below by subject rather
+than by build. A date in brackets says when a change arrived.
+
+**Everything 3.1 was going to be, and the two things that stopped an update from arriving.** Check for Updates now reads the version this computer actually installed instead of the version the shared runtime happens to carry, so it stops offering an update you already have; and Install and restart survives the launcher closing, so a one-click update installs instead of quietly doing nothing. It was prepared as 3.1.1 and never published under that number, so it ships as 3.2.0 (see below). **Five new things, and fourteen fixes.** Quill Radio checks your subscribed podcasts on its own and tells you what arrived, in the way each podcast asks for; there is a list of everything you have been told; you can leave yourself a note on any station or podcast; and Ask QUILL Radio answers questions about what is playing, on the ChatGPT plan you already pay for; and a Website button beside Play and Stop opens the station's own site. Then: the sound card switches, or says why it cannot and puts the setting back; Windows Media gets a route to a device of its own; Preferences names only the engines this copy has; a minimized window comes back when its menu item or key asks for it; a stale "start with Windows" entry is repaired by the installer rather than waiting for a launch; Preferences opens in a blink instead of two seconds; and four smaller things that came in the same week. **Also in 3.2.0:** Apple's podcast categories fill up and the Podcast Index says why when it cannot; browsing long lists stays smooth; Preferences has Find a setting; Undo History lists the last ten things you can take back; and a few choices can be shared with your other Quill apps.
+
+### Since build 5 (2026-10-27 to 2026-10-31)
+
+- **Victor Stream playlists import, and fifteen more reading services**
+  (2026-10-29).
   Import Stations from Playlist (Ctrl+I) reads XSPF lists exported from a
   HumanWare Victor Stream or Victor Trek, including one whose file name ends in
   `.xspf.txt` and one with a damaged line, which used to import nothing at
@@ -36,21 +32,50 @@ Quill Radio runs the same radio code as QUILL from the shared `quill` package, s
   WHRO Voice and the WQCS Radio Reading Service. The service listed as WUFT
   was always Minnesota Radio Talking Book, and is now called that. Exporting
   favorites as XSPF now includes each station's website and logo. (#1691)
-- **Windows Media closes cleanly after device enumeration.** Device selection
-  still uses the Windows render endpoints and keeps the selected route. QUILL
-  no longer retains COM-backed device objects in a module cache, which fixes a
-  process-exit access violation after opening audio preferences or switching
-  the output device. The player unregisters its WinRT events before shutdown.
-
-## [3.2.0] - 2026-10-03
-
-Testing rebuild: **3.2.0 (build 5)**. The packages have not been published yet.
-
-3.2.0 was prepared on 2026-10-03. Builds 2 to 5 are testing rebuilds of it, and
-everything they added belongs to 3.2.0, so it is grouped below by subject rather
-than by build. A date in brackets says when a change arrived.
-
-**Everything 3.1 was going to be, and the two things that stopped an update from arriving.** Check for Updates now reads the version this computer actually installed instead of the version the shared runtime happens to carry, so it stops offering an update you already have; and Install and restart survives the launcher closing, so a one-click update installs instead of quietly doing nothing. It was prepared as 3.1.1 and never published under that number, so it ships as 3.2.0 (see below). **Five new things, and fourteen fixes.** Quill Radio checks your subscribed podcasts on its own and tells you what arrived, in the way each podcast asks for; there is a list of everything you have been told; you can leave yourself a note on any station or podcast; and Ask QUILL Radio answers questions about what is playing, on the ChatGPT plan you already pay for; and a Website button beside Play and Stop opens the station's own site. Then: the sound card switches, or says why it cannot and puts the setting back; Windows Media gets a route to a device of its own; Preferences names only the engines this copy has; a minimized window comes back when its menu item or key asks for it; a stale "start with Windows" entry is repaired by the installer rather than waiting for a launch; Preferences opens in a blink instead of two seconds; and four smaller things that came in the same week. **Also in 3.2.0:** Apple's podcast categories fill up and the Podcast Index says why when it cannot; browsing long lists stays smooth; Preferences has Find a setting; Undo History lists the last ten things you can take back; and a few choices can be shared with your other Quill apps.
+- **ChatGPT plan sign-in holds through a brief problem** (2026-10-31).
+  A temporary failure on OpenAI's side while renewing the sign-in, such as a
+  server error or an empty answer, no longer signs you out; only an answer
+  that says the sign-in is really over does. A renewed sign-in that cannot be
+  saved is tried once more and then reported, instead of being lost until the
+  next renewal signed you out. The plan's model list keeps OpenAI's own order,
+  and Open ChatGPT Usage goes to chatgpt.com/settings/usage (#1715).
+- **SomaFM source retired** (2026-10-31). Its published terms no longer approve new
+  third-party clients. The shared Radio code removes the built-in source and
+  filters known catalogue entries and direct play/record paths. Review of
+  indirect paths, existing user data and previously published packages remains
+  open; this change has not been published as a new release.
+- **Shared-runtime licensing** (2026-10-31). Installed editions use the QuillVille Runtime,
+  which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
+  GLOW dependency; Radio does not itself expose GLOW. Release-specific source
+  and legal review are required before the next public release. Portable
+  contents must be checked separately. See Licences and Notices and the
+  PyMuPDF distribution review.
+- **PyWinRT 4 migration** (2026-10-27). The shared Windows Media runtime uses PyWinRT
+  4.0.3 and Windows SDK 10.0.28000.2705 projections; this does not change the
+  choice of player or the selected output device.
+- **Windows Media closes cleanly after device enumeration** (2026-10-27).
+  Device selection still uses the Windows render endpoints and keeps the
+  selected route. QUILL no longer retains COM-backed device objects in a
+  module cache, which fixes a process-exit access violation after opening
+  audio preferences or switching the output device. The player unregisters
+  its WinRT events before shutdown.
+- **Controls that had no label now have a spoken name** (2026-10-30).
+  JAWS, NVDA and Narrator used to announce them as a bare role, such as
+  "edit" or "list". Now they say what they are: Now playing (in the main window, the player
+  and the Now Playing window), the details of the highlighted station in
+  Browse, the schedule summary and programme schedule in the calendar,
+  station results and TuneIn categories in the station browser, the
+  listening report in Stats, the video window's status, the sleep timer's
+  custom minutes, and Spotify results.
+- **Sharp text at any display scaling** (2026-10-31). Quill Radio now handles
+  each monitor's scaling itself instead of letting Windows stretch it, so
+  text stays sharp at 125, 150 and 200 percent and on monitors with
+  different scaling, and windows and list columns keep their proportions.
+  Setting the environment variable `QUILL_DPI_UNAWARE` to `1` turns this off,
+  for diagnosing a display problem (#1702). User guide: "Text looks blurry, or a window is the wrong size".
+- **Pygments in the notices** (2026-10-31). The shared runtime now bundles
+  Pygments, which QUILL and QUILL Lite use to read code and web pages for
+  spell check, so Quill Radio's third-party notices list it.
 
 ### What each testing rebuild added
 

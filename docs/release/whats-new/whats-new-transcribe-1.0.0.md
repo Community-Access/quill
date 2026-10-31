@@ -25,6 +25,7 @@ QUILL Transcribe types what you say into the program you are using, with the sam
 ## Also in 1.0
 
 - **Transcribe a Recording** turns an audio or video file into text in the background.
+- Its windows stay sharp at 150 and 200 percent display scaling.
 - **Dictate Here (Ctrl+F11)** in Quill Cast and Quill Radio dictates into the box you are in.
 - Your dictation settings can be shared with QUILL, QUILL Lite and Quill Inkwell. Recent Phrases (Shift+F11) keeps words that could not be typed.
 - It never types into password fields or into programs running as administrator, and recordings of your voice are never kept.

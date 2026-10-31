@@ -638,8 +638,11 @@ If you already pay for ChatGPT, QUILL Lite can run every AI command on your
 plan, and you never have to handle a key. You sign in once in your browser,
 the same way you sign in to ChatGPT itself. From then on, the pad, the
 seventeen things it can do, Ask About This Document and conversations all go to
-OpenAI on your plan. There is **no monthly allowance, no size limit and no
-per-request bill**, and nothing goes through QUILL's servers. You also get two
+OpenAI on your plan. There is **no per-request bill**, and nothing goes
+through QUILL's servers. Requests draw on your plan's own usage limits,
+shared with ChatGPT and any other app you have connected; ChatGPT's
+**Settings > Usage** lets you set a weekly limit for each app. When the
+limit is reached, QUILL Lite says so and does not switch to an API key. You also get two
 things the free service and an API key cannot do: **pictures, described**, and
 **web search** for an answer about today.
 

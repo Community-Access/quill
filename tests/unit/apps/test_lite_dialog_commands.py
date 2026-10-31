@@ -79,7 +79,7 @@ def test_get_help_from_support_writes_as_quilllite(lite_window, monkeypatch):
     win = lite_window("hello")
     win.cmd_get_help_from_support()
 
-    # With its build, as About says it: support can distinguish a 1.2.0
+    # With its build, as About says it: support can distinguish a 2.0.0
     # installation from a later corrected build.
     assert calls == [{"source_app": APP_NAME, "app_version": version_label()}]
 

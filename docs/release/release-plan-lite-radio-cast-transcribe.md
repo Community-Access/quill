@@ -1,4 +1,4 @@
-# Releasing QUILL Lite 1.2, Quill Radio 3.2, QUILL Cast 2.0 and QUILL Transcribe 1.0
+# Releasing QUILL Lite 2.0, Quill Radio 3.2, QUILL Cast 2.0 and QUILL Transcribe 1.0
 
 Everything to do, in order, to publish these four apps as general (Stable)
 releases. Written 2026-10-24 from `main` at the commit that added this file.
@@ -13,7 +13,7 @@ screen reader. Everything else is a command you run in PowerShell at
 
 | App | Version | Tag | Update path | First release of this version |
 | --- | --- | --- | --- | --- |
-| QUILL Lite | 1.2.0 build 5 | `quill-lite-v1.2.0-build.5` | Release channels (Beta, then Stable) | Yes; 1.1.2 is current |
+| QUILL Lite | 2.0.0 build 1 (prepared as 1.2.0) | `quill-lite-v2.0.0-build.1` | Release channels (Beta, then Stable) | Yes; 1.1.2 is current |
 | Quill Radio | 3.2.0 build 4 | `quill-radio-v3.2.0-build.4` | Release channels | Yes; 3.0.4 is current |
 | QUILL Cast | 2.0.0 build 5 | `quill-cast-v2.0.0-build.5` | Release channels | Yes; Cast has never been published |
 | QUILL Transcribe | 1.0.0 build 2 | `quill-transcribe-v1.0.0-build.2` | Release channels | Yes; its site page promises 1 November 2026 |
@@ -39,7 +39,7 @@ Release Channel... (Alt+H, L), and the publish and promote scripts accept
   install, the pinned binaries (ffmpeg, libmpv, deno, piper), the built-in
   speech models and the updater's bootstrappers, all checksum-verified.
 - Versions agree everywhere; the four changelogs have their versions; all four
-  have release notes (`standalone/quilllite/docs/release-notes-1.2.md`,
+  have release notes (`standalone/quilllite/docs/release-notes-2.0.md`,
   `standalone/radio/docs/release-notes-3.2.md`,
   `standalone/cast/docs/release-notes-2.0.md`,
   `standalone/transcribe/docs/release-notes-1.0.md`).
@@ -129,7 +129,7 @@ Everything lands in `dist\release-builds\<date-time>\upload`, with
    - QUILL Transcribe: dictate into Notepad; transcribe a short recording.
 2. **Screen-reader testing, then a sign-off sheet per app.** Promotion to
    Stable refuses an app without one. A sheet is ready for each, to fill in:
-   - `docs/qa/signoffs/quilllite-1.2.0.md`
+   - `docs/qa/signoffs/quilllite-2.0.0.md`
    - `docs/qa/signoffs/radio-3.2.0.md`
    - `docs/qa/signoffs/cast-2.0.0.md`
    - `docs/qa/signoffs/transcribe-1.0.0.md`
@@ -149,10 +149,10 @@ portable QUILL Lite 1.1.2 and Quill Radio 3.0.4 must update by hand this once.
 Rehearse, then publish:
 
 ```powershell
-python scripts/publish_release.py --app quilllite --version 1.2.0 --build 5 --channel beta `
-    --dist standalone/quilllite/dist --notes-file docs/release/whats-new/whats-new-quilllite-1.2.0.md --dry-run
-python scripts/publish_release.py --app quilllite --version 1.2.0 --build 5 --channel beta `
-    --dist standalone/quilllite/dist --notes-file docs/release/whats-new/whats-new-quilllite-1.2.0.md
+python scripts/publish_release.py --app quilllite --version 2.0.0 --build 1 --channel beta `
+    --dist standalone/quilllite/dist --notes-file docs/release/whats-new/whats-new-quilllite-2.0.0.md --dry-run
+python scripts/publish_release.py --app quilllite --version 2.0.0 --build 1 --channel beta `
+    --dist standalone/quilllite/dist --notes-file docs/release/whats-new/whats-new-quilllite-2.0.0.md
 
 python scripts/publish_release.py --app radio --version 3.2.0 --build 4 --channel beta `
     --dist standalone/radio/dist --notes-file docs/release/whats-new/whats-new-radio-3.2.0.md --dry-run
@@ -188,10 +188,10 @@ shorter soak needs a reason, recorded in the list:
 ## Step 7: promote to Stable
 
 ```powershell
-python scripts/promote_release.py --app quilllite --version 1.2.0+5 --to stable --dry-run `
-    --notes-file docs/release/whats-new/whats-new-quilllite-1.2.0.md
-python scripts/promote_release.py --app quilllite --version 1.2.0+5 --to stable `
-    --notes-file docs/release/whats-new/whats-new-quilllite-1.2.0.md
+python scripts/promote_release.py --app quilllite --version 2.0.0+1 --to stable --dry-run `
+    --notes-file docs/release/whats-new/whats-new-quilllite-2.0.0.md
+python scripts/promote_release.py --app quilllite --version 2.0.0+1 --to stable `
+    --notes-file docs/release/whats-new/whats-new-quilllite-2.0.0.md
 python scripts/promote_release.py --app radio --version 3.2.0+4 --to stable --dry-run `
     --notes-file docs/release/whats-new/whats-new-radio-3.2.0.md
 python scripts/promote_release.py --app radio --version 3.2.0+4 --to stable `
@@ -240,7 +240,7 @@ section back to 1.0.0). Commit `docs/site/updates/v2` and push.
 
 ## At a glance
 
-| | QUILL Lite 1.2.0 | Quill Radio 3.2.0 | QUILL Cast 2.0.0 | QUILL Transcribe 1.0.0 |
+| | QUILL Lite 2.0.0 | Quill Radio 3.2.0 | QUILL Cast 2.0.0 | QUILL Transcribe 1.0.0 |
 | --- | --- | --- | --- | --- |
 | Feed key restored (you) | needed | needed | needed | needed |
 | Code signing set up (you) | done (2026-10-24) | done | done | done |

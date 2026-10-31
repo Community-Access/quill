@@ -1,6 +1,6 @@
 # QuillBeacon changelog
 
-## Unreleased
+## 0.1.0
 
 - **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
   which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared

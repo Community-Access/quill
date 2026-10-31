@@ -132,7 +132,7 @@ def test_pending_release_build_numbers_match_the_source() -> None:
 
     assert (radio._VERSION, radio._BUILD) == ("3.2.0", 5)
     assert (podcasts_menu.APP_VERSION, podcasts_menu.APP_BUILD) == ("2.0.0", 6)
-    assert (lite.APP_VERSION, lite.APP_BUILD) == ("1.2.0", 6)
+    assert (lite.APP_VERSION, lite.APP_BUILD) == ("2.0.0", 1)
     assert __build__ == 2
 
 

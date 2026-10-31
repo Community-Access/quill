@@ -605,6 +605,14 @@ Two Help items are worth knowing before anything else goes wrong. **Help > View 
 - **A translated edition was skipped.** The cloud voice you chose for that language has no API key configured; the run notes the skip and continues rather than stopping.
 - **Closing the window warns about work in progress.** A narration or build run is still going. Choose No to keep the Studio open, or minimize to the tray and let it finish; the "When closing the window" preference sets a fixed answer.
 - **Windows SmartScreen blocks the installer.** The release is not code-signed; choose "More info" then "Run anyway".
+- **Text looks blurry, or a window is the wrong size.** QUILL Studio scales itself for each monitor. Text stays sharp at 125, 150 or 200
+  percent, and when you move a window to a monitor with different scaling;
+  windows and list columns keep their proportions. If a window looks wrong at
+  your scaling, you can turn this off to see whether it is the cause. Search
+  Windows for "Edit environment variables for your account", add a variable
+  named `QUILL_DPI_UNAWARE` with the value `1`, and start QUILL Studio again.
+  Windows then stretches it the old way, so text is blurrier. Delete the
+  variable to put scaling back, and tell support what you saw.
 
 
 ## Screenshots and the Screenshot Inspector (unreleased)

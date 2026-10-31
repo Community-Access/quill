@@ -12,15 +12,6 @@ engine under `quill/core/audio/` -- so a fix to the engine lands in QUILL's
 Audio Studio at the same time. The `standalone/converter` folder carries only
 the launcher, installer, icon and these documents.
 
-## Unreleased
-
-- **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
-  which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
-  GLOW dependency; Converter does not itself expose GLOW. Release-specific source
-  and legal review are required before the next public release. Portable
-  contents must be checked separately. See Licences and Notices and the
-  PyMuPDF distribution review.
-
 ## Planned, not released
 
 - Studio's consolidated plan proposes an accessible project-to-Converter
@@ -33,6 +24,24 @@ the launcher, installer, icon and these documents.
 The first public release. The app was first built in July 2026 as an audio
 converter; that build was never published as an installer, and everything it
 had is included here.
+
+### Since build 2 (2026-10-27 to 2026-10-31)
+
+- **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
+  which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
+  GLOW dependency; Converter does not itself expose GLOW. Release-specific source
+  and legal review are required before the next public release. Portable
+  contents must be checked separately. See Licences and Notices and the
+  PyMuPDF distribution review.
+- **Sharp text at any display scaling** (2026-10-31). Quill Converter now handles
+  each monitor's scaling itself instead of letting Windows stretch it, so
+  text stays sharp at 125, 150 and 200 percent and on monitors with
+  different scaling, and windows and list columns keep their proportions.
+  Setting the environment variable `QUILL_DPI_UNAWARE` to `1` turns this off,
+  for diagnosing a display problem (#1702). User guide: "Text looks blurry, or a window is the wrong size".
+- **Pygments in the notices** (2026-10-31). The shared runtime now bundles
+  Pygments, which QUILL and QUILL Lite use to read code and web pages for
+  spell check, so Quill Converter's third-party notices list it.
 
 ### New in build 2
 

@@ -2,7 +2,7 @@
 
 Version 3.2.0 (build 4). Status, 2026-10-17: in beta for testers, not yet
 published; the last published version is 3.0.4. Everything in the
-changelog's Unreleased section is built and documented.
+changelog's 3.2.0 section is built and documented.
 
 **Current-source correction:** The shared Radio implementation retires the
 built-in SomaFM source in response to its published third-party-client terms.

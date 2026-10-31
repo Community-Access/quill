@@ -2,7 +2,7 @@
 
 Version 1.0.0 (build 2). This first public release is not yet published.
 
-## Unreleased distribution note
+## A note on the shared runtime's licence
 
 Installed Inkwell uses the shared QuillVille Runtime, which currently includes
 PyMuPDF 1.28.2 under AGPL-3.0 through GLOW. Inkwell does not itself expose
@@ -25,6 +25,12 @@ Inkwell runs quietly in the notification area. Type an abbreviation in your
 browser, your email or a form, then a space or a punctuation mark, and it
 expands. Press **Backspace** straight away if you did not want it. Nothing you
 type is kept, and nothing is sent anywhere.
+
+## Sharp at any display scaling
+
+Quill Inkwell handles each monitor's scaling itself, so text stays sharp at 125, 150
+and 200 percent and on monitors with different scaling, and windows and list
+columns keep their proportions.
 
 ## What you can do with it
 

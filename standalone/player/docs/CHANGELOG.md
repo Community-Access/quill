@@ -6,16 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 Quill Media Player runs the same player code as QUILL from the shared `quill` package, so a fix lands in both at once; `standalone/player` carries only the wrapper, launcher and docs.
 
-## Unreleased
+## 1.0.0
+
+Testing build: **1.0.0 (build 2)**. Quill Media Player has not been published yet: the other QuillVille apps do not list it in their QuillVille menus, and QUILL's **Tools > Media > Media Player** row appears once it is released. Everything below is in the build.
+
+### Since build 2 (2026-10-30 and 2026-10-31)
 
 - **Host-runtime licensing.** Media Player has no separate installer. When its
   host uses the QuillVille Runtime, that runtime currently carries PyMuPDF
   1.28.2 under AGPL-3.0 through the shared GLOW dependency; the player does not
   itself expose GLOW. Release-specific source and legal review remain open.
-
-## 1.0.0
-
-Testing build: **1.0.0 (build 2)**. Quill Media Player has not been published yet: the other QuillVille apps do not list it in their QuillVille menus, and QUILL's **Tools > Media > Media Player** row appears once it is released. Everything below is in the build.
+- **Controls that had no label now have a spoken name** (2026-10-30).
+  JAWS, NVDA and Narrator used to announce them as a bare role, such as
+  "edit" or "list". Now playing, the Chapters tree and the Bookmarks list now say what they are.
+- **Sharp text at any display scaling** (2026-10-31). QUILL Media Player now handles
+  each monitor's scaling itself instead of letting Windows stretch it, so
+  text stays sharp at 125, 150 and 200 percent and on monitors with
+  different scaling, and windows and list columns keep their proportions.
+  Setting the environment variable `QUILL_DPI_UNAWARE` to `1` turns this off,
+  for diagnosing a display problem (#1702). User guide: "Text looks blurry, or a window is the wrong size".
 
 ### Opening and listening to books
 

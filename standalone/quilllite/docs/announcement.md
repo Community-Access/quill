@@ -417,7 +417,7 @@ puts it in a new window and leaves your current work alone.
 ## Getting it
 
 Download QUILL Lite from **https://www.quillforall.org/quilllite.html**. The
-current version is 1.2.0. There are two files. Take the first one, unless you want to run QUILL Lite from a USB
+current version is 2.0.0. There are two files. Take the first one, unless you want to run QUILL Lite from a USB
 stick.
 
 | Download | Take this if |
@@ -466,12 +466,12 @@ this release is here because somebody asked for it.
 
 ---
 
-## Arrived in QUILL Lite 1.2.0
+## Arrived in QUILL Lite 2.0.0
 
 When this was first written, three small fixes were on their way. They arrived
-in QUILL Lite 1.2.0, together with a thesaurus, a dictionary you can use
+in QUILL Lite 2.0.0, together with a thesaurus, a dictionary you can use
 without AI, an AI dictionary, a Google Gemini key, and Activity and Repeat
-Last Result. The QUILL Lite 1.2 release notes have the whole story.
+Last Result. The QUILL Lite 2.0 release notes have the whole story.
 
 - When you come back to QUILL Lite with Alt+Tab, it checks that your document
   is ready for typing. It will not pull you out of Find or a menu.

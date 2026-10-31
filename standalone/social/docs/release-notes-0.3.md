@@ -18,6 +18,12 @@ Right read one part of a post at a time: who wrote it, the text, the time,
 and the rest. Enter opens the whole post. Ctrl+N writes a new post. Every
 command is on a menu, and every menu row says its key.
 
+## Sharp at any display scaling
+
+QUILL Social handles each monitor's scaling itself, so text stays sharp at 125, 150
+and 200 percent and on monitors with different scaling, and windows and list
+columns keep their proportions.
+
 ## What you can connect
 
 Choose **File > Add Account...** (Ctrl+Shift+A). The Network list offers:
