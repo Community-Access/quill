@@ -588,6 +588,14 @@ Per-book overrides and importing or exporting settings, specified in the PRD
   (see "Picking up where you left off").
 
 ---
+- **Text looks blurry, or a window is the wrong size.** QUILL Media Player scales itself for each monitor. Text stays sharp at 125, 150 or 200
+  percent, and when you move a window to a monitor with different scaling;
+  windows and list columns keep their proportions. If a window looks wrong at
+  your scaling, you can turn this off to see whether it is the cause. Search
+  Windows for "Edit environment variables for your account", add a variable
+  named `QUILL_DPI_UNAWARE` with the value `1`, and start QUILL Media Player again.
+  Windows then stretches it the old way, so text is blurrier. Delete the
+  variable to put scaling back, and tell support what you saw.
 
 ## 18. Feature availability at a glance
 

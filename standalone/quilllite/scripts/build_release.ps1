@@ -55,7 +55,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$version = "1.2.0"
+$version = "2.0.0"
 if ($DevVersion) { $version = $DevVersion }
 
 # Authenticode code signing is opt-in (docs/code-signing.md). -Sign turns it on

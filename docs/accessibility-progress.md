@@ -55,7 +55,7 @@ The full detail of every change is in the
 ### In progress and open
 
 - **Recorded screen reader testing.** The sign-off records for QUILL Lite
-  1.2.0, Quill Radio 3.2.0, QUILL Cast 2.0.0 and QUILL Transcribe 1.0.0 are
+  2.0.0, Quill Radio 3.2.0, QUILL Cast 2.0.0 and QUILL Transcribe 1.0.0 are
   pending, and the 316 checks in
   [screen-reader-checks-2026-10.md](qa/screen-reader-checks-2026-10.md) have no
   results yet. The QUILL Transcribe screen reader pass in Outlook, Word,

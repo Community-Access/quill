@@ -30,6 +30,7 @@ from quill.core.ai.chatgpt_errors import (
     ChatGptLimitError,
     ChatGptSignedOutError,
     ChatGptUnavailableError,
+    ChatGptUnsupportedError,
 )
 from quill.core.ai.retry_ladder import pause, wait_before_retry
 
@@ -127,6 +128,10 @@ def _error_for_status(status: int, raw: bytes, url: str) -> ChatGptError:
                 return ChatGptUnavailableError(
                     message or "ChatGPT plan usage is not available right now."
                 )
+            if code == "subscription_sharing_unsupported_capability":
+                return ChatGptUnsupportedError(
+                    message or "Your ChatGPT plan does not take this request."
+                )
         elif isinstance(error, str):
             message = error.strip()
     except ValueError:
@@ -152,7 +157,10 @@ def _http_failure(status: int, raw: bytes, url: str, headers: Any) -> ChatGptErr
     error = _error_for_status(status, raw, url)
     error.http_status = status  # type: ignore[attr-defined]
     error.http_headers = headers  # type: ignore[attr-defined]
-    error.retry_final = b"subscription_sharing_usage" in raw  # type: ignore[attr-defined]
+    error.retry_final = (  # type: ignore[attr-defined]
+        b"subscription_sharing_usage" in raw
+        or b"subscription_sharing_unsupported_capability" in raw
+    )
     return error
 
 

@@ -77,7 +77,7 @@ with you as reviewer.
 3. Publish for real (same command without `--dry-run`). It hashes the files,
    creates a GitHub **prerelease** (never "Latest"), uploads the installer and
    portable zip, adds the build to the **Beta** update list and signs it.
-4. Repeat for QUILL Lite (`--app quilllite --version 1.2.0 --build 5 --dist standalone/quilllite/dist`)
+4. Repeat for QUILL Lite (`--app quilllite --version 2.0.0 --build 1 --dist standalone/quilllite/dist`)
    and QUILL Cast (`--app cast --version 2.0.0 --build 5 --dist standalone/cast/dist`),
    each with its own file from `docs/release/whats-new/`.
    The script accepts `cast`, `quill`, `quilllite`, `radio` and (since

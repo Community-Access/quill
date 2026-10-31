@@ -3899,7 +3899,7 @@ subscription or your own Gemini key.
 Each Quill app signs in to ChatGPT on its own, so signing in here does not
 sign in QUILL or Quill Radio, and signing out of one leaves the others
 signed in. If another Quill app is already signed in, your browser remembers
-you and it takes one Allow.
+you and it takes one Allow. You stay signed in until you sign out or remove the app in ChatGPT's settings; a brief problem on OpenAI's side no longer signs you out.
 
 The last step of the **Show notes, and what else the podcast sent** lesson, in
 Help > Tutorials, turns AI help on with you.
@@ -4655,6 +4655,17 @@ respond, check which control has focus and return to the list with Tab.
 It may be an Advanced row, or a feature switched off in Customize Features
 (Ctrl+Alt+C). The Command Palette (Ctrl+Shift+P) finds it either way and tells
 you which.
+
+#### Text looks blurry, or a window is the wrong size
+
+QUILL Cast scales itself for each monitor. Text stays sharp at 125, 150 or 200
+percent, and when you move a window to a monitor with different scaling;
+windows and list columns keep their proportions. If a window looks wrong at
+your scaling, you can turn this off to see whether it is the cause. Search
+Windows for "Edit environment variables for your account", add a variable
+named `QUILL_DPI_UNAWARE` with the value `1`, and start QUILL Cast again.
+Windows then stretches it the old way, so text is blurrier. Delete the
+variable to put scaling back, and tell support what you saw.
 
 ### What you learned, and where to go next
 

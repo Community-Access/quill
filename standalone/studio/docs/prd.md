@@ -2,7 +2,7 @@
 
 Version 2.0.0 (QUILL Studio; see CHANGELOG.md)
 
-Unreleased runtime update: Windows OCR and Media use the shared PyWinRT 4.0.3
+Runtime update in 2.0.0: Windows OCR and Media use the shared PyWinRT 4.0.3
 runtime and Windows SDK 10.0.28000.2705 projections; Windows Media releases
 device references and event handlers on shutdown. DECtalk is not distributed
 or downloaded by QUILL and must be installed separately. Broader production,
@@ -665,9 +665,10 @@ open (`docs/design/quill-studio-capture-milestone.md`).
   model and endpoint, stating that the image may hold private information,
   that no redaction was applied, and that the price cannot be estimated. It
   uses the shared AI connection, credentials and vision transport (no separate
-  provider settings) and sends a private temporary copy whose hash matches the
-  reviewed image, deleted afterwards. AI Off, Safe Mode, or no connected
-  provider must refuse with a spoken reason while capture and OCR continue.
+  provider settings), or a ChatGPT plan (AS-114), and sends a private
+  temporary copy whose hash matches the reviewed image, deleted afterwards.
+  AI Off or Safe Mode must refuse with a spoken reason while capture and OCR
+  continue; no provider and no plan must offer the plan sign-in (AS-114).
   AI text is saved only as unverified observations.
 - AS-107. Automatic inspection of future captures must be off by default and
   turned on only with its own approval, bound to the approved provider, model
@@ -724,6 +725,27 @@ open (`docs/design/quill-studio-capture-milestone.md`).
   `wx.MessageDialog` shown with a bare `ShowModal()` from inside Capture
   screen; it should move to the host's modal contract.
 
+- AS-114. A ChatGPT plan must read Studio's pictures (screenshot inspection,
+  automatic analysis, video questions) with no API key
+  (`quill/core/studio_plan_vision.py`, `quill/apps/studio_vision_route.py`).
+  Studio signs in on its own as "QUILL Studio", with its own client
+  registration and its own refresh token in the credential store; it must
+  never use a token QUILL or QUILL Lite obtained, because plan usage stays
+  with the app the person connected. With only one of plan and provider,
+  Studio uses it without asking; with both, it asks each time, starting on
+  the last choice; with neither, it offers Sign in with your ChatGPT plan,
+  which opens the shared Use My ChatGPT Subscription window (also on the
+  Capture menu) and mentions a signed-in sibling, which makes it one Allow.
+  The approval names the plan and account and says the picture goes to
+  OpenAI on the person's plan. A picture over 20 MB, over 4096 pixels on a
+  side, or not PNG, JPEG, WebP or GIF is scaled and converted first; video
+  stays one bounded contact sheet. The request carries no `temperature`,
+  `max_output_tokens` or system item. A used-up plan stops and offers
+  ChatGPT's Usage settings, never falling back to an API key;
+  `subscription_sharing_unsupported_capability` is explained and never
+  retried; a sign-in OpenAI no longer accepts says where to sign in again.
+  Picture generation stays API-key only: the plan's preview does not offer it.
+
 ## 5. Non-functional requirements
 
 - N-1. Threading: the UI thread owns all wx widgets. Worker threads must never
@@ -738,7 +760,8 @@ open (`docs/design/quill-studio-capture-milestone.md`).
   consented cover fetch, user-initiated SFTP/Auphonic publishing, and
   configured AI/cloud-TTS/translation calls (cost-confirmed when paid),
   including screenshot inspection only after per-request approval or the
-  separately approved automatic mode (AS-106, AS-107). No other outbound calls;
+  separately approved automatic mode (AS-106, AS-107), on a ChatGPT plan
+  through the family's existing plan client (AS-114). No other outbound calls;
   capture, OCR, editing, notes and evidence bundles are entirely local. Book building, chapter editing, ACX checks, local and
   folder feeds are entirely local.
 - N-4. Privacy: passwords, API keys, and tokens live only in the Windows

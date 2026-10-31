@@ -1073,6 +1073,14 @@ through.
   Audible books or protected iTunes purchases, cannot be converted.
 - **Preview is silent.** Preview plays through the Windows default sound device.
   Check that it is the one you are listening on.
+- **Text looks blurry, or a window is the wrong size.** Quill Converter scales itself for each monitor. Text stays sharp at 125, 150 or 200
+  percent, and when you move a window to a monitor with different scaling;
+  windows and list columns keep their proportions. If a window looks wrong at
+  your scaling, you can turn this off to see whether it is the cause. Search
+  Windows for "Edit environment variables for your account", add a variable
+  named `QUILL_DPI_UNAWARE` with the value `1`, and start Quill Converter again.
+  Windows then stretches it the old way, so text is blurrier. Delete the
+  variable to put scaling back, and tell support what you saw.
 
 ### Settings and Safe Mode
 

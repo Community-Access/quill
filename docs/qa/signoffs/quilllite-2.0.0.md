@@ -1,4 +1,4 @@
-# Screen-reader sign-off: QUILL Lite 1.2.0 (build 5)
+# Screen-reader sign-off: QUILL Lite 2.0.0 (build 1)
 
 Fill this in after testing with a screen reader, then commit it. Stable
 promotion (`scripts/promote_release.py`, check P9) refuses this app until the

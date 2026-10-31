@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Releasing QUILL Lite 1.2, Quill Radio 3.2, QUILL Cast 2.0 and
+  <title>Releasing QUILL Lite 2.0, Quill Radio 3.2, QUILL Cast 2.0 and
 QUILL Transcribe 1.0</title>
   <style>
     /* Default styles provided by pandoc.
@@ -309,8 +309,8 @@ QUILL Transcribe 1.0</title>
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
 <h1
-id="releasing-quill-lite-12-quill-radio-32-quill-cast-20-and-quill-transcribe-10">Releasing
-QUILL Lite 1.2, Quill Radio 3.2, QUILL Cast 2.0 and QUILL Transcribe
+id="releasing-quill-lite-20-quill-radio-32-quill-cast-20-and-quill-transcribe-10">Releasing
+QUILL Lite 2.0, Quill Radio 3.2, QUILL Cast 2.0 and QUILL Transcribe
 1.0</h1>
 <p>Everything to do, in order, to publish these four apps as general
 (Stable) releases. Written 2026-10-24 from <code>main</code> at the
@@ -334,8 +334,8 @@ PowerShell at <code>D:\QUILL</code>.</p>
 <tbody>
 <tr>
 <td>QUILL Lite</td>
-<td>1.2.0 build 5</td>
-<td><code>quill-lite-v1.2.0-build.5</code></td>
+<td>2.0.0 build 1 (prepared as 1.2.0)</td>
+<td><code>quill-lite-v2.0.0-build.1</code></td>
 <td>Release channels (Beta, then Stable)</td>
 <td>Yes; 1.1.2 is current</td>
 </tr>
@@ -388,7 +388,7 @@ built-in speech models and the updater’s bootstrappers, all
 checksum-verified.</li>
 <li>Versions agree everywhere; the four changelogs have their versions;
 all four have release notes
-(<code>standalone/quilllite/docs/release-notes-1.2.md</code>,
+(<code>standalone/quilllite/docs/release-notes-2.0.md</code>,
 <code>standalone/radio/docs/release-notes-3.2.md</code>,
 <code>standalone/cast/docs/release-notes-2.0.md</code>,
 <code>standalone/transcribe/docs/release-notes-1.0.md</code>).</li>
@@ -493,7 +493,7 @@ recording.</li>
 app.</strong> Promotion to Stable refuses an app without one. A sheet is
 ready for each, to fill in:</p>
 <ul>
-<li><code>docs/qa/signoffs/quilllite-1.2.0.md</code></li>
+<li><code>docs/qa/signoffs/quilllite-2.0.0.md</code></li>
 <li><code>docs/qa/signoffs/radio-3.2.0.md</code></li>
 <li><code>docs/qa/signoffs/cast-2.0.0.md</code></li>
 <li><code>docs/qa/signoffs/transcribe-1.0.0.md</code></li>
@@ -515,10 +515,10 @@ would be cut). It puts anything to do before updating first: portable
 QUILL Lite 1.1.2 and Quill Radio 3.0.4 must update by hand this once.
 Rehearse, then publish:</p>
 <div class="sourceCode" id="cb3"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>publish_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app quilllite <span class="op">--</span>version <span class="dv">1.2</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>build <span class="dv">5</span> <span class="op">--</span>channel beta `</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>dist standalone<span class="op">/</span>quilllite<span class="op">/</span>dist <span class="op">--</span>notes-file docs<span class="op">/</span>release<span class="op">/</span>whats-new<span class="op">/</span>whats-new-quilllite-1<span class="op">.</span><span class="dv">2.0</span><span class="op">.</span><span class="fu">md</span> <span class="op">--</span>dry-run</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>publish_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app quilllite <span class="op">--</span>version <span class="dv">1.2</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>build <span class="dv">5</span> <span class="op">--</span>channel beta `</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>dist standalone<span class="op">/</span>quilllite<span class="op">/</span>dist <span class="op">--</span>notes-file docs<span class="op">/</span>release<span class="op">/</span>whats-new<span class="op">/</span>whats-new-quilllite-1<span class="op">.</span><span class="dv">2.0</span><span class="op">.</span><span class="fu">md</span></span>
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>publish_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app quilllite <span class="op">--</span>version <span class="dv">2.0</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>build <span class="dv">1</span> <span class="op">--</span>channel beta `</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>dist standalone<span class="op">/</span>quilllite<span class="op">/</span>dist <span class="op">--</span>notes-file docs<span class="op">/</span>release<span class="op">/</span>whats-new<span class="op">/</span>whats-new-quilllite-2<span class="op">.</span><span class="dv">0.0</span><span class="op">.</span><span class="fu">md</span> <span class="op">--</span>dry-run</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>publish_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app quilllite <span class="op">--</span>version <span class="dv">2.0</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>build <span class="dv">1</span> <span class="op">--</span>channel beta `</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>dist standalone<span class="op">/</span>quilllite<span class="op">/</span>dist <span class="op">--</span>notes-file docs<span class="op">/</span>release<span class="op">/</span>whats-new<span class="op">/</span>whats-new-quilllite-2<span class="op">.</span><span class="dv">0.0</span><span class="op">.</span><span class="fu">md</span></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>publish_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>version <span class="dv">3.2</span><span class="op">.</span><span class="dv">0</span> <span class="op">--</span>build <span class="dv">4</span> <span class="op">--</span>channel beta `</span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>dist standalone<span class="op">/</span>radio<span class="op">/</span>dist <span class="op">--</span>notes-file docs<span class="op">/</span>release<span class="op">/</span>whats-new<span class="op">/</span>whats-new-radio-3<span class="op">.</span><span class="dv">2.0</span><span class="op">.</span><span class="fu">md</span> <span class="op">--</span>dry-run</span>
@@ -550,10 +550,10 @@ days. A shorter soak needs a reason, recorded in the list:
 <code>--skip-soak "the reason"</code>.</p>
 <h2 id="step-7-promote-to-stable">Step 7: promote to Stable</h2>
 <div class="sourceCode" id="cb4"><pre
-class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>promote_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app quilllite <span class="op">--</span>version <span class="dv">1.2</span><span class="op">.</span><span class="dv">0</span><span class="op">+</span><span class="dv">5</span> <span class="op">--</span>to stable <span class="op">--</span>dry-run `</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>notes-file docs<span class="op">/</span>release<span class="op">/</span>whats-new<span class="op">/</span>whats-new-quilllite-1<span class="op">.</span><span class="dv">2.0</span><span class="op">.</span><span class="fu">md</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>promote_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app quilllite <span class="op">--</span>version <span class="dv">1.2</span><span class="op">.</span><span class="dv">0</span><span class="op">+</span><span class="dv">5</span> <span class="op">--</span>to stable `</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>notes-file docs<span class="op">/</span>release<span class="op">/</span>whats-new<span class="op">/</span>whats-new-quilllite-1<span class="op">.</span><span class="dv">2.0</span><span class="op">.</span><span class="fu">md</span></span>
+class="sourceCode powershell"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>promote_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app quilllite <span class="op">--</span>version <span class="dv">2.0</span><span class="op">.</span><span class="dv">0</span><span class="op">+</span><span class="dv">1</span> <span class="op">--</span>to stable <span class="op">--</span>dry-run `</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>notes-file docs<span class="op">/</span>release<span class="op">/</span>whats-new<span class="op">/</span>whats-new-quilllite-2<span class="op">.</span><span class="dv">0.0</span><span class="op">.</span><span class="fu">md</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>promote_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app quilllite <span class="op">--</span>version <span class="dv">2.0</span><span class="op">.</span><span class="dv">0</span><span class="op">+</span><span class="dv">1</span> <span class="op">--</span>to stable `</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>notes-file docs<span class="op">/</span>release<span class="op">/</span>whats-new<span class="op">/</span>whats-new-quilllite-2<span class="op">.</span><span class="dv">0.0</span><span class="op">.</span><span class="fu">md</span></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>promote_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>version <span class="dv">3.2</span><span class="op">.</span><span class="dv">0</span><span class="op">+</span><span class="dv">4</span> <span class="op">--</span>to stable <span class="op">--</span>dry-run `</span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="op">--</span>notes-file docs<span class="op">/</span>release<span class="op">/</span>whats-new<span class="op">/</span>whats-new-radio-3<span class="op">.</span><span class="dv">2.0</span><span class="op">.</span><span class="fu">md</span></span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>python scripts<span class="op">/</span>promote_release<span class="op">.</span><span class="fu">py</span> <span class="op">--</span>app radio <span class="op">--</span>version <span class="dv">3.2</span><span class="op">.</span><span class="dv">0</span><span class="op">+</span><span class="dv">4</span> <span class="op">--</span>to stable `</span>
@@ -611,7 +611,7 @@ key”).</li>
 <thead>
 <tr>
 <th></th>
-<th>QUILL Lite 1.2.0</th>
+<th>QUILL Lite 2.0.0</th>
 <th>Quill Radio 3.2.0</th>
 <th>QUILL Cast 2.0.0</th>
 <th>QUILL Transcribe 1.0.0</th>

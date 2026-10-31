@@ -2,7 +2,7 @@
 
 Built, not yet released.
 
-## Unreleased updates
+## Since build 2: speech engines, licensing and the chapter sound
 
 QUILL no longer downloads or distributes DECtalk while its redistribution
 terms are unclear. New Studio portable staging excludes it; separately
@@ -97,9 +97,17 @@ Professional audio interfaces with an ASIO driver can be used as microphones wit
 
 Kelly Ford's Quick Describe, a free, open-source app that describes the screen with Windows' own AI, shares what it learned the hard way, and Studio took several of those lessons. The Recording status window can now stay visible to magnifiers and screen sharing. Ask AI about a video draws fewer frames bigger, labels their times clearly, and tells the AI to say when text is too small rather than guess. A face detector that stops answering is replaced, and gives up out loud rather than going quiet. "Automatic screenshot AI is paused" is said once, not with every screenshot. Diagnostic bundles leave out your user name. Thank you, Kelly, for the ideas and for all you give to the community.
 
+## Sharp at any display scaling, and named controls
+
+QUILL Studio handles each monitor's scaling itself, so text stays sharp at 125, 150 and 200 percent and on monitors with different scaling. Controls that had no label, in Convert Audio, the wizard's summary and the translated speech export, now have a spoken name.
+
+## Ask AI about pictures on your ChatGPT plan
+
+The Screenshot Inspector's Ask AI, automatic screenshot analysis and Ask AI about a video can use your ChatGPT plan, with no API key. With no AI set up, asking about a picture offers to sign in with your plan right there; Studio signs in on its own, as QUILL Studio. With a plan and an AI provider, Studio asks which to use. The approval question names your plan and account. Pictures the plan can't take are converted first. When the plan's usage is used up, Studio says so and offers ChatGPT's Usage settings, and never moves to your API key by itself. Making a picture with AI still needs an API key.
+
 ## Not yet verified
 
-These features are built and tested with real FFmpeg runs and with stand-in servers and services, but the following have not yet been done: recordings with a real microphone and camera, face detection with a person in front of the camera, JAWS, NVDA, Narrator and braille passes, a real Icecast or SHOUTcast server, and a real AI picture request. A window recording records the window's area of the screen, so a covering window is recorded and a moved window is not followed.
+These features are built and tested with real FFmpeg runs and with stand-in servers and services, but the following have not yet been done: recordings with a real microphone and camera, face detection with a person in front of the camera, JAWS, NVDA, Narrator and braille passes, a real Icecast or SHOUTcast server, a real AI picture request, and a real ChatGPT plan answering a Studio picture. A window recording records the window's area of the screen, so a covering window is recorded and a moved window is not followed.
 
 ## Chapters for any recording
 

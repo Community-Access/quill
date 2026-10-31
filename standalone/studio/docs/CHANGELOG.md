@@ -4,7 +4,15 @@ All notable changes to QUILL Studio are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [2.0.0] - built, not yet released
+
+QUILL Studio 2.0.0 is the next Studio release after Audio Studio 1.0.0. The previously unpublished 2.2.0 build is renumbered to 2.0.0 for the QUILL Studio rename. Shared-runtime compatibility does not require matching the other apps' version numbers.
+
+This version is built but not yet published: Audio Studio is not offered in the QuillVille menu, and there is no 2.0.0 download page. Everything below is in the build.
+
+Testing build: **2.0.0 (build 2)**. Builds since the first have not been published.
+
+### Display scaling, named controls, licensing and packaging (2026-10-27 to 2026-10-31)
 
 - **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
   which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
@@ -25,14 +33,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Production planning.** The consolidated Studio plan proposes a shared
   Converter round trip and reviewable local or explicitly consented cloud
   transcription. These proposals are not delivered features.
-
-## [2.0.0] - built, not yet released
-
-QUILL Studio 2.0.0 is the next Studio release after Audio Studio 1.0.0. The previously unpublished 2.2.0 build is renumbered to 2.0.0 for the QUILL Studio rename. Shared-runtime compatibility does not require matching the other apps' version numbers.
-
-This version is built but not yet published: Audio Studio is not offered in the QuillVille menu, and there is no 2.0.0 download page. Everything below is in the build.
-
-Testing build: **2.0.0 (build 2)**. Builds since the first have not been published.
+- **Controls that had no label now have a spoken name** (2026-10-30).
+  JAWS, NVDA and Narrator used to announce them as a bare role, such as
+  "edit" or "list". Now they say what they are: the choices and number boxes in Convert
+  Audio, the summary of your choices at the end of the wizard, and the
+  translation voice and languages to export in the translated speech export.
+- **Sharp text at any display scaling** (2026-10-31). QUILL Studio now handles
+  each monitor's scaling itself instead of letting Windows stretch it, so
+  text stays sharp at 125, 150 and 200 percent and on monitors with
+  different scaling, and windows and list columns keep their proportions.
+  Setting the environment variable `QUILL_DPI_UNAWARE` to `1` turns this off,
+  for diagnosing a display problem (#1702). User guide: "Text looks blurry, or a window is the wrong size".
+- **Pygments in the notices** (2026-10-31). The shared runtime now bundles
+  Pygments, which QUILL and QUILL Lite use to read code and web pages for
+  spell check, so QUILL Studio's third-party notices list it.
 
 ### The new name: QUILL Studio
 
@@ -67,6 +81,16 @@ Kelly Ford's [Quick Describe](https://github.com/TheIdeaPlace/QuickDescribe), a 
 - **"Automatic screenshot AI is paused" is said once,** not with every screenshot, until automatic AI can run again. A limitation repeated with each result is noise.
 - **Your user name leaves diagnostic bundles.** Paths were already cut at the user folder; now the name on its own is replaced too, as a whole word only, so a user called Al does not turn Alt into a placeholder.
 - **No garbled text.** A new test fails if any of the app's text, or any app's user guide, has text garbled by a wrong encoding, such as a dash turned into three characters a screen reader reads out one by one.
+
+### Ask AI about pictures on your ChatGPT plan (2026-10-31)
+
+- **Studio can read pictures on your ChatGPT plan, with no API key.** The Screenshot Inspector's Ask AI, automatic screenshot analysis and Ask AI questions about a video all use the plan once Studio is signed in.
+- **Signing in is one step from where you are.** With no AI set up, asking about a picture offers Sign in with your ChatGPT plan instead of stopping with a refusal. Saying yes opens Use My ChatGPT Subscription, the same window QUILL uses. Studio signs in on its own, as QUILL Studio, and never uses the sign-in QUILL or QUILL Lite made; if one of them is signed in, the offer says so, because the browser is then usually one Allow away. The window is also on the Capture menu, for choosing the model or signing out.
+- **With a plan and an AI provider, Studio asks which to use** each time, starting on the one you chose last. With only one, it doesn't ask.
+- **The approval question names your plan and account,** says the picture goes straight to OpenAI on your account, and says it counts toward your plan's usage with no separate charge.
+- **Pictures the plan can't take are converted first.** A picture over 20 MB, wider or taller than 4096 pixels, or not PNG, JPEG, WebP or GIF is scaled and converted before it is sent. Ordinary screenshots and video frame sheets go as they are. A video is still one sheet of 4 to 16 frames, never a stream.
+- **When the plan says no, Studio says so and stops.** A used-up plan offers to open ChatGPT's Usage settings; Studio never moves to your API key by itself, so to use another AI you ask again and choose it. A request the plan doesn't take for other apps is explained and not retried. A sign-in OpenAI no longer accepts tells you where to sign in again.
+- Making a picture with AI still needs an OpenAI or Gemini API key; ChatGPT plans don't make pictures for other apps. Safe Mode and AI Off block all of this, as before.
 
 ### Record a demonstration (2026-10-29)
 

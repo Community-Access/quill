@@ -248,7 +248,14 @@
 href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>, and
 this project adheres to <a
 href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
-<h2 id="unreleased">Unreleased</h2>
+<h2 id="221---2026-10-08">[2.2.1] - 2026-10-08</h2>
+<p>Current build: <strong>2.2.1 (build 2)</strong>. Build 2 keeps
+everything in build 1 and adds the work marked “build 2” below, together
+with everything recorded since (the Command Palette and Product
+Requirements doors, What’s New, QUILL Transcribe on the QuillVille menu,
+and the user guide corrections).</p>
+<h3 id="since-build-2-2026-10-30-and-2026-10-31">Since build 2
+(2026-10-30 and 2026-10-31)</h3>
 <ul>
 <li><strong>Shared-runtime licensing.</strong> Installed editions use
 the QuillVille Runtime, which currently carries PyMuPDF 1.28.2 under
@@ -257,13 +264,22 @@ expose GLOW. Release-specific source and legal review are required
 before the next public release. Portable contents must be checked
 separately. See Licences and Notices and the PyMuPDF distribution
 review.</li>
+<li><strong>Controls that had no label now have a spoken name</strong>
+(2026-10-30). JAWS, NVDA and Narrator used to announce them as a bare
+role, such as “edit” or “list”. The Weather Center’s status line now
+says “Weather source and freshness status”.</li>
+<li><strong>Sharp text at any display scaling</strong> (2026-10-31).
+Quill Weather now handles each monitor’s scaling itself instead of
+letting Windows stretch it, so text stays sharp at 125, 150 and 200
+percent and on monitors with different scaling, and windows and list
+columns keep their proportions. Setting the environment variable
+<code>QUILL_DPI_UNAWARE</code> to <code>1</code> turns this off, for
+diagnosing a display problem (#1702).</li>
+<li><strong>Pygments in the notices</strong> (2026-10-31). The shared
+runtime now bundles Pygments, which QUILL and QUILL Lite use to read
+code and web pages for spell check, so Quill Weather’s third-party
+notices list it.</li>
 </ul>
-<h2 id="221---2026-10-08">[2.2.1] - 2026-10-08</h2>
-<p>Current build: <strong>2.2.1 (build 2)</strong>. Build 2 keeps
-everything in build 1 and adds the work marked “build 2” below, together
-with everything recorded since (the Command Palette and Product
-Requirements doors, What’s New, QUILL Transcribe on the QuillVille menu,
-and the user guide corrections).</p>
 <h3 id="places-and-conditions">Places and conditions</h3>
 <ul>
 <li>Current conditions, Quick Weather, and local time use the saved

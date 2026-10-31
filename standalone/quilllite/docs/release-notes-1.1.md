@@ -315,7 +315,7 @@ request.
 All of these are in QUILL too, on the same keys. Quill Radio has the ChatGPT
 sign-in as well, behind Ask QUILL Radio.
 
-## Coming next, in 1.2.0
+## Coming next, in 2.0.0
 
 These are on their way in the next release.
 

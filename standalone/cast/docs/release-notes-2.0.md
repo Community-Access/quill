@@ -3,7 +3,7 @@
 *Version 2.0.0 (build 6), the beta for testers, October 2026. 2.0.0 was
 prepared on October 3, 2026 and is not yet published.*
 
-## Unreleased distribution note
+## A note on the shared runtime's licence
 
 Installed Cast uses the shared QuillVille Runtime, which currently includes
 PyMuPDF 1.28.2 under AGPL-3.0 through GLOW. Cast does not itself expose GLOW.
@@ -50,6 +50,13 @@ QuillVille apps are installed" now opens the app you pick through its own
 launcher, with all of its settings. To replace an old pin, unpin it and pin
 QUILL Cast again after you update. Reported on QUILLVille for QUILL Lite; every
 QuillVille app has the fix.
+
+### Since build 6
+
+Text stays sharp at 125, 150 and 200 percent display scaling and on monitors
+with different scaling. Links in show notes follow your Windows colours,
+including a high contrast theme, and the sleep timer's custom minutes box
+now has a spoken name.
 
 ## Build 5
 

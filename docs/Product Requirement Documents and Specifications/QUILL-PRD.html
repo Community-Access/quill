@@ -325,8 +325,9 @@ and certification purposes only; they remain the property of their
 respective owners. Target platform: Windows 10 and Windows 11 Target
 screen readers: NVDA (primary), JAWS, Narrator UI framework: wxPython
 (wxWidgets 3.2 or newer) Language: Python 3.13 or newer</p>
-<h3 id="unreleased-runtime-and-distribution-correction">Unreleased
-runtime and distribution correction</h3>
+<h3
+id="runtime-and-distribution-correction-quill-100-2026-10-27-to-2026-10-31">Runtime
+and distribution correction (QUILL 1.0.0, 2026-10-27 to 2026-10-31)</h3>
 <p>The shared Windows OCR and Media dependencies move to PyWinRT 4.0.3
 and Windows SDK 10.0.28000.2705 projections; Windows Media releases
 device references and player event handlers at shutdown. The shared
@@ -4312,6 +4313,40 @@ Markdown inline code spans, and fenced code blocks
 (<code>core/spellcheck_live.py</code> <code>live_alert_suppressed</code>
 — those regions are wall-to-wall false positives that a sighted user
 filters visually, so the checker filters them for everyone).</li>
+<li><strong>What is read, by extension (shipped 2026-10-30, #1712,
+shared with QUILL Lite).</strong>
+<code>quill/core/spellcheck_spans.py</code>
+<code>spell_kind_for(filename)</code> picks one of four rules from the
+document’s current file name, and every path takes it (as-you-type, F7
+review, next/previous, the list, the context menu, browse mode).
+<strong>Prose</strong>: no name, any unlisted extension, and
+<code>.log .csv .tsv .diff .patch</code>; skips URLs, email addresses,
+file paths and file names with a known extension.
+<strong>Markdown</strong> (<code>.md .markdown .mdown .mkd .mdx</code>):
+prose, plus inline code, fenced blocks, link/image targets, reference
+definitions and inline HTML tags; link text and alt text are checked.
+<strong>Markup</strong>
+(<code>.html .htm .xhtml .xml .xsl .xslt .svg .opml .rss .atom</code>):
+text nodes and comments, plus the values of
+<code>READABLE_ATTRIBUTES</code> (<code>alt</code>, <code>title</code>,
+<code>aria-label</code>, <code>aria-description</code>,
+<code>placeholder</code>);
+<code>&lt;script&gt;</code>/<code>&lt;style&gt;</code> bodies are read
+as code. <strong>Code</strong> (the rest of
+<code>spellcheck_filetypes.CODE_SUFFIXES</code>): string literals and
+comments only, minus escapes, placeholders (<code>{0}</code>,
+<code>{name}</code>, <code>%s</code>, <code>%(name)s</code>,
+<code>${x}</code>, <code>$name</code>) and identifier-shaped words
+(snake_case, camelCase, <code>HTTPServer</code>, anything with a digit);
+string prefixes and quote marks are trimmed. Lexing is Pygments (lazy
+import; <code>get_lexer_for_filename</code>, HTML lexer for unknown
+markup), which also drops regex, char, interpolation, symbol and
+preprocessor tokens and hashbang lines;
+<code>spellcheck_lexers.py</code> regex families (hash, css, sql, lua,
+json, vb, batch, ini, default C-style “slash”) take over when Pygments
+or a lexer is missing or the text exceeds
+<code>PYGMENTS_MAX_CHARS</code> (100,000). Offsets are never shifted:
+skipped text is masked with spaces of the same length.</li>
 <li>Suggestions come from Hunspell plus an n-gram reranker trained on
 the user’s writing for personalised top suggestions.</li>
 <li>Personal dictionary persists per user; per-document dictionary
@@ -15537,6 +15572,24 @@ component.</li>
 <li><strong>Font scaling</strong>: editor font 10–48pt; dialog text
 follows Windows DPI; all layouts tested at 100%, 125%, 150%, 175%, 200%,
 300%, 400%.</li>
+<li><strong>Per-monitor DPI awareness</strong> (#1702, 2026-10-31):
+every QuillVille app declares itself per-monitor DPI aware before its
+<code>wx.App</code> exists
+(<code>quill/platform/windows/dpi_awareness.py</code>), so Windows never
+bitmap-stretches it, and every fixed window size, minimum size and list
+column width goes through <code>FromDIP</code> or
+<code>quill.ui.dpi.dip()</code> / <code>dip_size()</code>. GATE-DPI
+(<code>tests/unit/ui/test_dpi_awareness_gate.py</code>, with
+<code>fixed_pixel_audit</code> in <code>platform_report</code>) fails on
+an unaware app or a new raw pixel size. <code>QUILL_DPI_UNAWARE=1</code>
+turns the declaration off for diagnosis.</li>
+<li><strong>System theme under Windows high contrast</strong>
+(2026-10-30): the System theme uses the system colours, which under a
+high contrast theme are that theme, light or dark. It no longer
+substitutes black on white with a yellow frame. Status and link colours
+come from the system (<code>SYS_COLOUR_WINDOWTEXT</code>,
+<code>SYS_COLOUR_HOTLIGHT</code>); a link stays underlined so it never
+depends on colour alone.</li>
 <li><strong>Reflow</strong>: minimum supported window size 800x600; all
 dialogs scrollable at that size; status-bar cells overflow into the
 roll-up cell.</li>
