@@ -51,7 +51,7 @@ def _stream_opener(lines: list[bytes]):
 # --------------------------------------------------------------------------- #
 
 
-def test_the_plan_shape_lists_visible_models_with_their_display_names() -> None:
+def test_the_plan_shape_lists_visible_models_in_the_servers_order() -> None:
     payload = {
         "models": [
             {"slug": "gpt-6", "display_name": "GPT-6", "visibility": "list"},
@@ -61,8 +61,9 @@ def test_the_plan_shape_lists_visible_models_with_their_display_names() -> None:
         ]
     }
     models = client.list_models("tok", opener=_json_opener(200, payload))
-    assert [m.slug for m in models] == ["gpt-6-luna", "gpt-6"]
-    assert models[0].label == "Luna 6"
+    # OpenAI's order is its recommendation for this account, so it is kept.
+    assert [m.slug for m in models] == ["gpt-6", "gpt-6-luna"]
+    assert models[1].label == "Luna 6"
 
 
 def test_the_ordinary_shape_is_read_too() -> None:

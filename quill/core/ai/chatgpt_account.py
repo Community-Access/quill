@@ -52,7 +52,11 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlencode
 
-from quill.core.ai.chatgpt_errors import ChatGptSignedOutError, ChatGptSignInError
+from quill.core.ai.chatgpt_errors import (
+    ChatGptSignedOutError,
+    ChatGptSignInError,
+    ChatGptUnavailableError,
+)
 from quill.core.ai.chatgpt_loopback import CALLBACK_PATH, LoopbackListener
 from quill.core.ai.chatgpt_state import (
     ChatGptState,
@@ -87,12 +91,21 @@ OPENID_CONFIGURATION_URL = f"{AUTH_BASE}/.well-known/openid-configuration"
 API_BASE = "https://api.openai.com/v1"
 #: Where a person's own plan usage is. OpenAI's page is the only true answer;
 #: QUILL keeps a local count of requests but never sees the plan's limits.
-USAGE_URL = "https://chatgpt.com/#settings/Usage"
+USAGE_URL = "https://chatgpt.com/settings/usage"
 
 #: The permission that lets an app spend the plan. Without it in the granted
 #: scope the sign-in is refused here, because every request would fail later
 #: with a less helpful sentence.
 PLAN_SCOPE = "chatgpt.tokens.use.direct"
+
+#: Refresh answers that mean the sign-in is gone for good. Anything else is
+#: treated as temporary and leaves the stored token alone.
+_TERMINAL_REFRESH_ERRORS = frozenset({
+    "invalid_grant",
+    "refresh_token_reused",
+    "refresh_token_expired",
+    "invalid_client",
+})
 SCOPES: tuple[str, ...] = (
     "openid",
     "profile",
@@ -423,17 +436,35 @@ class ChatGptAccount:
                     "resource": API_BASE,
                 },
             )
-            if tokens.get("error") or not tokens.get("access_token"):
-                self._forget_locally()
-                raise ChatGptSignedOutError(
-                    "OpenAI no longer accepts this computer's ChatGPT sign-in."
+            if not tokens.get("access_token"):
+                # Only an answer that says the sign-in itself is dead clears it.
+                # A 5xx, an empty body or an unknown code is OpenAI having a bad
+                # moment; erasing the refresh token then would sign the person
+                # out for nothing (errors-and-recovery: "Do not erase credentials
+                # for temporary network or infrastructure failures").
+                if str(tokens.get("error", "")) in _TERMINAL_REFRESH_ERRORS:
+                    self._forget_locally()
+                    raise ChatGptSignedOutError(
+                        "OpenAI no longer accepts this computer's ChatGPT sign-in."
+                    )
+                raise ChatGptUnavailableError(
+                    "OpenAI's sign-in service did not answer. Try again in a moment."
                 )
             new_refresh = str(tokens.get("refresh_token", "") or "")
             if new_refresh and new_refresh != refresh:
-                try:
-                    self._store.set(self._refresh_ref, new_refresh)
-                except Exception:  # noqa: BLE001 - the old token keeps working until it rotates
-                    pass
+                # Rotation spends the old token, so a replacement that is not
+                # saved is a sign-out waiting for the next refresh. Try twice,
+                # then say so rather than carry on as if nothing happened.
+                for attempt in range(2):
+                    try:
+                        self._store.set(self._refresh_ref, new_refresh)
+                        break
+                    except Exception as exc:  # noqa: BLE001 - the store's own failure
+                        if attempt:
+                            raise ChatGptSignInError(
+                                "QUILL could not save the renewed ChatGPT sign-in "
+                                "in Windows Credential Manager."
+                            ) from exc
             self._remember_access(tokens)
             return self._access_token
 
