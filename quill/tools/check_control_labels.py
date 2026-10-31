@@ -53,6 +53,7 @@ from quill.tools.control_label_scan import (
     OFFENDING,
     REPO_ROOT,
     REVIEWED,
+    SPOKEN,
     UNLABELLED,
     ControlSite,
     scan_control_sites,
@@ -178,8 +179,9 @@ def build_snapshot(sites: Iterable[ControlSite], previous: dict[str, object]) ->
         "_about": (
             "GATE-CTLLABEL. On wxMSW a control's accessible name comes from the "
             "wx.StaticText built immediately before it in z-order, never from "
-            "SetName. 'reviewed' maps one exact site to the reason it is fine "
-            "without one. 'grandfathered' is the backlog that existed when the "
+            "SetName; set_spoken_name (quill/ui/spoken_name.py) sets that name "
+            "directly and counts as 'spoken'. 'reviewed' maps one exact site to the "
+            "reason it is fine without one. 'grandfathered' is the backlog that existed when the "
             "gate landed; it may only shrink, and 'high_water_mark' is what "
             "makes that assertable. Regenerate with "
             "'python -m quill.tools.check_control_labels --write'."
@@ -198,7 +200,7 @@ def write_snapshot(snapshot: dict[str, object]) -> None:
 
 def counts(sites: Iterable[ControlSite]) -> dict[str, int]:
     tally = Counter(site.status for site in sites)
-    return {s: tally.get(s, 0) for s in (LABELLED, NAMED_ONLY, UNLABELLED, REVIEWED)}
+    return {s: tally.get(s, 0) for s in (LABELLED, SPOKEN, NAMED_ONLY, UNLABELLED, REVIEWED)}
 
 
 def worst_files(sites: Iterable[ControlSite], limit: int = 10) -> list[tuple[str, int]]:
@@ -211,11 +213,13 @@ def _explain(site: ControlSite) -> str:
     if site.status == NAMED_ONLY:
         return (
             "a name is written for this control and no screen reader will ever "
-            "read it. Add a wx.StaticText built BEFORE the control."
+            "read it. Add a wx.StaticText built BEFORE the control, or pass it "
+            "to quill.ui.spoken_name.set_spoken_name."
         )
     return (
         "no label and no name: this announces as a bare role. Add a "
-        "wx.StaticText built BEFORE the control."
+        "wx.StaticText built BEFORE the control, or pass it to "
+        "quill.ui.spoken_name.set_spoken_name."
     )
 
 
@@ -229,6 +233,7 @@ def _print_scorecard(sites: list[ControlSite], snapshot: dict[str, object]) -> N
     backlog = grandfathered_keys(snapshot)
     print(f"Control labels (GATE-CTLLABEL): {len(sites)} control site(s) scanned.")
     print(f"  labelled (a static text precedes them):   {tally[LABELLED]}")
+    print(f"  spoken (set_spoken_name sets accName):     {tally[SPOKEN]}")
     print(f"  named-only (SetName written, never heard): {tally[NAMED_ONLY]}")
     print(f"  unlabelled (announces as a bare role):     {tally[UNLABELLED]}")
     print(f"  reviewed (classified with a reason):       {tally[REVIEWED]}")
@@ -249,7 +254,7 @@ def main() -> int:
     parser.add_argument(
         "--list",
         dest="list_status",
-        choices=sorted({LABELLED, NAMED_ONLY, UNLABELLED, REVIEWED}),
+        choices=sorted({LABELLED, SPOKEN, NAMED_ONLY, UNLABELLED, REVIEWED}),
         help="list every site with one classification and exit 0",
     )
     parser.add_argument(

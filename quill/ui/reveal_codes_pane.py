@@ -52,6 +52,7 @@ from quill.core.reveal_nav import (
     region_source,
     splice_region,
 )
+from quill.ui.spoken_name import set_spoken_name
 
 
 def _item_label(token: CodeToken) -> str:
@@ -96,6 +97,7 @@ class RevealCodesPane:
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP | wx.TE_PROCESS_ENTER,
         )
         self._flow.SetName("Reveal Codes (flowed)")
+        set_spoken_name(self._flow, "Reveal Codes (flowed)")
         sizer.Add(self._flow, 1, wx.EXPAND | wx.ALL, 2)
 
         self.panel.SetSizer(sizer)

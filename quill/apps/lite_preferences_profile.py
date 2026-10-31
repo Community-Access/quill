@@ -29,6 +29,7 @@ from quill.core.app_features import (
 )
 from quill.ui.app_features_dialog import CUSTOM_PROFILE, SETTING_WORDS
 from quill.ui.dialog_contract import set_accessible_name
+from quill.ui.spoken_name import set_spoken_name
 
 __all__ = ["ProfileRow"]
 
@@ -107,6 +108,7 @@ class ProfileRow:
             size=(_IMPACT_WIDTH, dialog.GetCharHeight() * _IMPACT_LINES),
         )
         set_accessible_name(self.impact, "What this profile does")
+        set_spoken_name(self.impact, "What this profile does")
         self.impact.SetHelpText(
             "What the profile above would change: which parts of the app it "
             "keeps, which it removes, and anything else it sets."

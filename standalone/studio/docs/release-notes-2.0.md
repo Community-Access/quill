@@ -25,6 +25,64 @@ Highlights:
 - **Library window instead of a book-centric home.** The home window stays intentionally quiet; open **View > Library Window...** (Ctrl+Alt+Y) to browse and manage books.
 - **Preferences close is silent.** Leaving Preferences updates the status line but does not speak "Preferences saved".
 
+## Record a demonstration: screen, camera and sound, checked before and after
+
+**Capture > Record a demonstration...** (Ctrl+Alt+Shift+V) records what you are showing and only what you choose to let people hear. It is built for a presenter who cannot see the screen: you set it up from lists and check boxes, hear one summary before you start, and are told afterwards what is really in the file.
+
+- **Any combination.** Two check boxes, Include the screen picture and Include the camera picture, and a list of sound sources. Record the screen, the screen with your camera in a corner, the camera alone, or sound only. Sound-only recordings are saved as M4A, MP3, WAV, FLAC or Opus. A video with no sound gets a silent soundtrack by default, because some websites refuse a video without one.
+- **What to record.** A named window, one display or the whole desktop, at 15, 24, 30 or 60 frames a second, optionally scaled to 1080p or 720p, with or without the mouse pointer, after a spoken countdown.
+- **Your screen reader stays private.** Each program's sound is recorded directly from that program, so a demonstrated browser is recorded without your screen reader. System sound can be recorded with the screen reader left out. Screen reader speech is a separate source that starts left out and asks before it goes in.
+- **Every sound is your choice.** The program you are demonstrating, system sound, any other program, everything on one sound card, your microphone and your screen reader, each in or out with its own level from minus 60 to plus 12 decibels. The microphone starts left out every time. Each source can also be kept as its own WAV file for editing later.
+- **The camera, with face framing.** Put your camera in any corner at the size you choose. Check camera framing (Ctrl+Alt+Shift+C) tells you as you move whether your face is in view and which way to move, using face detection built into Windows that runs on your computer. During a recording Studio can tell you when your face leaves the picture.
+- **Keep awake and Do Not Disturb.** Both are on by default while you record, so the computer does not sleep and no notification slides into the picture or the sound. Both are put back exactly as they were afterwards, even after a crash.
+- **One spoken check before you start.** Check takes a trial picture, records three seconds to see whether the computer keeps up, opens each sound source, and looks at the camera, FFmpeg, the folder, free space, the battery and any waiting Windows Update restart. It says what will be recorded, which sounds are in, which are left out, and every problem, as Stop or Warn. It catches a microphone that Windows privacy settings have silenced.
+- **A quick test.** Record a quick test makes a 5-second to 10-minute rehearsal with exactly these settings, checks it and plays it, then deletes it.
+- **Control from anywhere.** Pause, markers, microphone mute, a spoken status, a status window that never takes focus, an emergency stop and discard, from the Capture menu, the tray icon's menu, or system-wide keys you assign.
+- **Problems are said once and marked.** A window closing, a program or your screen reader quitting, a microphone unplugged, a display change, the camera stopping, or the disk running low are announced once and marked in the recording. A different microphone is never swapped in.
+- **The finished file is checked independently.** After Stop the file is reopened and checked: its streams, length, frame count, clean decoding at the start, middle and end, black stretches, and that each sound source is really there. You hear one sentence, and the result is Verified, Needs review or Failed. A readable report and a JSON report are saved beside the video.
+- **Nothing is lost.** Studio records in short pieces. If Studio or the computer stops, Recover unfinished recordings (Ctrl+Alt+Shift+L) finishes and checks what was recorded.
+- **Captions and a transcript.** The result window makes SRT and VTT captions and a plain transcript on your computer, with the speech recognition you already use. Nothing is sent anywhere.
+
+## The Studio Mixer
+
+**Capture > Studio Mixer...** (Ctrl+Alt+Shift+M) is one window for the sound you hear. The Programs tab lists every program playing sound: mute it with Space, set its volume from 0 to 100 percent, or move it to another sound card, as Windows Settings does, for example a browser to the speakers while your screen reader stays in your headset. The Devices tab sets the default and communications devices, and a microphone's recording level and mute.
+
+## ASIO sound cards
+
+Professional audio interfaces with an ASIO driver can be used as microphones with the lowest delay. Open Studio > Preferences, turn on Use ASIO sound cards, and restart Studio. It is off by default.
+
+## Make a picture with AI
+
+**Capture > New picture with AI...** (Ctrl+Alt+Shift+J) makes a picture from your description with OpenAI or Google Gemini, wide for YouTube, square for a cover, or tall for Shorts. Ask for changes in words; every version is kept. Each picture is then described to you by a separate look from your vision model, so you hear what was actually drawn, including any text exactly as written. Nothing is sent until you approve, and AI Off and Safe Mode stop it.
+
+## A picture and sound as a YouTube video
+
+**Capture > Make a YouTube video from a picture and sound...** (Ctrl+Alt+Shift+Y) turns a recording or any audio file into a video YouTube accepts, with your picture for the whole length. Choose YouTube, square, vertical or the picture's own size, a slow zoom, and a sound wave along the bottom. A recording's markers become YouTube chapters. A text file beside the video holds the title and the description with chapter times, ready to paste into YouTube.
+
+## Ask AI about a video
+
+**Capture > Ask AI questions about a video...** (Ctrl+Alt+Shift+K) asks about the whole video or a stretch you choose. Studio lays out 4 to 16 frames as one picture with each frame's time on it, adds the transcript of that stretch when there are captions, and opens the same conversation window as the Screenshot Inspector. Answers cite the frame times they rely on. Nothing is sent until you approve.
+
+## Broadcast live to Icecast or SHOUTcast
+
+**Capture > Broadcast live...** (Ctrl+Alt+Shift+G) streams a show to your own Icecast or SHOUTcast server.
+
+- **Plain-word quality.** Speech, Talk and music, or Music, or Custom for the format (MP3, AAC, Ogg Vorbis, Ogg Opus or FLAC), bit rate, stereo or mono, and sample rate. Loudness can keep the stream even at talk, music or broadcast level.
+- **You choose what listeners hear.** The microphone, system sound without the screen reader, the screen reader's speech, and every program, each in or out with its own level, separate from any recording. Everything starts left out. Studio's own sounds never reach listeners.
+- **Show details.** Title, description, genre, website, public listing, and a Now playing title you can change while live.
+- **Safe controls.** Mute everything public (Ctrl+Alt+Shift+Z) gives listeners silence at once without disconnecting; Stop broadcasting is Ctrl+Alt+Shift+E. Both can be system-wide keys.
+- **Check and test first.** Check says where the stream goes, what is in it, and every problem, including an upload speed too slow for the quality. Test the connection checks the address and password with two seconds of silence, privately.
+- **Keeps going.** A dropped connection is announced once and retried automatically. An optional FLAC copy of the show is saved on your computer throughout; you decide each time.
+- **Your password stays private.** It is kept in Windows Credential Manager, never in settings or logs.
+
+## Lessons from Quick Describe, with thanks to Kelly Ford
+
+Kelly Ford's Quick Describe, a free, open-source app that describes the screen with Windows' own AI, shares what it learned the hard way, and Studio took several of those lessons. The Recording status window can now stay visible to magnifiers and screen sharing. Ask AI about a video draws fewer frames bigger, labels their times clearly, and tells the AI to say when text is too small rather than guess. A face detector that stops answering is replaced, and gives up out loud rather than going quiet. "Automatic screenshot AI is paused" is said once, not with every screenshot. Diagnostic bundles leave out your user name. Thank you, Kelly, for the ideas and for all you give to the community.
+
+## Not yet verified
+
+These features are built and tested with real FFmpeg runs and with stand-in servers and services, but the following have not yet been done: recordings with a real microphone and camera, face detection with a person in front of the camera, JAWS, NVDA, Narrator and braille passes, a real Icecast or SHOUTcast server, and a real AI picture request. A window recording records the window's area of the screen, so a covering window is recorded and a moved window is not followed.
+
 ## Chapters for any recording
 
 **Studio > Find Chapters in a Recording...** (Ctrl+Shift+R) picks any MP3, M4A or M4B -- a lecture or a meeting as much as a book -- and opens the Chapter Workbench on it with **Propose chapters from silences** already started. Proposals are titled "Proposed chapter 1, 2...", so a guess is never mistaken for a real title. If the recording has chapters of its own you are asked whether to keep them and add only new boundaries (the default) or replace them; nothing is replaced silently. Press the button again (it reads **Stop proposing chapters**) to stop a scan.
@@ -140,4 +198,5 @@ The drawing was made for the size that actually matters. At 16 by 16 pixels -- t
 - **Not released yet.** This version is built but unpublished, and Audio Studio is not offered in the cross-app menu.
 - **Releases are not code-signed.** Windows SmartScreen warns on first run; choose "More info" then "Run anyway".
 - **Windows-first; macOS supported.** SAPI 5 and DECtalk are Windows engines, and stored secrets use the Windows Credential Manager; elsewhere those fields work per-session but are not persisted.
+- **Recording, broadcasting and AI pictures are not yet verified live.** See "Not yet verified" above.
 - **Add-ons are not available here yet.** Quillins - QUILL's small, sandboxed add-ons - run in QUILL, Quill Radio, and QUILL Cast. Audio Studio does not yet offer them.

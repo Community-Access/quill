@@ -395,6 +395,8 @@ class WritingAssistantDialog:
     ) -> None:
         import wx
 
+        from quill.ui.spoken_name import set_spoken_name
+
         self._wx = wx
         self._registry = command_registry
         self._open_python_tool = open_python_tool
@@ -480,6 +482,7 @@ class WritingAssistantDialog:
 
         self.results = wx.ListBox(self.dialog)
         set_accessible_name(self.results, "Matching actions")
+        set_spoken_name(self.results, "Matching actions")
         root.Add(self.results, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         self.details = wx.TextCtrl(
@@ -488,6 +491,7 @@ class WritingAssistantDialog:
             size=(-1, 120),
         )
         set_accessible_name(self.details, "Action details")
+        set_spoken_name(self.details, "Action details")
         root.Add(self.details, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)
@@ -643,6 +647,8 @@ class SearchableModelPickerDialog:
     def __init__(self, parent: object, models: list[str]) -> None:
         import wx
 
+        from quill.ui.spoken_name import set_spoken_name
+
         self._wx = wx
         self.dialog = wx.Dialog(
             parent,
@@ -661,6 +667,7 @@ class SearchableModelPickerDialog:
 
         self.listbox = wx.ListBox(self.dialog, choices=self._filtered_models)
         set_accessible_name(self.listbox, "Available models")
+        set_spoken_name(self.listbox, "Available models")
         root.Add(self.listbox, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         buttons = self.dialog.CreateButtonSizer(wx.OK | wx.CANCEL)

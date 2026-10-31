@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+<<<<<<< HEAD
 ### Quill Radio: Victor Stream XSPF import and more reading services (2026-10-29)
 
 - XSPF import (`quill/core/radio/xspf.py`) recovers each track of a malformed
@@ -13,6 +14,14 @@
   #1691, each stream checked live on 2026-10-29, and the entry named WUFT is
   renamed Minnesota Radio Talking Book, which is what that stream carries.
   (#1691)
+=======
+### QUILL Studio: record, mix, broadcast and make videos (2026-10-30)
+
+- Add demonstration recording to the shared Studio implementation: the screen, a camera and any chosen sounds, in any combination, with a spoken check before you start, keep awake and Do Not Disturb, and an independent check of the finished file. Your screen reader can be kept out of the recording.
+- Add the Studio Mixer (each program's volume, mute and sound card, plus default devices and recording levels), optional ASIO inputs, a YouTube video from a picture and sound, Ask AI about a video, New picture with AI (OpenAI or Google Gemini), and live broadcasting to Icecast or SHOUTcast with its own mix. The [Studio changelog](standalone/studio/docs/CHANGELOG.md) lists every feature, what is still pending and what has not been verified live.
+- Adopt lessons from Kelly Ford's Quick Describe, with thanks to Kelly for the ideas and for giving so much to the community: the Recording status window can stay visible to magnifiers, Ask AI about a video draws fewer frames bigger and asks the AI not to guess at small text, a stalled face detector is replaced, a paused automatic AI is said once, diagnostic bundles leave out the user name as a whole word, and a new test catches text garbled by a wrong encoding.
+- Shared changes: Windows process loopback can now leave out a program as well as record one, and can record a whole sound card; captions can be saved beside any recording; the shared sound manager can be muted. Existing behavior is unchanged.
+>>>>>>> origin/main
 
 ### Windows runtime, media shutdown and licensing (2026-10-27)
 

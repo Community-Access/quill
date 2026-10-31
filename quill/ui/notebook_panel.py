@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from quill.ui.spoken_name import set_spoken_name
+
 
 class NotebookEntriesPanel:
     """Docked panel showing entries for the active notebook.
@@ -27,6 +29,7 @@ class NotebookEntriesPanel:
         self._filter.SetHint("Filter entries...")
         self._listbox = wx.ListBox(self.panel, style=wx.LB_SINGLE)
         self._listbox.SetName("Notebook entries list")
+        set_spoken_name(self._listbox, "Notebook entries")
 
         sizer.Add(self._name_label, 0, wx.EXPAND | wx.ALL, 4)
         sizer.Add(self._goal_label, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 4)
