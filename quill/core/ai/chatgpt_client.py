@@ -121,15 +121,19 @@ def _model_rows(payload: dict[str, Any]) -> list[tuple[str, str]]:
 def list_models(token: str, *, opener: Opener | None = None) -> list[ChatGptModel]:
     """Every model the account can use for text, best first. Raises on failure.
 
-    Filtered and ordered by :mod:`quill.core.ai.own_key_models`, so a ChatGPT
-    plan and an own key offer the same list in the same order for the same
-    account, and neither offers a model that cannot answer a passage.
+    Filtered by :mod:`quill.core.ai.own_key_models` so no model that cannot
+    answer a passage is offered. The plan's own list keeps the order the server
+    sends, which is OpenAI's recommendation for this account
+    (models-and-inference: "preserves the server's ordering"); only the
+    ordinary API's unordered list is ranked the way an own key's is.
     """
-    from quill.core.ai.own_key_models import ordered
+    from quill.core.ai.own_key_models import ordered, usable
 
-    rows = _model_rows(get_json(MODELS_URL, token=token, opener=opener))
+    payload = get_json(MODELS_URL, token=token, opener=opener)
+    rows = _model_rows(payload)
     labels = dict(rows)
-    slugs = ordered(slug for slug, _ in rows)
+    names = (slug for slug, _ in rows)
+    slugs = usable(names) if isinstance(payload.get("models"), list) else ordered(names)
     return [ChatGptModel(slug, labels.get(slug, slug)) for slug in slugs]
 
 

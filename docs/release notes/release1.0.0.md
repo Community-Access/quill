@@ -2,6 +2,15 @@
 
 *Version 1.0.0. From Community Access. Free.*
 
+**Unreleased correction:** The shared Radio code retires the built-in SomaFM
+source in response to its published third-party-client terms; known catalogue
+entries and direct playback and recording paths are filtered or blocked.
+Indirect paths, existing user data and earlier packages still need review.
+QUILL no longer downloads or distributes DECtalk while its redistribution
+terms are unclear, though a separately installed copy remains supported.
+Windows OCR and Media projections move to PyWinRT 4.0.3 and Windows SDK
+10.0.28000.2705. These notes do not imply that a new release is published.
+
 Welcome to QUILL. It is a writing, reading and document suite for people who
 work by ear and by touch: blind and print-disabled readers, writers, students,
 proofreaders and braille transcribers, and anyone who uses a computer from the

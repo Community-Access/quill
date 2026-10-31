@@ -2,6 +2,19 @@
 
 Version 1.0.0 -- status: released September 28, 2026 (first public release)
 
+**Proposed Studio integration:** The consolidated Studio planning PRD calls
+for a capability-probed, accessible project-to-Converter round trip and
+reviewable transcription. These are future requirements, not claims about the
+released Converter. Conversion depends on available decoders, encoders,
+containers and valid, unprotected inputs; no converter can promise every file.
+Transcription is not a feature of the standalone Converter.
+
+**Distribution licensing:** Installed Converter editions use the QuillVille
+Runtime, which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through
+GLOW, although Converter does not expose GLOW. Release-specific source and
+legal review are required before the next public release; inspect portable
+builds separately. See the PyMuPDF distribution review and Licences and Notices.
+
 ## 1. Product statement
 
 Quill Converter is the Universal Converter shipped as its own small Windows app,

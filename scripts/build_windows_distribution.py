@@ -105,11 +105,6 @@ EMBEDDED_PYTHON_URL = (
 # the build will fail loudly rather than ship an unverified runtime.
 EMBEDDED_PYTHON_SHA256 = "a93abe456ab01bd96d7a085b3cdb6566b3063f4241360d114142fbdb07f0a310"
 
-DECTALK_RELEASE_ZIP_URL = (
-    "https://github.com/dectalk/dectalk/releases/download/2023-10-30/vs2022.zip"
-)
-DECTALK_RELEASE_ZIP_SHA256 = "4a778056c109b37f95ade4b3d3e308b9396b22a4b0629f9756ec0e5051b9636d"
-
 # Pinned Pandoc Windows release. _download_and_stage_pandoc() tries the
 # latest GitHub release first and falls back to these if the API is unreachable.
 PANDOC_PINNED_VERSION = "3.10"
@@ -339,12 +334,6 @@ def main() -> int:
         help="Optional local Pandoc directory to bundle under portable\\tools\\pandoc.",
     )
     parser.add_argument(
-        "--dectalk-dir",
-        type=Path,
-        default=None,
-        help="Optional local DECtalk runtime directory to bundle under portable\\tools\\speech\\dectalk.",
-    )
-    parser.add_argument(
         "--espeak-dir",
         type=Path,
         default=None,
@@ -404,7 +393,7 @@ def main() -> int:
         action="store_true",
         help=(
             "Build a fully self-contained 'Offline Edition' installer: any optional "
-            "component staged via --pandoc-dir/--dectalk-dir/--espeak-dir/"
+            "component staged via --pandoc-dir/--espeak-dir/"
             "--whisper-dir/--kokoro-dir/--braille-pack-dir is INCLUDED in the "
             "compiled .exe instead of being stripped by the default [Files] "
             "Excludes. Without this flag (the default, smaller/regular installer), "
@@ -447,7 +436,6 @@ def main() -> int:
             tool_id: path
             for tool_id, path in {
                 "pandoc": args.pandoc_dir,
-                "speech/dectalk": args.dectalk_dir,
                 "speech/espeak-ng": args.espeak_dir,
                 "speech/whispercpp": args.whisper_dir,
             }.items()
@@ -529,24 +517,7 @@ def build_windows_distribution(
     staged_docs = _stage_distribution_docs(portable_dir, resolved_source_root)
     _stage_dictation_models(portable_dir, resolved_source_root)
     effective_bundled_tools = dict(bundled_tool_dirs or {})
-    # Pandoc, Piper, Node.js, and the braille pack are NO LONGER bundled, and the
-    # installer no longer ships or prompts for any of them (footprint unbundle,
-    # PRD 10.2.x -- completing the 10.2.4 sweep that already dropped whisper.cpp,
-    # Kokoro, DECtalk, and eSpeak-NG). Fresh installs fetch each on demand from
-    # its verified source: Pandoc via quill/core/pandoc_install.py on the first
-    # conversion, Piper via the Voice Picker (quill.core.read_aloud /
-    # download_piper_exe), Node.js via quill/core/node_install.py, and the braille
-    # pack via download_braille_pack (Help > Download Optional Components). A dev
-    # build may still stage a local Pandoc/DECtalk/eSpeak/whisper copy with the
-    # matching --*-dir flag, but that only populates the portable bundle -- the
-    # installer ships none of them.
-    # whisper.cpp, DECtalk, and eSpeak-NG are NO LONGER bundled by default
-    # (PRD 10.2.4 unbundle): fresh installs download them on demand from QUILL's
-    # pinned, SHA-256-verified "assets-v1" release, and offline speech offers the
-    # download at point of use. SAPI 5 remains the always-present offline floor.
-    # A build may still stage a local copy by passing --whisper-dir / --dectalk-dir
-    # / --espeak-dir (populates effective_bundled_tools above, staged below).
-    # Upgraders keep their existing copies ([InstallDelete] does not touch them).
+    # Optional tools may be staged explicitly when their IDs are supported.
     bundled_tools = _stage_bundled_tools(portable_dir, effective_bundled_tools)
     # Kokoro is NO LONGER bundled by default (PRD 10.2.4 unbundle): fresh installs
     # download it on demand from QUILL's pinned, SHA-256-verified release asset, and
@@ -1358,10 +1329,11 @@ def build_inno_setup_script(
     # excluded regardless of --bundle-offline (a Node-based Quillin still needs a
     # separately installed Node.js either way; see quill/core/node_install.py).
     # The build-artifact/dev-only entries are excluded
-    # either way. The remaining five (Pandoc, DECtalk, eSpeak-NG, whisper.cpp's binary,
-    # and the braille pack) are only excluded for the regular/smaller installer;
+    # either way, including DECtalk, whose redistribution rights are unconfirmed.
+    # The remaining four (Pandoc, eSpeak-NG, whisper.cpp's binary and the braille
+    # pack) are only excluded for the regular/smaller installer;
     # --bundle-offline lifts the exclusion so a locally staged copy (via --pandoc-dir/
-    # --dectalk-dir/--espeak-dir/--whisper-dir/--braille-pack-dir) ships inside the
+    # --espeak-dir/--whisper-dir/--braille-pack-dir) ships inside the
     # compiled .exe. Kokoro's model files (kokoro-models\*) are handled the same way
     # but auto-stage under --bundle-offline with no flag required (see the
     # kokoro_dir/_stage_kokoro call site above), as does whisper.cpp's default GGML
@@ -1375,9 +1347,9 @@ def build_inno_setup_script(
     # Edition. (tools\speech\piper\* stays excluded: that path is only ever a
     # legacy locally-staged binary; the offline bundle lives under
     # speech-models-bundled\piper and installs to user data on demand.)
-    _always_excluded = "docs\\QUILL-PRD.md,tools\\nodejs\\*,tools\\speech\\piper\\*,_tool-download\\*,_speech-download\\*,*\\__pycache__\\*"
+    _always_excluded = "docs\\QUILL-PRD.md,tools\\nodejs\\*,tools\\speech\\piper\\*,tools\\speech\\dectalk\\*,_tool-download\\*,_speech-download\\*,*\\__pycache__\\*"
     _optional_component_excludes = (
-        "tools\\pandoc\\*,tools\\speech\\dectalk\\*,tools\\speech\\espeak-ng\\*,"
+        "tools\\pandoc\\*,tools\\speech\\espeak-ng\\*,"
         "tools\\speech\\whispercpp\\*,vendor\\braille-pack\\*,kokoro-models\\*,"
         # Not speech-models-bundled\\* wholesale any more: the Vosk model
         # inside it ships in every build (chapters have to work on first
@@ -1398,7 +1370,7 @@ def build_inno_setup_script(
     if bundle_offline_components:
         lines += [
             "; Offline Edition: every optional component (Pandoc, Piper, whisper.cpp,",
-            "; Kokoro, DECtalk, eSpeak-NG, the braille pack) staged via --*-dir flags",
+            "; Kokoro, eSpeak-NG, the braille pack) staged via --*-dir flags",
             "; ships inside this installer, so no internet connection is ever needed",
             "; after install. [InstallDelete] never touches an upgrader's existing",
             "; {app} copies.",
@@ -1407,7 +1379,7 @@ def build_inno_setup_script(
     else:
         lines += [
             "; Only Quill's core bundle is installed. Every optional component --",
-            "; Pandoc, Piper, Node.js, the braille pack, whisper.cpp, Kokoro, DECtalk,",
+            "; Pandoc, Piper, Node.js, the braille pack, whisper.cpp, Kokoro,",
             "; and eSpeak-NG -- is fetched on demand to %APPDATA%\\Quill (verified,",
             "; pinned release assets or official builds), which the app's resolvers",
             "; prefer. The Excludes above keep any locally staged copy (from a --*-dir",
@@ -2661,6 +2633,10 @@ def _stage_braille_pack(
 def _stage_bundled_tools(portable_dir: Path, bundled_tool_dirs: dict[str, Path]) -> list[str]:
     if not bundled_tool_dirs:
         return []
+    supported_tools = frozenset({"pandoc", "speech/espeak-ng", "speech/piper", "speech/whispercpp"})
+    unsupported = sorted(set(bundled_tool_dirs) - supported_tools)
+    if unsupported:
+        raise RuntimeError(f"Unsupported bundled tool IDs: {', '.join(unsupported)}")
     tools_root = portable_dir / "tools"
     tools_root.mkdir(parents=True, exist_ok=True)
     bundled: list[str] = []
@@ -2752,25 +2728,6 @@ def _stage_offline_extras(
             raise RuntimeError("braille pack staging reported nothing")
 
     _try("braille", _do_braille)
-
-    # DECtalk -> tools/speech/dectalk (resolver: read_aloud.discover_dectalk_executable,
-    # case-insensitive dectalk.dll search under the root). A local source tree is
-    # required -- DECtalk is licensed for redistribution but has no pinned public
-    # download, so the build stages it from source_root/tools/speech/dectalk (the
-    # same path --dectalk-dir stages) rather than fetching it.
-    def _do_dectalk() -> None:
-        dest = tools / "speech" / "dectalk"
-        if any(dest.rglob("dectalk.dll")) or any(dest.rglob("DECtalk.dll")):
-            return
-        source = source_root / "tools" / "speech" / "dectalk"
-        if not source.is_dir():
-            raise RuntimeError(
-                f"no DECtalk source at {source}; pass --dectalk-dir or place the "
-                "DECtalk .dll tree at tools/speech/dectalk"
-            )
-        _stage_bundled_tools(portable_dir, {"speech/dectalk": source})
-
-    _try("dectalk", _do_dectalk)
 
     # Piper -> tools/speech/piper (resolver: read_aloud.discover_piper_executable).
     def _do_piper() -> None:
@@ -3213,7 +3170,7 @@ def _speech_asset_manifest(
             "bundled": f"speech/{dir_name}" in bundled_tools,
             "path": str(engine_dir) if engine_dir.exists() else "",
             "exists": engine_dir.exists(),
-            "downloadable": True,
+            "downloadable": engine != "dectalk",
         }
     # Kokoro lives at the bundle root (kokoro-models/), not under tools/speech,
     # because that is where the runtime resolves a bundled copy via QUILL_APP_ROOT.

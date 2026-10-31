@@ -102,8 +102,8 @@ def _dialog() -> Any:
 def test_full_first_page_enables_more_and_flags_available() -> None:
     dialog = _dialog()
     radio = [_station(f"r{i}") for i in range(_SEARCH_LIMIT)]
-    soma = [_station("SomaFM Groove")]
-    dialog._on_search_done((radio, soma), None)
+    extras = [_station("TuneIn News")]
+    dialog._on_search_done((radio, extras), None)
     assert dialog._search_more_available is True
     assert dialog._more_btn.enabled is True
     assert len(dialog._search_results) == _SEARCH_LIMIT + 1
@@ -119,18 +119,18 @@ def test_short_first_page_disables_more() -> None:
     assert dialog._announced[0] == "1 station found."
 
 
-def test_more_appends_next_page_after_radiobrowser_before_soma() -> None:
+def test_more_appends_next_page_before_blended_results() -> None:
     dialog = _dialog()
     radio = [_station(f"r{i}") for i in range(_SEARCH_LIMIT)]
-    soma = [_station("SomaFM Groove")]
-    dialog._on_search_done((radio, soma), None)
+    extras = [_station("TuneIn News")]
+    dialog._on_search_done((radio, extras), None)
     first_new = len(dialog._search_results)
 
     page2 = [_station(f"r{i}") for i in range(_SEARCH_LIMIT, _SEARCH_LIMIT + 40)]
     dialog._on_more_done(page2, None)
 
-    # New RadioBrowser rows join the RadioBrowser half; SomaFM stays at the end.
-    assert dialog._search_results[-1].name == "SomaFM Groove"
+    # New RadioBrowser rows join that half; blended results stay at the end.
+    assert dialog._search_results[-1].name == "TuneIn News"
     assert dialog._search_rb[-1].name == f"r{_SEARCH_LIMIT + 39}"
     assert len(dialog._search_results) == _SEARCH_LIMIT + 40 + 1
     # A 40-row page is short of the cap, so there is no further page.

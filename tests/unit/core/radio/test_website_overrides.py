@@ -29,11 +29,11 @@ def test_normalize_website_validates_http_addresses(value: str, expected: str | 
 
 def test_local_override_wins_without_changing_the_provider_station() -> None:
     station = SimpleNamespace(
-        source="SomaFM",
+        source="TuneIn",
         station_uuid="",
         name="Groove Salad",
         stream_url="https://stream.example.org/groovesalad",
-        homepage="https://somafm.com/groovesalad",
+        homepage="https://station.example.org/about",
     )
     key = website_overrides.station_key(station)
     assert key
@@ -41,7 +41,7 @@ def test_local_override_wins_without_changing_the_provider_station() -> None:
         website_overrides.website_for(station, {key: "https://example.org/my-station"})
         == "https://example.org/my-station"
     )
-    assert station.homepage == "https://somafm.com/groovesalad"
+    assert station.homepage == "https://station.example.org/about"
 
 
 def test_stations_sharing_a_stream_do_not_share_overrides_when_names_differ() -> None:
@@ -62,11 +62,11 @@ def test_stations_sharing_a_stream_do_not_share_overrides_when_names_differ() ->
 
 def test_an_empty_override_deliberately_clears_a_provider_website() -> None:
     station = SimpleNamespace(
-        source="SomaFM",
+        source="TuneIn",
         station_uuid="",
         name="Groove Salad",
         stream_url="https://stream.example.org/groovesalad",
-        homepage="https://somafm.com/groovesalad",
+        homepage="https://station.example.org/about",
     )
     assert (
         website_overrides.website_for(station, {website_overrides.station_key(station): ""}) == ""

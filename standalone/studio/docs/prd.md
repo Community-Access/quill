@@ -2,6 +2,19 @@
 
 Version 2.0.0 (QUILL Studio; see CHANGELOG.md)
 
+Unreleased runtime update: Windows OCR and Media use the shared PyWinRT 4.0.3
+runtime and Windows SDK 10.0.28000.2705 projections; Windows Media releases
+device references and event handlers on shutdown. DECtalk is not distributed
+or downloaded by QUILL and must be installed separately. Broader production,
+Converter round-trip and AI transcription work is proposed in the consolidated
+Studio planning PRD, not represented by this document as delivered.
+
+**Distribution licensing:** Installed Studio editions use the QuillVille
+Runtime, which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through
+GLOW, although Studio does not expose GLOW. Release-specific source and legal
+review are required before the next public release; inspect portable builds
+separately. See the PyMuPDF distribution review and Licences and Notices.
+
 ## 1. Product overview and mission
 
 QUILL Studio is a standalone Windows desktop application for audiobook
@@ -353,8 +366,9 @@ requirement, not a layer.
   Piper voices download from the pinned voice catalog (offline bundle first
   when present, then the catalog URL, with .part temp files and atomic
   replace, cancelable progress, and cleanup on failure); Kokoro models, engine
-  executables (DECtalk, Piper, eSpeak), ffmpeg, and other optional components
-  install through the shared component downloader into the shared data store.
+  executables (Piper, eSpeak), ffmpeg, and other optional components install
+  through the shared component downloader into the shared data store. DECtalk
+  is supported only when installed separately and is not distributed by QUILL.
 - AS-49. Voice preview must always try to make sound: play the bundled
   pre-recorded sample when one ships; otherwise, if the engine is installed,
   synthesize the standard preview phrase live in the background; otherwise say
@@ -819,7 +833,7 @@ open (`docs/design/quill-studio-capture-milestone.md`).
   - Portable (`QUILL-Audio-Studio-Portable-Lean-<version>.zip`, roughly
     675 MB): fully self-contained, runs from a USB stick with no installation
     and no internet, bundling a genuine, unmodified copy of Python plus the
-    offline speech and text-to-speech engines (whisper.cpp, DECtalk, eSpeak-NG,
+    offline speech and text-to-speech engines (whisper.cpp, eSpeak-NG,
     Piper, and neural Kokoro).
   The thin `-Lite` installer and the runtime-less Companion zip are retired.
 - P-12. Every QuillVille Runtime download -- whether triggered by an installer

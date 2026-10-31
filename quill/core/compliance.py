@@ -38,7 +38,7 @@ _DEPENDENCY_METADATA_OVERRIDES: dict[str, tuple[str, str]] = {
     "elevenlabs": ("MIT", "https://github.com/elevenlabs/elevenlabs-python"),
     "hatchling": ("MIT", "https://github.com/pypa/hatch"),
     "accessible_output2": ("MIT", "https://github.com/accessibleapps/accessible_output2"),
-    "html_to_text": ("MIT", "https://github.com/accessibleapps/html_to_text"),
+    "html_to_text": ("Apache-2.0", "https://github.com/emludei/html_to_text"),
     "libloader": ("MIT", "https://github.com/accessibleapps/libloader"),
     "keynote-parser": ("MIT", "https://pypi.org/project/keynote-parser/"),
     "llama-cpp-python": ("MIT", "https://github.com/abetlen/llama-cpp-python"),
@@ -65,8 +65,8 @@ _DEPENDENCY_USAGE_NOTES: dict[str, str] = {
     "elevenlabs": "Optional premium cloud TTS (audio export) via the ElevenLabs SDK.",
     "hatchling": "Build backend used for packaging metadata.",
     "html_to_text": (
-        "Converts HTML from clipboard pastes to clean plain text"
-        " while preserving document structure (AccessibleApps, MIT)."
+        "The PyPI package is emludei's Apache-2.0 project; its API differs "
+        "from the AccessibleApps converter expected by the clipboard cleaner."
     ),
     "keynote-parser": "Apple Keynote parsing for import workflows.",
     "llama-cpp-python": "Python bridge for on-device llama.cpp inference.",

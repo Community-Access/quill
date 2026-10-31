@@ -2,8 +2,8 @@
 
 Drives the new category/genre logic against fakes (the dialog needs a live
 wx.App to fully construct), verifying the routing and genre-picker population
-headlessly. The source catalogs themselves (SomaFM, NFB, Community M3U) are
-unit-tested in their own core modules.
+headlessly. The source catalogs themselves (NFB, Community M3U) are unit-tested
+in their own core modules.
 """
 
 from __future__ import annotations
@@ -15,7 +15,6 @@ from quill.ui.radio.station_browser_dialog import (
     _CATEGORIES,
     _M3U_GENRES,
     _POPULAR,
-    _SOMAFM,
     BROWSE_MENU_CATEGORIES,
     StationBrowserDialog,
 )
@@ -29,7 +28,8 @@ def test_browse_menu_categories_are_real_browsable_sources() -> None:
         assert category in _CATEGORIES, category
     assert "Favorites" not in BROWSE_MENU_CATEGORIES
     assert "Search Results" not in BROWSE_MENU_CATEGORIES
-    assert _POPULAR in BROWSE_MENU_CATEGORIES and _SOMAFM in BROWSE_MENU_CATEGORIES
+    assert _POPULAR in BROWSE_MENU_CATEGORIES
+    assert "SomaFM" not in BROWSE_MENU_CATEGORIES
 
 
 class _FakeChoice:
@@ -79,17 +79,15 @@ def _dialog() -> Any:
     assert d._genre_ctrl.enabled is False  # genre picker only for Music Genres
 
 
-def test_popular_and_somafm_categories_browse_async() -> None:
-    # Both fetch off-thread via _browse_async (no query); stub it to capture.
-    for category, needle in ((_POPULAR, "popular"), (_SOMAFM, "SomaFM")):
-        d = _dialog()
-        captured: dict = {}
-        d._browse_async = lambda fetch, *, loading, done, error, _c=captured: _c.update(
-            loading=loading, error=error
-        )
-        d._show_category(category)
-        assert needle.lower() in (captured["loading"] + captured["error"]).lower(), category
-        assert d._genre_ctrl.enabled is False  # genre picker only for Music Genres
+def test_popular_stations_browse_async() -> None:
+    d = _dialog()
+    captured: dict = {}
+    d._browse_async = lambda fetch, *, loading, done, error: captured.update(
+        loading=loading, error=error
+    )
+    d._show_category(_POPULAR)
+    assert "popular" in (captured["loading"] + captured["error"]).lower()
+    assert d._genre_ctrl.enabled is False  # genre picker only for Music Genres
 
 
 def test_apply_genres_m3u_populates_and_credits_junguler() -> None:

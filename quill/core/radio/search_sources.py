@@ -1,7 +1,7 @@
 """Which directories Find Stations searches, and which the listener wants.
 
 One search fans out across a lot of places -- RadioBrowser, TuneIn, iHeart,
-SomaFM, NOAA Weather Radio, Radio Reading Services, Spotify, YouTube. That
+NOAA Weather Radio, Radio Reading Services, Spotify, YouTube. That
 breadth is the point for someone hunting a station, and it is the problem for
 someone who already knows what they want: a listener who only ever wants their
 local NPR affiliate does not want eight YouTube videos first, and a listener
@@ -59,7 +59,6 @@ SEARCH_SOURCES: tuple[SearchSource, ...] = (
     ),
     SearchSource("tunein", "TuneIn", "TuneIn's station directory."),
     SearchSource("iheart", "iHeart", "iHeartRadio's stations."),
-    SearchSource("somafm", "SomaFM", "SomaFM's listener-supported channels."),
     SearchSource(
         "shoutcast",
         "SHOUTcast",

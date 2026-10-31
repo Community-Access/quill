@@ -21,7 +21,11 @@ from quill.core.ai.chatgpt_account import (
     save_state,
     slug_for,
 )
-from quill.core.ai.chatgpt_errors import ChatGptSignedOutError, ChatGptSignInError
+from quill.core.ai.chatgpt_errors import (
+    ChatGptSignedOutError,
+    ChatGptSignInError,
+    ChatGptUnavailableError,
+)
 from quill.core.secrets import SecretsManager
 
 
@@ -316,6 +320,55 @@ def test_a_rejected_refresh_forgets_the_sign_in_and_says_so(harness) -> None:
     assert backend.store == {}
     # The registration is kept so the next sign-in does not make a second "QUILL Lite".
     assert account.state.client_id == "client-issued"
+
+
+@pytest.mark.parametrize(
+    "answer", [{}, {"error": "server_error"}, {"error": "temporarily_unavailable"}]
+)
+def test_a_temporary_refresh_failure_keeps_the_sign_in(harness, answer) -> None:
+    # A 5xx, an empty body or an unknown code is OpenAI having a bad moment;
+    # signing the person out for it would cost them a browser round trip.
+    account, backend, _posted, _opened, now = harness
+    account.sign_in()
+    account._poster = lambda _url, _fields: dict(answer)
+    now["t"] += 3600
+    with pytest.raises(ChatGptUnavailableError):
+        account.access_token()
+    assert account.signed_in
+    assert "refresh-1" in backend.store.values()
+
+
+@pytest.mark.parametrize("code", ["invalid_grant", "refresh_token_reused", "refresh_token_expired"])
+def test_a_dead_refresh_token_is_forgotten(harness, code) -> None:
+    account, backend, _posted, _opened, now = harness
+    account.sign_in()
+    account._poster = lambda _url, _fields: {"error": code}
+    now["t"] += 3600
+    with pytest.raises(ChatGptSignedOutError):
+        account.access_token()
+    assert backend.store == {}
+
+
+def test_a_rotated_refresh_token_that_cannot_be_saved_is_said(harness, monkeypatch) -> None:
+    # Rotation spends the old token, so failing quietly would only move the
+    # sign-out to the next refresh, where nobody could say why.
+    account, _backend, _posted, _opened, now = harness
+    account.sign_in()
+    calls = []
+
+    def refuse(*_args, **_kwargs):
+        calls.append(1)
+        raise OSError("credential store is locked")
+
+    monkeypatch.setattr(account._store, "set", refuse)
+    now["t"] += 3600
+    with pytest.raises(ChatGptSignInError):
+        account.access_token()
+    assert len(calls) == 2
+
+
+def test_the_usage_page_is_the_documented_address() -> None:
+    assert account_mod.USAGE_URL == "https://chatgpt.com/settings/usage"
 
 
 def test_forget_is_local_only_and_keeps_the_preferences(harness) -> None:

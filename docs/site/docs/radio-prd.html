@@ -247,6 +247,22 @@ Requirements</h1>
 <p>Version 3.2.0 (build 4). Status, 2026-10-17: in beta for testers, not
 yet published; the last published version is 3.0.4. Everything in the
 changelog’s Unreleased section is built and documented.</p>
+<p><strong>Current-source correction:</strong> The shared Radio
+implementation retires the built-in SomaFM source in response to its
+published third-party-client terms. Known catalogue entries and direct
+playback and recording paths are filtered or blocked; indirect paths,
+existing user data and previously published packages remain under
+review. Older SomaFM references below describe historical design or
+releases, not a current supported source. This work has not been
+published as a new release. The shared Windows Media dependency moves to
+PyWinRT 4.0.3 and Windows SDK 10.0.28000.2705 projections, with WinRT
+device objects and player event handlers released at shutdown.</p>
+<p><strong>Distribution licensing:</strong> Installed Radio editions use
+the QuillVille Runtime, which currently carries PyMuPDF 1.28.2 under
+AGPL-3.0 through GLOW, although Radio does not expose GLOW.
+Release-specific source and legal review are required before the next
+public release; inspect portable builds separately. See the PyMuPDF
+distribution review and Licences and Notices.</p>
 <h2 id="1-product-statement">1. Product statement</h2>
 <p>Quill Radio is QUILL’s internet radio, shipped as its own small
 Windows app for people who want the radio on without loading a full
@@ -280,10 +296,11 @@ from QUILL’s keymap so nothing collides with editor shortcuts.</li>
 (all reused from upstream; all shipped in 1.0)</h2>
 <p><strong>Listening</strong></p>
 <ul>
-<li>Station browser over four blended directories – RadioBrowser,
-SomaFM, iHeart, TuneIn – with a Source facet, genre/country dropdown
-filters, test-play, and favorite; bundled ACB Media directory; custom
-stream URLs; website stream finder with a Test/Stop Test toggle.</li>
+<li>Station browser over blended directories including RadioBrowser,
+iHeart and TuneIn, with a Source facet, genre/country dropdown filters,
+test-play, and favorite; bundled ACB Media directory; custom stream
+URLs; website stream finder with a Test/Stop Test toggle. SomaFM is
+retired as noted above.</li>
 <li>iHeart and TuneIn directory sources + Unified Find Stations
 (upstream <code>core/radio/iheart.py</code>,
 <code>core/radio/tunein.py</code>,

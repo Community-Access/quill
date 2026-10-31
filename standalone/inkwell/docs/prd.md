@@ -2,6 +2,12 @@
 
 Version 1.0.0. Status: implemented.
 
+**Distribution licensing:** Installed Inkwell editions use the QuillVille
+Runtime, which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through
+GLOW, although Inkwell does not expose GLOW. Release-specific source and legal
+review are required before the next public release; inspect portable builds
+separately. See the PyMuPDF distribution review and Licences and Notices.
+
 ## 0. The application icon
 
 **Resolved 2026-08-13.** Quill Inkwell has its own icon: a nib dipped into an

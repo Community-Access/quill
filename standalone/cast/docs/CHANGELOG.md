@@ -2,6 +2,15 @@
 
 All notable changes to QUILL Cast are documented here. QUILL Cast 2.0 is the first release most people will meet, so its release notes (`docs/release-notes-2.0.md`, Help > Release Notes in the app) are written as a welcome for new users rather than a list of changes; this file keeps the engineering record. The 1.x release notes were retired on 2026-10-03.
 
+## Unreleased
+
+- **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
+  which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
+  GLOW dependency; Cast does not itself expose GLOW. Release-specific source
+  and legal review are required before the next public release. Portable
+  contents must be checked separately. See Licences and Notices and the
+  PyMuPDF distribution review.
+
 ## 2.0.0 -- 2026-10-03
 
 QUILL Cast 2.0. The main window, Find in
