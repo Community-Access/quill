@@ -197,22 +197,16 @@ class ScreenshotChatDialog(wx.Dialog):
         self._say("Image prompt library refreshed. You can edit these instructions before sending.")
 
     def _set_automatic(self, _event):
-        from quill.core.ai.model_manager import load_ai_enabled
-        from quill.core.assistant_ai import load_assistant_connection_settings
-
         preferences = load_capture_ai_preferences()
         if not self.automatic.GetValue():
             preferences["auto_ai_enabled"] = False
             save_capture_ai_preferences(preferences)
             self._say("Automatic screenshot AI disabled. Already sent requests may finish.")
             return
-        connection = load_assistant_connection_settings()
-        if self.host._safe_mode or not load_ai_enabled() or connection.provider == "off":
+        # The same choice a single screenshot gets: a ChatGPT plan or the provider.
+        connection = self.host._choose_vision_connection()
+        if connection is None:
             self.automatic.SetValue(False)
-            self._say(
-                "Enable AI and connect a provider outside Safe Mode "
-                "before enabling automatic analysis."
-            )
             return
         identity = connection_identity(connection)
         approved = self.host._show_message_box(
@@ -279,6 +273,9 @@ class ScreenshotChatDialog(wx.Dialog):
             self.busy = False
             self.transcript.AppendText(f"\n\nInspection failed: {error}")
             self._say(f"Inspection failed: {error}. Your screenshot and conversation are retained.")
+            usage_url = getattr(error, "usage_url", "")
+            if usage_url:
+                self.host._offer_plan_usage(usage_url)
 
         self.task = self.host._submit_capture_inspection(
             self.evidence,

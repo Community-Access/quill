@@ -866,7 +866,7 @@ source behaviour; screen-reader, braille, mixed-DPI and
 installed-upgrade acceptance are still open
 (<code>docs/design/quill-studio-capture-milestone.md</code>).</p>
 <ul>
-<li>AS-93. A Capture menu must offer eight commands, each also in the
+<li><p>AS-93. A Capture menu must offer eight commands, each also in the
 command palette, with these default in-app chords from
 <code>APP_KEYMAPS["studio"]</code> (labels render whatever is actually
 bound): Capture screen… (Ctrl+Alt+Shift+S), Open saved screenshot…
@@ -875,8 +875,8 @@ pending capture (Ctrl+Alt+Shift+X), Screenshot active window now
 (Ctrl+Alt+Shift+F5), Screenshot full desktop now (Ctrl+Alt+Shift+F6),
 Repeat last selected target (Ctrl+Alt+Shift+F4), and Screenshot global
 hotkeys… (Ctrl+Alt+Shift+H). These are in-app keys; system-wide keys are
-AS-111.</li>
-<li>AS-94. Capture screen must list, in one Target choice: the full
+AS-111.</p></li>
+<li><p>AS-94. Capture screen must list, in one Target choice: the full
 desktop (all displays), each display by number with its size and origin
 (primary marked), each named top-level task window, “Active window after
 the delay”, and “Guided region”. The window list must by default show
@@ -886,28 +886,29 @@ windows” check box must list every visible titled window. Refresh
 windows and displays must keep the selected target by identity (kind,
 window handle, process, display device); a target that disappeared must
 stay selected and be labelled “Unavailable target”, never silently
-replaced.</li>
-<li>AS-95. Window targets must be labelled for listening: the title
+replaced.</p></li>
+<li><p>AS-95. Window targets must be labelled for listening: the title
 reduced to its first meaningful part, the application’s own name
 stripped from it and repeated once in parentheses in a friendly form
 (for example “Microsoft Edge” rather than msedge.exe), at most 80
-characters. Process IDs and handles must not be read in the list.</li>
-<li>AS-96. Advanced options must be hidden behind a “Show advanced
+characters. Process IDs and handles must not be read in the
+list.</p></li>
+<li><p>AS-96. Advanced options must be hidden behind a “Show advanced
 options” check box. They hold Show all windows, Window properties…, and
 Choose a specific window element…. Window properties must show the
 selected named window’s title, application, process ID, window handle
 (decimal and hex), class name, bounds and executable, and copy the same
 text to the clipboard for a bug report; it is enabled only for a named
-window.</li>
-<li>AS-97. Choose a specific window element must read the selected
+window.</p></li>
+<li><p>AS-97. Choose a specific window element must read the selected
 window’s UI Automation tree in the background, read-only (no control is
 invoked), bounded to 1,000 elements and 8 seconds, cancellable,
 excluding password controls, their descendants and offscreen elements.
 The user filters by name or role and picks one; the element becomes a
 capture target. Before capture it must be found again by its runtime ID,
 and capture must fail, not substitute, if the element moved, changed
-name, disappeared or its window changed.</li>
-<li>AS-98. Guided region must need no pixel input: choose a window or
+name, disappeared or its window changed.</p></li>
+<li><p>AS-98. Guided region must need no pixel input: choose a window or
 display as the source, then Whole source (the default), Top half, Bottom
 half, Left half, Right half, or Middle quarter. An “Enter exact
 coordinates (advanced)” check box must offer left, top, width and height
@@ -915,9 +916,9 @@ in physical desktop pixels (negative left and top allowed for displays
 left of or above the primary), prefilled from the guided choice and
 validated to lie within the desktop. A read-only “Capture plan and
 guidance” field must say what will be included, what may be cut off, and
-that geometry cannot prove the intended content is complete.</li>
-<li>AS-99. Capture must use physical-pixel coordinates (per-thread DPI
-awareness, restored afterward). A named window or element must be
+that geometry cannot prove the intended content is complete.</p></li>
+<li><p>AS-99. Capture must use physical-pixel coordinates (per-thread
+DPI awareness, restored afterward). A named window or element must be
 rendered from its own window by handle (PrintWindow), never by sampling
 the desktop behind it; displays, the desktop and screen-area regions are
 grabbed as a rectangle and their dimensions checked. Immediately before
@@ -925,30 +926,30 @@ and after the capture the target must be re-resolved and must fail with
 a spoken reason, never broaden, when: the window closed, is minimized or
 hung, its process or title changed, a display disconnected or the
 display layout changed, or a region’s source window moved or resized. No
-capture ever falls back to the full desktop.</li>
-<li>AS-100. Capture screen must offer a delay of 2 to 60 seconds
+capture ever falls back to the full desktop.</p></li>
+<li><p>AS-100. Capture screen must offer a delay of 2 to 60 seconds
 (default 5) and, under “More capture options”, an optional spoken
 countdown. Only one capture may be pending; a second request is refused
 with a spoken reason. Cancel pending capture (menu, tray, or global key)
 must cancel a waiting capture and say that one already under way may
 finish. Completing a capture must not move focus away from the
-application being captured; the outcome goes to the status bar.</li>
-<li>AS-101. More capture options must offer Several screenshots (1 to 30
-captures, 1 to 60 seconds apart) and Scrolling page. Scrolling page
+application being captured; the outcome goes to the status bar.</p></li>
+<li><p>AS-101. More capture options must offer Several screenshots (1 to
+30 captures, 1 to 60 seconds apart) and Scrolling page. Scrolling page
 needs a named window and a limit of 2 to 30; it must move the window’s
 scrollable element through UI Automation’s scroll pattern, capture each
 position, join the images only where their overlap matches, restore the
 original scroll position, and mark a result that hit its limit, could
 not be joined, or could not restore scrolling as needing review
 (spoken). Both modes must write a manifest that records an interrupted
-run as Incomplete with the files it did capture.</li>
-<li>AS-102. Capture setups must be savable by name (up to 100 setups,
+run as Incomplete with the files it did capture.</p></li>
+<li><p>AS-102. Capture setups must be savable by name (up to 100 setups,
 names up to 100 characters) holding target, delay, count, interval and
 mode only; the output folder and any AI permission must never be saved.
 Loading must read an explicit schema (unknown or out-of-range values
 rejected), and a saved window is rechecked like any other target
-(AS-99).</li>
-<li>AS-103. Every screenshot must be saved as a uniquely named PNG
+(AS-99).</p></li>
+<li><p>AS-103. Every screenshot must be saved as a uniquely named PNG
 (existing files never overwritten) in the chosen absolute folder
 (default <code>studio-captures</code> in the data folder), then
 reopened, fully decoded, measured and SHA-256 hashed from the same
@@ -959,14 +960,14 @@ privacy, completeness, visual correctness) and a readable
 <code>&lt;name&gt;.verification.md</code>. Metadata must record the
 backend, coordinate units, capture time, window DPI and scale factor
 where available, and whether every pixel was the same colour, reported
-as evidence of possibly protected content, not as proof.</li>
-<li>AS-104. Open saved screenshot must accept a PNG, verify it as in
+as evidence of possibly protected content, not as proof.</p></li>
+<li><p>AS-104. Open saved screenshot must accept a PNG, verify it as in
 AS-103, and restore the original target, time, metadata and unverified
 observations from its verification report only when the hashes
-match.</li>
-<li>AS-105. The Screenshot Inspector must work on the last or an opened
-screenshot: Read text locally (offline OCR, with confidence only when
-the engine reports it), Ask AI, Save report, Export description
+match.</p></li>
+<li><p>AS-105. The Screenshot Inspector must work on the last or an
+opened screenshot: Read text locally (offline OCR, with confidence only
+when the engine reports it), Ask AI, Save report, Export description
 (<code>&lt;name&gt;.description.txt</code>), Copy image, and Edit a
 copy. It must offer seven screenshot prompt styles (overview, controls,
 text and errors, framing problems, possible sensitive information, alt
@@ -974,22 +975,23 @@ text, charts) alongside the shared image prompt library and the user’s
 own prompts, editable instructions, and a free question. Follow-up
 questions must use the same image, verified by hash, and the prior
 conversation; they never recapture. A file-checks pane must show the
-source evidence.</li>
-<li>AS-106. Each Ask AI request must first ask for approval naming the
-provider, model and endpoint, stating that the image may hold private
-information, that no redaction was applied, and that the price cannot be
-estimated. It uses the shared AI connection, credentials and vision
-transport (no separate provider settings) and sends a private temporary
-copy whose hash matches the reviewed image, deleted afterwards. AI Off,
-Safe Mode, or no connected provider must refuse with a spoken reason
-while capture and OCR continue. AI text is saved only as unverified
-observations.</li>
-<li>AS-107. Automatic inspection of future captures must be off by
+source evidence.</p></li>
+<li><p>AS-106. Each Ask AI request must first ask for approval naming
+the provider, model and endpoint, stating that the image may hold
+private information, that no redaction was applied, and that the price
+cannot be estimated. It uses the shared AI connection, credentials and
+vision transport (no separate provider settings), or a ChatGPT plan
+(AS-114), and sends a private temporary copy whose hash matches the
+reviewed image, deleted afterwards. AI Off or Safe Mode must refuse with
+a spoken reason while capture and OCR continue; no provider and no plan
+must offer the plan sign-in (AS-114). AI text is saved only as
+unverified observations.</p></li>
+<li><p>AS-107. Automatic inspection of future captures must be off by
 default and turned on only with its own approval, bound to the approved
 provider, model and endpoint. A changed connection, AI Off or Safe Mode
 must pause it (said once), and permission must be rechecked immediately
-before each upload.</li>
-<li>AS-108. Edit a copy must open a nondestructive screenshot editor
+before each upload.</p></li>
+<li><p>AS-108. Edit a copy must open a nondestructive screenshot editor
 whose text “Edit plan and results” field is the full alternative to the
 visual preview. Operations: Keep only this area (crop), Hide private
 information (solid black redaction, flattened on export), Add a numbered
@@ -1004,25 +1006,25 @@ open a layered project (<code>.screenshot.json</code>), and export to
 PNG, JPEG or WEBP without the source’s hidden metadata. Undo and redo
 cover every edit; a project holds at most 200 edits; an invalid edit is
 rejected without losing the previous state; the original file is never
-changed, and a changed original is refused before export.</li>
-<li>AS-109. Export evidence bundle must write a ZIP holding the rendered
-image, <code>evidence.json</code> (export hash, parent hash, goal, steps
-to reproduce, review state, waiver, public annotation list),
+changed, and a changed original is refused before export.</p></li>
+<li><p>AS-109. Export evidence bundle must write a ZIP holding the
+rendered image, <code>evidence.json</code> (export hash, parent hash,
+goal, steps to reproduce, review state, waiver, public annotation list),
 <code>description.md</code> and <code>description.html</code>; the
 original image and its paths are excluded so a redaction cannot be
 undone from the bundle. Two review check boxes (private information,
 intended content) are human acknowledgments, cleared by any later edit.
 Strict evidence export must refuse until both are checked or a waiver
-reason is written, and the waiver goes into the bundle.</li>
-<li>AS-110. Add a spoken note must record from the user’s chosen
+reason is written, and the waiver goes into the bundle.</p></li>
+<li><p>AS-110. Add a spoken note must record from the user’s chosen
 microphone only on an explicit Start, through the shared microphone lock
 (another QUILL recording refuses it), stop at two minutes, recognise the
 speech locally with an installed speech model, reject a recording of
 pure digital silence, delete the audio afterwards, and write
 <code>&lt;name&gt;.note.json</code> tied to the screenshot’s hash with
 “Recognition unverified”. The text is edited and acknowledged before it
-becomes the screenshot’s description. Nothing is sent to AI.</li>
-<li>AS-111. System-wide screenshot hotkeys must be opt-in with no
+becomes the screenshot’s description. Nothing is sent to AI.</p></li>
+<li><p>AS-111. System-wide screenshot hotkeys must be opt-in with no
 defaults, set in Screenshot global hotkeys… through QUILL’s shared
 hotkey manager and limited to four commands: screenshot the active
 window, screenshot the full desktop, screenshot the last selected
@@ -1030,12 +1032,12 @@ target, and cancel a pending screenshot. Saving must preserve other
 apps’ global bindings; a chord another program holds must be reported as
 not registered; registrations are removed on exit; Safe Mode disables
 them. A global capture must not restore Studio before choosing the
-active window.</li>
-<li>AS-112. The tray menu must begin with Take a screenshot…, Review
+active window.</p></li>
+<li><p>AS-112. The tray menu must begin with Take a screenshot…, Review
 screenshot…, and Cancel pending screenshot, each showing its bound chord
-and restoring the window before acting.</li>
-<li>AS-113. Every capture, inspector, editor, element and note control
-must carry authored inline F1 help
+and restoring the window before acting.</p></li>
+<li><p>AS-113. Every capture, inspector, editor, element and note
+control must carry authored inline F1 help
 (<code>quill/core/audio_studio/surface_help.py</code>, audited by
 <code>quill/tools/studio_help_audit.py</code>), every dialog must use
 the shared modal contract, and a long operation in the editor, inspector
@@ -1043,7 +1045,29 @@ or note dialog must refuse a second press with a spoken line rather than
 disable the focused button. Known exception in 2.0.0: Window properties
 (AS-96) is a <code>wx.MessageDialog</code> shown with a bare
 <code>ShowModal()</code> from inside Capture screen; it should move to
-the host’s modal contract.</li>
+the host’s modal contract.</p></li>
+<li><p>AS-114. A ChatGPT plan must read Studio’s pictures (screenshot
+inspection, automatic analysis, video questions) with no API key
+(<code>quill/core/studio_plan_vision.py</code>,
+<code>quill/apps/studio_vision_route.py</code>). Studio signs in on its
+own as “QUILL Studio”, with its own client registration and its own
+refresh token in the credential store; it must never use a token QUILL
+or QUILL Lite obtained, because plan usage stays with the app the person
+connected. With only one of plan and provider, Studio uses it without
+asking; with both, it asks each time, starting on the last choice; with
+neither, it offers Sign in with your ChatGPT plan, which opens the
+shared Use My ChatGPT Subscription window (also on the Capture menu) and
+mentions a signed-in sibling, which makes it one Allow. The approval
+names the plan and account and says the picture goes to OpenAI on the
+person’s plan. A picture over 20 MB, over 4096 pixels on a side, or not
+PNG, JPEG, WebP or GIF is scaled and converted first; video stays one
+bounded contact sheet. The request carries no <code>temperature</code>,
+<code>max_output_tokens</code> or system item. A used-up plan stops and
+offers ChatGPT’s Usage settings, never falling back to an API key;
+<code>subscription_sharing_unsupported_capability</code> is explained
+and never retried; a sign-in OpenAI no longer accepts says where to sign
+in again. Picture generation stays API-key only: the plan’s preview does
+not offer it.</p></li>
 </ul>
 <h2 id="5-non-functional-requirements">5. Non-functional
 requirements</h2>
@@ -1062,7 +1086,8 @@ metadata lookup, consented cover fetch, user-initiated SFTP/Auphonic
 publishing, and configured AI/cloud-TTS/translation calls
 (cost-confirmed when paid), including screenshot inspection only after
 per-request approval or the separately approved automatic mode (AS-106,
-AS-107). No other outbound calls; capture, OCR, editing, notes and
+AS-107), on a ChatGPT plan through the family’s existing plan client
+(AS-114). No other outbound calls; capture, OCR, editing, notes and
 evidence bundles are entirely local. Book building, chapter editing, ACX
 checks, local and folder feeds are entirely local.</li>
 <li>N-4. Privacy: passwords, API keys, and tokens live only in the

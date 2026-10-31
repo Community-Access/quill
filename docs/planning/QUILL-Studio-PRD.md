@@ -17,6 +17,7 @@
 4. **Conflict rule:** Preserve working user journeys and the shared `quill.apps.studio` implementation; these consolidated additions supersede any prior plan to create another app or to call the expanded application QUILL Audio Studio indefinitely. Windows 11-first expansion is not a decision to remove current macOS audiobook functionality. Where the merged expanded material conflicts with this document's own requirements, this document wins and the conflict is noted in place.
 5. **External-tool scope:** The product specification describes QUILL Studio functionality in its own terms. VB-CABLE is the only named optional external tool/integration. Existing internal implementation dependencies are governed by engineering and license compliance, not presented as recommended companion products.
 6. **Supersedes:** the committed copy of the earlier consolidated proposal, [`docs/design/quill-studio-prd.md`](../design/quill-studio-prd.md), and its coverage audit [`docs/design/quill-studio-screenshot-coverage.md`](../design/quill-studio-screenshot-coverage.md), which predates the capture work in commit `5cc0023f`.
+7. **Cart Wall withdrawn:** Cart Wall (CW-001 to CW-009) withdrawn 2026-10-31 at the owner's decision. The running order (PL-001 to PL-007) and the Drop Deck engineering evidence in section 10C stay. CW-007's rule that Studio never writes over a user's file moved to PL-008, and SG-11 went with the cart wall.
 
 ### 1.1 How to read this document
 
@@ -25,7 +26,7 @@
   item, announcement or help message. Section 3.1 sets the language and
   simplicity requirements for the actual experience.
 - **Delivered.** A requirement the code now satisfies is replaced by one line, *Delivered: …*, naming the shipped requirement in `standalone/studio/docs/prd.md` (cited as *Studio PRD AS-n*). A requirement the code satisfies only in part keeps its full text, followed by a *Delivered so far* line and a *Remaining* line, so the planning text always says what is still to build.
-- **IDs.** This document's own IDs are unchanged. Merged requirements take the prefix of the section they joined: the expanded audio-engine requirements MX-010 to MX-083 become MX-110 to MX-183 (add 100), the cart wall and running order restart at CW-001 and PL-001, and the expanded gate scenarios become SG-01 to SG-13 so they cannot be confused with the repository's numbered gates (GATE-11, GATE-13 and so on in `CLAUDE.md`). Appendix A is the full trace.
+- **IDs.** This document's own IDs are unchanged. Merged requirements take the prefix of the section they joined: the expanded audio-engine requirements MX-010 to MX-083 become MX-110 to MX-183 (add 100), the running order restarts at PL-001 (the cart wall, CW-001 to CW-009, was withdrawn on 2026-10-31), and the expanded gate scenarios become SG-01 to SG-13 so they cannot be confused with the repository's numbered gates (GATE-11, GATE-13 and so on in `CLAUDE.md`). Appendix A is the full trace.
 - **Chords** named anywhere in this document are proposals until allocated in `keymap.APP_KEYMAPS["studio"]` and passed by the menu-accelerator, access-key, documentation-chord and family-rule gates.
 
 ### 1.2 Users
@@ -99,13 +100,19 @@ actions behind advanced settings, or require an advanced view to use a screen
 reader. People who need precise controls can open them and return without
 losing work.
 
-**UX-009** A control's accessible name changes the instant the *user edits* what it represents (rename, reassign, clear), focused or not, so "did that apply?" is answered without tabbing away; it never changes because *playback state* changed while focus is on it (a pad or row is not relabelled "playing" under the user's fingers, which restarts speech mid-sentence). Playback state is answered on demand instead. Acceptance: with NVDA and JAWS on a pad, renaming it is read at once; firing it, and it finishing, produce no re-read. (Source: TG Drop Deck `SoundButton.refresh`, section 10C.)
+**UX-009** A control's accessible name changes the instant the *user edits* what it represents (rename, reassign, clear), focused or not, so "did that apply?" is answered without tabbing away; it never changes because *playback state* changed while focus is on it (a running-order row is not relabelled "playing" under the user's fingers, which restarts speech mid-sentence). Playback state is answered on demand instead. Acceptance: with NVDA and JAWS on a running-order row, renaming it is read at once; playing it, and it finishing, produce no re-read. (Source: TG Drop Deck `SoundButton.refresh`, section 10C.)
 
 **UX-010** A live-updating list never removes or reorders the *focused* row; a removal that would take it is held until focus moves, after which it is silent. Measured by TG Drop Deck with an MSAA hook on a `wx.ListCtrl` under NVDA: deleting a row above or below focus raises no focus event, while deleting the focused row moves focus to a row the user did not choose. Acceptance: an up-next list draining during playback never causes an unprompted focus announcement.
 
-**UX-011** Workspace-local bare-key accelerators (digits, Space, letters) stand down whenever a text-entry control has focus, including composite controls such as `wx.SpinCtrlDouble` whose inner edit raises no child-focus event; the accelerator table is swapped, not vetoed, because on wx 4.2 a frame accelerator fires before `EVT_CHAR_HOOK` can refuse it. Acceptance: typing "3" into a crossfade field never fires pad 3.
+**UX-011** Workspace-local bare-key accelerators (digits, Space, letters) stand down whenever a text-entry control has focus, including composite controls such as `wx.SpinCtrlDouble` whose inner edit raises no child-focus event; the accelerator table is swapped, not vetoed, because on wx 4.2 a frame accelerator fires before `EVT_CHAR_HOOK` can refuse it. Acceptance: typing a space into a title field never skips the selected running-order item.
 
 **UX-012** Do not disable a focused button for the length of the work it starts: Windows moves focus silently to the next control, which may then become the default button. Refuse a second press with a spoken line instead, leaving focus where it was. Acceptance: pressing a long-running check twice, then Enter, never activates a neighbouring control.
+
+**UX-013** An announcement raised by a menu command waits until the menu has closed and focus has settled, so the screen reader's own focus announcement never talks over it. Outcome sentences put the state first ("Recording started") and never read out a full path; the path is in the status bar and the report. Acceptance: starting a recording from the menu with NVDA and JAWS, "Recording started" is heard whole. (Source: TG Drop Deck `CHANGELOG.md` lines 40-55, where reading the file path cut off "Recording started"; ours, REC-016.)
+
+**UX-014** A control kept in step with a list selection, such as a mute or solo check box that shows the selected row's state, is updated under a guard, so a change the app makes never runs the handler meant for a change the user makes. `SetValue` on a `wx.CheckBox` can raise `EVT_CHECKBOX` and write the shown value back. Acceptance: arrowing through the Mixer's list of sources changes no mute state. (Source: TG Drop Deck `CLAUDE.md` lines 249-262, where arrowing past rows muted them silently.)
+
+**UX-015** Every Studio preference has a behavioural test that changes it and observes an effect; a setting that is saved and loaded but read by nothing fails. This goes beyond the settings-vocabulary gate, which checks names only. Acceptance: one test per preference, and removing the code that reads a preference fails its test. (Source: TG Drop Deck `CHANGELOG.md` lines 742-753 and `mac/CLAUDE.md` lines 725-730, where "Hear yourself through" was saved, loaded and read by nothing.)
 
 
 *Delivered so far (UX-005, UX-012):* the screenshot editor, inspector and note dialogs refuse a second press with a spoken line instead of disabling the focused button (Studio PRD AS-113). *Remaining:* the same contract across every long-running action in the shell.
@@ -169,7 +176,7 @@ are already built.
 
 **TRAY-005** Status: `Recording 00:12:31; microphone live; application audio live; screen-reader audio private; frames dropped 0; disk estimated 43 minutes remaining`. The live status must be queryable without stealing focus or contaminating recordings.
 
-**TRAY-006** System-wide hotkeys (cart firing from another program, emergency keys) are opt-in, refuse any chord without a modifier (a bare global key steals that key from every program), are handed back with one documented key, and are checked at startup: the app briefly registers each of its own global chords and releases it, and names any chord another program already holds, because a key held elsewhere never arrives and Windows tells nobody. Acceptance: a chord pre-registered by a test process is named in the startup report; the app's own global chords are not reported against themselves. Tests that do this carry the `machine_global` marker.
+**TRAY-006** System-wide hotkeys (transport and emergency keys used from another program) are opt-in, refuse any chord without a modifier (a bare global key steals that key from every program), are handed back with one documented key, and are checked at startup: the app briefly registers each of its own global chords and releases it, and names any chord another program already holds, because a key held elsewhere never arrives and Windows tells nobody. Acceptance: a chord pre-registered by a test process is named in the startup report; the app's own global chords are not reported against themselves. Tests that do this carry the `machine_global` marker.
 
 **TRAY-007** Every safety-critical command (microphone on/off, MUTE AUDIENCE, stop all) has a second default chord, because a screen-reader add-on's keyboard hook can swallow a key invisibly. Acceptance: each such command has two bound chords in the keyboard reference, and the Key Describer names both.
 
@@ -242,7 +249,7 @@ Each source has a routing matrix with independent sends to:
 
 **MX-126** Monitor loopback latency and detect probable feedback; warn or automatically block high-risk feedback routing when safely detectable.
 
-**MX-127** Provide a **programme output**: the whole show (cart wall, running order, microphone, captured sources) on one chosen endpoint for another program on the same machine to pick up, distinct from any per-bank or main output. Monitor-only material (cue tones, previews, private screen-reader speech) is never in it. Routing help explains virtual-cable naming in the user's terms ("CABLE Input" is where this app *plays*; "CABLE Output" is what the other program *records*), because TG Drop Deck found users read it backwards first time. `Ctrl+Shift+W` (proposed) reads where every bus currently goes. Acceptance: with banks on one card and the monitor on another, the programme output carries pads *and* microphone, and carries no cue tone.
+**MX-127** Provide a **programme output**: the whole show (running order, microphone, captured sources) on one chosen endpoint for another program on the same machine to pick up, distinct from any per-source or main output. Monitor-only material (cue tones, previews, private screen-reader speech) is never in it. Routing help explains virtual-cable naming in the user's terms ("CABLE Input" is where this app *plays*; "CABLE Output" is what the other program *records*), because TG Drop Deck found users read it backwards first time. `Ctrl+Shift+W` (proposed) reads where every bus currently goes. Acceptance: with the running order on one card and the monitor on another, the programme output carries the running order *and* the microphone, and carries no cue tone.
 
 **MX-128** **Cable test:** play a short tone into the chosen output while recording the chosen far-end input, and report one of three results: nothing came back (the two ends are not one cable, or it is muted), it came back with gaps (count and share lost), or it came back clean (with its level). Opens its own streams, never the live path; refused while recording or with any audience route live, with the reason spoken. Acceptance: a deliberately undersized output buffer into a virtual cable is reported as gapped even when the driver reports no underrun.
 
@@ -266,7 +273,7 @@ Each source has a routing matrix with independent sends to:
 
 **MX-137** All changes reflected simultaneously in accessible text and visual meters, with throttled updates.
 
-**MX-138** **Event ducking** in addition to MX-134's level sidechain: beds and the running order duck while a cart one-shot plays, and while the microphone is *open* (keyed by the open state, not by voice level, so the first syllable is never clipped and a cough never ducks the bed). Default depth −9 dB, configurable; a duck shared across output devices so routing beds to a second card does not silently disable it; monitoring is summed after the duck so the presenter's voice never ducks itself; cue and preview buses neither duck nor are ducked. `Ctrl+D` (proposed, cart wall scope) toggles event ducking; the new state is an action outcome (spoken and brailled). Acceptance: rendered-sample tests confirm the duck depth claimed, with no sound card present.
+**MX-138** **Event ducking** in addition to MX-134's level sidechain: the running order ducks while the microphone is *open* (keyed by the open state, not by voice level, so the first syllable is never clipped and a cough never ducks the music). Default depth −9 dB, configurable; a duck shared across output devices so routing the running order to a second card does not silently disable it; monitoring is summed after the duck so the presenter's voice never ducks itself; cue and preview buses neither duck nor are ducked. `Ctrl+D` (proposed, Live Show scope) toggles event ducking; the new state is an action outcome (spoken and brailled). Acceptance: rendered-sample tests confirm the duck depth claimed, with no sound card present.
 
 **MX-139** Every effect parameter, built-in or from a hosted plug-in (EDIT-008), is exposed as a row in a native list or a native numeric control, in plain words with real units, so a plug-in whose own window no screen reader can read is still fully operable. The reader voices value changes from the native control; the app does not announce them as well (it speaks only what the reader cannot).
 
@@ -318,7 +325,7 @@ Each source has a routing matrix with independent sends to:
 
 **MX-165** Scenes may be exported and imported without exposing credentials or device-specific personal data by default.
 
-**MX-166** **Spoken go-public preflight.** Any command that newly sends audio to an audience route (or starts a recording intended for publication) first produces one summary: where it is going, what is in it, whether the microphone is in it, and every problem found, classified **Stop** (will not work; the command does not proceed) or **Warn** (will work and be spoiled: a moved file that will play silence, a microphone absent from the programme, a destination nobody is listening on). Shown in a native read-only text field, spoken and brailled as one announcement, and confirmed with Enter; a preference may skip the confirmation but never the Stop checks. Cart firing never asks: nothing goes between a keypress and a sound. The checks live in `quill/core` with no `wx` and no network, so each is unit-testable. Acceptance: each Warn case is produced by a unit test, and a Stop case cannot be confirmed.
+**MX-166** **Spoken go-public preflight.** Any command that newly sends audio to an audience route (or starts a recording intended for publication) first produces one summary: where it is going, what is in it, whether the microphone is in it, and every problem found, classified **Stop** (will not work; the command does not proceed) or **Warn** (will work and be spoiled: a moved file that will play silence, a microphone absent from the programme, a destination nobody is listening on). Shown in a native read-only text field, spoken and brailled as one announcement, and confirmed with Enter; a preference may skip the confirmation but never the Stop checks. Playing the next item in the running order never asks: nothing goes between a keypress and a sound. The checks live in `quill/core` with no `wx` and no network, so each is unit-testable. Acceptance: each Warn case is produced by a unit test, and a Stop case cannot be confirmed.
 
 ### 5.7 Capture, recording and reliability
 
@@ -340,7 +347,7 @@ Each source has a routing matrix with independent sends to:
 
 **MX-178** Provide master emergency MUTE AUDIENCE hotkey separate from STOP ALL RECORDING, both documented and confirmation-free for safety.
 
-**MX-179** Nothing opens a microphone except the user's explicit command: not startup, not loading a scene or cart set. Device, gain and monitoring are saved; whether the microphone was *on* is deliberately not. Acceptance: a test asserts the open state is absent from every persisted file and that loading a scene with a microphone source leaves it closed.
+**MX-179** Nothing opens a microphone except the user's explicit command: not startup, not loading a scene, a running order or a saved setup. Device, gain and monitoring are saved; whether the microphone was *on* is deliberately not. Acceptance: a test asserts the open state is absent from every persisted file and that loading a scene with a microphone source leaves it closed.
 
 **MX-180** **Silent-input detection.** A newly opened input that delivers only exact digital zeros for 2.5 s (configurable) is reported, spoken and brailled, as probably blocked (for example by Windows microphone privacy settings), naming where to look; real microphones are never digitally silent, so exact zeros are the test, not a low level. Acceptance: a stub device returning zeros triggers the message once; a quiet room does not.
 
@@ -348,7 +355,17 @@ Each source has a routing matrix with independent sends to:
 
 **MX-182** The engine times its own render callback and counts blocks that arrive late beyond a set factor of the buffer period, surfacing the count in MX-173 status, rather than trusting the driver's underrun report. TG Drop Deck measured a fixed 512-frame output into a virtual cable losing up to 7.4 % of the audio while PortAudio reported no underrun. Acceptance: an injected stall is counted.
 
-**MX-183** **Live track log.** While recording, every cart one-shot, bed and running-order item that reaches the recorded bus is appended, with its start time, to a CUE sheet written beside the recording with the same base name (`Show 004.wav` → `Show 004.cue`, `TITLE`, `PERFORMER`, `INDEX 01 mm:ss:ff` with **75 frames per second**, not hundredths). Times come from the recording's own written sample count, never the wall clock, so a stall cannot drift the log; each entry is flushed as it is written so a crash leaves a log complete to the last item. Reuse QUILL's existing CUE writer (`quill/core/speech/chapter_io.py`) rather than adding a second. Announced: nothing per entry; the log's path is part of the recording-finished outcome. Acceptance: a forced kill mid-take leaves a valid CUE for everything before the kill; an entry at 0.5 s is written as frame 38 (rounded from 37.5).
+**MX-183** **Live track log.** While recording, every running-order item that reaches the recorded bus is appended, with its start time, to a CUE sheet written beside the recording with the same base name (`Show 004.wav` → `Show 004.cue`, `TITLE`, `PERFORMER`, `INDEX 01 mm:ss:ff` with **75 frames per second**, not hundredths). Times come from the recording's own written sample count, never the wall clock, so a stall cannot drift the log; each entry is flushed as it is written so a crash leaves a log complete to the last item. Reuse QUILL's existing CUE writer (`quill/core/speech/chapter_io.py`) rather than adding a second. Announced: nothing per entry; the log's path is part of the recording-finished outcome. Acceptance: a forced kill mid-take leaves a valid CUE for everything before the kill; an entry at 0.5 s is written as frame 38 (rounded from 37.5).
+
+**MX-184** An excluded process, such as the screen reader, is held by executable name, not only by process ID. While capturing, Studio checks at least every 2 s that the excluded process is still alive; when it is gone, that sound is muted at once and the capture reopens to exclude the new process. The muted gap is spoken and marked, and the recording never carries the reader in the meantime. Today exclusion is fixed to the reader's process ID when the setup is chosen (`quill/ui/studio_demo_dialog.py:531`, `quill/apps/studio_streaming.py:54`), so a restarted NVDA or JAWS is recorded, or heard by listeners, and nothing says so. Acceptance: restarting a fixture "reader" mid-recording leaves its tone absent from the whole file. (Source: TG Drop Deck `dropdeck/proccapture.py` lines 240-243 and 401-416: Windows opens a process-loopback capture for a process that does not exist, and one whose process has closed keeps running silently; neither raises.)
+
+**MX-185** A microphone source has a channel choice: input 1, input 2, or both mixed. The default is both mixed for a device with two or more inputs. A level meter cannot show that a microphone is in one ear, so the spoken check reports it (REC-021). Today `quill/platform/windows/demo_audio.py:394` records `min(2, device.channels)` channels as they arrive, so a two-input interface with the microphone on input 1 makes a left-only demonstration. Acceptance: a fixture with signal on input 1 only records it in both channels at the default. (Source: TG Drop Deck `CHANGELOG.md` lines 1196-1233; line 668 notes that Zoom folds an input wider than two channels to mono.)
+
+**MX-186** Mixer source queues fill to 100 ms before first use and again after running dry, so a source whose packets arrive in bursts (loopback polled every 10 ms against 20 ms mix blocks) is not zero-filled into tiny gaps, which are heard as a change in pitch. Gaps and drops are counted and shown in MX-173 status. Today `_take` in `quill/platform/windows/live_stream.py` zero-fills whatever is short with no priming, and `push` drops the oldest audio silently once a source is 2 s ahead (lines 91-93). Acceptance: a fixture source delivering 10 ms bursts into the 20 ms mix produces no zero-filled block after priming. (Source: TG Drop Deck `dropdeck/mixer.py` lines 700-716 and `dropdeck/streamout.py` lines 1633-1646.)
+
+**MX-187** Device listing asks about each device on its own and leaves out, and logs, only a device it cannot describe, so one undecodable name (a Bluetooth headset named after a phone) never empties the whole microphone list. Today `quill/platform/windows/demo_audio.py:200` and `resolve_microphone` call `sd.query_devices()` for every device at once. Acceptance: a stub that raises on one index still lists the others. (Source: TG Drop Deck `dropdeck/mixer.py` lines 38-50.)
+
+**MX-188** Any thread that opens a PortAudio or WASAPI stream first enters the multithreaded COM apartment, and never uninitialises an apartment it did not open. Today the spoken check's probe (`quill/platform/windows/screen_recorder_check.py:208`) runs on a background task while the setup dialog is open, and the microphone reconnect (`quill/platform/windows/demo_audio.py:440-441`) reopens on its watch thread; neither initialises COM. Verify on hardware first. Acceptance: the probe and the reconnect both succeed with a modal dialog open. (Source: TG Drop Deck `CLAUDE.md` lines 1042-1066: a worker-thread WASAPI open with a wx dialog up failed three times out of three with a misleading WDM-KS error, and worked once the worker had a multithreaded apartment.)
 
 
 ## 6. Audio editing, recording and demonstrations
@@ -643,6 +660,7 @@ until evidence exists.
 **REC-008 — Recording and encoding pipeline.**
 - Video: one FFmpeg process per segment, writing **Matroska** (`.mkv`) so that a crash leaves a playable file up to the last flushed cluster.
 - Sound: each source is captured on its own thread to its own 48 kHz WAV per segment, every packet stamped with the Windows performance counter, as is the first video frame, so the sources are aligned by measurement rather than assumed to start together.
+- *Needs a code fix (2026-10-31):* the code does not use the performance counter. Each packet is placed by the wall clock (`time.time()` in `quill/platform/windows/process_loopback.py:429-437` and `quill/platform/windows/demo_audio.py:397`), and the counter that `GetBuffer` returns is thrown away. REC-022 says how this is to be fixed.
 - **Pause** closes the current segment of every stream; **Resume** starts the next. A pause is never encoded as frozen video.
 - **Stop** joins the segments (FFmpeg concat), mixes the enabled sources with their levels and measured offsets (`volume` and `amix`, with a limiter so the sum cannot clip), and writes the final **MP4: H.264 video, AAC-LC 192 kbit/s 48 kHz stereo, `+faststart`**. An option, *Also keep each source as its own WAV*, writes the per-source files beside it for later editing (default off).
 - Target audio/video alignment: within one frame at 30 frames a second, over a 30-minute recording on reference hardware. This is a measured target (spike **S5**), not a promise.
@@ -699,11 +717,25 @@ While recording, focus is in the application being demonstrated, so the in-app c
 | Secure desktop, lock screen or protected content | Recorded as black, never bypassed; detected afterwards by REC-014's black-frame check and reported |
 | Capture falls behind | Dropped frames are counted; above 5 percent over 10 seconds Studio warns once |
 
+*Needs a code fix (2026-10-31).* Two rows of this table describe the intended behaviour, not what the code does yet. A recorded program or screen reader that quits is never noticed, so it is not marked and is not found again (REC-019). System sound from a sound card that is lost is never reopened (REC-020). The user guide describes both as working (`standalone/studio/docs/userguide.md:848-849`) and carries a known-limitations note until the code is fixed.
+
 **REC-016 — Announcements, F1 help and keys.** Studio speaks only what the screen reader cannot (GATE-13) and routes everything through the announcement service, so it is also brailled (GATE-BRAILLE): the countdown; *Recording* once at the start; pause, resume, marker and microphone mute as action feedback through the shared `action_feedback` setting (sound, speech, both or silent; a sound with no clip in the pack speaks); every failure, always spoken; the result after stop; and the status line on request. When screen reader speech is a recorded source, the start, pause, marker and mute confirmations are sounds, not speech, whatever the setting, and only failures speak. Every control in the setup dialog, the Recording status window and the result window carries authored inline `SetHelpText`, joins Studio's `surface_help` catalogue and its help-audit snapshot, and answers F1 with the window's purpose and then the control's help. Dialogs use the host's modal contract (the Recording status window is a modeless frame whose Close button is bound with `dialog_contract.bind_close_button`), access keys are unique per window (GATE-14), menu labels render the bound chord through `_menu_label`, and the new keys land in `APP_KEYMAPS["studio"]`, the generated keyboard reference (GATE-KEYREF) and the Key Describer's titles (GATE-DESCRIBE).
 
 **REC-017 — Privacy and safety.** Nothing is uploaded; no AI runs during or after recording unless the user asks (Inspect a frame uses the Screenshot Inspector's existing consent, Studio PRD AS-106). No network call is added, so the network egress audit is unchanged. While recording, the window title begins *Recording –*, and the tray tooltip says so. Safe Mode allows recording (it is local) and disables the system-wide keys, as it does for screenshots. Nothing opens a microphone except the user's explicit choice (MX-179).
 
 **REC-018 — Where the code goes.** A wx-free `quill/core/demo_recording.py` for the plan, the preflight rules, file naming, the FFmpeg argument builders and the parsing of `ffprobe` results (strict mypy, unit-tested); `quill/platform/windows/screen_recorder.py` for the WGC helper and FFmpeg process control; the PCM capture API added to `process_loopback.py` and a new `endpoint_loopback.py` for system sound; `quill/apps/studio_demo.py` as the Studio mixin (menu, tray, commands, hotkey allowlist entries) with its dialogs in `quill/ui/studio_demo_*.py`. Background work runs on the task manager; UI updates go through `wx.CallAfter`; new exceptions inherit `CodedError` (GATE-EC); new surfaces must be reachable from the Studio entry point (GATE-REACH) and listed in the dialog inventory; module size budgets apply.
+
+**REC-019 — Notice when a recorded program quits.** Every process capture checks that its target is alive before it opens, and then at least every 2 s on a monotonic clock. A process that is gone ends the source with a spoken failure, which starts the find-again rescan in REC-015. Acceptance: kill a fixture process mid-recording, and within 3 s there is one failure line, then one "found again" line after it restarts. Verify on hardware first. *Needs a code fix (2026-10-31):* `quill/platform/windows/process_loopback.py:425-447` loops until `stop()` is called, and the rescan in `quill/platform/windows/demo_audio.py:348-369` runs only once the capture returns. Windows raises nothing when the process quits, so the capture never returns: the program records silence with no event and is never found again. REC-015, the user guide (`standalone/studio/docs/userguide.md:848`) and the `demo_audio.py` docstring (lines 11-14) all say otherwise. (Source: TG Drop Deck `dropdeck/proccapture.py` lines 240-243 and 401-416, and `CHANGELOG.md` line 2128, which notices a quit within a couple of seconds by polling `alive(pid)`.)
+
+**REC-020 — Reopen a lost sound card.** A system-sound (endpoint) loopback that ends is reopened by endpoint ID when that endpoint returns or changes format, and the failure line names the device. An unplugged headset, a Bluetooth reconnect or a sample-rate change in Sound settings all end the WASAPI client. Acceptance: disabling and re-enabling the endpoint mid-recording gives one failure line, one recovery line, and marked silence in between. *Needs a code fix (2026-10-31):* `quill/platform/windows/demo_audio.py:353-360` looks up a process name for a device source; that name is empty, so the loop polls forever and never reopens, and the failure line says the program "quit or its sound ended". REC-015's row for an unplugged device and the user guide (`standalone/studio/docs/userguide.md:849`) say it is reopened. (Source: TG Drop Deck `dropdeck/streamout.py` lines 195-235, and `CHANGELOG.md` lines 1052-1062, where a device change killed the send and lost 57.7 percent of the audio.)
+
+**REC-021 — Say when a source is in one ear.** The spoken check (REC-011) and the after-check (REC-014) report any source whose one channel is more than 30 dB below the other ("Microphone is only in the left ear"). REC-014's level check passes a one-ear microphone today, because its peak is fine. Acceptance: a fixture with signal on one channel is reported; a centred mono source is not. (Source: TG Drop Deck `CHANGELOG.md` lines 1196-1233, where the Help check says whether the two channels differ; ours, MX-185.)
+
+**REC-022 — Time sources by the sound, not the wall clock.** Source timing uses the capture API's own position (the WASAPI QPC position from `GetBuffer`, PortAudio's `inputBufferAdcTime`) against a monotonic clock, never `time.time()`. At stop, each source's sample count is compared with the session's monotonic length; a source off by more than 20 ms is stretched to fit (FFmpeg `aresample=async` or `atempo`), and the correction is written to the verification report. Filling gaps with silence is for real outages only, not for drift. This is how REC-008's alignment target, MX-116's drift handling and spike S5 are to be met. Acceptance: a fixture source at 48,010 Hz stays within one video frame over 30 minutes. Today `WavStream.write` (`quill/platform/windows/demo_audio.py:94-97`) inserts silence once wall time leads the sample count by 50 ms, so a slow device clock gets a 50 ms hole every few minutes and a fast one slides late; the mix applies only a start offset (`quill/core/demo_recording_ffmpeg.py:282-287`); and `time.time()` can jump when the system clock syncs. These effects come from reading the code, not from measurement. (Source: TG Drop Deck `dropdeck/streamout.py` lines 93-110, and `CHANGELOG.md` lines 763-764 and 889-890: the sound is the master clock, because a machine that stalls makes a wall-clock file shorter.)
+
+**REC-023 — Count glitches while they happen.** Each sound source counts discontinuities, overflows, and any stretch longer than 0.5 s with no callback. The first of each kind is spoken during the recording, not only at the end, and every count goes in the report. Today `quill/platform/windows/process_loopback.py:430-432` checks only the silent flag and ignores the data-discontinuity flag; the microphone callback ignores its `status` (`quill/platform/windows/demo_audio.py:396`); and the microphone watchdog (`demo_audio.py:429-443`) checks only `stream.active`, so a stream that stops calling back while it still reports active records silence without a word. Acceptance: an injected 1 s callback stall is spoken once. (Source: TG Drop Deck `CHANGELOG.md` lines 522 and 1008, and `dropdeck/recorder.py` lines 381-392; ours, MX-173, MX-182 and VERIFY-004.)
+
+**REC-024 — One stream's failure never ends the others.** A failure in the video, the camera or any one sound source is reported against that stream by name and never stops the rest. Acceptance: killing the camera's FFmpeg leaves the screen and every sound source recording, and the result is Needs review, naming the camera. (Source: TG Drop Deck `CLAUDE.md` lines 546-552 and `CHANGELOG.md` line 518, where one handler shared by two recorders let a disk fault on the MP4 abandon the WAV mid-write; ours, REC-015.)
 
 ### 7A.3 Keys and the family rules
 
@@ -804,6 +836,8 @@ Verified on the build machine: a 5-second display recording with a tone-playing 
 
 **VERIFY-008** Release benchmark: 100% of mandatory machine-testable checks executed; 0 silent failures; 0 inaccessible critical controls; 0 published strict-profile outputs with failed mandatory checks; truthfully disclose all model-dependent visual judgments. This is a robust *verification pathway*, not an impossible claim of 100% semantic accuracy.
 
+**VERIFY-009** **Measured sync.** The test recording (REC-012) embeds a flash-and-tone fixture, and the check measures the audio/video offset at the start, middle and end of the *decoded* file and reports drift per minute. Container timestamps are not evidence of sync: an encoder setting can fix the headers and move the real sync the wrong way. REC-014 checks duration and decoding, not sync. Acceptance: a fixture recording offset by 40 ms is reported within 5 ms. (Source: TG Drop Deck `CLAUDE.md` lines 518-526 and `tools/check_recording.py`, which measures sync at five points from frames carrying their own capture time; ours, REC-022 and spike S5. Proposed in the review as VERIFY-012; VERIFY-009 is the next free ID.)
+
 *Delivered so far (still images only):* every screenshot has a JSON and Markdown evidence report separating verified checks from unverified observations, and the evidence bundle has a strict mode that blocks until human review or a recorded waiver (Studio PRD AS-103, AS-109). *Remaining:* the Evidence Report for every other workflow, the full result-state model, and every recording, routing and export check. Section 7A's REC-014 is VERIFY-005 for one video file.
 
 ## 9A. Rehearse, detect, automatically repair, and prove readiness before recording
@@ -853,8 +887,10 @@ Verified on the build machine: a 5-second display recording with a tone-playing 
 
 **VIDEO-003** **Picture health.** While recording video, detect a picture that has gone black or frozen, from frames already in hand (cheap reductions on a subsample), and announce the *change* once a fault has lasted a patience period, then announce recovery; never repeat a standing state. Applies only to sources expected to move, so a still title card is never reported frozen. Acceptance: unplugging a camera mid-take produces one announcement after the patience period and one on recovery. (TG Drop Deck `health.py`; its VIS-005-style framing check, `Ctrl+Shift+F` there, independently validates VIS-005.)
 
+**VIDEO-004** **Colour tagging.** Every H.264 output converts RGB to YUV with the BT.709 matrix and tags BT.709 primaries, transfer and matrix with limited range (`-colorspace bt709 -color_primaries bt709 -color_trc bt709 -color_range tv`, with the matrix also given to the scaler). A player that has to guess the range guesses wrong, and a blind presenter cannot see the washed-out result. REC-014 reads the tags back. Today `quill/core/demo_recording_ffmpeg.py:375` sets none of them. Acceptance: a test decodes white, red and blue patches as Y 235, 63 and 32. (Source: TG Drop Deck `CLAUDE.md` lines 353-367, which measured BT.601 conversion on HD pictures: pure red came out at Y 81 where BT.709 wants 63.)
 
-**LIVE-001** Adopt accessible **cart wall**, named banks, queued tracks, running order, dual deck/crossfade, hotkey-triggered audio cues, ducking, emergency silence, mic talkover, playlist and live scene changes; guard against bare-key activations while typing and background updates that steal focused rows. Preserve private preview/cue path.
+
+**LIVE-001** Adopt an accessible **running order**, queued tracks, dual deck/crossfade, ducking, emergency silence, mic talkover, playlist and live scene changes; guard against bare-key activations while typing and background updates that steal focused rows. Preserve private preview/cue path.
 
 **LIVE-002** Support recording live program and stems simultaneously, reliable long-running scheduling, output to virtual cable or documented streaming integration, metadata/now-playing and QUILL Radio/Cast handoffs through shared contracts.
 
@@ -923,6 +959,10 @@ Verified on the build machine: a 5-second display recording with a tone-playing 
 
 **BCAST-025 — Accessible session operator (P0).** Main and tray accessible status: `OFFLINE / TESTING / ARMED / LIVE / RECONNECTING / ENDING / ENDED`; destinations with state; elapsed time; live scene; mic and private/public routing; stream and local-recording status; warnings; next step. One key to ask **Where am I in the show?** and **What does the audience currently receive?** Answers must say when based only on local/ingest indicators. No unrequested spoken alerts on the broadcast bus.
 
+**BCAST-026 — A slow link never stalls the saved copy (P0).** The stream encoder and the saved copy each have their own bounded queue and writer thread, so one stalling never stalls the other or the mix. Overflow is counted and said once. A half-speed link drops nothing for about 30 s while listeners fall 30 s behind, and only then loses audio, so the growing delay is said once when it passes a set threshold. Acceptance: throttling the stream pipe to half speed for 2 minutes leaves the saved copy complete and without gaps. *Needs a code fix (2026-10-31):* `quill/platform/windows/live_stream.py:289-297` writes to both FFmpeg pipes with blocking writes on the one mixer thread, so a slow ingest stalls the saved copy too. The module docstring (lines 12-13) says the copy "keeps recording through a reconnect"; that holds for a dropped connection, not for a slow one. (Source: TG Drop Deck `dropdeck/streamout.py` lines 13-17 and 1690-1700. Proposed in the review as BCAST-024, which was taken.)
+
+**BCAST-027 — "On air" only once audio has left the machine (P0).** "On air" and "Back on air" are said only after the server has accepted at least 2 s of encoded audio; a connection that has sent nothing is not a broadcast. Going on air is one sentence, because a second interrupts the first. An authentication refusal at any attempt, not only the first, stops the retries and says why. Today `quill/platform/windows/live_stream.py:326` says "The stream is back on air" as soon as `_connect()` returns. Acceptance: a fixture server that accepts the connection and then reads nothing produces no on-air line; one that refuses the password on the third retry stops there with the reason. (Source: TG Drop Deck `CLAUDE.md` lines 738-758 and its 3.8.4 changelog entry; ours, BCAST-023. Proposed in the review as BCAST-025, which was taken.)
+
 ### 10A.5 Audio and video demonstration examples and acceptance tests
 
 1. **YouTube live demonstration:** A totally blind presenter selects an Edge window, runs short preflight, verifies screen bounds and title visibility via OCR and AI with caveats, broadcasts intentional screen-reader demo speech but excludes QUILL cues, monitors audience questions privately, and records local video/audio/captions. Starting live requires clear confirmation and the result records ingest and downstream-verification levels.
@@ -934,7 +974,7 @@ Verified on the build machine: a 5-second display recording with a tone-playing 
 ### 10A.6 Engineering deliverables and release order
 
 - **P0 foundation:** Shared program/private/record buses; Live workspace, reliable local show/record loop, trial run, end-to-end objective checks, fault recovery, complete keyboard/tray operation and explicit readiness states.
-- **P1 audio broadcast:** Icecast/SHOUTcast and generic streaming profiles; native playlist/cart wall, metadata, listener confidence loopback, chat/Q&A infrastructure.
+- **P1 audio broadcast:** Icecast/SHOUTcast and generic streaming profiles; native playlist and running order, metadata, listener confidence loopback, chat/Q&A infrastructure.
 - **P1/P2 video and meetings:** YouTube Live endpoint and authorized chat; Teams RTMP-In/SRT-In and desktop-client paths; Zoom desktop-client routes, then permission-scoped SDK paths. Ship each capability only when tested against representative accounts/permissions.
 - **P2 advanced:** Simulcast, participant/guest stems where supported, moderation, remote co-producer accessibility, scheduled broadcasts and redundancy.
 
@@ -1010,87 +1050,17 @@ Verified on the build machine: a 5-second display recording with a tone-playing 
 
 **Definition of done:** All above scenarios pass with totally blind testers and documented assistive technologies; no workflow-critical mouse interaction, unlabeled custom control, inaccessible preview-only property, unexplained auto-edit or unverified success claim is accepted. Automated regression includes output probing, decoding, sample comparisons, keyboard command collisions and UI accessibility tests.
 
-## 10C. Live-show playout: Cart Wall and running order
+## 10C. Live-show playout: running order
 
-This section carries the expanded PRD's lessons from TG Drop Deck. It details LIVE-001's cart wall and running order. It is engineering evidence and a licensing record (LIC-007, LIC-008), not a user-facing referral to another product (section 19).
+This section carries the expanded PRD's lessons from TG Drop Deck. It details LIVE-001's running order. It is engineering evidence and a licensing record (LIC-007, LIC-008), not a user-facing referral to another product (section 19). Thanks to Tony Gebhard (TG Studios), who wrote TG Drop Deck and published it under the MIT licence at [github.com/tonygeb23/tg-drop-deck](https://github.com/tonygeb23/tg-drop-deck), for publishing the measurements and fixes this section and the requirements that cite it are built on.
 
 ### 10C.1 What it is
 
 [TG Drop Deck](https://github.com/tonygeb23/tg-drop-deck) (Tony Gebhard, TG Studios; MIT; Windows 3.9.0 of 16 October 2026 at the time of reading, with a separate native Mac copy) is an accessible soundboard and playout desk for podcasts, radio and live shows, written in Python and wxPython, screen-reader first and tested with NVDA running. Eighty sounds sit on the number row in four banks of twenty; one-shots overlap, beds loop and toggle; a two-deck running order crossfades; a processed microphone ducks the music; the show can be recorded, sent to another program through a virtual cable, or streamed to Icecast, SHOUTcast or RTMP services. Its working notes are unusually explicit about *measured* accessibility and audio behaviour, many prompted by blind broadcasters' reports, and that evidence is the main thing worth carrying over.
 
-QUILL Studio today narrates, chapters, converts, captions and publishes; it has no live mixer, recorder, cart wall or running order. Sections 5 and 6 plan the mixer and editor. This section adds the **live-show playout** layer TG Drop Deck demonstrates, built on AARME (section 5) rather than beside it. Requirements that belong to an existing area were placed there instead: UX-009 to UX-012, MX-127 to MX-129, MX-138, MX-139, TRAY-006, TRAY-007, MX-166, MX-179 to MX-183, EDIT-012, VIDEO-003, LIC-007, LIC-008, SEC-001, the section 13.1 latency target, and SG-11 to SG-13.
+QUILL Studio today narrates, chapters, converts, captions and publishes; it has no live mixer or running order. Sections 5 and 6 plan the mixer and editor. This section adds the **live-show playout** layer TG Drop Deck demonstrates, built on AARME (section 5) rather than beside it. Requirements that belong to an existing area were placed there instead: UX-009 to UX-012, MX-127 to MX-129, MX-138, MX-139, TRAY-006, TRAY-007, MX-166, MX-179 to MX-183, EDIT-012, VIDEO-003, LIC-007, LIC-008, SEC-001, the section 13.1 latency target, SG-12 and SG-13.
 
 **Rules every requirement below inherits:** every command has a key or a written reason and appears in a **Live Show** menu and the command palette; chords listed are *proposed* and are allocated in `keymap.APP_KEYMAPS` under the family rules and the menu-accelerator and access-key gates; the app speaks only what the screen reader does not already say, and everything it speaks goes through the announcement service so it is also brailled and written to the status bar; confirmations use the shared `action_feedback` channel (sound, speech, both or silent) while failures and counts are always spoken; every control has authored inline F1 help; nothing here makes a network call.
-
-### 10C.2 Cart Wall
-
-**CW-001 — Banks of prepared sounds.**
-
-- *Need:* a presenter who cannot see a grid needs dozens of stings, drops and beds instantly, without leaving the keyboard's home position.
-- *Behaviour:* a Cart Wall workspace (a panel, not a dialog, so Escape never closes it) of banks, default four banks of twenty slots, each a native button in a native tab page. A bank has a **kind** (one-shot, bed, or free) that decides behaviour; its **name** is the user's and purely cosmetic, so renaming a bank never changes what it does.
-- *Keys:* in the Cart Wall, `1` to `0` fire slots 1 to 10 of the current bank and `Shift+1` to `Shift+0` slots 11 to 20; `Ctrl+Tab` / `Ctrl+Shift+Tab` (and the native `Ctrl+PageDown` / `Ctrl+PageUp`) change bank; firing other banks without switching uses modifier layers set per bank in Preferences, with no `Ctrl+Alt` layer by default (AltGr); all bare keys stand down in text fields (UX-011).
-- *Announced:* nothing when a sound fires (it is heard, and the focused button already names it); a short help hint once per bank per session, not on every visit.
-- *Acceptance:* SG-11; menu, access-key and documentation-chord gates pass.
-
-**CW-002 — Fire, overlap and toggle.**
-
-- *Need:* drops must never cut each other off; a bed must start and stop on one key.
-- *Behaviour:* one-shots overlap freely; a bed-bank slot loops by default and the same key stops it, with only one bed playing at a time; bed fade-in and fade-out are settings in which zero means "exactly as recorded"; separate faders for one-shots, beds and the running order, each routable to its own AARME bus; auditioning a file while assigning it plays on a preview bus that is neither ducked nor ducking.
-- *Keys:* `Space` or `Enter` on a slot fires it; fader keys proposed as `F3`/`F4` (one-shots), `F5`/`F6` (beds), `F7`/`F8` (running order), subject to the Studio keymap.
-- *Announced:* fader moves are action outcomes (level in dB) because the fader is not focused; bed start and stop are not announced.
-- *Acceptance:* two overlapping one-shots both play to the end; a bed toggles; a zero fade starts on the first sample.
-
-**CW-003 — Stop last, stop all.**
-
-- *Need:* a wrong sound must be stoppable alone; everything must be stoppable at once without being stopped by accident.
-- *Behaviour:* **Stop last** stops the most recently started sound, and pressed again the one before it. **Stop all** stops every cart and running-order voice and requires a configurable number of presses (default 2, range 1 to 4) within a short window. Neither is MUTE AUDIENCE (MX-178), which stays single-press and confirmation-free.
-- *Keys:* Stop last proposed as `Backspace` in the Cart Wall (`Ctrl+Space` is reserved for transport by MX-154); Stop all `Escape` the configured number of times, plus a second chord per TRAY-007.
-- *Announced:* outcome with a count ("Stopped 3 sounds"); "nothing playing" when there was nothing.
-- *Acceptance:* one stray Escape at the default setting stops nothing and says how many more presses stop all.
-
-**CW-004 — Assign, rename, properties, clear.**
-
-- *Need:* building a board must be as keyboard-direct as playing it.
-- *Behaviour:* firing an empty slot opens a file chooser (WAV, MP3, FLAC, OGG, AIFF, M4A and anything the shared decoder reads); a properties dialog holds name, per-slot level trim in dB, loop, and an optional system-wide chord (TRAY-006); clear is undoable; sounds are referenced in place, never copied.
-- *Keys:* `F2` rename, `Alt+Enter` properties, `Delete` clear, `Ctrl+Z` undo clear, Applications key for the same commands in a context menu.
-- *Announced:* the slot's new name is read because its accessible name changes on the edit (UX-009); the app adds nothing.
-- *Acceptance:* every slot operation is reachable with no pointer, and the slot label updates with focus on it.
-
-**CW-005 — A slot that holds a folder.**
-
-- *Need:* six jingles that all mean "into the news" belong on one key, and the same one twice running sounds broken.
-- *Behaviour:* a slot may point at a folder; each press plays a random file from it, never the same file twice running when there is any other; the folder is scanned in the background and at assignment, never on the trigger path.
-- *Announced:* nothing on fire; an empty or vanished folder is a spoken failure.
-- *Acceptance:* 100 presses on a five-file folder never repeat consecutively and never block the UI thread.
-
-**CW-006 — Find and "what is playing".**
-
-- *Need:* with eighty slots, finding one by name beats remembering its key; and a listener cannot glance at meters.
-- *Behaviour:* a search over every bank by name that moves focus to the chosen slot; an on-demand summary of what is playing, with time left on each.
-- *Keys:* `Ctrl+F` find; "what is playing" proposed as `Ctrl+L` in the Cart Wall and Running Order.
-- *Announced:* the summary is the answer to an explicit request, so it is spoken and brailled.
-- *Acceptance:* both work while a bed and two one-shots play.
-
-**CW-007 — Cart sets are the user's files.**
-
-- *Need:* a presenter keeps one board per show, copies them between machines, and must never lose one to the app.
-- *Behaviour:* cart sets are human-readable JSON with schema validation, saved atomically (`write_json_atomic`) on change and on exit; paths under the set's own folder are stored relative so a folder of show assets moves intact; the app never overwrites a file that changed on disk since it was read (size, time, then hash) and saves its own changes beside it instead; a file that will not load is copied aside before anything replaces it, and the last-open set is remembered and reopened.
-- *Announced:* only when the app had to save beside, or set an unreadable file aside, naming the path.
-- *Acceptance:* copying a set over the open one while the app runs, then closing the app, leaves the copied set untouched.
-
-**CW-008 — Relink missing sounds.**
-
-- *Need:* a moved sound library must not cost a rebuilt board.
-- *Behaviour:* Relink missing sounds asks for a folder and repairs every missing slot whose file is found there (matched on relative path, then file name), in one pass.
-- *Announced:* the outcome with counts: relinked and still missing.
-- *Acceptance:* moving a library folder and relinking restores every slot.
-
-**CW-009 — Import a TG Drop Deck board.**
-
-- *Need:* migrating users should not rebuild eighty slots by hand.
-- *Behaviour:* read-only import of a TG Drop Deck `board.json` (`"format": 2` as read on 2026-10-26: `slots[]` with `filepath`, `name`, `loop`, `trim_db`, `custom_hotkey`, plus bank names, fader levels and duck depth) into a new cart set, resolving relative paths against the board's folder; tolerant of missing and unknown fields; streaming destinations and keys are never imported (SEC-001).
-- *Announced:* outcome with counts of slots imported, files missing, and fields ignored.
-- *Acceptance:* TG Drop Deck's own `demo/demo-board.json` imports with every slot in place.
 
 ### 10C.3 Running order and playout
 
@@ -1118,7 +1088,7 @@ QUILL Studio today narrates, chapters, converts, captions and publishes; it has 
 **PL-004 — Countdown cue on the monitor bus.**
 
 - *Need:* a sighted presenter watches a clock run down; a blind one needs to hear it without the audience hearing it.
-- *Behaviour:* optional (off by default), a short tone a set number of seconds before the on-air item's playable end (default 10, range 3 to 60), on the private monitor bus only, never in the programme or the recording, neither ducking nor ducked, with selectable tone and level (default 1 kHz, −6 dBFS); an optional braille flash of the time remaining for users who do not hear the cue; time remaining is also part of "what is playing" (CW-006).
+- *Behaviour:* optional (off by default), a short tone a set number of seconds before the on-air item's playable end (default 10, range 3 to 60), on the private monitor bus only, never in the programme or the recording, neither ducking nor ducked, with selectable tone and level (default 1 kHz, −6 dBFS); an optional braille flash of the time remaining for users who do not hear the cue; time remaining is also part of the answer to "Where am I in the show?" (BCAST-025).
 - *Acceptance:* SG-12 recording contains no cue tone.
 
 **PL-005 — Up next.**
@@ -1139,6 +1109,14 @@ QUILL Studio today narrates, chapters, converts, captions and publishes; it has 
 - *Behaviour:* optionally insert a random drop from a chosen drops folder every N songs, never the same drop twice running.
 - *Keys:* insert one random drop now, proposed `Alt+D` in the Running Order.
 
+**PL-008 — Running orders, scenes and setups are the user's files.**
+
+- *Need:* a presenter keeps one running order per show, copies them between machines, and must never lose one to the app.
+- *Behaviour:* running orders, Mixer scenes (MX-160 to MX-165) and saved recording setups are saved atomically on change and on exit (`write_json_atomic` for JSON; the same temporary-file-and-replace for PL-006's M3U); paths under the file's own folder are stored relative, so a folder of show assets moves intact; the app never overwrites a file that changed on disk since it was read (size, time, then hash) and saves its own changes beside it instead; a file that will not load is copied aside before anything replaces it; and the last-open running order is remembered and reopened.
+- *Announced:* only when the app had to save beside a file, or set an unreadable one aside, naming the file.
+- *Acceptance:* copying a running order, or a scene, over the open one while the app runs, then closing the app, leaves the copied file untouched.
+- *Source:* this is the rule withdrawn CW-007 carried, kept when the cart wall was withdrawn on 2026-10-31; TG Drop Deck `CLAUDE.md` lines 798-823.
+
 ### 10C.4 Engineering lessons worth keeping
 
 Not requirements; evidence from TG Drop Deck's notes to check against our own measurements:
@@ -1158,9 +1136,8 @@ Not requirements; evidence from TG Drop Deck's notes to check against our own me
 - **Broadcast picture cards, overlays and camera-in-corner layouts for video platforms:** a streaming feature, not a recording one; section 10 covers video capture.
 - **A three-level speech setting (all, essential, none):** QUILL's rule is to say less rather than make the user configure how much less; `action_feedback` already chooses the channel for confirmations.
 - **Speaking each sound's name as it fires:** the user hears the sound and the focused control already names it.
-- **Bundling its AI-generated demo pack:** about 8 MB, terms stated only in prose (LIC-008); Studio starts with an empty wall and a one-key assign flow, and CW-009 imports the pack for anyone who has it.
+- **Bundling its AI-generated demo pack:** about 8 MB, terms stated only in prose (LIC-008).
 - **`pedalboard` as the effects and VST3 host:** GPL-3.0 (LIC-008).
-- **Its frozen number-row map as the default keymap:** QUILL's family rules allocate keys; offered only as an open question (section 16.2, question 10).
 - **Check-box list for the running order:** QUILL's list convention uses a state column instead (PL-001).
 - **In-app feedback with donation prompts:** QUILL has its own feedback channel, and donations only cover AI costs.
 - **The Mac copy and its virtual audio driver:** Windows first, and kernel drivers are a non-goal (section 1.3).
@@ -1169,10 +1146,10 @@ Not requirements; evidence from TG Drop Deck's notes to check against our own me
 
 ### 10C.6 Phasing
 
-CW and PL depend on Phase 1 of section 14: the programme bus (MX-127), event ducking (MX-138) and the recorder (MX-170 to MX-183). They are a vertical slice for Phase 2: Cart Wall (CW-001 to CW-008) first, then the running order (PL-001 to PL-006), then CW-009 and PL-007. Exit: SG-11 to SG-13.
+PL depends on Phase 1 of section 14: the programme bus (MX-127), event ducking (MX-138) and the recorder (MX-170 to MX-183). It is a vertical slice for Phase 2: the running order (PL-001 to PL-006, and PL-008) first, then PL-007. Exit: SG-12 and SG-13.
 
 
-*Reconciliation with this document.* **Direct streaming** is adopted in section 10A (BCAST-011, BCAST-014), on exactly the conditions 10C.5 named (consent, a network egress audit entry, a go-public preflight such as MX-166, and credentials in secure storage, never in a shared board file per SEC-001). UX-006 now follows the repository's over-announce rule (GATE-13): provide details on request rather than a three-level speech setting.
+*Reconciliation with this document.* **Direct streaming** is adopted in section 10A (BCAST-011, BCAST-014), on exactly the conditions 10C.5 named (consent, a network egress audit entry, a go-public preflight such as MX-166, and credentials in secure storage, never in a shared file per SEC-001). UX-006 now follows the repository's over-announce rule (GATE-13): provide details on request rather than a three-level speech setting.
 
 ## 11. Technical design and component boundaries
 
@@ -1243,7 +1220,7 @@ These are **initial engineering targets pending validation**, not performance gu
 - At least 24-hour stability test for background mixer operation under realistic audio loads and app/device churn.
 - Bounded memory/cpu use; 8 GB RAM user profiles tested for core capture/edit/conversion without loading large AI models by default.
 - Every failure state accessible, actionable and logged locally with privacy safeguards.
-- Cart Wall keypress to first audible sample: target 30 ms or less on a WASAPI shared-mode endpoint on reference hardware, measured from key event to first non-zero output sample; short sounds decoded into memory at assignment, never on the trigger path.
+- Playout keypress (play or segue in the running order) to first audible sample: target 30 ms or less on a WASAPI shared-mode endpoint on reference hardware, measured from key event to first non-zero output sample; the start of the next item is decoded ahead, never on the trigger path.
 
 
 ### 13.2 Licensing
@@ -1269,7 +1246,7 @@ These are **initial engineering targets pending validation**, not performance gu
 
 ### 13.3 Security
 
-**SEC-001** Shared configuration files (scenes, cart sets, running orders, imported TG Drop Deck boards) are untrusted input: they never carry network destinations, credentials, or anything acted on at load, and such fields are dropped on import with the drop reported. TG Drop Deck found that a free-text "custom server" field in a shared board file could send a live microphone wherever the file's author chose on one keypress. Acceptance: importing a board containing a stream address imports the sounds and reports the address as ignored.
+**SEC-001** Shared configuration files (scenes, running orders, saved setups) are untrusted input: they never carry network destinations, credentials, or anything acted on at load, and such fields are dropped on import with the drop reported. TG Drop Deck found that a free-text "custom server" field in a shared board file could send a live microphone wherever the file's author chose on one keypress. Acceptance: opening a running order or scene containing a stream address opens the rest and reports the address as ignored.
 
 
 ## 14. Priority and incremental roadmap
@@ -1282,7 +1259,7 @@ These are **initial engineering targets pending validation**, not performance gu
 
 **Phase 2 — Demonstration and capture:** Window/screenshots, numerical cropping, OCR, AI visual inspector and grounded conversation, redaction, annotation, spoken screenshot dictation, demo recording, synchronized user narration, first-class export verification. *Status:* the screenshot half is delivered in code (Studio PRD section 4.14); demo recording is section 7A.
 
-**Phase 3 — Editing and production:** Accessible multitrack editor, clip operations/effects, image/video timeline, text-driven visual callouts, reusable scenes, captions/transcripts, audio description, live carts and running order.
+**Phase 3 — Editing and production:** Accessible multitrack editor, clip operations/effects, image/video timeline, text-driven visual callouts, reusable scenes, captions/transcripts, audio description and the live running order.
 
 **Phase 4 — Advanced creation and services:** Webcam coach, richer visual editing/generation, streaming/publishing targets, app extensions, model/plugin adapters, deeper QUILL Radio/Cast interoperability.
 
@@ -1340,11 +1317,9 @@ These are **initial engineering targets pending validation**, not performance gu
 
 **SG-10 — Upgrade:** Existing QUILL Audio Studio files, projects, profiles and common shortcuts survive migration or receive clear mapping/rollback.
 
-**SG-11 — Cart Wall on air:** With JAWS, NVDA and Narrator, keyboard only: build a bank of five sounds and one bed, fire overlapping one-shots, toggle the bed, stop the last sound, stop all; no pad is relabelled under focus during playback, a missing file is spoken and brailled, and keypress-to-sound meets the section 13.1 target.
+**SG-12 — Programme proof:** Cable test (MX-128) reports clean into a virtual cable; a recording of the far end contains the running order and the microphone and contains no cue tone, preview or private screen-reader speech.
 
-**SG-12 — Programme proof:** Cable test (MX-128) reports clean into a virtual cable; a recording of the far end contains cart, running order and microphone and contains no cue tone, preview or private screen-reader speech.
-
-**SG-13 — Show log:** A recorded show with running-order items and cart drops yields a same-name CUE (MX-183) that survives a forced kill and opens as proposed chapters (EDIT-012).
+**SG-13 — Show log:** A recorded show with running-order items and drops (PL-007) yields a same-name CUE (MX-183) that survives a forced kill and opens as proposed chapters (EDIT-012).
 
 
 *(SG numbers are this PRD's scenario numbers and are unrelated to repository gates that share a number, such as the module size budget or over-announce gate.)* *Status:* every feature SG-08 needs now exists (UIA element capture, OCR, numbered annotation, image and evidence export: Studio PRD AS-97, AS-105, AS-108, AS-109); the scenario itself has not been run with screen readers.
@@ -1390,7 +1365,7 @@ For each operation: focus placement; name/role/state; shortcut; change announcem
 | Third-party plugin crashes | Lost session | Isolate or disable plugins, test crash recovery |
 | Cloud API costs | Unanticipated expense | BYOK, quotas, per-task consent/cost disclosure; free offline baseline |
 | Scope expansion | Endless partial features | P0 gates, release train, regressions against current product |
-| Cart Wall keys collide with editor, screen-reader or international-layout keys | A pad that never fires, or fires while typing | Workspace-scoped keys (UX-011), keymap gates, no `Ctrl+Alt`+letter defaults (AltGr), startup held-key check (TRAY-006) |
+| Live Show workspace keys collide with editor, screen-reader or international-layout keys | A key that never fires, or fires while typing | Workspace-scoped keys (UX-011), keymap gates, no `Ctrl+Alt`+letter defaults (AltGr), startup held-key check (TRAY-006) |
 | Adopting a borrowed project's dependencies with its code | GPL obligations on a free MIT bundle | LIC-007/LIC-008 review before any port; port pure modules, not dependency stacks |
 
 
@@ -1404,8 +1379,6 @@ Questions 1 to 3 of the expanded PRD (current module layout, which controls exis
 7. Which supported AI image providers/local models have legal redistribution paths and acceptable resource requirements?
 8. Should downstream applications use IPC, Python package library calls, or both for shared audio engine control?
 9. Which collaboration/realtime guest recording approaches can provide legitimately separate tracks?
-10. Should the Cart Wall offer an optional "TG Drop Deck layout" key profile (its frozen number-row map) for users migrating with years of muscle memory, given that its `Ctrl+Alt` layers can be lost to AltGr on some keyboard layouts?
-11. Is the Cart Wall a Studio workspace only, or also reachable from QUILL and Quill Radio through the shared package, as the family rule that QUILL Lite may never be ahead of QUILL would suggest for any shared capability?
 
 
 ## 17. Development backlog, issue-ready epics
@@ -1433,8 +1406,8 @@ Questions 1 to 3 of the expanded PRD (current module layout, which controls exis
 | STUDIO-VIDEO-COMPOSE | 3 | Picture-in-picture, numeric crop/position, titles, lower thirds, transitions and keyframes |
 | STUDIO-VIDEO-AI | 3-4 | Timecoded visual inspection, proposed edit plans with human approval and provenance |
 | STUDIO-VIDEO-QA | 3 | Full-file decode, AV sync, caption and output validation, honest uncertainty report |
-| STUDIO-LIVE | 1 | Live workspace, accessible cart wall, preview, running order and public bus |
-| STUDIO-CARTWALL | 2-3 | Section 10C: CW-001 to CW-008, then PL-001 to PL-006, then CW-009 and PL-007; SG-11 to SG-13 |
+| STUDIO-LIVE | 1 | Live workspace, preview, running order and public bus |
+| STUDIO-PLAYOUT | 2-3 | Section 10C: PL-001 to PL-006 and PL-008, then PL-007; SG-12 and SG-13 |
 | STUDIO-ON-AIR | 1 | Offline/test/armed/live/reconnect states, independent output health and tray commands |
 | STUDIO-RADIO-STREAM | 1 | Icecast/SHOUTcast secure source-client streaming, metadata, loopback and recovery |
 | STUDIO-YOUTUBE-LIVE | 2 | Authenticated or stream-key video ingest, private rehearsal and audience chat where authorized |
@@ -1597,7 +1570,8 @@ Old IDs are the expanded PRD's unless marked *(C)*, the earlier consolidated pro
 | *(C)* STUDIO-RENAME, STUDIO-SNIP | Delivered in code | Section 17 |
 | — | CAP-007 | New: semantic regions |
 | — | REC-001 to REC-018 | New: section 7A |
-| AS-001 to SDK-001, CW-001 (scope matrix rows) | Dropped | A table of workspaces, not requirements; each workspace is a section here |
+| — | MX-184 to MX-188, REC-019 to REC-024, BCAST-026, BCAST-027, VIDEO-004, VERIFY-009, UX-013 to UX-015, PL-008 | New, 2026-10-31: the audio-lessons review; each cites its source |
+| AS-001 to SDK-001, CW-001 (scope matrix rows) | Dropped | A table of workspaces, not requirements; each workspace is a section here. The cart wall (CW) itself was withdrawn on 2026-10-31 |
 | A11Y-001 | Absorbed by UX-001 | |
 | A11Y-002 | Absorbed by section 2.1 (shell structure) | |
 | A11Y-003, A11Y-007 | Absorbed by section 13 and UX-007 | |
@@ -1662,8 +1636,8 @@ Old IDs are the expanded PRD's unless marked *(C)*, the earlier consolidated pro
 | SEC-001 to SEC-006 | Absorbed by section 13 and VIS-006 | |
 | SEC-007 | SEC-001 | Section 13.3 |
 | LIC-001 to LIC-009 | Unchanged | Section 13.2 |
-| GATE-01 to GATE-13 | SG-01 to SG-13 | Section 15.1 |
-| CW-010 to CW-018 | CW-001 to CW-009 | Section 10C.2 |
+| GATE-01 to GATE-13 | SG-01 to SG-13 | Section 15.1; SG-11 withdrawn with the cart wall on 2026-10-31 |
+| CW-010 to CW-018 | CW-001 to CW-009, withdrawn | Withdrawn on 2026-10-31 at the owner's decision; CW-007's rule continues as PL-008 |
 | PL-010 to PL-016 | PL-001 to PL-007 | Section 10C.3 |
 | Sections 1.3, 2.2, 16, 17, 20 (principles, workflows, roadmap, workstreams, definition of done) | Absorbed by the north star, section 15, section 14, section 17 and section 14's exit gates | |
 | Section 11.1 (preferred approach) | Absorbed by MX-007 and section 11 | |
