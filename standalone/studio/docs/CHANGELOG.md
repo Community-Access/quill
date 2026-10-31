@@ -82,6 +82,16 @@ Kelly Ford's [Quick Describe](https://github.com/TheIdeaPlace/QuickDescribe), a 
 - **Your user name leaves diagnostic bundles.** Paths were already cut at the user folder; now the name on its own is replaced too, as a whole word only, so a user called Al does not turn Alt into a placeholder.
 - **No garbled text.** A new test fails if any of the app's text, or any app's user guide, has text garbled by a wrong encoding, such as a dash turned into three characters a screen reader reads out one by one.
 
+### Ask AI about pictures on your ChatGPT plan (2026-10-31)
+
+- **Studio can read pictures on your ChatGPT plan, with no API key.** The Screenshot Inspector's Ask AI, automatic screenshot analysis and Ask AI questions about a video all use the plan once Studio is signed in.
+- **Signing in is one step from where you are.** With no AI set up, asking about a picture offers Sign in with your ChatGPT plan instead of stopping with a refusal. Saying yes opens Use My ChatGPT Subscription, the same window QUILL uses. Studio signs in on its own, as QUILL Studio, and never uses the sign-in QUILL or QUILL Lite made; if one of them is signed in, the offer says so, because the browser is then usually one Allow away. The window is also on the Capture menu, for choosing the model or signing out.
+- **With a plan and an AI provider, Studio asks which to use** each time, starting on the one you chose last. With only one, it doesn't ask.
+- **The approval question names your plan and account,** says the picture goes straight to OpenAI on your account, and says it counts toward your plan's usage with no separate charge.
+- **Pictures the plan can't take are converted first.** A picture over 20 MB, wider or taller than 4096 pixels, or not PNG, JPEG, WebP or GIF is scaled and converted before it is sent. Ordinary screenshots and video frame sheets go as they are. A video is still one sheet of 4 to 16 frames, never a stream.
+- **When the plan says no, Studio says so and stops.** A used-up plan offers to open ChatGPT's Usage settings; Studio never moves to your API key by itself, so to use another AI you ask again and choose it. A request the plan doesn't take for other apps is explained and not retried. A sign-in OpenAI no longer accepts tells you where to sign in again.
+- Making a picture with AI still needs an OpenAI or Gemini API key; ChatGPT plans don't make pictures for other apps. Safe Mode and AI Off block all of this, as before.
+
 ### Record a demonstration (2026-10-29)
 
 - **Screen, sound and camera as one checked video.** Capture > Record a demonstration (Ctrl+Alt+Shift+V) records a named window, one display or the full desktop to an MP4 (H.264 and AAC) through the bundled FFmpeg, using desktop duplication where it can reach the display and the GDI grabber otherwise. Frame rate 15 to 60, an optional 1080p or 720p ceiling, the mouse pointer on or off, a spoken countdown, and Studio's own windows kept out of the picture.

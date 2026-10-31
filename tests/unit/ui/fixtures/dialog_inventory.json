@@ -82,6 +82,7 @@
   "quill/apps/studio_demo_setup.py::StudioDemoSetupMixin._choose_demo_folder::wx.DirDialog": "native",
   "quill/apps/studio_demo_setup.py::StudioDemoSetupMixin._choose_program::wx.SingleChoiceDialog": "native",
   "quill/apps/studio_picture_video.py::StudioPictureVideoMixin._choose_media_file::wx.FileDialog": "native",
+  "quill/apps/studio_vision_route.py::StudioVisionRouteMixin._ask_which_connection::wx.SingleChoiceDialog": "native",
   "quill/apps/transcribe_coach.py::ProfileDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/apps/transcribe_dialogs.py::ChooseModelDialog::subclass:wx.Dialog": "hardened_custom",
   "quill/apps/transcribe_dialogs.py::SetupDialog::subclass:wx.Dialog": "hardened_custom",
