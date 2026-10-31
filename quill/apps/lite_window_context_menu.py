@@ -204,6 +204,7 @@ class DocumentContextMenuMixin:
                 self._spell_dictionary(),
                 self.spell_ignores,
                 limit=_MENU_SUGGESTIONS,
+                filename=self.path,
             )
         except Exception:  # noqa: BLE001 - a spell check must never eat the menu
             return None

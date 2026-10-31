@@ -170,7 +170,10 @@ class BrowseModeMixin(BrowsePagesMixin):
             from quill.core.spellcheck import list_misspellings
 
             context["misspellings"] = [
-                m.start for m in list_misspellings(text, self._spell_dictionary())
+                m.start
+                for m in list_misspellings(
+                    text, self._spell_dictionary(), filename=getattr(self.document, "path", None)
+                )
             ]
         except Exception:  # noqa: BLE001 - a spell-check hiccup must never break Quick Nav
             context["misspellings"] = []

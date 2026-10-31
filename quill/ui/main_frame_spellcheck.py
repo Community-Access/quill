@@ -197,6 +197,7 @@ class SpellcheckCommandsMixin:
         session = ReviewSession(
             text=text,
             dictionary=set(dictionary),
+            filename=getattr(self.document, "path", None),
             scope_start=scope_start,
             scope_end=scope_end,
             ranked=bool(getattr(self.settings, "spell_review_ranked", False)),
@@ -336,7 +337,9 @@ class SpellcheckCommandsMixin:
 
     def open_misspelling_list(self) -> None:
         dictionary = self._spell_dictionary()
-        misspellings = list_misspellings(self.editor.GetValue(), dictionary)
+        misspellings = list_misspellings(
+            self.editor.GetValue(), dictionary, filename=getattr(self.document, "path", None)
+        )
         if not misspellings:
             self._set_status("No misspellings found")
             return
@@ -369,7 +372,9 @@ class SpellcheckCommandsMixin:
         """
         dictionary = self._spell_dictionary()
         misspellings = rank_misspellings_by_frequency(
-            list_misspellings(self.editor.GetValue(), dictionary)
+            list_misspellings(
+                self.editor.GetValue(), dictionary, filename=getattr(self.document, "path", None)
+            )
         )
         if not misspellings:
             self._set_status("No misspellings found")
@@ -405,7 +410,9 @@ class SpellcheckCommandsMixin:
         """
         from quill.core.spellcheck import no_misspelling_message
 
-        return no_misspelling_message(text, cursor, dictionary, ahead=ahead)
+        return no_misspelling_message(
+            text, cursor, dictionary, ahead=ahead, filename=getattr(self.document, "path", None)
+        )
 
     def next_misspelling(self) -> None:
         dictionary = self._spell_dictionary()
@@ -459,7 +466,9 @@ class SpellcheckCommandsMixin:
         text = self.editor.GetValue()
         caret = self.editor.GetInsertionPoint()
         dictionary = self._spell_dictionary()
-        misspelling = misspelling_at_position(text, caret, dictionary)
+        misspelling = misspelling_at_position(
+            text, caret, dictionary, filename=getattr(self.document, "path", None)
+        )
         if misspelling is None:
             sel_start, sel_end = self.editor.GetSelection()
             if sel_end > sel_start:

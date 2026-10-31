@@ -99,6 +99,7 @@
     "prismatoid",
     "psutil",
     "pycparser",
+    "pygments",
     "pynacl",
     "python-docx",
     "pythoncom.py",
