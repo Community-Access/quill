@@ -453,6 +453,7 @@ from quill.ui.navigator_node import _NavigatorNode
 from quill.ui.notebook_panel import NotebookEntriesPanel
 from quill.ui.settings_live_switches import at_startup as start_live_settings
 from quill.ui.sound_manager import post_sound
+from quill.ui.spoken_name import set_spoken_name
 from quill.ui.status_bar_role import mark_as_status_bar
 from quill.ui.word_view import WordDocumentSurface
 
@@ -3818,6 +3819,7 @@ class MainFrame(
         search = wx.SearchCtrl(dialog, style=wx.TE_PROCESS_ENTER)
         search.SetDescriptiveText("Search by command name or key binding")
         set_accessible_name(search, "Search by command name or key binding")
+        set_spoken_name(search, "Search by command name or key binding")
         root.Add(search, 0, wx.EXPAND | wx.ALL, 8)
 
         cheatsheet_ctrl = wx.TextCtrl(
@@ -3825,6 +3827,7 @@ class MainFrame(
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
         )
         set_accessible_name(cheatsheet_ctrl, "Key cheatsheet")
+        set_spoken_name(cheatsheet_ctrl, "Key cheatsheet")
         root.Add(cheatsheet_ctrl, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         close_btn = wx.Button(dialog, id=wx.ID_CANCEL, label="Close")
@@ -8051,6 +8054,7 @@ class MainFrame(
         chooser.SetSelection(0 if choices else wx.NOT_FOUND)
         details = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
         set_accessible_name(details, "Tool details")
+        set_spoken_name(details, "Tool details")
         copy_button = wx.Button(dialog, label="Copy Install Command")
         website_button = wx.Button(dialog, label="Open Website")
         wizard_button = wx.Button(dialog, label="Open Wizard")
@@ -8476,10 +8480,12 @@ class MainFrame(
             category_values: list[str | None] = [None] + [name for name, _ in summary]
             category_box = wx.ListBox(dialog, choices=category_labels)
             set_accessible_name(category_box, "Category")
+            set_spoken_name(category_box, "Category")
             category_box.SetSelection(0)
             inner.Add(category_box, 0, wx.ALL | wx.EXPAND, 8)
             results = wx.ListBox(dialog)
             set_accessible_name(results, "Results")
+            set_spoken_name(results, "Results")
             inner.Add(results, 1, wx.ALL | wx.EXPAND, 8)
             go_button = wx.Button(dialog, id=wx.ID_OK, label="Go")
             cancel_button = wx.Button(dialog, id=wx.ID_CANCEL, label="Cancel")
@@ -9091,8 +9097,10 @@ class MainFrame(
             style=wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT | wx.TR_HAS_VARIABLE_ROW_HEIGHT,
         )
         set_accessible_name(tree, "YAML structure")
+        set_spoken_name(tree, "YAML structure")
         preview = wx.TextCtrl(splitter, style=wx.TE_MULTILINE | wx.TE_READONLY)
         set_accessible_name(preview, "Node preview")
+        set_spoken_name(preview, "Node preview")
         splitter.SplitVertically(tree, preview, 360)
         splitter.SetMinimumPaneSize(240)
 
@@ -9421,8 +9429,10 @@ class MainFrame(
         splitter = wx.SplitterWindow(dialog, style=wx.SP_LIVE_UPDATE)
         tree = wx.TreeCtrl(splitter, style=wx.TR_HAS_BUTTONS | wx.TR_HIDE_ROOT)
         set_accessible_name(tree, root_label)
+        set_spoken_name(tree, root_label)
         preview = wx.TextCtrl(splitter, style=wx.TE_MULTILINE | wx.TE_READONLY)
         set_accessible_name(preview, f"{root_label} preview")
+        set_spoken_name(preview, f"{root_label} preview")
         splitter.SplitVertically(tree, preview, 300)
         splitter.SetMinimumPaneSize(200)
 
@@ -12802,6 +12812,7 @@ class MainFrame(
                     dialog, value=value, style=style, size=(-1, 90) if multiline else (-1, -1)
                 )
                 ctrl.SetName(accessible_name)
+                set_spoken_name(ctrl, accessible_name)
                 return ctrl
 
             name_ctrl = _add_field(lambda: _make_text(name, "Name", False), "&Name (required):")
@@ -13412,6 +13423,7 @@ class MainFrame(
         set_accessible_name(chooser, "Recorded macros")
         details = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
         set_accessible_name(details, "Macro details")
+        set_spoken_name(details, "Macro details")
         if names:
             chooser.SetSelection(0)
 
@@ -13537,6 +13549,7 @@ class MainFrame(
         entries: list[tuple[str, str, str]] = []
         summary = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
         set_accessible_name(summary, "Profile summary")
+        set_spoken_name(summary, "Profile summary")
         # keyboard_pack_choices, keyboard_pack_choice, and keyboard_preview are
         # created in the layout section below so their StaticText labels are
         # created first in Z-order (required for JAWS label-buddy association).
@@ -13931,6 +13944,7 @@ class MainFrame(
             size=(-1, 160),
         )
         set_accessible_name(keyboard_preview, "Keyboard pack preview")
+        set_spoken_name(keyboard_preview, "Keyboard pack preview")
         root.Add(keyboard_preview, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM | wx.EXPAND, 8)
         buttons = wx.BoxSizer(wx.HORIZONTAL)
         buttons.Add(switch_button, 0, wx.RIGHT, 6)

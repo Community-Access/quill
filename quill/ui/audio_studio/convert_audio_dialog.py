@@ -41,6 +41,7 @@ from quill.core.audio.dsp import DspOptions, build_dsp_filters, loudness_choices
 from quill.core.audio.exact_optilab import ExactOptilab
 from quill.core.audio.formats import format_label, is_video_format, open_wildcard
 from quill.core.audio.presets import DEFAULT_PRESET_ID, preset_choices, preset_spec
+from quill.ui.spoken_name import set_spoken_name
 
 _TITLE = "Convert Audio"
 
@@ -524,6 +525,7 @@ class ConvertAudioDialog(wx.Dialog):
             ctrl = wx.Choice(self, choices=[label for _value, label in pairs])
             ctrl.SetSelection(0)
             set_accessible_name(ctrl, name)
+            set_spoken_name(ctrl, name)
             ctrl.SetHelpText(help_text)
             return ctrl
 
@@ -581,6 +583,7 @@ class ConvertAudioDialog(wx.Dialog):
             spin = wx.SpinCtrlDouble(self, min=lo, max=hi, inc=inc)
             spin.SetDigits(digits)
             set_accessible_name(spin, name)
+            set_spoken_name(spin, name)
             spin.SetHelpText(help_text)
             return spin
 

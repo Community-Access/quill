@@ -57,6 +57,7 @@ from quill.ui.dialog_contract import (
     show_modal_dialog,
 )
 from quill.ui.sound_event_labels import EVENT_GROUPS, GROUP_FOR, label_for
+from quill.ui.spoken_name import set_spoken_name
 
 __all__ = ["SoundSchemeDialog", "SoundSchemeResult", "draft_for_pack", "known_events"]
 
@@ -210,6 +211,7 @@ class SoundSchemeDialog:
             panel, value="", style=wx.TE_READONLY | wx.TE_MULTILINE, size=(-1, 44)
         )
         set_accessible_name(self.detail, "About this event")
+        set_spoken_name(self.detail, "About this event")
         self.detail.SetHelpText("What this event means, and what it currently plays.")
         box.Add(self.detail, 0, wx.EXPAND | wx.ALL, _PAD // 2)
 

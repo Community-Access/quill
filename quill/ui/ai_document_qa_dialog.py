@@ -56,6 +56,8 @@ class AIDocumentQADialog:
         self._build_ui()
 
     def _build_ui(self) -> None:
+        from quill.ui.spoken_name import set_spoken_name
+
         wx = self._wx
         root = wx.BoxSizer(wx.VERTICAL)
 
@@ -67,6 +69,7 @@ class AIDocumentQADialog:
             value=self._document_title,
         )
         self._doc_path_ctrl.SetName("Document path or title")
+        set_spoken_name(self._doc_path_ctrl, "Document path or title")
         browse_btn = wx.Button(self.dialog, label="&Browse File...")
         use_editor_btn = wx.Button(self.dialog, label="Use &Current Document")
         src_sizer.Add(self._doc_path_ctrl, 1, wx.EXPAND | wx.RIGHT, 6)
@@ -108,6 +111,7 @@ class AIDocumentQADialog:
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.BORDER_NONE,
         )
         self._answer_ctrl.SetName("Answer text")
+        set_spoken_name(self._answer_ctrl, "Answer")
         self._excerpt_label = wx.StaticText(self.dialog, label="")
         self._excerpt_label.Wrap(760)
         detail_sizer.Add(self._answer_ctrl, 1, wx.EXPAND | wx.ALL, 4)

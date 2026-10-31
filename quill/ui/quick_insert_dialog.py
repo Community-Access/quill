@@ -19,6 +19,7 @@ from quill.core.abbreviations import (
     quick_insert_order,
 )
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.spoken_name import set_spoken_name
 
 
 class QuickInsertDialog:
@@ -51,6 +52,7 @@ class QuickInsertDialog:
             self.dialog, style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.BORDER_SUNKEN
         )
         self._list.SetName("Abbreviations")
+        set_spoken_name(self._list, "Abbreviations")
         self._list.InsertColumn(0, "Abbreviation", width=130)
         self._list.InsertColumn(1, "Expands to", width=290)
         self._list.InsertColumn(2, "Category", width=90)
@@ -60,6 +62,7 @@ class QuickInsertDialog:
             self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(-1, 70)
         )
         self._preview.SetName("Full expansion of the selected abbreviation")
+        set_spoken_name(self._preview, "Full expansion of the selected abbreviation")
         root.Add(self._preview, 0, wx.EXPAND | wx.ALL, 8)
 
         buttons = self.dialog.CreateButtonSizer(wx.OK | wx.CANCEL)

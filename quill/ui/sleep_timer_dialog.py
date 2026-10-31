@@ -6,6 +6,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.spoken_name import set_spoken_name
 
 _PRESET_MINUTES = (15, 30, 45, 60, 90)
 #: Returned instead of a number of minutes when "End of this episode" is
@@ -76,6 +77,7 @@ class SleepTimerDialog:
         self._custom_ctrl = wx.SpinCtrl(self.dialog, min=1, max=600)
         self._custom_ctrl.SetValue(30)
         self._custom_ctrl.SetName("Custom sleep timer duration, in minutes")
+        set_spoken_name(self._custom_ctrl, "Custom sleep timer duration, in minutes")
         self._custom_ctrl.Enable(False)
         root.Add(self._custom_ctrl, 0, wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 

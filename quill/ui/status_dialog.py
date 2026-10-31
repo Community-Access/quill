@@ -11,6 +11,7 @@ from __future__ import annotations
 from typing import Any
 
 from quill.ui.dialog_contract import apply_modal_ids, focus_primary_control
+from quill.ui.spoken_name import set_spoken_name
 
 
 class HelpStatusDialog:
@@ -37,6 +38,7 @@ class HelpStatusDialog:
             style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.LC_VRULES,
         )
         self._status_list.SetName("Status overview")
+        set_spoken_name(self._status_list, "Status overview")
         self._status_list.AppendColumn("Section", width=130)
         self._status_list.AppendColumn("Setting", width=220)
         self._status_list.AppendColumn("Value", width=380)
@@ -52,6 +54,7 @@ class HelpStatusDialog:
             style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.LC_VRULES,
         )
         self._tasks_list.SetName("Tasks and downloads")
+        set_spoken_name(self._tasks_list, "Tasks and downloads")
         self._tasks_list.AppendColumn("Task / Model", width=220)
         self._tasks_list.AppendColumn("Status", width=90)
         self._tasks_list.AppendColumn("Progress", width=90)
@@ -69,6 +72,7 @@ class HelpStatusDialog:
             style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.LC_VRULES,
         )
         self._features_list.SetName("Features")
+        set_spoken_name(self._features_list, "Features")
         self._features_list.AppendColumn("Feature ID", width=230)
         self._features_list.AppendColumn("Name", width=210)
         self._features_list.AppendColumn("Category", width=130)
@@ -85,6 +89,7 @@ class HelpStatusDialog:
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2,
         )
         self._actions_ctrl.SetName("Recent actions")
+        set_spoken_name(self._actions_ctrl, "Recent actions")
         ap_sizer.Add(self._actions_ctrl, 1, wx.EXPAND | wx.ALL, 6)
         actions_panel.SetSizer(ap_sizer)
         nb.AddPage(actions_panel, "Actions")
