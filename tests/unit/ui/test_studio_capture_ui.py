@@ -242,6 +242,23 @@ def test_revoking_automatic_permission_blocks_queued_upload(chat, connected, mon
         host._task_manager.jobs[0][1](cancellation_token=CancellationToken())
 
 
+def test_paused_automatic_ai_is_said_once_not_with_every_screenshot(chat, connected, monkeypatch):
+    # Kelly Ford's Quick Describe: a lasting limitation is said once, not per result.
+    from quill.core import studio_capture_ai as ai
+
+    host, dialog = chat(consent=wx.YES)
+    preferences = {"auto_ai_enabled": True, "approved_connection": {"host": "elsewhere"}}
+    monkeypatch.setattr(ai, "load_capture_ai_preferences", lambda: preferences)
+    host.messages.clear()
+    host._maybe_auto_inspect(dialog.evidence)
+    host._maybe_auto_inspect(dialog.evidence)
+    paused = [m for m in host.messages if "Automatic screenshot AI is paused" in m]
+    assert len(paused) == 1 and not host._task_manager.jobs
+    preferences["approved_connection"] = ai.connection_identity(connected)
+    host._maybe_auto_inspect(dialog.evidence)
+    assert host._auto_ai_pause_said is False
+
+
 def test_refresh_does_not_replace_missing_window_with_desktop(parent, monkeypatch):
     from quill.platform.windows import studio_capture as platform
 

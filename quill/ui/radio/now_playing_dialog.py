@@ -12,6 +12,7 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from quill.ui.dialog_contract import announce_surface_exit, apply_modal_ids
+from quill.ui.spoken_name import set_spoken_name
 
 #: The one open modeless viewer, if any. This window is a snapshot -- of a
 #: track, a station's details, or the full now-playing state -- so opening a
@@ -151,6 +152,7 @@ class NowPlayingDialog:
             style=wx.TE_MULTILINE | wx.TE_READONLY,
         )
         self._field.SetName("Now playing")
+        set_spoken_name(self._field, "Now playing")
         root.Add(self._field, 1, wx.EXPAND | wx.ALL, 8)
 
         char_label = wx.StaticText(self._surface, label=f"{len(self._text):,} characters")

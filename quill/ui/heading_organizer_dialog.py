@@ -37,6 +37,7 @@ from quill.core.markdown_sections import (
 )
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box, show_modal_dialog
+from quill.ui.spoken_name import set_spoken_name
 
 __all__ = ["ORGANIZER_KINDS", "organize_headings", "organize_rich_headings"]
 
@@ -167,12 +168,14 @@ def _show_dialog(
 
     list_box = wx.ListBox(dialog)
     set_accessible_name(list_box, "Headings")
+    set_spoken_name(list_box, "Headings")
     list_box.SetHelpText(
         "Every heading in the document, in the order it appears. Arrow through "
         "them; Tab demotes the one you are on and Shift+Tab promotes it."
     )
     preview = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
     set_accessible_name(preview, "Heading preview")
+    set_spoken_name(preview, "Heading preview")
     preview.SetHelpText(
         "The section under the heading you are on, so you can tell two "
         "similarly named headings apart before moving either."

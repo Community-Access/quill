@@ -44,6 +44,7 @@ from quill.ui.dialog_contract import (
     bind_close_button,
     readable_min_size,
 )
+from quill.ui.spoken_name import set_spoken_name
 
 #: The buttons, in reaching order, as ``(command id, label)``. The labels are
 #: this panel's own: the table's are written for a Playback menu, and here they
@@ -279,6 +280,7 @@ class PlayerPanel:
             size=readable_min_size(self._win),
         )
         self._status.SetName("Now playing")
+        set_spoken_name(self._status, "Now playing")
         root.Add(self._status, 0, wx.EXPAND | wx.ALL, 10)
 
         grid = wx.GridSizer(0, 3, 6, 6)

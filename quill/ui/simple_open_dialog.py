@@ -38,6 +38,7 @@ from quill.ui.dialog_contract import (
     apply_modal_ids,
     show_modal_dialog,
 )
+from quill.ui.spoken_name import set_spoken_name
 
 
 def _toggle_hidden_key_pressed(event: wx.KeyEvent) -> bool:
@@ -203,6 +204,7 @@ class SimpleOpenDialog:
         # --- File list ----------------------------------------------------
         self._list = wx.ListBox(self.dialog, style=wx.LB_SINGLE)
         self._list.SetName("Files")
+        set_spoken_name(self._list, "Files")
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
         # --- Status line --------------------------------------------------
@@ -496,10 +498,10 @@ class SimpleOpenDialog:
 
     def _set_status(self, message: str, *, error: bool = False) -> None:
         self._status.SetLabel(message)
-        if error:
-            self._status.SetForegroundColour(wx.RED)
-        else:
-            self._status.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOWTEXT))
+        # The words carry the error and the announcement speaks them, so the
+        # status keeps the system text colour. Pure red on the dialog face was
+        # 3.5:1, under the 4.5:1 text needs, and it ignored high contrast.
+        self._status.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOWTEXT))
         self._status.Refresh()
         if message:
             self._announce(message)

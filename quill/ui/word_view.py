@@ -11,6 +11,7 @@ from quill.io.pandoc import (
     convert_document_with_pandoc,
 )
 from quill.ui.dialog_contract import set_accessible_name
+from quill.ui.spoken_name import set_spoken_name
 
 
 def _normalize_whitespace(value: str) -> str:
@@ -242,6 +243,7 @@ class WordDocumentSurface:
             style=wx.TE_MULTILINE | wx.TE_RICH2 | wx.TE_NOHIDESEL,
         )
         set_accessible_name(self.text_ctrl, "Word document as text")
+        set_spoken_name(self.text_ctrl, "Word document as text")
 
         preview_sizer = wx.BoxSizer(wx.VERTICAL)
         preview_sizer.Add(self.preview, 1, wx.EXPAND)

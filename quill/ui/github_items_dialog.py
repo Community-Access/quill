@@ -91,6 +91,7 @@ from quill.ui.github_items_view import (
     sort_items,
     view_label,
 )
+from quill.ui.spoken_name import set_spoken_name
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -274,6 +275,7 @@ class GitHubItemsDialog(GitHubBranchActionsMixin, GitHubQuickFilterMixin, GitHub
             style=wx.LC_REPORT | wx.BORDER_SIMPLE,
         )
         self._list.SetName("GitHub items list; select several rows for batch actions")
+        set_spoken_name(self._list, "GitHub items; select several rows for batch actions")
         root.Add(self._list, 2, wx.EXPAND | wx.LEFT | wx.RIGHT, 10)
 
         # Details

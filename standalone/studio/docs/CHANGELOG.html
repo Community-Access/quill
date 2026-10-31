@@ -395,6 +395,150 @@ annotation/redaction editing and screenshot comparison; and the later
 video demonstration with optional sound. None is represented as already
 delivered by this milestone.</li>
 </ul>
+<h3
+id="lessons-from-quick-describe-with-thanks-to-kelly-ford-2026-10-30">Lessons
+from Quick Describe, with thanks to Kelly Ford (2026-10-30)</h3>
+<p>Kelly Ford’s <a
+href="https://github.com/TheIdeaPlace/QuickDescribe">Quick Describe</a>,
+a free, open-source app that describes the screen with Windows’ own AI,
+shares what it learned the hard way. Studio adopted these lessons, with
+thanks to Kelly for the ideas and for giving so much to the
+community.</p>
+<ul>
+<li><strong>The Recording status window and magnifiers.</strong> Keeping
+a window out of a recording can also hide it from a magnifier and from
+screen sharing. Record a demonstration has a new check box, Let
+magnifiers and screen sharing see the Recording status window, off by
+default; the check says when it is on, because the window is then
+recorded too if it is inside what you record.</li>
+<li><strong>Ask AI about a video reads more clearly, and guesses
+less.</strong> Fewer frames are now drawn bigger (4 frames at 960 pixels
+wide each, 16 at 512), so no sheet is wider than about 2048 pixels and a
+provider has little reason to shrink it. Frame times are drawn in a
+larger font, so answers can cite them. The AI is told to quote text only
+where it can read it clearly, to say when text is too small, and not to
+describe what happened between frames. Quick Describe found that a
+picture shrunk until a model accepts it comes back with invented
+text.</li>
+<li><strong>A face detector that stops answering is replaced.</strong>
+Check camera framing starts a fresh detector after a failure, and after
+three failures in a row says once that framing advice has stopped,
+instead of going quiet. Quick Describe found that Windows’ AI can report
+itself ready while it has stopped answering.</li>
+<li><strong>“Automatic screenshot AI is paused” is said once,</strong>
+not with every screenshot, until automatic AI can run again. A
+limitation repeated with each result is noise.</li>
+<li><strong>Your user name leaves diagnostic bundles.</strong> Paths
+were already cut at the user folder; now the name on its own is replaced
+too, as a whole word only, so a user called Al does not turn Alt into a
+placeholder.</li>
+<li><strong>No garbled text.</strong> A new test fails if any of the
+app’s text, or any app’s user guide, has text garbled by a wrong
+encoding, such as a dash turned into three characters a screen reader
+reads out one by one.</li>
+</ul>
+<h3 id="record-a-demonstration-2026-10-29">Record a demonstration
+(2026-10-29)</h3>
+<ul>
+<li><strong>Screen, sound and camera as one checked video.</strong>
+Capture &gt; Record a demonstration (Ctrl+Alt+Shift+V) records a named
+window, one display or the full desktop to an MP4 (H.264 and AAC)
+through the bundled FFmpeg, using desktop duplication where it can reach
+the display and the GDI grabber otherwise. Frame rate 15 to 60, an
+optional 1080p or 720p ceiling, the mouse pointer on or off, a spoken
+countdown, and Studio’s own windows kept out of the picture.</li>
+<li><strong>You choose every sound, and your screen reader stays
+private.</strong> Sound sources are a list with a state column: the
+target program’s own sound (Windows process loopback), system sound with
+the screen reader left out by default, the microphone of your choice,
+screen reader speech (with confirmation), and any other program playing
+sound. Each has its own level. The microphone and screen reader always
+start left out, the microphone’s on state is never saved, and Studio’s
+own process is never recorded.</li>
+<li><strong>Screen, camera and sound in any combination.</strong> Two
+check boxes, Include the screen picture and Include the camera picture,
+with the Sound sources list: screen only, screen with a camera corner,
+camera filling the picture, or sound only (M4A, MP3, WAV, FLAC or Opus).
+A video with no sound source gets a silent soundtrack unless you turn
+that off. The after-check expects exactly the streams you chose.</li>
+<li><strong>Keep awake and Do Not Disturb.</strong> On by default while
+recording; put back exactly as they were when you stop, and after a
+crash on the next launch.</li>
+<li><strong>A picture and sound as a YouTube video.</strong> Capture
+&gt; Make a YouTube video from a picture and sound (Ctrl+Alt+Shift+Y),
+also offered after a sound-only recording: shape (YouTube, square,
+vertical or the picture’s own size), an optional slow zoom and sound
+wave, chapters from the recording’s markers, and a title and description
+saved beside the video ready for YouTube’s upload page. The sound is
+used exactly as it is.</li>
+<li><strong>ASIO sound cards.</strong> Use ASIO sound cards, in Studio
+&gt; Preferences (after restarting Studio), lists an interface’s ASIO
+inputs as microphones, first and marked “(ASIO)”. Off by default.</li>
+<li><strong>Record a whole sound card.</strong> Add a program’s sound
+also offers “Everything playing on” each sound card, recorded by Windows
+loopback; the check warns when the screen reader may be on it.</li>
+<li><strong>Ready for a long recording.</strong> The check also records
+three seconds at your settings and warns if the computer drops frames,
+warns on battery (with the charge and time left) and when Windows Update
+is waiting to restart. The quick test can last from 5 seconds to 10
+minutes, as a rehearsal.</li>
+<li><strong>Captions and a transcript for a recording.</strong> The
+result window’s Make captions and a transcript saves SRT, VTT and a
+plain transcript beside the file, transcribed on this computer.</li>
+<li><strong>Ask AI about a video.</strong> Capture &gt; Ask AI questions
+about a video (Ctrl+Alt+Shift+K): the whole video or a stretch, as
+labelled frames with the transcript of that stretch, in the Screenshot
+Inspector’s conversation, with its approval and Safe Mode rules.</li>
+<li><strong>Make a picture with AI.</strong> Capture &gt; New picture
+with AI (Ctrl+Alt+Shift+J), with OpenAI or Google Gemini: describe it,
+ask for changes in words, keep every version, and hear an independent
+description of each from your vision model. Every request is approved
+first; AI off and Safe Mode refuse it.</li>
+<li><strong>Broadcast live to Icecast or SHOUTcast.</strong> Capture
+&gt; Broadcast live (Ctrl+Alt+Shift+G): server and show details,
+plain-word quality presets with Custom (format, bit rate, stereo or
+mono, sample rate), loudness, a stream-only list of sounds with their
+own levels (the screen reader asks first), an optional saved copy, a
+spoken check and a private connection test. While live: now-playing
+title, Mute everything public (Ctrl+Alt+Shift+Z), Stop
+(Ctrl+Alt+Shift+E), automatic reconnect. Passwords stay in Windows
+Credential Manager.</li>
+<li><strong>Studio Mixer.</strong> One window (Ctrl+Alt+Shift+M) with a
+Programs tab (each program’s volume, mute and sound card, so a program
+can move to another card as in Windows Settings) and a Devices tab
+(default and communications devices, recording level and mute).</li>
+<li><strong>Camera and face framing.</strong> Add your camera in any
+corner, or record the camera alone. Check camera framing
+(Ctrl+Alt+Shift+C) says whether your face is in view and which way to
+move, and during a recording Studio can say when your face leaves the
+view and returns. Face detection is Windows’ own, on this computer; no
+frame is saved by the check.</li>
+<li><strong>One spoken check before you start.</strong> Check takes a
+trial picture, opens each source, looks for digital silence (a blocked
+microphone), the microphone lock, the camera, FFmpeg’s real
+capabilities, the folder and its free space, and system-wide keys. Stops
+block the start; Warns are named. Any change afterwards asks for a new
+check. A 5-second test records and checks the exact setup.</li>
+<li><strong>Control from anywhere.</strong> Pause and resume as separate
+segments, markers, microphone mute, a status line, emergency stop and
+discard, from the Capture menu, the tray (without restoring Studio) and
+a focus-safe Recording status window. All join the opt-in system-wide
+hotkey list; none is assigned by default.</li>
+<li><strong>Independent check and recovery.</strong> After Stop the
+finished file is reopened and checked (streams, length, frame count,
+decoding at start, middle and end, black stretches, each source’s level,
+SHA-256) and reported as Verified, Needs review or Failed in one
+sentence and in JSON and Markdown reports beside it. Failures during a
+recording are spoken once and marked. Recordings are written as
+crash-safe segments in a hidden folder, and Capture &gt; Recover
+unfinished recordings finishes any that a crash left behind.</li>
+<li><strong>Still pending.</strong> Window targets record the window’s
+screen area (Windows.Graphics.Capture is not yet used, so a covering
+window is recorded and movement is not followed); JAWS, NVDA, Narrator
+and braille acceptance; long-recording audio and video alignment on
+reference hardware; and a live check of face detection with a person in
+front of the camera.</li>
+</ul>
 <h3 id="the-window-the-tray-and-preferences">The window, the tray and
 Preferences</h3>
 <ul>

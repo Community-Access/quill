@@ -259,7 +259,10 @@ documentation to QUILL. Thank you.
 We add a name here, or credit someone in release notes, only with their
 consent and in the form they choose (a name, a GitHub handle, or no credit),
 and we describe the work, never the person's disability or assistive
-technology. See [Recognition](ACCESSIBILITY.md#recognition).
+technology. See [Recognition](ACCESSIBILITY.md#recognition). Accessibility
+reports and fixes from before that rule started, on 29 October 2026, are
+credited by GitHub account in
+[Earlier accessibility contributions](ACCESSIBILITY.md#earlier-accessibility-contributions).
 
 - Taylor Arndt ([@taylorarndt](https://github.com/taylorarndt))
 - Michael Doise ([@mikedoise](https://github.com/mikedoise))

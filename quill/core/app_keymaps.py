@@ -31,6 +31,41 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         "studio.capture_desktop": "Ctrl+Alt+Shift+F6",
         "studio.capture_selected": "Ctrl+Alt+Shift+F4",
         "studio.open_capture": "Ctrl+Alt+Shift+O",
+        # Record a Demonstration (Studio PRD 7A.3). Not Ctrl+Alt+Shift+R, the
+        # first proposal: that is Quill Radio's system-wide show/hide
+        # (family_chords.SHOW_HIDE_DEFAULTS), which wins while Radio runs.
+        # V for video. The rest are the PRD's proposals, free on this bar.
+        "studio.record_demo": "Ctrl+Alt+Shift+V",
+        "studio.record_pause": "Ctrl+Alt+Shift+P",
+        "studio.record_marker": "Ctrl+Alt+Shift+B",
+        "studio.record_mute": "Ctrl+Alt+Shift+U",
+        "studio.record_status": "Ctrl+Alt+Shift+T",
+        "studio.record_window": "Ctrl+Alt+Shift+W",
+        # A second Stop and save: a screen reader's keyboard hook can swallow
+        # one chord invisibly (TRAY-007).
+        "studio.record_emergency_stop": "Ctrl+Alt+Shift+End",
+        # Rare and destructive (family rule 9): a key, not a short one, and it
+        # asks before deleting anything.
+        # Not F7 to F11: those are the QuillVille launcher keys, and a launcher
+        # always wins, so a command there would never fire.
+        "studio.record_discard": "Ctrl+Alt+Shift+Delete",
+        "studio.record_recover": "Ctrl+Alt+Shift+L",
+        "studio.camera_check": "Ctrl+Alt+Shift+C",
+        # MX-150 proposes Ctrl+Alt+M for the mixer; the three-modifier form
+        # keeps Studio's capture keys one family.
+        "studio.mixer": "Ctrl+Alt+Shift+M",
+        # Y for YouTube: a picture and a sound made into one video (roadmap V3).
+        "studio.picture_video": "Ctrl+Alt+Shift+Y",
+        # K for asK: AI about the whole video or a stretch (roadmap A1). Not Q,
+        # which is QUILL's system-wide show/hide (family_chords.SHOW_HIDE_DEFAULTS).
+        "studio.ask_ai_video": "Ctrl+Alt+Shift+K",
+        # J: the one letter left on this bar; a picture made by talking (roadmap V1).
+        "studio.make_picture": "Ctrl+Alt+Shift+J",
+        # Broadcasting (roadmap section 6): G for go live, Z for the emergency
+        # mute of everything public (MX-178), E for end.
+        "studio.broadcast": "Ctrl+Alt+Shift+G",
+        "studio.broadcast_mute": "Ctrl+Alt+Shift+Z",
+        "studio.broadcast_stop": "Ctrl+Alt+Shift+E",
     },
     "radio": {
         # Quick-play favorites. These were Ctrl+Alt+Shift+1..0 in

@@ -753,7 +753,7 @@ class CommandRegistryMixin:
             "view.toggle_overwrite_mode",
             "Toggle Overwrite Mode",
             self.toggle_overwrite_mode,
-            None,
+            self._binding_for("view.toggle_overwrite_mode"),
         )
         self.commands.register(
             "navigate.go_to_line",
@@ -1000,7 +1000,7 @@ class CommandRegistryMixin:
             "tools.dictionary_status",
             "Dictionary Status...",
             self.show_dictionary_status,
-            None,
+            self._binding_for("tools.dictionary_status"),
         )
         self.commands.register(
             "tools.ocr_image",
@@ -1411,7 +1411,7 @@ class CommandRegistryMixin:
             "tools.keymap_editor",
             "Keymap Editor...",
             self.open_keymap_editor,
-            None,
+            self._binding_for("tools.keymap_editor"),
         )
         self.commands.register(
             "tools.status_bar_settings",
@@ -1525,7 +1525,7 @@ class CommandRegistryMixin:
             "help.switch_feature_profile",
             "Switch Feature Profile...",
             self.switch_feature_profile,
-            None,
+            self._binding_for("help.switch_feature_profile"),
         )
         self.commands.register(
             "help.feature_profile_health_check",
@@ -1621,7 +1621,7 @@ class CommandRegistryMixin:
             "help.report_bug",
             "Get Help from Support...",
             self.report_bug,
-            None,
+            self._binding_for("help.report_bug"),
         )
         self.commands.register(
             "help.open_logs_folder",
@@ -2272,7 +2272,7 @@ class CommandRegistryMixin:
             "format.toggle_case",
             "Toggle Case",
             self.format_toggle_case,
-            None,
+            self._binding_for("format.toggle_case"),
         )
         self.commands.register(
             "format.move_line_up",
@@ -2332,7 +2332,7 @@ class CommandRegistryMixin:
             "format.join_lines",
             "Join Lines",
             self.join_lines,
-            None,
+            self._binding_for("format.join_lines"),
         )
         self.commands.register(
             "format.insert_bullet_list",
@@ -2452,7 +2452,7 @@ class CommandRegistryMixin:
             "edit.sort_lines_descending",
             "Sort Lines Descending",
             self.sort_lines_descending,
-            None,
+            self._binding_for("edit.sort_lines_descending"),
         )
         self.commands.register(
             "edit.reverse_lines",
@@ -2482,7 +2482,7 @@ class CommandRegistryMixin:
             "edit.duplicate_selection",
             "Duplicate Selection",
             self.duplicate_selection,
-            None,
+            self._binding_for("edit.duplicate_selection"),
         )
         self.commands.register(
             "edit.select_chunk",
@@ -2509,7 +2509,7 @@ class CommandRegistryMixin:
             "edit.normalize_whitespace",
             "Normalize Whitespace",
             self.normalize_whitespace,
-            None,
+            self._binding_for("edit.normalize_whitespace"),
         )
         self.commands.register(
             "edit.convert_indentation_to_spaces",

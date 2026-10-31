@@ -13,6 +13,8 @@ from __future__ import annotations
 from collections.abc import Callable, Sequence
 from typing import Any
 
+from quill.ui.spoken_name import set_spoken_name
+
 
 def _end_modal_then(wx: Any, dialog: Any, func: Callable[..., Any], *args: Any) -> None:
     """End the modal first, then dispatch the activation callback.
@@ -200,6 +202,7 @@ class VaultFilterDialog:
 
         listbox = wx.ListBox(dialog, choices=self.labels, style=wx.LB_SINGLE)
         listbox.SetName(self._heading)
+        set_spoken_name(listbox, self._heading)
         if self._items:
             listbox.SetSelection(0)
         self._listbox = listbox

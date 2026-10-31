@@ -17,6 +17,7 @@ patterns) and the redaction contract in ``docs/SECURITY.md:81``.
 
 from __future__ import annotations
 
+import os
 import re
 from collections.abc import Sequence
 
@@ -235,6 +236,23 @@ def format_args_for_log(args: Sequence[str]) -> str:
     return f"{exe_base} {' '.join(rest)} — {len(rest)} args"
 
 
+def redact_user_name(text: str, name: str | None = None) -> str:
+    """Replace the signed-in user's name with ``<user>``, as a whole word only.
+
+    Paths are already cut at the user folder; this catches the name on its
+    own ("signed in as jeff"). Whole words only, so a user called "Al" does
+    not turn "Alt" into "<user>t". The rule and its test are from Kelly
+    Ford's Quick Describe, whose bug reports do the same.
+    """
+    if name is None:
+        name = os.environ.get("USERNAME") or os.environ.get("USER") or ""
+    name = name.strip()
+    if len(name) < 2:
+        return text
+    pattern = rf"(?<![\w]){re.escape(name)}(?![\w])"
+    return re.sub(pattern, "<user>", text, flags=re.IGNORECASE)
+
+
 def redact_text_for_bundle(
     text: str,
     *,
@@ -319,7 +337,7 @@ def redact_text_for_bundle_with_stats(
             stats.lines_dropped += 1
             stats.tokens_dropped += 1
             continue
-        redacted = redact_command_arg(line)
+        redacted = redact_user_name(redact_command_arg(line))
         if redacted != line:
             stats.tokens_dropped += 1
         if len(redacted) > line_cap:

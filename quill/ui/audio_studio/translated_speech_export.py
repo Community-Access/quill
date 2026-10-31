@@ -32,6 +32,7 @@ from quill.ui.dialog_contract import (
     set_accessible_name,
     show_message_box,
 )
+from quill.ui.spoken_name import set_spoken_name
 
 _TITLE = "Export a Document to Translated Speech"
 
@@ -114,6 +115,7 @@ class TranslatedSpeechExportDialog:
         self._lang.Bind(wx.EVT_CHOICE, lambda _e: self._reload_voices())
         self._voice = wx.Choice(self.dialog, choices=[])
         self._voice.SetName("Translation voice")
+        set_spoken_name(self._voice, "Translation voice")
         self._voice.SetHelpText(
             "The voice that reads the chosen language's edition -- local "
             "engines first, then premium cloud voices that need their "
@@ -132,6 +134,7 @@ class TranslatedSpeechExportDialog:
 
         self._list = wx.ListBox(self.dialog, style=wx.LB_SINGLE)
         self._list.SetName("Languages to export")
+        set_spoken_name(self._list, "Languages to export")
         self._list.SetHelpText(
             "The languages the document will be exported in, with the voice "
             "that reads each. Export needs at least one row here."

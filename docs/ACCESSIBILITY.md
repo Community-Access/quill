@@ -310,6 +310,34 @@ counts, you can change it later, and nothing about you beyond the credit you
 choose is published. The answer is recorded as a `credit:` label, and each
 release's credits are listed from those labels.
 
+### Earlier accessibility contributions
+
+The consent step started on 29 October 2026, with the workflow. Work from
+before then is already public on GitHub under each person's own account, so we
+credit it here by that account and by what the work was, and nothing else. If
+you would rather be credited differently, or not at all, say so on any issue or
+by email and we will change it.
+
+- [@taylorarndt](https://github.com/taylorarndt): an accessibility review of
+  the AI dialogs and Prompt Studio that found wrong and missing labels, a
+  dialog Escape could not close, jargon in messages, and dark mode text that
+  failed contrast (#83, #121 to #137, #212).
+- [@kellylford](https://github.com/kellylford): new document tabs that stayed
+  blank until focus moved (#804), and macOS dialog controls read without their
+  labels (#1012).
+- [@elettrona](https://github.com/elettrona): selected text not reaching a
+  braille display, reported and then retested after the first fix (#813,
+  #999).
+- [@dgoldfield](https://github.com/dgoldfield): silence and a wrong message
+  when QUILL starts (#259, #261).
+- [@jhomme](https://github.com/jhomme): labels not spoken in the Preferences
+  dialogs (#249).
+- [@salorajan](https://github.com/salorajan): mathematical equations in EPUB
+  books converted to speech (pull request #1355).
+- Ken Perry, named as the reporter in the issues: keyboard focus after opening
+  a file, knowing which file you are in, switching documents, and the compare
+  mode (#187 to #194).
+
 ## Ownership and maintenance
 
 Accessibility is owned by **Jeff Bishop**, project maintainer

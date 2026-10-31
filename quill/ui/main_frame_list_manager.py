@@ -12,6 +12,7 @@ from dataclasses import dataclass
 
 from quill.core.selection import line_span
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.spoken_name import set_spoken_name
 
 
 @dataclass(slots=True)
@@ -196,8 +197,10 @@ class ListManagerMixin:
             style=wx.TR_HAS_BUTTONS | wx.TR_LINES_AT_ROOT | wx.TR_HAS_VARIABLE_ROW_HEIGHT,
         )
         set_accessible_name(tree, "List items")
+        set_spoken_name(tree, "List items")
         preview = wx.TextCtrl(splitter, style=wx.TE_MULTILINE | wx.TE_READONLY)
         set_accessible_name(preview, "List item preview")
+        set_spoken_name(preview, "List item preview")
         splitter.SplitVertically(tree, preview, 420)
         splitter.SetMinimumPaneSize(260)
         item_indexes: dict[object, int] = {}

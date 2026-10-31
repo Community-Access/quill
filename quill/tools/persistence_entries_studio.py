@@ -22,4 +22,18 @@ STUDIO_ENTRIES: dict[str, str] = {
     "core/screenshot_workspaces.py::save_workspace": "needs-versioning",
     "core/screenshot_workspaces.py::remove_workspace": "needs-versioning",
     "core/studio_capture_ai.py::save_capture_ai_preferences": "needs-versioning",
+    # Record a demonstration (2026-10-29). The check report beside a finished
+    # recording is written for the user, like the screenshot report above.
+    "core/demo_recording_verify.py::save_reports": "export",
+    # The in-progress recording's session file, read back only to recover an
+    # unfinished recording and removed when it is finished: a recovery marker.
+    "core/demo_recording_session.py::save": "marker",
+    # Do Not Disturb as it was before recording, so a crash can put it back;
+    # deleted once restored.
+    "platform/windows/focus_guard.py::start": "marker",
+    # The recording window's last choices and the broadcast settings (never the
+    # password, which is in Windows Credential Manager): real config with no
+    # version stamp yet.
+    "apps/studio_demo.py::record_demonstration": "needs-versioning",
+    "apps/studio_streaming.py::_start_stream": "needs-versioning",
 }

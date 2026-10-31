@@ -245,6 +245,35 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="unreleased">Unreleased</h2>
 <h3
+id="quill-studio-record-mix-broadcast-and-make-videos-2026-10-30">QUILL
+Studio: record, mix, broadcast and make videos (2026-10-30)</h3>
+<ul>
+<li>Add demonstration recording to the shared Studio implementation: the
+screen, a camera and any chosen sounds, in any combination, with a
+spoken check before you start, keep awake and Do Not Disturb, and an
+independent check of the finished file. Your screen reader can be kept
+out of the recording.</li>
+<li>Add the Studio Mixer (each program’s volume, mute and sound card,
+plus default devices and recording levels), optional ASIO inputs, a
+YouTube video from a picture and sound, Ask AI about a video, New
+picture with AI (OpenAI or Google Gemini), and live broadcasting to
+Icecast or SHOUTcast with its own mix. The <a
+href="standalone/studio/docs/CHANGELOG.md">Studio changelog</a> lists
+every feature, what is still pending and what has not been verified
+live.</li>
+<li>Adopt lessons from Kelly Ford’s Quick Describe, with thanks to Kelly
+for the ideas and for giving so much to the community: the Recording
+status window can stay visible to magnifiers, Ask AI about a video draws
+fewer frames bigger and asks the AI not to guess at small text, a
+stalled face detector is replaced, a paused automatic AI is said once,
+diagnostic bundles leave out the user name as a whole word, and a new
+test catches text garbled by a wrong encoding.</li>
+<li>Shared changes: Windows process loopback can now leave out a program
+as well as record one, and can record a whole sound card; captions can
+be saved beside any recording; the shared sound manager can be muted.
+Existing behavior is unchanged.</li>
+</ul>
+<h3
 id="spell-check-reads-only-what-you-wrote-and-recovery-says-how-each-document-begins-2026-10-30">Spell
 check reads only what you wrote, and recovery says how each document
 begins (2026-10-30)</h3>

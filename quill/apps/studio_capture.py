@@ -7,12 +7,13 @@ from pathlib import Path
 import wx
 
 from quill.apps.studio_capture_hotkeys import StudioCaptureHotkeysMixin
+from quill.apps.studio_demo import StudioDemoMixin
 from quill.core.paths import app_data_dir
 from quill.core.studio_capture import save_capture_report
 from quill.stability.task_manager import UiLifetimeToken
 
 
-class StudioCaptureMixin(StudioCaptureHotkeysMixin):
+class StudioCaptureMixin(StudioDemoMixin, StudioCaptureHotkeysMixin):
     def _capture_command_specs(self):
         return (
             ("studio.capture", "&Capture screen...", self.capture_screen),
@@ -26,7 +27,7 @@ class StudioCaptureMixin(StudioCaptureHotkeysMixin):
                 "&Repeat last selected target",
                 self.capture_selected_target,
             ),
-            ("studio.capture_hotkeys", "Screenshot global &hotkeys...", self.open_capture_hotkeys),
+            ("studio.capture_hotkeys", "Capture global &hotkeys...", self.open_capture_hotkeys),
         )
 
     def _append_capture_menu(self, menu_bar):
@@ -36,6 +37,7 @@ class StudioCaptureMixin(StudioCaptureHotkeysMixin):
             item_id = wx.NewIdRef()
             capture.Append(item_id, self._menu_label(label, command_id))
             bindings.append((item_id, handler))
+        bindings += self._append_demo_menu(capture)
         menu_bar.Append(capture, "&Capture")
         return bindings
 
@@ -44,8 +46,10 @@ class StudioCaptureMixin(StudioCaptureHotkeysMixin):
             self.commands.register(
                 command_id, label.replace("&", ""), handler, self._binding_for(command_id)
             )
+        self._register_demo_commands()
 
     def _append_capture_tray(self, menu):
+        self._append_demo_tray(menu)
         for command, label, action in (
             ("studio.capture", "Take a screenshot...", self.capture_screen),
             ("studio.inspect_capture", "Review screenshot...", self.inspect_last_capture),
@@ -416,11 +420,17 @@ class StudioCaptureMixin(StudioCaptureHotkeysMixin):
         if not auto_ai_allowed(
             preferences, connection, ai_enabled=load_ai_enabled(), safe_mode=self._safe_mode
         ):
-            self._announce(
-                "Automatic screenshot AI is paused. "
-                "AI is disabled or the approved connection changed."
-            )
+            # Said once, not with every screenshot, until it can run again: a
+            # limitation repeated with each result is noise (Kelly Ford's Quick
+            # Describe learned this on PCs that cannot describe pictures).
+            if not getattr(self, "_auto_ai_pause_said", False):
+                self._auto_ai_pause_said = True
+                self._announce(
+                    "Automatic screenshot AI is paused. AI is disabled or the approved "
+                    "connection changed. Screenshots are still saved; this is said once."
+                )
             return
+        self._auto_ai_pause_said = False
         instructions = capture_prompt(
             preferences.get("prompt_id", "screen-overview"), load_settings()
         )

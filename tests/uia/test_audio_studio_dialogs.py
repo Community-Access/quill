@@ -90,8 +90,11 @@ def _open_audio_studio(quill_app):
                 f"({_AUDIO_STUDIO_MENU_PATH!r}) cannot be typed"
             )
         quill_app.main_window.type_keys(_AUDIO_STUDIO_MENU_PATH, with_spaces=False)
+        # The wizard is titled "QUILL Studio" since the product rename
+        # (529884ec); matching the old "Audio Studio" title is what failed all
+        # seven tests from the 2026-10-27 nightly while the wizard opened fine.
         dialog = quill_app.main_window.child_window(
-            title_re=".*Audio Studio.*", control_type="Window"
+            title_re=".*QUILL Studio.*", control_type="Window"
         )
         try:
             dialog.wait("exists visible", timeout=8)

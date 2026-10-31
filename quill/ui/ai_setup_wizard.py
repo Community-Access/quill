@@ -23,6 +23,7 @@ import wx
 
 from quill.core.ai import onboarding as ob
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.spoken_name import set_spoken_name
 
 _STEP_WELCOME = 0
 _STEP_PATH = 1
@@ -214,6 +215,7 @@ class AISetupWizard:
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_WORDWRAP,
         )
         ctrl.SetName(name)
+        set_spoken_name(ctrl, name)
         if grow:
             self._body_sizer.Add(ctrl, 1, wx.EXPAND | wx.BOTTOM, 8)
         else:
