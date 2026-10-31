@@ -29,10 +29,10 @@ Pure: text in, stations out. No files, no network, no wx.
 
 from __future__ import annotations
 
-import html
 import re
 from dataclasses import dataclass
 
+from quill.core.display_text import decode_entities
 from quill.core.radio.models import RadioStation
 from quill.core.radio.playlist_formats import _local, _name_from_url, _parse_xml, _playable
 
@@ -95,7 +95,7 @@ def _entries_from_tree(text: str) -> list[XspfEntry] | None:
 
 def _regex_field(block: str, name: str) -> str:
     match = re.search(rf"<(?:\w+:)?{name}\b[^>]*>(.*?)</(?:\w+:)?{name}\s*>", block, re.S | re.I)
-    return _clean(html.unescape(match.group(1))) if match else ""
+    return _clean(decode_entities(match.group(1))) if match else ""
 
 
 def _entries_from_regex(text: str) -> list[XspfEntry]:
@@ -111,7 +111,7 @@ def _entries_from_regex(text: str) -> list[XspfEntry]:
         if not values["title"]:
             nameless = _NAMELESS_RE.search(block)
             if nameless:
-                values["title"] = _clean(html.unescape(nameless.group(1)))
+                values["title"] = _clean(decode_entities(nameless.group(1)))
         entries.append(XspfEntry(**values))
     return entries
 
