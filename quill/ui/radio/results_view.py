@@ -45,8 +45,8 @@ class ResultsViewMixin:
         if choice == ALL_SOURCES:
             return stations
         # Match against every source that carried the station, not just the
-        # winning label, so a SomaFM channel RadioBrowser also lists still
-        # shows under the SomaFM facet (directory_search de-dups the two).
+        # winning label, so a station listed by more than one directory can
+        # still show under each source facet (directory_search de-dups them).
         return [s for s in stations if choice in station_source_labels(s)]
 
     def _fill_results(self, stations: list[RadioStation], *, status: str) -> None:

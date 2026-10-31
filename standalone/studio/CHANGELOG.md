@@ -12,8 +12,27 @@ This version is built but not yet published: Audio Studio is not offered in the 
 
 Testing build: **2.0.0 (build 2)**. Builds since the first have not been published.
 
-### Display scaling and named controls (2026-10-30 and 2026-10-31)
+### Display scaling, named controls, licensing and packaging (2026-10-27 to 2026-10-31)
 
+- **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
+  which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
+  GLOW dependency; Studio does not itself expose GLOW. Release-specific source
+  and legal review are required before the next public release. Portable
+  contents must be checked separately. See Licences and Notices and the
+  PyMuPDF distribution review.
+- **Chapter sound provenance.** The default page-turn-like cue is now generated
+  from scratch by QUILL rather than using a recording with unconfirmed origin.
+  Custom chapter sounds remain available.
+- **Speech packaging.** Studio portable builds now copy only supported speech
+  engine folders, rather than all speech data. Distribution of a legacy voice
+  engine has stopped pending licensing review. A separately installed copy
+  still works; complete removal and previous package review remain open.
+- **Shared Windows runtime.** Windows OCR and Media projections move to
+  PyWinRT 4.0.3 and the Windows SDK 10.0.28000.2705 line. The Windows Media
+  engine releases device references and event handlers on shutdown.
+- **Production planning.** The consolidated Studio plan proposes a shared
+  Converter round trip and reviewable local or explicitly consented cloud
+  transcription. These proposals are not delivered features.
 - **Controls that had no label now have a spoken name** (2026-10-30).
   JAWS, NVDA and Narrator used to announce them as a bare role, such as
   "edit" or "list". Now they say what they are: the choices and number boxes in Convert

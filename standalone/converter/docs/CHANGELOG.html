@@ -256,12 +256,28 @@ and <code>converter_advanced.py</code>, its windows in
 Audio Studio at the same time. The <code>standalone/converter</code>
 folder carries only the launcher, installer, icon and these
 documents.</p>
+<h2 id="planned-not-released">Planned, not released</h2>
+<ul>
+<li>Studio’s consolidated plan proposes an accessible
+project-to-Converter round trip with capability checks, batch outcomes
+and optional transcription through the shared speech stack. The plan
+does not add transcription to the standalone Converter or promise
+support for every file.</li>
+</ul>
 <h2 id="100--2026-09-28">1.0.0 – 2026-09-28</h2>
 <p>The first public release. The app was first built in July 2026 as an
 audio converter; that build was never published as an installer, and
 everything it had is included here.</p>
-<h3 id="since-build-2-2026-10-31">Since build 2 (2026-10-31)</h3>
+<h3 id="since-build-2-2026-10-27-to-2026-10-31">Since build 2
+(2026-10-27 to 2026-10-31)</h3>
 <ul>
+<li><strong>Shared-runtime licensing.</strong> Installed editions use
+the QuillVille Runtime, which currently carries PyMuPDF 1.28.2 under
+AGPL-3.0 through the shared GLOW dependency; Converter does not itself
+expose GLOW. Release-specific source and legal review are required
+before the next public release. Portable contents must be checked
+separately. See Licences and Notices and the PyMuPDF distribution
+review.</li>
 <li><strong>Sharp text at any display scaling</strong> (2026-10-31).
 Quill Converter now handles each monitor’s scaling itself instead of
 letting Windows stretch it, so text stays sharp at 125, 150 and 200

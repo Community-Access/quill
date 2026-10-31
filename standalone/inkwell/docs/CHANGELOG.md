@@ -6,8 +6,14 @@ Quill Inkwell 1.0.0 is its first public release, and it has not been published
 yet. The testing build is **1.0.0 (build 2)**. First, the work since the first
 build, grouped by subject; then the first build itself.
 
-### Display scaling (2026-10-31)
+### Display scaling and licensing (2026-10-31)
 
+- **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
+  which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
+  GLOW dependency; Inkwell does not itself expose GLOW. Release-specific source
+  and legal review are required before the next public release. Portable
+  contents must be checked separately. See Licences and Notices and the
+  PyMuPDF distribution review.
 - **Sharp text at any display scaling** (2026-10-31). Quill Inkwell now handles
   each monitor's scaling itself instead of letting Windows stretch it, so
   text stays sharp at 125, 150 and 200 percent and on monitors with

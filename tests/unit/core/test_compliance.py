@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import tomllib
 from pathlib import Path
 
 import pytest
@@ -21,6 +22,32 @@ from quill.core.compliance import (
 def test_normalize_requirement_name() -> None:
     assert normalize_requirement_name("wxPython>=4.2.2") == "wxpython"
     assert normalize_requirement_name("pytest-xdist>=3.6 ; extra == 'dev'") == "pytest-xdist"
+
+
+def test_html_to_text_notice_identifies_pypi_package(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr(
+        "quill.core.compliance._distribution_metadata", lambda _name: ("unknown", "", "")
+    )
+    pyproject = tmp_path / "pyproject.toml"
+    pyproject.write_text('[project]\ndependencies = ["html_to_text>=1.0.0"]\n', encoding="utf-8")
+    rows = build_dependency_notices(pyproject, include_optional=False, include_build=False)
+    assert len(rows) == 1
+    assert "emludei" in rows[0]["notes"]
+    assert "AccessibleApps" in rows[0]["notes"]
+    assert rows[0]["license"] == "Apache-2.0"
+    assert rows[0]["homepage"] == "https://github.com/emludei/html_to_text"
+
+
+def test_social_metadata_has_unique_authors() -> None:
+    root = Path(__file__).resolve().parents[3]
+    with (root / "standalone" / "social" / "pyproject.toml").open("rb") as source:
+        authors = tomllib.load(source)["project"]["authors"]
+    names = [author["name"] for author in authors]
+    assert len(names) == len(set(names))
+    assert "Jeff Bishop" in names
+    assert "Community Access" in names
 
 
 def test_dependency_names_from_pyproject(tmp_path: Path) -> None:

@@ -32,15 +32,11 @@ def test_merge_and_rank_dedupes_by_name_and_country() -> None:
 
 
 def test_merge_and_rank_absorbs_dropped_duplicate_source() -> None:
-    # RadioBrowser lists SomaFM channels itself (source=""), and the SomaFM
-    # client returns the same stream URL (source="SomaFM"). The dup is dropped,
-    # but the survivor must remember it came from SomaFM too, so the Source
-    # filter can still show it under SomaFM.
-    rb = [_rs("Groove Salad", "https://ice/gsalad", source="")]
-    soma = [_rs("Groove Salad", "https://ice/gsalad", source="SomaFM")]
-    merged = ds.merge_and_rank([rb, soma])
+    rb = [_rs("Jazz FM", "https://ice/jazz", source="")]
+    tunein = [_rs("Jazz FM", "https://ice/jazz", source="TuneIn")]
+    merged = ds.merge_and_rank([rb, tunein])
     assert len(merged) == 1
-    assert ds.station_source_labels(merged[0]) == {"Radio Browser", "SomaFM"}
+    assert ds.station_source_labels(merged[0]) == {"Radio Browser", "TuneIn"}
 
 
 def test_station_source_labels_defaults_and_maps_blank_to_radio_browser() -> None:

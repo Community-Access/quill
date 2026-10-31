@@ -63,6 +63,7 @@ _DELIVERY = {
         "Downloaded only when you ask for it, from QUILL's own pinned release, "
         "so QUILL still redistributes it."
     ),
+    "user-installed": "Not distributed by QUILL; usable only when installed separately.",
     "build-only": "Used only to build the products. Not shipped to you.",
 }
 

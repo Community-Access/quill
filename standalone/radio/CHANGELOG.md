@@ -14,6 +14,20 @@ than by build. A date in brackets says when a change arrived.
 
 ### Since build 5 (2026-10-27 to 2026-10-31)
 
+- **SomaFM source retired** (2026-10-31). Its published terms no longer approve new
+  third-party clients. The shared Radio code removes the built-in source and
+  filters known catalogue entries and direct play/record paths. Review of
+  indirect paths, existing user data and previously published packages remains
+  open; this change has not been published as a new release.
+- **Shared-runtime licensing** (2026-10-31). Installed editions use the QuillVille Runtime,
+  which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
+  GLOW dependency; Radio does not itself expose GLOW. Release-specific source
+  and legal review are required before the next public release. Portable
+  contents must be checked separately. See Licences and Notices and the
+  PyMuPDF distribution review.
+- **PyWinRT 4 migration** (2026-10-27). The shared Windows Media runtime uses PyWinRT
+  4.0.3 and Windows SDK 10.0.28000.2705 projections; this does not change the
+  choice of player or the selected output device.
 - **Windows Media closes cleanly after device enumeration** (2026-10-27).
   Device selection still uses the Windows render endpoints and keeps the
   selected route. QUILL no longer retains COM-backed device objects in a

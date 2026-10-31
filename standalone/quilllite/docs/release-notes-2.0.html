@@ -280,6 +280,16 @@ handles each monitor’s scaling itself, so text stays sharp at 150 and
 is the wrong size”.</li>
 <li><strong>A spoken name for the profile description</strong> in
 Preferences.</li>
+<li><strong>The shared runtime under the hood.</strong> Windows OCR now
+uses PyWinRT 4.0.3 and the Windows SDK 10.0.28000.2705 projections.
+Reading a scanned page works as before; nothing new is added to
+OCR.</li>
+<li><strong>Licensing of the shared runtime.</strong> The installed
+QUILL Lite uses the QuillVille Runtime, which currently includes PyMuPDF
+1.28.2 under AGPL-3.0 through GLOW. QUILL Lite does not itself expose
+GLOW. The source and legal review for this release is still open, and
+the portable package is checked separately. The Licences and Notices
+button in Help &gt; About has the details.</li>
 </ul>
 <h2 id="new-in-120-build-6-tables-in-every-document">New in 1.2.0 build
 6: tables in every document</h2>

@@ -11,8 +11,14 @@ since the first 0.3.0 build belongs to 0.3.0. In it QUILL Social became a feed
 reader as well as a social client, and grew an installer of its own. That work
 comes first, grouped by subject; the 0.3.0 build of 2026-07-19 follows it.
 
-### Display scaling (2026-10-31)
+### Display scaling and licensing (2026-10-31)
 
+- **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
+  which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
+  GLOW dependency; Social does not itself expose GLOW. Release-specific source
+  and legal review are required before the next public release. Portable
+  contents must be checked separately. See Licences and Notices and the
+  PyMuPDF distribution review.
 - **Sharp text at any display scaling** (2026-10-31). QUILL Social now handles
   each monitor's scaling itself instead of letting Windows stretch it, so
   text stays sharp at 125, 150 and 200 percent and on monitors with

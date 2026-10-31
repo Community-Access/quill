@@ -1,5 +1,5 @@
-"""Tests for the station-source and metadata modules ported in Task 4:
-safe_xml, radio_browser, soma_fm, acb_media, triton, and icy.
+"""Tests for station-source and metadata modules ported in Task 4:
+safe_xml, radio_browser, acb_media, triton, and icy.
 
 All tests are pure or use canned documents / monkeypatched egress
 functions -- no real network calls anywhere.
@@ -12,8 +12,7 @@ import urllib.request
 
 import pytest
 
-from quill_radio_mac import __version__
-from quill_radio_mac.core import acb_media, icy, radio_browser, safe_xml, soma_fm, triton
+from quill_radio_mac.core import acb_media, icy, radio_browser, safe_xml, triton
 from quill_radio_mac.core.models import RadioStation
 from quill_radio_mac.core.triton import TritonResolverError, TritonStream
 
@@ -289,45 +288,3 @@ def test_radio_browser_register_click_skips_blank_uuid(monkeypatch):
     radio_browser.register_click("")  # must not raise / must not fetch
 
 
-# --- soma_fm (pure helpers only; no network) -------------------------------
-
-
-def test_soma_fm_first_stream_url_from_pls():
-    pls_text = "[playlist]\nFile1=https://ice1.somafm.com/groovesalad-128-mp3\nTitle1=SomaFM\n"
-    assert soma_fm.first_stream_url_from_pls(pls_text) == "https://ice1.somafm.com/groovesalad-128-mp3"
-
-
-def test_soma_fm_first_stream_url_from_pls_none_when_absent():
-    assert soma_fm.first_stream_url_from_pls("[playlist]\nTitle1=Nope\n") is None
-
-
-def test_soma_fm_best_playlist_prefers_mp3_then_quality():
-    playlists = [
-        {"url": "https://a", "format": "aac", "quality": "highest"},
-        {"url": "https://b", "format": "mp3", "quality": "low"},
-        {"url": "https://c", "format": "mp3", "quality": "highest"},
-    ]
-    best = soma_fm._best_playlist(playlists)
-    assert best["url"] == "https://c"
-
-
-def test_soma_fm_channels_from_json_filters_non_dict_entries():
-    data = {"channels": [{"title": "Groove Salad"}, "junk", 42]}
-    channels = soma_fm.channels_from_json(data)
-    assert channels == [{"title": "Groove Salad"}]
-
-
-def test_soma_fm_channel_matches_query_across_fields():
-    channel = {"title": "Groove Salad", "description": "Chill", "genre": "ambient|downtempo"}
-    assert soma_fm._channel_matches(channel, "")
-    assert soma_fm._channel_matches(channel, "ambient")
-    assert not soma_fm._channel_matches(channel, "heavy metal")
-
-
-def test_soma_fm_refuses_in_safe_mode():
-    with pytest.raises(soma_fm.SomaFmError):
-        soma_fm.search_stations("jazz", safe_mode=True)
-
-
-def test_soma_fm_user_agent_uses_app_version():
-    assert soma_fm._USER_AGENT == f"QuillRadioMac/{__version__}"

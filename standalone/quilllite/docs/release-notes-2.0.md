@@ -37,6 +37,14 @@ of QUILL Lite does.
   scaling itself, so text stays sharp at 150 and 200 percent and on mixed
   monitors. See "Text looks blurry, or a window is the wrong size".
 - **A spoken name for the profile description** in Preferences.
+- **The shared runtime under the hood.** Windows OCR now uses PyWinRT 4.0.3
+  and the Windows SDK 10.0.28000.2705 projections. Reading a scanned page works
+  as before; nothing new is added to OCR.
+- **Licensing of the shared runtime.** The installed QUILL Lite uses the
+  QuillVille Runtime, which currently includes PyMuPDF 1.28.2 under AGPL-3.0
+  through GLOW. QUILL Lite does not itself expose GLOW. The source and legal
+  review for this release is still open, and the portable package is checked
+  separately. The Licences and Notices button in Help > About has the details.
 
 ## New in 1.2.0 build 6: tables in every document
 

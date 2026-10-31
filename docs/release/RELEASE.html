@@ -313,10 +313,11 @@ release. It is the canonical checklist referenced from
 <code>MAINTAINERS.md</code> and the release notes.</p>
 <h2 id="pre-tag-checklist">Pre-tag checklist</h2>
 <ol type="1">
-<li><strong>Wave sign-off.</strong> All issues in the active waves for
-this release are closed, with their PRs merged into the release
-branch.</li>
-<li><strong>Quality gates green.</strong> On the release branch head:
+<li><p><strong>Wave sign-off.</strong> All issues in the active waves
+for this release are closed, with their PRs merged into the release
+branch.</p></li>
+<li><p><strong>Quality gates green.</strong> On the release branch
+head:</p>
 <ul>
 <li><code>pytest -q</code></li>
 <li><code>ruff check .</code></li>
@@ -325,7 +326,7 @@ branch.</li>
 <li><code>python -m quill.tools.quillin_lint &lt;dir&gt; --strict</code></li>
 <li><code>python -m quill.tools.menu_lint</code></li>
 </ul></li>
-<li><strong>Docs in sync.</strong> <code>CHANGELOG.md</code>,
+<li><p><strong>Docs in sync.</strong> <code>CHANGELOG.md</code>,
 <code>docs/release notes/release&lt;X&gt;.md</code>, the user guide, and
 <code>CONTROL_REFERENCE.md</code> agree on the closed issues, the menu
 paths, and the shipped feature set. When a base dependency changes,
@@ -343,7 +344,7 @@ concluding that an absent directory means the dependency is missing.
 shared runtime through GLOW. Every installed app edition that installs
 that runtime carries it, even where the app does not expose GLOW.
 Standalone portable builds use app-specific dependency groups and
-currently omit the GLOW extra. Before each public release:
+currently omit the GLOW extra. Before each public release:</p>
 <ul>
 <li>Inspect the staged shared runtime, each installer package, and each
 portable artifact. Record which contain PyMuPDF; do not infer portable
@@ -365,8 +366,17 @@ not source snapshots.</li>
 <li>Do not make the next public runtime or app release until counsel or
 Artifex has reviewed the combined-work/source-scope and section 13
 questions in <code>docs/legal/PYMUPDF-AGPL-REVIEW.md</code>, and the
-release source offer has been checked against that advice.
-<strong>Accessibility.</strong> Before each public release:</li>
+release source offer has been checked against that advice. <strong>Other
+GPL-family components.</strong> Inventory the actual staged libmpv,
+mutagen, pillow-heif, FFmpeg, eSpeak NG, Pandoc and Git artifacts and
+their versions and build options. Verify applicable licences, notices
+and corresponding source and build inputs for each shipped artifact.
+Obtain legal review of combined-work and source-offer obligations where
+unresolved; a separate process or a repository link alone is not proof
+of compliance.</li>
+</ul>
+<p><strong>Accessibility.</strong> Before each public release:</p>
+<ul>
 <li>Add the release’s entry to
 <code>docs/accessibility-progress.md</code> (completed, open, known
 limitations, links) and link it from the release notes.</li>
@@ -384,17 +394,19 @@ other contributions. It also warns about <code>credit: asked</code>
 items with no answer after 14 days; leave those contributors out, or ask
 them again.</li>
 </ul></li>
-<li><strong>Translations template current.</strong>
+<li><p><strong>Translations template current.</strong>
 <code>quill/locale/quill.pot</code> shows the target version stamp and a
-fresh <code>POT-Creation-Date</code>.</li>
-<li><strong>No <code>.po</code> or <code>.mo</code> files ship.</strong>
-Verified with <code>git ls-files | grep -E '\.(po|mo)$'</code> returning
-empty.</li>
-<li><strong>Manifest regenerated.</strong>
+fresh <code>POT-Creation-Date</code>.</p></li>
+<li><p><strong>No <code>.po</code> or <code>.mo</code> files
+ship.</strong> Verified with
+<code>git ls-files | grep -E '\.(po|mo)$'</code> returning
+empty.</p></li>
+<li><p><strong>Manifest regenerated.</strong>
 <code>docs/site/updates/manifests/manifest-&lt;X&gt;.json</code> exists
 for the target version, alongside the historical <code>0.5.0</code>
-manifest that the public feed still points at during pre-release.</li>
-<li><strong>Quillin Hub service code shipped.</strong>
+manifest that the public feed still points at during
+pre-release.</p></li>
+<li><p><strong>Quillin Hub service code shipped.</strong>
 <code>quillin-hub/</code> is a Flask service in this repo; the registry
 API, Submission Forge, sync worker, and smoke test are all in-tree.
 Public deployment (<code>hub.quillforall.org</code> – DNS, hosting,
@@ -403,7 +415,7 @@ release cut. The Ed25519 publisher signature gate
 (<code>quill/tools/signing.py</code> plus the Submission Forge
 fail-closed hook) and the deployment runbook
 (<code>docs/release/quillin-hub-deployment.md</code>) are in; the
-protocol is documented in <code>docs/signing.md</code>.</li>
+protocol is documented in <code>docs/signing.md</code>.</p></li>
 </ol>
 <h2 id="tag-time-flip">Tag-time flip</h2>
 <ol start="7" type="1">

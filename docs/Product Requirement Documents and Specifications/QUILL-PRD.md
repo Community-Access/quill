@@ -11,6 +11,21 @@ Target screen readers: NVDA (primary), JAWS, Narrator
 UI framework: wxPython (wxWidgets 3.2 or newer)
 Language: Python 3.13 or newer
 
+### Runtime and distribution correction (QUILL 1.0.0, 2026-10-27 to 2026-10-31)
+
+The shared Windows OCR and Media dependencies move to PyWinRT 4.0.3 and
+Windows SDK 10.0.28000.2705 projections; Windows Media releases device
+references and player event handlers at shutdown. The shared Radio code
+retires its built-in SomaFM source in response to its published
+third-party-client terms, and filters or blocks known catalogue and direct
+playback/recording paths. Indirect paths, existing user data and previously
+published packages remain under review. Older SomaFM references in this PRD
+are historical, not current requirements.
+
+QUILL no longer downloads or distributes DECtalk while its redistribution
+terms are unclear. A separately installed copy remains supported. Previous
+packages and other distribution paths require review.
+
 ### Command ownership and Preferences search (2026-09-30)
 
 `CommandRegistry` is confined to its creating thread, which is the UI thread in

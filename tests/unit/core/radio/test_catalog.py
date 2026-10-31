@@ -144,9 +144,9 @@ def test_an_unchanged_dump_writes_nothing(tmp_path: Path) -> None:
 def test_a_hidden_source_is_never_due(tmp_path: Path) -> None:
     """Choose Browse Sources extends to refresh: off means never contacted."""
     store = CatalogStore(tmp_path)
-    specs = [_spec([_row("a")]), _spec([_row("z")], source_id="soma_fm")]
-    due = due_sources(specs, store, now=1e9, enabled_ids={"soma_fm"})
-    assert [s.id for s in due] == ["soma_fm"]
+    specs = [_spec([_row("a")]), _spec([_row("z")], source_id="xiph")]
+    due = due_sources(specs, store, now=1e9, enabled_ids={"xiph"})
+    assert [s.id for s in due] == ["xiph"]
 
 
 def test_a_fresh_source_is_not_due_until_its_interval_passes(tmp_path: Path) -> None:
@@ -156,6 +156,61 @@ def test_a_fresh_source_is_not_due_until_its_interval_passes(tmp_path: Path) -> 
     due = due_sources([_spec([_row("a")])], store, now=1000.0 + 25 * 3600, interval_hours=24)
     assert [s.id for s in due] == ["radio_browser"]
     store.close()
+
+
+def test_retired_somafm_rows_are_hidden_and_removed_on_next_generation(tmp_path: Path) -> None:
+    store = CatalogStore(tmp_path)
+    refresh([_spec([_row("kept")])], store, now=1000.0)
+    writer = store.begin_generation()
+    old_soma_source = StationRow(
+        key="old-soma-source",
+        name="Old directory row",
+        stream_url="https://stream.example.org/soma",
+        source_id="soma_fm",
+    )
+    old_soma_url = StationRow(
+        key="old-soma-url",
+        name="Old stream row",
+        stream_url="https://ice.somafm.com/groovesalad",
+        country="Retired",
+        source_id="radio_browser",
+    )
+    writer.upsert_stations("soma_fm", [old_soma_source], now=1001.0)
+    writer.upsert_stations("radio_browser", [old_soma_url], now=1001.0)
+    writer.record_source("soma_fm", status="ok", now=1001.0)
+    writer.commit()
+    assert [row.key for row in store.top_voted()] == ["kept"]
+    assert [row.key for row in store.search("Old")] == []
+
+    writer = store.begin_generation()
+    writer.commit()
+    assert [row.key for row in store.top_voted()] == ["kept"]
+    assert [health.id for health in store.source_health()] == ["radio_browser"]
+    store.close()
+
+
+def test_radio_browser_catalog_rows_omit_somafm_urls_and_homepages() -> None:
+    from quill.core.radio.catalog.sources import row_from_radio_browser
+
+    assert (
+        row_from_radio_browser({
+            "name": "Owned stream",
+            "url": "https://ice.somafm.com/groovesalad",
+        })
+        is None
+    )
+    assert (
+        row_from_radio_browser({
+            "name": "Owned homepage",
+            "url": "https://cdn.example.org/audio",
+            "homepage": "https://somafm.com/groovesalad/",
+        })
+        is None
+    )
+    assert (
+        row_from_radio_browser({"name": "Other station", "url": "https://radio.example.org/live"})
+        is not None
+    )
 
 
 # -- reads: parity with the live shape ---------------------------------------

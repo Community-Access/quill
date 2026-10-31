@@ -13,6 +13,7 @@ from collections.abc import Iterator
 from quill.core.radio.catalog.keys import canonical_key, normalize_stream_url
 from quill.core.radio.catalog.refresh import SourceSpec
 from quill.core.radio.catalog.store import StationRow
+from quill.core.radio.models import is_retired_somafm_station
 
 #: One dump page. 10k rows keeps refresh memory in the tens of megabytes
 #: (whole-dump loading measured 217 MB).
@@ -44,7 +45,8 @@ def row_from_radio_browser(entry: dict[str, object]) -> StationRow | None:
     uuid = str(entry.get("stationuuid") or "")
     url = str(entry.get("url_resolved") or entry.get("url") or "").strip()
     name = " ".join(str(entry.get("name") or "").split())[:200]
-    if not url or not name:
+    homepage = str(entry.get("homepage") or "").strip()
+    if not url or not name or is_retired_somafm_station(stream_url=url, homepage=homepage):
         return None
     bitrate = _as_int(entry.get("bitrate"))
     votes = _as_int(entry.get("votes"))
@@ -52,7 +54,7 @@ def row_from_radio_browser(entry: dict[str, object]) -> StationRow | None:
         key=canonical_key(uuid, url),
         name=name,
         stream_url=url,
-        homepage=str(entry.get("homepage") or "").strip(),
+        homepage=homepage,
         favicon=str(entry.get("favicon") or "").strip(),
         country=str(entry.get("country") or "").strip(),
         state=str(entry.get("state") or "").strip(),
@@ -81,32 +83,6 @@ def _radio_browser_pages() -> Iterator[list[StationRow]]:
             return
         offset += PAGE_SIZE
         time.sleep(PAGE_GAP_SECONDS)
-
-
-def _soma_pages() -> Iterator[list[StationRow]]:
-    from quill.core.radio import soma_fm
-
-    stations = soma_fm.search_stations("")
-    rows = [
-        StationRow(
-            key=canonical_key(station.station_uuid, station.stream_url),
-            name=station.name,
-            stream_url=station.stream_url,
-            homepage=station.homepage,
-            favicon=station.favicon,
-            country=station.country,
-            language=station.language,
-            tags=_normalize_tags(",".join(station.tags)),
-            codec=station.codec,
-            bitrate=station.bitrate_kbps,
-            votes=station.votes,
-            source_id="soma_fm",
-            source_record_id=station.station_uuid,
-        )
-        for station in stations
-    ]
-    if rows:
-        yield rows
 
 
 def _xiph_pages() -> Iterator[list[StationRow]]:
@@ -138,7 +114,6 @@ def station_specs() -> list[SourceSpec]:
     """Every refreshable station source, in trust order."""
     return [
         SourceSpec("radio_browser", "Radio Browser", _radio_browser_pages),
-        SourceSpec("soma_fm", "SomaFM", _soma_pages),
         SourceSpec("xiph", "Xiph", _xiph_pages),
     ]
 
@@ -147,7 +122,6 @@ def station_specs() -> list[SourceSpec]:
 #: stops its refresh (off means never contacted).
 VISIBILITY_IDS = {
     "radio_browser": {"popular", "trending", "recent", "rbcountry", "rblang", "rbgenre", "rbcodec"},
-    "soma_fm": {"soma"},
     "xiph": {"xiph"},
 }
 

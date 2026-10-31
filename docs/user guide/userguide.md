@@ -6738,16 +6738,17 @@ The rest of the **Read Aloud** page in Settings tunes the voice:
 
 Read Aloud uses voices on your own computer. The Windows system voice runs on
 **SAPI 5**. It is always there, works offline and needs no download, so Read
-Aloud works the moment QUILL is installed. **DECtalk**, **eSpeak NG**,
-**Piper**, and **Kokoro** (neural, offline) are extra downloads from Speech
-Center, which keeps the installer smaller. Before any download starts, QUILL
+Aloud works the moment QUILL is installed. **eSpeak NG**, **Piper**, and
+**Kokoro** (neural, offline) are extra downloads from Speech Center, which
+keeps the installer smaller. **DECtalk** works if you have installed it
+yourself; QUILL no longer downloads or distributes it, because its
+redistribution terms are unclear. Before any download starts, QUILL
 tells you what is available right now and what it suggests you do next. For
 cloud voices, see Read Aloud with AI Voice, which covers OpenAI and Google
 Gemini voices.
 
-The **Kokoro** voice models (about 120 MB), the classic **DECtalk** runtime
-(about 2 MB), and the **eSpeak NG** engine with its voice data (about 40 MB)
-are not in the installer. The first time you choose one of these voices,
+The **Kokoro** voice models (about 120 MB) and the **eSpeak NG** engine with
+its voice data (about 40 MB) are not in the installer. The first time you choose one of these voices,
 QUILL downloads it for you from its own verified source. The download is
 checksum-checked and has a progress window you can cancel. Your other voices,
 including the SAPI 5 system voice, keep working while it downloads. If you
@@ -11208,8 +11209,8 @@ The list puts the most important first:
 - **Dictation (offline speech)**: a guided setup covering Whisper.cpp, QUILL
   speech models (Parakeet, Nemotron and more) and Faster Whisper, described
   below.
-- **Kokoro** and **Piper** neural voices, and **eSpeak NG** and **DECtalk**
-  voices.
+- **Kokoro** and **Piper** neural voices, and **eSpeak NG** voices. DECtalk
+  is listed too, but says "Install separately": QUILL does not distribute it.
 - **Audio: export, playback & chapters**: FFmpeg for exporting compressed
   audio, the mpv playback engine, and MP3 audiobook chapter markers, all in one
   place. Each piece is fetched only when its feature is first used.

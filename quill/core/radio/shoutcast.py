@@ -73,8 +73,8 @@ _GENRE_INDEX_URL = f"{_BASE}/Genre"
 #: reported 2026-08-26 ("many of the stations from the shoutcast directory are
 #: not playing"), on a station with 293 listeners that was demonstrably on the
 #: air. A player is given a stream, not a playlist of one; every other source
-#: here already knows that (:mod:`quill.core.radio.soma_fm` resolves its own
-#: ``.pls`` for exactly this reason). So a SHOUTcast row is resolved at play
+#: here already resolves playlist addresses when needed). So a SHOUTcast row
+#: is resolved at play
 #: time -- one request, on the station you actually chose, rather than 500 for
 #: a genre page you are only reading.
 _TUNEIN_URL = "https://yp.shoutcast.com/sbin/tunein-station.pls?id={station_id}"

@@ -5,6 +5,11 @@ and **how each can be added** using open sources only (Radio Browser — already
 integrated, so no new network-egress site — plus each broadcaster's own public
 streams). No competitor data or curated lists are copied.
 
+**Current-source correction:** The SomaFM source described in the historical
+plan below is retired in the shared Radio code. It is not a current built-in
+network; indirect paths, old user data and published packages remain under
+review.
+
 ## The one distinction that matters
 
 A "network" is one of three very different things, and they must be handled
@@ -101,7 +106,7 @@ All are RB-addable by name/country; most also publish Direct streams.
 
 | Network | Add method | Notes |
 | --- | --- | --- |
-| SomaFM | Built-in | via SomaFM's own `channels.json` |
+| SomaFM | Retired | historical source; no longer built in |
 | Radio Paradise | Built-in | its own Browse Stations branch, every channel in every quality |
 | 181.FM | Built-in, and Networks > Music | its own branch from the station list 181.FM's site plays from (`one_eighty_one.py`), with a shipped snapshot; also an RB node filtered to "181.FM" names (2026-10-25) |
 | laut.fm | Built-in | its own branch through laut.fm's documented public API (`laut_fm.py`), by its most-listened genres (2026-10-25) |
@@ -129,7 +134,7 @@ A **Networks** branch in Browse Stations, grouped:
 - **Syndicators** (Westwood One, NBC News Radio, ABC News Radio, CBS/Fox Sports)
   — an **"…affiliates" search** node that runs a name search, honestly labeled
   "programming carried by local stations", **not** a fake single stream.
-- SomaFM stays where it is (or moves under Networks > Music).
+- The historical plan placed SomaFM here; the source is now retired.
 
 RB-query nodes reuse `radio_browser.py`, so the whole section adds **no new
 network-egress site** (keeps `network_egress_audit` green), needs no API keys,

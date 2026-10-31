@@ -22,7 +22,7 @@ distinct stations within Radio Browser alone).
 
 Sources are classed, and the class decides everything:
 
-- Class A (bundled + refreshed): Radio Browser, SomaFM, Xiph when its
+- Class A (bundled + refreshed): Radio Browser, Xiph when its
   backend recovers, and the library seed (LibriVox, Gutenberg audio).
 - Class B (live-drill, session cache only, **never** written into this
   store): TuneIn, iHeart and Apple (terms), the Internet Archive (scale),

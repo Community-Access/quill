@@ -64,6 +64,19 @@ def test_stations_from_json_falls_back_to_url() -> None:
     assert stations_from_json(data)[0].stream_url == "https://raw"
 
 
+def test_stations_from_json_omits_somafm_streams_and_homepages() -> None:
+    data = [
+        {"name": "Owned stream", "url": "https://ice.somafm.com/groovesalad"},
+        {
+            "name": "Owned homepage",
+            "url": "https://cdn.example.org/audio",
+            "homepage": "https://somafm.com/groovesalad/",
+        },
+        {"name": "Other station", "url": "https://radio.example.org/live"},
+    ]
+    assert [station.name for station in stations_from_json(data)] == ["Other station"]
+
+
 class _FakeResponse:
     def __init__(self, payload: bytes) -> None:
         self._payload = payload

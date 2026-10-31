@@ -8,6 +8,16 @@ in beta for testers and not yet published; the last published version is
 Everything in the changelog's 2.0.0 section is built and
 documented.
 
+Runtime update in 2.0.0: the shared Windows OCR projections move to PyWinRT
+4.0.3 and Windows SDK 10.0.28000.2705. Existing OCR behavior remains the
+requirement; this dependency change is not a new public release.
+
+**Distribution licensing:** Installed Lite editions use the QuillVille
+Runtime, which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through
+GLOW, although Lite does not expose GLOW. Release-specific source and legal
+review are required before the next public release; inspect portable builds
+separately. See the PyMuPDF distribution review and Licences and Notices.
+
 ## 1. Statement
 
 QUILL Lite is QUILL with everything removed except the editor. One document per

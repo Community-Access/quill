@@ -19,7 +19,7 @@ from quill.core.radio.catalog.store import CatalogStore, StationRow
 from quill.core.radio.catalog.summary import spoken_age
 
 #: The kinds the catalog answers outright when it is present and enabled.
-AXIS_KINDS = frozenset({"rbcountry", "rbstate", "rblang", "rbgenre", "rbcodec", "soma"})
+AXIS_KINDS = frozenset({"rbcountry", "rbstate", "rblang", "rbgenre", "rbcodec"})
 
 #: Rankings: live-first, catalog fallback labeled with its age.
 RANKING_KINDS = frozenset({"popular", "trending"})
@@ -33,7 +33,7 @@ LIBRARY_KINDS = frozenset({
     "gutenbergtopic",
 })
 
-_SOURCE_LABELS = {"radio_browser": "Radio Browser", "soma_fm": "SomaFM", "xiph": "Xiph"}
+_SOURCE_LABELS = {"radio_browser": "Radio Browser", "xiph": "Xiph"}
 
 
 def _leaves(rows: list[StationRow]) -> list[BrowseNode]:
@@ -96,9 +96,6 @@ def _serve(store: CatalogStore, kind: str, args: list[str]) -> list[BrowseNode] 
             folder(make_id("rbcodec", name), name, child_count=count)
             for name, count in store.codecs()
         ]
-    if kind == "soma":
-        rows = store.by_source("soma_fm")
-        return _leaves(rows) if rows else None  # empty -> let live fill it
     if kind in LIBRARY_KINDS:
         return _serve_library(store, kind, args)
     return None

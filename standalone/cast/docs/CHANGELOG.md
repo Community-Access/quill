@@ -21,6 +21,12 @@ and speed and reliability.
 
 ### Since build 6 (2026-10-27 to 2026-10-31)
 
+- **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
+  which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
+  GLOW dependency; Cast does not itself expose GLOW. Release-specific source
+  and legal review are required before the next public release. Portable
+  contents must be checked separately. See Licences and Notices and the
+  PyMuPDF distribution review.
 - **Windows Media closes cleanly after an audio device change** (2026-10-27).
   The shared player no longer keeps Windows audio-device objects in a cache and
   removes its event handlers when it stops. This fixes a crash on exit after the

@@ -15,6 +15,18 @@ in rich text, and arrows that read a table cell by cell), Help > What's New,
 and a full menu bar when every document is closed. Where an entry below says
 "1.2.0" or names a build, it means that testing build.
 
+### Shared runtime and licensing (2026-10-27 and 2026-10-31)
+
+- **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
+  which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
+  GLOW dependency; Lite does not itself expose GLOW. Release-specific source
+  and legal review are required before the next public release. Portable
+  contents must be checked separately. See Licences and Notices and the
+  PyMuPDF distribution review.
+- **Windows OCR runtime.** The shared Windows OCR projections move to PyWinRT
+  4.0.3 and the Windows SDK 10.0.28000.2705 line. This is a dependency
+  migration, not a new OCR feature or a claim that new packages are published.
+
 ### Spell check, recovery and display scaling (2026-10-30 and 2026-10-31)
 
 - **Spell check reads only what you wrote** (2026-10-30). It no longer stops

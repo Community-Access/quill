@@ -13,6 +13,12 @@ Transcribe on the QuillVille menu, and the user guide corrections).
 
 ### Since build 2 (2026-10-30 and 2026-10-31)
 
+- **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
+  which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
+  GLOW dependency; Weather does not itself expose GLOW. Release-specific
+  source and legal review are required before the next public release.
+  Portable contents must be checked separately. See Licences and Notices and
+  the PyMuPDF distribution review.
 - **Controls that had no label now have a spoken name** (2026-10-30).
   JAWS, NVDA and Narrator used to announce them as a bare role, such as
   "edit" or "list". The Weather Center's status line now says "Weather source and freshness status".

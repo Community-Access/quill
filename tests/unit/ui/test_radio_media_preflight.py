@@ -184,17 +184,19 @@ def test_a_host_with_no_history_is_survivable(health) -> None:
 def test_an_ogg_station_without_mpv_gets_the_real_reason(health) -> None:
     health(ffmpeg=True, mpv=False)
 
-    message = media_preflight.refusal_for("SomaFM", "https://ice.somafm.com/groovesalad.ogg")
+    message = media_preflight.refusal_for("Jazz FM", "https://stream.example.org/groovesalad.ogg")
 
     assert "Ogg, Opus or HLS" in message
-    assert message.startswith("SomaFM")
+    assert message.startswith("Jazz FM")
 
 
 def test_an_ogg_station_with_mpv_present_keeps_the_ordinary_error(health) -> None:
     # mpv is here, so whatever went wrong was not this.
     health(ffmpeg=True, mpv=True)
 
-    assert media_preflight.refusal_for("SomaFM", "https://ice.somafm.com/groovesalad.ogg") == ""
+    assert (
+        media_preflight.refusal_for("Jazz FM", "https://stream.example.org/groovesalad.ogg") == ""
+    )
 
 
 def test_an_mp3_station_is_never_blamed_on_the_missing_engine(health) -> None:

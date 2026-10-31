@@ -12,6 +12,10 @@ Testing build: **1.0.0 (build 2)**. Quill Media Player has not been published ye
 
 ### Since build 2 (2026-10-30 and 2026-10-31)
 
+- **Host-runtime licensing.** Media Player has no separate installer. When its
+  host uses the QuillVille Runtime, that runtime currently carries PyMuPDF
+  1.28.2 under AGPL-3.0 through the shared GLOW dependency; the player does not
+  itself expose GLOW. Release-specific source and legal review remain open.
 - **Controls that had no label now have a spoken name** (2026-10-30).
   JAWS, NVDA and Narrator used to announce them as a bare role, such as
   "edit" or "list". Now playing, the Chapters tree and the Bookmarks list now say what they are.
