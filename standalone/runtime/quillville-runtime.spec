@@ -121,6 +121,16 @@ except Exception:  # GLOW absent on this build machine: check_build_env names it
     pass
 ytdlp_hidden += word_hidden
 
+# Pygments (2026-10-30): spell check lexes code and markup to read only their
+# strings, comments and text (quill/core/spellcheck_spans.py). It finds its
+# lexers by name at run time, so the tracer sees none of them; collected here,
+# or a frozen build quietly falls back to the regex lexer for every language.
+ytdlp_hidden += collect_submodules("pygments.lexers") + [
+    "pygments.token",
+    "pygments.util",
+    "pygments.lexer",
+]
+
 a = Analysis(
     ["runtime_launcher.py"],
     pathex=[_CHECKOUT_ROOT],

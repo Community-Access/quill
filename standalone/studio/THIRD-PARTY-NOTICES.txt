@@ -25,11 +25,11 @@ Summary by licence
   Mozilla Public License, version 2.0: 3 components
   Public domain: 3 components
   The Unlicense (public domain dedication): 3 components
+  BSD 2-Clause License: 2 components
   ISC License: 2 components
   BSD Zero Clause License: 1 component
   GNU Affero General Public License, version 3: 1 component
   BASS licence (Un4seen Developments, proprietary freeware): 1 component
-  BSD 2-Clause License: 1 component
   Creative Commons Zero 1.0 (public domain dedication): 1 component
   GNU Lesser General Public License, version 3: 1 component
   MIT No Attribution License: 1 component
@@ -312,6 +312,17 @@ Copyright: Copyright (c) 2001-present Python Software Foundation
 Upstream: https://github.com/kurtmckee/feedparser-sgmllib
 How it reaches you: Bundled: it is inside the installer or the portable zip.
 What the licence asks of us: Keep the PSF copyright notice and licence with the distribution and summarise any changes we made.
+
+Pygments
+--------
+
+What it is: Finds the strings and comments in code, so spell check reads only those.
+Version: 2.21.0
+Licence: BSD-2-Clause
+Copyright: Copyright (c) 2006-2022 by the respective authors (see AUTHORS file)
+Upstream: https://pygments.org/
+How it reaches you: Bundled: it is inside the installer or the portable zip.
+What the licence asks of us: Keep the copyright notice, the conditions and the disclaimer in the documentation that ships with the binary.
 
 html_to_text
 ------------
@@ -2176,7 +2187,7 @@ The full text is not reproduced here. It is published at https://www.un4seen.com
 BSD 2-Clause License
 --------------------
 
-Used by: feedparser.
+Used by: feedparser, Pygments.
 
 What it asks of us: Keep the copyright notice, the conditions and the disclaimer in the documentation that ships with the binary.
 

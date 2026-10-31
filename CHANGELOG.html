@@ -273,6 +273,34 @@ as well as record one, and can record a whole sound card; captions can
 be saved beside any recording; the shared sound manager can be muted.
 Existing behavior is unchanged.</li>
 </ul>
+<h3
+id="spell-check-reads-only-what-you-wrote-and-recovery-says-how-each-document-begins-2026-10-30">Spell
+check reads only what you wrote, and recovery says how each document
+begins (2026-10-30)</h3>
+<p>Both from Chris Nova of Mystic Access on the QUILLVille list. QUILL
+and QUILL Lite share the code, so both get both.</p>
+<ul>
+<li>Spell check skips web addresses, email addresses, file paths and
+file names in every document. Checking <code>www.example.com</code> no
+longer stops on <code>www</code>, <code>example</code> and
+<code>com</code>. This covers checking as you type, the F7 review, next
+and previous misspelling, the misspelling list and the context
+menu.</li>
+<li>In Markdown it also skips code and link addresses; in web pages and
+XML it reads the text and the readable attributes (<code>alt</code>,
+<code>title</code>, <code>aria-label</code>, <code>placeholder</code>);
+in code it reads only strings and comments, and skips placeholders,
+escapes and identifiers inside them. The file’s extension picks the
+rule.</li>
+<li>Code and markup are read with Pygments, now a declared dependency,
+bundled in the shared runtime and listed in the third-party notices. A
+small built-in reader takes over if Pygments or a lexer is missing.</li>
+<li>A word in single quotes in SQL, CSS or a script is no longer
+reported with its closing quote attached.</li>
+<li>The recovery window in QUILL Lite quotes the first few words of each
+document, and QUILL’s Crash Recovery says how the document begins. The
+date alone didn’t say which piece of work it was.</li>
+</ul>
 <h3 id="windows-runtime-media-shutdown-and-licensing-2026-10-27">Windows
 runtime, media shutdown and licensing (2026-10-27)</h3>
 <ul>

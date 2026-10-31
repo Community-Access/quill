@@ -90,10 +90,10 @@ class SpellContextMenuMixin:
 
         finder = next_misspelling if forward else previous_misspelling
         ignores = self.spell_ignores()
-        item = finder(text, cursor, dictionary)
+        item = finder(text, cursor, dictionary, filename=getattr(self.document, "path", None))
         while item is not None and ignores.skips(text, item):
             cursor = item.end if forward else item.start
-            item = finder(text, cursor, dictionary)
+            item = finder(text, cursor, dictionary, filename=getattr(self.document, "path", None))
         return item
 
     def ignore_misspelling_once(self, item: object) -> None:

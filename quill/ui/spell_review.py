@@ -48,6 +48,7 @@ def review_textctrl(
     session = ReviewSession(
         text=text,
         dictionary=set(dictionary),
+        filename=document_path,
         scope_start=0,
         scope_end=len(text),
         # The words this surface has already been told to skip. Every other

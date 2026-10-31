@@ -32,6 +32,13 @@ dependencies = [
     # the standard Python choice. Pure Python, no C extension, tiny -- a normal
     # dependency, not an on-demand optional component like Pandoc/speech engines.
     "feedparser>=6.0.14",
+    # Spell check reads only the strings and comments of a code file and only
+    # the text of a web page (core/spellcheck_spans.py). Pygments has lexers for
+    # over 500 languages, so template strings, heredocs and scripts inside HTML
+    # are found correctly; a small regex lexer is the fallback when a lexer is
+    # missing. Pure Python, BSD-2-Clause, imported only on the first code file.
+    # Approved 2026-10-29.
+    "pygments>=2.21.0",
     # Runtime deps of the vendored autoupdate library (quill/_vendor/autoupdate).
     "requests>=2.34.2",
     "platform_utils>=1.6.3",
@@ -704,6 +711,10 @@ module = [
     "dns",
     "dns.*",
     "feedparser",
+    # Pygments (spell check lexes code, core/spellcheck_lexers.py); imported
+    # lazily and ships no type stubs.
+    "pygments",
+    "pygments.*",
     "regex",
     "enchant",
     "keynote_parser.*",

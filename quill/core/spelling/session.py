@@ -60,8 +60,13 @@ class ReviewSession:
         start_at: int | None = None,
         wrap: bool = False,
         context_mode: str = "sentence",
+        filename: str | Path | None = None,
     ) -> None:
         self._text = text
+        #: The document's file name: it decides what is read at all -- web
+        #: addresses never, and in code only the strings and comments
+        #: (quill.core.spellcheck_spans).
+        self._filename = filename
         #: ``spell_review_context_mode``: the Context field shows the sentence
         #: and its neighbours, or the whole paragraph.
         self._context_mode = normalize_context_mode(context_mode)
@@ -196,7 +201,7 @@ class ReviewSession:
 
         return [
             m
-            for m in _lm(self._text, self._dictionary)
+            for m in _lm(self._text, self._dictionary, filename=self._filename)
             if self._scope_start <= m.start < self._scope_end
             and m.word.lower() not in self._session_ignores
             and m.start not in self._ignored_once_positions
@@ -260,7 +265,7 @@ class ReviewSession:
 
         all_ms = [
             x
-            for x in _lm(self._text, self._dictionary)
+            for x in _lm(self._text, self._dictionary, filename=self._filename)
             if self._scope_start <= x.start < self._scope_end and x.word.lower() == target_lower
         ]
 
@@ -456,7 +461,7 @@ class ReviewSession:
 
         self._issues = [
             m
-            for m in _lm(self._text, self._dictionary)
+            for m in _lm(self._text, self._dictionary, filename=self._filename)
             if self._scope_start <= m.start < self._scope_end
             and m.word.lower() not in self._session_ignores
             and m.start not in self._ignored_once_positions
