@@ -16,6 +16,7 @@ from collections.abc import Callable
 
 from quill.core.ai import harness_credentials as hc
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 
 class HarnessApiKeyDialog:
@@ -43,7 +44,7 @@ class HarnessApiKeyDialog:
             title=f"Set Up {display_name}",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize(wx.Size(520, 300))
+        self.dialog.SetSize(dip_size(self.dialog, 520, 300))
         self._build_ui()
         self._refresh_state()
 

@@ -30,6 +30,7 @@ from collections.abc import Callable, Sequence
 
 from quill.core.media.list_columns import ColumnDef, ColumnLayouts
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 
 class ListColumnsDialog:
@@ -59,7 +60,7 @@ class ListColumnsDialog:
         self.dialog = wx.Dialog(
             parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize((620, 560))
+        self.dialog.SetMinSize(dip_size(self.dialog, 620, 560))
         root = wx.BoxSizer(wx.VERTICAL)
 
         intro = wx.StaticText(
@@ -136,7 +137,10 @@ class ListColumnsDialog:
         preview_label = wx.StaticText(self.dialog, label="&A row will read:")
         root.Add(preview_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)
         self._preview = wx.TextCtrl(
-            self.dialog, value="", style=wx.TE_READONLY | wx.TE_MULTILINE, size=(-1, 48)
+            self.dialog,
+            value="",
+            style=wx.TE_READONLY | wx.TE_MULTILINE,
+            size=dip_size(self.dialog, -1, 48),
         )
         self._preview.SetName("What one row of this list will say, with the columns as set above")
         root.Add(self._preview, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 4)

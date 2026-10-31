@@ -21,6 +21,7 @@ from collections.abc import Callable, Sequence
 from typing import Any
 
 from quill.core.highlights import HighlightPassage, list_label
+from quill.ui.dpi import dip_size
 
 __all__ = ["TITLE", "show_highlight_list"]
 
@@ -43,7 +44,7 @@ def show_highlight_list(
 
     chosen: dict[str, int | None] = {"index": None}
     dialog = wx.Dialog(parent, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
-    dialog.SetSize((720, 420))
+    dialog.SetSize(dip_size(dialog, 720, 420))
     sizer = wx.BoxSizer(wx.VERTICAL)
     label = wx.StaticText(dialog, label="&Passages:")
     sizer.Add(label, 0, wx.LEFT | wx.RIGHT | wx.TOP, 10)

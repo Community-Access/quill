@@ -51,6 +51,7 @@ from quill.ui.dialog_contract import (
     show_message_box,
     show_modal_dialog,
 )
+from quill.ui.dpi import dip_size
 
 
 class RunPythonDialog:
@@ -77,7 +78,7 @@ class RunPythonDialog:
             title="Run Python",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize((900, 680))
+        self.dialog.SetSize(dip_size(self.dialog, 900, 680))
 
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
@@ -96,7 +97,7 @@ class RunPythonDialog:
         self.code = wx.TextCtrl(
             self.dialog,
             style=wx.TE_MULTILINE | wx.TE_PROCESS_TAB | wx.BORDER_SIMPLE,
-            size=(-1, 280),
+            size=dip_size(self.dialog, -1, 280),
         )
         set_accessible_name(self.code, "Python code")
         self.code.SetValue(
@@ -112,7 +113,7 @@ class RunPythonDialog:
         self.preview = wx.TextCtrl(
             self.dialog,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.BORDER_SIMPLE,
-            size=(-1, 220),
+            size=dip_size(self.dialog, -1, 220),
         )
         set_accessible_name(self.preview, "Result preview")
         root.Add(self.preview, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
@@ -241,7 +242,7 @@ class AccessibilityAgentDialog:
             title="Accessibility Tune-Up",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize((860, 620))
+        self.dialog.SetSize(dip_size(self.dialog, 860, 620))
 
         panel = wx.Panel(self.dialog)
         root = wx.BoxSizer(wx.VERTICAL)
@@ -288,7 +289,7 @@ class AccessibilityAgentDialog:
         self.details = wx.TextCtrl(
             panel,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.BORDER_SIMPLE,
-            size=(-1, 150),
+            size=dip_size(panel, -1, 150),
         )
         set_accessible_name(self.details, "Step details")
         root.Add(self.details, 0, wx.EXPAND | wx.ALL, 8)
@@ -413,7 +414,7 @@ class WritingAssistantDialog:
             title="Writing Assistant",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize((960, 700))
+        self.dialog.SetSize(dip_size(self.dialog, 960, 700))
 
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
@@ -474,7 +475,7 @@ class WritingAssistantDialog:
         self.chat_log = wx.TextCtrl(
             self.dialog,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.BORDER_SIMPLE,
-            size=(-1, 110),
+            size=dip_size(self.dialog, -1, 110),
         )
         self.chat_log.SetValue(self._initial_chat_log())
         set_accessible_name(self.chat_log, "Assistant conversation log")
@@ -488,7 +489,7 @@ class WritingAssistantDialog:
         self.details = wx.TextCtrl(
             self.dialog,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.BORDER_SIMPLE,
-            size=(-1, 120),
+            size=dip_size(self.dialog, -1, 120),
         )
         set_accessible_name(self.details, "Action details")
         set_spoken_name(self.details, "Action details")
@@ -655,7 +656,7 @@ class SearchableModelPickerDialog:
             title="Available Models",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize((640, 520))
+        self.dialog.SetSize(dip_size(self.dialog, 640, 520))
         self._models = models
         self._filtered_models = list(models)
 
@@ -740,7 +741,7 @@ class AIHubDialog:
             title="AI Hub",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize((760, 560))
+        self.dialog.SetSize(dip_size(self.dialog, 760, 560))
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
             wx.StaticText(
@@ -758,7 +759,7 @@ class AIHubDialog:
         self.summary = wx.TextCtrl(
             self.dialog,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.BORDER_SIMPLE,
-            size=(-1, 220),
+            size=dip_size(self.dialog, -1, 220),
         )
         set_accessible_name(self.summary, "AI Hub summary")
         root.Add(self.summary, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
@@ -934,7 +935,7 @@ class AssistantConnectionDialog:
             title="AI Hub",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize((780, 520))
+        self.dialog.SetSize(dip_size(self.dialog, 780, 520))
 
         self._settings = load_assistant_connection_settings()
         # Prefer the per-provider key for the initial provider so the field

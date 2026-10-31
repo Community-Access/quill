@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from quill.core.lite import spelling as spelling_mod
+from quill.ui.dpi import dip_size
 
 
 class DocumentWordsMixin:
@@ -83,7 +84,7 @@ def show_dictionary_status(parent: Any, lines: list[str], announce: Any) -> None
     field = wx.TextCtrl(
         dialog,
         value="\n".join(lines),
-        size=(560, 220),
+        size=dip_size(dialog, 560, 220),
         style=wx.TE_MULTILINE | wx.TE_READONLY,
     )
     field.SetHelpText(

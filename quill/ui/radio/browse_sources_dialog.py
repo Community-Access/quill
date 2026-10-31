@@ -25,6 +25,7 @@ from collections.abc import Callable
 
 from quill.core.radio import browse_visibility
 from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids
+from quill.ui.dpi import dip_size
 
 TITLE = "Browse Sources"
 
@@ -77,7 +78,7 @@ class BrowseSourcesDialog:
         self.dialog = wx.Dialog(
             parent, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetSize(wx.Size(680, 480))
+        self.dialog.SetSize(dip_size(self.dialog, 680, 480))
         self._build_ui(labels)
 
     def _build_ui(self, labels: list[str]) -> None:

@@ -16,6 +16,7 @@ from quill.core.diagnostics import build_diagnostics_review_text, write_diagnost
 from quill.core.paths import app_data_dir
 from quill.platform.windows.sr_detect import detect_screen_reader
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 
 
 class DiagnosticsMixin:
@@ -83,7 +84,9 @@ class DiagnosticsMixin:
 
     def _review_diagnostics_export(self) -> bool | None:
         wx = self._wx
-        dialog = wx.Dialog(self.frame, title="Review Diagnostics Export", size=(780, 560))
+        dialog = wx.Dialog(
+            self.frame, title="Review Diagnostics Export", size=dip_size(self.frame, 780, 560)
+        )
         root = wx.BoxSizer(wx.VERTICAL)
         include_paths = wx.CheckBox(dialog, label="Include plain file paths in the bundle")
         review_label = wx.StaticText(dialog, label="Diagnostics &review:")

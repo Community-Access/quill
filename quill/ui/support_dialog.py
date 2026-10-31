@@ -38,6 +38,7 @@ from quill.core.support_message import (
     validate,
 )
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
+from quill.ui.dpi import dip
 
 TITLE = SUPPORT_MENU_TITLE
 
@@ -230,7 +231,9 @@ class _SupportDialog:
         # and a screen reader names a field from the static text before it.
         grid.Add(wx.StaticText(self.dialog, label=label), 0, wx.ALIGN_CENTER_VERTICAL)
         style = wx.TE_MULTILINE if multiline else 0
-        control = wx.TextCtrl(self.dialog, style=style, size=(360, 72 if multiline else -1))
+        control = wx.TextCtrl(
+            self.dialog, style=style, size=(dip(self.dialog, 360), 72 if multiline else -1)
+        )
         control.SetName(label.replace("&", "").rstrip(":"))
         control.SetHelpText(help_text)
         grid.Add(control, 1, wx.EXPAND)

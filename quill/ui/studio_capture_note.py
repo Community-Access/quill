@@ -7,6 +7,7 @@ import wx
 from quill.core.screenshot_note import ScreenshotNoteSession
 from quill.stability.task_manager import UiLifetimeToken
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 
 
 class ScreenshotNoteDialog(wx.Dialog):
@@ -14,7 +15,7 @@ class ScreenshotNoteDialog(wx.Dialog):
         super().__init__(
             host.frame,
             title="Add a spoken screenshot note",
-            size=(700, 520),
+            size=dip_size(host.frame, 700, 520),
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
         self.host, self.evidence = host, evidence

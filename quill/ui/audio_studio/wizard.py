@@ -39,6 +39,7 @@ from quill.ui.audio_studio.pages_shared import BookPage, SummaryPage
 from quill.ui.audio_studio.pages_start import StartPage
 from quill.ui.audio_studio.request import BatchSpeechRequest
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
+from quill.ui.dpi import dip_size
 
 _log = logging.getLogger(__name__)
 
@@ -138,7 +139,7 @@ class AudioStudioWizard(wx.Dialog):
         self._build_ui()
         self._show_page(0)
 
-        self.SetMinSize(wx.Size(680, 620))
+        self.SetMinSize(dip_size(self, 680, 620))
         self.Fit()
         self.CentreOnParent()
         apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)

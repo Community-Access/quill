@@ -22,6 +22,7 @@ from quill.ui.dialog_contract import (
     set_accessible_name,
     show_modal_dialog,
 )
+from quill.ui.dpi import dip_size
 
 TITLE = "What Was Left Out"
 
@@ -83,7 +84,7 @@ def show_skipped_items(
     rows = list(items)
     say = announce or (lambda _text: None)
     dialog = wx.Dialog(parent, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
-    dialog.SetMinSize(wx.Size(560, 400))
+    dialog.SetMinSize(dip_size(dialog, 560, 400))
     root = wx.BoxSizer(wx.VERTICAL)
 
     heading = wx.StaticText(dialog, label=summary)

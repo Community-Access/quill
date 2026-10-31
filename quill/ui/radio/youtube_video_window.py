@@ -25,6 +25,7 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.radio import youtube_video_info as vi
+from quill.ui.dpi import dip_size
 from quill.ui.surface_lifetime import surface_tasks
 
 TITLE = "YouTube Video"
@@ -74,7 +75,7 @@ class YouTubeVideoWindow:
         self._title = name.strip() or "this video"
 
         self.frame = wx.Frame(parent, title=TITLE, style=wx.DEFAULT_FRAME_STYLE)
-        self.frame.SetMinSize((560, 480))
+        self.frame.SetMinSize(dip_size(self.frame, 560, 480))
         self._panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
         self._build()
         self.frame.Bind(wx.EVT_CHAR_HOOK, self._on_char_hook)
@@ -494,7 +495,7 @@ def show_text(host: Any, heading: str, text: str) -> None:
         "The channel's name, its subscriber count and the description it wrote "
         "about itself. Read it with the arrow keys."
     )
-    box.SetMinSize((520, 320))
+    box.SetMinSize(dip_size(box, 520, 320))
     sizer.Add(box, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
     close = wx.Button(dialog, wx.ID_CANCEL, label="Close")
     close.SetHelpText("Closes this and goes back to the channel's row.")

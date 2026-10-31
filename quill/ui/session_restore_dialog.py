@@ -49,6 +49,7 @@ from quill.core.session_restore import (
     summarise,
 )
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_modal_dialog
+from quill.ui.dpi import dip_size
 
 __all__ = ["SessionRestoreAnswer", "ask_session_restore"]
 
@@ -175,7 +176,7 @@ def ask_session_restore(
         dialog,
         value="",
         style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
-        size=(-1, 160),
+        size=dip_size(dialog, -1, 160),
     )
     summary.SetHelpText(
         "A read-only description of this whole window: every remembered "

@@ -15,6 +15,7 @@ from quill.ui.dialog_contract import (
     show_message_box,
     show_modal_dialog,
 )
+from quill.ui.dpi import dip, dip_size
 from quill.ui.spoken_name import set_spoken_name
 
 _SR_DETECTED: bool | None = None
@@ -59,7 +60,7 @@ class StickyNoteEditorDialog:
             title="New Sticky Note" if note is None else "Edit Sticky Note",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize((720, 560))
+        self.dialog.SetSize(dip_size(self.dialog, 720, 560))
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         self._webview = None
@@ -198,7 +199,7 @@ class StickyNotesVaultDialog:
             title="Quill Notes Vault",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize((900, 620))
+        self.dialog.SetSize(dip_size(self.dialog, 900, 620))
         self._notes: list[StickyNote] = []
 
         root = wx.BoxSizer(wx.VERTICAL)
@@ -219,15 +220,15 @@ class StickyNotesVaultDialog:
             style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.BORDER_SIMPLE,
         )
         set_accessible_name(self.list, "Sticky notes")
-        self.list.AppendColumn("Title", width=260)
-        self.list.AppendColumn("Updated", width=180)
-        self.list.AppendColumn("Preview", width=420)
+        self.list.AppendColumn("Title", width=dip(self.list, 260))
+        self.list.AppendColumn("Updated", width=dip(self.list, 180))
+        self.list.AppendColumn("Preview", width=dip(self.list, 420))
         root.Add(self.list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
 
         self.preview = wx.TextCtrl(
             self.dialog,
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.BORDER_SIMPLE,
-            size=(-1, 140),
+            size=dip_size(self.dialog, -1, 140),
         )
         set_accessible_name(self.preview, "Note preview")
         set_spoken_name(self.preview, "Note preview")

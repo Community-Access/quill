@@ -28,6 +28,7 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 TITLE = "Move Podcasts to Folder"
 
@@ -57,7 +58,7 @@ class MoveShowsDialog:
         self.dialog = wx.Dialog(
             parent, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize((520, 460))
+        self.dialog.SetMinSize(dip_size(self.dialog, 520, 460))
         root = wx.BoxSizer(wx.VERTICAL)
 
         root.Add(

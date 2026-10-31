@@ -61,6 +61,7 @@ from quill.core.windows_dictation.model_catalog import (
 )
 from quill.core.windows_dictation.model_types import TIER_MEANINGS
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button, show_message_box
+from quill.ui.dpi import dip_size
 
 __all__ = ["SpeechModelsDialog", "offer_to_remove_replaced", "open_speech_models", "will_offer"]
 
@@ -221,7 +222,7 @@ class SpeechModelsDialog(wx.Dialog):
             buttons.Add(button, 0, wx.RIGHT, _PAD)
         root.Add(buttons, 0, wx.ALL, _PAD)
         self.SetSizer(root)
-        self.SetSize((680, 720))
+        self.SetSize(dip_size(self, 680, 720))
         apply_modal_ids(self, cancel_id=wx.ID_CANCEL, escape_id=wx.ID_CANCEL)
         bind_close_button(self, close, modeless=False)
         self.download.Bind(wx.EVT_BUTTON, self._on_download)

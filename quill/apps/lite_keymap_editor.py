@@ -47,6 +47,7 @@ from quill.ui.dialog_contract import (
     show_message_box,
     show_modal_dialog,
 )
+from quill.ui.dpi import dip_size
 from quill.ui.hotkey_conflict import claim_sentence
 
 __all__ = ["DocumentKeymapMixin", "KeymapEditorDialog", "row_text", "sort_key"]
@@ -194,7 +195,7 @@ class KeymapEditorDialog:
         closing = self.dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
         root.Add(closing, 0, wx.ALIGN_RIGHT | wx.ALL, _PAD)
         self.dialog.SetSizerAndFit(root)
-        self.dialog.SetSize(_SIZE)
+        self.dialog.SetSize(dip_size(self.dialog, *_SIZE))
         self._refresh_list("")
 
     # -- construction -------------------------------------------------------- #

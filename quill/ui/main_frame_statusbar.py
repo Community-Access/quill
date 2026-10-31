@@ -30,6 +30,7 @@ from quill.core.status_message import (
 )
 from quill.platform.sr_announce import announce
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 from quill.ui.native_status_bar import (
     native_status_text,
     show_native_status_bar,
@@ -1103,7 +1104,9 @@ class StatusBarMixin:
         wx = self._wx
         item_order = list(self.settings.status_bar_order)
         hidden = set(self.settings.status_bar_hidden)
-        dialog = wx.Dialog(self.frame, title="Status Bar Layout", size=(560, 420))
+        dialog = wx.Dialog(
+            self.frame, title="Status Bar Layout", size=dip_size(self.frame, 560, 420)
+        )
         # Parent every control directly to the dialog and lay them out in one
         # sizer (issue #119 pattern). The previous build parented controls to an
         # inner wx.Panel but added dialog.CreateButtonSizer()'s buttons (children

@@ -33,6 +33,7 @@ from quill.ui.dialog_contract import (
     apply_modal_ids,
     set_accessible_name,
 )
+from quill.ui.dpi import dip_size
 
 
 class KeymapIoMixin:
@@ -89,7 +90,9 @@ class KeymapIoMixin:
         if not offers:
             self._set_status("Nothing available to export")
             return
-        dialog = wx.Dialog(self.frame, title="Export and Back Up", size=(560, 460))
+        dialog = wx.Dialog(
+            self.frame, title="Export and Back Up", size=dip_size(self.frame, 560, 460)
+        )
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
             wx.StaticText(
@@ -250,7 +253,9 @@ class KeymapIoMixin:
             )
             self._set_status("Nothing to import")
             return
-        dialog = wx.Dialog(self.frame, title="Import and Restore", size=(580, 480))
+        dialog = wx.Dialog(
+            self.frame, title="Import and Restore", size=dip_size(self.frame, 580, 480)
+        )
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
             wx.StaticText(
@@ -340,7 +345,9 @@ class KeymapIoMixin:
         pack_desc = keyboard_pack_description(pack_name)
 
         # Collect name and description via a simple dialog before the file picker.
-        dlg = wx.Dialog(self.frame, title="Export Keyboard Pack", size=(480, 220))
+        dlg = wx.Dialog(
+            self.frame, title="Export Keyboard Pack", size=dip_size(self.frame, 480, 220)
+        )
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(wx.StaticText(dlg, label="Pack &name:"), 0, wx.ALL, 8)
         name_ctrl = wx.TextCtrl(dlg, value=pack_name)

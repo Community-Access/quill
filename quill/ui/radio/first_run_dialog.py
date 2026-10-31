@@ -34,6 +34,7 @@ from quill.core.radio.onboarding import (
     screen_body,
 )
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 _log = logging.getLogger(__name__)
 
@@ -105,7 +106,7 @@ class RadioFirstRunDialog:
         root.Add(buttons, 0, wx.ALL, 12)
 
         self._dialog.SetSizer(root)
-        self._dialog.SetMinSize((560, 400))
+        self._dialog.SetMinSize(dip_size(self._dialog, 560, 400))
         apply_modal_ids(self._dialog, cancel_id=wx.ID_CANCEL)
 
         self._back_btn.Bind(wx.EVT_BUTTON, lambda _e: self.go(-1))

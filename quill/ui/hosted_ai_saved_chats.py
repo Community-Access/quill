@@ -29,6 +29,7 @@ from quill.ui.dialog_contract import (
     bind_close_button,
     show_modal_dialog,
 )
+from quill.ui.dpi import dip_size
 
 __all__ = ["SavedConversationsDialog", "choose_saved_conversation", "row_label"]
 
@@ -91,7 +92,7 @@ class SavedConversationsDialog(wx.Dialog):
         apply_modal_ids(self, escape_id=wx.ID_CANCEL)
 
         self._refresh()
-        self.SetInitialSize((560, 420))
+        self.SetInitialSize(dip_size(self, 560, 420))
         self._list.SetFocus()
 
     def _refresh(self, keep: int = 0) -> None:

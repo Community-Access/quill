@@ -23,6 +23,7 @@ import wx
 from quill.core.ai.chatgpt_client import IMAGE_SUFFIXES
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 __all__ = ["TITLE", "AskImageDialog", "image_wildcard"]
 
@@ -60,7 +61,7 @@ class AskImageDialog(wx.Dialog):
                 "you can read, copy, or insert into your document. Nothing else is sent."
             ),
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2,
-            size=(-1, 70),
+            size=dip_size(self, -1, 70),
         )
         set_accessible_name(about_text, "What this does")
         about_text.SetHelpText("Where the picture goes and what comes back. Read with the arrows.")
@@ -84,7 +85,7 @@ class AskImageDialog(wx.Dialog):
         root.Add(row, 0, wx.EXPAND | wx.ALL, _PAD)
 
         question_label = wx.StaticText(self, label="Your &question (optional):")
-        self.question = wx.TextCtrl(self, style=wx.TE_MULTILINE, size=(-1, 70))
+        self.question = wx.TextCtrl(self, style=wx.TE_MULTILINE, size=dip_size(self, -1, 70))
         set_accessible_name(self.question, "Your question")
         self.question.SetHelpText(
             "What you want to know about the picture. Leave it empty for a plain "
@@ -108,7 +109,7 @@ class AskImageDialog(wx.Dialog):
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, _PAD)
 
         self.SetSizer(root)
-        self.SetInitialSize((560, 360))
+        self.SetInitialSize(dip_size(self, 560, 360))
         self.Centre()
         apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
         self.Bind(wx.EVT_BUTTON, self._on_ok, id=wx.ID_OK)

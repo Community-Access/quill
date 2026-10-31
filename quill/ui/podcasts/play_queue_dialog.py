@@ -16,6 +16,7 @@ from quill.core.podcasts import queue as queue_ops
 from quill.core.podcasts.models import PodcastEpisode, PodcastShow
 from quill.core.podcasts.subscriptions import PodcastLibrary
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 
 class PlayQueueDialog:
@@ -42,7 +43,7 @@ class PlayQueueDialog:
         self.dialog = wx.Dialog(
             parent, title="Play Queue", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize((560, 420))
+        self.dialog.SetMinSize(dip_size(self.dialog, 560, 420))
         root = wx.BoxSizer(wx.VERTICAL)
 
         group_row = wx.BoxSizer(wx.HORIZONTAL)

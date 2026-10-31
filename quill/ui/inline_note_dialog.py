@@ -21,6 +21,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.ui.dpi import dip_size
+
 IN_FILE_HELP = (
     "Checked, the note is written into the document itself as a hidden HTML "
     "comment right after this text, so anyone who opens the file -- a colleague "
@@ -54,7 +56,7 @@ def show_inline_note_dialog(
 
     result: dict[str, Any] = {"action": "cancel", "text": initial, "in_file": bool(in_file)}
     dialog = wx.Dialog(parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
-    dialog.SetSize((540, 400))
+    dialog.SetSize(dip_size(dialog, 540, 400))
     sizer = wx.BoxSizer(wx.VERTICAL)
 
     if note_on:

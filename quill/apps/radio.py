@@ -26,6 +26,7 @@ from quill.ui.app_quillins import QuillinsAppMixin
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.app_support import ListeningAppSupportMixin
 from quill.ui.dialog_contract import set_accessible_name
+from quill.ui.dpi import dip_size
 from quill.ui.keymap_editor import KeymapEditorMixin
 from quill.ui.main_frame_hotkeys import GlobalHotkeysMixin
 from quill.ui.main_frame_media_sleep_timer import MediaSleepTimerMixin
@@ -163,7 +164,9 @@ class RadioAppFrame(
     RadioFavoritesTreeMixin,
 ):
     def __init__(self, *, safe_mode: bool = False) -> None:
-        self._init_app_shell(_TITLE, safe_mode=safe_mode, size=(460, 360), app_id="radio")
+        self._init_app_shell(
+            _TITLE, safe_mode=safe_mode, size=dip_size(None, 460, 360), app_id="radio"
+        )
         self._init_app_support()  # the shared slots: undo, problems, quiet, setup
         # This app IS the radio: the editor's release gate on ``core.radio``
         # (#1340) must not apply here, or the recording scheduler, wake task,
@@ -287,7 +290,7 @@ class RadioAppFrame(
             panel,
             value="Radio: stopped",
             style=wx.TE_READONLY | wx.TE_MULTILINE | wx.TE_NO_VSCROLL | wx.BORDER_SIMPLE,
-            size=(-1, 54),
+            size=dip_size(panel, -1, 54),
         )
         set_accessible_name(self._now_playing_text, "Now playing")
         set_spoken_name(self._now_playing_text, "Now playing")
@@ -1229,6 +1232,9 @@ def main() -> int:
     # A new portable copy offers an earlier copy's favorites before anything
     # reads the data folder. Then file logging, so startup records land in
     # quill.log (quill-radio #5), in the log-location preference or <data>/logs.
+    from quill.platform.windows.dpi_awareness import enable_dpi_awareness
+
+    enable_dpi_awareness()  # before the first window, or Windows stretches it (#1702)
     app = wx.App()
     from quill.ui.radio.portable_migration_ui import offer_earlier_favorites
 

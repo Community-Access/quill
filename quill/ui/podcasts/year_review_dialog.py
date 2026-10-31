@@ -15,6 +15,8 @@ from collections.abc import Callable
 from datetime import datetime
 from typing import Any
 
+from quill.ui.dpi import dip_size
+
 __all__ = ["YearInReviewWindow", "open_year_in_review"]
 
 TITLE = "Year in Review"
@@ -51,8 +53,8 @@ class YearInReviewWindow:
         this_year = datetime.now().astimezone().year
         self._years = [this_year, this_year - 1]
 
-        self.frame = wx.Frame(parent, title=TITLE, size=(600, 560))
-        self.frame.SetMinSize((560, 520))
+        self.frame = wx.Frame(parent, title=TITLE, size=dip_size(parent, 600, 560))
+        self.frame.SetMinSize(dip_size(self.frame, 560, 520))
         panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
         root = wx.BoxSizer(wx.VERTICAL)
 

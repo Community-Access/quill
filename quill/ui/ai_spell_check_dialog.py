@@ -11,6 +11,7 @@ from collections.abc import Callable
 
 from quill.core.ai.spell_check import SpellCorrection, apply_corrections
 from quill.ui.dialog_contract import apply_modal_ids, dialog_alive, set_accessible_name
+from quill.ui.dpi import dip, dip_size
 
 
 class AISpellCheckDialog:
@@ -45,7 +46,7 @@ class AISpellCheckDialog:
             title=f"AI Spell Check - {n} suggestion{'s' if n != 1 else ''}",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize(wx.Size(760, 560))
+        self.dialog.SetSize(dip_size(self.dialog, 760, 560))
         self._build_ui()
 
     def _build_ui(self) -> None:
@@ -67,10 +68,10 @@ class AISpellCheckDialog:
             style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.BORDER_SIMPLE,
         )
         self._list.SetName("Spelling corrections")
-        self._list.InsertColumn(0, "#", width=40)
-        self._list.InsertColumn(1, "Misspelled", width=160)
-        self._list.InsertColumn(2, "Suggestion", width=160)
-        self._list.InsertColumn(3, "Context", width=280)
+        self._list.InsertColumn(0, "#", width=dip(self._list, 40))
+        self._list.InsertColumn(1, "Misspelled", width=dip(self._list, 160))
+        self._list.InsertColumn(2, "Suggestion", width=dip(self._list, 160))
+        self._list.InsertColumn(3, "Context", width=dip(self._list, 280))
         self._populate_list()
         root.Add(self._list, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
@@ -295,7 +296,7 @@ class AISpellCheckInteractiveDialog:
             title="Interactive Spell Check",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize(wx.Size(780, 580))
+        self.dialog.SetSize(dip_size(self.dialog, 780, 580))
         self._build_ui()
 
     def _build_ui(self) -> None:
@@ -318,10 +319,10 @@ class AISpellCheckInteractiveDialog:
             style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.BORDER_SIMPLE,
         )
         self._list.SetName("Paragraph corrections")
-        self._list.InsertColumn(0, "#", width=40)
-        self._list.InsertColumn(1, "Misspelled", width=160)
-        self._list.InsertColumn(2, "Suggestion", width=160)
-        self._list.InsertColumn(3, "Context", width=260)
+        self._list.InsertColumn(0, "#", width=dip(self._list, 40))
+        self._list.InsertColumn(1, "Misspelled", width=dip(self._list, 160))
+        self._list.InsertColumn(2, "Suggestion", width=dip(self._list, 160))
+        self._list.InsertColumn(3, "Context", width=dip(self._list, 260))
         root.Add(self._list, 1, wx.EXPAND | wx.ALL, 8)
 
         # Status

@@ -58,6 +58,7 @@ from quill.ui.dialog_contract import (
     apply_modal_ids,
     show_message_box,
 )
+from quill.ui.dpi import dip_size
 
 _log = logging.getLogger(__name__)
 
@@ -396,7 +397,7 @@ class ChapterWorkbenchDialog(SilenceProposalMixin, ChapterEditsMixin, wx.Dialog)
 
         apply_modal_ids(self, cancel_id=wx.ID_CANCEL)
         self.Bind(wx.EVT_CLOSE, self._on_close)
-        self.SetMinSize(wx.Size(720, 720))
+        self.SetMinSize(dip_size(self, 720, 720))
         self.SetSizer(root)
         self.Fit()
         self.CentreOnParent()

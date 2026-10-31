@@ -36,6 +36,7 @@ from quill.core.radio.audio_health import (
     headline,
 )
 from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids
+from quill.ui.dpi import dip_size
 
 _log = logging.getLogger(__name__)
 
@@ -230,7 +231,7 @@ def show_audio_health(host: Any) -> None:
 
     line, report = _rows(host)
     dialog = wx.Dialog(host.frame, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
-    dialog.SetSize(wx.Size(700, 460))
+    dialog.SetSize(dip_size(dialog, 700, 460))
     root = wx.BoxSizer(wx.VERTICAL)
 
     summary_label = wx.StaticText(dialog, label=line)

@@ -24,6 +24,7 @@ from quill.core.publish.feed_folder import (
     write_show_notes,
 )
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
+from quill.ui.dpi import dip_size
 
 
 class FolderFeedDialog(wx.Dialog):
@@ -182,7 +183,7 @@ class FolderFeedDialog(wx.Dialog):
             self._on_pick_episode()
 
         apply_modal_ids(self, cancel_id=wx.ID_CANCEL)
-        self.SetMinSize(wx.Size(680, 560))
+        self.SetMinSize(dip_size(self, 680, 560))
         self.SetSizer(root)
         self.Fit()
         self.CentreOnParent()

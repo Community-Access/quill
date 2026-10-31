@@ -37,6 +37,7 @@ from pathlib import Path
 from typing import Any
 
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 from quill.ui.radio.bounded_playback_ui import describe_chapter
 
 #: How much is played either side of a mark. Ten seconds is long enough to hear
@@ -83,7 +84,7 @@ class ChapterListDialog:
             title=self._title,
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize(wx.Size(560, 420))
+        self.dialog.SetSize(dip_size(self.dialog, 560, 420))
         self._build_ui()
 
     def _build_ui(self) -> None:

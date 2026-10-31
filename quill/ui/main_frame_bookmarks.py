@@ -37,6 +37,7 @@ from quill.core.favorite_folders import (
 from quill.core.marks import line_column_for_position
 from quill.core.pdf_open import outline_bookmark_offsets
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 from quill.ui.navigator_node import _NavigatorNode
 from quill.ui.sound_manager import post_sound
 from quill.ui.spoken_name import set_spoken_name
@@ -427,7 +428,9 @@ class BookmarksFoldsMixin:
             self._set_status("No favorite folders yet. Use Add Favorite Folder first.")
             return
 
-        dialog = wx.Dialog(self.frame, title="Open From Favorite Folder", size=(560, 440))
+        dialog = wx.Dialog(
+            self.frame, title="Open From Favorite Folder", size=dip_size(self.frame, 560, 440)
+        )
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(
             wx.StaticText(dialog, label="Type to filter, then choose a file to open:"),

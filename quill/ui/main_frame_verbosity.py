@@ -17,6 +17,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from quill.ui.dpi import dip_size
+
 if TYPE_CHECKING:
     from quill.core.verbosity.controller import VerbosityController
 
@@ -126,7 +128,7 @@ class VerbosityCommandsMixin:
             title="Verbosity Preferences",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        dialog.SetMinSize(wx.Size(640, 560))
+        dialog.SetMinSize(dip_size(dialog, 640, 560))
         sizer = wx.BoxSizer(wx.VERTICAL)
         panel = VerbosityPrefsPanel(dialog, announce_cb=self._announce_text)
         sizer.Add(panel, 1, wx.EXPAND | wx.ALL, 8)

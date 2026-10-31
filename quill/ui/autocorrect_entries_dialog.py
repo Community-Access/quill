@@ -57,6 +57,7 @@ from quill.ui.dialog_contract import (
     bind_close_button,
     show_message_box,
 )
+from quill.ui.dpi import dip_size
 
 __all__ = ["TITLE", "AutocorrectEntriesDialog", "CorrectionEditDialog", "EditAnswer"]
 
@@ -171,7 +172,7 @@ class AutocorrectEntriesDialog:
         self.dialog = wx.Dialog(
             parent, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize(wx.Size(560, 420))
+        self.dialog.SetMinSize(dip_size(self.dialog, 560, 420))
         root = wx.BoxSizer(wx.VERTICAL)
 
         root.Add(wx.StaticText(self.dialog, label="&Find:"), 0, wx.LEFT | wx.TOP, 8)

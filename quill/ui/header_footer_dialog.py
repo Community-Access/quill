@@ -17,6 +17,7 @@ import wx
 
 from quill.core.header_footer import PRESETS, HeaderFooterSpec, PageNumberStyle
 from quill.ui.dialog_contract import set_accessible_name
+from quill.ui.dpi import dip_size
 
 
 class HeaderFooterDialog:
@@ -35,7 +36,7 @@ class HeaderFooterDialog:
         self.dialog = wx.Dialog(
             parent, title="Header and Footer", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize(wx.Size(560, 520))
+        self.dialog.SetMinSize(dip_size(self.dialog, 560, 520))
         root = wx.BoxSizer(wx.VERTICAL)
 
         root.Add(wx.StaticText(self.dialog, label="&Preset:"), 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)

@@ -35,6 +35,7 @@ from quill.core.podcasts import opml_import
 from quill.core.podcasts.opml import OpmlError, OpmlValidationResult
 from quill.core.podcasts.subscriptions import PodcastLibrary
 from quill.ui.dialog_contract import bind_close_button
+from quill.ui.dpi import dip_size
 from quill.ui.podcasts.say_status import say_status
 from quill.ui.surface_lifetime import surface_tasks
 
@@ -89,7 +90,7 @@ class OpmlImportDialog:
         self.frame = wx.Frame(parent, title="Import OPML")
         self._frame_id = self.frame.GetId()
         self.dialog = self.frame
-        self.dialog.SetMinSize((560, 340))
+        self.dialog.SetMinSize(dip_size(self.dialog, 560, 340))
         panel = wx.Panel(self.frame)
         root = wx.BoxSizer(wx.VERTICAL)
 

@@ -33,6 +33,7 @@ from quill.core.restore_points import (
 )
 from quill.core.version_history import speakable_when, version_label
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 
 _log = logging.getLogger(__name__)
 
@@ -131,7 +132,7 @@ class RestorePointsMixin:
         buttons.Add(close_button, 0)
         root.Add(buttons, 0, wx.ALL | wx.EXPAND, 8)
         dialog.SetSizer(root)
-        dialog.SetSize((520, 360))
+        dialog.SetSize(dip_size(dialog, 520, 360))
         apply_modal_ids(dialog, affirmative_id=wx.ID_OK, escape_id=wx.ID_CANCEL)
         copy_button.Bind(wx.EVT_BUTTON, lambda _e: dialog.EndModal(wx.ID_APPLY))
         try:

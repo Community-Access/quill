@@ -15,6 +15,7 @@ from collections.abc import Callable
 
 from quill.core.sticky_notes import StickyNote, load_sticky_notes
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 
 
 def filter_notes(notes: list[StickyNote], query: str) -> list[StickyNote]:
@@ -50,7 +51,7 @@ class StickyNotesBrowserDialog:
             title="Sticky Notes Browser",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize((640, 480))
+        self.dialog.SetMinSize(dip_size(self.dialog, 640, 480))
         root = wx.BoxSizer(wx.VERTICAL)
 
         search_label = wx.StaticText(self.dialog, label="&Search notes:")
@@ -71,7 +72,7 @@ class StickyNotesBrowserDialog:
             self.dialog, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP
         )
         set_accessible_name(self._preview, "Selected note's full text, read-only")
-        self._preview.SetMinSize((-1, 140))
+        self._preview.SetMinSize(dip_size(self._preview, -1, 140))
         root.Add(self._preview, 1, wx.EXPAND | wx.ALL, 8)
 
         buttons = wx.BoxSizer(wx.HORIZONTAL)

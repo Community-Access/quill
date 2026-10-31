@@ -610,6 +610,9 @@ def main() -> int:
     from quill.stability.logging_config import configure_logging
 
     log_listener = configure_logging(data_dir() / "logs")
+    from quill.platform.windows.dpi_awareness import enable_dpi_awareness
+
+    enable_dpi_awareness()  # before the first window, or Windows stretches it (#1702)
     app = QuillLiteApp(paths, mode)
     try:
         app.MainLoop()

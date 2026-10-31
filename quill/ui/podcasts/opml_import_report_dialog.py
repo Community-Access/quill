@@ -11,6 +11,7 @@ from typing import Any
 from quill.core.counted import plural
 from quill.core.podcasts.opml import OpmlValidationResult
 from quill.ui.dialog_contract import bind_close_button
+from quill.ui.dpi import dip_size
 from quill.ui.surface_lifetime import surface_tasks
 
 
@@ -129,7 +130,7 @@ class OpmlImportReportDialog:
         self._frame_id = self.frame.GetId()
         self._population_later: Any = None
         self.dialog = self.frame
-        self.dialog.SetMinSize((560, 420))
+        self.dialog.SetMinSize(dip_size(self.dialog, 560, 420))
         panel = wx.Panel(self.frame)
         from quill.stability.task_manager import TaskManager
 

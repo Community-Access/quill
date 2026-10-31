@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any
 
 from quill.ui.dialog_contract import set_accessible_name
+from quill.ui.dpi import dip_size
 from quill.ui.spoken_name import set_spoken_name
 
 # The community store for every shareable QUILL artifact type.
@@ -131,7 +132,7 @@ def open_hub_submission(
         dialog,
         value=body_text,
         style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_DONTWRAP,
-        size=(560, 300),
+        size=dip_size(dialog, 560, 300),
     )
     set_accessible_name(text, "Submission check results")
     set_spoken_name(text, "Submission check results")

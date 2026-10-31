@@ -14,6 +14,7 @@ import wx
 
 from quill.core.clip_library import ClipLibrary
 from quill.core.fragment import FragmentFormat, render_fragment
+from quill.ui.dpi import dip_size
 
 
 class ClipLibraryDialog:
@@ -44,7 +45,7 @@ class ClipLibraryDialog:
         self.dialog = wx.Dialog(
             parent, title="Clip Library", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize(wx.Size(640, 440))
+        self.dialog.SetMinSize(dip_size(self.dialog, 640, 440))
         root = wx.BoxSizer(wx.VERTICAL)
 
         search_row = wx.BoxSizer(wx.HORIZONTAL)

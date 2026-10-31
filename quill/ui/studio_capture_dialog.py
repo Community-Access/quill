@@ -7,6 +7,7 @@ from wx.lib.scrolledpanel import ScrolledPanel
 
 from quill.core.studio_capture import REGION_PRESETS, CaptureTarget, guided_region, validate_region
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 from quill.ui.studio_capture_options import CaptureOptionsMixin
 
 # a11y: needs manual verification — screen-reader/braille announcements,
@@ -156,7 +157,9 @@ class CaptureSetupDialog(CaptureOptionsMixin, wx.Dialog):
         self.region_panel.SetSizer(region_layout)
         outer.Add(self.region_panel, 0, wx.EXPAND | wx.ALL, 10)
         outer.Add(wx.StaticText(panel, label="Capture plan and &guidance"), 0, wx.LEFT, 10)
-        self.guidance = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(-1, 100))
+        self.guidance = wx.TextCtrl(
+            panel, style=wx.TE_MULTILINE | wx.TE_READONLY, size=dip_size(panel, -1, 100)
+        )
         set_accessible_name(self.guidance, "Capture plan and guidance")
         self.guidance.SetHelpText(
             "Review what will be included, what may be cut off, and what to check next. "

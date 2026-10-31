@@ -21,6 +21,7 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.radio import youtube_comments as yc
+from quill.ui.dpi import dip_size
 from quill.ui.surface_lifetime import surface_tasks
 
 TITLE = "YouTube Comments"
@@ -71,7 +72,7 @@ class YouTubeCommentsWindow:
         self._generation = 0
 
         self.frame = wx.Frame(parent, title=TITLE, style=wx.DEFAULT_FRAME_STYLE)
-        self.frame.SetMinSize((560, 460))
+        self.frame.SetMinSize(dip_size(self.frame, 560, 460))
         self._panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
         self._build()
         self._timer = wx.Timer(self.frame)

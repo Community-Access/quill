@@ -41,6 +41,7 @@ from quill.core.lineups.refs import (
     Presence,
 )
 from quill.core.lineups.store import LineupStore, LineupStoreError
+from quill.ui.dpi import dip, dip_size
 from quill.ui.lineups import menus
 from quill.ui.lineups.commands import LineupsCommandsMixin
 from quill.ui.lineups.commands_play import LineupsArrangePlayMixin
@@ -96,7 +97,7 @@ class LineupsWindow(LineupsCommandsMixin, LineupsArrangePlayMixin, LineupsRefres
         self._win = wx.Frame(None, title=TITLE, style=wx.DEFAULT_FRAME_STYLE)
         self.dialog = self._win
         self._surface = wx.Panel(self._win, style=wx.TAB_TRAVERSAL)
-        self._win.SetMinSize((760, 520))
+        self._win.SetMinSize(dip_size(self._win, 760, 520))
         self._build()
         self._menu_items = menus.install_menu_bar(self, wx, self.run)
         outer = wx.BoxSizer(wx.VERTICAL)
@@ -152,7 +153,7 @@ class LineupsWindow(LineupsCommandsMixin, LineupsArrangePlayMixin, LineupsRefres
             "edits its rules, F2 renames, Delete deletes it after asking, and "
             "Alt+Shift+Up and Down move it."
         )
-        self._lineups.SetMinSize((240, 300))
+        self._lineups.SetMinSize(dip_size(self._lineups, 240, 300))
         left.Add(self._lineups, 1, wx.EXPAND)
         lists.Add(left, 0, wx.EXPAND | wx.RIGHT, 10)
 
@@ -174,7 +175,7 @@ class LineupsWindow(LineupsCommandsMixin, LineupsArrangePlayMixin, LineupsRefres
         # announce on every visit (review N6). The column follows the width.
         style = wx.LC_REPORT | wx.LC_NO_HEADER | wx.BORDER_SIMPLE
         self._items = wx.ListCtrl(surface, style=style)
-        self._items.InsertColumn(0, "Item", width=620)
+        self._items.InsertColumn(0, "Item", width=dip(self._items, 620))
         self._items.Bind(wx.EVT_SIZE, self._on_items_size)
         self._items.SetName("Items")
         self._items.SetHelpText(

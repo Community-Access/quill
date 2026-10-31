@@ -27,6 +27,7 @@ from quill.core.quill_key_help import (
     summarize_cheat_sheet,
 )
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 
 #: Named presets for the browse-mode follow-on timeout (seconds).
 #: Tokens match the values in ``settings_specs.SETTING_SPECS`` for
@@ -655,7 +656,7 @@ class QuillKeyMixin:
             self.frame,
             title=title,
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
-            size=(560, 560),
+            size=dip_size(self.frame, 560, 560),
         )
         try:
             inner = wx.BoxSizer(wx.VERTICAL)

@@ -23,6 +23,7 @@ from __future__ import annotations
 from typing import Any
 
 from quill.core.quillins.loader import remove_extension, set_enabled
+from quill.ui.dpi import dip_size
 
 _QUILLINS_MANAGER_COMMAND = "tools.quillins_manager"
 
@@ -178,7 +179,7 @@ class QuillinsAppMixin:
         body.Add(button_sizer, 0, wx.EXPAND | wx.ALL, 8)
 
         dialog.SetSizerAndFit(body)
-        dialog.SetSize((640, 520))
+        dialog.SetSize(dip_size(dialog, 640, 520))
         if hasattr(dialog, "CentreOnParent"):
             dialog.CentreOnParent()
 

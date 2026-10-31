@@ -32,6 +32,7 @@ from quill.core.file_manager import reveal_command
 from quill.core.net import certificate_problem
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 from quill.ui.spoken_name import set_spoken_name
 
 __all__ = [
@@ -221,7 +222,7 @@ def offer_install(
     dialog = wx.Dialog(
         parent, title="Update downloaded", style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
     )
-    dialog.SetSize((500, 240))
+    dialog.SetSize(dip_size(dialog, 500, 240))
     sizer = wx.BoxSizer(wx.VERTICAL)
     body = wx.TextCtrl(
         dialog,

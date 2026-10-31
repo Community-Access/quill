@@ -27,6 +27,7 @@ from quill.core.open_documents_search import (
     line_text,
     plan_replace,
 )
+from quill.ui.dpi import dip_size
 
 __all__ = [
     "MODES",
@@ -206,7 +207,7 @@ def _choose_match(host: OpenDocumentsHost, title: str, rows: list[tuple[int, str
     buttons = dialog.CreateStdDialogButtonSizer(wx.OK | wx.CANCEL)
     root.Add(buttons, 0, wx.EXPAND | wx.ALL, 8)
     dialog.SetSizer(root)
-    dialog.SetSize((640, 420))
+    dialog.SetSize(dip_size(dialog, 640, 420))
     from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids
 
     apply_modal_ids(
@@ -283,7 +284,7 @@ def open_find_in_open_documents(host: OpenDocumentsHost) -> None:
     grid.AddGrowableCol(1)
 
     find_label = wx.StaticText(dialog, label="&Find what:")
-    find_box = wx.TextCtrl(dialog, value=state.query.text, size=(320, -1))
+    find_box = wx.TextCtrl(dialog, value=state.query.text, size=dip_size(dialog, 320, -1))
     find_box.SetHelpText("The text to look for in every open document, saved or not.")
     replace_label = wx.StaticText(dialog, label="Replace w&ith:")
     replace_box = wx.TextCtrl(dialog, value=state.replacement)

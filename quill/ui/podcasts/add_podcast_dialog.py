@@ -18,6 +18,7 @@ from quill.core.podcasts.feed_problems import plain
 from quill.core.podcasts.list_columns import DIRECTORY_RESULTS
 from quill.core.podcasts.models import PodcastShow
 from quill.core.podcasts.subscriptions import PodcastLibrary, new_id
+from quill.ui.dpi import dip_size
 from quill.ui.media.list_columns_view import build_columns, columns_for, fill_row
 from quill.ui.podcasts.say_status import say_status
 from quill.ui.podcasts.subscription_backfill import _apply_backfill
@@ -63,8 +64,8 @@ class AddPodcastWindow:
         self._on_reveal_show = on_reveal_show
         self._search_results: list[itunes_search.PodcastSearchResult] = []
 
-        self.frame = wx.Frame(parent, title="Add Podcast", size=(760, 620))
-        self.frame.SetMinSize((640, 520))
+        self.frame = wx.Frame(parent, title="Add Podcast", size=dip_size(parent, 760, 620))
+        self.frame.SetMinSize(dip_size(self.frame, 640, 520))
         panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
         root = wx.BoxSizer(wx.VERTICAL)
 

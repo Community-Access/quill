@@ -29,6 +29,7 @@ import wx
 from quill.core.audio.dsp import DspOptions, loudness_choices
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.dialog_contract import apply_modal_ids, bind_close_button
+from quill.ui.dpi import dip_size
 
 EFFECTS_TITLE = "Custom Effects"
 
@@ -262,7 +263,10 @@ class ConverterTextDialog(wx.Dialog):
         root = wx.BoxSizer(wx.VERTICAL)
         root.Add(wx.StaticText(self, label="&Details:"), 0, wx.LEFT | wx.TOP, 8)
         self._body = wx.TextCtrl(
-            self, value=text, style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2, size=(560, 320)
+            self,
+            value=text,
+            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2,
+            size=dip_size(self, 560, 320),
         )
         set_accessible_name(self._body, "Details")
         self._body.SetHelpText(

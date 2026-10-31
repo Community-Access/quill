@@ -2,11 +2,11 @@
   "_about": "GATE-CTLLABEL. On wxMSW a control's accessible name comes from the wx.StaticText built immediately before it in z-order, never from SetName; set_spoken_name (quill/ui/spoken_name.py) sets that name directly and counts as 'spoken'. 'reviewed' maps one exact site to the reason it is fine without one. 'grandfathered' is the backlog that existed when the gate landed; it may only shrink, and 'high_water_mark' is what makes that assertable. Regenerate with 'python -m quill.tools.check_control_labels --write'.",
   "high_water_mark": 0,
   "reviewed": {
-    "quill/ui/audio_studio/pages_documents.py:417: wx.Choice": "named at runtime by pages_base.publish_accessible_names, which publishes this SetName through a wx.Accessible; the file sits on its GATE-11 budget.",
-    "quill/ui/audio_studio/pages_documents.py:468: wx.Choice": "named at runtime by pages_base.publish_accessible_names, which publishes this SetName through a wx.Accessible; the file sits on its GATE-11 budget.",
+    "quill/ui/audio_studio/pages_documents.py:418: wx.Choice": "named at runtime by pages_base.publish_accessible_names, which publishes this SetName through a wx.Accessible; the file sits on its GATE-11 budget.",
+    "quill/ui/audio_studio/pages_documents.py:469: wx.Choice": "named at runtime by pages_base.publish_accessible_names, which publishes this SetName through a wx.Accessible; the file sits on its GATE-11 budget.",
     "quill/ui/audio_studio/player_panel.py:176: wx.Slider": "named with quill.ui.audio_studio.pages_base.set_accessible_name, which attaches a wx.Accessible answering accName (the same mechanism as set_spoken_name), not the SetName-only helper the scanner cannot tell it apart from.",
     "quill/ui/audio_studio/player_panel.py:186: wx.Slider": "named with quill.ui.audio_studio.pages_base.set_accessible_name, which attaches a wx.Accessible answering accName (the same mechanism as set_spoken_name), not the SetName-only helper the scanner cannot tell it apart from.",
-    "quill/ui/audio_studio/tag_editor.py:126: wx.TextCtrl": "named with quill.ui.audio_studio.pages_base.set_accessible_name, which attaches a wx.Accessible answering accName (the same mechanism as set_spoken_name), not the SetName-only helper the scanner cannot tell it apart from."
+    "quill/ui/audio_studio/tag_editor.py:127: wx.TextCtrl": "named with quill.ui.audio_studio.pages_base.set_accessible_name, which attaches a wx.Accessible answering accName (the same mechanism as set_spoken_name), not the SetName-only helper the scanner cannot tell it apart from."
   },
   "grandfathered": []
 }

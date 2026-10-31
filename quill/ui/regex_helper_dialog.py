@@ -24,6 +24,7 @@ from quill.core.regex_helper.catalog import CATEGORIES, RegexRecipe, recipes_by_
 from quill.core.regex_helper.explain import explain_pattern
 from quill.core.regex_helper.runner import preview_replace, run_pattern
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 
 _RESULT_LIMIT = 25
 
@@ -81,7 +82,7 @@ def open_regex_helper(controller: Any) -> None:
         title="Regular Expression Helper",
         style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
     )
-    dialog.SetSize((900, 680))
+    dialog.SetSize(dip_size(dialog, 900, 680))
     root = wx.BoxSizer(wx.VERTICAL)
 
     intro = wx.StaticText(
@@ -99,7 +100,7 @@ def open_regex_helper(controller: Any) -> None:
     left.Add(wx.StaticText(dialog, label="&Recipes"), 0, wx.BOTTOM, 4)
     tree = wx.TreeCtrl(dialog, style=wx.TR_HAS_BUTTONS | wx.TR_HIDE_ROOT | wx.TR_SINGLE)
     set_accessible_name(tree, "Recipes by category")
-    tree.SetMinSize((300, -1))
+    tree.SetMinSize(dip_size(tree, 300, -1))
     root_item = tree.AddRoot("Recipes")
     recipe_for_item: dict[Any, RegexRecipe] = {}
     for category in CATEGORIES:
@@ -122,7 +123,7 @@ def open_regex_helper(controller: Any) -> None:
     right.Add(wx.StaticText(dialog, label="&What this pattern means"), 0, wx.BOTTOM, 4)
     explanation_ctrl = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
     set_accessible_name(explanation_ctrl, "What this pattern means")
-    explanation_ctrl.SetMinSize((520, 110))
+    explanation_ctrl.SetMinSize(dip_size(explanation_ctrl, 520, 110))
     right.Add(explanation_ctrl, 0, wx.EXPAND | wx.BOTTOM, 8)
 
     right.Add(wx.StaticText(dialog, label="&Sample text"), 0, wx.BOTTOM, 4)
@@ -131,13 +132,13 @@ def open_regex_helper(controller: Any) -> None:
     )
     sample_ctrl = wx.TextCtrl(dialog, value=default_sample, style=wx.TE_MULTILINE)
     set_accessible_name(sample_ctrl, "Sample text")
-    sample_ctrl.SetMinSize((520, 130))
+    sample_ctrl.SetMinSize(dip_size(sample_ctrl, 520, 130))
     right.Add(sample_ctrl, 1, wx.EXPAND | wx.BOTTOM, 8)
 
     right.Add(wx.StaticText(dialog, label="Preview res&ults"), 0, wx.BOTTOM, 4)
     results_ctrl = wx.TextCtrl(dialog, style=wx.TE_MULTILINE | wx.TE_READONLY)
     set_accessible_name(results_ctrl, "Preview results")
-    results_ctrl.SetMinSize((520, 150))
+    results_ctrl.SetMinSize(dip_size(results_ctrl, 520, 150))
     right.Add(results_ctrl, 1, wx.EXPAND)
 
     content.Add(right, 1, wx.EXPAND | wx.ALL, 10)

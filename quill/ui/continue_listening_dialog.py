@@ -29,6 +29,7 @@ from typing import Any
 
 from quill.core.media.continue_listening import Unfinished, summarise
 from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids
+from quill.ui.dpi import dip_size
 
 TITLE = "Continue Listening"
 
@@ -91,7 +92,7 @@ class ContinueListeningDialog:
         root.Add(buttons, 0, wx.ALL, 10)
 
         self._dialog.SetSizer(root)
-        self._dialog.SetMinSize((620, 400))
+        self._dialog.SetMinSize(dip_size(self._dialog, 620, 400))
         self._dialog.Fit()
         apply_modal_ids(self._dialog, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
 

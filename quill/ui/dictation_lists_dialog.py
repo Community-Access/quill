@@ -13,6 +13,7 @@ from typing import Any
 import wx
 
 from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids, bind_close_button
+from quill.ui.dpi import dip_size
 
 __all__ = ["DictationCommandsDialog", "RecentPhrasesDialog"]
 
@@ -42,7 +43,7 @@ class DictationCommandsDialog(wx.Dialog):
         root.Add(self.text, 1, wx.EXPAND | wx.ALL, _PAD)
         root.Add(close, 0, wx.ALL, _PAD)
         self.SetSizer(root)
-        self.SetSize((640, 520))
+        self.SetSize(dip_size(self, 640, 520))
         apply_modal_ids(self, cancel_id=wx.ID_CANCEL, escape_id=wx.ID_CANCEL)
         bind_close_button(self, close, modeless=False)
         self.text.SetFocus()
@@ -132,7 +133,7 @@ class RecentPhrasesDialog(wx.Dialog):
         root.Add(self.list, 1, wx.EXPAND | wx.ALL, _PAD)
         root.Add(buttons, 0, wx.ALL, _PAD)
         self.SetSizer(root)
-        self.SetSize((560, 400))
+        self.SetSize(dip_size(self, 560, 400))
         apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
         bind_close_button(self, close, modeless=False)
         self.Bind(wx.EVT_BUTTON, self._on_insert, id=wx.ID_OK)

@@ -17,6 +17,7 @@ from typing import Any
 
 from quill.core.mastodon.social import Account, MastodonList, Relationship, Status
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name, show_modal_dialog
+from quill.ui.dpi import dip_size
 
 
 class MastodonProfileDialog:
@@ -53,7 +54,7 @@ class MastodonProfileDialog:
             title=f"Profile: {account.label}",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetSize((520, 460))
+        self.dialog.SetSize(dip_size(self.dialog, 520, 460))
         root = wx.BoxSizer(wx.VERTICAL)
 
         name = wx.StaticText(self.dialog, label=account.label)

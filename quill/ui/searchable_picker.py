@@ -28,6 +28,7 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 
 __all__ = ["FILTER_DELAY_MS", "SHOWN_LIMIT", "choose_searchable_option", "match_status"]
 
@@ -72,7 +73,7 @@ def choose_searchable_option(
     picker opens on the search somebody left it with.
     """
     with wx.Dialog(parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER) as dialog:
-        dialog.SetSize((560, 420))
+        dialog.SetSize(dip_size(dialog, 560, 420))
         root = wx.BoxSizer(wx.VERTICAL)
 
         # A visible label built just before the box: on Windows that is where a

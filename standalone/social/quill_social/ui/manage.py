@@ -24,6 +24,7 @@ are thin: all persistence and logic live in the pure services under
 from __future__ import annotations
 
 import wx
+from quill.ui.dpi import dip_size
 
 from quill_social.model import now_ms
 from quill_social.services import moderation as moderation_svc
@@ -56,9 +57,7 @@ def _named(ctrl: wx.Window, name: str) -> wx.Window:
     return ctrl
 
 
-def _report_list(
-    parent: wx.Window, name: str, columns: list[tuple[str, int]]
-) -> wx.ListCtrl:
+def _report_list(parent: wx.Window, name: str, columns: list[tuple[str, int]]) -> wx.ListCtrl:
     """A single-selection report list with named columns for a screen reader."""
     lc = wx.ListCtrl(parent, style=wx.LC_REPORT | wx.LC_SINGLE_SEL)
     lc.SetName(name)
@@ -104,18 +103,14 @@ def save_plugin_manifest(store, manifest: PluginManifest) -> PluginManifest:
 
 
 def load_plugin_manifests(store) -> list[PluginManifest]:
-    return [
-        PluginManifest.from_dict(d) for d in store.list_documents(PLUGIN_MANIFEST_KIND)
-    ]
+    return [PluginManifest.from_dict(d) for d in store.list_documents(PLUGIN_MANIFEST_KIND)]
 
 
 # -- quiet-hours persistence (PRD 25.2) ---------------------------------------
 
 
 def save_quiet_hours(store, account_id: str, start: int | None, end: int | None) -> None:
-    store.put_document(
-        QUIET_HOURS_KIND, account_id or "global", {"start": start, "end": end}
-    )
+    store.put_document(QUIET_HOURS_KIND, account_id or "global", {"start": start, "end": end})
 
 
 def load_quiet_hours(store, account_id: str) -> tuple[int | None, int | None]:
@@ -175,9 +170,7 @@ class FilterEditorDialog(wx.Dialog):
             self._criteria[key] = ctrl
 
         _label(self, sizer, "Action:")
-        self.action = _named(
-            wx.Choice(self, choices=list(moderation_svc.ACTIONS)), "Action"
-        )
+        self.action = _named(wx.Choice(self, choices=list(moderation_svc.ACTIONS)), "Action")
         self.action.SetStringSelection(filter.action if filter else "hide")
         if self.action.GetSelection() == wx.NOT_FOUND:
             self.action.SetSelection(0)
@@ -187,9 +180,7 @@ class FilterEditorDialog(wx.Dialog):
         self.enabled.SetValue(filter.enabled if filter else True)
         sizer.Add(self.enabled, 0, wx.ALL, 6)
 
-        sizer.Add(
-            self.CreateButtonSizer(wx.OK | wx.CANCEL), 0, wx.ALIGN_RIGHT | wx.ALL, 8
-        )
+        sizer.Add(self.CreateButtonSizer(wx.OK | wx.CANCEL), 0, wx.ALIGN_RIGHT | wx.ALL, 8)
         self.SetSizerAndFit(sizer)
         self.Bind(wx.EVT_BUTTON, self._on_ok, id=wx.ID_OK)
         self.name.SetFocus()
@@ -238,9 +229,7 @@ class SafetyCenterDialog(wx.Dialog):
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         _label(self, sizer, "Overview:")
-        self.summary = _named(
-            wx.StaticText(self, label=""), "Safety center overview"
-        )
+        self.summary = _named(wx.StaticText(self, label=""), "Safety center overview")
         sizer.Add(self.summary, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
 
         _label(self, sizer, "Local filters:")
@@ -276,9 +265,7 @@ class SafetyCenterDialog(wx.Dialog):
         self.mb_target = _named(wx.TextCtrl(self), "Mute or block target")
         mrow.Add(self.mb_target, 1, wx.RIGHT, 6)
         mrow.Add(wx.StaticText(self, label="Kind:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
-        self.mb_kind = _named(
-            wx.Choice(self, choices=list(_MUTEBLOCK_KINDS)), "Mute or block kind"
-        )
+        self.mb_kind = _named(wx.Choice(self, choices=list(_MUTEBLOCK_KINDS)), "Mute or block kind")
         self.mb_kind.SetSelection(0)
         mrow.Add(self.mb_kind, 0, wx.RIGHT, 6)
         mrow.Add(wx.StaticText(self, label="Scope:"), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
@@ -295,7 +282,7 @@ class SafetyCenterDialog(wx.Dialog):
 
         sizer.Add(self.CreateButtonSizer(wx.CLOSE), 0, wx.ALIGN_RIGHT | wx.ALL, 8)
         self.SetSizer(sizer)
-        self.SetSize((680, 720))
+        self.SetSize(dip_size(self, 680, 720))
 
         self.add_btn.Bind(wx.EVT_BUTTON, self._on_add_filter)
         self.edit_btn.Bind(wx.EVT_BUTTON, self._on_edit_filter)
@@ -462,9 +449,7 @@ class NotificationPoliciesDialog(wx.Dialog):
         sizer = wx.BoxSizer(wx.VERTICAL)
 
         _label(self, sizer, "Category:")
-        self.category = _named(
-            wx.Choice(self, choices=list(CATEGORIES)), "Notification category"
-        )
+        self.category = _named(wx.Choice(self, choices=list(CATEGORIES)), "Notification category")
         self.category.SetSelection(0)
         sizer.Add(self.category, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 6)
 
@@ -528,9 +513,7 @@ class NotificationPoliciesDialog(wx.Dialog):
     def build_policy(self) -> NotificationPolicy:
         """Assemble the :class:`NotificationPolicy` for the current category."""
         handles = [h.strip() for h in self.only_from.GetValue().split(",") if h.strip()]
-        policy = NotificationPolicy(
-            account_id=self.account_id, category=self.current_category()
-        )
+        policy = NotificationPolicy(account_id=self.account_id, category=self.current_category())
         for attr, box in self._flags.items():
             setattr(policy, attr, box.GetValue())
         policy.only_from = handles
@@ -593,7 +576,7 @@ class PluginManagerDialog(wx.Dialog):
 
         sizer.Add(self.CreateButtonSizer(wx.CLOSE), 0, wx.ALIGN_RIGHT | wx.ALL, 8)
         self.SetSizer(sizer)
-        self.SetSize((680, 480))
+        self.SetSize(dip_size(self, 680, 480))
 
         self.safe_mode.Bind(wx.EVT_CHECKBOX, self._on_safe_mode)
         self.enable_btn.Bind(wx.EVT_BUTTON, lambda _e: self._set_enabled(True))
@@ -645,9 +628,7 @@ class PluginManagerDialog(wx.Dialog):
 class OutboxDialog(wx.Dialog):
     """The offline outbox and its circuit-breaker state (PRD 32.2, 32.3)."""
 
-    def __init__(
-        self, parent: wx.Window, store, breaker: CircuitBreaker | None = None
-    ) -> None:
+    def __init__(self, parent: wx.Window, store, breaker: CircuitBreaker | None = None) -> None:
         super().__init__(
             parent,
             title="Outbox",
@@ -660,9 +641,7 @@ class OutboxDialog(wx.Dialog):
 
         sizer = wx.BoxSizer(wx.VERTICAL)
 
-        self.breaker_text = _named(
-            wx.StaticText(self, label=""), "Circuit breaker state"
-        )
+        self.breaker_text = _named(wx.StaticText(self, label=""), "Circuit breaker state")
         sizer.Add(self.breaker_text, 0, wx.EXPAND | wx.ALL, 6)
 
         _label(self, sizer, "Queued posts:")
@@ -686,7 +665,7 @@ class OutboxDialog(wx.Dialog):
 
         sizer.Add(self.CreateButtonSizer(wx.CLOSE), 0, wx.ALIGN_RIGHT | wx.ALL, 8)
         self.SetSizer(sizer)
-        self.SetSize((640, 440))
+        self.SetSize(dip_size(self, 640, 440))
 
         self.remove_btn.Bind(wx.EVT_BUTTON, self._on_remove)
         self.Bind(wx.EVT_BUTTON, lambda _e: self.EndModal(wx.ID_CLOSE), id=wx.ID_CLOSE)

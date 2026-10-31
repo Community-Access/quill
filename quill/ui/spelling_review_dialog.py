@@ -15,6 +15,7 @@ from quill.core.spelling.announcements import AccessibilityAnnouncer
 from quill.core.spelling.models import ReviewCounters, SpellingIssue
 from quill.core.spelling.session import ReviewSession
 from quill.ui.dialog_contract import apply_modal_ids, show_message_box
+from quill.ui.dpi import dip_size
 
 if TYPE_CHECKING:
     pass
@@ -94,8 +95,8 @@ class SpellingReviewDialog:
             title="Spelling Review",
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
-        self.dialog.SetMinSize(wx.Size(560, 460))
-        self.dialog.SetSize(wx.Size(700, 540))
+        self.dialog.SetMinSize(dip_size(self.dialog, 560, 460))
+        self.dialog.SetSize(dip_size(self.dialog, 700, 540))
         self._build_ui()
 
     # ------------------------------------------------------------------
@@ -123,7 +124,7 @@ class SpellingReviewDialog:
             style=wx.TE_MULTILINE | wx.TE_READONLY | wx.BORDER_SIMPLE,
         )
         self._context.SetName("Context")
-        self._context.SetMinSize(wx.Size(-1, 90))
+        self._context.SetMinSize(dip_size(self._context, -1, 90))
         root.Add(self._context, 1, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         # Change-to field
@@ -141,7 +142,7 @@ class SpellingReviewDialog:
 
         self._suggestions = wx.ListBox(self.dialog, style=wx.LB_SINGLE)
         self._suggestions.SetName("Suggestions")
-        self._suggestions.SetMinSize(wx.Size(-1, 80))
+        self._suggestions.SetMinSize(dip_size(self._suggestions, -1, 80))
         root.Add(self._suggestions, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         # Review order. This was two commands until 2026-09-16 -- Spell Check

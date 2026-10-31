@@ -21,6 +21,7 @@ from __future__ import annotations
 import json
 
 from quill.ui.dialog_contract import apply_modal_ids, show_modal_dialog
+from quill.ui.dpi import dip_size
 
 try:
     from wx_accessible_webview import (
@@ -52,7 +53,7 @@ except ImportError:
             body_html: str,
             buttons=None,
             *,
-            size=(640, 560),
+            size=None,
             open_links_externally: bool = True,
             lang: str = "en",
             styles: str | None = None,
@@ -68,7 +69,7 @@ except ImportError:
                 parent, title=title, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
             )
             self.dialog.SetName(title)
-            self.dialog.SetSize(size)
+            self.dialog.SetSize(size if size is not None else dip_size(self.dialog, 640, 560))
             outer = wx.BoxSizer(wx.VERTICAL)
             view = wxhtml.HtmlWindow(self.dialog)
             view.SetName(title)
@@ -359,7 +360,7 @@ class MarkdownPreviewDialog:
             title,
             _build_accessible_dialog_body(body_html, start_anchor=start_anchor),
             [("Close", wx.ID_CANCEL)],
-            size=(820, 760),
+            size=dip_size(parent, 820, 760),
             open_links_externally=open_links_externally,
         )
 

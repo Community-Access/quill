@@ -17,6 +17,7 @@ from __future__ import annotations
 from typing import Any
 
 from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids
+from quill.ui.dpi import dip_size
 
 TITLE = "Station Catalog Status"
 
@@ -93,7 +94,7 @@ def show_catalog_status(host: Any) -> None:
     wx = host._wx
 
     dialog = wx.Dialog(host.frame, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
-    dialog.SetSize(wx.Size(700, 460))
+    dialog.SetSize(dip_size(dialog, 700, 460))
     root = wx.BoxSizer(wx.VERTICAL)
     root.Add(wx.StaticText(dialog, label="&Sources and what is stored:"), 0, wx.ALL, 8)
     listbox = wx.ListBox(dialog, choices=_status_rows(host), style=wx.LB_SINGLE)

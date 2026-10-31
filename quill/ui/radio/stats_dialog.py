@@ -18,6 +18,7 @@ from typing import Any
 
 from quill.core.media_stats import PERIODS
 from quill.ui.dialog_contract import apply_modal_ids
+from quill.ui.dpi import dip_size
 from quill.ui.spoken_name import set_spoken_name
 
 TITLE = "Listening Statistics"
@@ -44,7 +45,7 @@ class RadioStatsDialog:
         self.dialog = wx.Dialog(
             parent, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
         )
-        self.dialog.SetMinSize((560, 480))
+        self.dialog.SetMinSize(dip_size(self.dialog, 560, 480))
         root = wx.BoxSizer(wx.VERTICAL)
 
         period_row = wx.BoxSizer(wx.HORIZONTAL)

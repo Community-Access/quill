@@ -33,6 +33,7 @@ from quill.core.ai.writing_tools import (
     LANGUAGES,
 )
 from quill.ui.accessible_names import set_accessible_name
+from quill.ui.dpi import dip_size
 from quill.ui.hosted_ai_dialogs import _PAD, _close_row, _read_only, focus_on, show_problem
 from quill.ui.hosted_ai_pad_catalogue import PadRowsMixin
 
@@ -207,7 +208,7 @@ class AiPadFrame(PadRowsMixin, wx.Frame):
         self._on_action_changed()
         self._refresh_preview()
 
-        self.SetInitialSize((640, 620))
+        self.SetInitialSize(dip_size(self, 640, 620))
         self.Centre()
         # Focus on the preview: the reader reads it, which is what somebody
         # wants to hear first, and nothing is announced on top (GATE-13). The

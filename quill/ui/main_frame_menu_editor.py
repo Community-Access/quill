@@ -18,6 +18,7 @@ from quill.core.menu_customization import (
 from quill.ui.dialog_contract import (
     apply_modal_ids,
 )
+from quill.ui.dpi import dip_size
 
 #: Stable key and factory label for each top-level menu, in default order.
 #: The Menu Editor and the menu-build transform pass share this list so a person
@@ -90,7 +91,9 @@ class MenuEditorMixin:
 
         working.reconcile(set(default_keys), all_item_keys)
 
-        with wx.Dialog(self.frame, title="Customize Menus", size=(720, 560)) as dialog:
+        with wx.Dialog(
+            self.frame, title="Customize Menus", size=dip_size(self.frame, 720, 560)
+        ) as dialog:
             outer = wx.BoxSizer(wx.VERTICAL)
             outer.Add(
                 wx.StaticText(

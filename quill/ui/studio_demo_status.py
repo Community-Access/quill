@@ -15,6 +15,7 @@ from collections.abc import Callable
 import wx
 
 from quill.ui.dialog_contract import bind_close_button, set_accessible_name
+from quill.ui.dpi import dip_size
 
 # a11y: needs manual verification -- screen-reader/braille announcements,
 # keyboard focus order, high contrast, and layout at increased Windows scaling.
@@ -44,7 +45,9 @@ class RecordingStatusFrame(wx.Frame):
         panel = wx.Panel(self)
         layout = wx.BoxSizer(wx.VERTICAL)
         layout.Add(wx.StaticText(panel, label="Status"), 0, wx.LEFT | wx.TOP, 10)
-        self.text = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY, size=(420, 80))
+        self.text = wx.TextCtrl(
+            panel, style=wx.TE_MULTILINE | wx.TE_READONLY, size=dip_size(panel, 420, 80)
+        )
         set_accessible_name(self.text, "Status")
         self.text.SetHelpText(
             "Elapsed time, the sounds being recorded, whether the screen reader is in the "

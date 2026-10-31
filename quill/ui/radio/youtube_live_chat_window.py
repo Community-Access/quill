@@ -38,6 +38,7 @@ from typing import Any
 
 from quill.core.radio import youtube_live_chat as lc
 from quill.core.radio.youtube_live_chat_reader import ChatReader
+from quill.ui.dpi import dip, dip_size
 
 TITLE = "YouTube Live Chat"
 
@@ -89,7 +90,7 @@ class YouTubeLiveChatWindow:
         self._said_failure = False
 
         self.frame = wx.Frame(parent, title=TITLE, style=wx.DEFAULT_FRAME_STYLE)
-        self.frame.SetMinSize((600, 480))
+        self.frame.SetMinSize(dip_size(self.frame, 600, 480))
         self._panel = wx.Panel(self.frame, style=wx.TAB_TRAVERSAL)
         self._build()
         self._timer = wx.Timer(self.frame)
@@ -149,7 +150,7 @@ class YouTubeLiveChatWindow:
 
         root.Add(wx.StaticText(panel, label="Messa&ges:"), 0, wx.LEFT, 8)
         self._list = wx.ListCtrl(panel, style=wx.LC_REPORT | wx.LC_SINGLE_SEL | wx.LC_NO_HEADER)
-        self._list.InsertColumn(0, "Message", width=900)
+        self._list.InsertColumn(0, "Message", width=dip(self._list, 900))
         self._list.SetName("Messages")
         self._list.SetHelpText(
             "The chat, oldest at the top and newest at the bottom: who wrote "

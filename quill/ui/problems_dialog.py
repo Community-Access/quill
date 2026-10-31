@@ -23,6 +23,7 @@ from typing import Any
 
 from quill.core import problem_log
 from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids
+from quill.ui.dpi import dip_size
 
 TITLE = "Recent Problems"
 
@@ -71,7 +72,7 @@ def show_recent_problems(host: Any) -> None:
     problems = problem_log.load_problems(data_dir)
 
     dialog = wx.Dialog(host.frame, title=TITLE, style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER)
-    dialog.SetSize(wx.Size(760, 460))
+    dialog.SetSize(dip_size(dialog, 760, 460))
     root = wx.BoxSizer(wx.VERTICAL)
 
     summary_label = wx.StaticText(dialog, label=problem_log.summary(problems))

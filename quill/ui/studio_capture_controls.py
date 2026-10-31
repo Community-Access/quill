@@ -6,6 +6,7 @@ import wx
 
 from quill.stability.task_manager import UiLifetimeToken
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 
 
 class ScreenshotControlDialog(wx.Dialog):
@@ -13,7 +14,7 @@ class ScreenshotControlDialog(wx.Dialog):
         super().__init__(
             host.frame,
             title="Choose screenshot control",
-            size=(750, 560),
+            size=dip_size(host.frame, 750, 560),
             style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
         )
         self.host, self.source = host, source

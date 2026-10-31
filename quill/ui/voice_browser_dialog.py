@@ -25,6 +25,7 @@ from quill.ui.dialog_contract import (
     focus_primary_control,
     ok_cancel_platform_order,
 )
+from quill.ui.dpi import dip_size
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -127,8 +128,8 @@ class VoiceBrowserDialog:
                 title="Manage Voices & Reading Aloud",
                 style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
             )
-            self.dialog.SetMinSize(wx.Size(580, 520))
-            self.dialog.SetSize(wx.Size(680, 600))
+            self.dialog.SetMinSize(dip_size(self.dialog, 580, 520))
+            self.dialog.SetSize(dip_size(self.dialog, 680, 600))
             self._root = self.dialog
             self._embed_mode = False
 
@@ -175,7 +176,7 @@ class VoiceBrowserDialog:
         root.Add(voices_lbl, 0, wx.LEFT | wx.TOP, 10)
         self._voice_lb = wx.ListBox(parent, style=wx.LB_SINGLE)
         self._voice_lb.SetName("Voices")
-        self._voice_lb.SetMinSize(wx.Size(-1, 160))
+        self._voice_lb.SetMinSize(dip_size(self._voice_lb, -1, 160))
         root.Add(self._voice_lb, 1, wx.EXPAND | wx.ALL, 10)
 
         # Voice detail.

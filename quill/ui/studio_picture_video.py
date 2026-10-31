@@ -23,6 +23,7 @@ from quill.core.picture_video import (
     video_name,
 )
 from quill.ui.dialog_contract import apply_modal_ids, set_accessible_name
+from quill.ui.dpi import dip_size
 
 # a11y: needs manual verification -- screen-reader/braille announcements,
 # keyboard focus order, high contrast, and layout at increased Windows scaling.
@@ -105,7 +106,7 @@ class PictureVideoDialog(wx.Dialog):
         self.title_field.SetHelpText("The video's title, up to 100 characters.")
         layout.Add(self.title_field, 0, wx.EXPAND | wx.ALL, 10)
         layout.Add(wx.StaticText(self, label="&Description"), 0, wx.LEFT, 10)
-        self.description = wx.TextCtrl(self, style=wx.TE_MULTILINE, size=(-1, 90))
+        self.description = wx.TextCtrl(self, style=wx.TE_MULTILINE, size=dip_size(self, -1, 90))
         set_accessible_name(self.description, "Description")
         self.description.SetHelpText(
             "What viewers read under the video. Chapters are added at the end."
