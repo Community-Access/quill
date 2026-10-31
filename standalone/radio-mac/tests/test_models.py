@@ -12,11 +12,11 @@ from quill_radio_mac.core.models import RadioStation, _coerce_int
 
 def _sample_station() -> RadioStation:
     return RadioStation(
-        name="SomaFM Groove Salad",
-        stream_url="https://ice.somafm.com/groovesalad-128-mp3",
+        name="Chill Radio",
+        stream_url="https://stream.example.org/chill-128-mp3",
         station_uuid="abc-123",
-        homepage="https://somafm.com/groovesalad/",
-        favicon="https://somafm.com/img/groovesalad.png",
+        homepage="https://radio.example.org/",
+        favicon="https://radio.example.org/icon.png",
         country="United States",
         language="english",
         tags=("ambient", "chill"),
@@ -84,17 +84,17 @@ def test_coerce_int_cases():
 
 def test_display_name_with_and_without_country():
     with_country = _sample_station()
-    assert with_country.display_name == "SomaFM Groove Salad (United States)"
+    assert with_country.display_name == "Chill Radio (United States)"
     bare = RadioStation(name="Bare", stream_url="u")
     assert bare.display_name == "Bare"
 
 
 def test_details_text_lists_known_fields():
     text = _sample_station().details_text
-    assert "SomaFM Groove Salad" in text
+    assert "Chill Radio" in text
     assert "Location/language: United States, english" in text
     assert "Tags: ambient, chill" in text
     assert "Format: MP3 128 kbps" in text
     assert "Community votes: 4521" in text
-    assert "Homepage: https://somafm.com/groovesalad/" in text
-    assert "Stream URL: https://ice.somafm.com/groovesalad-128-mp3" in text
+    assert "Homepage: https://radio.example.org/" in text
+    assert "Stream URL: https://stream.example.org/chill-128-mp3" in text

@@ -88,7 +88,6 @@ TARGETS: tuple[SearchTarget, ...] = (
     SearchTarget("shoutcast", "SHOUTcast", "Station"),
     SearchTarget("live365", "Live365", "Station"),
     SearchTarget("radioparadise", "Radio Paradise", "Station"),
-    SearchTarget("soma", "SomaFM", "Station"),
     SearchTarget("one81", "181.FM", "Station"),
     SearchTarget("lautfm", "laut.fm", "Station"),
     SearchTarget("tv", "TV (iptv.org)", "TV channel"),

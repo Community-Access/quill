@@ -273,28 +273,31 @@ quill/tools/build_third_party_notices.py. Do not edit it by hand.</p>
 </ul>
 <h2 id="summary-by-licence">Summary by licence</h2>
 <ul>
-<li>MIT License: 55 components</li>
+<li>MIT License: 56 components</li>
 <li>BSD 3-Clause License: 21 components</li>
 <li>Apache License, version 2.0: 14 components</li>
 <li>GNU General Public License, version 2: 7 components</li>
-<li>GNU General Public License, version 3: 6 components</li>
+<li>GNU General Public License, version 3: 7 components</li>
 <li>Python Software Foundation License, version 2: 6 components</li>
-<li>Not confirmed: 6 components</li>
-<li>GNU Lesser General Public License, version 2.1: 4 components</li>
+<li>GNU Lesser General Public License, version 2.1: 5 components</li>
 <li>Mozilla Public License, version 2.0: 4 components</li>
 <li>Public domain: 3 components</li>
+<li>Not confirmed: 3 components</li>
 <li>The Unlicense (public domain dedication): 3 components</li>
+<li>BSD 2-Clause License: 2 components</li>
 <li>ISC License: 2 components</li>
 <li>GNU Lesser General Public License, version 3: 2 components</li>
 <li>BSD Zero Clause License: 1 component</li>
 <li>GNU Affero General Public License, version 3: 1 component</li>
 <li>BASS licence (Un4seen Developments, proprietary freeware): 1
 component</li>
-<li>BSD 2-Clause License: 1 component</li>
 <li>Creative Commons Zero 1.0 (public domain dedication): 1
 component</li>
 <li>Commons Clause License Condition v1.0, with Apache-2.0: 1
 component</li>
+<li>GCC Runtime Library Exception, version 3.1: 1 component</li>
+<li>Historical Permission Notice and Disclaimer (HPND): 1 component</li>
+<li>Inno Setup License: 1 component</li>
 <li>MIT No Attribution License: 1 component</li>
 <li>MIT-CMU (the historical PIL licence), with the licences of Pillow’s
 bundled libraries: 1 component</li>
@@ -310,7 +313,6 @@ obligation the owner should decide on. Each one says why under its own
 heading.</p>
 <ul>
 <li>html_to_text</li>
-<li>MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread)</li>
 <li>mutagen</li>
 <li>pillow-heif</li>
 <li>PyEnchant</li>
@@ -322,15 +324,9 @@ heading.</p>
 <li>OptiLab Core</li>
 <li>DECtalk</li>
 <li>Kokoro-82M voices and kokoro-onnx</li>
-<li>NVIDIA Nemotron Speech Streaming, English 0.6B (int8)</li>
 <li>Piper voices</li>
-<li>Emoji catalog (Unicode emoji-test.txt, CLDR annotations,
-iamcal/emoji-data)</li>
-<li>English thesaurus (th_en_US_v2, MyThes format)</li>
 <li>Hunspell dictionaries</li>
-<li>Radio station catalog seed</li>
 <li>Voice Previews (synthesised samples)</li>
-<li>Page-turn sound (quill/assets/audio/page_turn.wav)</li>
 <li>Inno Setup</li>
 </ul>
 <h2 id="family-components">Family components</h2>
@@ -762,8 +758,9 @@ notice with every copy.</li>
 </ul>
 <h3 id="html_to_text">html_to_text</h3>
 <ul>
-<li><strong>What it is:</strong> Turns HTML into plain text when
-pasting.</li>
+<li><strong>What it is:</strong> A PyPI HTML processing library included
+in the runtime. QUILL’s paste cleaner expects a different project’s API
+and falls back when this package is installed.</li>
 <li><strong>Included in:</strong> Every product in the family.</li>
 <li><strong>Version:</strong> 1.0.0</li>
 <li><strong>Licence:</strong> Apache-2.0</li>
@@ -776,10 +773,12 @@ installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Ship the licence text
 and keep copyright notices. Pass on any NOTICE file the component
 carries. Say so if we changed the component.</li>
-<li><strong>Needs review:</strong> The installed and shipped package is
-emludei’s html_to_text (Apache-2.0). Earlier notices credited
-AccessibleApps’ MIT html_to_text instead. Confirm which project
-pyproject.toml means to depend on; the two share a name on PyPI.</li>
+<li><strong>Needs review:</strong> The declared PyPI package is
+emludei’s html_to_text 1.0.0 (Apache-2.0); it does not export the
+html_to_text function the paste cleaner imports. AccessibleApps’
+separately installed project documents that API and is MIT-licensed.
+Choose and test the intended dependency and packaging before pinning or
+replacing either.</li>
 </ul>
 <h3 id="httpcore2">httpcore2</h3>
 <ul>
@@ -993,9 +992,8 @@ compiled libraries were built against.</li>
 <li><strong>Included in:</strong> Every product in the family.</li>
 <li><strong>Version:</strong> as bundled by pillow-heif and
 PyEnchant</li>
-<li><strong>Licence:</strong> GPL-3.0 with the GCC Runtime Library
-Exception 3.1 (libgcc, libstdc++), which lets them be shipped with any
-program; MIT and BSD (libwinpthread)</li>
+<li><strong>Licence:</strong> GPL-3.0 with GCC Runtime Library Exception
+3.1 (libgcc and libstdc++); MIT and BSD (libwinpthread)</li>
 <li><strong>Copyright:</strong> Copyright (C) Free Software Foundation,
 Inc.; MinGW-w64 project contributors</li>
 <li><strong>Upstream:</strong> <a
@@ -1006,12 +1004,12 @@ installer or the portable zip.</li>
 Provide the complete corresponding source of the component, or a written
 offer for it, for as long as we distribute it (and at least three
 years). Any program that is a derivative work must also be offered under
-GPL-3.0-compatible terms. Keep the copyright notice and the permission
-notice with every copy.</li>
-<li><strong>Needs review:</strong> The GCC Runtime Library Exception 3.1
-text is not reproduced here (see <a
-href="https://www.gnu.org/licenses/gcc-exception-3.1.html">https://www.gnu.org/licenses/gcc-exception-3.1.html</a>);
-add it if the owner wants it bundled.</li>
+GPL-3.0-compatible terms. Keep this exception with GPL-3.0 for the
+covered GCC runtime files. It permits eligible combinations with
+independent modules; it does not remove GPL obligations for the runtime
+libraries themselves. Keep the copyright notice and the permission
+notice with every copy. Keep the copyright notice, the conditions and
+the disclaimer in the documentation that ships with the binary.</li>
 </ul>
 <h3 id="mutagen">mutagen</h3>
 <ul>
@@ -1602,8 +1600,8 @@ product without permission.</li>
 update hand-off.</li>
 <li><strong>Included in:</strong> Every product in the family.</li>
 <li><strong>Version:</strong> 312</li>
-<li><strong>Licence:</strong> PSF-2.0 (Python Software Foundation style
-licence; the bundled Scintilla is HPND)</li>
+<li><strong>Licence:</strong> PSF-2.0 (pywin32); HPND (Scintilla);
+LGPL-2.1 (adodbapi)</li>
 <li><strong>Copyright:</strong> Copyright (c) 1994-2026 Mark Hammond and
 contributors</li>
 <li><strong>Upstream:</strong> <a
@@ -1612,10 +1610,15 @@ href="https://github.com/mhammond/pywin32">https://github.com/mhammond/pywin32</
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the PSF copyright
 notice and licence with the distribution and summarise any changes we
-made.</li>
-<li><strong>Needs review:</strong> Licence recorded from package
-metadata as PSF; pywin32 also carries Scintilla (HPND) and adodbapi
-(LGPL-2.1) texts inside the package. Not re-verified file by file.</li>
+made. Keep the copyright and permission notices in the documentation;
+retain the warranty disclaimer. Ship the licence text. Keep the library
+a separate, replaceable file (all are shipped as separate DLLs or
+modules). Offer the library’s source, or point to the exact upstream
+source of the version we ship.</li>
+<li><strong>Needs review:</strong> The wheel also contains Scintilla and
+adodbapi license notices; their HPND and LGPL-2.1 texts are included
+here. Recheck the file-level contents when the PyWin32 wheel version
+changes.</li>
 </ul>
 <h3 id="pywinrt-winrt-runtime-and-the-windows-projections">PyWinRT
 (winrt-runtime and the Windows.* projections)</h3>
@@ -1765,15 +1768,15 @@ href="https://github.com/accessibleapps/sound_lib">https://github.com/accessible
 <li><strong>How it reaches you:</strong> Bundled: it is inside the
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright
-notice and the permission notice with every copy. Free of charge only in
-non-commercial software. Credit Un4seen. No source is available and none
-is owed. The full terms are on un4seen.com and are not reproduced
-here.</li>
-<li><strong>Needs review:</strong> BASS is closed-source freeware.
-Un4seen allows free use in non-commercial software; QUILL is free and
-never sold, which fits, but the BASS licence text is not bundled with
-the wheel and must be read on un4seen.com. Confirm the current terms in
-writing.</li>
+notice and the permission notice with every copy. Free use is limited to
+non-commercial entities and products that make no money. Confirm that
+the QUILL publisher and product qualify before distribution; otherwise
+obtain a commercial BASS licence. Keep Un4seen attribution and these
+terms.</li>
+<li><strong>Needs review:</strong> BASS terms allow free use only for
+non-commercial entities and products that make no money. The publisher’s
+eligibility has not been established. Obtain a commercial licence or
+confirm the non-commercial grant before release.</li>
 </ul>
 <h3 id="sqlite">SQLite</h3>
 <ul>
@@ -2101,10 +2104,9 @@ today; it would block any paid edition.</li>
 <p>Speech engines, voices and recognition models.</p>
 <h3 id="dectalk">DECtalk</h3>
 <ul>
-<li><strong>What it is:</strong> The classic DECtalk voices. Bundled in
-QUILL Studio’s portable edition and the QUILL Offline Edition; otherwise
-downloaded on request. QUILL also ships DECtalk voice samples in Voice
-Previews.</li>
+<li><strong>What it is:</strong> The classic DECtalk voices, supported
+only when installed separately by the user. QUILL does not distribute
+the runtime or DECtalk voice previews.</li>
 <li><strong>Included in:</strong> QUILL for All, QUILL Studio.</li>
 <li><strong>Version:</strong> 2023-10-30 build (dectalk/dectalk on
 GitHub)</li>
@@ -2113,17 +2115,14 @@ GitHub)</li>
 Corporation; later Fonix Corporation and others</li>
 <li><strong>Upstream:</strong> <a
 href="https://github.com/dectalk/dectalk">https://github.com/dectalk/dectalk</a></li>
-<li><strong>How it reaches you:</strong> Bundled: it is inside the
-installer or the portable zip.</li>
+<li><strong>How it reaches you:</strong> Not distributed by QUILL;
+usable only when installed separately.</li>
 <li><strong>What the licence asks of us:</strong> Unknown until the
 licence is confirmed. See the review note on each entry.</li>
 <li><strong>Needs review:</strong> Redistribution rights are not
-established. The public source tree descends from code whose owners
-never published it under an open licence; earlier records here said both
-‘BSD-licensed’ and ‘proprietary, redistributable where licensed’, and
-neither is backed by a licence file. Owner decision needed before
-shipping it again: obtain written permission from the rights holder, or
-stop bundling and redistributing DECtalk and its samples.</li>
+established. Do not redistribute DECtalk or its voice samples without
+written permission from the rights holder. Previously published builds
+must be reviewed separately.</li>
 </ul>
 <h3
 id="dictation-models-moonshine-tiny-english-whisper-tinyen-and-tiny-onnx-silero-vad">Dictation
@@ -2175,9 +2174,11 @@ The model is bundled in the QUILL Offline Edition’s optional component
 and QUILL Studio’s portable edition, otherwise downloaded on request;
 Voice Previews has Kokoro samples.</li>
 <li><strong>Included in:</strong> QUILL for All, QUILL Studio.</li>
-<li><strong>Version:</strong> model-files-v1.0; kokoro-onnx 0.6.1</li>
-<li><strong>Licence:</strong> Apache-2.0 (Kokoro model and voices); MIT
-(kokoro-onnx and ONNX Runtime)</li>
+<li><strong>Version:</strong> model-files-v1.0; kokoro-onnx 0.6.1;
+phonemizer 3.4.0; espeakng-loader 0.2.4</li>
+<li><strong>Licence:</strong> Apache-2.0 (Kokoro model); MIT
+(kokoro-onnx and ONNX Runtime); GPL-3.0 (phonemizer and eSpeak NG
+runtime/data)</li>
 <li><strong>Copyright:</strong> Kokoro: Copyright hexgrad; kokoro-onnx:
 Copyright thewh1teagle; ONNX Runtime: Copyright (c) Microsoft
 Corporation</li>
@@ -2188,10 +2189,15 @@ installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Ship the licence text
 and keep copyright notices. Pass on any NOTICE file the component
 carries. Say so if we changed the component. Keep the copyright notice
-and the permission notice with every copy.</li>
-<li><strong>Needs review:</strong> kokoro-onnx installs phonemizer
-(GPL-3.0) and espeakng-loader alongside it; their versions and licences
-in the shipped engine pack were not re-read for this inventory.</li>
+and the permission notice with every copy. Ship the licence text.
+Provide the complete corresponding source of the component, or a written
+offer for it, for as long as we distribute it (and at least three
+years). Any program that is a derivative work must also be offered under
+GPL-3.0-compatible terms.</li>
+<li><strong>Needs review:</strong> The locked Kokoro runtime includes
+GPL-3.0 phonemizer and eSpeak NG components. Confirm the staged engine
+pack carries their source/licence notices and exact versions before
+release.</li>
 </ul>
 <h3 id="mathcat">MathCAT</h3>
 <ul>
@@ -2225,12 +2231,10 @@ href="https://huggingface.co/nvidia/nemotron-speech-streaming-en-0.6b">https://h
 <li><strong>How it reaches you:</strong> Downloaded only when you ask
 for it, from QUILL’s own pinned release, so QUILL still redistributes
 it.</li>
-<li><strong>What the licence asks of us:</strong> Ship the model’s
-NOTICE and the licence terms with it; keep NVIDIA’s attribution.
-Commercial use and redistribution are allowed.</li>
-<li><strong>Needs review:</strong> The licence text itself is not
-reproduced in this document; it is on nvidia.com. Commercial use and
-redistribution are permitted.</li>
+<li><strong>What the licence asks of us:</strong> Keep NVIDIA
+attribution and the model NOTICE, and provide this agreement with the
+model. Comply with the agreement’s use restrictions, guardrail
+requirements and any updated terms.</li>
 </ul>
 <h3 id="piper-text-to-speech-engine">Piper text-to-speech engine</h3>
 <ul>
@@ -2362,11 +2366,9 @@ href="https://www.unicode.org/">https://www.unicode.org/</a></li>
 <li><strong>How it reaches you:</strong> Bundled: it is inside the
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the Unicode
-copyright and permission notice with the data or in its documentation.
-The full text is at unicode.org and is not reproduced here. Keep the
-copyright notice and the permission notice with every copy.</li>
-<li><strong>Needs review:</strong> The Unicode License v3 text should be
-bundled beside the catalog; it is referenced here, not reproduced.</li>
+copyright and permission notice with the data or its documentation; the
+complete licence text is reproduced here. Keep the copyright notice and
+the permission notice with every copy.</li>
 </ul>
 <h3 id="english-thesaurus-th_en_us_v2-mythes-format">English thesaurus
 (th_en_US_v2, MyThes format)</h3>
@@ -2389,12 +2391,6 @@ Provide the complete corresponding source of the component, either
 alongside it or by a written offer valid for at least three years. Any
 program that is a derivative work must also be offered under
 GPL-2.0-compatible terms.</li>
-<li><strong>Needs review:</strong> Records disagree: the licence file
-shipped beside the data is GPL-2.0, earlier notices said LGPL-2.1, and
-the upstream MyThes code is BSD. Confirm the data’s licence from the
-LibreOffice dictionaries README for this exact file. It is data, not
-code, so it does not affect the apps’ own licence, but the GPL-2.0
-source offer applies to the file itself (it is its own source).</li>
 </ul>
 <h3 id="hunspell-dictionaries">Hunspell dictionaries</h3>
 <ul>
@@ -2481,21 +2477,15 @@ quill/data, so every product carries it.</li>
 <li><strong>Included in:</strong> Every product in the family.</li>
 <li><strong>Version:</strong> built per release
 (quill/data/radio-catalog/seed.db.xz)</li>
-<li><strong>Licence:</strong> Radio Browser directory data (terms not
-confirmed); SomaFM channel list; Project Gutenberg audio records (public
-domain works); Wikidata (CC0-1.0)</li>
-<li><strong>Copyright:</strong> Radio Browser community
-(radio-browser.info); SomaFM; Project Gutenberg; Wikidata
-contributors</li>
+<li><strong>Licence:</strong> Radio Browser directory data (public
+domain); Project Gutenberg catalog records; Wikidata (CC0-1.0)</li>
+<li><strong>Copyright:</strong> Radio Browser community; Project
+Gutenberg contributors; Wikidata contributors</li>
 <li><strong>Upstream:</strong> <a
 href="https://www.radio-browser.info/">https://www.radio-browser.info/</a></li>
 <li><strong>How it reaches you:</strong> Bundled: it is inside the
 installer or the portable zip.</li>
-<li><strong>What the licence asks of us:</strong> Unknown until the
-licence is confirmed. See the review note on each entry. None.</li>
-<li><strong>Needs review:</strong> The licence of the Radio Browser data
-dump and of SomaFM’s channel list was not confirmed. Check both sites’
-terms and record them here.</li>
+<li><strong>What the licence asks of us:</strong> None.</li>
 </ul>
 <h3 id="voice-previews-synthesised-samples">Voice Previews (synthesised
 samples)</h3>
@@ -2508,15 +2498,14 @@ voice before downloading it.</li>
 <li><strong>Licence:</strong> Generated by QUILL from the voices named
 in each sample; the terms follow each voice</li>
 <li><strong>Copyright:</strong> Samples made by the QUILL project with
-Piper, Kokoro, eSpeak NG, DECtalk and Windows SAPI 5 voices</li>
+Piper, Kokoro, eSpeak NG and Windows SAPI 5 voices</li>
 <li><strong>How it reaches you:</strong> Bundled: it is inside the
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Unknown until the
 licence is confirmed. See the review note on each entry.</li>
-<li><strong>Needs review:</strong> Synthesised output is usually free of
-the engine’s licence, but voice models trained on restricted datasets,
-and DECtalk, may limit use of their output. Confirm alongside the Piper
-voices and DECtalk entries.</li>
+<li><strong>Needs review:</strong> Voice models trained on restricted
+datasets may limit use of their output. Confirm each remaining voice’s
+terms alongside the Piper voice entries.</li>
 </ul>
 <h3 id="wordnet-21">WordNet 2.1</h3>
 <ul>
@@ -2573,20 +2562,20 @@ notice and the permission notice with every copy.</li>
 <h3 id="page-turn-sound-quillassetsaudiopage_turnwav">Page-turn sound
 (quill/assets/audio/page_turn.wav)</h3>
 <ul>
-<li><strong>What it is:</strong> The default sound between chapters in
-spoken audiobooks.</li>
+<li><strong>What it is:</strong> An original synthesized page-turn-like
+default sound between chapters in spoken audiobooks; no sampled audio is
+used.</li>
 <li><strong>Included in:</strong> Every product in the family.</li>
-<li><strong>Version:</strong> as committed</li>
-<li><strong>Licence:</strong> Not confirmed</li>
-<li><strong>Copyright:</strong> Unknown</li>
+<li><strong>Version:</strong> generated by scripts/gen_page_turn.py</li>
+<li><strong>Licence:</strong> MIT (QUILL project)</li>
+<li><strong>Copyright:</strong> Copyright (c) 2026 Blind Information
+Technology Solutions (BITS); Copyright (c) 2026 Jeff Bishop</li>
+<li><strong>Upstream:</strong> <a
+href="https://github.com/Community-Access/quill">https://github.com/Community-Access/quill</a></li>
 <li><strong>How it reaches you:</strong> Bundled: it is inside the
 installer or the portable zip.</li>
-<li><strong>What the licence asks of us:</strong> Unknown until the
-licence is confirmed. See the review note on each entry.</li>
-<li><strong>Needs review:</strong> Its commit says it was converted from
-the ACB audio pipeline’s reference MP3; the original source and licence
-are not recorded. Confirm provenance, or replace it with a generated
-sound.</li>
+<li><strong>What the licence asks of us:</strong> Keep the copyright
+notice and the permission notice with every copy.</li>
 </ul>
 <h3 id="quill-sound-packs-ink-and-the-indent-tone-packs">QUILL sound
 packs (Ink and the indent-tone packs)</h3>
@@ -2628,8 +2617,9 @@ notice and the permission notice with every copy.</li>
 completeness; their licences place no obligation on the products.</p>
 <h3 id="inno-setup">Inno Setup</h3>
 <ul>
-<li><strong>What it is:</strong> Builds the Windows installers. The
-installer engine is inside every Setup.exe.</li>
+<li><strong>What it is:</strong> Build-time installer engine. The
+compiler is not shipped, but Inno Setup code is embedded in the Windows
+Setup.exe files.</li>
 <li><strong>Included in:</strong> Every product in the family.</li>
 <li><strong>Version:</strong> 7.1</li>
 <li><strong>Licence:</strong> Inno Setup licence (free, permissive;
@@ -2640,11 +2630,13 @@ and Martijn Laan</li>
 href="https://jrsoftware.org/isinfo.php">https://jrsoftware.org/isinfo.php</a></li>
 <li><strong>How it reaches you:</strong> Used only to build the
 products. Not shipped to you.</li>
-<li><strong>What the licence asks of us:</strong> Unknown until the
-licence is confirmed. See the review note on each entry.</li>
-<li><strong>Needs review:</strong> Inno Setup’s own licence text is not
-reproduced; it permits free distribution of installers built with it.
-Add the text if the owner wants it bundled.</li>
+<li><strong>What the licence asks of us:</strong> Retain the upstream
+copyright notices and website addresses in binary redistributions; do
+not misrepresent origin or modifications. Commercial redistribution is
+permitted.</li>
+<li><strong>Needs review:</strong> The full licence is included in the
+family notices. Confirm a built Setup.exe retains the upstream copyright
+and website strings after compiler upgrades.</li>
 </ul>
 <h3 id="pandoc-documentation-build">Pandoc (documentation build)</h3>
 <ul>
@@ -3618,13 +3610,31 @@ component.</p>
 <h3 id="bass-licence-un4seen-developments-proprietary-freeware">BASS
 licence (Un4seen Developments, proprietary freeware)</h3>
 <p>Used by: sound_lib (with the BASS audio libraries).</p>
-<p>What it asks of us: Free of charge only in non-commercial software.
-Credit Un4seen. No source is available and none is owed. The full terms
-are on un4seen.com and are not reproduced here.</p>
-<p>The full text is not reproduced here. It is published at <a
-href="https://www.un4seen.com/bass.html#license">https://www.un4seen.com/bass.html#license</a>.</p>
+<p>What it asks of us: Free use is limited to non-commercial entities
+and products that make no money. Confirm that the QUILL publisher and
+product qualify before distribution; otherwise obtain a commercial BASS
+licence. Keep Un4seen attribution and these terms.</p>
+<pre class="text"><code>BASS Licensing Terms
+Source: https://www.un4seen.com/bass.html#license
+Retrieved 2026-10-27.
+
+BASS is free for non-commercial use. If you are a non-commercial entity (eg. an individual) and you are not making any money from your product (through sales, advertising, etc) then you can use BASS in it for free. Otherwise, one of the following licences will be required.
+Purchase
+Shareware licence: €125
+The &quot;shareware&quot; licence allows the usage of BASS in an unlimited number of your shareware (&quot;try before you buy&quot;) products, which must sell for no more than €40 each. Non-shareware products are also permitted, but the price limit is €10 in that case. With subscription models, the limit applies to the annual subscription fee. The limit can be raised by purchasing duplicate licences (for the same platform), eg. 2 licences doubles it. If you are an individual (not a corporation) making and selling your own software, this is the licence for you.
+Purchase
+Single Commercial licence: €950 (iOS or Android: €475)
+The &quot;single commercial&quot; licence allows the usage of BASS in one commercial product.
+Purchase
+Unlimited Commercial licence: €3450
+The &quot;unlimited commercial&quot; licence allows the usage of BASS in an unlimited number of your commercial products. This licence applies to a single site/location at which products are being developed with BASS.
+These licences are on a per-platform basis. There is a 40% reduction on each additional platform (excluding the iOS/Android Single Commercial specials), eg. Win32 and macOS Shareware licences would cost €200 (125+75) instead of €250.
+In all cases there are no royalties to pay and you can use future BASS updates without further cost. Reselling/sublicensing is not permitted. Your products must be end-user products, eg. not components used by other products. Please note that these licences only cover your own software, not the publishing of other&#39;s software. If you have got any questions, please
+get in touch
+.</code></pre>
 <h3 id="bsd-2-clause-license">BSD 2-Clause License</h3>
-<p>Used by: feedparser.</p>
+<p>Used by: feedparser, MinGW-w64 runtime (libgcc_s_seh, libstdc++,
+libwinpthread).</p>
 <p>What it asks of us: Keep the copyright notice, the conditions and the
 disclaimer in the documentation that ships with the binary.</p>
 <pre class="text"><code>BSD 2-Clause License
@@ -4031,6 +4041,47 @@ Licensor: Lanes Audio
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.</code></pre>
+<h3 id="gcc-runtime-library-exception-version-31">GCC Runtime Library
+Exception, version 3.1</h3>
+<p>Used by: MinGW-w64 runtime (libgcc_s_seh, libstdc++,
+libwinpthread).</p>
+<p>What it asks of us: Keep this exception with GPL-3.0 for the covered
+GCC runtime files. It permits eligible combinations with independent
+modules; it does not remove GPL obligations for the runtime libraries
+themselves.</p>
+<pre class="text"><code>GCC RUNTIME LIBRARY EXCEPTION
+
+Version 3.1, 31 March 2009
+
+General information: http://www.gnu.org/licenses/gcc-exception.html
+Copyright (C) 2009 Free Software Foundation, Inc. &lt;http://fsf.org/&gt;
+
+Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it is not allowed.
+This GCC Runtime Library Exception (&quot;Exception&quot;) is an additional permission under section 7 of the GNU General Public License, version 3 (&quot;GPLv3&quot;). It applies to a given file (the &quot;Runtime Library&quot;) that bears a notice placed by the copyright holder of the file stating that the file is governed by GPLv3 along with this Exception.
+
+When you use GCC to compile a program, GCC may combine portions of certain GCC header files and runtime libraries with the compiled program. The purpose of this Exception is to allow compilation of non-GPL (including proprietary) programs to use, in this way, the header files and runtime libraries covered by this Exception.
+
+0. Definitions.
+
+A file is an &quot;Independent Module&quot; if it either requires the Runtime Library for execution after a Compilation Process, or makes use of an interface provided by the Runtime Library, but is not otherwise based on the Runtime Library.
+
+&quot;GCC&quot; means a version of the GNU Compiler Collection, with or without modifications, governed by version 3 (or a specified later version) of the GNU General Public License (GPL) with the option of using any subsequent versions published by the FSF.
+
+&quot;GPL-compatible Software&quot; is software whose conditions of propagation, modification and use would permit combination with GCC in accord with the license of GCC.
+
+&quot;Target Code&quot; refers to output from any compiler for a real or virtual target processor architecture, in executable form or suitable for input to an assembler, loader, linker and/or execution phase. Notwithstanding that, Target Code does not include data in any format that is used as a compiler intermediate representation, or used for producing a compiler intermediate representation.
+
+The &quot;Compilation Process&quot; transforms code entirely represented in non-intermediate languages designed for human-written code, and/or in Java Virtual Machine byte code, into Target Code. Thus, for example, use of source code generators and preprocessors need not be considered part of the Compilation Process, since the Compilation Process can be understood as starting with the output of the generators or preprocessors.
+
+A Compilation Process is &quot;Eligible&quot; if it is done using GCC, alone or with other GPL-compatible software, or if it is done without using any work based on GCC. For example, using non-GPL-compatible Software to optimize any GCC intermediate representations would not qualify as an Eligible Compilation Process.
+
+1. Grant of Additional Permission.
+
+You have permission to propagate a work of Target Code formed by combining the Runtime Library with Independent Modules, even if such propagation would otherwise violate the terms of GPLv3, provided that all Target Code was generated by Eligible Compilation Processes. You may then convey such a combination under terms of your choice, consistent with the licensing of the Independent Modules.
+
+2. No Weakening of GCC Copyleft.
+
+The availability of this Exception does not imply any general presumption that third-party software is unaffected by the copyleft requirements of the license of GCC.</code></pre>
 <h3 id="gnu-general-public-license-version-2">GNU General Public
 License, version 2</h3>
 <p>Used by: Git for Windows (MinGit) and GitHub CLI, mutagen, Pandoc,
@@ -4383,7 +4434,8 @@ Public License instead of this License.</code></pre>
 License, version 3</h3>
 <p>Used by: MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread),
 FFmpeg (ffmpeg.exe and ffprobe.exe), libmpv (libmpv-2.dll), eSpeak NG,
-Hunspell dictionaries, liblouis (QUILL Braille Pack).</p>
+Kokoro-82M voices and kokoro-onnx, Hunspell dictionaries, liblouis
+(QUILL Braille Pack).</p>
 <p>What it asks of us: Ship the licence text. Provide the complete
 corresponding source of the component, or a written offer for it, for as
 long as we distribute it (and at least three years). Any program that is
@@ -5063,6 +5115,68 @@ may consider it more useful to permit linking proprietary applications with
 the library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.  But first, please read
 &lt;https://www.gnu.org/licenses/why-not-lgpl.html&gt;.</code></pre>
+<h3 id="historical-permission-notice-and-disclaimer-hpnd">Historical
+Permission Notice and Disclaimer (HPND)</h3>
+<p>Used by: pywin32.</p>
+<p>What it asks of us: Keep the copyright and permission notices in the
+documentation; retain the warranty disclaimer.</p>
+<pre class="text"><code>License for Lexilla, Scintilla, and SciTE
+
+Copyright 1998-2021 by Neil Hodgson &lt;neilh@scintilla.org&gt;
+
+All Rights Reserved
+
+Permission to use, copy, modify, and distribute this software and its
+documentation for any purpose and without fee is hereby granted,
+provided that the above copyright notice appear in all copies and that
+both that copyright notice and this permission notice appear in
+supporting documentation.
+
+NEIL HODGSON DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS
+SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS, IN NO EVENT SHALL NEIL HODGSON BE LIABLE FOR ANY
+SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE
+OR PERFORMANCE OF THIS SOFTWARE.</code></pre>
+<h3 id="inno-setup-license">Inno Setup License</h3>
+<p>Used by: Inno Setup.</p>
+<p>What it asks of us: Retain the upstream copyright notices and website
+addresses in binary redistributions; do not misrepresent origin or
+modifications. Commercial redistribution is permitted.</p>
+<pre class="text"><code>Inno Setup License
+==================
+
+Except where otherwise noted, all of the documentation and software included in the Inno
+Setup package is copyrighted by Jordan Russell.
+
+Copyright (C) 1997-2026 Jordan Russell. All rights reserved.
+Portions Copyright (C) 2000-2026 Martijn Laan. All rights reserved.
+
+This software is provided &quot;as-is,&quot; without any express or implied warranty. In no event shall
+the author be held liable for any damages arising from the use of this software.
+
+Permission is granted to anyone to use this software for any purpose, including commercial
+applications, and to alter and redistribute it, provided that the following conditions are met:
+
+1. All redistributions of source code files must retain all copyright notices that are currently
+   in place, and this list of conditions without modification.
+
+2. All redistributions in binary form must retain all occurrences of the above copyright notice
+   and web site addresses that are currently in place (for example, in the About boxes).
+
+3. The origin of this software must not be misrepresented; you must not claim that you wrote
+   the original software. If you use this software to distribute a product, an acknowledgment
+   in the product documentation would be appreciated but is not required.
+
+4. Modified versions in source or binary form must be plainly marked as such, and must not
+   be misrepresented as being the original software.
+
+
+Jordan Russell
+jr-2020 AT jrsoftware.org
+https://jrsoftware.org/</code></pre>
 <h3 id="isc-license">ISC License</h3>
 <p>Used by: PyNaCl (with libsodium), yt-dlp-ejs.</p>
 <p>What it asks of us: Keep the copyright notice and the permission
@@ -5085,7 +5199,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.</code></pre>
 <h3 id="gnu-lesser-general-public-license-version-21">GNU Lesser General
 Public License, version 2.1</h3>
 <p>Used by: Prism (prismatoid), PyEnchant, python-soundfile (with
-libsndfile), liblouis (QUILL Braille Pack).</p>
+libsndfile), pywin32, liblouis (QUILL Braille Pack).</p>
 <p>What it asks of us: Ship the licence text. Keep the library a
 separate, replaceable file (all are shipped as separate DLLs or
 modules). Offer the library’s source, or point to the exact upstream
@@ -5781,7 +5895,8 @@ audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, Deno
 and tiny (ONNX), Silero VAD, Kokoro-82M voices and kokoro-onnx, MathCAT,
 Piper text-to-speech engine, Whisper models (GGML format), whisper.cpp,
 Emoji catalog (Unicode emoji-test.txt, CLDR annotations,
-iamcal/emoji-data), App icons, QUILL sound packs (Ink and the
+iamcal/emoji-data), App icons, Page-turn sound
+(quill/assets/audio/page_turn.wav), QUILL sound packs (Ink and the
 indent-tone packs), Weather alert sound
 (quill/assets/audio/weather_alert.wav), Test and lint tools (pytest,
 ruff, mypy and their plugins).</p>
@@ -7859,11 +7974,75 @@ unmodified, as part of our program. No source is owed.</p>
 href="https://visualstudio.microsoft.com/license-terms/vs2022-cruntime/">https://visualstudio.microsoft.com/license-terms/vs2022-cruntime/</a>.</p>
 <h3 id="nvidia-open-model-license">NVIDIA Open Model License</h3>
 <p>Used by: NVIDIA Nemotron Speech Streaming, English 0.6B (int8).</p>
-<p>What it asks of us: Ship the model’s NOTICE and the licence terms
-with it; keep NVIDIA’s attribution. Commercial use and redistribution
-are allowed.</p>
-<p>The full text is not reproduced here. It is published at <a
-href="https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/">https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/</a>.</p>
+<p>What it asks of us: Keep NVIDIA attribution and the model NOTICE, and
+provide this agreement with the model. Comply with the agreement’s use
+restrictions, guardrail requirements and any updated terms.</p>
+<pre class="text"><code>NVIDIA Open Model License Agreement
+Last modified and version release date: October 24, 2025
+Official agreement: https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/
+Retrieved 2026-10-27. The following text is transcribed from the official agreement page.
+
+This NVIDIA Open Model License Agreement (the “Agreement”) is a legal agreement between the Legal Entity You represent, or if no entity is identified, You and NVIDIA Corporation and its Affiliates (“NVIDIA”) and governs Your use of the Models that NVIDIA provides to You under this Agreement. NVIDIA and You are each a “party” and collectively the “parties.”
+
+NVIDIA models released under this Agreement are intended to be used permissively and enable the further development of AI technologies. Subject to the terms of this Agreement, NVIDIA confirms that:
+
+Models are commercially usable.
+You are free to create and distribute Derivative Models.
+NVIDIA does not claim ownership to any outputs generated using the Models or Derivative Models.
+
+By using, reproducing, modifying, distributing, performing or displaying any portion or element of the Model or Derivative Model, or otherwise accepting the terms of this Agreement, you agree to be bound by this Agreement.
+
+Definitions. The following definitions apply to this Agreement:
+
+&quot;Derivative Model&quot; means all (a) modifications to the Model, (b) works based on the Model, and (c) any other derivative works of the Model. An output is not a Derivative Model.
+
+&quot;Legal Entity&quot; means the union of the acting entity and all other entities that control, are controlled by, or are under common control with that entity. For the purposes of this definition, &quot;control&quot; means (a) the power, direct or indirect, to cause the direction or management of such entity, whether by contract or otherwise, or (b) ownership of fifty percent (50%) or more of the outstanding shares, or (c) beneficial ownership of such entity.
+
+“Model” means the machine learning model, software, checkpoints, learnt weights, algorithms, parameters, configuration files and documentation shared under this Agreement.
+
+&quot;NVIDIA Cosmos Model&quot; means a multimodal Model shared under this Agreement
+
+&quot;Special-Purpose Model&quot; means a Model that is only competent in a narrow set of purpose-specific tasks and should not be used for unintended or general-purpose applications
+
+“You” or “Your” means an individual or Legal Entity exercising permissions granted by this Agreement.
+
+Conditions for Use, License Grant, AI Ethics and IP Ownership.
+
+Conditions for Use. The Model and any Derivative Model are subject to additional terms as described in Section 2 and Section 3 of this Agreement and govern Your use. If You institute copyright or patent litigation against any entity (including a cross-claim or counterclaim in a lawsuit) alleging that the Model or a Derivative Model constitutes direct or contributory copyright or patent infringement, then any licenses granted to You under this Agreement for that Model or Derivative Model will terminate as of the date such litigation is filed. If You bypass, disable, reduce the efficacy of, or circumvent any technical limitation, safety guardrail or associated safety guardrail hyperparameter, encryption, security, digital rights management, or authentication mechanism (collectively “Guardrail”) contained in the Model without a substantially similar Guardrail appropriate for your use case, your rights under this Agreement will automatically terminate. NVIDIA may indicate in relevant documentation that a Model is a Special-Purpose Model. NVIDIA may update this Agreement to comply with legal and regulatory requirements at any time and You agree to either comply with any updated license or cease Your copying, use, and distribution of the Model and any Derivative Model.
+
+License Grant. The rights granted herein are explicitly conditioned on Your full compliance with the terms of this Agreement. Subject to the terms and conditions of this Agreement, NVIDIA hereby grants to You a perpetual, worldwide, non-exclusive, no-charge, royalty-free, revocable (as stated in Section 2.1) license to publicly perform, publicly display, reproduce, use, create derivative works of, make, have made, sell, offer for sale, distribute (through multiple tiers of distribution) and import the Model.
+
+AI Ethics. Use of the Models under the Agreement must be consistent with NVIDIA’s Trustworthy AI terms found at https://www.nvidia.com/en-us/agreements/trustworthy-ai/terms/.
+
+NVIDIA owns the Model and any Derivative Models created by NVIDIA. Subject to NVIDIA’s underlying ownership rights in the Model or its Derivative Models, You are and will be the owner of Your Derivative Models. NVIDIA claims no ownership rights in outputs. You are responsible for outputs and their subsequent uses. Except as expressly granted in this Agreement, (a) NVIDIA reserves all rights, interests and remedies in connection with the Model and (b) no other license or right is granted to you by implication, estoppel or otherwise.
+
+Redistribution. You may reproduce and distribute copies of the Model or Derivative Models thereof in any medium, with or without modifications, provided that You meet the following conditions:
+
+If you distribute the Model, You must give any other recipients of the Model a copy of this Agreement and include the following attribution notice within a “Notice” text file with such copies: “Licensed by NVIDIA Corporation under the NVIDIA Open Model License”;
+
+If you distribute or make available a NVIDIA Cosmos Model, or a product or service (including an AI model) that contains or uses a NVIDIA Cosmos Model, use a NVIDIA Cosmos Model to create a Derivative Model, or use a NVIDIA Cosmos Model or its outputs to create, train, fine tune, or otherwise improve an AI model, you will include “Built on NVIDIA Cosmos” on a related website, user interface, blogpost, about page, or product documentation; and
+
+You may add Your own copyright statement to Your modifications and may provide additional or different license terms and conditions for use, reproduction, or distribution of Your modifications, or for any such Derivative Models as a whole, provided Your use, reproduction, and distribution of the Model otherwise complies with the conditions stated in this Agreement.
+
+Separate Components. The Models may include or be distributed with components provided with separate legal notices or terms that accompany the components, such as an Open Source Software License or other third-party license. The components are subject to the applicable other licenses, including any proprietary notices, disclaimers, requirements and extended use rights; except that this Agreement will prevail regarding the use of third-party Open Source Software License, unless a third-party Open Source Software License requires its license terms to prevail. “Open Source Software License” means any software, data or documentation subject to any license identified as an open source license by the Open Source Initiative (https://opensource.org), Free Software Foundation (https://www.fsf.org) or other similar open source organization or listed by the Software Package Data Exchange (SPDX) Workgroup under the Linux Foundation (https://www.spdx.org).
+
+
+Trademarks. This Agreement does not grant permission to use the trade names, trademarks, service marks, or product names of NVIDIA, except as required for reasonable and customary use in describing the origin of the Model and reproducing the content of the “Notice” text file.
+
+
+Disclaimer of Warranty. Unless required by applicable law or agreed to in writing, NVIDIA provides the Model on an “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied, including, without limitation, any warranties or conditions of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A PARTICULAR PURPOSE. You are solely responsible for reviewing Model documentation, including any Special-Purpose Model limitations, and determining the appropriateness of using or redistributing the Model, Derivative Models and outputs. You assume any risks associated with Your exercise of permissions under this Agreement.
+
+Limitation of Liability. In no event and under no legal theory, whether in tort (including negligence), contract, or otherwise, unless required by applicable law (such as deliberate and grossly negligent acts) or agreed to in writing, will NVIDIA be liable to You for damages, including any direct, indirect, special, incidental, or consequential damages of any character arising as a result of this Agreement or out of the use or inability to use the Model, Derivative Models or outputs (including but not limited to damages for loss of goodwill, work stoppage, computer failure or malfunction, or any and all other commercial damages or losses), even if NVIDIA has been advised of the possibility of such damages.
+
+Indemnity. You will indemnify and hold harmless NVIDIA from and against any claim by any third party arising out of or related to your use or distribution of the Model, Derivative Models or outputs.
+
+Feedback. NVIDIA appreciates your feedback, and You agree that NVIDIA may use it without restriction or compensation to You.
+
+Governing Law. This Agreement will be governed in all respects by the laws of the United States and the laws of the State of Delaware, without regard to conflict of laws principles or the United Nations Convention on Contracts for the International Sale of Goods. The state and federal courts residing in Santa Clara County, California will have exclusive jurisdiction over any dispute or claim arising out of or related to this Agreement, and the parties irrevocably consent to personal jurisdiction and venue in those courts; except that, either party may apply for injunctive remedies or an equivalent type of urgent legal relief in any jurisdiction.
+
+Trade and Compliance. You agree to comply with all applicable export, import, trade and economic sanctions laws and regulations, as amended, including without limitation U.S. Export Administration Regulations and Office of Foreign Assets Control regulations. These laws include restrictions on destinations, end-users and end-use.
+
+Version Release Date: October 24, 2025</code></pre>
 <h3 id="python-software-foundation-license-version-2">Python Software
 Foundation License, version 2</h3>
 <p>Used by: audioop-lts, defusedxml, feedparser-sgmllib, Python
@@ -8158,14 +8337,50 @@ station catalog seed.</p>
 <p>Used by: Emoji catalog (Unicode emoji-test.txt, CLDR annotations,
 iamcal/emoji-data).</p>
 <p>What it asks of us: Keep the Unicode copyright and permission notice
-with the data or in its documentation. The full text is at unicode.org
-and is not reproduced here.</p>
-<p>The full text is not reproduced here. It is published at <a
-href="https://www.unicode.org/license.txt">https://www.unicode.org/license.txt</a>.</p>
+with the data or its documentation; the complete licence text is
+reproduced here.</p>
+<pre class="text"><code>UNICODE LICENSE V3
+
+COPYRIGHT AND PERMISSION NOTICE
+
+Copyright © 1991-2026 Unicode, Inc.
+
+NOTICE TO USER: Carefully read the following legal agreement. BY
+DOWNLOADING, INSTALLING, COPYING OR OTHERWISE USING DATA FILES, AND/OR
+SOFTWARE, YOU UNEQUIVOCALLY ACCEPT, AND AGREE TO BE BOUND BY, ALL OF THE
+TERMS AND CONDITIONS OF THIS AGREEMENT. IF YOU DO NOT AGREE, DO NOT
+DOWNLOAD, INSTALL, COPY, DISTRIBUTE OR USE THE DATA FILES OR SOFTWARE.
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of data files and any associated documentation (the &quot;Data Files&quot;) or
+software and any associated documentation (the &quot;Software&quot;) to deal in the
+Data Files or Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, and/or sell
+copies of the Data Files or Software, and to permit persons to whom the
+Data Files or Software are furnished to do so, provided that either (a)
+this copyright and permission notice appear with all copies of the Data
+Files or Software, or (b) this copyright and permission notice appear in
+associated Documentation.
+
+THE DATA FILES AND SOFTWARE ARE PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY
+KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF
+THIRD PARTY RIGHTS.
+
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR HOLDERS INCLUDED IN THIS NOTICE
+BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES,
+OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
+ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THE DATA
+FILES OR SOFTWARE.
+
+Except as contained in this notice, the name of a copyright holder shall
+not be used in advertising or otherwise to promote the sale, use or other
+dealings in these Data Files or Software without prior written
+authorization of the copyright holder.</code></pre>
 <h3 id="not-confirmed">Not confirmed</h3>
-<p>Used by: DECtalk, Piper voices, Radio station catalog seed, Voice
-Previews (synthesised samples), Page-turn sound
-(quill/assets/audio/page_turn.wav), Inno Setup.</p>
+<p>Used by: DECtalk, Piper voices, Voice Previews (synthesised
+samples).</p>
 <p>What it asks of us: Unknown until the licence is confirmed. See the
 review note on each entry.</p>
 <p>The full text is not reproduced here.</p>

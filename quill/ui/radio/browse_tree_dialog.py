@@ -4,7 +4,7 @@ A dedicated, search-free browse experience (its counterpart, Search Stations,
 keeps the old field-based dialog). The whole window is a single ``wx.TreeCtrl``
 whose top-level branches are the sources: Favorites first for a quick jump, then
 Popular / Trending / Recently Changed, the geographic and language axes, Weather,
-the accessibility services (ACB, NFB, Radio Reading Services), SomaFM, TuneIn,
+the accessibility services (ACB, NFB, Radio Reading Services), TuneIn,
 iHeart, Networks, the catalogs, and Apple Podcasts.
 
 **This module no longer knows what any of those are.** It knows that a node is a

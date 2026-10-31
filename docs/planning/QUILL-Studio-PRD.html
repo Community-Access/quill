@@ -323,6 +323,11 @@ which predates the capture work in commit <code>5cc0023f</code>.</li>
 </ol>
 <h3 id="11-how-to-read-this-document">1.1 How to read this document</h3>
 <ul>
+<li><strong>Who this is for.</strong> This is an engineering plan, not
+wording to copy into the app. A technical name here does not make it an
+appropriate button, menu item, announcement or help message. Section 3.1
+sets the language and simplicity requirements for the actual
+experience.</li>
 <li><strong>Delivered.</strong> A requirement the code now satisfies is
 replaced by one line, <em>Delivered: …</em>, naming the shipped
 requirement in <code>standalone/studio/docs/prd.md</code> (cited as
@@ -467,22 +472,24 @@ accelerator reference, shortcut conflict detection, and a searchable
 command palette. Make shortcuts discoverable <em>and</em> configurable.
 Avoid consuming typical JAWS/NVDA/Narrator or OS shortcuts by
 default.</p>
-<p><strong>UX-004</strong> Editing models: spreadsheet-like source/bus
-matrix; sortable but stable source list; timeline with tracks/regions as
-rows and named edit fields; camera controls with textual labels;
-screenshot canvas with OCR-based element list. Every important command
-available from menu, command palette, and keyboard accelerators where
-appropriate.</p>
+<p><strong>UX-004</strong> The ordinary editing path uses named lists
+and clear actions, not a required spreadsheet or a picture of a
+timeline. An optional advanced view may show sources and outputs as a
+matrix and recordings as tracks and regions; both views operate on the
+same saved work. Camera controls have textual labels, and screenshot
+elements are available in a readable list. Every important command is
+reachable from menus, the command palette and a keyboard route.</p>
 <p><strong>UX-005</strong> Never disrupt text fields with live-show
 hotkeys; swap active accelerators when focus is in composite edit
 controls. Do not reorder/remove a focused row during background
 activity. Do not disable the currently focused action button while a
 long-running task executes; handle double activation safely.</p>
-<p><strong>UX-006</strong> Provide three announcement levels: concise,
-standard, detailed. High-frequency meter feedback is
-on-demand/threshold-based rather than repetitive speech. All important
-status remains reviewable as text/braille and in a searchable event log.
-Reuse current live status bar and speech/braille announcement
+<p><strong>UX-006</strong> Announce outcomes and information the screen
+reader does not already provide; offer additional detail on demand
+rather than a routine speech-verbosity setting. High-frequency meter
+feedback is on-demand/threshold-based rather than repetitive speech. All
+important status remains reviewable as text/braille and in a searchable
+event log. Reuse current live status bar and speech/braille announcement
 service.</p>
 <p><strong>UX-007</strong> Whole-app accessibility regression testing
 must involve JAWS, NVDA and Narrator, keyboard-only testers who are
@@ -490,11 +497,12 @@ totally blind, Windows scaling/high contrast, 8 GB RAM devices, multiple
 sound drivers, offline and portable configurations. Accessibility
 success is evidenced by executable test scripts and actual user outcome
 logs, not simply a WCAG checklist.</p>
-<p><strong>UX-008</strong> Offer <strong>guided mode</strong>
-(plain-language steps), <strong>standard mode</strong> (compact task
-screens) and <strong>advanced mode</strong> (matrix, buses, automation),
-backed by the <em>same saved state</em>. No accessibility tax for
-obtaining professional functions.</p>
+<p><strong>UX-008</strong> Start with a clear, task-focused experience
+and sensible defaults. Offer extra guidance on request and an optional
+advanced view, both using the same saved work. Do not make people choose
+a mode before starting, hide basic actions behind advanced settings, or
+require an advanced view to use a screen reader. People who need precise
+controls can open them and return without losing work.</p>
 <p><strong>UX-009</strong> A control’s accessible name changes the
 instant the <em>user edits</em> what it represents (rename, reassign,
 clear), focused or not, so “did that apply?” is answered without tabbing
@@ -531,6 +539,91 @@ inspector and note dialogs refuse a second press with a spoken line
 instead of disabling the focused button (Studio PRD AS-113).
 <em>Remaining:</em> the same contract across every long-running action
 in the shell.</p>
+<h3 id="31-keep-the-everyday-path-simple">3.1 Keep the everyday path
+simple</h3>
+<p>These are proposed product requirements, not a claim that the new
+workflows are already built.</p>
+<ul>
+<li><p><strong>Start with a person’s goal.</strong> Offer actions such
+as <strong>Record my voice</strong>, <strong>Improve a
+recording</strong>, <strong>Put recordings together</strong>,
+<strong>Add captions</strong> and <strong>Save a video</strong>.
+Existing audiobook journeys remain easy to find. Do not open with an
+empty technical workspace or require a person to understand tracks,
+buses, codecs or a production timeline before doing a first
+task.</p></li>
+<li><p><strong>Ask only what the task needs.</strong> Choose safe
+defaults, explain any consequential choice in one short sentence and let
+the user review the result before replacing, uploading or publishing
+anything. Avoid a chain of confirmations for reversible choices; ask
+explicitly when material is deleted, overwritten, sent online or
+published.</p></li>
+<li><p><strong>Name the result, not the machinery.</strong> Examples for
+design and usability testing, not final strings or key assignments:</p>
+<table>
+<thead>
+<tr>
+<th>Instead of leading with</th>
+<th>Start with</th>
+<th>Extra detail when requested</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Input routing / bus</td>
+<td>Choose what to record</td>
+<td>Sources, destinations and separate outputs</td>
+</tr>
+<tr>
+<td>Destructive or ripple edit</td>
+<td>Remove this part</td>
+<td>Whether later sound moves; edit scope</td>
+</tr>
+<tr>
+<td>Encoder / container</td>
+<td>Save as MP3 or Save as video</td>
+<td>Format, codec and quality</td>
+</tr>
+<tr>
+<td>Diarization</td>
+<td>Who is speaking</td>
+<td>Speaker detection and its limits</td>
+</tr>
+<tr>
+<td>Loudness normalization</td>
+<td>Make speech easier to hear</td>
+<td>Measured level and target</td>
+</tr>
+<tr>
+<td>Verification / probe</td>
+<td>Check my finished file</td>
+<td>File properties and checks performed</td>
+</tr>
+</tbody>
+</table></li>
+<li><p><strong>Make help useful at the point of need.</strong> F1
+explains the current control; optional more-detail help explains
+unfamiliar terms with examples. The screen reader already announces
+focus and control names; speak only what it does not already say. Errors
+say what happened, whether work was saved and what the person can try
+next.</p></li>
+<li><p><strong>Advanced is an invitation, not a different
+product.</strong> Show precise time, source/output choices, track
+controls, effects and batch options when requested, with descriptions
+and keyboard access. Advanced changes are reflected in the simple view
+when it can represent them; otherwise the simple view explains the
+limitation without discarding or rewriting work. Switching views never
+resets settings, changes an output or hides errors.</p></li>
+<li><p><strong>Test the experience, not just the labels.</strong> In
+moderated keyboard and screen-reader tests, a first-time user records a
+short message, removes a mistake, saves a copy and locates it without
+knowing production jargon. Another user mixes speech and music, and an
+experienced user sets precise levels and time ranges. Record task
+completion, missteps, needed help and actual output; test JAWS, NVDA and
+Narrator and retain the results. A simple default is not accepted if it
+silently changes work, excludes advanced users or requires sighted
+assistance.</p></li>
+</ul>
 <h2 id="4-persistent-tray-and-background-control">4. Persistent tray and
 background control</h2>
 <p><strong>TRAY-001</strong> Extend the existing tray rather than
@@ -961,10 +1054,11 @@ project playback.</p>
 hardware monitoring warnings.</p>
 <p><strong>EDIT-007</strong> Track freezing/render in place with
 reversible source and processing chain.</p>
-<p><strong>EDIT-008</strong> Optional VST3 plug-in host considered only
-after defining accessibility safety contract, sandboxing and crash
-isolation; inaccessible third-party GUI must never block core
-editing.</p>
+<p><strong>EDIT-008</strong> Plan an optional VST3 plug-in host after
+defining and validating the accessibility safety contract, sandboxing
+and crash isolation; inaccessible third-party GUI must never block core
+editing. The detailed compatibility and release conditions are in
+PP-009.</p>
 <p><strong>EDIT-009</strong> Multitrack music: instruments/voice/backing
 tracks, synchronized stems, groups, reverb/delay sends, automation,
 mastering chain.</p>
@@ -982,6 +1076,501 @@ also be published with the audio for services that read tracklists.
 Acceptance: record a show with three running-order items, open the
 recording, and the Workbench proposes three chapters at the logged
 times.</p>
+<h2 id="6a-recording-to-production-parity-detailed-workflows">6A.
+Recording-to-production parity: detailed workflows</h2>
+<p><strong>Status and scope:</strong> The following are planned
+requirements, not a claim that Studio currently implements or has tested
+them. They refine, rather than replace, sections 5–10B. They capture the
+user workflows described in the <a
+href="https://hartgenconsultancy.com/introducing-mediaccess-part-2-from-recording-to-finished-production/">MediAccess
+Part 2 article</a>, studied as public product evidence, not as code,
+interface text or a promise to reproduce another product. Existing
+delivered capabilities remain governed by the shipped-features PRD. The
+accepted release order and the limited first demonstration-recording
+milestone in section 7A are unchanged; these requirements belong to
+subsequent recording, editing, caption and publishing increments. No
+exact shortcuts, supported devices, service pricing or release dates are
+implied.</p>
+<h3 id="6a1-from-first-recording-to-synchronized-sources">6A.1 From
+first recording to synchronized sources</h3>
+<p><strong>PP-001 — A small first success.</strong> Offer a guided
+microphone-only path: select a device, explicitly open it for a short
+test, adjust the selected Windows input level where supported, hear the
+test, record, pause/resume, stop, name the destination and open the
+result for review. Reuse a shared accessible Windows sound-control
+surface where available, distinguishing system input level from Studio’s
+recording and monitoring gains and providing a safe recovery path for
+screen-reader output. Explain low level, clipping and background noise
+without claiming every defect is detected. Provide a configurable,
+conflict-checked global start/stop route, an optional pre-start cue and
+a distinct pause/resume action. Paused time is absent from recorded
+media; show when a level control is unavailable or changes a system-wide
+setting. A first recording does not require setting up tracks, video, an
+account or cloud services.</p>
+<p><strong>PP-002 — Mix and retain sources.</strong> A user can select
+microphone and system output together, set their independent
+contributions, make and hear a test, and record a mix without a hardware
+mixer. If isolated stems are selected, save them in addition to the mix
+against the same session clock, including video-only and separate
+microphone/system audio when requested and supported. State explicitly
+which outputs exist and whether synchronization was measured, corrected
+or is unknown; do not imply screen-reader speech was included when its
+output was not captured.</p>
+<p><strong>PP-003 — Interface inputs.</strong> Discover and name
+individual inputs on supported audio interfaces, including ASIO where a
+licensed, distributable and tested adapter is available. Let the user
+select inputs, monitor a mix and retain individual WAV stems on one
+capture clock; disclose sample rate, channel mapping, latency and
+unavailable inputs. Test the actual driver/device combinations, clock
+drift and alignment rather than promising universal ASIO support.
+Failure to open an input is reported and never silently substitutes a
+different device.</p>
+<h3 id="6a2-precise-nonvisual-audio-editing">6A.2 Precise, nonvisual
+audio editing</h3>
+<p><strong>PP-004 — Listen, locate and preview.</strong> Navigate by
+configurable coarse-to-fine time increments, including subsecond steps,
+and item and track boundaries. Offer quiet movement, spoken/brailled
+time, a short audio audition or continued playback from the new
+position. Provide held-key continuous audible scrubbing with predictable
+release/stop behavior and a fallback where a screen reader or global
+shortcut intercepts keys. Set selection boundaries, audition the
+selection and preview the proposed join with context on both sides
+before committing a deletion; adjustments and cancellation leave audio
+unchanged.</p>
+<p><strong>PP-005 — Personal bookmarks.</strong> Maintain named
+bookmarks per file or project, with create, list, rename, delete and
+exact-time navigation. Persist each change atomically as soon as it is
+accepted, without saving or exporting media; report persistence
+failures. Bookmarks are fixed timeline times, do not follow ripple
+edits, are distinct from exported chapter marks and never alter audio.
+Explain what happens when an edit leaves one beyond the new duration:
+retain its stored time and report it as outside the playable range until
+the user moves or removes it. Reopening restores the same names and
+times.</p>
+<p><strong>PP-006 — Items and tracks.</strong> Split nondestructively;
+name, select, copy, cut, paste, move, join and remove items with session
+undo/redo. Provide an accessible ordered track/item list, empty track
+creation, importing, recording a new track while monitoring the project,
+track naming, mute, multi-track solo, gain, pan, tone, duplication,
+reordering and exact item nudges. Support gain, pan and tone for either
+an entire track or a selected passage. Find tracks by name or number and
+allow up to ten user-assigned, conflict-checked track-jump shortcuts.
+Warn that speaker monitoring can bleed into a microphone and offer
+headphones or an explicit alternative.</p>
+<p><strong>PP-007 — Replace without ripple.</strong> An overwrite of a
+copied item begins at the destination item’s start, affects only the
+destination track for the copied duration and leaves the shared project
+clock and all other tracks unchanged. Explain how much destination
+material will be replaced, including any portion extending beyond the
+original item; preview and confirm before commit. Preserve
+non-overlapped material, handle gaps and track ends explicitly, and
+apply an optional short boundary transition only where sufficient
+material exists. Undo restores the original arrangement exactly.</p>
+<p><strong>PP-008 — Choose project or direct editing.</strong> Default
+to a recoverable nondestructive project whose original media is
+preserved and whose edits survive reopening; export produces a separate
+listening copy. Offer a clearly labeled, explicitly chosen direct-file
+mode for a supported audio format: Save replaces the source only after a
+confirmation describing the irreversible consequence, and Save As writes
+a separately named copy. Preflight format, write permission and space;
+use a recoverable temporary output and atomic replacement where
+supported, never destroy the original on failed rendering or
+replacement, and report errors. Session undo/redo is available while
+editing; do not promise recovery of the previous file after an
+explicitly confirmed successful overwrite.</p>
+<p><strong>PP-009 — Levels, analysis, transitions and plug-ins.</strong>
+Provide selected-passage gain in dB, independently readable left/right
+peak meters, three-band low/mid/high equalization, and local analysis
+for peaks, silence, potential clipping, stereo balance and low/mid/high
+spectral distribution. Describe these as measurements or indications,
+not guaranteed repairs. Provide auditionable fade-in and fade-out shapes
+and a crossfade whose safe duration is limited by available material and
+preserves intended project timing; report a shortened or unavailable
+transition. After the EDIT-008 safety gates, target installed 64-bit
+Windows VST3 effects through an isolated host, with an accessible list,
+bypass and controls for parameters the effect actually exposes.
+Distinguish discovery, load success and accessible parameter coverage;
+report crashes, unsupported effects and missing parameters. Do not
+promise accessibility of a plug-in’s own window, presets, licensing or
+routing, nor support VST2, 32-bit or other formats as part of this
+target. Explain third-party code and trust risks and record
+licensing/redistribution decisions before release.</p>
+<p><strong>PP-010 — Speech over music.</strong> Given a selected speech
+interval and an independently selected background track, preview and
+apply editable gain automation that lowers the background by a
+user-specified dB amount, fades down and restores it using
+user-specified durations. Retain both sources and their alignment;
+reject or explain impossible intervals and transition lengths, and allow
+reversal without altering source media.</p>
+<p><strong>PP-011 — Chapters and audio delivery.</strong> Edit named,
+time-based export chapters independently of PP-005 navigation bookmarks.
+For arbitrary local recordings, reuse the family’s chapter workbench and
+offer reviewable pause-based or transcript/topic-based proposals, with
+explicit sidecar versus embedding choices; preserve authored chapters
+and audio on cancellation or failure, and disclose any cloud
+transcription before use. Render a user-selected set of tracks
+separately or export the whole project; state which output contains
+which tracks and chapters and report unsupported chapter/container
+combinations. Offer lossless WAV/FLAC for further editing and MP3 for a
+smaller listening copy, explaining the quality and compatibility
+trade-offs. Verify output streams, duration and chapter metadata where
+applicable; keep the project and source files.</p>
+<h3 id="6a3-captions-visuals-and-finished-video">6A.3 Captions, visuals
+and finished video</h3>
+<p><strong>PP-012 — One transcript, multiple outputs.</strong>
+Transcribe selected audio or video with an explicitly chosen available
+local or consented online provider. Preserve timed segments and editable
+speaker labels in a reopenable caption project; allow keyboard
+navigation, playback of the corresponding media and correction without
+retranscribing. Export plain text, timestamped text, SRT/VTT and the
+editable project from the same corrected content. A no-separate-key
+hosted option is a product goal only if a funded, privacy-reviewed
+service is actually available; otherwise disclose setup, provider,
+credentials, cost and availability and retain local/offline options
+where supported. Never embed shared service secrets in the client or
+imply online processing is free.</p>
+<p><strong>PP-013 — Caption timing and outputs.</strong> Review
+individual captions against matching audio with an optional non-exported
+cue at their scheduled start. Adjust one caption or shift the set,
+preview the result, and validate negative times, reversed durations and
+overlaps. An optional provider may propose timing for a user-selected
+short clip after explicit consent; disclose exactly what is sent and
+require acceptance of the suggestion. Export an SRT/VTT sidecar,
+optional selectable subtitles in a supported video container, or
+burned-in captions; also support a still image plus audio and captions
+as an MP4. Report empty captions, overlaps and excessive reading speed.
+Inspect the <em>rendered</em> result at chosen times for presence,
+cropping and possible occlusion, distinguishing objective checks from
+uncertain visual descriptions. No transcript or model result is
+represented as proof of accurate wording or placement.</p>
+<p><strong>PP-014 — Screen, camera and screenshot confidence.</strong>
+Combine an explicitly selected display or named window with selected
+microphone/system sources and an optional webcam inset with accessible
+position and size controls. If the requested window cannot be captured,
+stop and explain; never silently capture the full display instead. A
+short test can check audible balance and measured A/V alignment and,
+with the user’s consent, periodically report uncertain face/framing
+observations. For screenshots, preserve the existing
+named-window/display, delayed capture, cue, naming and inspection
+workflows; optional grounded questions and revisions must preserve the
+original, save a separate version and offer comparison. Exact text,
+numbers and image revisions require human review rather than a guarantee
+from AI.</p>
+<p><strong>PP-015 — Inspect and repair video.</strong> At the current
+project time or across a selected range, describe user-requested frames
+or sampled moments with their positions on the full project clock; allow
+follow-up questions and direct inspection of a chosen moment. Report
+sample intervals and uninspected spans; sampling cannot prove every
+frame. Independently of cloud analysis, offer local media inspection for
+duration, dimensions, frame rate, audio presence, decoding errors,
+persistent borders, black intervals and unusually static intervals.
+Findings are review candidates, not automatically defects. Offer
+previewable border removal and audio normalization to a separate copy or
+a proposed repair plan, preserving the source; explain uncertainty,
+require approval and verify the resulting file.</p>
+<p><strong>PP-016 — Publishing presets and conversion.</strong> Offer
+understandable video export presets for existing project settings,
+general publishing while retaining source dimensions and frame rate
+where supported, a smaller sharing copy bounded by 1280 × 720, and a
+higher-quality intermediate for further editing. Explain the
+readability, quality and file-size trade-offs; no preset uploads or
+chooses a destination. Verify the actual encoded size, frame rate and
+streams, and report any required deviation. Convert supported audio,
+video and images to separate files with format guidance including
+WAV/FLAC, MP3/M4A, MP4 and PNG/JPEG; identify unsupported conversions
+and never silently overwrite the source.</p>
+<p><strong>PP-017 — Image creation and review.</strong> Start with
+purpose, audience and content, offer reviewable written approaches, then
+generate only after explicit user approval and any required provider
+consent. Describe the generated artifact, support focused questions and
+specific revisions, compare versions, and save a named accepted copy
+with provenance and accessible description. Preserve earlier versions
+and warn that generated text and numbers may be incorrect.</p>
+<h3 id="6a4-assistance-service-boundaries-and-acceptance">6A.4
+Assistance, service boundaries and acceptance</h3>
+<p><strong>PP-018 — Help and learning.</strong> Keep native keyboard and
+screen-reader controls usable without a learning mode. Provide extra
+contextual guidance on request rather than automatically repeating
+control information or introducing a routine speech-verbosity setting;
+mirror application announcements to braille. Focus-specific help
+explains purpose, operation, expected outcome and checks, and Escape
+returns focus to the originating control. The local guide and searchable
+command palette remain available offline; preserve the family’s F1 and
+keybinding conventions instead of copying another product’s shortcut
+assignments.</p>
+<p><strong>PP-019 — Optional online finishing.</strong> Provide an
+optional native finishing workflow for selected edited audio, a whole
+file or suitable tracks, using a supported processing provider only
+after a privacy, licensing and feasibility review. Before transmission
+show exact material, destination, credentials/account requirements,
+likely charges or quota and obtain per-action consent; show progress,
+failure and cancellation. Import the result as a separate asset,
+retaining the originals and project. A third-party companion application
+is not required or presented as a prerequisite (section 19); no specific
+service integration or bundled allowance is promised.</p>
+<p><strong>PP-020 — Offline and consent boundary.</strong> Basic
+recording, playback, project/direct editing, conversion, local analysis,
+help and command search must not require an online account or a network
+request. Cloud visual description, generation, transcription, timing
+suggestions and finishing are separate opt-in actions, with their own
+disclosure and failure handling. Offline or service failure must not
+block local work or pretend an online result exists.</p>
+<p><strong>Acceptance for this increment:</strong> In addition to
+section 15’s release gates, automated tests and keyboard/JAWS, NVDA and
+Narrator acceptance must demonstrate:</p>
+<ol type="1">
+<li>Make and audition a mic-only test, pause a take, reopen it and
+confirm the paused interval is absent; exercise failed device and
+output-write paths.</li>
+<li>Record a known mic/system test signal and individually selected
+interface inputs to mix and stems; measure alignment, independent level
+changes and correct failure reporting.</li>
+<li>Audition a selection and delete-join before commit; test subsecond
+movement and held-key release. Persist a bookmark, ripple-delete before
+it, reopen and verify its original fixed time, including the
+out-of-range case.</li>
+<li>Overwrite one item with a different-length copied item, assert exact
+affected interval and unchanged other tracks and clock, then undo.
+Duplicate, reorder, mute/solo and nudge tracks/items using keyboard
+alone.</li>
+<li>Test direct Save, Save As, declined confirmation and injected
+render/replace failures; verify the original survives failures. Reopen a
+nondestructive project and confirm the source is unchanged.</li>
+<li>Measure selected gain, three-band controls, fade shapes, crossfade
+boundaries and ducking envelope on synthetic audio; test VST3 discovery
+versus actual load, exposed parameters, inaccessible GUI and isolated
+crash without losing the project.</li>
+<li>Correct a timed transcript once, reopen and export each
+text/subtitle form; audition and shift caption timing, inspect
+validation errors and verify a rendered still-image-plus-audio video
+with captions. Confirm no review cue is exported.</li>
+<li>Reject an unavailable named window without desktop fallback; inspect
+specified final-video frames and local analysis findings, verify a
+separate repaired copy, and label unsampled intervals and uncertain
+descriptions.</li>
+<li>Exercise every video preset and selected-track export by probing the
+resulting files. Confirm source preservation, no implicit upload, and
+explicit handling of unsupported chapter metadata.</li>
+<li>With network access blocked, complete local editing and help. For
+each optional service, verify exact-data consent, cancellation, error
+reporting and preservation of local originals; check focus return and
+avoid duplicate announcements when requesting guidance.</li>
+</ol>
+<p><strong>Source coverage trace:</strong> First recording and source
+mixing → PP-001–003; listening, bookmarks, items, project/direct modes →
+PP-004–008; level, analysis, transitions and effects → PP-009;
+multitrack, replacement and ducking → PP-006–007 and PP-010;
+chapters/output → PP-011; online finishing → PP-019; screen, webcam and
+screenshot → PP-014; transcript/captions → PP-012–013; picture/video
+understanding and repair → PP-014–015; video presets and conversion →
+PP-016; image creation → PP-017; help and local/online boundary →
+PP-018–020. Studio uses on-demand guidance in place of the article’s
+automatically spoken learning mode, in line with the family announcement
+rule. The article’s vendor-specific account arrangements, price, dates
+and single-screen-reader support are evidence about that product, not
+Studio commitments.</p>
+<h2 id="6b-professional-power-without-professional-complexity">6B.
+Professional power without professional complexity</h2>
+<p><strong>Status:</strong> Proposed additions, not shipped behavior.
+Study <a href="https://www.reaper.fm/userguide.php">REAPER’s user
+guide</a> for editing, routing, takes, automation, actions and
+rendering, and <a href="https://osara.reaperaccessibility.com/">OSARA’s
+documentation</a> for nonvisual track, item, envelope and meter
+feedback. These sources show useful techniques, not deficiencies in
+either product; no comparative accessibility or performance superiority
+is claimed without testing. REAPER is licensed separately and OSARA is
+GPL-2.0: use ideas only, not their source code, interface wording,
+keymaps, assets or branding without a separate licence review. Studio
+must not require either product or an extension.</p>
+<p><strong>Product decision:</strong> Keep Studio free and usable for
+local recording, editing, effects, project saving and export without a
+subscription, account, trial or feature-unlock payment. Optional hosted
+services may have actual costs, account requirements or quotas; disclose
+these before consent and never promise unlimited free cloud processing.
+Ship accessibility as part of Studio, not as a separately installed
+accessibility layer. The accepted section 7A milestone and phase order
+remain unchanged.</p>
+<p><strong>SIMPLE-001 — Progressive workspaces.</strong> Start with
+three plain-language tasks: record a voice, improve an existing
+recording, and combine recordings. Each leads to a short accessible path
+with safe defaults; an explicit multitrack workspace reveals tracks,
+routing, takes and automation without changing the saved project or
+blocking return to the simple view. Provide a searchable command palette
+and a task-oriented local guide. Do not equate fewer controls with fewer
+capabilities: expert operations remain reachable by keyboard, and mode
+changes cannot discard edits.</p>
+<p><strong>SIMPLE-002 — A trustworthy place in the project.</strong>
+Provide on-demand “where am I?” reporting of selected track/item,
+position, selection, transport, mute/solo/arm and relevant edit/ripple
+mode. Use named tracks and items, real accessible lists, spoken/brailled
+on-demand meters and warnings for clipping. Announce state changes the
+reader cannot infer, not a duplicate of focus/selection speech. Support
+noncontiguous selection and expose exactly what is selected before a
+group action; no waveform or color is required.</p>
+<p><strong>SIMPLE-003 — Explain an edit before committing.</strong> For
+delete, move, ripple, overwrite and grouped edits, offer a concise
+preflight identifying affected time ranges and tracks, whether later
+material shifts, and the expected duration change. Audition before/after
+joins and retain a human-readable undo history; cancel or undo restores
+clip placement, automation and selection. Provide project snapshots and
+an audible A/B comparison without overwriting media. Never alter other
+tracks unless the chosen scope explicitly includes them.</p>
+<p><strong>SIMPLE-004 — Takes without a maze.</strong> Record multiple
+takes at a selected interval, name and audition them in a list against
+the same project clock, choose or assemble a final performance, and keep
+the original takes for later revision. Explain monitoring, count-in and
+latency compensation, report unavailable input or missed recording, and
+preserve the project if recording is interrupted. Quick retake must not
+delete the previous take.</p>
+<p><strong>SIMPLE-005 — Routing that proves itself.</strong> Express
+sources, destinations and sends as accessible named lists with a
+readable “what reaches this output?” summary, private versus program
+labels, independent monitor gain, mute/solo and feedback-loop warnings.
+Provide a local test signal and recorded test to verify the actual path;
+report unavailable or unverified isolation rather than claiming privacy
+based on configuration alone. Keep an advanced routing view for complex
+arrangements without making it mandatory for a voice-and-music mix.</p>
+<p><strong>SIMPLE-006 — Automation by intention and by point.</strong>
+Offer task actions such as fade, lower music under speech and return it,
+alongside an accessible time/value/easing point list for gain, pan and
+supported effect parameters. Show affected interval, resulting values
+and existing automation conflicts before replacing points; preview, undo
+and preserve neighboring automation. No destructive edit or
+model-generated suggestion is applied silently.</p>
+<p><strong>SIMPLE-007 — One job, many outputs.</strong> Name project
+regions, choose the complete mix, selected tracks or selected regions,
+and define an explicit batch of output files with format, destination,
+track/region mapping and chapter behavior. Preview filenames and
+collisions; avoid silent overwrite, write outputs recoverably, and
+report success or failure for each file. Reopen or independently probe
+the outputs and list unverified properties. Simple export remains one
+action with explainable defaults; batch options are optional.</p>
+<p><strong>SIMPLE-008 — Safer repeatable actions.</strong> Let users
+save a named, reviewable sequence of supported local commands with
+explicit inputs, scope and conflict-checked shortcut. Preview all
+intended edits and output paths; require confirmation for deletion,
+overwrite, cloud transmission and publishing, preserve normal undo
+boundaries, and stop with the failed step identified. Do not permit
+imported presets or sequences to silently execute scripts, install
+plug-ins, send media or bypass consent.</p>
+<p><strong>SIMPLE-009 — Above-and-beyond verification.</strong> Provide
+an optional production check that combines local decode and signal
+measurements with explicit user review: missing or muted sources,
+clipping, unexpected silence, output duration, chapters, caption timings
+and actual file properties. Findings are actionable and navigable to
+their source; uncertain content, visual descriptions and unsampled spans
+remain labeled unknown. An offline test project can exercise the whole
+workflow without microphones, accounts or uploading a real
+recording.</p>
+<p><strong>SIMPLE-010 — Measure simplicity and access.</strong> In
+moderated keyboard-only studies with blind and low-vision participants,
+time and record completion of first voice recording, mistake removal,
+voice-plus-music mix and export. Capture missteps, unassisted
+completion, reversibility and screen-reader/braille outcomes for JAWS,
+NVDA and Narrator. Establish a baseline before setting numerical
+targets; no “simpler” or “better” claim is a release gate substitute for
+measured results. Test with assistive technology both on and off, and
+include existing Studio audiobook journeys.</p>
+<p><strong>Acceptance:</strong> Automated tests cover edit-scope
+previews, noncontiguous selections, take retention, routing isolation
+and failure, automation boundaries, collision-safe batch rendering and
+macro consent/rollback. User tests demonstrate each SIMPLE-010 journey
+from a clean profile without a paid dependency, verify the on-demand
+context and real output, then reopen the project and repeat an edit.
+Online-service failures must not break local workflows. Manual
+screen-reader results and unsupported cases remain recorded until
+verified.</p>
+<h2 id="6c-accessible-media-finishing-conversion-and-transcription">6C.
+Accessible media finishing, conversion and transcription</h2>
+<p><strong>Status:</strong> Requirements below are proposed, not a claim
+that the complete workflow exists. Studio already exposes Convert Audio
+through the shared conversion dialog and Generate Captions (Offline) for
+a selected audio or video file, producing SRT or VTT when the selected
+local provider returns timed segments. The latter is disabled in Safe
+Mode. The standalone Converter offers additional video and batch
+capabilities; the existence of the shared engine does not prove that
+every standalone option is reachable from Studio or that a completed
+file is reimported into a Studio project.</p>
+<p>GoldWave’s published feature descriptions inform this work: timed and
+level-triggered recording, edit operations, effect previews and presets,
+noise and click repair, cue-based splitting, folder-preserving batches
+and foot-pedal playback. Audacity’s documentation describes real-time
+effects and track mixing. Adapt the ideas, not their code, artwork,
+text, keymaps or branding. See section 6B for REAPER and OSARA. The
+objective is a free, independently usable local workflow with accessible
+proof, not an unmeasured claim that Studio is superior.</p>
+<p><strong>FIN-001 — Predictable shared conversion.</strong> Studio must
+invoke the same maintained conversion services as QUILL Converter for
+audio-to-audio, video-to-audio and video-to-video, rather than copying
+format logic or depending on a separately installed application. Probe
+the actual source, available decoders, encoders and container
+combinations before offering an output; list unavailable choices with a
+useful reason. Support is conditional on the local tools, codecs, media
+and legal permissions: no product promise of literally every format, DRM
+removal or successful decoding of damaged files. A
+still-image-plus-audio video workflow is separately specified in PP-013
+and must not be inferred from audio-to-video support in Converter.</p>
+<p><strong>FIN-002 — A round trip that preserves work.</strong> From a
+project item, selection or explicit file, review the chosen source, time
+range, destination, preset, tracks and any conversion losses before
+starting. Never overwrite source media; handle name collisions
+explicitly, write recoverably and retain originals. Return a successful,
+independently probed output to the project only after the user accepts
+it, preserving the original and a reversible project edit. Failure,
+cancellation, app exit, missing tools and unavailable codecs leave the
+project and source intact, show an actionable error, and never report
+success. Persist or clearly report recoverable job state; do not
+silently relaunch work.</p>
+<p><strong>FIN-003 — Batch work with usable feedback.</strong> Support a
+keyboard-operable queue of files or project regions, optional folder
+hierarchy preservation, per-item destination and collision review,
+cancel/retry and per-item outcomes. Report progress and completion
+without interrupting navigation; distinguish failed, cancelled, skipped
+and successfully verified outputs. Presets identify their processing and
+permit before/after audition, bypass and undo.</p>
+<p><strong>FIN-004 — Audio and video transcription.</strong> Reuse the
+shared speech provider interfaces and local file transcription/caption
+services, plus QUILL Transcribe capabilities where actually supported,
+rather than maintaining a second engine. Accept supported audio and
+video, select the intended audio track and language, and retain an
+explicit mapping between source time and transcript time. Offer local
+installed models without an account; disclose and obtain consent before
+a model download. Offer cloud providers only by explicit action and
+prior consent identifying provider, exact data, destination, retention
+where known, estimated cost or unknown cost, and cancellation. Never
+silently fall back from local processing to a network provider.</p>
+<p><strong>FIN-005 — Reviewable results, not automatic truth.</strong>
+Present transcript segments with timestamps, editable text and speaker
+labels when the provider actually supplies them; mark missing timing,
+uncertain recognition and unavailable diarization as such. Keyboard
+navigation, adjustable playback speed, optional user-configured pedal
+control and short audio context let a person review and correct each
+segment. Link edits to project time, preserve the original recognition
+result and undo corrections. Export plain text and supported timed
+caption formats; validate cue ordering, bounds and overlap before an
+optional subtitle or burned-caption export. Neither a transcript nor a
+caption proves accuracy without review.</p>
+<p><strong>FIN-006 — AI assistance under user control.</strong> When a
+compatible provider is enabled, offer separately requested summaries,
+chapter suggestions, title and show-note drafts, transcript cleanup,
+speaker or timing suggestions and visual descriptions. Show source
+scope, provider and uncertainty, then preview and approve each change;
+do not invent speakers, facts, visual events or timestamps or silently
+edit media. AI processing must never be required for recording, local
+editing or conversion. Consent, cost and data disclosure apply to each
+outbound action; failure preserves editable local work.</p>
+<p><strong>FIN-007 — Measurable acceptance.</strong> Exercise
+audio-to-audio, video-to-audio and video-to-video with actual locally
+available codecs, independent output probing, project reimport and undo.
+Test unsupported codec, encrypted or corrupt media, missing executable,
+destination collision, partial batch, cancellation and restart without
+source loss or false success. Test local audio and video transcription
+with no network, an absent model, an empty timed result, speaker/timing
+capability gaps, editable SRT/VTT round trips and cloud refusal, expiry
+and failure. Verify every outbound request is preceded by its own
+consent and local work remains usable offline. Record keyboard, JAWS,
+NVDA and Narrator acceptance separately; do not mark the work delivered
+until evidence exists.</p>
 <h2 id="7-screen-capture-and-accessible-visual-tools">7. Screen capture
 and accessible visual tools</h2>
 <p><strong>CAP-001</strong> <em>Delivered:</em> keyboard-triggered
@@ -1125,18 +1714,17 @@ recording will show Studio’s controls.</p>
 target kind, chosen by Studio, with the choice and its known limits
 written into the evidence report:</p>
 <table>
-<caption>Table: 7A.2 Requirements</caption>
 <thead>
 <tr>
-<th scope="col">Target</th>
-<th scope="col">Backend</th>
-<th scope="col">Why</th>
-<th scope="col">Known limits</th>
+<th>Target</th>
+<th>Backend</th>
+<th>Why</th>
+<th>Known limits</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th scope="row">Display, full desktop</th>
+<td>Display, full desktop</td>
 <td>FFmpeg <code>ddagrab</code> (DXGI Desktop Duplication) when the
 bundled build has it; otherwise FFmpeg <code>gdigrab</code> on the
 display’s rectangle</td>
@@ -1148,7 +1736,7 @@ windows; protected content and the secure desktop (UAC, lock screen)
 appear black and are never bypassed</td>
 </tr>
 <tr>
-<th scope="row">Named window</th>
+<td>Named window</td>
 <td><strong>Windows.Graphics.Capture</strong> (WGC), through a small
 capture helper that writes raw frames to FFmpeg’s standard input</td>
 <td>Captures that window’s own content even when other windows partly
@@ -1203,18 +1791,17 @@ per QUILL’s list convention), a level from −60 to +12 dB (default 0 dB,
 typed or adjusted with the arrow keys, units spoken), and a live meter
 that is queried on demand rather than spoken continuously (UX-006):</p>
 <table>
-<caption>Table: 7A.2 Requirements</caption>
 <thead>
 <tr>
-<th scope="col">Source</th>
-<th scope="col">How it is captured</th>
-<th scope="col">Default</th>
-<th scope="col">Notes</th>
+<th>Source</th>
+<th>How it is captured</th>
+<th>Default</th>
+<th>Notes</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th scope="row"><strong>That application’s sound</strong></th>
+<td><strong>That application’s sound</strong></td>
 <td>WASAPI process loopback of the target window’s process tree, by the
 process ID the picker already holds</td>
 <td>On for a window target; absent for display and desktop targets,
@@ -1228,7 +1815,7 @@ packets to a sink) beside it and keeps the gate’s behaviour
 unchanged</td>
 </tr>
 <tr>
-<th scope="row"><strong>System sound</strong></th>
+<td><strong>System sound</strong></td>
 <td>WASAPI endpoint loopback of a chosen playback device (the default
 device unless the user picks another)</td>
 <td>Off</td>
@@ -1240,7 +1827,7 @@ to exclude it. Choosing it together with an application’s sound is a
 Warn about doubled audio (MX-125)</td>
 </tr>
 <tr>
-<th scope="row"><strong>Microphone</strong></th>
+<td><strong>Microphone</strong></td>
 <td>The shared input device (<code>load_input_device</code>) through
 <code>sounddevice</code> at 48 kHz, holding QUILL’s shared microphone
 lock (<code>quill/core/dictation_owner.py</code>) for the whole
@@ -1251,7 +1838,7 @@ naming the holder. Whether the microphone was on is never saved
 (MX-179); device and level are</td>
 </tr>
 <tr>
-<th scope="row"><strong>Screen reader speech</strong></th>
+<td><strong>Screen reader speech</strong></td>
 <td>Process loopback of the running reader’s process tree: JAWS
 (<code>jfw.exe</code>, whose voice runs in the
 <code>fsSynth32.exe</code> it starts), NVDA or Narrator, detected as
@@ -1358,30 +1945,29 @@ spoiled). The same structure as MX-166; the checks live in
 <code>quill/core</code> with no wx and no network so each is
 unit-tested.</p>
 <table>
-<caption>Table: 7A.2 Requirements</caption>
 <thead>
 <tr>
-<th scope="col">Check</th>
-<th scope="col">Stop when</th>
-<th scope="col">Warn when</th>
+<th>Check</th>
+<th>Stop when</th>
+<th>Warn when</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th scope="row">Target</th>
+<td>Target</td>
 <td>Closed, minimized, hung, identity changed, or the display layout
 changed</td>
 <td>Window is Studio itself; target is a full desktop with more than one
 display</td>
 </tr>
 <tr>
-<th scope="row">Video backend</th>
+<td>Video backend</td>
 <td>The one-second trial grab fails</td>
 <td>Every pixel of the trial grab is the same colour (possibly protected
 or black content)</td>
 </tr>
 <tr>
-<th scope="row">Each chosen sound source</th>
+<td>Each chosen sound source</td>
 <td>It cannot be opened, or the microphone lock is held</td>
 <td>It delivers only exact digital zeros for 2.5 seconds (probably
 blocked, for example by Windows microphone privacy; MX-180); an
@@ -1389,30 +1975,30 @@ application that is simply quiet is reported as quiet, not as a
 fault</td>
 </tr>
 <tr>
-<th scope="row">Screen reader rules</th>
+<td>Screen reader rules</td>
 <td>—</td>
 <td>System sound is on while the screen reader is left out; screen
 reader speech is on (a reminder of what that records)</td>
 </tr>
 <tr>
-<th scope="row">Doubled sound</th>
+<td>Doubled sound</td>
 <td>—</td>
 <td>System sound and an application’s sound are both on (MX-125)</td>
 </tr>
 <tr>
-<th scope="row">FFmpeg</th>
+<td>FFmpeg</td>
 <td>Not found, or no H.264 encoder</td>
 <td>Only <code>gdigrab</code> is available for a display target (higher
 CPU)</td>
 </tr>
 <tr>
-<th scope="row">Storage</th>
+<td>Storage</td>
 <td>The folder cannot be written</td>
 <td>Free space is below the estimate for 30 minutes at the chosen
 settings plus 1 GB</td>
 </tr>
 <tr>
-<th scope="row">System-wide keys</th>
+<td>System-wide keys</td>
 <td>—</td>
 <td>None are assigned: the recording will be controlled from the tray or
 by returning to Studio; an <em>Assign keys…</em> button opens the shared
@@ -1429,52 +2015,51 @@ when the dialog closes. This is version 1’s form of PREFLIGHT-001.</p>
 tray.</strong> Commands (each in the Capture menu, the command palette
 and the tray; chords are <strong>proposals</strong>, see 7A.3):</p>
 <table>
-<caption>Table: 7A.2 Requirements</caption>
 <thead>
 <tr>
-<th scope="col">Command</th>
-<th scope="col">Proposed chord</th>
-<th scope="col">Behaviour</th>
+<th>Command</th>
+<th>Proposed chord</th>
+<th>Behaviour</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th scope="row">Record a demonstration… / Stop and save</th>
+<td>Record a demonstration… / Stop and save</td>
 <td><code>Ctrl+Alt+Shift+R</code></td>
 <td>Opens the dialog when idle; while recording, stops and saves
 (REC-014)</td>
 </tr>
 <tr>
-<th scope="row">Pause / Resume recording</th>
+<td>Pause / Resume recording</td>
 <td><code>Ctrl+Alt+Shift+P</code></td>
 <td>Closes or opens a segment (REC-008)</td>
 </tr>
 <tr>
-<th scope="row">Add a marker</th>
+<td>Add a marker</td>
 <td><code>Ctrl+Alt+Shift+B</code></td>
 <td>Writes the elapsed time and an optional short label to the marker
 list</td>
 </tr>
 <tr>
-<th scope="row">Mute / unmute the microphone in the recording</th>
+<td>Mute / unmute the microphone in the recording</td>
 <td><code>Ctrl+Alt+Shift+U</code></td>
 <td>Mutes the microphone source only; the device stays open and the
 muted interval is in the markers</td>
 </tr>
 <tr>
-<th scope="row">Recording status</th>
+<td>Recording status</td>
 <td><code>Ctrl+Alt+Shift+T</code></td>
 <td>Speaks the TRAY-005 line: elapsed time, sources live, screen reader
 in or out, dropped frames, disk time left</td>
 </tr>
 <tr>
-<th scope="row">Emergency stop and save</th>
+<td>Emergency stop and save</td>
 <td><code>Ctrl+Alt+Shift+End</code></td>
 <td>A second chord for Stop and save, because a screen reader’s keyboard
 hook can swallow a key invisibly (TRAY-007)</td>
 </tr>
 <tr>
-<th scope="row">Discard this recording</th>
+<td>Discard this recording</td>
 <td>none (menu and tray only)</td>
 <td>Asks for confirmation; deletes the segments. No chord because it is
 rare and destructive (family rules 8 and 9)</td>
@@ -1522,69 +2107,68 @@ once (failures are always spoken, whatever the feedback setting),
 written to the status bar and the verification report, and given a
 marker at its moment. Nothing is silently replaced.</p>
 <table>
-<caption>Table: 7A.2 Requirements</caption>
 <thead>
 <tr>
-<th scope="col">Event</th>
-<th scope="col">What Studio does</th>
+<th>Event</th>
+<th>What Studio does</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th scope="row">The target window closes</th>
+<td>The target window closes</td>
 <td>Stops video at that moment, keeps every segment, finalizes the file
 up to the close, and says so; the result is Needs review</td>
 </tr>
 <tr>
-<th scope="row">The window is minimized</th>
+<td>The window is minimized</td>
 <td>WGC delivers no new frames, so the video holds the last frame:
 Studio warns once, marks the interval, and keeps recording; restoring
 resumes live frames</td>
 </tr>
 <tr>
-<th scope="row">The window moves to another display</th>
+<td>The window moves to another display</td>
 <td>WGC follows it; nothing to do</td>
 </tr>
 <tr>
-<th scope="row">A display is disconnected or changes resolution</th>
+<td>A display is disconnected or changes resolution</td>
 <td>Closes the segment and pauses, with the reason spoken; the user may
 resume on the display that remains (a new segment) or stop</td>
 </tr>
 <tr>
-<th scope="row">A sound device is unplugged</th>
+<td>A sound device is unplugged</td>
 <td>That source is filled with silence and marked; the same device is
 reopened by identity if it returns, never replaced by a different one
 (MX-181)</td>
 </tr>
 <tr>
-<th scope="row">The recorded application or the screen reader quits</th>
+<td>The recorded application or the screen reader quits</td>
 <td>That source ends and is marked; if the same executable starts again,
 it is found again by name after a settling delay (the dictation gate’s
 rescan, section 10C.4 lesson 6)</td>
 </tr>
 <tr>
-<th scope="row">Disk space runs low</th>
+<td>Disk space runs low</td>
 <td>A warning at 2 minutes of space left at the current rate; at 200 MB
 Studio stops and saves</td>
 </tr>
 <tr>
-<th scope="row">FFmpeg exits unexpectedly</th>
+<td>FFmpeg exits unexpectedly</td>
 <td>Recording stops; the segments already written are finalized; the
 result is Needs review or Failed with the reason</td>
 </tr>
 <tr>
-<th scope="row">Studio crashes or the power fails</th>
+<td>Studio crashes or the power fails</td>
 <td>On the next launch Studio offers <em>Recover unfinished
 recording</em> for each <code>.studio-recording-*</code> folder it
 finds, and finalizes it the same way</td>
 </tr>
 <tr>
-<th scope="row">Secure desktop, lock screen or protected content</th>
+<td>Secure desktop, lock screen or protected content</td>
 <td>Recorded as black, never bypassed; detected afterwards by REC-014’s
 black-frame check and reported</td>
 </tr>
 <tr>
-<th scope="row">Capture falls behind</th>
+<td>Capture falls behind</td>
 <td>Dropped frames are counted; above 5 percent over 10 seconds Studio
 warns once</td>
 </tr>
@@ -1906,19 +2490,17 @@ claiming that third-party settings have changed.</p>
 <p><strong>PREFLIGHT-006 — Failure-to-fix examples and
 tests:</strong></p>
 <table>
-<caption>Table: 9A. Rehearse, detect, automatically repair, and prove
-readiness before recording</caption>
 <thead>
 <tr>
-<th scope="col">Failed check</th>
-<th scope="col">Safe software action</th>
-<th scope="col">Assisted action / honest limitation</th>
-<th scope="col">Proof of repair</th>
+<th>Failed check</th>
+<th>Safe software action</th>
+<th>Assisted action / honest limitation</th>
+<th>Proof of repair</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th scope="row">Wrong display/window or partially cropped target</th>
+<td>Wrong display/window or partially cropped target</td>
 <td>Restore saved HWND target, recompute crop inside capture bounds,
 show named content region</td>
 <td>Help bring a minimized/occluded app foreground; ask which
@@ -1927,7 +2509,7 @@ monitor/window is intended</td>
 content and image dimensions; AI judge occlusion with caveat</td>
 </tr>
 <tr>
-<th scope="row">Black/protected video frames</th>
+<td>Black/protected video frames</td>
 <td>Reinitialize capture, try supported capture API in project
 scope</td>
 <td>Explain DRM/permission/secure-desktop restrictions; never bypass
@@ -1935,15 +2517,14 @@ protection</td>
 <td>Actual decoded nonblack motion-bearing trial frames</td>
 </tr>
 <tr>
-<th scope="row">Silent microphone/muted channel</th>
+<td>Silent microphone/muted channel</td>
 <td>Restore QUILL-local fader/arm, use preapproved active mic</td>
 <td>Guide hardware mute, Windows mic access and device choice</td>
 <td>Recorded test speech has expected time-aligned nonzero signal and
 intelligibility check</td>
 </tr>
 <tr>
-<th scope="row">Screen reader or private sounds entering published
-bus</th>
+<td>Screen reader or private sounds entering published bus</td>
 <td>Force known-safe private-routing preset, mute public feed pending
 retest</td>
 <td>Explain VB-CABLE/Windows endpoint setup; never silently reroute
@@ -1952,7 +2533,7 @@ sensitive output to public</td>
 loopback, within stated test limits</td>
 </tr>
 <tr>
-<th scope="row">VB-CABLE disconnected or incorrectly mapped</th>
+<td>VB-CABLE disconnected or incorrectly mapped</td>
 <td>Rebind explicitly approved named endpoints, preserve isolation
 lock</td>
 <td>Give step-by-step routing fix; driver installation remains
@@ -1961,7 +2542,7 @@ user-initiated</td>
 infer from driver name alone</td>
 </tr>
 <tr>
-<th scope="row">Mic clipping, too quiet, high noise</th>
+<td>Mic clipping, too quiet, high noise</td>
 <td>Adjust QUILL-local gain/limiter/compressor or suggest safer source
 levels</td>
 <td>Guide physical gain, mic distance or environment changes</td>
@@ -1969,7 +2550,7 @@ levels</td>
 speech content cautiously</td>
 </tr>
 <tr>
-<th scope="row">Camera face off-center, low light, blur</th>
+<td>Camera face off-center, low light, blur</td>
 <td>Adjust available QUILL-controlled crop/zoom/exposure within
 capability</td>
 <td>Provide spoken directional movement coaching and ask user to
@@ -1978,7 +2559,7 @@ recheck</td>
 explicitly qualified</td>
 </tr>
 <tr>
-<th scope="row">Disk low, invalid codec, missing output path</th>
+<td>Disk low, invalid codec, missing output path</td>
 <td>Allocate safe segment size, select compatible encoder, restore last
 known accessible destination</td>
 <td>Ask permission for alternate volume/location; never delete user
@@ -1987,14 +2568,14 @@ media automatically</td>
 available headroom</td>
 </tr>
 <tr>
-<th scope="row">Audio/video out of sync or dropped frames</th>
+<td>Audio/video out of sync or dropped frames</td>
 <td>Adjust app-owned capture buffers/preset and retest</td>
 <td>Offer reduced resolution/frame rate or source isolation</td>
 <td>Trial A/V timestamps and sample/frame continuity fall within
 documented tolerance</td>
 </tr>
 <tr>
-<th scope="row">Inaccessible dialog/control during workflow</th>
+<td>Inaccessible dialog/control during workflow</td>
 <td>Fall back to accessible native alternative if already
 implemented</td>
 <td>Present defect report and keyboard-reachable escape; do not gate
@@ -3012,17 +3593,13 @@ mixes concerns QUILL keeps apart; port pure modules only (LIC-007).</li>
 They are a vertical slice for Phase 2: Cart Wall (CW-001 to CW-008)
 first, then the running order (PL-001 to PL-006), then CW-009 and
 PL-007. Exit: SG-11 to SG-13.</p>
-<p><em>Reconciliation with this document.</em> Two items in 10C.5
-conflict with requirements above, and this document wins (decision 4):
-<strong>direct streaming</strong> is adopted in section 10A (BCAST-011,
-BCAST-014), on exactly the conditions 10C.5 named (consent, a network
-egress audit entry, a go-public preflight such as MX-166, and
-credentials in secure storage, never in a shared board file per
-SEC-001); and the <strong>three-level speech setting</strong> rejected
-here is UX-006’s concise/standard/detailed levels. UX-006 and the
-repository’s over-announce rule (GATE-13 in <code>CLAUDE.md</code>: “say
-less instead of making the user configure how much less”) disagree; that
-is an open decision in section 16.</p>
+<p><em>Reconciliation with this document.</em> <strong>Direct
+streaming</strong> is adopted in section 10A (BCAST-011, BCAST-014), on
+exactly the conditions 10C.5 named (consent, a network egress audit
+entry, a go-public preflight such as MX-166, and credentials in secure
+storage, never in a shared board file per SEC-001). UX-006 now follows
+the repository’s over-announce rule (GATE-13): provide details on
+request rather than a three-level speech setting.</p>
 <h2 id="11-technical-design-and-component-boundaries">11. Technical
 design and component boundaries</h2>
 <p>Use the existing <code>quill.apps.studio</code> shared package,
@@ -3450,91 +4027,85 @@ with NVDA, JAWS and Narrator.</li>
 journeys as Windows-specific capture expands.</li>
 <li>Project schema and shared-service release policy across
 independently updated QUILL apps.</li>
-<li>Announcement levels: UX-006 asks for concise, standard and detailed
-levels; section 10C.5 and the repository’s over-announce rule (GATE-13)
-say a verbosity setting is not the fix. Decide before any Studio
-verbosity setting is built.</li>
 <li>The demo recorder’s window backend (section 7A.5, spike S1): a
 pywinrt helper in Python or a native helper executable.</li>
 </ul>
 <h3 id="161-risks-and-mitigations">16.1 Risks and mitigations</h3>
 <table>
-<caption>Table: 16.1 Risks and mitigations</caption>
 <thead>
 <tr>
-<th scope="col">Risk</th>
-<th scope="col">Consequence</th>
-<th scope="col">Mitigation</th>
+<th>Risk</th>
+<th>Consequence</th>
+<th>Mitigation</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th scope="row">Same-process screen reader speech mixed with private
-notifications</th>
+<td>Same-process screen reader speech mixed with private
+notifications</td>
 <td>Accidental voice leakage into output</td>
 <td>Separate endpoints/speech instances where possible; honest
 capability labeling; safe scene defaults</td>
 </tr>
 <tr>
-<th scope="row">Process capture limitation or OS build mismatch</th>
+<td>Process capture limitation or OS build mismatch</td>
 <td>Missing or partial app audio</td>
 <td>OS feature detection; aggregate or device-level fallback with
 warning</td>
 </tr>
 <tr>
-<th scope="row">Mixing endpoint loopback with per-process sources</th>
+<td>Mixing endpoint loopback with per-process sources</td>
 <td>Double audio in saved recording</td>
 <td>Graph provenance checks and overlap warnings</td>
 </tr>
 <tr>
-<th scope="row">Complex DAW surface inaccessible</th>
+<td>Complex DAW surface inaccessible</td>
 <td>Primary use case fails</td>
 <td>Native accessible track/clip lists; numeric time model; expert-user
 testing</td>
 </tr>
 <tr>
-<th scope="row">Python UI starves audio engine</th>
+<td>Python UI starves audio engine</td>
 <td>Dropouts</td>
 <td>Compiled real-time core, IPC, no expensive UI work in capture
 callback</td>
 </tr>
 <tr>
-<th scope="row">Protected media/copyright</th>
+<td>Protected media/copyright</td>
 <td>Incomplete capture or legal exposure</td>
 <td>No bypass; platform-compliant error and docs</td>
 </tr>
 <tr>
-<th scope="row">FFmpeg or codec licensing</th>
+<td>FFmpeg or codec licensing</td>
 <td>Installer compliance failure</td>
 <td>SBOM, pinned build flags and release license checklist</td>
 </tr>
 <tr>
-<th scope="row">Third-party plugin crashes</th>
+<td>Third-party plugin crashes</td>
 <td>Lost session</td>
 <td>Isolate or disable plugins, test crash recovery</td>
 </tr>
 <tr>
-<th scope="row">Cloud API costs</th>
+<td>Cloud API costs</td>
 <td>Unanticipated expense</td>
 <td>BYOK, quotas, per-task consent/cost disclosure; free offline
 baseline</td>
 </tr>
 <tr>
-<th scope="row">Scope expansion</th>
+<td>Scope expansion</td>
 <td>Endless partial features</td>
 <td>P0 gates, release train, regressions against current product</td>
 </tr>
 <tr>
-<th scope="row">Cart Wall keys collide with editor, screen-reader or
-international-layout keys</th>
+<td>Cart Wall keys collide with editor, screen-reader or
+international-layout keys</td>
 <td>A pad that never fires, or fires while typing</td>
 <td>Workspace-scoped keys (UX-011), keymap gates, no
 <code>Ctrl+Alt</code>+letter defaults (AltGr), startup held-key check
 (TRAY-006)</td>
 </tr>
 <tr>
-<th scope="row">Adopting a borrowed project’s dependencies with its
-code</th>
+<td>Adopting a borrowed project’s dependencies with its code</td>
 <td>GPL obligations on a free MIT bundle</td>
 <td>LIC-007/LIC-008 review before any port; port pure modules, not
 dependency stacks</td>
@@ -3574,177 +4145,195 @@ capability?</li>
 <h2 id="17-development-backlog-issue-ready-epics">17. Development
 backlog, issue-ready epics</h2>
 <table>
-<caption>Table: 17. Development backlog, issue-ready epics</caption>
 <thead>
 <tr>
-<th scope="col">Epic</th>
-<th style="text-align: right;" scope="col">Phase</th>
-<th scope="col">Essential done criteria</th>
+<th>Epic</th>
+<th style="text-align: right;">Phase</th>
+<th>Essential done criteria</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th scope="row">STUDIO-RENAME</th>
+<td>STUDIO-RENAME</td>
 <td style="text-align: right;">0</td>
 <td><em>Delivered in code</em> (<code>529884ec</code>);
 installed-upgrade acceptance open (scenario D)</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-SHELL</th>
+<td>STUDIO-SHELL</td>
 <td style="text-align: right;">0</td>
 <td>Legacy library initial focus, F6/status, menu and command palette
 stable</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-KEYS</th>
+<td>STUDIO-KEYS</td>
 <td style="text-align: right;">0</td>
 <td>Searchable, configurable, collision-tested keyboard registry</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-TRAY</th>
+<td>STUDIO-TRAY</td>
 <td style="text-align: right;">1</td>
 <td>Recording/status/scene/mute reachable from tray and keyboard without
 focus loss</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-ROUTING</th>
+<td>STUDIO-ROUTING</td>
 <td style="text-align: right;">1</td>
 <td>Isolated stems and private/program buses; independent routing
 test</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-VBCABLE</th>
+<td>STUDIO-VBCABLE</td>
 <td style="text-align: right;">1</td>
 <td>Endpoint wizard, readable directionality, test audio, recovery</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-RECORD</th>
+<td>STUDIO-RECORD</td>
 <td style="text-align: right;">1</td>
 <td>Crash-resilient capture, timing and media decode QA</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-VERIFY</th>
+<td>STUDIO-VERIFY</td>
 <td style="text-align: right;">1</td>
 <td>Evidence manifest and explicit Verified/Unknown/Failed
 reporting</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-SNIP</th>
+<td>STUDIO-SNIP</td>
 <td style="text-align: right;">2</td>
 <td><em>Delivered in code:</em> numerical crop, named-window screenshot
 and redaction (Studio PRD AS-94 to AS-109); assistive-technology
 acceptance open</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-DEMO-REC</th>
+<td>STUDIO-DEMO-REC</td>
 <td style="text-align: right;">2</td>
 <td><strong>Next.</strong> Section 7A: one window or the desktop with
 chosen sounds to one verified MP4; REC-001 to REC-018 and the 7A.6 tests
 pass</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-VISION</th>
+<td>STUDIO-VISION</td>
 <td style="text-align: right;">2</td>
 <td>OCR+UIA+AI grounded questions, artifact provenance and
 uncertainty</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-DEMO</th>
+<td>STUDIO-DEMO</td>
 <td style="text-align: right;">2</td>
 <td>Narrated screen demonstration, private speech policies,
 review/edit/export</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-EDIT</th>
+<td>STUDIO-EDIT</td>
 <td style="text-align: right;">3</td>
 <td>Nonvisual multitrack edit with reversible effect/region
 operations</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-VIDEO</th>
+<td>STUDIO-PRODUCTION-PARITY</td>
+<td style="text-align: right;">1–4</td>
+<td>PP-001 to PP-020 delivered in their corresponding recording,
+editing, visual and publishing increments; section 6A acceptance and
+service/plug-in safety gates pass</td>
+</tr>
+<tr>
+<td>STUDIO-SIMPLE-PRO</td>
+<td style="text-align: right;">1–4</td>
+<td>SIMPLE-001 to SIMPLE-010, the free local-workflow policy and section
+6B acceptance demonstrated in the corresponding phases</td>
+</tr>
+<tr>
+<td>STUDIO-MEDIA-FINISH</td>
+<td style="text-align: right;">2–4</td>
+<td>FIN-001 to FIN-007 shared conversion, accessible review, opt-in AI
+and acceptance; section 7A remains the next milestone</td>
+</tr>
+<tr>
+<td>STUDIO-VIDEO</td>
 <td style="text-align: right;">3</td>
 <td>Professional accessible NLE with precise multitrack edits, effects,
 captions and verification</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-VIDEO-EDIT</th>
+<td>STUDIO-VIDEO-EDIT</td>
 <td style="text-align: right;">3</td>
 <td>Ripple/roll/slip/slide edit operations, frame-precise navigation,
 nondestructive undo/redo</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-VIDEO-COMPOSE</th>
+<td>STUDIO-VIDEO-COMPOSE</td>
 <td style="text-align: right;">3</td>
 <td>Picture-in-picture, numeric crop/position, titles, lower thirds,
 transitions and keyframes</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-VIDEO-AI</th>
+<td>STUDIO-VIDEO-AI</td>
 <td style="text-align: right;">3-4</td>
 <td>Timecoded visual inspection, proposed edit plans with human approval
 and provenance</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-VIDEO-QA</th>
+<td>STUDIO-VIDEO-QA</td>
 <td style="text-align: right;">3</td>
 <td>Full-file decode, AV sync, caption and output validation, honest
 uncertainty report</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-LIVE</th>
+<td>STUDIO-LIVE</td>
 <td style="text-align: right;">1</td>
 <td>Live workspace, accessible cart wall, preview, running order and
 public bus</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-CARTWALL</th>
+<td>STUDIO-CARTWALL</td>
 <td style="text-align: right;">2-3</td>
 <td>Section 10C: CW-001 to CW-008, then PL-001 to PL-006, then CW-009
 and PL-007; SG-11 to SG-13</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-ON-AIR</th>
+<td>STUDIO-ON-AIR</td>
 <td style="text-align: right;">1</td>
 <td>Offline/test/armed/live/reconnect states, independent output health
 and tray commands</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-RADIO-STREAM</th>
+<td>STUDIO-RADIO-STREAM</td>
 <td style="text-align: right;">1</td>
 <td>Icecast/SHOUTcast secure source-client streaming, metadata, loopback
 and recovery</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-YOUTUBE-LIVE</th>
+<td>STUDIO-YOUTUBE-LIVE</td>
 <td style="text-align: right;">2</td>
 <td>Authenticated or stream-key video ingest, private rehearsal and
 audience chat where authorized</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-TEAMS</th>
+<td>STUDIO-TEAMS</td>
 <td style="text-align: right;">2</td>
 <td>Policy-aware RTMP/SRT event ingest plus permitted meeting-presenter
 routing</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-ZOOM</th>
+<td>STUDIO-ZOOM</td>
 <td style="text-align: right;">2</td>
 <td>Permission-aware meeting audio/video paths, optional later SDK
 integration</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-LIVE-CHAT</th>
+<td>STUDIO-LIVE-CHAT</td>
 <td style="text-align: right;">2</td>
 <td>Stable keyboard list, private notifications, moderation and explicit
 on-air reading</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-PUBLISH</th>
+<td>STUDIO-PUBLISH</td>
 <td style="text-align: right;">3</td>
 <td>Media/accessibility bundles and strict publish gate</td>
 </tr>
 <tr>
-<th scope="row">STUDIO-CAMERA</th>
+<td>STUDIO-CAMERA</td>
 <td style="text-align: right;">4</td>
 <td>Blind framing coach with incremental rechecks</td>
 </tr>
@@ -3977,6 +4566,20 @@ studied</h3>
 href="https://hartgenconsultancy.com/introducing-mediaccess-part-1-opening-the-door-to-accessible-media/">MediAccess
 article (independent product reference)</a>: publicly described
 workflows that inspired the scope, not code (LIC-006)</li>
+<li><a
+href="https://hartgenconsultancy.com/introducing-mediaccess-part-2-from-recording-to-finished-production/">MediAccess
+Part 2: recording to finished production</a>: workflow evidence and
+coverage trace in section 6A; not a claim about Studio’s implemented
+features or a product integration</li>
+<li><a href="https://www.reaper.fm/userguide.php">REAPER user guide</a>
+and <a href="https://osara.reaperaccessibility.com/">OSARA
+documentation</a>: professional editing and nonvisual workflow research
+for section 6B, not dependencies or source-code imports</li>
+<li><a href="https://goldwave.com/goldwave.php">GoldWave feature
+overview</a> and <a
+href="https://support.audacityteam.org/audio-editing">Audacity audio
+editing documentation</a>: independent workflow research for section 6C,
+not dependencies or source-code imports</li>
 <li><a href="https://github.com/tonygeb23/tg-drop-deck">TG Drop Deck
 source (MIT)</a>, its <a
 href="https://github.com/tonygeb23/tg-drop-deck/blob/main/LICENSE">licence</a>
@@ -4133,414 +4736,413 @@ requirement’s substance is already in the named requirement, so it was
 not repeated. <em>Delivered</em> means it moved to
 <code>standalone/studio/docs/prd.md</code>.</p>
 <table>
-<caption>Table: Appendix A. Requirement ID trace</caption>
 <thead>
 <tr>
-<th scope="col">Old ID</th>
-<th scope="col">New ID or home</th>
-<th scope="col">Note</th>
+<th>Old ID</th>
+<th>New ID or home</th>
+<th>Note</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th scope="row"><em>(C)</em> UX-001 to UX-008, TRAY-001 to TRAY-005,
-MX-001 to MX-008, EDIT-001 to EDIT-003, DEMO-001 to DEMO-004, VIS-001 to
-VIS-008, VERIFY-001 to VERIFY-008, PREFLIGHT-001 to PREFLIGHT-011,
-VIDEO-001 to VIDEO-002, LIVE-001 to LIVE-002, PUB-001 to PUB-002,
-BCAST-001 to BCAST-025, CHAT-001 to CHAT-003, VID-001 to VID-034</th>
+<td><em>(C)</em> UX-001 to UX-008, TRAY-001 to TRAY-005, MX-001 to
+MX-008, EDIT-001 to EDIT-003, DEMO-001 to DEMO-004, VIS-001 to VIS-008,
+VERIFY-001 to VERIFY-008, PREFLIGHT-001 to PREFLIGHT-011, VIDEO-001 to
+VIDEO-002, LIVE-001 to LIVE-002, PUB-001 to PUB-002, BCAST-001 to
+BCAST-025, CHAT-001 to CHAT-003, VID-001 to VID-034</td>
 <td>Unchanged</td>
 <td>Partly delivered items carry a <em>Delivered so far</em> line</td>
 </tr>
 <tr>
-<th scope="row"><em>(C)</em> CAP-001</th>
+<td><em>(C)</em> CAP-001</td>
 <td>Delivered</td>
 <td>Studio PRD AS-93 to AS-104; its semantic-region gap is the new
 CAP-007</td>
 </tr>
 <tr>
-<th scope="row"><em>(C)</em> CAP-002 to CAP-006</th>
+<td><em>(C)</em> CAP-002 to CAP-006</td>
 <td>Unchanged, with <em>Remaining</em> lines</td>
 <td>Delivered parts: Studio PRD AS-97 to AS-111</td>
 </tr>
 <tr>
-<th scope="row"><em>(C)</em> Section 2.2, first two bullets</th>
+<td><em>(C)</em> Section 2.2, first two bullets</td>
 <td>Delivered</td>
 <td>Commit <code>529884ec</code>; Studio PRD section 1, P-1, REL-1 to
 REL-6</td>
 </tr>
 <tr>
-<th scope="row"><em>(C)</em> STUDIO-RENAME, STUDIO-SNIP</th>
+<td><em>(C)</em> STUDIO-RENAME, STUDIO-SNIP</td>
 <td>Delivered in code</td>
 <td>Section 17</td>
 </tr>
 <tr>
-<th scope="row">—</th>
+<td>—</td>
 <td>CAP-007</td>
 <td>New: semantic regions</td>
 </tr>
 <tr>
-<th scope="row">—</th>
+<td>—</td>
 <td>REC-001 to REC-018</td>
 <td>New: section 7A</td>
 </tr>
 <tr>
-<th scope="row">AS-001 to SDK-001, CW-001 (scope matrix rows)</th>
+<td>AS-001 to SDK-001, CW-001 (scope matrix rows)</td>
 <td>Dropped</td>
 <td>A table of workspaces, not requirements; each workspace is a section
 here</td>
 </tr>
 <tr>
-<th scope="row">A11Y-001</th>
+<td>A11Y-001</td>
 <td>Absorbed by UX-001</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">A11Y-002</th>
+<td>A11Y-002</td>
 <td>Absorbed by section 2.1 (shell structure)</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">A11Y-003, A11Y-007</th>
+<td>A11Y-003, A11Y-007</td>
 <td>Absorbed by section 13 and UX-007</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">A11Y-004</th>
+<td>A11Y-004</td>
 <td>Absorbed by UX-002</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">A11Y-005, A11Y-011, A11Y-012</th>
+<td>A11Y-005, A11Y-011, A11Y-012</td>
 <td>Absorbed by UX-006</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">A11Y-006, A11Y-013</th>
+<td>A11Y-006, A11Y-013</td>
 <td>Absorbed by UX-007</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">A11Y-008</th>
+<td>A11Y-008</td>
 <td>Absorbed by UX-008</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">A11Y-009</th>
+<td>A11Y-009</td>
 <td>Absorbed by UX-003</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">A11Y-010</th>
+<td>A11Y-010</td>
 <td>Absorbed by MX-001 and section 13</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">A11Y-014, A11Y-015, A11Y-016, A11Y-017</th>
+<td>A11Y-014, A11Y-015, A11Y-016, A11Y-017</td>
 <td>UX-009, UX-010, UX-011, UX-012</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">MX-010 to MX-018</th>
+<td>MX-010 to MX-018</td>
 <td>MX-110 to MX-118</td>
 <td>Section 5.1</td>
 </tr>
 <tr>
-<th scope="row">MX-020 to MX-029</th>
+<td>MX-020 to MX-029</td>
 <td>MX-120 to MX-129</td>
 <td>Section 5.2; MX-127 to MX-129 are the VB-CABLE-related programme
 output, cable test and mix-minus</td>
 </tr>
 <tr>
-<th scope="row">MX-030 to MX-039</th>
+<td>MX-030 to MX-039</td>
 <td>MX-130 to MX-139</td>
 <td>Section 5.3</td>
 </tr>
 <tr>
-<th scope="row">MX-040 to MX-045</th>
+<td>MX-040 to MX-045</td>
 <td>MX-140 to MX-145</td>
 <td>Section 5.4</td>
 </tr>
 <tr>
-<th scope="row">MX-050 to MX-057</th>
+<td>MX-050 to MX-057</td>
 <td>MX-150 to MX-157</td>
 <td>Section 5.5</td>
 </tr>
 <tr>
-<th scope="row">MX-058, MX-059</th>
+<td>MX-058, MX-059</td>
 <td>TRAY-006, TRAY-007</td>
 <td>System-wide keys and second safety chords belong with the tray and
 global keys</td>
 </tr>
 <tr>
-<th scope="row">MX-060 to MX-066</th>
+<td>MX-060 to MX-066</td>
 <td>MX-160 to MX-166</td>
 <td>Section 5.6</td>
 </tr>
 <tr>
-<th scope="row">MX-070 to MX-083</th>
+<td>MX-070 to MX-083</td>
 <td>MX-170 to MX-183</td>
 <td>Section 5.7</td>
 </tr>
 <tr>
-<th scope="row">AU-010, AU-011, AU-012</th>
+<td>AU-010, AU-011, AU-012</td>
 <td>Absorbed by EDIT-001, VID-001</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">AU-013</th>
+<td>AU-013</td>
 <td>EDIT-004</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">AU-014</th>
+<td>AU-014</td>
 <td>EDIT-005</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">AU-020 to AU-026</th>
+<td>AU-020 to AU-026</td>
 <td>Absorbed by EDIT-001, EDIT-002</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">AU-027</th>
+<td>AU-027</td>
 <td>EDIT-006</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">AU-028</th>
+<td>AU-028</td>
 <td>EDIT-007</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">AU-029</th>
+<td>AU-029</td>
 <td>EDIT-008</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">AU-030, AU-032</th>
+<td>AU-030, AU-032</td>
 <td>Absorbed by EDIT-001, EDIT-003 and PUB-001</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">AU-031</th>
+<td>AU-031</td>
 <td>EDIT-009</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">AU-033</th>
+<td>AU-033</td>
 <td>EDIT-010</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">AU-034</th>
+<td>AU-034</td>
 <td>EDIT-011</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">AU-035</th>
+<td>AU-035</td>
 <td>EDIT-012</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">VD-010, VD-013, VD-014</th>
+<td>VD-010, VD-013, VD-014</td>
 <td>Absorbed by VIDEO-001, VID-014, VID-024</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">VD-011, VD-012</th>
+<td>VD-011, VD-012</td>
 <td>Absorbed by VIS-005, VIS-006</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">VD-015</th>
+<td>VD-015</td>
 <td>Absorbed by VID-005, VID-007</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">VD-016</th>
+<td>VD-016</td>
 <td>Absorbed by VID-017</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">VD-017</th>
+<td>VD-017</td>
 <td>Absorbed by VID-019, VID-020</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">VD-018</th>
+<td>VD-018</td>
 <td>Absorbed by VID-018</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">VD-019</th>
+<td>VD-019</td>
 <td>Absorbed by VID-008, VID-027</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">VD-020</th>
+<td>VD-020</td>
 <td>VIDEO-003</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">CP-010, CP-011, CP-017</th>
+<td>CP-010, CP-011, CP-017</td>
 <td>Dropped</td>
 <td>Superseded by CAP-004: capture is built natively; no ZoomIt code was
 imported. LIC-002 and LIC-003 stay in case that changes</td>
 </tr>
 <tr>
-<th scope="row">CP-012</th>
+<td>CP-012</td>
 <td>Delivered (CAP-001)</td>
 <td>Studio PRD AS-94 to AS-98</td>
 </tr>
 <tr>
-<th scope="row">CP-013</th>
+<td>CP-013</td>
 <td>Absorbed by CAP-003, CAP-004</td>
 <td>Named setups delivered: Studio PRD AS-102</td>
 </tr>
 <tr>
-<th scope="row">CP-014</th>
+<td>CP-014</td>
 <td>Absorbed by CAP-002</td>
 <td>Local OCR delivered: Studio PRD AS-105</td>
 </tr>
 <tr>
-<th scope="row">CP-015</th>
+<td>CP-015</td>
 <td>Delivered (CAP-001)</td>
 <td>Studio PRD AS-101</td>
 </tr>
 <tr>
-<th scope="row">CP-016</th>
+<td>CP-016</td>
 <td>Absorbed by VERIFY-001</td>
 <td>Screenshot evidence bundle delivered: Studio PRD AS-109</td>
 </tr>
 <tr>
-<th scope="row">CP-018</th>
+<td>CP-018</td>
 <td>Absorbed by CAP-003</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">AI-010</th>
+<td>AI-010</td>
 <td>VIS-009</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">AI-011, AI-012, AI-013</th>
+<td>AI-011, AI-012, AI-013</td>
 <td>Absorbed by VIS-006, VID-022</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">AI-014</th>
+<td>AI-014</td>
 <td>Absorbed by VIS-001, VID-016, VID-017</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">AI-015, AI-016</th>
+<td>AI-015, AI-016</td>
 <td>Absorbed by VIS-007, VID-021</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">AI-017</th>
+<td>AI-017</td>
 <td>Absorbed by VIS-008</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">AI-018</th>
+<td>AI-018</td>
 <td>VIS-010</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">CV-010, CV-012, CV-013</th>
+<td>CV-010, CV-012, CV-013</td>
 <td>Absorbed by PUB-001</td>
 <td>Convert Audio already shipped: Studio PRD AS-88 to AS-91</td>
 </tr>
 <tr>
-<th scope="row">CV-011</th>
+<td>CV-011</td>
 <td>PUB-004</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">CV-014</th>
+<td>CV-014</td>
 <td>PUB-003</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">PB-010</th>
+<td>PB-010</td>
 <td>PUB-005</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">PB-011</th>
+<td>PB-011</td>
 <td>PUB-006</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">PB-012</th>
+<td>PB-012</td>
 <td>PUB-007</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">PB-013</th>
+<td>PB-013</td>
 <td>Delivered</td>
 <td>Auphonic mastering: Studio PRD AS-59</td>
 </tr>
 <tr>
-<th scope="row">PB-014</th>
+<td>PB-014</td>
 <td>Absorbed by PUB-001</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">REL-001 to REL-005</th>
+<td>REL-001 to REL-005</td>
 <td>Absorbed by section 2.2</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">REL-006</th>
+<td>REL-006</td>
 <td>TRAY-008</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">SEC-001 to SEC-006</th>
+<td>SEC-001 to SEC-006</td>
 <td>Absorbed by section 13 and VIS-006</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">SEC-007</th>
+<td>SEC-007</td>
 <td>SEC-001</td>
 <td>Section 13.3</td>
 </tr>
 <tr>
-<th scope="row">LIC-001 to LIC-009</th>
+<td>LIC-001 to LIC-009</td>
 <td>Unchanged</td>
 <td>Section 13.2</td>
 </tr>
 <tr>
-<th scope="row">GATE-01 to GATE-13</th>
+<td>GATE-01 to GATE-13</td>
 <td>SG-01 to SG-13</td>
 <td>Section 15.1</td>
 </tr>
 <tr>
-<th scope="row">CW-010 to CW-018</th>
+<td>CW-010 to CW-018</td>
 <td>CW-001 to CW-009</td>
 <td>Section 10C.2</td>
 </tr>
 <tr>
-<th scope="row">PL-010 to PL-016</th>
+<td>PL-010 to PL-016</td>
 <td>PL-001 to PL-007</td>
 <td>Section 10C.3</td>
 </tr>
 <tr>
-<th scope="row">Sections 1.3, 2.2, 16, 17, 20 (principles, workflows,
-roadmap, workstreams, definition of done)</th>
+<td>Sections 1.3, 2.2, 16, 17, 20 (principles, workflows, roadmap,
+workstreams, definition of done)</td>
 <td>Absorbed by the north star, section 15, section 14, section 17 and
 section 14’s exit gates</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">Section 11.1 (preferred approach)</th>
+<td>Section 11.1 (preferred approach)</td>
 <td>Absorbed by MX-007 and section 11</td>
 <td></td>
 </tr>
 <tr>
-<th scope="row">Sections 11.2, 11.3, 14, 15.1, 15.3, 18, 19, 21, 22</th>
+<td>Sections 11.2, 11.3, 14, 15.1, 15.3, 18, 19, 21, 22</td>
 <td>Sections 11.2, 11.1, 13.1, 15.2, 15.3, 16.1, 16.2, 21, 10C</td>
 <td></td>
 </tr>

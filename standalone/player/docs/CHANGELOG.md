@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 Quill Media Player runs the same player code as QUILL from the shared `quill` package, so a fix lands in both at once; `standalone/player` carries only the wrapper, launcher and docs.
 
+## Unreleased
+
+- **Host-runtime licensing.** Media Player has no separate installer. When its
+  host uses the QuillVille Runtime, that runtime currently carries PyMuPDF
+  1.28.2 under AGPL-3.0 through the shared GLOW dependency; the player does not
+  itself expose GLOW. Release-specific source and legal review remain open.
+
 ## 1.0.0
 
 Testing build: **1.0.0 (build 2)**. Quill Media Player has not been published yet: the other QuillVille apps do not list it in their QuillVille menus, and QUILL's **Tools > Media > Media Player** row appears once it is released. Everything below is in the build.

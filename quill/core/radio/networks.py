@@ -69,7 +69,7 @@ class Network:
     name_prefix: str = ""
 
 
-#: The catalog. SomaFM stays a built-in source (its own channels.json), so it is
+#: The catalog. Sources already available through a dedicated directory are
 #: not duplicated here.
 NETWORKS: tuple[Network, ...] = (
     # -- International public broadcasters (real streams) --------------------

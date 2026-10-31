@@ -134,9 +134,9 @@ Type: filesandordirs; Name: "{app}\python"
 ; needed now that migration protects the data.
 
 [Files]
-Source: "..\portable\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "docs\QUILL-PRD.md,tools\nodejs\*,tools\speech\piper\*,_tool-download\*,_speech-download\*,*\__pycache__\*,tools\pandoc\*,tools\speech\dectalk\*,tools\speech\espeak-ng\*,tools\speech\whispercpp\*,vendor\braille-pack\*,kokoro-models\*,speech-models-bundled\whispercpp\*,speech-models-bundled\piper\*,wheels\kokoro\*,wheels\faster-whisper\*,wheels\vosk\*,wheels\mp3\*"
+Source: "..\portable\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Excludes: "docs\QUILL-PRD.md,tools\nodejs\*,tools\speech\piper\*,tools\speech\dectalk\*,_tool-download\*,_speech-download\*,*\__pycache__\*,tools\pandoc\*,tools\speech\espeak-ng\*,tools\speech\whispercpp\*,vendor\braille-pack\*,kokoro-models\*,speech-models-bundled\whispercpp\*,speech-models-bundled\piper\*,wheels\kokoro\*,wheels\faster-whisper\*,wheels\vosk\*,wheels\mp3\*"
 ; Only Quill's core bundle is installed. Every optional component --
-; Pandoc, Piper, Node.js, the braille pack, whisper.cpp, Kokoro, DECtalk,
+; Pandoc, Piper, Node.js, the braille pack, whisper.cpp, Kokoro,
 ; and eSpeak-NG -- is fetched on demand to %APPDATA%\Quill (verified,
 ; pinned release assets or official builds), which the app's resolvers
 ; prefer. The Excludes above keep any locally staged copy (from a --*-dir

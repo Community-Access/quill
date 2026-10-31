@@ -35,6 +35,17 @@ from scripts.build_windows_distribution import (
 _VERSION_TOML = Path(__file__).resolve().parents[3] / "build" / "version.toml"
 
 
+@pytest.mark.parametrize("tool_id", ["speech/unrecognized", "../outside", "speech\\piper"])
+def test_bundled_tools_reject_unsupported_ids(tmp_path: Path, tool_id: str) -> None:
+    from scripts.build_windows_distribution import _stage_bundled_tools
+
+    source = tmp_path / "source"
+    source.mkdir()
+    with pytest.raises(RuntimeError, match="Unsupported bundled tool IDs"):
+        _stage_bundled_tools(tmp_path / "portable", {tool_id: source})
+    assert not (tmp_path / "portable" / "tools").exists()
+
+
 @pytest.fixture(autouse=True)
 def _no_model_downloads(monkeypatch: pytest.MonkeyPatch) -> list[Path]:
     """Keep the network out of the packaging tests.
@@ -181,7 +192,7 @@ version = "2.4.6"
             "CHANGELOG.md",
         )
     ]
-    assert manifest["speechAssets"]["dectalk"]["downloadable"] is True
+    assert manifest["speechAssets"]["dectalk"]["downloadable"] is False
     assert manifest["speechAssets"]["espeak"]["downloadable"] is True
     assert manifest["speechAssets"]["piper"]["downloadable"] is True
     # DECtalk and eSpeak-NG are unbundled (PRD 10.2.4): not staged by default,
@@ -340,7 +351,7 @@ def test_bundle_offline_lifts_optional_component_excludes() -> None:
     """--bundle-offline includes locally staged optional components in the .exe.
 
     Without the flag (the default/regular installer), any optional component
-    staged via --pandoc-dir/--dectalk-dir/--espeak-dir/--whisper-dir/--kokoro-dir/
+    staged via --pandoc-dir/--espeak-dir/--whisper-dir/--kokoro-dir/
     --braille-pack-dir is still stripped from the compiled .exe -- only the
     portable ZIP output carries it. This is what makes an "Offline Edition"
     installer genuinely different from the regular one instead of a same-payload
@@ -354,7 +365,6 @@ def test_bundle_offline_lifts_optional_component_excludes() -> None:
 
     optional_component_terms = (
         "tools\\pandoc\\*",
-        "tools\\speech\\dectalk\\*",
         "tools\\speech\\espeak-ng\\*",
         "tools\\speech\\whispercpp\\*",
         "vendor\\braille-pack\\*",
@@ -377,6 +387,8 @@ def test_bundle_offline_lifts_optional_component_excludes() -> None:
     # because there is nothing it could ever include. It stays excluded either way.
     assert "tools\\speech\\piper\\*" in online_excludes
     assert "tools\\speech\\piper\\*" in offline_excludes
+    assert "tools\\speech\\dectalk\\*" in online_excludes
+    assert "tools\\speech\\dectalk\\*" in offline_excludes
 
     # The Vosk chapter model is the one bundled speech asset a regular installer
     # keeps. Cast infers chapters from a transcript and most podcasts publish
@@ -564,7 +576,6 @@ def test_portable_bundle_flattens_runtime_to_root(tmp_path: Path, monkeypatch) -
     tool_dirs = {}
     for tool_id, exe in {
         "pandoc": "pandoc.exe",
-        "speech/dectalk": "say.exe",
         "speech/espeak-ng": "espeak-ng.exe",
         "speech/piper": "piper.exe",
         "speech/whispercpp": "whisper-cli.exe",
@@ -740,7 +751,7 @@ version = "3.0.0"
     # DECtalk and eSpeak-NG are unbundled (PRD 10.2.4): not staged by default, so
     # not marked bundled, but still flagged downloadable for on-demand acquisition.
     assert manifest["speechAssets"]["dectalk"]["bundled"] is False
-    assert manifest["speechAssets"]["dectalk"]["downloadable"] is True
+    assert manifest["speechAssets"]["dectalk"]["downloadable"] is False
     assert manifest["speechAssets"]["espeak"]["bundled"] is False
     assert manifest["speechAssets"]["espeak"]["downloadable"] is True
     # Kokoro is staged to the bundle root, not tools/, and not via bundledTools.

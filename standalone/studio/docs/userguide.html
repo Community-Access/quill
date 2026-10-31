@@ -297,9 +297,9 @@ See “The installer” below.</li>
 (<code>QUILL-Audio-Studio-Portable-Lean-&lt;version&gt;.zip</code>,
 about 675 MB) - fully self-contained. It runs from a USB stick with no
 installation and no internet, carrying a genuine, unmodified copy of
-Python plus the bundled offline speech and text-to-speech engines
-(whisper.cpp, DECtalk, eSpeak-NG, Piper, and neural Kokoro). Best when
-you want everything in one folder with nothing to install.</li>
+Python plus bundled offline speech and text-to-speech engines
+(whisper.cpp, eSpeak-NG, Piper, and neural Kokoro). DECtalk is not
+distributed with QUILL.</li>
 </ul>
 <p>Earlier test builds also came as a small “Lite” installer and a
 “Companion” zip. Those are gone. If you have one, take the installer in
@@ -501,8 +501,8 @@ you browse to a folder or arrive on the page.</li>
 <li><strong>Engine</strong> - Windows (SAPI 5), DECtalk, Piper (neural,
 offline), Kokoro (neural, offline), eSpeak-NG (many languages); on a
 Mac, the macOS system voice as well. An engine that is not installed yet
-is labeled “(not installed)” - see “Voices” below for downloading
-it.</li>
+is labeled “(not installed)” - see “Voices” below. DECtalk must be
+installed separately.</li>
 <li><strong>Voice</strong> and <strong>Preview voice</strong> - hear the
 chosen voice before committing. Previews play a bundled sample when one
 ships, or synthesize live with the real engine when it is
@@ -817,8 +817,9 @@ first. See “Publishing” below.</p>
 <ul>
 <li><strong>Windows (SAPI 5)</strong> - every voice installed on your
 PC, in any language; zero downloads.</li>
-<li><strong>DECtalk</strong> - the classic formant synthesizer,
-downloadable on demand.</li>
+<li><strong>DECtalk</strong> - the classic formant synthesizer, usable
+if you have installed it separately. QUILL does not distribute it or its
+preview samples.</li>
 <li><strong>Piper</strong> - neural voices that run entirely offline;
 download individual voices from a catalog.</li>
 <li><strong>Kokoro</strong> - modern neural voices, entirely on your
@@ -995,8 +996,9 @@ engines, and components</h3>
 Cancel:</p>
 <ul>
 <li>The Speech Hub offers <strong>Download Voice</strong> for Piper
-voices and the Kokoro model pack, and engine downloads for DECtalk,
-Piper, and eSpeak-NG right where you would use them.</li>
+voices and the Kokoro model pack, and engine downloads for Piper and
+eSpeak-NG right where you would use them. DECtalk must be installed
+separately.</li>
 <li><strong>Voices &gt; Manage Speech Models…</strong> (Ctrl+Shift+M)
 manages the speech-recognition engines and models used by Generate
 Captions and AI chapter titles: Whisper.cpp, the QUILL speech models and
@@ -1406,8 +1408,9 @@ copy, or the <code>data</code> folder next to the exe (marked by a
 the apps:</p>
 <ul>
 <li>Speech settings: engine, voices, rates, chapter sound.</li>
-<li>Downloaded engines and models: DECtalk, Piper voices, Kokoro,
-eSpeak-NG, speech-recognition models, the mpv engine.</li>
+<li>Installed engines and models: a separately installed DECtalk, Piper
+voices, Kokoro, eSpeak-NG, speech-recognition models, and the mpv
+engine.</li>
 <li>Your books list, recent source folders, and per-book listening
 positions.</li>
 <li>AI provider configuration and service keys (keys live in the Windows
@@ -1474,9 +1477,9 @@ ffmpeg’s jobs. The packaged installer and portable zip bundle ffmpeg;
 this mostly affects source checkouts.</li>
 <li><strong>An engine shows “(not installed)” in the wizard.</strong>
 Open <strong>Voices &gt; Speech Hub</strong> and use the download button
-on that engine’s tab, or use <strong>Voices &gt; Download Optional
-Components…</strong> instead: DECtalk, Piper, eSpeak-NG, and the Kokoro
-models all install on demand.</li>
+for Piper, eSpeak-NG, or Kokoro, or use <strong>Voices &gt; Download
+Optional Components…</strong>. DECtalk is not distributed by QUILL and
+must be installed separately.</li>
 <li><strong>The Preview voice button says “Download this voice to hear a
 preview.”</strong> No bundled sample ships for that voice and its engine
 is not installed yet; download the engine or voice first.</li>

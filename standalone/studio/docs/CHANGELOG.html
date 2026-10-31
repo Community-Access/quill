@@ -248,6 +248,33 @@
 href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>, and
 this project adheres to <a
 href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+<h2 id="unreleased">Unreleased</h2>
+<ul>
+<li><strong>Shared-runtime licensing.</strong> Installed editions use
+the QuillVille Runtime, which currently carries PyMuPDF 1.28.2 under
+AGPL-3.0 through the shared GLOW dependency; Studio does not itself
+expose GLOW. Release-specific source and legal review are required
+before the next public release. Portable contents must be checked
+separately. See Licences and Notices and the PyMuPDF distribution
+review.</li>
+<li><strong>Chapter sound provenance.</strong> The default
+page-turn-like cue is now generated from scratch by QUILL rather than
+using a recording with unconfirmed origin. Custom chapter sounds remain
+available.</li>
+<li><strong>Speech packaging.</strong> Studio portable builds now copy
+only supported speech engine folders, rather than all speech data.
+Distribution of a legacy voice engine has stopped pending licensing
+review. A separately installed copy still works; complete removal and
+previous package review remain open.</li>
+<li><strong>Shared Windows runtime.</strong> Windows OCR and Media
+projections move to PyWinRT 4.0.3 and the Windows SDK 10.0.28000.2705
+line. The Windows Media engine releases device references and event
+handlers on shutdown.</li>
+<li><strong>Production planning.</strong> The consolidated Studio plan
+proposes a shared Converter round trip and reviewable local or
+explicitly consented cloud transcription. These proposals are not
+delivered features.</li>
+</ul>
 <h2 id="200---built-not-yet-released">[2.0.0] - built, not yet
 released</h2>
 <p>QUILL Studio 2.0.0 is the next Studio release after Audio Studio
@@ -561,13 +588,11 @@ instantly.</li>
 <li><strong>Thin installer</strong> (the <code>-Lite</code> setup) – a
 tiny installer that downloads the shared runtime only if it is not
 already present, then installs the app.</li>
-<li>The <strong>full portable</strong> edition is now named
-<code>QUILL-Audio-Studio-Portable-Lean-&lt;version&gt;.zip</code> (about
-675 MB): fully self-contained, runs from a USB stick with no
-installation and no internet, bundling a genuine unmodified copy of
-Python plus the offline speech and text-to-speech engines (whisper.cpp,
-DECtalk, eSpeak-NG, Piper, and neural Kokoro). The <strong>full
-installer</strong>
+<li>The <strong>full portable</strong> edition is named
+<code>QUILL-Audio-Studio-Portable-Lean-&lt;version&gt;.zip</code>: it
+runs from a USB stick and bundles Python and offline speech engines.
+Earlier builds included DECtalk; new staging excludes it as noted above.
+The <strong>full installer</strong>
 (<code>QUILL-Audio-Studio-Setup-Shared-&lt;version&gt;.exe</code>)
 installs the shared runtime, if it is not already present, plus the
 app.</li>
@@ -774,9 +799,10 @@ finishes and the Workbench is closed.
 <code>on_volume</code>, <code>on_mute</code>, <code>on_closed</code>) to
 the player so the shell drives media keys, per-book prefs, history, and
 queue auto-advance.</li>
-<li>Voice engines with on-demand downloads: Windows SAPI 5, DECtalk,
-Piper, Kokoro, eSpeak-NG, macOS say; ElevenLabs (installs on demand) and
-OpenAI/Gemini/ElevenLabs cloud voices with user-supplied keys. Speech
+<li>Voice engines: Windows SAPI 5, Piper, Kokoro, eSpeak-NG and macOS
+say; ElevenLabs (installs on demand) and OpenAI/Gemini/ElevenLabs cloud
+voices with user-supplied keys. DECtalk was formerly offered as a
+download; it now requires a separate installation as noted above. Speech
 Hub, Manage Speech Models, Pronunciation Dictionaries, Download Optional
 Components (with Test/Remove), and Get FFmpeg in the Voices menu. A
 “Generating preview, please wait” spoken cue for slow live previews (on

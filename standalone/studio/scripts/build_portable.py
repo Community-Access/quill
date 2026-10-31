@@ -88,7 +88,8 @@ WORD_SUPPORT_MODULES: tuple[str, ...] = (
 # into the portable data/ dir (studio only). Each is skipped when absent.
 ENGINE_SUBDIRS = (
     "speech-engine",  # whisper.cpp (the DEFAULT offline transcription engine)
-    "speech",  # dectalk, espeak-ng, piper
+    "speech/espeak-ng",  # managed eSpeak-NG installation
+    "speech/piper",  # managed Piper installation
     "engine-packs",  # kokoro-onnx, mp3-support, mathcat, ... (heavy pruned below)
     "kokoro-models",  # neural TTS model + voices
     "piper-models",  # piper voices
@@ -99,6 +100,7 @@ ENGINE_SUBDIRS = (
 # drags ~600 MB; engine-packs/mpv duplicates tools/mpv; _vosk-download is
 # partial-download scratch. Relative to the portable data/ dir.
 ENGINE_PRUNE = (
+    "speech/dectalk",
     "engine-packs/faster-whisper",
     "engine-packs/mpv",
     "engine-packs/_vosk-download",
@@ -497,11 +499,11 @@ def _stage_engines(out_dir: Path, engines_dir: Path) -> list[str]:
     data_dir = out_dir / "data"
     data_dir.mkdir(exist_ok=True)
     staged: list[str] = []
-    prune_names = {Path(p).name for p in ENGINE_PRUNE}
+    prune_names = {Path(p).name.casefold() for p in ENGINE_PRUNE}
 
     def _ignore(dir_path: str, names: list[str]) -> set[str]:
         ignored = set(_DEV_CACHE_IGNORE(dir_path, names))
-        ignored |= {n for n in names if n in prune_names}
+        ignored |= {n for n in names if n.casefold() in prune_names}
         return ignored
 
     for sub in ENGINE_SUBDIRS:

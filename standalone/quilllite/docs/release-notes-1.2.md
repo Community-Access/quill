@@ -4,6 +4,17 @@
 prepared on October 3, 2026 and is not yet published; the last published
 version is 1.1.2.*
 
+## Unreleased runtime update
+
+The shared Windows OCR projections move to PyWinRT 4.0.3 and the Windows SDK
+10.0.28000.2705 line. This does not change the release status of QUILL Lite
+1.2 or add a new OCR feature.
+
+Installed Lite uses the shared QuillVille Runtime, which currently includes
+PyMuPDF 1.28.2 under AGPL-3.0 through GLOW. Lite does not itself expose GLOW.
+Release-specific source and legal review remain open; portable packages must
+be checked separately.
+
 Welcome to QUILL Lite 1.2. This is the release about words. QUILL Lite now has
 a thesaurus that finds the word you are really on, a dictionary that works
 without AI, and an AI dictionary that reads your word in its own sentence and

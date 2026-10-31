@@ -142,7 +142,6 @@ SEARCHABLE_SOURCES: dict[str, str] = {
     "rbgenre": "Radio Browser",
     "rbcodec": "Radio Browser",
     "acb": "ACB Media",
-    "soma": "SomaFM",
     "tunein": "TuneIn",
     "iheart": "iHeart",
     "apple": "Podcasts",

@@ -4,6 +4,22 @@ Version 3.2.0 (build 4). Status, 2026-10-17: in beta for testers, not yet
 published; the last published version is 3.0.4. Everything in the
 changelog's Unreleased section is built and documented.
 
+**Current-source correction:** The shared Radio implementation retires the
+built-in SomaFM source in response to its published third-party-client terms.
+Known catalogue entries and direct playback and recording paths are filtered
+or blocked; indirect paths, existing user data and previously published
+packages remain under review. Older SomaFM references below describe historical
+design or releases, not a current supported source. This work has not been
+published as a new release. The shared Windows Media dependency moves to PyWinRT
+4.0.3 and Windows SDK 10.0.28000.2705 projections, with WinRT device objects
+and player event handlers released at shutdown.
+
+**Distribution licensing:** Installed Radio editions use the QuillVille
+Runtime, which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through
+GLOW, although Radio does not expose GLOW. Release-specific source and legal
+review are required before the next public release; inspect portable builds
+separately. See the PyMuPDF distribution review and Licences and Notices.
+
 ## 1. Product statement
 
 Quill Radio is QUILL's internet radio, shipped as its own small Windows app for people who want the radio on without loading a full writing environment. It is screen-reader-first, keyboard-complete, and deliberately small -- and by 1.0 it is a complete radio product: organization, recording resilience, timers, and appliance-grade startup.
@@ -18,7 +34,7 @@ Quill Radio is QUILL's internet radio, shipped as its own small Windows app for 
 ## 3. Scope (all reused from upstream; all shipped in 1.0)
 
 **Listening**
-- Station browser over four blended directories -- RadioBrowser, SomaFM, iHeart, TuneIn -- with a Source facet, genre/country dropdown filters, test-play, and favorite; bundled ACB Media directory; custom stream URLs; website stream finder with a Test/Stop Test toggle.
+- Station browser over blended directories including RadioBrowser, iHeart and TuneIn, with a Source facet, genre/country dropdown filters, test-play, and favorite; bundled ACB Media directory; custom stream URLs; website stream finder with a Test/Stop Test toggle. SomaFM is retired as noted above.
 - iHeart and TuneIn directory sources + Unified Find Stations (upstream `core/radio/iheart.py`, `core/radio/tunein.py`, `core/radio/directory_search.py`; #1116, #1117, #1132). iHeart is indexed from its public XML sitemap (`www.iheart.com/sitemap.xml` -> the `livestations` sub-sitemap, two HTTPS GETs) and each station's real stream (iHeart-native HLS or a StreamTheWorld redirect) is resolved lazily from its own page on demand; the sitemap index is cached once per Browse Stations session with a Refresh button, and a name search resolves up to `IHEART_RESOLVE_CAP = 5` matches. TuneIn goes through RadioTime's open OPML API (`opml.radiotime.com` -- `Search.ashx`/`Browse.ashx`/`Tune.ashx?partnerId=RadioTime`, no key/auth; a bad guide id self-validates to "nothing found"), resolving up to `TUNEIN_RESOLVE_CAP = 10` per search. `directory_search.merge_and_rank` blends all four sources into one de-duped (by stream URL, then name+country), exact-match-first list; each non-RadioBrowser row is labeled "via <source>". The Browse Stations dialog adds a Source facet dropdown (All sources / RadioBrowser / iHeart / TuneIn / SomaFM / ACB Media / Website) and turns the tag/country free-text into a genre editable combo and a country dropdown auto-filled from the directory (choosing one fires the search). Find Streams also resolves iHeart/TuneIn station pages directly (`link_finder` `_PORTAL_HOSTS`, `_tunein_candidates`; #1131, #1105, #1087). All failure-tolerant (a down source never blanks the list), egress via each client's single reviewed `_fetch`, off in Safe Mode via `refuse_in_safe_mode`. This reverses the earlier "TuneIn deliberately left out" non-goal (upstream QUILL PRD §5.84f), approved 2026-07-17; TuneIn uses RadioTime's public API, not a competitor-data scrape.
 - Networks browse section, quick-play favorites, and browse position memory (this release; `quill/core/radio/networks.py`, `quill/ui/radio/browse_tree_dialog.py`, `quill/ui/radio/browse_position.py`, `quill/ui/main_frame_radio.py`, `quill/core/keymap.py`, #1384). A **Networks** branch in Browse Stations groups well-known broadcasters (public broadcasters worldwide, US news/talk, US public radio, sports, music) as one-click nodes, each a curated `radio_browser.search_stations` query so it adds **no new egress site**; syndication services with no single stream of their own (Westwood One, NBC News Radio, ABC News Radio) open an affiliate name-search, labelled as such. CBS News Radio is deliberately excluded (the syndicated service ends 2026-05-22). Ten `radio.play_favorite_1..10` commands play the first ten favorites directly (`Alt+1..0` in Quill Radio via `APP_KEYMAPS["radio"]` -- they were `Ctrl+Alt+Shift+1..0` until 2026-09-16, when QUILL's editor took that row; rebindable, on the Command Palette). Browse Stations remembers the top-level source last selected and reopens there instead of collapsed. The equalizer target is already met by the existing Sound Enhancements (3-band EQ + presets + compressor/mono/night mode, applied via mpv's native `af`).
 - JavaScript-player resolution in the website stream finder (upstream `core/radio/triton.py`): Triton Digital / StreamTheWorld players (the `player.listenlive.co` network and thousands of broadcast stations) compute their stream URL in JavaScript, so it never appears in the page HTML and a plain-HTML scan finds nothing. Quill Radio detects the player, reads the station callsign from the Triton PWA's own logo asset name, and resolves it to a real playable mount through Triton's JS-free provisioning API (`playerservices.streamtheworld.com`), offering both the MP3 and AAC streams. Gated to pages that actually are Triton players and to a callsign the API validates, so it never surfaces a wrong stream; the response is parsed through the hardened `core/safe_xml` wrapper. One added egress, inventoried in QUILL's network-egress audit (§N-1), reached only from the same explicit Scan button and disabled in Safe Mode.

@@ -53,6 +53,12 @@ release notes.
      Artifex has reviewed the combined-work/source-scope and section 13
      questions in `docs/legal/PYMUPDF-AGPL-REVIEW.md`, and the release source
      offer has been checked against that advice.
+   **Other GPL-family components.** Inventory the actual staged libmpv,
+   mutagen, pillow-heif, FFmpeg, eSpeak NG, Pandoc and Git artifacts and their
+   versions and build options. Verify applicable licences, notices and
+   corresponding source and build inputs for each shipped artifact. Obtain
+   legal review of combined-work and source-offer obligations where unresolved;
+   a separate process or a repository link alone is not proof of compliance.
 4. **Translations template current.** `quill/locale/quill.pot` shows the
    target version stamp and a fresh `POT-Creation-Date`.
 5. **No `.po` or `.mo` files ship.** Verified with

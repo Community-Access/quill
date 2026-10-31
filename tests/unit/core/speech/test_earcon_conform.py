@@ -91,3 +91,24 @@ def test_default_sound_path_points_at_bundled_page_turn() -> None:
     assert path.name == "page_turn.wav" and path.is_file()
     with wave.open(str(path), "rb") as w:
         assert w.getnframes() > 0
+
+
+def test_page_turn_is_reproducible_original_pcm(tmp_path: Path) -> None:
+    from scripts.gen_page_turn import DURATION_SECONDS, SAMPLE_RATE, generate_page_turn
+
+    generated = tmp_path / "page_turn.wav"
+    generate_page_turn(generated)
+    bundled = default_sound_path()
+    assert bundled is not None
+    assert generated.read_bytes() == bundled.read_bytes()
+    with wave.open(str(generated), "rb") as audio:
+        assert (audio.getnchannels(), audio.getsampwidth(), audio.getframerate()) == (
+            1,
+            2,
+            SAMPLE_RATE,
+        )
+        assert audio.getnframes() == int(SAMPLE_RATE * DURATION_SECONDS)
+        frames = audio.readframes(audio.getnframes())
+    samples = struct.unpack(f"<{len(frames) // 2}h", frames)
+    assert samples[0] == samples[-1] == 0
+    assert 1000 < max(abs(sample) for sample in samples) < 16000

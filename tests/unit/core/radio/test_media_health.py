@@ -113,8 +113,8 @@ def test_the_notice_is_the_summary_followed_by_the_hint() -> None:
 
 
 def test_a_refusal_names_the_station_the_format_and_the_fix() -> None:
-    message = NO_MPV.format_refusal("SomaFM Groove Salad")
-    assert message.startswith("SomaFM Groove Salad")
+    message = NO_MPV.format_refusal("Jazz FM")
+    assert message.startswith("Jazz FM")
     assert "Ogg, Opus or HLS" in message
     assert "reinstalling restores it" in message
 
@@ -127,7 +127,7 @@ def test_a_refusal_for_a_station_with_no_name_still_reads_as_a_sentence() -> Non
 
 
 def test_the_containers_windows_media_cannot_open_are_recognised() -> None:
-    assert stream_needs_mpv("https://ice.somafm.com/groovesalad-256-mp3.ogg")
+    assert stream_needs_mpv("https://stream.example.org/groovesalad.ogg")
     assert stream_needs_mpv("https://example.org/live/stream.opus")
     assert stream_needs_mpv("https://example.org/audio/playlist.m3u8")
     assert stream_needs_mpv("https://example.org/hls/live")
@@ -137,7 +137,7 @@ def test_an_ordinary_mp3_station_is_not_blamed_on_a_missing_component() -> None:
     # The conservative direction on purpose: sending somebody to repair a
     # healthy install because their station was merely offline is worse than
     # saying nothing.
-    assert not stream_needs_mpv("https://ice.somafm.com/groovesalad-256-mp3")
+    assert not stream_needs_mpv("https://stream.example.org/groovesalad.mp3")
     assert not stream_needs_mpv("https://example.org/stream.aac")
     assert not stream_needs_mpv("")
 
@@ -189,8 +189,8 @@ def test_there_is_no_thin_installer_advice_left_to_give() -> None:
     with pytest.raises(TypeError):
         NO_MPV.notice(lite=True)  # type: ignore[call-arg]
     with pytest.raises(TypeError):
-        NO_MPV.format_refusal("SomaFM", lite=True)  # type: ignore[call-arg]
+        NO_MPV.format_refusal("Jazz FM", lite=True)  # type: ignore[call-arg]
 
 
 def test_the_refusal_carries_the_same_hint() -> None:
-    assert NO_MPV.repair_hint() in NO_MPV.format_refusal("SomaFM")
+    assert NO_MPV.repair_hint() in NO_MPV.format_refusal("Jazz FM")

@@ -1,5 +1,9 @@
 # Quill Radio 3.0 -- test plan
 
+**Historical test plan:** The shared Radio code has retired the built-in
+SomaFM source. Do not execute the SomaFM live-stream examples against current
+builds; use a permitted, non-SomaFM station for equivalent generic tests.
+
 > **Signing off, not investigating?** Use
 > [radio-signoff.md](radio-signoff.md) instead: the same coverage as numbered
 > steps with check boxes, about 90 minutes, or 20 for the short run. This

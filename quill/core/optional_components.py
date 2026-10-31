@@ -54,6 +54,8 @@ class OptionalComponent:
 
     @property
     def status_label(self) -> str:
+        if self.component_id == "dectalk" and not self.installed:
+            return "Install separately"
         return "Installed" if self.installed else "Available to download"
 
     @property
@@ -93,7 +95,7 @@ def status_label_for(component: OptionalComponent) -> str:
     "Available to download" -- the Download action is suppressed either way
     (no internet to fetch it).
     """
-    if not _offline_edition():
+    if component.component_id == "dectalk" or not _offline_edition():
         return component.status_label
     return "Bundled (offline edition)" if component.installed else "Not included (needs internet)"
 
@@ -105,7 +107,7 @@ def download_allowed(component: OptionalComponent) -> bool:
     included, and the target machine is expected to have no internet). In a
     normal install, True unless the component is already effectively ready
     (Download resumes/refreshes; Test stays off until truly usable)."""
-    if _offline_edition():
+    if component.component_id == "dectalk" or _offline_edition():
         return False
     return not component.effective_ready
 
@@ -917,10 +919,11 @@ def gather_optional_components() -> list[OptionalComponent]:
             OptionalComponent(
                 "dectalk",
                 "DECtalk voices",
-                "The classic DECtalk Read Aloud voices.",
+                "The classic DECtalk Read Aloud voices, if installed separately.",
                 VOICES,
                 _safe(_dectalk_installed),
-                "~2 MB",
+                "Varies",
+                note="QUILL does not distribute DECtalk; use a separately installed copy.",
                 priority=70,
             )
         )

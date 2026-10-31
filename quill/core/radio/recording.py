@@ -39,6 +39,7 @@ from quill.core.audio.exact_optilab import ExactOptilab
 from quill.core.error_codes import CodedError
 from quill.core.radio import radio_logging, recording_outcome, recording_report
 from quill.core.radio.local_clock import local_now
+from quill.core.radio.models import is_somafm_url
 from quill.core.radio.recording_commands import (
     RECORD_FORMAT_LABELS,
     RECORD_FORMATS,
@@ -512,6 +513,10 @@ class RadioRecorder:
         original ``_started_at``/``_scheduled_end`` so identity and the
         remaining-time math survive a drop.
         """
+        if is_somafm_url(stream_url):
+            raise RecordingError(
+                "SomaFM streams are not available in QUILL under SomaFM's current terms."
+            )
         is_continuation = _continuation_part > 0
         # Concurrency cap (0 = unlimited). A continuation replaces a recording
         # that just dropped -- it reuses an existing job_id and so is never

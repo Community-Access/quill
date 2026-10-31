@@ -4,6 +4,12 @@ Version 3.2.0 (build 4), the beta for testers, October 2026. 3.2.0 was
 prepared on 2026-10-03 and is not yet published; the last published version
 is 3.0.4.
 
+**Unreleased source change:** The built-in SomaFM source has been retired in
+the shared Radio code in response to its published third-party-client terms.
+Known catalogue entries and direct playback and recording paths are filtered
+or blocked; indirect paths, existing user data and previously published
+packages remain under review.
+
 ## Welcome
 
 Welcome, and thank you for giving Quill Radio a try.
@@ -2216,7 +2222,6 @@ After **Search All Sources...**, the branches are:
 15. **Westwood One Sports**: Westwood One's ten live event channels. During
     the NCAA tournaments, the NFL and other big events, each one carries a
     different game.
-16. **SomaFM**.
 17. **181.FM**: the whole 181.FM network, about eighty channels, by its own
     genres, with **All stations** first. Explicit channels say so, and the
     Christmas genre is marked seasonal.
@@ -2525,7 +2530,7 @@ which it used:
   without the internet.
 - On **LibriVox**, the **Internet Archive**, **TuneIn**, **iHeart**, **NOAA**
   (by call sign, SAME code, or "County, ST"), **Project Gutenberg**,
-  **SomaFM**, **181.FM**, **laut.fm**, **Audius**, **Mixcloud** and
+  **181.FM**, **laut.fm**, **Audius**, **Mixcloud** and
   **ccMixter**, it uses that source's own search.
 - On a **podcast show**, it searches the episodes, show notes included.
 - Anywhere else it looks through the folder itself, within limits, and tells
@@ -2686,11 +2691,11 @@ To narrow things down:
 - **Tag/genre** (Alt+T) and **Country** (Alt+O) are drop-down lists filled from
   the directory. Choosing one searches straight away.
 - **Source** (Alt+U) shows results from just one directory: All sources, Radio
-  Browser, iHeart, TuneIn, Podcasts, SomaFM, ACB Media, Community M3U, Xiph,
+  Browser, iHeart, TuneIn, Podcasts, ACB Media, Community M3U, Xiph,
   Spotify, YouTube or Website. It filters what you have without searching
   again.
 - **Category** (Alt+Y) switches the window to a list instead of a search:
-  Favorites, Popular Stations, ACB Media, SomaFM, TuneIn, Music Genres, Xiph
+  Favorites, Popular Stations, ACB Media, TuneIn, Music Genres, Xiph
   Directory or Search Results. The window opens on Favorites.
 - In the **Station name** field, press **Down Arrow** for searches you ran
   before, newest first. Choosing one brings back the name, tag and country
@@ -2756,7 +2761,7 @@ menu.
 #### Search Sources, step by step
 
 Search Sources decides which directories Search Stations asks. There are
-fourteen, all on to begin with: Radio Browser, TuneIn, iHeart, SomaFM,
+thirteen, all on to begin with: Radio Browser, TuneIn, iHeart,
 SHOUTcast, Live365, TV, Radio Paradise, 181.FM, laut.fm, NOAA Weather Radio,
 Radio Reading Service, Spotify and YouTube. "YouTube in Search Stations" in Chapter 11 says
 what the YouTube one finds.
@@ -2836,7 +2841,7 @@ server is often in no directory at all. You can add it yourself.
 ### The Station Catalog
 
 Quill Radio comes with a directory of working stations built in: more than
-62,000 stations from 240 countries, plus SomaFM and the Project Gutenberg
+62,000 stations from 240 countries, plus the Project Gutenberg
 audiobook shelf. It keeps them in a catalog on your own computer. That makes a
 real difference:
 
@@ -2860,7 +2865,7 @@ real difference:
 #### What is stored, and what is not
 
 The catalog holds Radio Browser's stations and every way of browsing them,
-SomaFM, and the Project Gutenberg audiobook shelf. Everything else stays live
+and the Project Gutenberg audiobook shelf. Everything else stays live
 and needs the internet, each for a reason: **Apple Podcasts** (Apple's terms
 do not allow storing its charts), **TuneIn** (its folders may not be stored),
 **iHeart** (its terms do not allow storing its listings), the **Internet
@@ -6676,7 +6681,7 @@ plainly.
   outside can reach. On the mpv engine, the enhancements happen inside the
   player.
 - **Searching and browsing for stations** talks to public directories, none of
-  which need a key or an account: RadioBrowser, SomaFM, iHeart, TuneIn,
+  which need a key or an account: RadioBrowser, iHeart, TuneIn,
   SHOUTcast, Live365, Radio Paradise, a community M3U list on GitHub,
   iptv.org, the Internet Archive, LibriVox, Project Gutenberg, AudioPub,
   Audius, Mixcloud, ccMixter, Apple's podcast storefront and Podcast Index.

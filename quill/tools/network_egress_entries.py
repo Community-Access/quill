@@ -288,10 +288,6 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "TLS context; the access token travels in the Authorization header, never "
         "the URL."
     ),
-    "core/dectalk_runtime.py::download_dectalk_runtime": (
-        "User explicitly installs the optional DECTALK voice runtime; download "
-        "runs with a verified TLS context and visible progress."
-    ),
     "core/updates.py::fetch_update_manifest": (
         "Update check; gated by the user's update-check setting and shown in the "
         "update UI. Verified TLS."

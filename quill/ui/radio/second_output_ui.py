@@ -26,6 +26,7 @@ from collections.abc import Callable
 from typing import Any
 
 from quill.core.radio import second_output as rule
+from quill.core.radio.models import is_retired_somafm_station
 
 logger = logging.getLogger(__name__)
 
@@ -84,6 +85,12 @@ class SecondOutput:
         own_volume: int = rule.DEFAULT_BACKGROUND_VOLUME,
     ) -> None:
         self.stop()
+        if mode == rule.BACKGROUND and station is not None and is_retired_somafm_station(
+            stream_url=getattr(station, "stream_url", ""),
+            homepage=getattr(station, "homepage", ""),
+            source=getattr(station, "source", ""),
+        ):
+            return
         self.mode = mode
         self.device = device
         self.device_label = device_label
@@ -299,6 +306,16 @@ def toggle_background(
     if level is None:
         return
     favorite = favorites[pick]
+    if is_retired_somafm_station(
+        stream_url=favorite.station.stream_url,
+        homepage=favorite.station.homepage,
+        source=favorite.station.source,
+    ):
+        app._announce(
+            "SomaFM streams are not available in QUILL under SomaFM's current terms. "
+            "Choose another favorite."
+        )
+        return
     second.start(
         rule.BACKGROUND,
         device=device,

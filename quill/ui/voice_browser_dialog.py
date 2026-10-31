@@ -69,8 +69,8 @@ class VoiceBrowserDialog:
         ``_preview_voice`` method.
     engine_available:
         ``{engine_id: bool}`` mapping — True when the engine binary / packages are
-        installed and ready. Engines marked False show a "Download Engine" button
-        instead of the voice list action button. Defaults to all-True when omitted.
+        installed and ready. Missing downloadable engines show a "Download Engine"
+        button; DECtalk must be installed separately. Defaults to all-True when omitted.
     embed_in:
         When given, build the UI into this existing ``wx.Panel`` instead of
         creating a new ``wx.Dialog``.  In this mode ``show()`` must not be called;
@@ -453,10 +453,7 @@ class VoiceBrowserDialog:
         self._settings_sb.Show(has_any)
 
         eng_ok = self._engine_available.get(eng, True)
-        if eng == "dectalk" and not eng_ok:
-            self._download_btn.SetLabel("&Download DECtalk Engine (~30 MB)...")
-            self._download_btn.Show(True)
-        elif eng == "piper" and not eng_ok:
+        if eng == "piper" and not eng_ok:
             self._download_btn.SetLabel("&Download Piper Engine (~22 MB)...")
             self._download_btn.Show(True)
         elif eng == "piper":
@@ -519,7 +516,7 @@ class VoiceBrowserDialog:
         detail = " · ".join(parts)
         if not eng_ok:
             _NOT_READY_MSG = {
-                "dectalk": "DECtalk is not installed. Use the download button to get it.",
+                "dectalk": "DECtalk is not installed. QUILL does not distribute it.",
                 "piper": "Piper is not installed. Use the download button to get it.",
                 "espeak": "eSpeak-NG is not installed. Use the download button to get it.",
                 "kokoro": "Kokoro models are not downloaded. Use the download button to get them.",

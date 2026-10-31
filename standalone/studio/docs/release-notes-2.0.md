@@ -2,6 +2,24 @@
 
 Built, not yet released.
 
+## Unreleased updates
+
+QUILL no longer downloads or distributes DECtalk while its redistribution
+terms are unclear. New Studio portable staging excludes it; separately
+installed copies remain supported. Earlier packages still need review.
+Windows OCR and Media projections move to PyWinRT 4.0.3 and Windows SDK
+10.0.28000.2705; the Windows Media engine also releases device references and
+event handlers at shutdown.
+
+Installed Studio uses the shared QuillVille Runtime, which currently includes
+PyMuPDF 1.28.2 under AGPL-3.0 through GLOW. Studio does not itself expose GLOW.
+Release-specific source and legal review remain open; portable packages must
+be checked separately. The default chapter transition is now an original
+synthesized page-turn-like sound; you can still choose your own.
+
+The expanded Studio editing, Converter round-trip and AI transcription
+workflows in the planning PRD are proposed, not part of this release claim.
+
 ## QUILL Studio 2.0.0 follows Audio Studio 1.0.0
 
 QUILL Studio 2.0.0 follows Audio Studio 1.0.0. The previously unpublished 2.2.0 build is renumbered to 2.0.0 with the QUILL Studio rename. Studio continues to use the shared QuillVille Runtime; each app has its own release version.
