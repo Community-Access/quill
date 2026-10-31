@@ -96,6 +96,7 @@
     "prismatoid",
     "psutil",
     "pycparser",
+    "pygments",
     "pynacl",
     "pypdf",
     "pypdfium2",

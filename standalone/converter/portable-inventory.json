@@ -94,6 +94,7 @@
     "prism",
     "prismatoid",
     "pycparser",
+    "pygments",
     "pynacl",
     "python-docx",
     "pythoncom.py",
