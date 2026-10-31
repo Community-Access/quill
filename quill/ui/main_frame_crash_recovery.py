@@ -190,9 +190,13 @@ class CrashRecoveryMixin:
         logs_path = app_data_dir() / "logs"
         logs_path.mkdir(parents=True, exist_ok=True)
 
+        from quill.core.recovery_triage import opening_words_of_text
+
         preview_text = ""
+        opening = ""
         try:
             full, _had_rep = read_recovery_snapshot(offer.snapshot)
+            opening = opening_words_of_text(full)
             lines = full.splitlines()
             preview_text = "\n".join(lines[:30])
             if len(lines) > 30:
@@ -203,6 +207,7 @@ class CrashRecoveryMixin:
         return {
             "logs_path": logs_path,
             "preview_text": preview_text,
+            "opening": opening,
         }
 
     def _offer_crash_recovery(self) -> None:
@@ -271,6 +276,11 @@ class CrashRecoveryMixin:
         wx = self._wx
         offer = ctx["offer"]
         intro = ctx["intro"]
+        # Which document this is, in its own words, before anything else is read:
+        # the time of a crash does not say what was being written.
+        opening = prepared.get("opening", "")
+        if opening:
+            intro = f'{intro} The document begins: "{opening}"'
         logs_path = prepared["logs_path"]
         preview_text = prepared["preview_text"]
 

@@ -2,6 +2,29 @@
 
 ## Unreleased
 
+### Spell check reads only what you wrote, and recovery says how each document begins (2026-10-30)
+
+Both from Chris Nova of Mystic Access on the QUILLVille list. QUILL and QUILL
+Lite share the code, so both get both.
+
+- Spell check skips web addresses, email addresses, file paths and file names
+  in every document. Checking `www.example.com` no longer stops on `www`,
+  `example` and `com`. This covers checking as you type, the F7 review, next
+  and previous misspelling, the misspelling list and the context menu.
+- In Markdown it also skips code and link addresses; in web pages and XML it
+  reads the text and the readable attributes (`alt`, `title`, `aria-label`,
+  `placeholder`); in code it reads only strings and comments, and skips
+  placeholders, escapes and identifiers inside them. The file's extension
+  picks the rule.
+- Code and markup are read with Pygments, now a declared dependency, bundled in
+  the shared runtime and listed in the third-party notices. A small built-in
+  reader takes over if Pygments or a lexer is missing.
+- A word in single quotes in SQL, CSS or a script is no longer reported with
+  its closing quote attached.
+- The recovery window in QUILL Lite quotes the first few words of each
+  document, and QUILL's Crash Recovery says how the document begins. The date
+  alone didn't say which piece of work it was.
+
 ### Windows runtime, media shutdown and licensing (2026-10-27)
 
 - Move the Windows OCR and Media projections to PyWinRT 4.0.3 with the

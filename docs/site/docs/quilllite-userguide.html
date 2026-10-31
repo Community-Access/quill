@@ -2208,9 +2208,12 @@ Preferences.</li>
 hear “Tidied up unsaved work from last time”, so you know nothing was
 lost.</p>
 <h5 id="the-recovery-window">The recovery window</h5>
-<p>The window lists what is left, one row each, with a checkbox. There
-is also a read-only <strong>What this would do</strong> field you can
-arrow through. There are six buttons:</p>
+<p>The window lists what is left, one row each, with a checkbox. Each
+row quotes the first few words of the document, like
+<code>begins "Dear Margaret, thank you for the lovely..."</code>, so you
+can tell two untitled windows from the same afternoon apart. There is
+also a read-only <strong>What this would do</strong> field you can arrow
+through. There are six buttons:</p>
 <ul>
 <li><strong>Restore Checked</strong> brings back the ones you have
 checked.</li>
@@ -4584,6 +4587,36 @@ it, or add it to your dictionary so it is never questioned again.</li>
 reaches the end of the document, it tells you, then carries on from the
 beginning. If you would rather it simply stopped at the end, you can
 turn that off in Preferences.</p>
+<h4 id="what-spell-check-reads">What spell check reads</h4>
+<p>Spell check reads what you wrote as language, and passes over the
+rest. This applies everywhere: checking as you type, the
+<strong>F7</strong> review, next and previous misspelling, the list of
+every misspelling, and the context menu, exactly as in QUILL.</p>
+<ul>
+<li><strong>In any document</strong>, it skips web addresses
+(<code>www.example.com</code>, <code>https://...</code>, or a bare
+<code>example.com</code>), email addresses, file paths and file names
+such as <code>notes.txt</code>. Before this, checking
+<code>www.example.com</code> stopped on <code>www</code>,
+<code>example</code> and <code>com</code> one by one.</li>
+<li><strong>In Markdown</strong>, it also skips inline code, fenced code
+blocks, HTML tags and link addresses. It still checks the link text,
+because someone wrote that to be read.</li>
+<li><strong>In a web page or XML file</strong>, it checks the text
+between the tags and the comments. It skips the tags themselves, but it
+does check the words people read or hear: <code>alt</code>,
+<code>title</code>, <code>aria-label</code> and
+<code>placeholder</code>.</li>
+<li><strong>In code</strong>, such as Python, JavaScript, C#, SQL, CSS,
+PowerShell or JSON, it checks only the strings and the comments. Inside
+those it still skips placeholders like <code>{0}</code> and
+<code>%s</code>, escapes like <code>\n</code>, and names such as
+<code>snake_case</code> or <code>camelCase</code>.</li>
+</ul>
+<p>The file’s extension decides which rule applies, and an unsaved
+document is treated as ordinary writing. Code is read with Pygments,
+which knows over five hundred languages; if it ever can’t load, a
+simpler built-in reader does the same job.</p>
 <h4 id="the-spelling-keys">The spelling keys</h4>
 <table>
 <thead>

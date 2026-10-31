@@ -43,6 +43,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass, field
+from pathlib import Path
 
 from quill.core.spellcheck import Misspelling, misspelling_at_position, suggest_words
 
@@ -137,6 +138,7 @@ def spelling_context(
     ignores: IgnoreList | None = None,
     *,
     limit: int = MAX_CONTEXT_SUGGESTIONS,
+    filename: str | Path | None = None,
 ) -> SpellingContext | None:
     """The misspelling at *position*, with its suggestions, or None.
 
@@ -149,7 +151,7 @@ def spelling_context(
     "Ignore in This Document" for a word already ignored would be a menu item
     that does nothing, which is worse than one that is not there.
     """
-    item = _word_at_or_before(text, position, dictionary)
+    item = _word_at_or_before(text, position, dictionary, filename)
     if item is None:
         return None
     if ignores is not None and ignores.skips(text, item):
@@ -159,7 +161,9 @@ def spelling_context(
     )
 
 
-def _word_at_or_before(text: str, position: int, dictionary: set[str]) -> Misspelling | None:
+def _word_at_or_before(
+    text: str, position: int, dictionary: set[str], filename: str | Path | None = None
+) -> Misspelling | None:
     """The misspelled word the caret is in, counting the caret just past its end.
 
     ``misspelling_at_position``, never ``misspelling_at``: the latter is the
@@ -176,7 +180,7 @@ def _word_at_or_before(text: str, position: int, dictionary: set[str]) -> Misspe
     the caret belongs to a correctly spelled word, the retry answers None just
     as the first attempt did.
     """
-    found = misspelling_at_position(text, position, dictionary)
+    found = misspelling_at_position(text, position, dictionary, filename=filename)
     if found is not None or position <= 0:
         return found
-    return misspelling_at_position(text, position - 1, dictionary)
+    return misspelling_at_position(text, position - 1, dictionary, filename=filename)

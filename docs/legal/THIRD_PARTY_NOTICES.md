@@ -37,12 +37,12 @@ This file is generated from quill/data/third_party/components.json by quill/tool
 - Mozilla Public License, version 2.0: 4 components
 - Public domain: 3 components
 - The Unlicense (public domain dedication): 3 components
+- BSD 2-Clause License: 2 components
 - ISC License: 2 components
 - GNU Lesser General Public License, version 3: 2 components
 - BSD Zero Clause License: 1 component
 - GNU Affero General Public License, version 3: 1 component
 - BASS licence (Un4seen Developments, proprietary freeware): 1 component
-- BSD 2-Clause License: 1 component
 - Creative Commons Zero 1.0 (public domain dedication): 1 component
 - Commons Clause License Condition v1.0, with Apache-2.0: 1 component
 - MIT No Attribution License: 1 component
@@ -351,6 +351,17 @@ Python itself and libraries shipped in the shared runtime or an app's own depend
 - **Upstream:** https://github.com/kurtmckee/feedparser-sgmllib
 - **How it reaches you:** Bundled: it is inside the installer or the portable zip.
 - **What the licence asks of us:** Keep the PSF copyright notice and licence with the distribution and summarise any changes we made.
+
+### Pygments
+
+- **What it is:** Finds the strings and comments in code, so spell check reads only those.
+- **Included in:** Every product in the family.
+- **Version:** 2.21.0
+- **Licence:** BSD-2-Clause
+- **Copyright:** Copyright (c) 2006-2022 by the respective authors (see AUTHORS file)
+- **Upstream:** https://pygments.org/
+- **How it reaches you:** Bundled: it is inside the installer or the portable zip.
+- **What the licence asks of us:** Keep the copyright notice, the conditions and the disclaimer in the documentation that ships with the binary.
 
 ### Git for Windows (MinGit) and GitHub CLI
 
@@ -2412,7 +2423,7 @@ The full text is not reproduced here. It is published at https://www.un4seen.com
 
 ### BSD 2-Clause License
 
-Used by: feedparser.
+Used by: feedparser, Pygments.
 
 What it asks of us: Keep the copyright notice, the conditions and the disclaimer in the documentation that ships with the binary.
 

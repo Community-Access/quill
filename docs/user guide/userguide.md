@@ -6265,10 +6265,8 @@ The check waits until you have **finished** a word, with a space, a comma or a
 new line. It does not judge a word you are still typing, so "recie" on the way
 to "receive" never sets it off.
 
-Some places are full of things that look like misspellings, so the live check
-stays quiet there: web addresses, email addresses, Markdown inline code
-(between backticks) and fenced code blocks. The F7 review still covers the
-whole document; only the alert as you type skips them.
+Web addresses, email addresses, file paths and code are never treated as
+misspellings. **What spell check reads**, below, has the details.
 
 You can switch the spelling sound on or off by itself in **Tools > Reading and
 Dictation > Sound Scheme...** (look for "Possible misspelling as you type"). The spell check as you
@@ -6287,8 +6285,35 @@ inline code, web addresses and email addresses inside them are skipped.
 The setting is **`spellcheck_skip_code_files`**, and it is on by default.
 Turn it off if you want the live check everywhere, whatever the file type.
 
-`F7` is never affected. The Spelling Review checks whatever document you run
-it on, a code file included. Pressing `F7` is you asking for a check.
+`F7` is never silenced by this setting. The Spelling Review checks whatever
+document you run it on, a code file included, reading its strings and
+comments. Pressing `F7` is you asking for a check.
+
+##### What spell check reads
+
+Spell check reads what you wrote as language, and passes over the rest. This
+applies everywhere: checking as you type, the **F7** review, next and previous
+misspelling, the list of every misspelling, and the context menu.
+
+- **In any document**, it skips web addresses (`www.example.com`,
+  `https://...`, or a bare `example.com`), email addresses, file paths and file
+  names such as `notes.txt`. Before this, checking `www.example.com` stopped
+  on `www`, `example` and `com` one by one.
+- **In Markdown**, it also skips inline code, fenced code blocks, HTML tags and
+  link addresses. It still checks the link text, because someone wrote that to
+  be read.
+- **In a web page or XML file**, it checks the text between the tags and the
+  comments. It skips the tags themselves, but it does check the words people
+  read or hear: `alt`, `title`, `aria-label` and `placeholder`.
+- **In code**, such as Python, JavaScript, C#, SQL, CSS, PowerShell or JSON,
+  it checks only the strings and the comments. Inside those it still skips
+  placeholders like `{0}` and `%s`, escapes like `\n`, and names such as
+  `snake_case` or `camelCase`.
+
+The file's extension decides which rule applies, and an unsaved document is
+treated as ordinary writing. Code is read with Pygments, which knows over five
+hundred languages; if it ever can't load, a simpler built-in reader does the
+same job.
 
 #### Spell check a document before saving
 
@@ -15430,7 +15455,9 @@ it always describes the window as it is.
 If QUILL closed without an error report, after a freeze, a power cut or a
 forced close, the next launch shows **Crash Recovery**, which offers your
 unsaved work back. Its **Email Support** button (it used to say "Send Bug
-Report") writes a message to support for this kind of exit too:
+Report") writes a message to support for this kind of exit too. The first
+sentence also quotes how the document begins, so you know which work it is
+before you read the preview:
 
 1. Press **Email Support** in Crash Recovery.
 2. Your mail program opens with a message to **support@community-access.org**.

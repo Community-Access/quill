@@ -1724,7 +1724,10 @@ If everything it found was one of those, no window opens. Instead you hear
 
 ##### The recovery window
 
-The window lists what is left, one row each, with a checkbox. There is also a
+The window lists what is left, one row each, with a checkbox. Each row quotes
+the first few words of the document, like `begins "Dear Margaret, thank you
+for the lovely..."`, so you can tell two untitled windows from the same
+afternoon apart. There is also a
 read-only **What this would do** field you can arrow through. There are six
 buttons:
 
@@ -3638,6 +3641,32 @@ The check starts where your cursor is, just as in Word. When it reaches the
 end of the document, it tells you, then carries on from the beginning. If
 you would rather it simply stopped at the end, you can turn that off in
 Preferences.
+
+#### What spell check reads
+
+Spell check reads what you wrote as language, and passes over the rest. This
+applies everywhere: checking as you type, the **F7** review, next and previous
+misspelling, the list of every misspelling, and the context menu, exactly as in QUILL.
+
+- **In any document**, it skips web addresses (`www.example.com`,
+  `https://...`, or a bare `example.com`), email addresses, file paths and file
+  names such as `notes.txt`. Before this, checking `www.example.com` stopped
+  on `www`, `example` and `com` one by one.
+- **In Markdown**, it also skips inline code, fenced code blocks, HTML tags and
+  link addresses. It still checks the link text, because someone wrote that to
+  be read.
+- **In a web page or XML file**, it checks the text between the tags and the
+  comments. It skips the tags themselves, but it does check the words people
+  read or hear: `alt`, `title`, `aria-label` and `placeholder`.
+- **In code**, such as Python, JavaScript, C#, SQL, CSS, PowerShell or JSON,
+  it checks only the strings and the comments. Inside those it still skips
+  placeholders like `{0}` and `%s`, escapes like `\n`, and names such as
+  `snake_case` or `camelCase`.
+
+The file's extension decides which rule applies, and an unsaved document is
+treated as ordinary writing. Code is read with Pygments, which knows over five
+hundred languages; if it ever can't load, a simpler built-in reader does the
+same job.
 
 #### The spelling keys
 

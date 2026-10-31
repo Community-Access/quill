@@ -244,6 +244,52 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="unreleased">Unreleased</h2>
+<h3
+id="spell-check-reads-only-what-you-wrote-and-recovery-says-how-each-document-begins-2026-10-30">Spell
+check reads only what you wrote, and recovery says how each document
+begins (2026-10-30)</h3>
+<p>Both from Chris Nova of Mystic Access on the QUILLVille list. QUILL
+and QUILL Lite share the code, so both get both.</p>
+<ul>
+<li>Spell check skips web addresses, email addresses, file paths and
+file names in every document. Checking <code>www.example.com</code> no
+longer stops on <code>www</code>, <code>example</code> and
+<code>com</code>. This covers checking as you type, the F7 review, next
+and previous misspelling, the misspelling list and the context
+menu.</li>
+<li>In Markdown it also skips code and link addresses; in web pages and
+XML it reads the text and the readable attributes (<code>alt</code>,
+<code>title</code>, <code>aria-label</code>, <code>placeholder</code>);
+in code it reads only strings and comments, and skips placeholders,
+escapes and identifiers inside them. The file’s extension picks the
+rule.</li>
+<li>Code and markup are read with Pygments, now a declared dependency,
+bundled in the shared runtime and listed in the third-party notices. A
+small built-in reader takes over if Pygments or a lexer is missing.</li>
+<li>A word in single quotes in SQL, CSS or a script is no longer
+reported with its closing quote attached.</li>
+<li>The recovery window in QUILL Lite quotes the first few words of each
+document, and QUILL’s Crash Recovery says how the document begins. The
+date alone didn’t say which piece of work it was.</li>
+</ul>
+<h3 id="windows-runtime-media-shutdown-and-licensing-2026-10-27">Windows
+runtime, media shutdown and licensing (2026-10-27)</h3>
+<ul>
+<li>Move the Windows OCR and Media projections to PyWinRT 4.0.3 with the
+Windows SDK 10.0.28000.2705 projection line. OCR, local playback,
+seeking, device routing and frozen-runtime collection retain their
+existing behavior.</li>
+<li>Stop keeping WinRT audio-device objects in a process-wide cache. The
+Windows Media engine now resolves a selected endpoint from a fresh
+filtered query and removes its event handlers at termination. This fixes
+the <code>0xC0000005</code> process-exit crash after audio-device
+enumeration or switching.</li>
+<li>Retain PyMuPDF 1.28.2 under AGPL-3.0. The exact source archive,
+generated notices, Corresponding Source review and pre-release legal
+gate are documented; PDF behavior is unchanged.</li>
+<li>Verify and document which family apps check for updates
+automatically at launch in the published privacy statement.</li>
+</ul>
 <h3 id="quill-studio-screenshot-milestone-2026-10-26">QUILL Studio
 screenshot milestone (2026-10-26)</h3>
 <ul>

@@ -27,12 +27,23 @@ from dataclasses import dataclass
 from difflib import get_close_matches
 from pathlib import Path
 
-from quill.core.file_lock import guarded_write
-from quill.core.paths import app_data_dir
-
 # The language catalogue lives in spell_languages (a GATE-11 extraction). The
 # re-exports keep every existing caller -- and the tests that monkeypatch these
 # names as attributes of *this* module -- working unchanged.
+# The personal, document and project dictionaries moved to spell_dictionaries
+# (GATE-11, 2026-10-30); re-exported so every caller keeps importing them here.
+from quill.core.spell_dictionaries import (
+    add_word_to_scope as add_word_to_scope,
+)
+from quill.core.spell_dictionaries import (
+    load_combined_dictionary as load_combined_dictionary,
+)
+from quill.core.spell_dictionaries import (
+    load_scope_dictionary as load_scope_dictionary,
+)
+from quill.core.spell_dictionaries import (
+    personal_dictionary_revision as personal_dictionary_revision,
+)
 from quill.core.spell_languages import (
     DEFAULT_LANGUAGE as _DEFAULT_LANGUAGE,
 )
@@ -50,7 +61,7 @@ from quill.core.spell_languages import (
     managed_hunspell_dir,
     managed_spell_dir,
 )
-from quill.core.storage import read_json, write_json_atomic
+from quill.core.spellcheck_spans import masked_for_checking, spell_kind_for, word_is_checkable
 
 logger = logging.getLogger(__name__)
 
@@ -396,6 +407,11 @@ def is_known_word(token: str, extra: set[str] | frozenset[str] | None = None) ->
     return lowered in _STUB_WORDS
 
 
+def _suffix_of(filename: str | Path | None) -> str:
+    """The extension that picks the spell rule, for the misspellings cache key."""
+    return Path(str(filename)).suffix.lower() if filename else ""
+
+
 @dataclass(frozen=True, slots=True)
 class Misspelling:
     word: str
@@ -403,7 +419,9 @@ class Misspelling:
     end: int
 
 
-def list_misspellings(text: str, dictionary: set[str]) -> list[Misspelling]:
+def list_misspellings(
+    text: str, dictionary: set[str], *, filename: str | Path | None = None
+) -> list[Misspelling]:
     """Return every misspelling in *text*, honouring *dictionary*.
 
     #315: the result is memoized on the ``(text, frozenset(dictionary))``
@@ -413,14 +431,19 @@ def list_misspellings(text: str, dictionary: set[str]) -> list[Misspelling]:
     document, or project dictionary, so cache invalidation is
     automatic; ``reset_caches()`` also clears the cache for perf
     benchmarks.
+
+    *filename* decides what is read at all (:mod:`quill.core.spellcheck_spans`):
+    web addresses, email addresses and paths are never words, and in code
+    or markup only the strings, comments and text are. The scan runs over a
+    same-length mask, so every offset is still an offset in *text*.
     """
     dictionary_key = frozenset(item.lower() for item in dictionary)
-    cache_key = (text, hash(dictionary_key))
+    cache_key = (text, hash(dictionary_key), spell_kind_for(filename), _suffix_of(filename))
     cached = _MISSPELLINGS_CACHE.get(cache_key)
     if cached is not None:
         return list(cached)
     misspellings: list[Misspelling] = []
-    for match in _WORD_PATTERN.finditer(text):
+    for match in _WORD_PATTERN.finditer(masked_for_checking(text, filename)):
         token = match.group(0)
         if not is_known_word(token, dictionary_key):
             misspellings.append(Misspelling(word=token, start=match.start(), end=match.end()))
@@ -456,7 +479,9 @@ def rank_misspellings_by_frequency(misspellings: list[Misspelling]) -> list[Miss
     )
 
 
-def misspelling_at(text: str, position: int, dictionary: set[str]) -> Misspelling | None:
+def misspelling_at(
+    text: str, position: int, dictionary: set[str], *, filename: str | Path | None = None
+) -> Misspelling | None:
     """The misspelled word starting exactly at *position*, or None.
 
     The bounded form of :func:`next_misspelling` for the as-you-type hint
@@ -483,12 +508,19 @@ def misspelling_at(text: str, position: int, dictionary: set[str]) -> Misspellin
         token = match.group(0)
         if is_known_word(token, dictionary):
             return None
+        if not word_is_checkable(text, match.start(), match.end(), filename):
+            return None
         return Misspelling(word=token, start=match.start(), end=match.end())
     return None
 
 
 def misspelling_behind(
-    text: str, cursor: int, dictionary: set[str], *, require_terminator: bool = True
+    text: str,
+    cursor: int,
+    dictionary: set[str],
+    *,
+    require_terminator: bool = True,
+    filename: str | Path | None = None,
 ) -> Misspelling | None:
     """The misspelled word you have just *finished*, or None.
 
@@ -537,10 +569,14 @@ def misspelling_behind(
     token = match.group(0)
     if is_known_word(token, dictionary):
         return None
+    if not word_is_checkable(text, match.start(), match.end(), filename):
+        return None  # the tail of a web address, or code outside a string
     return Misspelling(word=token, start=match.start(), end=match.end())
 
 
-def next_misspelling(text: str, cursor: int, dictionary: set[str]) -> Misspelling | None:
+def next_misspelling(
+    text: str, cursor: int, dictionary: set[str], *, filename: str | Path | None = None
+) -> Misspelling | None:
     # Start the regex scan at the cursor position itself so the engine matches
     # whole words (a mid-word cursor would otherwise match a tail fragment).
     # Then skip any whole-word match that doesn't begin strictly after the
@@ -550,24 +586,32 @@ def next_misspelling(text: str, cursor: int, dictionary: set[str]) -> Misspellin
         if match.start() <= cursor:
             continue
         token = match.group(0)
-        if not is_known_word(token, dictionary):
+        if not is_known_word(token, dictionary) and word_is_checkable(
+            text, match.start(), match.end(), filename
+        ):
             return Misspelling(word=token, start=match.start(), end=match.end())
     return None
 
 
-def previous_misspelling(text: str, cursor: int, dictionary: set[str]) -> Misspelling | None:
+def previous_misspelling(
+    text: str, cursor: int, dictionary: set[str], *, filename: str | Path | None = None
+) -> Misspelling | None:
     previous: Misspelling | None = None
     scan_until = max(0, cursor)
     for match in _WORD_PATTERN.finditer(text, 0, scan_until):
         if match.end() > cursor:
             break
         token = match.group(0)
-        if not is_known_word(token, dictionary):
+        if not is_known_word(token, dictionary) and word_is_checkable(
+            text, match.start(), match.end(), filename
+        ):
             previous = Misspelling(word=token, start=match.start(), end=match.end())
     return previous
 
 
-def no_misspelling_message(text: str, cursor: int, dictionary: set[str], *, ahead: bool) -> str:
+def no_misspelling_message(
+    text: str, cursor: int, dictionary: set[str], *, ahead: bool, filename: str | Path | None = None
+) -> str:
     """What to say when there is no misspelling in the direction asked for.
 
     Ctrl+F7 and Ctrl+Shift+F7 search forward and backward from the caret and do
@@ -584,18 +628,21 @@ def no_misspelling_message(text: str, cursor: int, dictionary: set[str], *, ahea
     direction = "ahead" if ahead else "behind"
     other_key = "behind" if ahead else "ahead"
     other = (
-        previous_misspelling(text, cursor, dictionary)
+        previous_misspelling(text, cursor, dictionary, filename=filename)
         if ahead
-        else next_misspelling(text, cursor, dictionary)
+        else next_misspelling(text, cursor, dictionary, filename=filename)
     )
     if other is None:
         return "No misspellings found"
-    count = sum(1 for m in list_misspellings(text, dictionary) if (m.end <= cursor) == ahead)
+    found = list_misspellings(text, dictionary, filename=filename)
+    count = sum(1 for m in found if (m.end <= cursor) == ahead)
     plural = "" if count == 1 else "s"
     return f"No misspellings {direction}; {count} misspelling{plural} {other_key}"
 
 
-def misspelling_at_position(text: str, position: int, dictionary: set[str]) -> Misspelling | None:
+def misspelling_at_position(
+    text: str, position: int, dictionary: set[str], *, filename: str | Path | None = None
+) -> Misspelling | None:
     """The misspelling at *position*, or the one that ends there (bad.md S5).
 
     A caret sits at the *end* of the word you have just typed, and this needed
@@ -607,17 +654,19 @@ def misspelling_at_position(text: str, position: int, dictionary: set[str]) -> M
     """
     if position < 0 or position > len(text):
         return None
-    found = _misspelling_covering(text, position, dictionary)
+    found = _misspelling_covering(text, position, dictionary, filename)
     if found is not None:
         return found
     if position > 0 and _is_word_character(text[position - 1]):
         # The caret is just past the last letter: the word ending here is the
         # word being asked about.
-        return _misspelling_covering(text, position - 1, dictionary)
+        return _misspelling_covering(text, position - 1, dictionary, filename)
     return None
 
 
-def _misspelling_covering(text: str, position: int, dictionary: set[str]) -> Misspelling | None:
+def _misspelling_covering(
+    text: str, position: int, dictionary: set[str], filename: str | Path | None = None
+) -> Misspelling | None:
     # Find the word boundary around `position` directly rather than scanning
     # every word in the document. Walk left to the start of the current word,
     # then match forward once.
@@ -633,6 +682,8 @@ def _misspelling_covering(text: str, position: int, dictionary: set[str]) -> Mis
         return None
     token = match.group(0)
     if is_known_word(token, dictionary):
+        return None
+    if not word_is_checkable(text, match.start(), match.end(), filename):
         return None
     return Misspelling(word=token, start=match.start(), end=match.end())
 
@@ -715,136 +766,3 @@ def _length_buckets(wordlist: frozenset[str]) -> dict[int, list[str]]:
         frozen: dict[int, list[str]] = dict(buckets)
         _LENGTH_BUCKETS_BY_WORDLIST_ID[key] = frozen
         return frozen
-
-
-def personal_dictionary_revision(personal_dir: Path | None = None) -> tuple[int, int]:
-    """``(mtime_ns, size)`` of the personal dictionary; ``(0, 0)`` if absent.
-
-    What a caller compares against to find out whether the shared list has
-    changed under it. Each app used to load the dictionary once and keep the
-    set, so a word taught in QUILL Lite stayed underlined in QUILL until QUILL
-    was restarted -- which makes a *shared* dictionary look broken rather than
-    shared (bad.md S10).
-    """
-    path = _dictionary_path("personal", None, None, personal_dir)
-    if path is None:
-        return (0, 0)
-    try:
-        stat = path.stat()
-    except OSError:
-        return (0, 0)
-    return (int(stat.st_mtime_ns), int(stat.st_size))
-
-
-def add_word_to_scope(
-    word: str,
-    scope: str,
-    document_path: Path | None,
-    project_root: Path | None,
-    personal_dir: Path | None = None,
-) -> bool:
-    """Teach *word* in *scope*. ``False`` when there was nowhere to write it.
-
-    The return value is bad.md S3. The "this document only" and "this project"
-    dictionaries are files *beside* the document, so an unsaved buffer has no
-    such file and nothing is written -- and the caller went on announcing
-    ``Added "word" to this document only`` regardless. The word stayed
-    underlined, and the only way to learn that was to try again and hear the
-    same sentence a second time. Callers must now say which of the two
-    happened.
-    """
-    token = word.strip().lower()
-    if not token:
-        return False
-    path = _dictionary_path(scope, document_path, project_root, personal_dir)
-    if path is None:
-        return False
-    # Read and write inside the lock, not either side of it: the point is that
-    # nothing else rewrites the file between the two (bad.md S10).
-    # The lock is quill/core/file_lock.py: every shared read-modify-write in
-    # the product has the same race and deserves the same answer, not a second
-    # implementation of it (bad.md S10).
-    with guarded_write(path):
-        existing = load_scope_dictionary(scope, document_path, project_root, personal_dir)
-        existing.add(token)
-        write_json_atomic(path, sorted(existing))
-    return True
-
-
-def load_combined_dictionary(
-    document_path: Path | None,
-    project_root: Path | None,
-    personal_dir: Path | None = None,
-) -> set[str]:
-    personal = load_scope_dictionary("personal", document_path, project_root, personal_dir)
-    document = load_scope_dictionary("document", document_path, project_root, personal_dir)
-    project = load_scope_dictionary("project", document_path, project_root, personal_dir)
-    return personal | document | project
-
-
-def load_scope_dictionary(
-    scope: str,
-    document_path: Path | None,
-    project_root: Path | None,
-    personal_dir: Path | None = None,
-) -> set[str]:
-    path = _dictionary_path(scope, document_path, project_root, personal_dir)
-    if path is None:
-        return set()
-    raw = read_json(path, default=None)
-    if isinstance(raw, list):
-        return {item.strip().lower() for item in raw if isinstance(item, str) and item.strip()}
-    # EdSharp standard (magic2, 2026-08-27): a taught dictionary is an asset
-    # the user may open and edit by hand. A hand edit that breaks the JSON
-    # must not silently wipe two hundred taught words -- so a file that does
-    # not parse as JSON is read as a plain word list, one per line (which is
-    # also what a hand-authored file naturally looks like). Commas, brackets
-    # and quotes left over from JSON editing are stripped per line.
-    try:
-        text = path.read_text(encoding="utf-8")
-    except OSError:
-        return set()
-    words: set[str] = set()
-    for line in text.splitlines():
-        token = line.strip().strip("[],").strip().strip('"').strip("'").strip().lower()
-        if token and all(ch.isalpha() or ch in "-'" for ch in token):
-            words.add(token)
-    if words:
-        logger.warning(
-            "Scope dictionary %s is not valid JSON; recovered %d words from it "
-            "as a plain word list",
-            path,
-            len(words),
-        )
-        return words
-    if text.strip():
-        logger.warning("Scope dictionary %s is malformed; falling back to empty set", path)
-    return set()
-
-
-def _dictionary_path(
-    scope: str,
-    document_path: Path | None,
-    project_root: Path | None,
-    personal_dir: Path | None = None,
-) -> Path | None:
-    """Where a scope's taught words live.
-
-    ``personal_dir`` overrides the data folder the personal dictionary is kept
-    in, and exists for the sibling apps: QUILL Lite keeps its own dictionary in
-    its own folder, because a machine that has never had QUILL installed must
-    not grow a Quill data folder because somebody taught a text editor a word.
-    QUILL passes nothing and gets ``app_data_dir()``, exactly as before.
-    """
-    if scope == "personal":
-        root = personal_dir if personal_dir is not None else app_data_dir()
-        return root / "dictionaries" / "personal.json"
-    if scope == "document":
-        if document_path is None:
-            return None
-        return document_path.with_suffix(document_path.suffix + ".quill-dict.json")
-    if scope == "project":
-        if project_root is None:
-            return None
-        return project_root / ".quill-dictionary.json"
-    return None
