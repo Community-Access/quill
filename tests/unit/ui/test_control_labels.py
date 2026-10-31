@@ -156,13 +156,15 @@ def test_the_report_names_the_worst_files_so_a_fixer_knows_where_to_start() -> N
     """The scorecard has to be actionable, not only correct.
 
     A gate that prints 165 unsorted lines is a gate whose output gets skipped.
+    The live backlog reached zero in #1693, so this runs on synthetic files: a
+    report checked only against an empty tree would never be checked again.
     """
-    worst = worst_files(_live(), limit=10)
-    assert worst, "no offenders at all -- delete the backlog and this assertion"
-    assert len(worst) <= 10
-    assert [count for _path, count in worst] == sorted(
-        (count for _path, count in worst), reverse=True
-    )
+    one = "def build(self):\n    self._a = wx.TextCtrl(self.dialog)\n"
+    three = one + "    self._b = wx.TextCtrl(self.dialog)\n    self._c = wx.Choice(self.dialog)\n"
+    sites = [*classify_source(one, "one.py"), *classify_source(three, "three.py")]
+    assert worst_files(sites, limit=10) == [("three.py", 3), ("one.py", 1)]
+    assert worst_files(sites, limit=1) == [("three.py", 3)]
+    assert worst_files(_live(), limit=10) == []
 
 
 # -- the detector itself ---------------------------------------------------
