@@ -14,7 +14,7 @@ honors the anchor's scope:
   the anchored country/state/language/genre/codec. Instant, offline included.
 - **Every branch with a search engine behind it** -> that engine: LibriVox
   (books as folders of chapters), the Internet Archive (drillable items),
-  Project Gutenberg, SomaFM, TuneIn (streams resolved), iHeart (sitemap
+  Project Gutenberg, TuneIn (streams resolved), iHeart (sitemap
   index), NOAA (call sign / SAME / county), Audius, Mixcloud, ccMixter.
 - **Anything else** -> ``None``, and the caller falls back to the crawl.
 
@@ -133,13 +133,6 @@ def _find_gutenberg(query: str, *, safe_mode: bool) -> tuple[list[BrowseNode], s
     return [leaf(station) for station in rows], "searched Project Gutenberg"
 
 
-def _find_soma(query: str, *, safe_mode: bool) -> tuple[list[BrowseNode], str]:
-    from quill.core.radio import soma_fm
-
-    rows = soma_fm.search_stations(query, safe_mode=safe_mode)
-    return [leaf(station) for station in rows], "searched SomaFM"
-
-
 def _find_tunein(query: str, *, safe_mode: bool) -> tuple[list[BrowseNode], str]:
     from quill.core.radio.directory_search import tunein_search_stations
 
@@ -237,7 +230,6 @@ _PREFIX_ROUTES: tuple[tuple[str, Any], ...] = (
     ("librivox", _find_librivox),
     ("archive", _find_archive),
     ("gutenberg", _find_gutenberg),
-    ("soma", _find_soma),
     ("tunein", _find_tunein),
     ("iheart", _find_iheart),
     ("shoutcast", _find_shoutcast),

@@ -31,7 +31,7 @@ The runtime is reference-counted: it is removed only when the last app that need
 The Studio comes as two downloads. Pick the one that fits how you work:
 
 - **Installer** (`QUILL-Audio-Studio-Setup-Shared-<version>.exe`) - installs the shared runtime, if it is not already present, plus the app. See "The installer" below.
-- **Portable** (`QUILL-Audio-Studio-Portable-Lean-<version>.zip`, about 675 MB) - fully self-contained. It runs from a USB stick with no installation and no internet, carrying a genuine, unmodified copy of Python plus the bundled offline speech and text-to-speech engines (whisper.cpp, DECtalk, eSpeak-NG, Piper, and neural Kokoro). Best when you want everything in one folder with nothing to install.
+- **Portable** (`QUILL-Audio-Studio-Portable-Lean-<version>.zip`, about 675 MB) - fully self-contained. It runs from a USB stick with no installation and no internet, carrying a genuine, unmodified copy of Python plus bundled offline speech and text-to-speech engines (whisper.cpp, eSpeak-NG, Piper, and neural Kokoro). DECtalk is not distributed with QUILL.
 
 Earlier test builds also came as a small "Lite" installer and a "Companion" zip. Those are gone. If you have one, take the installer in place of the Lite installer, or the portable zip in place of the Companion zip. Help > Check for Updates offers the right one for you.
 
@@ -138,7 +138,7 @@ Seven steps: Start, What should I read?, Who should read it?, How should chapter
 
 ### Who should read it?
 
-- **Engine** - Windows (SAPI 5), DECtalk, Piper (neural, offline), Kokoro (neural, offline), eSpeak-NG (many languages); on a Mac, the macOS system voice as well. An engine that is not installed yet is labeled "(not installed)" - see "Voices" below for downloading it.
+- **Engine** - Windows (SAPI 5), DECtalk, Piper (neural, offline), Kokoro (neural, offline), eSpeak-NG (many languages); on a Mac, the macOS system voice as well. An engine that is not installed yet is labeled "(not installed)" - see "Voices" below. DECtalk must be installed separately.
 - **Voice** and **Preview voice** - hear the chosen voice before committing. Previews play a bundled sample when one ships, or synthesize live with the real engine when it is installed.
 - **Rate (WPM)** and **Kokoro speed** - pace controls.
 - **Round-robin voices** (optional) - build an ordered rotation; article 1 gets voice 1, article 2 voice 2, wrapping around. **Add voice**, **Move Up**, **Move Down**, **Remove**. The rotation uses voices of the selected engine; switching engines clears it.
@@ -283,7 +283,7 @@ Opens the Publish dialog for this book - save your chapter edits first. See "Pub
 ### Engines
 
 - **Windows (SAPI 5)** - every voice installed on your PC, in any language; zero downloads.
-- **DECtalk** - the classic formant synthesizer, downloadable on demand.
+- **DECtalk** - the classic formant synthesizer, usable if you have installed it separately. QUILL does not distribute it or its preview samples.
 - **Piper** - neural voices that run entirely offline; download individual voices from a catalog.
 - **Kokoro** - modern neural voices, entirely on your machine, in several languages; a one-time model download.
 - **eSpeak-NG** - compact and fast, speaks a very large number of languages.
@@ -359,7 +359,7 @@ The run happens in the background with several files at once, so the window stay
 
 Everything heavy downloads on demand, with progress and a working Cancel:
 
-- The Speech Hub offers **Download Voice** for Piper voices and the Kokoro model pack, and engine downloads for DECtalk, Piper, and eSpeak-NG right where you would use them.
+- The Speech Hub offers **Download Voice** for Piper voices and the Kokoro model pack, and engine downloads for Piper and eSpeak-NG right where you would use them. DECtalk must be installed separately.
 - **Voices > Manage Speech Models...** (Ctrl+Shift+M) manages the speech-recognition engines and models used by Generate Captions and AI chapter titles: Whisper.cpp, the QUILL speech models and Faster Whisper. See "Speech recognition: the engines that listen" above.
 - **Voices > Download Optional Components...** (Ctrl+Alt+Shift+D) is the hub for everything else: see what is installed versus available, download, **Test** it in place, or **Remove** it. The audio pack here bundles the mpv player engine and ffmpeg in one download.
 - **Voices > Get FFmpeg...** is the safety net for ffmpeg alone - the tool behind compressed formats, audiobook assembly, loudness measurement, and silence detection. Both packaged flavors already bundle it.
@@ -540,7 +540,7 @@ Set the environment variable `QUILL_SAFE_MODE=1` or pass `--safe-mode` (or use `
 The Studio reads and writes the same data store as QUILL, Quill Radio, and QUILL Cast: `%APPDATA%\Quill` for an installed copy, or the `data` folder next to the exe (marked by a `storage-mode.json` file holding `{"mode": "portable"}`) for a portable one. Shared between the apps:
 
 - Speech settings: engine, voices, rates, chapter sound.
-- Downloaded engines and models: DECtalk, Piper voices, Kokoro, eSpeak-NG, speech-recognition models, the mpv engine.
+- Installed engines and models: a separately installed DECtalk, Piper voices, Kokoro, eSpeak-NG, speech-recognition models, and the mpv engine.
 - Your books list, recent source folders, and per-book listening positions.
 - AI provider configuration and service keys (keys live in the Windows Credential Manager).
 
@@ -596,7 +596,7 @@ Several things in Studio's recording and screenshot features come from lessons K
 Two Help items are worth knowing before anything else goes wrong. **Help > View Log...** opens the Studio's own log, so you can read what happened during a run instead of guessing. **Help > Save Diagnostics...** writes a small, redacted zip - the log plus what the Studio can tell about your machine and settings, with anything private scrubbed - which is exactly what to attach to a bug report. **Help > Get Help from Support...** (Ctrl+Alt+F2) writes to a person for you, already tagged with this app's name and version.
 
 - **"The ACX check measures loudness with FFmpeg, which looks missing."** Choose **Voices > Get FFmpeg...** The same applies if compressed output formats fall back to WAV, audiobook assembly fails, or silence detection cannot run - all of those are ffmpeg's jobs. The packaged installer and portable zip bundle ffmpeg; this mostly affects source checkouts.
-- **An engine shows "(not installed)" in the wizard.** Open **Voices > Speech Hub** and use the download button on that engine's tab, or use **Voices > Download Optional Components...** instead: DECtalk, Piper, eSpeak-NG, and the Kokoro models all install on demand.
+- **An engine shows "(not installed)" in the wizard.** Open **Voices > Speech Hub** and use the download button for Piper, eSpeak-NG, or Kokoro, or use **Voices > Download Optional Components...**. DECtalk is not distributed by QUILL and must be installed separately.
 - **The Preview voice button says "Download this voice to hear a preview."** No bundled sample ships for that voice and its engine is not installed yet; download the engine or voice first.
 - **A Piper voice is selected but will not speak.** The voice model has not been downloaded; the Speech Hub's Download Voice button fetches it.
 - **A book in Your books is marked "(missing)".** The file was moved or renamed. Open it from its new location with Ctrl+O (the list updates), or press Delete to drop the stale entry.

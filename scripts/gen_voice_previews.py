@@ -21,11 +21,10 @@ Usage
     python scripts/gen_voice_previews.py preview_text.txt --engines piper kokoro
     python scripts/gen_voice_previews.py preview_text.txt --overwrite
     python scripts/gen_voice_previews.py preview_text.txt --piper-exe C:/piper/piper.exe
-    python scripts/gen_voice_previews.py preview_text.txt --dectalk-exe C:/dectalk/say.exe
     python scripts/gen_voice_previews.py preview_text.txt \
         --espeak-exe "C:/Program Files/eSpeak NG/espeak-ng.exe"
 
-Engines: piper  kokoro  espeak  dectalk
+Engines: piper  kokoro  espeak  sapi5
 """
 
 from __future__ import annotations
@@ -39,7 +38,7 @@ from pathlib import Path
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 _PREVIEW_DIR = _REPO_ROOT / "quill" / "data" / "voice-previews"
-_ALL_ENGINES = ("piper", "kokoro", "espeak", "dectalk", "sapi5")
+_ALL_ENGINES = ("piper", "kokoro", "espeak", "sapi5")
 
 
 def _sapi5_short_name(voice_id: str) -> str:
@@ -333,56 +332,6 @@ def _gen_espeak(
     return generated, skipped, errored
 
 
-def _gen_dectalk(
-    text: str,
-    out_dir: Path,
-    *,
-    dectalk_exe: str | None,
-    dectalk_rate: int,
-    overwrite: bool,
-) -> tuple[int, int, int]:
-    """Synthesize all DECTalk voices. Returns (generated, skipped)."""
-    from quill.core.read_aloud import (
-        discover_dectalk_executable,
-        list_dectalk_voices,
-        synthesize_to_file_with_dectalk,
-    )
-
-    exe = discover_dectalk_executable(dectalk_exe or "")
-    if exe is None:
-        print("  [dectalk] SKIP — DECTalk executable not found (pass --dectalk-exe)")
-        return 0, 0
-
-    voices = list_dectalk_voices()
-    generated = skipped = errored = 0
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    for voice in voices:
-        mp3 = out_dir / f"{voice.id}.mp3"
-        if mp3.exists() and not overwrite:
-            print(f"  [dectalk] skip  {voice.id} (already exists)")
-            skipped += 1
-            continue
-
-        print(f"  [dectalk] gen   {voice.id} ...", end="", flush=True)
-        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as fh:
-            wav = Path(fh.name)
-        try:
-            synthesize_to_file_with_dectalk(
-                text, wav, executable_path=exe, voice=voice.id, rate=dectalk_rate
-            )
-            _wav_to_mp3(wav, mp3)
-            print(f" OK  ({mp3.stat().st_size // 1024} KB)")
-            generated += 1
-        except Exception as exc:  # noqa: BLE001
-            print(f" ERROR: {exc}")
-            errored += 1
-        finally:
-            wav.unlink(missing_ok=True)
-
-    return generated, skipped, errored
-
-
 # ---------------------------------------------------------------------------
 # CLI entry point
 # ---------------------------------------------------------------------------
@@ -426,14 +375,6 @@ def main(argv: list[str] | None = None) -> int:
             "Download any catalog Piper voice model missing from --piper-model-dir "
             "(mirror-first, same path as the in-app download) before generating."
         ),
-    )
-    parser.add_argument(
-        "--dectalk-exe",
-        metavar="PATH",
-        help="Path to DECtalk.dll (the synthesis runtime) or its folder.",
-    )
-    parser.add_argument(
-        "--dectalk-rate", type=int, default=180, help="DECTalk words-per-minute rate (default 180)."
     )
     parser.add_argument("--espeak-exe", metavar="PATH", help="Path to espeak-ng executable.")
     parser.add_argument(
@@ -503,20 +444,6 @@ def main(argv: list[str] | None = None) -> int:
             _PREVIEW_DIR / "espeak",
             espeak_exe=args.espeak_exe,
             espeak_rate=args.espeak_rate,
-            overwrite=args.overwrite,
-        )
-        total_gen += g
-        total_skip += s
-        total_err += e
-        print()
-
-    if "dectalk" in args.engines:
-        print("=== DECTalk ===")
-        g, s, e = _gen_dectalk(
-            text,
-            _PREVIEW_DIR / "dectalk",
-            dectalk_exe=args.dectalk_exe,
-            dectalk_rate=args.dectalk_rate,
             overwrite=args.overwrite,
         )
         total_gen += g

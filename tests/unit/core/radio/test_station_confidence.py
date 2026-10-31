@@ -43,7 +43,7 @@ def test_no_published_check_is_not_bad_news() -> None:
     # THE CASE THAT KEEPS THIS HONEST: every directory but Radio Browser lands
     # here, and marking them all "unknown" would badge nearly every row in the
     # app to convey nothing.
-    verdict = confidence.assess(_station(last_check_ok=None, source="SomaFM"))
+    verdict = confidence.assess(_station(last_check_ok=None, source="Shoutcast"))
     assert verdict.verdict == confidence.UNKNOWN
     assert verdict.badge == ""
     assert "No directory has published a check" in verdict.explanation

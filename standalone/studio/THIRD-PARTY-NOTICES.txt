@@ -14,23 +14,25 @@ This file is generated from quill/data/third_party/components.json by quill/tool
 Summary by licence
 ------------------
 
-  MIT License: 49 components
+  MIT License: 50 components
   BSD 3-Clause License: 21 components
   Apache License, version 2.0: 11 components
   Python Software Foundation License, version 2: 6 components
-  Not confirmed: 5 components
-  GNU General Public License, version 3: 4 components
+  GNU General Public License, version 3: 5 components
+  GNU Lesser General Public License, version 2.1: 4 components
+  BSD 2-Clause License: 3 components
   GNU General Public License, version 2: 3 components
-  GNU Lesser General Public License, version 2.1: 3 components
   Mozilla Public License, version 2.0: 3 components
   Public domain: 3 components
+  Not confirmed: 3 components
   The Unlicense (public domain dedication): 3 components
-  BSD 2-Clause License: 2 components
   ISC License: 2 components
   BSD Zero Clause License: 1 component
   GNU Affero General Public License, version 3: 1 component
   BASS licence (Un4seen Developments, proprietary freeware): 1 component
   Creative Commons Zero 1.0 (public domain dedication): 1 component
+  GCC Runtime Library Exception, version 3.1: 1 component
+  Historical Permission Notice and Disclaimer (HPND): 1 component
   GNU Lesser General Public License, version 3: 1 component
   MIT No Attribution License: 1 component
   MIT-CMU (the historical PIL licence), with the licences of Pillow's bundled libraries: 1 component
@@ -327,7 +329,7 @@ What the licence asks of us: Keep the copyright notice, the conditions and the d
 html_to_text
 ------------
 
-What it is: Turns HTML into plain text when pasting.
+What it is: A PyPI HTML processing library included in the runtime. QUILL's paste cleaner expects a different project's API and falls back when this package is installed.
 Version: 1.0.0
 Licence: Apache-2.0
 Copyright: Copyright emludei (https://github.com/emludei/html_to_text)
@@ -472,11 +474,11 @@ MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread)
 
 What it is: Runtime libraries that two of the compiled libraries were built against.
 Version: as bundled by pillow-heif and PyEnchant
-Licence: GPL-3.0 with the GCC Runtime Library Exception 3.1 (libgcc, libstdc++), which lets them be shipped with any program; MIT and BSD (libwinpthread)
+Licence: GPL-3.0 with GCC Runtime Library Exception 3.1 (libgcc and libstdc++); MIT and BSD (libwinpthread)
 Copyright: Copyright (C) Free Software Foundation, Inc.; MinGW-w64 project contributors
 Upstream: https://www.mingw-w64.org/
 How it reaches you: Bundled: it is inside the installer or the portable zip.
-What the licence asks of us: Ship the licence text. Provide the complete corresponding source of the component, or a written offer for it, for as long as we distribute it (and at least three years). Any program that is a derivative work must also be offered under GPL-3.0-compatible terms. Keep the copyright notice and the permission notice with every copy.
+What the licence asks of us: Ship the licence text. Provide the complete corresponding source of the component, or a written offer for it, for as long as we distribute it (and at least three years). Any program that is a derivative work must also be offered under GPL-3.0-compatible terms. Keep this exception with GPL-3.0 for the covered GCC runtime files. It permits eligible combinations with independent modules; it does not remove GPL obligations for the runtime libraries themselves. Keep the copyright notice and the permission notice with every copy. Keep the copyright notice, the conditions and the disclaimer in the documentation that ships with the binary.
 
 mutagen
 -------
@@ -803,11 +805,11 @@ pywin32
 
 What it is: Windows API access: window capture and update hand-off.
 Version: 312
-Licence: PSF-2.0 (Python Software Foundation style licence; the bundled Scintilla is HPND)
+Licence: PSF-2.0 (pywin32); HPND (Scintilla); LGPL-2.1 (adodbapi)
 Copyright: Copyright (c) 1994-2026 Mark Hammond and contributors
 Upstream: https://github.com/mhammond/pywin32
 How it reaches you: Bundled: it is inside the installer or the portable zip.
-What the licence asks of us: Keep the PSF copyright notice and licence with the distribution and summarise any changes we made.
+What the licence asks of us: Keep the PSF copyright notice and licence with the distribution and summarise any changes we made. Keep the copyright and permission notices in the documentation; retain the warranty disclaimer. Ship the licence text. Keep the library a separate, replaceable file (all are shipped as separate DLLs or modules). Offer the library's source, or point to the exact upstream source of the version we ship.
 
 PyWinRT (winrt-runtime and the Windows.* projections)
 -----------------------------------------------------
@@ -884,7 +886,7 @@ Licence: MIT for sound_lib; BASS is proprietary freeware from Un4seen Developmen
 Copyright: sound_lib: Copyright (c) 2010-2022 Christopher Toth; BASS: Copyright (c) 1999-2026 Un4seen Developments Ltd.
 Upstream: https://github.com/accessibleapps/sound_lib
 How it reaches you: Bundled: it is inside the installer or the portable zip.
-What the licence asks of us: Keep the copyright notice and the permission notice with every copy. Free of charge only in non-commercial software. Credit Un4seen. No source is available and none is owed. The full terms are on un4seen.com and are not reproduced here.
+What the licence asks of us: Keep the copyright notice and the permission notice with every copy. Free use is limited to non-commercial entities and products that make no money. Confirm that the QUILL publisher and product qualify before distribution; otherwise obtain a commercial BASS licence. Keep Un4seen attribution and these terms.
 
 SQLite
 ------
@@ -1064,12 +1066,12 @@ Speech engines, voices and recognition models.
 DECtalk
 -------
 
-What it is: The classic DECtalk voices. Bundled in QUILL Studio's portable edition and the QUILL Offline Edition; otherwise downloaded on request. QUILL also ships DECtalk voice samples in Voice Previews.
+What it is: The classic DECtalk voices, supported only when installed separately by the user. QUILL does not distribute the runtime or DECtalk voice previews.
 Version: 2023-10-30 build (dectalk/dectalk on GitHub)
 Licence: Not confirmed
 Copyright: Originally Digital Equipment Corporation; later Fonix Corporation and others
 Upstream: https://github.com/dectalk/dectalk
-How it reaches you: Bundled: it is inside the installer or the portable zip.
+How it reaches you: Not distributed by QUILL; usable only when installed separately.
 What the licence asks of us: Unknown until the licence is confirmed. See the review note on each entry.
 
 eSpeak NG
@@ -1087,12 +1089,12 @@ Kokoro-82M voices and kokoro-onnx
 ---------------------------------
 
 What it is: Natural-sounding offline neural voices. The model is bundled in the QUILL Offline Edition's optional component and QUILL Studio's portable edition, otherwise downloaded on request; Voice Previews has Kokoro samples.
-Version: model-files-v1.0; kokoro-onnx 0.6.1
-Licence: Apache-2.0 (Kokoro model and voices); MIT (kokoro-onnx and ONNX Runtime)
+Version: model-files-v1.0; kokoro-onnx 0.6.1; phonemizer 3.4.0; espeakng-loader 0.2.4
+Licence: Apache-2.0 (Kokoro model); MIT (kokoro-onnx and ONNX Runtime); GPL-3.0 (phonemizer and eSpeak NG runtime/data)
 Copyright: Kokoro: Copyright hexgrad; kokoro-onnx: Copyright thewh1teagle; ONNX Runtime: Copyright (c) Microsoft Corporation
 Upstream: https://huggingface.co/hexgrad/Kokoro-82M
 How it reaches you: Bundled: it is inside the installer or the portable zip.
-What the licence asks of us: Ship the licence text and keep copyright notices. Pass on any NOTICE file the component carries. Say so if we changed the component. Keep the copyright notice and the permission notice with every copy.
+What the licence asks of us: Ship the licence text and keep copyright notices. Pass on any NOTICE file the component carries. Say so if we changed the component. Keep the copyright notice and the permission notice with every copy. Ship the licence text. Provide the complete corresponding source of the component, or a written offer for it, for as long as we distribute it (and at least three years). Any program that is a derivative work must also be offered under GPL-3.0-compatible terms.
 
 Piper text-to-speech engine
 ---------------------------
@@ -1152,7 +1154,7 @@ Licence: Unicode License v3 (Unicode and CLDR data); MIT (iamcal/emoji-data)
 Copyright: Copyright (c) 1991-2026 Unicode, Inc.; emoji-data: Copyright (c) 2013 Cal Henderson
 Upstream: https://www.unicode.org/
 How it reaches you: Bundled: it is inside the installer or the portable zip.
-What the licence asks of us: Keep the Unicode copyright and permission notice with the data or in its documentation. The full text is at unicode.org and is not reproduced here. Keep the copyright notice and the permission notice with every copy.
+What the licence asks of us: Keep the Unicode copyright and permission notice with the data or its documentation; the complete licence text is reproduced here. Keep the copyright notice and the permission notice with every copy.
 
 English thesaurus (th_en_US_v2, MyThes format)
 ----------------------------------------------
@@ -1181,11 +1183,11 @@ Radio station catalog seed
 
 What it is: A starting directory of stations and audio books, so searching works offline on first launch. It ships in quill/data, so every product carries it.
 Version: built per release (quill/data/radio-catalog/seed.db.xz)
-Licence: Radio Browser directory data (terms not confirmed); SomaFM channel list; Project Gutenberg audio records (public domain works); Wikidata (CC0-1.0)
-Copyright: Radio Browser community (radio-browser.info); SomaFM; Project Gutenberg; Wikidata contributors
+Licence: Radio Browser directory data (public domain); Project Gutenberg catalog records; Wikidata (CC0-1.0)
+Copyright: Radio Browser community; Project Gutenberg contributors; Wikidata contributors
 Upstream: https://www.radio-browser.info/
 How it reaches you: Bundled: it is inside the installer or the portable zip.
-What the licence asks of us: Unknown until the licence is confirmed. See the review note on each entry. None.
+What the licence asks of us: None.
 
 Voice Previews (synthesised samples)
 ------------------------------------
@@ -1193,7 +1195,7 @@ Voice Previews (synthesised samples)
 What it is: Short recordings so you can hear a voice before downloading it.
 Version: as committed (quill/data/voice-previews)
 Licence: Generated by QUILL from the voices named in each sample; the terms follow each voice
-Copyright: Samples made by the QUILL project with Piper, Kokoro, eSpeak NG, DECtalk and Windows SAPI 5 voices
+Copyright: Samples made by the QUILL project with Piper, Kokoro, eSpeak NG and Windows SAPI 5 voices
 How it reaches you: Bundled: it is inside the installer or the portable zip.
 What the licence asks of us: Unknown until the licence is confirmed. See the review note on each entry.
 
@@ -1238,12 +1240,13 @@ What the licence asks of us: Keep the copyright notice and the permission notice
 Page-turn sound (quill/assets/audio/page_turn.wav)
 --------------------------------------------------
 
-What it is: The default sound between chapters in spoken audiobooks.
-Version: as committed
-Licence: Not confirmed
-Copyright: Unknown
+What it is: An original synthesized page-turn-like default sound between chapters in spoken audiobooks; no sampled audio is used.
+Version: generated by scripts/gen_page_turn.py
+Licence: MIT (QUILL project)
+Copyright: Copyright (c) 2026 Blind Information Technology Solutions (BITS); Copyright (c) 2026 Jeff Bishop
+Upstream: https://github.com/Community-Access/quill
 How it reaches you: Bundled: it is inside the installer or the portable zip.
-What the licence asks of us: Unknown until the licence is confirmed. See the review note on each entry.
+What the licence asks of us: Keep the copyright notice and the permission notice with every copy.
 
 QUILL sound packs (Ink and the indent-tone packs)
 -------------------------------------------------
@@ -2180,14 +2183,31 @@ BASS licence (Un4seen Developments, proprietary freeware)
 
 Used by: sound_lib (with the BASS audio libraries).
 
-What it asks of us: Free of charge only in non-commercial software. Credit Un4seen. No source is available and none is owed. The full terms are on un4seen.com and are not reproduced here.
+What it asks of us: Free use is limited to non-commercial entities and products that make no money. Confirm that the QUILL publisher and product qualify before distribution; otherwise obtain a commercial BASS licence. Keep Un4seen attribution and these terms.
 
-The full text is not reproduced here. It is published at https://www.un4seen.com/bass.html#license.
+BASS Licensing Terms
+Source: https://www.un4seen.com/bass.html#license
+Retrieved 2026-10-27.
+
+BASS is free for non-commercial use. If you are a non-commercial entity (eg. an individual) and you are not making any money from your product (through sales, advertising, etc) then you can use BASS in it for free. Otherwise, one of the following licences will be required.
+Purchase
+Shareware licence: €125
+The "shareware" licence allows the usage of BASS in an unlimited number of your shareware ("try before you buy") products, which must sell for no more than €40 each. Non-shareware products are also permitted, but the price limit is €10 in that case. With subscription models, the limit applies to the annual subscription fee. The limit can be raised by purchasing duplicate licences (for the same platform), eg. 2 licences doubles it. If you are an individual (not a corporation) making and selling your own software, this is the licence for you.
+Purchase
+Single Commercial licence: €950 (iOS or Android: €475)
+The "single commercial" licence allows the usage of BASS in one commercial product.
+Purchase
+Unlimited Commercial licence: €3450
+The "unlimited commercial" licence allows the usage of BASS in an unlimited number of your commercial products. This licence applies to a single site/location at which products are being developed with BASS.
+These licences are on a per-platform basis. There is a 40% reduction on each additional platform (excluding the iOS/Android Single Commercial specials), eg. Win32 and macOS Shareware licences would cost €200 (125+75) instead of €250.
+In all cases there are no royalties to pay and you can use future BASS updates without further cost. Reselling/sublicensing is not permitted. Your products must be end-user products, eg. not components used by other products. Please note that these licences only cover your own software, not the publishing of other's software. If you have got any questions, please
+get in touch
+.
 
 BSD 2-Clause License
 --------------------
 
-Used by: feedparser, Pygments.
+Used by: feedparser, Pygments, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread).
 
 What it asks of us: Keep the copyright notice, the conditions and the disclaimer in the documentation that ships with the binary.
 
@@ -2377,6 +2397,47 @@ Affirmer's express Statement of Purpose.
 
 For more information, please see
 <http://creativecommons.org/publicdomain/zero/1.0/>
+
+GCC Runtime Library Exception, version 3.1
+------------------------------------------
+
+Used by: MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread).
+
+What it asks of us: Keep this exception with GPL-3.0 for the covered GCC runtime files. It permits eligible combinations with independent modules; it does not remove GPL obligations for the runtime libraries themselves.
+
+GCC RUNTIME LIBRARY EXCEPTION
+
+Version 3.1, 31 March 2009
+
+General information: http://www.gnu.org/licenses/gcc-exception.html
+Copyright (C) 2009 Free Software Foundation, Inc. <http://fsf.org/>
+
+Everyone is permitted to copy and distribute verbatim copies of this license document, but changing it is not allowed.
+This GCC Runtime Library Exception ("Exception") is an additional permission under section 7 of the GNU General Public License, version 3 ("GPLv3"). It applies to a given file (the "Runtime Library") that bears a notice placed by the copyright holder of the file stating that the file is governed by GPLv3 along with this Exception.
+
+When you use GCC to compile a program, GCC may combine portions of certain GCC header files and runtime libraries with the compiled program. The purpose of this Exception is to allow compilation of non-GPL (including proprietary) programs to use, in this way, the header files and runtime libraries covered by this Exception.
+
+0. Definitions.
+
+A file is an "Independent Module" if it either requires the Runtime Library for execution after a Compilation Process, or makes use of an interface provided by the Runtime Library, but is not otherwise based on the Runtime Library.
+
+"GCC" means a version of the GNU Compiler Collection, with or without modifications, governed by version 3 (or a specified later version) of the GNU General Public License (GPL) with the option of using any subsequent versions published by the FSF.
+
+"GPL-compatible Software" is software whose conditions of propagation, modification and use would permit combination with GCC in accord with the license of GCC.
+
+"Target Code" refers to output from any compiler for a real or virtual target processor architecture, in executable form or suitable for input to an assembler, loader, linker and/or execution phase. Notwithstanding that, Target Code does not include data in any format that is used as a compiler intermediate representation, or used for producing a compiler intermediate representation.
+
+The "Compilation Process" transforms code entirely represented in non-intermediate languages designed for human-written code, and/or in Java Virtual Machine byte code, into Target Code. Thus, for example, use of source code generators and preprocessors need not be considered part of the Compilation Process, since the Compilation Process can be understood as starting with the output of the generators or preprocessors.
+
+A Compilation Process is "Eligible" if it is done using GCC, alone or with other GPL-compatible software, or if it is done without using any work based on GCC. For example, using non-GPL-compatible Software to optimize any GCC intermediate representations would not qualify as an Eligible Compilation Process.
+
+1. Grant of Additional Permission.
+
+You have permission to propagate a work of Target Code formed by combining the Runtime Library with Independent Modules, even if such propagation would otherwise violate the terms of GPLv3, provided that all Target Code was generated by Eligible Compilation Processes. You may then convey such a combination under terms of your choice, consistent with the licensing of the Independent Modules.
+
+2. No Weakening of GCC Copyleft.
+
+The availability of this Exception does not imply any general presumption that third-party software is unaffected by the copyleft requirements of the license of GCC.
 
 GNU General Public License, version 2
 -------------------------------------
@@ -2728,7 +2789,7 @@ Public License instead of this License.
 GNU General Public License, version 3
 -------------------------------------
 
-Used by: MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), FFmpeg (ffmpeg.exe and ffprobe.exe), libmpv (libmpv-2.dll), eSpeak NG.
+Used by: MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), FFmpeg (ffmpeg.exe and ffprobe.exe), libmpv (libmpv-2.dll), eSpeak NG, Kokoro-82M voices and kokoro-onnx.
 
 What it asks of us: Ship the licence text. Provide the complete corresponding source of the component, or a written offer for it, for as long as we distribute it (and at least three years). Any program that is a derivative work must also be offered under GPL-3.0-compatible terms.
 
@@ -3407,6 +3468,34 @@ the library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.  But first, please read
 <https://www.gnu.org/licenses/why-not-lgpl.html>.
 
+Historical Permission Notice and Disclaimer (HPND)
+--------------------------------------------------
+
+Used by: pywin32.
+
+What it asks of us: Keep the copyright and permission notices in the documentation; retain the warranty disclaimer.
+
+License for Lexilla, Scintilla, and SciTE
+
+Copyright 1998-2021 by Neil Hodgson <neilh@scintilla.org>
+
+All Rights Reserved
+
+Permission to use, copy, modify, and distribute this software and its
+documentation for any purpose and without fee is hereby granted,
+provided that the above copyright notice appear in all copies and that
+both that copyright notice and this permission notice appear in
+supporting documentation.
+
+NEIL HODGSON DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS
+SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS, IN NO EVENT SHALL NEIL HODGSON BE LIABLE FOR ANY
+SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE
+OR PERFORMANCE OF THIS SOFTWARE.
+
 ISC License
 -----------
 
@@ -3433,7 +3522,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 GNU Lesser General Public License, version 2.1
 ----------------------------------------------
 
-Used by: Prism (prismatoid), PyEnchant, python-soundfile (with libsndfile).
+Used by: Prism (prismatoid), PyEnchant, python-soundfile (with libsndfile), pywin32.
 
 What it asks of us: Ship the licence text. Keep the library a separate, replaceable file (all are shipped as separate DLLs or modules). Offer the library's source, or point to the exact upstream source of the version we ship.
 
@@ -4118,7 +4207,7 @@ Library.
 MIT License
 -----------
 
-Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, pip, platform_utils, platformdirs, pydantic, pydantic-core, python-docx, python-pptx, python-sounddevice (with PortAudio), PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, Kokoro-82M voices and kokoro-onnx, Piper text-to-speech engine, Whisper models (GGML format), whisper.cpp, Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), App icons, QUILL sound packs (Ink and the indent-tone packs), Weather alert sound (quill/assets/audio/weather_alert.wav).
+Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, pip, platform_utils, platformdirs, pydantic, pydantic-core, python-docx, python-pptx, python-sounddevice (with PortAudio), PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, Kokoro-82M voices and kokoro-onnx, Piper text-to-speech engine, Whisper models (GGML format), whisper.cpp, Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), App icons, Page-turn sound (quill/assets/audio/page_turn.wav), QUILL sound packs (Ink and the indent-tone packs), Weather alert sound (quill/assets/audio/weather_alert.wav).
 
 What it asks of us: Keep the copyright notice and the permission notice with every copy.
 
@@ -6501,14 +6590,52 @@ Unicode License v3
 
 Used by: Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data).
 
-What it asks of us: Keep the Unicode copyright and permission notice with the data or in its documentation. The full text is at unicode.org and is not reproduced here.
+What it asks of us: Keep the Unicode copyright and permission notice with the data or its documentation; the complete licence text is reproduced here.
 
-The full text is not reproduced here. It is published at https://www.unicode.org/license.txt.
+UNICODE LICENSE V3
+
+COPYRIGHT AND PERMISSION NOTICE
+
+Copyright © 1991-2026 Unicode, Inc.
+
+NOTICE TO USER: Carefully read the following legal agreement. BY
+DOWNLOADING, INSTALLING, COPYING OR OTHERWISE USING DATA FILES, AND/OR
+SOFTWARE, YOU UNEQUIVOCALLY ACCEPT, AND AGREE TO BE BOUND BY, ALL OF THE
+TERMS AND CONDITIONS OF THIS AGREEMENT. IF YOU DO NOT AGREE, DO NOT
+DOWNLOAD, INSTALL, COPY, DISTRIBUTE OR USE THE DATA FILES OR SOFTWARE.
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of data files and any associated documentation (the "Data Files") or
+software and any associated documentation (the "Software") to deal in the
+Data Files or Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, and/or sell
+copies of the Data Files or Software, and to permit persons to whom the
+Data Files or Software are furnished to do so, provided that either (a)
+this copyright and permission notice appear with all copies of the Data
+Files or Software, or (b) this copyright and permission notice appear in
+associated Documentation.
+
+THE DATA FILES AND SOFTWARE ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY
+KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF
+THIRD PARTY RIGHTS.
+
+IN NO EVENT SHALL THE COPYRIGHT HOLDER OR HOLDERS INCLUDED IN THIS NOTICE
+BE LIABLE FOR ANY CLAIM, OR ANY SPECIAL INDIRECT OR CONSEQUENTIAL DAMAGES,
+OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
+ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THE DATA
+FILES OR SOFTWARE.
+
+Except as contained in this notice, the name of a copyright holder shall
+not be used in advertising or otherwise to promote the sale, use or other
+dealings in these Data Files or Software without prior written
+authorization of the copyright holder.
 
 Not confirmed
 -------------
 
-Used by: DECtalk, Piper voices, Radio station catalog seed, Voice Previews (synthesised samples), Page-turn sound (quill/assets/audio/page_turn.wav).
+Used by: DECtalk, Piper voices, Voice Previews (synthesised samples).
 
 What it asks of us: Unknown until the licence is confirmed. See the review note on each entry.
 

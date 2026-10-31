@@ -37,7 +37,6 @@ LIVE_ONLY = [
 
 _SOURCE_LABELS = {
     "radio_browser": "Radio Browser",
-    "soma_fm": "SomaFM",
     "xiph": "Xiph / Icecast",
     "librivox": "LibriVox",
     "gutenberg": "Project Gutenberg",

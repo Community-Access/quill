@@ -1,5 +1,11 @@
 # Quill Weather -- Product Requirements
 
+**Distribution licensing:** Installed Weather editions use the QuillVille
+Runtime, which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through
+GLOW, although Weather does not expose GLOW. Release-specific source and legal
+review are required before the next public release; inspect portable builds
+separately. See the PyMuPDF distribution review and Licences and Notices.
+
 This is the complete, authoritative product-requirements document for the QUILL Weather feature set -- the weather code shared by the standalone **Quill Weather** app, **Quill Radio**, and **QUILL**. It moved here from the Quill Radio PRD when Quill Weather became its own app (2.2.0). For what is specific to Quill Weather *as a standalone app* (its own process, tray, run-at-login, independent distribution), see the app-specific notes at the end of this document.
 
 ## Implementation status (2.2.1)

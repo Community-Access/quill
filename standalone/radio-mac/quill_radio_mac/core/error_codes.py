@@ -11,7 +11,7 @@ greppable, with no incrementing numbers to keep in sync by hand.
 
 Only :class:`CodedError` itself lives here. The radio modules each
 declare their own coded exception next to the code they protect
-(``RadioBrowserError``, ``SomaFmError``, ``TritonResolverError``,
+(``RadioBrowserError``, ``TritonResolverError``,
 ``LinkFinderError``, ``RecordingError``, and the task manager's
 ``CancelledError``), exactly as upstream does.
 

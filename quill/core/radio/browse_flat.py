@@ -24,7 +24,6 @@ from quill.core.radio import (
     radio_browser,
     radio_paradise,
     reading_services,
-    soma_fm,
     westwood_one,
 )
 from quill.core.radio.models import RadioStation
@@ -57,6 +56,5 @@ FLAT: dict[str, Callable[[bool], list[RadioStation]]] = {
     "nfb": lambda _safe: nfb_media.nfb_media_stations(),
     "westwood": lambda _safe: westwood_one.westwood_one_stations(),
     "reading": lambda safe: reading_services.list_reading_services(safe_mode=safe),
-    "soma": lambda safe: soma_fm.search_stations("", safe_mode=safe),
     "radioparadise": lambda safe: radio_paradise.fetch_stations(safe_mode=safe),
 }

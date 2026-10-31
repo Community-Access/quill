@@ -21,7 +21,6 @@ from quill.core.radio import (
     m3u_catalog,
     radio_browser,
     search_sources,
-    soma_fm,
     station_confidence,
     tunein,
     xiph,
@@ -58,7 +57,6 @@ from quill.ui.surface_lifetime import surface_tasks
 
 _FAVORITES = "Favorites"
 _ACB_MEDIA = acb_media.CATEGORY_LABEL
-_SOMAFM = "SomaFM"
 #: TuneIn's category tree (Music, Talk, Sports, Local, ...), browsed as folders.
 _TUNEIN_BROWSE = "TuneIn"
 #: Community M3U (junguler catalog): a genre-picker category, browsed on demand.
@@ -71,13 +69,12 @@ _XIPH_DIR = "Xiph Directory"
 _POPULAR = "Popular Stations"
 _SEARCH_RESULTS = "Search Results"
 #: Browsable-without-search categories come first; Search Results last. ACB
-#: Media and NFB Radio are bundled (instant); SomaFM and Music Genres fetch on
-#: demand. Kelly's request: pick a source and see its stations, no query needed.
+#: Media and NFB Radio are bundled (instant); Music Genres fetches on demand.
+#: Kelly's request: pick a source and see its stations, no query needed.
 _CATEGORIES = (
     _FAVORITES,
     _POPULAR,
     _ACB_MEDIA,
-    _SOMAFM,
     _TUNEIN_BROWSE,
     _M3U_GENRES,
     _XIPH_DIR,
@@ -94,7 +91,6 @@ _GENRE_SOURCES = {_M3U_GENRES: m3u_catalog, _XIPH_DIR: xiph}
 BROWSE_MENU_CATEGORIES: tuple[str, ...] = (
     _POPULAR,
     _ACB_MEDIA,
-    _SOMAFM,
     _TUNEIN_BROWSE,
     _M3U_GENRES,
     _XIPH_DIR,
@@ -113,7 +109,6 @@ _SOURCE_FACETS = (
     "iHeart",
     "TuneIn",
     "Podcasts",  # every podcast source name answers here (station_source_labels)
-    "SomaFM",
     "ACB Media",
     m3u_catalog.CATEGORY_LABEL,
     xiph.CATEGORY_LABEL,
@@ -244,12 +239,12 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         self._fill_status: str = ""
         self._search_results: list[RadioStation] = []
         # Pagination state for #1064: the query behind the current results, the
-        # RadioBrowser and SomaFM halves kept apart so paging appends only more
-        # RadioBrowser rows, the next page's offset, and whether the last page
+        # RadioBrowser and blended results kept apart so paging appends only
+        # more RadioBrowser rows, the next page's offset, and whether the last page
         # was full (so more may exist).
         self._search_rb: list[RadioStation] = []
-        #: SomaFM + TuneIn + iHeart results, blended after the RadioBrowser page
-        #: and kept at the end across "More Stations" paging (which pages only
+        #: TuneIn + iHeart results, blended after the RadioBrowser page and kept
+        #: at the end across "More Stations" paging (which pages only
         #: RadioBrowser).
         self._search_extras: list[RadioStation] = []
         #: The iHeart sitemap station index, fetched once per dialog session on
@@ -348,7 +343,7 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
         cat_col.Add(wx.StaticText(self._surface, label="Categor&y"), 0, wx.BOTTOM, 4)
         self._category_list = wx.ListBox(self._surface, choices=list(_CATEGORIES))
         self._category_list.SetName(
-            "Station category; Favorites, Popular Stations, ACB Media, SomaFM, "
+            "Station category; Favorites, Popular Stations, ACB Media, "
             "TuneIn (a folder tree), Music Genres, and the Xiph Directory browse "
             "without a search, Search Results appears after a search"
         )
@@ -789,13 +784,6 @@ class StationBrowserDialog(RecentSearchesMixin, ResultsViewMixin):
                 loading="Loading the most popular stations...",
                 done=lambda n: f"{n} of the most popular stations right now.",
                 error="Could not load popular stations",
-            )
-        elif category == _SOMAFM:
-            self._browse_async(
-                lambda: soma_fm.search_stations("", safe_mode=self._safe_mode),
-                loading="Loading SomaFM channels...",
-                done=lambda n: f"{n} SomaFM channel{'' if n == 1 else 's'}.",
-                error="Could not reach SomaFM",
             )
         elif category == _TUNEIN_BROWSE:
             self._populate_tunein_tree()

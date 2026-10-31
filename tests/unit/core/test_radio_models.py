@@ -61,6 +61,25 @@ def test_from_dict_requires_name_and_stream_url() -> None:
     assert RadioStation.from_dict({}) is None
 
 
+def test_from_dict_preserves_listener_saved_somafm_favorites() -> None:
+    for data in (
+        {"name": "Old favorite", "stream_url": "https://ice.somafm.com/live"},
+        {
+            "name": "Old favorite",
+            "stream_url": "https://stream.example.org/live",
+            "homepage": "https://somafm.com/",
+        },
+        {
+            "name": "Old favorite",
+            "stream_url": "https://stream.example.org/live",
+            "source": "SomaFM",
+        },
+    ):
+        station = RadioStation.from_dict(data)
+        assert station is not None
+        assert station.stream_url == data["stream_url"]
+
+
 def test_from_dict_tolerates_junk_numeric_fields() -> None:
     station = RadioStation.from_dict({
         "name": "WXYZ",
