@@ -220,7 +220,7 @@ class DocumentSpellingMixin(DocumentSpellingNavigationMixin):
 
         text = self.doc_text.text
         caret = self.control.GetInsertionPoint()
-        item = misspelling_behind(text, caret, self._spell_dictionary())
+        item = misspelling_behind(text, caret, self._spell_dictionary(), filename=self.path)
         if item is None or self.spell_ignores.skips(text, item):
             self._last_live_word = None
             return
@@ -336,7 +336,10 @@ class DocumentSpellingMixin(DocumentSpellingNavigationMixin):
             # one word was O(N) per arrow press (bad.md S8, V3).
             text = self.doc_text.text
             item = misspelling_at_position(
-                text, int(self.control.GetInsertionPoint()), self._spell_dictionary()
+                text,
+                int(self.control.GetInsertionPoint()),
+                self._spell_dictionary(),
+                filename=self.path,
             )
             if item is None:
                 return
@@ -436,7 +439,7 @@ class DocumentSpellingMixin(DocumentSpellingNavigationMixin):
         # QUILL has always used the walk-left form here; this is QUILL Lite
         # catching up rather than a new idea.
         item = misspelling_at_position(
-            text, self.control.GetInsertionPoint(), self._spell_dictionary()
+            text, self.control.GetInsertionPoint(), self._spell_dictionary(), filename=self.path
         )
         if item is None or self.spell_ignores.skips(text, item):
             self._announce("No misspelling at the cursor")
@@ -504,7 +507,7 @@ class DocumentSpellingMixin(DocumentSpellingNavigationMixin):
         # cmd_spell_word_at_cursor: Alt+F7 has to teach the word the caret is
         # in, not only one that happens to start under it.
         item = misspelling_at_position(
-            text, self.control.GetInsertionPoint(), self._spell_dictionary()
+            text, self.control.GetInsertionPoint(), self._spell_dictionary(), filename=self.path
         )
         if item is None or self.spell_ignores.skips(text, item):
             self._announce("No misspelling at the cursor")

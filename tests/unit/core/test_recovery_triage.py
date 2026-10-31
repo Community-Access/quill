@@ -17,6 +17,8 @@ from quill.core.recovery_triage import (
     describe_tidy,
     fingerprint,
     is_untitled,
+    opening_words,
+    opening_words_of_text,
     row_label,
     size_phrase,
     summarise_recovery,
@@ -245,3 +247,37 @@ def test_describe_restored_never_goes_quiet() -> None:
     # Always says the work is still unsaved: restoring is not saving, and a
     # window that looks like a document is exactly where that gets forgotten.
     assert "Save each one to keep it." in describe_restored(2, 5)
+
+
+def test_the_row_quotes_how_the_document_begins(tmp_path: Path) -> None:
+    """Asked for on the QUILLVille list: "Sometimes the date/time isn't enough".
+
+    Two untitled windows from the same hour are told apart by their opening
+    words, and only by them.
+    """
+    text = "# Dear Margaret,\n\nThank you for the lovely flowers you sent"
+    letter = _slot(tmp_path, "a.txt", text)
+    notes = _slot(tmp_path, "b.txt", "Meeting notes")
+    quoted = 'begins "Dear Margaret, Thank you for the lovely flowers..."'
+    assert quoted in row_label(letter, 1, now=_NOW)
+    assert 'begins "Meeting notes"  --  ' in row_label(notes, 1, now=_NOW)
+
+
+def test_a_rich_row_quotes_its_words_not_its_rtf(tmp_path: Path) -> None:
+    rtf = r"{\rtf1\ansi{\fonttbl{\f0 Arial;}}\f0 Chapter \b one\b0\par It was late}"
+    slot = _slot(tmp_path, "a.rtf", rtf, mode="rich")
+    assert opening_words(slot) == "Chapter one It was late"
+
+
+def test_a_blank_or_unreadable_row_quotes_nothing(tmp_path: Path) -> None:
+    blank = _slot(tmp_path, "a.txt", "   \n\t ")
+    assert opening_words(blank) == ""
+    assert "begins" not in row_label(blank, 1, now=_NOW)
+    gone = FakeSlot(mode="plain", original_path="", content_path=tmp_path / "missing.txt")
+    assert opening_words(gone) == ""
+
+
+def test_opening_words_stops_at_the_count() -> None:
+    assert opening_words_of_text("one two three", count=2) == "one two..."
+    assert opening_words_of_text("one two", count=2) == "one two"
+    assert opening_words_of_text("> - [x] **done** item") == "- x done item"

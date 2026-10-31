@@ -7611,11 +7611,9 @@ it never talks over your screen reader in the middle of a sentence.</p>
 <p>The check waits until you have <strong>finished</strong> a word, with
 a space, a comma or a new line. It does not judge a word you are still
 typing, so “recie” on the way to “receive” never sets it off.</p>
-<p>Some places are full of things that look like misspellings, so the
-live check stays quiet there: web addresses, email addresses, Markdown
-inline code (between backticks) and fenced code blocks. The F7 review
-still covers the whole document; only the alert as you type skips
-them.</p>
+<p>Web addresses, email addresses, file paths and code are never treated
+as misspellings. <strong>What spell check reads</strong>, below, has the
+details.</p>
 <p>You can switch the spelling sound on or off by itself in
 <strong>Tools &gt; Reading and Dictation &gt; Sound Scheme…</strong>
 (look for “Possible misspelling as you type”). The spell check as you
@@ -7634,9 +7632,40 @@ addresses inside them are skipped.</p>
 <strong><code>spellcheck_skip_code_files</code></strong>, and it is on
 by default. Turn it off if you want the live check everywhere, whatever
 the file type.</p>
-<p><code>F7</code> is never affected. The Spelling Review checks
-whatever document you run it on, a code file included. Pressing
-<code>F7</code> is you asking for a check.</p>
+<p><code>F7</code> is never silenced by this setting. The Spelling
+Review checks whatever document you run it on, a code file included,
+reading its strings and comments. Pressing <code>F7</code> is you asking
+for a check.</p>
+<h5 id="what-spell-check-reads">What spell check reads</h5>
+<p>Spell check reads what you wrote as language, and passes over the
+rest. This applies everywhere: checking as you type, the
+<strong>F7</strong> review, next and previous misspelling, the list of
+every misspelling, and the context menu.</p>
+<ul>
+<li><strong>In any document</strong>, it skips web addresses
+(<code>www.example.com</code>, <code>https://...</code>, or a bare
+<code>example.com</code>), email addresses, file paths and file names
+such as <code>notes.txt</code>. Before this, checking
+<code>www.example.com</code> stopped on <code>www</code>,
+<code>example</code> and <code>com</code> one by one.</li>
+<li><strong>In Markdown</strong>, it also skips inline code, fenced code
+blocks, HTML tags and link addresses. It still checks the link text,
+because someone wrote that to be read.</li>
+<li><strong>In a web page or XML file</strong>, it checks the text
+between the tags and the comments. It skips the tags themselves, but it
+does check the words people read or hear: <code>alt</code>,
+<code>title</code>, <code>aria-label</code> and
+<code>placeholder</code>.</li>
+<li><strong>In code</strong>, such as Python, JavaScript, C#, SQL, CSS,
+PowerShell or JSON, it checks only the strings and the comments. Inside
+those it still skips placeholders like <code>{0}</code> and
+<code>%s</code>, escapes like <code>\n</code>, and names such as
+<code>snake_case</code> or <code>camelCase</code>.</li>
+</ul>
+<p>The file’s extension decides which rule applies, and an unsaved
+document is treated as ordinary writing. Code is read with Pygments,
+which knows over five hundred languages; if it ever can’t load, a
+simpler built-in reader does the same job.</p>
 <h4 id="spell-check-a-document-before-saving">Spell check a document
 before saving</h4>
 <p>Turn on <strong>Settings &gt; Editing &gt; Spell check a document
@@ -18378,7 +18407,9 @@ unclean exit, Crash Recovery and Email Support</h4>
 or a forced close, the next launch shows <strong>Crash
 Recovery</strong>, which offers your unsaved work back. Its
 <strong>Email Support</strong> button (it used to say “Send Bug Report”)
-writes a message to support for this kind of exit too:</p>
+writes a message to support for this kind of exit too. The first
+sentence also quotes how the document begins, so you know which work it
+is before you read the preview:</p>
 <ol type="1">
 <li>Press <strong>Email Support</strong> in Crash Recovery.</li>
 <li>Your mail program opens with a message to <strong><a

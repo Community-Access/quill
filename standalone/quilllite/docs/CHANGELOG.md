@@ -1,5 +1,17 @@
 # QUILL Lite changelog
 
+## Unreleased
+
+### Spell check and recovery (2026-10-30)
+
+- Spell check no longer stops on the parts of a web address. It skips web
+  addresses, email addresses, file paths and file names in every document,
+  and in code or a web page it reads only what someone wrote as language.
+  User guide: **What spell check reads**. Suggested by Chris Nova.
+- The recovery window quotes how each document begins, so two untitled
+  windows from the same afternoon are easy to tell apart. Also suggested by
+  Chris Nova.
+
 ## 1.2.0 -- 2026-10-03
 
 Testing rebuild: **1.2.0 (build 6)**, following builds 2, 3, 4 and 5; builds 2

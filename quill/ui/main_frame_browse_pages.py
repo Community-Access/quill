@@ -49,7 +49,11 @@ class BrowsePagesMixin:
 
         text = self._browse_text()  # type: ignore[attr-defined]
         try:
-            found = list_misspellings(text, self._spell_dictionary())  # type: ignore[attr-defined]
+            found = list_misspellings(
+                text,
+                self._spell_dictionary(),  # type: ignore[attr-defined]
+                filename=getattr(getattr(self, "document", None), "path", None),
+            )
         except Exception:  # noqa: BLE001 - a spell-check hiccup never breaks browse mode
             found = []
         if not found:

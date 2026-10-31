@@ -2780,7 +2780,9 @@ class MainFrame(
 
         # Check spelling.
         dictionary = self._spell_dictionary()
-        misspelling = misspelling_at_position(text, caret, dictionary)
+        misspelling = misspelling_at_position(
+            text, caret, dictionary, filename=getattr(self.document, "path", None)
+        )
         is_misspelled = misspelling is not None
         suggestions = suggest_words(misspelling.word, dictionary) if misspelling else ()
 
@@ -2905,7 +2907,11 @@ class MainFrame(
             from quill.core.spelling.context_menu import spelling_context
 
             spell_context = spelling_context(
-                text, caret, self._spell_dictionary(), self.spell_ignores()
+                text,
+                caret,
+                self._spell_dictionary(),
+                self.spell_ignores(),
+                filename=getattr(self.document, "path", None),
             )
         if spell_context is not None:
             self._append_spelling_corrections(menu, spell_context)

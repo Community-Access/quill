@@ -44,7 +44,7 @@ class DocumentSpellingNavigationMixin:
         dictionary = self._spell_dictionary()
         items = [
             item
-            for item in list_misspellings(text, dictionary)
+            for item in list_misspellings(text, dictionary, filename=self.path)
             if not self.spell_ignores.skips(text, item)
         ]
         if not items:
@@ -94,10 +94,10 @@ class DocumentSpellingNavigationMixin:
         # by the search itself -- each hop starts past the last hit, so a
         # document of nothing but ignored words ends rather than loops.
         dictionary = self._spell_dictionary()
-        item = finder(text, caret, dictionary)
+        item = finder(text, caret, dictionary, filename=self.path)
         while item is not None and self.spell_ignores.skips(text, item):
             caret = item.end if forward else item.start
-            item = finder(text, caret, dictionary)
+            item = finder(text, caret, dictionary, filename=self.path)
         if item is None:
             # The count in the other direction, from the shared sentence QUILL
             # has said since #9. "No further misspellings" on its own reads as
@@ -107,7 +107,11 @@ class DocumentSpellingNavigationMixin:
 
             self._announce(
                 no_misspelling_message(
-                    text, self.control.GetInsertionPoint(), dictionary, ahead=forward
+                    text,
+                    self.control.GetInsertionPoint(),
+                    dictionary,
+                    ahead=forward,
+                    filename=self.path,
                 )
             )
             return

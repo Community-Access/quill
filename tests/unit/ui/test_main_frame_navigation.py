@@ -360,10 +360,12 @@ def test_misspellings_behind_message_counts_the_other_direction(
     # The unit env has no real spell backend, so drive the message logic with a
     # single known misspelling at [0, 5) (a stand-in for "teest good").
     miss = Misspelling(word="teest", start=0, end=5)
-    monkeypatch.setattr(mf, "list_misspellings", lambda _t, _d: [miss])
-    monkeypatch.setattr(mf, "next_misspelling", lambda _t, c, _d: miss if c <= miss.start else None)
+    monkeypatch.setattr(mf, "list_misspellings", lambda _t, _d, **_k: [miss])
     monkeypatch.setattr(
-        mf, "previous_misspelling", lambda _t, c, _d: miss if c > miss.end else None
+        mf, "next_misspelling", lambda _t, c, _d, **_k: miss if c <= miss.start else None
+    )
+    monkeypatch.setattr(
+        mf, "previous_misspelling", lambda _t, c, _d, **_k: miss if c > miss.end else None
     )
     frame = _build_frame("teest good")
     # Caret past the only misspelling: nothing ahead, one behind.
@@ -379,9 +381,9 @@ def test_misspellings_behind_message_reports_none_when_clean(
 ) -> None:
     from quill.core import spellcheck as mf
 
-    monkeypatch.setattr(mf, "list_misspellings", lambda _t, _d: [])
-    monkeypatch.setattr(mf, "next_misspelling", lambda _t, _c, _d: None)
-    monkeypatch.setattr(mf, "previous_misspelling", lambda _t, _c, _d: None)
+    monkeypatch.setattr(mf, "list_misspellings", lambda _t, _d, **_k: [])
+    monkeypatch.setattr(mf, "next_misspelling", lambda _t, _c, _d, **_k: None)
+    monkeypatch.setattr(mf, "previous_misspelling", lambda _t, _c, _d, **_k: None)
     frame = _build_frame("good good")
     assert (
         frame._misspellings_behind_message("good good", 9, {"good"}, ahead=True)
@@ -1186,7 +1188,7 @@ def test_open_misspelling_list_jumps_to_selected_occurrence(
     frame._show_tree_navigator = lambda **_kwargs: item  # type: ignore[method-assign]
     monkeypatch.setattr(
         "quill.ui.main_frame_spellcheck.list_misspellings",
-        lambda _text, _dictionary: [item],
+        lambda _text, _dictionary, **_k: [item],
     )
 
     frame.open_misspelling_list()
