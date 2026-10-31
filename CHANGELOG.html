@@ -244,6 +244,53 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="unreleased">Unreleased</h2>
+<h3
+id="quill-studio-record-mix-broadcast-and-make-videos-2026-10-30">QUILL
+Studio: record, mix, broadcast and make videos (2026-10-30)</h3>
+<ul>
+<li>Add demonstration recording to the shared Studio implementation: the
+screen, a camera and any chosen sounds, in any combination, with a
+spoken check before you start, keep awake and Do Not Disturb, and an
+independent check of the finished file. Your screen reader can be kept
+out of the recording.</li>
+<li>Add the Studio Mixer (each program’s volume, mute and sound card,
+plus default devices and recording levels), optional ASIO inputs, a
+YouTube video from a picture and sound, Ask AI about a video, New
+picture with AI (OpenAI or Google Gemini), and live broadcasting to
+Icecast or SHOUTcast with its own mix. The <a
+href="standalone/studio/docs/CHANGELOG.md">Studio changelog</a> lists
+every feature, what is still pending and what has not been verified
+live.</li>
+<li>Adopt lessons from Kelly Ford’s Quick Describe, with thanks to Kelly
+for the ideas and for giving so much to the community: the Recording
+status window can stay visible to magnifiers, Ask AI about a video draws
+fewer frames bigger and asks the AI not to guess at small text, a
+stalled face detector is replaced, a paused automatic AI is said once,
+diagnostic bundles leave out the user name as a whole word, and a new
+test catches text garbled by a wrong encoding.</li>
+<li>Shared changes: Windows process loopback can now leave out a program
+as well as record one, and can record a whole sound card; captions can
+be saved beside any recording; the shared sound manager can be muted.
+Existing behavior is unchanged.</li>
+</ul>
+<h3 id="windows-runtime-media-shutdown-and-licensing-2026-10-27">Windows
+runtime, media shutdown and licensing (2026-10-27)</h3>
+<ul>
+<li>Move the Windows OCR and Media projections to PyWinRT 4.0.3 with the
+Windows SDK 10.0.28000.2705 projection line. OCR, local playback,
+seeking, device routing and frozen-runtime collection retain their
+existing behavior.</li>
+<li>Stop keeping WinRT audio-device objects in a process-wide cache. The
+Windows Media engine now resolves a selected endpoint from a fresh
+filtered query and removes its event handlers at termination. This fixes
+the <code>0xC0000005</code> process-exit crash after audio-device
+enumeration or switching.</li>
+<li>Retain PyMuPDF 1.28.2 under AGPL-3.0. The exact source archive,
+generated notices, Corresponding Source review and pre-release legal
+gate are documented; PDF behavior is unchanged.</li>
+<li>Verify and document which family apps check for updates
+automatically at launch in the published privacy statement.</li>
+</ul>
 <h3 id="quill-studio-screenshot-milestone-2026-10-26">QUILL Studio
 screenshot milestone (2026-10-26)</h3>
 <ul>

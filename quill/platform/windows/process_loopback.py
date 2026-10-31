@@ -41,7 +41,7 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
-__all__ = ["READER_PROCESSES", "start_reader_capture"]
+__all__ = ["READER_PROCESSES", "PcmLoopback", "start_reader_capture"]
 
 #: Executables whose sound means "the screen reader is talking", lower-case.
 READER_PROCESSES = frozenset({"jfw.exe", "nvda.exe", "narrator.exe"})
@@ -51,6 +51,7 @@ _RATE = 16_000
 _LOOPBACK_PATH = "VAD\\Process_Loopback"
 _PROCESS_LOOPBACK = 1  # AUDIOCLIENT_ACTIVATION_TYPE_PROCESS_LOOPBACK
 _INCLUDE_TREE = 0  # PROCESS_LOOPBACK_MODE_INCLUDE_TARGET_PROCESS_TREE
+_EXCLUDE_TREE = 1  # PROCESS_LOOPBACK_MODE_EXCLUDE_TARGET_PROCESS_TREE
 _VT_BLOB = 65
 _LOOPBACK_FLAGS = 0x00020000 | 0x80000000 | 0x08000000  # loopback, auto-convert, SRC quality
 _SILENT_FLAG = 0x2  # AUDCLNT_BUFFERFLAGS_SILENT
@@ -201,10 +202,16 @@ def _interfaces() -> dict[str, Any]:
     }
 
 
-def _open(pid: int) -> tuple[Any, Any]:
-    """An audio client capturing *pid*'s tree, started, and its capture client."""
+def _open(
+    pid: int, *, exclude: bool = False, rate: int = _RATE, channels: int = 1
+) -> tuple[Any, Any]:
+    """An audio client capturing *pid*'s tree, started, and its capture client.
+
+    *exclude* captures everything the system plays **except** that tree --
+    how Studio records "system sound without the screen reader".
+    """
     com = _interfaces()
-    params = _ACTIVATION_PARAMS(_PROCESS_LOOPBACK, pid, _INCLUDE_TREE)
+    params = _ACTIVATION_PARAMS(_PROCESS_LOOPBACK, pid, _EXCLUDE_TREE if exclude else _INCLUDE_TREE)
     variant = _PROPVARIANT(
         vt=_VT_BLOB, blob=_BLOB(ctypes.sizeof(params), ctypes.cast(byref(params), c_void_p))
     )
@@ -233,7 +240,37 @@ def _open(pid: int) -> tuple[Any, Any]:
     if result != 0:
         raise OSError(f"process loopback activation failed: {result & 0xFFFFFFFF:#x}")
     client = unknown.QueryInterface(com["client"])
-    fmt = _WAVEFORMATEX(1, 1, _RATE, _RATE * 2, 2, 16, 0)
+    block = channels * 2
+    fmt = _WAVEFORMATEX(1, channels, rate, rate * block, block, 16, 0)
+    client.Initialize(0, _LOOPBACK_FLAGS, 2_000_000, 0, byref(fmt), None)
+    capture = ctypes.cast(client.GetService(byref(com["capture"]._iid_)), POINTER(com["capture"]))
+    client.Start()
+    return client, capture
+
+
+def _open_endpoint(device_id: str, *, rate: int, channels: int) -> tuple[Any, Any]:
+    """Loopback of everything one playback device plays (WASAPI endpoint loopback)."""
+    from quill.platform.windows.audio_routing import _CLSID_ENUMERATOR, _IID_ENUMERATOR, _create
+    from quill.platform.windows.face_detect import _GUID, _method, _release
+
+    com = _interfaces()
+    enumerator = _create(_CLSID_ENUMERATOR, _IID_ENUMERATOR)
+    try:
+        device = c_void_p()
+        _method(enumerator, 5, wintypes.LPCWSTR, POINTER(c_void_p))(device_id, byref(device))
+        try:
+            raw = c_void_p()
+            iid = _GUID.parse(str(com["client"]._iid_).strip("{}"))
+            _method(device, 3, POINTER(_GUID), wintypes.DWORD, c_void_p, POINTER(c_void_p))(
+                byref(iid), 23, None, byref(raw)
+            )
+        finally:
+            _release(device)
+    finally:
+        _release(enumerator)
+    client = ctypes.cast(raw, POINTER(com["client"]))
+    block = channels * 2
+    fmt = _WAVEFORMATEX(1, channels, rate, rate * block, block, 16, 0)
     client.Initialize(0, _LOOPBACK_FLAGS, 2_000_000, 0, byref(fmt), None)
     capture = ctypes.cast(client.GetService(byref(com["capture"]._iid_)), POINTER(com["capture"]))
     client.Start()
@@ -325,3 +362,86 @@ def start_reader_capture(gate: Any) -> threading.Thread:
     thread = threading.Thread(target=scan, name="reader-capture-scan", daemon=True)
     thread.start()
     return thread
+
+
+class PcmLoopback:
+    """Timestamped 16-bit PCM from one process tree, for recording.
+
+    Studio's demonstration recorder uses this beside the dictation gate, which
+    is unchanged: the gate keeps its 16 kHz mono loudness capture above. This
+    opens 48 kHz stereo and hands each packet, with the wall time its first
+    sample was captured, to *sink* on the calling thread. Run :meth:`run` on
+    a thread of its own; :meth:`stop` ends it. *exclude* inverts the capture
+    (everything except that tree). Silent packets are delivered as zeros so a
+    source's timeline never has holes.
+    """
+
+    def __init__(
+        self,
+        pid: int,
+        sink: Any,
+        *,
+        exclude: bool = False,
+        rate: int = 48_000,
+        channels: int = 2,
+        device_id: str = "",
+    ) -> None:
+        #: A playback device's id instead of a process: record all it plays.
+        self.device_id = device_id
+        self.pid = pid
+        self.sink = sink
+        self.exclude = exclude
+        self.rate = rate
+        self.channels = channels
+        self._stop = threading.Event()
+        self.opened = threading.Event()
+        self.error: str = ""
+
+    def stop(self) -> None:
+        self._stop.set()
+
+    def run(self) -> None:
+        import comtypes
+
+        try:
+            comtypes.CoInitializeEx(comtypes.COINIT_MULTITHREADED)
+        except OSError:
+            pass
+        try:
+            if self.device_id:
+                client, capture = _open_endpoint(
+                    self.device_id, rate=self.rate, channels=self.channels
+                )
+            else:
+                client, capture = _open(
+                    self.pid, exclude=self.exclude, rate=self.rate, channels=self.channels
+                )
+        except Exception as exc:  # noqa: BLE001 - reported to the caller, never raised
+            self.error = str(exc) or type(exc).__name__
+            self.opened.set()
+            return
+        self.opened.set()
+        block = self.channels * 2
+        try:
+            while not self._stop.is_set():
+                frames_waiting = capture.GetNextPacketSize()
+                while frames_waiting:
+                    now = time.time()
+                    data, frames, flags, _position, _counter = capture.GetBuffer()
+                    if frames:
+                        if flags & _SILENT_FLAG:
+                            payload = bytes(frames * block)
+                        else:
+                            payload = ctypes.string_at(data, frames * block)
+                        # The packet's first sample is *frames* old by now.
+                        self.sink(payload, now - frames / self.rate)
+                    capture.ReleaseBuffer(frames)
+                    frames_waiting = capture.GetNextPacketSize()
+                time.sleep(_POLL_S)
+        except Exception as exc:  # noqa: BLE001 - the process went away
+            self.error = str(exc) or type(exc).__name__
+        finally:
+            try:
+                client.Stop()
+            except Exception:  # noqa: BLE001
+                pass
