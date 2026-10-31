@@ -20,7 +20,9 @@ def test_status_bar_layout_dialog_parents_controls_to_dialog() -> None:
     start = SOURCE.index("def open_status_bar_settings")
     body = SOURCE[start:]
 
-    assert 'wx.Dialog(self.frame, title="Status Bar Layout"' in body
+    # Whitespace-folded: the call wraps once a DPI-scaled size= joins it (#1702).
+    folded = " ".join(body.split()).replace("( ", "(")
+    assert 'wx.Dialog(self.frame, title="Status Bar Layout"' in folded
     # No inner panel: controls share the dialog's sizer tree.
     assert "wx.Panel(dialog)" not in body
     assert "panel.SetSizer(root)" not in body

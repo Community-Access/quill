@@ -311,6 +311,11 @@ GATES: tuple[Gate, ...] = (
         "GATE-DATAFMT: a saved shape changes only with a bumped version or a review",
         (sys.executable, "-m", "quill.tools.data_format_audit"),
     ),
+    Gate(
+        "fixed-pixels",
+        "GATE-DPI: no window size in raw pixels now every app is DPI aware",
+        (sys.executable, "-m", "quill.tools.fixed_pixel_audit"),
+    ),
 )
 
 
