@@ -18,10 +18,14 @@ from pathlib import Path
 from typing import Any
 
 
-def generate_captions(host: Any) -> None:
+def generate_captions(host: Any, source: Path | None = None) -> None:
     """Transcribe an audio/video file to timed captions on this machine, then
     save them as .srt or .vtt -- a faithful port of QUILL's Tools > Speech >
-    Generate Captions (Offline). Disabled in Safe Mode."""
+    Generate Captions (Offline). Disabled in Safe Mode.
+
+    With *source* (a just-finished recording), no file is asked for and the
+    results are saved beside it: SRT and VTT captions and a plain transcript.
+    """
     if bool(getattr(host, "_safe_mode", False)):
         host._announce("Generating captions is disabled in Safe Mode.")
         return
@@ -29,22 +33,28 @@ def generate_captions(host: Any) -> None:
     host._check_installed_speech_models(
         provider,
         "Generate Captions",
-        lambda selected, installed: _generate_captions_with_models(host, selected, installed),
+        lambda selected, installed: _generate_captions_with_models(
+            host, selected, installed, source
+        ),
     )
 
 
-def _generate_captions_with_models(host: Any, provider: object, installed: list) -> None:
+def _generate_captions_with_models(
+    host: Any, provider: object, installed: list, source: Path | None = None
+) -> None:
     wx = host._wx
     model_id = host._default_model_id(installed)
-    with wx.FileDialog(
-        host.frame,
-        "Choose an audio or video file to caption",
-        wildcard=_wildcard(),
-        style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
-    ) as dialog:
-        if host._show_modal_dialog(dialog, "Generate Captions") != wx.ID_OK:
-            return
-        source = Path(dialog.GetPath())
+    beside = source is not None
+    if source is None:
+        with wx.FileDialog(
+            host.frame,
+            "Choose an audio or video file to caption",
+            wildcard=_wildcard(),
+            style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
+        ) as dialog:
+            if host._show_modal_dialog(dialog, "Generate Captions") != wx.ID_OK:
+                return
+            source = Path(dialog.GetPath())
 
     from quill.core.speech.provider import TranscriptionRequest
 
@@ -56,9 +66,38 @@ def _generate_captions_with_models(host: Any, provider: object, installed: list)
 
         return provider.transcribe_file(request, _on_progress)  # type: ignore[attr-defined]
 
-    host._run_background_task(
-        f"Captioning {source.name}", _work, lambda result: _save_captions(host, result, source)
-    )
+    def _done(result: object) -> None:
+        if beside:
+            _save_beside(host, result, source)
+        else:
+            _save_captions(host, result, source)
+
+    host._run_background_task(f"Captioning {source.name}", _work, _done)
+
+
+def _save_beside(host: Any, result: object, source: Path) -> None:
+    """SRT, VTT and a plain transcript beside *source*; nothing is replaced."""
+    from quill.core.demo_recording import unique_path
+    from quill.core.speech import formatters
+    from quill.core.storage import write_text_atomic
+
+    segments = getattr(result, "segments", ()) or ()
+    if not segments:
+        host._announce("No speech was found, so no captions were made.")
+        return
+    transcript = "\n".join(
+        str(getattr(segment, "text", "")).strip() for segment in segments
+    ).strip()
+    written = []
+    for ext, text in (
+        (".srt", formatters.to_srt(segments)),
+        (".vtt", formatters.to_vtt(segments)),
+        (".transcript.txt", transcript + "\n"),
+    ):
+        target = unique_path(source.with_name(source.stem + ext))
+        write_text_atomic(target, text, encoding="utf-8", newline="\n")
+        written.append(target.name)
+    host._announce(f"Captions and a transcript saved beside {source.name}.")
 
 
 def _save_captions(host: Any, result: object, source: Path) -> None:

@@ -410,11 +410,15 @@ def show_modal_dialog(
     announce: Callable[[str], None] | None = None,
     enter_region: Callable[[str], None] | None = None,
     exit_region: Callable[[str], None] | None = None,
+    search_announce: Callable[[str], None] | None = None,
 ) -> int:
-    """Show a modal dialog with optional region and announcement hooks."""
+    """Show a modal dialog with optional region and announcement hooks.
+
+    *search_announce* speaks Find a setting's match count when *announce* is
+    withheld so the entry and exit cues stay silent."""
     from quill.ui.preferences_search import install_preferences_search
 
-    settings_search = install_preferences_search(dialog, announce=announce)
+    settings_search = install_preferences_search(dialog, announce=search_announce or announce)
     _install_context_help(dialog)
     # macOS VoiceOver announces a control only by its own accessible name;
     # the neighbouring StaticText that Windows screen readers use is not

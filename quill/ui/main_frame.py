@@ -283,7 +283,6 @@ from quill.platform.sr_announce import (
     set_announce_handler,
     set_transcript_path,
 )
-from quill.platform.windows.high_contrast import is_high_contrast_enabled
 from quill.platform.windows.shell_integration import (
     apply_shell_verb_settings,
     build_shell_integration_plan,
@@ -3623,11 +3622,12 @@ class MainFrame(
             foreground = wx.Colour(230, 230, 230)
             background = wx.Colour(30, 30, 30)
             chrome_background = wx.Colour(45, 45, 45)
-        elif theme == "system" and is_high_contrast_enabled():
-            foreground = wx.Colour(0, 0, 0)
-            background = wx.Colour(255, 255, 255)
-            chrome_background = wx.Colour(255, 212, 0)
         else:
+            # System colours, which under a Windows high contrast theme ARE that
+            # theme. This used to force black on white with a yellow frame
+            # whenever high contrast was on, which overrode a person who chose
+            # a dark high contrast theme (white or yellow on black) with the
+            # opposite of what they picked.
             foreground = wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOWTEXT)
             background = wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOW)
             chrome_background = wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DFACE)
@@ -4860,6 +4860,7 @@ class MainFrame(
                 announce=announce_transitions,
                 enter_region=self._region_tracker.enter,
                 exit_region=self._region_tracker.exit,
+                search_announce=announce,
             )
         finally:
             stack.pop(dialog)

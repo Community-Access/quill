@@ -499,10 +499,10 @@ class SimpleOpenDialog:
 
     def _set_status(self, message: str, *, error: bool = False) -> None:
         self._status.SetLabel(message)
-        if error:
-            self._status.SetForegroundColour(wx.RED)
-        else:
-            self._status.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOWTEXT))
+        # The words carry the error and the announcement speaks them, so the
+        # status keeps the system text colour. Pure red on the dialog face was
+        # 3.5:1, under the 4.5:1 text needs, and it ignored high contrast.
+        self._status.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_WINDOWTEXT))
         self._status.Refresh()
         if message:
             self._announce(message)

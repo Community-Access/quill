@@ -1317,6 +1317,11 @@ class PreferencesMixin:
             _btn_row.Add(_cancel_btn, 0, wx.RIGHT, 8)
             _btn_row.Add(_apply_btn, 0)
             outer.Add(_btn_row, 0, wx.EXPAND | wx.ALL, 8)
+            # The dialog's own sizer. It was built and filled but never set, so
+            # the notebook and the button row were laid out by nobody, and Find a
+            # setting (which wraps the dialog's sizer) was never installed: Ctrl+F
+            # in Settings did nothing. Found by the keyboard-only core-task run.
+            dialog.SetSizer(outer)
 
             _apply_btn.Enable(False)
 

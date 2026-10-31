@@ -55,6 +55,79 @@ PURPOSES: dict[str, str] = {
         "explicitly send it to your configured AI provider. File checks prove "
         "decode and integrity; observations do not prove privacy or visual correctness."
     ),
+    "Record a demonstration": (
+        "Record a screen-and-sound demonstration as one video. Choose what to record, "
+        "which sounds go in -- your screen reader and microphone start left out -- the "
+        "camera, the picture and the folder, then press Check. The result is read once; "
+        "Start recording is available when nothing stops it. Nothing you hear changes."
+    ),
+    "Recording status": (
+        "The recording in progress: elapsed time, the sounds being recorded, whether "
+        "your screen reader is in it, dropped frames and disk space. Pause, add a "
+        "marker, mute the microphone, or stop and save. Closing this window hides it; "
+        "recording continues."
+    ),
+    "Test recording": (
+        "The result of a 5-second test with your exact settings: what the check found "
+        "in the file. The test file is deleted when this window closes."
+    ),
+    "Check camera framing": (
+        "The camera is open while this window is: Studio says whether your face is in "
+        "view and centred, and which way to move. Face detection runs on this computer; "
+        "nothing is recorded or saved."
+    ),
+    "Make a YouTube video from a picture and sound": (
+        "Choose a picture and a sound file, the shape of the video, and optionally a slow "
+        "zoom, a sound wave and chapters from the recording's markers. The sound is used "
+        "exactly as it is. The video and its YouTube title and description are saved beside "
+        "the sound."
+    ),
+    "Ask AI questions about a video": (
+        "Choose a video and the whole of it or a stretch. Studio takes frames from that "
+        "stretch, lays them out as one labelled picture with the transcript if there is one, "
+        "and opens a conversation about it. Nothing is sent until you approve it there."
+    ),
+    "Make a picture with AI": (
+        "Describe the picture you want, choose its shape and press Make the picture. Then ask "
+        "for changes in words and press it again; every version is kept with a description "
+        "from a separate look by your vision model. Every request is approved first."
+    ),
+    "Broadcast live": (
+        "Stream to an Icecast or SHOUTcast server. Fill in the server, the show and the "
+        "sound quality, choose what goes into the stream (your screen reader starts left "
+        "out), and whether to save a copy. Press Check; Go live is available when nothing "
+        "stops it. Test the connection privately first if you like."
+    ),
+    "Live broadcast": (
+        "The show on air: its status, the now-playing title, Mute everything public (listeners "
+        "hear silence at once) and Stop broadcasting. Closing this window hides it."
+    ),
+    "Screen reader in the stream": (
+        "Confirm putting your screen reader's speech in the stream: listeners hear everything "
+        "it says while you are live."
+    ),
+    "Studio Mixer": (
+        "Every program's sound and every sound card in one window. Programs: each "
+        "program's volume, mute and the sound card it plays on, as Windows Settings does. "
+        "Devices: choose the default and communications devices, and set a microphone's "
+        "level and mute. Ctrl+Tab moves between the tabs."
+    ),
+    "Add a program's sound": (
+        "Choose a program that is playing sound to add as a sound source of its own."
+    ),
+    "Add marker": ("Type an optional label for this moment in the recording, then press Enter."),
+    "Choose the save folder": "Choose the folder where demonstrations are saved.",
+    "Discard this recording": (
+        "Confirm deleting the recording in progress. It cannot be recovered."
+    ),
+    "Recover unfinished recordings": (
+        "Recordings interrupted by a crash or power cut were found. Studio can join, "
+        "check and save each one beside its folder."
+    ),
+    "Screen reader speech": (
+        "Confirm putting your screen reader's speech in the recording: everything it "
+        "says while you record will be in the file."
+    ),
     "Choose screenshot control": (
         "Choose a specific part of the selected window by its name or role. "
         "Search filters real accessible controls without AI. Password and offscreen "
@@ -199,6 +272,23 @@ for _title in ("QUILL Studio", "QUILL Studio (Safe Mode)", "QUILL Studio Prefere
 
 #: Purposes for windows whose titles carry live data, matched by prefix.
 PREFIX_PURPOSES: tuple[tuple[str, str], ...] = (
+    (
+        "Demonstration",
+        "The demonstration was saved and checked independently. Verified means every "
+        "check passed; Needs review means it plays but something may be spoiled; Failed "
+        "means a stream is missing or it does not decode. Play it, open its folder, copy "
+        "its path or inspect a frame.",
+    ),
+    (
+        "Video:",
+        "The video was made and checked. Play it, open its folder or copy its path. The "
+        "title and description for YouTube are in the text file beside it.",
+    ),
+    (
+        "Recovered:",
+        "An interrupted recording was finished and checked. Play it, open its folder, "
+        "copy its path or inspect a frame.",
+    ),
     (
         "Copy Sections",
         "Mark pieces of the file you are listening to and collect them into "

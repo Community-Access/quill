@@ -83,6 +83,16 @@ class QuillApp:
         return f"the QUILL process is gone (exit code {code})"
 
     @property
+    def documents_dir(self) -> Path:
+        """A trusted folder in this profile holding the core-task sample files.
+
+        Seeded by ``_seed_profile`` and listed in ``trusted_locations.json``,
+        so File > Open reaches the document without the untrusted-location
+        question a first open from an unknown folder asks.
+        """
+        return self.data_dir / "documents"
+
+    @property
     def corpus_audiobook(self) -> Path:
         """The chaptered MP3 the edit-journey tests open.
 
@@ -145,6 +155,17 @@ def _seed_profile(data_dir: Path) -> None:
     (data_dir / "trust-consent.json").write_text(
         json.dumps({"accepted": True, "version": current_trust_consent_version()}),
         encoding="utf-8",
+    )
+    # The core-task tests (test_core_tasks_keyboard.py) open and save here.
+    documents = data_dir / "documents"
+    documents.mkdir(exist_ok=True)
+    (documents / "headings-sample.md").write_text(
+        "# Core task sample\n\nAn opening paragraph.\n\n"
+        "## Second section\n\nMore text.\n\n## Third section\n\nThe end.\n",
+        encoding="utf-8",
+    )
+    (data_dir / "trusted_locations.json").write_text(
+        json.dumps([str(documents.resolve())]), encoding="utf-8"
     )
     # Pre-seed the Audio Studio audiobooks MRU so the edit journey's
     # EditSourcePage ComboBox already has the corpus sample at the top.
