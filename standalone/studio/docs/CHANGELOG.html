@@ -472,8 +472,8 @@ stale either (UX-014).</li>
 Studio (the status windows’ once-a-second refresh, the camera check, the
 end-of-chapter sleep timer, the voice preview cue and the spoken note)
 now logs a failure, and the main window shows it in the status bar,
-instead of stopping without a word. A timer that fails on every tick is
-reported once.</li>
+instead of stopping without a word. A timer that fails every time it
+runs is reported once.</li>
 <li><strong>Every preference has a test that watches it work.</strong>
 Each of Studio’s preferences is now changed by a test that observes the
 behaviour it controls, and a new preference without one fails the build.
