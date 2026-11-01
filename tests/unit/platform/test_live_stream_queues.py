@@ -10,7 +10,6 @@ import queue
 import threading
 import time
 
-import numpy as np
 import pytest
 
 from quill.core.streaming import StreamSettings
@@ -22,6 +21,9 @@ from quill.platform.windows.live_stream_air import (
     EncoderProgress,
     StreamRefused,
 )
+
+#: The live-dictation extra, not in every CI leg (the accessibility leg has no numpy).
+np = pytest.importorskip("numpy")
 
 pytestmark = pytest.mark.timeout(60)
 
