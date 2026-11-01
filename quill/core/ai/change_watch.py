@@ -90,7 +90,7 @@ def pixel_difference(before: bytes, after: bytes, *, tolerance: int = _TOLERANCE
         small_a = a.convert("L").resize((_SAMPLE, _SAMPLE))
         small_b = b.convert("L").resize((_SAMPLE, _SAMPLE))
     diff = ImageChops.difference(small_a, small_b)
-    moved = sum(diff.histogram()[tolerance + 1 :])
+    moved: int = sum(diff.histogram()[tolerance + 1 :])
     return moved / float(_SAMPLE * _SAMPLE)
 
 
