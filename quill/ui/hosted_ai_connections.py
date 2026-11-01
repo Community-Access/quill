@@ -6,10 +6,14 @@ AI Am I Using pressed twice, by the AI status cell, and by the three older
 account commands -- Use My Own AI Key, Use My ChatGPT Subscription and Connect
 or Sign Out -- each on its own row with its sign-in step ready.
 
-**Five controls, nothing else.** The Connections list, the About line, the
-Model choice, one action button whose label follows the row, and Close. Focus
-lands on the list, on the row in use. Enter does the button's job; Delete on a
-signed-in row signs it out after a Yes/No whose default is No.
+**Five controls, and one more only where it is needed.** The Connections
+list, the About line, the Model choice, one action button whose label follows
+the row, and Close. Focus lands on the list, on the row in use. Enter does the
+button's job; Delete on a signed-in row signs it out after a Yes/No whose
+default is No. While the ChatGPT plan's row (or Codex's) is selected and signed
+in, a **Plan Options** button appears beside the action button: web search and
+Forget on This Computer, which Alt+F5's old window held
+(:mod:`quill.ui.hosted_ai_plan_options`).
 
 **What is spoken (GATE-13).** Nothing on open, on a selection change or on
 focus: the reader already says the title, the row and its state. Only outcomes
@@ -20,9 +24,12 @@ plan. It is now in use.", "Signed out. No AI is in use until you choose one."
 so arrowing away and back reads the truth.
 
 **Sign-in reuses what exists.** The ChatGPT plan uses the loopback sign-in in
-one small modal step (:class:`SignInStep`); the own key uses ``OwnKeyDialog``;
-the free AI uses its Connect step, which never happens on its own (decision
-23). Copilot and Codex say "not available yet" until their phases ship.
+one small modal step (:class:`SignInStep`), and Codex the same one, because it
+runs on this app's plan sign-in; Copilot uses that step with GitHub's device
+code (:mod:`quill.ui.copilot_onboarding_dialog`); the own key uses
+``OwnKeyDialog``; the free AI uses its Connect step, which never happens on its
+own (decision 23). Copilot reads "not available yet" while this app has no
+GitHub registration or the build lacks the engine, and About says which.
 
 The sentences are :mod:`quill.core.ai.connection_words`; this module composes
 none of its own beyond the help text.
@@ -37,8 +44,16 @@ from typing import Any
 import wx
 
 from quill.core.ai import connection_words as words
-from quill.core.ai.connection_caps import CHATGPT, CODEX, CONNECTION_NAMES, FREE, OWN_KEY
+from quill.core.ai.connection_caps import (
+    CHATGPT,
+    CODEX,
+    CONNECTION_NAMES,
+    COPILOT,
+    FREE,
+    OWN_KEY,
+)
 from quill.core.ai.connection_choice import IN_USE, NOT_AVAILABLE_YET, SIGNED_IN
+from quill.core.ai.copilot_chat_parts import AUTO_MODEL
 from quill.ui.accessible_names import set_accessible_name
 from quill.ui.dialog_contract import apply_listbox_activation, apply_modal_ids, show_modal_dialog
 from quill.ui.dpi import dip_size
@@ -85,7 +100,14 @@ class SignInStep(wx.Dialog):
     the step closes itself and the window says what happened.
     """
 
-    def __init__(self, parent: Any, sentence: str, on_open: Callable[[SignInStep], None]) -> None:
+    def __init__(
+        self,
+        parent: Any,
+        sentence: str,
+        on_open: Callable[[SignInStep], None],
+        *,
+        with_code: bool = False,
+    ) -> None:
         super().__init__(parent, title=SIGN_IN_TITLE)
         self._on_open = on_open
         sizer = wx.BoxSizer(wx.VERTICAL)
@@ -99,6 +121,18 @@ class SignInStep(wx.Dialog):
             "not open, the address to use appears here.",
             grow=False,
         )
+        #: A device code's field (GitHub): read-only, spaced out, on the clipboard.
+        self.code: Any = None
+        if with_code:
+            self.code = _read_only(
+                self,
+                sizer,
+                "Code",
+                "Asking for a code...",
+                "The code to type on the sign-in page, spaced out so each character "
+                "is read on its own. It is already on the clipboard.",
+                grow=False,
+            )
         row = wx.BoxSizer(wx.HORIZONTAL)
         row.AddStretchSpacer(1)
         self.open_button = wx.Button(self, label="&Open the Page")
@@ -230,7 +264,17 @@ class ChooseAiFrame(wx.Frame):
             "in use."
         )
         self._action.Bind(wx.EVT_BUTTON, lambda _e: self.do_action())
-        _close_row(self, sizer, self._action)
+        # Shown only on a signed-in plan row: web search and Forget (Alt+F5's old
+        # window held them; quill/ui/hosted_ai_plan_options.py says why here).
+        self._options = wx.Button(panel, label="&Plan Options...")
+        self._options.SetHelpText(
+            "Shown while your ChatGPT plan, or Codex on it, is selected and signed in: "
+            "whether the model may search the web, and Forget on This Computer."
+        )
+        self._options.Bind(wx.EVT_BUTTON, lambda _e: self.plan_options())
+        self._options.Hide()
+        self._panel = panel
+        _close_row(self, sizer, self._action, self._options)
 
         self.Bind(wx.EVT_ACTIVATE, self._on_activate)
         self.SetInitialSize(dip_size(self, 560, 460))
@@ -280,12 +324,18 @@ class ChooseAiFrame(wx.Frame):
             return
         if self._hooks.safe_mode:
             self._about.SetValue(words.SAFE_MODE_ABOUT)
+        elif row.state == NOT_AVAILABLE_YET and row.connection in (COPILOT, CODEX):
+            self._about.SetValue(self._service.engine_unavailable_about(row.connection))
         else:
             record = self._service.capability_record(row.connection)
             provider = getattr(self._service, "own_key_provider", "openai") or "openai"
             self._about.SetValue(words.about_line(record, own_key_provider=provider))
         action = words.row_action(row, free_connected=bool(self._service.signed_in))
         self._action.SetLabel(words.ACTION_LABELS[action])
+        plan = row.connection in (CHATGPT, CODEX) and row.state in (IN_USE, SIGNED_IN)
+        if self._options.IsShown() != (plan and not self._hooks.safe_mode):
+            self._options.Show(plan and not self._hooks.safe_mode)
+            self._panel.Layout()
         self._fill_models(row)
 
     # -- the model choice -------------------------------------------------- #
@@ -304,8 +354,11 @@ class ChooseAiFrame(wx.Frame):
         if connection == FREE:
             self._disabled_model(words.FREE_MODEL)
             return
-        if row.state not in (IN_USE, SIGNED_IN) or connection not in (CHATGPT, OWN_KEY):
+        if row.state not in (IN_USE, SIGNED_IN):
             self._disabled_model(words.SIGN_IN_FOR_MODELS)
+            return
+        if connection == CODEX:
+            self._disabled_model(words.CODEX_MODEL)
             return
         listed = self._models.get(connection)
         if listed is None:
@@ -315,6 +368,9 @@ class ChooseAiFrame(wx.Frame):
         models, error = listed
         if error or not models:
             self._disabled_model(words.MODELS_FAILED)
+            return
+        if connection == COPILOT and [m for m, _l in models] == [AUTO_MODEL]:
+            self._disabled_model(models[0][1])  # Copilot Free: Auto only (10A.4)
             return
         self._shown_models = models
         self._model.Set(words.model_items([label for _id, label in models]))
@@ -355,6 +411,9 @@ class ChooseAiFrame(wx.Frame):
             self._fill_models(row)  # silent: the Model choice does not have focus
 
     def _list_models(self, connection: str) -> tuple[list[tuple[str, str]], str]:
+        if connection == COPILOT:
+            result: tuple[list[tuple[str, str]], str] = self._service.copilot_models()
+            return result
         if connection == CHATGPT:
             from quill.core.ai.chatgpt_client import list_models
 
@@ -376,8 +435,9 @@ class ChooseAiFrame(wx.Frame):
         model_id = self._shown_models[index][0]
         if row.connection == CHATGPT:
             self._service.chatgpt.set_model(model_id)
-        elif row.connection == OWN_KEY:
-            self._service._settings().ai_own_key_model = model_id
+        elif row.connection in (OWN_KEY, COPILOT):
+            field = "ai_own_key_model" if row.connection == OWN_KEY else "ai_copilot_model"
+            setattr(self._service._settings(), field, model_id)
             self._service._save_settings()
         self._hooks.changed()  # the reader says the new choice; nothing to add
 
@@ -425,6 +485,26 @@ class ChooseAiFrame(wx.Frame):
             return
         self.start_sign_in(row.connection)
 
+    def plan_options(self) -> None:
+        """ChatGPT Plan Options: web search, and Forget on This Computer."""
+        from quill.ui.hosted_ai_plan_options import show_plan_options
+
+        row = self._selected_row()
+        if row is None or row.connection not in (CHATGPT, CODEX):
+            return
+        was_in_use = self._service.connection_in_use in (CHATGPT, CODEX)
+        agent = self._hooks.app_name
+        if not show_plan_options(self, self._service.chatgpt, agent):
+            self._hooks.changed()  # a web-search change can alter what the plan offers
+            return
+        self._service.connection_changed(CHATGPT)
+        self._after_change(row.connection)
+        lead = words.SIGNED_OUT_IN_USE + " " if was_in_use else ""
+        self._hooks.announce(
+            f"{lead}Forgotten on this computer. {agent} stays listed under Apps in "
+            "ChatGPT's settings until you remove it there."
+        )
+
     def start_sign_in(self, connection: str) -> None:
         """The row's sign-in step. A command that opened the window on its row calls this."""
         say = self._hooks.announce
@@ -438,7 +518,7 @@ class ChooseAiFrame(wx.Frame):
             self._after_change(FREE)
             self._hooks.connect_free()
             return
-        if connection not in (CHATGPT, OWN_KEY):
+        if connection not in (CHATGPT, CODEX, COPILOT, OWN_KEY):
             say(words.not_available_sentence(connection))
             return
         before = self._service.connection_in_use
@@ -447,8 +527,15 @@ class ChooseAiFrame(wx.Frame):
             outcome = self._hooks.own_key()
             if not outcome:
                 return  # Cancel changes nothing, and says nothing
+        elif connection == COPILOT:
+            from quill.ui.copilot_onboarding_dialog import copilot_sign_in
+
+            if not copilot_sign_in(self, self._service, say):
+                return
+            self._models.pop(COPILOT, None)
+            outcome = words.signed_in_sentence(connection)
         elif not _chatgpt_sign_in(self, self._service.chatgpt, connection, self._hooks.app_name):
-            return
+            return  # ChatGPT and Codex share this app's one plan sign-in (10A.3)
         else:
             outcome = words.signed_in_sentence(connection)
         self._service.connection_changed(connection)
@@ -469,6 +556,10 @@ class ChooseAiFrame(wx.Frame):
         elif connection in (CHATGPT, CODEX):
             self._sign_out_of_plan(connection, was_in_use)
             return
+        elif connection == COPILOT:
+            from quill.core.ai.copilot_auth import forget_token
+
+            forget_token(self._service.agent_name)
         self._finish_sign_out(connection, was_in_use, "")
 
     def _sign_out_of_plan(self, connection: str, was_in_use: bool) -> None:

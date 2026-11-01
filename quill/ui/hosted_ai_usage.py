@@ -42,11 +42,13 @@ class UsageFrame(wx.Frame):
         announce: Callable[[str], None],
         *,
         fetch_free: bool = False,
+        fetch_copilot: bool = False,
     ) -> None:
         super().__init__(parent, title=TITLE)
         self._service = service
         self._announce = announce
         self._rows: list[Any] = []
+        self._free_quota: Any = None
 
         panel = wx.Panel(self)
         sizer = wx.BoxSizer(wx.VERTICAL)
@@ -77,11 +79,15 @@ class UsageFrame(wx.Frame):
         focus_on(self, self._list)
         if fetch_free:
             service.fetch_quota(on_done=self._free_arrived, on_error=lambda _m: None)
+        if fetch_copilot:  # GitHub's own count, on a worker (codex.md 10A.11)
+            service.fetch_copilot_quota(on_done=self._copilot_arrived, on_error=lambda _m: None)
 
     def show_rows(self, free_quota: Any = None) -> None:
         """Fill the list from the service, keeping the selection where it was."""
         index = self._list.GetSelection()
-        self._rows = list(self._service.usage_rows(free_quota))
+        if free_quota is not None:
+            self._free_quota = free_quota
+        self._rows = list(self._service.usage_rows(self._free_quota))
         texts = [f"{row.sentence} {row.detail}".strip() for row in self._rows]
         self._list.Set(texts)
         if not texts:
@@ -100,6 +106,15 @@ class UsageFrame(wx.Frame):
         free = next((r for r in self._rows if r.connection == "free"), None)
         if free is not None:
             self._announce(free.sentence)
+
+    def _copilot_arrived(self, _quota: Any) -> None:
+        """GitHub's count arrived (the service keeps it); say the Copilot row once."""
+        if not self:
+            return
+        self.show_rows()
+        row = next((r for r in self._rows if r.connection == "copilot"), None)
+        if row is not None:
+            self._announce(row.sentence)
 
     def manage(self) -> None:
         """Open the selected connection's own page."""

@@ -13,6 +13,7 @@
   "cmd_ai_privacy": "covered",
   "cmd_ai_prompt_library": "covered",
   "cmd_ai_sign_in": "covered",
+  "cmd_ai_task": "covered",
   "cmd_ai_usage": "covered",
   "cmd_ai_web_searches": "covered",
   "cmd_ai_which": "covered",

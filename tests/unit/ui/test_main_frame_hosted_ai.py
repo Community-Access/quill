@@ -532,8 +532,10 @@ def test_the_chatgpt_rows_join_the_accelerator_map() -> None:
         # Which AI Am I Using and Choose Your AI (2026-10-31).
         "tools.hosted_ai_which",
         "tools.hosted_ai_choose",
+        # Do a Document Task (codex.md 6.2, 2026-11-01).
+        "tools.hosted_ai_task",
     }
-    assert len({int(v) for v in mapping.values()}) == 4 + 13 + 3 + 2
+    assert len({int(v) for v in mapping.values()}) == 4 + 13 + 3 + 3
 
 
 # --------------------------------------------------------------------------- #
@@ -546,6 +548,7 @@ def test_the_chatgpt_rows_join_the_accelerator_map() -> None:
     [
         ("cmd_ai_which", "tools.hosted_ai_which", "Ctrl+8"),
         ("cmd_ai_choose", "tools.hosted_ai_choose", "Ctrl+4"),
+        ("cmd_ai_task", "tools.hosted_ai_task", "Ctrl+3"),
     ],
 )
 def test_which_ai_and_choose_your_ai_are_shared_on_the_same_chords(handler, command, chord):
@@ -556,8 +559,9 @@ def test_which_ai_and_choose_your_ai_are_shared_on_the_same_chords(handler, comm
     from quill.core.lite.parity import COMMAND_EQUIVALENTS
     from quill.core.quill_key_help import _CHORD_COMMAND_TITLES
     from quill.ui.hosted_ai_choose_commands import ChooseAiMixin
+    from quill.ui.hosted_ai_task_commands import AgentTaskMixin
 
-    assert handler in vars(ChooseAiMixin)
+    assert handler in vars(ChooseAiMixin) or handler in vars(AgentTaskMixin)
     assert handler not in vars(HostedAiCommandsMixin)
     assert COMMAND_EQUIVALENTS[handler] == command
     assert DEFAULT_KEYMAP[command] == chord
@@ -573,12 +577,12 @@ def test_the_choose_rows_are_appended_with_the_usage_row() -> None:
     assert '"Choose Your AI..."' in adapter
 
 
-def test_ctrl_4_and_ctrl_8_are_free_everywhere_else() -> None:
+def test_ctrl_3_ctrl_4_and_ctrl_8_are_free_everywhere_else() -> None:
     """10A.9: checked against both editors, the aliases and every app keymap."""
     from quill.core.app_keymaps import APP_KEYMAPS
     from quill.core.keymap import DEFAULT_ALIASES, DEFAULT_KEYMAP
 
-    for chord in ("Ctrl+4", "Ctrl+8"):
+    for chord in ("Ctrl+3", "Ctrl+4", "Ctrl+8"):
         owners = [c for c, k in DEFAULT_KEYMAP.items() if k == chord]
         assert len(owners) == 1, (chord, owners)
         assert chord not in DEFAULT_ALIASES.values()

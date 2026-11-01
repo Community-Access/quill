@@ -43,17 +43,17 @@ from quill.ui.atomic_edit import replace_as_one_undo
 from quill.ui.hosted_ai_answers import AiAnswersMixin
 from quill.ui.hosted_ai_chatgpt_commands import ChatGptAiMixin
 from quill.ui.hosted_ai_choose_commands import ChooseAiMixin
+from quill.ui.hosted_ai_task_commands import AgentTaskMixin
 
 __all__ = ["HostedAiMixin"]
 
 
-class HostedAiMixin(ChooseAiMixin, AiAnswersMixin, ChatGptAiMixin):
+class HostedAiMixin(AgentTaskMixin, ChooseAiMixin, AiAnswersMixin, ChatGptAiMixin):
     """The hosted-AI commands. Mixed into both editors' document windows.
 
-    Where an answer goes, Review Changes, the Chat Key, the Prompt Library and
-    the web search count are :mod:`quill.ui.hosted_ai_answers` (GATE-11); Which
-    AI, Choose Your AI, Usage and the three account doors are
-    :mod:`quill.ui.hosted_ai_choose_commands`."""
+    Answers, Review Changes, Ask, prompts and searches: hosted_ai_answers (GATE-11);
+    Which AI, Choose Your AI, Usage and the account doors: hosted_ai_choose_commands;
+    Do a Document Task: hosted_ai_task_commands."""
 
     # ------------------------------------------------------------------ #
     # The three hooks -- the only things the two editors do differently

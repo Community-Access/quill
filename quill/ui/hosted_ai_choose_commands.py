@@ -50,7 +50,12 @@ class ChooseAiMixin:
             return
         if not self._ai_switched_on():
             return
-        which = getattr(self._ai_service(), "which_ai", None)
+        service = self._ai_service()
+        later = getattr(service, "which_ai_later", None)
+        if callable(later):  # GitHub's count is fetched off the UI thread
+            later(self._announce)
+            return
+        which = getattr(service, "which_ai", None)
         if callable(which):
             self._announce(which())
 
@@ -66,9 +71,17 @@ class ChooseAiMixin:
 
         service = self._ai_service()
         fetch = bool(getattr(service, "signed_in", False)) and self._ai_privacy_accepted()
+        facts = getattr(service, "connection_facts", None)
+        copilot = bool(callable(facts) and facts().copilot_signed_in)
         self._open_ai_window(
             "usage",
-            lambda: UsageFrame(self._ai_parent(), service, self._announce, fetch_free=fetch),
+            lambda: UsageFrame(
+                self._ai_parent(),
+                service,
+                self._announce,
+                fetch_free=fetch,
+                fetch_copilot=copilot,
+            ),
         )
 
     def cmd_ai_own_key(self) -> None:

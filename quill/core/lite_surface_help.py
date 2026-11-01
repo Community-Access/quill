@@ -73,6 +73,14 @@ PURPOSES: dict[str, str] = {
         "Sign in to the AI you chose. Open the Page takes you to its sign-in page; "
         "approve there, and this closes itself once you are signed in."
     ),
+    "ChatGPT Plan Options": (
+        "Whether your ChatGPT plan may search the web, and Forget on This Computer."
+    ),
+    "Do a Document Task": (
+        "Tell GitHub Copilot or Codex what to do to this document. Each change asks "
+        "first and is shown before it is applied; the task ends with a summary."
+    ),
+    "Allow This Step?": "Whether the document task may take its next step.",
     "Use My ChatGPT Subscription": (
         "Use the ChatGPT plan you already pay for instead of QUILL's free AI or "
         "an API key. Continue with ChatGPT opens your browser to sign in and "
@@ -497,6 +505,9 @@ SHARED_WITH_QUILL: frozenset[str] = frozenset({
     "AI Usage",
     "Choose Your AI",
     "Sign In to Your AI",
+    "ChatGPT Plan Options",
+    "Do a Document Task",
+    "Allow This Step?",
     "Ask About an Image",
     "QUILL AI Sign-In",
     "QUILL AI: what is sent, and what is kept",

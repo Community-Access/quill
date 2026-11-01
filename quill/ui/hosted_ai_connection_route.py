@@ -10,9 +10,10 @@ so nobody's behaviour changes on upgrade
 Every request asks :meth:`request_allowed` before it leaves, which says no,
 with the specific sentence of 10A.5, when:
 
-* the connection in use is not ready -- signed out by OpenAI, signed out by
-  the person (decision 15: "No AI is in use. Choose one."), or not available
-  in this build yet (Copilot and Codex in Phase 1). There is no fall-through;
+* the connection in use is not ready -- signed out by OpenAI or GitHub, signed
+  out by the person (decision 15: "No AI is in use. Choose one."), or not
+  available in this build (no GitHub registration, or no engine). There is no
+  fall-through;
 * it cannot do what the request needs (GATE-CAPS,
   :func:`quill.core.ai.connection_caps.require`);
 * the route changed under the listener and they said No (the route guard).
@@ -132,7 +133,12 @@ class ConnectionRouteMixin:
             chatgpt_ended=ended,
             own_key_ready=bool(self.own_key_ready),
             own_key_provider=self.own_key_provider or "openai",
+            **self._engine_facts(),
         )
+
+    def _engine_facts(self) -> dict[str, bool]:
+        """Copilot's and Codex's fields; :class:`CopilotRouteMixin` reads them."""
+        return {}
 
     @property
     def connection_in_use(self) -> str:
@@ -223,6 +229,7 @@ class ConnectionRouteMixin:
             own_key_provider=self.own_key_provider or "openai",
             web_search_enabled=bool(getattr(limits, "web_search_enabled", False)),
             model=self.connection_model(chosen),
+            available=self.connection_facts().available(chosen) if chosen else None,
         )
 
     def can_do(self, capability: str) -> bool:
@@ -312,7 +319,10 @@ class ConnectionRouteMixin:
             ChatGptSignedOutError,
             ChatGptUsageUnavailableError,
         )
+        from quill.core.ai.copilot_chat_parts import CopilotChatError
 
+        if isinstance(error, CopilotChatError):
+            return error.sentence  # said once; CopilotChat already marked the row
         connection = self.connection
         if connection in (CHATGPT, CODEX):
             if isinstance(error, ChatGptSignedOutError):

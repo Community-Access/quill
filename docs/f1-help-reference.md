@@ -2162,7 +2162,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 237 audited sites (237 helped).
+Control coverage: 248 audited sites (248 helped).
 
 ### Every window, and what it is for
 
@@ -2180,6 +2180,8 @@ Control coverage: 237 audited sites (237 helped).
 
 **Add Inline Note.** Write a note about the line or selection you were on. Note on shows the start of that text, so you can check you are in the right place. In Markdown and HTML, Write this note into the file keeps the note inside the document where others can read it; otherwise it stays private.
 
+**Allow This Step?.** Whether the document task may take its next step.
+
 **Answer.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
 **Ask About an Image.** Choose a picture and, if you like, a question about it. The picture goes to OpenAI on your ChatGPT subscription and the description comes back in a window you can read, copy or insert into your document.
@@ -2191,6 +2193,8 @@ Control coverage: 237 audited sites (237 helped).
 **Bookmarks.** The places you marked in this document, in the order they appear. Choose one and press Enter to go there; Remove takes one out of the list without touching the document. Bookmarks last for the session and move with the text as you edit around them.
 
 **Character at the cursor.** Exactly which character the cursor is on: its name, its code point, and what it does to a search. A screen reader says 'space' for four different characters, and this is how you tell which one you have.
+
+**ChatGPT Plan Options.** Whether your ChatGPT plan may search the web, and Forget on This Computer.
 
 **Choose Your AI.** Choose where your AI comes from: QUILL's free AI, your ChatGPT plan or your own key. The list says which is in use; Enter uses the selected one or signs in to it, and Delete signs a signed-in one out.
 
@@ -2213,6 +2217,8 @@ Control coverage: 237 audited sites (237 helped).
 **Dictionary Status.** How many words each of your spelling dictionaries holds, where each file is kept, and whether the thesaurus data is present. A reading, not a setting: nothing here changes anything. Add words from the Spelling Actions submenu on a word, or with Ctrl+Alt+F9; Preferences chooses whether QUILL Lite shares QUILL's dictionary.
 
 **Discard These Words.** The AI has changed these words. Yes throws them away and writes nothing; No keeps the review open.
+
+**Do a Document Task.** Tell GitHub Copilot or Codex what to do to this document. Each change asks first and is shown before it is applied; the task ends with a summary.
 
 **Document language.** Which markup this document is written in. It decides what Bold writes, what the heading keys write, which of the two tag pickers the Insert menu offers, and whether the cursor can tell you what list you are in. QUILL Lite reads it from the file name; this is where you say otherwise. Nothing in your document changes -- only what the keys write from now on. The choice lasts as long as this window is open.
 
@@ -2481,6 +2487,7 @@ Control coverage: 237 audited sites (237 helped).
 - `self._list`: Where your AI comes from. Each row says its name and whether it is in use, signed in or not set up. Enter uses the row, or signs in to it; Delete on a signed-in row signs it out after asking.
 - `self._model`: The model this connection answers with, from the service's own list. The first is the service's recommendation. Your choice is saved at once.
 - `self._action`: Does what the selected row needs: Use This makes a signed-in row the one in use, Sign In opens its sign-in step, and Sign Out signs out of the row in use.
+- `self._options`: Shown while your ChatGPT plan, or Codex on it, is selected and signed in: whether the model may search the web, and Forget on This Computer.
 #### (module level) (`quill/ui/hosted_ai_dialogs.py`)
 
 - `close`: Closes this window. Nothing is sent, and nothing in your document changes.
@@ -2520,6 +2527,10 @@ Control coverage: 237 audited sites (237 helped).
 - `self._send`: Sends the text above and uses one of your free requests. While a request is on its way this button is Stop, and pressing it stops the request.
 - `choice`: Which part of your document to send: what you selected, the paragraph you are in, or the whole section.
 - `self._delivery`: Where the answer goes when it arrives: the AI Result window, where you can read it and choose what to do; your document at the cursor, as one edit Control Z takes back; or the clipboard. Remembered until you change it.
+#### PlanOptionsDialog (`quill/ui/hosted_ai_plan_options.py`)
+
+- `self.web`: When checked, the model may search the web through OpenAI to answer a question. Not checked, only what you send is used. Saved as soon as you change it.
+- `close`: Closes these options. Every choice is already saved.
 #### AiResultFrame (`quill/ui/hosted_ai_result.py`)
 
 - `copy`: Puts the answer on the clipboard.
@@ -2712,3 +2723,16 @@ Control coverage: 237 audited sites (237 helped).
 - `self.toggle_button`: Stop the correction you are on from happening, without deleting it, or start a stopped one again. Use this when a correction keeps changing a word you meant to type.
 - `self.remove_button`: Delete a correction of yours, or put a built-in one back the way it shipped after you changed or stopped it. A built-in correction cannot be deleted; Remove on one turns it off instead.
 - `close`: Close this window. Your changes are already kept.
+#### ApprovalDialog (`quill/ui/agent_window.py`)
+
+- `self.summary`: What the task wants to do next, in one sentence. Enter allows it once; Escape does not allow it.
+- `self.once`: Lets this one step happen. The next step asks again.
+- `self.task`: Lets steps like this one happen until this task ends, without asking again. The next task asks afresh.
+- `self.deny`: Stops this step. The task carries on without it, or ends.
+#### AgentWindow (`quill/ui/agent_window.py`)
+
+- `self.transcript`: Everything said in this task: what you asked, each step taken, and the summary at the end. Read it with the arrow keys.
+- `self.instruction`: Type what you want done to this document, then press Enter. While a task runs, what you type here goes to it as a follow-up.
+- `self.send_button`: Starts a task with what you typed, or sends it to the task that is running.
+- `self.stop_button`: Stops the task now. Changes already applied stay, and each can be undone with Control Z.
+- `close`: Closes this window, stopping a task that is still running.

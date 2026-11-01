@@ -1771,3 +1771,50 @@ ChatGPT plan or an own key signed in.
 - [ ] All ten with NVDA, in both editors.
 - [ ] All ten with JAWS, in both editors.
 - [ ] Checks 1, 3, 5 and 8 with Narrator.
+
+
+## GitHub Copilot, Codex, Plan Options and Do a Document Task, QUILL and QUILL Lite (codex.md 10A.12, 10A.13, 6.2, 2026-11-01)
+
+Run each check in both editors. Copilot checks need a build with this app's
+GitHub registration and a Copilot account (Free and paid if you can); the Codex
+checks need a ChatGPT plan and a build with the Codex engine.
+
+1. Ctrl+4, arrow to "My GitHub Copilot". In a build without the GitHub
+   registration it reads "not available yet", and Tab to About reads one
+   sentence saying why. Nothing is spoken by the app.
+2. With the registration, press Enter on the Copilot row. The sign-in step
+   opens with Open the Page focused. When the code arrives you hear it once,
+   spaced out ("The code is A B C D ... It is on the clipboard."), and the Code
+   field reads the same spaced characters. Ctrl+V in the browser pastes it.
+3. Approve on GitHub's page. The step closes by itself and you hear once
+   "Signed in to My GitHub Copilot. It is now in use." The row reads "in use".
+   Press Escape in a fresh step instead: nothing is said and nothing changes.
+4. On Copilot Free, Tab to Model: it reads "Auto (Copilot Free chooses)" and is
+   unavailable. Press Ctrl+8: one line naming Copilot and GitHub's count, said
+   once even when it waits a moment for GitHub.
+5. Open AI Usage: the Copilot row says GitHub's count; when it arrives it is
+   said once and the selection does not move.
+6. Signed in to your ChatGPT plan, arrow to "Codex, for tasks": it reads
+   "signed in". Enter: "Now using Codex, for tasks." Ctrl+8 says "Codex, on
+   your ChatGPT plan. Single requests go to the plan directly."
+7. On the ChatGPT or Codex row, Tab past the action button: Plan Options...
+   is there; on any other row it is not. Its window has Allow web search (a
+   check box; Space changes it and only your reader speaks) and Forget on This
+   Computer. Forget says once that the sign-in was forgotten here.
+8. On the free AI, open the AI menu: Do a Document Task reads "(needs Copilot
+   or Codex)" after its name and still shows Ctrl+3. Press Ctrl+3: nothing is
+   sent and the switch question has Yes chosen.
+9. On Copilot or Codex, press Ctrl+3: Do a Document Task opens with focus in
+   Instruction and nothing spoken by the app. Shift+Tab reaches Status ("Using
+   GitHub Copilot") and Conversation.
+10. Type "Make the first heading level 1" and Enter. Allow This Step? opens
+    with focus on its sentence, which your reader says. Enter allows once;
+    Review AI Changes opens; accept. When the task ends you hear the summary
+    once and Ctrl+Z in the document takes the change back in one step.
+11. Start a task and press Stop (Alt+T) while it works, or while Allow This
+    Step? is open: the question closes, the task ends within a second and you
+    hear "Stopped. ..." once. Escape in the window closes it and stops a task.
+
+- [ ] All eleven with NVDA, in both editors.
+- [ ] All eleven with JAWS, in both editors.
+- [ ] Checks 2, 3, 9 and 10 with Narrator.

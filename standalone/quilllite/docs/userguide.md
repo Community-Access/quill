@@ -7517,12 +7517,12 @@ the model can read at once, and the window tells you if that happens.
 ### Choose Your AI
 
 **Choose Your AI** is the one window for where your AI comes from: QUILL's free
-AI, your ChatGPT plan or your own key. Press **Choose Your AI** (**Ctrl+4**), or
+AI, your ChatGPT plan, your GitHub Copilot, Codex or your own key. Press **Choose Your AI** (**Ctrl+4**), or
 choose **Tools > AI > Choose Your AI...**. Focus lands on the list, on the one
 in use. There are five things in the window, in Tab order:
 
 - **Connections**, a list. Each row says its name and then "in use", "signed
-  in" or "not set up". GitHub Copilot and Codex say "not available yet" for now.
+  in" or "not set up".
 - **About this connection**, one short line: what it can do, who gets your text
   and what it costs.
 - **Model**, that connection's own models, the recommended one first. The free
@@ -7544,11 +7544,34 @@ next AI command opens this window and says "No AI is in use. Choose one."
 and **Connect or Sign Out** (**Ctrl+Alt+Shift+F10**) keep their keys and open
 this window on their own row, with the sign-in ready.
 
+**Signing in to GitHub Copilot.** **Sign In...** on **My GitHub Copilot** opens a
+small step with a short code from GitHub. The code is spaced out so your screen
+reader reads one character at a time, it is said once, and it is already on the
+clipboard. Press **Open the Page**, paste or type the code on GitHub's page and
+approve QUILL Lite. The step closes by itself and you hear "Signed in to My
+GitHub Copilot. It is now in use." **Cancel** stops waiting at once. Copilot
+Free works too: its only model is "Auto (Copilot Free chooses)". QUILL Lite
+signs in to GitHub on its own, separately from QUILL. If this copy cannot sign
+in to GitHub yet, the row says "not available yet" and **About this
+connection** says why.
+
+**Codex** runs on your ChatGPT plan with the same sign-in, so once you are
+signed in to your plan, **Use This** on **Codex, for tasks** is one key. While
+Codex is in use, single requests go straight to your plan.
+
+**Plan Options.** While your ChatGPT plan's row, or Codex's, is selected and
+signed in, a **Plan Options...** button appears beside the action button. It
+has **Allow web search**, a check box saved as soon as you change it, and
+**Forget on This Computer**, which forgets the sign-in here without telling
+OpenAI.
+
 #### Which AI Am I Using
 
 **Which AI Am I Using** (**Ctrl+8**) says in one line which AI is in use, the
-model, and one thing about usage. Press it twice quickly to open **Choose Your
-AI**.
+model, and one thing about usage. On GitHub Copilot that is GitHub's own count;
+the first time it waits a moment for GitHub's answer. On Codex it says "Codex,
+on your ChatGPT plan. Single requests go to the plan directly." Press it twice
+quickly to open **Choose Your AI**.
 
 The status bar's last cell before the message, **AI**, says the same thing
 shorter, such as "AI: ChatGPT plan". Press **F6**, arrow to it and press
@@ -7566,6 +7589,32 @@ It is all text, with no meter or chart.
 The command stays in the menu with its key, and its name says what it needs,
 such as **Ask About an Image (needs a connection that sees)**. Pressing it sends
 nothing and asks whether to switch to one that can, with **Yes** as the default.
+
+### Do a Document Task
+
+**Do a Document Task** (**Ctrl+3**), in **Tools > AI**, hands a job with several
+steps to GitHub Copilot or Codex, whichever is in use: "Fix the heading levels,
+then build a table of contents", or "Turn these notes into actions grouped by
+owner." On any other AI its name says "(needs Copilot or Codex)" and pressing
+it offers to switch.
+
+The window has six things, in Tab order: **Conversation**, a read-only record
+of the task; **Status**, which says "Using GitHub Copilot" or "Using Codex on
+your ChatGPT plan"; **Instruction**, where focus starts; **Send**; **Stop**; and
+**Close**. Type what you want done and press **Enter**. While the task runs,
+what you type goes to it as a follow-up. **Stop** ends it at once, and
+**Close** stops a task that is still running.
+
+Nothing changes without you. Before a step that changes something, **Allow This
+Step?** says in one sentence what will happen: **Enter** is **Allow once**,
+**Allow for this task** stops it asking about that kind of step until the task
+ends, and **Escape** is **Don't allow**. Every edit then opens **Review AI
+Changes**, so you accept or reject each change, and each one undoes with
+**Ctrl+Z**. The next task asks again.
+
+When the task ends you hear its summary, such as "Done. 1 change applied:
+Changed the document. Each can be undone with Control Z." Nothing else is
+spoken; the conversation fills in quietly, one **Shift+Tab** away.
 
 ### QUILL's free AI
 
@@ -9820,6 +9869,9 @@ previous cell.
 | **Ctrl+Alt+Z** | Ask About This Document... |
 | **Ctrl+6** | Ask AI a Question... |
 | **Ctrl+7** | Prompt Library... |
+| **Ctrl+3** | Do a Document Task... |
+| **Ctrl+8** | Which AI Am I Using |
+| **Ctrl+4** | Choose Your AI... |
 | **Ctrl+Alt+Shift+F9** | Usage... |
 | **Ctrl+9** | Web Searches Left |
 | **Ctrl+Alt+Shift+F10** | Connect or Sign Out... |

@@ -1032,6 +1032,25 @@ def _no_saved_own_ai_key(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture(autouse=True)
+def _no_copilot_or_codex_here(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Every hosted-AI test sees Copilot and Codex as not in this build.
+
+    The shared AI service reads this app's Copilot token from Windows'
+    credential store and looks for the bundled engines on every question about
+    the connections (quill/ui/hosted_ai_copilot_route.py); a developer signed
+    in to Copilot, or with a built runtime beside the tree, would otherwise
+    change what every Choose Your AI test hears. Tests of those rows patch
+    these back themselves.
+    """
+    from quill.core.ai.copilot_state import CopilotReadiness
+    from quill.ui import hosted_ai_copilot_route as route
+
+    nothing = CopilotReadiness(client_id=False, sdk=False, cli=False, signed_in=False)
+    monkeypatch.setattr(route.CopilotRouteMixin, "copilot_readiness", lambda _self: nothing)
+    monkeypatch.setattr(route.CopilotRouteMixin, "codex_available", property(lambda _s: False))
+
+
+@pytest.fixture(autouse=True)
 def _no_saved_acoustid_key(monkeypatch: pytest.MonkeyPatch) -> None:
     """Keep the developer's AcoustID key, and the credential store, out of tests.
 

@@ -38,9 +38,11 @@ def test_no_show_modal_call_omits_the_label() -> None:
 
 
 def test_the_two_fixed_sites_pass_real_labels() -> None:
+    # The Copilot setup dialog became the one sign-in step (codex.md 10A.12),
+    # shown through show_modal_dialog with its title.
     copilot = (_UI / "copilot_onboarding_dialog.py").read_text(encoding="utf-8")
     validator = (_UI / "agent_validator_dialog.py").read_text(encoding="utf-8")
-    assert '_show_modal(self.dialog, "Set Up GitHub Copilot")' in copilot
+    assert "show_modal_dialog(step, SIGN_IN_TITLE)" in copilot
     assert '_show_modal(self.dialog, "Validate Agents")' in validator
 
 

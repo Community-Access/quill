@@ -305,6 +305,8 @@ class HostedAiCommandsMixin(HostedAiMixin):
     _CHOOSE_ROWS: tuple[tuple[str, str, str], ...] = (
         ("tools.hosted_ai_which", "Which AI Am I Using", "cmd_ai_which"),
         ("tools.hosted_ai_choose", "Choose Your AI...", "cmd_ai_choose"),
+        # Do a Document Task (codex.md 6.2): quill/ui/hosted_ai_task_commands.py.
+        ("tools.hosted_ai_task", "Do a Document Task...", "cmd_ai_task"),
     )
 
     def _choose_menu_ids(self) -> dict[str, Any]:
@@ -323,8 +325,9 @@ class HostedAiCommandsMixin(HostedAiMixin):
         from quill.core.i18n import _
 
         ids = self._choose_menu_ids()
-        for command_id, label, _handler in self._CHOOSE_ROWS:
-            ai_menu.Append(ids[command_id], self._menu_label(_(label), command_id))
+        for command_id, label, handler_name in self._CHOOSE_ROWS:
+            shown = self._ai_gated_label(handler_name, _(label))  # codex.md 10A.8
+            ai_menu.Append(ids[command_id], self._menu_label(shown, command_id))
         if getattr(self, "_hosted_ai_choose_wired", False):
             return
         self._hosted_ai_choose_wired = True

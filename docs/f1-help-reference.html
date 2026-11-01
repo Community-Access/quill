@@ -5263,7 +5263,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
-<p>Control coverage: 237 audited sites (237 helped).</p>
+<p>Control coverage: 248 audited sites (248 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
@@ -5296,6 +5296,8 @@ selection you were on. Note on shows the start of that text, so you can
 check you are in the right place. In Markdown and HTML, Write this note
 into the file keeps the note inside the document where others can read
 it; otherwise it stays private.</p>
+<p><strong>Allow This Step?.</strong> Whether the document task may take
+its next step.</p>
 <p><strong>Answer.</strong> What the AI sent back. It is read-only on
 purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
@@ -5322,6 +5324,8 @@ for the session and move with the text as you edit around them.</p>
 cursor is on: its name, its code point, and what it does to a search. A
 screen reader says ‘space’ for four different characters, and this is
 how you tell which one you have.</p>
+<p><strong>ChatGPT Plan Options.</strong> Whether your ChatGPT plan may
+search the web, and Forget on This Computer.</p>
 <p><strong>Choose Your AI.</strong> Choose where your AI comes from:
 QUILL’s free AI, your ChatGPT plan or your own key. The list says which
 is in use; Enter uses the selected one or signs in to it, and Delete
@@ -5365,6 +5369,9 @@ or with Ctrl+Alt+F9; Preferences chooses whether QUILL Lite shares
 QUILL’s dictionary.</p>
 <p><strong>Discard These Words.</strong> The AI has changed these words.
 Yes throws them away and writes nothing; No keeps the review open.</p>
+<p><strong>Do a Document Task.</strong> Tell GitHub Copilot or Codex
+what to do to this document. Each change asks first and is shown before
+it is applied; the task ends with a summary.</p>
 <p><strong>Document language.</strong> Which markup this document is
 written in. It decides what Bold writes, what the heading keys write,
 which of the two tag pickers the Insert menu offers, and whether the
@@ -6039,6 +6046,9 @@ Your choice is saved at once.</li>
 <li><code>self._action</code>: Does what the selected row needs: Use
 This makes a signed-in row the one in use, Sign In opens its sign-in
 step, and Sign Out signs out of the row in use.</li>
+<li><code>self._options</code>: Shown while your ChatGPT plan, or Codex
+on it, is selected and signed in: whether the model may search the web,
+and Forget on This Computer.</li>
 </ul>
 <h4 id="module-level-quilluihosted_ai_dialogspy">(module level)
 (<code>quill/ui/hosted_ai_dialogs.py</code>)</h4>
@@ -6130,6 +6140,16 @@ selected, the paragraph you are in, or the whole section.</li>
 the AI Result window, where you can read it and choose what to do; your
 document at the cursor, as one edit Control Z takes back; or the
 clipboard. Remembered until you change it.</li>
+</ul>
+<h4
+id="planoptionsdialog-quilluihosted_ai_plan_optionspy">PlanOptionsDialog
+(<code>quill/ui/hosted_ai_plan_options.py</code>)</h4>
+<ul>
+<li><code>self.web</code>: When checked, the model may search the web
+through OpenAI to answer a question. Not checked, only what you send is
+used. Saved as soon as you change it.</li>
+<li><code>close</code>: Closes these options. Every choice is already
+saved.</li>
 </ul>
 <h4 id="airesultframe-quilluihosted_ai_resultpy">AiResultFrame
 (<code>quill/ui/hosted_ai_result.py</code>)</h4>
@@ -6747,6 +6767,34 @@ it. A built-in correction cannot be deleted; Remove on one turns it off
 instead.</li>
 <li><code>close</code>: Close this window. Your changes are already
 kept.</li>
+</ul>
+<h4 id="approvaldialog-quilluiagent_windowpy">ApprovalDialog
+(<code>quill/ui/agent_window.py</code>)</h4>
+<ul>
+<li><code>self.summary</code>: What the task wants to do next, in one
+sentence. Enter allows it once; Escape does not allow it.</li>
+<li><code>self.once</code>: Lets this one step happen. The next step
+asks again.</li>
+<li><code>self.task</code>: Lets steps like this one happen until this
+task ends, without asking again. The next task asks afresh.</li>
+<li><code>self.deny</code>: Stops this step. The task carries on without
+it, or ends.</li>
+</ul>
+<h4 id="agentwindow-quilluiagent_windowpy">AgentWindow
+(<code>quill/ui/agent_window.py</code>)</h4>
+<ul>
+<li><code>self.transcript</code>: Everything said in this task: what you
+asked, each step taken, and the summary at the end. Read it with the
+arrow keys.</li>
+<li><code>self.instruction</code>: Type what you want done to this
+document, then press Enter. While a task runs, what you type here goes
+to it as a follow-up.</li>
+<li><code>self.send_button</code>: Starts a task with what you typed, or
+sends it to the task that is running.</li>
+<li><code>self.stop_button</code>: Stops the task now. Changes already
+applied stay, and each can be undone with Control Z.</li>
+<li><code>close</code>: Closes this window, stopping a task that is
+still running.</li>
 </ul>
 </main>
 </body>

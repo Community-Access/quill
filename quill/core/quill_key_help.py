@@ -245,6 +245,7 @@ _CHORD_COMMAND_TITLES: dict[str, str] = {
     # Describer says the name a person reads in the AI menu.
     "tools.hosted_ai_which": "Which AI Am I Using",
     "tools.hosted_ai_choose": "Choose Your AI",
+    "tools.hosted_ai_task": "Do a Document Task",
     # Took the leader G on 2026-09-17 when favourite folders left the
     # three-modifier chords for the leader (bad.md §0.6, rule 7).
     "file.open_from_favorite_folder": "Open From Favourite Folder",

@@ -9751,15 +9751,14 @@ what the model can read at once, and the window tells you if that
 happens.</p>
 <h3 id="choose-your-ai">Choose Your AI</h3>
 <p><strong>Choose Your AI</strong> is the one window for where your AI
-comes from: QUILL’s free AI, your ChatGPT plan or your own key. Press
-<strong>Choose Your AI</strong> (<strong>Ctrl+4</strong>), or choose
-<strong>Tools &gt; AI &gt; Choose Your AI…</strong>. Focus lands on the
-list, on the one in use. There are five things in the window, in Tab
-order:</p>
+comes from: QUILL’s free AI, your ChatGPT plan, your GitHub Copilot,
+Codex or your own key. Press <strong>Choose Your AI</strong>
+(<strong>Ctrl+4</strong>), or choose <strong>Tools &gt; AI &gt; Choose
+Your AI…</strong>. Focus lands on the list, on the one in use. There are
+five things in the window, in Tab order:</p>
 <ul>
 <li><strong>Connections</strong>, a list. Each row says its name and
-then “in use”, “signed in” or “not set up”. GitHub Copilot and Codex say
-“not available yet” for now.</li>
+then “in use”, “signed in” or “not set up”.</li>
 <li><strong>About this connection</strong>, one short line: what it can
 do, who gets your text and what it costs.</li>
 <li><strong>Model</strong>, that connection’s own models, the
@@ -9783,10 +9782,35 @@ window and says “No AI is in use. Choose one.”</p>
 and <strong>Connect or Sign Out</strong>
 (<strong>Ctrl+Alt+Shift+F10</strong>) keep their keys and open this
 window on their own row, with the sign-in ready.</p>
+<p><strong>Signing in to GitHub Copilot.</strong> <strong>Sign
+In…</strong> on <strong>My GitHub Copilot</strong> opens a small step
+with a short code from GitHub. The code is spaced out so your screen
+reader reads one character at a time, it is said once, and it is already
+on the clipboard. Press <strong>Open the Page</strong>, paste or type
+the code on GitHub’s page and approve QUILL Lite. The step closes by
+itself and you hear “Signed in to My GitHub Copilot. It is now in use.”
+<strong>Cancel</strong> stops waiting at once. Copilot Free works too:
+its only model is “Auto (Copilot Free chooses)”. QUILL Lite signs in to
+GitHub on its own, separately from QUILL. If this copy cannot sign in to
+GitHub yet, the row says “not available yet” and <strong>About this
+connection</strong> says why.</p>
+<p><strong>Codex</strong> runs on your ChatGPT plan with the same
+sign-in, so once you are signed in to your plan, <strong>Use
+This</strong> on <strong>Codex, for tasks</strong> is one key. While
+Codex is in use, single requests go straight to your plan.</p>
+<p><strong>Plan Options.</strong> While your ChatGPT plan’s row, or
+Codex’s, is selected and signed in, a <strong>Plan Options…</strong>
+button appears beside the action button. It has <strong>Allow web
+search</strong>, a check box saved as soon as you change it, and
+<strong>Forget on This Computer</strong>, which forgets the sign-in here
+without telling OpenAI.</p>
 <h4 id="which-ai-am-i-using">Which AI Am I Using</h4>
 <p><strong>Which AI Am I Using</strong> (<strong>Ctrl+8</strong>) says
-in one line which AI is in use, the model, and one thing about usage.
-Press it twice quickly to open <strong>Choose Your AI</strong>.</p>
+in one line which AI is in use, the model, and one thing about usage. On
+GitHub Copilot that is GitHub’s own count; the first time it waits a
+moment for GitHub’s answer. On Codex it says “Codex, on your ChatGPT
+plan. Single requests go to the plan directly.” Press it twice quickly
+to open <strong>Choose Your AI</strong>.</p>
 <p>The status bar’s last cell before the message, <strong>AI</strong>,
 says the same thing shorter, such as “AI: ChatGPT plan”. Press
 <strong>F6</strong>, arrow to it and press <strong>Enter</strong> to
@@ -9803,6 +9827,34 @@ cannot do something</h4>
 needs, such as <strong>Ask About an Image (needs a connection that
 sees)</strong>. Pressing it sends nothing and asks whether to switch to
 one that can, with <strong>Yes</strong> as the default.</p>
+<h3 id="do-a-document-task">Do a Document Task</h3>
+<p><strong>Do a Document Task</strong> (<strong>Ctrl+3</strong>), in
+<strong>Tools &gt; AI</strong>, hands a job with several steps to GitHub
+Copilot or Codex, whichever is in use: “Fix the heading levels, then
+build a table of contents”, or “Turn these notes into actions grouped by
+owner.” On any other AI its name says “(needs Copilot or Codex)” and
+pressing it offers to switch.</p>
+<p>The window has six things, in Tab order:
+<strong>Conversation</strong>, a read-only record of the task;
+<strong>Status</strong>, which says “Using GitHub Copilot” or “Using
+Codex on your ChatGPT plan”; <strong>Instruction</strong>, where focus
+starts; <strong>Send</strong>; <strong>Stop</strong>; and
+<strong>Close</strong>. Type what you want done and press
+<strong>Enter</strong>. While the task runs, what you type goes to it as
+a follow-up. <strong>Stop</strong> ends it at once, and
+<strong>Close</strong> stops a task that is still running.</p>
+<p>Nothing changes without you. Before a step that changes something,
+<strong>Allow This Step?</strong> says in one sentence what will happen:
+<strong>Enter</strong> is <strong>Allow once</strong>, <strong>Allow for
+this task</strong> stops it asking about that kind of step until the
+task ends, and <strong>Escape</strong> is <strong>Don’t allow</strong>.
+Every edit then opens <strong>Review AI Changes</strong>, so you accept
+or reject each change, and each one undoes with <strong>Ctrl+Z</strong>.
+The next task asks again.</p>
+<p>When the task ends you hear its summary, such as “Done. 1 change
+applied: Changed the document. Each can be undone with Control Z.”
+Nothing else is spoken; the conversation fills in quietly, one
+<strong>Shift+Tab</strong> away.</p>
 <h3 id="quills-free-ai">QUILL’s free AI</h3>
 <p>Unless you choose otherwise, AI help runs on QUILL’s own free
 service. There is no account, no password and no email address to give.
@@ -13057,6 +13109,18 @@ Navigate)</h4>
 <tr>
 <td><strong>Ctrl+7</strong></td>
 <td>Prompt Library…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+3</strong></td>
+<td>Do a Document Task…</td>
+</tr>
+<tr>
+<td><strong>Ctrl+8</strong></td>
+<td>Which AI Am I Using</td>
+</tr>
+<tr>
+<td><strong>Ctrl+4</strong></td>
+<td>Choose Your AI…</td>
 </tr>
 <tr>
 <td><strong>Ctrl+Alt+Shift+F9</strong></td>

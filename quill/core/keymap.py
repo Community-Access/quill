@@ -277,6 +277,9 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # gets its parity row then (rule 11). Nothing in Cast binds them today.
     "tools.hosted_ai_which": "Ctrl+8",
     "tools.hosted_ai_choose": "Ctrl+4",
+    # Do a Document Task (codex.md 6.2): the last plain chord 10A.9 found free in
+    # both editors and every APP_KEYMAPS app; core/lite/commands_ai.py says why.
+    "tools.hosted_ai_task": "Ctrl+3",
     "tools.dictation_tidy": "Ctrl+F3",  # free in both editors; QUILL Lite's chord
     # The dictionary (2026-10-02; quill/ui/word_tools_commands.py, shared).
     # Look Up is the dictionary without AI (DICT-2's window, now reachable and

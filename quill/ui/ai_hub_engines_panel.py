@@ -130,11 +130,12 @@ class EnginesPanel:
         if target is None:
             return
         if target.harness_id == "copilot":
-            from quill.ui.copilot_onboarding_dialog import CopilotOnboardingDialog
+            # The bundled engine needs only a sign-in (codex.md 10A.12): the same
+            # step Choose Your AI uses, under QUILL's own name.
+            from quill.ui.copilot_onboarding_dialog import sign_in_copilot_for_app
 
-            CopilotOnboardingDialog(
-                self._parent_dialog, self._show_modal, announce=self._announce
-            ).show()
+            if sign_in_copilot_for_app(self._parent_dialog, "QUILL", self._announce):
+                self._announce("Signed in to GitHub Copilot.")
             self._reload()
             return
         if target.available:

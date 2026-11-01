@@ -31,6 +31,7 @@ from quill.core.ai.connection_choice import IN_USE, SIGNED_IN, ConnectionRow
 
 __all__ = [
     "ACTION_LABELS",
+    "CODEX_MODEL",
     "COMMAND_NEEDS",
     "FREE_MODEL",
     "MODELS_FAILED",
@@ -43,6 +44,7 @@ __all__ = [
     "USE",
     "about_line",
     "asking_sentence",
+    "engine_unavailable_about",
     "model_items",
     "not_available_sentence",
     "now_using",
@@ -123,6 +125,8 @@ def about_line(record: ConnectionRecord, *, own_key_provider: str = "openai") ->
 # -- the model choice (10A.3, 10A.4) --------------------------------------------- #
 
 FREE_MODEL = "QUILL chooses the model"
+#: Codex runs on the plan; its single requests use the plan's own model (10A.13).
+CODEX_MODEL = "Codex chooses the model"
 SIGN_IN_FOR_MODELS = "Sign in to see the models"
 NOT_AVAILABLE_MODELS = "Not available yet"
 MODELS_FAILED = "Could not read the model list. The recommended model is used."
@@ -170,6 +174,24 @@ def not_available_sentence(connection: str) -> str:
     )
 
 
+def engine_unavailable_about(
+    connection: str, *, registered: bool = True, app_name: str = "QUILL"
+) -> str:
+    """The About line for a Copilot or Codex row this build cannot offer: one sentence.
+
+    *registered* is False when this app has no GitHub sign-in registration yet
+    (Copilot's client id, 10A.12); otherwise the engine is missing from the build.
+    """
+    app = app_name or "QUILL"
+    if connection == COPILOT and not registered:
+        return (
+            f"Not available yet: GitHub sign-in for {app} has not been registered, "
+            "so it comes in a later update."
+        )
+    engine = "GitHub Copilot" if connection == COPILOT else "Codex"
+    return f"Not available yet: this copy of {app} does not include the {engine} engine."
+
+
 def sign_in_sentence(connection: str, app_name: str) -> str:
     """The sign-in step's one sentence: the same shape for every connection."""
     page = _COMPANY_PAGE.get(connection, "the service's")
@@ -195,6 +217,7 @@ COMMAND_NEEDS: dict[str, str] = {
     "cmd_ai_prompt_library": TEXT,
     "cmd_ai_image": PICTURES,
     "cmd_dictation_tidy": TEXT,
+    "cmd_ai_task": AGENT_TOOLS,
 }
 
 

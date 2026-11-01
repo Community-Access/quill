@@ -167,6 +167,7 @@ APPS: tuple[AppConfig, ...] = (
             "quill/ui/prompt_library_dialog.py",
             "quill/ui/prompt_edit_dialog.py",
             "quill/ui/autocorrect_entries_dialog.py",
+            "quill/ui/agent_window.py",
         ),
         "lite_help_inventory.json",
     ),

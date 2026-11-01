@@ -13825,6 +13825,11 @@ are in</td>
 <td>The one window for where your AI comes from</td>
 </tr>
 <tr>
+<td><code>Ctrl+3</code></td>
+<td>Do a Document Task…</td>
+<td>Tell GitHub Copilot or Codex what to do to this document</td>
+</tr>
+<tr>
 <td><code>Ctrl+Alt+Shift+F4</code></td>
 <td>Connect or Sign Out…</td>
 <td>Connect this computer, or disconnect it</td>
@@ -14554,9 +14559,8 @@ cannot use, an account with no credit, or the wrong provider chosen for
 the key you saved. <strong>Test the Key</strong> tells you which.</p>
 <h3 id="which-ai-is-in-use">Which AI is in use</h3>
 <p>QUILL keeps one record of which AI answers you: QUILL’s free AI, your
-ChatGPT plan, or your own key. GitHub Copilot and Codex are on the way;
-until they arrive they say “not available yet”. The choice is saved with
-your settings as <code>ai_connection</code>.</p>
+ChatGPT plan, your GitHub Copilot, Codex, or your own key. The choice is
+saved with your settings as <code>ai_connection</code>.</p>
 <p>The first time you start this version, QUILL keeps what you already
 had. If you were signed in with ChatGPT, your plan stays in use. If not,
 and you had a key saved, your key stays in use. Otherwise it is the free
@@ -14575,10 +14579,9 @@ once, and QUILL neither tries again nor switches.</p>
 this week, along with the token counts OpenAI reports back. That count
 stays on this computer and is always called a local count. OpenAI’s own
 usage page is the real answer about your plan.</p>
-<p>Two more settings hold the model for the connections still to come:
-<code>ai_copilot_model</code> for GitHub Copilot and
-<code>ai_codex_model</code> for Codex. Empty means the service
-picks.</p>
+<p>Two more settings hold a model each: <code>ai_copilot_model</code>
+for GitHub Copilot and <code>ai_codex_model</code> for Codex. Empty
+means the service picks.</p>
 <p>Answers are always plain text. QUILL asks every AI not to draw
 charts, graphs or diagrams, and if one sends something like that anyway,
 you get it as text, not a picture.</p>
@@ -14590,8 +14593,8 @@ window has five things in it, in Tab order:</p>
 <ul>
 <li><strong>Connections</strong>, a list. Each row says its name, then
 whether it is in use, signed in or not set up: “QUILL’s free AI, in
-use”, “My ChatGPT plan, signed in”, “My own key, OpenAI, signed in”.
-GitHub Copilot and Codex say “not available yet” until they arrive.</li>
+use”, “My ChatGPT plan, signed in”, “My GitHub Copilot, not set up”,
+“Codex, for tasks, signed in”, “My own key, OpenAI, signed in”.</li>
 <li><strong>About this connection</strong>, a short read-only line: what
 it can do, and who gets your text and what it costs. For example “Text
 and pictures, per model. Agent tasks: no. Goes to OpenAI and counts
@@ -14625,6 +14628,33 @@ step closes by itself. <strong>My own key</strong> opens <strong>Use My
 Own AI Key</strong>, with its Provider list. <strong>QUILL’s free
 AI</strong> opens its Connect step, the same one as before, and only
 when you ask for it.</p>
+<p><strong>My GitHub Copilot</strong> uses the same small step, with one
+more field: a short code from GitHub. QUILL spaces the code out so your
+screen reader reads one character at a time, says it once, and puts it
+on the clipboard. <strong>Open the Page</strong> takes you to GitHub’s
+page, where you paste or type the code and approve QUILL. The step
+closes by itself and you hear “Signed in to My GitHub Copilot. It is now
+in use.” <strong>Cancel</strong> stops waiting straight away. Copilot
+Free works too; its model list has one entry, “Auto (Copilot Free
+chooses)”. QUILL signs in to GitHub on its own, separately from QUILL
+Lite and from the GitHub sign-in QUILL uses for your repositories. If
+this copy of QUILL cannot sign in to GitHub yet, the row says “not
+available yet” and <strong>About this connection</strong> says why in
+one sentence.</p>
+<p><strong>Codex, for tasks</strong> runs on your ChatGPT plan, with the
+same sign-in. Once you are signed in to your plan, <strong>Use
+This</strong> on the Codex row is the only key to press. Codex is there
+for document tasks (below); while it is in use, single requests such as
+a rewrite or Ask go straight to your plan, which is quicker.</p>
+<p>While your ChatGPT plan’s row, or Codex’s, is selected and signed in,
+one more button appears beside the action button: <strong>Plan
+Options…</strong>. It opens two choices that used to live in the plan’s
+own window. <strong>Allow web search</strong> is a check box: when it is
+checked, the model may search the web through OpenAI to answer you, and
+it is saved as soon as you change it. <strong>Forget on This
+Computer</strong> forgets the sign-in here without telling OpenAI, for a
+computer that is offline or a sign-in you already removed in ChatGPT’s
+settings.</p>
 <p>The older commands keep their keys and now open this window on their
 own row, with the sign-in step ready: <strong>Use My Own AI Key</strong>
 (<code>Alt+F2</code>), <strong>Use My ChatGPT Subscription</strong>
@@ -14636,7 +14666,11 @@ Mode, and nothing can be signed in.</p>
 <p>Press <code>Ctrl+8</code> and QUILL says, in one line, which AI is in
 use, the model, and one thing about usage when there is something to
 say. On your ChatGPT plan that is the plan, the model you chose, and “3
-requests today from QUILL, counted on this computer.” Press
+requests today from QUILL, counted on this computer.” On GitHub Copilot
+it adds GitHub’s own count, such as “41 of 300 premium requests this
+month, by GitHub’s count.” The first time, that waits a moment for
+GitHub’s answer; after that it is said at once. On Codex it says “Codex,
+on your ChatGPT plan. Single requests go to the plan directly.” Press
 <code>Ctrl+8</code> twice quickly and it opens <strong>Choose Your
 AI</strong> instead.</p>
 <h4 id="the-ai-cell-in-the-status-bar">The AI cell in the status
@@ -14657,6 +14691,9 @@ For example:</p>
 at midnight.”</li>
 <li>“My ChatGPT plan: 23 requests today from QUILL, counted on this
 computer. OpenAI sets the limits; Manage usage opens them.”</li>
+<li>“My GitHub Copilot: 41 of 300 premium requests this month, by
+GitHub’s count.” QUILL asks GitHub when the list opens and says that row
+once when the answer arrives.</li>
 </ul>
 <p><strong>Manage Usage</strong> opens the selected one’s own page in
 your browser. It is all text. There is no meter, gauge or chart.</p>
@@ -14671,6 +14708,48 @@ see. My ChatGPT plan can. Switch to it and ask?”, with
 <strong>Yes</strong> switches and carries on. If nothing you have set up
 can do it, <strong>Yes</strong> opens <strong>Choose Your AI</strong> on
 a row that can.</p>
+<h3 id="do-a-document-task-ctrl3">Do a Document Task (Ctrl+3)</h3>
+<p>Some jobs take more than one step: “Fix the heading levels, then
+build a table of contents, then list broken links”, or “Turn these notes
+into actions grouped by owner.” <strong>AI &gt; Do a Document
+Task…</strong> (<code>Ctrl+3</code>) hands a job like that to
+<strong>GitHub Copilot</strong> or <strong>Codex</strong>, whichever is
+in use, and it works through the steps with QUILL’s own editing
+tools.</p>
+<p>Only those two can do tasks. On any other AI the menu says <strong>Do
+a Document Task (needs Copilot or Codex)…</strong>, and pressing it
+sends nothing and offers to switch, the same way as any other AI
+command.</p>
+<p>The window has six things in it, in Tab order:</p>
+<ul>
+<li><strong>Conversation</strong>, a read-only record of the task: what
+you asked, each step, and the summary at the end.</li>
+<li><strong>Status</strong>, which says “Using GitHub Copilot” or “Using
+Codex on your ChatGPT plan”, and whether it is working.</li>
+<li><strong>Instruction</strong>, where focus starts. Type what you want
+done and press <code>Enter</code>. While a task is running, what you
+type here goes to it as a follow-up.</li>
+<li><strong>Send</strong>, which does the same as
+<code>Enter</code>.</li>
+<li><strong>Stop</strong>, which stops the task straight away. Changes
+already made stay, and each one undoes with <code>Ctrl+Z</code>.</li>
+<li><strong>Close</strong>, which also stops a task that is still
+running.</li>
+</ul>
+<p>Nothing changes without you. Before a step that changes something, a
+small window, <strong>Allow This Step?</strong>, says in one sentence
+what will happen. Press <code>Enter</code> for <strong>Allow
+once</strong>, choose <strong>Allow for this task</strong> to stop being
+asked about that kind of step until this task ends, or press
+<code>Escape</code> for <strong>Don’t allow</strong>. Every edit to your
+document then opens <strong>Review AI Changes</strong>, the same review
+you already know, so you can accept or reject each change. Nothing
+carries over to the next task: it asks again.</p>
+<p>QUILL says only what your screen reader cannot know. When the task
+ends, you hear its summary, for example “Done. 2 changes applied:
+Changed the document; Ran a command. Each can be undone with Control Z.”
+The conversation and status fill in quietly; <code>Shift+Tab</code>
+takes you to them.</p>
 <h3 id="if-the-ai-you-chose-is-not-available">If the AI you chose is not
 available</h3>
 <p>QUILL never quietly answers with a different AI from the one you
@@ -15718,15 +15797,16 @@ Engines tab of the AI Hub:</p>
 <ol type="1">
 <li>Pick <strong>GitHub Copilot</strong>, <strong>OpenAI Agents</strong>
 or <strong>Claude Agent</strong>, or leave it on Native.</li>
-<li>Select <strong>Set Up / Install…</strong>. The first time, QUILL
-installs the small connector it needs. For Copilot it then signs you in
-to GitHub, with a short spoken device code in your browser when it can,
-or through the Copilot/GitHub CLI sign-in otherwise. <strong>OpenAI
-Agents</strong> and <strong>Claude Agent</strong> use your own API key
-instead of a sign-in, so once the connector is installed, <strong>Set
-Up</strong> opens a small dialog where you paste, save or remove that
-key. It also tells you whether a key is already saved. The change
-applies at once, with no restart.</li>
+<li>Select <strong>Set Up / Install…</strong>. For Copilot, which now
+comes with QUILL, this is only the sign-in: the same step as
+<strong>Choose Your AI</strong>, with GitHub’s code spaced out and on
+the clipboard. For the other two, the first time, QUILL installs the
+small connector it needs. <strong>OpenAI Agents</strong> and
+<strong>Claude Agent</strong> use your own API key instead of a sign-in,
+so once the connector is installed, <strong>Set Up</strong> opens a
+small dialog where you paste, save or remove that key. It also tells you
+whether a key is already saved. The change applies at once, with no
+restart.</li>
 <li>Select <strong>Set as Active Engine</strong>. From then on, Ask
 Quill and the agents run on that engine, and a status line names
 it.</li>

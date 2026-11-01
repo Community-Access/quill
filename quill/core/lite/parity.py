@@ -190,6 +190,9 @@ COMMAND_EQUIVALENTS: dict[str, str] = {
     # (quill/ui/hosted_ai_choose_commands.py), Ctrl+8 and Ctrl+4 in both.
     "cmd_ai_which": "tools.hosted_ai_which",
     "cmd_ai_choose": "tools.hosted_ai_choose",
+    # Do a Document Task (codex.md 6.2): the shared mixin's
+    # (quill/ui/hosted_ai_task_commands.py), Ctrl+3 in both.
+    "cmd_ai_task": "tools.hosted_ai_task",
     "cmd_dictation_tidy": "tools.dictation_tidy",
     # Inline notes, Toggle Task Done and Export as HTML (2026-10-04, from
     # PlanCake): QUILL's code, shared, on QUILL's chords (rule 2).

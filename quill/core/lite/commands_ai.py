@@ -21,10 +21,27 @@ Ctrl+9 and leaves Ctrl+8 beside the other two for whatever comes next.
 
 from __future__ import annotations
 
-#: Spliced in after Ask About This Document: the two ways to ask.
+#: Do a Document Task (codex.md 6.2, 2026-11-01): the agent window, on My GitHub
+#: Copilot or Codex. Ctrl+3 was the one plain chord left of the three 10A.9
+#: found free in both editors and in every APP_KEYMAPS app (Ctrl+4 and Ctrl+8
+#: went to Choose Your AI). Rule 6 keeps it off QUILL's leader, because QUILL
+#: Lite reaches its AI on plain chords; rule 3 gives a command people will use
+#: daily a short key rather than the long one rule 9 keeps for rare ones; and
+#: rule 5 does not apply, since nothing moves. QUILL has it on the same chord
+#: (tools.hosted_ai_task).
+AI_TASK_ROW: tuple[str, str, str, str, str] = (
+    "&Tools|&AI",
+    "&Do a Document Task...",
+    "Ctrl+3",
+    "cmd_ai_task",
+    "",
+)
+
+#: Spliced in after Ask About This Document: the ways to ask, then the task.
 AI_ASK_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
     ("&Tools|&AI", "Ask AI a &Question...", "Ctrl+6", "cmd_ai_chat_key", ""),
     ("&Tools|&AI", "Prompt &Library...", "Ctrl+7", "cmd_ai_prompt_library", ""),
+    AI_TASK_ROW,
 )
 
 #: Choose Your AI (codex.md 10A.9, 2026-10-31). Which AI Am I Using is a quick

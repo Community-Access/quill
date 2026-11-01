@@ -90,6 +90,13 @@ class _Service:
         self.free_signed_out += 1
         self.signed_in = False
 
+    agent_name = "QUILL"
+
+    def engine_unavailable_about(self, connection: str) -> str:
+        from quill.core.ai.connection_words import engine_unavailable_about
+
+        return engine_unavailable_about(connection, registered=False)
+
 
 def _hooks(said: list[str], **overrides) -> ChooseAiHooks:
     values = {

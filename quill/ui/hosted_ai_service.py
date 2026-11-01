@@ -13,10 +13,8 @@ nothing about a slow network reaches the caret. That is not a nicety for a tool
 people write in; an editor that stops accepting keystrokes because a server is
 thinking is an editor that has lost the thing it is for.
 
-**Nothing happens until somebody asks.** No request on launch, on typing, on
-save, on idle or on focus. The limits are fetched once, lazily, the first time a
-window actually needs them -- so an install with the feature switched on but
-never used makes no network call at all.
+**Nothing happens until somebody asks.** No request on launch, typing, save,
+idle or focus; the limits are fetched once, lazily, when a window needs them.
 """
 
 from __future__ import annotations
@@ -40,6 +38,7 @@ from quill.core.ai.gateway_session import (
 from quill.core.ai.text_only import as_text
 from quill.ui.hosted_ai_connection_route import ConnectionRouteMixin
 from quill.ui.hosted_ai_connection_route import plain_sentence as _sentence
+from quill.ui.hosted_ai_copilot_route import CopilotRouteMixin
 from quill.ui.hosted_ai_own_key_route import OwnKeyRouteMixin
 from quill.ui.hosted_ai_route_guard import RouteGuardMixin
 from quill.ui.hosted_ai_route_words import RouteWords
@@ -71,7 +70,9 @@ class SignInCode:
         return " ".join(self.user_code.replace("-", " dash "))
 
 
-class AiService(ConnectionRouteMixin, OwnKeyRouteMixin, RouteWords, RouteGuardMixin):
+class AiService(
+    CopilotRouteMixin, ConnectionRouteMixin, OwnKeyRouteMixin, RouteWords, RouteGuardMixin
+):
     """One per running QUILL Lite. Holds the session and does the waiting."""
 
     def __init__(self, app: Any) -> None:
@@ -133,14 +134,9 @@ class AiService(ConnectionRouteMixin, OwnKeyRouteMixin, RouteWords, RouteGuardMi
 
     @property
     def limits(self) -> GatewayLimits:
-        """The cached limits, or the shipped defaults until they are fetched.
-
-        Never fetches on access: a property that opens a socket is a property
-        that stalls a menu. :meth:`refresh_limits` is the explicit one, and the
-        defaults are honest in the meantime -- they are the values the service
-        actually ships with.
-        """
-        if self.chatgpt_active:
+        """The cached limits, or the shipped defaults until fetched. Never fetches on
+        access (a property that opens a socket stalls a menu): see refresh_limits."""
+        if self.chatgpt_active or self.copilot_active:  # the plan's or GitHub's limits
             from quill.core.ai.chatgpt_ai_help import CHATGPT_LIMITS
 
             return CHATGPT_LIMITS
@@ -152,11 +148,8 @@ class AiService(ConnectionRouteMixin, OwnKeyRouteMixin, RouteWords, RouteGuardMi
 
     @property
     def free_limits(self) -> GatewayLimits:
-        """The free service's limits, whichever way requests are going.
-
-        With an own key :attr:`limits` is deliberately unlimited; this is what
-        the pad compares against to say "more than the free AI would accept".
-        """
+        """The free service's limits whichever way requests go: what the pad compares
+        against to say "more than the free AI would accept"."""
         return self._limits or GatewayLimits()
 
     def refresh_limits(self, on_done: Callable[[GatewayLimits], None] | None = None) -> None:
@@ -231,7 +224,9 @@ class AiService(ConnectionRouteMixin, OwnKeyRouteMixin, RouteWords, RouteGuardMi
         stop = threading.Event()
         if not self.request_allowed(requires, lambda said: _call_after(on_error, said)):
             return stop  # not ready, cannot do it, or the route changed and they said No
-        if self.chatgpt_active:
+        if self.copilot_active:
+            work = self._copilot_ask_work(feature, prompt, chunks, language, stop)
+        elif self.chatgpt_active:
             from quill.core.ai.chatgpt_ai_help import ask_with_chatgpt
 
             account = self.chatgpt
@@ -315,7 +310,9 @@ class AiService(ConnectionRouteMixin, OwnKeyRouteMixin, RouteWords, RouteGuardMi
         stop = threading.Event()
         if not self.request_allowed(requires, lambda said: _call_after(on_error, said)):
             return stop
-        if self.chatgpt_active:
+        if self.copilot_active:
+            work = self._copilot_converse_work(prompt, chunks, history, stop)
+        elif self.chatgpt_active:
             from quill.core.ai.chatgpt_ai_help import converse_with_chatgpt
 
             account = self.chatgpt
@@ -376,13 +373,13 @@ class AiService(ConnectionRouteMixin, OwnKeyRouteMixin, RouteWords, RouteGuardMi
         on_error: Callable[[str], None],
         requires: tuple[str, ...] = ("text", "pictures"),
     ) -> None:
-        """Ask About an Image on the ChatGPT plan or an own Gemini key; answers on
-        the UI thread. The free service and an OpenAI key carry no pictures, so
-        GATE-CAPS refuses there. A bad file is the client's own sentence.
-        """
+        """Ask About an Image on the plan, Copilot or a Gemini key; answers on the UI
+        thread. GATE-CAPS refuses elsewhere. A bad file is the client's sentence."""
         if not self.request_allowed(requires, lambda said: _call_after(on_error, said)):
             return
-        if self.chatgpt_active:
+        if self.copilot_active:
+            work = self._copilot_image_work(path, question)
+        elif self.chatgpt_active:
             from quill.core.ai.chatgpt_ai_help import describe_image_with_chatgpt
 
             account = self.chatgpt

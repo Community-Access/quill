@@ -2,6 +2,34 @@
 
 ## 1.0.0
 
+### GitHub Copilot, Codex and document tasks, in QUILL and QUILL Lite (2026-11-01)
+
+- **My GitHub Copilot** in Choose Your AI now signs in with GitHub's short code
+  in the same small sign-in step as the other connections: the code is spaced
+  out for your screen reader, said once and already on the clipboard; Open the
+  Page goes to GitHub, and the step closes by itself. Each app signs in on its
+  own. Without this app's GitHub registration the row says "not available yet"
+  and About says why in one sentence.
+- Single requests, conversations and Ask About an Image (on a model that sees)
+  go to Copilot when it is in use. A Copilot error is said once; nothing is
+  retried or switched. Which AI Am I Using (Ctrl+8) and AI Usage include
+  GitHub's own count, fetched without holding up the window.
+- **Codex, for tasks** is one key once your ChatGPT plan is signed in. While it
+  is in use, single requests go straight to your plan, and Ctrl+8 says so.
+- **Do a Document Task** (Ctrl+3 in both editors, AI menu) hands a job with
+  several steps to GitHub Copilot or Codex. Each step that changes something
+  asks first (Allow once, Allow for this task, Don't allow), every edit opens
+  Review AI Changes and undoes with Ctrl+Z, Stop ends it at once, and the task
+  ends with a spoken text summary. On any other AI it says "(needs Copilot or
+  Codex)" and offers to switch.
+- **Plan Options...** in Choose Your AI, shown on the ChatGPT plan's and Codex's
+  rows, brings back Allow web search and Forget on This Computer, which became
+  unreachable when Use My ChatGPT Subscription (Alt+F5) began opening Choose
+  Your AI.
+- The old "Set Up GitHub Copilot" window, with its Install step, is gone: the
+  engine ships with QUILL, so the AI Hub's Engines tab and the engine status
+  cell open the same sign-in step.
+
 ### Choose Your AI, in QUILL and QUILL Lite (2026-10-31)
 
 - One window, **Choose Your AI** (Ctrl+4 in both editors), lists where your AI
