@@ -25,7 +25,7 @@ from collections.abc import Callable
 from pathlib import Path
 from typing import IO, Any
 
-from quill.core.demo_camera import Framing, framing
+from quill.core.demo_camera import FirstFrameGrace, Framing, framing
 from quill.core.demo_recording_ffmpeg import (
     FACE_FRAME_SIZE,
     Capabilities,
@@ -213,9 +213,18 @@ class FaceWatcher:
     kept, so advice is never about where the presenter was seconds ago.
     """
 
-    def __init__(self, on_framing: Callable[[Framing], None], *, mirrored: bool = False) -> None:
+    def __init__(
+        self,
+        on_framing: Callable[[Framing], None],
+        *,
+        mirrored: bool = False,
+        grace: FirstFrameGrace | None = None,
+    ) -> None:
         self.on_framing = on_framing
         self.mirrored = mirrored
+        #: VIDEO-003: told of every frame actually read, so a camera's start-up
+        #: is judged from its pictures, not from when it was asked to open.
+        self.grace = grace
         self._latest: bytes | None = None
         self._ready = threading.Event()
         self._stop = threading.Event()
@@ -226,6 +235,9 @@ class FaceWatcher:
         self._thread.start()
 
     def feed(self, frame: bytes) -> None:
+        grace = self.grace
+        if grace is not None:
+            grace.frame_read()
         self._latest = frame
         self._ready.set()
 
@@ -282,7 +294,8 @@ class CameraCheck:
     def __init__(
         self, ffmpeg: str, device: str, on_framing: Callable[[Framing], None], *, mirrored: bool
     ) -> None:
-        self.watcher = FaceWatcher(on_framing, mirrored=mirrored)
+        self.grace = FirstFrameGrace()
+        self.watcher = FaceWatcher(on_framing, mirrored=mirrored, grace=self.grace)
         width, height = FACE_FRAME_SIZE
         self.process = FFmpegProcess(
             camera_preview_command(ffmpeg, device),

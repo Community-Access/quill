@@ -14,6 +14,7 @@ shell Quill Radio and QUILL Cast are built on.
 
 from __future__ import annotations
 
+import contextlib
 import os
 import sys
 import threading
@@ -60,6 +61,7 @@ from quill.core.audio_studio.sleep_timer import (
 from quill.core.net import configure_ssl_trust
 from quill.core.paths import app_data_dir
 from quill.core.settings import save_settings
+from quill.stability.wx_dispatch import call_later_safely, guard_timer_callback
 from quill.ui import app_sounds as _app_sounds
 from quill.ui.app_shell import AppShellFrame
 from quill.ui.audio_studio.library_tree import (
@@ -663,14 +665,12 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
             self._sleep_eoc_from_chapter = -1
         if self._sleep_eoc_timer is None:
             self._sleep_eoc_timer = wx.Timer(self.frame)
-            self.frame.Bind(
-                wx.EVT_TIMER,
-                lambda _e: self._poll_end_of_chapter(),
-                self._sleep_eoc_timer,
-            )
+            show = self._set_status  # O8: a failed tick is logged and shown, never lost
+            poll = guard_timer_callback(self._poll_end_of_chapter, name="Sleep timer", report=show)
+            self.frame.Bind(wx.EVT_TIMER, poll, self._sleep_eoc_timer)
         self._sleep_eoc_timer.Start(1000)
 
-    def _poll_end_of_chapter(self) -> None:
+    def _poll_end_of_chapter(self, _event: object = None) -> None:
         player = self._active_player
         if player is None:
             self._disarm_end_of_chapter_watch()
@@ -2257,10 +2257,8 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
         preview it belonged to is over (superseded, finished, or errored)."""
         timer = getattr(self, "_preview_cue_timer", None)
         if timer is not None:
-            try:
+            with contextlib.suppress(Exception):  # a dead timer is fine to ignore
                 timer.Stop()
-            except Exception:  # noqa: BLE001 - a dead timer is fine to ignore
-                pass
             self._preview_cue_timer = None
 
     def _fire_generating_cue(self, generation: int) -> None:
@@ -2470,7 +2468,9 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
         # their cue was cancelled before it ever played. The
         # voice_preview_announce_generating setting still gates it.
         self._cancel_preview_cue_timer()
-        self._preview_cue_timer = wx.CallLater(1, self._fire_generating_cue, my_generation)
+        self._preview_cue_timer = call_later_safely(
+            1, self._fire_generating_cue, my_generation, name="Voice preview cue"
+        )
         self._run_background_task(
             f"Previewing {engine} voice", _synthesize_and_play, self._on_preview_synth_done
         )
@@ -2776,10 +2776,10 @@ def main() -> int:
     from quill.stability.logging_config import configure_logging
 
     log_listener = configure_logging(app_data_dir() / "logs")
-    # ASIO sound cards (roadmap M13): PortAudio's ASIO build must be chosen
-    # before sounddevice is first imported, so this is read at launch.
-    if bool(_load_app_prefs().get("use_asio")):
-        os.environ["SD_ENABLE_ASIO"] = "1"
+    # ASIO sound cards (roadmap M13) must be chosen before sounddevice is imported.
+    from quill.apps.studio_preferences import apply_asio_preference
+
+    apply_asio_preference(_load_app_prefs())
     from quill.core import components
 
     components.register_running_app("studio", REQUIRED_COMPONENTS)

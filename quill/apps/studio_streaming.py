@@ -223,7 +223,7 @@ class StudioStreamingMixin:
             archive_path=archive,
             studio_pid=os.getpid(),
         )
-        self._announce("Going live.")
+        self._announce_settled("Going live.")
 
         def work(**_kwargs):
             stream.start()
@@ -284,7 +284,9 @@ class StudioStreamingMixin:
         status = getattr(self, "_live_status", None)
         if status:
             status.set_muted(muted)
-        self._announce("Everything public is muted." if muted else "Public sound is back on.")
+        self._announce_settled(
+            "Everything public is muted." if muted else "Public sound is back on."
+        )
 
     def stop_broadcast(self) -> None:
         stream = getattr(self, "_live", None)
@@ -303,8 +305,12 @@ class StudioStreamingMixin:
         def done(_task, _result):
             self._release_demo_microphone(lock)
             self._demo_quiet_stop()
-            saved = f" The saved copy is at {stream.archive_path}." if stream.archive_path else ""
-            self._announce("The broadcast has ended." + saved)
+            # UX-013: state first, and the path only in the status bar.
+            archive = stream.archive_path
+            self._announce_settled(
+                "Broadcast ended." + (" A copy was saved." if archive else ""),
+                status=f"Broadcast ended. Saved copy: {archive}" if archive else "",
+            )
 
         self._task_manager.submit(
             "Stop broadcasting",
