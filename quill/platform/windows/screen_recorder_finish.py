@@ -31,6 +31,7 @@ from quill.core.demo_recording_session import (
     plan_from_dict,
     source_timing_summary,
 )
+from quill.core.demo_recording_timing import DriftCorrection, drift_correction, segment_timing
 from quill.core.demo_recording_verify import (
     ProbeResult,
     SourceLevel,
@@ -89,20 +90,27 @@ def finalize(
     expected = 0.0
     labels = {source.source_id: source for source in plan.enabled_sources()}
     stems: dict[str, list[Path]] = {key: [] for key in labels}
+    corrections: list[DriftCorrection] = []
     for segment in session.segments:
         if cancellation is not None:
             cancellation.raise_if_cancelled()
         folder = Path(segment.folder)
         video = folder / ("video.mkv" if plan.screen else "camera.mkv")
+        picture: Path | None = video
         if plan.has_picture:
             if not video.is_file() or video.stat().st_size == 0:
-                continue
-            duration = segment.duration or _probe_duration(ffprobe, video, plan.fps)
+                # REC-024: the picture failed before writing anything; the
+                # segment's sound is still kept, over a black picture.
+                picture = None
+                duration = segment.duration
+            else:
+                duration = segment.duration or _probe_duration(ffprobe, video, plan.fps)
         else:
             duration = segment.duration
         if duration <= 0:
             continue
         video_start = segment.video_start
+        timing = segment_timing(segment)
         sources = []
         for source_id in labels:
             wav = folder / f"{source_id}.wav"
@@ -111,7 +119,18 @@ def finalize(
             stems[source_id].append(wav)
             start = segment.audio_starts.get(source_id, video_start)
             offset = (start - video_start) if video_start else 0.0
-            sources.append(AudioInput(wav, labels[source_id].level_db, offset))
+            correction = drift_correction(
+                timing.get(source_id),
+                label=labels[source_id].label,
+                segment=segment.index,
+                duration=duration,
+            )
+            if correction is not None:
+                corrections.append(correction)
+            tempo = correction.tempo if correction is not None else 1.0
+            sources.append(AudioInput(wav, labels[source_id].level_db, offset, tempo))
+        if picture is None and not sources:
+            continue
         if not plan.has_picture:
             if not sources:
                 continue
@@ -128,7 +147,7 @@ def finalize(
             command = finish_segment_command(
                 ffmpeg,
                 plan,
-                video,
+                picture,
                 part,
                 sources=sources,
                 camera=camera if has_camera else None,
@@ -167,8 +186,19 @@ def finalize(
         )
     levels = _levels(stems, labels)
     verification = verify(
-        final, plan, expected, levels, markers, ffmpeg=ffmpeg, ffprobe=ffprobe, dropped=dropped
+        final,
+        plan,
+        expected,
+        levels,
+        markers,
+        ffmpeg=ffmpeg,
+        ffprobe=ffprobe,
+        dropped=dropped,
+        stream_failures=session.stream_failures,
     )
+    # REC-022: every stretch the mix applied is written into the report.
+    verification.timing += [correction.sentence() for correction in corrections]
+    verification.timing_data["drift_corrections"] = [c.to_dict() for c in corrections]
     verification.source_timing = source_timing_summary(
         session.segments, {key: source.label for key, source in labels.items()}
     )
@@ -247,6 +277,7 @@ def verify(
     ffmpeg: str,
     ffprobe: str | None,
     dropped: int = 0,
+    stream_failures: dict[str, str] | None = None,
 ) -> Verification:
     """Reopen *path* independently and judge it (REC-014)."""
     if ffprobe:
@@ -283,6 +314,7 @@ def verify(
         markers=markers,
         dropped_frames=dropped,
         folder_label=folder_label,
+        stream_failures=stream_failures,
     )
     verification.sha256 = sha256_file(path)
     verification.path = str(path)

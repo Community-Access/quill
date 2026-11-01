@@ -31,6 +31,7 @@ from quill.core.demo_recording_session import (
     work_folder,
 )
 from quill.core.speech.ffmpeg import find_ffmpeg, find_ffprobe
+from quill.core.video_colour import colour_tags, to_yuv420p
 from quill.stability.safe_subprocess import run_subprocess_safely
 
 FFMPEG = find_ffmpeg()
@@ -61,10 +62,12 @@ def _video(path: Path, seconds: float, size: str, fps: int = 30) -> None:
             "libx264",
             "-preset",
             "ultrafast",
-            "-pix_fmt",
-            "yuv420p",
+            # Converted and tagged as the capture commands do (VIDEO-004).
+            "-vf",
+            to_yuv420p(),
             "-g",
             str(fps * 2),
+            *colour_tags(),
             "-f",
             "matroska",
             str(path),
@@ -195,6 +198,42 @@ def test_every_combination_finishes_and_verifies(tmp_path, label, options, expec
     assert verification.state == "Verified", (label, verification.sentence)
     assert expect in verification.sentence, (label, verification.sentence)
     assert "6 seconds" in verification.sentence
+
+
+def test_a_drifted_source_is_stretched_and_the_report_says_so(tmp_path):
+    """REC-022, mix half: a 30 ms drift over 3 seconds is corrected and reported."""
+    import json
+
+    from quill.platform.windows.screen_recorder_finish import finalize
+
+    work = _session(tmp_path, camera=False, segments=1)
+    session = SessionRecord.load(work)
+    session.segments[0].audio_timing = {
+        "app-tone": {"drift_ratio": 1.01, "drift_ms": 30.0, "monotonic_seconds": 3.0}
+    }
+    session.save(work)
+    verification = finalize(work, ffmpeg=FFMPEG, caps=_caps())
+    assert verification.state == "Verified", verification.sentence
+    assert any("Tone sound, segment 1" in line for line in verification.timing)
+    report = json.loads((tmp_path / "Demo - Display 1 - test.verification.json").read_text("utf-8"))
+    assert report["timing"]["drift_corrections"][0]["tempo"] == pytest.approx(1.01)
+    assert "## Timing" in (tmp_path / "Demo - Display 1 - test.verification.md").read_text("utf-8")
+
+
+def test_a_lost_picture_keeps_the_sound_and_names_the_stream(tmp_path):
+    """REC-024: the screen capture wrote nothing, yet the sound is kept and the check names it."""
+    from quill.platform.windows.screen_recorder_finish import finalize
+
+    work = _session(tmp_path, camera=False, segments=1)
+    (work / "seg-001" / "video.mkv").unlink()
+    session = SessionRecord.load(work)
+    session.stream_failures = {"Screen": "Screen capture stopped: exit code 1."}
+    session.save(work)
+    verification = finalize(work, ffmpeg=FFMPEG, caps=_caps())
+    assert verification.state == "Needs review", verification.sentence
+    assert "Screen stopped early" in verification.sentence
+    assert "Tone sound present" in verification.sentence
+    assert "Colour tagged BT.709" not in verification.sentence
 
 
 @pytest.mark.parametrize("options", [{}, {"zoom": True}, {"wave": True, "shape": "square"}])
