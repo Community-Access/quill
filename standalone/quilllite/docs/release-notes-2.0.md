@@ -17,9 +17,46 @@ everything it has told you, F9 says the last important thing again, and if
 something goes wrong while you are busy elsewhere, it waits for you rather
 than slipping past.
 
+And it is the release where you choose your AI. QUILL's free AI is still there
+for everyone, and now your ChatGPT plan, your GitHub Copilot, Codex and your
+own key sit beside it in one window.
+
 Everything works from the keyboard and tells you how it went, the way the rest
 of QUILL Lite does.
 
+
+## New in 2.0.0: Choose Your AI, with GitHub Copilot and Codex
+
+- **Choose Your AI** (**Ctrl+4**, Tools > AI). One window lists where your AI
+  can come from: QUILL's free AI, your ChatGPT plan, your GitHub Copilot,
+  Codex, or your own key. Arrow to one and press Enter to use it or sign in.
+  Each row tells you whether it is in use, signed in or not set up, and one
+  line says what it can do, who gets your text and what it costs. QUILL Lite
+  speaks only what happened, such as "Now using My ChatGPT plan."
+- **GitHub Copilot.** Sign in with a short code from GitHub. The code is
+  spaced so your screen reader reads it one character at a time, and it is
+  already on the clipboard, so you only have to paste it on GitHub's page.
+  Copilot Free works too. Nothing extra to install.
+- **Codex** uses the same sign-in as your ChatGPT plan, so once you are signed
+  in it is one key away.
+- **Which AI Am I Using** (**Ctrl+8**) tells you in one line which AI is in
+  use, the model, and one thing about usage. Press it twice to open Choose
+  Your AI. The status bar's AI cell says the same thing in short.
+- **Usage** (**Ctrl+Alt+Shift+F9**) is one plain list with a sentence for each
+  AI you have set up, saying whose count it is. No meters, no charts.
+- **Do a Document Task** (**Ctrl+3**) gives GitHub Copilot or Codex a job with
+  several steps, such as "Fix the heading levels, then build a table of
+  contents." It asks before every step that changes something, every change
+  goes through Review AI Changes, and Ctrl+Z undoes each one.
+- **No dead ends.** When the AI you are using cannot do something, the command
+  stays where it was, its name says what it needs, and pressing it offers to
+  switch instead of failing quietly.
+- **Shared with QUILL.** Use My Own AI Key (Alt+F2) now offers Anthropic
+  Claude, OpenRouter, Ollama Cloud, a custom service and Ollama on this
+  computer, and your saved prompts are the same list QUILL uses. A key or a
+  prompt saved in either editor works in both.
+
+See "Choose Your AI" and "Do a Document Task" in the user guide.
 
 ## New in 2.0.0 (build 1): spell check that reads what you wrote
 

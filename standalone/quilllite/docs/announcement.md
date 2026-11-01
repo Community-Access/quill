@@ -468,6 +468,15 @@ this release is here because somebody asked for it.
 
 ## Arrived in QUILL Lite 2.0.0
 
+**You choose your AI now.** The free AI is still here, no account needed. Beside
+it, in one window called Choose Your AI (Ctrl+4), you can use your ChatGPT
+plan, your GitHub Copilot, Codex, or your own key. Copilot signs in with a
+short code that your screen reader spells out and that is already on the
+clipboard. Which AI Am I Using (Ctrl+8) tells you where your words are going,
+Usage (Ctrl+Alt+Shift+F9) tells you how much you have used in plain sentences,
+and Do a Document Task (Ctrl+3) lets Copilot or Codex take on a job with
+several steps, asking you before it changes anything.
+
 When this was first written, three small fixes were on their way. They arrived
 in QUILL Lite 2.0.0, together with a thesaurus, a dictionary you can use
 without AI, an AI dictionary, a Google Gemini key, and Activity and Repeat
