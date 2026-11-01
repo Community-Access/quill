@@ -1,5 +1,7 @@
 {
   "quill/apps/inkwell.py::QuillInkwellFrame._build_main_panel::wx.Button": "helped",
   "quill/apps/inkwell.py::QuillInkwellFrame._build_main_panel::wx.Button#2": "helped",
-  "quill/apps/inkwell.py::QuillInkwellFrame._build_main_panel::wx.ListCtrl": "helped"
+  "quill/apps/inkwell.py::QuillInkwellFrame._build_main_panel::wx.ListCtrl": "helped",
+  "quill/apps/inkwell_suggest_dialog.py::SuggestionsDialog.__init__::wx.Button": "helped",
+  "quill/apps/inkwell_suggest_dialog.py::SuggestionsDialog.__init__::wx.Button#2": "helped"
 }

@@ -33,6 +33,7 @@ from typing import Any
 import wx
 
 from quill.apps.converter_actions import ConverterActionsMixin
+from quill.apps.converter_ai import ConverterAiMixin
 from quill.apps.converter_auphonic import ConverterAuphonicMixin
 from quill.apps.converter_chapters import ConverterChaptersMixin
 from quill.apps.converter_url import ConverterUrlMixin
@@ -79,6 +80,7 @@ class QuillConverterFrame(
     ConverterChaptersMixin,
     ConverterActionsMixin,
     AppShellFrame,
+    ConverterAiMixin,
 ):
     """The Converter window: a queue, four choices, and Convert."""
 
@@ -316,6 +318,7 @@ class QuillConverterFrame(
         progress_row.Add(progress_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 6)
         progress_row.Add(self._progress, 1, wx.ALIGN_CENTER_VERTICAL)
         root.Add(progress_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+        self._build_ai_line(panel, root)  # which AI is in use; Enter opens Choose Your AI
 
         panel.SetSizer(root)
         self._main_panel = panel
@@ -391,15 +394,6 @@ class QuillConverterFrame(
 
             converter_advanced.remember(self)
         converter_settings.save(self._settings)
-
-    def set_open_when_done(self, value: bool) -> None:
-        self._settings.open_folder_when_done = bool(value)
-        self._remember()
-        self._announce(
-            "The output folder opens when a conversion finishes."
-            if value
-            else "The output folder no longer opens by itself."
-        )
 
     def _on_choice_changed(self, event: Any) -> None:
         self._remember()

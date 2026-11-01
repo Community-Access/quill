@@ -28,7 +28,9 @@ than by build. A date in brackets says when a change arrived.
   **AI Usage** (Ctrl+Alt+Shift+F2), Use My Own AI Key (Alt+F2) and Privacy
   Agreement (Alt+Shift+F2) are in Community > AI, and the status bar ends with
   an AI cell. **Describe the Video** (Ctrl+F5) asks the AI what is on screen,
-  from one picture taken on this computer.
+  from one picture taken on this computer. The first time on each AI, it says
+  where the picture goes and asks Yes or No first, with No the default
+  (2026-11-01).
 
 - **Victor Stream playlists import, and fifteen more reading services**
   (2026-10-29).

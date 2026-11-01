@@ -6,6 +6,30 @@ Quill Inkwell 1.0.0 is its first public release, and it has not been published
 yet. The testing build is **1.0.0 (build 2)**. First, the work since the first
 build, grouped by subject; then the first build itself.
 
+### AI (2026-11-01)
+
+- **An AI menu** (Alt+I). Quill Inkwell can now use the same AI as the rest
+  of QuillVille, and signs in on its own, as QUILL Inkwell. **Choose Your AI**
+  (Ctrl+Shift+F8) picks QUILL's free AI, your ChatGPT plan, GitHub Copilot,
+  Codex or your own key; **Which AI Am I Using** (Ctrl+F8) says which is in
+  use, and so does the new **AI** line in the window, where Enter opens Choose
+  Your AI. **Use My ChatGPT Subscription** (Alt+F5), **Use My Own AI Key**
+  (Alt+F2), **AI Usage** (Ctrl+Alt+Shift+F2) and **Privacy Agreement**
+  (Alt+Shift+F2, because Ctrl+Alt+Shift+K chooses the Quick Insert Key) are
+  there too. Safe Mode turns all of it off. User guide: section 21.
+- **Ask** (Ctrl+Shift+8) about your abbreviations. Your list goes with each
+  message, by abbreviation and expansion, most used first. Nothing you type in
+  other programs is ever read or sent.
+- **Suggest Abbreviations from a Document** (Ctrl+Shift+A). Pick a plain
+  text, Markdown, Word or rich text document, say yes to sending its text
+  (No is the default, and the question says how much goes and to which AI),
+  and check the suggestions you want in a list where every box starts
+  unchecked. Only the checked ones are added, and one you already have is
+  never suggested.
+- **The Quick Insert button is now Alt+N.** Alt+I is the AI menu, and when a
+  button and a menu share a letter Windows presses the button. Ctrl+K still
+  opens Quick Insert.
+
 ### Display scaling and licensing (2026-10-31)
 
 - **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,

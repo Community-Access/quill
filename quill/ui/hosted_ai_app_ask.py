@@ -60,6 +60,7 @@ __all__ = [
     "menu_routes",
     "open_app_ask",
     "rows_from_prompts",
+    "show_app_answer",
     "show_picture_answer",
 ]
 
@@ -361,13 +362,24 @@ def show_picture_answer(host: Any, answer: str) -> None:
     """A picture's description: said, because focus stays where it was, and kept
     in a result window to read again. Quill Radio's and QUILL Studio's Describe."""
     from quill.core.ai.chatgpt_ai_help import IMAGE_FEATURE
+
+    show_app_answer(host, answer, action=IMAGE_FEATURE)
+
+
+def show_app_answer(host: Any, answer: str, *, action: str = "", title: str = "") -> None:
+    """One request's answer, said and kept in a read-only result window.
+
+    *action* picks the window's title from the shared table ("AI Result" when it
+    is not there); *title* names it instead -- an app's own feature, "Should I
+    Go Out?". Copy is there; nothing is inserted anywhere.
+    """
     from quill.core.ai.spoken_answer import speakable_line
     from quill.ui.hosted_ai_pad import AiResultFrame
 
     host._announce(speakable_line(answer))
     frame = AiResultFrame(
         host._ai_parent(),
-        action=IMAGE_FEATURE,
+        action=action,
         text=answer,
         used="",
         on_replace=None,
@@ -375,6 +387,8 @@ def show_picture_answer(host: Any, answer: str) -> None:
         on_again=None,
         announce=host._announce,
     )
+    if title:
+        frame.SetTitle(title)
     host._show_ai_window(frame)
 
 

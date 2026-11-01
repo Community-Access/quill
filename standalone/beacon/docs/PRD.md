@@ -3501,6 +3501,36 @@ processing that changes the library without the user asking.
   scoring sentences by word frequency, returned in original order -- shown in a
   dialog and announced.
 
+## 47.3 The family's AI in the Assist menu (2026-11-01)
+
+The three local assists above stay, and stay first. After a separator the
+Assist menu carries the hosted-AI rows every QuillVille app shares, through the
+shared small-app adapter (`quill/ui/hosted_ai_app_adapter.py`) with Beacon's
+own hooks in `quill/apps/beacon/ai.py`. No new top-level menu.
+
+- **Keys.** Beacon has no Window menu and no Ctrl+digit key, so the editors'
+  keys hold: Ask Ctrl+6, Which AI Am I Using Ctrl+8 (twice opens Choose Your
+  AI), Choose Your AI Ctrl+4, Use My ChatGPT Subscription Alt+F5, Use My Own AI
+  Key Alt+F2, AI Usage Ctrl+Alt+Shift+F2, Privacy Agreement Ctrl+Alt+Shift+K,
+  Describe a Saved Picture Ctrl+F5 (`APP_KEYMAPS["beacon"]`).
+- **Its own sign-in.** The agent name is "QUILL Beacon"; the choice is kept in
+  `beacon-ai.json`.
+- **Ask** sends the search and its results' titles and notes when a search is
+  typed, else the selected beacon's title, note and tags, rebuilt each turn
+  from what is on screen. Never the database path or any file path.
+- **Describe a Saved Picture.** The selected beacon's newest image attachment,
+  else the image file its resource points at. OCR runs first, on this computer
+  (Windows OCR; tolerated when absent), off the UI thread. Then the capability
+  gate (10A.8 switch offer), the first-time picture consent per connection,
+  `picture_prep.prepare_request` with a per-session `PictureCache`, and one
+  `describe_image` with `requires=("text", "pictures")`. The answer is shown
+  and offered as a note in one Yes/No, No the default; Yes appends it through
+  the store as one undo step. A connection that cannot see, when the person
+  does not switch, gets the OCR text alone and nothing is sent.
+- **The AI line** is a read-only field at the foot of the results pane, last
+  in Tab order; Enter opens Choose Your AI.
+- **Nothing runs on a timer.** Safe Mode refuses every AI command.
+
 ## 47.4 Semantic search -- opt-in hook, no default model
 
 `assist.semantic_search` is a seam, not a feature: with no index registered it

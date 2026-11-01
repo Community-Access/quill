@@ -181,6 +181,8 @@ class CastAskMixin:
                     "The show notes describe their pictures: " + " ".join(f"{a}." for a in alts)
                 )
             return  # nothing fetched or sent; the switch was offered (10A.8)
+        if not self._cast_picture_consent():
+            return  # 10B.4: No, the default, fetches and sends nothing
         index = self._cast_choose_picture([p.label for p in pictures])
         if index is None:
             return
@@ -188,6 +190,14 @@ class CastAskMixin:
             super().cmd_ai_image()  # type: ignore[misc]
             return
         self._cast_describe_picture(pictures[index])
+
+    def _cast_picture_consent(self) -> bool:
+        """10B.4: the first picture on a connection says where pictures go, once.
+        Asked before a picture is chosen, so No fetches nothing either."""
+        from quill.ui.hosted_ai_picture_consent import ask_picture_consent
+
+        connection = str(self._ai_service().connection_in_use or "")  # type: ignore[attr-defined]
+        return ask_picture_consent(self, connection)
 
     def _cast_pictures(self) -> list[Any]:
         from quill.core.podcasts.picture_fetch import pictures_for

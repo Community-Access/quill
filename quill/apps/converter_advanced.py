@@ -77,7 +77,9 @@ _ROWS: tuple[tuple[str, str, tuple[tuple[Any, str], ...], str], ...] = (
     ),
     (
         "adv_polish",
-        "Broadcast pol&ish:",
+        # No access key (GATE-14): every letter of its name is taken, and I went
+        # to the AI menu (A&I), which outranks an option hidden by default.
+        "Broadcast polish:",
         _EXACT_OPTILAB_CHOICES,
         "Runs each converted file through the OptiLab Core processing engine: "
         "Podcast Leveler for speech, Stream Polish for music, Smooth Limiter for "

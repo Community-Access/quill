@@ -33,6 +33,7 @@ abbreviations QUILL's editor expands. There is one library, shared.
 18. [Privacy](#18-privacy)
 19. [Troubleshooting](#19-troubleshooting)
 20. [Dictate Anywhere](#20-dictate-anywhere)
+21. [AI: Ask, and suggested abbreviations](#21-ai-ask-and-suggested-abbreviations)
 
 ## 1. How expansion works
 
@@ -255,14 +256,14 @@ Quick Insert is the only way to reach an entry whose trigger mode is Never, and
 the easiest way to use an abbreviation you have not memorised yet.
 
 Inkwell's window also has a **Quick Insert...** button, beside **Manage
-Abbreviations...** (Alt+M). Its letter is I: press Alt+I to open Quick Insert
-from the window. Until 2026-10-17 the button used Alt+Q, which is also the
-**QuillVille** menu, and when a button and a menu share a letter Windows
-presses the button, so Alt+Q opened Quick Insert and "Alt+Q, then Q" in
-section 3 opened Quick Insert and typed a Q into its filter instead of opening
-QUILL. Now Alt+Q always opens the QuillVille menu. For example, in Inkwell's
-window press Alt+I, type "sig", and press Enter to type your signature into
-the program you were in; or press Alt+Q, then R, to open Quill Radio.
+Abbreviations...** (Alt+M). Its letter is N: press Alt+N to open Quick Insert
+from the window. When a button and a menu share a letter, Windows presses the
+button, so the button has moved twice to keep out of a menu's way: until
+2026-10-17 it was Alt+Q, which is the **QuillVille** menu, and until
+2026-11-01 it was Alt+I, which is now the **AI** menu. For example, in
+Inkwell's window press Alt+N, type "sig", and press Enter to type your
+signature into the program you were in; or press Alt+Q, then R, to open Quill
+Radio.
 
 **Expand the word I just typed** -- the key you chose in **File > Expand Word
 Key...** from anywhere, or **Ctrl+Alt+E** in the Abbreviations menu -- expands the word before the cursor without waiting for a
@@ -406,6 +407,14 @@ This changes Quill Inkwell only. Your other QUILL apps keep their own choice, un
 | New abbreviation from the clipboard | Ctrl+Shift+N |
 | Turn expansion on or off | Ctrl+Shift+E |
 | Minimize to the tray | Ctrl+W |
+| Ask about your abbreviations | Ctrl+Shift+8 |
+| Which AI Am I Using | Ctrl+F8 |
+| Choose Your AI | Ctrl+Shift+F8 |
+| Suggest Abbreviations from a Document | Ctrl+Shift+A |
+| Use My ChatGPT Subscription | Alt+F5 |
+| Use My Own AI Key | Alt+F2 |
+| AI Usage | Ctrl+Alt+Shift+F2 |
+| AI Privacy Agreement | Alt+Shift+F2 |
 
 Every dialog follows QUILL's dialog conventions: Escape cancels, Enter activates
 the default button, every control has a name your screen reader announces, and
@@ -424,6 +433,7 @@ With `QUILL_SAFE_MODE=1` set, Inkwell starts without installing the keyboard
 hook at all and says so. The manager still works, so you can edit abbreviations;
 nothing is watched and nothing is typed. Dictate Anywhere is off in Safe Mode
 too: pressing its key tells you so, and the microphone is never opened.
+Every command on the AI menu says "AI is off in Safe Mode." and sends nothing.
 
 ## 18. Privacy
 
@@ -446,6 +456,10 @@ that means:
   expansion like everyone else.
 - **Switchable.** Ctrl+Shift+E stops it, the tray menu stops it, and Safe Mode
   never starts it.
+- **Never sent to an AI.** The AI menu (section 21) never sees what you type
+  in other programs, and it has no part in expansion. Ask sends your
+  abbreviation list; Suggest Abbreviations sends the text of a document you
+  pick, and only after you say yes.
 - **Self-repairing, not self-extending.** Windows silently removes a keyboard
   hook that responds too slowly, so Inkwell quietly re-installs its own every few
   minutes. That refresh changes nothing about what is watched or kept.
@@ -783,6 +797,51 @@ Mode refuses them, as it refuses all of Dictate Anywhere.
 
 QUILL Transcribe's user guide has the full guide to choosing a model, with
 every model's size, languages and tier.
+
+## 21. AI: Ask, and suggested abbreviations
+
+Quill Inkwell can use the same AI as the rest of QuillVille. It is all on the
+**AI** menu (Alt+I), and nothing happens until you choose an AI and agree to
+the privacy agreement. Inkwell signs in on its own, as QUILL Inkwell, so its
+choice does not change QUILL's.
+
+- **Choose Your AI** (Ctrl+Shift+F8) picks where the AI comes from: QUILL's
+  free AI, your ChatGPT plan, GitHub Copilot, Codex or your own key.
+- **Which AI Am I Using** (Ctrl+F8) says which one is in use. The **AI** line
+  in Inkwell's window says the same thing; Tab to it and press Enter to open
+  Choose Your AI.
+- **Ask** (Ctrl+Shift+8) opens a conversation about your abbreviations. Your
+  list goes with each message, by abbreviation and expansion, most used first,
+  so you can ask "What do I type most?" or "Which of these could be shorter?".
+  Nothing you type in other programs ever goes with it.
+- **Use My ChatGPT Subscription** (Alt+F5), **Use My Own AI Key** (Alt+F2),
+  **AI Usage** (Ctrl+Alt+Shift+F2) and **Privacy Agreement** (Alt+Shift+F2)
+  are the same as in the other apps. Privacy Agreement is not on
+  Ctrl+Alt+Shift+K here, because that key chooses the Quick Insert Key.
+
+### Suggest Abbreviations from a Document
+
+**AI > Suggest Abbreviations from a Document...** (Ctrl+Shift+A) reads a
+document of yours and suggests abbreviations for the long words and phrases it
+repeats.
+
+1. Press Ctrl+Shift+A and pick a document: plain text, Markdown, Word (.docx)
+   or rich text (.rtf). Cancel stops here and nothing is read.
+2. Inkwell asks before anything leaves your computer, for example "The first
+   2,400 words of notes.docx go to My ChatGPT plan to suggest abbreviations.
+   Send them?". No is the default. Only the text goes; the file's name and
+   folder stay on your computer.
+3. The **Suggest Abbreviations** window lists each suggestion as a check box,
+   such as "mtg, expands to the Tuesday planning meeting". Every box starts
+   unchecked. Check the ones you want and press OK; Cancel adds none.
+
+Inkwell says how many it added, and they show up in the list straight away,
+in QUILL too. An abbreviation you already have is never suggested, so nothing
+here can replace one of yours. You can change or delete any of them later in
+Manage Abbreviations.
+
+The AI never types for you. Expansion in other programs works exactly as it
+did, and the AI has no part in it.
 
 ## Finding a setting or a command
 

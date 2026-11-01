@@ -136,6 +136,9 @@ def load_history(data_dir: Path) -> RadioHistory:
         for name, value in load_ai_fields(raw).items():
             setattr(history, name, value)
         history.ai_privacy_accepted_version = _coerce_int(raw.get("ai_privacy_accepted_version"), 0)
+        consent = raw.get("ai_picture_consent", [])
+        if isinstance(consent, list):
+            history.ai_picture_consent = [str(item) for item in consent if str(item).strip()]
         history.transcript_detail = transcript_export.normalize_detail(raw.get("transcript_detail"))
         template = raw.get("now_playing_template")
         if isinstance(template, str) and template.strip():
@@ -334,6 +337,7 @@ def snapshot_history(history: RadioHistory) -> dict[str, object]:
         "ai_connection": history.ai_connection,
         "ai_copilot_model": history.ai_copilot_model,
         "ai_codex_model": history.ai_codex_model,
+        "ai_picture_consent": list(history.ai_picture_consent),
         "stations": [station.to_dict() for station in history.stations],
     })
 

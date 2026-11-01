@@ -270,8 +270,20 @@ def test_describe_the_video_fits_one_picture_and_asks_once(
         on_done("A trumpet player on a stage.")
 
     radio._ai_service().describe_image = describe
+    questions: list[str] = []
+    monkeypatch.setattr(
+        type(radio),
+        "_show_message_box",
+        lambda self, message, caption, style: questions.append(message) or wx.YES,
+        raising=False,
+    )
     radio.cmd_radio_describe_video()
     assert len(asked) == 1
+    assert len(questions) == 1  # 10B.4: asked once, on the first picture
+    assert questions[0].startswith(
+        "Pictures you ask about in QUILL Radio go to OpenAI on your ChatGPT plan."
+    )
+    assert radio._radio_history.ai_picture_consent == ["chatgpt"]
     assert asked[0][0] <= 2048
     assert asked[0][2] == ("text", "pictures")
     assert len(shown) == 1
@@ -279,6 +291,21 @@ def test_describe_the_video_fits_one_picture_and_asks_once(
     radio.cmd_radio_describe_video()  # the same picture: answered from the cache
     assert len(asked) == 1
     assert any("Nothing was sent" in s for s in radio.said)
+    assert len(questions) == 1  # not asked again on the same connection
+
+
+def test_describe_the_video_sends_nothing_when_the_picture_consent_is_no(
+    radio, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    engine = _Engine()
+    monkeypatch.setattr("quill.ui.radio.video_commands._engine", lambda _host: engine)
+    radio._video_window = object()
+    asked: list[str] = []
+    radio._ai_service().describe_image = lambda *a, **k: asked.append("sent")
+    monkeypatch.setattr(type(radio), "_show_message_box", lambda self, *a: wx.NO, raising=False)
+    radio.cmd_radio_describe_video()
+    assert asked == []
+    assert radio._radio_history.ai_picture_consent == []
 
 
 def test_the_adapter_has_no_command_of_its_own() -> None:

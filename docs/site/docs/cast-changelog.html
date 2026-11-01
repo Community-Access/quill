@@ -267,43 +267,56 @@ updates and installing, and speed and reliability.</p>
 <h3 id="since-build-6-2026-10-27-to-2026-10-31">Since build 6
 (2026-10-27 to 2026-10-31)</h3>
 <ul>
-<li><strong>ChatGPT plan sign-in holds through a brief problem</strong>
-(2026-10-31). A temporary failure on OpenAI’s side while renewing the
-sign-in no longer signs you out, a renewed sign-in that cannot be saved
-is reported, the plan’s model list keeps OpenAI’s order, and Open
-ChatGPT Usage goes to chatgpt.com/settings/usage (#1715).</li>
-<li><strong>Shared-runtime licensing.</strong> Installed editions use
+<li><p><strong>Choose Your AI and Ask</strong> [2026-11-01]. Cast keeps
+its own AI choice, with the five rows the editors have; <strong>Choose
+Your AI</strong> is Ctrl+Shift+F8, <strong>Which AI Am I Using</strong>
+Ctrl+F8 and <strong>Ask</strong> Ctrl+Shift+8, and the status bar ends
+with an AI cell. Ask is about the episode you are on, its notes,
+chapters and your place, never the audio. <strong>What Did I Miss in
+This Episode?</strong> is a new AI Features row. <strong>Ask About an
+Image</strong> (Ctrl+Alt+F5) offers the podcast’s artwork and the show
+notes’ pictures, fetched once when you choose one. The first time on
+each AI, it says where pictures go and asks Yes or No first, with No the
+default, before anything is fetched (2026-11-01). Free AI Usage is now
+<strong>AI Usage</strong>, one list for every AI you set up.</p></li>
+<li><p><strong>ChatGPT plan sign-in holds through a brief
+problem</strong> (2026-10-31). A temporary failure on OpenAI’s side
+while renewing the sign-in no longer signs you out, a renewed sign-in
+that cannot be saved is reported, the plan’s model list keeps OpenAI’s
+order, and Open ChatGPT Usage goes to chatgpt.com/settings/usage
+(#1715).</p></li>
+<li><p><strong>Shared-runtime licensing.</strong> Installed editions use
 the QuillVille Runtime, which currently carries PyMuPDF 1.28.2 under
 AGPL-3.0 through the shared GLOW dependency; Cast does not itself expose
 GLOW. Release-specific source and legal review are required before the
 next public release. Portable contents must be checked separately. See
-Licences and Notices and the PyMuPDF distribution review.</li>
-<li><strong>Windows Media closes cleanly after an audio device
+Licences and Notices and the PyMuPDF distribution review.</p></li>
+<li><p><strong>Windows Media closes cleanly after an audio device
 change</strong> (2026-10-27). The shared player no longer keeps Windows
 audio-device objects in a cache and removes its event handlers when it
 stops. This fixes a crash on exit after the output device was listed or
-switched; choosing a device and playing work as before.</li>
-<li><strong>Controls that had no label now have a spoken name</strong>
-(2026-10-30). JAWS, NVDA and Narrator used to announce them as a bare
-role, such as “edit” or “list”. The sleep timer’s custom minutes box now
-says what it is.</li>
-<li><strong>Show notes links follow your colours</strong> (2026-10-30).
-Links in show notes use the system link colour, which a Windows high
-contrast theme sets, instead of a fixed blue that was 2.2:1 on a dark
-theme. They stay underlined, so a link never depends on colour
-alone.</li>
-<li><strong>Sharp text at any display scaling</strong> (2026-10-31).
+switched; choosing a device and playing work as before.</p></li>
+<li><p><strong>Controls that had no label now have a spoken
+name</strong> (2026-10-30). JAWS, NVDA and Narrator used to announce
+them as a bare role, such as “edit” or “list”. The sleep timer’s custom
+minutes box now says what it is.</p></li>
+<li><p><strong>Show notes links follow your colours</strong>
+(2026-10-30). Links in show notes use the system link colour, which a
+Windows high contrast theme sets, instead of a fixed blue that was 2.2:1
+on a dark theme. They stay underlined, so a link never depends on colour
+alone.</p></li>
+<li><p><strong>Sharp text at any display scaling</strong> (2026-10-31).
 QUILL Cast now handles each monitor’s scaling itself instead of letting
 Windows stretch it, so text stays sharp at 125, 150 and 200 percent and
 on monitors with different scaling, and windows and list columns keep
 their proportions. Setting the environment variable
 <code>QUILL_DPI_UNAWARE</code> to <code>1</code> turns this off, for
 diagnosing a display problem (#1702). User guide: “Text looks blurry, or
-a window is the wrong size”.</li>
-<li><strong>Pygments in the notices</strong> (2026-10-31). The shared
+a window is the wrong size”.</p></li>
+<li><p><strong>Pygments in the notices</strong> (2026-10-31). The shared
 runtime now bundles Pygments, which QUILL and QUILL Lite use to read
 code and web pages for spell check, so QUILL Cast’s third-party notices
-list it.</li>
+list it.</p></li>
 </ul>
 <h3 id="the-main-window-and-getting-around">The main window and getting
 around</h3>

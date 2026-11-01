@@ -1,9 +1,10 @@
 """Where a QuillVille app's AI keys differ from the editors' (rule 11).
 
 Choose Your AI, Which AI Am I Using and Ask are Ctrl+4, Ctrl+8 and Ctrl+6 in
-QUILL and QUILL Lite (codex.md 10A.9). Quill Radio, QUILL Cast and QUILL
-Transcribe cannot use them: Ctrl+1 to Ctrl+9 are their Window menu keys on
-every window. QUILL Studio has no Window menu and keeps them. Each such
+QUILL and QUILL Lite (codex.md 10A.9). Quill Radio, QUILL Cast, QUILL
+Transcribe, Quill Weather, Quill Converter, Quill Media Player and Quill Inkwell
+cannot use them: Ctrl+1 to Ctrl+9 are their Window menu keys on every window.
+QUILL Studio and QuillBeacon have no Window menu and keep them. Each such
 divergence is a comment where the key is set (``app_keymaps.APP_KEYMAPS``) and
 a row here, and ``tests/unit/core/test_app_ai_keys.py`` holds both halves: every
 row still diverges, and no AI command an app binds differs without a row.
@@ -64,6 +65,28 @@ APP_AI_DIVERGENCES: dict[tuple[str, str], str] = {
         "Ctrl+Alt+Shift+K is QUILL Transcribe's Command Key; Privacy Agreement takes "
         "Radio's and Cast's Alt+Shift+F2."
     ),
+    # Quill Weather, Quill Converter, Quill Media Player and Quill Inkwell
+    # (codex.md Phase 3): the same Window menu reason, so the same three keys.
+    **{
+        (app, command): (
+            "Ctrl+1 to Ctrl+9 are this app's Window menu keys "
+            "(quill/ui/window_menu.py), so the editors' plain-digit AI keys would "
+            "each be claimed twice. It takes Quill Radio's, QUILL Cast's and QUILL "
+            "Transcribe's set: Ask Ctrl+Shift+8, Which AI Ctrl+F8, Choose Your AI "
+            "Ctrl+Shift+F8 (rule 2)."
+        )
+        for app in ("weather", "converter", "player", "inkwell")
+        for command in (
+            "tools.hosted_ai_chat_key",
+            "tools.hosted_ai_which",
+            "tools.hosted_ai_choose",
+        )
+    },
+    ("inkwell", "tools.hosted_ai_privacy"): (
+        "Ctrl+Alt+Shift+K is Quill Inkwell's Quick Insert Key; Privacy Agreement takes "
+        "Radio's and Cast's Alt+Shift+F2."
+    ),
+    # QuillBeacon keeps the editors' Ctrl+4, Ctrl+6 and Ctrl+8 (no Window menu).
     # QUILL Studio keeps the editors' Ctrl+4, Ctrl+6 and Ctrl+8 (no Window menu).
     ("studio", "tools.hosted_ai_privacy"): (
         "Ctrl+Alt+Shift+K is Studio's Ask AI About a Video; Privacy Agreement takes "

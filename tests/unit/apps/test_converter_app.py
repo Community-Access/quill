@@ -69,6 +69,7 @@ def test_app_shell_and_bootstrap_present() -> None:
         "    ConverterChaptersMixin,\n"
         "    ConverterActionsMixin,\n"
         "    AppShellFrame,\n"
+        "    ConverterAiMixin,\n"
         "):"
     )
     assert frame_class in src

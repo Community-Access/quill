@@ -100,7 +100,7 @@ APPS: tuple[AppConfig, ...] = (
         "Quill Inkwell",
         "quill.core.inkwell_surface_help",
         (),
-        ("quill/apps/inkwell.py",),
+        ("quill/apps/inkwell.py", "quill/apps/inkwell_suggest_dialog.py"),
         "inkwell_help_inventory.json",
     ),
     AppConfig(

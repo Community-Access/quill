@@ -16,7 +16,7 @@ def _same(left: str, right: str) -> bool:
 
 
 #: Apps whose Ctrl+1 to Ctrl+9 are Window menu keys (quill/ui/window_menu.py).
-_WINDOW_MENU_APPS = ["radio", "cast", "transcribe"]
+_WINDOW_MENU_APPS = ["radio", "cast", "transcribe", "weather", "converter", "player", "inkwell"]
 
 
 @pytest.mark.parametrize("app", _WINDOW_MENU_APPS)
@@ -29,7 +29,7 @@ def test_no_ai_command_takes_a_window_menu_key(app: str) -> None:
     assert taken == {}
 
 
-@pytest.mark.parametrize("app", [*_WINDOW_MENU_APPS, "studio"])
+@pytest.mark.parametrize("app", [*_WINDOW_MENU_APPS, "studio", "beacon"])
 def test_every_ai_key_that_differs_from_the_editors_has_a_row(app: str) -> None:
     missing = [
         command
@@ -82,3 +82,42 @@ def test_studio_and_transcribe_menus_have_no_window_menu_keys() -> None:
 
     assert "WindowManager" not in inspect.getsource(studio)
     assert "WindowManager" in inspect.getsource(transcribe)
+
+
+@pytest.mark.parametrize("app", ["weather", "converter", "player", "inkwell"])
+def test_the_small_window_menu_apps_take_the_same_fallback_set(app: str) -> None:
+    for command in ("tools.hosted_ai_which", "tools.hosted_ai_choose", "tools.hosted_ai_chat_key"):
+        assert APP_KEYMAPS[app][command] == APP_KEYMAPS["cast"][command]
+
+
+@pytest.mark.parametrize(
+    ("app", "module"),
+    [
+        ("weather", "quill.apps.weather"),
+        ("converter", "quill.apps.converter"),
+        ("player", "quill.apps.player"),
+        ("inkwell", "quill.apps.inkwell"),
+    ],
+)
+def test_the_fallback_apps_really_have_a_window_menu(app: str, module: str) -> None:
+    import importlib
+    import inspect
+
+    assert "WindowManager" in inspect.getsource(importlib.import_module(module)), app
+
+
+def test_beacon_keeps_the_editors_digit_keys_and_has_no_window_menu() -> None:
+    import inspect
+
+    from quill.apps.beacon import app as beacon_app
+
+    for command, key in (
+        ("tools.hosted_ai_which", "Ctrl+8"),
+        ("tools.hosted_ai_choose", "Ctrl+4"),
+        ("tools.hosted_ai_chat_key", "Ctrl+6"),
+    ):
+        assert APP_KEYMAPS["beacon"][command] == key == DEFAULT_KEYMAP[command]
+    source = inspect.getsource(beacon_app)
+    assert "WindowManager" not in source
+    # Beacon's labels carry their keys as text: no row may end in a Ctrl+digit.
+    assert not any(f'\\tCtrl+{n}"' in source for n in range(1, 10))

@@ -1,16 +1,14 @@
-"""Wire the media player's AI chapter recap to QUILL's AI + transcription stacks.
+"""Gather the text the media player's AI recaps are made from, off the UI thread.
 
-This is the thin UI adapter over the tested core in
-:mod:`quill.core.media.recap`. It resolves the two injected collaborators from
-QUILL's existing machinery -- the **summarizer** from the configured AI provider
-(`quill.core.ai_chat.send_prompt`), and the optional **transcriber** from the
-offline speech engine plus ffmpeg (clip the segment, transcribe it) -- then runs
-the summary off the UI thread and speaks/shows the result.
+The thin UI side of :mod:`quill.core.media.recap`. It builds the recap service
+from QUILL's offline speech stack (ffmpeg clips the segment, the local speech
+engine transcribes it) and runs the slow part -- finding the text -- on a
+worker, handing the text back on the UI thread.
 
-Guardrails: never on protected BARD content, off in Safe Mode, and a clear
-message when no AI provider (or no transcription engine, for pure audio) is set
-up. The network call is inside the already-reviewed `ai_chat.send_prompt`
-(GATE-9); nothing here opens a socket.
+Sending it is not done here (codex.md 10E.8): ``quill.apps.player_ai`` sends
+``recap_prompt(kind, text)`` to the AI the person chose, through the family's
+shared service, which is where the reviewed network call lives. Nothing here
+opens a socket, and the audio never leaves the computer.
 """
 
 from __future__ import annotations
@@ -24,133 +22,41 @@ from typing import Any
 
 import wx
 
-#: Process-lifetime summary cache shared across invocations.
+#: Process-lifetime answers, per book and chapter, shared across invocations.
 _CACHE: dict[str, str] = {}
 
+BARD_REFUSAL = "AI summaries are not available for protected BARD content."
 
-def summarize_current_chapter(
-    host: Any,
-    *,
-    book_key: str,
-    chapter_index: int,
-    title: str,
-    audio_path: str,
-    start_ms: int,
-    duration_ms: int,
+
+def is_protected(book_key: str) -> bool:
+    """Whether *book_key* is protected BARD content, which no AI ever sees."""
+    return book_key.startswith("bard:")
+
+
+def recap_service() -> Any:
+    """The recap service: the local transcriber when there is one, and the shared cache."""
+    from quill.core.media import RecapService
+
+    return RecapService(transcriber=_make_transcriber(), cache=_CACHE)
+
+
+def gather_in_background(
+    service: Any,
+    ctx: Any,
+    on_text: Callable[[str], None],
+    on_error: Callable[[str], None],
 ) -> None:
-    """Summarize the current chapter with the configured AI; speak/show the result."""
-    _run_recap(
-        host,
-        kind="chapter",
-        heading="Chapter Summary",
-        starting="Summarizing this chapter.",
-        book_key=book_key,
-        chapter_index=chapter_index,
-        title=title,
-        audio_path=audio_path,
-        start_ms=start_ms,
-        duration_ms=duration_ms,
-    )
-
-
-def welcome_back_recap(
-    host: Any,
-    *,
-    book_key: str,
-    chapter_index: int,
-    title: str,
-    audio_path: str,
-    start_ms: int,
-    duration_ms: int,
-) -> None:
-    """AI recap of the passage up to the current point ("where am I / welcome back")."""
-    _run_recap(
-        host,
-        kind="recap",
-        heading="Recap",
-        starting="Recapping where you are.",
-        book_key=book_key,
-        chapter_index=chapter_index,
-        title=title,
-        audio_path=audio_path,
-        start_ms=start_ms,
-        duration_ms=duration_ms,
-    )
-
-
-def _run_recap(
-    host: Any,
-    *,
-    kind: str,
-    heading: str,
-    starting: str,
-    book_key: str,
-    chapter_index: int,
-    title: str,
-    audio_path: str,
-    start_ms: int,
-    duration_ms: int,
-) -> None:
-    if getattr(host, "_safe_mode", False):
-        host._announce("AI summaries are off in Safe Mode.")
-        return
-    if book_key.startswith("bard:"):
-        host._announce("AI summaries are not available for protected BARD content.")
-        return
-
-    from quill.core.media import ChapterContext, RecapService
-
-    service = RecapService(
-        _make_summarizer(host.settings), transcriber=_make_transcriber(), cache=_CACHE
-    )
-    ctx = ChapterContext(
-        book_key=book_key or "book",
-        chapter_index=chapter_index,
-        title=title,
-        text=None,
-        audio_path=audio_path,
-        start_ms=start_ms,
-        duration_ms=duration_ms,
-    )
-    host._announce(f"{starting} This may take a moment.")
-    summarize = service.chapter_summary if kind == "chapter" else service.welcome_back
+    """Find *ctx*'s text on a worker; call *on_text* or *on_error* on the UI thread."""
 
     def work() -> None:
         try:
-            result = summarize(ctx)
+            text = service.text_for(ctx)
         except Exception as error:  # noqa: BLE001 - surfaced on the UI thread
-            wx.CallAfter(_show_result, host, str(error), heading=heading, is_error=True)
+            wx.CallAfter(on_error, str(error) or "No text was available to summarize.")
             return
-        wx.CallAfter(_show_result, host, result, heading=heading, is_error=False)
+        wx.CallAfter(on_text, text)
 
     threading.Thread(target=work, daemon=True).start()  # GATE-40-OK: media recap worker.
-
-
-def _show_result(host: Any, text: str, *, heading: str, is_error: bool) -> None:
-    text = (text or "").strip() or "No summary was produced."
-    host._announce(text if is_error else f"{heading}: {text}")
-    host._show_message_box(text, heading)
-
-
-def _make_summarizer(settings: Any) -> Callable[[str], str]:
-    def summarize(prompt: str) -> str:
-        from quill.core.ai_chat import send_prompt
-        from quill.platform.windows.credential_store import load_secret
-
-        provider_id = (getattr(settings, "ai_chat_default_provider", "") or "").strip()
-        model_id = (
-            getattr(settings, "ai_prompt_default_model", "")
-            or getattr(settings, "ai_chat_default_model", "")
-            or ""
-        ).strip()
-        if not provider_id or not model_id:
-            raise RuntimeError(
-                "No AI provider is configured. Set one up in QUILL's AI Hub, then try again."
-            )
-        api_key = load_secret(f"quill-{provider_id}-api-key")
-        return send_prompt(provider_id, model_id, prompt, api_key=api_key)
-
-    return summarize
 
 
 def _make_transcriber() -> Callable[[str, int, int], str] | None:
@@ -211,4 +117,4 @@ def _clip_audio(audio_path: str, start_ms: int, duration_ms: int) -> str:
     return out
 
 
-__all__ = ["summarize_current_chapter", "welcome_back_recap"]
+__all__ = ["BARD_REFUSAL", "gather_in_background", "is_protected", "recap_service"]

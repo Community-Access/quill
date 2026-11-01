@@ -793,20 +793,89 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | F9 | Repeat Last Result | `app.repeat_last_result` |
 | Shift+F9 | Activity... | `app.activity` |
 
-## Weather (app keys)
+## Quill Weather (app keys)
 
 App keys, not editor keys: these apply inside the app named above and never inside the QUILL editor.
 
 | Key | Command | Command id |
 | --- | --- | --- |
+| Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
+| Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
 | Ctrl+Alt+F1 | Tutorials | `weather.tutorials` |
 | Ctrl+Alt+N | Noaa listen | `weather.noaa_listen` |
 | Ctrl+Alt+Shift+F | Settings | `weather.settings` |
+| Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
+| Ctrl+Alt+Shift+K | Privacy Agreement... | `tools.hosted_ai_privacy` |
 | Ctrl+Alt+Shift+L | Add location | `weather.add_location` |
 | Ctrl+Alt+Shift+M | Monitor toggle | `weather.monitor_toggle` |
 | Ctrl+Alt+Shift+N | Noaa update | `weather.noaa_update` |
 | Ctrl+Alt+Shift+P | Monitor pause | `weather.monitor_pause` |
 | Ctrl+Alt+Shift+T | Test alert | `weather.test_alert` |
+| Ctrl+F8 | Which AI Am I Using | `tools.hosted_ai_which` |
+| Ctrl+Shift+8 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
 | Ctrl+Shift+Alt+A | Alerts | `weather.alerts` |
+| Ctrl+Shift+F8 | Choose Your AI... | `tools.hosted_ai_choose` |
+| Ctrl+Shift+G | Ai go out | `weather.ai_go_out` |
 | Ctrl+Shift+Q | Quick | `weather.quick` |
 | Ctrl+Shift+W | Now | `weather.now` |
+
+## Quill Converter (app keys)
+
+App keys, not editor keys: these apply inside the app named above and never inside the QUILL editor.
+
+| Key | Command | Command id |
+| --- | --- | --- |
+| Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
+| Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
+| Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
+| Ctrl+Alt+Shift+K | Privacy Agreement... | `tools.hosted_ai_privacy` |
+| Ctrl+F8 | Which AI Am I Using | `tools.hosted_ai_which` |
+| Ctrl+Shift+8 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
+| Ctrl+Shift+D | Ai will play | `converter.ai_will_play` |
+| Ctrl+Shift+F8 | Choose Your AI... | `tools.hosted_ai_choose` |
+
+## Quill Media Player (app keys)
+
+App keys, not editor keys: these apply inside the app named above and never inside the QUILL editor.
+
+| Key | Command | Command id |
+| --- | --- | --- |
+| Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
+| Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
+| Ctrl+Alt+C | Ai chapter summary | `player.ai_chapter_summary` |
+| Ctrl+Alt+R | Ai recap | `player.ai_recap` |
+| Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
+| Ctrl+Alt+Shift+K | Privacy Agreement... | `tools.hosted_ai_privacy` |
+| Ctrl+F8 | Which AI Am I Using | `tools.hosted_ai_which` |
+| Ctrl+Shift+8 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
+| Ctrl+Shift+F8 | Choose Your AI... | `tools.hosted_ai_choose` |
+
+## Quill Inkwell (app keys)
+
+App keys, not editor keys: these apply inside the app named above and never inside the QUILL editor.
+
+| Key | Command | Command id |
+| --- | --- | --- |
+| Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
+| Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
+| Alt+Shift+F2 | Privacy Agreement... | `tools.hosted_ai_privacy` |
+| Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
+| Ctrl+F8 | Which AI Am I Using | `tools.hosted_ai_which` |
+| Ctrl+Shift+8 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
+| Ctrl+Shift+A | Ai suggest | `inkwell.ai_suggest` |
+| Ctrl+Shift+F8 | Choose Your AI... | `tools.hosted_ai_choose` |
+
+## QuillBeacon (app keys)
+
+App keys, not editor keys: these apply inside the app named above and never inside the QUILL editor.
+
+| Key | Command | Command id |
+| --- | --- | --- |
+| Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
+| Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
+| Ctrl+4 | Choose Your AI... | `tools.hosted_ai_choose` |
+| Ctrl+6 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
+| Ctrl+8 | Which AI Am I Using | `tools.hosted_ai_which` |
+| Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
+| Ctrl+Alt+Shift+K | Privacy Agreement... | `tools.hosted_ai_privacy` |
+| Ctrl+F5 | Describe picture | `beacon.describe_picture` |

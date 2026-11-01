@@ -34,6 +34,7 @@
             "ai_connection": "str",
             "ai_copilot_model": "str",
             "ai_codex_model": "str",
+            "ai_picture_consent": "list[str]",
             "episode_filter": "str",
             "notify_new_episode": "bool",
             "notify_feed_failed": "bool",
@@ -66,7 +67,7 @@
             "tips_enabled": "bool"
           }
         },
-        "function:quill.core.podcasts.history:save_history": "sha256:ca4d9a8aaac38d0b"
+        "function:quill.core.podcasts.history:save_history": "sha256:860cfb3a07eb8650"
       },
       "classification": "additive, compatible",
       "note": ""
@@ -1466,7 +1467,8 @@
             "ai_own_key_provider": "str",
             "ai_connection": "str",
             "ai_copilot_model": "str",
-            "ai_codex_model": "str"
+            "ai_codex_model": "str",
+            "ai_picture_consent": "list[str]"
           },
           "quill.core.radio.models:RadioStation": {
             "name": "str",

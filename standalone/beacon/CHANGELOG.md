@@ -1,5 +1,31 @@
 # Changelog
 
+## Unreleased
+
+- **AI in the Assist menu, when you want it** (2026-11-01). Suggest Tags,
+  Suggest Relationships and Summarize Note stay first and still run on your
+  computer. After them, behind a separator, are the AI commands every
+  QuillVille app now shares: **Assist > Ask...** (Ctrl+6) about the selected
+  beacon, or about your search and its results when one is typed;
+  **Assist > Which AI Am I Using** (Ctrl+8, twice opens Choose Your AI);
+  **Assist > Choose Your AI...** (Ctrl+4); **Assist > Use My ChatGPT
+  Subscription...** (Alt+F5); **Assist > Use My Own AI Key...** (Alt+F2);
+  **Assist > AI Usage...** (Ctrl+Alt+Shift+F2); and
+  **Assist > Privacy Agreement...** (Ctrl+Alt+Shift+K). QuillBeacon signs in on
+  its own, as QUILL Beacon, and never sends where your library lives or the path
+  of any file.
+- **Describe a Saved Picture** (Ctrl+F5, in the Assist menu). Select a beacon
+  with a picture attached, or one that points at a saved screenshot, and press
+  it. Windows reads the words in the picture on your computer first; then the
+  picture goes once to the AI in use, after a one-time question about which
+  company it goes to. The description is read to you, and you are asked whether
+  to add it to the beacon's note (No is the default; Ctrl+Z takes it back out).
+  If the AI in use cannot see pictures and you do not switch, nothing is sent
+  and you get the words read on your computer instead.
+- **An AI line at the bottom of the results pane** says which AI is in use.
+  Tab to it; Enter opens Choose Your AI. Nothing in QuillBeacon's AI runs on a
+  timer, and Safe Mode turns all of it off.
+
 ## 0.1.0 - 2026-07-15
 
 The current build is **0.1.0 (build 2)**. Build 2 keeps the first slice of

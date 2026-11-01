@@ -1956,3 +1956,81 @@ QUILL Transcribe:
 - [ ] All sixteen with NVDA.
 - [ ] All sixteen with JAWS.
 - [ ] Checks 1, 7, 11 and 12 with Narrator.
+
+## Choose Your AI, Ask and first features, Quill Weather, Quill Converter, Quill Media Player, Quill Inkwell and QuillBeacon (codex.md Phase 3, 2026-11-01)
+
+Run each app's checks in that app. A ChatGPT plan signed in for each app makes
+most checks possible; the checks that offer a switch want the free AI in use.
+Each app signs in on its own, so the browser page should name that app, for
+example QUILL Weather, never QUILL.
+
+Every app:
+
+1. Alt+I (Alt+A in QuillBeacon, the Assist menu) opens the AI rows, and every
+   row reads with its key. In Weather, Converter, Media Player and Inkwell the
+   keys are Ask Ctrl+Shift+8, Which AI Ctrl+F8 and Choose Your AI
+   Ctrl+Shift+F8, and Ctrl+2 still reaches window 2 on the Window menu. In
+   QuillBeacon they are Ctrl+6, Ctrl+8 and Ctrl+4.
+2. Which AI says one line; pressed twice quickly it opens Choose Your AI, focus
+   in the list on the row in use.
+3. Tab to the AI line in the main window: it reads "AI" and the AI in use, F1
+   says Enter opens Choose Your AI, and Enter opens it.
+4. Start the app with --safe-mode: Ask, Which AI and the app's own AI command
+   each say "AI is off in Safe Mode." and nothing opens.
+
+Quill Weather:
+
+5. Ctrl+Shift+G (Should I Go Out?): you hear "Getting weather for" your place,
+   then the answer, and a window titled "Should I Go Out?" takes focus. With an
+   active alert, the answer starts "Active alert, as the Weather Service wrote
+   it:" and the alert's own words.
+6. Ctrl+Shift+8, then "Do I need a coat at 5?" from Quick questions: the
+   answer uses your place's name. Alt+A still presses Add Location.
+
+Quill Converter:
+
+7. With an empty queue, Ctrl+Shift+D says the queue is empty and opens
+   nothing. With files queued, the device question takes focus; Escape cancels
+   quietly; Enter with "iPhone" says "Reading the queued files", then the
+   answer is spoken and its window is titled "Will This Play on My Device?".
+8. Alt+A still presses Add Files. With Advanced Options shown, Broadcast polish
+   is reached by Tab and no longer announces an access key.
+
+Quill Media Player:
+
+9. Ctrl+Alt+C in a book: "Summarizing this chapter. This may take a moment.",
+   then the answer is spoken and a "Chapter Summary" window opens. Pressed
+   again, it answers at once. With no AI chosen, Ctrl+Alt+R opens Choose Your
+   AI and says once that no AI is in use.
+10. Alt+A still plays or pauses. "Where am I?" no longer has an access key;
+    Tab and Shift+F6 still reach it.
+
+Quill Inkwell:
+
+11. Ctrl+Shift+A on a .docx: the Yes/No question names the file, about how
+    many words go and to which AI, and focus starts on No. Yes, then Suggest
+    Abbreviations opens: every check box reads "not checked", Space checks it,
+    and after OK you hear "Added" and the number.
+12. Alt+N presses Quick Insert (it was Alt+I).
+
+QuillBeacon:
+
+13. Select a beacon with a picture and press Ctrl+F5: the first time on this
+    AI you are asked where pictures go, No the default; then the description
+    is spoken, its window takes focus, and "Add this to the beacon's note?"
+    follows with No the default. Yes, then Ctrl+Z restores the note.
+14. On the free AI, Ctrl+F5 offers the switch; answer No and "Read on This
+    Computer" opens with the words OCR found, and nothing is sent.
+
+Quill Radio and QUILL Cast, the picture consent:
+
+15. In Quill Radio, show a video and press Ctrl+F5 on an AI that sees: the
+    first time you hear "Pictures you ask about in QUILL Radio go to" and the
+    company, Yes or No with No the default. No sends nothing; Yes describes it,
+    and the next Ctrl+F5 does not ask again.
+16. In QUILL Cast, press Ctrl+Alt+F5 on an AI that sees: the same question
+    comes before the list of pictures, and No fetches nothing.
+
+- [ ] All sixteen with NVDA.
+- [ ] All sixteen with JAWS.
+- [ ] Checks 1, 3, 5 and 11 with Narrator.

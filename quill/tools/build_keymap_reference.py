@@ -43,7 +43,16 @@ OUTPUT_PATH = _REPO_ROOT / "docs" / "keyboard-reference.md"
 #: registration is spread across the main-frame mixins by design (GATE-11).
 _TITLE_SOURCE_DIRS = ("quill/ui",)
 
-_APP_DISPLAY = {"radio": "Quill Radio", "cast": "QUILL Cast", "transcribe": "QUILL Transcribe"}
+_APP_DISPLAY = {
+    "radio": "Quill Radio",
+    "cast": "QUILL Cast",
+    "transcribe": "QUILL Transcribe",
+    "weather": "Quill Weather",
+    "converter": "Quill Converter",
+    "player": "Quill Media Player",
+    "inkwell": "Quill Inkwell",
+    "beacon": "QuillBeacon",
+}
 
 #: Section headings for the editor table, by command-id prefix, in the order
 #: they should appear. Anything unmatched lands in "Everything else".

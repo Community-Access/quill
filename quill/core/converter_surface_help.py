@@ -135,6 +135,36 @@ PURPOSES: dict[str, str] = {
         "you can arrow through or copy. It is a reference; nothing here "
         "changes a key."
     ),
+    "Ask": (
+        "A conversation about your queued files, on whichever AI is in use: each "
+        "file's details as File Properties gives them, by name and never its folder, "
+        "the Convert to choice and the last conversion's report go with every "
+        "message. The AI never hears the sound itself. Type in Your message and press "
+        "Enter; the reply is read aloud and added to the conversation above. Quick "
+        "questions holds Will this play in my car?, Make this smaller without losing "
+        "much, and a few more."
+    ),
+    "Will This Play on My Device?": (
+        "First, type the device you mean, such as an iPhone, a car stereo or an Echo, "
+        "or leave it empty for the usual ones; Cancel sends nothing. Then the AI's "
+        "answer, from the queued files' details only: for each kind of file, yes or "
+        "no and why, and what to choose in Convert to when it will not play. Copy puts "
+        "the answer on the clipboard."
+    ),
+    "Choose Your AI": (
+        "Choose where Quill Converter's AI comes from: QUILL's free AI, your ChatGPT "
+        "plan, GitHub Copilot, Codex or your own key. Quill Converter signs in on its "
+        "own, as QUILL Converter. The list says which is in use; Enter uses the "
+        "selected one or signs in to it, and Delete signs a signed-in one out."
+    ),
+    "Sign In to Your AI": (
+        "Sign in to the AI you chose. Open the Page takes you to its sign-in page; "
+        "approve there, and this closes itself once you are signed in."
+    ),
+    "AI Usage": (
+        "How much each AI you have set up has been used, one sentence each, and whose "
+        "count it is. Manage Usage opens the selected one's own page."
+    ),
 }
 
 #: Purposes for windows whose titles carry live data, matched by prefix.

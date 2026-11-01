@@ -137,6 +137,8 @@ class RadioAiFeaturesMixin:
             return
         if not self._ai_capable("pictures") or not self._ai_ready():  # type: ignore[attr-defined]
             return  # nothing sent; the switch was offered (codex.md 10A.8)
+        if not self._radio_picture_consent():
+            return  # 10B.4: No, the default, sends nothing
         scratch = Path(tempfile.mkdtemp(prefix="quill-radio-picture-"))
         try:
             shot = scratch / "frame.png"
@@ -148,6 +150,13 @@ class RadioAiFeaturesMixin:
         except Exception:
             shutil.rmtree(scratch, ignore_errors=True)
             raise
+
+    def _radio_picture_consent(self) -> bool:
+        """10B.4: the first picture on a connection says where pictures go, once."""
+        from quill.ui.hosted_ai_picture_consent import ask_picture_consent
+
+        connection = str(self._ai_service().connection_in_use or "")  # type: ignore[attr-defined]
+        return ask_picture_consent(self, connection)
 
     def _radio_describe_picture(self, data: bytes, scratch: Path, at: float | None) -> None:
         """Fit *data* to the connection, answer from the cache or ask, then tidy up."""

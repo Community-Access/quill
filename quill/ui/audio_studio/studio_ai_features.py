@@ -139,32 +139,9 @@ class StudioAiFeaturesMixin:
 
     def _studio_picture_consent(self, route: Any) -> bool:
         """10B.4: the first picture on a connection says where pictures go, once."""
-        import wx
+        from quill.ui.hosted_ai_picture_consent import ask_picture_consent
 
-        from quill.core.ai.picture_consent import (
-            consent_key,
-            consent_sentence,
-            given,
-            needs_consent,
-        )
-
-        host = self._ai_host()  # type: ignore[attr-defined]
-        settings = host.settings
-        provider = str(getattr(self._ai_service(), "own_key_provider", "") or "openai")  # type: ignore[attr-defined]
-        key = consent_key(route.provider, provider)
-        if not needs_consent(settings.ai_picture_consent, key):
-            return True
-        answer = self._show_message_box(  # type: ignore[attr-defined]
-            consent_sentence(host.ai_agent_name, route.provider, provider)
-            + " Send pictures you ask about this way?",
-            "Pictures and your AI",
-            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
-        )
-        if answer not in (wx.YES, wx.ID_YES):
-            return False
-        settings.ai_picture_consent = given(settings.ai_picture_consent, key)
-        host.save_settings()
-        return True
+        return ask_picture_consent(self, route.provider)
 
     def _choose_vision_connection(self) -> Any:
         """The connection a picture may go to, after the gate and the consent; or None."""

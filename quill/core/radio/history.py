@@ -405,6 +405,9 @@ class RadioHistory:
     ai_connection: str = ""
     ai_copilot_model: str = ""
     ai_codex_model: str = ""
+    #: Connections said Yes to for pictures (codex.md 10B.4), as ``consent_key``
+    #: writes them: Describe the Video asks once per connection.
+    ai_picture_consent: list[str] = field(default_factory=list)
 
     def record(self, station: RadioStation) -> None:
         """Note that *station* just played; it moves to the front."""

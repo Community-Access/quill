@@ -32,6 +32,7 @@ from quill.apps.beacon import (
 )
 from quill.apps.beacon import feeds as feeds_mod
 from quill.apps.beacon import publish as publish_mod
+from quill.apps.beacon.ai import BeaconAiMixin
 from quill.apps.beacon.announce import Announcer
 from quill.apps.beacon.commands import Command, CommandPalette
 from quill.apps.beacon.dialogs import (
@@ -100,7 +101,7 @@ def _data_dir() -> Path:
     return paths.data_dir()
 
 
-class BeaconFrame(wx.Frame):
+class BeaconFrame(wx.Frame, BeaconAiMixin):
     def __init__(self) -> None:
         super().__init__(None, title=_TITLE, size=dip_size(None, 1100, 720))
         # Maximized by default, and remembered after that, like every other app
@@ -625,26 +626,7 @@ class BeaconFrame(wx.Frame):
         )
         mb.Append(m_sync, "&Sync")
 
-        m_assist = wx.Menu()
-        self._add(
-            m_assist,
-            "Suggest &Tags\tCtrl+Shift+T",
-            self._on_suggest_tags,
-            "Suggest tags for the selected beacon from its text",
-        )
-        self._add(
-            m_assist,
-            "Suggest &Relationships\tCtrl+Shift+K",
-            self._on_suggest_relationships,
-            "Suggest related beacons by shared tags, collections, or domain",
-        )
-        self._add(
-            m_assist,
-            "&Summarize Note\tCtrl+Shift+M",
-            self._on_summarize,
-            "Produce an extractive summary of the selected beacon's note",
-        )
-        mb.Append(m_assist, "&Assist")
+        self._build_assist_menu(mb)  # the local helpers, then the AI rows (ai.py)
 
         m_help = wx.Menu()
         # The family item: every app answers "who can help me?" the same
@@ -783,6 +765,7 @@ class BeaconFrame(wx.Frame):
         right_sizer.Add(self.details, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
         right_sizer.SetItemMinSize(self.details, (-1, 140))
 
+        self._build_ai_line(right, right_sizer, border=8)  # last in Tab order; Enter: Choose
         right.SetSizer(right_sizer)
 
         self.splitter.SplitVertically(sidebar, right, 240)

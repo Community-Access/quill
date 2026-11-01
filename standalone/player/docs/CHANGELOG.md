@@ -6,6 +6,27 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 Quill Media Player runs the same player code as QUILL from the shared `quill` package, so a fix lands in both at once; `standalone/player` carries only the wrapper, launcher and docs.
 
+## Unreleased
+
+### AI
+
+- **Choose Your AI.** The player now has an AI menu (Alt+I) and uses the AI you
+  pick for it: QUILL's free AI, your ChatGPT plan, GitHub Copilot, Codex or your
+  own key. It signs in on its own, as QUILL Media Player. Which AI Am I Using is
+  Ctrl+F8 and Choose Your AI is Ctrl+Shift+F8, because Ctrl+1 to Ctrl+9 belong
+  to the Window menu here. A new AI line in the main window says which AI is in
+  use; Enter on it opens Choose Your AI.
+- **Summarize This Chapter (AI) and AI Recap of Where I Am work on any AI.**
+  Same place in the Playback menu, same keys (Ctrl+Alt+C and Ctrl+Alt+R), but
+  they no longer need a key set up in QUILL's AI Hub. The answer is read aloud
+  and shown in a window you can copy from, instead of a message box. The text
+  still comes from the book or a transcript made on your computer, audio never
+  leaves, and protected BARD content is still refused.
+- **Ask** (Ctrl+Shift+8) about the book you're listening to: the title, the
+  chapter, your place and the chapter list go with each question.
+- **Where am I? lost its Alt letter.** Alt+I now opens the AI menu. Tab to the
+  button, or press Shift+F6 to hear the status bar.
+
 ## 1.0.0
 
 Testing build: **1.0.0 (build 2)**. Quill Media Player has not been published yet: the other QuillVille apps do not list it in their QuillVille menus, and QUILL's **Tools > Media > Media Player** row appears once it is released. Everything below is in the build.

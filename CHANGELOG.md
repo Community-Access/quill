@@ -2,6 +2,27 @@
 
 ## 1.0.0
 
+### Choose Your AI in Quill Weather, Quill Converter, Quill Media Player, Quill Inkwell and QuillBeacon (2026-11-01)
+
+- **Five more apps get Choose Your AI**, each with its own sign-in under its own
+  name and its own small settings file: Which AI Am I Using, the one AI Usage
+  list, an AI line in the main window (Enter opens Choose Your AI), and Ask
+  with what that app knows. Weather, Converter, Media Player and Inkwell use
+  Ctrl+Shift+8, Ctrl+F8 and Ctrl+Shift+F8, because Ctrl+1 to Ctrl+9 move
+  between their windows; QuillBeacon keeps the editors' Ctrl+6, Ctrl+8 and
+  Ctrl+4, in its Assist menu after the three local helpers.
+- **Each app's first AI feature:** Should I Go Out? in Weather (Ctrl+Shift+G,
+  text only, alerts always in the Weather Service's own words); Will This Play
+  on My Device? in Converter (Ctrl+Shift+D, from probe text, never the audio);
+  the Media Player's chapter summary and recap (Ctrl+Alt+C, Ctrl+Alt+R) now use
+  the AI you chose instead of an AI Hub key; Suggest Abbreviations from a
+  Document in Inkwell (Ctrl+Shift+A, nothing added without a check); and
+  Describe a Saved Picture in QuillBeacon (Ctrl+F5, read on this computer
+  first, offered as a note).
+- **Pictures ask first everywhere.** Quill Radio's Describe the Video and QUILL
+  Cast's Ask About an Image now ask once per AI where pictures go, No the
+  default, as QUILL Studio already did.
+
 ### Choose Your AI and Ask, in Quill Radio and QUILL Cast (2026-11-01)
 
 - **Quill Radio and QUILL Cast get Choose Your AI**, with the same five rows as

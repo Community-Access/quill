@@ -31,4 +31,9 @@ AI_ENTRIES: dict[str, str] = {
     # and an unchecked migration, which only delays retiring the old files.
     "core/ai/family_prompts.py::_write_prompts": "content",
     "core/ai/family_prompts.py::_write_meta": "marker",
+    # <app data>/<app>-ai.json: Quill Weather's, Quill Converter's, Quill Media
+    # Player's, Quill Inkwell's and QuillBeacon's own Choose Your AI choice and
+    # picture consent (codex.md Phase 3), as Studio's studio-ai.json: names and
+    # ids only, never a key or a token; no version stamp yet.
+    "core/ai/app_ai_settings.py::save_app_ai_settings": "needs-versioning",
 }

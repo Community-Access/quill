@@ -1041,11 +1041,19 @@ Control coverage: 39 audited sites (26 helped, 13 named-help).
 
 ### Every window, and what it is for
 
+**AI Usage.** How much each AI you have set up has been used, one sentence each, and whose count it is. Manage Usage opens the selected one's own page.
+
 **Add Bookmark.** A note to keep with the bookmark being added at the current position. The note is what the Bookmarks list shows for this bookmark, and what is read aloud when playback reaches it again.
+
+**Ask.** A conversation about the book you are listening to, on whichever AI is in use: the book's title, the chapter, your place in it and the list of chapters go with every message, and the audio never does. Type in Your message and press Enter; the reply is read aloud and added to the conversation above. Quick questions holds Remind me who this character is and a few more.
 
 **Book Library.** Search LibriVox, the free public-domain audiobook catalog, and choose a book. Type a title, press Search, pick a result, and Play streams the book's sections here in order. No account is involved and nothing is saved to disk.
 
+**Chapter Summary.** The AI's summary of the chapter you are in, in a sentence or two, made from the book's own text or a short transcript made on this computer. Copy puts it on the clipboard; asking again for the same chapter gives the same answer without sending anything.
+
 **Choose Columns.** Decide what a row of the chosen list says, and in what order. A row is read out one column at a time, so hiding a column removes it from every spoken row, and the preview line reads exactly what one row will say. Cancel leaves every list as it was.
+
+**Choose Your AI.** Choose where Quill Media Player's AI comes from: QUILL's free AI, your ChatGPT plan, GitHub Copilot, Codex or your own key. The player signs in on its own, as QUILL Media Player. The list says which is in use; Enter uses the selected one or signs in to it, and Delete signs a signed-in one out.
 
 **Edit Bookmark.** Change the note on the highlighted bookmark. Only the words change -- the bookmark keeps its position.
 
@@ -1063,7 +1071,11 @@ Control coverage: 39 audited sites (26 helped, 13 named-help).
 
 **Quill Media Player.** The main window: what is playing, the transport, and three pages under it -- Chapters, Bookmarks, and the Audio equalizer. Open a file, a folder, a DAISY book, or a free LibriVox title; your place is saved as you listen, so a book resumes where you left it. Nothing here needs an account, and playback stays on this computer.
 
+**Recap.** The AI's reminder of what was happening up to your place in the book, with nothing from further on. It is made from the book's own text or a transcript of at most five minutes, made on this computer. Copy puts it on the clipboard.
+
 **Show and Hide Key.** Choose one key that shows and hides the player from any program. Type it, for example with Ctrl, Alt and Shift held, or leave the box empty for no key. A key another QuillVille app already uses is refused, and you are told whose it is.
+
+**Sign In to Your AI.** Sign in to the AI you chose. Open the Page takes you to its sign-in page; approve there, and this closes itself once you are signed in.
 
 **Voice Command.** Say or type one natural command -- 'skip back thirty', 'next chapter', 'go to 1:20:00', 'bookmark this', 'sleep in twenty' -- and OK carries it out. The same grammar answers the hands-free Listen for a Command toggle; this field is the way to use it without a microphone.
 
@@ -1609,9 +1621,17 @@ Control coverage: 296 audited sites (11 help-elsewhere, 285 helped).
 
 ## Quill Inkwell
 
-Control coverage: 3 audited sites (3 helped).
+Control coverage: 5 audited sites (5 helped).
 
 ### Every window, and what it is for
+
+**AI Usage.** How much each AI you have set up has been used, one sentence each, and whose count it is. Manage Usage opens the selected one's own page.
+
+**Ask.** A conversation about your abbreviations, on whichever AI is in use: each abbreviation by name and expansion, most used first, goes with every message, and nothing you type in other programs ever does. Type in Your message and press Enter; the reply is read aloud and added to the conversation above. Quick questions holds What do I type most? and a few more.
+
+**Choose Your AI.** Choose where Quill Inkwell's AI comes from: QUILL's free AI, your ChatGPT plan, GitHub Copilot, Codex or your own key. Quill Inkwell signs in on its own, as QUILL Inkwell. The list says which is in use; Enter uses the selected one or signs in to it, and Delete signs a signed-in one out.
+
+**Choose a Document.** Pick the document Suggest Abbreviations reads: plain text, Markdown, Word or rich text. Nothing is sent yet; you are asked first, and Cancel sends nothing.
 
 **Edit Abbreviation.** Change one abbreviation: its trigger word, its expansion, or how it behaves -- which keys fire it, what is spoken, whether a sound plays. The expansion may carry ${cursor}, ${date}, ${time}, and ${clipboard}. OK saves the change into the shared library at once.
 
@@ -1631,7 +1651,13 @@ Control coverage: 3 audited sites (3 helped).
 
 **Quill Inkwell.** The manager window for a service that lives in the system tray: type an abbreviation in any application -- a browser, a mail client, a form -- and Inkwell replaces it with the text you saved. The list shows your library, which is the same library QUILL's editor expands from, so an abbreviation added in either works in both immediately. Closing this window keeps expansion running in the tray unless you turn that off in Options.
 
+**Send the Document?.** Whether the text of the document you picked goes to the AI in use, and how much of it. The file's name and folder stay on this computer. No is the default and sends nothing.
+
 **Show and Hide Key.** Choose one key that shows and hides the Inkwell window from any program. Type it, for example with Ctrl, Alt and Shift held, or leave the box empty for no key. A key another QuillVille app already uses is refused, and you are told whose it is.
+
+**Sign In to Your AI.** Sign in to the AI you chose. Open the Page takes you to its sign-in page; approve there, and this closes itself once you are signed in.
+
+**Suggest Abbreviations.** The abbreviations the AI suggested from your document, one check box each, all starting cleared. Check the ones you want and press OK to add them to the library QUILL shares; Cancel adds none. An abbreviation you already have is never suggested, so nothing here can replace one of yours.
 
 **Update downloaded.** A new Quill Inkwell is on disk and ready. Install and restart now applies it and relaunches -- your abbreviations and settings are kept -- or Open folder shows you the installer to run later.
 
@@ -1644,6 +1670,11 @@ Control coverage: 3 audited sites (3 helped).
 - `self._list`: Your abbreviation library, read-only here: each row is a trigger word, the start of what it expands to, and its category, with disabled entries marked. To add, change, or remove entries press the Manage Abbreviations button (Ctrl+M); this list follows the same library QUILL's editor expands from.
 - `manage_btn`: Open the Manage Abbreviations dialog: create, edit, delete, enable or disable entries, and import or export the whole library. Changes save immediately and work in QUILL too.
 - `quick_btn`: Pick an abbreviation and have its expansion typed into the window you were just working in -- the way to use entries set to expand only manually. Also on Ctrl+K here, and from any program on the key you choose with File, Quick Insert Key.
+#### SuggestionsDialog (`quill/apps/inkwell_suggest_dialog.py`)
+
+- `ok`: Add the abbreviations you checked to your library, the same library QUILL expands from, and close. If none are checked, nothing is added.
+- `cancel`: Close without adding any of the suggested abbreviations.
+- `box`: Check this to add the abbreviation to your library when you press OK. It starts cleared, so nothing the AI suggested is added unless you check it. You can change or delete it later in Manage Abbreviations.
 
 ## QUILL Transcribe
 
@@ -1795,7 +1826,13 @@ Control coverage: 40 audited sites (40 helped).
 
 ### Every window, and what it is for
 
+**AI Usage.** How much each AI you have set up has been used, one sentence each, and whose count it is. Manage Usage opens the selected one's own page.
+
 **Add Weather Location.** Save a new place to watch. Type a ZIP code, city, county, or address and press Search; the matching places come back as a list so same-named towns are told apart, and Add Selected saves the one you choose. A bare latitude,longitude pair resolves to that exact point with no search.
+
+**Ask.** A conversation about the weather, on whichever AI is in use: your primary place's name, never its coordinates, the current conditions, the next hours, the forecast and any active alerts by their official names go with every message. Type in Your message and press Enter; the reply is read aloud and added to the conversation above. Quick questions holds Do I need a coat at 5? and a few more.
+
+**Choose Your AI.** Choose where Quill Weather's AI comes from: QUILL's free AI, your ChatGPT plan, GitHub Copilot, Codex or your own key. Quill Weather signs in on its own, as QUILL Weather. The list says which is in use; Enter uses the selected one or signs in to it, and Delete signs a signed-in one out.
 
 **Customize Quill Weather Features.** Turn whole areas of Quill Weather on or off -- alert monitoring, NOAA Weather Radio. Turning one off removes its menu items at the next launch; nothing you have saved is deleted.
 
@@ -1803,7 +1840,11 @@ Control coverage: 40 audited sites (40 helped).
 
 **Quill Weather Tutorials.** Guided lessons, one step at a time, that can run the step for you and notice when you have done it. The contents list is grouped by track and remembers where you stopped; typing 'here' in the filter box narrows it to the tutorials about the window you came from. Follow me watches what the app is doing -- never which key you pressed -- and moves you on by itself.
 
+**Should I Go Out?.** The AI's answer to Should I Go Out?, in plain words, from the forecast for your primary place. Any active alert comes first, in the Weather Service's own words, never reworded by the AI. Copy puts the answer on the clipboard.
+
 **Show and Hide Key.** Choose one key that shows and hides Quill Weather from any program. Type it, for example with Ctrl, Alt and Shift held, or leave the box empty for no key. A key another QuillVille app already uses is refused, and you are told whose it is.
+
+**Sign In to Your AI.** Sign in to the AI you chose. Open the Page takes you to its sign-in page; approve there, and this closes itself once you are signed in.
 
 **Weather Center.** The full text weather report for one location at a time, in reading order: active alerts first, then current conditions, the period forecast, the hourly forecast, and the extended daily outlook. Each list pairs with a read-only detail box below it that follows your selection, so arrowing a list reads the full official text. The Location chooser switches places, Refresh re-pulls, and Add Location and Settings open their own windows.
 
@@ -1868,9 +1909,15 @@ Control coverage: 38 audited sites (38 helped).
 
 ### Every window, and what it is for
 
+**AI Usage.** How much each AI you have set up has been used, one sentence each, and whose count it is. Manage Usage opens the selected one's own page.
+
+**Ask.** A conversation about your queued files, on whichever AI is in use: each file's details as File Properties gives them, by name and never its folder, the Convert to choice and the last conversion's report go with every message. The AI never hears the sound itself. Type in Your message and press Enter; the reply is read aloud and added to the conversation above. Quick questions holds Will this play in my car?, Make this smaller without losing much, and a few more.
+
 **Auphonic Work Waiting.** Productions Auphonic accepted whose results have not been saved yet, remembered on this computer without contacting Auphonic. Resume waits for them and saves the results; Dismiss forgets one here, and it stays in your Auphonic account.
 
 **Chapter Workbench.** Edit the chapters of an MP3, M4B or M4A: hear it, then add, rename, move, split and merge chapters at the playhead, find them at the pauses, or import and export a chapter list. Save writes them into the file itself, and every later conversion carries them.
+
+**Choose Your AI.** Choose where Quill Converter's AI comes from: QUILL's free AI, your ChatGPT plan, GitHub Copilot, Codex or your own key. Quill Converter signs in on its own, as QUILL Converter. The list says which is in use; Enter uses the selected one or signs in to it, and Delete signs a signed-in one out.
 
 **Conversion Report.** Your last conversion, file by file: the settings used, where the files went, what converted, and why anything failed -- in plain words, then FFmpeg's own message. Copy All puts it on the clipboard, ready to paste into an email to support.
 
@@ -1896,7 +1943,11 @@ Control coverage: 38 audited sites (38 helped).
 
 **Show and Hide Key.** Choose one key that shows and hides Quill Converter from any program. Type it, for example with Ctrl, Alt and Shift held, or leave the box empty for no key. A key another QuillVille app already uses is refused, and you are told whose it is.
 
+**Sign In to Your AI.** Sign in to the AI you chose. Open the Page takes you to its sign-in page; approve there, and this closes itself once you are signed in.
+
 **Tag Editor.** Every tag of one MP3, M4A, M4B or MP4 file, over five pages -- title, artist and album, the people, the dates and numbers, sorting, and the cover art. Control+Tab moves between pages. OK writes the tags into the file; the sound itself is not touched.
+
+**Will This Play on My Device?.** First, type the device you mean, such as an iPhone, a car stereo or an Echo, or leave it empty for the usual ones; Cancel sends nothing. Then the AI's answer, from the queued files' details only: for each kind of file, yes or no and why, and what to choose in Convert to when it will not play. Copy puts the answer on the clipboard.
 
 **Windows titled "Help:...".** This is the help window itself: the purpose of the window you were in, then the control you were on. Escape returns you to it.
 
@@ -1970,6 +2021,8 @@ Control coverage: 127 audited sites (127 helped).
 
 ### Every window, and what it is for
 
+**AI Usage.** How much each AI you have set up has been used, one sentence each, and whose count it is. Manage Usage opens the selected one's own page.
+
 **Accessibility Settings.** How the app speaks and looks: announcement verbosity, high contrast, text scale, and reduced motion. Apply puts the settings into effect across the whole window and announces the result.
 
 **Add Attachment.** Attach one thing to the selected bookmark: a file on disk, a URL, or an inline note. Pick the kind first; the form shows the field that kind needs. Attachments stay on this machine and are never synced.
@@ -1978,11 +2031,17 @@ Control coverage: 127 audited sites (127 helped).
 
 **Add Radio Program.** Save a radio program with its schedule: station, program name, host, start and end times in 24-hour HH:MM, and an optional stream address. A station or a program name is enough to save.
 
+**Ask.** A conversation about what you have saved, on whichever AI is in use. When a search is typed, the search and its results' titles and notes go with every message; otherwise the selected beacon's title, note and tags do -- never where your library or any file is kept. Type in Your message and press Enter; the reply is read aloud and added to the conversation above.
+
 **Build Search.** A form that writes the search query for you: words, an exact phrase, exclusions, type, collection, tag, link health, and domain. Search runs the built query in the main window's search box, where it can also be saved as a Smart Collection.
+
+**Choose Your AI.** Choose where QuillBeacon's AI comes from: QUILL's free AI, your ChatGPT plan, GitHub Copilot, Codex or your own key. QuillBeacon signs in on its own, as QUILL Beacon. The list says which is in use; Enter uses the selected one or signs in to it, and Delete signs a signed-in one out.
 
 **Collection Editor.** Create a collection, or edit the one selected in the sidebar: its name, description, optional parent, sharing mark, and color. Collections are folders you invent; a bookmark can sit in several.
 
 **Command Palette.** Every command in the app as one searchable list. Type part of a name to filter, Enter runs the highlighted command, Escape closes without running anything.
+
+**Describe a Saved Picture.** The AI's description of the selected beacon's picture. The words in the picture were read on this computer first and sent with it. Copy puts the description on the clipboard, and you are asked once whether to add it to the beacon's note.
 
 **External Player.** Which media player handles handoffs: the default player, optional paths to VLC and mpv for installs not on PATH, and a per-type override so radio and podcasts can open in different players.
 
@@ -1994,9 +2053,13 @@ Control coverage: 127 audited sites (127 helped).
 
 **QuillBeacon Player.** The built-in player for one episode or stream, with its chapters and transcript. Selecting a chapter jumps playback there, and Add Time Point saves a bookmark at the exact moment you are hearing so you can come back to it.
 
+**Read on This Computer.** The words read in the selected beacon's picture on this computer, because the AI in use cannot see pictures. Nothing was sent. Copy puts the words on the clipboard.
+
 **Review Location Repair.** A saved location resolved poorly, and this is the decision: read what was saved against what the repair engine proposes, then accept the repair, keep the old location, or mark the bookmark broken for later. Nothing is rewritten without your choice.
 
 **Routing Rule.** One filing rule: when a new web bookmark's address contains the keyword, it is filed into the folder. The first matching rule in the Preferences list wins, and each keyword may be used only once.
+
+**Sign In to Your AI.** Sign in to the AI you chose. Open the Page takes you to its sign-in page; approve there, and this closes itself once you are signed in.
 
 **Smart Collection Editor.** One saved search, editable: its name, the live query it evaluates, the sort order, and an optional collection scope. The collection re-runs the query every time it is opened, so it stays current by itself.
 
@@ -2183,7 +2246,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 248 audited sites (248 helped).
+Control coverage: 251 audited sites (251 helped).
 
 ### Every window, and what it is for
 

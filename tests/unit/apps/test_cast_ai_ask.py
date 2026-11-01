@@ -197,7 +197,17 @@ def test_a_chosen_picture_is_fetched_once_fitted_and_described(cast, monkeypatch
         on_done("A red square.")
 
     cast._ai_service().describe_image = describe
+    questions: list[str] = []
+    monkeypatch.setattr(
+        type(cast),
+        "_show_message_box",
+        lambda self, message, caption, style: questions.append(message) or wx.YES,
+        raising=False,
+    )
     cast.cmd_ai_image()
+    assert len(questions) == 1  # 10B.4: asked once, before anything is fetched
+    assert "QUILL Cast go to OpenAI on your ChatGPT plan" in questions[0]
+    assert cast._podcast_history.ai_picture_consent == ["chatgpt"]
     assert offered[0] == [
         "Podcast artwork for Sea Stories",
         "Show-note picture 1: A tide chart for March",
@@ -227,3 +237,21 @@ def test_ask_about_an_image_says_what_it_needs_on_the_free_ai(cast, monkeypatch)
     cast._build_menu_bar()
     labels = _ai_submenu(cast)
     assert "As&k About an Image (needs a connection that sees)...\tCtrl+Alt+F5" in labels
+
+
+def test_ask_about_an_image_fetches_and_sends_nothing_when_consent_is_no(cast, monkeypatch) -> None:
+    fetched: list[str] = []
+    monkeypatch.setattr(
+        "quill.core.podcasts.picture_fetch.fetch_picture",
+        lambda url, **_k: fetched.append(url) or _png(),
+    )
+    offered: list[list[str]] = []
+    monkeypatch.setattr(
+        type(cast), "_cast_choose_picture", lambda self, labels: offered.append(labels) or 0
+    )
+    sent: list[str] = []
+    cast._ai_service().describe_image = lambda *a, **k: sent.append("sent")
+    monkeypatch.setattr(type(cast), "_show_message_box", lambda self, *a: wx.NO, raising=False)
+    cast.cmd_ai_image()
+    assert offered == [] and fetched == [] and sent == []
+    assert cast._podcast_history.ai_picture_consent == []

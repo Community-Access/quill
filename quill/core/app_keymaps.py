@@ -17,6 +17,7 @@ nothing else. wx-free, so the rule is testable without a UI.
 
 from __future__ import annotations
 
+from quill.core.app_keymaps_ai import SMALL_APP_AI_KEYMAPS
 from quill.core.family_chords import SHOW_HIDE_DEFAULTS
 from quill.core.keymap import DEFAULT_KEYMAP
 
@@ -501,7 +502,9 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # chord opens the lessons in Quill Radio, QUILL Cast and QUILL -- and it
         # sits in the F1 family, which is where help lives everywhere.
         "weather.tutorials": "Ctrl+Alt+F1",
+        **SMALL_APP_AI_KEYMAPS["weather"],  # AI rows, rule-11 comments: app_keymaps_ai.py
     },
+    **{app: rows for app, rows in SMALL_APP_AI_KEYMAPS.items() if app != "weather"},
 }
 
 #: The QuillVille menu's sibling launchers, numbered in menu order. Kept here

@@ -217,6 +217,13 @@ COMMAND_NEEDS: dict[str, str] = {
     "cmd_ai_prompt_library": TEXT,
     "cmd_ai_image": PICTURES,
     "cmd_studio_describe_picture": PICTURES,
+    # codex.md Phase 3: the small apps' first features.
+    "cmd_weather_go_out": TEXT,
+    "cmd_converter_will_play": TEXT,
+    "cmd_player_chapter_summary": TEXT,
+    "cmd_player_recap": TEXT,
+    "cmd_inkwell_suggest": TEXT,
+    "cmd_beacon_describe_picture": PICTURES,
     "cmd_dictation_tidy": TEXT,
     "cmd_ai_task": AGENT_TOOLS,
 }

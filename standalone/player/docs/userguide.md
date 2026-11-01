@@ -54,7 +54,7 @@ book, the Now Playing area reads "Open a file or a folder to begin." Press
 Moving through the window with Tab (or your screen reader's controls), you meet
 these regions in order:
 
-1. **Menu bar** - File, Navigation, Playback, View, QuillVille, Help and
+1. **Menu bar** - File, Navigation, Playback, View, AI, QuillVille, Help and
    Window. Press Alt (or F10) to reach it, Left and Right to move between the
    menus, and Down to open one. For example, to set the sleep timer, press
    Alt, Right twice to Playback, Down, then T for Sleep Timer.
@@ -65,7 +65,9 @@ these regions in order:
 4. **Content area** - three pages: Chapters, Bookmarks and Audio. Press
    Ctrl+Tab to move between them. The Book Library is a window of its own
    (File > Book Library..., Ctrl+L); a play queue is not built yet.
-5. **Status bar** — live state you can review field by field (Section 11).
+5. **AI** - a read-only line saying which AI the player uses, if any. Press
+   Enter on it to open Choose Your AI (Section 13b).
+6. **Status bar** — live state you can review field by field (Section 11).
 
 ---
 
@@ -119,7 +121,7 @@ the menus keep their letters and the buttons moved:
 | V | View menu | X | Next chapter |
 | Q | QuillVille menu | R | Rewind |
 | H | Help menu | O | Forward |
-| W | Window menu | I | Where am I? |
+| W | Window menu | I | AI menu |
 | D | Speed | U | Mute or Unmute |
 | M | Add Bookmark (Bookmarks page) | K | Remove Bookmark (Bookmarks page) |
 | E | Equalizer preset (Audio page) | B | Volume boost (Audio page) |
@@ -127,7 +129,10 @@ the menus keep their letters and the buttons moved:
 
 The Play button says Play or Pause depending on what is happening, and the
 Mute button says Mute or Unmute, but each keeps one letter, so Alt+A and Alt+U
-always work. For example: press Alt+P and the Playback menu opens; press Escape,
+always work. Where am I? has no Alt letter any more: it used to have I,
+which the AI menu took on 2026-11-01, and every other letter in its name was
+already in use. Tab to it, or press Shift+F6 to hear the status bar. For
+example: press Alt+P and the Playback menu opens; press Escape,
 then Alt+A, and the book plays or pauses. The Bookmarks and Audio letters work
 while that page is the one showing (Ctrl+Tab moves between pages).
 
@@ -445,16 +450,8 @@ is no notification-area tray (the app uses the Dock instead).
   (Play/Pause, Previous/Next chapter) so playback stays reachable while you work
   elsewhere. **View > Compact Mode** shrinks the main window to just the transport.
   *(Available now.)*
-- **Summarize This Chapter (AI)** — **Playback > Summarize This Chapter (AI)** asks
-  your configured AI for a one- or two-sentence summary and speaks it (also shown in a
-  dialog you can read).
-- **AI Recap of Where I Am** — **Playback > AI Recap of Where I Am** recaps the passage
-  up to your current point ("here's what's been happening"), so you can pick a book back
-  up after a break.
-  Both use the AI: for a book with a text layer (DAISY/EPUB) they summarize the text
-  directly; for pure audio they transcribe the passage first, so that needs the offline
-  speech engine installed. Both require an AI provider set up in QUILL's AI Hub, are off
-  in Safe Mode, and never run on protected BARD content. *(Available now.)*
+- **Summarize This Chapter (AI)** and **AI Recap of Where I Am** are in the
+  Playback menu. They use whichever AI you chose; see Section 13b.
 - **Magical Mode** — **View > Magical Mode** turns on opt-in flourishes. Today it
   gives a warm spoken **welcome-back recap** when you reopen a book ("Welcome back.
   The Return, resuming at 6 hours 42 minutes"). Richer touches — spoken chapter intros
@@ -517,6 +514,57 @@ computer.
 
 ---
 
+## 13b. AI: summaries, recaps and Ask
+
+The player can use an AI to tell you about the book you're listening to. It
+uses the AI you pick for it, and nothing is sent until you ask. The audio
+itself never leaves your computer.
+
+### Picking an AI
+
+Open **AI > Choose Your AI...** (**Ctrl+Shift+F8**). You can use QUILL's free
+AI, your ChatGPT plan, GitHub Copilot, Codex, or your own key. The player signs
+in on its own, as QUILL Media Player, so signing in here doesn't sign in any
+other QuillVille app. To hear which one is in use, press **Ctrl+F8**
+(**AI > Which AI Am I Using**). The AI line in the main window says the same
+thing; press Enter on it to open Choose Your AI.
+
+The rest of the AI menu: **Use My ChatGPT Subscription...** (**Alt+F5**),
+**Use My Own AI Key...** (**Alt+F2**), **AI Usage...** (**Ctrl+Alt+Shift+F2**)
+and **Privacy Agreement...** (**Ctrl+Alt+Shift+K**).
+
+### Summarize This Chapter and AI Recap of Where I Am
+
+- **Summarize This Chapter (AI)** (**Ctrl+Alt+C**) gives you the chapter
+  you're in, in a sentence or two.
+- **AI Recap of Where I Am** (**Ctrl+Alt+R**) reminds you what was going on up
+  to your place in the book, without giving away anything further on. It's
+  handy after a few days away from a book.
+
+Both are in the Playback menu, where they've always been. The answer is read
+aloud and also shown in a window you can read again and copy. Ask for the same
+chapter again and you get the same answer straight away, without sending
+anything.
+
+The AI can only read text, so the player finds some first. For pure audio it
+makes a short transcript of the passage, at most five minutes, right here on
+your computer; that needs QUILL's offline speech engine installed. Only that
+text goes to the AI. You can also say "summarize" or "recap" to the voice
+command bar.
+
+Neither one works in Safe Mode, and neither ever runs on protected BARD
+content.
+
+### Ask
+
+**AI > Ask...** (**Ctrl+Shift+8**) opens a conversation about the book. Each
+message takes along the book's title, the chapter you're in, your place in it
+and the list of chapters, so you can ask things like "how many chapters are
+left?" or pick **Remind me who this character is** from Quick questions. No
+file names or folders go with it, and no audio.
+
+---
+
 ## 14. Settings
 
 **File > Preferences...** (Ctrl+,) gathers the player's settings in one window:
@@ -548,7 +596,11 @@ Per-book overrides and importing or exporting settings, specified in the PRD
 - **Lyrics** are fetched from LRCLIB only when you open the Lyrics window,
   sending the song's artist, title, album and length, and are kept in memory
   only.
-- **Safe Mode** disables all network sources — local playback still works.
+- **AI** is used only when you ask, through the AI you chose (Section 13b).
+  What goes is text: the book's title, chapter names and your place, and for a
+  summary or recap a short transcript made on your computer. Audio never goes.
+- **Safe Mode** disables all network sources and every AI command — local
+  playback still works.
 - Protected BARD content is handled only through the sanctioned mechanism; a
   decrypted copy is never written to disk.
 - Your BARD sign-in and any keys live only in your operating system's secure vault,
@@ -604,7 +656,7 @@ Per-book overrides and importing or exporting settings, specified in the PRD
 | Open file / folder / DAISY, resume | Always-on hotword (say a wake word to start) |
 | **Hands-free voice (offline, QUILL's speech engines)** | Spoken chapter intros / soundscape |
 | Chapter **tree** (multi-level, DAISY) | Spoken chapter intros / soundscape |
-| **Summarize Chapter + AI Recap (AI)** | Automatic (server) cross-device sync |
+| **Summarize Chapter + AI Recap, Ask (AI)** | Automatic (server) cross-device sync |
 | **Copy/Export bookmarks + Sync bundle** | Embedded in-QUILL window; zero-gap gapless |
 | Book Library (LibriVox) + multi-track | BARD sources (NLS contract) |
 | 10-band EQ, boost, normalize, skip-silence | Embedded in-QUILL player window |

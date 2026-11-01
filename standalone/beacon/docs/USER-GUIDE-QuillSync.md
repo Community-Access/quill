@@ -316,6 +316,55 @@ such a key may run its command instead of typing the letter while the search
 box has focus, and the menus always work. The keys work in the main window,
 not inside a dialog.
 
+## AI, if you want it
+
+The Assist menu has always had three helpers that run on your computer:
+Suggest Tags, Suggest Relationships and Summarize Note. They still come first,
+and they still call no AI service. Below them, after a separator, are the AI
+commands every QuillVille app now shares. None of them sends anything until you
+press it.
+
+- **Assist > Choose Your AI...** (Ctrl+4) picks where the AI comes from:
+  QUILL's free AI, your ChatGPT plan, GitHub Copilot, Codex or your own key.
+  QuillBeacon signs in on its own, as QUILL Beacon, so signing in here does not
+  sign in any other app, and the other way round.
+- **Assist > Which AI Am I Using** (Ctrl+8) tells you which one is in use.
+  Press it twice quickly to open Choose Your AI.
+- **Assist > Ask...** (Ctrl+6) opens a conversation about what is in front of
+  you. If you have typed a search, the search and the titles and notes of its
+  results go with each message. If not, the selected beacon's title, note and
+  tags go. Where your library lives, and the path of any file you saved, never
+  go.
+- **Assist > Describe a Saved Picture...** (Ctrl+F5) describes the selected
+  beacon's picture: its newest picture attachment, or the screenshot or picture
+  file the beacon itself points at. First Windows reads any words in the
+  picture, on your computer. Then the picture and those words go to the AI in
+  use, once. The first time you send a picture on a connection, QuillBeacon
+  tells you which company it goes to and asks first, with No as the default.
+  The description is read to you and shown in a window you can copy from, and
+  then you are asked whether to add it to the beacon's note. No is the default
+  there too. If you say Yes and change your mind, Ctrl+Z takes it back out.
+- **Assist > Use My ChatGPT Subscription...** (Alt+F5),
+  **Assist > Use My Own AI Key...** (Alt+F2), **Assist > AI Usage...**
+  (Ctrl+Alt+Shift+F2) and **Assist > Privacy Agreement...**
+  (Ctrl+Alt+Shift+K) work the same way they do in the other apps.
+
+At the bottom of the results pane, after Details, there is a line that says
+which AI is in use, such as "AI: ChatGPT plan". Tab to it whenever you want to
+check, and press Enter there to open Choose Your AI.
+
+Example: you saved a screenshot of a concert flyer and attached it to a
+beacon. Select the beacon and press Ctrl+F5. You hear "Reading the picture on
+this computer," then the description, with the band, the date and the price.
+Then QuillBeacon asks "Add this to the beacon's note?" Press Y and the
+description is in the note, so a search for the band's name finds it later.
+
+Limits: not every AI can see pictures. If yours cannot, Describe a Saved
+Picture says which ones can and offers to switch with one key. If you say no,
+nothing is sent, and you get the words Windows read in the picture instead. If
+Windows OCR is not on your computer, the picture still goes, just without them.
+Nothing in QuillBeacon's AI runs on a timer, and Safe Mode turns all of it off.
+
 ## Getting started
 
 1. Open QuillBeacon. Your library lives on this machine by default.

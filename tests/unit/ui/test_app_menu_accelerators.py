@@ -60,6 +60,9 @@ APP_MENU_FILES = (
     "weather.py",
     "converter.py",
     "beacon/app.py",
+    # Its Assist menu: the three local helpers, then the AI rows (codex.md
+    # Phase 3, 2026-11-01).
+    "beacon/ai.py",
     # QUILL Lite builds its bar by walking a table, so every label here is an
     # f-string the source-level scan cannot read. The table itself is checked
     # far more strictly instead (tests/unit/core/lite/test_lite_commands.py):

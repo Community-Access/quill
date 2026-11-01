@@ -370,8 +370,16 @@ def transcribe_context(
 # -- Converter --------------------------------------------------------------- #
 
 
-def converter_context(files: Sequence[MediaInfo], *, limit: int = 20) -> AppFacts:
-    """The queued files, as the File Properties text ``media_probe.describe`` makes."""
+def converter_context(
+    files: Sequence[MediaInfo],
+    *,
+    limit: int = 20,
+    output_format: str = "",
+    last_result: str = "",
+) -> AppFacts:
+    """The queued files, as the File Properties text ``media_probe.describe`` makes;
+    the format chosen in Convert to; and the last conversion's result, when there
+    is one (its report, which names files, never folders)."""
     from quill.core.audio.media_probe import describe
 
     blocks = ["\n".join(describe(info)) for info in files[:limit]]
@@ -381,7 +389,9 @@ def converter_context(files: Sequence[MediaInfo], *, limit: int = 20) -> AppFact
     return _facts(
         "converter",
         Fact("Files queued", str(len(files)) if files else ""),
+        Fact("Convert to", output_format),
         Fact("File details", "\n\n".join(blocks)),
+        Fact("Last conversion", _cap(last_result, 3000)),
     )
 
 

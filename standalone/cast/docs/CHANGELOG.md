@@ -27,7 +27,9 @@ and speed and reliability.
   an AI cell. Ask is about the episode you are on, its notes, chapters and your
   place, never the audio. **What Did I Miss in This Episode?** is a new AI
   Features row. **Ask About an Image** (Ctrl+Alt+F5) offers the podcast's
-  artwork and the show notes' pictures, fetched once when you choose one. Free
+  artwork and the show notes' pictures, fetched once when you choose one. The
+  first time on each AI, it says where pictures go and asks Yes or No first,
+  with No the default, before anything is fetched (2026-11-01). Free
   AI Usage is now **AI Usage**, one list for every AI you set up.
 
 - **ChatGPT plan sign-in holds through a brief problem** (2026-10-31).
