@@ -3,15 +3,19 @@
 The **stream mix** is built here, live: each source the presenter turned on
 for the stream is captured with the recording sources' own classes, and a
 mixing thread sums 20-millisecond blocks at each source's stream level into
-48 kHz stereo PCM. Only those sources can reach listeners; Studio's own cues
-come from Studio's process, which is never a source. *Mute everything
-public* sends silence without disconnecting.
+48 kHz stereo PCM (``live_stream_mix``). Only those sources can reach
+listeners; Studio's own cues come from Studio's process, which is never a
+source. *Mute everything public* sends silence without disconnecting.
 
 The PCM goes to FFmpeg, which encodes it and sends it to Icecast itself, or
 hands the encoded bytes to Studio's SHOUTcast source client (FFmpeg cannot
 do SHOUTcast's login). A saved copy, when chosen, is a second FFmpeg fed the
-same mix, so it keeps recording through a reconnect. A dropped connection is
-retried with growing pauses, said once, and marked.
+same mix through its **own** queue and writer thread, so it keeps recording
+through a dropped connection *and* through a slow one: only the stream's
+queue can overflow (BCAST-026). "On air" is said only once the server has
+taken two seconds of encoded audio, and a refused password stops the retries
+at any attempt (BCAST-027, ``live_stream_air``). A dropped connection is
+retried with growing pauses and marked.
 """
 
 from __future__ import annotations
@@ -21,7 +25,6 @@ import socket
 import subprocess
 import threading
 import time
-from collections import deque
 from collections.abc import Callable
 from typing import Any
 
@@ -34,13 +37,26 @@ from quill.core.streaming import (
     shoutcast_source_port,
     stream_command,
 )
+from quill.platform.windows.live_stream_air import (
+    ACCEPTED_SECONDS,
+    BACK_ON_AIR,
+    ON_AIR,
+    REFUSED,
+    SILENT_CONNECTION_SECONDS,
+    STALLED_SECONDS,
+    EncoderProgress,
+    StreamRefused,
+    is_auth_refusal,
+)
+from quill.platform.windows.live_stream_mix import BLOCK, RATE, BlockWriter, StreamMixer
 
 logger = logging.getLogger(__name__)
 
-_RATE = 48_000
-_BLOCK = 960  # 20 ms
 _NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+_BLOCK_SECONDS = BLOCK / RATE
 Event = Callable[[str, bool], None]
+
+__all__ = ["LiveStream", "StreamMixer", "test_connection"]
 
 
 class _MixerInput:
@@ -63,90 +79,19 @@ class _MixerInput:
         return None
 
 
-class StreamMixer:
-    """Sum the stream's sources, at their levels, into one stereo PCM stream."""
-
-    def __init__(self, levels: dict[str, float], outputs: list[Callable[[bytes], None]]) -> None:
-        import numpy as np
-
-        self._np = np
-        self.gains = {key: 10 ** (db / 20) for key, db in levels.items()}
-        self.outputs = outputs
-        self.queues: dict[str, deque[Any]] = {key: deque() for key in levels}
-        self.public_muted = False
-        self._lock = threading.Lock()
-        self._stop = threading.Event()
-        self._thread = threading.Thread(target=self._run, daemon=True, name="stream-mixer")
-        self.blocks = 0
-
-    def push(self, source_id: str, payload: bytes, channels: int) -> None:
-        np = self._np
-        samples = np.frombuffer(payload, dtype=np.int16).astype(np.float32)
-        if channels == 1:
-            samples = np.repeat(samples, 2)
-        with self._lock:
-            queue = self.queues.get(source_id)
-            if queue is not None:
-                queue.append(samples)
-                # Never more than two seconds behind: a stalled mixer drops the oldest.
-                while sum(len(chunk) for chunk in queue) > _RATE * 4:
-                    queue.popleft()
-
-    def _take(self, source_id: str, count: int) -> Any:
-        np = self._np
-        queue = self.queues[source_id]
-        out = np.zeros(count, dtype=np.float32)
-        filled = 0
-        while filled < count and queue:
-            chunk = queue[0]
-            take = min(count - filled, len(chunk))
-            out[filled : filled + take] = chunk[:take]
-            filled += take
-            if take == len(chunk):
-                queue.popleft()
-            else:
-                queue[0] = chunk[take:]
-        return out
-
-    def mix_block(self) -> bytes:
-        np = self._np
-        count = _BLOCK * 2
-        total = np.zeros(count, dtype=np.float32)
-        with self._lock:
-            for source_id, gain in self.gains.items():
-                total += self._take(source_id, count) * gain
-        if self.public_muted:
-            total[:] = 0
-        return np.clip(total, -32768, 32767).astype(np.int16).tobytes()
-
-    def start(self) -> None:
-        self._thread.start()
-
-    def _run(self) -> None:
-        period = _BLOCK / _RATE
-        next_at = time.perf_counter()
-        while not self._stop.is_set():
-            block = self.mix_block()
-            for output in list(self.outputs):
-                try:
-                    output(block)
-                except Exception:  # noqa: BLE001 - one broken output never stops the others
-                    logger.debug("Stream output failed", exc_info=True)
-            self.blocks += 1
-            next_at += period
-            delay = next_at - time.perf_counter()
-            if delay > 0:
-                self._stop.wait(delay)
-            else:
-                next_at = time.perf_counter()
-
-    def stop(self) -> None:
-        self._stop.set()
-        self._thread.join(2)
-
-
 class LiveStream:
     """One live show: sources, mixer, connection, saved copy, now-playing title."""
+
+    #: The first pause before a reconnect; it doubles up to 30 seconds.
+    _first_wait = 2.0
+    #: How often the connection is looked at.
+    _tick = 1.0
+    #: A half-speed link drops nothing for this long, while listeners fall behind.
+    _stream_queue_seconds = 30.0
+    #: Listeners this far behind are told about, once.
+    _lag_after_seconds = 5.0
+    #: The saved copy's queue: only a stalled disk could fill it.
+    _archive_queue_seconds = 120.0
 
     def __init__(
         self,
@@ -169,13 +114,31 @@ class LiveStream:
         self.started = 0.0
         self.reconnects = 0
         self.connected = False
+        #: True once the server has taken ACCEPTED_SECONDS on this connection.
+        self.on_air = False
+        #: Why the stream stopped for good, while the show (and saved copy) goes on.
+        self.ended = ""
+        self._ever_on_air = False
+        self._connected_at = 0.0
+        self._silence_said = False
+        #: Accepted seconds the current on-air count starts from (after a stall).
+        self._air_from = 0.0
+        self._last_accepted = 0.0
+        self._moved_at = 0.0
+        self._air_lock = threading.Lock()
+        self._progress = EncoderProgress()
+        self._reader: threading.Thread | None = None
         self._captures: list[Any] = []
         self._encoder: subprocess.Popen[bytes] | None = None
         self._archive: subprocess.Popen[bytes] | None = None
         self._socket: socket.socket | None = None
+        self._stream_out: BlockWriter | None = None
+        self._archive_out: BlockWriter | None = None
         self._stop = threading.Event()
         levels = {source.source_id: source.level_db for source in sources}
-        self.mixer = StreamMixer(levels, [self._to_encoder, self._to_archive])
+        # The microphone clocks the mix when it is in the stream (live_stream_mix).
+        reference = next((s.source_id for s in sources if s.kind == "microphone"), "")
+        self.mixer = StreamMixer(levels, [], reference=reference)
 
     # -- life -----------------------------------------------------------------------
 
@@ -198,8 +161,25 @@ class LiveStream:
             self.on_event(f"Left out of the stream: {problem}", True)
         if self.archive_path:
             self._archive = self._popen(self._archive_command(), stdout=False)
+            self._archive_out = BlockWriter(
+                "stream-archive-writer",
+                self._to_archive,
+                capacity=int(self._archive_queue_seconds / _BLOCK_SECONDS),
+                on_overflow=self._archive_overflow,
+            )
         self._connect()
-        self.started = time.time()
+        self._stream_out = BlockWriter(
+            "stream-encoder-writer",
+            self._to_encoder,
+            capacity=int(self._stream_queue_seconds / _BLOCK_SECONDS),
+            on_overflow=self._stream_overflow,
+            lag_after=self._lag_after_seconds,
+            on_lag=self._stream_lag,
+        )
+        self.mixer.outputs.append(self._stream_out.put)
+        if self._archive_out is not None:
+            self.mixer.outputs.append(self._archive_out.put)
+        self.started = time.monotonic()
         self.mixer.start()
         threading.Thread(target=self._watch, daemon=True, name="stream-watch").start()
 
@@ -240,13 +220,36 @@ class LiveStream:
 
     def _connect(self) -> None:
         command = stream_command(self.ffmpeg, self.settings, self._password)
+        # Progress as key=value lines on stderr: how much audio has gone out.
+        command[1:1] = ["-nostats", "-progress", "pipe:2"]
         shoutcast = self.settings.kind == "shoutcast"
         if shoutcast:
             self._socket = self._shoutcast_login()
-        self._encoder = self._popen(command, stdout=shoutcast)
-        if shoutcast:
-            threading.Thread(target=self._pump, daemon=True, name="shoutcast-pump").start()
+        progress = EncoderProgress()
+        with self._air_lock:
+            self._progress = progress
+            self.on_air = False
+            self._air_from = 0.0
+        encoder = self._popen(command, stdout=shoutcast)
+        self._encoder = encoder
+        self._reader = threading.Thread(
+            target=self._read_progress,
+            args=(encoder, progress),
+            daemon=True,
+            name="stream-progress",
+        )
+        self._reader.start()
+        # Connected before the pump starts, so a pump that ends at once is seen.
         self.connected = True
+        self._connected_at = time.monotonic()
+        self._silence_said = False
+        if shoutcast:
+            threading.Thread(
+                target=self._pump,
+                args=(encoder, self._socket, progress),
+                daemon=True,
+                name="shoutcast-pump",
+            ).start()
 
     def _shoutcast_login(self) -> socket.socket:
         login, headers = shoutcast_handshake(self.settings, self._password)
@@ -261,19 +264,43 @@ class LiveStream:
             reply = sock.recv(256).decode("utf-8", "replace")
             if not reply.startswith("OK"):
                 sock.close()
-                raise StreamingError(
-                    "The SHOUTcast server refused the password."
-                    if "invalid" in reply.lower()
-                    else f"The SHOUTcast server answered: {reply.strip() or 'nothing'}"
-                )
+                if "invalid" in reply.lower():
+                    raise StreamRefused("The SHOUTcast server refused the password.")
+                raise StreamingError(f"The SHOUTcast server answered: {reply.strip() or 'nothing'}")
             sock.sendall(headers)
             sock.settimeout(None)
             return sock
         except OSError as error:
             raise StreamingError(f"The SHOUTcast server could not be reached: {error}") from error
 
-    def _pump(self) -> None:
-        encoder, sock = self._encoder, self._socket
+    def _read_progress(self, encoder: Any, progress: EncoderProgress) -> None:
+        stream = encoder.stderr
+        if stream is None:
+            return
+        try:
+            for raw in iter(stream.readline, b""):
+                progress.feed(raw.decode("utf-8", "replace"))
+                if raw.startswith(b"progress="):
+                    self._check_on_air(progress)
+        except (OSError, ValueError):
+            pass
+
+    def _check_on_air(self, progress: EncoderProgress) -> None:
+        shoutcast = self.settings.kind == "shoutcast"
+        with self._air_lock:
+            if progress is not self._progress or self.on_air or self._stop.is_set():
+                return
+            accepted = progress.accepted_seconds(counted_bytes=shoutcast)
+            if accepted - self._air_from < ACCEPTED_SECONDS:
+                return
+            self.on_air = True
+            self._moved_at, self._last_accepted = time.monotonic(), accepted
+            sentence = BACK_ON_AIR if self._ever_on_air else ON_AIR
+            self._ever_on_air = True
+            self._silence_said = True  # this connection has carried sound
+        self.on_event(sentence, False)
+
+    def _pump(self, encoder: Any, sock: socket.socket | None, progress: EncoderProgress) -> None:
         if encoder is None or encoder.stdout is None or sock is None:
             return
         try:
@@ -282,23 +309,51 @@ class LiveStream:
                 if not chunk:
                     break
                 sock.sendall(chunk)
+                progress.sent_bytes += len(chunk)
+                self._check_on_air(progress)
         except OSError:
             pass
-        self.connected = False
+        if encoder is self._encoder:
+            self.connected = False
 
     def _to_encoder(self, block: bytes) -> None:
         encoder = self._encoder
         if encoder is not None and encoder.stdin is not None and encoder.poll() is None:
             encoder.stdin.write(block)
+            encoder.stdin.flush()
 
     def _to_archive(self, block: bytes) -> None:
         archive = self._archive
         if archive is not None and archive.stdin is not None and archive.poll() is None:
             archive.stdin.write(block)
+            archive.stdin.flush()
+
+    # -- said once ------------------------------------------------------------------
+
+    def _copy_note(self, sentence: str) -> str:
+        return f"{sentence} The saved copy continues." if self.archive_path else sentence
+
+    def _stream_overflow(self) -> None:
+        self.on_event(
+            self._copy_note(
+                "The connection is too slow for this quality, so listeners are losing sound."
+            ),
+            True,
+        )
+
+    def _stream_lag(self, backlog: float) -> None:
+        self.on_event(
+            f"The connection is slow: listeners are now {int(backlog)} seconds behind.", True
+        )
+
+    def _archive_overflow(self) -> None:
+        self.on_event("The saved copy cannot keep up with the disk and has lost some sound.", True)
+
+    # -- staying connected ----------------------------------------------------------
 
     def _watch(self) -> None:
-        wait = 2.0
-        while not self._stop.wait(1.0):
+        wait = self._first_wait
+        while not self._stop.wait(self._tick):
             encoder = self._encoder
             alive = (
                 encoder is not None
@@ -306,14 +361,25 @@ class LiveStream:
                 and (self.settings.kind != "shoutcast" or self.connected)
             )
             if alive:
-                wait = 2.0
+                if self.on_air:
+                    wait = self._first_wait
+                    self._check_still_moving()
+                elif (
+                    not self._silence_said
+                    and time.monotonic() - self._connected_at >= SILENT_CONNECTION_SECONDS
+                ):
+                    self._silence_said = True
+                    self.on_event("Connected, but the server has taken no sound yet.", True)
                 continue
+            refused = self._refused(encoder)
+            with self._air_lock:
+                self.on_air = False
             self.connected = False
+            if refused:
+                self._give_up(REFUSED)
+                return
             if self.reconnects >= self.settings.reconnect_tries:
-                self.on_event(
-                    "The stream could not reconnect and has stopped. The saved copy continues.",
-                    True,
-                )
+                self._give_up("The stream could not reconnect.")
                 return
             self.on_event(f"The stream dropped; trying again in {int(wait)} seconds.", True)
             self._close_connection()
@@ -323,25 +389,78 @@ class LiveStream:
             self.reconnects += 1
             try:
                 self._connect()
-                self.on_event("The stream is back on air.", False)
+            except StreamRefused as error:
+                self._give_up(str(error))
+                return
             except StreamingError as error:
                 self.on_event(str(error), True)
 
-    def _close_connection(self) -> None:
+    def _check_still_moving(self) -> None:
+        """On air means audio is moving: a server that stops taking it is off air.
+
+        The buffers between Studio and the server hold several seconds, so a
+        server that answers and then reads nothing looks on air until they fill;
+        after that the encoder's output stops advancing, and that is said once.
+        Two more seconds taken puts the show back on air.
+        """
+        shoutcast = self.settings.kind == "shoutcast"
+        now = time.monotonic()
+        with self._air_lock:
+            accepted = self._progress.accepted_seconds(counted_bytes=shoutcast)
+            if accepted > self._last_accepted:
+                self._moved_at, self._last_accepted = now, accepted
+                return
+            if now - self._moved_at < STALLED_SECONDS:
+                return
+            self.on_air = False
+            self._air_from = accepted
+        self.on_event("The server has stopped taking sound.", True)
+
+    def _refused(self, encoder: Any) -> bool:
+        """Whether the encoder that just ended said the server refused the login."""
+        if encoder is None:
+            return False
+        reader = self._reader
+        if reader is not None:
+            reader.join(1.0)  # its last words arrive just after it exits
+        return is_auth_refusal(self._progress.tail)
+
+    def _give_up(self, reason: str) -> None:
+        self.ended = reason
+        self._close_connection()
+        self.on_event(self._copy_note(f"{reason} The stream has stopped."), True)
+
+    def _close_connection(self, *, graceful: bool = False) -> None:
         encoder, self._encoder = self._encoder, None
         if encoder is not None:
-            try:
-                if encoder.stdin is not None:
-                    encoder.stdin.close()
-                encoder.wait(5)
-            except (OSError, subprocess.TimeoutExpired):
-                encoder.kill()
+            if graceful and encoder.poll() is None:
+                try:
+                    if encoder.stdin is not None:
+                        encoder.stdin.close()
+                    encoder.wait(5)
+                except (OSError, ValueError, subprocess.TimeoutExpired):
+                    encoder.kill()
+            else:
+                # The connection is gone: a writer may be blocked on this pipe,
+                # and ending the process is what frees it.
+                try:
+                    encoder.kill()
+                    encoder.wait(5)
+                except (OSError, subprocess.TimeoutExpired):
+                    pass
+                try:
+                    if encoder.stdin is not None:
+                        encoder.stdin.close()
+                except (OSError, ValueError):
+                    pass
         sock, self._socket = self._socket, None
         if sock is not None:
             try:
                 sock.close()
             except OSError:
                 pass
+        if self._stream_out is not None:
+            self._stream_out.clear()  # a new connection starts live, not late
 
     def set_public_muted(self, muted: bool) -> None:
         self.mixer.public_muted = muted
@@ -363,13 +482,29 @@ class LiveStream:
     def status_line(self) -> str:
         from quill.core.demo_recording import format_timestamp
 
-        state = "On air" if self.connected else "Reconnecting"
+        if self.ended:
+            state = "Stream stopped"
+        elif self.on_air:
+            state = "On air"
+        elif self.connected and self._air_from:
+            state = "Off air, the server is not taking sound"
+        else:
+            state = "Reconnecting" if self._ever_on_air else "Connecting"
         if self.mixer.public_muted:
             state += ", public sound muted"
-        parts = [f"{state}, {format_timestamp(time.time() - self.started)[:-2]}"]
+        elapsed = time.monotonic() - self.started if self.started else 0.0
+        parts = [f"{state}, {format_timestamp(elapsed)[:-2]}"]
         parts.append(f"{len(self._captures)} sound source{'s' if len(self._captures) != 1 else ''}")
         if self.reconnects:
             parts.append(f"{self.reconnects} reconnect{'s' if self.reconnects != 1 else ''}")
+        gaps, trims = self.mixer.gaps, self.mixer.trims
+        if gaps:
+            parts.append(f"{gaps} short gap{'s' if gaps != 1 else ''} in a source")
+        if trims:
+            parts.append(f"delay trimmed {trims} time{'s' if trims != 1 else ''}")
+        for writer, what in ((self._stream_out, "the stream"), (self._archive_out, "the copy")):
+            if writer is not None and writer.dropped:
+                parts.append(f"{writer.dropped * _BLOCK_SECONDS:.1f} seconds lost from {what}")
         if self.archive_path:
             parts.append("saving a copy")
         return "; ".join(parts) + "."
@@ -379,16 +514,23 @@ class LiveStream:
         self.mixer.stop()
         for capture in self._captures:
             capture.close()
-        self._close_connection()
+        stuck = False
+        if self._stream_out is not None:
+            stuck = not self._stream_out.close(drain=False, timeout=2)
+        self._close_connection(graceful=not stuck)
+        if self._archive_out is not None:
+            self._archive_out.close(drain=True, timeout=10)
         archive, self._archive = self._archive, None
         if archive is not None:
             try:
                 if archive.stdin is not None:
                     archive.stdin.close()
                 archive.wait(10)
-            except (OSError, subprocess.TimeoutExpired):
+            except (OSError, ValueError, subprocess.TimeoutExpired):
                 archive.kill()
         self.connected = False
+        with self._air_lock:
+            self.on_air = False
 
 
 def test_connection(settings: StreamSettings, password: str, ffmpeg: str) -> str:
@@ -428,6 +570,6 @@ def test_connection(settings: StreamSettings, password: str, ffmpeg: str) -> str
         return ""
     lines = (result.stderr or "").strip().splitlines()
     detail = lines[-1] if lines else f"exit code {result.returncode}"
-    if "401" in detail or "Unauthorized" in detail:
-        return "The server refused the user name or password."
+    if is_auth_refusal([detail]):
+        return REFUSED
     return f"The server did not accept the test: {detail}"

@@ -2671,8 +2671,10 @@ own sounds can never reach listeners.</p>
 <h3 id="a-saved-copy">A saved copy</h3>
 <p><strong>Save a copy of the show on this computer</strong> keeps a
 FLAC copy in <strong>Folder for the saved copy</strong>, even through a
-dropped connection. It is off by default: you decide each time, and the
-check reminds you when no copy is being saved.</p>
+dropped connection or a slow one. The copy has its own writer, so a slow
+upload can hold up only the stream, never the copy. It is off by
+default: you decide each time, and the check reminds you when no copy is
+being saved.</p>
 <h3 id="check-test-and-go-live">Check, test and go live</h3>
 <p>Press <strong>Check</strong>: you hear where the stream goes, what is
 in it, and every problem. A <strong>Stop</strong> blocks going live, for
@@ -2688,8 +2690,14 @@ both are put back afterwards.</p>
 <h3 id="while-you-are-live">While you are live</h3>
 <p>The <strong>Live broadcast</strong> window, which does not take
 focus, shows the <strong>Status</strong>: how long you have been live,
-whether you are connected, and how many times the stream has
-reconnected.</p>
+whether you are on air, and how many times the stream has reconnected.
+When there are any, it also shows short gaps in a source, delay trims,
+and seconds the stream lost to a slow connection.</p>
+<p>Studio says “On air” only once the server has taken 2 seconds of your
+sound, not when the connection opens, because a connection that carries
+nothing is not a broadcast. Until then the status says Connecting. If
+the server stops taking sound later, Studio says so once and the status
+says Off air.</p>
 <ul>
 <li><strong>Now playing</strong> and <strong>Update the title</strong>
 change the title listeners see, such as the name of the current
@@ -2707,9 +2715,16 @@ any program; Mute everything public is the one to have under your
 fingers.</p>
 <p>If the connection drops, Studio says so once and keeps trying: after
 2 seconds, then waiting twice as long each time up to 30 seconds, for up
-to 10 tries. The saved copy keeps recording throughout. If it cannot
-reconnect, it says so and stops the stream; the saved copy continues
-until you stop.</p>
+to 10 tries. “The stream is back on air” is said only once sound is
+reaching the server again. If the server refuses your user name or
+password, on any try, Studio stops trying and says why. The saved copy
+keeps recording throughout.</p>
+<p>If the connection is too slow for the quality, listeners fall behind
+first. Studio says once when they are 5 seconds behind. After about 30
+seconds behind, the stream starts losing sound, and Studio says that
+once too. The saved copy is not affected. Choose a lower quality. If it
+cannot reconnect, it says so and stops the stream; the saved copy
+continues until you stop.</p>
 <h3 id="worked-example-a-weekly-talk-show">Worked example: a weekly talk
 show</h3>
 <ol type="1">
