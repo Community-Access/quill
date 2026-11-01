@@ -26,7 +26,7 @@ This file is generated from quill/data/third_party/components.json by quill/tool
 
 ## Summary by licence
 
-- MIT License: 56 components
+- MIT License: 57 components
 - BSD 3-Clause License: 21 components
 - Apache License, version 2.0: 14 components
 - GNU General Public License, version 2: 7 components
@@ -1155,6 +1155,17 @@ Separate programs and engines for playing, recording and converting media.
 - **How it reaches you:** Bundled: it is inside the installer or the portable zip.
 - **What the licence asks of us:** Everything Apache-2.0 asks, and we may not sell the software itself. QUILL is free and never sold. The upstream NOTICE ships beside the program.
 - **Needs review:** The Commons Clause forbids selling the software. QUILL is free and never sold, and the upstream NOTICE grants royalty-free use for producing and streaming audio, so this fits today; it would block any paid edition.
+
+### TG Drop Deck (adapted code)
+
+- **What it is:** Studio's sound capture adapts two small pieces of Tony Gebhard's live-show deck: the check that a captured program is still running, and listing sound devices one at a time so one bad name cannot empty the list. Several other capture fixes follow lessons TG Drop Deck published.
+- **Included in:** QUILL Studio.
+- **Version:** 3.9.0
+- **Licence:** MIT
+- **Copyright:** Copyright (c) 2026 Tony Gebhard
+- **Upstream:** https://github.com/tonygeb23/tg-drop-deck
+- **How it reaches you:** Bundled: it is inside the installer or the portable zip.
+- **What the licence asks of us:** Keep the copyright notice and the permission notice with every copy.
 
 ## Speech and dictation
 
@@ -4710,7 +4721,7 @@ Library.
 
 ### MIT License
 
-Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, Git for Windows (MinGit) and GitHub CLI, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, pip, platform_utils, platformdirs, pydantic, pydantic-core, python-docx, python-pptx, python-sounddevice (with PortAudio), PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sherpa-onnx (with ONNX Runtime), sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, Deno (deno.exe), Dictation models: Moonshine tiny (English), Whisper tiny.en and tiny (ONNX), Silero VAD, Kokoro-82M voices and kokoro-onnx, MathCAT, Piper text-to-speech engine, Whisper models (GGML format), whisper.cpp, Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), App icons, Page-turn sound (quill/assets/audio/page_turn.wav), QUILL sound packs (Ink and the indent-tone packs), Weather alert sound (quill/assets/audio/weather_alert.wav), Test and lint tools (pytest, ruff, mypy and their plugins).
+Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, Git for Windows (MinGit) and GitHub CLI, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, pip, platform_utils, platformdirs, pydantic, pydantic-core, python-docx, python-pptx, python-sounddevice (with PortAudio), PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sherpa-onnx (with ONNX Runtime), sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, Deno (deno.exe), TG Drop Deck (adapted code), Dictation models: Moonshine tiny (English), Whisper tiny.en and tiny (ONNX), Silero VAD, Kokoro-82M voices and kokoro-onnx, MathCAT, Piper text-to-speech engine, Whisper models (GGML format), whisper.cpp, Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), App icons, Page-turn sound (quill/assets/audio/page_turn.wav), QUILL sound packs (Ink and the indent-tone packs), Weather alert sound (quill/assets/audio/weather_alert.wav), Test and lint tools (pytest, ruff, mypy and their plugins).
 
 What it asks of us: Keep the copyright notice and the permission notice with every copy.
 

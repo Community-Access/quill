@@ -14,7 +14,7 @@ This file is generated from quill/data/third_party/components.json by quill/tool
 Summary by licence
 ------------------
 
-  MIT License: 50 components
+  MIT License: 51 components
   BSD 3-Clause License: 21 components
   Apache License, version 2.0: 11 components
   Python Software Foundation License, version 2: 6 components
@@ -1057,6 +1057,17 @@ Copyright: Copyright (c) the mpv developers; Copyright (c) 2000-2026 the FFmpeg 
 Upstream: https://mpv.io/
 How it reaches you: Bundled: it is inside the installer or the portable zip.
 What the licence asks of us: Ship the licence text. Provide the complete corresponding source of the component, or a written offer for it, for as long as we distribute it (and at least three years). Any program that is a derivative work must also be offered under GPL-3.0-compatible terms.
+
+TG Drop Deck (adapted code)
+---------------------------
+
+What it is: Studio's sound capture adapts two small pieces of Tony Gebhard's live-show deck: the check that a captured program is still running, and listing sound devices one at a time so one bad name cannot empty the list. Several other capture fixes follow lessons TG Drop Deck published.
+Version: 3.9.0
+Licence: MIT
+Copyright: Copyright (c) 2026 Tony Gebhard
+Upstream: https://github.com/tonygeb23/tg-drop-deck
+How it reaches you: Bundled: it is inside the installer or the portable zip.
+What the licence asks of us: Keep the copyright notice and the permission notice with every copy.
 
 SPEECH AND DICTATION
 ====================
@@ -4207,7 +4218,7 @@ Library.
 MIT License
 -----------
 
-Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, pip, platform_utils, platformdirs, pydantic, pydantic-core, python-docx, python-pptx, python-sounddevice (with PortAudio), PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, Kokoro-82M voices and kokoro-onnx, Piper text-to-speech engine, Whisper models (GGML format), whisper.cpp, Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), App icons, Page-turn sound (quill/assets/audio/page_turn.wav), QUILL sound packs (Ink and the indent-tone packs), Weather alert sound (quill/assets/audio/weather_alert.wav).
+Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, pip, platform_utils, platformdirs, pydantic, pydantic-core, python-docx, python-pptx, python-sounddevice (with PortAudio), PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, TG Drop Deck (adapted code), Kokoro-82M voices and kokoro-onnx, Piper text-to-speech engine, Whisper models (GGML format), whisper.cpp, Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), App icons, Page-turn sound (quill/assets/audio/page_turn.wav), QUILL sound packs (Ink and the indent-tone packs), Weather alert sound (quill/assets/audio/weather_alert.wav).
 
 What it asks of us: Keep the copyright notice and the permission notice with every copy.
 

@@ -29,6 +29,7 @@ from quill.core.demo_recording_session import (
     SessionRecord,
     markers_from_session,
     plan_from_dict,
+    source_timing_summary,
 )
 from quill.core.demo_recording_verify import (
     ProbeResult,
@@ -167,6 +168,9 @@ def finalize(
     levels = _levels(stems, labels)
     verification = verify(
         final, plan, expected, levels, markers, ffmpeg=ffmpeg, ffprobe=ffprobe, dropped=dropped
+    )
+    verification.source_timing = source_timing_summary(
+        session.segments, {key: source.label for key, source in labels.items()}
     )
     if plan.keep_stems:
         _write_stems(ffmpeg, final, stems, labels)

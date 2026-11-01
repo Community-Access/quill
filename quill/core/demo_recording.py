@@ -74,6 +74,11 @@ class DemoRecordingError(CodedError):
     code = "QUILL-STUDIO-RECORD-FAILED"
 
 
+#: The microphone channel choice (MX-185), as shown -> as saved. Both mixed
+#: comes first because it is the default for a device with two inputs.
+MIC_CHANNEL_LABELS = {"Both inputs mixed": "mix", "Input 1 only": "1", "Input 2 only": "2"}
+
+
 @dataclass(frozen=True)
 class SoundSource:
     """One row of the Sound sources list.
@@ -95,6 +100,12 @@ class SoundSource:
     #: screen reader by default), using process-loopback exclude mode.
     exclude_process_id: int = 0
     exclude_name: str = ""
+    #: Microphone only: the Windows capture endpoint ID saved with ``device``,
+    #: so the same device is found first by identity, then by name (MX-114).
+    endpoint_id: str = ""
+    #: Microphone only: ``"mix"`` (both inputs mixed, the default), ``"1"`` or
+    #: ``"2"`` -- which input of a two-input interface is recorded (MX-185).
+    channel_mode: str = "mix"
 
     def spoken(self) -> str:
         level = "" if abs(self.level_db) < 0.05 else f", level {self.level_db:+.0f} dB"
@@ -220,6 +231,8 @@ class PreflightFacts:
     digital_silence: tuple[str, ...] = ()
     #: source_ids that were open and simply quiet.
     quiet: tuple[str, ...] = ()
+    #: source_id -> a sentence when one channel is over 30 dB below the other (REC-021).
+    one_ear: dict[str, str] = field(default_factory=dict)
     microphone_holder: str = ""
     ffmpeg_found: bool = True
     h264_encoder: str = "libx264"

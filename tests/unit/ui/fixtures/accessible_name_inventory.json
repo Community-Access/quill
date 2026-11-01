@@ -1158,6 +1158,7 @@
   "quill/ui/studio_capture_options.py::CaptureOptionsMixin._build_capture_options::wx.TextCtrl": "named",
   "quill/ui/studio_demo_camera.py::CameraCheckDialog.__init__::wx.TextCtrl": "named",
   "quill/ui/studio_demo_dialog.py::RecordDemoDialog.__init__::wx.Choice": "named",
+  "quill/ui/studio_demo_dialog.py::RecordDemoDialog.__init__::wx.Choice#10": "named",
   "quill/ui/studio_demo_dialog.py::RecordDemoDialog.__init__::wx.Choice#2": "named",
   "quill/ui/studio_demo_dialog.py::RecordDemoDialog.__init__::wx.Choice#3": "named",
   "quill/ui/studio_demo_dialog.py::RecordDemoDialog.__init__::wx.Choice#4": "named",
