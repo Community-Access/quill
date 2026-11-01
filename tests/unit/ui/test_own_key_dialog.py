@@ -172,7 +172,8 @@ def test_switching_to_a_keyed_hub_provider_turns_the_key_back_on(
         dialog._on_provider(None)
         assert dialog.key.IsEnabled() and not dialog.host.IsEnabled()
         assert dialog.key_label.GetLabel() == "Anthropic Claude API &key:"
-        assert "console.anthropic.com" in dialog.about.GetValue()
+        words = {w.strip(".,;:()") for w in dialog.about.GetValue().split()}
+        assert "console.anthropic.com" in words  # a whole word, not a substring
         assert dialog.test.GetLabel() == "Test the Ke&y"
     finally:
         dialog.Destroy()
