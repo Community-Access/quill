@@ -1,31 +1,88 @@
 # QUILL Lite 2.0
 
-*Version 2.0.0 (build 1), the beta for testers, October 2026. 2.0.0 is not
-yet published; the last published version is 1.1.2.*
+*Version 2.0.0, November 2026. Now in testing as 2.0.0 (build 1); the last
+published version is 1.1.2.*
 
-*This release was prepared as 1.2.0 on October 3, 2026 and tested under that
-number through six builds. It was renumbered 2.0.0 on October 31, 2026, so
-the sections below that name a 1.2.0 build describe those testing builds.*
+Welcome to QUILL Lite 2.0, the first release since 1.1.2, and the biggest one
+yet. Here is what is new.
 
-Welcome to QUILL Lite 2.0. This is the release about words. QUILL Lite now has
-a thesaurus that finds the word you are really on, a dictionary that works
-without AI, and an AI dictionary that reads your word in its own sentence and
-tells you whether it is the right one.
-
-It is also the release about knowing what happened. QUILL Lite keeps a list of
-everything it has told you, F9 says the last important thing again, and if
-something goes wrong while you are busy elsewhere, it waits for you rather
-than slipping past.
-
-And it is the release where you choose your AI. QUILL's free AI is still there
-for everyone, and now your ChatGPT plan, your GitHub Copilot, Codex and your
-own key sit beside it in one window.
+- **Choose Your AI.** QUILL's free AI is still there for everyone, and now
+  your ChatGPT plan, your GitHub Copilot, Codex and your own key sit beside it
+  in one window. Copilot and Codex can take on a job with several steps.
+- **Words.** A thesaurus that finds the word you are really on, a dictionary
+  that works without AI, and an AI dictionary that reads your word in its own
+  sentence and tells you whether it is the right one.
+- **Tables in every kind of document**, read cell by cell and changed from the
+  keyboard.
+- **Knowing what happened.** QUILL Lite keeps a list of everything it has told
+  you, F9 says the last important thing again, and if something goes wrong
+  while you are busy elsewhere, it waits for you rather than slipping past.
+- **Dictation** that keeps up with you, works in Spanish, and lets you edit by
+  voice, and **transcription** of a recording into text.
+- **Spell check that reads only what you wrote**, not web addresses, file
+  names or code.
+- **Word documents** that open and save as Word, and PDFs opened as text.
+- **Find in Open Documents** and folder search, across everything at once.
 
 Everything works from the keyboard and tells you how it went, the way the rest
 of QUILL Lite does.
 
+## Try this first
 
-## New in 2.0.0: Choose Your AI, with GitHub Copilot and Codex
+1. Put the cursor on a word you are not happy with and press **Shift+F7**.
+   Arrow through the meanings, press **Tab** to reach the words, and press
+   **Enter** on one you like. It goes into your sentence in the right form.
+2. On another word, press the **Applications** key. You find two new
+   submenus, **Thesaurus for** that word and **Dictionary for** that word.
+3. Press **Alt+F10** for **Look Up Word**. It works without the internet, and
+   tells you more if you let it go online.
+4. Press **Ctrl+,** for Preferences and type "spelling" in **Find a setting**.
+   Press Down, then Enter, and you are on that setting.
+5. Press **Shift+F9** for **Activity**, the list of everything QUILL Lite has
+   told you since you opened it. Press **F9** any time to hear the last
+   important thing again.
+
+## If you already use QUILL Lite
+
+Your settings, recent
+files and recovered work come with you exactly as they are, and **Help >
+Check for Updates** (**Ctrl+Alt+U**) offers 2.0.0 like any other update.
+
+**If you use the portable QUILL Lite 1.1.2, update by hand this time.** In
+that copy, **Install and restart now** can delete everything in its `data`
+folder: your settings, keys and recovered work. The fault is in the updater
+inside 1.1.2, so 2.0.0 cannot fix it for you; 2.0.0 carries a fixed one. An
+installed copy is not affected. Instead of Install and restart now:
+
+1. Close QUILL Lite.
+2. Copy the `data` folder next to `QuillLite.exe` somewhere safe.
+3. Download the new `QuillLite-Portable` zip and unzip it into a new folder
+   next to the old one, not on top of it.
+4. Copy everything from your saved `data` folder into the new folder's `data`
+   folder, and choose to replace files with the same name.
+5. Start the new copy, check **Help > About** and your settings, then delete
+   the old folder when you are sure.
+
+If your settings are already gone, QUILL Lite cannot bring them back; look for
+a backup or your computer's File History.
+
+Some keys have moved:
+
+- **Tools > Keyboard Manager** is now **Ctrl+Alt+Shift+Space**. Its old key,
+  Ctrl+Alt+Shift+R, shows and hides Quill Radio from anywhere, so while Quill
+  Radio was running the Keyboard Manager never opened. QUILL moved its
+  Keyboard Manager to the same key, so the two still match.
+- **Trim Trailing Spaces** is now **Ctrl+Alt+R**, as in QUILL; **Ctrl+Alt+T** is
+  Insert Table.
+- **Remove Quote Marks** is now **Alt+Shift+.** (the period), and
+  **Snippets** is **Ctrl+Alt+Shift+Home**.
+- **Collect Selection** is now **Alt+Shift+C**; **Alt+Shift+S** is the
+  clipboard collector, as in QUILL.
+- **Alt+Shift+1** to **Alt+Shift+8** reopen your first eight recent files, and
+  **Alt+Shift+9** is always **AutoCorrect Entries**. The ninth file is in
+  **File > Recent Documents** (**Alt+Shift+0**).
+
+## Choose Your AI, with GitHub Copilot and Codex
 
 - **Choose Your AI** (**Ctrl+4**, Tools > AI). One window lists where your AI
   can come from: QUILL's free AI, your ChatGPT plan, your GitHub Copilot,
@@ -58,36 +115,125 @@ of QUILL Lite does.
 
 See "Choose Your AI" and "Do a Document Task" in the user guide.
 
-## New in 2.0.0 (build 1): spell check that reads what you wrote
+## AI help
 
-- **Spell check skips web addresses, email addresses, file paths and file
-  names**, so `www.example.com` is no longer three misspellings. The file's
-  extension picks what is read: everything in plain text, the writing but
-  not the code or link addresses in Markdown, the text and the readable
-  attributes in a web page or XML file, and only the strings and comments in
-  code, in over sixty kinds of source and settings file from Python and
-  JavaScript to PowerShell, SQL and JSON. Suggested by Chris Nova of Mystic
-  Access. See "What spell check reads" in the user guide.
-- **The recovery window quotes how each document begins**, so you can tell
-  which piece of work is which.
-- **Sharp text at any display scaling.** QUILL Lite handles each monitor's
-  scaling itself, so text stays sharp at 150 and 200 percent and on mixed
-  monitors. See "Text looks blurry, or a window is the wrong size".
-- **A spoken name for the profile description** in Preferences.
-- **The shared runtime under the hood.** Windows OCR now uses PyWinRT 4.0.3
-  and the Windows SDK 10.0.28000.2705 projections. Reading a scanned page works
-  as before; nothing new is added to OCR.
-- **Licensing of the shared runtime.** The installed QUILL Lite uses the
-  QuillVille Runtime, which currently includes PyMuPDF 1.28.2 under AGPL-3.0
-  through GLOW. QUILL Lite does not itself expose GLOW. The source and legal
-  review for this release is still open, and the portable package is checked
-  separately. The Licences and Notices button in Help > About has the details.
+- **Asked before switching AI.** If your own key or ChatGPT sign-in stops
+  working, QUILL Lite asks before sending anything to QUILL's free AI instead,
+  and No sends nothing. See "If the AI you use is not available".
+- **The AI tries again when it is busy.** A busy or timed-out answer is tried
+  up to three times, quietly. See "When the AI service is busy".
+- **Answers read as words.** Answers are read without Markdown symbols, so no
+  "star star". What goes into your document is the answer exactly as it came.
+  See "How answers are read aloud".
+- **Keep some words of a change.** In Review AI Changes, **Words in this
+  change** lets you drop single word edits and keep the rest. See "Keeping
+  some words of a change and not others".
+- **Go back over a conversation.** In the AI Conversation window, **Alt+1** to
+  **Alt+0** read the newest ten messages, **Messages...** lists them all, and
+  **Export Conversation...** saves it as a Word document or text file.
+  Conversations are saved as you go, and **Saved Conversations** opens one
+  again. See "Going back over a conversation".
+- **Prompt Library, the Chat Key and web search.** **Prompt Library**
+  (**Ctrl+7**) is QUILL's library of prompts. **Ask AI a Question**
+  (**Ctrl+6**) opens straight on a question. On the free AI, **Search the
+  web** gives ten searches a month, and **Web Searches Left** (**Ctrl+9**) says
+  how many remain. The AI Assistant can put the answer in its window, at the
+  cursor, or on the clipboard, and QUILL's free service can add new tools
+  without an update.
 
-## New in 1.2.0 build 6: tables in every document
+### AI help with a Google Gemini key
 
-Build 6 keeps everything from build 5, below, and adds tables, Help > What's
-New and a full menu bar when every document is closed. It is the same work as
-in QUILL, on the same keys.
+**Use My Own AI Key** (**Alt+F2**), which used to be called Use My Own OpenAI
+Key, now opens on a **Provider** list: OpenAI or Google Gemini. Choose one,
+paste that company's key, and everything follows your choice: where your text
+goes, which models you can pick, and what they cost. QUILL Lite never guesses
+from the key or the model name.
+
+You can keep both keys saved and switch with the Provider list. With a Gemini
+key, **Ask About an Image** (**Ctrl+F5**) works too, and so do the AI
+dictionary and Tidy Dictated Text.
+
+If you use your ChatGPT plan in more than one Quill app, each app now keeps
+its own sign-in. Signing out of one leaves the others signed in, and **Use My
+ChatGPT Subscription** (**Alt+F5**) tells you when another app on this
+computer is already signed in, so signing in here is one Allow in your
+browser.
+
+## Finding the right word
+
+### The thesaurus
+
+Press **Shift+F7**, the same key as in Word and QUILL, or choose
+**Tools > Thesaurus**. It opens on the word you are on.
+
+A thesaurus lists plain forms of words, *run* rather than *running*. QUILL
+Lite works your word back for you, so "running" finds "run", "happier" finds
+"happy" and "stopped" finds "stop", and it tells you so. Then it puts your
+choice back in the form your sentence needs. Choose *sprint* for *running* and
+you get *sprinting*. Choose *glad* for *Happier* and you get *More glad*,
+capital letter and all.
+
+It is the same thesaurus QUILL uses, and it comes inside QUILL Lite. Nothing
+is downloaded and nothing is sent anywhere.
+
+Want the short version without a window? **Say Word Summary**
+(**Ctrl+Alt+Shift+[**) tells you what the thesaurus knows about a word: how
+many meanings it has, the first few replacements, and its opposites.
+
+### Look Up, the dictionary without AI
+
+Press **Alt+F10**, or choose **Tools > Look Up Word**. Offline, you get
+synonyms, opposites and related words from the word list inside QUILL Lite.
+
+Check **Use online sources** and you also get definitions with examples, more
+words, rhymes and a short Wikipedia summary. Only the word is sent, never your
+sentence or your document, and only after you check the box. QUILL Lite
+remembers your choice.
+
+Press **Enter** on a word to put it in place of yours. **Add to Dictionary**
+teaches a word to your spell checker.
+
+### The AI dictionary
+
+A thesaurus knows every meaning of *bank*. It cannot tell which one your
+sentence means. **Tools > Dictionary** can, because it sends the word and the
+sentence it is in (never the rest of your document) and answers in plain words
+written to be listened to.
+
+There are twelve questions to ask, each with a key of its own:
+
+- **Define in Context** (**Ctrl+Alt+Shift+'**) says what the word means here.
+- **Synonyms That Fit**, **Simpler Word**, **More Formal Word** and **More
+  Vivid Word** offer replacements that suit this sentence.
+- **Is This the Right Word?** settles affect or effect, complement or
+  compliment.
+- **Opposites**, **Use It in a Sentence**, **Where It Comes From**, **How to
+  Say It** and **Rhymes** do just what they say.
+- **Word Explorer** (**Ctrl+F10**) does them all at once.
+- **Find the Word For** (**Ctrl+Alt+Shift+]**) is the other way round: you
+  describe the meaning, and it suggests the word you are reaching for.
+
+When an answer offers words, Tab to **Choices** and press Enter, or choose
+**Use This Word**. It goes into your document as one step, and one Ctrl+Z
+takes it back.
+
+The AI dictionary needs your ChatGPT subscription or your own AI key. It does
+not use QUILL's free AI service, because a dictionary gets asked many times a
+day and would use up the free allowance quickly.
+
+### Checking your word lists
+
+**Tools > Spelling > Dictionary Status** (**Alt+Shift+;**) tells you how many
+words your personal dictionary and this document's own list hold, where each
+file is kept, and whether the thesaurus is there.
+
+If you would rather not have any of this, turn off **Dictionary and
+thesaurus** in **Tools > Customize Features** (**Ctrl+Alt+F10**). It is on to begin with, and off
+in the WordPad and Notepad profiles.
+
+## Tables in every document
+
+The same table work as in QUILL, on the same keys.
 
 ### Making a table
 
@@ -128,41 +274,32 @@ in QUILL, on the same keys.
   them.
 - A blank row is no longer skipped by the table keys.
 
-### Menus and help
+## Spell check, recovery and sharp text
 
-- **Pinned to the taskbar, QUILL Lite opens as itself.** Reported on
-  QUILLVille: QUILL Lite pinned to the taskbar from its running window asked
-  "Several QuillVille apps are installed. Which one do you want to open?",
-  and the copy it then opened ignored your settings and said its speech
-  engines were not included. Windows had pinned the shared QuillVille runtime
-  instead of QUILL Lite. QUILL Lite's shortcuts now carry its own taskbar
-  identity, so a new pin opens QUILL Lite through its own launcher, like the
-  desktop icon. An older pin still asks once which app you want, then opens
-  it the same proper way. To replace an old pin, unpin it and pin QUILL Lite
-  again after you update. Every QuillVille app has the same fix.
-- **Help > What's New** opens the changelog in your browser. It has no key:
-  press **Alt+H**, then **W**. Every QUILL family app has the same item.
-- **A full menu bar with every document closed.** Close the last document and
-  the window still has **File** (New, Open, Recent Documents, Reopen Last
-  Session and Exit), **Tools** (Preferences, the Keyboard Manager, the Sound
-  Scheme, and backing up and restoring settings) and **Help**, on the same
-  keys as a document window.
+- **Spell check skips web addresses, email addresses, file paths and file
+  names**, so `www.example.com` is no longer three misspellings. The file's
+  extension picks what is read: everything in plain text, the writing but
+  not the code or link addresses in Markdown, the text and the readable
+  attributes in a web page or XML file, and only the strings and comments in
+  code, in over sixty kinds of source and settings file from Python and
+  JavaScript to PowerShell, SQL and JSON. Suggested by Chris Nova of Mystic
+  Access. See "What spell check reads" in the user guide.
+- **The recovery window quotes how each document begins**, so you can tell
+  which piece of work is which.
+- **Sharp text at any display scaling.** QUILL Lite handles each monitor's
+  scaling itself, so text stays sharp at 150 and 200 percent and on mixed
+  monitors. See "Text looks blurry, or a window is the wrong size".
+- **A spoken name for the profile description** in Preferences.
+- **The shared runtime under the hood.** Windows OCR now uses PyWinRT 4.0.3
+  and the Windows SDK 10.0.28000.2705 projections. Reading a scanned page works
+  as before; nothing new is added to OCR.
+- **Licensing of the shared runtime.** The installed QUILL Lite uses the
+  QuillVille Runtime, which currently includes PyMuPDF 1.28.2 under AGPL-3.0
+  through GLOW. QUILL Lite does not itself expose GLOW. The source and legal
+  review for this release is still open, and the portable package is checked
+  separately. The Licences and Notices button in Help > About has the details.
 
-## New in 1.2.0 build 5: Find in Open Documents, folder search and the clipboard collector
-
-Press **Ctrl+Alt+Shift+F8** to find and replace across every document you have open, not just the one in front of you. It searches what is in each window right now, including changes you have not saved and documents you have never saved. Find Next moves from document to document and tells you each one's name, Find All lists every match, and Replace All tells you how many it found before it changes anything, lets you undo each document on its own, and saves nothing. Afterwards, F3 keeps searching across your documents until you start an ordinary Find. QUILL has it too, on Ctrl+Shift+F10. Thanks to Chris Nova for asking.
-
-QUILL Lite also has QUILL's folder search now: **Search in Files** (**Ctrl+Alt+Shift+F**) and **Replace Across Files** (**Ctrl+Shift+R**), on the **Edit** menu itself, just below **Replace...** and Find in Open Documents. They search, or change, every file in a folder without opening them, and Replace Across Files shows you every change and asks first. **Edit > Matches** keeps All Matches and Count Occurrences, the two about the document in front of you.
-
-And QUILL Lite now has QUILL's **clipboard collector**. Press **Alt+Shift+S** in a window and everything you copy, in any program, lands at the end of it, until you press **Alt+Shift+S** again. Collect Selection, which used that key, is now on **Alt+Shift+C**.
-
-## Testing rebuild: 1.2.0 (build 5)
-
-Build 5 keeps everything from build 4, below,
-and adds Find in Open Documents, folder search and the clipboard collector
-above, plus everything in this section.
-
-### Word documents, PDFs and other files
+## Word documents, PDFs and other files
 
 - **Edit Word documents.** A `.docx` now opens as rich text, and **Ctrl+S**
   saves it as a real Word document. Headings, lists, bold, italic, fonts,
@@ -212,7 +349,37 @@ above, plus everything in this section.
   when Tesseract is not installed, instead of stopping with a message about
   installing it.
 
-### Writing and editing
+## Opening a document however it arrives
+
+Copy a file in File Explorer, a path from a chat or a link from an email, then
+press **Ctrl+Alt+Shift+Enter** (**File > Open from Clipboard**). QUILL Lite
+opens it. **File > Open from URL...** asks before it downloads anything,
+naming the website and the size, and shows you how the download is going. You
+can also drag files onto the window to open them.
+
+## Careful with your files
+
+- An older file that is not UTF-8 now keeps every byte when you save it. Before
+  2.0, five rare characters in such a file could be lost. QUILL Lite also tells
+  you, once, when a file is not UTF-8.
+- If an old file's letters come out wrong, **Reopen with Encoding...** in the
+  File Encoding and Line Endings window (**Ctrl+Alt+E**) reads it again in the
+  encoding you choose.
+- If another program changed your file since you opened it, **Ctrl+S** asks
+  before writing over that change.
+- QUILL Lite now notices that change as it happens, not only when you save.
+  If you have not touched the document, it can reload it for you, keeping
+  your cursor on the same line, and tell you once. Otherwise it asks: **Keep
+  Mine**, **Reload from Disk** or **Save As...**, with Keep Mine on Enter. A
+  file deleted or moved away is said once, and your text stays. The settings
+  are in Preferences under **When another program changes the file**, the same
+  ones QUILL has. A remembered Reload never throws away unsaved edits; QUILL
+  Lite asks instead.
+
+These ideas come from **PlanCake**, a small app by Andre of Oire Software for
+reviewing AI-written plans. Thank you, Andre.
+
+## Writing and editing
 
 - **AutoCorrect.** Check **Correct common misspellings as I type** in
   Preferences, and a space or Enter after a misspelling such as "teh" puts the
@@ -245,6 +412,98 @@ above, plus everything in this section.
 - **Every Alt key in Preferences works.** No two controls share an Alt letter
   any more.
 
+### Notes on your document
+
+QUILL Lite now has **inline notes**, the same ones QUILL has, on the same keys.
+A note is a comment on a line or a selection: a question, a reminder, or what
+you think of a plan somebody sent you. They are on **Tools > Inline Notes**.
+
+- **Alt+Shift+I** adds a note. The window shows the start of the text it is on,
+  so you know you are in the right place.
+- **Alt+Shift+J** and **Alt+Shift+K** move to the next and previous note, and
+  **Alt+Shift+H** reads the one you are on (twice to change it).
+- **Alt+Shift+Delete** deletes a note, after asking.
+- **Alt+Shift+Enter** lists every note in the document. From there you can go
+  to one, change or delete it, remove them all, copy them all, or save them as
+  a Markdown or JSON file.
+
+Notes are private unless you say otherwise. In a Markdown or HTML document you
+can write a note **into the file** instead, as a hidden comment that anyone who
+opens the file can read, including an AI assistant. That makes QUILL Lite a
+good way to review a plan an AI wrote: leave your notes in it and hand the file
+back. A script can then list or clear them with `QuillLite.exe --notes`.
+
+**Snippets** moved to **Ctrl+Alt+Shift+Home** to make room for the notes on
+the same keys as QUILL. Alt+Shift+I is now Add Inline Note.
+
+### Checking off tasks
+
+Put the cursor on a task line, such as `- [ ] Write the tests`, and press
+**Ctrl+Alt+Enter** (**Format > Toggle Task Done**). The box is checked and you
+hear how many tasks in the list are done. Press it again to uncheck, or select
+several tasks to check them together. **Ctrl+Z** takes it back.
+
+### A web page you can share
+
+**File > Export as HTML...** (**Ctrl+Alt+Shift+End**) saves a copy of your
+document as one web page, ready to email or put on a website. Task lists
+show as check boxes. Your document stays as it was.
+
+## Find in Open Documents, folder search and the clipboard collector
+
+Press **Ctrl+Alt+Shift+F8** to find and replace across every document you have open, not just the one in front of you. It searches what is in each window right now, including changes you have not saved and documents you have never saved. Find Next moves from document to document and tells you each one's name, Find All lists every match, and Replace All tells you how many it found before it changes anything, lets you undo each document on its own, and saves nothing. Afterwards, F3 keeps searching across your documents until you start an ordinary Find. QUILL has it too, on Ctrl+Shift+F10. Thanks to Chris Nova for asking.
+
+QUILL Lite also has QUILL's folder search now: **Search in Files** (**Ctrl+Alt+Shift+F**) and **Replace Across Files** (**Ctrl+Shift+R**), on the **Edit** menu itself, just below **Replace...** and Find in Open Documents. They search, or change, every file in a folder without opening them, and Replace Across Files shows you every change and asks first. **Edit > Matches** keeps All Matches and Count Occurrences, the two about the document in front of you.
+
+And QUILL Lite now has QUILL's **clipboard collector**. Press **Alt+Shift+S** in a window and everything you copy, in any program, lands at the end of it, until you press **Alt+Shift+S** again. Collect Selection, which used that key, is now on **Alt+Shift+C**.
+
+### Your recent documents, one key away
+
+New: press **Alt+Shift+0** (or choose **File > Recent Documents...**) to see
+every document you opened recently, newest first, and press Enter on the one
+you want. The list was always there, under **File > Open Recent**, but it was
+easy to miss. Now it has a key and a window of its own.
+
+- **Pin** the documents you come back to, and they stay at the top however many
+  others you open.
+- **Remove from List** takes one off. The file is not touched.
+- **Open Containing Folder** shows the file in File Explorer.
+- **Clear Unpinned...** empties the list after asking. Pinned documents stay.
+- Choose how many documents to remember, from 1 to 50, and whether files
+  deleted from this computer drop off by themselves.
+
+**Alt+Shift+1** to **Alt+Shift+8** reopen the first eight straight away,
+and pinned documents now come first there too. QUILL has the same window on
+the same key, and the same quick keys on its Open Recent menu. The user
+guide's "Opening something you worked on recently" has the details.
+
+## Knowing what happened
+
+### Activity and Repeat Last Result
+
+**Help > Activity** (**Shift+F9**) lists everything QUILL Lite has told you
+since you opened it, newest first. Each row offers what you can do about it:
+
+- **Retry** tries the same thing again.
+- **Open Folder** shows you the file in File Explorer.
+- **Copy Details** copies the row, ready to paste into a message to support.
+
+If work finishes after you closed the window that started it, the result
+lands here instead of being lost. A large file you opened while you were busy
+elsewhere is here too, as Opened or Could not open.
+
+**Help > Repeat Last Result** (**F9**) says the last important thing again.
+That is QUILL Lite's own last message, not the last thing your screen reader
+read. Both keys do the same in QUILL, Quill Radio and QUILL Cast.
+
+### When your settings cannot be saved
+
+Sometimes Windows will not let QUILL Lite save your settings, perhaps because
+the disk is full. Now you are told once, with the reason. Your choices keep
+working for the rest of the session, the warning stays in the status bar's
+Message cell, and Activity offers Retry. When a later save works, you hear
+that too. Preferences no longer says "saved" when it was not.
+
 ### Sounds, speech and braille
 
 - **App Sounds and Alt+Shift+M.** The **App Sounds Play On...** button in
@@ -264,33 +523,7 @@ above, plus everything in this section.
   replacing each other faster than you can read. Speech is unchanged. See "On
   a braille display".
 
-### AI help
-
-- **Asked before switching AI.** If your own key or ChatGPT sign-in stops
-  working, QUILL Lite asks before sending anything to QUILL's free AI instead,
-  and No sends nothing. See "If the AI you use is not available".
-- **The AI tries again when it is busy.** A busy or timed-out answer is tried
-  up to three times, quietly. See "When the AI service is busy".
-- **Answers read as words.** Answers are read without Markdown symbols, so no
-  "star star". What goes into your document is the answer exactly as it came.
-  See "How answers are read aloud".
-- **Keep some words of a change.** In Review AI Changes, **Words in this
-  change** lets you drop single word edits and keep the rest. See "Keeping
-  some words of a change and not others".
-- **Go back over a conversation.** In the AI Conversation window, **Alt+1** to
-  **Alt+0** read the newest ten messages, **Messages...** lists them all, and
-  **Export Conversation...** saves it as a Word document or text file.
-  Conversations are saved as you go, and **Saved Conversations** opens one
-  again. See "Going back over a conversation".
-- **Prompt Library, the Chat Key and web search.** **Prompt Library**
-  (**Ctrl+7**) is QUILL's library of prompts. **Ask AI a Question**
-  (**Ctrl+6**) opens straight on a question. On the free AI, **Search the
-  web** gives ten searches a month, and **Web Searches Left** (**Ctrl+9**) says
-  how many remain. The AI Assistant can put the answer in its window, at the
-  cursor, or on the clipboard, and QUILL's free service can add new tools
-  without an update.
-
-### Dictation
+## Dictation
 
 - **"Quill dictate" is heard the way the engines write it.** Reported on
   QUILLVille: QUILL Lite loaded the chosen speech engine but never answered
@@ -443,347 +676,12 @@ above, plus everything in this section.
   each phrase is written, give me** list has moved beside the other sounds.
 - **QUILL Transcribe**, released on 1 November 2026, is now in the user
   guide's list of QuillVille apps.
-
-### Updates
-
-- **A portable update keeps your settings** where QUILL Lite looks for them.
-- **A failed update undoes itself properly**, and an update never asks for
-  administrator approval.
-- **The Beta engine's 335 MB come back** when your last app returns to Stable.
-- **The user guide's menu paths are checked** against the real menus before
-  each release.
-
-## Testing rebuild: 1.2.0 (build 4)
-
-Build 4 runs on Python 3.14. Its installer also removes the older Python 3.13
-runtime once no QuillVille app on your computer uses it.
-
-Dictation is kinder to screen reader users with a headset. QUILL Lite no
-longer writes down your screen reader reading back what you said, saying the
-same phrase twice writes it twice, and the sound for a written phrase is a
-soft tone instead of something that sounded like the letter "c".
-
-Build 4 keeps everything from build 3:
-
-Build 3 retains build 2's local-recording transcription fix and Windows audio
-duration fallback. It prepares downloaded model availability in the background,
-and completed transcripts are saved privately for opening from **Notifications**.
-Your current document stays unchanged until you choose to open a result.
-
-Routine settings saves also run in the background and still report failures
-through Activity. Python HTTPS requests use the Windows certificate store while
-checking certificates and hostnames. The installer is current-user only and
-does not offer an administrator-only installation.
-
-The bundled changelog records the complete build changes. These testing
-packages are not a GitHub release or a Stable-channel promotion.
-
-## If you already use QUILL Lite
-
-Your settings, recent
-files and recovered work come with you exactly as they are, and **Help >
-Check for Updates** (**Ctrl+Alt+U**) offers 2.0.0 like any other update.
-
-**If you use the portable QUILL Lite 1.1.2, update by hand this time.** In
-that copy, **Install and restart now** can delete everything in its `data`
-folder: your settings, keys and recovered work. The fault is in the updater
-inside 1.1.2, so 2.0.0 cannot fix it for you; 2.0.0 carries a fixed one. An
-installed copy is not affected. Instead of Install and restart now:
-
-1. Close QUILL Lite.
-2. Copy the `data` folder next to `QuillLite.exe` somewhere safe.
-3. Download the new `QuillLite-Portable` zip and unzip it into a new folder
-   next to the old one, not on top of it.
-4. Copy everything from your saved `data` folder into the new folder's `data`
-   folder, and choose to replace files with the same name.
-5. Start the new copy, check **Help > About** and your settings, then delete
-   the old folder when you are sure.
-
-If your settings are already gone, QUILL Lite cannot bring them back; look for
-a backup or your computer's File History.
-
-Some keys have moved:
-
-- **Tools > Keyboard Manager** is now **Ctrl+Alt+Shift+Space**. Its old key,
-  Ctrl+Alt+Shift+R, shows and hides Quill Radio from anywhere, so while Quill
-  Radio was running the Keyboard Manager never opened. QUILL moved its
-  Keyboard Manager to the same key, so the two still match.
-- **Trim Trailing Spaces** is now **Ctrl+Alt+R**, as in QUILL; **Ctrl+Alt+T** is
-  Insert Table.
-- **Remove Quote Marks** is now **Alt+Shift+.** (the period), and
-  **Snippets** is **Ctrl+Alt+Shift+Home**.
-- **Collect Selection** is now **Alt+Shift+C**; **Alt+Shift+S** is the
-  clipboard collector, as in QUILL.
-- **Alt+Shift+1** to **Alt+Shift+8** reopen your first eight recent files, and
-  **Alt+Shift+9** is always **AutoCorrect Entries**. The ninth file is in
-  **File > Recent Documents** (**Alt+Shift+0**).
-
-## Try this first
-
-1. Put the cursor on a word you are not happy with and press **Shift+F7**.
-   Arrow through the meanings, press **Tab** to reach the words, and press
-   **Enter** on one you like. It goes into your sentence in the right form.
-2. On another word, press the **Applications** key. You find two new
-   submenus, **Thesaurus for** that word and **Dictionary for** that word.
-3. Press **Alt+F10** for **Look Up Word**. It works without the internet, and
-   tells you more if you let it go online.
-4. Press **Ctrl+,** for Preferences and type "spelling" in **Find a setting**.
-   Press Down, then Enter, and you are on that setting.
-5. Press **Shift+F9** for **Activity**, the list of everything QUILL Lite has
-   told you since you opened it. Press **F9** any time to hear the last
-   important thing again.
-
-## Finding the right word
-
-### The thesaurus
-
-Press **Shift+F7**, the same key as in Word and QUILL, or choose
-**Tools > Thesaurus**. It opens on the word you are on.
-
-A thesaurus lists plain forms of words, *run* rather than *running*. QUILL
-Lite works your word back for you, so "running" finds "run", "happier" finds
-"happy" and "stopped" finds "stop", and it tells you so. Then it puts your
-choice back in the form your sentence needs. Choose *sprint* for *running* and
-you get *sprinting*. Choose *glad* for *Happier* and you get *More glad*,
-capital letter and all.
-
-It is the same thesaurus QUILL uses, and it comes inside QUILL Lite. Nothing
-is downloaded and nothing is sent anywhere.
-
-Want the short version without a window? **Say Word Summary**
-(**Ctrl+Alt+Shift+[**) tells you what the thesaurus knows about a word: how
-many meanings it has, the first few replacements, and its opposites.
-
-### Look Up, the dictionary without AI
-
-Press **Alt+F10**, or choose **Tools > Look Up Word**. Offline, you get
-synonyms, opposites and related words from the word list inside QUILL Lite.
-
-Check **Use online sources** and you also get definitions with examples, more
-words, rhymes and a short Wikipedia summary. Only the word is sent, never your
-sentence or your document, and only after you check the box. QUILL Lite
-remembers your choice.
-
-Press **Enter** on a word to put it in place of yours. **Add to Dictionary**
-teaches a word to your spell checker.
-
-### The AI dictionary
-
-A thesaurus knows every meaning of *bank*. It cannot tell which one your
-sentence means. **Tools > Dictionary** can, because it sends the word and the
-sentence it is in (never the rest of your document) and answers in plain words
-written to be listened to.
-
-There are twelve questions to ask, each with a key of its own:
-
-- **Define in Context** (**Ctrl+Alt+Shift+'**) says what the word means here.
-- **Synonyms That Fit**, **Simpler Word**, **More Formal Word** and **More
-  Vivid Word** offer replacements that suit this sentence.
-- **Is This the Right Word?** settles affect or effect, complement or
-  compliment.
-- **Opposites**, **Use It in a Sentence**, **Where It Comes From**, **How to
-  Say It** and **Rhymes** do just what they say.
-- **Word Explorer** (**Ctrl+F10**) does them all at once.
-- **Find the Word For** (**Ctrl+Alt+Shift+]**) is the other way round: you
-  describe the meaning, and it suggests the word you are reaching for.
-
-When an answer offers words, Tab to **Choices** and press Enter, or choose
-**Use This Word**. It goes into your document as one step, and one Ctrl+Z
-takes it back.
-
-The AI dictionary needs your ChatGPT subscription or your own AI key. It does
-not use QUILL's free AI service, because a dictionary gets asked many times a
-day and would use up the free allowance quickly.
-
-### Checking your word lists
-
-**Tools > Spelling > Dictionary Status** (**Alt+Shift+;**) tells you how many
-words your personal dictionary and this document's own list hold, where each
-file is kept, and whether the thesaurus is there.
-
-If you would rather not have any of this, turn off **Dictionary and
-thesaurus** in **Tools > Customize Features** (**Ctrl+Alt+F10**). It is on to begin with, and off
-in the WordPad and Notepad profiles.
-
-## AI help with a Google Gemini key
-
-**Use My Own AI Key** (**Alt+F2**), which used to be called Use My Own OpenAI
-Key, now opens on a **Provider** list: OpenAI or Google Gemini. Choose one,
-paste that company's key, and everything follows your choice: where your text
-goes, which models you can pick, and what they cost. QUILL Lite never guesses
-from the key or the model name.
-
-You can keep both keys saved and switch with the Provider list. With a Gemini
-key, **Ask About an Image** (**Ctrl+F5**) works too, and so do the AI
-dictionary and Tidy Dictated Text.
-
-If you use your ChatGPT plan in more than one Quill app, each app now keeps
-its own sign-in. Signing out of one leaves the others signed in, and **Use My
-ChatGPT Subscription** (**Alt+F5**) tells you when another app on this
-computer is already signed in, so signing in here is one Allow in your
-browser.
-
-## Knowing what happened
-
-### Activity and Repeat Last Result
-
-**Help > Activity** (**Shift+F9**) lists everything QUILL Lite has told you
-since you opened it, newest first. Each row offers what you can do about it:
-
-- **Retry** tries the same thing again.
-- **Open Folder** shows you the file in File Explorer.
-- **Copy Details** copies the row, ready to paste into a message to support.
-
-If work finishes after you closed the window that started it, the result
-lands here instead of being lost. A large file you opened while you were busy
-elsewhere is here too, as Opened or Could not open.
-
-**Help > Repeat Last Result** (**F9**) says the last important thing again.
-That is QUILL Lite's own last message, not the last thing your screen reader
-read. Both keys do the same in QUILL, Quill Radio and QUILL Cast.
-
-### When your settings cannot be saved
-
-Sometimes Windows will not let QUILL Lite save your settings, perhaps because
-the disk is full. Now you are told once, with the reason. Your choices keep
-working for the rest of the session, the warning stays in the status bar's
-Message cell, and Activity offers Retry. When a later save works, you hear
-that too. Preferences no longer says "saved" when it was not.
-
-## Finding a setting
-
-Preferences (**Ctrl+,**) has a **Find a setting** box at the top. Type a word,
-press **Down** to reach the matches, and press **Enter** on one to go straight
-to it. **Ctrl+F** takes you back to the box. Searching never changes a
-setting, and OK and Cancel work just as before. Quill Radio and QUILL Cast
-have the same box in their Preferences.
-
-## Making QUILL Lite your text editor
-
-The installer is for your Windows account only. It does not offer an all-users
-install or need administrator approval. The separate option below that opens
-QUILL Lite whenever a program asks for Notepad changes a computer-wide setting,
-so Windows still asks for administrator approval for that action.
-
-Every QUILL Lite install now tells Windows that QUILL Lite can open text,
-Markdown, rich text, HTML and CSV files. It takes nothing over. QUILL Lite
-simply shows up in **Open with**, and in Windows Settings under Default apps,
-where you choose which app opens what. The Custom install's checkbox for
-opening .txt and .rtf files is gone, because there is nothing left to ask.
-
-Open Preferences (**Ctrl+,**) and look under **Windows and your files**. A
-line there tells you what opens in place of Notepad right now.
-
-The **Make QUILL Lite My Text Editor...** button takes you the rest of the way.
-It explains what Windows lets an app do and what you choose, then opens the
-Default apps page for QUILL Lite. Choose .txt, pick QUILL Lite, and choose Set
-default. It works from a portable copy too.
-
-Some programs still open Notepad by name. If you would like QUILL Lite to open
-for those as well, check **Open QUILL Lite instead of Notepad** and press OK. It
-is off to begin with. It changes Notepad for everyone on the computer, so
-Windows asks for administrator approval, and clearing the box puts Notepad
-back. On Windows 11, QUILL Lite also shows you where to turn off the newer
-Notepad's app execution alias. Uninstalling QUILL Lite puts Notepad back for
-you.
-
-QUILL for All has both of these too, in its own Settings. Only one program can
-open in place of Notepad, so if QUILL already does, QUILL Lite tells you before
-it takes over, and QUILL does the same.
-
-## Choose Stable, Beta or Dev
-
-New in this version: **Release Channel...**, on the Help menu. Every copy
-stays on **Stable**, the version we check with JAWS and NVDA, unless you choose
-otherwise. **Beta** gets new features a few weeks early; **Dev** is the work in
-progress, for testers.
-
-Arrowing through the three only explains them. If you choose Beta or Dev, a
-short warning says plainly what could go wrong and how to come back, and
-nothing moves until you check **I understand** and choose **Move**. Before it
-moves, QUILL Lite saves a copy of your settings, keys and recent files list. Your documents are not copied, and updates don't change them.
-
-Coming back to Stable is safe. If Stable can read everything you have saved,
-QUILL Lite offers to go straight back. If it can't yet, QUILL Lite says so plainly and
-lets you either wait for Stable to catch up (it moves you across by itself), or
-go back to the copy of your settings saved when you joined. A copy of how things
-are right now is saved first, so nothing is thrown away.
-
-On Beta and Dev, QUILL Lite downloads new versions in the background so they are
-ready when you are, and never installs one without asking. It waits on a
-metered connection, during Quiet Hours, and while Quill Radio is recording.
-
-Quill Radio and QUILL Cast share one engine with QUILL Lite on your computer. When one of you moves
-to Beta or Dev, it gets its own copy of the engine, so the apps you leave on
-Stable are never touched. That copy uses about 335 MB of disk space until your
-last app comes back to Stable.
-
-If an update ever fails to start, it undoes itself, puts back the version you
-had, and tells you so the next time QUILL Lite opens. The window's **Update
-History** button shows everything the updater has done.
-
-Help > About shows a build number after the version. The initial 1.2.0 release
-was build 1; this testing rebuild is **1.2.0 (build 5)**. If a newer build is
-published to your update channel without a new version number, Check for
-Updates offers it to you. Uploading a testing package alone does not publish
-it to an update channel.
-
-## Dictating in Spanish
-
-New, and ready for you to try: you can dictate in Spanish. Open Dictation
-Settings (**Alt+Shift+F6**), choose **Spanish** under **Dictation language**,
-and press Enter. Or press **Ctrl+Shift+F11** to switch between English and
-Spanish at any time, even while you are dictating.
-
-- Your words come out in Spanish, accents and all, using Whisper's
-  multilingual speech model. It comes with QUILL Lite, so nothing is
-  downloaded.
-- The commands stay in English for now. "Scratch that", "new paragraph" and
-  the rest work as they always have. Spanish commands come next, once a native
-  speaker has checked them.
-- With automatic punctuation on, Whisper punctuates for you. Turn it off and
-  you can say the Spanish words instead: "coma", "punto", "punto y coma",
-  "dos puntos", "abrir interrogación", "cerrar interrogación" and more.
-- The wake and stop phrases become "Quill dicta" and "deja de dictar".
-
-QUILL has the same thing, in the same place. The user guide's "Dictating in
-Spanish" has the whole list. If something comes out wrong, tell us through
-**Help > Get Help from Support**. We're keen to hear how it goes.
-
-## Better accuracy: optional speech models
-
-Dictation works the moment you install. If you want more accuracy, you can
-now download a larger model: the same local models VS Code offers for its own
-dictation, plus the rest of the Whisper family.
-
-Open Dictation Settings (**Alt+Shift+F6**) and press **Better Accuracy:
-Speech Models...** (**Alt+B**). The list starts with NVIDIA's
-**Nemotron 3.5 ASR Streaming** (VS Code's default), then NVIDIA's two
-**Parakeet** models, **Whisper** small, base and tiny, the rest of Whisper from
-base.en to large-v3, and a lighter **Moonshine base**. Each one says what it is
-good for, how big it is, which languages it knows, which computers suit it and
-whether yours should keep up.
-
-- Nothing downloads until you press **Download...** and say yes to a question
-  that names where it comes from, its size, its licence and where it will be
-  saved. On a metered connection you are asked first.
-- They are free and run on your computer's processor; no graphics card
-  needed. Your voice never leaves the computer.
-- A download you cancel carries on later from where it stopped, every file is
-  checked before it is used, and **Remove** frees the space.
-- QUILL and QUILL Lite share the models on the same computer. In a portable
-  copy, models are saved inside the portable folder, so everything travels
-  together.
-- Moonshine stays the engine until you choose another. If a downloaded model
-  goes missing, dictation tells you in one sentence and uses the built-in one.
-
-The **Recommendation** box (**Alt+C**) names the model that suits this
-computer, from our tests on real speech (see "Advice from real speech" in
-build 5, above). The user guide's "Better accuracy: optional speech models"
-has every model's published accuracy, what we measured on real speech, and
-"Nemotron or Parakeet: which should I try?".
-
-## Dictation that keeps up with you
+- **Kinder to a headset.** QUILL Lite no longer writes down your screen
+  reader reading back what you said, saying the same phrase twice writes it
+  twice, and the sound for a written phrase is a soft tone instead of
+  something that sounded like the letter "c".
+
+### Dictation that keeps up with you
 
 Dictation learned a lot this time, much of it from studying how VS Code does
 it. Everything here is in QUILL too, on the same keys.
@@ -825,7 +723,7 @@ it. Everything here is in QUILL too, on the same keys.
 choices. The user guide's chapter on writing by voice has a section for each,
 and there is a new lesson, "Write by talking", in **Help > Tutorials...**.
 
-## Dictation: more you can do by voice
+### Dictation: more you can do by voice
 
 There is a lot more you can do just by talking now. All of it is in **Tools >
 Dictation**, all of it is in QUILL too on the same keys, and five new lessons
@@ -876,6 +774,61 @@ through it.
   Choose a key, and you can dictate into your browser, your email or any other
   program.
 
+### Dictating in Spanish
+
+New, and ready for you to try: you can dictate in Spanish. Open Dictation
+Settings (**Alt+Shift+F6**), choose **Spanish** under **Dictation language**,
+and press Enter. Or press **Ctrl+Shift+F11** to switch between English and
+Spanish at any time, even while you are dictating.
+
+- Your words come out in Spanish, accents and all, using Whisper's
+  multilingual speech model. It comes with QUILL Lite, so nothing is
+  downloaded.
+- The commands stay in English for now. "Scratch that", "new paragraph" and
+  the rest work as they always have. Spanish commands come next, once a native
+  speaker has checked them.
+- With automatic punctuation on, Whisper punctuates for you. Turn it off and
+  you can say the Spanish words instead: "coma", "punto", "punto y coma",
+  "dos puntos", "abrir interrogación", "cerrar interrogación" and more.
+- The wake and stop phrases become "Quill dicta" and "deja de dictar".
+
+QUILL has the same thing, in the same place. The user guide's "Dictating in
+Spanish" has the whole list. If something comes out wrong, tell us through
+**Help > Get Help from Support**. We're keen to hear how it goes.
+
+### Better accuracy: optional speech models
+
+Dictation works the moment you install. If you want more accuracy, you can
+now download a larger model: the same local models VS Code offers for its own
+dictation, plus the rest of the Whisper family.
+
+Open Dictation Settings (**Alt+Shift+F6**) and press **Better Accuracy:
+Speech Models...** (**Alt+B**). The list starts with NVIDIA's
+**Nemotron 3.5 ASR Streaming** (VS Code's default), then NVIDIA's two
+**Parakeet** models, **Whisper** small, base and tiny, the rest of Whisper from
+base.en to large-v3, and a lighter **Moonshine base**. Each one says what it is
+good for, how big it is, which languages it knows, which computers suit it and
+whether yours should keep up.
+
+- Nothing downloads until you press **Download...** and say yes to a question
+  that names where it comes from, its size, its licence and where it will be
+  saved. On a metered connection you are asked first.
+- They are free and run on your computer's processor; no graphics card
+  needed. Your voice never leaves the computer.
+- A download you cancel carries on later from where it stopped, every file is
+  checked before it is used, and **Remove** frees the space.
+- QUILL and QUILL Lite share the models on the same computer. In a portable
+  copy, models are saved inside the portable folder, so everything travels
+  together.
+- Moonshine stays the engine until you choose another. If a downloaded model
+  goes missing, dictation tells you in one sentence and uses the built-in one.
+
+The **Recommendation** box (**Alt+C**) names the model that suits this
+computer, from our tests on real speech (see "Advice from real speech" under
+Dictation, above). The user guide's "Better accuracy: optional speech models"
+has every model's published accuracy, what we measured on real speech, and
+"Nemotron or Parakeet: which should I try?".
+
 ## Turn a recording into text
 
 Got a voice note, an interview or a lecture you need in writing? Press
@@ -906,99 +859,124 @@ uses the same speech engines you dictate with:
 The user guide's "Transcribing an audio file" has the whole story, including
 which model suits which recording.
 
-## Follow-up for testers: reopen a completed transcript
+A finished transcript is saved privately and linked from its notice in
+Notifications. Open it when you are ready; it stays separate from the
+document you were editing.
 
-This is a follow-up after the first 1.2.0 testing build, and is part of 2.0.0. A completed
-transcript is now saved privately and linked from its completion notice in
-Notifications. Activate the notice when you are ready to open the result; it
-stays separate from the document you were editing.
+## Menus and help
 
-## Your recent documents, one key away
+- **Pinned to the taskbar, QUILL Lite opens as itself.** Reported on
+  QUILLVille: QUILL Lite pinned to the taskbar from its running window asked
+  "Several QuillVille apps are installed. Which one do you want to open?",
+  and the copy it then opened ignored your settings and said its speech
+  engines were not included. Windows had pinned the shared QuillVille runtime
+  instead of QUILL Lite. QUILL Lite's shortcuts now carry its own taskbar
+  identity, so a new pin opens QUILL Lite through its own launcher, like the
+  desktop icon. An older pin still asks once which app you want, then opens
+  it the same proper way. To replace an old pin, unpin it and pin QUILL Lite
+  again after you update. Every QuillVille app has the same fix.
+- **Help > What's New** opens the changelog in your browser. It has no key:
+  press **Alt+H**, then **W**. Every QUILL family app has the same item.
+- **A full menu bar with every document closed.** Close the last document and
+  the window still has **File** (New, Open, Recent Documents, Reopen Last
+  Session and Exit), **Tools** (Preferences, the Keyboard Manager, the Sound
+  Scheme, and backing up and restoring settings) and **Help**, on the same
+  keys as a document window.
 
-New: press **Alt+Shift+0** (or choose **File > Recent Documents...**) to see
-every document you opened recently, newest first, and press Enter on the one
-you want. The list was always there, under **File > Open Recent**, but it was
-easy to miss. Now it has a key and a window of its own.
+### Finding a setting
 
-- **Pin** the documents you come back to, and they stay at the top however many
-  others you open.
-- **Remove from List** takes one off. The file is not touched.
-- **Open Containing Folder** shows the file in File Explorer.
-- **Clear Unpinned...** empties the list after asking. Pinned documents stay.
-- Choose how many documents to remember, from 1 to 50, and whether files
-  deleted from this computer drop off by themselves.
+Preferences (**Ctrl+,**) has a **Find a setting** box at the top. Type a word,
+press **Down** to reach the matches, and press **Enter** on one to go straight
+to it. **Ctrl+F** takes you back to the box. Searching never changes a
+setting, and OK and Cancel work just as before. Quill Radio and QUILL Cast
+have the same box in their Preferences.
 
-**Alt+Shift+1** to **Alt+Shift+8** reopen the first eight straight away,
-and pinned documents now come first there too. QUILL has the same window on
-the same key, and the same quick keys on its Open Recent menu. The user
-guide's "Opening something you worked on recently" has the details.
+## Updates and installing
 
-## Notes on your document
+- **A portable update keeps your settings** where QUILL Lite looks for them.
+- **A failed update undoes itself properly**, and an update never asks for
+  administrator approval.
+- **The Beta engine's 335 MB come back** when your last app returns to Stable.
+- **The user guide's menu paths are checked** against the real menus before
+  each release.
+- **Runs on Python 3.14.** The installer removes the older Python 3.13
+  runtime once no QuillVille app on your computer uses it.
+- **Settings save in the background**, and a failed save still reaches you
+  through Activity.
+- **Secure connections use the Windows certificate store**, checking
+  certificates and host names as Windows does.
+- **Installed for you alone.** The installer is current-user only and never
+  asks for administrator approval.
 
-QUILL Lite now has **inline notes**, the same ones QUILL has, on the same keys.
-A note is a comment on a line or a selection: a question, a reminder, or what
-you think of a plan somebody sent you. They are on **Tools > Inline Notes**.
+### Choose Stable, Beta or Dev
 
-- **Alt+Shift+I** adds a note. The window shows the start of the text it is on,
-  so you know you are in the right place.
-- **Alt+Shift+J** and **Alt+Shift+K** move to the next and previous note, and
-  **Alt+Shift+H** reads the one you are on (twice to change it).
-- **Alt+Shift+Delete** deletes a note, after asking.
-- **Alt+Shift+Enter** lists every note in the document. From there you can go
-  to one, change or delete it, remove them all, copy them all, or save them as
-  a Markdown or JSON file.
+New in this version: **Release Channel...**, on the Help menu. Every copy
+stays on **Stable**, the version we check with JAWS and NVDA, unless you choose
+otherwise. **Beta** gets new features a few weeks early; **Dev** is the work in
+progress, for testers.
 
-Notes are private unless you say otherwise. In a Markdown or HTML document you
-can write a note **into the file** instead, as a hidden comment that anyone who
-opens the file can read, including an AI assistant. That makes QUILL Lite a
-good way to review a plan an AI wrote: leave your notes in it and hand the file
-back. A script can then list or clear them with `QuillLite.exe --notes`.
+Arrowing through the three only explains them. If you choose Beta or Dev, a
+short warning says plainly what could go wrong and how to come back, and
+nothing moves until you check **I understand** and choose **Move**. Before it
+moves, QUILL Lite saves a copy of your settings, keys and recent files list. Your documents are not copied, and updates don't change them.
 
-**Snippets** moved to **Ctrl+Alt+Shift+Home** to make room for the notes on
-the same keys as QUILL. Alt+Shift+I is now Add Inline Note.
+Coming back to Stable is safe. If Stable can read everything you have saved,
+QUILL Lite offers to go straight back. If it can't yet, QUILL Lite says so plainly and
+lets you either wait for Stable to catch up (it moves you across by itself), or
+go back to the copy of your settings saved when you joined. A copy of how things
+are right now is saved first, so nothing is thrown away.
 
-## Checking off tasks
+On Beta and Dev, QUILL Lite downloads new versions in the background so they are
+ready when you are, and never installs one without asking. It waits on a
+metered connection, during Quiet Hours, and while Quill Radio is recording.
 
-Put the cursor on a task line, such as `- [ ] Write the tests`, and press
-**Ctrl+Alt+Enter** (**Format > Toggle Task Done**). The box is checked and you
-hear how many tasks in the list are done. Press it again to uncheck, or select
-several tasks to check them together. **Ctrl+Z** takes it back.
+Quill Radio and QUILL Cast share one engine with QUILL Lite on your computer. When one of you moves
+to Beta or Dev, it gets its own copy of the engine, so the apps you leave on
+Stable are never touched. That copy uses about 335 MB of disk space until your
+last app comes back to Stable.
 
-## A web page you can share
+If an update ever fails to start, it undoes itself, puts back the version you
+had, and tells you so the next time QUILL Lite opens. The window's **Update
+History** button shows everything the updater has done.
 
-**File > Export as HTML...** (**Ctrl+Alt+Shift+End**) saves a copy of your
-document as one web page, ready to email or put on a website. Task lists
-show as check boxes. Your document stays as it was.
+Help > About shows a build number after the version, such as **2.0.0 (build
+1)**. If a newer build is
+published to your update channel without a new version number, Check for
+Updates offers it to you. Uploading a testing package alone does not publish
+it to an update channel.
 
-## Opening a document however it arrives
+### Making QUILL Lite your text editor
 
-Copy a file in File Explorer, a path from a chat or a link from an email, then
-press **Ctrl+Alt+Shift+Enter** (**File > Open from Clipboard**). QUILL Lite
-opens it. **File > Open from URL...** asks before it downloads anything,
-naming the website and the size, and shows you how the download is going. You
-can also drag files onto the window to open them.
+The installer is for your Windows account only. It does not offer an all-users
+install or need administrator approval. The separate option below that opens
+QUILL Lite whenever a program asks for Notepad changes a computer-wide setting,
+so Windows still asks for administrator approval for that action.
 
-## Careful with your files
+Every QUILL Lite install now tells Windows that QUILL Lite can open text,
+Markdown, rich text, HTML and CSV files. It takes nothing over. QUILL Lite
+simply shows up in **Open with**, and in Windows Settings under Default apps,
+where you choose which app opens what. The Custom install's checkbox for
+opening .txt and .rtf files is gone, because there is nothing left to ask.
 
-- An older file that is not UTF-8 now keeps every byte when you save it. Before
-  2.0, five rare characters in such a file could be lost. QUILL Lite also tells
-  you, once, when a file is not UTF-8.
-- If an old file's letters come out wrong, **Reopen with Encoding...** in the
-  File Encoding and Line Endings window (**Ctrl+Alt+E**) reads it again in the
-  encoding you choose.
-- If another program changed your file since you opened it, **Ctrl+S** asks
-  before writing over that change.
-- QUILL Lite now notices that change as it happens, not only when you save.
-  If you have not touched the document, it can reload it for you, keeping
-  your cursor on the same line, and tell you once. Otherwise it asks: **Keep
-  Mine**, **Reload from Disk** or **Save As...**, with Keep Mine on Enter. A
-  file deleted or moved away is said once, and your text stays. The settings
-  are in Preferences under **When another program changes the file**, the same
-  ones QUILL has. A remembered Reload never throws away unsaved edits; QUILL
-  Lite asks instead.
+Open Preferences (**Ctrl+,**) and look under **Windows and your files**. A
+line there tells you what opens in place of Notepad right now.
 
-These ideas come from **PlanCake**, a small app by Andre of Oire Software for
-reviewing AI-written plans. Thank you, Andre.
+The **Make QUILL Lite My Text Editor...** button takes you the rest of the way.
+It explains what Windows lets an app do and what you choose, then opens the
+Default apps page for QUILL Lite. Choose .txt, pick QUILL Lite, and choose Set
+default. It works from a portable copy too.
+
+Some programs still open Notepad by name. If you would like QUILL Lite to open
+for those as well, check **Open QUILL Lite instead of Notepad** and press OK. It
+is off to begin with. It changes Notepad for everyone on the computer, so
+Windows asks for administrator approval, and clearing the box puts Notepad
+back. On Windows 11, QUILL Lite also shows you where to turn off the newer
+Notepad's app execution alias. Uninstalling QUILL Lite puts Notepad back for
+you.
+
+QUILL for All has both of these too, in its own Settings. Only one program can
+open in place of Notepad, so if QUILL already does, QUILL Lite tells you before
+it takes over, and QUILL does the same.
 
 ## Things that work better now
 
