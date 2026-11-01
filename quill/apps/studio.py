@@ -1072,15 +1072,9 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
         menu_bar.Append(voices, "Vo&ices")
 
         capture_bindings = self._append_capture_menu(menu_bar)
-
-        ai = wx.Menu()
-        ai_setup_id = wx.NewIdRef()
-        ai.Append(
-            ai_setup_id,
-            "Set &Up AI...\tCtrl+Alt+Shift+A",
-            "Connect an AI provider for cloud voices, chapter titles, and translation",
-        )
-        menu_bar.Append(ai, "&AI")
+        # Ask, Which AI, Choose Your AI, Describe, the accounts, Set Up AI
+        # (codex.md Phase 3; ui/audio_studio/studio_ai_host.py).
+        capture_bindings += self._append_studio_ai_menu(menu_bar)
 
         help_menu = wx.Menu()
         guide_id, prd_id, notes_id, palette_id = (wx.NewIdRef() for _ in range(4))
@@ -1135,7 +1129,6 @@ class StudioAppFrame(AppShellFrame, SpeechDownloadsMixin, StudioCaptureMixin):
             (sections_id, self.copy_sections),
             (components_id, self.open_optional_components),
             (ffmpeg_id, self.download_ffmpeg_component),
-            (ai_setup_id, self.open_ai_setup),
             (guide_id, lambda: self._open_studio_doc("userguide")),
             (prd_id, lambda: self._open_studio_doc("prd")),
             (notes_id, lambda: self._open_studio_doc("release-notes-1.0")),

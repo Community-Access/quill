@@ -195,3 +195,16 @@ def test_inkwell_context_most_used_first_and_scrubbed() -> None:
 def test_beacon_context() -> None:
     facts = ac.beacon_context(search="tax", results=[("2025 return", "filed in April")])
     assert facts.get("Search results") == "- 2025 return: filed in April"
+
+
+def test_studio_context_names_the_recording_and_the_book_but_never_a_path() -> None:
+    from quill.core.ai.app_ask_context import facts_text, filter_facts, studio_context
+
+    facts = filter_facts(
+        studio_context(recording="Recording, 2 minutes 10 seconds.", book="Sea Stories")
+    )
+    text = facts_text(facts)
+    assert "Recording now: Recording, 2 minutes 10 seconds." in text
+    assert "Book open: Sea Stories" in text
+    leaked = studio_context(book=r"C:\Users\me\Books\Sea Stories.m4b")
+    assert "Users" not in facts_text(filter_facts(leaked))

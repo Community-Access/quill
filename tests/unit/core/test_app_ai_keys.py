@@ -1,4 +1,4 @@
-"""Quill Radio's and QUILL Cast's AI keys, against the editors' (rule 11)."""
+"""The QuillVille apps' AI keys, against the editors' (rule 11)."""
 
 from __future__ import annotations
 
@@ -15,7 +15,11 @@ def _same(left: str, right: str) -> bool:
     return (canonical_binding(left) or left.upper()) == (canonical_binding(right) or right.upper())
 
 
-@pytest.mark.parametrize("app", ["radio", "cast"])
+#: Apps whose Ctrl+1 to Ctrl+9 are Window menu keys (quill/ui/window_menu.py).
+_WINDOW_MENU_APPS = ["radio", "cast", "transcribe"]
+
+
+@pytest.mark.parametrize("app", _WINDOW_MENU_APPS)
 def test_no_ai_command_takes_a_window_menu_key(app: str) -> None:
     taken = {
         command: key
@@ -25,7 +29,7 @@ def test_no_ai_command_takes_a_window_menu_key(app: str) -> None:
     assert taken == {}
 
 
-@pytest.mark.parametrize("app", ["radio", "cast"])
+@pytest.mark.parametrize("app", [*_WINDOW_MENU_APPS, "studio"])
 def test_every_ai_key_that_differs_from_the_editors_has_a_row(app: str) -> None:
     missing = [
         command
@@ -52,3 +56,29 @@ def test_radio_and_cast_share_their_ai_keys() -> None:
         APP_KEYMAPS["radio"]["radio.ask_quill_radio"]
         == (APP_KEYMAPS["cast"]["tools.hosted_ai_chat_key"])
     )
+
+
+def test_transcribe_takes_the_same_fallback_set_as_radio_and_cast() -> None:
+    for command in ("tools.hosted_ai_which", "tools.hosted_ai_choose", "tools.hosted_ai_chat_key"):
+        assert APP_KEYMAPS["transcribe"][command] == APP_KEYMAPS["cast"][command]
+
+
+def test_studio_keeps_the_editors_digit_keys() -> None:
+    """No Window menu in Studio, so decision 14's keys hold: nothing overrides them."""
+    for command in ("tools.hosted_ai_which", "tools.hosted_ai_choose", "tools.hosted_ai_chat_key"):
+        assert command not in APP_KEYMAPS["studio"]
+        assert (APP_KEYMAPS["studio"].get(command) or DEFAULT_KEYMAP[command]) in (
+            "Ctrl+8",
+            "Ctrl+4",
+            "Ctrl+6",
+        )
+
+
+def test_studio_and_transcribe_menus_have_no_window_menu_keys() -> None:
+    """Studio has no Window menu (so Ctrl+4, 6, 8 are free); Transcribe has one."""
+    import inspect
+
+    from quill.apps import studio, transcribe
+
+    assert "WindowManager" not in inspect.getsource(studio)
+    assert "WindowManager" in inspect.getsource(transcribe)

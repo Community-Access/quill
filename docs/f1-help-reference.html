@@ -2710,6 +2710,9 @@ for</h3>
 against Audible’s ACX submission window: loudness, true peak, and noise
 floor, each with its limit, plus plain recommendations for anything
 failing. Read-only – Escape closes it and nothing was changed.</p>
+<p><strong>AI Usage.</strong> How much each AI you have set up has been
+used, one sentence each, and whose count it is. Manage Usage opens the
+selected one’s own page.</p>
 <p><strong>Add a program’s sound.</strong> Choose a program that is
 playing sound to add as a sound source of its own.</p>
 <p><strong>Add a spoken screenshot note.</strong> Start explicitly opens
@@ -2719,6 +2722,12 @@ Closing stops recording; temporary audio is deleted. No cloud upload
 occurs.</p>
 <p><strong>Add marker.</strong> Type an optional label for this moment
 in the recording, then press Enter.</p>
+<p><strong>Ask.</strong> A conversation about your recording setup, on
+whichever AI is in use: the last pre-flight check and what it measured,
+the last recording check, the recording running now and the book open go
+with every message, never a picture or sound. Type in Your message and
+press Enter; the reply is read aloud and added to the conversation
+above. Quick questions holds Is my setup ready? and a few more.</p>
 <p><strong>Ask AI questions about a video.</strong> Choose a video and
 the whole of it or a stretch. Studio takes frames from that stretch,
 lays them out as one labelled picture with the transcript if there is
@@ -2753,6 +2762,12 @@ undoes either answer.</p>
 window is: Studio says whether your face is in view and centred, and
 which way to move. Face detection runs on this computer; nothing is
 recorded or saved.</p>
+<p><strong>Choose Your AI.</strong> Choose where QUILL Studio’s AI comes
+from: QUILL’s free AI, your ChatGPT plan, GitHub Copilot, Codex or your
+own key. The list says which is in use; Enter uses the selected one or
+signs in to it, and Delete signs a signed-in one out. Every picture
+Studio asks about goes to the one in use. Choosing here changes nothing
+in the other apps.</p>
 <p><strong>Choose screenshot control.</strong> Choose a specific part of
 the selected window by its name or role. Search filters real accessible
 controls without AI. Password and offscreen items are excluded. Use
@@ -2764,6 +2779,10 @@ between formats, on this machine. Build the queue, pick the output
 format, preset, and destination folder, and Convert runs in the
 background with spoken progress. The Advanced options only override what
 you deliberately change; untouched controls leave the preset alone.</p>
+<p><strong>Describe a Picture.</strong> Choose a picture, or a video and
+then the moment in it. Studio takes that one picture on this computer,
+fits it to the AI in use and reads the description aloud. Asking about
+the same picture again sends nothing.</p>
 <p><strong>Discard this recording.</strong> Confirm deleting the
 recording in progress. It cannot be recovered.</p>
 <p><strong>Edit chapter.</strong> This chapter’s title and its exact
@@ -2875,6 +2894,9 @@ sharing.</p>
 <p><strong>Screenshot visual preview.</strong> An optional magnified
 visual preview. Use scrolling keys to inspect it. The editing window
 retains a text plan and object list for nonvisual review.</p>
+<p><strong>Sign In to Your AI.</strong> Sign in to the AI you chose.
+Open the Page takes you to its sign-in page; approve there, and this
+closes itself once you are signed in.</p>
 <p><strong>Sleep Timer.</strong> Stop playback by itself. Turn the timer
 on and give it a delay in minutes, or choose to stop at the end of the
 current chapter instead. It fires once and then turns itself off –
@@ -4012,9 +4034,18 @@ set to expand only manually. Also on Ctrl+K here, and from any program
 on the key you choose with File, Quick Insert Key.</li>
 </ul>
 <h2 id="quill-transcribe">QUILL Transcribe</h2>
-<p>Control coverage: 43 audited sites (43 helped).</p>
+<p>Control coverage: 44 audited sites (44 helped).</p>
 <h3 id="every-window-and-what-it-is-for-5">Every window, and what it is
 for</h3>
+<p><strong>AI Usage.</strong> How much each AI you have set up has been
+used, one sentence each, and whose count it is. Manage Usage opens the
+selected one’s own page.</p>
+<p><strong>Ask.</strong> A conversation about your dictation, on
+whichever AI is in use: the transcript you last reviewed, or this
+session’s dictated phrases, go with every message, never your voice.
+Type in Your message and press Enter; the reply is read aloud and added
+to the conversation above. Quick questions holds Who said what? and a
+few more.</p>
 <p><strong>Choose Microphone.</strong> The microphone QUILL Transcribe
 listens on. The Windows default follows whatever Windows is set to; a
 named microphone stays chosen.</p>
@@ -4022,6 +4053,11 @@ named microphone stays chosen.</p>
 marked as running on this computer or sending your speech over the
 internet, with its languages and whether it is downloaded. The model you
 choose is used every time until you choose another.</p>
+<p><strong>Choose Your AI.</strong> Choose where QUILL Transcribe’s AI
+comes from: QUILL’s free AI, your ChatGPT plan, GitHub Copilot, Codex or
+your own key. QUILL Transcribe signs in on its own, as QUILL Transcribe.
+The list says which is in use; Enter uses the selected one or signs in
+to it, and Delete signs a signed-in one out.</p>
 <p><strong>Dictation Commands.</strong> Everything dictation
 understands, to read with the arrow keys. In another program only the
 commands that do not need to read its text work.</p>
@@ -4113,6 +4149,9 @@ nothing. Nothing listens and nothing downloads here.</p>
 hides the QUILL Transcribe window from any program, or leave the box
 empty for no key. A key another QuillVille app already uses is refused,
 and you are told whose it is.</p>
+<p><strong>Sign In to Your AI.</strong> Sign in to the AI you chose.
+Open the Page takes you to its sign-in page; approve there, and this
+closes itself once you are signed in.</p>
 <p><strong>Speech Models.</strong> The Model Library: download, check or
 remove the optional speech models. Each download shows its size first,
 is checked before it is used, and can be cancelled. A model that did not
@@ -4170,6 +4209,8 @@ dictation profile and start and stop key dictation uses now. The model
 you chose is the one that runs; it never changes on its own.</li>
 <li><code>self._next_text</code>: What starting dictation will do, why
 it paused or could not start, and the last thing it said.</li>
+<li><code>self._ai_text</code>: Which AI is in use, as Which AI Am I
+Using says it. Press Enter to open Choose Your AI.</li>
 <li><code>model_button</code>: Choose the speech model: each is marked
 as running on this computer or sending your speech over the
 internet.</li>

@@ -141,6 +141,8 @@ class TranscribeFilesMixin(DictationTranscribeMixin):
         except OSError as error:
             self._dictation_say(f"The transcript could not be opened: {error.strerror or error}")
             return
+        # Ask's facts (codex.md 10C.3): the transcript last reviewed, by file name.
+        self._last_transcript = (Path(path).stem, text)
         dialog = TranscriptReviewDialog(self.frame, text)
         try:
             self._dictation_run_modal(dialog, "Review Transcript")

@@ -60,6 +60,7 @@ __all__ = [
     "menu_routes",
     "open_app_ask",
     "rows_from_prompts",
+    "show_picture_answer",
 ]
 
 TITLE = "Ask"
@@ -354,6 +355,27 @@ def menu_routes(menu_bar: Any) -> list[tuple[str, str]]:
     except Exception:  # noqa: BLE001 - no menu bar lists nothing
         return routes
     return routes
+
+
+def show_picture_answer(host: Any, answer: str) -> None:
+    """A picture's description: said, because focus stays where it was, and kept
+    in a result window to read again. Quill Radio's and QUILL Studio's Describe."""
+    from quill.core.ai.chatgpt_ai_help import IMAGE_FEATURE
+    from quill.core.ai.spoken_answer import speakable_line
+    from quill.ui.hosted_ai_pad import AiResultFrame
+
+    host._announce(speakable_line(answer))
+    frame = AiResultFrame(
+        host._ai_parent(),
+        action=IMAGE_FEATURE,
+        text=answer,
+        used="",
+        on_replace=None,
+        on_insert=None,
+        on_again=None,
+        announce=host._announce,
+    )
+    host._show_ai_window(frame)
 
 
 # Re-exported for the adapters' consent rows.

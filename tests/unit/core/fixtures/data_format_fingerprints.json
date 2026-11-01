@@ -1545,13 +1545,21 @@
             "close_to_tray": "bool",
             "inkwell_checked": "bool",
             "dictation": "dict[str, Any]",
+            "ai_connection": "str",
+            "ai_own_key_provider": "str",
+            "ai_own_key_model": "str",
+            "ai_copilot_model": "str",
+            "ai_codex_model": "str",
+            "ai_privacy_accepted_version": "int",
+            "ai_seeded": "bool",
+            "ai_sign_in_noticed": "bool",
             "read_only": "bool"
           }
         },
-        "function:quill.core.transcribe.settings:save_settings": "sha256:04ffd60117d0d9d8",
+        "function:quill.core.transcribe.settings:save_settings": "sha256:85d2deedd73931a3",
         "constant:quill.core.transcribe.settings:SCHEMA_VERSION": "1"
       },
-      "classification": "baseline",
+      "classification": "additive, compatible",
       "note": ""
     }
   }

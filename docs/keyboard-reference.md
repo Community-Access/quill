@@ -588,6 +588,8 @@ App keys, not editor keys: these apply inside the app named above and never insi
 
 | Key | Command | Command id |
 | --- | --- | --- |
+| Alt+F5 | Use My ChatGPT Subscription... | `studio.chatgpt_account` |
+| Alt+Shift+F2 | Privacy Agreement... | `tools.hosted_ai_privacy` |
 | Ctrl+Alt+Shift+B | Record marker | `studio.record_marker` |
 | Ctrl+Alt+Shift+C | Camera check | `studio.camera_check` |
 | Ctrl+Alt+Shift+Delete | Record discard | `studio.record_discard` |
@@ -613,6 +615,21 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+X | Cancel capture | `studio.cancel_capture` |
 | Ctrl+Alt+Shift+Y | Picture video | `studio.picture_video` |
 | Ctrl+Alt+Shift+Z | Broadcast mute | `studio.broadcast_mute` |
+| Ctrl+F5 | Describe a Picture... | `studio.describe_picture` |
+
+## QUILL Transcribe (app keys)
+
+App keys, not editor keys: these apply inside the app named above and never inside the QUILL editor.
+
+| Key | Command | Command id |
+| --- | --- | --- |
+| Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
+| Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
+| Alt+Shift+F2 | Privacy Agreement... | `tools.hosted_ai_privacy` |
+| Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
+| Ctrl+F8 | Which AI Am I Using | `tools.hosted_ai_which` |
+| Ctrl+Shift+8 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
+| Ctrl+Shift+F8 | Choose Your AI... | `tools.hosted_ai_choose` |
 
 ## Quill Radio (app keys)
 

@@ -216,6 +216,7 @@ COMMAND_NEEDS: dict[str, str] = {
     "cmd_ai_chat_key": TEXT,
     "cmd_ai_prompt_library": TEXT,
     "cmd_ai_image": PICTURES,
+    "cmd_studio_describe_picture": PICTURES,
     "cmd_dictation_tidy": TEXT,
     "cmd_ai_task": AGENT_TOOLS,
 }

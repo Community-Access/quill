@@ -409,6 +409,8 @@ set.</li>
 (informational; the home window does not show a book list by
 default).</li>
 <li><strong>Time</strong> - the current time.</li>
+<li><strong>AI</strong> - which AI Studio uses, for example “AI: ChatGPT
+plan”. Press Enter to open Choose Your AI.</li>
 </ul>
 <p>Press <strong>Enter</strong> to act on the cell you are on, use the
 context menu (Application key, or Shift+F10) for what that cell offers,
@@ -1019,13 +1021,66 @@ support so the failure can be read without exposing anything
 private.</p>
 <p>All downloads are disabled in Safe Mode.</p>
 <h2 id="ai-features">AI features</h2>
+<h3 id="choose-your-ai-and-the-ai-menu">Choose Your AI, and the AI
+menu</h3>
+<p>Studio uses the same AI choice as the rest of the family. <strong>AI
+&gt; Choose Your AI…</strong> (Ctrl+4) picks where Studio’s AI comes
+from: QUILL’s free AI, your ChatGPT plan, GitHub Copilot, Codex or your
+own key. Arrow through the list; each row says whether it is in use,
+signed in or not set up, and Enter uses the one you are on or signs in
+to it. Studio signs in on its own, as QUILL Studio, and choosing here
+changes nothing in QUILL or the other apps. If you had already signed
+Studio in to your ChatGPT plan, it stays in use.</p>
+<p>Every picture Studio asks about goes to the AI chosen here: Describe
+a Picture, the Screenshot Inspector, automatic screenshot analysis and
+Ask AI questions about a video. That replaced Studio’s old question
+about which AI should read a picture.</p>
+<p>The rest of the AI menu:</p>
+<ul>
+<li><strong>Ask…</strong> (Ctrl+6) opens a conversation about your
+recording setup. With each message go the last pre-flight check and what
+it measured, the last recording check, the recording running now, and
+the name of the book open in the Chapter Workbench. No picture and no
+sound ever goes with it. Quick questions starts with <strong>Is my setup
+ready?</strong> and <strong>Does this recording look right?</strong>.
+<strong>What can I do here?</strong> is answered on this computer and
+sends nothing.</li>
+<li><strong>Which AI Am I Using</strong> (Ctrl+8) says the AI in use and
+its model in one line. Press it twice quickly to open Choose Your
+AI.</li>
+<li><strong>Describe a Picture…</strong> (Ctrl+F5) asks you for a
+picture, or a video and then the moment in it, like 2:10. Studio takes
+that one picture on this computer, fits it to the AI in use and reads
+the description aloud; the description of a video frame starts with its
+time. Asking about the same picture again in the same session sends
+nothing. When the AI in use cannot see, the menu row says “(needs a
+connection that sees)”, and pressing it sends nothing and offers to
+switch to one that can.</li>
+<li><strong>Use My ChatGPT Subscription…</strong> (Alt+F5) opens Choose
+Your AI on the ChatGPT row, ready to sign in. It used to be on the
+Capture menu.</li>
+<li><strong>Use My Own AI Key…</strong> (Alt+F2), <strong>AI
+Usage…</strong> (Ctrl+Alt+Shift+F2) and <strong>Privacy
+Agreement…</strong> (Alt+Shift+F2).</li>
+</ul>
+<p><strong>Pictures: asked once, and every screenshot
+confirmed.</strong> The first time you ask about a picture on a
+connection, Studio says where pictures go, for example “Pictures you ask
+about in QUILL Studio go to OpenAI on your ChatGPT plan. Nothing is sent
+until you ask.”, and asks Yes or No; No is the default. Studio asks
+again if you change to an AI from a different company. A screenshot is
+still confirmed every time before it goes.</p>
+<p><strong>Make a picture with AI</strong> keeps its own key
+(Ctrl+Alt+Shift+J) and still needs an OpenAI or Gemini key, because
+ChatGPT plans don’t make pictures for other apps.</p>
 <h3 id="set-up-ai">Set Up AI</h3>
 <p><strong>AI &gt; Set Up AI…</strong> runs a short, jargon-free wizard:
 choose how AI should run - a cloud provider with your own key (paste it,
 test it) or a local model via Ollama (nothing leaves your machine) - and
 you land ready to go. Nothing is applied until you confirm, and you can
 cancel at any point with nothing lost.</p>
-<p>One configured provider powers three things in this app:</p>
+<p>Set Up AI is separate from Choose Your AI. The provider it sets up
+powers three things in this app:</p>
 <ul>
 <li><strong>AI chapter titles</strong> - the Workbench’s “Propose AI
 titles…” (local transcription first; only text goes to the AI).</li>
@@ -1405,6 +1460,38 @@ will be off in Safe Mode like everywhere else.</p>
 <td>Mute everything public (while live)</td>
 <td>Ctrl+Alt+Shift+Z</td>
 </tr>
+<tr>
+<td>Ask (AI)</td>
+<td>Ctrl+6</td>
+</tr>
+<tr>
+<td>Which AI Am I Using</td>
+<td>Ctrl+8</td>
+</tr>
+<tr>
+<td>Choose Your AI</td>
+<td>Ctrl+4</td>
+</tr>
+<tr>
+<td>Describe a Picture</td>
+<td>Ctrl+F5</td>
+</tr>
+<tr>
+<td>Use My ChatGPT Subscription</td>
+<td>Alt+F5</td>
+</tr>
+<tr>
+<td>Use My Own AI Key</td>
+<td>Alt+F2</td>
+</tr>
+<tr>
+<td>AI Usage</td>
+<td>Ctrl+Alt+Shift+F2</td>
+</tr>
+<tr>
+<td>AI Privacy Agreement</td>
+<td>Alt+Shift+F2</td>
+</tr>
 </tbody>
 </table>
 <p>Every button and field in the wizard, the Workbench, and the dialogs
@@ -1699,17 +1786,15 @@ prompt instructions</strong> lets you add detail or replace the preset,
 and <strong>Your question or additional instructions</strong> accepts a
 separate question. <strong>Manage prompts</strong> adds, edits or
 removes reusable prompts in the shared library.</p>
-<p><strong>Configured AI providers.</strong> Screenshot AI uses QUILL’s
-shared AI connection settings, model selection, provider-specific
-credentials and vision transport: OpenAI, Google Gemini, Anthropic
-Claude, OpenRouter, Ollama (local or cloud), and compatible custom
-endpoints. Select the provider and an image-capable model through the
-shared AI setup. Studio does not require Ollama or maintain a separate
-provider configuration. Provider/model image support still applies; a
-text-only model cannot inspect screenshots. Changing the connection
-pauses previously approved automatic uploads.</p>
+<p><strong>The AI in use.</strong> Screenshot AI uses the AI chosen in
+<strong>AI &gt; Choose Your AI</strong>: your ChatGPT plan, GitHub
+Copilot, Codex or a Gemini key can see pictures; QUILL’s free AI and an
+OpenAI key cannot, and with one of those in use Ask AI sends nothing and
+offers to switch. The screenshot is fitted to what that AI accepts
+before it goes. Changing the connection pauses previously approved
+automatic uploads.</p>
 <p>Choose <strong>Ask AI</strong> to approve sending the complete
-screenshot to the named provider, model and endpoint. Private
+screenshot to the named connection, model and company. Private
 information is not automatically redacted. A privacy-review prompt is a
 review of an image already sent to that provider, not a guarantee that
 sharing was safe. AI Off and Safe Mode block AI; local capture and
@@ -1732,8 +1817,8 @@ by default. Enabling it asks for separate approval to send every future
 user-triggered Studio screenshot, including full-desktop captures, to
 the selected connection. <strong>Use for automatic AI</strong> saves the
 current prompt instructions for those requests.</p>
-<p>Changing the provider, model or endpoint pauses automatic analysis
-until you approve the new connection. AI Off and Safe Mode override this
+<p>Changing the AI in use, or its model, pauses automatic analysis until
+you approve the new connection. AI Off and Safe Mode override this
 setting. Clearing the checkbox stops future and queued unsent automatic
 requests; it cannot recall a request already sent. Capturing remains an
 explicit user action. The result is available in Screenshot Inspector
@@ -1769,54 +1854,26 @@ paste it into the intended destination. Review the exported text and
 image before sharing. The evidence report labels AI/OCR observations as
 unverified.</li>
 </ol>
-<h3 id="worked-example-use-your-configured-ai-provider">Worked example:
-use your configured AI provider</h3>
-<p>Use <strong>AI &gt; Set Up AI</strong> and QUILL’s shared connection
-controls to choose OpenAI, Google Gemini, Anthropic Claude, OpenRouter,
-Ollama or a compatible custom service. Configure the endpoint,
-credential and an image-capable model there. The Screenshot Inspector
-uses that active shared connection, or your ChatGPT plan (below); it has
-no key store of its own. Switching providers in shared settings affects
-other QUILL features that use the same connection.</p>
-<p>Open a saved PNG or make a new screenshot. Choose a prompt, edit its
-instructions, type a question and activate Ask AI. Check the provider,
-effective model and endpoint in the consent message. Local OCR works
-independently of a cloud key. A provider being configured does not prove
-that every one of its models accepts images. Provider errors should be
-resolved through the shared connection/model settings, rather than by
-sending the image to another service without approval.</p>
-<h3 id="use-your-chatgpt-plan-instead-of-a-key">Use your ChatGPT plan
-instead of a key</h3>
-<p>If you pay for ChatGPT, Studio can use your plan to answer questions
-about pictures: Ask AI in the Screenshot Inspector, automatic screenshot
-analysis and <strong>Ask AI questions about a video</strong>. There’s no
-key to paste and nothing to pay per request; what you send counts toward
-your plan’s own usage.</p>
-<p>Studio signs in on its own, as QUILL Studio, the same way QUILL and
-QUILL Lite each do. It never uses their sign-in. If you have no AI set
-up when you ask about a picture, Studio offers to sign in with your
-ChatGPT plan right there; say Yes and the <strong>Use My ChatGPT
-Subscription</strong> window opens. Choose Continue with ChatGPT and
-allow QUILL Studio in your browser. If QUILL or QUILL Lite is already
-signed in on this computer, the browser is usually already signed in
-too, so it’s one Allow. You can open the window yourself from the
-Capture menu to choose the model or sign out.</p>
-<p>If you have both a plan and an AI provider set up, Studio asks which
-one to use for each picture, starting on the one you chose last time.
-Before anything is sent, Studio asks your approval, naming your plan and
-account and saying the picture goes to OpenAI on your account.</p>
-<p>The plan reads pictures up to 20 MB in PNG, JPEG, WebP or GIF. A
-larger picture, or another format, is scaled and converted before it
-goes; ordinary screenshots and video frame sheets are sent as they are.
-A video is always one sheet of frames, never the video itself.</p>
-<p>When your plan’s usage limit is reached, Studio says so, sends
-nothing, and offers to open ChatGPT’s Usage settings. It never switches
-to your API key by itself; to use another AI, ask again and choose it.
-If the plan can’t take a request from other apps, Studio explains and
-doesn’t retry. If OpenAI stops accepting Studio’s sign-in, sign in again
-from the Capture menu.</p>
-<p>Making a picture with AI still needs an OpenAI or Gemini API key,
-because ChatGPT plans don’t make pictures for other apps.</p>
+<h3
+id="worked-example-ask-about-a-screenshot-on-your-chatgpt-plan">Worked
+example: ask about a screenshot on your ChatGPT plan</h3>
+<ol type="1">
+<li>Press Ctrl+4 to open Choose Your AI. Arrow to <strong>My ChatGPT
+plan</strong>. If it says “not set up”, press Enter and allow QUILL
+Studio in your browser; when the sign-in finishes it is in use.</li>
+<li>Open a saved PNG or make a new screenshot, and open the Screenshot
+Inspector.</li>
+<li>Choose a prompt, edit its instructions, type a question and activate
+Ask AI. The first time, Studio says that pictures go to OpenAI on your
+ChatGPT plan and asks once. Then it confirms this screenshot, naming the
+connection and model.</li>
+<li>The answer starts with what was looked at, then the description.
+Follow-ups use the same picture.</li>
+</ol>
+<p>When your plan’s limit is reached, Studio says so once and sends
+nothing; it never switches to another AI by itself. AI Usage shows what
+Studio has used. Local OCR works whichever AI is chosen, and in Safe
+Mode.</p>
 <h3
 id="customize-a-reusable-prompt-and-keep-the-conversation-grounded">Customize
 a reusable prompt and keep the conversation grounded</h3>
@@ -2570,10 +2627,10 @@ stretch.</li>
 out as one picture with each frame’s time written on it, and opens the
 same conversation window as the Screenshot Inspector, with a question
 already describing the picture. Ask your own question, and follow-ups
-after it. Nothing is sent until you approve it, using your usual AI
-connection or your ChatGPT plan, and Safe Mode blocks it as it blocks
-screenshot AI. Answers cite the times of the frames they rely on, so you
-can go to that point in the video.</p>
+after it. Nothing is sent until you approve it, to the AI chosen in
+Choose Your AI, and Safe Mode blocks it as it blocks screenshot AI.
+Answers cite the times of the frames they rely on, so you can go to that
+point in the video.</p>
 <p>The AI sees only the frames, not the moving video, so something that
 appears and disappears between two frames can be missed. Ask about a
 shorter stretch to look more closely. The AI is told to quote text only

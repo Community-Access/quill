@@ -12,6 +12,15 @@ This version is built but not yet published: Audio Studio is not offered in the 
 
 Testing build: **2.0.0 (build 2)**. Builds since the first have not been published.
 
+### Choose Your AI, Ask and Describe a Picture (2026-11-01)
+
+- **One AI choice, the family's.** The AI menu has Choose Your AI (Ctrl+4), Which AI Am I Using (Ctrl+8; twice opens Choose Your AI), Ask (Ctrl+6), AI Usage, Use My Own AI Key and Privacy Agreement, the same rows as the editors. Studio's old question about which AI should read a picture is gone: every picture goes to the AI chosen there. Studio still signs in as QUILL Studio, and an existing sign-in stays in use.
+- **Ask about your setup.** Ask sends the last pre-flight check, what it measured, the last recording check, the recording running now and the name of the open book. Never a picture or sound.
+- **Describe a Picture** (Ctrl+F5) describes one picture, or one frame of a video at the time you give, fitted to the AI in use. The same picture asked about again sends nothing.
+- **Pictures are asked about once per connection.** The first picture on a connection says where pictures go and asks Yes or No, No the default, and asks again when the company changes. Screenshots are still confirmed every time. A connection that cannot see sends nothing and offers the switch.
+- **Use My ChatGPT Subscription** moved from the Capture menu to the AI menu and now has a key, Alt+F5.
+- **An AI cell** ends the status bar: press Enter on it to open Choose Your AI.
+
 ### Live broadcast: a slow link, short gaps and proof of air (2026-10-31)
 
 These lessons come from Tony Gebhard's TG Drop Deck, an MIT-licensed broadcast cart program. Studio's code is its own; the lessons are his.

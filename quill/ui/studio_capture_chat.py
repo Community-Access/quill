@@ -203,18 +203,19 @@ class ScreenshotChatDialog(wx.Dialog):
             save_capture_ai_preferences(preferences)
             self._say("Automatic screenshot AI disabled. Already sent requests may finish.")
             return
-        # The same choice a single screenshot gets: a ChatGPT plan or the provider.
+        # The connection in use in Choose Your AI, after the same gate and
+        # picture consent a single screenshot gets.
         connection = self.host._choose_vision_connection()
         if connection is None:
             self.automatic.SetValue(False)
             return
         identity = connection_identity(connection)
+        model = f"\nModel: {connection.model}" if connection.model else ""
         approved = self.host._show_message_box(
             "Automatically send EVERY future user-triggered Studio screenshot, "
             "including full desktop "
             "captures, to this AI connection until disabled?\n\n"
-            f"Provider: {identity['provider']}\nModel: {identity['model']}\n"
-            f"Endpoint: {identity['host']}\n\n"
+            f"Connection: {connection.name}{model}\nIt goes to: {connection.host}\n\n"
             "Images may contain private information. There is no automatic redaction. "
             "A changed connection pauses automatic analysis. Safe Mode and AI Off block it.",
             "Enable automatic screenshot AI",
@@ -272,10 +273,8 @@ class ScreenshotChatDialog(wx.Dialog):
         def failed(_task, error):
             self.busy = False
             self.transcript.AppendText(f"\n\nInspection failed: {error}")
-            self._say(f"Inspection failed: {error}. Your screenshot and conversation are retained.")
-            usage_url = getattr(error, "usage_url", "")
-            if usage_url:
-                self.host._offer_plan_usage(usage_url)
+            said = str(error).rstrip(". ")
+            self._say(f"Inspection failed: {said}. Your screenshot and conversation are retained.")
 
         self.task = self.host._submit_capture_inspection(
             self.evidence,

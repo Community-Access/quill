@@ -98,10 +98,12 @@ class StudioDemoSetupMixin:
             finally:
                 shutil.rmtree(scratch, ignore_errors=True)
             findings = preflight(plan, facts)
-            return summary(plan, findings), can_start(findings)
+            return summary(plan, findings), can_start(findings), findings, facts
 
         def ready(_task, result):
-            text, ok = result
+            text, ok, findings, facts = result
+            # Kept for Ask (codex.md 10C.3): the last check and what it measured.
+            self._studio_last_check = (text, tuple(findings), facts)
             done(text, ok)
 
         def failed(_task, error):

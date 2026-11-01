@@ -1,4 +1,9 @@
-"""Screenshot chat, consent, artifact identity, and local OCR through native controls."""
+"""Screenshot chat, consent, artifact identity, and local OCR through native controls.
+
+A screenshot question goes to the connection in use in Choose Your AI (codex.md
+Phase 3), through the shared service; here that service is a stand-in, so
+nothing leaves the machine.
+"""
 
 from pathlib import Path
 from types import SimpleNamespace
@@ -22,6 +27,38 @@ class Tasks:
         self.jobs.append((name, work, kwargs))
         return SimpleNamespace(cancellation_token=CancellationToken())
 
+    def run(self, index=-1):
+        """Finish a queued job the way the task manager would."""
+        _name, work, callbacks = self.jobs[index]
+        callbacks["on_success"]("task", work(cancellation_token=CancellationToken()))
+
+
+class Service:
+    """The connection in use, as the shared service answers for it."""
+
+    def __init__(self, connection="chatgpt", model="vision-model"):
+        self.connection_in_use = connection
+        self.model = model
+        self.own_key_provider = "openai"
+        self.direct = True
+        self.sent = []
+        self.answer = "Possible overlay; uncertain."
+
+    def can_do(self, capability):
+        return self.capability_record(self.connection_in_use).claim(capability).supported
+
+    def connection_model(self, connection=""):
+        return self.model
+
+    def capability_record(self, connection=""):
+        from quill.core.ai.connection_caps import record_for
+
+        return record_for(connection or self.connection_in_use)
+
+    def describe_image(self, path, question, *, on_done, on_error, requires):
+        self.sent.append((Path(path).read_bytes(), question, requires))
+        on_done(self.answer)
+
 
 class Host(StudioCaptureMixin):
     def __init__(self, frame, *, safe=False, consent=wx.NO):
@@ -31,6 +68,10 @@ class Host(StudioCaptureMixin):
         self.messages = []
         self._task_manager = Tasks()
         self._capture_lifetime = UiLifetimeToken()
+        self.service = Service()
+
+    def _ai_service(self):
+        return self.service
 
     def _show_message_box(self, message, _title, _style):
         self.messages.append(message)
@@ -59,17 +100,9 @@ def parent(wx_session_app):
 
 @pytest.fixture
 def connected(monkeypatch):
-    from quill.core import assistant_ai
     from quill.core.ai import model_manager
 
     monkeypatch.setattr(model_manager, "load_ai_enabled", lambda: True)
-    connection = SimpleNamespace(
-        provider="openai", model="configured-model", host="https://example.org"
-    )
-    monkeypatch.setattr(assistant_ai, "load_assistant_connection_settings", lambda: connection)
-    monkeypatch.setattr(assistant_ai, "load_provider_api_key", lambda _provider: "provider-key")
-    monkeypatch.setattr(assistant_ai, "load_assistant_api_key", lambda: "legacy-key")
-    return connection
 
 
 @pytest.fixture
@@ -132,56 +165,68 @@ def test_editing_starts_simple_and_keeps_exact_geometry_under_advanced(parent, c
 def test_safe_mode_never_offers_network_send(chat, connected):
     host, dialog = chat(safe=True, consent=wx.YES)
     dialog.send(local=False)
-    assert not host._task_manager.jobs
+    assert not host._task_manager.jobs and not host.service.sent
     assert not any("Send this complete" in m for m in host.messages)
 
 
-def test_declining_ai_sends_nothing(chat, connected):
+def test_declining_the_picture_consent_sends_nothing(chat, connected):
     host, dialog = chat()
     dialog.send(local=False)
-    assert not host._task_manager.jobs
-    assert any("No automatic redaction" in m for m in host.messages)
+    assert not host._task_manager.jobs and not host.service.sent
+    assert any(
+        m.startswith("Pictures you ask about in QUILL Studio go to OpenAI on your ChatGPT plan")
+        for m in host.messages
+    )
 
 
-def test_chat_keeps_same_artifact_custom_prompt_and_followup(chat, capture, connected, monkeypatch):
-    from quill.core.ai import vision
+def test_a_connection_that_cannot_see_is_offered_the_switch_and_sends_nothing(
+    chat, connected, monkeypatch
+):
+    host, dialog = chat(consent=wx.YES)
+    host.service.connection_in_use = "free"
+    offered = []
+    host.service.capability_offer = lambda capability: SimpleNamespace(
+        sentence="Pictures need a connection that can see.", target="", open_row=""
+    )
+    host._announce = offered.append
+    dialog.send(local=False)
+    assert offered == ["Pictures need a connection that can see."]
+    assert not host._task_manager.jobs and not host.service.sent
 
-    seen = []
 
-    def describe(connection, key, path, **kwargs):
-        seen.append((key, path.read_bytes(), kwargs["prompt"]))
-        assert path != Path(capture.path)
-        return "Possible overlay; uncertain.", None
-
-    monkeypatch.setattr(vision, "describe_image", describe)
+def test_chat_keeps_same_artifact_custom_prompt_and_followup(chat, capture, connected):
     host, dialog = chat(consent=wx.YES)
     dialog.prompt.ChangeValue("Focus on the error dialog.")
     dialog.question.ChangeValue("What is clipped?")
     dialog.send(local=False)
-    _, work, callbacks = host._task_manager.jobs[0]
-    callbacks["on_success"]("task", work(cancellation_token=CancellationToken()))
-    assert seen[0][0] == "provider-key"
-    assert seen[0][1] == Path(capture.path).read_bytes()
-    assert "Focus on the error dialog" in seen[0][2]
-    assert "What is clipped?" in seen[0][2]
+    assert any("Send this complete screenshot to My ChatGPT plan" in m for m in host.messages)
+    host._task_manager.run(0)
+    data, prompt, requires = host.service.sent[0]
+    assert requires == ("text", "pictures")
+    with Image.open(capture.path) as original:
+        assert original.size == (20, 30)
+    assert data  # the fitted copy of the very screenshot that was verified
+    assert "Focus on the error dialog" in prompt and "What is clipped?" in prompt
     assert "Possible overlay" in dialog.transcript.GetValue()
+    assert "AI (My ChatGPT plan, vision-model)" in dialog.transcript.GetValue()
     dialog.question.ChangeValue("Where is it?")
     dialog.send(local=False)
-    host._task_manager.jobs[1][1](cancellation_token=CancellationToken())
-    assert seen[1][1] == seen[0][1]
-    assert "Possible overlay" in seen[1][2]
-    assert "Where is it?" in seen[1][2]
+    host._task_manager.run(1)
+    assert host.service.sent[1][0] == data
+    assert "Possible overlay" in host.service.sent[1][1]
+    assert "Where is it?" in host.service.sent[1][1]
+    # The picture consent is asked once per connection, not with every screenshot.
+    assert len([m for m in host.messages if m.startswith("Pictures you ask about")]) == 1
 
 
-def test_replaced_screenshot_cannot_be_sent(chat, capture, connected, monkeypatch):
-    from quill.core.ai import vision
-
-    monkeypatch.setattr(vision, "describe_image", lambda *a, **k: pytest.fail("network called"))
+def test_replaced_screenshot_cannot_be_sent(chat, capture, connected):
     host, dialog = chat(consent=wx.YES)
     dialog.send(local=False)
     Image.new("RGB", (20, 30), "red").save(capture.path)
+    _name, work, _callbacks = host._task_manager.jobs[0]
     with pytest.raises(ValueError, match="changed"):
-        host._task_manager.jobs[0][1](cancellation_token=CancellationToken())
+        work(cancellation_token=CancellationToken())
+    assert not host.service.sent
 
 
 def test_local_ocr_works_in_safe_mode(chat, monkeypatch):
@@ -218,28 +263,46 @@ def test_auto_ai_requires_separate_explicit_consent(chat, connected, monkeypatch
     dialog.automatic.SetValue(True)
     dialog._set_automatic(None)
     assert saved[-1]["auto_ai_enabled"] is True
-    assert saved[-1]["approved_connection"]["host"] == "https://example.org"
+    assert saved[-1]["approved_connection"] == {
+        "provider": "chatgpt",
+        "host": "OpenAI on your ChatGPT plan",
+        "model": "vision-model",
+    }
+    assert any("Connection: My ChatGPT plan" in m for m in host.messages)
     assert not host._task_manager.jobs
 
 
 def test_revoking_automatic_permission_blocks_queued_upload(chat, connected, monkeypatch):
     from quill.core import studio_capture_ai as ai
-    from quill.core.ai import vision
 
     host, dialog = chat(consent=wx.YES)
     preferences = {
         "auto_ai_enabled": True,
-        "approved_connection": ai.connection_identity(connected),
+        "approved_connection": ai.connection_identity(host._studio_picture_route()),
     }
     monkeypatch.setattr(ai, "load_capture_ai_preferences", lambda: preferences)
-    monkeypatch.setattr(
-        vision, "describe_image", lambda *a, **k: pytest.fail("Upload after revocation")
-    )
     host._maybe_auto_inspect(dialog.evidence)
     assert len(host._task_manager.jobs) == 1
     preferences["auto_ai_enabled"] = False
     with pytest.raises(RuntimeError, match="permission changed"):
         host._task_manager.jobs[0][1](cancellation_token=CancellationToken())
+    assert not host.service.sent
+
+
+def test_a_changed_connection_pauses_automatic_analysis(chat, connected, monkeypatch):
+    from quill.core import studio_capture_ai as ai
+
+    host, dialog = chat(consent=wx.YES)
+    preferences = {
+        "auto_ai_enabled": True,
+        "approved_connection": ai.connection_identity(host._studio_picture_route()),
+    }
+    monkeypatch.setattr(ai, "load_capture_ai_preferences", lambda: preferences)
+    host.service.connection_in_use = "own_key"  # a different company now
+    host.service.own_key_provider = "gemini"
+    host._maybe_auto_inspect(dialog.evidence)
+    assert not host._task_manager.jobs
+    assert any("Automatic screenshot AI is paused" in m for m in host.messages)
 
 
 def test_paused_automatic_ai_is_said_once_not_with_every_screenshot(chat, connected, monkeypatch):
@@ -254,7 +317,7 @@ def test_paused_automatic_ai_is_said_once_not_with_every_screenshot(chat, connec
     host._maybe_auto_inspect(dialog.evidence)
     paused = [m for m in host.messages if "Automatic screenshot AI is paused" in m]
     assert len(paused) == 1 and not host._task_manager.jobs
-    preferences["approved_connection"] = ai.connection_identity(connected)
+    preferences["approved_connection"] = ai.connection_identity(host._studio_picture_route())
     host._maybe_auto_inspect(dialog.evidence)
     assert host._auto_ai_pause_said is False
 

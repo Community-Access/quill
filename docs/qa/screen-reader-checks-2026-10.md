@@ -1883,3 +1883,76 @@ QUILL Cast:
 - [ ] All fourteen with NVDA.
 - [ ] All fourteen with JAWS.
 - [ ] Checks 1, 4, 9 and 13 with Narrator.
+
+## Choose Your AI, Ask and pictures, QUILL Studio and QUILL Transcribe (codex.md Phase 3, 2026-11-01)
+
+Run the Studio checks in QUILL Studio and the Transcribe checks in QUILL
+Transcribe. A ChatGPT plan signed in for each app makes most checks possible;
+Studio check 6 also wants the free AI in use, and Transcribe check 12 wants a
+copy that has never signed in to ChatGPT as QUILL Transcribe.
+
+QUILL Studio:
+
+1. Press Alt+A. The AI menu reads Ask (Ctrl+6), Which AI Am I Using (Ctrl+8),
+   Choose Your AI (Ctrl+4), Describe a Picture (Ctrl+F5), Use My ChatGPT
+   Subscription (Alt+F5), Use My Own AI Key (Alt+F2), AI Usage
+   (Ctrl+Alt+Shift+F2), Privacy Agreement (Alt+Shift+F2) and Set Up AI
+   (Ctrl+Alt+Shift+A). Each letter works. The Capture menu no longer has a
+   ChatGPT row.
+2. If Studio was signed in to your ChatGPT plan before this build, press
+   Ctrl+8: it names My ChatGPT plan without asking you to choose again. Press
+   it twice quickly: Choose Your AI opens on that row, and nothing is spoken
+   on open.
+3. Press Ctrl+6. Ask opens with focus in Your message. Shift+Tab to About this
+   conversation: it starts "Asking My ChatGPT plan about your recording setup."
+   The first two quick questions are "Is my setup ready?" and "Does this
+   recording look right?".
+4. Run a demonstration check in Record a Demonstration, close it, then ask "Is
+   my setup ready?": the answer refers to what the check found. You hear
+   "Working." and the reply, once.
+5. Press F6 to the status bar and move to the last cell: it reads "AI: ChatGPT
+   plan". Enter opens Choose Your AI.
+6. With the free AI in use, open the AI menu: Describe a Picture reads "(needs
+   a connection that sees)" and still shows Ctrl+F5. Press Ctrl+F5: nothing
+   opens, nothing is sent, and the switch question has Yes chosen.
+7. On your ChatGPT plan, press Ctrl+F5 for the first time: you hear "Pictures
+   you ask about in QUILL Studio go to OpenAI on your ChatGPT plan. Nothing is
+   sent until you ask." with No chosen. Choose Yes, pick a picture: you hear
+   "Working.", then "Looked at 1 picture ... Described by My ChatGPT plan." and
+   the description, once, and a result window opens. Press Ctrl+F5 on the same
+   picture: no consent question, and the answer ends "Nothing was sent".
+8. Press Ctrl+F5 and pick a video, type 1:30 and press Enter: the description
+   names 1:30.
+9. In the Screenshot Inspector, choose Ask AI: the confirmation names My
+   ChatGPT plan and says it goes to OpenAI on your ChatGPT plan. No is chosen.
+10. Start Studio with --safe-mode and press Ctrl+6, Ctrl+4 and Ctrl+F5: each
+    says "AI is off in Safe Mode." and nothing opens.
+
+QUILL Transcribe:
+
+11. Press Alt+A. The AI menu sits after Options and reads Ask (Ctrl+Shift+8),
+    Which AI Am I Using (Ctrl+F8), Choose Your AI (Ctrl+Shift+F8), Use My
+    ChatGPT Subscription (Alt+F5), Use My Own AI Key (Alt+F2), AI Usage
+    (Ctrl+Alt+Shift+F2) and Privacy Agreement (Alt+Shift+F2). Ctrl+2 still
+    reaches window 2 on the Window menu.
+12. On a copy that has never signed in as QUILL Transcribe, with the free AI in
+    use, open Review Dictation (Shift+F4): you hear once "QUILL Transcribe now
+    signs in to your AI on its own and no longer uses QUILL's sign-in; press
+    Ctrl+Shift+F8 to sign in as QUILL Transcribe." The Status line starts with
+    the same sentence, then says why the AI cannot change the words. Close and
+    open it again: the sentence is not said again.
+13. Press Ctrl+Shift+F8, sign in to My ChatGPT plan: the browser page names
+    QUILL Transcribe, not QUILL. You hear "Signed in to My ChatGPT plan. It is
+    now in use." once.
+14. Tab through the main window to the AI line: it reads "AI" and "AI: ChatGPT
+    plan", and F1 says Enter opens Choose Your AI. Press Enter: it opens.
+15. Open a finished transcript from Notifications, close it, and press
+    Ctrl+Shift+8. Ask "What was decided?": the answer is about that
+    transcript. About this conversation starts "Asking My ChatGPT plan about
+    your dictation."
+16. Start QUILL Transcribe with --safe-mode and press Ctrl+Shift+8 and Ctrl+F8:
+    each says "AI is off in Safe Mode."
+
+- [ ] All sixteen with NVDA.
+- [ ] All sixteen with JAWS.
+- [ ] Checks 1, 7, 11 and 12 with Narrator.

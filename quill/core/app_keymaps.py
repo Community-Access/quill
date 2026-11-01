@@ -66,6 +66,32 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         "studio.broadcast": "Ctrl+Alt+Shift+G",
         "studio.broadcast_mute": "Ctrl+Alt+Shift+Z",
         "studio.broadcast_stop": "Ctrl+Alt+Shift+E",
+        # The family's AI (codex.md Phase 3). No Window menu here, so the
+        # editors' Ctrl+8, Ctrl+4 and Ctrl+6 hold, from DEFAULT_KEYMAP
+        # (decision 14). Use My ChatGPT Subscription keeps its id, once keyless
+        # on the Capture menu, and takes the family's Alt+F5 (rule 2). Privacy
+        # Agreement takes Radio's Alt+Shift+F2: Ctrl+Alt+Shift+K is Ask AI
+        # About a Video above (rule 11; app_ai_keys.APP_AI_DIVERGENCES).
+        # Describe a Picture: the family's Describe key (codex.md 10B.6).
+        "studio.chatgpt_account": "Alt+F5",
+        "tools.hosted_ai_privacy": "Alt+Shift+F2",
+        "studio.describe_picture": "Ctrl+F5",
+    },
+    # QUILL Transcribe's AI rows (codex.md Phase 3); its other keys are in
+    # transcribe_menus.py. Ctrl+1 to Ctrl+9 are its Window menu keys, so the
+    # editors' Ctrl+4, Ctrl+6 and Ctrl+8 would each be claimed twice: it takes
+    # Radio's and Cast's set -- Ask Ctrl+Shift+8, Which AI Ctrl+F8, Choose
+    # Your AI Ctrl+Shift+F8 (rule 2) -- and their Alt+Shift+F2 for Privacy
+    # Agreement, Ctrl+Alt+Shift+K being its Command Key. Each divergence is
+    # this comment and an app_ai_keys row (rule 11); the rest are the editors'.
+    "transcribe": {
+        "tools.hosted_ai_chat_key": "Ctrl+Shift+8",
+        "tools.hosted_ai_which": "Ctrl+F8",
+        "tools.hosted_ai_choose": "Ctrl+Shift+F8",
+        "tools.hosted_ai_chatgpt": "Alt+F5",
+        "tools.hosted_ai_own_key": "Alt+F2",
+        "tools.hosted_ai_usage": "Ctrl+Alt+Shift+F2",
+        "tools.hosted_ai_privacy": "Alt+Shift+F2",
     },
     "radio": {
         # Quick-play favorites. These were Ctrl+Alt+Shift+1..0 in

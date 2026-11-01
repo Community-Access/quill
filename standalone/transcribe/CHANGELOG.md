@@ -14,6 +14,13 @@ did. This is the short list, grouped by area in the same order as
 
 ### Since build 3 (2026-10-31)
 
+- **Its own AI menu, and its own sign-in** (2026-11-01). QUILL Transcribe
+  has an AI menu: Choose Your AI (Ctrl+Shift+F8), Which AI Am I Using
+  (Ctrl+F8; twice opens Choose Your AI), Ask (Ctrl+Shift+8), AI Usage and
+  the account rows, and an AI line in its window. It signs in to ChatGPT as
+  QUILL Transcribe and no longer uses QUILL's sign-in; Review Dictation says
+  so once, the first time it needs a plan you have not signed in to.
+
 - **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
   which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
   GLOW dependency; Transcribe does not itself expose GLOW. Release-specific

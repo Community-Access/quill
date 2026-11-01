@@ -153,6 +153,18 @@ class StudioStatusBar:
                 activate=self._announce_clock,
                 help="The current time. Press Enter to hear the full date and time.",
             ),
+            # Last, so it never pushes the cells above onto another row
+            # (codex.md decision 19).
+            CellSpec(
+                key="ai",
+                name="AI",
+                text=lambda: _call_value(host, "ai_status_text", ""),
+                activate=lambda: _call(host, "cmd_ai_choose"),
+                help=(
+                    "Which AI is in use, as Which AI Am I Using says it. Press Enter to "
+                    "open Choose Your AI."
+                ),
+            ),
         ]
 
     # -- cell text ------------------------------------------------------------

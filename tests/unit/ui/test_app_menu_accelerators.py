@@ -55,6 +55,8 @@ APP_MENU_FILES = (
     "inkwell_dictation.py",
     # QUILL Transcribe builds its bar and tray menu in one module (2026-10-11).
     "transcribe_menus.py",
+    # Its AI menu, appended to that bar (codex.md Phase 3, 2026-11-01).
+    "transcribe_ai.py",
     "weather.py",
     "converter.py",
     "beacon/app.py",

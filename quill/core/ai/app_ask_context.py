@@ -311,9 +311,13 @@ def studio_context(
     findings: Sequence[Finding] = (),
     capture: Mapping[str, str] | None = None,
     verification: Verification | None = None,
+    recording: str = "",
+    book: str = "",
 ) -> AppFacts:
     """The plan (``demo_recording.summary``), the pre-flight findings, the capture
-    facts ``gather_facts`` measured, and the last recording check's result."""
+    facts ``gather_facts`` measured, and the last recording check's result; and,
+    when there is one, the recording running now (its status line) and the book
+    open in the Chapter Workbench, by name only."""
     found = "\n".join(f"{f.severity}: {f.text}" for f in findings) if findings else ""
     if not findings and plan_summary:
         found = "No problems found."
@@ -330,6 +334,8 @@ def studio_context(
         Fact("Pre-flight check", found),
         Fact("Capture facts", measured),
         Fact("Last recording check", last),
+        Fact("Recording now", recording),
+        Fact("Book open", scrub(book)),
     )
 
 

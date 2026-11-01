@@ -52,7 +52,7 @@ def _check(host: Any, menu: Any, label: str, checked: bool, handler: Callable[[b
 
 
 def build_menu_bar(host: Any, *, title: str, version: str) -> None:
-    """File, Dictation, Model, Options, QuillVille, Help."""
+    """File, Dictation, Model, Options, AI, QuillVille, Help."""
     bar = wx.MenuBar()
 
     shared: dict[str, Any] = {}  # method -> menu id, for the 1.0 keys (rule 5)
@@ -151,6 +151,9 @@ def build_menu_bar(host: Any, *, title: str, version: str) -> None:
     app_sounds.append_menu_item(host, options)
     host._sounds_chooser_id = app_sounds.append_chooser_item(host, options, "Ctrl+Shift+S")
     bar.Append(options, "&Options")
+
+    # Ask, Which AI, Choose Your AI and the accounts (codex.md Phase 3).
+    host._append_transcribe_ai_menu(bar)
 
     from quill.ui.quillville_menu import build_quillville_menu
 

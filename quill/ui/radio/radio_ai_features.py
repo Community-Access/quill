@@ -204,22 +204,9 @@ class RadioAiFeaturesMixin:
 
     def _radio_picture_answer(self, answer: str) -> None:
         """Said, because focus stays on the player, and kept in a result window."""
-        from quill.core.ai.chatgpt_ai_help import IMAGE_FEATURE
-        from quill.core.ai.spoken_answer import speakable_line
-        from quill.ui.hosted_ai_pad import AiResultFrame
+        from quill.ui.hosted_ai_app_ask import show_picture_answer
 
-        self._announce(speakable_line(answer))  # type: ignore[attr-defined]
-        frame = AiResultFrame(
-            self._ai_parent(),  # type: ignore[attr-defined]
-            action=IMAGE_FEATURE,
-            text=answer,
-            used="",
-            on_replace=None,
-            on_insert=None,
-            on_again=None,
-            announce=self._announce,  # type: ignore[attr-defined]
-        )
-        self._show_ai_window(frame)  # type: ignore[attr-defined]
+        show_picture_answer(self, answer)
 
 
 # --------------------------------------------------------------------------- #
