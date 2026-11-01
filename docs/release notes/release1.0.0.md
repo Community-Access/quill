@@ -32,6 +32,12 @@ and QUILLBee explains. They're new around here, and
 has the proper introductions.
 
 
+## New in this build: Choose Your AI, with GitHub Copilot and Codex
+
+Press **Ctrl+4** (**AI > Choose Your AI...**) and one window lists every place your AI can come from: QUILL's free AI, your ChatGPT plan, your GitHub Copilot, Codex, or your own key. Each row tells you whether it is in use, signed in or not set up, and one line says what it can do, who gets your text and what it costs. Enter uses it or signs you in. GitHub Copilot signs in with a short code that your screen reader spells out and that is already on the clipboard; Copilot Free works too, and the Copilot engine comes with QUILL, so there is nothing else to install. Codex uses your ChatGPT plan's sign-in.
+
+**Which AI Am I Using** (**Ctrl+8**) tells you in one line where your words are going, the model, and one thing about usage. **AI Usage** (**Ctrl+Alt+Shift+F2**) is one plain list, a sentence for each AI you have set up, each saying whose count it is: no meters, no charts. **Do a Document Task** (**Ctrl+3**) hands GitHub Copilot or Codex a job with several steps, asks before every step that changes something, and sends every edit through the review you already know, one undo each. When the AI you are using cannot do something, the command stays where it was, its name says what it needs, and pressing it offers to switch. QUILL Lite has all of this on the same keys, from the same code. See "Choose Your AI" in the user guide.
+
 ## New in this build: Find in Open Documents
 
 Press **Ctrl+Shift+F10** to find and replace across every document you have open, not just the one in front of you. It searches what is in each window right now, including changes you have not saved and documents you have never saved. Find Next moves from document to document and tells you each one's name, Find All lists every match, and Replace All tells you how many it found before it changes anything, lets you undo each document on its own, and saves nothing. Afterwards, F3 keeps searching across your documents until you start an ordinary Find. QUILL Lite has it too, on Ctrl+Alt+Shift+F8. Thanks to Chris Nova for asking.
