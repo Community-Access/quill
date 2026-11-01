@@ -7,7 +7,8 @@ A guided, accessible two-step setup for the Copilot engine:
 2. **Sign in** to GitHub using the OAuth 2.0 device flow — a short, speakable
    code the user types in their browser (:mod:`quill.core.ai.device_login` driven
    by the real :func:`quill.core.ai.oauth_poster.post_form`), with the token
-   persisted to the OS secure store and handed to the SDK for the session.
+   persisted to this app's own Copilot entry in the OS secure store (apart from
+   the GitHub repository features) and handed to the SDK at session start.
 
 Accessibility: one status text area narrates every step and carries the device
 code / verification URL / expiry as live text a screen reader can review; each
@@ -49,10 +50,13 @@ class CopilotOnboardingDialog:
         parent: object,
         show_modal_dialog: Callable,
         announce: Callable[[str], None] | None = None,
+        agent_name: str = copilot_auth.DEFAULT_AGENT_NAME,
     ) -> None:
         import wx
 
         self._wx = wx
+        # Each app signs in to Copilot under its own name and store entry.
+        self._agent_name = agent_name
         self._show_modal = show_modal_dialog
         self._announce = announce or (lambda _m: None)
         self._grant: object | None = None
@@ -191,12 +195,9 @@ class CopilotOnboardingDialog:
 
     def _on_sign_in(self, _event: object) -> None:
         wx = self._wx
-        if not copilot_auth.is_configured():
-            self._set_status(
-                "Automatic GitHub sign-in is not configured in this build. "
-                "Sign in once with the Copilot CLI (run: copilot) or the GitHub "
-                "CLI (gh auth login), then choose GitHub Copilot as your engine."
-            )
+        if not copilot_auth.is_configured(self._agent_name):
+            # Spoken plainly: the CLI route (copilot, or gh auth login) still works.
+            self._set_status(copilot_auth.sign_in_unavailable_message(self._agent_name))
             return
         self._busy = True
         self._refresh_state()
@@ -204,7 +205,7 @@ class CopilotOnboardingDialog:
 
         def worker() -> None:
             try:
-                config = copilot_auth.github_device_flow_config()
+                config = copilot_auth.github_device_flow_config(self._agent_name)
                 grant = request_device_code(config, poster=post_form)
                 wx.CallAfter(self._on_code_ready, config, grant, None)
             except Exception as exc:  # noqa: BLE001
@@ -254,8 +255,9 @@ class CopilotOnboardingDialog:
         tokens = getattr(result, "tokens", None) or {}
         token = str(tokens.get("access_token", "")) if isinstance(tokens, dict) else ""
         if token:
-            copilot_auth.persist_token(token)
-            copilot_auth.apply_token_to_environment(token)
+            # Stored under this app's own Copilot entry; never exported to the
+            # environment -- the pack hands it to the SDK at session start.
+            copilot_auth.persist_token(token, self._agent_name)
         self._set_status(spoken)
         self._refresh_state()
 

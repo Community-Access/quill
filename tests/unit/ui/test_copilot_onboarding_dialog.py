@@ -40,10 +40,13 @@ def test_two_steps_install_then_device_sign_in() -> None:
     assert "describe_login_result(result)" in body
 
 
-def test_persists_and_bridges_token() -> None:
+def test_persists_token_per_app_and_never_exports_it() -> None:
     body = _source()
-    assert "copilot_auth.persist_token(token)" in body
-    assert "copilot_auth.apply_token_to_environment(token)" in body
+    # Stored under this app's own Copilot entry; the pack hands it to the SDK
+    # at session start, so nothing is ever exported to the environment.
+    assert "copilot_auth.persist_token(token, self._agent_name)" in body
+    assert "apply_token_to_environment" not in body
+    assert "os.environ" not in body
 
 
 def test_has_three_action_buttons_and_close() -> None:
@@ -54,10 +57,10 @@ def test_has_three_action_buttons_and_close() -> None:
     assert "wx.ID_CANCEL, label=" in body
 
 
-def test_unconfigured_falls_back_to_cli_sign_in() -> None:
+def test_unconfigured_says_sign_in_is_not_available_yet() -> None:
     body = _source()
-    assert "copilot_auth.is_configured()" in body
-    assert "gh auth login" in body
+    assert "copilot_auth.is_configured(self._agent_name)" in body
+    assert "copilot_auth.sign_in_unavailable_message(self._agent_name)" in body
 
 
 def test_setup_is_reachable_from_the_hub_engines_tab() -> None:

@@ -2,6 +2,24 @@
 
 ## 1.0.0
 
+### Copilot engine groundwork (2026-10-31)
+
+- The GitHub Copilot engine now waits for Copilot's answer instead of
+  inserting a request id, passes the token to the SDK directly, and never
+  puts it in QUILL's environment, so Quillin workers and external engines
+  cannot inherit it. `GITHUB_TOKEN`, `GH_TOKEN` and `COPILOT_GITHUB_TOKEN`
+  are stripped from every child process, and `ghu_`, `ghs_` and `ghr_`
+  tokens are redacted from logs and diagnostic bundles alongside `gho_`.
+- Copilot keeps its own sign-in, one per app, apart from the token the
+  GitHub repository commands use. An existing shared sign-in stays with the
+  repository commands; Copilot asks once for its own.
+- When a build carries the Copilot CLI (`tools\copilot\copilot.exe`, version
+  1.0.105), QUILL launches it only if it matches the SHA-256 pinned for the
+  release, and the SDK is told never to download a CLI of its own.
+- Explain a Command and Ask Copilot for a Command are gone from Tools > Git
+  and GitHub > GitHub. They drove the `gh copilot` extension, which GitHub
+  retired on 2025-10-25.
+
 ### ChatGPT plan sign-in holds through a brief problem (2026-10-31)
 
 - In QUILL, QUILL Lite, Quill Radio and QUILL Cast, a temporary failure while renewing the

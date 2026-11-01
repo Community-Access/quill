@@ -3308,8 +3308,8 @@ page and marks it read.</li>
 Dependabot alerts (severity, the package affected and a summary), so you
 can see what needs attention without opening a browser.</li>
 </ul>
-<h5 id="codespaces-and-copilot-cli">Codespaces and Copilot CLI</h5>
-<p>Four more commands on <strong>Tools &gt; Git and GitHub &gt;
+<h5 id="codespaces">Codespaces</h5>
+<p>Two more commands on <strong>Tools &gt; Git and GitHub &gt;
 GitHub</strong> use the <code>gh</code> command-line tool installed on
 your own computer, instead of QUILL’s usual GitHub connection. If you
 don’t have <code>gh</code> yet, see Downloading git and the GitHub CLI
@@ -3323,17 +3323,11 @@ optional branch, then creates a Codespace. <strong>Codespaces use GitHub
 compute and storage minutes and may cost money.</strong> This is the one
 GitHub command in QUILL that says so, and it asks you to confirm, naming
 the cost, before it does anything.</li>
-<li><strong>Ask Copilot for a Command…</strong> lets you describe in
-plain words what you want to do (for example, “undo my last commit”) and
-shows the command GitHub Copilot suggests.</li>
-<li><strong>Explain a Command…</strong> asks for a git or
-<code>gh</code> command you don’t recognize and shows Copilot’s plain
-explanation of what it does.</li>
 </ul>
-<p>These four are new. They have been tested with a stand-in for
-<code>gh</code>, but not yet with a real Codespaces repository or real
-Copilot CLI access. If something looks wrong, please tell us through
-<strong>Help &gt; Get Help from Support</strong>.</p>
+<p>These two are new. They have been tested with a stand-in for
+<code>gh</code>, but not yet with a real Codespaces repository. If
+something looks wrong, please tell us through <strong>Help &gt; Get Help
+from Support</strong>.</p>
 <h3 id="command-line-launching">Command-line launching</h3>
 <p>You can start QUILL from a command line, a script or a shortcut, and
 tell it which file to open and where to put the cursor. Most people
@@ -13623,9 +13617,9 @@ feature is first used.</li>
 <li>The <strong>MathCAT</strong> math-speech engine.</li>
 <li><strong>Git</strong> and the <strong>GitHub CLI</strong>: portable
 fallback copies for <strong>Tools &gt; Git and GitHub &gt; Local
-Git</strong> and the Codespaces and Copilot commands on <strong>Tools
-&gt; Git and GitHub</strong>. The section “Downloading git and the
-GitHub CLI”, where this guide covers Git and GitHub, has more.</li>
+Git</strong> and the Codespaces commands on <strong>Tools &gt; Git and
+GitHub</strong>. The section “Downloading git and the GitHub CLI”, where
+this guide covers Git and GitHub, has more.</li>
 <li>The <strong>Node.js</strong> runtime, for Node Quillins and the
 Developer Console’s TypeScript interface. It comes last, as the extra
 people use least.</li>
@@ -15622,10 +15616,12 @@ vendor agents run in a text-only mode with their own file-editing and
 shell tools switched off, so only QUILL can touch your document, and
 only with your approval. All of this is optional, off until you turn it
 on, and disabled in Safe Mode.</p>
-<p>A note for administrators who package QUILL: the in-app spoken device
-code for Copilot needs the build to provide a GitHub OAuth App client id
-through <code>QUILL_GITHUB_CLIENT_ID</code>. Without it, Copilot still
-works through the Copilot/GitHub CLI sign-in.</p>
+<p>Signing in to GitHub for Copilot from inside QUILL needs QUILL’s own
+GitHub registration, which is built in. Until a build carries it, the
+Sign In button says sign-in is not available yet, and Copilot still
+works if you have signed in with the Copilot or GitHub command-line
+tool. Copilot keeps its own sign-in, separate from the one QUILL uses
+for your repositories, so signing out of one leaves the other alone.</p>
 <h4 id="the-ai-and-assistant-page-in-settings">The AI and Assistant page
 in Settings</h4>
 <p>Providers, models and keys live in the AI Hub. This page holds the
@@ -19693,7 +19689,7 @@ starting point.</li>
 </ul>
 <h4 id="downloading-git-and-the-github-cli">Downloading git and the
 GitHub CLI</h4>
-<p>The Local Git commands, and the Codespaces and Copilot commands under
+<p>The Local Git commands, and the Codespaces commands under
 <strong>Tools &gt; Git and GitHub &gt; GitHub</strong>, need
 <code>git</code> and <code>gh</code> (the GitHub CLI) on your computer.
 QUILL looks for copies you already have first: if <code>git</code> or

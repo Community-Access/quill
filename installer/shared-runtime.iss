@@ -31,6 +31,7 @@
 ; solves YouTube's challenges with, and for Radio the OptiLab Core adapter:
 ;   #define ToolDeno                      ; tools\deno\deno.exe + DENO-LICENSE.txt
 ;   #define ToolOptiLab                   ; quill-optilab.exe + its LICENSE/NOTICE
+; (tools\copilot and tools\codex need no define: every runtime carries them.)
 ; and its [Icons]/[Run] should launch the app via:
 ;   {code:RuntimeExe} -m <the app's module>     (e.g. -m quill.apps.radio)
 
@@ -108,6 +109,28 @@ Source: "{#RuntimeSourceDir}\tools\deno\*"; DestDir: "{code:RuntimeDir}\tools\de
   Components: runtime; \
   Flags: ignoreversion recursesubdirs createallsubdirs uninsneveruninstall
 #endif
+; The AI engines: the GitHub Copilot CLI and the OpenAI Codex app-server. Not
+; per app -- standalone\runtime\build_runtime.ps1 stages both into every shared
+; runtime (codex.md section 9) -- so no Tool define. Ungated for the same reason as
+; the tools above. Each vendor exe and its licence files are named one by one,
+; with no wildcard and no skipifsourcedoesntexist, so ISCC refuses to compile
+; an installer that would ship either engine without its licence (the Copilot
+; CLI licence permits redistribution only with it).
+Source: "{#RuntimeSourceDir}\tools\copilot\copilot.exe"; DestDir: "{code:RuntimeDir}\tools\copilot"; \
+  Components: runtime; \
+  Flags: ignoreversion uninsneveruninstall
+Source: "{#RuntimeSourceDir}\tools\copilot\COPILOT-CLI-LICENSE.txt"; DestDir: "{code:RuntimeDir}\tools\copilot"; \
+  Components: runtime; \
+  Flags: ignoreversion uninsneveruninstall
+Source: "{#RuntimeSourceDir}\tools\codex\codex-app-server.exe"; DestDir: "{code:RuntimeDir}\tools\codex"; \
+  Components: runtime; \
+  Flags: ignoreversion uninsneveruninstall
+Source: "{#RuntimeSourceDir}\tools\codex\CODEX-LICENSE.txt"; DestDir: "{code:RuntimeDir}\tools\codex"; \
+  Components: runtime; \
+  Flags: ignoreversion uninsneveruninstall
+Source: "{#RuntimeSourceDir}\tools\codex\CODEX-NOTICE.txt"; DestDir: "{code:RuntimeDir}\tools\codex"; \
+  Components: runtime; \
+  Flags: ignoreversion uninsneveruninstall
 ; The OptiLab Core adapter sits beside QuillVilleRuntime.exe (where
 ; exact_optilab looks), so it used to ride inside the gated runtime wildcard
 ; and a second app skipped it -- exactly the install-order trap the tools had.

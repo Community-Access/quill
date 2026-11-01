@@ -81,3 +81,17 @@ def test_apply_all_stored_keys_skips_packs_with_no_saved_key(monkeypatch, absent
 
     assert "OPENAI_API_KEY" not in os.environ
     assert "ANTHROPIC_API_KEY" not in os.environ
+
+
+def test_scrubbed_child_env_strips_github_tokens(monkeypatch) -> None:
+    # Quillin workers and external engines must never inherit a GitHub
+    # credential, whoever put it in the environment.
+    from quill.core.ai.harness_credentials import scrubbed_child_env
+
+    for name in ("GITHUB_TOKEN", "GH_TOKEN", "COPILOT_GITHUB_TOKEN"):
+        monkeypatch.setenv(name, "gho_leak")
+    monkeypatch.setenv("QUILL_HARMLESS_VAR", "kept")
+    env = scrubbed_child_env()
+    for name in ("GITHUB_TOKEN", "GH_TOKEN", "COPILOT_GITHUB_TOKEN"):
+        assert name not in env
+    assert env["QUILL_HARMLESS_VAR"] == "kept"

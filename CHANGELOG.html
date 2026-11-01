@@ -244,6 +244,28 @@
 <main id="main-content" tabindex="-1">
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
+<h3 id="copilot-engine-groundwork-2026-10-31">Copilot engine groundwork
+(2026-10-31)</h3>
+<ul>
+<li>The GitHub Copilot engine now waits for Copilot’s answer instead of
+inserting a request id, passes the token to the SDK directly, and never
+puts it in QUILL’s environment, so Quillin workers and external engines
+cannot inherit it. <code>GITHUB_TOKEN</code>, <code>GH_TOKEN</code> and
+<code>COPILOT_GITHUB_TOKEN</code> are stripped from every child process,
+and <code>ghu_</code>, <code>ghs_</code> and <code>ghr_</code> tokens
+are redacted from logs and diagnostic bundles alongside
+<code>gho_</code>.</li>
+<li>Copilot keeps its own sign-in, one per app, apart from the token the
+GitHub repository commands use. An existing shared sign-in stays with
+the repository commands; Copilot asks once for its own.</li>
+<li>When a build carries the Copilot CLI
+(<code>tools\copilot\copilot.exe</code>, version 1.0.105), QUILL
+launches it only if it matches the SHA-256 pinned for the release, and
+the SDK is told never to download a CLI of its own.</li>
+<li>Explain a Command and Ask Copilot for a Command are gone from Tools
+&gt; Git and GitHub &gt; GitHub. They drove the <code>gh copilot</code>
+extension, which GitHub retired on 2025-10-25.</li>
+</ul>
 <h3
 id="chatgpt-plan-sign-in-holds-through-a-brief-problem-2026-10-31">ChatGPT
 plan sign-in holds through a brief problem (2026-10-31)</h3>

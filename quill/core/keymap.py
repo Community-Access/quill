@@ -1073,13 +1073,11 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "github.dispatch_workflow": "",
     "github.view_notifications": "",
     "github.view_security_alerts": "",
-    # GitHub Tier 3 (Codespaces + Copilot CLI, needs live-device
+    # GitHub Tier 3 (Codespaces, needs live-device
     # verification -- see quill/core/github/gh_bridge.py). No default
     # chords -- the leader-chord space is fully claimed.
     "github.list_codespaces": "",
     "github.create_codespace": "",
-    "github.copilot_suggest": "",
-    "github.copilot_explain": "",
     # Local git (Tools > Local Git). No default chords -- the single-letter
     # leader-chord space is fully claimed (see the github.* block above);
     # these are reachable via the menu and the Command Palette, and freely

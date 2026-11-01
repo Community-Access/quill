@@ -1,23 +1,19 @@
 """The narrow `gh`-CLI bridge (`docs/planning/github.md` section 1's Tier 3):
-GitHub Codespaces lifecycle management and `gh copilot suggest`/`explain`.
+GitHub Codespaces lifecycle management.
 
 Deliberately not a general `gh api` passthrough or an extension-ecosystem
-bridge -- those stay out of scope per the PRD. This module covers exactly
-the two things PyGithub has no clean path to: Codespaces (no stable REST
-wrapper for the interesting lifecycle operations) and Copilot's CLI-native
-suggest/explain (a genuinely different feature from QUILL's own AI
-assistant, scoped to git/gh command help).
+bridge -- those stay out of scope per the PRD. This module covers the one
+thing PyGithub has no clean path to: Codespaces (no stable REST wrapper for
+the interesting lifecycle operations). The `gh copilot suggest`/`explain`
+pair it once wrapped was removed on 2026-10-31: GitHub retired that
+extension on 2025-10-25, so both commands could only fail.
 
 **Needs live-device verification.** Every function here is unit-tested with
 a fake subprocess runner (mirroring `quill.core.local_git`'s convention),
 which proves the argument-building and JSON-parsing logic is correct, but
 none of it has been exercised against a real `gh` installation, a real
-GitHub Codespaces-enabled repository, or a real Copilot CLI entitlement --
-none of which are available in this environment. `gh copilot suggest` in
-particular is a TUI-first command in its upstream design; whether it
-degrades cleanly to captured, non-interactive stdout the way this module
-assumes needs confirming on a real machine before this is promoted out of
-"needs verification." Matches QUILL's own established pattern for
+GitHub Codespaces-enabled repository -- neither of which is available in
+this environment. Matches QUILL's own established pattern for
 hardware/account-dependent features (e.g. the macOS `say` Read Aloud engine
 shipping "needs on-device confirmation").
 """
@@ -141,45 +137,10 @@ def codespace_ssh_config(name: str, *, gh_path: str, runner: Runner) -> str:
     return _run_ok(gh_path, runner, "codespace", "ssh", "--codespace", name, "--config")
 
 
-# ---------------------------------------------------------------------------
-# Copilot CLI: suggest / explain
-# ---------------------------------------------------------------------------
-
-
-def copilot_suggest(
-    query: str, *, gh_path: str, runner: Runner, timeout_seconds: float = 60.0
-) -> str:
-    """Ask `gh copilot suggest` for a shell command matching *query*, in
-    plain natural language (e.g. "undo my last commit but keep the
-    changes"). Returns whatever `gh` prints; the caller decides whether to
-    show it as-is or offer to run it (this function never executes a
-    suggested command).
-    """
-    return _run_ok(
-        gh_path,
-        runner,
-        "copilot",
-        "suggest",
-        "-t",
-        "shell",
-        query,
-        timeout_seconds=timeout_seconds,
-    )
-
-
-def copilot_explain(
-    command: str, *, gh_path: str, runner: Runner, timeout_seconds: float = 60.0
-) -> str:
-    """Ask `gh copilot explain` what *command* does, in plain language."""
-    return _run_ok(gh_path, runner, "copilot", "explain", command, timeout_seconds=timeout_seconds)
-
-
 __all__ = [
     "CodespaceInfo",
     "GhBridgeError",
     "codespace_ssh_config",
-    "copilot_explain",
-    "copilot_suggest",
     "create_codespace",
     "delete_codespace",
     "list_codespaces",

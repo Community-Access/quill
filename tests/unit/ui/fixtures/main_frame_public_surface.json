@@ -288,8 +288,6 @@
   "github_change_repository_visibility",
   "github_commit_multiple_files",
   "github_configure_branch_protection",
-  "github_copilot_explain",
-  "github_copilot_suggest",
   "github_create_codespace",
   "github_create_release",
   "github_create_repository",

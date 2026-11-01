@@ -10947,11 +10947,11 @@ supported client.
   minutes — so its confirmation dialog says so explicitly, in those words,
   distinct from every other GitHub command's "this changes something on
   GitHub" framing.
-- **Ask Copilot for a Command...** — prompts for a plain-language request
-  (e.g. "undo my last commit") and shows `gh copilot suggest`'s answer in a
-  message box.
-- **Explain a Command...** — prompts for a git or `gh` command and shows
-  `gh copilot explain`'s answer.
+- **Ask Copilot for a Command...** and **Explain a Command...** (removed
+  2026-10-31) — wrapped `gh copilot suggest` and `gh copilot explain`.
+  GitHub retired that extension on 2025-10-25, so both could only fail;
+  `github.copilot_suggest` and `github.copilot_explain` no longer exist.
+  Copilot is reached through the GitHub Copilot engine instead.
 
 **Architecture.** `quill/core/github/gh_bridge.py` (wx-free) wraps each `gh`
 subcommand through the same `Runner = Callable[..., object]` injection

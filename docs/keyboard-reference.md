@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 516.
+Editor commands with default bindings: 514.
 
 ## The QUILL editor
 
@@ -443,8 +443,6 @@ Editor commands with default bindings: 516.
 | (unbound by default) | GitHub: Change Repository Visibility... | `github.change_repository_visibility` |
 | (unbound by default) | GitHub: Commit Multiple Files... | `github.commit_multiple_files` |
 | (unbound by default) | GitHub: Configure Branch Protection... | `github.configure_branch_protection` |
-| (unbound by default) | GitHub: Explain a Command... | `github.copilot_explain` |
-| (unbound by default) | GitHub: Ask Copilot for a Command... | `github.copilot_suggest` |
 | (unbound by default) | GitHub: Create Codespace... | `github.create_codespace` |
 | (unbound by default) | GitHub: Create Release... | `github.create_release` |
 | (unbound by default) | GitHub: Create Repository... | `github.create_repository` |

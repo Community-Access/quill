@@ -1924,8 +1924,6 @@ class MenuBuilderMixin:
         self._id_github_security_alerts = wx.NewIdRef()
         self._id_github_list_codespaces = wx.NewIdRef()
         self._id_github_create_codespace = wx.NewIdRef()
-        self._id_github_copilot_suggest = wx.NewIdRef()
-        self._id_github_copilot_explain = wx.NewIdRef()
         self._id_localgit_uncommitted = wx.NewIdRef()
         self._id_localgit_switch_branch = wx.NewIdRef()
         self._id_localgit_stash_changes = wx.NewIdRef()
@@ -2106,14 +2104,6 @@ class MenuBuilderMixin:
         github_admin_menu.Append(
             self._id_github_create_codespace,
             self._menu_label(_("Create Codespace..."), "github.create_codespace"),
-        )
-        github_admin_menu.Append(
-            self._id_github_copilot_suggest,
-            self._menu_label(_("Ask Copilot for a Command..."), "github.copilot_suggest"),
-        )
-        github_admin_menu.Append(
-            self._id_github_copilot_explain,
-            self._menu_label(_("Explain a Command..."), "github.copilot_explain"),
         )
         git_family_menu = wx.Menu()
         git_family_menu.AppendSubMenu(github_admin_menu, _("Git&Hub"))

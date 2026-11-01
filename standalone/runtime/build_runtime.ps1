@@ -115,6 +115,20 @@ Get-ChildItem $internal -Directory -Filter "h2-*.dist-info" -ErrorAction Silentl
 & $Python (Join-Path $quillRepo "scripts\prune_enchant_payload.py") $dist
 if ($LASTEXITCODE -ne 0) { throw "enchant payload prune failed (see above)." }
 
+# -- the AI engines every app shares -------------------------------------------
+# The GitHub Copilot CLI (tools\copilot) and the OpenAI Codex app-server
+# (tools\codex) ship once, in every shared runtime, so no app downloads an
+# engine on first use (codex.md section 9, decisions 1 and 8). Unlike the media
+# tools they are not per app, so the runtime build stages them itself -- from
+# the pinned, SHA-256-verified cache, never from PATH. Both are the vendors'
+# own signed exes, copied unmodified (scripts\code_signing.py skips them).
+& $Python (Join-Path $quillRepo "scripts\fetch_build_deps.py") --only copilot --only codex
+if ($LASTEXITCODE -ne 0) { throw "Could not stage the AI engines (see scripts/fetch_build_deps.py)." }
+. (Join-Path $quillRepo "scripts\StageMediaTools.ps1")
+Stage-QuillMediaTools -RuntimeDist $dist `
+    -CopilotDir (Join-Path $quillRepo "build\deps\copilot") `
+    -CodexDir (Join-Path $quillRepo "build\deps\codex")
+
 
 # -- stamp the version marker (installer's skip-if-present check reads this) ---
 $pyver = (& $Python -c "import platform; print(platform.python_version())").Trim()
@@ -136,7 +150,8 @@ $build = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
 # describes exactly what the runtime contributes to an installer. ffmpeg and
 # mpv are declared "optional" rather than expected: the runtime never stages
 # them now, and the media apps add them afterwards (scripts\StageMediaTools.ps1),
-# so their presence and their absence are both correct here.
+# so their presence and their absence are both correct here. tools\copilot and
+# tools\codex are declared outright: this build staged them above.
 & $Python (Join-Path $quillRepo "scripts\check_runtime_inventory.py") $dist
 if ($LASTEXITCODE -ne 0) {
     throw "Runtime inventory drift -- see above. Rebaseline (--write) only for intentional changes."

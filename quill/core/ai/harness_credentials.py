@@ -24,6 +24,8 @@ __all__ = [
     "stored_key",
     "forget_key",
     "apply_all_stored_keys",
+    "scrubbed_child_env",
+    "GITHUB_TOKEN_ENV_VARS",
 ]
 
 # The environment variable(s) each pack's SDK reads for authentication.
@@ -33,6 +35,12 @@ _ENV_VARS: dict[str, tuple[str, ...]] = {
 }
 
 SUPPORTED_PACK_IDS = tuple(_ENV_VARS)
+
+# GitHub token variables the Copilot SDK, the gh CLI and git tooling read. QUILL
+# never exports these (the Copilot token goes to the SDK as an explicit
+# ``github_token`` argument), but a user's shell may have set them, and no child
+# QUILL starts has any business inheriting a GitHub credential.
+GITHUB_TOKEN_ENV_VARS: tuple[str, ...] = ("GITHUB_TOKEN", "GH_TOKEN", "COPILOT_GITHUB_TOKEN")
 
 
 def env_var_names(pack_id: str) -> tuple[str, ...]:
@@ -94,6 +102,10 @@ def scrubbed_child_env() -> dict[str, str]:
     for names in _ENV_VARS.values():
         for name in names:
             env.pop(name, None)
+    # GitHub tokens too: Quillin workers and external engines must never hold
+    # the Copilot or repository credential (2026-10-31).
+    for name in GITHUB_TOKEN_ENV_VARS:
+        env.pop(name, None)
     return env
 
 

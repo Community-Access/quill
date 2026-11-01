@@ -380,16 +380,6 @@ class MenuBindingsMixin:
         )
         self.frame.Bind(
             wx.EVT_MENU,
-            lambda _e: self.github_copilot_suggest(),
-            id=self._id_github_copilot_suggest,
-        )
-        self.frame.Bind(
-            wx.EVT_MENU,
-            lambda _e: self.github_copilot_explain(),
-            id=self._id_github_copilot_explain,
-        )
-        self.frame.Bind(
-            wx.EVT_MENU,
             lambda _e: self.local_git_uncommitted_changes(),
             id=self._id_localgit_uncommitted,
         )

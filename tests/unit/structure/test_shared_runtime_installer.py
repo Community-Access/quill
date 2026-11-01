@@ -232,6 +232,33 @@ def test_deno_is_installed_unconditionally_for_the_apps_that_play_youtube() -> N
         assert ("#define ToolDeno" in text) == (relative in wanted), relative
 
 
+def test_the_ai_engines_ship_in_every_runtime_with_their_licences() -> None:
+    """copilot.exe and codex-app-server.exe: ungated, no #ifdef, licences by name.
+
+    Every shared runtime carries both engines (codex.md section 9), so no app
+    opts in; each file is its own entry so ISCC refuses to compile without the
+    licence the Copilot CLI may only be redistributed with.
+    """
+    source = FRAGMENT.read_text(encoding="utf-8")
+    expected = {
+        "copilot": ("copilot.exe", "COPILOT-CLI-LICENSE.txt"),
+        "codex": ("codex-app-server.exe", "CODEX-LICENSE.txt", "CODEX-NOTICE.txt"),
+    }
+    for tool, files in expected.items():
+        assert rf'Source: "{{#RuntimeSourceDir}}\tools\{tool}\*"' not in source
+        for name in files:
+            marker = rf'Source: "{{#RuntimeSourceDir}}\tools\{tool}\{name}"'
+            assert marker in source, f"{tool}: {name} has no [Files] entry"
+            entry = _files_entry(source, marker)
+            assert "Check:" not in entry
+            assert "skipifsourcedoesntexist" not in entry
+            assert rf'DestDir: "{{code:RuntimeDir}}\tools\{tool}"' in entry
+            before = source.split(marker, 1)[0]
+            assert before.count("#ifdef") == before.count("#endif"), (
+                f"{tool} must not sit inside an #ifdef: every runtime carries it"
+            )
+
+
 def test_the_optilab_adapter_is_not_behind_the_runtime_gate() -> None:
     """quill-optilab.exe rode the gated wildcard, so a second app skipped it."""
     source = FRAGMENT.read_text(encoding="utf-8")

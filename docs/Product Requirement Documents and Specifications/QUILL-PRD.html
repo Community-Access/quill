@@ -19969,12 +19969,13 @@ GitHub command in QUILL with a real dollar cost</strong> — Codespaces
 consume GitHub compute and storage minutes — so its confirmation dialog
 says so explicitly, in those words, distinct from every other GitHub
 command’s “this changes something on GitHub” framing.</li>
-<li><strong>Ask Copilot for a Command…</strong> — prompts for a
-plain-language request (e.g. “undo my last commit”) and shows
-<code>gh copilot suggest</code>’s answer in a message box.</li>
-<li><strong>Explain a Command…</strong> — prompts for a git or
-<code>gh</code> command and shows <code>gh copilot explain</code>’s
-answer.</li>
+<li><strong>Ask Copilot for a Command…</strong> and <strong>Explain a
+Command…</strong> (removed 2026-10-31) — wrapped
+<code>gh copilot suggest</code> and <code>gh copilot explain</code>.
+GitHub retired that extension on 2025-10-25, so both could only fail;
+<code>github.copilot_suggest</code> and
+<code>github.copilot_explain</code> no longer exist. Copilot is reached
+through the GitHub Copilot engine instead.</li>
 </ul>
 <p><strong>Architecture.</strong>
 <code>quill/core/github/gh_bridge.py</code> (wx-free) wraps each

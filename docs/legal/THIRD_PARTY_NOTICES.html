@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>Third-Party Notices</title>
+  <title>THIRD_PARTY_NOTICES</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -180,74 +180,14 @@
       vertical-align: middle;
     }
   </style>
-  <style>
-    /* Accessible skip link: off-screen until it receives keyboard focus. */
-    .skip-link {
-      position: absolute;
-      left: -9999px;
-      top: 0;
-      background: #ffffff;
-      color: #1a1a1a;
-      padding: 0.5em 1em;
-      border: 2px solid #1a1a1a;
-      z-index: 1000;
-    }
-    .skip-link:focus { left: 0; }
-    /* The skip link above targets main, and a focusable main needs a ring for
-       the sighted keyboard user. These pages load no external stylesheet, so it
-       has to be inline; the colour is the site theme's --focus, hardcoded
-       because there is no token here. :focus-visible, not :focus -- tabindex="-1"
-       makes main the click-focus target for every paragraph inside it, so
-       :focus would box the whole page on any ordinary click. The offset is inset
-       because main is full-bleed and an outset ring gets clipped into two
-       vertical lines. */
-    main[tabindex="-1"]:focus-visible {
-      outline: 3px solid #b8540a;
-      outline-offset: -3px;
-    }
-    /* WCAG AA overrides (>= 4.5:1 on the light code background) for the
-       low-contrast default syntax-highlight token colors. */
-    code span.al, code span.er { color: #c00000; }
-    code span.an, code span.co, code span.cv { color: #5a5a5a; }
-    code span.ss { color: #8a3a5a; }
-    /* Pandoc's own styles.html partial, injected near the top of this template,
-       ships `table { display: block; overflow-x: auto; }`. display: block takes
-       the table role out of the accessibility tree in Blink and Gecko, and the
-       row and cell roles go with it, so every rendered table reads as a flat run
-       of words -- 62 of them in QUILL Lite's user guide alone, all of them
-       keyboard reference tables, on a site whose readers are overwhelmingly
-       screen-reader users. Restoring display: table is not a preference.
-
-       The scroll affordance it was there for is given up rather than moved,
-       because Pandoc emits a bare table with no wrapper element to hang overflow
-       on -- the wrapper pattern compare.html uses is not available here. So the
-       exchange is a certain and total loss of table semantics against a possible
-       sideways page scroll on the widest tables, and the cells are taught to
-       break so that stays possible rather than likely.
-
-       This override also covers the governance pages built by
-       .github/workflows/github-pages.yml, which installs Pandoc from apt at a
-       version nobody pins -- whatever styles.html that ships, this wins. */
-    table {
-      display: table;
-      overflow-x: visible;
-    }
-    table th,
-    table td {
-      overflow-wrap: break-word;
-      word-break: break-word;
-    }
-  </style>
 </head>
 <body>
-<a class="skip-link" href="#main-content">Skip to main content</a>
-<main id="main-content" tabindex="-1">
 <h1 id="third-party-notices">Third-Party Notices</h1>
 <p>This document lists the third-party software, data, models and sounds
-included in the QUILL family, with each one’s licence, copyright holder
+included in the QUILL family, with each one's licence, copyright holder
 and what its licence asks of us. QUILL and every app in the family are
 free and never sold.</p>
-<p>The family’s own code is released under the MIT License; see
+<p>The family's own code is released under the MIT License; see
 LICENSE.txt beside the program, or the LICENSE file in the source
 repository.</p>
 <p>Each component has its own heading, grouped by kind. The full licence
@@ -275,7 +215,7 @@ quill/tools/build_third_party_notices.py. Do not edit it by hand.</p>
 <ul>
 <li>MIT License: 56 components</li>
 <li>BSD 3-Clause License: 21 components</li>
-<li>Apache License, version 2.0: 14 components</li>
+<li>Apache License, version 2.0: 15 components</li>
 <li>GNU General Public License, version 2: 7 components</li>
 <li>GNU General Public License, version 3: 7 components</li>
 <li>Python Software Foundation License, version 2: 6 components</li>
@@ -296,10 +236,11 @@ component</li>
 <li>Commons Clause License Condition v1.0, with Apache-2.0: 1
 component</li>
 <li>GCC Runtime Library Exception, version 3.1: 1 component</li>
+<li>GitHub Copilot CLI License (proprietary): 1 component</li>
 <li>Historical Permission Notice and Disclaimer (HPND): 1 component</li>
 <li>Inno Setup License: 1 component</li>
 <li>MIT No Attribution License: 1 component</li>
-<li>MIT-CMU (the historical PIL licence), with the licences of Pillow’s
+<li>MIT-CMU (the historical PIL licence), with the licences of Pillow's
 bundled libraries: 1 component</li>
 <li>Microsoft Visual C++ Redistributable licence terms: 1 component</li>
 <li>NVIDIA Open Model License: 1 component</li>
@@ -352,7 +293,7 @@ notice and the permission notice with every copy.</li>
 </ul>
 <h3 id="quill-social">quill-social</h3>
 <ul>
-<li><strong>What it is:</strong> Quill Social’s own package. A family
+<li><strong>What it is:</strong> Quill Social's own package. A family
 project, not third-party.</li>
 <li><strong>Included in:</strong> Every product in the family.</li>
 <li><strong>Version:</strong> 0.3.0</li>
@@ -383,7 +324,7 @@ installer or the portable zip.</li>
 notice and the permission notice with every copy.</li>
 </ul>
 <h2 id="runtime-and-libraries">Runtime and libraries</h2>
-<p>Python itself and libraries shipped in the shared runtime or an app’s
+<p>Python itself and libraries shipped in the shared runtime or an app's
 own dependency set. Installed apps share the runtime; portable editions
 carry only the dependencies selected for that product.</p>
 <h3 id="accessible_output2">accessible_output2</h3>
@@ -561,7 +502,7 @@ href="https://github.com/pallets/click">https://github.com/pallets/click</a></li
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright
 notice, the conditions and the disclaimer in the documentation that
-ships with the binary. Do not use the authors’ names to promote the
+ships with the binary. Do not use the authors' names to promote the
 product without permission.</li>
 </ul>
 <h3 id="colorama">colorama</h3>
@@ -578,7 +519,7 @@ href="https://github.com/tartley/colorama">https://github.com/tartley/colorama</
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright
 notice, the conditions and the disclaimer in the documentation that
-ships with the binary. Do not use the authors’ names to promote the
+ships with the binary. Do not use the authors' names to promote the
 product without permission.</li>
 </ul>
 <h3 id="colorlog">colorlog</h3>
@@ -632,7 +573,7 @@ installer or the portable zip.</li>
 and keep copyright notices. Pass on any NOTICE file the component
 carries. Say so if we changed the component. Keep the copyright notice,
 the conditions and the disclaimer in the documentation that ships with
-the binary. Do not use the authors’ names to promote the product without
+the binary. Do not use the authors' names to promote the product without
 permission.</li>
 </ul>
 <h3 id="curl_cffi">curl_cffi</h3>
@@ -643,7 +584,7 @@ browser, for radio and video sources that refuse plain clients.</li>
 <li><strong>Version:</strong> 0.16.3</li>
 <li><strong>Licence:</strong> MIT (the bundled libcurl-impersonate
 carries the curl licence, a permissive MIT-style licence, and
-BoringSSL’s OpenSSL/ISC terms)</li>
+BoringSSL's OpenSSL/ISC terms)</li>
 <li><strong>Copyright:</strong> Copyright (c) 2018 multippt; Copyright
 (c) 2022 curl_cffi developers; curl: Copyright (c) Daniel Stenberg and
 contributors</li>
@@ -753,8 +694,8 @@ ships with the binary.</li>
 <h3 id="git-for-windows-mingit-and-github-cli">Git for Windows (MinGit)
 and GitHub CLI</h3>
 <ul>
-<li><strong>What it is:</strong> Optional tools for QUILL’s GitHub
-publishing, downloaded on request from QUILL’s release and run as
+<li><strong>What it is:</strong> Optional tools for QUILL's GitHub
+publishing, downloaded on request from QUILL's release and run as
 separate programs.</li>
 <li><strong>Included in:</strong> QUILL for All.</li>
 <li><strong>Version:</strong> MinGit 2.55.0.2; gh 2.96.0</li>
@@ -764,7 +705,7 @@ the Git contributors; GitHub CLI: Copyright (c) 2019 GitHub Inc.</li>
 <li><strong>Upstream:</strong> <a
 href="https://gitforwindows.org/">https://gitforwindows.org/</a></li>
 <li><strong>How it reaches you:</strong> Downloaded only when you ask
-for it, from QUILL’s own pinned release, so QUILL still redistributes
+for it, from QUILL's own pinned release, so QUILL still redistributes
 it.</li>
 <li><strong>What the licence asks of us:</strong> Ship the licence text.
 Provide the complete corresponding source of the component, either
@@ -776,7 +717,7 @@ notice with every copy.</li>
 <h3 id="html_to_text">html_to_text</h3>
 <ul>
 <li><strong>What it is:</strong> A PyPI HTML processing library included
-in the runtime. QUILL’s paste cleaner expects a different project’s API
+in the runtime. QUILL's paste cleaner expects a different project's API
 and falls back when this package is installed.</li>
 <li><strong>Included in:</strong> Every product in the family.</li>
 <li><strong>Version:</strong> 1.0.0</li>
@@ -791,8 +732,8 @@ installer or the portable zip.</li>
 and keep copyright notices. Pass on any NOTICE file the component
 carries. Say so if we changed the component.</li>
 <li><strong>Needs review:</strong> The declared PyPI package is
-emludei’s html_to_text 1.0.0 (Apache-2.0); it does not export the
-html_to_text function the paste cleaner imports. AccessibleApps’
+emludei's html_to_text 1.0.0 (Apache-2.0); it does not export the
+html_to_text function the paste cleaner imports. AccessibleApps'
 separately installed project documents that API and is MIT-licensed.
 Choose and test the intended dependency and packaging before pinning or
 replacing either.</li>
@@ -813,7 +754,7 @@ href="https://github.com/pydantic/httpx2">https://github.com/pydantic/httpx2</a>
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright
 notice, the conditions and the disclaimer in the documentation that
-ships with the binary. Do not use the authors’ names to promote the
+ships with the binary. Do not use the authors' names to promote the
 product without permission.</li>
 </ul>
 <h3 id="httpx2">httpx2</h3>
@@ -831,7 +772,7 @@ href="https://github.com/pydantic/httpx2">https://github.com/pydantic/httpx2</a>
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright
 notice, the conditions and the disclaimer in the documentation that
-ships with the binary. Do not use the authors’ names to promote the
+ships with the binary. Do not use the authors' names to promote the
 product without permission.</li>
 </ul>
 <h3 id="idna">idna</h3>
@@ -848,7 +789,7 @@ href="https://github.com/kjd/idna">https://github.com/kjd/idna</a></li>
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright
 notice, the conditions and the disclaimer in the documentation that
-ships with the binary. Do not use the authors’ names to promote the
+ships with the binary. Do not use the authors' names to promote the
 product without permission.</li>
 </ul>
 <h3 id="isodate">isodate</h3>
@@ -867,7 +808,7 @@ href="https://github.com/gweis/isodate/">https://github.com/gweis/isodate/</a></
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright
 notice, the conditions and the disclaimer in the documentation that
-ships with the binary. Do not use the authors’ names to promote the
+ships with the binary. Do not use the authors' names to promote the
 product without permission.</li>
 </ul>
 <h3 id="keyring">keyring</h3>
@@ -963,7 +904,7 @@ href="https://lxml.de/">https://lxml.de/</a></li>
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright
 notice, the conditions and the disclaimer in the documentation that
-ships with the binary. Do not use the authors’ names to promote the
+ships with the binary. Do not use the authors' names to promote the
 product without permission.</li>
 </ul>
 <h3 id="markupsafe">MarkupSafe</h3>
@@ -979,7 +920,7 @@ href="https://github.com/pallets/markupsafe">https://github.com/pallets/markupsa
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright
 notice, the conditions and the disclaimer in the documentation that
-ships with the binary. Do not use the authors’ names to promote the
+ships with the binary. Do not use the authors' names to promote the
 product without permission.</li>
 </ul>
 <h3
@@ -1047,8 +988,8 @@ alongside it or by a written offer valid for at least three years. Any
 program that is a derivative work must also be offered under
 GPL-2.0-compatible terms.</li>
 <li><strong>Needs review:</strong> GPL-2.0-or-later library imported by
-QUILL’s own code. Distributing it means the combined program must be
-offered under GPL-compatible terms with its source. QUILL’s own MIT
+QUILL's own code. Distributing it means the combined program must be
+offered under GPL-compatible terms with its source. QUILL's own MIT
 source is public, which satisfies this, but it should be a deliberate,
 written decision.</li>
 </ul>
@@ -1068,7 +1009,7 @@ href="https://github.com/numpy/numpy">https://github.com/numpy/numpy</a></li>
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright
 notice, the conditions and the disclaimer in the documentation that
-ships with the binary. Do not use the authors’ names to promote the
+ships with the binary. Do not use the authors' names to promote the
 product without permission.</li>
 </ul>
 <h3 id="openpyxl">openpyxl</h3>
@@ -1116,7 +1057,7 @@ and contributors</li>
 <li><strong>Upstream:</strong> <a
 href="https://pandoc.org/">https://pandoc.org/</a></li>
 <li><strong>How it reaches you:</strong> Downloaded only when you ask
-for it, from QUILL’s own pinned release, so QUILL still redistributes
+for it, from QUILL's own pinned release, so QUILL still redistributes
 it.</li>
 <li><strong>What the licence asks of us:</strong> Ship the GPL-2.0 text
 with it and point to its source (<a
@@ -1194,9 +1135,9 @@ href="https://github.com/bigcat88/pillow_heif">https://github.com/bigcat88/pillo
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright
 notice, the conditions and the disclaimer in the documentation that
-ships with the binary. Do not use the authors’ names to promote the
+ships with the binary. Do not use the authors' names to promote the
 product without permission. Ship the LGPL-3.0 and GPL-3.0 texts. Keep
-the library replaceable. Offer the library’s source, or point to the
+the library replaceable. Offer the library's source, or point to the
 exact upstream source of the version we ship. Ship the licence text.
 Provide the complete corresponding source of the component, either
 alongside it or by a written offer valid for at least three years. Any
@@ -1209,8 +1150,8 @@ other GPL items.</li>
 </ul>
 <h3 id="pip">pip</h3>
 <ul>
-<li><strong>What it is:</strong> Python’s package installer, present in
-the portable editions’ embedded Python.</li>
+<li><strong>What it is:</strong> Python's package installer, present in
+the portable editions' embedded Python.</li>
 <li><strong>Included in:</strong> QUILL for All, QUILL Lite, Quill
 Radio, QUILL Studio, Quill Weather, Quill Inkwell, Quill Converter,
 QUILL Transcribe.</li>
@@ -1276,7 +1217,7 @@ Make the source of the MPL-covered files available (we ship them
 unmodified; the upstream source is public) and keep their notices. Our
 own code is not affected. Ship the licence text. Keep the library a
 separate, replaceable file (all are shipped as separate DLLs or
-modules). Offer the library’s source, or point to the exact upstream
+modules). Offer the library's source, or point to the exact upstream
 source of the version we ship.</li>
 </ul>
 <h3 id="psutil">psutil</h3>
@@ -1294,7 +1235,7 @@ href="https://github.com/giampaolo/psutil">https://github.com/giampaolo/psutil</
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright
 notice, the conditions and the disclaimer in the documentation that
-ships with the binary. Do not use the authors’ names to promote the
+ships with the binary. Do not use the authors' names to promote the
 product without permission.</li>
 </ul>
 <h3 id="pycparser">pycparser</h3>
@@ -1311,7 +1252,7 @@ href="https://github.com/eliben/pycparser">https://github.com/eliben/pycparser</
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright
 notice, the conditions and the disclaimer in the documentation that
-ships with the binary. Do not use the authors’ names to promote the
+ships with the binary. Do not use the authors' names to promote the
 product without permission.</li>
 </ul>
 <h3 id="pydantic">pydantic</h3>
@@ -1358,7 +1299,7 @@ href="https://pyenchant.github.io/pyenchant/">https://pyenchant.github.io/pyench
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Ship the licence text.
 Keep the library a separate, replaceable file (all are shipped as
-separate DLLs or modules). Offer the library’s source, or point to the
+separate DLLs or modules). Offer the library's source, or point to the
 exact upstream source of the version we ship.</li>
 <li><strong>Needs review:</strong> The pruned Enchant payload also ships
 GLib, libiconv and libintl (LGPL-2.1-or-later), Hunspell (MPL-1.1,
@@ -1369,7 +1310,7 @@ confirmed.</li>
 <h3 id="pymupdf-with-mupdf">PyMuPDF (with MuPDF)</h3>
 <ul>
 <li><strong>What it is:</strong> PDF parsing and rendering used by
-QUILL’s GLOW document backend; included in the shared runtime.</li>
+QUILL's GLOW document backend; included in the shared runtime.</li>
 <li><strong>Included in:</strong> The QuillVille Runtime and installed
 app editions that include it. Standalone portable editions are scoped by
 their own dependency inventories.</li>
@@ -1386,29 +1327,29 @@ href="https://files.pythonhosted.org/packages/a3/fb/b6761fa2d5266f2cdb24c3b91f40
 5e0be7908a715aa20333caddd73f1d6f01e4cd0c26e869fa2dd0b7f344da2249)</li>
 <li><strong>How it reaches you:</strong> Bundled in the QuillVille
 Runtime used by installed app editions. A standalone portable includes
-it only when that app’s declared dependencies require it.</li>
+it only when that app's declared dependencies require it.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright and
 licence notices and provide Corresponding Source when required for a
 covered work; sections 4–6 distinguish source and object-code
-conveyance. Section 13’s remote-network offer applies when a modified
+conveyance. Section 13's remote-network offer applies when a modified
 covered program supports remote network interaction. Whether QUILL
 packaging creates a covered combined work, and the resulting source
 scope, require legal review.</li>
 <li><strong>Needs review:</strong> Decision recorded: retain PyMuPDF
 under AGPL-3.0 and preserve existing PDF behavior. The installed
 QuillVille Runtime includes PyMuPDF; installed app editions carry it
-through that runtime. QUILL’s GLOW feature uses it; QUILL’s ordinary PDF
+through that runtime. QUILL's GLOW feature uses it; QUILL's ordinary PDF
 reader uses pdfplumber and pypdf, with pypdfium2 for scanned-page
 rendering. Current standalone portable dependency groups omit the GLOW
 extra, and the committed portable inventories omit pymupdf; verify
 staged portable artifacts independently. The exact 1.28.2 source archive
 and checksum are listed above. Legal review is required before the next
-public release to determine whether QUILL’s shared runtime and
+public release to determine whether QUILL's shared runtime and
 application packages form a covered combined work, the Corresponding
 Source scope, and whether section 13 applies to any modified
 network-facing covered work. This entry does not declare all original
 QUILL code relicensed under AGPL; the MIT boundary and any exceptions
-need counsel’s review.</li>
+need counsel's review.</li>
 </ul>
 <h3 id="pynacl-with-libsodium">PyNaCl (with libsodium)</h3>
 <ul>
@@ -1442,7 +1383,7 @@ href="https://github.com/py-pdf/pypdf">https://github.com/py-pdf/pypdf</a></li>
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright
 notice, the conditions and the disclaimer in the documentation that
-ships with the binary. Do not use the authors’ names to promote the
+ships with the binary. Do not use the authors' names to promote the
 product without permission.</li>
 </ul>
 <h3 id="pypdfium2-with-pdfium">pypdfium2 (with PDFium)</h3>
@@ -1450,7 +1391,7 @@ product without permission.</li>
 <li><strong>What it is:</strong> Renders PDF pages.</li>
 <li><strong>Included in:</strong> Every product in the family.</li>
 <li><strong>Version:</strong> 5.14.0</li>
-<li><strong>Licence:</strong> Apache-2.0 or BSD-3-Clause; PDFium’s own
+<li><strong>Licence:</strong> Apache-2.0 or BSD-3-Clause; PDFium's own
 dependencies (FreeType, ICU, libjpeg-turbo, libpng, OpenJPEG, Little
 CMS, zlib and others) under their licences, all shipped inside the
 package</li>
@@ -1464,7 +1405,7 @@ installer or the portable zip.</li>
 and keep copyright notices. Pass on any NOTICE file the component
 carries. Say so if we changed the component. Keep the copyright notice,
 the conditions and the disclaimer in the documentation that ships with
-the binary. Do not use the authors’ names to promote the product without
+the binary. Do not use the authors' names to promote the product without
 permission.</li>
 </ul>
 <h3 id="pyreadline3">pyreadline3</h3>
@@ -1482,18 +1423,18 @@ href="https://github.com/pyreadline3/pyreadline3">https://github.com/pyreadline3
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright
 notice, the conditions and the disclaimer in the documentation that
-ships with the binary. Do not use the authors’ names to promote the
+ships with the binary. Do not use the authors' names to promote the
 product without permission.</li>
 </ul>
 <h3 id="python-cpython">Python (CPython)</h3>
 <ul>
 <li><strong>What it is:</strong> The language every app is written in.
-Portable editions also ship Python’s own license.txt beside
+Portable editions also ship Python's own license.txt beside
 python.exe.</li>
 <li><strong>Included in:</strong> Every product in the family.</li>
 <li><strong>Version:</strong> 3.14.8 (embeddable distribution in
 portable editions; the runtime is frozen from 3.14)</li>
-<li><strong>Licence:</strong> PSF-2.0. Python’s own LICENSE also lists
+<li><strong>Licence:</strong> PSF-2.0. Python's own LICENSE also lists
 the third-party code inside it (for example expat, libmpdec, zlib,
 bzip2, xz and libtommath) with their permissive licences.</li>
 <li><strong>Copyright:</strong> Copyright (c) 2001-2026 Python Software
@@ -1522,7 +1463,7 @@ installer or the portable zip.</li>
 and keep copyright notices. Pass on any NOTICE file the component
 carries. Say so if we changed the component. Keep the copyright notice,
 the conditions and the disclaimer in the documentation that ships with
-the binary. Do not use the authors’ names to promote the product without
+the binary. Do not use the authors' names to promote the product without
 permission.</li>
 </ul>
 <h3 id="python-docx">python-docx</h3>
@@ -1587,10 +1528,10 @@ href="https://github.com/bastibe/python-soundfile">https://github.com/bastibe/py
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright
 notice, the conditions and the disclaimer in the documentation that
-ships with the binary. Do not use the authors’ names to promote the
+ships with the binary. Do not use the authors' names to promote the
 product without permission. Ship the licence text. Keep the library a
 separate, replaceable file (all are shipped as separate DLLs or
-modules). Offer the library’s source, or point to the exact upstream
+modules). Offer the library's source, or point to the exact upstream
 source of the version we ship.</li>
 </ul>
 <h3 id="python-zstandard">python-zstandard</h3>
@@ -1608,7 +1549,7 @@ href="https://github.com/indygreg/python-zstandard">https://github.com/indygreg/
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright
 notice, the conditions and the disclaimer in the documentation that
-ships with the binary. Do not use the authors’ names to promote the
+ships with the binary. Do not use the authors' names to promote the
 product without permission.</li>
 </ul>
 <h3 id="pywin32">pywin32</h3>
@@ -1630,7 +1571,7 @@ notice and licence with the distribution and summarise any changes we
 made. Keep the copyright and permission notices in the documentation;
 retain the warranty disclaimer. Ship the licence text. Keep the library
 a separate, replaceable file (all are shipped as separate DLLs or
-modules). Offer the library’s source, or point to the exact upstream
+modules). Offer the library's source, or point to the exact upstream
 source of the version we ship.</li>
 <li><strong>Needs review:</strong> The wheel also contains Scintilla and
 adodbapi license notices; their HPND and LGPL-2.1 texts are included
@@ -1704,7 +1645,7 @@ Find and Replace.</li>
 <li><strong>Included in:</strong> Every product in the family.</li>
 <li><strong>Version:</strong> 2026.9.29</li>
 <li><strong>Licence:</strong> Apache-2.0 AND CNRI-Python (parts derived
-from Secret Labs’ sre)</li>
+from Secret Labs' sre)</li>
 <li><strong>Copyright:</strong> Copyright (c) 2020 Matthew Barnett;
 Copyright (c) 1998-2001 by Secret Labs AB</li>
 <li><strong>Upstream:</strong> <a
@@ -1798,7 +1739,7 @@ confirm the non-commercial grant before release.</li>
 <h3 id="sqlite">SQLite</h3>
 <ul>
 <li><strong>What it is:</strong> The database behind the radio catalog,
-QuillBeacon’s library and other stores, shipped as part of Python.</li>
+QuillBeacon's library and other stores, shipped as part of Python.</li>
 <li><strong>Included in:</strong> Every product in the family.</li>
 <li><strong>Version:</strong> as shipped with Python 3.14</li>
 <li><strong>Licence:</strong> Public domain</li>
@@ -1940,7 +1881,7 @@ href="https://github.com/python-websockets/websockets">https://github.com/python
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright
 notice, the conditions and the disclaimer in the documentation that
-ships with the binary. Do not use the authors’ names to promote the
+ships with the binary. Do not use the authors' names to promote the
 product without permission.</li>
 </ul>
 <h3 id="werkzeug">Werkzeug</h3>
@@ -1957,7 +1898,7 @@ href="https://github.com/pallets/werkzeug">https://github.com/pallets/werkzeug</
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright
 notice, the conditions and the disclaimer in the documentation that
-ships with the binary. Do not use the authors’ names to promote the
+ships with the binary. Do not use the authors' names to promote the
 product without permission.</li>
 </ul>
 <h3 id="wxpython-and-wxwidgets">wxPython and wxWidgets</h3>
@@ -1968,7 +1909,7 @@ every app.</li>
 <li><strong>Version:</strong> 4.3.1</li>
 <li><strong>Licence:</strong> wxWindows Library Licence 3.1
 (LGPL-2.0-or-later with an exception for binary distribution); bundles
-Microsoft’s WebView2Loader and cairo under their own terms</li>
+Microsoft's WebView2Loader and cairo under their own terms</li>
 <li><strong>Copyright:</strong> wxPython: Copyright (c) 1998-2026 Robin
 Dunn and contributors; wxWidgets: Copyright (c) 1998-2005 Julian Smart,
 Robert Roebling et al</li>
@@ -1977,7 +1918,7 @@ href="https://wxpython.org/">https://wxpython.org/</a></li>
 <li><strong>How it reaches you:</strong> Bundled: it is inside the
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Keep the notice. The
-licence’s exception lets us ship the compiled library with our program
+licence's exception lets us ship the compiled library with our program
 on our own terms; changes to the library itself would have to be offered
 as source.</li>
 </ul>
@@ -2013,13 +1954,60 @@ installer or the portable zip.</li>
 copyright notice and the permission notice with every copy. Keep the
 copyright notice and the permission notice.</li>
 </ul>
+<h3 id="github-copilot-cli-copilotexe">GitHub Copilot CLI
+(copilot.exe)</h3>
+<ul>
+<li><strong>What it is:</strong> The engine behind the My GitHub Copilot
+connection, run as a separate program. Ships unmodified, signed by
+GitHub, in the shared runtime's tools\copilot with its licence as
+COPILOT-CLI-LICENSE.txt.</li>
+<li><strong>Included in:</strong> The QuillVille Runtime and installed
+app editions that include it. Standalone portable editions are scoped by
+their own dependency inventories.</li>
+<li><strong>Version:</strong> 1.0.105</li>
+<li><strong>Licence:</strong> GitHub Copilot CLI License (proprietary;
+redistribution of unmodified copies permitted)</li>
+<li><strong>Copyright:</strong> Copyright (c) GitHub, Inc.</li>
+<li><strong>Upstream:</strong> <a
+href="https://github.com/github/copilot-cli">https://github.com/github/copilot-cli</a></li>
+<li><strong>How it reaches you:</strong> Bundled in the QuillVille
+Runtime used by installed app editions. A standalone portable includes
+it only when that app's declared dependencies require it.</li>
+<li><strong>What the licence asks of us:</strong> Redistribute only
+unmodified copies, only as part of an application that does more than
+the CLI itself and never on a standalone basis, with a copy of this
+licence included and GitHub's copyright, trademark and attribution
+notices kept.</li>
+</ul>
+<h3 id="openai-codex-app-server-codex-app-serverexe">OpenAI Codex
+app-server (codex-app-server.exe)</h3>
+<ul>
+<li><strong>What it is:</strong> The Codex agent engine, run as a
+separate program. Ships unmodified, signed by OpenAI, in the shared
+runtime's tools\codex with its licence as CODEX-LICENSE.txt and its
+NOTICE as CODEX-NOTICE.txt.</li>
+<li><strong>Included in:</strong> The QuillVille Runtime and installed
+app editions that include it. Standalone portable editions are scoped by
+their own dependency inventories.</li>
+<li><strong>Version:</strong> 0.166.0</li>
+<li><strong>Licence:</strong> Apache-2.0</li>
+<li><strong>Copyright:</strong> Copyright 2025 OpenAI</li>
+<li><strong>Upstream:</strong> <a
+href="https://github.com/openai/codex">https://github.com/openai/codex</a></li>
+<li><strong>How it reaches you:</strong> Bundled in the QuillVille
+Runtime used by installed app editions. A standalone portable includes
+it only when that app's declared dependencies require it.</li>
+<li><strong>What the licence asks of us:</strong> Ship the licence text
+and keep copyright notices. Pass on any NOTICE file the component
+carries. Say so if we changed the component.</li>
+</ul>
 <h2 id="audio-and-video">Audio and video</h2>
 <p>Separate programs and engines for playing, recording and converting
 media.</p>
 <h3 id="deno-denoexe">Deno (deno.exe)</h3>
 <ul>
 <li><strong>What it is:</strong> A JavaScript runtime yt-dlp uses for
-YouTube’s challenges. Ships in tools\deno with its own licence as
+YouTube's challenges. Ships in tools\deno with its own licence as
 DENO-LICENSE.txt.</li>
 <li><strong>Included in:</strong> Quill Radio, Quill Converter,
 QuillVille Runtime.</li>
@@ -2046,7 +2034,7 @@ Cast, QUILL Studio, Quill Converter, QuillVille Runtime.</li>
 <li><strong>Version:</strong> 8.1.2 (gyan.dev essentials build, SHA-256
 pinned)</li>
 <li><strong>Licence:</strong> GPL-3.0-or-later (this build is configured
-with –enable-gpl –enable-version3)</li>
+with --enable-gpl --enable-version3)</li>
 <li><strong>Copyright:</strong> Copyright (c) 2000-2026 the FFmpeg
 developers. FFmpeg is a trademark of Fabrice Bellard.</li>
 <li><strong>Upstream:</strong> <a
@@ -2085,7 +2073,7 @@ years). Any program that is a derivative work must also be offered under
 GPL-3.0-compatible terms.</li>
 <li><strong>Needs review:</strong> libmpv is loaded into the same
 process as the app. A GPL library loaded in-process makes the combined
-program subject to the GPL when distributed. QUILL’s own source is
+program subject to the GPL when distributed. QUILL's own source is
 public under MIT, which is GPL-compatible, so this is satisfiable, but
 the obligation (offer the complete source of the combined program)
 should be acknowledged by the owner.</li>
@@ -2187,8 +2175,8 @@ href="https://github.com/espeak-ng/espeak-ng/releases/tag/1.52.0">https://github
 kokoro-onnx</h3>
 <ul>
 <li><strong>What it is:</strong> Natural-sounding offline neural voices.
-The model is bundled in the QUILL Offline Edition’s optional component
-and QUILL Studio’s portable edition, otherwise downloaded on request;
+The model is bundled in the QUILL Offline Edition's optional component
+and QUILL Studio's portable edition, otherwise downloaded on request;
 Voice Previews has Kokoro samples.</li>
 <li><strong>Included in:</strong> QUILL for All, QUILL Studio.</li>
 <li><strong>Version:</strong> model-files-v1.0; kokoro-onnx 0.6.1;
@@ -2219,7 +2207,7 @@ release.</li>
 <h3 id="mathcat">MathCAT</h3>
 <ul>
 <li><strong>What it is:</strong> Speaks and brailles mathematics.
-Downloaded on request from QUILL’s release.</li>
+Downloaded on request from QUILL's release.</li>
 <li><strong>Included in:</strong> QUILL for All.</li>
 <li><strong>Version:</strong> 0.7.6-beta.5</li>
 <li><strong>Licence:</strong> MIT</li>
@@ -2228,7 +2216,7 @@ Consortium</li>
 <li><strong>Upstream:</strong> <a
 href="https://github.com/daisy/MathCATForC">https://github.com/daisy/MathCATForC</a></li>
 <li><strong>How it reaches you:</strong> Downloaded only when you ask
-for it, from QUILL’s own pinned release, so QUILL still redistributes
+for it, from QUILL's own pinned release, so QUILL still redistributes
 it.</li>
 <li><strong>What the licence asks of us:</strong> Keep the copyright
 notice and the permission notice with every copy.</li>
@@ -2246,7 +2234,7 @@ NOTICE.txt travels with it.</li>
 <li><strong>Upstream:</strong> <a
 href="https://huggingface.co/nvidia/nemotron-speech-streaming-en-0.6b">https://huggingface.co/nvidia/nemotron-speech-streaming-en-0.6b</a></li>
 <li><strong>How it reaches you:</strong> Downloaded only when you ask
-for it, from QUILL’s own pinned release, so QUILL still redistributes
+for it, from QUILL's own pinned release, so QUILL still redistributes
 it.</li>
 <li><strong>What the licence asks of us:</strong> Keep NVIDIA
 attribution and the model NOTICE, and provide this agreement with the
@@ -2256,8 +2244,8 @@ requirements and any updated terms.</li>
 <h3 id="piper-text-to-speech-engine">Piper text-to-speech engine</h3>
 <ul>
 <li><strong>What it is:</strong> A fast offline neural voice. Bundled in
-QUILL Studio’s portable edition; otherwise downloaded on request. Piper
-uses eSpeak NG’s phoneme data.</li>
+QUILL Studio's portable edition; otherwise downloaded on request. Piper
+uses eSpeak NG's phoneme data.</li>
 <li><strong>Included in:</strong> QUILL for All, QUILL Studio.</li>
 <li><strong>Version:</strong> 2023.11.14-2</li>
 <li><strong>Licence:</strong> MIT</li>
@@ -2275,21 +2263,21 @@ notice and the permission notice with every copy.</li>
 request, and the short Piper samples in Voice Previews.</li>
 <li><strong>Included in:</strong> QUILL for All, QUILL Studio.</li>
 <li><strong>Version:</strong> per voice</li>
-<li><strong>Licence:</strong> Varies by voice (each voice’s MODEL_CARD
+<li><strong>Licence:</strong> Varies by voice (each voice's MODEL_CARD
 names its dataset and licence; several are CC-BY-4.0, CC0-1.0 or MIT,
 and some datasets restrict commercial use)</li>
-<li><strong>Copyright:</strong> Each voice’s trainer and dataset
+<li><strong>Copyright:</strong> Each voice's trainer and dataset
 owner</li>
 <li><strong>Upstream:</strong> <a
 href="https://huggingface.co/rhasspy/piper-voices">https://huggingface.co/rhasspy/piper-voices</a></li>
 <li><strong>How it reaches you:</strong> Downloaded only when you ask
-for it, from QUILL’s own pinned release, so QUILL still redistributes
+for it, from QUILL's own pinned release, so QUILL still redistributes
 it.</li>
 <li><strong>What the licence asks of us:</strong> Unknown until the
 licence is confirmed. See the review note on each entry.</li>
 <li><strong>Needs review:</strong> Not confirmed voice by voice. QUILL
 redistributes some voices (from its own release) and ships samples of 39
-of them in quill/data/voice-previews/piper. Each voice’s MODEL_CARD must
+of them in quill/data/voice-previews/piper. Each voice's MODEL_CARD must
 be checked and its licence and attribution recorded here.</li>
 </ul>
 <h3 id="vosk-small-english-model-vosk-model-small-en-us-015">Vosk small
@@ -2313,7 +2301,7 @@ carries. Say so if we changed the component.</li>
 (with Kaldi)</h3>
 <ul>
 <li><strong>What it is:</strong> Offline speech recognition: QUILL
-Cast’s chapter finder and an optional dictation engine in QUILL.</li>
+Cast's chapter finder and an optional dictation engine in QUILL.</li>
 <li><strong>Included in:</strong> QUILL for All, QUILL Cast.</li>
 <li><strong>Version:</strong> 0.3.45</li>
 <li><strong>Licence:</strong> Apache-2.0</li>
@@ -2347,7 +2335,7 @@ notice and the permission notice with every copy.</li>
 <h3 id="whispercpp">whisper.cpp</h3>
 <ul>
 <li><strong>What it is:</strong> The default offline transcription
-engine. Bundled in the Offline Editions and QUILL Studio’s portable
+engine. Bundled in the Offline Editions and QUILL Studio's portable
 edition; otherwise downloaded on request.</li>
 <li><strong>Included in:</strong> QUILL for All, QUILL Studio,
 QuillVille Runtime.</li>
@@ -2411,7 +2399,7 @@ GPL-2.0-compatible terms.</li>
 </ul>
 <h3 id="hunspell-dictionaries">Hunspell dictionaries</h3>
 <ul>
-<li><strong>What it is:</strong> Spelling dictionaries for QUILL’s spell
+<li><strong>What it is:</strong> Spelling dictionaries for QUILL's spell
 checker.</li>
 <li><strong>Included in:</strong> QUILL for All, QuillVille
 Runtime.</li>
@@ -2420,8 +2408,8 @@ from LibreOffice dictionaries at commit 93d537d</li>
 <li><strong>Licence:</strong> Per language. The downloadable languages
 (es_ES, fr_FR and others) are GPL-3.0, LGPL-3.0 or MPL-2.0 as their own
 README states; each zip carries those files.</li>
-<li><strong>Copyright:</strong> Each dictionary’s authors (for English:
-Kevin Atkinson’s SCOWL and contributors; for Spanish: RLA-ES; for
+<li><strong>Copyright:</strong> Each dictionary's authors (for English:
+Kevin Atkinson's SCOWL and contributors; for Spanish: RLA-ES; for
 French: Dicollecte)</li>
 <li><strong>Upstream:</strong> <a
 href="https://github.com/LibreOffice/dictionaries">https://github.com/LibreOffice/dictionaries</a></li>
@@ -2435,10 +2423,10 @@ corresponding source of the component, or a written offer for it, for as
 long as we distribute it (and at least three years). Any program that is
 a derivative work must also be offered under GPL-3.0-compatible terms.
 Ship the LGPL-3.0 and GPL-3.0 texts. Keep the library replaceable. Offer
-the library’s source, or point to the exact upstream source of the
+the library's source, or point to the exact upstream source of the
 version we ship.</li>
 <li><strong>Needs review:</strong> The English dictionaries that ship
-inside PyEnchant’s payload (en_US, en_GB, en_AU and other en_* variants)
+inside PyEnchant's payload (en_US, en_GB, en_AU and other en_* variants)
 were not checked one by one; their README files are not in the pruned
 payload. Confirm and keep their licence files with them.</li>
 </ul>
@@ -2457,11 +2445,11 @@ contributors (ViewPlus Technologies, JJB Software, and others)</li>
 <li><strong>Upstream:</strong> <a
 href="https://github.com/liblouis/liblouis">https://github.com/liblouis/liblouis</a></li>
 <li><strong>How it reaches you:</strong> Downloaded only when you ask
-for it, from QUILL’s own pinned release, so QUILL still redistributes
+for it, from QUILL's own pinned release, so QUILL still redistributes
 it.</li>
 <li><strong>What the licence asks of us:</strong> Ship the licence text.
 Keep the library a separate, replaceable file (all are shipped as
-separate DLLs or modules). Offer the library’s source, or point to the
+separate DLLs or modules). Offer the library's source, or point to the
 exact upstream source of the version we ship. Ship the licence text.
 Provide the complete corresponding source of the component, or a written
 offer for it, for as long as we distribute it (and at least three
@@ -2521,7 +2509,7 @@ installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> Unknown until the
 licence is confirmed. See the review note on each entry.</li>
 <li><strong>Needs review:</strong> Voice models trained on restricted
-datasets may limit use of their output. Confirm each remaining voice’s
+datasets may limit use of their output. Confirm each remaining voice's
 terms alongside the Piper voice entries.</li>
 </ul>
 <h3 id="wordnet-21">WordNet 2.1</h3>
@@ -2537,7 +2525,7 @@ All rights reserved.</li>
 href="https://wordnet.princeton.edu/">https://wordnet.princeton.edu/</a></li>
 <li><strong>How it reaches you:</strong> Bundled: it is inside the
 installer or the portable zip.</li>
-<li><strong>What the licence asks of us:</strong> Keep Princeton’s
+<li><strong>What the licence asks of us:</strong> Keep Princeton's
 copyright notice and licence with the data and in its
 documentation.</li>
 </ul>
@@ -2562,11 +2550,11 @@ installer or the portable zip.</li>
 The sounds and icons are listed here.</p>
 <h3 id="app-icons">App icons</h3>
 <ul>
-<li><strong>What it is:</strong> Every app’s icon, drawn by
+<li><strong>What it is:</strong> Every app's icon, drawn by
 scripts/build_app_icons.py. No third-party artwork.</li>
 <li><strong>Included in:</strong> Every product in the family.</li>
 <li><strong>Version:</strong> generated</li>
-<li><strong>Licence:</strong> MIT (QUILL’s own work)</li>
+<li><strong>Licence:</strong> MIT (QUILL's own work)</li>
 <li><strong>Copyright:</strong> Copyright (c) 2026 Blind Information
 Technology Solutions (BITS)</li>
 <li><strong>Upstream:</strong> <a
@@ -2602,7 +2590,7 @@ scripts/gen_ink_sounds.py and scripts/gen_indent_tones.py. No
 third-party recordings.</li>
 <li><strong>Included in:</strong> Every product in the family.</li>
 <li><strong>Version:</strong> generated</li>
-<li><strong>Licence:</strong> MIT (QUILL’s own work)</li>
+<li><strong>Licence:</strong> MIT (QUILL's own work)</li>
 <li><strong>Copyright:</strong> Copyright (c) 2026 Blind Information
 Technology Solutions (BITS)</li>
 <li><strong>Upstream:</strong> <a
@@ -2619,7 +2607,7 @@ alert sound (quill/assets/audio/weather_alert.wav)</h3>
 scripts/gen_ink_sounds.py.</li>
 <li><strong>Included in:</strong> Every product in the family.</li>
 <li><strong>Version:</strong> generated</li>
-<li><strong>Licence:</strong> MIT (QUILL’s own work)</li>
+<li><strong>Licence:</strong> MIT (QUILL's own work)</li>
 <li><strong>Copyright:</strong> Copyright (c) 2026 Blind Information
 Technology Solutions (BITS)</li>
 <li><strong>Upstream:</strong> <a
@@ -2658,7 +2646,7 @@ and website strings after compiler upgrades.</li>
 <h3 id="pandoc-documentation-build">Pandoc (documentation build)</h3>
 <ul>
 <li><strong>What it is:</strong> Renders the user guides to HTML and
-EPUB. The rendered guides are QUILL’s own text.</li>
+EPUB. The rendered guides are QUILL's own text.</li>
 <li><strong>Included in:</strong> Every product in the family.</li>
 <li><strong>Version:</strong> 3.10 or later</li>
 <li><strong>Licence:</strong> GPL-2.0-or-later</li>
@@ -2721,7 +2709,7 @@ release-specific source and build instructions according to the
 applicable terms; to request source materials or a written offer, write
 to <a
 href="mailto:support@community-access.org">support@community-access.org</a>.</p>
-<p>QUILL’s own source code is public at <a
+<p>QUILL's own source code is public at <a
 href="https://github.com/Community-Access/quill">https://github.com/Community-Access/quill</a>.
 For PyMuPDF, the entry above names the exact source archive and its
 SHA-256 checksum. The source scope for a QUILL work combined with an
@@ -2748,7 +2736,7 @@ Public License, version 3</h3>
 <p>Used by: PyMuPDF (with MuPDF).</p>
 <p>What it asks of us: Keep the copyright and licence notices and
 provide Corresponding Source when required for a covered work; sections
-4–6 distinguish source and object-code conveyance. Section 13’s
+4–6 distinguish source and object-code conveyance. Section 13's
 remote-network offer applies when a modified covered program supports
 remote network interaction. Whether QUILL packaging creates a covered
 combined work, and the resulting source scope, require legal review.</p>
@@ -3417,9 +3405,9 @@ For more information on this, and how to apply and follow the GNU AGPL, see
 <p>Used by: cryptography, html_to_text, OpenSSL (libssl and libcrypto),
 PyNaCl (with libsodium), pypdfium2 (with PDFium), python-dateutil,
 regex, Requests, sherpa-onnx (with ONNX Runtime), tzdata,
-websocket-client, Kokoro-82M voices and kokoro-onnx, Vosk small English
-model (vosk-model-small-en-us-0.15), Vosk speech recognition (with
-Kaldi).</p>
+websocket-client, OpenAI Codex app-server (codex-app-server.exe),
+Kokoro-82M voices and kokoro-onnx, Vosk small English model
+(vosk-model-small-en-us-0.15), Vosk speech recognition (with Kaldi).</p>
 <p>What it asks of us: Ship the licence text and keep copyright notices.
 Pass on any NOTICE file the component carries. Say so if we changed the
 component.</p>
@@ -3686,7 +3674,7 @@ pypdfium2 (with PDFium), pyreadline3, python-dateutil, python-soundfile
 (with libsndfile), python-zstandard, websockets, Werkzeug.</p>
 <p>What it asks of us: Keep the copyright notice, the conditions and the
 disclaimer in the documentation that ships with the binary. Do not use
-the authors’ names to promote the product without permission.</p>
+the authors' names to promote the product without permission.</p>
 <pre class="text"><code>BSD 3-Clause License
 
 Copyright (c) [year], [fullname]
@@ -4099,6 +4087,49 @@ You have permission to propagate a work of Target Code formed by combining the R
 2. No Weakening of GCC Copyleft.
 
 The availability of this Exception does not imply any general presumption that third-party software is unaffected by the copyleft requirements of the license of GCC.</code></pre>
+<h3 id="github-copilot-cli-license-proprietary">GitHub Copilot CLI
+License (proprietary)</h3>
+<p>Used by: GitHub Copilot CLI (copilot.exe).</p>
+<p>What it asks of us: Redistribute only unmodified copies, only as part
+of an application that does more than the CLI itself and never on a
+standalone basis, with a copy of this licence included and GitHub's
+copyright, trademark and attribution notices kept.</p>
+<pre class="text"><code>GitHub Copilot CLI License
+
+1. License Grant
+Subject to the terms of this License, GitHub grants you a non‑exclusive, non‑transferable, royalty‑free license to install and run copies of the GitHub Copilot CLI (the “Software”). Subject to Section 2 below, GitHub also grants you the right to reproduce and redistribute unmodified copies of the Software as part of an application or service.
+
+2. Redistribution Rights and Conditions
+You may reproduce and redistribute the Software only in accordance with all of the following conditions:
+The Software is distributed only in unmodified form;
+The Software is redistributed solely as part of an application or service that provides material functionality beyond the Software itself;
+The Software is not distributed on a standalone basis or as a primary product;
+You include a copy of this License and retain all applicable copyright, trademark, and attribution notices; and
+Your application or service is licensed independently of the Software.
+Nothing in this License restricts your choice of license for your application or service, including distribution under an open source license. This License applies solely to the Software and does not modify or supersede the license terms governing your application or its source code.
+
+3. Scope Limitations
+This License does not grant you the right to:
+Modify, adapt, translate, or create derivative works of the Software;
+Redistribute the Software except as expressly permitted in Section 2;
+Remove, alter, or obscure any proprietary notices included in the Software; or
+Use GitHub trademarks, logos, or branding except as necessary to identify the Software.
+
+4. Reservation of Rights
+GitHub and its licensors retain all right, title, and interest in and to the Software. All rights not expressly granted by this License are reserved.
+
+5. Disclaimer of Warranty
+THE SOFTWARE IS PROVIDED “AS IS,” WITHOUT WARRANTY OF ANY KIND, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING WITHOUT LIMITATION WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON‑INFRINGEMENT. THE ENTIRE RISK ARISING OUT OF USE OF THE SOFTWARE REMAINS WITH YOU.
+
+6. Limitation of Liability
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL GITHUB OR ITS LICENSORS BE LIABLE FOR ANY DAMAGES ARISING OUT OF OR RELATING TO THIS LICENSE OR THE USE OR DISTRIBUTION OF THE SOFTWARE, WHETHER IN CONTRACT, TORT, OR OTHERWISE.
+
+7. Termination
+This License terminates automatically if you fail to comply with its terms. Upon termination, you must cease all use and distribution of the Software.
+
+8. Third-Party Services. 
+The Software may enable access to or interaction with services provided by GitHub, Microsoft, or other third parties. Access to a service may require a separate account, subscription, license, authorization, or other entitlement. Your use of each service is subject to the terms, agreements, and privacy notices applicable to that service and your relationship with the relevant service provider.  
+For example, if you access the Software using a Microsoft 365 account or entitlement, the Microsoft 365 services made available through the Software—including any applicable data-access or AI-inference services—are provided under, and subject to, the Microsoft Product Terms and the agreement under which you or your organization obtained the applicable Microsoft 365 subscription. This License governs only your rights to use the Software and does not grant any right to access or use Microsoft 365 services or other third-party services.</code></pre>
 <h3 id="gnu-general-public-license-version-2">GNU General Public
 License, version 2</h3>
 <p>Used by: Git for Windows (MinGit) and GitHub CLI, mutagen, Pandoc,
@@ -5219,7 +5250,7 @@ Public License, version 2.1</h3>
 libsndfile), pywin32, liblouis (QUILL Braille Pack).</p>
 <p>What it asks of us: Ship the licence text. Keep the library a
 separate, replaceable file (all are shipped as separate DLLs or
-modules). Offer the library’s source, or point to the exact upstream
+modules). Offer the library's source, or point to the exact upstream
 source of the version we ship.</p>
 <pre class="text"><code>GNU LESSER GENERAL PUBLIC LICENSE
                        Version 2.1, February 1999
@@ -5729,7 +5760,7 @@ That&#39;s all there is to it!</code></pre>
 Public License, version 3</h3>
 <p>Used by: pillow-heif, Hunspell dictionaries.</p>
 <p>What it asks of us: Ship the LGPL-3.0 and GPL-3.0 texts. Keep the
-library replaceable. Offer the library’s source, or point to the exact
+library replaceable. Offer the library's source, or point to the exact
 upstream source of the version we ship.</p>
 <pre class="text"><code>GNU LESSER GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
@@ -5966,7 +5997,7 @@ documentation is licensed as follows:
     DEALINGS IN THE SOFTWARE.</code></pre>
 <h3
 id="mit-cmu-the-historical-pil-licence-with-the-licences-of-pillows-bundled-libraries">MIT-CMU
-(the historical PIL licence), with the licences of Pillow’s bundled
+(the historical PIL licence), with the licences of Pillow's bundled
 libraries</h3>
 <p>Used by: Pillow.</p>
 <p>What it asks of us: Keep the copyright notice and permission notice
@@ -8432,7 +8463,7 @@ For more information, please refer to &lt;http://unlicense.org&gt;</code></pre>
 <h3 id="wordnet-21-licence-princeton-university">WordNet 2.1 licence
 (Princeton University)</h3>
 <p>Used by: WordNet 2.1.</p>
-<p>What it asks of us: Keep Princeton’s copyright notice and licence
+<p>What it asks of us: Keep Princeton's copyright notice and licence
 with the data and in its documentation.</p>
 <pre class="text"><code>WordNet Release 2.1
 
@@ -8468,7 +8499,7 @@ Princeton University and LICENSEE agrees to preserve same.  </code></pre>
 <h3 id="wxwindows-library-licence-version-31">wxWindows Library Licence,
 version 3.1</h3>
 <p>Used by: wxPython and wxWidgets.</p>
-<p>What it asks of us: Keep the notice. The licence’s exception lets us
+<p>What it asks of us: Keep the notice. The licence's exception lets us
 ship the compiled library with our program on our own terms; changes to
 the library itself would have to be offered as source.</p>
 <pre class="text"><code>Preamble
@@ -9082,6 +9113,5 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</code></pre>
-</main>
 </body>
 </html>

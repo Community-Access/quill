@@ -260,6 +260,12 @@
       "text": "Inno-Setup-License.txt",
       "url": "https://jrsoftware.org/files/is/license.txt",
       "obligations": "Retain the upstream copyright notices and website addresses in binary redistributions; do not misrepresent origin or modifications. Commercial redistribution is permitted."
+    },
+    "GitHub-Copilot-CLI": {
+      "name": "GitHub Copilot CLI License (proprietary)",
+      "text": "GitHub-Copilot-CLI-License.txt",
+      "url": "https://github.com/github/copilot-cli/blob/main/LICENSE.md",
+      "obligations": "Redistribute only unmodified copies, only as part of an application that does more than the CLI itself and never on a standalone basis, with a copy of this licence included and GitHub's copyright, trademark and attribution notices kept."
     }
   },
   "components": [
@@ -1967,6 +1973,40 @@
         "runtime"
       ],
       "delivery": "bundled"
+    },
+    {
+      "id": "copilot-cli",
+      "name": "GitHub Copilot CLI (copilot.exe)",
+      "group": "runtime",
+      "version": "1.0.105",
+      "licenses": [
+        "GitHub-Copilot-CLI"
+      ],
+      "license_label": "GitHub Copilot CLI License (proprietary; redistribution of unmodified copies permitted)",
+      "copyright": "Copyright (c) GitHub, Inc.",
+      "homepage": "https://github.com/github/copilot-cli",
+      "what": "The engine behind the My GitHub Copilot connection, run as a separate program. Ships unmodified, signed by GitHub, in the shared runtime's tools\\copilot with its licence as COPILOT-CLI-LICENSE.txt.",
+      "products": [
+        "all"
+      ],
+      "delivery": "shared-runtime"
+    },
+    {
+      "id": "codex-app-server",
+      "name": "OpenAI Codex app-server (codex-app-server.exe)",
+      "group": "runtime",
+      "version": "0.166.0",
+      "licenses": [
+        "Apache-2.0"
+      ],
+      "license_label": "Apache-2.0",
+      "copyright": "Copyright 2025 OpenAI",
+      "homepage": "https://github.com/openai/codex",
+      "what": "The Codex agent engine, run as a separate program. Ships unmodified, signed by OpenAI, in the shared runtime's tools\\codex with its licence as CODEX-LICENSE.txt and its NOTICE as CODEX-NOTICE.txt.",
+      "products": [
+        "all"
+      ],
+      "delivery": "shared-runtime"
     },
     {
       "id": "ffmpeg",

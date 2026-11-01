@@ -784,3 +784,43 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "reviewed core/spotify/auth.py::_token_request site."
     ),
 }
+
+
+# Child-process egress: a bundled agent runtime QUILL starts, whose network
+# calls happen inside that child, not at a urlopen in quill/ source -- so the
+# AST scan above cannot see them, and an entry in _REVIEWED_EGRESS would be
+# reported stale. A new kind of entry, then: keyed "<path>::<function>" at the
+# place QUILL launches (or, before the launcher exists, locates) the binary.
+# tests/unit/tools/test_network_egress_audit.py checks every key still names a
+# real function, so an entry cannot outlive its launcher unnoticed.
+_CHILD_PROCESS_EGRESS: dict[str, str] = {
+    "ai_packs/copilot.py::_make_invoke": (
+        "The GitHub Copilot engine. The Copilot SDK starts the bundled Copilot "
+        "CLI (tools/copilot/copilot.exe, pinned by SHA-256 in "
+        "core/ai/copilot_runtime.py and checked before every launch; "
+        "COPILOT_SKIP_CLI_DOWNLOAD=1 so it never fetches another) and the CLI "
+        "talks to GitHub's Copilot service over HTTPS (api.github.com and the "
+        "Copilot API hosts; gate G5 records the exact list). What is sent: the "
+        "agent's instructions, the person's prompt and the document context "
+        "they chose. Reached only when the person has chosen GitHub Copilot as "
+        "the engine and runs an AI command; never in the background. The "
+        "GitHub token travels as the SDK's explicit github_token argument, "
+        "never in the child's environment (copilot_child_env strips "
+        "GITHUB_TOKEN, GH_TOKEN and COPILOT_GITHUB_TOKEN). No vendor tools are "
+        "offered and every permission request is refused. Safe Mode turns AI "
+        "off, so the engine never starts under it."
+    ),
+    "core/ai/codex_binary.py::find_codex_app_server": (
+        "The Codex engine (ChatGPT plan, agent tasks). The bundled "
+        "codex-app-server.exe (tools/codex, pinned by SHA-256 in "
+        "core/ai/codex_binary.py) will be started as a long-lived child over "
+        "stdio and talks to OpenAI's ChatGPT backend over HTTPS with the "
+        "person's own ChatGPT plan token, passed only in the child's "
+        "environment. No launcher exists yet (the agent engines phase), so "
+        "this entry sits at the lookup; move it to the launcher when that "
+        "lands. Reached only from an explicit agent task with Codex chosen; "
+        "never in the background; refused in Safe Mode. Not on the "
+        "external-engine allowlist, which guards a different, per-request "
+        "spawn."
+    ),
+}

@@ -1,10 +1,10 @@
-# Section — GitHub, Local Git, and Publishing (`github.*` `localgit.*` `publishing.*`, 40 commands)
+# Section — GitHub, Local Git, and Publishing (`github.*` `localgit.*` `publishing.*`, 38 commands)
 
 Three related but separate surfaces, all about moving your writing between QUILL
 and the wider world:
 
-- **GitHub** (`github.*`, 17) — operate a GitHub account's repositories, releases,
-  branches, notifications, security alerts, Codespaces, and Copilot CLI, without
+- **GitHub** (`github.*`, 15) — operate a GitHub account's repositories, releases,
+  branches, notifications, security alerts and Codespaces, without
   leaving QUILL. These live under **Tools menu ▸ Git and GitHub ▸ GitHub**. (The
   File-menu GitHub commands — save-back, open a file/repo/items, manage accounts —
   are `file.*` and are covered in `section-file.md` as **FILE-25…FILE-29**; do not
@@ -34,9 +34,9 @@ without them:**
   Credential Manager / DPAPI, portable `keys.enc`, or macOS Keychain) — never in
   plain text. In **Safe Mode** every GitHub command refuses aloud; that is correct,
   not a failure.
-- **GitHub CLI (`gh`) for Codespaces and Copilot.** GH-06, GH-07, GH-08, GH-14
+- **GitHub CLI (`gh`) for Codespaces.** GH-08 and GH-14
   additionally need the **GitHub CLI** installed and on your PATH (or QUILL's
-  self-hosted copy via **Help ▸ Download Optional Components**). These four are
+  self-hosted copy via **Help ▸ Download Optional Components**). These two are
   wired but flagged **needs live-device verification** — record exactly what you saw.
 - **A local git repo for `localgit.*`.** You need a folder that is a git
   repository, plus a `git` executable (QUILL offers **Help ▸ Download Optional
@@ -201,52 +201,11 @@ status checks, enforce-on-admins) for a branch.
 
 ---
 
-## GH-06 — Explain a Command… (`github.copilot_explain`)
+## GH-06 and GH-07 — retired
 
-*What & why.* Paste a `git` or `gh` command and have GitHub Copilot CLI explain it
-in plain language.
-
-**Before you start**
-- **Precondition:** the **GitHub CLI (`gh`)** installed with Copilot access
-  (`gh copilot`). If not present, QUILL points you to cli.github.com / Download
-  Optional Components — mark **Blocked** if you cannot install it. Needs live-device
-  verification.
-
-**Do this**
-1. **Tools ▸ Git and GitHub ▸ GitHub ▸ Explain a Command…**.
-2. Paste a command such as **`git reset --soft HEAD~1`**; confirm.
-
-**You should see and hear**
-- "Asking Copilot" is announced; the explanation appears in a readable, dismissible
-  message box. If `gh` is missing you hear the "GitHub CLI Not Found" guidance
-  instead of an error; an empty answer reports "Copilot did not explain that
-  command."
-
-**Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
-`[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________
-
----
-
-## GH-07 — Ask Copilot for a Command… (`github.copilot_suggest`)
-
-*What & why.* Describe what you want to do in words and get a suggested `git`/`gh`
-command from Copilot CLI.
-
-**Before you start**
-- Same `gh` + Copilot precondition as GH-06 (else **Blocked**). Needs live-device
-  verification.
-
-**Do this**
-1. **Tools ▸ Git and GitHub ▸ GitHub ▸ Ask Copilot for a Command…**.
-2. Type e.g. **`undo my last commit but keep the changes`**; confirm.
-
-**You should see and hear**
-- "Asking Copilot"; the suggested command appears in a readable message box; a blank
-  result says "Copilot did not suggest anything." Missing `gh` gives the guidance
-  message, not a crash.
-
-**Sign off** — `[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A`
-`[ ] Works` `[ ] Surface-exact` `[ ] Accessible`  · Notes: ____________________
+Explain a Command and Ask Copilot for a Command were removed on 2026-10-31.
+They drove the `gh copilot` extension, which GitHub retired on 2025-10-25, so
+they could only fail. The numbers are not reused. Nothing to sign off.
 
 ---
 

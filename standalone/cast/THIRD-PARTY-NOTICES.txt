@@ -16,7 +16,7 @@ Summary by licence
 
   MIT License: 45 components
   BSD 3-Clause License: 21 components
-  Apache License, version 2.0: 12 components
+  Apache License, version 2.0: 13 components
   Python Software Foundation License, version 2: 6 components
   GNU Lesser General Public License, version 2.1: 4 components
   BSD 2-Clause License: 3 components
@@ -31,6 +31,7 @@ Summary by licence
   BASS licence (Un4seen Developments, proprietary freeware): 1 component
   Creative Commons Zero 1.0 (public domain dedication): 1 component
   GCC Runtime Library Exception, version 3.1: 1 component
+  GitHub Copilot CLI License (proprietary): 1 component
   Historical Permission Notice and Disclaimer (HPND): 1 component
   GNU Lesser General Public License, version 3: 1 component
   MIT No Attribution License: 1 component
@@ -1020,6 +1021,28 @@ Upstream: https://github.com/yt-dlp/ejs
 How it reaches you: Bundled: it is inside the installer or the portable zip.
 What the licence asks of us: None. Keep the copyright notice and the permission notice with every copy. Keep the copyright notice and the permission notice.
 
+GitHub Copilot CLI (copilot.exe)
+--------------------------------
+
+What it is: The engine behind the My GitHub Copilot connection, run as a separate program. Ships unmodified, signed by GitHub, in the shared runtime's tools\copilot with its licence as COPILOT-CLI-LICENSE.txt.
+Version: 1.0.105
+Licence: GitHub Copilot CLI License (proprietary; redistribution of unmodified copies permitted)
+Copyright: Copyright (c) GitHub, Inc.
+Upstream: https://github.com/github/copilot-cli
+How it reaches you: Bundled in the QuillVille Runtime used by installed app editions. A standalone portable includes it only when that app's declared dependencies require it.
+What the licence asks of us: Redistribute only unmodified copies, only as part of an application that does more than the CLI itself and never on a standalone basis, with a copy of this licence included and GitHub's copyright, trademark and attribution notices kept.
+
+OpenAI Codex app-server (codex-app-server.exe)
+----------------------------------------------
+
+What it is: The Codex agent engine, run as a separate program. Ships unmodified, signed by OpenAI, in the shared runtime's tools\codex with its licence as CODEX-LICENSE.txt and its NOTICE as CODEX-NOTICE.txt.
+Version: 0.166.0
+Licence: Apache-2.0
+Copyright: Copyright 2025 OpenAI
+Upstream: https://github.com/openai/codex
+How it reaches you: Bundled in the QuillVille Runtime used by installed app editions. A standalone portable includes it only when that app's declared dependencies require it.
+What the licence asks of us: Ship the licence text and keep copyright notices. Pass on any NOTICE file the component carries. Say so if we changed the component.
+
 AUDIO AND VIDEO
 ===============
 
@@ -1895,7 +1918,7 @@ For more information on this, and how to apply and follow the GNU AGPL, see
 Apache License, version 2.0
 ---------------------------
 
-Used by: cryptography, html_to_text, OpenSSL (libssl and libcrypto), PyNaCl (with libsodium), pypdfium2 (with PDFium), python-dateutil, regex, Requests, tzdata, websocket-client, Vosk small English model (vosk-model-small-en-us-0.15), Vosk speech recognition (with Kaldi).
+Used by: cryptography, html_to_text, OpenSSL (libssl and libcrypto), PyNaCl (with libsodium), pypdfium2 (with PDFium), python-dateutil, regex, Requests, tzdata, websocket-client, OpenAI Codex app-server (codex-app-server.exe), Vosk small English model (vosk-model-small-en-us-0.15), Vosk speech recognition (with Kaldi).
 
 What it asks of us: Ship the licence text and keep copyright notices. Pass on any NOTICE file the component carries. Say so if we changed the component.
 
@@ -2361,6 +2384,50 @@ You have permission to propagate a work of Target Code formed by combining the R
 2. No Weakening of GCC Copyleft.
 
 The availability of this Exception does not imply any general presumption that third-party software is unaffected by the copyleft requirements of the license of GCC.
+
+GitHub Copilot CLI License (proprietary)
+----------------------------------------
+
+Used by: GitHub Copilot CLI (copilot.exe).
+
+What it asks of us: Redistribute only unmodified copies, only as part of an application that does more than the CLI itself and never on a standalone basis, with a copy of this licence included and GitHub's copyright, trademark and attribution notices kept.
+
+GitHub Copilot CLI License
+
+1. License Grant
+Subject to the terms of this License, GitHub grants you a non‑exclusive, non‑transferable, royalty‑free license to install and run copies of the GitHub Copilot CLI (the “Software”). Subject to Section 2 below, GitHub also grants you the right to reproduce and redistribute unmodified copies of the Software as part of an application or service.
+
+2. Redistribution Rights and Conditions
+You may reproduce and redistribute the Software only in accordance with all of the following conditions:
+The Software is distributed only in unmodified form;
+The Software is redistributed solely as part of an application or service that provides material functionality beyond the Software itself;
+The Software is not distributed on a standalone basis or as a primary product;
+You include a copy of this License and retain all applicable copyright, trademark, and attribution notices; and
+Your application or service is licensed independently of the Software.
+Nothing in this License restricts your choice of license for your application or service, including distribution under an open source license. This License applies solely to the Software and does not modify or supersede the license terms governing your application or its source code.
+
+3. Scope Limitations
+This License does not grant you the right to:
+Modify, adapt, translate, or create derivative works of the Software;
+Redistribute the Software except as expressly permitted in Section 2;
+Remove, alter, or obscure any proprietary notices included in the Software; or
+Use GitHub trademarks, logos, or branding except as necessary to identify the Software.
+
+4. Reservation of Rights
+GitHub and its licensors retain all right, title, and interest in and to the Software. All rights not expressly granted by this License are reserved.
+
+5. Disclaimer of Warranty
+THE SOFTWARE IS PROVIDED “AS IS,” WITHOUT WARRANTY OF ANY KIND, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING WITHOUT LIMITATION WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON‑INFRINGEMENT. THE ENTIRE RISK ARISING OUT OF USE OF THE SOFTWARE REMAINS WITH YOU.
+
+6. Limitation of Liability
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL GITHUB OR ITS LICENSORS BE LIABLE FOR ANY DAMAGES ARISING OUT OF OR RELATING TO THIS LICENSE OR THE USE OR DISTRIBUTION OF THE SOFTWARE, WHETHER IN CONTRACT, TORT, OR OTHERWISE.
+
+7. Termination
+This License terminates automatically if you fail to comply with its terms. Upon termination, you must cease all use and distribution of the Software.
+
+8. Third-Party Services. 
+The Software may enable access to or interaction with services provided by GitHub, Microsoft, or other third parties. Access to a service may require a separate account, subscription, license, authorization, or other entitlement. Your use of each service is subject to the terms, agreements, and privacy notices applicable to that service and your relationship with the relevant service provider.  
+For example, if you access the Software using a Microsoft 365 account or entitlement, the Microsoft 365 services made available through the Software—including any applicable data-access or AI-inference services—are provided under, and subject to, the Microsoft Product Terms and the agreement under which you or your organization obtained the applicable Microsoft 365 subscription. This License governs only your rights to use the Software and does not grant any right to access or use Microsoft 365 services or other third-party services.
 
 GNU General Public License, version 2
 -------------------------------------

@@ -71,6 +71,8 @@ _STAGED_BINARIES = (
     "build/deps/ffmpeg/ffmpeg.exe",
     "build/deps/ffmpeg/ffprobe.exe",
     "build/deps/mpv/libmpv-2.dll",
+    "build/deps/copilot/copilot.exe",
+    "build/deps/codex/codex-app-server.exe",
 )
 
 #: Built runtime dists worth measuring, relative to the checkout root.

@@ -212,3 +212,37 @@ def test_sanitize_ignores_non_pe_files(tmp_path: Path) -> None:
     plain.write_text("hello", encoding="utf-8")
     cs._sanitize_pe_for_signing(plain)  # must not raise
     assert plain.read_text(encoding="utf-8") == "hello"
+
+
+def test_collect_files_never_returns_vendor_signed_tools(tmp_path: Path) -> None:
+    """GitHub's copilot.exe and OpenAI's app-server ship exactly as signed."""
+    for rel in ("tools/copilot/copilot.exe", "tools/codex/codex-app-server.exe"):
+        (tmp_path / rel).parent.mkdir(parents=True, exist_ok=True)
+        (tmp_path / rel).write_text("x", encoding="utf-8")
+    (tmp_path / "tools" / "ffmpeg").mkdir(parents=True)
+    (tmp_path / "tools" / "ffmpeg" / "ffmpeg.exe").write_text("x", encoding="utf-8")
+    (tmp_path / "QuillVilleRuntime.exe").write_text("x", encoding="utf-8")
+    names = {p.name for p in cs.collect_files(tmp_path)}
+    assert names == {"ffmpeg.exe", "QuillVilleRuntime.exe"}
+
+
+def test_is_vendor_signed_matches_only_the_vendor_tool_dirs() -> None:
+    assert cs.is_vendor_signed(Path("dist/R/tools/copilot/copilot.exe"))
+    assert cs.is_vendor_signed(Path("dist/R/TOOLS/Codex/codex-app-server.exe"))
+    assert not cs.is_vendor_signed(Path("dist/R/tools/deno/deno.exe"))
+    assert not cs.is_vendor_signed(Path("dist/R/copilot/copilot.exe"))
+
+
+def test_sign_paths_skips_an_explicit_vendor_signed_file(
+    monkeypatch: pytest.MonkeyPatch, clean_env: None, tmp_path: Path
+) -> None:
+    exe = tmp_path / "tools" / "codex" / "codex-app-server.exe"
+    exe.parent.mkdir(parents=True)
+    exe.write_text("x", encoding="utf-8")
+    monkeypatch.setenv("QUILL_SIGN", "1")
+    monkeypatch.setattr(cs, "signing_refused", lambda *a, **k: False)
+    monkeypatch.setattr(cs, "resolve_config", lambda: _fake_config(tmp_path))
+    signed: list[Path] = []
+    monkeypatch.setattr(cs, "sign_files", lambda files, config: signed.extend(files) or files)
+    assert cs.sign_paths([exe], label="t") == []
+    assert signed == []

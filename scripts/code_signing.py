@@ -89,6 +89,28 @@ TRUSTED_SIGNING_CLIENT_SHA256 = "3bfcf1e0a3cb42af1692f0a8ed45c15de070c2de86f28a5
 # binaries; catalogs and scripts are out of scope here.
 DEFAULT_SIGN_PATTERNS = ("*.exe", "*.dll")
 
+# Third-party binaries that arrive already Authenticode-signed by their vendor
+# and must ship byte-for-byte as staged: ``tools/<name>/`` under any tree we
+# walk. The GitHub Copilot CLI (signed by GitHub, Inc.) may be redistributed
+# only unmodified, and the OpenAI Codex app-server (signed by OpenAI) is checked
+# against its pinned SHA-256 before every launch
+# (quill.core.ai.codex_binary) -- re-signing either would change its bytes and
+# replace the vendor's signature with ours. We never re-sign a third-party
+# binary that carries its maker's signature. (ffmpeg and libmpv ship unsigned
+# upstream and are signed with the rest of the payload; deno is signed by Deno
+# Land Inc. and is, for now, still re-signed -- a candidate for this list.)
+VENDOR_SIGNED_TOOL_DIRS = ("copilot", "codex")
+
+
+def is_vendor_signed(path: Path) -> bool:
+    """True when *path* sits in a ``tools/<vendor>`` dir we never re-sign."""
+    parts = [part.casefold() for part in Path(path).parts]
+    return any(
+        parts[i] == "tools" and parts[i + 1] in VENDOR_SIGNED_TOOL_DIRS
+        for i in range(len(parts) - 1)
+    )
+
+
 # A verification is over the embedded Authenticode signature only. signtool's
 # /pa uses the Default Authentication Policy, which is what SmartScreen and the
 # UAC prompt evaluate.
@@ -478,10 +500,14 @@ def sign_files(files: Iterable[Path], config: SigningConfig, *, batch: int = 50)
 
 
 def collect_files(root: Path, patterns: Sequence[str] = DEFAULT_SIGN_PATTERNS) -> list[Path]:
-    """Every file under *root* matching any of *patterns* (recursive, sorted)."""
+    """Every file under *root* matching any of *patterns* (recursive, sorted).
+
+    Vendor-signed tools (:data:`VENDOR_SIGNED_TOOL_DIRS`) are left out: they
+    ship exactly as their maker signed them.
+    """
     found: set[Path] = set()
     for pattern in patterns:
-        found.update(p for p in root.rglob(pattern) if p.is_file())
+        found.update(p for p in root.rglob(pattern) if p.is_file() and not is_vendor_signed(p))
     return sorted(found)
 
 
@@ -562,6 +588,9 @@ def sign_paths(
         if path.is_dir():
             targets.extend(collect_files(path, effective_patterns))
         elif path.is_file():
+            if is_vendor_signed(path):
+                print(f"[sign] not re-signing vendor-signed {path} ({label}).")
+                continue
             targets.append(path)
         else:
             msg = SigningError(f"Nothing to sign at {path}")

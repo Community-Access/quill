@@ -50,7 +50,19 @@ function Stage-QuillMediaTools {
         # (scripts\fetch_build_deps.py --only deno). yt-dlp's JavaScript runtime
         # for YouTube's challenges; staged by the app that plays YouTube
         # (Radio), found by quill.core.js_runtime.find_deno.
-        [string]$DenoDir = ""
+        [string]$DenoDir = "",
+        # A vetted directory holding copilot.exe and COPILOT-CLI-LICENSE.txt
+        # (scripts\fetch_build_deps.py --only copilot). The GitHub Copilot CLI
+        # the Copilot SDK drives. Unlike the tools above it is not per app: it
+        # ships in every shared runtime, so build_runtime.ps1 stages it. GitHub's
+        # signed exe is copied unmodified -- its licence allows redistribution
+        # only that way, and only with the licence beside it.
+        [string]$CopilotDir = "",
+        # A vetted directory holding codex-app-server.exe, CODEX-LICENSE.txt and
+        # CODEX-NOTICE.txt (scripts\fetch_build_deps.py --only codex). OpenAI's
+        # Codex app-server, found by quill.core.ai.codex_binary; staged by
+        # build_runtime.ps1 into every shared runtime, unmodified.
+        [string]$CodexDir = ""
     )
 
     if (-not (Test-Path (Join-Path $RuntimeDist "QuillVilleRuntime.exe"))) {
@@ -111,5 +123,27 @@ function Stage-QuillMediaTools {
         Copy-Item $source $target -Force
         Copy-Item $license $target -Force
         Write-Host "Staged deno into the shared runtime."
+    }
+
+    # The two AI engines: one exe plus the licence files that must ride with
+    # it. Each file is required by name, so a stage missing its licence fails
+    # here rather than shipping without it.
+    $engines = @(
+        @{ Dir = $CopilotDir; Name = "copilot"; Files = @("copilot.exe", "COPILOT-CLI-LICENSE.txt") },
+        @{ Dir = $CodexDir; Name = "codex"; Files = @("codex-app-server.exe", "CODEX-LICENSE.txt", "CODEX-NOTICE.txt") }
+    )
+    foreach ($engine in $engines) {
+        if (-not $engine.Dir) { continue }
+        foreach ($file in $engine.Files) {
+            if (-not (Test-Path (Join-Path $engine.Dir $file))) {
+                throw "$file not found in the $($engine.Name) directory '$($engine.Dir)' -- it ships with its licence."
+            }
+        }
+        $target = Join-Path $RuntimeDist "tools\$($engine.Name)"
+        New-Item -ItemType Directory -Force $target | Out-Null
+        foreach ($file in $engine.Files) {
+            Copy-Item (Join-Path $engine.Dir $file) $target -Force
+        }
+        Write-Host "Staged $($engine.Name) into the shared runtime."
     }
 }

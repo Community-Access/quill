@@ -954,9 +954,9 @@ def gather_optional_components() -> list[OptionalComponent]:
         out.append(
             OptionalComponent(
                 "gh",
-                "GitHub CLI (for Codespaces and Copilot commands)",
+                "GitHub CLI (for Codespaces commands)",
                 "A portable copy of the official GitHub CLI, used by Tools > GitHub's "
-                "Codespaces and Copilot suggest/explain commands when gh is not "
+                "Codespaces commands when gh is not "
                 "already installed. QUILL always prefers a system gh on PATH first; "
                 "this download exists only as a fallback for a user who has never "
                 "installed it.",
