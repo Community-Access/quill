@@ -2047,9 +2047,11 @@ runs on this computer. Nothing is recorded, saved or sent anywhere while
 you check.</p>
 <p>With <strong>Tell me when my face leaves the camera view</strong>
 checked, Studio says so during the recording, and again when you are
-back. If your screen reader’s speech is being recorded, Studio adds a
-marker instead of speaking, so the announcement does not end up in the
-video.</p>
+back. A camera takes a moment to send its first picture, and its first
+pictures can be dark, so Studio says nothing about your face until the
+camera has been sending pictures for about a second and a half. If your
+screen reader’s speech is being recorded, Studio adds a marker instead
+of speaking, so the announcement does not end up in the video.</p>
 <p>If the face detector stops answering, Studio starts a fresh one.
 After three failures in a row it says “Face detection stopped answering,
 so framing advice has stopped”: close the camera check and open it
@@ -2150,7 +2152,13 @@ YouTube chapters later and make the recording easy to navigate.</li>
 <p>Studio hides itself, keeps its own windows out of the picture, puts
 “Recording” at the front of its title, and shows a small
 <strong>Recording status</strong> window that does not take focus. Focus
-stays in the program you are demonstrating.</p>
+stays in the program you are demonstrating. You hear “Recording
+started”; stopping says “Recording stopped” before Studio saves and
+checks the file.</p>
+<p>When you start, pause, mark, mute or stop from a menu or the tray
+icon’s menu, Studio waits until the menu has closed and your screen
+reader has said where focus went, then speaks. The sentence is not cut
+off, and the status bar shows it at once.</p>
 <table>
 <thead>
 <tr>
@@ -2698,8 +2706,9 @@ segment.</li>
 listeners silence at once without disconnecting. Press it again to bring
 the sound back. Use it for a cough, a phone call, or anything you do not
 want broadcast.</li>
-<li><strong>Stop broadcasting</strong> (Ctrl+Alt+Shift+E) ends the
-show.</li>
+<li><strong>Stop broadcasting</strong> (Ctrl+Alt+Shift+E) ends the show.
+You hear “Broadcast ended”, and “A copy was saved” when one was; the
+saved copy’s full path is in the status bar rather than read aloud.</li>
 </ul>
 <p>Both keys work while Studio has focus. Give them system-wide keys in
 <strong>Capture &gt; Capture global hotkeys…</strong> so they work from
