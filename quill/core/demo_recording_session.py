@@ -86,6 +86,10 @@ class SegmentRecord:
     camera_start: float = 0.0
     #: source_id -> wall time of the first captured sample.
     audio_starts: dict[str, float] = field(default_factory=dict)
+    #: source_id -> its measured sample count, drift against the monotonic span
+    #: it covered (``drift_ratio``, for the mix to apply) and glitch counts
+    #: (REC-022, REC-023).
+    audio_timing: dict[str, dict[str, float]] = field(default_factory=dict)
     duration: float = 0.0
     closed: bool = False
 
@@ -100,6 +104,9 @@ class SessionRecord:
     segments: list[SegmentRecord] = field(default_factory=list)
     markers: list[dict[str, Any]] = field(default_factory=list)
     state: Literal["recording", "paused", "finalizing", "finished", "failed"] = "recording"
+    #: REC-024: stream name ("Screen", "Camera", a sound source's label) -> the
+    #: first failure it reported. The others kept recording; the check names it.
+    stream_failures: dict[str, str] = field(default_factory=dict)
 
     def save(self, work: Path) -> None:
         data = asdict(self)
@@ -126,6 +133,12 @@ class SessionRecord:
             segments=segments,
             markers=list(raw.get("markers", [])),
             state=raw.get("state", "recording"),
+            stream_failures={
+                str(name): str(reason)
+                for name, reason in (raw.get("stream_failures") or {}).items()
+            }
+            if isinstance(raw.get("stream_failures"), dict)
+            else {},
         )
 
 

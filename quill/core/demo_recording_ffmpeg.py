@@ -9,6 +9,11 @@ last cluster) with a constant frame rate and a keyframe every two seconds.
 Finishing a segment mixes the enabled sound sources at their levels and
 measured offsets, overlays the camera picture when there is one, and writes
 an MP4 part; the parts are then joined without re-encoding.
+
+Every H.264 picture is converted with the BT.709 matrix to limited range and
+tagged so (VIDEO-004, :mod:`quill.core.video_colour`), and a sound source
+whose clock drifted is stretched to fit in the mix (REC-022). Both lessons
+are from Tony Gebhard's TG Drop Deck; no code was copied.
 """
 
 from __future__ import annotations
@@ -19,6 +24,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from quill.core.demo_recording import DemoPlan, output_size
+from quill.core.video_colour import colour_tags, to_yuv420p
 
 CAPTURE_PRESET = "superfast"
 FINAL_PRESET = "veryfast"
@@ -82,7 +88,7 @@ def parse_dshow_devices(text: str) -> list[tuple[str, str]]:
     return found
 
 
-def _video_filters(plan: DemoPlan, *, hw_download: bool) -> str:
+def _video_filters(plan: DemoPlan, *, hw_download: bool, rgb: bool = False) -> str:
     width, height = output_size(plan)
     chain = []
     if hw_download:
@@ -91,7 +97,8 @@ def _video_filters(plan: DemoPlan, *, hw_download: bool) -> str:
         chain.append(f"scale={width}:{height}:flags=bicubic")
     # H.264 4:2:0 needs even dimensions: pad an odd edge by one pixel.
     chain.append("pad=ceil(iw/2)*2:ceil(ih/2)*2")
-    chain.append("format=yuv420p")
+    # The trial picture stays RGB; everything encoded is BT.709 (VIDEO-004).
+    chain.append("format=rgb24" if rgb else to_yuv420p())
     return ",".join(chain)
 
 
@@ -100,10 +107,19 @@ def _encode_args(plan: DemoPlan, encoder: str, *, preset: str) -> list[str]:
         codec = ["-c:v", "libx264", "-preset", preset, "-tune", "zerolatency", "-crf", CRF]
     else:
         codec = ["-c:v", encoder, "-b:v", "8M"]
-    return [*codec, "-g", str(plan.fps * 2), "-fps_mode", "cfr", "-r", str(plan.fps)]
+    return [
+        *codec,
+        "-g",
+        str(plan.fps * 2),
+        "-fps_mode",
+        "cfr",
+        "-r",
+        str(plan.fps),
+        *colour_tags(),
+    ]
 
 
-def _screen_input(plan: DemoPlan, backend: str) -> tuple[list[str], str]:
+def _screen_input(plan: DemoPlan, backend: str, *, rgb: bool = False) -> tuple[list[str], str]:
     """Input arguments for *backend* and the picture filter chain after it."""
     left, top, right, bottom = plan.bounds
     width, height = right - left, bottom - top
@@ -122,7 +138,7 @@ def _screen_input(plan: DemoPlan, backend: str) -> tuple[list[str], str]:
                 f"video_size={width}x{height}",
             ]
         command += ["-f", "lavfi", "-i", "ddagrab=" + ":".join(options)]
-        filters = _video_filters(plan, hw_download=True)
+        filters = _video_filters(plan, hw_download=True, rgb=rgb)
     elif backend == "gdigrab":
         command += [
             "-f",
@@ -140,7 +156,7 @@ def _screen_input(plan: DemoPlan, backend: str) -> tuple[list[str], str]:
             "-i",
             "desktop",
         ]
-        filters = _video_filters(plan, hw_download=False)
+        filters = _video_filters(plan, hw_download=False, rgb=rgb)
     else:
         raise ValueError(f"Unknown video backend: {backend!r}")
     return command, filters
@@ -172,8 +188,7 @@ def screen_capture_command(
 
 def trial_grab_command(ffmpeg: str, plan: DemoPlan, output: Path, *, backend: str) -> list[str]:
     """One PNG frame through the same backend, for the spoken check."""
-    inputs, filters = _screen_input(plan, backend)
-    filters = filters.replace(",format=yuv420p", ",format=rgb24")
+    inputs, filters = _screen_input(plan, backend, rgb=True)
     return [
         ffmpeg,
         "-hide_banner",
@@ -222,14 +237,16 @@ def camera_capture_command(
         "-map",
         "0:v",
         "-vf",
-        "pad=ceil(iw/2)*2:ceil(ih/2)*2,format=yuv420p",
+        # The camera's own YUV (usually BT.601) is converted to BT.709 too.
+        "pad=ceil(iw/2)*2:ceil(ih/2)*2," + to_yuv420p(),
     ]
     if encoder == "libx264":
         command += ["-c:v", "libx264", "-preset", CAPTURE_PRESET, "-tune", "zerolatency"]
         command += ["-crf", CRF]
     else:
         command += ["-c:v", encoder, "-b:v", "4M"]
-    command += ["-fps_mode", "cfr", "-r", str(fps), "-an", "-f", "matroska", str(output)]
+    command += ["-fps_mode", "cfr", "-r", str(fps), *colour_tags()]
+    command += ["-an", "-f", "matroska", str(output)]
     if face_frames:
         command += face_frame_output()
     return command
@@ -275,10 +292,17 @@ class AudioInput:
     #: Seconds after the video's first frame this source's first sample was
     #: captured. Positive: the sound started late; negative: early.
     offset: float
+    #: REC-022: the source's measured samples against the time they covered.
+    #: Above 1 its clock ran fast and the file is too long, so it is played
+    #: that much faster (``atempo``, which keeps the pitch); 1 leaves it alone.
+    tempo: float = 1.0
 
 
 def _audio_chain(index: int, source: AudioInput) -> str:
     steps = []
+    if abs(source.tempo - 1.0) > 1e-7:
+        # First, so the offsets below are in real seconds, not the drifted file's.
+        steps.append(f"atempo={source.tempo:.7f}")
     if source.offset > 0.0005:
         steps.append(f"adelay={int(round(source.offset * 1000))}:all=1")
     elif source.offset < -0.0005:
@@ -303,7 +327,7 @@ def _overlay_xy(position: str) -> str:
 def finish_segment_command(
     ffmpeg: str,
     plan: DemoPlan,
-    video: Path,
+    video: Path | None,
     output: Path,
     *,
     sources: Sequence[AudioInput],
@@ -318,8 +342,18 @@ def finish_segment_command(
     fills the picture (then *camera* is ``None``). The sum of the sources
     goes through a limiter so it cannot clip; with no source the soundtrack
     is generated silence, unless the plan asks for no soundtrack at all.
+
+    *video* is ``None`` when the picture's capture failed before writing
+    anything (REC-024): the segment's sound is still kept, over a black
+    picture of the planned size, rather than thrown away with the picture.
     """
-    command = [ffmpeg, "-hide_banner", "-y", "-loglevel", "error", "-i", str(video)]
+    command = [ffmpeg, "-hide_banner", "-y", "-loglevel", "error"]
+    if video is None:
+        width, height = output_size(plan)
+        width, height = width + width % 2, height + height % 2
+        command += ["-f", "lavfi", "-i", f"color=c=black:s={width}x{height}:r={plan.fps}"]
+    else:
+        command += ["-i", str(video)]
     filters: list[str] = []
     next_index = 1
     video_label = "0:v"
@@ -337,8 +371,11 @@ def finish_segment_command(
         filters.append(f"[{cam}:v]{delay}scale={cam_width}:-2[cam]")
         filters.append(
             f"[0:v][cam]overlay={_overlay_xy(plan.camera.position)}:eof_action=pass,"
-            "format=yuv420p[v]"
+            f"{to_yuv420p()}[v]"
         )
+        video_label = "[v]"
+    elif video is None:
+        filters.append(f"[0:v]{to_yuv420p()}[v]")
         video_label = "[v]"
     audio_labels = []
     for source in sources:
@@ -369,13 +406,16 @@ def finish_segment_command(
     if filters:
         command += ["-filter_complex", ";".join(filters)]
     command += ["-map", video_label] + (["-map", audio_map] if audio_map else [])
-    if camera is None:
+    if camera is None and video is not None:
+        # The capture already converted and tagged the picture (VIDEO-004).
         command += ["-c:v", "copy"]
     elif encoder == "libx264":
         command += ["-c:v", "libx264", "-preset", FINAL_PRESET, "-crf", CRF, "-pix_fmt", "yuv420p"]
         command += ["-g", str(plan.fps * 2), "-fps_mode", "cfr", "-r", str(plan.fps)]
+        command += colour_tags()
     else:
         command += ["-c:v", encoder, "-b:v", "8M", "-fps_mode", "cfr", "-r", str(plan.fps)]
+        command += colour_tags()
     if audio_map:
         command += ["-c:a", "aac", "-b:a", AUDIO_BITRATE, "-ar", str(SAMPLE_RATE), "-ac", "2"]
     command += ["-t", f"{max(duration, 0.1):.3f}", "-movflags", "+faststart", str(output)]
