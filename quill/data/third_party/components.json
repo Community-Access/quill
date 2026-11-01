@@ -2639,6 +2639,23 @@
       "delivery": "bundled"
     },
     {
+      "id": "image-description-toolkit",
+      "name": "Image Description Toolkit (ideas and image prompt text)",
+      "group": "data",
+      "version": "4.8.0",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2025 kellylford",
+      "homepage": "https://github.com/kellylford/Image-Description-Toolkit",
+      "what": "Kelly Ford's batch image-description tool. The twelve image prompt styles in quill/core/ai/vision_prompts.py come from it, and QUILL Studio's Describe a Folder, Describe Again, photo details as context and Save Described Copies follow its approach and its choice of metadata fields. No code is copied.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled"
+    },
+    {
       "id": "app-icons",
       "name": "App icons",
       "group": "fonts-sounds",

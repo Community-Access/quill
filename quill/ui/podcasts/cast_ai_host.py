@@ -11,8 +11,8 @@ A test asserts the absence of commands here the way QUILL's does.
 What the shared commands act on in Cast is the **show notes pane** under the
 library tree (:mod:`quill.ui.notes_reader`): the free AI Assistant summarises,
 explains or rewrites the notes of the episode you are on, Ask About This
-Document asks about them, Ask About an Image (a ChatGPT plan or a Gemini key)
-describes a picture, and the ChatGPT subscription, own key, usage and privacy
+Document asks about them, Ask About an Image (a ChatGPT plan, or an OpenAI,
+Gemini or Claude key) describes a picture, and the ChatGPT subscription, own key, usage and privacy
 windows are the family's. The notes are read only, so nothing here ever
 writes into Cast: Replace My Selection and Insert Below say so and offer Copy.
 

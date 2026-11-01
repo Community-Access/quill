@@ -54,8 +54,8 @@ class OwnKeyRouteMixin:
     @property
     def own_key_can_see(self) -> bool:
         """Whether the own key's provider reads pictures, from the capability registry:
-        Gemini does, an Ollama model does when its ``/api/show`` says so, and the
-        rest are text only on this route (GATE-CAPS)."""
+        OpenAI, Gemini and Claude do, an Ollama model does when its ``/api/show``
+        says so, and the rest are text only on this route (GATE-CAPS)."""
         if not self.own_key_active:
             return False
         from quill.core.ai.connection_caps import OWN_KEY, PICTURES, record_for
