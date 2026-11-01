@@ -123,6 +123,7 @@ class ServiceReviewAi:
             None,
             on_done=lambda text, _quota: on_done(str(text)),
             on_error=on_error,
+            requires=("text",),
         )
 
     def cancel(self, request: Any) -> None:

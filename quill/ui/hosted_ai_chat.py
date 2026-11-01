@@ -271,6 +271,7 @@ class AiChatFrame(wx.Frame):
             history,
             on_done=lambda text, quota, dropped: self._reply(message, text, quota, dropped),
             on_error=self._failed,
+            requires=("text",),
         )
 
     def _ceiling(self) -> int:

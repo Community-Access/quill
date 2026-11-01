@@ -262,6 +262,13 @@ def test_the_service_sends_nothing_when_the_answer_is_no(monkeypatch: pytest.Mon
         lambda _self, on_error: on_error("Nothing was sent.") or False,
     )
     monkeypatch.setattr(module.AiService, "chatgpt_active", property(lambda _s: False))
+    # A ready connection that can see, so each request reaches the route guard.
+    from quill.core.ai.connection_choice import ConnectionFacts
+
+    facts = ConnectionFacts(stored="chatgpt", chatgpt_signed_in=True)
+    monkeypatch.setattr(module.AiService, "connection_facts", lambda _s: facts)
+    monkeypatch.setattr(module.AiService, "connection", property(lambda _s: "chatgpt"))
+    monkeypatch.setattr(module.AiService, "chatgpt", SimpleNamespace(model=""), raising=False)
     service = module.AiService(SimpleNamespace(data_dir=Path("."), settings=None))
 
     service.ask("rewrite", "text", None, on_done=lambda *_a: None, on_error=told.append)

@@ -40,7 +40,7 @@ class _ChatService:
     def unavailable_reason(self, _feature: str = "") -> str:
         return ""
 
-    def converse(self, prompt, chunks, history, *, on_done, on_error) -> None:  # noqa: ANN001
+    def converse(self, prompt, chunks, history, *, on_done, on_error, **_kw) -> None:  # noqa: ANN001
         on_done(f"Reply to {prompt}", SimpleNamespace(monthly_cap=90, daily_cap=19), 0)
 
 

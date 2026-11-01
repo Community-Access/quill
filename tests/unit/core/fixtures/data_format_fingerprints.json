@@ -422,6 +422,9 @@
             "ai_privacy_accepted_version": "int",
             "ai_own_key_model": "str",
             "ai_own_key_provider": "str",
+            "ai_connection": "str",
+            "ai_copilot_model": "str",
+            "ai_codex_model": "str",
             "ai_answer_delivery": "str",
             "session_restore_ask": "str",
             "session_files": "list[str]",
@@ -479,7 +482,7 @@
         "constant:quill.core.lite.settings:SCHEMA": "1"
       },
       "classification": "additive, compatible",
-      "note": ""
+      "note": "adds ai_connection, ai_copilot_model and ai_codex_model (Choose Your AI, codex.md 10A.6); older builds drop unknown keys on load"
     },
     "quill.keymap": {
       "current": 1,
@@ -641,6 +644,9 @@
             "ai_privacy_accepted_version": "int",
             "ai_own_key_model": "str",
             "ai_own_key_provider": "str",
+            "ai_connection": "str",
+            "ai_copilot_model": "str",
+            "ai_codex_model": "str",
             "ai_answer_delivery": "str",
             "markdown_clipboard_format": "str",
             "markdown_profile_id": "str",
@@ -1048,6 +1054,9 @@
           "ai_privacy_accepted_version": "_ungrouped",
           "ai_own_key_model": "_ungrouped",
           "ai_own_key_provider": "_ungrouped",
+          "ai_connection": "_ungrouped",
+          "ai_copilot_model": "_ungrouped",
+          "ai_codex_model": "_ungrouped",
           "ai_answer_delivery": "_ungrouped",
           "markdown_clipboard_format": "editing",
           "markdown_profile_id": "_ungrouped",
@@ -1310,7 +1319,7 @@
         "constant:quill.core.settings_migration:SETTINGS_SCHEMA_VERSION": "2"
       },
       "classification": "additive, compatible",
-      "note": ""
+      "note": "adds ai_connection, ai_copilot_model and ai_codex_model (Choose Your AI, codex.md 10A.6); older builds drop unknown keys on load"
     },
     "radio.favorites": {
       "current": 1,

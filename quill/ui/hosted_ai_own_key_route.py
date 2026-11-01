@@ -17,18 +17,24 @@ class OwnKeyRouteMixin:
     """Mixed into ``AiService``; reads ``self._app.settings``."""
 
     _app: Any
+    route: str
 
     @property
-    def own_key_active(self) -> bool:
-        """Whether requests go to OpenAI with the user's own key instead.
-
-        Then there is no QUILL server, no sign-in and no allowance: the same
-        five commands, billed to the user's OpenAI account
-        (:mod:`quill.core.ai.own_key`).
-        """
+    def own_key_ready(self) -> bool:
+        """Whether a key is saved for the provider the listener chose: the row is set up."""
         from quill.core.ai.own_key import own_key_active
 
         return own_key_active(getattr(self._app, "settings", None))
+
+    @property
+    def own_key_active(self) -> bool:
+        """Whether requests go to the provider with the user's own key: it is the
+        connection in use (``ai_connection``) and its key is saved.
+
+        Then there is no QUILL server, no sign-in and no allowance: the same
+        five commands, billed to the user's account (:mod:`quill.core.ai.own_key`).
+        """
+        return self.route == "own_key" and self.own_key_ready
 
     @property
     def own_key_provider(self) -> str:

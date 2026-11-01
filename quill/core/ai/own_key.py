@@ -477,6 +477,10 @@ def ask_with_own_key(
             "or choose another provider there."
         )
     system, user = request_for(feature, prompt, chunks, history, language)
+    # The family's text-only line goes after the template, never into it (decision 13).
+    from quill.core.ai.text_only import with_family_instruction
+
+    system = with_family_instruction(system)
     chosen = model.strip() or default_model(provider)
     if provider == GEMINI:
         from quill.core.ai.own_key_gemini import stream_answer
@@ -485,13 +489,17 @@ def ask_with_own_key(
     connection = AssistantConnectionSettings(
         provider=provider, host=default_host_for_provider(provider), model=chosen
     )
-    # No answer ceiling: the model's own maximum is the only one.
+    from quill.core.ai.connection_usage import remember_rate_limits
+
+    # No answer ceiling: the model's own maximum is the only one. The reply's
+    # x-ratelimit-* headers feed the Usage view, from this answer (10A.11).
     text, error = generate_assistant_response(
         connection,
         key,
         user,
         max_tokens=None,
         system_prompt=system,
+        on_headers=lambda headers: remember_rate_limits(provider, headers),
     )
     _stop_if_cancelled(cancel)  # it arrived after Stop: not shown
     if error or not text:
@@ -520,6 +528,8 @@ def describe_image_with_own_key(
     key = load_provider_api_key(chosen)
     if not key:
         raise OwnKeyError(f"No {name} key is saved on this computer. Nothing was sent.")
+    from quill.core.ai.text_only import with_family_instruction
+
     connection = AssistantConnectionSettings(
         provider=chosen,
         host=default_host_for_provider(chosen),
@@ -530,7 +540,7 @@ def describe_image_with_own_key(
             connection,
             key,
             Path(str(path)),
-            prompt=question or "Describe this image in detail.",
+            prompt=with_family_instruction(question or "Describe this image in detail."),
         )
     except Exception as exc:  # noqa: BLE001 - one actionable sentence for the UI
         raise OwnKeyError(f"{name} could not describe the image: {scrub(str(exc), key)}") from exc

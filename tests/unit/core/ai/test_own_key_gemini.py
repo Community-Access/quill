@@ -232,4 +232,6 @@ def test_a_gemini_key_describes_an_image_through_the_vision_client(monkeypatch, 
     said = own_key.describe_image_with_own_key(picture, "What colour?", provider="gemini")
 
     assert said == "A red door."
-    assert seen == [("gemini", "gemini-2.5-flash", "What colour?")]
+    from quill.core.ai.text_only import with_family_instruction
+
+    assert seen == [("gemini", "gemini-2.5-flash", with_family_instruction("What colour?"))]

@@ -188,11 +188,12 @@ def describe_on_plan(
     One request, one picture: no ``temperature``, ``max_output_tokens`` or
     system item, which the plan's preview rejects, and no retry here.
     """
-    from quill.core.ai.chatgpt_client import image_part, respond
+    from quill.core.ai.chatgpt_ai_help import respond_on_plan
+    from quill.core.ai.chatgpt_client import image_part
 
     part = image_part(plan_ready_image(picture, Path(picture).parent))
-    answer = respond(
-        connection.account.access_token(),
+    answer = respond_on_plan(
+        connection.account,
         model=_model_for(connection),
         items=[{"role": "user", "content": [{"type": "input_text", "text": prompt}, part]}],
         instructions=_INSTRUCTIONS,

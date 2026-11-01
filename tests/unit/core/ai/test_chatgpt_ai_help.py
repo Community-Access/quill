@@ -19,6 +19,7 @@ from quill.core.ai.chatgpt_ai_help import (
 )
 from quill.core.ai.chatgpt_errors import ChatGptError
 from quill.core.ai.own_key import INSTRUCTIONS
+from quill.core.ai.text_only import with_family_instruction as _family
 
 
 class _Account:
@@ -52,7 +53,7 @@ def test_a_request_carries_the_gateways_instructions_and_the_users_text(sent) ->
     call = sent[0]
     assert call["token"] == "tok"
     assert call["model"] == "gpt-6"
-    assert call["instructions"] == INSTRUCTIONS["summarize"]
+    assert call["instructions"] == _family(INSTRUCTIONS["summarize"])
     assert call["items"] == [
         {"role": "user", "content": [{"type": "input_text", "text": "Long text here"}]}
     ]
@@ -95,12 +96,12 @@ def test_a_conversation_goes_as_real_turns(sent) -> None:
         "content": [{"type": "output_text", "text": "Reply"}],
     }
     assert items[3]["content"][0]["text"] == "Second"
-    assert sent[0]["instructions"] == INSTRUCTIONS["chat"]
+    assert sent[0]["instructions"] == _family(INSTRUCTIONS["chat"])
 
 
 def test_an_app_can_bring_its_own_conversation_instructions(sent) -> None:
     converse_with_chatgpt(_Account(), "Hi", None, [], instructions="You are Quill Radio.")
-    assert sent[0]["instructions"] == "You are Quill Radio."
+    assert sent[0]["instructions"] == _family("You are Quill Radio.")
 
 
 def test_an_image_goes_with_its_question_or_a_plain_request(sent, tmp_path) -> None:
@@ -112,7 +113,7 @@ def test_an_image_goes_with_its_question_or_a_plain_request(sent, tmp_path) -> N
     content = sent[0]["items"][0]["content"]
     assert content[0] == {"type": "input_text", "text": "What colour is it?"}
     assert content[1]["type"] == "input_image"
-    assert sent[0]["instructions"] == IMAGE_INSTRUCTIONS
+    assert sent[0]["instructions"] == _family(IMAGE_INSTRUCTIONS)
 
     describe_image_with_chatgpt(_Account(), path)
     assert sent[1]["items"][0]["content"][0]["text"] == "Describe this image."

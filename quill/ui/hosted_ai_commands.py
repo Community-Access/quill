@@ -10,11 +10,10 @@ feature switch. Everything about what the commands *do* -- what they act on,
 when an answer may still be applied, what is announced -- is here once. See
 :meth:`_ai_parent`, :meth:`_ai_control` and :meth:`_ai_host`.
 
-The feature is switched off until somebody turns it on, so most of what this
-module does is open one of the windows in :mod:`quill.ui.hosted_ai_dialogs` and
-get out of the way. Three things are decided here rather than there, because
-they are about the *document* and the windows deliberately know nothing about
-one:
+The feature is off until somebody turns it on, so most of this module opens a
+window in :mod:`quill.ui.hosted_ai_dialogs` and gets out of the way. Three
+things are decided here, because they are about the *document* and the windows
+deliberately know nothing about one:
 
 **What the command acts on.** The selection, else the paragraph, else the
 section -- resolved in :mod:`quill.core.ai.gateway_context` and never the whole
@@ -142,6 +141,7 @@ class HostedAiMixin(AiAnswersMixin, ChatGptAiMixin):
         from quill.ui.hosted_ai_own_key import OwnKeyDialog
 
         settings = self._ai_host().settings
+        self._ai_note_readiness()
         dialog = OwnKeyDialog(self._ai_parent(), settings, self._announce)
         try:
             if show_modal_dialog(dialog, "Use My Own AI Key") != wx.ID_OK:
@@ -150,7 +150,7 @@ class HostedAiMixin(AiAnswersMixin, ChatGptAiMixin):
         finally:
             dialog.Destroy()
         self._ai_host().save_settings()
-        self._ai_route_changed()  # a key saved or removed here is a choice, not a fallback
+        self._ai_route_changed("own_key")  # saving a key here chooses it (10A.5)
         self._announce(outcome)
 
     def cmd_ai_sign_in(self) -> None:

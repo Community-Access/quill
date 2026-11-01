@@ -46,6 +46,10 @@ class ChatGptState:
     web_search: bool = False
     #: The app that signed in, for the sibling notice; filled on save.
     agent_name: str = ""
+    #: OpenAI ended this sign-in (a 401, or a refresh it called dead), as
+    #: opposed to the person signing out: Choose Your AI's row then reads
+    #: "Signed out by OpenAI" (codex.md 10A.5). Cleared by the next sign-in.
+    ended_by_openai: bool = False
 
     @property
     def signed_in(self) -> bool:
@@ -67,6 +71,7 @@ class ChatGptState:
             "model": self.model,
             "web_search": self.web_search,
             "agent_name": self.agent_name,
+            "ended_by_openai": self.ended_by_openai,
         }
 
     @classmethod
@@ -83,6 +88,7 @@ class ChatGptState:
             model=str(data.get("model", "") or ""),
             web_search=bool(data.get("web_search", False)),
             agent_name=str(data.get("agent_name", "") or ""),
+            ended_by_openai=bool(data.get("ended_by_openai", False)),
         )
 
 

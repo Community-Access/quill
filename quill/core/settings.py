@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any
 
 from quill.core.action_feedback import coerce as _coerce_action_feedback
-from quill.core.ai.own_key import load_settings_fields as load_own_key_fields
+from quill.core.ai.connection_choice import load_ai_fields
 from quill.core.ai.vision_prompts import BUILTIN_STYLE_IDS
 from quill.core.editor_font import DEFAULT_FONT_POINTS, clamp_font_points
 from quill.core.inline_note_cue import coerce_note_line_cue
@@ -295,6 +295,11 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
     # Which company the own key belongs to: "openai" or "gemini". An explicit
     # choice made in Use My Own AI Key, never inferred (core/ai/own_key.py).
     ai_own_key_provider: str = "openai"
+    # Choose Your AI (core/ai/connection_choice.py; QUILL Lite's fields too): the AI in
+    # use -- free, chatgpt, copilot, codex, own_key; "" until decided -- and two models.
+    ai_connection: str = ""
+    ai_copilot_model: str = ""
+    ai_codex_model: str = ""
     # Where a hosted-AI answer goes: "window", "cursor" or "clipboard" (QUILL
     # Lite's field too; core/ai/answer_delivery.py). Chosen in the AI Assistant.
     ai_answer_delivery: str = "window"
@@ -1122,7 +1127,7 @@ class Settings(DictationSettings):  # the windows_dictation_* fields, shared wit
         dictation_intelligent_spacing = bool(data.get("dictation_intelligent_spacing", True))
         dictation_onboarding_shown = bool(data.get("dictation_onboarding_shown", False))
         dictation_remove_fillers = bool(data.get("dictation_remove_fillers", False))
-        windows_dictation = load_windows_dictation_fields(data) | load_own_key_fields(data)
+        windows_dictation = load_windows_dictation_fields(data) | load_ai_fields(data)
         announce_formatting_on_move = bool(data.get("announce_formatting_on_move", False))
         find_use_quill_dialog = bool(data.get("find_use_quill_dialog", False))
         dictionary_online_lookups = bool(data.get("dictionary_online_lookups", False))

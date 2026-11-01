@@ -215,8 +215,10 @@ class AskRadioFrame(wx.Frame):
         instructions = instructions_for(
             station, now_playing, web_search=self._account.web_search, extra=extra
         )
+        from quill.core.ai.connection_caps import record_for, require
         from quill.core.ai.own_key import CONTEXT_WARNING_TOKENS
 
+        require(record_for("chatgpt"), "text")  # GATE-CAPS: what this request needs
         history = self._conversation.history_for(message, CONTEXT_WARNING_TOKENS)
         self.refresh_context()
         self._busy = True

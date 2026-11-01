@@ -12010,6 +12010,44 @@ message names the provider. The usual causes are a mistyped key, a model your
 account cannot use, an account with no credit, or the wrong provider chosen for
 the key you saved. **Test the Key** tells you which.
 
+### Which AI is in use
+
+QUILL keeps one record of which AI answers you: QUILL's free AI, your ChatGPT
+plan, or your own key. GitHub Copilot and Codex are on the way; until they
+arrive they say "not available yet". The choice is saved with your settings as
+`ai_connection`.
+
+The first time you start this version, QUILL keeps what you already had. If you
+were signed in with ChatGPT, your plan stays in use. If not, and you had a key
+saved, your key stays in use. Otherwise it is the free AI. Nothing changes for
+you.
+
+After that, signing in is choosing. Sign in with ChatGPT and your plan is in
+use. Save a key in **Use My Own AI Key** and your key is in use. Connect the
+free AI and the free AI is in use.
+
+If you sign out of the one in use, no AI is in use until you pick one. QUILL
+does not quietly send your text to the free AI or to your key instead. The next
+AI command says "No AI is in use. Choose one."
+
+If OpenAI ends your ChatGPT sign-in itself, you hear "Your ChatGPT plan sign-in
+has ended. Nothing was sent." Nothing is retried, and nothing goes anywhere
+else. A plan limit works the same way: you hear it once, and QUILL neither
+tries again nor switches.
+
+QUILL counts the requests it sends on your ChatGPT plan, today and this week,
+along with the token counts OpenAI reports back. That count stays on this
+computer and is always called a local count. OpenAI's own usage page is the
+real answer about your plan.
+
+Two more settings hold the model for the connections still to come:
+`ai_copilot_model` for GitHub Copilot and `ai_codex_model` for Codex. Empty
+means the service picks.
+
+Answers are always plain text. QUILL asks every AI not to draw charts, graphs or
+diagrams, and if one sends something like that anyway, you get it as text, not
+a picture.
+
 ### If the AI you chose is not available
 
 QUILL never quietly answers with a different AI from the one you chose. If
@@ -12039,8 +12077,7 @@ and **No** is the default button, so pressing Enter out of habit sends nothing.
   the Prompt Library, AI conversations and Ask About an Image). QUILL remembers
   which way your requests have been going this session. If that changes
   without you changing it, for instance your Gemini key has gone from Windows'
-  credential store, or your ChatGPT sign-in has stopped working, the next
-  request asks: "Your own Google Gemini key is not available right now. Use
+  credential store, the next request asks: "Your own Google Gemini key is not available right now. Use
   QUILL's free AI instead? That sends your text to QUILL's free AI service over
   the internet. Choose No and nothing is sent." **Yes** sends it, and the new
   route is simply the route from then on, so you are asked once. **No** sends

@@ -154,7 +154,7 @@ def plan_and_capture(tmp_path, monkeypatch):
 
 
 def test_inspection_on_the_plan_sends_one_picture_and_no_key(plan_and_capture, monkeypatch):
-    from quill.core.ai import chatgpt_client, vision
+    from quill.core.ai import chatgpt_ai_help, chatgpt_client, vision
     from quill.core.studio_capture_ai import inspect_screenshot
 
     plan, evidence = plan_and_capture
@@ -164,7 +164,7 @@ def test_inspection_on_the_plan_sends_one_picture_and_no_key(plan_and_capture, m
         sent.update(kwargs, token=token)
         return chatgpt_client.ChatGptAnswer(text="A white page.")
 
-    monkeypatch.setattr(chatgpt_client, "respond", respond)
+    monkeypatch.setattr(chatgpt_ai_help, "respond", respond)
     monkeypatch.setattr(vision, "describe_image", lambda *a, **k: pytest.fail("API-key route"))
     text = inspect_screenshot(evidence, connection=plan, question="What is this?")
     assert "A white page." in text and "ChatGPT plan" in text
@@ -178,7 +178,7 @@ def test_inspection_on_the_plan_sends_one_picture_and_no_key(plan_and_capture, m
 
 
 def test_a_used_up_plan_stops_and_never_falls_back_to_a_key(plan_and_capture, monkeypatch):
-    from quill.core.ai import chatgpt_client, vision
+    from quill.core.ai import chatgpt_ai_help, vision
     from quill.core.studio_capture_ai import inspect_screenshot
 
     plan, evidence = plan_and_capture
@@ -188,7 +188,7 @@ def test_a_used_up_plan_stops_and_never_falls_back_to_a_key(plan_and_capture, mo
         calls.append(1)
         raise ChatGptLimitError("limit")
 
-    monkeypatch.setattr(chatgpt_client, "respond", respond)
+    monkeypatch.setattr(chatgpt_ai_help, "respond", respond)
     monkeypatch.setattr(vision, "describe_image", lambda *a, **k: pytest.fail("fell back"))
     with pytest.raises(RuntimeError, match="usage limit has been reached") as raised:
         inspect_screenshot(evidence, connection=plan)
@@ -199,7 +199,7 @@ def test_a_used_up_plan_stops_and_never_falls_back_to_a_key(plan_and_capture, mo
 def test_a_plan_with_no_model_chosen_uses_and_keeps_its_first(
     plan_and_capture, monkeypatch, tmp_path
 ):
-    from quill.core.ai import chatgpt_client
+    from quill.core.ai import chatgpt_ai_help, chatgpt_client
     from quill.core.studio_capture_ai import inspect_screenshot
 
     plan, evidence = plan_and_capture
@@ -212,7 +212,7 @@ def test_a_plan_with_no_model_chosen_uses_and_keeps_its_first(
     )
     used = []
     monkeypatch.setattr(
-        chatgpt_client,
+        chatgpt_ai_help,
         "respond",
         lambda _t, **k: used.append(k["model"]) or chatgpt_client.ChatGptAnswer(text="ok"),
     )

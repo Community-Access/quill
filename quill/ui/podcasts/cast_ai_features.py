@@ -54,7 +54,14 @@ class CastDomainAiMixin:
 
             report_failure(self, sentence, subject="AI help")
 
-        service.ask("ask", prompt, None, on_done=lambda text, _q: on_answer(text), on_error=_failed)
+        service.ask(
+            "ask",
+            prompt,
+            None,
+            on_done=lambda text, _q: on_answer(text),
+            on_error=_failed,
+            requires=("text",),
+        )
         return True
 
     def _ai_episode(self) -> tuple[Any, Any] | None:

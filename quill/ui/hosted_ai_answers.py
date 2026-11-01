@@ -273,6 +273,7 @@ class AiAnswersMixin:
                 "ask", answer, _used(quota), start, end, selection, "ask", request
             ),
             on_error=self._announce,
+            requires=("text",),
         )
 
     # ------------------------------------------------------------------ #

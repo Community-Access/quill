@@ -27,7 +27,6 @@ from dataclasses import dataclass
 from typing import Any
 
 from quill.core.ai.gateway_client import GatewayClient, GatewayLimits, GatewayQuota
-from quill.core.ai.gateway_errors import GatewayError
 from quill.core.ai.gateway_session import (
     GatewaySession,
     base_url,
@@ -38,6 +37,9 @@ from quill.core.ai.gateway_session import (
     save_token,
     support_id_for,
 )
+from quill.core.ai.text_only import as_text
+from quill.ui.hosted_ai_connection_route import ConnectionRouteMixin
+from quill.ui.hosted_ai_connection_route import plain_sentence as _sentence
 from quill.ui.hosted_ai_own_key_route import OwnKeyRouteMixin
 from quill.ui.hosted_ai_route_guard import RouteGuardMixin
 from quill.ui.hosted_ai_route_words import RouteWords
@@ -69,7 +71,7 @@ class SignInCode:
         return " ".join(self.user_code.replace("-", " dash "))
 
 
-class AiService(OwnKeyRouteMixin, RouteWords, RouteGuardMixin):
+class AiService(ConnectionRouteMixin, OwnKeyRouteMixin, RouteWords, RouteGuardMixin):
     """One per running QUILL Lite. Holds the session and does the waiting."""
 
     def __init__(self, app: Any) -> None:
@@ -125,34 +127,7 @@ class AiService(OwnKeyRouteMixin, RouteWords, RouteGuardMixin):
             self._chatgpt = account
         return account
 
-    @property
-    def chatgpt_active(self) -> bool:
-        """Whether requests go to OpenAI on the person's ChatGPT plan.
-
-        Whenever this app is signed in with ChatGPT -- there is no separate
-        switch, for the same reason an own key has none: a sign-in somebody
-        made is the choice, and Sign Out or Forget in the ChatGPT window is
-        how it is unmade. A sign-in outranks a saved key: the plan is already
-        paid for, where a key is billed per request.
-        """
-        try:
-            return bool(self.chatgpt.signed_in)
-        except Exception:  # noqa: BLE001 - an unreadable store is "not signed in"
-            return False
-
-    @property
-    def route(self) -> str:
-        """Which way requests travel: ``"chatgpt"``, ``"own_key"`` or ``"free"``."""
-        if self.chatgpt_active:
-            return "chatgpt"
-        if self.own_key_active:
-            return "own_key"
-        return "free"
-
-    @property
-    def direct(self) -> bool:
-        """Whether requests skip QUILL's service, and with it every QUILL limit."""
-        return self.route != "free"
+    # chatgpt_active, route and direct: the stored choice (hosted_ai_connection_route.py).
 
     # -- what the service allows ----------------------------------------- #
 
@@ -243,17 +218,19 @@ class AiService(OwnKeyRouteMixin, RouteWords, RouteGuardMixin):
         on_done: Callable[[str, GatewayQuota | None], None],
         on_error: Callable[[str], None],
         language: str = "",
+        requires: tuple[str, ...] = ("text",),
     ) -> threading.Event:
         """Run one AI request. Returns at once; answers on the UI thread.
 
         *on_error* receives a finished sentence, never an exception. Every
         failure in the client is already a coded error whose text was written
         for a person to hear, so rendering one at a user is the whole job.
-        *language* is Translate's target language.
+        *language* is Translate's target language; *requires* is what the
+        request needs of the connection in use (GATE-CAPS).
         """
         stop = threading.Event()
-        if not self.route_allowed(lambda said: _call_after(on_error, said)):
-            return stop  # the route changed under the listener and they said No
+        if not self.request_allowed(requires, lambda said: _call_after(on_error, said)):
+            return stop  # not ready, cannot do it, or the route changed and they said No
         if self.chatgpt_active:
             from quill.core.ai.chatgpt_ai_help import ask_with_chatgpt
 
@@ -294,14 +271,16 @@ class AiService(OwnKeyRouteMixin, RouteWords, RouteGuardMixin):
                 if stop.is_set():
                     return
                 text, quota = result
-                on_done(text, quota)
+                on_done(as_text(text), quota)  # chart-like content stays text (decision 13)
 
             _call_after(deliver)
 
         def failed(_name: str, error: BaseException) -> None:
+            said = self._failure_sentence(error)
+
             def deliver() -> None:
                 if not stop.is_set():
-                    on_error(_sentence(error))
+                    on_error(said)
 
             _call_after(deliver)
 
@@ -323,6 +302,7 @@ class AiService(OwnKeyRouteMixin, RouteWords, RouteGuardMixin):
         *,
         on_done: Callable[[str, GatewayQuota | None, int], None],
         on_error: Callable[[str], None],
+        requires: tuple[str, ...] = ("text",),
     ) -> threading.Event:
         """One conversation turn (:mod:`quill.core.ai.hosted_chat`). Returns at
         once; answers on the UI thread with ``(reply, quota, turns_dropped)``.
@@ -333,7 +313,7 @@ class AiService(OwnKeyRouteMixin, RouteWords, RouteGuardMixin):
         how many turns.
         """
         stop = threading.Event()
-        if not self.route_allowed(lambda said: _call_after(on_error, said)):
+        if not self.request_allowed(requires, lambda said: _call_after(on_error, said)):
             return stop
         if self.chatgpt_active:
             from quill.core.ai.chatgpt_ai_help import converse_with_chatgpt
@@ -371,14 +351,16 @@ class AiService(OwnKeyRouteMixin, RouteWords, RouteGuardMixin):
                 if stop.is_set():
                     return
                 text, quota, dropped = result
-                on_done(text, quota, dropped)
+                on_done(as_text(text), quota, dropped)
 
             _call_after(deliver)
 
         def failed(_name: str, error: BaseException) -> None:
+            said = self._failure_sentence(error)
+
             def deliver() -> None:
                 if not stop.is_set():
-                    on_error(_sentence(error))
+                    on_error(said)
 
             _call_after(deliver)
 
@@ -392,12 +374,13 @@ class AiService(OwnKeyRouteMixin, RouteWords, RouteGuardMixin):
         *,
         on_done: Callable[[str], None],
         on_error: Callable[[str], None],
+        requires: tuple[str, ...] = ("text", "pictures"),
     ) -> None:
         """Ask About an Image on the ChatGPT plan or an own Gemini key; answers on
-        the UI thread. The free service and an OpenAI key carry no pictures. A
-        bad file is reported as the client's own sentence before anything is sent.
+        the UI thread. The free service and an OpenAI key carry no pictures, so
+        GATE-CAPS refuses there. A bad file is the client's own sentence.
         """
-        if not self.route_allowed(lambda said: _call_after(on_error, said)):
+        if not self.request_allowed(requires, lambda said: _call_after(on_error, said)):
             return
         if self.chatgpt_active:
             from quill.core.ai.chatgpt_ai_help import describe_image_with_chatgpt
@@ -416,13 +399,13 @@ class AiService(OwnKeyRouteMixin, RouteWords, RouteGuardMixin):
                 return describe_image_with_own_key(path, question, provider=provider, model=model)
 
         def done(_name: str, text: Any) -> None:
-            _call_after(on_done, str(text))
+            _call_after(on_done, as_text(str(text)))
 
         def failed(_name: str, error: BaseException) -> None:
             if isinstance(error, ValueError):
                 _call_after(on_error, str(error))
                 return
-            _call_after(on_error, _sentence(error))
+            _call_after(on_error, self._failure_sentence(error))
 
         _submit("quill-ai-image", work, on_success=done, on_failure=failed)
 
@@ -528,6 +511,7 @@ class AiService(OwnKeyRouteMixin, RouteWords, RouteGuardMixin):
             session = GatewaySession(device_id=device_id, base_url=url, connected_at=_now())
             save_session(self.data_dir, session)
             self._session = session
+            _call_after(self.choose, "free")  # connecting is choosing (codex.md 10A.5)
             _call_after(on_done, support_id_for(device_id))
 
         def failed(_name: str, error: BaseException) -> None:
@@ -560,29 +544,6 @@ class AiService(OwnKeyRouteMixin, RouteWords, RouteGuardMixin):
 # --------------------------------------------------------------------------- #
 # Small helpers, kept at the bottom so the class reads as one thing
 # --------------------------------------------------------------------------- #
-
-
-def _sentence(error: BaseException) -> str:
-    """A finished sentence for a person, from whatever went wrong.
-
-    A coded gateway error already carries one, plus a hint saying what to do
-    next -- both are worth speaking, and the hint is usually the more useful
-    half. Anything else gets a generic sentence rather than a traceback: a
-    ``ConnectionResetError`` rendered at a listener tells them nothing they can
-    act on.
-    """
-    from quill.core.error_codes import CodedError
-
-    if isinstance(error, (GatewayError, CodedError)):
-        # The sentence first and the code last. str(error) leads with
-        # "[QUILL-AI-GATEWAY-QUOTA]", which a screen reader spells out before
-        # the person hears what happened; support still gets the code.
-        message = str(error.args[0]) if error.args else ""
-        hint = getattr(error, "user_hint", "")
-        code = getattr(error, "code", "")
-        parts = [message, hint, f"Error code {code}." if code else ""]
-        return " ".join(part.strip() for part in parts if part and part.strip())
-    return "The AI service is not answering right now. Try again in a moment. Nothing was used."
 
 
 def _sign_in_failure(result: Any) -> str:

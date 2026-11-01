@@ -72,13 +72,14 @@ class ChatGptAiMixin(WordToolsMixin):
         from quill.ui.hosted_ai_chatgpt import ChatGptFrame
 
         service = self._ai_service()
+        self._ai_note_readiness()
         self._open_ai_window(
             "chatgpt",
             lambda: ChatGptFrame(
                 self._ai_parent(),
                 service.chatgpt,
                 self._announce,
-                on_change=self._ai_route_changed,
+                on_change=lambda: self._ai_route_changed("chatgpt"),
             ),
         )
 
@@ -111,6 +112,7 @@ class ChatGptAiMixin(WordToolsMixin):
             question,
             on_done=lambda text: self._show_image_result(text, path),
             on_error=self._announce,
+            requires=("text", "pictures"),
         )
 
     def cmd_dictation_tidy(self) -> None:
@@ -145,6 +147,7 @@ class ChatGptAiMixin(WordToolsMixin):
                 "tidy_dictation", text, "", start, end, original, ""
             ),
             on_error=self._announce,
+            requires=("text",),
         )
 
     # -- plumbing -------------------------------------------------------- #
@@ -188,7 +191,14 @@ class ChatGptAiMixin(WordToolsMixin):
         self._announce(f"AI help is switched off. Turn it on in {self._ai_switch_route()}.")
         return False
 
-    def _ai_route_changed(self) -> None:
+    def _ai_note_readiness(self) -> None:
+        """Remember which connections are set up before a sign-in window opens,
+        so the change it makes can be told apart from a model change."""
+        note = getattr(self._ai_service(), "note_readiness", None)
+        if callable(note):
+            note()
+
+    def _ai_route_changed(self, connection: str = "") -> None:
         """A sign-in, a sign-out or a saved key just changed where requests go.
 
         The service reads the account live, so nothing is cached that could go
@@ -198,6 +208,10 @@ class ChatGptAiMixin(WordToolsMixin):
         that shows the route somewhere overrides this and calls it.
         """
         service = getattr(self._ai_host(), "ai_service", None)
+        changed = getattr(service, "connection_changed", None)
+        if connection and callable(changed):
+            changed(connection)  # signing in is choosing (codex.md 10A.5)
+            return
         chosen = getattr(service, "route_chosen", None)
         if callable(chosen):
             chosen()

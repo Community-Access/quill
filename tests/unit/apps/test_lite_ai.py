@@ -842,6 +842,7 @@ def test_own_key_needs_no_agreement_and_saves_what_the_window_chose(lite_window,
     touches them, and the window itself says where the text goes."""
     win = lite_window("text")
     win.app.settings.ai_privacy_accepted_version = 0
+    win.app.settings.ai_connection = "free"  # migrated already: no first-read save
     before = win.app.saved_settings
 
     (lambda w: w.cmd_ai_own_key())(win)
@@ -857,6 +858,7 @@ def test_cancelling_own_key_changes_nothing(lite_window, own_key_dialog):
 
     own_key_dialog["answer"] = wx.ID_CANCEL
     win = lite_window("text")
+    win.app.settings.ai_connection = "free"  # migrated already: no first-read save
     before = win.app.saved_settings
 
     (lambda w: w.cmd_ai_own_key())(win)
@@ -942,7 +944,7 @@ class _PlanService:
     def unavailable_reason(self, feature=""):
         return ""
 
-    def describe_image(self, path, question, *, on_done, on_error):
+    def describe_image(self, path, question, *, on_done, on_error, **_kw):
         self.images.append((path, question))
         on_done("A red door.")
 
