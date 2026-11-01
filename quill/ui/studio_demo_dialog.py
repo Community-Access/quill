@@ -27,6 +27,7 @@ from quill.core.demo_recording import (
     COUNTDOWN_RANGE,
     FRAME_RATES,
     LEVEL_RANGE_DB,
+    MIC_CHANNEL_LABELS,
     SOUND_FORMATS,
     CameraSetup,
     DemoPlan,
@@ -200,6 +201,19 @@ class RecordDemoDialog(DemoSourcesMixin, DemoPictureMixin, DemoActionsMixin, wx.
         self.microphone.SetSelection(index if index != wx.NOT_FOUND else 0)
         self.microphone.Bind(wx.EVT_CHOICE, self._microphone_changed)
         outer.Add(self.microphone, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
+        outer.Add(wx.StaticText(panel, label="Microphone channels (&1, 2 or both)"), 0, wx.LEFT, 10)
+        self.mic_channels = wx.Choice(panel, choices=list(MIC_CHANNEL_LABELS))
+        set_accessible_name(self.mic_channels, "Microphone channels")
+        self.mic_channels.SetHelpText(
+            "Which input of the microphone device is recorded. Both inputs mixed suits most "
+            "microphones; on a two-input interface with the microphone plugged into one "
+            "input, choose that input so it is recorded at full level in both ears."
+        )
+        saved_mode = str(self._saved_source("microphone").get("channel_mode", "mix"))
+        modes = list(MIC_CHANNEL_LABELS.values())
+        self.mic_channels.SetSelection(modes.index(saved_mode) if saved_mode in modes else 0)
+        self.mic_channels.Bind(wx.EVT_CHOICE, self._stale)
+        outer.Add(self.mic_channels, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 10)
 
         outer.Add(wx.StaticText(panel, label="&Your screen reader"), 0, wx.LEFT, 10)
         reader_choices = [self._reader_label(name) for name, _pid in callbacks.readers]
@@ -525,10 +539,18 @@ class RecordDemoDialog(DemoSourcesMixin, DemoPictureMixin, DemoActionsMixin, wx.
         else:
             device, display_bounds = "", (0, 0, 0, 0)
         reader, reader_pid = self._reader()
+        if reader_pid:
+            # Held by its executable: a reader restarted since this window
+            # opened is excluded under its new process (MX-184).
+            from quill.platform.windows.demo_audio import live_pid
+
+            reader_pid = live_pid(reader, reader_pid)
         sources = []
         for source in self.sources:
             if source.kind == "system" and self.exclude_reader.GetValue() and reader_pid:
                 source = replace(source, exclude_process_id=reader_pid, exclude_name=reader)
+            elif source.kind == "microphone":
+                source = self._microphone_identity(source)
             sources.append(source)
         camera_on = self.camera_on.GetValue() and bool(self.callbacks.cameras)
         plan = DemoPlan(

@@ -26,6 +26,7 @@ import logging
 import os
 import threading
 import time
+from collections.abc import Callable
 from ctypes import (
     HRESULT,
     POINTER,
@@ -38,6 +39,10 @@ from ctypes import (
     wintypes,
 )
 from typing import Any
+
+from quill.platform.windows.capture_health import ALIVE_POLL_S, alive
+from quill.platform.windows.capture_timing import packet_monotonic
+from quill.platform.windows.com_apartment import import_comtypes, mta
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +60,7 @@ _EXCLUDE_TREE = 1  # PROCESS_LOOPBACK_MODE_EXCLUDE_TARGET_PROCESS_TREE
 _VT_BLOB = 65
 _LOOPBACK_FLAGS = 0x00020000 | 0x80000000 | 0x08000000  # loopback, auto-convert, SRC quality
 _SILENT_FLAG = 0x2  # AUDCLNT_BUFFERFLAGS_SILENT
+_DISCONTINUITY_FLAG = 0x1  # AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY
 
 
 class _WAVEFORMATEX(Structure):
@@ -369,11 +375,19 @@ class PcmLoopback:
 
     Studio's demonstration recorder uses this beside the dictation gate, which
     is unchanged: the gate keeps its 16 kHz mono loudness capture above. This
-    opens 48 kHz stereo and hands each packet, with the wall time its first
-    sample was captured, to *sink* on the calling thread. Run :meth:`run` on
-    a thread of its own; :meth:`stop` ends it. *exclude* inverts the capture
-    (everything except that tree). Silent packets are delivered as zeros so a
-    source's timeline never has holes.
+    opens 48 kHz stereo and hands each packet, with the **monotonic** time its
+    first sample was captured (from ``GetBuffer``'s performance-counter
+    position, REC-022), to *sink* on the calling thread. Run :meth:`run` on a
+    thread of its own; :meth:`stop` ends it. *exclude* inverts the capture
+    (everything except that tree). Silent packets are delivered as zeros.
+
+    Windows keeps a capture running, silently, after its process has gone,
+    and raises nothing. So a process capture asks whether its pid is alive
+    before it opens and every *alive_every* seconds while it runs, and ends
+    with ``ended == "gone"`` the moment it is not (REC-019, MX-184): an
+    excluded screen reader that has restarted is then no longer excluded, so
+    not one more packet is delivered. ``DATA_DISCONTINUITY`` after the first
+    packet is passed to *on_glitch* (REC-023).
     """
 
     def __init__(
@@ -385,6 +399,8 @@ class PcmLoopback:
         rate: int = 48_000,
         channels: int = 2,
         device_id: str = "",
+        alive_every: float = ALIVE_POLL_S,
+        on_glitch: Callable[[str], None] | None = None,
     ) -> None:
         #: A playback device's id instead of a process: record all it plays.
         self.device_id = device_id
@@ -393,21 +409,34 @@ class PcmLoopback:
         self.exclude = exclude
         self.rate = rate
         self.channels = channels
+        self.alive_every = alive_every
+        self.on_glitch = on_glitch
         self._stop = threading.Event()
         self.opened = threading.Event()
+        #: True once the capture opened; a failed open never counts as "ended".
+        self.started = False
         self.error: str = ""
+        #: ``"gone"`` when the target process ended, ``"error"`` when Windows
+        #: ended the capture (a lost device), ``"stopped"`` when asked to.
+        self.ended = ""
 
     def stop(self) -> None:
         self._stop.set()
 
-    def run(self) -> None:
-        import comtypes
+    def _target_gone(self) -> bool:
+        return not self.device_id and not alive(self.pid)
 
+    def run(self) -> None:
+        with mta():
+            self._run()
+
+    def _run(self) -> None:
+        if self._target_gone():
+            self.error = f"process {self.pid} is not running"
+            self.opened.set()
+            return
         try:
-            comtypes.CoInitializeEx(comtypes.COINIT_MULTITHREADED)
-        except OSError:
-            pass
-        try:
+            import_comtypes()
             if self.device_id:
                 client, capture = _open_endpoint(
                     self.device_id, rate=self.rate, channels=self.channels
@@ -420,28 +449,46 @@ class PcmLoopback:
             self.error = str(exc) or type(exc).__name__
             self.opened.set()
             return
+        self.started = True
         self.opened.set()
-        block = self.channels * 2
         try:
-            while not self._stop.is_set():
-                frames_waiting = capture.GetNextPacketSize()
-                while frames_waiting:
-                    now = time.time()
-                    data, frames, flags, _position, _counter = capture.GetBuffer()
-                    if frames:
-                        if flags & _SILENT_FLAG:
-                            payload = bytes(frames * block)
-                        else:
-                            payload = ctypes.string_at(data, frames * block)
-                        # The packet's first sample is *frames* old by now.
-                        self.sink(payload, now - frames / self.rate)
-                    capture.ReleaseBuffer(frames)
-                    frames_waiting = capture.GetNextPacketSize()
-                time.sleep(_POLL_S)
-        except Exception as exc:  # noqa: BLE001 - the process went away
+            self._pump(capture)
+        except Exception as exc:  # noqa: BLE001 - the device or process went away
             self.error = str(exc) or type(exc).__name__
+            self.ended = "error"
         finally:
             try:
                 client.Stop()
             except Exception:  # noqa: BLE001
                 pass
+
+    def _pump(self, capture: Any) -> None:
+        block = self.channels * 2
+        first = True
+        next_check = time.monotonic() + self.alive_every
+        while not self._stop.is_set():
+            if time.monotonic() >= next_check:
+                if self._target_gone():
+                    # Muted at once: nothing more is taken from this capture.
+                    self.ended = "gone"
+                    return
+                next_check = time.monotonic() + self.alive_every
+            frames_waiting = capture.GetNextPacketSize()
+            while frames_waiting:
+                data, frames, flags, _device_position, qpc_position = capture.GetBuffer()
+                if frames:
+                    if flags & _DISCONTINUITY_FLAG and not first and self.on_glitch:
+                        self.on_glitch("discontinuity")
+                    first = False
+                    if flags & _SILENT_FLAG:
+                        payload = bytes(frames * block)
+                    else:
+                        payload = ctypes.string_at(data, frames * block)
+                    self.sink(
+                        payload,
+                        packet_monotonic(int(qpc_position), frames=frames, rate=self.rate),
+                    )
+                capture.ReleaseBuffer(frames)
+                frames_waiting = capture.GetNextPacketSize()
+            time.sleep(_POLL_S)
+        self.ended = "stopped"

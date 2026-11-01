@@ -31,6 +31,19 @@ These lessons come from Tony Gebhard's TG Drop Deck, an MIT-licensed broadcast c
 - **"On air" means sound is reaching the server.** Studio says "On air" and "The stream is back on air" only after the server has taken 2 seconds of encoded sound, not as soon as the connection opens. If the server stops taking sound, Studio says so once, and the status shows that you are off air. (BCAST-027)
 - **A refused password stops the retries.** If the server refuses the user name or password on any attempt, not only the first, Studio stops trying and gives the reason.
 
+### Sound capture that notices what Windows does not say, with thanks to Tony Gebhard (2026-10-31)
+
+These fixes come from lessons Tony Gebhard published in [TG Drop Deck](https://github.com/tonygeb23/tg-drop-deck), his free, MIT-licensed live-show deck. Two small pieces of its code are adapted here, with his copyright and licence kept in the files and in the third-party notices.
+
+- **A restarted screen reader stays out of "system sound without the screen reader".** Studio checks every second that the left-out screen reader is still running. When it restarts, system sound is muted at once, you hear that it is muted, the moment is marked, and it comes back once the new screen reader is left out too. Before, a restarted NVDA or JAWS was recorded, or heard on a live stream, and nothing said so.
+- **A program that quits is noticed.** Windows keeps recording silence from a program that has gone. Studio now checks every two seconds, says that the program quit, marks it, and records it again when it starts. The user guide already promised this; now it is true.
+- **A lost sound card comes back.** A whole-sound-card source that is unplugged or changes format is reopened by its Windows identity when it returns, and the message names the card.
+- **Microphone channels.** A new Microphone channels choice records input 1, input 2, or both inputs mixed (the default), so a microphone on one input of a two-input interface is no longer only in the left ear. The check says when a source is in one ear only.
+- **Timing from the sound, not the wall clock.** Each source is placed by the sound card's own clock against a clock that never jumps. Silence is added only where sound really stopped arriving, not every few minutes because a device's clock runs a little slow. Each source's sample count and drift are written to the check report.
+- **Lost audio is said while you record.** Gaps Windows reports, microphone overflows, and stretches of more than half a second with no sound arriving are counted, the first of each is said at once, and every count is in the report.
+- **More microphones open.** A microphone that will not open at 48 kHz is opened at 44.1 kHz or its own rate and converted, and one that is busy under WASAPI is tried as the same device under DirectSound, then MME. You are told which was used. A microphone is saved with its Windows identity as well as its name; if only the name matches, Studio says so.
+- **One bad device name no longer empties the microphone list,** and every thread that opens a sound stream sets up Windows COM first, which a background check needs while the setup window is open.
+
 ### Display scaling, named controls, licensing and packaging (2026-10-27 to 2026-10-31)
 
 - **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,

@@ -182,6 +182,9 @@ class Verification:
     sha256: str = ""
     path: str = ""
     duration: float = 0.0
+    #: Per source: samples measured, drift against the monotonic span and
+    #: glitch counts (REC-022, REC-023), from ``source_timing_summary``.
+    source_timing: list[dict[str, Any]] = field(default_factory=list)
 
     def report_markdown(self, plan: DemoPlan, markers: MarkerLog) -> str:
         lines = [
@@ -206,9 +209,26 @@ class Verification:
         if plan.camera.enabled:
             lines.append(f"- Camera: {plan.camera.device}, {plan.camera.position}")
         lines.append(f"- SHA-256: {self.sha256}")
+        if self.source_timing:
+            lines += ["", "## Sound timing", ""]
+            lines += [f"- {timing_sentence(row)}" for row in self.source_timing]
         if markers.markers:
             lines += ["", "## Markers", "", markers.text().rstrip()]
         return "\n".join(lines) + "\n"
+
+
+def timing_sentence(row: dict[str, Any]) -> str:
+    """One source's timing and glitch counts, as the report says them."""
+    return (
+        f"{row.get('label', row.get('source_id', 'Source'))}: "
+        f"{int(row.get('measured_frames', 0))} samples over "
+        f"{float(row.get('monotonic_seconds', 0.0)):.1f} seconds, drift "
+        f"{float(row.get('drift_ms', 0.0)):+.1f} ms "
+        f"(ratio {float(row.get('drift_ratio', 1.0)):.6f}); "
+        f"{int(row.get('discontinuity_count', 0))} gaps reported by Windows, "
+        f"{int(row.get('overflow_count', 0))} input overflows, "
+        f"{int(row.get('stall_count', 0))} stalls."
+    )
 
 
 def sha256_file(path: Path) -> str:
@@ -384,6 +404,7 @@ def save_reports(
         "screen_reader": screen_reader_sentence(plan),
         "camera": plan.camera.device if plan.camera.enabled else "",
         "markers": [asdict(marker) for marker in markers.markers],
+        "source_timing": verification.source_timing,
     }
     json_path = sidecar(video, ".verification.json")
     md_path = sidecar(video, ".verification.md")
