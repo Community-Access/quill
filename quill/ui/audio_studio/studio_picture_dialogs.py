@@ -120,11 +120,9 @@ class _StyleAndDetails:
         }
 
 
-def _buttons(dialog: wx.Dialog, layout: wx.BoxSizer, label: str, ok_help: str) -> None:
+def _buttons(dialog: wx.Dialog, layout: wx.BoxSizer, ok_help: str) -> None:
+    """OK and Cancel with their help; each dialog wires apply_modal_ids itself."""
     layout.Add(dialog.CreateButtonSizer(wx.OK | wx.CANCEL), 0, wx.EXPAND | wx.ALL, 10)
-    apply_modal_ids(
-        dialog, affirmative_id=wx.ID_OK, affirmative_label=label, cancel_id=wx.ID_CANCEL
-    )
     for button_id, help_text in ((wx.ID_OK, ok_help), (wx.ID_CANCEL, "Close without describing.")):
         button = dialog.FindWindow(button_id)
         if button is not None:
@@ -178,8 +176,10 @@ class DescribeFolderDialog(_StyleAndDetails, wx.Dialog):
         _buttons(
             self,
             layout,
-            "Continue",
             "Count the pictures and ask before sending any of them.",
+        )
+        apply_modal_ids(
+            self, affirmative_id=wx.ID_OK, affirmative_label="Continue", cancel_id=wx.ID_CANCEL
         )
         self.SetSizerAndFit(layout)
         (self.style if folder else self.folder).SetFocus()
@@ -237,8 +237,13 @@ class DescribeAgainDialog(_StyleAndDetails, wx.Dialog):
         _buttons(
             self,
             layout,
-            "Describe again",
             "Describe it again in the style you chose. A folder is counted and asked about first.",
+        )
+        apply_modal_ids(
+            self,
+            affirmative_id=wx.ID_OK,
+            affirmative_label="Describe again",
+            cancel_id=wx.ID_CANCEL,
         )
         self.SetSizerAndFit(layout)
         self.target.SetFocus()
