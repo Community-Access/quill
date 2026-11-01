@@ -373,8 +373,8 @@ class AiService(
         on_error: Callable[[str], None],
         requires: tuple[str, ...] = ("text", "pictures"),
     ) -> None:
-        """Ask About an Image on the plan, Copilot or a Gemini key; answers on the UI
-        thread. GATE-CAPS refuses elsewhere. A bad file is the client's sentence."""
+        """Ask About an Image on the plan, Copilot or a seeing own key; answers on the
+        UI thread. GATE-CAPS refuses elsewhere. A bad file is the client's sentence."""
         if not self.request_allowed(requires, lambda said: _call_after(on_error, said)):
             return
         if self.copilot_active:

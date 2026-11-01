@@ -12,7 +12,9 @@ and every picture it sends goes to the connection chosen there.
 
 What Studio *does* with AI -- Ask about the recording, Describe a Picture, and
 the Screenshot Inspector's questions -- is
-:mod:`quill.ui.audio_studio.studio_ai_features`; this module has no command of
+:mod:`quill.ui.audio_studio.studio_ai_features`, and Describe a Folder,
+Describe Again and Save Described Copies are
+:mod:`quill.ui.audio_studio.studio_ai_pictures`; this module has no command of
 its own. Make a Picture keeps its own key and its own-key route (decision 13),
 and Set Up AI stays for cloud voices, chapter titles and translation.
 
@@ -32,6 +34,7 @@ from __future__ import annotations
 from typing import Any
 
 from quill.ui.audio_studio.studio_ai_features import StudioAiFeaturesMixin
+from quill.ui.audio_studio.studio_ai_pictures import StudioPicturesMixin
 from quill.ui.audio_studio.studio_ai_watch import StudioWatchMixin
 from quill.ui.hosted_ai_commands import HostedAiMixin
 
@@ -43,7 +46,7 @@ AGENT_NAME = "QUILL Studio"
 _SAFE_MODE = "AI is off in Safe Mode."
 
 #: The AI menu: command id, label, handler name; "" is a separator. Letters are
-#: unique within the menu (A W C R N D H T G O S P, and U for Set Up AI).
+#: unique within the menu (A W C R N D F L E V H T G O S P, and U for Set Up AI).
 AI_ROWS: tuple[tuple[str, str, str], ...] = (
     ("tools.hosted_ai_chat_key", "&Ask...", "cmd_ai_chat_key"),
     ("tools.hosted_ai_which", "&Which AI Am I Using", "cmd_ai_which"),
@@ -53,6 +56,19 @@ AI_ROWS: tuple[tuple[str, str, str], ...] = (
     ("tools.hosted_ai_task", "&Recording Pre-flight Check...", "cmd_ai_task"),
     ("studio.ai_narrative", "&Narrate a Recording...", "cmd_studio_ai_narrative"),
     ("studio.describe_picture", "&Describe a Picture...", "cmd_studio_describe_picture"),
+    # The picture batch, in studio_ai_pictures: F, L, E and V.
+    ("studio.describe_folder", "Describe a &Folder...", "cmd_studio_describe_folder"),
+    (
+        "studio.describe_folder_stop",
+        "Stop Describing the Fo&lder",
+        "cmd_studio_describe_folder_stop",
+    ),
+    ("studio.describe_again", "Describ&e Again...", "cmd_studio_describe_again"),
+    (
+        "studio.save_described_copies",
+        "Sa&ve Described Copies...",
+        "cmd_studio_save_described_copies",
+    ),
     # Tell me when this changes (decision 25): studio_ai_watch, H and T.
     ("studio.ai_watch_start", "Start Watching for C&hanges", "cmd_studio_watch_start"),
     ("studio.ai_watch_stop", "S&top Watching for Changes", "cmd_studio_watch_stop"),
@@ -135,7 +151,7 @@ class StudioAiHost:
                 pass
 
 
-class StudioAiMixin(StudioAiFeaturesMixin, StudioWatchMixin, HostedAiMixin):
+class StudioAiMixin(StudioAiFeaturesMixin, StudioPicturesMixin, StudioWatchMixin, HostedAiMixin):
     """The shared hosted-AI commands on Studio's frame: hooks, no commands."""
 
     #: Studio has no document: an answer is copied, never inserted.

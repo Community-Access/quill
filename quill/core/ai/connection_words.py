@@ -238,6 +238,11 @@ COMMAND_NEEDS: dict[str, str] = {
     "cmd_studio_ai_narrative": AGENT_TOOLS,
     "cmd_studio_watch_start": PICTURES,
     "cmd_radio_watch_start": PICTURES,
+    # Studio's picture batch (the Image Description Toolkit proposal): Describe a
+    # Folder and Describe Again send pictures; Stop and Save Described Copies
+    # send nothing and are never gated.
+    "cmd_studio_describe_folder": PICTURES,
+    "cmd_studio_describe_again": PICTURES,
 }
 
 

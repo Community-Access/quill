@@ -273,7 +273,7 @@ quill/tools/build_third_party_notices.py. Do not edit it by hand.</p>
 </ul>
 <h2 id="summary-by-licence">Summary by licence</h2>
 <ul>
-<li>MIT License: 64 components</li>
+<li>MIT License: 65 components</li>
 <li>BSD 3-Clause License: 23 components</li>
 <li>Apache License, version 2.0: 15 components</li>
 <li>GNU General Public License, version 2: 7 components</li>
@@ -2783,6 +2783,25 @@ href="https://github.com/dwyl/english-words">https://github.com/dwyl/english-wor
 <li><strong>How it reaches you:</strong> Bundled: it is inside the
 installer or the portable zip.</li>
 <li><strong>What the licence asks of us:</strong> None.</li>
+</ul>
+<h3 id="image-description-toolkit-ideas-and-image-prompt-text">Image
+Description Toolkit (ideas and image prompt text)</h3>
+<ul>
+<li><strong>What it is:</strong> Kelly Ford’s batch image-description
+tool. The twelve image prompt styles in quill/core/ai/vision_prompts.py
+come from it, and QUILL Studio’s Describe a Folder, Describe Again,
+photo details as context and Save Described Copies follow its approach
+and its choice of metadata fields. No code is copied.</li>
+<li><strong>Included in:</strong> Every product in the family.</li>
+<li><strong>Version:</strong> 4.8.0</li>
+<li><strong>Licence:</strong> MIT</li>
+<li><strong>Copyright:</strong> Copyright (c) 2025 kellylford</li>
+<li><strong>Upstream:</strong> <a
+href="https://github.com/kellylford/Image-Description-Toolkit">https://github.com/kellylford/Image-Description-Toolkit</a></li>
+<li><strong>How it reaches you:</strong> Bundled: it is inside the
+installer or the portable zip.</li>
+<li><strong>What the licence asks of us:</strong> Keep the copyright
+notice and the permission notice with every copy.</li>
 </ul>
 <h2 id="fonts-sounds-and-icons">Fonts, sounds and icons</h2>
 <p>No fonts are bundled: every app uses the fonts Windows already has.
@@ -6185,7 +6204,8 @@ Drop Deck (adapted code), Dictation models: Moonshine tiny (English),
 Whisper tiny.en and tiny (ONNX), Silero VAD, Kokoro-82M voices and
 kokoro-onnx, MathCAT, Piper text-to-speech engine, Whisper models (GGML
 format), whisper.cpp, Emoji catalog (Unicode emoji-test.txt, CLDR
-annotations, iamcal/emoji-data), App icons, Page-turn sound
+annotations, iamcal/emoji-data), Image Description Toolkit (ideas and
+image prompt text), App icons, Page-turn sound
 (quill/assets/audio/page_turn.wav), QUILL sound packs (Ink and the
 indent-tone packs), Weather alert sound
 (quill/assets/audio/weather_alert.wav), Test and lint tools (pytest,

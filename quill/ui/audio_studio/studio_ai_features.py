@@ -338,6 +338,9 @@ class StudioAiFeaturesMixin:
             return frames[0].path.read_bytes()
 
         def took(_task: Any, data: bytes) -> None:
+            # Kept for Describe Again (studio_ai_pictures), this session only.
+            self._studio_last_picture = (data, at, path.name)
+            self._studio_last_answers = []
             self._studio_describe_bytes(data, scratch, at, route)
 
         def failed(_task: Any, error: BaseException) -> None:
@@ -370,6 +373,7 @@ class StudioAiFeaturesMixin:
                 [data],
                 service.capability_record(connection),
                 times=(at,) if at is not None else (),
+                own_key_provider=self._studio_route_provider(route),  # type: ignore[attr-defined]
             )
         except PicturePrepError as error:
             shutil.rmtree(scratch, ignore_errors=True)
@@ -409,6 +413,13 @@ class StudioAiFeaturesMixin:
 
     def _studio_picture_answer(self, answer: str) -> None:
         from quill.ui.hosted_ai_app_ask import show_picture_answer
+
+        if not getattr(self, "_studio_last_answers", None):
+            from quill.core.ai.connection_caps import CONNECTION_NAMES
+
+            connection = str(getattr(self._ai_service(), "connection_in_use", "") or "")  # type: ignore[attr-defined]
+            name = CONNECTION_NAMES.get(connection, connection)
+            self._studio_last_answers = [(f"Describe a Picture, {name}", answer)]
 
         show_picture_answer(self, answer)
 

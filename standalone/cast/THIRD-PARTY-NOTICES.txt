@@ -14,7 +14,7 @@ This file is generated from quill/data/third_party/components.json by quill/tool
 Summary by licence
 ------------------
 
-  MIT License: 52 components
+  MIT License: 53 components
   BSD 3-Clause License: 23 components
   Apache License, version 2.0: 13 components
   Python Software Foundation License, version 2: 6 components
@@ -1265,6 +1265,17 @@ Copyright: Dedicated to the public domain by the dwyl/english-words contributors
 Upstream: https://github.com/dwyl/english-words
 How it reaches you: Bundled: it is inside the installer or the portable zip.
 What the licence asks of us: None.
+
+Image Description Toolkit (ideas and image prompt text)
+-------------------------------------------------------
+
+What it is: Kelly Ford's batch image-description tool. The twelve image prompt styles in quill/core/ai/vision_prompts.py come from it, and QUILL Studio's Describe a Folder, Describe Again, photo details as context and Save Described Copies follow its approach and its choice of metadata fields. No code is copied.
+Version: 4.8.0
+Licence: MIT
+Copyright: Copyright (c) 2025 kellylford
+Upstream: https://github.com/kellylford/Image-Description-Toolkit
+How it reaches you: Bundled: it is inside the installer or the portable zip.
+What the licence asks of us: Keep the copyright notice and the permission notice with every copy.
 
 FONTS, SOUNDS AND ICONS
 =======================
@@ -4295,7 +4306,7 @@ Library.
 MIT License
 -----------
 
-Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, annotated-types, AnyIO, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, GitHub Copilot SDK (copilot), h11, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, platform_utils, platformdirs, pydantic, pydantic-core, python-docx, python-pptx, six, python-sounddevice (with PortAudio), typing-inspection, PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, ripgrep (rg.exe), Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), App icons, Page-turn sound (quill/assets/audio/page_turn.wav), QUILL sound packs (Ink and the indent-tone packs), Weather alert sound (quill/assets/audio/weather_alert.wav).
+Used by: ACB Large Print, quill-social, wx-accessible-webview, accessible_output2, annotated-types, AnyIO, attrs, autoupdate (vendored), Brotli, charset-normalizer, chat-downloader, colorlog, comtypes, curl_cffi, docstring_parser, et_xmlfile, GitHub Copilot SDK (copilot), h11, keyring, latex2mathml, libffi, libipld, libloader, MinGW-w64 runtime (libgcc_s_seh, libstdc++, libwinpthread), openpyxl, pdfminer.six, pdfplumber, platform_utils, platformdirs, pydantic, pydantic-core, python-docx, python-pptx, six, python-sounddevice (with PortAudio), typing-inspection, PyWinRT (winrt-runtime and the Windows.* projections), PyYAML, RapidFuzz, setuptools, sound_lib (with the BASS audio libraries), tomli, tqdm, truststore, urllib3, yt-dlp-ejs, ripgrep (rg.exe), Emoji catalog (Unicode emoji-test.txt, CLDR annotations, iamcal/emoji-data), Image Description Toolkit (ideas and image prompt text), App icons, Page-turn sound (quill/assets/audio/page_turn.wav), QUILL sound packs (Ink and the indent-tone packs), Weather alert sound (quill/assets/audio/weather_alert.wav).
 
 What it asks of us: Keep the copyright notice and the permission notice with every copy.
 

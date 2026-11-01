@@ -107,7 +107,11 @@ def test_ollama_says_it_runs_here_and_sends_nothing() -> None:
 def test_a_hub_provider_goes_to_its_own_company() -> None:
     record = caps.record_for(caps.OWN_KEY, own_key_provider="claude")
     assert "Goes to Anthropic" in words.about_line(record, own_key_provider="claude")
-    assert not record.claim(caps.PICTURES).supported
+    # Claude's models read pictures (2026-11-01, docs.anthropic.com vision); the
+    # rest of the Hub's keyed providers are text only on this route.
+    assert record.claim(caps.PICTURES).supported
+    openrouter = caps.record_for(caps.OWN_KEY, own_key_provider="openrouter")
+    assert not openrouter.claim(caps.PICTURES).supported
     assert own_key.key_url("openrouter") == "openrouter.ai/keys"
 
 

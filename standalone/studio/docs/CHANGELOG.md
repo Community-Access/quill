@@ -12,6 +12,17 @@ This version is built but not yet published: Audio Studio is not offered in the 
 
 Testing build: **2.0.0 (build 2)**. Builds since the first have not been published.
 
+### Describe a Folder, Describe Again and Save Described Copies (2026-11-01)
+
+These follow the approach of Kelly Ford's Image Description Toolkit, and the prompt styles are his.
+
+- **Describe a Folder** (Ctrl+Shift+F5, AI menu) describes every picture in a folder, one at a time, in the prompt style you choose, and opens all the descriptions in QUILL as one document with a heading per picture. Before anything is sent, one question says how many pictures will go and to whom. Each run stops at a limit you set, 25 to begin with on a plan. Progress is spoken now and then as counts. **Stop Describing the Folder** (Alt+Shift+F5) stops after the picture in hand.
+- **It picks up where it stopped.** Each description is kept in its own small file under Studio's data, never in your picture folder, so running the same folder again sends only what isn't described yet.
+- **Photo details go along, if you like.** The date, camera and lens are read from the picture on this computer and sent with it, so a description can say when it was taken. The GPS location goes only if you check a box that starts unchecked every time. No place name is ever looked up.
+- **Describe Again** (Ctrl+Alt+F5) adds a description in another style, or from another AI chosen first, to the last picture, a folder or one picture of it, and keeps the earlier ones beside it to compare.
+- **Save Described Copies** (Ctrl+Alt+F6) writes each description into a copy of its picture, in a folder you choose, so the words travel with the photo. JPEG and PNG get the description; your pictures are never changed.
+- **Your own OpenAI or Anthropic Claude key now sees pictures**, as a Gemini key already did, so Describe a Picture and the rest work with it.
+
 ### Recording Pre-flight Check and Narrate a Recording (2026-11-01)
 
 - **Recording Pre-flight Check** (Ctrl+3, AI menu). Press it and Enter, and GitHub Copilot or Codex goes over your set-up and answers with a short checklist in plain words. It reads Record a Demonstration's own check, made fresh, and the Studio Mixer's devices and levels. It may look at one picture of what would be recorded, only with an AI that can see and only after you say yes, and it may open the Studio Mixer for you, also after a yes. Sound and video never leave.
