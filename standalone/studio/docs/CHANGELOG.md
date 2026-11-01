@@ -12,6 +12,16 @@ This version is built but not yet published: Audio Studio is not offered in the 
 
 Testing build: **2.0.0 (build 2)**. Builds since the first have not been published.
 
+### Live broadcast: a slow link, short gaps and proof of air (2026-10-31)
+
+These lessons come from Tony Gebhard's TG Drop Deck, an MIT-licensed broadcast cart program. Studio's code is its own; the lessons are his.
+
+- **A slow connection no longer stalls the saved copy.** The stream and the saved copy each have their own queue and their own writer, so a slow upload can hold up only the stream. The mix and the saved copy keep going. Up to about 30 seconds of stream is held while listeners fall behind, and Studio says once when they are 5 seconds behind. After that the oldest stream sound is dropped, counted, and said once. Only the stream ever loses sound this way. (BCAST-026)
+- **No more tiny gaps from bursty sources.** Each source in the stream fills to 100 ms before it is played, and again after it runs dry, so sound that arrives in small bursts is no longer cut into gaps you hear as a change in pitch. A source that runs ahead is trimmed back to that 100 ms, instead of drifting to 2 seconds late. The status shows short gaps and trims when there are any. (MX-186)
+- **The stream keeps time with the microphone.** The mix still runs on a timer, because loopback sound stops arriving when nothing is playing. The timer is now corrected against the sound the microphone actually delivers, so the two clocks no longer drift apart over a long show.
+- **"On air" means sound is reaching the server.** Studio says "On air" and "The stream is back on air" only after the server has taken 2 seconds of encoded sound, not as soon as the connection opens. If the server stops taking sound, Studio says so once, and the status shows that you are off air. (BCAST-027)
+- **A refused password stops the retries.** If the server refuses the user name or password on any attempt, not only the first, Studio stops trying and gives the reason.
+
 ### Sound capture that notices what Windows does not say, with thanks to Tony Gebhard (2026-10-31)
 
 These fixes come from lessons Tony Gebhard published in [TG Drop Deck](https://github.com/tonygeb23/tg-drop-deck), his free, MIT-licensed live-show deck. Two small pieces of its code are adapted here, with his copyright and licence kept in the files and in the third-party notices.

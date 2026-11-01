@@ -260,6 +260,40 @@ Everything below is in the build.</p>
 <p>Testing build: <strong>2.0.0 (build 2)</strong>. Builds since the
 first have not been published.</p>
 <h3
+id="live-broadcast-a-slow-link-short-gaps-and-proof-of-air-2026-10-31">Live
+broadcast: a slow link, short gaps and proof of air (2026-10-31)</h3>
+<p>These lessons come from Tony Gebhard’s TG Drop Deck, an MIT-licensed
+broadcast cart program. Studio’s code is its own; the lessons are
+his.</p>
+<ul>
+<li><strong>A slow connection no longer stalls the saved copy.</strong>
+The stream and the saved copy each have their own queue and their own
+writer, so a slow upload can hold up only the stream. The mix and the
+saved copy keep going. Up to about 30 seconds of stream is held while
+listeners fall behind, and Studio says once when they are 5 seconds
+behind. After that the oldest stream sound is dropped, counted, and said
+once. Only the stream ever loses sound this way. (BCAST-026)</li>
+<li><strong>No more tiny gaps from bursty sources.</strong> Each source
+in the stream fills to 100 ms before it is played, and again after it
+runs dry, so sound that arrives in small bursts is no longer cut into
+gaps you hear as a change in pitch. A source that runs ahead is trimmed
+back to that 100 ms, instead of drifting to 2 seconds late. The status
+shows short gaps and trims when there are any. (MX-186)</li>
+<li><strong>The stream keeps time with the microphone.</strong> The mix
+still runs on a timer, because loopback sound stops arriving when
+nothing is playing. The timer is now corrected against the sound the
+microphone actually delivers, so the two clocks no longer drift apart
+over a long show.</li>
+<li><strong>“On air” means sound is reaching the server.</strong> Studio
+says “On air” and “The stream is back on air” only after the server has
+taken 2 seconds of encoded sound, not as soon as the connection opens.
+If the server stops taking sound, Studio says so once, and the status
+shows that you are off air. (BCAST-027)</li>
+<li><strong>A refused password stops the retries.</strong> If the server
+refuses the user name or password on any attempt, not only the first,
+Studio stops trying and gives the reason.</li>
+</ul>
+<h3
 id="sound-capture-that-notices-what-windows-does-not-say-with-thanks-to-tony-gebhard-2026-10-31">Sound
 capture that notices what Windows does not say, with thanks to Tony
 Gebhard (2026-10-31)</h3>

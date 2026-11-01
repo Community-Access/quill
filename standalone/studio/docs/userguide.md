@@ -1109,7 +1109,7 @@ You need a server: one you run, or one from a streaming host. Your host gives yo
 
 ### A saved copy
 
-**Save a copy of the show on this computer** keeps a FLAC copy in **Folder for the saved copy**, even through a dropped connection. It is off by default: you decide each time, and the check reminds you when no copy is being saved.
+**Save a copy of the show on this computer** keeps a FLAC copy in **Folder for the saved copy**, even through a dropped connection or a slow one. The copy has its own writer, so a slow upload can hold up only the stream, never the copy. It is off by default: you decide each time, and the check reminds you when no copy is being saved.
 
 ### Check, test and go live
 
@@ -1121,7 +1121,9 @@ When nothing says Stop, press Enter or **Go live**. While live, the computer is 
 
 ### While you are live
 
-The **Live broadcast** window, which does not take focus, shows the **Status**: how long you have been live, whether you are connected, and how many times the stream has reconnected.
+The **Live broadcast** window, which does not take focus, shows the **Status**: how long you have been live, whether you are on air, and how many times the stream has reconnected. When there are any, it also shows short gaps in a source, delay trims, and seconds the stream lost to a slow connection.
+
+Studio says "On air" only once the server has taken 2 seconds of your sound, not when the connection opens, because a connection that carries nothing is not a broadcast. Until then the status says Connecting. If the server stops taking sound later, Studio says so once and the status says Off air.
 
 - **Now playing** and **Update the title** change the title listeners see, such as the name of the current segment.
 - **Mute everything public** (Ctrl+Alt+Shift+Z) gives listeners silence at once without disconnecting. Press it again to bring the sound back. Use it for a cough, a phone call, or anything you do not want broadcast.
@@ -1129,7 +1131,9 @@ The **Live broadcast** window, which does not take focus, shows the **Status**: 
 
 Both keys work while Studio has focus. Give them system-wide keys in **Capture > Capture global hotkeys...** so they work from any program; Mute everything public is the one to have under your fingers.
 
-If the connection drops, Studio says so once and keeps trying: after 2 seconds, then waiting twice as long each time up to 30 seconds, for up to 10 tries. The saved copy keeps recording throughout. If it cannot reconnect, it says so and stops the stream; the saved copy continues until you stop.
+If the connection drops, Studio says so once and keeps trying: after 2 seconds, then waiting twice as long each time up to 30 seconds, for up to 10 tries. "The stream is back on air" is said only once sound is reaching the server again. If the server refuses your user name or password, on any try, Studio stops trying and says why. The saved copy keeps recording throughout.
+
+If the connection is too slow for the quality, listeners fall behind first. Studio says once when they are 5 seconds behind. After about 30 seconds behind, the stream starts losing sound, and Studio says that once too. The saved copy is not affected. Choose a lower quality. If it cannot reconnect, it says so and stops the stream; the saved copy continues until you stop.
 
 ### Worked example: a weekly talk show
 
