@@ -275,3 +275,150 @@ def test_parse_stats_and_start_estimator():
     estimator.report(110.1, 10.0)
     estimator.report(100.0, 0.0)
     assert estimator.start == pytest.approx(100.1)
+
+
+# -- VIDEO-004: BT.709, limited range, tagged -------------------------------------
+
+
+def test_every_h264_output_converts_and_tags_bt709():
+    tags = ["-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709"]
+    from quill.core.video_colour import to_yuv420p
+
+    matrix = to_yuv420p()
+    assert matrix.startswith("scale=out_color_matrix=bt709:out_range=tv,format=yuv420p,")
+    for backend in ("ddagrab", "gdigrab"):
+        command = screen_capture_command(
+            FF, _plan(), Path("seg.mkv"), backend=backend, encoder="libx264"
+        )
+        assert _value(command, "-vf").endswith(matrix)
+        assert _value(command, "-color_range") == "tv"
+        assert all(flag in command for flag in tags)
+    camera = camera_capture_command(
+        FF, "Cam", Path("c.mkv"), fps=30, encoder="libx264", face_frames=False
+    )
+    assert matrix in _value(camera, "-vf") and _value(camera, "-color_range") == "tv"
+    overlay = finish_segment_command(
+        FF,
+        _plan(camera=CameraSetup(enabled=True, device="Cam")),
+        Path("v.mkv"),
+        Path("p.mp4"),
+        sources=[],
+        camera=Path("c.mkv"),
+        camera_offset=0.0,
+        duration=5.0,
+        encoder="libx264",
+    )
+    assert matrix + "[v]" in _value(overlay, "-filter_complex")
+    assert _value(overlay, "-colorspace") == "bt709"
+    # The trial picture is RGB and is never converted.
+    trial = trial_grab_command(FF, _plan(), Path("t.png"), backend="gdigrab")
+    assert _value(trial, "-vf").endswith("format=rgb24") and "bt709" not in trial
+
+
+def test_a_lost_picture_keeps_its_sound_over_black():
+    """REC-024: with no picture file the segment is black, encoded and tagged."""
+    command = finish_segment_command(
+        FF,
+        _plan(),
+        None,
+        Path("p.mp4"),
+        sources=[AudioInput(Path("mic.wav"), 0.0, 0.0)],
+        camera=None,
+        camera_offset=0.0,
+        duration=5.0,
+        encoder="libx264",
+    )
+    assert command[command.index("-f") + 1] == "lavfi"
+    assert _value(command, "-i").startswith("color=c=black:s=1920x1080:r=30")
+    assert "copy" not in command and _value(command, "-colorspace") == "bt709"
+
+
+def test_a_drifted_source_is_stretched_before_its_offset():
+    """REC-022: atempo first, so the offset is in real seconds."""
+    command = finish_sound_segment_command(
+        FF,
+        Path("p.wav"),
+        sources=[AudioInput(Path("mic.wav"), 0.0, 0.25, tempo=1.0002), AudioInput(Path("b"), 0, 0)],
+        duration=60.0,
+    )
+    graph = _value(command, "-filter_complex")
+    assert graph.startswith("[0:a]atempo=1.0002000,adelay=250:all=1,")
+    assert "[1:a]aresample" in graph and graph.count("atempo") == 1
+
+
+def _ffmpeg_or_skip() -> str:
+    from quill.core.speech.ffmpeg import find_ffmpeg
+
+    ffmpeg = find_ffmpeg()
+    if ffmpeg is None:
+        pytest.skip("ffmpeg is not installed")
+    return ffmpeg
+
+
+def test_white_red_and_blue_decode_as_bt709_limited_range(tmp_path):
+    """VIDEO-004 acceptance: Y 235, 63 and 32, where BT.601 would give 81 for red."""
+    from PIL import Image
+
+    from quill.stability.safe_subprocess import run_subprocess_safely
+
+    ffmpeg = _ffmpeg_or_skip()
+    width, height = 1280, 720
+    picture = Image.new("RGB", (width, height), (255, 255, 255))
+    third = width // 3
+    picture.paste((255, 0, 0), (third, 0, 2 * third, height))
+    picture.paste((0, 0, 255), (2 * third, 0, width, height))
+    source = tmp_path / "patches.png"
+    picture.save(source)
+    # The real screen capture command, with FFmpeg's grabber swapped for the picture.
+    plan = _plan(bounds=(0, 0, width, height), display_bounds=(0, 0, width, height))
+    real = screen_capture_command(
+        ffmpeg, plan, tmp_path / "seg.mkv", backend="gdigrab", encoder="libx264"
+    )
+    start, vf = real.index("-f"), real.index("-vf")
+    command = real[:start] + ["-loop", "1", "-framerate", "30", "-i", str(source), "-t", "1"]
+    command += real[vf:]
+    result = run_subprocess_safely(command, timeout_seconds=60)
+    assert result.returncode == 0, result.stderr
+    decoded = tmp_path / "frame.yuv"
+    result = run_subprocess_safely(
+        [
+            ffmpeg,
+            "-hide_banner",
+            "-v",
+            "error",
+            "-y",
+            "-i",
+            str(tmp_path / "seg.mkv"),
+            "-frames:v",
+            "1",
+            "-f",
+            "rawvideo",
+            "-pix_fmt",
+            "yuv420p",
+            str(decoded),
+        ],
+        timeout_seconds=60,
+    )
+    assert result.returncode == 0, result.stderr
+    luma = decoded.read_bytes()[: width * height]
+    row = height // 2 * width
+
+    def y_at(x: int) -> int:
+        return luma[row + x]
+
+    assert abs(y_at(third // 2) - 235) <= 2
+    assert abs(y_at(third + third // 2) - 63) <= 2
+    assert abs(y_at(2 * third + third // 2) - 32) <= 2
+    from quill.core.speech.ffmpeg import find_ffprobe
+
+    ffprobe = find_ffprobe()
+    if ffprobe is not None:
+        from quill.core.demo_recording_verify import build_probe_command, parse_probe
+        from quill.core.video_colour import colour_problems
+
+        probe = parse_probe(
+            run_subprocess_safely(
+                build_probe_command(ffprobe, tmp_path / "seg.mkv"), timeout_seconds=60
+            ).stdout
+        )
+        assert colour_problems(probe.colour) == []

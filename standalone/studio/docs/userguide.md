@@ -891,7 +891,7 @@ If something goes wrong while you record, you hear it once and it is marked at t
 - A microphone is unplugged: silent until the same microphone comes back. A different microphone is never swapped in.
 - Sound stops arriving, or a microphone overflows: you hear it the first time, and the check report counts every time.
 - The display changes: the recording pauses.
-- The camera stops or falls behind.
+- The screen capture, the camera or one sound source stops: you hear which one, and everything else keeps recording. The result is Needs review and names it. Studio stops and saves only if nothing is left recording.
 - The disk runs low: a warning at two minutes left, then a stop and save before it runs out.
 
 **Known limitations.** Some of this does not yet work reliably, and is being fixed. Thanks to Tony Gebhard (TG Studios), who wrote TG Drop Deck (MIT licence, [github.com/tonygeb23/tg-drop-deck](https://github.com/tonygeb23/tg-drop-deck)) and published the measurements and fixes that showed us these gaps:
@@ -904,7 +904,7 @@ Until these are fixed, if a program or your screen reader restarts while you rec
 
 ### When you stop
 
-Studio joins the pieces, mixes the sounds at your levels, adds the camera picture, and then checks the finished file on its own, without trusting anything it measured while recording: one picture stream and one sound stream, the right length and frame count, clean decoding at the start, middle and end, no long black stretches, and each sound source actually present. You hear one sentence, for example "Demonstration saved, 2 minutes 41 seconds, 1920 by 1080 at 30 frames a second. Picture and sound checked. msedge sound and Microphone present; screen reader left out."
+Studio joins the pieces, mixes the sounds at your levels, adds the camera picture, and then checks the finished file on its own, without trusting anything it measured while recording: one picture stream and one sound stream, the right length and frame count, clean decoding at the start, middle and end, no long black stretches, colour tagged as BT.709 so every player shows it the same way, and each sound source actually present. You hear one sentence, for example "Demonstration saved, 2 minutes 41 seconds, 1920 by 1080 at 30 frames a second. Picture and sound checked. msedge sound and Microphone present; screen reader left out."
 
 The result is **Verified** when every check passed, **Needs review** when it plays but something may be spoiled, or **Failed** when a stream is missing or it does not decode, in which case the recorded pieces are kept so nothing is lost.
 
@@ -958,7 +958,7 @@ You want to show how to fill in a web form with your screen reader, with your vo
 - **My screen reader is in the recording and I did not want it.** Check which rows are in. "Everything playing on" a sound card includes your screen reader if it speaks on that card; use the program's own sound or System sound with "Leave the screen reader out" instead.
 - **A covering window is in the video.** A window recording records the window's area of the screen. Bring the window to the front, turn on Do Not Disturb, or record the whole display.
 - **My stop key does nothing.** Studio's own keys work only while Studio has focus. Assign system-wide keys, or use the tray icon's menu.
-- **The result says Needs review.** Open the result window's list of checks: it says which check did not pass, such as a long black stretch or a sound source that was silent throughout.
+- **The result says Needs review.** Open the result window's list of checks: it says which check did not pass, such as a long black stretch, a sound source that was silent throughout, or a stream that stopped early, such as the camera.
 - **Do Not Disturb did not turn on.** Some Windows editions and policies do not allow it. Turn it on yourself before you start.
 
 ### What this does not do yet

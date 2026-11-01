@@ -22,6 +22,7 @@ from pathlib import Path
 from typing import Literal
 
 from quill.core.demo_recording import DemoRecordingError
+from quill.core.video_colour import colour_tags, to_yuv420p
 
 Shape = Literal["youtube", "square", "vertical", "picture"]
 
@@ -189,7 +190,8 @@ def video_command(
             f"zoompan=z='min(zoom+0.0004,1.12)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)'"
             f":d=1:s={width}x{height}:fps={fps}"
         )
-    filters = [chain + ",format=yuv420p[pic]"]
+    # The picture is RGB: convert with BT.709 and say so (VIDEO-004).
+    filters = [chain + f",{to_yuv420p()}[pic]"]
     video_label = "[pic]"
     if plan.wave:
         wave_height = max(2, height // 6 // 2 * 2)
@@ -210,7 +212,7 @@ def video_command(
     command += ["-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-pix_fmt", "yuv420p"]
     if not (plan.zoom or plan.wave):
         command += ["-tune", "stillimage"]
-    command += ["-r", str(fps), "-g", str(fps * 2)]
+    command += ["-r", str(fps), "-g", str(fps * 2), *colour_tags()]
     command += ["-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-ac", "2"]
     command += ["-shortest", "-movflags", "+faststart", str(plan.output)]
     return command

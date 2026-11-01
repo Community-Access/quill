@@ -2301,7 +2301,10 @@ back. A different microphone is never swapped in.</li>
 <li>Sound stops arriving, or a microphone overflows: you hear it the
 first time, and the check report counts every time.</li>
 <li>The display changes: the recording pauses.</li>
-<li>The camera stops or falls behind.</li>
+<li>The screen capture, the camera or one sound source stops: you hear
+which one, and everything else keeps recording. The result is Needs
+review and names it. Studio stops and saves only if nothing is left
+recording.</li>
 <li>The disk runs low: a warning at two minutes left, then a stop and
 save before it runs out.</li>
 </ul>
@@ -2328,11 +2331,12 @@ while you record, stop and start a new recording.</p>
 camera picture, and then checks the finished file on its own, without
 trusting anything it measured while recording: one picture stream and
 one sound stream, the right length and frame count, clean decoding at
-the start, middle and end, no long black stretches, and each sound
-source actually present. You hear one sentence, for example
-“Demonstration saved, 2 minutes 41 seconds, 1920 by 1080 at 30 frames a
-second. Picture and sound checked. msedge sound and Microphone present;
-screen reader left out.”</p>
+the start, middle and end, no long black stretches, colour tagged as
+BT.709 so every player shows it the same way, and each sound source
+actually present. You hear one sentence, for example “Demonstration
+saved, 2 minutes 41 seconds, 1920 by 1080 at 30 frames a second. Picture
+and sound checked. msedge sound and Microphone present; screen reader
+left out.”</p>
 <p>The result is <strong>Verified</strong> when every check passed,
 <strong>Needs review</strong> when it plays but something may be
 spoiled, or <strong>Failed</strong> when a stream is missing or it does
@@ -2432,7 +2436,8 @@ only while Studio has focus. Assign system-wide keys, or use the tray
 icon’s menu.</li>
 <li><strong>The result says Needs review.</strong> Open the result
 window’s list of checks: it says which check did not pass, such as a
-long black stretch or a sound source that was silent throughout.</li>
+long black stretch, a sound source that was silent throughout, or a
+stream that stopped early, such as the camera.</li>
 <li><strong>Do Not Disturb did not turn on.</strong> Some Windows
 editions and policies do not allow it. Turn it on yourself before you
 start.</li>

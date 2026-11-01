@@ -114,8 +114,14 @@ class DemoRecorder:
             started=datetime.now().isoformat(),
         )
         self.markers = MarkerLog()
+        # Each source reports through its own callback, so a failure is held
+        # against that source by name (REC-024).
         self.sources = [
-            make_source(source, self._source_event, studio_pid=plan.studio_process_id)
+            make_source(
+                source,
+                self._source_callback(source.label),
+                studio_pid=plan.studio_process_id,
+            )
             for source in self.plan.enabled_sources()
         ]
         self.state = "idle"
@@ -133,15 +139,51 @@ class DemoRecorder:
         self._stop_monitor = threading.Event()
         self._monitor: threading.Thread | None = None
         self._warned: set[str] = set()
+        #: Streams that failed in the open segment, so each is reported once.
+        self._failed_now: set[str] = set()
         self.stop_reason = ""
         self.auto_stop: Callable[[str], None] | None = None
 
     # -- events -----------------------------------------------------------------
 
-    def _source_event(self, sentence: str, failure: bool) -> None:
+    def _source_callback(self, name: str) -> EventCallback:
+        def report(sentence: str, failure: bool) -> None:
+            self._source_event(sentence, failure, stream=name)
+
+        return report
+
+    def _source_event(self, sentence: str, failure: bool, *, stream: str = "") -> None:
         if failure:
             self.mark(sentence, failure=True)
+            if stream:
+                self._note_failure(stream, sentence)
         self.on_event(sentence, failure)
+
+    def _note_failure(self, stream: str, reason: str) -> None:
+        """Hold *reason* against *stream* for the check (REC-024); the first one wins."""
+        with self._lock:
+            self._failed_now.add(stream)
+            self.session.stream_failures.setdefault(stream, reason)
+            self._save()
+
+    def _stream_failed(self, stream: str, sentence: str) -> None:
+        """*stream* stopped; say so by name, once, and let every other stream go on."""
+        if stream in self._failed_now:
+            return
+        self._note_failure(stream, sentence)
+        self.mark(sentence, failure=True)
+        self.on_event(sentence, True)
+
+    def _others_recording(self, stream: str) -> bool:
+        """Whether anything but *stream* is still capturing."""
+        if any(source.label not in self._failed_now for source in self.sources):
+            return True
+        pictures = {"Screen": self._screen, "Camera": self._camera}
+        return any(
+            process is not None and process.running
+            for name, process in pictures.items()
+            if name != stream
+        )
 
     def _warn_once(self, key: str, sentence: str, *, failure: bool = True) -> None:
         if key in self._warned:
@@ -181,6 +223,7 @@ class DemoRecorder:
         segment = SegmentRecord(index, str(folder))
         # The segment's own clock: a sound-only recording aligns its sources to this.
         self._segment_wall = time.time()
+        self._failed_now = set()
         for source in self.sources:
             source.begin_segment(folder / f"{source.source.source_id}.wav")
         encoder = self.caps.h264_encoder
@@ -220,7 +263,12 @@ class DemoRecorder:
                 on_frame=self._faces.feed if (alerts and self._faces) else None,
                 frame_bytes=width * height,
             )
-            self._camera.launch()
+            try:
+                self._camera.launch()
+            except OSError as error:
+                # REC-024: no camera is no reason not to record the rest.
+                self._camera = None
+                self._stream_failed("Camera", f"The camera could not start: {error}.")
         self._segment = segment
         self.session.segments.append(segment)
 
@@ -242,9 +290,17 @@ class DemoRecorder:
         # The picture's clock is the screen, or the camera when it fills the
         # picture; with no picture it is the segment's own start.
         main = screen if screen is not None else camera
-        for process in (screen, camera):
-            if process is not None:
+        main_name = "Screen" if screen is not None else "Camera"
+        # REC-024: each stream is stopped on its own, so one that fails to
+        # close cannot leave the next one unfinished.
+        for name, process in (("Screen", screen), ("Camera", camera)):
+            if process is None:
+                continue
+            try:
                 process.stop()
+            except Exception as error:  # noqa: BLE001 - the other streams still close
+                logger.exception("Stopping the %s capture failed", name)
+                self._note_failure(name, f"{name} capture did not close cleanly: {error}.")
         if camera is not None:
             segment.camera_start = camera.start.start or camera.launched
         if main is not None:
@@ -254,14 +310,21 @@ class DemoRecorder:
                 self._dropped += stats.dropped
                 self._frames += stats.frames
             segment.duration = max(0.0, (stats.seconds if stats else 0.0))
-            if not segment.duration:
-                segment.duration = max(0.0, end - segment.video_start)
+            if not segment.duration or main_name in self._failed_now:
+                # A picture that stopped early does not cut the sound short:
+                # the segment lasts as long as the streams that kept going.
+                segment.duration = max(segment.duration, end - segment.video_start)
         else:
             segment.video_start = self._segment_wall
             segment.duration = max(0.0, end - self._segment_wall)
         stop_at = segment.video_start + segment.duration
         for source in self.sources:
-            stream = source.end_segment(stop_at)
+            try:
+                stream = source.end_segment(stop_at)
+            except Exception as error:  # noqa: BLE001 - the other sources still close
+                logger.exception("Closing %s failed", source.label)
+                self._note_failure(source.label, f"{source.label} did not close cleanly: {error}.")
+                continue
             if stream is not None:
                 segment.audio_starts[source.source.source_id] = stream.first_time or stop_at
                 segment.audio_timing[source.source.source_id] = source.statistics(stream)
@@ -361,17 +424,21 @@ class DemoRecorder:
             if self.state != "recording":
                 return
             screen = self._screen
-        if screen is not None and not screen.running and not screen.stopping:
-            detail = screen.tail[-1] if screen.tail else f"exit code {screen.returncode}"
-            self._request_stop(f"Screen capture stopped unexpectedly: {detail}")
-            return
-        camera = self._camera
-        if camera is not None and not camera.running and not camera.stopping:
-            if self.plan.camera_fills:
-                detail = camera.tail[-1] if camera.tail else f"exit code {camera.returncode}"
-                self._request_stop(f"The camera stopped unexpectedly: {detail}")
+        # REC-024: a picture stream that dies is reported by name and the rest
+        # keep recording; the recording stops only when nothing is left.
+        for name, process in (("Screen", screen), ("Camera", self._camera)):
+            if process is None or process.running or process.stopping:
+                continue
+            if name in self._failed_now:
+                continue
+            detail = process.tail[-1] if process.tail else f"exit code {process.returncode}"
+            if not self._others_recording(name):
+                self._note_failure(name, f"{name} capture stopped: {detail}.")
+                self._request_stop(f"{name} capture stopped unexpectedly: {detail}")
                 return
-            self._warn_once("camera", "The camera stopped; the rest is recorded without it.")
+            self._stream_failed(
+                name, f"{name} capture stopped: {detail}. The rest is still recording."
+            )
         if not self.plan.screen:
             pass
         elif self.plan.target_kind == "window":
@@ -445,7 +512,10 @@ class DemoRecorder:
             self.session.state = "finalizing"
             self._save()
         for source in self.sources:
-            source.close()
+            try:
+                source.close()
+            except Exception:  # noqa: BLE001 - one device's fault must not keep the others open
+                logger.exception("Releasing %s failed", source.label)
         if self._faces is not None:
             self._faces.stop()
             self._faces = None

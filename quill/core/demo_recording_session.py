@@ -113,6 +113,9 @@ class SessionRecord:
     segments: list[SegmentRecord] = field(default_factory=list)
     markers: list[dict[str, Any]] = field(default_factory=list)
     state: Literal["recording", "paused", "finalizing", "finished", "failed"] = "recording"
+    #: REC-024: stream name ("Screen", "Camera", a sound source's label) -> the
+    #: first failure it reported. The others kept recording; the check names it.
+    stream_failures: dict[str, str] = field(default_factory=dict)
 
     def save(self, work: Path) -> None:
         data = asdict(self)
@@ -139,6 +142,12 @@ class SessionRecord:
             segments=segments,
             markers=list(raw.get("markers", [])),
             state=raw.get("state", "recording"),
+            stream_failures={
+                str(name): str(reason)
+                for name, reason in (raw.get("stream_failures") or {}).items()
+            }
+            if isinstance(raw.get("stream_failures"), dict)
+            else {},
         )
 
 
