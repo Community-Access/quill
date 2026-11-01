@@ -16,7 +16,8 @@ import pytest
 
 wx = pytest.importorskip("wx")
 
-#: Builds a real Quill Radio window, which registers system-wide hotkeys.
+#: Serialized onto one worker: builds a real Quill Radio window, which registers
+#: system-wide hotkeys.
 pytestmark = pytest.mark.machine_global
 
 

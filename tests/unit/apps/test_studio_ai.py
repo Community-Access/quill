@@ -17,8 +17,8 @@ import pytest
 
 wx = pytest.importorskip("wx")
 
-#: Builds a real Studio window, which registers system-wide hotkeys and a tray icon.
-pytestmark = pytest.mark.machine_global
+#: A real window with its machine-wide doors closed (closed_machine_doors in conftest).
+pytestmark = pytest.mark.usefixtures("closed_machine_doors")
 
 
 class _Account:

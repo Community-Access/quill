@@ -17,8 +17,8 @@ import pytest
 
 wx = pytest.importorskip("wx")
 
-#: Builds a real Quill Media Player window, which reaches for system-wide keys.
-pytestmark = pytest.mark.machine_global
+#: A real window with its machine-wide doors closed (closed_machine_doors in conftest).
+pytestmark = pytest.mark.usefixtures("closed_machine_doors")
 
 
 class _Account:

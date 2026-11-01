@@ -709,6 +709,24 @@ class FakeApp:
 
 
 @pytest.fixture
+def closed_machine_doors(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Build a real app window without reaching the machine, so the test needs
+    no ``machine_global`` mark and does not crowd the one shared worker
+    (tests/unit/test_parallel_grouping.py caps that group).
+
+    System-wide hotkeys answer True and register nothing, and no tray icon goes
+    in the notification area. Anything else a window reaches for -- a real
+    voice, the clipboard -- is still caught by the autouse real-output guard in
+    tests/conftest.py, which fails the test and names it.
+    """
+    import quill.ui.app_shell as app_shell
+
+    monkeypatch.setattr(wx.Frame, "RegisterHotKey", lambda *_a: True, raising=False)
+    monkeypatch.setattr(wx.Frame, "UnregisterHotKey", lambda *_a: True, raising=False)
+    monkeypatch.setattr(app_shell.AppShellFrame, "_ensure_tray_icon", lambda *_a, **_k: None)
+
+
+@pytest.fixture
 def wx_app():
     """A **live** ``wx.App``, whatever the rest of the worker has done to it.
 

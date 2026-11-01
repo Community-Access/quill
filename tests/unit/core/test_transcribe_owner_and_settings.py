@@ -141,6 +141,15 @@ def test_settings_never_hold_transcript_text_or_keys(tmp_path: Path) -> None:
         "close_to_tray",
         "inkwell_checked",
         "dictation",
+        # Its own AI choice (decision 2): names and flags, never a key or a token.
+        "ai_connection",
+        "ai_own_key_provider",
+        "ai_own_key_model",
+        "ai_copilot_model",
+        "ai_codex_model",
+        "ai_privacy_accepted_version",
+        "ai_seeded",
+        "ai_sign_in_noticed",
     }
 
 

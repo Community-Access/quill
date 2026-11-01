@@ -13,8 +13,8 @@ import pytest
 
 wx = pytest.importorskip("wx")
 
-#: Builds a real QUILL Cast window, which registers system-wide hotkeys.
-pytestmark = pytest.mark.machine_global
+#: A real window with its machine-wide doors closed (closed_machine_doors in conftest).
+pytestmark = pytest.mark.usefixtures("closed_machine_doors")
 
 _NOTES = (
     '<p>We talk about tides.</p><img src="https://x.invalid/chart.png" '

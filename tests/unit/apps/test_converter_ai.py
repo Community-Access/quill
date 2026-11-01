@@ -15,8 +15,8 @@ import pytest
 
 wx = pytest.importorskip("wx")
 
-#: Builds a real Quill Converter window, which registers the show/hide key and a tray icon.
-pytestmark = pytest.mark.machine_global
+#: A real window with its machine-wide doors closed (closed_machine_doors in conftest).
+pytestmark = pytest.mark.usefixtures("closed_machine_doors")
 
 
 class _Account:
