@@ -24,6 +24,7 @@ __all__ = [
     "TITLE",
     "WORKING",
     "engine_name",
+    "no_engine",
     "status_line",
     "transcript_line",
 ]
@@ -39,6 +40,12 @@ _USING: dict[str, str] = {
 WORKING = "Working."
 STOPPING = "Stopping."
 NO_ENGINE = "Document tasks need My GitHub Copilot or Codex. Press Ctrl+4 to choose one."
+
+
+def no_engine(choose_key: str = "Ctrl+4") -> str:
+    """Why a task could not start, naming this app's Choose Your AI key."""
+    where = f"Press {choose_key} to choose one." if choose_key else "Choose one in Choose Your AI."
+    return f"Agent tasks need My GitHub Copilot or Codex. {where}"
 
 
 def status_line(connection: str, state: str = "") -> str:

@@ -316,6 +316,21 @@ class ReviewConversation:
         self._keep()
         self._say_and_mute(summary)
 
+    def apply(self, label: str, text: str) -> str:
+        """Replace the words with *text* as one change Undo Change takes back.
+
+        For a change the person already reviewed elsewhere (an agent task's
+        preview), so nothing is said here; returns the change in words.
+        """
+        if self._finished:
+            return ""
+        summary = self.session.revise(label, text)
+        self._port.show_text(self.session.current)
+        self._port.show_changes(summary)
+        self._port.status(f"Changed: {label}.")
+        self._keep()
+        return summary
+
     def _failed(self, message: str) -> None:
         if self._request is None:
             return  # cancelled, or the window has gone

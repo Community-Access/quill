@@ -2,6 +2,57 @@
 
 ## 1.0.0
 
+### Agent tasks across the family, and Tell Me When This Changes (2026-11-01)
+
+- **Propose Alt Text**, in QUILL's AI menu and QUILL Lite's Tools > AI, opens
+  Do a Document Task with the request typed in: alt text for every picture in
+  the document that has none. Each proposal is one change in Review AI Changes,
+  undone with Ctrl+Z. On an AI that can see, the task asks before it sends a
+  picture, naming it; only pictures on this computer are sent, never one from a
+  web address. Do a Document Task itself can now list the document's pictures
+  and set their alt text too.
+- **Every QuillVille app gets an agent task** on GitHub Copilot or Codex, in the
+  same window as Do a Document Task, on the same command: Ctrl+3 in QUILL
+  Studio and QuillBeacon, Ctrl+F3 where Ctrl+1 to Ctrl+9 move between windows.
+  On any other AI the row says "(needs Copilot or Codex)" and offers to switch.
+  - Quill Radio, **Find and Record**: finds stations, plays one, records now or
+    schedules a recording, which Radio's own recorder makes.
+  - QUILL Cast, **Find and Follow**: searches the directories, follows a show,
+    makes folders and moves shows into them, and queues episodes. Build Me a
+    Listening Run's access key moves from L to B to make room.
+  - QUILL Transcribe, **Speakers, Sections and Summary**: names speakers, adds
+    section headings, a summary and an action list, written into Review
+    Dictation as one change you can undo. Only text is sent.
+  - QUILL Studio, **Recording Pre-flight Check** (Ctrl+3): runs Record a
+    Demonstration's check and answers with a short checklist; it may ask to send
+    one still of what you will record. **Narrate a Recording** (Ctrl+Shift+3)
+    writes a narrative of a recording from its captions and, on an AI that can
+    see, a contact sheet of frames, saved beside the recording and opened in
+    QUILL.
+  - Quill Converter, **Make This Right for My Player**: reads what is queued
+    and what each format carries, then sets up and starts a conversion, join or
+    split. It never sends audio.
+  - QuillBeacon, **Organize What I Saved**: searches, suggests tags, and tags or
+    moves saved items.
+  - Quill Media Player, **Find the Part Where**: goes to a chapter, bookmark or
+    time. There is no transcript yet, so it works from chapters and bookmarks.
+  - Quill Inkwell, **Add Abbreviations from a Document**: proposes abbreviations
+    from a document you pick and adds the ones you accept.
+- **Nothing changes without you.** Every step that changes, records, schedules
+  or sends a picture asks first (Allow once, Allow for this task, Don't allow).
+  Every change to your data is shown as text in **Review Proposed Change**
+  before it is made. Each task ends with a spoken summary of what was done,
+  built from what actually happened.
+- **Tell Me When This Changes** in QUILL Studio and Quill Radio: Start Watching
+  for Changes (Ctrl+F9) and Stop Watching for Changes (Ctrl+Shift+F9). Studio
+  watches the screen you chose in Capture, Radio the video picture. The picture
+  is compared on this computer and read with OCR first; the AI is asked only
+  when something changed that OCR cannot put into words, at most once a minute
+  and at most 30 times a watch, and then the watch stops and says so. You hear
+  one sentence only when something changed. Every question counts in AI Usage,
+  the first picture on each AI asks your consent, Safe Mode refuses it, and
+  closing the window ends the watch.
+
 ### One list of prompts, and the AI Hub's providers in My own key (2026-11-01)
 
 - **The AI Hub's providers are in Use My Own AI Key**, in QUILL and QUILL Lite

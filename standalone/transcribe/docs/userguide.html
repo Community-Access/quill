@@ -2307,6 +2307,8 @@ session. Your voice never goes. Quick questions has <strong>Who said
 what?</strong> and <strong>What was decided?</strong>, and <strong>What
 can I do here?</strong>, which is answered on this computer and sends
 nothing.</li>
+<li><strong>Speakers, Sections and Summary…</strong> (Ctrl+F3) tidies a
+transcript into something you can read back. See the next section.</li>
 <li><strong>Use My ChatGPT Subscription</strong> (Alt+F5), <strong>Use
 My Own AI Key</strong> (Alt+F2), <strong>AI Usage</strong>
 (Ctrl+Alt+Shift+F2) and <strong>Privacy Agreement</strong>
@@ -2324,6 +2326,41 @@ Credential Manager as before.</p>
 <p>Ctrl+1 to Ctrl+9 are the Window menu’s keys here, so Ask, Which AI
 and Choose Your AI use the same keys as in Quill Radio and QUILL Cast
 rather than the editors’ Ctrl+6, Ctrl+8 and Ctrl+4.</p>
+<h3 id="speakers-sections-and-summary">Speakers, sections and
+summary</h3>
+<p>A long transcript is hard to listen back to: one block of words, no
+idea who is talking or where the subject changes. <strong>AI &gt;
+Speakers, Sections and Summary…</strong> (Ctrl+F3) hands it to an AI
+that works through it in steps. It names the speakers where what they
+say makes the name clear (if Bo says “thanks, Ann”, Speaker 1 is
+probably Ann), adds a heading wherever the subject changes, and ends
+with a short summary and a list of who is doing what by when. It never
+makes up a name it cannot tell, and it keeps every word that was
+said.</p>
+<p>It works on the words in Review Dictation when that is open;
+otherwise on the transcript you last opened in Review Transcript;
+otherwise on what you dictated this session. If the transcript came from
+speaker detection, with lines like “Speaker 1 [00:01:05]:”, the AI is
+told which labels are in it.</p>
+<p>This needs GitHub Copilot or Codex. With another AI in use the menu
+row says “(needs Copilot or Codex)”, and pressing it offers to switch.
+The window that opens is the same one as Do a Document Task in QUILL.
+The instruction is already filled in, so Enter starts it; you can type
+something else first, like “the speakers are Ann and Bo, and leave out
+the small talk”.</p>
+<p>Before anything changes, you are asked whether the AI may write into
+Review Dictation (Allow once, Allow for this task, or Don’t allow), and
+then the whole new text is shown to you to read with the arrow keys.
+Enter applies it; Escape leaves everything as it was. Applied, it goes
+into Review Dictation as one change, so Undo Change (Ctrl+Z there) puts
+the words back. If Review Dictation was closed it opens on the
+transcript first, so Undo Change gets you back to the transcript as it
+was. If Review Dictation is holding words kept from last time, nothing
+is written: insert or discard those first.</p>
+<p>Only text goes to the AI. Turning speech into text still happens on
+this computer, or with the speech service you chose, and your voice
+never goes anywhere. The task ends with a sentence saying what was
+done.</p>
 <h2 id="safe-mode">Safe Mode</h2>
 <p>In Safe Mode, QUILL Transcribe does not listen, registers no keys,
 downloads no models, uses no AI and sends nothing over the internet. The
@@ -2516,6 +2553,10 @@ app.</p>
 <tr>
 <td>AI privacy agreement</td>
 <td>Alt+Shift+F2</td>
+</tr>
+<tr>
+<td>Speakers, sections and summary</td>
+<td>Ctrl+F3</td>
 </tr>
 </tbody>
 </table>

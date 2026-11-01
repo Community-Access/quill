@@ -12,6 +12,15 @@ This version is built but not yet published: Audio Studio is not offered in the 
 
 Testing build: **2.0.0 (build 2)**. Builds since the first have not been published.
 
+### Recording Pre-flight Check and Narrate a Recording (2026-11-01)
+
+- **Recording Pre-flight Check** (Ctrl+3, AI menu). Press it and Enter, and GitHub Copilot or Codex goes over your set-up and answers with a short checklist in plain words. It reads Record a Demonstration's own check, made fresh, and the Studio Mixer's devices and levels. It may look at one picture of what would be recorded, only with an AI that can see and only after you say yes, and it may open the Studio Mixer for you, also after a yes. Sound and video never leave.
+- **Narrate a Recording** (Ctrl+Shift+3, AI menu) writes an accessible narrative of the last recording, or one you choose: what is seen and said, with times, from the captions beside it and from contact sheets of up to 16 frames, each asked about first. You read it in full, then it is saved as Markdown beside the video, never over an existing file, and opened in QUILL.
+
+### Watching for changes (2026-11-01)
+
+- **Start Watching for Changes** (Ctrl+F9) and **Stop Watching for Changes** (Ctrl+Shift+F9), on the AI menu. Studio watches the target you last chose in Capture screen, or the whole screen without Studio in it, and says one sentence when it changes. A small picture is compared on this computer every 4 seconds; changed words are read with OCR on this computer and nothing is sent. The AI in use is asked only when the words don't explain the change, with before and after as one picture, at most once a minute and 30 times a watch, and then the watch stops and says so. Start and Stop are spoken. Closing Studio ends it, and it is off in Safe Mode. The first picture asks the usual picture question, and each question counts in AI Usage.
+
 ### Choose Your AI, Ask and Describe a Picture (2026-11-01)
 
 - **One AI choice, the family's.** The AI menu has Choose Your AI (Ctrl+4), Which AI Am I Using (Ctrl+8; twice opens Choose Your AI), Ask (Ctrl+6), AI Usage, Use My Own AI Key and Privacy Agreement, the same rows as the editors. Studio's old question about which AI should read a picture is gone: every picture goes to the AI chosen there. Studio still signs in as QUILL Studio, and an existing sign-in stays in use.

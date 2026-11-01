@@ -17,6 +17,9 @@ What the player *does* with AI is :class:`PlayerAiFeaturesMixin`:
   (Ctrl+Alt+R): the two recaps, on whichever AI is in use. They stay in the
   Playback menu on the keys they always had (rule 5); they are not repeated in
   the AI menu, because a key claimed twice in one bar fails the gate.
+* **Find the Part Where...** (Ctrl+F3): the agent task
+  (:mod:`quill.apps.player_ai_task`): finds a place by chapters, bookmarks and
+  times and moves there after asking. There is no transcript source.
 
 **Audio never leaves.** The text a recap is made from is the book's own, or a
 transcript of at most five minutes made on this computer
@@ -54,12 +57,14 @@ RECAP_TITLE = "Recap"
 _MAX_CHAPTERS = 80
 
 #: The AI menu: command id, label, handler name; "" is a separator. Letters are
-#: unique within the menu (A W C H O S P). The recaps are not here: they live
+#: unique within the menu (A W C F H O S P). The recaps are not here: they live
 #: in the Playback menu (RECAP_ROWS).
 AI_ROWS: tuple[tuple[str, str, str], ...] = (
     ("tools.hosted_ai_chat_key", "&Ask...", "cmd_ai_chat_key"),
     ("tools.hosted_ai_which", "&Which AI Am I Using", "cmd_ai_which"),
     ("tools.hosted_ai_choose", "&Choose Your AI...", "cmd_ai_choose"),
+    ("", "", ""),
+    ("tools.hosted_ai_task", "&Find the Part Where...", "cmd_ai_task"),
     ("", "", ""),
     ("tools.hosted_ai_chatgpt", "Use My C&hatGPT Subscription...", "cmd_ai_chatgpt"),
     ("tools.hosted_ai_own_key", "Use My &Own AI Key...", "cmd_ai_own_key"),
@@ -98,6 +103,24 @@ class PlayerAiFeaturesMixin:
             )
 
     # -- the commands ---------------------------------------------------------- #
+
+    def cmd_ai_task(self) -> None:
+        """Find the Part Where (Ctrl+F3, codex.md 6.11): find a place by chapters,
+        bookmarks and times in the shared agent window, and move there after
+        asking. No transcript is made; the audio never leaves."""
+        from quill.apps.player_ai_task import (
+            FIND_THE_PART,
+            INSTRUCTION_HELP,
+            player_task_facts,
+            player_task_tools,
+        )
+
+        self._open_app_task(  # type: ignore[attr-defined]
+            FIND_THE_PART,
+            lambda ctx: player_task_tools(self, ctx),
+            instruction_help=INSTRUCTION_HELP,
+            context=lambda: player_task_facts(self),
+        )
 
     def cmd_player_chapter_summary(self) -> None:
         """Summarize This Chapter (AI) (Ctrl+Alt+C), on the AI in use."""

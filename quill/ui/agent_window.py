@@ -58,6 +58,9 @@ _STEP_EVENTS = frozenset({
 })
 
 
+_DOCUMENT_HELP = ""  # the editors' sentence is the literal at the construction site
+
+
 @dataclass
 class AgentTaskHooks:
     """What the window needs from the editor, and nothing more."""
@@ -71,6 +74,14 @@ class AgentTaskHooks:
     make_host: Callable[[Any, Callable[[str], None]], Any]
     #: ``(name, work, on_success=, on_failure=)``: one worker job.
     submit: Callable[..., None] | None = None
+    #: The window's title: "Do a Document Task" in the editors; an app task
+    #: names its own ("Find and Record"), codex.md Phase 4c.
+    title: str = words.TITLE
+    #: The instruction field's F1 sentence, for what this window works on.
+    instruction_help: str = ""
+    #: An instruction filled in, selected, for the person to send or change
+    #: (Propose Alt Text, a pre-flight check). Nothing is sent until Enter.
+    starter: str = ""
 
 
 class ApprovalDialog(wx.Dialog):
@@ -138,6 +149,8 @@ class AgentWindow(wx.Frame):
 
     def __init__(self, parent: Any, hooks: AgentTaskHooks) -> None:
         super().__init__(parent, title="Do a Document Task")  # words.TITLE
+        if hooks.title and hooks.title != words.TITLE:
+            self.SetTitle(hooks.title)  # an app task names its own (codex.md Phase 4c)
         self._hooks = hooks
         self._approval = UiApprovalBridge(post=wx.CallAfter, present=self._present)
         self._runner: Any = None
@@ -173,6 +186,8 @@ class AgentWindow(wx.Frame):
             "Type what you want done to this document, then press Enter. While a "
             "task runs, what you type here goes to it as a follow-up."
         )
+        if hooks.instruction_help != _DOCUMENT_HELP:
+            self.instruction.SetHelpText(hooks.instruction_help)  # an app task's own
         self.instruction.Bind(wx.EVT_TEXT_ENTER, lambda _e: self.send())
         sizer.Add(field_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         sizer.Add(self.instruction, 0, wx.EXPAND | wx.ALL, _PAD)
@@ -195,6 +210,9 @@ class AgentWindow(wx.Frame):
         self.Bind(wx.EVT_CLOSE, self._on_close)
         self.SetInitialSize(dip_size(self, 640, 520))
         self.Centre()
+        if hooks.starter:
+            self.instruction.SetValue(hooks.starter)
+            self.instruction.SelectAll()
         focus_on(self, self.instruction)
 
     # -- what the person does ------------------------------------------------ #

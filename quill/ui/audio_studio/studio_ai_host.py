@@ -32,6 +32,7 @@ from __future__ import annotations
 from typing import Any
 
 from quill.ui.audio_studio.studio_ai_features import StudioAiFeaturesMixin
+from quill.ui.audio_studio.studio_ai_watch import StudioWatchMixin
 from quill.ui.hosted_ai_commands import HostedAiMixin
 
 __all__ = ["AGENT_NAME", "AI_ROWS", "StudioAiHost", "StudioAiMixin"]
@@ -42,13 +43,19 @@ AGENT_NAME = "QUILL Studio"
 _SAFE_MODE = "AI is off in Safe Mode."
 
 #: The AI menu: command id, label, handler name; "" is a separator. Letters are
-#: unique within the menu (A W C D G O S P, and U for Set Up AI).
+#: unique within the menu (A W C R N D H T G O S P, and U for Set Up AI).
 AI_ROWS: tuple[tuple[str, str, str], ...] = (
     ("tools.hosted_ai_chat_key", "&Ask...", "cmd_ai_chat_key"),
     ("tools.hosted_ai_which", "&Which AI Am I Using", "cmd_ai_which"),
     ("tools.hosted_ai_choose", "&Choose Your AI...", "cmd_ai_choose"),
     ("", "", ""),
+    # The agent tasks (codex.md 6.1 and 6.8), in studio_ai_features: R and N.
+    ("tools.hosted_ai_task", "&Recording Pre-flight Check...", "cmd_ai_task"),
+    ("studio.ai_narrative", "&Narrate a Recording...", "cmd_studio_ai_narrative"),
     ("studio.describe_picture", "&Describe a Picture...", "cmd_studio_describe_picture"),
+    # Tell me when this changes (decision 25): studio_ai_watch, H and T.
+    ("studio.ai_watch_start", "Start Watching for C&hanges", "cmd_studio_watch_start"),
+    ("studio.ai_watch_stop", "S&top Watching for Changes", "cmd_studio_watch_stop"),
     ("", "", ""),
     ("studio.chatgpt_account", "Use My Chat&GPT Subscription...", "cmd_ai_chatgpt"),
     ("tools.hosted_ai_own_key", "Use My &Own AI Key...", "cmd_ai_own_key"),
@@ -128,7 +135,7 @@ class StudioAiHost:
                 pass
 
 
-class StudioAiMixin(StudioAiFeaturesMixin, HostedAiMixin):
+class StudioAiMixin(StudioAiFeaturesMixin, StudioWatchMixin, HostedAiMixin):
     """The shared hosted-AI commands on Studio's frame: hooks, no commands."""
 
     #: Studio has no document: an answer is copied, never inserted.

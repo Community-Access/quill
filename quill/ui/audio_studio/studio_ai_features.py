@@ -19,6 +19,11 @@ video at the time you give: taken on this computer, fitted to the connection
 frame. The same picture asked about again is answered from this session's
 cache and sends nothing.
 
+**The agent tasks** (codex.md Phase 4c): Recording Pre-flight Check (Ctrl+3,
+:mod:`~quill.ui.audio_studio.studio_ai_task`) and Narrate a Recording
+(Ctrl+Shift+3, :mod:`~quill.ui.audio_studio.studio_ai_narrative`), in the
+shared agent window, on Copilot or Codex.
+
 **Screenshot questions.** The Screenshot Inspector and Ask AI About a Video
 send to the connection in use as well -- Studio's own picture chooser folded
 into Choose Your AI. A connection that cannot see sends nothing and offers the
@@ -261,6 +266,46 @@ class StudioAiFeaturesMixin:
         )
         holder["task"] = task
         return task
+
+    # -- the agent tasks (codex.md 6.1, 6.8) ----------------------------------- #
+
+    def cmd_ai_task(self) -> None:
+        """Recording Pre-flight Check (Ctrl+3, codex.md 6.1): the set-up checked
+        with Studio's own tools, answered as a short checklist. Enter starts it."""
+        from quill.ui.audio_studio.studio_ai_task import (
+            INSTRUCTION_HELP,
+            PREFLIGHT,
+            STARTER,
+            studio_preflight_facts,
+            studio_preflight_tools,
+        )
+
+        self._open_app_task(  # type: ignore[attr-defined]
+            PREFLIGHT,
+            lambda ctx: studio_preflight_tools(self, ctx),
+            instruction_help=INSTRUCTION_HELP,
+            starter=STARTER,
+            context=lambda: studio_preflight_facts(self),
+        )
+
+    def cmd_studio_ai_narrative(self) -> None:
+        """Narrate a Recording (Ctrl+Shift+3, codex.md 6.8): an accessible narrative
+        of the last recording, or one you choose, opened in QUILL after you read it."""
+        from quill.ui.audio_studio.studio_ai_narrative import (
+            NARRATE,
+            NARRATIVE_HELP,
+            NARRATIVE_STARTER,
+            studio_narrative_facts,
+            studio_narrative_tools,
+        )
+
+        self._open_app_task(  # type: ignore[attr-defined]
+            NARRATE,
+            lambda ctx: studio_narrative_tools(self, ctx),
+            instruction_help=NARRATIVE_HELP,
+            starter=NARRATIVE_STARTER,
+            context=lambda: studio_narrative_facts(self),
+        )
 
     # -- Describe a Picture ---------------------------------------------------- #
 

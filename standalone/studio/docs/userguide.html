@@ -1048,6 +1048,10 @@ sends nothing.</li>
 <li><strong>Which AI Am I Using</strong> (Ctrl+8) says the AI in use and
 its model in one line. Press it twice quickly to open Choose Your
 AI.</li>
+<li><strong>Recording Pre-flight Check…</strong> (Ctrl+3) and
+<strong>Narrate a Recording…</strong> (Ctrl+Shift+3) are tasks an AI
+works through in steps. See Recording pre-flight check and Narrate a
+recording, below.</li>
 <li><strong>Describe a Picture…</strong> (Ctrl+F5) asks you for a
 picture, or a video and then the moment in it, like 2:10. Studio takes
 that one picture on this computer, fits it to the AI in use and reads
@@ -1056,6 +1060,9 @@ time. Asking about the same picture again in the same session sends
 nothing. When the AI in use cannot see, the menu row says “(needs a
 connection that sees)”, and pressing it sends nothing and offers to
 switch to one that can.</li>
+<li><strong>Start Watching for Changes</strong> (Ctrl+F9) and
+<strong>Stop Watching for Changes</strong> (Ctrl+Shift+F9) tell you when
+something on screen changes. See Watching for changes, below.</li>
 <li><strong>Use My ChatGPT Subscription…</strong> (Alt+F5) opens Choose
 Your AI on the ChatGPT row, ready to sign in. It used to be on the
 Capture menu.</li>
@@ -1073,6 +1080,87 @@ still confirmed every time before it goes.</p>
 <p><strong>Make a picture with AI</strong> keeps its own key
 (Ctrl+Alt+Shift+J) and still needs an OpenAI or Gemini key, because
 ChatGPT plans don’t make pictures for other apps.</p>
+<h3 id="recording-pre-flight-check">Recording pre-flight check</h3>
+<p>Before a recording that matters, press <strong>Ctrl+3</strong>
+(<strong>AI &gt; Recording Pre-flight Check…</strong>) and then Enter.
+An AI goes over your set-up and gives you a short checklist in plain
+words, most important first. For example: “The microphone is the webcam
+mic, not the USB headset. The captured window is Settings, not the
+browser you named.” If you say what you are about to record before
+pressing Enter, like “a demo of Firefox with my headset mic”, it checks
+against that.</p>
+<p>It reads the same check Record a Demonstration runs when you press
+Check, made fresh: what will be recorded, every Stop and Warn, what was
+measured, and the Studio Mixer’s devices, levels and the programs
+playing sound. It uses the set-up you last checked in Record a
+Demonstration. If you haven’t checked one yet this session, it uses your
+saved settings on your main display and tells the AI so. All of that is
+text.</p>
+<p>Two things it can do along the way, and each asks you first (Allow
+once, Allow for this task, or Don’t allow):</p>
+<ul>
+<li><strong>Look at one picture of what would be recorded.</strong> Only
+when the AI in use can see. The question names what is captured, like
+“Take one picture of Notepad and send it to My ChatGPT plan.” The first
+picture on a connection also asks where pictures go, as Describe a
+Picture does. For a whole display, Studio’s own windows are kept out of
+the picture.</li>
+<li><strong>Open the Studio Mixer</strong>, so you can change a device
+or a level yourself. The AI never changes one.</li>
+</ul>
+<p>Sound and video never leave this computer. This needs GitHub Copilot
+or Codex; with another AI in use the menu row says “(needs Copilot or
+Codex)” and pressing it offers to switch.</p>
+<h3 id="narrate-a-recording">Narrate a recording</h3>
+<p><strong>AI &gt; Narrate a Recording…</strong> (Ctrl+Shift+3) writes
+an accessible narrative of a recording: what is seen and what is said,
+in order, with the time of each part. It works on the recording Studio
+last made. If there isn’t one, Studio’s file chooser asks for a video
+the first time it is needed. Press Enter to start, or say what the
+narrative is for first, like “for a blind colleague who missed the
+meeting”.</p>
+<p>What is said comes from the captions beside the video, an .srt or
+.vtt file with the same name. What is seen comes from contact sheets: up
+to 16 frames from a stretch of the video as one picture, each labelled
+with its time, the same sheets Ask AI questions about a video makes.
+Each sheet asks you first, naming the file and the stretch, and only
+goes to an AI that can see. With an AI that cannot see, the narrative is
+written from the captions alone, and says so.</p>
+<p>When it is done, you read the whole narrative before anything is
+saved. Enter applies it: Studio saves it as a Markdown file beside the
+video, named after it, like “Demo narrative.md”, and opens it in QUILL.
+An existing file is never replaced; the new one gets a number. Escape
+saves nothing. Sound and video never leave this computer. Like the
+pre-flight check, this needs GitHub Copilot or Codex.</p>
+<h3 id="watching-for-changes">Watching for changes</h3>
+<p>Sometimes you are waiting for something on screen: an installer to
+finish, a progress dialog to go away, a slide to change in a meeting.
+<strong>AI &gt; Start Watching for Changes</strong> (Ctrl+F9) watches it
+for you and tells you when it changes. <strong>Stop Watching for
+Changes</strong> (Ctrl+Shift+F9) ends it.</p>
+<p>Studio watches the target you last chose in <strong>Capture
+screen</strong>, the same one <strong>Repeat last selected
+target</strong> uses. If you haven’t chosen one, it watches the whole
+screen and keeps Studio’s own windows out of the picture until you
+stop.</p>
+<p>Every 4 seconds Studio takes a small picture on this computer and
+compares it with the last one. Nothing happens until enough of it
+changes. When it does, Studio reads the words on screen with OCR on this
+computer, and if the words changed it tells you the new words and sends
+nothing. Only when the words don’t explain the change does it ask the AI
+in use, sending the before and after as one picture, labelled Before and
+After. It asks at most once a minute, and at most 30 times in one watch.
+After the 30th question it stops and tells you so; start it again to
+keep watching.</p>
+<p>You hear “Watching” and the name of what is watched when it starts,
+one sentence each time something changes, and nothing in between. If the
+AI answers that nothing meaningful changed, you hear nothing. The watch
+also ends when you close Studio, when the AI in use changes (pictures
+were agreed for the one before), or when the AI can’t answer, and you
+hear why. It is off in Safe Mode.</p>
+<p>It needs an AI that can see. The first time, Studio asks the same
+picture question as Describe a Picture, and No starts nothing. Each
+question to the AI counts in AI Usage like any other request.</p>
 <h3 id="set-up-ai">Set Up AI</h3>
 <p><strong>AI &gt; Set Up AI…</strong> runs a short, jargon-free wizard:
 choose how AI should run - a cloud provider with your own key (paste it,
@@ -1473,8 +1561,24 @@ will be off in Safe Mode like everywhere else.</p>
 <td>Ctrl+4</td>
 </tr>
 <tr>
+<td>Recording Pre-flight Check</td>
+<td>Ctrl+3</td>
+</tr>
+<tr>
+<td>Narrate a Recording</td>
+<td>Ctrl+Shift+3</td>
+</tr>
+<tr>
 <td>Describe a Picture</td>
 <td>Ctrl+F5</td>
+</tr>
+<tr>
+<td>Start Watching for Changes</td>
+<td>Ctrl+F9</td>
+</tr>
+<tr>
+<td>Stop Watching for Changes</td>
+<td>Ctrl+Shift+F9</td>
 </tr>
 <tr>
 <td>Use My ChatGPT Subscription</td>

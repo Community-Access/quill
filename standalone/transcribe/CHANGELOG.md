@@ -14,6 +14,13 @@ did. This is the short list, grouped by area in the same order as
 
 ### Since build 3 (2026-10-31)
 
+- **Speakers, sections and summary** (2026-11-01). AI > Speakers, Sections
+  and Summary... (Ctrl+F3) has GitHub Copilot or Codex read a transcript as
+  text, name the speakers where the words make it clear, add headings, and
+  finish with a summary and an action list. You read the whole result before
+  it goes into Review Dictation, as one change Undo Change takes back. Only
+  text goes; your voice never does.
+
 - **Its own AI menu, and its own sign-in** (2026-11-01). QUILL Transcribe
   has an AI menu: Choose Your AI (Ctrl+Shift+F8), Which AI Am I Using
   (Ctrl+F8; twice opens Choose Your AI), Ask (Ctrl+Shift+8), AI Usage and

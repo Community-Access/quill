@@ -1035,6 +1035,8 @@ tell you so.
 - **Video Information** (Ctrl+Shift+I).
 - **Take a Snapshot** (Ctrl+Shift+Alt+H).
 - **Describe the Video** (Ctrl+F5).
+- **Start Watching for Changes** (Ctrl+F9) and **Stop Watching for Changes**
+  (Ctrl+Shift+F9).
 - **Full Screen** (F11).
 - **Read Comments...** (Ctrl+Shift+7): the comments on the YouTube video that
   is playing. See "Read a video's comments" in Chapter 11.
@@ -1060,10 +1062,10 @@ See Chapter 8, Recording.
 
 - **Ask...** (Ctrl+Shift+8): a conversation that already knows what is playing,
   on the AI you chose.
-- **AI**: **Which AI Am I Using** (Ctrl+F8), **Choose Your AI...**
-  (Ctrl+Shift+F8), **Use My ChatGPT Subscription...** (Alt+F5), **Use My Own AI
-  Key...** (Alt+F2), **AI Usage...** (Ctrl+Alt+Shift+F2) and **Privacy
-  Agreement...** (Alt+Shift+F2).
+- **AI**: **Find and Record...** (Ctrl+F3), **Which AI Am I Using** (Ctrl+F8),
+  **Choose Your AI...** (Ctrl+Shift+F8), **Use My ChatGPT Subscription...**
+  (Alt+F5), **Use My Own AI Key...** (Alt+F2), **AI Usage...**
+  (Ctrl+Alt+Shift+F2) and **Privacy Agreement...** (Alt+Shift+F2).
 - **ACB Media Schedule...** (Ctrl+Shift+N), **What Is On Now** (Ctrl+Alt+H),
   **Upcoming...** (Ctrl+Alt+Shift+F) and **Refresh the Schedule** (F5).
 - **What's New** (Alt+Shift+N): what arrived since you last looked, in one
@@ -2021,6 +2023,8 @@ The rest of the Video menu:
   hear "Snapshot saved as" and its name.
 - **Describe the Video** (Ctrl+F5) asks the AI you chose what is on screen. See
   Chapter 13.
+- **Start Watching for Changes** (Ctrl+F9) tells you each time the picture
+  changes, until **Stop Watching for Changes** (Ctrl+Shift+F9). See Chapter 13.
 - **Video Size** (Ctrl+Alt+4 to Ctrl+Alt+7) sets the window to Fit, 50%, 100%
   or 200%.
 
@@ -5991,6 +5995,78 @@ video ever leave your computer. QUILL's free AI cannot see pictures, so with
 it in use the menu item says "(needs a connection that sees)", and pressing it
 sends nothing and offers to switch to one that can.
 
+### Watching the video for changes
+
+When a video is showing, **Start Watching for Changes** (**Ctrl+F9**, Video
+menu) tells you when the picture changes: a new slide in a lecture, a score on
+screen, a caption that appears. **Stop Watching for Changes**
+(**Ctrl+Shift+F9**) ends it.
+
+Every 4 seconds Quill Radio takes a picture of the video on this computer, the
+way Take a Snapshot does, without the captions, and compares it with the last
+one. When enough of it changes, it reads the words on screen with OCR on this
+computer, and if the words changed it tells you the new words and sends
+nothing. Only when the words don't explain the change does it ask the AI in
+use, sending the before and after as one picture. It asks at most once a
+minute and at most 30 times in one watch; after the 30th question it stops and
+tells you so.
+
+You hear when it starts and stops, one sentence each time something changes,
+and nothing in between. The watch also ends when you hide the video, close
+Quill Radio, change the AI in use, or the AI can't answer, and you hear why.
+It is off in Safe Mode. It needs an AI that can see; the first time it asks
+the same picture question as Describe the Video, and No starts nothing. Each
+question counts in AI Usage like any other request. No sound and no video file
+ever leave your computer.
+
+### Find and Record
+
+**Find and Record...** (**Ctrl+F3**, Community > AI) lets you say what you
+want in plain words and have the AI do it with Quill Radio's own tools. For
+example: "Find a jazz station from New Orleans and record it tonight from 8 for
+an hour", or "Record WBGO every Friday at 7:30 PM for half an hour", or "What
+was that song on the station I'm listening to?"
+
+It needs an AI that can carry out tasks: My GitHub Copilot, or Codex on your
+ChatGPT plan. With any other AI in use, the menu item says "(needs Copilot or
+Codex)", and pressing it sends nothing and offers to switch.
+
+What it can do:
+
+- **Find stations.** It searches your favorites, the station list kept on this
+  computer, and the Radio Browser directory, the same places Find Stations
+  looks. It can also read your favorites, the songs heard on a station, and the
+  recordings you already have scheduled. Reading never asks you anything.
+- **Play a station.** It asks first.
+- **Record a station now**, for as long as it says. It asks first, naming the
+  station and the length. The recording is made by Quill Radio's own recorder,
+  with your Recording Settings and Sound Enhancements, and shows in the
+  Recordings list like any other.
+- **Schedule a recording**, once on a date, every day, or every week on a day.
+  It asks first, and the question says the station, the day, the time and the
+  length, for example "Schedule a recording of WBGO every Friday at 7:30 PM,
+  for 30 minutes." The entry goes into Schedule Recording, where you can change
+  or delete it.
+
+Each question has three answers: **Allow once**, **Allow for this task**, and
+**Don't allow**. Enter is Allow once and Escape is Don't allow. Nothing you
+allow carries over to the next task.
+
+Scheduled recordings are made by Quill Radio itself while it is running, the
+same as one you add by hand. The AI is finished when the task ends; it never
+wakes up later, so nothing runs on your plan in the background.
+
+#### Find and Record, step by step
+
+1. Press **Ctrl+F3**. The Find and Record window opens with your cursor in the
+   instruction box.
+2. Type what you want and press **Enter**. The station and song playing go with
+   your first message, so "record this for an hour" works.
+3. Answer each question as it comes. The conversation shows every step.
+4. When it is done you hear a short summary of what changed. Type a follow-up
+   and press Enter to carry on, or close the window with **Close** or
+   **Ctrl+W**. **Stop** ends a task that is still running.
+
 ### ACB Media Podcasts, step by step
 
 1. Press **Ctrl+Alt+I** (**Community > ACB Media Podcasts...**). Quill Radio
@@ -8053,6 +8129,8 @@ In every other window, Alt+S is the Station menu and Alt+W is the Window menu. S
 | Video Information | Ctrl+Shift+I |
 | Take a Snapshot | Ctrl+Shift+Alt+H |
 | Describe the Video | Ctrl+F5 |
+| Start Watching for Changes | Ctrl+F9 |
+| Stop Watching for Changes | Ctrl+Shift+F9 |
 | Full screen | F11 |
 | Video Size: Fit, 50%, 100%, 200% | Ctrl+Alt+4 / 5 / 6 / 7 |
 | Audio and Described Audio | Ctrl+Shift+A |
@@ -8129,6 +8207,7 @@ In every other window, Alt+S is the Station menu and Alt+W is the Window menu. S
 | Action | Key |
 | --- | --- |
 | Ask | Ctrl+Shift+8 |
+| Find and Record | Ctrl+F3 |
 | Which AI Am I Using (twice: Choose Your AI) | Ctrl+F8 |
 | Choose Your AI | Ctrl+Shift+F8 |
 | Use My ChatGPT Subscription | Alt+F5 |

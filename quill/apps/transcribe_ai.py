@@ -29,6 +29,10 @@ stays on this computer, or with the speech provider you chose.
 Quill Radio and QUILL Cast, Ask is Ctrl+Shift+8, Which AI Ctrl+F8 and Choose
 Your AI Ctrl+Shift+F8 (``app_keymaps.py``, ``app_ai_keys.py``).
 
+**Speakers, Sections and Summary** (Ctrl+F3) is the family's agent task on the
+transcript (:mod:`quill.apps.transcribe_ai_task`, codex.md 6.6); its command is
+there, because this adapter has none.
+
 **Safe Mode** refuses every AI command.
 """
 
@@ -37,6 +41,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
+from quill.apps.transcribe_ai_task import TranscribeAiFeaturesMixin
 from quill.ui.hosted_ai_commands import HostedAiMixin
 
 __all__ = [
@@ -57,11 +62,15 @@ _ABOUT_FACTS = (
 )
 
 #: The AI menu: command id, label, handler name; "" is a separator. Letters are
-#: unique within the menu (A W C G O S P).
+#: unique within the menu (A W C E G O S P). Speakers, Sections and Summary is
+#: the family's agent task (``tools.hosted_ai_task``, codex.md 6.6); its handler
+#: is transcribe_ai_task's, because this adapter has no command of its own.
 AI_ROWS: tuple[tuple[str, str, str], ...] = (
     ("tools.hosted_ai_chat_key", "&Ask...", "cmd_ai_chat_key"),
     ("tools.hosted_ai_which", "&Which AI Am I Using", "cmd_ai_which"),
     ("tools.hosted_ai_choose", "&Choose Your AI...", "cmd_ai_choose"),
+    ("", "", ""),
+    ("tools.hosted_ai_task", "Sp&eakers, Sections and Summary...", "cmd_ai_task"),
     ("", "", ""),
     ("tools.hosted_ai_chatgpt", "Use My Chat&GPT Subscription...", "cmd_ai_chatgpt"),
     ("tools.hosted_ai_own_key", "Use My &Own AI Key...", "cmd_ai_own_key"),
@@ -132,13 +141,14 @@ class TranscribeAiHost:
         """Nothing to save: there is no switch."""
 
     def rebuild_all_menus(self) -> None:
-        """No AI row here is gated, so only the window's AI line changes."""
-        refresh = getattr(self._frame, "_refresh_ai_line", None)
-        if callable(refresh):
-            try:
-                refresh()
-            except Exception:  # noqa: BLE001 - a status line is never worth a crash
-                pass
+        """The gated row's label and the window's AI line follow the connection."""
+        for name in ("_transcribe_ai_relabel", "_refresh_ai_line"):
+            refresh = getattr(self._frame, name, None)
+            if callable(refresh):
+                try:
+                    refresh()
+                except Exception:  # noqa: BLE001 - a label is never worth a crash
+                    pass
 
 
 def _seed_from_quill(settings: Any) -> None:
@@ -161,7 +171,7 @@ def _seed_from_quill(settings: Any) -> None:
         settings.ai_own_key_model = fields["ai_own_key_model"]
 
 
-class TranscribeAiMixin(HostedAiMixin):
+class TranscribeAiMixin(TranscribeAiFeaturesMixin, HostedAiMixin):
     """The shared hosted-AI commands on QUILL Transcribe's frame: hooks, no commands."""
 
     #: QUILL Transcribe has no document: an answer is copied, never inserted.
@@ -264,16 +274,20 @@ class TranscribeAiMixin(HostedAiMixin):
         import wx
 
         menu = wx.Menu()
+        self._transcribe_ai_items: dict[str, tuple[Any, str]] = {}
         for command_id, label, handler_name in AI_ROWS:
             if not command_id:
                 menu.AppendSeparator()
                 continue
             item_id = wx.NewIdRef()
-            menu.Append(item_id, self._menu_label(label, command_id))  # type: ignore[attr-defined]
+            shown = self._ai_gated_label(handler_name, label)  # codex.md 10A.8
+            menu.Append(item_id, self._menu_label(shown, command_id))  # type: ignore[attr-defined]
+            self._transcribe_ai_items[handler_name] = (item_id, label)
             handler = getattr(self, handler_name)
             self.frame.Bind(wx.EVT_MENU, lambda _e, run=handler: run(), id=item_id)  # type: ignore[attr-defined]
             self._keep_menu_ids(item_id)  # type: ignore[attr-defined]
         menu_bar.Append(menu, "&AI")
+        self._transcribe_ai_menu = menu
         if not getattr(self, "_transcribe_ai_registered", False):
             self._transcribe_ai_registered = True
             for command_id, label, handler_name in AI_ROWS:
@@ -284,3 +298,18 @@ class TranscribeAiMixin(HostedAiMixin):
                         getattr(self, handler_name),
                         self._binding_for(command_id),  # type: ignore[attr-defined]
                     )
+
+    def _transcribe_ai_relabel(self) -> None:
+        """Rewrite the gated rows' labels after the connection changed (10A.8)."""
+        menu = getattr(self, "_transcribe_ai_menu", None)
+        if menu is None:
+            return
+        for handler_name, (item_id, label) in getattr(self, "_transcribe_ai_items", {}).items():
+            command_id = next(cid for cid, _l, h in AI_ROWS if h == handler_name)
+            try:
+                item = menu.FindItemById(int(item_id))
+            except RuntimeError:  # the menu bar was rebuilt
+                return
+            if item is not None:
+                shown = self._ai_gated_label(handler_name, label)
+                item.SetItemLabel(self._menu_label(shown, command_id))  # type: ignore[attr-defined]

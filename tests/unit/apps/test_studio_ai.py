@@ -118,7 +118,12 @@ def test_the_ai_menu_has_the_family_rows_on_the_editors_keys(studio) -> None:
         "&Ask...\tCtrl+6",
         "&Which AI Am I Using\tCtrl+8",
         "&Choose Your AI...\tCtrl+4",
+        # The agent tasks say what they need on the ChatGPT plan (codex.md 10A.8).
+        "&Recording Pre-flight Check (needs Copilot or Codex)...\tCtrl+3",
+        "&Narrate a Recording (needs Copilot or Codex)...\tCtrl+Shift+3",
         "&Describe a Picture...\tCtrl+F5",
+        "Start Watching for C&hanges\tCtrl+F9",
+        "S&top Watching for Changes\tCtrl+Shift+F9",
         "Use My Chat&GPT Subscription...\tAlt+F5",
         "Use My &Own AI Key...\tAlt+F2",
         "AI U&sage...\tCtrl+Alt+Shift+F2",

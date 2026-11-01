@@ -1015,6 +1015,29 @@ when it is no, what to choose in Convert to so it will play. It is read out
 and also shown in a window you can arrow through and copy. With an empty queue
 it tells you so and asks nothing.
 
+### Make This Right for My Player
+
+**AI > Make This Right for My Player...** (Ctrl+F3) hands the whole job to the
+AI. You say what you want in your own words, such as "make these 40 MP3s one
+M4B audiobook with a chapter per file, small enough for my phone", and it works
+it out: it lists the queue, reads each file's details the way File Properties
+does, checks which formats this computer can write, and picks the format,
+preset, bit rate and chapter marks.
+
+Before anything starts it asks you, and the question names everything: the
+files, the format, the bit rate, and whether it will convert each file, join
+them into one, or split them at their chapters. Choose Allow once, Allow for
+this task, or Don't allow. On a yes it sets the main window's own choices,
+so you can see exactly what it picked, and starts Convert Now, Join into One
+File or Split by Chapters, the same as if you had pressed them. A joined file
+goes in the output folder under a new name; nothing is ever written over.
+
+This needs an AI that can run tasks, which today means GitHub Copilot or Codex.
+With any other AI in use the menu item says "(needs Copilot or Codex)", and
+choosing it offers to switch instead of sending anything. While a task runs,
+anything you type goes to it as a follow-up. When it finishes it tells you what
+it started and anything it could not do.
+
 ### Ask
 
 **AI > Ask...** (Ctrl+Shift+8) opens a conversation about your files. Every
@@ -1030,8 +1053,9 @@ wait.
 ### What you learned, and where to go next
 
 Choose Your AI (Ctrl+Shift+F8) picks the AI, Will This Play on My Device?
-(Ctrl+Shift+D) checks the queue against a device, and Ask (Ctrl+Shift+8) is a
-conversation about your files. Only the files' details are sent, never the
+(Ctrl+Shift+D) checks the queue against a device, Make This Right for My Player
+(Ctrl+F3) works out and starts the conversion for you after asking, and Ask
+(Ctrl+Shift+8) is a conversation about your files. Only the files' details are sent, never the
 sound or the folders. Safe Mode turns all of it off. Chapter 9 is about keeping
 Quill Converter out of the way while it works.
 
@@ -1282,6 +1306,7 @@ every key in a read-only window you can arrow through.
 | Which AI Am I Using | Ctrl+F8 |
 | Choose Your AI... | Ctrl+Shift+F8 |
 | Will This Play on My Device?... | Ctrl+Shift+D |
+| Make This Right for My Player... | Ctrl+F3 |
 | Use My ChatGPT Subscription... | Alt+F5 |
 | Use My Own AI Key... | Alt+F2 |
 | AI Usage... | Ctrl+Alt+Shift+F2 |

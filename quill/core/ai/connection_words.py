@@ -232,6 +232,12 @@ COMMAND_NEEDS: dict[str, str] = {
     "cmd_beacon_describe_picture": PICTURES,
     "cmd_dictation_tidy": TEXT,
     "cmd_ai_task": AGENT_TOOLS,
+    "cmd_ai_alt_text": AGENT_TOOLS,
+    # codex.md Phase 4c: Studio's second task, and Tell Me When This Changes
+    # (decision 25), which sends pictures; Stop is never gated.
+    "cmd_studio_ai_narrative": AGENT_TOOLS,
+    "cmd_studio_watch_start": PICTURES,
+    "cmd_radio_watch_start": PICTURES,
 }
 
 

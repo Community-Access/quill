@@ -19,6 +19,10 @@ screen (codex.md 10B.5, through :mod:`quill.core.ai.picture_prep`). A connection
 that cannot see sends nothing and offers the switch in one key (10A.8). The same
 picture asked about again is answered from this session's cache and sends
 nothing. No sound and no video file ever leaves.
+
+**Find and Record** (Ctrl+F3, Community > AI) is the family's agent task on
+Radio's own tools (:mod:`quill.ui.radio.radio_ai_task`, codex.md 6.5): find
+stations, then play, record or schedule one, each change asked about first.
 """
 
 from __future__ import annotations
@@ -121,6 +125,27 @@ class RadioAiFeaturesMixin:
         return what_can_i_do_here(
             purpose_for_title("Quill Radio"),
             commands=menu_routes(self.frame.GetMenuBar()),  # type: ignore[attr-defined]
+        )
+
+    # -- Find and Record --------------------------------------------------- #
+
+    def cmd_ai_task(self) -> None:
+        """Find and Record (Ctrl+F3, codex.md 6.5): find stations, then play,
+        record or schedule them, in the shared agent window. Each step that
+        plays, records or schedules asks first; the recording itself is made by
+        Radio's own recorder and scheduler, never by the model."""
+        from quill.ui.radio.radio_ai_task import (
+            FIND_AND_RECORD,
+            INSTRUCTION_HELP,
+            radio_task_facts,
+            radio_task_tools,
+        )
+
+        self._open_app_task(  # type: ignore[attr-defined]
+            FIND_AND_RECORD,
+            lambda ctx: radio_task_tools(self, ctx),
+            instruction_help=INSTRUCTION_HELP,
+            context=lambda: radio_task_facts(self),
         )
 
     # -- Describe the Video ------------------------------------------------ #

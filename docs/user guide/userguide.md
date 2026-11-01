@@ -12240,6 +12240,32 @@ hear its summary, for example "Done. 2 changes applied: Changed the document;
 Ran a command. Each can be undone with Control Z." The conversation and status
 fill in quietly; `Shift+Tab` takes you to them.
 
+### Propose Alt Text
+
+**AI > Propose Alt Text...** opens the same window as Do a Document Task with
+the request already typed in: give alt text to every picture in this document
+that has none. Press `Enter` to send it as it is, or change it first. It has no
+key of its own, because `Ctrl+3` gets you to the same window.
+
+The task lists the document's pictures, Markdown and HTML alike, and proposes
+short alt text for each one that is missing it, one picture at a time. Each
+proposal opens **Review AI Changes** on just that change, so you hear exactly
+what will be written, and each one undoes with `Ctrl+Z`. Pictures that already
+have alt text are left alone.
+
+If the AI in use can see pictures, the task may ask to look at one. **Allow
+This Step?** names the picture ("Send the picture beach.png from this document
+to your AI, to describe it"), and the first picture on each AI also asks
+whether pictures may go to that company at all. Only pictures saved on this
+computer are ever sent; a picture on a web address is never fetched, and the
+task writes its proposal from the words around it and tells you it could not
+see it. On an AI that cannot see pictures, every proposal comes from the
+words around the picture, and the summary says so.
+
+A Word or EPUB file you opened through Import / Convert keeps its pictures
+inside the original file, so the task can propose alt text for them from the
+words only.
+
 ### If the AI you chose is not available
 
 QUILL never quietly answers with a different AI from the one you chose. If

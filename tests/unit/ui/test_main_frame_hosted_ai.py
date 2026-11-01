@@ -534,8 +534,10 @@ def test_the_chatgpt_rows_join_the_accelerator_map() -> None:
         "tools.hosted_ai_choose",
         # Do a Document Task (codex.md 6.2, 2026-11-01).
         "tools.hosted_ai_task",
+        # Propose Alt Text (codex.md 6.4, 2026-11-01).
+        "tools.hosted_ai_alt_text",
     }
-    assert len({int(v) for v in mapping.values()}) == 4 + 13 + 3 + 3
+    assert len({int(v) for v in mapping.values()}) == 4 + 13 + 3 + 4
 
 
 # --------------------------------------------------------------------------- #

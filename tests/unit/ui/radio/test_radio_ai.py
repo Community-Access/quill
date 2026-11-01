@@ -91,6 +91,8 @@ def test_community_opens_on_ask_then_the_ai_submenu_on_radios_own_keys(radio) ->
     assert first.GetItemLabel() == "&Ask...\tCtrl+Shift+8"
     sub = next(i.GetSubMenu() for i in community.GetMenuItems() if i.GetSubMenu() is not None)
     assert _labels(sub) == [
+        # codex.md 6.5: the agent task, gated on the ChatGPT plan (10A.8).
+        "&Find and Record (needs Copilot or Codex)...\tCtrl+F3",
         "&Which AI Am I Using\tCtrl+F8",
         "&Choose Your AI...\tCtrl+Shift+F8",
         "Use My Chat&GPT Subscription...\tAlt+F5",

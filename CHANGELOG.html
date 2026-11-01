@@ -245,6 +245,99 @@
 <h1 id="changelog">Changelog</h1>
 <h2 id="100">1.0.0</h2>
 <h3
+id="agent-tasks-across-the-family-and-tell-me-when-this-changes-2026-11-01">Agent
+tasks across the family, and Tell Me When This Changes (2026-11-01)</h3>
+<ul>
+<li><strong>Propose Alt Text</strong>, in QUILL’s AI menu and QUILL
+Lite’s Tools &gt; AI, opens Do a Document Task with the request typed
+in: alt text for every picture in the document that has none. Each
+proposal is one change in Review AI Changes, undone with Ctrl+Z. On an
+AI that can see, the task asks before it sends a picture, naming it;
+only pictures on this computer are sent, never one from a web address.
+Do a Document Task itself can now list the document’s pictures and set
+their alt text too.</li>
+<li><strong>Every QuillVille app gets an agent task</strong> on GitHub
+Copilot or Codex, in the same window as Do a Document Task, on the same
+command: Ctrl+3 in QUILL Studio and QuillBeacon, Ctrl+F3 where Ctrl+1 to
+Ctrl+9 move between windows. On any other AI the row says “(needs
+Copilot or Codex)” and offers to switch.
+<ul>
+<li>Quill Radio, <strong>Find and Record</strong>: finds stations, plays
+one, records now or schedules a recording, which Radio’s own recorder
+makes.</li>
+<li>QUILL Cast, <strong>Find and Follow</strong>: searches the
+directories, follows a show, makes folders and moves shows into them,
+and queues episodes. Build Me a Listening Run’s access key moves from L
+to B to make room.</li>
+<li>QUILL Transcribe, <strong>Speakers, Sections and Summary</strong>:
+names speakers, adds section headings, a summary and an action list,
+written into Review Dictation as one change you can undo. Only text is
+sent.</li>
+<li>QUILL Studio, <strong>Recording Pre-flight Check</strong> (Ctrl+3):
+runs Record a Demonstration’s check and answers with a short checklist;
+it may ask to send one still of what you will record. <strong>Narrate a
+Recording</strong> (Ctrl+Shift+3) writes a narrative of a recording from
+its captions and, on an AI that can see, a contact sheet of frames,
+saved beside the recording and opened in QUILL.</li>
+<li>Quill Converter, <strong>Make This Right for My Player</strong>:
+reads what is queued and what each format carries, then sets up and
+starts a conversion, join or split. It never sends audio.</li>
+<li>QuillBeacon, <strong>Organize What I Saved</strong>: searches,
+suggests tags, and tags or moves saved items.</li>
+<li>Quill Media Player, <strong>Find the Part Where</strong>: goes to a
+chapter, bookmark or time. There is no transcript yet, so it works from
+chapters and bookmarks.</li>
+<li>Quill Inkwell, <strong>Add Abbreviations from a Document</strong>:
+proposes abbreviations from a document you pick and adds the ones you
+accept.</li>
+</ul></li>
+<li><strong>Nothing changes without you.</strong> Every step that
+changes, records, schedules or sends a picture asks first (Allow once,
+Allow for this task, Don’t allow). Every change to your data is shown as
+text in <strong>Review Proposed Change</strong> before it is made. Each
+task ends with a spoken summary of what was done, built from what
+actually happened.</li>
+<li><strong>Tell Me When This Changes</strong> in QUILL Studio and Quill
+Radio: Start Watching for Changes (Ctrl+F9) and Stop Watching for
+Changes (Ctrl+Shift+F9). Studio watches the screen you chose in Capture,
+Radio the video picture. The picture is compared on this computer and
+read with OCR first; the AI is asked only when something changed that
+OCR cannot put into words, at most once a minute and at most 30 times a
+watch, and then the watch stops and says so. You hear one sentence only
+when something changed. Every question counts in AI Usage, the first
+picture on each AI asks your consent, Safe Mode refuses it, and closing
+the window ends the watch.</li>
+</ul>
+<h3
+id="one-list-of-prompts-and-the-ai-hubs-providers-in-my-own-key-2026-11-01">One
+list of prompts, and the AI Hub’s providers in My own key
+(2026-11-01)</h3>
+<ul>
+<li><strong>The AI Hub’s providers are in Use My Own AI Key</strong>, in
+QUILL and QUILL Lite at once: Anthropic Claude, OpenRouter, Ollama Cloud
+and a custom OpenAI-compatible service join OpenAI and Google Gemini,
+each with its own saved key, as before. <strong>Ollama on this
+computer</strong> is there too and needs no key; its About line says
+“Runs on this computer. Nothing is sent.” A custom service and a local
+Ollama get a Server address box, and an address you saved in the AI Hub
+is carried over. Ollama’s model list comes from Ollama itself, and a
+model Ollama says can read pictures answers Ask About an Image.</li>
+<li><strong>One choice for all of QUILL’s AI.</strong> The provider you
+save in Use My Own AI Key is also the one Ask Quill, Run Agent, the AI
+Library and the other advanced features use. The AI Hub’s own Provider
+list, its On-Device address box and its Reset AI Settings button are
+gone; the Hub’s Provider page says which provider is in use and opens
+Use My Own AI Key.</li>
+<li><strong>One list of your prompts for the whole family.</strong>
+QUILL Lite’s Prompt Library now reads the same <code>prompts.json</code>
+as QUILL. The first time this version starts, either editor quietly
+brings in the prompts kept elsewhere (Prompt Studio, your image
+description styles, QUILL Lite’s own list) on a background thread. The
+same prompt in two places becomes one; two different prompts with one
+name are both kept, the second named after where it came from. Nothing
+is deleted: the old files stay as they were for one release.</li>
+</ul>
+<h3
 id="choose-your-ai-in-quill-weather-quill-converter-quill-media-player-quill-inkwell-and-quillbeacon-2026-11-01">Choose
 Your AI in Quill Weather, Quill Converter, Quill Media Player, Quill
 Inkwell and QuillBeacon (2026-11-01)</h3>

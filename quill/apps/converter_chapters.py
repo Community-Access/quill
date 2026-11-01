@@ -30,8 +30,12 @@ class ConverterChaptersMixin:
 
     # -- join and split -------------------------------------------------------
 
-    def join_into_one(self) -> None:
-        """Join the queue into one file, a chapter per source where it can."""
+    def join_into_one(self, out_path: Path | None = None) -> None:
+        """Join the queue into one file, a chapter per source where it can.
+
+        *out_path* skips the Save As window: Make This Right for My Player
+        (``converter_ai_task``) passes the name the person already agreed to.
+        """
         if self._busy or not self._entries:
             self._announce(
                 "Add files to join first." if not self._entries else "A job is already running."
@@ -54,17 +58,18 @@ class ConverterChaptersMixin:
             return
         dest = self._destination()
         name = sources[0].parent.name or "Joined"
-        with wx.FileDialog(
-            self.frame,
-            "Save the joined file as",
-            defaultDir=str(dest),
-            defaultFile=name + spec.output_extension(),
-            wildcard=f"{format_label(spec.fmt)}|*{spec.output_extension()}",
-            style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
-        ) as picker:
-            if picker.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
-                return
-            out_path = Path(picker.GetPath())
+        if out_path is None:
+            with wx.FileDialog(
+                self.frame,
+                "Save the joined file as",
+                defaultDir=str(dest),
+                defaultFile=name + spec.output_extension(),
+                wildcard=f"{format_label(spec.fmt)}|*{spec.output_extension()}",
+                style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT,
+            ) as picker:
+                if picker.ShowModal() != wx.ID_OK:  # dialog_button_contract: exempt
+                    return
+                out_path = Path(picker.GetPath())
         cancel = CancelToken()
         self._remember()
         chapters = " with a chapter for each" if spec.fmt in CHAPTER_FORMATS else ""

@@ -13,6 +13,9 @@ What Quill Converter *does* with AI is :class:`ConverterAiFeaturesMixin`:
   conversion's report (``app_ask_context.converter_context``).
 * **Will This Play on My Device?** (Ctrl+Shift+D): asks which device, reads the
   queued files, and sends one request.
+* **Make This Right for My Player...** (Ctrl+F3): the agent task
+  (:mod:`quill.apps.converter_ai_task`), which reads the queue as text and
+  starts one Convert, Join or Split job after asking.
 
 **The model never hears the audio.** Only probe text goes: codecs, lengths,
 sample rates, tags, file names. Folders never go (``scrub`` strips any path that
@@ -57,13 +60,14 @@ WHICH_DEVICE = (
 _PROBE_LIMIT = 20
 
 #: The AI menu: command id, label, handler name; "" is a separator. Letters are
-#: unique within the menu (A W C D H O S P).
+#: unique within the menu (A W C D M H O S P).
 AI_ROWS: tuple[tuple[str, str, str], ...] = (
     ("tools.hosted_ai_chat_key", "&Ask...", "cmd_ai_chat_key"),
     ("tools.hosted_ai_which", "&Which AI Am I Using", "cmd_ai_which"),
     ("tools.hosted_ai_choose", "&Choose Your AI...", "cmd_ai_choose"),
     ("", "", ""),
     ("converter.ai_will_play", "Will This Play on My &Device?...", "cmd_converter_will_play"),
+    ("tools.hosted_ai_task", "&Make This Right for My Player...", "cmd_ai_task"),
     ("", "", ""),
     ("tools.hosted_ai_chatgpt", "Use My C&hatGPT Subscription...", "cmd_ai_chatgpt"),
     ("tools.hosted_ai_own_key", "Use My &Own AI Key...", "cmd_ai_own_key"),
@@ -120,6 +124,25 @@ def _read_queue(
 class ConverterAiFeaturesMixin:
     """Will This Play on My Device? and the queue Ask reads. Mixed in through
     ``ConverterAiMixin``."""
+
+    def cmd_ai_task(self) -> None:
+        """Make This Right for My Player (Ctrl+F3, codex.md 6.7): the queue, read as
+        text, then one Convert, Join or Split job, in the shared agent window. The
+        job asks first, naming the files, format, bit rate and chapters; the
+        audio never leaves."""
+        from quill.apps.converter_ai_task import (
+            INSTRUCTION_HELP,
+            MAKE_IT_RIGHT,
+            converter_task_facts,
+            converter_task_tools,
+        )
+
+        self._open_app_task(  # type: ignore[attr-defined]
+            MAKE_IT_RIGHT,
+            lambda ctx: converter_task_tools(self, ctx),
+            instruction_help=INSTRUCTION_HELP,
+            context=lambda: converter_task_facts(self),
+        )
 
     def cmd_converter_will_play(self) -> None:
         """Will This Play on My Device? (Ctrl+Shift+D): the queue, against a device."""

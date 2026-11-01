@@ -411,6 +411,7 @@ This changes Quill Inkwell only. Your other QUILL apps keep their own choice, un
 | Which AI Am I Using | Ctrl+F8 |
 | Choose Your AI | Ctrl+Shift+F8 |
 | Suggest Abbreviations from a Document | Ctrl+Shift+A |
+| Add Abbreviations from a Document | Ctrl+F3 |
 | Use My ChatGPT Subscription | Alt+F5 |
 | Use My Own AI Key | Alt+F2 |
 | AI Usage | Ctrl+Alt+Shift+F2 |
@@ -458,8 +459,8 @@ that means:
   never starts it.
 - **Never sent to an AI.** The AI menu (section 21) never sees what you type
   in other programs, and it has no part in expansion. Ask sends your
-  abbreviation list; Suggest Abbreviations sends the text of a document you
-  pick, and only after you say yes.
+  abbreviation list; Suggest Abbreviations and Add Abbreviations from a
+  Document send the text of a document you pick, and only after you say yes.
 - **Self-repairing, not self-extending.** Windows silently removes a keyboard
   hook that responds too slowly, so Inkwell quietly re-installs its own every few
   minutes. That refresh changes nothing about what is watched or kept.
@@ -839,6 +840,27 @@ Inkwell says how many it added, and they show up in the list straight away,
 in QUILL too. An abbreviation you already have is never suggested, so nothing
 here can replace one of yours. You can change or delete any of them later in
 Manage Abbreviations.
+
+### Add Abbreviations from a Document
+
+**AI > Add Abbreviations from a Document...** (Ctrl+F3) does the same job as a
+conversation instead of one request. Type what you want, such as "add
+abbreviations for the long names and phrases in my report", and the AI asks you
+to pick the document with the same Open window. Inkwell then asks the same
+question Suggest does before any of its text goes, with No as the default. The
+AI can look at the abbreviations you already have, so it does not suggest a
+second one for something you have covered, and you can tell it what to change:
+"make them shorter", "leave out the people's names".
+
+When it is ready it shows you every abbreviation it wants to add, one a line,
+like "tpm -> the Tuesday planning meeting". Any that clashes with one you
+already have is listed separately as left out, with yours beside it, so
+nothing here can replace one of yours. Press Apply to add them all, or Don't
+Apply to add none; they go into the same library QUILL uses.
+
+This needs an AI that can run tasks, which today means GitHub Copilot or Codex.
+With any other AI the menu item says "(needs Copilot or Codex)" and offers to
+switch instead of sending anything.
 
 The AI never types for you. Expansion in other programs works exactly as it
 did, and the AI has no part in it.

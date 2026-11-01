@@ -3887,6 +3887,7 @@ Everything on the AI Features menu:
 | Ask | Ctrl+Shift+8 | A conversation about the episode you are on |
 | Which AI Am I Using | Ctrl+F8 | Say which AI is in use; twice opens Choose Your AI |
 | Choose Your AI | Ctrl+Shift+F8 | Choose where Cast's AI comes from |
+| Find and Follow | Ctrl+F3 | Find podcasts, then follow, file or queue them |
 | Free AI Assistant | Ctrl+Alt+G | Sum up, explain or shorten the show notes |
 | Ask About These Show Notes | Ctrl+Alt+Z | Ask a question about the notes |
 | Ask About an Image | Ctrl+Alt+F5 | Describe the podcast's artwork, a show-note picture or a file |
@@ -3964,6 +3965,40 @@ you and it takes one Allow. You stay signed in until you sign out or remove the 
 The last step of the **Show notes, and what else the podcast sent** lesson, in
 Help > Tutorials, turns AI help on with you.
 
+#### Find and Follow
+
+**Find and Follow...** (**Ctrl+F3**, Help > AI Features) lets you say what you
+want in plain words and have the AI do it with Cast's own tools. For example:
+"Find two podcasts about birds, follow the better one and put it in a Nature
+folder", or "Queue the newest episode of each podcast in my News folder."
+
+Like every row here, it needs AI help turned on in Preferences. It also needs
+an AI that can carry out tasks: My GitHub Copilot, or Codex on your ChatGPT
+plan. With any other AI in use, the row says "(needs Copilot or Codex)", and
+pressing it sends nothing and offers to switch.
+
+What it can do:
+
+- **Find podcasts** in the same directories Add Podcast searches, and say which
+  ones you already follow. It can also read the podcasts you follow, your
+  folders, and a podcast's newest episodes. Reading never asks you anything.
+- **Follow a podcast.** It asks first. Then Cast reads the feed and shows you
+  what you would be following, as text: the title, who makes it, how many
+  episodes, and the newest few. **Apply** follows it; **Don't Apply**, or
+  Escape, leaves things as they were.
+- **Make a folder** and **move a podcast into a folder**, or back to the top
+  level. Each asks first and shows the change as text, such as "Move: Bird
+  Notes, From: the top level, To: Nature", before anything moves.
+- **Add an episode to the Play Queue.** It asks first.
+
+Each question has three answers: **Allow once**, **Allow for this task**, and
+**Don't allow**. Enter is Allow once and Escape is Don't allow. Nothing you
+allow carries over to the next task. It never unfollows, deletes or downloads
+anything; those stay yours to do.
+
+The podcast and episode you are on go with your first message, so "follow
+more like this one" works.
+
 #### Letting AI help with your podcasts
 
 Below the rows above, the AI Features menu has a few more that are about your
@@ -4000,7 +4035,7 @@ and if not it summarises the show notes. The answer always starts by saying
 which it used, because a summary of the show notes is not a summary of what
 was said.
 
-**Build Me a Listening Run** (L). "I have 40 minutes." Type how many minutes
+**Build Me a Listening Run** (B). "I have 40 minutes." Type how many minutes
 you have, and AI help picks unheard episodes from your Inbox and New Episodes
 that fit, in an order worth hearing. Cast measures the time itself, so the run
 really fits. Review the list, then Apply Selected adds them to the end of your
@@ -5652,6 +5687,7 @@ They are listed in full under "Keys in the Lineups window" in Chapter 9.
 | Ask | Ctrl+Shift+8 |
 | Which AI Am I Using (twice: Choose Your AI) | Ctrl+F8 |
 | Choose Your AI | Ctrl+Shift+F8 |
+| Find and Follow | Ctrl+F3 |
 | Free AI Assistant | Ctrl+Alt+G |
 | Ask About These Show Notes | Ctrl+Alt+Z |
 | Ask About an Image | Ctrl+Alt+F5 |

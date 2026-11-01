@@ -37,6 +37,10 @@ and release channels.
   Copilot or Codex: "Fix the heading levels, then build a table of contents."
   Before any step that changes something, **Allow This Step?** asks, and every
   edit goes through **Review AI Changes**, each one undone with Ctrl+Z.
+- **Propose Alt Text** (**Tools > AI**) opens that window with the request
+  typed in: alt text for every picture in the document that has none, one
+  picture at a time, each through Review AI Changes. On an AI that can see, it
+  asks before sending a picture, and only pictures on this computer are sent.
 - **Commands say what they need.** When the AI in use cannot do something, the
   command keeps its place and key, its name says what it needs, such as "(needs
   Copilot or Codex)", and pressing it offers to switch rather than failing.

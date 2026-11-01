@@ -255,7 +255,7 @@ cannot drift from the code. Bindings shown as
 release, then the second key. Every binding here is a <em>default</em> –
 the in-app reference (Help &gt; Open Keyboard Reference) always shows
 your own customised keymap.</p>
-<p>Editor commands with default bindings: 517.</p>
+<p>Editor commands with default bindings: 518.</p>
 <h2 id="the-quill-editor">The QUILL editor</h2>
 <h3 id="files">Files</h3>
 <table>
@@ -1601,6 +1601,11 @@ your own customised keymap.</p>
 <td>(unbound by default)</td>
 <td>Open CSV in Table Studio (Experimental)</td>
 <td><code>tools.csv_studio</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
+<td>Propose Alt Text…</td>
+<td><code>tools.hosted_ai_alt_text</code></td>
 </tr>
 <tr>
 <td>(unbound by default)</td>
@@ -2985,6 +2990,11 @@ never inside the QUILL editor.</p>
 <td><code>tools.hosted_ai_privacy</code></td>
 </tr>
 <tr>
+<td>Ctrl+3</td>
+<td>Recording Pre-flight Check…</td>
+<td><code>tools.hosted_ai_task</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+Shift+B</td>
 <td>Record marker</td>
 <td><code>studio.record_marker</code></td>
@@ -3114,6 +3124,21 @@ never inside the QUILL editor.</p>
 <td>Describe a Picture…</td>
 <td><code>studio.describe_picture</code></td>
 </tr>
+<tr>
+<td>Ctrl+F9</td>
+<td>Start Watching for Changes</td>
+<td><code>studio.ai_watch_start</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+3</td>
+<td>Narrate a Recording…</td>
+<td><code>studio.ai_narrative</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+F9</td>
+<td>Stop Watching for Changes</td>
+<td><code>studio.ai_watch_stop</code></td>
+</tr>
 </tbody>
 </table>
 <h2 id="quill-transcribe-app-keys">QUILL Transcribe (app keys)</h2>
@@ -3147,6 +3172,11 @@ never inside the QUILL editor.</p>
 <td>Ctrl+Alt+Shift+F2</td>
 <td>AI Usage…</td>
 <td><code>tools.hosted_ai_usage</code></td>
+</tr>
+<tr>
+<td>Ctrl+F3</td>
+<td>Speakers, Sections and Summary…</td>
+<td><code>tools.hosted_ai_task</code></td>
 </tr>
 <tr>
 <td>Ctrl+F8</td>
@@ -3468,6 +3498,11 @@ never inside the QUILL editor.</p>
 <td><code>app.dictate_here</code></td>
 </tr>
 <tr>
+<td>Ctrl+F3</td>
+<td>Find and Record…</td>
+<td><code>tools.hosted_ai_task</code></td>
+</tr>
+<tr>
 <td>Ctrl+F5</td>
 <td>Describe the Video</td>
 <td><code>radio.describe_video</code></td>
@@ -3476,6 +3511,11 @@ never inside the QUILL editor.</p>
 <td>Ctrl+F8</td>
 <td>Which AI Am I Using</td>
 <td><code>tools.hosted_ai_which</code></td>
+</tr>
+<tr>
+<td>Ctrl+F9</td>
+<td>Start Watching for Changes</td>
+<td><code>radio.ai_watch_start</code></td>
 </tr>
 <tr>
 <td>Ctrl+G</td>
@@ -3576,6 +3616,11 @@ never inside the QUILL editor.</p>
 <td>Ctrl+Shift+F8</td>
 <td>Choose Your AI…</td>
 <td><code>tools.hosted_ai_choose</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+F9</td>
+<td>Stop Watching for Changes</td>
+<td><code>radio.ai_watch_stop</code></td>
 </tr>
 <tr>
 <td>Ctrl+Shift+G</td>
@@ -3832,6 +3877,11 @@ never inside the QUILL editor.</p>
 <td><code>app.dictate_here</code></td>
 </tr>
 <tr>
+<td>Ctrl+F3</td>
+<td>Find and Follow…</td>
+<td><code>tools.hosted_ai_task</code></td>
+</tr>
+<tr>
 <td>Ctrl+F5</td>
 <td>Refresh podcasts</td>
 <td><code>media.refresh_podcasts</code></td>
@@ -4075,6 +4125,11 @@ never inside the QUILL editor.</p>
 <td><code>tools.hosted_ai_privacy</code></td>
 </tr>
 <tr>
+<td>Ctrl+F3</td>
+<td>Make This Right for My Player…</td>
+<td><code>tools.hosted_ai_task</code></td>
+</tr>
+<tr>
 <td>Ctrl+F8</td>
 <td>Which AI Am I Using</td>
 <td><code>tools.hosted_ai_which</code></td>
@@ -4139,6 +4194,11 @@ never inside the QUILL editor.</p>
 <td><code>tools.hosted_ai_privacy</code></td>
 </tr>
 <tr>
+<td>Ctrl+F3</td>
+<td>Find the Part Where…</td>
+<td><code>tools.hosted_ai_task</code></td>
+</tr>
+<tr>
 <td>Ctrl+F8</td>
 <td>Which AI Am I Using</td>
 <td><code>tools.hosted_ai_which</code></td>
@@ -4188,6 +4248,11 @@ never inside the QUILL editor.</p>
 <td><code>tools.hosted_ai_usage</code></td>
 </tr>
 <tr>
+<td>Ctrl+F3</td>
+<td>Add Abbreviations from a Document…</td>
+<td><code>tools.hosted_ai_task</code></td>
+</tr>
+<tr>
 <td>Ctrl+F8</td>
 <td>Which AI Am I Using</td>
 <td><code>tools.hosted_ai_which</code></td>
@@ -4230,6 +4295,11 @@ never inside the QUILL editor.</p>
 <td>Alt+F5</td>
 <td>Use My ChatGPT Subscription…</td>
 <td><code>tools.hosted_ai_chatgpt</code></td>
+</tr>
+<tr>
+<td>Ctrl+3</td>
+<td>Organize What I Saved…</td>
+<td><code>tools.hosted_ai_task</code></td>
 </tr>
 <tr>
 <td>Ctrl+4</td>

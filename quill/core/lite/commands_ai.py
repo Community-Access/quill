@@ -37,11 +37,24 @@ AI_TASK_ROW: tuple[str, str, str, str, str] = (
     "",
 )
 
+#: Propose Alt Text (codex.md 6.4, 10B.5): Do a Document Task with the
+#: alt-text request filled in, for the document's own images. No key: no chord
+#: is free in both editors, and Ctrl+3 is the front door (rule 8 reason in the
+#: family gate). T is free in this submenu. QUILL has it (tools.hosted_ai_alt_text).
+AI_ALT_TEXT_ROW: tuple[str, str, str, str, str] = (
+    "&Tools|&AI",
+    "Propose Alt &Text...",
+    "",
+    "cmd_ai_alt_text",
+    "",
+)
+
 #: Spliced in after Ask About This Document: the ways to ask, then the task.
 AI_ASK_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
     ("&Tools|&AI", "Ask AI a &Question...", "Ctrl+6", "cmd_ai_chat_key", ""),
     ("&Tools|&AI", "Prompt &Library...", "Ctrl+7", "cmd_ai_prompt_library", ""),
     AI_TASK_ROW,
+    AI_ALT_TEXT_ROW,
 )
 
 #: Choose Your AI (codex.md 10A.9, 2026-10-31). Which AI Am I Using is a quick

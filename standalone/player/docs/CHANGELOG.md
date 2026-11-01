@@ -24,6 +24,13 @@ Quill Media Player runs the same player code as QUILL from the shared `quill` pa
   leaves, and protected BARD content is still refused.
 - **Ask** (Ctrl+Shift+8) about the book you're listening to: the title, the
   chapter, your place and the chapter list go with each question.
+- **Find the Part Where...** (Ctrl+F3, AI menu): tell it the place you want
+  ("the chapter where the storm starts", "my bookmark about the map") and the
+  AI works it out from the chapter list, your bookmarks and their notes, then
+  asks "Go to 1:02:30 in <book>." before it jumps there the way Go to Position
+  does. There is no transcript to search, so it finds places by chapters,
+  bookmarks and times. Needs GitHub Copilot or Codex; with another AI the item
+  says "(needs Copilot or Codex)" and sends nothing.
 - **Where am I? lost its Alt letter.** Alt+I now opens the AI menu. Tab to the
   button, or press Shift+F6 to hear the status bar.
 

@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 517.
+Editor commands with default bindings: 518.
 
 ## The QUILL editor
 
@@ -299,6 +299,7 @@ Editor commands with default bindings: 517.
 | (unbound by default) | AI Thesaurus... | `tools.ai_thesaurus` |
 | (unbound by default) | Translate Selection... | `tools.ai_translate_selection` |
 | (unbound by default) | Open CSV in Table Studio (Experimental) | `tools.csv_studio` |
+| (unbound by default) | Propose Alt Text... | `tools.hosted_ai_alt_text` |
 | (unbound by default) | Table Studio (Experimental) | `tools.table_studio` |
 | (unbound by default) | Voice Command (Offline) | `tools.voice_command` |
 | (unbound by default) | Voice Conversation Mode | `tools.voice_conversation` |
@@ -590,6 +591,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | --- | --- | --- |
 | Alt+F5 | Use My ChatGPT Subscription... | `studio.chatgpt_account` |
 | Alt+Shift+F2 | Privacy Agreement... | `tools.hosted_ai_privacy` |
+| Ctrl+3 | Recording Pre-flight Check... | `tools.hosted_ai_task` |
 | Ctrl+Alt+Shift+B | Record marker | `studio.record_marker` |
 | Ctrl+Alt+Shift+C | Camera check | `studio.camera_check` |
 | Ctrl+Alt+Shift+Delete | Record discard | `studio.record_discard` |
@@ -616,6 +618,9 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+Y | Picture video | `studio.picture_video` |
 | Ctrl+Alt+Shift+Z | Broadcast mute | `studio.broadcast_mute` |
 | Ctrl+F5 | Describe a Picture... | `studio.describe_picture` |
+| Ctrl+F9 | Start Watching for Changes | `studio.ai_watch_start` |
+| Ctrl+Shift+3 | Narrate a Recording... | `studio.ai_narrative` |
+| Ctrl+Shift+F9 | Stop Watching for Changes | `studio.ai_watch_stop` |
 
 ## QUILL Transcribe (app keys)
 
@@ -627,6 +632,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
 | Alt+Shift+F2 | Privacy Agreement... | `tools.hosted_ai_privacy` |
 | Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
+| Ctrl+F3 | Speakers, Sections and Summary... | `tools.hosted_ai_task` |
 | Ctrl+F8 | Which AI Am I Using | `tools.hosted_ai_which` |
 | Ctrl+Shift+8 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
 | Ctrl+Shift+F8 | Choose Your AI... | `tools.hosted_ai_choose` |
@@ -695,8 +701,10 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Down | Radio: Volume Down | `radio.volume_down` |
 | Ctrl+E | Internet Radio: Sound Enhancements... | `radio.sound_enhancements` |
 | Ctrl+F11 | Dictate here | `app.dictate_here` |
+| Ctrl+F3 | Find and Record... | `tools.hosted_ai_task` |
 | Ctrl+F5 | Describe the Video | `radio.describe_video` |
 | Ctrl+F8 | Which AI Am I Using | `tools.hosted_ai_which` |
+| Ctrl+F9 | Start Watching for Changes | `radio.ai_watch_start` |
 | Ctrl+G | Go to | `radio.go_to` |
 | Ctrl+K | Identify This Song | `radio.identify_song` |
 | Ctrl+L | Play Last Station | `radio.play_last` |
@@ -717,6 +725,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Shift+Down | Transport.speed down | `radio.transport.speed_down` |
 | Ctrl+Shift+F | Toggle playing favorite | `radio.toggle_playing_favorite` |
 | Ctrl+Shift+F8 | Choose Your AI... | `tools.hosted_ai_choose` |
+| Ctrl+Shift+F9 | Stop Watching for Changes | `radio.ai_watch_stop` |
 | Ctrl+Shift+G | Transport.go to player | `radio.transport.go_to_player` |
 | Ctrl+Shift+H | Song History... | `radio.song_history` |
 | Ctrl+Shift+L | Back to Live | `radio.jump_to_live` |
@@ -772,6 +781,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+Z | Quiet Hours... | `app.quiet_hours` |
 | Ctrl+Alt+Z | Ask Free AI About This Document | `tools.hosted_ai_ask_document` |
 | Ctrl+F11 | Dictate here | `app.dictate_here` |
+| Ctrl+F3 | Find and Follow... | `tools.hosted_ai_task` |
 | Ctrl+F5 | Refresh podcasts | `media.refresh_podcasts` |
 | Ctrl+F8 | Which AI Am I Using | `tools.hosted_ai_which` |
 | Ctrl+G | Go to | `app.go_to` |
@@ -829,6 +839,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
 | Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
 | Ctrl+Alt+Shift+K | Privacy Agreement... | `tools.hosted_ai_privacy` |
+| Ctrl+F3 | Make This Right for My Player... | `tools.hosted_ai_task` |
 | Ctrl+F8 | Which AI Am I Using | `tools.hosted_ai_which` |
 | Ctrl+Shift+8 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
 | Ctrl+Shift+D | Ai will play | `converter.ai_will_play` |
@@ -846,6 +857,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+R | Ai recap | `player.ai_recap` |
 | Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
 | Ctrl+Alt+Shift+K | Privacy Agreement... | `tools.hosted_ai_privacy` |
+| Ctrl+F3 | Find the Part Where... | `tools.hosted_ai_task` |
 | Ctrl+F8 | Which AI Am I Using | `tools.hosted_ai_which` |
 | Ctrl+Shift+8 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
 | Ctrl+Shift+F8 | Choose Your AI... | `tools.hosted_ai_choose` |
@@ -860,6 +872,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
 | Alt+Shift+F2 | Privacy Agreement... | `tools.hosted_ai_privacy` |
 | Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
+| Ctrl+F3 | Add Abbreviations from a Document... | `tools.hosted_ai_task` |
 | Ctrl+F8 | Which AI Am I Using | `tools.hosted_ai_which` |
 | Ctrl+Shift+8 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
 | Ctrl+Shift+A | Ai suggest | `inkwell.ai_suggest` |
@@ -873,6 +886,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | --- | --- | --- |
 | Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
 | Alt+F5 | Use My ChatGPT Subscription... | `tools.hosted_ai_chatgpt` |
+| Ctrl+3 | Organize What I Saved... | `tools.hosted_ai_task` |
 | Ctrl+4 | Choose Your AI... | `tools.hosted_ai_choose` |
 | Ctrl+6 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
 | Ctrl+8 | Which AI Am I Using | `tools.hosted_ai_which` |

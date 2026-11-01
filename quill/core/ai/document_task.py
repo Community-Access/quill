@@ -38,6 +38,7 @@ from dataclasses import dataclass, field, replace
 from quill.core.ai.activity_log import ActivityLog
 from quill.core.ai.approvals import Approver, ApprovingEditorHost
 from quill.core.ai.context_builder import ContextScope
+from quill.core.ai.doc_images import PictureLoader, doc_image_tools
 from quill.core.ai.family_tools import EDITOR_APP, FamilyToolRegistry, editor_tools
 from quill.core.ai.harness import (
     AgentSpec,
@@ -80,7 +81,9 @@ DOCUMENT_TASK_INSTRUCTIONS = (
     "before you change anything. To change the document, call doc_apply_patch "
     "with the full original text from doc_read_document and the full new "
     "text; the person reviews every change before it is applied, and may "
-    "decline it. doc_run_command accepts only the listed command ids. Work "
+    "decline it. To give an image alt text, call doc_set_alt_text with its "
+    "number from doc_list_images; doc_image shows you one image, when you have "
+    "it. doc_run_command accepts only the listed command ids. Work "
     "through the steps in order. Never draw charts, graphs, diagrams or "
     "pictures, in text art or otherwise. Finish with a short plain-text "
     "summary of what you changed and anything you could not do."
@@ -152,6 +155,7 @@ def _change_sentence(name: str) -> str:
         "replace_selection": "Replaced the selection",
         "insert": "Inserted text",
         "run_command": "Ran a command",
+        "set_alt_text": "Set alt text for an image",
     }.get(bare, f"Used {bare}")
 
 
@@ -206,6 +210,10 @@ class DocumentTaskRunner:
     on_usage: Callable[[TurnUsage], None] | None = None
     file_type: str = ""
     web: object | None = None
+    #: Loads one of the document's own images for a connection that sees
+    #: (codex.md 6.4); None leaves ``doc.image`` out, and alt text is then
+    #: proposed from the document's words alone.
+    pictures: PictureLoader | None = None
     _session: ToolSession | None = field(default=None, init=False, repr=False)
     _registry: FamilyToolRegistry | None = field(default=None, init=False, repr=False)
 
@@ -217,8 +225,19 @@ class DocumentTaskRunner:
     def start(self, instruction: str, context_text: str = "") -> ToolSession:
         """Build the task's tools and session. Does not launch anything."""
         identity = AgentIdentity(self.agent.id, self.agent.risk, harness=self.harness.id)
-        registry, _gateway = build_document_tools(
+        registry, gateway = build_document_tools(
             self.host, self.broker, self.activity, identity, self.emit, web=self.web
+        )
+        # Alt text for the document's own images (codex.md 6.4, decision 13).
+        registry.register_app(
+            EDITOR_APP,
+            doc_image_tools(
+                self.host.get_document,
+                lambda original, revised, label: gateway.apply_text_patch(
+                    original, revised, label=label
+                ),
+                self.pictures,
+            ),
         )
         spec = replace(
             self.agent,

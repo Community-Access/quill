@@ -28,6 +28,15 @@ the launcher, installer, icon and these documents.
   conversion's report. The AI gets the text File Properties shows -- file
   names, never folders -- and never the sound. The files are read in the
   background, so the window never waits.
+- **Make This Right for My Player...** (Ctrl+F3) is an agent task: say what you
+  want ("one M4B audiobook with a chapter per file, small enough for my
+  phone") and the AI reads the queue's details, checks the formats this
+  computer can write, and starts one Convert, Join into One File or Split by
+  Chapters job on the queue. It asks first, naming the files, format, bit rate
+  and chapters, and sets the main window's own choices so you can see what it
+  picked. A joined file never overwrites one already there. Needs GitHub
+  Copilot or Codex; with another AI the item says "(needs Copilot or Codex)"
+  and sends nothing.
 - Safe Mode refuses everything in the AI menu.
 - Broadcast polish in Advanced Options no longer has an access key: Alt+I is
   the AI menu now, and every other letter in its name was already taken.
