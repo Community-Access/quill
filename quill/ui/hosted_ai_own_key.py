@@ -51,8 +51,9 @@ Both run on a worker thread; the result arrives in the status line and is
 spoken, because a label changing under an unfocused control is exactly what a
 screen reader does not announce.
 
-With a Gemini key, **Ask About an Image** works too: Gemini's models read
-pictures, which the free service and an OpenAI key here do not.
+With an OpenAI, Gemini or Anthropic Claude key, **Ask About an Image** and the
+media apps' picture commands work too: those providers' models read pictures,
+which the free service does not (``connection_caps``, each claim with its source).
 """
 
 from __future__ import annotations
@@ -123,8 +124,8 @@ def _explanation(provider: str) -> str:
         "Type the service's address in Server address below. " if provider in HOST_PROVIDERS else ""
     )
     pictures = (
-        " Gemini's models also read pictures, so Ask About an Image works with a Gemini key."
-        if provider == "gemini"
+        f" {name}'s models also read pictures, so Ask About an Image works with this key."
+        if provider in ("openai", "gemini", "claude")
         else ""
     )
     return (

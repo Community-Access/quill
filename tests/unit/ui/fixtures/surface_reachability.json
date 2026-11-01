@@ -46,6 +46,8 @@
   "quill.ui.audio_studio.sections_dialog": "reachable",
   "quill.ui.audio_studio.sleep_timer_dialog": "reachable",
   "quill.ui.audio_studio.studio_ai_features": "reachable",
+  "quill.ui.audio_studio.studio_ai_pictures": "reachable",
+  "quill.ui.audio_studio.studio_picture_dialogs": "reachable",
   "quill.ui.audio_studio.tag_editor": "reachable",
   "quill.ui.audio_studio.translated_speech_export": "reachable",
   "quill.ui.audio_studio.wizard": "reachable",

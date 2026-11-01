@@ -114,6 +114,17 @@ PURPOSES: dict[str, str] = {
         "picture on this computer, fits it to the AI in use and reads the description "
         "aloud. Asking about the same picture again sends nothing."
     ),
+    "Describe a Folder": (
+        "Choose a folder of pictures and a prompt style. Studio counts the pictures and asks "
+        "once before sending any, then describes them one at a time and opens all the "
+        "descriptions in QUILL. Pictures already described are never sent again, so running "
+        "the same folder again carries on where it stopped."
+    ),
+    "Describe Again": (
+        "Choose the last picture you described, or a folder you described or one picture from "
+        "it, and a prompt style. The new description is kept beside the earlier ones, so you "
+        "can compare them. To use another AI, choose it in Choose Your AI first."
+    ),
     "Make a picture with AI": (
         "Describe the picture you want, choose its shape and press Make the picture. Then ask "
         "for changes in words and press it again; every version is kept with a description "

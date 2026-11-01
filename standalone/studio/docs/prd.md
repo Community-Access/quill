@@ -740,6 +740,53 @@ open (`docs/design/quill-studio-capture-milestone.md`).
   every screenshot is still confirmed. A used-up plan says so once, never
   falling back to another AI. Picture generation stays own-key only.
 
+- AS-115. Describe a Folder (Ctrl+Shift+F5, AI menu) must describe every
+  picture in a chosen folder (JPEG, PNG, WebP, GIF, BMP, TIFF and HEIC; never
+  a video), one at a time, through the same path as Describe a Picture: read
+  and fitted by `picture_prep` off the UI thread, then the shared service's
+  `describe_image`, which asks the capability gate again. The logic is the
+  wx-free `quill/core/ai/picture_batch.py`; the run is
+  `quill/ui/audio_studio/studio_picture_run.py`. Before anything is sent it
+  must ask one Yes/No question, No the default, naming the count and the
+  receiver ("50 pictures will go to OpenAI on your ChatGPT plan ..."), after
+  the per-connection picture consent. A ceiling per run, chosen in the
+  window, defaults to 25 on a plan, 200 on an own key and 1000 on a local
+  model. One JSON result per picture (`write_json_atomic`) lives under
+  Studio's data in `studio-descriptions`, never in the source folder; a
+  second run sends only pictures with no description or whose file changed.
+  Progress is spoken now and then as counts, never once per picture; Stop
+  Describing the Folder (Alt+Shift+F5) stops after the picture in hand and
+  keeps what was described. At the end, a Markdown document with a heading
+  per picture opens in QUILL through Studio's Open in QUILL route.
+- AS-116. Describe Again (Ctrl+Alt+F5) must add a description, in another
+  prompt style or from the AI then in use, to the last picture described,
+  a described folder, or one picture of it, keeping every earlier
+  description; the document and the single-picture result show them side by
+  side, each labelled with its style, connection and model. The same picture
+  in the same style on the same connection is answered from the session
+  cache and sends nothing.
+- AS-117. Photo details as context: the date taken, camera and lens are read
+  from EXIF on this computer (`quill/core/ai/photo_details.py`) and sent as
+  one line before the prompt while their check box is checked (the default).
+  GPS coordinates go only when a second check box, unchecked every time, is
+  checked, and only to the same receiver as the picture; nothing is ever
+  geocoded. The fitted picture is re-encoded without its EXIF block, so no
+  location leaves inside it. Coordinates are never written to the result
+  files.
+- AS-118. Save Described Copies (Ctrl+Alt+F6) must write each picture's
+  newest description into a copy in a folder the person chooses, which may
+  not be the source folder, never replacing an existing file
+  (`quill/io/picture_metadata.py`): JPEG gets EXIF ImageDescription, EXIF
+  XPComment and XMP dc:description, spliced in without re-encoding; PNG gets
+  iTXt Description and XMP chunks. Other kinds are left out by name. Nothing
+  is sent.
+- AS-119. My own key sees pictures on OpenAI and Anthropic Claude as well as
+  Gemini and per-model local Ollama, each claim in `connection_caps.py`
+  citing the provider's vision page; a picture is fitted to 2048 pixels for
+  OpenAI and 1568 for Claude. These features follow the approach of Kelly
+  Ford's Image Description Toolkit (MIT), credited in the third-party notices
+  and the user guide.
+
 ## 5. Non-functional requirements
 
 - N-1. Threading: the UI thread owns all wx widgets. Worker threads must never

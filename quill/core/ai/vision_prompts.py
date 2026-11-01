@@ -8,6 +8,11 @@ dialog.
 
 The prompts are immutable constants — users can disable built-in styles and
 add custom prompts, but the shipped text is never edited in place.
+
+The prompt text is Kelly Ford's, from his Image Description Toolkit
+(https://github.com/kellylford/Image-Description-Toolkit), MIT licensed,
+"Copyright (c) 2025 kellylford"; the notice is the ``image-description-toolkit``
+entry in ``quill/data/third_party/components.json``.
 """
 
 from __future__ import annotations

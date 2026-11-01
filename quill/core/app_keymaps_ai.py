@@ -138,6 +138,19 @@ AGENT_TASK_KEYMAPS["radio"].update({
     "radio.ai_watch_start": "Ctrl+F9",
     "radio.ai_watch_stop": "Ctrl+Shift+F9",
 })
+#: QUILL Studio's picture batch (the Image Description Toolkit proposal), beside
+#: Describe a Picture on Ctrl+F5, the family's Describe key: Describe a Folder
+#: Ctrl+Shift+F5, Stop Describing the Folder Alt+Shift+F5, Describe Again
+#: Ctrl+Alt+F5 and Save Described Copies Ctrl+Alt+F6. All four were free on
+#: Studio's bar; Ctrl+Alt+Shift+F5 is its Screenshot Active Window, and
+#: Ctrl+Alt+Shift+F7 to F12 belong to the QuillVille launchers. Studio-only
+#: commands, so no other app's chord moves.
+AGENT_TASK_KEYMAPS["studio"].update({
+    "studio.describe_folder": "Ctrl+Shift+F5",
+    "studio.describe_folder_stop": "Alt+Shift+F5",
+    "studio.describe_again": "Ctrl+Alt+F5",
+    "studio.save_described_copies": "Ctrl+Alt+F6",
+})
 
 
 #: What ``tools.hosted_ai_task`` is called in each app's menu, for the generated

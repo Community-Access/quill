@@ -2728,7 +2728,7 @@ with Note (Navigation menu) adds words to it.</li>
 from this book; the audio and your place stay.</li>
 </ul>
 <h2 id="quill-studio">QUILL Studio</h2>
-<p>Control coverage: 297 audited sites (11 help-elsewhere, 286
+<p>Control coverage: 302 audited sites (11 help-elsewhere, 291
 helped).</p>
 <h3 id="every-window-and-what-it-is-for-3">Every window, and what it is
 for</h3>
@@ -2805,6 +2805,16 @@ between formats, on this machine. Build the queue, pick the output
 format, preset, and destination folder, and Convert runs in the
 background with spoken progress. The Advanced options only override what
 you deliberately change; untouched controls leave the preset alone.</p>
+<p><strong>Describe Again.</strong> Choose the last picture you
+described, or a folder you described or one picture from it, and a
+prompt style. The new description is kept beside the earlier ones, so
+you can compare them. To use another AI, choose it in Choose Your AI
+first.</p>
+<p><strong>Describe a Folder.</strong> Choose a folder of pictures and a
+prompt style. Studio counts the pictures and asks once before sending
+any, then describes them one at a time and opens all the descriptions in
+QUILL. Pictures already described are never sent again, so running the
+same folder again carries on where it stopped.</p>
 <p><strong>Describe a Picture.</strong> Choose a picture, or a video and
 then the moment in it. Studio takes that one picture on this computer,
 fits it to the AI in use and reads the description aloud. Asking about
@@ -3460,6 +3470,40 @@ id="sleeptimerdialog-quilluiaudio_studiosleep_timer_dialogpy">SleepTimerDialog
 <li><code>self._minutes</code>: How long playback keeps going before the
 timer stops it, 1 to 480 minutes. Ignored while Stop at end of chapter
 is checked, and only read while the timer is enabled.</li>
+</ul>
+<h4
+id="_styleanddetails-quilluiaudio_studiostudio_picture_dialogspy">_StyleAndDetails
+(<code>quill/ui/audio_studio/studio_picture_dialogs.py</code>)</h4>
+<ul>
+<li><code>self.style</code>: How the pictures are described.
+Accessibility suits most people; Concise is short, Detailed is long, and
+AI Alt Text writes three lengths of alt text.</li>
+<li><code>self.details</code>: Read the date taken, the camera and the
+lens from the picture on this computer and send them with it, so the
+description can say when it was taken.</li>
+<li><code>self.location</code>: Off unless you check it, every time.
+When checked, the picture’s GPS coordinates go to the same AI as the
+picture, and to nobody else. No place name is looked up.</li>
+<li><code>self.ceiling</code>: The run stops after this many pictures.
+Run it again for the rest; pictures already described are never sent
+twice.</li>
+</ul>
+<h4
+id="describefolderdialog-quilluiaudio_studiostudio_picture_dialogspy">DescribeFolderDialog
+(<code>quill/ui/audio_studio/studio_picture_dialogs.py</code>)</h4>
+<ul>
+<li><code>self.folder</code>: The folder whose pictures you want
+described.</li>
+<li><code>browse</code>: Choose the folder of pictures.</li>
+<li><code>self.subfolders</code>: Describe the pictures in folders
+inside this one as well.</li>
+</ul>
+<h4
+id="describeagaindialog-quilluiaudio_studiostudio_picture_dialogspy">DescribeAgainDialog
+(<code>quill/ui/audio_studio/studio_picture_dialogs.py</code>)</h4>
+<ul>
+<li><code>self.target</code>: The picture to describe again, every
+picture of a folder you described, or one picture from that folder.</li>
 </ul>
 <h4 id="coverpagepanel-quilluiaudio_studiotag_editorpy">CoverPagePanel
 (<code>quill/ui/audio_studio/tag_editor.py</code>)</h4>
