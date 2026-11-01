@@ -16,6 +16,7 @@ from quill.core.ai.vision_prompts import enabled_style_choices, resolve_prompt_t
 from quill.core.paths import app_data_dir
 from quill.core.storage import read_json, write_json_atomic
 from quill.core.studio_capture import INSPECTION_PROMPT, CaptureEvidence
+from quill.core.studio_plan_vision import PLAN_PROVIDER
 
 if TYPE_CHECKING:
     from quill.core.assistant_ai import AssistantConnectionSettings
@@ -109,6 +110,10 @@ def connection_identity(connection: AssistantConnectionSettings) -> dict[str, st
     from quill.core.assistant_ai import default_host_for_provider, default_model_for_provider
 
     provider = connection.provider.strip().lower()
+    if provider == PLAN_PROVIDER:
+        from quill.core.studio_plan_vision import plan_identity
+
+        return plan_identity(connection)  # type: ignore[arg-type]
     return {
         "provider": provider,
         "host": (connection.host.strip() or default_host_for_provider(provider)).rstrip("/"),
@@ -183,14 +188,31 @@ def inspect_screenshot(
             )
         if question:
             prompt += "\nUser question:\n" + question
-        key = load_keyed_provider_api_key(connection.provider)
         if can_send is not None and not can_send():
             raise RuntimeError("Automatic screenshot AI permission changed before sending.")
-        text, error = describe_image(connection, key, snapshot, prompt=prompt, max_tokens=3000)
-        if error:
-            raise RuntimeError(error)
+        text: str | None
+        if connection.provider == PLAN_PROVIDER:
+            text = _ask_plan(connection, snapshot, prompt, cancellation_token)
+        else:
+            key = load_keyed_provider_api_key(connection.provider)
+            text, error = describe_image(connection, key, snapshot, prompt=prompt, max_tokens=3000)
+            if error:
+                raise RuntimeError(error)
         identity = connection_identity(connection)
         return (
             f"AI ({identity['provider']}, {identity['model']}); uncertain.\n"
             f"Question: {question or 'Inspect screenshot'}\n{text or 'No response.'}"
         )
+
+
+def _ask_plan(connection: Any, snapshot: Path, prompt: str, cancellation_token: Any) -> str:
+    from quill.core.ai.chatgpt_errors import ChatGptError
+    from quill.core.studio_plan_vision import describe_on_plan, plan_failure
+
+    stop = None
+    if cancellation_token is not None:
+        stop = getattr(cancellation_token, "is_cancelled", None)
+    try:
+        return describe_on_plan(connection, snapshot, prompt, stop=stop)
+    except ChatGptError as error:
+        raise plan_failure(error) from error
