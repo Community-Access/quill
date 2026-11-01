@@ -43,7 +43,16 @@ OUTPUT_PATH = _REPO_ROOT / "docs" / "keyboard-reference.md"
 #: registration is spread across the main-frame mixins by design (GATE-11).
 _TITLE_SOURCE_DIRS = ("quill/ui",)
 
-_APP_DISPLAY = {"radio": "Quill Radio", "cast": "QUILL Cast"}
+_APP_DISPLAY = {
+    "radio": "Quill Radio",
+    "cast": "QUILL Cast",
+    "transcribe": "QUILL Transcribe",
+    "weather": "Quill Weather",
+    "converter": "Quill Converter",
+    "player": "Quill Media Player",
+    "inkwell": "Quill Inkwell",
+    "beacon": "QuillBeacon",
+}
 
 #: Section headings for the editor table, by command-id prefix, in the order
 #: they should appear. Anything unmatched lands in "Everything else".
@@ -68,7 +77,11 @@ def harvest_titles() -> dict[str, str]:
     titles: dict[str, str] = {}
     paths: list[Path] = []
     for rel in _TITLE_SOURCE_DIRS:
-        paths.extend(sorted((_REPO_ROOT / rel).rglob("*.py")))
+        # The editor's own modules first: a command id has one title here, and
+        # where an app's menu words it differently (Studio's "Ask..."), the
+        # editor table must still say what the editor's menu says.
+        found = (_REPO_ROOT / rel).rglob("*.py")
+        paths.extend(sorted(found, key=lambda path: (not path.name.startswith("main_frame"), path)))
     for path in paths:
         try:
             tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))
@@ -217,8 +230,16 @@ def generate() -> str:
             "above and never inside the QUILL editor."
         )
         lines.append("")
+        from quill.core.app_keymaps_ai import AGENT_TASK_TITLES
+
         rows = [
-            (format_binding_for_display(binding), _title_for(command_id, titles), command_id)
+            (
+                format_binding_for_display(binding),
+                AGENT_TASK_TITLES.get(app_id, "")
+                if command_id == "tools.hosted_ai_task" and app_id in AGENT_TASK_TITLES
+                else _title_for(command_id, titles),
+                command_id,
+            )
             for command_id, binding in keymap.items()
         ]
         rows.sort(key=lambda row: (row[0], row[2]))

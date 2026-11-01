@@ -1732,3 +1732,417 @@ song) and a recordings folder with a few finished recordings in it.
 - [ ] All seven with NVDA.
 - [ ] All seven with JAWS.
 - [ ] Checks 2, 4 and 7 with Narrator.
+
+
+## Choose Your AI, Which AI and AI Usage, QUILL and QUILL Lite (codex.md 10A, 2026-10-31)
+
+Run each check in both editors. Have the free AI connected and, if you can, a
+ChatGPT plan or an own key signed in.
+
+1. Press Ctrl+4. You hear the title "Choose Your AI" and the row in use, such
+   as "QUILL's free AI, in use", and nothing else. Arrow down the list: each
+   row reads its name and state; the app adds nothing.
+2. Tab once: the About line reads what the row can do and who gets the text.
+   Tab again: Model. On the free AI it reads "QUILL chooses the model" and is
+   unavailable. Tab again: the one button, whose name follows the row (Use
+   This, Sign In..., Sign Out). Tab again: Close. F1 on each of the five says
+   what it is for.
+3. On a signed-in row that is not in use, press Enter. You hear once "Now
+   using ..." and the row now reads "in use" when you arrow away and back.
+4. On a signed-in row, press Delete. The question "Sign out of ...?" has No
+   chosen; Enter changes nothing. Yes signs out and says so once.
+5. Close the window. Press Ctrl+8: one line naming the AI in use and its
+   model. Press Ctrl+8 twice quickly: Choose Your AI opens and nothing is
+   spoken over it.
+6. Press F6 and arrow to the AI cell: it reads "AI: ..." matching Ctrl+8.
+   Enter opens Choose Your AI.
+7. Press Alt+F5 while not signed in to ChatGPT: Choose Your AI opens on "My
+   ChatGPT plan" with the sign-in step over it; Escape closes the step and
+   nothing is said. Alt+F2 opens the window with Use My Own AI Key over it.
+8. Open AI Usage (QUILL Ctrl+Alt+Shift+F2, QUILL Lite Ctrl+Alt+Shift+F9): one
+   list, a sentence per AI, focus on the one in use. When the free AI's count
+   arrives it is said once.
+9. With the free AI in use, open the AI menu: Ask About an Image reads
+   "(needs a connection that sees)" after its name and still shows its key.
+   Press Ctrl+F5: nothing is sent, the switch question has Yes chosen.
+10. Press Ctrl+6: the AI Conversation opens; the About field's first line says
+    "Asking ... about this document." Each reply is spoken and brailled.
+
+- [ ] All ten with NVDA, in both editors.
+- [ ] All ten with JAWS, in both editors.
+- [ ] Checks 1, 3, 5 and 8 with Narrator.
+
+
+## GitHub Copilot, Codex, Plan Options and Do a Document Task, QUILL and QUILL Lite (codex.md 10A.12, 10A.13, 6.2, 2026-11-01)
+
+Run each check in both editors. Copilot checks need a build with this app's
+GitHub registration and a Copilot account (Free and paid if you can); the Codex
+checks need a ChatGPT plan and a build with the Codex engine.
+
+1. Ctrl+4, arrow to "My GitHub Copilot". In a build without the GitHub
+   registration it reads "not available yet", and Tab to About reads one
+   sentence saying why. Nothing is spoken by the app.
+2. With the registration, press Enter on the Copilot row. The sign-in step
+   opens with Open the Page focused. When the code arrives you hear it once,
+   spaced out ("The code is A B C D ... It is on the clipboard."), and the Code
+   field reads the same spaced characters. Ctrl+V in the browser pastes it.
+3. Approve on GitHub's page. The step closes by itself and you hear once
+   "Signed in to My GitHub Copilot. It is now in use." The row reads "in use".
+   Press Escape in a fresh step instead: nothing is said and nothing changes.
+4. On Copilot Free, Tab to Model: it reads "Auto (Copilot Free chooses)" and is
+   unavailable. Press Ctrl+8: one line naming Copilot and GitHub's count, said
+   once even when it waits a moment for GitHub.
+5. Open AI Usage: the Copilot row says GitHub's count; when it arrives it is
+   said once and the selection does not move.
+6. Signed in to your ChatGPT plan, arrow to "Codex, for tasks": it reads
+   "signed in". Enter: "Now using Codex, for tasks." Ctrl+8 says "Codex, on
+   your ChatGPT plan. Single requests go to the plan directly."
+7. On the ChatGPT or Codex row, Tab past the action button: Plan Options...
+   is there; on any other row it is not. Its window has Allow web search (a
+   check box; Space changes it and only your reader speaks) and Forget on This
+   Computer. Forget says once that the sign-in was forgotten here.
+8. On the free AI, open the AI menu: Do a Document Task reads "(needs Copilot
+   or Codex)" after its name and still shows Ctrl+3. Press Ctrl+3: nothing is
+   sent and the switch question has Yes chosen.
+9. On Copilot or Codex, press Ctrl+3: Do a Document Task opens with focus in
+   Instruction and nothing spoken by the app. Shift+Tab reaches Status ("Using
+   GitHub Copilot") and Conversation.
+10. Type "Make the first heading level 1" and Enter. Allow This Step? opens
+    with focus on its sentence, which your reader says. Enter allows once;
+    Review AI Changes opens; accept. When the task ends you hear the summary
+    once and Ctrl+Z in the document takes the change back in one step.
+11. Start a task and press Stop (Alt+T) while it works, or while Allow This
+    Step? is open: the question closes, the task ends within a second and you
+    hear "Stopped. ..." once. Escape in the window closes it and stops a task.
+
+- [ ] All eleven with NVDA, in both editors.
+- [ ] All eleven with JAWS, in both editors.
+- [ ] Checks 2, 3, 9 and 10 with Narrator.
+
+
+## Choose Your AI, Ask and pictures, Quill Radio and QUILL Cast (codex.md Phase 3, 2026-11-01)
+
+Run the Radio checks in Quill Radio and the Cast checks in QUILL Cast. In Cast,
+turn AI help on first (Ctrl+, > The window). A ChatGPT plan makes most checks
+possible; check 6 and check 12 also want the free AI in use.
+
+Quill Radio:
+
+1. Press Ctrl+Shift+8. Ask opens with focus in Your message, and the window is
+   on the Window menu. Shift+Tab to About this conversation: it starts "Asking
+   My ChatGPT plan about this station." Nothing is spoken on open.
+2. With a station playing, type "What is this song?" and press Enter. You hear
+   "Working." and then the reply, once. Wait for the next song and ask again:
+   you hear "Now playing changed since your last question." once, before
+   "Working."
+3. Shift+Tab to Quick questions and arrow through it: nothing is said but the
+   rows, and focus stays put. The first nine are Ask QUILL Radio's. Press Enter
+   on "Recommend stations like my favorites": focus moves to Your message and
+   you hear what will be sent with it. Press Enter on "What can I do here?":
+   the answer is read once, ending "Answered on this computer. Nothing was
+   sent."
+4. Press Ctrl+F8: one line naming the AI in use. Press it twice quickly:
+   Choose Your AI opens on the row in use. Press Alt+F5: Choose Your AI opens
+   on the ChatGPT row.
+5. Press F6 to the status bar and move to the last cell: it reads "AI: ChatGPT
+   plan". Enter opens Choose Your AI. Choose another AI there: the cell's text
+   follows the next time you read it, and nothing extra is spoken.
+6. With the free AI in use, open the Video menu: Describe the Video reads
+   "(needs a connection that sees)" and still shows Ctrl+F5. Play a video and
+   press Ctrl+F5: nothing is sent and the switch question has Yes chosen.
+7. On your ChatGPT plan with a video showing, press Ctrl+F5: you hear
+   "Working.", then "Looked at 1 picture ... Described by My ChatGPT plan." and
+   the description, once, and a result window opens. Press Ctrl+F5 again
+   without the picture changing: the answer comes straight back, ending
+   "Nothing was sent".
+8. Start Quill Radio with --safe-mode and press Ctrl+Shift+8 and
+   Ctrl+Shift+F8: each says "AI is off in Safe Mode." and nothing opens.
+
+QUILL Cast:
+
+9. Select an episode you have started and press Ctrl+Shift+8. About this
+   conversation starts "Asking My ChatGPT plan about this episode." The first
+   quick question is "What did I miss in this episode?"
+10. Help > AI Features: the first three rows are Ask (Ctrl+Shift+8), Which AI
+    Am I Using (Ctrl+F8) and Choose Your AI (Ctrl+Shift+F8), each letter works,
+    and What Did I Miss in This Episode? (D) is near the end. In an episode
+    list, Ctrl+4 still runs Quick Action 4, and Ctrl+2 still reaches window 2.
+11. Choose What Did I Miss in This Episode? on an episode you have started: the
+    answer is read once and shown in the answer window. On one you have not
+    started you hear that there is nothing to miss, and nothing is sent.
+12. With the free AI in use, on an episode whose show notes have a described
+    picture, press Ctrl+Alt+F5: the switch question comes first; answer No and
+    the notes' own description is read.
+13. On your ChatGPT plan, press Ctrl+Alt+F5: the chooser lists the artwork and
+    the show-note pictures by name, then "A picture file on this computer...".
+    Choose the artwork: you hear "Fetching the picture.", "Working.", then the
+    description, once.
+14. The status bar's last cell reads "AI: ChatGPT plan"; with AI help off it
+    reads "AI: off".
+
+- [ ] All fourteen with NVDA.
+- [ ] All fourteen with JAWS.
+- [ ] Checks 1, 4, 9 and 13 with Narrator.
+
+## Choose Your AI, Ask and pictures, QUILL Studio and QUILL Transcribe (codex.md Phase 3, 2026-11-01)
+
+Run the Studio checks in QUILL Studio and the Transcribe checks in QUILL
+Transcribe. A ChatGPT plan signed in for each app makes most checks possible;
+Studio check 6 also wants the free AI in use, and Transcribe check 12 wants a
+copy that has never signed in to ChatGPT as QUILL Transcribe.
+
+QUILL Studio:
+
+1. Press Alt+A. The AI menu reads Ask (Ctrl+6), Which AI Am I Using (Ctrl+8),
+   Choose Your AI (Ctrl+4), Describe a Picture (Ctrl+F5), Use My ChatGPT
+   Subscription (Alt+F5), Use My Own AI Key (Alt+F2), AI Usage
+   (Ctrl+Alt+Shift+F2), Privacy Agreement (Alt+Shift+F2) and Set Up AI
+   (Ctrl+Alt+Shift+A). Each letter works. The Capture menu no longer has a
+   ChatGPT row.
+2. If Studio was signed in to your ChatGPT plan before this build, press
+   Ctrl+8: it names My ChatGPT plan without asking you to choose again. Press
+   it twice quickly: Choose Your AI opens on that row, and nothing is spoken
+   on open.
+3. Press Ctrl+6. Ask opens with focus in Your message. Shift+Tab to About this
+   conversation: it starts "Asking My ChatGPT plan about your recording setup."
+   The first two quick questions are "Is my setup ready?" and "Does this
+   recording look right?".
+4. Run a demonstration check in Record a Demonstration, close it, then ask "Is
+   my setup ready?": the answer refers to what the check found. You hear
+   "Working." and the reply, once.
+5. Press F6 to the status bar and move to the last cell: it reads "AI: ChatGPT
+   plan". Enter opens Choose Your AI.
+6. With the free AI in use, open the AI menu: Describe a Picture reads "(needs
+   a connection that sees)" and still shows Ctrl+F5. Press Ctrl+F5: nothing
+   opens, nothing is sent, and the switch question has Yes chosen.
+7. On your ChatGPT plan, press Ctrl+F5 for the first time: you hear "Pictures
+   you ask about in QUILL Studio go to OpenAI on your ChatGPT plan. Nothing is
+   sent until you ask." with No chosen. Choose Yes, pick a picture: you hear
+   "Working.", then "Looked at 1 picture ... Described by My ChatGPT plan." and
+   the description, once, and a result window opens. Press Ctrl+F5 on the same
+   picture: no consent question, and the answer ends "Nothing was sent".
+8. Press Ctrl+F5 and pick a video, type 1:30 and press Enter: the description
+   names 1:30.
+9. In the Screenshot Inspector, choose Ask AI: the confirmation names My
+   ChatGPT plan and says it goes to OpenAI on your ChatGPT plan. No is chosen.
+10. Start Studio with --safe-mode and press Ctrl+6, Ctrl+4 and Ctrl+F5: each
+    says "AI is off in Safe Mode." and nothing opens.
+
+QUILL Transcribe:
+
+11. Press Alt+A. The AI menu sits after Options and reads Ask (Ctrl+Shift+8),
+    Which AI Am I Using (Ctrl+F8), Choose Your AI (Ctrl+Shift+F8), Use My
+    ChatGPT Subscription (Alt+F5), Use My Own AI Key (Alt+F2), AI Usage
+    (Ctrl+Alt+Shift+F2) and Privacy Agreement (Alt+Shift+F2). Ctrl+2 still
+    reaches window 2 on the Window menu.
+12. On a copy that has never signed in as QUILL Transcribe, with the free AI in
+    use, open Review Dictation (Shift+F4): you hear once "QUILL Transcribe now
+    signs in to your AI on its own and no longer uses QUILL's sign-in; press
+    Ctrl+Shift+F8 to sign in as QUILL Transcribe." The Status line starts with
+    the same sentence, then says why the AI cannot change the words. Close and
+    open it again: the sentence is not said again.
+13. Press Ctrl+Shift+F8, sign in to My ChatGPT plan: the browser page names
+    QUILL Transcribe, not QUILL. You hear "Signed in to My ChatGPT plan. It is
+    now in use." once.
+14. Tab through the main window to the AI line: it reads "AI" and "AI: ChatGPT
+    plan", and F1 says Enter opens Choose Your AI. Press Enter: it opens.
+15. Open a finished transcript from Notifications, close it, and press
+    Ctrl+Shift+8. Ask "What was decided?": the answer is about that
+    transcript. About this conversation starts "Asking My ChatGPT plan about
+    your dictation."
+16. Start QUILL Transcribe with --safe-mode and press Ctrl+Shift+8 and Ctrl+F8:
+    each says "AI is off in Safe Mode."
+
+- [ ] All sixteen with NVDA.
+- [ ] All sixteen with JAWS.
+- [ ] Checks 1, 7, 11 and 12 with Narrator.
+
+## Choose Your AI, Ask and first features, Quill Weather, Quill Converter, Quill Media Player, Quill Inkwell and QuillBeacon (codex.md Phase 3, 2026-11-01)
+
+Run each app's checks in that app. A ChatGPT plan signed in for each app makes
+most checks possible; the checks that offer a switch want the free AI in use.
+Each app signs in on its own, so the browser page should name that app, for
+example QUILL Weather, never QUILL.
+
+Every app:
+
+1. Alt+I (Alt+A in QuillBeacon, the Assist menu) opens the AI rows, and every
+   row reads with its key. In Weather, Converter, Media Player and Inkwell the
+   keys are Ask Ctrl+Shift+8, Which AI Ctrl+F8 and Choose Your AI
+   Ctrl+Shift+F8, and Ctrl+2 still reaches window 2 on the Window menu. In
+   QuillBeacon they are Ctrl+6, Ctrl+8 and Ctrl+4.
+2. Which AI says one line; pressed twice quickly it opens Choose Your AI, focus
+   in the list on the row in use.
+3. Tab to the AI line in the main window: it reads "AI" and the AI in use, F1
+   says Enter opens Choose Your AI, and Enter opens it.
+4. Start the app with --safe-mode: Ask, Which AI and the app's own AI command
+   each say "AI is off in Safe Mode." and nothing opens.
+
+Quill Weather:
+
+5. Ctrl+Shift+G (Should I Go Out?): you hear "Getting weather for" your place,
+   then the answer, and a window titled "Should I Go Out?" takes focus. With an
+   active alert, the answer starts "Active alert, as the Weather Service wrote
+   it:" and the alert's own words.
+6. Ctrl+Shift+8, then "Do I need a coat at 5?" from Quick questions: the
+   answer uses your place's name. Alt+A still presses Add Location.
+
+Quill Converter:
+
+7. With an empty queue, Ctrl+Shift+D says the queue is empty and opens
+   nothing. With files queued, the device question takes focus; Escape cancels
+   quietly; Enter with "iPhone" says "Reading the queued files", then the
+   answer is spoken and its window is titled "Will This Play on My Device?".
+8. Alt+A still presses Add Files. With Advanced Options shown, Broadcast polish
+   is reached by Tab and no longer announces an access key.
+
+Quill Media Player:
+
+9. Ctrl+Alt+C in a book: "Summarizing this chapter. This may take a moment.",
+   then the answer is spoken and a "Chapter Summary" window opens. Pressed
+   again, it answers at once. With no AI chosen, Ctrl+Alt+R opens Choose Your
+   AI and says once that no AI is in use.
+10. Alt+A still plays or pauses. "Where am I?" no longer has an access key;
+    Tab and Shift+F6 still reach it.
+
+Quill Inkwell:
+
+11. Ctrl+Shift+A on a .docx: the Yes/No question names the file, about how
+    many words go and to which AI, and focus starts on No. Yes, then Suggest
+    Abbreviations opens: every check box reads "not checked", Space checks it,
+    and after OK you hear "Added" and the number.
+12. Alt+N presses Quick Insert (it was Alt+I).
+
+QuillBeacon:
+
+13. Select a beacon with a picture and press Ctrl+F5: the first time on this
+    AI you are asked where pictures go, No the default; then the description
+    is spoken, its window takes focus, and "Add this to the beacon's note?"
+    follows with No the default. Yes, then Ctrl+Z restores the note.
+14. On the free AI, Ctrl+F5 offers the switch; answer No and "Read on This
+    Computer" opens with the words OCR found, and nothing is sent.
+
+Quill Radio and QUILL Cast, the picture consent:
+
+15. In Quill Radio, show a video and press Ctrl+F5 on an AI that sees: the
+    first time you hear "Pictures you ask about in QUILL Radio go to" and the
+    company, Yes or No with No the default. No sends nothing; Yes describes it,
+    and the next Ctrl+F5 does not ask again.
+16. In QUILL Cast, press Ctrl+Alt+F5 on an AI that sees: the same question
+    comes before the list of pictures, and No fetches nothing.
+
+- [ ] All sixteen with NVDA.
+- [ ] All sixteen with JAWS.
+- [ ] Checks 1, 3, 5 and 11 with Narrator.
+
+## My own key gains the AI Hub's providers, and one prompt list for the family, QUILL and QUILL Lite (codex.md decisions 18 and 20, 2026-11-01)
+
+Use My Own AI Key (Alt+F2), in QUILL and then in QUILL Lite:
+
+1. Open it and arrow through Provider: OpenAI, Google Gemini, Anthropic
+   Claude, OpenRouter, Ollama Cloud, Custom OpenAI-compatible service, Ollama
+   on this computer. Each is read once, with nothing else spoken over it.
+2. Choose Ollama on this computer and Tab to About this: the first words read
+   are "Runs on this computer. Nothing is sent." The API key box reads as
+   unavailable and its label says none is needed; Server address reads
+   http://localhost:11434 (or your saved address); the test button reads
+   "Test the Connection" and Remove the Saved Key reads as unavailable.
+3. With Ollama running, press Test the Connection: you hear "Ollama on this
+   computer is running", the number of models and which one answered. With
+   Ollama stopped, you hear that it did not answer, and nothing else.
+4. Choose Anthropic Claude: the key box is available again and its label names
+   Anthropic Claude; Server address reads as unavailable; Alt+V does nothing
+   useful there and Alt+K lands in the key box.
+5. Press OK on Ollama: you hear "AI help uses Ollama on this computer. Runs on
+   this computer. Nothing is sent." Ctrl+4 then reads "My own key, Ollama on
+   this computer" and its About line ends with "Runs on this computer. Nothing
+   is sent."
+6. With an Ollama model that reads pictures chosen, Ctrl+F5 asks once where
+   pictures go and names "Ollama on this computer, and nowhere else"; with a
+   text-only model it says pictures need a connection that can see.
+
+The AI Hub (QUILL only):
+
+7. Open AI > AI Hub. The Provider page reads "Provider in use" and the
+   sentence naming the provider and model; the next Tab stop is "Open Use My
+   Own AI Key", Alt+K. There is no provider list, key box or model box.
+8. Press Open Use My Own AI Key: the Hub closes and Choose Your AI opens on the
+   own key's row with Use My Own AI Key on top. Focus lands in that window,
+   not back in the editor.
+9. The On-Device page reads as one paragraph with no address box. The
+   Advanced page has no Reset AI Settings button.
+
+One prompt list:
+
+10. On a profile with prompts in QUILL Lite's own prompts.json, start QUILL
+    Lite: nothing is spoken about the move. Ctrl+7 lists those prompts, and a
+    name QUILL already had with different words reads "(from QUILL Lite)".
+11. Start QUILL afterwards: Ctrl+7 lists the same prompts. Quit and start
+    again: nothing is added twice.
+
+- [ ] All eleven with NVDA.
+- [ ] All eleven with JAWS.
+
+## Agent tasks across the family, Propose Alt Text and Tell Me When This Changes (codex.md Phase 4c, 2026-11-01)
+
+Set up GitHub Copilot (or Codex) in Choose Your AI in each app first. Keyboard only.
+
+QUILL and QUILL Lite, Propose Alt Text:
+
+1. Open a Markdown file with two pictures, one with alt text and one without,
+   saved beside it. On the free AI, AI > Propose Alt Text reads "(needs
+   Copilot or Codex)" and pressing it offers to switch; say No and nothing
+   opens.
+2. On Copilot, press it: the window title is Do a Document Task, focus lands
+   in Instruction and the reader says the filled-in request. Nothing is
+   spoken by QUILL itself.
+3. Press Enter. If the AI can see, Allow This Step? names the picture
+   ("Send the picture ... from this document"); the first time on this AI a
+   Yes/No about pictures follows, No the default.
+4. Review AI Changes opens on one change only, the alt text for the picture
+   without it. Accept: Ctrl+Z after the task removes exactly that change.
+5. The closing summary is spoken once, for example "Done. 1 change applied:
+   Set alt text for an image." The picture that already had alt text is
+   untouched.
+
+Each app's task (Quill Radio Find and Record and QUILL Cast Find and Follow on
+Ctrl+F3; QUILL Transcribe Speakers, Sections and Summary on Ctrl+F3; QUILL
+Studio Recording Pre-flight Check on Ctrl+3 and Narrate a Recording on
+Ctrl+Shift+3; Quill Converter, Quill Media Player and Quill Inkwell on Ctrl+F3;
+QuillBeacon Organize What I Saved on Ctrl+3):
+
+6. On the free AI the row says "(needs Copilot or Codex)" and the key offers
+   to switch, sending nothing. In Safe Mode the key says AI is off.
+7. On Copilot the key opens the agent window with the app's own title; the
+   reader says the title and the Instruction field, and the app says nothing.
+   F1 on Instruction gives the app's own sentence.
+8. Ask for something that changes data (follow a show, schedule a recording,
+   tag an item, add abbreviations, write sections). Allow This Step? asks in
+   one specific sentence; for a data change Review Proposed Change then shows
+   the whole change as text, Enter applies and Escape does not. Say Don't
+   allow once and confirm nothing changed.
+9. The summary is spoken once and brailled; the conversation fills in
+   silently and Shift+Tab reaches it. Stop ends a running task within a
+   second; Close does the same.
+10. Studio pre-flight: with the webcam microphone as default, the checklist
+    names it. If the AI can see, the still is asked about first, naming what
+    is captured.
+
+Tell Me When This Changes (QUILL Studio, Quill Radio):
+
+11. Studio: choose a window in Capture, press Ctrl+F9. Hear "Watching ... for
+    changes." once. Change the words in that window: within a few seconds one
+    sentence says what the words changed to, read on this computer.
+12. Press Ctrl+F9 again: "Already watching". Press Ctrl+Shift+F9: "Stopped
+    watching ...". Press it again: "Nothing was being watched."
+13. Radio: with no video showing, Ctrl+F9 says there is no picture to watch.
+    With a video stream showing, start a watch; hide the video and hear the
+    watch stop with a reason.
+14. On the free AI, Start Watching reads "(needs a connection that sees)" and
+    offers to switch. In Safe Mode it is refused aloud. Declining the picture
+    consent starts nothing.
+15. Close the window while watching: nothing more is said or sent. AI Usage
+    counts each question the watch asked.
+
+- [ ] All fifteen with NVDA.
+- [ ] All fifteen with JAWS.

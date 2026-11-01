@@ -318,10 +318,11 @@ def test_a_reply_that_is_not_json_is_still_an_answer_with_no_choices(
 def test_the_dictionary_needs_a_direct_route_and_opens_the_account_window(
     lite_window, answer_frames, monkeypatch
 ):
-    import quill.ui.hosted_ai_chatgpt as chatgpt_ui
+    import quill.ui.hosted_ai_connections as connections
 
-    window = type("ChatGptFrame", (_Recorder,), {"last": None, "made": []})
-    monkeypatch.setattr(chatgpt_ui, "ChatGptFrame", window)
+    # Use My ChatGPT Subscription opens Choose Your AI on the plan's row (10A.9).
+    window = type("ChooseAiFrame", (_Recorder,), {"last": None, "made": []})
+    monkeypatch.setattr(connections, "ChooseAiFrame", window)
     win = _on_running(lite_window)
     service = _WordService()
     service.direct = False

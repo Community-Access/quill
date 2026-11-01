@@ -89,6 +89,8 @@ _SCAN_GLOBS: tuple[str, ...] = (
     "quill/ui/prompt_edit_dialog.py",
     # AutoCorrect Entries, the same window in both editors (2026-10-16).
     "quill/ui/autocorrect_entries_dialog.py",
+    # Do a Document Task and its approval question, both editors (codex.md 6.2).
+    "quill/ui/agent_window.py",
 )
 
 #: Surface constructions whose titles the scan cannot resolve, with the reason

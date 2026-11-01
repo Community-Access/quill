@@ -52,3 +52,28 @@ def test_egress_platforms_cover_every_discovered_site() -> None:
     # The platform view and the enforcement view must cover the same site keys --
     # they derive from one scan, so a missing or extra key would be a drift bug.
     assert set(discover_egress_platforms()) == set(discover_egress_sites())
+
+
+def test_every_child_process_entry_names_a_real_launcher() -> None:
+    # Child-process egress (the Copilot CLI, the Codex app-server) is invisible
+    # to the AST scan, so its entries cannot be checked for staleness the usual
+    # way. Instead each key must still name a function that exists.
+    import ast
+    from pathlib import Path
+
+    import quill
+    from quill.tools.network_egress_entries import _CHILD_PROCESS_EGRESS
+
+    root = Path(quill.__file__).parent
+    assert _CHILD_PROCESS_EGRESS, "the Copilot and Codex entries are missing"
+    for site, reason in _CHILD_PROCESS_EGRESS.items():
+        assert reason.strip(), f"{site} has an empty rationale"
+        rel, func = site.split("::")
+        path = root / rel
+        assert path.is_file(), f"{site}: {rel} no longer exists"
+        names = {
+            node.name
+            for node in ast.walk(ast.parse(path.read_text(encoding="utf-8")))
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        }
+        assert func in names, f"{site}: {func} is not defined in {rel}"

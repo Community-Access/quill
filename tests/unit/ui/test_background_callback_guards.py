@@ -24,9 +24,6 @@ _UI_ROOT = Path(str(ui_package.__file__)).parent
 #: ``module::function``; the guard may be ``dialog_alive(...)`` or a dialog's
 #: own ``_alive()`` helper.
 _GUARDED = [
-    ("ai_hub_dialog.py", "_on_auto_probe_done"),
-    ("ai_hub_dialog.py", "_on_hub_models_listed"),
-    ("ai_hub_dialog.py", "_on_test_done"),
     ("ai_document_qa_dialog.py", "_on_answer_done"),
     ("ai_document_qa_dialog.py", "_on_answer_error"),
     ("ai_thesaurus_dialog.py", "_on_results"),

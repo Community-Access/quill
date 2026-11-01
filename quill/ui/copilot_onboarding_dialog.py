@@ -1,281 +1,138 @@
-"""GitHub Copilot onboarding dialog (Phase 6 UI, AI-19).
+"""Signing in to My GitHub Copilot: the one sign-in step, with a device code.
 
-A guided, accessible two-step setup for the Copilot engine:
+The Copilot row of Choose Your AI (codex.md 10A.3, 10A.12) signs in through the
+window's one sign-in step (:class:`quill.ui.hosted_ai_connections.SignInStep`),
+the same layout every connection uses, with one more field for GitHub's code:
 
-1. **Install** the Copilot SDK on demand (wheel-only, user-writable, Safe-Mode
-   aware) via :func:`quill.core.ai.sdk_install.install_pack`.
-2. **Sign in** to GitHub using the OAuth 2.0 device flow — a short, speakable
-   code the user types in their browser (:mod:`quill.core.ai.device_login` driven
-   by the real :func:`quill.core.ai.oauth_poster.post_form`), with the token
-   persisted to the OS secure store and handed to the SDK for the session.
+* one sentence -- "To use My GitHub Copilot, approve QUILL on GitHub's page.";
+* the code, read-only and spaced out so a reader says each character, and
+  already on the clipboard when it arrives (said once, because a field that
+  changes without focus is something the reader does not say);
+* **Open the Page** (the default) opens GitHub's page; **Cancel** stops the
+  wait at once;
+* on success the step closes itself, and the window says "Signed in to My
+  GitHub Copilot. It is now in use."
 
-Accessibility: one status text area narrates every step and carries the device
-code / verification URL / expiry as live text a screen reader can review; each
-action is a labelled button; the dialog follows the modal contract (escape to
-Close, focus on the status content, ``Destroy`` on every exit). Heavy work
-(install, polling) runs off the UI thread and reports back via ``wx.CallAfter``.
+**The Install step is retired.** The Copilot SDK and CLI ship in the shared
+runtime since Phase 2 (10A.12), so sign-in is the only step there is. This
+module used to hold a two-step "Set Up GitHub Copilot" dialog; the AI Hub's
+Engines tab and the engine status cell now open this same step.
+
+**Per app, and only with a registration.** Each app signs in under its own name
+and keeps its own token (:mod:`quill.core.ai.copilot_sign_in`). With no GitHub
+client id for this app the step never opens: the caller hears
+:func:`quill.core.ai.copilot_auth.sign_in_unavailable_message` in one sentence.
+
+The waiting happens on worker threads and comes back with ``wx.CallAfter``.
 """
 
 from __future__ import annotations
 
-import threading
-import time
 from collections.abc import Callable
+from typing import Any
+
+import wx
 
 from quill.core.ai import copilot_auth
-from quill.core.ai.device_login import (
-    announce_device_code,
-    describe_login_result,
-    request_device_code,
-    run_device_login,
-)
-from quill.core.ai.oauth_poster import post_form
-from quill.core.ai.sdk_install import (
-    install_pack,
-    is_pack_importable,
-    manual_install_hint,
-)
-from quill.ui.dialog_contract import apply_modal_ids, focus_primary_control
-from quill.ui.dpi import dip_size
+from quill.core.ai.connection_caps import COPILOT
 
-_PACK_ID = "copilot"
+__all__ = ["copilot_sign_in", "sign_in_copilot_for_app"]
 
 
-class CopilotOnboardingDialog:
-    """Install + sign in to GitHub Copilot, accessibly."""
+def _copy(text: str) -> bool:
+    """Put *text* on the clipboard; False when the clipboard is busy."""
+    clipboard = wx.TheClipboard
+    if not clipboard.Open():
+        return False
+    try:
+        return bool(clipboard.SetData(wx.TextDataObject(text)))
+    finally:
+        clipboard.Close()
 
-    def __init__(
-        self,
-        parent: object,
-        show_modal_dialog: Callable,
-        announce: Callable[[str], None] | None = None,
-    ) -> None:
-        import wx
 
-        self._wx = wx
-        self._show_modal = show_modal_dialog
-        self._announce = announce or (lambda _m: None)
-        self._grant: object | None = None
-        self._busy = False
+def copilot_sign_in(parent: Any, service: Any, announce: Callable[[str], None]) -> bool:
+    """Run the Copilot sign-in step for *service*'s app. True when signed in.
 
-        self.dialog = wx.Dialog(
-            parent,
-            title="Set Up GitHub Copilot",
-            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
-        )
-        self.dialog.SetSize(dip_size(self.dialog, 560, 440))
-        self._build_ui()
-        self._refresh_state()
+    *announce* says the one thing the step itself cannot show the reader: the
+    code arriving in a field that does not have focus. Every other outcome is
+    the caller's to say.
+    """
+    return sign_in_copilot_for_app(
+        parent,
+        str(getattr(service, "agent_name", "") or copilot_auth.DEFAULT_AGENT_NAME),
+        announce,
+        data_dir=getattr(service, "data_dir", None),
+    )
 
-    # ------------------------------------------------------------------
-    # UI
-    # ------------------------------------------------------------------
 
-    def _build_ui(self) -> None:
-        wx = self._wx
-        root = wx.BoxSizer(wx.VERTICAL)
+def sign_in_copilot_for_app(
+    parent: Any,
+    agent_name: str,
+    announce: Callable[[str], None],
+    *,
+    data_dir: Any = None,
+) -> bool:
+    """The step for *agent_name*; the AI Hub and the engine status cell call this too."""
+    from quill.core.ai.connection_words import sign_in_sentence
+    from quill.core.ai.copilot_sign_in import CopilotSignIn, SignInCancelled, spoken_code
+    from quill.ui.dialog_contract import show_modal_dialog
+    from quill.ui.hosted_ai_connections import SIGN_IN_TITLE, SignInStep
+    from quill.ui.update_download import thread_submit
 
-        intro = wx.StaticText(
-            self.dialog,
-            label=(
-                "GitHub Copilot runs agentic edits through your GitHub account. "
-                "This sets it up in two steps: install the Copilot SDK, then sign "
-                "in to GitHub with a short code — no key to paste."
+    if not copilot_auth.is_configured(agent_name):
+        announce(copilot_auth.sign_in_unavailable_message(agent_name))
+        return False
+    flow = CopilotSignIn(agent_name, data_dir=data_dir)
+    state: dict[str, Any] = {"grant": None, "open_when_ready": False}
+
+    def open_page(step: SignInStep) -> None:
+        grant = state["grant"]
+        if grant is None:
+            state["open_when_ready"] = True  # opened as soon as the code arrives
+            return
+        url = grant.verification_uri
+        if not wx.LaunchDefaultBrowser(url):
+            step.failed(f"Your browser did not open. Go to {url} and type the code.")
+
+    step = SignInStep(parent, sign_in_sentence(COPILOT, agent_name), open_page, with_code=True)
+
+    def failed(message: str) -> None:
+        if step:
+            step.failed(message)
+
+    def code_arrived(grant: Any) -> None:
+        if not step:
+            return
+        state["grant"] = grant
+        spaced = spoken_code(grant.user_code)
+        step.code.SetValue(spaced)
+        copied = _copy(grant.user_code)
+        where = " It is on the clipboard." if copied else ""
+        announce(f"The code is {spaced}.{where}")
+        thread_submit(
+            "quill-ai-copilot-wait",
+            lambda **_k: flow.wait(grant),
+            on_success=lambda _n, _r: wx.CallAfter(step.succeeded),
+            on_failure=lambda _n, error: (
+                None
+                if isinstance(error, SignInCancelled)
+                else wx.CallAfter(failed, str(error.args[0]) if error.args else str(error))
             ),
         )
-        intro.Wrap(520)
-        root.Add(intro, 0, wx.ALL, 12)
+        if state["open_when_ready"]:
+            open_page(step)
 
-        self.status = wx.TextCtrl(
-            self.dialog,
-            style=wx.TE_MULTILINE | wx.TE_READONLY | wx.TE_RICH2,
-        )
-        self.status.SetName("Setup status")
-        self.status.SetMinSize(dip_size(self.status, 520, 160))
-        root.Add(self.status, 1, wx.EXPAND | wx.LEFT | wx.RIGHT, 12)
-
-        self.gauge = wx.Gauge(self.dialog, range=100)
-        self.gauge.SetName("Install progress")
-        self.gauge.Hide()
-        root.Add(self.gauge, 0, wx.EXPAND | wx.ALL, 12)
-
-        actions = wx.BoxSizer(wx.HORIZONTAL)
-        self.install_btn = wx.Button(self.dialog, label="&Install Copilot SDK")
-        self.signin_btn = wx.Button(self.dialog, label="&Sign in to GitHub")
-        self.browser_btn = wx.Button(self.dialog, label="Open Sign-in Page in &Browser")
-        actions.Add(self.install_btn, 0, wx.RIGHT, 8)
-        actions.Add(self.signin_btn, 0, wx.RIGHT, 8)
-        actions.Add(self.browser_btn, 0)
-        root.Add(actions, 0, wx.ALL, 12)
-
-        buttons = wx.BoxSizer(wx.HORIZONTAL)
-        buttons.AddStretchSpacer()
-        self.close_btn = wx.Button(self.dialog, wx.ID_CANCEL, label="&Close")
-        buttons.Add(self.close_btn, 0)
-        root.Add(buttons, 0, wx.EXPAND | wx.ALL, 12)
-
-        self.dialog.SetSizer(root)
-        apply_modal_ids(self.dialog, escape_id=wx.ID_CANCEL)
-
-        self.install_btn.Bind(wx.EVT_BUTTON, self._on_install)
-        self.signin_btn.Bind(wx.EVT_BUTTON, self._on_sign_in)
-        self.browser_btn.Bind(wx.EVT_BUTTON, self._on_open_browser)
-
-    def _set_status(self, message: str, *, announce: bool = True) -> None:
-        self.status.SetValue(message)
-        if announce:
-            self._announce(message)
-
-    def _refresh_state(self) -> None:
-        installed = is_pack_importable(_PACK_ID)
-        self.install_btn.Enable(not installed and not self._busy)
-        self.signin_btn.Enable(installed and not self._busy)
-        self.browser_btn.Enable(self._grant is not None)
-        if self._busy:
-            return
-        if not installed:
-            self._set_status(
-                "Step 1 of 2: install the Copilot SDK. "
-                f"You can also run this yourself: {manual_install_hint(_PACK_ID)}",
-                announce=False,
-            )
-        else:
-            self._set_status(
-                "Step 2 of 2: sign in to GitHub to finish connecting Copilot.",
-                announce=False,
-            )
-
-    # ------------------------------------------------------------------
-    # Step 1: install
-    # ------------------------------------------------------------------
-
-    def _on_install(self, _event: object) -> None:
-        wx = self._wx
-        self._busy = True
-        self._refresh_state()
-        self.gauge.Show()
-        self.dialog.Layout()
-        self._set_status("Installing the Copilot SDK. This can take a few minutes...")
-
-        def progress(fraction: float, message: str) -> None:
-            wx.CallAfter(self._on_install_progress, fraction, message)
-
-        def worker() -> None:
-            try:
-                install_pack(_PACK_ID, progress)
-                wx.CallAfter(self._on_install_done, None)
-            except Exception as exc:  # noqa: BLE001 - surface a clean message
-                wx.CallAfter(self._on_install_done, str(exc))
-
-        threading.Thread(  # GATE-40-OK: bounded install worker; posts via CallAfter.
-            target=worker, daemon=True
-        ).start()
-
-    def _on_install_progress(self, fraction: float, message: str) -> None:
-        self.gauge.SetValue(max(0, min(100, int(fraction * 100))))
-        self.status.SetValue(message)
-
-    def _on_install_done(self, error: str | None) -> None:
-        self._busy = False
-        self.gauge.Hide()
-        self.dialog.Layout()
-        if error:
-            self._set_status(f"Could not install the Copilot SDK: {error}")
-        else:
-            self._set_status("Copilot SDK installed. Now sign in to GitHub.")
-        self._refresh_state()
-
-    # ------------------------------------------------------------------
-    # Step 2: device-flow sign-in
-    # ------------------------------------------------------------------
-
-    def _on_sign_in(self, _event: object) -> None:
-        wx = self._wx
-        if not copilot_auth.is_configured():
-            self._set_status(
-                "Automatic GitHub sign-in is not configured in this build. "
-                "Sign in once with the Copilot CLI (run: copilot) or the GitHub "
-                "CLI (gh auth login), then choose GitHub Copilot as your engine."
-            )
-            return
-        self._busy = True
-        self._refresh_state()
-        self._set_status("Contacting GitHub for a sign-in code...")
-
-        def worker() -> None:
-            try:
-                config = copilot_auth.github_device_flow_config()
-                grant = request_device_code(config, poster=post_form)
-                wx.CallAfter(self._on_code_ready, config, grant, None)
-            except Exception as exc:  # noqa: BLE001
-                wx.CallAfter(self._on_code_ready, None, None, str(exc))
-
-        threading.Thread(  # GATE-40-OK: device-code request; posts via CallAfter.
-            target=worker, daemon=True
-        ).start()
-
-    def _on_code_ready(self, config: object, grant: object, error: str | None) -> None:
-        wx = self._wx
-        if error or grant is None:
-            self._busy = False
-            self._set_status(f"Could not start GitHub sign-in: {error or 'unknown error'}")
-            self._refresh_state()
-            return
-        self._grant = grant
-        message = announce_device_code(grant)  # type: ignore[arg-type]
-        self._set_status(message)
-        self.browser_btn.Enable(True)
-
-        def worker() -> None:
-            try:
-                result = run_device_login(
-                    config,  # type: ignore[arg-type]
-                    grant,  # type: ignore[arg-type]
-                    poster=post_form,
-                    clock=time.monotonic,
-                    sleeper=time.sleep,
-                )
-                wx.CallAfter(self._on_login_result, result, None)
-            except Exception as exc:  # noqa: BLE001
-                wx.CallAfter(self._on_login_result, None, str(exc))
-
-        threading.Thread(  # GATE-40-OK: device-login poll loop; posts via CallAfter.
-            target=worker, daemon=True
-        ).start()
-
-    def _on_login_result(self, result: object, error: str | None) -> None:
-        self._busy = False
-        self._grant = None
-        if error or result is None:
-            self._set_status(f"Sign-in did not complete: {error or 'unknown error'}")
-            self._refresh_state()
-            return
-        spoken = describe_login_result(result)  # type: ignore[arg-type]
-        tokens = getattr(result, "tokens", None) or {}
-        token = str(tokens.get("access_token", "")) if isinstance(tokens, dict) else ""
-        if token:
-            copilot_auth.persist_token(token)
-            copilot_auth.apply_token_to_environment(token)
-        self._set_status(spoken)
-        self._refresh_state()
-
-    def _on_open_browser(self, _event: object) -> None:
-        if self._grant is None:
-            return
-        uri = getattr(self._grant, "verification_uri", "")
-        if uri:
-            self._wx.LaunchDefaultBrowser(uri)
-
-    # ------------------------------------------------------------------
-    # Public API
-    # ------------------------------------------------------------------
-
-    def show(self) -> None:
-        self.dialog.CentreOnParent()
-        focus_primary_control(self.dialog)
-        try:
-            # _show_modal is MainFrame._show_modal_dialog(dialog, label) -- the
-            # label is required, and omitting it was crash report #1442.
-            self._show_modal(self.dialog, "Set Up GitHub Copilot")
-        finally:
-            self.dialog.Destroy()
+    thread_submit(
+        "quill-ai-copilot-code",
+        lambda **_k: flow.request_code(),
+        on_success=lambda _n, grant: wx.CallAfter(code_arrived, grant),
+        on_failure=lambda _n, error: wx.CallAfter(
+            failed, str(error.args[0]) if error.args else str(error)
+        ),
+    )
+    try:
+        result = show_modal_dialog(step, SIGN_IN_TITLE)
+    finally:
+        flow.cancel()  # a wait still running stops now; after success it is a no-op
+        step.Destroy()
+    return result == wx.ID_OK and bool(copilot_auth.stored_token(agent_name))

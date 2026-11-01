@@ -28,10 +28,11 @@ from typing import Any
 
 import wx
 
+from quill.apps.inkwell_ai import InkwellAiMixin
 from quill.apps.inkwell_dictation import InkwellDictationMixin
 from quill.apps.inkwell_keys import InkwellKeysMixin
 from quill.apps.inkwell_preference_save import InkwellPreferenceSaver
-from quill.apps.inkwell_preferences import open_preferences
+from quill.apps.inkwell_preferences import InkwellStartupMixin, open_preferences
 from quill.core.abbreviations import (
     AbbreviationLibrary,
     load_abbreviation_library,
@@ -59,7 +60,12 @@ _IPC_SLOT = "inkwell"
 
 
 class QuillInkwellFrame(
-    AppShellFrame, InkwellExpansionMixin, InkwellKeysMixin, InkwellDictationMixin
+    AppShellFrame,
+    InkwellExpansionMixin,
+    InkwellKeysMixin,
+    InkwellDictationMixin,
+    InkwellStartupMixin,
+    InkwellAiMixin,
 ):
     """The manager window for a system-wide expander that runs in the tray."""
 
@@ -90,6 +96,8 @@ class QuillInkwellFrame(
         from quill.ui import app_context_help
 
         app_context_help.activate(inkwell_surface_help.purpose_for_title)
+        # The family's AI rows read their keys from APP_KEYMAPS (codex.md Phase 3).
+        self._apply_app_keymap("inkwell")
         self._build_menu_bar()
         self._build_main_panel()
         self._ensure_tray_icon(self._build_tray_menu, tooltip=_TITLE)
@@ -208,6 +216,9 @@ class QuillInkwellFrame(
         app_sounds.append_menu_item(self, options_menu)  # Alt+Shift+M, family-wide
         menu_bar.Append(options_menu, "&Options")
         self._append_dictation_menu(menu_bar)  # Dictate Anywhere (inkwell_dictation.py)
+        # Ask, Which AI, Choose Your AI, Suggest Abbreviations and the accounts
+        # (codex.md Phase 3, inkwell_ai.py). A&I, not &AI: Alt+A is Abbreviations.
+        self._append_app_ai_menu(menu_bar, "A&I")
 
         from quill.ui.quillville_menu import build_quillville_menu
 
@@ -324,7 +335,8 @@ class QuillInkwellFrame(
             "enable or disable entries, and import or export the whole "
             "library. Changes save immediately and work in QUILL too."
         )
-        quick_btn = wx.Button(panel, label="Quick &Insert...")
+        # Alt+N: Windows gives a menu's letter to a button sharing it (A&I).
+        quick_btn = wx.Button(panel, label="Quick I&nsert...")
         quick_btn.SetHelpText(
             "Pick an abbreviation and have its expansion typed into the "
             "window you were just working in -- the way to use entries set "
@@ -336,6 +348,8 @@ class QuillInkwellFrame(
         buttons.Add(manage_btn, 0, wx.RIGHT, 6)
         buttons.Add(quick_btn, 0)
         root.Add(buttons, 0, wx.ALL, 10)
+        # Which AI is in use (codex.md decision 19); Enter opens Choose Your AI.
+        self._build_ai_line(panel, root, border=10)
 
         panel.SetSizer(root)
         self._panel = panel
@@ -509,28 +523,6 @@ class QuillInkwellFrame(
             "Expansions are pasted; the clipboard is restored afterwards."
             if paste
             else "Expansions are typed; the clipboard is never touched."
-        )
-
-    def _launch_at_startup_enabled(self) -> bool:
-        try:
-            from quill.platform.windows import inkwell_startup
-
-            return bool(inkwell_startup.is_launch_at_startup_enabled())
-        except Exception:  # noqa: BLE001
-            return False
-
-    def _set_launch_at_startup(self, enabled: bool) -> None:
-        try:
-            from quill.platform.windows import inkwell_startup
-
-            inkwell_startup.set_launch_at_startup(enabled)
-        except Exception:  # noqa: BLE001
-            self._announce("Could not change the Windows startup setting.")
-            return
-        self._announce(
-            "Quill Inkwell will start with Windows."
-            if enabled
-            else "Quill Inkwell will not start with Windows."
         )
 
     # -- lifecycle ---------------------------------------------------------------

@@ -15,7 +15,6 @@ blanket no-op). No wx is required.
 from __future__ import annotations
 
 from quill.ui.ai_document_qa_dialog import AIDocumentQADialog
-from quill.ui.ai_hub_dialog import AIHubDialog
 from quill.ui.ai_model_panel import AIModelDialog
 from quill.ui.ai_thesaurus_dialog import AIThesaurusDialog
 from quill.ui.dialog_contract import dialog_alive
@@ -95,36 +94,6 @@ def test_dialog_alive_truth_table() -> None:
     assert dialog_alive(None) is False
     # A torn-down dialog whose probe raises must read as "not alive", not crash.
     assert dialog_alive(_RaisingDialog()) is False
-
-
-# --- AI Hub: auto-probe / list-models / test-connection ----------------------
-
-
-def test_hub_auto_probe_noops_when_dialog_deleted() -> None:
-    stub = _Stub(_DeletedDialog())
-    AIHubDialog._on_auto_probe_done(stub, "Ollama running.")  # type: ignore[attr-defined]
-    assert stub.widget_call_count() == 0
-
-
-def test_hub_auto_probe_updates_label_when_alive() -> None:
-    stub = _Stub(_AliveDialog())
-    AIHubDialog._on_auto_probe_done(stub, "Ollama running. 3 models available.")  # type: ignore[attr-defined]
-    assert stub.widget_call_count() == 1
-    assert stub.widget_calls("_test_label") == [
-        ("SetLabel", ("Ollama running. 3 models available.",), {})
-    ]
-
-
-def test_hub_models_listed_noops_when_dialog_deleted() -> None:
-    stub = _Stub(_DeletedDialog())
-    AIHubDialog._on_hub_models_listed(stub, ["m1"], "", None)  # type: ignore[attr-defined]
-    assert stub.widget_call_count() == 0
-
-
-def test_hub_test_done_noops_when_dialog_deleted() -> None:
-    stub = _Stub(_DeletedDialog())
-    AIHubDialog._on_test_done(stub, "Connection OK.")  # type: ignore[attr-defined]
-    assert stub.widget_call_count() == 0
 
 
 # --- AI Thesaurus: lookup result / error ------------------------------------

@@ -109,7 +109,7 @@ def register_surfaces(app: Any) -> None:
     import wx
 
     from quill.apps import radio_main_keys
-    from quill.ui.radio import ask_radio_wiring, bookmarks_wiring, calendar_wiring
+    from quill.ui.radio import bookmarks_wiring, calendar_wiring
 
     bookmarks_wiring.register(app)
     calendar_wiring.register(app)
@@ -134,8 +134,8 @@ def register_surfaces(app: Any) -> None:
     from quill.ui.radio import media_player_registration
 
     media_player_registration.register(app)
-    # Ask QUILL Radio (2026-09-29): the assistant on the listener's ChatGPT plan.
-    ask_radio_wiring.register(app)
+    # Ask and the family's AI (codex.md Phase 3; quill/ui/radio/radio_ai_host.py).
+    app._register_radio_ai_commands()
     # Alt+1..0, Stop and Ctrl+Shift+O: keys the main window answers that no
     # menu item carries, so no accelerator did either (2026-09-25).
     radio_main_keys.install(app, wx)
@@ -153,18 +153,14 @@ def append_calendar_menu(app: Any, menu: Any, wx: Any) -> None:
     The separator is only added when the menu already has something above, so
     the caller's empty menu opens on a row rather than on a rule.
     """
-    from quill.ui.radio import (
-        acb_podcasts_wiring,
-        ask_radio_wiring,
-        calendar_wiring,
-        community_picks_wiring,
-    )
+    from quill.ui.radio import acb_podcasts_wiring, calendar_wiring, community_picks_wiring
 
-    # Ask QUILL Radio first (2026-09-29): it is the row that answers a question
-    # in words, and it already knows what is playing.
+    # Ask first (2026-09-29, as Ask QUILL Radio): it is the row that answers a
+    # question in words, and it already knows what is playing. Then the AI
+    # submenu: Which AI, Choose Your AI, the accounts, Usage (codex.md Phase 3).
     if menu.GetMenuItemCount():
         menu.AppendSeparator()
-    ask_radio_wiring.append_menu_items(app, menu, wx)
+    app._append_radio_ai_rows(menu)
     menu.AppendSeparator()
     calendar_wiring.append_menu_items(app, menu, wx)
     # What's New sits beside What Is On Now: one asks what is broadcast, the

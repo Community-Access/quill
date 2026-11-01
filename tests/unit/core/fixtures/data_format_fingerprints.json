@@ -31,6 +31,10 @@
             "ai_privacy_accepted_version": "int",
             "ai_own_key_model": "str",
             "ai_own_key_provider": "str",
+            "ai_connection": "str",
+            "ai_copilot_model": "str",
+            "ai_codex_model": "str",
+            "ai_picture_consent": "list[str]",
             "episode_filter": "str",
             "notify_new_episode": "bool",
             "notify_feed_failed": "bool",
@@ -63,10 +67,10 @@
             "tips_enabled": "bool"
           }
         },
-        "function:quill.core.podcasts.history:save_history": "sha256:5291c9682ff568cc"
+        "function:quill.core.podcasts.history:save_history": "sha256:860cfb3a07eb8650"
       },
       "classification": "additive, compatible",
-      "note": "QUILL Lineups: start_lineup_id, the Lineup Cast opens in (empty by default); additive, older builds ignore it."
+      "note": ""
     },
     "cast.library": {
       "current": 2,
@@ -422,6 +426,9 @@
             "ai_privacy_accepted_version": "int",
             "ai_own_key_model": "str",
             "ai_own_key_provider": "str",
+            "ai_connection": "str",
+            "ai_copilot_model": "str",
+            "ai_codex_model": "str",
             "ai_answer_delivery": "str",
             "session_restore_ask": "str",
             "session_files": "list[str]",
@@ -479,7 +486,7 @@
         "constant:quill.core.lite.settings:SCHEMA": "1"
       },
       "classification": "additive, compatible",
-      "note": ""
+      "note": "adds ai_connection, ai_copilot_model and ai_codex_model (Choose Your AI, codex.md 10A.6); older builds drop unknown keys on load"
     },
     "quill.keymap": {
       "current": 1,
@@ -641,6 +648,9 @@
             "ai_privacy_accepted_version": "int",
             "ai_own_key_model": "str",
             "ai_own_key_provider": "str",
+            "ai_connection": "str",
+            "ai_copilot_model": "str",
+            "ai_codex_model": "str",
             "ai_answer_delivery": "str",
             "markdown_clipboard_format": "str",
             "markdown_profile_id": "str",
@@ -1048,6 +1058,9 @@
           "ai_privacy_accepted_version": "_ungrouped",
           "ai_own_key_model": "_ungrouped",
           "ai_own_key_provider": "_ungrouped",
+          "ai_connection": "_ungrouped",
+          "ai_copilot_model": "_ungrouped",
+          "ai_codex_model": "_ungrouped",
           "ai_answer_delivery": "_ungrouped",
           "markdown_clipboard_format": "editing",
           "markdown_profile_id": "_ungrouped",
@@ -1310,7 +1323,7 @@
         "constant:quill.core.settings_migration:SETTINGS_SCHEMA_VERSION": "2"
       },
       "classification": "additive, compatible",
-      "note": ""
+      "note": "adds ai_connection, ai_copilot_model and ai_codex_model (Choose Your AI, codex.md 10A.6); older builds drop unknown keys on load"
     },
     "radio.favorites": {
       "current": 1,
@@ -1448,7 +1461,14 @@
             "use_global_volume": "bool",
             "song_history_enabled": "bool",
             "recording_resume_choice": "str",
-            "subscription_episode_limit": "int"
+            "subscription_episode_limit": "int",
+            "ai_privacy_accepted_version": "int",
+            "ai_own_key_model": "str",
+            "ai_own_key_provider": "str",
+            "ai_connection": "str",
+            "ai_copilot_model": "str",
+            "ai_codex_model": "str",
+            "ai_picture_consent": "list[str]"
           },
           "quill.core.radio.models:RadioStation": {
             "name": "str",
@@ -1527,13 +1547,21 @@
             "close_to_tray": "bool",
             "inkwell_checked": "bool",
             "dictation": "dict[str, Any]",
+            "ai_connection": "str",
+            "ai_own_key_provider": "str",
+            "ai_own_key_model": "str",
+            "ai_copilot_model": "str",
+            "ai_codex_model": "str",
+            "ai_privacy_accepted_version": "int",
+            "ai_seeded": "bool",
+            "ai_sign_in_noticed": "bool",
             "read_only": "bool"
           }
         },
-        "function:quill.core.transcribe.settings:save_settings": "sha256:04ffd60117d0d9d8",
+        "function:quill.core.transcribe.settings:save_settings": "sha256:85d2deedd73931a3",
         "constant:quill.core.transcribe.settings:SCHEMA_VERSION": "1"
       },
-      "classification": "baseline",
+      "classification": "additive, compatible",
       "note": ""
     }
   }

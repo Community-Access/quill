@@ -453,6 +453,7 @@ class AiPadFrame(PadRowsMixin, wx.Frame):
             chunks,
             on_done=lambda text, quota: self._done(feature, text, quota),
             on_error=self._failed,
+            requires=("text",),
             **extra,
         )
 

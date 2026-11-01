@@ -192,6 +192,11 @@ GATES: tuple[Gate, ...] = (
         (sys.executable, "-m", "quill.tools.check_over_announce"),
     ),
     Gate(
+        "connection-caps",
+        "GATE-CAPS: no AI request reaches a connection that cannot do it",
+        (sys.executable, "-m", "quill.tools.connection_caps_audit"),
+    ),
+    Gate(
         "braille-parity",
         "GATE-BRAILLE: what QUILL speaks also reaches a braille display",
         (sys.executable, "-m", "quill.tools.braille_parity_audit"),

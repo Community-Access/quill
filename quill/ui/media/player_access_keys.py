@@ -13,12 +13,16 @@ moves (GATE-14: to a free letter, and to none when no letter is free).
 Every letter in the window, after the move (``tests/unit/ui/
 test_menu_bar_versus_controls.py`` builds the real window and checks it):
 
-* menus: F N P V Q H W;
+* menus: F N P V Q H W, and I for the AI menu (A&I, codex.md Phase 3);
 * the transport row: Play and Pause A, Stop T, Previous chapter C, Next
-  chapter X, Rewind R, Forward O, Where am I? I, Speed D, Mute and Unmute U;
+  chapter X, Rewind R, Forward O, Speed D, Mute and Unmute U;
 * the Bookmarks page: Add Bookmark M, Remove Bookmark K;
 * the Audio page: Equalizer preset E, Volume boost B, Normalize loudness L,
   Skip silence S.
+
+Where am I? has no letter at all since the AI menu arrived (2026-11-01): it
+held I, the AI menu's, and every letter in its name was already taken, so by
+GATE-14's last rule it gets none rather than a duplicate. Tab still reaches it.
 
 Play and Pause keep one letter between them, and so do Mute and Unmute, so the
 key a listener learns does not change with the state.
@@ -35,6 +39,7 @@ PLAYER_PANEL_LABELS: dict[str, str] = {
     "player.prev": "Previous &chapter",
     "player.rewind": "&Rewind",
     "player.forward": "F&orward",
+    "player.where_am_i": "Where am I?",
     "player.mute": "M&ute",
     "player.unmute": "&Unmute",
 }

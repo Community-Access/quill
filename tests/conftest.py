@@ -1032,6 +1032,25 @@ def _no_saved_own_ai_key(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture(autouse=True)
+def _no_copilot_or_codex_here(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Every hosted-AI test sees Copilot and Codex as not in this build.
+
+    The shared AI service reads this app's Copilot token from Windows'
+    credential store and looks for the bundled engines on every question about
+    the connections (quill/ui/hosted_ai_copilot_route.py); a developer signed
+    in to Copilot, or with a built runtime beside the tree, would otherwise
+    change what every Choose Your AI test hears. Tests of those rows patch
+    these back themselves.
+    """
+    from quill.core.ai.copilot_state import CopilotReadiness
+    from quill.ui import hosted_ai_copilot_route as route
+
+    nothing = CopilotReadiness(client_id=False, sdk=False, cli=False, signed_in=False)
+    monkeypatch.setattr(route.CopilotRouteMixin, "copilot_readiness", lambda _self: nothing)
+    monkeypatch.setattr(route.CopilotRouteMixin, "codex_available", property(lambda _s: False))
+
+
+@pytest.fixture(autouse=True)
 def _no_saved_acoustid_key(monkeypatch: pytest.MonkeyPatch) -> None:
     """Keep the developer's AcoustID key, and the credential store, out of tests.
 
@@ -1267,3 +1286,23 @@ def wx_call_after(monkeypatch: pytest.MonkeyPatch) -> Callable[..., Any]:
         return patch_call_after(monkeypatch, replacement)
 
     return install
+
+
+@pytest.fixture
+def closed_machine_doors(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Build a real app window without reaching the machine, so the test needs
+    no ``machine_global`` mark and does not crowd the one shared worker
+    (tests/unit/test_parallel_grouping.py caps that group).
+
+    System-wide hotkeys answer True and register nothing, and no tray icon goes
+    in the notification area. Anything else a window reaches for -- a real
+    voice, the clipboard -- is still caught by the autouse real-output guard in
+    tests/conftest.py, which fails the test and names it.
+    """
+    import wx
+
+    import quill.ui.app_shell as app_shell
+
+    monkeypatch.setattr(wx.Frame, "RegisterHotKey", lambda *_a: True, raising=False)
+    monkeypatch.setattr(wx.Frame, "UnregisterHotKey", lambda *_a: True, raising=False)
+    monkeypatch.setattr(app_shell.AppShellFrame, "_ensure_tray_icon", lambda *_a, **_k: None)

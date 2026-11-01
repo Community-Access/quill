@@ -11,9 +11,10 @@ from __future__ import annotations
 import wx
 
 from quill.apps import radio_audio_menu, radio_go_to, radio_playback_extras
+from quill.ui.radio.radio_ai_host import RadioAiMixin
 
 
-class RadioMenuBarMixin:
+class RadioMenuBarMixin(RadioAiMixin):  # Ask and the AI rows (Community)
     """Radio's menu bar; mixed into ``RadioAppFrame``."""
 
     def _build_menu_bar(self) -> None:
@@ -371,10 +372,8 @@ class RadioMenuBarMixin:
 
         # The top-level Community menu: "places this community already goes,
         # brought inside the app". The rows it started with are gone (removed
-        # from the whole family on 2026-09-30), and the menu
-        # now carries only the community surfaces it was renamed for in
-        # 2026-08-23 -- Ask QUILL Radio and Use My ChatGPT Subscription, the ACB
-        # Media schedule and podcasts, and Community Picks, all appended by
+        # from the whole family on 2026-09-30): Ask and the AI submenu, the ACB
+        # schedule and podcasts and Community Picks, all appended by
         # radio_launch_tasks.append_calendar_menu. It starts empty here so that
         # helper's leading separator is skipped and the menu opens on a row
         # rather than on a rule.

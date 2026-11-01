@@ -29,6 +29,7 @@ about six minutes.
 - [When something goes wrong](#when-something-goes-wrong)
 - [Your privacy](#your-privacy)
 - [Signing out and changing your mind](#signing-out-and-changing-your-mind)
+- [Which AI is in use](#which-ai-is-in-use)
 - [Using your own OpenAI or Google Gemini key: no limits](#using-your-own-openai-or-google-gemini-key-no-limits)
 - [Using your ChatGPT subscription](#using-your-chatgpt-subscription)
 - [Ask About an Image](#ask-about-an-image)
@@ -522,6 +523,32 @@ If you would like more than the free allowance, the next two chapters, *Using
 your own OpenAI or Google Gemini key: no limits* and *Using your ChatGPT
 subscription*, explain the other ways to run AI help.
 
+## Which AI is in use
+
+QUILL Lite keeps one record of which AI answers you: the free AI, your ChatGPT
+plan, or your own key. It is the same setting QUILL uses, `ai_connection`, so
+the two programs agree. GitHub Copilot and Codex are on the way and say "not
+available yet" for now; their models will live in `ai_copilot_model` and
+`ai_codex_model`.
+
+When you first start this version, QUILL Lite keeps what you already had: your
+ChatGPT plan if you were signed in, else your key if you had one saved, else
+the free AI.
+
+After that, signing in is choosing. Sign in with ChatGPT, save a key, or
+connect the free AI, and that one is in use. Sign out of the one in use and no
+AI is in use until you pick one; QUILL Lite never quietly sends your text
+somewhere else. The next AI command says "No AI is in use. Choose one."
+
+If OpenAI ends your ChatGPT sign-in, or your plan's limit is reached, you hear
+it once. Nothing is sent, nothing is retried, and nothing switches.
+
+QUILL Lite counts the requests it sends on your ChatGPT plan, today and this
+week, with the token counts OpenAI reports. The count stays on this computer.
+
+Answers are plain text. QUILL Lite asks every AI not to draw charts or
+diagrams, and anything like that which arrives anyway is shown as text.
+
 ## Using your own OpenAI or Google Gemini key: no limits
 
 If you have an OpenAI account or a Google Gemini key, you can use **your own
@@ -534,10 +561,12 @@ monthly, daily or hourly allowance, no 2,250-word ceiling, and no smaller first
 Choose **Tools > AI > Use My Own AI Key** (**Alt+F2**). One window opens. Here
 is what is in it:
 
-1. **Provider.** Choose **OpenAI** or **Google Gemini**. Everything else in the
+1. **Provider.** Choose **OpenAI**, **Google Gemini**, **Anthropic Claude**,
+   **OpenRouter**, **Ollama Cloud**, a **Custom OpenAI-compatible service**, or
+   **Ollama on this computer**, which needs no key. Everything else in the
    window follows this choice: where your text goes, which key, which models
    and whose prices. AI help always uses the key saved for the provider you
-   choose here, and never the other one. Your choice is saved with your
+   choose here, and never another one. Your choice is saved with your
    settings, and QUILL never guesses it from a key or a model name.
 2. **About this.** A read-only box saying exactly where your text goes. Arrow
    through it once.
@@ -575,6 +604,16 @@ your models as soon as it opens. Press **Alt+F2**, pick another, and press OK.
 **There is no separate on and off switch.** While a key is saved for the
 provider you chose, AI help uses it. Remove the key and AI help goes back to
 the free service, with its free allowance, straight away.
+
+**Ollama on this computer needs no key.** Install Ollama from ollama.com, pull
+a model, and choose **Ollama on this computer**. The About box starts with
+"Runs on this computer. Nothing is sent.", and that is exactly what happens:
+the model runs on your computer, nothing is billed and nothing leaves it. The
+key box is off, a **Server address** box says where Ollama listens (usually
+`http://localhost:11434`), the Model list is whatever Ollama has, and the test
+button reads **Test the Connection**. A custom service has a Server address
+too. These providers used to be set up in QUILL's AI Hub; they are the same
+providers, with the same saved keys, in this one window in both editors.
 
 **You can save both keys.** The Provider list decides which one is used. If
 you choose OpenAI, a saved Gemini key just sits there unused. The status line

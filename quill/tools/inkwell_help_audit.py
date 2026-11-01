@@ -46,7 +46,11 @@ SNAPSHOT_PATH = REPO_ROOT / "tests" / "unit" / "ui" / "fixtures" / "inkwell_help
 #: ``quill/apps/inkwell.py``; the dialogs it opens (Manage Abbreviations,
 #: Quick Insert, Fill In) are shared with QUILL and live under ``quill/ui``.
 _SCAN_DIRS: tuple[str, ...] = ()
-_SCAN_GLOBS: tuple[str, ...] = ("quill/apps/inkwell.py",)
+#: Suggest Abbreviations' review window is Inkwell's own (codex.md Phase 3).
+_SCAN_GLOBS: tuple[str, ...] = (
+    "quill/apps/inkwell.py",
+    "quill/apps/inkwell_suggest_dialog.py",
+)
 
 #: Surface constructions whose titles the scan cannot resolve, with the
 #: reason they are fine. Keyed ``<module>::<qualname>``.

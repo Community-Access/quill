@@ -360,7 +360,14 @@ github = [
 # bridges to the same Safe Editor Tool Gateway + Permission Broker and emits the
 # same normalized events; none edits the buffer directly. The Native harness
 # always works without any of these.
-ai-copilot = ["github-copilot-sdk>=1.0.15rc3"]  # PyPI package; imports as `copilot`
+# GitHub Copilot is the exception: its SDK ships in the shared runtime (the
+# [runtime] group below pulls this extra), beside the bundled Copilot CLI, so
+# nothing is installed at first use (codex.md 10A.12). Pinned exactly, like the
+# CLI it drives (quill/core/ai/copilot_runtime.py COPILOT_CLI_VERSION): the SDK
+# and the CLI negotiate a protocol version, and quill/ai_packs/copilot.py is
+# checked against this release's source. One pure wheel; pydantic, httpx and
+# python-dateutil come with it.
+ai-copilot = ["github-copilot-sdk==1.0.28"]  # PyPI package; imports as `copilot`
 ai-claude = ["claude-agent-sdk>=0.2.160"]
 ai-openai = ["openai-agents>=0.22.3"]
 # Build-time only: compile the optional Table Studio native UIA provider
@@ -468,6 +475,8 @@ runtime = [
   "quill[social-app]",
   "quill[office-text]",
   "quill[pdf-ocr]",
+  # My GitHub Copilot (codex.md 10A.12): the SDK beside the CLI in tools/copilot.
+  "quill[ai-copilot]",
   "quill[youtube]",
   "quill[fasterwhisper]",
   "quill[vosk]",

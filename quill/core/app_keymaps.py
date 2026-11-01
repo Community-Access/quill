@@ -17,11 +17,12 @@ nothing else. wx-free, so the rule is testable without a UI.
 
 from __future__ import annotations
 
+from quill.core.app_keymaps_ai import SMALL_APP_AI_KEYMAPS, with_agent_tasks
 from quill.core.family_chords import SHOW_HIDE_DEFAULTS
 from quill.core.keymap import DEFAULT_KEYMAP
 
 #: app id -> {command id: binding}.
-APP_KEYMAPS: dict[str, dict[str, str]] = {
+APP_KEYMAPS: dict[str, dict[str, str]] = with_agent_tasks({
     "studio": {
         "studio.capture": "Ctrl+Alt+Shift+S",
         "studio.inspect_capture": "Ctrl+Alt+Shift+I",
@@ -66,6 +67,32 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         "studio.broadcast": "Ctrl+Alt+Shift+G",
         "studio.broadcast_mute": "Ctrl+Alt+Shift+Z",
         "studio.broadcast_stop": "Ctrl+Alt+Shift+E",
+        # The family's AI (codex.md Phase 3). No Window menu here, so the
+        # editors' Ctrl+8, Ctrl+4 and Ctrl+6 hold, from DEFAULT_KEYMAP
+        # (decision 14). Use My ChatGPT Subscription keeps its id, once keyless
+        # on the Capture menu, and takes the family's Alt+F5 (rule 2). Privacy
+        # Agreement takes Radio's Alt+Shift+F2: Ctrl+Alt+Shift+K is Ask AI
+        # About a Video above (rule 11; app_ai_keys.APP_AI_DIVERGENCES).
+        # Describe a Picture: the family's Describe key (codex.md 10B.6).
+        "studio.chatgpt_account": "Alt+F5",
+        "tools.hosted_ai_privacy": "Alt+Shift+F2",
+        "studio.describe_picture": "Ctrl+F5",
+    },
+    # QUILL Transcribe's AI rows (codex.md Phase 3); its other keys are in
+    # transcribe_menus.py. Ctrl+1 to Ctrl+9 are its Window menu keys, so the
+    # editors' Ctrl+4, Ctrl+6 and Ctrl+8 would each be claimed twice: it takes
+    # Radio's and Cast's set -- Ask Ctrl+Shift+8, Which AI Ctrl+F8, Choose
+    # Your AI Ctrl+Shift+F8 (rule 2) -- and their Alt+Shift+F2 for Privacy
+    # Agreement, Ctrl+Alt+Shift+K being its Command Key. Each divergence is
+    # this comment and an app_ai_keys row (rule 11); the rest are the editors'.
+    "transcribe": {
+        "tools.hosted_ai_chat_key": "Ctrl+Shift+8",
+        "tools.hosted_ai_which": "Ctrl+F8",
+        "tools.hosted_ai_choose": "Ctrl+Shift+F8",
+        "tools.hosted_ai_chatgpt": "Alt+F5",
+        "tools.hosted_ai_own_key": "Alt+F2",
+        "tools.hosted_ai_usage": "Ctrl+Alt+Shift+F2",
+        "tools.hosted_ai_privacy": "Alt+Shift+F2",
     },
     "radio": {
         # Quick-play favorites. These were Ctrl+Alt+Shift+1..0 in
@@ -295,6 +322,29 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # same window, so a person who set it up in QUILL Lite finds it here.
         "radio.ask_quill_radio": "Ctrl+Shift+8",
         "radio.chatgpt_account": "Alt+F5",
+        # The family's AI (codex.md Phase 3, 2026-11-01). Ask QUILL Radio became
+        # Ask, the family's one conversation window, and keeps its id and
+        # Ctrl+Shift+8 (rule 5: nothing moves). The editors' Ctrl+4, Ctrl+6 and
+        # Ctrl+8 cannot follow it here: Ctrl+1 to Ctrl+9 are Quill Radio's
+        # Window menu keys on every window (quill/ui/window_menu.py), and a key
+        # claimed twice means one of the pair silently never fires. So Which AI
+        # Am I Using is Ctrl+F8 -- the 8 of the editors' key, moved to the
+        # function row -- and Choose Your AI is Ctrl+Shift+F8, the same key with
+        # Shift for "and open the window" (Ctrl+F8 pressed twice opens it too).
+        # Both were free on this bar and on Cast's, where the same two commands
+        # take the same two keys (rule 2). The divergence from the editors is
+        # this comment and its row in app_ai_keys.APP_AI_DIVERGENCES (rule 11).
+        "tools.hosted_ai_which": "Ctrl+F8",
+        "tools.hosted_ai_choose": "Ctrl+Shift+F8",
+        # The family's Usage and own-key keys, free here. Privacy Agreement
+        # takes Cast's Alt+Shift+F2: the editors' Ctrl+Alt+Shift+K is this bar's
+        # Keyboard Shortcuts Sheet.
+        "tools.hosted_ai_usage": "Ctrl+Alt+Shift+F2",
+        "tools.hosted_ai_own_key": "Alt+F2",
+        "tools.hosted_ai_privacy": "Alt+Shift+F2",
+        # Describe the Video (codex.md 10B.5): the family's Describe key, the
+        # editors' Ask About an Image chord, free on this bar.
+        "radio.describe_video": "Ctrl+F5",
         # Search YouTube... (Station) and Read Comments... (Video), 2026-10-03:
         # the last two of the three Ctrl+Shift digit gaps named above. Digits,
         # so no mnemonic is pretended; Alt+S then H and Alt+D then M are the
@@ -367,6 +417,15 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         "tools.hosted_ai_privacy": "Alt+Shift+F2",
         "tools.hosted_ai_own_key": "Alt+F2",
         "tools.hosted_ai_chatgpt": "Alt+F5",
+        # Ask, Which AI Am I Using and Choose Your AI (codex.md Phase 3): Quill
+        # Radio's three keys, for Radio's reason -- Ctrl+1 to Ctrl+9 are this
+        # app's Window menu keys, and inside an episode list Ctrl+1 to Ctrl+9
+        # also run its Quick Actions -- so the editors' Ctrl+6, Ctrl+8 and Ctrl+4
+        # would each be a key one of two things silently loses. Ctrl+Shift+8 is
+        # Radio's Ask key, free here (rule 2). See app_ai_keys.py (rule 11).
+        "tools.hosted_ai_chat_key": "Ctrl+Shift+8",
+        "tools.hosted_ai_which": "Ctrl+F8",
+        "tools.hosted_ai_choose": "Ctrl+Shift+F8",
         "app.recent_problems": "Ctrl+Alt+Shift+P",
         # qc.md F-10: the family's two result keys, the same everywhere.
         "app.repeat_last_result": "F9",
@@ -443,8 +502,10 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # chord opens the lessons in Quill Radio, QUILL Cast and QUILL -- and it
         # sits in the F1 family, which is where help lives everywhere.
         "weather.tutorials": "Ctrl+Alt+F1",
+        **SMALL_APP_AI_KEYMAPS["weather"],  # AI rows, rule-11 comments: app_keymaps_ai.py
     },
-}
+    **{app: rows for app, rows in SMALL_APP_AI_KEYMAPS.items() if app != "weather"},
+})
 
 #: The QuillVille menu's sibling launchers, numbered in menu order. Kept here
 #: with the rest of the app-key data rather than inline in the menu builder.

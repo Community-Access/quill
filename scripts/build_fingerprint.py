@@ -71,6 +71,11 @@ _STAGED_BINARIES = (
     "build/deps/ffmpeg/ffmpeg.exe",
     "build/deps/ffmpeg/ffprobe.exe",
     "build/deps/mpv/libmpv-2.dll",
+    # The Copilot hostless bundle's two pinned pieces (the copilot.exe alias is
+    # a byte copy of the wrapper, so hashing it as well would add nothing).
+    "build/deps/copilot/copilot-runtime.exe",
+    "build/deps/copilot/runtime.node",
+    "build/deps/codex/codex-app-server.exe",
 )
 
 #: Built runtime dists worth measuring, relative to the checkout root.

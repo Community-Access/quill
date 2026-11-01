@@ -281,7 +281,45 @@ other Quill apps.</p>
 <h3 id="since-build-5-2026-10-27-to-2026-10-31">Since build 5
 (2026-10-27 to 2026-10-31)</h3>
 <ul>
-<li><strong>Victor Stream playlists import, and fifteen more reading
+<li><p><strong>Watching the video for changes</strong> [2026-11-01].
+Video &gt; Start Watching for Changes (Ctrl+F9) and Stop Watching for
+Changes (Ctrl+Shift+F9). While a video is showing, Quill Radio compares
+a picture of it on this computer every 4 seconds and says one sentence
+when it changes. Changed words on screen are read with OCR on this
+computer and nothing is sent; the AI in use is asked only when the words
+don’t explain the change, with before and after as one picture, at most
+once a minute and 30 times a watch, and then the watch stops and says
+so. Start and Stop are spoken. Hiding the video or closing Quill Radio
+ends it, and it is off in Safe Mode. The first picture asks the usual
+picture question, and each question counts in AI Usage.</p></li>
+<li><p><strong>Find and Record</strong> [2026-11-01]. Community &gt; AI
+&gt; Find and Record (Ctrl+F3) takes a request in plain words, such as
+“find a jazz station from New Orleans and record it tonight from 8 for
+an hour”, and carries it out with Quill Radio’s own search, player,
+recorder and schedule. It searches your favorites, the station list on
+this computer and Radio Browser, and reads your favorites, recent songs
+and scheduled recordings without asking. Playing, recording and
+scheduling each ask first, and the scheduling question names the
+station, day, time and length. Scheduled recordings are made by Quill
+Radio itself, never by the AI. It needs My GitHub Copilot or Codex; with
+another AI the menu item says “(needs Copilot or Codex)” and nothing is
+sent.</p></li>
+<li><p><strong>Ask QUILL Radio is now Ask, on any AI</strong>
+[2026-11-01]. Ask (Ctrl+Shift+8) is the family’s one conversation
+window, and it answers on whichever AI you chose in <strong>Choose Your
+AI</strong> (Ctrl+Shift+F8): QUILL’s free AI, your ChatGPT plan, GitHub
+Copilot or your own key. If you were signed in to ChatGPT here, nothing
+changes. The station and what is playing are read fresh for every
+message, and the window says when the song changed. Conversations are
+saved on this computer. <strong>Which AI Am I Using</strong> (Ctrl+F8,
+twice for the window), <strong>AI Usage</strong> (Ctrl+Alt+Shift+F2),
+Use My Own AI Key (Alt+F2) and Privacy Agreement (Alt+Shift+F2) are in
+Community &gt; AI, and the status bar ends with an AI cell.
+<strong>Describe the Video</strong> (Ctrl+F5) asks the AI what is on
+screen, from one picture taken on this computer. The first time on each
+AI, it says where the picture goes and asks Yes or No first, with No the
+default (2026-11-01).</p></li>
+<li><p><strong>Victor Stream playlists import, and fifteen more reading
 services</strong> (2026-10-29). Import Stations from Playlist (Ctrl+I)
 reads XSPF lists exported from a HumanWare Victor Stream or Victor Trek,
 including one whose file name ends in <code>.xspf.txt</code> and one
@@ -295,59 +333,60 @@ Triangle Radio Reading Service, Audio Journal, BTC/UCP Reading Service,
 The WHRO Voice and the WQCS Radio Reading Service. The service listed as
 WUFT was always Minnesota Radio Talking Book, and is now called that.
 Exporting favorites as XSPF now includes each station’s website and
-logo. (#1691)</li>
-<li><strong>ChatGPT plan sign-in holds through a brief problem</strong>
-(2026-10-31). A temporary failure on OpenAI’s side while renewing the
-sign-in, such as a server error or an empty answer, no longer signs you
-out; only an answer that says the sign-in is really over does. A renewed
-sign-in that cannot be saved is tried once more and then reported,
-instead of being lost until the next renewal signed you out. The plan’s
-model list keeps OpenAI’s own order, and Open ChatGPT Usage goes to
-chatgpt.com/settings/usage (#1715).</li>
-<li><strong>SomaFM source retired</strong> (2026-10-31). Its published
-terms no longer approve new third-party clients. The shared Radio code
-removes the built-in source and filters known catalogue entries and
-direct play/record paths. Review of indirect paths, existing user data
-and previously published packages remains open; this change has not been
-published as a new release.</li>
-<li><strong>Shared-runtime licensing</strong> (2026-10-31). Installed
+logo. (#1691)</p></li>
+<li><p><strong>ChatGPT plan sign-in holds through a brief
+problem</strong> (2026-10-31). A temporary failure on OpenAI’s side
+while renewing the sign-in, such as a server error or an empty answer,
+no longer signs you out; only an answer that says the sign-in is really
+over does. A renewed sign-in that cannot be saved is tried once more and
+then reported, instead of being lost until the next renewal signed you
+out. The plan’s model list keeps OpenAI’s own order, and Open ChatGPT
+Usage goes to chatgpt.com/settings/usage (#1715).</p></li>
+<li><p><strong>SomaFM source retired</strong> (2026-10-31). Its
+published terms no longer approve new third-party clients. The shared
+Radio code removes the built-in source and filters known catalogue
+entries and direct play/record paths. Review of indirect paths, existing
+user data and previously published packages remains open; this change
+has not been published as a new release.</p></li>
+<li><p><strong>Shared-runtime licensing</strong> (2026-10-31). Installed
 editions use the QuillVille Runtime, which currently carries PyMuPDF
 1.28.2 under AGPL-3.0 through the shared GLOW dependency; Radio does not
 itself expose GLOW. Release-specific source and legal review are
 required before the next public release. Portable contents must be
 checked separately. See Licences and Notices and the PyMuPDF
-distribution review.</li>
-<li><strong>PyWinRT 4 migration</strong> (2026-10-27). The shared
+distribution review.</p></li>
+<li><p><strong>PyWinRT 4 migration</strong> (2026-10-27). The shared
 Windows Media runtime uses PyWinRT 4.0.3 and Windows SDK 10.0.28000.2705
 projections; this does not change the choice of player or the selected
-output device.</li>
-<li><strong>Windows Media closes cleanly after device
+output device.</p></li>
+<li><p><strong>Windows Media closes cleanly after device
 enumeration</strong> (2026-10-27). Device selection still uses the
 Windows render endpoints and keeps the selected route. QUILL no longer
 retains COM-backed device objects in a module cache, which fixes a
 process-exit access violation after opening audio preferences or
 switching the output device. The player unregisters its WinRT events
-before shutdown.</li>
-<li><strong>Controls that had no label now have a spoken name</strong>
-(2026-10-30). JAWS, NVDA and Narrator used to announce them as a bare
-role, such as “edit” or “list”. Now they say what they are: Now playing
-(in the main window, the player and the Now Playing window), the details
-of the highlighted station in Browse, the schedule summary and programme
-schedule in the calendar, station results and TuneIn categories in the
-station browser, the listening report in Stats, the video window’s
-status, the sleep timer’s custom minutes, and Spotify results.</li>
-<li><strong>Sharp text at any display scaling</strong> (2026-10-31).
+before shutdown.</p></li>
+<li><p><strong>Controls that had no label now have a spoken
+name</strong> (2026-10-30). JAWS, NVDA and Narrator used to announce
+them as a bare role, such as “edit” or “list”. Now they say what they
+are: Now playing (in the main window, the player and the Now Playing
+window), the details of the highlighted station in Browse, the schedule
+summary and programme schedule in the calendar, station results and
+TuneIn categories in the station browser, the listening report in Stats,
+the video window’s status, the sleep timer’s custom minutes, and Spotify
+results.</p></li>
+<li><p><strong>Sharp text at any display scaling</strong> (2026-10-31).
 Quill Radio now handles each monitor’s scaling itself instead of letting
 Windows stretch it, so text stays sharp at 125, 150 and 200 percent and
 on monitors with different scaling, and windows and list columns keep
 their proportions. Setting the environment variable
 <code>QUILL_DPI_UNAWARE</code> to <code>1</code> turns this off, for
 diagnosing a display problem (#1702). User guide: “Text looks blurry, or
-a window is the wrong size”.</li>
-<li><strong>Pygments in the notices</strong> (2026-10-31). The shared
+a window is the wrong size”.</p></li>
+<li><p><strong>Pygments in the notices</strong> (2026-10-31). The shared
 runtime now bundles Pygments, which QUILL and QUILL Lite use to read
 code and web pages for spell check, so Quill Radio’s third-party notices
-list it.</li>
+list it.</p></li>
 </ul>
 <h3 id="what-each-testing-rebuild-added">What each testing rebuild
 added</h3>

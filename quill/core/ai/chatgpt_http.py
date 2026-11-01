@@ -26,11 +26,12 @@ from collections.abc import Callable, Iterator
 from typing import Any
 
 from quill.core.ai.chatgpt_errors import (
+    ChatGptBusyError,
     ChatGptError,
     ChatGptLimitError,
     ChatGptSignedOutError,
-    ChatGptUnavailableError,
     ChatGptUnsupportedError,
+    ChatGptUsageUnavailableError,
 )
 from quill.core.ai.retry_ladder import pause, wait_before_retry
 
@@ -125,7 +126,7 @@ def _error_for_status(status: int, raw: bytes, url: str) -> ChatGptError:
             if code == "subscription_sharing_usage_limit_exceeded":
                 return ChatGptLimitError(message or "Your ChatGPT plan's usage limit was reached.")
             if code == "subscription_sharing_usage_unavailable":
-                return ChatGptUnavailableError(
+                return ChatGptUsageUnavailableError(
                     message or "ChatGPT plan usage is not available right now."
                 )
             if code == "subscription_sharing_unsupported_capability":
@@ -142,7 +143,7 @@ def _error_for_status(status: int, raw: bytes, url: str) -> ChatGptError:
             message or "OpenAI no longer accepts this computer's ChatGPT sign-in."
         )
     if status == 429:
-        return ChatGptLimitError(message or "OpenAI is asking QUILL to slow down for a moment.")
+        return ChatGptBusyError(message or "OpenAI is asking QUILL to slow down for a moment.")
     return ChatGptError(f"{host} answered {status}. {message}".strip())
 
 
@@ -152,13 +153,15 @@ def _http_failure(status: int, raw: bytes, url: str, headers: Any) -> ChatGptErr
     The status and headers ride on the error so :func:`stream_sse` can ask
     :func:`~quill.core.ai.retry_ladder.wait_before_retry` about a refusal that
     arrived before any of the answer did. A plan whose usage is used up is
-    final: asking again cannot help until the plan resets.
+    final: asking again cannot help until the plan resets. Plan usage that is
+    only *unavailable* (503 ``subscription_sharing_usage_unavailable``) gets
+    the bounded retry OpenAI's errors-and-recovery page asks for (10A.5).
     """
     error = _error_for_status(status, raw, url)
     error.http_status = status  # type: ignore[attr-defined]
     error.http_headers = headers  # type: ignore[attr-defined]
     error.retry_final = (  # type: ignore[attr-defined]
-        b"subscription_sharing_usage" in raw
+        b"subscription_sharing_usage_limit_exceeded" in raw
         or b"subscription_sharing_unsupported_capability" in raw
     )
     return error

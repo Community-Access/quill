@@ -34,7 +34,7 @@ def test_engine_list_is_named_and_populated_from_targets() -> None:
 def test_set_active_and_setup_are_wired() -> None:
     body = _panel_source()
     assert "set_active(self._build_registry(), target.harness_id)" in body
-    assert "CopilotOnboardingDialog(" in body
+    assert "sign_in_copilot_for_app(" in body
     assert "install_pack(pack_id)" in body
 
 

@@ -63,6 +63,7 @@ def window(lite_window, monkeypatch):
     holder: dict[str, Any] = {}
     monkeypatch.setattr(wx.Window, "FindFocus", staticmethod(lambda: holder["focus"]))
     win = lite_window("", cursor=0)
+    win.app.settings.ai_connection = "free"  # migrated already: no first-read save
     holder["focus"] = win.control
     win.focus = holder
     return win

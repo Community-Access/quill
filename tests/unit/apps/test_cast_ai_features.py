@@ -51,7 +51,7 @@ def cast(quill_data_dir: Path, wx_app, quiet_cast_startup, close_cast, monkeypat
     frame.prompts: list[str] = []
 
     class _Service:
-        def ask(self, feature, prompt, chunks, *, on_done, on_error, language=""):
+        def ask(self, feature, prompt, chunks, *, on_done, on_error, language="", **_kw):
             frame.prompts.append(prompt)
             on_done(frame.answers.pop(0), None)
 

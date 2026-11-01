@@ -2,12 +2,16 @@
 
 The AI help features normally go through QUILL's free service, which keeps
 an allowance per person and a size limit per request. Somebody with their own
-OpenAI or Google Gemini account can switch that off: the same features then go
-**straight from this computer to the provider they chose**, billed to their
-account, with no QUILL server in between and none of the free tier's limits.
+account at one of the providers in :mod:`quill.core.ai.own_key_providers` --
+OpenAI, Google Gemini, and since decision 20 the AI Hub's Anthropic Claude,
+OpenRouter, Ollama Cloud and custom service -- can switch that off: the same
+features then go **straight from this computer to the provider they chose**,
+billed to their account, with no QUILL server in between and none of the free
+tier's limits. Ollama on this computer needs no key, and nothing leaves the
+computer at all.
 
-**The provider is chosen, never guessed** (qc.md X-07). The person picks OpenAI
-or Google Gemini in Use My Own API Key, and that choice -- ``ai_own_key_provider``
+**The provider is chosen, never guessed** (qc.md X-07). The person picks a
+provider in Use My Own API Key, and that choice -- ``ai_own_key_provider``
 -- is the only thing that decides where a request goes. Nothing is inferred
 from a model's name, and nothing falls back from one provider to the other: a
 request on Gemini with no Gemini key saved is refused with a sentence, even when
@@ -48,6 +52,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from quill.core.ai import own_key_providers as _providers
 from quill.core.ai import word_tools
 from quill.core.ai.gateway_client import GatewayLimits
 from quill.core.error_codes import CodedError
@@ -84,25 +89,20 @@ __all__ = [
 ]
 
 #: The first own-key provider, and what an empty ``ai_own_key_provider`` means.
-OWN_KEY_PROVIDER = "openai"
-GEMINI = "gemini"
+OWN_KEY_PROVIDER = _providers.OPENAI
+GEMINI = _providers.GEMINI
 
-#: Every provider an own key can be for, in the order the window offers them.
-OWN_KEY_PROVIDERS: tuple[str, ...] = (OWN_KEY_PROVIDER, GEMINI)
+#: Every provider an own key can be for, in the order the window offers them:
+#: OpenAI and Gemini, then the AI Hub's providers (decision 20).
+OWN_KEY_PROVIDERS: tuple[str, ...] = _providers.PROVIDERS
 
 #: Each provider as a person hears it.
-PROVIDER_NAMES: dict[str, str] = {OWN_KEY_PROVIDER: "OpenAI", GEMINI: "Google Gemini"}
+PROVIDER_NAMES: dict[str, str] = _providers.PROVIDER_NAMES
 
 #: Whose account each provider bills, for the cost sentences.
-_ACCOUNT_NAMES: dict[str, str] = {OWN_KEY_PROVIDER: "OpenAI", GEMINI: "Google Gemini"}
-_KEY_URLS = {
-    OWN_KEY_PROVIDER: "platform.openai.com, under API keys",
-    GEMINI: "aistudio.google.com/apikey (Google AI Studio)",
-}
-_USAGE_URLS = {
-    OWN_KEY_PROVIDER: "https://platform.openai.com/usage",
-    GEMINI: "https://aistudio.google.com/usage",
-}
+_ACCOUNT_NAMES: dict[str, str] = _providers.ACCOUNT_NAMES
+_KEY_URLS = _providers.KEY_URLS
+_USAGE_URLS = _providers.USAGE_URLS
 
 #: The instruction half of each gateway template, sent as the system message.
 #: Must match ``quill-ai-gateway/app/prompts.py`` word for word.
@@ -351,7 +351,12 @@ def chosen_model(settings: Any = None) -> str:
 
 
 def has_own_key(provider: str = OWN_KEY_PROVIDER) -> bool:
-    """Whether *provider*'s key is stored (or set in the environment)."""
+    """Whether *provider*'s key is stored (or set in the environment).
+
+    A provider that needs no key (Ollama on this computer) always has one.
+    """
+    if not _providers.needs_key(provider):
+        return True
     from quill.core.assistant_ai import load_provider_api_key
 
     try:
@@ -388,6 +393,8 @@ def scrub(text: str, key: str) -> str:
 
 def conversation_note(provider: str) -> str:
     """What a conversation costs on an own key, said once at the top of its window."""
+    if _providers.is_local(provider):
+        return f"This conversation uses {provider_name(provider)}. {_providers.LOCAL_ABOUT}"
     account = _ACCOUNT_NAMES.get(provider, provider_name(provider))
     return (
         f"This conversation uses your own {provider_name(provider)} key: no limits, "
@@ -457,7 +464,6 @@ def ask_with_own_key(
     """
     from quill.core.assistant_ai import (
         AssistantConnectionSettings,
-        default_host_for_provider,
         generate_assistant_response,
         load_provider_api_key,
     )
@@ -465,33 +471,40 @@ def ask_with_own_key(
     provider = (provider or "").strip().lower()
     if provider not in OWN_KEY_PROVIDERS:
         raise OwnKeyError(
-            "No provider is chosen for your own key. Choose OpenAI or Google Gemini "
-            "in Use My Own API Key."
+            "No provider is chosen for your own key. Choose one in Use My Own API Key."
         )
     name = provider_name(provider)
     _stop_if_cancelled(cancel)
-    key = load_provider_api_key(provider)
-    if not key:
+    key = load_provider_api_key(provider) if _providers.needs_key(provider) else ""
+    if not key and _providers.needs_key(provider):
         raise OwnKeyError(
             f"No {name} key is saved on this computer. Add one in Use My Own API Key, "
             "or choose another provider there."
         )
     system, user = request_for(feature, prompt, chunks, history, language)
+    # The family's text-only line goes after the template, never into it (decision 13).
+    from quill.core.ai.text_only import with_family_instruction
+
+    system = with_family_instruction(system)
     chosen = model.strip() or default_model(provider)
     if provider == GEMINI:
         from quill.core.ai.own_key_gemini import stream_answer
 
         return stream_answer(key, chosen, system, user, cancel=cancel)
     connection = AssistantConnectionSettings(
-        provider=provider, host=default_host_for_provider(provider), model=chosen
+        provider=provider, host=_providers.host_for(provider), model=chosen
     )
-    # No answer ceiling: the model's own maximum is the only one.
+    from quill.core.ai.connection_usage import remember_rate_limits
+
+    # No answer ceiling: the model's own maximum is the only one. The reply's
+    # x-ratelimit-* headers feed the Usage view, from this answer (10A.11).
     text, error = generate_assistant_response(
         connection,
         key,
         user,
         max_tokens=None,
         system_prompt=system,
+        on_headers=lambda headers: remember_rate_limits(provider, headers),
     )
     _stop_if_cancelled(cancel)  # it arrived after Stop: not shown
     if error or not text:
@@ -507,22 +520,20 @@ def describe_image_with_own_key(
     from pathlib import Path
 
     from quill.core.ai.vision import describe_image
-    from quill.core.assistant_ai import (
-        AssistantConnectionSettings,
-        default_host_for_provider,
-        load_provider_api_key,
-    )
+    from quill.core.assistant_ai import AssistantConnectionSettings, load_provider_api_key
 
     chosen = (provider or "").strip().lower()
     if chosen not in OWN_KEY_PROVIDERS:
         raise OwnKeyError("No provider is chosen for your own key. Nothing was sent.")
     name = provider_name(chosen)
-    key = load_provider_api_key(chosen)
-    if not key:
+    key = load_provider_api_key(chosen) if _providers.needs_key(chosen) else ""
+    if not key and _providers.needs_key(chosen):
         raise OwnKeyError(f"No {name} key is saved on this computer. Nothing was sent.")
+    from quill.core.ai.text_only import with_family_instruction
+
     connection = AssistantConnectionSettings(
         provider=chosen,
-        host=default_host_for_provider(chosen),
+        host=_providers.host_for(chosen),
         model=model.strip() or default_model(chosen),
     )
     try:
@@ -530,7 +541,7 @@ def describe_image_with_own_key(
             connection,
             key,
             Path(str(path)),
-            prompt=question or "Describe this image in detail.",
+            prompt=with_family_instruction(question or "Describe this image in detail."),
         )
     except Exception as exc:  # noqa: BLE001 - one actionable sentence for the UI
         raise OwnKeyError(f"{name} could not describe the image: {scrub(str(exc), key)}") from exc
@@ -556,6 +567,11 @@ def size_warning(
 
     tokens = estimate_tokens(text)
     words = words_in(text)
+    if _providers.is_local(provider):
+        return (
+            f"{provider_name(provider)} has no limits and costs nothing per request. "
+            f"{_providers.LOCAL_ABOUT} A long passage may take a while on this computer."
+        )
     cost = tokens * estimate_for(model, provider).input_per_million / 1_000_000
     spent = "less than 1 cent" if cost < 0.01 else f"about ${cost:,.2f}"
     account = _ACCOUNT_NAMES.get(provider, provider_name(provider))

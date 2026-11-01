@@ -466,28 +466,47 @@ this release is here because somebody asked for it.
 
 ---
 
-## Arrived in QUILL Lite 2.0.0
+## What's new in QUILL Lite 2.0.0
 
-When this was first written, three small fixes were on their way. They arrived
-in QUILL Lite 2.0.0, together with a thesaurus, a dictionary you can use
-without AI, an AI dictionary, a Google Gemini key, and Activity and Repeat
-Last Result. The QUILL Lite 2.0 release notes have the whole story.
+QUILL Lite 2.0.0 is the first release since 1.1.2, and the biggest one yet.
+The QUILL Lite 2.0 release notes have every detail; here is the short tour.
 
-- When you come back to QUILL Lite with Alt+Tab, it checks that your document
-  is ready for typing. It will not pull you out of Find or a menu.
-- If QUILL Lite cannot save your preferences, because the disk is full or the
-  settings folder is read-only, it tells you. Your choices still work until
-  you close the app, the warning stays in the status bar, and opening
-  Preferences again tries the save once there is room.
-- When you close QUILL Lite, anything sent to it while it closes is kept for
-  next time. If you change your mind about closing, everything carries on as
-  usual.
+### You choose your AI
 
----
+The free AI is still here, no account needed. Beside it, in one window called
+Choose Your AI (Ctrl+4), you can use your ChatGPT plan, your GitHub Copilot,
+Codex, or your own key. Copilot signs in with a short code that your screen
+reader spells out and that is already on the clipboard. Which AI Am I Using
+(Ctrl+8) tells you where your words are going, Usage (Ctrl+Alt+Shift+F9)
+tells you how much you have used in plain sentences, and Do a Document Task
+(Ctrl+3) lets Copilot or Codex take on a job with several steps, asking you
+before it changes anything. Your own key can now be a Google Gemini,
+Anthropic Claude or OpenRouter key, or Ollama on your own computer.
 
-## Dictation, tested on real voices
+### Finding the right word
 
-**October 22, 2026**
+The Thesaurus (Shift+F7) finds the word you are really on. Look Up (Alt+F10)
+is a dictionary that works without AI, and the AI dictionary reads your word
+in its own sentence and tells you whether it is the right one.
+
+### Tables, in every kind of document
+
+QUILL Lite can now make a table and read it to you one cell at a time, the
+same way as QUILL. Press **Ctrl+Alt+T** for **Insert > Table**, say how many
+columns and rows you want and whether the first row is a header, and you are
+in the first cell. In a rich text document it is a real table, which your
+screen reader, Word and WordPad all see as a table; in Markdown and plain
+text it is rows of cells divided by bars; in a web page it is a proper HTML
+table.
+
+Inside a table the arrow keys move by cell: Up and Down go to the cell above
+and below and say what is there, so you no longer hear the whole row at once.
+Tab and Shift+Tab move cell to cell as in Word, Tab in the last cell adds a
+row, and **Navigate > Table** adds and deletes rows and columns. It works the
+same with JAWS, NVDA and Narrator, with nothing to install. Trim Trailing
+Spaces, which used to be on Ctrl+Alt+T, is now on **Ctrl+Alt+R**, as in QUILL.
+
+### Dictation, tested on real voices
 
 When QUILL Lite suggests a speech model for your computer, that advice now
 comes from real people talking, not a computer voice. We tested every
@@ -511,32 +530,33 @@ them. And Moonshine base, which used to drop any phrase longer than about
 eight and a half seconds, now hears every word. The user guide's "How we
 chose: tested on real speech" has the whole table.
 
----
+Dictation also works in Spanish, keeps up with you as you speak, lets you
+correct and edit by voice, and turns a recording into text.
 
-## Tables, in every kind of document
+### Knowing what happened
 
-**October 26, 2026**
+QUILL Lite keeps a list of everything it has told you, and Repeat Last Result
+(F9) says the last important thing again. If something goes wrong while you
+are busy elsewhere, it waits for you rather than slipping past. If it cannot
+save your preferences, because the disk is full or the settings folder is
+read-only, it tells you, keeps your choices working until you close it, and
+tries again when you next open Preferences.
 
-QUILL Lite can now make a table and read it to you one cell at a time, the
-same way as QUILL. Press **Ctrl+Alt+T** for **Insert > Table**, say how many
-columns and rows you want and whether the first row is a header, and you are
-in the first cell. In a rich text document it is a real table, which your
-screen reader, Word and WordPad all see as a table; in Markdown and plain
-text it is rows of cells divided by bars; in a web page it is a proper HTML
-table.
+### And a lot more
 
-Inside a table the arrow keys move by cell: Up and Down go to the cell above
-and below and say what is there, so you no longer hear the whole row at once.
-Tab and Shift+Tab move cell to cell as in Word, Tab in the last cell adds a
-row, and **Navigate > Table** adds and deletes rows and columns. It works the
-same with JAWS, NVDA and Narrator, with nothing to install. Trim Trailing
-Spaces, which used to be on Ctrl+Alt+T, is now on **Ctrl+Alt+R**, as in QUILL.
-
-Two smaller things arrived with it. **Help > What's New** (**Alt+H**, then
-**W**) opens the full list of changes in your browser, as in every QUILL
-family app. And when you close your last document, the window keeps a full
-menu bar, File, Tools and Help, so you can reach Preferences or Help without
-opening a blank page first.
+- **Spell check reads only what you wrote**, skipping web addresses, file
+  names and code.
+- **Word documents** open and save as Word, and PDFs open as text.
+- **Find in Open Documents** (Ctrl+Alt+Shift+F8) searches every document you
+  have open, and folder search reaches every file in a folder.
+- **Recent Documents** (Alt+Shift+0) shows the whole list at once.
+- **Help > What's New** (Alt+H, then W) opens the full list of changes in
+  your browser, and closing your last document still leaves you a full menu
+  bar.
+- **Coming back with Alt+Tab** puts you back in your document, without
+  pulling you out of Find or a menu.
+- **Release channels**: stay on Stable, or try Beta or Dev, with a safe way
+  back.
 
 ---
 

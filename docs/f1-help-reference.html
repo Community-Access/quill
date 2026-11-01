@@ -266,7 +266,7 @@ separately in <a href="CONTROL_REFERENCE.md">CONTROL_REFERENCE.md</a>,
 generated from <code>topics.json</code> by
 <code>quill/tools/build_docs.py</code>.</p>
 <h2 id="quill-radio">Quill Radio</h2>
-<p>Control coverage: 335 audited sites (221 helped, 114 named-help).</p>
+<p>Control coverage: 327 audited sites (213 helped, 114 named-help).</p>
 <h3 id="every-window-and-what-it-is-for">Every window, and what it is
 for</h3>
 <p><strong>ACB Media Podcasts.</strong> Everything ACB Media publishes,
@@ -287,6 +287,9 @@ the Play Queue and Copy Details. Search narrows the week in place, and
 the channel box narrows it to one. The schedule is kept on this
 computer, so it opens with no connection and says how old it is when it
 does.</p>
+<p><strong>AI Usage.</strong> How much each AI you have set up has been
+used, one sentence each, and whose count it is. Manage Usage opens the
+selected one’s own page.</p>
 <p><strong>About This Channel.</strong> A YouTube channel’s name,
 subscriber count and the description it wrote about itself, to read with
 the arrow keys. Escape closes it.</p>
@@ -300,15 +303,14 @@ arrives as its own row in your favorites.</p>
 <p><strong>Add to Lineup.</strong> Choose the lineup to add to, or New
 Lineup to make one. Items you add stay until you remove them, whatever
 the rules say.</p>
-<p><strong>Ask QUILL Radio.</strong> A conversation with ChatGPT, on
-your own plan, that already knows what is playing: the station and the
-title the stream is announcing go with every message, so ‘what is this
-song’ and ‘tell me about this station’ need no names typed. Type in Your
-message and press Enter; the reply is read aloud and added to the
-conversation above. Ask About What’s Playing asks for you, and the Quick
-questions list holds nine more: arrow freely, press Enter on one to put
-it in the message box, and three of them say what they send about you
-before anything goes. Nothing here changes what is playing.</p>
+<p><strong>Ask.</strong> A conversation about what is playing, on
+whichever AI is in use: the station and the title the stream is
+announcing go with every message, so ‘what is this song’ needs no names
+typed. Type in Your message and press Enter; the reply is read aloud and
+added to the conversation above. The Quick questions list holds Radio’s
+nine questions and a few more: arrow freely and press Enter on one to
+put it in the message box. The ones that send something about you say so
+before anything goes.</p>
 <p><strong>Audio Health.</strong> Can this installation play and record?
 Each row names one piece of the media machinery – the playback engine,
 the recorder, the converters – and says plainly whether it is present,
@@ -337,6 +339,11 @@ They will be in Recently Left.</p>
 <p><strong>Chapters.</strong> The chapter list of what is playing. Enter
 jumps straight to the highlighted chapter; the player keeps playing from
 there.</p>
+<p><strong>Choose Your AI.</strong> Choose where Quill Radio’s AI comes
+from: QUILL’s free AI, your ChatGPT plan, GitHub Copilot, Codex or your
+own key. The list says which is in use; Enter uses the selected one or
+signs in to it, and Delete signs a signed-in one out. Choosing here
+changes nothing in the other apps.</p>
 <p><strong>Closing Quill Radio.</strong> A recording is being written
 right now, and exiting would stop it. Exit finishes the file and quits;
 Minimize to Tray keeps recording with the window tucked away; Cancel
@@ -559,6 +566,9 @@ much warning you want, add a note if there is something to say with it,
 and choose High priority if it should come through quiet hours. A
 reminder only tells you: it never starts, records or queues anything by
 itself.</p>
+<p><strong>Sign In to Your AI.</strong> Sign in to the AI you chose.
+Open the Page takes you to its sign-in page; approve there, and this
+closes itself once you are signed in.</p>
 <p><strong>Skip Sponsor Segments.</strong> Whether Quill Radio jumps
 over the parts of YouTube videos that SponsorBlock’s volunteers have
 marked as sponsor reads, self-promotion and the like, and which kinds.
@@ -606,12 +616,6 @@ the wrong row would mean a very different morning.</p>
 the updater did for this app: checks, downloads, channel changes and the
 copies of your settings it saved. Read-only; nothing here changes
 anything.</p>
-<p><strong>Use My ChatGPT Subscription.</strong> Sign Quill Radio in
-with the ChatGPT plan you already pay for, so Ask QUILL Radio can answer
-on it. Continue with ChatGPT opens your browser; once signed in, choose
-the model from your plan’s own list and whether web search is allowed.
-Sign Out and Forget on This Computer appear only while you are signed
-in.</p>
 <p><strong>Wake-Up Timer.</strong> Start a station playing at a time you
 choose – an alarm clock that wakes you to radio. Quill Radio must be
 running (or in the tray) at the set time; the status readout here says
@@ -672,31 +676,6 @@ has played while you listened: every title the stream reported, newest
 first, with the time it was heard.</p>
 <h3 id="every-authored-control-help-sentence">Every authored control
 help sentence</h3>
-<h4 id="askradioframe-quilluiradioask_radio_windowpy">AskRadioFrame
-(<code>quill/ui/radio/ask_radio_window.py</code>)</h4>
-<ul>
-<li><code>self._quick</code>: Questions worth one keystroke. Arrow
-through them freely; press Enter, or Use This Question, to put the one
-you are on into the message box, where you can send it or change it. Six
-ask about what is playing; three also send something you keep – your
-favorites, or the songs logged – and say so before anything goes.</li>
-<li><code>use</code>: Puts the highlighted quick question into the
-message box and says what else, if anything, will go with it. Nothing is
-sent yet.</li>
-<li><code>self._message</code>: Type a question and press Enter. What is
-playing goes with it, so ‘what is this song’ and ‘tell me about this
-station’ just work.</li>
-<li><code>self._send_button</code>: Sends your message with what is
-playing right now.</li>
-<li><code>playing</code>: Asks about the song and station playing right
-now, without typing. Press it again for the next suggested
-question.</li>
-<li><code>fresh</code>: Forgets this conversation and starts again.
-Nothing is sent.</li>
-<li><code>copy</code>: Puts the most recent reply on the clipboard.</li>
-<li><code>account_button</code>: Opens the window where you sign in or
-out of ChatGPT, choose the model, and allow web search.</li>
-</ul>
 <h4 id="module-level-quilluiradioaudio_health_dialogpy">(module level)
 (<code>quill/ui/radio/audio_health_dialog.py</code>)</h4>
 <ul>
@@ -1436,6 +1415,9 @@ Read-only.</li>
 <p>Control coverage: 341 audited sites (245 helped, 96 named-help).</p>
 <h3 id="every-window-and-what-it-is-for-1">Every window, and what it is
 for</h3>
+<p><strong>AI Usage.</strong> How much each AI you have set up has been
+used, one sentence each, and whose count it is. Manage Usage opens the
+selected one’s own page.</p>
 <p><strong>About This Episode.</strong> Everything the feed says about
 one episode – people, links, chapters, transcripts, funding – as
 reviewable, copyable text. What is missing here is missing from the
@@ -1447,6 +1429,13 @@ feed is read.</p>
 <p><strong>Add to Lineup.</strong> Choose the lineup to add to, or New
 Lineup to make one. Items you add stay until you remove them, whatever
 the rules say.</p>
+<p><strong>Ask.</strong> A conversation about the episode in front of
+you, on whichever AI is in use: the episode, its show notes, its
+chapters and where you are in it go with every message, never the audio.
+Type in Your message and press Enter; the reply is read aloud and added
+to the conversation above. The Quick questions list holds What did I
+miss in this episode? and a few more: arrow freely and press Enter on
+one to put it in the message box.</p>
 <p><strong>Build Me a Listening Run.</strong> Episodes AI help chose to
 fit the time you have, measured by Cast. Suggestions from AI help, for
 you to decide. Each row starts accepted; Space switches it between
@@ -1458,6 +1447,11 @@ kind of thing clears the rule’s tests and places, because they belong to
 the old kind.</p>
 <p><strong>Change the Rules.</strong> The change lets some items go.
 They will be in Recently Left.</p>
+<p><strong>Choose Your AI.</strong> Choose where QUILL Cast’s AI comes
+from: QUILL’s free AI, your ChatGPT plan, GitHub Copilot, Codex or your
+own key. The list says which is in use; Enter uses the selected one or
+signs in to it, and Delete signs a signed-in one out. Choosing here
+changes nothing in the other apps.</p>
 <p><strong>Closing QUILL Cast.</strong> What closing the window should
 do: exit, or keep playing with QUILL Cast tucked into the system tray.
 Cancel leaves everything as it was. Don’t ask me again remembers your
@@ -1667,6 +1661,9 @@ queue itself.</p>
 knows: your shows, their episodes, show notes and transcripts. Each
 result says which show and which episode it came from, and Enter opens
 the row it names.</p>
+<p><strong>Sign In to Your AI.</strong> Sign in to the AI you chose.
+Open the Page takes you to its sign-in page; approve there, and this
+closes itself once you are signed in.</p>
 <p><strong>Smart Playlist Rules.</strong> The rules that build a smart
 playlist: which shows it draws from, how old an episode may be, whether
 played episodes count, and how many it holds. The playlist rebuilds
@@ -2547,19 +2544,38 @@ move it.</li>
 <p>Control coverage: 39 audited sites (26 helped, 13 named-help).</p>
 <h3 id="every-window-and-what-it-is-for-2">Every window, and what it is
 for</h3>
+<p><strong>AI Usage.</strong> How much each AI you have set up has been
+used, one sentence each, and whose count it is. Manage Usage opens the
+selected one’s own page.</p>
 <p><strong>Add Bookmark.</strong> A note to keep with the bookmark being
 added at the current position. The note is what the Bookmarks list shows
 for this bookmark, and what is read aloud when playback reaches it
 again.</p>
+<p><strong>Ask.</strong> A conversation about the book you are listening
+to, on whichever AI is in use: the book’s title, the chapter, your place
+in it and the list of chapters go with every message, and the audio
+never does. Type in Your message and press Enter; the reply is read
+aloud and added to the conversation above. Quick questions holds Remind
+me who this character is and a few more.</p>
 <p><strong>Book Library.</strong> Search LibriVox, the free
 public-domain audiobook catalog, and choose a book. Type a title, press
 Search, pick a result, and Play streams the book’s sections here in
 order. No account is involved and nothing is saved to disk.</p>
+<p><strong>Chapter Summary.</strong> The AI’s summary of the chapter you
+are in, in a sentence or two, made from the book’s own text or a short
+transcript made on this computer. Copy puts it on the clipboard; asking
+again for the same chapter gives the same answer without sending
+anything.</p>
 <p><strong>Choose Columns.</strong> Decide what a row of the chosen list
 says, and in what order. A row is read out one column at a time, so
 hiding a column removes it from every spoken row, and the preview line
 reads exactly what one row will say. Cancel leaves every list as it
 was.</p>
+<p><strong>Choose Your AI.</strong> Choose where Quill Media Player’s AI
+comes from: QUILL’s free AI, your ChatGPT plan, GitHub Copilot, Codex or
+your own key. The player signs in on its own, as QUILL Media Player. The
+list says which is in use; Enter uses the selected one or signs in to
+it, and Delete signs a signed-in one out.</p>
 <p><strong>Edit Bookmark.</strong> Change the note on the highlighted
 bookmark. Only the words change – the bookmark keeps its position.</p>
 <p><strong>Find a Setting or Command.</strong> Every menu command in
@@ -2596,11 +2612,18 @@ and the Audio equalizer. Open a file, a folder, a DAISY book, or a free
 LibriVox title; your place is saved as you listen, so a book resumes
 where you left it. Nothing here needs an account, and playback stays on
 this computer.</p>
+<p><strong>Recap.</strong> The AI’s reminder of what was happening up to
+your place in the book, with nothing from further on. It is made from
+the book’s own text or a transcript of at most five minutes, made on
+this computer. Copy puts it on the clipboard.</p>
 <p><strong>Show and Hide Key.</strong> Choose one key that shows and
 hides the player from any program. Type it, for example with Ctrl, Alt
 and Shift held, or leave the box empty for no key. A key another
 QuillVille app already uses is refused, and you are told whose it
 is.</p>
+<p><strong>Sign In to Your AI.</strong> Sign in to the AI you chose.
+Open the Page takes you to its sign-in page; approve there, and this
+closes itself once you are signed in.</p>
 <p><strong>Voice Command.</strong> Say or type one natural command –
 ‘skip back thirty’, ‘next chapter’, ‘go to 1:20:00’, ‘bookmark this’,
 ‘sleep in twenty’ – and OK carries it out. The same grammar answers the
@@ -2713,6 +2736,9 @@ for</h3>
 against Audible’s ACX submission window: loudness, true peak, and noise
 floor, each with its limit, plus plain recommendations for anything
 failing. Read-only – Escape closes it and nothing was changed.</p>
+<p><strong>AI Usage.</strong> How much each AI you have set up has been
+used, one sentence each, and whose count it is. Manage Usage opens the
+selected one’s own page.</p>
 <p><strong>Add a program’s sound.</strong> Choose a program that is
 playing sound to add as a sound source of its own.</p>
 <p><strong>Add a spoken screenshot note.</strong> Start explicitly opens
@@ -2722,6 +2748,12 @@ Closing stops recording; temporary audio is deleted. No cloud upload
 occurs.</p>
 <p><strong>Add marker.</strong> Type an optional label for this moment
 in the recording, then press Enter.</p>
+<p><strong>Ask.</strong> A conversation about your recording setup, on
+whichever AI is in use: the last pre-flight check and what it measured,
+the last recording check, the recording running now and the book open go
+with every message, never a picture or sound. Type in Your message and
+press Enter; the reply is read aloud and added to the conversation
+above. Quick questions holds Is my setup ready? and a few more.</p>
 <p><strong>Ask AI questions about a video.</strong> Choose a video and
 the whole of it or a stretch. Studio takes frames from that stretch,
 lays them out as one labelled picture with the transcript if there is
@@ -2756,6 +2788,12 @@ undoes either answer.</p>
 window is: Studio says whether your face is in view and centred, and
 which way to move. Face detection runs on this computer; nothing is
 recorded or saved.</p>
+<p><strong>Choose Your AI.</strong> Choose where QUILL Studio’s AI comes
+from: QUILL’s free AI, your ChatGPT plan, GitHub Copilot, Codex or your
+own key. The list says which is in use; Enter uses the selected one or
+signs in to it, and Delete signs a signed-in one out. Every picture
+Studio asks about goes to the one in use. Choosing here changes nothing
+in the other apps.</p>
 <p><strong>Choose screenshot control.</strong> Choose a specific part of
 the selected window by its name or role. Search filters real accessible
 controls without AI. Password and offscreen items are excluded. Use
@@ -2767,6 +2805,10 @@ between formats, on this machine. Build the queue, pick the output
 format, preset, and destination folder, and Convert runs in the
 background with spoken progress. The Advanced options only override what
 you deliberately change; untouched controls leave the preset alone.</p>
+<p><strong>Describe a Picture.</strong> Choose a picture, or a video and
+then the moment in it. Studio takes that one picture on this computer,
+fits it to the AI in use and reads the description aloud. Asking about
+the same picture again sends nothing.</p>
 <p><strong>Discard this recording.</strong> Confirm deleting the
 recording in progress. It cannot be recovered.</p>
 <p><strong>Edit chapter.</strong> This chapter’s title and its exact
@@ -2878,6 +2920,9 @@ sharing.</p>
 <p><strong>Screenshot visual preview.</strong> An optional magnified
 visual preview. Use scrolling keys to inspect it. The editing window
 retains a text plan and object list for nonvisual review.</p>
+<p><strong>Sign In to Your AI.</strong> Sign in to the AI you chose.
+Open the Page takes you to its sign-in page; approve there, and this
+closes itself once you are signed in.</p>
 <p><strong>Sleep Timer.</strong> Stop playback by itself. Turn the timer
 on and give it a delay in minutes, or choose to stop at the end of the
 current chapter instead. It fires once and then turns itself off –
@@ -3936,9 +3981,26 @@ copy.</li>
 <li><code>close</code>: Hide this window; the broadcast continues.</li>
 </ul>
 <h2 id="quill-inkwell">Quill Inkwell</h2>
-<p>Control coverage: 3 audited sites (3 helped).</p>
+<p>Control coverage: 5 audited sites (5 helped).</p>
 <h3 id="every-window-and-what-it-is-for-4">Every window, and what it is
 for</h3>
+<p><strong>AI Usage.</strong> How much each AI you have set up has been
+used, one sentence each, and whose count it is. Manage Usage opens the
+selected one’s own page.</p>
+<p><strong>Ask.</strong> A conversation about your abbreviations, on
+whichever AI is in use: each abbreviation by name and expansion, most
+used first, goes with every message, and nothing you type in other
+programs ever does. Type in Your message and press Enter; the reply is
+read aloud and added to the conversation above. Quick questions holds
+What do I type most? and a few more.</p>
+<p><strong>Choose Your AI.</strong> Choose where Quill Inkwell’s AI
+comes from: QUILL’s free AI, your ChatGPT plan, GitHub Copilot, Codex or
+your own key. Quill Inkwell signs in on its own, as QUILL Inkwell. The
+list says which is in use; Enter uses the selected one or signs in to
+it, and Delete signs a signed-in one out.</p>
+<p><strong>Choose a Document.</strong> Pick the document Suggest
+Abbreviations reads: plain text, Markdown, Word or rich text. Nothing is
+sent yet; you are asked first, and Cancel sends nothing.</p>
 <p><strong>Edit Abbreviation.</strong> Change one abbreviation: its
 trigger word, its expansion, or how it behaves – which keys fire it,
 what is spoken, whether a sound plays. The expansion may carry
@@ -3988,11 +4050,23 @@ you saved. The list shows your library, which is the same library
 QUILL’s editor expands from, so an abbreviation added in either works in
 both immediately. Closing this window keeps expansion running in the
 tray unless you turn that off in Options.</p>
+<p><strong>Send the Document?.</strong> Whether the text of the document
+you picked goes to the AI in use, and how much of it. The file’s name
+and folder stay on this computer. No is the default and sends
+nothing.</p>
 <p><strong>Show and Hide Key.</strong> Choose one key that shows and
 hides the Inkwell window from any program. Type it, for example with
 Ctrl, Alt and Shift held, or leave the box empty for no key. A key
 another QuillVille app already uses is refused, and you are told whose
 it is.</p>
+<p><strong>Sign In to Your AI.</strong> Sign in to the AI you chose.
+Open the Page takes you to its sign-in page; approve there, and this
+closes itself once you are signed in.</p>
+<p><strong>Suggest Abbreviations.</strong> The abbreviations the AI
+suggested from your document, one check box each, all starting cleared.
+Check the ones you want and press OK to add them to the library QUILL
+shares; Cancel adds none. An abbreviation you already have is never
+suggested, so nothing here can replace one of yours.</p>
 <p><strong>Update downloaded.</strong> A new Quill Inkwell is on disk
 and ready. Install and restart now applies it and relaunches – your
 abbreviations and settings are kept – or Open folder shows you the
@@ -4018,10 +4092,33 @@ typed into the window you were just working in – the way to use entries
 set to expand only manually. Also on Ctrl+K here, and from any program
 on the key you choose with File, Quick Insert Key.</li>
 </ul>
+<h4
+id="suggestionsdialog-quillappsinkwell_suggest_dialogpy">SuggestionsDialog
+(<code>quill/apps/inkwell_suggest_dialog.py</code>)</h4>
+<ul>
+<li><code>ok</code>: Add the abbreviations you checked to your library,
+the same library QUILL expands from, and close. If none are checked,
+nothing is added.</li>
+<li><code>cancel</code>: Close without adding any of the suggested
+abbreviations.</li>
+<li><code>box</code>: Check this to add the abbreviation to your library
+when you press OK. It starts cleared, so nothing the AI suggested is
+added unless you check it. You can change or delete it later in Manage
+Abbreviations.</li>
+</ul>
 <h2 id="quill-transcribe">QUILL Transcribe</h2>
-<p>Control coverage: 43 audited sites (43 helped).</p>
+<p>Control coverage: 44 audited sites (44 helped).</p>
 <h3 id="every-window-and-what-it-is-for-5">Every window, and what it is
 for</h3>
+<p><strong>AI Usage.</strong> How much each AI you have set up has been
+used, one sentence each, and whose count it is. Manage Usage opens the
+selected one’s own page.</p>
+<p><strong>Ask.</strong> A conversation about your dictation, on
+whichever AI is in use: the transcript you last reviewed, or this
+session’s dictated phrases, go with every message, never your voice.
+Type in Your message and press Enter; the reply is read aloud and added
+to the conversation above. Quick questions holds Who said what? and a
+few more.</p>
 <p><strong>Choose Microphone.</strong> The microphone QUILL Transcribe
 listens on. The Windows default follows whatever Windows is set to; a
 named microphone stays chosen.</p>
@@ -4029,6 +4126,11 @@ named microphone stays chosen.</p>
 marked as running on this computer or sending your speech over the
 internet, with its languages and whether it is downloaded. The model you
 choose is used every time until you choose another.</p>
+<p><strong>Choose Your AI.</strong> Choose where QUILL Transcribe’s AI
+comes from: QUILL’s free AI, your ChatGPT plan, GitHub Copilot, Codex or
+your own key. QUILL Transcribe signs in on its own, as QUILL Transcribe.
+The list says which is in use; Enter uses the selected one or signs in
+to it, and Delete signs a signed-in one out.</p>
 <p><strong>Dictation Commands.</strong> Everything dictation
 understands, to read with the arrow keys. In another program only the
 commands that do not need to read its text work.</p>
@@ -4120,6 +4222,9 @@ nothing. Nothing listens and nothing downloads here.</p>
 hides the QUILL Transcribe window from any program, or leave the box
 empty for no key. A key another QuillVille app already uses is refused,
 and you are told whose it is.</p>
+<p><strong>Sign In to Your AI.</strong> Sign in to the AI you chose.
+Open the Page takes you to its sign-in page; approve there, and this
+closes itself once you are signed in.</p>
 <p><strong>Speech Models.</strong> The Model Library: download, check or
 remove the optional speech models. Each download shows its size first,
 is checked before it is used, and can be cancelled. A model that did not
@@ -4177,6 +4282,8 @@ dictation profile and start and stop key dictation uses now. The model
 you chose is the one that runs; it never changes on its own.</li>
 <li><code>self._next_text</code>: What starting dictation will do, why
 it paused or could not start, and the last thing it said.</li>
+<li><code>self._ai_text</code>: Which AI is in use, as Which AI Am I
+Using says it. Press Enter to open Choose Your AI.</li>
 <li><code>model_button</code>: Choose the speech model: each is marked
 as running on this computer or sending your speech over the
 internet.</li>
@@ -4305,11 +4412,25 @@ field stops; nothing is kept.</li>
 <p>Control coverage: 40 audited sites (40 helped).</p>
 <h3 id="every-window-and-what-it-is-for-6">Every window, and what it is
 for</h3>
+<p><strong>AI Usage.</strong> How much each AI you have set up has been
+used, one sentence each, and whose count it is. Manage Usage opens the
+selected one’s own page.</p>
 <p><strong>Add Weather Location.</strong> Save a new place to watch.
 Type a ZIP code, city, county, or address and press Search; the matching
 places come back as a list so same-named towns are told apart, and Add
 Selected saves the one you choose. A bare latitude,longitude pair
 resolves to that exact point with no search.</p>
+<p><strong>Ask.</strong> A conversation about the weather, on whichever
+AI is in use: your primary place’s name, never its coordinates, the
+current conditions, the next hours, the forecast and any active alerts
+by their official names go with every message. Type in Your message and
+press Enter; the reply is read aloud and added to the conversation
+above. Quick questions holds Do I need a coat at 5? and a few more.</p>
+<p><strong>Choose Your AI.</strong> Choose where Quill Weather’s AI
+comes from: QUILL’s free AI, your ChatGPT plan, GitHub Copilot, Codex or
+your own key. Quill Weather signs in on its own, as QUILL Weather. The
+list says which is in use; Enter uses the selected one or signs in to
+it, and Delete signs a signed-in one out.</p>
 <p><strong>Customize Quill Weather Features.</strong> Turn whole areas
 of Quill Weather on or off – alert monitoring, NOAA Weather Radio.
 Turning one off removes its menu items at the next launch; nothing you
@@ -4327,11 +4448,18 @@ The contents list is grouped by track and remembers where you stopped;
 typing ‘here’ in the filter box narrows it to the tutorials about the
 window you came from. Follow me watches what the app is doing – never
 which key you pressed – and moves you on by itself.</p>
+<p><strong>Should I Go Out?.</strong> The AI’s answer to Should I Go
+Out?, in plain words, from the forecast for your primary place. Any
+active alert comes first, in the Weather Service’s own words, never
+reworded by the AI. Copy puts the answer on the clipboard.</p>
 <p><strong>Show and Hide Key.</strong> Choose one key that shows and
 hides Quill Weather from any program. Type it, for example with Ctrl,
 Alt and Shift held, or leave the box empty for no key. A key another
 QuillVille app already uses is refused, and you are told whose it
 is.</p>
+<p><strong>Sign In to Your AI.</strong> Sign in to the AI you chose.
+Open the Page takes you to its sign-in page; approve there, and this
+closes itself once you are signed in.</p>
 <p><strong>Weather Center.</strong> The full text weather report for one
 location at a time, in reading order: active alerts first, then current
 conditions, the period forecast, the hourly forecast, and the extended
@@ -4512,6 +4640,17 @@ primary one the alert watch follows.</li>
 <p>Control coverage: 38 audited sites (38 helped).</p>
 <h3 id="every-window-and-what-it-is-for-7">Every window, and what it is
 for</h3>
+<p><strong>AI Usage.</strong> How much each AI you have set up has been
+used, one sentence each, and whose count it is. Manage Usage opens the
+selected one’s own page.</p>
+<p><strong>Ask.</strong> A conversation about your queued files, on
+whichever AI is in use: each file’s details as File Properties gives
+them, by name and never its folder, the Convert to choice and the last
+conversion’s report go with every message. The AI never hears the sound
+itself. Type in Your message and press Enter; the reply is read aloud
+and added to the conversation above. Quick questions holds Will this
+play in my car?, Make this smaller without losing much, and a few
+more.</p>
 <p><strong>Auphonic Work Waiting.</strong> Productions Auphonic accepted
 whose results have not been saved yet, remembered on this computer
 without contacting Auphonic. Resume waits for them and saves the
@@ -4522,6 +4661,11 @@ or M4A: hear it, then add, rename, move, split and merge chapters at the
 playhead, find them at the pauses, or import and export a chapter list.
 Save writes them into the file itself, and every later conversion
 carries them.</p>
+<p><strong>Choose Your AI.</strong> Choose where Quill Converter’s AI
+comes from: QUILL’s free AI, your ChatGPT plan, GitHub Copilot, Codex or
+your own key. Quill Converter signs in on its own, as QUILL Converter.
+The list says which is in use; Enter uses the selected one or signs in
+to it, and Delete signs a signed-in one out.</p>
 <p><strong>Conversion Report.</strong> Your last conversion, file by
 file: the settings used, where the files went, what converted, and why
 anything failed – in plain words, then FFmpeg’s own message. Copy All
@@ -4585,11 +4729,20 @@ hides Quill Converter from any program. Type it, for example with Ctrl,
 Alt and Shift held, or leave the box empty for no key. A key another
 QuillVille app already uses is refused, and you are told whose it
 is.</p>
+<p><strong>Sign In to Your AI.</strong> Sign in to the AI you chose.
+Open the Page takes you to its sign-in page; approve there, and this
+closes itself once you are signed in.</p>
 <p><strong>Tag Editor.</strong> Every tag of one MP3, M4A, M4B or MP4
 file, over five pages – title, artist and album, the people, the dates
 and numbers, sorting, and the cover art. Control+Tab moves between
 pages. OK writes the tags into the file; the sound itself is not
 touched.</p>
+<p><strong>Will This Play on My Device?.</strong> First, type the device
+you mean, such as an iPhone, a car stereo or an Echo, or leave it empty
+for the usual ones; Cancel sends nothing. Then the AI’s answer, from the
+queued files’ details only: for each kind of file, yes or no and why,
+and what to choose in Convert to when it will not play. Copy puts the
+answer on the clipboard.</p>
 <p><strong>Windows titled “Help:…”.</strong> This is the help window
 itself: the purpose of the window you were in, then the control you were
 on. Escape returns you to it.</p>
@@ -4791,6 +4944,9 @@ results go, before anything is uploaded.</li>
 <p>Control coverage: 127 audited sites (127 helped).</p>
 <h3 id="every-window-and-what-it-is-for-8">Every window, and what it is
 for</h3>
+<p><strong>AI Usage.</strong> How much each AI you have set up has been
+used, one sentence each, and whose count it is. Manage Usage opens the
+selected one’s own page.</p>
 <p><strong>Accessibility Settings.</strong> How the app speaks and
 looks: announcement verbosity, high contrast, text scale, and reduced
 motion. Apply puts the settings into effect across the whole window and
@@ -4807,10 +4963,21 @@ unless a routing rule files them into a folder.</p>
 schedule: station, program name, host, start and end times in 24-hour
 HH:MM, and an optional stream address. A station or a program name is
 enough to save.</p>
+<p><strong>Ask.</strong> A conversation about what you have saved, on
+whichever AI is in use. When a search is typed, the search and its
+results’ titles and notes go with every message; otherwise the selected
+beacon’s title, note and tags do – never where your library or any file
+is kept. Type in Your message and press Enter; the reply is read aloud
+and added to the conversation above.</p>
 <p><strong>Build Search.</strong> A form that writes the search query
 for you: words, an exact phrase, exclusions, type, collection, tag, link
 health, and domain. Search runs the built query in the main window’s
 search box, where it can also be saved as a Smart Collection.</p>
+<p><strong>Choose Your AI.</strong> Choose where QuillBeacon’s AI comes
+from: QUILL’s free AI, your ChatGPT plan, GitHub Copilot, Codex or your
+own key. QuillBeacon signs in on its own, as QUILL Beacon. The list says
+which is in use; Enter uses the selected one or signs in to it, and
+Delete signs a signed-in one out.</p>
 <p><strong>Collection Editor.</strong> Create a collection, or edit the
 one selected in the sidebar: its name, description, optional parent,
 sharing mark, and color. Collections are folders you invent; a bookmark
@@ -4818,6 +4985,11 @@ can sit in several.</p>
 <p><strong>Command Palette.</strong> Every command in the app as one
 searchable list. Type part of a name to filter, Enter runs the
 highlighted command, Escape closes without running anything.</p>
+<p><strong>Describe a Saved Picture.</strong> The AI’s description of
+the selected beacon’s picture. The words in the picture were read on
+this computer first and sent with it. Copy puts the description on the
+clipboard, and you are asked once whether to add it to the beacon’s
+note.</p>
 <p><strong>External Player.</strong> Which media player handles
 handoffs: the default player, optional paths to VLC and mpv for installs
 not on PATH, and a per-type override so radio and podcasts can open in
@@ -4840,6 +5012,10 @@ Everything is local-first: nothing needs an account.</p>
 episode or stream, with its chapters and transcript. Selecting a chapter
 jumps playback there, and Add Time Point saves a bookmark at the exact
 moment you are hearing so you can come back to it.</p>
+<p><strong>Read on This Computer.</strong> The words read in the
+selected beacon’s picture on this computer, because the AI in use cannot
+see pictures. Nothing was sent. Copy puts the words on the
+clipboard.</p>
 <p><strong>Review Location Repair.</strong> A saved location resolved
 poorly, and this is the decision: read what was saved against what the
 repair engine proposes, then accept the repair, keep the old location,
@@ -4849,6 +5025,9 @@ choice.</p>
 bookmark’s address contains the keyword, it is filed into the folder.
 The first matching rule in the Preferences list wins, and each keyword
 may be used only once.</p>
+<p><strong>Sign In to Your AI.</strong> Sign in to the AI you chose.
+Open the Page takes you to its sign-in page; approve there, and this
+closes itself once you are signed in.</p>
 <p><strong>Smart Collection Editor.</strong> One saved search, editable:
 its name, the live query it evaluates, the sort order, and an optional
 collection scope. The collection re-runs the query every time it is
@@ -5267,7 +5446,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
-<p>Control coverage: 233 audited sites (233 helped).</p>
+<p>Control coverage: 252 audited sites (252 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
@@ -5284,10 +5463,9 @@ Nothing goes into your document until you choose to put it there.</p>
 purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
 Control Z takes back.</p>
-<p><strong>AI Usage.</strong> How many free AI requests you have left
-this month and today, and when the count starts again. Your support ID
-is here too – that is what QUILL support will ask for. You can also sign
-this computer out from here, and connect it again whenever you like.</p>
+<p><strong>AI Usage.</strong> How much each AI you have set up has been
+used, one sentence each, and whose count it is. Manage Usage opens the
+selected one’s own page.</p>
 <p><strong>About QUILL Lite.</strong> What this copy is, and where it
 keeps your settings and your recovered work. QUILL Lite is a small
 companion to QUILL for All, not a replacement for it: conversion,
@@ -5301,6 +5479,8 @@ selection you were on. Note on shows the start of that text, so you can
 check you are in the right place. In Markdown and HTML, Write this note
 into the file keeps the note inside the document where others can read
 it; otherwise it stays private.</p>
+<p><strong>Allow This Step?.</strong> Whether the document task may take
+its next step.</p>
 <p><strong>Answer.</strong> What the AI sent back. It is read-only on
 purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
@@ -5327,6 +5507,12 @@ for the session and move with the text as you edit around them.</p>
 cursor is on: its name, its code point, and what it does to a search. A
 screen reader says ‘space’ for four different characters, and this is
 how you tell which one you have.</p>
+<p><strong>ChatGPT Plan Options.</strong> Whether your ChatGPT plan may
+search the web, and Forget on This Computer.</p>
+<p><strong>Choose Your AI.</strong> Choose where your AI comes from:
+QUILL’s free AI, your ChatGPT plan or your own key. The list says which
+is in use; Enter uses the selected one or signs in to it, and Delete
+signs a signed-in one out.</p>
 <p><strong>Clear Recent Documents.</strong> Asks before the recent list
 is emptied. No is the default, so Enter keeps the list; pinned documents
 stay either way.</p>
@@ -5366,6 +5552,9 @@ or with Ctrl+Alt+F9; Preferences chooses whether QUILL Lite shares
 QUILL’s dictionary.</p>
 <p><strong>Discard These Words.</strong> The AI has changed these words.
 Yes throws them away and writes nothing; No keeps the review open.</p>
+<p><strong>Do a Document Task.</strong> Tell GitHub Copilot or Codex
+what to do to this document. Each change asks first and is shown before
+it is applied; the task ends with a summary.</p>
 <p><strong>Document language.</strong> Which markup this document is
 written in. It decides what Bold writes, what the heading keys write,
 which of the two tag pickers the Insert menu offers, and whether the
@@ -5602,6 +5791,9 @@ off; Delete removes one after asking.</p>
 purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
 Control Z takes back.</p>
+<p><strong>Sign In to Your AI.</strong> Sign in to the AI you chose.
+Open the Page takes you to its sign-in page; approve there, and this
+closes itself once you are signed in.</p>
 <p><strong>Speech Models.</strong> Optional speech models you can
 download for better accuracy, with each one’s size, languages and what
 it suits. Your voice never leaves the computer with these models;
@@ -5655,11 +5847,12 @@ with ChatGPT opens your browser to sign in and allow it; once signed in,
 choose the model from your plan’s own list and whether web search is
 allowed. Sign Out and Forget on This Computer appear only while you are
 signed in.</p>
-<p><strong>Use My Own AI Key.</strong> Use AI help on your own OpenAI or
-Google Gemini account instead of QUILL’s free service. Choose the
-company, paste the key it gave you, and test it; with a saved key there
-is no daily limit. Remove the Saved Key puts you straight back on the
-free service.</p>
+<p><strong>Use My Own AI Key.</strong> Use AI help on your own account
+with OpenAI, Google Gemini, Anthropic Claude, OpenRouter, Ollama Cloud
+or a custom service, or on Ollama on this computer, which needs no key
+and sends nothing. Choose the provider, paste the key it gave you, and
+test it; with a saved key there is no daily limit. Remove the Saved Key
+puts you straight back on the free service.</p>
 <p><strong>Use the Shared Word List.</strong> Which of your words will
 be added to the list QUILL, QUILL Transcribe and Quill Inkwell share,
 before QUILL Lite starts using it. Use the Shared List goes ahead;
@@ -5972,6 +6165,17 @@ the top suggestion as well as the word. Off by default: it doubles the
 arrival announcement, which is welcome when you are learning a word and
 noise when you are checking one.</li>
 </ul>
+<h4 id="appaskframe-quilluihosted_ai_app_askpy">AppAskFrame
+(<code>quill/ui/hosted_ai_app_ask.py</code>)</h4>
+<ul>
+<li><code>self._quick</code>: Questions worth one keystroke. Arrow
+through them freely; press Enter, or Use This Question, to put the one
+you are on into the message box, where you can send it or change it.
+What can I do here? is answered on this computer and sends nothing.</li>
+<li><code>use</code>: Puts the highlighted quick question into the
+message box and says what else, if anything, will go with it. Nothing is
+sent yet.</li>
+</ul>
 <h4 id="aichatframe-quilluihosted_ai_chatpy">AiChatFrame
 (<code>quill/ui/hosted_ai_chat.py</code>)</h4>
 <ul>
@@ -6016,6 +6220,31 @@ where your plan’s limits and what is left are shown.</li>
 <li><code>refresh</code>: Asks your ChatGPT plan for its model list
 again.</li>
 </ul>
+<h4 id="signinstep-quilluihosted_ai_connectionspy">SignInStep
+(<code>quill/ui/hosted_ai_connections.py</code>)</h4>
+<ul>
+<li><code>self.open_button</code>: Opens the sign-in page in your web
+browser. Approve there and come back; this step closes itself when the
+sign-in is done.</li>
+<li><code>cancel</code>: Stops the sign-in. Nothing changes.</li>
+</ul>
+<h4 id="chooseaiframe-quilluihosted_ai_connectionspy">ChooseAiFrame
+(<code>quill/ui/hosted_ai_connections.py</code>)</h4>
+<ul>
+<li><code>self._list</code>: Where your AI comes from. Each row says its
+name and whether it is in use, signed in or not set up. Enter uses the
+row, or signs in to it; Delete on a signed-in row signs it out after
+asking.</li>
+<li><code>self._model</code>: The model this connection answers with,
+from the service’s own list. The first is the service’s recommendation.
+Your choice is saved at once.</li>
+<li><code>self._action</code>: Does what the selected row needs: Use
+This makes a signed-in row the one in use, Sign In opens its sign-in
+step, and Sign Out signs out of the row in use.</li>
+<li><code>self._options</code>: Shown while your ChatGPT plan, or Codex
+on it, is selected and signed in: whether the model may search the web,
+and Forget on This Computer.</li>
+</ul>
 <h4 id="module-level-quilluihosted_ai_dialogspy">(module level)
 (<code>quill/ui/hosted_ai_dialogs.py</code>)</h4>
 <ul>
@@ -6042,14 +6271,6 @@ here.</li>
 <li><code>retry</code>: Asks QUILL for a fresh code and tries
 again.</li>
 </ul>
-<h4 id="aiusageframe-quilluihosted_ai_dialogspy">AiUsageFrame
-(<code>quill/ui/hosted_ai_dialogs.py</code>)</h4>
-<ul>
-<li><code>self._sign_out</code>: Disconnects this computer from QUILL’s
-free AI. You can connect it again at any time.</li>
-<li><code>copy</code>: Puts this computer’s support ID on the
-clipboard.</li>
-</ul>
 <h4 id="askimagedialog-quilluihosted_ai_imagepy">AskImageDialog
 (<code>quill/ui/hosted_ai_image.py</code>)</h4>
 <ul>
@@ -6068,15 +6289,21 @@ opens in its own window.</li>
 <h4 id="ownkeydialog-quilluihosted_ai_own_keypy">OwnKeyDialog
 (<code>quill/ui/hosted_ai_own_key.py</code>)</h4>
 <ul>
-<li><code>self.provider</code>: Which company your key belongs to:
-OpenAI, or Google Gemini. Everything below follows the choice – where
-the text goes, which key, which models and whose prices. AI help uses
-the key saved for the provider chosen here, never the other one.</li>
+<li><code>self.provider</code>: Which provider answers: OpenAI, Google
+Gemini, Anthropic Claude, OpenRouter, Ollama Cloud, a custom service, or
+Ollama on this computer, which needs no key. Everything below follows
+the choice – where the text goes, which key, which models and whose
+prices. AI help uses the key saved for the provider chosen here, never
+another one.</li>
 <li><code>self.about</code>: Where your text goes with your own key, and
 where to make one. Read with the arrow keys.</li>
 <li><code>self.key</code>: Paste the API key for the provider chosen
 above. It is stored securely and never shown again; leave this empty to
 keep the key already saved.</li>
+<li><code>self.host</code>: Where a custom service or Ollama on this
+computer is listening, for example http://localhost:11434 for Ollama.
+The other providers have a fixed address, so this box is off for
+them.</li>
 <li><code>self.model</code>: Which model answers, with an estimate of
 what each might cost at the chosen provider’s prices. Every model your
 key can use for text is listed once the key is checked, the current
@@ -6089,10 +6316,11 @@ is saved.</li>
 <li><code>test</code>: Checks the key with the chosen provider, lists
 every model it can use, then sends one tiny request to the chosen model
 and says whether it answered. The request costs a fraction of a cent on
-your account.</li>
+your account; with Ollama on this computer it checks Ollama is running
+and costs nothing.</li>
 <li><code>self.remove</code>: Forgets the saved key for the chosen
-provider now, and puts AI help back on QUILL’s free service with its
-free allowance.</li>
+provider now. If that key was the AI in use, no AI is in use until you
+choose one in Choose Your AI.</li>
 </ul>
 <h4 id="aipadframe-quilluihosted_ai_padpy">AiPadFrame
 (<code>quill/ui/hosted_ai_pad.py</code>)</h4>
@@ -6114,6 +6342,16 @@ selected, the paragraph you are in, or the whole section.</li>
 the AI Result window, where you can read it and choose what to do; your
 document at the cursor, as one edit Control Z takes back; or the
 clipboard. Remembered until you change it.</li>
+</ul>
+<h4
+id="planoptionsdialog-quilluihosted_ai_plan_optionspy">PlanOptionsDialog
+(<code>quill/ui/hosted_ai_plan_options.py</code>)</h4>
+<ul>
+<li><code>self.web</code>: When checked, the model may search the web
+through OpenAI to answer a question. Not checked, only what you send is
+used. Saved as soon as you change it.</li>
+<li><code>close</code>: Closes these options. Every choice is already
+saved.</li>
 </ul>
 <h4 id="airesultframe-quilluihosted_ai_resultpy">AiResultFrame
 (<code>quill/ui/hosted_ai_result.py</code>)</h4>
@@ -6146,6 +6384,17 @@ off.</li>
 computer, after asking. It cannot be brought back.</li>
 <li><code>close</code>: Closes this window and leaves the conversation
 you had open.</li>
+</ul>
+<h4 id="usageframe-quilluihosted_ai_usagepy">UsageFrame
+(<code>quill/ui/hosted_ai_usage.py</code>)</h4>
+<ul>
+<li><code>self._list</code>: One sentence for each connection that is
+set up: how much has been used and whose count it is. A count kept on
+this computer is called a local count; a service’s own number is named
+as the service’s.</li>
+<li><code>manage</code>: Opens the selected connection’s own usage or
+billing page in your web browser, where its limits and bill are
+kept.</li>
 </ul>
 <h4
 id="cloudprovidersmixin-quilluiwindows_dictation_cloudpy">CloudProvidersMixin
@@ -6720,6 +6969,34 @@ it. A built-in correction cannot be deleted; Remove on one turns it off
 instead.</li>
 <li><code>close</code>: Close this window. Your changes are already
 kept.</li>
+</ul>
+<h4 id="approvaldialog-quilluiagent_windowpy">ApprovalDialog
+(<code>quill/ui/agent_window.py</code>)</h4>
+<ul>
+<li><code>self.summary</code>: What the task wants to do next, in one
+sentence. Enter allows it once; Escape does not allow it.</li>
+<li><code>self.once</code>: Lets this one step happen. The next step
+asks again.</li>
+<li><code>self.task</code>: Lets steps like this one happen until this
+task ends, without asking again. The next task asks afresh.</li>
+<li><code>self.deny</code>: Stops this step. The task carries on without
+it, or ends.</li>
+</ul>
+<h4 id="agentwindow-quilluiagent_windowpy">AgentWindow
+(<code>quill/ui/agent_window.py</code>)</h4>
+<ul>
+<li><code>self.transcript</code>: Everything said in this task: what you
+asked, each step taken, and the summary at the end. Read it with the
+arrow keys.</li>
+<li><code>self.instruction</code>: Type what you want done to this
+document, then press Enter. While a task runs, what you type here goes
+to it as a follow-up.</li>
+<li><code>self.send_button</code>: Starts a task with what you typed, or
+sends it to the task that is running.</li>
+<li><code>self.stop_button</code>: Stops the task now. Changes already
+applied stay, and each can be undone with Control Z.</li>
+<li><code>close</code>: Closes this window, stopping a task that is
+still running.</li>
 </ul>
 </main>
 </body>

@@ -73,10 +73,16 @@ class MenuItem:
 _ROUTE_SUFFIX = re.compile(r"\s*\((?:(?:Alt|Ctrl|Shift|QUILL Key|Cmd)[^()]*|&\w)\)\s*$")
 _TAB = chr(9)
 
+#: What a capability-gated AI row adds while the connection in use cannot run it
+#: (codex.md 10A.8): "Do a Document Task (needs Copilot or Codex)...". The
+#: guide names the command, and the row is still that command.
+_NEEDS_SUFFIX = re.compile(r"\s*\(needs [^()]*\)")
+
 
 def normalise(title: str) -> str:
     """A title as a document would write it: no ``&``, no ellipsis, no route."""
     title = title.split(_TAB, 1)[0]
+    title = _NEEDS_SUFFIX.sub("", title)
     while (stripped := _ROUTE_SUFFIX.sub("", title)) != title:
         title = stripped  # "Copy to Slot 1 (QUILL Key + Shift+1) (Alt+E, O, &Q)"
     # Every ampersand goes, the literal one too: a menu writes "Q&&A" and a

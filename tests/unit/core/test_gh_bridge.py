@@ -137,33 +137,8 @@ def test_codespace_ssh_config_returns_raw_output(runner: _FakeRunner) -> None:
     assert runner.calls[0] == ["gh", "codespace", "ssh", "--codespace", "cs1", "--config"]
 
 
-# ---------------------------------------------------------------------------
-# Copilot suggest / explain
-# ---------------------------------------------------------------------------
-
-
-def test_copilot_suggest_passes_query(runner: _FakeRunner) -> None:
-    runner.responses.append(_Result(stdout="git reset --soft HEAD~1"))
-    result = gb.copilot_suggest("undo my last commit but keep changes", gh_path="gh", runner=runner)
-    assert result == "git reset --soft HEAD~1"
-    assert runner.calls[0] == [
-        "gh",
-        "copilot",
-        "suggest",
-        "-t",
-        "shell",
-        "undo my last commit but keep changes",
-    ]
-
-
-def test_copilot_explain_passes_command(runner: _FakeRunner) -> None:
-    runner.responses.append(_Result(stdout="This resets your branch..."))
-    result = gb.copilot_explain("git reset --soft HEAD~1", gh_path="gh", runner=runner)
-    assert "resets" in result
-    assert runner.calls[0] == ["gh", "copilot", "explain", "git reset --soft HEAD~1"]
-
-
-def test_copilot_suggest_raises_on_failure(runner: _FakeRunner) -> None:
-    runner.responses.append(_Result(returncode=1, stderr="copilot extension not installed"))
-    with pytest.raises(gb.GhBridgeError, match="not installed"):
-        gb.copilot_suggest("anything", gh_path="gh", runner=runner)
+def test_retired_gh_copilot_wrappers_are_gone() -> None:
+    # GitHub retired the gh copilot extension on 2025-10-25; the wrappers
+    # could only fail, so they were removed on 2026-10-31.
+    assert not hasattr(gb, "copilot_suggest")
+    assert not hasattr(gb, "copilot_explain")

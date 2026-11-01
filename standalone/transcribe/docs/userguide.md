@@ -92,8 +92,8 @@ starts.
 Press Enter on **Show QUILL Transcribe** in the tray menu, or your show and
 hide key if you chose one. The window shows:
 
-- **State** - Ready, Listening, Hearing you, Paused, or Waiting for you to
-  switch to a field.
+- **State** (Alt+E) - Ready, Listening, Hearing you, Paused, or Waiting for you to
+  switch to a field. It was Alt+A until the AI menu took that letter.
 - **Start Dictation** - the button changes to Stop Dictation while dictation is on.
 - **Resume** (Alt+R), **Resume in This Field** (Alt+T) and **Discard Held Words** (Alt+C) - for when dictation is paused. Discard Held Words was Alt+W until 2026-10-17, but Alt+W is the **Window** menu, and when a button and a menu share a letter Windows presses the button: Alt+W threw your held words away instead of opening the Window menu. Now Alt+W always opens Window, and Alt+C is the button. For example, if dictation paused because you left the field and you no longer want those words, press Alt+C; Dictation > Discard Held Words (Ctrl+Shift+D) does the same from the menu.
 - **Model and microphone** - the model, microphone, dictation profile (and
@@ -101,6 +101,9 @@ hide key if you chose one. The window shows:
 - **What happens next** - what starting dictation will do, or why it paused or
   could not start.
 - **Choose Model**, **Choose Microphone** and **Dictation Settings**.
+- **AI** - which AI QUILL Transcribe uses, for example "AI: ChatGPT plan".
+  Press Enter on it to open Choose Your AI. It has no Alt letter; Tab gets
+  there.
 
 Closing the window keeps QUILL Transcribe running in the tray. To quit, choose
 **Exit** in the File menu (Ctrl+Q) or **Exit QUILL Transcribe** in the tray menu.
@@ -568,12 +571,12 @@ or discards the words ("QUILL discard it"). From the QUILL Transcribe window,
 **Review Dictation** (Shift+F4, in the Dictation menu, the key QUILL and QUILL
 Lite use) opens it too, empty if there is nothing to take.
 
-**The AI.** QUILL Transcribe has no AI menu of its own. It uses what you set up
-in QUILL: your ChatGPT subscription (Use My ChatGPT Subscription) or your own
-key (Use My Own AI Key). Without either, or in Safe Mode, AI is off: "QUILL
-review that" says "AI is off. Your words were written as you said them." and
-leaves the phrase typed, and the window still opens from Shift+F4 to edit and
-insert by hand. The first time, QUILL Transcribe asks before anything is sent
+**The AI.** The review uses the AI you chose in QUILL Transcribe's own AI menu
+(see "AI: Choose Your AI and Ask" below): your ChatGPT plan, GitHub Copilot or
+your own key. QUILL's free AI does not change your words. Without one of them,
+or in Safe Mode, AI is off: "QUILL review that" says "AI is off. Your words
+were written as you said them." and leaves the phrase typed, and the window
+still opens from Shift+F4 to edit and insert by hand. The first time, QUILL Transcribe asks before anything is sent
 and names who receives it; No is the default and sends nothing. Only the words
 in the window and your instruction are sent, with My Dictation Instructions if
 you wrote any; nothing is ever read from the other program. Each change you ask
@@ -632,7 +635,7 @@ typed, with no AI. It is off until you turn it on.
 
 **Dictation style** (Alt+Y), in the same window, sets these choices together:
 **Verbatim** (every word as you say it), **Clean** (no filler words, and your
-corrections fixed) or, only when AI is set up in QUILL, **Polished** (Clean,
+corrections fixed) or, only when AI is set up in QUILL Transcribe, **Polished** (Clean,
 plus Send dictation to review first and Allow polishing my dictation with AI).
 Choosing Polished sends nothing by itself. Change a check box yourself and the
 style shows **Your own mix of the settings below**.
@@ -1516,10 +1519,79 @@ can read your settings; if it can't yet, it offers to wait for Stable or to put
 back the copy saved when you joined, and saves a copy of how things are now
 first, so nothing is thrown away.
 
+## AI: Choose Your AI and Ask
+
+QUILL Transcribe has its own **AI** menu (Alt+A), the same one Quill Radio,
+QUILL Cast and the editors have.
+
+- **Choose Your AI** (Ctrl+Shift+F8) picks where the AI comes from: QUILL's
+  free AI, your ChatGPT plan, GitHub Copilot, Codex or your own key. Arrow
+  through the list; each row says whether it is in use, signed in or not set
+  up. Enter uses the one you are on, or signs in to it.
+- **Which AI Am I Using** (Ctrl+F8) says the AI in use and its model in one
+  line. Press it twice quickly to open Choose Your AI.
+- **Ask** (Ctrl+Shift+8) opens a conversation about your dictation. With each
+  message goes the transcript you last opened in Review Transcript, or, when
+  there is none, the phrases you dictated this session. Your voice never goes.
+  Quick questions has **Who said what?** and **What was decided?**, and **What
+  can I do here?**, which is answered on this computer and sends nothing.
+- **Speakers, Sections and Summary...** (Ctrl+F3) tidies a transcript into
+  something you can read back. See the next section.
+- **Use My ChatGPT Subscription** (Alt+F5), **Use My Own AI Key** (Alt+F2),
+  **AI Usage** (Ctrl+Alt+Shift+F2) and **Privacy Agreement** (Alt+Shift+F2).
+
+**QUILL Transcribe signs in on its own.** Until now QUILL Transcribe used
+QUILL's ChatGPT sign-in. Now it signs in as itself, as QUILL Transcribe, the way
+every app in the family does, and it never reads QUILL's sign-in. If you used
+your ChatGPT plan in Review Dictation before, sign in once from Choose Your AI;
+the first time the review needs a plan you have not signed in to, it tells you
+so, once. If you use your own key, the provider and model you chose in QUILL
+are copied over the first time, and the key itself stays in Windows Credential
+Manager as before.
+
+Ctrl+1 to Ctrl+9 are the Window menu's keys here, so Ask, Which AI and Choose
+Your AI use the same keys as in Quill Radio and QUILL Cast rather than the
+editors' Ctrl+6, Ctrl+8 and Ctrl+4.
+
+### Speakers, sections and summary
+
+A long transcript is hard to listen back to: one block of words, no idea who
+is talking or where the subject changes. **Speakers, Sections and
+Summary...** on the AI menu (Ctrl+F3) hands it to an AI that works through it in steps. It
+names the speakers where what they say makes the name clear (if Bo says
+"thanks, Ann", Speaker 1 is probably Ann), adds a heading wherever the subject
+changes, and ends with a short summary and a list of who is doing what by
+when. It never makes up a name it cannot tell, and it keeps every word that
+was said.
+
+It works on the words in Review Dictation when that is open; otherwise on the
+transcript you last opened in Review Transcript; otherwise on what you
+dictated this session. If the transcript came from speaker detection, with
+lines like "Speaker 1 [00:01:05]:", the AI is told which labels are in it.
+
+This needs GitHub Copilot or Codex. With another AI in use the menu row says
+"(needs Copilot or Codex)", and pressing it offers to switch. The window that
+opens is the same one as Do a Document Task in QUILL. The instruction is
+already filled in, so Enter starts it; you can type something else first, like
+"the speakers are Ann and Bo, and leave out the small talk".
+
+Before anything changes, you are asked whether the AI may write into Review
+Dictation (Allow once, Allow for this task, or Don't allow), and then the
+whole new text is shown to you to read with the arrow keys. Enter applies it;
+Escape leaves everything as it was. Applied, it goes into Review Dictation as
+one change, so Undo Change (Ctrl+Z there) puts the words back. If Review
+Dictation was closed it opens on the transcript first, so Undo Change gets you
+back to the transcript as it was. If Review Dictation is holding words kept
+from last time, nothing is written: insert or discard those first.
+
+Only text goes to the AI. Turning speech into text still happens on this
+computer, or with the speech service you chose, and your voice never goes
+anywhere. The task ends with a sentence saying what was done.
+
 ## Safe Mode
 
 In Safe Mode, QUILL Transcribe does not listen, registers no keys, downloads no
-models and sends nothing over the internet. The window and tray menu still open
+models, uses no AI and sends nothing over the internet. The window and tray menu still open
 so you can look at your settings.
 
 ## Privacy
@@ -1591,6 +1663,14 @@ In the QUILL Transcribe window:
 | What's new | Ctrl+Shift+F1 |
 | Check for updates | Ctrl+Alt+U |
 | About QUILL Transcribe | Ctrl+Alt+I |
+| Ask | Ctrl+Shift+8 |
+| Which AI am I using | Ctrl+F8 |
+| Choose Your AI | Ctrl+Shift+F8 |
+| Use my ChatGPT subscription | Alt+F5 |
+| Use my own AI key | Alt+F2 |
+| AI usage | Ctrl+Alt+Shift+F2 |
+| AI privacy agreement | Alt+Shift+F2 |
+| Speakers, sections and summary | Ctrl+F3 |
 
 In the Practice Dictation window, Ctrl+F11 starts or stops dictation in the
 practice field, and Escape closes it.

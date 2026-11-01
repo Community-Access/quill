@@ -171,6 +171,13 @@ document until you agree, and then the change is one undo step. QUILL never quie
 changes which AI is answering you, and never switches between the cloud and your
 own computer.
 
+You choose where your AI comes from, in one window: Choose Your AI (Ctrl+4).
+QUILL's free AI needs no account. Beside it are your ChatGPT plan, your GitHub
+Copilot, Codex and your own key. Copilot signs in with a short code your screen
+reader spells out, already on the clipboard. Which AI Am I Using (Ctrl+8) tells
+you where your words are going, and Do a Document Task (Ctrl+3) lets Copilot or
+Codex take on a job with several steps, asking you before it changes anything.
+
 ## Your work is safe
 
 A writing tool that loses your work, or does something other than what it said, is

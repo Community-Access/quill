@@ -3308,8 +3308,8 @@ page and marks it read.</li>
 Dependabot alerts (severity, the package affected and a summary), so you
 can see what needs attention without opening a browser.</li>
 </ul>
-<h5 id="codespaces-and-copilot-cli">Codespaces and Copilot CLI</h5>
-<p>Four more commands on <strong>Tools &gt; Git and GitHub &gt;
+<h5 id="codespaces">Codespaces</h5>
+<p>Two more commands on <strong>Tools &gt; Git and GitHub &gt;
 GitHub</strong> use the <code>gh</code> command-line tool installed on
 your own computer, instead of QUILL’s usual GitHub connection. If you
 don’t have <code>gh</code> yet, see Downloading git and the GitHub CLI
@@ -3323,17 +3323,11 @@ optional branch, then creates a Codespace. <strong>Codespaces use GitHub
 compute and storage minutes and may cost money.</strong> This is the one
 GitHub command in QUILL that says so, and it asks you to confirm, naming
 the cost, before it does anything.</li>
-<li><strong>Ask Copilot for a Command…</strong> lets you describe in
-plain words what you want to do (for example, “undo my last commit”) and
-shows the command GitHub Copilot suggests.</li>
-<li><strong>Explain a Command…</strong> asks for a git or
-<code>gh</code> command you don’t recognize and shows Copilot’s plain
-explanation of what it does.</li>
 </ul>
-<p>These four are new. They have been tested with a stand-in for
-<code>gh</code>, but not yet with a real Codespaces repository or real
-Copilot CLI access. If something looks wrong, please tell us through
-<strong>Help &gt; Get Help from Support</strong>.</p>
+<p>These two are new. They have been tested with a stand-in for
+<code>gh</code>, but not yet with a real Codespaces repository. If
+something looks wrong, please tell us through <strong>Help &gt; Get Help
+from Support</strong>.</p>
 <h3 id="command-line-launching">Command-line launching</h3>
 <p>You can start QUILL from a command line, a script or a shortcut, and
 tell it which file to open and where to put the cursor. Most people
@@ -13623,9 +13617,9 @@ feature is first used.</li>
 <li>The <strong>MathCAT</strong> math-speech engine.</li>
 <li><strong>Git</strong> and the <strong>GitHub CLI</strong>: portable
 fallback copies for <strong>Tools &gt; Git and GitHub &gt; Local
-Git</strong> and the Codespaces and Copilot commands on <strong>Tools
-&gt; Git and GitHub</strong>. The section “Downloading git and the
-GitHub CLI”, where this guide covers Git and GitHub, has more.</li>
+Git</strong> and the Codespaces commands on <strong>Tools &gt; Git and
+GitHub</strong>. The section “Downloading git and the GitHub CLI”, where
+this guide covers Git and GitHub, has more.</li>
 <li>The <strong>Node.js</strong> runtime, for Node Quillins and the
 Developer Console’s TypeScript interface. It comes last, as the extra
 people use least.</li>
@@ -13803,12 +13797,13 @@ are in</td>
 <tr>
 <td><code>Ctrl+6</code></td>
 <td>Ask AI a Question…</td>
-<td>The Chat Key: the pad, with the caret in the question box</td>
+<td>Ask: a conversation about this document, with the AI in use</td>
 </tr>
 <tr>
 <td><code>Ctrl+7</code></td>
-<td>Free AI Prompt Library…</td>
-<td>Run one of your saved prompts on the selection, on the free AI</td>
+<td>Prompt Library…</td>
+<td>Run one of your saved prompts on the selection, on the AI in
+use</td>
 </tr>
 <tr>
 <td><code>Ctrl+9</code></td>
@@ -13817,8 +13812,23 @@ are in</td>
 </tr>
 <tr>
 <td><code>Ctrl+Alt+Shift+F2</code></td>
-<td>Free AI Usage…</td>
-<td>What you have used and what is left</td>
+<td>AI Usage…</td>
+<td>One list: what each AI you have set up has used</td>
+</tr>
+<tr>
+<td><code>Ctrl+8</code></td>
+<td>Which AI Am I Using</td>
+<td>Says which AI is in use; pressed twice, opens Choose Your AI</td>
+</tr>
+<tr>
+<td><code>Ctrl+4</code></td>
+<td>Choose Your AI…</td>
+<td>The one window for where your AI comes from</td>
+</tr>
+<tr>
+<td><code>Ctrl+3</code></td>
+<td>Do a Document Task…</td>
+<td>Tell GitHub Copilot or Codex what to do to this document</td>
 </tr>
 <tr>
 <td><code>Ctrl+Alt+Shift+F4</code></td>
@@ -13833,13 +13843,12 @@ are in</td>
 <tr>
 <td><code>Alt+F2</code></td>
 <td>Use My Own AI Key…</td>
-<td>Every limit lifted, billed to your OpenAI or Google Gemini
-account</td>
+<td>Choose Your AI on the own key’s row, ready to save a key</td>
 </tr>
 <tr>
 <td><code>Alt+F5</code></td>
 <td>Use My ChatGPT Subscription…</td>
-<td>Every AI command on the ChatGPT plan you already pay for</td>
+<td>Choose Your AI on your plan’s row, ready to sign in</td>
 </tr>
 <tr>
 <td><code>Ctrl+F5</code></td>
@@ -13971,25 +13980,40 @@ character.</li>
 <p>The answer in the AI Result window is not read out for you: focus
 lands on it and your screen reader reads it as text, symbols included,
 so you can check the formatting before you use it.</p>
-<h4 id="the-chat-key-ctrl6">The Chat Key (Ctrl+6)</h4>
+<h4 id="ask-ctrl6">Ask (Ctrl+6)</h4>
 <p>Press <code>Ctrl+6</code> (<strong>AI &gt; Ask AI a
-Question…</strong>) to open the pad on <strong>Ask a general
-question</strong> with the caret already in <strong>Your
-question</strong>. Type your question and press <code>Enter</code>; the
-answer arrives the way you chose in <strong>Put the answer in</strong>.
-Only your question is sent, nothing from your document.</p>
-<h4 id="your-prompts-on-the-free-ai-ctrl7">Your prompts on the free AI
-(Ctrl+7)</h4>
-<p><code>Ctrl+7</code> (<strong>AI &gt; Free AI Prompt
-Library…</strong>) opens the <strong>Prompt Library</strong>, with the
-same prompts as the Prompts tab of <strong>AI &gt; AI Library…</strong>:
-QUILL’s built-in prompts, the ones you wrote, and the ones your Quillins
-add. Choose a prompt and press <strong>Run with AI</strong>. The window
-closes, your selection is put where the prompt says
-<code>{selection}</code>, and the prompt goes to QUILL’s free AI as a
-general question, using one request. The answer arrives the way you
-chose. If the prompt with your text in it is bigger than the free limit
-allows, QUILL says so and sends nothing.</p>
+Question…</strong>) to open the <strong>AI Conversation</strong> window
+about the document you are in. Its first line says which AI you are
+asking, such as “Asking My ChatGPT plan about this document.” Type your
+question and press <code>Enter</code>. With each message QUILL sends
+your selection, or else the paragraph or section the cursor is in, the
+document’s title and its headings, read fresh every time, so you can
+move around the document between questions. It never sends the whole
+file. <strong>Ask Quill</strong> (<code>Alt+Q</code>) is still there for
+the advanced companion; it has not changed.</p>
+<h4 id="your-prompts-on-the-ai-in-use-ctrl7">Your prompts on the AI in
+use (Ctrl+7)</h4>
+<p><code>Ctrl+7</code> (<strong>AI &gt; Prompt Library…</strong>) opens
+the <strong>Prompt Library</strong>, with the same prompts as the
+Prompts tab of <strong>AI &gt; AI Library…</strong>: QUILL’s built-in
+prompts, the ones you wrote, and the ones your Quillins add. Choose a
+prompt and press <strong>Run with AI</strong>. The window closes, your
+selection is put where the prompt says <code>{selection}</code>, and the
+prompt goes to QUILL’s free AI as a general question, using one request.
+The answer arrives the way you chose. If the prompt with your text in it
+is bigger than the free limit allows, QUILL says so and sends
+nothing.</p>
+<p><strong>One list of your prompts, for the whole family.</strong> The
+prompts you save are kept in one file, <code>prompts.json</code> in
+QUILL’s data folder, and QUILL Lite’s Prompt Library reads the same
+file. The first time this version starts, QUILL brings in the prompts
+you had saved elsewhere: Prompt Studio’s, the image description styles
+you wrote, and QUILL Lite’s own list. A prompt that is the same in two
+places becomes one. Two different prompts with the same name are both
+kept, and the second is named after where it came from, for example
+“Tighten (from QUILL Lite)”. This happens once, quietly, in the
+background, and the old files are left exactly as they were for one
+release in case anything needs checking.</p>
 <h4 id="searching-the-web-ctrl9">Searching the web (Ctrl+9)</h4>
 <p>QUILL’s free service can search the web for you, ten times a month.
 When the service has search switched on, the pad’s list ends with
@@ -14245,20 +14269,19 @@ Credential Manager, with a DPAPI-encrypted file as a fallback, and are
 never written to disk as plain text. Where your keys are kept, later in
 this chapter, has the details.</p>
 <h4 id="setting-up-an-ai-provider">Setting up an AI provider</h4>
-<p>Open <strong>AI &gt; AI Hub…</strong> to set up your providers. The
-AI Hub is the one place for every provider’s key, model, <strong>Test
-Chat</strong> and key removal. If you are looking for the old <strong>AI
-Model and Connection</strong> or <strong>Forget API Key</strong> menu
-items, they are part of the AI Hub now.</p>
+<p>Open <strong>AI &gt; Use My Own AI Key…</strong>
+(<code>Alt+F2</code>) to choose a provider, save its key and pick a
+model. It used to be the AI Hub’s job; the Hub’s Provider page now just
+says which provider is in use and opens Use My Own AI Key.</p>
 <ul>
-<li><strong>OpenRouter.</strong> Paste your key into the OpenRouter API
-Key field. One OpenRouter key reaches many models, including Claude,
-GPT-4o and Gemini.</li>
+<li><strong>OpenRouter.</strong> Paste your OpenRouter key. One
+OpenRouter key reaches many models, including Claude, GPT-4o and
+Gemini.</li>
 <li><strong>OpenAI.</strong> Paste your OpenAI API key.</li>
-<li><strong>Ollama.</strong> No key needed. Install Ollama on your
-computer (<code>ollama serve</code>) and QUILL finds it by itself at
-<code>http://localhost:11434</code>. If you run Ollama on a different
-port or computer, change the Ollama Base URL setting.</li>
+<li><strong>Ollama on this computer.</strong> No key needed. Install
+Ollama (<code>ollama serve</code>) and choose it; QUILL looks for it at
+<code>http://localhost:11434</code>. If Ollama runs on a different port
+or computer, change the Server address.</li>
 </ul>
 <p>You can also set a <strong>Default model for prompt runs</strong>
 (<code>ai_prompt_default_model</code>). Leave it blank and Ask AI and
@@ -14289,7 +14312,7 @@ its text. The command uses your version from then on.</p>
 <h3 id="free-ai-limits-and-when-they-start-again">Free AI limits, and
 when they start again</h3>
 <p>QUILL’s free AI is free because everybody shares it, so it has
-limits. Here is every one of them in one place. <strong>Free AI
+limits. Here is every one of them in one place. <strong>AI
 Usage</strong> (<code>Ctrl+Alt+Shift+F2</code>) shows where you
 stand.</p>
 <h4 id="your-allowance-at-a-glance">Your allowance at a glance</h4>
@@ -14427,32 +14450,42 @@ no account name or password to give. Support can raise your monthly
 allowance, and can end the new-connection allowance early. The change
 applies from your next request. You do not need to sign out, reconnect
 or update, and Usage shows the new number the next time you open it.</p>
-<p>Your support ID is also in <strong>Help &gt; About Quill</strong> and
-in <strong>AI &gt; Free AI Usage…</strong>, with a <strong>Copy Support
-ID</strong> button, if you would rather write from somewhere else.</p>
+<p>Your support ID is also in <strong>Help &gt; About Quill</strong>, if
+you would rather write from somewhere else.</p>
 <h3 id="using-your-own-openai-or-google-gemini-key">Using your own
 OpenAI or Google Gemini key</h3>
-<p>If you have an OpenAI account or a Google Gemini key, you can use
-<strong>your own key</strong> instead of QUILL’s free service, and
-<strong>every limit goes away</strong>: no monthly, daily or hourly
-allowance, no 2,250-word ceiling, and no smaller first 48 hours.</p>
+<p>If you have an account with OpenAI, Google Gemini, Anthropic,
+OpenRouter, Ollama Cloud or another OpenAI-compatible service, or Ollama
+on your own computer, you can use <strong>your own key</strong> instead
+of QUILL’s free service, and <strong>every limit goes away</strong>: no
+monthly, daily or hourly allowance, no 2,250-word ceiling, and no
+smaller first 48 hours.</p>
 <h4 id="setting-up-your-key-altf2">Setting up your key (Alt+F2)</h4>
 <p><strong>AI &gt; Use My Own AI Key…</strong> (<code>Alt+F2</code>)
 opens one window. Its parts, in Tab order:</p>
 <ul>
-<li><strong>Provider.</strong> <strong>OpenAI</strong> or <strong>Google
-Gemini</strong>. Everything else in the window follows this choice:
-where your text goes, which key, which models and whose prices. AI help
-uses the key saved for the provider you choose here, never the other
-one. The choice is saved with your settings
-(<code>ai_own_key_provider</code>), and QUILL never guesses it from a
-key or a model name.</li>
+<li><strong>Provider.</strong> <strong>OpenAI</strong>, <strong>Google
+Gemini</strong>, <strong>Anthropic Claude</strong>,
+<strong>OpenRouter</strong>, <strong>Ollama Cloud</strong>,
+<strong>Custom OpenAI-compatible service</strong>, or <strong>Ollama on
+this computer</strong>. The last five used to live in the AI Hub’s
+Provider list; that list is gone and they are all here now. Everything
+else in the window follows this choice: where your text goes, which key,
+which models and whose prices. AI help uses the key saved for the
+provider you choose here, never another one. The choice is saved with
+your settings (<code>ai_own_key_provider</code>), and QUILL never
+guesses it from a key or a model name.</li>
 <li><strong>About this.</strong> A read-only box that says exactly where
 your text goes. Arrow through it once.</li>
 <li><strong>API key.</strong> Paste the key for the provider you chose.
 An OpenAI key comes from platform.openai.com, under API keys, and starts
 with <code>sk-</code>. A Gemini key comes from Google AI Studio at
-aistudio.google.com/apikey.</li>
+aistudio.google.com/apikey. The About box says where to get a key for
+each of the others.</li>
+<li><strong>Server address.</strong> Only for a custom service and for
+Ollama on this computer; it is off for the others, whose address never
+changes. Ollama usually listens at <code>http://localhost:11434</code>.
+An address you saved in the AI Hub before is filled in for you.</li>
 <li><strong>Model.</strong> Every model your key can use for text,
 filled in from your account once the key is checked. For OpenAI,
 <strong>Luna 6 first, then the other GPT-6 models</strong>; for Gemini,
@@ -14488,6 +14521,19 @@ OK.</p>
 <p>There is no separate switch to find. While a key is saved for the
 chosen provider, AI help uses it. Remove the key and AI help goes back
 to the free service, with its free allowance, at that moment.</p>
+<p><strong>Ollama on this computer needs no key.</strong> Install Ollama
+from ollama.com, pull a model, and choose <strong>Ollama on this
+computer</strong>. The About box starts with “Runs on this computer.
+Nothing is sent.”, and that is the whole story: the model runs on your
+own computer, nothing is billed and nothing leaves it. The key box is
+off, the Model list is whatever Ollama says it has, and the test button
+reads <strong>Test the Connection</strong>, which checks Ollama is
+running. A model that Ollama says can read pictures answers Ask About an
+Image too.</p>
+<p><strong>One choice for all of QUILL’s AI.</strong> When you press OK,
+the provider you chose is also the one the advanced AI features use (Ask
+Quill, Run Agent, the AI Library, Proofread, Transform and the rest).
+You no longer set it up twice.</p>
 <p>You can save both keys. The Provider list decides which one is used.
 With OpenAI chosen, a saved Gemini key just waits; the Status line tells
 you it is there, and choosing Google Gemini puts it to work. QUILL never
@@ -14510,13 +14556,13 @@ that company’s own terms and privacy policy.</li>
 <strong>Stop</strong> (<code>Alt+S</code>). Stopping closes a Gemini
 stream immediately; for another route it discards that request’s
 eventual answer. It never stops a request from another AI window.</li>
-<li><strong>Usage</strong> (<code>Ctrl+Alt+Shift+F2</code>) opens a
-different window. It tells you which model is answering and that no
-allowance applies, and its <strong>Open My Usage</strong> button takes
-you to the usage page of your OpenAI or Google AI Studio account, where
-your requests and charges are. There is no Sign Out and no support ID in
-it, because neither applies. <strong>Help &gt; About</strong> also shows
-the model and that page’s address instead of the free allowance.</li>
+<li><strong>AI Usage</strong> (<code>Ctrl+Alt+Shift+F2</code>) has a row
+for your key: how many requests are left this minute, from the
+provider’s last answer, where it reports one. <strong>Manage
+Usage</strong> opens the usage page of your OpenAI or Google AI Studio
+account, where your requests and charges are. <strong>Help &gt;
+About</strong> also shows the model and that page’s address instead of
+the free allowance.</li>
 <li>You do not need to connect this computer, and you are not asked to
 accept the free service’s agreement, which covers QUILL’s servers. Your
 own key never touches them.</li>
@@ -14546,6 +14592,223 @@ removing it in either removes it from both.</p>
 provider. The usual causes are a mistyped key, a model your account
 cannot use, an account with no credit, or the wrong provider chosen for
 the key you saved. <strong>Test the Key</strong> tells you which.</p>
+<h3 id="which-ai-is-in-use">Which AI is in use</h3>
+<p>QUILL keeps one record of which AI answers you: QUILL’s free AI, your
+ChatGPT plan, your GitHub Copilot, Codex, or your own key. The choice is
+saved with your settings as <code>ai_connection</code>.</p>
+<p>The first time you start this version, QUILL keeps what you already
+had. If you were signed in with ChatGPT, your plan stays in use. If not,
+and you had a key saved, your key stays in use. Otherwise it is the free
+AI. Nothing changes for you.</p>
+<p>After that, signing in is choosing. Sign in with ChatGPT and your
+plan is in use. Save a key in <strong>Use My Own AI Key</strong> and
+your key is in use. Connect the free AI and the free AI is in use.</p>
+<p>If you sign out of the one in use, no AI is in use until you pick
+one. QUILL does not quietly send your text to the free AI or to your key
+instead. The next AI command says “No AI is in use. Choose one.”</p>
+<p>If OpenAI ends your ChatGPT sign-in itself, you hear “Your ChatGPT
+plan sign-in has ended. Nothing was sent.” Nothing is retried, and
+nothing goes anywhere else. A plan limit works the same way: you hear it
+once, and QUILL neither tries again nor switches.</p>
+<p>QUILL counts the requests it sends on your ChatGPT plan, today and
+this week, along with the token counts OpenAI reports back. That count
+stays on this computer and is always called a local count. OpenAI’s own
+usage page is the real answer about your plan.</p>
+<p>Two more settings hold a model each: <code>ai_copilot_model</code>
+for GitHub Copilot and <code>ai_codex_model</code> for Codex. Empty
+means the service picks.</p>
+<p>Answers are always plain text. QUILL asks every AI not to draw
+charts, graphs or diagrams, and if one sends something like that anyway,
+you get it as text, not a picture.</p>
+<h3 id="choose-your-ai">Choose Your AI</h3>
+<p><strong>Choose Your AI</strong> is the one window for where your AI
+comes from. Press <code>Ctrl+4</code>, or choose <strong>AI &gt; Choose
+Your AI…</strong>. Focus lands on the list, on the one in use, and the
+window has five things in it, in Tab order:</p>
+<ul>
+<li><strong>Connections</strong>, a list. Each row says its name, then
+whether it is in use, signed in or not set up: “QUILL’s free AI, in
+use”, “My ChatGPT plan, signed in”, “My GitHub Copilot, not set up”,
+“Codex, for tasks, signed in”, “My own key, OpenAI, signed in”.</li>
+<li><strong>About this connection</strong>, a short read-only line: what
+it can do, and who gets your text and what it costs. For example “Text
+and pictures, per model. Agent tasks: no. Goes to OpenAI and counts
+toward your ChatGPT plan.”</li>
+<li><strong>Model</strong>, the models that connection offers, from its
+own list. The first one is the service’s recommendation and says
+“(recommended)”. The free AI says “QUILL chooses the model”, and a row
+you have not signed in to says “Sign in to see the models”.</li>
+<li><strong>One button that follows the row.</strong> <strong>Use
+This</strong> on a row you are signed in to, <strong>Sign In…</strong>
+on one that is not set up, and <strong>Sign Out</strong> on the one in
+use.</li>
+<li><strong>Close</strong>. <code>Escape</code> closes the window
+too.</li>
+</ul>
+<p><code>Enter</code> on a row does what the button says.
+<code>Delete</code> on a row you are signed in to asks whether to sign
+out of it, and <strong>No</strong> is the default, so a stray key does
+nothing.</p>
+<p>QUILL does not talk over your screen reader here. When the window
+opens, or you move along the list, your screen reader already reads the
+row and its state, so QUILL says nothing. It only speaks when something
+happens that your screen reader cannot know: “Now using My ChatGPT
+plan.”, “Signed in to My ChatGPT plan. It is now in use.”, or “Signed
+out. No AI is in use until you choose one.” The row’s own words change
+at the same moment, so arrowing away and back tells you the truth.</p>
+<p>Signing in uses what you already know. <strong>My ChatGPT
+plan</strong> opens a small step with <strong>Open the Page</strong>,
+which takes you to OpenAI’s sign-in page; approve QUILL there and the
+step closes by itself. <strong>My own key</strong> opens <strong>Use My
+Own AI Key</strong>, with its Provider list. <strong>QUILL’s free
+AI</strong> opens its Connect step, the same one as before, and only
+when you ask for it.</p>
+<p><strong>My GitHub Copilot</strong> uses the same small step, with one
+more field: a short code from GitHub. QUILL spaces the code out so your
+screen reader reads one character at a time, says it once, and puts it
+on the clipboard. <strong>Open the Page</strong> takes you to GitHub’s
+page, where you paste or type the code and approve QUILL. The step
+closes by itself and you hear “Signed in to My GitHub Copilot. It is now
+in use.” <strong>Cancel</strong> stops waiting straight away. Copilot
+Free works too; its model list has one entry, “Auto (Copilot Free
+chooses)”. QUILL signs in to GitHub on its own, separately from QUILL
+Lite and from the GitHub sign-in QUILL uses for your repositories. If
+this copy of QUILL cannot sign in to GitHub yet, the row says “not
+available yet” and <strong>About this connection</strong> says why in
+one sentence.</p>
+<p><strong>Codex, for tasks</strong> runs on your ChatGPT plan, with the
+same sign-in. Once you are signed in to your plan, <strong>Use
+This</strong> on the Codex row is the only key to press. Codex is there
+for document tasks (below); while it is in use, single requests such as
+a rewrite or Ask go straight to your plan, which is quicker.</p>
+<p>While your ChatGPT plan’s row, or Codex’s, is selected and signed in,
+one more button appears beside the action button: <strong>Plan
+Options…</strong>. It opens two choices that used to live in the plan’s
+own window. <strong>Allow web search</strong> is a check box: when it is
+checked, the model may search the web through OpenAI to answer you, and
+it is saved as soon as you change it. <strong>Forget on This
+Computer</strong> forgets the sign-in here without telling OpenAI, for a
+computer that is offline or a sign-in you already removed in ChatGPT’s
+settings.</p>
+<p>The older commands keep their keys and now open this window on their
+own row, with the sign-in step ready: <strong>Use My Own AI Key</strong>
+(<code>Alt+F2</code>), <strong>Use My ChatGPT Subscription</strong>
+(<code>Alt+F5</code>) and <strong>Connect or Sign Out</strong>
+(<code>Ctrl+Alt+Shift+F4</code>).</p>
+<p>In Safe Mode the window still opens, says that AI is off in Safe
+Mode, and nothing can be signed in.</p>
+<h4 id="which-ai-am-i-using-ctrl8">Which AI Am I Using (Ctrl+8)</h4>
+<p>Press <code>Ctrl+8</code> and QUILL says, in one line, which AI is in
+use, the model, and one thing about usage when there is something to
+say. On your ChatGPT plan that is the plan, the model you chose, and “3
+requests today from QUILL, counted on this computer.” On GitHub Copilot
+it adds GitHub’s own count, such as “41 of 300 premium requests this
+month, by GitHub’s count.” The first time, that waits a moment for
+GitHub’s answer; after that it is said at once. On Codex it says “Codex,
+on your ChatGPT plan. Single requests go to the plan directly.” Press
+<code>Ctrl+8</code> twice quickly and it opens <strong>Choose Your
+AI</strong> instead.</p>
+<h4 id="the-ai-cell-in-the-status-bar">The AI cell in the status
+bar</h4>
+<p>The status bar has a cell called <strong>AI</strong>, near the end,
+that says the same thing shorter: “AI: free”, “AI: ChatGPT plan” or “AI:
+own key”. Press <code>F6</code> to reach the status bar, arrow to it,
+and press <code>Enter</code> to open <strong>Choose Your
+AI</strong>.</p>
+<h4 id="ai-usage">AI Usage</h4>
+<p><strong>AI &gt; AI Usage…</strong> (<code>Ctrl+Alt+Shift+F2</code>)
+opens one list, with one sentence for each AI you have set up, and each
+sentence says whose count it is. A count QUILL keeps on this computer is
+always called that; a number from a service is named as that service’s.
+For example:</p>
+<ul>
+<li>“QUILL’s free AI: 14 of 50 requests today, by QUILL’s count. Resets
+at midnight.”</li>
+<li>“My ChatGPT plan: 23 requests today from QUILL, counted on this
+computer. OpenAI sets the limits; Manage usage opens them.”</li>
+<li>“My GitHub Copilot: 41 of 300 premium requests this month, by
+GitHub’s count.” QUILL asks GitHub when the list opens and says that row
+once when the answer arrives.</li>
+</ul>
+<p><strong>Manage Usage</strong> opens the selected one’s own page in
+your browser. It is all text. There is no meter, gauge or chart.</p>
+<h4 id="when-the-ai-in-use-cannot-do-something">When the AI in use
+cannot do something</h4>
+<p>Every AI command stays in the menu with its key. When the AI in use
+cannot do one, its menu name says what it needs, for example <strong>Ask
+About an Image (needs a connection that sees)…</strong>. Pressing it
+sends nothing. QUILL asks instead, “Pictures need a connection that can
+see. My ChatGPT plan can. Switch to it and ask?”, with
+<strong>Yes</strong> as the default because you just asked for it.
+<strong>Yes</strong> switches and carries on. If nothing you have set up
+can do it, <strong>Yes</strong> opens <strong>Choose Your AI</strong> on
+a row that can.</p>
+<h3 id="do-a-document-task-ctrl3">Do a Document Task (Ctrl+3)</h3>
+<p>Some jobs take more than one step: “Fix the heading levels, then
+build a table of contents, then list broken links”, or “Turn these notes
+into actions grouped by owner.” <strong>AI &gt; Do a Document
+Task…</strong> (<code>Ctrl+3</code>) hands a job like that to
+<strong>GitHub Copilot</strong> or <strong>Codex</strong>, whichever is
+in use, and it works through the steps with QUILL’s own editing
+tools.</p>
+<p>Only those two can do tasks. On any other AI the menu says <strong>Do
+a Document Task (needs Copilot or Codex)…</strong>, and pressing it
+sends nothing and offers to switch, the same way as any other AI
+command.</p>
+<p>The window has six things in it, in Tab order:</p>
+<ul>
+<li><strong>Conversation</strong>, a read-only record of the task: what
+you asked, each step, and the summary at the end.</li>
+<li><strong>Status</strong>, which says “Using GitHub Copilot” or “Using
+Codex on your ChatGPT plan”, and whether it is working.</li>
+<li><strong>Instruction</strong>, where focus starts. Type what you want
+done and press <code>Enter</code>. While a task is running, what you
+type here goes to it as a follow-up.</li>
+<li><strong>Send</strong>, which does the same as
+<code>Enter</code>.</li>
+<li><strong>Stop</strong>, which stops the task straight away. Changes
+already made stay, and each one undoes with <code>Ctrl+Z</code>.</li>
+<li><strong>Close</strong>, which also stops a task that is still
+running.</li>
+</ul>
+<p>Nothing changes without you. Before a step that changes something, a
+small window, <strong>Allow This Step?</strong>, says in one sentence
+what will happen. Press <code>Enter</code> for <strong>Allow
+once</strong>, choose <strong>Allow for this task</strong> to stop being
+asked about that kind of step until this task ends, or press
+<code>Escape</code> for <strong>Don’t allow</strong>. Every edit to your
+document then opens <strong>Review AI Changes</strong>, the same review
+you already know, so you can accept or reject each change. Nothing
+carries over to the next task: it asks again.</p>
+<p>QUILL says only what your screen reader cannot know. When the task
+ends, you hear its summary, for example “Done. 2 changes applied:
+Changed the document; Ran a command. Each can be undone with Control Z.”
+The conversation and status fill in quietly; <code>Shift+Tab</code>
+takes you to them.</p>
+<h3 id="propose-alt-text">Propose Alt Text</h3>
+<p><strong>AI &gt; Propose Alt Text…</strong> opens the same window as
+Do a Document Task with the request already typed in: give alt text to
+every picture in this document that has none. Press <code>Enter</code>
+to send it as it is, or change it first. It has no key of its own,
+because <code>Ctrl+3</code> gets you to the same window.</p>
+<p>The task lists the document’s pictures, Markdown and HTML alike, and
+proposes short alt text for each one that is missing it, one picture at
+a time. Each proposal opens <strong>Review AI Changes</strong> on just
+that change, so you hear exactly what will be written, and each one
+undoes with <code>Ctrl+Z</code>. Pictures that already have alt text are
+left alone.</p>
+<p>If the AI in use can see pictures, the task may ask to look at one.
+<strong>Allow This Step?</strong> names the picture (“Send the picture
+beach.png from this document to your AI, to describe it”), and the first
+picture on each AI also asks whether pictures may go to that company at
+all. Only pictures saved on this computer are ever sent; a picture on a
+web address is never fetched, and the task writes its proposal from the
+words around it and tells you it could not see it. On an AI that cannot
+see pictures, every proposal comes from the words around the picture,
+and the summary says so.</p>
+<p>A Word or EPUB file you opened through Import / Convert keeps its
+pictures inside the original file, so the task can propose alt text for
+them from the words only.</p>
 <h3 id="if-the-ai-you-chose-is-not-available">If the AI you chose is not
 available</h3>
 <p>QUILL never quietly answers with a different AI from the one you
@@ -14577,14 +14840,13 @@ chat. <strong>No</strong> keeps the on-device model.</li>
 (the pad, the Chat Key, the Prompt Library, AI conversations and Ask
 About an Image). QUILL remembers which way your requests have been going
 this session. If that changes without you changing it, for instance your
-Gemini key has gone from Windows’ credential store, or your ChatGPT
-sign-in has stopped working, the next request asks: “Your own Google
-Gemini key is not available right now. Use QUILL’s free AI instead? That
-sends your text to QUILL’s free AI service over the internet. Choose No
-and nothing is sent.” <strong>Yes</strong> sends it, and the new route
-is simply the route from then on, so you are asked once.
-<strong>No</strong> sends nothing, and you hear “Nothing was sent”, with
-what to do next; the next request asks again.</li>
+Gemini key has gone from Windows’ credential store, the next request
+asks: “Your own Google Gemini key is not available right now. Use
+QUILL’s free AI instead? That sends your text to QUILL’s free AI service
+over the internet. Choose No and nothing is sent.” <strong>Yes</strong>
+sends it, and the new route is simply the route from then on, so you are
+asked once. <strong>No</strong> sends nothing, and you hear “Nothing was
+sent”, with what to do next; the next request asks again.</li>
 </ul>
 <p>Changing the route yourself is never questioned: signing in or out in
 <strong>Use My ChatGPT Subscription</strong>, or saving or removing a
@@ -15083,26 +15345,21 @@ restriction is a list of allowed imports and some limits on time and
 memory. It is not a security boundary. Only run Python code you trust or
 wrote yourself.</p>
 <h4 id="connecting-to-an-ai-provider">Connecting to an AI provider</h4>
-<p>The quickest way in is the <strong>AI Hub</strong> (<strong>AI &gt;
-AI Hub…</strong>), one place that links provider checks, model lists,
-Prompt Studio, Agent Center and the Writing Assistant. The AI Hub topic
-below walks through it in full. In short:</p>
+<p>The quickest way in is <strong>Use My Own AI Key</strong> (<strong>AI
+&gt; Use My Own AI Key…</strong>, <code>Alt+F2</code>). In short:</p>
 <ol type="1">
-<li>Open <strong>AI Hub</strong> and choose a provider:
-<code>Ollama (local)</code>, <code>Ollama Cloud</code>,
-<code>OpenAI</code>, <code>Claude</code>, <code>OpenRouter</code>,
-<code>Google Gemini</code>, or
-<code>Custom OpenAI-compatible</code>.</li>
-<li>Confirm the host URL and model.</li>
-<li>Enter a key only if your endpoint needs one.</li>
-<li>Use <strong>Verify Connection</strong> to test the endpoint and your
-key.</li>
-<li>Use <strong>List Models</strong> to fetch the endpoint’s models,
-then type in the search box to narrow the list.</li>
-<li>Use <strong>Recommend Model</strong> to pick a model that suits your
-computer and the kind of work you do.</li>
-<li>Save. QUILL checks the connection on its own and updates the AI
-status line in the AI menu.</li>
+<li>Choose a provider: OpenAI, Google Gemini, Anthropic Claude,
+OpenRouter, Ollama Cloud, a custom OpenAI-compatible service, or Ollama
+on this computer.</li>
+<li>Paste the key, unless it is Ollama on this computer, which needs
+none.</li>
+<li>For a custom service or a local Ollama, check the Server
+address.</li>
+<li>Press <strong>Test the Key</strong> (for Ollama, <strong>Test the
+Connection</strong>). The Model list fills from your account or from
+Ollama.</li>
+<li>Pick a model and press OK. The basic AI commands and the advanced
+features both use it from then on.</li>
 </ol>
 <p>Most cloud providers come with their host URL already filled in, so
 setup is mostly about the key. For an unusual OpenAI-compatible
@@ -15338,58 +15595,35 @@ Train Writing Style…</strong>) teaches the assistant your own style,
 from samples or from the current document.</li>
 </ul>
 <h3 id="the-ai-hub">The AI Hub</h3>
-<p>The <strong>AI Hub</strong> (<strong>AI &gt; AI Hub…</strong>) is the
-one place to set up and manage AI: providers, models, keys and testing.
-If you remember the old <strong>AI Model and Connection</strong> and
-<strong>Forget API Key</strong> menu items, they now live here.</p>
-<h4 id="setting-up-a-provider">Setting up a provider</h4>
-<p>Each provider keeps its own key and default model, so switching
-providers never loses another one’s settings.</p>
-<ol type="1">
-<li>Choose a provider: <code>Ollama (local)</code>,
-<code>Ollama Cloud</code>, <code>OpenAI</code>, <code>Claude</code>,
-<code>OpenRouter</code>, <code>Google Gemini</code>, or a
-<code>Custom OpenAI-compatible</code> endpoint.</li>
-<li>The host, default model and that provider’s saved key fill in by
-themselves. Cloud hosts are already filled in, so setup is usually just
-a key and a model. The <strong>Model</strong> field is a dropdown you
-can also type in: pick a recommended model (for OpenRouter the free one
-comes first) or type any model id. Changing the provider refreshes the
-suggestions.</li>
-<li>Enter the API key. Only cloud providers need one. It is stored
-securely on this computer, separately for each provider.</li>
-<li><strong>Verify Connection</strong> checks the endpoint and your
-key.</li>
-<li><strong>List Models</strong> loads every model the account or
-computer offers, with a search filter. <strong>Recommend Model</strong>
-suggests one that suits your hardware or task.</li>
-<li><strong>Test Chat</strong> sends a tiny prompt and confirms the
-provider and model really answer, so you know they work before you rely
-on them.</li>
-<li><strong>Forget this provider’s key</strong> clears that one
-provider’s key and nothing else.</li>
-<li><strong>On-device model…</strong> opens the settings for the local
-GGUF model used by llama.cpp.</li>
-<li>Select OK to save. The provider and model become active straight
-away, and QUILL tells you in plain words how the check went: ready,
-sign-in failed, timed out, or endpoint unreachable.</li>
-</ol>
-<p>Ollama Cloud’s free personal-use tier, with lower limits, is
-available here too. Use <strong>Prompt Studio</strong> to save reusable
-templates and <strong>Agent Center</strong> to build guided task
-prompts.</p>
+<p>The <strong>AI Hub</strong> (<strong>AI &gt; AI Hub…</strong>) holds
+the settings for QUILL’s advanced AI features: the agent engines, audio
+services, document services, your custom instructions and saved
+sessions.</p>
+<h4 id="choosing-a-provider">Choosing a provider</h4>
+<p>The Hub used to have its own Provider list. It is gone, because it
+was a second way to pick an AI. Every provider it offered (Ollama on
+this computer, Ollama Cloud, Claude, OpenRouter and a custom
+OpenAI-compatible service) is in <strong>Use My Own AI Key</strong> now,
+beside OpenAI and Google Gemini, and the provider you choose there is
+the one the advanced features use. Each provider still keeps its own
+key, so switching never loses another one’s.</p>
+<p>The Hub’s <strong>Provider</strong> page says which provider is in
+use and has one button, <strong>Open Use My Own AI Key</strong>. It
+saves the Hub, closes it and opens that window.</p>
+<p>Ollama Cloud’s free personal-use tier, with lower limits, is there
+too. Use <strong>Prompt Studio</strong> to save reusable templates and
+<strong>Agent Center</strong> to build guided task prompts.</p>
 <p>Word and CSV files open in the normal plain-text editor, and AI
 connection and chat work with them as usual.</p>
 <h4 id="the-tabs">The tabs</h4>
 <p>The AI Hub has eight tabs:</p>
 <ul>
-<li><strong>Provider</strong>: choose your AI provider (Ollama, OpenAI,
-Claude, Gemini, OpenRouter or custom), enter your API key, set the model
-and host URL, and test the connection. For per-provider key management,
-model lists and checks, use the <strong>Full Connection
-Settings</strong> button on this tab.</li>
-<li><strong>On-Device</strong>: set up Ollama for fully local AI, with
-recommended models and the Ollama base URL.</li>
+<li><strong>Provider</strong>: which provider the advanced features use,
+and the <strong>Open Use My Own AI Key</strong> button, where you change
+it.</li>
+<li><strong>On-Device</strong>: what Ollama on this computer is and how
+to start with it. The Ollama address is set in Use My Own AI Key
+now.</li>
 <li><strong>Audio Services</strong>: enter your Deepgram API key for
 speaker diarization, and set the default maximum number of
 speakers.</li>
@@ -15399,8 +15633,9 @@ which services send anything off your computer.</li>
 instructions for every AI task. See Custom Instructions below.</li>
 <li><strong>Sessions</strong>: your saved AI sessions.</li>
 <li><strong>Advanced</strong>: a privacy consent summary listing every
-action that sends data, an explanation of Safe Mode, and a <strong>Reset
-AI Settings</strong> button.</li>
+action that sends data, and an explanation of Safe Mode. (The old Reset
+AI Settings button reset the provider; choosing another provider in Use
+My Own AI Key does that now.)</li>
 </ul>
 <p>The <strong>Engines</strong> tab, second in the row, is covered in
 the AI engines topic below.</p>
@@ -15594,15 +15829,16 @@ Engines tab of the AI Hub:</p>
 <ol type="1">
 <li>Pick <strong>GitHub Copilot</strong>, <strong>OpenAI Agents</strong>
 or <strong>Claude Agent</strong>, or leave it on Native.</li>
-<li>Select <strong>Set Up / Install…</strong>. The first time, QUILL
-installs the small connector it needs. For Copilot it then signs you in
-to GitHub, with a short spoken device code in your browser when it can,
-or through the Copilot/GitHub CLI sign-in otherwise. <strong>OpenAI
-Agents</strong> and <strong>Claude Agent</strong> use your own API key
-instead of a sign-in, so once the connector is installed, <strong>Set
-Up</strong> opens a small dialog where you paste, save or remove that
-key. It also tells you whether a key is already saved. The change
-applies at once, with no restart.</li>
+<li>Select <strong>Set Up / Install…</strong>. For Copilot, which now
+comes with QUILL, this is only the sign-in: the same step as
+<strong>Choose Your AI</strong>, with GitHub’s code spaced out and on
+the clipboard. For the other two, the first time, QUILL installs the
+small connector it needs. <strong>OpenAI Agents</strong> and
+<strong>Claude Agent</strong> use your own API key instead of a sign-in,
+so once the connector is installed, <strong>Set Up</strong> opens a
+small dialog where you paste, save or remove that key. It also tells you
+whether a key is already saved. The change applies at once, with no
+restart.</li>
 <li>Select <strong>Set as Active Engine</strong>. From then on, Ask
 Quill and the agents run on that engine, and a status line names
 it.</li>
@@ -15622,10 +15858,12 @@ vendor agents run in a text-only mode with their own file-editing and
 shell tools switched off, so only QUILL can touch your document, and
 only with your approval. All of this is optional, off until you turn it
 on, and disabled in Safe Mode.</p>
-<p>A note for administrators who package QUILL: the in-app spoken device
-code for Copilot needs the build to provide a GitHub OAuth App client id
-through <code>QUILL_GITHUB_CLIENT_ID</code>. Without it, Copilot still
-works through the Copilot/GitHub CLI sign-in.</p>
+<p>Signing in to GitHub for Copilot from inside QUILL needs QUILL’s own
+GitHub registration, which is built in. Until a build carries it, the
+Sign In button says sign-in is not available yet, and Copilot still
+works if you have signed in with the Copilot or GitHub command-line
+tool. Copilot keeps its own sign-in, separate from the one QUILL uses
+for your repositories, so signing out of one leaves the other alone.</p>
 <h4 id="the-ai-and-assistant-page-in-settings">The AI and Assistant page
 in Settings</h4>
 <p>Providers, models and keys live in the AI Hub. This page holds the
@@ -19693,7 +19931,7 @@ starting point.</li>
 </ul>
 <h4 id="downloading-git-and-the-github-cli">Downloading git and the
 GitHub CLI</h4>
-<p>The Local Git commands, and the Codespaces and Copilot commands under
+<p>The Local Git commands, and the Codespaces commands under
 <strong>Tools &gt; Git and GitHub &gt; GitHub</strong>, need
 <code>git</code> and <code>gh</code> (the GitHub CLI) on your computer.
 QUILL looks for copies you already have first: if <code>git</code> or

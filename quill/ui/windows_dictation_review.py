@@ -100,8 +100,12 @@ class ServiceReviewAi:
         return ""
 
     def provider(self) -> str:
-        if getattr(self._service, "route", "") == "chatgpt":
+        route = getattr(self._service, "route", "")
+        # Codex sends single requests over the ChatGPT plan (decision 21).
+        if route in {"chatgpt", "codex"}:
             return "OpenAI, on your ChatGPT subscription"
+        if route == "copilot":
+            return "GitHub Copilot, on your Copilot plan"
         from quill.core.ai.own_key import provider_name
 
         name = provider_name(str(getattr(self._service, "own_key_provider", "") or "openai"))
@@ -123,6 +127,7 @@ class ServiceReviewAi:
             None,
             on_done=lambda text, _quota: on_done(str(text)),
             on_error=on_error,
+            requires=("text",),
         )
 
     def cancel(self, request: Any) -> None:

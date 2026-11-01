@@ -107,7 +107,10 @@
     "yt_dlp_ejs",
     "zstandard"
   ],
-  "tools": [],
+  "tools": [
+    "codex",
+    "copilot"
+  ],
   "optional": [
     "deno",
     "ffmpeg",

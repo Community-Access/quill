@@ -2,6 +2,200 @@
 
 ## 1.0.0
 
+### Agent tasks across the family, and Tell Me When This Changes (2026-11-01)
+
+- **Propose Alt Text**, in QUILL's AI menu and QUILL Lite's Tools > AI, opens
+  Do a Document Task with the request typed in: alt text for every picture in
+  the document that has none. Each proposal is one change in Review AI Changes,
+  undone with Ctrl+Z. On an AI that can see, the task asks before it sends a
+  picture, naming it; only pictures on this computer are sent, never one from a
+  web address. Do a Document Task itself can now list the document's pictures
+  and set their alt text too.
+- **Every QuillVille app gets an agent task** on GitHub Copilot or Codex, in the
+  same window as Do a Document Task, on the same command: Ctrl+3 in QUILL
+  Studio and QuillBeacon, Ctrl+F3 where Ctrl+1 to Ctrl+9 move between windows.
+  On any other AI the row says "(needs Copilot or Codex)" and offers to switch.
+  - Quill Radio, **Find and Record**: finds stations, plays one, records now or
+    schedules a recording, which Radio's own recorder makes.
+  - QUILL Cast, **Find and Follow**: searches the directories, follows a show,
+    makes folders and moves shows into them, and queues episodes. Build Me a
+    Listening Run's access key moves from L to B to make room.
+  - QUILL Transcribe, **Speakers, Sections and Summary**: names speakers, adds
+    section headings, a summary and an action list, written into Review
+    Dictation as one change you can undo. Only text is sent.
+  - QUILL Studio, **Recording Pre-flight Check** (Ctrl+3): runs Record a
+    Demonstration's check and answers with a short checklist; it may ask to send
+    one still of what you will record. **Narrate a Recording** (Ctrl+Shift+3)
+    writes a narrative of a recording from its captions and, on an AI that can
+    see, a contact sheet of frames, saved beside the recording and opened in
+    QUILL.
+  - Quill Converter, **Make This Right for My Player**: reads what is queued
+    and what each format carries, then sets up and starts a conversion, join or
+    split. It never sends audio.
+  - QuillBeacon, **Organize What I Saved**: searches, suggests tags, and tags or
+    moves saved items.
+  - Quill Media Player, **Find the Part Where**: goes to a chapter, bookmark or
+    time. There is no transcript yet, so it works from chapters and bookmarks.
+  - Quill Inkwell, **Add Abbreviations from a Document**: proposes abbreviations
+    from a document you pick and adds the ones you accept.
+- **Nothing changes without you.** Every step that changes, records, schedules
+  or sends a picture asks first (Allow once, Allow for this task, Don't allow).
+  Every change to your data is shown as text in **Review Proposed Change**
+  before it is made. Each task ends with a spoken summary of what was done,
+  built from what actually happened.
+- **Tell Me When This Changes** in QUILL Studio and Quill Radio: Start Watching
+  for Changes (Ctrl+F9) and Stop Watching for Changes (Ctrl+Shift+F9). Studio
+  watches the screen you chose in Capture, Radio the video picture. The picture
+  is compared on this computer and read with OCR first; the AI is asked only
+  when something changed that OCR cannot put into words, at most once a minute
+  and at most 30 times a watch, and then the watch stops and says so. You hear
+  one sentence only when something changed. Every question counts in AI Usage,
+  the first picture on each AI asks your consent, Safe Mode refuses it, and
+  closing the window ends the watch.
+
+### One list of prompts, and the AI Hub's providers in My own key (2026-11-01)
+
+- **The AI Hub's providers are in Use My Own AI Key**, in QUILL and QUILL Lite
+  at once: Anthropic Claude, OpenRouter, Ollama Cloud and a custom
+  OpenAI-compatible service join OpenAI and Google Gemini, each with its own
+  saved key, as before. **Ollama on this computer** is there too and needs no
+  key; its About line says "Runs on this computer. Nothing is sent." A custom
+  service and a local Ollama get a Server address box, and an address you saved
+  in the AI Hub is carried over. Ollama's model list comes from Ollama itself,
+  and a model Ollama says can read pictures answers Ask About an Image.
+- **One choice for all of QUILL's AI.** The provider you save in Use My Own AI
+  Key is also the one Ask Quill, Run Agent, the AI Library and the other
+  advanced features use. The AI Hub's own Provider list, its On-Device address
+  box and its Reset AI Settings button are gone; the Hub's Provider page says
+  which provider is in use and opens Use My Own AI Key.
+- **One list of your prompts for the whole family.** QUILL Lite's Prompt Library
+  now reads the same `prompts.json` as QUILL. The first time this version
+  starts, either editor quietly brings in the prompts kept elsewhere (Prompt
+  Studio, your image description styles, QUILL Lite's own list) on a background
+  thread. The same prompt in two places becomes one; two different prompts with
+  one name are both kept, the second named after where it came from. Nothing is
+  deleted: the old files stay as they were for one release.
+
+### Choose Your AI in Quill Weather, Quill Converter, Quill Media Player, Quill Inkwell and QuillBeacon (2026-11-01)
+
+- **Five more apps get Choose Your AI**, each with its own sign-in under its own
+  name and its own small settings file: Which AI Am I Using, the one AI Usage
+  list, an AI line in the main window (Enter opens Choose Your AI), and Ask
+  with what that app knows. Weather, Converter, Media Player and Inkwell use
+  Ctrl+Shift+8, Ctrl+F8 and Ctrl+Shift+F8, because Ctrl+1 to Ctrl+9 move
+  between their windows; QuillBeacon keeps the editors' Ctrl+6, Ctrl+8 and
+  Ctrl+4, in its Assist menu after the three local helpers.
+- **Each app's first AI feature:** Should I Go Out? in Weather (Ctrl+Shift+G,
+  text only, alerts always in the Weather Service's own words); Will This Play
+  on My Device? in Converter (Ctrl+Shift+D, from probe text, never the audio);
+  the Media Player's chapter summary and recap (Ctrl+Alt+C, Ctrl+Alt+R) now use
+  the AI you chose instead of an AI Hub key; Suggest Abbreviations from a
+  Document in Inkwell (Ctrl+Shift+A, nothing added without a check); and
+  Describe a Saved Picture in QuillBeacon (Ctrl+F5, read on this computer
+  first, offered as a note).
+- **Pictures ask first everywhere.** Quill Radio's Describe the Video and QUILL
+  Cast's Ask About an Image now ask once per AI where pictures go, No the
+  default, as QUILL Studio already did.
+
+### Choose Your AI and Ask, in Quill Radio and QUILL Cast (2026-11-01)
+
+- **Quill Radio and QUILL Cast get Choose Your AI**, with the same five rows as
+  the editors: QUILL's free AI, your ChatGPT plan, GitHub Copilot, Codex and
+  your own key. Each app keeps its own choice and signs in under its own name,
+  and anyone already signed in to ChatGPT in either app keeps using it. Which
+  AI Am I Using, the one AI Usage list and an AI cell at the end of the status
+  bar come with it, and every AI command says what it needs when the AI in use
+  cannot do it.
+- The keys are **Ctrl+F8** for Which AI Am I Using (twice opens the window),
+  **Ctrl+Shift+F8** for Choose Your AI and **Ctrl+Shift+8** for Ask, the same in
+  both apps. In Radio and Cast Ctrl+1 to Ctrl+9 move between windows, so the
+  editors' Ctrl+4, Ctrl+6 and Ctrl+8 were taken there. Use My ChatGPT
+  Subscription stays on Alt+F5 and now opens Choose Your AI on the ChatGPT row.
+- **Ask QUILL Radio is now Ask**, the family's one conversation window, on any
+  AI. The station and what is playing go with every message, read fresh, and
+  the window says when the song changed since your last question.
+  Conversations are saved and Saved Conversations opens Radio's own. The nine
+  quick questions stay first; your listening history still goes only with the
+  one question that asks for it.
+- **Describe the Video** (Ctrl+F5, Video menu) in Quill Radio takes one picture
+  of the video on this computer, fits it to the AI in use and asks what is on
+  screen. Asking again about the same picture sends nothing.
+- **Ask in QUILL Cast** (Ctrl+Shift+8) is about the episode you are on: the show
+  notes, chapters and where you are, never the audio. **What Did I Miss in This
+  Episode?** asks only about what came before your place.
+- **Ask About an Image in QUILL Cast** (Ctrl+Alt+F5) offers the podcast's
+  artwork and the show notes' own pictures, fetched once only when you choose
+  one, and reads the notes' own descriptions when the AI in use cannot see.
+
+### GitHub Copilot, Codex and document tasks, in QUILL and QUILL Lite (2026-11-01)
+
+- **My GitHub Copilot** in Choose Your AI now signs in with GitHub's short code
+  in the same small sign-in step as the other connections: the code is spaced
+  out for your screen reader, said once and already on the clipboard; Open the
+  Page goes to GitHub, and the step closes by itself. Each app signs in on its
+  own. Without this app's GitHub registration the row says "not available yet"
+  and About says why in one sentence.
+- Single requests, conversations and Ask About an Image (on a model that sees)
+  go to Copilot when it is in use. A Copilot error is said once; nothing is
+  retried or switched. Which AI Am I Using (Ctrl+8) and AI Usage include
+  GitHub's own count, fetched without holding up the window.
+- **Codex, for tasks** is one key once your ChatGPT plan is signed in. While it
+  is in use, single requests go straight to your plan, and Ctrl+8 says so.
+- **Do a Document Task** (Ctrl+3 in both editors, AI menu) hands a job with
+  several steps to GitHub Copilot or Codex. Each step that changes something
+  asks first (Allow once, Allow for this task, Don't allow), every edit opens
+  Review AI Changes and undoes with Ctrl+Z, Stop ends it at once, and the task
+  ends with a spoken text summary. On any other AI it says "(needs Copilot or
+  Codex)" and offers to switch.
+- **Plan Options...** in Choose Your AI, shown on the ChatGPT plan's and Codex's
+  rows, brings back Allow web search and Forget on This Computer, which became
+  unreachable when Use My ChatGPT Subscription (Alt+F5) began opening Choose
+  Your AI.
+- The old "Set Up GitHub Copilot" window, with its Install step, is gone: the
+  engine ships with QUILL, so the AI Hub's Engines tab and the engine status
+  cell open the same sign-in step.
+
+### Choose Your AI, in QUILL and QUILL Lite (2026-10-31)
+
+- One window, **Choose Your AI** (Ctrl+4 in both editors), lists where your AI
+  comes from: QUILL's free AI, your ChatGPT plan and your own key, each saying
+  whether it is in use, signed in or not set up. GitHub Copilot and Codex say
+  "not available yet". One button follows the row: Use This, Sign In or Sign
+  Out. Delete on a signed-in row asks first, with No as the default.
+- **Which AI Am I Using** (Ctrl+8) says which AI is in use, the model and one
+  thing about usage. Pressed twice quickly, it opens Choose Your AI.
+- Use My Own AI Key (Alt+F2), Use My ChatGPT Subscription (Alt+F5) and
+  Connect or Sign Out keep their keys and open Choose Your AI on their own row,
+  ready to sign in.
+- A new **AI** status-bar cell, in both editors, says which AI is in use;
+  Enter on it opens Choose Your AI.
+- **AI Usage** is one list, a sentence for each AI you have set up, with Manage
+  Usage. It replaces the free AI's allowance window and the own key's usage
+  window. Everything is text.
+- An AI command the AI in use cannot do keeps its key, says what it needs in
+  its menu name, sends nothing, and offers to switch with Yes as the default.
+- Ask AI a Question (Ctrl+6) now opens the AI Conversation about the document
+  you are in, naming the AI being asked; each message takes the selection, else
+  the paragraph or section, the title and the headings.
+
+### Copilot engine groundwork (2026-10-31)
+
+- The GitHub Copilot engine now waits for Copilot's answer instead of
+  inserting a request id, passes the token to the SDK directly, and never
+  puts it in QUILL's environment, so Quillin workers and external engines
+  cannot inherit it. `GITHUB_TOKEN`, `GH_TOKEN` and `COPILOT_GITHUB_TOKEN`
+  are stripped from every child process, and `ghu_`, `ghs_` and `ghr_`
+  tokens are redacted from logs and diagnostic bundles alongside `gho_`.
+- Copilot keeps its own sign-in, one per app, apart from the token the
+  GitHub repository commands use. An existing shared sign-in stays with the
+  repository commands; Copilot asks once for its own.
+- When a build carries the Copilot CLI (`tools\copilot\copilot.exe`, version
+  1.0.105), QUILL launches it only if it matches the SHA-256 pinned for the
+  release, and the SDK is told never to download a CLI of its own.
+- Explain a Command and Ask Copilot for a Command are gone from Tools > Git
+  and GitHub > GitHub. They drove the `gh copilot` extension, which GitHub
+  retired on 2025-10-25.
+
 ### ChatGPT plan sign-in holds through a brief problem (2026-10-31)
 
 - In QUILL, QUILL Lite, Quill Radio and QUILL Cast, a temporary failure while renewing the

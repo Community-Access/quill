@@ -58,23 +58,28 @@ PURPOSES: dict[str, str] = {
         "watches what the app is doing -- never which key you pressed -- and "
         "moves you on by itself."
     ),
-    "Ask QUILL Radio": (
-        "A conversation with ChatGPT, on your own plan, that already knows what "
-        "is playing: the station and the title the stream is announcing go with "
-        "every message, so 'what is this song' and 'tell me about this station' "
-        "need no names typed. Type in Your message and press Enter; the reply is "
-        "read aloud and added to the conversation above. Ask About What's Playing "
-        "asks for you, and the Quick questions list holds nine more: arrow freely, "
-        "press Enter on one to put it in the message box, and three of them say "
-        "what they send about you before anything goes. Nothing here changes "
-        "what is playing."
+    "Ask": (
+        "A conversation about what is playing, on whichever AI is in use: the "
+        "station and the title the stream is announcing go with every message, "
+        "so 'what is this song' needs no names typed. Type in Your message and "
+        "press Enter; the reply is read aloud and added to the conversation "
+        "above. The Quick questions list holds Radio's nine questions and a few "
+        "more: arrow freely and press Enter on one to put it in the message box. "
+        "The ones that send something about you say so before anything goes."
     ),
-    "Use My ChatGPT Subscription": (
-        "Sign Quill Radio in with the ChatGPT plan you already pay for, so Ask "
-        "QUILL Radio can answer on it. Continue with ChatGPT opens your browser; "
-        "once signed in, choose the model from your plan's own list and whether "
-        "web search is allowed. Sign Out and Forget on This Computer appear only "
-        "while you are signed in."
+    "Choose Your AI": (
+        "Choose where Quill Radio's AI comes from: QUILL's free AI, your ChatGPT plan, "
+        "GitHub Copilot, Codex or your own key. The list says which is in use; "
+        "Enter uses the selected one or signs in to it, and Delete signs a "
+        "signed-in one out. Choosing here changes nothing in the other apps."
+    ),
+    "Sign In to Your AI": (
+        "Sign in to the AI you chose. Open the Page takes you to its sign-in page; "
+        "approve there, and this closes itself once you are signed in."
+    ),
+    "AI Usage": (
+        "How much each AI you have set up has been used, one sentence each, and "
+        "whose count it is. Manage Usage opens the selected one's own page."
     ),
     "Browse Stations": (
         "A search-free tree for wandering: every source Quill Radio knows -- "

@@ -21,7 +21,7 @@ from typing import Any
 from quill.core.app_settings_index import CONVERTER_SETTINGS
 from quill.core.settings_finder import SettingEntry, moved_to
 
-__all__ = ["go_to_setting", "open_preferences"]
+__all__ = ["go_to_setting", "open_preferences", "set_open_when_done"]
 
 #: Main-window settings -> the attribute holding the control.
 _MAIN_CONTROLS = {
@@ -73,12 +73,23 @@ def open_preferences(host: Any) -> None:
     # Only what changed is applied, and each change says itself; an OK that
     # changed nothing says nothing, because nothing happened.
     if open_when_done != bool(settings.open_folder_when_done):
-        host.set_open_when_done(open_when_done)
+        set_open_when_done(host, open_when_done)
         _check_menu(host, "_open_when_done_item", open_when_done)
     if show_advanced != bool(settings.show_advanced):
         host.set_advanced_visible(show_advanced)
         _check_menu(host, "_advanced_item", show_advanced)
         host._announce("Advanced Options shown." if show_advanced else "Advanced Options hidden.")
+
+
+def set_open_when_done(host: Any, value: bool) -> None:
+    """Convert > Open Output Folder When Done (Ctrl+Shift+W), and its Preferences box."""
+    host._settings.open_folder_when_done = bool(value)
+    host._remember()
+    host._announce(
+        "The output folder opens when a conversion finishes."
+        if value
+        else "The output folder no longer opens by itself."
+    )
 
 
 def _check_menu(host: Any, attribute: str, value: bool) -> None:

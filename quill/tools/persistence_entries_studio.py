@@ -36,4 +36,7 @@ STUDIO_ENTRIES: dict[str, str] = {
     # version stamp yet.
     "apps/studio_demo.py::record_demonstration": "needs-versioning",
     "apps/studio_streaming.py::_start_stream": "needs-versioning",
+    # Studio's own Choose Your AI choice and picture consent (codex.md Phase 3):
+    # names and ids only, never a key or a token; no version stamp yet.
+    "core/audio_studio/ai_settings.py::save_ai_settings": "needs-versioning",
 }

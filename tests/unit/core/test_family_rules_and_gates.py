@@ -201,6 +201,9 @@ UNBOUND_WITH_REASON: dict[str, str] = {
             "table.tidy",
         )
     },
+    "tools.hosted_ai_alt_text": "Reached another way: Do a Document Task (Ctrl+3) takes "
+    "the same request, and this row only types it in for you. No chord is free in both "
+    "editors, and rule 9 asks an occasional repair pass for a way in, not a chord.",
     "help.whats_new": "Reached another way: Help > What's New, in both editors. No chord "
     "is free in both -- Ctrl+Shift+F1, the standalone apps' What's New, is the User "
     "Guide here -- and rule 9 asks a once-per-update read for a way in, not a chord.",

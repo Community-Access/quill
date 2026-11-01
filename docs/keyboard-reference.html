@@ -255,7 +255,7 @@ cannot drift from the code. Bindings shown as
 release, then the second key. Every binding here is a <em>default</em> –
 the in-app reference (Help &gt; Open Keyboard Reference) always shows
 your own customised keymap.</p>
-<p>Editor commands with default bindings: 516.</p>
+<p>Editor commands with default bindings: 518.</p>
 <h2 id="the-quill-editor">The QUILL editor</h2>
 <h3 id="files">Files</h3>
 <table>
@@ -1604,6 +1604,11 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>(unbound by default)</td>
+<td>Propose Alt Text…</td>
+<td><code>tools.hosted_ai_alt_text</code></td>
+</tr>
+<tr>
+<td>(unbound by default)</td>
 <td>Table Studio (Experimental)</td>
 <td><code>tools.table_studio</code></td>
 </tr>
@@ -1718,14 +1723,29 @@ your own customised keymap.</p>
 <td><code>tools.misspelling_list_ranked</code></td>
 </tr>
 <tr>
+<td>Ctrl+3</td>
+<td>Do a Document Task…</td>
+<td><code>tools.hosted_ai_task</code></td>
+</tr>
+<tr>
+<td>Ctrl+4</td>
+<td>Choose Your AI…</td>
+<td><code>tools.hosted_ai_choose</code></td>
+</tr>
+<tr>
 <td>Ctrl+6</td>
 <td>Ask AI a Question…</td>
 <td><code>tools.hosted_ai_chat_key</code></td>
 </tr>
 <tr>
 <td>Ctrl+7</td>
-<td>Free AI Prompt Library…</td>
+<td>Prompt Library…</td>
 <td><code>tools.hosted_ai_prompt_library</code></td>
+</tr>
+<tr>
+<td>Ctrl+8</td>
+<td>Which AI Am I Using</td>
+<td><code>tools.hosted_ai_which</code></td>
 </tr>
 <tr>
 <td>Ctrl+9</td>
@@ -1754,7 +1774,7 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>Ctrl+Alt+G</td>
-<td>Free AI Assistant…</td>
+<td>Free AI Assistant</td>
 <td><code>tools.hosted_ai_assistant</code></td>
 </tr>
 <tr>
@@ -1794,7 +1814,7 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>Ctrl+Alt+Shift+F2</td>
-<td>Free AI Usage…</td>
+<td>AI Usage…</td>
 <td><code>tools.hosted_ai_usage</code></td>
 </tr>
 <tr>
@@ -1849,7 +1869,7 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>Ctrl+Alt+Z</td>
-<td>Ask About This Document…</td>
+<td>Ask Free AI About This Document</td>
 <td><code>tools.hosted_ai_ask_document</code></td>
 </tr>
 <tr>
@@ -1864,12 +1884,12 @@ your own customised keymap.</p>
 </tr>
 <tr>
 <td>Ctrl+F3</td>
-<td>Tidy Dictated Text…</td>
+<td>Tidy Dictated Text</td>
 <td><code>tools.dictation_tidy</code></td>
 </tr>
 <tr>
 <td>Ctrl+F5</td>
-<td>Ask About an Image…</td>
+<td>Ask About an Image</td>
 <td><code>tools.hosted_ai_image</code></td>
 </tr>
 <tr>
@@ -2269,16 +2289,6 @@ your own customised keymap.</p>
 <td>(unbound by default)</td>
 <td>GitHub: Configure Branch Protection…</td>
 <td><code>github.configure_branch_protection</code></td>
-</tr>
-<tr>
-<td>(unbound by default)</td>
-<td>GitHub: Explain a Command…</td>
-<td><code>github.copilot_explain</code></td>
-</tr>
-<tr>
-<td>(unbound by default)</td>
-<td>GitHub: Ask Copilot for a Command…</td>
-<td><code>github.copilot_suggest</code></td>
 </tr>
 <tr>
 <td>(unbound by default)</td>
@@ -2970,6 +2980,21 @@ never inside the QUILL editor.</p>
 </thead>
 <tbody>
 <tr>
+<td>Alt+F5</td>
+<td>Use My ChatGPT Subscription…</td>
+<td><code>studio.chatgpt_account</code></td>
+</tr>
+<tr>
+<td>Alt+Shift+F2</td>
+<td>Privacy Agreement…</td>
+<td><code>tools.hosted_ai_privacy</code></td>
+</tr>
+<tr>
+<td>Ctrl+3</td>
+<td>Recording Pre-flight Check…</td>
+<td><code>tools.hosted_ai_task</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+Shift+B</td>
 <td>Record marker</td>
 <td><code>studio.record_marker</code></td>
@@ -3094,6 +3119,80 @@ never inside the QUILL editor.</p>
 <td>Broadcast mute</td>
 <td><code>studio.broadcast_mute</code></td>
 </tr>
+<tr>
+<td>Ctrl+F5</td>
+<td>Describe a Picture…</td>
+<td><code>studio.describe_picture</code></td>
+</tr>
+<tr>
+<td>Ctrl+F9</td>
+<td>Start Watching for Changes</td>
+<td><code>studio.ai_watch_start</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+3</td>
+<td>Narrate a Recording…</td>
+<td><code>studio.ai_narrative</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+F9</td>
+<td>Stop Watching for Changes</td>
+<td><code>studio.ai_watch_stop</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="quill-transcribe-app-keys">QUILL Transcribe (app keys)</h2>
+<p>App keys, not editor keys: these apply inside the app named above and
+never inside the QUILL editor.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+<th>Command id</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Alt+F2</td>
+<td>Use My Own AI Key…</td>
+<td><code>tools.hosted_ai_own_key</code></td>
+</tr>
+<tr>
+<td>Alt+F5</td>
+<td>Use My ChatGPT Subscription…</td>
+<td><code>tools.hosted_ai_chatgpt</code></td>
+</tr>
+<tr>
+<td>Alt+Shift+F2</td>
+<td>Privacy Agreement…</td>
+<td><code>tools.hosted_ai_privacy</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+F2</td>
+<td>AI Usage…</td>
+<td><code>tools.hosted_ai_usage</code></td>
+</tr>
+<tr>
+<td>Ctrl+F3</td>
+<td>Speakers, Sections and Summary…</td>
+<td><code>tools.hosted_ai_task</code></td>
+</tr>
+<tr>
+<td>Ctrl+F8</td>
+<td>Which AI Am I Using</td>
+<td><code>tools.hosted_ai_which</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+8</td>
+<td>Ask AI a Question…</td>
+<td><code>tools.hosted_ai_chat_key</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+F8</td>
+<td>Choose Your AI…</td>
+<td><code>tools.hosted_ai_choose</code></td>
+</tr>
 </tbody>
 </table>
 <h2 id="quill-radio-app-keys">Quill Radio (app keys)</h2>
@@ -3164,6 +3263,11 @@ never inside the QUILL editor.</p>
 <td><code>radio.play_favorite_9</code></td>
 </tr>
 <tr>
+<td>Alt+F2</td>
+<td>Use My Own AI Key…</td>
+<td><code>tools.hosted_ai_own_key</code></td>
+</tr>
+<tr>
 <td>Alt+F5</td>
 <td>Use My ChatGPT Subscription…</td>
 <td><code>radio.chatgpt_account</code></td>
@@ -3182,6 +3286,11 @@ never inside the QUILL editor.</p>
 <td>Alt+Shift+F</td>
 <td>Play Favorite Station…</td>
 <td><code>radio.play_favorite</code></td>
+</tr>
+<tr>
+<td>Alt+Shift+F2</td>
+<td>Privacy Agreement…</td>
+<td><code>tools.hosted_ai_privacy</code></td>
 </tr>
 <tr>
 <td>Alt+Shift+I</td>
@@ -3284,6 +3393,11 @@ never inside the QUILL editor.</p>
 <td><code>radio.upcoming</code></td>
 </tr>
 <tr>
+<td>Ctrl+Alt+Shift+F2</td>
+<td>AI Usage…</td>
+<td><code>tools.hosted_ai_usage</code></td>
+</tr>
+<tr>
 <td>Ctrl+Alt+Shift+F3</td>
 <td>Notifications…</td>
 <td><code>app.notifications</code></td>
@@ -3384,6 +3498,26 @@ never inside the QUILL editor.</p>
 <td><code>app.dictate_here</code></td>
 </tr>
 <tr>
+<td>Ctrl+F3</td>
+<td>Find and Record…</td>
+<td><code>tools.hosted_ai_task</code></td>
+</tr>
+<tr>
+<td>Ctrl+F5</td>
+<td>Describe the Video</td>
+<td><code>radio.describe_video</code></td>
+</tr>
+<tr>
+<td>Ctrl+F8</td>
+<td>Which AI Am I Using</td>
+<td><code>tools.hosted_ai_which</code></td>
+</tr>
+<tr>
+<td>Ctrl+F9</td>
+<td>Start Watching for Changes</td>
+<td><code>radio.ai_watch_start</code></td>
+</tr>
+<tr>
 <td>Ctrl+G</td>
 <td>Go to</td>
 <td><code>radio.go_to</code></td>
@@ -3450,7 +3584,7 @@ never inside the QUILL editor.</p>
 </tr>
 <tr>
 <td>Ctrl+Shift+8</td>
-<td>Ask QUILL Radio…</td>
+<td>Ask…</td>
 <td><code>radio.ask_quill_radio</code></td>
 </tr>
 <tr>
@@ -3477,6 +3611,16 @@ never inside the QUILL editor.</p>
 <td>Ctrl+Shift+F</td>
 <td>Toggle playing favorite</td>
 <td><code>radio.toggle_playing_favorite</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+F8</td>
+<td>Choose Your AI…</td>
+<td><code>tools.hosted_ai_choose</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+F9</td>
+<td>Stop Watching for Changes</td>
+<td><code>radio.ai_watch_stop</code></td>
 </tr>
 <tr>
 <td>Ctrl+Shift+G</td>
@@ -3649,12 +3793,12 @@ never inside the QUILL editor.</p>
 </tr>
 <tr>
 <td>Ctrl+Alt+F5</td>
-<td>Ask About an Image…</td>
+<td>Ask About an Image</td>
 <td><code>tools.hosted_ai_image</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+G</td>
-<td>Free AI Assistant…</td>
+<td>Free AI Assistant</td>
 <td><code>tools.hosted_ai_assistant</code></td>
 </tr>
 <tr>
@@ -3674,7 +3818,7 @@ never inside the QUILL editor.</p>
 </tr>
 <tr>
 <td>Ctrl+Alt+Shift+F2</td>
-<td>Free AI Usage…</td>
+<td>AI Usage…</td>
 <td><code>tools.hosted_ai_usage</code></td>
 </tr>
 <tr>
@@ -3724,7 +3868,7 @@ never inside the QUILL editor.</p>
 </tr>
 <tr>
 <td>Ctrl+Alt+Z</td>
-<td>Ask About This Document…</td>
+<td>Ask Free AI About This Document</td>
 <td><code>tools.hosted_ai_ask_document</code></td>
 </tr>
 <tr>
@@ -3733,9 +3877,19 @@ never inside the QUILL editor.</p>
 <td><code>app.dictate_here</code></td>
 </tr>
 <tr>
+<td>Ctrl+F3</td>
+<td>Find and Follow…</td>
+<td><code>tools.hosted_ai_task</code></td>
+</tr>
+<tr>
 <td>Ctrl+F5</td>
 <td>Refresh podcasts</td>
 <td><code>media.refresh_podcasts</code></td>
+</tr>
+<tr>
+<td>Ctrl+F8</td>
+<td>Which AI Am I Using</td>
+<td><code>tools.hosted_ai_which</code></td>
 </tr>
 <tr>
 <td>Ctrl+G</td>
@@ -3746,6 +3900,11 @@ never inside the QUILL editor.</p>
 <td>Ctrl+I</td>
 <td>Player Information…</td>
 <td><code>podcasts.player_information</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+8</td>
+<td>Ask AI a Question…</td>
+<td><code>tools.hosted_ai_chat_key</code></td>
 </tr>
 <tr>
 <td>Ctrl+Shift+9</td>
@@ -3761,6 +3920,11 @@ never inside the QUILL editor.</p>
 <td>Ctrl+Shift+E</td>
 <td>New folder</td>
 <td><code>podcasts.new_folder</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+F8</td>
+<td>Choose Your AI…</td>
+<td><code>tools.hosted_ai_choose</code></td>
 </tr>
 <tr>
 <td>Ctrl+Shift+J</td>
@@ -3819,7 +3983,7 @@ never inside the QUILL editor.</p>
 </tr>
 </tbody>
 </table>
-<h2 id="weather-app-keys">Weather (app keys)</h2>
+<h2 id="quill-weather-app-keys">Quill Weather (app keys)</h2>
 <p>App keys, not editor keys: these apply inside the app named above and
 never inside the QUILL editor.</p>
 <table>
@@ -3831,6 +3995,16 @@ never inside the QUILL editor.</p>
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>Alt+F2</td>
+<td>Use My Own AI Key…</td>
+<td><code>tools.hosted_ai_own_key</code></td>
+</tr>
+<tr>
+<td>Alt+F5</td>
+<td>Use My ChatGPT Subscription…</td>
+<td><code>tools.hosted_ai_chatgpt</code></td>
+</tr>
 <tr>
 <td>Ctrl+Alt+F1</td>
 <td>Tutorials</td>
@@ -3845,6 +4019,16 @@ never inside the QUILL editor.</p>
 <td>Ctrl+Alt+Shift+F</td>
 <td>Settings</td>
 <td><code>weather.settings</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+F2</td>
+<td>AI Usage…</td>
+<td><code>tools.hosted_ai_usage</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+K</td>
+<td>Privacy Agreement…</td>
+<td><code>tools.hosted_ai_privacy</code></td>
 </tr>
 <tr>
 <td>Ctrl+Alt+Shift+L</td>
@@ -3872,9 +4056,29 @@ never inside the QUILL editor.</p>
 <td><code>weather.test_alert</code></td>
 </tr>
 <tr>
+<td>Ctrl+F8</td>
+<td>Which AI Am I Using</td>
+<td><code>tools.hosted_ai_which</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+8</td>
+<td>Ask AI a Question…</td>
+<td><code>tools.hosted_ai_chat_key</code></td>
+</tr>
+<tr>
 <td>Ctrl+Shift+Alt+A</td>
 <td>Alerts</td>
 <td><code>weather.alerts</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+F8</td>
+<td>Choose Your AI…</td>
+<td><code>tools.hosted_ai_choose</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+G</td>
+<td>Ai go out</td>
+<td><code>weather.ai_go_out</code></td>
 </tr>
 <tr>
 <td>Ctrl+Shift+Q</td>
@@ -3885,6 +4089,247 @@ never inside the QUILL editor.</p>
 <td>Ctrl+Shift+W</td>
 <td>Now</td>
 <td><code>weather.now</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="quill-converter-app-keys">Quill Converter (app keys)</h2>
+<p>App keys, not editor keys: these apply inside the app named above and
+never inside the QUILL editor.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+<th>Command id</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Alt+F2</td>
+<td>Use My Own AI Key…</td>
+<td><code>tools.hosted_ai_own_key</code></td>
+</tr>
+<tr>
+<td>Alt+F5</td>
+<td>Use My ChatGPT Subscription…</td>
+<td><code>tools.hosted_ai_chatgpt</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+F2</td>
+<td>AI Usage…</td>
+<td><code>tools.hosted_ai_usage</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+K</td>
+<td>Privacy Agreement…</td>
+<td><code>tools.hosted_ai_privacy</code></td>
+</tr>
+<tr>
+<td>Ctrl+F3</td>
+<td>Make This Right for My Player…</td>
+<td><code>tools.hosted_ai_task</code></td>
+</tr>
+<tr>
+<td>Ctrl+F8</td>
+<td>Which AI Am I Using</td>
+<td><code>tools.hosted_ai_which</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+8</td>
+<td>Ask AI a Question…</td>
+<td><code>tools.hosted_ai_chat_key</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+D</td>
+<td>Ai will play</td>
+<td><code>converter.ai_will_play</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+F8</td>
+<td>Choose Your AI…</td>
+<td><code>tools.hosted_ai_choose</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="quill-media-player-app-keys">Quill Media Player (app keys)</h2>
+<p>App keys, not editor keys: these apply inside the app named above and
+never inside the QUILL editor.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+<th>Command id</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Alt+F2</td>
+<td>Use My Own AI Key…</td>
+<td><code>tools.hosted_ai_own_key</code></td>
+</tr>
+<tr>
+<td>Alt+F5</td>
+<td>Use My ChatGPT Subscription…</td>
+<td><code>tools.hosted_ai_chatgpt</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+C</td>
+<td>Ai chapter summary</td>
+<td><code>player.ai_chapter_summary</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+R</td>
+<td>Ai recap</td>
+<td><code>player.ai_recap</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+F2</td>
+<td>AI Usage…</td>
+<td><code>tools.hosted_ai_usage</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+K</td>
+<td>Privacy Agreement…</td>
+<td><code>tools.hosted_ai_privacy</code></td>
+</tr>
+<tr>
+<td>Ctrl+F3</td>
+<td>Find the Part Where…</td>
+<td><code>tools.hosted_ai_task</code></td>
+</tr>
+<tr>
+<td>Ctrl+F8</td>
+<td>Which AI Am I Using</td>
+<td><code>tools.hosted_ai_which</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+8</td>
+<td>Ask AI a Question…</td>
+<td><code>tools.hosted_ai_chat_key</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+F8</td>
+<td>Choose Your AI…</td>
+<td><code>tools.hosted_ai_choose</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="quill-inkwell-app-keys">Quill Inkwell (app keys)</h2>
+<p>App keys, not editor keys: these apply inside the app named above and
+never inside the QUILL editor.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+<th>Command id</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Alt+F2</td>
+<td>Use My Own AI Key…</td>
+<td><code>tools.hosted_ai_own_key</code></td>
+</tr>
+<tr>
+<td>Alt+F5</td>
+<td>Use My ChatGPT Subscription…</td>
+<td><code>tools.hosted_ai_chatgpt</code></td>
+</tr>
+<tr>
+<td>Alt+Shift+F2</td>
+<td>Privacy Agreement…</td>
+<td><code>tools.hosted_ai_privacy</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+F2</td>
+<td>AI Usage…</td>
+<td><code>tools.hosted_ai_usage</code></td>
+</tr>
+<tr>
+<td>Ctrl+F3</td>
+<td>Add Abbreviations from a Document…</td>
+<td><code>tools.hosted_ai_task</code></td>
+</tr>
+<tr>
+<td>Ctrl+F8</td>
+<td>Which AI Am I Using</td>
+<td><code>tools.hosted_ai_which</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+8</td>
+<td>Ask AI a Question…</td>
+<td><code>tools.hosted_ai_chat_key</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+A</td>
+<td>Ai suggest</td>
+<td><code>inkwell.ai_suggest</code></td>
+</tr>
+<tr>
+<td>Ctrl+Shift+F8</td>
+<td>Choose Your AI…</td>
+<td><code>tools.hosted_ai_choose</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="quillbeacon-app-keys">QuillBeacon (app keys)</h2>
+<p>App keys, not editor keys: these apply inside the app named above and
+never inside the QUILL editor.</p>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>Command</th>
+<th>Command id</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Alt+F2</td>
+<td>Use My Own AI Key…</td>
+<td><code>tools.hosted_ai_own_key</code></td>
+</tr>
+<tr>
+<td>Alt+F5</td>
+<td>Use My ChatGPT Subscription…</td>
+<td><code>tools.hosted_ai_chatgpt</code></td>
+</tr>
+<tr>
+<td>Ctrl+3</td>
+<td>Organize What I Saved…</td>
+<td><code>tools.hosted_ai_task</code></td>
+</tr>
+<tr>
+<td>Ctrl+4</td>
+<td>Choose Your AI…</td>
+<td><code>tools.hosted_ai_choose</code></td>
+</tr>
+<tr>
+<td>Ctrl+6</td>
+<td>Ask AI a Question…</td>
+<td><code>tools.hosted_ai_chat_key</code></td>
+</tr>
+<tr>
+<td>Ctrl+8</td>
+<td>Which AI Am I Using</td>
+<td><code>tools.hosted_ai_which</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+F2</td>
+<td>AI Usage…</td>
+<td><code>tools.hosted_ai_usage</code></td>
+</tr>
+<tr>
+<td>Ctrl+Alt+Shift+K</td>
+<td>Privacy Agreement…</td>
+<td><code>tools.hosted_ai_privacy</code></td>
+</tr>
+<tr>
+<td>Ctrl+F5</td>
+<td>Describe picture</td>
+<td><code>beacon.describe_picture</code></td>
 </tr>
 </tbody>
 </table>

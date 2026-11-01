@@ -221,7 +221,24 @@ def build_specs(host: Any, wx: Any) -> list[CellSpec]:
             activate=lambda: announce_clock(host),
             help="The current time. Press Enter to hear the full date and time.",
         ),
+        CellSpec(
+            key="ai",
+            name="AI",
+            text=lambda: ai_text(host),
+            activate=lambda: call_host(host, "cmd_ai_choose"),
+            help=(
+                "Which AI is in use, as Which AI Am I Using says it. Press Enter to "
+                "open Choose Your AI."
+            ),
+        ),
     ]
+
+
+def ai_text(host: Any) -> str:
+    """The AI cell (codex.md decision 19): "AI: ChatGPT plan"; "AI: off" until
+    AI help is switched on in Preferences."""
+    text = getattr(host, "ai_status_text", None)
+    return str(text()) if callable(text) else ""
 
 
 # -- action labels ------------------------------------------------------------

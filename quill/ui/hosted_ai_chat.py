@@ -79,8 +79,11 @@ class AiChatFrame(wx.Frame):
         conversation: Conversation | None = None,
         first_message: str = "",
         store: Path | None = None,
+        context: Callable[[], list[str]] | None = None,
     ) -> None:
         super().__init__(parent, title="AI Conversation")
+        #: Ask's facts, read fresh for every turn (codex.md 10C.3), or None.
+        self._context = context
         #: Told each reply as it is read aloud: dictation mutes its microphone.
         self.on_reply: Callable[[str], None] | None = None
         self._service = service
@@ -118,6 +121,7 @@ class AiChatFrame(wx.Frame):
             "also read aloud as it arrives.",
         )
 
+        self._add_before_message(panel, sizer)  # an app's quick list (hosted_ai_app_ask)
         label = wx.StaticText(panel, label="Your &message")
         self._message = wx.TextCtrl(panel, style=wx.TE_PROCESS_ENTER)
         set_accessible_name(self._message, "Your message")
@@ -196,6 +200,9 @@ class AiChatFrame(wx.Frame):
             # it before the reply is read out.
             wx.CallAfter(self._send)
 
+    def _add_before_message(self, panel: wx.Panel, sizer: wx.BoxSizer) -> None:
+        """Controls above the message box; an app's Ask adds its quick list."""
+
     # -- what the window says ---------------------------------------------- #
 
     def _direct(self) -> bool:
@@ -206,11 +213,29 @@ class AiChatFrame(wx.Frame):
         return bool(direct)
 
     def _about_text(self) -> str:
-        excerpts = (
-            " Excerpts from your document go with every message, as they did with your question."
-            if self._conversation.excerpts
-            else " Nothing from your document is sent."
-        )
+        if self._context is not None:
+            return self._asking_line() + " " + self._plain_about_text()
+        return self._plain_about_text()
+
+    def _asking_line(self) -> str:
+        """The first line of Ask: which connection is being asked (10C.2)."""
+        from quill.core.ai.connection_words import asking_sentence
+
+        return asking_sentence(str(getattr(self._service, "connection_in_use", "") or ""))
+
+    def _plain_about_text(self) -> str:
+        if self._context is not None:
+            excerpts = (
+                " With each message go the selection, else the paragraph or section the "
+                "cursor is in, the document's title and its headings, read fresh each time."
+            )
+        elif self._conversation.excerpts:
+            excerpts = (
+                " Excerpts from your document go with every message, as they did with "
+                "your question."
+            )
+        else:
+            excerpts = " Nothing from your document is sent."
         excerpts += (
             " Alt+1 reads the newest message aloud, Alt+2 the one before it, up to "
             "Alt+0; Messages lists them all."
@@ -260,6 +285,11 @@ class AiChatFrame(wx.Frame):
                 self._announce,
             )
             return
+        if self._context is not None:
+            try:
+                self._conversation.excerpts = list(self._context())
+            except Exception:  # noqa: BLE001 - a closed document sends no facts
+                self._conversation.excerpts = []
         history = self._conversation.history_for(message, limit)
         self._busy = True
         self._send_button.Disable()
@@ -271,6 +301,7 @@ class AiChatFrame(wx.Frame):
             history,
             on_done=lambda text, quota, dropped: self._reply(message, text, quota, dropped),
             on_error=self._failed,
+            requires=("text",),
         )
 
     def _ceiling(self) -> int:
@@ -472,14 +503,19 @@ class AiChatFrame(wx.Frame):
 # --------------------------------------------------------------------------- #
 
 
-def open_for(host: Any, *, first_message: str = "", seed: Conversation | None = None) -> None:
+def open_for(
+    host: Any,
+    *,
+    first_message: str = "",
+    seed: Conversation | None = None,
+    context: Callable[[], list[str]] | None = None,
+) -> None:
     """Open the AI Conversation window from either editor's HostedAiMixin.
 
-    Reached from the pad's **Have a conversation** row and from **Follow Up**
-    in a result window -- no command and no chord of its own, because the
-    chords free in both editors are too few to spend on a second door to the
-    same place. The same readiness rules as the pad: the agreement, and a
-    connection or an own key.
+    Reached from the pad's **Have a conversation** row, from **Follow Up** in a
+    result window, and as **Ask** on Ctrl+6, which passes *context* -- the
+    editor's facts for each turn -- so the window is about this document. The
+    same readiness rules as the pad: the agreement, and a connection.
     """
     if not host._ai_ready():
         return
@@ -489,7 +525,8 @@ def open_for(host: Any, *, first_message: str = "", seed: Conversation | None = 
             "This computer is not connected to QUILL's free AI. "
             "Choose Connect or Sign Out in the AI menu to connect it."
         )
-        host.cmd_ai_sign_in()
+        connect = getattr(host, "_ai_open_connect", None) or host.cmd_ai_sign_in
+        connect()
         return
     service.refresh_limits()
     frame = AiChatFrame(
@@ -500,6 +537,7 @@ def open_for(host: Any, *, first_message: str = "", seed: Conversation | None = 
         conversation=seed,
         first_message=first_message,
         store=_conversation_store(host),
+        context=context,
     )
     _talk_to_it(frame, host)
     host._after_agreement(lambda: host._show_ai_window(frame))

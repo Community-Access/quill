@@ -2,17 +2,20 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="generator" content="pandoc 3.10.1" />
+  <meta name="generator" content="pandoc 3.12.1" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>Section — GitHub, Local Git, and Publishing (`github.*`
-`localgit.*` `publishing.*`, 40 commands)</title>
+`localgit.*` `publishing.*`, 38 commands)</title>
   <style>
     /* Default styles provided by pandoc.
     ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
     */
     html {
       color: #1a1a1a;
+      color: light-dark(#1a1a1a, #fdfdfd);
       background-color: #fdfdfd;
+      background-color: light-dark(#fdfdfd, #1a1a1a);
+      color-scheme: light dark;
     }
     body {
       margin: 0 auto;
@@ -37,11 +40,16 @@
     }
     @media print {
       html {
-        background-color: white;
+        color-scheme: light only;
       }
-      body {
+      html, body, pre, code {
         background-color: transparent;
+      }
+      body, a, a:visited, blockquote {
         color: black;
+      }
+      pre, code {
+        padding: 0;
       }
       p, h2, h3 {
         orphans: 3;
@@ -54,11 +62,8 @@
     p {
       margin: 1em 0;
     }
-    a {
-      color: #1a1a1a;
-    }
-    a:visited {
-      color: #1a1a1a;
+    a, a:visited {
+      color: inherit;
     }
     img {
       max-width: 100%;
@@ -87,8 +92,11 @@
     blockquote {
       margin: 1em 0 1em 1.7em;
       padding-left: 1em;
-      border-left: 2px solid #e6e6e6;
+      border-left: 2px solid;
+      border-color: #e6e6e6;
+      border-color: light-dark(#e6e6e6, #4c4c4c);
       color: #606060;
+      color: light-dark(#606060, #b6b6b6);
     }
     code {
       white-space: pre-wrap;
@@ -112,7 +120,7 @@
     }
     hr {
       border: none;
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       height: 1px;
       margin: 1em 0;
     }
@@ -129,11 +137,11 @@
     }
     tbody {
       margin-top: 0.5em;
-      border-top: 1px solid #1a1a1a;
-      border-bottom: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
     }
     th {
-      border-top: 1px solid #1a1a1a;
+      border-top: 1px solid currentColor;
       padding: 0.25em 0.5em 0.25em 0.5em;
     }
     td {
@@ -172,7 +180,6 @@
       margin: 0 0.8em 0.2em -1.6em;
       vertical-align: middle;
     }
-    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
   <style>
     /* Accessible skip link: off-screen until it receives keyboard focus. */
@@ -237,21 +244,20 @@
 <a class="skip-link" href="#main-content">Skip to main content</a>
 <main id="main-content" tabindex="-1">
 <h1
-id="section--github-local-git-and-publishing-github-localgit-publishing-40-commands">Section
+id="section--github-local-git-and-publishing-github-localgit-publishing-38-commands">Section
 — GitHub, Local Git, and Publishing (<code>github.*</code>
-<code>localgit.*</code> <code>publishing.*</code>, 40 commands)</h1>
+<code>localgit.*</code> <code>publishing.*</code>, 38 commands)</h1>
 <p>Three related but separate surfaces, all about moving your writing
 between QUILL and the wider world:</p>
 <ul>
-<li><strong>GitHub</strong> (<code>github.*</code>, 17) — operate a
+<li><strong>GitHub</strong> (<code>github.*</code>, 15) — operate a
 GitHub account’s repositories, releases, branches, notifications,
-security alerts, Codespaces, and Copilot CLI, without leaving QUILL.
-These live under <strong>Tools menu ▸ Git and GitHub ▸ GitHub</strong>.
-(The File-menu GitHub commands — save-back, open a file/repo/items,
-manage accounts — are <code>file.*</code> and are covered in
-<code>section-file.md</code> as <strong>FILE-25…FILE-29</strong>; do not
-re-test them here, but you must have connected an account there
-first.)</li>
+security alerts and Codespaces, without leaving QUILL. These live under
+<strong>Tools menu ▸ Git and GitHub ▸ GitHub</strong>. (The File-menu
+GitHub commands — save-back, open a file/repo/items, manage accounts —
+are <code>file.*</code> and are covered in <code>section-file.md</code>
+as <strong>FILE-25…FILE-29</strong>; do not re-test them here, but you
+must have connected an account there first.)</li>
 <li><strong>Local Git</strong> (<code>localgit.*</code>, 12) —
 screen-reader-first front ends for everyday local <code>git</code> work
 (status, branches, stash, blame, bisect, conflicts, rebase, worktrees)
@@ -283,12 +289,12 @@ secret store</strong> (Windows Credential Manager / DPAPI, portable
 <code>keys.enc</code>, or macOS Keychain) — never in plain text. In
 <strong>Safe Mode</strong> every GitHub command refuses aloud; that is
 correct, not a failure.</li>
-<li><strong>GitHub CLI (<code>gh</code>) for Codespaces and
-Copilot.</strong> GH-06, GH-07, GH-08, GH-14 additionally need the
-<strong>GitHub CLI</strong> installed and on your PATH (or QUILL’s
-self-hosted copy via <strong>Help ▸ Download Optional
-Components</strong>). These four are wired but flagged <strong>needs
-live-device verification</strong> — record exactly what you saw.</li>
+<li><strong>GitHub CLI (<code>gh</code>) for Codespaces.</strong> GH-08
+and GH-14 additionally need the <strong>GitHub CLI</strong> installed
+and on your PATH (or QUILL’s self-hosted copy via <strong>Help ▸
+Download Optional Components</strong>). These two are wired but flagged
+<strong>needs live-device verification</strong> — record exactly what
+you saw.</li>
 <li><strong>A local git repo for <code>localgit.*</code>.</strong> You
 need a folder that is a git repository, plus a <code>git</code>
 executable (QUILL offers <strong>Help ▸ Download Optional
@@ -502,66 +508,11 @@ A plain confirmation precedes the change. On success: “Protected
 <code>[ ] Works</code> <code>[ ] Surface-exact</code>
 <code>[ ] Accessible</code> · Notes: ____________________</p>
 <hr />
-<h2 id="gh-06--explain-a-command-githubcopilot_explain">GH-06 — Explain
-a Command… (<code>github.copilot_explain</code>)</h2>
-<p><em>What &amp; why.</em> Paste a <code>git</code> or <code>gh</code>
-command and have GitHub Copilot CLI explain it in plain language.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li><strong>Precondition:</strong> the <strong>GitHub CLI
-(<code>gh</code>)</strong> installed with Copilot access
-(<code>gh copilot</code>). If not present, QUILL points you to
-cli.github.com / Download Optional Components — mark
-<strong>Blocked</strong> if you cannot install it. Needs live-device
-verification.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Git and GitHub ▸ GitHub ▸ Explain a
-Command…</strong>.</li>
-<li>Paste a command such as
-<strong><code>git reset --soft HEAD~1</code></strong>; confirm.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>“Asking Copilot” is announced; the explanation appears in a
-readable, dismissible message box. If <code>gh</code> is missing you
-hear the “GitHub CLI Not Found” guidance instead of an error; an empty
-answer reports “Copilot did not explain that command.”</li>
-</ul>
-<p><strong>Sign off</strong> —
-<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
-<code>[ ] Works</code> <code>[ ] Surface-exact</code>
-<code>[ ] Accessible</code> · Notes: ____________________</p>
-<hr />
-<h2 id="gh-07--ask-copilot-for-a-command-githubcopilot_suggest">GH-07 —
-Ask Copilot for a Command… (<code>github.copilot_suggest</code>)</h2>
-<p><em>What &amp; why.</em> Describe what you want to do in words and
-get a suggested <code>git</code>/<code>gh</code> command from Copilot
-CLI.</p>
-<p><strong>Before you start</strong></p>
-<ul>
-<li>Same <code>gh</code> + Copilot precondition as GH-06 (else
-<strong>Blocked</strong>). Needs live-device verification.</li>
-</ul>
-<p><strong>Do this</strong></p>
-<ol type="1">
-<li><strong>Tools ▸ Git and GitHub ▸ GitHub ▸ Ask Copilot for a
-Command…</strong>.</li>
-<li>Type e.g.
-<strong><code>undo my last commit but keep the changes</code></strong>;
-confirm.</li>
-</ol>
-<p><strong>You should see and hear</strong></p>
-<ul>
-<li>“Asking Copilot”; the suggested command appears in a readable
-message box; a blank result says “Copilot did not suggest anything.”
-Missing <code>gh</code> gives the guidance message, not a crash.</li>
-</ul>
-<p><strong>Sign off</strong> —
-<code>[ ] Pass  [ ] Fail  [ ] Blocked  [ ] N/A</code>
-<code>[ ] Works</code> <code>[ ] Surface-exact</code>
-<code>[ ] Accessible</code> · Notes: ____________________</p>
+<h2 id="gh-06-and-gh-07--retired">GH-06 and GH-07 — retired</h2>
+<p>Explain a Command and Ask Copilot for a Command were removed on
+2026-10-31. They drove the <code>gh copilot</code> extension, which
+GitHub retired on 2025-10-25, so they could only fail. The numbers are
+not reused. Nothing to sign off.</p>
 <hr />
 <h2 id="gh-08--create-codespace-githubcreate_codespace">GH-08 — Create
 Codespace… (<code>github.create_codespace</code>)</h2>

@@ -28,32 +28,6 @@ def _ai_hub_source() -> str:
     return (ui / "ai_hub_dialog.py").read_text(encoding="utf-8")
 
 
-def test_ai_hub_provider_choice_coerces_labels_to_str() -> None:
-    """#614: ``wx.Choice(choices=...)`` rejects _LazyString on Windows.
-
-    ``_PROVIDER_CHOICES`` wraps each label in ``lazy_gettext(...)`` for
-    Babel extraction. The provider tab must coerce each label to ``str``
-    at the wx boundary or the dialog raises ``TypeError`` the first
-    time it is opened.
-    """
-    src = _ai_hub_source()
-    # The labels are computed in a separate statement, then passed to wx.Choice.
-    # The fix lives in the comprehension that builds ``provider_labels`` —
-    # pin the comprehension, not the wx.Choice call.
-    match = re.search(
-        r"provider_labels\s*=\s*\[[^\]]+\]",
-        src,
-    )
-    assert match is not None, "AIHubDialog provider_labels comprehension not found"
-    assert "str(label)" in match.group(0), (
-        "AIHubDialog provider_labels must coerce lazy_gettext labels to str"
-    )
-    # And the wx.Choice call must use that variable.
-    assert "choices=provider_labels" in src, (
-        "AIHubDialog provider Choice must read from the coerced provider_labels"
-    )
-
-
 def test_ai_hub_instructions_listbox_coerces_titles_to_str() -> None:
     """#614 follow-up: same class of bug in the instructions ListBox."""
     src = _ai_hub_source()

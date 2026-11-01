@@ -123,3 +123,20 @@ def reflect_background_check(host: Any, checked: bool | None = None) -> None:
 
     state = scheduled_task.is_registered() if checked is None else checked
     _check_menu_item(host, host._background_item_id, state)
+
+
+class WeatherOptionsMixin:
+    """The Options menu's four handlers on Quill Weather's frame, moved here
+    from ``weather.py`` under GATE-11 when the AI menu arrived (codex.md Phase 3)."""
+
+    def _set_launch_at_startup(self, enabled: bool) -> None:
+        set_launch_at_startup(self, enabled)
+
+    def _set_app_pref(self, field: str, value: bool) -> None:
+        set_app_pref(self, field, value)
+
+    def _set_background_check(self, enabled: bool) -> None:
+        set_background_check(self, enabled)
+
+    def _reflect_background_check_item(self, checked: bool | None = None) -> None:
+        reflect_background_check(self, checked)

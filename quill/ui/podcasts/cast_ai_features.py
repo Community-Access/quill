@@ -20,31 +20,35 @@ from __future__ import annotations
 from typing import Any
 
 from quill.core.podcasts import ai_listening as ai
+from quill.ui.podcasts.cast_ai_ask import CastAskMixin
 
 __all__ = ["AI_FEATURE_ROWS", "CastDomainAiMixin"]
 
 #: The Help > AI Features rows these add: command id, label, handler name.
-#: Letters avoid the shared rows' E N G C Y O U K.
+#: Letters avoid the shared rows' A M R E N G C Y O U K L (L is Find and Follow).
 AI_FEATURE_ROWS: tuple[tuple[str, str, str], ...] = (
     ("podcasts.ai_organise", "Organise My &Podcasts...", "ai_organise_podcasts"),
     ("podcasts.ai_about", "&What Is This Podcast About?", "ai_about_podcast"),
     ("podcasts.ai_for_me", "Is This Episode &for Me?", "ai_for_me"),
     ("podcasts.ai_summary", "&Summarise This Episode", "ai_summarise_episode"),
-    ("podcasts.ai_run", "Build Me a &Listening Run...", "ai_listening_run"),
+    ("podcasts.ai_run", "&Build Me a Listening Run...", "ai_listening_run"),
     ("podcasts.ai_playlist", "Smart Playlist from a Sen&tence...", "ai_playlist_from_sentence"),
     ("podcasts.ai_chapters", "Name These C&hapters...", "ai_name_chapters"),
+    # codex.md 10E.4: only what came before your place (cast_ai_ask.py).
+    ("podcasts.ai_missed", "What &Did I Miss in This Episode?", "ai_what_did_i_miss"),
     ("podcasts.tidy", "T&idy the Podcasts I Follow...", "tidy_subscriptions"),
 )
 
 
-class CastDomainAiMixin:
-    """Cast's AI verbs. Mixed into ``PodcastsAppFrame`` beside ``CastAiMixin``."""
+class CastDomainAiMixin(CastAskMixin):
+    """Cast's AI verbs. Mixed into ``PodcastsAppFrame`` beside ``CastAiMixin``;
+    Ask, What Did I Miss and pictures are :class:`CastAskMixin`'s."""
 
     # -- plumbing ------------------------------------------------------------------ #
 
     def _cast_ask(self, prompt: str, on_answer: Any, *, working: str = "Working.") -> bool:
         """Send *prompt* through the shared service, if AI may run. True if sent."""
-        if not self._ai_ready():  # type: ignore[attr-defined]
+        if not self._ai_ready() or not self._ai_capable("text"):  # type: ignore[attr-defined]
             return False
         service = self._ai_service()  # type: ignore[attr-defined]
         self._announce(working)  # type: ignore[attr-defined]
@@ -54,7 +58,14 @@ class CastDomainAiMixin:
 
             report_failure(self, sentence, subject="AI help")
 
-        service.ask("ask", prompt, None, on_done=lambda text, _q: on_answer(text), on_error=_failed)
+        service.ask(
+            "ask",
+            prompt,
+            None,
+            on_done=lambda text, _q: on_answer(text),
+            on_error=_failed,
+            requires=("text",),
+        )
         return True
 
     def _ai_episode(self) -> tuple[Any, Any] | None:
@@ -88,6 +99,26 @@ class CastDomainAiMixin:
 
         self._announce(text)  # type: ignore[attr-defined]
         show_answer(self, title, text)
+
+    # -- Find and Follow (codex.md 6.5) ---------------------------------------------- #
+
+    def cmd_ai_task(self) -> None:
+        """Find and Follow (Ctrl+F3): find podcasts, then follow, file or queue them,
+        in the shared agent window. Every change asks first and is shown as text;
+        nothing unfollows, deletes or downloads (ear.md A10)."""
+        from quill.ui.podcasts.cast_ai_task import (
+            FIND_AND_FOLLOW,
+            INSTRUCTION_HELP,
+            cast_task_facts,
+            cast_task_tools,
+        )
+
+        self._open_app_task(  # type: ignore[attr-defined]
+            FIND_AND_FOLLOW,
+            lambda ctx: cast_task_tools(self, ctx),
+            instruction_help=INSTRUCTION_HELP,
+            context=lambda: cast_task_facts(self),
+        )
 
     # -- A3, A4, A5: answers ----------------------------------------------------------- #
 

@@ -581,6 +581,95 @@ separate from Quill Radio. Because the QuillVille Runtime is shared, an
 app update is usually just the small app itself; the large runtime is
 downloaded only when a new one is required, and again with a fully
 accessible progress bar.</p>
+<h2 id="asking-the-ai-about-the-weather">Asking the AI about the
+weather</h2>
+<p>Quill Weather can ask an AI about your forecast, if you want it to.
+Nothing is sent anywhere until you press one of these keys, and nothing
+runs on a timer. The menu is called AI, and Alt+I opens it (Alt+A is
+still the Add Location button).</p>
+<table>
+<thead>
+<tr>
+<th>What</th>
+<th>Key</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ask</td>
+<td>Ctrl+Shift+8</td>
+</tr>
+<tr>
+<td>Which AI Am I Using</td>
+<td>Ctrl+F8 (press it twice quickly to open Choose Your AI)</td>
+</tr>
+<tr>
+<td>Choose Your AI</td>
+<td>Ctrl+Shift+F8</td>
+</tr>
+<tr>
+<td>Should I Go Out?</td>
+<td>Ctrl+Shift+G</td>
+</tr>
+<tr>
+<td>Use My ChatGPT Subscription</td>
+<td>Alt+F5</td>
+</tr>
+<tr>
+<td>Use My Own AI Key</td>
+<td>Alt+F2</td>
+</tr>
+<tr>
+<td>AI Usage</td>
+<td>Ctrl+Alt+Shift+F2</td>
+</tr>
+<tr>
+<td>Privacy Agreement</td>
+<td>Ctrl+Alt+Shift+K</td>
+</tr>
+</tbody>
+</table>
+<p>Ctrl+1 to Ctrl+9 already switch windows here, so the keys for Ask,
+Which AI and Choose Your AI are the same ones Quill Radio, QUILL Cast
+and QUILL Transcribe use, rather than QUILL’s Ctrl+6, Ctrl+8 and
+Ctrl+4.</p>
+<p><strong>Choose Your AI</strong> is where you pick where the answers
+come from: QUILL’s free AI, your ChatGPT plan, GitHub Copilot, Codex, or
+your own OpenAI or Gemini key. Quill Weather signs in on its own, as
+“QUILL Weather”. Signing in here does not sign in QUILL or any other
+app, and signing in somewhere else does not sign in Quill Weather. If
+you already use your own key in QUILL, its provider and model are copied
+over once, so you do not have to set them again. The key itself stays in
+the Windows credential store.</p>
+<p><strong>The AI line.</strong> The main window has a read-only line
+under the buttons that says which AI is in use, like “AI: ChatGPT plan”.
+Tab to it and press Enter to open Choose Your AI.</p>
+<p><strong>Should I Go Out?</strong> (Ctrl+Shift+G) gets the forecast
+for your primary place and asks for a plain answer: whether the next few
+hours are a good time to be outside, what to wear or bring, and a better
+time if there is one. The answer is read to you and stays in a window
+you can copy from. If there is an active alert, it comes first, word for
+word as the Weather Service wrote it. The AI is never allowed to reword
+an alert.</p>
+<p><strong>Ask</strong> (Ctrl+Shift+8) opens a conversation about the
+weather. With every message go your primary place’s name, the current
+conditions, the next hours, the forecast and the names of any active
+alerts. Your place’s coordinates never go. The Quick questions list
+starts with “Do I need a coat at 5?” and “When is the rain coming?”.
+“What can I do here?” is answered from this guide’s own help, on your
+computer, and sends nothing.</p>
+<p>A few things stay the same no matter what:</p>
+<ul>
+<li>The alert watch never uses AI. Alerts are spoken exactly as
+issued.</li>
+<li>Everything is text. There are no radar pictures or maps.</li>
+<li>The forecast is fetched only when you ask, the same way Weather Now
+gets it, and kept for ten minutes.</li>
+<li>In Safe Mode every AI command says “AI is off in Safe Mode.” and
+does nothing.</li>
+<li>Your choice is kept in <code>weather-ai.json</code> in Quill
+Weather’s data folder. It holds names, never a key or a password.</li>
+</ul>
 <h2 id="weather-features--full-reference">Weather features – full
 reference</h2>
 <p>This is the full reference for the weather features, shared by the

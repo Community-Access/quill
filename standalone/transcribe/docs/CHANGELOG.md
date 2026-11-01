@@ -15,6 +15,25 @@ grouped by area; most say where in the user guide to read more.
 
 ### Since build 3 (2026-10-31)
 
+- **Speakers, sections and summary** (2026-11-01). Speakers, Sections and
+  Summary... on the AI menu (Ctrl+F3) has GitHub Copilot or Codex read a transcript as
+  text, name the speakers where the words make it clear, add headings, and
+  finish with a summary and an action list. You read the whole result before
+  it goes into Review Dictation, as one change Undo Change takes back. Only
+  text goes; your voice never does. See "Speakers, sections and summary"
+  in the user guide.
+
+- **Its own AI menu, and its own sign-in** (2026-11-01). QUILL Transcribe
+  has an AI menu: Choose Your AI (Ctrl+Shift+F8), Which AI Am I Using
+  (Ctrl+F8; twice opens Choose Your AI), Ask (Ctrl+Shift+8), AI Usage and
+  the account rows, and an AI line in its window. It signs in to ChatGPT as
+  QUILL Transcribe and no longer uses QUILL's sign-in; Review Dictation says
+  so once, the first time it needs a plan you have not signed in to.
+  Ask sends the transcript you last reviewed, or this session's phrases,
+  never your voice. Ctrl+1 to Ctrl+9 are the Window menu's keys, so the
+  AI keys are Quill Radio's and QUILL Cast's. See "AI: Choose Your AI and
+  Ask" in the user guide.
+
 - **Shared-runtime licensing.** Installed editions use the QuillVille Runtime,
   which currently carries PyMuPDF 1.28.2 under AGPL-3.0 through the shared
   GLOW dependency; Transcribe does not itself expose GLOW. Release-specific
