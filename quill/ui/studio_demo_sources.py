@@ -11,7 +11,7 @@ from dataclasses import replace
 
 import wx
 
-from quill.core.demo_recording import SoundSource
+from quill.core.demo_recording import MIC_CHANNEL_LABELS, SoundSource
 from quill.core.demo_recording_session import saved_level
 from quill.core.studio_capture import CaptureTarget
 
@@ -206,6 +206,17 @@ class DemoSourcesMixin:
             del self.sources[row]
             self._fill_sources(row - 1)
             self.source_list.SetFocus()
+
+    def _microphone_identity(self, source: SoundSource) -> SoundSource:
+        """The channel choice, and the endpoint ID saved with the name (MX-185, MX-114)."""
+        mode = list(MIC_CHANNEL_LABELS.values())[max(0, self.mic_channels.GetSelection())]
+        saved = self._saved_source("microphone")
+        endpoint = str(saved.get("endpoint_id", "")) if saved.get("device") == source.device else ""
+        if source.device and not endpoint:
+            from quill.platform.windows.demo_devices import endpoint_id_for
+
+            endpoint = endpoint_id_for(source.device)
+        return replace(source, channel_mode=mode, endpoint_id=endpoint)
 
     def _microphone_changed(self, _event: wx.Event) -> None:
         index = self.microphone.GetSelection()

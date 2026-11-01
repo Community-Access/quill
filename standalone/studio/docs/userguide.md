@@ -772,7 +772,7 @@ Two check boxes decide the picture, and the Sound sources list decides the sound
 
 - **The program's own sound** (for example "msedge sound") is in by default when you chose a window. It is that program's sound and nothing else, so your screen reader is not in it. Windows records it directly from the program, so it does not matter which sound card the program plays on, or whether you have muted it for yourself.
 - **System sound** is everything your computer plays. It starts left out. With **Leave the screen reader out of system sound** checked, which is the default, Studio records everything except your screen reader. Studio's own sounds are switched off while it records the system and come back when you stop.
-- **Microphone** starts left out, every time. Studio never remembers that it was on, so you never record your voice by accident. Choose which microphone under **Microphone device**. If another QUILL app is dictating, the check tells you which one.
+- **Microphone** starts left out, every time. Studio never remembers that it was on, so you never record your voice by accident. Choose which microphone under **Microphone device**, and under **Microphone channels** whether to record input 1, input 2 or both inputs mixed; use one input when your interface has the microphone plugged into only that one. If another QUILL app is dictating, the check tells you which one.
 - **Screen reader speech** (for example "JAWS speech") starts left out. Putting it in asks you to confirm, because everything your screen reader says while you record ends up in the file. While it is in, Studio stops talking to you through it except to report a failure; confirmations become sounds instead.
 - **Add a program's sound...** adds any other program that is playing sound, such as a media player, as a row of its own. The same list ends with **Everything playing on** each sound card, to record all a card plays, such as your headphones. If your screen reader speaks on that card, its speech is recorded too, and the check says so. **Remove program** takes a row off again.
 
@@ -853,8 +853,11 @@ Those keys work while Studio has focus. While you are demonstrating, focus is so
 If something goes wrong while you record, you hear it once and it is marked at that moment:
 
 - The window you are recording closes: the recording stops and saves what it has.
-- A program or your screen reader quits: that sound is silent until the same program starts again.
+- A program or your screen reader quits: Studio notices within two seconds, and that sound is silent until the same program starts again, when you hear that it is back.
+- Your screen reader restarts while it is left out of system sound: system sound is muted at once, so the new screen reader is never recorded, and comes back once the new one is left out too.
+- A sound card you are recording is unplugged or changes format: silent until the same card comes back, and then reopened.
 - A microphone is unplugged: silent until the same microphone comes back. A different microphone is never swapped in.
+- Sound stops arriving, or a microphone overflows: you hear it the first time, and the check report counts every time.
 - The display changes: the recording pauses.
 - The camera stops or falls behind.
 - The disk runs low: a warning at two minutes left, then a stop and save before it runs out.

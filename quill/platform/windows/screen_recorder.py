@@ -259,6 +259,7 @@ class DemoRecorder:
             stream = source.end_segment(stop_at)
             if stream is not None:
                 segment.audio_starts[source.source.source_id] = stream.first_time or stop_at
+                segment.audio_timing[source.source.source_id] = source.statistics(stream)
         segment.closed = True
         self._closed_seconds += segment.duration
         self._segment = None
