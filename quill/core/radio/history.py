@@ -394,6 +394,17 @@ class RadioHistory:
     #: rich per-show retention/inbox machinery lives in Quill Cast, and Radio
     #: stays a player.
     subscription_episode_limit: int = 25
+    #: The family's AI (codex.md Phase 3): what the shared hosted-AI code reads
+    #: from "the settings" -- the free AI's agreement version, the own key's
+    #: model and provider, and Choose Your AI's stored choice and engine models,
+    #: under the field names both editors use. Radio's own, beside its own
+    #: ChatGPT sign-in, so choosing an AI here changes nothing in the editors.
+    ai_privacy_accepted_version: int = 0
+    ai_own_key_model: str = ""
+    ai_own_key_provider: str = "openai"
+    ai_connection: str = ""
+    ai_copilot_model: str = ""
+    ai_codex_model: str = ""
 
     def record(self, station: RadioStation) -> None:
         """Note that *station* just played; it moves to the front."""

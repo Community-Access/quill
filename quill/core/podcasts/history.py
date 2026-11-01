@@ -127,6 +127,12 @@ class PodcastHistory:
     ai_privacy_accepted_version: int = 0
     ai_own_key_model: str = ""
     ai_own_key_provider: str = "openai"
+    #: Choose Your AI (codex.md 10A.6, Phase 3): Cast's own stored choice and the
+    #: two engine models, the field names both editors use. "" is "not yet
+    #: decided" and is migrated once, on first read, from the old precedence.
+    ai_connection: str = ""
+    ai_copilot_model: str = ""
+    ai_codex_model: str = ""
     #: View > Show: the one episode filter, applied to every list (qc.md 4.2).
     episode_filter: str = "all"
     #: The six notice kinds (core/podcasts/notices.py), each its own switch,
@@ -325,6 +331,10 @@ def load_history(data_dir: Path) -> PodcastHistory:
         from quill.core.ai.own_key import normalize_provider
 
         history.ai_own_key_provider = normalize_provider(raw.get("ai_own_key_provider"))
+        from quill.core.ai.connection_choice import load_connection_fields
+
+        for name, value in load_connection_fields(raw).items():
+            setattr(history, name, value)
         history.onboarding = OnboardingState.from_dict(raw.get("onboarding"))
         entries = raw.get("episodes")
         for entry in entries if isinstance(entries, list) else []:
@@ -370,6 +380,9 @@ def save_history(data_dir: Path, history: PodcastHistory) -> None:
                 "ai_privacy_accepted_version": history.ai_privacy_accepted_version,
                 "ai_own_key_model": history.ai_own_key_model,
                 "ai_own_key_provider": history.ai_own_key_provider,
+                "ai_connection": history.ai_connection,
+                "ai_copilot_model": history.ai_copilot_model,
+                "ai_codex_model": history.ai_codex_model,
                 "episode_filter": history.episode_filter,
                 "action_feedback": history.action_feedback,
                 **{switch: getattr(history, switch, True) for switch in _SWITCHES},

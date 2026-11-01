@@ -24,13 +24,15 @@ from `topics.json` by `quill/tools/build_docs.py`.
 
 ## Quill Radio
 
-Control coverage: 335 audited sites (221 helped, 114 named-help).
+Control coverage: 327 audited sites (213 helped, 114 named-help).
 
 ### Every window, and what it is for
 
 **ACB Media Podcasts.** Everything ACB Media publishes, so you can choose what to keep. The list on the left is the whole lineup, alphabetically; arrow it and the Description box reads what each show is. Add moves one across, Add All takes everything you do not already have. The list on the right is what you are about to add: it stays alphabetical however you add to it, until you use Move Up or Move Down, and from then on it stays exactly as you arranged it. Add These subscribes to them and puts them in a Favorites folder in that same order; a podcast there opens straight into its episodes. Shows you already have are listed and say so.
 
 **ACB Media Schedule.** What is on the ten ACB Media channels this week, Sunday to Saturday, with a heading before each day. Enter tunes in to the highlighted programme's channel; the buttons and the context menu also offer Schedule a Recording, Set a Reminder, Add to the Play Queue and Copy Details. Search narrows the week in place, and the channel box narrows it to one. The schedule is kept on this computer, so it opens with no connection and says how old it is when it does.
+
+**AI Usage.** How much each AI you have set up has been used, one sentence each, and whose count it is. Manage Usage opens the selected one's own page.
 
 **About This Channel.** A YouTube channel's name, subscriber count and the description it wrote about itself, to read with the arrow keys. Escape closes it.
 
@@ -40,7 +42,7 @@ Control coverage: 335 audited sites (221 helped, 114 named-help).
 
 **Add to Lineup.** Choose the lineup to add to, or New Lineup to make one. Items you add stay until you remove them, whatever the rules say.
 
-**Ask QUILL Radio.** A conversation with ChatGPT, on your own plan, that already knows what is playing: the station and the title the stream is announcing go with every message, so 'what is this song' and 'tell me about this station' need no names typed. Type in Your message and press Enter; the reply is read aloud and added to the conversation above. Ask About What's Playing asks for you, and the Quick questions list holds nine more: arrow freely, press Enter on one to put it in the message box, and three of them say what they send about you before anything goes. Nothing here changes what is playing.
+**Ask.** A conversation about what is playing, on whichever AI is in use: the station and the title the stream is announcing go with every message, so 'what is this song' needs no names typed. Type in Your message and press Enter; the reply is read aloud and added to the conversation above. The Quick questions list holds Radio's nine questions and a few more: arrow freely and press Enter on one to put it in the message box. The ones that send something about you say so before anything goes.
 
 **Audio Health.** Can this installation play and record? Each row names one piece of the media machinery -- the playback engine, the recorder, the converters -- and says plainly whether it is present, with a button to fetch anything missing.
 
@@ -57,6 +59,8 @@ Control coverage: 335 audited sites (221 helped, 114 named-help).
 **Change the Rules.** The change lets some items go. They will be in Recently Left.
 
 **Chapters.** The chapter list of what is playing. Enter jumps straight to the highlighted chapter; the player keeps playing from there.
+
+**Choose Your AI.** Choose where Quill Radio's AI comes from: QUILL's free AI, your ChatGPT plan, GitHub Copilot, Codex or your own key. The list says which is in use; Enter uses the selected one or signs in to it, and Delete signs a signed-in one out. Choosing here changes nothing in the other apps.
 
 **Closing Quill Radio.** A recording is being written right now, and exiting would stop it. Exit finishes the file and quits; Minimize to Tray keeps recording with the window tucked away; Cancel returns to the app. The checkbox makes your answer permanent -- changeable later in Preferences.
 
@@ -170,6 +174,8 @@ Control coverage: 335 audited sites (221 helped, 114 named-help).
 
 **Set a Reminder.** Be told about this at a time you choose -- a programme in the schedule, a station, a recording. Pick how much warning you want, add a note if there is something to say with it, and choose High priority if it should come through quiet hours. A reminder only tells you: it never starts, records or queues anything by itself.
 
+**Sign In to Your AI.** Sign in to the AI you chose. Open the Page takes you to its sign-in page; approve there, and this closes itself once you are signed in.
+
 **Skip Sponsor Segments.** Whether Quill Radio jumps over the parts of YouTube videos that SponsorBlock's volunteers have marked as sponsor reads, self-promotion and the like, and which kinds. Off until you turn it on here.
 
 **Sleep Timer.** Stop playback by itself after a time you choose, so the radio does not play to an empty room all night. The status bar's Sleep timer cell counts it down; setting a new time replaces the old one.
@@ -189,8 +195,6 @@ Control coverage: 335 audited sites (221 helped, 114 named-help).
 **Upcoming.** Everything Quill Radio has planned -- reminders and scheduled recordings together, soonest first, with the kind on every row. Snooze and Dismiss work on a reminder; a recording is cancelled in Schedule Recording, where it was made, because Dismiss on the wrong row would mean a very different morning.
 
 **Update History: Quill Radio.** A plain record of what the updater did for this app: checks, downloads, channel changes and the copies of your settings it saved. Read-only; nothing here changes anything.
-
-**Use My ChatGPT Subscription.** Sign Quill Radio in with the ChatGPT plan you already pay for, so Ask QUILL Radio can answer on it. Continue with ChatGPT opens your browser; once signed in, choose the model from your plan's own list and whether web search is allowed. Sign Out and Forget on This Computer appear only while you are signed in.
 
 **Wake-Up Timer.** Start a station playing at a time you choose -- an alarm clock that wakes you to radio. Quill Radio must be running (or in the tray) at the set time; the status readout here says what is scheduled.
 
@@ -222,16 +226,6 @@ Control coverage: 335 audited sites (221 helped, 114 named-help).
 
 ### Every authored control help sentence
 
-#### AskRadioFrame (`quill/ui/radio/ask_radio_window.py`)
-
-- `self._quick`: Questions worth one keystroke. Arrow through them freely; press Enter, or Use This Question, to put the one you are on into the message box, where you can send it or change it. Six ask about what is playing; three also send something you keep -- your favorites, or the songs logged -- and say so before anything goes.
-- `use`: Puts the highlighted quick question into the message box and says what else, if anything, will go with it. Nothing is sent yet.
-- `self._message`: Type a question and press Enter. What is playing goes with it, so 'what is this song' and 'tell me about this station' just work.
-- `self._send_button`: Sends your message with what is playing right now.
-- `playing`: Asks about the song and station playing right now, without typing. Press it again for the next suggested question.
-- `fresh`: Forgets this conversation and starts again. Nothing is sent.
-- `copy`: Puts the most recent reply on the clipboard.
-- `account_button`: Opens the window where you sign in or out of ChatGPT, choose the model, and allow web search.
 #### (module level) (`quill/ui/radio/audio_health_dialog.py`)
 
 - `ffmpeg_btn`: Emergency repair: downloads FFmpeg, the converter recording needs, which normally ships inside Quill Radio. Offered only when this installation is missing it.
@@ -549,17 +543,23 @@ Control coverage: 341 audited sites (245 helped, 96 named-help).
 
 ### Every window, and what it is for
 
+**AI Usage.** How much each AI you have set up has been used, one sentence each, and whose count it is. Manage Usage opens the selected one's own page.
+
 **About This Episode.** Everything the feed says about one episode -- people, links, chapters, transcripts, funding -- as reviewable, copyable text. What is missing here is missing from the feed, not hidden by Cast.
 
 **Add Podcast.** Follow a new show. Search the directories by name, or paste a feed address you already have. What you add lands in your library, and its episodes appear the first time the feed is read.
 
 **Add to Lineup.** Choose the lineup to add to, or New Lineup to make one. Items you add stay until you remove them, whatever the rules say.
 
+**Ask.** A conversation about the episode in front of you, on whichever AI is in use: the episode, its show notes, its chapters and where you are in it go with every message, never the audio. Type in Your message and press Enter; the reply is read aloud and added to the conversation above. The Quick questions list holds What did I miss in this episode? and a few more: arrow freely and press Enter on one to put it in the message box.
+
 **Build Me a Listening Run.** Episodes AI help chose to fit the time you have, measured by Cast. Suggestions from AI help, for you to decide. Each row starts accepted; Space switches it between Accept and Skip, and Accept All and Skip All change every row. Apply Selected does only the accepted rows; Cancel or Escape changes nothing.
 
 **Change What It Looks For.** Looking for a different kind of thing clears the rule's tests and places, because they belong to the old kind.
 
 **Change the Rules.** The change lets some items go. They will be in Recently Left.
+
+**Choose Your AI.** Choose where QUILL Cast's AI comes from: QUILL's free AI, your ChatGPT plan, GitHub Copilot, Codex or your own key. The list says which is in use; Enter uses the selected one or signs in to it, and Delete signs a signed-in one out. Choosing here changes nothing in the other apps.
 
 **Closing QUILL Cast.** What closing the window should do: exit, or keep playing with QUILL Cast tucked into the system tray. Cancel leaves everything as it was. Don't ask me again remembers your answer, and Preferences can set it back to asking.
 
@@ -662,6 +662,8 @@ Control coverage: 341 audited sites (245 helped, 96 named-help).
 **Save Lineup.** A name for the Play Queue's current order, so Apply Lineup can put it back later. Saving never changes the queue itself.
 
 **Search Everywhere.** One search across everything Cast knows: your shows, their episodes, show notes and transcripts. Each result says which show and which episode it came from, and Enter opens the row it names.
+
+**Sign In to Your AI.** Sign in to the AI you chose. Open the Page takes you to its sign-in page; approve there, and this closes itself once you are signed in.
 
 **Smart Playlist Rules.** The rules that build a smart playlist: which shows it draws from, how old an episode may be, whether played episodes count, and how many it holds. The playlist rebuilds itself from these rules -- you never add episodes to it by hand.
 
@@ -2459,6 +2461,10 @@ Control coverage: 248 audited sites (248 helped).
 - `suggestions`: Choosing between two spellings by ear is exactly as impossible in a list of corrections as it is in the document. Arrowing on cancels it.
 - `sug_delay`: How long to wait after landing on a suggestion before spelling it.
 - `first`: When the review reaches a new misspelling, spell the top suggestion as well as the word. Off by default: it doubles the arrival announcement, which is welcome when you are learning a word and noise when you are checking one.
+#### AppAskFrame (`quill/ui/hosted_ai_app_ask.py`)
+
+- `self._quick`: Questions worth one keystroke. Arrow through them freely; press Enter, or Use This Question, to put the one you are on into the message box, where you can send it or change it. What can I do here? is answered on this computer and sends nothing.
+- `use`: Puts the highlighted quick question into the message box and says what else, if anything, will go with it. Nothing is sent yet.
 #### AiChatFrame (`quill/ui/hosted_ai_chat.py`)
 
 - `self._message`: Type what you want to say and press Enter to send it. The reply is read aloud and added to the conversation above.

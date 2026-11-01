@@ -1818,3 +1818,68 @@ checks need a ChatGPT plan and a build with the Codex engine.
 - [ ] All eleven with NVDA, in both editors.
 - [ ] All eleven with JAWS, in both editors.
 - [ ] Checks 2, 3, 9 and 10 with Narrator.
+
+
+## Choose Your AI, Ask and pictures, Quill Radio and QUILL Cast (codex.md Phase 3, 2026-11-01)
+
+Run the Radio checks in Quill Radio and the Cast checks in QUILL Cast. In Cast,
+turn AI help on first (Ctrl+, > The window). A ChatGPT plan makes most checks
+possible; check 6 and check 12 also want the free AI in use.
+
+Quill Radio:
+
+1. Press Ctrl+Shift+8. Ask opens with focus in Your message, and the window is
+   on the Window menu. Shift+Tab to About this conversation: it starts "Asking
+   My ChatGPT plan about this station." Nothing is spoken on open.
+2. With a station playing, type "What is this song?" and press Enter. You hear
+   "Working." and then the reply, once. Wait for the next song and ask again:
+   you hear "Now playing changed since your last question." once, before
+   "Working."
+3. Shift+Tab to Quick questions and arrow through it: nothing is said but the
+   rows, and focus stays put. The first nine are Ask QUILL Radio's. Press Enter
+   on "Recommend stations like my favorites": focus moves to Your message and
+   you hear what will be sent with it. Press Enter on "What can I do here?":
+   the answer is read once, ending "Answered on this computer. Nothing was
+   sent."
+4. Press Ctrl+F8: one line naming the AI in use. Press it twice quickly:
+   Choose Your AI opens on the row in use. Press Alt+F5: Choose Your AI opens
+   on the ChatGPT row.
+5. Press F6 to the status bar and move to the last cell: it reads "AI: ChatGPT
+   plan". Enter opens Choose Your AI. Choose another AI there: the cell's text
+   follows the next time you read it, and nothing extra is spoken.
+6. With the free AI in use, open the Video menu: Describe the Video reads
+   "(needs a connection that sees)" and still shows Ctrl+F5. Play a video and
+   press Ctrl+F5: nothing is sent and the switch question has Yes chosen.
+7. On your ChatGPT plan with a video showing, press Ctrl+F5: you hear
+   "Working.", then "Looked at 1 picture ... Described by My ChatGPT plan." and
+   the description, once, and a result window opens. Press Ctrl+F5 again
+   without the picture changing: the answer comes straight back, ending
+   "Nothing was sent".
+8. Start Quill Radio with --safe-mode and press Ctrl+Shift+8 and
+   Ctrl+Shift+F8: each says "AI is off in Safe Mode." and nothing opens.
+
+QUILL Cast:
+
+9. Select an episode you have started and press Ctrl+Shift+8. About this
+   conversation starts "Asking My ChatGPT plan about this episode." The first
+   quick question is "What did I miss in this episode?"
+10. Help > AI Features: the first three rows are Ask (Ctrl+Shift+8), Which AI
+    Am I Using (Ctrl+F8) and Choose Your AI (Ctrl+Shift+F8), each letter works,
+    and What Did I Miss in This Episode? (D) is near the end. In an episode
+    list, Ctrl+4 still runs Quick Action 4, and Ctrl+2 still reaches window 2.
+11. Choose What Did I Miss in This Episode? on an episode you have started: the
+    answer is read once and shown in the answer window. On one you have not
+    started you hear that there is nothing to miss, and nothing is sent.
+12. With the free AI in use, on an episode whose show notes have a described
+    picture, press Ctrl+Alt+F5: the switch question comes first; answer No and
+    the notes' own description is read.
+13. On your ChatGPT plan, press Ctrl+Alt+F5: the chooser lists the artwork and
+    the show-note pictures by name, then "A picture file on this computer...".
+    Choose the artwork: you hear "Fetching the picture.", "Working.", then the
+    description, once.
+14. The status bar's last cell reads "AI: ChatGPT plan"; with AI help off it
+    reads "AI: off".
+
+- [ ] All fourteen with NVDA.
+- [ ] All fourteen with JAWS.
+- [ ] Checks 1, 4, 9 and 13 with Narrator.

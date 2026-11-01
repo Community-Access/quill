@@ -297,14 +297,21 @@ class ConnectionRouteMixin:
         once, with the sentence that says why, and nothing is sent."""
         problem = not_ready_sentence(self.connection_facts())
         if problem:
-            on_error(problem)
+            on_error(self._keyed(problem))
             return False
         try:
             require(self.capability_record(), *requires)
         except CapabilityMissing as missing:
-            on_error(str(missing.args[0]))
+            on_error(self._keyed(str(missing.args[0])))
             return False
         return self.route_allowed(on_error)
+
+    def _keyed(self, sentence: str) -> str:
+        """*sentence* naming this app's Choose Your AI key. Quill Radio and QUILL
+        Cast reach it on Ctrl+Shift+F8 (``ai_choose_key``), because Ctrl+1 to
+        Ctrl+9 are their Window menu keys; the editors keep Ctrl+4."""
+        key = str(getattr(self._app, "ai_choose_key", "") or "")
+        return sentence.replace("Ctrl+4", key) if key else sentence
 
     def _failure_sentence(self, error: BaseException) -> str:
         """The sentence for a failed request, with 10A.5's cases on the plan.
@@ -322,7 +329,7 @@ class ConnectionRouteMixin:
         from quill.core.ai.copilot_chat_parts import CopilotChatError
 
         if isinstance(error, CopilotChatError):
-            return error.sentence  # said once; CopilotChat already marked the row
+            return self._keyed(error.sentence)  # said once; CopilotChat marked the row
         connection = self.connection
         if connection in (CHATGPT, CODEX):
             if isinstance(error, ChatGptSignedOutError):
@@ -330,11 +337,11 @@ class ConnectionRouteMixin:
                     self.chatgpt.mark_ended_by_openai()
                 except Exception:  # noqa: BLE001 - the sentence still holds
                     pass
-                return revoked_sentence(CHATGPT)
+                return self._keyed(revoked_sentence(CHATGPT))
             limited = isinstance(error, ChatGptLimitError) and not isinstance(
                 error, ChatGptBusyError
             )
             if limited or isinstance(error, ChatGptUsageUnavailableError):
                 agent = str(getattr(self._app, "ai_agent_name", "") or "QUILL")
                 return limit_sentence(connection, agent)
-        return plain_sentence(error)
+        return self._keyed(plain_sentence(error))

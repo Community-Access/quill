@@ -20,11 +20,12 @@ from __future__ import annotations
 from typing import Any
 
 from quill.core.podcasts import ai_listening as ai
+from quill.ui.podcasts.cast_ai_ask import CastAskMixin
 
 __all__ = ["AI_FEATURE_ROWS", "CastDomainAiMixin"]
 
 #: The Help > AI Features rows these add: command id, label, handler name.
-#: Letters avoid the shared rows' E N G C Y O U K.
+#: Letters avoid the shared rows' A M R E N G C Y O U K.
 AI_FEATURE_ROWS: tuple[tuple[str, str, str], ...] = (
     ("podcasts.ai_organise", "Organise My &Podcasts...", "ai_organise_podcasts"),
     ("podcasts.ai_about", "&What Is This Podcast About?", "ai_about_podcast"),
@@ -33,18 +34,21 @@ AI_FEATURE_ROWS: tuple[tuple[str, str, str], ...] = (
     ("podcasts.ai_run", "Build Me a &Listening Run...", "ai_listening_run"),
     ("podcasts.ai_playlist", "Smart Playlist from a Sen&tence...", "ai_playlist_from_sentence"),
     ("podcasts.ai_chapters", "Name These C&hapters...", "ai_name_chapters"),
+    # codex.md 10E.4: only what came before your place (cast_ai_ask.py).
+    ("podcasts.ai_missed", "What &Did I Miss in This Episode?", "ai_what_did_i_miss"),
     ("podcasts.tidy", "T&idy the Podcasts I Follow...", "tidy_subscriptions"),
 )
 
 
-class CastDomainAiMixin:
-    """Cast's AI verbs. Mixed into ``PodcastsAppFrame`` beside ``CastAiMixin``."""
+class CastDomainAiMixin(CastAskMixin):
+    """Cast's AI verbs. Mixed into ``PodcastsAppFrame`` beside ``CastAiMixin``;
+    Ask, What Did I Miss and pictures are :class:`CastAskMixin`'s."""
 
     # -- plumbing ------------------------------------------------------------------ #
 
     def _cast_ask(self, prompt: str, on_answer: Any, *, working: str = "Working.") -> bool:
         """Send *prompt* through the shared service, if AI may run. True if sent."""
-        if not self._ai_ready():  # type: ignore[attr-defined]
+        if not self._ai_ready() or not self._ai_capable("text"):  # type: ignore[attr-defined]
             return False
         service = self._ai_service()  # type: ignore[attr-defined]
         self._announce(working)  # type: ignore[attr-defined]

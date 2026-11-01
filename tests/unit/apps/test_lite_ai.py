@@ -867,6 +867,7 @@ def test_own_key_needs_no_agreement_and_saves_what_the_window_chose(
     """Alt+F2 opens Choose Your AI on the own key's row with its sign-in step --
     the key dialog -- ready (codex.md 10A.9). The free service's agreement is
     about QUILL's servers; this route never touches them."""
+    wx_call_after()  # the sign-in step is readied after the window, deferred
     win = lite_window("text")
     win.app.settings.ai_privacy_accepted_version = 0
     win.app.settings.ai_connection = "free"  # migrated already: no first-read save
@@ -991,6 +992,7 @@ def test_the_chatgpt_command_opens_choose_your_ai_on_the_plan_ready_to_sign_in(
     """Alt+F5 keeps its key and id (rule 5) and opens Choose Your AI on the
     plan's row with its sign-in step ready. No agreement: this route never
     touches QUILL's servers."""
+    wx_call_after()  # the sign-in step is readied after the window, deferred
     win = lite_window("text")
     win.app.settings.ai_privacy_accepted_version = 0
     service = _PlanService()

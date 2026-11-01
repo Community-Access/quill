@@ -72,8 +72,8 @@ The chapters follow the order you are likely to want things.
     YouTube sign-in.
 12. **Chapter 12: The ACB Media schedule and reminders.** What is on, what is
     coming up, and being told about it.
-13. **Chapter 13: The Community menu.** Ask QUILL Radio, your ChatGPT plan,
-    ACB Media podcasts, Community Picks, and suggesting a station.
+13. **Chapter 13: The Community menu.** Ask, choosing your AI, describing a
+    video, ACB Media podcasts, Community Picks, and suggesting a station.
 14. **Chapter 14: Making Quill Radio yours.** Preferences, keys, the Command
     Palette, quiet hours and more.
 15. **Chapter 15: Safety nets.** Undo, why something is dimmed, Recent
@@ -1034,6 +1034,7 @@ tell you so.
 - **Captions** (Ctrl+Shift+K) and **Caption Settings...** (Ctrl+Shift+Alt+T).
 - **Video Information** (Ctrl+Shift+I).
 - **Take a Snapshot** (Ctrl+Shift+Alt+H).
+- **Describe the Video** (Ctrl+F5).
 - **Full Screen** (F11).
 - **Read Comments...** (Ctrl+Shift+7): the comments on the YouTube video that
   is playing. See "Read a video's comments" in Chapter 11.
@@ -1057,9 +1058,12 @@ See Chapter 8, Recording.
 
 #### Community menu (Alt+C)
 
-- **Ask QUILL Radio...** (Ctrl+Shift+8) and **Use My ChatGPT Subscription...**
-  (Alt+F5): a conversation that already knows what is playing, on the ChatGPT
-  plan you pay for.
+- **Ask...** (Ctrl+Shift+8): a conversation that already knows what is playing,
+  on the AI you chose.
+- **AI**: **Which AI Am I Using** (Ctrl+F8), **Choose Your AI...**
+  (Ctrl+Shift+F8), **Use My ChatGPT Subscription...** (Alt+F5), **Use My Own AI
+  Key...** (Alt+F2), **AI Usage...** (Ctrl+Alt+Shift+F2) and **Privacy
+  Agreement...** (Alt+Shift+F2).
 - **ACB Media Schedule...** (Ctrl+Shift+N), **What Is On Now** (Ctrl+Alt+H),
   **Upcoming...** (Ctrl+Alt+Shift+F) and **Refresh the Schedule** (F5).
 - **What's New** (Alt+Shift+N): what arrived since you last looked, in one
@@ -2015,6 +2019,8 @@ The rest of the Video menu:
 - **Take a Snapshot** (Ctrl+Shift+Alt+H) saves the current picture into your
   recordings folder, for example so you can read a slide with OCR. You should
   hear "Snapshot saved as" and its name.
+- **Describe the Video** (Ctrl+F5) asks the AI you chose what is on screen. See
+  Chapter 13.
 - **Video Size** (Ctrl+Alt+4 to Ctrl+Alt+7) sets the window to Fit, 50%, 100%
   or 200%.
 
@@ -5839,26 +5845,24 @@ You can now browse the ACB Media schedule, tune in, record a programme with a
 couple of key presses, and set reminders so you never miss the ones you love.
 Upcoming shows you everything you have planned, and Notifications keeps
 everything you have been told. Next, Chapter 13, The Community menu, has the
-rest of what is on that menu, including Ask QUILL Radio. The tutorial
+rest of what is on that menu, including Ask. The tutorial
 **Sleeping, waking, and being left alone** touches on reminders and quiet
 hours too.
 
 ## Chapter 13: The Community menu
 
 The Community menu (Alt+C) is where Quill Radio connects you with other
-listeners and with a helpful assistant. This chapter covers Ask QUILL Radio,
-signing in with your ChatGPT plan, ACB Media's podcasts, Community Picks, and
+listeners and with AI. This chapter covers Ask, choosing your AI, describing
+a video, ACB Media's podcasts, Community Picks, and
 how to suggest a station or podcast for everyone to enjoy. The ACB Media
 schedule, which is on this menu too, has Chapter 12 to itself.
 
 The tutorial **Community Picks, and suggesting one**, in the More than radio
 track, goes with this chapter.
 
-### Ask QUILL Radio: a conversation that knows what is playing
+### Ask: a conversation that knows what is playing
 
-Ask QUILL Radio is the radio's own assistant. It runs on the ChatGPT plan you
-already pay for, so there is no key to paste and no charge per question. And
-it knows one thing ChatGPT on the web does not: **what you are listening to**.
+Ask is a conversation with AI that already knows what you are listening to.
 The station and the title the stream is announcing go with every message, so
 you can ask about them without typing any names:
 
@@ -5867,128 +5871,125 @@ you can ask about them without typing any names:
 - "Tell me about this station: who runs it, where, and what it plays."
 - "What kind of programmes does this station broadcast, and when?"
 - "Is there a podcast like this one?"
-- "This presenter mentioned a book. What was it?"
-- "What was the news story they just referred to?" (with web search allowed)
-- "Explain the rules of the sport they are commentating on."
 - "This is in Spanish. What are they talking about?"
 
 It is a conversation, so you can follow up with "and where can I hear more of
 them?" and it knows what you mean. Nothing you ask changes what is playing.
 
-**It works from words, not from sound.** Ask QUILL Radio never listens to the
-stream, records anything or turns speech into text. It only knows what Quill
-Radio already knows in words: the station's name, and the title the stream
-sends, when it sends one. If a station sends no titles, the assistant knows the
-station but not the song, and tells you so. If you ask about something a
-presenter just said, the answer comes from what the assistant knows about the
-programme, not from hearing it.
+Ask used to be called Ask QUILL Radio, and it only worked with a ChatGPT plan.
+Now it is the same Ask every QUILL app has, and it answers on whichever AI you
+chose in Choose Your AI: QUILL's free AI, your ChatGPT plan, GitHub Copilot or
+your own key. If you were already signed in to ChatGPT in Quill Radio, nothing
+changes for you: it keeps using your plan.
 
-**Before your first question, sign in.** Ask QUILL Radio only works with your
-own paid ChatGPT plan, such as Plus or Pro. See "Use My ChatGPT
-Subscription, step by step" below. If you have not signed in, Ctrl+Shift+8
-tells you so and opens that window instead.
+**It works from words, not from sound.** Ask never listens to the stream,
+records anything or turns speech into text. It only knows what Quill Radio
+already knows in words: the station's name, and the title the stream sends,
+when it sends one. If a station sends no titles, Ask knows the station but not
+the song, and says so.
 
-#### Ask QUILL Radio, step by step
+#### Ask, step by step
 
-1. Play something if you like. It answers either way; it just knows more with
+1. Play something if you like. Ask answers either way; it just knows more with
    a station on.
-2. Press **Ctrl+Shift+8** (**Community > Ask QUILL Radio...**). The Ask QUILL
-   Radio window opens with your cursor in **Your message**. It is a window of
-   its own, on the Window menu and one Ctrl+Tab away, and the playing keys
-   still work in it.
-3. **What it knows**, one Shift+Tab back, tells you what is on right now, which
-   model will answer, and whether web search is allowed. It is worth reading
-   once.
+2. Press **Ctrl+Shift+8** (**Community > Ask...**). The Ask window opens with
+   your cursor in **Your message**. It is a window of its own, on the Window
+   menu and one Ctrl+Tab away, and the playing keys still work in it.
+3. **About this conversation**, a few Shift+Tabs back, starts with which AI you
+   are asking, for example "Asking My ChatGPT plan about this station."
 4. Type a question and press **Enter**. You hear "Working.", then the reply is
-   read aloud as it arrives. It is also added to **Conversation**, the box
-   above, where you can read it again word by word.
-5. Or press **Ask About What's Playing** (Alt+P) without typing anything. It
-   asks about the song and the station for you, and each press asks the next
-   suggested question.
-6. **New Conversation** (Alt+N) starts again. **Copy Last Reply** (Alt+L) puts
-   the latest answer on the clipboard. **ChatGPT Account** (Alt+G) opens the
-   sign-in window. **Escape**, **Ctrl+W** or **Close** closes the window.
+   read aloud. It is also added to **Conversation**, where you can read it
+   again word by word.
+5. The station and what is playing are read again for every message. If the
+   song changed since your last question, the Status line says so, for
+   example "Now playing changed since your last question."
+6. **Alt+1** reads the newest message aloud without leaving the message box,
+   Alt+2 the one before, up to Alt+0. **Messages** lists them all, and
+   **Export Conversation** saves the whole thing to a file.
+7. Every conversation is saved on this computer as it goes. **Saved
+   Conversations** lists Quill Radio's own and opens one to carry on. **New
+   Conversation** starts again, and **Escape** or **Ctrl+W** closes the window.
 
 #### Quick questions
 
 Above Your message is a **Quick questions** list (Alt+Q). Arrow through it as
 much as you like; nothing happens until you press **Enter** on the one you
-want, or choose **Use This Question** (Alt+T). The question is then put in
-the message box for you to send as it is or change, your cursor moves there,
-and the Status line tells you what else, if anything, will go with it. Six of
-them ask about what is playing and send nothing more:
+want, or choose **Use This Question** (Alt+T). The question goes into the
+message box for you to send as it is or change, and the Status line tells you
+what else, if anything, will go with it.
 
-- What is this song?
-- Tell me about the artist playing now
-- Tell me about this station
-- What does this station broadcast, and when?
-- Is there a podcast like this station?
-- What is the title now playing about? (it translates a title in another
-  language)
+The nine questions Ask QUILL Radio had are still first. Six ask about what is
+playing and send nothing more: What is this song?, Tell me about the artist
+playing now, Tell me about this station, What does this station broadcast, and
+when?, Is there a podcast like this station?, and What is the title now
+playing about?
 
 Three of them ask about *you*, and each one tells you, before you send it,
 exactly what it will attach and how much:
 
 - **Recommend stations like my favorites** sends the names of your favorite
-  stations and their folders, up to sixty, and asks for five you do not have.
+  stations and their folders, up to sixty.
 - **What have I been hearing on this station lately?** sends the songs Quill
-  Radio has noted on the station playing, up to twenty-five, and asks what
-  they add up to.
-- **Suggest something new from everything I have played** sends the names of
-  the stations you have played recently, with a few songs from each, and asks
-  for three stations or podcasts that would be new to you.
+  Radio has noted on the station playing, up to twenty-five.
+- **Suggest something new from everything I have played** sends the stations
+  you have played recently, with a few songs from each. Your listening history
+  never goes with any other question, even if you type the word "history".
 
-Nothing about you is sent unless you choose one of those three, and nothing is
-sent at all until you press Enter. Each question is one request on your plan,
-made when you ask and never on a timer.
+After those come **What is on next?** and **Record this whenever it is on**,
+which suggests times but never sets a recording for you, and then three every
+QUILL app has: **Explain this simply**, **What can I do here?** and
+**Summarise what is in front of me**. What can I do here? is answered by Quill
+Radio itself, from its own help, and sends nothing.
 
-Good to know: Ask QUILL Radio needs the internet, and it is off in Safe Mode.
-What you ask counts towards your ChatGPT plan's own limits, which OpenAI sets.
-If you reach a limit, the window tells you in words, and **Open ChatGPT
-Usage** in the account window shows when it resets.
+Good to know: Ask needs the internet, and it is off in Safe Mode. Each message
+is one request on the AI you chose. If you reach a limit, Ask says so once and
+does not switch to another AI.
 
-### Use My ChatGPT Subscription, step by step
+### Choosing your AI
 
-1. Press **Alt+F5** (**Community > Use My ChatGPT Subscription...**). The window
-   opens on **About this**, which tells you where your questions go and what
-   it costs. Read it once.
-2. Tab to **Continue with ChatGPT** and press it. Your browser opens on
-   OpenAI's own sign-in page.
-3. Sign in to ChatGPT there. When the page asks whether **QUILL Radio** may use
-   your plan, allow it. That is the name you will see under Apps in ChatGPT's
-   settings from now on.
-4. Come back to Quill Radio. The window says "Signed in with ChatGPT as" and
-   your email address, and your cursor is on **Model**, a list of every model
-   your plan offers, read from your account. The first one is chosen for you;
-   arrow to another and it is saved as soon as you land on it. **Refresh
-   Models** reads the list again. You stay signed in until you sign out; a
-   brief problem on OpenAI's side no longer signs you out.
-5. **Allow web search** (Alt+W) starts off. Press **Alt+W**, then **Space**,
-   and you hear "Web search is allowed." With it on, the assistant may look
-   things up on the web through OpenAI, such as a station's schedule, a news
-   story a presenter mentioned, or a new album, and tell you what it found. It
-   is saved as soon as you change it, and Space again turns it off.
-6. **Open ChatGPT Usage** (Alt+U) opens your plan's usage page in your
-   browser. Your questions draw on your plan's own usage limits, shared with
-   ChatGPT itself and any other app you have connected, and that page lets you
-   set a weekly limit for Quill Radio. When the limit is reached, Quill Radio
-   says so and does not switch to an API key. **Sign Out** (Alt+O, press it twice) asks OpenAI to cancel Quill
-   Radio's sign-in and forgets it here. **Forget on This Computer** (Alt+F)
-   only forgets it here, which is handy on a computer with no internet or for
-   a sign-in you already removed in ChatGPT's settings. Both only appear while
-   you are signed in.
-7. Press **Escape** to close.
+Quill Radio uses the same Choose Your AI window as QUILL and QUILL Lite, and it
+keeps its own choice: choosing an AI here changes nothing in the other apps.
 
-If the browser did not open, the window tells you and offers **Copy the
-Sign-In Address**. Paste it into any browser on this computer and finish
-there. **Stop Waiting** gives up without changing anything.
+- **Choose Your AI...** (**Ctrl+Shift+F8**, Community > AI) opens the window
+  on the AI in use. The list has five rows: QUILL's free AI, My ChatGPT plan,
+  My GitHub Copilot, Codex, for tasks, and My own key. Each says its state,
+  such as "in use" or "not set up". Press Enter on a row to use it or sign in
+  to it, and Delete to sign a signed-in one out. Copilot says "not available
+  yet" until Quill Radio has its GitHub sign-in.
+- **Which AI Am I Using** (**Ctrl+F8**) says which AI is in use, its model, and
+  how much is left where the service says. Press it twice quickly and it opens
+  Choose Your AI.
+- **Use My ChatGPT Subscription...** (**Alt+F5**) opens Choose Your AI on the
+  ChatGPT row, ready to sign in. Quill Radio signs in as "QUILL Radio", so it
+  shows under its own name in ChatGPT's settings. Web search and Forget on
+  This Computer are in the plan's options in that window.
+- **Use My Own AI Key...** (**Alt+F2**) does the same for your own OpenAI or
+  Google Gemini key.
+- **AI Usage...** (**Ctrl+Alt+Shift+F2**) lists every AI you have set up, one
+  sentence each, and says whose count it is. **Manage Usage** opens that
+  service's own page.
+- **Privacy Agreement...** (**Alt+Shift+F2**) is the agreement for QUILL's
+  free AI. It only comes up when you use the free AI.
 
-Good to know: Quill Radio never sees your ChatGPT password. It only keeps a
-sign-in pass from OpenAI, in the Windows credential store, under Quill Radio's
-own name. Each QUILL app signs in as itself, so Quill Radio, QUILL Lite and
-QUILL each appear under Apps in ChatGPT's settings, and signing one out leaves
-the others alone. There is no free QUILL AI service behind Ask QUILL Radio and
-no key to paste: it is your plan or nothing, and the window tells you so.
+The last cell of the status bar says which AI is in use, for example "AI:
+ChatGPT plan". Press Enter on it to open Choose Your AI.
+
+Why Ctrl+F8 and Ctrl+Shift+F8, when QUILL uses Ctrl+8 and Ctrl+4? In Quill
+Radio, Ctrl+1 to Ctrl+9 move between your open windows, so those keys were
+already taken. QUILL Cast uses the same keys as Quill Radio.
+
+### Describe the Video
+
+When a video is showing, **Describe the Video** (**Ctrl+F5**, Video menu) takes
+one picture of it on this computer and asks the AI in use what is on screen.
+You hear what was looked at, which AI described it, and the description, and
+it stays in a result window you can copy from. Asking about the same picture
+again answers straight away and sends nothing.
+
+Only the one picture goes, made smaller to suit the AI first. No sound and no
+video ever leave your computer. QUILL's free AI cannot see pictures, so with
+it in use the menu item says "(needs a connection that sees)", and pressing it
+sends nothing and offers to switch to one that can.
 
 ### ACB Media Podcasts, step by step
 
@@ -8051,6 +8052,7 @@ In every other window, Alt+S is the Station menu and Alt+W is the Window menu. S
 | Caption Settings | Ctrl+Shift+Alt+T |
 | Video Information | Ctrl+Shift+I |
 | Take a Snapshot | Ctrl+Shift+Alt+H |
+| Describe the Video | Ctrl+F5 |
 | Full screen | F11 |
 | Video Size: Fit, 50%, 100%, 200% | Ctrl+Alt+4 / 5 / 6 / 7 |
 | Audio and Described Audio | Ctrl+Shift+A |
@@ -8126,8 +8128,13 @@ In every other window, Alt+S is the Station menu and Alt+W is the Window menu. S
 
 | Action | Key |
 | --- | --- |
-| Ask QUILL Radio | Ctrl+Shift+8 |
+| Ask | Ctrl+Shift+8 |
+| Which AI Am I Using (twice: Choose Your AI) | Ctrl+F8 |
+| Choose Your AI | Ctrl+Shift+F8 |
 | Use My ChatGPT Subscription | Alt+F5 |
+| Use My Own AI Key | Alt+F2 |
+| AI Usage | Ctrl+Alt+Shift+F2 |
+| Privacy Agreement | Alt+Shift+F2 |
 | ACB Media Schedule | Ctrl+Shift+N |
 | What Is On Now | Ctrl+Alt+H |
 | What's New (since you last looked) | Alt+Shift+N |

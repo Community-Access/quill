@@ -271,10 +271,10 @@ DEFAULT_KEYMAP: dict[str, str] = {
     # Choose Your AI (codex.md 10A.9, 2026-10-31): QUILL Lite's chords (rule 2);
     # core/lite/commands_ai.py says why these two. Checked free here, in
     # DEFAULT_ALIASES, in every APP_KEYMAPS app and in the system-wide keys.
-    # Cast's quick-actions list answers Ctrl+1 to Ctrl+9 *inside the list*
-    # (core/podcasts/quick_actions.py); when Cast binds these in Phase 3 the
-    # list keeps Ctrl+4 and Ctrl+8 while it has focus, and that divergence
-    # gets its parity row then (rule 11). Nothing in Cast binds them today.
+    # Not in Quill Radio or QUILL Cast (codex.md Phase 3): Ctrl+1 to Ctrl+9
+    # are their Window menu keys on every window, so there Which AI is Ctrl+F8,
+    # Choose Your AI Ctrl+Shift+F8 and Ask Ctrl+Shift+8 -- a comment in
+    # app_keymaps.py and a row in app_ai_keys.APP_AI_DIVERGENCES (rule 11).
     "tools.hosted_ai_which": "Ctrl+8",
     "tools.hosted_ai_choose": "Ctrl+4",
     # Do a Document Task (codex.md 6.2): the last plain chord 10A.9 found free in

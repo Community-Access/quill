@@ -20,6 +20,15 @@ The switch is **AI help** in Preferences (``PodcastHistory.ai_help_enabled``,
 off), and the agreement is the shared one -- both, not either, as QUILL Lite's
 docstring says: an area switched on by an import is not consent. The OpenAI
 consent page names "QUILL Cast", because each app signs in on its own.
+
+**Choose Your AI** (codex.md Phase 3): Cast stores its own ``ai_connection``
+in the history record, so it gets the window with all five connections, Which
+AI Am I Using, the one AI Usage list, the AI status cell and capability gating
+from the shared code, and **Ask** with Cast's own facts
+(:mod:`quill.ui.podcasts.cast_ai_ask`). Ctrl+1 to Ctrl+9 are Cast's Window menu
+keys (and an episode list's Quick Actions), so Ask is Ctrl+Shift+8, Which AI
+Ctrl+F8 and Choose Your AI Ctrl+Shift+F8, as in Quill Radio
+(:mod:`quill.core.app_ai_keys`).
 """
 
 from __future__ import annotations
@@ -32,14 +41,18 @@ __all__ = ["CastAiHost", "CastAiMixin", "AI_ROWS"]
 
 _FEATURE = "hosted_ai"
 
-#: The submenu's rows: command id, label, handler name on the shared mixin.
-#: Mnemonics are unique within the submenu (E N G C Y O U K).
+#: The submenu's rows: command id, label, handler name. Mnemonics are unique
+#: within the submenu (A M R E N K G C Y O U, and cast_ai_features' own).
 AI_ROWS: tuple[tuple[str, str, str], ...] = (
+    ("tools.hosted_ai_chat_key", "&Ask...", "cmd_ai_chat_key"),
+    ("tools.hosted_ai_which", "Which AI A&m I Using", "cmd_ai_which"),
+    ("tools.hosted_ai_choose", "Choose You&r AI...", "cmd_ai_choose"),
+    ("", "", ""),
     ("tools.hosted_ai_assistant", "Fr&ee AI Assistant...", "cmd_ai_assistant"),
     ("tools.hosted_ai_ask_document", "Ask About These Show &Notes...", "cmd_ai_ask_document"),
     ("tools.hosted_ai_image", "As&k About an Image...", "cmd_ai_image"),
     ("", "", ""),
-    ("tools.hosted_ai_usage", "Free AI Usa&ge...", "cmd_ai_usage"),
+    ("tools.hosted_ai_usage", "AI Usa&ge...", "cmd_ai_usage"),
     ("tools.hosted_ai_sign_in", "&Connect or Sign Out...", "cmd_ai_sign_in"),
     ("tools.hosted_ai_privacy", "Privac&y Agreement...", "cmd_ai_privacy"),
     ("tools.hosted_ai_own_key", "Use My &Own AI Key...", "cmd_ai_own_key"),
@@ -56,6 +69,14 @@ class CastAiHost:
     """
 
     ai_agent_name = "QUILL Cast"
+
+    @property
+    def ai_choose_key(self) -> str:
+        """Choose Your AI's key here, for the sentences that name it."""
+        try:
+            return str(self._frame._binding_for("tools.hosted_ai_choose") or "")
+        except Exception:  # noqa: BLE001 - a missing keymap names no key
+            return ""
 
     def __init__(self, frame: Any) -> None:
         self._frame = frame
@@ -123,6 +144,16 @@ class CastAiMixin(HostedAiMixin):
     def _ai_switch_route(self) -> str:
         return "Preferences, AI help"
 
+    def _ai_connection_refresh(self) -> None:
+        """The connection changed: the gated labels and the AI status cell follow."""
+        super()._ai_connection_refresh()
+        refresh = getattr(self, "_refresh_statusbar", None)
+        if callable(refresh):
+            try:
+                refresh()
+            except RuntimeError:  # the window is going
+                pass
+
     # The notes are read only: an answer never goes into Cast.
     def _replace_range(self, start: int, end: int, answer: str) -> None:
         del start, end, answer
@@ -154,11 +185,12 @@ class CastAiMixin(HostedAiMixin):
 
         ids = self._cast_ai_menu_ids()
         sub = wx.Menu()
-        for command_id, label, _handler in AI_ROWS:
+        for command_id, label, handler_name in AI_ROWS:
             if not command_id:
                 sub.AppendSeparator()
                 continue
-            sub.Append(ids[command_id], self._menu_label(label, command_id))  # type: ignore[attr-defined]
+            shown = self._ai_gated_label(handler_name, label)  # codex.md 10A.8
+            sub.Append(ids[command_id], self._menu_label(shown, command_id))  # type: ignore[attr-defined]
         # Cast's own domain verbs (ear.md A2-A9) live in cast_ai_features, not
         # here: this adapter has no command of its own.
         extra = getattr(self, "_append_cast_ai_feature_rows", None)

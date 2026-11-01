@@ -631,10 +631,12 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Alt+7 | Play favorite 7 | `radio.play_favorite_7` |
 | Alt+8 | Play favorite 8 | `radio.play_favorite_8` |
 | Alt+9 | Play favorite 9 | `radio.play_favorite_9` |
+| Alt+F2 | Use My Own AI Key... | `tools.hosted_ai_own_key` |
 | Alt+F5 | Use My ChatGPT Subscription... | `radio.chatgpt_account` |
 | Alt+Shift+B | Background station | `radio.background_station` |
 | Alt+Shift+D | Mirror output | `radio.mirror_output` |
 | Alt+Shift+F | Play Favorite Station... | `radio.play_favorite` |
+| Alt+Shift+F2 | Privacy Agreement... | `tools.hosted_ai_privacy` |
 | Alt+Shift+I | Station details | `radio.station_details` |
 | Alt+Shift+N | Whats new | `radio.whats_new` |
 | Ctrl+. | Radio: Stop | `radio.stop` |
@@ -655,6 +657,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+A | Undo History... | `app.undo_history` |
 | Ctrl+Alt+Shift+D | Internet Radio: Download Preferences... | `radio.download_preferences` |
 | Ctrl+Alt+Shift+F | Upcoming... | `radio.upcoming` |
+| Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
 | Ctrl+Alt+Shift+F3 | Notifications... | `app.notifications` |
 | Ctrl+Alt+Shift+G | Internet Radio: Update Station Catalog | `radio.update_catalog` |
 | Ctrl+Alt+Shift+I | Recording Settings... | `radio.recording_settings` |
@@ -675,6 +678,8 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Down | Radio: Volume Down | `radio.volume_down` |
 | Ctrl+E | Internet Radio: Sound Enhancements... | `radio.sound_enhancements` |
 | Ctrl+F11 | Dictate here | `app.dictate_here` |
+| Ctrl+F5 | Describe the Video | `radio.describe_video` |
+| Ctrl+F8 | Which AI Am I Using | `tools.hosted_ai_which` |
 | Ctrl+G | Go to | `radio.go_to` |
 | Ctrl+K | Identify This Song | `radio.identify_song` |
 | Ctrl+L | Play Last Station | `radio.play_last` |
@@ -688,12 +693,13 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Shift+0 | Transport.speed reset | `radio.transport.speed_reset` |
 | Ctrl+Shift+6 | Internet Radio: Search YouTube... | `radio.search_youtube` |
 | Ctrl+Shift+7 | Internet Radio: Read YouTube Comments... | `radio.youtube_comments` |
-| Ctrl+Shift+8 | Ask QUILL Radio... | `radio.ask_quill_radio` |
+| Ctrl+Shift+8 | Ask... | `radio.ask_quill_radio` |
 | Ctrl+Shift+9 | Transport.skip silence | `radio.transport.skip_silence` |
 | Ctrl+Shift+B | Volume Boost | `radio.volume_boost` |
 | Ctrl+Shift+C | Transport.chapter list | `radio.transport.chapter_list` |
 | Ctrl+Shift+Down | Transport.speed down | `radio.transport.speed_down` |
 | Ctrl+Shift+F | Toggle playing favorite | `radio.toggle_playing_favorite` |
+| Ctrl+Shift+F8 | Choose Your AI... | `tools.hosted_ai_choose` |
 | Ctrl+Shift+G | Transport.go to player | `radio.transport.go_to_player` |
 | Ctrl+Shift+H | Song History... | `radio.song_history` |
 | Ctrl+Shift+L | Back to Live | `radio.jump_to_live` |
@@ -750,11 +756,14 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Z | Ask Free AI About This Document | `tools.hosted_ai_ask_document` |
 | Ctrl+F11 | Dictate here | `app.dictate_here` |
 | Ctrl+F5 | Refresh podcasts | `media.refresh_podcasts` |
+| Ctrl+F8 | Which AI Am I Using | `tools.hosted_ai_which` |
 | Ctrl+G | Go to | `app.go_to` |
 | Ctrl+I | Player Information... | `podcasts.player_information` |
+| Ctrl+Shift+8 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
 | Ctrl+Shift+9 | Skip silence | `podcasts.skip_silence` |
 | Ctrl+Shift+D | Bookmark note | `podcasts.bookmark_note` |
 | Ctrl+Shift+E | New folder | `podcasts.new_folder` |
+| Ctrl+Shift+F8 | Choose Your AI... | `tools.hosted_ai_choose` |
 | Ctrl+Shift+J | Episode bookmarks | `podcasts.episode_bookmarks` |
 | Ctrl+Shift+T | Podcasts: Time Remaining | `podcasts.time_remaining` |
 | Ctrl+Shift+V | Move to folder | `podcasts.move_to_folder` |

@@ -617,6 +617,7 @@
   "quill/ui/podcasts/ai_review_dialog.py::review::wx.Dialog": "hardened_custom",
   "quill/ui/podcasts/backup_ui.py::back_up_cast_data::wx.FileDialog": "native",
   "quill/ui/podcasts/backup_ui.py::restore_cast_data::wx.FileDialog": "native",
+  "quill/ui/podcasts/cast_ai_ask.py::CastAskMixin._cast_choose_picture::wx.SingleChoiceDialog": "native",
   "quill/ui/podcasts/cast_ai_features.py::CastDomainAiMixin.ai_listening_run::wx.TextEntryDialog": "native",
   "quill/ui/podcasts/cast_ai_features.py::CastDomainAiMixin.ai_playlist_from_sentence::wx.TextEntryDialog": "native",
   "quill/ui/podcasts/chapter_review_dialog.py::ChapterReviewDialog.__init__::wx.Dialog": "hardened_custom",

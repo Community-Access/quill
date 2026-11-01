@@ -189,6 +189,10 @@ class AiAnswersMixin:
         Its first line names the connection being asked; each turn sends the
         passage, the title and the outline, read fresh (:meth:`_ai_ask_context`).
         """
+        app_ask = getattr(self, "_ai_app_ask", None)
+        if callable(app_ask):  # Quill Radio's and QUILL Cast's Ask (hosted_ai_app_ask)
+            app_ask()
+            return
         if not self._ai_ready() or not self._ai_capable("text"):
             return
         from quill.ui.hosted_ai_chat import open_for

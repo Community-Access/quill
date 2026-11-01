@@ -295,6 +295,29 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         # same window, so a person who set it up in QUILL Lite finds it here.
         "radio.ask_quill_radio": "Ctrl+Shift+8",
         "radio.chatgpt_account": "Alt+F5",
+        # The family's AI (codex.md Phase 3, 2026-11-01). Ask QUILL Radio became
+        # Ask, the family's one conversation window, and keeps its id and
+        # Ctrl+Shift+8 (rule 5: nothing moves). The editors' Ctrl+4, Ctrl+6 and
+        # Ctrl+8 cannot follow it here: Ctrl+1 to Ctrl+9 are Quill Radio's
+        # Window menu keys on every window (quill/ui/window_menu.py), and a key
+        # claimed twice means one of the pair silently never fires. So Which AI
+        # Am I Using is Ctrl+F8 -- the 8 of the editors' key, moved to the
+        # function row -- and Choose Your AI is Ctrl+Shift+F8, the same key with
+        # Shift for "and open the window" (Ctrl+F8 pressed twice opens it too).
+        # Both were free on this bar and on Cast's, where the same two commands
+        # take the same two keys (rule 2). The divergence from the editors is
+        # this comment and its row in app_ai_keys.APP_AI_DIVERGENCES (rule 11).
+        "tools.hosted_ai_which": "Ctrl+F8",
+        "tools.hosted_ai_choose": "Ctrl+Shift+F8",
+        # The family's Usage and own-key keys, free here. Privacy Agreement
+        # takes Cast's Alt+Shift+F2: the editors' Ctrl+Alt+Shift+K is this bar's
+        # Keyboard Shortcuts Sheet.
+        "tools.hosted_ai_usage": "Ctrl+Alt+Shift+F2",
+        "tools.hosted_ai_own_key": "Alt+F2",
+        "tools.hosted_ai_privacy": "Alt+Shift+F2",
+        # Describe the Video (codex.md 10B.5): the family's Describe key, the
+        # editors' Ask About an Image chord, free on this bar.
+        "radio.describe_video": "Ctrl+F5",
         # Search YouTube... (Station) and Read Comments... (Video), 2026-10-03:
         # the last two of the three Ctrl+Shift digit gaps named above. Digits,
         # so no mnemonic is pretended; Alt+S then H and Alt+D then M are the
@@ -367,6 +390,15 @@ APP_KEYMAPS: dict[str, dict[str, str]] = {
         "tools.hosted_ai_privacy": "Alt+Shift+F2",
         "tools.hosted_ai_own_key": "Alt+F2",
         "tools.hosted_ai_chatgpt": "Alt+F5",
+        # Ask, Which AI Am I Using and Choose Your AI (codex.md Phase 3): Quill
+        # Radio's three keys, for Radio's reason -- Ctrl+1 to Ctrl+9 are this
+        # app's Window menu keys, and inside an episode list Ctrl+1 to Ctrl+9
+        # also run its Quick Actions -- so the editors' Ctrl+6, Ctrl+8 and Ctrl+4
+        # would each be a key one of two things silently loses. Ctrl+Shift+8 is
+        # Radio's Ask key, free here (rule 2). See app_ai_keys.py (rule 11).
+        "tools.hosted_ai_chat_key": "Ctrl+Shift+8",
+        "tools.hosted_ai_which": "Ctrl+F8",
+        "tools.hosted_ai_choose": "Ctrl+Shift+F8",
         "app.recent_problems": "Ctrl+Alt+Shift+P",
         # qc.md F-10: the family's two result keys, the same everywhere.
         "app.repeat_last_result": "F9",

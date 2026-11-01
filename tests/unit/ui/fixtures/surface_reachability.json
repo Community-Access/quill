@@ -313,7 +313,6 @@
   "quill.ui.quillin_prefs_dialog": "reachable",
   "quill.ui.quillin_wizard": "reachable",
   "quill.ui.radio.add_station_dialog": "reachable",
-  "quill.ui.radio.ask_radio_window": "reachable",
   "quill.ui.radio.audio_health_dialog": "reachable",
   "quill.ui.radio.audio_track_dialog": "reachable",
   "quill.ui.radio.backup_ui": "reachable",

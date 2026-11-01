@@ -121,6 +121,7 @@ class AiChatFrame(wx.Frame):
             "also read aloud as it arrives.",
         )
 
+        self._add_before_message(panel, sizer)  # an app's quick list (hosted_ai_app_ask)
         label = wx.StaticText(panel, label="Your &message")
         self._message = wx.TextCtrl(panel, style=wx.TE_PROCESS_ENTER)
         set_accessible_name(self._message, "Your message")
@@ -198,6 +199,9 @@ class AiChatFrame(wx.Frame):
             # Sent once the window is on screen, so the reader has arrived in
             # it before the reply is read out.
             wx.CallAfter(self._send)
+
+    def _add_before_message(self, panel: wx.Panel, sizer: wx.BoxSizer) -> None:
+        """Controls above the message box; an app's Ask adds its quick list."""
 
     # -- what the window says ---------------------------------------------- #
 

@@ -21,6 +21,15 @@ and speed and reliability.
 
 ### Since build 6 (2026-10-27 to 2026-10-31)
 
+- **Choose Your AI and Ask** [2026-11-01]. Cast keeps its own AI choice, with
+  the five rows the editors have; **Choose Your AI** is Ctrl+Shift+F8, **Which
+  AI Am I Using** Ctrl+F8 and **Ask** Ctrl+Shift+8, and the status bar ends with
+  an AI cell. Ask is about the episode you are on, its notes, chapters and your
+  place, never the audio. **What Did I Miss in This Episode?** is a new AI
+  Features row. **Ask About an Image** (Ctrl+Alt+F5) offers the podcast's
+  artwork and the show notes' pictures, fetched once when you choose one. Free
+  AI Usage is now **AI Usage**, one list for every AI you set up.
+
 - **ChatGPT plan sign-in holds through a brief problem** (2026-10-31).
   A temporary failure on OpenAI's side while renewing the sign-in no longer
   signs you out, a renewed sign-in that cannot be saved is reported, the

@@ -113,6 +113,12 @@ def build_video_playback_items(
     video_target.Append(caption_settings_id, "Caption Se&ttings...\tCtrl+Shift+Alt+T")
     video_target.Append(video_info_id, "Video &Information	Ctrl+Shift+I")
     video_target.Append(snapshot_id, "Take a Snaps&hot\tCtrl+Shift+Alt+H")
+    # Describe the Video (codex.md 10B.5): that picture, described by the AI in
+    # use; Ctrl+F5 is the family's Describe key, and the label says what it needs.
+    describe_id = wx.NewIdRef()
+    describe = app._ai_gated_label("cmd_ai_image", "&Describe the Video")
+    video_target.Append(describe_id, app._menu_label(describe, "radio.describe_video"))
+    frame.Bind(wx.EVT_MENU, lambda _e: app.cmd_radio_describe_video(), id=describe_id)
     video_target.Append(full_screen_id, "F&ull Screen	F11")
     # The comments of the video that is playing (YouTube only); the same
     # window a video row's Read Comments... opens. Ctrl+Shift+7 is one of the
@@ -189,6 +195,7 @@ def build_video_playback_items(
         caption_settings_id,
         video_info_id,
         snapshot_id,
+        describe_id,
         full_screen_id,
         video_size_id,
         *size_ids,

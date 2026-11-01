@@ -3884,17 +3884,77 @@ Everything on the AI Features menu:
 
 | Row | Key | What it does |
 | --- | --- | --- |
+| Ask | Ctrl+Shift+8 | A conversation about the episode you are on |
+| Which AI Am I Using | Ctrl+F8 | Say which AI is in use; twice opens Choose Your AI |
+| Choose Your AI | Ctrl+Shift+F8 | Choose where Cast's AI comes from |
 | Free AI Assistant | Ctrl+Alt+G | Sum up, explain or shorten the show notes |
 | Ask About These Show Notes | Ctrl+Alt+Z | Ask a question about the notes |
-| Ask About an Image | Ctrl+F5 | Describe a picture on your computer |
-| Free AI Usage | Ctrl+Alt+Shift+F2 | How much of this month's free allowance is left |
+| Ask About an Image | Ctrl+Alt+F5 | Describe the podcast's artwork, a show-note picture or a file |
+| AI Usage | Ctrl+Alt+Shift+F2 | How much each AI you set up has been used |
 | Connect or Sign Out | Ctrl+Alt+Shift+F4 | Sign in to or out of the free service |
 | Privacy Agreement | Alt+Shift+F2 | Read the agreement again, or withdraw it |
 | Use My Own AI Key | Alt+F2 | Use your own OpenAI or Google Gemini key |
 | Use My ChatGPT Subscription | Alt+F5 | Use the ChatGPT plan you already pay for |
 
-The free service works for show notes. Ask About an Image needs your ChatGPT
-subscription or your own Gemini key.
+The free service works for show notes. Ask About an Image needs an AI that can
+see pictures: your ChatGPT plan, GitHub Copilot or your own Gemini key. With
+the free AI in use its row says "(needs a connection that sees)".
+
+#### Choose Your AI
+
+Cast uses the same Choose Your AI window as QUILL and QUILL Lite, and keeps its
+own choice, so choosing an AI here changes nothing in the other apps. Press
+**Ctrl+Shift+F8**, or **Alt+F5** to land on the ChatGPT row ready to sign in.
+The list has five rows: QUILL's free AI, My ChatGPT plan, My GitHub Copilot,
+Codex, for tasks, and My own key. Each says its state, such as "in use" or "not
+set up". Enter uses a row or signs in to it, and Delete signs a signed-in one
+out. If you were already signed in to ChatGPT in Cast, nothing changes: it
+stays in use.
+
+**Which AI Am I Using** (**Ctrl+F8**) says which AI is in use, its model and
+how much is left where the service says; press it twice quickly to open Choose
+Your AI. The last cell of the status bar says the same thing in short, for
+example "AI: ChatGPT plan", and Enter on it opens Choose Your AI.
+
+Why not QUILL's Ctrl+4, Ctrl+6 and Ctrl+8? In Cast, Ctrl+1 to Ctrl+9 move
+between your open windows, and in an episode list they run its Quick Actions,
+so those keys were taken. Quill Radio uses the same keys as Cast.
+
+#### Ask about the episode you are on
+
+**Ask** (**Ctrl+Shift+8**) is a conversation about the episode you are on, on
+whichever AI you chose. The show, the episode, where you are in it, the chapter
+you are in, the chapter list and the show notes go with every message, read
+again each time. The audio never does. The first line of the window says which
+AI you are asking, such as "Asking My ChatGPT plan about this episode."
+
+Type a question and press Enter; the reply is read aloud and added to the
+conversation. The **Quick questions** list (Alt+Q) starts with **What did I
+miss in this episode?** and **Is this episode worth my time?**, then **Explain
+this simply**, **What can I do here?**, which Cast answers itself and sends
+nothing for, and **Summarise what is in front of me**. Press Enter on one to put
+it in the message box. Every conversation is saved on this computer, and
+**Saved Conversations** opens Cast's own.
+
+**What Did I Miss in This Episode?** is also its own row on the AI Features
+menu (D). It sends the show notes, the chapters, where you are and, when Cast
+has the transcript, the transcript up to that point, and asks only about what
+came before. If you have not started the episode, it says so and sends nothing.
+
+#### Ask about a picture
+
+**Ask About an Image** (**Ctrl+Alt+F5**) offers the pictures Cast knows about
+for the episode you are on: the podcast's artwork and any pictures in its show
+notes, named by their own descriptions when the show wrote them, and last, a
+picture file on your computer. Cast fetches the picture you choose then, once,
+because you asked. It never downloads artwork in the background. The picture
+is made smaller to suit the AI before it goes, and the answer starts by saying
+what was looked at and which AI described it. Asking about the same picture
+again answers straight away and sends nothing.
+
+With an AI that cannot see in use, nothing is fetched or sent. Cast offers to
+switch to one that can, and if the show notes described their pictures, it
+reads those descriptions to you instead.
 
 Each Quill app signs in to ChatGPT on its own, so signing in here does not
 sign in QUILL or Quill Radio, and signing out of one leaves the others
@@ -5589,10 +5649,13 @@ They are listed in full under "Keys in the Lineups window" in Chapter 9.
 
 | Action | Key |
 | --- | --- |
+| Ask | Ctrl+Shift+8 |
+| Which AI Am I Using (twice: Choose Your AI) | Ctrl+F8 |
+| Choose Your AI | Ctrl+Shift+F8 |
 | Free AI Assistant | Ctrl+Alt+G |
 | Ask About These Show Notes | Ctrl+Alt+Z |
-| Ask About an Image | Ctrl+F5 |
-| Free AI Usage | Ctrl+Alt+Shift+F2 |
+| Ask About an Image | Ctrl+Alt+F5 |
+| AI Usage | Ctrl+Alt+Shift+F2 |
 | Connect or Sign Out | Ctrl+Alt+Shift+F4 |
 | Privacy Agreement | Alt+Shift+F2 |
 | Use My Own AI Key | Alt+F2 |

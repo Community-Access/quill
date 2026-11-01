@@ -12,6 +12,7 @@ what is sent, what comes back, what triggers it, and how it behaves in Safe Mode
 
 from __future__ import annotations
 
+from quill.tools.network_egress_entries_cast import CAST_EXTRAS_EGRESS
 from quill.tools.network_egress_entries_radio import RADIO_EGRESS
 from quill.tools.network_egress_entries_speech import SPEECH_EGRESS
 
@@ -20,6 +21,7 @@ _REVIEWED_EGRESS: dict[str, str] = {
     **RADIO_EGRESS,
     # The cloud dictation providers (D-31 to D-37), split out the same way.
     **SPEECH_EGRESS,
+    **CAST_EXTRAS_EGRESS,
     "core/audio/url_import.py::_default_download": (
         "The Universal Audio Converter's optional URL import (#1255 §4.6): "
         "downloads the best-audio stream of a user-pasted http(s) link via yt-dlp "
@@ -232,15 +234,6 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "Podcasts explicitly. HTTPS-only over a verified TLS context with a "
         "bounded timeout and response size. Disabled in Safe Mode via "
         "feed_reader.refuse_in_safe_mode."
-    ),
-    "core/podcasts/transcripts.py::_fetch_transcript_bytes": (
-        "Single egress site for podcast transcripts: fetches one episode's "
-        "Podcasting 2.0 transcript file (VTT/SRT/JSON, parsed locally, no "
-        "further network activity) and caches the parsed text so reopening "
-        "never re-fetches. Reached only when the user opens the transcript "
-        "view for an episode that has a transcript_url. HTTPS-only over a "
-        "verified TLS context with a bounded timeout and response size. "
-        "Disabled in Safe Mode via refuse_in_safe_mode."
     ),
     "core/podcasts/apple_podcasts.py::_fetch": (
         "Single egress site for browsing Apple Podcasts without a key: the "

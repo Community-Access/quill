@@ -2,6 +2,36 @@
 
 ## 1.0.0
 
+### Choose Your AI and Ask, in Quill Radio and QUILL Cast (2026-11-01)
+
+- **Quill Radio and QUILL Cast get Choose Your AI**, with the same five rows as
+  the editors: QUILL's free AI, your ChatGPT plan, GitHub Copilot, Codex and
+  your own key. Each app keeps its own choice and signs in under its own name,
+  and anyone already signed in to ChatGPT in either app keeps using it. Which
+  AI Am I Using, the one AI Usage list and an AI cell at the end of the status
+  bar come with it, and every AI command says what it needs when the AI in use
+  cannot do it.
+- The keys are **Ctrl+F8** for Which AI Am I Using (twice opens the window),
+  **Ctrl+Shift+F8** for Choose Your AI and **Ctrl+Shift+8** for Ask, the same in
+  both apps. In Radio and Cast Ctrl+1 to Ctrl+9 move between windows, so the
+  editors' Ctrl+4, Ctrl+6 and Ctrl+8 were taken there. Use My ChatGPT
+  Subscription stays on Alt+F5 and now opens Choose Your AI on the ChatGPT row.
+- **Ask QUILL Radio is now Ask**, the family's one conversation window, on any
+  AI. The station and what is playing go with every message, read fresh, and
+  the window says when the song changed since your last question.
+  Conversations are saved and Saved Conversations opens Radio's own. The nine
+  quick questions stay first; your listening history still goes only with the
+  one question that asks for it.
+- **Describe the Video** (Ctrl+F5, Video menu) in Quill Radio takes one picture
+  of the video on this computer, fits it to the AI in use and asks what is on
+  screen. Asking again about the same picture sends nothing.
+- **Ask in QUILL Cast** (Ctrl+Shift+8) is about the episode you are on: the show
+  notes, chapters and where you are, never the audio. **What Did I Miss in This
+  Episode?** asks only about what came before your place.
+- **Ask About an Image in QUILL Cast** (Ctrl+Alt+F5) offers the podcast's
+  artwork and the show notes' own pictures, fetched once only when you choose
+  one, and reads the notes' own descriptions when the AI in use cannot see.
+
 ### GitHub Copilot, Codex and document tasks, in QUILL and QUILL Lite (2026-11-01)
 
 - **My GitHub Copilot** in Choose Your AI now signs in with GitHub's short code

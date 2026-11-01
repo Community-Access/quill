@@ -31,6 +31,9 @@
             "ai_privacy_accepted_version": "int",
             "ai_own_key_model": "str",
             "ai_own_key_provider": "str",
+            "ai_connection": "str",
+            "ai_copilot_model": "str",
+            "ai_codex_model": "str",
             "episode_filter": "str",
             "notify_new_episode": "bool",
             "notify_feed_failed": "bool",
@@ -63,10 +66,10 @@
             "tips_enabled": "bool"
           }
         },
-        "function:quill.core.podcasts.history:save_history": "sha256:5291c9682ff568cc"
+        "function:quill.core.podcasts.history:save_history": "sha256:ca4d9a8aaac38d0b"
       },
       "classification": "additive, compatible",
-      "note": "QUILL Lineups: start_lineup_id, the Lineup Cast opens in (empty by default); additive, older builds ignore it."
+      "note": ""
     },
     "cast.library": {
       "current": 2,
@@ -1457,7 +1460,13 @@
             "use_global_volume": "bool",
             "song_history_enabled": "bool",
             "recording_resume_choice": "str",
-            "subscription_episode_limit": "int"
+            "subscription_episode_limit": "int",
+            "ai_privacy_accepted_version": "int",
+            "ai_own_key_model": "str",
+            "ai_own_key_provider": "str",
+            "ai_connection": "str",
+            "ai_copilot_model": "str",
+            "ai_codex_model": "str"
           },
           "quill.core.radio.models:RadioStation": {
             "name": "str",

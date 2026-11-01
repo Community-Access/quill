@@ -18,6 +18,18 @@ than by build. A date in brackets says when a change arrived.
 
 ### Since build 5 (2026-10-27 to 2026-10-31)
 
+- **Ask QUILL Radio is now Ask, on any AI** [2026-11-01]. Ask (Ctrl+Shift+8)
+  is the family's one conversation window, and it answers on whichever AI you
+  chose in **Choose Your AI** (Ctrl+Shift+F8): QUILL's free AI, your ChatGPT
+  plan, GitHub Copilot or your own key. If you were signed in to ChatGPT here,
+  nothing changes. The station and what is playing are read fresh for every
+  message, and the window says when the song changed. Conversations are saved
+  on this computer. **Which AI Am I Using** (Ctrl+F8, twice for the window),
+  **AI Usage** (Ctrl+Alt+Shift+F2), Use My Own AI Key (Alt+F2) and Privacy
+  Agreement (Alt+Shift+F2) are in Community > AI, and the status bar ends with
+  an AI cell. **Describe the Video** (Ctrl+F5) asks the AI what is on screen,
+  from one picture taken on this computer.
+
 - **Victor Stream playlists import, and fifteen more reading services**
   (2026-10-29).
   Import Stations from Playlist (Ctrl+I) reads XSPF lists exported from a
