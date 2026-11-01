@@ -561,10 +561,12 @@ monthly, daily or hourly allowance, no 2,250-word ceiling, and no smaller first
 Choose **Tools > AI > Use My Own AI Key** (**Alt+F2**). One window opens. Here
 is what is in it:
 
-1. **Provider.** Choose **OpenAI** or **Google Gemini**. Everything else in the
+1. **Provider.** Choose **OpenAI**, **Google Gemini**, **Anthropic Claude**,
+   **OpenRouter**, **Ollama Cloud**, a **Custom OpenAI-compatible service**, or
+   **Ollama on this computer**, which needs no key. Everything else in the
    window follows this choice: where your text goes, which key, which models
    and whose prices. AI help always uses the key saved for the provider you
-   choose here, and never the other one. Your choice is saved with your
+   choose here, and never another one. Your choice is saved with your
    settings, and QUILL never guesses it from a key or a model name.
 2. **About this.** A read-only box saying exactly where your text goes. Arrow
    through it once.
@@ -602,6 +604,16 @@ your models as soon as it opens. Press **Alt+F2**, pick another, and press OK.
 **There is no separate on and off switch.** While a key is saved for the
 provider you chose, AI help uses it. Remove the key and AI help goes back to
 the free service, with its free allowance, straight away.
+
+**Ollama on this computer needs no key.** Install Ollama from ollama.com, pull
+a model, and choose **Ollama on this computer**. The About box starts with
+"Runs on this computer. Nothing is sent.", and that is exactly what happens:
+the model runs on your computer, nothing is billed and nothing leaves it. The
+key box is off, a **Server address** box says where Ollama listens (usually
+`http://localhost:11434`), the Model list is whatever Ollama has, and the test
+button reads **Test the Connection**. A custom service has a Server address
+too. These providers used to be set up in QUILL's AI Hub; they are the same
+providers, with the same saved keys, in this one window in both editors.
 
 **You can save both keys.** The Provider list decides which one is used. If
 you choose OpenAI, a saved Gemini key just sits there unused. The status line

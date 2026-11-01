@@ -31,6 +31,11 @@ AI_ENTRIES: dict[str, str] = {
     # and an unchecked migration, which only delays retiring the old files.
     "core/ai/family_prompts.py::_write_prompts": "content",
     "core/ai/family_prompts.py::_write_meta": "marker",
+    # My own key's server address for a custom service or Ollama on this
+    # computer (decision 20), assistant-own-key-hosts.json beside the AI Hub's
+    # assistant-connection.json: a schema_version envelope and one address per
+    # provider, never a key. Lost, each provider reads its default address.
+    "core/ai/own_key_providers.py::save_host": "versioned",
     # <app data>/<app>-ai.json: Quill Weather's, Quill Converter's, Quill Media
     # Player's, Quill Inkwell's and QuillBeacon's own Choose Your AI choice and
     # picture consent (codex.md Phase 3), as Studio's studio-ai.json: names and

@@ -1613,6 +1613,7 @@ class MainFrame(
             # sweep, so the Performance settings (Low-resource mode, Unload idle
             # models after) actually take effect on the speech/TTS/LLM engines.
             ("model lifecycle", self._start_model_lifecycle),
+            ("family prompts", self._start_family_prompt_migration),
         ):
             _t = time.perf_counter() if _profile else 0.0
             try:
@@ -11539,7 +11540,7 @@ class MainFrame(
             self.frame,
             show_modal_dialog=self._show_modal_dialog,
             announce=self._set_status,
-            open_advanced_connection=self.open_ai_preferences,
+            open_own_key=self.cmd_ai_own_key,  # the Provider page's one route (decision 20)
             initial_page=initial_page,
         )
         dlg.show()

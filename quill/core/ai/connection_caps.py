@@ -50,6 +50,7 @@ __all__ = [
     "connections_that_can",
     "missing_sentence",
     "needs_label",
+    "own_key_records",
     "record_for",
     "require",
     "set_model_capabilities",
@@ -126,6 +127,25 @@ _SRC_OWN_SEE = "AiService.own_key_can_see (hosted_ai_own_key_route.py); own_key_
 _SRC_OWN_STREAM = "own_key_gemini.stream_answer streams; the OpenAI own-key client does not"
 _SRC_OWN_MEDIA = "image_generation.py, cloud_tts.py, gemini_tts.py: own key only (codex.md 7)"
 _SRC_LAYER = "codex.md 10A.7: this layer runs no agent tools on a direct route"
+#: The AI Hub's providers in My own key (decision 20): one text source each.
+_SRC_OWN_TEXT: dict[str, str] = {
+    "openai": _SRC_OWN_SEE,
+    "gemini": _SRC_OWN_SEE,
+    "claude": "assistant_ai.generate_assistant_response: Anthropic /v1/messages "
+    "(docs.anthropic.com)",
+    "openrouter": "assistant_ai.generate_assistant_response: OpenRouter /v1/chat/completions "
+    "(openrouter.ai/docs)",
+    "ollama_cloud": "assistant_ai.generate_assistant_response: ollama.com /v1/chat/completions "
+    "(docs.ollama.com/cloud)",
+    "custom": "assistant_ai.generate_assistant_response: the service's OpenAI-compatible "
+    "/v1/chat/completions",
+    "ollama": "assistant_ai.generate_assistant_response: Ollama /api/chat on this computer "
+    "(docs.ollama.com/api)",
+}
+#: Pictures on the Hub's providers: only local Ollama, and only per model.
+_SRC_OWN_HUB_SEE = "the own-key route sends pictures only on Gemini and per-model Ollama"
+_SRC_OLLAMA_SEE = "Ollama /api/show capabilities (ollama_capabilities.py), per model"
+_SRC_OWN_NO_STREAM = "assistant_ai.generate_assistant_response answers whole, not streamed"
 _SRC_PLAN_MEDIA = "codex.md 10A.7: plans carry no image generation or speech"
 
 
@@ -220,18 +240,36 @@ def _codex() -> ConnectionRecord:
     )
 
 
+def _own_key_pictures(provider: str) -> Claim:
+    if provider in ("openai", "gemini"):
+        return Claim(provider == "gemini", _SRC_OWN_SEE, "Gemini yes; OpenAI here no")
+    if provider == "ollama":
+        return Claim(False, _SRC_OLLAMA_SEE, "per model")
+    return Claim(False, _SRC_OWN_HUB_SEE)
+
+
 def _own_key(provider: str) -> ConnectionRecord:
+    """My own key's record for *provider*. Every provider has one (decision 20);
+    an unknown provider is the text source's empty, which GATE-CAPS catches."""
     gemini = provider == "gemini"
+    stream_source = _SRC_OWN_STREAM if provider in ("openai", "gemini") else _SRC_OWN_NO_STREAM
     return _record(
         OWN_KEY,
-        text=Claim(True, _SRC_OWN_SEE),
-        pictures=Claim(gemini, _SRC_OWN_SEE, "Gemini yes; OpenAI here no"),
+        text=Claim(True, _SRC_OWN_TEXT.get(provider, "")),
+        pictures=_own_key_pictures(provider),
         agent_tools=Claim(False, _SRC_LAYER),
         web_search=Claim(False, _SRC_LAYER),
-        streaming=Claim(gemini, _SRC_OWN_STREAM, "per provider"),
+        streaming=Claim(gemini, stream_source, "per provider"),
         image_generation=Claim(True, _SRC_OWN_MEDIA),
         speech=Claim(True, _SRC_OWN_MEDIA),
     )
+
+
+def own_key_records() -> dict[str, ConnectionRecord]:
+    """My own key's record for every provider it offers, for GATE-CAPS and the tests."""
+    from quill.core.ai.own_key_providers import PROVIDERS
+
+    return {provider: _own_key(provider) for provider in PROVIDERS}
 
 
 # -- per-model overrides -------------------------------------------------------- #

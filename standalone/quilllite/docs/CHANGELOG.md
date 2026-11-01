@@ -15,6 +15,20 @@ in rich text, and arrows that read a table cell by cell), Help > What's New,
 and a full menu bar when every document is closed. Where an entry below says
 "1.2.0" or names a build, it means that testing build.
 
+### Your own key, and your prompts, shared with QUILL (2026-11-01)
+
+- **More providers in Use My Own AI Key** (Alt+F2): Anthropic Claude,
+  OpenRouter, Ollama Cloud and a custom OpenAI-compatible service, beside
+  OpenAI and Google Gemini, and **Ollama on this computer**, which needs no key
+  and says "Runs on this computer. Nothing is sent." QUILL got exactly the same
+  list in the same change, from its AI Hub, so a key saved in either editor
+  works in both.
+- **Your saved prompts are the family's.** The Prompt Library reads QUILL's
+  `prompts.json`. The prompts QUILL Lite kept in its own folder are brought
+  into it once, in the background, the first time this version starts; the old
+  file is kept as it was for one release. Nothing is written to QUILL's folder
+  on a computer without QUILL until there is a prompt to keep.
+
 ### Shared runtime and licensing (2026-10-27 and 2026-10-31)
 
 - **ChatGPT plan sign-in holds through a brief problem** (2026-10-31).

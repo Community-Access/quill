@@ -28,6 +28,8 @@ from quill.core.ai.connection_caps import (
     ConnectionRecord,
 )
 from quill.core.ai.connection_choice import IN_USE, SIGNED_IN, ConnectionRow
+from quill.core.ai.own_key_providers import COMPANIES, LOCAL_ABOUT, is_local
+from quill.core.ai.own_key_providers import CUSTOM as _CUSTOM
 
 __all__ = [
     "ACTION_LABELS",
@@ -97,7 +99,7 @@ _WHO_PAYS: dict[str, str] = {
     CODEX: "Runs tasks on your ChatGPT plan.",
 }
 
-_OWN_KEY_COMPANY = {"openai": "OpenAI", "gemini": "Google"}
+_OWN_KEY_COMPANY = COMPANIES
 
 
 def about_line(record: ConnectionRecord, *, own_key_provider: str = "openai") -> str:
@@ -114,6 +116,10 @@ def about_line(record: ConnectionRecord, *, own_key_provider: str = "openai") ->
     if record.connection == OWN_KEY:
         company = _OWN_KEY_COMPANY.get(own_key_provider, own_key_provider)
         who = f"Goes to {company}, billed per request to your own key."
+        if is_local(own_key_provider):
+            who = LOCAL_ABOUT
+        elif own_key_provider == _CUSTOM:
+            who = f"Goes to {company}, under that service's own terms."
     else:
         who = _WHO_PAYS.get(record.connection, "")
     line = " ".join(part for part in (what, tasks, who) if part)

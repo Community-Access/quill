@@ -33,6 +33,7 @@ from quill.core.ai.connection_choice import (
     row_states,
 )
 from quill.core.ai.copilot_quota import CopilotQuota, usage_clause
+from quill.core.ai.own_key_providers import LOCAL_ABOUT, PROVIDER_NAMES, USAGE_URLS, is_local
 
 __all__ = [
     "CHATGPT_USAGE_URL",
@@ -49,11 +50,8 @@ __all__ = [
 
 CHATGPT_USAGE_URL = "https://chatgpt.com/settings/usage"
 GITHUB_USAGE_URL = "https://github.com/settings/billing"
-_OWN_KEY_USAGE_URLS = {
-    "openai": "https://platform.openai.com/usage",
-    "gemini": "https://aistudio.google.com/usage",
-}
-_PROVIDER_NAMES = {"openai": "OpenAI", "gemini": "Google Gemini"}
+_OWN_KEY_USAGE_URLS = USAGE_URLS
+_PROVIDER_NAMES = PROVIDER_NAMES
 
 
 # -- the own key's rate-limit headers -------------------------------------------- #
@@ -174,6 +172,8 @@ def _own_key_clause(provider: str, snapshot: RateLimitSnapshot | None) -> str:
     company = _PROVIDER_NAMES.get(provider, provider)
     if provider == "gemini":
         return "Google reports no count of what is left."
+    if is_local(provider):
+        return f"no limit and no bill. {LOCAL_ABOUT}"
     if snapshot is None or snapshot.remaining_requests is None:
         return f"no count yet; {company} sends one with each answer."
     left = snapshot.remaining_requests
@@ -225,7 +225,8 @@ def usage_rows(
             UsageRow(
                 OWN_KEY,
                 f"{CONNECTION_NAMES[OWN_KEY]}, {company}: "
-                f"{_own_key_clause(provider, own_key_limits)} Your bill is on {company}'s page.",
+                f"{_own_key_clause(provider, own_key_limits)}"
+                + ("" if is_local(provider) else f" Your bill is on {company}'s page."),
                 manage_url=_OWN_KEY_USAGE_URLS.get(provider, ""),
             )
         )

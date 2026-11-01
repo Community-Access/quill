@@ -2034,3 +2034,51 @@ Quill Radio and QUILL Cast, the picture consent:
 - [ ] All sixteen with NVDA.
 - [ ] All sixteen with JAWS.
 - [ ] Checks 1, 3, 5 and 11 with Narrator.
+
+## My own key gains the AI Hub's providers, and one prompt list for the family, QUILL and QUILL Lite (codex.md decisions 18 and 20, 2026-11-01)
+
+Use My Own AI Key (Alt+F2), in QUILL and then in QUILL Lite:
+
+1. Open it and arrow through Provider: OpenAI, Google Gemini, Anthropic
+   Claude, OpenRouter, Ollama Cloud, Custom OpenAI-compatible service, Ollama
+   on this computer. Each is read once, with nothing else spoken over it.
+2. Choose Ollama on this computer and Tab to About this: the first words read
+   are "Runs on this computer. Nothing is sent." The API key box reads as
+   unavailable and its label says none is needed; Server address reads
+   http://localhost:11434 (or your saved address); the test button reads
+   "Test the Connection" and Remove the Saved Key reads as unavailable.
+3. With Ollama running, press Test the Connection: you hear "Ollama on this
+   computer is running", the number of models and which one answered. With
+   Ollama stopped, you hear that it did not answer, and nothing else.
+4. Choose Anthropic Claude: the key box is available again and its label names
+   Anthropic Claude; Server address reads as unavailable; Alt+V does nothing
+   useful there and Alt+K lands in the key box.
+5. Press OK on Ollama: you hear "AI help uses Ollama on this computer. Runs on
+   this computer. Nothing is sent." Ctrl+4 then reads "My own key, Ollama on
+   this computer" and its About line ends with "Runs on this computer. Nothing
+   is sent."
+6. With an Ollama model that reads pictures chosen, Ctrl+F5 asks once where
+   pictures go and names "Ollama on this computer, and nowhere else"; with a
+   text-only model it says pictures need a connection that can see.
+
+The AI Hub (QUILL only):
+
+7. Open AI > AI Hub. The Provider page reads "Provider in use" and the
+   sentence naming the provider and model; the next Tab stop is "Open Use My
+   Own AI Key", Alt+K. There is no provider list, key box or model box.
+8. Press Open Use My Own AI Key: the Hub closes and Choose Your AI opens on the
+   own key's row with Use My Own AI Key on top. Focus lands in that window,
+   not back in the editor.
+9. The On-Device page reads as one paragraph with no address box. The
+   Advanced page has no Reset AI Settings button.
+
+One prompt list:
+
+10. On a profile with prompts in QUILL Lite's own prompts.json, start QUILL
+    Lite: nothing is spoken about the move. Ctrl+7 lists those prompts, and a
+    name QUILL already had with different words reads "(from QUILL Lite)".
+11. Start QUILL afterwards: Ctrl+7 lists the same prompts. Quit and start
+    again: nothing is added twice.
+
+- [ ] All eleven with NVDA.
+- [ ] All eleven with JAWS.

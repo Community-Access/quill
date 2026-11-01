@@ -1,17 +1,29 @@
-"""Use My Own AI Key: AI help on the user's own OpenAI or Google Gemini account.
+"""Use My Own AI Key: AI help on the user's own account with the provider they chose.
 
 One window, shared by QUILL and QUILL Lite (Tools > AI in both, Alt+F2). It
-opens on a **Provider** list -- OpenAI, or Google Gemini -- and everything
-under it follows the choice: the About text says plainly where the text goes
+opens on a **Provider** list -- OpenAI, Google Gemini, Anthropic Claude,
+OpenRouter, Ollama Cloud, a custom OpenAI-compatible service, or Ollama on this
+computer (:mod:`quill.core.ai.own_key_providers`; the last five were the AI
+Hub's list until decision 20 folded it in here) -- and everything under it
+follows the choice: the About text says plainly where the text goes
 for *that* company and where a key is made, the key field names the company,
 the model list is that account's own models with that company's prices, and
 Test the Key tests against that company. The provider is an explicit choice
 saved with the settings (``ai_own_key_provider``); nothing is ever inferred
 from a key that happens to be saved or from a model's name, because a request
 that quietly went to a company the person did not choose is the one outcome
-this window exists to prevent (qc.md X-07). Both keys may be saved; the
-Provider list says which one runs, and the status line says when the other
+this window exists to prevent (qc.md X-07). Several keys may be saved; the
+Provider list says which one runs, and the status line says when another
 company's key is there too.
+
+**Ollama on this computer needs no key**: the key box is off, the About text
+starts "Runs on this computer. Nothing is sent.", and the Server address box
+says where Ollama is listening. A custom service has a Server address too. The
+model list for Ollama is whatever ``/api/tags`` reports, never a list kept here.
+
+**One choice for every AI feature.** OK also makes the provider the one QUILL's
+advanced features use, which the AI Hub's Provider list used to set
+(:func:`~quill.core.ai.own_key_providers.use_for_advanced_features`).
 
 There is no separate switch: **a saved key for the chosen provider lifts every
 limit**, and **Remove the Saved Key** puts AI help straight back on QUILL's free
@@ -64,6 +76,15 @@ from quill.core.ai.own_key_models import (
     estimate_note,
     list_models,
 )
+from quill.core.ai.own_key_providers import (
+    HOST_PROVIDERS,
+    LOCAL_ABOUT,
+    host_for,
+    is_local,
+    needs_key,
+    save_host,
+    use_for_advanced_features,
+)
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
 
@@ -79,8 +100,27 @@ _PAD = 8
 _PROVIDER_LABELS = tuple(provider_name(p) for p in OWN_KEY_PROVIDERS)
 
 
-def _explanation(provider: str) -> str:
+def _local_explanation(provider: str) -> str:
     name = provider_name(provider)
+    return (
+        f"{LOCAL_ABOUT} With {name}, the AI help commands -- Summarize, Rewrite, "
+        "Proofread, Explain, the dictionary and questions about a document -- are "
+        "answered by a model running on this computer. No key is needed, nothing "
+        "is billed, and there is no allowance and no size limit beyond the model's "
+        "own. Install Ollama from ollama.com and pull a model first; the Model list "
+        "shows every model Ollama has, and the Server address says where it listens. "
+        "A model that reads pictures, as Ollama reports it, also answers Ask About "
+        "an Image."
+    )
+
+
+def _explanation(provider: str) -> str:
+    if is_local(provider):
+        return _local_explanation(provider)
+    name = provider_name(provider)
+    address = (
+        "Type the service's address in Server address below. " if provider in HOST_PROVIDERS else ""
+    )
     pictures = (
         " Gemini's models also read pictures, so Ask About an Image works with a Gemini key."
         if provider == "gemini"
@@ -94,7 +134,7 @@ def _explanation(provider: str) -> str:
         f"and no size limit beyond the model's own, and {name} bills your account "
         "for each request under its own terms and privacy policy."
         f"{pictures} "
-        f"Create a key at {key_url(provider)}. "
+        f"Create a key at {key_url(provider)}. {address}"
         "While a key is saved for the provider chosen above, every limit is "
         "lifted. Remove the saved key to go back to QUILL's free AI help, with its "
         "free allowance. The key is stored on this computer in Windows' credential "
@@ -120,10 +160,11 @@ class OwnKeyDialog(wx.Dialog):
         self.provider = wx.Choice(self, choices=list(_PROVIDER_LABELS))
         self.provider.SetSelection(OWN_KEY_PROVIDERS.index(self._provider))
         self.provider.SetHelpText(
-            "Which company your key belongs to: OpenAI, or Google Gemini. Everything "
-            "below follows the choice -- where the text goes, which key, which models "
-            "and whose prices. AI help uses the key saved for the provider chosen here, "
-            "never the other one."
+            "Which provider answers: OpenAI, Google Gemini, Anthropic Claude, "
+            "OpenRouter, Ollama Cloud, a custom service, or Ollama on this computer, "
+            "which needs no key. Everything below follows the choice -- where the text "
+            "goes, which key, which models and whose prices. AI help uses the key "
+            "saved for the provider chosen here, never another one."
         )
         self.provider.Bind(wx.EVT_CHOICE, self._on_provider)
         root.Add(provider_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
@@ -152,6 +193,16 @@ class OwnKeyDialog(wx.Dialog):
         )
         root.Add(self.key_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
         root.Add(self.key, 0, wx.EXPAND | wx.ALL, _PAD)
+
+        host_label = wx.StaticText(self, label="Ser&ver address:")
+        self.host = wx.TextCtrl(self, value=host_for(self._provider))
+        self.host.SetHelpText(
+            "Where a custom service or Ollama on this computer is listening, for "
+            "example http://localhost:11434 for Ollama. The other providers have a "
+            "fixed address, so this box is off for them."
+        )
+        root.Add(host_label, 0, wx.LEFT | wx.RIGHT | wx.TOP, _PAD)
+        root.Add(self.host, 0, wx.EXPAND | wx.ALL, _PAD)
 
         model_label = wx.StaticText(self, label="&Model:")
         self._models: list[str] = [self._chosen or default_model(self._provider)]
@@ -186,11 +237,12 @@ class OwnKeyDialog(wx.Dialog):
         root.Add(self.status, 0, wx.EXPAND | wx.ALL, _PAD)
 
         actions = wx.BoxSizer(wx.HORIZONTAL)
-        test = wx.Button(self, label="Test the Ke&y")
+        test = self.test = wx.Button(self, label="Test the Ke&y")
         test.SetHelpText(
             "Checks the key with the chosen provider, lists every model it can use, "
             "then sends one tiny request to the chosen model and says whether it "
-            "answered. The request costs a fraction of a cent on your account."
+            "answered. The request costs a fraction of a cent on your account; with "
+            "Ollama on this computer it checks Ollama is running and costs nothing."
         )
         test.Bind(wx.EVT_BUTTON, self._on_test)
         self.remove = wx.Button(self, label="&Remove the Saved Key")
@@ -208,7 +260,8 @@ class OwnKeyDialog(wx.Dialog):
         root.Add(buttons, 0, wx.EXPAND | wx.ALL, _PAD)
         self.SetSizerAndFit(root)
         apply_modal_ids(self, affirmative_id=wx.ID_OK, cancel_id=wx.ID_CANCEL)
-        self.key.SetFocus()
+        self._follow_provider_fields()
+        (self.key if needs_key(self._provider) else self.provider).SetFocus()
         if saved:
             self._list_saved_key_models()
 
@@ -219,6 +272,24 @@ class OwnKeyDialog(wx.Dialog):
         if 0 <= index < len(OWN_KEY_PROVIDERS):
             return OWN_KEY_PROVIDERS[index]
         return self._provider
+
+    def _follow_provider_fields(self) -> None:
+        """The key box, the address box, Remove and Test follow the provider."""
+        keyed = needs_key(self._provider)
+        self.key.Enable(keyed)
+        self.host.Enable(self._provider in HOST_PROVIDERS)
+        self.host.SetValue(host_for(self._provider))
+        self.remove.Enable(keyed and has_own_key(self._provider))
+        self.test.SetLabel("Test the Ke&y" if keyed else "Test the Connectio&n")
+
+    def _host(self) -> str:
+        """The address typed for a provider that has one, else ""."""
+        return self.host.GetValue().strip() if self._provider in HOST_PROVIDERS else ""
+
+    def _list(self, key: str, provider: str) -> tuple[list[str], str]:
+        """The provider's model list, at the typed address when it has one."""
+        host = self._host()
+        return list_models(key, provider, host=host) if host else list_models(key, provider)
 
     def _on_provider(self, _event: Any) -> None:
         """Everything under the list follows it; the typed key is for the new one."""
@@ -235,24 +306,35 @@ class OwnKeyDialog(wx.Dialog):
         self.model.Set([self._label(name) for name in self._models])
         self.model.SetSelection(0)
         self._show_estimate()
-        self.remove.Enable(saved)
+        self._follow_provider_fields()
         self._set_status(self._saved_status(saved))
         if saved:
             self._list_saved_key_models()
 
     def _key_label(self, saved: bool) -> str:
         name = provider_name(self._provider)
+        if not needs_key(self._provider):
+            return f"API &key (none is needed for {name}):"
         if saved:
             return f"{name} API &key (a key is saved; leave empty to keep it):"
         return f"{name} API &key:"
 
     def _saved_status(self, saved: bool) -> str:
         name = provider_name(self._provider)
-        other = next(p for p in OWN_KEY_PROVIDERS if p != self._provider)
+        if is_local(self._provider):
+            return f"AI help uses {name}. {LOCAL_ABOUT}"
+        other = next(
+            (
+                p
+                for p in OWN_KEY_PROVIDERS
+                if p != self._provider and needs_key(p) and has_own_key(p)
+            ),
+            "",
+        )
         other_note = (
             f" A {provider_name(other)} key is saved too; choose {provider_name(other)} "
             "above to use it instead."
-            if has_own_key(other)
+            if other
             else ""
         )
         if saved:
@@ -268,6 +350,8 @@ class OwnKeyDialog(wx.Dialog):
     # -- buttons ---------------------------------------------------------- #
 
     def _key_to_use(self) -> str:
+        if not needs_key(self._provider):
+            return ""
         typed = self.key.GetValue().strip()
         if typed:
             return typed
@@ -320,13 +404,13 @@ class OwnKeyDialog(wx.Dialog):
         from quill.ui.update_download import thread_submit
 
         key = self._key_to_use()
-        if not key:
+        if not key and needs_key(self._provider):
             return
         provider = self._provider
         self.status.SetValue("Listing the models your key can use...")
 
         def work(**_kwargs: Any) -> tuple[list[str], str]:
-            return list_models(key, provider)
+            return self._list(key, provider)
 
         def done(_name: str, result: Any) -> None:
             models, error = result
@@ -341,37 +425,38 @@ class OwnKeyDialog(wx.Dialog):
             self.status.SetValue(f"The models could not be listed. {error}")
             return
         self._fill_models(models, self._preferred(models, self._selected_model()))
+        found = f"{len(models)} models are listed."
         self.status.SetValue(
-            f"A {provider_name(provider)} key is saved. {len(models)} models are listed."
+            f"{provider_name(provider)} is ready. {found}"
+            if is_local(provider)
+            else f"A {provider_name(provider)} key is saved. {found}"
         )
 
     def _on_test(self, _event: Any) -> None:
         provider = self._provider
         name = provider_name(provider)
         key = self._key_to_use()
-        if not key:
+        keyed = needs_key(provider)
+        if not key and keyed:
             self._set_status(f"Enter your {name} key first.")
             return
-        from quill.core.assistant_ai import (
-            AssistantConnectionSettings,
-            default_host_for_provider,
-            test_chat,
-        )
+        from quill.core.assistant_ai import AssistantConnectionSettings, test_chat
         from quill.ui.update_download import thread_submit
 
         current = self._selected_model() if self._listed else ""
-        self._set_status(f"Checking the key with {name}...")
+        host = self._host() or host_for(provider)
+        self._set_status(f"Checking the key with {name}..." if keyed else f"Checking {name}...")
 
         def work(**_kwargs: Any) -> tuple[list[str], str, str]:
-            models, error = list_models(key, provider)
+            models, error = self._list(key, provider)
             if error:
-                return [], "", f"The key did not work. {error}"
+                failed = "The key did not work." if keyed else f"{name} did not answer."
+                return [], "", f"{failed} {error}"
             model = self._preferred(models, current)
-            connection = AssistantConnectionSettings(
-                provider=provider, host=default_host_for_provider(provider), model=model
-            )
+            connection = AssistantConnectionSettings(provider=provider, host=host, model=model)
             ok, message = test_chat(connection, key)
-            listed = f"The key works with {name}. {len(models)} models are listed"
+            works = f"The key works with {name}." if keyed else f"{name} is running."
+            listed = f"{works} {len(models)} models are listed"
             if ok:
                 return models, model, f"{listed}, and {model} answered."
             return models, model, f"{listed}, but {model} did not answer. {message}"
@@ -423,17 +508,28 @@ class OwnKeyDialog(wx.Dialog):
 
         provider = self._provider
         name = provider_name(provider)
-        typed = self.key.GetValue().strip()
+        typed = self.key.GetValue().strip() if needs_key(provider) else ""
         settings.ai_own_key_provider = provider
         settings.ai_own_key_model = self._selected_model()
+        if provider in HOST_PROVIDERS:
+            try:
+                save_host(provider, self.host.GetValue())
+            except OSError:
+                return f"The server address could not be saved, so {name} keeps the old one."
         if typed and not save_provider_api_key(provider, typed):
             return (
                 "The key could not be stored securely on this computer, so it was not "
                 "saved. AI help stays on QUILL's free service."
             )
-        if has_own_key(provider):
-            return f"AI help uses your own {name} key, with no limits."
-        return "AI help uses QUILL's free service."
+        if not has_own_key(provider):
+            return "AI help uses QUILL's free service."
+        try:  # the advanced AI features follow the same choice (decision 20)
+            use_for_advanced_features(provider, settings.ai_own_key_model)
+        except Exception:  # noqa: BLE001 - the basic AI is saved either way
+            pass
+        if is_local(provider):
+            return f"AI help uses {name}. {LOCAL_ABOUT}"
+        return f"AI help uses your own {name} key, with no limits."
 
 
 # --------------------------------------------------------------------------- #
@@ -453,6 +549,8 @@ def own_key_about_text(model: str, provider: str = "openai") -> str:
     limit they do not have is running out.
     """
     name = provider_name(provider)
+    if is_local(provider):
+        return f"\n\nAI help\nUsing {name}, with the model {model}. {LOCAL_ABOUT}"
     return (
         "\n\nAI help\n"
         f"Using your own {name} key, with the model {model}. No QUILL allowance "

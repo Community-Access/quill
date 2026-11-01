@@ -2246,7 +2246,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 251 audited sites (251 helped).
+Control coverage: 252 audited sites (252 helped).
 
 ### Every window, and what it is for
 
@@ -2432,7 +2432,7 @@ Control coverage: 251 audited sites (251 helped).
 
 **Use My ChatGPT Subscription.** Use the ChatGPT plan you already pay for instead of QUILL's free AI or an API key. Continue with ChatGPT opens your browser to sign in and allow it; once signed in, choose the model from your plan's own list and whether web search is allowed. Sign Out and Forget on This Computer appear only while you are signed in.
 
-**Use My Own AI Key.** Use AI help on your own OpenAI or Google Gemini account instead of QUILL's free service. Choose the company, paste the key it gave you, and test it; with a saved key there is no daily limit. Remove the Saved Key puts you straight back on the free service.
+**Use My Own AI Key.** Use AI help on your own account with OpenAI, Google Gemini, Anthropic Claude, OpenRouter, Ollama Cloud or a custom service, or on Ollama on this computer, which needs no key and sends nothing. Choose the provider, paste the key it gave you, and test it; with a saved key there is no daily limit. Remove the Saved Key puts you straight back on the free service.
 
 **Use the Shared Word List.** Which of your words will be added to the list QUILL, QUILL Transcribe and Quill Inkwell share, before QUILL Lite starts using it. Use the Shared List goes ahead; Cancel keeps QUILL Lite's own list.
 
@@ -2599,13 +2599,14 @@ Control coverage: 251 audited sites (251 helped).
 - `cancel`: Closes this window. Nothing is sent.
 #### OwnKeyDialog (`quill/ui/hosted_ai_own_key.py`)
 
-- `self.provider`: Which company your key belongs to: OpenAI, or Google Gemini. Everything below follows the choice -- where the text goes, which key, which models and whose prices. AI help uses the key saved for the provider chosen here, never the other one.
+- `self.provider`: Which provider answers: OpenAI, Google Gemini, Anthropic Claude, OpenRouter, Ollama Cloud, a custom service, or Ollama on this computer, which needs no key. Everything below follows the choice -- where the text goes, which key, which models and whose prices. AI help uses the key saved for the provider chosen here, never another one.
 - `self.about`: Where your text goes with your own key, and where to make one. Read with the arrow keys.
 - `self.key`: Paste the API key for the provider chosen above. It is stored securely and never shown again; leave this empty to keep the key already saved.
+- `self.host`: Where a custom service or Ollama on this computer is listening, for example http://localhost:11434 for Ollama. The other providers have a fixed address, so this box is off for them.
 - `self.model`: Which model answers, with an estimate of what each might cost at the chosen provider's prices. Every model your key can use for text is listed once the key is checked, the current flagship first. You can change it here at any time.
 - `self.cost`: What the chosen model might cost for a typical request, and where the provider's real prices are. An estimate, not a price.
 - `self.status`: What the last test said, or whether a key is saved.
-- `test`: Checks the key with the chosen provider, lists every model it can use, then sends one tiny request to the chosen model and says whether it answered. The request costs a fraction of a cent on your account.
+- `test`: Checks the key with the chosen provider, lists every model it can use, then sends one tiny request to the chosen model and says whether it answered. The request costs a fraction of a cent on your account; with Ollama on this computer it checks Ollama is running and costs nothing.
 - `self.remove`: Forgets the saved key for the chosen provider now, and puts AI help back on QUILL's free service with its free allowance.
 #### AiPadFrame (`quill/ui/hosted_ai_pad.py`)
 

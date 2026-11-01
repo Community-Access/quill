@@ -586,5 +586,8 @@ def test_ctrl_3_ctrl_4_and_ctrl_8_are_free_everywhere_else() -> None:
         owners = [c for c, k in DEFAULT_KEYMAP.items() if k == chord]
         assert len(owners) == 1, (chord, owners)
         assert chord not in DEFAULT_ALIASES.values()
+        # An app may carry the chord only for the same family command (decision 14:
+        # Ctrl+4 is Choose Your AI in Beacon too), never for something else.
         for app, table in APP_KEYMAPS.items():
-            assert chord not in table.values(), (app, chord)
+            claimed = [c for c, k in table.items() if k == chord]
+            assert claimed in ([], owners), (app, chord, claimed)

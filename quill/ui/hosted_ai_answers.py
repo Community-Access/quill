@@ -204,15 +204,18 @@ class AiAnswersMixin:
     # ------------------------------------------------------------------ #
 
     def _ai_prompt_library(self) -> Any:
-        """The library this editor keeps: ``prompts.json`` in its data folder.
+        """The family's one prompt list, ``<app data>/prompts.json`` (decision 18).
 
-        QUILL overrides this with its own cached library, which also holds the
-        prompts its Quillins contribute, so both of QUILL's ways in show one list.
+        Every app reads the same file, QUILL Lite included -- its own
+        ``prompts.json`` was brought in once at startup
+        (:mod:`quill.core.ai.family_prompt_migration`) and is no longer written.
+        QUILL overrides this with its own cached library of the same file, which
+        also holds the prompts its Quillins contribute.
         """
-        from quill.core.prompt_fill import PROMPTS_FILE
+        from quill.core.ai.family_prompts import family_store_path
         from quill.core.prompt_library import PromptLibrary
 
-        return PromptLibrary(self._ai_host().data_dir / PROMPTS_FILE)
+        return PromptLibrary(family_store_path())
 
     def _ai_document_title(self) -> str:
         """The document's title for a prompt's ``{title}``, or nothing."""

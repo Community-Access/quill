@@ -401,13 +401,14 @@ def migrate(store: FamilyPromptStore, sources: Sequence[MigrationSource]) -> Mig
             names.setdefault(old.name.lower(), []).append(old.text)
             report.added.append(name)
     store.add_many(new)
+    previous = store.meta().get("migration", {})
+    previous = previous if isinstance(previous, dict) else {}
+    earlier = previous.get("sources", [])
+    labels = [str(label) for label in earlier] if isinstance(earlier, list) else []
+    labels += [s.label for s in sources if s.label not in labels]
     store.record(
         "migration",
-        {
-            **store.meta().get("migration", {}),
-            "done": datetime.now(UTC).isoformat(timespec="seconds"),
-            "sources": [s.label for s in sources],
-        },
+        {**previous, "done": datetime.now(UTC).isoformat(timespec="seconds"), "sources": labels},
     )
     return report
 

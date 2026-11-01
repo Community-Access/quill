@@ -433,14 +433,14 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "only in the Authorization header."
     ),
     "core/assistant_ai.py::_fetch_models_from_endpoint": (
-        "User-initiated model discovery from the AI Connection dialog (Verify "
-        "Connection / List Models). HTTPS uses a verified context."
+        "User-initiated model discovery: Use My Own AI Key's model list (any of its "
+        "seven providers), Choose Your AI and AI Connection. Verified HTTPS context."
     ),
     "core/assistant_ai.py::_post_chat": (
-        "AI generation against the user's explicitly configured provider (AI-13). "
-        "Only runs when the user has set up an AI connection and invokes an "
-        "assistant action; HTTPS uses a verified context and cloud endpoints are "
-        "HTTPS-enforced by _validate_endpoint_security."
+        "AI generation against the user's explicitly chosen provider (AI-13): My own "
+        "key's providers (decision 20: OpenAI, Claude, OpenRouter, Ollama Cloud, custom "
+        "service, Ollama on this computer) and the advanced features, only on an explicit "
+        "AI action. Verified TLS; cloud HTTPS enforced by _validate_endpoint_security."
     ),
     "core/assistant_ai.py::_post_chat_stream": (
         "Streaming variant of AI generation (AI-14). Same gating as _post_chat: "
@@ -658,10 +658,10 @@ _REVIEWED_EGRESS: dict[str, str] = {
         "streams the response body to a temp file with a visible progress callback."
     ),
     "core/ai_chat.py::_post_json": (
-        "AI chat request. Triggered only by an explicit user action in the Ask AI "
-        "dialog (Tools > Ask AI or Alt+Q). The provider, model, and prompt are "
-        "chosen by the user in the dialog before sending. HTTPS enforced for cloud "
-        "providers; local Ollama uses HTTP on localhost only. No silent background calls."
+        "AI chat request from the Ask AI dialog (Alt+Q), on an explicit user action; also "
+        "Ollama /api/show, asked when Use My Own AI Key lists a local Ollama's models, to "
+        "learn which can read pictures (no prompt, no key). HTTPS enforced for cloud; "
+        "local Ollama uses HTTP on localhost only. No silent background calls."
     ),
     "core/ai_chat.py::_get_json": (
         "AI model list fetch. Triggered when the Ask AI dialog opens or when the "

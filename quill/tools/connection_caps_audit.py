@@ -172,18 +172,27 @@ def scan_tree(roots: Iterable[str] = SCAN_ROOTS) -> list[Finding]:
 
 
 def claim_findings() -> list[Finding]:
-    """Every capability claim with an empty source."""
+    """Every capability claim with an empty source, for every own-key provider.
+
+    My own key has one record per provider it offers (decision 20), so each
+    provider in :data:`~quill.core.ai.own_key_providers.PROVIDERS` is checked:
+    a provider added to the list without a sourced record fails here.
+    """
     from quill.core.ai.connection_caps import all_records
+    from quill.core.ai.own_key_providers import PROVIDERS
 
     path = "quill/core/ai/connection_caps.py"
     findings: list[Finding] = []
-    for provider in ("openai", "gemini"):
+    for provider in PROVIDERS:
         for record in all_records(own_key_provider=provider, web_search_enabled=True):
             for capability, claim in record.claims.items():
                 if not claim.source.strip():
-                    findings.append(
-                        Finding(path, 0, f"{record.connection}.{capability} names no source")
-                    )
+                    who = record.connection
+                    if who == "own_key":
+                        who = f"own_key[{provider}]"
+                    finding = Finding(path, 0, f"{who}.{capability} names no source")
+                    if finding not in findings:
+                        findings.append(finding)
     return findings
 
 

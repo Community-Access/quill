@@ -82,6 +82,11 @@ _NOT_FOR_TEXT = re.compile(
     re.IGNORECASE,
 )
 
+#: The same, for the providers that came from the AI Hub (decision 20).
+_NOT_FOR_TEXT_ELSEWHERE = re.compile(
+    r"embedding|embed-|tts|whisper|transcribe|dall-e|moderation|realtime", re.IGNORECASE
+)
+
 #: Offered first, in this order: Luna 6 (OpenAI names it ``gpt-6-luna``; a bare
 #: ``luna-6`` is matched too), then every other GPT-6 model.
 _FIRST = (
@@ -125,9 +130,25 @@ _GEMINI_PREVIEW = re.compile(r"preview|exp(erimental)?\b|-exp-", re.IGNORECASE)
 _GEMINI_VERSION = re.compile(r"gemini-(\d+(?:\.\d+)?)", re.IGNORECASE)
 
 
+_LOCAL = "ollama"
+
+
 def estimate_note(provider: str = "openai") -> str:
     """Where *provider*'s real prices are, and that the figures are estimates."""
-    return GEMINI_ESTIMATE_NOTE if provider == _GEMINI else ESTIMATE_NOTE
+    if provider == _GEMINI:
+        return GEMINI_ESTIMATE_NOTE
+    if provider == "openai":
+        return ESTIMATE_NOTE
+    if provider == _LOCAL:
+        return "Ollama on this computer costs nothing per request. Nothing is sent."
+    from quill.core.ai.own_key_providers import COMPANIES, CUSTOM
+
+    who = "the service's" if provider == CUSTOM else f"{COMPANIES.get(provider, provider)}'s"
+    return (
+        "Costs shown are rough estimates from the model's name, at OpenAI's price "
+        f"tiers, to help you compare models. They are not {who} prices; check "
+        f"{who} own price list for the real ones."
+    )
 
 
 def _gemini_rank(name: str) -> tuple[int, float, int, str]:
@@ -155,7 +176,15 @@ def usable(names: Iterable[str], provider: str = "openai") -> list[str]:
     from quill.core.ai.endpoints import gemini_model_id
 
     gemini = provider == _GEMINI
-    leave_out = _GEMINI_NOT_FOR_TEXT if gemini else _NOT_FOR_TEXT
+    # OpenAI's "instruct" models are completion-only; everywhere else (Ollama,
+    # OpenRouter) "instruct" is the chat-tuned model a person wants.
+    leave_out = (
+        _GEMINI_NOT_FOR_TEXT
+        if gemini
+        else _NOT_FOR_TEXT
+        if provider == "openai"
+        else _NOT_FOR_TEXT_ELSEWHERE
+    )
     seen: dict[str, None] = {}
     for name in names:
         name = gemini_model_id(str(name)) if gemini else str(name).strip()
@@ -179,7 +208,7 @@ def ordered(names: Iterable[str], provider: str = "openai") -> list[str]:
                 return position, name.lower()
         return len(_FIRST), name.lower()
 
-    return sorted(usable(names), key=rank)
+    return sorted(usable(names, provider), key=rank)
 
 
 def estimate_for(model: str, provider: str = "openai") -> Estimate:
@@ -210,6 +239,8 @@ def _dollars(amount: float) -> str:
 
 def describe_estimate(model: str, provider: str = "openai") -> str:
     """One sentence: what *model* might cost, per request and per hundred."""
+    if provider == _LOCAL:
+        return f"{model} runs on this computer. Nothing is charged and nothing is sent."
     estimate = estimate_for(model, provider)
     return (
         f"Estimated cost for {model}: {_dollars(estimate.per_request())} per request, "
@@ -220,6 +251,8 @@ def describe_estimate(model: str, provider: str = "openai") -> str:
 
 def choice_label(model: str, provider: str = "openai") -> str:
     """How *model* reads in the model list: its name and its estimate, briefly."""
+    if provider == _LOCAL:
+        return model
     per_hundred = _dollars(estimate_for(model, provider).per_request() * 100)
     return f"{model}, about {per_hundred} per 100 requests (estimate)"
 
@@ -228,19 +261,22 @@ def list_models(key: str, provider: str = "openai", *, host: str = "") -> tuple[
     """``(models, error)`` for *key* on *provider*, ordered for offering.
 
     Blocking; never raises; the error never contains the key. A successful
-    list is also the proof that the key is good: both providers refuse a key
-    they do not recognise, and listing costs nothing. *host* is for tests.
+    list is also the proof that the key is good: every keyed provider refuses
+    a key it does not recognise, and listing costs nothing. *host* overrides the
+    provider's address (the address field, and the tests).
+
+    Ollama on this computer is asked ``/api/tags`` for its models, then
+    ``/api/show`` for what each can do (:func:`_ollama_models`): a model that
+    reports it cannot complete text is left out, and one that reads pictures is
+    recorded in the capability registry with that source.
     """
     from quill.core.ai.own_key import default_model, provider_name, scrub
-    from quill.core.assistant_ai import (
-        AssistantConnectionSettings,
-        default_host_for_provider,
-        list_assistant_models,
-    )
+    from quill.core.ai.own_key_providers import host_for
+    from quill.core.assistant_ai import AssistantConnectionSettings, list_assistant_models
 
     connection = AssistantConnectionSettings(
         provider=provider,
-        host=host or default_host_for_provider(provider),
+        host=(host or host_for(provider)).rstrip("/"),
         model=default_model(provider),
     )
     try:
@@ -250,6 +286,39 @@ def list_models(key: str, provider: str = "openai", *, host: str = "") -> tuple[
     if error:
         return [], scrub(error, key)
     offered = ordered(models, provider)
+    if provider == _LOCAL:
+        offered = _ollama_models(connection.host, offered)
     if not offered:
         return [], f"{provider_name(provider)} listed no models this key can use for text."
     return offered, ""
+
+
+#: Where an Ollama model's "can it see" comes from (GATE-CAPS needs a source).
+OLLAMA_SHOW_SOURCE = "Ollama /api/show capabilities (ollama_capabilities.py), per model"
+
+
+def _ollama_models(host: str, names: list[str]) -> list[str]:
+    """*names* from ``/api/tags``, less the ones ``/api/show`` says cannot write text.
+
+    A model whose capabilities are unknown (an older Ollama) stays: absence of
+    an answer is not a "no". One that reports ``vision`` is recorded as seeing
+    pictures for My own key; one that reports otherwise, as not.
+    """
+    from quill.core.ai.connection_caps import OWN_KEY, PICTURES, set_model_capabilities
+    from quill.core.ai.ollama_capabilities import enrich_capabilities
+
+    try:
+        found = enrich_capabilities(host, names)
+    except Exception:  # noqa: BLE001 - enrichment is best-effort
+        return names
+    kept: list[str] = []
+    for name in names:
+        caps = {c.lower() for c in found.get(name, [])}
+        if name in found and caps and "completion" not in caps:
+            continue
+        if name in found:
+            set_model_capabilities(
+                OWN_KEY, name, {PICTURES: "vision" in caps}, source=OLLAMA_SHOW_SOURCE
+            )
+        kept.append(name)
+    return kept

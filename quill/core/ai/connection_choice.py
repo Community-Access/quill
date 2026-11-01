@@ -32,6 +32,7 @@ from quill.core.ai.connection_caps import (
     FREE,
     OWN_KEY,
 )
+from quill.core.ai.own_key_providers import PROVIDER_NAMES
 
 __all__ = [
     "CHOICE_VALUES",
@@ -89,7 +90,7 @@ ROW_STATES: dict[str, str] = {
 #: Said once by the next AI command after the row in use was signed out.
 NO_AI_IN_USE = "No AI is in use. Choose one."
 
-_OWN_KEY_PROVIDER_NAMES = {"openai": "OpenAI", "gemini": "Google Gemini"}
+_OWN_KEY_PROVIDER_NAMES = PROVIDER_NAMES
 
 
 # -- settings -------------------------------------------------------------------- #

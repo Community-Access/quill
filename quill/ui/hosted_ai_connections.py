@@ -550,9 +550,7 @@ class ChooseAiFrame(wx.Frame):
         if connection == FREE:
             self._service.sign_out()
         elif connection == OWN_KEY:
-            from quill.core.assistant_ai import clear_provider_api_key
-
-            clear_provider_api_key(self._service.own_key_provider or "openai")
+            self._service.own_key_sign_out()
         elif connection in (CHATGPT, CODEX):
             self._sign_out_of_plan(connection, was_in_use)
             return

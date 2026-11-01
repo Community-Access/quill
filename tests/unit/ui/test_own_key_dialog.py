@@ -108,3 +108,71 @@ def test_testing_the_key_lists_the_models_then_asks_the_chosen_one(
         assert said[-1] == "The key works with OpenAI. 2 models are listed, and gpt-6 answered."
     finally:
         dialog.Destroy()
+
+
+# -- the AI Hub's providers, folded in (decision 20) --------------------------------
+
+
+def test_ollama_on_this_computer_needs_no_key_and_has_an_address(
+    wx_app, dialog_module, monkeypatch
+):
+    import quill.core.assistant_ai as assistant_ai
+
+    monkeypatch.setattr(
+        dialog_module, "has_own_key", lambda provider="openai": provider == "ollama"
+    )
+    listed = []
+    monkeypatch.setattr(
+        dialog_module,
+        "list_models",
+        lambda key, provider, **kw: (listed.append((key, provider, kw)), (["llava:7b"], ""))[1],
+    )
+    monkeypatch.setattr(assistant_ai, "test_chat", lambda connection, _key: (True, ""))
+    settings = _Settings()
+    settings.ai_own_key_provider = "ollama"
+    said = []
+    dialog = dialog_module.OwnKeyDialog(None, settings, said.append)
+    try:
+        assert dialog.provider.GetStringSelection() == "Ollama on this computer"
+        assert dialog.about.GetValue().startswith("Runs on this computer. Nothing is sent.")
+        assert not dialog.key.IsEnabled() and dialog.host.IsEnabled()
+        assert not dialog.remove.IsEnabled()
+        assert dialog.test.GetLabel() == "Test the Connectio&n"
+        assert listed and listed[0][0] == ""  # listed on opening, with no key
+        dialog.host.SetValue("http://127.0.0.1:11500")
+        dialog._on_test(None)
+        assert said[-1] == (
+            "Ollama on this computer is running. 1 models are listed, and llava:7b answered."
+        )
+        assert listed[-1][2] == {"host": "http://127.0.0.1:11500"}
+        hosts, advanced = [], []
+        monkeypatch.setattr(dialog_module, "save_host", lambda p, h: hosts.append((p, h)))
+        monkeypatch.setattr(
+            dialog_module, "use_for_advanced_features", lambda p, m: advanced.append((p, m))
+        )
+        outcome = dialog.apply(settings)
+        assert (
+            outcome
+            == "AI help uses Ollama on this computer. Runs on this computer. Nothing is sent."
+        )
+        assert hosts == [("ollama", "http://127.0.0.1:11500")]
+        assert advanced == [("ollama", "llava:7b")]
+        assert settings.ai_own_key_provider == "ollama"
+    finally:
+        dialog.Destroy()
+
+
+def test_switching_to_a_keyed_hub_provider_turns_the_key_back_on(
+    wx_app, dialog_module, monkeypatch
+):
+    monkeypatch.setattr(dialog_module, "has_own_key", lambda *_a: False)
+    dialog = dialog_module.OwnKeyDialog(None, _Settings())
+    try:
+        dialog.provider.SetStringSelection("Anthropic Claude")
+        dialog._on_provider(None)
+        assert dialog.key.IsEnabled() and not dialog.host.IsEnabled()
+        assert dialog.key_label.GetLabel() == "Anthropic Claude API &key:"
+        assert "console.anthropic.com" in dialog.about.GetValue()
+        assert dialog.test.GetLabel() == "Test the Ke&y"
+    finally:
+        dialog.Destroy()

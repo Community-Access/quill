@@ -887,12 +887,16 @@ allowance, no 2,250-word ceiling, and no smaller first 48 hours.</p>
 <p>Choose <strong>Tools &gt; AI &gt; Use My Own AI Key</strong>
 (<strong>Alt+F2</strong>). One window opens. Here is what is in it:</p>
 <ol type="1">
-<li><strong>Provider.</strong> Choose <strong>OpenAI</strong> or
-<strong>Google Gemini</strong>. Everything else in the window follows
-this choice: where your text goes, which key, which models and whose
-prices. AI help always uses the key saved for the provider you choose
-here, and never the other one. Your choice is saved with your settings,
-and QUILL never guesses it from a key or a model name.</li>
+<li><strong>Provider.</strong> Choose <strong>OpenAI</strong>,
+<strong>Google Gemini</strong>, <strong>Anthropic Claude</strong>,
+<strong>OpenRouter</strong>, <strong>Ollama Cloud</strong>, a
+<strong>Custom OpenAI-compatible service</strong>, or <strong>Ollama on
+this computer</strong>, which needs no key. Everything else in the
+window follows this choice: where your text goes, which key, which
+models and whose prices. AI help always uses the key saved for the
+provider you choose here, and never another one. Your choice is saved
+with your settings, and QUILL never guesses it from a key or a model
+name.</li>
 <li><strong>About this.</strong> A read-only box saying exactly where
 your text goes. Arrow through it once.</li>
 <li><strong>API key.</strong> Paste the key for the provider you chose.
@@ -936,6 +940,18 @@ saved, the window lists your models as soon as it opens. Press
 is saved for the provider you chose, AI help uses it. Remove the key and
 AI help goes back to the free service, with its free allowance, straight
 away.</p>
+<p><strong>Ollama on this computer needs no key.</strong> Install Ollama
+from ollama.com, pull a model, and choose <strong>Ollama on this
+computer</strong>. The About box starts with “Runs on this computer.
+Nothing is sent.”, and that is exactly what happens: the model runs on
+your computer, nothing is billed and nothing leaves it. The key box is
+off, a <strong>Server address</strong> box says where Ollama listens
+(usually <code>http://localhost:11434</code>), the Model list is
+whatever Ollama has, and the test button reads <strong>Test the
+Connection</strong>. A custom service has a Server address too. These
+providers used to be set up in QUILL’s AI Hub; they are the same
+providers, with the same saved keys, in this one window in both
+editors.</p>
 <p><strong>You can save both keys.</strong> The Provider list decides
 which one is used. If you choose OpenAI, a saved Gemini key just sits
 there unused. The status line tells you it is there, and choosing Google

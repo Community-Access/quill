@@ -11499,6 +11499,17 @@ the prompt goes to QUILL's free AI as a general question, using one request.
 The answer arrives the way you chose. If the prompt with your text in it is
 bigger than the free limit allows, QUILL says so and sends nothing.
 
+**One list of your prompts, for the whole family.** The prompts you save are
+kept in one file, `prompts.json` in QUILL's data folder, and QUILL Lite's
+Prompt Library reads the same file. The first time this version starts, QUILL
+brings in the prompts you had saved elsewhere: Prompt Studio's, the image
+description styles you wrote, and QUILL Lite's own list. A prompt that is the
+same in two places becomes one. Two different prompts with the same name are
+both kept, and the second is named after where it came from, for example
+"Tighten (from QUILL Lite)". This happens once, quietly, in the background, and
+the old files are left exactly as they were for one release in case anything
+needs checking.
+
 #### Searching the web (Ctrl+9)
 
 QUILL's free service can search the web for you, ten times a month. When the
@@ -11745,17 +11756,16 @@ text. Where your keys are kept, later in this chapter, has the details.
 
 #### Setting up an AI provider
 
-Open **AI > AI Hub...** to set up your providers. The AI Hub is the one place
-for every provider's key, model, **Test Chat** and key removal. If you are
-looking for the old **AI Model and Connection** or **Forget API Key** menu
-items, they are part of the AI Hub now.
+Open **AI > Use My Own AI Key...** (`Alt+F2`) to choose a provider, save its
+key and pick a model. It used to be the AI Hub's job; the Hub's Provider page
+now just says which provider is in use and opens Use My Own AI Key.
 
-- **OpenRouter.** Paste your key into the OpenRouter API Key field. One
-  OpenRouter key reaches many models, including Claude, GPT-4o and Gemini.
+- **OpenRouter.** Paste your OpenRouter key. One OpenRouter key reaches many
+  models, including Claude, GPT-4o and Gemini.
 - **OpenAI.** Paste your OpenAI API key.
-- **Ollama.** No key needed. Install Ollama on your computer (`ollama serve`)
-  and QUILL finds it by itself at `http://localhost:11434`. If you run Ollama
-  on a different port or computer, change the Ollama Base URL setting.
+- **Ollama on this computer.** No key needed. Install Ollama (`ollama serve`)
+  and choose it; QUILL looks for it at `http://localhost:11434`. If Ollama runs
+  on a different port or computer, change the Server address.
 
 You can also set a **Default model for prompt runs**
 (`ai_prompt_default_model`). Leave it blank and Ask AI and the Prompt Library
@@ -11908,8 +11918,10 @@ write from somewhere else.
 
 ### Using your own OpenAI or Google Gemini key
 
-If you have an OpenAI account or a Google Gemini key, you can use **your own
-key** instead of QUILL's free service, and **every limit goes away**: no
+If you have an account with OpenAI, Google Gemini, Anthropic, OpenRouter,
+Ollama Cloud or another OpenAI-compatible service, or Ollama on your own
+computer, you can use **your own key** instead of QUILL's free service, and
+**every limit goes away**: no
 monthly, daily or hourly allowance, no 2,250-word ceiling, and no smaller first
 48 hours.
 
@@ -11918,17 +11930,25 @@ monthly, daily or hourly allowance, no 2,250-word ceiling, and no smaller first
 **AI > Use My Own AI Key...** (`Alt+F2`) opens one window. Its parts, in Tab
 order:
 
-- **Provider.** **OpenAI** or **Google Gemini**. Everything else in the window
-  follows this choice: where your text goes, which key, which models and whose
-  prices. AI help uses the key saved for the provider you choose here, never
-  the other one. The choice is saved with your settings
+- **Provider.** **OpenAI**, **Google Gemini**, **Anthropic Claude**,
+  **OpenRouter**, **Ollama Cloud**, **Custom OpenAI-compatible service**, or
+  **Ollama on this computer**. The last five used to live in the AI Hub's
+  Provider list; that list is gone and they are all here now. Everything else
+  in the window follows this choice: where your text goes, which key, which
+  models and whose prices. AI help uses the key saved for the provider you
+  choose here, never another one. The choice is saved with your settings
   (`ai_own_key_provider`), and QUILL never guesses it from a key or a model
   name.
 - **About this.** A read-only box that says exactly where your text goes. Arrow
   through it once.
 - **API key.** Paste the key for the provider you chose. An OpenAI key comes
   from platform.openai.com, under API keys, and starts with `sk-`. A Gemini key
-  comes from Google AI Studio at aistudio.google.com/apikey.
+  comes from Google AI Studio at aistudio.google.com/apikey. The About box
+  says where to get a key for each of the others.
+- **Server address.** Only for a custom service and for Ollama on this
+  computer; it is off for the others, whose address never changes. Ollama
+  usually listens at `http://localhost:11434`. An address you saved in the AI
+  Hub before is filled in for you.
 - **Model.** Every model your key can use for text, filled in from your account
   once the key is checked. For OpenAI, **Luna 6 first, then the other GPT-6
   models**; for Gemini, **2.5 Flash first, then 2.5 Pro**; then the rest by
@@ -11958,6 +11978,18 @@ is there straight away. Pick another and press OK.
 There is no separate switch to find. While a key is saved for the chosen
 provider, AI help uses it. Remove the key and AI help goes back to the free
 service, with its free allowance, at that moment.
+
+**Ollama on this computer needs no key.** Install Ollama from ollama.com,
+pull a model, and choose **Ollama on this computer**. The About box starts with
+"Runs on this computer. Nothing is sent.", and that is the whole story: the
+model runs on your own computer, nothing is billed and nothing leaves it. The
+key box is off, the Model list is whatever Ollama says it has, and the test
+button reads **Test the Connection**, which checks Ollama is running. A model
+that Ollama says can read pictures answers Ask About an Image too.
+
+**One choice for all of QUILL's AI.** When you press OK, the provider you chose
+is also the one the advanced AI features use (Ask Quill, Run Agent, the AI
+Library, Proofread, Transform and the rest). You no longer set it up twice.
 
 You can save both keys. The Provider list decides which one is used. With
 OpenAI chosen, a saved Gemini key just waits; the Status line tells you it is
@@ -12734,22 +12766,18 @@ boundary. Only run Python code you trust or wrote yourself.
 
 #### Connecting to an AI provider
 
-The quickest way in is the **AI Hub** (**AI > AI Hub...**), one place that
-links provider checks, model lists, Prompt Studio, Agent Center and the
-Writing Assistant. The AI Hub topic below walks through it in full. In short:
+The quickest way in is **Use My Own AI Key** (**AI > Use My Own AI Key...**,
+`Alt+F2`). In short:
 
-1. Open **AI Hub** and choose a provider: `Ollama (local)`, `Ollama Cloud`,
-   `OpenAI`, `Claude`, `OpenRouter`, `Google Gemini`, or
-   `Custom OpenAI-compatible`.
-2. Confirm the host URL and model.
-3. Enter a key only if your endpoint needs one.
-4. Use **Verify Connection** to test the endpoint and your key.
-5. Use **List Models** to fetch the endpoint's models, then type in the search
-   box to narrow the list.
-6. Use **Recommend Model** to pick a model that suits your computer and the
-   kind of work you do.
-7. Save. QUILL checks the connection on its own and updates the AI status line
-   in the AI menu.
+1. Choose a provider: OpenAI, Google Gemini, Anthropic Claude, OpenRouter,
+   Ollama Cloud, a custom OpenAI-compatible service, or Ollama on this
+   computer.
+2. Paste the key, unless it is Ollama on this computer, which needs none.
+3. For a custom service or a local Ollama, check the Server address.
+4. Press **Test the Key** (for Ollama, **Test the Connection**). The Model list
+   fills from your account or from Ollama.
+5. Pick a model and press OK. The basic AI commands and the advanced features
+   both use it from then on.
 
 Most cloud providers come with their host URL already filled in, so setup is
 mostly about the key. For an unusual OpenAI-compatible endpoint, choose Custom
@@ -12960,41 +12988,25 @@ reply arrives while you are reading the list, your place in it does not move.
 
 ### The AI Hub
 
-The **AI Hub** (**AI > AI Hub...**) is the one place to set up and manage AI:
-providers, models, keys and testing. If you remember the old **AI Model and
-Connection** and **Forget API Key** menu items, they now live here.
+The **AI Hub** (**AI > AI Hub...**) holds the settings for QUILL's advanced AI
+features: the agent engines, audio services, document services, your custom
+instructions and saved sessions.
 
-#### Setting up a provider
+#### Choosing a provider
 
-Each provider keeps its own key and default model, so switching providers
-never loses another one's settings.
+The Hub used to have its own Provider list. It is gone, because it was a second
+way to pick an AI. Every provider it offered (Ollama on this computer, Ollama
+Cloud, Claude, OpenRouter and a custom OpenAI-compatible service) is in **Use My
+Own AI Key** now, beside OpenAI and Google Gemini, and the provider you choose
+there is the one the advanced features use. Each provider still keeps its own
+key, so switching never loses another one's.
 
-1. Choose a provider: `Ollama (local)`, `Ollama Cloud`, `OpenAI`, `Claude`,
-   `OpenRouter`, `Google Gemini`, or a `Custom OpenAI-compatible` endpoint.
-2. The host, default model and that provider's saved key fill in by
-   themselves. Cloud hosts are already filled in, so setup is usually just a
-   key and a model. The **Model** field is a dropdown you can also type in:
-   pick a recommended model (for OpenRouter the free one comes first) or type
-   any model id. Changing the provider refreshes the suggestions.
-3. Enter the API key. Only cloud providers need one. It is stored securely on
-   this computer, separately for each provider.
-4. **Verify Connection** checks the endpoint and your key.
-5. **List Models** loads every model the account or computer offers, with a
-   search filter. **Recommend Model** suggests one that suits your hardware or
-   task.
-6. **Test Chat** sends a tiny prompt and confirms the provider and model
-   really answer, so you know they work before you rely on them.
-7. **Forget this provider's key** clears that one provider's key and nothing
-   else.
-8. **On-device model...** opens the settings for the local GGUF model used by
-   llama.cpp.
-9. Select OK to save. The provider and model become active straight away, and
-   QUILL tells you in plain words how the check went: ready, sign-in failed,
-   timed out, or endpoint unreachable.
+The Hub's **Provider** page says which provider is in use and has one button,
+**Open Use My Own AI Key**. It saves the Hub, closes it and opens that window.
 
-Ollama Cloud's free personal-use tier, with lower limits, is available here
-too. Use **Prompt Studio** to save reusable templates and **Agent Center** to
-build guided task prompts.
+Ollama Cloud's free personal-use tier, with lower limits, is there too. Use
+**Prompt Studio** to save reusable templates and **Agent Center** to build
+guided task prompts.
 
 Word and CSV files open in the normal plain-text editor, and AI connection and
 chat work with them as usual.
@@ -13003,12 +13015,10 @@ chat work with them as usual.
 
 The AI Hub has eight tabs:
 
-- **Provider**: choose your AI provider (Ollama, OpenAI, Claude, Gemini,
-  OpenRouter or custom), enter your API key, set the model and host URL, and
-  test the connection. For per-provider key management, model lists and
-  checks, use the **Full Connection Settings** button on this tab.
-- **On-Device**: set up Ollama for fully local AI, with recommended models and
-  the Ollama base URL.
+- **Provider**: which provider the advanced features use, and the **Open Use
+  My Own AI Key** button, where you change it.
+- **On-Device**: what Ollama on this computer is and how to start with it. The
+  Ollama address is set in Use My Own AI Key now.
 - **Audio Services**: enter your Deepgram API key for speaker diarization, and
   set the default maximum number of speakers.
 - **Services**: document conversion and OCR, including which services send
@@ -13017,7 +13027,9 @@ The AI Hub has eight tabs:
   AI task. See Custom Instructions below.
 - **Sessions**: your saved AI sessions.
 - **Advanced**: a privacy consent summary listing every action that sends
-  data, an explanation of Safe Mode, and a **Reset AI Settings** button.
+  data, and an explanation of Safe Mode. (The old Reset AI Settings button
+  reset the provider; choosing another provider in Use My Own AI Key does
+  that now.)
 
 The **Engines** tab, second in the row, is covered in the AI engines topic below.
 

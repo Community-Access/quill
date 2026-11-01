@@ -116,7 +116,6 @@
   "quill/ui/ai_document_qa_dialog.py::AIDocumentQADialog._on_browse::wx.FileDialog": "native",
   "quill/ui/ai_grammar_check_dialog.py::AIGrammarCheckDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/ai_hub_dialog.py::AIHubDialog.__init__::wx.Dialog": "hardened_custom",
-  "quill/ui/ai_hub_dialog.py::AIHubDialog._on_reset::wx.MessageBox": "native",
   "quill/ui/ai_library_dialog.py::AILibraryDialog.__init__::wx.Dialog": "hardened_custom",
   "quill/ui/ai_library_dialog.py::AILibraryDialog._ask_open::wx.FileDialog": "native",
   "quill/ui/ai_library_dialog.py::AILibraryDialog._ask_save::wx.FileDialog": "native",

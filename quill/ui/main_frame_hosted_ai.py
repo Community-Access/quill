@@ -343,6 +343,19 @@ class HostedAiCommandsMixin(HostedAiMixin):
         Prompt Library and Tools, AI, Prompt Library show the same list."""
         return self._get_prompt_library()
 
+    def _start_family_prompt_migration(self) -> None:
+        """Bring the old prompt stores into the family list once, on a worker
+        (decision 18). Not in Safe Mode. A failure is logged; startup goes on."""
+        if getattr(self, "_safe_mode", False):
+            return
+        from quill.core.ai.family_prompt_migration import schedule
+
+        schedule(self._task_manager.submit, on_done=self._family_prompts_arrived)
+
+    def _family_prompts_arrived(self, _report: Any) -> None:
+        """Prompts arrived after the list was cached: read the file again next time."""
+        self.__dict__.pop("_prompt_library_cache", None)
+
     #: The Dictionary submenu's rows: command id, label, handler name. QUILL
     #: Lite's rows, QUILL Lite's two chords (quill/core/lite/commands.py).
     _DICTIONARY_ROWS: tuple[tuple[str, str, str], ...] = (

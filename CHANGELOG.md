@@ -2,6 +2,29 @@
 
 ## 1.0.0
 
+### One list of prompts, and the AI Hub's providers in My own key (2026-11-01)
+
+- **The AI Hub's providers are in Use My Own AI Key**, in QUILL and QUILL Lite
+  at once: Anthropic Claude, OpenRouter, Ollama Cloud and a custom
+  OpenAI-compatible service join OpenAI and Google Gemini, each with its own
+  saved key, as before. **Ollama on this computer** is there too and needs no
+  key; its About line says "Runs on this computer. Nothing is sent." A custom
+  service and a local Ollama get a Server address box, and an address you saved
+  in the AI Hub is carried over. Ollama's model list comes from Ollama itself,
+  and a model Ollama says can read pictures answers Ask About an Image.
+- **One choice for all of QUILL's AI.** The provider you save in Use My Own AI
+  Key is also the one Ask Quill, Run Agent, the AI Library and the other
+  advanced features use. The AI Hub's own Provider list, its On-Device address
+  box and its Reset AI Settings button are gone; the Hub's Provider page says
+  which provider is in use and opens Use My Own AI Key.
+- **One list of your prompts for the whole family.** QUILL Lite's Prompt Library
+  now reads the same `prompts.json` as QUILL. The first time this version
+  starts, either editor quietly brings in the prompts kept elsewhere (Prompt
+  Studio, your image description styles, QUILL Lite's own list) on a background
+  thread. The same prompt in two places becomes one; two different prompts with
+  one name are both kept, the second named after where it came from. Nothing is
+  deleted: the old files stay as they were for one release.
+
 ### Choose Your AI in Quill Weather, Quill Converter, Quill Media Player, Quill Inkwell and QuillBeacon (2026-11-01)
 
 - **Five more apps get Choose Your AI**, each with its own sign-in under its own

@@ -17,6 +17,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 
 from quill.core.ai.connection_caps import CHATGPT, CODEX, COPILOT, FREE, OWN_KEY
+from quill.core.ai.own_key_providers import COMPANIES, is_local
 
 __all__ = ["consent_key", "consent_sentence", "given", "needs_consent", "receiver"]
 
@@ -26,13 +27,15 @@ _RECEIVERS = {
     COPILOT: "GitHub on your Copilot plan",
     FREE: "QUILL's free AI service",
 }
-_OWN_KEY_COMPANY = {"openai": "OpenAI", "gemini": "Google"}
+_OWN_KEY_COMPANY = COMPANIES
 
 
 def receiver(connection: str, own_key_provider: str = "openai") -> str:
     """Who receives a picture on *connection*: "OpenAI on your ChatGPT plan"."""
     if connection == OWN_KEY:
         company = _OWN_KEY_COMPANY.get(own_key_provider, own_key_provider or "the company")
+        if is_local(own_key_provider):
+            return f"{company}, and nowhere else"
         return f"{company}, billed to your own key"
     return _RECEIVERS.get(connection, connection)
 

@@ -410,10 +410,11 @@ PURPOSES.update({
         "Nothing changes until you apply."
     ),
     "Use My Own AI Key": (
-        "Use AI help on your own OpenAI or Google Gemini account instead of "
-        "QUILL's free service. Choose the company, paste the key it gave you, "
-        "and test it; with a saved key there is no daily limit. Remove the "
-        "Saved Key puts you straight back on the free service."
+        "Use AI help on your own account with OpenAI, Google Gemini, Anthropic "
+        "Claude, OpenRouter, Ollama Cloud or a custom service, or on Ollama on "
+        "this computer, which needs no key and sends nothing. Choose the provider, "
+        "paste the key it gave you, and test it; with a saved key there is no "
+        "daily limit. Remove the Saved Key puts you straight back on the free service."
     ),
     "Dictation Settings": (
         "How dictation works for you: the speech engine, the microphone, the "

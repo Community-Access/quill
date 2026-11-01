@@ -9643,6 +9643,17 @@ question, using one request. If the prompt with your text in it is
 bigger than the free limit allows, you are told and nothing is sent.
 <strong>Import</strong> and <strong>Export</strong> share prompts with
 QUILL and with other people as a prompt pack file.</p>
+<p><strong>Your prompts are QUILL’s prompts too.</strong> The Prompt
+Library reads the one list the whole family shares,
+<code>prompts.json</code> in QUILL’s data folder, so a prompt you save
+here shows up in QUILL and the other way round. The first time this
+version starts, the prompts QUILL Lite kept in its own folder are
+brought into that list once, in the background. A prompt both had
+becomes one; two different prompts with the same name are both kept, and
+the second is named after where it came from, such as “Tighten (from
+QUILL Lite)”. The old file is left as it was for one release. On a
+computer without QUILL, nothing is written to QUILL’s folder until you
+have a prompt to keep.</p>
 <h4 id="what-is-sent-and-when">What is sent, and when</h4>
 <p>Text is only sent when you press Send in the pad, or send a message
 in a conversation. Then the text you asked about, either the selection
@@ -10090,12 +10101,15 @@ the provider for what you use.</p>
 (<strong>Alt+F2</strong>). The window has these parts, from top to
 bottom:</p>
 <ol type="1">
-<li><strong>Provider.</strong> Choose <strong>OpenAI</strong> or
-<strong>Google Gemini</strong>. Everything else in the window follows
-this choice: where your text goes, which key, which models and whose
-prices. AI help uses the key saved for the provider you choose here, and
-never the other one. QUILL never guesses the provider from a key or a
-model name.</li>
+<li><strong>Provider.</strong> Choose <strong>OpenAI</strong>,
+<strong>Google Gemini</strong>, <strong>Anthropic Claude</strong>,
+<strong>OpenRouter</strong>, <strong>Ollama Cloud</strong>, a
+<strong>Custom OpenAI-compatible service</strong>, or <strong>Ollama on
+this computer</strong>, which needs no key. Everything else in the
+window follows this choice: where your text goes, which key, which
+models and whose prices. AI help uses the key saved for the provider you
+choose here, and never another one. QUILL never guesses the provider
+from a key or a model name.</li>
 <li><strong>About this.</strong> A read-only box that says exactly where
 your text goes. Arrow through it once.</li>
 <li><strong>API key.</strong> Paste the key for the provider you chose.
@@ -10137,6 +10151,18 @@ straight away. Pick another and press OK.</p>
 is saved for the chosen provider, AI help uses it. Remove the key and AI
 help goes back to the free service, with its free allowance, at that
 moment.</p>
+<p><strong>Ollama on this computer needs no key.</strong> Install Ollama
+from ollama.com, pull a model, and choose <strong>Ollama on this
+computer</strong>. The About box starts with “Runs on this computer.
+Nothing is sent.”, and that is exactly what happens: the model runs on
+your computer, nothing is billed and nothing leaves it. The key box is
+off, a <strong>Server address</strong> box says where Ollama listens
+(usually <code>http://localhost:11434</code>), the Model list is
+whatever Ollama has, and the test button reads <strong>Test the
+Connection</strong>. A custom service has a Server address too. These
+providers used to be set up in QUILL’s AI Hub; they are the same
+providers, with the same saved keys, in this one window in both
+editors.</p>
 <p><strong>You can save both keys.</strong> The Provider list decides
 which one is used. If you choose OpenAI, a saved Gemini key just sits
 there unused. The status line tells you it is there, and choosing Google
