@@ -74,7 +74,7 @@ def _shoutcast_answer(conn, server):
     conn.sendall(b"OK2\r\nicy-caps:11\r\n\r\n")
 
 
-def _run(settings: StreamSettings, server: _Server, seconds: float = 3.0):
+def _run(settings: StreamSettings, server: _Server, seconds: float = 5.0):
     from quill.platform.windows.live_stream import LiveStream
 
     server.start()

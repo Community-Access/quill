@@ -240,7 +240,8 @@ class StudioStreamingMixin:
                 stop=self.stop_broadcast,
             )
             self._live_status.ShowWithoutActivating()
-            self._announce_settled("On air.")
+            # "On air." comes from the stream itself, once the server has taken
+            # two seconds of audio (BCAST-027): a connection alone is not a show.
 
         def failed(_task, error):
             self._release_demo_microphone(lock)
@@ -252,8 +253,10 @@ class StudioStreamingMixin:
         )
 
     def _stream_event(self, text: str, failure: bool) -> None:
+        from quill.platform.windows.live_stream_air import BACK_ON_AIR, ON_AIR
+
         self._set_status_quiet(text)
-        if failure or not getattr(self, "_live", None):
+        if failure or text in (ON_AIR, BACK_ON_AIR) or not getattr(self, "_live", None):
             self._announce(text)
 
     def _update_stream_title(self, title: str) -> None:
