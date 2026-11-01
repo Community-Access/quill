@@ -4,10 +4,11 @@ from __future__ import annotations
 
 import importlib.util
 import wave
+from types import SimpleNamespace
 
 import pytest
 
-from quill.platform.windows import demo_audio
+from quill.platform.windows import demo_audio, demo_devices
 from quill.platform.windows.demo_audio import (
     Microphone,
     WavStream,
@@ -75,7 +76,7 @@ def test_microphone_resolves_only_the_same_device(monkeypatch):
         Microphone(2, "Headset Microphone (Logitech USB Headset H340)", "Windows WASAPI", 1),
         Microphone(3, "Microphone Array (Realtek High Definition Audio)", "Windows WASAPI", 2),
     ]
-    monkeypatch.setattr(demo_audio, "list_microphones", lambda: mics)
+    monkeypatch.setattr(demo_devices, "list_microphones", lambda **_kw: mics)
     assert resolve_microphone("Microphone Array (Realtek High Definition Audio)").index == 3
     # A 31-character MME name shared by two headsets matches neither.
     assert resolve_microphone("Headset Microphone (Logitech US") is None
@@ -83,23 +84,17 @@ def test_microphone_resolves_only_the_same_device(monkeypatch):
     assert resolve_microphone("USB Camera Microphone") is None
 
 
-@needs_numpy
 def test_asio_inputs_are_listed_first_and_named(monkeypatch):
-    import sounddevice as sd
-
-    monkeypatch.setattr(
-        sd,
-        "query_hostapis",
-        lambda: [{"name": "MME"}, {"name": "ASIO"}, {"name": "Windows WASAPI"}],
+    devices = [
+        {"name": "Focusrite USB", "hostapi": 1, "max_input_channels": 2},
+        {"name": "Focusrite USB", "hostapi": 2, "max_input_channels": 2},
+        {"name": "Speakers", "hostapi": 2, "max_input_channels": 0},
+    ]
+    fake = SimpleNamespace(
+        query_hostapis=lambda: [{"name": "MME"}, {"name": "ASIO"}, {"name": "Windows WASAPI"}],
+        query_devices=lambda index: devices[index],
+        _lib=SimpleNamespace(Pa_GetDeviceCount=lambda: len(devices)),
     )
-    monkeypatch.setattr(
-        sd,
-        "query_devices",
-        lambda: [
-            {"name": "Focusrite USB", "hostapi": 1, "max_input_channels": 2},
-            {"name": "Focusrite USB", "hostapi": 2, "max_input_channels": 2},
-            {"name": "Speakers", "hostapi": 2, "max_input_channels": 0},
-        ],
-    )
+    monkeypatch.setattr(demo_devices, "_sd", lambda: fake)
     names = [(m.name, m.host_api) for m in demo_audio.list_microphones()]
     assert names == [("Focusrite USB", "Windows WASAPI"), ("Focusrite USB (ASIO)", "ASIO")]

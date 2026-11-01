@@ -40,7 +40,21 @@ SUPPORTED_PACK_IDS = tuple(_ENV_VARS)
 # never exports these (the Copilot token goes to the SDK as an explicit
 # ``github_token`` argument), but a user's shell may have set them, and no child
 # QUILL starts has any business inheriting a GitHub credential.
-GITHUB_TOKEN_ENV_VARS: tuple[str, ...] = ("GITHUB_TOKEN", "GH_TOKEN", "COPILOT_GITHUB_TOKEN")
+GITHUB_TOKEN_ENV_VARS: tuple[str, ...] = (
+    "GITHUB_TOKEN",
+    "GH_TOKEN",
+    "GH_ENTERPRISE_TOKEN",
+    "GITHUB_ENTERPRISE_TOKEN",
+    "COPILOT_GITHUB_TOKEN",
+)
+
+
+def _is_github_token_name(name: str) -> bool:
+    """A GitHub or Copilot credential's variable name, in any case (Windows
+    environment names are case-insensitive): the listed names, and any
+    COPILOT_*TOKEN* such as COPILOT_SDK_AUTH_TOKEN or whatever comes next."""
+    upper = name.upper()
+    return upper in GITHUB_TOKEN_ENV_VARS or (upper.startswith("COPILOT_") and "TOKEN" in upper)
 
 
 def env_var_names(pack_id: str) -> tuple[str, ...]:
@@ -104,8 +118,8 @@ def scrubbed_child_env() -> dict[str, str]:
             env.pop(name, None)
     # GitHub tokens too: Quillin workers and external engines must never hold
     # the Copilot or repository credential (2026-10-31).
-    for name in GITHUB_TOKEN_ENV_VARS:
-        env.pop(name, None)
+    for name in [n for n in env if _is_github_token_name(n)]:
+        del env[name]
     return env
 
 

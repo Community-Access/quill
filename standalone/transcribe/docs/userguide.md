@@ -1556,8 +1556,8 @@ editors' Ctrl+6, Ctrl+8 and Ctrl+4.
 ### Speakers, sections and summary
 
 A long transcript is hard to listen back to: one block of words, no idea who
-is talking or where the subject changes. **AI > Speakers, Sections and
-Summary...** (Ctrl+F3) hands it to an AI that works through it in steps. It
+is talking or where the subject changes. **Speakers, Sections and
+Summary...** on the AI menu (Ctrl+F3) hands it to an AI that works through it in steps. It
 names the speakers where what they say makes the name clear (if Bo says
 "thanks, Ann", Speaker 1 is probably Ann), adds a heading wherever the subject
 changes, and ends with a short summary and a list of who is doing what by

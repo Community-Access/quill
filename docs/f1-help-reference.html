@@ -2728,7 +2728,7 @@ with Note (Navigation menu) adds words to it.</li>
 from this book; the audio and your place stay.</li>
 </ul>
 <h2 id="quill-studio">QUILL Studio</h2>
-<p>Control coverage: 296 audited sites (11 help-elsewhere, 285
+<p>Control coverage: 297 audited sites (11 help-elsewhere, 286
 helped).</p>
 <h3 id="every-window-and-what-it-is-for-3">Every window, and what it is
 for</h3>
@@ -3704,6 +3704,10 @@ you and for every recording.</li>
 <li><code>self.microphone</code>: Which microphone the Microphone source
 records. It opens only while you record and only when the Microphone
 source is in the recording.</li>
+<li><code>self.mic_channels</code>: Which input of the microphone device
+is recorded. Both inputs mixed suits most microphones; on a two-input
+interface with the microphone plugged into one input, choose that input
+so it is recorded at full level in both ears.</li>
 <li><code>self.reader</code>: The screen reader whose speech Studio
 keeps private. Its speech is left out of the recording unless you put
 Screen reader speech in.</li>

@@ -355,6 +355,55 @@ refuses the user name or password on any attempt, not only the first,
 Studio stops trying and gives the reason.</li>
 </ul>
 <h3
+id="sound-capture-that-notices-what-windows-does-not-say-with-thanks-to-tony-gebhard-2026-10-31">Sound
+capture that notices what Windows does not say, with thanks to Tony
+Gebhard (2026-10-31)</h3>
+<p>These fixes come from lessons Tony Gebhard published in <a
+href="https://github.com/tonygeb23/tg-drop-deck">TG Drop Deck</a>, his
+free, MIT-licensed live-show deck. Two small pieces of its code are
+adapted here, with his copyright and licence kept in the files and in
+the third-party notices.</p>
+<ul>
+<li><strong>A restarted screen reader stays out of “system sound without
+the screen reader”.</strong> Studio checks every second that the
+left-out screen reader is still running. When it restarts, system sound
+is muted at once, you hear that it is muted, the moment is marked, and
+it comes back once the new screen reader is left out too. Before, a
+restarted NVDA or JAWS was recorded, or heard on a live stream, and
+nothing said so.</li>
+<li><strong>A program that quits is noticed.</strong> Windows keeps
+recording silence from a program that has gone. Studio now checks every
+two seconds, says that the program quit, marks it, and records it again
+when it starts. The user guide already promised this; now it is
+true.</li>
+<li><strong>A lost sound card comes back.</strong> A whole-sound-card
+source that is unplugged or changes format is reopened by its Windows
+identity when it returns, and the message names the card.</li>
+<li><strong>Microphone channels.</strong> A new Microphone channels
+choice records input 1, input 2, or both inputs mixed (the default), so
+a microphone on one input of a two-input interface is no longer only in
+the left ear. The check says when a source is in one ear only.</li>
+<li><strong>Timing from the sound, not the wall clock.</strong> Each
+source is placed by the sound card’s own clock against a clock that
+never jumps. Silence is added only where sound really stopped arriving,
+not every few minutes because a device’s clock runs a little slow. Each
+source’s sample count and drift are written to the check report.</li>
+<li><strong>Lost audio is said while you record.</strong> Gaps Windows
+reports, microphone overflows, and stretches of more than half a second
+with no sound arriving are counted, the first of each is said at once,
+and every count is in the report.</li>
+<li><strong>More microphones open.</strong> A microphone that will not
+open at 48 kHz is opened at 44.1 kHz or its own rate and converted, and
+one that is busy under WASAPI is tried as the same device under
+DirectSound, then MME. You are told which was used. A microphone is
+saved with its Windows identity as well as its name; if only the name
+matches, Studio says so.</li>
+<li><strong>One bad device name no longer empties the microphone
+list,</strong> and every thread that opens a sound stream sets up
+Windows COM first, which a background check needs while the setup window
+is open.</li>
+</ul>
+<h3
 id="display-scaling-named-controls-licensing-and-packaging-2026-10-27-to-2026-10-31">Display
 scaling, named controls, licensing and packaging (2026-10-27 to
 2026-10-31)</h3>
@@ -622,6 +671,50 @@ placeholder.</li>
 app’s text, or any app’s user guide, has text garbled by a wrong
 encoding, such as a dash turned into three characters a screen reader
 reads out one by one.</li>
+</ul>
+<h3
+id="video-colour-sync-and-one-stream-at-a-time-lessons-from-tg-drop-deck-with-thanks-to-tony-gebhard-2026-10-31">Video
+colour, sync and one stream at a time: lessons from TG Drop Deck, with
+thanks to Tony Gebhard (2026-10-31)</h3>
+<p>Tony Gebhard (TG Studios) wrote <a
+href="https://github.com/tonygeb23/tg-drop-deck">TG Drop Deck</a>, an
+MIT-licensed recorder, and published what he measured and fixed along
+the way. These changes follow his lessons; no code was copied.</p>
+<ul>
+<li><strong>Colours look right in every player (VIDEO-004).</strong>
+Every H.264 video Studio writes, from Record a demonstration and from
+Make a YouTube video from a picture and sound, now converts its picture
+with the BT.709 colour matrix to limited range and says so in the file.
+Before, the conversion used the older standard and wrote no colour tags,
+so players guessed, and the picture could look washed out: pure red came
+out at a brightness of 81 where it should be 63. The camera’s picture is
+converted the same way. The after-check now reads the tags back from the
+finished file, and a test decodes white, red and blue and checks them
+against 235, 63 and 32.</li>
+<li><strong>One stream’s failure no longer ends the others
+(REC-024).</strong> If the screen capture, the camera, or one sound
+source stops while you record, you hear which one, it is marked, and
+everything else keeps recording. The result is Needs review and names
+that stream, for example “Camera stopped early”. Before, a screen
+capture or a full-picture camera that stopped ended the whole recording.
+A camera that cannot start no longer stops the screen recording either,
+and when a picture stream wrote nothing at all, the sound from that
+stretch is kept over a black picture rather than thrown away. Studio
+stops and saves only when nothing is left recording.</li>
+<li><strong>A sound source whose clock drifts is stretched to fit
+(REC-022, the mix half).</strong> When the recording measured that a
+source’s sound card ran fast or slow by more than 20 milliseconds over a
+stretch, the mix stretches that source to fit the picture, keeping its
+pitch, and the report has a new Timing section saying which source, by
+how much and the correction applied. Where no measurement was recorded,
+nothing changes.</li>
+<li><strong>Sync is measured from the decoded picture and sound
+(VERIFY-009).</strong> Studio has a new measurement that finds a white
+flash and a tone in the decoded file, not in its headers, and reports
+the offset between them at the start, middle and end, and the drift per
+minute. A clip whose tone is 40 milliseconds late is read back within a
+millisecond. The test recording does not show a flash and tone yet, so
+this is not yet part of the after-check.</li>
 </ul>
 <h3 id="ask-ai-about-pictures-on-your-chatgpt-plan-2026-10-31">Ask AI
 about pictures on your ChatGPT plan (2026-10-31)</h3>

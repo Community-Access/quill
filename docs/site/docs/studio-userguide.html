@@ -2170,8 +2170,10 @@ records the system and come back when you stop.</li>
 <li><strong>Microphone</strong> starts left out, every time. Studio
 never remembers that it was on, so you never record your voice by
 accident. Choose which microphone under <strong>Microphone
-device</strong>. If another QUILL app is dictating, the check tells you
-which one.</li>
+device</strong>, and under <strong>Microphone channels</strong> whether
+to record input 1, input 2 or both inputs mixed; use one input when your
+interface has the microphone plugged into only that one. If another
+QUILL app is dictating, the check tells you which one.</li>
 <li><strong>Screen reader speech</strong> (for example “JAWS speech”)
 starts left out. Putting it in asks you to confirm, because everything
 your screen reader says while you record ends up in the file. While it
@@ -2390,12 +2392,23 @@ marked at that moment:</p>
 <ul>
 <li>The window you are recording closes: the recording stops and saves
 what it has.</li>
-<li>A program or your screen reader quits: that sound is silent until
-the same program starts again.</li>
+<li>A program or your screen reader quits: Studio notices within two
+seconds, and that sound is silent until the same program starts again,
+when you hear that it is back.</li>
+<li>Your screen reader restarts while it is left out of system sound:
+system sound is muted at once, so the new screen reader is never
+recorded, and comes back once the new one is left out too.</li>
+<li>A sound card you are recording is unplugged or changes format:
+silent until the same card comes back, and then reopened.</li>
 <li>A microphone is unplugged: silent until the same microphone comes
 back. A different microphone is never swapped in.</li>
+<li>Sound stops arriving, or a microphone overflows: you hear it the
+first time, and the check report counts every time.</li>
 <li>The display changes: the recording pauses.</li>
-<li>The camera stops or falls behind.</li>
+<li>The screen capture, the camera or one sound source stops: you hear
+which one, and everything else keeps recording. The result is Needs
+review and names it. Studio stops and saves only if nothing is left
+recording.</li>
 <li>The disk runs low: a warning at two minutes left, then a stop and
 save before it runs out.</li>
 </ul>
@@ -2422,11 +2435,12 @@ while you record, stop and start a new recording.</p>
 camera picture, and then checks the finished file on its own, without
 trusting anything it measured while recording: one picture stream and
 one sound stream, the right length and frame count, clean decoding at
-the start, middle and end, no long black stretches, and each sound
-source actually present. You hear one sentence, for example
-“Demonstration saved, 2 minutes 41 seconds, 1920 by 1080 at 30 frames a
-second. Picture and sound checked. msedge sound and Microphone present;
-screen reader left out.”</p>
+the start, middle and end, no long black stretches, colour tagged as
+BT.709 so every player shows it the same way, and each sound source
+actually present. You hear one sentence, for example “Demonstration
+saved, 2 minutes 41 seconds, 1920 by 1080 at 30 frames a second. Picture
+and sound checked. msedge sound and Microphone present; screen reader
+left out.”</p>
 <p>The result is <strong>Verified</strong> when every check passed,
 <strong>Needs review</strong> when it plays but something may be
 spoiled, or <strong>Failed</strong> when a stream is missing or it does
@@ -2526,7 +2540,8 @@ only while Studio has focus. Assign system-wide keys, or use the tray
 icon’s menu.</li>
 <li><strong>The result says Needs review.</strong> Open the result
 window’s list of checks: it says which check did not pass, such as a
-long black stretch or a sound source that was silent throughout.</li>
+long black stretch, a sound source that was silent throughout, or a
+stream that stopped early, such as the camera.</li>
 <li><strong>Do Not Disturb did not turn on.</strong> Some Windows
 editions and policies do not allow it. Turn it on yourself before you
 start.</li>

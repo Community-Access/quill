@@ -14,8 +14,8 @@ did. This is the short list, grouped by area in the same order as
 
 ### Since build 3 (2026-10-31)
 
-- **Speakers, sections and summary** (2026-11-01). AI > Speakers, Sections
-  and Summary... (Ctrl+F3) has GitHub Copilot or Codex read a transcript as
+- **Speakers, sections and summary** (2026-11-01). Speakers, Sections and
+  Summary... on the AI menu (Ctrl+F3) has GitHub Copilot or Codex read a transcript as
   text, name the speakers where the words make it clear, add headings, and
   finish with a summary and an action list. You read the whole result before
   it goes into Review Dictation, as one change Undo Change takes back. Only
