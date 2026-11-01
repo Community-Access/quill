@@ -16,6 +16,7 @@ from pathlib import Path
 
 from quill.core.demo_recording import DemoPlan, PreflightFacts
 from quill.core.demo_recording_ffmpeg import Capabilities, trial_grab_command
+from quill.platform.windows.com_apartment import mta
 from quill.platform.windows.demo_audio import probe_source
 from quill.platform.windows.demo_media import folder_problem, free_bytes, list_cameras
 from quill.stability.safe_subprocess import run_subprocess_safely
@@ -202,16 +203,22 @@ def gather_facts(plan: DemoPlan, context: CheckContext, scratch: Path) -> Prefli
     source_errors: dict[str, str] = {}
     silence: list[str] = []
     quiet: list[str] = []
-    for source in plan.enabled_sources():
-        if source.kind == "microphone" and context.microphone_holder:
-            continue  # Opening it would fail; the lock is its own Stop.
-        result = probe_source(source, studio_pid=plan.studio_process_id, folder=scratch)
-        if result.error:
-            source_errors[source.source_id] = result.error
-        elif result.digital_silence:
-            silence.append(source.source_id)
-        elif result.quiet:
-            quiet.append(source.source_id)
+    one_ear: dict[str, str] = {}
+    # This runs on a background task while the setup dialog is open; device
+    # listing and any stream opened here need the MTA (MX-188).
+    with mta():
+        for source in plan.enabled_sources():
+            if source.kind == "microphone" and context.microphone_holder:
+                continue  # Opening it would fail; the lock is its own Stop.
+            result = probe_source(source, studio_pid=plan.studio_process_id, folder=scratch)
+            if result.error:
+                source_errors[source.source_id] = result.error
+            elif result.digital_silence:
+                silence.append(source.source_id)
+            elif result.quiet:
+                quiet.append(source.source_id)
+            if result.one_ear:
+                one_ear[source.source_id] = result.one_ear
     camera_error = ""
     if plan.camera.enabled and context.ffmpeg:
         if plan.camera.device not in list_cameras(context.ffmpeg):
@@ -244,6 +251,7 @@ def gather_facts(plan: DemoPlan, context: CheckContext, scratch: Path) -> Prefli
         source_errors=source_errors,
         digital_silence=tuple(silence),
         quiet=tuple(quiet),
+        one_ear=one_ear,
         microphone_holder=context.microphone_holder,
         ffmpeg_found=bool(context.ffmpeg),
         h264_encoder=context.caps.h264_encoder if context.ffmpeg else "",

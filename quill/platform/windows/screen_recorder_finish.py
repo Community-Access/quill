@@ -29,6 +29,7 @@ from quill.core.demo_recording_session import (
     SessionRecord,
     markers_from_session,
     plan_from_dict,
+    source_timing_summary,
 )
 from quill.core.demo_recording_timing import DriftCorrection, drift_correction, segment_timing
 from quill.core.demo_recording_verify import (
@@ -198,6 +199,9 @@ def finalize(
     # REC-022: every stretch the mix applied is written into the report.
     verification.timing += [correction.sentence() for correction in corrections]
     verification.timing_data["drift_corrections"] = [c.to_dict() for c in corrections]
+    verification.source_timing = source_timing_summary(
+        session.segments, {key: source.label for key, source in labels.items()}
+    )
     if plan.keep_stems:
         _write_stems(ffmpeg, final, stems, labels)
     save_reports(final, verification, plan, markers)

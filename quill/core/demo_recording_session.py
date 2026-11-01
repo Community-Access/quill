@@ -28,7 +28,16 @@ from quill.core.storage import read_json, write_json_atomic
 
 #: Keys of a source that may be saved. ``enabled`` for the microphone is not
 #: among them anywhere: MX-179 forbids remembering that a microphone was on.
-_SAVED_SOURCE_KEYS = ("kind", "label", "source_id", "level_db", "device", "process_name")
+_SAVED_SOURCE_KEYS = (
+    "kind",
+    "label",
+    "source_id",
+    "level_db",
+    "device",
+    "process_name",
+    "endpoint_id",
+    "channel_mode",
+)
 
 
 def preferences_from_plan(plan: DemoPlan) -> dict[str, Any]:
@@ -140,6 +149,41 @@ class SessionRecord:
             if isinstance(raw.get("stream_failures"), dict)
             else {},
         )
+
+
+def source_timing_summary(
+    segments: list[SegmentRecord], labels: dict[str, str]
+) -> list[dict[str, Any]]:
+    """Each source's timing over the whole recording, for the report (REC-022, REC-023).
+
+    Sample counts and spans add across segments; glitch counts are running
+    totals, so the largest is the whole recording's.
+    """
+    rows: list[dict[str, Any]] = []
+    for source_id, label in labels.items():
+        stats = [s.audio_timing[source_id] for s in segments if source_id in s.audio_timing]
+        if not stats:
+            continue
+        measured = sum(float(x.get("measured_frames", 0.0)) for x in stats)
+        expected = sum(float(x.get("expected_frames", 0.0)) for x in stats)
+        rate = float(stats[0].get("rate", 48_000.0)) or 48_000.0
+        row: dict[str, Any] = {
+            "source_id": source_id,
+            "label": label,
+            "measured_frames": int(measured),
+            "expected_frames": round(expected, 1),
+            "monotonic_seconds": round(
+                sum(float(x.get("monotonic_seconds", 0.0)) for x in stats), 3
+            ),
+            "drift_ms": round((measured - expected) / rate * 1000, 3),
+            "drift_ratio": round(measured / expected, 9) if expected > 0 and measured else 1.0,
+            "filled_frames": int(sum(float(x.get("filled_frames", 0.0)) for x in stats)),
+            "segment_drift_ratios": [float(x.get("drift_ratio", 1.0)) for x in stats],
+        }
+        for kind in ("discontinuity_count", "overflow_count", "stall_count"):
+            row[kind] = int(max(float(x.get(kind, 0.0)) for x in stats))
+        rows.append(row)
+    return rows
 
 
 def plan_to_dict(plan: DemoPlan) -> dict[str, Any]:
