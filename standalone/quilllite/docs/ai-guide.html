@@ -279,6 +279,7 @@ wrong</a></li>
 <li><a href="#your-privacy">Your privacy</a></li>
 <li><a href="#signing-out-and-changing-your-mind">Signing out and
 changing your mind</a></li>
+<li><a href="#which-ai-is-in-use">Which AI is in use</a></li>
 <li><a
 href="#using-your-own-openai-or-google-gemini-key-no-limits">Using your
 own OpenAI or Google Gemini key: no limits</a></li>
@@ -852,6 +853,30 @@ signs you out. If you would like more than the free allowance, the next
 two chapters, <em>Using your own OpenAI or Google Gemini key: no
 limits</em> and <em>Using your ChatGPT subscription</em>, explain the
 other ways to run AI help.</p>
+<h2 id="which-ai-is-in-use">Which AI is in use</h2>
+<p>QUILL Lite keeps one record of which AI answers you: the free AI,
+your ChatGPT plan, or your own key. It is the same setting QUILL uses,
+<code>ai_connection</code>, so the two programs agree. GitHub Copilot
+and Codex are on the way and say “not available yet” for now; their
+models will live in <code>ai_copilot_model</code> and
+<code>ai_codex_model</code>.</p>
+<p>When you first start this version, QUILL Lite keeps what you already
+had: your ChatGPT plan if you were signed in, else your key if you had
+one saved, else the free AI.</p>
+<p>After that, signing in is choosing. Sign in with ChatGPT, save a key,
+or connect the free AI, and that one is in use. Sign out of the one in
+use and no AI is in use until you pick one; QUILL Lite never quietly
+sends your text somewhere else. The next AI command says “No AI is in
+use. Choose one.”</p>
+<p>If OpenAI ends your ChatGPT sign-in, or your plan’s limit is reached,
+you hear it once. Nothing is sent, nothing is retried, and nothing
+switches.</p>
+<p>QUILL Lite counts the requests it sends on your ChatGPT plan, today
+and this week, with the token counts OpenAI reports. The count stays on
+this computer.</p>
+<p>Answers are plain text. QUILL Lite asks every AI not to draw charts
+or diagrams, and anything like that which arrives anyway is shown as
+text.</p>
 <h2 id="using-your-own-openai-or-google-gemini-key-no-limits">Using your
 own OpenAI or Google Gemini key: no limits</h2>
 <p>If you have an OpenAI account or a Google Gemini key, you can use

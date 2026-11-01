@@ -215,8 +215,17 @@ def test_sanitize_ignores_non_pe_files(tmp_path: Path) -> None:
 
 
 def test_collect_files_never_returns_vendor_signed_tools(tmp_path: Path) -> None:
-    """GitHub's copilot.exe and OpenAI's app-server ship exactly as signed."""
-    for rel in ("tools/copilot/copilot.exe", "tools/codex/codex-app-server.exe"):
+    """GitHub's Copilot bundle and OpenAI's app-server ship exactly as signed."""
+    vendor = (
+        "tools/copilot/copilot.exe",
+        "tools/copilot/copilot-runtime.exe",
+        "tools/copilot/runtime.node",
+        "tools/copilot/msalruntime.dll",
+        "tools/copilot/plugins/computer-use/computer-use-mcp.exe",
+        "tools/copilot/ripgrep/bin/win32-x64/rg.exe",
+        "tools/codex/codex-app-server.exe",
+    )
+    for rel in vendor:
         (tmp_path / rel).parent.mkdir(parents=True, exist_ok=True)
         (tmp_path / rel).write_text("x", encoding="utf-8")
     (tmp_path / "tools" / "ffmpeg").mkdir(parents=True)
@@ -224,10 +233,16 @@ def test_collect_files_never_returns_vendor_signed_tools(tmp_path: Path) -> None
     (tmp_path / "QuillVilleRuntime.exe").write_text("x", encoding="utf-8")
     names = {p.name for p in cs.collect_files(tmp_path)}
     assert names == {"ffmpeg.exe", "QuillVilleRuntime.exe"}
+    # Even a pattern list that reaches .node addons (PE DLLs) leaves the bundle alone.
+    wide = {p.name for p in cs.collect_files(tmp_path, ("*.exe", "*.dll", "*.node"))}
+    assert wide == {"ffmpeg.exe", "QuillVilleRuntime.exe"}
 
 
 def test_is_vendor_signed_matches_only_the_vendor_tool_dirs() -> None:
     assert cs.is_vendor_signed(Path("dist/R/tools/copilot/copilot.exe"))
+    assert cs.is_vendor_signed(Path("dist/R/tools/copilot/copilot-runtime.exe"))
+    assert cs.is_vendor_signed(Path("dist/R/tools/copilot/runtime.node"))
+    assert cs.is_vendor_signed(Path("dist/R/tools/copilot/tgrep/bin/win32-x64/tgrep.exe"))
     assert cs.is_vendor_signed(Path("dist/R/TOOLS/Codex/codex-app-server.exe"))
     assert not cs.is_vendor_signed(Path("dist/R/tools/deno/deno.exe"))
     assert not cs.is_vendor_signed(Path("dist/R/copilot/copilot.exe"))

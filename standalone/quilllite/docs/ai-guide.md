@@ -29,6 +29,7 @@ about six minutes.
 - [When something goes wrong](#when-something-goes-wrong)
 - [Your privacy](#your-privacy)
 - [Signing out and changing your mind](#signing-out-and-changing-your-mind)
+- [Which AI is in use](#which-ai-is-in-use)
 - [Using your own OpenAI or Google Gemini key: no limits](#using-your-own-openai-or-google-gemini-key-no-limits)
 - [Using your ChatGPT subscription](#using-your-chatgpt-subscription)
 - [Ask About an Image](#ask-about-an-image)
@@ -521,6 +522,32 @@ You can sign out from Usage, and withdrawing your agreement also signs you out.
 If you would like more than the free allowance, the next two chapters, *Using
 your own OpenAI or Google Gemini key: no limits* and *Using your ChatGPT
 subscription*, explain the other ways to run AI help.
+
+## Which AI is in use
+
+QUILL Lite keeps one record of which AI answers you: the free AI, your ChatGPT
+plan, or your own key. It is the same setting QUILL uses, `ai_connection`, so
+the two programs agree. GitHub Copilot and Codex are on the way and say "not
+available yet" for now; their models will live in `ai_copilot_model` and
+`ai_codex_model`.
+
+When you first start this version, QUILL Lite keeps what you already had: your
+ChatGPT plan if you were signed in, else your key if you had one saved, else
+the free AI.
+
+After that, signing in is choosing. Sign in with ChatGPT, save a key, or
+connect the free AI, and that one is in use. Sign out of the one in use and no
+AI is in use until you pick one; QUILL Lite never quietly sends your text
+somewhere else. The next AI command says "No AI is in use. Choose one."
+
+If OpenAI ends your ChatGPT sign-in, or your plan's limit is reached, you hear
+it once. Nothing is sent, nothing is retried, and nothing switches.
+
+QUILL Lite counts the requests it sends on your ChatGPT plan, today and this
+week, with the token counts OpenAI reports. The count stays on this computer.
+
+Answers are plain text. QUILL Lite asks every AI not to draw charts or
+diagrams, and anything like that which arrives anyway is shown as text.
 
 ## Using your own OpenAI or Google Gemini key: no limits
 

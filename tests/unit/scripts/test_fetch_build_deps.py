@@ -145,9 +145,24 @@ def test_ai_engines_are_offered_pinned_and_official(fbd, component) -> None:
         assert fbd.COPILOT_URL.startswith(
             "https://github.com/github/copilot-cli/releases/download/v"
         )
+        from quill.core.ai import copilot_runtime
+
         assert f"/v{fbd.COPILOT_VERSION}/" in fbd.COPILOT_URL
-        assert f"/v{fbd.COPILOT_VERSION}/" in fbd.COPILOT_LICENSE_URL
-        hashes = (fbd.COPILOT_SHA256, fbd.COPILOT_EXE_SHA256, fbd.COPILOT_LICENSE_SHA256)
+        # The unified runtime package the SDK downloads, not the legacy SEA zip.
+        assert fbd.COPILOT_URL.endswith(
+            f"/github-copilot-{copilot_runtime.COPILOT_CLI_VERSION}-win32-x64.tgz"
+        )
+        assert not hasattr(fbd, "COPILOT_LICENSE_URL"), "the licence comes from the package"
+        # One pin per bundle file, shared with the launch-time check.
+        assert fbd.COPILOT_WRAPPER_SHA256 == copilot_runtime.COPILOT_WRAPPER_SHA256
+        assert fbd.COPILOT_RUNTIME_NODE_SHA256 == copilot_runtime.COPILOT_RUNTIME_NODE_SHA256
+        assert fbd.COPILOT_ASSETS_MARKER == copilot_runtime.COPILOT_ASSETS_MARKER
+        hashes = (
+            fbd.COPILOT_SHA256,
+            fbd.COPILOT_WRAPPER_SHA256,
+            fbd.COPILOT_RUNTIME_NODE_SHA256,
+            fbd.COPILOT_LICENSE_SHA256,
+        )
     else:
         from quill.core.ai import codex_binary
 
@@ -191,23 +206,175 @@ def _fake_engine_download(fbd, monkeypatch, *, member: str, exe: bytes, extra: b
     return calls
 
 
-def test_fetch_copilot_stages_the_exe_and_its_licence(fbd, tmp_path, monkeypatch) -> None:
+#: A miniature of the real package: every rule of the SDK's filter has a member
+#: that it drops, and every kind of kept entry has one that survives.
+_COPILOT_PACKAGE = {
+    "package/LICENSE.md": b"GitHub Copilot CLI License",
+    "package/package.json": b"{}",
+    "package/index.js": b"// SEA host",
+    "package/copilot.exe": b"MZ legacy sea",
+    "package/assets/a.txt": b"x",
+    "package/webview/w.js": b"x",
+    "package/tree-sitter-go.wasm": b"x",
+    "package/voice-server.js": b"x",
+    "package/schemas/api.schema.json": b"{}",
+    "package/definitions/sidekick/task.yaml": b"x",
+    "package/ripgrep/bin/win32-x64/rg.exe": b"MZ rg",
+    "package/plugins/computer-use/mediaremote-adapter/x.dylib": b"x",
+    "package/prebuilds/win32-x64/copilot-runtime.exe": b"MZ wrapper",
+    "package/prebuilds/win32-x64/runtime.node": b"MZ runtime",
+    "package/prebuilds/win32-x64/cli-native.node": b"MZ sea native",
+    "package/prebuilds/win32-x64/copilot-runtime-bin.exe": b"x",
+    "package/prebuilds/win32-x64/OneAuthInterop.LICENSE.txt": b"MS licence",
+    "package/prebuilds/linux-x64/runtime.node": b"ELF",
+}
+
+
+def _copilot_tgz(path: Path, members: dict[str, bytes]) -> None:
+    import io
+    import tarfile
+
+    with tarfile.open(path, "w:gz") as tar:
+        for name, data in members.items():
+            info = tarfile.TarInfo(name)
+            info.size = len(data)
+            tar.addfile(info, io.BytesIO(data))
+
+
+def _fake_copilot_download(fbd, monkeypatch, members: dict[str, bytes] | None = None):
     import hashlib
 
+    package = dict(_COPILOT_PACKAGE if members is None else members)
+    monkeypatch.setattr(fbd, "COPILOT_WRAPPER_SHA256", hashlib.sha256(b"MZ wrapper").hexdigest())
+    monkeypatch.setattr(
+        fbd, "COPILOT_RUNTIME_NODE_SHA256", hashlib.sha256(b"MZ runtime").hexdigest()
+    )
+    monkeypatch.setattr(
+        fbd, "COPILOT_LICENSE_SHA256", hashlib.sha256(b"GitHub Copilot CLI License").hexdigest()
+    )
+    calls: list[tuple[str, str]] = []
+
+    def fake_download(url, dest, *, sha256="", progress=None, **_kw):
+        calls.append((url, sha256))
+        Path(dest).parent.mkdir(parents=True, exist_ok=True)
+        _copilot_tgz(Path(dest), package)
+        return dest
+
+    monkeypatch.setattr(fbd, "download_verified", fake_download)
+    return calls
+
+
+def _tree(root: Path) -> list[str]:
+    return sorted(p.relative_to(root).as_posix() for p in root.rglob("*") if p.is_file())
+
+
+def test_fetch_copilot_materialises_the_sdk_hostless_bundle(fbd, tmp_path, monkeypatch) -> None:
     monkeypatch.setenv("QUILL_BUILD_DEPS_DIR", str(tmp_path / "deps"))
-    monkeypatch.setattr(fbd, "COPILOT_EXE_SHA256", hashlib.sha256(b"MZ copilot").hexdigest())
-    calls = _fake_engine_download(fbd, monkeypatch, member="copilot.exe", exe=b"MZ copilot")
+    calls = _fake_copilot_download(fbd, monkeypatch)
     out = fbd.fetch_copilot()
-    assert sorted(p.name for p in out.iterdir()) == ["COPILOT-CLI-LICENSE.txt", "copilot.exe"]
-    assert (out / "copilot.exe").read_bytes() == b"MZ copilot"
-    assert calls == [
-        (fbd.COPILOT_URL, fbd.COPILOT_SHA256),
-        (fbd.COPILOT_LICENSE_URL, fbd.COPILOT_LICENSE_SHA256),
+    assert calls == [(fbd.COPILOT_URL, fbd.COPILOT_SHA256)]
+    assert _tree(out) == [
+        ".hostless-runtime-assets-v2",
+        "COPILOT-CLI-LICENSE.txt",
+        "OneAuthInterop.LICENSE.txt",
+        "copilot-runtime.exe",
+        "copilot.exe",
+        "definitions/sidekick/task.yaml",
+        "ripgrep/bin/win32-x64/rg.exe",
+        "runtime.node",
+        "schemas/api.schema.json",
     ]
+    # download_cli's alias is the wrapper, byte for byte -- not the legacy SEA exe.
+    assert (out / "copilot.exe").read_bytes() == b"MZ wrapper"
+    assert (out / "runtime.node").read_bytes() == b"MZ runtime"
+    assert (out / "COPILOT-CLI-LICENSE.txt").read_bytes() == b"GitHub Copilot CLI License"
+    assert (out / ".hostless-runtime-assets-v2").read_text(encoding="ascii").strip() == "1"
     assert fbd.is_complete("copilot")
     calls.clear()
     fbd.fetch_copilot()
     assert calls == []
+
+
+def test_fetch_copilot_replaces_a_legacy_stage_whole(fbd, tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("QUILL_BUILD_DEPS_DIR", str(tmp_path / "deps"))
+    legacy = fbd.component_dir("copilot")
+    legacy.mkdir(parents=True)
+    (legacy / "copilot.exe").write_bytes(b"MZ legacy sea")
+    (legacy / "COPILOT-CLI-LICENSE.txt").write_text("old", encoding="utf-8")
+    (legacy / "stale.dll").write_bytes(b"x")
+    assert fbd.is_staged("copilot") and not fbd.is_complete("copilot")
+    _fake_copilot_download(fbd, monkeypatch)
+    out = fbd.fetch_copilot()
+    assert not (out / "stale.dll").exists()
+    assert (out / "copilot.exe").read_bytes() == b"MZ wrapper"
+    assert not any(p.name.startswith(".copilot-staging-") for p in out.parent.iterdir())
+
+
+@pytest.mark.parametrize(
+    ("extra", "match"),
+    [
+        ({"package/brand-new-dir/x.js": b"x"}, "layout"),
+        ({"outside/x.txt": b"x"}, "Unexpected copilot package entry"),
+        ({"package/../escape.txt": b"x"}, "Unsafe"),
+    ],
+)
+def test_fetch_copilot_refuses_an_unexpected_package(
+    fbd, tmp_path, monkeypatch, extra, match
+) -> None:
+    monkeypatch.setenv("QUILL_BUILD_DEPS_DIR", str(tmp_path / "deps"))
+    _fake_copilot_download(fbd, monkeypatch, {**_COPILOT_PACKAGE, **extra})
+    with pytest.raises(fbd.ReleaseAssetError, match=match):
+        fbd.fetch_copilot()
+    assert not fbd.component_dir("copilot").exists()
+    assert not any(p.name.startswith(".copilot-staging-") for p in (tmp_path / "deps").iterdir())
+
+
+@pytest.mark.parametrize("member", ["copilot-runtime.exe", "runtime.node"])
+def test_fetch_copilot_refuses_a_bundle_file_that_misses_its_pin(
+    fbd, tmp_path, monkeypatch, member
+) -> None:
+    monkeypatch.setenv("QUILL_BUILD_DEPS_DIR", str(tmp_path / "deps"))
+    package = {**_COPILOT_PACKAGE, f"package/prebuilds/win32-x64/{member}": b"not it"}
+    _fake_copilot_download(fbd, monkeypatch, package)
+    with pytest.raises(fbd.ReleaseAssetError, match="pinned SHA-256"):
+        fbd.fetch_copilot()
+    assert not fbd.component_dir("copilot").exists()
+
+
+def test_fetch_copilot_refuses_a_package_without_its_licence(fbd, tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("QUILL_BUILD_DEPS_DIR", str(tmp_path / "deps"))
+    package = {k: v for k, v in _COPILOT_PACKAGE.items() if k != "package/LICENSE.md"}
+    _fake_copilot_download(fbd, monkeypatch, package)
+    with pytest.raises(fbd.ReleaseAssetError, match="LICENSE.md"):
+        fbd.fetch_copilot()
+
+
+def test_a_copilot_bundle_missing_its_marker_is_not_complete(fbd, tmp_path, monkeypatch) -> None:
+    monkeypatch.setenv("QUILL_BUILD_DEPS_DIR", str(tmp_path))
+    staged = tmp_path / "copilot"
+    staged.mkdir()
+    for name in ("copilot.exe", "copilot-runtime.exe", "runtime.node", "COPILOT-CLI-LICENSE.txt"):
+        (staged / name).write_bytes(b"MZ")
+    assert not fbd.is_complete("copilot")
+    (staged / ".hostless-runtime-assets-v2").write_text("1\n", encoding="ascii")
+    assert fbd.is_complete("copilot")
+
+
+def test_copilot_filter_matches_the_sdk_rules(fbd) -> None:
+    """Spot checks of the reimplemented ``_hostless_runtime_path``."""
+    path = fbd.copilot_bundle_path
+    assert path("package/prebuilds/win32-x64/runtime.node").as_posix() == "runtime.node"
+    assert path("package/prebuilds/win32-arm64/runtime.node") is None
+    assert path("package/prebuilds/win32-x64") is None
+    assert path("package/plugins/a/cli-native.node") is None
+    assert path("package/tree-sitter.wasm") is None
+    assert path("package/voice-engine.worker.js") is None
+    assert path("package/LICENSE.md") is None
+    assert path("package/README.md") is None
+    assert path("other/runtime.node") is None
+    assert path("package/schemas/x.json").as_posix() == "schemas/x.json"
+    with pytest.raises(fbd.ReleaseAssetError):
+        path("package\\schemas\\x.json")
 
 
 def test_fetch_codex_renames_the_exe_and_stages_licence_and_notice(
@@ -245,10 +412,10 @@ def test_an_engine_without_its_licence_is_not_complete(fbd, tmp_path, monkeypatc
 
 def test_fetch_engine_refuses_an_unexpected_archive(fbd, tmp_path, monkeypatch) -> None:
     monkeypatch.setenv("QUILL_BUILD_DEPS_DIR", str(tmp_path / "deps"))
-    _fake_engine_download(fbd, monkeypatch, member="copilot.exe", exe=b"x", extra=True)
+    _fake_engine_download(fbd, monkeypatch, member=fbd.CODEX_ARCHIVE_MEMBER, exe=b"x", extra=True)
     with pytest.raises(fbd.ReleaseAssetError, match="layout"):
-        fbd.fetch_copilot()
-    assert not (fbd.component_dir("copilot") / "copilot.exe").exists()
+        fbd.fetch_codex()
+    assert not (fbd.component_dir("codex") / "codex-app-server.exe").exists()
 
 
 def test_fetch_engine_refuses_an_exe_that_misses_its_pin(fbd, tmp_path, monkeypatch) -> None:

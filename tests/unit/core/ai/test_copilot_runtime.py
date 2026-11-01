@@ -11,11 +11,24 @@ import pytest
 from quill.core.ai import copilot_runtime as rt
 
 
-def _plant(root: Path) -> Path:
-    exe = root / "tools" / "copilot" / rt.COPILOT_EXE
-    exe.parent.mkdir(parents=True)
-    exe.write_bytes(b"")
-    return exe
+def _plant(root: Path, *, wrapper: bytes = b"MZ wrapper", node: bytes = b"MZ runtime") -> Path:
+    """A complete hostless bundle in ``root/tools/copilot``; returns the alias."""
+    directory = root / "tools" / "copilot"
+    directory.mkdir(parents=True)
+    (directory / rt.COPILOT_RUNTIME_WRAPPER).write_bytes(wrapper)
+    (directory / rt.COPILOT_EXE).write_bytes(wrapper)
+    (directory / rt.COPILOT_RUNTIME_NODE).write_bytes(node)
+    (directory / rt.COPILOT_ASSETS_MARKER).write_text("1\n", encoding="ascii")
+    return directory / rt.COPILOT_EXE
+
+
+@pytest.fixture
+def pinned(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Pin the bytes :func:`_plant` writes by default."""
+    monkeypatch.setattr(rt, "COPILOT_WRAPPER_SHA256", hashlib.sha256(b"MZ wrapper").hexdigest())
+    monkeypatch.setattr(
+        rt, "COPILOT_RUNTIME_NODE_SHA256", hashlib.sha256(b"MZ runtime").hexdigest()
+    )
 
 
 @pytest.fixture
@@ -35,6 +48,33 @@ def test_none_when_the_build_carries_no_cli(no_overrides: Path) -> None:
 def test_found_beside_the_interpreter(no_overrides: Path) -> None:
     exe = _plant(no_overrides)
     assert rt.find_copilot_cli() == exe
+    # What the SDK's get_cached_cli_path returns: the alias, not the wrapper.
+    assert exe.name == ("copilot.exe" if sys.platform == "win32" else "copilot")
+
+
+@pytest.mark.parametrize(
+    "missing",
+    [rt.COPILOT_EXE, rt.COPILOT_RUNTIME_WRAPPER, rt.COPILOT_RUNTIME_NODE, rt.COPILOT_ASSETS_MARKER],
+)
+def test_an_incomplete_bundle_is_no_bundle(no_overrides: Path, missing: str) -> None:
+    exe = _plant(no_overrides)
+    (exe.parent / missing).unlink()
+    assert rt.copilot_bundle_complete(exe.parent) is False
+    assert rt.find_copilot_cli() is None
+
+
+def test_an_empty_bundle_file_is_no_bundle(no_overrides: Path) -> None:
+    exe = _plant(no_overrides)
+    (exe.parent / rt.COPILOT_RUNTIME_NODE).write_bytes(b"")
+    assert rt.find_copilot_cli() is None
+
+
+def test_a_legacy_single_file_stage_is_no_bundle(no_overrides: Path) -> None:
+    """The old copilot-win32-x64.zip exe alone: the SDK would not use it either."""
+    legacy = no_overrides / "tools" / "copilot" / rt.COPILOT_EXE
+    legacy.parent.mkdir(parents=True)
+    legacy.write_bytes(b"MZ legacy sea")
+    assert rt.find_copilot_cli() is None
 
 
 def test_app_root_is_tried_first(no_overrides: Path, monkeypatch, tmp_path: Path) -> None:
@@ -83,19 +123,28 @@ def test_child_env_without_a_binary_adds_nothing(monkeypatch, absent_env) -> Non
     assert "COPILOT_SKIP_CLI_DOWNLOAD" not in env
 
 
-def test_pin_matches_only_the_pinned_bytes(monkeypatch, tmp_path: Path) -> None:
-    good = tmp_path / "good.exe"
-    good.write_bytes(b"MZ pinned")
-    bad = tmp_path / "bad.exe"
-    bad.write_bytes(b"MZ other")
-    monkeypatch.setattr(rt, "COPILOT_EXE_SHA256", hashlib.sha256(b"MZ pinned").hexdigest())
+def test_pin_matches_only_the_pinned_bundle(pinned: None, tmp_path: Path) -> None:
+    good = _plant(tmp_path / "good")
     assert rt.copilot_cli_matches_pin(good) is True
-    assert rt.copilot_cli_matches_pin(bad) is False
+    assert rt.copilot_cli_matches_pin(good.parent / rt.COPILOT_RUNTIME_WRAPPER) is True
+    assert rt.copilot_cli_matches_pin(_plant(tmp_path / "w", wrapper=b"MZ other")) is False
+    assert rt.copilot_cli_matches_pin(_plant(tmp_path / "n", node=b"MZ other")) is False
     assert rt.copilot_cli_matches_pin(tmp_path / "missing.exe") is False
 
 
+def test_pin_refuses_an_alias_that_is_not_the_wrapper(pinned: None, tmp_path: Path) -> None:
+    exe = _plant(tmp_path)
+    exe.write_bytes(b"MZ legacy sea")
+    assert rt.copilot_cli_matches_pin(exe) is False
+
+
+def test_launch_path_returns_a_pinned_bundle(no_overrides: Path, pinned: None) -> None:
+    exe = _plant(no_overrides)
+    assert rt.cli_path_for_launch() == exe
+
+
 def test_launch_path_refuses_an_unpinned_bundle(no_overrides: Path) -> None:
-    _plant(no_overrides)  # empty file: never the pinned exe
+    _plant(no_overrides)  # test bytes: never the pinned bundle
     with pytest.raises(rt.CopilotCliUnverified):
         rt.cli_path_for_launch()
 
@@ -104,6 +153,10 @@ def test_launch_path_is_none_without_a_bundle(no_overrides: Path) -> None:
     assert rt.cli_path_for_launch() is None
 
 
-def test_pin_is_the_one_the_build_stages() -> None:
+def test_pins_are_the_ones_the_build_stages() -> None:
     assert rt.COPILOT_CLI_VERSION == "1.0.105"
-    assert len(rt.COPILOT_EXE_SHA256) == 64
+    assert rt.COPILOT_RUNTIME_PLATFORM == "win32-x64"
+    assert rt.COPILOT_ASSETS_MARKER == ".hostless-runtime-assets-v2"
+    assert rt.COPILOT_RUNTIME_NODE == "runtime.node"
+    for pin in (rt.COPILOT_WRAPPER_SHA256, rt.COPILOT_RUNTIME_NODE_SHA256):
+        assert len(pin) == 64 and pin == pin.lower()

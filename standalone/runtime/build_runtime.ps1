@@ -120,8 +120,10 @@ if ($LASTEXITCODE -ne 0) { throw "enchant payload prune failed (see above)." }
 # (tools\codex) ship once, in every shared runtime, so no app downloads an
 # engine on first use (codex.md section 9, decisions 1 and 8). Unlike the media
 # tools they are not per app, so the runtime build stages them itself -- from
-# the pinned, SHA-256-verified cache, never from PATH. Both are the vendors'
-# own signed exes, copied unmodified (scripts\code_signing.py skips them).
+# the pinned, SHA-256-verified cache, never from PATH. Copilot is the SDK's
+# hostless runtime bundle (copilot.exe alias, copilot-runtime.exe, runtime.node,
+# marker and asset subfolders); Codex is one exe. Both are the vendors' own
+# signed binaries, copied unmodified (scripts\code_signing.py skips them).
 & $Python (Join-Path $quillRepo "scripts\fetch_build_deps.py") --only copilot --only codex
 if ($LASTEXITCODE -ne 0) { throw "Could not stage the AI engines (see scripts/fetch_build_deps.py)." }
 . (Join-Path $quillRepo "scripts\StageMediaTools.ps1")

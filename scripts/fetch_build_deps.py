@@ -37,17 +37,24 @@ tag, both SHA-256-pinned.
 ``copilot`` is the GitHub Copilot CLI, the runtime the Copilot SDK drives as a
 child process over JSON-RPC (codex.md sections 2B.2, 9 and 10A.12). It ships
 once in the shared runtime at ``tools/copilot``, so the SDK never downloads it
-(``COPILOT_CLI_PATH`` + ``COPILOT_SKIP_CLI_DOWNLOAD=1``). The standalone
-``copilot-win32-x64.zip`` build holds exactly one file, ``copilot.exe`` (a
-self-contained exe: no Node, no supporting files), signed by GitHub, Inc.
-Its pin was checked against the release's ``SHA256SUMS.txt``, the GitHub API
-asset digest and a local download, which all agreed. **Licence:** the GitHub
-Copilot CLI License is proprietary. It permits redistributing the Software only
-unmodified, only as part of an application that provides material
-functionality beyond it (never standalone), and only with a copy of the licence
-included and GitHub's notices retained. So ``copilot.exe`` is never re-signed
-or altered (``scripts/code_signing.py`` skips ``tools/copilot``), and the
-licence text from the same tag ships beside it as ``COPILOT-CLI-LICENSE.txt``.
+(``COPILOT_CLI_PATH`` + ``COPILOT_SKIP_CLI_DOWNLOAD=1``). The Copilot SDK does
+not run the legacy single-file ``copilot.exe`` of ``copilot-win32-x64.zip``: it
+downloads the unified package ``github-copilot-<version>-win32-x64.tgz`` and
+materialises a filtered "hostless" bundle from it (``copilot-runtime.exe``,
+``runtime.node``, runtime assets, a ``.hostless-runtime-assets-v2`` marker and
+a ``copilot.exe`` alias copied from the wrapper). :func:`fetch_copilot` builds
+exactly that bundle, with the SDK's own filter reimplemented here (no SDK
+import), so ``tools/copilot`` holds what the SDK's ``prebuilds/win32-x64``
+cache folder would. The package pin was checked against the release's
+``SHA256SUMS.txt``, the GitHub API asset digest and a local download, which all
+agreed. **Licence:** the GitHub Copilot CLI License is proprietary. It permits
+redistributing the Software only unmodified, only as part of an application
+that provides material functionality beyond it (never standalone), and only
+with a copy of the licence included and GitHub's notices retained. So nothing
+in ``tools/copilot`` is re-signed or altered (``scripts/code_signing.py`` skips
+the folder), and the package's own ``LICENSE.md`` -- which the SDK's filter
+drops -- ships beside the bundle as ``COPILOT-CLI-LICENSE.txt``. Licence files
+the filter keeps (``OneAuthInterop.LICENSE.txt``) ship where they sit.
 
 ``codex`` is the OpenAI Codex app-server, the agent engine of codex.md sections
 2 and 5, shipped once in the shared runtime at ``tools/codex`` (decisions 1 and
@@ -82,8 +89,9 @@ import argparse
 import os
 import shutil
 import sys
+import tarfile
 import tempfile
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(_REPO_ROOT))
@@ -93,8 +101,11 @@ from quill.core.ai.codex_binary import (  # noqa: E402
     CODEX_VERSION,
 )
 from quill.core.ai.copilot_runtime import (  # noqa: E402
+    COPILOT_ASSETS_MARKER,
     COPILOT_CLI_VERSION,
-    COPILOT_EXE_SHA256,
+    COPILOT_RUNTIME_NODE_SHA256,
+    COPILOT_RUNTIME_PLATFORM,
+    COPILOT_WRAPPER_SHA256,
 )
 from quill.core.release_assets import (  # noqa: E402
     ASSETS,
@@ -143,26 +154,80 @@ DENO_LICENSE_NAME = "DENO-LICENSE.txt"
 
 COPILOT_DIR_NAME = "copilot"
 COPILOT_SENTINEL = "copilot.exe"
-#: GitHub Copilot CLI for Windows x64, pinned 2026-10-31: SHA256SUMS.txt, the
-#: GitHub API asset digest and a local download agreed on the zip's hash.
-#: The version and the unpacked-exe pin live in quill.core.ai.copilot_runtime,
-#: which checks the same hash before every launch; bump them there together
-#: with the zip and licence hashes here.
+#: The unified Copilot runtime package for Windows x64, the asset SDK 1.0.28
+#: itself downloads for CLI 1.0.105, pinned 2026-10-31: SHA256SUMS.txt, the
+#: GitHub API asset digest and a local download agreed on its hash
+#: (77,606,846 bytes). The version, platform and the wrapper/runtime.node pins
+#: live in quill.core.ai.copilot_runtime, which checks the same hashes before
+#: every launch; bump them there together with the package hash here.
 COPILOT_VERSION = COPILOT_CLI_VERSION
+COPILOT_PLATFORM = COPILOT_RUNTIME_PLATFORM
+COPILOT_ARCHIVE_NAME = f"github-copilot-{COPILOT_VERSION}-{COPILOT_PLATFORM}.tgz"
 COPILOT_URL = (
     f"https://github.com/github/copilot-cli/releases/download/v{COPILOT_VERSION}/"
-    "copilot-win32-x64.zip"
+    f"{COPILOT_ARCHIVE_NAME}"
 )
-COPILOT_SHA256 = "34e16e9cf47de0e1534920171d6f39fa246638bddbb6ece820870b382bcc061a"
-#: The one file in the zip, as staged (172,637,984 bytes for 1.0.105), is held
-#: to COPILOT_EXE_SHA256, imported above from quill.core.ai.copilot_runtime.
-#: The GitHub Copilot CLI License (proprietary; see the module docstring), from
-#: the same tag; shipped beside copilot.exe, as the licence requires.
-COPILOT_LICENSE_URL = (
-    f"https://raw.githubusercontent.com/github/copilot-cli/v{COPILOT_VERSION}/LICENSE.md"
-)
-COPILOT_LICENSE_SHA256 = "c694e2d9b3f3bb40704ca9bdc823dc90269999ab4c013dfd8a52c407046074b4"
+COPILOT_SHA256 = "2dbd898b12d71e7c2c467adb5df113c8e4ad940d552aceec0599c86f7ba0af94"
+#: The bundle's files, as the SDK names them (``_cli_download.py``).
+COPILOT_WRAPPER = "copilot-runtime.exe"
+COPILOT_RUNTIME_NODE = "runtime.node"
+#: The GitHub Copilot CLI License (proprietary; see the module docstring): the
+#: package's own ``package/LICENSE.md``, which the SDK's filter drops, staged
+#: beside the bundle as the licence requires. Pinned because the copy in the
+#: git tag differs (section 8): what ships is the text that came with the bytes.
+COPILOT_LICENSE_MEMBER = "package/LICENSE.md"
+COPILOT_LICENSE_SHA256 = "b9680937e10425bf19862908856c16ed274e6b81a1368bd62be7a757eab21628"
 COPILOT_LICENSE_NAME = "COPILOT-CLI-LICENSE.txt"
+
+#: The SDK's hostless filter (``_HOSTLESS_EXCLUDED_TOP_LEVEL`` in SDK 1.0.28's
+#: ``_cli_download.py``), reimplemented rather than imported: these top-level
+#: package entries are the legacy SEA host and its assets, never the runtime.
+_COPILOT_EXCLUDED_TOP_LEVEL = frozenset({
+    "app.js",
+    "assets",
+    "changelog.json",
+    "cli-main.js",
+    "copilot",
+    "copilot.exe",
+    "copilot-sdk",
+    "foundry-local-sdk",
+    "index.js",
+    "LICENSE.md",
+    "napi-oop-runtime",
+    "npm-loader.js",
+    "package.json",
+    "preloads",
+    "pvrecorder",
+    "queries",
+    "README.md",
+    "sdk",
+    "sea-loader.js",
+    "webview",
+})
+
+#: What the filter leaves at the top of the bundle for 1.0.105 -- reviewed. A
+#: package that keeps anything else fails the build rather than shipping
+#: something nobody looked at (the SDK itself would keep it).
+_COPILOT_EXPECTED_TOP_LEVEL = frozenset({
+    # directories
+    "animations",
+    "builtin",
+    "builtin-skills",
+    "definitions",
+    "plugins",
+    "ripgrep",
+    "schemas",
+    "tgrep",
+    # files (from prebuilds/win32-x64)
+    "OneAuthInterop.LICENSE.txt",
+    "OneAuthInterop.dll",
+    "OneAuthInterop.dll.stamp.json",
+    COPILOT_WRAPPER,
+    "dpapi.node",
+    "msal-node-runtime.node",
+    "msalruntime.dll",
+    COPILOT_RUNTIME_NODE,
+})
 
 CODEX_DIR_NAME = "codex"
 CODEX_SENTINEL = "codex-app-server.exe"
@@ -229,6 +294,8 @@ def is_complete(component: str) -> bool:
         return False
     if component == "ffmpeg":
         return ffmpeg_notices_staged(component_dir("ffmpeg"))
+    if component == "copilot" and not copilot_bundle_staged(component_dir("copilot")):
+        return False
     names = _LICENCE_FILES.get(component, ())
     return all((component_dir(component) / name).is_file() for name in names)
 
@@ -417,18 +484,158 @@ def _fetch_single_exe_zip(
     return dest
 
 
-def fetch_copilot(*, force: bool = False) -> Path:
-    """Stage copilot.exe and the GitHub Copilot CLI License; return the directory."""
-    return _fetch_single_exe_zip(
-        "copilot",
-        version=COPILOT_VERSION,
-        url=COPILOT_URL,
-        sha256=COPILOT_SHA256,
-        member=COPILOT_SENTINEL,
-        exe_sha256=COPILOT_EXE_SHA256,
-        licences=((COPILOT_LICENSE_URL, COPILOT_LICENSE_SHA256, COPILOT_LICENSE_NAME),),
-        force=force,
+def copilot_bundle_staged(directory: Path) -> bool:
+    """True when *directory* passes the SDK's completeness test for a bundle.
+
+    ``get_cached_cli_path``: alias, wrapper, ``runtime.node`` and marker are
+    each a non-empty file.
+    """
+    required = (COPILOT_SENTINEL, COPILOT_WRAPPER, COPILOT_RUNTIME_NODE, COPILOT_ASSETS_MARKER)
+    return all(
+        (directory / name).is_file() and (directory / name).stat().st_size > 0 for name in required
     )
+
+
+def copilot_bundle_path(member_name: str) -> PurePosixPath | None:
+    """Where package member *member_name* lands in the bundle, or None to drop it.
+
+    The SDK's ``_hostless_runtime_path`` for :data:`COPILOT_PLATFORM`, rule for
+    rule: entries outside ``package/``, the excluded top-level entries, the
+    tree-sitter grammars, the voice workers, ``cli-native.node``, anything under
+    ``mediaremote-adapter`` and ``copilot-runtime-bin*`` are dropped;
+    ``prebuilds/<platform>/`` is flattened to the bundle root and other
+    platforms' prebuilds are dropped. Unsafe names raise.
+    """
+    if "\\" in member_name:
+        raise ReleaseAssetError(f"Unsafe copilot package path: {member_name}")
+    parts = PurePosixPath(member_name).parts
+    if not parts or parts[0] != "package" or len(parts) < 2:
+        return None
+    relative = parts[1:]
+    top_level = relative[0]
+    file_name = relative[-1]
+    if (
+        top_level in _COPILOT_EXCLUDED_TOP_LEVEL
+        or (top_level.startswith("tree-sitter") and top_level.endswith(".wasm"))
+        or (top_level.startswith("voice-") and top_level.endswith(".js"))
+        or file_name == "cli-native.node"
+        or "mediaremote-adapter" in relative
+        or file_name.startswith("copilot-runtime-bin")
+    ):
+        return None
+    if top_level == "prebuilds":
+        if len(relative) < 3 or relative[1] != COPILOT_PLATFORM:
+            return None
+        relative = relative[2:]
+    destination = PurePosixPath(*relative)
+    if destination.is_absolute() or ".." in destination.parts:
+        raise ReleaseAssetError(f"Unsafe copilot package path: {member_name}")
+    return destination
+
+
+def _materialize_copilot_bundle(archive: Path, staging: Path) -> None:
+    """Write the hostless bundle from *archive* into the empty dir *staging*.
+
+    Same files, same filter and same marker as the SDK's
+    ``ensure_runtime_wrapper``, plus the ``copilot.exe`` alias ``download_cli``
+    copies from the wrapper and the licence the filter drops. Refuses a
+    package that is not plain files under ``package/``, keeps anything outside
+    the reviewed top level, or whose wrapper, ``runtime.node`` or licence miss
+    their pins.
+    """
+    import hashlib
+
+    licence: bytes | None = None
+    with tarfile.open(archive, mode="r:gz") as tar:
+        for member in tar:
+            if not member.name.startswith("package/"):
+                raise ReleaseAssetError(f"Unexpected copilot package entry: {member.name!r}")
+            if member.isdir():
+                continue
+            if not member.isfile():
+                raise ReleaseAssetError(f"Unsupported copilot package entry: {member.name!r}")
+            relative = copilot_bundle_path(member.name)
+            if member.name == COPILOT_LICENSE_MEMBER:
+                licence = _read_member(tar, member)
+            if relative is None:
+                continue
+            if relative.parts[0] not in _COPILOT_EXPECTED_TOP_LEVEL:
+                raise ReleaseAssetError(
+                    f"Unexpected copilot package layout: {member.name!r} would ship as "
+                    f"{relative} (not in the reviewed bundle)."
+                )
+            target = staging.joinpath(*relative.parts)
+            if target.exists():
+                raise ReleaseAssetError(f"Duplicate copilot bundle path: {relative}")
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(_read_member(tar, member))
+
+    pins = (
+        (COPILOT_WRAPPER, COPILOT_WRAPPER_SHA256),
+        (COPILOT_RUNTIME_NODE, COPILOT_RUNTIME_NODE_SHA256),
+    )
+    for name, pin in pins:
+        path = staging / name
+        if not path.is_file() or path.stat().st_size == 0:
+            raise ReleaseAssetError(f"copilot: the package carries no {name}.")
+        got = hashlib.sha256(path.read_bytes()).hexdigest()
+        if got != pin:
+            raise ReleaseAssetError(
+                f"copilot: {name} does not match its pinned SHA-256 (got {got}, expected {pin})."
+            )
+    if licence is None:
+        raise ReleaseAssetError(f"copilot: the package carries no {COPILOT_LICENSE_MEMBER}.")
+    got = hashlib.sha256(licence).hexdigest()
+    if got != COPILOT_LICENSE_SHA256:
+        raise ReleaseAssetError(
+            f"copilot: {COPILOT_LICENSE_MEMBER} does not match its pinned SHA-256 "
+            f"(got {got}, expected {COPILOT_LICENSE_SHA256})."
+        )
+    # The SDK's marker, written by the same call, so the bytes match a cache
+    # the SDK made on the same OS.
+    (staging / COPILOT_ASSETS_MARKER).write_text("1\n", encoding="ascii")
+    # download_cli's compatibility alias: a byte copy of the wrapper.
+    shutil.copyfile(staging / COPILOT_WRAPPER, staging / COPILOT_SENTINEL)
+    (staging / COPILOT_LICENSE_NAME).write_bytes(licence)
+
+
+def _read_member(tar: tarfile.TarFile, member: tarfile.TarInfo) -> bytes:
+    extracted = tar.extractfile(member)
+    if extracted is None:
+        raise ReleaseAssetError(f"Could not read copilot package entry: {member.name!r}")
+    with extracted:
+        return extracted.read()
+
+
+def fetch_copilot(*, force: bool = False) -> Path:
+    """Stage the Copilot hostless runtime bundle and its licence; return the directory.
+
+    The bundle is built in a sibling staging folder and swapped in whole, so a
+    failed or interrupted stage never leaves a complete-looking folder behind,
+    and a re-stage drops every file of the previous one (the legacy
+    single-file exe included).
+    """
+    dest = component_dir("copilot")
+    if is_complete("copilot") and not force:
+        print(f"  copilot {COPILOT_VERSION}: already staged at {dest}")
+        return dest
+
+    print(f"  copilot {COPILOT_VERSION}: downloading {COPILOT_ARCHIVE_NAME} (SHA-256 pinned)...")
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    tmp = Path(tempfile.mkdtemp(prefix="quill-build-dep-"))
+    staging = Path(tempfile.mkdtemp(prefix=".copilot-staging-", dir=dest.parent))
+    try:
+        archive = tmp / COPILOT_ARCHIVE_NAME
+        download_verified(COPILOT_URL, archive, sha256=COPILOT_SHA256, progress=_progress)
+        _materialize_copilot_bundle(archive, staging)
+        if dest.exists():
+            shutil.rmtree(dest)
+        os.replace(staging, dest)
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+        shutil.rmtree(staging, ignore_errors=True)
+    print(f"  copilot {COPILOT_VERSION}: staged at {dest}")
+    return dest
 
 
 def fetch_codex(*, force: bool = False) -> Path:

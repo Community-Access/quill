@@ -91,11 +91,16 @@ DEFAULT_SIGN_PATTERNS = ("*.exe", "*.dll")
 
 # Third-party binaries that arrive already Authenticode-signed by their vendor
 # and must ship byte-for-byte as staged: ``tools/<name>/`` under any tree we
-# walk. The GitHub Copilot CLI (signed by GitHub, Inc.) may be redistributed
-# only unmodified, and the OpenAI Codex app-server (signed by OpenAI) is checked
-# against its pinned SHA-256 before every launch
-# (quill.core.ai.codex_binary) -- re-signing either would change its bytes and
-# replace the vendor's signature with ours. We never re-sign a third-party
+# walk, at any depth and whatever the extension. The GitHub Copilot CLI may be
+# redistributed only unmodified: it is the SDK's hostless runtime bundle, whose
+# copilot.exe alias, copilot-runtime.exe wrapper and runtime.node (all pinned in
+# quill.core.ai.copilot_runtime), its other .node addons and its subfolder exes
+# are signed by GitHub, Inc., and its auth DLLs and tgrep by Microsoft. The
+# OpenAI Codex app-server (signed by OpenAI) is checked against its pinned
+# SHA-256 before every launch (quill.core.ai.codex_binary). Re-signing any of
+# them would change its bytes and replace the vendor's signature with ours. The
+# skip is by directory, not by pattern, so a .node file -- a PE DLL that a
+# wider pattern list could reach -- is covered as well as the exes. We never re-sign a third-party
 # binary that carries its maker's signature. (ffmpeg and libmpv ship unsigned
 # upstream and are signed with the rest of the payload; deno is signed by Deno
 # Land Inc. and is, for now, still re-signed -- a candidate for this list.)
