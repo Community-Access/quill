@@ -10,6 +10,7 @@ directly).
 
 from __future__ import annotations
 
+import functools
 import logging
 import threading
 import time
@@ -74,6 +75,60 @@ def call_ui_safely(func: Callable[..., Any], *args: Any, **kwargs: Any) -> None:
         getattr(func, "__qualname__", repr(func)),
     )
     wrapped()
+
+
+def guard_timer_callback(
+    func: Callable[..., Any],
+    *,
+    name: str,
+    report: Callable[[str], None] | None = None,
+) -> Callable[..., None]:
+    """Wrap a ``wx.CallLater`` or ``wx.Timer`` callback so a failure is seen.
+
+    An exception that escapes a timer callback goes to wxPython's default
+    handler, which prints to a console a windowed app does not have, so the
+    callback just stops working and nothing says so (TG Drop Deck's startup
+    announcement raised on every launch for five releases that way). The
+    wrapper logs the traceback and, when *report* is given, hands it one
+    status-bar line naming *name*. It never raises: a timer that fails once
+    must not take its window down with it. A repeating timer that fails on
+    every tick logs the traceback and reports only the first time, then
+    counts, so a one-second refresh cannot fill the log.
+    """
+    failures = 0
+
+    @functools.wraps(func)
+    def guarded(*args: Any, **kwargs: Any) -> None:
+        nonlocal failures
+        try:
+            func(*args, **kwargs)
+        except Exception:
+            failures += 1
+            if failures > 1:
+                logger.debug("Timer callback %s failed again (%d times)", name, failures)
+                return
+            logger.exception("Timer callback failed: %s", name)
+            if report is None:
+                return
+            try:
+                report(f"{name} failed. The details are in the log.")
+            except Exception:
+                logger.exception("Could not report the failed timer callback %s", name)
+
+    return guarded
+
+
+def call_later_safely(
+    delay_ms: int,
+    func: Callable[..., Any],
+    *args: Any,
+    name: str,
+    report: Callable[[str], None] | None = None,
+    **kwargs: Any,
+) -> Any:
+    """``wx.CallLater`` with :func:`guard_timer_callback` around *func*."""
+    guarded = guard_timer_callback(func, name=name, report=report)
+    return wx.CallLater(delay_ms, guarded, *args, **kwargs)
 
 
 class CoalescedUiReporter:

@@ -10,6 +10,7 @@ from collections.abc import Callable
 
 import wx
 
+from quill.stability.wx_dispatch import guard_timer_callback
 from quill.ui.dialog_contract import bind_close_button, set_accessible_name
 from quill.ui.dpi import dip_size
 
@@ -74,7 +75,8 @@ class LiveStatusFrame(wx.Frame):
         layout.Fit(self)
         self.Bind(wx.EVT_CLOSE, self._on_close)
         self._timer = wx.Timer(self)
-        self.Bind(wx.EVT_TIMER, lambda _e: self.refresh(), self._timer)
+        tick = guard_timer_callback(lambda _e: self.refresh(), name="Broadcast status refresh")
+        self.Bind(wx.EVT_TIMER, tick, self._timer)
         self._timer.Start(1000)
         self.refresh()
 

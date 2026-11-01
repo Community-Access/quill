@@ -49,7 +49,9 @@ class StudioDemoFinishMixin:
         self._demo_lock = None
         protected = getattr(self, "_protected_background_jobs", {})
         protected["studio-demo-save"] = "Saving a demonstration"
-        self._announce((reason + " " if reason else "") + "Saving and checking the demonstration.")
+        self._announce_settled(
+            (reason + " " if reason else "Recording stopped. ") + "Saving and checking it."
+        )
 
         def work(*, cancellation_token, **_kwargs):
             try:
@@ -98,7 +100,7 @@ class StudioDemoFinishMixin:
 
         def done(_task, _result):
             self._release_demo_microphone(lock)
-            self._announce("Recording discarded.")
+            self._announce_settled("Recording discarded.")
 
         def failed(_task, error):
             self._release_demo_microphone(lock)
