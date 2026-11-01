@@ -5,17 +5,15 @@ second mixin each editor has to remember to add: both editors get these the
 moment they get the rest, and the QUILL adapter's "no commands of its own"
 test keeps holding, because neither editor writes a line of either.
 
-**Use My ChatGPT Subscription** opens the account window
-(:mod:`quill.ui.hosted_ai_chatgpt`). It needs the area switched on and nothing
-else: the free service's agreement is about QUILL's servers, which this route
-never touches, and the window itself says where the text goes.
+**Use My ChatGPT Subscription** opens Choose Your AI on the plan's row, with its
+sign-in step ready (:mod:`quill.ui.hosted_ai_connections`). It needs the area
+switched on and nothing else: the free service's agreement is about QUILL's
+servers, which this route never touches.
 
-**Ask About an Image** is the one AI help command only the plan can answer --
-neither the free service nor an own key carries a picture -- so with no
-sign-in it says so and opens the account window rather than failing later with
-a less useful sentence. The answer arrives in the ordinary result window with
-Insert Below and Copy, and nothing goes into the document without one of
-those keystrokes.
+**Ask About an Image** needs a connection that sees (codex.md 10A.8): on one
+that cannot, it sends nothing and offers the switch in one Yes/No. The answer
+arrives in the ordinary result window with Insert Below and Copy, and nothing
+goes into the document without one of those keystrokes.
 
 **Tidy Dictated Text** is the third, and the one dictation asked for: speech
 recognition writes what it heard, and what it heard is not always the word
@@ -66,13 +64,22 @@ class ChatGptAiMixin(WordToolsMixin):
     and, as a base, the thesaurus and the dictionary (word_tools_commands)."""
 
     def cmd_ai_chatgpt(self) -> None:
-        """Open the ChatGPT account window: sign in, choose the model, sign out."""
+        """Use My ChatGPT Subscription (Alt+F5): Choose Your AI on the plan's row,
+        its sign-in step ready when this app is not signed in yet (10A.9, rule 5)."""
         if not self._ai_switched_on():
             return
+        service = self._ai_service()
+        if self._ai_choosable():
+            signed_in = bool(getattr(service.chatgpt, "signed_in", False))
+            self._ai_open_choose("chatgpt", sign_in=not signed_in)
+            return
+        # An app whose settings have no stored choice yet (Cast, until codex.md
+        # Phase 3) keeps the account window it has always had.
         from quill.ui.hosted_ai_chatgpt import ChatGptFrame
 
-        service = self._ai_service()
-        self._ai_note_readiness()
+        note = getattr(service, "note_readiness", None)
+        if callable(note):
+            note()
         self._open_ai_window(
             "chatgpt",
             lambda: ChatGptFrame(
@@ -87,15 +94,9 @@ class ChatGptAiMixin(WordToolsMixin):
         """Choose a picture and a question, and hear what the model sees."""
         if not self._ai_switched_on():
             return
+        if not self._ai_capable("pictures"):
+            return  # nothing sent; the switch was offered (codex.md 10A.8)
         service = self._ai_service()
-        if not self._ai_chatgpt_active() and not bool(getattr(service, "own_key_can_see", False)):
-            self._announce(
-                "Ask About an Image uses your ChatGPT subscription, or your own Google "
-                "Gemini key. Sign in with Use My ChatGPT Subscription, or save a Gemini "
-                "key in Use My Own AI Key, first."
-            )
-            self.cmd_ai_chatgpt()
-            return
         from quill.ui.dialog_contract import show_modal_dialog
         from quill.ui.hosted_ai_image import TITLE, AskImageDialog
 
@@ -117,7 +118,7 @@ class ChatGptAiMixin(WordToolsMixin):
 
     def cmd_dictation_tidy(self) -> None:
         """Tidy the selection, else the paragraph, as dictated text."""
-        if not self._ai_switched_on():
+        if not self._ai_switched_on() or not self._ai_capable("text"):
             return
         service = self._ai_service()
         if not self._ai_direct():
@@ -191,13 +192,6 @@ class ChatGptAiMixin(WordToolsMixin):
         self._announce(f"AI help is switched off. Turn it on in {self._ai_switch_route()}.")
         return False
 
-    def _ai_note_readiness(self) -> None:
-        """Remember which connections are set up before a sign-in window opens,
-        so the change it makes can be told apart from a model change."""
-        note = getattr(self._ai_service(), "note_readiness", None)
-        if callable(note):
-            note()
-
     def _ai_route_changed(self, connection: str = "") -> None:
         """A sign-in, a sign-out or a saved key just changed where requests go.
 
@@ -209,12 +203,14 @@ class ChatGptAiMixin(WordToolsMixin):
         """
         service = getattr(self._ai_host(), "ai_service", None)
         changed = getattr(service, "connection_changed", None)
+        chosen = getattr(service, "route_chosen", None)
         if connection and callable(changed):
             changed(connection)  # signing in is choosing (codex.md 10A.5)
-            return
-        chosen = getattr(service, "route_chosen", None)
-        if callable(chosen):
+        elif callable(chosen):
             chosen()
+        refresh = getattr(self, "_ai_connection_refresh", None)
+        if callable(refresh):
+            refresh()
 
     def _show_image_result(self, text: str, path: Path) -> None:
         from quill.core.ai.chatgpt_ai_help import IMAGE_FEATURE

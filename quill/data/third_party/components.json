@@ -342,6 +342,42 @@
       "pypi": "accessible-output2"
     },
     {
+      "id": "annotated-types",
+      "name": "annotated-types",
+      "group": "runtime",
+      "version": "0.8.0",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2022 the contributors",
+      "homepage": "https://github.com/annotated-types/annotated-types",
+      "what": "Type annotations pydantic reads, a dependency of pydantic.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "annotated-types"
+    },
+    {
+      "id": "anyio",
+      "name": "AnyIO",
+      "group": "runtime",
+      "version": "4.15.1",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2018 Alex Grönholm",
+      "homepage": "https://github.com/agronholm/anyio",
+      "what": "Asynchronous networking underneath httpx, a dependency of the GitHub Copilot SDK.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "anyio"
+    },
+    {
       "id": "attrs",
       "name": "attrs",
       "group": "runtime",
@@ -700,6 +736,78 @@
       ],
       "delivery": "bundled",
       "pypi": "feedparser-sgmllib"
+    },
+    {
+      "id": "github-copilot-sdk",
+      "name": "GitHub Copilot SDK (copilot)",
+      "group": "runtime",
+      "version": "1.0.28",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright GitHub, Inc.",
+      "homepage": "https://github.com/github/copilot-sdk",
+      "what": "The Python side of the My GitHub Copilot connection: it starts the bundled Copilot CLI in tools\\copilot and talks to it. Ships in the shared runtime unmodified; its licence text is the repository's LICENSE at tag v1.0.28 (SHA-256 2510b446bc1f0cf9702453075d20cd88631e20e5642658edb7325d9c1eb534f7), the MIT text with GitHub's copyright.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "github-copilot-sdk"
+    },
+    {
+      "id": "h11",
+      "name": "h11",
+      "group": "runtime",
+      "version": "0.16.0",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2016 Nathaniel J. Smith and other contributors",
+      "homepage": "https://github.com/python-hyper/h11",
+      "what": "HTTP/1.1 protocol handling underneath httpx.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "h11"
+    },
+    {
+      "id": "httpcore",
+      "name": "httpcore",
+      "group": "runtime",
+      "version": "1.0.9",
+      "licenses": [
+        "BSD-3-Clause"
+      ],
+      "license_label": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2020, Encode OSS Ltd.",
+      "homepage": "https://github.com/encode/httpcore",
+      "what": "The HTTP transport underneath httpx.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "httpcore"
+    },
+    {
+      "id": "httpx",
+      "name": "httpx",
+      "group": "runtime",
+      "version": "0.28.1",
+      "licenses": [
+        "BSD-3-Clause"
+      ],
+      "license_label": "BSD-3-Clause",
+      "copyright": "Copyright (c) 2019, Encode OSS Ltd.",
+      "homepage": "https://github.com/encode/httpx",
+      "what": "An HTTP client, a dependency of the GitHub Copilot SDK.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "httpx"
     },
     {
       "id": "pygments",
@@ -1494,6 +1602,24 @@
       "pypi": "python-pptx"
     },
     {
+      "id": "six",
+      "name": "six",
+      "group": "runtime",
+      "version": "1.17.0",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) 2010-2024 Benjamin Peterson",
+      "homepage": "https://github.com/benjaminp/six",
+      "what": "Python 2 and 3 compatibility helpers, a dependency of python-dateutil.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "six"
+    },
+    {
       "id": "sounddevice",
       "name": "python-sounddevice (with PortAudio)",
       "group": "runtime",
@@ -1529,6 +1655,24 @@
       ],
       "delivery": "bundled",
       "pypi": "soundfile"
+    },
+    {
+      "id": "typing-inspection",
+      "name": "typing-inspection",
+      "group": "runtime",
+      "version": "0.4.4",
+      "licenses": [
+        "MIT"
+      ],
+      "license_label": "MIT",
+      "copyright": "Copyright (c) Pydantic Services Inc. 2025 to present",
+      "homepage": "https://github.com/pydantic/typing-inspection",
+      "what": "Type inspection helpers, a dependency of pydantic.",
+      "products": [
+        "all"
+      ],
+      "delivery": "bundled",
+      "pypi": "typing_inspection"
     },
     {
       "id": "zstandard",
@@ -1985,7 +2129,25 @@
       "license_label": "GitHub Copilot CLI License (proprietary; redistribution of unmodified copies permitted)",
       "copyright": "Copyright (c) GitHub, Inc.",
       "homepage": "https://github.com/github/copilot-cli",
-      "what": "The engine behind the My GitHub Copilot connection, run as a separate program: the runtime bundle the GitHub Copilot SDK installs for itself, taken from GitHub's github-copilot-1.0.105-win32-x64 package. Ships unmodified in the shared runtime's tools\\copilot with its licence as COPILOT-CLI-LICENSE.txt. The bundle also carries components GitHub ships inside it -- Microsoft's sign-in libraries (OneAuthInterop.dll, with its licence as OneAuthInterop.LICENSE.txt, and msalruntime.dll), Microsoft's tgrep and ripgrep -- each signed by GitHub or Microsoft and covered by that licence.",
+      "what": "The engine behind the My GitHub Copilot connection, run as a separate program: the runtime bundle the GitHub Copilot SDK installs for itself, taken from GitHub's github-copilot-1.0.105-win32-x64 package. Ships unmodified in the shared runtime's tools\\copilot with its licence as COPILOT-CLI-LICENSE.txt. The bundle also carries components GitHub ships inside it -- Microsoft's sign-in libraries (OneAuthInterop.dll, with its licence as OneAuthInterop.LICENSE.txt, and msalruntime.dll), and Microsoft's tgrep -- each signed by GitHub or Microsoft and covered by that licence -- and ripgrep, which has its own entry.",
+      "products": [
+        "all"
+      ],
+      "delivery": "shared-runtime"
+    },
+    {
+      "id": "ripgrep",
+      "name": "ripgrep (rg.exe)",
+      "group": "runtime",
+      "version": "15.0.0 (rev 3a612f88b8)",
+      "licenses": [
+        "Unlicense",
+        "MIT"
+      ],
+      "license_label": "Unlicense or MIT (your choice)",
+      "copyright": "Copyright (c) 2015 Andrew Gallant",
+      "homepage": "https://github.com/BurntSushi/ripgrep",
+      "what": "A fast text search program the GitHub Copilot CLI runtime carries in tools\\copilot\\ripgrep, shipped inside GitHub's package unmodified. Its licence texts are LICENSE-MIT (SHA-256 0f96a83840e146e43c0ec96a22ec1f392e0680e6c1226e6f3ba87e0740af850f) and UNLICENSE (SHA-256 7e12e5df4bae12cb21581ba157ced20e1986a0508dd10d0e8a4ab9a4cf94e85c) at ripgrep tag 15.0.0, the version the bundled rg.exe reports.",
       "products": [
         "all"
       ],

@@ -42,6 +42,14 @@ class _FakeFrame:
         # counting as open. Kept so close() below can fire it.
         self._on_close = handler
 
+    def select(self, connection):
+        """Choose Your AI: the row a command opened the window on."""
+        self.selected = connection
+
+    def start_sign_in(self, connection):
+        """Choose Your AI: the row's sign-in step, made ready by its command."""
+        self.signing_in = connection
+
     def close(self):
         """Close this window the way wx would, handler and all."""
         handler = getattr(self, "_on_close", None)
@@ -52,8 +60,10 @@ class _FakeFrame:
 @pytest.fixture
 def ai_frames(monkeypatch):
     """Every AI window, replaced by a recorder. Returns the four classes."""
+    import quill.ui.hosted_ai_connections as connections
     import quill.ui.hosted_ai_dialogs as dialogs
     import quill.ui.hosted_ai_pad as pad
+    import quill.ui.hosted_ai_usage as usage
 
     # Patched where each is looked up, not where it is defined -- the mixin
     # imports them inside its methods, so the defining module is the lookup
@@ -62,12 +72,16 @@ def ai_frames(monkeypatch):
     made = {}
     for module, names in (
         (pad, ("AiPadFrame", "AiResultFrame")),
-        (dialogs, ("AiSignInFrame", "AiUsageFrame")),
+        (dialogs, ("AiSignInFrame",)),
+        (usage, ("UsageFrame",)),
+        (connections, ("ChooseAiFrame",)),
     ):
         for name in names:
             cls = type(name, (_FakeFrame,), {"last": None})
             monkeypatch.setattr(module, name, cls)
             made[name] = cls
+    # The one Usage view (codex.md 10A.11) replaced the allowance window.
+    made["AiUsageFrame"] = made["UsageFrame"]
     return made
 
 
@@ -156,6 +170,7 @@ def test_every_ai_command_refuses_when_the_area_is_off(lite_window, ai_frames, m
     assert ai_frames["AiPadFrame"].last is None
     assert ai_frames["AiUsageFrame"].last is None
     assert ai_frames["AiSignInFrame"].last is None
+    assert ai_frames["ChooseAiFrame"].last is None
 
 
 # --------------------------------------------------------------------------- #
@@ -187,8 +202,11 @@ def test_the_assistant_offers_sign_in_when_this_computer_is_not_connected(
     assert any("not connected" in said for said in win.announcements)
 
 
-def test_usage_does_not_open_when_signed_out(lite_window, ai_frames, monkeypatch):
-    """A usage window for an account that does not exist has nothing to show."""
+def test_usage_opens_when_signed_out_without_asking_the_free_service(
+    lite_window, ai_frames, monkeypatch
+):
+    """The one Usage view lists every connection set up, from local counts too
+    (codex.md 10A.11); with this computer not connected it asks QUILL nothing."""
     win = lite_window("text")
 
     from quill.ui.hosted_ai_commands import HostedAiMixin
@@ -203,7 +221,7 @@ def test_usage_does_not_open_when_signed_out(lite_window, ai_frames, monkeypatch
 
     (lambda w: w.cmd_ai_usage())(win)
 
-    assert ai_frames["AiUsageFrame"].last is None
+    assert ai_frames["UsageFrame"].last["kwargs"]["fetch_free"] is False
 
 
 # --------------------------------------------------------------------------- #
@@ -283,14 +301,16 @@ def test_the_usage_window_is_handed_the_service(lite_window, ai_frames, monkeypa
 
 
 def test_sign_in_opens_even_when_already_connected(lite_window, ai_frames, monkeypatch, signed_in):
-    """It is Sign In *or Out*: somebody already connected uses this window to
-    check that, and to get to the way back out."""
+    """It is Connect *or Sign Out*: somebody already connected lands in Choose
+    Your AI on the free AI's row, where the way back out is, and no Connect step
+    opens on its own (decision 23)."""
     win = lite_window("text")
     monkeypatch.setattr(win, "_ai_service", lambda: signed_in)
 
     (lambda w: w.cmd_ai_sign_in())(win)
 
-    assert ai_frames["AiSignInFrame"].last is not None
+    assert ai_frames["ChooseAiFrame"].last["kwargs"]["select"] == "free"
+    assert ai_frames["AiSignInFrame"].last is None
 
 
 # --------------------------------------------------------------------------- #
@@ -718,15 +738,19 @@ def test_accepting_on_the_way_to_sign_in_does_not_send_you_back_to_sign_in(
     lite_window, ai_frames, agreement, monkeypatch, connected, wx_call_after
 ):
     """The agreement used to answer "choose Tools, AI, Sign In or Out" to
-    somebody who had just chosen exactly that. The window they asked for is the
-    answer; the reader announces it when it takes focus."""
+    somebody who had just chosen exactly that. Connect or Sign Out on a computer
+    not connected opens Choose Your AI with the free AI's Connect step ready;
+    that step asks for the agreement and then opens, and says nothing itself."""
     wx_call_after()  # the window opens after the agreement, deferred
+    connected.signed_in = False
     win = lite_window("text")
     monkeypatch.setattr(win, "_ai_service", lambda: connected)
     win.app.settings.ai_privacy_accepted_version = 0
     agreement["answer"] = True
 
-    (lambda w: w.cmd_ai_sign_in())(win)
+    (lambda w: w.cmd_ai_sign_in())(win)  # the sign-in step is made ready inline
+    assert win._ai_windows["choose"].signing_in == "free"
+    ai_frames["ChooseAiFrame"].last["args"][2].connect_free()  # as the window runs it
 
     assert ai_frames["AiSignInFrame"].last is not None
     assert win.announcements == []
@@ -775,11 +799,11 @@ def test_asking_for_a_window_twice_raises_the_one_that_is_open(
     press was indistinguishable by ear from a key that is not bound."""
     win = lite_window("text")
 
-    (lambda w: w.cmd_ai_sign_in())(win)
-    first = ai_frames["AiSignInFrame"].last
-    (lambda w: w.cmd_ai_sign_in())(win)
+    (lambda w: w.cmd_ai_choose())(win)
+    first = ai_frames["ChooseAiFrame"].last
+    (lambda w: w.cmd_ai_choose())(win)
 
-    assert ai_frames["AiSignInFrame"].last is first, "no second window was built"
+    assert ai_frames["ChooseAiFrame"].last is first, "no second window was built"
 
 
 def test_closing_a_window_lets_the_next_press_open_it_again(
@@ -787,12 +811,12 @@ def test_closing_a_window_lets_the_next_press_open_it_again(
 ):
     win = lite_window("text")
 
-    (lambda w: w.cmd_ai_sign_in())(win)
-    win._ai_windows["sign_in"].close()
-    ai_frames["AiSignInFrame"].last = None
-    (lambda w: w.cmd_ai_sign_in())(win)
+    (lambda w: w.cmd_ai_choose())(win)
+    win._ai_windows["choose"].close()
+    ai_frames["ChooseAiFrame"].last = None
+    (lambda w: w.cmd_ai_choose())(win)
 
-    assert ai_frames["AiSignInFrame"].last is not None
+    assert ai_frames["ChooseAiFrame"].last is not None
 
 
 # --------------------------------------------------------------------------- #
@@ -837,23 +861,28 @@ def test_own_key_refuses_when_the_area_is_off(lite_window, own_key_dialog, monke
     assert any("switched off" in said for said in win.announcements)
 
 
-def test_own_key_needs_no_agreement_and_saves_what_the_window_chose(lite_window, own_key_dialog):
-    """The free service's agreement is about QUILL's servers; this route never
-    touches them, and the window itself says where the text goes."""
+def test_own_key_needs_no_agreement_and_saves_what_the_window_chose(
+    lite_window, own_key_dialog, ai_frames, wx_call_after
+):
+    """Alt+F2 opens Choose Your AI on the own key's row with its sign-in step --
+    the key dialog -- ready (codex.md 10A.9). The free service's agreement is
+    about QUILL's servers; this route never touches them."""
     win = lite_window("text")
     win.app.settings.ai_privacy_accepted_version = 0
     win.app.settings.ai_connection = "free"  # migrated already: no first-read save
     before = win.app.saved_settings
 
     (lambda w: w.cmd_ai_own_key())(win)
+    assert win._ai_windows["choose"].signing_in == "own_key"
+    said = ai_frames["ChooseAiFrame"].last["args"][2].own_key()  # as the window runs it
 
     assert own_key_dialog["applied"] == 1
     assert win.app.settings.ai_own_key_model == "gpt-test"
     assert win.app.saved_settings == before + 1
-    assert any("no limits" in said for said in win.announcements)
+    assert "no limits" in said
 
 
-def test_cancelling_own_key_changes_nothing(lite_window, own_key_dialog):
+def test_cancelling_own_key_changes_nothing(lite_window, own_key_dialog, ai_frames):
     import wx
 
     own_key_dialog["answer"] = wx.ID_CANCEL
@@ -862,17 +891,16 @@ def test_cancelling_own_key_changes_nothing(lite_window, own_key_dialog):
     before = win.app.saved_settings
 
     (lambda w: w.cmd_ai_own_key())(win)
+    said = ai_frames["ChooseAiFrame"].last["args"][2].own_key()
 
+    assert said == ""
     assert own_key_dialog["applied"] == 0
     assert win.app.saved_settings == before
 
 
-def test_with_a_saved_key_usage_opens_the_own_key_window(lite_window, ai_frames, monkeypatch):
-    """A different window, not the allowance one: there is nothing to fetch."""
-    import quill.ui.hosted_ai_own_key as own_key_ui
+def test_with_a_saved_key_usage_opens_the_one_usage_view(lite_window, ai_frames, monkeypatch):
+    """One view for every connection (codex.md 10A.11), handed the service."""
     from quill.ui.hosted_ai_commands import HostedAiMixin
-
-    Window = type("OwnKeyUsageFrame", (_FakeFrame,), {"last": None})
 
     class Service:
         signed_in = False
@@ -882,12 +910,10 @@ def test_with_a_saved_key_usage_opens_the_own_key_window(lite_window, ai_frames,
     win = lite_window("text")
     monkeypatch.setattr(HostedAiMixin, "_ai_privacy_accepted", lambda _self: True)
     monkeypatch.setattr(win, "_ai_service", lambda: service)
-    monkeypatch.setattr(own_key_ui, "OwnKeyUsageFrame", Window)
 
     (lambda w: w.cmd_ai_usage())(win)
 
-    assert Window.last["args"][1] is service
-    assert ai_frames["AiUsageFrame"].last is None
+    assert ai_frames["UsageFrame"].last["args"][1] is service
 
 
 def test_a_saved_key_lifts_the_limits_and_removing_it_restores_them(monkeypatch):
@@ -959,11 +985,12 @@ def test_the_chatgpt_window_refuses_when_the_area_is_off(lite_window, chatgpt_wi
     assert any("switched off" in said for said in win.announcements)
 
 
-def test_the_chatgpt_window_needs_no_agreement_and_gets_this_apps_account(
-    lite_window, chatgpt_window, monkeypatch
+def test_the_chatgpt_command_opens_choose_your_ai_on_the_plan_ready_to_sign_in(
+    lite_window, chatgpt_window, ai_frames, monkeypatch, wx_call_after
 ):
-    """The free service's agreement is about QUILL's servers, which this route
-    never touches; the account handed over is the service's own."""
+    """Alt+F5 keeps its key and id (rule 5) and opens Choose Your AI on the
+    plan's row with its sign-in step ready. No agreement: this route never
+    touches QUILL's servers."""
     win = lite_window("text")
     win.app.settings.ai_privacy_accepted_version = 0
     service = _PlanService()
@@ -971,9 +998,9 @@ def test_the_chatgpt_window_needs_no_agreement_and_gets_this_apps_account(
 
     (lambda w: w.cmd_ai_chatgpt())(win)
 
-    assert chatgpt_window.last is not None
-    assert chatgpt_window.last["args"][1] is service.chatgpt
-    assert callable(chatgpt_window.last["kwargs"]["on_change"])
+    assert ai_frames["ChooseAiFrame"].last["args"][1] is service
+    assert win._ai_windows["choose"].signing_in == "chatgpt"
+    assert chatgpt_window.last is None
 
 
 def test_the_lite_app_signs_in_as_quill_lite(tmp_path):
@@ -992,9 +1019,7 @@ def test_the_lite_app_signs_in_as_quill_lite(tmp_path):
     assert service.chatgpt.agent_name == "QUILL Lite"
 
 
-def test_usage_opens_the_account_window_on_a_plan(
-    lite_window, ai_frames, chatgpt_window, monkeypatch
-):
+def test_usage_on_a_plan_is_the_one_usage_view(lite_window, ai_frames, chatgpt_window, monkeypatch):
     from quill.ui.hosted_ai_commands import HostedAiMixin
 
     win = lite_window("text")
@@ -1003,8 +1028,8 @@ def test_usage_opens_the_account_window_on_a_plan(
 
     (lambda w: w.cmd_ai_usage())(win)
 
-    assert chatgpt_window.last is not None
-    assert ai_frames["AiUsageFrame"].last is None
+    assert chatgpt_window.last is None
+    assert ai_frames["UsageFrame"].last is not None
 
 
 def test_the_pad_opens_on_a_plan_with_no_connection_to_the_free_service(
@@ -1020,20 +1045,55 @@ def test_the_pad_opens_on_a_plan_with_no_connection_to_the_free_service(
     assert ai_frames["AiSignInFrame"].last is None
 
 
-def test_ask_about_an_image_without_a_sign_in_opens_the_account_window(
-    lite_window, chatgpt_window, monkeypatch
+class _CannotSee(_PlanService):
+    """The free AI in use: no pictures; My ChatGPT plan is signed in and can."""
+
+    connection_in_use = "free"
+
+    def __init__(self):
+        super().__init__()
+        self.chosen = []
+
+    def can_do(self, capability):
+        return capability != "pictures" or bool(self.chosen)
+
+    def capability_offer(self, capability):
+        from quill.core.ai.connection_caps import SwitchOffer
+
+        return SwitchOffer(
+            "Pictures need a connection that can see. My ChatGPT plan can. Switch to it and ask?",
+            target="chatgpt",
+        )
+
+    def choose(self, connection):
+        self.chosen.append(connection)
+        return True
+
+
+def test_ask_about_an_image_on_a_connection_that_cannot_see_sends_nothing_on_no(
+    lite_window, monkeypatch
 ):
+    """10A.8: pressing it sends nothing and offers the switch, Yes the default."""
+    import quill.ui.hosted_ai_connections as connections
+
+    asked = []
+
+    def answer(_parent, sentence, *, default_yes):
+        asked.append((sentence, default_yes))
+        return False
+
+    monkeypatch.setattr(connections, "ask_yes_no", answer)
     win = lite_window("text")
-    service = _PlanService()
-    service.chatgpt_active = False
-    service.direct = False
+    service = _CannotSee()
     monkeypatch.setattr(win, "_ai_service", lambda: service)
 
     (lambda w: w.cmd_ai_image())(win)
 
-    assert chatgpt_window.last is not None
     assert service.images == []
-    assert any("ChatGPT subscription" in said for said in win.announcements)
+    assert service.chosen == []
+    assert len(asked) == 1
+    assert asked[0][1] is True
+    assert "My ChatGPT plan can" in asked[0][0]
 
 
 @pytest.fixture
@@ -1126,7 +1186,7 @@ class _TidyService(_PlanService):
 
 
 def test_tidy_dictation_needs_a_direct_route_and_opens_the_account_window(
-    lite_window, chatgpt_window, monkeypatch
+    lite_window, chatgpt_window, ai_frames, monkeypatch
 ):
     win = lite_window("some dictated words")
     service = _TidyService()
@@ -1137,7 +1197,8 @@ def test_tidy_dictation_needs_a_direct_route_and_opens_the_account_window(
     (lambda w: w.cmd_dictation_tidy())(win)
 
     assert service.asked == []
-    assert chatgpt_window.last is not None
+    # Use My ChatGPT Subscription now opens Choose Your AI on the plan's row.
+    assert ai_frames["ChooseAiFrame"].last["kwargs"]["select"] == "chatgpt"
     assert any("Tidy Dictated Text uses" in said for said in win.announcements)
 
 
@@ -1192,3 +1253,23 @@ def test_the_paragraph_span_finds_the_paragraph_and_its_offsets():
     assert _paragraph_span(text, 9) == (7, 17, "beta gamma")
     assert _paragraph_span(text, len(text)) == (19, 24, "delta")
     assert _paragraph_span("", 3) == (0, 0, "")
+
+
+def test_yes_to_the_switch_chooses_the_plan_and_asks(
+    lite_window, monkeypatch, image_dialog, ai_frames
+):
+    """Yes is a choice, not a fallback: the plan is chosen, the menus follow,
+    and the picture goes (codex.md 10A.8)."""
+    import quill.ui.hosted_ai_connections as connections
+
+    monkeypatch.setattr(connections, "ask_yes_no", lambda *_a, **_k: True)
+    win = lite_window("text")
+    service = _CannotSee()
+    monkeypatch.setattr(win, "_ai_service", lambda: service)
+    before = win.app.rebuilt_menus
+
+    (lambda w: w.cmd_ai_image())(win)
+
+    assert service.chosen == ["chatgpt"]
+    assert win.app.rebuilt_menus > before, "the gated labels follow the switch"
+    assert service.images == [(image_dialog["path"], "What colour?")]

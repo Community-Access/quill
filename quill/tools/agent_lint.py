@@ -99,9 +99,9 @@ class Finding:
 
 
 def _known_harnesses() -> set[str]:
-    from quill.core.ai.sdk_install import PACK_INSTALLS
+    from quill.core.ai.sdk_install import known_pack_ids
 
-    return {"auto", "native", *PACK_INSTALLS}
+    return {"auto", "native", *known_pack_ids()}
 
 
 def lint_agent_data(data: object, *, path: str = "<data>") -> list[Finding]:

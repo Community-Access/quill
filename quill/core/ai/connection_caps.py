@@ -271,8 +271,15 @@ def record_for(
     own_key_provider: str = "openai",
     web_search_enabled: bool = False,
     model: str = "",
+    available: bool | None = None,
 ) -> ConnectionRecord:
-    """The record for *connection*, with any per-model override applied."""
+    """The record for *connection*, with any per-model override applied.
+
+    *available* overrides whether this build carries the connection, for a
+    connection whose availability is read at run time (Copilot: a client id,
+    the bundled SDK and CLI, :func:`quill.core.ai.copilot_state.readiness`).
+    None keeps the record's own default.
+    """
     if connection == FREE:
         base = _free(web_search_enabled)
     elif connection == CHATGPT:
@@ -285,6 +292,8 @@ def record_for(
         base = _own_key(own_key_provider)
     else:
         raise ValueError(f"Unknown connection: {connection!r}")
+    if available is not None:
+        base = replace(base, available=bool(available))
     chosen = model.strip()
     if not chosen:
         return base

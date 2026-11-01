@@ -2162,7 +2162,7 @@ Control coverage: 127 audited sites (127 helped).
 
 ## QUILL Lite
 
-Control coverage: 233 audited sites (233 helped).
+Control coverage: 237 audited sites (237 helped).
 
 ### Every window, and what it is for
 
@@ -2172,7 +2172,7 @@ Control coverage: 233 audited sites (233 helped).
 
 **AI Result.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
 
-**AI Usage.** How many free AI requests you have left this month and today, and when the count starts again. Your support ID is here too -- that is what QUILL support will ask for. You can also sign this computer out from here, and connect it again whenever you like.
+**AI Usage.** How much each AI you have set up has been used, one sentence each, and whose count it is. Manage Usage opens the selected one's own page.
 
 **About QUILL Lite.** What this copy is, and where it keeps your settings and your recovered work. QUILL Lite is a small companion to QUILL for All, not a replacement for it: conversion, comparison, publishing and the rest of QUILL's AI live in QUILL.
 
@@ -2191,6 +2191,8 @@ Control coverage: 233 audited sites (233 helped).
 **Bookmarks.** The places you marked in this document, in the order they appear. Choose one and press Enter to go there; Remove takes one out of the list without touching the document. Bookmarks last for the session and move with the text as you edit around them.
 
 **Character at the cursor.** Exactly which character the cursor is on: its name, its code point, and what it does to a search. A screen reader says 'space' for four different characters, and this is how you tell which one you have.
+
+**Choose Your AI.** Choose where your AI comes from: QUILL's free AI, your ChatGPT plan or your own key. The list says which is in use; Enter uses the selected one or signs in to it, and Delete signs a signed-in one out.
 
 **Clear Recent Documents.** Asks before the recent list is emptied. No is the default, so Enter keeps the list; pinned documents stay either way.
 
@@ -2313,6 +2315,8 @@ Control coverage: 233 audited sites (233 helped).
 **Saved AI Conversations.** Your saved AI conversations, newest first. Every conversation with the AI is saved on this computer as it goes. Press Enter on one to open it and carry on where it left off; Delete removes one after asking.
 
 **Shorter.** What the AI sent back. It is read-only on purpose: nothing goes into your document until you choose Replace My Selection or Insert Below, and either of those is a single edit that Control Z takes back.
+
+**Sign In to Your AI.** Sign in to the AI you chose. Open the Page takes you to its sign-in page; approve there, and this closes itself once you are signed in.
 
 **Speech Models.** Optional speech models you can download for better accuracy, with each one's size, languages and what it suits. Your voice never leaves the computer with these models; Download asks first, and Remove frees the space again.
 
@@ -2468,6 +2472,15 @@ Control coverage: 233 audited sites (233 helped).
 - `self._web`: When checked, the model may search the web through OpenAI to answer a question. Off, only what you send is used. Saved as soon as you change it.
 - `usage`: Opens ChatGPT's own usage page in your browser, where your plan's limits and what is left are shown.
 - `refresh`: Asks your ChatGPT plan for its model list again.
+#### SignInStep (`quill/ui/hosted_ai_connections.py`)
+
+- `self.open_button`: Opens the sign-in page in your web browser. Approve there and come back; this step closes itself when the sign-in is done.
+- `cancel`: Stops the sign-in. Nothing changes.
+#### ChooseAiFrame (`quill/ui/hosted_ai_connections.py`)
+
+- `self._list`: Where your AI comes from. Each row says its name and whether it is in use, signed in or not set up. Enter uses the row, or signs in to it; Delete on a signed-in row signs it out after asking.
+- `self._model`: The model this connection answers with, from the service's own list. The first is the service's recommendation. Your choice is saved at once.
+- `self._action`: Does what the selected row needs: Use This makes a signed-in row the one in use, Sign In opens its sign-in step, and Sign Out signs out of the row in use.
 #### (module level) (`quill/ui/hosted_ai_dialogs.py`)
 
 - `close`: Closes this window. Nothing is sent, and nothing in your document changes.
@@ -2481,10 +2494,6 @@ Control coverage: 233 audited sites (233 helped).
 - `say`: Reads the code out one character at a time.
 - `copy`: Puts the code on the clipboard.
 - `retry`: Asks QUILL for a fresh code and tries again.
-#### AiUsageFrame (`quill/ui/hosted_ai_dialogs.py`)
-
-- `self._sign_out`: Disconnects this computer from QUILL's free AI. You can connect it again at any time.
-- `copy`: Puts this computer's support ID on the clipboard.
 #### AskImageDialog (`quill/ui/hosted_ai_image.py`)
 
 - `about_text`: Where the picture goes and what comes back. Read with the arrows.
@@ -2525,6 +2534,10 @@ Control coverage: 233 audited sites (233 helped).
 - `self._open`: Opens the chosen conversation in the conversation window, so you can read it and carry on where it left off.
 - `self._delete`: Deletes the chosen conversation from this computer, after asking. It cannot be brought back.
 - `close`: Closes this window and leaves the conversation you had open.
+#### UsageFrame (`quill/ui/hosted_ai_usage.py`)
+
+- `self._list`: One sentence for each connection that is set up: how much has been used and whose count it is. A count kept on this computer is called a local count; a service's own number is named as the service's.
+- `manage`: Opens the selected connection's own usage or billing page in your web browser, where its limits and bill are kept.
 #### CloudProvidersMixin (`quill/ui/windows_dictation_cloud.py`)
 
 - `button`: Use a speech service you already have an account with: Microsoft Azure, Google Cloud, Amazon, Deepgram, AssemblyAI, Speechmatics, ElevenLabs, Gladia, Rev.ai, Groq, Mistral or IBM Watson. Enter what it needs and test it there, then choose it as the speech engine. Optional: the built-in engines need no account and never send anything anywhere.

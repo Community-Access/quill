@@ -1,5 +1,5 @@
-"""Three Tools > AI rows added 2026-10-15: the Chat Key, the Prompt Library and
-Web Searches Left.
+"""Tools > AI rows added 2026-10-15 -- Ask (the Chat Key), the Prompt Library and
+Web Searches Left -- and 2026-10-31, Which AI Am I Using and Choose Your AI.
 
 Split out of :mod:`quill.core.lite.commands` under GATE-11 and spliced into
 ``COMMANDS`` where the table marks; the row shape is that table's (``menu,
@@ -27,7 +27,21 @@ AI_ASK_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
     ("&Tools|&AI", "Prompt &Library...", "Ctrl+7", "cmd_ai_prompt_library", ""),
 )
 
-#: Spliced in after Usage: the other number the free service keeps.
+#: Choose Your AI (codex.md 10A.9, 2026-10-31). Which AI Am I Using is a quick
+#: question, so a short key (rule 3) in the AI row beside Ctrl+6, 7 and 9; and
+#: Ctrl+4 was one of the three plain chords free in both editors and in every
+#: APP_KEYMAPS app. Rule 7 would keep editor chords for the editor, but rule 6
+#: outranks it: QUILL Lite reaches its AI on plain chords, so QUILL cannot bury
+#: this on the leader. Ctrl+8 pressed twice also opens the window. QUILL has
+#: both on the same chords (tools.hosted_ai_which, tools.hosted_ai_choose).
+AI_CHOOSE_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
+    ("&Tools|&AI", "W&hich AI Am I Using", "Ctrl+8", "cmd_ai_which", ""),
+    ("&Tools|&AI", "Choose &Your AI...", "Ctrl+4", "cmd_ai_choose", ""),
+)
+
+#: Spliced in after Usage: the other number the free service keeps, then
+#: Choose Your AI's two rows, which sit with the account rows below them.
 AI_SEARCH_ROWS: tuple[tuple[str, str, str, str, str], ...] = (
     ("&Tools|&AI", "&Web Searches Left", "Ctrl+9", "cmd_ai_web_searches", ""),
+    *AI_CHOOSE_ROWS,
 )

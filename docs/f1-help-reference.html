@@ -5263,7 +5263,7 @@ playback to its start.</li>
 text, when one is available. Empty otherwise.</li>
 </ul>
 <h2 id="quill-lite">QUILL Lite</h2>
-<p>Control coverage: 233 audited sites (233 helped).</p>
+<p>Control coverage: 237 audited sites (237 helped).</p>
 <h3 id="every-window-and-what-it-is-for-9">Every window, and what it is
 for</h3>
 <p><strong>AI Assistant.</strong> Ask QUILL’s free AI to summarize,
@@ -5280,10 +5280,9 @@ Nothing goes into your document until you choose to put it there.</p>
 purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
 Control Z takes back.</p>
-<p><strong>AI Usage.</strong> How many free AI requests you have left
-this month and today, and when the count starts again. Your support ID
-is here too – that is what QUILL support will ask for. You can also sign
-this computer out from here, and connect it again whenever you like.</p>
+<p><strong>AI Usage.</strong> How much each AI you have set up has been
+used, one sentence each, and whose count it is. Manage Usage opens the
+selected one’s own page.</p>
 <p><strong>About QUILL Lite.</strong> What this copy is, and where it
 keeps your settings and your recovered work. QUILL Lite is a small
 companion to QUILL for All, not a replacement for it: conversion,
@@ -5323,6 +5322,10 @@ for the session and move with the text as you edit around them.</p>
 cursor is on: its name, its code point, and what it does to a search. A
 screen reader says ‘space’ for four different characters, and this is
 how you tell which one you have.</p>
+<p><strong>Choose Your AI.</strong> Choose where your AI comes from:
+QUILL’s free AI, your ChatGPT plan or your own key. The list says which
+is in use; Enter uses the selected one or signs in to it, and Delete
+signs a signed-in one out.</p>
 <p><strong>Clear Recent Documents.</strong> Asks before the recent list
 is emptied. No is the default, so Enter keeps the list; pinned documents
 stay either way.</p>
@@ -5598,6 +5601,9 @@ off; Delete removes one after asking.</p>
 purpose: nothing goes into your document until you choose Replace My
 Selection or Insert Below, and either of those is a single edit that
 Control Z takes back.</p>
+<p><strong>Sign In to Your AI.</strong> Sign in to the AI you chose.
+Open the Page takes you to its sign-in page; approve there, and this
+closes itself once you are signed in.</p>
 <p><strong>Speech Models.</strong> Optional speech models you can
 download for better accuracy, with each one’s size, languages and what
 it suits. Your voice never leaves the computer with these models;
@@ -6012,6 +6018,28 @@ where your plan’s limits and what is left are shown.</li>
 <li><code>refresh</code>: Asks your ChatGPT plan for its model list
 again.</li>
 </ul>
+<h4 id="signinstep-quilluihosted_ai_connectionspy">SignInStep
+(<code>quill/ui/hosted_ai_connections.py</code>)</h4>
+<ul>
+<li><code>self.open_button</code>: Opens the sign-in page in your web
+browser. Approve there and come back; this step closes itself when the
+sign-in is done.</li>
+<li><code>cancel</code>: Stops the sign-in. Nothing changes.</li>
+</ul>
+<h4 id="chooseaiframe-quilluihosted_ai_connectionspy">ChooseAiFrame
+(<code>quill/ui/hosted_ai_connections.py</code>)</h4>
+<ul>
+<li><code>self._list</code>: Where your AI comes from. Each row says its
+name and whether it is in use, signed in or not set up. Enter uses the
+row, or signs in to it; Delete on a signed-in row signs it out after
+asking.</li>
+<li><code>self._model</code>: The model this connection answers with,
+from the service’s own list. The first is the service’s recommendation.
+Your choice is saved at once.</li>
+<li><code>self._action</code>: Does what the selected row needs: Use
+This makes a signed-in row the one in use, Sign In opens its sign-in
+step, and Sign Out signs out of the row in use.</li>
+</ul>
 <h4 id="module-level-quilluihosted_ai_dialogspy">(module level)
 (<code>quill/ui/hosted_ai_dialogs.py</code>)</h4>
 <ul>
@@ -6037,14 +6065,6 @@ here.</li>
 <li><code>copy</code>: Puts the code on the clipboard.</li>
 <li><code>retry</code>: Asks QUILL for a fresh code and tries
 again.</li>
-</ul>
-<h4 id="aiusageframe-quilluihosted_ai_dialogspy">AiUsageFrame
-(<code>quill/ui/hosted_ai_dialogs.py</code>)</h4>
-<ul>
-<li><code>self._sign_out</code>: Disconnects this computer from QUILL’s
-free AI. You can connect it again at any time.</li>
-<li><code>copy</code>: Puts this computer’s support ID on the
-clipboard.</li>
 </ul>
 <h4 id="askimagedialog-quilluihosted_ai_imagepy">AskImageDialog
 (<code>quill/ui/hosted_ai_image.py</code>)</h4>
@@ -6142,6 +6162,17 @@ off.</li>
 computer, after asking. It cannot be brought back.</li>
 <li><code>close</code>: Closes this window and leaves the conversation
 you had open.</li>
+</ul>
+<h4 id="usageframe-quilluihosted_ai_usagepy">UsageFrame
+(<code>quill/ui/hosted_ai_usage.py</code>)</h4>
+<ul>
+<li><code>self._list</code>: One sentence for each connection that is
+set up: how much has been used and whose count it is. A count kept on
+this computer is called a local count; a service’s own number is named
+as the service’s.</li>
+<li><code>manage</code>: Opens the selected connection’s own usage or
+billing page in your web browser, where its limits and bill are
+kept.</li>
 </ul>
 <h4
 id="cloudprovidersmixin-quilluiwindows_dictation_cloudpy">CloudProvidersMixin

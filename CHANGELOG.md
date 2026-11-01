@@ -2,6 +2,29 @@
 
 ## 1.0.0
 
+### Choose Your AI, in QUILL and QUILL Lite (2026-10-31)
+
+- One window, **Choose Your AI** (Ctrl+4 in both editors), lists where your AI
+  comes from: QUILL's free AI, your ChatGPT plan and your own key, each saying
+  whether it is in use, signed in or not set up. GitHub Copilot and Codex say
+  "not available yet". One button follows the row: Use This, Sign In or Sign
+  Out. Delete on a signed-in row asks first, with No as the default.
+- **Which AI Am I Using** (Ctrl+8) says which AI is in use, the model and one
+  thing about usage. Pressed twice quickly, it opens Choose Your AI.
+- Use My Own AI Key (Alt+F2), Use My ChatGPT Subscription (Alt+F5) and
+  Connect or Sign Out keep their keys and open Choose Your AI on their own row,
+  ready to sign in.
+- A new **AI** status-bar cell, in both editors, says which AI is in use;
+  Enter on it opens Choose Your AI.
+- **AI Usage** is one list, a sentence for each AI you have set up, with Manage
+  Usage. It replaces the free AI's allowance window and the own key's usage
+  window. Everything is text.
+- An AI command the AI in use cannot do keeps its key, says what it needs in
+  its menu name, sends nothing, and offers to switch with Yes as the default.
+- Ask AI a Question (Ctrl+6) now opens the AI Conversation about the document
+  you are in, naming the AI being asked; each message takes the selection, else
+  the paragraph or section, the title and the headings.
+
 ### Copilot engine groundwork (2026-10-31)
 
 - The GitHub Copilot engine now waits for Copilot's answer instead of

@@ -11,7 +11,7 @@ chords: press Ctrl+Shift+Grave, release, then the second key. Every
 binding here is a *default* -- the in-app reference (Help > Open
 Keyboard Reference) always shows your own customised keymap.
 
-Editor commands with default bindings: 514.
+Editor commands with default bindings: 516.
 
 ## The QUILL editor
 
@@ -322,14 +322,16 @@ Editor commands with default bindings: 514.
 | Alt+Shift+M | App Sounds On or Off | `tools.sound_toggle` |
 | Alt+Shift+Q | Ask Quill by Voice... | `tools.ask_quill_conversation` |
 | Alt+Shift+R | Misspelling List (Ranked by Frequency)... | `tools.misspelling_list_ranked` |
+| Ctrl+4 | Choose Your AI... | `tools.hosted_ai_choose` |
 | Ctrl+6 | Ask AI a Question... | `tools.hosted_ai_chat_key` |
 | Ctrl+7 | Free AI Prompt Library... | `tools.hosted_ai_prompt_library` |
+| Ctrl+8 | Which AI Am I Using | `tools.hosted_ai_which` |
 | Ctrl+9 | Web Searches Left | `tools.hosted_ai_web_searches` |
 | Ctrl+Alt+F10 | Manage Individual Features... | `tools.individual_feature_toggles` |
 | Ctrl+Alt+F11 | Export and Back Up... | `tools.share_export` |
 | Ctrl+Alt+F12 | Import or Restore... | `tools.share_import` |
 | Ctrl+Alt+F9 | Add Word to Dictionary | `tools.add_word_to_dictionary` |
-| Ctrl+Alt+G | Free AI Assistant... | `tools.hosted_ai_assistant` |
+| Ctrl+Alt+G | Free AI Assistant | `tools.hosted_ai_assistant` |
 | Ctrl+Alt+Shift+' | Define in Context | `tools.word_define` |
 | Ctrl+Alt+Shift+, | Previous Difference | `tools.compare_previous_difference` |
 | Ctrl+Alt+Shift+. | Next Difference | `tools.compare_next_difference` |
@@ -337,7 +339,7 @@ Editor commands with default bindings: 514.
 | Ctrl+Alt+Shift+; | Rhymes | `tools.word_rhymes` |
 | Ctrl+Alt+Shift+D | Announce Current Difference | `tools.compare_announce_difference` |
 | Ctrl+Alt+Shift+F | Search in Files... | `tools.search_in_files` |
-| Ctrl+Alt+Shift+F2 | Free AI Usage... | `tools.hosted_ai_usage` |
+| Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
 | Ctrl+Alt+Shift+F4 | Connect or Sign Out... | `tools.hosted_ai_sign_in` |
 | Ctrl+Alt+Shift+F6 | Spelling Announcements | `tools.spelling_announcements` |
 | Ctrl+Alt+Shift+K | Privacy Agreement... | `tools.hosted_ai_privacy` |
@@ -348,11 +350,11 @@ Editor commands with default bindings: 514.
 | Ctrl+Alt+Shift+[ | Word Summary | `tools.word_summary` |
 | Ctrl+Alt+Shift+] | Find the Word For... | `tools.find_word` |
 | Ctrl+Alt+U | Check for Updates... | `tools.check_updates` |
-| Ctrl+Alt+Z | Ask About This Document... | `tools.hosted_ai_ask_document` |
+| Ctrl+Alt+Z | Ask Free AI About This Document | `tools.hosted_ai_ask_document` |
 | Ctrl+F10 | Word Explorer... | `tools.word_explorer` |
 | Ctrl+F11 | Windows dictation toggle | `tools.windows_dictation_toggle` |
-| Ctrl+F3 | Tidy Dictated Text... | `tools.dictation_tidy` |
-| Ctrl+F5 | Ask About an Image... | `tools.hosted_ai_image` |
+| Ctrl+F3 | Tidy Dictated Text | `tools.dictation_tidy` |
+| Ctrl+F5 | Ask About an Image | `tools.hosted_ai_image` |
 | Ctrl+F7 or Alt+F7 | Next Misspelling | `tools.next_misspelling` |
 | Ctrl+F9 | Locked Dictation (start/finish) | `tools.dictation_lock_toggle` |
 | Ctrl+Shift+' | More Vivid Word | `tools.word_vivid` |
@@ -729,12 +731,12 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+F1 | Podcasts: Tutorials... | `podcasts.tutorials` |
 | Ctrl+Alt+F10 | Carry My Place Between Machines... | `media.sync_places` |
 | Ctrl+Alt+F12 | Restore | `app.restore` |
-| Ctrl+Alt+F5 | Ask About an Image... | `tools.hosted_ai_image` |
-| Ctrl+Alt+G | Free AI Assistant... | `tools.hosted_ai_assistant` |
+| Ctrl+Alt+F5 | Ask About an Image | `tools.hosted_ai_image` |
+| Ctrl+Alt+G | Free AI Assistant | `tools.hosted_ai_assistant` |
 | Ctrl+Alt+J | Podcasts: Go to Position... | `podcasts.go_to_position` |
 | Ctrl+Alt+Shift+B | Backup | `app.backup` |
 | Ctrl+Alt+Shift+Down | Podcasts: Mark as Played and Next | `podcasts.mark_played_and_next` |
-| Ctrl+Alt+Shift+F2 | Free AI Usage... | `tools.hosted_ai_usage` |
+| Ctrl+Alt+Shift+F2 | AI Usage... | `tools.hosted_ai_usage` |
 | Ctrl+Alt+Shift+F3 | Notifications... | `app.notifications` |
 | Ctrl+Alt+Shift+F4 | Connect or Sign Out... | `tools.hosted_ai_sign_in` |
 | Ctrl+Alt+Shift+J | Bookmarks... | `app.bookmarks` |
@@ -744,7 +746,7 @@ App keys, not editor keys: these apply inside the app named above and never insi
 | Ctrl+Alt+Shift+P | Recent Problems... | `app.recent_problems` |
 | Ctrl+Alt+Shift+X | Export My Setup... | `app.export_setup` |
 | Ctrl+Alt+Shift+Z | Quiet Hours... | `app.quiet_hours` |
-| Ctrl+Alt+Z | Ask About This Document... | `tools.hosted_ai_ask_document` |
+| Ctrl+Alt+Z | Ask Free AI About This Document | `tools.hosted_ai_ask_document` |
 | Ctrl+F11 | Dictate here | `app.dictate_here` |
 | Ctrl+F5 | Refresh podcasts | `media.refresh_podcasts` |
 | Ctrl+G | Go to | `app.go_to` |

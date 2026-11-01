@@ -11365,14 +11365,16 @@ the **AI** menu (the `&AI` menu, so `Alt` then `A` opens it).
 |---|---|---|
 | `Ctrl+Alt+G` | Free AI Assistant... | Summarise, rewrite, proofread, shorten or explain the passage you are in |
 | `Ctrl+Alt+Z` | Ask About This Document... | Ask a question about what you are writing |
-| `Ctrl+6` | Ask AI a Question... | The Chat Key: the pad, with the caret in the question box |
+| `Ctrl+6` | Ask AI a Question... | Ask: a conversation about this document, with the AI in use |
 | `Ctrl+7` | Free AI Prompt Library... | Run one of your saved prompts on the selection, on the free AI |
 | `Ctrl+9` | Web Searches Left | How many of this month's web searches are left |
-| `Ctrl+Alt+Shift+F2` | Free AI Usage... | What you have used and what is left |
+| `Ctrl+Alt+Shift+F2` | AI Usage... | One list: what each AI you have set up has used |
+| `Ctrl+8` | Which AI Am I Using | Says which AI is in use; pressed twice, opens Choose Your AI |
+| `Ctrl+4` | Choose Your AI... | The one window for where your AI comes from |
 | `Ctrl+Alt+Shift+F4` | Connect or Sign Out... | Connect this computer, or disconnect it |
 | `Ctrl+Alt+Shift+K` | Privacy Agreement... | Read what is sent, and accept or withdraw |
-| `Alt+F2` | Use My Own AI Key... | Every limit lifted, billed to your OpenAI or Google Gemini account |
-| `Alt+F5` | Use My ChatGPT Subscription... | Every AI command on the ChatGPT plan you already pay for |
+| `Alt+F2` | Use My Own AI Key... | Choose Your AI on the own key's row, ready to save a key |
+| `Alt+F5` | Use My ChatGPT Subscription... | Choose Your AI on your plan's row, ready to sign in |
 | `Ctrl+F5` | Ask About an Image... | A picture described, on your ChatGPT subscription |
 | `Ctrl+F3` | Tidy Dictated Text... | Dictation's misheard words and punctuation corrected, nothing else changed |
 | `Ctrl+F10` | Dictionary > Word Explorer... | Everything about the word you are on, as used in this sentence |
@@ -11474,12 +11476,16 @@ The answer in the AI Result window is not read out for you: focus lands on it
 and your screen reader reads it as text, symbols included, so you can check
 the formatting before you use it.
 
-#### The Chat Key (Ctrl+6)
+#### Ask (Ctrl+6)
 
-Press `Ctrl+6` (**AI > Ask AI a Question...**) to open the pad on **Ask a
-general question** with the caret already in **Your question**. Type your
-question and press `Enter`; the answer arrives the way you chose in **Put the
-answer in**. Only your question is sent, nothing from your document.
+Press `Ctrl+6` (**AI > Ask AI a Question...**) to open the **AI Conversation**
+window about the document you are in. Its first line says which AI you are
+asking, such as "Asking My ChatGPT plan about this document." Type your
+question and press `Enter`. With each message QUILL sends your selection, or
+else the paragraph or section the cursor is in, the document's title and its
+headings, read fresh every time, so you can move around the document between
+questions. It never sends the whole file. **Ask Quill** (`Alt+Q`) is still
+there for the advanced companion; it has not changed.
 
 #### Your prompts on the free AI (Ctrl+7)
 
@@ -11783,7 +11789,7 @@ command uses your version from then on.
 ### Free AI limits, and when they start again
 
 QUILL's free AI is free because everybody shares it, so it has limits. Here is
-every one of them in one place. **Free AI Usage** (`Ctrl+Alt+Shift+F2`) shows
+every one of them in one place. **AI Usage** (`Ctrl+Alt+Shift+F2`) shows
 where you stand.
 
 #### Your allowance at a glance
@@ -11896,9 +11902,8 @@ your monthly allowance, and can end the new-connection allowance early. The
 change applies from your next request. You do not need to sign out, reconnect
 or update, and Usage shows the new number the next time you open it.
 
-Your support ID is also in **Help > About Quill** and in
-**AI > Free AI Usage...**, with a **Copy
-Support ID** button, if you would rather write from somewhere else.
+Your support ID is also in **Help > About Quill**, if you would rather
+write from somewhere else.
 
 ### Using your own OpenAI or Google Gemini key
 
@@ -11974,12 +11979,11 @@ answers on a Gemini key just as it does on a ChatGPT subscription.
 - While an answer is on its way, **Send** becomes **Stop** (`Alt+S`). Stopping
   closes a Gemini stream immediately; for another route it discards that
   request's eventual answer. It never stops a request from another AI window.
-- **Usage** (`Ctrl+Alt+Shift+F2`) opens a different window. It tells you which
-  model is answering and that no allowance applies, and its **Open My Usage**
-  button takes you to the usage page of your OpenAI or Google AI Studio
-  account, where your requests and charges are. There is no Sign Out and no
-  support ID in it, because neither applies. **Help > About** also shows the
-  model and that page's address instead of the free allowance.
+- **AI Usage** (`Ctrl+Alt+Shift+F2`) has a row for your key: how many
+  requests are left this minute, from the provider's last answer, where it
+  reports one. **Manage Usage** opens the usage page of your OpenAI or Google
+  AI Studio account, where your requests and charges are. **Help > About**
+  also shows the model and that page's address instead of the free allowance.
 - You do not need to connect this computer, and you are not asked to accept the
   free service's agreement, which covers QUILL's servers. Your own key never
   touches them.
@@ -12047,6 +12051,92 @@ means the service picks.
 Answers are always plain text. QUILL asks every AI not to draw charts, graphs or
 diagrams, and if one sends something like that anyway, you get it as text, not
 a picture.
+
+### Choose Your AI
+
+**Choose Your AI** is the one window for where your AI comes from. Press
+`Ctrl+4`, or choose **AI > Choose Your AI...**. Focus lands on the list, on the
+one in use, and the window has five things in it, in Tab order:
+
+- **Connections**, a list. Each row says its name, then whether it is in use,
+  signed in or not set up: "QUILL's free AI, in use", "My ChatGPT plan, signed
+  in", "My own key, OpenAI, signed in". GitHub Copilot and Codex say "not
+  available yet" until they arrive.
+- **About this connection**, a short read-only line: what it can do, and who
+  gets your text and what it costs. For example "Text and pictures, per model.
+  Agent tasks: no. Goes to OpenAI and counts toward your ChatGPT plan."
+- **Model**, the models that connection offers, from its own list. The first
+  one is the service's recommendation and says "(recommended)". The free AI
+  says "QUILL chooses the model", and a row you have not signed in to says
+  "Sign in to see the models".
+- **One button that follows the row.** **Use This** on a row you are signed in
+  to, **Sign In...** on one that is not set up, and **Sign Out** on the one in
+  use.
+- **Close**. `Escape` closes the window too.
+
+`Enter` on a row does what the button says. `Delete` on a row you are signed in
+to asks whether to sign out of it, and **No** is the default, so a stray key
+does nothing.
+
+QUILL does not talk over your screen reader here. When the window opens, or you
+move along the list, your screen reader already reads the row and its state, so
+QUILL says nothing. It only speaks when something happens that your screen
+reader cannot know: "Now using My ChatGPT plan.", "Signed in to My ChatGPT plan.
+It is now in use.", or "Signed out. No AI is in use until you choose one." The
+row's own words change at the same moment, so arrowing away and back tells you
+the truth.
+
+Signing in uses what you already know. **My ChatGPT plan** opens a small step
+with **Open the Page**, which takes you to OpenAI's sign-in page; approve QUILL
+there and the step closes by itself. **My own key** opens **Use My Own AI Key**,
+with its Provider list. **QUILL's free AI** opens its Connect step, the same one
+as before, and only when you ask for it.
+
+The older commands keep their keys and now open this window on their own row,
+with the sign-in step ready: **Use My Own AI Key** (`Alt+F2`), **Use My ChatGPT
+Subscription** (`Alt+F5`) and **Connect or Sign Out** (`Ctrl+Alt+Shift+F4`).
+
+In Safe Mode the window still opens, says that AI is off in Safe Mode, and
+nothing can be signed in.
+
+#### Which AI Am I Using (Ctrl+8)
+
+Press `Ctrl+8` and QUILL says, in one line, which AI is in use, the model, and
+one thing about usage when there is something to say. On your ChatGPT plan that
+is the plan, the model you chose, and "3 requests today from QUILL, counted on
+this computer." Press `Ctrl+8`
+twice quickly and it opens **Choose Your AI** instead.
+
+#### The AI cell in the status bar
+
+The status bar has a cell called **AI**, near the end, that says the same thing
+shorter: "AI: free", "AI: ChatGPT plan" or "AI: own key". Press `F6` to reach
+the status bar, arrow to it, and press `Enter` to open **Choose Your AI**.
+
+#### AI Usage
+
+**AI > AI Usage...** (`Ctrl+Alt+Shift+F2`) opens one list, with one sentence
+for each AI you have set up, and each sentence says whose count it is. A count
+QUILL keeps on this computer is always called that; a number from a service is
+named as that service's. For example:
+
+- "QUILL's free AI: 14 of 50 requests today, by QUILL's count. Resets at
+  midnight."
+- "My ChatGPT plan: 23 requests today from QUILL, counted on this computer.
+  OpenAI sets the limits; Manage usage opens them."
+
+**Manage Usage** opens the selected one's own page in your browser. It is all
+text. There is no meter, gauge or chart.
+
+#### When the AI in use cannot do something
+
+Every AI command stays in the menu with its key. When the AI in use cannot do
+one, its menu name says what it needs, for example **Ask About an Image (needs
+a connection that sees)...**. Pressing it sends nothing. QUILL asks instead,
+"Pictures need a connection that can see. My ChatGPT plan can. Switch to it and
+ask?", with **Yes** as the default because you just asked for it. **Yes**
+switches and carries on. If nothing you have set up can do it, **Yes** opens
+**Choose Your AI** on a row that can.
 
 ### If the AI you chose is not available
 

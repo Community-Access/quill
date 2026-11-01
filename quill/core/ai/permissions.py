@@ -45,6 +45,12 @@ class PermissionCategory(StrEnum):
     WEB = "web"
     MEMORY = "memory"
     RUN_COMMAND = "run_command"
+    # Agent tools beyond the editor (codex.md 5.2): a picture of the screen, a
+    # recording, and a write that acts later (a scheduled recording). They ask
+    # in every profile but Locked Down, which denies them.
+    CAPTURE_SCREEN = "capture_screen"
+    RECORD_AUDIO = "record_audio"
+    SCHEDULE = "schedule"
 
 
 class Decision(StrEnum):
@@ -111,6 +117,9 @@ _PROFILE_DEFAULTS: dict[SafetyProfile, dict[PermissionCategory, Decision]] = {
         PermissionCategory.WEB: Decision.ASK,
         PermissionCategory.MEMORY: Decision.ASK,
         PermissionCategory.RUN_COMMAND: Decision.ASK,
+        PermissionCategory.CAPTURE_SCREEN: Decision.ASK,
+        PermissionCategory.RECORD_AUDIO: Decision.ASK,
+        PermissionCategory.SCHEDULE: Decision.ASK,
     },
     SafetyProfile.BALANCED: {
         PermissionCategory.READ_SELECTION: Decision.ALLOW,
@@ -124,6 +133,9 @@ _PROFILE_DEFAULTS: dict[SafetyProfile, dict[PermissionCategory, Decision]] = {
         PermissionCategory.WEB: Decision.ASK,
         PermissionCategory.MEMORY: Decision.ASK,
         PermissionCategory.RUN_COMMAND: Decision.ASK,
+        PermissionCategory.CAPTURE_SCREEN: Decision.ASK,
+        PermissionCategory.RECORD_AUDIO: Decision.ASK,
+        PermissionCategory.SCHEDULE: Decision.ASK,
     },
     SafetyProfile.POWER_USER: {
         PermissionCategory.READ_SELECTION: Decision.ALLOW,
@@ -137,6 +149,9 @@ _PROFILE_DEFAULTS: dict[SafetyProfile, dict[PermissionCategory, Decision]] = {
         PermissionCategory.WEB: Decision.ALLOW,
         PermissionCategory.MEMORY: Decision.ALLOW,
         PermissionCategory.RUN_COMMAND: Decision.ALLOW,
+        PermissionCategory.CAPTURE_SCREEN: Decision.ASK,
+        PermissionCategory.RECORD_AUDIO: Decision.ASK,
+        PermissionCategory.SCHEDULE: Decision.ASK,
     },
     SafetyProfile.LOCKED_DOWN: {
         PermissionCategory.READ_SELECTION: Decision.DENY,
@@ -150,6 +165,9 @@ _PROFILE_DEFAULTS: dict[SafetyProfile, dict[PermissionCategory, Decision]] = {
         PermissionCategory.WEB: Decision.DENY,
         PermissionCategory.MEMORY: Decision.DENY,
         PermissionCategory.RUN_COMMAND: Decision.DENY,
+        PermissionCategory.CAPTURE_SCREEN: Decision.DENY,
+        PermissionCategory.RECORD_AUDIO: Decision.DENY,
+        PermissionCategory.SCHEDULE: Decision.DENY,
     },
 }
 

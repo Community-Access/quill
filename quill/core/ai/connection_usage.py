@@ -32,6 +32,7 @@ from quill.core.ai.connection_choice import (
     in_use,
     row_states,
 )
+from quill.core.ai.copilot_quota import CopilotQuota, usage_clause
 
 __all__ = [
     "CHATGPT_USAGE_URL",
@@ -186,11 +187,14 @@ def usage_rows(
     free_quota: Any = None,
     chatgpt_count: LocalCount | None = None,
     own_key_limits: RateLimitSnapshot | None = None,
+    copilot_quota: CopilotQuota | None = None,
 ) -> list[UsageRow]:
     """One row per connection that is set up, in window order (10A.11).
 
     The free AI is always listed (it is the default and needs no sign-in to be
-    chosen); Copilot is listed as not available yet until its phase ships.
+    chosen); Copilot is listed as not available yet until this build carries
+    it, and with GitHub's own count (*copilot_quota*, read by
+    ``CopilotChat.quota``) once this app is signed in.
     """
     rows: list[UsageRow] = []
     rows.append(UsageRow(FREE, f"{CONNECTION_NAMES[FREE]}: {_free_clause(free_quota)}"))
@@ -206,6 +210,14 @@ def usage_rows(
         )
     if not facts.copilot_available:
         rows.append(UsageRow(COPILOT, f"{CONNECTION_NAMES[COPILOT]}: not available yet."))
+    elif facts.copilot_signed_in:
+        rows.append(
+            UsageRow(
+                COPILOT,
+                f"{CONNECTION_NAMES[COPILOT]}: {usage_clause(copilot_quota)}",
+                manage_url=GITHUB_USAGE_URL,
+            )
+        )
     if facts.own_key_ready:
         provider = facts.own_key_provider
         company = _PROVIDER_NAMES.get(provider, provider)
@@ -231,6 +243,7 @@ def which_ai_sentence(
     free_quota: Any = None,
     chatgpt_count: LocalCount | None = None,
     own_key_limits: RateLimitSnapshot | None = None,
+    copilot_quota: CopilotQuota | None = None,
 ) -> str:
     """The one line Which AI Am I Using speaks: connection, model, one usage clause.
 
@@ -262,6 +275,8 @@ def which_ai_sentence(
         lead = f"{name}, {company}" + (f", {chosen}" if chosen else "")
         return f"{lead}. {_capital(_own_key_clause(provider, own_key_limits))}"
     lead = f"{name}, {chosen}" if chosen else name
+    if active == COPILOT and copilot_quota is not None:
+        return f"{lead}. {usage_clause(copilot_quota)}"
     return f"{lead}."
 
 

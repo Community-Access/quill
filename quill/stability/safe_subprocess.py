@@ -103,3 +103,45 @@ def run_subprocess_safely(
     except OSError as error:
         logger.exception("Subprocess failed to launch %s cwd=%s", safe_args, cwd)
         raise OSError(f"Could not run {arg_list[0]!r}: {error}") from error
+
+
+def spawn_subprocess_safely(
+    args: Sequence[str],
+    *,
+    cwd: str | None = None,
+    env: dict[str, str] | None = None,
+) -> subprocess.Popen[bytes]:
+    """Start a long-lived child with piped stdin, stdout and stderr (bytes).
+
+    The same contract as :func:`run_subprocess_safely` -- non-empty ``args``
+    from a fixed, trusted executable; an existing ``cwd``; only the redacted
+    argv is logged -- for a child that speaks a protocol over its pipes
+    rather than running to completion (the Codex app-server). ``env`` is
+    never logged: it is how a caller hands the child a secret without
+    putting it on the command line or in this process's environment. The
+    caller owns the process: it must close stdin and wait or kill it.
+    """
+    arg_list = list(args)
+    if not arg_list:
+        raise ValueError("spawn_subprocess_safely requires a non-empty args sequence")
+    if cwd is not None and not os.path.isdir(cwd):
+        raise ValueError(f"cwd must be an existing directory: {cwd!r}")
+    safe_args = format_args_for_log(arg_list)
+    logger.info("Starting subprocess %s cwd=%s", safe_args, cwd)
+    extra_kwargs: dict = {}
+    if os.name == "nt":
+        extra_kwargs["creationflags"] = subprocess.CREATE_NO_WINDOW
+    try:
+        return subprocess.Popen(  # noqa: S603 - argv list from a fixed, verified executable
+            arg_list,
+            cwd=cwd,
+            env=env,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            bufsize=0,
+            **extra_kwargs,
+        )
+    except OSError as error:
+        logger.exception("Subprocess failed to start %s cwd=%s", safe_args, cwd)
+        raise OSError(f"Could not start {arg_list[0]!r}: {error}") from error

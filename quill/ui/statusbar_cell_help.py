@@ -46,6 +46,10 @@ STATUS_BAR_CELL_HELP: dict[str, str] = {
     "suggestion": "Frequently used command. Press Enter to run it.",
     "braille": "Braille position. Press Enter for Read Braille Status.",
     "ai_engine": "Active AI engine. Press Enter to switch engines.",
+    "ai": (
+        "Which AI is in use: QUILL's free AI, your ChatGPT plan or your own key, the "
+        "same thing Control 8 says, shortened. Press Enter to choose a different one."
+    ),
     "radio_player": (
         "Internet Radio. Press Enter to play or pause; right-click for "
         "Stop, Mute, and Favorite Stations."

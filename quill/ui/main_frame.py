@@ -320,6 +320,7 @@ from quill.ui.main_frame_activity import MainFrameActivityMixin
 from quill.ui.main_frame_ai_actions import AiActionsMixin
 from quill.ui.main_frame_ai_menu import AiMenuMixin
 from quill.ui.main_frame_ai_reading_order import ReadingOrderMixin
+from quill.ui.main_frame_ai_status import AiStatusCellMixin
 from quill.ui.main_frame_bookmarks import BookmarksFoldsMixin
 from quill.ui.main_frame_braille import BrailleCommandsMixin
 from quill.ui.main_frame_braille_phase2 import BraillePhase2CommandsMixin
@@ -768,6 +769,7 @@ class MainFrame(
     RichModeMixin,
     SelectionMarksMixin,
     SessionsMixin,
+    AiStatusCellMixin,  # ahead of StatusBarMixin: the AI cell's text and Enter
     StatusBarMixin,
     IntellisensePopupMixin,
     LineCommandsMixin,
@@ -884,6 +886,7 @@ class MainFrame(
         "ai_engine": "AI Engine",
         "radio_player": "Radio",
         "podcast_player": "Podcasts",
+        "ai": "AI",
     }
     _STATUS_BAR_WIDTHS: dict[str, int] = {
         "message": -1,
@@ -920,6 +923,7 @@ class MainFrame(
         "ai_engine": 200,
         "radio_player": 260,
         "podcast_player": 280,
+        "ai": 160,
     }
     _STATUS_BAR_FEATURES: dict[str, str] = {
         "message": "core.app",

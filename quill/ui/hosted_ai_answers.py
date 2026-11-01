@@ -19,9 +19,8 @@ applied as one undo step.
 
 **The commands:**
 
-* :meth:`cmd_ai_chat_key` -- the **Chat Key**: the AI Assistant, opened on Ask a
-  General Question with the caret already in the question box. Type, Enter,
-  and the answer arrives the way you chose.
+* :meth:`cmd_ai_chat_key` -- **Ask** (Ctrl+6): the AI Conversation about this
+  document, its first line naming the connection asked (codex.md 10C.2).
 * :meth:`cmd_ai_prompt_library` -- QUILL's Prompt Library
   (:mod:`quill.ui.prompt_library_dialog`, :mod:`quill.core.prompt_library`), run
   on the free AI: choose a prompt, and it is sent as a general question with
@@ -185,8 +184,16 @@ class AiAnswersMixin:
     # ------------------------------------------------------------------ #
 
     def cmd_ai_chat_key(self) -> None:
-        """The AI Assistant on Ask a General Question, caret in the question box."""
-        self._open_ai_pad(action="ask", focus_prompt=True)
+        """Ask (Ctrl+6): the AI Conversation, about this document (codex.md 10C).
+
+        Its first line names the connection being asked; each turn sends the
+        passage, the title and the outline, read fresh (:meth:`_ai_ask_context`).
+        """
+        if not self._ai_ready() or not self._ai_capable("text"):
+            return
+        from quill.ui.hosted_ai_chat import open_for
+
+        open_for(self, context=self._ai_ask_context)
 
     # ------------------------------------------------------------------ #
     # The Prompt Library, on the free AI
@@ -213,7 +220,7 @@ class AiAnswersMixin:
 
     def cmd_ai_prompt_library(self) -> None:
         """Choose a saved prompt and run it on the selection, on the free AI."""
-        if not self._ai_ready():
+        if not self._ai_ready() or not self._ai_capable("text"):
             return
         service = self._ai_service()
         if not self._ai_direct() and not service.signed_in:

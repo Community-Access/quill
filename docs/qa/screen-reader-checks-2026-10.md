@@ -1732,3 +1732,42 @@ song) and a recordings folder with a few finished recordings in it.
 - [ ] All seven with NVDA.
 - [ ] All seven with JAWS.
 - [ ] Checks 2, 4 and 7 with Narrator.
+
+
+## Choose Your AI, Which AI and AI Usage, QUILL and QUILL Lite (codex.md 10A, 2026-10-31)
+
+Run each check in both editors. Have the free AI connected and, if you can, a
+ChatGPT plan or an own key signed in.
+
+1. Press Ctrl+4. You hear the title "Choose Your AI" and the row in use, such
+   as "QUILL's free AI, in use", and nothing else. Arrow down the list: each
+   row reads its name and state; the app adds nothing.
+2. Tab once: the About line reads what the row can do and who gets the text.
+   Tab again: Model. On the free AI it reads "QUILL chooses the model" and is
+   unavailable. Tab again: the one button, whose name follows the row (Use
+   This, Sign In..., Sign Out). Tab again: Close. F1 on each of the five says
+   what it is for.
+3. On a signed-in row that is not in use, press Enter. You hear once "Now
+   using ..." and the row now reads "in use" when you arrow away and back.
+4. On a signed-in row, press Delete. The question "Sign out of ...?" has No
+   chosen; Enter changes nothing. Yes signs out and says so once.
+5. Close the window. Press Ctrl+8: one line naming the AI in use and its
+   model. Press Ctrl+8 twice quickly: Choose Your AI opens and nothing is
+   spoken over it.
+6. Press F6 and arrow to the AI cell: it reads "AI: ..." matching Ctrl+8.
+   Enter opens Choose Your AI.
+7. Press Alt+F5 while not signed in to ChatGPT: Choose Your AI opens on "My
+   ChatGPT plan" with the sign-in step over it; Escape closes the step and
+   nothing is said. Alt+F2 opens the window with Use My Own AI Key over it.
+8. Open AI Usage (QUILL Ctrl+Alt+Shift+F2, QUILL Lite Ctrl+Alt+Shift+F9): one
+   list, a sentence per AI, focus on the one in use. When the free AI's count
+   arrives it is said once.
+9. With the free AI in use, open the AI menu: Ask About an Image reads
+   "(needs a connection that sees)" after its name and still shows its key.
+   Press Ctrl+F5: nothing is sent, the switch question has Yes chosen.
+10. Press Ctrl+6: the AI Conversation opens; the About field's first line says
+    "Asking ... about this document." Each reply is spoken and brailled.
+
+- [ ] All ten with NVDA, in both editors.
+- [ ] All ten with JAWS, in both editors.
+- [ ] Checks 1, 3, 5 and 8 with Narrator.

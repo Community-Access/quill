@@ -67,7 +67,7 @@ from quill.core.ai.own_key_models import (
 from quill.ui.dialog_contract import apply_modal_ids
 from quill.ui.dpi import dip_size
 
-__all__ = ["OPENAI_USAGE_URL", "OwnKeyDialog", "OwnKeyUsageFrame", "own_key_about_text"]
+__all__ = ["OPENAI_USAGE_URL", "OwnKeyDialog", "own_key_about_text"]
 
 #: Where an OpenAI account's usage and charges are. QUILL keeps no count of
 #: own-key requests -- they never reach it -- so this is the only true answer.
@@ -445,24 +445,6 @@ def _ignore(_name: str, _error: BaseException) -> None:
     """A background listing that failed: the status line already says what to try."""
 
 
-def _usage_text(model: str, provider: str = "openai") -> str:
-    name = provider_name(provider)
-    return (
-        f"AI help is using your own {name} key.\n\n"
-        f"Model: {model}\n\n"
-        f"{describe_estimate(model, provider)} {estimate_note(provider)}\n\n"
-        "To change the provider or the model, press Alt+F2 or choose Use My Own AI "
-        "Key in the AI menu.\n\n"
-        "There is no QUILL allowance and no size limit beyond the model's own. "
-        f"Requests go straight from this computer to {name}; nothing goes through "
-        "QUILL's servers, so QUILL keeps no count of them.\n\n"
-        f"Your usage and charges are on your {name} account. Open My Usage opens "
-        "that page in your browser.\n\n"
-        "To go back to QUILL's free AI, choose Use My Own AI Key in the AI menu "
-        "and press Remove the Saved Key."
-    )
-
-
 def own_key_about_text(model: str, provider: str = "openai") -> str:
     """What the About windows add when AI help is on the user's own key.
 
@@ -477,48 +459,3 @@ def own_key_about_text(model: str, provider: str = "openai") -> str:
         "or size limit applies, and nothing goes through QUILL's servers. Your "
         f"usage and charges are on your {name} account: {usage_url(provider)}"
     )
-
-
-class OwnKeyUsageFrame(wx.Frame):
-    """AI Usage with the user's own key: what is in use, and where the bill is.
-
-    A different window from the free service's rather than the same one with
-    fields hidden: no allowance to fetch, no sign-out, no support ID -- and so
-    nothing is fetched, and the text is there the moment the window opens.
-    """
-
-    def __init__(self, parent: Any, service: Any, announce: Callable[[str], None]) -> None:
-        from quill.ui.hosted_ai_dialogs import _close_row, _read_only, focus_on
-
-        super().__init__(parent, title="AI Usage")
-        self._announce = announce
-        self._provider = normalize_provider(getattr(service, "own_key_provider", "openai"))
-        name = provider_name(self._provider)
-        panel = wx.Panel(self)
-        sizer = wx.BoxSizer(wx.VERTICAL)
-        panel.SetSizer(sizer)
-        self.body = _read_only(
-            panel,
-            sizer,
-            f"Your own {name} key",
-            _usage_text(service.own_key_model, self._provider),
-            f"Which model AI help is using with your own {name} key, and where your "
-            "usage and charges are. Read with the arrow keys.",
-        )
-        usage = wx.Button(panel, label="Open My &Usage")
-        usage.SetHelpText(
-            f"Opens your {name} account's usage page in your browser, where your "
-            "requests and charges are."
-        )
-        usage.Bind(wx.EVT_BUTTON, self._on_usage)
-        _close_row(self, sizer, usage)
-        focus_on(self, self.body)
-        self.SetInitialSize(dip_size(self, 520, 380))
-        self.Centre()
-
-    def _on_usage(self, _event: Any) -> None:
-        # The browser taking focus is what the reader announces; only a failure
-        # is ours to say.
-        url = usage_url(self._provider)
-        if not wx.LaunchDefaultBrowser(url):
-            self._announce(f"Could not open a browser. Go to {url}.")

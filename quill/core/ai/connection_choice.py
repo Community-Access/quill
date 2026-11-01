@@ -37,6 +37,7 @@ __all__ = [
     "CHOICE_VALUES",
     "IN_USE",
     "NOT_AVAILABLE_YET",
+    "NOT_FOR_ACCOUNT",
     "NOT_SET_UP",
     "NO_AI_IN_USE",
     "ROW_STATES",
@@ -52,6 +53,7 @@ __all__ = [
     "load_connection_fields",
     "migrate_choice",
     "normalize_choice",
+    "not_for_account_sentence",
     "not_ready_sentence",
     "ready",
     "request_route",
@@ -70,6 +72,8 @@ NOT_SET_UP = "not_set_up"
 SIGNED_OUT_BY_OPENAI = "signed_out_by_openai"
 SIGNED_OUT_BY_GITHUB = "signed_out_by_github"
 NOT_AVAILABLE_YET = "not_available_yet"
+#: GitHub said Copilot is switched off for this account (R15, 10A.4).
+NOT_FOR_ACCOUNT = "not_for_account"
 
 #: Each state as the row reads it after the connection's name.
 ROW_STATES: dict[str, str] = {
@@ -79,6 +83,7 @@ ROW_STATES: dict[str, str] = {
     SIGNED_OUT_BY_OPENAI: "signed out by OpenAI",
     SIGNED_OUT_BY_GITHUB: "signed out by GitHub",
     NOT_AVAILABLE_YET: "not available yet",
+    NOT_FOR_ACCOUNT: "not available for your account",
 }
 
 #: Said once by the next AI command after the row in use was signed out.
@@ -175,6 +180,8 @@ class ConnectionFacts:
     #: Whether this build carries the connection at all (Phase 1: neither).
     copilot_available: bool = False
     codex_available: bool = False
+    #: GitHub said Copilot is switched off for this account (R15).
+    copilot_policy_off: bool = False
 
     def available(self, connection: str) -> bool:
         if connection == COPILOT:
@@ -197,7 +204,7 @@ def ready(facts: ConnectionFacts, connection: str) -> bool:
     if connection in (CHATGPT, CODEX):
         return facts.chatgpt_signed_in
     if connection == COPILOT:
-        return facts.copilot_signed_in
+        return facts.copilot_signed_in and not facts.copilot_policy_off
     if connection == OWN_KEY:
         return facts.own_key_ready
     return False
@@ -238,6 +245,8 @@ class ConnectionRow:
 def _row_state(facts: ConnectionFacts, connection: str, active: str) -> str:
     if not facts.available(connection):
         return NOT_AVAILABLE_YET
+    if connection == COPILOT and facts.copilot_policy_off:
+        return NOT_FOR_ACCOUNT
     if connection == active:
         return IN_USE
     if connection in (CHATGPT, CODEX) and facts.chatgpt_ended and not facts.chatgpt_signed_in:
@@ -297,6 +306,14 @@ def limit_sentence(connection: str, app_name: str) -> str:
     )
 
 
+def not_for_account_sentence() -> str:
+    """Said when GitHub reports Copilot switched off for the account (R15)."""
+    return (
+        "My GitHub Copilot is not available for your account; your organisation "
+        "or plan has it switched off. Nothing was sent. Press Ctrl+4 to choose another."
+    )
+
+
 def not_ready_sentence(facts: ConnectionFacts) -> str:
     """Why the stored choice cannot take a request right now, or "" when it can."""
     stored = facts.stored
@@ -307,6 +324,8 @@ def not_ready_sentence(facts: ConnectionFacts) -> str:
         return f"{name} is not available yet. Nothing was sent. Press Ctrl+4 to choose another."
     if stored in (CHATGPT, CODEX) and facts.chatgpt_ended:
         return revoked_sentence(CHATGPT)
+    if stored == COPILOT and facts.copilot_policy_off:
+        return not_for_account_sentence()
     if stored == COPILOT and facts.copilot_ended:
         return revoked_sentence(COPILOT)
     return NO_AI_IN_USE

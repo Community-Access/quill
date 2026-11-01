@@ -45,20 +45,30 @@ class AiMenuMixin:
         claimed elsewhere in *this* menu once the advanced rows are showing, and
         a duplicate mnemonic is a key Windows may silently refuse to press.
         """
+        # A gated row says what it needs after its name (codex.md 10A.8).
+        gated = self._ai_gated_label
         ai_menu.Append(
             self._id_hosted_ai_assistant,
-            self._menu_label(_("Fr&ee AI Assistant..."), "tools.hosted_ai_assistant"),
+            self._menu_label(
+                gated("cmd_ai_assistant", _("Fr&ee AI Assistant...")),
+                "tools.hosted_ai_assistant",
+            ),
         )
         ai_menu.Append(
             self._id_hosted_ai_ask_document,
-            self._menu_label(_("Ask About This &Document..."), "tools.hosted_ai_ask_document"),
+            self._menu_label(
+                gated("cmd_ai_ask_document", _("Ask About This &Document...")),
+                "tools.hosted_ai_ask_document",
+            ),
         )
         # The Chat Key, the Prompt Library and Web Searches Left (2026-10-15).
         self._append_answer_rows(ai_menu)  # quill/ui/main_frame_hosted_ai.py
         ai_menu.Append(
             self._id_hosted_ai_usage,
-            self._menu_label(_("Free AI Usa&ge..."), "tools.hosted_ai_usage"),
+            self._menu_label(_("AI Usa&ge..."), "tools.hosted_ai_usage"),
         )
+        # Which AI Am I Using and Choose Your AI (codex.md 10A.9).
+        self._append_choose_rows(ai_menu)  # quill/ui/main_frame_hosted_ai.py
         ai_menu.Append(
             self._id_hosted_ai_sign_in,
             self._menu_label(_("&Connect or Sign Out..."), "tools.hosted_ai_sign_in"),

@@ -275,7 +275,7 @@ def test_the_advanced_surface_is_behind_the_basic_check() -> None:
     [
         'Fr&ee AI Assistant..."',
         'Ask About This &Document..."',
-        'Free AI Usa&ge..."',
+        'AI Usa&ge..."',
         '&Connect or Sign Out..."',
         'Privac&y Agreement..."',
     ],
@@ -415,10 +415,13 @@ def test_own_key_is_the_shared_command_on_lites_chord_and_joins_the_accelerator_
     from quill.core.keymap import DEFAULT_KEYMAP
     from quill.core.lite.commands import COMMANDS
     from quill.core.lite.parity import COMMAND_EQUIVALENTS
+    from quill.ui.hosted_ai_choose_commands import ChooseAiMixin
     from quill.ui.hosted_ai_commands import HostedAiMixin
     from quill.ui.main_frame_hosted_ai import HostedAiCommandsMixin
 
-    assert "cmd_ai_own_key" in vars(HostedAiMixin)
+    # Moved with Choose Your AI into a base of the shared mixin (codex.md 10A.9).
+    assert issubclass(HostedAiMixin, ChooseAiMixin)
+    assert "cmd_ai_own_key" in vars(ChooseAiMixin)
     assert "cmd_ai_own_key" not in vars(HostedAiCommandsMixin)
     lite_keys = {row[3]: row[2] for row in COMMANDS if row[3]}
     assert DEFAULT_KEYMAP[COMMAND_EQUIVALENTS["cmd_ai_own_key"]] == lite_keys["cmd_ai_own_key"]
@@ -490,7 +493,9 @@ def test_the_chatgpt_rows_are_appended_after_the_free_rows_with_free_mnemonics()
     # mode. Submenu rows (Transform's E&xpand, Read Aloud's E&xport) are their
     # own namespace, which is the same rule the sibling test above applies.
     top_level = re.compile(
-        r'ai_menu\.Append(?:CheckItem)?\(\s*[^,]+,\s*(?:self\._menu_label\()?_\("([^"]*)"',
+        # A gated row (codex.md 10A.8) wraps its literal in gated("cmd_...", ...).
+        r"ai_menu\.Append(?:CheckItem)?\(\s*[^,]+,\s*(?:self\._menu_label\(\s*)?"
+        r'(?:gated\("[^"]*",\s*)?_\("([^"]*)"',
         re.S,
     )
     letters = set()
@@ -524,5 +529,58 @@ def test_the_chatgpt_rows_join_the_accelerator_map() -> None:
         "tools.hosted_ai_chat_key",
         "tools.hosted_ai_prompt_library",
         "tools.hosted_ai_web_searches",
+        # Which AI Am I Using and Choose Your AI (2026-10-31).
+        "tools.hosted_ai_which",
+        "tools.hosted_ai_choose",
     }
-    assert len({int(v) for v in mapping.values()}) == 4 + 13 + 3
+    assert len({int(v) for v in mapping.values()}) == 4 + 13 + 3 + 2
+
+
+# --------------------------------------------------------------------------- #
+# Choose Your AI (codex.md 10A, 2026-10-31)
+# --------------------------------------------------------------------------- #
+
+
+@pytest.mark.parametrize(
+    ("handler", "command", "chord"),
+    [
+        ("cmd_ai_which", "tools.hosted_ai_which", "Ctrl+8"),
+        ("cmd_ai_choose", "tools.hosted_ai_choose", "Ctrl+4"),
+    ],
+)
+def test_which_ai_and_choose_your_ai_are_shared_on_the_same_chords(handler, command, chord):
+    """Rule 2 and 10A.14: one implementation, in the shared mixin, on QUILL Lite's
+    chords; QUILL reaches it through the adapter, which still has no commands."""
+    from quill.core.keymap import DEFAULT_KEYMAP
+    from quill.core.lite.commands import COMMANDS
+    from quill.core.lite.parity import COMMAND_EQUIVALENTS
+    from quill.core.quill_key_help import _CHORD_COMMAND_TITLES
+    from quill.ui.hosted_ai_choose_commands import ChooseAiMixin
+
+    assert handler in vars(ChooseAiMixin)
+    assert handler not in vars(HostedAiCommandsMixin)
+    assert COMMAND_EQUIVALENTS[handler] == command
+    assert DEFAULT_KEYMAP[command] == chord
+    assert {row[3]: row[2] for row in COMMANDS if row[3]}[handler] == chord
+    assert _CHORD_COMMAND_TITLES[command]
+
+
+def test_the_choose_rows_are_appended_with_the_usage_row() -> None:
+    body = _source(_AI_MENU)
+    assert body.index('"AI Usa&ge..."') < body.index("self._append_choose_rows(ai_menu)")
+    adapter = _source("quill/ui/main_frame_hosted_ai.py")
+    assert '"Which AI Am I Using"' in adapter
+    assert '"Choose Your AI..."' in adapter
+
+
+def test_ctrl_4_and_ctrl_8_are_free_everywhere_else() -> None:
+    """10A.9: checked against both editors, the aliases and every app keymap."""
+    from quill.core.app_keymaps import APP_KEYMAPS
+    from quill.core.keymap import DEFAULT_ALIASES, DEFAULT_KEYMAP
+
+    for chord in ("Ctrl+4", "Ctrl+8"):
+        owners = [c for c, k in DEFAULT_KEYMAP.items() if k == chord]
+        assert len(owners) == 1, (chord, owners)
+        assert chord not in DEFAULT_ALIASES.values()
+        for app, table in APP_KEYMAPS.items():
+            assert chord not in table.values(), (app, chord)

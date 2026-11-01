@@ -268,6 +268,15 @@ DEFAULT_KEYMAP: dict[str, str] = {
     "tools.hosted_ai_chat_key": "Ctrl+6",
     "tools.hosted_ai_prompt_library": "Ctrl+7",
     "tools.hosted_ai_web_searches": "Ctrl+9",  # rule 9 wanted longer; none was free
+    # Choose Your AI (codex.md 10A.9, 2026-10-31): QUILL Lite's chords (rule 2);
+    # core/lite/commands_ai.py says why these two. Checked free here, in
+    # DEFAULT_ALIASES, in every APP_KEYMAPS app and in the system-wide keys.
+    # Cast's quick-actions list answers Ctrl+1 to Ctrl+9 *inside the list*
+    # (core/podcasts/quick_actions.py); when Cast binds these in Phase 3 the
+    # list keeps Ctrl+4 and Ctrl+8 while it has focus, and that divergence
+    # gets its parity row then (rule 11). Nothing in Cast binds them today.
+    "tools.hosted_ai_which": "Ctrl+8",
+    "tools.hosted_ai_choose": "Ctrl+4",
     "tools.dictation_tidy": "Ctrl+F3",  # free in both editors; QUILL Lite's chord
     # The dictionary (2026-10-02; quill/ui/word_tools_commands.py, shared).
     # Look Up is the dictionary without AI (DICT-2's window, now reachable and

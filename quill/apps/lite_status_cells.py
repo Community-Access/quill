@@ -27,6 +27,7 @@ __all__ = [
     "RICH_LINE_ENDINGS_CELL",
     "SHOWN_ONLY_WITH_TEXT",
     "StatusCell",
+    "ai_cell",
     "encoding_name",
     "live_status_message",
     "native_cell_labels",
@@ -240,6 +241,15 @@ CELLS: tuple[StatusCell, ...] = (
         "just because it was opened. Press Enter to change it.",
     ),
     StatusCell("saved", "Saved State", "Whether this document has unsaved changes."),
+    # Decision 19 (codex.md 10A.10, 2026-10-31): which AI is in use, short, after
+    # every editing cell so it cannot push one onto another row. QUILL has the
+    # same cell. The message stays last, for the reason given below it.
+    StatusCell(
+        "ai",
+        "AI",
+        "Which AI is in use: QUILL's free AI, your ChatGPT plan or your own key, the "
+        "same thing Control 8 says, shortened. Press Enter to choose a different one.",
+    ),
     # Last, and the position is load-bearing twice over. The row **wraps**, so
     # the one cell whose width has no ceiling has to be the one with nothing
     # after it to push -- it was first, and a two-hundred-character message
@@ -274,6 +284,7 @@ _CELL_ACTIONS: dict[str, str] = {
     "encoding": "cmd_file_format",
     "line_endings": "cmd_file_format",
     "saved": "cmd_save",
+    "ai": "cmd_ai_choose",
 }
 
 
@@ -283,6 +294,17 @@ _CELL_ACTIONS: dict[str, str] = {
 #: not offer: classic-Mac CR, which can be read but is not worth writing.
 _ENCODING_NAMES = dict(ENCODING_CHOICES)
 _NEWLINE_NAMES = dict(NEWLINE_CHOICES) | {"\r": "CR (classic Mac)"}
+
+
+def ai_cell(frame: object) -> str:
+    """The AI cell's text ("AI: ChatGPT plan"), read defensively like the
+    Dictation cell: a host without the hosted AI shows nothing rather than
+    taking the whole status refresh down."""
+    text = getattr(frame, "ai_status_text", None)
+    try:
+        return str(text()) if callable(text) else ""
+    except Exception:  # noqa: BLE001 - a status cell never takes the bar down
+        return ""
 
 
 def encoding_name(codec: str) -> str:
@@ -310,6 +332,7 @@ _SELF_NAMING = frozenset({
     "heading",
     "list",
     "saved",
+    "ai",
 })
 
 

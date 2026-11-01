@@ -121,6 +121,12 @@ MUST_IMPORT: tuple[str, ...] = (
     "quill_social",
     "mastodon",
     "atproto",
+    # My GitHub Copilot (2026-10-31, codex.md 10A.12): the SDK ships in the
+    # runtime instead of installing on demand, and pydantic_core is native, so
+    # a runtime that froze the SDK without it would fail at the first request.
+    "copilot",
+    "copilot.rpc",
+    "quill.core.ai.copilot_chat",
 )
 
 #: The Word stack and GLOW's audits; part of MUST_IMPORT, and named on their

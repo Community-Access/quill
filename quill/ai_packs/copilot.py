@@ -6,11 +6,19 @@ it is imported lazily only when a session runs.
 
 Integration note: the Copilot SDK is itself an agent that can edit files and run
 shell commands, governed by an ``on_permission_request`` handler. QUILL must own
-every edit, so this bridge **offers the SDK none of its own tools and refuses
-every permission request**, and uses the session purely to produce text, which
-QUILL then applies through its reviewed Safe Editor Tool Gateway (permission
-broker + diff preview + one-step undo). Registering QUILL's editor tools as
-Copilot custom tools is the follow-up (the agent engines phase).
+every edit. Two paths:
+
+- **Text only** (:meth:`CopilotHarness.start_session`, ``_make_invoke``): the
+  SDK is offered none of its own tools, every permission request is refused,
+  and the session only produces text, which QUILL applies through its
+  reviewed Safe Editor Tool Gateway (permission broker + diff preview +
+  one-step undo).
+- **Family tools** (:meth:`CopilotHarness.start_tool_session`, Phase 4a): the
+  session is offered exactly QUILL's family tools as Copilot custom tools,
+  each call answered by the :class:`~quill.core.ai.family_tools.FamilyToolRegistry`
+  (so the same gateway, broker, log and diff review apply), and a
+  ``custom-tool`` request is approved only for those names, only after the
+  broker and the approver agree. See :mod:`quill.ai_packs.copilot_tool_session`.
 
 How a session is made, and why (checked against the SDK 1.0.28 source):
 
@@ -87,13 +95,24 @@ SDK 1.0.28 facts recorded for later phases (read from source, not built here):
 
 from __future__ import annotations
 
-from collections.abc import Sequence
-from typing import Any
+import os
+import sys
+from collections.abc import Callable, Sequence
+from typing import TYPE_CHECKING, Any
 
 from quill.ai_packs._base import Invoke, SdkHarness
 from quill.core.ai import copilot_auth
+from quill.core.ai.agent_workdir import AgentFolders, agent_folders
 from quill.core.ai.copilot_runtime import cli_path_for_launch, copilot_child_env
-from quill.core.ai.harness import AgentSpec, AIContext, HarnessCapabilities
+from quill.core.ai.harness import AgentSpec, AIContext, HarnessCapabilities, TurnUsage
+from quill.stability.safe_mode import should_enable_safe_mode
+
+if TYPE_CHECKING:
+    from quill.ai_packs.copilot_tool_session import SdkParts
+    from quill.core.ai.approvals import Approver
+    from quill.core.ai.family_tools import FamilyToolRegistry
+    from quill.core.ai.harness import ToolSession
+    from quill.core.ai.tool_gateway import Emit
 
 __all__ = [
     "CopilotHarness",
@@ -101,6 +120,8 @@ __all__ = [
     "TEXT_ONLY_TOOL_NAME",
     "available_tools_for",
     "answer_text",
+    "client_kwargs",
+    "reject_class",
     "system_message_for",
 ]
 
@@ -155,6 +176,49 @@ def _reject_class() -> Any:
     return PermissionDecisionReject
 
 
+def _client_kwargs(copilot: Any, agent_name: str) -> dict[str, object]:
+    """``CopilotClient`` options: pinned stdio CLI, scrubbed env, explicit token."""
+    cli_path = cli_path_for_launch()  # raises on a bundle that fails the pin
+    kwargs: dict[str, object] = {
+        "env": copilot_child_env(cli_path),
+        # Always explicit stdio: path=None means the SDK's own runtime.
+        "connection": copilot.RuntimeConnection.for_stdio(
+            path=str(cli_path) if cli_path is not None else None
+        ),
+    }
+    token = copilot_auth.stored_token(agent_name)
+    if token:
+        kwargs["github_token"] = token
+        kwargs["use_logged_in_user"] = False
+    return kwargs
+
+
+def _sdk_parts() -> SdkParts:
+    """The SDK classes a tool session needs (imports the SDK; call lazily)."""
+    from copilot.rpc import PermissionDecisionApproveOnce  # type: ignore[import-not-found]
+    from copilot.tools import (  # type: ignore[import-not-found]
+        Tool,
+        ToolBinaryResult,
+        ToolResult,
+    )
+
+    from quill.ai_packs.copilot_tool_session import SdkParts
+
+    return SdkParts(
+        tool_cls=Tool,
+        result_cls=ToolResult,
+        binary_cls=ToolBinaryResult,
+        reject_cls=_reject_class(),
+        approve_cls=PermissionDecisionApproveOnce,
+    )
+
+
+#: Public names for the hosted-AI route (:mod:`quill.core.ai.copilot_chat`),
+#: which makes its clients exactly the way this pack does.
+client_kwargs = _client_kwargs
+reject_class = _reject_class
+
+
 def system_message_for(system_prompt: str) -> dict[str, str] | None:
     """The ``system_message`` option: QUILL's prompt appended to the CLI's own."""
     text = system_prompt.strip()
@@ -187,6 +251,65 @@ class CopilotHarness(SdkHarness):
             subagents=True,
             requires_oauth=True,  # default use_logged_in_user; BYOK also supported
             long_context=True,
+            app_tools=True,
+            images=True,  # a tool may return a picture (G6, binary_results_for_llm)
+        )
+
+    def _tool_client(self, folders: AgentFolders) -> Any:
+        """A ``CopilotClient`` for one tool task (not yet started).
+
+        Its state (``COPILOT_HOME``, via ``base_directory``) and its working
+        directory both sit in this app's own folders, emptied after the task.
+        """
+        import copilot  # type: ignore[import-not-found]
+
+        kwargs = _client_kwargs(copilot, self.agent_name)
+        kwargs["working_directory"] = str(folders.work)
+        kwargs["base_directory"] = str(folders.home)
+        return copilot.CopilotClient(**kwargs)
+
+    def start_tool_session(
+        self,
+        agent: AgentSpec,
+        ctx: AIContext,
+        tools: FamilyToolRegistry,
+        approver: Approver,
+        emit: Emit,
+        *,
+        keep_open: bool = False,
+        on_usage: Callable[[TurnUsage], None] | None = None,
+        model: str | None = None,
+        folders: AgentFolders | None = None,
+    ) -> ToolSession:
+        """A multi-turn session over QUILL's family tools (codex.md 5.2).
+
+        Refused (an error result, never a launch) in Safe Mode (G4) or when the
+        SDK pack is not installed. ``keep_open`` keeps the task alive for
+        follow-ups until ``end()``; ``on_usage`` receives token counts per call.
+        """
+        from quill.ai_packs.copilot_tool_session import CopilotToolSession, RefusedToolSession
+
+        if should_enable_safe_mode(sys.argv, os.environ):
+            return RefusedToolSession("Safe Mode is on, so AI agents are off.", emit)
+        available, reason = self.is_available()
+        if not available:
+            return RefusedToolSession(reason or "GitHub Copilot is not available.", emit)
+        options: dict[str, Any] = {}
+        if model:
+            options["model"] = model
+        return CopilotToolSession(
+            agent=agent,
+            ctx=ctx,
+            tools=tools,
+            approver=approver,
+            emit=emit,
+            sdk=_sdk_parts(),
+            client_factory=self._tool_client,
+            folders=folders or agent_folders("copilot", self.agent_name),
+            session_options=options,
+            keep_open=keep_open,
+            on_usage=on_usage,
+            display_name=self.display_name,
         )
 
     def _make_invoke(self) -> Invoke:
@@ -209,21 +332,6 @@ class CopilotHarness(SdkHarness):
             # memory, custom-tool, ...) is refused, never approved.
             return reject(feedback=_REFUSAL)
 
-        def _client_kwargs() -> dict[str, object]:
-            cli_path = cli_path_for_launch()  # raises on a bundle that fails the pin
-            kwargs: dict[str, object] = {
-                "env": copilot_child_env(cli_path),
-                # Always explicit stdio: path=None means the SDK's own runtime.
-                "connection": copilot.RuntimeConnection.for_stdio(
-                    path=str(cli_path) if cli_path is not None else None
-                ),
-            }
-            token = copilot_auth.stored_token(agent_name)
-            if token:
-                kwargs["github_token"] = token
-                kwargs["use_logged_in_user"] = False
-            return kwargs
-
         def invoke(agent: AgentSpec, ctx: AIContext) -> str:
             prompt = f"{ctx.prompt}\n\n{ctx.context_text}".strip()
             session_kwargs: dict[str, object] = {
@@ -235,7 +343,7 @@ class CopilotHarness(SdkHarness):
                 session_kwargs["system_message"] = system_message
 
             async def _run() -> str:
-                async with copilot.CopilotClient(**_client_kwargs()) as client:
+                async with copilot.CopilotClient(**_client_kwargs(copilot, agent_name)) as client:
                     async with await client.create_session(**session_kwargs) as session:
                         try:
                             result = await session.send_and_wait(

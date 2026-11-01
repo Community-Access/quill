@@ -576,8 +576,9 @@ If you press F6 while the bar is hidden, QUILL Lite tells you it is hidden.
 | **Encoding** | How this file stores its letters and accents | change it |
 | **Line Endings** | How this file marks the end of a line | change it |
 | **Saved State** | Whether you have unsaved changes | saves |
+| **AI** | Which AI is in use, such as "AI: ChatGPT plan" | opens Choose Your AI |
 
-That is sixteen parts, or fifteen when the document has no pages. Most of
+That is seventeen parts, or sixteen when the document has no pages. Most of
 them explain themselves. A few are worth a
 closer look.
 
@@ -7204,10 +7205,10 @@ seventeen things, and two keys open it:
 - **Ask About This Document** (**Ctrl+Alt+Z**) opens the same pad with **Ask a
   question about the document** already chosen, so you can go straight to
   typing your question.
-- **Ask AI a Question**, the Chat Key (**Ctrl+6**), opens the pad with **Ask a
-  general question** chosen and the caret already in **Your question**. Type,
-  press **Enter**, and the answer arrives wherever you chose to put answers
-  (see *Where the answer goes*, below).
+- **Ask AI a Question** (**Ctrl+6**) opens the **AI Conversation** about the
+  document you are in. Its first line says which AI you are asking. Each
+  message takes your selection, or else the paragraph or section you are in,
+  the title and the headings, read fresh every time, and never the whole file.
 - **Prompt Library** (**Ctrl+7**) runs one of your saved prompts on the
   selection. See *Your saved prompts*, below.
 
@@ -7513,6 +7514,59 @@ with every message and is billed to your OpenAI account, so a long
 conversation costs more per reply. It is only shortened if it grows past what
 the model can read at once, and the window tells you if that happens.
 
+### Choose Your AI
+
+**Choose Your AI** is the one window for where your AI comes from: QUILL's free
+AI, your ChatGPT plan or your own key. Press **Choose Your AI** (**Ctrl+4**), or
+choose **Tools > AI > Choose Your AI...**. Focus lands on the list, on the one
+in use. There are five things in the window, in Tab order:
+
+- **Connections**, a list. Each row says its name and then "in use", "signed
+  in" or "not set up". GitHub Copilot and Codex say "not available yet" for now.
+- **About this connection**, one short line: what it can do, who gets your text
+  and what it costs.
+- **Model**, that connection's own models, the recommended one first. The free
+  AI says "QUILL chooses the model".
+- **One button** that follows the row: **Use This**, **Sign In...** or **Sign
+  Out**.
+- **Close**, or press **Escape**.
+
+**Enter** on a row does what the button says. **Delete** on a row you are
+signed in to asks whether to sign out, with **No** as the default.
+
+QUILL Lite says nothing when the window opens or as you move along the list,
+because your screen reader already reads each row. It speaks only what happened:
+"Now using My ChatGPT plan.", "Signed in to My ChatGPT plan. It is now in use.",
+or "Signed out. No AI is in use until you choose one." If no AI is in use, the
+next AI command opens this window and says "No AI is in use. Choose one."
+
+**Use My Own AI Key** (**Alt+F2**), **Use My ChatGPT Subscription** (**Alt+F5**)
+and **Connect or Sign Out** (**Ctrl+Alt+Shift+F10**) keep their keys and open
+this window on their own row, with the sign-in ready.
+
+#### Which AI Am I Using
+
+**Which AI Am I Using** (**Ctrl+8**) says in one line which AI is in use, the
+model, and one thing about usage. Press it twice quickly to open **Choose Your
+AI**.
+
+The status bar's last cell before the message, **AI**, says the same thing
+shorter, such as "AI: ChatGPT plan". Press **F6**, arrow to it and press
+**Enter** to open **Choose Your AI**.
+
+#### One Usage list
+
+**Usage** (**Ctrl+Alt+Shift+F9**) opens one list with a sentence for each AI you
+have set up, each saying whose count it is: QUILL's, your provider's, or a
+count kept on this computer. **Manage Usage** opens the selected one's own page.
+It is all text, with no meter or chart.
+
+#### When the AI in use cannot do something
+
+The command stays in the menu with its key, and its name says what it needs,
+such as **Ask About an Image (needs a connection that sees)**. Pressing it sends
+nothing and asks whether to switch to one that can, with **Yes** as the default.
+
 ### QUILL's free AI
 
 Unless you choose otherwise, AI help runs on QUILL's own free service. There
@@ -7569,9 +7623,9 @@ you which passages it chose before anything is sent.
 
 #### Checking what you have left
 
-- **Usage** (**Ctrl+Alt+Shift+F9**) shows what you have used and what is left.
-  Look here before you run out, rather than finding out when a request is
-  turned down.
+- **Usage** (**Ctrl+Alt+Shift+F9**) shows what each AI you have set up has
+  used, the free AI included. Look here before you run out, rather than finding
+  out when a request is turned down.
 - **Web Searches Left** (**Ctrl+9**) says how many of this month's web searches
   are left. See *Searching the web on the free AI*, below.
 - **Help > About QUILL Lite** shows the same allowance, and this computer's
@@ -7786,11 +7840,9 @@ pictures. The free service and an OpenAI key cannot, so with a Gemini key,
 - While an answer is on its way, **Send** becomes **Stop** (`Alt+S`). Stopping
   closes a Gemini stream immediately; for another route it discards that
   request's eventual answer. It never stops a request from another AI window.
-- **Usage** (**Ctrl+Alt+Shift+F9**) opens a different window. It shows which
-  model is answering, that no allowance applies, and an **Open My Usage**
-  button that takes you to the usage page of your OpenAI or Google AI Studio
-  account, where your requests and charges are listed. There is no Sign Out
-  and no support ID, because you do not need them. **Help > About QUILL Lite** likewise
+- **Usage** (**Ctrl+Alt+Shift+F9**) has a row for your key, and **Manage
+  Usage** opens the usage page of your OpenAI or Google AI Studio account,
+  where your requests and charges are listed. **Help > About QUILL Lite**
   shows the model and that page's address instead of the free allowance.
 - You do not need to connect this computer, and you are not asked to accept
   the free service's agreement. That agreement is about QUILL's servers, and
@@ -7936,10 +7988,10 @@ takes over straight away.
   sets. When you reach one, QUILL Lite tells you in plain words, with the
   error code `QUILL-AI-CHATGPT-LIMIT`. Open ChatGPT Usage shows when it
   resets.
-- **Usage** (**Ctrl+Alt+Shift+F9**) opens this same window instead of the free
-  allowance, since there is no QUILL count to show and your plan's page is one
-  button away. **Help > About QUILL Lite** shows the account and the model instead of the
-  free allowance.
+- **Usage** (**Ctrl+Alt+Shift+F9**) has a row for your plan with the requests
+  QUILL Lite sent today, counted on this computer, and **Manage Usage** opens
+  your plan's own page. **Help > About QUILL Lite** shows the account and the
+  model instead of the free allowance.
 - You do not need to connect this computer to the free service, and you are
   not asked to accept the free service's agreement, because your text never
   goes to QUILL's servers. This window tells you where it does go.

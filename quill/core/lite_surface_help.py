@@ -61,10 +61,17 @@ PURPOSES: dict[str, str] = {
         "device. This window says when you are connected."
     ),
     "AI Usage": (
-        "How many free AI requests you have left this month and today, and "
-        "when the count starts again. Your support ID is here too -- that is "
-        "what QUILL support will ask for. You can also sign this computer out "
-        "from here, and connect it again whenever you like."
+        "How much each AI you have set up has been used, one sentence each, and "
+        "whose count it is. Manage Usage opens the selected one's own page."
+    ),
+    "Choose Your AI": (
+        "Choose where your AI comes from: QUILL's free AI, your ChatGPT plan or "
+        "your own key. The list says which is in use; Enter uses the selected one "
+        "or signs in to it, and Delete signs a signed-in one out."
+    ),
+    "Sign In to Your AI": (
+        "Sign in to the AI you chose. Open the Page takes you to its sign-in page; "
+        "approve there, and this closes itself once you are signed in."
     ),
     "Use My ChatGPT Subscription": (
         "Use the ChatGPT plan you already pay for instead of QUILL's free AI or "
@@ -488,6 +495,8 @@ SHARED_WITH_QUILL: frozenset[str] = frozenset({
     "Edit Prompt",
     "Review AI Changes",
     "AI Usage",
+    "Choose Your AI",
+    "Sign In to Your AI",
     "Ask About an Image",
     "QUILL AI Sign-In",
     "QUILL AI: what is sent, and what is kept",

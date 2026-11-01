@@ -34,6 +34,9 @@ from quill.core.error_codes import CodedError
 __all__ = [
     "PackInstall",
     "PACK_INSTALLS",
+    "BUNDLED_PACKS",
+    "pack_is_bundled",
+    "known_pack_ids",
     "pack_install_for",
     "install_command",
     "manual_install_hint",
@@ -76,14 +79,12 @@ class PackInstall:
 
 # Keyed by harness/pack id (matches the ``pack_id`` on each SdkHarness). Kept in
 # step with pyproject ``[project.optional-dependencies]`` and the pack modules.
+#
+# GitHub Copilot is not here any more (codex.md 10A.12, Phase 2): its SDK ships
+# in the shared runtime (pyproject ``[runtime]`` pulls ``quill[ai-copilot]``)
+# beside the bundled CLI, so nothing is downloaded at first use and sign-in is
+# the only step. It is listed in :data:`BUNDLED_PACKS` instead.
 PACK_INSTALLS: dict[str, PackInstall] = {
-    "copilot": PackInstall(
-        pack_id="copilot",
-        display_name="GitHub Copilot SDK",
-        extra="ai-copilot",
-        requirement="github-copilot-sdk>=1.0",
-        import_name="copilot",
-    ),
     "claude_agent_sdk": PackInstall(
         pack_id="claude_agent_sdk",
         display_name="Claude Agent SDK",
@@ -99,6 +100,20 @@ PACK_INSTALLS: dict[str, PackInstall] = {
         import_name="agents",
     ),
 }
+
+#: Packs whose SDK ships in the shared runtime: pack id -> import name. They
+#: are never installed on demand; :func:`install_pack` refuses them.
+BUNDLED_PACKS: dict[str, str] = {"copilot": "copilot"}
+
+
+def pack_is_bundled(pack_id: str) -> bool:
+    """True when *pack_id*'s SDK ships with QUILL rather than installing on demand."""
+    return pack_id in BUNDLED_PACKS
+
+
+def known_pack_ids() -> list[str]:
+    """Every optional SDK pack id, bundled or installed on demand."""
+    return [*BUNDLED_PACKS, *PACK_INSTALLS]
 
 
 def pack_install_for(pack_id: str) -> PackInstall | None:
@@ -242,15 +257,16 @@ def is_pack_importable(pack_id: str) -> bool:
     "installed" forever with nothing to recover it.
     """
     spec = PACK_INSTALLS.get(pack_id)
-    if spec is None:
+    import_name = BUNDLED_PACKS.get(pack_id) or (spec.import_name if spec else "")
+    if not import_name:
         return False
     try:
-        if importlib.util.find_spec(spec.import_name) is None:
+        if importlib.util.find_spec(import_name) is None:
             return False
     except (ImportError, ValueError):
         return False
     try:
-        importlib.import_module(spec.import_name)
+        importlib.import_module(import_name)
     except Exception:
         return False
     return True
@@ -300,6 +316,10 @@ def install_pack(
     injectable for tests. Raises :class:`PackInstallError` on Safe Mode, missing
     pip, an unknown pack, a non-zero pip exit, or if the SDK still cannot import.
     """
+    if pack_is_bundled(pack_id):
+        raise PackInstallError(
+            "GitHub Copilot ships with QUILL, so there is nothing to install. Sign in to use it."
+        )
     spec = PACK_INSTALLS.get(pack_id)
     if spec is None:
         raise PackInstallError(f"Unknown SDK pack: {pack_id!r}.")

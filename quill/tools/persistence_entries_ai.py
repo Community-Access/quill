@@ -19,4 +19,8 @@ AI_ENTRIES: dict[str, str] = {
     # fourteen days of request and token counts under a version stamp, rebuilt
     # from zero if lost, and never used to infer a limit.
     "core/ai/chatgpt_usage.py::record_request": "cache",
+    # What GitHub last said about this app's Copilot (<data>/ai/copilot-<slug>.json):
+    # two flags, "ended by GitHub" and "not available for your account", so the
+    # Choose Your AI row says them after a restart. No token; a sign-in clears it.
+    "core/ai/copilot_state.py::_save": "marker",
 }

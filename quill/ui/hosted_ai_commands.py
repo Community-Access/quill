@@ -1,7 +1,8 @@
 """The hosted-AI commands, shared by QUILL and QUILL Lite.
 
-Five commands -- the pad, Ask About This Document, Usage, Sign In or Out and the
-Privacy Agreement -- plus the rule that AI never edits on its own.
+The pad, Ask About This Document and the Privacy Agreement, plus the rule that
+AI never edits on its own. Usage and Connect or Sign Out moved to
+:mod:`quill.ui.hosted_ai_choose_commands` with Choose Your AI (codex.md 10A).
 
 **Both editors mix this in.** Three things differ between them and nothing else
 does, so those three are hooks: which window a new frame is parented to, which
@@ -41,15 +42,18 @@ import wx
 from quill.ui.atomic_edit import replace_as_one_undo
 from quill.ui.hosted_ai_answers import AiAnswersMixin
 from quill.ui.hosted_ai_chatgpt_commands import ChatGptAiMixin
+from quill.ui.hosted_ai_choose_commands import ChooseAiMixin
 
 __all__ = ["HostedAiMixin"]
 
 
-class HostedAiMixin(AiAnswersMixin, ChatGptAiMixin):
+class HostedAiMixin(ChooseAiMixin, AiAnswersMixin, ChatGptAiMixin):
     """The hosted-AI commands. Mixed into both editors' document windows.
 
     Where an answer goes, Review Changes, the Chat Key, the Prompt Library and
-    the web search count are :mod:`quill.ui.hosted_ai_answers` (GATE-11)."""
+    the web search count are :mod:`quill.ui.hosted_ai_answers` (GATE-11); Which
+    AI, Choose Your AI, Usage and the three account doors are
+    :mod:`quill.ui.hosted_ai_choose_commands`."""
 
     # ------------------------------------------------------------------ #
     # The three hooks -- the only things the two editors do differently
@@ -110,57 +114,6 @@ class HostedAiMixin(AiAnswersMixin, ChatGptAiMixin):
         arrow down to.
         """
         self._open_ai_pad(action="document_qna")
-
-    def cmd_ai_usage(self) -> None:
-        if not self._ai_ready():
-            return
-        from quill.ui.hosted_ai_dialogs import AiUsageFrame
-
-        if self._ai_chatgpt_active():  # the plan's usage is in the account window
-            self.cmd_ai_chatgpt()
-            return
-        if self._ai_service().own_key_active:  # no allowance: the model and the bill
-            from quill.ui.hosted_ai_own_key import OwnKeyUsageFrame as AiUsageFrame
-        elif not self._ai_service().signed_in:
-            self._announce(
-                "This computer is not connected to QUILL's free AI. "
-                "Choose Connect or Sign Out in the AI menu to connect it."
-            )
-            return
-        self._open_ai_window(
-            f"usage-{AiUsageFrame.__name__}",
-            lambda: AiUsageFrame(self._ai_parent(), self._ai_service(), self._announce),
-        )
-
-    def cmd_ai_own_key(self) -> None:
-        """Use My Own AI Key (OpenAI or Gemini). No agreement: the window says where text goes."""
-        if not self._ai_host().feature_enabled("hosted_ai"):
-            self._announce(f"AI help is switched off. Turn it on in {self._ai_switch_route()}.")
-            return
-        from quill.ui.dialog_contract import show_modal_dialog
-        from quill.ui.hosted_ai_own_key import OwnKeyDialog
-
-        settings = self._ai_host().settings
-        self._ai_note_readiness()
-        dialog = OwnKeyDialog(self._ai_parent(), settings, self._announce)
-        try:
-            if show_modal_dialog(dialog, "Use My Own AI Key") != wx.ID_OK:
-                return
-            outcome = dialog.apply(settings)
-        finally:
-            dialog.Destroy()
-        self._ai_host().save_settings()
-        self._ai_route_changed("own_key")  # saving a key here chooses it (10A.5)
-        self._announce(outcome)
-
-    def cmd_ai_sign_in(self) -> None:
-        if not self._ai_ready():
-            return
-        from quill.ui.hosted_ai_dialogs import AiSignInFrame
-
-        self._open_ai_window(
-            "sign_in", lambda: AiSignInFrame(self._ai_parent(), self._ai_service(), self._announce)
-        )
 
     # ------------------------------------------------------------------ #
     # Plumbing
@@ -333,7 +286,7 @@ class HostedAiMixin(AiAnswersMixin, ChatGptAiMixin):
         if self._ai_service().signed_in:
             self._announce("AI help is on.")
             return
-        self.cmd_ai_sign_in()
+        self._ai_open_connect()
 
     def _light_up_ai(self) -> None:
         """Switch the area on, because accepting here means accepting here.
@@ -501,7 +454,7 @@ class HostedAiMixin(AiAnswersMixin, ChatGptAiMixin):
             take_focus(frame)
 
     def _open_ai_pad(self, action: str = "", *, focus_prompt: bool = False) -> None:
-        if not self._ai_ready():
+        if not self._ai_ready() or not self._ai_capable("text"):
             return
 
         service = self._ai_service()
@@ -510,7 +463,7 @@ class HostedAiMixin(AiAnswersMixin, ChatGptAiMixin):
                 "This computer is not connected to QUILL's free AI. "
                 "Choose Connect or Sign Out in the AI menu to connect it."
             )
-            self.cmd_ai_sign_in()
+            self._ai_open_connect()
             return
 
         from quill.ui.hosted_ai_pad import AiPadFrame
